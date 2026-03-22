@@ -1,14 +1,15 @@
 <script lang="ts">
   import { getExerciseQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
+  import { getTrueFalseCorrectIsTrue } from './true-false-correct';
 
   let { question, labels }: ExerciseQuestionRendererProps = $props();
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(labels, key, fallback);
 
   const correctValue = $derived(
-    (question.settings?.correctValue as boolean | undefined) === false
-      ? label('true_false.false_label')
-      : label('true_false.true_label')
+    getTrueFalseCorrectIsTrue(question.settings as Record<string, unknown> | undefined)
+      ? label('true_false.true_label')
+      : label('true_false.false_label')
   );
 </script>
 

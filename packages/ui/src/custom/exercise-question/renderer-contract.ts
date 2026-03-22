@@ -61,6 +61,14 @@ import { default as ShortAnswerSubmission } from './renderers/short-answer/submi
 import { default as TextareaSubmission } from './renderers/textarea/submission.svelte';
 import { default as TrueFalseSubmission } from './renderers/true-false/submission.svelte';
 
+import { default as RadioReview } from './renderers/radio/review.svelte';
+import { default as CheckboxReview } from './renderers/checkbox/review.svelte';
+import { default as NumericReview } from './renderers/numeric/review.svelte';
+import { default as ShortAnswerReview } from './renderers/short-answer/review.svelte';
+import { default as FillBlankReview } from './renderers/fill-blank/review.svelte';
+import { default as OrderingReview } from './renderers/ordering/review.svelte';
+import { default as TrueFalseReview } from './renderers/true-false/review.svelte';
+
 type SharedRendererComponent = Component<ExerciseQuestionRendererProps>;
 
 export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<SharedRendererComponent> = {
@@ -68,13 +76,15 @@ export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<Share
     edit: RadioEdit,
     take: RadioTake,
     preview: RadioPreview,
-    submission: RadioSubmission
+    submission: RadioSubmission,
+    review: RadioReview
   },
   [QUESTION_TYPE_KEY.CHECKBOX]: {
     edit: CheckboxEdit,
     take: CheckboxTake,
     preview: CheckboxPreview,
-    submission: CheckboxSubmission
+    submission: CheckboxSubmission,
+    review: CheckboxReview
   },
   [QUESTION_TYPE_KEY.TEXTAREA]: {
     edit: TextareaEdit,
@@ -86,25 +96,29 @@ export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<Share
     edit: TrueFalseEdit,
     take: TrueFalseTake,
     preview: TrueFalsePreview,
-    submission: TrueFalseSubmission
+    submission: TrueFalseSubmission,
+    review: TrueFalseReview
   },
   [QUESTION_TYPE_KEY.SHORT_ANSWER]: {
     edit: ShortAnswerEdit,
     take: ShortAnswerTake,
     preview: ShortAnswerPreview,
-    submission: ShortAnswerSubmission
+    submission: ShortAnswerSubmission,
+    review: ShortAnswerReview
   },
   [QUESTION_TYPE_KEY.NUMERIC]: {
     edit: NumericEdit,
     take: NumericTake,
     preview: NumericPreview,
-    submission: NumericSubmission
+    submission: NumericSubmission,
+    review: NumericReview
   },
   [QUESTION_TYPE_KEY.FILL_BLANK]: {
     edit: FillBlankEdit,
     take: FillBlankTake,
     preview: FillBlankPreview,
-    submission: FillBlankSubmission
+    submission: FillBlankSubmission,
+    review: FillBlankReview
   },
   [QUESTION_TYPE_KEY.FILE_UPLOAD]: {
     edit: FileUploadEdit,
@@ -122,7 +136,8 @@ export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<Share
     edit: OrderingEdit,
     take: OrderingTake,
     preview: OrderingPreview,
-    submission: OrderingSubmission
+    submission: OrderingSubmission,
+    review: OrderingReview
   },
   [QUESTION_TYPE_KEY.HOTSPOT]: {
     edit: HotspotEdit,

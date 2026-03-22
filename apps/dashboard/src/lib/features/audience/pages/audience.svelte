@@ -1,41 +1,68 @@
 <script lang="ts">
-  import * as Table from '@cio/ui/base/table';
-  import { page } from '$app/state';
-  import { Skeleton } from '@cio/ui/base/skeleton';
-  import { Search } from '@cio/ui/custom/search';
-  import * as Pagination from '@cio/ui/base/pagination';
   import UsersIcon from '@lucide/svelte/icons/users';
   import { orgApi } from '$features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
   import { UpgradeBanner } from '$features/ui';
   import { currentOrgMaxAudience } from '$lib/utils/store/org';
-  import * as Avatar from '@cio/ui/base/avatar';
-  import * as Page from '@cio/ui/base/page';
-  import { shortenName } from '$lib/utils/functions/string';
   import type { OrganizationAudience } from '$features/org/utils/types';
+  import AssignCoursesModal from '$features/audience/components/assign-courses-modal.svelte';
+  import AudienceTableToolbar from '$features/audience/components/audience-table-toolbar.svelte';
+  import AudienceTableSkeleton from '$features/audience/components/audience-table-skeleton.svelte';
+  import AudienceTable from '$features/audience/components/audience-table.svelte';
+  import AudiencePagination from '$features/audience/components/audience-pagination.svelte';
+  import { SvelteSet } from 'svelte/reactivity';
+
+  interface Course {
+    id: string;
+    title: string;
+  }
 
   interface Props {
     audience?: OrganizationAudience;
+    courses?: Course[];
   }
 
-  let { audience }: Props = $props();
+  let { audience, courses = [] }: Props = $props();
 
-  // Initialize audience from prop if provided
   $effect(() => {
     if (audience) {
       orgApi.audience = audience;
     }
   });
 
-  const headers = [
-    { key: 'name', value: $t('audience.name') },
-    { key: 'email', value: $t('audience.email') },
-    { key: 'date_joined', value: $t('audience.date_joined') }
-  ];
-  let pageSize = $state(5);
+  const headers = $derived([
+    { key: 'name', value: t.get('audience.name') },
+    { key: 'email', value: t.get('audience.email') },
+    { key: 'status', value: t.get('audience.status') },
+    { key: 'date_joined', value: t.get('audience.date_joined') }
+  ]);
+
+  let inviteActionEmail = $state<string | null>(null);
+
+  async function handleResendInvite(email: string) {
+    inviteActionEmail = email;
+    try {
+      await orgApi.resendAudienceInvite({ email });
+    } finally {
+      inviteActionEmail = null;
+    }
+  }
+
+  async function handleRevokeInvite(email: string) {
+    inviteActionEmail = email;
+    try {
+      await orgApi.revokeAudienceInvite({ email });
+    } finally {
+      inviteActionEmail = null;
+    }
+  }
+
+  let pageSize = $state(20);
   let currentPage = $state(1);
   let searchValue = $state('');
+  let selectedIds = new SvelteSet<string>();
+  let assignModalOpen = $state(false);
 
   const filteredRows = $derived(
     searchValue
@@ -50,6 +77,45 @@
   const endIndex = $derived(startIndex + pageSize);
   const paginatedRows = $derived(filteredRows.slice(startIndex, endIndex));
 
+  const selectablePageRows = $derived(paginatedRows.filter((row) => row.profileId));
+
+  const allPageSelected = $derived(
+    selectablePageRows.length > 0 && selectablePageRows.every((row) => selectedIds.has(String(row.id)))
+  );
+  const somePageSelected = $derived(
+    selectablePageRows.some((row) => selectedIds.has(String(row.id))) && !allPageSelected
+  );
+  const hasSelection = $derived(selectedIds.size > 0);
+
+  function toggleSelectAll() {
+    if (allPageSelected) {
+      for (const row of selectablePageRows) {
+        selectedIds.delete(String(row.id));
+      }
+    } else {
+      for (const row of selectablePageRows) {
+        selectedIds.add(String(row.id));
+      }
+    }
+  }
+
+  function toggleRow(id: string) {
+    if (selectedIds.has(id)) {
+      selectedIds.delete(id);
+    } else {
+      selectedIds.add(id);
+    }
+  }
+
+  const selectedProfileIds = $derived(
+    orgApi.audience.filter((r) => selectedIds.has(String(r.id)) && r.profileId).map((r) => r.profileId!)
+  );
+
+  function handleAssigned() {
+    assignModalOpen = false;
+    selectedIds.clear();
+  }
+
   $effect(() => {
     if (filteredRows.length > 0 && currentPage > totalPages) {
       currentPage = 1;
@@ -61,90 +127,47 @@
   <UpgradeBanner>{$t('audience.upgrade')}</UpgradeBanner>
 {/if}
 
-<Page.BodyHeader>
-  <Search placeholder="Search..." bind:value={searchValue} class="" />
-</Page.BodyHeader>
+<AudienceTableToolbar
+  {hasSelection}
+  selectedCount={selectedIds.size}
+  bind:searchValue
+  onOpenAssign={() => (assignModalOpen = true)}
+/>
 
 {#if orgApi.audience.length || orgApi.isLoading}
   <div class="w-full space-y-4">
-    <!-- Table -->
     {#if orgApi.isLoading}
-      <div class="space-y-2">
-        {#each Array(pageSize) as _, i (i)}
-          <Skeleton class="h-12 w-full" />
-        {/each}
-      </div>
+      <AudienceTableSkeleton rowCount={pageSize} />
     {:else}
-      <div class="rounded-md border">
-        <Table.Root>
-          <Table.Header>
-            <Table.Row>
-              {#each headers as header (header)}
-                <Table.Head>{header.value}</Table.Head>
-              {/each}
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {#each paginatedRows as row (row.id)}
-              <Table.Row>
-                <Table.Cell>
-                  <a
-                    href={`${page.url.href}/${row.id}`}
-                    class="ui:text-primary flex items-center gap-2 hover:underline"
-                  >
-                    <Avatar.Root class="h-5 w-5">
-                      <Avatar.Image
-                        src={row.avatarUrl ? row.avatarUrl : '/logo-192.png'}
-                        alt={row.name ? row.name : 'User'}
-                      />
-                      <Avatar.Fallback>{shortenName(row.name) || 'U'}</Avatar.Fallback>
-                    </Avatar.Root>
-                    {row.name}
-                  </a>
-                </Table.Cell>
-                <Table.Cell>{row.email}</Table.Cell>
-                <Table.Cell>{row.createdAt}</Table.Cell>
-              </Table.Row>
-            {/each}
-          </Table.Body>
-        </Table.Root>
-      </div>
+      <AudienceTable
+        {headers}
+        rows={paginatedRows}
+        {allPageSelected}
+        {somePageSelected}
+        onToggleSelectAll={toggleSelectAll}
+        isRowSelected={(id) => selectedIds.has(id)}
+        onToggleRow={toggleRow}
+        {inviteActionEmail}
+        onResendInvite={handleResendInvite}
+        onRevokeInvite={handleRevokeInvite}
+      />
     {/if}
 
-    <!-- Pagination -->
-    <div class="flex items-center justify-between">
-      <Pagination.Root
-        count={filteredRows.length}
-        perPage={pageSize}
-        page={currentPage}
-        onPageChange={(page) => (currentPage = page)}
-      >
-        {#snippet children({ pages, currentPage: activePage })}
-          <Pagination.Content>
-            <Pagination.Item>
-              <Pagination.PrevButton />
-            </Pagination.Item>
-            {#each pages as page (page.key)}
-              {#if page.type === 'ellipsis'}
-                <Pagination.Item>
-                  <Pagination.Ellipsis />
-                </Pagination.Item>
-              {:else}
-                <Pagination.Item>
-                  <Pagination.Link {page} isActive={activePage === page.value}>
-                    {page.value}
-                  </Pagination.Link>
-                </Pagination.Item>
-              {/if}
-            {/each}
-            <Pagination.Item>
-              <Pagination.NextButton />
-            </Pagination.Item>
-          </Pagination.Content>
-        {/snippet}
-      </Pagination.Root>
-    </div>
+    <AudiencePagination
+      count={filteredRows.length}
+      perPage={pageSize}
+      page={currentPage}
+      onPageChange={(p) => (currentPage = p)}
+    />
   </div>
 {:else}
   <Empty title={$t('audience.no_audience')} description={$t('audience.manage')} icon={UsersIcon} variant="page" />
 {/if}
+
+<AssignCoursesModal
+  bind:open={assignModalOpen}
+  {selectedProfileIds}
+  {courses}
+  onclose={() => (assignModalOpen = false)}
+  onassigned={handleAssigned}
+/>

@@ -16,6 +16,7 @@ const afterHooks: Array<(context: AuthMiddlewareContext) => Promise<unknown>> = 
  * This function will be called by better-auth after each request
  */
 export const combineAfterHooks = async (context: AuthMiddlewareContext) => {
+  console.log('[auth] combineAfterHooks: running');
   for (const hook of afterHooks) {
     try {
       await hook(context);

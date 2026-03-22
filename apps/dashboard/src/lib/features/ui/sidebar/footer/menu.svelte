@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
+  import { goto } from '$app/navigation';
   import { basePath, globalStore } from '$lib/utils/store/app';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import RocketIcon from '@lucide/svelte/icons/rocket';
@@ -12,7 +14,6 @@
   import ThemeToggle from './theme-toggle.svelte';
 
   import { t } from '$lib/utils/functions/translations';
-  import { logout } from '$lib/utils/functions/logout';
   import { profile } from '$lib/utils/store/user';
 
   const sidebar = useSidebar();
@@ -36,7 +37,7 @@
 
 {#snippet usertrigger()}
   <DropdownMenu.Label class="p-0">
-    <a href={`${$basePath}/settings`} class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+    <a href={resolve(`${$basePath}/settings`, {})} class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
       {@render avatarblock()}
     </a>
   </DropdownMenu.Label>
@@ -122,7 +123,7 @@
 
             <DropdownMenu.Separator />
 
-            <DropdownMenu.Item onclick={() => logout()}>
+            <DropdownMenu.Item onclick={() => goto(resolve(`/logout`, {}))}>
               <span class="flex items-center gap-2">
                 <LogOutIcon />
                 <p class="text-sm">{$t('settings.profile.logout')}</p>

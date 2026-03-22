@@ -100,7 +100,7 @@ export const createOrganizationMember = async (data: TNewOrganizationmember, dbC
  * @returns Array of created members
  */
 export const createOrganizationMembers = async (data: TNewOrganizationmember[]) => {
-  const members = await db.insert(schema.organizationmember).values(data).returning();
+  const members = await db.insert(schema.organizationmember).values(data).onConflictDoNothing().returning();
 
   return members;
 };
@@ -345,33 +345,92 @@ export const getOrganizationTeam = async (orgId: string) => {
 };
 
 /**
- * Gets organization audience (all organization members with student role)
- * @param orgId Organization ID
- * @returns Array of student profiles
+ * Gets organization audience (all organization members with student role).
+ * Includes invited members without a profile (LEFT JOIN profile).
+ * Row id is organizationmember.id; use profileId for profile-backed actions when present.
  */
 export const getOrganizationAudience = async (orgId: string) => {
   const result = await db
     .select({
-      id: schema.profile.id,
+      memberId: schema.organizationmember.id,
+      profileId: schema.profile.id,
       fullname: schema.profile.fullname,
-      email: schema.profile.email,
+      email: sql<string>`COALESCE(${schema.profile.email}, ${schema.organizationmember.email})`.as('email'),
       avatarUrl: schema.profile.avatarUrl,
-      createdAt: schema.profile.createdAt
+      profileCreatedAt: schema.profile.createdAt,
+      memberCreatedAt: schema.organizationmember.createdAt
     })
     .from(schema.organizationmember)
-    .innerJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+    .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
     .where(
       and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.roleId, ROLE.STUDENT))
     );
 
-  return result.map((profile) => ({
-    id: profile.id,
-    name: profile.fullname,
-    email: profile.email || '',
-    avatarUrl: profile.avatarUrl || '',
-    createdAt: profile.createdAt ? new Date(profile.createdAt).toDateString() : ''
-  }));
+  return result.map((row) => {
+    const email = row.email?.trim() ?? '';
+    const name = row.fullname?.trim() || (email.includes('@') ? email.split('@')[0] : email) || '';
+    const createdAtRaw = row.profileId ? row.profileCreatedAt : row.memberCreatedAt;
+    const createdAt = createdAtRaw ? new Date(createdAtRaw).toDateString() : '';
+
+    return {
+      id: row.memberId,
+      profileId: row.profileId ?? null,
+      name,
+      email,
+      avatarUrl: row.avatarUrl || '',
+      createdAt
+    };
+  });
 };
+
+/**
+ * Student org member matched by profile email or organizationmember.email (for audience invite actions).
+ */
+export async function getStudentOrganizationMemberByOrgAndEmail(
+  orgId: string,
+  email: string
+): Promise<{ id: number; profileId: string | null; email: string } | null> {
+  const normalized = email.toLowerCase().trim();
+  if (!normalized) {
+    return null;
+  }
+
+  try {
+    const [row] = await db
+      .select({
+        id: schema.organizationmember.id,
+        profileId: schema.organizationmember.profileId,
+        displayEmail: sql<string>`COALESCE(${schema.profile.email}, ${schema.organizationmember.email})`.as(
+          'displayEmail'
+        )
+      })
+      .from(schema.organizationmember)
+      .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.roleId, ROLE.STUDENT),
+          or(eq(schema.organizationmember.email, normalized), eq(schema.profile.email, normalized))
+        )
+      )
+      .limit(1);
+
+    if (!row) {
+      return null;
+    }
+
+    return {
+      id: row.id,
+      profileId: row.profileId,
+      email: (row.displayEmail ?? normalized).trim()
+    };
+  } catch (error) {
+    console.error('getStudentOrganizationMemberByOrgAndEmail error:', error);
+    throw new Error(
+      `Failed to get organization student member: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
 
 /**
  * Gets organizations with optional filters
@@ -687,3 +746,33 @@ export const getActiveOrganizationPlan = async (orgId: string) => {
 
   return plan ?? null;
 };
+
+/**
+ * Gets organization members by profile IDs
+ * @param orgId Organization ID
+ * @param profileIds Array of profile IDs to look up
+ * @returns Array of { profileId, email } for matching members
+ */
+export async function getOrgMembersByProfileIds(orgId: string, profileIds: string[]) {
+  try {
+    if (profileIds.length === 0) return [];
+
+    return db
+      .select({
+        profileId: schema.organizationmember.profileId,
+        email: schema.organizationmember.email
+      })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          inArray(schema.organizationmember.profileId, profileIds)
+        )
+      );
+  } catch (error) {
+    console.error('getOrgMembersByProfileIds error:', error);
+    throw new Error(
+      `Failed to get org members by profile IDs: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}

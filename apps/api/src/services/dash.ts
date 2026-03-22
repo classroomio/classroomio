@@ -2,7 +2,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getCourseStats, getDashOrgStats, getRecentEnrollments } from '@cio/db/queries/dash';
 
 import { OrganisationAnalytics } from '@api/types';
-import { getOrgIdBySiteName } from '@db/queries';
+import { getOrgIdBySiteName } from '@cio/db/queries';
 
 export async function getOrganisationAnalytics(orgId?: string, siteName?: string): Promise<OrganisationAnalytics> {
   const analytics: OrganisationAnalytics = {

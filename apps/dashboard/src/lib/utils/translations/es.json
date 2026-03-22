@@ -475,7 +475,54 @@
     "name": "Nombre",
     "email": "Correo electrónico",
     "date_joined": "Fecha de incorporación",
-    "upgrade": "Actualice su plan para invitar a más estudiantes"
+    "upgrade": "Actualice su plan para invitar a más estudiantes",
+    "import_users": "Importar usuarios",
+    "search_placeholder": "Buscar…",
+    "status": "Estado",
+    "status_active": "Activo",
+    "status_pending": "Pendiente",
+    "status_expired": "Caducado",
+    "status_revoked": "Revocado",
+    "select_all": "Seleccionar todo",
+    "selected_count": "{count} seleccionado",
+    "assign_courses": "Asignar a cursos",
+    "invite": {
+      "row_actions_aria": "Acciones abiertas",
+      "resend": "Reenviar invitación",
+      "revoke": "Revocar invitación pendiente",
+      "resend_snackbar_success": "Correo electrónico de invitación enviado",
+      "resend_snackbar_email_failed": "La invitación se renovó pero no se pudo enviar el correo electrónico.",
+      "revoke_snackbar_success": "Invitación pendiente revocada"
+    },
+    "assign": {
+      "title": "Asignar a cursos",
+      "description": "Dar acceso a los cursos a los usuarios seleccionados y, opcionalmente, notificarles por correo electrónico.",
+      "select_courses": "Seleccionar cursos",
+      "select_courses_placeholder": "Elige cursos...",
+      "send_email": "Enviar correo electrónico de notificación",
+      "submit": "Asignar",
+      "cancel": "Cancelar",
+      "snackbar_success": "Usuarios asignados {assigned} a cursos ({alreadyEnrolled} ya inscritos, {emailsSent} correos electrónicos enviados)",
+      "snackbar_no_courses": "Por favor seleccione al menos un curso",
+      "snackbar_failed": "No se pudieron asignar cursos"
+    },
+    "import": {
+      "title": "Importar usuarios",
+      "description": "Agregue estudiantes a su organización ingresando sus direcciones de correo electrónico. Opcionalmente, asígnalos a cursos y envía correos electrónicos de invitación.",
+      "emails_label": "Direcciones de correo electrónico",
+      "emails_placeholder": "Ingrese correos electrónicos separados por comas, nuevas líneas o punto y coma\npor ej. alicia@ejemplo.com, bob@ejemplo.com",
+      "course_access": "Acceso al curso",
+      "no_courses": "Sin tarea de curso",
+      "all_courses": "Todos los cursos",
+      "select_courses": "Seleccionar cursos específicos",
+      "select_courses_placeholder": "Elige cursos...",
+      "send_email": "Enviar correo electrónico de invitación a usuarios importados",
+      "submit": "Importar usuarios",
+      "back": "Volver a la audiencia",
+      "snackbar_success": "Usuarios importados {importados} ({skipped} ya existía, {emailsSent} correos electrónicos enviados)",
+      "snackbar_no_emails": "Por favor ingrese al menos una dirección de correo electrónico",
+      "snackbar_failed": "No se pudieron importar usuarios"
+    }
   },
   "community": {
     "title": "Comunidad",
@@ -940,6 +987,8 @@
         "complete": "completo",
         "next": "Siguiente",
         "prev": "Anterior",
+        "prev_shortcut": "Anterior (←)",
+        "next_shortcut": "Siguiente (→)",
         "disabled": "La característica está deshabilitada",
         "version_history": {
           "title": "Historial de versiones",
@@ -1200,6 +1249,9 @@
                 },
                 "edit": {
                   "accepted_answers_placeholder": "Respuestas aceptadas (separadas por comas)"
+                },
+                "review": {
+                  "your_answer_label": "Enviado:"
                 }
               },
               "numeric": {
@@ -1217,6 +1269,11 @@
                   "tolerance_info": "Diferencia permitida con respecto al valor correcto (por ejemplo, 0,5 acepta +/-0,5).",
                   "correct_value_placeholder": "Valor correcto",
                   "tolerance_placeholder": "Tolerancia"
+                },
+                "review": {
+                  "your_answer_label": "Enviado:",
+                  "in_range": "Dentro de la tolerancia",
+                  "out_of_range": "Tolerancia exterior"
                 }
               },
               "short_answer": {
@@ -1228,6 +1285,10 @@
                 },
                 "edit": {
                   "instructions_placeholder": "Instrucciones opcionales"
+                },
+                "review": {
+                  "your_answer_label": "Enviado:",
+                  "accepted_label": "Respuestas aceptadas"
                 }
               },
               "true_false": {
@@ -1291,8 +1352,9 @@
                 "option_prefix": "Opción",
                 "remove": "Quitar",
                 "add_option": "Agregar opción",
-                "correct_badge": "(Correcto)",
-                "not_set": "No establecido"
+                "correct_badge": "Correcto",
+                "not_set": "No establecido",
+                "incorrect_badge": "Incorrecto"
               }
             }
           },
@@ -1473,7 +1535,10 @@
           "cancel": "Cancelar"
         },
         "content_locked_title": "Este contenido está bloqueado.",
-        "content_locked_description": "Su instructor aún no ha desbloqueado este contenido. Complete el contenido anterior o vuelva a consultarlo más tarde."
+        "content_locked_description": "Su instructor aún no ha desbloqueado este contenido. Complete el contenido anterior o vuelva a consultarlo más tarde.",
+        "saving": "Guardando…",
+        "saved": "Guardado",
+        "draft_recovery": "Se encontró un borrador no guardado para esta lección. ¿Quieres restaurarlo?"
       },
       "news_feed": {
         "heading": "Noticias",
@@ -1582,6 +1647,7 @@
       "unpublished": "Inédito",
       "continue_course": "Continuar",
       "learn_more": "Más información",
+      "tags_overflow_aria": "{count} etiquetas más",
       "list_view": {
         "title": "Título",
         "description": "Descripción",
@@ -2245,7 +2311,8 @@
         "email_password_disabled_message": "El inicio de sesión con correo electrónico/contraseña está deshabilitado para esta organización.",
         "google_auth_disabled": "La autenticación de Google está deshabilitada.",
         "signup_disabled_error": "El registro está deshabilitado para esta organización. Por favor contacte a su administrador.",
-        "or_continue_with": "O continuar con correo electrónico y contraseña"
+        "or_continue_with": "O continuar con correo electrónico y contraseña",
+        "sso_enabled": "{provider} está habilitado para esta organización"
       },
       "tabs": {
         "general": "generales",
@@ -2471,7 +2538,8 @@
       "edit_group": "Editar grupo",
       "edit_tag": "Editar etiqueta",
       "save": "Guardar",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "actions_menu": "Acciones de etiqueta"
     },
     "common": {
       "not_available": "N/A"
@@ -2480,9 +2548,13 @@
   "invite": {
     "organization": {
       "page_title": "Únase a {orgName} en ClassroomIO",
-      "role_label": "Rol: {rol}",
-      "email_label": "Correo electrónico invitado: {email}",
-      "join_button": "Unirse a la organización",
+      "invitation_student": "Has sido invitado a {orgName} como estudiante.",
+      "invitation_teacher": "Has sido invitado a {orgName} como profesor.",
+      "invitation_admin": "Has sido invitado a {orgName} como administrador.",
+      "invitation_fallback": "Has sido invitado a {orgName} como {role}.",
+      "email_line": "Correo electrónico: {email}",
+      "accept_button": "Aceptar invitación",
+      "go_to_dashboard": "Ir al panel",
       "messages": {
         "email_mismatch": "Has iniciado sesión con un correo electrónico diferente al de esta invitación.",
         "expired": "Este enlace de invitación ha caducado.",
@@ -2520,6 +2592,17 @@
           "cancel": "Cancel",
           "save": "Create key"
         }
+      },
+      "usage": {
+        "title": "Uso y límites",
+        "description": "MCP está disponible en todos los planes, pero el uso se controla con créditos de automatización mensuales y límites clave.",
+        "credits_title": "Créditos restantes",
+        "credits_description": "Las acciones mutantes de MCP consumen créditos. Las acciones de lectura son gratuitas.",
+        "keys_title": "Claves activas",
+        "keys_description": "Utilice una clave MCP por integración para que el acceso se pueda rotar o revocar limpiamente.",
+        "rate_limits_title": "Límites de tarifas",
+        "rate_limits_description": "Solicitudes de lectura/escritura/publicación permitidas por minuto.",
+        "used_label": "Usado:"
       }
     },
     "keys": {
@@ -2534,7 +2617,11 @@
       "never_used": "nunca",
       "scopes_label": "Alcances:",
       "revoke_confirm": "¿Revocar esta clave de automatización?",
-      "rotate_confirm": "¿Girar esta clave de automatización?"
+      "rotate_confirm": "¿Girar esta clave de automatización?",
+      "table_key": "clave",
+      "table_status": "Estado",
+      "table_created": "Creado",
+      "table_last_used": "último usado"
     },
     "clients": {
       "claude_code": "Código Claude",

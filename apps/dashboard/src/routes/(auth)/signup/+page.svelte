@@ -48,7 +48,7 @@
 
   // Invite context: allow signup when invite_token present or redirect contains invite info
   const hasInviteContext = $derived(
-    !!inviteToken || (!!redirectUrl && (redirectUrl.includes('/invite/t/') || redirectUrl.includes('invite_token')))
+    !!inviteToken || (!!redirectUrl && (redirectUrl.includes('/invite/') || redirectUrl.includes('invite_token')))
   );
 
   const inviteOnly = $derived(!!org?.settings?.signup?.inviteOnly);

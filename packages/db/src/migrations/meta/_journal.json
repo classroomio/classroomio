@@ -50,6 +50,13 @@
       "when": 1771176910627,
       "tag": "0006_modern_the_initiative",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1774154467188,
+      "tag": "0007_rainy_vivisector",
+      "breakpoints": true
     }
   ]
 }

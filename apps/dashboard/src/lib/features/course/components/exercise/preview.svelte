@@ -1,6 +1,7 @@
 <script lang="ts">
   import { getExerciseQuestionContractKey } from '@cio/question-types';
-  import type { AnswerData } from '@cio/question-types';
+  import type { AnswerData, ExerciseQuestionModel } from '@cio/question-types';
+  import type { Question } from '$features/course/types';
   import { Grade, ReasonBox } from '$features/ui/question';
   import { toExerciseQuestionModel } from './question-type-utils';
   import { getExerciseQuestionLabels } from './question-labels';
@@ -8,15 +9,15 @@
   import type { QuestionnaireMetaData } from './store';
 
   interface Props {
-    questions?: any;
+    questions?: Question[];
     questionnaireMetaData?: Partial<QuestionnaireMetaData>;
+    /** Per-question scores (e.g. from `questionnaireMetaData.grades` or grading modal `questionAnswerByPoint`). */
     grades?: Record<string, number>;
-    onSubmit?: any;
-    onPrevious?: any;
     disableGrading?: boolean;
     isGradeWithAI?: boolean;
     isLoading?: boolean;
-    reasons?: any;
+    /** Optional AI grading copy keyed by question id. */
+    reasons?: Record<string, string>;
   }
 
   let {
@@ -33,12 +34,12 @@
     isGradeWithAI = false;
   }
 
-  function rejectGradeSuggestion(questionId) {
+  function rejectGradeSuggestion(questionId: Question['id']) {
     isGradeWithAI = false;
-    grades[questionId] = 0;
+    grades[String(questionId)] = 0;
   }
 
-  function getAnswerForQuestion(questionModel, fallbackIndex = 0) {
+  function getAnswerForQuestion(questionModel: ExerciseQuestionModel, fallbackIndex = 0): AnswerData | undefined {
     const questionKey = getExerciseQuestionContractKey(questionModel, fallbackIndex);
     return _questionnaireMetaData?.answers?.[questionKey];
   }
@@ -59,11 +60,11 @@
 
 {#if disableGrading && !Object.keys(grades || {}).length}
   <ExerciseQuestion.QuestionList
-    contract={{ mode: 'view', questions: questionModels, answersByKey, labels: questionLabels, disabled: true }}
+    contract={{ mode: 'review', questions: questionModels, answersByKey, labels: questionLabels, disabled: true }}
     itemClass="mb-4"
   />
 {:else if disableGrading && Object.keys(grades || {}).length}
-  {#each questions as currentQuestion, index}
+  {#each questions as currentQuestion, index (currentQuestion.id)}
     {@const questionModel = questionModels[index]}
     <div class="mb-4 space-y-3">
       <div class="flex items-center justify-between">
@@ -73,7 +74,7 @@
 
       <ExerciseQuestion.QuestionRenderer
         contract={{
-          mode: 'view',
+          mode: 'review',
           question: questionModel,
           answer: getAnswerForQuestion(questionModel, index),
           labels: questionLabels,
@@ -83,7 +84,7 @@
     </div>
   {/each}
 {:else}
-  {#each questions as currentQuestion, index}
+  {#each questions as currentQuestion, index (currentQuestion.id)}
     {@const questionModel = questionModels[index]}
     <div class="mb-4 space-y-3">
       <div class="flex items-center justify-between">
@@ -93,7 +94,7 @@
 
       <ExerciseQuestion.QuestionRenderer
         contract={{
-          mode: 'view',
+          mode: 'review',
           question: questionModel,
           answer: getAnswerForQuestion(questionModel, index),
           labels: questionLabels,

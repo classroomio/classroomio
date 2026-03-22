@@ -24,6 +24,7 @@ import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { profile } from '$lib/utils/store/user';
 import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
+import { coursesApi } from './courses.svelte';
 import { ROLE } from '@cio/utils/constants';
 import { ContentType } from '@cio/utils/constants/content';
 import type { CourseMembers } from '../utils/types';
@@ -499,6 +500,7 @@ export class CourseApi extends BaseApiWithErrors {
         }),
       logContext: 'deleting course',
       onSuccess: (response) => {
+        coursesApi.removeCourseFromLists(courseId);
         if (response.data) {
           snackbar.success('Course deleted successfully');
           this.success = true;

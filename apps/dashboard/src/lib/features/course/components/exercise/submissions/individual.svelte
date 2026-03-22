@@ -81,7 +81,7 @@
         <div class="pb-4">
           <ExerciseQuestion.QuestionRenderer
             contract={{
-              mode: 'view',
+              mode: 'review',
               question: { ...toExerciseQuestionModel(q), title: `${i + 1}. ${q.title}` },
               answer: getStudentAnswerForQuestion($submissions[studentSelected], q),
               labels: questionLabels,

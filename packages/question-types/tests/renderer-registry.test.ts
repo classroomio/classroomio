@@ -55,6 +55,21 @@ describe('renderer registry helpers', () => {
     expect(getRendererForMode(REGISTRY, QUESTION_TYPE_KEY.ORDERING, 'view', FALLBACK_RENDERER)).toBe('ordering-take');
   });
 
+  it("resolves 'review' mode to 'take' when review is omitted", () => {
+    expect(getRendererForMode(REGISTRY, QUESTION_TYPE_KEY.RADIO, 'review', FALLBACK_RENDERER)).toBe('radio-take');
+  });
+
+  it("resolves 'review' mode using optional review slot when provided", () => {
+    const withReview: typeof REGISTRY = {
+      ...REGISTRY,
+      [QUESTION_TYPE_KEY.RADIO]: {
+        ...REGISTRY[QUESTION_TYPE_KEY.RADIO]!,
+        review: 'radio-review'
+      }
+    };
+    expect(getRendererForMode(withReview, QUESTION_TYPE_KEY.RADIO, 'review', FALLBACK_RENDERER)).toBe('radio-review');
+  });
+
   it('returns fallback renderer mode when type is unregistered', () => {
     expect(getRendererForMode(REGISTRY, QUESTION_TYPE_KEY.LINK, 'edit', FALLBACK_RENDERER)).toBe('fallback-edit');
     expect(getRendererForMode(REGISTRY, QUESTION_TYPE_KEY.LINK, 'take', FALLBACK_RENDERER)).toBe('fallback-take');

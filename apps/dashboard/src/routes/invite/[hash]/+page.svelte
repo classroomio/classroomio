@@ -11,6 +11,7 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { page } from '$app/state';
   import { t } from '$lib/utils/functions/translations';
+  import { ROLE } from '@cio/utils/constants';
 
   let { data } = $props();
 
@@ -25,6 +26,9 @@
     )
   );
   const canJoinOrganization = $derived(inviteStatus === 'ACTIVE' && !isInviteEmailMismatch);
+  const isAlreadyJoined = $derived(inviteStatus === 'ACCEPTED');
+
+  const orgSlug = $derived(data.currentOrg?.siteName ?? data.invite.organization.siteName ?? '');
 
   function buildInviteAuthParams(pathname: string, email: string): string {
     const parts: string[] = [];
@@ -34,6 +38,9 @@
   }
 
   const loginParams = $derived(buildInviteAuthParams(page.url?.pathname || '', data.invite?.invite?.email || ''));
+
+  const orgName = $derived(data.invite?.organization?.name ?? '');
+  const inviteRoleId = $derived(data.invite?.invite?.roleId ?? 0);
 
   function getBlockedInviteMessage(): string {
     if (isInviteEmailMismatch) {
@@ -96,6 +103,13 @@
     }
   }
 
+  function handleNavigateAfterJoined() {
+    if (inviteRoleId === ROLE.STUDENT) {
+      return goto(resolve('/lms', {}));
+    }
+    return goto(resolve(orgSlug ? `/org/${orgSlug}` : '/org', {}));
+  }
+
   onMount(async () => {
     if (!data.currentOrg) return;
 
@@ -110,23 +124,43 @@
 
 <AuthUI isLogin={false} {handleSubmit} isLoading={loading} showOnlyContent={true} showLogo={true}>
   <div class="mt-0 w-full">
-    <h3 class="mt-0 mb-4 text-center text-lg font-medium dark:text-white">{data.invite.organization.name}</h3>
     <p class="text-center text-sm font-light dark:text-white">
-      {$t('invite.organization.role_label', { role: data.invite.invite.roleLabel })}
+      {#if inviteRoleId === ROLE.STUDENT}
+        {$t('invite.organization.invitation_student', { orgName })}
+      {:else if inviteRoleId === ROLE.TUTOR}
+        {$t('invite.organization.invitation_teacher', { orgName })}
+      {:else if inviteRoleId === ROLE.ADMIN}
+        {$t('invite.organization.invitation_admin', { orgName })}
+      {:else}
+        {$t('invite.organization.invitation_fallback', {
+          orgName,
+          role: data.invite.invite.roleLabel
+        })}
+      {/if}
     </p>
-    <p class="mt-1 text-center text-sm font-light dark:text-white">
-      {$t('invite.organization.email_label', { email: data.invite.invite.email })}
+    <p class="mt-3 text-center text-sm font-light dark:text-white">
+      {$t('invite.organization.email_line', { email: data.invite.invite.email })}
     </p>
 
-    {#if !canJoinOrganization}
+    {#if !canJoinOrganization && !isAlreadyJoined}
       <p class="mt-3 text-center text-sm text-red-500">{getBlockedInviteMessage()}</p>
     {/if}
   </div>
 
   <div class="my-4 flex w-full flex-col items-center justify-center gap-3">
-    <Button type="submit" disabled={!canJoinOrganization || loading} {loading}>
-      {$t('invite.organization.join_button')}
-    </Button>
+    {#if isAlreadyJoined}
+      <Button type="button" onclick={handleNavigateAfterJoined}>
+        {#if inviteRoleId === ROLE.STUDENT}
+          {$t('navigation.goto_lms')}
+        {:else}
+          {$t('invite.organization.go_to_dashboard')}
+        {/if}
+      </Button>
+    {:else}
+      <Button type="submit" disabled={!canJoinOrganization || loading} {loading}>
+        {$t('invite.organization.accept_button')}
+      </Button>
+    {/if}
     <p class="ui:text-muted-foreground text-center text-sm">
       {$t('login.already_have_account')}
       <a class="ui:text-primary hover:underline" href={resolve(`/login?${loginParams}`, {})}> {$t('login.login')}</a>

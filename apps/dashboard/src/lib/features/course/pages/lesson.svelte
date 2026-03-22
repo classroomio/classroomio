@@ -18,7 +18,7 @@
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { RefreshPageData } from '$features/ui';
+  import { RefreshPageData, UnsavedChanges } from '$features/ui';
   import LessonVersionHistory from '$features/course/components/lesson/lesson-version-history.svelte';
   import { courseApi, lessonApi } from '$features/course/api';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
@@ -50,6 +50,7 @@
   import type { TLocale } from '@cio/db/types';
   import { orderedTabs, tabs as materialTabs } from '$features/course/components/lesson/constants';
   import { getViewModeComponents } from '$features/course/components/lesson/utils';
+  import { loadDraft, clearDraft } from '$features/course/utils/lesson-draft';
 
   interface Props {
     courseId: string;
@@ -61,9 +62,14 @@
   const mode = $derived($page.url.searchParams.get('mode') === 'edit' ? MODES.edit : MODES.view);
 
   let prevModeParam = $state<string | null>(null);
-  let isSaving = $state(false);
   let isDeletingLesson = $state(false);
   let isVersionDrawerOpen = $state(false);
+  // eslint-disable-next-line svelte/prefer-writable-derived -- must be writable: cleared before intentional navigations and bound to UnsavedChanges
+  let hasUnsavedChanges = $state(false);
+
+  $effect(() => {
+    hasUnsavedChanges = lessonApi.isDirty && mode === MODES.edit;
+  });
 
   const lessonTitle = $derived(lessonApi.lesson?.title || 'Lesson');
   const isLessonUnlocked = $derived(lessonApi.lesson?.isUnlocked ?? false);
@@ -80,6 +86,12 @@
   }
 
   function toggleMode() {
+    if (mode === MODES.edit && lessonApi.isDirty) {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = undefined;
+      saveLesson();
+    }
+    hasUnsavedChanges = false;
     setModeQueryParam(mode === MODES.edit ? MODES.view : MODES.edit);
   }
 
@@ -139,7 +151,7 @@
 
   const isMaterialsEmpty = $derived(tabs.every((tab) => tab.badgeValue === 0));
 
-  let timeoutId: NodeJS.Timeout;
+  let timeoutId: NodeJS.Timeout | undefined;
 
   let isLoading = writable(false);
 
@@ -184,9 +196,6 @@
   async function saveLesson() {
     if (!lessonApi.lesson) return false;
 
-    // Prevent autosave loops: we only set this back to `true` when the user edits again.
-    lessonApi.isDirty = false;
-
     const [isLessonUpdated] = await Promise.all([
       lessonApi.update(courseApi.course?.id || '', lessonId, {
         title: lessonApi.lesson.title || undefined,
@@ -200,6 +209,8 @@
 
     if (isLessonUpdated) {
       patchLessonListItemLocally();
+      clearDraft(lessonId, lessonApi.currentLocale);
+      lessonApi.isDirty = false;
     }
   }
 
@@ -219,6 +230,7 @@
     await lessonApi.delete(courseId, lessonId);
 
     if (lessonApi.success) {
+      hasUnsavedChanges = false;
       await goto(resolve(`/courses/${courseId}/lessons`, {}));
     }
 
@@ -228,6 +240,8 @@
   function handleSave(prevMode: string) {
     untrack(() => {
       if (prevMode === MODES.edit) {
+        if (timeoutId) clearTimeout(timeoutId);
+        timeoutId = undefined;
         saveLesson();
       }
     });
@@ -240,11 +254,8 @@
     if (timeoutId) clearTimeout(timeoutId);
 
     untrack(() => {
-      isSaving = true;
       timeoutId = setTimeout(async () => {
         await saveLesson();
-
-        isSaving = false;
       }, 2000);
     });
   }
@@ -255,13 +266,41 @@
     autoSave();
   };
 
+  // Check for an unsaved localStorage draft when the lesson first loads.
+  let draftCheckedForLesson = '';
+  $effect(() => {
+    if (!browser) return;
+    if (!lessonApi.lesson || !lessonId) return;
+    if (draftCheckedForLesson === lessonId) return;
+    draftCheckedForLesson = lessonId;
+
+    const draft = loadDraft(lessonId, lessonApi.currentLocale);
+    if (!draft) return;
+
+    const serverContent = lessonApi.translations[lessonId]?.[lessonApi.currentLocale] || '';
+    if (draft.content === serverContent) {
+      clearDraft(lessonId, lessonApi.currentLocale);
+      return;
+    }
+
+    const shouldRestore = window.confirm(t.get('course.navItem.lessons.draft_recovery'));
+    if (shouldRestore) {
+      if (!lessonApi.translations[lessonId]) {
+        lessonApi.translations[lessonId] = {} as Record<TLocale, string>;
+      }
+      lessonApi.translations[lessonId][lessonApi.currentLocale] = draft.content;
+      lessonApi.isDirty = true;
+    } else {
+      clearDraft(lessonId, lessonApi.currentLocale);
+    }
+  });
+
   // Only autosave after real edits, not on every reactive update.
   $effect(() => {
     if (mode !== MODES.edit) return;
     if (!lessonApi.lesson || !lessonId) return;
     if (!lessonApi.isDirty) return;
     if ($isLoading) return;
-    console.log('autoSave');
 
     autoSave();
   });
@@ -270,7 +309,6 @@
   let didHandleExitEdit = false;
   $effect(() => {
     if (!lessonId) return;
-    console.log('didHandleExitEdit');
 
     const currentParam = $page.url.searchParams.get('mode');
     const prev = prevModeParam;
@@ -338,8 +376,17 @@
           </IconButton>
         {/if}
 
-        <div class="flex-row items-center lg:flex">
-          <IconButton onclick={toggleMode} disabled={isSaving}>
+        <div class="flex flex-row items-center gap-2 lg:flex">
+          {#if mode === MODES.edit}
+            <span class="ui:text-muted-foreground text-sm" aria-live="polite">
+              {#if lessonApi.isSaving}
+                {$t('course.navItem.lessons.saving')}
+              {:else if !lessonApi.isDirty}
+                {$t('course.navItem.lessons.saved')}
+              {/if}
+            </span>
+          {/if}
+          <IconButton onclick={toggleMode} disabled={lessonApi.isSaving}>
             {#if mode === MODES.edit}
               <Save size={20} />
             {:else}
@@ -451,6 +498,8 @@
     </div>
   {/snippet}
 </Page.Body>
+
+<UnsavedChanges bind:hasUnsavedChanges />
 
 {#if isVersionDrawerOpen && window.innerWidth >= 1024}
   <LessonVersionHistory

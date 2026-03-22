@@ -59,11 +59,11 @@ html .dark {
 }
 
 .prose h1 {
-  @apply mt-0 text-4xl font-extrabold;
+  @apply mt-0 text-4xl font-normal;
 }
 
 .prose h2 {
-  @apply mt-10 border-b pb-2 text-3xl font-semibold transition-colors;
+  @apply mt-0 text-3xl font-normal transition-colors;
 }
 
 .prose h2:first-child {
@@ -71,11 +71,11 @@ html .dark {
 }
 
 .prose h3 {
-  @apply mt-8 text-2xl font-semibold;
+  @apply mt-0 text-2xl font-normal;
 }
 
 .prose h4 {
-  @apply mt-8 text-xl font-semibold;
+  @apply mt-0 text-xl font-normal;
 }
 
 .prose p,

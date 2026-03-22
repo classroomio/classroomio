@@ -475,7 +475,54 @@
     "name": "Nome",
     "email": "E-mail",
     "date_joined": "Data de adesão",
-    "upgrade": "Atualize seu plano para convidar mais alunos"
+    "upgrade": "Atualize seu plano para convidar mais alunos",
+    "import_users": "Importar usuários",
+    "search_placeholder": "Pesquisar…",
+    "status": "Estado",
+    "status_active": "Ativo",
+    "status_pending": "Pendente",
+    "status_expired": "Expirado",
+    "status_revoked": "Revogado",
+    "select_all": "Selecionar tudo",
+    "selected_count": "{contagem} selecionados",
+    "assign_courses": "Atribuir a cursos",
+    "invite": {
+      "row_actions_aria": "Ações abertas",
+      "resend": "Reenviar convite",
+      "revoke": "Revogar convite pendente",
+      "resend_snackbar_success": "E-mail de convite enviado",
+      "resend_snackbar_email_failed": "O convite foi renovado, mas não foi possível enviar o e-mail",
+      "revoke_snackbar_success": "Convite pendente revogado"
+    },
+    "assign": {
+      "title": "Atribuir a cursos",
+      "description": "Conceda aos usuários selecionados acesso aos cursos e, opcionalmente, notifique-os por e-mail.",
+      "select_courses": "Selecione os cursos",
+      "select_courses_placeholder": "Escolha cursos...",
+      "send_email": "Enviar e-mail de notificação",
+      "submit": "Atribuir",
+      "cancel": "Cancelar",
+      "snackbar_success": "{assigned} usuários atribuídos aos cursos ({alreadyEnrolled} já inscrito, {emailsSent} e-mails enviados)",
+      "snackbar_no_courses": "Selecione pelo menos um curso",
+      "snackbar_failed": "Falha ao atribuir cursos"
+    },
+    "import": {
+      "title": "Importar usuários",
+      "description": "Adicione alunos à sua organização inserindo seus endereços de e-mail. Opcionalmente, atribua-os a cursos e envie e-mails de convite.",
+      "emails_label": "Endereços de e-mail",
+      "emails_placeholder": "Insira e-mails separados por vírgulas, novas linhas ou ponto e vírgula\npor exemplo alice@exemplo.com, bob@exemplo.com",
+      "course_access": "Acesso ao curso",
+      "no_courses": "Nenhuma tarefa de curso",
+      "all_courses": "Todos os cursos",
+      "select_courses": "Selecione cursos específicos",
+      "select_courses_placeholder": "Escolha cursos...",
+      "send_email": "Enviar e-mail de convite para usuários importados",
+      "submit": "Importar usuários",
+      "back": "Voltar ao público",
+      "snackbar_success": "Usuários {importados} importados ({skipped} já existia, {emailsSent} emails enviados)",
+      "snackbar_no_emails": "Insira pelo menos um endereço de e-mail",
+      "snackbar_failed": "Falha ao importar usuários"
+    }
   },
   "community": {
     "title": "Comunidade",
@@ -940,6 +987,8 @@
         "complete": "Completo",
         "next": "Próximo",
         "prev": "Anterior",
+        "prev_shortcut": "Anterior (←)",
+        "next_shortcut": "Próximo (→)",
         "disabled": "O recurso está desativado",
         "version_history": {
           "title": "Histórico de versões",
@@ -1200,6 +1249,9 @@
                 },
                 "edit": {
                   "accepted_answers_placeholder": "Respostas aceitas (separadas por vírgula)"
+                },
+                "review": {
+                  "your_answer_label": "Enviado:"
                 }
               },
               "numeric": {
@@ -1217,6 +1269,11 @@
                   "tolerance_info": "Diferença permitida do valor correto (por exemplo, 0,5 aceita +/-0,5).",
                   "correct_value_placeholder": "Valor correto",
                   "tolerance_placeholder": "Tolerância"
+                },
+                "review": {
+                  "your_answer_label": "Enviado:",
+                  "in_range": "Dentro da tolerância",
+                  "out_of_range": "Tolerância externa"
                 }
               },
               "short_answer": {
@@ -1228,6 +1285,10 @@
                 },
                 "edit": {
                   "instructions_placeholder": "Instruções opcionais"
+                },
+                "review": {
+                  "your_answer_label": "Enviado:",
+                  "accepted_label": "Respostas aceitas"
                 }
               },
               "true_false": {
@@ -1291,8 +1352,9 @@
                 "option_prefix": "Opção",
                 "remove": "Remover",
                 "add_option": "Adicionar opção",
-                "correct_badge": "(Correto)",
-                "not_set": "Não definido"
+                "correct_badge": "Correto",
+                "not_set": "Não definido",
+                "incorrect_badge": "Incorreto"
               }
             }
           },
@@ -1473,7 +1535,10 @@
           "cancel": "Cancelar"
         },
         "content_locked_title": "Este conteúdo está bloqueado",
-        "content_locked_description": "Seu instrutor ainda não desbloqueou este conteúdo. Conclua o conteúdo anterior ou volte mais tarde."
+        "content_locked_description": "Seu instrutor ainda não desbloqueou este conteúdo. Conclua o conteúdo anterior ou volte mais tarde.",
+        "saving": "Salvando…",
+        "saved": "Salvo",
+        "draft_recovery": "Um rascunho não salvo foi encontrado para esta lição. Você gostaria de restaurá-lo?"
       },
       "news_feed": {
         "heading": "Feed de notícias",
@@ -1582,6 +1647,7 @@
       "unpublished": "Não publicado",
       "continue_course": "Continuar",
       "learn_more": "Saiba mais",
+      "tags_overflow_aria": "Mais {count} tags",
       "list_view": {
         "title": "Título",
         "description": "Descrição",
@@ -2245,7 +2311,8 @@
         "email_password_disabled_message": "O login por e-mail/senha está desativado para esta organização.",
         "google_auth_disabled": "A autenticação do Google está desativada.",
         "signup_disabled_error": "A inscrição está desativada para esta organização. Entre em contato com seu administrador.",
-        "or_continue_with": "Ou continue com e-mail e senha"
+        "or_continue_with": "Ou continue com e-mail e senha",
+        "sso_enabled": "{provider} está ativado para esta organização"
       },
       "tabs": {
         "general": "Geral",
@@ -2471,7 +2538,8 @@
       "edit_group": "Editar grupo",
       "edit_tag": "Editar etiqueta",
       "save": "Salvar",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "actions_menu": "Ações de tags"
     },
     "common": {
       "not_available": "N/A"
@@ -2480,9 +2548,13 @@
   "invite": {
     "organization": {
       "page_title": "Junte-se a {orgName} no ClassroomIO",
-      "role_label": "Função: {função}",
-      "email_label": "E-mail convidado: {email}",
-      "join_button": "Junte-se à organização",
+      "invitation_student": "Você foi convidado para {orgName} como aluno.",
+      "invitation_teacher": "Você foi convidado para {orgName} como professor.",
+      "invitation_admin": "Você foi convidado para {orgName} como administrador.",
+      "invitation_fallback": "Você foi convidado para {orgName} como {role}.",
+      "email_line": "E-mail: {email}",
+      "accept_button": "Aceitar convite",
+      "go_to_dashboard": "Ir para o painel",
       "messages": {
         "email_mismatch": "Você está conectado com um e-mail diferente deste convite.",
         "expired": "Este link de convite expirou.",
@@ -2520,6 +2592,17 @@
           "cancel": "Cancel",
           "save": "Create key"
         }
+      },
+      "usage": {
+        "title": "Uso e limites",
+        "description": "O MCP está disponível em todos os planos, mas o uso é controlado com créditos mensais de automação e limites principais.",
+        "credits_title": "Créditos restantes",
+        "credits_description": "As ações mutantes do MCP consomem créditos. As ações de leitura são gratuitas.",
+        "keys_title": "Chaves ativas",
+        "keys_description": "Use uma chave MCP por integração para que o acesso possa ser alternado ou revogado de forma limpa.",
+        "rate_limits_title": "Limites de taxa",
+        "rate_limits_description": "Solicitações de leitura/gravação/publicação permitidas por minuto.",
+        "used_label": "Usado:"
       }
     },
     "keys": {
@@ -2534,7 +2617,11 @@
       "never_used": "Nunca",
       "scopes_label": "Escopos:",
       "revoke_confirm": "Revogar esta chave de automação?",
-      "rotate_confirm": "Girar esta chave de automação?"
+      "rotate_confirm": "Girar esta chave de automação?",
+      "table_key": "Chave",
+      "table_status": "Estado",
+      "table_created": "Criado",
+      "table_last_used": "Usado pela última vez"
     },
     "clients": {
       "claude_code": "Código Claude",

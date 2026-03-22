@@ -1,6 +1,9 @@
 export interface QuestionStoryFixture {
   question: Record<string, unknown>;
+  /** Correct answer (`AnswerData` or legacy shapes supported by renderers). */
   answer?: unknown;
+  /** Incorrect answer for Review Mode demos in Storybook (`AnswerData`). */
+  wrongAnswer?: unknown;
 }
 
 const OPTION_IMAGE_A = 'https://brand.cdn.clsrio.com/classroomio-lms-courses.png';
@@ -33,7 +36,8 @@ export const RADIO_FIXTURE: QuestionStoryFixture = {
       { id: 1003, label: 'Ruby', value: 'ruby' }
     ]
   },
-  answer: 1001
+  answer: { type: 'RADIO', optionId: 1001 },
+  wrongAnswer: { type: 'RADIO', optionId: 1002 }
 };
 
 export const CHECKBOX_FIXTURE: QuestionStoryFixture = {
@@ -63,7 +67,8 @@ export const CHECKBOX_FIXTURE: QuestionStoryFixture = {
       }
     ]
   },
-  answer: ['2001', '2003']
+  answer: { type: 'CHECKBOX', optionIds: [2001, 2003] },
+  wrongAnswer: { type: 'CHECKBOX', optionIds: [2002] }
 };
 
 export const TEXTAREA_FIXTURE: QuestionStoryFixture = {
@@ -93,7 +98,8 @@ export const TRUE_FALSE_FIXTURE: QuestionStoryFixture = {
       correctValue: true
     }
   },
-  answer: true
+  answer: { type: 'TRUE_FALSE', value: true },
+  wrongAnswer: { type: 'TRUE_FALSE', value: false }
 };
 
 export const SHORT_ANSWER_FIXTURE: QuestionStoryFixture = {
@@ -103,10 +109,12 @@ export const SHORT_ANSWER_FIXTURE: QuestionStoryFixture = {
     title: 'Name one strategy for reducing flaky frontend tests. [SHORT_ANSWER]',
     questionType: 'SHORT_ANSWER',
     settings: {
-      instructions: 'Answer in one sentence.'
+      instructions: 'Answer in one sentence.',
+      acceptedAnswers: 'use deterministic test fixtures'
     }
   },
-  answer: 'Use deterministic test fixtures'
+  answer: { type: 'SHORT_ANSWER', text: 'Use deterministic test fixtures' },
+  wrongAnswer: { type: 'SHORT_ANSWER', text: 'Guess randomly every time' }
 };
 
 export const NUMERIC_FIXTURE: QuestionStoryFixture = {
@@ -117,7 +125,8 @@ export const NUMERIC_FIXTURE: QuestionStoryFixture = {
     questionType: 'NUMERIC',
     settings: { correctValue: 90, tolerance: 0 }
   },
-  answer: 90
+  answer: { type: 'NUMERIC', value: 90 },
+  wrongAnswer: { type: 'NUMERIC', value: 42 }
 };
 
 export const FILL_BLANK_FIXTURE: QuestionStoryFixture = {
@@ -128,7 +137,8 @@ export const FILL_BLANK_FIXTURE: QuestionStoryFixture = {
     questionType: 'FILL_BLANK',
     settings: { acceptedAnswers: 'API,endpoint' }
   },
-  answer: ['API']
+  answer: { type: 'FILL_BLANK', values: ['API'] },
+  wrongAnswer: { type: 'FILL_BLANK', values: ['SOAP'] }
 };
 
 export const FILE_UPLOAD_FIXTURE: QuestionStoryFixture = {
@@ -180,7 +190,8 @@ export const ORDERING_FIXTURE: QuestionStoryFixture = {
       items: ['Design schema', 'Implement renderer', 'Ship to production']
     }
   },
-  answer: ['order-1', 'order-2', 'order-3']
+  answer: { type: 'ORDERING', orderedValues: ['order-1', 'order-2', 'order-3'] },
+  wrongAnswer: { type: 'ORDERING', orderedValues: ['order-3', 'order-1', 'order-2'] }
 };
 
 export const HOTSPOT_FIXTURE: QuestionStoryFixture = {

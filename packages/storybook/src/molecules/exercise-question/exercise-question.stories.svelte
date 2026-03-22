@@ -29,19 +29,31 @@
 
 <Story name="Checkbox">
   {#snippet template()}
-    <QuestionTypeModes question={CHECKBOX_FIXTURE.question} answer={CHECKBOX_FIXTURE.answer} />
+    <QuestionTypeModes
+      question={CHECKBOX_FIXTURE.question}
+      answer={CHECKBOX_FIXTURE.answer}
+      wrongAnswer={CHECKBOX_FIXTURE.wrongAnswer}
+    />
   {/snippet}
 </Story>
 
 <Story name="FileUpload">
   {#snippet template()}
-    <QuestionTypeModes question={FILE_UPLOAD_FIXTURE.question} answer={FILE_UPLOAD_FIXTURE.answer} />
+    <QuestionTypeModes
+      question={FILE_UPLOAD_FIXTURE.question}
+      answer={FILE_UPLOAD_FIXTURE.answer}
+      wrongAnswer={FILE_UPLOAD_FIXTURE.wrongAnswer}
+    />
   {/snippet}
 </Story>
 
 <Story name="FillBlank">
   {#snippet template()}
-    <QuestionTypeModes question={FILL_BLANK_FIXTURE.question} answer={FILL_BLANK_FIXTURE.answer} />
+    <QuestionTypeModes
+      question={FILL_BLANK_FIXTURE.question}
+      answer={FILL_BLANK_FIXTURE.answer}
+      wrongAnswer={FILL_BLANK_FIXTURE.wrongAnswer}
+    />
   {/snippet}
 </Story>
 
@@ -62,13 +74,21 @@
     >
       <strong>Hidden – still in development.</strong> Not available in the exercise editor.
     </div>
-    <QuestionTypeModes question={HOTSPOT_FIXTURE.question} answer={HOTSPOT_FIXTURE.answer} />
+    <QuestionTypeModes
+      question={HOTSPOT_FIXTURE.question}
+      answer={HOTSPOT_FIXTURE.answer}
+      wrongAnswer={HOTSPOT_FIXTURE.wrongAnswer}
+    />
   {/snippet}
 </Story>
 
 <Story name="Link">
   {#snippet template()}
-    <QuestionTypeModes question={LINK_FIXTURE.question} answer={LINK_FIXTURE.answer} />
+    <QuestionTypeModes
+      question={LINK_FIXTURE.question}
+      answer={LINK_FIXTURE.answer}
+      wrongAnswer={LINK_FIXTURE.wrongAnswer}
+    />
   {/snippet}
 </Story>
 
@@ -89,42 +109,70 @@
     >
       <strong>Hidden – still in development.</strong> Not available in the exercise editor.
     </div>
-    <QuestionTypeModes question={MATCHING_FIXTURE.question} answer={MATCHING_FIXTURE.answer} />
+    <QuestionTypeModes
+      question={MATCHING_FIXTURE.question}
+      answer={MATCHING_FIXTURE.answer}
+      wrongAnswer={MATCHING_FIXTURE.wrongAnswer}
+    />
   {/snippet}
 </Story>
 
 <Story name="Numeric">
   {#snippet template()}
-    <QuestionTypeModes question={NUMERIC_FIXTURE.question} answer={NUMERIC_FIXTURE.answer} />
+    <QuestionTypeModes
+      question={NUMERIC_FIXTURE.question}
+      answer={NUMERIC_FIXTURE.answer}
+      wrongAnswer={NUMERIC_FIXTURE.wrongAnswer}
+    />
   {/snippet}
 </Story>
 
 <Story name="Ordering">
   {#snippet template()}
-    <QuestionTypeModes question={ORDERING_FIXTURE.question} answer={ORDERING_FIXTURE.answer} />
+    <QuestionTypeModes
+      question={ORDERING_FIXTURE.question}
+      answer={ORDERING_FIXTURE.answer}
+      wrongAnswer={ORDERING_FIXTURE.wrongAnswer}
+    />
   {/snippet}
 </Story>
 
 <Story name="Radio">
   {#snippet template()}
-    <QuestionTypeModes question={RADIO_FIXTURE.question} answer={RADIO_FIXTURE.answer} />
+    <QuestionTypeModes
+      question={RADIO_FIXTURE.question}
+      answer={RADIO_FIXTURE.answer}
+      wrongAnswer={RADIO_FIXTURE.wrongAnswer}
+    />
   {/snippet}
 </Story>
 
 <Story name="ShortAnswer">
   {#snippet template()}
-    <QuestionTypeModes question={SHORT_ANSWER_FIXTURE.question} answer={SHORT_ANSWER_FIXTURE.answer} />
+    <QuestionTypeModes
+      question={SHORT_ANSWER_FIXTURE.question}
+      answer={SHORT_ANSWER_FIXTURE.answer}
+      wrongAnswer={SHORT_ANSWER_FIXTURE.wrongAnswer}
+    />
   {/snippet}
 </Story>
 
 <Story name="Textarea">
   {#snippet template()}
-    <QuestionTypeModes question={TEXTAREA_FIXTURE.question} answer={TEXTAREA_FIXTURE.answer} />
+    <QuestionTypeModes
+      question={TEXTAREA_FIXTURE.question}
+      answer={TEXTAREA_FIXTURE.answer}
+      wrongAnswer={TEXTAREA_FIXTURE.wrongAnswer}
+    />
   {/snippet}
 </Story>
 
 <Story name="TrueFalse">
   {#snippet template()}
-    <QuestionTypeModes question={TRUE_FALSE_FIXTURE.question} answer={TRUE_FALSE_FIXTURE.answer} />
+    <QuestionTypeModes
+      question={TRUE_FALSE_FIXTURE.question}
+      answer={TRUE_FALSE_FIXTURE.answer}
+      wrongAnswer={TRUE_FALSE_FIXTURE.wrongAnswer}
+    />
   {/snippet}
 </Story>

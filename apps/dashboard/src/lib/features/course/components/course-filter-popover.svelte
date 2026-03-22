@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { COURSE_SORT_OPTIONS } from '../utils/constants';
+  import {
+    COURSE_SORT_OPTIONS,
+    CourseSortOrder,
+    DEFAULT_COURSE_SORT,
+    DEFAULT_SORT_ORDER,
+    type CourseSortBy
+  } from '../utils/constants';
   import * as Popover from '@cio/ui/base/popover';
   import * as ToggleGroup from '@cio/ui/base/toggle-group';
   import { Button } from '@cio/ui/base/button';
@@ -27,8 +33,8 @@
   type SortOption = (typeof COURSE_SORT_OPTIONS)[number];
 
   interface Props {
-    selectedId?: string;
-    selectedOrder?: 'asc' | 'desc';
+    sortKey?: CourseSortBy;
+    selectedOrder?: CourseSortOrder;
     selectedTags?: string[];
     tagGroups?: FilterTagGroup[];
     sortOptions?: readonly SortOption[];
@@ -38,8 +44,8 @@
   }
 
   let {
-    selectedId = $bindable('0'),
-    selectedOrder = $bindable('desc' as 'asc' | 'desc'),
+    sortKey = $bindable(DEFAULT_COURSE_SORT),
+    selectedOrder = $bindable(DEFAULT_SORT_ORDER),
     selectedTags = [],
     tagGroups = [],
     sortOptions = COURSE_SORT_OPTIONS,
@@ -50,7 +56,9 @@
 
   let isOpen = $state(false);
 
-  const hasActiveFilters = $derived(selectedId !== '0' || selectedOrder !== 'desc' || selectedTags.length > 0);
+  const hasActiveFilters = $derived(
+    sortKey !== DEFAULT_COURSE_SORT || selectedOrder !== DEFAULT_SORT_ORDER || selectedTags.length > 0
+  );
 
   function isTagSelected(tagSlug: string) {
     return selectedTags.includes(tagSlug);
@@ -96,8 +104,8 @@
             <Button
               type="button"
               size="sm"
-              variant={selectedId === option.value ? 'secondary' : 'outline'}
-              onclick={() => (selectedId = option.value)}
+              variant={sortKey === option.value ? 'secondary' : 'outline'}
+              onclick={() => (sortKey = option.value)}
             >
               {$t(option.label)}
             </Button>
@@ -115,13 +123,13 @@
           size="sm"
           value={selectedOrder}
           onValueChange={(value) => {
-            if (value === 'asc' || value === 'desc') {
+            if (value === CourseSortOrder.Asc || value === CourseSortOrder.Desc) {
               selectedOrder = value;
             }
           }}
         >
-          <ToggleGroup.Item value="asc">{$t('courses.tag_filters.ascending')}</ToggleGroup.Item>
-          <ToggleGroup.Item value="desc">{$t('courses.tag_filters.descending')}</ToggleGroup.Item>
+          <ToggleGroup.Item value={CourseSortOrder.Asc}>{$t('courses.tag_filters.ascending')}</ToggleGroup.Item>
+          <ToggleGroup.Item value={CourseSortOrder.Desc}>{$t('courses.tag_filters.descending')}</ToggleGroup.Item>
         </ToggleGroup.Root>
       </div>
 

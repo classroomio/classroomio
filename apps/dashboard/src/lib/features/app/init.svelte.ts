@@ -119,7 +119,8 @@ class AppInitApi extends BaseApi {
     }
 
     // This allows you to be on the landing page of an organization site and not be redirected
-    if (isOrgSite && isPublicRoute(window.location.pathname)) {
+    const path = window.location.pathname;
+    if (isPublicRoute(path) && (path !== '/' || isOrgSite)) {
       console.log('no redirect is needed');
       return;
     }

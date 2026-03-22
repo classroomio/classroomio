@@ -13,7 +13,6 @@
   import EmptyState from './empty-state.svelte';
   import * as Avatar from '@cio/ui/base/avatar';
   import type { CourseAnalytics } from '$features/course/utils/types';
-  import { shortenName } from '$lib/utils/functions/string';
 
   interface Props {
     students?: CourseAnalytics['students'];
@@ -37,7 +36,10 @@
     if (!student) return;
 
     goto(
-      resolve(`/courses/${courseApi.course?.id}/people/${student.id}?back=/courses/${courseApi.course?.id}/analytics`)
+      resolve(
+        `/courses/${courseApi.course?.id}/people/${student.id}?back=/courses/${courseApi.course?.id}/analytics`,
+        {}
+      )
     );
   };
 
@@ -79,11 +81,15 @@
             >
               <div class="flex items-center gap-3">
                 <Avatar.Root class="size-8">
-                  <Avatar.Image
-                    src={student.profile.avatar_url ? student.profile.avatar_url : '/logo-192.png'}
-                    alt={student.profile.fullname ? student.profile.fullname : $t('analytics.student')}
-                  />
-                  <Avatar.Fallback>{shortenName(student.profile.fullname) || 'S'}</Avatar.Fallback>
+                  {#if student.profile.avatar_url}
+                    <Avatar.Image
+                      src={student.profile.avatar_url}
+                      alt={student.profile.fullname ? student.profile.fullname : $t('analytics.student')}
+                    />
+                  {/if}
+                  <Avatar.Fallback>
+                    <UserIcon class="ui:size-4 ui:text-muted-foreground" />
+                  </Avatar.Fallback>
                 </Avatar.Root>
                 <div class="min-w-0 flex-1">
                   <p class="truncate font-medium text-gray-900 dark:text-white">

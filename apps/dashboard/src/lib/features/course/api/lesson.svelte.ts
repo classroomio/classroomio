@@ -77,7 +77,6 @@ export class LessonApi extends BaseApiWithErrors {
 
   translations = $state<Record<string, Record<TLocale, string>>>({});
   note = $state('');
-  private autoSaveTimeoutId: NodeJS.Timeout | null = null;
 
   /**
    * Gets a lesson by ID
@@ -840,23 +839,6 @@ export class LessonApi extends BaseApiWithErrors {
         this.translations[lessonId]?.[this.currentLocale] || ''
       )
     ]);
-  }
-
-  /**
-   * Starts autosave with debouncing
-   * @param courseId Course ID
-   * @param lessonId Lesson ID
-   */
-  startAutoSave(courseId: string, lessonId: string) {
-    if (!this.isDirty || this.isSaving) return;
-    if (this.autoSaveTimeoutId) clearTimeout(this.autoSaveTimeoutId);
-
-    this.isSaving = true;
-    this.autoSaveTimeoutId = setTimeout(async () => {
-      await this.save(courseId, lessonId);
-      this.isSaving = false;
-      this.autoSaveTimeoutId = null;
-    }, 1500);
   }
 }
 

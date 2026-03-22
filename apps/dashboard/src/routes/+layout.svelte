@@ -86,7 +86,14 @@
       return;
     }
 
-    // No need to require login for public routes
+    // Skip /login redirect below when the route is already public.
+    // [NO_REDIRECT] public + path !== '/' — e.g. /login, /signup, /courses, … (not the main-app home edge case)
+    // [NO_REDIRECT] public + '/' + isOrgSite — org landing page on its own domain
+    // [MAY_REDIRECT_TO_LOGIN] public + '/' + !isOrgSite — main app home is public so we can show loading/errors while
+    //   auth resolves; if there is still no session after that, we send to /login (this effect). Logged-in users
+    //   return earlier (session branch above); post-login navigation from '/' is in init.svelte.ts routeUserToNextPage.
+    // [MAY_REDIRECT_TO_LOGIN] not public — private route; unauthenticated users go to /login
+
     if (isPublicRoute(path) && (path !== '/' || data.isOrgSite)) {
       return;
     }

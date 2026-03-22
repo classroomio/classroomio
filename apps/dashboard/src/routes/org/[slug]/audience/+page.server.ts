@@ -5,17 +5,26 @@ export const load = async ({ parent, cookies }) => {
 
   if (!orgId) {
     return {
-      audience: []
+      audience: [],
+      courses: []
     };
   }
 
-  // Fetch organization audience
-  const audienceResponse = await classroomio.organization.audience.$get({}, getApiHeaders(cookies, orgId));
+  const headers = getApiHeaders(cookies, orgId);
+
+  const [audienceResponse, coursesResponse] = await Promise.all([
+    classroomio.organization.audience.$get({}, headers),
+    classroomio.organization.courses.$get({ query: { tags: undefined } }, headers)
+  ]);
 
   const audienceData = await audienceResponse.json();
   const audience = audienceData.success ? audienceData.data : [];
 
+  const coursesData = await coursesResponse.json();
+  const courses = coursesData.success ? coursesData.data : [];
+
   return {
-    audience
+    audience,
+    courses
   };
 };

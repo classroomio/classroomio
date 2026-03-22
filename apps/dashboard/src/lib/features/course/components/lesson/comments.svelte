@@ -2,10 +2,10 @@
   import { untrack } from 'svelte';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import UserIcon from '@lucide/svelte/icons/user';
 
   import * as Avatar from '@cio/ui/base/avatar';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
-  import { shortenName } from '$lib/utils/functions/string';
   import { DeleteModal } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
 
@@ -99,11 +99,12 @@
   <div>
     <div class="flex h-full items-start gap-3">
       <Avatar.Root class="mt-2 size-6!">
-        <Avatar.Image
-          src={$profile.avatarUrl ? $profile.avatarUrl : '/logo-192.png'}
-          alt={$profile.fullname ? $profile.fullname : 'User'}
-        />
-        <Avatar.Fallback>{shortenName($profile.fullname) || 'U'}</Avatar.Fallback>
+        {#if $profile.avatarUrl}
+          <Avatar.Image src={$profile.avatarUrl} alt={$profile.fullname ? $profile.fullname : 'User'} />
+        {/if}
+        <Avatar.Fallback>
+          <UserIcon class="ui:size-3 ui:text-muted-foreground" />
+        </Avatar.Fallback>
       </Avatar.Root>
       <div class="h-full w-full">
         <TextareaField
@@ -125,11 +126,12 @@
     {#each comments as commentItem (commentItem.id)}
       <div class="mt-2 flex items-start gap-3 pb-2">
         <Avatar.Root class="mt-2 size-6!">
-          <Avatar.Image
-            src={commentItem.avatar ? commentItem.avatar : '/logo-192.png'}
-            alt={commentItem.name ? commentItem.name : 'User'}
-          />
-          <Avatar.Fallback>{shortenName(commentItem.name) || 'U'}</Avatar.Fallback>
+          {#if commentItem.avatar}
+            <Avatar.Image src={commentItem.avatar} alt={commentItem.name ? commentItem.name : 'User'} />
+          {/if}
+          <Avatar.Fallback>
+            <UserIcon class="ui:size-3 ui:text-muted-foreground" />
+          </Avatar.Fallback>
         </Avatar.Root>
 
         <div class="w-full rounded-md border px-3 py-2 dark:border-neutral-700">

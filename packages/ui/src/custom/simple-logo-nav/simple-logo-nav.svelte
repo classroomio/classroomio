@@ -7,7 +7,7 @@
     rel="noopener noreferrer"
     class="ui:flex ui:items-center ui:justify-center ui:gap-2"
   >
-    <img src="https://classroomio.com/logo-512.png" class="ui:w-7 ui:h-7" alt="ClassroomIO Logo" />
+    <img src="/logo-512.png" class="ui:w-7 ui:h-7" alt="ClassroomIO Logo" />
     <span class="ui:text-foreground ui:text-md">ClassroomIO</span>
   </a>
 

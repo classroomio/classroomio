@@ -879,3 +879,47 @@ export async function deleteCourseSection(sectionId: string, dbClient: DbOrTxCli
     );
   }
 }
+
+/**
+ * Gets group IDs for multiple courses at once
+ * @param courseIds Array of course IDs
+ * @returns Array of { courseId, groupId } mappings
+ */
+export async function getCourseGroupIds(courseIds: string[]) {
+  try {
+    if (courseIds.length === 0) return [];
+
+    return db
+      .select({ courseId: schema.course.id, groupId: schema.course.groupId })
+      .from(schema.course)
+      .where(inArray(schema.course.id, courseIds));
+  } catch (error) {
+    console.error('getCourseGroupIds error:', error);
+    throw new Error(`Failed to get course group IDs: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Gets course group mappings for an organization, including course title
+ * @param orgId Organization ID
+ * @param courseIds Array of course IDs to filter
+ * @returns Array of { courseId, courseTitle, groupId }
+ */
+export async function getOrgCourseGroups(orgId: string, courseIds: string[]) {
+  try {
+    if (courseIds.length === 0) return [];
+
+    return db
+      .select({
+        courseId: schema.course.id,
+        courseTitle: schema.course.title,
+        groupId: schema.course.groupId
+      })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .where(and(eq(schema.group.organizationId, orgId), inArray(schema.course.id, courseIds)));
+  } catch (error) {
+    console.error('getOrgCourseGroups error:', error);
+    throw new Error(`Failed to get org course groups: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}

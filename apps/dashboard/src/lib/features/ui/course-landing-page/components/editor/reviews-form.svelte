@@ -2,12 +2,12 @@
   import get from 'lodash/get';
   import z from 'zod';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import UserIcon from '@lucide/svelte/icons/user';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
   import ReviewFormEditor from './review-form-editor.svelte';
   import * as Avatar from '@cio/ui/base/avatar';
   import { processErrors } from '$lib/utils/functions/validator';
-  import { shortenName } from '$lib/utils/functions/string';
   import { t } from '$lib/utils/functions/translations';
   import type { Course } from '$features/course/utils/types';
 
@@ -98,11 +98,12 @@
           <!-- the headers -->
           <div class="flex w-full items-center justify-between">
             <Avatar.Root class="mt-1 h-10 w-10">
-              <Avatar.Image
-                src={review.avatar_url ? review.avatar_url : '/logo-192.png'}
-                alt={review.name ? review.name : 'Reviewer'}
-              />
-              <Avatar.Fallback>{shortenName(review.name) || 'R'}</Avatar.Fallback>
+              {#if review.avatar_url}
+                <Avatar.Image src={review.avatar_url} alt={review.name ? review.name : 'Reviewer'} />
+              {/if}
+              <Avatar.Fallback>
+                <UserIcon class="ui:size-5 ui:text-muted-foreground" />
+              </Avatar.Fallback>
             </Avatar.Root>
             <p class="text-sm">{review.name}</p>
 

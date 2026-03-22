@@ -23,7 +23,7 @@ import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, sendEmail } from '@cio/email';
-import { getProfileByEmail } from '@cio/db/queries/auth';
+import { getProfileByEmail, markUserAndProfileEmailVerified } from '@cio/db/queries/auth';
 import { generateSlug } from '@cio/utils/functions';
 
 type InviteStatus = 'ACTIVE' | 'EXPIRED' | 'USED_UP' | 'REVOKED';
@@ -948,6 +948,8 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       .limit(1);
 
     if (existingMember) {
+      await markUserAndProfileEmailVerified(user.id, tx);
+
       await recordInviteAudit(invite.id, invite.courseId, 'ACCEPTED', {
         actorProfileId: user.id,
         targetEmail: normalizedEmail,
@@ -1028,6 +1030,8 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       profileId: user.id,
       email: normalizedEmail
     });
+
+    await markUserAndProfileEmailVerified(user.id, tx);
 
     const [consumeInvite] = await tx
       .update(schema.courseInvite)

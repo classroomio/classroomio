@@ -18,6 +18,7 @@ export * from './teacher-student-joined';
 export * from './teacher-student-buy-request';
 export * from './student-prove-payment';
 export * from './teacher-course-welcome';
+export * from './student-org-invite';
 
 import type { newsfeedCommentEmail, newsfeedPostEmail } from './newsfeed';
 
@@ -28,6 +29,7 @@ import type { onPasswordResetEmail } from './on-password-reset';
 import type { studentCourseInviteEmail } from './student-course-invite';
 import type { studentCourseWelcomeEmail } from './student-course-welcome';
 import type { studentProvePaymentEmail } from './student-prove-payment';
+import type { studentOrgInviteEmail } from './student-org-invite';
 import type { teacherCourseWelcomeEmail } from './teacher-course-welcome';
 import type { teacherStudentBuyRequestEmail } from './teacher-student-buy-request';
 import type { teacherStudentJoinedEmail } from './teacher-student-joined';
@@ -54,4 +56,5 @@ export type EmailSchemas = {
   teacherStudentBuyRequest: typeof teacherStudentBuyRequestEmail.template.schema;
   studentProvePayment: typeof studentProvePaymentEmail.template.schema;
   teacherCourseWelcome: typeof teacherCourseWelcomeEmail.template.schema;
+  studentOrgInvite: typeof studentOrgInviteEmail.template.schema;
 };

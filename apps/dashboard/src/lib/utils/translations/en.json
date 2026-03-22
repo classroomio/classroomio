@@ -902,6 +902,7 @@
       "unpublished": "Unpublished",
       "continue_course": "Continue",
       "learn_more": "Learn more",
+      "tags_overflow_aria": "{count} more tags",
       "list_view": {
         "title": "Title",
         "description": "Description",
@@ -1084,6 +1085,8 @@
         "complete": "Complete",
         "next": "Next",
         "prev": "Prev",
+        "prev_shortcut": "Previous (←)",
+        "next_shortcut": "Next (→)",
         "materials": {
           "body_heading": "No note, video or slide added for this lesson yet",
           "body_content": "Share your knowledge with your students by creating engaging content. Start by clicking on",
@@ -1345,7 +1348,8 @@
                 "option_prefix": "Option",
                 "remove": "Remove",
                 "add_option": "Add option",
-                "correct_badge": "(Correct)",
+                "correct_badge": "Correct",
+                "incorrect_badge": "Incorrect",
                 "not_set": "Not set"
               },
               "navigation": {
@@ -1414,6 +1418,10 @@
                 },
                 "preview": {
                   "helper": "Free-text answer question."
+                },
+                "review": {
+                  "your_answer_label": "Submitted:",
+                  "accepted_label": "Accepted answers"
                 }
               },
               "numeric": {
@@ -1431,6 +1439,11 @@
                 "preview": {
                   "correct_value_label": "Correct value",
                   "tolerance_label": "Tolerance"
+                },
+                "review": {
+                  "your_answer_label": "Submitted:",
+                  "in_range": "Within tolerance",
+                  "out_of_range": "Outside tolerance"
                 }
               },
               "fill_blank": {
@@ -1442,6 +1455,9 @@
                 },
                 "preview": {
                   "accepted_answers_label": "Accepted answers"
+                },
+                "review": {
+                  "your_answer_label": "Submitted:"
                 }
               },
               "file_upload": {
@@ -2015,6 +2031,12 @@
     "manage": "Manage all your students here and stay connected with them",
     "name": "Name",
     "email": "Email",
+    "search_placeholder": "Search…",
+    "status": "Status",
+    "status_active": "Active",
+    "status_pending": "Pending",
+    "status_expired": "Expired",
+    "status_revoked": "Revoked",
     "date_joined": "Date Joined",
     "upgrade": "Upgrade your plan to invite more students",
     "select_all": "Select all",
@@ -2048,6 +2070,14 @@
       "snackbar_success": "Assigned {assigned} users to courses ({alreadyEnrolled} already enrolled, {emailsSent} emails sent)",
       "snackbar_no_courses": "Please select at least one course",
       "snackbar_failed": "Failed to assign courses"
+    },
+    "invite": {
+      "row_actions_aria": "Open actions",
+      "resend": "Resend invite",
+      "revoke": "Revoke pending invite",
+      "resend_snackbar_success": "Invitation email sent",
+      "resend_snackbar_email_failed": "Invite was renewed but the email could not be sent",
+      "revoke_snackbar_success": "Pending invitation revoked"
     }
   },
   "analytics": {
@@ -2453,9 +2483,13 @@
   "invite": {
     "organization": {
       "page_title": "Join {orgName} on ClassroomIO",
-      "role_label": "Role: {role}",
-      "email_label": "Invited email: {email}",
-      "join_button": "Join Organization",
+      "invitation_student": "You've been invited into {orgName} as a student.",
+      "invitation_teacher": "You've been invited into {orgName} as a teacher.",
+      "invitation_admin": "You've been invited into {orgName} as an admin.",
+      "invitation_fallback": "You've been invited into {orgName} as {role}.",
+      "email_line": "Email: {email}",
+      "accept_button": "Accept invitation",
+      "go_to_dashboard": "Go to Dashboard",
       "messages": {
         "email_mismatch": "You are logged in with a different email from this invite.",
         "expired": "This invite link has expired.",

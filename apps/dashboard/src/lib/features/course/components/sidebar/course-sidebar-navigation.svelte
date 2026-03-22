@@ -4,8 +4,7 @@
   import { resolve } from '$app/paths';
   import Plus from '@lucide/svelte/icons/plus';
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import { Button } from '@cio/ui/base/button';
-  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+  import { BackButton } from '@cio/ui';
 
   import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
   import {
@@ -231,10 +230,7 @@
 </script>
 
 <Sidebar.Group class="pt-0!">
-  <Button variant="link" class="h-fit! justify-start! px-2! py-2!" href={resolve(coursesListPath, {})}>
-    <ArrowLeftIcon class="custom" />
-    <span class="text-xs">{$t('org_navigation.courses')}</span>
-  </Button>
+  <BackButton href={resolve(coursesListPath, {})} label={$t('org_navigation.courses')} class="px-2! py-2!" />
 
   <Sidebar.Menu>
     {#each navItems as item (item.id)}

@@ -1,0 +1,30 @@
+<script lang="ts">
+  import { Button } from '@cio/ui/base/button';
+  import { Search } from '@cio/ui/custom/search';
+  import * as Page from '@cio/ui/base/page';
+  import { t } from '$lib/utils/functions/translations';
+
+  interface Props {
+    hasSelection: boolean;
+    selectedCount: number;
+    searchValue?: string;
+    onOpenAssign: () => void;
+  }
+
+  let { hasSelection, selectedCount, searchValue = $bindable(''), onOpenAssign }: Props = $props();
+</script>
+
+<Page.BodyHeader>
+  {#if hasSelection}
+    <div class="flex items-center gap-3 rounded-md border px-4 py-2">
+      <span class="ui:text-muted-foreground text-sm">
+        {$t('audience.selected_count', { count: selectedCount })}
+      </span>
+      <Button variant="secondary" size="sm" onclick={onOpenAssign}>
+        {$t('audience.assign_courses')}
+      </Button>
+    </div>
+  {:else}
+    <Search placeholder={$t('audience.search_placeholder')} bind:value={searchValue} class="" />
+  {/if}
+</Page.BodyHeader>

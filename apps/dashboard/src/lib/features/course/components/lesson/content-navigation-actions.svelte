@@ -5,6 +5,7 @@
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import { CircleCheckIcon } from '$features/ui/icons';
   import { Button } from '@cio/ui/base/button';
+  import * as Tooltip from '@cio/ui/base/tooltip';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi, lessonApi } from '$features/course/api';
@@ -115,7 +116,24 @@
       }
     };
   }
+
+  const INTERACTIVE_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT']);
+
+  function handleKeydown(event: KeyboardEvent) {
+    const target = event.target as HTMLElement;
+    if (INTERACTIVE_TAGS.has(target.tagName) || target.isContentEditable) return;
+
+    if (event.key === 'ArrowLeft' && !isPrevDisabled) {
+      event.preventDefault();
+      goToContent(prevNextContent.prev);
+    } else if (event.key === 'ArrowRight' && !isNextDisabled) {
+      event.preventDefault();
+      goToContent(prevNextContent.next);
+    }
+  }
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="flex items-center gap-2">
   {#if showMarkComplete && lessonId}
@@ -131,27 +149,41 @@
     </Button>
   {/if}
 
-  <div class="flex items-center gap-1">
-    <Button
-      size="icon-sm"
-      variant="outline"
-      onclick={() => goToContent(prevNextContent.prev)}
-      disabled={isPrevDisabled}
-      aria-label={$t('course.navItem.lessons.prev')}
-      title={$t('course.navItem.lessons.prev')}
-    >
-      <ChevronLeftIcon size={14} />
-    </Button>
+  <Tooltip.Provider>
+    <div class="flex items-center gap-1">
+      <Tooltip.Root>
+        <Tooltip.Trigger>
+          <Button
+            size="icon-sm"
+            variant="outline"
+            onclick={() => goToContent(prevNextContent.prev)}
+            disabled={isPrevDisabled}
+            aria-label={$t('course.navItem.lessons.prev')}
+          >
+            <ChevronLeftIcon size={14} />
+          </Button>
+        </Tooltip.Trigger>
+        <Tooltip.Content side="bottom" sideOffset={4}>
+          {$t('course.navItem.lessons.prev_shortcut')}
+        </Tooltip.Content>
+      </Tooltip.Root>
 
-    <Button
-      size="icon-sm"
-      variant="outline"
-      onclick={() => goToContent(prevNextContent.next)}
-      disabled={isNextDisabled}
-      aria-label={$t('course.navItem.lessons.next')}
-      title={$t('course.navItem.lessons.next')}
-    >
-      <ChevronRightIcon size={14} />
-    </Button>
-  </div>
+      <Tooltip.Root>
+        <Tooltip.Trigger>
+          <Button
+            size="icon-sm"
+            variant="outline"
+            onclick={() => goToContent(prevNextContent.next)}
+            disabled={isNextDisabled}
+            aria-label={$t('course.navItem.lessons.next')}
+          >
+            <ChevronRightIcon size={14} />
+          </Button>
+        </Tooltip.Trigger>
+        <Tooltip.Content side="bottom" sideOffset={4}>
+          {$t('course.navItem.lessons.next_shortcut')}
+        </Tooltip.Content>
+      </Tooltip.Root>
+    </div>
+  </Tooltip.Provider>
 </div>

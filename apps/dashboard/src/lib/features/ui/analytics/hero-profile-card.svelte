@@ -5,6 +5,7 @@
   import type { UserAnalytics } from '$lib/utils/types/analytics';
   import AlarmClockIcon from '@lucide/svelte/icons/alarm-clock';
   import MailIcon from '@lucide/svelte/icons/mail';
+  import UserIcon from '@lucide/svelte/icons/user';
 
   interface Props {
     user: UserAnalytics['user'];
@@ -16,11 +17,12 @@
 <div class="rounded-md border p-5">
   <div class="flex w-full flex-col items-center justify-start gap-4 text-start md:flex-row">
     <Avatar.Root class="h-16 w-16">
-      <Avatar.Image
-        src={user.avatarUrl ? user.avatarUrl : '/logo-192.png'}
-        alt={user.fullName ? user.fullName : 'User'}
-      />
-      <Avatar.Fallback>{user.fullName ? user.fullName : 'User'}</Avatar.Fallback>
+      {#if user.avatarUrl}
+        <Avatar.Image src={user.avatarUrl} alt={user.fullName ? user.fullName : 'User'} />
+      {/if}
+      <Avatar.Fallback>
+        <UserIcon class="ui:size-8 ui:text-muted-foreground" />
+      </Avatar.Fallback>
     </Avatar.Root>
     <div class="flex flex-col space-y-2">
       <p class="text-center text-2xl md:text-left dark:text-white">

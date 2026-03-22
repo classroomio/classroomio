@@ -14,7 +14,6 @@
 
   import { CreateCourseButton } from '$features/course/components';
   import * as Avatar from '@cio/ui/base/avatar';
-  import { shortenName } from '$lib/utils/functions/string';
   import { Progress } from '@cio/ui/base/progress';
   import { Button } from '@cio/ui/base/button';
   import { WelcomeModal } from '$features/onboarding/components';
@@ -148,11 +147,12 @@
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-2">
                     <Avatar.Root class="h-6 w-6">
-                      <Avatar.Image
-                        src={enrollment.avatarUrl ? enrollment.avatarUrl : '/logo-192.png'}
-                        alt={enrollment.name ? enrollment.name : 'User'}
-                      />
-                      <Avatar.Fallback>{shortenName(enrollment.name) || 'U'}</Avatar.Fallback>
+                      {#if enrollment.avatarUrl}
+                        <Avatar.Image src={enrollment.avatarUrl} alt={enrollment.name ? enrollment.name : 'User'} />
+                      {/if}
+                      <Avatar.Fallback>
+                        <UserIcon class="ui:size-3 ui:text-muted-foreground" />
+                      </Avatar.Fallback>
                     </Avatar.Root>
 
                     <div class="min-h-[45px] space-y-1">

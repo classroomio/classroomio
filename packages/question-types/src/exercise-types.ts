@@ -3,13 +3,14 @@ import type { AnswerData } from './answer-data';
 
 export type ExerciseQuestionTypeKey = QuestionTypeKey;
 
-export type ExerciseRendererMode = 'edit' | 'take' | 'preview' | 'view' | 'submission';
+export type ExerciseRendererMode = 'edit' | 'take' | 'preview' | 'review' | 'view' | 'submission';
 
 export type ExerciseQuestionLabelKey =
   | 'common.option_prefix'
   | 'common.remove'
   | 'common.add_option'
   | 'common.correct_badge'
+  | 'common.incorrect_badge'
   | 'common.not_set'
   | 'navigation.previous'
   | 'navigation.next'
@@ -51,6 +52,8 @@ export type ExerciseQuestionLabelKey =
   | 'short_answer.edit.instructions_placeholder'
   | 'short_answer.take.placeholder'
   | 'short_answer.preview.helper'
+  | 'short_answer.review.your_answer_label'
+  | 'short_answer.review.accepted_label'
   | 'numeric.edit.correct_value_label'
   | 'numeric.edit.correct_value_info'
   | 'numeric.edit.tolerance_label'
@@ -60,9 +63,13 @@ export type ExerciseQuestionLabelKey =
   | 'numeric.take.placeholder'
   | 'numeric.preview.correct_value_label'
   | 'numeric.preview.tolerance_label'
+  | 'numeric.review.your_answer_label'
+  | 'numeric.review.in_range'
+  | 'numeric.review.out_of_range'
   | 'fill_blank.edit.accepted_answers_placeholder'
   | 'fill_blank.take.placeholder'
   | 'fill_blank.preview.accepted_answers_label'
+  | 'fill_blank.review.your_answer_label'
   | 'file_upload.edit.accepted_types_placeholder'
   | 'file_upload.edit.max_size_placeholder'
   | 'file_upload.take.selected_file_label'
@@ -164,6 +171,8 @@ export interface ExerciseRendererDefinition<TRenderer = unknown> {
   take: TRenderer;
   preview: TRenderer;
   submission: TRenderer;
+  /** Read-only submission replay with correctness; defaults to `take` when omitted. */
+  review?: TRenderer;
 }
 
 export interface ExerciseQuestionRendererProps {
