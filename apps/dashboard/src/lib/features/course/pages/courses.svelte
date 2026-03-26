@@ -20,7 +20,7 @@
 
   import { DeleteModal } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
-  import { courseApi } from '$features/course/api';
+  import { courseApi, coursesApi } from '$features/course/api';
   import { deleteCourseModal, deleteCourseModalInitialState, courseMetaDeta } from '../utils/store';
   import { browser } from '$app/environment';
   import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
@@ -74,10 +74,13 @@
 
     $deleteCourseModal.isDeleting = true;
 
-    await courseApi.delete($deleteCourseModal.id);
+    const deletedId = $deleteCourseModal.id;
+    await courseApi.delete(deletedId);
 
     if (courseApi.success) {
-      deleteCourseModal.set(deleteCourseModalInitialState);
+      coursesApi.orgCourses = coursesApi.orgCourses.filter((c) => c.id !== deletedId);
+      deleteCourseModal.set({ ...deleteCourseModalInitialState });
+      return;
     }
 
     $deleteCourseModal.isDeleting = false;

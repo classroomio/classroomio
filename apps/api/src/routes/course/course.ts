@@ -27,6 +27,7 @@ import {
   updateCourse
 } from '@api/services/course/course';
 import { getCourseTags, replaceCourseTags } from '@api/services/tag';
+import { invalidateCachePattern } from '@api/utils/redis/cache';
 
 import { Hono } from '@api/utils/hono';
 import { attendanceRouter } from '@api/routes/course/attendance';
@@ -104,6 +105,11 @@ export const courseRouter = new Hono()
       const validatedData = c.req.valid('json');
 
       const result = await createCourse(user.id, validatedData);
+
+      // Invalidate dash stats cache
+      if (validatedData.organizationId) {
+        await invalidateCachePattern(`dash:stats:${validatedData.organizationId}*`);
+      }
 
       return c.json(
         {
@@ -349,7 +355,12 @@ export const courseRouter = new Hono()
     async (c) => {
       try {
         const { courseId } = c.req.valid('param');
+        const orgId = c.req.header('cio-org-id');
         const result = await deleteCourse(courseId);
+
+        if (orgId) {
+          await invalidateCachePattern(`dash:stats:${orgId}*`);
+        }
 
         return c.json(
           {

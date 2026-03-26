@@ -5,6 +5,7 @@ import { getOrganisationAnalytics } from '@api/services/dash';
 import { handleError } from '@api/utils/errors';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { zValidator } from '@hono/zod-validator';
+import { getCached } from '@api/utils/redis/cache';
 
 export const dashAnalyticsRouter = new Hono().get(
   '/stats',
@@ -15,7 +16,8 @@ export const dashAnalyticsRouter = new Hono().get(
     try {
       const { orgId, siteName } = c.req.valid('query');
 
-      const result = await getOrganisationAnalytics(orgId, siteName);
+      const cacheKey = `dash:stats:${orgId}:${siteName || 'default'}`;
+      const result = await getCached(cacheKey, () => getOrganisationAnalytics(orgId, siteName), 300);
 
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
