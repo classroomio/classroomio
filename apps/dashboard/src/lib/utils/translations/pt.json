@@ -311,6 +311,7 @@
       "creating_new": "Falha ao criar novas traduções"
     },
     "exercise": {
+      "points_required_auto_grade": "Defina um valor de pontos positivo para cada pergunta antes de salvar.",
       "success": "Salvo com sucesso",
       "submission_updated": "Envio atualizado para",
       "error_fetching": "Falha ao buscar exercícios. Atualize a página"
@@ -750,6 +751,8 @@
       "certificates": {
         "title": "Certificados",
         "certificate_settings": "Configurações de certificado",
+        "tab_design": "Design",
+        "tab_settings": "Configurações",
         "theme": "Escolha um tema",
         "logo": "Logotipo da marca",
         "to_update": "Para atualizar a imagem da sua marca, acesse",
@@ -1071,6 +1074,9 @@
             "finish": "Concluir",
             "next": "Próximo",
             "check": "Verifique",
+            "auto_graded_badge": "Auto-graded",
+            "manual_grading_required_badge": "Manual grading required",
+            "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "Envios",
               "individual": {
@@ -1139,6 +1145,8 @@
                 "link": "Ligações"
               },
               "select_type": "Selecione o tipo",
+              "question_type_auto_gradable": "Auto",
+              "question_type_manual_grading": "Manual",
               "premium_question_type": "Atualize para usar este tipo de pergunta"
             },
             "delete_confirmation": {
@@ -1608,6 +1616,27 @@
       "nav_certificates": "Certificados",
       "nav_landing_page": "Página inicial",
       "nav_settings": "Configurações"
+    },
+    "completion": {
+      "modal": {
+        "title": "Requisitos do curso concluídos!",
+        "subtitle": "Parabéns – você pode visualizar e baixar seu certificado a qualquer momento.",
+        "view_certificate": "Ver certificado",
+        "later": "Fechar"
+      }
+    },
+    "certification": {
+      "rules_heading": "Regras de certificação",
+      "deadline_label": "Prazo de certificação",
+      "deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo.",
+      "threshold_label": "Conclusão mínima (%)",
+      "threshold_helper": "Progresso combinado de aulas e exercícios necessário para obter o certificado (0–100). O padrão é 100%.",
+      "email_message_label": "Mensagem de e-mail de certificação",
+      "email_message_helper": "Mensagem opcional mostrada no e-mail quando um aluno atende aos requisitos. Um link para a página do certificado está sempre incluído.",
+      "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!"
+    },
+    "certificates": {
+      "progress_hint": "{current}% concluído ({required}% necessário para download)"
     }
   },
   "courses": {
@@ -1785,7 +1814,20 @@
         "refresh": "Atualizar",
         "remove": "Remover",
         "custom_favicon": "Favicon personalizado",
-        "custom_code": "Código personalizado"
+        "custom_code": "Código personalizado",
+        "reconnect": "Reconectar domínio",
+        "reconnect_hint": "Reconecte este domínio para gerar novos registros de configuração da Cloudflare.",
+        "status_verified": "Verificado",
+        "status_pending_dns": "DNS pendente",
+        "status_pending_verification": "Verificação pendente",
+        "status_reconnect_required": "É necessário reconectar",
+        "status_error": "Precisa de atenção",
+        "status_removed": "Removido",
+        "verified_description": "Este domínio personalizado está ativo e verificado.",
+        "pending_dns_description": "Adicione os registros DNS abaixo e atualize a verificação.",
+        "pending_verification_description": "Registros DNS foram encontrados. A emissão ou validação de SSL ainda está em andamento.",
+        "reconnect_description": "Este domínio precisa ser conectado novamente por meio do novo fluxo de configuração da Cloudflare.",
+        "error_description": "Este domínio personalizado existe, mas a verificação ainda não foi concluída."
       }
     },
     "quiz": {

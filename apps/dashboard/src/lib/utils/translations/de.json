@@ -311,6 +311,7 @@
       "creating_new": "Das Erstellen neuer Übersetzungen ist fehlgeschlagen"
     },
     "exercise": {
+      "points_required_auto_grade": "Legen Sie für jede Frage einen positiven Punktwert fest, bevor Sie speichern.",
       "success": "Erfolgreich gespeichert",
       "submission_updated": "Einreichung aktualisiert auf",
       "error_fetching": "Das Abrufen der Übungen ist fehlgeschlagen. Bitte laden Sie die Seite neu"
@@ -750,6 +751,8 @@
       "certificates": {
         "title": "Zertifikate",
         "certificate_settings": "Zertifikatseinstellungen",
+        "tab_design": "Design",
+        "tab_settings": "Einstellungen",
         "theme": "Wählen Sie ein Thema",
         "logo": "Markenlogo",
         "to_update": "Um Ihr Markenimage zu aktualisieren, gehen Sie zu",
@@ -1071,6 +1074,9 @@
             "finish": "Fertig",
             "next": "Als nächstes",
             "check": "Überprüfen",
+            "auto_graded_badge": "Auto-graded",
+            "manual_grading_required_badge": "Manual grading required",
+            "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "Einsendungen",
               "individual": {
@@ -1139,6 +1145,8 @@
                 "link": "Links"
               },
               "select_type": "Typ auswählen",
+              "question_type_auto_gradable": "Auto",
+              "question_type_manual_grading": "Manual",
               "premium_question_type": "Führen Sie ein Upgrade durch, um diesen Fragetyp zu verwenden"
             },
             "delete_confirmation": {
@@ -1608,6 +1616,27 @@
       "nav_certificates": "Zertifikate",
       "nav_landing_page": "Landingpage",
       "nav_settings": "Einstellungen"
+    },
+    "completion": {
+      "modal": {
+        "title": "Kursvoraussetzungen erfüllt!",
+        "subtitle": "Herzlichen Glückwunsch – Sie können Ihr Zertifikat jederzeit einsehen und herunterladen.",
+        "view_certificate": "Zertifikat ansehen",
+        "later": "Schließen"
+      }
+    },
+    "certification": {
+      "rules_heading": "Zertifizierungsregeln",
+      "deadline_label": "Zertifizierungsfrist",
+      "deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen.",
+      "threshold_label": "Mindestabschluss (%)",
+      "threshold_helper": "Kombinierter Unterrichts- und Übungsfortschritt, der zum Erwerb des Zertifikats erforderlich ist (0–100). Der Standardwert ist 100 %.",
+      "email_message_label": "E-Mail-Nachricht zur Zertifizierung",
+      "email_message_helper": "Optionale Nachricht, die in der E-Mail angezeigt wird, wenn ein Student die Anforderungen erfüllt. Ein Link zur Zertifikatsseite ist immer enthalten.",
+      "email_message_placeholder": "z.B. Wir sind stolz auf Ihre Fortschritte – lernen Sie weiter!"
+    },
+    "certificates": {
+      "progress_hint": "{current} % abgeschlossen ({required} % zum Herunterladen erforderlich)"
     }
   },
   "courses": {
@@ -1785,7 +1814,20 @@
         "refresh": "Aktualisieren",
         "remove": "Entfernen",
         "custom_favicon": "Benutzerdefiniertes Favicon",
-        "custom_code": "Benutzerdefinierter Code"
+        "custom_code": "Benutzerdefinierter Code",
+        "reconnect": "Domäne erneut verbinden",
+        "reconnect_hint": "Verbinden Sie diese Domäne erneut, um neue Cloudflare-Setup-Datensätze zu generieren.",
+        "status_verified": "Verifiziert",
+        "status_pending_dns": "Ausstehendes DNS",
+        "status_pending_verification": "Ausstehende Überprüfung",
+        "status_reconnect_required": "Erneute Verbindung erforderlich",
+        "status_error": "Braucht Aufmerksamkeit",
+        "status_removed": "Entfernt",
+        "verified_description": "Diese benutzerdefinierte Domäne ist aktiv und überprüft.",
+        "pending_dns_description": "Fügen Sie die DNS-Einträge unten hinzu und aktualisieren Sie dann die Überprüfung.",
+        "pending_verification_description": "DNS-Einträge wurden gefunden. Die SSL-Ausstellung oder -Validierung ist noch im Gange.",
+        "reconnect_description": "Diese Domäne muss über den neuen Cloudflare-Setup-Ablauf erneut verbunden werden.",
+        "error_description": "Diese benutzerdefinierte Domäne existiert, aber die Überprüfung ist noch nicht abgeschlossen."
       }
     },
     "quiz": {

@@ -777,7 +777,20 @@
         "dns_value": "Value",
         "dns_name": "Name",
         "refresh": "Refresh",
+        "reconnect": "Reconnect domain",
+        "reconnect_hint": "Reconnect this domain to generate new Cloudflare setup records.",
         "remove": "Remove",
+        "status_verified": "Verified",
+        "status_pending_dns": "Pending DNS",
+        "status_pending_verification": "Pending verification",
+        "status_reconnect_required": "Reconnect required",
+        "status_error": "Needs attention",
+        "status_removed": "Removed",
+        "verified_description": "This custom domain is active and verified.",
+        "pending_dns_description": "Add the DNS records below, then refresh verification.",
+        "pending_verification_description": "DNS records were found. SSL issuance or validation is still in progress.",
+        "reconnect_description": "This domain needs to be connected again through the new Cloudflare setup flow.",
+        "error_description": "This custom domain exists, but verification is not complete yet.",
         "custom_favicon": "Custom favicon",
         "custom_code": "Custom code"
       },
@@ -960,6 +973,27 @@
     "search": {
       "placeholder": "Search lessons or exercises",
       "empty": "No results found"
+    },
+    "certificates": {
+      "progress_hint": "{current}% complete ({required}% required to download)"
+    },
+    "certification": {
+      "rules_heading": "Certification rules",
+      "deadline_label": "Certification deadline",
+      "deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
+      "threshold_label": "Minimum completion (%)",
+      "threshold_helper": "Combined lesson and exercise progress required to earn the certificate (0–100). Default is 100%.",
+      "email_message_label": "Certification email message",
+      "email_message_helper": "Optional message shown in the email when a student meets the requirements. A link to the certificate page is always included.",
+      "email_message_placeholder": "e.g. We are proud of your progress — keep learning!"
+    },
+    "completion": {
+      "modal": {
+        "title": "Course requirements complete!",
+        "subtitle": "Congratulations — you can view and download your certificate anytime.",
+        "view_certificate": "View certificate",
+        "later": "Close"
+      }
     },
     "header": {
       "preview": "Preview course",
@@ -1261,6 +1295,9 @@
             "finish": "Finish",
             "next": "Next",
             "check": "Check",
+            "auto_graded_badge": "Auto-graded",
+            "manual_grading_required_badge": "Manual grading required",
+            "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "description": {
               "title": "Title",
               "heading": "Description",
@@ -1279,6 +1316,8 @@
               "no": "No, cancel",
               "yes": "Yes, delete",
               "select_type": "Select type",
+              "question_type_auto_gradable": "Auto",
+              "question_type_manual_grading": "Manual",
               "premium_question_type": "Upgrade to use this question type",
               "deleting": "Deleting...",
               "error": "You have some errors",
@@ -1776,6 +1815,8 @@
       "certificates": {
         "title": "Certificates",
         "certificate_settings": "Certificate Settings",
+        "tab_design": "Design",
+        "tab_settings": "Settings",
         "theme": "Choose a theme",
         "logo": "Brand Logo",
         "to_update": "To update your brand image, go to",
@@ -2303,6 +2344,7 @@
       }
     },
     "exercise": {
+      "points_required_auto_grade": "Set a positive point value for every question before saving.",
       "success": "Saved Successfully",
       "submission_updated": "Submission updated to",
       "error_fetching": "Fetching exercises failed, please reload the page"

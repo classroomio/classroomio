@@ -311,6 +311,7 @@
       "creating_new": "Tworzenie nowych tłumaczeń nie powiodło się"
     },
     "exercise": {
+      "points_required_auto_grade": "Ustaw dodatnią liczbę punktów dla każdego pytania przed zapisaniem.",
       "success": "Zapisano pomyślnie",
       "submission_updated": "Zgłoszenie zaktualizowane do",
       "error_fetching": "Pobieranie ćwiczeń nie powiodło się. Załaduj stronę ponownie"
@@ -750,6 +751,8 @@
       "certificates": {
         "title": "Certyfikaty",
         "certificate_settings": "Ustawienia certyfikatu",
+        "tab_design": "Projekt",
+        "tab_settings": "Ustawienia",
         "theme": "Wybierz motyw",
         "logo": "Logo marki",
         "to_update": "Aby zaktualizować wizerunek swojej marki, przejdź do",
@@ -1071,6 +1074,9 @@
             "finish": "Zakończ",
             "next": "Następny",
             "check": "Sprawdź",
+            "auto_graded_badge": "Auto-graded",
+            "manual_grading_required_badge": "Manual grading required",
+            "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "Zgłoszenia",
               "individual": {
@@ -1139,6 +1145,8 @@
                 "link": "Linki"
               },
               "select_type": "Wybierz typ",
+              "question_type_auto_gradable": "Auto",
+              "question_type_manual_grading": "Manual",
               "premium_question_type": "Uaktualnij, aby używać tego typu pytań"
             },
             "delete_confirmation": {
@@ -1608,6 +1616,27 @@
       "nav_certificates": "Certyfikaty",
       "nav_landing_page": "Strona docelowa",
       "nav_settings": "Ustawienia"
+    },
+    "completion": {
+      "modal": {
+        "title": "Wymagania dotyczące kursu zostały spełnione!",
+        "subtitle": "Gratulacje — możesz wyświetlić i pobrać swój certyfikat w dowolnym momencie.",
+        "view_certificate": "Zobacz certyfikat",
+        "later": "Zamknij"
+      }
+    },
+    "certification": {
+      "rules_heading": "Zasady certyfikacji",
+      "deadline_label": "Termin certyfikacji",
+      "deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu.",
+      "threshold_label": "Minimalne ukończenie (%)",
+      "threshold_helper": "Do uzyskania certyfikatu wymagany jest łączny postęp w lekcjach i ćwiczeniach (0–100). Wartość domyślna to 100%.",
+      "email_message_label": "Wiadomość e-mail z certyfikatem",
+      "email_message_helper": "Opcjonalna wiadomość wyświetlana w wiadomości e-mail, gdy uczeń spełni wymagania. Zawsze dołączany jest link do strony z certyfikatem.",
+      "email_message_placeholder": "np. Jesteśmy dumni z Twoich postępów — ucz się dalej!"
+    },
+    "certificates": {
+      "progress_hint": "{bieżący}% ukończenia ({required}% wymagane do pobrania)"
     }
   },
   "courses": {
@@ -1785,7 +1814,20 @@
         "refresh": "Odśwież",
         "remove": "Usuń",
         "custom_favicon": "Niestandardowa favikona",
-        "custom_code": "Kod niestandardowy"
+        "custom_code": "Kod niestandardowy",
+        "reconnect": "Połącz ponownie domenę",
+        "reconnect_hint": "Połącz ponownie tę domenę, aby wygenerować nowe rekordy konfiguracji Cloudflare.",
+        "status_verified": "Zweryfikowano",
+        "status_pending_dns": "Oczekujące DNS-y",
+        "status_pending_verification": "Oczekuje na weryfikację",
+        "status_reconnect_required": "Wymagane ponowne połączenie",
+        "status_error": "Potrzebuje uwagi",
+        "status_removed": "Usunięto",
+        "verified_description": "Ta domena niestandardowa jest aktywna i zweryfikowana.",
+        "pending_dns_description": "Dodaj poniższe rekordy DNS, a następnie odśwież weryfikację.",
+        "pending_verification_description": "Znaleziono rekordy DNS. Wydanie lub weryfikacja protokołu SSL jest nadal w toku.",
+        "reconnect_description": "Ta domena musi zostać ponownie połączona poprzez nowy proces konfiguracji Cloudflare.",
+        "error_description": "Ta domena niestandardowa istnieje, ale weryfikacja nie została jeszcze ukończona."
       }
     },
     "quiz": {

@@ -311,6 +311,7 @@
       "creating_new": "Oprettelse af nye oversættelser mislykkedes"
     },
     "exercise": {
+      "points_required_auto_grade": "Angiv en positiv pointværdi for hvert spørgsmål, før du gemmer.",
       "success": "Gemt",
       "submission_updated": "Indsendelse opdateret til",
       "error_fetching": "Hentning af øvelser mislykkedes. Genindlæs venligst siden"
@@ -750,6 +751,8 @@
       "certificates": {
         "title": "Certifikater",
         "certificate_settings": "Certifikatindstillinger",
+        "tab_design": "Design",
+        "tab_settings": "Indstillinger",
         "theme": "Vælg et tema",
         "logo": "Brand Logo",
         "to_update": "Gå til for at opdatere dit brandimage",
@@ -1071,6 +1074,9 @@
             "finish": "Afslut",
             "next": "Næste",
             "check": "Tjek",
+            "auto_graded_badge": "Auto-graded",
+            "manual_grading_required_badge": "Manual grading required",
+            "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "Indsendelser",
               "individual": {
@@ -1139,6 +1145,8 @@
                 "link": "Links"
               },
               "select_type": "Vælg type",
+              "question_type_auto_gradable": "Auto",
+              "question_type_manual_grading": "Manual",
               "premium_question_type": "Opgrader for at bruge denne spørgsmålstype"
             },
             "delete_confirmation": {
@@ -1608,6 +1616,27 @@
       "nav_certificates": "Certifikater",
       "nav_landing_page": "Landingsside",
       "nav_settings": "Indstillinger"
+    },
+    "completion": {
+      "modal": {
+        "title": "Kursuskravene er fuldført!",
+        "subtitle": "Tillykke – du kan se og downloade dit certifikat når som helst.",
+        "view_certificate": "Se certifikat",
+        "later": "Luk"
+      }
+    },
+    "certification": {
+      "rules_heading": "Certificeringsregler",
+      "deadline_label": "Certificeringsfrist",
+      "deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline.",
+      "threshold_label": "Minimum fuldførelse (%)",
+      "threshold_helper": "Kombineret fremskridt i lektion og træning kræves for at opnå certifikatet (0-100). Standard er 100 %.",
+      "email_message_label": "E-mail med certificering",
+      "email_message_helper": "Valgfri besked vist i e-mailen, når en elev opfylder kravene. Et link til certifikatsiden er altid inkluderet.",
+      "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!"
+    },
+    "certificates": {
+      "progress_hint": "{current} % gennemført ({required} % kræves for at downloade)"
     }
   },
   "courses": {
@@ -1785,7 +1814,20 @@
         "refresh": "Opdater",
         "remove": "Fjern",
         "custom_favicon": "Brugerdefineret favicon",
-        "custom_code": "Brugerdefineret kode"
+        "custom_code": "Brugerdefineret kode",
+        "reconnect": "Gentilslut domæne",
+        "reconnect_hint": "Gentilslut dette domæne for at generere nye Cloudflare-opsætningsposter.",
+        "status_verified": "Verificeret",
+        "status_pending_dns": "Afventende DNS",
+        "status_pending_verification": "Afventer bekræftelse",
+        "status_reconnect_required": "Genopret forbindelse påkrævet",
+        "status_error": "Har brug for opmærksomhed",
+        "status_removed": "Fjernet",
+        "verified_description": "Dette tilpassede domæne er aktivt og bekræftet.",
+        "pending_dns_description": "Tilføj DNS-posterne nedenfor, og opdater derefter bekræftelsen.",
+        "pending_verification_description": "DNS-poster blev fundet. SSL-udstedelse eller -validering er stadig i gang.",
+        "reconnect_description": "Dette domæne skal forbindes igen gennem det nye Cloudflare-opsætningsflow.",
+        "error_description": "Dette tilpassede domæne eksisterer, men bekræftelsen er ikke fuldført endnu."
       }
     },
     "quiz": {

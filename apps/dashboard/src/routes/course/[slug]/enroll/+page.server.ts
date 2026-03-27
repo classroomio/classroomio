@@ -1,14 +1,14 @@
 import { classroomio } from '$lib/utils/services/api';
 import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 import { calcCourseDiscount } from '$lib/utils/functions/course';
-import { redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 
 export const load = async ({ params, url }) => {
   const slug = params?.slug ?? '';
   const inviteToken = url.searchParams.get('invite_token') ?? null;
 
   if (!slug) {
-    redirect(307, '/404');
+    throw error(404, 'Not found');
   }
 
   if (inviteToken) {
@@ -20,7 +20,7 @@ export const load = async ({ params, url }) => {
       const result = await response.json();
 
       if (!result.success || !result.data) {
-        redirect(307, '/404');
+        throw error(404, 'Not found');
       }
 
       const data = result.data;
@@ -50,9 +50,9 @@ export const load = async ({ params, url }) => {
         requiresPaymentOrInvite: false,
         token: inviteToken
       };
-    } catch (error) {
-      console.error('Enroll load: failed to load invite', error);
-      redirect(307, '/404');
+    } catch (e) {
+      console.error('Enroll load: failed to load invite', e);
+      throw error(404, 'Not found');
     }
   }
 
@@ -63,7 +63,7 @@ export const load = async ({ params, url }) => {
     const result = await response.json();
 
     if (!result.success || !result.data) {
-      redirect(307, '/404');
+      throw error(404, 'Not found');
     }
 
     const courseData = result.data;
@@ -99,8 +99,8 @@ export const load = async ({ params, url }) => {
       requiresPaymentOrInvite: !isFree,
       token: null as string | null
     };
-  } catch (error) {
-    console.error('Enroll load: failed to load course by slug', error);
-    redirect(307, '/404');
+  } catch (e) {
+    console.error('Enroll load: failed to load course by slug', e);
+    throw error(404, 'Not found');
   }
 };

@@ -311,6 +311,7 @@
       "creating_new": "Не удалось создать новые переводы."
     },
     "exercise": {
+      "points_required_auto_grade": "Установите положительное количество баллов для каждого вопроса перед сохранением.",
       "success": "Сохранено успешно",
       "submission_updated": "Представление обновлено до",
       "error_fetching": "Не удалось загрузить упражнения. Обновите страницу."
@@ -750,6 +751,8 @@
       "certificates": {
         "title": "Сертификаты",
         "certificate_settings": "Настройки сертификата",
+        "tab_design": "Дизайн",
+        "tab_settings": "Настройки",
         "theme": "Выберите тему",
         "logo": "Логотип бренда",
         "to_update": "Чтобы обновить имидж вашего бренда, перейдите по ссылке",
@@ -1071,6 +1074,9 @@
             "finish": "Готово",
             "next": "Далее",
             "check": "Проверить",
+            "auto_graded_badge": "Auto-graded",
+            "manual_grading_required_badge": "Manual grading required",
+            "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "Материалы",
               "individual": {
@@ -1139,6 +1145,8 @@
                 "link": "Ссылки"
               },
               "select_type": "Выберите тип",
+              "question_type_auto_gradable": "Auto",
+              "question_type_manual_grading": "Manual",
               "premium_question_type": "Обновите, чтобы использовать этот тип вопроса"
             },
             "delete_confirmation": {
@@ -1608,6 +1616,27 @@
       "nav_certificates": "Сертификаты",
       "nav_landing_page": "Целевая страница",
       "nav_settings": "Настройки"
+    },
+    "completion": {
+      "modal": {
+        "title": "Требования курса выполнены!",
+        "subtitle": "Поздравляем — вы можете просмотреть и скачать свой сертификат в любое время.",
+        "view_certificate": "Посмотреть сертификат",
+        "later": "Закрыть"
+      }
+    },
+    "certification": {
+      "rules_heading": "Правила сертификации",
+      "deadline_label": "Срок сертификации",
+      "deadline_helper": "Учащиеся должны достичь процента завершения до этой даты и времени (по местному времени). Оставьте пустым, если срок не установлен.",
+      "threshold_label": "Минимальное завершение (%)",
+      "threshold_helper": "Для получения сертификата необходим совмещенный прогресс урока и упражнений (0–100). По умолчанию — 100%.",
+      "email_message_label": "Сертификационное письмо по электронной почте",
+      "email_message_helper": "Дополнительное сообщение, отображаемое в электронном письме, когда учащийся соответствует требованиям. Ссылка на страницу сертификата всегда включена.",
+      "email_message_placeholder": "например Мы гордимся вашим прогрессом — продолжайте учиться!"
+    },
+    "certificates": {
+      "progress_hint": "Выполнено {current}% (для загрузки требуется {required}%)"
     }
   },
   "courses": {
@@ -1785,7 +1814,20 @@
         "refresh": "Обновить",
         "remove": "Удалить",
         "custom_favicon": "Пользовательский значок",
-        "custom_code": "Пользовательский код"
+        "custom_code": "Пользовательский код",
+        "reconnect": "Переподключить домен",
+        "reconnect_hint": "Повторно подключите этот домен, чтобы создать новые записи настройки Cloudflare.",
+        "status_verified": "Проверено",
+        "status_pending_dns": "Ожидание DNS",
+        "status_pending_verification": "Ожидает проверки",
+        "status_reconnect_required": "Требуется переподключение",
+        "status_error": "Требует внимания",
+        "status_removed": "Удален",
+        "verified_description": "Этот личный домен активен и проверен.",
+        "pending_dns_description": "Добавьте записи DNS ниже, затем обновите проверку.",
+        "pending_verification_description": "DNS-записи были найдены. Выдача или проверка SSL все еще продолжается.",
+        "reconnect_description": "Этот домен необходимо снова подключить с помощью нового процесса настройки Cloudflare.",
+        "error_description": "Этот личный домен существует, но проверка еще не завершена."
       }
     },
     "quiz": {

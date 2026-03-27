@@ -1,7 +1,7 @@
 import { getOrgBySiteName } from '$features/org/api/org.server';
 import { classroomio } from '$lib/utils/services/api';
 import { getApiKeyHeaders } from '$lib/utils/services/api/server';
-import { redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 
 export const load = async ({ params = { hash: '' } }) => {
   try {
@@ -28,8 +28,8 @@ export const load = async ({ params = { hash: '' } }) => {
       invite: result.data,
       currentOrg
     };
-  } catch (error) {
-    console.error('Error decoding organization invite params.hash', error);
-    redirect(307, '/404');
+  } catch (e) {
+    console.error('Error decoding organization invite params.hash', e);
+    throw error(404, 'Not found');
   }
 };

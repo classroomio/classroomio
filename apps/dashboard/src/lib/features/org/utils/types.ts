@@ -53,6 +53,8 @@ export type UpdateOrganizationSuccess = Extract<UpdateOrganizationResponse, { su
 export type DomainRequestRequest = typeof classroomio.domain.$post;
 export type DomainRequestResponse = InferResponseType<DomainRequestRequest>;
 export type DomainRequestSuccess = Extract<DomainRequestResponse, { success: true }>;
+export type DomainRequestData = DomainRequestSuccess['data'];
+export type DomainRequestStatus = DomainRequestData['status'];
 
 // SSO types
 export type GetSsoConfigRequest = (typeof classroomio.organization)['sso']['$get'];

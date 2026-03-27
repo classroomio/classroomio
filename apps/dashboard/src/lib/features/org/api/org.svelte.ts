@@ -353,23 +353,21 @@ class OrgApi extends BaseApiWithErrors {
   }
 
   /**
-   * Sends a domain request (verify, add, or remove domain)
-   * @param key Domain operation key: 'verify_domain', 'add_domain', or 'remove_domain'
+   * Sends a domain request (connect, refresh, or remove)
+   * @param action Domain operation action
    * @param domain Domain name
    * @returns Domain request response data
    */
-  async sendDomainRequest(key: 'verify_domain' | 'add_domain' | 'remove_domain', domain: string) {
+  async sendDomainRequest(action: 'connect' | 'refresh' | 'remove', domain: string) {
     return this.execute<DomainRequestRequest>({
       requestFn: () =>
         classroomio.domain.$post({
           json: {
-            params: {
-              key,
-              domain
-            }
+            action,
+            domain
           }
         }),
-      logContext: `processing domain request: ${key}`,
+      logContext: `processing domain request: ${action}`,
       onSuccess: () => {
         this.success = true;
         this.errors = {};
