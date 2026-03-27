@@ -1,49 +1,60 @@
-import { addDomainToVercel, getConfigResponse, removeDomainFromVercelProject } from '@api/services/org/domain';
-
+import { ZDomainActionRequest } from '@cio/utils/validation/organization';
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
+import {
+  assertSupportedCustomDomain,
+  connectDomain,
+  normalizeCustomDomain,
+  refreshDomain,
+  removeDomain
+} from '@api/services/org/domain';
+import { orgAdminMiddleware } from '@api/middlewares/org-admin';
+import { updateOrg } from '@api/services/organization';
 import { handleError } from '@api/utils/errors';
-import { z } from 'zod';
-
-const ZDomainRequest = z.object({
-  params: z.object({
-    key: z.enum(['verify_domain', 'add_domain', 'remove_domain']),
-    domain: z.string().min(1)
-  })
-});
+import { zValidator } from '@hono/zod-validator';
 
 export const domainRouter = new Hono()
   /**
    * POST /domain
-   * Handles domain operations: verify, add, or remove domain
-   * Requires authentication
+   * Handles domain operations: connect, refresh, or remove
+   * Requires authentication and organization admin access
    */
-  .post('/', authMiddleware, async (c) => {
+  .post('/', authMiddleware, orgAdminMiddleware, zValidator('json', ZDomainActionRequest), async (c) => {
     try {
-      const body = await c.req.json();
-      const validatedData = ZDomainRequest.parse(body);
+      const orgId = c.req.header('cio-org-id')!;
+      const { action, domain } = c.req.valid('json');
 
-      const { key, domain } = validatedData.params;
+      const normalizedDomain = normalizeCustomDomain(domain);
+      assertSupportedCustomDomain(normalizedDomain);
 
-      if (domain.includes('classroomio.com')) {
-        return c.json({ success: false }, 400);
-      }
+      switch (action) {
+        case 'connect': {
+          const result = await connectDomain(normalizedDomain);
+          await updateOrg(orgId, {
+            customDomain: normalizedDomain,
+            isCustomDomainVerified: result.verified
+          });
 
-      switch (key) {
-        case 'verify_domain': {
-          const configResponse = await getConfigResponse(domain);
-          return c.json({ success: true, verified: !configResponse.misconfigured }, 200);
+          return c.json({ success: true, data: result }, 200);
         }
-        case 'add_domain': {
-          const addDomainResponse = await addDomainToVercel(domain);
-          return c.json({ success: true, data: addDomainResponse }, 200);
+        case 'refresh': {
+          const result = await refreshDomain(normalizedDomain);
+          await updateOrg(orgId, {
+            customDomain: normalizedDomain,
+            isCustomDomainVerified: result.verified
+          });
+
+          return c.json({ success: true, data: result }, 200);
         }
-        case 'remove_domain': {
-          const removeDomainResponse = await removeDomainFromVercelProject(domain);
-          return c.json({ success: true, data: removeDomainResponse }, 200);
+        case 'remove': {
+          const result = await removeDomain(normalizedDomain);
+          await updateOrg(orgId, {
+            customDomain: null,
+            isCustomDomainVerified: false
+          });
+
+          return c.json({ success: true, data: result }, 200);
         }
-        default:
-          return c.json({ success: false, message: 'Invalid request' }, 400);
       }
     } catch (error) {
       return handleError(c, error, 'Failed to process domain request');

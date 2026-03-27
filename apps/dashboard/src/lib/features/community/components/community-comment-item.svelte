@@ -1,9 +1,9 @@
 <script lang="ts">
   import * as Avatar from '@cio/ui/base/avatar';
   import TrashIcon from '@lucide/svelte/icons/trash';
+  import UserIcon from '@lucide/svelte/icons/user';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import { shortenName } from '$lib/utils/functions/string';
   import { Vote } from '$features/ui';
   import { CircleCheckIcon } from '$features/ui/icons';
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
@@ -40,11 +40,15 @@
     <header class="flex items-center justify-between p-2 leading-none">
       <div class="flex items-center text-black">
         <Avatar.Root class="size-7">
-          <Avatar.Image
-            src={comment.author?.avatarUrl ? comment.author.avatarUrl : '/logo-192.png'}
-            alt={comment.author?.fullname ? comment.author.fullname : 'User'}
-          />
-          <Avatar.Fallback>{shortenName(comment.author?.fullname) || 'U'}</Avatar.Fallback>
+          {#if comment.author?.avatarUrl}
+            <Avatar.Image
+              src={comment.author.avatarUrl}
+              alt={comment.author?.fullname ? comment.author.fullname : 'User'}
+            />
+          {/if}
+          <Avatar.Fallback>
+            <UserIcon class="ui:size-3.5 ui:text-muted-foreground" />
+          </Avatar.Fallback>
         </Avatar.Root>
 
         <p class="ml-2 text-sm dark:text-white">{comment.author?.fullname}</p>

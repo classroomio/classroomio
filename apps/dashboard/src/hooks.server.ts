@@ -1,5 +1,5 @@
 import { getSessionData } from '$lib/utils/services/auth/session';
-import { getCioCookieString } from '$lib/utils/functions/cookies';
+import { getHasCioCookies } from '$lib/utils/functions/cookies';
 import { applyCspExtensions } from '$lib/utils/csp';
 import { type Handle, redirect } from '@sveltejs/kit';
 import { isPublicApiRoute, isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
@@ -26,7 +26,7 @@ export const handle: Handle = async (args) => {
 
 const handlePagesRoutes: Handle = async ({ event, resolve }) => {
   const { pathname } = event.url;
-  const hasCioCookie = Boolean(getCioCookieString(event.cookies));
+  const hasCioCookie = getHasCioCookies(event.cookies);
 
   if (isPublicRoute(pathname)) {
     return resolve(event);

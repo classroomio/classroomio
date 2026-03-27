@@ -4,6 +4,8 @@
   import { Empty } from '@cio/ui/custom/empty';
   import * as Item from '@cio/ui/base/item';
   import { Search } from '@cio/ui/custom/search';
+  import { Button } from '@cio/ui/base/button';
+  import { resolve } from '$app/paths';
   import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
   import MessageCirclePlusIcon from '@lucide/svelte/icons/message-circle-plus';
 
@@ -62,10 +64,8 @@
     </Select.Trigger>
     <Select.Content>
       <Select.Item value="">{$t('community.all')}</Select.Item>
-      {#each communityApi.courses as course}
-        {#if course.id}
-          <Select.Item value={course.id}>{course.title}</Select.Item>
-        {/if}
+      {#each communityApi.courses as course (course.id)}
+        <Select.Item value={course.id}>{course.title}</Select.Item>
       {/each}
     </Select.Content>
   </Select.Root>
@@ -77,10 +77,10 @@
   <CommunityListLoader />
   <CommunityListLoader />
 {:else}
-  {#each filteredQuestions as question}
+  {#each filteredQuestions as question (question.slug)}
     <Item.Root variant="outline">
       {#snippet child({ props })}
-        <a href="{$basePath}/community/{question.slug}" {...props}>
+        <a href={resolve(`${$basePath}/community/[slug]`, { slug: question.slug })} {...props}>
           <Vote value={question.votes} />
           <Item.Content class="gap-y-0.5">
             <Item.Title class="mt-0">
@@ -89,11 +89,15 @@
             <Item.Description>
               {question?.authorFullname} asked {calDateDiff(question.createdAt || new Date())}
             </Item.Description>
-            <a class="m-0" href="/courses/{question.courseId}" onclick={(e) => e.stopPropagation()}>
+            <Button
+              class="m-0! justify-start! px-0! py-0! underline"
+              href={resolve(`/courses/[id]`, { id: question.courseId })}
+              variant="ghost"
+            >
               <span class="text-muted-foreground p-0 text-xs">
                 #{question?.courseTitle}
               </span>
-            </a>
+            </Button>
           </Item.Content>
           <Item.Actions>
             <div class="flex items-center">

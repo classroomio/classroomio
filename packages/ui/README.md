@@ -64,6 +64,16 @@ Components in the `custom` directory come from various sources or are built on t
 - `custom/image-cropper/` - Custom image cropping component
 - `custom/checkbox-field/` - Field component built on top of base Checkbox
 
+### Exercise question (`src/custom/exercise-question/`)
+
+Learner and author UIs for exercise questions (take, preview, review, submission, edit per question type).
+
+- **`renderers/shared/`** — Cross-type presentation pieces reused by multiple question families (for example `labeled-value-row.svelte`, `mcq-preview-option-row.svelte`, `submission-response-pie-chart.svelte`). Mode entry files stay thin; add new shared pieces here when two or more types need the same markup.
+- **`renderers/<question-type>/`** — One folder per type (`radio`, `numeric`, …) containing `take.svelte`, `preview.svelte`, and optional `review.svelte`, `submission.svelte`, `edit.svelte`, plus type-specific fragments (for example `numeric-expected-fields.svelte`, `ordering-display.svelte`).
+- **`renderers/option-image.svelte`**, **`renderers/submission-utils.ts`** — Existing shared helpers at the `renderers/` root; keep importing from there unless consolidating in a later pass.
+
+**Types with heavier or distinct UIs** (textarea editor, file upload, matching/hotspot authoring, link lists) intentionally keep separate `take` / `preview` implementations until a second consumer (for example a dedicated `review` mode) justifies extracting more shared fragments.
+
 ### Hooks (`src/hooks/`)
 
 Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelte 5 runes-based utilities that can be used across components.

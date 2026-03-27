@@ -177,6 +177,23 @@ You can bind form controls directly to a writable store’s properties. Svelte c
 <Select.Root type="single" bind:value={$inviteSettingsStore.preset}>
 ```
 
+### Reactive built-in collections
+
+In Svelte 5, the built-in `Set` and `Map` classes are **not** reactive. Use `SvelteSet` and `SvelteMap` from `svelte/reactivity` instead. They are already reactive on their own — do **not** wrap them in `$state()`.
+
+```svelte
+<script lang="ts">
+  import { SvelteSet } from 'svelte/reactivity';
+
+  let selectedIds = new SvelteSet<string>();
+
+  // Mutations are reactive — no clone-and-reassign needed
+  selectedIds.add('abc');
+  selectedIds.delete('abc');
+  selectedIds.clear();
+</script>
+```
+
 ### Server-Side API Calls
 
 Use `.server.ts` files for server-side code to isolate API keys.
@@ -205,6 +222,7 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Use `.server.ts` for server-side API calls with API keys
 - Use non-null assertion (`!`) for `user` when `authMiddleware` is present
 - Put all user-facing copy in translations and reference by key
+- Use `SvelteSet`/`SvelteMap` from `svelte/reactivity` for reactive collections (not `new Set`/`new Map`)
 
 ### ❌ DON'T
 - Put business logic in routes or queries
@@ -217,6 +235,8 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Call RPC client directly in server files (use `.server.ts` classes)
 - Add unnecessary null checks for `user` when `authMiddleware` is present
 - Write plain English strings in components
+- Use `new Set()`/`new Map()` for mutable reactive state — use `SvelteSet`/`SvelteMap` instead
+- Wrap `SvelteSet`/`SvelteMap` in `$state()` — they are already reactive
 - **Use inline type imports** (e.g. `import('Package').Type` in type positions) — use top-level `import type` instead
 
 ## Checklist for New Routes

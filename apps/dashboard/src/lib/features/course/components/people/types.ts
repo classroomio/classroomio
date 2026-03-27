@@ -1,5 +1,6 @@
 import type { StudentInviteListItem, StudentInviteAuditItem } from '../../utils/types';
 import type { OrganizationTeamMembers } from '$features/org/utils/types';
+import type { OrganizationAudience } from '$features/org/utils/types';
 import type { TCourseInvitePreset } from '@cio/utils/validation/course/invite';
 
 export interface Profile {
@@ -29,6 +30,9 @@ type OrgTeamMemberItem = OrganizationTeamMembers[number];
 export type Tutor = Pick<OrgTeamMemberItem, 'id' | 'profileId' | 'email'> & {
   text: OrgTeamMemberItem['fullname'];
 };
+
+type OrgAudienceMemberItem = OrganizationAudience[number];
+export type OrgStudent = OrgAudienceMemberItem;
 
 /** Re-export API-driven invite types from course utils */
 export type InviteListItem = StudentInviteListItem;

@@ -1,11 +1,12 @@
 <script lang="ts">
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+  import Copy from '@lucide/svelte/icons/copy';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import TrashIcon from '@lucide/svelte/icons/trash';
-  import Copy from '@lucide/svelte/icons/copy';
+  import type { DomainRequestData, DomainRequestStatus } from '$features/org/utils/types';
   import isValidDomain from 'is-valid-domain';
   import { goto } from '$app/navigation';
-  import { untrack } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { parse } from 'tldts';
 
   import { t } from '$lib/utils/functions/translations';
@@ -31,13 +32,19 @@
   let isLoading = $state(false);
   let isCustomDomainLoading = $state(false);
   let isRefreshing = $state(false);
+  let domainSetup = $state<DomainRequestData | null>(null);
 
   const isDomainValid = $derived(isValidDomain(sanitizeDomain(customDomain), { subdomain: true }));
+  const currentDomainStatus = $derived<DomainRequestStatus | null>(
+    domainSetup?.status ??
+      ($currentOrg.customDomain ? ($currentOrg.isCustomDomainVerified ? 'verified' : 'pending_verification') : null)
+  );
 
   type Error = {
     siteName: string;
     customDomain: string;
   };
+
   let errors: Error = $state({
     siteName: '',
     customDomain: ''
@@ -55,6 +62,7 @@
       errors.siteName = 'Sitename already exists.';
       return;
     }
+
     isLoading = true;
 
     await orgApi.update($currentOrg.id, {
@@ -64,29 +72,93 @@
     if (orgApi.success) {
       $currentOrg.siteName = siteName;
       goto(`/org/${$currentOrg.siteName}/settings/domains`);
+    } else if (orgApi.errors.general) {
+      errors.siteName = orgApi.errors.general;
     } else {
-      if (orgApi.errors.general) {
-        errors.siteName = orgApi.errors.general;
-      } else {
-        errors.siteName = $t('add_org.sitename');
-      }
+      errors.siteName = $t('add_org.sitename');
     }
 
     isLoading = false;
   }
 
+  function applyDomainSetup(data: DomainRequestData) {
+    domainSetup = data;
+
+    if (data.status === 'removed') {
+      $currentOrg.customDomain = '';
+      $currentOrg.isCustomDomainVerified = false;
+      return;
+    }
+
+    $currentOrg.customDomain = data.hostname;
+    $currentOrg.isCustomDomainVerified = data.verified;
+    customDomain = '';
+  }
+
+  function getDomainStatusLabel(status: DomainRequestStatus | null) {
+    switch (status) {
+      case 'verified':
+        return $t('components.settings.domains.status_verified');
+      case 'pending_dns':
+        return $t('components.settings.domains.status_pending_dns');
+      case 'pending_verification':
+        return $t('components.settings.domains.status_pending_verification');
+      case 'reconnect_required':
+        return $t('components.settings.domains.status_reconnect_required');
+      case 'error':
+        return $t('components.settings.domains.status_error');
+      case 'removed':
+        return $t('components.settings.domains.status_removed');
+      default:
+        return '';
+    }
+  }
+
+  function getDomainStatusClass(status: DomainRequestStatus | null) {
+    switch (status) {
+      case 'verified':
+        return 'bg-green-500 text-white';
+      case 'pending_dns':
+      case 'pending_verification':
+        return 'bg-yellow-500 text-white';
+      case 'reconnect_required':
+      case 'error':
+        return 'bg-red-500 text-white';
+      case 'removed':
+        return 'bg-slate-500 text-white';
+      default:
+        return 'bg-yellow-500 text-white';
+    }
+  }
+
+  function getDomainStatusDescription(status: DomainRequestStatus | null) {
+    switch (status) {
+      case 'verified':
+        return $t('components.settings.domains.verified_description');
+      case 'pending_dns':
+        return $t('components.settings.domains.pending_dns_description');
+      case 'pending_verification':
+        return $t('components.settings.domains.pending_verification_description');
+      case 'reconnect_required':
+        return $t('components.settings.domains.reconnect_description');
+      case 'error':
+        return $t('components.settings.domains.error_description');
+      default:
+        return $t('components.settings.domains.dns_description');
+    }
+  }
+
   async function handleSaveCustomDomain() {
     if (!isDomainValid) return;
 
-    // Prevent free plan users from bypassing UI restrictions
     if ($isFreePlan) {
       errors.customDomain = 'Custom domains are only available on paid plans';
       return;
     }
 
     const sanitizedDomain = sanitizeDomain(customDomain);
-
     const details = parse(sanitizedDomain);
+
     if (!details.subdomain) {
       errors.customDomain = $t('components.settings.domains.custom_domain_error');
       return;
@@ -99,31 +171,39 @@
 
     isCustomDomainLoading = true;
 
-    await orgApi.update($currentOrg.id, {
-      customDomain: sanitizedDomain
-    });
+    try {
+      const response = await sendDomainRequest('connect', sanitizedDomain);
+      if (!response.success || !response.data) {
+        throw new Error(response.message || 'Failed to connect domain');
+      }
 
-    if (!orgApi.success) {
-      errors.customDomain = orgApi.errors.general || 'Failed to update custom domain';
+      applyDomainSetup(response.data);
+    } catch (error) {
+      console.log('Error: connecting domain', error);
+      snackbar.error(error instanceof Error ? error.message : String(error));
+    } finally {
       isCustomDomainLoading = false;
-      return;
     }
+  }
+
+  async function handleReconnectCustomDomain() {
+    if (!$currentOrg.customDomain) return;
+
+    isCustomDomainLoading = true;
 
     try {
-      const data = await sendDomainRequest('add_domain', sanitizedDomain);
-      if (!data.success) {
-        throw new Error(data.message || 'Failed to add domain');
+      const response = await sendDomainRequest('connect', $currentOrg.customDomain);
+      if (!response.success || !response.data) {
+        throw new Error(response.message || 'Failed to reconnect domain');
       }
-      console.log('added domain to vercel', data);
-    } catch (error) {
-      console.log('Error: adding domain to vercel', error);
-      snackbar.error(error instanceof Error ? error.message : (error as string));
-      isCustomDomainLoading = false;
-      return;
-    }
 
-    $currentOrg.customDomain = sanitizedDomain;
-    isCustomDomainLoading = false;
+      applyDomainSetup(response.data);
+    } catch (error) {
+      console.log('Error: reconnecting domain', error);
+      snackbar.error(error instanceof Error ? error.message : String(error));
+    } finally {
+      isCustomDomainLoading = false;
+    }
   }
 
   async function handleRemoveCustomDomain() {
@@ -131,57 +211,41 @@
 
     isCustomDomainLoading = true;
 
-    await orgApi.update($currentOrg.id, {
-      customDomain: null,
-      isCustomDomainVerified: false
-    });
-
-    if (!orgApi.success) {
-      snackbar.error(orgApi.errors.general || 'Failed to remove custom domain');
-      isCustomDomainLoading = false;
-      return;
-    }
-
     try {
-      const data = await sendDomainRequest('remove_domain', $currentOrg.customDomain);
-      if (!data.success) {
-        throw new Error(data.message || 'Failed to remove domain');
+      const response = await sendDomainRequest('remove', $currentOrg.customDomain);
+      if (!response.success || !response.data) {
+        throw new Error(response.message || 'Failed to remove domain');
       }
-      console.log('removed domain from vercel', data);
-    } catch (error) {
-      console.log('Error: removing domain from vercel', error);
-      snackbar.error(error instanceof Error ? error.message : (error as string));
-      isCustomDomainLoading = false;
-      return;
-    }
 
-    $currentOrg.customDomain = '';
-    $currentOrg.isCustomDomainVerified = false;
-    isCustomDomainLoading = false;
+      applyDomainSetup(response.data);
+    } catch (error) {
+      console.log('Error: removing domain', error);
+      snackbar.error(error instanceof Error ? error.message : String(error));
+    } finally {
+      isCustomDomainLoading = false;
+    }
   }
 
-  async function handleRefreshCustomDomain() {
+  async function handleRefreshCustomDomain(silent = false) {
+    if (!$currentOrg.customDomain) return;
+
     isRefreshing = true;
 
     try {
-      const data = await sendDomainRequest('verify_domain', $currentOrg.customDomain || '');
-
-      console.log('data', data);
-      if (data.verified && !$currentOrg.isCustomDomainVerified) {
-        await orgApi.update($currentOrg.id, {
-          isCustomDomainVerified: true
-        });
-
-        if (orgApi.success) {
-          $currentOrg.isCustomDomainVerified = true;
-        }
+      const response = await sendDomainRequest('refresh', $currentOrg.customDomain);
+      if (!response.success || !response.data) {
+        throw new Error(response.message || 'Failed to refresh domain');
       }
+
+      applyDomainSetup(response.data);
     } catch (error) {
       console.log('Error: refreshing domain', error);
-      snackbar.error(error as string);
+      if (!silent) {
+        snackbar.error(error instanceof Error ? error.message : String(error));
+      }
+    } finally {
+      isRefreshing = false;
     }
-
-    isRefreshing = false;
   }
 
   function resetErrors(_siteName: string | null, _customDomain: string | null) {
@@ -189,16 +253,18 @@
       if (errors.siteName) {
         errors.siteName = '';
       }
+
       if (errors.customDomain) {
         errors.customDomain = '';
       }
     });
   }
 
-  function getSubdomain() {
-    const details = parse($currentOrg.customDomain || '');
-    return details.subdomain;
-  }
+  onMount(() => {
+    if ($currentOrg.customDomain) {
+      void handleRefreshCustomDomain(true);
+    }
+  });
 
   $effect(() => {
     resetErrors(siteName, customDomain);
@@ -224,6 +290,7 @@
         <Field.Error>{errors.siteName}</Field.Error>
       {/if}
     </Field.Field>
+
     <Field.Field orientation="horizontal">
       <Button variant="outline" onclick={handleSaveSiteName} disabled={isLoading}>
         {$t('components.settings.domains.update')}
@@ -237,10 +304,11 @@
   <Field.Set>
     <Field.Legend>{$t('components.settings.domains.custom')}</Field.Legend>
     <UpgradeBanner>{$t('upgrade.domain')}</UpgradeBanner>
+
     <Field.Group>
       {#if $currentOrg.customDomain}
         <Field.Field>
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between gap-3">
             <div class="flex items-center gap-2">
               <p class="text-md flex items-center gap-2 font-medium">
                 {$currentOrg.customDomain}
@@ -249,56 +317,88 @@
                 </Button>
               </p>
               <div
-                class="mt-1 h-2 w-2 rounded-full bg-{$currentOrg.isCustomDomainVerified ? 'green' : 'yellow'}-400"
+                class={`mt-1 h-2 w-2 rounded-full ${
+                  currentDomainStatus === 'verified'
+                    ? 'bg-green-400'
+                    : currentDomainStatus === 'reconnect_required' || currentDomainStatus === 'error'
+                      ? 'bg-red-400'
+                      : 'bg-yellow-400'
+                }`}
               ></div>
             </div>
-            {#if $currentOrg.isCustomDomainVerified}
-              <Badge variant="default" class="bg-green-500 px-3 text-xs text-white">Verified</Badge>
-            {:else}
-              <Badge variant="default" class="bg-yellow-500 px-3 text-xs text-white">Pending verification</Badge>
-            {/if}
+
+            <Badge variant="default" class={`px-3 text-xs ${getDomainStatusClass(currentDomainStatus)}`}>
+              {getDomainStatusLabel(currentDomainStatus)}
+            </Badge>
           </div>
         </Field.Field>
 
-        <Field.Description>{$t('components.settings.domains.dns_description')}</Field.Description>
+        <Field.Description>{getDomainStatusDescription(currentDomainStatus)}</Field.Description>
 
-        <Field.Field>
-          <div class="flex items-center gap-10 rounded-md border px-4 py-2">
-            <div class="flex h-[72px] flex-col justify-evenly">
-              <Field.Label class="font-light">{$t('components.settings.domains.dns_type')}</Field.Label>
-              <p class="flex h-[40px] items-center">CNAME</p>
+        {#if domainSetup?.dnsRecords?.length}
+          <Field.Field>
+            <div class="space-y-3 rounded-md border px-4 py-3">
+              {#each domainSetup.dnsRecords as record}
+                <div class="grid gap-3 sm:grid-cols-[80px,1fr,1fr] sm:items-center">
+                  <div>
+                    <Field.Label class="font-light">{$t('components.settings.domains.dns_type')}</Field.Label>
+                    <p>{record.type}</p>
+                  </div>
+
+                  <div class="min-w-0">
+                    <Field.Label class="font-light">{$t('components.settings.domains.dns_name')}</Field.Label>
+                    <div class="flex items-center gap-2">
+                      <p class="truncate">{record.name}</p>
+                      <Button variant="ghost" size="icon-sm" onclick={() => copyToClipboard(record.name)}>
+                        <Copy />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div class="min-w-0">
+                    <Field.Label class="font-light">{$t('components.settings.domains.dns_value')}</Field.Label>
+                    <div class="flex items-center gap-2">
+                      <p class="truncate">{record.value}</p>
+                      <Button variant="ghost" size="icon-sm" onclick={() => copyToClipboard(record.value)}>
+                        <Copy />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              {/each}
             </div>
-            <div class="flex h-[72px] flex-col justify-evenly">
-              <Field.Label class="font-light">{$t('components.settings.domains.dns_name')}</Field.Label>
-              <p class="flex h-[40px] items-center">
-                {getSubdomain()}
-              </p>
+          </Field.Field>
+        {:else if currentDomainStatus !== 'verified'}
+          <Field.Field>
+            <div class="rounded-md border px-4 py-3 text-sm ui:text-muted-foreground">
+              {$t('components.settings.domains.reconnect_hint')}
             </div>
-            <div class="flex h-[72px] flex-col justify-evenly">
-              <Field.Label class="font-light">{$t('components.settings.domains.dns_value')}</Field.Label>
-              <p class=" flex items-center gap-1">
-                cname.vercel-dns.com
-                <Button variant="ghost" size="icon-sm" onclick={() => copyToClipboard('cname.vercel-dns.com')}>
-                  <p>cname.vercel-dns.com</p>
-                  <Copy />
-                </Button>
-              </p>
-            </div>
-          </div>
-        </Field.Field>
+          </Field.Field>
+        {/if}
 
         <Field.Field orientation="horizontal">
-          <Button
-            variant="outline"
-            class="flex items-center gap-2 py-2"
-            onclick={handleRefreshCustomDomain}
-            loading={isRefreshing}
-          >
-            {#if !isRefreshing}
-              <RotateCcwIcon size={16} />
-            {/if}
-            {$t('components.settings.domains.refresh')}
-          </Button>
+          {#if currentDomainStatus === 'reconnect_required'}
+            <Button
+              variant="outline"
+              class="flex items-center gap-2 py-2"
+              onclick={handleReconnectCustomDomain}
+              loading={isCustomDomainLoading}
+            >
+              {$t('components.settings.domains.reconnect')}
+            </Button>
+          {:else}
+            <Button
+              variant="outline"
+              class="flex items-center gap-2 py-2"
+              onclick={() => handleRefreshCustomDomain()}
+              loading={isRefreshing}
+            >
+              {#if !isRefreshing}
+                <RotateCcwIcon size={16} />
+              {/if}
+              {$t('components.settings.domains.refresh')}
+            </Button>
+          {/if}
 
           <Button
             variant="destructive"

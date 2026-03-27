@@ -1,15 +1,26 @@
-import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
+  AssignAudienceCoursesRequest,
   DeleteTeamRequest,
   DomainRequestRequest,
   GetAudienceRequest,
   GetOrgPublicCoursesRequest,
+  ImportAudienceRequest,
   InviteTeamRequest,
   OrgPublicCourses,
   OrganizationAudience,
-  OrganizationTeamMembers
+  OrganizationTeamMembers,
+  ResendAudienceInviteRequest,
+  RevokeAudienceInviteRequest
 } from '../utils/types';
-import type { TCreateOrganization, TGetOrganizations, TUpdateOrganization } from '@cio/utils/validation/organization';
+import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import type {
+  TAssignAudienceCourses,
+  TAudienceInviteByEmail,
+  TCreateOrganization,
+  TGetOrganizations,
+  TImportAudienceMembers,
+  TUpdateOrganization
+} from '@cio/utils/validation/organization';
 import { ZCreateOrganization, ZUpdateOrganization } from '@cio/utils/validation/organization';
 import { currentOrg, orgs } from '$lib/utils/store/org';
 
@@ -342,26 +353,135 @@ class OrgApi extends BaseApiWithErrors {
   }
 
   /**
-   * Sends a domain request (verify, add, or remove domain)
-   * @param key Domain operation key: 'verify_domain', 'add_domain', or 'remove_domain'
+   * Sends a domain request (connect, refresh, or remove)
+   * @param action Domain operation action
    * @param domain Domain name
    * @returns Domain request response data
    */
-  async sendDomainRequest(key: 'verify_domain' | 'add_domain' | 'remove_domain', domain: string) {
+  async sendDomainRequest(action: 'connect' | 'refresh' | 'remove', domain: string) {
     return this.execute<DomainRequestRequest>({
       requestFn: () =>
         classroomio.domain.$post({
           json: {
-            params: {
-              key,
-              domain
-            }
+            action,
+            domain
           }
         }),
-      logContext: `processing domain request: ${key}`,
+      logContext: `processing domain request: ${action}`,
       onSuccess: () => {
         this.success = true;
         this.errors = {};
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error(result);
+        }
+      }
+    });
+  }
+
+  /**
+   * Imports users into the organization as students
+   */
+  async importAudienceMembers(data: TImportAudienceMembers) {
+    console.log('importAudienceMembers', data);
+    return this.execute<ImportAudienceRequest>({
+      requestFn: () =>
+        classroomio.organization.audience.import.$post({
+          json: data
+        }),
+      logContext: 'importing audience members',
+      onSuccess: (response) => {
+        const d = response.data;
+        snackbar.success(
+          t.get('audience.import.snackbar_success', {
+            imported: d.imported,
+            skipped: d.skipped,
+            emailsSent: d.emailsSent
+          })
+        );
+        this.success = true;
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error(result);
+          return;
+        }
+        if ('error' in result && 'field' in result) {
+          this.errors[result.field as string] = result.error;
+        }
+      }
+    });
+  }
+
+  /**
+   * Assigns existing audience members to courses
+   */
+  async assignAudienceToCourses(data: TAssignAudienceCourses) {
+    return this.execute<AssignAudienceCoursesRequest>({
+      requestFn: () =>
+        classroomio.organization.audience['assign-courses'].$post({
+          json: data
+        }),
+      logContext: 'assigning audience to courses',
+      onSuccess: (response) => {
+        const d = response.data;
+        snackbar.success(
+          t.get('audience.assign.snackbar_success', {
+            assigned: d.assigned,
+            alreadyEnrolled: d.alreadyEnrolled,
+            emailsSent: d.emailsSent
+          })
+        );
+        this.success = true;
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error(result);
+          return;
+        }
+        if ('error' in result && 'field' in result) {
+          this.errors[result.field as string] = result.error;
+        }
+      }
+    });
+  }
+
+  async resendAudienceInvite(data: TAudienceInviteByEmail) {
+    return this.execute<ResendAudienceInviteRequest>({
+      requestFn: () =>
+        classroomio.organization.audience['resend-invite'].$post({
+          json: data
+        }),
+      logContext: 'resending audience invite',
+      onSuccess: (response) => {
+        if (response.data.emailSent) {
+          snackbar.success('audience.invite.resend_snackbar_success');
+        } else {
+          snackbar.error('audience.invite.resend_snackbar_email_failed');
+        }
+        const orgId = get(currentOrg).id;
+        if (orgId) this.getOrgAudience(orgId);
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error(result);
+        }
+      }
+    });
+  }
+
+  async revokeAudienceInvite(data: TAudienceInviteByEmail) {
+    return this.execute<RevokeAudienceInviteRequest>({
+      requestFn: () =>
+        classroomio.organization.audience['revoke-invite'].$post({
+          json: data
+        }),
+      logContext: 'revoking audience invite',
+      onSuccess: () => {
+        snackbar.success('audience.invite.revoke_snackbar_success');
+        const orgId = get(currentOrg).id;
+        if (orgId) this.getOrgAudience(orgId);
       },
       onError: (result) => {
         if (typeof result === 'string') {

@@ -4,11 +4,11 @@
   import UnfoldVerticalIcon from '@lucide/svelte/icons/unfold-vertical';
 
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
-  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import ChartLineIcon from '@lucide/svelte/icons/chart-line';
   import { Progress } from '@cio/ui/base/progress';
   import { ActivityCard, HeroProfileCard, LoadingPage } from '$features/ui';
 
+  import { BackButton } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrgPath } from '$lib/utils/store/org';
   import type { UserAnalytics } from '$lib/utils/types/analytics';
@@ -61,10 +61,7 @@
 
 {#if userAnalytics}
   <div class="p-5">
-    <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/audience`}>
-      <ArrowLeftIcon size={16} />
-      {$t('community.ask.go_back')}
-    </a>
+    <BackButton href={`${$currentOrgPath}/audience`} label={$t('community.ask.go_back')} />
   </div>
 
   <div class="px-5 py-1">
@@ -116,7 +113,7 @@
         </div>
       </div>
 
-      {#each filteredCourses as course, index}
+      {#each filteredCourses as course (course.id)}
         {#key index}
           <div
             class={`mt-5 w-full rounded-md border border-gray-200 p-5 ${

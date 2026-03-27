@@ -311,6 +311,7 @@
       "creating_new": "Tạo bản dịch mới không thành công"
     },
     "exercise": {
+      "points_required_auto_grade": "Đặt điểm dương cho mỗi câu hỏi trước khi lưu.",
       "success": "Đã lưu thành công",
       "submission_updated": "Đã cập nhật bài nộp vào",
       "error_fetching": "Tìm nạp bài tập không thành công, vui lòng tải lại trang"
@@ -475,7 +476,54 @@
     "name": "Tên",
     "email": "Email",
     "date_joined": "Ngày tham gia",
-    "upgrade": "Nâng cấp kế hoạch của bạn để mời thêm sinh viên"
+    "upgrade": "Nâng cấp kế hoạch của bạn để mời thêm sinh viên",
+    "import_users": "Nhập người dùng",
+    "search_placeholder": "Tìm kiếm…",
+    "status": "Trạng thái",
+    "status_active": "Đang hoạt động",
+    "status_pending": "Đang chờ xử lý",
+    "status_expired": "Đã hết hạn",
+    "status_revoked": "Đã thu hồi",
+    "select_all": "Chọn tất cả",
+    "selected_count": "đã chọn {count}",
+    "assign_courses": "Chỉ định cho các khóa học",
+    "invite": {
+      "row_actions_aria": "Mở hành động",
+      "resend": "Gửi lại lời mời",
+      "revoke": "Thu hồi lời mời đang chờ xử lý",
+      "resend_snackbar_success": "Đã gửi email mời",
+      "resend_snackbar_email_failed": "Lời mời đã được gia hạn nhưng không thể gửi email",
+      "revoke_snackbar_success": "Đã thu hồi lời mời đang chờ xử lý"
+    },
+    "assign": {
+      "title": "Chỉ định cho các khóa học",
+      "description": "Cấp cho người dùng đã chọn quyền truy cập vào các khóa học và tùy ý thông báo cho họ qua email.",
+      "select_courses": "Chọn khóa học",
+      "select_courses_placeholder": "Chọn khóa học...",
+      "send_email": "Gửi email thông báo",
+      "submit": "Chỉ định",
+      "cancel": "Hủy bỏ",
+      "snackbar_success": "Đã chỉ định người dùng {được chỉ định} cho các khóa học ({alreadyEnrolled} đã đăng ký, đã gửi {emailsSent} email)",
+      "snackbar_no_courses": "Vui lòng chọn ít nhất một khóa học",
+      "snackbar_failed": "Không thể chỉ định khóa học"
+    },
+    "import": {
+      "title": "Nhập người dùng",
+      "description": "Thêm sinh viên vào tổ chức của bạn bằng cách nhập địa chỉ email của họ. Tùy chọn chỉ định chúng cho các khóa học và gửi email mời.",
+      "emails_label": "Địa chỉ email",
+      "emails_placeholder": "Nhập các email được phân tách bằng dấu phẩy, dòng mới hoặc dấu chấm phẩy\nví dụ: alice@example.com, bob@example.com",
+      "course_access": "Truy cập khóa học",
+      "no_courses": "Không có bài tập khóa học",
+      "all_courses": "Tất cả các khóa học",
+      "select_courses": "Chọn các khóa học cụ thể",
+      "select_courses_placeholder": "Chọn khóa học...",
+      "send_email": "Gửi email lời mời tới người dùng đã nhập",
+      "submit": "Nhập người dùng",
+      "back": "Quay lại Đối tượng",
+      "snackbar_success": "Đã nhập {imported} người dùng ({skipped} đã tồn tại, đã gửi email {emailsSent})",
+      "snackbar_no_emails": "Vui lòng nhập ít nhất một địa chỉ email",
+      "snackbar_failed": "Không thể nhập người dùng"
+    }
   },
   "community": {
     "title": "cộng đồng",
@@ -703,6 +751,8 @@
       "certificates": {
         "title": "Chứng chỉ",
         "certificate_settings": "Cài đặt chứng chỉ",
+        "tab_design": "Thiết kế",
+        "tab_settings": "Cài đặt",
         "theme": "Chọn một chủ đề",
         "logo": "Logo thương hiệu",
         "to_update": "Để cập nhật hình ảnh thương hiệu của bạn, hãy truy cập",
@@ -940,6 +990,8 @@
         "complete": "Hoàn thành",
         "next": "Tiếp theo",
         "prev": "Trước đó",
+        "prev_shortcut": "Trước (←)",
+        "next_shortcut": "Tiếp (→)",
         "disabled": "Tính năng bị vô hiệu hóa",
         "version_history": {
           "title": "Lịch sử phiên bản",
@@ -1022,6 +1074,9 @@
             "finish": "Kết thúc",
             "next": "Tiếp theo",
             "check": "Kiểm tra",
+            "auto_graded_badge": "Auto-graded",
+            "manual_grading_required_badge": "Manual grading required",
+            "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "bài nộp",
               "individual": {
@@ -1090,6 +1145,8 @@
                 "link": "Liên kết"
               },
               "select_type": "Chọn loại",
+              "question_type_auto_gradable": "Auto",
+              "question_type_manual_grading": "Manual",
               "premium_question_type": "Nâng cấp để sử dụng loại câu hỏi này"
             },
             "delete_confirmation": {
@@ -1200,6 +1257,9 @@
                 },
                 "edit": {
                   "accepted_answers_placeholder": "Câu trả lời được chấp nhận (được phân tách bằng dấu phẩy)"
+                },
+                "review": {
+                  "your_answer_label": "Đã gửi:"
                 }
               },
               "numeric": {
@@ -1217,6 +1277,11 @@
                   "tolerance_info": "Chênh lệch được phép so với giá trị chính xác (ví dụ: 0,5 chấp nhận +/- 0,5).",
                   "correct_value_placeholder": "Giá trị đúng",
                   "tolerance_placeholder": "Dung sai"
+                },
+                "review": {
+                  "your_answer_label": "Đã gửi:",
+                  "in_range": "Trong phạm vi dung sai",
+                  "out_of_range": "Dung sai bên ngoài"
                 }
               },
               "short_answer": {
@@ -1228,6 +1293,10 @@
                 },
                 "edit": {
                   "instructions_placeholder": "Hướng dẫn tùy chọn"
+                },
+                "review": {
+                  "your_answer_label": "Đã gửi:",
+                  "accepted_label": "Câu trả lời được chấp nhận"
                 }
               },
               "true_false": {
@@ -1291,8 +1360,9 @@
                 "option_prefix": "Tùy chọn",
                 "remove": "Xóa",
                 "add_option": "Thêm tùy chọn",
-                "correct_badge": "(Đúng)",
-                "not_set": "Chưa đặt"
+                "correct_badge": "Đúng",
+                "not_set": "Chưa đặt",
+                "incorrect_badge": "sai"
               }
             }
           },
@@ -1473,7 +1543,10 @@
           "cancel": "Hủy bỏ"
         },
         "content_locked_title": "Nội dung này đã bị khóa",
-        "content_locked_description": "Người hướng dẫn của bạn chưa mở khóa nội dung này. Hoàn thành nội dung trước đó hoặc kiểm tra lại sau."
+        "content_locked_description": "Người hướng dẫn của bạn chưa mở khóa nội dung này. Hoàn thành nội dung trước đó hoặc kiểm tra lại sau.",
+        "saving": "Đang lưu…",
+        "saved": "Đã lưu",
+        "draft_recovery": "Đã tìm thấy một bản nháp chưa được lưu cho bài học này. Bạn có muốn khôi phục nó không?"
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",
@@ -1543,6 +1616,27 @@
       "nav_certificates": "Chứng chỉ",
       "nav_landing_page": "Trang đích",
       "nav_settings": "Cài đặt"
+    },
+    "completion": {
+      "modal": {
+        "title": "Yêu cầu khóa học đã hoàn tất!",
+        "subtitle": "Xin chúc mừng — bạn có thể xem và tải xuống chứng chỉ của mình bất kỳ lúc nào.",
+        "view_certificate": "Xem chứng chỉ",
+        "later": "Đóng"
+      }
+    },
+    "certification": {
+      "rules_heading": "Quy tắc chứng nhận",
+      "deadline_label": "Thời hạn chứng nhận",
+      "deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn.",
+      "threshold_label": "Hoàn thành tối thiểu (%)",
+      "threshold_helper": "Cần có tiến độ kết hợp của bài học và bài tập để đạt được chứng chỉ (0–100). Mặc định là 100%.",
+      "email_message_label": "Thông báo email chứng nhận",
+      "email_message_helper": "Thông báo tùy chọn hiển thị trong email khi học sinh đáp ứng yêu cầu. Một liên kết đến trang chứng chỉ luôn được bao gồm.",
+      "email_message_placeholder": "ví dụ. Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!"
+    },
+    "certificates": {
+      "progress_hint": "Đã hoàn thành {current}% (cần có {required}% để tải xuống)"
     }
   },
   "courses": {
@@ -1582,6 +1676,7 @@
       "unpublished": "Chưa được xuất bản",
       "continue_course": "Tiếp tục",
       "learn_more": "Tìm hiểu thêm",
+      "tags_overflow_aria": "Thêm {count} thẻ",
       "list_view": {
         "title": "Tiêu đề",
         "description": "Mô tả",
@@ -1719,7 +1814,20 @@
         "refresh": "Làm mới",
         "remove": "Xóa",
         "custom_favicon": "Biểu tượng yêu thích tùy chỉnh",
-        "custom_code": "Mã tùy chỉnh"
+        "custom_code": "Mã tùy chỉnh",
+        "reconnect": "Kết nối lại miền",
+        "reconnect_hint": "Kết nối lại miền này để tạo bản ghi thiết lập Cloudflare mới.",
+        "status_verified": "Đã xác minh",
+        "status_pending_dns": "DNS đang chờ xử lý",
+        "status_pending_verification": "Đang chờ xác minh",
+        "status_reconnect_required": "Yêu cầu kết nối lại",
+        "status_error": "Cần chú ý",
+        "status_removed": "Đã xóa",
+        "verified_description": "Miền tùy chỉnh này đang hoạt động và đã được xác minh.",
+        "pending_dns_description": "Thêm bản ghi DNS bên dưới, sau đó làm mới xác minh.",
+        "pending_verification_description": "Bản ghi DNS đã được tìm thấy. Việc cấp hoặc xác thực SSL vẫn đang được tiến hành.",
+        "reconnect_description": "Miền này cần được kết nối lại thông qua quy trình thiết lập Cloudflare mới.",
+        "error_description": "Miền tùy chỉnh này tồn tại nhưng quá trình xác minh chưa hoàn tất."
       }
     },
     "quiz": {
@@ -2245,7 +2353,8 @@
         "email_password_disabled_message": "Đăng nhập email/mật khẩu bị vô hiệu hóa đối với tổ chức này.",
         "google_auth_disabled": "Xác thực Google bị vô hiệu hóa.",
         "signup_disabled_error": "Đăng ký bị vô hiệu hóa cho tổ chức này. Vui lòng liên hệ với quản trị viên của bạn.",
-        "or_continue_with": "Hoặc tiếp tục với email và mật khẩu"
+        "or_continue_with": "Hoặc tiếp tục với email và mật khẩu",
+        "sso_enabled": "{provider} đã được bật cho tổ chức này"
       },
       "tabs": {
         "general": "chung",
@@ -2471,7 +2580,8 @@
       "edit_group": "Chỉnh sửa nhóm",
       "edit_tag": "Chỉnh sửa thẻ",
       "save": "Lưu",
-      "cancel": "Hủy bỏ"
+      "cancel": "Hủy bỏ",
+      "actions_menu": "Hành động gắn thẻ"
     },
     "common": {
       "not_available": "không áp dụng"
@@ -2480,9 +2590,13 @@
   "invite": {
     "organization": {
       "page_title": "Tham gia cùng {orgName} trên ClassroomIO",
-      "role_label": "Vai trò: {vai trò}",
-      "email_label": "Email được mời: {email}",
-      "join_button": "Tham gia tổ chức",
+      "invitation_student": "Bạn được mời vào {orgName} với vai trò học viên.",
+      "invitation_teacher": "Bạn được mời vào {orgName} với vai trò giáo viên.",
+      "invitation_admin": "Bạn được mời vào {orgName} với vai trò quản trị viên.",
+      "invitation_fallback": "Bạn được mời vào {orgName} với vai trò {role}.",
+      "email_line": "Email: {email}",
+      "accept_button": "Chấp nhận lời mời",
+      "go_to_dashboard": "Đi tới bảng điều khiển",
       "messages": {
         "email_mismatch": "Bạn đã đăng nhập bằng một email khác với lời mời này.",
         "expired": "Liên kết mời này đã hết hạn.",
@@ -2520,6 +2634,17 @@
           "cancel": "Cancel",
           "save": "Create key"
         }
+      },
+      "usage": {
+        "title": "Cách sử dụng và giới hạn",
+        "description": "MCP có sẵn trên mọi gói, nhưng việc sử dụng được kiểm soát bằng tín dụng tự động hóa hàng tháng và các giới hạn chính.",
+        "credits_title": "Tín dụng còn lại",
+        "credits_description": "Các hành động MCP đột biến sẽ tiêu tốn tín dụng. Hành động đọc là miễn phí.",
+        "keys_title": "Phím hoạt động",
+        "keys_description": "Sử dụng một khóa MCP cho mỗi lần tích hợp để có thể luân chuyển hoặc thu hồi quyền truy cập một cách dễ dàng.",
+        "rate_limits_title": "Giới hạn tỷ lệ",
+        "rate_limits_description": "Yêu cầu đọc/ghi/xuất bản được phép mỗi phút.",
+        "used_label": "Đã sử dụng:"
       }
     },
     "keys": {
@@ -2534,7 +2659,11 @@
       "never_used": "không bao giờ",
       "scopes_label": "Phạm vi:",
       "revoke_confirm": "Thu hồi khóa tự động hóa này?",
-      "rotate_confirm": "Xoay phím tự động hóa này?"
+      "rotate_confirm": "Xoay phím tự động hóa này?",
+      "table_key": "Chìa khóa",
+      "table_status": "Trạng thái",
+      "table_created": "Đã tạo",
+      "table_last_used": "Lần sử dụng cuối cùng"
     },
     "clients": {
       "claude_code": "Mã Claude",

@@ -11,11 +11,14 @@ import {
   getOrganizationInviteByTokenHash,
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
+import { getCourseGroupIds } from '@cio/db/queries/course';
+import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
 
 import { ROLE } from '@cio/utils/constants';
 import crypto from 'node:crypto';
 import { db } from '@cio/db/drizzle';
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
+import { parseCourseIdsFromInviteMetadata } from '@api/utils/org';
 import { markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { sendEmail } from '@cio/email';
 
@@ -46,12 +49,13 @@ function normalizeEmails(emails: string[]): string[] {
 }
 
 function buildInviteLink(token: string): string {
-  return `${getDashboardBaseUrl()}/invite/t/${encodeURIComponent(token)}`;
+  return `${getDashboardBaseUrl()}/invite/${encodeURIComponent(token)}`;
 }
 
 function getRoleLabel(roleId: number): string {
   if (roleId === ROLE.ADMIN) return 'Admin';
   if (roleId === ROLE.TUTOR) return 'Tutor';
+  if (roleId === ROLE.STUDENT) return 'Student';
   return `Role ${roleId}`;
 }
 
@@ -405,6 +409,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
   const siteName = result.organization.siteName || '';
 
   const invite = await getOrganizationInviteByTokenHash(tokenHash);
+
   if (invite) {
     await recordOrganizationInviteAudit(invite.invite.id, invite.invite.organizationId, 'ACCEPTED', {
       actorProfileId: user.id,
@@ -415,10 +420,35 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
     });
   }
 
+  // Auto-enroll in courses if invite metadata contains courseIds (from audience import).
+  // Run regardless of alreadyAccepted — enrollment is idempotent and the user may
+  // have accepted the org invite previously without getting course access.
+  if (invite) {
+    const metadata = invite.invite.metadata;
+    const courseIds = parseCourseIdsFromInviteMetadata(metadata);
+
+    if (courseIds.length > 0) {
+      try {
+        // Same as importAudienceMembers after course ids are known: resolve groups from course rows only.
+        const courseGroupMappings = await getCourseGroupIds(courseIds);
+        const validGroupIds = courseGroupMappings.map((m) => m.groupId).filter(Boolean) as string[];
+        await enrollUsersInCourseGroups(
+          validGroupIds,
+          [{ profileId: user.id, email: normalizedEmail }],
+          invite.invite.roleId
+        );
+      } catch (error) {
+        console.error('acceptOrganizationInvite course enrollment error:', error);
+      }
+    }
+  }
+
+  const redirectTo = result.roleId === ROLE.STUDENT ? '/lms' : siteName ? `/org/${siteName}` : '/org';
+
   return {
     organizationId: result.organization.id,
     roleId: result.roleId,
     alreadyAccepted: result.alreadyAccepted,
-    redirectTo: siteName ? `/org/${siteName}` : '/org'
+    redirectTo
   };
 }

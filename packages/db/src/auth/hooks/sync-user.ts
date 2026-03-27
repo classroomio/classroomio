@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm';
 import { hasVerifiedEmailProvider } from './create-profile';
 
 export const syncUserWithProfile = async (user: User) => {
-  console.debug('syncUserWithProfile', user);
+  console.log('[auth] syncUserWithProfile: running', { userId: user?.id });
 
   if (!user?.id) {
     return;

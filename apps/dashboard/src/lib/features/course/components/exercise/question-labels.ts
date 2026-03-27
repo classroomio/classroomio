@@ -18,6 +18,9 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'common.correct_badge': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.common.correct_badge'
     ),
+    'common.incorrect_badge': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.common.incorrect_badge'
+    ),
     'common.not_set': t.get('course.navItem.lessons.exercises.all_exercises.shared_question.common.not_set'),
     'navigation.previous': t.get('course.navItem.lessons.exercises.all_exercises.shared_question.navigation.previous'),
     'navigation.next': t.get('course.navItem.lessons.exercises.all_exercises.shared_question.navigation.next'),
@@ -131,6 +134,12 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'short_answer.preview.helper': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.short_answer.preview.helper'
     ),
+    'short_answer.review.your_answer_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.short_answer.review.your_answer_label'
+    ),
+    'short_answer.review.accepted_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.short_answer.review.accepted_label'
+    ),
     'numeric.edit.correct_value_label': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.numeric.edit.correct_value_label'
     ),
@@ -158,6 +167,15 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'numeric.preview.tolerance_label': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.numeric.preview.tolerance_label'
     ),
+    'numeric.review.your_answer_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.numeric.review.your_answer_label'
+    ),
+    'numeric.review.in_range': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.numeric.review.in_range'
+    ),
+    'numeric.review.out_of_range': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.numeric.review.out_of_range'
+    ),
     'fill_blank.edit.accepted_answers_placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.accepted_answers_placeholder'
     ),
@@ -166,6 +184,9 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     ),
     'fill_blank.preview.accepted_answers_label': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.preview.accepted_answers_label'
+    ),
+    'fill_blank.review.your_answer_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.review.your_answer_label'
     ),
     'file_upload.edit.accepted_types_placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.edit.accepted_types_placeholder'

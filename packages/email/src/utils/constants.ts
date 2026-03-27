@@ -2,18 +2,19 @@ import { env } from '../config/env';
 
 export const EMAIL_IDS = [
   'forgotPassword',
-  'welcome',
-  'verifyEmail',
-  'onPasswordReset',
   'inviteTeacher',
-  'newsfeedPost',
   'newsfeedComment',
-  'studentCourseWelcome',
+  'newsfeedPost',
+  'onPasswordReset',
   'studentCourseInvite',
-  'teacherStudentJoined',
-  'teacherStudentBuyRequest',
+  'studentCourseWelcome',
+  'studentOrgInvite',
   'studentProvePayment',
-  'teacherCourseWelcome'
+  'teacherCourseWelcome',
+  'teacherStudentBuyRequest',
+  'teacherStudentJoined',
+  'verifyEmail',
+  'welcome'
 ] as const;
 
 const DEFAULT_EMAIL_FROM = '"Best from ClassroomIO" <notify@mail.classroomio.com>';

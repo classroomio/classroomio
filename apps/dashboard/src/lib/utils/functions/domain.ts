@@ -1,27 +1,25 @@
+import type { DomainRequestData } from '$features/org/utils/types';
 import { orgApi } from '$features/org/api/org.svelte';
 
 export const sanitizeDomain = (domain: string) => {
   return domain
     .trim()
     .toLowerCase()
-    .replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
-    .split('/')[0];
+    .replace(/^https?:\/\//i, '')
+    .split('/')[0]
+    .replace(/\.$/, '');
 };
 
 export async function sendDomainRequest(
-  key: 'verify_domain' | 'add_domain' | 'remove_domain',
+  action: 'connect' | 'refresh' | 'remove',
   domain: string
-): Promise<{ success: boolean; data?: unknown; verified?: boolean; message?: string }> {
-  const response = await orgApi.sendDomainRequest(key, domain);
+): Promise<{ success: boolean; data?: DomainRequestData; message?: string }> {
+  const response = await orgApi.sendDomainRequest(action, domain);
 
-  if (orgApi.success && response) {
-    const data = 'data' in response ? response.data : null;
-    const verified = 'verified' in response ? response.verified : undefined;
-
+  if (orgApi.success && response?.data) {
     return {
       success: true,
-      data,
-      verified
+      data: response.data
     };
   }
 

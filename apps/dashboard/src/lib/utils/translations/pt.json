@@ -311,6 +311,7 @@
       "creating_new": "Falha ao criar novas traduções"
     },
     "exercise": {
+      "points_required_auto_grade": "Defina um valor de pontos positivo para cada pergunta antes de salvar.",
       "success": "Salvo com sucesso",
       "submission_updated": "Envio atualizado para",
       "error_fetching": "Falha ao buscar exercícios. Atualize a página"
@@ -475,7 +476,54 @@
     "name": "Nome",
     "email": "E-mail",
     "date_joined": "Data de adesão",
-    "upgrade": "Atualize seu plano para convidar mais alunos"
+    "upgrade": "Atualize seu plano para convidar mais alunos",
+    "import_users": "Importar usuários",
+    "search_placeholder": "Pesquisar…",
+    "status": "Estado",
+    "status_active": "Ativo",
+    "status_pending": "Pendente",
+    "status_expired": "Expirado",
+    "status_revoked": "Revogado",
+    "select_all": "Selecionar tudo",
+    "selected_count": "{contagem} selecionados",
+    "assign_courses": "Atribuir a cursos",
+    "invite": {
+      "row_actions_aria": "Ações abertas",
+      "resend": "Reenviar convite",
+      "revoke": "Revogar convite pendente",
+      "resend_snackbar_success": "E-mail de convite enviado",
+      "resend_snackbar_email_failed": "O convite foi renovado, mas não foi possível enviar o e-mail",
+      "revoke_snackbar_success": "Convite pendente revogado"
+    },
+    "assign": {
+      "title": "Atribuir a cursos",
+      "description": "Conceda aos usuários selecionados acesso aos cursos e, opcionalmente, notifique-os por e-mail.",
+      "select_courses": "Selecione os cursos",
+      "select_courses_placeholder": "Escolha cursos...",
+      "send_email": "Enviar e-mail de notificação",
+      "submit": "Atribuir",
+      "cancel": "Cancelar",
+      "snackbar_success": "{assigned} usuários atribuídos aos cursos ({alreadyEnrolled} já inscrito, {emailsSent} e-mails enviados)",
+      "snackbar_no_courses": "Selecione pelo menos um curso",
+      "snackbar_failed": "Falha ao atribuir cursos"
+    },
+    "import": {
+      "title": "Importar usuários",
+      "description": "Adicione alunos à sua organização inserindo seus endereços de e-mail. Opcionalmente, atribua-os a cursos e envie e-mails de convite.",
+      "emails_label": "Endereços de e-mail",
+      "emails_placeholder": "Insira e-mails separados por vírgulas, novas linhas ou ponto e vírgula\npor exemplo alice@exemplo.com, bob@exemplo.com",
+      "course_access": "Acesso ao curso",
+      "no_courses": "Nenhuma tarefa de curso",
+      "all_courses": "Todos os cursos",
+      "select_courses": "Selecione cursos específicos",
+      "select_courses_placeholder": "Escolha cursos...",
+      "send_email": "Enviar e-mail de convite para usuários importados",
+      "submit": "Importar usuários",
+      "back": "Voltar ao público",
+      "snackbar_success": "Usuários {importados} importados ({skipped} já existia, {emailsSent} emails enviados)",
+      "snackbar_no_emails": "Insira pelo menos um endereço de e-mail",
+      "snackbar_failed": "Falha ao importar usuários"
+    }
   },
   "community": {
     "title": "Comunidade",
@@ -703,6 +751,8 @@
       "certificates": {
         "title": "Certificados",
         "certificate_settings": "Configurações de certificado",
+        "tab_design": "Design",
+        "tab_settings": "Configurações",
         "theme": "Escolha um tema",
         "logo": "Logotipo da marca",
         "to_update": "Para atualizar a imagem da sua marca, acesse",
@@ -940,6 +990,8 @@
         "complete": "Completo",
         "next": "Próximo",
         "prev": "Anterior",
+        "prev_shortcut": "Anterior (←)",
+        "next_shortcut": "Próximo (→)",
         "disabled": "O recurso está desativado",
         "version_history": {
           "title": "Histórico de versões",
@@ -1022,6 +1074,9 @@
             "finish": "Concluir",
             "next": "Próximo",
             "check": "Verifique",
+            "auto_graded_badge": "Auto-graded",
+            "manual_grading_required_badge": "Manual grading required",
+            "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "Envios",
               "individual": {
@@ -1090,6 +1145,8 @@
                 "link": "Ligações"
               },
               "select_type": "Selecione o tipo",
+              "question_type_auto_gradable": "Auto",
+              "question_type_manual_grading": "Manual",
               "premium_question_type": "Atualize para usar este tipo de pergunta"
             },
             "delete_confirmation": {
@@ -1200,6 +1257,9 @@
                 },
                 "edit": {
                   "accepted_answers_placeholder": "Respostas aceitas (separadas por vírgula)"
+                },
+                "review": {
+                  "your_answer_label": "Enviado:"
                 }
               },
               "numeric": {
@@ -1217,6 +1277,11 @@
                   "tolerance_info": "Diferença permitida do valor correto (por exemplo, 0,5 aceita +/-0,5).",
                   "correct_value_placeholder": "Valor correto",
                   "tolerance_placeholder": "Tolerância"
+                },
+                "review": {
+                  "your_answer_label": "Enviado:",
+                  "in_range": "Dentro da tolerância",
+                  "out_of_range": "Tolerância externa"
                 }
               },
               "short_answer": {
@@ -1228,6 +1293,10 @@
                 },
                 "edit": {
                   "instructions_placeholder": "Instruções opcionais"
+                },
+                "review": {
+                  "your_answer_label": "Enviado:",
+                  "accepted_label": "Respostas aceitas"
                 }
               },
               "true_false": {
@@ -1291,8 +1360,9 @@
                 "option_prefix": "Opção",
                 "remove": "Remover",
                 "add_option": "Adicionar opção",
-                "correct_badge": "(Correto)",
-                "not_set": "Não definido"
+                "correct_badge": "Correto",
+                "not_set": "Não definido",
+                "incorrect_badge": "Incorreto"
               }
             }
           },
@@ -1473,7 +1543,10 @@
           "cancel": "Cancelar"
         },
         "content_locked_title": "Este conteúdo está bloqueado",
-        "content_locked_description": "Seu instrutor ainda não desbloqueou este conteúdo. Conclua o conteúdo anterior ou volte mais tarde."
+        "content_locked_description": "Seu instrutor ainda não desbloqueou este conteúdo. Conclua o conteúdo anterior ou volte mais tarde.",
+        "saving": "Salvando…",
+        "saved": "Salvo",
+        "draft_recovery": "Um rascunho não salvo foi encontrado para esta lição. Você gostaria de restaurá-lo?"
       },
       "news_feed": {
         "heading": "Feed de notícias",
@@ -1543,6 +1616,27 @@
       "nav_certificates": "Certificados",
       "nav_landing_page": "Página inicial",
       "nav_settings": "Configurações"
+    },
+    "completion": {
+      "modal": {
+        "title": "Requisitos do curso concluídos!",
+        "subtitle": "Parabéns – você pode visualizar e baixar seu certificado a qualquer momento.",
+        "view_certificate": "Ver certificado",
+        "later": "Fechar"
+      }
+    },
+    "certification": {
+      "rules_heading": "Regras de certificação",
+      "deadline_label": "Prazo de certificação",
+      "deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo.",
+      "threshold_label": "Conclusão mínima (%)",
+      "threshold_helper": "Progresso combinado de aulas e exercícios necessário para obter o certificado (0–100). O padrão é 100%.",
+      "email_message_label": "Mensagem de e-mail de certificação",
+      "email_message_helper": "Mensagem opcional mostrada no e-mail quando um aluno atende aos requisitos. Um link para a página do certificado está sempre incluído.",
+      "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!"
+    },
+    "certificates": {
+      "progress_hint": "{current}% concluído ({required}% necessário para download)"
     }
   },
   "courses": {
@@ -1582,6 +1676,7 @@
       "unpublished": "Não publicado",
       "continue_course": "Continuar",
       "learn_more": "Saiba mais",
+      "tags_overflow_aria": "Mais {count} tags",
       "list_view": {
         "title": "Título",
         "description": "Descrição",
@@ -1719,7 +1814,20 @@
         "refresh": "Atualizar",
         "remove": "Remover",
         "custom_favicon": "Favicon personalizado",
-        "custom_code": "Código personalizado"
+        "custom_code": "Código personalizado",
+        "reconnect": "Reconectar domínio",
+        "reconnect_hint": "Reconecte este domínio para gerar novos registros de configuração da Cloudflare.",
+        "status_verified": "Verificado",
+        "status_pending_dns": "DNS pendente",
+        "status_pending_verification": "Verificação pendente",
+        "status_reconnect_required": "É necessário reconectar",
+        "status_error": "Precisa de atenção",
+        "status_removed": "Removido",
+        "verified_description": "Este domínio personalizado está ativo e verificado.",
+        "pending_dns_description": "Adicione os registros DNS abaixo e atualize a verificação.",
+        "pending_verification_description": "Registros DNS foram encontrados. A emissão ou validação de SSL ainda está em andamento.",
+        "reconnect_description": "Este domínio precisa ser conectado novamente por meio do novo fluxo de configuração da Cloudflare.",
+        "error_description": "Este domínio personalizado existe, mas a verificação ainda não foi concluída."
       }
     },
     "quiz": {
@@ -2245,7 +2353,8 @@
         "email_password_disabled_message": "O login por e-mail/senha está desativado para esta organização.",
         "google_auth_disabled": "A autenticação do Google está desativada.",
         "signup_disabled_error": "A inscrição está desativada para esta organização. Entre em contato com seu administrador.",
-        "or_continue_with": "Ou continue com e-mail e senha"
+        "or_continue_with": "Ou continue com e-mail e senha",
+        "sso_enabled": "{provider} está ativado para esta organização"
       },
       "tabs": {
         "general": "Geral",
@@ -2471,7 +2580,8 @@
       "edit_group": "Editar grupo",
       "edit_tag": "Editar etiqueta",
       "save": "Salvar",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "actions_menu": "Ações de tags"
     },
     "common": {
       "not_available": "N/A"
@@ -2480,9 +2590,13 @@
   "invite": {
     "organization": {
       "page_title": "Junte-se a {orgName} no ClassroomIO",
-      "role_label": "Função: {função}",
-      "email_label": "E-mail convidado: {email}",
-      "join_button": "Junte-se à organização",
+      "invitation_student": "Você foi convidado para {orgName} como aluno.",
+      "invitation_teacher": "Você foi convidado para {orgName} como professor.",
+      "invitation_admin": "Você foi convidado para {orgName} como administrador.",
+      "invitation_fallback": "Você foi convidado para {orgName} como {role}.",
+      "email_line": "E-mail: {email}",
+      "accept_button": "Aceitar convite",
+      "go_to_dashboard": "Ir para o painel",
       "messages": {
         "email_mismatch": "Você está conectado com um e-mail diferente deste convite.",
         "expired": "Este link de convite expirou.",
@@ -2520,6 +2634,17 @@
           "cancel": "Cancel",
           "save": "Create key"
         }
+      },
+      "usage": {
+        "title": "Uso e limites",
+        "description": "O MCP está disponível em todos os planos, mas o uso é controlado com créditos mensais de automação e limites principais.",
+        "credits_title": "Créditos restantes",
+        "credits_description": "As ações mutantes do MCP consomem créditos. As ações de leitura são gratuitas.",
+        "keys_title": "Chaves ativas",
+        "keys_description": "Use uma chave MCP por integração para que o acesso possa ser alternado ou revogado de forma limpa.",
+        "rate_limits_title": "Limites de taxa",
+        "rate_limits_description": "Solicitações de leitura/gravação/publicação permitidas por minuto.",
+        "used_label": "Usado:"
       }
     },
     "keys": {
@@ -2534,7 +2659,11 @@
       "never_used": "Nunca",
       "scopes_label": "Escopos:",
       "revoke_confirm": "Revogar esta chave de automação?",
-      "rotate_confirm": "Girar esta chave de automação?"
+      "rotate_confirm": "Girar esta chave de automação?",
+      "table_key": "Chave",
+      "table_status": "Estado",
+      "table_created": "Criado",
+      "table_last_used": "Usado pela última vez"
     },
     "clients": {
       "claude_code": "Código Claude",

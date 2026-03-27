@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
@@ -7,15 +8,18 @@
   import { courseMetaDeta } from '$features/course/utils/store';
   import { coursesApi } from '$features/course/api';
   import type { RecommendedCourses } from '$features/course/types';
+  import { CourseSortBy, DEFAULT_COURSE_SORT, parseCourseSortValue } from '$features/course/utils/constants';
 
   let searchValue = $state('');
-  let selectedId: string | undefined = $state('');
+  let sortKey = $state<CourseSortBy>(DEFAULT_COURSE_SORT);
+
+  $effect(() => {
+    if (!browser) return;
+    void sortKey;
+    localStorage.setItem('classroomio_filter_course_key', sortKey);
+  });
 
   const filteredExploreCourses: RecommendedCourses = $derived.by(() => {
-    if (selectedId) {
-      localStorage.setItem('classroomio_filter_course_key', selectedId);
-    }
-
     const coursesFiltered = coursesApi.recommendedCourses.filter((course) => {
       if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
         return true;
@@ -24,11 +28,13 @@
       return false;
     });
 
-    if (selectedId === '0') {
+    if (sortKey === CourseSortBy.DateCreated) {
       return coursesFiltered.sort(
         (a, b) => new Date(a.createdAt ?? '').getTime() - new Date(b.createdAt ?? '').getTime()
       );
-    } else if (selectedId === '1') {
+    } else if (sortKey === CourseSortBy.Published) {
+      return coursesFiltered.sort((a, b) => Number(b.isPublished) - Number(a.isPublished));
+    } else if (sortKey === CourseSortBy.Lessons) {
       return coursesFiltered.sort((a, b) => (b.lessonCount ?? 0) - (a.lessonCount ?? 0));
     }
 
@@ -42,7 +48,7 @@
       $courseMetaDeta.view = courseView;
     }
 
-    selectedId = localStorage.getItem('classroomio_filter_course_key') || '0';
+    sortKey = parseCourseSortValue(localStorage.getItem('classroomio_filter_course_key'));
   });
 
   $effect(() => {
@@ -60,5 +66,5 @@
   isLMS={true}
   isLoading={coursesApi.isLoading}
   bind:searchValue
-  bind:selectedId
+  bind:sortKey
 />

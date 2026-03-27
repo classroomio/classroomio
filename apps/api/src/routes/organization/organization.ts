@@ -1,4 +1,6 @@
 import {
+  ZAssignAudienceCourses,
+  ZAudienceInviteByEmail,
   ZCancelOrgPlan,
   ZCreateOrgPlan,
   ZCreateOrganization,
@@ -7,12 +9,20 @@ import {
   ZGetOrganizationCoursesQuery,
   ZGetOrganizations,
   ZGetUserAnalytics,
+  ZImportAudienceMembers,
   ZInviteTeamMembers,
   ZLMSExercisesParam,
   ZRemoveTeamMember,
   ZUpdateOrgPlan,
   ZUpdateOrganization
 } from '@cio/utils/validation/organization';
+import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
+import {
+  assignAudienceToCourses,
+  importAudienceMembers,
+  resendAudienceInvite,
+  revokeAudiencePendingInvite
+} from '@api/services/organization/audience';
 import {
   cancelOrgPlan,
   createOrg,
@@ -33,13 +43,13 @@ import {
 } from '@api/services/organization';
 
 import { Hono } from '@api/utils/hono';
+import { ROLE } from '@cio/utils/constants';
 import { TOrganization } from '@db/types';
-import { automationRouter } from '@api/routes/organization/automation';
 import { assetsRouter } from '@api/routes/organization/assets';
 import { authMiddleware } from '@api/middlewares/auth';
-import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
-import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
+import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
+import { automationRouter } from '@api/routes/organization/automation';
 import { courseImportRouter } from '@api/routes/organization/course-import';
 import { getLMSExercisesService } from '@api/services/exercise';
 import { handleError } from '@api/utils/errors';
@@ -47,9 +57,9 @@ import { inviteTeamMembers } from '@api/services/organization/invite';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { orgMemberOrAutomationKeyMiddleware } from '@api/middlewares/org-member-or-automation-key';
+import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
 import { quizRouter } from '@api/routes/organization/quiz';
 import { tagsRouter } from '@api/routes/organization/tags';
-import { ROLE } from '@cio/utils/constants';
 import { zValidator } from '@hono/zod-validator';
 
 export const organizationRouter = new Hono()
@@ -100,7 +110,7 @@ export const organizationRouter = new Hono()
    * Gets organization team members (non-students)
    * Requires authentication
    */
-  .get('/team', authMiddleware, orgMemberMiddleware, async (c) => {
+  .get('/team', authMiddleware, orgTeamMemberMiddleware, async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;
       const team = await getOrgTeam(orgId);
@@ -168,7 +178,7 @@ export const organizationRouter = new Hono()
    * Gets organization audience (students)
    * Requires authentication
    */
-  .get('/audience', authMiddleware, orgMemberMiddleware, async (c) => {
+  .get('/audience', authMiddleware, orgTeamMemberMiddleware, async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;
       const audience = await getOrgAudience(orgId);
@@ -185,6 +195,48 @@ export const organizationRouter = new Hono()
     }
   })
   /**
+   * POST /organization/audience/resend-invite
+   * Resends a student org invite email (new token; optional course metadata from last invite)
+   */
+  .post(
+    '/audience/resend-invite',
+    authMiddleware,
+    orgTeamMemberMiddleware,
+    zValidator('json', ZAudienceInviteByEmail),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const user = c.get('user')!;
+        const data = c.req.valid('json');
+        const result = await resendAudienceInvite(orgId, data, user.id);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to resend audience invite');
+      }
+    }
+  )
+  /**
+   * POST /organization/audience/revoke-invite
+   * Revokes an active (non-expired) pending student org invite
+   */
+  .post(
+    '/audience/revoke-invite',
+    authMiddleware,
+    orgTeamMemberMiddleware,
+    zValidator('json', ZAudienceInviteByEmail),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const user = c.get('user')!;
+        const data = c.req.valid('json');
+        const result = await revokeAudiencePendingInvite(orgId, data, user.id);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to revoke audience invite');
+      }
+    }
+  )
+  /**
    * GET /organization/audience/:userId/analytics
    * Gets user analytics for a specific user in an organization
    * Requires authentication and organization membership
@@ -192,7 +244,7 @@ export const organizationRouter = new Hono()
   .get(
     '/audience/:userId/analytics',
     authMiddleware,
-    orgMemberMiddleware,
+    orgTeamMemberMiddleware,
     zValidator('param', ZGetUserAnalytics),
     async (c) => {
       try {
@@ -458,7 +510,6 @@ export const organizationRouter = new Hono()
    */
   .put('/', authMiddleware, orgAdminMiddleware, zValidator('json', ZUpdateOrganization), async (c) => {
     try {
-      console.log('updateOrg');
       console.log(c.req.valid('json'));
       const orgId = c.req.header('cio-org-id')!;
 
@@ -515,6 +566,65 @@ export const organizationRouter = new Hono()
       return handleError(c, error, 'Failed to fetch LMS exercises');
     }
   })
+  /**
+   * POST /organization/audience/import
+   * Imports users into the organization as students with optional course assignment
+   * Requires authentication and admin role
+   */
+  .post(
+    '/audience/import',
+    authMiddleware,
+    orgTeamMemberMiddleware,
+    zValidator('json', ZImportAudienceMembers),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const user = c.get('user')!;
+        const data = c.req.valid('json');
+
+        const result = await importAudienceMembers(orgId, data, user.id);
+
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          201
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to import audience members');
+      }
+    }
+  )
+  /**
+   * POST /organization/audience/assign-courses
+   * Assigns existing audience members to one or more courses
+   * Requires authentication and admin role
+   */
+  .post(
+    '/audience/assign-courses',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('json', ZAssignAudienceCourses),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const data = c.req.valid('json');
+
+        const result = await assignAudienceToCourses(orgId, data);
+
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to assign audience to courses');
+      }
+    }
+  )
   .route('/automation', automationRouter)
   .route('/course-import', courseImportRouter)
   .route('/tags', tagsRouter)

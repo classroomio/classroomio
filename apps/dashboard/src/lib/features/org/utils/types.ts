@@ -23,6 +23,8 @@ export type OrganizationAudienceSuccess = Extract<InferResponseType<GetAudienceR
 
 export type OrganizationAudience = OrganizationAudienceSuccess['data'];
 
+export type OrganizationAudienceMember = OrganizationAudience[number];
+
 // Org Public Courses  types
 export type GetOrgPublicCoursesRequest = typeof classroomio.organization.courses.public.$get;
 export type OrgPublicCoursesResponse = InferResponseType<GetOrgPublicCoursesRequest> | null;
@@ -51,6 +53,8 @@ export type UpdateOrganizationSuccess = Extract<UpdateOrganizationResponse, { su
 export type DomainRequestRequest = typeof classroomio.domain.$post;
 export type DomainRequestResponse = InferResponseType<DomainRequestRequest>;
 export type DomainRequestSuccess = Extract<DomainRequestResponse, { success: true }>;
+export type DomainRequestData = DomainRequestSuccess['data'];
+export type DomainRequestStatus = DomainRequestData['status'];
 
 // SSO types
 export type GetSsoConfigRequest = (typeof classroomio.organization)['sso']['$get'];
@@ -82,6 +86,20 @@ export type SsoDiscoveryResult = GetSsoDiscoverySuccess['data'];
 
 export type GetOrgSsoInfoSuccess = Extract<InferResponseType<GetOrgSsoInfoRequest>, { success: true }>;
 export type OrgSsoInfo = GetOrgSsoInfoSuccess['data'];
+
+// Audience import types
+export type ImportAudienceRequest = (typeof classroomio.organization)['audience']['import']['$post'];
+export type ImportAudienceSuccess = Extract<InferResponseType<ImportAudienceRequest>, { success: true }>;
+export type ImportAudienceData = ImportAudienceSuccess['data'];
+
+// Audience assign courses types
+export type AssignAudienceCoursesRequest = (typeof classroomio.organization)['audience']['assign-courses']['$post'];
+export type AssignAudienceCoursesSuccess = Extract<InferResponseType<AssignAudienceCoursesRequest>, { success: true }>;
+export type AssignAudienceCoursesData = AssignAudienceCoursesSuccess['data'];
+
+// Audience invite actions
+export type ResendAudienceInviteRequest = (typeof classroomio.organization)['audience']['resend-invite']['$post'];
+export type RevokeAudienceInviteRequest = (typeof classroomio.organization)['audience']['revoke-invite']['$post'];
 
 // Token auth types
 export type CreateTokenAuthRequest = (typeof classroomio.organization)['token-auth']['$post'];

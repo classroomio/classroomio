@@ -311,6 +311,7 @@
       "creating_new": "नए अनुवाद बनाना विफल रहा"
     },
     "exercise": {
+      "points_required_auto_grade": "सहेजने से पहले प्रत्येक प्रश्न के लिए धनात्मक अंक निर्धारित करें।",
       "success": "सफलतापूर्वक सहेजा गया",
       "submission_updated": "सबमिशन को अद्यतन किया गया",
       "error_fetching": "फ़ेचिंग अभ्यास विफल रहा, कृपया पृष्ठ पुनः लोड करें"
@@ -475,7 +476,54 @@
     "name": "नाम",
     "email": "ईमेल",
     "date_joined": "शामिल होने की तिथि",
-    "upgrade": "अधिक छात्रों को आमंत्रित करने के लिए अपनी योजना को अपग्रेड करें"
+    "upgrade": "अधिक छात्रों को आमंत्रित करने के लिए अपनी योजना को अपग्रेड करें",
+    "import_users": "उपयोगकर्ता आयात करें",
+    "search_placeholder": "खोजें…",
+    "status": "स्थिति",
+    "status_active": "सक्रिय",
+    "status_pending": "लंबित",
+    "status_expired": "समाप्त हो गया",
+    "status_revoked": "निरस्त किया गया",
+    "select_all": "सभी का चयन करें",
+    "selected_count": "{गिनती} चयनित",
+    "assign_courses": "पाठ्यक्रमों को असाइन करें",
+    "invite": {
+      "row_actions_aria": "खुली कार्रवाइयां",
+      "resend": "आमंत्रण पुनः भेजें",
+      "revoke": "लंबित आमंत्रण निरस्त करें",
+      "resend_snackbar_success": "आमंत्रण ईमेल भेजा गया",
+      "resend_snackbar_email_failed": "आमंत्रण नवीनीकृत किया गया लेकिन ईमेल नहीं भेजा जा सका",
+      "revoke_snackbar_success": "लंबित आमंत्रण निरस्त कर दिया गया"
+    },
+    "assign": {
+      "title": "पाठ्यक्रमों को असाइन करें",
+      "description": "चयनित उपयोगकर्ताओं को पाठ्यक्रमों तक पहुंच प्रदान करें और वैकल्पिक रूप से उन्हें ईमेल द्वारा सूचित करें।",
+      "select_courses": "पाठ्यक्रम चुनें",
+      "select_courses_placeholder": "पाठ्यक्रम चुनें...",
+      "send_email": "अधिसूचना ईमेल भेजें",
+      "submit": "नियुक्‍त करें",
+      "cancel": "रद्द करें",
+      "snackbar_success": "पाठ्यक्रमों के लिए {assigned} उपयोगकर्ताओं को असाइन किया गया ({alreadyEnrolled} पहले से ही नामांकित, {emailsSent} ईमेल भेजे गए)",
+      "snackbar_no_courses": "कृपया कम से कम एक पाठ्यक्रम चुनें",
+      "snackbar_failed": "पाठ्यक्रम आवंटित करने में विफल"
+    },
+    "import": {
+      "title": "उपयोगकर्ता आयात करें",
+      "description": "छात्रों के ईमेल पते दर्ज करके उन्हें अपने संगठन में जोड़ें। वैकल्पिक रूप से उन्हें पाठ्यक्रमों में नियुक्त करें और आमंत्रण ईमेल भेजें।",
+      "emails_label": "ईमेल पते",
+      "emails_placeholder": "ईमेल को अल्पविराम, न्यूलाइन या अर्धविराम से अलग करके दर्ज करें\nजैसे alice@example.com, bob@example.com",
+      "course_access": "पाठ्यक्रम प्रवेश",
+      "no_courses": "कोई पाठ्यक्रम असाइनमेंट नहीं",
+      "all_courses": "सभी पाठ्यक्रम",
+      "select_courses": "विशिष्ट पाठ्यक्रम चुनें",
+      "select_courses_placeholder": "पाठ्यक्रम चुनें...",
+      "send_email": "आयातित उपयोगकर्ताओं को आमंत्रण ईमेल भेजें",
+      "submit": "उपयोगकर्ता आयात करें",
+      "back": "दर्शकों के पास वापस जाएँ",
+      "snackbar_success": "आयातित {आयातित} उपयोगकर्ता ({स्किप्ड} पहले से मौजूद थे, {ईमेल्ससेंट} ईमेल भेजे गए)",
+      "snackbar_no_emails": "कृपया कम से कम एक ईमेल पता दर्ज करें",
+      "snackbar_failed": "उपयोगकर्ताओं को आयात करने में विफल"
+    }
   },
   "community": {
     "title": "समुदाय",
@@ -703,6 +751,8 @@
       "certificates": {
         "title": "प्रमाणपत्र",
         "certificate_settings": "प्रमाणपत्र सेटिंग्स",
+        "tab_design": "डिज़ाइन",
+        "tab_settings": "सेटिंग्स",
         "theme": "एक थीम चुनें",
         "logo": "ब्रांड लोगो",
         "to_update": "अपनी ब्रांड छवि को अद्यतन करने के लिए, पर जाएँ",
@@ -940,6 +990,8 @@
         "complete": "पूर्ण",
         "next": "अगला",
         "prev": "पिछला",
+        "prev_shortcut": "पिछला (←)",
+        "next_shortcut": "अगला (→)",
         "disabled": "सुविधा अक्षम है",
         "version_history": {
           "title": "संस्करण इतिहास",
@@ -1022,6 +1074,9 @@
             "finish": "ख़त्म करो",
             "next": "अगला",
             "check": "जांचें",
+            "auto_graded_badge": "Auto-graded",
+            "manual_grading_required_badge": "Manual grading required",
+            "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "प्रस्तुतियाँ",
               "individual": {
@@ -1090,6 +1145,8 @@
                 "link": "कड़ियाँ"
               },
               "select_type": "प्रकार चुनें",
+              "question_type_auto_gradable": "Auto",
+              "question_type_manual_grading": "Manual",
               "premium_question_type": "इस प्रश्न प्रकार का उपयोग करने के लिए अपग्रेड करें"
             },
             "delete_confirmation": {
@@ -1200,6 +1257,9 @@
                 },
                 "edit": {
                   "accepted_answers_placeholder": "स्वीकृत उत्तर (अल्पविराम से अलग)"
+                },
+                "review": {
+                  "your_answer_label": "प्रस्तुत:"
                 }
               },
               "numeric": {
@@ -1217,6 +1277,11 @@
                   "tolerance_info": "सही मान से स्वीकार्य अंतर (उदाहरण के लिए, 0.5 +/-0.5 स्वीकार करता है)।",
                   "correct_value_placeholder": "सही मूल्य",
                   "tolerance_placeholder": "सहनशीलता"
+                },
+                "review": {
+                  "your_answer_label": "प्रस्तुत:",
+                  "in_range": "सहनशीलता के भीतर",
+                  "out_of_range": "बाहर की सहनशीलता"
                 }
               },
               "short_answer": {
@@ -1228,6 +1293,10 @@
                 },
                 "edit": {
                   "instructions_placeholder": "वैकल्पिक निर्देश"
+                },
+                "review": {
+                  "your_answer_label": "प्रस्तुत:",
+                  "accepted_label": "स्वीकृत उत्तर"
                 }
               },
               "true_false": {
@@ -1291,8 +1360,9 @@
                 "option_prefix": "विकल्प",
                 "remove": "हटाओ",
                 "add_option": "विकल्प जोड़ें",
-                "correct_badge": "(सही)",
-                "not_set": "सेट नहीं"
+                "correct_badge": "सही",
+                "not_set": "सेट नहीं",
+                "incorrect_badge": "गलत"
               }
             }
           },
@@ -1473,7 +1543,10 @@
           "cancel": "रद्द करें"
         },
         "content_locked_title": "यह सामग्री लॉक है",
-        "content_locked_description": "आपके प्रशिक्षक ने अभी तक इस सामग्री को अनलॉक नहीं किया है। पिछली सामग्री पूरी करें या बाद में दोबारा जाँचें।"
+        "content_locked_description": "आपके प्रशिक्षक ने अभी तक इस सामग्री को अनलॉक नहीं किया है। पिछली सामग्री पूरी करें या बाद में दोबारा जाँचें।",
+        "saving": "सहेजा जा रहा है...",
+        "saved": "सहेजा गया",
+        "draft_recovery": "इस पाठ के लिए एक सहेजा न गया ड्राफ्ट मिला। क्या आप इसे पुनर्स्थापित करना चाहेंगे?"
       },
       "news_feed": {
         "heading": "समाचार फ़ीड",
@@ -1543,6 +1616,27 @@
       "nav_certificates": "प्रमाणपत्र",
       "nav_landing_page": "लैंडिंग पृष्ठ",
       "nav_settings": "सेटिंग्स"
+    },
+    "completion": {
+      "modal": {
+        "title": "पाठ्यक्रम की आवश्यकताएँ पूर्ण!",
+        "subtitle": "बधाई हो - आप अपना प्रमाणपत्र कभी भी देख और डाउनलोड कर सकते हैं।",
+        "view_certificate": "प्रमाणपत्र देखें",
+        "later": "बंद करें"
+      }
+    },
+    "certification": {
+      "rules_heading": "प्रमाणन नियम",
+      "deadline_label": "प्रमाणीकरण की समय सीमा",
+      "deadline_helper": "छात्रों को इस दिनांक समय (स्थानीय समय) से पहले पूर्णता प्रतिशत पूरा करना होगा। बिना किसी समय सीमा के खाली छोड़ दें.",
+      "threshold_label": "न्यूनतम पूर्णता (%)",
+      "threshold_helper": "प्रमाणपत्र (0-100) अर्जित करने के लिए संयुक्त पाठ और अभ्यास प्रगति की आवश्यकता है। डिफ़ॉल्ट 100% है.",
+      "email_message_label": "प्रमाणीकरण ईमेल संदेश",
+      "email_message_helper": "जब कोई छात्र आवश्यकताओं को पूरा करता है तो ईमेल में वैकल्पिक संदेश दिखाया जाता है। प्रमाणपत्र पृष्ठ का एक लिंक हमेशा शामिल किया जाता है।",
+      "email_message_placeholder": "जैसे हमें आपकी प्रगति पर गर्व है - सीखते रहें!"
+    },
+    "certificates": {
+      "progress_hint": "{वर्तमान}% पूर्ण (डाउनलोड करने के लिए {आवश्यक}% आवश्यक)"
     }
   },
   "courses": {
@@ -1582,6 +1676,7 @@
       "unpublished": "अप्रकाशित",
       "continue_course": "जारी रखें",
       "learn_more": "और जानें",
+      "tags_overflow_aria": "{count} और टैग",
       "list_view": {
         "title": "शीर्षक",
         "description": "विवरण",
@@ -1719,7 +1814,20 @@
         "refresh": "ताज़ा करें",
         "remove": "हटाओ",
         "custom_favicon": "कस्टम फ़ेविकॉन",
-        "custom_code": "कस्टम कोड"
+        "custom_code": "कस्टम कोड",
+        "reconnect": "डोमेन पुनः कनेक्ट करें",
+        "reconnect_hint": "नए क्लाउडफ़ेयर सेटअप रिकॉर्ड बनाने के लिए इस डोमेन को पुनः कनेक्ट करें।",
+        "status_verified": "सत्यापित",
+        "status_pending_dns": "लंबित डीएनएस",
+        "status_pending_verification": "सत्यापन लंबित है",
+        "status_reconnect_required": "पुनः कनेक्ट करना आवश्यक है",
+        "status_error": "ध्यान देने की जरूरत है",
+        "status_removed": "हटा दिया गया",
+        "verified_description": "यह कस्टम डोमेन सक्रिय और सत्यापित है.",
+        "pending_dns_description": "नीचे DNS रिकॉर्ड जोड़ें, फिर सत्यापन ताज़ा करें।",
+        "pending_verification_description": "डीएनएस रिकॉर्ड पाए गए. एसएसएल जारी करना या सत्यापन अभी भी जारी है।",
+        "reconnect_description": "इस डोमेन को नए क्लाउडफ़ेयर सेटअप फ़्लो के माध्यम से फिर से कनेक्ट करने की आवश्यकता है।",
+        "error_description": "यह कस्टम डोमेन मौजूद है, लेकिन सत्यापन अभी तक पूरा नहीं हुआ है।"
       }
     },
     "quiz": {
@@ -2245,7 +2353,8 @@
         "email_password_disabled_message": "इस संगठन के लिए ईमेल/पासवर्ड लॉगिन अक्षम है।",
         "google_auth_disabled": "Google प्रमाणीकरण अक्षम है.",
         "signup_disabled_error": "इस संगठन के लिए साइनअप अक्षम है. कृपया अपने व्यवस्थापक से संपर्क करें.",
-        "or_continue_with": "या ईमेल और पासवर्ड के साथ जारी रखें"
+        "or_continue_with": "या ईमेल और पासवर्ड के साथ जारी रखें",
+        "sso_enabled": "इस संगठन के लिए {प्रदाता} सक्षम है"
       },
       "tabs": {
         "general": "सामान्य",
@@ -2471,7 +2580,8 @@
       "edit_group": "समूह संपादित करें",
       "edit_tag": "टैग संपादित करें",
       "save": "सहेजें",
-      "cancel": "रद्द करें"
+      "cancel": "रद्द करें",
+      "actions_menu": "क्रियाएँ टैग करें"
     },
     "common": {
       "not_available": "एन/ए"
@@ -2480,9 +2590,13 @@
   "invite": {
     "organization": {
       "page_title": "ClassroomIO पर {orgName} से जुड़ें",
-      "role_label": "भूमिका: {भूमिका}",
-      "email_label": "आमंत्रित ईमेल: {ईमेल}",
-      "join_button": "संगठन से जुड़ें",
+      "invitation_student": "आपको {orgName} में छात्र के रूप में आमंत्रित किया गया है।",
+      "invitation_teacher": "आपको {orgName} में शिक्षक के रूप में आमंत्रित किया गया है।",
+      "invitation_admin": "आपको {orgName} में व्यवस्थापक के रूप में आमंत्रित किया गया है।",
+      "invitation_fallback": "आपको {orgName} में {role} के रूप में आमंत्रित किया गया है।",
+      "email_line": "ईमेल: {email}",
+      "accept_button": "निमंत्रण स्वीकार करें",
+      "go_to_dashboard": "डैशबोर्ड पर जाएं",
       "messages": {
         "email_mismatch": "आप इस आमंत्रण से भिन्न ईमेल से लॉग इन हैं।",
         "expired": "यह आमंत्रण लिंक समाप्त हो गया है.",
@@ -2520,6 +2634,17 @@
           "cancel": "Cancel",
           "save": "Create key"
         }
+      },
+      "usage": {
+        "title": "उपयोग और सीमाएँ",
+        "description": "एमसीपी हर योजना पर उपलब्ध है, लेकिन उपयोग को मासिक स्वचालन क्रेडिट और प्रमुख सीमाओं के साथ नियंत्रित किया जाता है।",
+        "credits_title": "क्रेडिट शेष",
+        "credits_description": "MCP क्रियाओं को बदलने से क्रेडिट की खपत होती है। पढ़ें क्रियाएँ निःशुल्क हैं।",
+        "keys_title": "सक्रिय कुंजियाँ",
+        "keys_description": "प्रति एकीकरण एक एमसीपी कुंजी का उपयोग करें ताकि पहुंच को घुमाया जा सके या सफाई से रद्द किया जा सके।",
+        "rate_limits_title": "दर सीमा",
+        "rate_limits_description": "प्रति मिनट पढ़ने/लिखने/प्रकाशित करने के अनुरोधों की अनुमति है।",
+        "used_label": "प्रयुक्त:"
       }
     },
     "keys": {
@@ -2534,7 +2659,11 @@
       "never_used": "कभी नहीं",
       "scopes_label": "दायरा:",
       "revoke_confirm": "इस स्वचालन कुंजी को निरस्त करें?",
-      "rotate_confirm": "इस स्वचालन कुंजी को घुमाएँ?"
+      "rotate_confirm": "इस स्वचालन कुंजी को घुमाएँ?",
+      "table_key": "कुंजी",
+      "table_status": "स्थिति",
+      "table_created": "बनाया गया",
+      "table_last_used": "अंतिम बार उपयोग किया गया"
     },
     "clients": {
       "claude_code": "क्लाउड कोड",

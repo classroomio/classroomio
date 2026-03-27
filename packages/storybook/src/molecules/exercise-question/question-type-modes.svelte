@@ -5,6 +5,8 @@
   interface Props {
     question: Record;
     answer?: unknown;
+    /** When set, renders an additional Review block with this incorrect `AnswerData`. */
+    wrongAnswer?: unknown;
   }
 
   type StoryQuestion = {
@@ -15,7 +17,7 @@
     settings?: Record<string, unknown>;
   };
 
-  let { question, answer = null }: Props = $props();
+  let { question, answer = null, wrongAnswer = undefined }: Props = $props();
 
   function cloneQuestion(source: Record) {
     return JSON.parse(JSON.stringify(source));
@@ -177,6 +179,42 @@
       }}
     />
   </div>
+
+  <div class="ui:rounded-md ui:border ui:p-4 ui:space-y-3">
+    <p class="ui:text-sm ui:font-semibold">Review Mode</p>
+    <p class="ui:text-muted-foreground ui:text-xs">
+      Read-only submission replay with correctness (same as grading / finished exercise in the app).
+    </p>
+    <ExerciseQuestion.QuestionRenderer
+      showContainer={false}
+      contract={{
+        mode: 'review',
+        question,
+        answer: viewAnswer,
+        labels: QUESTION_LABELS,
+        disabled: true
+      }}
+    />
+  </div>
+
+  {#if wrongAnswer !== undefined}
+    <div class="ui:rounded-md ui:border ui:p-4 ui:space-y-3">
+      <p class="ui:text-sm ui:font-semibold">Review Mode (incorrect)</p>
+      <p class="ui:text-muted-foreground ui:text-xs">
+        Same review UI when the submitted answer does not match the correct solution.
+      </p>
+      <ExerciseQuestion.QuestionRenderer
+        showContainer={false}
+        contract={{
+          mode: 'review',
+          question,
+          answer: wrongAnswer,
+          labels: QUESTION_LABELS,
+          disabled: true
+        }}
+      />
+    </div>
+  {/if}
 
   <div class="ui:rounded-md ui:border ui:p-4 ui:space-y-3">
     <p class="ui:text-sm ui:font-semibold">Submission Mode (12 respondents)</p>

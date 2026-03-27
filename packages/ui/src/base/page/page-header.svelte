@@ -19,7 +19,7 @@
   class={cn('ui:flex ui:my-4 ui:py-2 ui:flex-col', isSticky && 'ui:sticky ui:top-13 ui:z-10 ui:bg-white', className)}
   {...restProps}
 >
-  <div class="ui:flex ui:items-start ui:justify-between ui:gap-4">
+  <div class="ui:flex ui:items-start ui:justify-between ui:gap-4 ui:flex-col ui:md:flex-row">
     {@render children?.()}
   </div>
 </div>

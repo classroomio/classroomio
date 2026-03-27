@@ -17,6 +17,7 @@
   import type { CourseMembers, CourseMember } from '$features/course/utils/types';
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
+  import UserIcon from '@lucide/svelte/icons/user';
   import { shortenName } from '$lib/utils/functions/string';
   import * as Select from '@cio/ui/base/select';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -138,11 +139,15 @@
               {#if person.profile}
                 <div class="flex items-start lg:items-center">
                   <Avatar.Root class="mr-3">
-                    <Avatar.Image
-                      src={person.profile.avatar_url ? person.profile.avatar_url : '/logo-192.png'}
-                      alt={person.profile.fullname ? person.profile.fullname : 'User'}
-                    />
-                    <Avatar.Fallback>{shortenName(person.profile.fullname) || 'U'}</Avatar.Fallback>
+                    {#if person.profile.avatar_url}
+                      <Avatar.Image
+                        src={person.profile.avatar_url}
+                        alt={person.profile.fullname ? person.profile.fullname : 'User'}
+                      />
+                    {/if}
+                    <Avatar.Fallback>
+                      <UserIcon class="ui:size-4 ui:text-muted-foreground" />
+                    </Avatar.Fallback>
                   </Avatar.Root>
                   <div class="flex flex-col items-start lg:flex-row lg:items-center">
                     <div class="mr-2">

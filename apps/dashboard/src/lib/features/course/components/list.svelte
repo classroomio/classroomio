@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import { goto } from '$app/navigation';
   import * as Table from '@cio/ui/base/table';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
@@ -7,6 +8,7 @@
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import { t } from '$lib/utils/functions/translations';
   import CoursePublishBadge from './course-publish-badge.svelte';
+  import CourseTagsOverflow from './course-tags-overflow.svelte';
 
   interface Props {
     id?: string;
@@ -60,29 +62,18 @@
   }
 </script>
 
-<Table.Row class="cursor-pointer" onclick={() => goto(`/courses/${id}`)}>
+<Table.Row class="cursor-pointer" onclick={() => goto(resolve(`/courses/[id]`, { id }))}>
   <Table.Cell class="truncate"><p class="font-semibold">{title}</p></Table.Cell>
   <Table.Cell class="truncate">
     <p>{description}</p>
   </Table.Cell>
   {#if !isMobileStore.current}
     <Table.Cell class="truncate">{type}</Table.Cell>
-    <Table.Cell>
+    <Table.Cell class="w-3/12 min-w-0">
       {#if tags.length === 0}
         <span class="ui:text-muted-foreground text-2xs">-</span>
       {:else}
-        <div class="ui:text-muted-foreground text-2xs flex max-w-[220px] flex-wrap items-center gap-2">
-          {#each tags as tag (tag.id)}
-            <span class="inline-flex items-center gap-1.5">
-              <span
-                class="ui:bg-primary/60 inline-block h-1.5 w-1.5 rounded-full"
-                style={tag.color ? `background-color: ${tag.color}` : undefined}
-                aria-hidden="true"
-              ></span>
-              <span>{tag.name}</span>
-            </span>
-          {/each}
-        </div>
+        <CourseTagsOverflow {tags} variant="table" />
       {/if}
     </Table.Cell>
     <Table.Cell>{totalLessons}</Table.Cell>

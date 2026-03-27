@@ -66,4 +66,6 @@ export { RadioOptionCard, RadioOptionCardGroup, type RadioOptionCardOption } fro
 export { DocumentCard } from './custom/document-card';
 export * as ExerciseQuestion from './custom/exercise-question';
 export * as MediaPlayer from './custom/media-player';
+export { MultiSelectList, type MultiSelectListItem } from './custom/multi-select-list';
 export * as YoutubeLinkForm from './custom/youtube-link-form';
+export { BackButton } from './custom/back-button';

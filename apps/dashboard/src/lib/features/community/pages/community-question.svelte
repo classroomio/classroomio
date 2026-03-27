@@ -5,6 +5,7 @@
   import * as Avatar from '@cio/ui/base/avatar';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import TrashIcon from '@lucide/svelte/icons/trash';
+  import UserIcon from '@lucide/svelte/icons/user';
 
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
@@ -17,19 +18,20 @@
   import { Vote } from '$features/ui';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { shortenName } from '$lib/utils/functions/string';
   import { TextEditor } from '$features/ui';
   import { CommunityDeleteModal, CommunityCommentItem } from '$features/community/components';
+  import { BackButton } from '@cio/ui';
   import type { CommunityQuestionSuccess } from '../utils/types';
   import { currentCommunityQuestion } from '../utils/store';
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
 
   interface Props {
     slug: string;
+    backHref?: string;
     question?: CommunityQuestionSuccess['data'] | null;
   }
 
-  let { question }: Props = $props();
+  let { question, backHref }: Props = $props();
 
   let commentEditor: TiptapEditor | undefined = $state();
   let isValidAnswer = false; // V2 allow admin mark an answer as accepted
@@ -100,6 +102,9 @@
   <Page.Root class="mx-auto w-[90%] md:mx-10 md:max-w-3xl lg:mb-20">
     <Page.Header>
       <Page.HeaderContent>
+        {#if backHref}
+          <BackButton href={backHref} label={$t('community.ask.go_back')} />
+        {/if}
         {#if communityApi.isEditMode}
           <div class="flex w-full items-center gap-2">
             <InputField
@@ -175,13 +180,15 @@
           <div class="flex items-center justify-between p-2 leading-none">
             <div class="flex items-center text-black no-underline hover:underline">
               <Avatar.Root class="h-7 w-7">
-                <Avatar.Image
-                  src={communityApi.question?.authorAvatarUrl
-                    ? communityApi.question?.authorAvatarUrl
-                    : '/logo-192.png'}
-                  alt={communityApi.question?.authorFullname ? communityApi.question?.authorFullname : 'User'}
-                />
-                <Avatar.Fallback>{shortenName(communityApi.question?.authorFullname) || 'U'}</Avatar.Fallback>
+                {#if communityApi.question?.authorAvatarUrl}
+                  <Avatar.Image
+                    src={communityApi.question.authorAvatarUrl}
+                    alt={communityApi.question?.authorFullname ? communityApi.question.authorFullname : 'User'}
+                  />
+                {/if}
+                <Avatar.Fallback>
+                  <UserIcon class="ui:size-3.5 ui:text-muted-foreground" />
+                </Avatar.Fallback>
               </Avatar.Root>
               <p class="ml-2 text-sm dark:text-white">{communityApi.question?.authorFullname}</p>
               <p class="ml-2 text-sm text-gray-500 dark:text-white">

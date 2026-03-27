@@ -21,6 +21,7 @@
   import { DeleteModal } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi, coursesApi } from '$features/course/api';
+  import { COURSE_SORT_OPTIONS, DEFAULT_COURSE_SORT, type CourseSortBy } from '../utils/constants';
   import { deleteCourseModal, deleteCourseModalInitialState, courseMetaDeta } from '../utils/store';
   import { browser } from '$app/environment';
   import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
@@ -33,7 +34,7 @@
     isExplore?: boolean;
     isLMS?: boolean;
     searchValue?: string;
-    selectedId?: string;
+    sortKey?: CourseSortBy;
     isLoading?: boolean;
     showSortSelect?: boolean;
     filterControls?: Snippet;
@@ -46,21 +47,20 @@
     isExplore = false,
     isLMS = false,
     searchValue = $bindable(''),
-    selectedId = $bindable('0'),
+    sortKey = $bindable(DEFAULT_COURSE_SORT),
     isLoading = false,
     showSortSelect = true,
     filterControls
   }: Props = $props();
 
-  const filterOptions = $derived([
-    { value: '0', label: $t('courses.course_filter.date_created') },
-    { value: '1', label: $t('courses.course_filter.published') },
-    { value: '2', label: $t('courses.course_filter.lessons') }
-  ]);
-
-  const selectedLabel = $derived(
-    filterOptions.find((opt) => opt.value === selectedId)?.label || filterOptions[0].label
+  const filterOptions = $derived(
+    COURSE_SORT_OPTIONS.map((option) => ({
+      value: option.value,
+      label: $t(option.label)
+    }))
   );
+
+  const selectedLabel = $derived(filterOptions.find((opt) => opt.value === sortKey)?.label || filterOptions[0].label);
 
   const setViewPreference = (preference: 'grid' | 'list') => {
     $courseMetaDeta.view = preference;
@@ -98,12 +98,12 @@
   isLoading={$deleteCourseModal.isDeleting}
 />
 
-<Page.BodyHeader align="right">
+<Page.BodyHeader align="right" class="p-0!">
   <Search placeholder={$t('courses.search_placeholder')} bind:value={searchValue} />
   {#if showSortSelect}
-    <Select.Root type="single" bind:value={selectedId}>
+    <Select.Root type="single" bind:value={sortKey}>
       <Select.Trigger class="min-w-[150px]">
-        <p>{selectedId ? selectedLabel : filterOptions[0].label}</p>
+        <p>{sortKey ? selectedLabel : filterOptions[0].label}</p>
       </Select.Trigger>
       <Select.Content>
         {#each filterOptions as option (option.label)}
@@ -146,9 +146,9 @@
         <Table.Header>
           <Table.Row>
             <Table.Head class="w-[20%]">{$t('courses.course_card.list_view.title')}</Table.Head>
-            <Table.Head class="w-[24%]">{$t('courses.course_card.list_view.description')}</Table.Head>
+            <Table.Head class="w-[20%]">{$t('courses.course_card.list_view.description')}</Table.Head>
             <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.type')}</Table.Head>
-            <Table.Head class="w-[14%]">{$t('courses.course_card.list_view.tags')}</Table.Head>
+            <Table.Head class="w-3/12 min-w-0">{$t('courses.course_card.list_view.tags')}</Table.Head>
             <Table.Head class="w-[8%]">{$t('courses.course_card.list_view.lessons')}</Table.Head>
             <Table.Head class="w-[8%]">{$t('courses.course_card.list_view.students')}</Table.Head>
             <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.published')}</Table.Head>

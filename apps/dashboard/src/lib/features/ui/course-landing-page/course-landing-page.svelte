@@ -6,6 +6,7 @@
   import { resolve } from '$app/paths';
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import PlayIcon from '@lucide/svelte/icons/play';
+  import UserIcon from '@lucide/svelte/icons/user';
 
   import { getLectureNo } from '$features/course/utils/functions';
   import { currentOrg } from '$lib/utils/store/org';
@@ -31,7 +32,6 @@
   import * as Avatar from '@cio/ui/base/avatar';
   import PricingSection from './components/pricing-section.svelte';
   import NavSection from './components/nav-section.svelte';
-  import { shortenName } from '$lib/utils/functions/string';
   import SectionsDisplay from './components/sections-display.svelte';
   import { observeIntersection } from './components/intersection-observer';
 
@@ -194,7 +194,7 @@
       <!-- Course Details -->
       <div class="course-content w-full p-3 lg:mr-10 lg:w-10/12">
         <!-- Navigation -->
-        <UnderlineTabs.Root bind:value={activeNav} class="ui:bg-background sticky top-0 py-2">
+        <UnderlineTabs.Root bind:value={activeNav} class="ui:bg-background sticky top-10 py-2">
           <UnderlineTabs.List>
             {#each navItems as navItem (navItem.key)}
               <UnderlineTabs.Trigger value={navItem.key}>
@@ -316,15 +316,14 @@
                   <!-- review -->
                   <div class="item-start my-2 flex w-2/4 flex-row">
                     <!-- image container -->
-                    {#if review.avatar_url}
-                      <Avatar.Root class="mt-1 size-10">
-                        <Avatar.Image
-                          src={review.avatar_url ? review.avatar_url : '/logo-192.png'}
-                          alt={review.name ? review.name : 'Avatar'}
-                        />
-                        <Avatar.Fallback>{shortenName(review.name) || 'AV'}</Avatar.Fallback>
-                      </Avatar.Root>
-                    {/if}
+                    <Avatar.Root class="mt-1 size-10">
+                      {#if review.avatar_url}
+                        <Avatar.Image src={review.avatar_url} alt={review.name ? review.name : 'Avatar'} />
+                      {/if}
+                      <Avatar.Fallback>
+                        <UserIcon class="ui:size-5 ui:text-muted-foreground" />
+                      </Avatar.Fallback>
+                    </Avatar.Root>
 
                     <!-- profile content -->
                     <div class="w-11/12 pl-2.5">
@@ -385,15 +384,14 @@
                       <!-- review -->
                       <div class="item-start my-2 flex w-full flex-row">
                         <!-- image container -->
-                        {#if review.avatar_url}
-                          <Avatar.Root class="mt-1 h-10 w-10">
-                            <Avatar.Image
-                              src={review.avatar_url ? review.avatar_url : '/logo-192.png'}
-                              alt={review.name ? review.name : 'Avatar'}
-                            />
-                            <Avatar.Fallback>{shortenName(review.name) || 'AV'}</Avatar.Fallback>
-                          </Avatar.Root>
-                        {/if}
+                        <Avatar.Root class="mt-1 h-10 w-10">
+                          {#if review.avatar_url}
+                            <Avatar.Image src={review.avatar_url} alt={review.name ? review.name : 'Avatar'} />
+                          {/if}
+                          <Avatar.Fallback>
+                            <UserIcon class="ui:size-5 ui:text-muted-foreground" />
+                          </Avatar.Fallback>
+                        </Avatar.Root>
 
                         <!-- profile content -->
                         <div class="w-11/12 pl-2.5">

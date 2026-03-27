@@ -1475,7 +1475,10 @@ export const organizationmember = pgTable(
     index('idx_organizationmember_profile_org').on(table.profileId, table.organizationId),
     uniqueIndex('organizationmember_org_profile_unique')
       .on(table.organizationId, table.profileId)
-      .where(sql`${table.profileId} IS NOT NULL`)
+      .where(sql`${table.profileId} IS NOT NULL`),
+    uniqueIndex('organizationmember_org_email_unique')
+      .on(table.organizationId, table.email)
+      .where(sql`${table.email} IS NOT NULL`)
   ]
 );
 

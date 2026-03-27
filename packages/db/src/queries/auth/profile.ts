@@ -2,7 +2,7 @@ import * as schema from '@db/schema';
 
 import type { TProfile } from '@db/types';
 import { db, type DbOrTxClient } from '@db/drizzle';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 
 export const getProfileById = async (id: string) => {
   const [profile] = await db.select().from(schema.profile).where(eq(schema.profile.id, id)).limit(1);
@@ -15,6 +15,12 @@ export const getProfileByEmail = async (email: string) => {
 
   return profile;
 };
+
+export async function getProfilesByEmails(emails: string[]) {
+  if (emails.length === 0) return [];
+
+  return db.select().from(schema.profile).where(inArray(schema.profile.email, emails));
+}
 
 export const updateProfile = async (id: string, data: Partial<Omit<TProfile, 'id' | 'createdAt' | 'updatedAt'>>) => {
   const [updatedProfile] = await db.update(schema.profile).set(data).where(eq(schema.profile.id, id)).returning();

@@ -9,6 +9,7 @@
   import type { TLocale } from '@cio/db/types';
   import AIButton from '$features/course/components/lesson/ai-button.svelte';
   import type { Writable } from 'svelte/store';
+  import { saveDraft } from '$features/course/utils/lesson-draft';
 
   interface Props {
     mode?: (typeof MODES)[keyof typeof MODES];
@@ -33,12 +34,7 @@
     }
     lessonApi.translations[lessonId][lessonApi.currentLocale] = `${content}`;
 
-    try {
-      localStorage.setItem(`lesson-${lessonId}-${lessonApi.currentLocale}`, `${content}`);
-    } catch (error) {
-      console.error('Error saving lesson note to localStorage', error);
-    }
-
+    saveDraft(lessonId, lessonApi.currentLocale, `${content}`);
     lessonApi.isDirty = true;
   }
 

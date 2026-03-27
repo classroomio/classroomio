@@ -152,7 +152,7 @@
     await submissionApi.updateGrades(courseId, subId, {
       answers,
       total,
-      feedback,
+      feedback: feedback || undefined,
       statusId: STATUS.GRADED
     });
 
@@ -194,6 +194,8 @@
         feedback: feedback ?? submissionIdData[subId]?.feedback
       }
     };
+
+    handleModalClose();
 
     isSaving = false;
   }

@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import { TNewGroup, TNewGroupmember } from '@db/types';
-import { and, eq, isNotNull, or } from 'drizzle-orm';
+import { and, eq, inArray, isNotNull, or } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@db/drizzle';
@@ -21,6 +21,91 @@ export async function addGroupMember(values: TNewGroupmember) {
   } catch (error) {
     console.error('addGroupMember error:', error);
     throw new Error(`Failed to add group member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function addGroupMembers(values: TNewGroupmember[]) {
+  if (values.length === 0) return [];
+  try {
+    return db.insert(schema.groupmember).values(values).returning();
+  } catch (error) {
+    console.error('addGroupMembers error:', error);
+    throw new Error(`Failed to bulk add group members: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function getExistingGroupMembers(
+  pairs: Array<{ groupId: string; profileId: string }>
+): Promise<Set<string>> {
+  if (pairs.length === 0) return new Set();
+
+  try {
+    const groupIds = [...new Set(pairs.map((p) => p.groupId))];
+    const profileIds = [...new Set(pairs.map((p) => p.profileId))];
+
+    const rows = await db
+      .select({ groupId: schema.groupmember.groupId, profileId: schema.groupmember.profileId })
+      .from(schema.groupmember)
+      .where(and(inArray(schema.groupmember.groupId, groupIds), inArray(schema.groupmember.profileId, profileIds)));
+
+    return new Set(rows.map((r) => `${r.groupId}:${r.profileId}`));
+  } catch (error) {
+    console.error('getExistingGroupMembers error:', error);
+    throw new Error(
+      `Failed to check existing group members: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Enroll users in course groups, skipping any existing memberships.
+ * Returns the count of newly inserted memberships.
+ */
+export async function enrollUsersInCourseGroups(
+  groupIds: string[],
+  users: Array<{ profileId: string; email?: string }>,
+  roleId: number
+): Promise<number> {
+  if (groupIds.length === 0 || users.length === 0) return 0;
+
+  const pairs = users.flatMap((u) => groupIds.map((groupId) => ({ groupId, profileId: u.profileId })));
+  const existingSet = await getExistingGroupMembers(pairs);
+  const emailByProfile = new Map(users.map((u) => [u.profileId, u.email]));
+
+  const toInsert = pairs
+    .filter((p) => !existingSet.has(`${p.groupId}:${p.profileId}`))
+    .map((p) => ({
+      groupId: p.groupId,
+      roleId,
+      profileId: p.profileId,
+      email: emailByProfile.get(p.profileId) ?? undefined
+    }));
+
+  if (toInsert.length > 0) {
+    await addGroupMembers(toInsert);
+  }
+
+  return toInsert.length;
+}
+
+/**
+ * Checks if a profile is already a member of a specific group
+ * @param groupId Group ID
+ * @param profileId Profile ID
+ * @returns true if the user is already a member
+ */
+export async function isGroupMember(groupId: string, profileId: string): Promise<boolean> {
+  try {
+    const [existing] = await db
+      .select({ id: schema.groupmember.id })
+      .from(schema.groupmember)
+      .where(and(eq(schema.groupmember.groupId, groupId), eq(schema.groupmember.profileId, profileId)))
+      .limit(1);
+
+    return !!existing;
+  } catch (error) {
+    console.error('isGroupMember error:', error);
+    throw new Error(`Failed to check group membership: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

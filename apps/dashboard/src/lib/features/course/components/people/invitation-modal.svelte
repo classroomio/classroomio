@@ -13,19 +13,11 @@
   import { peopleApi } from '$features/course/api';
   import { orgApi } from '$features/org/api/org.svelte';
   import type { OrgTeamMember } from '$lib/utils/types/org';
-  import {
-    DEFAULT_INVITE_SETTINGS_STATE,
-    DEFAULT_STUDENT_INVITE_LINK_STATE,
-    inviteSettingsStore,
-    studentInviteLinkStore
-  } from './store';
-  import type { Tutor } from './types';
+  import type { OrgStudent, Tutor } from './types';
 
   import TutorSelectSection from './tutor-select-section.svelte';
-  import InviteSettingsSection from './invite-settings-section.svelte';
+  import ExistingStudentsSection from './existing-students-section.svelte';
   import BulkEmailSection from './bulk-email-section.svelte';
-  import InviteListSection from './invite-list-section.svelte';
-  import type { InviteListItem } from './types';
 
   let tutors = $state<Tutor[]>([]);
   let selectedIds = $state<string[]>([]);
@@ -36,21 +28,9 @@
   const selectedTutors = $derived(tutors.filter((t) => selectedIds.includes(t.id.toString())));
   const INVITE_MODAL = 'course.navItem.people.invite_modal';
 
-  let existingInvites = $state<InviteListItem[]>([]);
-  let isLoadingInvites = $state(false);
-  let activeTab = $state<'tutors' | 'students'>('tutors');
-  let activeStudentTab = $state<'email' | 'history'>('email');
-
-  async function loadInvites() {
-    if (!courseId) return;
-    isLoadingInvites = true;
-    try {
-      const invites = await peopleApi.listStudentInvites(courseId);
-      existingInvites = (invites || []) as InviteListItem[];
-    } finally {
-      isLoadingInvites = false;
-    }
-  }
+  let isLoadingStudents = $state(false);
+  let activeTab = $state<'tutors' | 'students'>('students');
+  const availableStudents = $derived.by(() => getAvailableStudents(orgApi.audience, courseApi.group.people));
 
   function getTutors(team: OrgTeamMember[]) {
     const existingTutors = courseApi?.group?.tutors || [];
@@ -65,6 +45,22 @@
       }));
   }
 
+  function getAvailableStudents(students: OrgStudent[], courseMembers: typeof courseApi.group.people) {
+    const enrolledStudentIds = new Set(
+      courseMembers
+        .filter((member) => Number(member.roleId) === ROLE.STUDENT)
+        .map((member) => member.profileId)
+        .filter((profileId): profileId is string => Boolean(profileId))
+    );
+
+    return students.filter((student) => {
+      if (!student.profileId) {
+        return false;
+      }
+      return !enrolledStudentIds.has(student.profileId);
+    });
+  }
+
   function setTutors(orgId: string | undefined) {
     if (!orgId) return;
     untrack(async () => {
@@ -74,6 +70,18 @@
         return;
       }
       tutors = getTutors(orgApi.teamMembers);
+    });
+  }
+
+  function loadStudents(orgId: string | undefined) {
+    if (!orgId) return;
+    untrack(async () => {
+      isLoadingStudents = true;
+      try {
+        await orgApi.getOrgAudience(orgId);
+      } finally {
+        isLoadingStudents = false;
+      }
     });
   }
 
@@ -105,11 +113,8 @@
   $effect(() => {
     if (!isOpen || !courseId) return;
     untrack(() => {
-      activeTab = 'tutors';
-      activeStudentTab = 'email';
-      inviteSettingsStore.set({ ...DEFAULT_INVITE_SETTINGS_STATE });
-      studentInviteLinkStore.set({ ...DEFAULT_STUDENT_INVITE_LINK_STATE });
-      void loadInvites();
+      activeTab = 'students';
+      void loadStudents($currentOrg.id);
     });
   });
 </script>
@@ -149,35 +154,8 @@
 
       <UnderlineTabs.Content value="students">
         <div class="mt-6 space-y-6">
-          <InviteSettingsSection />
-
-          <UnderlineTabs.Root bind:value={activeStudentTab}>
-            <UnderlineTabs.List class="flex flex-wrap">
-              <UnderlineTabs.Trigger value="email">
-                {$t(`${INVITE_MODAL}.direct_email_bulk`)}
-              </UnderlineTabs.Trigger>
-              <UnderlineTabs.Trigger value="history">
-                {$t(`${INVITE_MODAL}.existing_invites`)}
-              </UnderlineTabs.Trigger>
-            </UnderlineTabs.List>
-
-            <UnderlineTabs.Content value="email">
-              <div class="mt-6">
-                <BulkEmailSection {courseId} onInviteCreated={loadInvites} />
-              </div>
-            </UnderlineTabs.Content>
-
-            <UnderlineTabs.Content value="history">
-              <div class="mt-6">
-                <InviteListSection
-                  {courseId}
-                  invites={existingInvites}
-                  isLoading={isLoadingInvites}
-                  onRefresh={loadInvites}
-                />
-              </div>
-            </UnderlineTabs.Content>
-          </UnderlineTabs.Root>
+          <ExistingStudentsSection {courseId} students={availableStudents} isLoading={isLoadingStudents} />
+          <BulkEmailSection {courseId} />
         </div>
       </UnderlineTabs.Content>
     </UnderlineTabs.Root>

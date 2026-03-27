@@ -1,11 +1,12 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan, TPlan } from '@db/types';
+import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
 import {
   cancelOrganizationPlan,
   createOrganizationPlan,
   deleteOrganizationMember,
   getOrgIdBySiteName,
   getFirstOrganizationWithPlans,
+  getLatestOrgInvitesByEmails,
   getOrganizationAudience,
   getOrganizationBySiteName,
   getOrganizationTeam,
@@ -32,6 +33,8 @@ import { ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { getProfileById } from '@cio/db/queries/auth';
 import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/invite';
+import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
+import type { OrgAudienceMember } from '@api/types/org';
 
 /**
  * Creates a new organization with the current user as owner
@@ -116,12 +119,26 @@ export async function getOrgTeam(orgId: string) {
 /**
  * Gets organization audience (students)
  * @param orgId - The organization ID
- * @returns Array of student profiles
+ * @returns Audience members with invite status for profile-less rows
  */
-export async function getOrgAudience(orgId: string) {
+export async function getOrgAudience(orgId: string): Promise<OrgAudienceMember[]> {
   try {
     const audience = await getOrganizationAudience(orgId);
-    return audience;
+
+    const emailsWithoutProfile = audience.filter((m) => !m.profileId && m.email).map((m) => m.email.toLowerCase());
+
+    const invites = await getLatestOrgInvitesByEmails(orgId, emailsWithoutProfile);
+    const inviteByEmail = new Map(invites.map((i) => [i.email.toLowerCase(), i]));
+
+    return audience.map(
+      (member): OrgAudienceMember => ({
+        ...member,
+        status: deriveAudienceMemberStatus(
+          member.profileId,
+          member.email ? inviteByEmail.get(member.email.toLowerCase()) : undefined
+        )
+      })
+    );
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch organization audience',

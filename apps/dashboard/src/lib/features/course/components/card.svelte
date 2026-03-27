@@ -21,6 +21,7 @@
   import { calcCourseProgress, calcProgressRate } from '$features/course/utils/functions';
   import CardDropdown from './card-dropdown.svelte';
   import CoursePublishBadge from './course-publish-badge.svelte';
+  import CourseTagsOverflow from './course-tags-overflow.svelte';
   import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
   import type { OrgPublicCourses } from '$features/org/utils/types';
 
@@ -57,7 +58,7 @@
     title: course.title,
     type: course.type,
     description: course.description,
-    isPublished: course.isPublished,
+    isPublished: !!course.isPublished,
     pricingData: {
       cost: course.cost,
       discount: course.metadata?.discount || 0,
@@ -147,25 +148,14 @@
       </Item.Header>
 
       <Item.Content>
-        <Item.Title class="line-clamp-1 min-h-[44px] text-base!">
+        <Item.Title class="line-clamp-2 min-h-14 text-base!">
           {title}
         </Item.Title>
 
         <Item.Description class="min-h-[63px]">{description}</Item.Description>
-        <div class="ui:text-muted-foreground flex min-h-[12px] flex-wrap items-center gap-1">
-          {#if !isLMS && courseTags.length > 0}
-            {#each courseTags as tag (tag.id)}
-              <Item.SubDescription class="border-border inline-flex items-center gap-1.5 rounded-full border px-2">
-                <span
-                  class="ui:bg-primary/60 inline-block h-1.5 w-1.5 rounded-full"
-                  style={tag.color ? `background-color: ${tag.color}` : undefined}
-                  aria-hidden="true"
-                ></span>
-                <span>{tag.name}</span>
-              </Item.SubDescription>
-            {/each}
-          {/if}
-        </div>
+        {#if !isLMS}
+          <CourseTagsOverflow tags={courseTags} variant="card" />
+        {/if}
 
         <Separator class="my-3" />
 

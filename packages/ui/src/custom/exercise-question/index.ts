@@ -40,6 +40,7 @@ export { default as CheckboxPreview } from './renderers/checkbox/preview.svelte'
 export { default as TextareaPreview } from './renderers/textarea/preview.svelte';
 export { default as MatchingPreview } from './renderers/matching/preview.svelte';
 export { default as OrderingPreview } from './renderers/ordering/preview.svelte';
+export { default as OrderingDisplay } from './renderers/ordering/ordering-display.svelte';
 export { default as HotspotPreview } from './renderers/hotspot/preview.svelte';
 
 export { default as TrueFalseSubmission } from './renderers/true-false/submission.svelte';
