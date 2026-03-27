@@ -71,6 +71,7 @@
 
   async function handleDeleteCourse() {
     if (!$deleteCourseModal.id) return;
+    courseApi.success = false;
 
     $deleteCourseModal.isDeleting = true;
 

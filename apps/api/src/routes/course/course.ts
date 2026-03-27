@@ -108,7 +108,7 @@ export const courseRouter = new Hono()
 
       // Invalidate dash stats cache
       if (validatedData.organizationId) {
-        await invalidateCachePattern(`dash:stats:${validatedData.organizationId}*`);
+        await invalidateCachePattern(`dash:stats:${validatedData.organizationId}:*`);
       }
 
       return c.json(
@@ -359,7 +359,7 @@ export const courseRouter = new Hono()
         const result = await deleteCourse(courseId);
 
         if (orgId) {
-          await invalidateCachePattern(`dash:stats:${orgId}*`);
+          await invalidateCachePattern(`dash:stats:${orgId}:*`);
         }
 
         return c.json(
