@@ -12,5 +12,8 @@
       "enabled": true,
       "invocation_logs": true
     }
+  },
+  "secrets": {
+    "required": ["PRIVATE_SERVER_KEY"]
   }
 }

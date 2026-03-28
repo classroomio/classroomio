@@ -101,7 +101,7 @@
   $effect(() => {
     // this means the session cookie 'classroomio.session_data' expired and we need to trigger a new session
     // triggering a new session will update the session data in the cookies so that our hooks.server.ts doesn't always have to hit the DB when checking if user is logged in or not. Without the session cookie, every page navigation or route would always hit the database to check if user is logged in or not.
-    if (!data.locals.fromSessions && isSessionReady) {
+    if (!data?.locals?.fromSessions && isSessionReady) {
       authClient.getSession().then(() => {
         console.log('triggered new session');
       });
