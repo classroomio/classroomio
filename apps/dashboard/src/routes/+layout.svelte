@@ -6,7 +6,6 @@
   import { UpgradeModal, PageLoadProgress, PageRestricted } from '$features/ui';
   import { user } from '$lib/utils/store/user';
   import { setTheme } from '$lib/utils/functions/theme';
-  import { initOrgAnalytics } from '$lib/utils/services/posthog';
   import { setupCloudAnalytics } from '$lib/utils/functions/appSetup';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg, isOrgStudent } from '$lib/utils/store/org';
@@ -52,11 +51,6 @@
     $globalStore.isOrgSite = data.isOrgSite;
 
     currentOrg.set(data.org);
-
-    // Setup internal analytics
-    if (data.orgSiteName) {
-      initOrgAnalytics(data.orgSiteName);
-    }
 
     const theme = data.org?.theme;
     if (theme) {
