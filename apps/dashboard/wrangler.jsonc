@@ -14,6 +14,6 @@
     }
   },
   "secrets": {
-    "required": ["PRIVATE_SERVER_KEY"]
+    "required": ["PRIVATE_SERVER_KEY", "PUBLIC_SERVER_URL", "PUBLIC_IS_SELFHOSTED", "ALLOWED_EXTERNAL_DOMAINS"]
   }
 }
