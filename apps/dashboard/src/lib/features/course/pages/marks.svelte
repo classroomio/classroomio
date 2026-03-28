@@ -1,11 +1,10 @@
 <script lang="ts">
   import { Empty } from '@cio/ui/custom/empty';
   import UserXIcon from '@lucide/svelte/icons/user-x';
-  import * as Avatar from '@cio/ui/base/avatar';
+  import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import * as Table from '@cio/ui/base/table';
   import * as Tooltip from '@cio/ui/base/tooltip';
   import { t } from '$lib/utils/functions/translations';
-  import { shortenName } from '$lib/utils/functions/string';
   import { calculateStudentAverage, type MarksPageData, type ExerciseInfo } from '$features/course/utils/marks-utils';
   import TruncatedWithTooltip from '$features/course/components/truncated-with-tooltip.svelte';
 
@@ -70,15 +69,11 @@
                 class="sticky left-0 min-w-[200px] border-r border-gray-200 bg-gray-50 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-800/80"
               >
                 <div class="flex items-center gap-2">
-                  <Avatar.Root class="size-6! shrink-0 rounded-full">
-                    <Avatar.Image
-                      src={student.profile?.avatarUrl ?? undefined}
-                      alt={student.profile?.fullname ?? 'Student'}
-                    />
-                    <Avatar.Fallback class="ui:bg-muted ui:text-muted-foreground rounded-full">
-                      {shortenName(student.profile?.fullname) ?? 'S'}
-                    </Avatar.Fallback>
-                  </Avatar.Root>
+                  <UserAvatar
+                    src={student.profile?.avatarUrl}
+                    alt={student.profile?.fullname ?? 'Student'}
+                    class="size-6! shrink-0"
+                  />
                   <div class="min-w-0 flex-1">
                     <p class="ui:text-foreground truncate text-sm font-medium">
                       {student.profile?.fullname ?? '-'}

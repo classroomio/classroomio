@@ -2,9 +2,7 @@
   import { untrack } from 'svelte';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
-  import UserIcon from '@lucide/svelte/icons/user';
-
-  import * as Avatar from '@cio/ui/base/avatar';
+  import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { DeleteModal } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
@@ -98,14 +96,7 @@
   </div>
   <div>
     <div class="flex h-full items-start gap-3">
-      <Avatar.Root class="mt-2 size-6!">
-        {#if $profile.avatarUrl}
-          <Avatar.Image src={$profile.avatarUrl} alt={$profile.fullname ? $profile.fullname : 'User'} />
-        {/if}
-        <Avatar.Fallback>
-          <UserIcon class="ui:size-3 ui:text-muted-foreground" />
-        </Avatar.Fallback>
-      </Avatar.Root>
+      <UserAvatar src={$profile.avatarUrl} alt={$profile.fullname ?? 'User'} class="mt-2 size-6!" />
       <div class="h-full w-full">
         <TextareaField
           label={$t('course.navItem.lessons.comments.text_area_title')}
@@ -125,14 +116,7 @@
   <div class="my-5">
     {#each comments as commentItem (commentItem.id)}
       <div class="mt-2 flex items-start gap-3 pb-2">
-        <Avatar.Root class="mt-2 size-6!">
-          {#if commentItem.avatar}
-            <Avatar.Image src={commentItem.avatar} alt={commentItem.name ? commentItem.name : 'User'} />
-          {/if}
-          <Avatar.Fallback>
-            <UserIcon class="ui:size-3 ui:text-muted-foreground" />
-          </Avatar.Fallback>
-        </Avatar.Root>
+        <UserAvatar src={commentItem.avatar} alt={commentItem.name ?? 'User'} class="mt-2 size-6!" />
 
         <div class="w-full rounded-md border px-3 py-2 dark:border-neutral-700">
           <div class="flex items-center justify-between gap-2">

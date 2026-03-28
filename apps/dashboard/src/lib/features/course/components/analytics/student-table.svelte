@@ -11,7 +11,7 @@
   import { t } from '$lib/utils/functions/translations';
 
   import EmptyState from './empty-state.svelte';
-  import * as Avatar from '@cio/ui/base/avatar';
+  import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import type { CourseAnalytics } from '$features/course/utils/types';
 
   interface Props {
@@ -80,17 +80,11 @@
               class="sticky left-0 z-10 min-w-[200px] bg-white px-4 py-3 transition-colors group-hover:bg-gray-50 dark:bg-neutral-800 dark:group-hover:bg-gray-700"
             >
               <div class="flex items-center gap-3">
-                <Avatar.Root class="size-8">
-                  {#if student.profile.avatar_url}
-                    <Avatar.Image
-                      src={student.profile.avatar_url}
-                      alt={student.profile.fullname ? student.profile.fullname : $t('analytics.student')}
-                    />
-                  {/if}
-                  <Avatar.Fallback>
-                    <UserIcon class="ui:size-4 ui:text-muted-foreground" />
-                  </Avatar.Fallback>
-                </Avatar.Root>
+                <UserAvatar
+                  src={student.profile.avatar_url}
+                  alt={student.profile.fullname ?? $t('analytics.student')}
+                  class="size-8"
+                />
                 <div class="min-w-0 flex-1">
                   <p class="truncate font-medium text-gray-900 dark:text-white">
                     {student.profile.fullname}

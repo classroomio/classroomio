@@ -288,9 +288,7 @@ export const profile = pgTable(
     id: uuid().primaryKey().notNull(),
     fullname: text().notNull(),
     username: text().notNull(),
-    avatarUrl: text('avatar_url').default(
-      'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/avatar.png'
-    ),
+    avatarUrl: text('avatar_url'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     email: varchar(),
@@ -591,6 +589,11 @@ export const course = pgTable(
     isPublished: boolean('is_published').default(false),
     isCertificateDownloadable: boolean('is_certificate_downloadable').default(false),
     certificateTheme: text('certificate_theme'),
+    certificationDeadline: timestamp('certification_deadline', { withTimezone: true, mode: 'string' }),
+    certificationThreshold: integer('certification_threshold').default(100),
+    certificationRequiredExerciseId: uuid('certification_required_exercise_id'),
+    certificationExerciseMinScorePercent: integer('certification_exercise_min_score_percent'),
+    certificationEmailMessage: text('certification_email_message'),
     status: text().default('ACTIVE').notNull(),
     type: courseType().default('LIVE_CLASS')
   },
@@ -904,7 +907,8 @@ export const exercise = pgTable(
       .primaryKey()
       .notNull(),
     isUnlocked: boolean('is_unlocked').default(true),
-    dueBy: timestamp('due_by', { mode: 'string' })
+    dueBy: timestamp('due_by', { mode: 'string' }),
+    allowMultipleAttempts: boolean('allow_multiple_attempts').default(false).notNull()
   },
   (table) => [
     foreignKey({
@@ -938,7 +942,9 @@ export const groupmember = pgTable(
     profileId: uuid('profile_id'),
     email: varchar(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-    assignedStudentId: varchar('assigned_student_id')
+    assignedStudentId: varchar('assigned_student_id'),
+    certificateEarnedAt: timestamp('certificate_earned_at', { withTimezone: true, mode: 'string' }),
+    certificationEmailSentAt: timestamp('certification_email_sent_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({

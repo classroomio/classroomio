@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Spinner } from '@cio/ui/base/spinner';
   import { ExerciseQuestion } from '@cio/ui';
+  import { UserAvatar } from '@cio/ui/custom/user-avatar';
 
   import { submissions } from './store';
   import { questionnaire } from '../store';
@@ -16,9 +17,6 @@
   }
 
   let { isLoading = $bindable(false) }: Props = $props();
-
-  const defaultImg =
-    'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=60&w=800&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YXZhdGFyc3xlbnwwfHwwfHx8Mg%3D%3D';
 
   let studentSelected = $state(0);
   const questionLabels = $derived(getExerciseQuestionLabels());
@@ -57,10 +55,10 @@
             studentSelected == i ? 'border-primary-700 border-[3px]' : ''
           }`}
         >
-          <img
-            src={student.groupmember?.profile.avatarUrl ? student.groupmember.profile.avatarUrl : defaultImg}
+          <UserAvatar
+            src={student.groupmember?.profile.avatarUrl}
             alt={$t('course.navItem.lessons.exercises.all_exercises.analytics.individual.student_avatar')}
-            class="m-1 max-h-10 w-10 rounded-full bg-white"
+            class="m-1 size-10"
           />
         </div>
         <p class="line-clamp-2 w-20 leading-4 whitespace-pre-wrap">

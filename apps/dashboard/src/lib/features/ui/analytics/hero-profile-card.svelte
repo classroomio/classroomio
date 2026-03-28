@@ -1,11 +1,10 @@
 <script lang="ts">
-  import * as Avatar from '@cio/ui/base/avatar';
+  import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
   import type { UserAnalytics } from '$lib/utils/types/analytics';
   import AlarmClockIcon from '@lucide/svelte/icons/alarm-clock';
   import MailIcon from '@lucide/svelte/icons/mail';
-  import UserIcon from '@lucide/svelte/icons/user';
 
   interface Props {
     user: UserAnalytics['user'];
@@ -16,14 +15,7 @@
 
 <div class="rounded-md border p-5">
   <div class="flex w-full flex-col items-center justify-start gap-4 text-start md:flex-row">
-    <Avatar.Root class="h-16 w-16">
-      {#if user.avatarUrl}
-        <Avatar.Image src={user.avatarUrl} alt={user.fullName ? user.fullName : 'User'} />
-      {/if}
-      <Avatar.Fallback>
-        <UserIcon class="ui:size-8 ui:text-muted-foreground" />
-      </Avatar.Fallback>
-    </Avatar.Root>
+    <UserAvatar src={user.avatarUrl} alt={user.fullName ?? 'User'} class="h-16 w-16" />
     <div class="flex flex-col space-y-2">
       <p class="text-center text-2xl md:text-left dark:text-white">
         {user.fullName}

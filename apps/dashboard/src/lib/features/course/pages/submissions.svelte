@@ -10,6 +10,7 @@
   import { t } from '$lib/utils/functions/translations';
 
   import { Chip } from '@cio/ui/custom/chip';
+  import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import MarkExerciseModal from '$features/course/components/exercise/mark-exercise-modal.svelte';
   import { STATUS } from '$features/course/components/exercise/constants';
   import { onMount } from 'svelte';
@@ -242,7 +243,7 @@
               class="mb-2 flex w-full cursor-pointer items-center text-black"
               href={`${page.url.pathname}?submissionId=${item.id}`}
             >
-              <img alt="Student avatar" class="block h-6 w-6 rounded-full" src={item.student.avatarUrl} />
+              <UserAvatar src={item.student.avatarUrl} alt="Student avatar" class="h-6 w-6" />
               <p class="ml-2 text-sm dark:text-white">
                 {item.student.username}
               </p>

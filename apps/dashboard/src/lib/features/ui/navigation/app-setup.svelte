@@ -21,7 +21,7 @@
       if (item.id === 'profile') {
         return {
           ...item,
-          is_completed: !$profile.avatarUrl?.includes('avatars/avatar.png')
+          is_completed: !$profile.avatarUrl?.includes('avatars/avatar.png') || !!$profile.avatarUrl
         };
       }
       return item;
@@ -46,7 +46,7 @@
             </Button>
           </div>
 
-          {#each setupList as item}
+          {#each setupList as item (item.id)}
             <div class="flex items-center gap-2 text-sm">
               {#if item.is_completed}
                 <BadgeCheckIcon class="custom size-4 shrink-0 text-green-600! opacity-50" />

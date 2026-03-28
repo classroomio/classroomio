@@ -12,6 +12,7 @@
   import { newsfeedApi } from '$features/course/api';
 
   import { Button } from '@cio/ui/base/button';
+  import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import type { Feed } from '$features/course/utils/types';
   import type { NewsfeedCommentsByFeedId } from '$features/course/api';
 
@@ -193,13 +194,7 @@
 
   <!-- Input for new comment -->
   <div class="flex items-center justify-between gap-2">
-    <div class="h-7 w-7">
-      <img
-        src={author.avatarUrl}
-        alt={$t('course.navItem.news_feed.user_avatar_alt')}
-        class="h-full w-full rounded-full object-cover"
-      />
-    </div>
+    <UserAvatar src={author.avatarUrl} alt={$t('course.navItem.news_feed.user_avatar_alt')} class="size-7" />
     <div class="flex-1">
       <input
         type="text"

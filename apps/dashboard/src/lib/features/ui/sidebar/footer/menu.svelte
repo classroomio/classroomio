@@ -7,8 +7,8 @@
   import BellPlusIcon from '@lucide/svelte/icons/bell-plus';
   import BadgeHelpIcon from '@lucide/svelte/icons/badge-help';
   import LogOutIcon from '@lucide/svelte/icons/log-out';
-  import * as Avatar from '@cio/ui/base/avatar';
   import * as Sidebar from '@cio/ui/base/sidebar';
+  import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import { useSidebar } from '@cio/ui/base/sidebar';
   import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
   import ThemeToggle from './theme-toggle.svelte';
@@ -25,10 +25,7 @@
 
 -->
 {#snippet avatarblock()}
-  <Avatar.Root>
-    <Avatar.Image src={$profile.avatarUrl} alt={$profile.fullname} />
-    <Avatar.Fallback class="rounded-lg">{$profile.fullname.slice(0, 2)}</Avatar.Fallback>
-  </Avatar.Root>
+  <UserAvatar src={$profile.avatarUrl} alt={$profile.fullname} />
   <div class="grid flex-1 text-left text-sm leading-tight font-normal">
     <span class="truncate">{$profile.fullname}</span>
     <span class="truncate text-xs">{$profile.email}</span>

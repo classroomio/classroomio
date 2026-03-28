@@ -14,6 +14,7 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { Button } from '@cio/ui/base/button';
+  import { UserAvatar } from '@cio/ui/custom/user-avatar';
 
   // import { useCompletion } from 'ai/svelte';
   // import { QUESTION_TYPE } from '$features/ui/question/constants';
@@ -330,10 +331,10 @@
             </p>
             {#if data.student}
               <div class="flex flex-row items-center justify-center rounded-md bg-gray-100 p-[6px] dark:bg-neutral-700">
-                <img
-                  alt={$t('course.navItem.submissions.grading_modal.student_avatar')}
-                  class="flex h-5 w-5 rounded-full"
+                <UserAvatar
                   src={data.student.avatarUrl}
+                  alt={$t('course.navItem.submissions.grading_modal.student_avatar')}
+                  class="h-5 w-5"
                 />
                 <p class="ml-2 line-clamp-1 text-sm font-semibold dark:text-white">
                   {data.student.fullname}

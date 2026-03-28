@@ -29,7 +29,6 @@ export async function seedProfile({ usersData }: { usersData: TUserSeedData[] })
       fullname: resolveFullName(user),
       username: `${user.email.split('@')[0]}${Date.now()}`,
       email: user.email,
-      avatarUrl: 'https://pgrest.classroomio.com/storage/v1/object/public/avatars/avatar.png',
       canAddCourse: true,
       isEmailVerified: true
     }))

@@ -13,7 +13,7 @@
   import { currentOrgPath } from '$lib/utils/store/org';
 
   import { CreateCourseButton } from '$features/course/components';
-  import * as Avatar from '@cio/ui/base/avatar';
+  import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import { Progress } from '@cio/ui/base/progress';
   import { Button } from '@cio/ui/base/button';
   import { WelcomeModal } from '$features/onboarding/components';
@@ -146,14 +146,7 @@
               {#each enrollments as enrollment, i (i)}
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-2">
-                    <Avatar.Root class="h-6 w-6">
-                      {#if enrollment.avatarUrl}
-                        <Avatar.Image src={enrollment.avatarUrl} alt={enrollment.name ? enrollment.name : 'User'} />
-                      {/if}
-                      <Avatar.Fallback>
-                        <UserIcon class="ui:size-3 ui:text-muted-foreground" />
-                      </Avatar.Fallback>
-                    </Avatar.Root>
+                    <UserAvatar src={enrollment.avatarUrl} alt={enrollment.name ?? 'User'} class="h-6 w-6" />
 
                     <div class="min-h-[45px] space-y-1">
                       <p class="text-sm leading-none capitalize">{enrollment.name}</p>

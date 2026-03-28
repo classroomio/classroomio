@@ -31,7 +31,7 @@
       if (item.id === 'profile') {
         return {
           ...item,
-          is_completed: !$profile.avatarUrl?.includes('avatars/avatar.png')
+          is_completed: !$profile.avatarUrl?.includes('avatars/avatar.png') || !!$profile.avatarUrl
         };
       }
       return item;

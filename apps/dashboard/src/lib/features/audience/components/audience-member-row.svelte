@@ -1,10 +1,9 @@
 <script lang="ts">
   import * as Table from '@cio/ui/base/table';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
-  import * as Avatar from '@cio/ui/base/avatar';
   import { Checkbox } from '@cio/ui/base/checkbox';
   import { Badge } from '@cio/ui/base/badge';
-  import UserIcon from '@lucide/svelte/icons/user';
+  import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import type { OrganizationAudienceMember } from '$features/org/utils/types';
   import { t } from '$lib/utils/functions/translations';
@@ -40,26 +39,12 @@
   <Table.Cell>
     {#if memberDetailHref}
       <a href={memberDetailHref} class="ui:text-primary flex items-center gap-2 hover:underline">
-        <Avatar.Root class="h-5 w-5">
-          {#if row.avatarUrl}
-            <Avatar.Image src={row.avatarUrl} alt={row.name ? row.name : 'User'} />
-          {/if}
-          <Avatar.Fallback>
-            <UserIcon class="ui:size-3 ui:text-muted-foreground" />
-          </Avatar.Fallback>
-        </Avatar.Root>
+        <UserAvatar src={row.avatarUrl} alt={row.name ?? 'User'} class="h-5 w-5" />
         {row.name}
       </a>
     {:else}
       <span class="flex items-center gap-2">
-        <Avatar.Root class="h-5 w-5">
-          {#if row.avatarUrl}
-            <Avatar.Image src={row.avatarUrl} alt={row.name ? row.name : 'User'} />
-          {/if}
-          <Avatar.Fallback>
-            <UserIcon class="ui:size-3 ui:text-muted-foreground" />
-          </Avatar.Fallback>
-        </Avatar.Root>
+        <UserAvatar src={row.avatarUrl} alt={row.name ?? 'User'} class="h-5 w-5" />
         {row.name}
       </span>
     {/if}
