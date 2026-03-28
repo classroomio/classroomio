@@ -15,7 +15,7 @@
   import { MetaTags } from 'svelte-meta-tags';
   import { authClient } from '$lib/utils/services/auth/client';
   import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
-
+  import { env } from '$env/dynamic/public';
   import { ModeWatcher } from '@cio/ui/base/dark-mode';
 
   import '../app.css';
@@ -109,6 +109,8 @@
   });
 
   $effect(() => {
+    console.log('env public server url', env.PUBLIC_SERVER_URL);
+    console.log('env public is selfhosted', env.PUBLIC_IS_SELFHOSTED);
     if (isSessionReady && !appInitApi.isInitializedAndReady && !appInitApi.loading) {
       console.log('setting up account with session data');
 
