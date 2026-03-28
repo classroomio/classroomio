@@ -2,8 +2,59 @@ import { Context } from 'runed';
 import type { ReadableBoxedValues, WritableBoxedValues } from 'svelte-toolbelt';
 import type { CodeRootProps } from './types';
 import { highlighter } from './shiki';
-import DOMPurify from 'isomorphic-dompurify';
 import type { HighlighterCore } from 'shiki';
+import sanitizeHtml from 'sanitize-html';
+import type { IOptions as SanitizeHtmlOptions } from 'sanitize-html';
+
+/** Shiki HTML only; avoids isomorphic-dompurify/jsdom (CommonJS `require` breaks Vite ESM SSR). */
+const SHIKI_HIGHLIGHT_SANITIZE: SanitizeHtmlOptions = {
+  allowedTags: ['pre', 'code', 'span', 'div', 'br'],
+  allowedAttributes: {
+    pre: ['class', 'style', 'tabindex'],
+    code: ['class', 'style'],
+    span: ['class', 'style'],
+    div: ['class', 'style'],
+    br: ['class', 'style']
+  },
+  allowedStyles: {
+    '*': {
+      color: [
+        /^#[0-9a-f]{3,8}$/i,
+        /^rgb\(/i,
+        /^rgba\(/i,
+        /^hsl\(/i,
+        /^hsla\(/i,
+        /^var\(/,
+        /^inherit$/i,
+        /^initial$/i,
+        /^currentColor$/i,
+        /^transparent$/i,
+        /^unset$/i,
+        /^color-mix\(/i
+      ],
+      'background-color': [
+        /^#[0-9a-f]{3,8}$/i,
+        /^rgb\(/i,
+        /^rgba\(/i,
+        /^hsl\(/i,
+        /^hsla\(/i,
+        /^var\(/,
+        /^inherit$/i,
+        /^initial$/i,
+        /^transparent$/i,
+        /^unset$/i,
+        /^color-mix\(/i
+      ],
+      'font-style': [/^[\w-]+$/, /^var\(/],
+      'font-weight': [/^\d+$/, /^[\w-]+$/, /^var\(/],
+      'text-decoration': [/^[\w\s-]+$/, /^var\(/]
+    }
+  }
+};
+
+function sanitizeShikiHtml(html: string): string {
+  return sanitizeHtml(html, SHIKI_HIGHLIGHT_SANITIZE);
+}
 
 type CodeOverflowStateProps = WritableBoxedValues<{
   collapsed: boolean;
@@ -74,7 +125,7 @@ class CodeRootState {
     return this.opts.code.current;
   }
 
-  highlighted = $derived(DOMPurify.sanitize(this.highlight(this.code) ?? ''));
+  highlighted = $derived(sanitizeShikiHtml(this.highlight(this.code) ?? ''));
 }
 
 function within(num: number, range: CodeRootProps['highlight']) {
