@@ -7,6 +7,10 @@
   import * as Avatar from '@cio/ui/base/avatar';
 
   const errorCode = $derived(new URLSearchParams(page.url.search).get('error'));
+
+  function goHome() {
+    window.location.href = '/';
+  }
 </script>
 
 <svelte:head>
@@ -36,6 +40,6 @@
       find more information about the error here.
     </Card.Description>
 
-    <Button href="/" class="">Go Home</Button>
+    <Button onclick={goHome} class="">Go Home</Button>
   </div>
 </AuthUI>

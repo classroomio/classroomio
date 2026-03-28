@@ -20,7 +20,7 @@ export default ({ mode }) => {
       sourcemap: false
     },
     ssr: {
-      noExternal: ['svelte-sonner', 'layerchart', 'svelte-toolbelt']
+      noExternal: ['svelte-sonner', 'layerchart', 'svelte-toolbelt', 'tldts', 'tldts-core']
     },
     optimizeDeps: {
       entries: ['src/routes/**/+*.{js,ts,svelte}'],

@@ -7,6 +7,10 @@
   const isNotFound = $derived(page.status === 404);
 
   console.error('error message', page.error?.message);
+
+  function goHome() {
+    window.location.href = '/';
+  }
 </script>
 
 <svelte:head>
@@ -23,7 +27,7 @@
     showLogo={true}
   >
     <div class="flex gap-2">
-      <Button href="/">Go Home</Button>
+      <Button onclick={goHome}>Go Home</Button>
     </div>
   </Empty>
 {:else}
@@ -37,7 +41,7 @@
   >
     <div class="flex gap-2">
       <Button href="https://classroomio.com/tools" variant="secondary">Try Free tools</Button>
-      <Button href="/">Go Home</Button>
+      <Button onclick={goHome}>Go Home</Button>
     </div>
   </Empty>
 {/if}
