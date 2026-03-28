@@ -5,15 +5,15 @@ const SUPPORTED_LANGUAGES = config?.loaders?.map((loader) => loader.locale) || [
 export const load = async ({ url, data }) => {
   const { pathname } = url;
 
-  const serverLang = data.serverLang?.split?.('-')?.[0] || 'en';
-  const persistedLocale = data.localeCookie || getPersistedLocale();
+  const serverLang = data?.serverLang?.split?.('-')?.[0] || 'en';
+  const persistedLocale = data?.localeCookie || getPersistedLocale();
 
-  const userLocale = persistedLocale || data.locals?.profile?.locale || getInitialLocale(serverLang);
+  const userLocale = persistedLocale || data?.locals?.profile?.locale || getInitialLocale(serverLang);
 
   const initLocale = getInitialLocale(userLocale);
   await loadTranslations(initLocale, pathname); // keep this just before the `return`
 
-  return data;
+  return data ?? {};
 };
 
 function getInitialLocale(lang: string): string {
