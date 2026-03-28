@@ -1,5 +1,5 @@
 {
-  "name": "cio-dashboard",
+  "name": "selfhosted-ui",
   "main": ".svelte-kit/cloudflare/_worker.js",
   "compatibility_flags": ["nodejs_compat"],
   "compatibility_date": "2026-03-13",
