@@ -34,7 +34,7 @@
 
     setupCloudAnalytics();
 
-    if (data.locals.user) {
+    if (data?.locals?.user) {
       user.set({
         ...$user,
         isLoggedIn: true,
