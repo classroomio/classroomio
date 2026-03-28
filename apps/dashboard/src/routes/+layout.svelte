@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
 
-  import { OrgLandingPage, PlayQuiz } from '$features/org';
+  import { OrgLandingPage } from '$features/org';
   import { Snackbar } from '$features/ui';
   import { UpgradeModal, PageLoadProgress, PageRestricted } from '$features/ui';
   import { user } from '$lib/utils/store/user';
@@ -144,8 +144,6 @@
 
   {#if data.org?.isRestricted || $currentOrg.isRestricted}
     <PageRestricted />
-  {:else if data.skipAuth}
-    <PlayQuiz />
   {:else if data.isOrgSite && data.org && path === '/'}
     <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
   {:else}

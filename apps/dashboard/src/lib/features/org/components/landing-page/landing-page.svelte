@@ -131,6 +131,13 @@
   <title>
     {!org?.name ? '' : `${org.name}'s `}{$t('course.navItem.landing_page.landing_page')}
   </title>
+  {#if $landingPageSettings.header.background?.show !== false}
+    <link
+      rel="preload"
+      as="image"
+      href={$landingPageSettings.header.background?.image || '/images/org-landingpage-banner.jpeg'}
+    />
+  {/if}
 </svelte:head>
 
 <PoweredBy />
@@ -201,7 +208,14 @@
                     />
                   </div>
                 {:else}
-                  <img class="rounded-md" src={$landingPageSettings.header?.banner?.image} alt="landing page banner" />
+                  <img
+                    class="rounded-md"
+                    src={$landingPageSettings.header?.banner?.image}
+                    alt="landing page banner"
+                    width="640"
+                    height="427"
+                    fetchpriority="high"
+                  />
                 {/if}
               </div>
             </div>
@@ -245,7 +259,14 @@
           </div>
 
           <div class="image">
-            <img src={$landingPageSettings.aboutUs.imageUrl} alt="Our Story" class=" max-h-[450px] rounded-2xl" />
+            <img
+              src={$landingPageSettings.aboutUs.imageUrl}
+              alt="Our Story"
+              class="max-h-[450px] rounded-2xl"
+              width="900"
+              height="562"
+              loading="lazy"
+            />
           </div>
         </div>
       </section>
@@ -477,7 +498,9 @@
                 src={org.avatarUrl || '/logo-192.png'}
                 alt={`${org.name} logo`}
                 class="mx-auto inline-block max-h-10 w-10 rounded"
-                data-atf="1"
+                width="40"
+                height="40"
+                loading="lazy"
               />
               <h3 class="ml-3 text-xl text-black">{org.name}</h3>
             </a>
