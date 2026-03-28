@@ -13,9 +13,9 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
       redirect: false
     },
     banner: {
-      video: 'https://www.youtube.com/watch?v=qqAYW7uxErI',
-      image: '',
-      type: 'video',
+      video: '',
+      image: '/images/learn-on-cio.jpg',
+      type: 'image',
       show: true
     },
     background: {
