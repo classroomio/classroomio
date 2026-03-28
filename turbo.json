@@ -35,8 +35,6 @@
       "persistent": true
     },
     "clean": { "cache": false },
-    "db:generate": { "cache": false },
-    "db:push": { "cache": false },
-    "db:format": { "cache": false }
+    "db": { "cache": false }
   }
 }
