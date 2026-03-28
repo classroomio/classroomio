@@ -223,35 +223,37 @@
           {/if}
         </div>
 
-        <div class="my-8">
+        <div class="my-2">
           {pluralize($t('community.answers'), communityApi.question?.comments.length ?? 0, true)}
         </div>
 
-        <div class="space-y-2">
-          {#each communityApi.question?.comments as commentItem (commentItem.id)}
-            <CommunityCommentItem
-              comment={commentItem}
-              isVoted={!!voted.comment[commentItem.id]}
-              {isValidAnswer}
-              isAuthorOrAdmin={commentItem.author?.id === $profile.id || $isOrgAdmin === true}
-              upVote={() => {
-                if (voted.comment[commentItem.id]) return;
+        {#if !!communityApi.question?.comments?.length}
+          <div class="space-y-2">
+            {#each communityApi.question?.comments as commentItem (commentItem.id)}
+              <CommunityCommentItem
+                comment={commentItem}
+                isVoted={!!voted.comment[commentItem.id]}
+                {isValidAnswer}
+                isAuthorOrAdmin={commentItem.author?.id === $profile.id || $isOrgAdmin === true}
+                upVote={() => {
+                  if (voted.comment[commentItem.id]) return;
 
-                voted.comment[commentItem.id] = true;
+                  voted.comment[commentItem.id] = true;
 
-                communityApi.upvotePost({
-                  id: commentItem.id,
-                  isQuestion: false
-                });
-              }}
-              onDelete={() => {
-                console.log('deleting commentItem', commentItem);
-                communityApi.deleteCommentState.shouldDelete = true;
-                communityApi.deleteCommentState.commentId = commentItem.id;
-              }}
-            />
-          {/each}
-        </div>
+                  communityApi.upvotePost({
+                    id: commentItem.id,
+                    isQuestion: false
+                  });
+                }}
+                onDelete={() => {
+                  console.log('deleting commentItem', commentItem);
+                  communityApi.deleteCommentState.shouldDelete = true;
+                  communityApi.deleteCommentState.commentId = commentItem.id;
+                }}
+              />
+            {/each}
+          </div>
+        {/if}
 
         <hr />
 
