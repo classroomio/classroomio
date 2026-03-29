@@ -291,6 +291,18 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'textarea.edit.placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.textarea.edit.placeholder'
     ),
+    'textarea.edit.min_characters_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.textarea.edit.min_characters_label'
+    ),
+    'textarea.edit.min_characters_placeholder': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.textarea.edit.min_characters_placeholder'
+    ),
+    'textarea.edit.max_characters_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.textarea.edit.max_characters_label'
+    ),
+    'textarea.edit.max_characters_placeholder': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.textarea.edit.max_characters_placeholder'
+    ),
     'textarea.take.placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.textarea.take.placeholder'
     ),

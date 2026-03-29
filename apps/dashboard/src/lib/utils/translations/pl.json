@@ -520,7 +520,7 @@
       "send_email": "Wyślij wiadomość e-mail z zaproszeniem do zaimportowanych użytkowników",
       "submit": "Importuj użytkowników",
       "back": "Powrót do Publiczności",
-      "snackbar_success": "Zaimportowani użytkownicy: {imported} ({skipped} już istniało, wysłano e-maile: {emailsSent})",
+      "snackbar_success": "{imported} nowych zaproszeń, {assigned} istniejących studentów z dostępem do kursu, {pendingInvitesRenewed} odnowionych oczekujących zaproszeń (wysłano e-maile: {emailsSent})",
       "snackbar_no_emails": "Proszę podać przynajmniej jeden adres e-mail",
       "snackbar_failed": "Nie udało się zaimportować użytkowników"
     }
@@ -1164,10 +1164,17 @@
             "shared_question": {
               "textarea": {
                 "take": {
-                  "placeholder": "Napisz swoją odpowiedź"
+                  "placeholder": "Napisz swoją odpowiedź",
+                  "min_error": "Answer must be at least {min} characters.",
+                  "max_error": "Answer must be at most {max} characters.",
+                  "range_error": "Answer must be between {min} and {max} characters."
                 },
                 "edit": {
-                  "placeholder": "Uczniowie będą odpowiadać za pomocą długiego tekstu"
+                  "placeholder": "Uczniowie będą odpowiadać za pomocą długiego tekstu",
+                  "min_characters_label": "Minimum characters",
+                  "min_characters_placeholder": "Minimum characters",
+                  "max_characters_label": "Maximum characters",
+                  "max_characters_placeholder": "Maximum characters"
                 }
               },
               "hotspot": {

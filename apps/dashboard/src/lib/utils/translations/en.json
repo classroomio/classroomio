@@ -983,6 +983,18 @@
       "deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
       "threshold_label": "Minimum completion (%)",
       "threshold_helper": "Combined lesson and exercise progress required to earn the certificate (0–100). Default is 100%.",
+      "final_exercise_label": "Final exercise (optional)",
+      "final_exercise_none": "None — no extra exercise score",
+      "final_exercise_helper": "When set, students must reach at least the minimum score on this exercise (best attempt counts) in addition to the completion percentage above.",
+      "min_exercise_score_label": "Minimum score on final exercise (%)",
+      "min_exercise_score_helper": "Score is a percentage of the total points possible on that exercise (0–100).",
+      "blocker_progress": "Your course progress is {current}%; {required}% is required.",
+      "blocker_deadline": "The certification deadline has passed.",
+      "blocker_no_content": "This course has no lessons or exercises to complete.",
+      "blocker_final_not_submitted": "Submit the required exercise \"{exerciseTitle}\" to qualify for the certificate.",
+      "blocker_final_pending": "Your attempt on \"{exerciseTitle}\" is still being graded.",
+      "blocker_final_score": "Your best score on \"{exerciseTitle}\" is {bestPercent}%; {requiredPercent}% is required.",
+      "blocker_final_misconfigured": "The certification exercise \"{exerciseTitle}\" has no points configured; ask your instructor to fix it.",
       "email_message_label": "Certification email message",
       "email_message_helper": "Optional message shown in the email when a student meets the requirements. A link to the certificate page is always included.",
       "email_message_placeholder": "e.g. We are proud of your progress — keep learning!"
@@ -1268,6 +1280,10 @@
           "all_exercises": {
             "heading": "All Exercise",
             "questions": "Questions",
+            "settings": "Settings",
+            "settings_allow_multiple": "Allow multiple attempts",
+            "settings_allow_multiple_helper": "Students can submit more than once and review past attempts on the results screen.",
+            "settings_save": "Save settings",
             "submissions": "Submissions",
             "save": "Save",
             "preview": "Preview",
@@ -1340,6 +1356,10 @@
               }
             },
             "view_mode": {
+              "attempt_counter": "Attempt {current} of {total}",
+              "previous_try": "Previous attempt",
+              "next_try": "Next attempt",
+              "try_again": "Try again",
               "no_question": "No question added for this exercise",
               "empty_description": "Click the Edit button to add.",
               "empty_edit_hint_prefix": "Click the ",
@@ -1578,11 +1598,18 @@
                 }
               },
               "textarea": {
-                "edit": {
-                  "placeholder": "Learners will answer with long-form text"
-                },
                 "take": {
-                  "placeholder": "Write your answer"
+                  "placeholder": "Write your answer",
+                  "min_error": "Answer must be at least {min} characters.",
+                  "max_error": "Answer must be at most {max} characters.",
+                  "range_error": "Answer must be between {min} and {max} characters."
+                },
+                "edit": {
+                  "placeholder": "Learners will answer with long-form text",
+                  "min_characters_label": "Minimum characters",
+                  "min_characters_placeholder": "Minimum characters",
+                  "max_characters_label": "Maximum characters",
+                  "max_characters_placeholder": "Maximum characters"
                 }
               }
             }
@@ -2096,7 +2123,7 @@
       "send_email": "Send invitation email to imported users",
       "submit": "Import Users",
       "back": "Back to Audience",
-      "snackbar_success": "Imported {imported} users ({skipped} already existed, {emailsSent} emails sent)",
+      "snackbar_success": "{imported} new invites, {assigned} existing students given course access, {pendingInvitesRenewed} pending invites renewed ({emailsSent} emails sent)",
       "snackbar_no_emails": "Please enter at least one email address",
       "snackbar_failed": "Failed to import users"
     },

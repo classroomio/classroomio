@@ -1,4 +1,5 @@
 import type { AnswerData, FileUploadAnswerData } from '@cio/question-types';
+import { scoreSubmissionAnswers, type ScoreSubmissionResult, validateTextareaAnswer } from '@cio/question-types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { TNewSubmission, TSubmission } from '@cio/db/types';
 import type {
@@ -242,6 +243,7 @@ export async function listSubmissionsByExercise(
         s.answers?.length ? { ...s, answers: await enrichFileUploadAnswersArray(s.answers) } : s
       )
     );
+    enriched.sort((a, b) => new Date(a.createdAt ?? 0).getTime() - new Date(b.createdAt ?? 0).getTime());
     return enriched;
   } catch (error) {
     throw new AppError(
@@ -464,16 +466,24 @@ export async function listSubmissionsForGrading(courseId: string) {
  * @param exerciseId Exercise ID
  * @param submittedBy Group member ID
  * @param answers Array of question answers
- * @returns Created submission
+ * @returns Created submission (with `answers` when auto-graded on the server)
  */
 export async function createSubmissionService(
   courseId: string,
   exerciseId: string,
   submittedBy: string,
   answers: Array<{ questionId: number; optionId?: number; answer?: string }>
-): Promise<TSubmission> {
+): Promise<TSubmission & { answers?: any[] }> {
   try {
     const exerciseWithRelations = await getExerciseWithRelationsOptimized(exerciseId);
+
+    if (!exerciseWithRelations.exercise.allowMultipleAttempts) {
+      const existing = await getSubmissionsByCourseIdWithDetails(courseId, exerciseId, submittedBy);
+      if (existing.length > 0) {
+        throw new AppError('This exercise allows only one submission', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+    }
+
     const overallStatus = resolveOverallStatusFromTypenames(
       exerciseWithRelations.questions
         .map((question) => question.questionType?.typename ?? '')
@@ -491,30 +501,37 @@ export async function createSubmissionService(
       total: 0 // Will be calculated during grading
     };
 
-    const submission = await createSubmission(submissionData);
+    let submission = await createSubmission(submissionData);
+
+    const questionById = new Map(
+      exerciseWithRelations.questions.map((q) => {
+        const questionTypeKey = QUESTION_TYPE_ID_TO_KEY[q.questionTypeId] ?? 'TEXTAREA';
+        return [
+          q.id,
+          {
+            id: q.id,
+            title: String(q.title ?? ''),
+            questionType: questionTypeKey,
+            points: Number(q.points ?? 0),
+            settings:
+              q.settings && typeof q.settings === 'object' && !Array.isArray(q.settings)
+                ? (q.settings as Record<string, unknown>)
+                : {},
+            options: (q.options ?? []).map((o) => ({
+              id: o.id,
+              label: o.label ?? '',
+              value: o.value ?? undefined,
+              isCorrect: o.isCorrect
+            }))
+          }
+        ];
+      })
+    );
+
+    const answerByQuestionId = new Map<number, AnswerData>();
 
     // Create question answers
     if (answers.length > 0) {
-      const questionById = new Map(
-        exerciseWithRelations.questions.map((q) => {
-          const questionTypeKey = QUESTION_TYPE_ID_TO_KEY[q.questionTypeId] ?? 'TEXTAREA';
-          return [
-            q.id,
-            {
-              id: q.id,
-              title: q.title ?? '',
-              questionType: questionTypeKey,
-              options: (q.options ?? []).map((o) => ({
-                id: o.id,
-                label: o.label ?? '',
-                value: o.value ?? undefined,
-                isCorrect: o.isCorrect
-              }))
-            }
-          ];
-        })
-      );
-
       await db.transaction(async () => {
         for (const ans of answers) {
           const question = questionById.get(ans.questionId);
@@ -527,6 +544,24 @@ export async function createSubmissionService(
           );
           if (!answerData) continue;
 
+          if (answerData.type === 'TEXTAREA') {
+            const validation = validateTextareaAnswer(answerData.text, question);
+
+            if (!validation.isValid) {
+              throw new AppError(
+                validation.minCharacters !== undefined && validation.maxCharacters !== undefined
+                  ? `Paragraph answer must be between ${validation.minCharacters} and ${validation.maxCharacters} characters`
+                  : validation.reason === 'below_min' && validation.minCharacters !== undefined
+                    ? `Paragraph answer must be at least ${validation.minCharacters} characters`
+                    : `Paragraph answer must be at most ${validation.maxCharacters} characters`,
+                ErrorCodes.VALIDATION_ERROR,
+                400
+              );
+            }
+          }
+
+          answerByQuestionId.set(ans.questionId, answerData);
+
           await upsertQuestionAnswer({
             submissionId: submission.id,
             questionId: ans.questionId,
@@ -537,12 +572,63 @@ export async function createSubmissionService(
       });
     }
 
+    const courseRows = await getCourseById(courseId);
+    const course = courseRows[0];
+    const shouldAutoGrade =
+      course?.type === 'SELF_PACED' && overallStatus === 'auto_graded' && exerciseWithRelations.questions.length > 0;
+
+    if (shouldAutoGrade) {
+      const answeredIds = new Set(answerByQuestionId.keys());
+      for (const q of exerciseWithRelations.questions) {
+        if (q.id == null) continue;
+        if (!answeredIds.has(q.id)) {
+          await upsertQuestionAnswer({
+            submissionId: submission.id,
+            questionId: q.id,
+            groupMemberId: submittedBy,
+            answerData: null
+          });
+        }
+      }
+
+      const dbQuestions = exerciseWithRelations.questions
+        .filter((q): q is typeof q & { id: number } => q.id != null)
+        .map((q) => ({
+          id: q.id,
+          title: q.title,
+          questionTypeId: q.questionTypeId,
+          points: q.points != null ? Number(q.points) : 0,
+          settings: (q.settings as Record<string, unknown>) ?? {},
+          options: q.options ?? []
+        }));
+
+      const { scores, total }: ScoreSubmissionResult = scoreSubmissionAnswers(dbQuestions, answerByQuestionId);
+
+      const graded = await updateSubmissionGrades(submission.id, {
+        answers: scores.map((s: ScoreSubmissionResult['scores'][number]) => ({
+          questionId: s.questionId,
+          points: s.points
+        })),
+        total,
+        statusId: 3,
+        gradingState: 'completed'
+      });
+
+      if (graded) {
+        submission = graded;
+      }
+    }
+
     // Send email notification to teachers
     try {
       await sendExerciseSubmissionUpdateEmail(courseId, exerciseId, submittedBy);
     } catch (emailError) {
       // Log but don't fail the request if email fails
       console.error('Failed to send exercise submission update email:', emailError);
+    }
+
+    if (submission.gradingState === 'completed') {
+      return await getSubmission(submission.id);
     }
 
     return submission;

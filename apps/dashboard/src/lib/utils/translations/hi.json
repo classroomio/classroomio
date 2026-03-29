@@ -520,7 +520,7 @@
       "send_email": "आयातित उपयोगकर्ताओं को आमंत्रण ईमेल भेजें",
       "submit": "उपयोगकर्ता आयात करें",
       "back": "दर्शकों के पास वापस जाएँ",
-      "snackbar_success": "आयातित {आयातित} उपयोगकर्ता ({स्किप्ड} पहले से मौजूद थे, {ईमेल्ससेंट} ईमेल भेजे गए)",
+      "snackbar_success": "{imported} नए निमंत्रण, {assigned} मौजूदा छात्रों को पाठ्यक्रम पहुंच, {pendingInvitesRenewed} लंबित निमंत्रण नवीकृत ({emailsSent} ईमेल भेजे गए)",
       "snackbar_no_emails": "कृपया कम से कम एक ईमेल पता दर्ज करें",
       "snackbar_failed": "उपयोगकर्ताओं को आयात करने में विफल"
     }
@@ -1164,10 +1164,17 @@
             "shared_question": {
               "textarea": {
                 "take": {
-                  "placeholder": "अपना उत्तर लिखें"
+                  "placeholder": "अपना उत्तर लिखें",
+                  "min_error": "Answer must be at least {min} characters.",
+                  "max_error": "Answer must be at most {max} characters.",
+                  "range_error": "Answer must be between {min} and {max} characters."
                 },
                 "edit": {
-                  "placeholder": "शिक्षार्थी लंबे प्रारूप वाले पाठ के साथ उत्तर देंगे"
+                  "placeholder": "शिक्षार्थी लंबे प्रारूप वाले पाठ के साथ उत्तर देंगे",
+                  "min_characters_label": "Minimum characters",
+                  "min_characters_placeholder": "Minimum characters",
+                  "max_characters_label": "Maximum characters",
+                  "max_characters_placeholder": "Maximum characters"
                 }
               },
               "hotspot": {

@@ -1,14 +1,40 @@
 import 'dotenv/config';
 
 import { SQL, sql } from 'drizzle-orm';
-
 import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres, { type Sql } from 'postgres';
 
 // import * as schema from './schema';
 
 const connectionString = process.env.DATABASE_URL ?? process.env.PRIVATE_DATABASE_URL ?? '';
 
-export const db = drizzle(connectionString);
+type DatabaseClient = ReturnType<typeof drizzle>;
+
+const globalDatabase = globalThis as typeof globalThis & {
+  __cioDatabaseClient?: Sql;
+  __cioDb?: DatabaseClient;
+};
+
+function createDatabaseClient() {
+  return postgres(connectionString, {
+    max: process.env.NODE_ENV === 'production' ? 10 : 1,
+    idle_timeout: 20,
+    connect_timeout: 10,
+    max_lifetime: 60 * 30
+  });
+}
+
+const databaseClient = globalDatabase.__cioDatabaseClient ?? createDatabaseClient();
+
+if (process.env.NODE_ENV !== 'production') {
+  globalDatabase.__cioDatabaseClient = databaseClient;
+}
+
+export const db = globalDatabase.__cioDb ?? drizzle(databaseClient);
+
+if (process.env.NODE_ENV !== 'production') {
+  globalDatabase.__cioDb = db;
+}
 
 export type DbClient = typeof db;
 export type TxClient = Parameters<typeof db.transaction>[0] extends (tx: infer T) => any ? T : never;

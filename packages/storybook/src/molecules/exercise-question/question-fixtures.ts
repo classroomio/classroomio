@@ -78,7 +78,9 @@ export const TEXTAREA_FIXTURE: QuestionStoryFixture = {
     title: 'Explain why exercise feedback should be specific. [TEXTAREA]',
     questionType: 'TEXTAREA',
     settings: {
-      description: 'Provide a detailed response.'
+      description: 'Provide a detailed response.',
+      minCharacters: 30,
+      maxCharacters: 250
     }
   },
   answer: '<p>Specific feedback helps students improve on the next attempt quickly.</p>'

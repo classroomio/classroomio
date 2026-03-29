@@ -520,7 +520,7 @@
       "send_email": "Gửi email lời mời tới người dùng đã nhập",
       "submit": "Nhập người dùng",
       "back": "Quay lại Đối tượng",
-      "snackbar_success": "Đã nhập {imported} người dùng ({skipped} đã tồn tại, đã gửi email {emailsSent})",
+      "snackbar_success": "{imported} lời mời mới, {assigned} học viên hiện có được quyền truy cập khóa học, {pendingInvitesRenewed} lời mời đang chờ được gia hạn ({emailsSent} email đã gửi)",
       "snackbar_no_emails": "Vui lòng nhập ít nhất một địa chỉ email",
       "snackbar_failed": "Không thể nhập người dùng"
     }
@@ -1164,10 +1164,17 @@
             "shared_question": {
               "textarea": {
                 "take": {
-                  "placeholder": "Viết câu trả lời của bạn"
+                  "placeholder": "Viết câu trả lời của bạn",
+                  "min_error": "Answer must be at least {min} characters.",
+                  "max_error": "Answer must be at most {max} characters.",
+                  "range_error": "Answer must be between {min} and {max} characters."
                 },
                 "edit": {
-                  "placeholder": "Người học sẽ trả lời bằng văn bản dài"
+                  "placeholder": "Người học sẽ trả lời bằng văn bản dài",
+                  "min_characters_label": "Minimum characters",
+                  "min_characters_placeholder": "Minimum characters",
+                  "max_characters_label": "Maximum characters",
+                  "max_characters_placeholder": "Maximum characters"
                 }
               },
               "hotspot": {

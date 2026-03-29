@@ -520,7 +520,7 @@
       "send_email": "Send invitationsmail til importerede brugere",
       "submit": "Importer brugere",
       "back": "Tilbage til Publikum",
-      "snackbar_success": "Importerede {importerede} brugere ({skipped} eksisterede allerede, {emailsSent} e-mails sendt)",
+      "snackbar_success": "{imported} nye invitationer, {assigned} eksisterende studerende med kursusadgang, {pendingInvitesRenewed} afventende invitationer fornyet ({emailsSent} e-mails sendt)",
       "snackbar_no_emails": "Indtast venligst mindst én e-mailadresse",
       "snackbar_failed": "Kunne ikke importere brugere"
     }
@@ -1164,10 +1164,17 @@
             "shared_question": {
               "textarea": {
                 "take": {
-                  "placeholder": "Skriv dit svar"
+                  "placeholder": "Skriv dit svar",
+                  "min_error": "Answer must be at least {min} characters.",
+                  "max_error": "Answer must be at most {max} characters.",
+                  "range_error": "Answer must be between {min} and {max} characters."
                 },
                 "edit": {
-                  "placeholder": "Eleverne vil svare med lang tekst"
+                  "placeholder": "Eleverne vil svare med lang tekst",
+                  "min_characters_label": "Minimum characters",
+                  "min_characters_placeholder": "Minimum characters",
+                  "max_characters_label": "Maximum characters",
+                  "max_characters_placeholder": "Maximum characters"
                 }
               },
               "hotspot": {

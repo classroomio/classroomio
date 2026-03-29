@@ -49,6 +49,14 @@
   // Browser detection
   const browser = typeof window !== 'undefined';
 
+  function normalizeEditorContent(value: HTMLContent | undefined): string {
+    const html = String(value ?? '').trim();
+
+    if (html === '' || html === '<p></p>' || html === '<p><br></p>') return '';
+
+    return html;
+  }
+
   // Handle content persistence
   $effect(() => {
     if (enablePersistence && browser && content) {
@@ -92,6 +100,17 @@
       isEditorReady = true;
       onEditorReady?.(editor);
     }
+  });
+
+  $effect(() => {
+    if (!editor || editor.isDestroyed) return;
+
+    const nextContent = normalizeEditorContent(content);
+    const currentContent = normalizeEditorContent(editor.getHTML());
+
+    if (currentContent === nextContent) return;
+
+    editor.commands.setContent(nextContent, false);
   });
 
   function onUpdate(props: { editor: Editor; transaction: Transaction }) {

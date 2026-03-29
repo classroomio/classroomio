@@ -4,7 +4,7 @@
   import { fly } from 'svelte/transition';
   import { cubicInOut } from 'svelte/easing';
   import { courseApi } from '$features/course/api';
-  import { questionnaire, questionnaireMetaData } from './store';
+  import { questionnaire, questionnaireMetaData, resetStudentExerciseTake } from './store';
   import Preview from './preview.svelte';
   import { ExerciseQuestion } from '@cio/ui';
   import * as Alert from '@cio/ui/base/alert';
@@ -18,33 +18,48 @@
   import { STATUS } from './constants';
   import { filterOutDeleted } from './functions';
   import { formatAnswers } from '$features/course/utils/functions';
-  import { toApiPayload, type AnswerData } from '@cio/question-types';
+  import {
+    getTextareaAnswerCharacterCount,
+    toApiPayload,
+    type AnswerData,
+    validateTextareaAnswer
+  } from '@cio/question-types';
   import { exerciseApi, presignApi } from '$features/course/api';
   import type { SubmissionListItem } from '$features/course/utils/types';
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { globalStore } from '$lib/utils/store/app';
+  import { openCourseCompletionModal } from '$features/course/store/course-completion-modal';
   import { ContentType } from '@cio/utils/constants/content';
   import { toExerciseQuestionModel } from './question-type-utils';
   import { getExerciseQuestionLabels } from './question-labels';
   import axios from 'axios';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 
   interface Props {
     preview?: boolean;
     exerciseId?: string;
     isFetchingExercise?: boolean;
-    /** Current user's submission from server (no client fetch) */
-    mySubmission?: SubmissionListItem | null;
+    /** Current user's submissions (ordered by attempt) */
+    mySubmissions?: SubmissionListItem[];
   }
 
-  let { preview = false, exerciseId = '', isFetchingExercise = false, mySubmission = null }: Props = $props();
+  let { preview = false, exerciseId = '', isFetchingExercise = false, mySubmissions = [] }: Props = $props();
 
   let isSubmitting = $state(false);
+  /** When true, do not re-apply a past submission over a fresh take (Try again). */
+  let skipHydrateFromSubmissions = $state(false);
   let isLoadingAutoSavedData = $state(false);
   let alreadyCheckedAutoSavedData = $state(false);
   let prevExerciseId = $state('');
   let slideDirection = $state<'next' | 'prev'>('next');
+  let selectedTryIndex = $state(-1);
   const questionLabels = $derived(getExerciseQuestionLabels());
+
+  const submissionList = $derived(Array.isArray(mySubmissions) ? mySubmissions : []);
 
   function handleStart() {
     questionnaireMetaData.update((m) => ({ ...m, currentQuestionIndex: m.currentQuestionIndex + 1 }));
@@ -116,20 +131,39 @@
         return;
       }
 
-      await exerciseApi.submit(courseApi.course?.id!, exerciseId, answersForApi);
+      const submitResult = await exerciseApi.submit(courseApi.course.id, exerciseId, answersForApi);
 
-      if (exerciseApi.success) {
-        questionnaireMetaData.update((m) => ({
-          ...m,
-          status: 1,
-          totalPossibleGrade,
-          grades: {},
-          comment: '',
-          isFinished: true,
-          exerciseId
-        }));
+      if (exerciseApi.success && submitResult?.data) {
+        skipHydrateFromSubmissions = false;
+        const sub = submitResult.data as unknown as SubmissionListItem & { gradingState?: string };
+        if (sub.gradingState === 'completed' && sub.statusId === STATUS.GRADED && Array.isArray(sub.answers)) {
+          applyMySubmission(sub);
+        } else {
+          questionnaireMetaData.update((m) => ({
+            ...m,
+            status: 1,
+            totalPossibleGrade,
+            grades: {},
+            comment: '',
+            isFinished: true,
+            exerciseId
+          }));
+        }
         courseApi.updateContentItem(exerciseId, ContentType.Exercise, { isComplete: true });
+        if (
+          $globalStore.isStudent &&
+          courseApi.course?.id &&
+          submitResult?.data &&
+          'certification' in submitResult.data
+        ) {
+          const certification = (submitResult.data as { certification?: { isNewCompletion?: boolean } | null })
+            .certification;
+          if (certification?.isNewCompletion) {
+            openCourseCompletionModal(courseApi.course.id);
+          }
+        }
       }
+
       isSubmitting = false;
     } else {
       // Advance to next question
@@ -208,6 +242,7 @@
         case 'CHECKBOX':
           return answerValue.optionIds.length > 0;
         case 'TEXTAREA':
+          return getTextareaAnswerCharacterCount(answerValue.text) > 0;
         case 'SHORT_ANSWER':
           return answerValue.text.trim().length > 0;
         case 'FILL_BLANK':
@@ -249,6 +284,12 @@
       return;
     }
 
+    const textareaError = getTextareaValidationError(valueToUse);
+    if (textareaError) {
+      snackbar.error(textareaError);
+      return;
+    }
+
     onSubmit(sharedCurrentQuestionKey, valueToUse);
   }
 
@@ -256,7 +297,7 @@
     if (e.key !== 'Enter' || isSubmitting || !currentQuestion) return;
 
     const target = e.target as HTMLElement;
-    if (target?.tagName === 'TEXTAREA') return;
+    if (target?.tagName === 'TEXTAREA' || isTextEditorTarget(target)) return;
 
     e.preventDefault();
 
@@ -281,6 +322,42 @@
       return;
     }
     onSharedNext(valueToUse);
+  }
+
+  function isTextEditorTarget(target: EventTarget | null): boolean {
+    if (!(target instanceof HTMLElement)) return false;
+
+    if (target.isContentEditable) return true;
+
+    return target.closest('[contenteditable="true"], .ProseMirror') !== null;
+  }
+
+  function getTextareaValidationError(answerValue: AnswerData | null | undefined): string | null {
+    if (!sharedQuestionModel || !answerValue || answerValue.type !== 'TEXTAREA') return null;
+
+    const validation = validateTextareaAnswer(answerValue.text, sharedQuestionModel);
+    if (validation.isValid) return null;
+
+    if (validation.minCharacters !== undefined && validation.maxCharacters !== undefined) {
+      return t.get('course.navItem.lessons.exercises.all_exercises.shared_question.textarea.take.range_error', {
+        min: validation.minCharacters,
+        max: validation.maxCharacters
+      });
+    }
+
+    if (validation.reason === 'below_min' && validation.minCharacters !== undefined) {
+      return t.get('course.navItem.lessons.exercises.all_exercises.shared_question.textarea.take.min_error', {
+        min: validation.minCharacters
+      });
+    }
+
+    if (validation.reason === 'above_max' && validation.maxCharacters !== undefined) {
+      return t.get('course.navItem.lessons.exercises.all_exercises.shared_question.textarea.take.max_error', {
+        max: validation.maxCharacters
+      });
+    }
+
+    return null;
   }
 
   $effect(() => {
@@ -322,9 +399,38 @@
   });
 
   $effect(() => {
-    if (isFetchingExercise || !mySubmission || $questionnaireMetaData.isFinished) return;
-    applyMySubmission(mySubmission);
+    if (!exerciseId || isFetchingExercise || skipHydrateFromSubmissions) return;
+    if (!submissionList.length || $questionnaireMetaData.isFinished) return;
+    let idx = selectedTryIndex;
+    if (idx < 0 || idx >= submissionList.length) {
+      idx = submissionList.length - 1;
+      selectedTryIndex = idx;
+    }
+    const sub = submissionList[idx];
+    if (sub) applyMySubmission(sub);
   });
+
+  function goPrevTry() {
+    if (selectedTryIndex <= 0) return;
+    selectedTryIndex -= 1;
+    const sub = submissionList[selectedTryIndex];
+    if (sub) applyMySubmission(sub);
+  }
+
+  function goNextTry() {
+    if (selectedTryIndex >= submissionList.length - 1) return;
+    selectedTryIndex += 1;
+    const sub = submissionList[selectedTryIndex];
+    if (sub) applyMySubmission(sub);
+  }
+
+  function tryAgain() {
+    if (!$questionnaire.allowMultipleAttempts) return;
+    localStorage.removeItem(`autosave-exercise-${exerciseId}`);
+    selectedTryIndex = -1;
+    skipHydrateFromSubmissions = true;
+    resetStudentExerciseTake();
+  }
 
   function applyMySubmission(submission: SubmissionListItem) {
     const totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
@@ -360,6 +466,8 @@
     if (!!prevExerciseId) {
       isSubmitting = false;
       alreadyCheckedAutoSavedData = false;
+      skipHydrateFromSubmissions = false;
+      selectedTryIndex = -1;
     }
     prevExerciseId = exerciseId;
   });
@@ -474,12 +582,47 @@
       {/if}
     </div>
 
+    {#if submissionList.length > 1}
+      <div class="mb-4 flex flex-wrap items-center gap-2">
+        <IconButton
+          disabled={selectedTryIndex <= 0}
+          onclick={goPrevTry}
+          tooltip={$t('course.navItem.lessons.exercises.all_exercises.view_mode.previous_try')}
+        >
+          <ChevronLeftIcon class="h-4 w-4" />
+        </IconButton>
+        <span class="ui:text-muted-foreground text-sm">
+          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.attempt_counter', {
+            current: selectedTryIndex + 1,
+            total: submissionList.length
+          })}
+        </span>
+        <IconButton
+          disabled={selectedTryIndex >= submissionList.length - 1}
+          onclick={goNextTry}
+          tooltip={$t('course.navItem.lessons.exercises.all_exercises.view_mode.next_try')}
+        >
+          <ChevronRightIcon class="h-4 w-4" />
+        </IconButton>
+      </div>
+    {/if}
+
     <Preview
       questions={$questionnaire.questions.sort((a, b) => a.order - b.order)}
       questionnaireMetaData={$questionnaireMetaData}
       grades={$questionnaireMetaData.grades}
       disableGrading={true}
     />
+
+    <RoleBasedSecurity allowedRoles={[3]}>
+      {#if $questionnaire.allowMultipleAttempts}
+        <div class="mt-4">
+          <Button type="button" variant="secondary" onclick={tryAgain}>
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.try_again')}
+          </Button>
+        </div>
+      {/if}
+    </RoleBasedSecurity>
   {/if}
 {:else if currentQuestion && currentQuestion?.id}
   <div class="flex flex-col gap-4">

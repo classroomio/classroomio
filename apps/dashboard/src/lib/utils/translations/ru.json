@@ -520,7 +520,7 @@
       "send_email": "Отправить электронное письмо с приглашением импортированным пользователям",
       "submit": "Импортировать пользователей",
       "back": "Вернуться к аудитории",
-      "snackbar_success": "Импортированные пользователи: {imported} ({skiped} уже существует, писем отправлено: {emailsSent})",
+      "snackbar_success": "{imported} новых приглашений, {assigned} существующих студентов с доступом к курсу, {pendingInvitesRenewed} обновлённых ожидающих приглашений (отправлено писем: {emailsSent})",
       "snackbar_no_emails": "Пожалуйста, введите хотя бы один адрес электронной почты",
       "snackbar_failed": "Не удалось импортировать пользователей."
     }
@@ -1164,10 +1164,17 @@
             "shared_question": {
               "textarea": {
                 "take": {
-                  "placeholder": "Напишите свой ответ"
+                  "placeholder": "Напишите свой ответ",
+                  "min_error": "Answer must be at least {min} characters.",
+                  "max_error": "Answer must be at most {max} characters.",
+                  "range_error": "Answer must be between {min} and {max} characters."
                 },
                 "edit": {
-                  "placeholder": "Учащиеся будут отвечать длинным текстом"
+                  "placeholder": "Учащиеся будут отвечать длинным текстом",
+                  "min_characters_label": "Minimum characters",
+                  "min_characters_placeholder": "Minimum characters",
+                  "max_characters_label": "Maximum characters",
+                  "max_characters_placeholder": "Maximum characters"
                 }
               },
               "hotspot": {
