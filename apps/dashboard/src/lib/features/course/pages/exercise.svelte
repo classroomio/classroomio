@@ -30,6 +30,7 @@
   import { exerciseApi } from '$features/course/api';
   import { courseApi } from '$features/course/api';
   import EditMode from '$features/course/components/exercise/edit-mode.svelte';
+  import ExerciseSettingsTab from '$features/course/components/exercise/exercise-settings-tab.svelte';
   import ViewMode from '$features/course/components/exercise/view-mode.svelte';
   import Submissions from '$features/course/components/exercise/submissions/submissions.svelte';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -41,17 +42,19 @@
   import VideoIcon from '@lucide/svelte/icons/video';
   import {
     getQuestionTypeId,
+    getQuestionTypeKeyFromId,
     getQuestionTypeOptionById
   } from '$features/course/components/exercise/question-type-utils';
   import type { SubmissionListItem } from '$features/course/utils/types';
   import { Badge } from '@cio/ui/base/badge';
+  import { isAutoGradableQuestionType } from '@cio/question-types';
 
   interface Props {
     exerciseId?: string;
     goBack?: () => void;
     isFetching?: boolean;
     submissions: SubmissionListItem[];
-    mySubmission: SubmissionListItem | null;
+    mySubmissions?: SubmissionListItem[];
   }
 
   let {
@@ -59,14 +62,17 @@
     goBack = () => {},
     isFetching = false,
     submissions,
-    mySubmission
+    mySubmissions = []
   }: Props = $props();
 
-  type ExerciseTab = 'questions' | 'submissions';
+  type ExerciseTab = 'questions' | 'settings' | 'submissions';
 
   function normalizeExerciseTab(tabParam: string | null): ExerciseTab {
     if (tabParam === 'submissions' || tabParam === 'analytics') {
       return 'submissions';
+    }
+    if (tabParam === 'settings') {
+      return 'settings';
     }
 
     return 'questions';
@@ -107,6 +113,26 @@
       questionnaireValidation.set(questionErrors);
       snackbar.error('Please fix all validation errors before saving');
       return;
+    }
+
+    if (requiresPositivePointsForAutoGrade) {
+      const zeroPointQuestions = ($questionnaire.questions ?? []).filter((q) => !q.deletedAt && Number(q.points) === 0);
+
+      if (zeroPointQuestions.length > 0) {
+        const pointErrors: Record<string, { option?: string; title?: string; points?: string }> = {};
+
+        for (const q of zeroPointQuestions) {
+          pointErrors[q.id] = {
+            points: t.get('course.navItem.lessons.exercises.all_exercises.points_required_auto_grade')
+          };
+        }
+
+        questionnaireValidation.set(pointErrors);
+
+        snackbar.error('snackbar.exercise.points_required_auto_grade');
+
+        return;
+      }
     }
 
     isSaving = true;
@@ -204,11 +230,41 @@
     )
   );
   const isExerciseUnlocked = $derived(exerciseContentItem?.isUnlocked ?? false);
+
+  const isSelfPacedCourse = $derived(courseApi.course?.type === 'SELF_PACED');
+  const activeQuestionTypeIds = $derived(
+    ($questionnaire.questions ?? []).filter((q) => !q.deletedAt).map((q) => getQuestionTypeId(q))
+  );
+  function isExerciseFullyAutoGradable(typeIds: number[]): boolean {
+    return typeIds.length > 0 && typeIds.every((id) => isAutoGradableQuestionType(getQuestionTypeKeyFromId(id)));
+  }
+
+  /** When true, every question must have points &gt; 0 before save */
+  const requiresPositivePointsForAutoGrade = $derived(
+    isSelfPacedCourse && isExerciseFullyAutoGradable(activeQuestionTypeIds)
+  );
+  const teacherAutoGradeBadge = $derived.by(() => {
+    if ($globalStore.isStudent || !isSelfPacedCourse || activeQuestionTypeIds.length === 0) return null;
+    return isExerciseFullyAutoGradable(activeQuestionTypeIds) ? ('auto' as const) : ('manual' as const);
+  });
 </script>
 
 <Page.Header isSticky={true} class="z-250! min-h-[36px]">
   <Page.HeaderContent>
-    <Page.Title>{$questionnaire.title || 'Exercise'}</Page.Title>
+    <Page.Title class="flex flex-wrap items-center gap-2">
+      <span>{$questionnaire.title || 'Exercise'}</span>
+      <RoleBasedSecurity allowedRoles={[1, 2]}>
+        {#if teacherAutoGradeBadge === 'auto'}
+          <Badge variant="success" class="font-normal">
+            {$t('course.navItem.lessons.exercises.all_exercises.auto_graded_badge')}
+          </Badge>
+        {:else if teacherAutoGradeBadge === 'manual'}
+          <Badge variant="warning" class="font-normal">
+            {$t('course.navItem.lessons.exercises.all_exercises.manual_grading_required_badge')}
+          </Badge>
+        {/if}
+      </RoleBasedSecurity>
+    </Page.Title>
   </Page.HeaderContent>
   <Page.Action>
     <div class="flex items-center gap-2">
@@ -278,7 +334,7 @@
     <div class="overflow-x-hidden">
       {#if $globalStore.isStudent}
         {#if isExerciseUnlocked}
-          <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmission} />
+          <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmissions} />
         {:else}
           <Empty
             title={$t('course.navItem.lessons.content_locked_title')}
@@ -290,9 +346,12 @@
         {/if}
       {:else}
         <UnderlineTabs.Root bind:value={selectedTab} class="mb-4">
-          <UnderlineTabs.List class="grid w-full max-w-xs grid-cols-2">
+          <UnderlineTabs.List class="grid w-full max-w-lg grid-cols-3">
             <UnderlineTabs.Trigger value="questions">
               {$t('course.navItem.lessons.exercises.all_exercises.questions')}
+            </UnderlineTabs.Trigger>
+            <UnderlineTabs.Trigger value="settings">
+              {$t('course.navItem.lessons.exercises.all_exercises.settings')}
             </UnderlineTabs.Trigger>
             <UnderlineTabs.Trigger value="submissions">
               {$t('course.navItem.lessons.exercises.all_exercises.analytics.submissions')}
@@ -303,10 +362,19 @@
           <UnderlineTabs.Content value="questions">
             <UpdateDescription {preview} />
             {#if !preview}
-              <EditMode bind:shouldDeleteExercise {exerciseId} {goBack} />
+              <EditMode
+                bind:shouldDeleteExercise
+                {exerciseId}
+                {goBack}
+                {requiresPositivePointsForAutoGrade}
+                selfPacedCourse={isSelfPacedCourse}
+              />
             {:else}
-              <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmission} />
+              <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmissions} />
             {/if}
+          </UnderlineTabs.Content>
+          <UnderlineTabs.Content value="settings">
+            <ExerciseSettingsTab {exerciseId} />
           </UnderlineTabs.Content>
           <UnderlineTabs.Content value="submissions">
             <Submissions bind:exerciseId {submissions} />

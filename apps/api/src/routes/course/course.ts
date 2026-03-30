@@ -26,6 +26,7 @@ import {
   getCourseProgress,
   updateCourse
 } from '@api/services/course/course';
+import { assertCertificateDownloadAllowed, evaluateCourseCertification } from '@api/services/course/completion';
 import { getCourseTags, replaceCourseTags } from '@api/services/tag';
 
 import { Hono } from '@api/utils/hono';
@@ -394,6 +395,33 @@ export const courseRouter = new Hono()
     }
   )
   /**
+   * GET /course/:courseId/certification-evaluation
+   * Full certification eligibility for the current user (blockers for UI).
+   */
+  .get(
+    '/:courseId/certification-evaluation',
+    authMiddleware,
+    courseMemberMiddleware,
+    zValidator('param', ZCourseProgressParam),
+    async (c) => {
+      try {
+        const { courseId } = c.req.valid('param');
+        const user = c.get('user')!;
+        const data = await evaluateCourseCertification(courseId, user.id);
+
+        return c.json(
+          {
+            success: true,
+            data
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to evaluate certification');
+      }
+    }
+  )
+  /**
    * GET /course/:courseId/analytics
    * Gets course analytics including student progress, completion rates, and grades
    * Requires authentication and course membership (admin/tutor role)
@@ -427,6 +455,10 @@ export const courseRouter = new Hono()
     zValidator('param', ZCourseDownloadParam),
     zValidator('json', ZCertificateDownload),
     async (c) => {
+      const { courseId } = c.req.valid('param');
+      const user = c.get('user')!;
+      await assertCertificateDownloadAllowed(courseId, user.id);
+
       const validatedData = c.req.valid('json');
 
       const result = await generateCertificate(validatedData);

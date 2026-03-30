@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@cio/question-types": "workspace:*",
+    "@cio/utils": "workspace:*",
     "@floating-ui/dom": "^1.7.4",
     "@tiptap/core": "^3.10.7",
     "@tiptap/extension-bubble-menu": "^3.10.7",

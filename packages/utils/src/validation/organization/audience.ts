@@ -1,5 +1,20 @@
 import * as z from 'zod';
 
+export const AudienceSortBy = z.enum(['createdAt', 'name', 'email']);
+export const AudienceSortOrder = z.enum(['asc', 'desc']);
+
+export const ZGetAudienceQuery = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().trim().optional(),
+  sortBy: AudienceSortBy.default('createdAt'),
+  sortOrder: AudienceSortOrder.default('desc')
+});
+
+export type TAudienceSortBy = z.infer<typeof AudienceSortBy>;
+export type TAudienceSortOrder = z.infer<typeof AudienceSortOrder>;
+export type TGetAudienceQuery = z.infer<typeof ZGetAudienceQuery>;
+
 export const ZImportAudienceMembers = z.object({
   recipientCsv: z.string().max(25000),
   courseIds: z.array(z.string().uuid()).optional(),

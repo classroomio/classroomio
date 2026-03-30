@@ -21,17 +21,6 @@ function getSiteNameValidation() {
     });
 }
 
-export const saveCertificateValidation = (fields = {}) => {
-  const schema = z.object({
-    description: z.string().max(200, 'course.navItem.certificates.description_error'),
-    is_certificate_downloadable: z.boolean(),
-    certificate_theme: z.string()
-  });
-
-  const { error } = schema.safeParse(fields);
-  return processErrors(error);
-};
-
 export const getConfirmPasswordError = ({ password, confirmPassword }) => {
   return password > 6 && confirmPassword > 6 && password !== confirmPassword
     ? `${t.get('validations.confirm_password.not_match')}`

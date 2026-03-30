@@ -15,6 +15,7 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { PREMIUM_QUESTION_TYPE_KEYS, QUESTION_TYPES } from '$features/ui/question/constants';
   import { Button } from '@cio/ui/base/button';
+  import { Badge } from '@cio/ui/base/badge';
   import { ExerciseQuestion } from '@cio/ui';
 
   import OrderModal from './order-modal.svelte';
@@ -40,11 +41,20 @@
 
   interface Props {
     shouldDeleteExercise?: boolean;
-    exerciseId: any;
-    goBack?: any;
+    exerciseId: string;
+    goBack?: () => void;
+    /** Self-paced + all auto-gradable question types: enforce points &gt; 0 */
+    requiresPositivePointsForAutoGrade?: boolean;
+    selfPacedCourse?: boolean;
   }
 
-  let { shouldDeleteExercise = $bindable(false), exerciseId, goBack = () => {} }: Props = $props();
+  let {
+    shouldDeleteExercise = $bindable(false),
+    exerciseId,
+    goBack = () => {},
+    requiresPositivePointsForAutoGrade = false,
+    selfPacedCourse = false
+  }: Props = $props();
 
   let questionIdToDelete = $state(null);
   let isDeleting = $state(false);
@@ -173,9 +183,10 @@
   }
 
   async function handleDelete() {
+    if (!courseApi.course?.id) return;
     isDeleting = true;
 
-    await exerciseApi.delete(courseApi.course?.id!, exerciseId);
+    await exerciseApi.delete(courseApi.course.id, exerciseId);
 
     if (exerciseApi.success) {
       courseApi.removeContentItem(exerciseId, ContentType.Exercise);
@@ -234,6 +245,9 @@
           bind:points={question.points}
           hasError={!!errors[question.id]}
           errorMsg={getQuestionErrorMsg(errors, question, 'points')}
+          pointsHint={requiresPositivePointsForAutoGrade && Number(question.points) === 0
+            ? $t('course.navItem.lessons.exercises.all_exercises.points_required_auto_grade')
+            : null}
           onPointsChange={() => {
             question.isDirty = true;
           }}
@@ -272,7 +286,7 @@
                     {getQuestionTypeLabel(question?.questionType)}
                   </Select.Trigger>
                   <Select.Content>
-                    {#each QUESTION_TYPES as type, i (type.key)}
+                    {#each QUESTION_TYPES as type (type.key)}
                       {#if $isFreePlan && PREMIUM_QUESTION_TYPE_KEYS.has(type.key)}
                         <button
                           type="button"
@@ -288,7 +302,27 @@
                           <span>{getQuestionTypeLabel(type)}</span>
                         </button>
                       {:else}
-                        <Select.Item value={type.id.toString()} label={getQuestionTypeLabel(type)} />
+                        <Select.Item value={type.id.toString()} label={getQuestionTypeLabel(type)}>
+                          {#snippet children({ selected: _sel })}
+                            <span class="flex w-full min-w-0 items-center justify-between gap-2">
+                              <span class="truncate">{getQuestionTypeLabel(type)}</span>
+                              {#if selfPacedCourse}
+                                <Badge
+                                  variant={type.autoGradable ? 'success' : 'warning'}
+                                  class="ui:shrink-0 ui:text-[10px] ui:font-normal"
+                                >
+                                  {type.autoGradable
+                                    ? $t(
+                                        'course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_auto_gradable'
+                                      )
+                                    : $t(
+                                        'course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_manual_grading'
+                                      )}
+                                </Badge>
+                              {/if}
+                            </span>
+                          {/snippet}
+                        </Select.Item>
                       {/if}
                     {/each}
                   </Select.Content>

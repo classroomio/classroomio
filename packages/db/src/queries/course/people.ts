@@ -307,3 +307,39 @@ export async function getProfileByGroupMemberId(groupMemberId: string): Promise<
     );
   }
 }
+
+/**
+ * Sets when the learner first met certification threshold for this course membership.
+ */
+export async function setMemberCertificateEarned(memberId: string, earnedAt: string): Promise<TGroupmember | null> {
+  try {
+    const [updated] = await db
+      .update(schema.groupmember)
+      .set({ certificateEarnedAt: earnedAt })
+      .where(eq(schema.groupmember.id, memberId))
+      .returning();
+    return updated ?? null;
+  } catch (error) {
+    console.error('setMemberCertificateEarned error:', error);
+    throw new Error(`Failed to set certificate earned: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Records that the certification congratulations email was sent.
+ */
+export async function setMemberCertificationEmailSent(memberId: string, sentAt: string): Promise<TGroupmember | null> {
+  try {
+    const [updated] = await db
+      .update(schema.groupmember)
+      .set({ certificationEmailSentAt: sentAt })
+      .where(eq(schema.groupmember.id, memberId))
+      .returning();
+    return updated ?? null;
+  } catch (error) {
+    console.error('setMemberCertificationEmailSent error:', error);
+    throw new Error(
+      `Failed to set certification email sent: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}

@@ -54,6 +54,7 @@ export const questionnaire: Writable<{
   isDescriptionDirty?: boolean;
   questions: Question[];
   totalSubmissions: number;
+  allowMultipleAttempts?: boolean;
 }> = writable({
   title: '',
   dueBy: '',
@@ -62,7 +63,8 @@ export const questionnaire: Writable<{
   description: '',
   isDescriptionDirty: false,
   questions: [],
-  totalSubmissions: 0
+  totalSubmissions: 0,
+  allowMultipleAttempts: false
 });
 
 export function clearQuestionnaireValidation() {
@@ -85,6 +87,15 @@ export function reset() {
     progressValue: 100
   }));
 
+  clearQuestionnaireValidation();
+}
+
+/** Clears take-exercise state so the student can start another attempt (when allowed). */
+export function resetStudentExerciseTake() {
+  questionnaireMetaData.set({
+    ...initAnswerState,
+    exerciseId: null
+  });
   clearQuestionnaireValidation();
 }
 

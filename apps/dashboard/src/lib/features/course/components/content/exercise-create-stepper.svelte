@@ -252,7 +252,7 @@
         bind:value={title}
         autoFocus={true}
         placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.title_placeholder')}
-        className="my-4 w-2/4!"
+        className="my-4 w-full"
       />
     </div>
   {:else if type === EXERCISE_CREATE_TYPE.TEMPLATE}

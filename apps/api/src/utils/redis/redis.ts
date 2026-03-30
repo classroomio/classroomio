@@ -6,17 +6,30 @@ const client: RedisClientType = createClient({
   url: env.REDIS_URL
 });
 
+let hasLoggedRedisUnavailable = false;
+
+export function logRedisUnavailableOnce(message: string, error?: unknown): void {
+  if (hasLoggedRedisUnavailable) {
+    return;
+  }
+
+  hasLoggedRedisUnavailable = true;
+
+  if (error) {
+    console.warn(message, error);
+    return;
+  }
+
+  console.warn(message);
+}
+
 // Handle connection events
 client.on('error', (err) => {
-  console.error('Redis Client Error:', err);
+  logRedisUnavailableOnce('Redis unavailable, Redis-backed features disabled', err);
 });
 
 client.on('connect', () => {
   console.log('Redis Client Connected');
-});
-
-client.on('reconnecting', () => {
-  console.log('Redis Client Reconnecting');
 });
 
 // Track connection state
@@ -24,7 +37,7 @@ let isConnected = false;
 
 export async function connectRedis(): Promise<void> {
   if (!env.REDIS_URL) {
-    console.warn('REDIS_URL not set, Redis features disabled');
+    logRedisUnavailableOnce('REDIS_URL not set, Redis features disabled');
     return;
   }
   if (isConnected) return;
@@ -32,7 +45,7 @@ export async function connectRedis(): Promise<void> {
     await client.connect();
     isConnected = true;
   } catch (error) {
-    console.error('Redis connection failed, API will run without Redis:', error);
+    logRedisUnavailableOnce('Redis connection failed, API will run without Redis', error);
     // Don't throw - allow API to start; rate limiting and caching will degrade gracefully
   }
 }

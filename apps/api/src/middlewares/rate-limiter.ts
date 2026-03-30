@@ -9,7 +9,7 @@ import type { MiddlewareHandler } from 'hono';
 import { RedisRateLimiter } from '@api/utils/redis/limiter';
 import { userKeyGenerator } from '../utils/redis/key-generators';
 import { env } from '@api/config/env';
-import { redis } from '@api/utils/redis/redis';
+import { logRedisUnavailableOnce, redis } from '@api/utils/redis/redis';
 
 export interface RateLimiterOptions {
   windowMs?: number;
@@ -80,8 +80,7 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
 
       await next();
     } catch (error) {
-      console.error('Rate limiter error:', error);
-      // If Redis is down, allow the request but log the error
+      logRedisUnavailableOnce('Redis rate limiter unavailable, allowing requests without rate limiting', error);
       await next();
     }
   };

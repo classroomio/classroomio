@@ -5,6 +5,8 @@ This document collects implementation rules and workflow conventions for code ch
 ## Naming Convention
 
 - Use kebab-case for files (e.g. `user-profile.svelte`, `org.svelte.ts`).
+- **Variables must read clearly at the call site.** Avoid opaque single-letter or ultra-short names (`d`, `x`, `tmp`) unless they match a universal convention (e.g. `i` in a trivial index loop). Prefer names that state intent (`deadlineDate`, `parsedUrl`, `nextSection`).
+- **After an early `return` (or other guard exit), leave a blank line** before the next statement so the “happy path” block is visually separated from guards.
 
 ## Creating a New Route
 
@@ -176,6 +178,54 @@ You can bind form controls directly to a writable store’s properties. Svelte c
 <InputField bind:value={$inviteSettingsStore.customExpiresAt} />
 <Select.Root type="single" bind:value={$inviteSettingsStore.preset}>
 ```
+
+### Form Structure
+
+For large dashboard forms, group fields by section instead of rendering one long flat list of controls.
+
+- Use a top-level `Field.Group` as the form container.
+- Split each logical section into its own `Field.Set`.
+- Use `Field.Legend` for the section title.
+- Separate sibling sections with `Field.Separator`.
+- Inside each section, wrap related controls in an inner `Field.Group`.
+- Put every control inside `Field.Field`, and use `orientation="horizontal"` for toggle or checkbox rows.
+- Use `Field.Description` for helper copy that applies to a whole section.
+
+Pattern:
+
+```svelte
+<Field.Group>
+  <Field.Set>
+    <Field.Legend>{$t('settings.section.heading')}</Field.Legend>
+
+    <Field.Field orientation="horizontal">
+      <Switch bind:checked={$store.section.enabled} />
+      <Field.Label>{$t('settings.section.toggle')}</Field.Label>
+    </Field.Field>
+
+    <Field.Group>
+      <Field.Field>
+        <Field.Label>{$t('settings.section.title')}</Field.Label>
+        <Input bind:value={$store.section.title} />
+      </Field.Field>
+
+      <Field.Field>
+        <Field.Label>{$t('settings.section.description')}</Field.Label>
+        <Textarea bind:value={$store.section.description} />
+      </Field.Field>
+    </Field.Group>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend>{$t('settings.other.heading')}</Field.Legend>
+    <!-- more grouped fields -->
+  </Field.Set>
+</Field.Group>
+```
+
+Use `@cio/ui/custom/*-field` wrappers for standard app forms. When building larger settings/editor screens that need legends, descriptions, separators, grouped rows, or mixed controls such as `Switch`, `Checkbox`, `RadioGroup`, image pickers, and action buttons, compose the form with `@cio/ui/base/field` primitives and the matching base inputs instead.
 
 ### Reactive built-in collections
 

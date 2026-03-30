@@ -63,7 +63,8 @@
       isDescriptionDirty: false,
       isDueByDirty: false,
       questions: questions,
-      totalSubmissions: 0
+      totalSubmissions: 0,
+      allowMultipleAttempts: !!exercise.allowMultipleAttempts
     });
     questionnaireMetaData.update((m) => ({ ...m, exerciseId: data.exerciseId }));
   });
@@ -84,7 +85,7 @@
       goBack={() => goto(resolve(path, {}))}
       isFetching={false}
       submissions={data.submissions ?? []}
-      mySubmission={data.mySubmission ?? null}
+      mySubmissions={data.mySubmissions ?? []}
     />
   {/if}
 </Page.Root>

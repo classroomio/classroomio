@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { sanitizeHtml } from '@api/utils/sanitize-html';
 import type { TLesson, TNewLessonComment, TNewLessonCompletion } from '@cio/db/types';
 import type { TLessonCreate, TLessonReorder, TLessonUpdate } from '@cio/utils/validation/lesson';
 import {
@@ -230,7 +231,7 @@ export async function createLessonCommentService(lessonId: string, groupMemberId
     const commentData: TNewLessonComment = {
       lessonId,
       groupmemberId: groupMemberId,
-      comment
+      comment: sanitizeHtml(comment)
     };
 
     return await createLessonComment(commentData);
@@ -252,7 +253,7 @@ export async function createLessonCommentService(lessonId: string, groupMemberId
  */
 export async function updateLessonCommentService(commentId: number, comment: string) {
   try {
-    const updated = await updateLessonComment(commentId, comment);
+    const updated = await updateLessonComment(commentId, sanitizeHtml(comment));
     if (!updated) {
       throw new AppError('Comment not found', ErrorCodes.LESSON_COMMENT_UPDATE_FAILED, 404);
     }

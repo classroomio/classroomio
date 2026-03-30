@@ -3,7 +3,14 @@ import type { Course } from '$features/course/types';
 import type { CourseMembers, CourseSectionWithLessons, ListLessons } from '$features/course/utils/types';
 import { writable, type Writable } from 'svelte/store';
 
-export const defaultCourse = {
+const defaultLessonTabsOrder: NonNullable<NonNullable<Course['metadata']>['lessonTabsOrder']> = [
+  { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
+  { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
+  { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
+  { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
+];
+
+export const defaultCourse: Course = {
   id: '',
   title: '',
   description: '',
@@ -12,8 +19,10 @@ export const defaultCourse = {
   cost: 0,
   currency: 'USD',
   status: 'ACTIVE',
-  isCertificateDownloadable: false,
-  certificateTheme: 'professional',
+  certificate: {
+    isDownloadable: false,
+    theme: 'professional'
+  },
   isPublished: false,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
@@ -24,10 +33,6 @@ export const defaultCourse = {
   bannerImage: null,
   attendance: [],
   group: null,
-  course_section: [],
-  sections: [],
-  lessons: [],
-  exercises: [],
   content: {
     grouped: false,
     sections: [],
@@ -52,12 +57,7 @@ export const defaultCourse = {
       description: '',
       imgUrl: ''
     },
-    lessonTabsOrder: [
-      { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
-      { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
-      { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
-      { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
-    ],
+    lessonTabsOrder: defaultLessonTabsOrder,
     grading: false,
     lessonDownload: true,
     allowNewStudent: false,

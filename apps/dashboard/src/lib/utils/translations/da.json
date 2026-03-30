@@ -1118,7 +1118,11 @@
               "answers_required": "Angiv venligst mindst ét ​​svar, før du sender.",
               "checking_submission": "Tjek din indsendelse...",
               "answer_required": "Besvar venligst dette spørgsmål, før du fortsætter.",
-              "instructor_feedback": "Instruktør feedback"
+              "instructor_feedback": "Instruktør feedback",
+              "attempt_counter": "Forsøg {current} af {total}",
+              "previous_try": "Tidligere forsøg",
+              "next_try": "Næste forsøg",
+              "try_again": "Prøv igen"
             },
             "edit_mode": {
               "delete_modal": "Slet øvelse",
@@ -1371,7 +1375,11 @@
                 "not_set": "Ikke indstillet",
                 "incorrect_badge": "Forkert"
               }
-            }
+            },
+            "settings": "Indstillinger",
+            "settings_allow_multiple": "Tillad flere forsøg",
+            "settings_allow_multiple_helper": "Studerende kan indsende mere end én gang og gennemgå tidligere forsøg på resultatskærmen.",
+            "settings_save": "Gem indstillinger"
           },
           "new_exercise_modal": {
             "heading": "Ny øvelse",
@@ -1632,18 +1640,29 @@
         "later": "Luk"
       }
     },
+    "certificates": {
+      "progress_hint": "{current} % gennemført ({required} % kræves for at downloade)"
+    },
     "certification": {
-      "rules_heading": "Certificeringsregler",
+      "rules_heading": "Regler",
       "deadline_label": "Certificeringsfrist",
       "deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline.",
       "threshold_label": "Minimum fuldførelse (%)",
       "threshold_helper": "Kombineret fremskridt i lektion og træning kræves for at opnå certifikatet (0-100). Standard er 100 %.",
-      "email_message_label": "E-mail med certificering",
-      "email_message_helper": "Valgfri besked vist i e-mailen, når en elev opfylder kravene. Et link til certifikatsiden er altid inkluderet.",
+      "final_exercise_label": "Afsluttende øvelse (valgfrit)",
+      "final_exercise_none": "ingen",
+      "final_exercise_helper": "Når den er indstillet, skal eleverne mindst opnå minimumscore på denne øvelse (bedste forsøg tæller) ud over fuldførelsesprocenten ovenfor.",
+      "min_exercise_score_label": "Minimumsscore på sidste øvelse (%)",
+      "min_exercise_score_helper": "Score er en procentdel af det samlede antal point, der er mulige på den øvelse (0-100).",
+      "blocker_progress": "Dit kursus fremskridt er {current}%; {required} % er påkrævet.",
+      "blocker_deadline": "Certificeringsfristen er udløbet.",
+      "blocker_no_content": "Dette kursus har ingen lektioner eller øvelser at gennemføre.",
+      "blocker_final_not_submitted": "Indsend den nødvendige øvelse \"{exerciseTitle}\" for at kvalificere dig til certifikatet.",
+      "blocker_final_pending": "Dit forsøg på \"{exerciseTitle}\" bliver stadig bedømt.",
+      "blocker_final_score": "Din bedste score på \"{exerciseTitle}\" er {bestPercent}%; {requiredPercent} % er påkrævet.",
+      "blocker_final_misconfigured": "Certificeringsøvelsen \"{exerciseTitle}\" har ingen point konfigureret; bed din instruktør om at ordne det.",
+      "email_message_label": "E-mail besked",
       "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!"
-    },
-    "certificates": {
-      "progress_hint": "{current} % gennemført ({required} % kræves for at downloade)"
     }
   },
   "courses": {

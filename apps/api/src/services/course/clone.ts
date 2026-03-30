@@ -182,8 +182,7 @@ export async function cloneCourse(
     currency: course.currency,
     bannerImage: course.bannerImage,
     isPublished: course.isPublished,
-    isCertificateDownloadable: course.isCertificateDownloadable,
-    certificateTheme: course.certificateTheme,
+    certificate: course.certificate,
     status: course.status,
     type: course.type
   });

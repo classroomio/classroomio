@@ -4,6 +4,7 @@ import {
   ZCancelOrgPlan,
   ZCreateOrgPlan,
   ZCreateOrganization,
+  ZGetAudienceQuery,
   ZGetCoursesBySiteName,
   ZGetOrgSetup,
   ZGetOrganizationCoursesQuery,
@@ -37,6 +38,7 @@ import {
   getRecommendedCourses,
   getUserAnalytics,
   getUserEnrolledCourses,
+  removeAudienceMember,
   removeTeamMember,
   updateOrg,
   updateOrgPlan
@@ -178,15 +180,18 @@ export const organizationRouter = new Hono()
    * Gets organization audience (students)
    * Requires authentication
    */
-  .get('/audience', authMiddleware, orgTeamMemberMiddleware, async (c) => {
+  .get('/audience', authMiddleware, orgTeamMemberMiddleware, zValidator('query', ZGetAudienceQuery), async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;
-      const audience = await getOrgAudience(orgId);
+      const query = c.req.valid('query');
+      const audience = await getOrgAudience(orgId, query);
 
       return c.json(
         {
           success: true,
-          data: audience
+          data: audience.items,
+          pagination: audience.pagination,
+          query: audience.query
         },
         200
       );
@@ -194,6 +199,35 @@ export const organizationRouter = new Hono()
       return handleError(c, error, 'Failed to fetch organization audience');
     }
   })
+  /**
+   * DELETE /organization/audience/:memberId
+   * Removes a student from the organization
+   */
+  .delete(
+    '/audience/:memberId',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZRemoveTeamMember),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const user = c.get('user')!;
+        const { memberId } = c.req.valid('param');
+
+        const deleted = await removeAudienceMember(orgId, memberId, user.id);
+
+        return c.json(
+          {
+            success: true,
+            data: deleted
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to remove audience member');
+      }
+    }
+  )
   /**
    * POST /organization/audience/resend-invite
    * Resends a student org invite email (new token; optional course metadata from last invite)
@@ -604,7 +638,7 @@ export const organizationRouter = new Hono()
   .post(
     '/audience/assign-courses',
     authMiddleware,
-    orgAdminMiddleware,
+    orgTeamMemberMiddleware,
     zValidator('json', ZAssignAudienceCourses),
     async (c) => {
       try {

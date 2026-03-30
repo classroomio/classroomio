@@ -1,6 +1,7 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
 import {
+  deleteOrganizationAudienceMember,
   cancelOrganizationPlan,
   createOrganizationPlan,
   deleteOrganizationMember,
@@ -34,7 +35,8 @@ import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { getProfileById } from '@cio/db/queries/auth';
 import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/invite';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
-import type { OrgAudienceMember } from '@api/types/org';
+import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
+import type { TGetAudienceQuery } from '@cio/utils/validation/organization';
 
 /**
  * Creates a new organization with the current user as owner
@@ -121,28 +123,78 @@ export async function getOrgTeam(orgId: string) {
  * @param orgId - The organization ID
  * @returns Audience members with invite status for profile-less rows
  */
-export async function getOrgAudience(orgId: string): Promise<OrgAudienceMember[]> {
+export async function getOrgAudience(
+  orgId: string,
+  query: TGetAudienceQuery
+): Promise<{ items: OrgAudienceMember[]; pagination: OrgAudiencePagination; query: OrgAudienceQuery }> {
   try {
-    const audience = await getOrganizationAudience(orgId);
+    const audienceResult = await getOrganizationAudience(orgId, query);
+    const audience = audienceResult.items;
 
     const emailsWithoutProfile = audience.filter((m) => !m.profileId && m.email).map((m) => m.email.toLowerCase());
 
     const invites = await getLatestOrgInvitesByEmails(orgId, emailsWithoutProfile);
     const inviteByEmail = new Map(invites.map((i) => [i.email.toLowerCase(), i]));
 
-    return audience.map(
-      (member): OrgAudienceMember => ({
-        ...member,
-        status: deriveAudienceMemberStatus(
-          member.profileId,
-          member.email ? inviteByEmail.get(member.email.toLowerCase()) : undefined
-        )
-      })
-    );
+    return {
+      items: audience.map(
+        (member): OrgAudienceMember => ({
+          ...member,
+          status: deriveAudienceMemberStatus(
+            member.profileId,
+            member.email ? inviteByEmail.get(member.email.toLowerCase()) : undefined
+          )
+        })
+      ),
+      pagination: {
+        page: audienceResult.page,
+        limit: audienceResult.limit,
+        total: audienceResult.total,
+        totalPages: audienceResult.totalPages
+      },
+      query: {
+        page: audienceResult.page,
+        limit: audienceResult.limit,
+        search: query.search,
+        sortBy: query.sortBy,
+        sortOrder: query.sortOrder
+      }
+    };
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch organization audience',
       ErrorCodes.ORG_AUDIENCE_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Removes a student audience member from an organization
+ * @param orgId - The organization ID
+ * @param memberId - The student member ID to remove
+ * @returns Deleted member
+ */
+export async function removeAudienceMember(orgId: string, memberId: number, removedByProfileId?: string) {
+  try {
+    const deleted = await deleteOrganizationAudienceMember(orgId, memberId);
+    if (!deleted) {
+      throw new AppError('Audience member not found', ErrorCodes.ORG_AUDIENCE_REMOVE_FAILED, 404);
+    }
+
+    if (deleted.email && removedByProfileId) {
+      await revokeActiveOrganizationInvitesByEmails(orgId, [deleted.email.toLowerCase()], removedByProfileId);
+    }
+
+    return deleted;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to remove audience member',
+      ErrorCodes.ORG_AUDIENCE_REMOVE_FAILED,
       500
     );
   }

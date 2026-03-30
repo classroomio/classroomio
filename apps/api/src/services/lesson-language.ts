@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { sanitizeOptionalHtml } from '@api/utils/sanitize-html';
 import type { TLessonLanguage, TLocale, TNewLessonLanguage } from '@db/types';
 import {
   getLessonLanguageByLessonIdAndLocale,
@@ -65,6 +66,7 @@ export async function upsertLessonLanguageService(
 
     const language = await upsertLessonLanguage({
       ...data,
+      content: sanitizeOptionalHtml(data.content),
       lessonId
     });
 
@@ -105,7 +107,10 @@ export async function updateLessonLanguageService(
       throw new AppError('Lesson language not found', ErrorCodes.LESSON_LANGUAGE_NOT_FOUND, 404);
     }
 
-    const language = await updateLessonLanguage(lessonId, locale, data);
+    const language = await updateLessonLanguage(lessonId, locale, {
+      ...data,
+      content: sanitizeOptionalHtml(data.content)
+    });
     return language;
   } catch (error) {
     if (error instanceof AppError) {

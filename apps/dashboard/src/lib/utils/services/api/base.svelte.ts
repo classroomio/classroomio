@@ -67,6 +67,10 @@ export class BaseApi {
         return typedResult;
       }
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        return;
+      }
+
       console.error(`Error in ${logContext}:`, error);
       this.error = getErrMsg(error, `Error ${logContext}:`);
 

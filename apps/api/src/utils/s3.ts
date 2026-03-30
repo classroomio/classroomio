@@ -9,7 +9,7 @@ import {
 
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getPresignS3Client, getS3Client, getStorageConfig } from '@api/config/storage';
-import { redis } from '@api/utils/redis/redis';
+import { logRedisUnavailableOnce, redis } from '@api/utils/redis/redis';
 
 export type GetSignedUrlParameters = Parameters<typeof getSignedUrl>;
 
@@ -70,7 +70,7 @@ export async function generateDownloadPresignedUrls(
   try {
     cachedValues = await redis.mGet(cacheKeys);
   } catch (error) {
-    console.error('Redis mGet failed for presigned URL cache, falling back to S3:', error);
+    logRedisUnavailableOnce('Redis cache unavailable for presigned URLs, falling back to S3', error);
   }
 
   const keysToGenerate: string[] = [];
@@ -121,7 +121,7 @@ export async function generateDownloadPresignedUrls(
     });
     await pipeline.exec();
   } catch (error) {
-    console.error('Redis setEx failed for presigned URL cache:', error);
+    logRedisUnavailableOnce('Redis cache write unavailable for presigned URLs, continuing without cache', error);
     // URLs are already in signedUrls; cache write failure is non-fatal
   }
 

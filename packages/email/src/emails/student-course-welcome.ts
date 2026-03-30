@@ -5,17 +5,18 @@ import { getDefaultTemplate } from '../templates';
 
 export const studentCourseWelcomeEmail = defineEmail({
   id: 'studentCourseWelcome',
-  subject: 'Welcome to Class 🎉',
+  subject: 'You have access to a course — sign in to get started',
   schema: z.object({
     orgName: z.string().min(1),
-    courseName: z.string().min(1)
+    courseName: z.string().min(1),
+    loginUrl: z.string().min(1)
   }),
   render: (fields) => {
     const content = `
       <p>Hi there,</p>
-      <p>Congratulations 🎉, you've successfully joined: <strong>${fields.courseName}</strong></p>
-      <p>Everything has been set up for you to have an amazing learning experience.</p>
-      <p>If you run into any issues, don't fail to reach out to your instructor(s).</p>
+      <p>You now have access to <strong>${fields.courseName}</strong> in <strong>${fields.orgName}</strong>.</p>
+      <p><a href="${fields.loginUrl}">Sign in to ClassroomIO</a> to open the course and get started.</p>
+      <p>If you run into any issues, reach out to your instructor(s).</p>
       <p>Cheers,</p>
       <p>${fields.orgName}</p>
     `;

@@ -17,7 +17,7 @@
     isLoading = false;
   }
 
-  const audienceLength = $derived(data.audience?.length || 0);
+  const audienceLength = $derived(data.pagination?.total || 0);
 </script>
 
 <svelte:head>
@@ -47,7 +47,7 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <AudiencePage audience={data.audience} courses={data.courses} />
+      <AudiencePage audience={data.audience} pagination={data.pagination} query={data.query} courses={data.courses} />
     {/snippet}
   </Page.Body>
 </Page.Root>

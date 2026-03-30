@@ -5,16 +5,54 @@
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { Button } from '@cio/ui/base/button';
-  import Empty from '@cio/ui/custom/empty/empty.svelte';
+  import { Empty } from '@cio/ui/custom/empty';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import { classroomio } from '$lib/utils/services/api';
+  import type { CertificationEvaluationData } from '$features/course/utils/types';
+  import { openCourseCompletionModal } from '$features/course/store/course-completion-modal';
 
   let isLoading = $state(false);
   let isCourseComplete = $state(false);
+  let evaluation = $state<CertificationEvaluationData | null>(null);
 
   let courseId = $derived(courseApi.course?.id ?? '');
+
+  function formatBlockerMessage(blocker: CertificationEvaluationData['blockers'][number]): string {
+    const p = blocker.params ?? {};
+    switch (blocker.code) {
+      case 'CERT_PROGRESS':
+        return t.get('course.certification.blocker_progress', {
+          current: Number(p.current ?? 0),
+          required: Number(p.required ?? 0)
+        });
+      case 'CERT_DEADLINE_PASSED':
+        return t.get('course.certification.blocker_deadline');
+      case 'CERT_NO_CONTENT':
+        return t.get('course.certification.blocker_no_content');
+      case 'CERT_FINAL_EXERCISE_NOT_SUBMITTED':
+        return t.get('course.certification.blocker_final_not_submitted', {
+          exerciseTitle: String(p.exerciseTitle ?? '')
+        });
+      case 'CERT_FINAL_EXERCISE_PENDING_GRADE':
+        return t.get('course.certification.blocker_final_pending', {
+          exerciseTitle: String(p.exerciseTitle ?? '')
+        });
+      case 'CERT_FINAL_EXERCISE_SCORE':
+        return t.get('course.certification.blocker_final_score', {
+          exerciseTitle: String(p.exerciseTitle ?? ''),
+          bestPercent: Number(p.bestPercent ?? 0),
+          requiredPercent: Number(p.requiredPercent ?? 0)
+        });
+      case 'CERT_FINAL_EXERCISE_MISCONFIGURED':
+        return t.get('course.certification.blocker_final_misconfigured', {
+          exerciseTitle: String(p.exerciseTitle ?? '')
+        });
+      default:
+        return blocker.code;
+    }
+  }
 
   const downLoadCertificate = async () => {
     if (!isCourseComplete || !courseId) return;
@@ -24,7 +62,7 @@
       const response = await classroomio.course[':courseId']['download']['certificate']['$post']({
         param: { courseId },
         json: {
-          theme: `${courseApi.course?.certificateTheme}`,
+          theme: `${courseApi.course?.certificate?.theme ?? 'professional'}`,
           studentName: `${$profile.fullname}`,
           courseName: `${courseApi.course?.title}`,
           courseDescription: `${courseApi.course?.description}`,
@@ -52,22 +90,24 @@
     isLoading = false;
   };
 
-  const hasUserCompletedCourse = async () => {
+  const loadEvaluation = async () => {
+    if (!courseId) return;
     isLoading = true;
+    const res = await courseApi.getCertificationEvaluation(courseId);
+    if (res?.data) {
+      evaluation = res.data;
+      const hasEarned = res.data.certificateEarnedAt != null;
+      isCourseComplete = hasEarned || !!res.data.eligibleForCertificate;
 
-    const response = await courseApi.getProgress(courseId, $profile.id);
-
-    if (courseApi.success && response?.data) {
-      const progress = response.data;
-      isCourseComplete =
-        progress.lessonsCount === progress.lessonsCompleted && progress.exercisesCount === progress.exercisesCompleted;
+      if (res.data.isNewCompletion && courseId) {
+        openCourseCompletionModal(courseId);
+      }
     }
-
     isLoading = false;
   };
 
   onMount(() => {
-    hasUserCompletedCourse();
+    loadEvaluation();
   });
 
   let title = $derived(
@@ -75,15 +115,40 @@
       ? 'course.navItem.certificates.unlocked_certificate'
       : 'course.navItem.certificates.complete_to_download_title'
   );
-  let subtitle = $derived(
-    isCourseComplete
-      ? 'course.navItem.certificates.unlocked_certificate_subtitle'
-      : 'course.navItem.certificates.complete_to_download_subtitle'
-  );
+
+  let progressLines = $derived.by(() => {
+    if (!evaluation) {
+      return [
+        t.get('course.certificates.progress_hint', {
+          current: 0,
+          required: courseApi.course?.certificate?.threshold ?? 100
+        })
+      ];
+    }
+    const blockers = evaluation.blockers ?? [];
+    if (blockers.length > 0) {
+      return blockers.map((b) => formatBlockerMessage(b));
+    }
+    return [
+      t.get('course.certificates.progress_hint', {
+        current: evaluation.progressPercent,
+        required: evaluation.certificationThreshold
+      })
+    ];
+  });
 </script>
 
 <div class="flex-1">
-  <Empty title={$t(title)} description={$t(subtitle)} icon={DownloadIcon} variant="page">
+  <Empty title={$t(title)} icon={DownloadIcon} variant="page">
+    <div class="ui:text-muted-foreground mx-auto mb-4 max-w-md space-y-2 text-center text-sm">
+      {#if isCourseComplete}
+        <p>{$t('course.navItem.certificates.unlocked_certificate_subtitle')}</p>
+      {:else}
+        {#each progressLines as line (line)}
+          <p>{line}</p>
+        {/each}
+      {/if}
+    </div>
     <Button onclick={downLoadCertificate} disabled={!isCourseComplete} loading={isLoading}>
       <DownloadIcon size={16} />
       {$t('course.navItem.certificates.download_certificate')}

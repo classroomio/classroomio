@@ -11,6 +11,7 @@
   import { Confetti } from '$features/ui';
   import { courseApi } from '$features/course/api';
   import ContentCreateModal from '$features/course/components/content/content-create-modal.svelte';
+  import CourseCompletionModal from '$features/course/components/ceritficate/course-completion-modal.svelte';
   import { profile } from '$lib/utils/store/user';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
@@ -98,6 +99,7 @@
   >
     <CourseHeader />
     <ContentCreateModal />
+    <CourseCompletionModal />
 
     {#if !isCourseReady}
       <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center">

@@ -20,8 +20,11 @@
     isRowSelected: (rowId: string) => boolean;
     onToggleRow: (rowId: string) => void;
     inviteActionEmail: string | null;
+    deletingMemberId: string | null;
+    canDeleteMembers: boolean;
     onResendInvite: (email: string) => void;
     onRevokeInvite: (email: string) => void;
+    onDeleteRow: (row: OrganizationAudienceMember) => void;
   }
 
   let {
@@ -33,8 +36,11 @@
     isRowSelected,
     onToggleRow,
     inviteActionEmail,
+    deletingMemberId,
+    canDeleteMembers,
     onResendInvite,
-    onRevokeInvite
+    onRevokeInvite,
+    onDeleteRow
   }: Props = $props();
 
   function memberHref(row: OrganizationAudienceMember): string | null {
@@ -71,8 +77,11 @@
           selected={isRowSelected(String(row.id))}
           onToggleSelect={() => onToggleRow(String(row.id))}
           {inviteActionEmail}
+          {deletingMemberId}
+          {canDeleteMembers}
           {onResendInvite}
           {onRevokeInvite}
+          onDelete={() => onDeleteRow(row)}
         />
       {/each}
     </Table.Body>

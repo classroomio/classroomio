@@ -10,3 +10,10 @@ export function toggleConfetti() {
     show: !confetti.show
   }));
 }
+
+export function setConfetti(show: boolean) {
+  confettiStore.update((confetti) => ({
+    ...confetti,
+    show
+  }));
+}

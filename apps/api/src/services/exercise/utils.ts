@@ -79,6 +79,7 @@ export function buildExerciseUpdateFields(data: TExerciseUpdate): Partial<TExerc
   if (data.order !== undefined) exerciseUpdate.order = data.order;
   if (data.isUnlocked !== undefined) exerciseUpdate.isUnlocked = data.isUnlocked;
   if (data.dueBy !== undefined) exerciseUpdate.dueBy = data.dueBy || null;
+  if (data.allowMultipleAttempts !== undefined) exerciseUpdate.allowMultipleAttempts = data.allowMultipleAttempts;
   return exerciseUpdate;
 }
 

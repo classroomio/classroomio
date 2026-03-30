@@ -3,13 +3,22 @@ import { db, organizationmember } from '@db/drizzle';
 interface SeedOrganizationMember {
   testOrgId: string;
   adminUserId: string;
+  studentUserId: string;
+  enterpriseOrgId: string;
+  enterpriseAdminUserId: string;
+  enterpriseStudentUserId: string;
 }
 
-export async function seedOrganizationMember({ testOrgId, adminUserId }: SeedOrganizationMember) {
+export async function seedOrganizationMember({
+  testOrgId,
+  adminUserId,
+  studentUserId,
+  enterpriseOrgId,
+  enterpriseAdminUserId,
+  enterpriseStudentUserId
+}: SeedOrganizationMember) {
   const existingOrgMembers = await db.select().from(organizationmember);
   const existingOrgMemberKeys = existingOrgMembers.map((om) => `${om.organizationId}-${om.profileId}`);
-
-  const studentUserId = '0c256e75-aa40-4f62-8d30-0217ca1c60d9';
 
   const orgMembersToInsert = [
     {
@@ -22,6 +31,18 @@ export async function seedOrganizationMember({ testOrgId, adminUserId }: SeedOrg
       organizationId: testOrgId,
       roleId: 3, // STUDENT
       profileId: studentUserId,
+      verified: false
+    },
+    {
+      organizationId: enterpriseOrgId,
+      roleId: 1, // ADMIN
+      profileId: enterpriseAdminUserId,
+      verified: false
+    },
+    {
+      organizationId: enterpriseOrgId,
+      roleId: 3, // STUDENT
+      profileId: enterpriseStudentUserId,
       verified: false
     }
   ].filter((om) => !existingOrgMemberKeys.includes(`${om.organizationId}-${om.profileId}`));

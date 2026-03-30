@@ -343,15 +343,18 @@ async function sendStudentJoinEmails(input: {
   courseId: string;
   courseName: string;
   orgName: string;
+  orgSiteName: string | null;
   studentId: string;
   studentEmail: string;
 }) {
   try {
+    const loginUrl = getDashboardBaseUrl(input.orgSiteName ?? undefined);
     await sendEmail('studentCourseWelcome', {
       to: input.studentEmail,
       fields: {
         orgName: input.orgName,
-        courseName: input.courseName
+        courseName: input.courseName,
+        loginUrl
       },
       from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`)
     });
@@ -678,6 +681,7 @@ export async function enrollInCourse(
     courseId,
     courseName: title,
     orgName: org.name,
+    orgSiteName: org.siteName,
     studentId: user.id,
     studentEmail: normalizedEmail
   });
@@ -962,7 +966,8 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
         alreadyJoined: true,
         courseId: course.id,
         courseName: course.title,
-        orgName: organization.name
+        orgName: organization.name,
+        orgSiteName: organization.siteName
       };
     }
 
@@ -1061,7 +1066,8 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       alreadyJoined: false,
       courseId: course.id,
       courseName: course.title,
-      orgName: organization.name
+      orgName: organization.name,
+      orgSiteName: organization.siteName
     };
   });
 
@@ -1070,6 +1076,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       courseId: result.courseId,
       courseName: result.courseName,
       orgName: result.orgName,
+      orgSiteName: result.orgSiteName,
       studentId: user.id,
       studentEmail: normalizedEmail
     });

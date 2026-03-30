@@ -1,4 +1,4 @@
-import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
 
 // Team member types
 export type GetTeamRequest = (typeof classroomio.organization)['team']['$get'];
@@ -20,9 +20,19 @@ export type OrganizationTeamMembers = Array<
 export type GetAudienceRequest = (typeof classroomio.organization)['audience']['$get'];
 export type OrganizationAudienceResponse = InferResponseType<GetAudienceRequest> | null;
 export type OrganizationAudienceSuccess = Extract<InferResponseType<GetAudienceRequest>, { success: true }>;
+export type OrganizationAudienceRequestQuery = NonNullable<InferRequestType<GetAudienceRequest>['query']>;
+export type OrganizationAudienceSortBy = 'createdAt' | 'name' | 'email';
+export type OrganizationAudienceSortOrder = 'asc' | 'desc';
+export type OrganizationAudienceQuery = {
+  page: number;
+  limit: number;
+  search?: string;
+  sortBy: OrganizationAudienceSortBy;
+  sortOrder: OrganizationAudienceSortOrder;
+};
 
 export type OrganizationAudience = OrganizationAudienceSuccess['data'];
-
+export type OrganizationAudiencePagination = OrganizationAudienceSuccess['pagination'];
 export type OrganizationAudienceMember = OrganizationAudience[number];
 
 // Org Public Courses  types
@@ -43,6 +53,8 @@ export type InviteTeamData = InviteTeamSuccess['data'];
 
 export type DeleteTeamRequest = (typeof classroomio.organization)['team'][':memberId']['$delete'];
 export type DeleteTeamSuccess = Extract<InferResponseType<DeleteTeamRequest>, { success: true }>;
+export type DeleteAudienceMemberRequest = (typeof classroomio.organization)['audience'][':memberId']['$delete'];
+export type DeleteAudienceMemberSuccess = Extract<InferResponseType<DeleteAudienceMemberRequest>, { success: true }>;
 
 // update organization types
 export type UpdateOrganizationRequest = (typeof classroomio.organization)['$put'];

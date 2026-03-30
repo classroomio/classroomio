@@ -19,6 +19,39 @@ export const getRequestBaseUrl = () => {
   return env.PUBLIC_SERVER_URL;
 };
 
+function mergeAbortSignals(...signals: Array<AbortSignal | null | undefined>) {
+  const activeSignals = signals.filter((signal): signal is AbortSignal => Boolean(signal));
+
+  if (activeSignals.length === 0) {
+    return undefined;
+  }
+
+  if (activeSignals.length === 1) {
+    return activeSignals[0];
+  }
+
+  const controller = new AbortController();
+
+  const abortWithSignal = (signal: AbortSignal) => {
+    if (controller.signal.aborted) {
+      return;
+    }
+
+    controller.abort(signal.reason);
+  };
+
+  for (const signal of activeSignals) {
+    if (signal.aborted) {
+      abortWithSignal(signal);
+      break;
+    }
+
+    signal.addEventListener('abort', () => abortWithSignal(signal), { once: true });
+  }
+
+  return controller.signal;
+}
+
 class ApiClient {
   private config: Required<ApiClientConfig>;
 
@@ -70,14 +103,14 @@ class ApiClient {
     }
 
     // Create abort controller for timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    const timeoutController = new AbortController();
+    const timeoutId = setTimeout(() => timeoutController.abort(), timeout);
 
     const requestInit: RequestInit = {
       ...fetchConfig,
       headers: isFormData ? undefined : headers,
       body: requestBody,
-      signal: controller.signal
+      signal: mergeAbortSignals(fetchConfig.signal, timeoutController.signal)
     };
 
     let lastError: Error | null = null;
@@ -124,6 +157,10 @@ class ApiClient {
 
         // Handle abort (timeout)
         if (error instanceof Error && error.name === 'AbortError') {
+          if (!timeoutController.signal.aborted) {
+            throw error;
+          }
+
           throw new ApiError('Request timeout', 408, 'Request Timeout');
         }
 

@@ -7,6 +7,7 @@ export const EMAIL_IDS = [
   'newsfeedPost',
   'onPasswordReset',
   'studentCourseInvite',
+  'studentCourseCompletion',
   'studentCourseWelcome',
   'studentOrgInvite',
   'studentProvePayment',

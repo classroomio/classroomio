@@ -978,13 +978,13 @@
       "progress_hint": "{current}% complete ({required}% required to download)"
     },
     "certification": {
-      "rules_heading": "Certification rules",
+      "rules_heading": "Rules",
       "deadline_label": "Certification deadline",
       "deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
       "threshold_label": "Minimum completion (%)",
       "threshold_helper": "Combined lesson and exercise progress required to earn the certificate (0–100). Default is 100%.",
       "final_exercise_label": "Final exercise (optional)",
-      "final_exercise_none": "None — no extra exercise score",
+      "final_exercise_none": "none",
       "final_exercise_helper": "When set, students must reach at least the minimum score on this exercise (best attempt counts) in addition to the completion percentage above.",
       "min_exercise_score_label": "Minimum score on final exercise (%)",
       "min_exercise_score_helper": "Score is a percentage of the total points possible on that exercise (0–100).",
@@ -995,8 +995,7 @@
       "blocker_final_pending": "Your attempt on \"{exerciseTitle}\" is still being graded.",
       "blocker_final_score": "Your best score on \"{exerciseTitle}\" is {bestPercent}%; {requiredPercent}% is required.",
       "blocker_final_misconfigured": "The certification exercise \"{exerciseTitle}\" has no points configured; ask your instructor to fix it.",
-      "email_message_label": "Certification email message",
-      "email_message_helper": "Optional message shown in the email when a student meets the requirements. A link to the certificate page is always included.",
+      "email_message_label": "Email Message",
       "email_message_placeholder": "e.g. We are proud of your progress — keep learning!"
     },
     "completion": {

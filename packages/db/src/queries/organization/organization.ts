@@ -8,10 +8,11 @@ import type {
   TOrganization,
   TOrganizationPlan
 } from '@db/types';
-import { and, eq, inArray, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
+import type { TAudienceSortBy, TAudienceSortOrder } from '@cio/utils/validation/organization';
 
 export function getOrgIdBySiteName(siteName: string) {
   return db.select().from(schema.organization).where(eq(schema.organization.siteName, siteName)).limit(1);
@@ -247,6 +248,27 @@ export const deleteOrganizationMember = async (orgId: string, memberId: number) 
 };
 
 /**
+ * Deletes a student organization member by ID
+ * @param orgId Organization ID
+ * @param memberId Member ID to delete
+ * @returns Deleted member or null if not found
+ */
+export const deleteOrganizationAudienceMember = async (orgId: string, memberId: number) => {
+  const [deleted] = await db
+    .delete(schema.organizationmember)
+    .where(
+      and(
+        eq(schema.organizationmember.organizationId, orgId),
+        eq(schema.organizationmember.id, memberId),
+        eq(schema.organizationmember.roleId, ROLE.STUDENT)
+      )
+    )
+    .returning();
+
+  return deleted || null;
+};
+
+/**
  * Checks if a user is an admin of an organization
  * @param orgId Organization ID
  * @param profileId Profile ID to check
@@ -349,38 +371,93 @@ export const getOrganizationTeam = async (orgId: string) => {
  * Includes invited members without a profile (LEFT JOIN profile).
  * Row id is organizationmember.id; use profileId for profile-backed actions when present.
  */
-export const getOrganizationAudience = async (orgId: string) => {
+type GetOrganizationAudienceOptions = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: TAudienceSortBy;
+  sortOrder?: TAudienceSortOrder;
+};
+
+export const getOrganizationAudience = async (orgId: string, options: GetOrganizationAudienceOptions = {}) => {
+  const page = options.page && options.page > 0 ? options.page : 1;
+  const limit = options.limit && options.limit > 0 ? Math.min(options.limit, 100) : 20;
+  const offset = (page - 1) * limit;
+  const search = options.search?.trim();
+  const sortBy = options.sortBy ?? 'createdAt';
+  const sortOrder = options.sortOrder ?? 'desc';
+
+  const audienceNameSql = sql<string>`COALESCE(NULLIF(${schema.profile.fullname}, ''), ${schema.profile.email}, ${schema.organizationmember.email})`;
+  const audienceEmailSql = sql<string>`COALESCE(${schema.profile.email}, ${schema.organizationmember.email})`;
+  const audienceCreatedAtSql = sql<string>`COALESCE(${schema.profile.createdAt}, ${schema.organizationmember.createdAt})`;
+
+  const conditions = [
+    eq(schema.organizationmember.organizationId, orgId),
+    eq(schema.organizationmember.roleId, ROLE.STUDENT)
+  ];
+
+  if (search) {
+    const searchValue = `%${search}%`;
+    conditions.push(
+      or(
+        ilike(schema.profile.fullname, searchValue),
+        ilike(schema.profile.email, searchValue),
+        ilike(schema.organizationmember.email, searchValue)
+      )!
+    );
+  }
+
+  const whereClause = and(...conditions);
+  const [totalRow] = await db
+    .select({ count: count(schema.organizationmember.id) })
+    .from(schema.organizationmember)
+    .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+    .where(whereClause);
+
+  const total = Number(totalRow?.count ?? 0);
+
+  const orderByExpression =
+    sortBy === 'name' ? audienceNameSql : sortBy === 'email' ? audienceEmailSql : audienceCreatedAtSql;
+  const orderedExpression = sortOrder === 'asc' ? asc(orderByExpression) : desc(orderByExpression);
+
   const result = await db
     .select({
       memberId: schema.organizationmember.id,
       profileId: schema.profile.id,
       fullname: schema.profile.fullname,
-      email: sql<string>`COALESCE(${schema.profile.email}, ${schema.organizationmember.email})`.as('email'),
+      email: audienceEmailSql.as('email'),
       avatarUrl: schema.profile.avatarUrl,
       profileCreatedAt: schema.profile.createdAt,
       memberCreatedAt: schema.organizationmember.createdAt
     })
     .from(schema.organizationmember)
     .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
-    .where(
-      and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.roleId, ROLE.STUDENT))
-    );
+    .where(whereClause)
+    .orderBy(orderedExpression, desc(schema.organizationmember.id))
+    .limit(limit)
+    .offset(offset);
 
-  return result.map((row) => {
-    const email = row.email?.trim() ?? '';
-    const name = row.fullname?.trim() || (email.includes('@') ? email.split('@')[0] : email) || '';
-    const createdAtRaw = row.profileId ? row.profileCreatedAt : row.memberCreatedAt;
-    const createdAt = createdAtRaw ? new Date(createdAtRaw).toDateString() : '';
+  return {
+    items: result.map((row) => {
+      const email = row.email?.trim() ?? '';
+      const name = row.fullname?.trim() || (email.includes('@') ? email.split('@')[0] : email) || '';
+      const createdAtRaw = row.profileId ? row.profileCreatedAt : row.memberCreatedAt;
+      const createdAt = createdAtRaw ? new Date(createdAtRaw).toDateString() : '';
 
-    return {
-      id: row.memberId,
-      profileId: row.profileId ?? null,
-      name,
-      email,
-      avatarUrl: row.avatarUrl || '',
-      createdAt
-    };
-  });
+      return {
+        id: row.memberId,
+        profileId: row.profileId ?? null,
+        name,
+        email,
+        avatarUrl: row.avatarUrl || '',
+        createdAt
+      };
+    }),
+    page,
+    limit,
+    total,
+    totalPages: Math.max(1, Math.ceil(total / limit))
+  };
 };
 
 /**
@@ -760,7 +837,8 @@ export async function getOrgMembersByProfileIds(orgId: string, profileIds: strin
     return db
       .select({
         profileId: schema.organizationmember.profileId,
-        email: schema.organizationmember.email
+        email: schema.organizationmember.email,
+        roleId: schema.organizationmember.roleId
       })
       .from(schema.organizationmember)
       .where(
@@ -773,6 +851,54 @@ export async function getOrgMembersByProfileIds(orgId: string, profileIds: strin
     console.error('getOrgMembersByProfileIds error:', error);
     throw new Error(
       `Failed to get org members by profile IDs: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export type TOrganizationMemberByEmail = {
+  normalizedEmail: string;
+  profileId: string | null;
+  roleId: number;
+};
+
+/**
+ * Resolves organization members matching normalized emails (profile email or organizationmember.email).
+ */
+export async function getOrganizationMembersByNormalizedEmails(
+  orgId: string,
+  emails: string[]
+): Promise<TOrganizationMemberByEmail[]> {
+  try {
+    if (emails.length === 0) return [];
+
+    const normalized = [...new Set(emails.map((e) => e.toLowerCase().trim()).filter(Boolean))];
+
+    const rows = await db
+      .select({
+        roleId: schema.organizationmember.roleId,
+        profileId: schema.organizationmember.profileId,
+        matchEmail: sql<string>`lower(trim(coalesce(${schema.profile.email}, ${schema.organizationmember.email})))`.as(
+          'matchEmail'
+        )
+      })
+      .from(schema.organizationmember)
+      .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          inArray(sql`lower(trim(coalesce(${schema.profile.email}, ${schema.organizationmember.email})))`, normalized)
+        )
+      );
+
+    return rows.map((row) => ({
+      normalizedEmail: row.matchEmail,
+      profileId: row.profileId,
+      roleId: row.roleId
+    }));
+  } catch (error) {
+    console.error('getOrganizationMembersByNormalizedEmails error:', error);
+    throw new Error(
+      `Failed to get organization members by emails: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

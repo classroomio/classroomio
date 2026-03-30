@@ -5,7 +5,7 @@ export const load = async ({ params, cookies }) => {
   const exerciseId = params.exerciseId || '';
 
   if (!courseId || !exerciseId) {
-    return { courseId, exerciseId, exercise: null, submissions: [], mySubmission: null };
+    return { courseId, exerciseId, exercise: null, submissions: [], mySubmissions: [] };
   }
 
   const headers = getApiHeaders(cookies);
@@ -26,7 +26,7 @@ export const load = async ({ params, cookies }) => {
     overviewResult.success && overviewResult.data ? overviewResult.data : { mySubmission: [], allSubmissions: [] };
 
   const mySubmissionData = Array.isArray(overview.mySubmission) ? overview.mySubmission : [];
-  const mySubmission = mySubmissionData.length > 0 ? mySubmissionData[0] : null;
+  const mySubmissions = mySubmissionData;
 
   const submissions = Array.isArray(overview.allSubmissions) ? overview.allSubmissions : [];
 
@@ -35,6 +35,6 @@ export const load = async ({ params, cookies }) => {
     exerciseId,
     exercise,
     submissions,
-    mySubmission
+    mySubmissions
   };
 };

@@ -44,7 +44,7 @@
 
 <UnderlineTabs.Root bind:value={currentTab}>
   <UnderlineTabs.List>
-    {#each tabs as tab}
+    {#each tabs as tab (tab.value)}
       <UnderlineTabs.Trigger value={tab.value}>
         {$t(tab.label)}
       </UnderlineTabs.Trigger>

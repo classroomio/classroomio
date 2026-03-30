@@ -71,16 +71,17 @@ export function formatAnswers(data: {
   answers: SubmissionAnswer[];
 }): Record<string, AnswerData> {
   const answers: Record<string, AnswerData> = {};
-  const questionByIdAndName: Record<string, string> = {};
+  const questionKeyById: Record<string, string> = {};
 
   for (const question of data.questions) {
-    questionByIdAndName[String(question.id)] = question.name ?? '';
+    const key = question.name ? String(question.name) : String(question.id);
+    questionKeyById[String(question.id)] = key;
   }
 
   for (const answer of data.answers) {
-    const questionName = questionByIdAndName[String(answer.questionId)];
-    if (questionName && answer.answerData) {
-      answers[questionName] = answer.answerData;
+    const questionKey = questionKeyById[String(answer.questionId)];
+    if (questionKey && answer.answerData) {
+      answers[questionKey] = answer.answerData;
     }
   }
 

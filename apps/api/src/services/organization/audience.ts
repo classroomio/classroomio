@@ -7,7 +7,6 @@ import type {
 import { addGroupMembers, enrollUsersInCourseGroups, getExistingGroupMembers } from '@cio/db/queries/group';
 import { buildEmailFromName, sendEmail } from '@cio/email';
 import {
-  checkEmailsExistInOrg,
   createOrganizationInvite,
   createOrganizationInviteAudits,
   createOrganizationInvites,
@@ -15,6 +14,7 @@ import {
   getLatestOrganizationInviteRowByOrgAndEmail,
   getOrgMembersByProfileIds,
   getOrganizationById,
+  getOrganizationMembersByNormalizedEmails,
   getStudentOrganizationMemberByOrgAndEmail,
   hasActiveOrganizationInviteForEmail,
   revokeActiveOrganizationInvitesByEmails
@@ -108,52 +108,9 @@ function getNormalizedRecipients(recipientCsv: string): {
   return { valid, invalid, duplicates };
 }
 
-export async function importAudienceMembers(orgId: string, data: TImportAudienceMembers, invitedByProfileId: string) {
-  const organization = await getOrganizationById(orgId);
-  if (!organization || !organization.siteName) {
-    throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
-  }
-
-  const recipients = getNormalizedRecipients(data.recipientCsv);
-
-  if (recipients.invalid.length > 0) {
-    throw new AppError(
-      `Invalid emails found: ${recipients.invalid.slice(0, 5).join(', ')}`,
-      ErrorCodes.VALIDATION_ERROR,
-      400,
-      'recipientCsv'
-    );
-  }
-
-  if (recipients.valid.length === 0) {
-    throw new AppError('No valid emails provided', ErrorCodes.VALIDATION_ERROR, 400, 'recipientCsv');
-  }
-
-  const existingEmails = await checkEmailsExistInOrg(orgId, recipients.valid);
-  const emailsToImport = recipients.valid.filter((email) => !existingEmails.includes(email));
-
-  if (emailsToImport.length === 0) {
-    return {
-      imported: 0,
-      skipped: existingEmails.length,
-      duplicates: recipients.duplicates.length,
-      emailsSent: 0,
-      emailsFailed: 0
-    };
-  }
-
-  await createOrganizationMembers(
-    emailsToImport.map((email) => ({
-      organizationId: orgId,
-      email,
-      roleId: ROLE.STUDENT,
-      verified: false
-    }))
-  );
-
+async function resolveCourseIdsAndNamesForImport(orgId: string, data: TImportAudienceMembers) {
   let courseIds: string[] = [];
   let courseNames: string[] = [];
-
   if (data.allCourses) {
     const courses = await getOrgCourses({ orgId });
     courseIds = courses.map((c) => c.id);
@@ -163,25 +120,108 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
     courseIds = courses.map((c) => c.id);
     courseNames = courses.map((c) => c.title).filter(Boolean);
   }
-  if (courseIds.length > 0) {
-    const courseGroupMappings = await getCourseGroupIds(courseIds);
-    const validGroupIds = courseGroupMappings.map((m) => m.groupId).filter(Boolean) as string[];
+  return { courseIds, courseNames };
+}
 
-    if (validGroupIds.length > 0) {
-      const profiles = await getProfilesByEmails(emailsToImport);
-      if (profiles.length > 0) {
-        const users = profiles.map((p) => ({ profileId: p.id, email: p.email ?? undefined }));
-        await enrollUsersInCourseGroups(validGroupIds, users, ROLE.STUDENT);
-      }
-    }
+async function enrollAudienceStudentProfilesInCourses(
+  orgId: string,
+  organization: NonNullable<Awaited<ReturnType<typeof getOrganizationById>>>,
+  profileIds: string[],
+  courseIds: string[],
+  shouldSendEmail: boolean
+): Promise<{ assigned: number; alreadyEnrolled: number; emailsSent: number }> {
+  if (courseIds.length === 0 || profileIds.length === 0) {
+    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
   }
 
-  await revokeActiveOrganizationInvitesByEmails(orgId, emailsToImport, invitedByProfileId);
+  const uniqueProfileIds = [...new Set(profileIds)];
+  const orgMembers = await getOrgMembersByProfileIds(orgId, uniqueProfileIds);
+  const studentMembers = orgMembers.filter((m) => m.profileId && m.roleId === ROLE.STUDENT);
+  const validProfileIds = new Set(studentMembers.map((m) => m.profileId!));
+  const profileEmailMap = new Map(studentMembers.filter((m) => m.profileId).map((m) => [m.profileId!, m.email ?? '']));
+
+  const courseGroups = await getOrgCourseGroups(orgId, courseIds);
+
+  if (courseGroups.length === 0) {
+    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+  }
+
+  const validGroupIds = courseGroups.map((cg) => cg.groupId).filter(Boolean) as string[];
+  const courseTitleByGroupId = new Map(courseGroups.map((cg) => [cg.groupId, cg.courseTitle]));
+  const validProfiles = uniqueProfileIds.filter((id) => validProfileIds.has(id));
+
+  const pairs = validProfiles.flatMap((profileId) => validGroupIds.map((groupId) => ({ groupId, profileId })));
+
+  const existingSet = await getExistingGroupMembers(pairs);
+
+  const toInsert = pairs.filter((p) => !existingSet.has(`${p.groupId}:${p.profileId}`));
+  const alreadyEnrolled = pairs.length - toInsert.length;
+
+  if (toInsert.length > 0) {
+    await addGroupMembers(
+      toInsert.map((p) => ({
+        groupId: p.groupId,
+        roleId: ROLE.STUDENT,
+        profileId: p.profileId,
+        email: profileEmailMap.get(p.profileId) || undefined
+      }))
+    );
+  }
+
+  let emailsSent = 0;
+  const loginUrl = getDashboardBaseUrl(organization.siteName ?? undefined);
+
+  if (shouldSendEmail && toInsert.length > 0) {
+    const emailPromises = toInsert
+      .filter((p) => profileEmailMap.get(p.profileId))
+      .map(async (p) => {
+        const email = profileEmailMap.get(p.profileId)!;
+        try {
+          await sendEmail('studentCourseWelcome', {
+            to: email,
+            fields: {
+              orgName: organization.name,
+              courseName: courseTitleByGroupId.get(p.groupId) || 'Course',
+              loginUrl
+            },
+            from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`)
+          });
+          emailsSent++;
+        } catch (emailError) {
+          console.error(`enrollAudienceStudentProfilesInCourses email error for ${email}:`, emailError);
+        }
+      });
+
+    await Promise.all(emailPromises);
+  }
+
+  return {
+    assigned: toInsert.length,
+    alreadyEnrolled,
+    emailsSent
+  };
+}
+
+async function createStudentOrgInvitesAndSendEmails(input: {
+  orgId: string;
+  organization: NonNullable<Awaited<ReturnType<typeof getOrganizationById>>>;
+  emails: string[];
+  courseIds: string[];
+  courseNamesLabel: string | undefined;
+  invitedByProfileId: string;
+  shouldSendEmail: boolean;
+}): Promise<{ created: number; emailsSent: number; emailsFailed: number }> {
+  const { orgId, organization, emails, courseIds, courseNamesLabel, invitedByProfileId, shouldSendEmail } = input;
+
+  if (emails.length === 0) {
+    return { created: 0, emailsSent: 0, emailsFailed: 0 };
+  }
+
+  await revokeActiveOrganizationInvitesByEmails(orgId, emails, invitedByProfileId);
 
   const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
-  const courseNamesLabel = courseNames.length > 0 ? courseNames.join(', ') : undefined;
 
-  const inviteInputs = emailsToImport.map((email) => {
+  const inviteInputs = emails.map((email) => {
     const token = generateToken();
     return {
       email,
@@ -207,7 +247,7 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
   const tokenByEmail = new Map(inviteInputs.map((i) => [i.email.toLowerCase(), i.token]));
 
   await createOrganizationInviteAudits(
-    emailsToImport.map((email) => {
+    emails.map((email) => {
       const invite = inviteByEmail.get(email)!;
       return {
         inviteId: invite.id,
@@ -230,8 +270,8 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
   let emailsSent = 0;
   let emailsFailed = 0;
 
-  if (data.sendEmail) {
-    const emailOutcomes = await mapWithConcurrency(emailsToImport, EMAIL_SEND_CONCURRENCY, async (email) => {
+  if (shouldSendEmail) {
+    const emailOutcomes = await mapWithConcurrency(emails, EMAIL_SEND_CONCURRENCY, async (email) => {
       const invite = inviteByEmail.get(email)!;
       const token = tokenByEmail.get(email)!;
       try {
@@ -289,12 +329,140 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
     );
   }
 
+  return { created: emails.length, emailsSent, emailsFailed };
+}
+
+export async function importAudienceMembers(orgId: string, data: TImportAudienceMembers, invitedByProfileId: string) {
+  const organization = await getOrganizationById(orgId);
+  if (!organization || !organization.siteName) {
+    throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
+  }
+
+  const recipients = getNormalizedRecipients(data.recipientCsv);
+
+  if (recipients.invalid.length > 0) {
+    throw new AppError(
+      `Invalid emails found: ${recipients.invalid.slice(0, 5).join(', ')}`,
+      ErrorCodes.VALIDATION_ERROR,
+      400,
+      'recipientCsv'
+    );
+  }
+
+  if (recipients.valid.length === 0) {
+    throw new AppError('No valid emails provided', ErrorCodes.VALIDATION_ERROR, 400, 'recipientCsv');
+  }
+
+  const memberRows = await getOrganizationMembersByNormalizedEmails(orgId, recipients.valid);
+  const memberByEmail = new Map(memberRows.map((m) => [m.normalizedEmail, m]));
+
+  const newEmails: string[] = [];
+  const existingStudentProfileIds: string[] = [];
+  const pendingStudentEmails: string[] = [];
+  const teamEmails: string[] = [];
+
+  for (const email of recipients.valid) {
+    const m = memberByEmail.get(email);
+    if (!m) {
+      newEmails.push(email);
+      continue;
+    }
+    if (m.roleId !== ROLE.STUDENT) {
+      teamEmails.push(email);
+      continue;
+    }
+    if (!m.profileId) {
+      pendingStudentEmails.push(email);
+      continue;
+    }
+    existingStudentProfileIds.push(m.profileId);
+  }
+
+  if (teamEmails.length > 0) {
+    throw new AppError(
+      `These emails belong to organization staff, not students: ${teamEmails.slice(0, 8).join(', ')}${teamEmails.length > 8 ? '…' : ''}`,
+      ErrorCodes.VALIDATION_ERROR,
+      400,
+      'recipientCsv'
+    );
+  }
+
+  const { courseIds, courseNames } = await resolveCourseIdsAndNamesForImport(orgId, data);
+  const courseNamesLabel = courseNames.length > 0 ? courseNames.join(', ') : undefined;
+
+  const assignResult = await enrollAudienceStudentProfilesInCourses(
+    orgId,
+    organization,
+    existingStudentProfileIds,
+    courseIds,
+    data.sendEmail
+  );
+
+  let imported = 0;
+  let importEmailsSent = 0;
+  let importEmailsFailed = 0;
+
+  if (newEmails.length > 0) {
+    await createOrganizationMembers(
+      newEmails.map((email) => ({
+        organizationId: orgId,
+        email,
+        roleId: ROLE.STUDENT,
+        verified: false
+      }))
+    );
+
+    if (courseIds.length > 0) {
+      const courseGroupMappings = await getCourseGroupIds(courseIds);
+      const validGroupIds = courseGroupMappings.map((m) => m.groupId).filter(Boolean) as string[];
+
+      if (validGroupIds.length > 0) {
+        const profiles = await getProfilesByEmails(newEmails);
+        if (profiles.length > 0) {
+          const users = profiles.map((p) => ({ profileId: p.id, email: p.email ?? undefined }));
+          await enrollUsersInCourseGroups(validGroupIds, users, ROLE.STUDENT);
+        }
+      }
+    }
+
+    const inviteOutcome = await createStudentOrgInvitesAndSendEmails({
+      orgId,
+      organization,
+      emails: newEmails,
+      courseIds,
+      courseNamesLabel,
+      invitedByProfileId,
+      shouldSendEmail: data.sendEmail
+    });
+    imported = newEmails.length;
+    importEmailsSent = inviteOutcome.emailsSent;
+    importEmailsFailed = inviteOutcome.emailsFailed;
+  }
+
+  let pendingEmailsSent = 0;
+  let pendingEmailsFailed = 0;
+  if (pendingStudentEmails.length > 0) {
+    const pendingOutcome = await createStudentOrgInvitesAndSendEmails({
+      orgId,
+      organization,
+      emails: pendingStudentEmails,
+      courseIds,
+      courseNamesLabel,
+      invitedByProfileId,
+      shouldSendEmail: data.sendEmail
+    });
+    pendingEmailsSent = pendingOutcome.emailsSent;
+    pendingEmailsFailed = pendingOutcome.emailsFailed;
+  }
+
   return {
-    imported: emailsToImport.length,
-    skipped: existingEmails.length,
+    imported,
+    assigned: assignResult.assigned,
+    alreadyEnrolledInCourses: assignResult.alreadyEnrolled,
+    pendingInvitesRenewed: pendingStudentEmails.length,
     duplicates: recipients.duplicates.length,
-    emailsSent,
-    emailsFailed
+    emailsSent: assignResult.emailsSent + importEmailsSent + pendingEmailsSent,
+    emailsFailed: importEmailsFailed + pendingEmailsFailed
   };
 }
 
@@ -465,67 +633,10 @@ export async function assignAudienceToCourses(orgId: string, data: TAssignAudien
     throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
   }
 
-  const orgMembers = await getOrgMembersByProfileIds(orgId, data.profileIds);
-
-  const validProfileIds = new Set(orgMembers.map((m) => m.profileId).filter(Boolean));
-  const profileEmailMap = new Map(orgMembers.filter((m) => m.profileId).map((m) => [m.profileId!, m.email ?? '']));
-
   const courseGroups = await getOrgCourseGroups(orgId, data.courseIds);
-
   if (courseGroups.length === 0) {
     throw new AppError('No valid courses found', ErrorCodes.VALIDATION_ERROR, 400, 'courseIds');
   }
 
-  const validGroupIds = courseGroups.map((cg) => cg.groupId).filter(Boolean) as string[];
-  const courseTitleByGroupId = new Map(courseGroups.map((cg) => [cg.groupId, cg.courseTitle]));
-  const validProfiles = data.profileIds.filter((id) => validProfileIds.has(id));
-
-  const pairs = validProfiles.flatMap((profileId) => validGroupIds.map((groupId) => ({ groupId, profileId })));
-
-  const existingSet = await getExistingGroupMembers(pairs);
-
-  const toInsert = pairs.filter((p) => !existingSet.has(`${p.groupId}:${p.profileId}`));
-  const alreadyEnrolled = pairs.length - toInsert.length;
-
-  if (toInsert.length > 0) {
-    await addGroupMembers(
-      toInsert.map((p) => ({
-        groupId: p.groupId,
-        roleId: ROLE.STUDENT,
-        profileId: p.profileId,
-        email: profileEmailMap.get(p.profileId) || undefined
-      }))
-    );
-  }
-
-  let emailsSent = 0;
-
-  if (data.sendEmail && toInsert.length > 0) {
-    const emailPromises = toInsert
-      .filter((p) => profileEmailMap.get(p.profileId))
-      .map(async (p) => {
-        const email = profileEmailMap.get(p.profileId)!;
-        try {
-          await sendEmail('studentCourseWelcome', {
-            to: email,
-            fields: {
-              orgName: organization.name,
-              courseName: courseTitleByGroupId.get(p.groupId) || 'Course'
-            },
-            from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`)
-          });
-          emailsSent++;
-        } catch (emailError) {
-          console.error(`assignAudienceToCourses email error for ${email}:`, emailError);
-        }
-      });
-
-    await Promise.all(emailPromises);
-  }
-
-  return {
-    assigned: toInsert.length,
-    alreadyEnrolled,
-    emailsSent
-  };
+  return enrollAudienceStudentProfilesInCourses(orgId, organization, data.profileIds, data.courseIds, data.sendEmail);
 }

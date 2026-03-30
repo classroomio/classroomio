@@ -32,7 +32,8 @@ export const QUESTION_TYPES = QUESTION_TYPE_REGISTRY.filter((qt) => !HIDDEN_QUES
     id: questionType.id,
     key: questionType.key,
     label: questionType.label,
-    labelKey: QUESTION_TYPE_LABEL_KEYS[questionType.key]
+    labelKey: QUESTION_TYPE_LABEL_KEYS[questionType.key],
+    autoGradable: questionType.autoGradable
   })
 );
 

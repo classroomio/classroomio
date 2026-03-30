@@ -285,8 +285,8 @@
               {id}
               {isStudent}
               className="mt-1 ml-2"
-              onOpenContentModal={(sectionId) => openContentModal(id, sectionId)}
-              onEditSection={(sectionId) => openSectionEditor(id, sectionId)}
+              onOpenContentModal={isStudent ? undefined : (sectionId) => openContentModal(id, sectionId)}
+              onEditSection={isStudent ? undefined : (sectionId) => openSectionEditor(id, sectionId)}
             />
           {/if}
         </Sidebar.MenuItem>

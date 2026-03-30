@@ -155,7 +155,7 @@
 </script>
 
 <Dialog.Root bind:open={$contentCreateStore.open} onOpenChange={(isOpen) => !isOpen && closeModal()}>
-  <Dialog.Content class="flex max-h-[680px] w-fit! max-w-2xl! min-w-[400px] flex-col overflow-hidden">
+  <Dialog.Content class="flex max-h-[680px] w-full! max-w-xl! min-w-[400px] flex-col overflow-hidden">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.add_content')}</Dialog.Title>
     </Dialog.Header>

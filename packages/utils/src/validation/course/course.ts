@@ -279,6 +279,18 @@ export const ZCourseLandingPageMetadataUpdate = z.object({
 });
 export type TCourseLandingPageMetadataUpdate = z.infer<typeof ZCourseLandingPageMetadataUpdate>;
 
+export const ZCertificationSettings = z.object({
+  isDownloadable: z.boolean().optional(),
+  theme: z.string().optional(),
+  /** ISO 8601 datetime string or null to clear */
+  deadline: z.union([z.string().min(1), z.null()]).optional(),
+  threshold: z.number().int().min(0).max(100).optional(),
+  requiredExerciseId: z.union([z.string().uuid(), z.null()]).optional(),
+  exerciseMinScorePercent: z.number().int().min(0).max(100).nullable().optional(),
+  emailMessage: z.string().max(5000).nullable().optional()
+});
+export type TCertificationSettings = z.infer<typeof ZCertificationSettings>;
+
 export const ZCourseUpdate = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
@@ -290,8 +302,7 @@ export const ZCourseUpdate = z.object({
   metadata: ZCourseMetadata.optional(),
   cost: z.number().int().min(0).optional(),
   currency: z.enum(['NGN', 'USD']).optional(),
-  isCertificateDownloadable: z.boolean().optional(),
-  certificateTheme: z.string().optional(),
+  certificate: ZCertificationSettings.optional(),
   tagIds: z.array(z.uuid()).max(100).optional()
 });
 export type TCourseUpdate = z.infer<typeof ZCourseUpdate>;

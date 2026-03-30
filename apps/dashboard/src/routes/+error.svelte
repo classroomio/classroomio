@@ -6,7 +6,8 @@
 
   const isNotFound = $derived(page.status === 404);
 
-  console.error('error message', page.error?.message);
+  console.error('Error message:', page.error?.message);
+  console.error('Error page:', page.url);
 
   function goHome() {
     window.location.href = '/';

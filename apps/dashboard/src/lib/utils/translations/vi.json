@@ -1118,7 +1118,11 @@
               "answers_required": "Vui lòng cung cấp ít nhất một câu trả lời trước khi gửi.",
               "checking_submission": "Đang kiểm tra nội dung gửi của bạn...",
               "answer_required": "Vui lòng trả lời câu hỏi này trước khi tiếp tục.",
-              "instructor_feedback": "Phản hồi của giảng viên"
+              "instructor_feedback": "Phản hồi của giảng viên",
+              "attempt_counter": "Hãy thử {current} trong tổng số {total}",
+              "previous_try": "Lần thử trước",
+              "next_try": "Lần thử tiếp theo",
+              "try_again": "Thử lại"
             },
             "edit_mode": {
               "delete_modal": "Xóa bài tập",
@@ -1371,7 +1375,11 @@
                 "not_set": "Chưa đặt",
                 "incorrect_badge": "sai"
               }
-            }
+            },
+            "settings": "Cài đặt",
+            "settings_allow_multiple": "Cho phép thử nhiều lần",
+            "settings_allow_multiple_helper": "Học sinh có thể gửi nhiều lần và xem lại các lần thử trước đây trên màn hình kết quả.",
+            "settings_save": "Lưu cài đặt"
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",
@@ -1632,18 +1640,29 @@
         "later": "Đóng"
       }
     },
+    "certificates": {
+      "progress_hint": "Đã hoàn thành {current}% (cần có {required}% để tải xuống)"
+    },
     "certification": {
-      "rules_heading": "Quy tắc chứng nhận",
+      "rules_heading": "Quy tắc",
       "deadline_label": "Thời hạn chứng nhận",
       "deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn.",
       "threshold_label": "Hoàn thành tối thiểu (%)",
       "threshold_helper": "Cần có tiến độ kết hợp của bài học và bài tập để đạt được chứng chỉ (0–100). Mặc định là 100%.",
-      "email_message_label": "Thông báo email chứng nhận",
-      "email_message_helper": "Thông báo tùy chọn hiển thị trong email khi học sinh đáp ứng yêu cầu. Một liên kết đến trang chứng chỉ luôn được bao gồm.",
-      "email_message_placeholder": "ví dụ. Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!"
-    },
-    "certificates": {
-      "progress_hint": "Đã hoàn thành {current}% (cần có {required}% để tải xuống)"
+      "final_exercise_label": "Bài tập cuối cùng (tùy chọn)",
+      "final_exercise_none": "không có",
+      "final_exercise_helper": "Khi được đặt ra, học sinh phải đạt ít nhất số điểm tối thiểu trong bài tập này (tính số lần thử tốt nhất) bên cạnh tỷ lệ hoàn thành ở trên.",
+      "min_exercise_score_label": "Điểm tối thiểu trong bài tập cuối cùng (%)",
+      "min_exercise_score_helper": "Điểm là tỷ lệ phần trăm của tổng số điểm có thể đạt được trong bài tập đó (0–100).",
+      "blocker_progress": "Tiến độ khóa học của bạn là {current}%; {required}% là bắt buộc.",
+      "blocker_deadline": "Thời hạn chứng nhận đã qua.",
+      "blocker_no_content": "Khóa học này không có bài học hoặc bài tập nào để hoàn thành.",
+      "blocker_final_not_submitted": "Gửi bài tập bắt buộc \"{exerciseTitle}\" để đủ điều kiện nhận chứng chỉ.",
+      "blocker_final_pending": "Nỗ lực của bạn về \"{exerciseTitle}\" vẫn đang được chấm điểm.",
+      "blocker_final_score": "Điểm cao nhất của bạn trong \"{exerciseTitle}\" là {bestPercent}%; {requiredPercent}% là bắt buộc.",
+      "blocker_final_misconfigured": "Bài tập chứng nhận \"{exerciseTitle}\" không có cấu hình điểm nào; nhờ người hướng dẫn khắc phục.",
+      "email_message_label": "Tin nhắn email",
+      "email_message_placeholder": "ví dụ: Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!"
     }
   },
   "courses": {

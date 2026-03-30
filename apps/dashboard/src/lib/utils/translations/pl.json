@@ -1118,7 +1118,11 @@
               "answers_required": "Przed przesłaniem proszę podać co najmniej jedną odpowiedź.",
               "checking_submission": "Sprawdzam Twoje zgłoszenie...",
               "answer_required": "Zanim przejdziesz dalej, odpowiedz na to pytanie.",
-              "instructor_feedback": "Informacje zwrotne od instruktora"
+              "instructor_feedback": "Informacje zwrotne od instruktora",
+              "attempt_counter": "Próba {bieżąca} z {total}",
+              "previous_try": "Poprzednia próba",
+              "next_try": "Następna próba",
+              "try_again": "Spróbuj ponownie"
             },
             "edit_mode": {
               "delete_modal": "Usuń ćwiczenie",
@@ -1371,7 +1375,11 @@
                 "not_set": "Nie ustawiono",
                 "incorrect_badge": "Niepoprawne"
               }
-            }
+            },
+            "settings": "Ustawienia",
+            "settings_allow_multiple": "Zezwalaj na wiele prób",
+            "settings_allow_multiple_helper": "Uczniowie mogą przesłać więcej niż raz i przejrzeć wcześniejsze próby na ekranie wyników.",
+            "settings_save": "Zapisz ustawienia"
           },
           "new_exercise_modal": {
             "heading": "Nowe ćwiczenie",
@@ -1632,18 +1640,29 @@
         "later": "Zamknij"
       }
     },
+    "certificates": {
+      "progress_hint": "{bieżący}% ukończenia ({required}% wymagane do pobrania)"
+    },
     "certification": {
-      "rules_heading": "Zasady certyfikacji",
+      "rules_heading": "Zasady",
       "deadline_label": "Termin certyfikacji",
       "deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu.",
       "threshold_label": "Minimalne ukończenie (%)",
       "threshold_helper": "Do uzyskania certyfikatu wymagany jest łączny postęp w lekcjach i ćwiczeniach (0–100). Wartość domyślna to 100%.",
-      "email_message_label": "Wiadomość e-mail z certyfikatem",
-      "email_message_helper": "Opcjonalna wiadomość wyświetlana w wiadomości e-mail, gdy uczeń spełni wymagania. Zawsze dołączany jest link do strony z certyfikatem.",
+      "final_exercise_label": "Ćwiczenie końcowe (opcjonalnie)",
+      "final_exercise_none": "żaden",
+      "final_exercise_helper": "Jeśli ta opcja jest ustawiona, uczniowie muszą osiągnąć co najmniej minimalny wynik w tym ćwiczeniu (liczą się najlepsze próby) oprócz powyższego procentu ukończenia.",
+      "min_exercise_score_label": "Minimalny wynik w ćwiczeniu końcowym (%)",
+      "min_exercise_score_helper": "Wynik to procent wszystkich punktów możliwych do uzyskania w tym ćwiczeniu (0–100).",
+      "blocker_progress": "Twój postęp w kursie wynosi {current}%; Wymagany jest {required}%.",
+      "blocker_deadline": "Termin certyfikacji minął.",
+      "blocker_no_content": "Ten kurs nie zawiera żadnych lekcji ani ćwiczeń do ukończenia.",
+      "blocker_final_not_submitted": "Wykonaj wymagane ćwiczenie „{exerciseTitle}”, aby zakwalifikować się do certyfikatu.",
+      "blocker_final_pending": "Twoje podejście do zadania „{exerciseTitle}” jest nadal oceniane.",
+      "blocker_final_score": "Twój najlepszy wynik w „{exerciseTitle}” to {bestPercent}%; Wymagany jest {requiredPercent}%.",
+      "blocker_final_misconfigured": "W ćwiczeniu certyfikacyjnym „{exerciseTitle}” nie skonfigurowano żadnych punktów; poproś instruktora, żeby to naprawił.",
+      "email_message_label": "Wiadomość e-mail",
       "email_message_placeholder": "np. Jesteśmy dumni z Twoich postępów — ucz się dalej!"
-    },
-    "certificates": {
-      "progress_hint": "{bieżący}% ukończenia ({required}% wymagane do pobrania)"
     }
   },
   "courses": {

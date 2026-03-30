@@ -5,7 +5,9 @@
     "baseUrl": ".",
     "paths": {
       "$src": ["./src"],
-      "$src/*": ["./src/*"]
+      "$src/*": ["./src/*"],
+      "@cio/utils": ["./node_modules/@cio/utils/dist/index.ts"],
+      "@cio/utils/*": ["./node_modules/@cio/utils/dist/*"]
     },
     "allowJs": true,
     "checkJs": true,

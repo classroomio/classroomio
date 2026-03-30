@@ -1,7 +1,7 @@
 import type { AnswerData, FileUploadAnswerData } from '@cio/question-types';
 import { scoreSubmissionAnswers, type ScoreSubmissionResult, validateTextareaAnswer } from '@cio/question-types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import type { TNewSubmission, TSubmission } from '@cio/db/types';
+import type { TNewQuestionAnswer, TNewSubmission, TSubmission } from '@cio/db/types';
 import type {
   TSubmissionAnswerUpdate,
   TSubmissionGradesUpdate,
@@ -15,10 +15,11 @@ import {
   getSubmissionById,
   getSubmissionsByCourseIdWithDetails,
   getSubmissionsForGrading,
+  hasSubmission,
+  insertQuestionAnswersBatch,
   updateQuestionAnswer,
   updateSubmission,
-  updateSubmissionGrades,
-  upsertQuestionAnswer
+  updateSubmissionGrades
 } from '@cio/db/queries/submission';
 import {
   fromApiPayload,
@@ -32,7 +33,7 @@ import { getExerciseById, getExerciseWithRelationsOptimized } from '@cio/db/quer
 import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 
 import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
-import { db } from '@cio/db/drizzle';
+
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { generateDocumentDownloadPresignedUrls } from '@api/utils/s3';
 
@@ -355,27 +356,26 @@ export async function listSubmissionsForGrading(courseId: string) {
         timeStyle: 'medium'
       }).format(new Date(submission.createdAt!));
 
-      // Format answers
-      const questionByIdAndName: { [id: number]: string } = {};
+      const questionKeyById: { [id: number]: string } = {};
       const questionTypeById: { [id: number]: number } = {};
       for (const question of submission.exercise.questions || []) {
-        questionByIdAndName[question.id] = question.name ?? '';
+        questionKeyById[question.id] = question.name ? String(question.name) : String(question.id);
         questionTypeById[question.id] = question.questionTypeId;
       }
 
-      const formattedAnswers: { [questionName: string]: AnswerData } = {};
+      const formattedAnswers: { [questionKey: string]: AnswerData } = {};
       const questionAnswerByPoint: { [questionId: number]: number } = {};
 
       for (const answer of submission.answers || []) {
-        const questionName = questionByIdAndName[answer.questionId];
+        const questionKey = questionKeyById[answer.questionId];
         if (
-          questionName &&
+          questionKey &&
           answer.answerData &&
           typeof answer.answerData === 'object' &&
           answer.answerData !== null &&
           'type' in answer.answerData
         ) {
-          formattedAnswers[questionName] = answer.answerData as AnswerData;
+          formattedAnswers[questionKey] = answer.answerData as AnswerData;
         }
         questionAnswerByPoint[answer.questionId] = answer.point || 0;
       }
@@ -475,11 +475,15 @@ export async function createSubmissionService(
   answers: Array<{ questionId: number; optionId?: number; answer?: string }>
 ): Promise<TSubmission & { answers?: any[] }> {
   try {
-    const exerciseWithRelations = await getExerciseWithRelationsOptimized(exerciseId);
+    const [exerciseWithRelations, courseRows] = await Promise.all([
+      getExerciseWithRelationsOptimized(exerciseId),
+      getCourseById(courseId)
+    ]);
+    const course = courseRows[0];
 
     if (!exerciseWithRelations.exercise.allowMultipleAttempts) {
-      const existing = await getSubmissionsByCourseIdWithDetails(courseId, exerciseId, submittedBy);
-      if (existing.length > 0) {
+      const alreadySubmitted = await hasSubmission(exerciseId, submittedBy);
+      if (alreadySubmitted) {
         throw new AppError('This exercise allows only one submission', ErrorCodes.VALIDATION_ERROR, 400);
       }
     }
@@ -498,7 +502,7 @@ export async function createSubmissionService(
       statusId: projectLegacyStatusId(gradingState),
       gradingState,
       overallStatus,
-      total: 0 // Will be calculated during grading
+      total: 0
     };
 
     let submission = await createSubmission(submissionData);
@@ -529,51 +533,45 @@ export async function createSubmissionService(
     );
 
     const answerByQuestionId = new Map<number, AnswerData>();
+    const answerRows: TNewQuestionAnswer[] = [];
 
-    // Create question answers
-    if (answers.length > 0) {
-      await db.transaction(async () => {
-        for (const ans of answers) {
-          const question = questionById.get(ans.questionId);
-          if (!question) continue;
+    for (const ans of answers) {
+      const question = questionById.get(ans.questionId);
+      if (!question) continue;
 
-          const answerData = fromApiPayload(
-            question.questionType,
-            { questionId: ans.questionId, optionId: ans.optionId, answer: ans.answer },
-            question
+      const answerData = fromApiPayload(
+        question.questionType,
+        { questionId: ans.questionId, optionId: ans.optionId, answer: ans.answer },
+        question
+      );
+      if (!answerData) continue;
+
+      if (answerData.type === 'TEXTAREA') {
+        const validation = validateTextareaAnswer(answerData.text, question);
+
+        if (!validation.isValid) {
+          throw new AppError(
+            validation.minCharacters !== undefined && validation.maxCharacters !== undefined
+              ? `Paragraph answer must be between ${validation.minCharacters} and ${validation.maxCharacters} characters`
+              : validation.reason === 'below_min' && validation.minCharacters !== undefined
+                ? `Paragraph answer must be at least ${validation.minCharacters} characters`
+                : `Paragraph answer must be at most ${validation.maxCharacters} characters`,
+            ErrorCodes.VALIDATION_ERROR,
+            400
           );
-          if (!answerData) continue;
-
-          if (answerData.type === 'TEXTAREA') {
-            const validation = validateTextareaAnswer(answerData.text, question);
-
-            if (!validation.isValid) {
-              throw new AppError(
-                validation.minCharacters !== undefined && validation.maxCharacters !== undefined
-                  ? `Paragraph answer must be between ${validation.minCharacters} and ${validation.maxCharacters} characters`
-                  : validation.reason === 'below_min' && validation.minCharacters !== undefined
-                    ? `Paragraph answer must be at least ${validation.minCharacters} characters`
-                    : `Paragraph answer must be at most ${validation.maxCharacters} characters`,
-                ErrorCodes.VALIDATION_ERROR,
-                400
-              );
-            }
-          }
-
-          answerByQuestionId.set(ans.questionId, answerData);
-
-          await upsertQuestionAnswer({
-            submissionId: submission.id,
-            questionId: ans.questionId,
-            groupMemberId: submittedBy,
-            answerData
-          });
         }
+      }
+
+      answerByQuestionId.set(ans.questionId, answerData);
+
+      answerRows.push({
+        submissionId: submission.id,
+        questionId: ans.questionId,
+        groupMemberId: submittedBy,
+        answerData
       });
     }
 
-    const courseRows = await getCourseById(courseId);
-    const course = courseRows[0];
     const shouldAutoGrade =
       course?.type === 'SELF_PACED' && overallStatus === 'auto_graded' && exerciseWithRelations.questions.length > 0;
 
@@ -582,7 +580,7 @@ export async function createSubmissionService(
       for (const q of exerciseWithRelations.questions) {
         if (q.id == null) continue;
         if (!answeredIds.has(q.id)) {
-          await upsertQuestionAnswer({
+          answerRows.push({
             submissionId: submission.id,
             questionId: q.id,
             groupMemberId: submittedBy,
@@ -590,7 +588,11 @@ export async function createSubmissionService(
           });
         }
       }
+    }
 
+    const insertedAnswers = answerRows.length > 0 ? await insertQuestionAnswersBatch(answerRows) : [];
+
+    if (shouldAutoGrade) {
       const dbQuestions = exerciseWithRelations.questions
         .filter((q): q is typeof q & { id: number } => q.id != null)
         .map((q) => ({
@@ -616,20 +618,28 @@ export async function createSubmissionService(
 
       if (graded) {
         submission = graded;
+
+        const pointByQuestionId = new Map(
+          scores.map((s: ScoreSubmissionResult['scores'][number]) => [s.questionId, s.points])
+        );
+        const answersWithPoints = insertedAnswers.map((row) => ({
+          ...row,
+          point: pointByQuestionId.get(row.questionId) ?? row.point
+        }));
+
+        void sendExerciseSubmissionUpdateEmail(courseId, exerciseId, submittedBy).catch((emailError) => {
+          console.error('Failed to send exercise submission update email:', emailError);
+        });
+
+        const enrichedAnswers =
+          answersWithPoints.length > 0 ? await enrichFileUploadAnswersArray(answersWithPoints) : answersWithPoints;
+        return { ...submission, answers: enrichedAnswers };
       }
     }
 
-    // Send email notification to teachers
-    try {
-      await sendExerciseSubmissionUpdateEmail(courseId, exerciseId, submittedBy);
-    } catch (emailError) {
-      // Log but don't fail the request if email fails
+    void sendExerciseSubmissionUpdateEmail(courseId, exerciseId, submittedBy).catch((emailError) => {
       console.error('Failed to send exercise submission update email:', emailError);
-    }
-
-    if (submission.gradingState === 'completed') {
-      return await getSubmission(submission.id);
-    }
+    });
 
     return submission;
   } catch (error) {
@@ -679,14 +689,10 @@ export async function updateSubmissionService(submissionId: string, data: TSubmi
       throw new AppError('Failed to update submission', ErrorCodes.INTERNAL_ERROR, 500);
     }
 
-    // Send email notification if status changed
     if (statusChanged) {
-      try {
-        await sendSubmissionUpdateEmail(submissionId, nextLegacyStatusId);
-      } catch (emailError) {
-        // Log but don't fail the request if email fails
+      void sendSubmissionUpdateEmail(submissionId, nextLegacyStatusId).catch((emailError) => {
         console.error('Failed to send submission update email:', emailError);
-      }
+      });
     }
 
     return updated;
@@ -782,11 +788,9 @@ export async function updateSubmissionGradesBatch(
     }
 
     if (statusChanged) {
-      try {
-        await sendSubmissionUpdateEmail(submissionId, targetStatusId);
-      } catch (emailError) {
+      void sendSubmissionUpdateEmail(submissionId, targetStatusId).catch((emailError) => {
         console.error('Failed to send submission update email:', emailError);
-      }
+      });
     }
 
     return updated;

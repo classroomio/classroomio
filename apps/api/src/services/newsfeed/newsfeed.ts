@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { sanitizeHtml } from '@api/utils/sanitize-html';
 import type { TCourseNewsfeed, TNewCourseNewsfeed, TNewCourseNewsfeedComment } from '@cio/db/types';
 import type { TNewsfeedCreate, TNewsfeedUpdate } from '@cio/utils/validation/newsfeed';
 import {
@@ -93,10 +94,12 @@ export async function createNewsfeedService(
   data: TNewsfeedCreate
 ): Promise<TCourseNewsfeed> {
   try {
+    const sanitizedContent = sanitizeHtml(data.content);
+
     const newsfeedData: TNewCourseNewsfeed = {
       courseId,
       authorId,
-      content: data.content,
+      content: sanitizedContent,
       isPinned: data.isPinned || false
     };
 
@@ -125,7 +128,10 @@ export async function createNewsfeedService(
  */
 export async function updateNewsfeedService(feedId: string, data: TNewsfeedUpdate): Promise<TCourseNewsfeed> {
   try {
-    const updated = await updateNewsfeed(feedId, data);
+    const updated = await updateNewsfeed(feedId, {
+      ...data,
+      content: data.content === undefined ? undefined : sanitizeHtml(data.content)
+    });
     if (!updated) {
       // If no row was updated, it usually means the feed doesn't exist.
       throw new AppError('Newsfeed item not found', ErrorCodes.INTERNAL_ERROR, 404);
@@ -256,16 +262,18 @@ export async function getNewsfeedCommentsService(feedId: string, options: { curs
  */
 export async function createNewsfeedCommentService(feedId: string, authorId: string, content: string) {
   try {
+    const sanitizedContent = sanitizeHtml(content);
+
     const commentData: TNewCourseNewsfeedComment = {
       courseNewsfeedId: feedId,
       authorId,
-      content
+      content: sanitizedContent
     };
 
     const comment = await createNewsfeedComment(commentData);
 
     // Send email notification to feed author (async, don't wait)
-    sendNewsfeedCommentEmail(feedId, content).catch((error) => {
+    sendNewsfeedCommentEmail(feedId, sanitizedContent).catch((error) => {
       console.error('Failed to send newsfeed comment email:', error);
     });
 
@@ -287,7 +295,7 @@ export async function createNewsfeedCommentService(feedId: string, authorId: str
  */
 export async function updateNewsfeedCommentService(commentId: number, content: string) {
   try {
-    const updated = await updateNewsfeedComment(commentId, content);
+    const updated = await updateNewsfeedComment(commentId, sanitizeHtml(content));
     if (!updated) {
       throw new AppError('Comment not found', ErrorCodes.NEWSFEED_COMMENT_UPDATE_FAILED, 404);
     }

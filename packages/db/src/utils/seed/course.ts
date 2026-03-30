@@ -39,7 +39,10 @@ export async function seedCourses({ mvcGroupId, reactGroupId, pandasGroupId }: S
       cost: 0,
       currency: 'NGN',
       isPublished: true,
-      isCertificateDownloadable: false,
+      certificate: {
+        isDownloadable: false,
+        theme: 'professional'
+      },
       status: 'ACTIVE'
     },
     {
@@ -63,7 +66,10 @@ export async function seedCourses({ mvcGroupId, reactGroupId, pandasGroupId }: S
       cost: 0,
       currency: 'NGN',
       isPublished: true,
-      isCertificateDownloadable: false,
+      certificate: {
+        isDownloadable: false,
+        theme: 'professional'
+      },
       status: 'ACTIVE'
     },
     {
@@ -87,7 +93,10 @@ export async function seedCourses({ mvcGroupId, reactGroupId, pandasGroupId }: S
       cost: 0,
       currency: 'NGN',
       isPublished: true,
-      isCertificateDownloadable: false,
+      certificate: {
+        isDownloadable: false,
+        theme: 'professional'
+      },
       status: 'ACTIVE'
     }
   ].filter((c) => !existingCourseIds.includes(c.id));

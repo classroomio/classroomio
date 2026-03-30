@@ -10,6 +10,7 @@ import { seedGroupmembers } from '@db/utils/seed/groupmember';
 import { type LessonTemplate, seedLessons } from '@db/utils/seed/lesson';
 import { seedOrganization } from '@db/utils/seed/organization';
 import { seedOrganizationMember } from '@db/utils/seed/organizationmember';
+import { seedEnterpriseOrganizationPlan } from '@db/utils/seed/organizationPlan';
 import { seedProfile } from '@db/utils/seed/profile';
 import { seedQuestionTypes } from '@db/utils/seed/questionType';
 import { seedQuestions } from '@db/utils/seed/question';
@@ -28,6 +29,9 @@ const MVC_COURSE_ID = '98e6e798-f0bd-4f9d-a6f5-ce0816a4f97e';
 const REACT_COURSE_ID = '16e3bc8d-5d1b-4708-988e-93abae288ccf';
 const PANDAS_COURSE_ID = 'f0a85d18-aff4-412f-b8e6-3b34ef098dce';
 const STUDENT_USER_ID = '0c256e75-aa40-4f62-8d30-0217ca1c60d9';
+const ENTERPRISE_ORG_ID = '2b8f4a1c-6d3e-4b2a-9f7e-1c4d8a6e9b0f';
+const ENTERPRISE_ADMIN_USER_ID = '3c9052de-7e4f-4c3a-8d8e-2d5e9b7f1a3c';
+const ENTERPRISE_STUDENT_USER_ID = '4da163ef-8050-4d4b-9c9f-3e6fac802b4d';
 
 // Parse command line arguments
 function parseFlags(): Set<string> {
@@ -62,6 +66,7 @@ Flags:
   --accounts                  Seed accounts
   --organizations             Seed organizations
   --organization-members      Seed organization members
+  --organization-plan         Seed enterprise plan for Coursera Test org
   --groups                    Seed groups
   --group-members             Seed group members
   --courses                  Seed courses
@@ -108,11 +113,22 @@ const seedFunctions = {
   },
   organizations: async () => {
     console.log('📝 Seeding organizations...');
-    await seedOrganization({ testOrgId: TEST_ORG_ID });
+    await seedOrganization({ testOrgId: TEST_ORG_ID, enterpriseOrgId: ENTERPRISE_ORG_ID });
   },
   'organization-members': async () => {
     console.log('📝 Seeding organization members...');
-    await seedOrganizationMember({ testOrgId: TEST_ORG_ID, adminUserId: ADMIN_USER_ID });
+    await seedOrganizationMember({
+      testOrgId: TEST_ORG_ID,
+      adminUserId: ADMIN_USER_ID,
+      studentUserId: STUDENT_USER_ID,
+      enterpriseOrgId: ENTERPRISE_ORG_ID,
+      enterpriseAdminUserId: ENTERPRISE_ADMIN_USER_ID,
+      enterpriseStudentUserId: ENTERPRISE_STUDENT_USER_ID
+    });
+  },
+  'organization-plan': async () => {
+    console.log('📝 Seeding enterprise organization plan...');
+    await seedEnterpriseOrganizationPlan({ enterpriseOrgId: ENTERPRISE_ORG_ID });
   },
   groups: async () => {
     console.log('📝 Seeding groups...');
@@ -205,6 +221,7 @@ async function seed() {
       await seedFunctions.accounts();
       await seedFunctions.organizations();
       await seedFunctions['organization-members']();
+      await seedFunctions['organization-plan']();
       await seedFunctions.groups();
       await seedFunctions['group-members']();
       await seedFunctions.courses();
@@ -225,6 +242,7 @@ async function seed() {
         'accounts',
         'organizations',
         'organization-members',
+        'organization-plan',
         'groups',
         'group-members',
         'courses',

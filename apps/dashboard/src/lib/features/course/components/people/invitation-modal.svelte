@@ -12,6 +12,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { peopleApi } from '$features/course/api';
   import { orgApi } from '$features/org/api/org.svelte';
+  import { DEFAULT_ORG_AUDIENCE_QUERY } from '$features/org/utils/audience-query-utils';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import type { OrgStudent, Tutor } from './types';
 
@@ -75,10 +76,11 @@
 
   function loadStudents(orgId: string | undefined) {
     if (!orgId) return;
+
     untrack(async () => {
       isLoadingStudents = true;
       try {
-        await orgApi.getOrgAudience(orgId);
+        await orgApi.getOrgAudience(orgId, DEFAULT_ORG_AUDIENCE_QUERY, { abortPrevious: true });
       } finally {
         isLoadingStudents = false;
       }
@@ -125,7 +127,7 @@
     if (!open) closeModal();
   }}
 >
-  <Dialog.Content class="max-h-[80vh] w-[96vw] max-w-6xl overflow-y-auto">
+  <Dialog.Content class="max-h-[80vh] w-[96vw] max-w-3xl! overflow-y-auto">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.people.invite_modal.title')}</Dialog.Title>
     </Dialog.Header>

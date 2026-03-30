@@ -155,6 +155,7 @@ export const ZExerciseUpdate = z.object({
   order: z.number().int().optional(),
   isUnlocked: z.boolean().optional(),
   dueBy: z.string().optional(), // Changed from iso.datetime() to string to match frontend format
+  allowMultipleAttempts: z.boolean().optional(),
   questions: z.array(ZExerciseUpdateQuestion).optional()
 });
 export type TExerciseUpdate = z.infer<typeof ZExerciseUpdate>;

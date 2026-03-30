@@ -20,16 +20,31 @@
     selected: boolean;
     onToggleSelect: () => void;
     inviteActionEmail: string | null;
+    deletingMemberId: string | null;
+    canDeleteMembers: boolean;
     onResendInvite: (email: string) => void;
     onRevokeInvite: (email: string) => void;
+    onDelete: () => void;
   }
 
-  let { row, memberDetailHref, selected, onToggleSelect, inviteActionEmail, onResendInvite, onRevokeInvite }: Props =
-    $props();
+  let {
+    row,
+    memberDetailHref,
+    selected,
+    onToggleSelect,
+    inviteActionEmail,
+    deletingMemberId,
+    canDeleteMembers,
+    onResendInvite,
+    onRevokeInvite,
+    onDelete
+  }: Props = $props();
 
   const showInviteActions = $derived(
     !row.profileId && (canResendAudienceInvite(row.status) || canRevokeAudienceInvite(row.status))
   );
+  const isActionDisabled = $derived(inviteActionEmail === row.email || deletingMemberId === String(row.id));
+  const showRowActions = $derived(showInviteActions || canDeleteMembers);
 </script>
 
 <Table.Row>
@@ -55,29 +70,38 @@
   </Table.Cell>
   <Table.Cell>{row.createdAt}</Table.Cell>
   <Table.Cell class="text-right">
-    {#if showInviteActions}
+    {#if showRowActions}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger
           class="hover:ui:bg-muted inline-flex items-center justify-center rounded-md p-1.5"
           aria-label={$t('audience.invite.row_actions_aria')}
-          disabled={inviteActionEmail !== null}
+          disabled={isActionDisabled}
           onclick={(e) => e.stopPropagation()}
         >
           <EllipsisVerticalIcon class="ui:size-4 ui:text-muted-foreground" />
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end">
           {#if canResendAudienceInvite(row.status)}
-            <DropdownMenu.Item disabled={inviteActionEmail === row.email} onclick={() => onResendInvite(row.email)}>
+            <DropdownMenu.Item disabled={isActionDisabled} onclick={() => onResendInvite(row.email)}>
               {$t('audience.invite.resend')}
             </DropdownMenu.Item>
           {/if}
           {#if canRevokeAudienceInvite(row.status)}
             <DropdownMenu.Item
               class="ui:text-destructive focus:ui:text-destructive"
-              disabled={inviteActionEmail === row.email}
+              disabled={isActionDisabled}
               onclick={() => onRevokeInvite(row.email)}
             >
               {$t('audience.invite.revoke')}
+            </DropdownMenu.Item>
+          {/if}
+          {#if canDeleteMembers}
+            <DropdownMenu.Item
+              class="ui:text-destructive focus:ui:text-destructive"
+              disabled={isActionDisabled}
+              onclick={onDelete}
+            >
+              {$t('audience.delete.action')}
             </DropdownMenu.Item>
           {/if}
         </DropdownMenu.Content>

@@ -9,6 +9,7 @@
 
   let settingsComponent: CourseSettingsPage | null = $state(null);
   let isSaving = $state(false);
+  let hasUnsavedChanges = $state(false);
   let { data } = $props();
 
   async function handleSave() {
@@ -30,7 +31,7 @@
     </Page.HeaderContent>
     <Page.Action>
       <div class="flex items-center gap-2">
-        <Button variant="secondary" loading={isSaving} onclick={handleSave}>
+        <Button variant="secondary" loading={isSaving} disabled={isSaving || !hasUnsavedChanges} onclick={handleSave}>
           {$t('course.navItem.settings.save')}
         </Button>
         <RefreshPageData disabled={isSaving} onRefresh={() => courseApi.refreshCourse(data.courseId, $profile.id)} />
@@ -39,7 +40,7 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <CourseSettingsPage bind:this={settingsComponent} />
+      <CourseSettingsPage bind:this={settingsComponent} bind:hasUnsavedChanges />
     {/snippet}
   </Page.Body>
 </Page.Root>

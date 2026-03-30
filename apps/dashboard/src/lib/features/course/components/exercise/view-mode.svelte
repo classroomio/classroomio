@@ -29,9 +29,10 @@
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { ContentType } from '@cio/utils/constants/content';
+  import { getOrderedNavigableContent } from '$features/course/utils/content';
   import { globalStore } from '$lib/utils/store/app';
   import { openCourseCompletionModal } from '$features/course/store/course-completion-modal';
-  import { ContentType } from '@cio/utils/constants/content';
   import { toExerciseQuestionModel } from './question-type-utils';
   import { getExerciseQuestionLabels } from './question-labels';
   import axios from 'axios';
@@ -150,17 +151,13 @@
           }));
         }
         courseApi.updateContentItem(exerciseId, ContentType.Exercise, { isComplete: true });
-        if (
-          $globalStore.isStudent &&
-          courseApi.course?.id &&
-          submitResult?.data &&
-          'certification' in submitResult.data
-        ) {
-          const certification = (submitResult.data as { certification?: { isNewCompletion?: boolean } | null })
-            .certification;
-          if (certification?.isNewCompletion) {
-            openCourseCompletionModal(courseApi.course.id);
-          }
+
+        const allContentItems = getOrderedNavigableContent(courseApi.course);
+        const allComplete =
+          $globalStore.isStudent && allContentItems.length > 0 && allContentItems.every((item) => item.isComplete);
+
+        if (allComplete && courseApi.course?.id) {
+          openCourseCompletionModal(courseApi.course.id);
         }
       }
 

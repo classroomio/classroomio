@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { sanitizeHtml, sanitizeOptionalHtml, sanitizeUnknownStrings } from '@api/utils/sanitize-html';
 import type { TExercise, TExerciseTemplate, TNewOption, TNewQuestion } from '@cio/db/types';
 import type { TExerciseCreate, TExerciseUpdate } from '@cio/utils/validation/exercise';
 import {
@@ -40,6 +41,29 @@ type ExerciseWithCompletion = TExercise & {
   isComplete: boolean;
 };
 
+function sanitizeExerciseQuestions(questions: TExerciseCreate['questions'] | TExerciseUpdate['questions']) {
+  return questions?.map((question) => ({
+    ...question,
+    question: sanitizeHtml(question.question),
+    settings: question.settings ? sanitizeUnknownStrings(question.settings) : question.settings,
+    options: question.options?.map((option) => ({
+      ...option,
+      label: sanitizeHtml(option.label),
+      settings: option.settings ? sanitizeUnknownStrings(option.settings) : option.settings
+    }))
+  }));
+}
+
+function sanitizeExercisePayload(data: TExerciseCreate): TExerciseCreate;
+function sanitizeExercisePayload(data: TExerciseUpdate): TExerciseUpdate;
+function sanitizeExercisePayload(data: TExerciseCreate | TExerciseUpdate): TExerciseCreate | TExerciseUpdate {
+  return {
+    ...data,
+    description: sanitizeOptionalHtml(data.description),
+    questions: sanitizeExerciseQuestions(data.questions)
+  };
+}
+
 /**
  * Creates a new exercise with optional questions and options
  * @param data Exercise creation data
@@ -47,14 +71,16 @@ type ExerciseWithCompletion = TExercise & {
  */
 export async function createExercise(data: TExerciseCreate): Promise<TExercise> {
   try {
+    const sanitizedData = sanitizeExercisePayload(data);
+
     const exerciseData = {
-      title: data.title,
-      description: data.description ?? null,
-      lessonId: data.lessonId || null,
-      courseId: data.courseId,
-      sectionId: data.sectionId || null,
-      order: data.order ?? null,
-      dueBy: data.dueBy || null
+      title: sanitizedData.title,
+      description: sanitizedData.description ?? null,
+      lessonId: sanitizedData.lessonId || null,
+      courseId: sanitizedData.courseId,
+      sectionId: sanitizedData.sectionId || null,
+      order: sanitizedData.order ?? null,
+      dueBy: sanitizedData.dueBy || null
     };
 
     const [exercise] = await createExercises([exerciseData]);
@@ -63,10 +89,10 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
     }
 
     // Create questions and options if provided
-    if (data.questions && data.questions.length > 0) {
+    if (sanitizedData.questions && sanitizedData.questions.length > 0) {
       await db.transaction(async (tx) => {
         const txClient = tx as DbOrTxClient;
-        const questionsData: TNewQuestion[] = data.questions!.map((q) => ({
+        const questionsData: TNewQuestion[] = sanitizedData.questions!.map((q) => ({
           exerciseId: exercise.id,
           title: q.question,
           questionTypeId: q.questionTypeId || 1,
@@ -78,7 +104,7 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
         const questions = await createQuestions(questionsData, txClient);
 
         // Create options for each question
-        const optionsPromises = data.questions!.map(async (q, index) => {
+        const optionsPromises = sanitizedData.questions!.map(async (q, index) => {
           const question = questions[index];
           if (!question) return;
 
@@ -165,11 +191,13 @@ export async function getExercise(
  */
 export async function updateExerciseService(exerciseId: string, data: TExerciseUpdate): Promise<TExercise> {
   try {
+    const sanitizedData = sanitizeExercisePayload(data);
+
     return await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;
 
       // Update exercise basic fields only if they changed
-      const exerciseUpdate = buildExerciseUpdateFields(data);
+      const exerciseUpdate = buildExerciseUpdateFields(sanitizedData);
       if (Object.keys(exerciseUpdate).length > 0) {
         const updated = await updateExercise(exerciseId, exerciseUpdate, txClient);
         if (!updated) {
@@ -178,7 +206,7 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
       }
 
       // Process questions - only update what changed
-      if (data.questions && data.questions.length > 0) {
+      if (sanitizedData.questions && sanitizedData.questions.length > 0) {
         // Query current state from DB
         const { questions: currentQuestions, options: currentOptions } = await fetchQuestionsAndOptions(
           exerciseId,
@@ -192,7 +220,7 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
         }));
 
         // Compute diff between current DB state and incoming data
-        const diff = computeExerciseDiff(currentQuestionsWithOptions, data.questions);
+        const diff = computeExerciseDiff(currentQuestionsWithOptions, sanitizedData.questions);
 
         // Sync option id sequence so next inserts get ids > max(id) (avoids option_pkey duplicate)
         if (
@@ -240,10 +268,12 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
  */
 export async function replaceExerciseService(exerciseId: string, data: TExerciseUpdate): Promise<TExercise> {
   try {
+    const sanitizedData = sanitizeExercisePayload(data);
+
     return await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;
 
-      const exerciseUpdate = buildExerciseUpdateFields(data);
+      const exerciseUpdate = buildExerciseUpdateFields(sanitizedData);
       if (Object.keys(exerciseUpdate).length > 0) {
         const updated = await updateExercise(exerciseId, exerciseUpdate, txClient);
         if (!updated) {
@@ -260,7 +290,7 @@ export async function replaceExerciseService(exerciseId: string, data: TExercise
         await deleteQuestionsByIds(currentQuestionIds, txClient);
       }
 
-      const replacementQuestions = data.questions ?? [];
+      const replacementQuestions = sanitizedData.questions ?? [];
       const hasReplacementOptions = replacementQuestions.some((question) => (question.options?.length ?? 0) > 0);
 
       if (replacementQuestions.length > 0) {
@@ -389,14 +419,16 @@ export async function createExerciseFromTemplate(
         const txClient = tx as DbOrTxClient;
         for (const question of questions) {
           const { title, question_type, options, order, points } = question;
-          const questionSettings = (question as { settings?: Record<string, unknown> }).settings ?? {};
+          const questionSettings = sanitizeUnknownStrings(
+            (question as { settings?: Record<string, unknown> }).settings ?? {}
+          );
 
           // Create question
           const [newQuestion] = await createQuestions(
             [
               {
                 exerciseId: exercise.id,
-                title,
+                title: sanitizeHtml(title),
                 questionTypeId: question_type.id,
                 points: points || 0,
                 order: order || 0,
@@ -415,9 +447,9 @@ export async function createExerciseFromTemplate(
             // value column is UUID (default gen_random_uuid()); label is the display text only
             const optionsData: TNewOption[] = options.map((opt) => ({
               questionId: newQuestion.id,
-              label: opt.label || '',
+              label: sanitizeHtml(opt.label || ''),
               isCorrect: opt.is_correct || false,
-              settings: (opt as { settings?: Record<string, unknown> }).settings ?? {}
+              settings: sanitizeUnknownStrings((opt as { settings?: Record<string, unknown> }).settings ?? {})
             }));
 
             await createOptions(optionsData, txClient);

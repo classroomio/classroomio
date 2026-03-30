@@ -426,11 +426,20 @@ export async function getCourseProgress(
   lessonsCompleted: number;
   exercisesCount: number;
   exercisesCompleted: number;
+  groupMemberId: string | null;
+  roleId: number | null;
+  certificateEarnedAt: string | null;
+  certificationEmailSentAt: string | null;
 }> {
   try {
     // Get the groupmember ID for this profile in the course
     const groupMemberResult = await db
-      .select({ id: schema.groupmember.id })
+      .select({
+        id: schema.groupmember.id,
+        roleId: schema.groupmember.roleId,
+        certificateEarnedAt: schema.groupmember.certificateEarnedAt,
+        certificationEmailSentAt: schema.groupmember.certificationEmailSentAt
+      })
       .from(schema.groupmember)
       .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
       .where(and(eq(schema.course.id, courseId), eq(schema.groupmember.profileId, profileId)))
@@ -442,68 +451,108 @@ export async function getCourseProgress(
         lessonsCount: 0,
         lessonsCompleted: 0,
         exercisesCount: 0,
-        exercisesCompleted: 0
+        exercisesCompleted: 0,
+        groupMemberId: null,
+        roleId: null,
+        certificateEarnedAt: null,
+        certificationEmailSentAt: null
       };
     }
 
     const groupMemberId = groupMemberResult[0].id;
+    const roleId = groupMemberResult[0].roleId;
+    const certificateEarnedAt = groupMemberResult[0].certificateEarnedAt ?? null;
+    const certificationEmailSentAt = groupMemberResult[0].certificationEmailSentAt ?? null;
 
-    // Get all lessons for the course
-    const lessons = await db
-      .select({ id: schema.lesson.id })
-      .from(schema.lesson)
-      .where(eq(schema.lesson.courseId, courseId));
+    const [lessons, completedLessons, exercises, [completedRow]] = await Promise.all([
+      db.select({ id: schema.lesson.id }).from(schema.lesson).where(eq(schema.lesson.courseId, courseId)),
 
-    const lessonsCount = lessons.length;
+      db
+        .select({ id: schema.lessonCompletion.id })
+        .from(schema.lessonCompletion)
+        .innerJoin(schema.lesson, eq(schema.lessonCompletion.lessonId, schema.lesson.id))
+        .where(
+          and(
+            eq(schema.lesson.courseId, courseId),
+            eq(schema.lessonCompletion.profileId, profileId),
+            eq(schema.lessonCompletion.isComplete, true)
+          )
+        ),
 
-    // Get completed lessons (lesson_completion where is_complete = true and profile_id matches)
-    const completedLessons = await db
-      .select({ id: schema.lessonCompletion.id })
-      .from(schema.lessonCompletion)
-      .innerJoin(schema.lesson, eq(schema.lessonCompletion.lessonId, schema.lesson.id))
-      .where(
-        and(
-          eq(schema.lesson.courseId, courseId),
-          eq(schema.lessonCompletion.profileId, profileId),
-          eq(schema.lessonCompletion.isComplete, true)
+      db
+        .select({ id: schema.exercise.id })
+        .from(schema.exercise)
+        .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+        .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId))),
+
+      db
+        .select({
+          exercisesCompleted: sql<number>`count(distinct ${schema.exercise.id})::int`
+        })
+        .from(schema.submission)
+        .innerJoin(schema.exercise, eq(schema.submission.exerciseId, schema.exercise.id))
+        .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+        .where(
+          and(
+            or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+            eq(schema.submission.submittedBy, groupMemberId)
+          )
         )
-      );
-
-    const lessonsCompleted = completedLessons.length;
-
-    // Get all exercises for the course (legacy lesson_id support)
-    const exercises = await db
-      .select({ id: schema.exercise.id })
-      .from(schema.exercise)
-      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-      .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)));
-
-    const exercisesCount = exercises.length;
-
-    // Get completed exercises (submissions where submitted_by = groupmember.id)
-    const completedExercises = await db
-      .select({ id: schema.submission.id })
-      .from(schema.submission)
-      .innerJoin(schema.exercise, eq(schema.submission.exerciseId, schema.exercise.id))
-      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-      .where(
-        and(
-          or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
-          eq(schema.submission.submittedBy, groupMemberId)
-        )
-      );
-
-    const exercisesCompleted = completedExercises.length;
+    ]);
 
     return {
-      lessonsCount,
-      lessonsCompleted,
-      exercisesCount,
-      exercisesCompleted
+      lessonsCount: lessons.length,
+      lessonsCompleted: completedLessons.length,
+      exercisesCount: exercises.length,
+      exercisesCompleted: completedRow?.exercisesCompleted ?? 0,
+      groupMemberId,
+      roleId,
+      certificateEarnedAt,
+      certificationEmailSentAt
     };
   } catch (error) {
     console.error('getCourseProgress error:', error);
     throw new Error(`Failed to get course progress: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Course + org fields needed for certification email and threshold rules */
+export type TCourseCertificationRow = {
+  certificate: {
+    isDownloadable?: boolean;
+    theme?: string;
+    deadline?: string | null;
+    threshold?: number;
+    requiredExerciseId?: string | null;
+    exerciseMinScorePercent?: number | null;
+    emailMessage?: string | null;
+  } | null;
+  title: string;
+  orgSiteName: string | null;
+  orgName: string;
+};
+
+export async function getCourseCertificationRow(courseId: string): Promise<TCourseCertificationRow | null> {
+  try {
+    const [row] = await db
+      .select({
+        certificate: schema.course.certificate,
+        title: schema.course.title,
+        orgSiteName: schema.organization.siteName,
+        orgName: schema.organization.name
+      })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+      .where(eq(schema.course.id, courseId))
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('getCourseCertificationRow error:', error);
+    throw new Error(
+      `Failed to get course certification row: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 

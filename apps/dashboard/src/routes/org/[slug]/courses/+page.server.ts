@@ -9,11 +9,6 @@ export const load = async ({ parent, locals, cookies, url }) => {
   const { orgId } = await parent();
 
   if (!orgId || !locals.user?.id) {
-    const loadMs = Math.round((performance.now() - loadStart) * 100) / 100;
-    console.log(
-      `[org/[slug]/courses +page.server] load: ${loadMs}ms (skipped: no orgId or user) | PUBLIC_IS_SELFHOSTED=${PUBLIC_IS_SELFHOSTED}`
-    );
-
     return {
       courses: []
     };

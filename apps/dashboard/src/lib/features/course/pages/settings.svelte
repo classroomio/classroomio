@@ -35,6 +35,12 @@
   import { currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { page } from '$app/stores';
 
+  interface Props {
+    hasUnsavedChanges?: boolean;
+  }
+
+  let { hasUnsavedChanges = $bindable(false) }: Props = $props();
+
   let isLoading = $state(false);
   let isDeleting = $state(false);
   let errors: {
@@ -45,7 +51,6 @@
     description: undefined
   });
   let avatar: string | undefined;
-  let hasUnsavedChanges = $state(false);
   let openDeleteModal = $state(false);
   let selectedTagIds = $state<string[]>([]);
   let initialTagIds = $state<string[]>([]);

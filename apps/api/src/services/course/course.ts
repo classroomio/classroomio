@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { sanitizeHtml, sanitizeOptionalHtml, sanitizeUnknownStrings } from '@api/utils/sanitize-html';
 import { addGroupMember, createGroup } from '@cio/db/queries/group';
 import {
   createCourseNewsfeed,
@@ -20,12 +21,49 @@ import {
 import { ContentType, ROLE } from '@cio/utils/constants';
 import type { TCourse } from '@cio/db/types';
 import { db } from '@cio/db/drizzle';
+import { exerciseBelongsToCourse } from '@cio/db/queries/course/certification-exercise';
 import { updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildCourseContent, calcPercentageWithRounding, formatLastSeen, type CourseContent } from './utils';
 
 const DEFAULT_CONTENT_GROUPING = true;
 const DEFAULT_SECTION_TITLE = 'First Section [edit me]';
+
+function sanitizeCourseMetadata(metadata: TCourse['metadata'] | undefined) {
+  if (!metadata) return metadata;
+
+  return {
+    ...metadata,
+    description: sanitizeOptionalHtml(metadata.description),
+    goals: sanitizeOptionalHtml(metadata.goals),
+    requirements: sanitizeOptionalHtml(metadata.requirements),
+    reward: metadata.reward
+      ? {
+          ...metadata.reward,
+          description: sanitizeHtml(metadata.reward.description)
+        }
+      : metadata.reward,
+    instructor: metadata.instructor
+      ? {
+          ...metadata.instructor,
+          description: sanitizeHtml(metadata.instructor.description)
+        }
+      : metadata.instructor,
+    reviews: metadata.reviews?.map((review) => ({
+      ...review,
+      description: sanitizeHtml(review.description)
+    }))
+  };
+}
+
+function sanitizeCourseCertificate(certificate: TCourse['certificate'] | undefined) {
+  if (!certificate) return certificate;
+
+  return {
+    ...certificate,
+    emailMessage: sanitizeOptionalHtml(certificate.emailMessage)
+  };
+}
 
 /**
  * Gets a course by ID or slug with all related data
@@ -93,11 +131,13 @@ export async function createCourse(
   data: { title: string; description: string; type: 'LIVE_CLASS' | 'SELF_PACED'; organizationId: string }
 ): Promise<{ course: TCourse; groupId: string; memberId: string }> {
   try {
+    const description = sanitizeHtml(data.description);
+
     const result = await db.transaction(async () => {
       // 1. Create group
       const [newGroup] = await createGroup({
         name: data.title,
-        description: data.description,
+        description,
         organizationId: data.organizationId
       });
 
@@ -108,7 +148,7 @@ export async function createCourse(
       // 2. Create course with group_id
       const [newCourse] = await createCourseQuery({
         title: data.title,
-        description: data.description,
+        description,
         type: data.type,
         groupId: newGroup.id
       });
@@ -130,8 +170,8 @@ export async function createCourse(
 
       // 4. Add default news feed
       await createCourseNewsfeed({
-        content: `<h2>Welcome to this course 🎉&nbsp;</h2>
-<p>Thank you for joining this course and I hope you get the best out of it.</p>`,
+        content: sanitizeHtml(`<h2>Welcome to this course 🎉&nbsp;</h2>
+<p>Thank you for joining this course and I hope you get the best out of it.</p>`),
         courseId: newCourse.id,
         isPinned: true,
         authorId: newMember.id
@@ -166,7 +206,24 @@ export async function createCourse(
  */
 export async function updateCourse(courseId: string, data: Partial<TCourse>) {
   try {
-    const updated = await updateCourseQuery(courseId, data);
+    const sanitizedData: Partial<TCourse> = {
+      ...data,
+      description: sanitizeOptionalHtml(data.description),
+      overview: sanitizeOptionalHtml(data.overview),
+      metadata: sanitizeCourseMetadata(data.metadata),
+      certificate: sanitizeCourseCertificate(data.certificate),
+      logo: data.logo,
+      slug: data.slug
+    };
+
+    if (data.certificate?.requiredExerciseId) {
+      const ok = await exerciseBelongsToCourse(data.certificate.requiredExerciseId, courseId);
+      if (!ok) {
+        throw new AppError('Certification exercise must belong to this course', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+    }
+
+    const updated = await updateCourseQuery(courseId, sanitizeUnknownStrings(sanitizedData));
     if (!updated) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }

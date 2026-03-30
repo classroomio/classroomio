@@ -1118,7 +1118,11 @@
               "answers_required": "Veuillez fournir au moins une réponse avant de soumettre.",
               "checking_submission": "Vérification de votre soumission...",
               "answer_required": "Veuillez répondre à cette question avant de continuer.",
-              "instructor_feedback": "Commentaires de l'instructeur"
+              "instructor_feedback": "Commentaires de l'instructeur",
+              "attempt_counter": "Tentative {actuelle} de {total}",
+              "previous_try": "Tentative précédente",
+              "next_try": "Prochaine tentative",
+              "try_again": "Réessayez"
             },
             "edit_mode": {
               "delete_modal": "Supprimer l'exercice",
@@ -1371,7 +1375,11 @@
                 "not_set": "Non défini",
                 "incorrect_badge": "Incorrect"
               }
-            }
+            },
+            "settings": "Paramètres",
+            "settings_allow_multiple": "Autoriser plusieurs tentatives",
+            "settings_allow_multiple_helper": "Les étudiants peuvent soumettre plus d'une fois et revoir leurs tentatives antérieures sur l'écran des résultats.",
+            "settings_save": "Enregistrer les paramètres"
           },
           "new_exercise_modal": {
             "heading": "Nouvel exercice",
@@ -1632,18 +1640,29 @@
         "later": "Fermer"
       }
     },
+    "certificates": {
+      "progress_hint": "{current} % terminé ({required} % requis pour le téléchargement)"
+    },
     "certification": {
-      "rules_heading": "Règles de certification",
+      "rules_heading": "Règles",
       "deadline_label": "Date limite de certification",
       "deadline_helper": "Les étudiants doivent atteindre le pourcentage d'achèvement avant cette date/heure (heure locale). Laisser vide sans date limite.",
       "threshold_label": "Achèvement minimum (%)",
       "threshold_helper": "Progrès combiné des leçons et des exercices requis pour obtenir le certificat (0-100). La valeur par défaut est 100 %.",
-      "email_message_label": "Courriel de certification",
-      "email_message_helper": "Message facultatif affiché dans l'e-mail lorsqu'un étudiant répond aux exigences. Un lien vers la page du certificat est toujours inclus.",
+      "final_exercise_label": "Exercice final (facultatif)",
+      "final_exercise_none": "aucun",
+      "final_exercise_helper": "Une fois défini, les élèves doivent atteindre au moins le score minimum pour cet exercice (la meilleure tentative compte) en plus du pourcentage d'achèvement ci-dessus.",
+      "min_exercise_score_label": "Note minimale à l'exercice final (%)",
+      "min_exercise_score_helper": "Le score est un pourcentage du total de points possibles sur cet exercice (0 à 100).",
+      "blocker_progress": "La progression de votre cours est de {current} % ; {obligatoire} % est requis.",
+      "blocker_deadline": "La date limite de certification est dépassée.",
+      "blocker_no_content": "Ce cours ne comporte aucune leçon ni exercice à réaliser.",
+      "blocker_final_not_submitted": "Soumettez l'exercice requis \"{exerciseTitle}\" pour être admissible au certificat.",
+      "blocker_final_pending": "Votre tentative sur \"{exerciseTitle}\" est toujours en cours d'évaluation.",
+      "blocker_final_score": "Votre meilleur score sur \"{exerciseTitle}\" est de {bestPercent} % ; {requiredPercent} % est requis.",
+      "blocker_final_misconfigured": "L'exercice de certification « {exerciseTitle} » n'a aucun point configuré ; demandez à votre instructeur de le réparer.",
+      "email_message_label": "Message électronique",
       "email_message_placeholder": "par ex. Nous sommes fiers de vos progrès – continuez à apprendre !"
-    },
-    "certificates": {
-      "progress_hint": "{current} % terminé ({required} % requis pour le téléchargement)"
     }
   },
   "courses": {

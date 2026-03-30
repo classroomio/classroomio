@@ -180,6 +180,31 @@ html .dark {
   @apply text-end;
 }
 
+.prose hr {
+  @apply my-6 border-t;
+  border-top-color: var(--border);
+}
+
+.prose pre {
+  @apply my-4 overflow-auto rounded-lg p-4;
+  background-color: var(--muted);
+}
+
+.dark .prose pre {
+  background-color: color-mix(in oklch, var(--muted) 30%, transparent);
+}
+
+.prose pre code {
+  @apply bg-transparent p-0 text-sm;
+  font-family: 'JetBrains Mono', monospace, Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono';
+  color: inherit;
+}
+
+.prose code:not(pre code) {
+  @apply rounded px-1.5 py-0.5 text-sm font-semibold;
+  background-color: var(--muted);
+}
+
 /* .dark .prose h1,
 .dark .prose h2,
 .dark .prose h3,

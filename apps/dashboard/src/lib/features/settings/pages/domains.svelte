@@ -370,7 +370,7 @@
           </Field.Field>
         {:else if currentDomainStatus !== 'verified'}
           <Field.Field>
-            <div class="rounded-md border px-4 py-3 text-sm ui:text-muted-foreground">
+            <div class="ui:text-muted-foreground rounded-md border px-4 py-3 text-sm">
               {$t('components.settings.domains.reconnect_hint')}
             </div>
           </Field.Field>

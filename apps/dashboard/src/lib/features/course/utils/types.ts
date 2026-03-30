@@ -266,6 +266,13 @@ export type DeleteCourseRequest = (typeof classroomio.course)[':courseId']['$del
 export type UpdateCourseContentRequest = (typeof classroomio.course)[':courseId']['content']['$put'];
 export type DeleteCourseContentRequest = (typeof classroomio.course)[':courseId']['content']['$delete'];
 export type GetCourseProgressRequest = (typeof classroomio.course)[':courseId']['progress']['$get'];
+export type GetCertificationEvaluationRequest =
+  (typeof classroomio.course)[':courseId']['certification-evaluation']['$get'];
+export type GetCertificationEvaluationSuccess = Extract<
+  InferResponseType<GetCertificationEvaluationRequest>,
+  { success: true }
+>;
+export type CertificationEvaluationData = GetCertificationEvaluationSuccess['data'];
 export type CloneCourseRequest = (typeof classroomio.course)[':courseId']['clone']['$post'];
 export type EnrollCourseRequest = (typeof classroomio.course)[':courseId']['enroll']['$post'];
 
@@ -280,12 +287,17 @@ export type CourseMetadata = (NonNullable<ApiCourse['metadata']> extends object
   : Record<string, unknown>) & {
   isContentGroupingEnabled?: boolean;
 };
+export type CourseCertificate =
+  NonNullable<ApiCourse['certificate']> extends object
+    ? NonNullable<ApiCourse['certificate']>
+    : Record<string, unknown>;
 export type CourseContent = NonNullable<ApiCourse['content']>;
 export type CourseContentSection = CourseContent['sections'][number];
 export type CourseContentItem = CourseContent['items'][number];
 
 export type Course = Omit<ApiCourse, 'metadata' | 'lessons' | 'sections' | 'exercises'> & {
   metadata?: CourseMetadata | null;
+  certificate?: CourseCertificate | null;
   content: CourseContent;
 };
 

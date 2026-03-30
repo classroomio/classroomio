@@ -62,6 +62,7 @@ export async function addMember(
         if (courseOrgData) {
           const courseName = courseOrgData.courseTitle || '';
           const orgName = courseOrgData.orgName || 'ClassroomIO';
+          const loginUrl = getDashboardBaseUrl(courseOrgData.orgSiteName ?? undefined);
 
           // Get student profile data
           let studentEmail: string | null = null;
@@ -86,7 +87,8 @@ export async function addMember(
                 to: studentEmail,
                 fields: {
                   orgName,
-                  courseName
+                  courseName,
+                  loginUrl
                 },
                 from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`)
               });

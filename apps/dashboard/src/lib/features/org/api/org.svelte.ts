@@ -1,5 +1,6 @@
 import type {
   AssignAudienceCoursesRequest,
+  DeleteAudienceMemberRequest,
   DeleteTeamRequest,
   DomainRequestRequest,
   GetAudienceRequest,
@@ -8,6 +9,8 @@ import type {
   InviteTeamRequest,
   OrgPublicCourses,
   OrganizationAudience,
+  OrganizationAudiencePagination,
+  OrganizationAudienceQuery,
   OrganizationTeamMembers,
   ResendAudienceInviteRequest,
   RevokeAudienceInviteRequest
@@ -36,6 +39,7 @@ import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
 import { uploadImage } from '$lib/utils/services/upload';
+import { DEFAULT_ORG_AUDIENCE_QUERY, toAudienceRequestQuery } from '../utils/audience-query-utils';
 
 export interface TOrgUpdateForm {
   name?: string;
@@ -59,9 +63,16 @@ export interface TOrgUpdateForm {
 class OrgApi extends BaseApiWithErrors {
   teamMembers = $state<OrganizationTeamMembers>([]);
   audience = $state<OrganizationAudience>([]);
+  audiencePagination = $state<OrganizationAudiencePagination | null>(null);
   publicCourses: OrgPublicCourses = $state([]);
 
   isFetchingOrgPublicCourses = $state(false);
+  private activeAudienceRequestController: AbortController | null = null;
+
+  cancelAudienceRequest() {
+    this.activeAudienceRequestController?.abort();
+    this.activeAudienceRequestController = null;
+  }
 
   /**
    * Gets organization team members (non-students)
@@ -91,16 +102,52 @@ class OrgApi extends BaseApiWithErrors {
    * @param orgId Organization ID
    * @returns Audience array
    */
-  async getOrgAudience(orgId?: string) {
+  async getOrgAudience(
+    orgId?: string,
+    query?: Partial<OrganizationAudienceQuery>,
+    options: { abortPrevious?: boolean; signal?: AbortSignal } = {}
+  ) {
     if (!orgId) return;
 
-    return this.execute<GetAudienceRequest>({
-      requestFn: () => classroomio.organization.audience.$get(),
+    const requestQuery = toAudienceRequestQuery({
+      ...DEFAULT_ORG_AUDIENCE_QUERY,
+      ...query
+    });
+
+    let requestSignal = options.signal;
+    let requestController: AbortController | null = null;
+
+    if (options.abortPrevious) {
+      this.cancelAudienceRequest();
+      requestController = new AbortController();
+      this.activeAudienceRequestController = requestController;
+      requestSignal = requestController.signal;
+    }
+
+    const response = await this.execute<GetAudienceRequest>({
+      requestFn: () =>
+        classroomio.organization.audience.$get(
+          {
+            query: requestQuery!
+          },
+          {
+            init: {
+              signal: requestSignal
+            }
+          }
+        ),
       logContext: 'fetching organization audience',
       onSuccess: (response) => {
         this.audience = response.data;
+        this.audiencePagination = response.pagination;
       }
     });
+
+    if (requestController && this.activeAudienceRequestController === requestController) {
+      this.activeAudienceRequestController = null;
+    }
+
+    return response;
   }
 
   /**
@@ -384,7 +431,6 @@ class OrgApi extends BaseApiWithErrors {
    * Imports users into the organization as students
    */
   async importAudienceMembers(data: TImportAudienceMembers) {
-    console.log('importAudienceMembers', data);
     return this.execute<ImportAudienceRequest>({
       requestFn: () =>
         classroomio.organization.audience.import.$post({
@@ -396,7 +442,8 @@ class OrgApi extends BaseApiWithErrors {
         snackbar.success(
           t.get('audience.import.snackbar_success', {
             imported: d.imported,
-            skipped: d.skipped,
+            assigned: d.assigned ?? 0,
+            pendingInvitesRenewed: d.pendingInvitesRenewed ?? 0,
             emailsSent: d.emailsSent
           })
         );
@@ -460,8 +507,6 @@ class OrgApi extends BaseApiWithErrors {
         } else {
           snackbar.error('audience.invite.resend_snackbar_email_failed');
         }
-        const orgId = get(currentOrg).id;
-        if (orgId) this.getOrgAudience(orgId);
       },
       onError: (result) => {
         if (typeof result === 'string') {
@@ -480,13 +525,32 @@ class OrgApi extends BaseApiWithErrors {
       logContext: 'revoking audience invite',
       onSuccess: () => {
         snackbar.success('audience.invite.revoke_snackbar_success');
-        const orgId = get(currentOrg).id;
-        if (orgId) this.getOrgAudience(orgId);
       },
       onError: (result) => {
         if (typeof result === 'string') {
           snackbar.error(result);
         }
+      }
+    });
+  }
+
+  async deleteAudienceMember(memberId: number) {
+    return this.execute<DeleteAudienceMemberRequest>({
+      requestFn: () =>
+        classroomio.organization.audience[':memberId'].$delete({
+          param: { memberId: memberId.toString() }
+        }),
+      logContext: 'removing audience member',
+      onSuccess: () => {
+        snackbar.success('audience.delete.snackbar_success');
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error(result);
+          return;
+        }
+
+        snackbar.error('error' in result ? result.error : result.message);
       }
     });
   }

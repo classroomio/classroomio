@@ -71,6 +71,6 @@
     </Button>
   </div>
   <pre bind:this={preRef} draggable={false}>
-		<NodeViewContent as="code" class={`language-${defaultLanguage}`} {...node.attrs} />
+		<NodeViewContent as="code" class={`language-${defaultLanguage} ui:pt-3!`} {...node.attrs} />
 	</pre>
 </NodeViewWrapper>

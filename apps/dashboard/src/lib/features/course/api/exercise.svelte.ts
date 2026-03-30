@@ -32,7 +32,7 @@ export class ExerciseApi extends BaseApiWithErrors {
       logContext: 'fetching exercise',
       onSuccess: (response) => {
         if (response.data) {
-          this.exercise = response.data;
+          this.exercise = response.data as Exercise;
           this.success = true;
           this.errors = {};
         }
@@ -64,7 +64,7 @@ export class ExerciseApi extends BaseApiWithErrors {
       logContext: 'creating exercise',
       onSuccess: (response) => {
         if (response.data) {
-          this.exercise = response.data;
+          this.exercise = response.data as Exercise;
           snackbar.success('Exercise created successfully');
           this.success = true;
           this.errors = {};
@@ -106,7 +106,7 @@ export class ExerciseApi extends BaseApiWithErrors {
       logContext: 'updating exercise',
       onSuccess: (response) => {
         if (response.data) {
-          this.exercise = response.data;
+          this.exercise = response.data as Exercise;
           this.success = true;
           this.errors = {};
         }
@@ -163,7 +163,7 @@ export class ExerciseApi extends BaseApiWithErrors {
       return;
     }
 
-    await this.execute<SubmitExerciseRequest>({
+    return await this.execute<SubmitExerciseRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].exercise[':exerciseId'].submission.$post({
           param: { courseId, exerciseId },
@@ -220,7 +220,7 @@ export class ExerciseApi extends BaseApiWithErrors {
       logContext: 'creating exercise from template',
       onSuccess: (response) => {
         if (response.data) {
-          this.exercise = response.data;
+          this.exercise = response.data as Exercise;
           snackbar.success('Exercise created successfully');
           this.success = true;
           this.errors = {};

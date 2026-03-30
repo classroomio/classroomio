@@ -2,9 +2,20 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { env } from '@api/config/env';
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { createCourse, updateCourse } from '@api/services/course/course';
-import { createExercise, getExercise, listExercises, replaceExerciseService } from '@api/services/exercise';
-import { createCourseSection, listCourseSections, updateCourseSectionService } from '@api/services/course/section';
-import { createLesson, listLessons, updateLessonService } from '@api/services/lesson';
+import {
+  createExercise,
+  deleteExerciseService,
+  getExercise,
+  listExercises,
+  replaceExerciseService
+} from '@api/services/exercise';
+import {
+  createCourseSection,
+  deleteCourseSectionService,
+  listCourseSections,
+  updateCourseSectionService
+} from '@api/services/course/section';
+import { createLesson, listLessons, updateLessonService, deleteLessonService } from '@api/services/lesson';
 import { upsertLessonLanguageService, updateLessonLanguageService } from '@api/services/lesson-language';
 import {
   createCourseImportDraft,
@@ -201,6 +212,43 @@ function normalizeDraftTagNames(tagNames: string[]) {
 
 function parseStoredDraft(record: TCourseImportDraft): TCourseImportDraftPayload {
   return ZCourseImportDraftPayload.parse(record.draft);
+}
+
+async function reserveDraftPublishedCourseId(
+  orgId: string,
+  draftId: string,
+  draft: TCourseImportDraftPayload,
+  existingSummary: TCourseImportDraft['summary'],
+  courseId: string
+) {
+  await updateCourseImportDraft(orgId, draftId, {
+    publishedCourseId: courseId,
+    summary: {
+      ...(existingSummary ?? {}),
+      ...buildDraftSummary(draft),
+      publishedCourseId: courseId
+    }
+  });
+}
+
+async function resetCourseContentForDraftRetry(courseId: string) {
+  const [exercises, lessons, sections] = await Promise.all([
+    listExercises(courseId),
+    listLessons(courseId),
+    listCourseSections(courseId)
+  ]);
+
+  for (const exercise of exercises) {
+    await deleteExerciseService(exercise.id);
+  }
+
+  for (const lesson of lessons) {
+    await deleteLessonService(lesson.id);
+  }
+
+  for (const section of sections) {
+    await deleteCourseSectionService(section.id);
+  }
 }
 
 async function assertCourseBelongsToOrganization(orgId: string, courseId: string) {
@@ -665,6 +713,14 @@ export async function publishCourseImportDraftService(
     const courseDescription = overrides.description ?? draft.course.description;
     const courseType = overrides.type ?? draft.course.type;
     const courseMetadata = overrides.metadata ?? draft.course.metadata;
+    const courseUpdateFields: Partial<TCourse> = {
+      title: courseTitle,
+      description: courseDescription,
+      type: courseType
+    };
+    if (courseMetadata) {
+      courseUpdateFields.metadata = courseMetadata;
+    }
 
     const sectionExternalIds = new Set(draft.sections.map((section) => section.externalId));
     draft.lessons.forEach((lesson) => {
@@ -673,17 +729,31 @@ export async function publishCourseImportDraftService(
       }
     });
 
-    const courseResult = await createCourse(profileId, {
-      title: courseTitle,
-      description: courseDescription,
-      type: courseType,
-      organizationId: orgId
-    });
+    let courseId = existing.publishedCourseId;
 
-    const courseId = courseResult.course.id;
+    if (courseId) {
+      const [existingCourse] = await getCourseById(courseId);
+      if (!existingCourse || existingCourse.status === 'DELETED') {
+        courseId = null;
+      } else {
+        await updateCourse(courseId, courseUpdateFields);
+        await resetCourseContentForDraftRetry(courseId);
+      }
+    }
 
-    if (courseMetadata) {
-      await updateCourse(courseId, { metadata: courseMetadata });
+    if (!courseId) {
+      const courseResult = await createCourse(profileId, {
+        title: courseTitle,
+        description: courseDescription,
+        type: courseType,
+        organizationId: orgId
+      });
+
+      courseId = courseResult.course.id;
+      await reserveDraftPublishedCourseId(orgId, draftId, draft, existing.summary, courseId);
+      if (courseMetadata) {
+        await updateCourse(courseId, { metadata: courseMetadata });
+      }
     }
 
     const bannerImageUrl = await resolvePublishBannerImage(courseTitle, overrides);

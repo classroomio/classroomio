@@ -38,7 +38,6 @@ import {
 import {
   ZLessonCommentCreate,
   ZLessonCommentUpdate,
-  ZLessonCompletionUpdate,
   ZLessonCreate,
   ZLessonReorder,
   ZLessonUpdate
@@ -46,8 +45,8 @@ import {
 
 import type { TLocale } from '@cio/db/types';
 import { get } from 'svelte/store';
-import { mediaApi } from '$features/media/api';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
+import { mediaApi } from '$features/media/api';
 import { profile } from '$lib/utils/store/user';
 import { snackbar } from '$features/ui/snackbar/store';
 
@@ -607,17 +606,11 @@ export class LessonApi extends BaseApiWithErrors {
    * Updates lesson completion
    */
   async updateCompletion(courseId: string, lessonId: string, isComplete: boolean) {
-    const result = ZLessonCompletionUpdate.safeParse({ isComplete });
-    if (!result.success) {
-      this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
-      return;
-    }
-
-    await this.execute<UpdateLessonCompletionRequest>({
+    return this.execute<UpdateLessonCompletionRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].lesson[':lessonId'].completion.$put({
           param: { courseId, lessonId },
-          json: result.data
+          json: { isComplete }
         }),
       logContext: 'updating lesson completion',
       onSuccess: (response) => {

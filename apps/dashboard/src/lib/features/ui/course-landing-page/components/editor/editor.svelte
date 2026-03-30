@@ -18,6 +18,7 @@
     HoverableItem,
     PreviewIcon
   } from '@cio/ui/custom/moving-icons';
+  import type { TCourseUpdate } from '@cio/utils/validation/course';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { CloseButton } from '$features/ui';
@@ -151,15 +152,22 @@
     course.slug = course.slug || generateSlug(course.title, { appendTimestamp: true });
 
     console.log('course', course);
-    await courseApi.update(courseId, {
+    const updatePayload = {
       ...course,
       type: course.type!,
       slug: course.slug!,
       isPublished: course.isPublished ?? undefined,
       overview: course.overview ?? undefined,
-      isCertificateDownloadable: course.isCertificateDownloadable ?? undefined,
-      certificateTheme: course.certificateTheme ?? undefined
-    });
+      certificate: course.certificate
+        ? {
+            ...course.certificate,
+            isDownloadable: course.certificate.isDownloadable ?? undefined,
+            theme: course.certificate.theme ?? undefined
+          }
+        : undefined
+    } as TCourseUpdate;
+
+    await courseApi.update(courseId, updatePayload);
 
     loading = false;
     syncCourseStore(course);
@@ -173,7 +181,7 @@
     });
   }
 
-  function setter(value: any, setterKey: string) {
+  function setter(value: unknown, setterKey: string) {
     if (typeof value === 'undefined') return;
 
     // Untrack the course change to avoid unnecessary re-renders
@@ -231,7 +239,7 @@
         </Sidebar.GroupLabel>
         <Sidebar.GroupContent>
           <Sidebar.Menu>
-            {#each sections as section}
+            {#each sections as section (section.key)}
               {@const SectionIcon = section.icon}
               <HoverableItem>
                 {#snippet children(isHovered)}
@@ -253,7 +261,7 @@
       </Sidebar.Group>
     {:else}
       <Sidebar.Menu>
-        {#each sections as section}
+        {#each sections as section (section.key)}
           {@const SectionIcon = section.icon}
           <HoverableItem>
             {#snippet children(isHovered)}

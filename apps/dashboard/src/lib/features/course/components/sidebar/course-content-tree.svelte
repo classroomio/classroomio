@@ -26,6 +26,7 @@
   let { path, id, isStudent = false, className = '', onOpenContentModal }: Props = $props();
 
   const contentData = $derived(getCourseContent(courseApi.course));
+  const canOpenContentModal = $derived(Boolean(onOpenContentModal) && !isStudent);
 </script>
 
 <Sidebar.MenuSub class={className}>
@@ -42,7 +43,7 @@
                   <span class="flex-1 truncate">{section.title}</span>
 
                   <div class="ml-auto flex items-center gap-1">
-                    {#if onOpenContentModal}
+                    {#if canOpenContentModal}
                       <IconButton
                         variant="ghost-outline"
                         size="icon-xs"

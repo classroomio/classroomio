@@ -9,6 +9,7 @@ import type {
   EnrollCourseRequest,
   GetCourseAnalyticsRequest,
   GetCourseBySlugRequest,
+  GetCertificationEvaluationRequest,
   GetCourseProgressRequest,
   GetCourseRequest,
   UpdateCourseData,
@@ -543,6 +544,27 @@ export class CourseApi extends BaseApiWithErrors {
     });
   }
 
+  async getCertificationEvaluation(courseId: string) {
+    return this.execute<GetCertificationEvaluationRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId']['certification-evaluation'].$get({
+          param: { courseId }
+        }),
+      logContext: 'fetching certification evaluation',
+      onSuccess: (response) => {
+        if (response.data) {
+          this.success = true;
+          this.errors = {};
+        }
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error('Failed to load certification status');
+        }
+      }
+    });
+  }
+
   /**
    * Gets course analytics including student progress, completion rates, and grades
    * @param courseId Course ID
@@ -635,7 +657,7 @@ export class CourseApi extends BaseApiWithErrors {
     const lessonTabsOrder = metadata?.lessonTabsOrder;
     if (lessonTabsOrder) {
       const existingTabIds = lessonTabsOrder.map((tab) => tab.id);
-      const allTabs = [
+      const allTabs: Array<{ id: 1 | 2 | 3 | 4; name: string }> = [
         { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
         { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
         { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
@@ -661,9 +683,15 @@ export class CourseApi extends BaseApiWithErrors {
       };
     }
 
-    // Ensure certificateTheme has default value
-    if (!data.certificateTheme) {
-      data.certificateTheme = 'professional';
+    if (!data.certificate) {
+      data.certificate = {
+        isDownloadable: false,
+        theme: 'professional'
+      };
+    }
+
+    if (!data.certificate.theme) {
+      data.certificate.theme = 'professional';
     }
 
     // Set the course data

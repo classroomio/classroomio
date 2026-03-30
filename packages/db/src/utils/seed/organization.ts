@@ -1,6 +1,6 @@
 import { db, organization } from '@db/drizzle';
 
-export async function seedOrganization({ testOrgId }: { testOrgId: string }) {
+export async function seedOrganization({ testOrgId, enterpriseOrgId }: { testOrgId: string; enterpriseOrgId: string }) {
   const existingOrgs = await db.select().from(organization);
   const existingOrgIds = existingOrgs.map((o) => o.id);
 
@@ -9,6 +9,19 @@ export async function seedOrganization({ testOrgId }: { testOrgId: string }) {
       id: testOrgId,
       name: 'Udemy Test',
       siteName: 'udemy-test',
+      settings: {},
+      landingpage: {},
+      theme: '',
+      customization: {
+        apps: { poll: true, comments: true },
+        course: { grading: true, newsfeed: true },
+        dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
+      }
+    },
+    {
+      id: enterpriseOrgId,
+      name: 'Coursera Test',
+      siteName: 'coursera-test',
       settings: {},
       landingpage: {},
       theme: '',

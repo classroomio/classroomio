@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import type { TNewQuestionAnswer, TNewSubmission, TQuestionAnswer, TSubmission } from '@db/types';
-import { and, db, eq, inArray } from '@db/drizzle';
+import { and, count, db, eq, inArray, sql } from '@db/drizzle';
 
 /**
  * Gets a submission by ID
@@ -20,6 +20,23 @@ export async function getSubmissionById(submissionId: string): Promise<TSubmissi
     console.error('getSubmissionById error:', error);
     throw new Error(
       `Failed to get submission by ID "${submissionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function hasSubmission(exerciseId: string, submittedBy: string): Promise<boolean> {
+  try {
+    const [result] = await db
+      .select({ total: count() })
+      .from(schema.submission)
+      .where(and(eq(schema.submission.exerciseId, exerciseId), eq(schema.submission.submittedBy, submittedBy)))
+      .limit(1);
+
+    return (result?.total ?? 0) > 0;
+  } catch (error) {
+    console.error('hasSubmission error:', error);
+    throw new Error(
+      `Failed to check submission existence: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -266,6 +283,21 @@ export async function upsertQuestionAnswer(data: TNewQuestionAnswer): Promise<TQ
   }
 }
 
+export async function insertQuestionAnswersBatch(rows: TNewQuestionAnswer[]): Promise<TQuestionAnswer[]> {
+  if (rows.length === 0) {
+    return [];
+  }
+
+  try {
+    return db.insert(schema.questionAnswer).values(rows).returning();
+  } catch (error) {
+    console.error('insertQuestionAnswersBatch error:', error);
+    throw new Error(
+      `Failed to insert question answers batch: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 /**
  * Updates a question answer
  * @param submissionId Submission ID
@@ -311,13 +343,15 @@ export async function updateSubmissionGrades(
 ): Promise<TSubmission | null> {
   try {
     return await db.transaction(async (tx) => {
-      for (const { questionId, points } of data.answers) {
-        await tx
-          .update(schema.questionAnswer)
-          .set({ point: points })
-          .where(
-            and(eq(schema.questionAnswer.submissionId, submissionId), eq(schema.questionAnswer.questionId, questionId))
-          );
+      if (data.answers.length > 0) {
+        const valueRows = data.answers.map((a) => sql`(${a.questionId}::bigint, ${a.points}::bigint)`);
+        await tx.execute(sql`
+          UPDATE question_answer AS qa
+          SET point = v.point
+          FROM (VALUES ${sql.join(valueRows, sql`, `)}) AS v(question_id, point)
+          WHERE qa.submission_id = ${submissionId}
+            AND qa.question_id = v.question_id
+        `);
       }
 
       const submissionData: Partial<TSubmission> = {

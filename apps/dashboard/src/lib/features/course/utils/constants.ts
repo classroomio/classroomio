@@ -37,6 +37,19 @@ export type CourseSortOrder = (typeof CourseSortOrder)[keyof typeof CourseSortOr
 
 export const DEFAULT_SORT_ORDER: CourseSortOrder = CourseSortOrder.Desc;
 
+export const CERTIFICATE_THEME_IDS = [
+  'professional',
+  'plain',
+  'purpleProfessionalBadge',
+  'blueProfessionalBadge',
+  'purpleBadgePattern',
+  'blueBadgePattern'
+] as const;
+
+export type CertificateThemeId = (typeof CERTIFICATE_THEME_IDS)[number];
+
+export const DEFAULT_CERTIFICATE_THEME_ID: CertificateThemeId = 'professional';
+
 const COURSE_SORT_ORDER_VALUES = new Set<string>(Object.values(CourseSortOrder));
 
 export function parseCourseSortOrder(value: string | null | undefined): CourseSortOrder {

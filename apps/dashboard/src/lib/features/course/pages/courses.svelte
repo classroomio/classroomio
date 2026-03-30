@@ -110,20 +110,18 @@
   {/if}
   {@render filterControls?.()}
 
-  {#if !isLMS}
-    {#if $courseMetaDeta.view === 'list'}
-      <IconButton onclick={() => setViewPreference('grid')}>
-        <GridIcon size={16} />
-      </IconButton>
-    {:else}
-      <IconButton onclick={() => setViewPreference('list')}>
-        <ListIcon size={16} />
-      </IconButton>
-    {/if}
+  {#if $courseMetaDeta.view === 'list'}
+    <IconButton onclick={() => setViewPreference('grid')}>
+      <GridIcon size={16} />
+    </IconButton>
+  {:else}
+    <IconButton onclick={() => setViewPreference('list')}>
+      <ListIcon size={16} />
+    </IconButton>
   {/if}
 </Page.BodyHeader>
 
-<div class="mx-auto w-full flex-1">
+<div class="mx-auto mt-4 w-full flex-1">
   {#if isLoading}
     <section class={`${isLoading || courses ? 'cards-container' : ''} `}>
       <CourseCardLoader />
@@ -146,15 +144,18 @@
             <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.type')}</Table.Head>
             <Table.Head class="w-3/12 min-w-0">{$t('courses.course_card.list_view.tags')}</Table.Head>
             <Table.Head class="w-[8%]">{$t('courses.course_card.list_view.lessons')}</Table.Head>
-            <Table.Head class="w-[8%]">{$t('courses.course_card.list_view.students')}</Table.Head>
-            <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.published')}</Table.Head>
-            <Table.Head class="w-[6%]"></Table.Head>
+            {#if !isLMS}
+              <Table.Head class="w-[8%]">{$t('courses.course_card.list_view.students')}</Table.Head>
+              <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.published')}</Table.Head>
+              <Table.Head class="w-[6%]"></Table.Head>
+            {/if}
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {#each courses as courseData (courseData.id)}
             <CourseList
               id={courseData.id}
+              slug={courseData.slug ?? ''}
               title={courseData.title}
               type={$t(`course.navItem.settings.${courseData.type?.toLowerCase()}`)}
               description={courseData.description}
@@ -167,6 +168,8 @@
                 slug: string;
                 color?: string | null;
               }>}
+              {isExplore}
+              {isLMS}
             />
           {/each}
         </Table.Body>

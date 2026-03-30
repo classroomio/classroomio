@@ -1,6 +1,7 @@
 /**
  * HTML Sanitization utilities to prevent XSS attacks
  */
+import { createSanitizeHtmlConfig, FORBID_TAGS, stripSvgDataUrls } from '@cio/utils/functions';
 import DOMPurify from 'dompurify';
 
 const browser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
@@ -17,77 +18,10 @@ export function sanitizeHtml(html: string): string {
     return fallbackSanitize(html);
   }
 
-  let sanitized = DOMPurify.sanitize(html, {
-    // Allow safe HTML tags
-    ALLOWED_TAGS: [
-      'p',
-      'br',
-      'strong',
-      'b',
-      'em',
-      'i',
-      'u',
-      'span',
-      'div',
-      'h1',
-      'h2',
-      'h3',
-      'h4',
-      'h5',
-      'h6',
-      'ul',
-      'ol',
-      'li',
-      'blockquote',
-      'pre',
-      'code',
-      'a',
-      'img'
-    ],
-    // Allow safe attributes
-    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'style', 'data-type', 'data-latex'],
-    // Forbid dangerous attributes
-    FORBID_ATTR: [
-      'onerror',
-      'onload',
-      'onclick',
-      'onmouseover',
-      'onfocus',
-      'onblur',
-      'onchange',
-      'onsubmit',
-      'onreset',
-      'onselect',
-      'onunload'
-    ],
-    // Forbid dangerous tags (including svg)
-    FORBID_TAGS: [
-      'script',
-      'iframe',
-      'object',
-      'embed',
-      'form',
-      'input',
-      'textarea',
-      'select',
-      'button',
-      'meta',
-      'link',
-      'svg',
-      'math'
-    ],
-    // Keep content of forbidden tags
-    KEEP_CONTENT: true,
-    // Sanitize attributes
-    SANITIZE_DOM: true,
-    // Allow data attributes
-    ALLOW_DATA_ATTR: false,
-    // Transform URLs and filter dangerous protocols
-    ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i
-  });
+  let sanitized = String(DOMPurify.sanitize(html, createSanitizeHtmlConfig()));
 
   // Additional post-processing to remove any SVG data URLs that might have slipped through
-  sanitized = sanitized.replace(/src\s*=\s*["']data:image\/svg[^"']*["']/gi, 'src=""');
+  sanitized = stripSvgDataUrls(sanitized);
 
   return sanitized;
 }
@@ -125,20 +59,7 @@ function fallbackSanitize(html: string): string {
   html = html.replace(/expression\s*\(/gi, '');
 
   // Remove dangerous tags
-  const dangerousTags = [
-    'script',
-    'iframe',
-    'object',
-    'embed',
-    'form',
-    'input',
-    'textarea',
-    'select',
-    'button',
-    'svg',
-    'math'
-  ];
-  dangerousTags.forEach((tag) => {
+  FORBID_TAGS.forEach((tag: string) => {
     const regex = new RegExp(`<${tag}\\b[^>]*>.*?<\\/${tag}>`, 'gi');
     html = html.replace(regex, '');
     const selfClosing = new RegExp(`<${tag}\\b[^>]*\\/>`, 'gi');

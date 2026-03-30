@@ -64,15 +64,17 @@
             <span>{$t('course.navItems.nav_content')}</span>
 
             <div class="ml-auto flex items-center gap-1">
-              <Plus
-                size={20}
-                class="rounded-full p-1"
-                onclick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  openContentModal(id);
-                }}
-              />
+              {#if !isStudent}
+                <Plus
+                  size={20}
+                  class="rounded-full p-1"
+                  onclick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    openContentModal(id);
+                  }}
+                />
+              {/if}
             </div>
           </a>
         {/snippet}
@@ -85,8 +87,8 @@
     {id}
     {isStudent}
     className="mt-1"
-    onOpenContentModal={(sectionId) => openContentModal(id, sectionId)}
-    onEditSection={(sectionId) => openSectionEditor(id, sectionId)}
+    onOpenContentModal={isStudent ? undefined : (sectionId) => openContentModal(id, sectionId)}
+    onEditSection={isStudent ? undefined : (sectionId) => openSectionEditor(id, sectionId)}
   />
 </Sidebar.Group>
 

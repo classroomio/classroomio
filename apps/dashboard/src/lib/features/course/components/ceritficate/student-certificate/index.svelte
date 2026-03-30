@@ -5,7 +5,7 @@
 </script>
 
 <div>
-  {#if courseApi.course?.isCertificateDownloadable === true}
+  {#if courseApi.course?.certificate?.isDownloadable === true}
     <UnlockedCertificate />
   {:else}
     <LockedCertificate />

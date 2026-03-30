@@ -11,6 +11,8 @@
     points?: any;
     hasError?: boolean;
     errorMsg?: string | null;
+    /** Extra hint under points row (e.g. auto-grade requires non-zero points) */
+    pointsHint?: string | null;
     onPointsChange?: any;
     key?: string;
     children?: import('svelte').Snippet;
@@ -23,6 +25,7 @@
     points = $bindable(undefined),
     hasError = false,
     errorMsg = null,
+    pointsHint = null,
     onPointsChange = () => {},
     children
   }: Props = $props();
@@ -67,6 +70,8 @@
 
       {#if errorMsg}
         <p class="text-xs text-red-500">{errorMsg}</p>
+      {:else if pointsHint}
+        <p class="ui:text-muted-foreground max-w-[min(100%,12rem)] text-xs">{pointsHint}</p>
       {/if}
 
       {#if onClose && !isTitle}

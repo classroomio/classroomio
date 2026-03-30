@@ -13,6 +13,7 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { CourseContentItem } from '$features/course/utils/types';
+  import { openCourseCompletionModal } from '$features/course/store/course-completion-modal';
 
   interface Props {
     lessonId?: string;
@@ -65,7 +66,7 @@
   const isLessonLocked = $derived(
     $globalStore.isStudent && currentLessonItem && !(currentLessonItem.isUnlocked ?? false)
   );
-  const isMarkCompleteDisabled = $derived(isMarkingComplete || isLessonLocked);
+  const isMarkCompleteDisabled = $derived(isMarkingComplete || isLessonLocked || isLessonComplete);
 
   async function markLessonComplete(currentLessonId: string) {
     isMarkingComplete = true;
@@ -78,8 +79,18 @@
     await lessonApi.updateCompletion(courseId, currentLessonId, isComplete);
 
     if (lessonApi.success) {
-      updateCourseContentCompletion(currentLessonId, isComplete);
       snackbar.success('snackbar.lessons.success.complete_marked');
+      updateCourseContentCompletion(currentLessonId, isComplete);
+
+      const allComplete =
+        $globalStore.isStudent &&
+        isComplete &&
+        navigableContentItems.length > 0 &&
+        navigableContentItems.every((item) => item.isComplete);
+
+      if (allComplete) {
+        openCourseCompletionModal(courseId);
+      }
     } else {
       snackbar.error('snackbar.lessons.error.try_later');
     }

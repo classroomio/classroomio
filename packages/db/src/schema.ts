@@ -587,13 +587,15 @@ export const course = pgTable(
     currency: varchar().default('USD').notNull(),
     bannerImage: text('banner_image'),
     isPublished: boolean('is_published').default(false),
-    isCertificateDownloadable: boolean('is_certificate_downloadable').default(false),
-    certificateTheme: text('certificate_theme'),
-    certificationDeadline: timestamp('certification_deadline', { withTimezone: true, mode: 'string' }),
-    certificationThreshold: integer('certification_threshold').default(100),
-    certificationRequiredExerciseId: uuid('certification_required_exercise_id'),
-    certificationExerciseMinScorePercent: integer('certification_exercise_min_score_percent'),
-    certificationEmailMessage: text('certification_email_message'),
+    certificate: jsonb().default({}).$type<{
+      isDownloadable?: boolean;
+      theme?: string;
+      deadline?: string | null;
+      threshold?: number;
+      requiredExerciseId?: string | null;
+      exerciseMinScorePercent?: number | null;
+      emailMessage?: string | null;
+    }>(),
     status: text().default('ACTIVE').notNull(),
     type: courseType().default('LIVE_CLASS')
   },
