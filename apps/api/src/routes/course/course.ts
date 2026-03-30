@@ -27,7 +27,7 @@ import {
   updateCourse
 } from '@api/services/course/course';
 import { getCourseTags, replaceCourseTags } from '@api/services/tag';
-import { invalidateCachePattern } from '@api/utils/redis/cache';
+
 
 import { Hono } from '@api/utils/hono';
 import { attendanceRouter } from '@api/routes/course/attendance';
@@ -60,6 +60,9 @@ import { sectionRouter } from '@api/routes/course/section';
 import { submissionRouter } from '@api/routes/course/submission';
 import { updateCourseLandingPageService } from '@api/services/course/landing-page';
 import { zValidator } from '@hono/zod-validator';
+import { Context } from 'hono';
+import { invalidateCacheMiddleware } from '@api/middlewares/cache';
+import z from 'zod';
 
 const enrollRateLimit = createRateLimiter({
   windowMs: 60 * 60 * 1000,
@@ -94,34 +97,35 @@ export const courseRouter = new Hono()
       return handleError(c, error, 'Failed to fetch course by slug');
     }
   })
+
   /**
    * POST /course
    * Creates a new course with group, group member, and default newsfeed
    * Requires authentication and organization membership
    */
-  .post('/', authMiddleware, orgAdminMiddleware, zValidator('json', ZCourseCreate), async (c) => {
-    try {
-      const user = c.get('user')!;
-      const validatedData = c.req.valid('json');
 
-      const result = await createCourse(user.id, validatedData);
+  .post('/', authMiddleware, orgAdminMiddleware, zValidator('json', ZCourseCreate),
+    invalidateCacheMiddleware({
+      indexes: (c) => (c.req.valid('json' as never) as z.infer<typeof ZCourseCreate>).organizationId ?? null,
+    }),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const validatedData = c.req.valid('json');
 
-      // Invalidate dash stats cache
-      if (validatedData.organizationId) {
-        await invalidateCachePattern(`dash:stats:${validatedData.organizationId}:*`);
+        const result = await createCourse(user.id, validatedData);
+
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          201
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to create course');
       }
-
-      return c.json(
-        {
-          success: true,
-          data: result
-        },
-        201
-      );
-    } catch (error) {
-      return handleError(c, error, 'Failed to create course');
-    }
-  })
+    })
   /**
    * POST /course/:courseId/enroll
    * Unified enrollment: free courses enroll directly; paid/invited require inviteToken.
@@ -352,15 +356,16 @@ export const courseRouter = new Hono()
     authMiddleware,
     courseTeamMemberMiddleware,
     zValidator('param', ZCourseDeleteParam),
+    invalidateCacheMiddleware({
+      indexes: (c) => c.req.header('cio-org-id') ?? null,
+    }),
     async (c) => {
       try {
         const { courseId } = c.req.valid('param');
         const orgId = c.req.header('cio-org-id');
         const result = await deleteCourse(courseId);
 
-        if (orgId) {
-          await invalidateCachePattern(`dash:stats:${orgId}:*`);
-        }
+
 
         return c.json(
           {

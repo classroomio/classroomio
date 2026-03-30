@@ -1,76 +1,42 @@
 import { redis } from './redis';
 
-/**
- * Gets a value from Redis cache or fetches it and caches it if missing.
- * @param key The Redis cache key
- * @param fetcher The function to fetch the raw data if not cached
- * @param ttlSeconds Time to live in seconds (default: 3600 = 1 hour)
- */
-export async function getCached<T>(key: string, fetcher: () => Promise<T>, ttlSeconds: number = 3600): Promise<T> {
-  try {
-    const cached = await redis.get(key);
-    if (cached) {
-      return JSON.parse(cached) as T;
-    }
-  } catch (err) {
-    console.error(`Cache read error for key ${key}:`, err);
-    // If Redis fails, gracefully fall back to executing fetcher
-  }
-
-  const data = await fetcher();
-
-  try {
-    if (data !== undefined && data !== null) {
-      await redis.set(key, JSON.stringify(data), {
-        EX: ttlSeconds
-      });
-    }
-  } catch (err) {
-    console.error(`Cache write error for key ${key}:`, err);
-  }
-
-  return data;
-}
+const CACHE_INDEX_PREFIX = 'cache:index';
 
 /**
- * Invalidates cache by deleting all keys matching a specific pattern.
- * Uses SCAN to safely find and delete keys without blocking Redis.
- * @param pattern The pattern to match (e.g. "dash:stats:org-id-*")
+ * Registers a cache key under an org index so it can be explicitly invalidated later.
  */
-export async function invalidateCachePattern(pattern: string): Promise<void> {
+export async function registerCacheKey(indexKey: string, cacheKey: string, ttlSeconds: number): Promise<void> {
   try {
-    let cursor = 0;
-    const keysToDelete: string[] = [];
-
-    do {
-      const result = await redis.scan(cursor, {
-        MATCH: pattern,
-        COUNT: 100
-      });
-      cursor = result.cursor;
-      keysToDelete.push(...result.keys);
-    } while (cursor !== 0);
-
-    if (keysToDelete.length > 0) {
-      // Delete in chunks to avoid blocking
-      for (let i = 0; i < keysToDelete.length; i += 100) {
-        const chunk = keysToDelete.slice(i, i + 100);
-        await redis.del(chunk);
-      }
-    }
+    await redis.sAdd(`${CACHE_INDEX_PREFIX}:${indexKey}`, cacheKey);
+    // Index TTL slightly longer than the cache entry itself
+    await redis.expire(`${CACHE_INDEX_PREFIX}:${indexKey}`, ttlSeconds + 60);
   } catch (err) {
-    console.error(`Cache invalidation error for pattern ${pattern}:`, err);
+    console.error(`Cache index registration error:`, err);
   }
 }
 
 /**
- * Deletes a specific cache key
- * @param key The key to delete
+ * Invalidates all keys registered under an index (e.g. all keys for an org).
  */
-export async function invalidateCacheKey(key: string): Promise<void> {
+export async function invalidateCacheIndex(indexKey: string): Promise<void> {
   try {
-    await redis.del(key);
+    const keys = await redis.sMembers(`${CACHE_INDEX_PREFIX}:${indexKey}`);
+    if (keys.length > 0) {
+      await redis.del(keys);
+    }
+    await redis.del(`${CACHE_INDEX_PREFIX}:${indexKey}`);
   } catch (err) {
-    console.error(`Cache invalidation error for key ${key}:`, err);
+    console.error(`Cache index invalidation error for "${indexKey}":`, err);
+  }
+}
+
+/**
+ * Deletes a specific cache key.
+ */
+export async function invalidateCacheKey(key: string | string[]): Promise<void> {
+  try {
+    await redis.del(Array.isArray(key) ? key : [key]);
+  } catch (err) {
+    console.error(`Cache invalidation error:`, err);
   }
 }

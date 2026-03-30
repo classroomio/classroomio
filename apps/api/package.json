@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "tsc && tsc-alias",
-    "build:clean": "rm -rf dist tsconfig.tsbuildinfo && pnpm run build",
+    "build:clean": "rimraf dist tsconfig.tsbuildinfo && pnpm run build",
     "dev": "pnpm --filter @cio/api --parallel \"/^dev:.*/\"",
     "dev:server": "tsx watch src/index.ts",
     "dev:tsc": "tsc -p tsconfig.json --watch",
