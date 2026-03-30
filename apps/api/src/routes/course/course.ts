@@ -105,9 +105,7 @@ export const courseRouter = new Hono()
    */
 
   .post('/', authMiddleware, orgAdminMiddleware, zValidator('json', ZCourseCreate),
-    invalidateCacheMiddleware({
-      indexes: (c) => (c.req.valid('json' as never) as z.infer<typeof ZCourseCreate>).organizationId ?? null,
-    }),
+    invalidateCacheMiddleware(),
     async (c) => {
       try {
         const user = c.get('user')!;
@@ -356,9 +354,7 @@ export const courseRouter = new Hono()
     authMiddleware,
     courseTeamMemberMiddleware,
     zValidator('param', ZCourseDeleteParam),
-    invalidateCacheMiddleware({
-      indexes: (c) => c.req.header('cio-org-id') ?? null,
-    }),
+    invalidateCacheMiddleware(),
     async (c) => {
       try {
         const { courseId } = c.req.valid('param');

@@ -57,22 +57,29 @@ export const cacheResponseMiddleware = (options: CacheOptions) =>
 
 
 
-export const invalidateCacheMiddleware = (options: InvalidateCacheOptions) =>
+export const invalidateCacheMiddleware = (options?: InvalidateCacheOptions) =>
   createMiddleware(async (c, next) => {
     await next();
 
     const { status } = c.res;
     if (status < 200 || status >= 300) return;
 
-    const [keys, indexes] = await Promise.all([
-      options.keys?.(c),
-      options.indexes?.(c),
+    const [keys, indexesResolved] = await Promise.all([
+      options?.keys?.(c),
+      options?.indexes?.(c),
     ]);
+
+    const indexes = Array.isArray(indexesResolved) ? indexesResolved : (indexesResolved ? [indexesResolved] : []);
+    const orgId = c.req.header('cio-org-id');
+    
+    if (orgId && !indexes.includes(orgId)) {
+      indexes.push(orgId);
+    }
 
     await Promise.all([
       keys && invalidateCacheKey(Array.isArray(keys) ? keys : [keys]),
-      indexes && Promise.all(
-        (Array.isArray(indexes) ? indexes : [indexes]).map(invalidateCacheIndex)
+      indexes.length > 0 && Promise.all(
+        indexes.map(invalidateCacheIndex)
       ),
     ]);
   });
