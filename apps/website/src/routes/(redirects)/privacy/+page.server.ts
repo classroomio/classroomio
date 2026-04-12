@@ -1,4 +1,3 @@
-import { redirect } from '@sveltejs/kit';
 import { client } from '$lib/utils/posthog';
 
 export const prerender = false;
@@ -6,8 +5,14 @@ export const prerender = false;
 export const load = async ({ request }) => {
   client.capture({
     distinctId: request.headers.get('x-forwarded-for') || new Date().getTime().toString(),
-    event: 'privacy page visited'
+    event: 'privacy policy page visited'
   });
 
-  redirect(307, 'https://app.enzuzo.com/policies/privacy/958fc978-5477-11ee-a03b-7b111830c594');
+  return {
+    pageMetaTags: {
+      title: 'Privacy Policy | ClassroomIO',
+      description:
+        'How ClassroomIO collects, uses, stores, and protects personal data when you use our websites and services.'
+    }
+  };
 };

@@ -20,7 +20,16 @@ export default ({ mode }) => {
       sourcemap: false
     },
     ssr: {
-      noExternal: ['svelte-sonner', 'layerchart', 'svelte-toolbelt', 'tldts', 'tldts-core']
+      // svelte-motion uses directory imports without `/index.js`; Node ESM fails unless bundled for SSR.
+      noExternal: [
+        'svelte-sonner',
+        'layerchart',
+        'svelte-toolbelt',
+        'tldts',
+        'tldts-core',
+        'svelte-motion',
+        'svelte-inview'
+      ]
     },
     optimizeDeps: {
       entries: ['src/routes/**/+*.{js,ts,svelte}'],

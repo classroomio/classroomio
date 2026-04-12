@@ -7,6 +7,7 @@ export { default as CourseFilterPopover } from './course-filter-popover.svelte';
 export { default as CourseTagPicker } from './course-tag-picker.svelte';
 export { default as CreateCourseButton } from './create-course-button.svelte';
 export { default as CourseList } from './list.svelte';
+export { default as CourseListRow } from './course-list-row.svelte';
 export { default as CourseTagsOverflow } from './course-tags-overflow.svelte';
 export { default as CourseListLoader } from './list-loader.svelte';
 export { default as NewCourseModal } from './new-course-modal.svelte';

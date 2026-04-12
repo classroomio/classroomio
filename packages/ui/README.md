@@ -63,6 +63,7 @@ Components in the `custom` directory come from various sources or are built on t
 - `custom/editor/` - Rich text editor based on Edra/Tiptap
 - `custom/image-cropper/` - Custom image cropping component
 - `custom/checkbox-field/` - Field component built on top of base Checkbox
+- `custom/newsfeed-reactions/` - Newsfeed reaction picker and summary used by course and program feeds
 
 ### Exercise question (`src/custom/exercise-question/`)
 
@@ -73,6 +74,10 @@ Learner and author UIs for exercise questions (take, preview, review, submission
 - **`renderers/option-image.svelte`**, **`renderers/submission-utils.ts`** — Existing shared helpers at the `renderers/` root; keep importing from there unless consolidating in a later pass.
 
 **Types with heavier or distinct UIs** (textarea editor, file upload, matching/hotspot authoring, link lists) intentionally keep separate `take` / `preview` implementations until a second consumer (for example a dedicated `review` mode) justifies extracting more shared fragments.
+
+### Question type picker (`src/custom/question-type-picker/`)
+
+Marketing / demo widget: left-hand list of question types and a live **take**-mode preview using `ExerciseQuestion.QuestionRenderer`. Copy is English-only (no dashboard i18n). Also consumed by the **`@cio/embeds`** app as a CDN bundle (`apps/embeds`).
 
 ### Hooks (`src/hooks/`)
 

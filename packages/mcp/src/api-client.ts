@@ -91,7 +91,7 @@ export class ClassroomIoApiClient {
     });
   }
 
-  async listOrganizationCourses(query: TGetOrganizationCoursesQuery = {}) {
+  async listOrganizationCourses(query: Partial<TGetOrganizationCoursesQuery> = {}) {
     const searchParams = new URLSearchParams();
     if (query.tags) searchParams.set('tags', query.tags);
 

@@ -4,6 +4,7 @@ import { QUESTION_TYPE_KEY } from './question-type-keys';
 import { getQuestionTypeById } from './question-type-lookup';
 import { QUESTION_TYPE_ID_TO_KEY } from './question-type-registry';
 import { supportsPartialCredit } from './question-type-capabilities';
+import { getStarRatingMaxFromSettings, isValidStarRatingValue } from './star-rating-settings';
 
 export type DbQuestionForScoring = {
   id: number;
@@ -129,6 +130,20 @@ function scoreTrueFalse(
   return answer.value === correctIsTrue ? maxPoints : 0;
 }
 
+function scoreStar(
+  question: ExerciseQuestionModel,
+  answer: Extract<AnswerData, { type: 'STAR' }>,
+  maxPoints: number
+): number {
+  const maxStars = getStarRatingMaxFromSettings(question.settings);
+  const rawCorrect = question.settings?.correctValue;
+  const correct = typeof rawCorrect === 'number' ? rawCorrect : rawCorrect != null ? Number(rawCorrect) : NaN;
+  if (!isValidStarRatingValue(correct, maxStars)) return 0;
+  if (!isValidStarRatingValue(answer.value, maxStars)) return 0;
+
+  return answer.value === correct ? maxPoints : 0;
+}
+
 function scoreNumeric(
   question: ExerciseQuestionModel,
   answer: Extract<AnswerData, { type: 'NUMERIC' }>,
@@ -157,6 +172,31 @@ function scoreFillBlank(
     .filter(Boolean);
   const studentVals = answer.values.map((v) => String(v).trim().toLowerCase());
   if (expected.length === 0) return 0;
+
+  let correct = 0;
+  for (let i = 0; i < expected.length; i++) {
+    if (studentVals[i] === expected[i]) correct++;
+  }
+
+  if (!partial) {
+    return correct === expected.length && studentVals.length === expected.length ? maxPoints : 0;
+  }
+  return (correct / expected.length) * maxPoints;
+}
+
+function scoreWordBank(
+  question: ExerciseQuestionModel,
+  answer: Extract<AnswerData, { type: 'WORD_BANK' }>,
+  maxPoints: number,
+  partial: boolean
+): number {
+  const rawCorrect = question.settings?.correctAnswers;
+  const expected = Array.isArray(rawCorrect)
+    ? (rawCorrect as unknown[]).map((s) => String(s).trim().toLowerCase()).filter(Boolean)
+    : [];
+  if (expected.length === 0) return 0;
+
+  const studentVals = (answer.filledBlanks ?? []).map((v) => String(v).trim().toLowerCase());
 
   let correct = 0;
   for (let i = 0; i < expected.length; i++) {
@@ -298,9 +338,15 @@ export function scoreAnswerForQuestion(question: ExerciseQuestionModel, answer: 
     case 'NUMERIC':
       if (key !== QUESTION_TYPE_KEY.NUMERIC) return 0;
       return scoreNumeric(question, answer, maxPoints);
+    case 'STAR':
+      if (key !== QUESTION_TYPE_KEY.STAR) return 0;
+      return scoreStar(question, answer, maxPoints);
     case 'FILL_BLANK':
       if (key !== QUESTION_TYPE_KEY.FILL_BLANK) return 0;
       return clampPoints(scoreFillBlank(question, answer, maxPoints, partial), maxPoints);
+    case 'WORD_BANK':
+      if (key !== QUESTION_TYPE_KEY.WORD_BANK) return 0;
+      return clampPoints(scoreWordBank(question, answer, maxPoints, partial), maxPoints);
     case 'MATCHING':
       if (key !== QUESTION_TYPE_KEY.MATCHING) return 0;
       return clampPoints(scoreMatching(question, answer, maxPoints, partial), maxPoints);

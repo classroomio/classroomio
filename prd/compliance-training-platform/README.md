@@ -1,979 +1,705 @@
-# Compliance Training Platform PRD
+# Compliance Course Type PRD
 
 ## Status
 - Draft
 
 ## Date
-- February 21, 2026
+- February 21, 2026 (updated April 11, 2026)
 
 ## Purpose
-Transform ClassroomIO into the go-to platform for companies that need to deliver, track, and prove compliance training for their employees. This PRD defines features for organizations in regulated industries (healthcare, finance, manufacturing, government) who must ensure their workforce stays compliant with regulations.
+Add a `COMPLIANCE` course type to ClassroomIO for courses that must be retaken after a given period. This targets organizations in regulated industries (healthcare, finance, manufacturing, government) that need recurring training with automated renewal, reminders, and compliance status tracking.
+
+> **Scope**: This PRD covers the `COMPLIANCE` course type only — retake intervals, completion validity, automatic re-enrollment, reminders, certificates, and dashboards. Programs already exist in the app and are out of scope. Policy attestation, audit trails, and HRIS integrations are separate efforts.
 
 ---
 
 ## 1. Executive Summary
 
 ### The Problem
-Companies in regulated industries struggle to:
-- **Assign** the right training to the right people based on their role/location
-- **Track** who completed training on time and who is overdue
-- **Remind** employees before deadlines and escalate to managers
-- **Prove** compliance to auditors with tamper-proof records
-- **Renew** certifications automatically when they expire
+Companies in regulated industries need courses that employees must retake periodically. Today, ClassroomIO courses are one-and-done — there's no way to say "this HIPAA course must be retaken every 12 months" and have the system enforce it.
 
 ### Target Customers
 | Industry | Example Use Cases |
 |----------|-------------------|
-| Healthcare | HIPAA training, patient safety, infection control, medical device handling |
-| Financial Services | Anti-money laundering, fraud prevention, data privacy, trading compliance |
-| Manufacturing | OSHA safety, quality control (ISO), hazardous materials handling |
-| Government | Security clearance, ethics training, procurement rules, FISMA |
-| Education | FERPA, Title IX, campus safety, student data handling |
-| Retail/Hospitality | Food safety, anti-harassment, PCI-DSS, workplace safety |
+| Healthcare | HIPAA training, patient safety, infection control |
+| Financial Services | Anti-money laundering, fraud prevention, data privacy |
+| Manufacturing | OSHA safety, quality control (ISO), hazardous materials |
+| Government | Security clearance, ethics training, procurement rules |
+| Education | FERPA, Title IX, campus safety |
+| Retail/Hospitality | Food safety, anti-harassment, PCI-DSS |
 
-### Solution Overview
-ClassroomIO becomes a **Compliance Training Management System** that helps organizations:
-1. **Deploy** compliance training programs efficiently
-2. **Automate** assignment, reminders, and renewals
-3. **Monitor** compliance status in real-time
-4. **Report** audit-ready evidence instantly
-5. **Scale** across thousands of employees and multiple locations
+### Solution
+A third course type — `COMPLIANCE` — that carries retake settings directly on the course. When a learner completes it, their completion is valid for N months. When it expires, they're automatically re-enrolled. The system sends reminders before deadlines and tracks compliance status per learner.
 
 ---
 
-## 2. Current State vs. Required Features
+## 2. Current State
 
-### ✅ What ClassroomIO Already Does Well
-| Feature | Current Capability | Compliance Gap |
-|---------|-------------------|----------------|
-| Course Creation | Rich content editor, videos, documents | ✅ Good enough |
-| Assessments | Basic exercises with grading | ⚠️ Need more question types & pass/fail rules |
-| Certificates | Generate PDF certificates | ⚠️ Need expiration, renewal, revocation |
-| User Management | Invite students, track progress | ⚠️ Need bulk assignment by role/department |
-| SSO | OIDC/SAML integration | ✅ Enterprise-ready |
-| Basic Reporting | Course completion stats | ❌ Need compliance-specific dashboards |
+### What Already Exists
+| Feature | Current State |
+|---------|--------------|
+| Course Types | `LIVE_CLASS` and `SELF_PACED` — no recurring/retake support |
+| Programs | Already implemented — can group courses together |
+| Assessments | Exercises with auto-grading for self-paced courses |
+| Certificates | PDF generation with themes, thresholds, and deadlines |
+| User Management | Invite students, track progress per course |
 
-### ❌ Critical Missing Features for Compliance Training
-
-| Missing Feature | Why It Matters | Customer Pain |
-|-----------------|----------------|---------------|
-| **Mandatory Training Assignment** | Compliance training isn't optional - everyone in a role MUST complete it | Currently can only invite, can't enforce |
-| **Recurring/Refresh Training** | Many regulations require annual/quarterly retraining | No automated renewal system |
-| **Compliance Dashboard** | See who is compliant, who is overdue, by department/role | No bird's-eye view for compliance officers |
-| **Policy Acknowledgment** | Track who read and agreed to policies | No policy attestation workflow |
-| **Audit Trail** | Prove "who did what when" to auditors | No immutable activity log |
-| **Automated Reminders** | Notify employees before deadlines, escalate to managers | Manual follow-up is unsustainable |
-| **Evidence Export** | One-click export of training records for auditors | Manual report generation takes hours |
+### What's Missing
+| Gap | Impact |
+|-----|--------|
+| No `COMPLIANCE` course type | Can't model courses that need periodic retaking |
+| No completion validity window | Completions are permanent — no expiry |
+| No automatic re-enrollment | Admins must manually re-invite learners |
+| No compliance status tracking | No way to see who is compliant vs overdue |
+| No retake reminders | Manual follow-up is unsustainable at scale |
 
 ---
 
 ## 3. Feature Requirements
 
-### 3.1 Compliance Training Programs (The Container)
+### 3.1 COMPLIANCE Course Type
 
 #### Purpose
-A "Program" groups related training requirements (e.g., "Annual HIPAA Compliance" or "New Hire Safety Training"). This is the top-level entity compliance officers manage.
+Add `COMPLIANCE` to the `COURSE_TYPE` enum. A compliance course behaves like a self-paced course for content delivery but carries retake settings that drive automatic re-enrollment and compliance tracking.
 
 #### Requirements
 
-**CP-1: Program Management**
-- Create programs with title, description, and regulatory framework (e.g., "HIPAA", "OSHA", "SOX")
-- Set program status: draft, active, archived
-- Assign program owner (compliance officer responsible)
-- Add custom fields for internal tracking (department codes, cost centers, etc.)
+**CCT-1: Course Type Enum Extension**
+- Add `COMPLIANCE` to the `COURSE_TYPE` PostgreSQL enum: `['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE']`
+- Compliance courses behave like self-paced courses for content delivery (lessons, exercises, grading) but carry additional retake/renewal configuration
+- All existing course features (content editor, assessments, certificates, invites) work unchanged
 
-**CP-2: Program Content**
-- Link multiple courses/lessons to a program (e.g., HIPAA includes: Basics course, Security course, Quiz)
-- Set completion rules: 
-  - "Complete all courses"
-  - "Complete any 2 of 3 courses" 
-  - "Complete Course A AND (Course B OR Course C)"
-- Set passing criteria: minimum score, attempt limits, time between retakes
+**CCT-2: Compliance Settings (per course)**
+When a course is created or updated with type `COMPLIANCE`, the following settings are available via a new `compliance` JSONB column:
 
-**CP-3: Program Assignment Rules**
-- Assign by: role, department, location, employment type, custom attributes
-- Examples:
-  - "All nurses in California hospitals"
-  - "All new hires in first 30 days"
-  - "All employees with security clearance Level 2+"
-- Support exclusions (e.g., "All managers EXCEPT contractors")
+| Setting | Type | Required | Default | Description |
+|---------|------|----------|---------|-------------|
+| `retakeIntervalMonths` | integer | Yes | — | Months after completion before the course must be retaken. Common: 3, 6, 12, 24 |
+| `gracePeriodDays` | integer | — | `0` | Additional days after the retake deadline before marking non-compliant |
+| `reminderDaysBefore` | integer[] | — | `[30, 7, 1]` | Days before retake deadline to send reminder notifications |
+| `isMandatory` | boolean | — | `true` | Whether the course is mandatory for all assigned learners |
+| `framework` | string | — | `null` | Regulatory framework tag: `HIPAA`, `OSHA`, `SOX`, `GDPR`, `PCI_DSS`, `FERPA`, `ISO`, `CUSTOM` |
+| `maxRetakeAttempts` | integer \| null | — | `null` | Max attempts per retake cycle. `null` = unlimited |
+| `passingScore` | integer | — | `80` | Minimum score (0–100) to count as a valid completion |
 
-**CP-4: Program Schedule**
-- One-time assignment (e.g., new hire training)
-- Recurring: every N months/years from completion date OR fixed date
-- Grace period: days after due date before marked overdue
-- Prerequisites: must complete Program X before starting Program Y
+**CCT-3: Completion Validity Window**
+- When a learner completes a compliance course (meets passing score), their completion is **valid for `retakeIntervalMonths` months**
+- `validUntil` = `completedAt` + `retakeIntervalMonths`
+- The system tracks this validity window per learner per course in the `course_completion_record` table
+- A valid completion satisfies compliance; an expired completion does not
 
-#### Database Schema
-```sql
--- Compliance training programs
-CREATE TABLE compliance_program (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  organization_id UUID NOT NULL REFERENCES organization(id),
-  title VARCHAR NOT NULL,
-  description TEXT,
-  framework VARCHAR, -- 'HIPAA', 'OSHA', 'SOX', 'GDPR', 'Custom'
-  status VARCHAR DEFAULT 'draft', -- 'draft', 'active', 'archived'
-  owner_id UUID REFERENCES profile(id),
-  completion_rule JSONB NOT NULL DEFAULT '{"type": "all"}', -- { type: 'all' | 'any' | 'minimum', count: number }
-  passing_criteria JSONB NOT NULL DEFAULT '{"minScore": 80, "maxAttempts": 3}',
-  schedule_config JSONB NOT NULL DEFAULT '{}', -- { type: 'once' | 'recurring', intervalMonths: 12, graceDays: 7 }
-  custom_fields JSONB DEFAULT '{}',
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+**CCT-4: Retake Lifecycle**
+A learner's relationship to a compliance course follows this cycle:
 
--- Program content (courses/exercises linked to program)
-CREATE TABLE compliance_program_content (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  program_id UUID NOT NULL REFERENCES compliance_program(id),
-  content_type VARCHAR NOT NULL, -- 'course', 'exercise', 'lesson'
-  content_id UUID NOT NULL,
-  is_required BOOLEAN DEFAULT true,
-  order_index INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- Assignment rules (who gets this program)
-CREATE TABLE compliance_program_assignment (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  program_id UUID NOT NULL REFERENCES compliance_program(id),
-  rule_type VARCHAR NOT NULL, -- 'role', 'group', 'location', 'attribute', 'all'
-  rule_value JSONB NOT NULL, -- { roleIds: [], groupIds: [], location: '', attributes: {} }
-  is_exclusion BOOLEAN DEFAULT false,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
 ```
+Enrolled → In Progress → Completed (Compliant)
+                              ↓
+                    [retakeIntervalMonths pass]
+                              ↓
+                      Expiring Soon  ← reminder notifications sent
+                              ↓
+                    [validity expires]
+                              ↓
+                      In Grace Period  ← if gracePeriodDays > 0
+                              ↓
+                    [grace period ends]
+                              ↓
+                      Non-Compliant  ← escalation triggers
+                              ↓
+                    [learner re-enrolled automatically]
+                              ↓
+                         In Progress → Completed (Compliant) → ...
+```
+
+**CCT-5: Compliance Status per Learner**
+Each learner enrolled in a compliance course has one of these statuses (tracked on `course_completion_record`):
+
+| Status | Condition |
+|--------|-----------|
+| `not_started` | Enrolled but hasn't begun |
+| `in_progress` | Started but not yet completed/passed |
+| `compliant` | Completed within validity window |
+| `expiring_soon` | Within the earliest reminder window (e.g., 30 days before expiry) |
+| `in_grace_period` | Past expiry date but within grace period |
+| `non_compliant` | Past expiry + grace period with no valid completion |
+| `waived` | Exempted by admin (with reason and optional expiration) |
+
+**CCT-6: Automatic Re-enrollment**
+- When a learner's completion validity expires, the system automatically creates a new completion record with status `not_started` and a new `dueDate`
+- Previous completions are preserved in history (never deleted)
+- The learner sees the course reappear in their "Due" list
+- A background job (`compliance-expiry-checker`) runs daily to process expirations
+
+**CCT-7: Auto-grading Behavior**
+- Like `SELF_PACED` courses, `COMPLIANCE` courses auto-grade submissions when all questions are auto-gradable
+- If the learner's score meets or exceeds `passingScore`, the completion is recorded as valid
+- If below `passingScore` and `maxRetakeAttempts` is not reached, the learner may retry
 
 ---
 
-### 3.2 Learner Assignments & Tracking
+### 3.2 Notifications & Reminders
 
 #### Purpose
-Track each learner's obligation, progress, and completion status for every program they're assigned.
+Automatically remind learners before their compliance course deadlines and notify admins about overdue learners.
 
 #### Requirements
 
-**LA-1: Assignment Lifecycle**
-- **Assigned**: User meets assignment rule criteria → creates assignment
-- **In Progress**: User started but not completed
-- **Completed**: User met all completion rules
-- **Overdue**: Past due date + grace period
-- **Waived**: Admin exempted user (with reason and expiration)
-- **Expired**: Previous completion past validity period → needs renewal
+**NR-1: Learner Reminders**
+- Send reminders at each interval defined in `reminderDaysBefore` (e.g., 30, 7, 1 days before due)
+- Email includes: course name, due date, current progress, direct link to course
+- In-app notification badge on the course card
 
-**LA-2: Assignment Attributes**
-- Assigned date, due date, completed date
-- Current status and status history with timestamps
-- Attempts count, best score, time spent
-- Certificate issued (if applicable)
-- Reminder history (when reminders were sent)
+**NR-2: Admin Alerts**
+- Notify course admins when learners become overdue (transition to `non_compliant`)
+- Daily digest option: summary of all overdue learners across compliance courses in the org
 
-**LA-3: Bulk Operations**
-- Bulk assign to users matching criteria
-- Bulk extend due dates (e.g., grant extension to entire department)
-- Bulk waive with reason
-- Bulk re-enroll (force retake even if completed)
+**NR-3: Completion Confirmation**
+- Email + in-app notification when a learner completes a compliance course
+- Include: course name, score, "compliant until" date, certificate download link (if applicable)
 
-**LA-4: Self-Service Portal (for Learners)**
-- "My Compliance" dashboard showing all assigned programs
-- Visual indicators: due soon (yellow), overdue (red), completed (green)
-- Download certificates for completed programs
-- See upcoming renewals
+**NR-4: Renewal Notification**
+- When a new retake cycle is created (automatic re-enrollment), notify the learner
+- Email includes: course name, new due date, link to start
 
-#### Database Schema
-```sql
--- Individual learner assignments
-CREATE TABLE compliance_assignment (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  organization_id UUID NOT NULL REFERENCES organization(id),
-  program_id UUID NOT NULL REFERENCES compliance_program(id),
-  user_id UUID NOT NULL REFERENCES user(id),
-  
-  -- Assignment details
-  assigned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  due_date TIMESTAMPTZ NOT NULL,
-  grace_period_days INTEGER DEFAULT 0,
-  
-  -- Status tracking
-  status VARCHAR NOT NULL DEFAULT 'assigned', -- 'assigned', 'in_progress', 'completed', 'overdue', 'waived', 'expired'
-  status_changed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  status_history JSONB DEFAULT '[]', -- [{ status, timestamp, reason }]
-  
-  -- Progress
-  started_at TIMESTAMPTZ,
-  completed_at TIMESTAMPTZ,
-  progress_percent INTEGER DEFAULT 0,
-  
-  -- Results
-  attempts INTEGER DEFAULT 0,
-  best_score INTEGER,
-  passing_score INTEGER,
-  time_spent_minutes INTEGER,
-  
-  -- Certificate
-  certificate_id UUID,
-  
-  -- Waiver (if applicable)
-  waived_at TIMESTAMPTZ,
-  waived_by UUID REFERENCES profile(id),
-  waiver_reason TEXT,
-  waiver_expires_at TIMESTAMPTZ,
-  
-  -- For recurring programs
-  is_renewal BOOLEAN DEFAULT false,
-  previous_assignment_id UUID REFERENCES compliance_assignment(id),
-  
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
-  UNIQUE(program_id, user_id, is_renewal) -- One active assignment per program per user
-);
-
--- Assignment content progress (track individual courses within program)
-CREATE TABLE compliance_assignment_progress (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  assignment_id UUID NOT NULL REFERENCES compliance_assignment(id),
-  content_type VARCHAR NOT NULL,
-  content_id UUID NOT NULL,
-  status VARCHAR NOT NULL DEFAULT 'not_started', -- 'not_started', 'in_progress', 'completed', 'failed'
-  started_at TIMESTAMPTZ,
-  completed_at TIMESTAMPTZ,
-  score INTEGER,
-  attempts INTEGER DEFAULT 0,
-  time_spent_minutes INTEGER,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-```
+> **Note**: The notification system PRD (`prd/notification-system`) covers the general delivery infrastructure (templates, channels, preferences). This section only defines the compliance-specific triggers.
 
 ---
 
-### 3.3 Automated Notifications & Escalations
+### 3.3 Certificate Lifecycle for Compliance Courses
 
 #### Purpose
-Ensure employees complete training on time without manual follow-up from compliance teams.
+Certificates issued for compliance courses should carry an expiration date matching the completion validity window, and be re-issued on each retake cycle.
 
 #### Requirements
 
-**NE-1: Reminder Schedule**
-- Configurable reminder schedule per program (e.g., 30, 14, 7, 1 days before due)
-- Customizable email templates per reminder stage
-- Include: program name, due date, progress, direct link to training
+**CL-1: Certificate Expiration**
+- When a compliance course has certificates enabled, the issued certificate includes an `expiresAt` date equal to the completion's `validUntil`
+- Certificate status follows the completion record: valid → expiring soon → expired
 
-**NE-2: Escalation Paths**
-- **Level 1**: Reminder to learner
-- **Level 2**: Notify learner + CC manager (when overdue)
-- **Level 3**: Escalate to compliance admin + learner's skip-level manager
-- **Level 4**: Flag for HR/executive review
+**CL-2: Certificate Re-issuance**
+- Each successful retake cycle issues a new certificate
+- Previous certificates are preserved in history with status `renewed`
+- Learner can view/download all historical certificates
 
-**NE-3: Manager Notifications**
-- Weekly digest of team's compliance status
-- Immediate alert when direct report goes overdue
-- Dashboard showing team compliance rate
+**CL-3: Certificate Display**
+- Certificate PDF shows: completion date, expiration date, cycle number, framework tag (if set)
+- Certificate list view in dashboard shows validity status badge (valid/expiring/expired)
 
-**NE-4: Compliance Team Alerts**
-- Daily summary of new overdue assignments
-- Alert when large group approaches deadline (e.g., "50 employees due in 3 days")
-- System health alerts (failed email deliveries, sync errors)
-
-**NE-5: Notification Preferences**
-- Email, in-app notification, or both
-- SMS for critical alerts (optional add-on)
-- Digest mode vs. immediate notifications
-
-#### Database Schema
-```sql
--- Notification templates
-CREATE TABLE compliance_notification_template (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  organization_id UUID NOT NULL REFERENCES organization(id),
-  name VARCHAR NOT NULL,
-  trigger_type VARCHAR NOT NULL, -- 'reminder', 'overdue', 'escalation', 'completion'
-  trigger_days INTEGER, -- days before/after event (negative = before, positive = after)
-  subject_template VARCHAR NOT NULL,
-  body_template TEXT NOT NULL,
-  recipients VARCHAR[] NOT NULL, -- ['learner', 'manager', 'compliance_admin']
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- Notification queue and history
-CREATE TABLE compliance_notification (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  assignment_id UUID NOT NULL REFERENCES compliance_assignment(id),
-  template_id UUID REFERENCES compliance_notification_template(id),
-  notification_type VARCHAR NOT NULL,
-  recipient_type VARCHAR NOT NULL, -- 'learner', 'manager', 'admin'
-  recipient_id UUID NOT NULL,
-  recipient_email VARCHAR NOT NULL,
-  scheduled_at TIMESTAMPTZ NOT NULL,
-  sent_at TIMESTAMPTZ,
-  status VARCHAR NOT NULL DEFAULT 'pending', -- 'pending', 'sent', 'delivered', 'failed', 'bounced'
-  error_message TEXT,
-  opened_at TIMESTAMPTZ,
-  clicked_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- Notification schedule (tracks what reminders are due)
-CREATE TABLE compliance_notification_schedule (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  assignment_id UUID NOT NULL REFERENCES compliance_assignment(id),
-  reminder_type VARCHAR NOT NULL, -- '30_days', '14_days', '7_days', '1_day', 'overdue', 'escalation'
-  scheduled_at TIMESTAMPTZ NOT NULL,
-  is_sent BOOLEAN DEFAULT false,
-  sent_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-```
+> **Note**: This builds on the existing certificate system (`course.certificate` JSONB settings). No new certificate tables are needed — the `course_completion_record.cycle_number` links each certificate to its retake cycle.
 
 ---
 
-### 3.4 Policy Attestation (Read & Acknowledge)
+### 3.4 Compliance Dashboard
 
 #### Purpose
-Not all compliance is "training" - sometimes employees just need to read and acknowledge a policy. Track who has read and agreed to important documents.
+Give course admins visibility into who is compliant, who is expiring, and who is overdue — per compliance course.
 
 #### Requirements
 
-**PA-1: Policy Management**
-- Upload policy documents (PDF, Word, HTML)
-- Version control with version numbers and effective dates
-- Categorize (Security, HR, Safety, Code of Conduct, etc.)
-- Set required reading time (e.g., "Must view for at least 5 minutes")
+**CD-1: Course-Level Compliance Overview**
+Available on the course management page for any `COMPLIANCE` type course:
+- Summary stats: total enrolled, compliant, expiring soon, in grace period, non-compliant, waived
+- Compliance rate percentage (compliant / total)
+- Learner table with: name, status, due date, last completed date, score, cycle number
 
-**PA-2: Attestation Workflow**
-1. Employee receives notification of new/updated policy
-2. Employee opens and reads the document (viewer tracks time)
-3. Employee checks "I have read and understand this policy"
-4. Employee digitally "signs" with name, date, employee ID
-5. System records: user, policy version, timestamp, IP, time spent reading
+**CD-2: Status Filters & Sorting**
+- Filter learners by compliance status
+- Sort by: due date (soonest first), status severity, name
+- Search by learner name or email
 
-**PA-3: Attestation Tracking**
-- Who has attested to which version
-- Who hasn't attested (and how overdue)
-- Bulk attestation for initial rollout (with verification)
-- Re-attestation required when policy version changes
+**CD-3: Bulk Admin Actions**
+- Bulk waive selected learners (with reason and optional expiry)
+- Bulk extend due dates
+- Bulk force re-enrollment (reset cycle)
+- Export learner compliance data as CSV
 
-**PA-4: Attestation Certificate**
-- Generate proof of attestation per employee
-- Include: policy name, version, attestation date, digital signature hash
-
-#### Database Schema
-```sql
--- Policy documents
-CREATE TABLE compliance_policy (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  organization_id UUID NOT NULL REFERENCES organization(id),
-  title VARCHAR NOT NULL,
-  description TEXT,
-  category VARCHAR NOT NULL, -- 'security', 'hr', 'safety', 'conduct', 'privacy'
-  status VARCHAR DEFAULT 'draft', -- 'draft', 'active', 'archived'
-  requires_reading_time_seconds INTEGER DEFAULT 0,
-  created_by UUID NOT NULL REFERENCES profile(id),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- Policy versions
-CREATE TABLE compliance_policy_version (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  policy_id UUID NOT NULL REFERENCES compliance_policy(id),
-  version_number INTEGER NOT NULL,
-  content_url TEXT NOT NULL, -- S3/MinIO URL
-  content_hash TEXT NOT NULL,
-  effective_date TIMESTAMPTZ NOT NULL,
-  requires_reattestation BOOLEAN DEFAULT true,
-  created_by UUID NOT NULL REFERENCES profile(id),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE(policy_id, version_number)
-);
-
--- Who needs to attest to which policy version
-CREATE TABLE compliance_policy_assignment (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  policy_version_id UUID NOT NULL REFERENCES compliance_policy_version(id),
-  assigned_to_type VARCHAR NOT NULL, -- 'role', 'group', 'department', 'all'
-  assigned_to_id UUID,
-  due_date TIMESTAMPTZ,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- Attestation records (immutable)
-CREATE TABLE compliance_policy_attestation (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  policy_version_id UUID NOT NULL REFERENCES compliance_policy_version(id),
-  user_id UUID NOT NULL REFERENCES user(id),
-  attested_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  ip_address INET,
-  user_agent TEXT,
-  time_spent_seconds INTEGER,
-  digital_signature VARCHAR NOT NULL, -- hash of user+policy+timestamp
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE(policy_version_id, user_id)
-);
-```
-
----
-
-### 3.5 Certificates with Lifecycle Management
-
-#### Purpose
-Issue certificates that expire, track renewals, and maintain a complete history for audit purposes.
-
-#### Requirements
-
-**CE-1: Certificate Templates**
-- Design certificate templates per program
-- Include: recipient name, program name, completion date, expiration date, certificate ID, QR code for verification
-- Custom fields (CE credits, accreditation body, instructor name)
-
-**CE-2: Certificate Issuance**
-- Auto-issue upon program completion
-- Manual issue by admin (for external training imported into system)
-- Bulk issue for historical data import
-
-**CE-3: Certificate Lifecycle**
-- **Valid**: Currently valid certificate
-- **Expiring Soon**: Within renewal window
-- **Expired**: Past expiration date
-- **Revoked**: Invalidated (with reason and revoked_by)
-- **Renewed**: Replaced by newer certificate (link to new cert)
-
-**CE-4: Certificate Verification**
-- Public verification page (for external auditors)
-- QR code on certificate links to verification
-- Shows: valid/invalid/revoked status, original issue details
-
-**CE-5: Certificate History**
-- Complete chain: Original → Renewal 1 → Renewal 2 → Current
-- Never delete - maintain full history even after revocation
-
-#### Database Schema
-```sql
--- Certificate definitions (linked to programs)
-CREATE TABLE compliance_certificate_definition (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  organization_id UUID NOT NULL REFERENCES organization(id),
-  program_id UUID NOT NULL REFERENCES compliance_program(id),
-  name VARCHAR NOT NULL,
-  template_url TEXT NOT NULL, -- S3/MinIO URL to template file
-  validity_period_months INTEGER NOT NULL, -- 0 = no expiration
-  renewal_window_days INTEGER DEFAULT 30,
-  ce_credits DECIMAL(4,2), -- continuing education credits
-  accreditation_body VARCHAR,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- Issued certificates
-CREATE TABLE compliance_certificate (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  certificate_number VARCHAR UNIQUE NOT NULL, -- human-readable number
-  definition_id UUID NOT NULL REFERENCES compliance_certificate_definition(id),
-  user_id UUID NOT NULL REFERENCES user(id),
-  assignment_id UUID NOT NULL REFERENCES compliance_assignment(id),
-  
-  -- Certificate data
-  issued_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  issued_by UUID NOT NULL REFERENCES profile(id),
-  expires_at TIMESTAMPTZ,
-  
-  -- Certificate file
-  certificate_url TEXT NOT NULL,
-  certificate_hash TEXT NOT NULL,
-  
-  -- Lifecycle
-  status VARCHAR DEFAULT 'valid', -- 'valid', 'expiring_soon', 'expired', 'revoked', 'renewed'
-  revoked_at TIMESTAMPTZ,
-  revoked_by UUID REFERENCES profile(id),
-  revoke_reason TEXT,
-  
-  -- Renewal chain
-  is_renewal BOOLEAN DEFAULT false,
-  previous_certificate_id UUID REFERENCES compliance_certificate(id),
-  renewed_by_certificate_id UUID REFERENCES compliance_certificate(id),
-  
-  -- Verification
-  verification_token VARCHAR UNIQUE NOT NULL, -- for public verification URL
-  
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-```
-
----
-
-### 3.6 Compliance Dashboard & Reporting
-
-#### Purpose
-Give compliance officers and managers real-time visibility into organizational compliance posture.
-
-#### Requirements
-
-**CD-1: Organization Compliance Overview**
-- Overall compliance rate (% of required training completed on time)
-- Breakdown by: program, department, location, role
-- Risk indicators: overdue count, expiring soon count, non-compliant departments
-- Trend lines: compliance rate over time
-
-**CD-2: Program-Level Dashboard**
-- Assignment status pie chart (completed, in progress, overdue, not started)
-- Completion rate over time
-- Average time to complete
-- Pass/fail rates for assessments
-- Upcoming due dates calendar view
-
-**CD-3: Individual Learner View**
-- Complete training history
-- Current assignments and status
-- Certificates earned (with download links)
-- Policy attestations
-- Compliance "score" or rating
-
-**CD-4: Alerts & Warnings**
-- High-risk situations: "50 people overdue on HIPAA training"
-- Approaching deadlines: "200 certifications expire next month"
-- Completion milestones: "90% of organization completed annual training"
-
-**CD-5: Manager Dashboard**
-- My team's compliance rate
-- Direct reports' individual status
-- Overdue notifications sent
-- Team comparison to organization average
-
-**CD-6: Audit Reports**
-- One-click generation of compliance packages
-- Include: training records, certificates, policy attestations, audit log excerpt
-- Tamper-evident (checksums, signed manifest)
-- Date range selection
-- Filter by: program, department, individual
-
-#### API Endpoints
-```typescript
-// Organization compliance overview
-GET /compliance/dashboard/overview
-  Response: {
-    overallComplianceRate: number;
-    totalAssignments: number;
-    completedOnTime: number;
-    completedLate: number;
-    overdue: number;
-    inProgress: number;
-    notStarted: number;
-    expiringSoon30Days: number;
-    expiringSoon90Days: number;
-    byProgram: ProgramComplianceSummary[];
-    byDepartment: DepartmentComplianceSummary[];
-    trends: { date: string; rate: number }[];
-  }
-
-// Program detail dashboard
-GET /compliance/dashboard/programs/:programId
-  Response: {
-    program: ComplianceProgram;
-    stats: {
-      totalAssigned: number;
-      completed: number;
-      inProgress: number;
-      overdue: number;
-      averageCompletionTime: number;
-      passRate: number;
-    };
-    statusBreakdown: { status: string; count: number; percentage: number }[];
-    upcomingDueDates: { date: string; count: number }[];
-    recentCompletions: AssignmentSummary[];
-    atRiskLearners: AssignmentSummary[]; -- overdue or due soon
-  }
-
-// Generate audit report
-POST /compliance/reports/audit-package
-  Body: {
-    title: string;
-    dateRange: { start: string; end: string };
-    filters: {
-      programs?: string[];
-      departments?: string[];
-      users?: string[];
-    };
-    include: {
-      trainingRecords: boolean;
-      certificates: boolean;
-      policyAttestations: boolean;
-      auditLog: boolean;
-    };
-  }
-  Response: {
-    reportId: string;
-    status: 'generating' | 'ready' | 'failed';
-    downloadUrl?: string;
-    expiresAt?: string;
-    manifest: {
-      generatedAt: string;
-      generatedBy: string;
-      recordCounts: Record<string, number>;
-      checksums: Record<string, string>;
-    };
-  }
-
-// Learner compliance profile
-GET /compliance/learners/:userId/profile
-  Response: {
-    user: UserSummary;
-    currentAssignments: AssignmentDetails[];
-    completedPrograms: CompletedProgram[];
-    certificates: CertificateSummary[];
-    policyAttestations: AttestationSummary[];
-    complianceScore: number;
-    riskLevel: 'low' | 'medium' | 'high';
-  }
-```
-
----
-
-### 3.7 Audit Trail & Evidence
-
-#### Purpose
-Provide immutable, tamper-evident records of all compliance-related activities for auditor review.
-
-#### Requirements
-
-**AT-1: Comprehensive Event Logging**
-Log every compliance-relevant action:
-- Program created, modified, archived
-- Assignment created, completed, waived, expired
-- Certificate issued, revoked, renewed
-- Policy published, attested
-- Notification sent, opened, clicked
-- Report generated, downloaded
-- Admin actions (bulk operations, settings changes)
-
-**AT-2: Log Entry Content**
-- Timestamp (UTC, millisecond precision)
-- Actor (user ID, role, email)
-- Action type and description
-- Affected resources (program, assignment, user)
-- Before/after values for changes
-- IP address and user agent
-- Session ID
-
-**AT-3: Audit Log Characteristics**
-- Append-only (no modifications allowed)
-- Retained for 7+ years (configurable)
-- Exportable to CSV/JSON/PDF
-- Full-text searchable
-- Filterable by: date range, actor, action type, resource
-
-**AT-4: Evidence Integrity**
-- Cryptographic hash chain linking entries
-- Regular integrity verification reports
-- Tamper detection alerts
-
-#### Database Schema
-```sql
--- Audit event log (append-only)
-CREATE TABLE compliance_audit_event (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  organization_id UUID NOT NULL REFERENCES organization(id),
-  timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
-  -- Actor
-  actor_id UUID REFERENCES user(id),
-  actor_email VARCHAR,
-  actor_role VARCHAR,
-  
-  -- Action
-  action_category VARCHAR NOT NULL, -- 'program', 'assignment', 'certificate', 'policy', 'report', 'admin'
-  action_type VARCHAR NOT NULL, -- 'created', 'updated', 'completed', 'revoked', etc.
-  action_description TEXT,
-  
-  -- Resources
-  resource_type VARCHAR, -- 'program', 'assignment', 'user', 'certificate'
-  resource_id UUID,
-  resource_name VARCHAR,
-  
-  -- Details
-  changes JSONB, -- { field: { from: x, to: y } }
-  metadata JSONB, -- additional context
-  
-  -- Context
-  ip_address INET,
-  user_agent TEXT,
-  session_id UUID,
-  
-  -- Integrity
-  previous_hash VARCHAR,
-  entry_hash VARCHAR NOT NULL, -- hash of this entry including previous_hash
-  
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE INDEX idx_audit_org_time ON compliance_audit_event(organization_id, timestamp DESC);
-CREATE INDEX idx_audit_action ON compliance_audit_event(action_category, action_type);
-CREATE INDEX idx_audit_resource ON compliance_audit_event(resource_type, resource_id);
-CREATE INDEX idx_audit_actor ON compliance_audit_event(actor_id);
-```
+**CD-4: Org-Level Compliance Summary**
+On the organization dashboard, show a summary card for compliance courses:
+- Count of compliance courses in the org
+- Overall compliance rate across all compliance courses
+- Number of overdue learners (link to drill down)
 
 ---
 
 ## 4. User Experience Flows
 
-### 4.1 Compliance Officer Journey
+### 4.1 Admin: Creating a Compliance Course
 
 ```
-1. Create Compliance Program
+1. Click "New Course" → Select type: "Compliance"
    ↓
-2. Add Content (courses, assessments)
+2. Fill in title, description (same as any course)
    ↓
-3. Set Assignment Rules (who needs to complete)
+3. Compliance settings panel appears:
+   - Retake interval: [12] months  (dropdown: 3, 6, 12, 18, 24, custom)
+   - Framework: [HIPAA] (optional dropdown)
+   - Passing score: [80]%
+   - Grace period: [14] days
+   - Reminders: [30, 7, 1] days before due
    ↓
-4. Configure Schedule & Reminders
+4. Add content: lessons, exercises, assessments (same as self-paced)
    ↓
-5. Launch Program → System auto-assigns to users
+5. Configure certificate (optional, same as today but will auto-expire)
    ↓
-6. Monitor Dashboard → See completion rates, overdue alerts
-   ↓
-7. Send Reminders / Escalate / Waive as needed
-   ↓
-8. Generate Audit Report → Export for auditor
+6. Publish course → Invite/enroll learners
 ```
 
-### 4.2 Employee (Learner) Journey
+### 4.2 Student: Taking a Compliance Course (First Time)
 
 ```
-1. Receive Email: "New Required Training: HIPAA Compliance"
+1. Receive invite / see course in dashboard
+   - Course card shows: compliance badge, framework tag, "Due by [date]"
    ↓
-2. Click Link → Login (if needed) → Go to "My Compliance" dashboard
+2. Open course → See banner: "Required: Complete by [date]"
    ↓
-3. See: List of assigned programs with due dates
+3. Work through lessons and exercises (same as self-paced)
    ↓
-4. Click Program → Start Training
+4. Complete final assessment
+   - Score >= passing score → "Compliant until [date]" confirmation
+   - Score < passing score → "You need [X]% to pass. [N] attempts remaining."
    ↓
-5. Complete Courses/Assessments
+5. Receive confirmation email + certificate (if enabled)
    ↓
-6. Receive Certificate + Confirmation Email
-   ↓
-7. Certificate stored in "My Certificates" for future reference
+6. Course card updates: green "Compliant" badge, "Valid until [date]"
 ```
 
-### 4.3 Manager Journey
+### 4.3 Student: The Renewal Cycle
 
 ```
-1. Weekly Email Digest: "Your Team's Compliance Status"
+1. [30 days before expiry] Receive reminder email:
+   "Your HIPAA Compliance certification expires on [date]. Retake the course to stay compliant."
+   - Course card turns yellow: "Expiring Soon"
    ↓
-2. Click to Manager Dashboard
+2. [7 days before] Second reminder
    ↓
-3. See: Team compliance rate, who's overdue, who's due soon
+3. [1 day before] Final reminder
    ↓
-4. Drill into individual → See their assignments
+4. [Expiry date] If not completed:
+   - Course card turns orange: "In Grace Period" (if grace period > 0)
+   - OR red: "Non-Compliant" (if no grace period)
    ↓
-5. Send reminder to specific team member
+5. Student clicks course → Sees their previous completion history:
+   "Cycle 1: Completed Jan 2025 (Score: 92%) — Expired"
+   "Cycle 2: Due by Jan 2026 — [Start Retake]"
    ↓
-6. Get notified when team member completes overdue training
+6. Completes retake → New certificate issued → Back to "Compliant"
 ```
 
-### 4.4 Auditor Journey
+### 4.4 Admin: Monitoring Compliance
 
 ```
-1. Compliance officer generates "Audit Package" 
+1. Open compliance course → "Compliance" tab in course management
    ↓
-2. Secure download link sent to auditor (time-limited)
+2. See dashboard: 85% compliant, 10% expiring soon, 5% overdue
    ↓
-3. OR: Auditor given time-limited read-only portal access
+3. Filter by "Non-Compliant" → See list of overdue learners
    ↓
-4. Auditor views/downloads:
-      - Training completion records
-      - Certificates with verification
-      - Policy attestations
-      - Activity audit log
+4. Select overdue learners → Actions:
+   - "Send Reminder" (manual nudge)
+   - "Extend Due Date" (grant extension)
+   - "Waive" (exempt with reason)
    ↓
-5. All auditor activity is itself logged
+5. Export compliance report as CSV for records
 ```
 
 ---
 
-## 5. Implementation Roadmap
+## 5. Database Schema
 
-### Phase 1: Core Assignment & Tracking (Weeks 1-6)
-**Goal**: Basic compliance program delivery
+### Enum Change
+```sql
+ALTER TYPE "COURSE_TYPE" ADD VALUE 'COMPLIANCE';
+```
 
-| Task | Duration | Deliverable |
-|------|----------|-------------|
-| Compliance program data model | 3 days | Database schema |
-| Program CRUD API | 4 days | Backend endpoints |
-| Assignment engine | 5 days | Auto-assignment logic |
-| Basic compliance dashboard | 5 days | Compliance overview UI |
-| "My Compliance" learner view | 4 days | Learner dashboard |
-| Assignment tracking | 4 days | Progress tracking UI |
-| **Milestone** | | Companies can assign and track compliance training |
+### New Column on `course` Table
+```sql
+ALTER TABLE course ADD COLUMN compliance JSONB DEFAULT NULL;
+-- Only populated when type = 'COMPLIANCE'. Example:
+-- {
+--   "retakeIntervalMonths": 12,
+--   "gracePeriodDays": 14,
+--   "reminderDaysBefore": [30, 14, 7, 1],
+--   "isMandatory": true,
+--   "framework": "HIPAA",
+--   "maxRetakeAttempts": null,
+--   "passingScore": 80
+-- }
+```
 
-### Phase 2: Notifications & Reminders (Weeks 7-10)
-**Goal**: Automated follow-up without manual work
+### New Table: `course_completion_record`
+```sql
+CREATE TABLE course_completion_record (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  course_id UUID NOT NULL REFERENCES course(id) ON DELETE CASCADE,
+  group_member_id UUID NOT NULL REFERENCES groupmember(id) ON DELETE CASCADE,
+  profile_id UUID NOT NULL REFERENCES profile(id),
 
-| Task | Duration | Deliverable |
-|------|----------|-------------|
-| Notification template system | 3 days | Template CRUD API/UI |
-| Reminder scheduling engine | 4 days | Background job processor |
-| Email delivery & tracking | 3 days | Sendgrid/SES integration |
-| Manager notifications | 3 days | Manager digest & alerts |
-| Escalation workflows | 4 days | Multi-level escalation |
-| **Milestone** | | Fully automated reminder system |
+  -- Cycle tracking
+  cycle_number INTEGER NOT NULL DEFAULT 1,  -- 1 = first time, 2 = first retake, etc.
+  status VARCHAR NOT NULL DEFAULT 'not_started',
+    -- 'not_started', 'in_progress', 'compliant', 'expiring_soon',
+    -- 'in_grace_period', 'non_compliant', 'waived'
 
-### Phase 3: Certificates & Renewals (Weeks 11-14)
-**Goal**: Complete certification lifecycle
+  -- Dates
+  due_date TIMESTAMPTZ NOT NULL,
+  started_at TIMESTAMPTZ,
+  completed_at TIMESTAMPTZ,
+  valid_until TIMESTAMPTZ,  -- completedAt + retakeIntervalMonths
+  expired_at TIMESTAMPTZ,   -- when status changed to non_compliant
 
-| Task | Duration | Deliverable |
-|------|----------|-------------|
-| Certificate templates | 3 days | Template designer |
-| Certificate generation | 3 days | PDF generation |
-| Certificate lifecycle mgmt | 4 days | Expire, revoke, renew |
-| Recurring assignment engine | 4 days | Auto-renewal logic |
-| Expiration dashboard | 3 days | Renewals view |
-| **Milestone** | | Automated renewal cycles |
+  -- Results
+  score INTEGER,             -- best score for this cycle
+  attempts INTEGER DEFAULT 0,
+  time_spent_minutes INTEGER DEFAULT 0,
 
-### Phase 4: Policy Attestation (Weeks 15-18)
-**Goal**: Policy acknowledgment tracking
+  -- Waiver
+  waived_by UUID REFERENCES profile(id),
+  waiver_reason TEXT,
+  waiver_expires_at TIMESTAMPTZ,
 
-| Task | Duration | Deliverable |
-|------|----------|-------------|
-| Policy document management | 3 days | Policy CRUD |
-| Document viewer with tracking | 4 days | Time-on-page tracking |
-| Attestation workflow | 3 days | Sign/acknowledge flow |
-| Attestation dashboard | 3 days | Who's attested view |
-| **Milestone** | | Policy attestation system |
+  -- Metadata
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-### Phase 5: Reporting & Audit (Weeks 19-24)
-**Goal**: Audit-ready evidence and reporting
+  UNIQUE(course_id, profile_id, cycle_number)
+);
 
-| Task | Duration | Deliverable |
-|------|----------|-------------|
-| Audit event logging | 4 days | Event capture system |
-| Audit log viewer & export | 4 days | Log UI |
-| Advanced dashboards | 5 days | Drill-down reports |
-| Audit package generator | 5 days | One-click export |
-| Auditor portal (read-only) | 5 days | External auditor access |
-| **Milestone** | | Full audit readiness |
+CREATE INDEX idx_ccr_course ON course_completion_record(course_id);
+CREATE INDEX idx_ccr_profile ON course_completion_record(profile_id);
+CREATE INDEX idx_ccr_status ON course_completion_record(status);
+CREATE INDEX idx_ccr_due_date ON course_completion_record(due_date);
+CREATE INDEX idx_ccr_valid_until ON course_completion_record(valid_until);
+```
 
-### Phase 6: Integrations & Scale (Weeks 25-30)
-**Goal**: Enterprise integrations
+### Drizzle Schema (TypeScript)
 
-| Task | Duration | Deliverable |
-|------|----------|-------------|
-| HRIS integration (Workday, BambooHR) | 2 weeks | User sync |
-| SCIM provisioning | 1 week | Automated user lifecycle |
-| Advanced analytics | 1 week | Trend analysis, predictions |
-| API for external systems | 1 week | Public API endpoints |
-| **Milestone** | | Enterprise-ready platform |
+```typescript
+// In packages/db/src/schema.ts
+
+// Update enum
+export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE']);
+
+// Add to course table definition
+compliance: jsonb().$type<{
+  retakeIntervalMonths: number;
+  gracePeriodDays?: number;
+  reminderDaysBefore?: number[];
+  isMandatory?: boolean;
+  framework?: 'HIPAA' | 'OSHA' | 'SOX' | 'GDPR' | 'PCI_DSS' | 'FERPA' | 'ISO' | 'CUSTOM' | null;
+  maxRetakeAttempts?: number | null;
+  passingScore?: number;
+}>(),
+
+// New table
+export const courseCompletionRecord = pgTable(
+  'course_completion_record',
+  {
+    id: uuid().default(sql`gen_random_uuid()`).primaryKey().notNull(),
+    courseId: uuid('course_id').notNull(),
+    groupMemberId: uuid('group_member_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    cycleNumber: integer('cycle_number').default(1).notNull(),
+    status: varchar().default('not_started').notNull(),
+    dueDate: timestamp('due_date', { withTimezone: true, mode: 'string' }).notNull(),
+    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    validUntil: timestamp('valid_until', { withTimezone: true, mode: 'string' }),
+    expiredAt: timestamp('expired_at', { withTimezone: true, mode: 'string' }),
+    score: integer(),
+    attempts: integer().default(0),
+    timeSpentMinutes: integer('time_spent_minutes').default(0),
+    waivedBy: uuid('waived_by'),
+    waiverReason: text('waiver_reason'),
+    waiverExpiresAt: timestamp('waiver_expires_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+  },
+  (table) => [
+    foreignKey({ columns: [table.courseId], foreignColumns: [course.id], name: 'ccr_course_id_fkey' }),
+    foreignKey({ columns: [table.groupMemberId], foreignColumns: [groupmember.id], name: 'ccr_group_member_id_fkey' }),
+    foreignKey({ columns: [table.profileId], foreignColumns: [profile.id], name: 'ccr_profile_id_fkey' }),
+    unique('ccr_unique_cycle').on(table.courseId, table.profileId, table.cycleNumber),
+    index('idx_ccr_course').on(table.courseId),
+    index('idx_ccr_profile').on(table.profileId),
+    index('idx_ccr_status').on(table.status),
+    index('idx_ccr_due_date').on(table.dueDate),
+    index('idx_ccr_valid_until').on(table.validUntil),
+  ]
+);
+```
+
+### Validation Schema (Zod)
+
+```typescript
+// In packages/utils/src/validation/course/course.ts
+
+export const ZComplianceSettings = z.object({
+  retakeIntervalMonths: z.number().int().min(1).max(120),
+  gracePeriodDays: z.number().int().min(0).max(365).optional().default(0),
+  reminderDaysBefore: z.array(z.number().int().min(1).max(365)).max(10).optional().default([30, 7, 1]),
+  isMandatory: z.boolean().optional().default(true),
+  framework: z.enum(['HIPAA', 'OSHA', 'SOX', 'GDPR', 'PCI_DSS', 'FERPA', 'ISO', 'CUSTOM']).nullable().optional(),
+  maxRetakeAttempts: z.number().int().min(1).nullable().optional(),
+  passingScore: z.number().int().min(0).max(100).optional().default(80),
+});
+
+// Update ZCourseCreate
+export const ZCourseCreate = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  type: z.enum(['LIVE_CLASS', 'SELF_PACED', 'COMPLIANCE']),
+  organizationId: z.string().min(1),
+  compliance: ZComplianceSettings.optional(),
+}).refine(
+  (data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined,
+  { message: 'Compliance settings are required for COMPLIANCE courses', path: ['compliance'] }
+);
+
+// Update ZCourseUpdate
+export const ZCourseUpdate = z.object({
+  // ... existing fields ...
+  type: z.enum(['LIVE_CLASS', 'SELF_PACED', 'COMPLIANCE']).optional(),
+  compliance: ZComplianceSettings.optional(),
+});
+```
 
 ---
 
-## 6. Technical Architecture
+## 6. API Endpoints
 
-### New API Routes
+### Course Endpoints (extended)
 ```
-/compliance/programs              # CRUD for compliance programs
-/compliance/assignments           # Assignment management
-/compliance/assignments/:id/progress  # Track learner progress
-/compliance/certificates          # Certificate lifecycle
-/compliance/policies              # Policy document management
-/compliance/attestations          # Policy acknowledgment
-/compliance/dashboard             # Dashboard data
-/compliance/reports               # Report generation
-/compliance/audit-events          # Audit log access
-/compliance/notifications         # Notification management
-/compliance/settings              # Organization compliance settings
+POST   /courses                          # Now accepts type: 'COMPLIANCE' + compliance settings
+PATCH  /courses/:courseId                 # Can update compliance settings
 ```
 
-### Background Jobs
+### Compliance-Specific Endpoints
 ```
-assignment-processor      # Create assignments based on rules
-reminder-scheduler        # Queue upcoming reminders
-notification-sender       # Send emails/SMS
-expiration-checker        # Mark expired certifications
-renewal-processor         # Create renewal assignments
-report-generator          # Generate large audit reports
-audit-archiver            # Archive old audit logs
+GET    /courses/:courseId/compliance
+  → Compliance overview: stats + learner list with statuses
+
+GET    /courses/:courseId/compliance/learners/:profileId
+  → Learner compliance history: current cycle + all previous cycles
+
+POST   /courses/:courseId/compliance/waive
+  Body: { profileId, reason, expiresAt? }
+  → Waive a learner from the current cycle
+
+POST   /courses/:courseId/compliance/reset
+  Body: { profileId, newDueDate }
+  → Force re-enrollment (create new cycle)
+
+POST   /courses/:courseId/compliance/extend
+  Body: { profileIds[], newDueDate }
+  → Bulk extend due dates
+
+GET    /courses/:courseId/compliance/export
+  → CSV export of all learner compliance records
 ```
 
-### Frontend Features
+---
+
+## 7. Background Job Infrastructure
+
+### Current State
+There is no cron or job queue system in ClassroomIO today. Redis exists but is only used for rate limiting and caching. The compliance course type requires two daily jobs — this is the first scheduled work in the platform.
+
+### Architecture: Internal API Routes + Cron Runner
+
+The compliance logic lives inside the existing API (where it has DB access, services, and context). A separate lightweight Bun cron runner triggers it on a schedule by calling internal endpoints.
+
 ```
-apps/dashboard/src/lib/features/compliance/
-  pages/
-    programs-list.svelte
-    program-editor.svelte
-    assignments.svelte
-    dashboard.svelte
-    reports.svelte
-    audit-log.svelte
-    settings.svelte
+┌─────────────────┐       POST /internal/compliance/*       ┌──────────────┐
+│   Cron Runner   │  ──────────────────────────────────►    │   API        │
+│   (apps/cron)   │       x-api-key: PRIVATE_SERVER_KEY     │   (apps/api) │
+│   Bun + croner  │                                         │   Hono       │
+└─────────────────┘                                         └──────┬───────┘
+                                                                   │
+                                                            ┌──────▼───────┐
+                                                            │  PostgreSQL  │
+                                                            └──────────────┘
+```
+
+### Internal API Routes
+
+Two new routes under `/internal/`, protected by the existing `PRIVATE_SERVER_KEY` middleware (`apps/api/src/middlewares/api-key.ts`):
+
+```
+POST /internal/compliance/check-expiry
+  → Checks valid_until dates across all compliance courses
+  → Transitions statuses: compliant → expiring_soon → in_grace_period → non_compliant
+  → Creates new cycle records (automatic re-enrollment) when expired
+  → Returns: { processed: number, transitioned: number, reEnrolled: number }
+
+POST /internal/compliance/send-reminders
+  → Finds compliance courses with upcoming due dates
+  → Sends reminders based on each course's reminderDaysBefore settings
+  → Sends admin notifications for newly overdue learners
+  → Returns: { remindersSent: number, adminAlertsSent: number }
+```
+
+### Cron Runner (`apps/cron/`)
+
+Minimal Bun project. Its only job is to call the internal API endpoints on a schedule.
+
+```typescript
+// apps/cron/index.ts
+import { Cron } from 'croner';
+
+const API_URL = process.env.API_URL;
+const SERVER_KEY = process.env.PRIVATE_SERVER_KEY;
+
+const headers = { 'x-api-key': SERVER_KEY, 'content-type': 'application/json' };
+
+// Daily at 2:00 AM UTC — check expirations and transition statuses
+new Cron('0 2 * * *', async () => {
+  const res = await fetch(`${API_URL}/internal/compliance/check-expiry`, { method: 'POST', headers });
+  console.log('check-expiry:', await res.json());
+});
+
+// Daily at 2:30 AM UTC — send reminders (runs after expiry check so statuses are up to date)
+new Cron('30 2 * * *', async () => {
+  const res = await fetch(`${API_URL}/internal/compliance/send-reminders`, { method: 'POST', headers });
+  console.log('send-reminders:', await res.json());
+});
+
+console.log('Cron runner started');
+```
+
+**Dependencies**: Just `croner` (lightweight, zero-dep cron library for Bun/Node).
+
+### Security
+
+| Concern | How it's handled |
+|---------|-----------------|
+| **Authentication** | `PRIVATE_SERVER_KEY` — the existing server-to-server key, validated by the `api-key` middleware. No new auth mechanism needed |
+| **Route exposure** | `/internal/*` prefix is never registered in public-facing route groups. Middleware rejects requests without a valid key |
+| **Network isolation** | On Railway, the cron runner and API are separate services in the same project — internal communication stays within Railway's private network |
+| **Idempotency** | Both jobs are safe to run multiple times. `check-expiry` only transitions records that match date conditions. `send-reminders` tracks sent reminders to avoid duplicates |
+
+### Deployment
+
+**Railway** (production): The cron runner is a separate Railway service in the same project as the API. It needs two env vars:
+- `API_URL` — internal URL of the API service (Railway provides this via service references)
+- `PRIVATE_SERVER_KEY` — same value as the API's key
+
+**Self-hosted**: Not included in docker-compose. A `README.md` in `apps/cron/` explains the three options:
+
+1. **Run the cron runner directly** — `bun run apps/cron/index.ts` as a separate long-running process
+2. **Use system cron** — add two crontab entries that `curl` the internal endpoints:
+   ```
+   0 2 * * * curl -X POST -H "x-api-key: $PRIVATE_SERVER_KEY" http://localhost:3002/internal/compliance/check-expiry
+   30 2 * * * curl -X POST -H "x-api-key: $PRIVATE_SERVER_KEY" http://localhost:3002/internal/compliance/send-reminders
+   ```
+3. **Manual** — call the endpoints on demand, skip automation entirely
+
+### Adding Future Jobs
+
+When new scheduled work is needed beyond compliance, add a new `/internal/*` route in the API and a new `Cron(...)` call in the runner. The pattern scales without architectural changes.
+
+---
+
+## 8. Technical Architecture
+
+### Frontend Changes
+
+```
+apps/dashboard/src/lib/features/course/
   components/
-    program-card.svelte
-    assignment-status-badge.svelte
-    compliance-chart.svelte
-    notification-template-editor.svelte
-    certificate-viewer.svelte
-    policy-uploader.svelte
-    attestation-flow.svelte
-  api/
-    compliance.svelte.ts
-  utils/
-    types.ts
-    constants.ts
+    new-course-modal.svelte             # Updated: COMPLIANCE option alongside LIVE_CLASS/SELF_PACED
+    compliance-settings-form.svelte     # New: retake interval, framework, grace period, passing score
+    compliance-status-badge.svelte      # New: compliant/expiring/non-compliant badges
+    compliance-learner-table.svelte     # New: learner list with compliance statuses + bulk actions
+  pages/
+    settings.svelte                     # Updated: compliance settings section when type=COMPLIANCE
+    compliance.svelte                   # New: compliance tab in course management
+
+apps/course-app/  (learner-facing)
+  # Updated: show compliance status badge, due date, retake history on course page
+  # Updated: course card shows "Due by" and color-coded status
 ```
 
----
+### Files That Need Code Changes
 
-## 7. Success Metrics
-
-### Product Metrics
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| Time to create compliance program | < 30 minutes | User testing |
-| Time to assign training to 1000 people | < 5 minutes | Performance test |
-| Training completion rate | > 90% | Dashboard tracking |
-| Automated reminder open rate | > 60% | Email analytics |
-| Time to generate audit report | < 2 minutes | Performance test |
-
-### Business Metrics
-| Metric | Target |
-|--------|--------|
-| Compliance-focused customer acquisition | 10 new customers in 6 months |
-| Compliance feature NPS | > 50 |
-| Customer retention (compliance segment) | > 95% |
-| Expansion revenue from compliance add-on | 20% of ARR |
+| File | Change |
+|------|--------|
+| `packages/db/src/schema.ts` | Add `COMPLIANCE` to enum, `compliance` column to course, new `courseCompletionRecord` table |
+| `packages/utils/src/validation/course/course.ts` | Add `ZComplianceSettings`, update `ZCourseCreate`/`ZCourseUpdate` with `COMPLIANCE` and `.refine()` |
+| `packages/utils/src/validation/course-import/course-import.ts` | Add `COMPLIANCE` to `ZCourseImportDraftCourse.type` |
+| `apps/api/src/services/course/course.ts` | Handle `compliance` field in create/update |
+| `apps/api/src/services/submission/submission.ts` | Record valid completion on `course_completion_record` when score >= passingScore |
+| `apps/api/src/routes/v1/courses.ts` | Add `/courses/:courseId/compliance/*` endpoints |
+| `apps/api/src/routes/internal/compliance.ts` | New: `/internal/compliance/check-expiry` and `send-reminders` routes |
+| `apps/cron/index.ts` | New: Bun cron runner that calls internal endpoints on a schedule |
+| `apps/dashboard/.../new-course-modal.svelte` | Add COMPLIANCE option to course type selector |
+| `apps/dashboard/.../settings.svelte` | Show compliance settings panel for COMPLIANCE courses |
 
 ---
 
-## 8. Competitive Differentiation
+## 9. Implementation Roadmap
 
-| Feature | ClassroomIO | Competitors (LMS) | Compliance Tools |
-|---------|-------------|-------------------|------------------|
-| Course creation quality | ✅ Strong | ✅ Strong | ❌ Weak |
-| Compliance-specific features | 🆕 Building | ⚠️ Limited | ✅ Strong |
-| Price | 💰 Affordable | 💰💰 Expensive | 💰💰💰 Very expensive |
-| Open Source | ✅ Yes | ❌ No | ❌ No |
-| Self-hosted option | ✅ Yes | ⚠️ Limited | ❌ Rare |
-| Ease of use | ✅ Simple | ⚠️ Complex | ❌ Complex |
+### Phase 1: Schema & API (Week 1-2)
 
-**Positioning**: "The compliance training platform that doesn't suck - powerful enough for enterprise compliance, simple enough for anyone to use."
+| Task | Duration | Deliverable |
+|------|----------|-------------|
+| Extend `COURSE_TYPE` enum + migration | 1 day | `COMPLIANCE` in Postgres enum and Drizzle schema |
+| Add `compliance` JSONB column to course | 1 day | Migration + schema update |
+| `course_completion_record` table + Drizzle model | 2 days | New table with indexes |
+| `ZComplianceSettings` Zod validation | 1 day | Validation for create/update |
+| Update course create/update API | 2 days | Accept compliance settings |
+| Compliance-specific API endpoints | 2 days | Overview, waive, reset, extend, export |
+
+### Phase 2: Completion Tracking & Background Jobs (Week 2-3)
+
+| Task | Duration | Deliverable |
+|------|----------|-------------|
+| Record compliance completion on submission | 2 days | Submission service integration |
+| `/internal/compliance/*` routes + `PRIVATE_SERVER_KEY` guard | 1 day | Internal API endpoints |
+| `check-expiry` service logic | 2 days | Daily status transitions + auto re-enrollment |
+| `send-reminders` service logic | 1 day | Reminder emails based on `reminderDaysBefore` |
+| `apps/cron` Bun project + `croner` setup | 1 day | Cron runner calling internal endpoints |
+| Deploy cron runner as Railway service | 0.5 day | Running in production |
+| Admin overdue notifications | 1 day | Notify admins of newly non-compliant learners |
+
+### Phase 3: Dashboard & Admin UI (Week 3-4)
+
+| Task | Duration | Deliverable |
+|------|----------|-------------|
+| COMPLIANCE option in course creation modal | 1 day | Course type selector update |
+| Compliance settings form component | 2 days | Retake interval, framework, grace period UI |
+| Compliance settings in course settings page | 1 day | Edit compliance config after creation |
+| Compliance tab in course management | 3 days | Learner table with statuses, bulk actions |
+| Org-level compliance summary card | 1 day | Dashboard overview widget |
+
+### Phase 4: Student Experience (Week 4-5)
+
+| Task | Duration | Deliverable |
+|------|----------|-------------|
+| Compliance badge + due date on course card | 1 day | Learner dashboard update |
+| "Required: Complete by" banner on course page | 1 day | Course page update |
+| Retake history view | 2 days | "Cycle 1: Completed... Cycle 2: Due..." |
+| "Compliant until" confirmation on completion | 1 day | Post-completion UI |
+| Certificate with expiration date | 1 day | Certificate PDF update |
+
+**Milestone**: Organizations can create compliance courses with retake periods. Learners see due dates, get reminders, and are automatically re-enrolled when completions expire. Admins can monitor compliance status and take bulk actions.
 
 ---
 
-## 9. Open Questions
+## 10. Success Metrics
 
-1. Should we offer pre-built compliance program templates (e.g., "HIPAA Basics")?
-2. Do we need integration with third-party course libraries (Skillsoft, LinkedIn Learning)?
-3. Should we support instructor-led training tracking (ILT) or self-paced only?
-4. How important is mobile app support for field workers?
-5. Do we need e-signature integration (DocuSign) for high-stakes certifications?
-6. Should we build a marketplace for compliance content creators?
+| Metric | Target | How to Measure |
+|--------|--------|----------------|
+| Time to create a compliance course | < 5 min | User testing |
+| Compliance course completion rate | > 90% | `course_completion_record` data |
+| Reminder email → completion conversion | > 50% | Track completions within 7 days of reminder |
+| Overdue rate (non-compliant after grace period) | < 10% | `course_completion_record` status counts |
+| Admin time spent on manual follow-up | Reduced by 80% | Customer interviews |
 
 ---
 
-## 10. Next Steps
+## 11. Open Questions
 
-1. **Validate** this PRD with 3-5 compliance officers at target companies
-2. **Prioritize** Phase 1 features for immediate development
-3. **Design** the compliance dashboard UI mockups
-4. **Prototype** the program creation wizard
-5. **Plan** data migration strategy for existing ClassroomIO courses
+1. Should converting an existing `SELF_PACED` course to `COMPLIANCE` retroactively create completion records for current enrollees?
+2. When a waiver expires, should the learner automatically get a new cycle, or return to their previous status?
+3. Should compliance courses support a "pre-assessment" that lets learners who already know the material skip directly to the final assessment?
+4. Do we need org-level defaults for compliance settings (e.g., "all compliance courses in this org default to 12-month retake")?

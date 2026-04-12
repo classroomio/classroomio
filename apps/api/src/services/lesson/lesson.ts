@@ -18,6 +18,7 @@ import {
   upsertLessonCompletion,
   type LessonById
 } from '@cio/db/queries/lesson';
+import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { enrichLessonWithPresignedUrls } from '@api/utils/lesson-media';
 
 /**
@@ -37,6 +38,8 @@ export async function createLesson(courseId: string, data: TLessonCreate): Promi
     if (!lesson) {
       throw new AppError('Failed to create lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }
+
+    await touchCourseUpdatedAt(courseId);
 
     return lesson;
   } catch (error) {
@@ -91,6 +94,10 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
       throw new AppError('Failed to update lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }
 
+    if (updated.courseId) {
+      await touchCourseUpdatedAt(updated.courseId);
+    }
+
     return updated;
   } catch (error) {
     if (error instanceof AppError) {
@@ -115,6 +122,10 @@ export async function deleteLessonService(lessonId: string): Promise<TLesson> {
     const deleted = await deleteLesson(lessonId);
     if (!deleted) {
       throw new AppError('Failed to delete lesson', ErrorCodes.INTERNAL_ERROR, 500);
+    }
+
+    if (deleted.courseId) {
+      await touchCourseUpdatedAt(deleted.courseId);
     }
 
     return deleted;
@@ -168,7 +179,14 @@ export async function reorderLessons(lessons: TLessonReorder['lessons']): Promis
     );
 
     const updated = await Promise.all(updatePromises);
-    return updated.filter((l): l is TLesson => l !== null);
+    const validLessons = updated.filter((l): l is TLesson => l !== null);
+
+    const courseId = validLessons[0]?.courseId;
+    if (courseId) {
+      await touchCourseUpdatedAt(courseId);
+    }
+
+    return validLessons;
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to reorder lessons',

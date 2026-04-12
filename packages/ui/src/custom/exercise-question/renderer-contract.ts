@@ -18,7 +18,9 @@ import { default as NumericEdit } from './renderers/numeric/edit.svelte';
 import { default as OrderingEdit } from './renderers/ordering/edit.svelte';
 import { default as RadioEdit } from './renderers/radio/edit.svelte';
 import { default as LinkEdit } from './renderers/link/edit.svelte';
+import { default as WordBankEdit } from './renderers/word-bank/edit.svelte';
 import { default as ShortAnswerEdit } from './renderers/short-answer/edit.svelte';
+import { default as StarEdit } from './renderers/star/edit.svelte';
 import { default as TextareaEdit } from './renderers/textarea/edit.svelte';
 import { default as TrueFalseEdit } from './renderers/true-false/edit.svelte';
 
@@ -31,7 +33,9 @@ import { default as NumericTake } from './renderers/numeric/take.svelte';
 import { default as OrderingTake } from './renderers/ordering/take.svelte';
 import { default as RadioTake } from './renderers/radio/take.svelte';
 import { default as LinkTake } from './renderers/link/take.svelte';
+import { default as WordBankTake } from './renderers/word-bank/take.svelte';
 import { default as ShortAnswerTake } from './renderers/short-answer/take.svelte';
+import { default as StarTake } from './renderers/star/take.svelte';
 import { default as TextareaTake } from './renderers/textarea/take.svelte';
 import { default as TrueFalseTake } from './renderers/true-false/take.svelte';
 
@@ -44,7 +48,9 @@ import { default as NumericPreview } from './renderers/numeric/preview.svelte';
 import { default as OrderingPreview } from './renderers/ordering/preview.svelte';
 import { default as RadioPreview } from './renderers/radio/preview.svelte';
 import { default as LinkPreview } from './renderers/link/preview.svelte';
+import { default as WordBankPreview } from './renderers/word-bank/preview.svelte';
 import { default as ShortAnswerPreview } from './renderers/short-answer/preview.svelte';
+import { default as StarPreview } from './renderers/star/preview.svelte';
 import { default as TextareaPreview } from './renderers/textarea/preview.svelte';
 import { default as TrueFalsePreview } from './renderers/true-false/preview.svelte';
 
@@ -57,7 +63,9 @@ import { default as NumericSubmission } from './renderers/numeric/submission.sve
 import { default as OrderingSubmission } from './renderers/ordering/submission.svelte';
 import { default as RadioSubmission } from './renderers/radio/submission.svelte';
 import { default as LinkSubmission } from './renderers/link/submission.svelte';
+import { default as WordBankSubmission } from './renderers/word-bank/submission.svelte';
 import { default as ShortAnswerSubmission } from './renderers/short-answer/submission.svelte';
+import { default as StarSubmission } from './renderers/star/submission.svelte';
 import { default as TextareaSubmission } from './renderers/textarea/submission.svelte';
 import { default as TrueFalseSubmission } from './renderers/true-false/submission.svelte';
 
@@ -66,6 +74,7 @@ import { default as CheckboxReview } from './renderers/checkbox/review.svelte';
 import { default as NumericReview } from './renderers/numeric/review.svelte';
 import { default as ShortAnswerReview } from './renderers/short-answer/review.svelte';
 import { default as FillBlankReview } from './renderers/fill-blank/review.svelte';
+import { default as WordBankReview } from './renderers/word-bank/review.svelte';
 import { default as OrderingReview } from './renderers/ordering/review.svelte';
 import { default as TrueFalseReview } from './renderers/true-false/review.svelte';
 
@@ -150,6 +159,19 @@ export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<Share
     take: LinkTake,
     preview: LinkPreview,
     submission: LinkSubmission
+  },
+  [QUESTION_TYPE_KEY.WORD_BANK]: {
+    edit: WordBankEdit,
+    take: WordBankTake,
+    preview: WordBankPreview,
+    submission: WordBankSubmission,
+    review: WordBankReview
+  },
+  [QUESTION_TYPE_KEY.STAR]: {
+    edit: StarEdit,
+    take: StarTake,
+    preview: StarPreview,
+    submission: StarSubmission
   }
 };
 

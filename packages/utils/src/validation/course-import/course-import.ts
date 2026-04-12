@@ -228,6 +228,7 @@ export const ZCourseImportDraftPublish = z.object({
 export type TCourseImportDraftPublish = z.infer<typeof ZCourseImportDraftPublish>;
 
 export const ZCourseImportDraftPublishToCourse = ZCourseImportDraftPublish.extend({
-  courseId: z.string().min(1)
+  courseId: z.string().min(1),
+  syncMode: z.enum(['merge', 'replace']).default('merge')
 });
 export type TCourseImportDraftPublishToCourse = z.infer<typeof ZCourseImportDraftPublishToCourse>;

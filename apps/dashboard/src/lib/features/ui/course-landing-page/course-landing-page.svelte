@@ -7,6 +7,17 @@
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import PlayIcon from '@lucide/svelte/icons/play';
   import UserIcon from '@lucide/svelte/icons/user';
+  import StarIcon from '@lucide/svelte/icons/star';
+  import UsersIcon from '@lucide/svelte/icons/users';
+  import BookOpenIcon from '@lucide/svelte/icons/book-open';
+  import ClockIcon from '@lucide/svelte/icons/clock';
+
+  import { BlurFade } from '@cio/ui/custom/animation/blurfade';
+  import { BlurIn } from '@cio/ui/custom/animation/blurin';
+  import { DotPattern } from '@cio/ui/custom/animation/dot-pattern';
+  import { HeroVideoDialog } from '@cio/ui/custom/animation/hero-video-dialog';
+  import { Sparkle } from '@cio/ui/custom/animation/sparkle';
+  import { MagicCard } from '@cio/ui/custom/animation/magic-card';
 
   import { getLectureNo } from '$features/course/utils/functions';
   import { currentOrg } from '$lib/utils/store/org';
@@ -18,7 +29,7 @@
   import { handleOpenWidget, reviewsModalStore } from './store';
   import type { Course, CourseMetadata } from '$features/course/utils/types';
   import { courseApi } from '$features/course/api';
-  import { MediaPlayer, isYoutubeUrl } from '@cio/ui/custom/media-player';
+  import { formatYoutubeEmbedUrl, isYoutubeUrl } from '@cio/ui/custom/media-player';
   import { filterNavItems, getCourseLessons, getCourseSections, getTotalLessons } from './utils';
   import { Button } from '@cio/ui/base/button';
 
@@ -38,16 +49,17 @@
   interface Props {
     editMode?: boolean;
     courseData: Course;
+    showStandaloneShell?: boolean;
   }
 
-  let { editMode = false, courseData = $bindable() }: Props = $props();
+  let { editMode = false, courseData = $bindable(), showStandaloneShell = true }: Props = $props();
 
   const reviews = $derived(get(courseData, 'metadata.reviews') || []);
   const video = $derived(get(courseData, 'metadata.videoUrl'));
 
   const lessons = $derived(getCourseLessons(courseData));
   const totalRatings = $derived(reviews?.reduce((acc = 0, review) => acc + (review?.rating || 0), 0));
-  const averageRating = $derived(totalRatings / reviews?.length);
+  const averageRating = $derived(reviews?.length ? (totalRatings / reviews.length).toFixed(1) : null);
   const expandDescription = $derived(Array(reviews?.length ?? 0).fill(false));
 
   const allowNewStudent = $derived(get(courseData, 'metadata.allowNewStudent'));
@@ -70,6 +82,9 @@
 
   const courseSections = $derived(getCourseSections(courseData));
   const totalLessons = $derived(getTotalLessons(courseSections));
+  const studentCount = $derived(courseData.group?.members?.length ?? 0);
+
+  const videoEmbedUrl = $derived(video ? (isYoutubeUrl(video) ? formatYoutubeEmbedUrl(video) : video) : '');
 
   function locationHashChanged() {
     activeNav = window.location.hash;
@@ -93,11 +108,11 @@
   });
 </script>
 
-{#if !editMode}
+{#if !editMode && showStandaloneShell}
   <PoweredBy />
 {/if}
 
-{#if !editMode}
+{#if !editMode && showStandaloneShell}
   <Navigation
     logo={$currentOrg.avatarUrl || '/logo-192.png'}
     orgName={$currentOrg.name}
@@ -108,93 +123,127 @@
 {/if}
 
 <div class="flex w-full flex-col items-center bg-white dark:bg-black">
-  <!-- Header Section -->
-  <header id="header" class="banner p- flex w-full items-center justify-center">
-    <div class="flex w-full flex-col-reverse items-center justify-between md:w-5/6 md:flex-row">
-      <!-- Course Description -->
-      <div class="w-11/12 py-10 md:w-2/5">
-        <h1 class="my-4 text-5xl text-white dark:text-white">
-          {get(courseData, 'title', '')}
-        </h1>
-        <p class="text-md mb-6 text-white dark:text-white">
-          {get(courseData, 'description', '')}
-        </p>
+  {#if showStandaloneShell}
+    <!-- Hero Section -->
+    <header class="relative w-full overflow-hidden bg-[#040f2d] py-12 md:py-20">
+      <DotPattern
+        class="[mask-image:radial-gradient(ellipse_at_center,white,transparent_80%)] opacity-10"
+        fillColor="rgb(255 255 255 / 0.5)"
+      />
 
-        <p class="author my-3 text-sm dark:text-white">
-          {get(courseData, 'metadata.instructor.name', '')}
-        </p>
-        <Button
-          class="mt-6 hidden sm:w-fit md:block"
-          onclick={() => {
-            if (editMode) return;
-            startCoursePayment = true;
-          }}
-          disabled={!allowNewStudent}
-        >
-          {$t('course.navItem.landing_page.start_course')}
-        </Button>
-        {#if $handleOpenWidget.open}
-          <UploadWidget imageURL={courseApi.course?.logo} onchange={(newLogo) => (courseApi.course!.logo = newLogo)} />
-        {/if}
+      <div
+        class="relative z-10 mx-auto flex w-full max-w-6xl flex-col-reverse items-center gap-8 px-6 md:flex-row md:gap-12"
+      >
+        <!-- Course Description -->
+        <div class="w-full py-4 md:w-1/2">
+          <BlurIn class="my-4 text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
+            {get(courseData, 'title', '')}
+          </BlurIn>
+
+          <BlurFade delay={0.2}>
+            <p class="mb-6 text-base leading-relaxed text-gray-300 md:text-lg">
+              {get(courseData, 'description', '')}
+            </p>
+          </BlurFade>
+
+          <BlurFade delay={0.3}>
+            <p class="mb-6 text-sm text-blue-300">
+              {get(courseData, 'metadata.instructor.name', '')}
+            </p>
+          </BlurFade>
+
+          <BlurFade delay={0.4}>
+            <Button
+              class="hidden h-12 px-8 text-base font-semibold sm:w-fit md:block"
+              onclick={() => {
+                if (editMode) return;
+                startCoursePayment = true;
+              }}
+              disabled={!allowNewStudent}
+            >
+              {$t('course.navItem.landing_page.start_course')}
+            </Button>
+          </BlurFade>
+
+          {#if $handleOpenWidget.open}
+            <UploadWidget
+              imageURL={courseApi.course?.logo}
+              onchange={(newLogo) => (courseApi.course!.logo = newLogo)}
+            />
+          {/if}
+        </div>
+
+        <!-- Banner Image / Video -->
+        <div class="w-full md:w-1/2">
+          <BlurFade delay={0.3} yOffset={20}>
+            {#if video}
+              <HeroVideoDialog
+                videoSrc={videoEmbedUrl}
+                thumbnailSrc={bannerImage || '/images/classroomio-course-img-template.jpg'}
+                thumbnailAlt={get(courseData, 'title', 'Course video')}
+                animationStyle="from-center"
+              />
+            {:else}
+              <div class="overflow-hidden rounded-xl shadow-2xl">
+                <img
+                  alt="Course banner"
+                  src={bannerImage ? bannerImage : '/images/classroomio-course-img-template.jpg'}
+                  class="h-auto w-full rounded-xl object-cover"
+                />
+              </div>
+            {/if}
+          </BlurFade>
+        </div>
       </div>
+    </header>
 
-      <!-- Banner Image -->
-      {#if video}
-        <div class="banner-image flex w-full md:w-2/3">
-          <MediaPlayer
-            source={{
-              type: isYoutubeUrl(video) ? 'youtube' : 'generic',
-              url: video
-            }}
-            options={{
-              width: '100%',
-              height: '400'
-            }}
-            class="w-full"
-          />
-        </div>
-      {:else}
-        <div class="banner-image relative overflow-hidden rounded-md md:w-2/3">
-          <img
-            style="min-width:280px; min-height:200px"
-            alt="About us"
-            src={bannerImage ? bannerImage : '/images/classroomio-course-img-template.jpg'}
-            class="relative mt-2 h-full max-h-[400px] w-full max-w-[500px] rounded-md md:mt-0"
-          />
-        </div>
-
-        <!-- <div
-          class="banner-image w-2/3 h-96 relative cursor-pointer"
-          on:click={playVideo}
+    <!-- Social Proof Strip -->
+    {#if reviews.length > 0 || studentCount > 0 || lessons.length > 0}
+      <div class="w-full border-b border-gray-200 bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900">
+        <div
+          class="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-6 px-6 py-4 text-sm md:justify-start"
         >
-          <div
-            aria-hidden="true"
-            class="absolute top-0 left-0 backdrop w-full h-full"
-          />
-          <img
-            src="/images/course-banner-image.png"
-            alt="banner"
-            class="w-full h-full"
-          />
-          <div
-            class="absolute top-0 left-0 w-full h-full z-50 flex items-center justify-center"
-          >
-            <img src="/images/play_video.png" alt="play video" />
-          </div>
-        </div> -->
-      {/if}
-    </div>
-  </header>
+          {#if averageRating}
+            <div class="flex items-center gap-1.5 text-gray-700 dark:text-gray-300">
+              <StarIcon size={16} class="fill-yellow-400 text-yellow-400" />
+              <span class="font-semibold">{averageRating}</span>
+              <span class="text-gray-500 dark:text-gray-400"
+                >({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span
+              >
+            </div>
+          {/if}
+          {#if studentCount > 0}
+            <div class="flex items-center gap-1.5 text-gray-700 dark:text-gray-300">
+              <UsersIcon size={16} />
+              <span>{studentCount} {studentCount === 1 ? 'student' : 'students'}</span>
+            </div>
+          {/if}
+          {#if lessons.length > 0}
+            <div class="flex items-center gap-1.5 text-gray-700 dark:text-gray-300">
+              <BookOpenIcon size={16} />
+              <span>{pluralize('lesson', lessons.length, true)}</span>
+            </div>
+          {/if}
+          {#if courseData.type}
+            <div class="flex items-center gap-1.5 text-gray-700 dark:text-gray-300">
+              <ClockIcon size={16} />
+              <span>{courseData.type === 'LIVE_CLASS' ? 'Live Class' : 'Self-Paced'}</span>
+            </div>
+          {/if}
+        </div>
+      </div>
+    {/if}
+  {/if}
 
   <!-- Body -->
   <div class="w-full bg-white dark:bg-black">
     <div
-      class="mx-0 my-2 flex w-full max-w-[1200px] flex-col-reverse items-center justify-between lg:m-auto lg:w-11/12 lg:flex-row lg:items-start lg:py-8"
+      class="mx-auto my-2 flex w-full max-w-6xl flex-col-reverse items-center justify-between px-4 lg:flex-row lg:items-start lg:py-8"
     >
       <!-- Course Details -->
-      <div class="course-content w-full p-3 lg:mr-10 lg:w-10/12">
+      <div class="w-full max-w-[680px] min-w-[60%] p-3 lg:mr-10">
         <!-- Navigation -->
-        <UnderlineTabs.Root bind:value={activeNav} class="ui:bg-background sticky top-10 py-2">
+        <UnderlineTabs.Root bind:value={activeNav} class="ui:bg-background sticky top-0 z-20 py-2">
           <UnderlineTabs.List>
             {#each navItems as navItem (navItem.key)}
               <UnderlineTabs.Trigger value={navItem.key}>
@@ -207,155 +256,194 @@
         </UnderlineTabs.Root>
 
         <!-- Sections - Requirement -->
-
         {#if navItemKeys.includes(NAV_ITEM_KEY.REQUIREMENT)}
           <NavSection id="requirement">
-            <h3 class="mt-0 mb-3 text-2xl">
-              {$t('course.navItem.landing_page.requirement')}
-            </h3>
-
-            <ul class="list font-light">
-              <HTMLRender><SafeHtmlContent content={get(courseData, 'metadata.requirements', '')} /></HTMLRender>
-            </ul>
+            <BlurFade delay={0.1}>
+              <h3 class="mt-0 mb-3 text-2xl font-semibold">
+                {$t('course.navItem.landing_page.requirement')}
+              </h3>
+              <ul class="list font-light">
+                <HTMLRender><SafeHtmlContent content={get(courseData, 'metadata.requirements', '')} /></HTMLRender>
+              </ul>
+            </BlurFade>
           </NavSection>
         {/if}
 
         <!-- Sections - Course Description -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.DESCRIPTION)}
           <NavSection id="description">
-            <h3 class="mt-0 mb-3 text-2xl">
-              {$t('course.navItem.landing_page.description')}
-            </h3>
-
-            <HTMLRender className="dark:text-white text-sm font-light">
-              <SafeHtmlContent content={get(courseData, 'metadata.description', '')} />
-            </HTMLRender>
+            <BlurFade delay={0.1}>
+              <h3 class="mt-0 mb-3 text-2xl font-semibold">
+                {$t('course.navItem.landing_page.description')}
+              </h3>
+              <HTMLRender className="dark:text-white text-sm font-light leading-relaxed">
+                <SafeHtmlContent content={get(courseData, 'metadata.description', '')} />
+              </HTMLRender>
+            </BlurFade>
           </NavSection>
         {/if}
 
         <!-- Sections - Goal -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.GOALS)}
           <NavSection id="goals">
-            <h3 class="mt-0 mb-3 text-2xl">{$t('course.navItem.landing_page.learn')}</h3>
-            <ul class="list font-light">
-              <HTMLRender><SafeHtmlContent content={get(courseData, 'metadata.goals', '')} /></HTMLRender>
-            </ul>
+            <BlurFade delay={0.1}>
+              <h3 class="mt-0 mb-3 text-2xl font-semibold">{$t('course.navItem.landing_page.learn')}</h3>
+              <ul class="list font-light">
+                <HTMLRender><SafeHtmlContent content={get(courseData, 'metadata.goals', '')} /></HTMLRender>
+              </ul>
+            </BlurFade>
           </NavSection>
         {/if}
 
         <!-- Sections - Certificate -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.CERTIFICATE)}
           <NavSection id="certificate">
-            <h3 class="mt-0 text-2xl">{$t('course.navItem.landing_page.certificate')}</h3>
-            <p class="mb-3 text-sm font-light dark:text-white">
-              {$t('course.navItem.landing_page.certificate_text')}
-            </p>
-
-            <Image
-              src={certificate?.templateUrl}
-              alt="certificate template"
-              className="certificate-img max-h-[215px]"
-            />
+            <BlurFade delay={0.1}>
+              <h3 class="mt-0 text-2xl font-semibold">{$t('course.navItem.landing_page.certificate')}</h3>
+              <p class="mb-4 text-sm font-light dark:text-white">
+                {$t('course.navItem.landing_page.certificate_text')}
+              </p>
+              <MagicCard
+                gradientColor="#3b82f6"
+                gradientOpacity={0.15}
+                class="inline-block w-auto border-0 bg-transparent py-0 dark:bg-transparent"
+              >
+                <Image src={certificate?.templateUrl} alt="certificate template" className="max-h-[215px] w-auto" />
+              </MagicCard>
+            </BlurFade>
           </NavSection>
         {/if}
 
         <!-- Sections - Lessons -->
         {#if !courseData.metadata?.isContentGroupingEnabled}
           <NavSection id="lessons">
-            <div class="mb-3 flex w-full items-center justify-between">
-              <h3 class="mt-0 mb-3 text-2xl">
-                {$t('course.navItem.landing_page.content')}
-              </h3>
-              <p class="text-sm font-light dark:text-white">
-                {pluralize('lesson', lessons.length, true)}
-              </p>
-            </div>
+            <BlurFade delay={0.1}>
+              <div class="mb-3 flex w-full items-center justify-between">
+                <h3 class="mt-0 mb-3 text-2xl font-semibold">
+                  {$t('course.navItem.landing_page.content')}
+                </h3>
+                <p class="text-sm font-light dark:text-white">
+                  {pluralize('lesson', lessons.length, true)}
+                </p>
+              </div>
 
-            <div class="flex flex-wrap">
-              {#each lessons as lesson, index (lesson.id)}
-                <div class="m-2 rounded border px-2 py-1">
-                  <Chip value={getLectureNo(index + 1, '0')} />
-                  <p class="ml-2 inline text-xs font-light dark:text-white">
-                    {lesson.title}
-                  </p>
-                </div>
-              {/each}
-            </div>
+              <div class="flex flex-wrap gap-2">
+                {#each lessons as lesson, index (lesson.id)}
+                  <BlurFade delay={0.05 * Math.min(index, 10)}>
+                    <div
+                      class="rounded-lg border border-gray-200 px-3 py-1.5 transition-colors hover:border-gray-400 dark:border-neutral-700 dark:hover:border-neutral-500"
+                    >
+                      <Chip value={getLectureNo(index + 1, '0')} />
+                      <p class="ml-2 inline text-xs font-light dark:text-white">
+                        {lesson.title}
+                      </p>
+                    </div>
+                  </BlurFade>
+                {/each}
+              </div>
+            </BlurFade>
           </NavSection>
         {:else if courseData.metadata?.isContentGroupingEnabled}
           <NavSection id="lessons">
-            <!-- header -->
-            <div class="flex items-center justify-between">
-              <h1>{$t('course.navItem.landing_page.course_content')}</h1>
-              <span class="text-xs font-normal">
-                {pluralize($t('course.navItem.landing_page.modules'), courseSections.length, true)},
-                {pluralize($t('course.navItem.landing_page.lessons'), totalLessons, true)}
-              </span>
-            </div>
+            <BlurFade delay={0.1}>
+              <!-- header -->
+              <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-semibold">{$t('course.navItem.landing_page.course_content')}</h1>
+                <span class="text-xs font-normal">
+                  {pluralize($t('course.navItem.landing_page.modules'), courseSections.length, true)},
+                  {pluralize($t('course.navItem.landing_page.lessons'), totalLessons, true)}
+                </span>
+              </div>
 
-            {#each courseSections as section (section.id)}
-              <SectionsDisplay
-                exerciseCount={section.exerciseCount}
-                lessonCount={section.lessons?.length}
-                lessons={section.lessons}
-                title={section.title!}
-              />
-            {/each}
+              {#each courseSections as section, index (section.id)}
+                <BlurFade delay={0.05 * Math.min(index, 8)}>
+                  <SectionsDisplay
+                    exerciseCount={section.exerciseCount}
+                    lessonCount={section.lessons?.length}
+                    lessons={section.lessons}
+                    title={section.title!}
+                  />
+                </BlurFade>
+              {/each}
+            </BlurFade>
           </NavSection>
         {/if}
 
         <!-- Sections - Reviews -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.REVIEWS)}
           <NavSection id="reviews">
-            <h2 class="my-16 mr-0 mb-6 ml-0 font-semibold">
-              {$t('course.navItem.landing_page.reviews')}
-            </h2>
-            <div class="flex flex-wrap">
+            <BlurFade delay={0.1}>
+              <div class="mb-6 flex items-center gap-3">
+                <h2 class="text-2xl font-semibold">
+                  {$t('course.navItem.landing_page.reviews')}
+                </h2>
+                {#if averageRating}
+                  <Sparkle
+                    text={averageRating}
+                    colors={{ first: '#facc15', second: '#f97316' }}
+                    sparklesCount={3}
+                    class="text-xl font-bold"
+                  />
+                {/if}
+              </div>
+            </BlurFade>
+
+            <div class="grid gap-4 sm:grid-cols-2">
               {#each reviews.slice(0, 4) as review, id (review.id)}
                 {#if !review.hide}
-                  <!-- review -->
-                  <div class="item-start my-2 flex w-2/4 flex-row">
-                    <!-- image container -->
-                    <Avatar.Root class="mt-1 size-10">
-                      {#if review.avatar_url}
-                        <Avatar.Image src={review.avatar_url} alt={review.name ? review.name : 'Avatar'} />
-                      {/if}
-                      <Avatar.Fallback>
-                        <UserIcon class="ui:size-5 ui:text-muted-foreground" />
-                      </Avatar.Fallback>
-                    </Avatar.Root>
+                  <BlurFade delay={0.1 + id * 0.08}>
+                    <div
+                      class="flex flex-row items-start gap-3 rounded-lg border border-gray-100 p-4 dark:border-neutral-800"
+                    >
+                      <!-- image container -->
+                      <Avatar.Root class="mt-1 size-10 shrink-0">
+                        {#if review.avatar_url}
+                          <Avatar.Image src={review.avatar_url} alt={review.name ? review.name : 'Avatar'} />
+                        {/if}
+                        <Avatar.Fallback>
+                          <UserIcon class="ui:size-5 ui:text-muted-foreground" />
+                        </Avatar.Fallback>
+                      </Avatar.Root>
 
-                    <!-- profile content -->
-                    <div class="w-11/12 pl-2.5">
-                      <p class="mb-0.5 font-medium">{review.name}</p>
-                      <!-- ratings -->
-                      <div class="flex flex-row items-center">
-                        {#if review.rating}
-                          <img src="/images/rating-{review.rating}.svg" class="mt-1 mr-4 w-24" alt="" />
+                      <!-- profile content -->
+                      <div class="min-w-0 flex-1">
+                        <p class="mb-0.5 font-medium">{review.name}</p>
+                        <!-- ratings -->
+                        <div class="mb-2 flex items-center gap-0.5">
+                          {#each Array(5) as _, i}
+                            <StarIcon
+                              size={14}
+                              class={i < (review.rating || 0)
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'text-gray-300 dark:text-neutral-600'}
+                            />
+                          {/each}
+                        </div>
+                        <div class="mb-2 overflow-hidden" style:max-height={expandDescription[id] ? 'none' : '60px'}>
+                          <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                            {review.description}
+                          </p>
+                        </div>
+                        {#if !expandDescription[id] && review.description.split(' ').length > 12}
+                          <button
+                            class="ui:text-primary text-sm font-normal underline"
+                            onclick={() => toggleDescription(id)}>See More</button
+                          >
+                        {/if}
+                        {#if expandDescription[id]}
+                          <button
+                            class="ui:text-primary text-sm font-normal underline"
+                            onclick={() => toggleDescription(id)}>See Less</button
+                          >
                         {/if}
                       </div>
-                      <div class="read-more-content mb-2" style="max-height: {expandDescription[id] ? 'none' : '50px'}">
-                        <p class="my-2 text-sm leading-5 text-gray-600">
-                          {review.description}
-                        </p>
-                      </div>
-                      {#if !expandDescription[id] && review.description.split(' ').length > 9}
-                        <button class="ui:text-primary mt-2 font-normal underline" onclick={() => toggleDescription(id)}
-                          >See More</button
-                        >
-                      {/if}
-                      {#if expandDescription[id]}
-                        <button class="ui:text-primary mt-2 font-normal underline" onclick={() => toggleDescription(id)}
-                          >See Less</button
-                        >
-                      {/if}
                     </div>
-                  </div>
+                  </BlurFade>
                 {/if}
               {/each}
             </div>
             {#if reviews.length > 4}
-              <Button class="mt-2" variant="outline" onclick={() => ($reviewsModalStore.open = true)}>
+              <Button class="mt-4" variant="outline" onclick={() => ($reviewsModalStore.open = true)}>
                 {$t('course.navItem.landing_page.see_all')}
               </Button>
             {/if}
@@ -382,7 +470,7 @@
                   <div class="flex w-4/6 flex-wrap">
                     {#each reviews as review, id (review.id)}
                       <!-- review -->
-                      <div class="item-start my-2 flex w-full flex-row">
+                      <div class="my-2 flex w-full flex-row items-start">
                         <!-- image container -->
                         <Avatar.Root class="mt-1 h-10 w-10">
                           {#if review.avatar_url}
@@ -397,17 +485,26 @@
                         <div class="w-11/12 pl-2.5">
                           <p class="mb-0.5 font-medium">{review.name}</p>
                           <!-- ratings -->
-                          <div class="flex flex-row">
-                            <img src="/images/rating-full.svg" alt="" class="mr-2" />
+                          <div class="flex flex-row items-center gap-1">
+                            <div class="flex items-center gap-0.5">
+                              {#each Array(5) as _, i}
+                                <StarIcon
+                                  size={14}
+                                  class={i < (review.rating || 0)
+                                    ? 'fill-yellow-400 text-yellow-400'
+                                    : 'text-gray-300 dark:text-neutral-600'}
+                                />
+                              {/each}
+                            </div>
                             <p class="text-xs text-gray-600">
                               {calDateDiff(review.created_at)}
                             </p>
                           </div>
                           <div
-                            class="read-more-content mb-2"
-                            style="max-height: {expandDescription[id] ? 'none' : '50px'}"
+                            class="mb-2 overflow-hidden transition-all"
+                            style:max-height={expandDescription[id] ? 'none' : '60px'}
                           >
-                            <p class="my-2 text-sm leading-5 text-gray-600">
+                            <p class="my-2 text-sm leading-relaxed text-gray-600">
                               {review.description}
                             </p>
                           </div>
@@ -423,35 +520,39 @@
 
         <!-- Sections - Instructor -->
         <NavSection id="instructor">
-          <h3 class="mt-0 mb-3 text-2xl">
-            {$t('course.navItem.landing_page.instructor')}
-          </h3>
-          <div class="mb-4 flex items-center">
-            <img
-              alt="Author Avatar"
-              class="mr-3 block h-20 w-20 rounded-full"
-              src={get(instructor, 'imgUrl', $currentOrg.avatarUrl || '/logo-512.png')}
-            />
-            <div>
-              <p class="text-md font-light dark:text-white">
-                {get(instructor, 'name', $currentOrg.name)}
-              </p>
-              <p class="text-xs font-light dark:text-white">
-                {get(instructor, 'role', '')}
-              </p>
-              <p class="text-md flex items-center font-light dark:text-white">
-                <PlayIcon size={16} class="filled" />
-                <span class="ml-1"
-                  >{get(instructor, 'courseNo', '')}
-                  {$t('course.navItem.landing_page.courses')}</span
-                >
-              </p>
+          <BlurFade delay={0.1}>
+            <h3 class="mt-0 mb-4 text-2xl font-semibold">
+              {$t('course.navItem.landing_page.instructor')}
+            </h3>
+            <div class="mb-4 flex items-center gap-4">
+              <img
+                alt="Author Avatar"
+                class="block h-20 w-20 rounded-full object-cover ring-2 ring-gray-200 dark:ring-neutral-700"
+                src={get(instructor, 'imgUrl', $currentOrg.avatarUrl || '/logo-512.png')}
+              />
+              <div>
+                <p class="text-base font-medium dark:text-white">
+                  {get(instructor, 'name', $currentOrg.name)}
+                </p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  {get(instructor, 'role', '')}
+                </p>
+                {#if get(instructor, 'courseNo', '')}
+                  <p class="mt-1 flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300">
+                    <PlayIcon size={14} class="filled" />
+                    <span>
+                      {get(instructor, 'courseNo', '')}
+                      {$t('course.navItem.landing_page.courses')}
+                    </span>
+                  </p>
+                {/if}
+              </div>
             </div>
-          </div>
 
-          <p class="text-sm font-light dark:text-white">
-            {get(instructor, 'description', '')}
-          </p>
+            <p class="text-sm leading-relaxed font-light dark:text-white">
+              {get(instructor, 'description', '')}
+            </p>
+          </BlurFade>
         </NavSection>
       </div>
 
@@ -464,45 +565,9 @@
   </div>
 </div>
 
-<!-- TODO: CONVERT TO TAILWIND -->
 <style>
-  .banner {
-    background-color: #040f2d;
-    min-height: 472px;
-  }
-
-  .author {
-    color: #7888b7;
-  }
-
-  .banner-image {
-    max-width: 559px;
-  }
-
-  :global(.certificate-img) {
-    width: unset !important;
-  }
-
-  .course-content {
-    max-width: 608px;
-    min-width: 60%;
-  }
-
   :global(.list ul li) {
     margin-left: 1rem;
     list-style-type: disc;
-  }
-
-  .read-more-content {
-    max-height: 100px; /* Adjust this value to set the maximum height for the truncated content */
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    text-overflow: ellipsis;
-  }
-
-  @media screen and (max-width: 1023px) {
-    .course-content {
-      min-width: 80%;
-    }
   }
 </style>

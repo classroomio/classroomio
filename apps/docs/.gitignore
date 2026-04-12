@@ -15,6 +15,7 @@ node_modules
 /blob-report/
 /playwright/.cache/
 .tanstack
+.react-router
 .dev.vars
 
 src/routeTree.gen.ts

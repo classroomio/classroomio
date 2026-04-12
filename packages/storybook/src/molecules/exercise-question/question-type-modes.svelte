@@ -63,11 +63,45 @@
         return { type: 'SHORT_ANSWER', text: 'Use deterministic fixtures' };
       case 'NUMERIC':
         return { type: 'NUMERIC', value: 88 + (index % 6) };
+      case 'STAR': {
+        const rawMax = storyQuestion.settings?.maxStars;
+        const maxStars =
+          typeof rawMax === 'number' && Number.isFinite(rawMax) ? Math.min(10, Math.max(1, Math.floor(rawMax))) : 5;
+        const rawCorrect = storyQuestion.settings?.correctValue;
+        const correct =
+          typeof rawCorrect === 'number' && Number.isFinite(rawCorrect)
+            ? Math.min(maxStars, Math.max(1, Math.floor(rawCorrect)))
+            : Math.min(3, maxStars);
+        if (index % 4 === 0) return { type: 'STAR', value: correct };
+        return { type: 'STAR', value: (index % maxStars) + 1 };
+      }
       case 'FILL_BLANK':
         return {
           type: 'FILL_BLANK',
           values: index % 2 === 0 ? ['API'] : ['endpoint']
         };
+      case 'WORD_BANK': {
+        const correct = Array.isArray(storyQuestion.settings?.correctAnswers)
+          ? (storyQuestion.settings.correctAnswers as string[]).map((s) => String(s ?? ''))
+          : ['alpha', 'beta'];
+        const blankCount = Math.max(1, correct.length);
+        if (index % 4 === 0) {
+          return { type: 'WORD_BANK', filledBlanks: correct.slice(0, blankCount) };
+        }
+        if (index % 4 === 1) {
+          const wrongFirst = ['wrong term', ...correct.slice(1)].slice(0, blankCount);
+          return { type: 'WORD_BANK', filledBlanks: wrongFirst };
+        }
+        if (index % 4 === 2 && blankCount > 1) {
+          const swapped = [...correct.slice(0, blankCount)];
+          [swapped[0], swapped[1]] = [swapped[1], swapped[0]];
+          return { type: 'WORD_BANK', filledBlanks: swapped };
+        }
+        return {
+          type: 'WORD_BANK',
+          filledBlanks: Array.from({ length: blankCount }, () => '')
+        };
+      }
       case 'FILE_UPLOAD':
         return {
           type: 'FILE_UPLOAD',

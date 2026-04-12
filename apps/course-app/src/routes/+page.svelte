@@ -1,16 +1,19 @@
 <script lang="ts">
-  import { CardBody, CardContainer } from '$lib/components/animation/card';
-  import { BlurFade } from '$lib/components/animation/blurfade';
-  import { BlurIn } from '$lib/components/animation/blurin';
   import { Button } from '$lib/components/ui/button';
   import { TemplateCard, CustomTemplate } from '$lib/components/template-card';
-  import { Meteors } from '$lib/components/animation/meteors';
   import { Separator } from '$lib/components/ui/separator';
-  import { BorderBeam } from '$lib/components/animation/border-beam';
-  import { ShimmerButton } from '$lib/components/animation/shimmerbutton';
   import { BuyTemplate } from '$lib/components/buy-template';
-  import { Sparkle } from '$lib/components/animation/sparkle';
-  import { HeroVideoDialog } from '$lib/components/animation/hero-video-dialog';
+  import {
+    BlurFade,
+    BlurIn,
+    BorderBeam,
+    CardBody,
+    CardContainer,
+    HeroVideoDialog,
+    Meteors,
+    ShimmerButton,
+    Sparkle
+  } from '@cio/ui/custom/animation';
 
   const templates = [
     {
@@ -93,7 +96,7 @@
         className="py-10 max-w-4xl mx-auto flex flex-col items-center justify-center px-30 gap-2 md:gap-5"
       >
         <BlurIn
-          class="pointer-events-none flex max-w-2xl flex-col items-center whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-center text-2xl font-semibold leading-none tracking-tighter text-transparent md:mb-4 md:block md:text-4xl lg:text-6xl"
+          class="pointer-events-none flex max-w-2xl flex-col items-center whitespace-pre-wrap bg-linear-to-b from-black to-gray-300/80 bg-clip-text text-center text-2xl font-semibold leading-none tracking-tighter text-transparent md:mb-4 md:block md:text-4xl lg:text-6xl"
         >
           Create a <span class="font-mono italic text-blue-700">Course</span>
           <span>Site for your Product in</span>
@@ -157,7 +160,7 @@
 
 <!-- Templates -->
 <section id="templates" class="my-5 w-full pt-0 md:my-0 md:pt-24">
-  <div class="px-4 md:container">
+  <div class="px-4 max-w- mx-auto">
     <h2 class="mb-5 text-center text-3xl font-semibold md:mb-20 md:text-start md:text-5xl">
       Browse Templates
     </h2>

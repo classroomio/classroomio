@@ -16,7 +16,7 @@
     "test": "jest",
     "test:watch": "pnpm run test --watch",
     "ci": "cp .env.example .env && vite build && vite preview",
-    "script:translate": "node ./scripts/translate.cjs"
+    "translate": "node ./scripts/translate.cjs"
   },
   "dependencies": {
     "@better-auth/sso": "1.4.18",

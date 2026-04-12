@@ -1,7 +1,6 @@
 <script lang="ts">
   import Santa from './santa.svg';
-  import { BorderBeam } from '$lib/components/animation/border-beam';
-  import { DotPattern } from '$lib/components/animation/dot-pattern';
+  import { BorderBeam, DotPattern } from '@cio/ui/custom/animation';
   import { BuyTemplate } from '$lib/components/buy-template';
 </script>
 

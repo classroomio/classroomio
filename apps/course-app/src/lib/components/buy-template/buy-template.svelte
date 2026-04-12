@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { buttonVariants } from '$lib/components/ui/button';
-  import { ShimmerButton } from '$lib/components/animation/shimmerbutton';
-  import * as Dialog from '$lib/components/ui/dialog';
+  import { buttonVariants } from '@cio/ui/base/button';
+  import { ShimmerButton } from '@cio/ui/custom/animation';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { cn } from '$lib/utils';
   import BadgeCheck from 'lucide-svelte/icons/badge-check';
 
@@ -19,10 +19,6 @@
 </script>
 
 <Dialog.Root>
-  <!-- <span
-    class="absolute inset-0 z-30 flex items-center justify-center bg-black/50 opacity-0 transition-all duration-500 hover:opacity-80"
-  >
-</span> -->
   <Dialog.Trigger class={cn(buttonVariants({ variant: 'default' }), `z-20 ${ctaClass}`)}>
     {ctaLabel}
   </Dialog.Trigger>

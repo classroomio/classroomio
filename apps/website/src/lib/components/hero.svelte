@@ -1,220 +1,137 @@
-<script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
-  import { fly } from 'svelte/transition';
-  import { sineInOut } from 'svelte/easing';
-  import { PUBLIC_ENABLE_USERS_COMPANIES } from '$env/static/public';
-  import { Button } from '@cio/ui/base/button';
-
-  const names = [
-    { label: 'Audience', color: '#3ADFEC' },
-    { label: 'Employees', color: '#BF0696' },
-    { label: 'Customers', color: '#0233BD' },
-    { label: 'Students', color: '#9747FF' }
-  ];
-  let animate = $state(false);
-  let titleIndex = $state(0);
-  let timeout: NodeJS.Timeout;
-
-  onMount(() => {
-    setTimeout(() => {
-      animate = true;
-    }, 70);
-
-    timeout = setInterval(() => {
-      const nextIndex = titleIndex + 1;
-      titleIndex = names[nextIndex] ? nextIndex : 0;
-    }, 3000);
-  });
-
-  onDestroy(() => {
-    clearTimeout(timeout);
-  });
+<script>
+  import { BlurFade } from '@cio/ui/custom/animation/blurfade';
+  import { BorderBeam } from '@cio/ui/custom/animation/border-beam';
+  import { Badge } from '@cio/ui/base/badge';
 </script>
 
-<div class="hero-bg relative h-full w-full border-b-2 bg-[#F5F8FE] pt-18 text-center">
-  <div class="w-full pt-24">
-    <div class="mb-10 ml-[5%] flex w-full items-center justify-start lg:ml-0 lg:justify-center">
-      <a
-        target="_blank"
-        rel="noopener noreferrer nofollow"
-        href="/github"
-        style="color: rgb(75, 85, 99);"
-        class="rounded-full border-2 border-[#C2D2FF] bg-[#DCE5FF] px-4 py-1 text-sm font-medium text-[#4B5563] hover:underline"
-        >We are <span class="ui:text-primary">100%</span> open source</a
-      >
-    </div>
+<section class="px-6 pt-32 pb-16 lg:px-12 lg:pt-40 lg:pb-24">
+  <div class="mx-auto grid max-w-[1100px] grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+    <div>
+      <BlurFade delay={0} once>
+        <a href="/blog/learn-from-the-best" class="mb-7 inline-block">
+          <Badge variant="secondary" class="gap-2! px-3.5! py-1.5! text-xs! underline!">
+            <span class="relative flex h-2 w-2">
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
+            </span>
+            Introducing ClassroomIO Version 2 →
+          </Badge>
+        </a>
+      </BlurFade>
 
-    <div class="absolute top-[10%] left-[5%] hidden w-[90%] justify-between lg:flex">
-      {#if animate}
-        <div
-          class="relative rotate-12 transition-all hover:scale-110"
-          transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
-        >
+      <BlurFade delay={0.1} once>
+        <h1 class="mb-6 text-[clamp(2.4rem,4vw,3.4rem)] leading-[1.12] font-medium tracking-tight text-gray-950">
+          Nail your compliance training and your
+          <em class="text-blue-700 not-italic">certification program.</em>
+        </h1>
+      </BlurFade>
+
+      <BlurFade delay={0.2} once>
+        <p class="mb-9 max-w-[480px] text-base leading-relaxed text-gray-500 lg:text-lg">
+          ClassroomIO is the open source LMS built for compliance-driven teams. Run your certification programs, track
+          completions, and prove training happened. No Moodle headaches.
+        </p>
+      </BlurFade>
+
+      <BlurFade delay={0.3} once>
+        <div class="flex flex-wrap items-center gap-3.5">
           <a
-            href="/#collaboration"
-            class="rounded-[4px] border-[1.5px] border-[#3ADFEC] bg-white px-6 py-2 text-lg font-bold text-[#3ADFEC]"
-            >Collaboration</a
+            href="/signup"
+            class="inline-flex items-center gap-2 rounded-lg bg-gray-950 px-7 py-3.5 text-sm font-medium text-white no-underline transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-700 lg:text-base"
           >
-          <svg
-            class="absolute -right-1 -bottom-2.5"
-            width="11"
-            height="11"
-            viewBox="0 0 11 11"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+            Get Started Free →
+          </a>
+          <button
+            data-cal-link="classroomio/demo"
+            data-cal-config="'layout':'month_view'"
+            class="cursor-pointer rounded-lg border-[1.5px] border-gray-200 bg-transparent px-7 py-3.5 text-sm font-medium text-gray-950 transition-all duration-200 hover:border-gray-950 lg:text-base"
           >
-            <rect width="10.9223" height="10.9223" fill="#3ADFEC" />
-          </svg>
+            Book a Demo
+          </button>
         </div>
+      </BlurFade>
 
-        <div
-          class="relative -rotate-12 transition-all hover:scale-110"
-          transition:fly={{ x: 100, delay: 50, easing: sineInOut }}
-        >
-          <a
-            href="/github"
-            target="_blank"
-            class="rounded-[4px] border-[1.5px] border-[#BF0696] bg-white px-6 py-2 text-lg font-bold text-[#BF0696]"
-            >Open Source</a
-          >
-          <svg
-            class="absolute -right-1 -bottom-2.5"
-            width="11"
-            height="11"
-            viewBox="0 0 11 11"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="10.9223" height="10.9223" fill="#BF0696" />
-          </svg>
-        </div>
-      {/if}
-    </div>
-
-    <div class="w-full">
-      <div class="ml-6 text-left text-2xl font-semibold text-slate-900 lg:text-center lg:text-6xl">
-        <span>Educate Your</span>
-        <div class="mb-2 flex flex-wrap items-center justify-center lg:gap-3">
-          <span
-            class="relative mt-1 mb-0 inline-block h-[40px] w-full overflow-hidden md:mt-0 md:h-[50px] lg:-mb-4 lg:h-[75px] lg:w-[48%] lg:text-center"
-          >
-            {#key titleIndex}
-              <span
-                class="absolute right-[unset] left-0 w-full lg:right-0 lg:left-[unset]"
-                style="color: {names[titleIndex].color}"
-                transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
-              >
-                <span class="m-auto w-full text-center">
-                  {names[titleIndex].label}
-                </span>
-              </span>
-            {/key}
+      <BlurFade delay={0.4} once>
+        <div class="mt-7 flex flex-wrap items-center gap-5 text-xs text-gray-500">
+          <span class="flex items-center gap-1.5">
+            <span class="font-medium text-blue-700">✓</span> Open source
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="font-medium text-blue-700">✓</span> Self-hosted
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="font-medium text-blue-700">✓</span> No per-seat fees
           </span>
         </div>
-        <span>from one Platform</span>
-      </div>
-
-      <p class="ui:text-muted-foreground mx-auto mt-10 px-4 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
-        ClassroomIO is an open source learning management system for companies. We give you a suite of tools to help you
-        achieve your training, onboarding and certification goals.
-      </p>
+      </BlurFade>
     </div>
 
-    <div class="absolute top-[30%] left-[5%] hidden w-[90%] justify-between lg:flex">
-      {#if animate}
-        <div
-          class="relative -rotate-12 transition-all hover:scale-110"
-          transition:fly={{ x: -100, delay: 100, easing: sineInOut }}
-        >
-          <a
-            href="/#customization"
-            class="rounded-[4px] border-[1.5px] border-[#0233BD] bg-white px-6 py-2 text-lg font-bold text-[#0233BD]"
-          >
-            Customizable LMS
-          </a>
-
-          <svg
-            class="absolute -right-1 -bottom-2.5"
-            width="11"
-            height="11"
-            viewBox="0 0 11 11"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="10.9223" height="10.9223" fill="#0233BD" />
-          </svg>
+    <!-- Hero Visual -->
+    <BlurFade delay={0.2} once>
+      <div class="relative overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 shadow-2xl/5">
+        <BorderBeam size={250} duration={12} colorFrom="#0233BD" colorTo="#6b8fff" delay={1} />
+        <div class="flex items-center gap-2 border-b border-gray-200 bg-white px-4 py-3.5">
+          <div class="h-2.5 w-2.5 rounded-full bg-red-400"></div>
+          <div class="h-2.5 w-2.5 rounded-full bg-yellow-400"></div>
+          <div class="h-2.5 w-2.5 rounded-full bg-green-500"></div>
         </div>
-        <div
-          class="relative rotate-12 transition-all hover:scale-110"
-          transition:fly={{ y: 100, delay: 150, easing: sineInOut }}
-        >
-          <a
-            href="/#ai"
-            class="rounded-[4px] border-[1.5px] border-[#9747FF] bg-white px-6 py-2 text-lg font-bold text-[#9747FF]"
-            >AI Support</a
-          >
+        <div class="p-6">
+          <div class="mb-3.5 text-xs font-medium tracking-wider text-gray-500 uppercase">Team Progress - This Week</div>
 
-          <svg
-            class="absolute -right-1 -bottom-2.5"
-            width="11"
-            height="11"
-            viewBox="0 0 11 11"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="10.9223" height="10.9223" fill="#9747FF" />
-          </svg>
-        </div>
-      {/if}
-    </div>
+          <div class="mb-3 flex items-center gap-3.5 rounded-xl border border-gray-200 bg-white p-4">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-lg">📋</div>
+            <div class="min-w-0 flex-1">
+              <div class="mb-1 text-sm font-medium">Annual Compliance Training</div>
+              <div class="h-1 overflow-hidden rounded-full bg-gray-200">
+                <div class="h-full rounded-full bg-blue-700" style="width: 85%"></div>
+              </div>
+            </div>
+            <div
+              class="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-[0.7rem] font-medium whitespace-nowrap text-blue-700"
+            >
+              85%
+            </div>
+          </div>
 
-    <div class="my-10 flex flex-col items-center justify-center gap-4 md:flex-row">
-      <Button variant="outline" href="/demo" target="_blank" rel="noopener noreferrer nofollow">Book a demo</Button>
-      <Button href="/signup" target="_blank" rel="noopener noreferrer nofollow">Sign Up for Free</Button>
-      <!-- <a
-      class="font-medium lg:font-semibold text-sm md:text-base w-11/12 md:w-fit border px-6 py-3 lg:px-10 lg:py-5 rounded-md"
-      href="/github"
-      target="_blank"
-      rel="noopener noreferrer nofollow"
-    >
-      View on Github
-    </a> -->
-    </div>
+          <div class="mb-3 flex items-center gap-3.5 rounded-xl border border-gray-200 bg-white p-4">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-50 text-lg">🛡️</div>
+            <div class="min-w-0 flex-1">
+              <div class="mb-1 text-sm font-medium">Security & Compliance</div>
+              <div class="h-1 overflow-hidden rounded-full bg-gray-200">
+                <div class="h-full rounded-full bg-green-500" style="width: 100%"></div>
+              </div>
+            </div>
+            <div
+              class="shrink-0 rounded-full bg-green-50 px-2 py-0.5 text-[0.7rem] font-medium whitespace-nowrap text-green-600"
+            >
+              ✓ Done
+            </div>
+          </div>
 
-    <!-- <div class="relative my-5 md:my-10">
-      <img
-        width="710"
-        height="710"
-        src="./cio-hero.webp"
-        alt="hero section with dark vs light mode"
-        class=""
-      />
-      
-    </div> -->
-    <div style="position: relative; padding-bottom: calc(50% + 42px);" class="mx-auto w-[85%] lg:w-[70%]">
-      <iframe
-        title="ClassroomIO Live Demo"
-        src="https://app.supademo.com/embed/cluw8chyy06nhq2s9m697a680"
-        allow="clipboard-write"
-        frameborder="0"
-        webkitallowfullscreen="true"
-        mozallowfullscreen="true"
-        allowfullscreen
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-      ></iframe>
-    </div>
+          <div class="mb-3 flex items-center gap-3.5 rounded-xl border border-gray-200 bg-white p-4">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-lg">🎯</div>
+            <div class="min-w-0 flex-1">
+              <div class="mb-1 text-sm font-medium">Product Certification</div>
+              <div class="h-1 overflow-hidden rounded-full bg-gray-200">
+                <div class="h-full rounded-full bg-blue-700" style="width: 42%"></div>
+              </div>
+            </div>
+            <div
+              class="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-[0.7rem] font-medium whitespace-nowrap text-blue-700"
+            >
+              42%
+            </div>
+          </div>
 
-    {#if PUBLIC_ENABLE_USERS_COMPANIES}
-      <div class="mb-[10%] px-[15%]">
-        <h2 class="text-base font-semibold text-gray-900 lg:text-xl">Used at</h2>
-        <div class="flex w-full flex-row flex-wrap items-center justify-between gap-5 py-[5%]">
-          <img loading="lazy" src="/hero-1.svg" alt="" class="w-[30%] lg:w-[13%]" />
-          <img loading="lazy" src="/hero-2.svg" alt="" class="w-[30%] lg:w-[13%]" />
-          <img loading="lazy" src="/hero-3.svg" alt="" class="w-[30%] lg:w-[13%]" />
-          <img loading="lazy" src="/hero-4.svg" alt="" class="w-[30%] lg:w-[13%]" />
-          <img loading="lazy" src="/hero-5.svg" alt="" class="w-[30%] lg:w-[13%]" />
+          <div class="mt-4 flex items-center gap-3 rounded-lg bg-blue-50 p-4">
+            <span class="text-xl">🏆</span>
+            <div>
+              <div class="text-sm font-medium">3 certificates issued today</div>
+              <div class="text-xs text-gray-500">Sarah, Marcus & Priya completed their certs</div>
+            </div>
+          </div>
         </div>
       </div>
-    {/if}
+    </BlurFade>
   </div>
-</div>
+</section>

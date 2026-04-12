@@ -364,6 +364,32 @@
       "created": "Utworzono klucz automatyzacji. Zapisz go teraz, ponieważ pełny sekret zostanie wyświetlony tylko raz.",
       "rotated": "Klucz automatyki obrócony. Zapisz teraz nowy sekret, ponieważ nie będzie on wyświetlany ponownie.",
       "revoked": "Klucz automatyzacji unieważniony."
+    },
+    "program": {
+      "error": {
+        "reaction_error": "Wystąpił błąd podczas odpowiadania na post",
+        "news_feed_fail": "Nie udało się pobrać kanału informacyjnego programu",
+        "post_create_failed": "Nie udało się utworzyć posta",
+        "post_update_failed": "Nie udało się zaktualizować wpisu",
+        "code": {
+          "program_forbidden": "Aby wykonać tę czynność, musisz być członkiem tego programu.",
+          "program_member_check_failed": "Nie mogliśmy zweryfikować Twojego członkostwa w programie. Spróbuj ponownie.",
+          "program_not_found": "Nie można znaleźć tego programu.",
+          "program_create_failed": "Nie można utworzyć programu.",
+          "program_update_failed": "Nie można zaktualizować programu.",
+          "program_delete_failed": "Nie można usunąć programu.",
+          "program_member_not_found": "Nie można znaleźć tego członka programu.",
+          "program_newsfeed_not_found": "Nie udało się znaleźć tego wpisu.",
+          "program_newsfeed_comment_not_found": "Nie udało się znaleźć tego komentarza."
+        }
+      },
+      "success": {
+        "comment_deleted": "Komentarz usunięty",
+        "comment_added": "Komentarz dodany",
+        "feed_delete_success": "Post został pomyślnie usunięty",
+        "post_created": "Post został utworzony pomyślnie",
+        "post_updated": "Post został pomyślnie zaktualizowany"
+      }
     }
   },
   "explore": {
@@ -396,7 +422,8 @@
     "community": "Społeczność",
     "explore": "Eksploruj",
     "help": "Pomoc",
-    "settings": "Ustawienia"
+    "settings": "Ustawienia",
+    "programs": "Programy"
   },
   "upgrade": {
     "certificate": "Uaktualnij swój plan, aby generować certyfikaty",
@@ -517,12 +544,23 @@
       "all_courses": "Wszystkie kursy",
       "select_courses": "Wybierz konkretne kursy",
       "select_courses_placeholder": "Wybierz kursy...",
+      "program_access": "Dostęp do programów",
+      "no_programs": "Bez przypisania do programu",
+      "all_programs": "Wszystkie programy",
+      "select_programs": "Wybierz konkretne programy",
+      "select_programs_placeholder": "Wybierz programy...",
       "send_email": "Wyślij wiadomość e-mail z zaproszeniem do zaimportowanych użytkowników",
       "submit": "Importuj użytkowników",
       "back": "Powrót do Publiczności",
       "snackbar_success": "{imported} nowych zaproszeń, {assigned} istniejących studentów z dostępem do kursu, {pendingInvitesRenewed} odnowionych oczekujących zaproszeń (wysłano e-maile: {emailsSent})",
       "snackbar_no_emails": "Proszę podać przynajmniej jeden adres e-mail",
-      "snackbar_failed": "Nie udało się zaimportować użytkowników"
+      "snackbar_failed": "Nie udało się zaimportować użytkowników",
+      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like."
+    },
+    "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
+    "user_analytics": {
+      "title": "Learner profile",
+      "page_subtitle": "Progress, grades, and activity across their courses."
     }
   },
   "community": {
@@ -554,7 +592,12 @@
       "edit": "Edytuj",
       "cancel": "Anuluj",
       "give": "Podaj odpowiedź",
-      "comment": "Komentarz"
+      "comment": "Komentarz",
+      "page_subtitle": "Start a thread the whole community can see, and tie it to a course if you want."
+    },
+    "page_subtitle": "Questions and answers shared across your organization's courses.",
+    "question": {
+      "page_subtitle": "Follow answers, vote, and join the discussion."
     }
   },
   "course": {
@@ -1146,7 +1189,9 @@
                 "matching": "Dopasowanie",
                 "ordering": "Zamawianie",
                 "hotspot": "Hotspot",
-                "link": "Linki"
+                "link": "Linki",
+                "word_bank": "Bank słów",
+                "star": "Ocena gwiazdkowa"
               },
               "select_type": "Wybierz typ",
               "question_type_auto_gradable": "Auto",
@@ -1374,6 +1419,49 @@
                 "correct_badge": "Poprawnie",
                 "not_set": "Nie ustawiono",
                 "incorrect_badge": "Niepoprawne"
+              },
+              "word_bank": {
+                "review": {
+                  "your_answer_label": "Twoje odpowiedzi",
+                  "correct_label": "Prawidłowe odpowiedzi"
+                },
+                "preview": {
+                  "filled_label": "Oczekiwane odpowiedzi w kontekście"
+                },
+                "take": {
+                  "helper": "Kliknij słowo, aby umieścić je w pierwszym pustym pustym miejscu, lub przeciągnij je w puste miejsce. Kliknij wypełnione puste miejsce, aby zwrócić słowo do banku.",
+                  "bank_heading": "Bank słów",
+                  "clear_blank_sr": "Usuń słowo z pustego miejsca"
+                },
+                "edit": {
+                  "template_label": "Szablon zdania",
+                  "template_placeholder": "Pomiary opisujące nasze dane nazywane są ___. ___ jest funkcją...",
+                  "template_helper": "Użyj trzech podkreśleń (___) dla każdego spacji. Uczniowie zobaczą bank słów z poprawnymi odpowiedziami i elementami rozpraszającymi.",
+                  "no_blanks_warning": "Dodaj co najmniej jeden ___ pusty znacznik do swojego szablonu.",
+                  "correct_answers_heading": "Prawidłowa odpowiedź w każdą lukę",
+                  "blank_label": "Puste",
+                  "correct_placeholder": "Prawidłowy termin lub fraza",
+                  "distractors_heading": "Dodatkowe słowa (rozpraszacze)",
+                  "distractor_placeholder": "Zła opcja",
+                  "add_distractor": "Dodaj rozpraszacz"
+                }
+              },
+              "star": {
+                "preview": {
+                  "correct_label": "Prawidłowa odpowiedź"
+                },
+                "take": {
+                  "helper": "Wybierz swoją ocenę.",
+                  "star_sr": "Gwiazdka „{'n'}” z „{'max'}”"
+                },
+                "edit": {
+                  "correct_value_label": "Prawidłowa wartość gwiazdki",
+                  "correct_value_info": "Aby zdobyć pełną liczbę punktów, uczniowie muszą wybrać liczbę gwiazdek.",
+                  "max_stars_label": "Maksymalna ilość gwiazdek",
+                  "max_stars_info": "Ile gwiazdek widzą uczniowie (1–10). Wartość domyślna to 5.",
+                  "correct_value_placeholder": "np. 3",
+                  "max_stars_placeholder": "np. 5"
+                }
               }
             },
             "settings": "Ustawienia",
@@ -1498,10 +1586,16 @@
                 "cancel_upload": "Anuluj przesyłanie",
                 "upload_cancelled": "Przesyłanie anulowane przez użytkownika",
                 "max_files": "{count, plural, one {Możesz przesłać # plik} other {Możesz przesłać # plików}}",
-                "max_files_and_size": "(do {rozmiar} każdy)"
+                "max_files_and_size": "(do {rozmiar} każdy)",
+                "google_drive_choose": "Wybierz z Dysku Google",
+                "google_drive_opening": "Otwieram selektor…",
+                "google_drive_hint": "Wybierz film ze swojego konta Google. Każda osoba przeglądająca lekcję potrzebuje dostępu — ustaw udostępnianie na Dysku na „Każda osoba mająca link może wyświetlać” (lub odpowiednik w Twojej organizacji).",
+                "google_drive_not_configured": "Import do Dysku Google nie jest skonfigurowany dla tego wdrożenia. Dodaj PUBLIC_GOOGLE_PICKER_CLIENT_ID i PUBLIC_GOOGLE_PICKER_API_KEY do swojego środowiska.",
+                "google_drive_error": "Nie można otworzyć Dysku Google. Sprawdź, czy Twoja przeglądarka zezwala na wyskakujące okienka i czy Google Picker jest poprawnie skonfigurowany."
               },
               "empty_title": "Nie ma jeszcze filmów",
-              "empty_description": "Dodaj filmy z YouTube, prześlij lub ze swojej biblioteki multimediów"
+              "empty_description": "Dodaj filmy z YouTube, prześlij lub ze swojej biblioteki multimediów",
+              "google_drive": "Dysk Google"
             },
             "slide": {
               "title": "Przesuń",
@@ -1697,6 +1791,7 @@
       "empty_description": "Podziel się swoją wiedzą ze światem, tworząc angażujące kursy dla swoich uczniów.",
       "error_message": "Wystąpił błąd.",
       "lessons_number": "lekcje",
+      "exercise": "ćwiczenie",
       "students": "studenci",
       "published": "Opublikowano",
       "unpublished": "Niepublikowane",
@@ -1716,7 +1811,8 @@
         "clone": "Klon",
         "share": "Udostępnij",
         "invite": "Zaproś",
-        "delete": "Usuń"
+        "delete": "Usuń",
+        "open": "Otwórz"
       }
     },
     "course_filter": {
@@ -1741,7 +1837,8 @@
       "descending": "Desc",
       "tags": "Tagi",
       "empty_tags": "Brak dostępnych tagów"
-    }
+    },
+    "page_subtitle": "Where lessons turn into courses and courses turn into enrollments."
   },
   "ai": {
     "help_me": "Pomóż mi pisać",
@@ -1768,8 +1865,13 @@
     "lms_dashboard_hero": "Dziś jest kolejny dzień, który przybliży Cię do Twoich celów edukacyjnych. Nie poddawaj się, im więcej się uczysz, tym jesteś lepszy.",
     "lessons_completed": "Lekcje zakończone",
     "no_courses_started": "Żadne kursy nie zostały rozpoczęte",
-    "revenue": "Przychody",
-    "revenue_description": "Przybliżone przychody ze sprzedaży kursów",
+    "certificates_earned": "Certificates earned",
+    "certificates_earned_description": "Total certificates issued to students in your organization",
+    "certification_rate": "certification rate",
+    "recent_certifications": "Recent certifications",
+    "no_certifications_yet": "No certificates earned yet",
+    "no_certifications_yet_description": "When students complete a course and earn a certificate, they will appear here",
+    "view_courses": "View courses",
     "no_of_courses": "Liczba kursów",
     "no_courses_description": "Kursy stworzone w ramach tej organizacji",
     "total_students": "Razem studenci",
@@ -1819,7 +1921,8 @@
           "banner_text": "Tekst banera",
           "banner_text_label": "Zaktualizuj tekst banera",
           "banner_text_placeholder": "Wpisz tekst tutaj"
-        }
+        },
+        "page_subtitle": "Choose which tabs, banners, course tools, and extras learners see."
       },
       "domains": {
         "title": "Domena niestandardowa",
@@ -1853,7 +1956,8 @@
         "pending_dns_description": "Dodaj poniższe rekordy DNS, a następnie odśwież weryfikację.",
         "pending_verification_description": "Znaleziono rekordy DNS. Wydanie lub weryfikacja protokołu SSL jest nadal w toku.",
         "reconnect_description": "Ta domena musi zostać ponownie połączona poprzez nowy proces konfiguracji Cloudflare.",
-        "error_description": "Ta domena niestandardowa istnieje, ale weryfikacja nie została jeszcze ukończona."
+        "error_description": "Ta domena niestandardowa istnieje, ale weryfikacja nie została jeszcze ukończona.",
+        "page_subtitle": "Run your public learning site on a web address you own."
       }
     },
     "quiz": {
@@ -1977,6 +2081,9 @@
   },
   "org_navigation": {
     "platform": "Platforma",
+    "home": "Strona główna",
+    "content": "Treść",
+    "people": "Ludzie",
     "dashboard": "Pulpit nawigacyjny",
     "courses": "Kursy",
     "community": "Społeczność",
@@ -1989,7 +2096,8 @@
     "unlock": "Odblokuj nieograniczone funkcje i inwestuj w naszą przyszłość",
     "upgrade": "Uaktualnij teraz",
     "tags": "Tagi",
-    "automation": "Automatyzacja"
+    "automation": "Automatyzacja",
+    "programs": "Programy"
   },
   "media_manager": {
     "page_title": "Menedżer multimediów - ClassroomIO",
@@ -2061,7 +2169,8 @@
       "upload": "Prześlij",
       "youtube": "YouTube",
       "generic": "Ogólne",
-      "external_url": "Zewnętrzny adres URL"
+      "external_url": "Zewnętrzny adres URL",
+      "google_drive": "Dysk Google"
     },
     "kind": {
       "video": "Wideo",
@@ -2097,7 +2206,8 @@
     "common": {
       "not_available": "Nie dotyczy"
     },
-    "empty_description": "Zasób nie istnieje lub nie jest dostępny w tej organizacji."
+    "empty_description": "Zasób nie istnieje lub nie jest dostępny w tej organizacji.",
+    "page_subtitle": "Keep files, videos, and links for your courses in one library."
   },
   "settings": {
     "heading": "Ustawienia",
@@ -2107,7 +2217,8 @@
       "active": "Nie masz żadnych aktywnych rozliczeń",
       "provider": "Używamy Polar do zarządzania Twoimi rozliczeniami",
       "open_billing": "Otwórz rozliczenia",
-      "error": "Wystąpił błąd podczas otwierania rozliczeń"
+      "error": "Wystąpił błąd podczas otwierania rozliczeń",
+      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO."
     },
     "integrations": {
       "heading": "Telegram",
@@ -2117,7 +2228,8 @@
       "step_chatId": "Krok 2: Wpisz identyfikator czatu otrzymany od bota.",
       "connect_button": "Połącz",
       "success_message": "Integracja udana",
-      "disconnect": "Rozłącz"
+      "disconnect": "Rozłącz",
+      "page_subtitle": "Connect Telegram to get notified when important things happen."
     },
     "landing_page": {
       "heading": "Strona docelowa",
@@ -2212,6 +2324,99 @@
         "title": "Obraz tła",
         "show_background": "Pokaż tło",
         "hide_background": "Ukryj tło"
+      },
+      "page_subtitle": "Shape the marketing page people see before they sign up or enroll.",
+      "editor": {
+        "save": "Zapisz",
+        "close": "Zamknij",
+        "page_builder": "Kreator Stron",
+        "footer": {
+          "text": "Tekst stopki",
+          "add": "Dodaj link do stopki",
+          "default_label": "Nowe łącze",
+          "link_label": "Etykieta łącza",
+          "link_href": "Adres URL linku",
+          "remove": "Usuń link ze stopki"
+        },
+        "embed": {
+          "toggle": "Pokaż sekcję osadzania",
+          "title": "Tytuł sekcji",
+          "title_placeholder": "Tytuł sekcji",
+          "description": "Opis",
+          "description_placeholder": "Opcjonalny opis",
+          "code": "Wstaw kod",
+          "code_placeholder": "Wklej tutaj kod osadzania",
+          "code_description": "Wklej pełny fragment kodu do osadzenia lub kod iframe.",
+          "secondary_label": "Etykieta przycisku dodatkowego",
+          "secondary_href": "Link do przycisku dodatkowego"
+        },
+        "callout": {
+          "toggle": "Pokaż sekcję objaśnień",
+          "heading": "Nagłówek",
+          "heading_default": "Gotowy do rozpoczęcia nauki?",
+          "heading_placeholder": "Wprowadź nagłówek",
+          "description": "Opis",
+          "description_placeholder": "Dodaj krótki opis lub pozostaw puste",
+          "action_label": "Etykieta przycisku",
+          "action_label_default": "Rozpocznij",
+          "action_label_placeholder": "Tekst przycisku",
+          "action_href": "Link do przycisku",
+          "action_href_placeholder": "https://..."
+        },
+        "navigation": {
+          "add": "Dodaj łącze nawigacyjne",
+          "default_label": "Nowe łącze",
+          "link_label": "Etykieta łącza",
+          "link_href": "Adres URL linku",
+          "remove": "Usuń link nawigacyjny"
+        },
+        "hero": {
+          "heading": "Nagłówek",
+          "subheading": "Podtytuł",
+          "primary_label": "Etykieta przycisku głównego",
+          "primary_href": "Link do przycisku głównego",
+          "secondary_toggle": "Pokaż akcję drugorzędną",
+          "secondary_label": "Etykieta przycisku dodatkowego",
+          "secondary_href": "Link do przycisku dodatkowego",
+          "image": "Obraz bohatera",
+          "upload": "Prześlij obraz",
+          "clear": "Wyczyść obraz"
+        },
+        "sections": {
+          "hero": "Bohater",
+          "hero_desc": "Nagłówek, przyciski akcji i obraz bohatera.",
+          "navigation": "Nawigacja",
+          "navigation_desc": "Linki wyświetlane w nagłówku strony docelowej.",
+          "callout": "Objaśnienie",
+          "callout_desc": "Opcjonalny baner promocyjny wyświetlany po kursach.",
+          "embed": "Osadź",
+          "embed_desc": "Opcjonalna sekcja iframe pokazywana po kursach.",
+          "footer": "Stopka",
+          "footer_desc": "Tekst stopki i linki."
+        }
+      },
+      "content": {
+        "heading": "Edytuj treść",
+        "description": "Zaktualizuj bohatera, nawigację, osadzenie i stopkę, które pojawiają się w każdym motywie.",
+        "edit": "Edytuj treść"
+      },
+      "theme": {
+        "heading": "Wybierz motyw",
+        "description": "Wybierz styl wizualny, jaki widzą odwiedzający na Twojej publicznej stronie docelowej.",
+        "cards": {
+          "classic": {
+            "title": "Klasyczny",
+            "description": "Tradycyjny układ ze zrównoważoną hierarchią"
+          },
+          "bold": {
+            "title": "Odważne",
+            "description": "Wysoki kontrast, redakcyjny i uderzający"
+          },
+          "minimal": {
+            "title": "Minimalne",
+            "description": "Czyste, jasne i skupione na kursie"
+          }
+        }
       }
     },
     "organization": {
@@ -2244,7 +2449,8 @@
           "custom_theme": "Motyw niestandardowy",
           "add_theme": "Dodaj motyw"
         }
-      }
+      },
+      "page_subtitle": "Set the name, logo, and theme learners see for this organization."
     },
     "profile": {
       "heading": "Profil",
@@ -2266,7 +2472,8 @@
         "file_size": "Maksymalny rozmiar pliku:",
         "accepted": "Zaakceptowano:",
         "validation_error": "Rozmiar pliku przekracza maksymalny limit:"
-      }
+      },
+      "page_subtitle": "Your name, email, and how you appear wherever you work in ClassroomIO."
     },
     "tabs": {
       "profile_tab": "Profil",
@@ -2386,7 +2593,8 @@
         "general": "Generał",
         "sso": "Jednokrotne logowanie",
         "token_auth": "Autoryzacja tokenu"
-      }
+      },
+      "page_subtitle": "Control sign-up, login, SSO, and token-based access for this org."
     },
     "token_auth": {
       "heading": "Autoryzacja tokenu",
@@ -2407,6 +2615,9 @@
       "integration_description": "Podpisz token JWT za pomocą klucza tajnego i przekieruj użytkowników do adresu URL wymiany tokenów.",
       "no_config": "Nie skonfigurowano uwierzytelniania tokena. Aby rozpocząć, wygeneruj sekret podpisu.",
       "actions_menu": "Akcje uwierzytelniania tokenu"
+    },
+    "teams": {
+      "page_subtitle": "Invite teammates and control who helps run this organization."
     }
   },
   "profileMenu": {
@@ -2457,7 +2668,8 @@
   "app": {
     "search": {
       "placeholder": "Szukaj"
-    }
+    },
+    "cancel": "Anuluj"
   },
   "welcome_modal": {
     "we_at": "My o",
@@ -2611,7 +2823,8 @@
     },
     "common": {
       "not_available": "Nie dotyczy"
-    }
+    },
+    "page_subtitle": "Organize courses with labels so filters and lists stay easy to scan."
   },
   "invite": {
     "organization": {
@@ -2671,7 +2884,28 @@
         "rate_limits_title": "Limity stawek",
         "rate_limits_description": "Żądania odczytu/zapisu/publikowania dozwolone na minutę.",
         "used_label": "Używane:"
-      }
+      },
+      "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime."
+    },
+    "api": {
+      "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
+      "keys": {
+        "title": "API keys",
+        "description": "These keys authenticate the current organization when calling the ClassroomIO public API.",
+        "generate": "Generate API key",
+        "secret_once": "This secret is shown once. Copy it and store it securely.",
+        "empty_title": "No API keys yet",
+        "empty_description": "Create the first org-scoped API key to use the ClassroomIO public API.",
+        "modal": {
+          "title": "Create API key",
+          "description": "Choose a name for this API key before it is generated.",
+          "name_label": "Key name",
+          "name_placeholder": "My API integration",
+          "cancel": "Cancel",
+          "save": "Create key"
+        }
+      },
+      "view_docs": "View Docs"
     },
     "keys": {
       "active": "Aktywny",
@@ -2705,6 +2939,145 @@
     "permissions": {
       "disabled_title": "Dostęp tylko do odczytu",
       "disabled_description": "Tylko administratorzy organizacji mogą tworzyć, obracać i unieważniać klucze automatyzacji. Nauczyciele mogą zapoznać się z instrukcjami konfiguracji tutaj."
+    },
+    "zapier": {
+      "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
+    }
+  },
+  "programs": {
+    "heading": "Programy",
+    "page_title": "Programy",
+    "create": "Nowy program",
+    "create_success": "Program stworzony",
+    "update_success": "Program zaktualizowany",
+    "delete_success": "Program usunięty",
+    "members_added": "Dodano członków",
+    "member_removed": "Członek usunięty",
+    "course_added": "Kurs dodany",
+    "course_removed": "Kurs usunięty",
+    "empty_title": "Nie ma jeszcze programów",
+    "empty_description": "Utwórz swój pierwszy program certyfikacji lub zgodności.",
+    "settings": {
+      "general": "Generał",
+      "name_label": "Imię",
+      "description_label": "Opis",
+      "status_label": "Stan",
+      "save": "Zapisz zmiany",
+      "danger_zone": "Strefa zagrożenia",
+      "delete": "Usuń program",
+      "delete_description": "Po usunięciu tego programu i wszystkich jego danych nie można odzyskać.",
+      "confirm_delete": "Czy na pewno chcesz usunąć ten program? Tego nie można cofnąć."
+    },
+    "lms": {
+      "empty_title": "Nie ma jeszcze programów",
+      "empty_description": "Nie jesteś zarejestrowany w żadnym programie."
+    },
+    "people": {
+      "invite": "Zaproś",
+      "invite_modal_title": "Zaproś członków",
+      "invite_modal_description": "Dodaj osoby do tego programu przez e-mail.",
+      "email_label": "E-mail",
+      "role_label": "Rola",
+      "add_another": "Dodaj kolejny",
+      "invite_submit": "Wyślij zaproszenia",
+      "empty_title": "Nie ma jeszcze członków",
+      "empty_description": "Zaproś ludzi do przyłączenia się do tego programu."
+    },
+    "courses": {
+      "add": "Dodaj kurs",
+      "add_modal_title": "Dodaj kurs do programu",
+      "select_course": "Wybierz kurs",
+      "select_placeholder": "Wybierz kurs…",
+      "empty_title": "Nie ma jeszcze żadnych kursów",
+      "empty_description": "Dodaj kursy do tego programu.",
+      "select_courses": "Wybierz kursy",
+      "search_placeholder": "Wyszukaj kursy",
+      "no_available_courses": "Brak dostępnych kursów do dodania.",
+      "no_matching_courses": "Żaden kurs nie pasuje do Twojego wyszukiwania.",
+      "no_matching_program_courses": "Żaden kurs programowy nie pasuje do Twojego wyszukiwania.",
+      "pagination_status": "Strona {strona} z {totalPages}",
+      "published_access_callout_title": "Dostęp studencki",
+      "published_access_callout_description": "Studenci mają dostęp wyłącznie do opublikowanych kursów. Kursy mogą znajdować się w tym programie dla Twojego zespołu, gdy nie są jeszcze opublikowane, ale pozostają ukryte przed uczniami, dopóki ich nie opublikujesz."
+    },
+    "newsfeed": {
+      "post": "Nowy post",
+      "post_placeholder": "Co masz na myśli?",
+      "post_submit": "Opublikuj",
+      "empty_title": "Nie ma jeszcze żadnych postów",
+      "empty_description": "Bądź pierwszą osobą, która coś opublikuje.",
+      "heading": "Kanał informacyjny",
+      "make_a_post": "Napisz post",
+      "edit_post": "Edytuj post",
+      "editor_placeholder": "Udostępnij aktualizację swojemu programowi",
+      "cancel": "Anuluj",
+      "pinned": "Przypięty",
+      "delete_feed_title": "Usuń wpis",
+      "delete_feed_description": "Czy na pewno chcesz usunąć ten post?",
+      "confirm_delete": "Usuń",
+      "user_avatar_alt": "Awatar użytkownika",
+      "comments": {
+        "comment": "komentarz",
+        "showing_of": "Wyświetlanie {pokazane} z {total}",
+        "hide": "Ukryj komentarze",
+        "placeholder": "Dodaj komentarz do programu",
+        "submit_aria": "Prześlij komentarz",
+        "delete": "Usuń"
+      },
+      "card": {
+        "pin": "Przypnij",
+        "unpin": "Odepnij",
+        "edit": "Edytuj",
+        "delete": "Usuń"
+      }
+    },
+    "create_modal": {
+      "title": "Utwórz program",
+      "description": "Dodaj nowy program certyfikacji lub zgodności.",
+      "name_label": "Imię",
+      "name_placeholder": "np. Certyfikat bezpieczeństwa OSHA",
+      "description_label": "Opis",
+      "description_placeholder": "O czym jest ten program?",
+      "submit": "Utwórz"
+    },
+    "sidebar": {
+      "newsfeed": "Kanał informacyjny",
+      "courses": "Kursy",
+      "people": "Ludzie",
+      "settings": "Ustawienia"
+    },
+    "status": {
+      "active": "Aktywny",
+      "inactive": "Nieaktywny",
+      "archived": "Zarchiwizowane"
+    },
+    "description": "Daj grupie osób dostęp do wielu kursów, np. zajęć",
+    "search_placeholder": "Wyszukaj programy",
+    "multiple_added": "Dodano kursy",
+    "no_matching_programs": "Żaden program nie pasuje do Twoich filtrów.",
+    "card": {
+      "courses": "Kursy",
+      "students": "Studenci"
+    },
+    "table": {
+      "name": "Imię",
+      "courses": "Kursy",
+      "students": "Studenci",
+      "status": "Stan",
+      "description": "Opis"
+    },
+    "filters": {
+      "filter": "Filtruj",
+      "clear_all": "Wyczyść wszystko",
+      "popover_title": "Filtry",
+      "sort": "Sortuj",
+      "order": "Zamów",
+      "status": "Stan",
+      "ascending": "rosnąco",
+      "descending": "Opis",
+      "sort_name": "Imię",
+      "sort_courses": "Kursy",
+      "sort_students": "Studenci",
+      "sort_status": "Stan"
     }
   }
 }

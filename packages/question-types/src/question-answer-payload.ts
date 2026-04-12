@@ -8,11 +8,13 @@ export type QuestionAnswerPayload =
   | ShortAnswerPayload
   | NumericAnswerPayload
   | FillBlankAnswerPayload
+  | WordBankAnswerPayload
   | FileUploadAnswerPayload
   | MatchingAnswerPayload
   | OrderingAnswerPayload
   | HotspotAnswerPayload
-  | LinkAnswerPayload;
+  | LinkAnswerPayload
+  | StarAnswerPayload;
 
 interface BaseAnswerPayload {
   type: QuestionTypeKey;
@@ -53,6 +55,11 @@ export interface FillBlankAnswerPayload extends BaseAnswerPayload {
   answers: string[];
 }
 
+export interface WordBankAnswerPayload extends BaseAnswerPayload {
+  type: typeof QUESTION_TYPE_KEY.WORD_BANK;
+  filledBlanks: string[];
+}
+
 export interface FileUploadAnswerPayload extends BaseAnswerPayload {
   type: typeof QUESTION_TYPE_KEY.FILE_UPLOAD;
   fileId: string;
@@ -79,4 +86,9 @@ export interface HotspotAnswerPayload extends BaseAnswerPayload {
 export interface LinkAnswerPayload extends BaseAnswerPayload {
   type: typeof QUESTION_TYPE_KEY.LINK;
   links: string[];
+}
+
+export interface StarAnswerPayload extends BaseAnswerPayload {
+  type: typeof QUESTION_TYPE_KEY.STAR;
+  value: number;
 }

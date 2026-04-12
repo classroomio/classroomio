@@ -11,7 +11,7 @@
       <p class="mr-2 mb-5 text-sm leading-7 tracking-wide text-gray-600 lg:text-base lg:leading-7">
         The Open Source Learning Management System for Companies
         <br />
-        ClassroomIO is the easiest way to grow your teaching business.
+        Nail your compliance training and your certification program.
       </p>
       <!-- <a
         href="https://www.producthunt.com/posts/classroomio?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-classroomio"
@@ -50,19 +50,16 @@
         <p class="mb-3 text-base leading-6 font-semibold text-gray-900 lg:mb-10 lg:text-base">Product</p>
         <ul class="space-y-2 lg:space-y-4">
           <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
-            <a href="/#coursemanagement"> Course Management </a>
+            <a href="/#features"> Certifications </a>
           </li>
           <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
-            <a href="/#customization"> Customizations </a>
+            <a href="/#ai"> AI Content </a>
           </li>
           <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
-            <a href="/#collaboration"> Forum </a>
+            <a href="/#deploy"> Deploy </a>
           </li>
           <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
-            <a href="/#ai"> AI Lesson Planner </a>
-          </li>
-          <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
-            <a href="/#student-dashboard"> Student Dashboard </a>
+            <a href="/#testimonial"> Testimonials </a>
           </li>
         </ul>
       </div>
@@ -113,17 +110,13 @@
             <a href="mailto:help@classroomio.com" target="_blank"> Support </a>
           </li>
           <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
-            <a href="https://app.enzuzo.com/policies/privacy/958fc978-5477-11ee-a03b-7b111830c594" target="_blank">
-              Privacy policy
-            </a>
+            <a href="/privacy"> Privacy policy </a>
           </li>
           <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
             <a target="_blank" href="https://classroomio.com/docs/quickstart/signup"> Getting Started </a>
           </li>
           <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
-            <a href="https://app.enzuzo.com/policies/tos/958fc978-5477-11ee-a03b-7b111830c594" target="_blank">
-              Terms of use
-            </a>
+            <a href="/tos"> Terms of use </a>
           </li>
         </ul>
       </div>

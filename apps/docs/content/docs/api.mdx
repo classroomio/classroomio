@@ -1,0 +1,64 @@
+---
+title: API
+description: Use the ClassroomIO public API to manage audience members and courses with organization-scoped API keys.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The ClassroomIO public API is available under:
+
+```text
+https://api.classroomio.com/public-api/v1
+```
+
+Authentication uses organization-scoped bearer tokens created from `Automation -> API` in the ClassroomIO dashboard.
+
+## Interactive Reference
+
+- [Open the interactive API reference](/docs/api/reference)
+
+## Plan Requirement
+
+<Callout type="warn" title="Paid Access">
+  API key creation is available only on Early Adopter and Enterprise plans.
+</Callout>
+
+## Current Surface
+
+Current public API groups:
+
+- `audience`
+- `courses`
+
+Implemented route families:
+
+- `GET /public-api/v1/audience`
+- `POST /public-api/v1/audience`
+- `POST /public-api/v1/audience/assign-courses`
+- `GET /public-api/v1/audience/:memberId`
+- `PUT /public-api/v1/audience/:memberId`
+- `DELETE /public-api/v1/audience/:memberId`
+- `GET /public-api/v1/courses`
+- `GET /public-api/v1/courses/:courseId`
+- `GET /public-api/v1/courses/:courseId/students`
+- `GET /public-api/v1/courses/:courseId/export`
+
+## OpenAPI
+
+Raw OpenAPI JSON:
+
+- [Public API OpenAPI JSON](https://api.cdn.clsrio.com/openapi/public-api/openapi-latest.json)
+- [Interactive API Reference](/docs/api/reference)
+
+## Authentication Example
+
+```bash
+curl https://api.classroomio.com/public-api/v1/audience \
+  -H "Authorization: Bearer <cio_api_key>"
+```
+
+## Notes
+
+- API keys are organization-scoped.
+- Enrollment is handled through `POST /public-api/v1/audience/assign-courses`.
+- The API documentation will expand as the remaining public API write endpoints are added.

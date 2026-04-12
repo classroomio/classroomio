@@ -73,7 +73,7 @@
 </section>
 
 <PageSignupCTA
-  header="Bring your bootcamp vision online"
+  header="Migrate your certification program to ClassroomIO"
   subText="Try before you buy. No credit card required."
   btnLabel="Sign up for free"
   link="/signup"

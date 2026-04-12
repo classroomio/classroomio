@@ -18,17 +18,25 @@ export type TGetAudienceQuery = z.infer<typeof ZGetAudienceQuery>;
 export const ZImportAudienceMembers = z.object({
   recipientCsv: z.string().max(25000),
   courseIds: z.array(z.string().uuid()).optional(),
+  programIds: z.array(z.string().uuid()).optional(),
   allCourses: z.boolean().optional().default(false),
+  allPrograms: z.boolean().optional().default(false),
   sendEmail: z.boolean().default(true)
 });
 
 export type TImportAudienceMembers = z.infer<typeof ZImportAudienceMembers>;
 
-export const ZAssignAudienceCourses = z.object({
-  profileIds: z.array(z.uuid()).min(1).max(500),
-  courseIds: z.array(z.uuid()).min(1),
-  sendEmail: z.boolean().default(true)
-});
+export const ZAssignAudienceCourses = z
+  .object({
+    profileIds: z.array(z.uuid()).min(1).max(500),
+    courseIds: z.array(z.uuid()).optional(),
+    programIds: z.array(z.uuid()).optional(),
+    sendEmail: z.boolean().default(true)
+  })
+  .refine((data) => (data.courseIds?.length ?? 0) > 0 || (data.programIds?.length ?? 0) > 0, {
+    message: 'At least one course or program must be selected',
+    path: ['courseIds']
+  });
 
 export type TAssignAudienceCourses = z.infer<typeof ZAssignAudienceCourses>;
 

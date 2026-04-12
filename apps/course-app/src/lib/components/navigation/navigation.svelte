@@ -11,7 +11,7 @@
 </script>
 
 <header
-  class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+  class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60"
 >
   <p class="bg-blue-700 py-1.5 text-center text-sm font-medium text-white">
     brought to you by
@@ -35,7 +35,7 @@
       </svg>
     </a>
   </p>
-  <div class="container flex h-14 max-w-screen-2xl items-center">
+  <div class="flex h-14 max-w-5xl mx-auto items-center">
     <div class="mr-4 flex">
       <a href="/" class="mr-6 flex items-center">
         <img src="/logo-512.png" alt="Course App" class="h-8 w-8" />

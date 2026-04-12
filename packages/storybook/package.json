@@ -13,7 +13,9 @@
     "storybook:publish": "pnpm build-storybook && pnpm storybook:upload"
   },
   "dependencies": {
-    "@cio/ui": "workspace:*"
+    "@cio/ui": "workspace:*",
+    "svelte-inview": "^4.0.4",
+    "svelte-motion": "^0.12.2"
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.388.0",

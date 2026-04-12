@@ -7,18 +7,20 @@ import {
   createOrganizationInvite,
   createOrganizationInviteAudit,
   createOrganizationMembers,
+  getActivePendingOrgInviteForEmail,
   getOrganizationById,
   getOrganizationInviteByTokenHash,
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
+import { addProgramMember, getExistingProgramMembers } from '@cio/db/queries/program';
 
 import { ROLE } from '@cio/utils/constants';
 import crypto from 'node:crypto';
 import { db } from '@cio/db/drizzle';
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
-import { parseCourseIdsFromInviteMetadata } from '@api/utils/org';
+import { parseCourseIdsFromInviteMetadata, parseProgramIdsFromInviteMetadata } from '@api/utils/org';
 import { markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { sendEmail } from '@cio/email';
 
@@ -426,6 +428,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
   if (invite) {
     const metadata = invite.invite.metadata;
     const courseIds = parseCourseIdsFromInviteMetadata(metadata);
+    const programIds = parseProgramIdsFromInviteMetadata(metadata);
 
     if (courseIds.length > 0) {
       try {
@@ -441,8 +444,239 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
         console.error('acceptOrganizationInvite course enrollment error:', error);
       }
     }
+
+    if (programIds.length > 0) {
+      try {
+        const existingProgramMemberships = await getExistingProgramMembers(
+          programIds.map((programId) => ({ programId, profileId: user.id }))
+        );
+        const programIdsToInsert = programIds.filter(
+          (programId) => !existingProgramMemberships.has(`${programId}:${user.id}`)
+        );
+
+        await Promise.all(
+          programIdsToInsert.map((programId) =>
+            addProgramMember({
+              programId,
+              roleId: invite.invite.roleId,
+              profileId: user.id,
+              email: normalizedEmail
+            })
+          )
+        );
+      } catch (error) {
+        console.error('acceptOrganizationInvite program enrollment error:', error);
+      }
+    }
   }
 
+  const redirectTo = result.roleId === ROLE.STUDENT ? '/lms' : siteName ? `/org/${siteName}` : '/org';
+
+  return {
+    organizationId: result.organization.id,
+    roleId: result.roleId,
+    alreadyAccepted: result.alreadyAccepted,
+    redirectTo
+  };
+}
+
+/**
+ * Returns the pending org invite for the currently logged-in user, if one exists.
+ * Used by the LMS dashboard to prompt the student to accept on first load.
+ */
+export async function getPendingOrgInviteForUser(orgId: string, email: string) {
+  if (!orgId || !email) {
+    return null;
+  }
+
+  const data = await getActivePendingOrgInviteForEmail(orgId, email);
+
+  if (!data) {
+    return null;
+  }
+
+  return {
+    id: data.invite.id,
+    email: data.invite.email,
+    roleId: data.invite.roleId,
+    roleLabel: getRoleLabel(data.invite.roleId),
+    expiresAt: data.invite.expiresAt,
+    organization: data.organization
+  };
+}
+
+/**
+ * Accepts an organization invite by invite ID (for logged-in students with a pending invite).
+ * Replicates the acceptance logic of acceptOrganizationInvite but looks up by invite ID instead of token.
+ */
+export async function acceptOrganizationInviteById(
+  inviteId: string,
+  user: TAuthUser,
+  context: TInviteRequestContext = {}
+) {
+  if (!user.id || !user.email) {
+    throw new AppError('Authenticated user email is required', ErrorCodes.UNAUTHORIZED, 401);
+  }
+
+  const normalizedEmail = user.email.toLowerCase().trim();
+
+  const result = await db.transaction(async (tx) => {
+    const [row] = await tx
+      .select({
+        invite: schema.organizationInvite,
+        organization: {
+          id: schema.organization.id,
+          name: schema.organization.name,
+          siteName: schema.organization.siteName
+        }
+      })
+      .from(schema.organizationInvite)
+      .innerJoin(schema.organization, eq(schema.organizationInvite.organizationId, schema.organization.id))
+      .where(eq(schema.organizationInvite.id, inviteId))
+      .limit(1);
+
+    if (!row) {
+      throw new AppError('Invalid invite', ErrorCodes.NOT_FOUND, 404);
+    }
+
+    const status = getInviteStatus(row.invite);
+    if (status === 'REVOKED') {
+      throw new AppError('This invite has been revoked', ErrorCodes.UNAUTHORIZED, 403);
+    }
+
+    if (status === 'EXPIRED') {
+      throw new AppError('This invite has expired', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    if (row.invite.email.toLowerCase().trim() !== normalizedEmail) {
+      throw new AppError('This invite is for a different email address', ErrorCodes.UNAUTHORIZED, 403);
+    }
+
+    if (status === 'ACCEPTED') {
+      await markUserAndProfileEmailVerified(user.id, tx);
+
+      return { organization: row.organization, invite: row.invite, roleId: row.invite.roleId, alreadyAccepted: true };
+    }
+
+    const [orgMemberByEmail] = await tx
+      .select()
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, row.invite.organizationId),
+          eq(schema.organizationmember.email, normalizedEmail)
+        )
+      )
+      .limit(1);
+
+    if (orgMemberByEmail) {
+      if (orgMemberByEmail.profileId && orgMemberByEmail.profileId !== user.id) {
+        throw new AppError('This invite is linked to another account', ErrorCodes.UNAUTHORIZED, 403);
+      }
+
+      await tx
+        .update(schema.organizationmember)
+        .set({ profileId: user.id, roleId: row.invite.roleId, email: normalizedEmail, verified: true })
+        .where(eq(schema.organizationmember.id, orgMemberByEmail.id));
+    } else {
+      const [orgMemberByProfile] = await tx
+        .select()
+        .from(schema.organizationmember)
+        .where(
+          and(
+            eq(schema.organizationmember.organizationId, row.invite.organizationId),
+            eq(schema.organizationmember.profileId, user.id)
+          )
+        )
+        .limit(1);
+
+      if (orgMemberByProfile) {
+        await tx
+          .update(schema.organizationmember)
+          .set({ roleId: row.invite.roleId, email: normalizedEmail, verified: true })
+          .where(eq(schema.organizationmember.id, orgMemberByProfile.id));
+      } else {
+        await tx.insert(schema.organizationmember).values({
+          organizationId: row.invite.organizationId,
+          roleId: row.invite.roleId,
+          profileId: user.id,
+          email: normalizedEmail,
+          verified: true
+        });
+      }
+    }
+
+    await markUserAndProfileEmailVerified(user.id, tx);
+
+    const [acceptedInvite] = await tx
+      .update(schema.organizationInvite)
+      .set({
+        acceptedAt: new Date().toISOString(),
+        acceptedByProfileId: user.id,
+        updatedAt: new Date().toISOString()
+      })
+      .where(
+        and(
+          eq(schema.organizationInvite.id, row.invite.id),
+          eq(schema.organizationInvite.isRevoked, false),
+          isNull(schema.organizationInvite.acceptedAt)
+        )
+      )
+      .returning({ id: schema.organizationInvite.id });
+
+    if (!acceptedInvite) {
+      throw new AppError('Invite is no longer available', ErrorCodes.VALIDATION_ERROR, 409);
+    }
+
+    return { organization: row.organization, invite: row.invite, roleId: row.invite.roleId, alreadyAccepted: false };
+  });
+
+  await recordOrganizationInviteAudit(result.invite.id, result.invite.organizationId, 'ACCEPTED', {
+    actorProfileId: user.id,
+    targetEmail: normalizedEmail,
+    ipAddress: context.ipAddress,
+    userAgent: context.userAgent,
+    metadata: { alreadyAccepted: result.alreadyAccepted }
+  });
+
+  const metadata = result.invite.metadata;
+  const courseIds = parseCourseIdsFromInviteMetadata(metadata);
+  const programIds = parseProgramIdsFromInviteMetadata(metadata);
+
+  if (courseIds.length > 0) {
+    try {
+      const courseGroupMappings = await getCourseGroupIds(courseIds);
+      const validGroupIds = courseGroupMappings.map((m) => m.groupId).filter(Boolean) as string[];
+      await enrollUsersInCourseGroups(
+        validGroupIds,
+        [{ profileId: user.id, email: normalizedEmail }],
+        result.invite.roleId
+      );
+    } catch (error) {
+      console.error('acceptOrganizationInviteById course enrollment error:', error);
+    }
+  }
+
+  if (programIds.length > 0) {
+    try {
+      const existingProgramMemberships = await getExistingProgramMembers(
+        programIds.map((programId) => ({ programId, profileId: user.id }))
+      );
+      const programIdsToInsert = programIds.filter(
+        (programId) => !existingProgramMemberships.has(`${programId}:${user.id}`)
+      );
+
+      await Promise.all(
+        programIdsToInsert.map((programId) =>
+          addProgramMember({ programId, roleId: result.invite.roleId, profileId: user.id, email: normalizedEmail })
+        )
+      );
+    } catch (error) {
+      console.error('acceptOrganizationInviteById program enrollment error:', error);
+    }
+  }
+
+  const siteName = result.organization.siteName || '';
   const redirectTo = result.roleId === ROLE.STUDENT ? '/lms' : siteName ? `/org/${siteName}` : '/org';
 
   return {

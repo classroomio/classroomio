@@ -1,6 +1,6 @@
 <script lang="ts">
   import { toast } from 'svelte-sonner';
-  import { ShinnyText } from '$lib/components/animation/shinny-text';
+  import { ShinnyText } from '@cio/ui/custom/animation';
   import Copy from 'lucide-svelte/icons/copy';
   import { cn } from '$lib/utils';
 
@@ -17,7 +17,7 @@
   )}
 >
   <ShinnyText
-    class="animate-gradient inline-flex items-center justify-center bg-gradient-to-r from-[#ffaa40]  via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%]  bg-clip-text px-4 py-1 text-transparent text-white transition ease-out hover:text-neutral-400 hover:duration-300"
+    class="animate-gradient inline-flex items-center justify-center bg-linear-to-r from-[#ffaa40]  via-[#9c40ff] to-[#ffaa40] bg-size-[var(--bg-size)_100%]  bg-clip-text px-4 py-1 text-transparent text-white transition ease-out hover:text-neutral-400 hover:duration-300"
   >
     <span>{command}</span>
 

@@ -1,20 +1,31 @@
 <script>
-  import { Hero, CoreFeatures, Faq, StudentDashboard, MoreFeatures, Testimonial } from '$lib/components';
-  import { PUBLIC_ENABLE_FAQ } from '$env/static/public';
-
-  import { onMount } from 'svelte';
-
-  onMount(() => {
-    console.log('Welcome to CIO');
-  });
+  import {
+    Hero,
+    CertSection,
+    FeaturesSection,
+    AiSection,
+    LearnerSection,
+    QuestionTypes,
+    AutomateSection,
+    DeploySection,
+    EnterpriseSection,
+    Testimonial,
+    PageSignupCTA
+  } from '$lib/components';
 </script>
 
 <Hero />
-<CoreFeatures />
-<StudentDashboard />
+<AiSection />
+<FeaturesSection />
+<CertSection />
+<LearnerSection />
+<QuestionTypes />
+<!-- <AutomateSection /> -->
+<DeploySection />
+<EnterpriseSection />
 <Testimonial />
-<MoreFeatures />
-
-{#if PUBLIC_ENABLE_FAQ}
-  <Faq />
-{/if}
+<PageSignupCTA
+  header="Ready to replace Moodle with something you'll actually enjoy?"
+  subText="Get up and running in an afternoon. No vendor calls, no implementation fees, no surprises."
+  btnLabel="Book a Demo"
+/>

@@ -3,64 +3,147 @@
 ## Scope Lock (v1)
 
 1. AI assistant is teacher-only (course team members; not students).
-2. Agent executes via API (no local-only execution).
+2. Agent executes via API using Vercel AI SDK tool-calling pattern.
 3. All actions are org/course-scoped; no cross-org access.
-4. Self-hosted: assistant not available; hide UI and block agent routes.
-5. Chat lives in a right sidebar (Sheet) from the course header.
-6. Supported intents: update lesson text, generate questions from text, draft lesson; exercise tagging TBD (clarify org tags vs template tags).
+4. Self-hosted: assistant disabled by default; enabled via `AI_API_KEY` env var.
+5. Chat lives in a right sidebar (Sheet) triggered from the course sidebar navigation.
+6. Two modes: **Plan Mode** (propose course structure from document or prompt) and **Agent Mode** (execute approved actions).
+7. Supported actions: upload PDF/DOCX, generate course plan, create sections, create/update lessons, create exercises with questions.
 
 ## Delivery Phases
 
-1. Phase A: Package + types + self-host gate
-2. Phase B: Agent API routes + permission checks
-3. Phase C: Chat UI + header button
-4. Phase D: LLM integration + intent execution
-5. Phase E: Polish (quick actions, context, rate limits)
+1. Phase 1: Foundation — package + types + DB tables + route skeletons + upload endpoint + sidebar UI shell
+2. Phase 2: Agent Core — LLM integration + 9 tools + streaming chat + plan view + agent execution + usage tracking
+3. Phase 3: Polish — rate limits, quick actions, self-host gating, credits, stop button
+4. Phase 4: More Tools — section/lesson/exercise management (delete, reorder, update metadata)
+5. Phase 5: Student Assistant (v2) — student tools, student prompt, course-app surface
 
 ## Ticket Breakdown
 
-| ID | Area | Task | Key Files | Dependencies | Done When |
-| --- | --- | --- | --- | --- | --- |
-| AI-A1 | Package | Create `packages/ai-assistant` with types (Message, Intent, Response) | `packages/ai-assistant/src/types.ts` | None | Package builds; types exportable |
-| AI-A2 | Package | Add optional API client for agent chat | `packages/ai-assistant/src/client.ts` | AI-A1 | Client can call agent endpoints (or dashboard uses RPC directly) |
-| AI-A3 | Dashboard | Add `isAiAssistantAvailable` util (false when `PUBLIC_IS_SELFHOSTED`) | `apps/dashboard/src/lib/utils/ai-assistant.ts` | None | Util returns bool; hide button when self-hosted |
-| AI-B1 | API | Add agent validation schemas (chat payload, intent payloads) | `packages/utils/src/validation/agent/` | None | Zod schemas for chat + intents |
-| AI-B2 | API | Add agent routes under `/course/:courseId/agent`; do not register or return 403 when self-hosted | `apps/api/src/routes/course/agent.ts` | AI-B1 | `POST /chat`, `POST /execute` (or combined); blocked when `PUBLIC_IS_SELFHOSTED` |
-| AI-B3 | API | Apply auth + courseTeamMember middleware to agent routes | `apps/api/src/routes/course/agent.ts` | AI-B2 | Unauthorized users get 403 |
-| AI-B4 | API | Add agent service: parse message → intent → call lesson/exercise services | `apps/api/src/services/agent.ts` | AI-B2 | Service orchestrates intents; returns structured response |
-| AI-B5 | API | Verify org/course scoping in every agent mutation | `apps/api/src/services/agent.ts` | AI-B4 | Cross-org requests rejected |
-| AI-C1 | Dashboard | Add AI Assistant button to course header | `apps/dashboard/src/lib/features/course/components/course-header.svelte` | AI-A3 | Button visible when `isAiAssistantAvailable` and teacher |
-| AI-C2 | Dashboard | Add right Sheet with chat UI (message list + input) | `apps/dashboard/src/lib/features/ai-assistant/ai-assistant-sheet.svelte` | AI-C1 | Sheet opens from button; placeholder chat |
-| AI-C3 | Dashboard | Create AI assistant feature module (store, API class) | `apps/dashboard/src/lib/features/ai-assistant/` | AI-A1 | API class calls agent endpoint; store holds messages |
-| AI-C4 | Dashboard | Wire chat input → API → message display | `apps/dashboard/src/lib/features/ai-assistant/` | AI-C3, AI-B2 | User can send message; response shows in chat |
-| AI-D1 | API | Integrate LLM provider (OpenAI/Anthropic) for chat completion | `apps/api/src/services/agent.ts` | AI-B4 | Agent can generate text from user message |
-| AI-D2 | API | Implement intent: update lesson text | Agent service + lessonLanguage service | AI-D1 | "Update this text..." → `updateLessonLanguageService` |
-| AI-D3 | API | Implement intent: generate N questions from text | Agent service | AI-D1 | Returns generated questions as text; user copies or we add create flow later |
-| AI-D4 | API | Implement intent: draft lesson | Agent service + `createLesson` | AI-D1 | Creates draft lesson; returns lesson ID for navigation |
-| AI-D5 | API | Clarify and implement exercise tagging intent | Agent service + tag/course APIs | AI-D1 | Semantic clarified in PRD; implement |
-| AI-E1 | Copy | Add i18n keys for AI assistant UI | `apps/dashboard/src/lib/utils/translations/en.json` | AI-C2 | No hardcoded strings |
-| AI-E2 | API | Add rate limiting for agent endpoints | Middleware or route-level | AI-B2 | Prevents abuse; configurable limit |
-| AI-E3 | Tests | Add auth/role tests for agent routes | API tests | AI-B3 | Unauthorized/student requests return 403 |
+### Phase 1: Foundation
 
-## API Contract (Target)
+| ID | Area | Task | Key Files | Dependencies |
+| --- | --- | --- | --- | --- |
+| AI-1.1 | Package | Create `packages/ai-assistant` with types (`AgentRole`, `AgentContext`, `CoursePlan`, `AIProviderConfig`) | `packages/ai-assistant/src/types.ts` | None |
+| AI-1.2 | Package | Implement provider factory (`createModel(config)`) with OpenAI + Anthropic | `packages/ai-assistant/src/providers/index.ts` | AI-1.1 |
+| AI-1.3 | Package | Implement tool registry (`getToolSchemas(role)`) with 9 v1 tool schemas | `packages/ai-assistant/src/tools/` | AI-1.1 |
+| AI-1.4 | Package | Implement system prompt builder with Plan/Agent mode instructions + no-hallucination boundary | `packages/ai-assistant/src/prompt/` | AI-1.1 |
+| AI-1.5 | DB | Add `ai_token_usage` and `ai_credit_balance` tables to schema + migration | `packages/db/src/schema.ts` | None |
+| AI-1.6 | API | Add agent route skeleton (`/agent/status`, `/agent/chat`, `/agent/upload`) with auth middleware + role detection | `apps/api/src/routes/agent/` | AI-1.1 |
+| AI-1.7 | API | Implement `POST /agent/upload` — plan gating (EARLY_ADOPTER+ required, 403 for BASIC), file size validation (max 5MB), PDF parsing (`pdf-parse`) + DOCX parsing (`mammoth`) + Redis storage | `apps/api/src/services/agent/document.ts` | AI-1.6 |
+| AI-1.8 | API | Add Redis key generators for agent documents | `apps/api/src/utils/redis/key-generators.ts` | None |
+| AI-1.9 | Dashboard | Add "AI Assistant" button to course sidebar nav (gated on `/agent/status`) | `course-sidebar-navigation.svelte` | AI-1.6 |
+| AI-1.10 | Dashboard | Build right sidebar Sheet with placeholder chat UI (message list + input + file upload button) | `apps/dashboard/src/lib/features/ai-assistant/` | AI-1.9 |
+| AI-1.11 | Dashboard | Implement file upload flow — plan gate (BASIC clicks attachment icon -> `openUpgradeModal()`), client-side 5MB size check, file picker -> upload -> chip display, handle 403 from server by triggering upgrade modal | `apps/dashboard/src/lib/features/ai-assistant/` | AI-1.7, AI-1.10 |
 
-### Agent Chat
+### Phase 2: Agent Core
 
-- `POST /course/:courseId/agent/chat`
-  - Body: `{ message: string, context?: { lessonId?, exerciseId? } }`
-  - Response: `{ success: true, data: { message: string, intent?: string, actions?: [...] } }`
-  - Auth: `authMiddleware`, `courseTeamMemberMiddleware`
+| ID | Area | Task | Key Files | Dependencies |
+| --- | --- | --- | --- | --- |
+| AI-2.1 | API | Wire `POST /agent/chat` to `streamText()` with provider factory + tool schemas + system prompt | `apps/api/src/routes/agent/chat.ts` | AI-1.2, AI-1.3, AI-1.4 |
+| AI-2.2 | API | Implement tool execute functions: `get_course_structure`, `get_lesson_content`, `get_exercise_details` (read tools) | `apps/api/src/routes/agent/chat.ts` | AI-2.1 |
+| AI-2.3 | API | Implement tool execute functions: `create_section`, `create_lesson`, `update_lesson_content` (write tools) | `apps/api/src/routes/agent/chat.ts` | AI-2.1 |
+| AI-2.4 | API | Implement tool execute functions: `create_exercise`, `add_questions` (exercise tools) | `apps/api/src/routes/agent/chat.ts` | AI-2.1 |
+| AI-2.5 | API | Implement `generate_course_plan` tool — structured `CoursePlan` JSON output | `apps/api/src/routes/agent/chat.ts` | AI-2.1 |
+| AI-2.6 | API | Inject uploaded document text from Redis into LLM context when `documentId` present | `apps/api/src/routes/agent/chat.ts` | AI-1.7, AI-2.1 |
+| AI-2.7 | API | Token usage tracking — record `promptTokens` + `completionTokens` after each `streamText()` call | `apps/api/src/services/agent/usage.ts` | AI-1.5, AI-2.1 |
+| AI-2.8 | API | Token balance check — enforce before each LLM call, return 402 when exhausted | `apps/api/src/services/agent/usage.ts` | AI-2.7 |
+| AI-2.9 | Dashboard | Connect chat UI to `/agent/chat` via `@ai-sdk/svelte` `Chat` class | `apps/dashboard/src/lib/features/ai-assistant/` | AI-2.1, AI-1.10 |
+| AI-2.10 | Dashboard | Render streamed tokens and tool status cards (spinner -> checkmark) | `apps/dashboard/src/lib/features/ai-assistant/` | AI-2.9 |
+| AI-2.11 | Dashboard | Build Plan View component — structured plan card with sections/lessons tree, "Implement Plan" and "Ask for Changes" buttons | `apps/dashboard/src/lib/features/ai-assistant/plan-view.svelte` | AI-2.5, AI-2.9 |
+| AI-2.12 | Dashboard | Build Agent Mode progress card — real-time checklist during plan execution | `apps/dashboard/src/lib/features/ai-assistant/progress-card.svelte` | AI-2.11 |
+| AI-2.13 | Dashboard | Implement `onFinish` store refresh — course content tree, lesson, exercise data | `apps/dashboard/src/lib/features/ai-assistant/` | AI-2.9 |
+| AI-2.14 | Dashboard | Add usage meter to AI assistant sidebar header | `apps/dashboard/src/lib/features/ai-assistant/` | AI-2.8 |
 
-### Optional Structured Execute
+### Phase 3: Polish + Safeguards + Credits
 
-- `POST /course/:courseId/agent/execute`
-  - Body: `{ intent: string, payload: Record<string, unknown> }`
-  - For tool-calling or explicit intent execution (e.g. from LLM tool use)
-  - Auth: same as above
+| ID | Area | Task | Key Files | Dependencies |
+| --- | --- | --- | --- | --- |
+| AI-3.1 | API | Tool-level permission re-validation (verify resource belongs to course/org in every tool execute) | `apps/api/src/routes/agent/chat.ts` | AI-2.2, AI-2.3, AI-2.4 |
+| AI-3.2 | API | Rate limiting — per-user, per-org requests/minute on agent endpoints | `apps/api/src/middlewares/` | AI-1.6 |
+| AI-3.3 | API | Self-host env var detection: hide assistant when no `AI_API_KEY`; uncap rate limits for self-hosted | `apps/api/src/routes/agent/status.ts` | AI-1.6 |
+| AI-3.4 | API | Conversation context windowing — trim long message histories, especially after document uploads | `apps/api/src/routes/agent/chat.ts` | AI-2.1 |
+| AI-3.5 | API | `POST /agent/credits` — credit purchase endpoint (orgAdmin only) | `apps/api/src/routes/agent/credits.ts` | AI-1.5 |
+| AI-3.6 | API | `GET /agent/usage` — detailed usage stats endpoint | `apps/api/src/routes/agent/usage.ts` | AI-2.7 |
+| AI-3.7 | Dashboard | Quick-action chips (context-dependent: document upload, draft lesson, generate questions, improve text) | `apps/dashboard/src/lib/features/ai-assistant/` | AI-2.9 |
+| AI-3.8 | Dashboard | Stop button during plan execution (graceful halt, keep created content) | `apps/dashboard/src/lib/features/ai-assistant/` | AI-2.12 |
+| AI-3.9 | Dashboard | Exhausted-state UI — disable chat input when tokens run out, show upgrade prompt | `apps/dashboard/src/lib/features/ai-assistant/` | AI-2.14 |
+| AI-3.10 | Dashboard | Credit purchase UI in org settings | `apps/dashboard/src/lib/features/org-settings/` | AI-3.5 |
 
-## Open Items Before Implementation
+## API Contract
 
-1. LLM provider choice (OpenAI vs Anthropic vs configurable).
-2. Streaming: v1 non-streaming vs SSE streaming.
-3. Exercise tagging semantics (org course tags vs exercise template tags).
-4. Draft lesson: create immediately vs return text for paste.
+### GET /agent/status
+
+```typescript
+// Response
+{
+  enabled: boolean,              // false when self-hosted + no AI_API_KEY
+  role: 'teacher' | 'student',
+  usage: {
+    used: number,
+    allowance: number,
+    creditBalance: number,
+    remaining: number
+  }
+}
+```
+
+### POST /agent/chat
+
+```typescript
+// Request
+{
+  courseId: string,
+  messages: UIMessage[],          // Vercel AI SDK format
+  context?: {
+    lessonId?: string,
+    exerciseId?: string,
+    documentId?: string
+  }
+}
+// Response: SSE stream (toUIMessageStreamResponse())
+```
+
+### POST /agent/upload
+
+```typescript
+// Request: multipart/form-data with 'file' field (PDF or DOCX, max 5MB)
+// Requires: EARLY_ADOPTER+ plan
+
+// Success Response (200)
+{
+  documentId: string,
+  fileName: string,
+  mimeType: string,
+  pageCount: number | null,
+  wordCount: number,
+  textPreview: string
+}
+
+// Error Responses
+// 403: { error: "document_upload_requires_upgrade", upgradeRequired: true }  — BASIC plan
+// 413: { error: "file_too_large", maxSize: 5242880 }                         — > 5MB
+// 415: { error: "unsupported_file_type", allowed: [...] }                    — not PDF/DOCX
+```
+
+### GET /agent/usage
+
+```typescript
+// Response
+{
+  used: number,
+  allowance: number,
+  creditBalance: number,
+  remaining: number,
+  history: Array<{ date: string, tokens: number }>
+}
+```
+
+### POST /agent/credits
+
+```typescript
+// Request
+{ amount: number }
+// Response
+{ creditBalance: number }
+```

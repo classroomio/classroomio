@@ -24,7 +24,7 @@ type LessonDocument = {
 };
 
 type AssetKind = 'video' | 'document' | 'image' | 'audio' | 'other';
-type AssetProvider = 'upload' | 'youtube' | 'generic' | 'external_url';
+type AssetProvider = 'upload' | 'youtube' | 'generic' | 'external_url' | 'google_drive';
 type SlotType = 'lesson_video' | 'lesson_document';
 
 type MediaSummaryKey =

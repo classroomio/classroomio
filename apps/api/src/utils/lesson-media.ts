@@ -11,6 +11,7 @@ type LessonDocument = NonNullable<TLesson['documents']>[number];
 
 function mapProviderToVideoType(provider: string): LessonVideo['type'] {
   if (provider === 'youtube') return 'youtube';
+  if (provider === 'google_drive') return 'google_drive';
   if (provider === 'generic' || provider === 'external_url') return 'generic';
   return 'upload';
 }

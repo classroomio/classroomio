@@ -1,4 +1,4 @@
-export type VideoType = 'youtube' | 'generic' | 'upload' | 'muse';
+export type VideoType = 'youtube' | 'generic' | 'upload' | 'muse' | 'google_drive';
 
 export interface VideoSource {
   type: VideoType;
@@ -6,6 +6,7 @@ export interface VideoSource {
   metadata?: {
     svid?: string; // muse.ai video ID
     thumbnailUrl?: string; // upload thumbnail / poster
+    title?: string;
   };
 }
 

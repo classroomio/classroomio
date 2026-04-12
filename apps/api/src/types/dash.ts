@@ -3,9 +3,10 @@ export interface TopCourse {
   title: string;
   enrollments: number;
   completion: number;
+  certification: number;
 }
 
-export interface Enrollment {
+export interface RecentCertification {
   id: string;
   avatarUrl: string | null;
   name: string;
@@ -15,9 +16,9 @@ export interface Enrollment {
 }
 
 export interface OrganisationAnalytics {
-  revenue: number;
+  totalCertificates: number;
   numberOfCourses: number;
   totalStudents: number;
   topCourses: TopCourse[];
-  enrollments: Enrollment[];
+  recentCertifications: RecentCertification[];
 }

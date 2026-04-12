@@ -7,6 +7,7 @@
   import { profile } from '$lib/utils/store/user';
   import { coursesApi } from '$features/course/api';
   import { resolve } from '$app/paths';
+  import { BlurFade } from '@cio/ui/custom/animation/blurfade';
 
   let totalCompleted = $derived(
     coursesApi.enrolledCourses.reduce((acc, cur) => {
@@ -32,30 +33,34 @@
   });
 </script>
 
-<div class="flex h-fit w-full flex-col-reverse justify-between rounded-md border px-4 py-2 md:flex-row md:items-center">
-  <div class="w-full md:w-[75%] lg:w-[80%]">
-    <p class="mb-5 w-4/6 font-normal lg:text-xl">
-      {$currentOrg.customization.dashboard.bannerText
-        ? $currentOrg.customization.dashboard.bannerText
-        : $t('dashboard.lms_dashboard_hero')}
-    </p>
-    <Button onclick={() => goto(resolve('/lms/mylearning', {}))}>
-      {$t('dashboard.continue_learning')}
-    </Button>
+<BlurFade delay={0} once>
+  <div
+    class="flex h-fit w-full flex-col-reverse justify-between rounded-md border px-4 py-2 md:flex-row md:items-center"
+  >
+    <div class="w-full md:w-[75%] lg:w-[80%]">
+      <p class="mb-5 w-4/6 font-normal lg:text-xl">
+        {$currentOrg.customization.dashboard.bannerText
+          ? $currentOrg.customization.dashboard.bannerText
+          : $t('dashboard.lms_dashboard_hero')}
+      </p>
+      <Button onclick={() => goto(resolve('/lms/mylearning', {}))}>
+        {$t('dashboard.continue_learning')}
+      </Button>
+    </div>
+    <img
+      src={$currentOrg.customization.dashboard.bannerImage
+        ? $currentOrg.customization.dashboard.bannerImage
+        : '/images/student-learning.svg'}
+      alt="student Learning Pictogram"
+      class="mb-3 aspect-square size-48 md:mb-0 md:block"
+    />
   </div>
-  <img
-    src={$currentOrg.customization.dashboard.bannerImage
-      ? $currentOrg.customization.dashboard.bannerImage
-      : '/images/student-learning.svg'}
-    alt="student Learning Pictogram"
-    class="mb-3 aspect-square size-48 md:mb-0 md:block"
-  />
-</div>
+</BlurFade>
 <section class="flex w-full flex-col md:gap-4 lg:flex-row">
-  <div class="mt-10 w-full lg:w-[50%] xl:mt-2">
+  <BlurFade delay={0.1} once class="mt-10 w-full lg:w-[50%] xl:mt-2">
     <Learning />
-  </div>
-  <div class="mt-10 w-full lg:w-[50%] xl:mt-2">
+  </BlurFade>
+  <BlurFade delay={0.2} once class="mt-10 w-full lg:w-[50%] xl:mt-2">
     <p class="pb-3 text-base font-semibold text-[#040F2D] dark:text-white">
       {$t('dashboard.your_progress')}
     </p>
@@ -88,5 +93,5 @@
         </h1>
       </div>
     </div>
-  </div>
+  </BlurFade>
 </section>

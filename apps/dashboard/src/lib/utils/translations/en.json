@@ -89,6 +89,7 @@
     "deeply_appreciate": "we deeply appreciate it and are at your service."
   },
   "app": {
+    "cancel": "Cancel",
     "search": {
       "placeholder": "Search"
     }
@@ -161,6 +162,7 @@
       "teams_tab": "Teams"
     },
     "profile": {
+      "page_subtitle": "Your name, email, and how you appear wherever you work in ClassroomIO.",
       "profile_picture": {
         "heading": "Profile Picture",
         "upload_image": "Upload Image",
@@ -183,6 +185,7 @@
       "logout": "Log out"
     },
     "organization": {
+      "page_subtitle": "Set the name, logo, and theme learners see for this organization.",
       "organization_profile": {
         "heading": "Organization",
         "organization_name": "Organization Name",
@@ -234,7 +237,11 @@
       "no_config": "No token auth configured. Generate a signing secret to get started.",
       "actions_menu": "Token auth actions"
     },
+    "teams": {
+      "page_subtitle": "Invite teammates and control who helps run this organization."
+    },
     "auth": {
+      "page_subtitle": "Control sign-up, login, SSO, and token-based access for this org.",
       "title": "Authentication",
       "tabs": {
         "general": "General",
@@ -338,9 +345,103 @@
       }
     },
     "landing_page": {
+      "page_subtitle": "Shape the marketing page people see before they sign up or enroll.",
       "heading": "Landing Page",
+      "save_changes": "Save Changes",
       "show_section": "Show Section",
       "hide_section": "Hide Section",
+      "theme": {
+        "heading": "Choose a Theme",
+        "description": "Pick the visual style visitors see on your public landing page.",
+        "cards": {
+          "minimal": {
+            "title": "Minimal",
+            "description": "Clean, bright, and course-focused"
+          },
+          "bold": {
+            "title": "Bold",
+            "description": "High contrast, editorial, and striking"
+          },
+          "classic": {
+            "title": "Classic",
+            "description": "Traditional layout with balanced hierarchy"
+          }
+        }
+      },
+      "content": {
+        "heading": "Edit Content",
+        "description": "Update the hero, navigation, embed, and footer that appear in every theme.",
+        "edit": "Edit Content"
+      },
+      "editor": {
+        "save": "Save",
+        "close": "Close",
+        "page_builder": "Page Builder",
+        "sections": {
+          "hero": "Hero",
+          "hero_desc": "Headline, action buttons, and the hero image.",
+          "navigation": "Navigation",
+          "navigation_desc": "Links shown in the landing page header.",
+          "callout": "Callout",
+          "callout_desc": "Optional promotional banner shown after courses.",
+          "embed": "Embed",
+          "embed_desc": "Optional iframe section shown after courses.",
+          "footer": "Footer",
+          "footer_desc": "Footer text and links."
+        },
+        "hero": {
+          "heading": "Heading",
+          "subheading": "Subheading",
+          "primary_label": "Primary Button Label",
+          "primary_href": "Primary Button Link",
+          "secondary_toggle": "Show secondary action",
+          "secondary_label": "Secondary Button Label",
+          "secondary_href": "Secondary Button Link",
+          "image": "Hero Image",
+          "upload": "Upload Image",
+          "clear": "Clear Image"
+        },
+        "navigation": {
+          "add": "Add Navigation Link",
+          "default_label": "New link",
+          "link_label": "Link label",
+          "link_href": "Link URL",
+          "remove": "Remove navigation link"
+        },
+        "callout": {
+          "toggle": "Show callout section",
+          "heading": "Heading",
+          "heading_default": "Ready to start learning?",
+          "heading_placeholder": "Enter a heading",
+          "description": "Description",
+          "description_placeholder": "Add a short description or leave empty",
+          "action_label": "Button label",
+          "action_label_default": "Get Started",
+          "action_label_placeholder": "Button text",
+          "action_href": "Button link",
+          "action_href_placeholder": "https://..."
+        },
+        "embed": {
+          "toggle": "Show embed section",
+          "title": "Section title",
+          "title_placeholder": "Section title",
+          "description": "Description",
+          "description_placeholder": "Optional description",
+          "code": "Embed code",
+          "code_placeholder": "Paste embed code here",
+          "code_description": "Paste the full embed snippet or iframe code.",
+          "secondary_label": "Secondary Button Label",
+          "secondary_href": "Secondary Button Link"
+        },
+        "footer": {
+          "text": "Footer text",
+          "add": "Add Footer Link",
+          "default_label": "New link",
+          "link_label": "Link label",
+          "link_href": "Link URL",
+          "remove": "Remove footer link"
+        }
+      },
       "title": "Title",
       "title_highlight": "Title-Highlight",
       "subtitle": "Subtitle",
@@ -433,6 +534,7 @@
       "save_changes": "Save Changes"
     },
     "integrations": {
+      "page_subtitle": "Connect Telegram to get notified when important things happen.",
       "heading": "Telegram",
       "sub_heading": "Connect your account to telegram to get notified of any change within the application.",
       "step_authenticate": "Step 1: Authenticate your account via the ClassroomIO bot.",
@@ -443,6 +545,7 @@
       "disconnect": "Disconnect"
     },
     "billing": {
+      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
       "sub_title": "Billing details",
       "manage": "Manage your billing",
       "active": "You don't have any active billing",
@@ -454,6 +557,7 @@
   "media_manager": {
     "page_title": "Media Manager - ClassroomIO",
     "heading": "Media Manager",
+    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
     "empty": "No assets found",
     "empty_description": "The asset does not exist or is not available in this organization.",
     "common": {
@@ -494,7 +598,8 @@
       "upload": "Upload",
       "youtube": "YouTube",
       "generic": "Generic",
-      "external_url": "External URL"
+      "external_url": "External URL",
+      "google_drive": "Google Drive"
     },
     "status": {
       "active": "Active",
@@ -562,6 +667,7 @@
   "tags_admin": {
     "page_title": "Tags - ClassroomIO",
     "heading": "Tags",
+    "page_subtitle": "Organize courses with labels so filters and lists stay easy to scan.",
     "create": "Create",
     "common": {
       "not_available": "N/A"
@@ -626,8 +732,12 @@
   },
   "org_navigation": {
     "platform": "Platform",
+    "home": "Home",
+    "content": "Content",
+    "people": "People",
     "dashboard": "Dashboard",
     "courses": "Courses",
+    "programs": "Programs",
     "tags": "Tags",
     "community": "Community",
     "audience": "Audience",
@@ -761,6 +871,7 @@
     },
     "settings": {
       "domains": {
+        "page_subtitle": "Run your public learning site on a web address you own.",
         "title": "Custom domain",
         "add": "Add",
         "url": "URL",
@@ -795,6 +906,7 @@
         "custom_code": "Custom code"
       },
       "customize_lms": {
+        "page_subtitle": "Choose which tabs, banners, course tools, and extras learners see.",
         "title": "Customize LMS",
         "disabled": "Disabled",
         "enabled": "Enabled",
@@ -846,8 +958,13 @@
     "lessons_completed": "Lessons completed",
     "items_completed": "Items completed",
     "no_courses_started": "No courses started",
-    "revenue": "Revenue",
-    "revenue_description": "Approximate revenue made from course sales",
+    "certificates_earned": "Certificates earned",
+    "certificates_earned_description": "Total certificates issued to students in your organization",
+    "certification_rate": "certification rate",
+    "recent_certifications": "Recent certifications",
+    "no_certifications_yet": "No certificates earned yet",
+    "no_certifications_yet_description": "When students complete a course and earn a certificate, they will appear here",
+    "view_courses": "View courses",
     "no_of_courses": "Number of courses",
     "no_courses_description": "Courses created within this organization",
     "total_students": "Total students",
@@ -872,8 +989,145 @@
     "insert": "Insert",
     "can_you": "Can you please rephrase this"
   },
+  "programs": {
+    "heading": "Programs",
+    "description": "Give a group of people access to multiple courses, like a class",
+    "page_title": "Programs",
+    "search_placeholder": "Search programs",
+    "create": "New Program",
+    "create_success": "Program created",
+    "update_success": "Program updated",
+    "delete_success": "Program deleted",
+    "members_added": "Members added",
+    "member_removed": "Member removed",
+    "course_added": "Course added",
+    "multiple_added": "Courses added",
+    "course_removed": "Course removed",
+    "empty_title": "No programs yet",
+    "empty_description": "Create your first certification or compliance program.",
+    "no_matching_programs": "No programs match your filters.",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "archived": "Archived"
+    },
+    "filters": {
+      "filter": "Filter",
+      "clear_all": "Clear all",
+      "popover_title": "Filters",
+      "sort": "Sort",
+      "order": "Order",
+      "status": "Status",
+      "ascending": "Asc",
+      "descending": "Desc",
+      "sort_name": "Name",
+      "sort_courses": "Courses",
+      "sort_students": "Students",
+      "sort_status": "Status"
+    },
+    "table": {
+      "name": "Name",
+      "courses": "Courses",
+      "students": "Students",
+      "status": "Status",
+      "description": "Description"
+    },
+    "sidebar": {
+      "newsfeed": "Newsfeed",
+      "courses": "Courses",
+      "people": "People",
+      "settings": "Settings"
+    },
+    "create_modal": {
+      "title": "Create Program",
+      "description": "Add a new certification or compliance program.",
+      "name_label": "Name",
+      "name_placeholder": "e.g. OSHA Safety Certification",
+      "description_label": "Description",
+      "description_placeholder": "What is this program about?",
+      "submit": "Create"
+    },
+    "card": {
+      "courses": "Courses",
+      "students": "Students"
+    },
+    "newsfeed": {
+      "heading": "Newsfeed",
+      "post": "New Post",
+      "post_placeholder": "What's on your mind?",
+      "make_a_post": "Make a Post",
+      "edit_post": "Edit Post",
+      "editor_placeholder": "Share an update with your program",
+      "cancel": "Cancel",
+      "post_submit": "Post",
+      "pinned": "Pinned",
+      "delete_feed_title": "Delete post",
+      "delete_feed_description": "Are you sure you want to delete this post?",
+      "confirm_delete": "Delete",
+      "user_avatar_alt": "User avatar",
+      "card": {
+        "pin": "Pin",
+        "unpin": "Unpin",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "comments": {
+        "comment": "comment",
+        "showing_of": "Showing {shown} of {total}",
+        "hide": "Hide comments",
+        "placeholder": "Add program comment",
+        "submit_aria": "Submit comment",
+        "delete": "Delete"
+      },
+      "empty_title": "No posts yet",
+      "empty_description": "Be the first to post something."
+    },
+    "courses": {
+      "add": "Add Course",
+      "add_modal_title": "Add Course to Program",
+      "select_course": "Select a course",
+      "select_courses": "Select courses",
+      "select_placeholder": "Choose a course…",
+      "search_placeholder": "Search courses",
+      "no_available_courses": "No available courses to add.",
+      "no_matching_courses": "No courses match your search.",
+      "no_matching_program_courses": "No program courses match your search.",
+      "pagination_status": "Page {page} of {totalPages}",
+      "empty_title": "No courses yet",
+      "empty_description": "Add courses to this program.",
+      "published_access_callout_title": "Student access",
+      "published_access_callout_description": "Students only have access to published courses. Courses can be in this program for your team while still unpublished while those stay hidden from students until you publish them."
+    },
+    "people": {
+      "invite": "Invite",
+      "invite_modal_title": "Invite Members",
+      "invite_modal_description": "Add people to this program by email.",
+      "email_label": "Email",
+      "role_label": "Role",
+      "add_another": "Add another",
+      "invite_submit": "Send Invites",
+      "empty_title": "No members yet",
+      "empty_description": "Invite people to join this program."
+    },
+    "lms": {
+      "empty_title": "No programs yet",
+      "empty_description": "You haven't been enrolled in any programs."
+    },
+    "settings": {
+      "general": "General",
+      "name_label": "Name",
+      "description_label": "Description",
+      "status_label": "Status",
+      "save": "Save Changes",
+      "danger_zone": "Danger Zone",
+      "delete": "Delete Program",
+      "delete_description": "Once deleted, this program and all its data cannot be recovered.",
+      "confirm_delete": "Are you sure you want to delete this program? This cannot be undone."
+    }
+  },
   "courses": {
     "heading": "Courses",
+    "page_subtitle": "Where lessons turn into courses and courses turn into enrollments.",
     "heading_button": "Create Course",
     "search_placeholder": "Find Course",
     "tag_filters": {
@@ -903,6 +1157,7 @@
       "empty_title": "No Courses Created",
       "empty_description": "Share your knowledge with the world by creating engaging courses for your students.",
       "context_menu": {
+        "open": "Open",
         "clone": "Clone",
         "share": "Share",
         "invite": "Invite",
@@ -910,6 +1165,7 @@
       },
       "error_message": "An error occurred.",
       "lessons_number": "lessons",
+      "exercise": "exercise",
       "students": "students",
       "published": "Published",
       "unpublished": "Unpublished",
@@ -1157,12 +1413,13 @@
             "video": {
               "title": "Video",
               "embed_link": "Embed Link",
+              "google_drive": "Google Drive",
               "upload": "Upload",
               "library": "Library",
               "button": "Add/Edit Video(s)",
               "remove_video": "Remove video",
               "empty_title": "No videos yet",
-              "empty_description": "Add videos from YouTube, upload, or your media library",
+              "empty_description": "Add videos from YouTube, Google Drive, embed links, upload, or your media library",
               "add_video": {
                 "title": "Add a Video",
                 "add_by": "Add By",
@@ -1191,7 +1448,12 @@
                 "cancel_upload": "Cancel Upload",
                 "upload_cancelled": "Upload cancelled by user",
                 "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
-                "max_files_and_size": "(up to {size} each)"
+                "max_files_and_size": "(up to {size} each)",
+                "google_drive_choose": "Choose from Google Drive",
+                "google_drive_opening": "Opening picker…",
+                "google_drive_hint": "Pick a video from your Google account. Anyone viewing the lesson needs access—set sharing in Drive to “Anyone with the link can view” (or your org’s equivalent).",
+                "google_drive_not_configured": "Google Drive import is not set up for this deployment. Add PUBLIC_GOOGLE_PICKER_CLIENT_ID and PUBLIC_GOOGLE_PICKER_API_KEY to your environment.",
+                "google_drive_error": "Could not open Google Drive. Check your browser allows pop-ups and that the Google Picker is configured correctly."
               }
             },
             "document": {
@@ -1351,7 +1613,9 @@
                 "matching": "Matching",
                 "ordering": "Ordering",
                 "hotspot": "Hotspot",
-                "link": "Links"
+                "link": "Links",
+                "word_bank": "Word bank",
+                "star": "Star rating"
               }
             },
             "view_mode": {
@@ -1504,6 +1768,23 @@
                   "out_of_range": "Outside tolerance"
                 }
               },
+              "star": {
+                "edit": {
+                  "correct_value_label": "Correct star value",
+                  "correct_value_info": "The star count learners must select to earn full points.",
+                  "max_stars_label": "Maximum stars",
+                  "max_stars_info": "How many stars learners see (1–10). Default is 5.",
+                  "correct_value_placeholder": "e.g. 3",
+                  "max_stars_placeholder": "e.g. 5"
+                },
+                "take": {
+                  "helper": "Select your rating.",
+                  "star_sr": "Star '{'n'}' of '{'max'}'"
+                },
+                "preview": {
+                  "correct_label": "Correct answer"
+                }
+              },
               "fill_blank": {
                 "edit": {
                   "accepted_answers_placeholder": "Accepted answers (comma separated)"
@@ -1516,6 +1797,32 @@
                 },
                 "review": {
                   "your_answer_label": "Submitted:"
+                }
+              },
+              "word_bank": {
+                "edit": {
+                  "template_label": "Sentence template",
+                  "template_placeholder": "Measurements to describe our data are called ___. The ___ is a function...",
+                  "template_helper": "Use three underscores (___) for each blank. Learners will see a word bank with correct answers and distractors.",
+                  "no_blanks_warning": "Add at least one ___ blank marker in your template.",
+                  "correct_answers_heading": "Correct answer for each blank",
+                  "blank_label": "Blank",
+                  "correct_placeholder": "Correct term or phrase",
+                  "distractors_heading": "Extra words (distractors)",
+                  "distractor_placeholder": "Wrong option",
+                  "add_distractor": "Add distractor"
+                },
+                "take": {
+                  "helper": "Click a word to place it in the first empty blank, or drag it into a blank. Click a filled blank to return the word to the bank.",
+                  "bank_heading": "Word bank",
+                  "clear_blank_sr": "Remove word from blank"
+                },
+                "preview": {
+                  "filled_label": "Expected answers in context"
+                },
+                "review": {
+                  "your_answer_label": "Your answers",
+                  "correct_label": "Correct answers"
                 }
               },
               "file_upload": {
@@ -2060,8 +2367,13 @@
   },
   "community": {
     "title": "Community",
+    "page_subtitle": "Questions and answers shared across your organization's courses.",
     "ask_button": "Ask Community",
+    "question": {
+      "page_subtitle": "Follow answers, vote, and join the discussion."
+    },
     "ask": {
+      "page_subtitle": "Start a thread the whole community can see, and tie it to a course if you want.",
       "go_back": "Go Back",
       "ask_the": "Ask the community",
       "publish": "Publish",
@@ -2092,6 +2404,7 @@
   },
   "audience": {
     "title": "Audience",
+    "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "export": "Export",
     "import_users": "Import Users",
     "no_audience": "No audience to manage",
@@ -2109,9 +2422,14 @@
     "select_all": "Select all",
     "selected_count": "{count} selected",
     "assign_courses": "Assign to Courses",
+    "user_analytics": {
+      "title": "Learner profile",
+      "page_subtitle": "Progress, grades, and activity across their courses."
+    },
     "import": {
+      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like.",
       "title": "Import Users",
-      "description": "Add students to your organization by entering their email addresses. Optionally assign them to courses and send invitation emails.",
+      "description": "Add students to your organization by entering their email addresses. Optionally assign them to courses or programs and send invitation emails.",
       "emails_label": "Email Addresses",
       "emails_placeholder": "Enter emails separated by commas, newlines, or semicolons\ne.g. alice@example.com, bob@example.com",
       "course_access": "Course Access",
@@ -2119,10 +2437,15 @@
       "all_courses": "All courses",
       "select_courses": "Select specific courses",
       "select_courses_placeholder": "Choose courses...",
+      "program_access": "Program Access",
+      "no_programs": "No program assignment",
+      "all_programs": "All programs",
+      "select_programs": "Select specific programs",
+      "select_programs_placeholder": "Choose programs...",
       "send_email": "Send invitation email to imported users",
       "submit": "Import Users",
       "back": "Back to Audience",
-      "snackbar_success": "{imported} new invites, {assigned} existing students given course access, {pendingInvitesRenewed} pending invites renewed ({emailsSent} emails sent)",
+      "snackbar_success": "{imported} new invites, {assigned} existing students given access, {pendingInvitesRenewed} pending invites renewed ({emailsSent} emails sent)",
       "snackbar_no_emails": "Please enter at least one email address",
       "snackbar_failed": "Failed to import users"
     },
@@ -2134,7 +2457,7 @@
       "send_email": "Send notification email",
       "submit": "Assign",
       "cancel": "Cancel",
-      "snackbar_success": "Assigned {assigned} users to courses ({alreadyEnrolled} already enrolled, {emailsSent} emails sent)",
+      "snackbar_success": "Assigned {assigned} users ({alreadyEnrolled} already had access, {emailsSent} emails sent)",
       "snackbar_no_courses": "Please select at least one course",
       "snackbar_failed": "Failed to assign courses"
     },
@@ -2255,6 +2578,7 @@
       "rotate_confirm": "Rotate this automation key?"
     },
     "mcp": {
+      "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime.",
       "usage": {
         "title": "Usage and limits",
         "description": "MCP is available on every plan, but usage is controlled with monthly automation credits and key limits.",
@@ -2288,11 +2612,35 @@
         "cursor_description": "Paste this into `~/.cursor/mcp.json` or your workspace MCP config.",
         "opencode_description": "Add this to `opencode.json` in your project root or `~/.config/opencode/opencode.json`."
       }
+    },
+    "api": {
+      "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
+      "keys": {
+        "title": "API keys",
+        "description": "These keys authenticate the current organization when calling the ClassroomIO public API.",
+        "generate": "Generate API key",
+        "secret_once": "This secret is shown once. Copy it and store it securely.",
+        "empty_title": "No API keys yet",
+        "empty_description": "Create the first org-scoped API key to use the ClassroomIO public API.",
+        "modal": {
+          "title": "Create API key",
+          "description": "Choose a name for this API key before it is generated.",
+          "name_label": "Key name",
+          "name_placeholder": "My API integration",
+          "cancel": "Cancel",
+          "save": "Create key"
+        }
+      },
+      "view_docs": "View Docs"
+    },
+    "zapier": {
+      "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
     }
   },
   "lms_navigation": {
     "home": "Home",
     "my_learning": "My Learning",
+    "programs": "Programs",
     "exercise": "Exercise",
     "community": "Community",
     "explore": "Explore",
@@ -2466,6 +2814,32 @@
         "toggle_error": "Failed to toggle pinned feed",
         "news_feed_fail": "Failed to fetch news feeds",
         "feed_fetch_error": "An error occured while fetching feed"
+      }
+    },
+    "program": {
+      "success": {
+        "comment_deleted": "Comment deleted",
+        "comment_added": "Comment added",
+        "feed_delete_success": "Post deleted successfully",
+        "post_created": "Post created successfully",
+        "post_updated": "Post updated successfully"
+      },
+      "error": {
+        "reaction_error": "An error occurred while reacting to the post",
+        "news_feed_fail": "Failed to fetch program newsfeed",
+        "post_create_failed": "Failed to create post",
+        "post_update_failed": "Failed to update post",
+        "code": {
+          "program_forbidden": "You must be a member of this program to perform this action.",
+          "program_member_check_failed": "We could not verify your program membership. Try again.",
+          "program_not_found": "This program could not be found.",
+          "program_create_failed": "Could not create the program.",
+          "program_update_failed": "Could not update the program.",
+          "program_delete_failed": "Could not delete the program.",
+          "program_member_not_found": "That program member could not be found.",
+          "program_newsfeed_not_found": "That post could not be found.",
+          "program_newsfeed_comment_not_found": "That comment could not be found."
+        }
       }
     },
     "attendance": {

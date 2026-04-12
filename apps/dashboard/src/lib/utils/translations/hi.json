@@ -364,6 +364,32 @@
       "created": "स्वचालन कुंजी बनाई गई. इसे अभी सहेजें क्योंकि पूरा रहस्य केवल एक बार दिखाया गया है।",
       "rotated": "स्वचालन कुंजी घुमाई गई. नया रहस्य अभी सहेजें क्योंकि यह दोबारा नहीं दिखाया जाएगा।",
       "revoked": "स्वचालन कुंजी निरस्त कर दी गई."
+    },
+    "program": {
+      "error": {
+        "reaction_error": "पोस्ट पर प्रतिक्रिया करते समय एक त्रुटि उत्पन्न हुई",
+        "news_feed_fail": "प्रोग्राम न्यूज़फ़ीड लाने में विफल",
+        "post_create_failed": "पोस्ट बनाने में विफल",
+        "post_update_failed": "पोस्ट अपडेट करने में विफल",
+        "code": {
+          "program_forbidden": "इस क्रिया को करने के लिए आपको इस कार्यक्रम का सदस्य होना चाहिए।",
+          "program_member_check_failed": "हम आपके कार्यक्रम की सदस्यता सत्यापित नहीं कर सके. पुनः प्रयास करें।",
+          "program_not_found": "यह प्रोग्राम नहीं मिल सका.",
+          "program_create_failed": "प्रोग्राम नहीं बनाया जा सका.",
+          "program_update_failed": "प्रोग्राम अद्यतन नहीं किया जा सका.",
+          "program_delete_failed": "प्रोग्राम को हटाया नहीं जा सका.",
+          "program_member_not_found": "वह प्रोग्राम सदस्य नहीं मिल सका.",
+          "program_newsfeed_not_found": "वह पोस्ट नहीं मिल सकी.",
+          "program_newsfeed_comment_not_found": "वह टिप्पणी नहीं मिल सकी."
+        }
+      },
+      "success": {
+        "comment_deleted": "टिप्पणी हटा दी गई",
+        "comment_added": "टिप्पणी जोड़ी गई",
+        "feed_delete_success": "पोस्ट सफलतापूर्वक हटा दी गई",
+        "post_created": "पोस्ट सफलतापूर्वक बनाई गई",
+        "post_updated": "पोस्ट सफलतापूर्वक अपडेट की गई"
+      }
     }
   },
   "explore": {
@@ -396,7 +422,8 @@
     "community": "समुदाय",
     "explore": "अन्वेषण करें",
     "help": "मदद",
-    "settings": "सेटिंग्स"
+    "settings": "सेटिंग्स",
+    "programs": "कार्यक्रम"
   },
   "upgrade": {
     "certificate": "प्रमाणपत्र बनाने की अपनी योजना को अपग्रेड करें",
@@ -517,12 +544,23 @@
       "all_courses": "सभी पाठ्यक्रम",
       "select_courses": "विशिष्ट पाठ्यक्रम चुनें",
       "select_courses_placeholder": "पाठ्यक्रम चुनें...",
+      "program_access": "प्रोग्राम एक्सेस",
+      "no_programs": "कोई प्रोग्राम असाइनमेंट नहीं",
+      "all_programs": "सभी प्रोग्राम",
+      "select_programs": "विशिष्ट प्रोग्राम चुनें",
+      "select_programs_placeholder": "प्रोग्राम चुनें...",
       "send_email": "आयातित उपयोगकर्ताओं को आमंत्रण ईमेल भेजें",
       "submit": "उपयोगकर्ता आयात करें",
       "back": "दर्शकों के पास वापस जाएँ",
       "snackbar_success": "{imported} नए निमंत्रण, {assigned} मौजूदा छात्रों को पाठ्यक्रम पहुंच, {pendingInvitesRenewed} लंबित निमंत्रण नवीकृत ({emailsSent} ईमेल भेजे गए)",
       "snackbar_no_emails": "कृपया कम से कम एक ईमेल पता दर्ज करें",
-      "snackbar_failed": "उपयोगकर्ताओं को आयात करने में विफल"
+      "snackbar_failed": "उपयोगकर्ताओं को आयात करने में विफल",
+      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like."
+    },
+    "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
+    "user_analytics": {
+      "title": "Learner profile",
+      "page_subtitle": "Progress, grades, and activity across their courses."
     }
   },
   "community": {
@@ -554,7 +592,12 @@
       "edit": "संपादित करें",
       "cancel": "रद्द करें",
       "give": "उत्तर दीजिए",
-      "comment": "टिप्पणी करें"
+      "comment": "टिप्पणी करें",
+      "page_subtitle": "Start a thread the whole community can see, and tie it to a course if you want."
+    },
+    "page_subtitle": "Questions and answers shared across your organization's courses.",
+    "question": {
+      "page_subtitle": "Follow answers, vote, and join the discussion."
     }
   },
   "course": {
@@ -1146,7 +1189,9 @@
                 "matching": "मिलान",
                 "ordering": "ऑर्डर देना",
                 "hotspot": "हॉटस्पॉट",
-                "link": "कड़ियाँ"
+                "link": "कड़ियाँ",
+                "word_bank": "वर्ड बैंक",
+                "star": "स्टार रेटिंग"
               },
               "select_type": "प्रकार चुनें",
               "question_type_auto_gradable": "Auto",
@@ -1374,6 +1419,49 @@
                 "correct_badge": "सही",
                 "not_set": "सेट नहीं",
                 "incorrect_badge": "गलत"
+              },
+              "word_bank": {
+                "review": {
+                  "your_answer_label": "आपके उत्तर",
+                  "correct_label": "सही उत्तर"
+                },
+                "preview": {
+                  "filled_label": "संदर्भ में अपेक्षित उत्तर"
+                },
+                "take": {
+                  "helper": "किसी शब्द को पहले रिक्त स्थान में रखने के लिए उस पर क्लिक करें, या उसे रिक्त स्थान में खींचें। बैंक को शब्द लौटाने के लिए भरे हुए रिक्त स्थान पर क्लिक करें।",
+                  "bank_heading": "वर्ड बैंक",
+                  "clear_blank_sr": "रिक्त स्थान से शब्द हटाएँ"
+                },
+                "edit": {
+                  "template_label": "वाक्य टेम्पलेट",
+                  "template_placeholder": "हमारे डेटा का वर्णन करने वाले मापों को ___ कहा जाता है। ___ एक फ़ंक्शन है...",
+                  "template_helper": "प्रत्येक रिक्त स्थान के लिए तीन अंडरस्कोर (___) का प्रयोग करें। शिक्षार्थियों को सही उत्तरों और ध्यान भटकाने वाली सामग्री वाला एक शब्द बैंक दिखाई देगा।",
+                  "no_blanks_warning": "अपने टेम्पलेट में कम से कम एक ___ रिक्त मार्कर जोड़ें।",
+                  "correct_answers_heading": "प्रत्येक रिक्त स्थान के लिए सही उत्तर",
+                  "blank_label": "रिक्त",
+                  "correct_placeholder": "सही शब्द या वाक्यांश",
+                  "distractors_heading": "अतिरिक्त शब्द (विचलित करने वाले)",
+                  "distractor_placeholder": "ग़लत विकल्प",
+                  "add_distractor": "ध्यान भटकाने वाला जोड़ें"
+                }
+              },
+              "star": {
+                "preview": {
+                  "correct_label": "सही उत्तर"
+                },
+                "take": {
+                  "helper": "अपनी रेटिंग चुनें.",
+                  "star_sr": "'{'अधिकतम'}' का तारा '{'n'}'"
+                },
+                "edit": {
+                  "correct_value_label": "सही तारा मान",
+                  "correct_value_info": "पूर्ण अंक अर्जित करने के लिए स्टार काउंट सीखने वालों को चयन करना होगा।",
+                  "max_stars_label": "अधिकतम सितारे",
+                  "max_stars_info": "शिक्षार्थी कितने तारे देखते हैं (1-10)। डिफ़ॉल्ट 5 है.",
+                  "correct_value_placeholder": "जैसे 3",
+                  "max_stars_placeholder": "जैसे 5"
+                }
               }
             },
             "settings": "सेटिंग्स",
@@ -1498,10 +1586,16 @@
                 "cancel_upload": "अपलोड रद्द करें",
                 "upload_cancelled": "उपयोगकर्ता द्वारा अपलोड रद्द कर दिया गया",
                 "max_files": "{गिनती, बहुवचन, एक {आप # फ़ाइल अपलोड कर सकते हैं} अन्य {आप # फ़ाइलें अपलोड कर सकते हैं}}",
-                "max_files_and_size": "(प्रत्येक {आकार} तक)"
+                "max_files_and_size": "(प्रत्येक {आकार} तक)",
+                "google_drive_choose": "Google Drive से चुनें",
+                "google_drive_opening": "पिकर खुल रहा है...",
+                "google_drive_hint": "अपने Google खाते से एक वीडियो चुनें. पाठ को देखने वाले किसी भी व्यक्ति को एक्सेस की आवश्यकता है - ड्राइव में साझाकरण को \"लिंक वाला कोई भी व्यक्ति देख सकता है\" (या आपके संगठन के समकक्ष) पर सेट करें।",
+                "google_drive_not_configured": "इस परिनियोजन के लिए Google ड्राइव आयात सेट नहीं किया गया है। अपने परिवेश में PUBLIC_GOOGLE_PICKER_CLIENT_ID और PUBLIC_GOOGLE_PICKER_API_KEY जोड़ें।",
+                "google_drive_error": "Google Drive नहीं खुल सका. जांचें कि आपका ब्राउज़र पॉप-अप की अनुमति देता है और Google पिकर सही ढंग से कॉन्फ़िगर किया गया है।"
               },
               "empty_title": "अभी तक कोई वीडियो नहीं",
-              "empty_description": "YouTube से वीडियो जोड़ें, अपलोड करें, या अपनी मीडिया लाइब्रेरी से"
+              "empty_description": "YouTube से वीडियो जोड़ें, अपलोड करें, या अपनी मीडिया लाइब्रेरी से",
+              "google_drive": "गूगल ड्राइव"
             },
             "slide": {
               "title": "फिसल पट्टी",
@@ -1697,6 +1791,7 @@
       "empty_description": "अपने छात्रों के लिए आकर्षक पाठ्यक्रम बनाकर अपना ज्ञान दुनिया के साथ साझा करें।",
       "error_message": "एक त्रुटि पाई गई।",
       "lessons_number": "सबक",
+      "exercise": "अभ्यास",
       "students": "छात्र",
       "published": "प्रकाशित",
       "unpublished": "अप्रकाशित",
@@ -1716,7 +1811,8 @@
         "clone": "क्लोन",
         "share": "साझा करें",
         "invite": "आमंत्रित करें",
-        "delete": "हटाएँ"
+        "delete": "हटाएँ",
+        "open": "खुला"
       }
     },
     "course_filter": {
@@ -1741,7 +1837,8 @@
       "descending": "Desc",
       "tags": "टैग",
       "empty_tags": "कोई टैग उपलब्ध नहीं है"
-    }
+    },
+    "page_subtitle": "Where lessons turn into courses and courses turn into enrollments."
   },
   "ai": {
     "help_me": "मुझे लिखने में मदद करें",
@@ -1768,8 +1865,13 @@
     "lms_dashboard_hero": "आज का दिन आपको आपके सीखने के लक्ष्यों के करीब लाने का एक और दिन है। हार मत मानो, जितना अधिक सीखोगे उतना बेहतर हो जाओगे।",
     "lessons_completed": "पाठ पूरा हुआ",
     "no_courses_started": "कोई पाठ्यक्रम शुरू नहीं हुआ",
-    "revenue": "राजस्व",
-    "revenue_description": "पाठ्यक्रम की बिक्री से प्राप्त अनुमानित राजस्व",
+    "certificates_earned": "Certificates earned",
+    "certificates_earned_description": "Total certificates issued to students in your organization",
+    "certification_rate": "certification rate",
+    "recent_certifications": "Recent certifications",
+    "no_certifications_yet": "No certificates earned yet",
+    "no_certifications_yet_description": "When students complete a course and earn a certificate, they will appear here",
+    "view_courses": "View courses",
     "no_of_courses": "पाठ्यक्रमों की संख्या",
     "no_courses_description": "इस संगठन के अंतर्गत बनाए गए पाठ्यक्रम",
     "total_students": "कुल छात्र",
@@ -1819,7 +1921,8 @@
           "banner_text": "बैनर पाठ",
           "banner_text_label": "बैनर टेक्स्ट अपडेट करें",
           "banner_text_placeholder": "यहां पाठ लिखें"
-        }
+        },
+        "page_subtitle": "Choose which tabs, banners, course tools, and extras learners see."
       },
       "domains": {
         "title": "कस्टम डोमेन",
@@ -1853,7 +1956,8 @@
         "pending_dns_description": "नीचे DNS रिकॉर्ड जोड़ें, फिर सत्यापन ताज़ा करें।",
         "pending_verification_description": "डीएनएस रिकॉर्ड पाए गए. एसएसएल जारी करना या सत्यापन अभी भी जारी है।",
         "reconnect_description": "इस डोमेन को नए क्लाउडफ़ेयर सेटअप फ़्लो के माध्यम से फिर से कनेक्ट करने की आवश्यकता है।",
-        "error_description": "यह कस्टम डोमेन मौजूद है, लेकिन सत्यापन अभी तक पूरा नहीं हुआ है।"
+        "error_description": "यह कस्टम डोमेन मौजूद है, लेकिन सत्यापन अभी तक पूरा नहीं हुआ है।",
+        "page_subtitle": "Run your public learning site on a web address you own."
       }
     },
     "quiz": {
@@ -1977,6 +2081,9 @@
   },
   "org_navigation": {
     "platform": "मंच",
+    "home": "होम",
+    "content": "सामग्री",
+    "people": "लोग",
     "dashboard": "डैशबोर्ड",
     "courses": "पाठ्यक्रम",
     "community": "समुदाय",
@@ -1989,7 +2096,8 @@
     "unlock": "असीमित सुविधाएँ अनलॉक करें और हमारे भविष्य में निवेश करें",
     "upgrade": "अभी अपग्रेड करें",
     "tags": "टैग",
-    "automation": "स्वचालन"
+    "automation": "स्वचालन",
+    "programs": "कार्यक्रम"
   },
   "media_manager": {
     "page_title": "मीडिया मैनेजर - क्लासरूमआईओ",
@@ -2061,7 +2169,8 @@
       "upload": "अपलोड करें",
       "youtube": "यूट्यूब",
       "generic": "सामान्य",
-      "external_url": "बाहरी यूआरएल"
+      "external_url": "बाहरी यूआरएल",
+      "google_drive": "गूगल ड्राइव"
     },
     "kind": {
       "video": "वीडियो",
@@ -2097,7 +2206,8 @@
     "common": {
       "not_available": "एन/ए"
     },
-    "empty_description": "संपत्ति इस संगठन में मौजूद नहीं है या उपलब्ध नहीं है."
+    "empty_description": "संपत्ति इस संगठन में मौजूद नहीं है या उपलब्ध नहीं है.",
+    "page_subtitle": "Keep files, videos, and links for your courses in one library."
   },
   "settings": {
     "heading": "सेटिंग्स",
@@ -2107,7 +2217,8 @@
       "active": "आपके पास कोई सक्रिय बिलिंग नहीं है",
       "provider": "हम आपकी बिलिंग प्रबंधित करने में सहायता के लिए पोलर का उपयोग करते हैं",
       "open_billing": "बिलिंग खोलें",
-      "error": "बिलिंग खोलते समय एक त्रुटि उत्पन्न हुई"
+      "error": "बिलिंग खोलते समय एक त्रुटि उत्पन्न हुई",
+      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO."
     },
     "integrations": {
       "heading": "टेलीग्राम",
@@ -2117,7 +2228,8 @@
       "step_chatId": "चरण 2: बॉट द्वारा आपको दी गई चैट आईडी दर्ज करें।",
       "connect_button": "कनेक्ट करें",
       "success_message": "एकीकरण सफल",
-      "disconnect": "डिस्कनेक्ट करें"
+      "disconnect": "डिस्कनेक्ट करें",
+      "page_subtitle": "Connect Telegram to get notified when important things happen."
     },
     "landing_page": {
       "heading": "लैंडिंग पृष्ठ",
@@ -2212,6 +2324,99 @@
         "title": "पृष्ठभूमि छवि",
         "show_background": "पृष्ठभूमि दिखाएँ",
         "hide_background": "पृष्ठभूमि छिपाएँ"
+      },
+      "page_subtitle": "Shape the marketing page people see before they sign up or enroll.",
+      "editor": {
+        "save": "सहेजें",
+        "close": "बंद करें",
+        "page_builder": "पेज बिल्डर",
+        "footer": {
+          "text": "पादलेख पाठ",
+          "add": "फ़ुटर लिंक जोड़ें",
+          "default_label": "नया लिंक",
+          "link_label": "लिंक लेबल",
+          "link_href": "लिंक यूआरएल",
+          "remove": "फ़ुटर लिंक हटाएँ"
+        },
+        "embed": {
+          "toggle": "एम्बेड अनुभाग दिखाएँ",
+          "title": "अनुभाग शीर्षक",
+          "title_placeholder": "अनुभाग शीर्षक",
+          "description": "विवरण",
+          "description_placeholder": "वैकल्पिक विवरण",
+          "code": "कोड एंबेड करें",
+          "code_placeholder": "यहां एंबेड कोड चिपकाएं",
+          "code_description": "पूर्ण एंबेड स्निपेट या आईफ़्रेम कोड चिपकाएँ।",
+          "secondary_label": "सेकेंडरी बटन लेबल",
+          "secondary_href": "द्वितीयक बटन लिंक"
+        },
+        "callout": {
+          "toggle": "कॉलआउट अनुभाग दिखाएँ",
+          "heading": "शीर्षक",
+          "heading_default": "सीखना शुरू करने के लिए तैयार हैं?",
+          "heading_placeholder": "एक शीर्षक दर्ज करें",
+          "description": "विवरण",
+          "description_placeholder": "संक्षिप्त विवरण जोड़ें या खाली छोड़ दें",
+          "action_label": "बटन लेबल",
+          "action_label_default": "आरंभ करें",
+          "action_label_placeholder": "बटन पाठ",
+          "action_href": "बटन लिंक",
+          "action_href_placeholder": "https://..."
+        },
+        "navigation": {
+          "add": "नेविगेशन लिंक जोड़ें",
+          "default_label": "नया लिंक",
+          "link_label": "लिंक लेबल",
+          "link_href": "लिंक यूआरएल",
+          "remove": "नेविगेशन लिंक हटाएँ"
+        },
+        "hero": {
+          "heading": "शीर्षक",
+          "subheading": "उपशीर्षक",
+          "primary_label": "प्राथमिक बटन लेबल",
+          "primary_href": "प्राथमिक बटन लिंक",
+          "secondary_toggle": "द्वितीयक क्रिया दिखाएँ",
+          "secondary_label": "सेकेंडरी बटन लेबल",
+          "secondary_href": "द्वितीयक बटन लिंक",
+          "image": "हीरो छवि",
+          "upload": "छवि अपलोड करें",
+          "clear": "साफ़ छवि"
+        },
+        "sections": {
+          "hero": "हीरो",
+          "hero_desc": "शीर्षक, एक्शन बटन और नायक छवि।",
+          "navigation": "नेविगेशन",
+          "navigation_desc": "लैंडिंग पृष्ठ शीर्षलेख में लिंक दिखाए गए हैं.",
+          "callout": "कॉलआउट",
+          "callout_desc": "पाठ्यक्रमों के बाद दिखाया गया वैकल्पिक प्रचार बैनर।",
+          "embed": "एम्बेड करें",
+          "embed_desc": "पाठ्यक्रमों के बाद वैकल्पिक आईफ्रेम अनुभाग दिखाया गया है।",
+          "footer": "फ़ुटर",
+          "footer_desc": "पादलेख पाठ और लिंक."
+        }
+      },
+      "content": {
+        "heading": "सामग्री संपादित करें",
+        "description": "प्रत्येक थीम में दिखाई देने वाले हीरो, नेविगेशन, एंबेड और फ़ूटर को अपडेट करें।",
+        "edit": "सामग्री संपादित करें"
+      },
+      "theme": {
+        "heading": "एक थीम चुनें",
+        "description": "वह दृश्य शैली चुनें जो विज़िटर आपके सार्वजनिक लैंडिंग पृष्ठ पर देखते हैं।",
+        "cards": {
+          "classic": {
+            "title": "क्लासिक",
+            "description": "संतुलित पदानुक्रम के साथ पारंपरिक लेआउट"
+          },
+          "bold": {
+            "title": "साहसी",
+            "description": "उच्च कंट्रास्ट, संपादकीय और प्रभावशाली"
+          },
+          "minimal": {
+            "title": "न्यूनतम",
+            "description": "स्वच्छ, उज्ज्वल और पाठ्यक्रम-केंद्रित"
+          }
+        }
       }
     },
     "organization": {
@@ -2244,7 +2449,8 @@
           "custom_theme": "कस्टम थीम",
           "add_theme": "थीम जोड़ें"
         }
-      }
+      },
+      "page_subtitle": "Set the name, logo, and theme learners see for this organization."
     },
     "profile": {
       "heading": "प्रोफाइल",
@@ -2266,7 +2472,8 @@
         "file_size": "अधिकतम फ़ाइल आकार:",
         "accepted": "स्वीकृत:",
         "validation_error": "फ़ाइल का आकार अधिकतम सीमा से अधिक है:"
-      }
+      },
+      "page_subtitle": "Your name, email, and how you appear wherever you work in ClassroomIO."
     },
     "tabs": {
       "profile_tab": "प्रोफाइल",
@@ -2386,7 +2593,8 @@
         "general": "सामान्य",
         "sso": "एसएसओ",
         "token_auth": "टोकन प्रामाणिक"
-      }
+      },
+      "page_subtitle": "Control sign-up, login, SSO, and token-based access for this org."
     },
     "token_auth": {
       "heading": "टोकन प्रामाणिक",
@@ -2407,6 +2615,9 @@
       "integration_description": "गुप्त के साथ एक JWT पर हस्ताक्षर करें और उपयोगकर्ताओं को टोकन-एक्सचेंज URL पर रीडायरेक्ट करें।",
       "no_config": "कोई टोकन प्रमाणीकरण कॉन्फ़िगर नहीं किया गया. आरंभ करने के लिए एक हस्ताक्षर रहस्य उत्पन्न करें।",
       "actions_menu": "टोकन प्रमाणीकरण क्रियाएँ"
+    },
+    "teams": {
+      "page_subtitle": "Invite teammates and control who helps run this organization."
     }
   },
   "profileMenu": {
@@ -2457,7 +2668,8 @@
   "app": {
     "search": {
       "placeholder": "खोजें"
-    }
+    },
+    "cancel": "रद्द करें"
   },
   "welcome_modal": {
     "we_at": "हम पर",
@@ -2611,7 +2823,8 @@
     },
     "common": {
       "not_available": "एन/ए"
-    }
+    },
+    "page_subtitle": "Organize courses with labels so filters and lists stay easy to scan."
   },
   "invite": {
     "organization": {
@@ -2671,7 +2884,28 @@
         "rate_limits_title": "दर सीमा",
         "rate_limits_description": "प्रति मिनट पढ़ने/लिखने/प्रकाशित करने के अनुरोधों की अनुमति है।",
         "used_label": "प्रयुक्त:"
-      }
+      },
+      "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime."
+    },
+    "api": {
+      "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
+      "keys": {
+        "title": "API keys",
+        "description": "These keys authenticate the current organization when calling the ClassroomIO public API.",
+        "generate": "Generate API key",
+        "secret_once": "This secret is shown once. Copy it and store it securely.",
+        "empty_title": "No API keys yet",
+        "empty_description": "Create the first org-scoped API key to use the ClassroomIO public API.",
+        "modal": {
+          "title": "Create API key",
+          "description": "Choose a name for this API key before it is generated.",
+          "name_label": "Key name",
+          "name_placeholder": "My API integration",
+          "cancel": "Cancel",
+          "save": "Create key"
+        }
+      },
+      "view_docs": "View Docs"
     },
     "keys": {
       "active": "सक्रिय",
@@ -2705,6 +2939,145 @@
     "permissions": {
       "disabled_title": "केवल पढ़ने योग्य पहुंच",
       "disabled_description": "केवल संगठन व्यवस्थापक ही स्वचालन कुंजियाँ बना सकते हैं, घुमा सकते हैं या निरस्त कर सकते हैं। शिक्षक यहां सेटअप निर्देशों की समीक्षा कर सकते हैं।"
+    },
+    "zapier": {
+      "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
+    }
+  },
+  "programs": {
+    "heading": "कार्यक्रम",
+    "page_title": "कार्यक्रम",
+    "create": "नया कार्यक्रम",
+    "create_success": "प्रोग्राम बनाया गया",
+    "update_success": "कार्यक्रम अद्यतन किया गया",
+    "delete_success": "प्रोग्राम हटा दिया गया",
+    "members_added": "सदस्य जोड़े गए",
+    "member_removed": "सदस्य हटा दिया गया",
+    "course_added": "पाठ्यक्रम जोड़ा गया",
+    "course_removed": "पाठ्यक्रम हटा दिया गया",
+    "empty_title": "अभी तक कोई कार्यक्रम नहीं",
+    "empty_description": "अपना पहला प्रमाणन या अनुपालन कार्यक्रम बनाएं।",
+    "settings": {
+      "general": "सामान्य",
+      "name_label": "नाम",
+      "description_label": "विवरण",
+      "status_label": "स्थिति",
+      "save": "परिवर्तन सहेजें",
+      "danger_zone": "ख़तरे का क्षेत्र",
+      "delete": "प्रोग्राम हटाएँ",
+      "delete_description": "एक बार डिलीट होने के बाद, यह प्रोग्राम और इसका सारा डेटा पुनर्प्राप्त नहीं किया जा सकता है।",
+      "confirm_delete": "क्या आप वाकई इस प्रोग्राम को हटाना चाहते हैं? इसे असंपादित नहीं किया जा सकता है।"
+    },
+    "lms": {
+      "empty_title": "अभी तक कोई कार्यक्रम नहीं",
+      "empty_description": "आपको किसी भी कार्यक्रम में नामांकित नहीं किया गया है."
+    },
+    "people": {
+      "invite": "आमंत्रित करें",
+      "invite_modal_title": "सदस्यों को आमंत्रित करें",
+      "invite_modal_description": "लोगों को ईमेल द्वारा इस कार्यक्रम में जोड़ें.",
+      "email_label": "ईमेल",
+      "role_label": "भूमिका",
+      "add_another": "दूसरा जोड़ें",
+      "invite_submit": "निमंत्रण भेजें",
+      "empty_title": "अभी तक कोई सदस्य नहीं",
+      "empty_description": "लोगों को इस कार्यक्रम में शामिल होने के लिए आमंत्रित करें."
+    },
+    "courses": {
+      "add": "पाठ्यक्रम जोड़ें",
+      "add_modal_title": "कार्यक्रम में पाठ्यक्रम जोड़ें",
+      "select_course": "एक पाठ्यक्रम चुनें",
+      "select_placeholder": "एक कोर्स चुनें...",
+      "empty_title": "अभी तक कोई पाठ्यक्रम नहीं",
+      "empty_description": "इस कार्यक्रम में पाठ्यक्रम जोड़ें.",
+      "select_courses": "पाठ्यक्रम चुनें",
+      "search_placeholder": "पाठ्यक्रम खोजें",
+      "no_available_courses": "जोड़ने के लिए कोई पाठ्यक्रम उपलब्ध नहीं है.",
+      "no_matching_courses": "कोई भी पाठ्यक्रम आपकी खोज से मेल नहीं खाता.",
+      "no_matching_program_courses": "कोई भी प्रोग्राम पाठ्यक्रम आपकी खोज से मेल नहीं खाता।",
+      "pagination_status": "{totalPages} का पेज {page}",
+      "published_access_callout_title": "छात्र प्रवेश",
+      "published_access_callout_description": "छात्रों को केवल प्रकाशित पाठ्यक्रमों तक ही पहुंच है। पाठ्यक्रम अप्रकाशित रहते हुए भी आपकी टीम के लिए इस कार्यक्रम में हो सकते हैं, जबकि जब तक आप उन्हें प्रकाशित नहीं करते तब तक वे छात्रों से छिपे रहते हैं।"
+    },
+    "newsfeed": {
+      "post": "नई पोस्ट",
+      "post_placeholder": "आपके मन में क्या है?",
+      "post_submit": "पोस्ट",
+      "empty_title": "अभी तक कोई पोस्ट नहीं",
+      "empty_description": "कुछ पोस्ट करने वाले पहले व्यक्ति बनें.",
+      "heading": "न्यूज़फीड",
+      "make_a_post": "एक पोस्ट बनाएं",
+      "edit_post": "पोस्ट संपादित करें",
+      "editor_placeholder": "अपने प्रोग्राम के साथ एक अपडेट साझा करें",
+      "cancel": "रद्द करें",
+      "pinned": "पिन किया गया",
+      "delete_feed_title": "पोस्ट हटाएं",
+      "delete_feed_description": "क्या आप वाकई इस पोस्ट को हटाना चाहते हैं?",
+      "confirm_delete": "हटाएँ",
+      "user_avatar_alt": "उपयोगकर्ता अवतार",
+      "comments": {
+        "comment": "टिप्पणी",
+        "showing_of": "{कुल} में से {दिखाया गया}",
+        "hide": "टिप्पणियाँ छिपाएँ",
+        "placeholder": "प्रोग्राम टिप्पणी जोड़ें",
+        "submit_aria": "टिप्पणी सबमिट करें",
+        "delete": "हटाएँ"
+      },
+      "card": {
+        "pin": "पिन",
+        "unpin": "अनपिन करें",
+        "edit": "संपादित करें",
+        "delete": "हटाएँ"
+      }
+    },
+    "create_modal": {
+      "title": "प्रोग्राम बनाएं",
+      "description": "एक नया प्रमाणन या अनुपालन कार्यक्रम जोड़ें.",
+      "name_label": "नाम",
+      "name_placeholder": "जैसे OSHA सुरक्षा प्रमाणन",
+      "description_label": "विवरण",
+      "description_placeholder": "यह कार्यक्रम किस बारे में है?",
+      "submit": "बनाएँ"
+    },
+    "sidebar": {
+      "newsfeed": "न्यूज़फीड",
+      "courses": "पाठ्यक्रम",
+      "people": "लोग",
+      "settings": "सेटिंग्स"
+    },
+    "status": {
+      "active": "सक्रिय",
+      "inactive": "निष्क्रिय",
+      "archived": "संग्रहीत"
+    },
+    "description": "लोगों के एक समूह को एक कक्षा जैसे कई पाठ्यक्रमों तक पहुंच प्रदान करें",
+    "search_placeholder": "प्रोग्राम खोजें",
+    "multiple_added": "पाठ्यक्रम जोड़े गए",
+    "no_matching_programs": "कोई भी प्रोग्राम आपके फ़िल्टर से मेल नहीं खाता.",
+    "card": {
+      "courses": "पाठ्यक्रम",
+      "students": "छात्र"
+    },
+    "table": {
+      "name": "नाम",
+      "courses": "पाठ्यक्रम",
+      "students": "छात्र",
+      "status": "स्थिति",
+      "description": "विवरण"
+    },
+    "filters": {
+      "filter": "फ़िल्टर करें",
+      "clear_all": "सब साफ़ करें",
+      "popover_title": "फिल्टर",
+      "sort": "क्रमबद्ध करें",
+      "order": "आदेश",
+      "status": "स्थिति",
+      "ascending": "ए.एस.सी",
+      "descending": "वर्णन",
+      "sort_name": "नाम",
+      "sort_courses": "पाठ्यक्रम",
+      "sort_students": "छात्र",
+      "sort_status": "स्थिति"
     }
   }
 }

@@ -10,7 +10,9 @@ export const QUESTION_TYPE_KEY = {
   MATCHING: 'MATCHING',
   ORDERING: 'ORDERING',
   HOTSPOT: 'HOTSPOT',
-  LINK: 'LINK'
+  LINK: 'LINK',
+  WORD_BANK: 'WORD_BANK',
+  STAR: 'STAR'
 } as const;
 
 export type QuestionTypeKey = (typeof QUESTION_TYPE_KEY)[keyof typeof QUESTION_TYPE_KEY];

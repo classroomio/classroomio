@@ -3,6 +3,7 @@
   import UploadVideo from './upload-video.svelte';
   import EmbedLink from './embed-link.svelte';
   import LibraryVideo from './library-video.svelte';
+  import GoogleDriveVideo from './google-drive-video.svelte';
   import * as CONSTANTS from './constants';
   import { t } from '$lib/utils/functions/translations';
   import { isFreePlan } from '$lib/utils/store/org';
@@ -56,6 +57,9 @@
       </UnderlineTabs.Content>
       <UnderlineTabs.Content value="4" class="mt-3">
         <LibraryVideo {lessonId} />
+      </UnderlineTabs.Content>
+      <UnderlineTabs.Content value="5" class="mt-3">
+        <GoogleDriveVideo {lessonId} />
       </UnderlineTabs.Content>
     </UnderlineTabs.Root>
   </Dialog.Content>

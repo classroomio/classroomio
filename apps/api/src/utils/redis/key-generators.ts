@@ -3,7 +3,16 @@
  * These functions help create consistent and secure rate limit keys
  */
 
+import { getConnInfo } from '@hono/node-server/conninfo';
 import type { Context } from 'hono';
+
+function normalizeIp(value: string | null | undefined): string | null {
+  const ip = value?.trim();
+
+  if (!ip) return null;
+
+  return ip.startsWith('::ffff:') ? ip.slice('::ffff:'.length) : ip;
+}
 
 /**
  * Extract real client IP address considering various proxy headers
@@ -15,9 +24,11 @@ export const extractClientIp = (c: Context): string => {
   // 3. X-Forwarded-For (standard, but can be spoofed)
   // 4. Connection IP (least reliable)
 
-  const cfConnectingIp = c.req.header('cf-connecting-ip');
-  const realIp = c.req.header('x-real-ip');
+  const cfConnectingIp = normalizeIp(c.req.header('cf-connecting-ip'));
+  const realIp = normalizeIp(c.req.header('x-real-ip'));
   const forwardedFor = c.req.header('x-forwarded-for');
+  const connInfo = getConnInfo(c);
+  const remoteAddress = normalizeIp(connInfo.remote.address);
 
   if (cfConnectingIp) {
     return cfConnectingIp;
@@ -30,7 +41,11 @@ export const extractClientIp = (c: Context): string => {
   if (forwardedFor) {
     // x-forwarded-for can contain multiple IPs: "client, proxy1, proxy2"
     // The first IP is usually the original client
-    return forwardedFor.split(',')[0].trim();
+    return normalizeIp(forwardedFor.split(',')[0]) ?? 'unknown';
+  }
+
+  if (remoteAddress) {
+    return remoteAddress;
   }
 
   // Fallback - this might be a proxy IP

@@ -11,6 +11,7 @@
   import type { Course } from '$features/course/utils/types';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
+  import { BorderBeam } from '@cio/ui/custom/animation/border-beam';
 
   interface Props {
     className?: string;
@@ -81,14 +82,10 @@
   <div
     class="sticky bottom-0 flex h-fit w-full items-center justify-center bg-gray-50 transition duration-300 lg:hidden dark:bg-neutral-800"
   >
-    <aside
-      class="price-container sticky lg:hidden {editMode
-        ? 'lg:bottom-2'
-        : 'lg:top-10'} m-h-fit z-0 bg-gray-50 dark:bg-neutral-800 {className}"
-    >
+    <aside class="sticky z-0 w-[90%] max-w-[405px] bg-gray-50 lg:hidden dark:bg-neutral-800 {className}">
       <div class="flex items-center justify-center gap-3 px-3 py-3">
         <!-- Pricing -->
-        <div class=" text-center">
+        <div class="text-center">
           {#if courseData?.metadata?.allowNewStudent}
             <p class="flex items-center gap-1 text-sm font-medium dark:text-white">
               {formatter?.format(calculatedCost) || calculatedCost}
@@ -126,24 +123,26 @@
   </div>
 {:else}
   <aside
-    class="price-container border border-gray-200 lg:sticky {editMode
+    class="relative w-[90%] max-w-[405px] overflow-hidden rounded-xl border border-gray-200 shadow-lg lg:sticky lg:w-[350px] lg:min-w-[250px] xl:w-[405px] xl:min-w-[330px] {editMode
       ? 'lg:top-0'
-      : 'lg:top-10'} m-h-fit dark:bg-neutral-800 {className}"
+      : 'lg:top-10'} h-fit dark:border-neutral-700 dark:bg-neutral-800 {className}"
   >
-    <div class="p-2 lg:p-10">
+    <BorderBeam size={150} duration={12} colorFrom="#3b82f6" colorTo="#8b5cf6" borderWidth={1.5} />
+
+    <div class="p-4 lg:p-10">
       <!-- Pricing -->
       <div class="mb-6">
         {#if courseData?.metadata?.allowNewStudent}
-          <p class="text-lg font-medium dark:text-white">
+          <p class="text-2xl font-bold dark:text-white">
             {formatter?.format(calculatedCost) || calculatedCost}
             {#if isFree}
-              <span class="text-sm">
+              <span class="text-base font-normal">
                 ({$t('course.navItem.landing_page.pricing_section.free')})
               </span>
             {/if}
           </p>
           {#if courseData?.metadata?.showDiscount}
-            <p class="text-sm font-light text-gray-500 dark:text-white">
+            <p class="mt-1 text-sm font-light text-gray-500 dark:text-white">
               {discount}% {$t('course.navItem.landing_page.pricing_section.discount')}.
               <span class="line-through">
                 {formatter?.format(courseData?.cost || 0) || courseData.cost}
@@ -159,7 +158,11 @@
 
       <!-- Call To Action Buttons -->
       <div class="flex w-full flex-col items-center">
-        <Button class="mb-3 w-full" onclick={handleJoinCourse} disabled={!courseData.metadata?.allowNewStudent}>
+        <Button
+          class="mb-3 h-12 w-full text-base font-semibold"
+          onclick={handleJoinCourse}
+          disabled={!courseData.metadata?.allowNewStudent}
+        >
           {isFree
             ? $t('course.navItem.landing_page.pricing_section.enroll')
             : $t('course.navItem.landing_page.pricing_section.buy')}
@@ -174,80 +177,11 @@
 
     <!-- Gift Container -->
     {#if courseData?.metadata?.reward?.show}
-      <div class="flex flex-col items-center border-t border-b border-gray-300 p-10">
-        <HTMLRender
-          ><SafeHtmlContent content={get(courseData, 'metadata.reward.description', '') as string} /></HTMLRender
-        >
+      <div class="flex flex-col items-center border-t border-gray-200 p-10 dark:border-neutral-700">
+        <HTMLRender>
+          <SafeHtmlContent content={get(courseData, 'metadata.reward.description', '') as string} />
+        </HTMLRender>
       </div>
     {/if}
   </aside>
 {/if}
-
-<style lang="scss">
-  .banner {
-    background-color: #040f2d;
-    min-height: 472px;
-  }
-
-  .author {
-    color: #7888b7;
-  }
-
-  .banner-image {
-    max-width: 559px;
-  }
-
-  .backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-
-  .active {
-    position: relative;
-    display: inline-block;
-  }
-
-  .active::after {
-    position: absolute;
-    content: '';
-    width: 100%;
-    height: 3px;
-    background-color: var(--main-primary-color);
-    display: block;
-    bottom: -14px;
-    left: 0px;
-  }
-
-  .price-container {
-    width: 90%;
-    max-width: 405px;
-    height: fit-content;
-  }
-
-  @media screen and (min-width: 768px) {
-    .price-container {
-      width: 50%;
-      height: fit-content;
-    }
-  }
-  @media screen and (min-width: 1024px) {
-    .price-container {
-      width: 350px;
-      min-width: 250px;
-    }
-  }
-  @media screen and (min-width: 1280px) {
-    .price-container {
-      width: 405px;
-      min-width: 330px;
-      height: fit-content;
-    }
-  }
-  .course-content {
-    max-width: 608px;
-  }
-
-  :global(.list ul li) {
-    margin-left: 1rem;
-    list-style-type: disc;
-  }
-</style>

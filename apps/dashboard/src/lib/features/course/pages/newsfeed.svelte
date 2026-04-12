@@ -15,7 +15,8 @@
   import type { AccountOrg } from '$features/app/types';
   import Empty from '@cio/ui/custom/empty/empty.svelte';
   import { BookIcon } from '@lucide/svelte';
-  import type { TNewsfeedReactionUpdate } from '@cio/utils/validation/newsfeed';
+  import { ROLE } from '@cio/utils/constants';
+  import { buildNextNewsfeedReaction } from '@cio/ui/custom/newsfeed-reactions';
 
   interface Props {
     courseId: string;
@@ -48,27 +49,12 @@
   };
 
   const addNewReaction = async (reactionType: string, feedId: string, authorId: string) => {
-    if (isReactingByFeedId[feedId]) return;
+    if (!authorId || isReactingByFeedId[feedId]) return;
 
     const reactedFeed = newsfeedApi.feeds.find((feed) => feed.id === feedId);
     if (!reactedFeed) return;
 
-    const reaction = reactedFeed.reaction;
-    let reactedAuthorIds: string[] = reaction?.[reactionType] || [];
-
-    if (reactedAuthorIds.includes(authorId)) {
-      reactedAuthorIds = reactedAuthorIds.filter((reactionAuthorId) => reactionAuthorId !== authorId);
-    } else {
-      reactedAuthorIds = [...reactedAuthorIds, authorId];
-    }
-
-    const updatedReaction: TNewsfeedReactionUpdate['reaction'] = {
-      clap: reaction?.clap || [],
-      smile: reaction?.smile || [],
-      thumbsup: reaction?.thumbsup || [],
-      thumbsdown: reaction?.thumbsdown || [],
-      [reactionType]: reactedAuthorIds
-    };
+    const updatedReaction = buildNextNewsfeedReaction(reactedFeed.reaction, reactionType, authorId);
 
     isReactingByFeedId = { ...isReactingByFeedId, [feedId]: true };
 
@@ -99,11 +85,11 @@
       return snackbar.error('snackbar.course.error.toggle_error');
     }
 
-    snackbar.success(
-      `${
-        newIsPinned ? 'snackbar.course.success.pinned' : 'snackbar.course.success.unpinned'
-      } snackbar.course.success.successfully`
-    );
+    const pinStatusMessage = newIsPinned
+      ? t.get('snackbar.course.success.pinned')
+      : t.get('snackbar.course.success.unpinned');
+
+    snackbar.success(`${pinStatusMessage} ${t.get('snackbar.course.success.successfully')}`);
   };
 
   const deleteFeed = async (id: string) => {
@@ -119,10 +105,10 @@
   });
 
   function getPageRoles(org: AccountOrg) {
-    const roles: number[] = [1, 2];
+    const roles: number[] = [ROLE.ADMIN, ROLE.TUTOR];
 
     if (org.customization.course.newsfeed) {
-      roles.push(3);
+      roles.push(ROLE.STUDENT);
     }
 
     return roles;
@@ -143,7 +129,7 @@
     goto(`/courses/${courseId}/lessons?next=true`);
   }}
 >
-  <RoleBasedSecurity allowedRoles={[1, 2]}>
+  <RoleBasedSecurity allowedRoles={getPageRoles($currentOrg)}>
     <NewFeedModal {courseId} bind:edit bind:editFeed />
   </RoleBasedSecurity>
   {#if isListing}

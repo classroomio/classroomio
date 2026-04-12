@@ -1,6 +1,8 @@
 <script lang="ts">
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import * as Avatar from '@cio/ui/base/avatar';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import UserIcon from '@lucide/svelte/icons/user';
 
   import { calDateDiff } from '$lib/utils/functions/date';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
@@ -24,11 +26,17 @@
   <div class="mb-2 flex justify-between">
     <span class="flex items-center gap-3">
       <div class="h-9 w-9">
-        <img
-          src={feed.authorAvatarUrl || ''}
-          alt={$t('course.navItem.news_feed.user_avatar_alt')}
-          class="h-full w-full rounded-full object-cover"
-        />
+        <Avatar.Root class="h-full w-full">
+          <Avatar.Image
+            src={feed.authorAvatarUrl ?? ''}
+            alt={$t('course.navItem.news_feed.user_avatar_alt')}
+            loading="lazy"
+            decoding="async"
+          />
+          <Avatar.Fallback aria-hidden="true">
+            <UserIcon class="text-muted-foreground h-5 w-5" />
+          </Avatar.Fallback>
+        </Avatar.Root>
       </div>
       <span>
         <p class="text-base font-semibold capitalize">{feed.authorFullname || ''}</p>

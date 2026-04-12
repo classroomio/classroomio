@@ -4,6 +4,8 @@
 
 @import '@cio/ui/output.css';
 
+@source '../../packages/ui/src/custom/animation/**/*.svelte';
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Geist variable font — self-hosted */

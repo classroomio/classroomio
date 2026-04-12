@@ -1,14 +1,18 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
+import type { TGetAudienceQuery, TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
 import {
-  deleteOrganizationAudienceMember,
   cancelOrganizationPlan,
   createOrganizationPlan,
+  deleteOrganizationAudienceMember,
   deleteOrganizationMember,
-  getOrgIdBySiteName,
+  getActiveOrganizationPlan,
   getFirstOrganizationWithPlans,
   getLatestOrgInvitesByEmails,
+  getOrgIdBySiteName,
   getOrganizationAudience,
+  getOrganizationAudienceMember,
   getOrganizationBySiteName,
   getOrganizationTeam,
   getOrganizations,
@@ -16,8 +20,8 @@ import {
   updateOrganization,
   updateOrganizationPlan
 } from '@cio/db/queries/organization';
-import { getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 import {
+  countPublishedCoursesBySiteName,
   getCoursesById,
   getCoursesBySiteNameForSetup,
   getEnrolledCourses,
@@ -27,16 +31,18 @@ import {
   getOrgCourses,
   getPublishedCoursesBySiteName
 } from '@cio/db/queries/course';
+import { getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
 
 import type { OrganizationWithPlans } from '@cio/db/queries/organization/types';
+import { PLAN } from '@cio/utils/plans';
 import { ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
+import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
 import { getProfileById } from '@cio/db/queries/auth';
 import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/invite';
-import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
-import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
-import type { TGetAudienceQuery } from '@cio/utils/validation/organization';
+
+const PUBLIC_ORG_LANDING_PAGE_COURSE_LIMIT = 4;
 
 /**
  * Creates a new organization with the current user as owner
@@ -169,6 +175,41 @@ export async function getOrgAudience(
   }
 }
 
+export async function getOrgAudienceMember(orgId: string, memberId: number): Promise<OrgAudienceMember> {
+  try {
+    const member = await getOrganizationAudienceMember(orgId, memberId);
+
+    if (!member) {
+      throw new AppError('Audience member not found', ErrorCodes.NOT_FOUND, 404);
+    }
+
+    if (!member.profileId && member.email) {
+      const invites = await getLatestOrgInvitesByEmails(orgId, [member.email.toLowerCase()]);
+      const invite = invites[0];
+
+      return {
+        ...member,
+        status: deriveAudienceMemberStatus(member.profileId, invite)
+      };
+    }
+
+    return {
+      ...member,
+      status: deriveAudienceMemberStatus(member.profileId, undefined)
+    };
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch audience member',
+      ErrorCodes.ORG_AUDIENCE_FETCH_FAILED,
+      500
+    );
+  }
+}
+
 /**
  * Removes a student audience member from an organization
  * @param orgId - The organization ID
@@ -218,20 +259,31 @@ export async function getPublicCourses(siteName: string, tagSlugs?: string[]) {
     if (tagSlugs && tagSlugs.length > 0) {
       filteredCourseIds = await getCourseIdsByTagSlugs(org.id, tagSlugs);
       if (filteredCourseIds.length === 0) {
-        return [];
+        return {
+          courses: [],
+          hasMoreCourses: false
+        };
       }
     }
 
-    const courses = await getPublishedCoursesBySiteName(siteName, filteredCourseIds);
+    const totalCourses = await countPublishedCoursesBySiteName(siteName, filteredCourseIds);
+    const courses = await getPublishedCoursesBySiteName(
+      siteName,
+      filteredCourseIds,
+      PUBLIC_ORG_LANDING_PAGE_COURSE_LIMIT
+    );
     const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
       org.id,
       courses.map((course) => course.id)
     );
 
-    return courses.map((course) => ({
-      ...course,
-      tags: tagsByCourseId[course.id] ?? []
-    }));
+    return {
+      courses: courses.map((course) => ({
+        ...course,
+        tags: tagsByCourseId[course.id] ?? []
+      })),
+      hasMoreCourses: totalCourses > courses.length
+    };
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -251,44 +303,110 @@ export async function getPublicCourses(siteName: string, tagSlugs?: string[]) {
  * - Admins: all courses with totalStudents
  * - Tutors: assigned courses with totalStudents
  */
-export async function getOrganizationCourses(orgId: string, userId: string, userRole: number, tagSlugs?: string[]) {
+export async function getOrganizationCourses(
+  orgId: string,
+  userId: string,
+  userRole: number,
+  query: TGetOrganizationCoursesQuery
+) {
   try {
     if (!userRole) {
       throw new AppError('Invalid permissions', ErrorCodes.UNAUTHORIZED, 403);
     }
 
+    const { page, limit, search } = query;
+    const tagSlugs = query.tags
+      ?.split(',')
+      .map((value) => value.trim())
+      .filter(Boolean);
+
     let filteredCourseIds: string[] | undefined = undefined;
     if (tagSlugs && tagSlugs.length > 0) {
       filteredCourseIds = await getCourseIdsByTagSlugs(orgId, tagSlugs);
       if (filteredCourseIds.length === 0) {
-        return [];
+        return {
+          items: [],
+          pagination: {
+            page,
+            limit,
+            total: 0,
+            totalPages: 0
+          },
+          query: {
+            page,
+            limit,
+            search,
+            tags: query.tags
+          }
+        };
       }
     }
 
     switch (userRole) {
       case ROLE.ADMIN: {
-        const courses = await getOrgCourses({ orgId, courseIds: filteredCourseIds });
+        const courses = await getOrgCourses({
+          orgId,
+          courseIds: filteredCourseIds,
+          page,
+          limit,
+          search
+        });
         const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
           orgId,
-          courses.map((course) => course.id)
+          courses.items.map((course) => course.id)
         );
 
-        return courses.map((course) => ({
-          ...course,
-          tags: tagsByCourseId[course.id] ?? []
-        }));
+        return {
+          items: courses.items.map((course) => ({
+            ...course,
+            tags: tagsByCourseId[course.id] ?? []
+          })),
+          pagination: {
+            page: courses.page,
+            limit: courses.limit,
+            total: courses.total,
+            totalPages: courses.totalPages
+          },
+          query: {
+            page,
+            limit,
+            search,
+            tags: query.tags
+          }
+        };
       }
       case ROLE.TUTOR: {
-        const courses = await getOrgCourses({ orgId, profileId: userId, courseIds: filteredCourseIds });
+        const courses = await getOrgCourses({
+          orgId,
+          profileId: userId,
+          courseIds: filteredCourseIds,
+          page,
+          limit,
+          search
+        });
         const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
           orgId,
-          courses.map((course) => course.id)
+          courses.items.map((course) => course.id)
         );
 
-        return courses.map((course) => ({
-          ...course,
-          tags: tagsByCourseId[course.id] ?? []
-        }));
+        return {
+          items: courses.items.map((course) => ({
+            ...course,
+            tags: tagsByCourseId[course.id] ?? []
+          })),
+          pagination: {
+            page: courses.page,
+            limit: courses.limit,
+            total: courses.total,
+            totalPages: courses.totalPages
+          },
+          query: {
+            page,
+            limit,
+            search,
+            tags: query.tags
+          }
+        };
       }
       default:
         throw new AppError('Invalid permissions', ErrorCodes.UNAUTHORIZED, 403);
@@ -433,6 +551,21 @@ export async function createOrgPlan(data: TNewOrganizationPlan) {
  */
 export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
   try {
+    // Enforce plan restriction: only paid plans can use non-minimal landing page themes
+    if (data.landingpage && typeof data.landingpage === 'object') {
+      const landingpage = data.landingpage as Record<string, unknown>;
+      const theme = landingpage.theme;
+
+      if (typeof theme === 'string' && theme !== 'minimal') {
+        const activePlan = await getActiveOrganizationPlan(orgId);
+        const planName = activePlan?.planName ?? PLAN.BASIC;
+
+        if (planName === PLAN.BASIC) {
+          throw new AppError('Landing page themes require a paid plan', ErrorCodes.UPGRADE_REQUIRED, 403);
+        }
+      }
+    }
+
     const organization = await updateOrganization(orgId, data);
     if (!organization) {
       throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);

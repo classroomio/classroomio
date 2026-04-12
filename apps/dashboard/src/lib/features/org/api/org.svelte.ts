@@ -65,6 +65,7 @@ class OrgApi extends BaseApiWithErrors {
   audience = $state<OrganizationAudience>([]);
   audiencePagination = $state<OrganizationAudiencePagination | null>(null);
   publicCourses: OrgPublicCourses = $state([]);
+  hasMorePublicCourses = $state(false);
 
   isFetchingOrgPublicCourses = $state(false);
   private activeAudienceRequestController: AbortController | null = null;
@@ -165,7 +166,8 @@ class OrgApi extends BaseApiWithErrors {
         }),
       logContext: 'fetching public courses',
       onSuccess: (response) => {
-        this.publicCourses = response.data;
+        this.publicCourses = response.data.courses;
+        this.hasMorePublicCourses = response.data.hasMoreCourses;
       }
     });
 

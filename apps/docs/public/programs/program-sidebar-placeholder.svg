@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="none">
+  <rect width="1600" height="900" fill="#F8FAFC"/>
+  <rect x="48" y="48" width="1504" height="804" rx="28" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="4"/>
+  <rect x="96" y="96" width="280" height="660" rx="24" fill="#E2E8F0"/>
+  <rect x="136" y="150" width="200" height="22" rx="11" fill="#0F172A"/>
+  <rect x="136" y="224" width="200" height="56" rx="16" fill="#FFFFFF"/>
+  <rect x="136" y="300" width="200" height="56" rx="16" fill="#FFFFFF"/>
+  <rect x="136" y="376" width="200" height="56" rx="16" fill="#FFFFFF"/>
+  <rect x="136" y="452" width="200" height="56" rx="16" fill="#FFFFFF"/>
+  <rect x="424" y="96" width="1032" height="92" rx="24" fill="#E2E8F0"/>
+  <rect x="424" y="224" width="1032" height="532" rx="24" fill="#FFFFFF" stroke="#94A3B8" stroke-dasharray="14 10" stroke-width="4"/>
+  <text x="940" y="470" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0F172A">Program Shell Placeholder</text>
+  <text x="940" y="528" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#475569">Replace with a screenshot showing the sidebar and header layout.</text>
+</svg>

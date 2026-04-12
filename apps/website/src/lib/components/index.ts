@@ -1,17 +1,26 @@
 // UI Components - Named exports for easy importing
+export { default as AiSection } from './ai-section.svelte';
+export { default as AutomateSection } from './automate-section.svelte';
 export { default as BlogListItem } from './blog-list-item.svelte';
+export { default as CertSection } from './cert-section.svelte';
 export { default as CoreFeatureSection } from './core-feature-section.svelte';
 export { default as CoreFeatures } from './core-features.svelte';
 export { default as CustomImg } from './custom-img.svelte';
+export { default as DeploySection } from './deploy-section.svelte';
+export { default as EnterpriseSection } from './enterprise-section.svelte';
 export { default as Faq } from './faq.svelte';
+export { default as FeaturesSection } from './features-section.svelte';
 export { default as Footer } from './footer.svelte';
+export { default as FooterCta } from './footer-cta.svelte';
 export { default as Hero } from './hero.svelte';
+export { default as LearnerSection } from './learner-section.svelte';
 export { default as Modal } from './modal.svelte';
 export { default as MoreFeatures } from './more-features.svelte';
 export { default as Navigation } from './navigation.svelte';
 export { default as NotFound } from './not-found.svelte';
 export { default as PageHeader } from './page-header.svelte';
 export { default as PageSignupCTA } from './page-signup-cta.svelte';
+export { default as QuestionTypes } from './question-types.svelte';
 export { default as SenjaEmbed } from './senja-embed.svelte';
 export { default as StudentDashboard } from './student-dashboard.svelte';
 export { default as Success } from './success.svelte';

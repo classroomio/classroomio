@@ -364,6 +364,32 @@
       "created": "Đã tạo khóa tự động hóa. Hãy lưu lại ngay vì bí mật đầy đủ chỉ được hiển thị một lần.",
       "rotated": "Phím tự động đã được xoay. Hãy lưu lại bí mật mới ngay bây giờ vì nó sẽ không được hiển thị lại.",
       "revoked": "Khóa tự động hóa đã bị thu hồi."
+    },
+    "program": {
+      "error": {
+        "reaction_error": "Đã xảy ra lỗi khi phản hồi bài viết",
+        "news_feed_fail": "Không thể tìm nạp nguồn cấp tin tức của chương trình",
+        "post_create_failed": "Không tạo được bài đăng",
+        "post_update_failed": "Không thể cập nhật bài đăng",
+        "code": {
+          "program_forbidden": "Bạn phải là thành viên của chương trình này để thực hiện hành động này.",
+          "program_member_check_failed": "Chúng tôi không thể xác minh tư cách thành viên chương trình của bạn. Hãy thử lại.",
+          "program_not_found": "Chương trình này không thể được tìm thấy.",
+          "program_create_failed": "Không thể tạo chương trình.",
+          "program_update_failed": "Không thể cập nhật chương trình.",
+          "program_delete_failed": "Không thể xóa chương trình.",
+          "program_member_not_found": "Không thể tìm thấy thành viên chương trình đó.",
+          "program_newsfeed_not_found": "Không thể tìm thấy bài đăng đó.",
+          "program_newsfeed_comment_not_found": "Bình luận đó không thể được tìm thấy."
+        }
+      },
+      "success": {
+        "comment_deleted": "Đã xóa bình luận",
+        "comment_added": "Đã thêm nhận xét",
+        "feed_delete_success": "Đã xóa bài đăng thành công",
+        "post_created": "Bài viết được tạo thành công",
+        "post_updated": "Đã cập nhật bài đăng thành công"
+      }
     }
   },
   "explore": {
@@ -396,7 +422,8 @@
     "community": "cộng đồng",
     "explore": "Khám phá",
     "help": "Trợ giúp",
-    "settings": "Cài đặt"
+    "settings": "Cài đặt",
+    "programs": "Chương trình"
   },
   "upgrade": {
     "certificate": "Nâng cấp gói của bạn để tạo chứng chỉ",
@@ -517,12 +544,23 @@
       "all_courses": "Tất cả các khóa học",
       "select_courses": "Chọn các khóa học cụ thể",
       "select_courses_placeholder": "Chọn khóa học...",
+      "program_access": "Quyền truy cập chương trình",
+      "no_programs": "Không gán chương trình",
+      "all_programs": "Tất cả chương trình",
+      "select_programs": "Chọn các chương trình cụ thể",
+      "select_programs_placeholder": "Chọn chương trình...",
       "send_email": "Gửi email lời mời tới người dùng đã nhập",
       "submit": "Nhập người dùng",
       "back": "Quay lại Đối tượng",
       "snackbar_success": "{imported} lời mời mới, {assigned} học viên hiện có được quyền truy cập khóa học, {pendingInvitesRenewed} lời mời đang chờ được gia hạn ({emailsSent} email đã gửi)",
       "snackbar_no_emails": "Vui lòng nhập ít nhất một địa chỉ email",
-      "snackbar_failed": "Không thể nhập người dùng"
+      "snackbar_failed": "Không thể nhập người dùng",
+      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like."
+    },
+    "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
+    "user_analytics": {
+      "title": "Learner profile",
+      "page_subtitle": "Progress, grades, and activity across their courses."
     }
   },
   "community": {
@@ -554,7 +592,12 @@
       "edit": "Chỉnh sửa",
       "cancel": "Hủy bỏ",
       "give": "Đưa ra câu trả lời",
-      "comment": "Bình luận"
+      "comment": "Bình luận",
+      "page_subtitle": "Start a thread the whole community can see, and tie it to a course if you want."
+    },
+    "page_subtitle": "Questions and answers shared across your organization's courses.",
+    "question": {
+      "page_subtitle": "Follow answers, vote, and join the discussion."
     }
   },
   "course": {
@@ -1146,7 +1189,9 @@
                 "matching": "Kết hợp",
                 "ordering": "Đặt hàng",
                 "hotspot": "Điểm phát sóng",
-                "link": "Liên kết"
+                "link": "Liên kết",
+                "word_bank": "Ngân hàng từ",
+                "star": "Xếp hạng sao"
               },
               "select_type": "Chọn loại",
               "question_type_auto_gradable": "Auto",
@@ -1374,6 +1419,49 @@
                 "correct_badge": "Đúng",
                 "not_set": "Chưa đặt",
                 "incorrect_badge": "sai"
+              },
+              "word_bank": {
+                "review": {
+                  "your_answer_label": "Câu trả lời của bạn",
+                  "correct_label": "Câu trả lời đúng"
+                },
+                "preview": {
+                  "filled_label": "Câu trả lời mong đợi trong bối cảnh"
+                },
+                "take": {
+                  "helper": "Bấm vào một từ để đặt nó vào ô trống đầu tiên hoặc kéo nó vào chỗ trống. Bấm vào chỗ trống đã điền để trả từ về ngân hàng.",
+                  "bank_heading": "Ngân hàng từ",
+                  "clear_blank_sr": "Xóa từ khỏi chỗ trống"
+                },
+                "edit": {
+                  "template_label": "Mẫu câu",
+                  "template_placeholder": "Các phép đo để mô tả dữ liệu của chúng tôi được gọi là ___. ___ là một hàm...",
+                  "template_helper": "Sử dụng ba dấu gạch dưới (___) cho mỗi chỗ trống. Người học sẽ thấy một ngân hàng từ có câu trả lời đúng và các từ gây phân tâm.",
+                  "no_blanks_warning": "Thêm ít nhất một điểm đánh dấu trống ___ vào mẫu của bạn.",
+                  "correct_answers_heading": "Câu trả lời đúng cho mỗi chỗ trống",
+                  "blank_label": "trống",
+                  "correct_placeholder": "Thuật ngữ hoặc cụm từ đúng",
+                  "distractors_heading": "Những từ bổ sung (làm mất tập trung)",
+                  "distractor_placeholder": "Lựa chọn sai",
+                  "add_distractor": "Thêm yếu tố phân tâm"
+                }
+              },
+              "star": {
+                "preview": {
+                  "correct_label": "Câu trả lời đúng"
+                },
+                "take": {
+                  "helper": "Chọn đánh giá của bạn.",
+                  "star_sr": "Sao '{'n'}' của '{'max'}'"
+                },
+                "edit": {
+                  "correct_value_label": "Giá trị sao chính xác",
+                  "correct_value_info": "Người học đếm sao phải chọn để đạt được điểm tối đa.",
+                  "max_stars_label": "Số sao tối đa",
+                  "max_stars_info": "Người học nhìn thấy bao nhiêu ngôi sao (1–10). Mặc định là 5.",
+                  "correct_value_placeholder": "ví dụ: 3",
+                  "max_stars_placeholder": "ví dụ: 5"
+                }
               }
             },
             "settings": "Cài đặt",
@@ -1498,10 +1586,16 @@
                 "cancel_upload": "Hủy tải lên",
                 "upload_cancelled": "Tải lên bị người dùng hủy",
                 "max_files": "{đếm, số nhiều, một {Bạn có thể tải lên # tệp} khác {Bạn có thể tải lên # tệp}}",
-                "max_files_and_size": "(tối đa {size} mỗi cái)"
+                "max_files_and_size": "(tối đa {size} mỗi cái)",
+                "google_drive_choose": "Chọn từ Google Drive",
+                "google_drive_opening": "Đang mở bộ chọn…",
+                "google_drive_hint": "Chọn một video từ tài khoản Google của bạn. Bất kỳ ai xem bài học đều cần có quyền truy cập—đặt tính năng chia sẻ trong Drive thành “Bất kỳ ai có liên kết đều có thể xem” (hoặc tổ chức tương đương của bạn).",
+                "google_drive_not_configured": "Tính năng nhập vào Google Drive chưa được thiết lập cho hoạt động triển khai này. Thêm PUBLIC_GOOGLE_PICKER_CLIENT_ID và PUBLIC_GOOGLE_PICKER_API_KEY vào môi trường của bạn.",
+                "google_drive_error": "Không thể mở Google Drive. Kiểm tra xem trình duyệt của bạn có cho phép cửa sổ bật lên không và Google Picker có được định cấu hình chính xác hay không."
               },
               "empty_title": "Chưa có video nào",
-              "empty_description": "Thêm video từ YouTube, tải lên hoặc thư viện phương tiện của bạn"
+              "empty_description": "Thêm video từ YouTube, tải lên hoặc thư viện phương tiện của bạn",
+              "google_drive": "Google Drive"
             },
             "slide": {
               "title": "Trượt",
@@ -1697,6 +1791,7 @@
       "empty_description": "Chia sẻ kiến thức của bạn với thế giới bằng cách tạo các khóa học hấp dẫn cho sinh viên của bạn.",
       "error_message": "Đã xảy ra lỗi.",
       "lessons_number": "bài học",
+      "exercise": "bài tập",
       "students": "sinh viên",
       "published": "Đã xuất bản",
       "unpublished": "Chưa được xuất bản",
@@ -1716,7 +1811,8 @@
         "clone": "bản sao",
         "share": "Chia sẻ",
         "invite": "Mời",
-        "delete": "Xóa"
+        "delete": "Xóa",
+        "open": "Mở"
       }
     },
     "course_filter": {
@@ -1741,7 +1837,8 @@
       "descending": "Desc",
       "tags": "Thẻ",
       "empty_tags": "Không có thẻ nào"
-    }
+    },
+    "page_subtitle": "Where lessons turn into courses and courses turn into enrollments."
   },
   "ai": {
     "help_me": "Giúp tôi viết",
@@ -1768,8 +1865,13 @@
     "lms_dashboard_hero": "Hôm nay là một ngày khác để đưa bạn đến gần hơn với mục tiêu học tập của mình. Đừng bỏ cuộc, bạn càng học nhiều thì bạn càng tiến bộ hơn.",
     "lessons_completed": "Bài học đã hoàn thành",
     "no_courses_started": "Không có khóa học nào bắt đầu",
-    "revenue": "Doanh thu",
-    "revenue_description": "Doanh thu ước tính từ việc bán khóa học",
+    "certificates_earned": "Certificates earned",
+    "certificates_earned_description": "Total certificates issued to students in your organization",
+    "certification_rate": "certification rate",
+    "recent_certifications": "Recent certifications",
+    "no_certifications_yet": "No certificates earned yet",
+    "no_certifications_yet_description": "When students complete a course and earn a certificate, they will appear here",
+    "view_courses": "View courses",
     "no_of_courses": "Số lượng khóa học",
     "no_courses_description": "Các khóa học được tạo trong tổ chức này",
     "total_students": "Tổng số học sinh",
@@ -1819,7 +1921,8 @@
           "banner_text": "Văn bản biểu ngữ",
           "banner_text_label": "Cập nhật văn bản biểu ngữ",
           "banner_text_placeholder": "Viết văn bản ở đây"
-        }
+        },
+        "page_subtitle": "Choose which tabs, banners, course tools, and extras learners see."
       },
       "domains": {
         "title": "Miền tùy chỉnh",
@@ -1853,7 +1956,8 @@
         "pending_dns_description": "Thêm bản ghi DNS bên dưới, sau đó làm mới xác minh.",
         "pending_verification_description": "Bản ghi DNS đã được tìm thấy. Việc cấp hoặc xác thực SSL vẫn đang được tiến hành.",
         "reconnect_description": "Miền này cần được kết nối lại thông qua quy trình thiết lập Cloudflare mới.",
-        "error_description": "Miền tùy chỉnh này tồn tại nhưng quá trình xác minh chưa hoàn tất."
+        "error_description": "Miền tùy chỉnh này tồn tại nhưng quá trình xác minh chưa hoàn tất.",
+        "page_subtitle": "Run your public learning site on a web address you own."
       }
     },
     "quiz": {
@@ -1977,6 +2081,9 @@
   },
   "org_navigation": {
     "platform": "Nền tảng",
+    "home": "Trang chủ",
+    "content": "Nội dung",
+    "people": "Mọi người",
     "dashboard": "Trang tổng quan",
     "courses": "Khóa học",
     "community": "cộng đồng",
@@ -1989,7 +2096,8 @@
     "unlock": "Mở khóa các tính năng không giới hạn và đầu tư vào tương lai của chúng tôi",
     "upgrade": "Nâng cấp ngay",
     "tags": "Thẻ",
-    "automation": "Tự động hóa"
+    "automation": "Tự động hóa",
+    "programs": "Chương trình"
   },
   "media_manager": {
     "page_title": "Quản lý truyền thông - ClassroomIO",
@@ -2061,7 +2169,8 @@
       "upload": "Tải lên",
       "youtube": "YouTube",
       "generic": "Chung",
-      "external_url": "URL bên ngoài"
+      "external_url": "URL bên ngoài",
+      "google_drive": "Google Drive"
     },
     "kind": {
       "video": "Video",
@@ -2097,7 +2206,8 @@
     "common": {
       "not_available": "không áp dụng"
     },
-    "empty_description": "Tài sản không tồn tại hoặc không có sẵn trong tổ chức này."
+    "empty_description": "Tài sản không tồn tại hoặc không có sẵn trong tổ chức này.",
+    "page_subtitle": "Keep files, videos, and links for your courses in one library."
   },
   "settings": {
     "heading": "Cài đặt",
@@ -2107,7 +2217,8 @@
       "active": "Bạn không có bất kỳ thanh toán nào đang hoạt động",
       "provider": "Chúng tôi sử dụng Polar để giúp quản lý việc thanh toán của bạn",
       "open_billing": "Thanh toán mở",
-      "error": "Đã xảy ra lỗi khi mở thanh toán"
+      "error": "Đã xảy ra lỗi khi mở thanh toán",
+      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO."
     },
     "integrations": {
       "heading": "điện tín",
@@ -2117,7 +2228,8 @@
       "step_chatId": "Bước 2: Nhập ID trò chuyện được bot cung cấp cho bạn.",
       "connect_button": "Kết nối",
       "success_message": "Tích hợp thành công",
-      "disconnect": "Ngắt kết nối"
+      "disconnect": "Ngắt kết nối",
+      "page_subtitle": "Connect Telegram to get notified when important things happen."
     },
     "landing_page": {
       "heading": "Trang đích",
@@ -2212,6 +2324,99 @@
         "title": "Hình nền",
         "show_background": "Hiển thị nền",
         "hide_background": "Ẩn nền"
+      },
+      "page_subtitle": "Shape the marketing page people see before they sign up or enroll.",
+      "editor": {
+        "save": "Lưu",
+        "close": "Đóng",
+        "page_builder": "Trình tạo trang",
+        "footer": {
+          "text": "Văn bản chân trang",
+          "add": "Thêm liên kết chân trang",
+          "default_label": "Liên kết mới",
+          "link_label": "Nhãn liên kết",
+          "link_href": "URL liên kết",
+          "remove": "Xóa liên kết chân trang"
+        },
+        "embed": {
+          "toggle": "Hiển thị phần nhúng",
+          "title": "Tiêu đề phần",
+          "title_placeholder": "Tiêu đề phần",
+          "description": "Mô tả",
+          "description_placeholder": "Mô tả tùy chọn",
+          "code": "Nhúng mã",
+          "code_placeholder": "Dán mã nhúng vào đây",
+          "code_description": "Dán đoạn mã nhúng hoặc mã iframe đầy đủ.",
+          "secondary_label": "Nhãn nút phụ",
+          "secondary_href": "Liên kết nút phụ"
+        },
+        "callout": {
+          "toggle": "Hiển thị phần chú thích",
+          "heading": "tiêu đề",
+          "heading_default": "Sẵn sàng để bắt đầu học?",
+          "heading_placeholder": "Nhập một tiêu đề",
+          "description": "Mô tả",
+          "description_placeholder": "Thêm mô tả ngắn hoặc để trống",
+          "action_label": "Nhãn nút",
+          "action_label_default": "Bắt đầu",
+          "action_label_placeholder": "Văn bản nút",
+          "action_href": "Liên kết nút",
+          "action_href_placeholder": "https://..."
+        },
+        "navigation": {
+          "add": "Thêm liên kết điều hướng",
+          "default_label": "Liên kết mới",
+          "link_label": "Nhãn liên kết",
+          "link_href": "URL liên kết",
+          "remove": "Xóa liên kết điều hướng"
+        },
+        "hero": {
+          "heading": "tiêu đề",
+          "subheading": "Tiêu đề phụ",
+          "primary_label": "Nhãn nút chính",
+          "primary_href": "Liên kết nút chính",
+          "secondary_toggle": "Hiển thị hành động phụ",
+          "secondary_label": "Nhãn nút phụ",
+          "secondary_href": "Liên kết nút phụ",
+          "image": "Hình ảnh anh hùng",
+          "upload": "Tải hình ảnh lên",
+          "clear": "Xóa hình ảnh"
+        },
+        "sections": {
+          "hero": "anh hùng",
+          "hero_desc": "Dòng tiêu đề, nút hành động và hình ảnh chính.",
+          "navigation": "Điều hướng",
+          "navigation_desc": "Các liên kết được hiển thị trong tiêu đề trang đích.",
+          "callout": "Chú thích",
+          "callout_desc": "Biểu ngữ quảng cáo tùy chọn hiển thị sau các khóa học.",
+          "embed": "Nhúng",
+          "embed_desc": "Phần iframe tùy chọn hiển thị sau các khóa học.",
+          "footer": "Chân trang",
+          "footer_desc": "Văn bản chân trang và các liên kết."
+        }
+      },
+      "content": {
+        "heading": "Chỉnh sửa nội dung",
+        "description": "Cập nhật phần chính, điều hướng, nhúng và chân trang xuất hiện trong mọi chủ đề.",
+        "edit": "Chỉnh sửa nội dung"
+      },
+      "theme": {
+        "heading": "Chọn một chủ đề",
+        "description": "Chọn phong cách trực quan mà khách truy cập nhìn thấy trên trang đích công khai của bạn.",
+        "cards": {
+          "classic": {
+            "title": "cổ điển",
+            "description": "Bố cục truyền thống với hệ thống phân cấp cân bằng"
+          },
+          "bold": {
+            "title": "Đậm",
+            "description": "Độ tương phản cao, biên tập và nổi bật"
+          },
+          "minimal": {
+            "title": "Tối thiểu",
+            "description": "Sạch sẽ, sáng sủa và tập trung vào khóa học"
+          }
+        }
       }
     },
     "organization": {
@@ -2244,7 +2449,8 @@
           "custom_theme": "Chủ đề tùy chỉnh",
           "add_theme": "Thêm chủ đề"
         }
-      }
+      },
+      "page_subtitle": "Set the name, logo, and theme learners see for this organization."
     },
     "profile": {
       "heading": "Hồ sơ",
@@ -2266,7 +2472,8 @@
         "file_size": "Kích thước tệp tối đa:",
         "accepted": "Đã chấp nhận:",
         "validation_error": "Kích thước tệp vượt quá giới hạn tối đa:"
-      }
+      },
+      "page_subtitle": "Your name, email, and how you appear wherever you work in ClassroomIO."
     },
     "tabs": {
       "profile_tab": "Hồ sơ",
@@ -2386,7 +2593,8 @@
         "general": "chung",
         "sso": "SSO",
         "token_auth": "Xác thực mã thông báo"
-      }
+      },
+      "page_subtitle": "Control sign-up, login, SSO, and token-based access for this org."
     },
     "token_auth": {
       "heading": "Xác thực mã thông báo",
@@ -2407,6 +2615,9 @@
       "integration_description": "Ký JWT bằng bí mật và chuyển hướng người dùng đến URL trao đổi mã thông báo.",
       "no_config": "Không có cấu hình xác thực mã thông báo. Tạo bí mật ký để bắt đầu.",
       "actions_menu": "Hành động xác thực mã thông báo"
+    },
+    "teams": {
+      "page_subtitle": "Invite teammates and control who helps run this organization."
     }
   },
   "profileMenu": {
@@ -2457,7 +2668,8 @@
   "app": {
     "search": {
       "placeholder": "Tìm kiếm"
-    }
+    },
+    "cancel": "Hủy bỏ"
   },
   "welcome_modal": {
     "we_at": "Chúng tôi ở",
@@ -2611,7 +2823,8 @@
     },
     "common": {
       "not_available": "không áp dụng"
-    }
+    },
+    "page_subtitle": "Organize courses with labels so filters and lists stay easy to scan."
   },
   "invite": {
     "organization": {
@@ -2671,7 +2884,28 @@
         "rate_limits_title": "Giới hạn tỷ lệ",
         "rate_limits_description": "Yêu cầu đọc/ghi/xuất bản được phép mỗi phút.",
         "used_label": "Đã sử dụng:"
-      }
+      },
+      "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime."
+    },
+    "api": {
+      "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
+      "keys": {
+        "title": "API keys",
+        "description": "These keys authenticate the current organization when calling the ClassroomIO public API.",
+        "generate": "Generate API key",
+        "secret_once": "This secret is shown once. Copy it and store it securely.",
+        "empty_title": "No API keys yet",
+        "empty_description": "Create the first org-scoped API key to use the ClassroomIO public API.",
+        "modal": {
+          "title": "Create API key",
+          "description": "Choose a name for this API key before it is generated.",
+          "name_label": "Key name",
+          "name_placeholder": "My API integration",
+          "cancel": "Cancel",
+          "save": "Create key"
+        }
+      },
+      "view_docs": "View Docs"
     },
     "keys": {
       "active": "Đang hoạt động",
@@ -2705,6 +2939,145 @@
     "permissions": {
       "disabled_title": "Quyền truy cập chỉ đọc",
       "disabled_description": "Chỉ quản trị viên tổ chức mới có thể tạo, xoay hoặc thu hồi khóa tự động hóa. Thầy cô có thể xem lại hướng dẫn thiết lập tại đây."
+    },
+    "zapier": {
+      "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
+    }
+  },
+  "programs": {
+    "heading": "Chương trình",
+    "page_title": "Chương trình",
+    "create": "Chương trình mới",
+    "create_success": "Đã tạo chương trình",
+    "update_success": "Đã cập nhật chương trình",
+    "delete_success": "Chương trình đã bị xóa",
+    "members_added": "Đã thêm thành viên",
+    "member_removed": "Thành viên đã bị xóa",
+    "course_added": "Đã thêm khóa học",
+    "course_removed": "Đã xóa khóa học",
+    "empty_title": "Chưa có chương trình nào",
+    "empty_description": "Tạo chương trình chứng nhận hoặc tuân thủ đầu tiên của bạn.",
+    "settings": {
+      "general": "chung",
+      "name_label": "Tên",
+      "description_label": "Mô tả",
+      "status_label": "Trạng thái",
+      "save": "Lưu thay đổi",
+      "danger_zone": "Vùng nguy hiểm",
+      "delete": "Xóa chương trình",
+      "delete_description": "Sau khi xóa, chương trình này và tất cả dữ liệu của nó sẽ không thể phục hồi được.",
+      "confirm_delete": "Bạn có chắc chắn muốn xóa chương trình này? Điều này không thể hoàn tác được."
+    },
+    "lms": {
+      "empty_title": "Chưa có chương trình nào",
+      "empty_description": "Bạn chưa được ghi danh vào bất kỳ chương trình nào."
+    },
+    "people": {
+      "invite": "Mời",
+      "invite_modal_title": "Mời thành viên",
+      "invite_modal_description": "Thêm người vào chương trình này qua email.",
+      "email_label": "Email",
+      "role_label": "Vai trò",
+      "add_another": "Thêm cái khác",
+      "invite_submit": "Gửi lời mời",
+      "empty_title": "Chưa có thành viên nào",
+      "empty_description": "Mời mọi người tham gia chương trình này."
+    },
+    "courses": {
+      "add": "Thêm khóa học",
+      "add_modal_title": "Thêm khóa học vào chương trình",
+      "select_course": "Chọn một khóa học",
+      "select_placeholder": "Chọn một khóa học…",
+      "empty_title": "Chưa có khóa học nào",
+      "empty_description": "Thêm các khóa học vào chương trình này.",
+      "select_courses": "Chọn khóa học",
+      "search_placeholder": "Tìm kiếm khóa học",
+      "no_available_courses": "Không có khóa học có sẵn để thêm.",
+      "no_matching_courses": "Không có khóa học phù hợp với tìm kiếm của bạn.",
+      "no_matching_program_courses": "Không có chương trình khóa học phù hợp với tìm kiếm của bạn.",
+      "pagination_status": "Trang {trang} trong tổng số {totalPages}",
+      "published_access_callout_title": "Quyền truy cập của sinh viên",
+      "published_access_callout_description": "Sinh viên chỉ có quyền truy cập vào các khóa học được xuất bản. Các khóa học có thể có trong chương trình này cho nhóm của bạn trong khi vẫn chưa được xuất bản và các khóa học đó sẽ bị ẩn với sinh viên cho đến khi bạn xuất bản chúng."
+    },
+    "newsfeed": {
+      "post": "Bài đăng mới",
+      "post_placeholder": "Bạn đang nghĩ gì thế?",
+      "post_submit": "bài đăng",
+      "empty_title": "Chưa có bài viết nào",
+      "empty_description": "Hãy là người đầu tiên đăng một cái gì đó.",
+      "heading": "Nguồn cấp tin tức",
+      "make_a_post": "Tạo một bài đăng",
+      "edit_post": "Chỉnh sửa bài đăng",
+      "editor_placeholder": "Chia sẻ bản cập nhật với chương trình của bạn",
+      "cancel": "Hủy bỏ",
+      "pinned": "Đã ghim",
+      "delete_feed_title": "Xóa bài đăng",
+      "delete_feed_description": "Bạn có chắc chắn muốn xóa bài đăng này?",
+      "confirm_delete": "Xóa",
+      "user_avatar_alt": "Hình đại diện của người dùng",
+      "comments": {
+        "comment": "bình luận",
+        "showing_of": "Đang hiển thị {được hiển thị} trong tổng số {toàn bộ}",
+        "hide": "Ẩn bình luận",
+        "placeholder": "Thêm bình luận chương trình",
+        "submit_aria": "Gửi bình luận",
+        "delete": "Xóa"
+      },
+      "card": {
+        "pin": "Ghim",
+        "unpin": "Bỏ ghim",
+        "edit": "Chỉnh sửa",
+        "delete": "Xóa"
+      }
+    },
+    "create_modal": {
+      "title": "Tạo chương trình",
+      "description": "Thêm một chương trình chứng nhận hoặc tuân thủ mới.",
+      "name_label": "Tên",
+      "name_placeholder": "ví dụ: Chứng nhận an toàn OSHA",
+      "description_label": "Mô tả",
+      "description_placeholder": "Chương trình này nói về cái gì?",
+      "submit": "Tạo"
+    },
+    "sidebar": {
+      "newsfeed": "Nguồn cấp tin tức",
+      "courses": "Khóa học",
+      "people": "mọi người",
+      "settings": "Cài đặt"
+    },
+    "status": {
+      "active": "Đang hoạt động",
+      "inactive": "Không hoạt động",
+      "archived": "Đã lưu trữ"
+    },
+    "description": "Cấp cho một nhóm người quyền truy cập vào nhiều khóa học, chẳng hạn như một lớp học",
+    "search_placeholder": "Tìm kiếm chương trình",
+    "multiple_added": "Đã thêm khóa học",
+    "no_matching_programs": "Không có chương trình nào phù hợp với bộ lọc của bạn.",
+    "card": {
+      "courses": "Khóa học",
+      "students": "Sinh viên"
+    },
+    "table": {
+      "name": "Tên",
+      "courses": "Khóa học",
+      "students": "Sinh viên",
+      "status": "Trạng thái",
+      "description": "Mô tả"
+    },
+    "filters": {
+      "filter": "Lọc",
+      "clear_all": "Xóa tất cả",
+      "popover_title": "Bộ lọc",
+      "sort": "Sắp xếp",
+      "order": "Đặt hàng",
+      "status": "Trạng thái",
+      "ascending": "tăng dần",
+      "descending": "mô tả",
+      "sort_name": "Tên",
+      "sort_courses": "Khóa học",
+      "sort_students": "Sinh viên",
+      "sort_status": "Trạng thái"
     }
   }
 }

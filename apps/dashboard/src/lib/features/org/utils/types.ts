@@ -1,5 +1,15 @@
 import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
 
+export type GetOrganizationRequest = typeof classroomio.organization.$get;
+export type GetOrganizationResponse = InferResponseType<GetOrganizationRequest> | null;
+export type GetOrganizationSuccess = Extract<InferResponseType<GetOrganizationRequest>, { success: true }>;
+export type OrganizationRecord = GetOrganizationSuccess['data'][number];
+
+export type GetFirstOrganizationRequest = typeof classroomio.organization.first.$get;
+export type GetFirstOrganizationResponse = InferResponseType<GetFirstOrganizationRequest> | null;
+export type GetFirstOrganizationSuccess = Extract<InferResponseType<GetFirstOrganizationRequest>, { success: true }>;
+export type FirstOrganizationRecord = GetFirstOrganizationSuccess['data'][number];
+
 // Team member types
 export type GetTeamRequest = (typeof classroomio.organization)['team']['$get'];
 export type OrganizationTeamResponse = InferResponseType<GetTeamRequest> | null;
@@ -39,7 +49,8 @@ export type OrganizationAudienceMember = OrganizationAudience[number];
 export type GetOrgPublicCoursesRequest = typeof classroomio.organization.courses.public.$get;
 export type OrgPublicCoursesResponse = InferResponseType<GetOrgPublicCoursesRequest> | null;
 export type OrgPublicCoursesSuccess = Extract<InferResponseType<GetOrgPublicCoursesRequest>, { success: true }>;
-export type OrgPublicCourses = OrgPublicCoursesSuccess['data'];
+export type OrgPublicCoursesData = OrgPublicCoursesSuccess['data'];
+export type OrgPublicCourses = OrgPublicCoursesData['courses'];
 
 // dashboard analytics types
 export type GetDashStatsRequest = typeof classroomio.dash.stats.$get;

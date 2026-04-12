@@ -85,7 +85,8 @@ class AutomationApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         this.keys = this.keys.map((key) => (key.id === response.data.id ? response.data : key));
         if (this.usage) {
-          const activeKeys = this.keys.filter((key) => key.type === 'mcp' && !key.revokedAt).length;
+          const revokedKeyType = response.data.type;
+          const activeKeys = this.keys.filter((key) => key.type === revokedKeyType && !key.revokedAt).length;
           this.usage = { ...this.usage, activeKeys };
         }
         snackbar.success('snackbar.automation.revoked');

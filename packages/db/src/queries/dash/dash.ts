@@ -7,9 +7,9 @@ import {
   eq,
   group,
   groupmember,
+  isNotNull,
   lesson,
   lessonCompletion,
-  organization,
   profile,
   sql
 } from '@db/drizzle';
@@ -24,7 +24,11 @@ export function getCourseStats(orgId: string) {
       completedLessons: sql<number>`
         COUNT(DISTINCT ${lessonCompletion.id}) 
         FILTER (WHERE ${lessonCompletion.isComplete} = true)
-      `.as('completed_lessons')
+      `.as('completed_lessons'),
+      certificatesEarned: sql<number>`
+        COUNT(DISTINCT ${groupmember.id})
+        FILTER (WHERE ${groupmember.certificateEarnedAt} IS NOT NULL)
+      `.as('certificates_earned')
     })
     .from(course)
     .innerJoin(group, eq(group.id, course.groupId))
@@ -48,6 +52,12 @@ export function getCourseStats(orgId: string) {
         CASE 
           WHEN ${subquery.totalStudents} * ${subquery.totalLessons} = 0 THEN 0
           ELSE ROUND((${subquery.completedLessons}::numeric / (${subquery.totalStudents} * ${subquery.totalLessons})) * 100)::integer
+        END
+      `,
+      certificationPercentage: sql<number>`
+        CASE
+          WHEN ${subquery.totalStudents} = 0 THEN 0
+          ELSE ROUND((${subquery.certificatesEarned}::numeric / ${subquery.totalStudents}) * 100)::integer
         END
       `
     })
@@ -73,6 +83,52 @@ export function getRecentEnrollments(orgId: string) {
     .where(and(eq(course.status, 'ACTIVE'), eq(group.organizationId, orgId)))
     .groupBy(profile.id, course.id, course.title, groupmember.createdAt)
     .orderBy(desc(groupmember.createdAt))
+    .limit(5);
+}
+
+/** Count of student enrollments that have earned a certificate (per org, active courses). */
+export function getTotalCertificatesIssued(orgId: string) {
+  return db
+    .select({
+      count: sql<number>`count(${groupmember.id})::int`
+    })
+    .from(groupmember)
+    .innerJoin(group, eq(groupmember.groupId, group.id))
+    .innerJoin(course, eq(course.groupId, group.id))
+    .where(
+      and(
+        eq(group.organizationId, orgId),
+        eq(course.status, 'ACTIVE'),
+        eq(groupmember.roleId, 3),
+        isNotNull(groupmember.certificateEarnedAt)
+      )
+    );
+}
+
+/** Most recent certificate earners for the org dashboard. */
+export function getRecentCertifications(orgId: string) {
+  return db
+    .select({
+      profileId: profile.id,
+      avatarUrl: profile.avatarUrl,
+      fullname: profile.fullname,
+      courseId: course.id,
+      courseTitle: course.title,
+      earnedAt: groupmember.certificateEarnedAt
+    })
+    .from(groupmember)
+    .innerJoin(group, eq(groupmember.groupId, group.id))
+    .innerJoin(course, eq(course.groupId, group.id))
+    .innerJoin(profile, eq(profile.id, groupmember.profileId))
+    .where(
+      and(
+        eq(group.organizationId, orgId),
+        eq(course.status, 'ACTIVE'),
+        eq(groupmember.roleId, 3),
+        isNotNull(groupmember.certificateEarnedAt)
+      )
+    )
+    .orderBy(desc(groupmember.certificateEarnedAt))
     .limit(5);
 }
 

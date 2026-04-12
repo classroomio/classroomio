@@ -1,6 +1,6 @@
-import type { LMSExercise } from './exercises.svelte';
+import type { GetLMSExercisesSuccess, LMSExercise } from './exercises.svelte';
 import { classroomio } from '$lib/utils/services/api';
-import { getApiKeyHeaders } from '$lib/utils/services/api/server';
+import { getApiKeyHeaders, safeServerApi } from '$lib/utils/services/api/server';
 
 /**
  * Server-side API methods for LMS exercises
@@ -15,15 +15,15 @@ export class LMSExercisesApiServer {
    */
   static async fetchLMSExercises(orgId: string): Promise<LMSExercise[] | null> {
     try {
-      const response = await classroomio.organization[':orgId'].exercises.lms.$get(
-        {
-          param: { orgId }
-        },
-        getApiKeyHeaders()
+      const result = await safeServerApi<GetLMSExercisesSuccess>(() =>
+        classroomio.organization[':orgId'].exercises.lms.$get(
+          {
+            param: { orgId }
+          },
+          getApiKeyHeaders()
+        )
       );
-
-      const data = await response.json();
-      return data.success && data.data ? data.data : null;
+      return result.ok && result.body.data ? result.body.data : null;
     } catch (error) {
       console.error('Error fetching LMS exercises (server):', error);
       return null;

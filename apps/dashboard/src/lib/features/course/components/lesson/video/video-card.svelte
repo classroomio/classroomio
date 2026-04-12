@@ -2,7 +2,7 @@
   import * as Item from '@cio/ui/base/item';
   import { Image } from '$features/ui';
   import VideoIcon from '@lucide/svelte/icons/video';
-  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
+  import { ExternalLinkIcon, HoverableItem } from '@cio/ui/custom/moving-icons';
   import VideoCardDropdown from './video-card-dropdown.svelte';
   import {
     getVideoThumbnailUrl,
@@ -67,15 +67,19 @@
     <Item.Content>
       <Item.Title class="line-clamp-2 min-h-[44px] text-base!" {title}>
         {#if isYoutubeWithLink}
-          <a
-            href={video.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="ui:text-foreground hover:ui:underline focus:ui:underline focus:ui:outline-none inline-flex items-center gap-1.5"
-          >
-            <span class="line-clamp-2">{title}</span>
-            <ExternalLinkIcon class="ui:text-muted-foreground size-3.5 shrink-0" aria-hidden="true" />
-          </a>
+          <HoverableItem>
+            {#snippet children(isHovered)}
+              <a
+                href={video.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="ui:text-foreground hover:ui:underline focus:ui:underline focus:ui:outline-none inline-flex items-center gap-1.5"
+              >
+                <span class="line-clamp-2">{title}</span>
+                <ExternalLinkIcon {isHovered} size={14} class="ui:text-muted-foreground shrink-0" ariaHidden={true} />
+              </a>
+            {/snippet}
+          </HoverableItem>
         {:else}
           {title}
         {/if}

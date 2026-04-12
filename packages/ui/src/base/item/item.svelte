@@ -7,7 +7,8 @@
       variant: {
         default: 'ui:bg-transparent',
         outline: 'ui:border-border',
-        muted: 'ui:bg-muted/50'
+        muted: 'ui:bg-muted/50',
+        'muted-border': 'ui:border-border ui:bg-muted/50'
       },
       size: {
         default: 'ui:gap-4 ui:p-4',

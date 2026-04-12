@@ -210,6 +210,9 @@ export async function deleteExercise(exerciseId: string, dbClient: DbOrTxClient 
 export async function createQuestions(values: TNewQuestion[], dbClient: DbOrTxClient = db) {
   if (values.length === 0) return [];
   try {
+    // Keep the identity sequence aligned before bulk inserts so restored data
+    // or manual imports cannot reuse an existing question id.
+    await syncQuestionIdSequence(dbClient);
     return dbClient.insert(schema.question).values(values).returning();
   } catch (error) {
     const err = error as Error & { code?: string; cause?: unknown };
@@ -268,6 +271,9 @@ export async function deleteQuestion(questionId: number, dbClient: DbOrTxClient 
 export async function createOptions(values: TNewOption[], dbClient: DbOrTxClient = db) {
   if (values.length === 0) return [];
   try {
+    // Keep the identity sequence aligned before bulk inserts so restored data
+    // or manual imports cannot reuse an existing option id.
+    await syncOptionIdSequence(dbClient);
     return dbClient.insert(schema.option).values(values).returning();
   } catch (error) {
     console.error('createOptions error:', error);
@@ -520,6 +526,22 @@ export async function syncOptionIdSequence(dbClient: DbOrTxClient = db): Promise
         pg_get_serial_sequence('option', 'id'),
         COALESCE((SELECT MAX(id) FROM "option"), 1),
         EXISTS(SELECT 1 FROM "option")
+      )
+    `
+  );
+}
+
+/**
+ * Syncs the question table's identity sequence to the current max(id).
+ * Call before inserting questions to avoid duplicate key on question_pkey when the sequence is behind.
+ */
+export async function syncQuestionIdSequence(dbClient: DbOrTxClient = db): Promise<void> {
+  await dbClient.execute(
+    sql`
+      SELECT setval(
+        pg_get_serial_sequence('question', 'id'),
+        COALESCE((SELECT MAX(id) FROM question), 1),
+        EXISTS(SELECT 1 FROM question)
       )
     `
   );

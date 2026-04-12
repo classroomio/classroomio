@@ -45,7 +45,7 @@ export async function fetchCommunityQuestions(
       case ROLE.TUTOR:
         // Tutors can see questions in courses they have access to
         const tutorCourses = await getOrgCourses({ orgId, profileId: userId });
-        const tutorCourseIds = tutorCourses.map((course) => course.id);
+        const tutorCourseIds = tutorCourses.items.map((course) => course.id);
         discussions = await getCommunityQuestions({ courseIds: tutorCourseIds });
         break;
       case ROLE.STUDENT:

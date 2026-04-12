@@ -11,7 +11,7 @@ import {
   TNewCourseSection,
   TProfile
 } from '@db/types';
-import { and, desc, eq, inArray, isNull, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, ilike, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -23,6 +23,7 @@ import { getCourseContentItems, type CourseContentItemRow } from './content';
  */
 export interface TBaseCourse extends TCourse {
   lessonCount: number;
+  exerciseCount: number;
 }
 
 /**
@@ -40,7 +41,6 @@ export interface TAdminCourse extends TBaseCourse {
  */
 export interface TStudentCourse extends TBaseCourse {
   progressRate: number;
-  exerciseCount: number;
   exercisesCompleted: number;
 }
 
@@ -49,7 +49,11 @@ export interface TStudentCourse extends TBaseCourse {
  * @param siteName Organization site name
  * @returns Array of published courses with lesson counts
  */
-export const getPublishedCoursesBySiteName = async (siteName: string, courseIds?: string[]): Promise<TBaseCourse[]> => {
+export const getPublishedCoursesBySiteName = async (
+  siteName: string,
+  courseIds?: string[],
+  limit?: number
+): Promise<TBaseCourse[]> => {
   try {
     if (courseIds && courseIds.length === 0) {
       return [];
@@ -65,27 +69,85 @@ export const getPublishedCoursesBySiteName = async (siteName: string, courseIds?
       conditions.push(inArray(schema.course.id, courseIds));
     }
 
-    const result = await db
-      .select({
-        course: schema.course,
-        lessonCount: sql<number>`COUNT(${schema.lesson.id})`.as('lesson_count')
-      })
-      .from(schema.course)
-      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
-      .leftJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId))
-      .where(and(...conditions))
-      .groupBy(schema.course.id)
-      .orderBy(desc(schema.course.createdAt));
+    const exerciseCountSql = sql<number>`(
+      SELECT COUNT(*)::bigint
+      FROM ${schema.exercise} as ex
+      LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
+      WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
+    )`.as('exercise_count');
+
+    const result = limit
+      ? await db
+          .select({
+            course: schema.course,
+            lessonCount: sql<number>`COUNT(${schema.lesson.id})`.as('lesson_count'),
+            exerciseCount: exerciseCountSql
+          })
+          .from(schema.course)
+          .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+          .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+          .leftJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId))
+          .where(and(...conditions))
+          .groupBy(schema.course.id)
+          .orderBy(desc(schema.course.createdAt))
+          .limit(limit)
+      : await db
+          .select({
+            course: schema.course,
+            lessonCount: sql<number>`COUNT(${schema.lesson.id})`.as('lesson_count'),
+            exerciseCount: exerciseCountSql
+          })
+          .from(schema.course)
+          .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+          .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+          .leftJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId))
+          .where(and(...conditions))
+          .groupBy(schema.course.id)
+          .orderBy(desc(schema.course.createdAt));
 
     return result.map((row) => ({
       ...row.course,
-      lessonCount: Number(row.lessonCount)
+      lessonCount: Number(row.lessonCount),
+      exerciseCount: Number(row.exerciseCount)
     }));
   } catch (error) {
     console.error('getCoursesBySiteName error:', error);
     throw new Error(
       `Failed to get courses by site name "${siteName}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+};
+
+export const countPublishedCoursesBySiteName = async (siteName: string, courseIds?: string[]): Promise<number> => {
+  try {
+    if (courseIds && courseIds.length === 0) {
+      return 0;
+    }
+
+    const conditions = [
+      eq(schema.organization.siteName, siteName),
+      eq(schema.course.status, 'ACTIVE'),
+      eq(schema.course.isPublished, true)
+    ];
+
+    if (courseIds && courseIds.length > 0) {
+      conditions.push(inArray(schema.course.id, courseIds));
+    }
+
+    const [result] = await db
+      .select({
+        total: count(schema.course.id)
+      })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+      .where(and(...conditions));
+
+    return Number(result?.total ?? 0);
+  } catch (error) {
+    console.error('countPublishedCoursesBySiteName error:', error);
+    throw new Error(
+      `Failed to count courses by site name "${siteName}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 };
@@ -354,18 +416,18 @@ export async function getCourseWithRelations(
   }
 }
 
-export async function createCourse(newCourse: TNewCourse) {
+export async function createCourse(newCourse: TNewCourse, dbClient: DbOrTxClient = db) {
   try {
-    return await db.insert(schema.course).values(newCourse).returning();
+    return await dbClient.insert(schema.course).values(newCourse).returning();
   } catch (error) {
     console.error('createCourse error:', error);
     throw new Error(`Failed to create course: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
-export async function createCourseNewsfeed(newsfeed: TNewCourseNewsfeed) {
+export async function createCourseNewsfeed(newsfeed: TNewCourseNewsfeed, dbClient: DbOrTxClient = db) {
   try {
-    return await db.insert(schema.courseNewsfeed).values(newsfeed).returning();
+    return await dbClient.insert(schema.courseNewsfeed).values(newsfeed).returning();
   } catch (error) {
     console.error('createCourseNewsfeed error:', error);
     throw new Error(`Failed to create course newsfeed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -389,6 +451,18 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
   } catch (error) {
     console.error('updateCourse error:', error);
     throw new Error(`Failed to update course: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Bumps updatedAt on a course without changing any other fields.
+ * Call this whenever course content (lessons, exercises) changes.
+ */
+export async function touchCourseUpdatedAt(courseId: string) {
+  try {
+    await db.update(schema.course).set({ updatedAt: new Date().toISOString() }).where(eq(schema.course.id, courseId));
+  } catch (error) {
+    console.error('touchCourseUpdatedAt error:', error);
   }
 }
 
@@ -563,6 +637,20 @@ interface GetOrgCoursesOptions {
   profileId?: string;
   /** Optional course IDs filter */
   courseIds?: string[];
+  /** Optional search query against the course title */
+  search?: string;
+  /** Page number (1-indexed) */
+  page?: number;
+  /** Page size */
+  limit?: number;
+}
+
+export interface GetOrgCoursesResult {
+  items: TAdminCourse[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 /**
@@ -572,11 +660,53 @@ interface GetOrgCoursesOptions {
  * @param options.profileId Optional profile ID to filter by membership
  * @returns Array of courses with admin-level data
  */
-export const getOrgCourses = async ({ orgId, profileId, courseIds }: GetOrgCoursesOptions): Promise<TAdminCourse[]> => {
+export const getOrgCourses = async ({
+  orgId,
+  profileId,
+  courseIds,
+  search,
+  page = 1,
+  limit = 20
+}: GetOrgCoursesOptions): Promise<GetOrgCoursesResult> => {
   try {
     if (courseIds && courseIds.length === 0) {
-      return [];
+      return {
+        items: [],
+        total: 0,
+        page,
+        limit,
+        totalPages: 0
+      };
     }
+
+    const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
+
+    if (courseIds && courseIds.length > 0) {
+      conditions.push(inArray(schema.course.id, courseIds));
+    }
+
+    if (search?.trim()) {
+      conditions.push(ilike(schema.course.title, `%${search.trim()}%`));
+    }
+
+    const totalQuery = profileId
+      ? db
+          .select({ count: count(schema.course.id) })
+          .from(schema.course)
+          .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+          .innerJoin(
+            schema.groupmember,
+            and(eq(schema.groupmember.groupId, schema.group.id), eq(schema.groupmember.profileId, profileId))
+          )
+          .where(and(...conditions))
+      : db
+          .select({ count: count(schema.course.id) })
+          .from(schema.course)
+          .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+          .where(and(...conditions));
+
+    const [countRow] = await totalQuery;
+    const total = Number(countRow?.count ?? 0);
 
     const baseQuery = db
       .select({
@@ -584,35 +714,47 @@ export const getOrgCourses = async ({ orgId, profileId, courseIds }: GetOrgCours
         lessonCount: sql<number>`COUNT(DISTINCT ${schema.lesson.id})`.as('lesson_count'),
         studentCount: sql<number>`(SELECT COUNT(*)::bigint
           FROM ${schema.groupmember} as gm
-          WHERE gm.group_id = ${schema.course.groupId}
+          WHERE ${eq(sql`gm.group_id`, schema.course.groupId)}
           AND gm.role_id = ${ROLE.STUDENT}
-        )`.as('total_students')
+        )`.as('total_students'),
+        exerciseCount: sql<number>`(
+          SELECT COUNT(*)::bigint
+          FROM ${schema.exercise} as ex
+          LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
+          WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
+        )`.as('exercise_count')
       })
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
       .leftJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId));
 
-    // Build conditions
-    const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
-
-    if (courseIds && courseIds.length > 0) {
-      conditions.push(inArray(schema.course.id, courseIds));
-    }
-
-    // If profileId provided, join groupmember and filter by membership
-    const query = profileId
+    const itemsQuery = profileId
       ? baseQuery
-          .innerJoin(schema.groupmember, eq(schema.group.id, schema.groupmember.groupId))
-          .where(and(...conditions, eq(schema.groupmember.profileId, profileId)))
+          .innerJoin(
+            schema.groupmember,
+            and(eq(schema.groupmember.groupId, schema.group.id), eq(schema.groupmember.profileId, profileId))
+          )
+          .where(and(...conditions))
       : baseQuery.where(and(...conditions));
 
-    const result = await query.groupBy(schema.course.id).orderBy(desc(schema.course.createdAt));
+    const result = await itemsQuery
+      .groupBy(schema.course.id)
+      .orderBy(desc(schema.course.createdAt))
+      .limit(limit)
+      .offset((page - 1) * limit);
 
-    return result.map((row) => ({
-      ...row.course,
-      lessonCount: Number(row.lessonCount),
-      totalStudents: Number(row.studentCount)
-    }));
+    return {
+      items: result.map((row) => ({
+        ...row.course,
+        lessonCount: Number(row.lessonCount),
+        totalStudents: Number(row.studentCount),
+        exerciseCount: Number(row.exerciseCount)
+      })),
+      total,
+      page,
+      limit,
+      totalPages: total === 0 ? 0 : Math.ceil(total / limit)
+    };
   } catch (error) {
     console.error('getOrgCourses error:', error);
     throw new Error(`Failed to get org courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -638,6 +780,15 @@ export const getEnrolledCourses = async ({
   profileId
 }: GetEnrolledCoursesOptions): Promise<TStudentCourse[]> => {
   try {
+    // Single query covering both access paths:
+    //   1. Direct enrollment: student has a groupmember row for the course's group
+    //   2. Program membership: student is a program_member of a program that contains the course
+    //
+    // Profile filters are pushed into each LEFT JOIN's ON clause so the database
+    // can filter early. The WHERE then requires at least one path to have matched.
+    // GROUP BY course.id deduplicates courses accessible via both paths simultaneously.
+    // exercisesCompleted uses a profileId-based subquery so it doesn't depend on
+    // the outer groupmember join (which may be NULL for program-only access).
     const result = await db
       .select({
         course: schema.course,
@@ -646,7 +797,7 @@ export const getEnrolledCourses = async ({
           SELECT COUNT(*)::bigint
           FROM ${schema.lessonCompletion} as lc
           JOIN ${schema.lesson} as l ON l.id = lc.lesson_id
-          WHERE l.course_id = ${schema.course.id}
+          WHERE ${eq(sql`l.course_id`, schema.course.id)}
           AND lc.is_complete = true
           AND lc.profile_id = ${sql.raw(`'${profileId}'::uuid`)}
         )`.as('progress_rate'),
@@ -654,31 +805,49 @@ export const getEnrolledCourses = async ({
           SELECT COUNT(*)::bigint
           FROM ${schema.exercise} as ex
           LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
-          WHERE ex.course_id = ${schema.course.id}
-          OR el.course_id = ${schema.course.id}
+          WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
         )`.as('exercise_count'),
         exercisesCompleted: sql<number>`(
           SELECT COUNT(DISTINCT s.exercise_id)::bigint
           FROM ${schema.submission} as s
           JOIN ${schema.exercise} as ex ON ex.id = s.exercise_id
           LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
-          WHERE (ex.course_id = ${schema.course.id} OR el.course_id = ${schema.course.id})
-          AND s.submitted_by = ${schema.groupmember.id}
+          JOIN ${schema.groupmember} as gm ON gm.id = s.submitted_by
+          WHERE ${and(
+            or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id)),
+            sql`gm.profile_id = ${sql.raw(`'${profileId}'::uuid`)}`
+          )}
         )`.as('exercises_completed')
       })
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-      .innerJoin(schema.groupmember, eq(schema.group.id, schema.groupmember.groupId))
+      .leftJoin(
+        schema.groupmember,
+        and(eq(schema.group.id, schema.groupmember.groupId), eq(schema.groupmember.profileId, profileId))
+      )
+      .leftJoin(schema.programCourse, eq(schema.course.id, schema.programCourse.courseId))
+      .leftJoin(
+        schema.program,
+        and(
+          eq(schema.programCourse.programId, schema.program.id),
+          eq(schema.program.organizationId, orgId),
+          eq(schema.program.status, 'ACTIVE')
+        )
+      )
+      .leftJoin(
+        schema.programMember,
+        and(eq(schema.program.id, schema.programMember.programId), eq(schema.programMember.profileId, profileId))
+      )
       .leftJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId))
       .where(
         and(
           eq(schema.group.organizationId, orgId),
           eq(schema.course.status, 'ACTIVE'),
           eq(schema.course.isPublished, true),
-          eq(schema.groupmember.profileId, profileId)
+          or(isNotNull(schema.groupmember.id), isNotNull(schema.programMember.id))
         )
       )
-      .groupBy(schema.course.id, schema.groupmember.id)
+      .groupBy(schema.course.id)
       .orderBy(desc(schema.course.createdAt));
 
     return result.map((row) => ({
@@ -711,7 +880,13 @@ export const getExploreCourses = async ({ orgId, profileId }: GetExploreCoursesO
     const result = await db
       .select({
         course: schema.course,
-        lessonCount: sql<number>`COUNT(DISTINCT ${schema.lesson.id})`.as('total_lessons')
+        lessonCount: sql<number>`COUNT(DISTINCT ${schema.lesson.id})`.as('total_lessons'),
+        exerciseCount: sql<number>`(
+          SELECT COUNT(*)::bigint
+          FROM ${schema.exercise} as ex
+          LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
+          WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
+        )`.as('exercise_count')
       })
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -733,7 +908,8 @@ export const getExploreCourses = async ({ orgId, profileId }: GetExploreCoursesO
 
     return result.map((row) => ({
       ...row.course,
-      lessonCount: Number(row.lessonCount)
+      lessonCount: Number(row.lessonCount),
+      exerciseCount: Number(row.exerciseCount)
     }));
   } catch (error) {
     console.error('getExploreCourses error:', error);

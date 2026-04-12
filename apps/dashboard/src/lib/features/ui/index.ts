@@ -30,3 +30,6 @@ export { default as UpgradeModal } from './upgrade-modal.svelte';
 export { default as VisitOrgSiteButton } from './visit-org-site-btn.svelte';
 export { default as Vote } from './vote.svelte';
 export { default as PageRestricted } from './page-restricted.svelte';
+export { default as SortSelect } from './sort-select.svelte';
+export type { SortOption } from './sort-select.svelte';
+export { default as SortPopover } from './sort-popover.svelte';

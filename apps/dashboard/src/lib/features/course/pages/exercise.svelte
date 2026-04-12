@@ -249,7 +249,7 @@
   });
 </script>
 
-<Page.Header isSticky={true} class="z-250! min-h-[36px]">
+<Page.Header isSticky={true} class="z-50! min-h-[36px]">
   <Page.HeaderContent>
     <Page.Title class="flex flex-wrap items-center gap-2">
       <span>{$questionnaire.title || 'Exercise'}</span>

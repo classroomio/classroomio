@@ -6,11 +6,13 @@ import type {
 } from '@cio/utils/validation/organization';
 import { addGroupMembers, enrollUsersInCourseGroups, getExistingGroupMembers } from '@cio/db/queries/group';
 import { buildEmailFromName, sendEmail } from '@cio/email';
+import { addProgramMember, getExistingProgramMembers, getProgramsByOrg } from '@cio/db/queries/program';
 import {
   createOrganizationInvite,
   createOrganizationInviteAudits,
   createOrganizationInvites,
   createOrganizationMembers,
+  getOrganizationAudienceMember,
   getLatestOrganizationInviteRowByOrgAndEmail,
   getOrgMembersByProfileIds,
   getOrganizationById,
@@ -20,6 +22,7 @@ import {
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
 import { getCourseGroupIds, getOrgCourseGroups, getOrgCourses } from '@cio/db/queries/course';
+import { updateOrganizationAudienceMember } from '@cio/db/queries/organization';
 
 import { ROLE } from '@cio/utils/constants';
 import crypto from 'node:crypto';
@@ -113,14 +116,31 @@ async function resolveCourseIdsAndNamesForImport(orgId: string, data: TImportAud
   let courseNames: string[] = [];
   if (data.allCourses) {
     const courses = await getOrgCourses({ orgId });
-    courseIds = courses.map((c) => c.id);
-    courseNames = courses.map((c) => c.title).filter(Boolean);
+    courseIds = courses.items.map((c) => c.id);
+    courseNames = courses.items.map((c) => c.title).filter(Boolean);
   } else if (data.courseIds && data.courseIds.length > 0) {
     const courses = await getOrgCourses({ orgId, courseIds: data.courseIds });
-    courseIds = courses.map((c) => c.id);
-    courseNames = courses.map((c) => c.title).filter(Boolean);
+    courseIds = courses.items.map((c) => c.id);
+    courseNames = courses.items.map((c) => c.title).filter(Boolean);
   }
   return { courseIds, courseNames };
+}
+
+async function resolveProgramIdsAndNamesForImport(orgId: string, data: TImportAudienceMembers) {
+  let programIds: string[] = [];
+  let programNames: string[] = [];
+
+  if (data.allPrograms) {
+    const programs = await getProgramsByOrg(orgId);
+    programIds = programs.map((program) => program.id);
+    programNames = programs.map((program) => program.name).filter(Boolean);
+  } else if (data.programIds && data.programIds.length > 0) {
+    const programs = await getProgramsByOrg(orgId, data.programIds);
+    programIds = programs.map((program) => program.id);
+    programNames = programs.map((program) => program.name).filter(Boolean);
+  }
+
+  return { programIds, programNames };
 }
 
 async function enrollAudienceStudentProfilesInCourses(
@@ -202,16 +222,98 @@ async function enrollAudienceStudentProfilesInCourses(
   };
 }
 
+async function enrollAudienceStudentProfilesInPrograms(
+  organization: NonNullable<Awaited<ReturnType<typeof getOrganizationById>>>,
+  orgId: string,
+  profileIds: string[],
+  programIds: string[],
+  shouldSendEmail: boolean
+): Promise<{ assigned: number; alreadyEnrolled: number; emailsSent: number }> {
+  if (programIds.length === 0 || profileIds.length === 0) {
+    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+  }
+
+  const uniqueProfileIds = [...new Set(profileIds)];
+  const orgMembers = await getOrgMembersByProfileIds(orgId, uniqueProfileIds);
+  const studentMembers = orgMembers.filter((member) => member.profileId && member.roleId === ROLE.STUDENT);
+  const validProfileIds = new Set(studentMembers.map((member) => member.profileId!));
+  const profileEmailMap = new Map(
+    studentMembers.filter((member) => member.profileId).map((member) => [member.profileId!, member.email ?? ''])
+  );
+
+  const programs = await getProgramsByOrg(orgId, programIds);
+  if (programs.length === 0) {
+    return { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+  }
+
+  const programNameById = new Map(programs.map((program) => [program.id, program.name || 'Program']));
+  const loginUrl = getDashboardBaseUrl(organization.siteName ?? undefined);
+  const validProgramIds = programs.map((program) => program.id);
+  const validProfiles = uniqueProfileIds.filter((profileId) => validProfileIds.has(profileId));
+  const pairs = validProfiles.flatMap((profileId) => validProgramIds.map((programId) => ({ programId, profileId })));
+  const existingSet = await getExistingProgramMembers(pairs);
+  const toInsert = pairs.filter((pair) => !existingSet.has(`${pair.programId}:${pair.profileId}`));
+  const alreadyEnrolled = pairs.length - toInsert.length;
+
+  if (toInsert.length > 0) {
+    await Promise.all(
+      toInsert.map((pair) =>
+        addProgramMember({
+          programId: pair.programId,
+          roleId: ROLE.STUDENT,
+          profileId: pair.profileId,
+          email: profileEmailMap.get(pair.profileId) || undefined
+        })
+      )
+    );
+  }
+
+  let emailsSent = 0;
+
+  if (shouldSendEmail && toInsert.length > 0) {
+    await Promise.all(
+      toInsert
+        .filter((pair) => profileEmailMap.get(pair.profileId))
+        .map(async (pair) => {
+          const email = profileEmailMap.get(pair.profileId)!;
+
+          try {
+            await sendEmail('studentProgramWelcome', {
+              to: email,
+              fields: {
+                orgName: organization.name,
+                programName: programNameById.get(pair.programId) || 'Program',
+                loginUrl
+              },
+              from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`)
+            });
+            emailsSent++;
+          } catch (emailError) {
+            console.error(`enrollAudienceStudentProfilesInPrograms email error for ${email}:`, emailError);
+          }
+        })
+    );
+  }
+
+  return {
+    assigned: toInsert.length,
+    alreadyEnrolled,
+    emailsSent
+  };
+}
+
 async function createStudentOrgInvitesAndSendEmails(input: {
   orgId: string;
   organization: NonNullable<Awaited<ReturnType<typeof getOrganizationById>>>;
   emails: string[];
   courseIds: string[];
-  courseNamesLabel: string | undefined;
+  programIds: string[];
+  accessNamesLabel: string | undefined;
   invitedByProfileId: string;
   shouldSendEmail: boolean;
 }): Promise<{ created: number; emailsSent: number; emailsFailed: number }> {
-  const { orgId, organization, emails, courseIds, courseNamesLabel, invitedByProfileId, shouldSendEmail } = input;
+  const { orgId, organization, emails, courseIds, programIds, accessNamesLabel, invitedByProfileId, shouldSendEmail } =
+    input;
 
   if (emails.length === 0) {
     return { created: 0, emailsSent: 0, emailsFailed: 0 };
@@ -236,7 +338,8 @@ async function createStudentOrgInvitesAndSendEmails(input: {
         isRevoked: false,
         metadata: {
           source: 'AUDIENCE_IMPORT',
-          courseIds: courseIds.length > 0 ? courseIds : undefined
+          courseIds: courseIds.length > 0 ? courseIds : undefined,
+          programIds: programIds.length > 0 ? programIds : undefined
         }
       }
     };
@@ -261,7 +364,8 @@ async function createStudentOrgInvitesAndSendEmails(input: {
           roleId: ROLE.STUDENT,
           roleName: 'Student',
           expiresAt,
-          courseIds
+          courseIds,
+          programIds
         }
       };
     })
@@ -283,7 +387,7 @@ async function createStudentOrgInvitesAndSendEmails(input: {
             orgName: organization.name,
             inviteLink,
             expiresAt: getExpiryLabel(expiresAt),
-            courseNames: courseNamesLabel
+            courseNames: accessNamesLabel
           },
           from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`)
         });
@@ -388,13 +492,22 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
   }
 
   const { courseIds, courseNames } = await resolveCourseIdsAndNamesForImport(orgId, data);
-  const courseNamesLabel = courseNames.length > 0 ? courseNames.join(', ') : undefined;
+  const { programIds, programNames } = await resolveProgramIdsAndNamesForImport(orgId, data);
+  const accessNames = [...courseNames, ...programNames];
+  const accessNamesLabel = accessNames.length > 0 ? accessNames.join(', ') : undefined;
 
-  const assignResult = await enrollAudienceStudentProfilesInCourses(
+  const assignedToCourses = await enrollAudienceStudentProfilesInCourses(
     orgId,
     organization,
     existingStudentProfileIds,
     courseIds,
+    data.sendEmail
+  );
+  const assignedToPrograms = await enrollAudienceStudentProfilesInPrograms(
+    organization,
+    orgId,
+    existingStudentProfileIds,
+    programIds,
     data.sendEmail
   );
 
@@ -425,12 +538,26 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
       }
     }
 
+    if (programIds.length > 0) {
+      const profiles = await getProfilesByEmails(newEmails);
+      if (profiles.length > 0) {
+        await enrollAudienceStudentProfilesInPrograms(
+          organization,
+          orgId,
+          profiles.map((profile) => profile.id),
+          programIds,
+          false
+        );
+      }
+    }
+
     const inviteOutcome = await createStudentOrgInvitesAndSendEmails({
       orgId,
       organization,
       emails: newEmails,
       courseIds,
-      courseNamesLabel,
+      programIds,
+      accessNamesLabel,
       invitedByProfileId,
       shouldSendEmail: data.sendEmail
     });
@@ -447,7 +574,8 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
       organization,
       emails: pendingStudentEmails,
       courseIds,
-      courseNamesLabel,
+      programIds,
+      accessNamesLabel,
       invitedByProfileId,
       shouldSendEmail: data.sendEmail
     });
@@ -457,11 +585,12 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
 
   return {
     imported,
-    assigned: assignResult.assigned,
-    alreadyEnrolledInCourses: assignResult.alreadyEnrolled,
+    assigned: assignedToCourses.assigned + assignedToPrograms.assigned,
+    alreadyEnrolledInCourses: assignedToCourses.alreadyEnrolled,
+    alreadyEnrolledInPrograms: assignedToPrograms.alreadyEnrolled,
     pendingInvitesRenewed: pendingStudentEmails.length,
     duplicates: recipients.duplicates.length,
-    emailsSent: assignResult.emailsSent + importEmailsSent + pendingEmailsSent,
+    emailsSent: assignedToCourses.emailsSent + assignedToPrograms.emailsSent + importEmailsSent + pendingEmailsSent,
     emailsFailed: importEmailsFailed + pendingEmailsFailed
   };
 }
@@ -483,22 +612,32 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
   const emailToUse = member.email.toLowerCase().trim();
 
   const latestInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, emailToUse);
-  const meta = latestInvite?.metadata as { courseIds?: string[] } | undefined;
-  const courseIdsFromMetadata = meta?.courseIds?.filter(Boolean) ?? [];
+  const meta = (latestInvite?.metadata as { courseIds?: string[]; programIds?: string[] } | undefined) ?? {};
+  const courseIdsFromMetadata = meta.courseIds?.filter(Boolean) ?? [];
+  const programIdsFromMetadata = meta.programIds?.filter(Boolean) ?? [];
 
   let courseIds: string[] = [];
   let courseNames: string[] = [];
   if (courseIdsFromMetadata.length > 0) {
     const courses = await getOrgCourses({ orgId, courseIds: courseIdsFromMetadata });
-    courseIds = courses.map((c) => c.id);
-    courseNames = courses.map((c) => c.title).filter(Boolean);
+    courseIds = courses.items.map((c) => c.id);
+    courseNames = courses.items.map((c) => c.title).filter(Boolean);
+  }
+
+  let programIds: string[] = [];
+  let programNames: string[] = [];
+  if (programIdsFromMetadata.length > 0) {
+    const programs = await getProgramsByOrg(orgId, programIdsFromMetadata);
+    programIds = programs.map((program) => program.id);
+    programNames = programs.map((program) => program.name).filter(Boolean);
   }
 
   await revokeActiveOrganizationInvitesByEmails(orgId, [emailToUse], invitedByProfileId);
 
   const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
   const token = generateToken();
-  const courseNamesLabel = courseNames.length > 0 ? courseNames.join(', ') : undefined;
+  const accessNames = [...courseNames, ...programNames];
+  const accessNamesLabel = accessNames.length > 0 ? accessNames.join(', ') : undefined;
 
   const invite = await createOrganizationInvite({
     organizationId: orgId,
@@ -510,7 +649,8 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
     isRevoked: false,
     metadata: {
       source: 'AUDIENCE_RESEND',
-      courseIds: courseIds.length > 0 ? courseIds : undefined
+      courseIds: courseIds.length > 0 ? courseIds : undefined,
+      programIds: programIds.length > 0 ? programIds : undefined
     }
   });
 
@@ -527,7 +667,8 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
         roleId: ROLE.STUDENT,
         roleName: 'Student',
         expiresAt,
-        courseIds
+        courseIds,
+        programIds
       }
     }
   ]);
@@ -542,7 +683,7 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
         orgName: organization.name,
         inviteLink,
         expiresAt: getExpiryLabel(expiresAt),
-        courseNames: courseNamesLabel
+        courseNames: accessNamesLabel
       },
       from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`)
     });
@@ -633,10 +774,113 @@ export async function assignAudienceToCourses(orgId: string, data: TAssignAudien
     throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
   }
 
-  const courseGroups = await getOrgCourseGroups(orgId, data.courseIds);
-  if (courseGroups.length === 0) {
-    throw new AppError('No valid courses found', ErrorCodes.VALIDATION_ERROR, 400, 'courseIds');
+  const courseIds = data.courseIds ?? [];
+  const programIds = data.programIds ?? [];
+
+  let assignedToCourses = { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+  let assignedToPrograms = { assigned: 0, alreadyEnrolled: 0, emailsSent: 0 };
+
+  if (courseIds.length > 0) {
+    const courseGroups = await getOrgCourseGroups(orgId, courseIds);
+    if (courseGroups.length === 0) {
+      throw new AppError('No valid courses found', ErrorCodes.VALIDATION_ERROR, 400, 'courseIds');
+    }
+
+    assignedToCourses = await enrollAudienceStudentProfilesInCourses(
+      orgId,
+      organization,
+      data.profileIds,
+      courseIds,
+      data.sendEmail
+    );
   }
 
-  return enrollAudienceStudentProfilesInCourses(orgId, organization, data.profileIds, data.courseIds, data.sendEmail);
+  if (programIds.length > 0) {
+    const programs = await getProgramsByOrg(orgId, programIds);
+    if (programs.length === 0) {
+      throw new AppError('No valid programs found', ErrorCodes.VALIDATION_ERROR, 400, 'programIds');
+    }
+
+    assignedToPrograms = await enrollAudienceStudentProfilesInPrograms(
+      organization,
+      orgId,
+      data.profileIds,
+      programIds,
+      data.sendEmail
+    );
+  }
+
+  return {
+    assigned: assignedToCourses.assigned + assignedToPrograms.assigned,
+    alreadyEnrolled: assignedToCourses.alreadyEnrolled + assignedToPrograms.alreadyEnrolled,
+    emailsSent: assignedToCourses.emailsSent + assignedToPrograms.emailsSent
+  };
+}
+
+export async function updatePendingAudienceMemberEmail(
+  orgId: string,
+  memberId: number,
+  data: { email: string; sendEmail: boolean },
+  invitedByProfileId: string
+) {
+  const organization = await getOrganizationById(orgId);
+  if (!organization) {
+    throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
+  }
+
+  const existingMember = await getOrganizationAudienceMember(orgId, memberId);
+  if (!existingMember) {
+    throw new AppError('Audience member not found', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  if (existingMember.profileId) {
+    throw new AppError(
+      'Only pending audience members can be updated through this endpoint',
+      ErrorCodes.VALIDATION_ERROR,
+      400,
+      'memberId'
+    );
+  }
+
+  const normalizedEmail = data.email.toLowerCase().trim();
+  const currentEmail = existingMember.email.toLowerCase().trim();
+
+  if (!normalizedEmail) {
+    throw new AppError('Email is required', ErrorCodes.VALIDATION_ERROR, 400, 'email');
+  }
+
+  if (normalizedEmail !== currentEmail) {
+    const matchingMembers = await getOrganizationMembersByNormalizedEmails(orgId, [normalizedEmail]);
+
+    if (matchingMembers.length > 0) {
+      throw new AppError('An audience member with this email already exists', ErrorCodes.CONFLICT, 409, 'email');
+    }
+  }
+
+  await revokeActiveOrganizationInvitesByEmails(orgId, [currentEmail, normalizedEmail], invitedByProfileId);
+
+  const updatedMember = await updateOrganizationAudienceMember(orgId, memberId, {
+    email: normalizedEmail,
+    verified: false
+  });
+
+  if (!updatedMember) {
+    throw new AppError('Audience member not found', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  const latestInvite = await getLatestOrganizationInviteRowByOrgAndEmail(orgId, currentEmail);
+  const meta = (latestInvite?.metadata as { courseIds?: string[]; programIds?: string[] } | undefined) ?? {};
+
+  await createStudentOrgInvitesAndSendEmails({
+    orgId,
+    organization,
+    emails: [normalizedEmail],
+    courseIds: meta.courseIds?.filter(Boolean) ?? [],
+    programIds: meta.programIds?.filter(Boolean) ?? [],
+    accessNamesLabel: undefined,
+    invitedByProfileId,
+    shouldSendEmail: data.sendEmail
+  });
+
+  return updatedMember;
 }

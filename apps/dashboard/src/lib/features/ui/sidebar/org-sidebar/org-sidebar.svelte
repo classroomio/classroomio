@@ -20,7 +20,7 @@
       <AppLogo />
     </Sidebar.Header>
 
-    <Sidebar.Content>
+    <Sidebar.Content class="gap-0!">
       <NavMain />
     </Sidebar.Content>
 

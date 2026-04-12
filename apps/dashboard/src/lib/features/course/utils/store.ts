@@ -3,7 +3,7 @@ import { writable } from 'svelte/store';
 export const courseMetaDeta = writable<{
   view: 'grid' | 'list';
 }>({
-  view: 'grid'
+  view: 'list'
 });
 
 export const createCourseModal = writable({

@@ -88,8 +88,5 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
 
 // Default rate limiter middleware with standard configuration
 export default createRateLimiter({
-  maxRequests: (c) =>
-    c.req.path === '/api/auth/get-session'
-      ? DEFAULT_RATE_LIMITER_OPTIONS.maxRequests * 3
-      : DEFAULT_RATE_LIMITER_OPTIONS.maxRequests
+  maxRequests: (c) => (c.req.path === '/api/auth/get-session' ? 1000 : DEFAULT_RATE_LIMITER_OPTIONS.maxRequests)
 });

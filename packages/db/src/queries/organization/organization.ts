@@ -268,6 +268,67 @@ export const deleteOrganizationAudienceMember = async (orgId: string, memberId: 
   return deleted || null;
 };
 
+export const getOrganizationAudienceMember = async (orgId: string, memberId: number) => {
+  const [row] = await db
+    .select({
+      memberId: schema.organizationmember.id,
+      profileId: schema.organizationmember.profileId,
+      fullname: schema.profile.fullname,
+      email: sql<string>`coalesce(${schema.profile.email}, ${schema.organizationmember.email})`.as('email'),
+      avatarUrl: schema.profile.avatarUrl,
+      profileCreatedAt: schema.profile.createdAt,
+      memberCreatedAt: schema.organizationmember.createdAt
+    })
+    .from(schema.organizationmember)
+    .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+    .where(
+      and(
+        eq(schema.organizationmember.organizationId, orgId),
+        eq(schema.organizationmember.id, memberId),
+        eq(schema.organizationmember.roleId, ROLE.STUDENT)
+      )
+    )
+    .limit(1);
+
+  if (!row) {
+    return null;
+  }
+
+  const email = row.email?.trim() ?? '';
+  const name = row.fullname?.trim() || (email.includes('@') ? email.split('@')[0] : email) || '';
+  const createdAtRaw = row.profileId ? row.profileCreatedAt : row.memberCreatedAt;
+  const createdAt = createdAtRaw ? new Date(createdAtRaw).toDateString() : '';
+
+  return {
+    id: row.memberId,
+    profileId: row.profileId ?? null,
+    name,
+    email,
+    avatarUrl: row.avatarUrl || '',
+    createdAt
+  };
+};
+
+export const updateOrganizationAudienceMember = async (
+  orgId: string,
+  memberId: number,
+  data: Partial<Pick<TNewOrganizationmember, 'email' | 'verified'>>
+) => {
+  const [updated] = await db
+    .update(schema.organizationmember)
+    .set(data)
+    .where(
+      and(
+        eq(schema.organizationmember.organizationId, orgId),
+        eq(schema.organizationmember.id, memberId),
+        eq(schema.organizationmember.roleId, ROLE.STUDENT)
+      )
+    )
+    .returning();
+
+  return updated || null;
+};
+
 /**
  * Checks if a user is an admin of an organization
  * @param orgId Organization ID

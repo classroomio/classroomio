@@ -40,6 +40,7 @@ export class BaseApi {
 
     this.isLoading = true;
     this.error = null;
+    this.success = false;
 
     try {
       const response = await requestFn();
@@ -50,6 +51,7 @@ export class BaseApi {
 
         if (apiResult.success === false) {
           console.log('apiResult false', apiResult);
+          this.error = JSON.stringify(apiResult);
           options.onError?.(apiResult as ExtractError<TrpcType>);
 
           return;

@@ -97,7 +97,7 @@
     if (!isOpen) $handleOpenWidget.open = false;
   }}
 >
-  <Dialog.Content class="w-3/5">
+  <Dialog.Content class="ui:z-300! w-3/5">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.landing_page.upload_widget.title')}</Dialog.Title>
     </Dialog.Header>

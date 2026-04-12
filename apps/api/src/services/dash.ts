@@ -1,16 +1,21 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { getCourseStats, getDashOrgStats, getRecentEnrollments } from '@cio/db/queries/dash';
+import {
+  getCourseStats,
+  getDashOrgStats,
+  getRecentCertifications,
+  getTotalCertificatesIssued
+} from '@cio/db/queries/dash';
 
 import { OrganisationAnalytics } from '@api/types';
 import { getOrgIdBySiteName } from '@cio/db/queries';
 
 export async function getOrganisationAnalytics(orgId?: string, siteName?: string): Promise<OrganisationAnalytics> {
   const analytics: OrganisationAnalytics = {
-    revenue: 0,
+    totalCertificates: 0,
     numberOfCourses: 0,
     totalStudents: 0,
     topCourses: [],
-    enrollments: []
+    recentCertifications: []
   };
 
   let resolvedOrgId = orgId;
@@ -26,13 +31,14 @@ export async function getOrganisationAnalytics(orgId?: string, siteName?: string
   }
 
   try {
-    const [stats, topCourses, enrollments] = await Promise.all([
+    const [stats, topCourses, recentCertificationRows, certificateCountRows] = await Promise.all([
       getDashOrgStats(resolvedOrgId!),
       getCourseStats(resolvedOrgId!),
-      getRecentEnrollments(resolvedOrgId!)
+      getRecentCertifications(resolvedOrgId!),
+      getTotalCertificatesIssued(resolvedOrgId!)
     ]);
 
-    analytics.revenue = 0;
+    analytics.totalCertificates = certificateCountRows[0]?.count ?? 0;
     analytics.numberOfCourses = stats?.[0]?.noOfCourses ?? 0;
     analytics.totalStudents = stats?.[0]?.enrolledStudents ?? 0;
 
@@ -40,16 +46,17 @@ export async function getOrganisationAnalytics(orgId?: string, siteName?: string
       id: c.courseId,
       title: c.courseTitle,
       enrollments: c.totalStudents,
-      completion: c.completionPercentage
+      completion: c.completionPercentage,
+      certification: c.certificationPercentage
     }));
 
-    analytics.enrollments = enrollments.map((e) => ({
-      id: e.profileId,
-      avatarUrl: e.avatarUrl,
-      name: e.fullname,
-      courseId: e.courseId,
-      course: e.courseTitle,
-      date: e.enrolledAt ?? ''
+    analytics.recentCertifications = recentCertificationRows.map((row) => ({
+      id: row.profileId,
+      avatarUrl: row.avatarUrl,
+      name: row.fullname,
+      courseId: row.courseId,
+      course: row.courseTitle,
+      date: row.earnedAt ?? ''
     }));
 
     return analytics;

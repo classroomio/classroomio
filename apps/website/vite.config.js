@@ -17,7 +17,7 @@ export default defineConfig({
     entries: ['src/routes/**/+*.{js,ts,svelte}']
   },
   ssr: {
-    noExternal: ['bits-ui', 'svelte-toolbelt', '@lucide/svelte', 'runed']
+    noExternal: ['bits-ui', 'svelte-toolbelt', '@lucide/svelte', 'runed', 'svelte-motion', 'svelte-inview']
   },
   resolve: {
     mainFields: ['browser']

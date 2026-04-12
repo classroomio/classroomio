@@ -1,31 +1,35 @@
 import { getOrgBySiteName } from '$features/org/api/org.server';
-import { classroomio } from '$lib/utils/services/api';
-import { getApiKeyHeaders } from '$lib/utils/services/api/server';
+import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import { getApiKeyHeaders, safeServerApi } from '$lib/utils/services/api/server';
 import { error } from '@sveltejs/kit';
+
+type PreviewOrganizationInviteRequest = (typeof classroomio.invite.organization)[':token']['preview']['$get'];
+type PreviewOrganizationInviteSuccess = Extract<InferResponseType<PreviewOrganizationInviteRequest>, { success: true }>;
 
 export const load = async ({ params = { hash: '' } }) => {
   try {
     const token = decodeURIComponent(params.hash);
-    const response = await classroomio.invite.organization[':token'].preview.$get(
-      {
-        param: { token }
-      },
-      getApiKeyHeaders()
+    const result = await safeServerApi<PreviewOrganizationInviteSuccess>(() =>
+      classroomio.invite.organization[':token'].preview.$get(
+        {
+          param: { token }
+        },
+        getApiKeyHeaders()
+      )
     );
-    const result = await response.json();
 
-    if (!result.success || !result.data) {
+    if (!result.ok || !result.body.data) {
       throw new Error('Invalid organization invite payload');
     }
 
     const apiKeyHeaders = getApiKeyHeaders();
-    const currentOrg = result.data.organization.siteName
-      ? await getOrgBySiteName(result.data.organization.siteName, apiKeyHeaders)
+    const currentOrg = result.body.data.organization.siteName
+      ? await getOrgBySiteName(result.body.data.organization.siteName, apiKeyHeaders)
       : null;
 
     return {
       token,
-      invite: result.data,
+      invite: result.body.data,
       currentOrg
     };
   } catch (e) {

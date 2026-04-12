@@ -176,6 +176,29 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'numeric.review.out_of_range': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.numeric.review.out_of_range'
     ),
+    'star.edit.correct_value_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.star.edit.correct_value_label'
+    ),
+    'star.edit.correct_value_info': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.star.edit.correct_value_info'
+    ),
+    'star.edit.max_stars_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.star.edit.max_stars_label'
+    ),
+    'star.edit.max_stars_info': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.star.edit.max_stars_info'
+    ),
+    'star.edit.correct_value_placeholder': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.star.edit.correct_value_placeholder'
+    ),
+    'star.edit.max_stars_placeholder': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.star.edit.max_stars_placeholder'
+    ),
+    'star.take.helper': t.get('course.navItem.lessons.exercises.all_exercises.shared_question.star.take.helper'),
+    'star.take.star_sr': t.get('course.navItem.lessons.exercises.all_exercises.shared_question.star.take.star_sr'),
+    'star.preview.correct_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.star.preview.correct_label'
+    ),
     'fill_blank.edit.accepted_answers_placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.edit.accepted_answers_placeholder'
     ),
@@ -187,6 +210,54 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     ),
     'fill_blank.review.your_answer_label': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.fill_blank.review.your_answer_label'
+    ),
+    'word_bank.edit.template_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.edit.template_label'
+    ),
+    'word_bank.edit.template_placeholder': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.edit.template_placeholder'
+    ),
+    'word_bank.edit.template_helper': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.edit.template_helper'
+    ),
+    'word_bank.edit.no_blanks_warning': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.edit.no_blanks_warning'
+    ),
+    'word_bank.edit.correct_answers_heading': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.edit.correct_answers_heading'
+    ),
+    'word_bank.edit.blank_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.edit.blank_label'
+    ),
+    'word_bank.edit.correct_placeholder': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.edit.correct_placeholder'
+    ),
+    'word_bank.edit.distractors_heading': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.edit.distractors_heading'
+    ),
+    'word_bank.edit.distractor_placeholder': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.edit.distractor_placeholder'
+    ),
+    'word_bank.edit.add_distractor': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.edit.add_distractor'
+    ),
+    'word_bank.take.helper': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.take.helper'
+    ),
+    'word_bank.take.bank_heading': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.take.bank_heading'
+    ),
+    'word_bank.take.clear_blank_sr': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.take.clear_blank_sr'
+    ),
+    'word_bank.preview.filled_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.preview.filled_label'
+    ),
+    'word_bank.review.your_answer_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.review.your_answer_label'
+    ),
+    'word_bank.review.correct_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.word_bank.review.correct_label'
     ),
     'file_upload.edit.accepted_types_placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.edit.accepted_types_placeholder'

@@ -701,7 +701,7 @@ export const lesson = pgTable(
     isUnlocked: boolean('is_unlocked').default(false),
     videos: jsonb().default([]).$type<
       {
-        type: 'youtube' | 'generic' | 'upload';
+        type: 'youtube' | 'generic' | 'upload' | 'google_drive';
         link: string;
         key?: string;
         assetId?: string;
@@ -1569,6 +1569,11 @@ export const questionAnswer = pgTable(
   ]
 );
 
+/**
+ * Exercise question kinds (`typename` matches `@cio/question-types` keys). Expected ids:
+ * 1 RADIO, 2 CHECKBOX, 3 TEXTAREA, 4 TRUE_FALSE, 5 SHORT_ANSWER, 6 NUMERIC, 7 FILL_BLANK,
+ * 8 FILE_UPLOAD, 9 MATCHING, 10 ORDERING, 11 HOTSPOT, 12 LINK, 13 WORD_BANK, 14 STAR.
+ */
 export const questionType = pgTable(
   'question_type',
   {
@@ -2112,5 +2117,159 @@ export const courseImportDraft = pgTable(
     uniqueIndex('course_import_draft_org_idempotency_key')
       .on(table.organizationId, table.idempotencyKey)
       .where(sql`${table.idempotencyKey} IS NOT NULL`)
+  ]
+);
+
+// ─── Programs ────────────────────────────────────────────────────────────────
+
+export const programStatus = pgEnum('PROGRAM_STATUS', ['ACTIVE', 'INACTIVE', 'ARCHIVED']);
+
+export const program = pgTable(
+  'program',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    organizationId: uuid('organization_id').notNull(),
+    name: varchar().notNull(),
+    description: text(),
+    coverImage: text('cover_image'),
+    status: programStatus().default('ACTIVE').notNull(),
+    createdByProfileId: uuid('created_by_profile_id')
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'program_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'program_created_by_profile_id_fkey'
+    }),
+    index('idx_program_organization_id').on(table.organizationId)
+  ]
+);
+
+export const programCourse = pgTable(
+  'program_course',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    programId: uuid('program_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    addedAt: timestamp('added_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.programId],
+      foreignColumns: [program.id],
+      name: 'program_course_program_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'program_course_course_id_fkey'
+    }).onDelete('cascade'),
+    unique('program_course_program_id_course_id_unique').on(table.programId, table.courseId),
+    index('idx_program_course_program_id').on(table.programId)
+  ]
+);
+
+export const programMember = pgTable(
+  'program_member',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    programId: uuid('program_id').notNull(),
+    profileId: uuid('profile_id'),
+    roleId: integer('role_id').notNull(),
+    email: text(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.programId],
+      foreignColumns: [program.id],
+      name: 'program_member_program_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'program_member_profile_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.roleId],
+      foreignColumns: [role.id],
+      name: 'program_member_role_id_fkey'
+    }),
+    unique('program_member_program_id_profile_id_unique').on(table.programId, table.profileId),
+    index('idx_program_member_program_id').on(table.programId),
+    index('idx_program_member_profile_id').on(table.profileId)
+  ]
+);
+
+export const programNewsfeed = pgTable(
+  'program_newsfeed',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    authorId: uuid('author_id'),
+    programId: uuid('program_id'),
+    content: text(),
+    reaction: jsonb()
+      .default({ clap: [], smile: [], thumbsup: [], thumbsdown: [] })
+      .$type<{ clap: string[]; smile: string[]; thumbsup: string[]; thumbsdown: string[] }>(),
+    isPinned: boolean('is_pinned').default(false).notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.authorId],
+      foreignColumns: [programMember.id],
+      name: 'program_newsfeed_author_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.programId],
+      foreignColumns: [program.id],
+      name: 'program_newsfeed_program_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_program_newsfeed_program_id').on(table.programId)
+  ]
+);
+
+export const programNewsfeedComment = pgTable(
+  'program_newsfeed_comment',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'program_newsfeed_comment_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    authorId: uuid('author_id'),
+    content: text(),
+    programNewsfeedId: uuid('program_newsfeed_id')
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.authorId],
+      foreignColumns: [programMember.id],
+      name: 'program_newsfeed_comment_author_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.programNewsfeedId],
+      foreignColumns: [programNewsfeed.id],
+      name: 'program_newsfeed_comment_program_newsfeed_id_fkey'
+    }).onDelete('cascade')
   ]
 );

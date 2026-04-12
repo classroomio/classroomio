@@ -20,6 +20,7 @@ import {
   updateOptions,
   updateQuestions
 } from '@cio/db/queries/exercise';
+import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 
 import { db } from '@cio/db/drizzle';
 import type { DbOrTxClient } from '@cio/db/drizzle';
@@ -123,7 +124,13 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
     }
 
     // Fetch the complete exercise with questions and options
-    return await getExercise(exercise.id);
+    const result = await getExercise(exercise.id);
+
+    if (sanitizedData.courseId) {
+      await touchCourseUpdatedAt(sanitizedData.courseId);
+    }
+
+    return result;
   } catch (error) {
     console.error('createExercise error:', error);
     if (error instanceof AppError) {
@@ -193,7 +200,9 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
   try {
     const sanitizedData = sanitizeExercisePayload(data);
 
-    return await db.transaction(async (tx) => {
+    const existing = await getExerciseById(exerciseId);
+
+    const result = await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;
 
       // Update exercise basic fields only if they changed
@@ -252,6 +261,13 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
       // Return the updated exercise
       return await getExercise(exerciseId, txClient);
     });
+
+    const courseId = existing?.courseId;
+    if (courseId) {
+      await touchCourseUpdatedAt(courseId);
+    }
+
+    return result;
   } catch (error) {
     console.error('updateExerciseService error:', error);
     if (error instanceof AppError) {
@@ -270,7 +286,9 @@ export async function replaceExerciseService(exerciseId: string, data: TExercise
   try {
     const sanitizedData = sanitizeExercisePayload(data);
 
-    return await db.transaction(async (tx) => {
+    const existing = await getExerciseById(exerciseId);
+
+    const result = await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;
 
       const exerciseUpdate = buildExerciseUpdateFields(sanitizedData);
@@ -303,6 +321,13 @@ export async function replaceExerciseService(exerciseId: string, data: TExercise
 
       return await getExercise(exerciseId, txClient);
     });
+
+    const courseId = existing?.courseId;
+    if (courseId) {
+      await touchCourseUpdatedAt(courseId);
+    }
+
+    return result;
   } catch (error) {
     console.error('replaceExerciseService error:', error);
     if (error instanceof AppError) {
@@ -328,6 +353,10 @@ export async function deleteExerciseService(exerciseId: string): Promise<TExerci
     const deleted = await deleteExercise(exerciseId);
     if (!deleted) {
       throw new AppError('Failed to delete exercise', ErrorCodes.INTERNAL_ERROR, 500);
+    }
+
+    if (exercise.courseId) {
+      await touchCourseUpdatedAt(exercise.courseId);
     }
 
     return deleted;

@@ -13,12 +13,10 @@
   import { peopleApi } from '$features/course/api';
   import { orgApi } from '$features/org/api/org.svelte';
   import { DEFAULT_ORG_AUDIENCE_QUERY } from '$features/org/utils/audience-query-utils';
+  import { profile } from '$lib/utils/store/user';
   import type { OrgTeamMember } from '$lib/utils/types/org';
-  import type { OrgStudent, Tutor } from './types';
-
-  import TutorSelectSection from './tutor-select-section.svelte';
-  import ExistingStudentsSection from './existing-students-section.svelte';
-  import BulkEmailSection from './bulk-email-section.svelte';
+  import type { OrgStudent, Tutor } from '$features/people/utils/types';
+  import { TutorSelectSection, ExistingStudentsSection, BulkEmailSection } from '$features/people/components';
 
   let tutors = $state<Tutor[]>([]);
   let selectedIds = $state<string[]>([]);
@@ -87,6 +85,56 @@
     });
   }
 
+  async function handleStudentSearch(value: string) {
+    const orgId = $currentOrg.id;
+    if (!orgId) {
+      return;
+    }
+
+    isLoadingStudents = true;
+
+    try {
+      await orgApi.getOrgAudience(
+        orgId,
+        {
+          ...DEFAULT_ORG_AUDIENCE_QUERY,
+          search: value.trim() || undefined
+        },
+        { abortPrevious: true }
+      );
+    } finally {
+      isLoadingStudents = false;
+    }
+  }
+
+  async function assignExistingStudents(profileIds: string[], sendEmail: boolean) {
+    const result = await orgApi.assignAudienceToCourses({
+      profileIds,
+      courseIds: [courseId],
+      sendEmail
+    });
+
+    if (!result) {
+      return;
+    }
+
+    await courseApi.refreshCourse(courseId, $profile.id);
+  }
+
+  async function inviteNewStudents(recipientCsv: string, sendEmail: boolean) {
+    const response = await orgApi.importAudienceMembers({
+      recipientCsv,
+      courseIds: [courseId],
+      sendEmail
+    });
+
+    if (!response) {
+      return;
+    }
+
+    await courseApi.refreshCourse(courseId, $profile.id);
+  }
+
   async function onSubmit() {
     if (!selectedTutors.length) {
       goto(resolve(page.url.pathname, {}));
@@ -144,7 +192,12 @@
 
       <UnderlineTabs.Content value="tutors">
         <div class="mt-6 space-y-6">
-          <TutorSelectSection {tutors} bind:selectedIds isLoading={orgApi.isLoading} />
+          <TutorSelectSection
+            {tutors}
+            bind:selectedIds
+            isLoading={orgApi.isLoading}
+            helperHref={`/org/${$currentOrg.siteName}/settings/teams`}
+          />
 
           <div class="mt-5 flex flex-row-reverse items-center gap-2">
             <Button variant="secondary" type="button" onclick={onSubmit} loading={peopleApi.isLoading}>
@@ -156,8 +209,13 @@
 
       <UnderlineTabs.Content value="students">
         <div class="mt-6 space-y-6">
-          <ExistingStudentsSection {courseId} students={availableStudents} isLoading={isLoadingStudents} />
-          <BulkEmailSection {courseId} />
+          <ExistingStudentsSection
+            students={availableStudents}
+            isLoading={isLoadingStudents}
+            onSearchValueChange={handleStudentSearch}
+            onAssign={assignExistingStudents}
+          />
+          <BulkEmailSection onInvite={inviteNewStudents} />
         </div>
       </UnderlineTabs.Content>
     </UnderlineTabs.Root>

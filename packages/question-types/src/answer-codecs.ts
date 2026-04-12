@@ -9,14 +9,17 @@ import type {
   ShortAnswerData,
   NumericAnswerData,
   FillBlankAnswerData,
+  WordBankAnswerData,
   FileUploadAnswerData,
   MatchingAnswerData,
   OrderingAnswerData,
   LinkAnswerData,
-  HotspotAnswerData
+  HotspotAnswerData,
+  StarAnswerData
 } from './answer-data';
 
 import { QUESTION_TYPE_KEY } from './question-type-keys';
+import { getStarRatingMaxFromSettings, isValidStarRatingValue } from './star-rating-settings';
 
 export type ApiPayload = { questionId: number; optionId?: number; answer?: string };
 
@@ -129,6 +132,23 @@ const FILL_BLANK_CODEC: AnswerCodec<FillBlankAnswerData> = {
   }
 };
 
+const WORD_BANK_CODEC: AnswerCodec<WordBankAnswerData> = {
+  type: 'WORD_BANK',
+  toApiPayload(data, questionId) {
+    return { questionId, answer: JSON.stringify({ type: 'WORD_BANK', filledBlanks: data.filledBlanks }) };
+  },
+  fromApiPayload(payload) {
+    if (!payload.answer) return null;
+    try {
+      const parsed = JSON.parse(payload.answer) as { type?: string; filledBlanks?: string[] };
+      if (parsed?.type !== 'WORD_BANK' || !Array.isArray(parsed.filledBlanks)) return null;
+      return { type: 'WORD_BANK', filledBlanks: parsed.filledBlanks.map((v) => String(v ?? '')) };
+    } catch {
+      return null;
+    }
+  }
+};
+
 const FILE_UPLOAD_CODEC: AnswerCodec<FileUploadAnswerData> = {
   type: 'FILE_UPLOAD',
   toApiPayload(data, questionId) {
@@ -208,6 +228,25 @@ const HOTSPOT_CODEC: AnswerCodec<HotspotAnswerData> = {
   }
 };
 
+const STAR_CODEC: AnswerCodec<StarAnswerData> = {
+  type: 'STAR',
+  toApiPayload(data, questionId) {
+    return { questionId, answer: JSON.stringify({ type: 'STAR', value: data.value }) };
+  },
+  fromApiPayload(payload, question) {
+    if (!payload.answer) return null;
+    try {
+      const parsed = JSON.parse(payload.answer) as { type?: string; value?: unknown };
+      if (parsed?.type !== 'STAR') return null;
+      const maxStars = getStarRatingMaxFromSettings(question.settings);
+      if (!isValidStarRatingValue(parsed.value, maxStars)) return null;
+      return { type: 'STAR', value: parsed.value };
+    } catch {
+      return null;
+    }
+  }
+};
+
 export const ANSWER_CODECS: Record<QuestionTypeKey, AnswerCodec> = {
   [QUESTION_TYPE_KEY.RADIO]: RADIO_CODEC,
   [QUESTION_TYPE_KEY.CHECKBOX]: CHECKBOX_CODEC,
@@ -216,11 +255,13 @@ export const ANSWER_CODECS: Record<QuestionTypeKey, AnswerCodec> = {
   [QUESTION_TYPE_KEY.SHORT_ANSWER]: SHORT_ANSWER_CODEC,
   [QUESTION_TYPE_KEY.NUMERIC]: NUMERIC_CODEC,
   [QUESTION_TYPE_KEY.FILL_BLANK]: FILL_BLANK_CODEC,
+  [QUESTION_TYPE_KEY.WORD_BANK]: WORD_BANK_CODEC,
   [QUESTION_TYPE_KEY.FILE_UPLOAD]: FILE_UPLOAD_CODEC,
   [QUESTION_TYPE_KEY.MATCHING]: MATCHING_CODEC,
   [QUESTION_TYPE_KEY.ORDERING]: ORDERING_CODEC,
   [QUESTION_TYPE_KEY.LINK]: LINK_CODEC,
-  [QUESTION_TYPE_KEY.HOTSPOT]: HOTSPOT_CODEC
+  [QUESTION_TYPE_KEY.HOTSPOT]: HOTSPOT_CODEC,
+  [QUESTION_TYPE_KEY.STAR]: STAR_CODEC
 };
 
 /** Convert any answer to API submission payload */
@@ -267,8 +308,12 @@ export function extractAnswerDisplayValues(data: AnswerData): {
       return { selectedIds: [], selectedValues: [], text: data.text };
     case 'NUMERIC':
       return { selectedIds: [], selectedValues: [], text: String(data.value) };
+    case 'STAR':
+      return { selectedIds: [], selectedValues: [data.value], text: String(data.value) };
     case 'FILL_BLANK':
       return { selectedIds: [], selectedValues: [], text: data.values.join(', ') };
+    case 'WORD_BANK':
+      return { selectedIds: [], selectedValues: [], text: data.filledBlanks.filter(Boolean).join(', ') };
     case 'LINK':
       return { selectedIds: [], selectedValues: data.urls, text: data.urls.join(', ') };
     case 'MATCHING':

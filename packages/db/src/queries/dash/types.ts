@@ -1,5 +1,5 @@
 export interface OrganisationAnalytics {
-  revenue: number;
+  totalCertificates: number;
   numberOfCourses: number;
   totalStudents: number;
   topCourses: {
@@ -7,8 +7,9 @@ export interface OrganisationAnalytics {
     title: string;
     enrollments: number;
     completion: number;
+    certification: number;
   }[];
-  enrollments: {
+  recentCertifications: {
     id: string;
     avatarUrl: string;
     name: string;

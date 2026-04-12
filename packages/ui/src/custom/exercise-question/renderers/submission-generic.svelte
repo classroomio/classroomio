@@ -17,6 +17,8 @@
         return [answer.text];
       case 'NUMERIC':
         return [String(answer.value)];
+      case 'STAR':
+        return [String(answer.value)];
       case 'LINK':
         return answer.urls;
       case 'FILE_UPLOAD':

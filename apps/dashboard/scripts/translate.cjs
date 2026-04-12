@@ -9,6 +9,7 @@ const jessy = require('jessy');
 const set = require('lodash/set');
 
 const englishTranslations = require('../src/lib/utils/translations/en.json');
+let prettierPromise;
 
 // Load env variables
 dotenv.config();
@@ -37,6 +38,25 @@ const selectedLanguageFiles = requestedLanguages.length
   : languageFiles;
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const getPrettier = async () => {
+  if (!prettierPromise) {
+    prettierPromise = import('prettier');
+  }
+
+  return prettierPromise;
+};
+
+const writeFormattedTranslationFile = async (outputFilePath, translations) => {
+  const prettier = await getPrettier();
+  const prettierConfig = (await prettier.resolveConfig(outputFilePath)) ?? {};
+  const formattedJson = await prettier.format(JSON.stringify(translations, null, 2), {
+    ...prettierConfig,
+    filepath: outputFilePath
+  });
+
+  fs.writeFileSync(outputFilePath, formattedJson);
+};
 
 const getMissingTranslations = async (toLanguage, outputFilePath) => {
   const englishKeys = keys(englishTranslations);
@@ -109,7 +129,7 @@ const translateLanguage = async (fromLanguage, toLanguage, outputFilePath) => {
         set(targetTranslations, key, value);
       }
 
-      fs.writeFileSync(outputFilePath, JSON.stringify(targetTranslations, null, 2));
+      await writeFormattedTranslationFile(outputFilePath, targetTranslations);
       console.log(`${toLanguage.toUpperCase()} translations updated successfully.`);
     } else {
       console.log(`Failed to update ${toLanguage.toUpperCase()} translations.`);

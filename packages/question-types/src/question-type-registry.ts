@@ -109,6 +109,24 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     autoGradable: false,
     supportsPartialCredit: false,
     manualGradingRequired: true
+  },
+  {
+    key: QUESTION_TYPE_KEY.WORD_BANK,
+    typename: 'WORD_BANK',
+    label: 'Word bank',
+    id: 13,
+    autoGradable: true,
+    supportsPartialCredit: true,
+    manualGradingRequired: false
+  },
+  {
+    key: QUESTION_TYPE_KEY.STAR,
+    typename: 'STAR',
+    label: 'Star rating',
+    id: 14,
+    autoGradable: true,
+    supportsPartialCredit: false,
+    manualGradingRequired: false
   }
 ] as const;
 

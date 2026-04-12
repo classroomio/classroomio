@@ -1,5 +1,5 @@
 {
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["app/**/*.ts", "app/**/*.tsx", "react-router.config.ts", "source.config.ts", "vite.config.ts"],
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,
@@ -16,7 +16,7 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./app/*"],
       "fumadocs-mdx:collections/*": [".source/*"]
     },
     "noEmit": true

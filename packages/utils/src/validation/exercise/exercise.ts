@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { getStarRatingMaxFromSettings, isValidStarRatingValue } from '@cio/question-types';
+
 import { QUESTION_TYPE } from '../constants';
 
 const EXERCISE_QUESTION_TYPE_ID_LITERALS = [
@@ -14,16 +16,20 @@ const EXERCISE_QUESTION_TYPE_ID_LITERALS = [
   z.literal(QUESTION_TYPE.MATCHING),
   z.literal(QUESTION_TYPE.ORDERING),
   z.literal(QUESTION_TYPE.HOTSPOT),
-  z.literal(QUESTION_TYPE.LINK)
+  z.literal(QUESTION_TYPE.LINK),
+  z.literal(QUESTION_TYPE.WORD_BANK),
+  z.literal(QUESTION_TYPE.STAR)
 ] as const;
 
 export const ZExerciseQuestionTypeId = z.union(EXERCISE_QUESTION_TYPE_ID_LITERALS);
 export type TExerciseQuestionTypeId = z.infer<typeof ZExerciseQuestionTypeId>;
 
-const QUESTION_VALIDATION_RULES: Record<
-  number,
-  Array<(question: { options?: Array<{ isCorrect: boolean }> }) => string | null>
-> = {
+type QuestionRuleInput = {
+  options?: Array<{ isCorrect: boolean }>;
+  settings?: Record<string, unknown>;
+};
+
+const QUESTION_VALIDATION_RULES: Record<number, Array<(question: QuestionRuleInput) => string | null>> = {
   [QUESTION_TYPE.RADIO]: [
     (question) => {
       const options = question.options || [];
@@ -72,7 +78,41 @@ const QUESTION_VALIDATION_RULES: Record<
       return null;
     }
   ],
-  [QUESTION_TYPE.TEXTAREA]: []
+  [QUESTION_TYPE.TEXTAREA]: [],
+  [QUESTION_TYPE.WORD_BANK]: [
+    (question) => {
+      const settings = question.settings;
+      const template = String(settings?.template ?? '');
+      const blankCount = Math.max(0, template.split('___').length - 1);
+      if (blankCount < 1) {
+        return 'Word bank questions need at least one ___ blank in the template';
+      }
+      const raw = settings?.correctAnswers;
+      const answers = Array.isArray(raw) ? (raw as unknown[]) : [];
+      if (answers.length < blankCount) {
+        return 'Provide a correct answer for each blank';
+      }
+      for (let i = 0; i < blankCount; i++) {
+        if (!String(answers[i] ?? '').trim()) {
+          return `Correct answer for blank ${i + 1} is required`;
+        }
+      }
+      return null;
+    }
+  ],
+  [QUESTION_TYPE.STAR]: [
+    (question) => {
+      const settings = question.settings ?? {};
+      const maxStars = getStarRatingMaxFromSettings(settings);
+      const rawCorrect = settings.correctValue;
+      const correct = typeof rawCorrect === 'number' ? rawCorrect : rawCorrect != null ? Number(rawCorrect) : NaN;
+      if (!isValidStarRatingValue(correct, maxStars)) {
+        return 'Set a correct star value from 1 up to the maximum number of stars';
+      }
+
+      return null;
+    }
+  ]
 };
 
 // Base schema for exercise update question (without refinement)

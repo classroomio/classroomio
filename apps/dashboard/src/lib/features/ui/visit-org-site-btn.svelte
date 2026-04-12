@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from '@cio/ui/base/button';
+  import { Button, type ButtonVariant } from '@cio/ui/base/button';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
   import { currentOrgDomain } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
@@ -9,22 +9,27 @@
   interface Props {
     className?: string;
     isLMS?: boolean;
+    labelKey?: string;
+    variant?: ButtonVariant;
   }
 
-  let { className = '', isLMS = false }: Props = $props();
+  let {
+    className = '',
+    isLMS = false,
+    labelKey = 'settings.subheadings.view_site',
+    variant = 'default'
+  }: Props = $props();
 
   let href = $derived(isLMS && $user.isLoggedIn ? `${$currentOrgDomain}/home` : $currentOrgDomain);
 </script>
 
-<a {href} target="_blank" class="{className} ml-2 hover:no-underline">
-  <Button variant="default">
-    {#if !$isMobile}
-      {#if isLMS}
-        {$t('dashboard.visit_site')}
-      {:else}
-        {$t('settings.subheadings.view_site')}
-      {/if}
+<Button {href} target="_blank" {variant} class={`ml-2 ${className}`.trim()}>
+  {#if !$isMobile}
+    {#if isLMS}
+      {$t('dashboard.visit_site')}
+    {:else}
+      {$t(labelKey)}
     {/if}
-    <ArrowUpRightIcon class="custom" />
-  </Button>
-</a>
+  {/if}
+  <ArrowUpRightIcon class="custom" />
+</Button>

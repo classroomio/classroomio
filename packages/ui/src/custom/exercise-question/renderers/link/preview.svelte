@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getExerciseQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
-  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
+  import { ExternalLinkIcon, HoverableItem } from '../../../moving-icons';
 
   let { question, answer = null, labels }: ExerciseQuestionRendererProps = $props();
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
@@ -35,15 +35,19 @@
       {#each links as link, index}
         <div class="ui:bg-background ui:rounded-md ui:border ui:p-2">
           {#if isValidLink(link)}
-            <a
-              href={link}
-              target="_blank"
-              rel="noreferrer"
-              class="ui:text-primary ui:inline-flex ui:items-center ui:gap-2 ui:text-sm ui:underline"
-            >
-              <span>{formatLinkLabel(index)}</span>
-              <ExternalLinkIcon class="ui:size-3.5" />
-            </a>
+            <HoverableItem>
+              {#snippet children(isHovered)}
+                <a
+                  href={link}
+                  target="_blank"
+                  rel="noreferrer"
+                  class="ui:text-primary ui:inline-flex ui:items-center ui:gap-2 ui:text-sm ui:underline"
+                >
+                  <span>{formatLinkLabel(index)}</span>
+                  <ExternalLinkIcon {isHovered} size={14} class="ui:shrink-0" ariaHidden={true} />
+                </a>
+              {/snippet}
+            </HoverableItem>
             <p class="ui:text-muted-foreground ui:mt-1 ui:text-xs">{link}</p>
           {:else}
             <p class="ui:text-sm">{link}</p>

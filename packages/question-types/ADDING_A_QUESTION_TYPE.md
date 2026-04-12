@@ -9,7 +9,7 @@ This guide walks through adding a new question type to ClassroomIO. Question typ
 A question type flows through several layers:
 
 1. **`@cio/question-types`** — Keys, metadata, answer serialization (codecs)
-2. **`@cio/db`** — Database seed/migration for the `question_type` table
+2. **`@cio/db`** — Document the type in `schema.ts` and add a seed row for `question_type` (no migration file for reference data)
 3. **`@cio/ui`** — Edit, take, and preview renderers
 4. **`apps/dashboard`** — Translation keys, question type picker
 5. **`apps/api`** — Uses the above via `@cio/question-types`; no code changes usually needed
@@ -151,9 +151,17 @@ export type ExerciseQuestionLabelKey =
 
 ---
 
-## Step 6: Database — seed and migration
+## Step 6: Database — `schema.ts` and seed
 
-### 6a. Seed (for new environments)
+**Do not add a migration file** (nothing new under `packages/db/src/migrations/`) for a new question type. Reference data like `question_type` rows is not versioned via Drizzle migrations in this repo. Updating **`schema.ts`** (documentation only, unless you change table structure) and the **seed** is enough.
+
+### 6a. Update `schema.ts` documentation
+
+**File:** `packages/db/src/schema.ts`
+
+On the `questionType` table, extend the JSDoc comment that lists expected ids and typenames (e.g. `1 RADIO`, `2 CHECKBOX`, …) so it includes your new type and id. That keeps the database package aligned with `QUESTION_TYPE_REGISTRY` for anyone reading the schema.
+
+### 6b. Seed (for new environments)
 
 **File:** `packages/db/src/utils/seed/questionType.ts`
 
@@ -168,17 +176,11 @@ Add a seed entry so new databases get the type:
 }
 ```
 
-The `id` is auto-generated. Use the next sequential id (e.g. 13) in `QUESTION_TYPE_REGISTRY` so it matches after seed runs.
+The `id` is auto-generated. Use the next sequential id in `QUESTION_TYPE_REGISTRY` so it matches the order rows get when seed runs (or document the expected id in both places).
 
-### 6b. Migration (for existing databases)
+### 6c. Existing / production databases
 
-For existing production databases, add a migration that inserts the new question type:
-
-```sql
-INSERT INTO question_type (label, typename) VALUES ('My New Type', 'MY_NEW_TYPE');
-```
-
-If you need a specific `id` to match the registry, you may need to use `SELECT setval(...)` or an `ON CONFLICT`-style approach depending on your migration strategy.
+For databases that already exist and will not re-run seed, insert the `question_type` row **outside** the migration folder (e.g. a one-off SQL run in staging/production, or your ops playbook). Do **not** commit a migration whose only purpose is `INSERT INTO question_type`.
 
 ---
 
@@ -303,7 +305,8 @@ In `constants.ts`, you can:
 - [ ] `AnswerCodec` (`toApiPayload`, `fromApiPayload`) in `answer-codecs.ts` and registration in `ANSWER_CODECS`
 - [ ] Optional: payload in `question-answer-payload.ts`
 - [ ] Optional: label keys in `exercise-types.ts`
-- [ ] Seed in `questionType.ts` and migration for existing DBs
+- [ ] `schema.ts` comment on `questionType` updated with the new id/typename
+- [ ] Seed entry in `questionType.ts` (no new migration file for `INSERT INTO question_type`)
 - [ ] Three renderers (edit, take, preview) in `@cio/ui`
 - [ ] Registration in `EXERCISE_QUESTION_RENDERER_CONTRACT`
 - [ ] Translation keys in dashboard `constants.ts` and `en.json`
@@ -328,4 +331,4 @@ In `constants.ts`, you can:
 | HOTSPOT      | 11  | Auto-gradable, partial credit |
 | LINK         | 12  | Manual grading                |
 
-Use the next available id (13) for your new type, and ensure the DB `question_type` row has a matching id.
+Use the next available id for your new type, keep `QUESTION_TYPE_REGISTRY` and the `questionType` comment in `schema.ts` in sync, and ensure environments that need the row have it inserted (seed or one-off—**not** a committed migration for reference data).

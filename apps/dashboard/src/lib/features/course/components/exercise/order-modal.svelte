@@ -15,7 +15,7 @@
   const flipDurationMs = 300;
 
   interface Question {
-    id: number;
+    id: number | string;
     name: string;
     type: number;
   }
@@ -36,23 +36,36 @@
     items = e.detail.items;
   }
 
-  function handleDndFinalize(e) {
-    items = e.detail.items;
+  function applyItemOrder(nextItems: Array<Question>) {
+    questionnaire.update((currentQuestionnaire) => {
+      const nextOrderById = new Map(nextItems.map((item, index) => [String(item.id), index + 1]));
+      const nextQuestions = currentQuestionnaire.questions.map((question) => {
+        const nextOrder = nextOrderById.get(String(question.id));
+        if (nextOrder == null) {
+          return question;
+        }
+
+        return {
+          ...question,
+          isDirty: true,
+          order: nextOrder
+        };
+      });
+      const activeQuestions = nextQuestions
+        .filter((question) => !question.deletedAt)
+        .sort((leftQuestion, rightQuestion) => (leftQuestion.order ?? 0) - (rightQuestion.order ?? 0));
+      const deletedQuestions = nextQuestions.filter((question) => question.deletedAt);
+
+      return {
+        ...currentQuestionnaire,
+        questions: [...activeQuestions, ...deletedQuestions]
+      };
+    });
   }
 
-  function handleClose() {
-    items.forEach((item, index) => {
-      const order = index + 1;
-      $questionnaire.questions.some((q) => {
-        if (q.id === item.id) {
-          q.isDirty = true;
-          q.order = order;
-          return true;
-        }
-      });
-    });
-    $questionnaire.questions = $questionnaire.questions.sort((a, b) => a.order - b.order);
-    $questionnaireOrder.open = false;
+  function handleDndFinalize(e) {
+    items = e.detail.items;
+    applyItemOrder(e.detail.items);
   }
 
   $effect(() => {
@@ -63,7 +76,9 @@
 <Dialog.Root
   bind:open={$questionnaireOrder.open}
   onOpenChange={(isOpen) => {
-    if (!isOpen) handleClose();
+    if (!isOpen) {
+      applyItemOrder(items);
+    }
   }}
 >
   <Dialog.Content class="w-96">
@@ -81,7 +96,7 @@
       }}
       onconsider={handleDndConsider}
       onfinalize={handleDndFinalize}
-      class="w-full"
+      class="max-h-[300px] w-full"
     >
       {#each items as item (item.id)}
         <div

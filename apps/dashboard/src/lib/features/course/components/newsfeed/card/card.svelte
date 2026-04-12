@@ -3,11 +3,12 @@
 
   import type { Feed } from '$features/course/utils/types';
   import { newsfeedApi } from '$features/course/api';
+  import { getNewsfeedReactionCounts, getSelectedNewsfeedReactionType } from '@cio/ui/custom/newsfeed-reactions';
 
   import DeleteConfirmation from './delete-confirmation.svelte';
   import type { NewsfeedCommentsByFeedId } from '$features/course/api';
   import Header from './header.svelte';
-  import Reactions from './reactions.svelte';
+  import { NewsfeedReactions } from '@cio/ui/custom/newsfeed-reactions';
   import Comments from './comments.svelte';
 
   interface Props {
@@ -64,6 +65,9 @@
     deleteFeed(feed.id);
   };
 
+  const reactionCounts = $derived(getNewsfeedReactionCounts(feed.reaction));
+  const selectedReactionType = $derived(getSelectedNewsfeedReactionType(feed.reaction, author.id));
+
   onMount(() => {
     if (isActive) {
       const el = document.getElementById(feed.id);
@@ -84,7 +88,14 @@
 >
   <Header {feed} {onPin} onEdit={openEditFeed} onRequestDelete={() => (isDeleteFeedModal = true)} />
 
-  <Reactions {feed} authorId={author.id} {isReacting} onReact={handleReact} />
+  <div class="px-3 pt-1 pb-2">
+    <NewsfeedReactions
+      {reactionCounts}
+      {selectedReactionType}
+      disabled={isReacting || !author.id}
+      onReactionToggle={handleReact}
+    />
+  </div>
 
   <Comments
     {courseId}

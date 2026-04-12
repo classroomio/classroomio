@@ -1,6 +1,6 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { sanitizeHtml, sanitizeOptionalHtml, sanitizeUnknownStrings } from '@api/utils/sanitize-html';
-import { addGroupMember, createGroup } from '@cio/db/queries/group';
+import { addGroupMember, createGroup, getCourseProgramAccess } from '@cio/db/queries/group';
 import {
   createCourseNewsfeed,
   createCourse as createCourseQuery,
@@ -21,6 +21,7 @@ import {
 import { ContentType, ROLE } from '@cio/utils/constants';
 import type { TCourse } from '@cio/db/types';
 import { db } from '@cio/db/drizzle';
+import * as schema from '@db/schema';
 import { exerciseBelongsToCourse } from '@cio/db/queries/course/certification-exercise';
 import { updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { getProfileById } from '@cio/db/queries/auth';
@@ -28,6 +29,45 @@ import { buildCourseContent, calcPercentageWithRounding, formatLastSeen, type Co
 
 const DEFAULT_CONTENT_GROUPING = true;
 const DEFAULT_SECTION_TITLE = 'First Section [edit me]';
+
+export async function ensureProgramCourseAccess(courseId: string, profileId: string) {
+  const access = await getCourseProgramAccess(courseId, profileId);
+  if (!access) {
+    return false;
+  }
+
+  const organizationId = access.organizationId;
+  if (!organizationId) {
+    return false;
+  }
+
+  const normalizedEmail = access.profileEmail?.trim() || undefined;
+
+  await db.transaction(async (tx) => {
+    await tx
+      .insert(schema.organizationmember)
+      .values({
+        organizationId,
+        roleId: access.roleId,
+        profileId,
+        email: normalizedEmail,
+        verified: true
+      })
+      .onConflictDoNothing();
+
+    await tx
+      .insert(schema.groupmember)
+      .values({
+        groupId: access.courseGroupId,
+        roleId: access.roleId,
+        profileId,
+        email: normalizedEmail
+      })
+      .onConflictDoNothing();
+  });
+
+  return true;
+}
 
 function sanitizeCourseMetadata(metadata: TCourse['metadata'] | undefined) {
   if (!metadata) return metadata;
@@ -133,49 +173,57 @@ export async function createCourse(
   try {
     const description = sanitizeHtml(data.description);
 
-    const result = await db.transaction(async () => {
-      // 1. Create group
-      const [newGroup] = await createGroup({
-        name: data.title,
-        description,
-        organizationId: data.organizationId
-      });
+    const result = await db.transaction(async (tx) => {
+      const [newGroup] = await createGroup(
+        {
+          name: data.title,
+          description,
+          organizationId: data.organizationId
+        },
+        tx
+      );
 
       if (!newGroup) {
         throw new AppError('Failed to create group', ErrorCodes.INTERNAL_ERROR, 500);
       }
 
-      // 2. Create course with group_id
-      const [newCourse] = await createCourseQuery({
-        title: data.title,
-        description,
-        type: data.type,
-        groupId: newGroup.id
-      });
+      const [newCourse] = await createCourseQuery(
+        {
+          title: data.title,
+          description,
+          type: data.type,
+          groupId: newGroup.id
+        },
+        tx
+      );
 
       if (!newCourse) {
         throw new AppError('Failed to create course', ErrorCodes.INTERNAL_ERROR, 500);
       }
 
-      // 3. Add group member (creator as TUTOR)
-      const [newMember] = await addGroupMember({
-        profileId,
-        groupId: newGroup.id,
-        roleId: ROLE.TUTOR
-      });
+      const [newMember] = await addGroupMember(
+        {
+          profileId,
+          groupId: newGroup.id,
+          roleId: ROLE.TUTOR
+        },
+        tx
+      );
 
       if (!newMember) {
         throw new AppError('Failed to add group member', ErrorCodes.INTERNAL_ERROR, 500);
       }
 
-      // 4. Add default news feed
-      await createCourseNewsfeed({
-        content: sanitizeHtml(`<h2>Welcome to this course 🎉&nbsp;</h2>
+      await createCourseNewsfeed(
+        {
+          content: sanitizeHtml(`<h2>Welcome to this course 🎉&nbsp;</h2>
 <p>Thank you for joining this course and I hope you get the best out of it.</p>`),
-        courseId: newCourse.id,
-        isPinned: true,
-        authorId: newMember.id
-      });
+          courseId: newCourse.id,
+          isPinned: true,
+          authorId: newMember.id
+        },
+        tx
+      );
 
       return {
         course: newCourse,

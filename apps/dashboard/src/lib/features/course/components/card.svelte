@@ -1,15 +1,13 @@
 <script lang="ts">
-  import type { Component } from 'svelte';
+  import type { Component, Snippet } from 'svelte';
   import { resolve } from '$app/paths';
-  import { Badge } from '@cio/ui/base/badge';
+  import { CourseCard, DEFAULT_COURSE_BANNER_IMAGE } from '@cio/ui';
   import UserIcon from '@lucide/svelte/icons/user';
   import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
   import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 
   import { Button } from '@cio/ui/base/button';
-  import { Separator } from '@cio/ui/base/separator';
-  import * as Item from '@cio/ui/base/item';
   import { Progress } from '@cio/ui/base/progress';
 
   import pluralize from 'pluralize';
@@ -30,9 +28,11 @@
     isOnLandingPage?: boolean;
     isLMS?: boolean;
     isExplore?: boolean;
+    href?: string;
+    actions?: Snippet;
   }
 
-  let { course, isOnLandingPage, isLMS, isExplore }: Props = $props();
+  let { course, isOnLandingPage, isLMS, isExplore, href, actions }: Props = $props();
 
   let {
     bannerImage,
@@ -42,6 +42,7 @@
     description = '',
     isPublished = false,
     totalLessons = 0,
+    totalExercises = 0,
     totalStudents = 0,
     currency = 'USD',
     progressRate = 45,
@@ -54,7 +55,7 @@
   } = $derived({
     id: course.id,
     slug: course.slug,
-    bannerImage: course.logo || '/images/classroomio-course-img-template.jpg',
+    bannerImage: course.logo || DEFAULT_COURSE_BANNER_IMAGE,
     title: course.title,
     type: course.type,
     description: course.description,
@@ -66,6 +67,10 @@
     },
     currency: course.currency,
     totalLessons: course.lessonCount,
+    totalExercises: (() => {
+      const c = course as { exerciseCount?: number };
+      return typeof c.exerciseCount === 'number' ? c.exerciseCount : 0;
+    })(),
     progressRate: (() => {
       const c = course as { exerciseCount?: number; exercisesCompleted?: number };
       if (typeof c.exerciseCount === 'number' && typeof c.exercisesCompleted === 'number') {
@@ -122,91 +127,104 @@
   let cost = $derived(calcCourseDiscount(pricingData.discount, pricingData.cost ?? 0, !!pricingData.showDiscount));
 
   let courseUrl = $derived(
-    isOnLandingPage || isExplore ? `/course/${slug}` : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`
+    href ?? (isOnLandingPage || isExplore ? `/course/${slug}` : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`)
+  );
+
+  const typeBadge = $derived(
+    type && COURSE_TAG[type]
+      ? {
+          label: COURSE_TAG[type].label,
+          icon: COURSE_TAG[type].icon,
+          iconClass: COURSE_TAG[type].iconStyle
+        }
+      : undefined
   );
 </script>
 
-<Item.Root variant="outline" class="group relative max-w-[320px] p-3!">
-  {#snippet child({ props })}
-    <a href={resolve(courseUrl, {})} {...props}>
-      {#if !isLMS && !isOnLandingPage}
-        <CardDropdown {id} {title} {description} />
-      {/if}
+<CourseCard href={resolve(courseUrl, {})} {title} {description} {typeBadge} class="group relative">
+  {#snippet media()}
+    <Image src={bannerImage} alt="Course banner image" className="w-full h-full rounded-sm object-cover" />
+  {/snippet}
 
-      <Item.Header>
-        <Item.Media variant="image" class="relative h-50! w-full!">
-          <Image src={bannerImage} alt="Course banner image" className="w-full h-full rounded-sm object-cover" />
+  {#snippet overlay()}
+    {#if actions}
+      {@render actions()}
+    {:else if !isLMS && !isOnLandingPage}
+      <CardDropdown {id} {title} {description} />
+    {/if}
+  {/snippet}
 
-          {#if type}
-            {@const tag = COURSE_TAG[type]}
-            <Badge class="absolute bottom-2 left-2 z-10 flex items-center rounded-md! capitalize" variant="secondary">
-              <tag.icon class={tag.iconStyle} />
-              {tag.label}
-            </Badge>
-          {/if}
-        </Item.Media>
-      </Item.Header>
+  {#snippet tags()}
+    {#if !isLMS}
+      <CourseTagsOverflow tags={courseTags} variant="card" />
+    {/if}
+  {/snippet}
 
-      <Item.Content>
-        <Item.Title class="line-clamp-2 min-h-14 text-base!">
-          {title}
-        </Item.Title>
-
-        <Item.Description class="min-h-[63px]">{description}</Item.Description>
-        {#if !isLMS}
-          <CourseTagsOverflow tags={courseTags} variant="card" />
-        {/if}
-
-        <Separator class="my-3" />
-
-        <div class="flex justify-between {isLMS && 'items-center'} w-full">
-          <div class="w-[50%]">
-            <p class="text-xs {!isLMS && 'pl-2'} dark:text-white">
+  {#snippet footer()}
+    <div class="flex justify-between {isLMS && 'items-center'} w-full">
+      <div class="w-[60%]">
+        {#if isLMS || isOnLandingPage}
+          <p class="text-xs {!isLMS && 'pl-2'} flex gap-1 dark:text-white">
+            <span>
               {totalLessons}
               {$t('courses.course_card.lessons_number')}
-            </p>
-            <div class="py-2 text-xs">
-              {#if isOnLandingPage}
-                <span class="px-2">
-                  {#if !cost}
-                    {$t('course.navItem.landing_page.pricing_section.free')}
-                  {:else if pricingData.showDiscount}
-                    {formatter.format(cost)}
-                    <span class="line-through">
-                      {formatter?.format(pricingData?.cost ?? 0)}
-                    </span>
-                  {:else}
-                    {formatter.format(cost)}
-                  {/if}
+            </span>
+            &
+            <span>
+              {pluralize($t('courses.course_card.exercise'), totalExercises, true)}
+            </span>
+          </p>
+        {/if}
+        <div class="py-2 text-xs">
+          {#if isOnLandingPage}
+            <span class="px-2">
+              {#if !cost}
+                {$t('course.navItem.landing_page.pricing_section.free')}
+              {:else if pricingData.showDiscount}
+                {formatter.format(cost)}
+                <span class="line-through">
+                  {formatter?.format(pricingData?.cost ?? 0)}
                 </span>
-              {:else if isLMS}
-                {#if !isExplore}
-                  <div class="flex w-3/4 items-center gap-2">
-                    <Progress value={progressRate} />
-                    <p class="ui:text-muted-foreground text-xs">{progressRate}%</p>
-                  </div>
-                {/if}
               {:else}
-                <CoursePublishBadge {isPublished} />
+                {formatter.format(cost)}
               {/if}
-            </div>
-          </div>
-
-          {#if isLMS}
-            <Button variant="outline">
-              {isExplore ? $t('courses.course_card.learn_more') : $t('courses.course_card.continue_course')}
-
-              <ArrowRightIcon class="custom" />
-            </Button>
-          {:else if !isOnLandingPage}
-            <div class="flex flex-col justify-between">
-              <p class="pl-2 text-xs dark:text-white">
-                {pluralize($t('courses.course_card.students'), totalStudents, true)}
-              </p>
-            </div>
+            </span>
+          {:else if isLMS}
+            {#if !isExplore}
+              <div class="flex w-3/4 items-center gap-2">
+                <Progress value={progressRate} />
+                <p class="ui:text-muted-foreground text-xs">{progressRate}%</p>
+              </div>
+            {/if}
+          {:else}
+            <CoursePublishBadge {isPublished} />
           {/if}
         </div>
-      </Item.Content>
-    </a>
+      </div>
+
+      {#if isLMS}
+        <Button variant="outline">
+          {isExplore ? $t('courses.course_card.learn_more') : $t('courses.course_card.continue_course')}
+
+          <ArrowRightIcon class="custom" />
+        </Button>
+      {:else if !isOnLandingPage}
+        <div class="flex flex-col justify-end gap-1 text-right">
+          <p class="pl-2 text-xs whitespace-nowrap dark:text-white">
+            <span>
+              {totalLessons}
+              {$t('courses.course_card.lessons_number')}
+            </span>
+            &
+            <span>
+              {pluralize($t('courses.course_card.exercise'), totalExercises, true)}
+            </span>
+          </p>
+          <p class="pl-2 text-xs dark:text-white">
+            {pluralize($t('courses.course_card.students'), totalStudents, true)}
+          </p>
+        </div>
+      {/if}
+    </div>
   {/snippet}
-</Item.Root>
+</CourseCard>

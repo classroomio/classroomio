@@ -1,0 +1,81 @@
+/* Shared by @cio/ui index.css and course-app (no Tailwind prefix; no global theme reset). */
+
+@keyframes border-beam {
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes meteor {
+  0% {
+    transform: rotate(215deg) translateX(0);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(215deg) translateX(-500px);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer-marketing {
+  0%,
+  90%,
+  100% {
+    background-position: calc(-100% - var(--shimmer-width)) 0;
+  }
+  30%,
+  60% {
+    background-position: calc(100% + var(--shimmer-width)) 0;
+  }
+}
+
+@keyframes spin-around {
+  0% {
+    transform: translateZ(0) rotate(0);
+  }
+  15%,
+  35% {
+    transform: translateZ(0) rotate(90deg);
+  }
+  65%,
+  85% {
+    transform: translateZ(0) rotate(270deg);
+  }
+  100% {
+    transform: translateZ(0) rotate(360deg);
+  }
+}
+
+@keyframes magicslide {
+  to {
+    transform: translate(calc(100cqw - 100%), 0);
+  }
+}
+
+@layer components {
+  .cio-marketing-border-beam {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: calc(var(--border-width) * 1px) solid transparent;
+    mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
+    mask-clip: padding-box, border-box;
+    mask-composite: intersect;
+  }
+
+  .cio-marketing-border-beam::after {
+    content: '';
+    position: absolute;
+    aspect-ratio: 1;
+    width: calc(var(--size) * 1px);
+    animation-delay: var(--delay);
+    background: linear-gradient(to left, var(--color-from), var(--color-to), transparent);
+    offset-anchor: calc(var(--anchor) * 1%) 50%;
+    offset-path: rect(0 auto auto 0 round calc(var(--size) * 1px));
+    animation: border-beam calc(var(--duration) * 1s) infinite linear;
+  }
+}

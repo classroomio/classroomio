@@ -177,11 +177,11 @@ export const getDefaultTemplate = (content: string): string =>
     </table>
     <p style="padding-top: 8px; line-height: initial">
       ClassroomIO ${new Date().getFullYear()}. All rights reserved.<br />
-      <a style="text-decoration: none" href="https://app.enzuzo.com/policies/tos/958fc978-5477-11ee-a03b-7b111830c594"
+      <a style="text-decoration: none" href="https://classroomio.com/tos"
         target="_blank">Terms</a>
       |
       <a style="text-decoration: none"
-        href="https://app.enzuzo.com/policies/privacy/958fc978-5477-11ee-a03b-7b111830c594" target="_blank">Privacy
+        href="https://classroomio.com/privacy" target="_blank">Privacy
         Policy</a>
     </p>
   </div>

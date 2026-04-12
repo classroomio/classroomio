@@ -8,9 +8,7 @@
   import { Progress } from '@cio/ui/base/progress';
   import { ActivityCard, HeroProfileCard, LoadingPage } from '$features/ui';
 
-  import { BackButton } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
-  import { currentOrgPath } from '$lib/utils/store/org';
   import type { UserAnalytics } from '$lib/utils/types/analytics';
 
   let { data } = $props();
@@ -60,16 +58,12 @@
 </script>
 
 {#if userAnalytics}
-  <div class="p-5">
-    <BackButton href={`${$currentOrgPath}/audience`} label={$t('community.ask.go_back')} />
-  </div>
-
   <div class="px-5 py-1">
     <HeroProfileCard user={userAnalytics!.user} />
 
     <div class="mt-5 px-0">
       <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {#each userMetrics as activity}
+        {#each userMetrics as activity (activity.title)}
           <ActivityCard {activity} />
         {/each}
       </div>
@@ -114,54 +108,52 @@
       </div>
 
       {#each filteredCourses as course (course.id)}
-        {#key index}
-          <div
-            class={`mt-5 w-full rounded-md border border-gray-200 p-5 ${
-              course.lessons_count === course.lessons_completed
-                ? 'border-green-200 bg-green-50 dark:bg-green-100'
-                : 'border-yellow-200 bg-yellow-50 dark:bg-yellow-100'
-            }`}
-            transition:fade={{ duration: 300 }}
-          >
-            <div class="flex items-center justify-between gap-4">
-              <div class="flex w-4/5 items-center gap-4">
-                <img
-                  src={course.logo || '/images/classroomio-course-img-template.jpg'}
-                  alt={course.title}
-                  class="h-20 w-24 rounded-md"
-                />
-                <div class="mb-4 gap-4">
-                  <a href={`/courses/${course.id}`}>
-                    <p class="text-lg font-semibold text-gray-600">
-                      {course.title}
-                    </p>
-                  </a>
-
-                  <p class="line-clamp-2 text-sm text-gray-600">
-                    {course.description}
+        <div
+          class={`mt-5 w-full rounded-md border border-gray-200 p-5 ${
+            course.lessons_count === course.lessons_completed
+              ? 'border-green-200 bg-green-50 dark:bg-green-100'
+              : 'border-yellow-200 bg-yellow-50 dark:bg-yellow-100'
+          }`}
+          transition:fade={{ duration: 300 }}
+        >
+          <div class="flex items-center justify-between gap-4">
+            <div class="flex w-4/5 items-center gap-4">
+              <img
+                src={course.logo || '/images/classroomio-course-img-template.jpg'}
+                alt={course.title}
+                class="h-20 w-24 rounded-md"
+              />
+              <div class="mb-4 gap-4">
+                <a href={`/courses/${course.id}`}>
+                  <p class="text-lg font-semibold text-gray-600">
+                    {course.title}
                   </p>
-                </div>
+                </a>
+
+                <p class="line-clamp-2 text-sm text-gray-600">
+                  {course.description}
+                </p>
               </div>
-
-              <Badge
-                class={`${
-                  course.lessons_count === course.lessons_completed
-                    ? 'bg-green-200 text-green-700'
-                    : 'bg-yellow-200 text-yellow-700'
-                }`}
-              >
-                {course.lessons_count === course.lessons_completed
-                  ? $t('analytics.completed')
-                  : $t('analytics.incomplete')}
-              </Badge>
             </div>
 
-            <div class="flex w-full items-center gap-1">
-              <Progress value={course.progress_percentage} />
-              <p>{course.progress_percentage}%</p>
-            </div>
+            <Badge
+              class={`${
+                course.lessons_count === course.lessons_completed
+                  ? 'bg-green-200 text-green-700'
+                  : 'bg-yellow-200 text-yellow-700'
+              }`}
+            >
+              {course.lessons_count === course.lessons_completed
+                ? $t('analytics.completed')
+                : $t('analytics.incomplete')}
+            </Badge>
           </div>
-        {/key}
+
+          <div class="flex w-full items-center gap-1">
+            <Progress value={course.progress_percentage} />
+            <p>{course.progress_percentage}%</p>
+          </div>
+        </div>
       {/each}
     </div>
   </div>

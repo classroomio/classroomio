@@ -36,10 +36,12 @@
     }
   });
 
+  let isCoursesFetched = $state(false);
   $effect(() => {
-    if (!$profile.id || !$currentOrg.id) return;
+    if (!$profile.id || !$currentOrg.id || isCoursesFetched) return;
 
     communityApi.fetchCoursesForOrg($profile.id, $currentOrg.id);
+    isCoursesFetched = true;
   });
 
   let filteredQuestions = $derived(

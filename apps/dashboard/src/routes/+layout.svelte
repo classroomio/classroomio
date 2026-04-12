@@ -1,134 +1,14 @@
 <script lang="ts">
   import { page } from '$app/state';
 
-  import { OrgLandingPage } from '$features/org';
   import { Snackbar } from '$features/ui';
-  import { UpgradeModal, PageLoadProgress, PageRestricted } from '$features/ui';
-  import { user } from '$lib/utils/store/user';
-  import { setTheme } from '$lib/utils/functions/theme';
-  import { setupCloudAnalytics } from '$lib/utils/functions/appSetup';
-  import { globalStore } from '$lib/utils/store/app';
-  import { currentOrg, isOrgStudent } from '$lib/utils/store/org';
-  import { appInitApi } from '$features/app/init.svelte';
   import merge from 'lodash/merge';
-  import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
-  import { authClient } from '$lib/utils/services/auth/client';
-  import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
-  import { env } from '$env/dynamic/public';
   import { ModeWatcher } from '@cio/ui/base/dark-mode';
 
   import '../app.css';
 
   let { data, children } = $props();
-
-  let path = $derived(page.url.pathname);
-
-  function intialAppSetup() {
-    console.log(
-      'Welcome to ClassroomIO, we are grateful you chose us.',
-      page.url.host,
-      `\nIs student domain: ${data.isOrgSite}`,
-      data
-    );
-
-    setupCloudAnalytics();
-
-    if (data?.locals?.user) {
-      user.set({
-        ...$user,
-        isLoggedIn: true,
-        currentSession: data.locals.user
-      });
-    }
-
-    console.log('user', $user);
-
-    // Authentication Steps
-    if (!data.isOrgSite || !data.org) return;
-
-    $globalStore.orgSiteName = data.orgSiteName || '';
-    $globalStore.isOrgSite = data.isOrgSite;
-
-    currentOrg.set(data.org);
-
-    const theme = data.org?.theme;
-    if (theme) {
-      setTheme(theme);
-    }
-  }
-
-  onMount(() => {
-    const loadingIndicator = document.getElementById('app-loading-indicator');
-    if (loadingIndicator) {
-      loadingIndicator.style.display = 'none';
-    }
-
-    intialAppSetup();
-
-    if (data.skipAuth) return;
-  });
-
-  const session = authClient.useSession();
-  const isSessionReady = $derived(!$session.isPending && !$session.isRefetching && $session.data);
-
-  // The goal of this effect is to make sure that we do a redirect to /login if the session data is expired
-  // This should be happening on the hooks.server.ts (if there is no cookie) but we've made the home page public so we can show a loading spinner while the app is initializing OR an error message if the backend is down.
-  $effect(() => {
-    if ($session.isPending || $session.isRefetching || !!$session.data) {
-      console.log('session is pending or refetching');
-      return;
-    }
-
-    // Skip /login redirect below when the route is already public.
-    // [NO_REDIRECT] public + path !== '/' — e.g. /login, /signup, /courses, … (not the main-app home edge case)
-    // [NO_REDIRECT] public + '/' + isOrgSite — org landing page on its own domain
-    // [MAY_REDIRECT_TO_LOGIN] public + '/' + !isOrgSite — main app home is public so we can show loading/errors while
-    //   auth resolves; if there is still no session after that, we send to /login (this effect). Logged-in users
-    //   return earlier (session branch above); post-login navigation from '/' is in init.svelte.ts routeUserToNextPage.
-    // [MAY_REDIRECT_TO_LOGIN] not public — private route; unauthenticated users go to /login
-
-    if (isPublicRoute(path) && (path !== '/' || data.isOrgSite)) {
-      return;
-    }
-
-    if (!$session.data && !path.startsWith('/login')) {
-      console.log('session data is not available, go to login');
-      window.location.href = '/login';
-    }
-  });
-
-  $effect(() => {
-    // this means the session cookie 'classroomio.session_data' expired and we need to trigger a new session
-    // triggering a new session will update the session data in the cookies so that our hooks.server.ts doesn't always have to hit the DB when checking if user is logged in or not. Without the session cookie, every page navigation or route would always hit the database to check if user is logged in or not.
-    if (!data?.locals?.fromSessions && isSessionReady) {
-      authClient.getSession().then(() => {
-        console.log('triggered new session');
-      });
-    }
-  });
-
-  $effect(() => {
-    console.log('env public server url', env.PUBLIC_SERVER_URL);
-    console.log('env public is selfhosted', env.PUBLIC_IS_SELFHOSTED);
-    if (isSessionReady && !appInitApi.isInitializedAndReady && !appInitApi.loading) {
-      console.log('setting up account with session data');
-
-      appInitApi.setupApp($session.data as App.Locals, {
-        isOrgSite: data.isOrgSite,
-        orgSiteName: data.orgSiteName
-      });
-    }
-  });
-
-  $effect(() => {
-    // Means it hasn't been set yet.
-    if ($isOrgStudent === null) return;
-
-    if ($isOrgStudent !== $globalStore.isStudent) {
-      globalStore.update((s) => ({ ...s, isStudent: !!$isOrgStudent }));
-    }
-  });
 
   const metaTags = $derived(merge(data.baseMetaTags, page.data.pageMetaTags));
 </script>
@@ -138,19 +18,9 @@
 
   <MetaTags {...metaTags} />
 
-  <UpgradeModal />
-
   <Snackbar />
 
-  {#if data.org?.isRestricted || $currentOrg.isRestricted}
-    <PageRestricted />
-  {:else if data.isOrgSite && data.org && path === '/'}
-    <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
-  {:else}
-    <PageLoadProgress zIndex={10000} />
-
-    {@render children?.()}
-  {/if}
+  {@render children?.()}
 </div>
 
 <style>

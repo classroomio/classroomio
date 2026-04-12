@@ -11,6 +11,7 @@
   import { Separator } from '@cio/ui/base/separator';
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { ROUTE } from '$lib/utils/constants/routes';
+  import { DotPattern } from '@cio/ui/custom/animation/dot-pattern';
 
   interface Props {
     isLogin?: boolean;
@@ -67,8 +68,9 @@
   }
 </script>
 
-<div class="auth-ui-background flex min-h-screen w-full items-center justify-center p-4">
-  <Card.Root class="ui:w-full max-w-[400px]">
+<div class="auth-ui-background relative flex min-h-screen w-full items-center justify-center overflow-hidden p-4">
+  <DotPattern fillColor="rgb(2 51 189 / 0.25)" class="absolute inset-0 h-full w-full" />
+  <Card.Root class="ui:w-full relative z-10 max-w-[400px]">
     {#if !showOnlyContent || showLogo}
       <Card.Header class="ui:flex ui:flex-col ui:items-center ui:gap-4">
         <Avatar.Root>
@@ -132,13 +134,3 @@
     {/if}
   </Card.Root>
 </div>
-
-<style>
-  /* .auth-ui-background {
-    background: url(https://assets.cdn.clsrio.com/www/futuristic-classroom.jpg) no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-  } */
-</style>

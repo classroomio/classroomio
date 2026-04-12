@@ -386,7 +386,7 @@ export const organizationRouter = new Hono()
         const orgId = c.get('orgId');
         const userRole = c.get('userRole');
         const automationKey = c.get('automationKey');
-        const { tags } = c.req.valid('query');
+        const query = c.req.valid('query');
 
         if (!orgId) {
           return c.json(
@@ -403,25 +403,28 @@ export const organizationRouter = new Hono()
           await assertMcpAutomationUsageAllowed(automationKey, 'list_org_courses');
         }
 
-        const tagSlugs = tags
-          ?.split(',')
-          .map((value) => value.trim())
-          .filter(Boolean);
         const result = await getOrganizationCourses(
           orgId,
           user?.id ?? automationKey?.createdByProfileId ?? '',
           userRole ?? ROLE.ADMIN,
-          tagSlugs && tagSlugs.length > 0 ? tagSlugs : undefined
+          query
         );
 
         if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'list_org_courses', { tags: tagSlugs });
+          await recordMcpAutomationUsage(automationKey, 'list_org_courses', {
+            tags: query.tags,
+            search: query.search,
+            page: query.page,
+            limit: query.limit
+          });
         }
 
         return c.json(
           {
             success: true,
-            data: result
+            data: result.items,
+            pagination: result.pagination,
+            query: result.query
           },
           200
         );

@@ -173,6 +173,7 @@
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>{$t('tags_admin.heading')}</Page.Title>
+      <Page.Subtitle>{$t('tags_admin.page_subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
     <Page.Action>
       <ButtonGroup.Root>

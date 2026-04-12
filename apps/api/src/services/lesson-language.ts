@@ -2,6 +2,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { sanitizeOptionalHtml } from '@api/utils/sanitize-html';
 import type { TLessonLanguage, TLocale, TNewLessonLanguage } from '@db/types';
 import {
+  deleteLessonLanguage,
   getLessonLanguageByLessonIdAndLocale,
   getLessonLanguagesByLessonId,
   updateLessonLanguage,
@@ -9,6 +10,7 @@ import {
 } from '@cio/db/queries/lesson/language';
 
 import { getLessonById } from '@cio/db/queries/lesson/lesson';
+import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 
 /**
  * Gets all language translations for a lesson
@@ -70,6 +72,10 @@ export async function upsertLessonLanguageService(
       lessonId
     });
 
+    if (lesson.courseId) {
+      await touchCourseUpdatedAt(lesson.courseId);
+    }
+
     return language;
   } catch (error) {
     if (error instanceof AppError) {
@@ -111,6 +117,11 @@ export async function updateLessonLanguageService(
       ...data,
       content: sanitizeOptionalHtml(data.content)
     });
+
+    if (lesson.courseId) {
+      await touchCourseUpdatedAt(lesson.courseId);
+    }
+
     return language;
   } catch (error) {
     if (error instanceof AppError) {
@@ -119,6 +130,41 @@ export async function updateLessonLanguageService(
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to update lesson language',
       ErrorCodes.LESSON_LANGUAGE_UPDATE_FAILED,
+      500
+    );
+  }
+}
+
+export async function deleteLessonLanguageService(lessonId: string, locale: TLocale): Promise<TLessonLanguage> {
+  try {
+    const lesson = await getLessonById(lessonId);
+    if (!lesson) {
+      throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+    }
+
+    const existing = await getLessonLanguageByLessonIdAndLocale(lessonId, locale);
+    if (!existing) {
+      throw new AppError('Lesson language not found', ErrorCodes.LESSON_LANGUAGE_NOT_FOUND, 404);
+    }
+
+    const deleted = await deleteLessonLanguage(lessonId, locale);
+    if (!deleted) {
+      throw new AppError('Lesson language not found', ErrorCodes.LESSON_LANGUAGE_NOT_FOUND, 404);
+    }
+
+    if (lesson.courseId) {
+      await touchCourseUpdatedAt(lesson.courseId);
+    }
+
+    return deleted;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to delete lesson language',
+      ErrorCodes.LESSON_LANGUAGE_DELETE_FAILED,
       500
     );
   }

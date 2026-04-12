@@ -9,14 +9,14 @@ import type {
   UpvotePostRequest
 } from '../utils/types';
 import { ZCommunityComment, ZCommunityQuestionUpdate, ZCreateCommunityQuestion } from '@cio/utils/validation/community';
-import { currentOrg as currentOrgStore } from '$lib/utils/store/org';
+import { basePath, isStudentExperience } from '$lib/utils/store/app';
 
 import type { TCreateCommunityQuestion } from '@cio/utils/validation/community';
 import { coursesApi } from '$features/course/api/courses.svelte';
 import { currentCommunityQuestion } from '../utils/store';
+import { currentOrg as currentOrgStore } from '$lib/utils/store/org';
 import { generateSlug } from '@cio/utils/functions';
 import { get } from 'svelte/store';
-import { basePath, isStudentExperience } from '$lib/utils/store/app';
 import { goto } from '$app/navigation';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { profile as profileStore } from '$lib/utils/store/user';

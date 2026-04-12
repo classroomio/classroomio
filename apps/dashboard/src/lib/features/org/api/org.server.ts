@@ -1,4 +1,6 @@
 import { classroomio } from '$lib/utils/services/api';
+import { safeServerApi } from '$lib/utils/services/api/server';
+import type { FirstOrganizationRecord, OrganizationRecord } from '../utils/types';
 
 /**
  * Server-side organization API functions.
@@ -15,14 +17,16 @@ import { classroomio } from '$lib/utils/services/api';
  * @returns First organization or null
  */
 export async function getFirstOrg(apiKeyHeaders: { headers: Record<string, string> }) {
-  try {
-    const response = await classroomio.organization.first.$get(undefined, apiKeyHeaders);
-    const data = await response.json();
-    return data.success && data.data && data.data.length > 0 ? data.data[0] : null;
-  } catch (error) {
-    console.error('Error fetching first organization (server):', error);
+  const result = await safeServerApi<{ success: true; data: FirstOrganizationRecord[] }>(() =>
+    classroomio.organization.first.$get(undefined, apiKeyHeaders)
+  );
+
+  if (!result.ok) {
+    console.error('Error fetching first organization (server):', result);
     return null;
   }
+
+  return result.body.data.length > 0 ? result.body.data[0] : null;
 }
 
 /**
@@ -32,20 +36,21 @@ export async function getFirstOrg(apiKeyHeaders: { headers: Record<string, strin
  * @returns Organization or null
  */
 export async function getOrgBySiteName(siteName: string, apiKeyHeaders: { headers: Record<string, string> }) {
-  try {
-    const response = await classroomio.organization.$get(
+  const result = await safeServerApi<{ success: true; data: OrganizationRecord[] }>(() =>
+    classroomio.organization.$get(
       {
         query: { siteName }
       },
       apiKeyHeaders
-    );
+    )
+  );
 
-    const data = await response.json();
-    return data.success && data.data && data.data.length > 0 ? data.data[0] : null;
-  } catch (error) {
-    console.error('Error fetching organization by siteName (server):', error);
+  if (!result.ok) {
+    console.error('Error fetching organization by siteName (server):', result);
     return null;
   }
+
+  return result.body.data.length > 0 ? result.body.data[0] : null;
 }
 
 /**
@@ -60,8 +65,8 @@ export async function getOrgsByCustomDomain(
   isCustomDomainVerified: boolean,
   apiKeyHeaders: { headers: Record<string, string> }
 ) {
-  try {
-    const response = await classroomio.organization.$get(
+  const result = await safeServerApi<{ success: true; data: OrganizationRecord[] }>(() =>
+    classroomio.organization.$get(
       {
         query: {
           customDomain,
@@ -69,12 +74,13 @@ export async function getOrgsByCustomDomain(
         }
       },
       apiKeyHeaders
-    );
+    )
+  );
 
-    const data = await response.json();
-    return data.success && data.data ? data.data : [];
-  } catch (error) {
-    console.error('Error fetching organizations by custom domain (server):', error);
+  if (!result.ok) {
+    console.error('Error fetching organizations by custom domain (server):', result);
     return [];
   }
+
+  return result.body.data;
 }

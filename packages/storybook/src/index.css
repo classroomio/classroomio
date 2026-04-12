@@ -2,4 +2,17 @@
 
 @import 'tailwindcss';
 
+/* Unprefixed animation utilities for packages/ui/custom/animation.
+   @cio/ui/output.css is built with prefix(ui), so animate-* must be declared for Storybook's scan. */
+@theme inline {
+  --animate-magicslide: magicslide var(--speed) ease-in-out infinite alternate;
+  --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
+  --animate-meteor: meteor 5s linear infinite;
+}
+
 @import '@cio/ui/output.css';
+
+@import '../../ui/src/custom/animation/marketing-layers.css';
+
+@source '../../ui/src/custom/animation/**/*.svelte';
+@source inline('animate-magicslide animate-spin-around animate-meteor');

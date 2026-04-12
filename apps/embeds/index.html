@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClassroomIO embeds — dev harness</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        padding: 2rem;
+        background: #f4f4f5;
+      }
+      .harness-note {
+        max-width: 56rem;
+        margin: 0 auto 1.5rem;
+        font-size: 0.875rem;
+        color: #52525b;
+      }
+      #demo {
+        max-width: 56rem;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="harness-note">
+      Dev harness for the question-type-picker embed. Production sites load
+      <code>question-type-picker.js</code> and a mount target only.
+    </p>
+    <div id="demo" data-cio-widget="question-type-picker"></div>
+    <script type="module" src="/src/widgets/question-type-picker/bootstrap.ts"></script>
+  </body>
+</html>

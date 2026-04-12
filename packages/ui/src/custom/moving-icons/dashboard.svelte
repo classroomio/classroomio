@@ -1,26 +1,36 @@
-<script>
-  /**
-   * @typedef {Object} Props
-   * @property {string} [color]
-   * @property {number} [size]
-   * @property {number} [strokeWidth]
-   * @property {boolean} [isHovered]
-   * @property {string} [class]
-   */
+<script lang="ts">
+  interface IconProps {
+    color?: string;
+    size?: number;
+    strokeWidth?: number;
+    isHovered?: boolean;
+    class?: string;
+  }
 
-  /** @type {Props} */
-  let { color = 'currentColor', size = 24, strokeWidth = 2, isHovered = false, class: className = '' } = $props();
+  let {
+    color = 'currentColor',
+    size = 24,
+    strokeWidth = 2,
+    isHovered: isParentHovered = false,
+    class: className = ''
+  }: IconProps = $props();
+
+  /** Local pulse when the icon itself is moused; row hover uses the `isHovered` prop from `HoverableItem`. */
+  let localMotion = $state(false);
+
+  const showMotion = $derived(isParentHovered || localMotion);
 
   function handleMouseEnter() {
-    isHovered = true;
+    if (isParentHovered || localMotion) return;
+    localMotion = true;
 
     setTimeout(() => {
-      isHovered = false;
+      localMotion = false;
     }, 650);
   }
 </script>
 
-<div class={className} aria-label="layout-dashboard" role="img" onmouseenter={handleMouseEnter}>
+<div class={className} aria-label="layout-grid" role="img" onmouseenter={handleMouseEnter}>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={size}
@@ -31,13 +41,13 @@
     stroke-width={strokeWidth}
     stroke-linecap="round"
     stroke-linejoin="round"
-    class="layout-dashboard-icon"
-    class:animate={isHovered}
+    class="layout-grid-icon"
+    class:motion-active={showMotion}
   >
-    <rect width="7" height="9" x="3" y="3" rx="1" class="ui:top-left-panel" />
-    <rect width="7" height="5" x="14" y="3" rx="1" class="ui:top-right-panel" />
-    <rect width="7" height="9" x="14" y="12" rx="1" class="ui:bottom-right-panel" />
-    <rect width="7" height="5" x="3" y="16" rx="1" class="ui:bottom-left-panel" />
+    <rect width="7" height="7" x="3" y="3" rx="1" class="top-left-panel" />
+    <rect width="7" height="7" x="14" y="3" rx="1" class="top-right-panel" />
+    <rect width="7" height="7" x="14" y="14" rx="1" class="bottom-right-panel" />
+    <rect width="7" height="7" x="3" y="14" rx="1" class="bottom-left-panel" />
   </svg>
 </div>
 
@@ -45,28 +55,29 @@
   div {
     display: inline-block;
   }
-  .layout-dashboard-icon {
+
+  .layout-grid-icon {
     overflow: visible;
   }
 
-  .layout-dashboard-icon.animate .top-left-panel {
+  .layout-grid-icon.motion-active .top-right-panel {
     opacity: 0;
-    animation: fadeInLeft 0.35s ease-out forwards;
+    animation: fadeInTop 0.35s ease-out forwards;
   }
 
-  .layout-dashboard-icon.animate .bottom-right-panel {
+  .layout-grid-icon.motion-active .bottom-right-panel {
     opacity: 0;
     animation: fadeInRight 0.35s ease-out 0.1s forwards;
   }
 
-  .layout-dashboard-icon.animate .top-right-panel {
+  .layout-grid-icon.motion-active .bottom-left-panel {
     opacity: 0;
-    animation: fadeInTop 0.35s ease-out 0.2s forwards;
+    animation: fadeInBottom 0.35s ease-out 0.2s forwards;
   }
 
-  .layout-dashboard-icon.animate .bottom-left-panel {
+  .layout-grid-icon.motion-active .top-left-panel {
     opacity: 0;
-    animation: fadeInBottom 0.35s ease-out 0.3s forwards;
+    animation: fadeInLeft 0.35s ease-out 0.3s forwards;
   }
 
   @keyframes fadeInLeft {

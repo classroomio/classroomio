@@ -16,6 +16,7 @@ import {
   MCP_TOOL_CREDIT_COST,
   type TMcpToolName
 } from '@cio/utils/plans';
+import { PLAN } from '@cio/utils/plans/constants';
 
 export type OrganizationAutomationUsageSummary = {
   type: TOrganizationApiKeyType;
@@ -56,11 +57,16 @@ export async function assertOrganizationAutomationKeyCreationAllowed(
   organizationId: string,
   type: TOrganizationApiKeyType
 ): Promise<void> {
+  const planName = await getOrganizationPlanName(organizationId);
+
+  if (type === AUTOMATION_TYPE.API && planName === PLAN.BASIC) {
+    throw new AppError('Public API keys require an Early Adopter or Enterprise plan', ErrorCodes.UPGRADE_REQUIRED, 403);
+  }
+
   if (type !== AUTOMATION_TYPE.MCP) {
     return;
   }
 
-  const planName = await getOrganizationPlanName(organizationId);
   const limits = getMcpAutomationLimits(planName);
   const activeKeys = await countActiveOrganizationApiKeys(organizationId, type);
 

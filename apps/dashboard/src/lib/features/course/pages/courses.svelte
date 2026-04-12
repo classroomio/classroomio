@@ -1,10 +1,10 @@
 <script lang="ts">
-  import * as Table from '@cio/ui/base/table';
+  import * as ResourceListRow from '@cio/ui/custom/resource-list-row';
   import { Empty } from '@cio/ui/custom/empty';
   import { Search } from '@cio/ui/custom/search';
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import * as Page from '@cio/ui/base/page';
-  import * as Select from '@cio/ui/base/select';
+  import { SortSelect } from '$features/ui';
   import GridIcon from '@lucide/svelte/icons/grid-2x2';
   import ListIcon from '@lucide/svelte/icons/list';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -12,8 +12,8 @@
   import {
     CourseCardList,
     CourseCardLoader,
+    CourseListRow,
     CreateCourseButton,
-    CourseList,
     CopyCourseModal,
     NewCourseModal
   } from '$features/course/components';
@@ -60,8 +60,6 @@
     }))
   );
 
-  const selectedLabel = $derived(filterOptions.find((opt) => opt.value === sortKey)?.label || filterOptions[0].label);
-
   const setViewPreference = (preference: 'grid' | 'list') => {
     $courseMetaDeta.view = preference;
     if (browser) {
@@ -97,27 +95,20 @@
 <Page.BodyHeader align="right" class="p-0!">
   <Search placeholder={$t('courses.search_placeholder')} bind:value={searchValue} />
   {#if showSortSelect}
-    <Select.Root type="single" bind:value={sortKey}>
-      <Select.Trigger class="min-w-[150px]">
-        <p>{sortKey ? selectedLabel : filterOptions[0].label}</p>
-      </Select.Trigger>
-      <Select.Content>
-        {#each filterOptions as option (option.label)}
-          <Select.Item value={option.value}>{option.label}</Select.Item>
-        {/each}
-      </Select.Content>
-    </Select.Root>
+    <SortSelect options={filterOptions} bind:value={sortKey} />
   {/if}
   {@render filterControls?.()}
 
-  {#if $courseMetaDeta.view === 'list'}
-    <IconButton onclick={() => setViewPreference('grid')}>
-      <GridIcon size={16} />
-    </IconButton>
-  {:else}
-    <IconButton onclick={() => setViewPreference('list')}>
-      <ListIcon size={16} />
-    </IconButton>
+  {#if !isLMS}
+    {#if $courseMetaDeta.view === 'list'}
+      <IconButton onclick={() => setViewPreference('grid')}>
+        <GridIcon size={16} />
+      </IconButton>
+    {:else}
+      <IconButton onclick={() => setViewPreference('list')}>
+        <ListIcon size={16} />
+      </IconButton>
+    {/if}
   {/if}
 </Page.BodyHeader>
 
@@ -134,48 +125,33 @@
         <CreateCourseButton isResponsive />
       {/if}
     </Empty>
-  {:else if $courseMetaDeta.view === 'list'}
-    <div class="w-full overflow-hidden rounded-md border">
-      <Table.Root class="w-full table-fixed">
-        <Table.Header>
-          <Table.Row>
-            <Table.Head class="w-[20%]">{$t('courses.course_card.list_view.title')}</Table.Head>
-            <Table.Head class="w-[20%]">{$t('courses.course_card.list_view.description')}</Table.Head>
-            <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.type')}</Table.Head>
-            <Table.Head class="w-3/12 min-w-0">{$t('courses.course_card.list_view.tags')}</Table.Head>
-            <Table.Head class="w-[8%]">{$t('courses.course_card.list_view.lessons')}</Table.Head>
-            {#if !isLMS}
-              <Table.Head class="w-[8%]">{$t('courses.course_card.list_view.students')}</Table.Head>
-              <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.published')}</Table.Head>
-              <Table.Head class="w-[6%]"></Table.Head>
-            {/if}
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {#each courses as courseData (courseData.id)}
-            <CourseList
-              id={courseData.id}
-              slug={courseData.slug ?? ''}
-              title={courseData.title}
-              type={$t(`course.navItem.settings.${courseData.type?.toLowerCase()}`)}
-              description={courseData.description}
-              isPublished={courseData.isPublished ?? false}
-              totalLessons={courseData.lessonCount}
-              totalStudents={'totalStudents' in courseData ? courseData.totalStudents : 0}
-              tags={('tags' in courseData && Array.isArray(courseData.tags) ? courseData.tags : []) as Array<{
-                id: string;
-                name: string;
-                slug: string;
-                color?: string | null;
-              }>}
-              {isExplore}
-              {isLMS}
-            />
-          {/each}
-        </Table.Body>
-      </Table.Root>
-    </div>
-  {:else}
+  {:else if isLMS || $courseMetaDeta.view === 'grid'}
     <CourseCardList {courses} {isExplore} {isLMS} />
+  {:else}
+    <ResourceListRow.Group>
+      {#each courses as courseData (courseData.id)}
+        <CourseListRow
+          id={courseData.id}
+          slug={courseData.slug ?? ''}
+          title={courseData.title}
+          logo={courseData.logo ?? null}
+          type={courseData.type}
+          description={courseData.description}
+          isPublished={courseData.isPublished ?? false}
+          lessonCount={courseData.lessonCount}
+          exerciseCount={'exerciseCount' in courseData ? (courseData.exerciseCount ?? 0) : 0}
+          totalStudents={'totalStudents' in courseData ? courseData.totalStudents : 0}
+          updatedAt={'updatedAt' in courseData ? (courseData.updatedAt ?? null) : null}
+          tags={('tags' in courseData && Array.isArray(courseData.tags) ? courseData.tags : []) as Array<{
+            id: string;
+            name: string;
+            slug: string;
+            color?: string | null;
+          }>}
+          {isExplore}
+          {isLMS}
+        />
+      {/each}
+    </ResourceListRow.Group>
   {/if}
 </div>

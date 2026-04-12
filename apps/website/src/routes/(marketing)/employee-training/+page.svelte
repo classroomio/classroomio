@@ -6,23 +6,23 @@
   const benefitDetails = [
     {
       icon: 'light-bulb.svg',
-      title: 'Increased Engagement',
-      description: 'Interactive courses and collaborative features keep employees motivated.'
+      title: 'Grow from within',
+      description: 'Employees who learn new skills stay longer, perform better, and take on bigger challenges.'
     },
     {
       icon: 'learning.svg',
-      title: 'Streamlined Learning',
-      description: 'Centralized platform for all training materials and progress tracking.'
+      title: 'Training that sticks',
+      description: 'Structured courses with quizzes and certifications so your team actually retains what they learn.'
     },
     {
       icon: 'pie-chart.svg',
-      title: 'Data-Driven Insights',
-      description: 'Gain valuable insights into employee performance and learning patterns.'
+      title: 'See the ROI',
+      description: 'Track completion rates, skill gaps, and progress across every department in real time.'
     },
     {
       icon: 'paint-brush.svg',
-      title: 'Customizable Experience',
-      description: "Tailor the learning experience to your company's specific needs and branding."
+      title: 'Make it yours',
+      description: 'Your logo, your colors, your domain. Employees see your brand, not ours.'
     }
   ];
 
@@ -30,21 +30,22 @@
     {
       icon: 'team-mgnt.svg',
       img: 'team-mgnt2.svg',
-      title: 'Team management',
-      description: 'You can invite managers and employees to create and take trainings at scale in your organization.'
+      title: 'Enroll entire teams in minutes',
+      description:
+        'Invite managers and employees by department or role. Assign the right training to the right people without the back and forth.'
     },
     {
       icon: 'colour-pallete.svg',
       img: 'custom.svg',
-      title: 'Custom branding',
+      title: 'A learning platform that feels like yours',
       description:
-        'With our customizable platform, you can set your company logo, brand color and add a custom domain to your employee LMS.'
+        'Set your company logo, brand colors, and custom domain. Your employees get a seamless experience that looks and feels internal.'
     },
     {
       icon: 'cup.svg',
       img: 'progress.svg',
-      title: 'Track employee progress',
-      description: 'You can track the progress of your employees and assist whoever needs help.'
+      title: 'Know exactly where your team stands',
+      description: 'See who completed what, who needs a nudge, and where the skill gaps are. All in one dashboard.'
     }
   ];
 </script>
@@ -57,19 +58,20 @@
   <PageHeader
     className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 md:px-16 px-8"
   >
-    <Badge class="px-4! py-2!" variant="outline">Unlock your team's potential</Badge>
+    <Badge class="px-4! py-2!" variant="outline">Invest in your people</Badge>
 
     <div class="flex w-full flex-col items-start justify-start gap-y-8 lg:items-center lg:justify-center">
       <div class="flex w-full max-w-7xl flex-col items-start justify-start gap-y-4 lg:items-center lg:justify-center">
         <h1 class="m-0 mx-auto text-4xl text-slate-900 md:text-6xl lg:text-center">
-          Employee training software for
-          <br /><span class="relative text-blue-700">modern teams</span>
+          Your best investment is
+          <br /><span class="relative text-blue-700">your employees</span>
         </h1>
         <p class="text-base font-normal text-slate-700 md:text-lg lg:w-[60%] lg:text-center">
-          With ClassroomIO, you can keep your teams in sync with company standards as they change quickly.
+          Companies that invest in employee growth outperform the ones that don't. Give your team the tools to learn,
+          grow, and lead.
         </p>
       </div>
-      <Button href="/signup" target="_blank">Get Started for Free 🚀</Button>
+      <Button href="/signup" target="_blank">Start investing in your team</Button>
     </div>
   </PageHeader>
 
@@ -77,12 +79,12 @@
     class="flex w-full max-w-7xl flex-col justify-center gap-x-6 gap-y-8 px-8 py-16 md:px-16 lg:flex-row lg:items-center lg:justify-between lg:px-28 lg:py-24"
   >
     <div class="flex w-full flex-col items-start justify-start gap-y-4 lg:w-[35%]">
-      <Badge variant="outline">Amazing benefits</Badge>
+      <Badge variant="outline">Why it matters</Badge>
 
       <div class="flex flex-col items-start justify-start gap-y-4 md:w-full">
-        <h1 class="text-3xl">Unlock your team's potential</h1>
+        <h1 class="text-3xl">Great teams are built, not hired</h1>
         <p class="text-lg leading-8 text-gray-500">
-          Modern teams require solutions that are easy to use and allows them move quickly.
+          The companies people want to work for are the ones that help them grow. Training is how you get there.
         </p>
       </div>
     </div>
@@ -96,7 +98,7 @@
           <img
             class="h-[48px] w-[48px]"
             src="https://assets.cdn.clsrio.com/www/employee-training/{benefits.icon}"
-            alt="light-bulb"
+            alt={benefits.title}
           />
 
           <div class="align-start flex w-full flex-col justify-start gap-y-2">
@@ -114,15 +116,14 @@
     class="flex w-full flex-col items-center justify-start gap-y-16 bg-[#F1F6FF] px-8 py-16 md:px-16 lg:px-28 lg:py-24"
   >
     <div class="flex w-full flex-col items-start justify-start gap-y-4 lg:items-center lg:justify-center">
-      <Badge class="px-4! py-2!" variant="outline">Explore our features</Badge>
+      <Badge class="px-4! py-2!" variant="outline">How it works</Badge>
 
       <div
         class="flex max-w-7xl flex-col items-start justify-start gap-y-4 lg:w-full lg:items-center lg:justify-center"
       >
-        <h1 class="text-3xl">What makes us the right choice</h1>
+        <h1 class="text-3xl">Everything you need to grow your team</h1>
         <p class="text-sm font-light text-[#334155] md:w-[80%] md:text-base lg:text-center">
-          Discover why we’re the perfect partner for your employee training needs. Experience innovative solutions
-          designed to reduce stress and enhance productivity.
+          From onboarding to upskilling, ClassroomIO gives you the tools to build a culture of continuous learning.
         </p>
       </div>
     </div>
@@ -138,7 +139,7 @@
             <img
               class="h-[48px] w-[48px]"
               src="https://assets.cdn.clsrio.com/www/employee-training/{feature.icon}"
-              alt="team icon"
+              alt={feature.title}
             />
             <div class="flex flex-col items-start justify-start gap-y-4 md:w-full">
               <h1 class="text-2xl">{feature.title}</h1>
@@ -155,7 +156,7 @@
             <img
               class="w-full lg:max-w-[380px]"
               src="https://assets.cdn.clsrio.com/www/employee-training/{feature.img}"
-              alt="team management feature ui"
+              alt={feature.title}
             />
           </div>
         </div>
@@ -171,9 +172,10 @@
     >
       <div class="flex w-full flex-col items-start justify-start gap-y-4 lg:w-[40%]">
         <div class="flex flex-col items-start justify-start gap-y-4 md:w-full">
-          <h1 class="text-2xl text-white">Did you know you can request for custom features?</h1>
+          <h1 class="text-2xl text-white">Need something specific for your team?</h1>
           <p class="text-base leading-8 text-[#DEDEDE]">
-            Companies get the opportunity to request custom features from us.
+            We work with companies to build custom training solutions. Tell us what your team needs and we'll make it
+            happen.
           </p>
         </div>
         <Button href="/demo" target="_blank" variant="outline">Talk to sales</Button>
@@ -188,9 +190,9 @@
   </section>
 
   <PageSignupCTA
-    header="Give your team the training they deserve"
-    subText="It's free to sign up and start getting value out of the product."
-    btnLabel="Sign me up"
+    header="The best time to invest in your team is now"
+    subText="Start for free. No credit card required."
+    btnLabel="Get started"
     link="/signup"
     demo={false}
   />

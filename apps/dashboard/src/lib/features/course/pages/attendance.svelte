@@ -145,7 +145,7 @@
 </section>
 
 <section class="my-2 space-y-4">
-  <div class="rounded-md border">
+  <div class="overflow-x-auto rounded-md border">
     <Table.Root>
       <Table.Header>
         <Table.Row>

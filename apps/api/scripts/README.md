@@ -1,6 +1,6 @@
 # OpenAPI Spec Generator Script
 
-This script generates the OpenAPI specification from your Hono application and optionally uploads it to a Cloudflare R2 bucket.
+This script generates the OpenAPI specification for the public API routes only and optionally uploads it to a Cloudflare R2 bucket.
 
 ## Usage
 
@@ -38,10 +38,11 @@ CLOUDFLARE_ACCOUNT_ID=your_account_id
 The script will:
 
 1. **Generate** the OpenAPI specification from your Hono app routes
-2. **Save locally** to `dist/openapi/openapi.json`
-3. **Upload to R2** (if credentials provided):
-   - `openapi/openapi-YYYY-MM-DD.json` (dated version)
-   - `openapi/openapi-latest.json` (latest version)
+2. **Filter** the output to `/public-api/v1/*`
+3. **Save locally** to `dist/openapi/public-api/openapi.json`
+4. **Upload to R2** (if credentials provided):
+   - `openapi/public-api/openapi-YYYY-MM-DD.json` (dated version)
+   - `openapi/public-api/openapi-latest.json` (latest version)
 
 ## GitHub Action Integration
 

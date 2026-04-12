@@ -1,13 +1,21 @@
 // Question type inferred from API Exercise response
 import type { Course as CourseDetails, Exercise } from './utils/types';
-import type { InferResponseType } from '@cio/api/rpc-types';
+import type { InferRequestType, InferResponseType } from '@cio/api/rpc-types';
 import { classroomio } from '$lib/utils/services/api';
 
 // Org Courses types
 export type GetOrgCoursesRequest = typeof classroomio.organization.courses.$get;
 export type OrgCoursesResponse = InferResponseType<GetOrgCoursesRequest> | null;
 export type OrgCoursesSuccess = Extract<InferResponseType<GetOrgCoursesRequest>, { success: true }>;
+export type GetOrgCoursesRequestQuery = NonNullable<InferRequestType<GetOrgCoursesRequest>['query']>;
 export type OrgCourses = OrgCoursesSuccess['data'];
+export type OrgCoursesPagination = OrgCoursesSuccess['pagination'];
+export type OrgCoursesQuery = {
+  page: number;
+  limit: number;
+  search?: string;
+  tags?: string;
+};
 
 // User Enrolled Courses types
 export type GetUserEnrolledCoursesRequest = typeof classroomio.organization.courses.enrolled.$get;

@@ -9,6 +9,8 @@ type VideoMetadata = {
   duration?: number;
   createdAt?: string;
   thumbnailUrl?: string;
+  googleDriveFileId?: string;
+  mimeType?: string;
 };
 
 /**
@@ -22,6 +24,13 @@ export function getVideoThumbnailUrl(video: LessonVideo): string | null {
   if (video.type === 'upload') {
     const meta = video.metadata as VideoMetadata | undefined;
     if (meta?.thumbnailUrl && typeof meta.thumbnailUrl === 'string') return meta.thumbnailUrl;
+  }
+  if (video.type === 'google_drive') {
+    const meta = video.metadata as VideoMetadata | undefined;
+    if (meta?.thumbnailUrl && typeof meta.thumbnailUrl === 'string') return meta.thumbnailUrl;
+    if (meta?.googleDriveFileId && typeof meta.googleDriveFileId === 'string') {
+      return `https://drive.google.com/thumbnail?id=${meta.googleDriveFileId}&sz=w400`;
+    }
   }
   return null;
 }
@@ -67,6 +76,7 @@ export function getVideoTitle(video: LessonVideo, index: number): string {
 
   if (video.type === 'youtube') return 'YouTube video';
   if (video.type === 'generic') return 'Embedded video';
+  if (video.type === 'google_drive') return 'Google Drive video';
 
   return `Video ${index + 1}`;
 }

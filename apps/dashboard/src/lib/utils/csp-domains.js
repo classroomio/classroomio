@@ -11,7 +11,9 @@ const saasDefaults = {
     'https://umami.hz.oncws.com',
     'https://www.youtube.com',
     'https://youtube.com',
-    'https://google.com'
+    'https://google.com',
+    'https://apis.google.com',
+    'https://accounts.google.com'
   ],
   styleSrc: [
     'https://cdn.plyr.io',
@@ -34,14 +36,17 @@ const saasDefaults = {
     'https://*.r2.cloudflarestorage.com',
     'https://*.senja.io',
     'https://*.ytimg.com',
-    'https://noembed.com'
+    'https://noembed.com',
+    'https://www.googleapis.com'
   ],
   frameSrc: [
     'https://www.youtube.com',
     'https://youtube.com',
     'https://www.youtube-nocookie.com',
     'https://www.google.com',
-    'https://google.com'
+    'https://google.com',
+    'https://drive.google.com',
+    'https://docs.google.com'
   ],
   fontSrc: ['https://fonts.gstatic.com', 'https://cdn.plyr.io'],
   mediaSrc: ['https:']

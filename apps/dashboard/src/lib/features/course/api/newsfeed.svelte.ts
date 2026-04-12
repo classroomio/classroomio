@@ -180,21 +180,20 @@ export class NewsfeedApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         if (response.data) {
           snackbar.success('Post updated successfully');
-          // Update local state, preserving author fields from existing feed
-          const index = this.feeds.findIndex((f) => f.id === feedId);
-          if (index !== -1) {
-            const existingFeed = this.feeds[index];
-            // Merge response data with existing feed to preserve author fields
-            this.feeds[index] = {
-              ...existingFeed,
+          this.feeds = this.feeds.map((feed) => {
+            if (feed.id !== feedId) {
+              return feed;
+            }
+
+            return {
+              ...feed,
               ...response.data,
-              // Preserve author fields from existing feed
-              authorProfileId: existingFeed.authorProfileId,
-              authorFullname: existingFeed.authorFullname,
-              authorUsername: existingFeed.authorUsername,
-              authorAvatarUrl: existingFeed.authorAvatarUrl
+              authorProfileId: feed.authorProfileId,
+              authorFullname: feed.authorFullname,
+              authorUsername: feed.authorUsername,
+              authorAvatarUrl: feed.authorAvatarUrl
             };
-          }
+          });
         }
       },
       onError: (result) => {
@@ -232,21 +231,20 @@ export class NewsfeedApi extends BaseApiWithErrors {
       logContext: 'updating newsfeed reaction',
       onSuccess: (response) => {
         if (response.data) {
-          // Update local state, preserving author fields from existing feed
-          const index = this.feeds.findIndex((f) => f.id === feedId);
-          if (index !== -1) {
-            const existingFeed = this.feeds[index];
-            // Merge response data with existing feed to preserve author fields
-            this.feeds[index] = {
-              ...existingFeed,
+          this.feeds = this.feeds.map((feed) => {
+            if (feed.id !== feedId) {
+              return feed;
+            }
+
+            return {
+              ...feed,
               ...response.data,
-              // Preserve author fields from existing feed
-              authorProfileId: existingFeed.authorProfileId,
-              authorFullname: existingFeed.authorFullname,
-              authorUsername: existingFeed.authorUsername,
-              authorAvatarUrl: existingFeed.authorAvatarUrl
+              authorProfileId: feed.authorProfileId,
+              authorFullname: feed.authorFullname,
+              authorUsername: feed.authorUsername,
+              authorAvatarUrl: feed.authorAvatarUrl
             };
-          }
+          });
         }
       },
       onError: (result) => {

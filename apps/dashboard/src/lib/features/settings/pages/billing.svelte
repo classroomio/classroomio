@@ -5,10 +5,9 @@
   import HourglassIcon from '@lucide/svelte/icons/hourglass';
   import { openUpgradeModal } from '$lib/utils/functions/org';
   import ReceiptIcon from '@lucide/svelte/icons/receipt';
-  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
-
   import { Button } from '@cio/ui/base/button';
   import * as Item from '@cio/ui/base/item';
+  import { ExternalLinkIcon, HoverableItem } from '@cio/ui/custom/moving-icons';
 
   let isRedirecting = $state(false);
 
@@ -28,7 +27,7 @@
       if ($currentOrgPlan?.provider === 'lmz') {
         isRedirecting = true;
         const url = new URL('/api/lmz/subscription', window.location.origin);
-        url.searchParams.set('subscriptionId', $currentOrgPlan?.subscriptionId);
+        url.searchParams.set('subscriptionId', $currentOrgPlan?.subscriptionId || '');
 
         const response = await fetch(url.toString());
         const result = await response.json();
@@ -70,10 +69,14 @@
         <Item.Description>{$t('settings.billing.provider')}</Item.Description>
       </Item.Content>
       <Item.Actions>
-        <Button size="sm" variant="outline" onclick={onOpenBilling} loading={isRedirecting}>
-          <ExternalLinkIcon class="size-4" />
-          {$t('settings.billing.open_billing')}
-        </Button>
+        <HoverableItem>
+          {#snippet children(isHovered)}
+            <Button size="sm" variant="outline" onclick={onOpenBilling} loading={isRedirecting}>
+              <ExternalLinkIcon {isHovered} size={16} ariaHidden={true} />
+              {$t('settings.billing.open_billing')}
+            </Button>
+          {/snippet}
+        </HoverableItem>
       </Item.Actions>
     </Item.Root>
   {/if}

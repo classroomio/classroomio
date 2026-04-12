@@ -98,7 +98,7 @@ const publishCourseDraftToExistingCourseShape =
 const tagCoursesShape = ZAutomationCourseTagAssignment.shape as unknown as ZodRawShapeCompat;
 
 const SUPPORTED_QUESTION_TYPES_GUIDE =
-  'Supported questionTypeId values: RADIO=1 (Single answer), CHECKBOX=2 (Multiple answers), TEXTAREA=3 (Paragraph), TRUE_FALSE=4 (True/False), SHORT_ANSWER=5 (Short answer), NUMERIC=6 (Numeric answer), FILL_BLANK=7 (Fill in the blank), FILE_UPLOAD=8 (File upload), MATCHING=9 (Matching), ORDERING=10 (Ordering), HOTSPOT=11 (Hotspot), LINK=12 (Links). Use the numeric ids in exercise payloads.';
+  'Supported questionTypeId values: RADIO=1 (Single answer), CHECKBOX=2 (Multiple answers), TEXTAREA=3 (Paragraph), TRUE_FALSE=4 (True/False), SHORT_ANSWER=5 (Short answer), NUMERIC=6 (Numeric answer), FILL_BLANK=7 (Fill in the blank), FILE_UPLOAD=8 (File upload), MATCHING=9 (Matching), ORDERING=10 (Ordering), HOTSPOT=11 (Hotspot), LINK=12 (Links), WORD_BANK=13 (Word bank). Use the numeric ids in exercise payloads.';
 const LESSON_HTML_GUIDE =
   'For draft lesson HTML, put only the lesson body in lessonLanguages[].content. Do not include the lesson title. Do not use h1 or h2 anywhere in lesson HTML. Start headings at h3 because that is the highest heading level allowed in lesson content.';
 

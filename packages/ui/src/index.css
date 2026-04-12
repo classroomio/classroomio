@@ -1,5 +1,6 @@
 @import 'tailwindcss' prefix(ui);
 @import 'tw-animate-css';
+@import './custom/animation/marketing-layers.css';
 
 @source './**/*.{html,js,ts,svelte}';
 @source '../node_modules/layerchart/dist';
@@ -114,6 +115,12 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Course-app style animations (marketing / landing) */
+  --animate-meteor: meteor 5s linear infinite;
+  --animate-shimmer-marketing: shimmer-marketing 8s infinite;
+  --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
+  --animate-magicslide: magicslide var(--speed) ease-in-out infinite alternate;
 }
 
 @layer base {

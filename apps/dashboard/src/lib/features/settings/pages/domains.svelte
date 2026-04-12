@@ -7,7 +7,6 @@
   import isValidDomain from 'is-valid-domain';
   import { goto } from '$app/navigation';
   import { onMount, untrack } from 'svelte';
-  import { parse } from 'tldts';
 
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -157,6 +156,7 @@
     }
 
     const sanitizedDomain = sanitizeDomain(customDomain);
+    const { parse } = await import('tldts/dist/es6/index.js');
     const details = parse(sanitizedDomain);
 
     if (!details.subdomain) {
@@ -338,7 +338,7 @@
         {#if domainSetup?.dnsRecords?.length}
           <Field.Field>
             <div class="space-y-3 rounded-md border px-4 py-3">
-              {#each domainSetup.dnsRecords as record}
+              {#each domainSetup.dnsRecords as record (record.name)}
                 <div class="grid gap-3 sm:grid-cols-[80px,1fr,1fr] sm:items-center">
                   <div>
                     <Field.Label class="font-light">{$t('components.settings.domains.dns_type')}</Field.Label>

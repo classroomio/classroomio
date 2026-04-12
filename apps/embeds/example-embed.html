@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Question type picker embed (static test)</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        padding: 2rem;
+        background: #fafafa;
+      }
+    </style>
+  </head>
+  <body>
+    <p style="max-width: 56rem; margin: 0 auto 1rem; color: #52525b; font-size: 0.875rem">
+      Serve this directory over HTTP (e.g. <code>npx serve .</code> from <code>apps/embeds</code> after
+      <code>pnpm build</code>). File URLs will not load the script correctly.
+    </p>
+    <div style="max-width: 56rem; margin: 0 auto" data-cio-widget="question-type-picker"></div>
+    <script type="module" src="./dist/question-type-picker.js"></script>
+  </body>
+</html>

@@ -21,6 +21,8 @@
     totalStudents?: number;
     isExplore?: boolean;
     isLMS?: boolean;
+    href?: string;
+    showActions?: boolean;
     tags?: Array<{
       id: string;
       name: string;
@@ -40,10 +42,17 @@
     totalStudents = 0,
     isExplore = false,
     isLMS = false,
+    href,
+    showActions = true,
     tags = []
   }: Props = $props();
 
   function handleRowClick() {
+    if (href) {
+      goto(resolve(href, {}));
+      return;
+    }
+
     if (isExplore) {
       goto(resolve(`/course/${slug}`, {}));
       return;
@@ -104,7 +113,7 @@
       </Table.Cell>
     {/if}
   {/if}
-  {#if !isLMS}
+  {#if !isLMS && showActions}
     <Table.Cell class="text-center">
       <DropdownMenu.Root>
         <DropdownMenu.Trigger

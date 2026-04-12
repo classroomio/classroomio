@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
+  import { ExternalLinkIcon, HomeIcon, HoverableItem } from '@cio/ui/custom/moving-icons';
   import HeartCrack from '@lucide/svelte/icons/heart-crack';
 
   const isNotFound = $derived(page.status === 404);
@@ -28,7 +29,14 @@
     showLogo={true}
   >
     <div class="flex gap-2">
-      <Button onclick={goHome}>Go Home</Button>
+      <HoverableItem>
+        {#snippet children(isHovered)}
+          <Button onclick={goHome}>
+            <HomeIcon {isHovered} size={16} ariaHidden={true} />
+            Go Home
+          </Button>
+        {/snippet}
+      </HoverableItem>
     </div>
   </Empty>
 {:else}
@@ -41,8 +49,22 @@
     showLogo={true}
   >
     <div class="flex gap-2">
-      <Button href="https://classroomio.com/tools" variant="secondary">Try Free tools</Button>
-      <Button onclick={goHome}>Go Home</Button>
+      <HoverableItem>
+        {#snippet children(isHovered)}
+          <Button href="https://classroomio.com/tools" variant="secondary">
+            <ExternalLinkIcon {isHovered} size={16} ariaHidden={true} />
+            Try Free Tools
+          </Button>
+        {/snippet}
+      </HoverableItem>
+      <HoverableItem>
+        {#snippet children(isHovered)}
+          <Button onclick={goHome}>
+            <HomeIcon {isHovered} size={16} ariaHidden={true} />
+            Go Home
+          </Button>
+        {/snippet}
+      </HoverableItem>
     </div>
   </Empty>
 {/if}

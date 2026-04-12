@@ -1,761 +1,177 @@
 <script lang="ts">
-  import { Label } from '@cio/ui/base/label';
-  import { Switch } from '@cio/ui/base/switch';
-  import TrashIcon from '@lucide/svelte/icons/trash';
-  import * as RadioGroup from '@cio/ui/base/radio-group';
-
-  import { landingPageSettings } from '../utils/store';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
+  import { goto } from '$app/navigation';
+  import { SvelteURLSearchParams } from 'svelte/reactivity';
+  import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import { openUpgradeModal } from '$lib/utils/functions/org';
   import { t } from '$lib/utils/functions/translations';
-  import { orgApi } from '$features/org/api/org.svelte';
-  import { handleOpenWidget } from '$features/ui/course-landing-page/store';
-
-  import { Checkbox } from '@cio/ui/base/checkbox';
-  import { Input } from '@cio/ui/base/input';
-  import { Textarea } from '@cio/ui/base/textarea';
   import { Button } from '@cio/ui/base/button';
-  import { UploadWidget, UnsavedChanges } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
-  import type { OrgLandingPageJson } from '$lib/utils/types/org';
+  import * as RadioGroup from '@cio/ui/base/radio-group';
+  import { UnsavedChanges } from '$features/ui';
+  import { orgApi } from '$features/org/api/org.svelte';
+  import {
+    createDefaultLandingPageSettings,
+    landingPageThemes,
+    normalizeLandingPageSettings
+  } from '$features/org/utils/landing-page';
+  import { landingPageSettings } from '../utils/store';
+  import { PremiumIcon } from '@cio/ui/custom/moving-icons';
   import type { AccountOrg } from '$features/app/types';
 
-  let creatingNewQuestion = $state(false);
-  let creatingNewCustomLink = $state(false);
-  let hasUnsavedChanges = $state(false);
-  let widgetKey = $state('');
-  const banner = [
-    { value: 'video', label: `${$t('settings.landing_page.actions.banner_type.video')}` },
-    { value: 'image', label: `${$t('settings.landing_page.actions.banner_type.image')}` }
-  ];
+  let hasInitialized = $state(false);
+  let skipUnsavedPrompt = $state(false);
+  let { hasUnsavedChanges = $bindable(false) }: { hasUnsavedChanges?: boolean } = $props();
 
-  let newQuestion = $state({
-    title: '',
-    content: ''
-  });
+  const themeCards = [
+    {
+      value: 'minimal',
+      preview: 'https://assets.cdn.clsrio.com/www/templates/minimal.png',
+      titleKey: 'settings.landing_page.theme.cards.minimal.title',
+      descriptionKey: 'settings.landing_page.theme.cards.minimal.description'
+    },
+    {
+      value: 'bold',
+      preview: 'https://assets.cdn.clsrio.com/www/templates/bold.png',
+      titleKey: 'settings.landing_page.theme.cards.bold.title',
+      descriptionKey: 'settings.landing_page.theme.cards.bold.description'
+    },
+    {
+      value: 'classic',
+      preview: 'https://assets.cdn.clsrio.com/www/templates/classic.png',
+      titleKey: 'settings.landing_page.theme.cards.classic.title',
+      descriptionKey: 'settings.landing_page.theme.cards.classic.description'
+    }
+  ] as const;
 
-  let newCustomLink = $state({
-    label: '',
-    url: '',
-    openInNewTab: false
-  });
-
-  function widgetControl(key: string) {
-    widgetKey = key;
-    $handleOpenWidget.open = true;
+  function isPaidTheme(theme: string): boolean {
+    return theme !== 'minimal';
   }
 
-  function createNewFaq() {
-    newQuestion = {
-      title: '',
-      content: ''
+  function selectTheme(theme: (typeof landingPageThemes)[number]) {
+    if ($isFreePlan && isPaidTheme(theme)) {
+      openUpgradeModal();
+      return;
+    }
+
+    $landingPageSettings.theme = theme;
+    hasUnsavedChanges = true;
+  }
+
+  function isLandingPageTheme(value: string | null): value is (typeof landingPageThemes)[number] {
+    return value === 'minimal' || value === 'bold' || value === 'classic';
+  }
+
+  function getEditContentUrl() {
+    const query = new SvelteURLSearchParams(page.url.searchParams);
+    query.set('theme', $landingPageSettings.theme);
+    return `${$currentOrgPath}/settings/landingpage/edit?${query.toString()}`;
+  }
+
+  $effect(() => {
+    if (hasInitialized || !$currentOrg.id) {
+      return;
+    }
+
+    const normalizedLandingPage = normalizeLandingPageSettings($currentOrg.landingpage);
+    const orgDefaultLandingPageSettings = createDefaultLandingPageSettings();
+    const queryTheme = page.url.searchParams.get('theme');
+    $landingPageSettings = {
+      ...orgDefaultLandingPageSettings,
+      ...normalizedLandingPage
     };
-    creatingNewQuestion = true;
-  }
-
-  function saveNewFAQ() {
-    if (newQuestion.title !== '' && newQuestion.content !== '') {
-      $landingPageSettings.faq.questions = [
-        ...$landingPageSettings.faq.questions,
-        {
-          id: new Date().getTime(),
-          title: newQuestion.title,
-          content: newQuestion.content
-        }
-      ];
-      creatingNewQuestion = false;
+    if (isLandingPageTheme(queryTheme)) {
+      $landingPageSettings.theme = queryTheme;
+      hasUnsavedChanges = queryTheme !== normalizedLandingPage.theme;
+    } else {
+      hasUnsavedChanges = false;
     }
-  }
-
-  function cancelNewFAQ() {
-    creatingNewQuestion = false;
-  }
-
-  function deleteFaq(id: number) {
-    let faqs = $landingPageSettings.faq.questions;
-    const filteredFaq = faqs.filter((faq) => faq.id !== id);
-    $landingPageSettings.faq.questions = filteredFaq;
-  }
-
-  function createNewCustomLink() {
-    newCustomLink = {
-      label: '',
-      url: '',
-      openInNewTab: false
-    };
-    creatingNewCustomLink = true;
-  }
-
-  function saveNewCustomLink() {
-    if (newCustomLink.label !== '' && newCustomLink.url !== '') {
-      $landingPageSettings.customLinks.links = [
-        ...$landingPageSettings.customLinks.links,
-        {
-          id: new Date().getTime(),
-          label: newCustomLink.label,
-          url: newCustomLink.url,
-          openInNewTab: newCustomLink.openInNewTab
-        }
-      ];
-      creatingNewCustomLink = false;
-    }
-  }
-
-  function cancelNewCustomLink() {
-    creatingNewCustomLink = false;
-  }
-
-  function deleteCustomLink(id: number) {
-    let customLinks = $landingPageSettings.customLinks.links;
-    const filteredCustomLinks = customLinks.filter((link) => link.id !== id);
-    $landingPageSettings.customLinks.links = filteredCustomLinks;
-  }
-
-  const checkPrefix = (inputValue: string) => {
-    if (!inputValue) return;
-
-    if (inputValue.trim() !== '') {
-      if (!inputValue.startsWith('https://')) {
-        inputValue = 'https://' + inputValue;
-      }
-    }
-    return inputValue;
-  };
+    hasInitialized = true;
+  });
 
   export async function handleSave() {
-    $landingPageSettings.footer.twitter = checkPrefix($landingPageSettings.footer.twitter) || '';
-    $landingPageSettings.footer.linkedin = checkPrefix($landingPageSettings.footer.linkedin) || '';
-    $landingPageSettings.footer.facebook = checkPrefix($landingPageSettings.footer.facebook) || '';
+    const updatedLandingPage = normalizeLandingPageSettings($landingPageSettings as AccountOrg['landingpage']);
 
     await orgApi.update($currentOrg.id, {
-      landingpage: $landingPageSettings as AccountOrg['landingpage']
+      landingpage: updatedLandingPage as AccountOrg['landingpage']
     });
 
     if (orgApi.success) {
-      $currentOrg.landingpage = $landingPageSettings as AccountOrg['landingpage'];
+      $landingPageSettings = updatedLandingPage;
+      $currentOrg.landingpage = updatedLandingPage as AccountOrg['landingpage'];
       hasUnsavedChanges = false;
     }
   }
-
-  // Set default from store
-  currentOrg.subscribe((cOrg) => {
-    if (cOrg.landingpage && Object.keys(cOrg.landingpage).length) {
-      const landingpage = { ...(cOrg.landingpage as unknown as OrgLandingPageJson) };
-
-      // Fallbacks for new keys we added into JSON, in case a user already saved the old JSON
-      if (!landingpage?.header?.banner) {
-        landingpage.header.banner = $landingPageSettings.header.banner;
-      }
-
-      if (!landingpage?.header?.background) {
-        landingpage.header.background = $landingPageSettings.header.background;
-      }
-
-      if (!landingpage.customLinks) {
-        landingpage.customLinks = $landingPageSettings.customLinks;
-      }
-      $landingPageSettings = {
-        ...landingpage
-      };
-    }
-  });
 </script>
 
-<UnsavedChanges bind:hasUnsavedChanges />
+<UnsavedChanges bind:hasUnsavedChanges skipPrompt={skipUnsavedPrompt} />
 
-<Field.Group class="w-full max-w-md! px-2">
+<Field.Group class="w-full px-2">
   <Field.Set>
-    <Field.Legend>{$t('settings.landing_page.heading')}</Field.Legend>
-    <Field.Field orientation="horizontal">
-      <Switch bind:checked={$landingPageSettings.header.show} onCheckedChange={() => (hasUnsavedChanges = true)} />
-      <Field.Label class="text-gray-600">
-        {$landingPageSettings.header.show
-          ? $t('settings.landing_page.show_section')
-          : $t('settings.landing_page.hide_section')}
-      </Field.Label>
-    </Field.Field>
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <Field.Legend>{$t('settings.landing_page.theme.heading')}</Field.Legend>
+        <Field.Description>{$t('settings.landing_page.theme.description')}</Field.Description>
+      </div>
 
-    <Field.Group>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.title')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
-          bind:value={$landingPageSettings.header.title}
-          oninput={() => (hasUnsavedChanges = true)}
-          class="w-full"
-        />
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.title_highlight')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
-          class="w-full"
-          bind:value={$landingPageSettings.header.titleHighlight}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.subtitle')}</Field.Label>
-        <Textarea
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
-          class="w-full"
-          bind:value={$landingPageSettings.header.subtitle}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
+      <Button
+        variant="outline"
+        onclick={async () => {
+          skipUnsavedPrompt = true;
 
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.actions.heading')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.label')}
-          class="w-full"
-          bind:value={$landingPageSettings.header.action.label}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.actions.link')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.link')}
-          bind:value={$landingPageSettings.header.action.link}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-      <Field.Field orientation="horizontal">
-        <Switch
-          bind:checked={$landingPageSettings.header.action.redirect}
-          onCheckedChange={() => (hasUnsavedChanges = true)}
-        />
-        <Field.Label class="text-gray-600">
-          {$landingPageSettings.header.action.redirect
-            ? $t('settings.landing_page.actions.redirect')
-            : $t('settings.landing_page.actions.no_redirect')}
-        </Field.Label>
-      </Field.Field>
+          try {
+            await goto(resolve(getEditContentUrl(), {}));
+          } finally {
+            skipUnsavedPrompt = false;
+          }
+        }}
+      >
+        {$t('settings.landing_page.content.edit')}
+      </Button>
+    </div>
 
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.actions.banner_type.heading')}</Field.Label>
-        <RadioGroup.Root
-          bind:value={$landingPageSettings.header.banner.type}
-          onValueChange={() => {
-            if (hasUnsavedChanges) return;
-            hasUnsavedChanges = true;
-          }}
-        >
-          {#each banner as item}
-            <div class="flex items-center space-x-2">
-              <RadioGroup.Item value={item.value} id={item.value} />
-              <Label for={item.value} class="cursor-pointer">{item.label}</Label>
+    <Field.Field>
+      <RadioGroup.Root
+        bind:value={$landingPageSettings.theme}
+        class="grid gap-4 md:grid-cols-3"
+        onValueChange={() => {
+          hasUnsavedChanges = true;
+        }}
+      >
+        {#each themeCards as themeCard (themeCard.value)}
+          {@const isLocked = $isFreePlan && isPaidTheme(themeCard.value)}
+          <RadioGroup.Item value={themeCard.value} id={themeCard.value} class="sr-only" />
+          <button
+            type="button"
+            onclick={() => selectTheme(themeCard.value)}
+            aria-pressed={$landingPageSettings.theme === themeCard.value}
+            class={`group relative cursor-pointer rounded-xl border transition ${
+              isLocked
+                ? 'border-border opacity-75 hover:border-blue-500/60'
+                : $landingPageSettings.theme === themeCard.value
+                  ? 'border-primary ring-primary/20 ring-2'
+                  : 'border-border hover:border-primary/60'
+            }`}
+          >
+            {#if isLocked}
+              <div
+                class="absolute top-2 right-2 z-10 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-xs font-medium text-white shadow-sm"
+              >
+                <PremiumIcon size={14} color="white" />
+                Upgrade
+              </div>
+            {/if}
+            <div class="bg-background mb-4 overflow-hidden rounded-xl">
+              <img src={themeCard.preview} alt={$t(themeCard.titleKey)} class="h-50 w-full object-cover object-top" />
             </div>
-          {/each}
-        </RadioGroup.Root>
-      </Field.Field>
-
-      {#if $landingPageSettings.header.banner.type === 'video'}
-        <Field.Field>
-          <Field.Label>{$t('settings.landing_page.actions.link')}</Field.Label>
-          <Input
-            placeholder={$t('course.navItem.lessons.exercises.all_exercises.video')}
-            bind:value={$landingPageSettings.header.banner.video}
-            oninput={() => (hasUnsavedChanges = true)}
-          />
-        </Field.Field>
-      {:else}
-        <Field.Field>
-          <Button variant="outline" onclick={() => widgetControl('header.banner.image')}>
-            {$t('settings.landing_page.about.select_image')}
-          </Button>
-        </Field.Field>
-      {/if}
-      {#if $landingPageSettings.header.banner.image && $landingPageSettings.header.banner.type === 'image'}
-        <img alt="bannerImage" src={$landingPageSettings.header.banner.image} class="mt-2 w-full rounded-md" />
-      {/if}
-
-      <Field.Field orientation="horizontal">
-        <Switch
-          bind:checked={$landingPageSettings.header.banner.show}
-          onCheckedChange={() => (hasUnsavedChanges = true)}
-        />
-        <Field.Label class="text-gray-600">
-          {$landingPageSettings.header.banner.show
-            ? $t('settings.landing_page.actions.show_banner')
-            : $t('settings.landing_page.actions.hide_banner')}
-        </Field.Label>
-      </Field.Field>
-      {#if $handleOpenWidget.open && widgetKey === 'banner'}
-        <UploadWidget
-          bind:imageURL={$landingPageSettings.header.banner.image}
-          onchange={() => (hasUnsavedChanges = true)}
-        />
-      {/if}
-
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.background.title')}</Field.Label>
-        <Button variant="outline" onclick={() => widgetControl('background')}>
-          {$t('settings.landing_page.about.select_image')}
-        </Button>
-      </Field.Field>
-      {#if $landingPageSettings.header.background?.image}
-        <img alt="backgroundImage" src={$landingPageSettings.header.background.image} class="mt-2 w-full rounded-md" />
-      {/if}
-
-      <Field.Field orientation="horizontal">
-        <Switch
-          checked={$landingPageSettings.header.background?.show}
-          onCheckedChange={() => {
-            hasUnsavedChanges = true;
-            if (!$landingPageSettings.header.background) {
-              $landingPageSettings.header.background = {
-                image: '',
-                show: true
-              };
-            } else {
-              $landingPageSettings.header.background.show = !$landingPageSettings.header.background.show;
-            }
-          }}
-        />
-        <Field.Label class="text-gray-600">
-          {$landingPageSettings.header.background?.show
-            ? $t('settings.landing_page.background.show_background')
-            : $t('settings.landing_page.background.hide_background')}
-        </Field.Label>
-      </Field.Field>
-      {#if $handleOpenWidget.open && widgetKey === 'background'}
-        <UploadWidget
-          imageURL={$landingPageSettings.header.background?.image}
-          onchange={(imgUrl) => {
-            hasUnsavedChanges = true;
-
-            if (!$landingPageSettings.header.background) {
-              $landingPageSettings.header.background = {
-                image: imgUrl,
-                show: true
-              };
-            } else {
-              $landingPageSettings.header.background.image = imgUrl;
-            }
-          }}
-        />
-      {/if}
-    </Field.Group>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('settings.landing_page.about.heading')}</Field.Legend>
-    <Field.Field orientation="horizontal">
-      <Switch bind:checked={$landingPageSettings.aboutUs.show} onCheckedChange={() => (hasUnsavedChanges = true)} />
-      <Field.Label class="text-gray-600">
-        {$landingPageSettings.aboutUs.show
-          ? $t('settings.landing_page.show_section')
-          : $t('settings.landing_page.hide_section')}
-      </Field.Label>
-    </Field.Field>
-
-    <Field.Group>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.about.title')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
-          bind:value={$landingPageSettings.aboutUs.title}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.about.content')}</Field.Label>
-        <Textarea
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.content')}
-          bind:value={$landingPageSettings.aboutUs.content}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-
-      <Field.Field>
-        <Field.Label class="font-bold">{$t('settings.landing_page.about.upload_an_image')}</Field.Label>
-        <Button variant="outline" onclick={() => widgetControl('about-us')}>
-          {$t('settings.landing_page.about.select_image')}
-        </Button>
-        {#if $landingPageSettings.aboutUs.imageUrl}
-          <img alt="About us" src={$landingPageSettings.aboutUs.imageUrl} class="mt-2 w-full rounded-md" />
-        {/if}
-        {#if $handleOpenWidget.open && widgetKey === 'about-us'}
-          <UploadWidget bind:imageURL={$landingPageSettings.aboutUs.imageUrl} />
-        {/if}
-      </Field.Field>
-    </Field.Group>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('settings.landing_page.courses.heading')}</Field.Legend>
-    <Field.Field orientation="horizontal">
-      <Switch bind:checked={$landingPageSettings.courses.show} onCheckedChange={() => (hasUnsavedChanges = true)} />
-      <Field.Label class="text-gray-600">
-        {$landingPageSettings.courses.show
-          ? $t('settings.landing_page.courses.show_section')
-          : $t('settings.landing_page.courses.hide_section')}
-      </Field.Label>
-    </Field.Field>
-
-    <Field.Group>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.courses.title')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
-          bind:value={$landingPageSettings.courses.title}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.courses.title_highlight')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
-          bind:value={$landingPageSettings.courses.titleHighlight}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.courses.subtitle')}</Field.Label>
-        <Textarea
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
-          bind:value={$landingPageSettings.courses.subtitle}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-    </Field.Group>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('settings.landing_page.faq.heading')}</Field.Legend>
-    <Field.Field orientation="horizontal">
-      <Switch bind:checked={$landingPageSettings.faq.show} onCheckedChange={() => (hasUnsavedChanges = true)} />
-      <Field.Label class="text-gray-600">
-        {$landingPageSettings.faq.show
-          ? $t('settings.landing_page.faq.show_section')
-          : $t('settings.landing_page.faq.hide_section')}
-      </Field.Label>
-    </Field.Field>
-
-    <Field.Group>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.faq.title')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
-          bind:value={$landingPageSettings.faq.title}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-
-      {#each $landingPageSettings.faq.questions as item (item.id)}
-        <Field.Field>
-          <Field.Label>{$t('settings.landing_page.faq.question')}</Field.Label>
-          <Input
-            placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_question_here')}
-            bind:value={item.title}
-            oninput={() => (hasUnsavedChanges = true)}
-          />
-        </Field.Field>
-        <Field.Field>
-          <Field.Label>{$t('settings.landing_page.faq.answer')}</Field.Label>
-          <Textarea
-            placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_answer_here')}
-            bind:value={item.content}
-            oninput={() => (hasUnsavedChanges = true)}
-          />
-        </Field.Field>
-        <Button variant="ghost" size="icon" onclick={() => deleteFaq(item.id)}>
-          <TrashIcon size={16} />
-        </Button>
-      {/each}
-
-      {#if creatingNewQuestion}
-        <Field.Field>
-          <Field.Label>{$t('settings.landing_page.faq.question')}</Field.Label>
-          <Input
-            placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_question_here')}
-            bind:value={newQuestion.title}
-            oninput={() => (hasUnsavedChanges = true)}
-          />
-        </Field.Field>
-        <Field.Field>
-          <Field.Label>{$t('settings.landing_page.faq.answer')}</Field.Label>
-          <Textarea
-            placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_answer_here')}
-            bind:value={newQuestion.content}
-            oninput={() => (hasUnsavedChanges = true)}
-          />
-        </Field.Field>
-        <Field.Field orientation="horizontal">
-          <Button variant="outline" onclick={saveNewFAQ}>
-            {$t('settings.landing_page.faq.save')}
-          </Button>
-          <Button variant="outline" onclick={cancelNewFAQ}>
-            {$t('settings.landing_page.faq.cancel')}
-          </Button>
-        </Field.Field>
-      {:else}
-        <Field.Field orientation="horizontal">
-          <Button variant="outline" onclick={createNewFaq}>
-            {$t('settings.landing_page.faq.button')}
-          </Button>
-        </Field.Field>
-      {/if}
-    </Field.Group>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('settings.landing_page.contact_us.heading')}</Field.Legend>
-    <Field.Field orientation="horizontal">
-      <Switch bind:checked={$landingPageSettings.contact.show} onCheckedChange={() => (hasUnsavedChanges = true)} />
-      <Field.Label class="text-gray-600">
-        {$landingPageSettings.contact.show
-          ? $t('settings.landing_page.contact_us.show_section')
-          : $t('settings.landing_page.contact_us.hide_section')}
-      </Field.Label>
-    </Field.Field>
-
-    <Field.Group>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.contact_us.title')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
-          bind:value={$landingPageSettings.contact.title}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.contact_us.title_highlight')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
-          bind:value={$landingPageSettings.contact.titleHighlight}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.contact_us.subtitle')}</Field.Label>
-        <Textarea
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
-          bind:value={$landingPageSettings.contact.subtitle}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.contact_us.address')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.address')}
-          bind:value={$landingPageSettings.contact.address}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.contact_us.phone_number')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.number')}
-          bind:value={$landingPageSettings.contact.phone}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.contact_us.email')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.email')}
-          bind:value={$landingPageSettings.contact.email}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-    </Field.Group>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('settings.landing_page.mailing_list.heading')}</Field.Legend>
-    <Field.Field orientation="horizontal">
-      <Switch bind:checked={$landingPageSettings.mailinglist.show} onCheckedChange={() => (hasUnsavedChanges = true)} />
-      <Field.Label class="text-gray-600">
-        {$landingPageSettings.mailinglist.show
-          ? $t('settings.landing_page.mailing_list.show_section')
-          : $t('settings.landing_page.mailing_list.hide_section')}
-      </Field.Label>
-    </Field.Field>
-
-    <Field.Group>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.mailing_list.title')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
-          bind:value={$landingPageSettings.mailinglist.title}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.mailing_list.subtitle')}</Field.Label>
-        <Textarea
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
-          bind:value={$landingPageSettings.mailinglist.subtitle}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.mailing_list.button_label')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.label')}
-          bind:value={$landingPageSettings.mailinglist.buttonLabel}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-    </Field.Group>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('settings.landing_page.custom_links.heading')}</Field.Legend>
-    <Field.Field orientation="horizontal">
-      <Switch bind:checked={$landingPageSettings.customLinks.show} />
-      <Field.Label class="text-gray-600">
-        {$landingPageSettings.customLinks.show
-          ? $t('settings.landing_page.custom_links.show_links')
-          : $t('settings.landing_page.custom_links.hide_links')}
-      </Field.Label>
-    </Field.Field>
-
-    <Field.Description>{$t('settings.landing_page.custom_links.description')}</Field.Description>
-
-    <Field.Group>
-      {#each $landingPageSettings.customLinks.links as link (link.id)}
-        <div class="flex flex-col gap-2">
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field.Field>
-              <Field.Label>{$t('settings.landing_page.custom_links.label')}</Field.Label>
-              <Input placeholder={$t('settings.landing_page.custom_links.label_placeholder')} bind:value={link.label} />
-            </Field.Field>
-            <Field.Field>
-              <Field.Label>{$t('settings.landing_page.custom_links.url')}</Field.Label>
-              <Input placeholder={$t('settings.landing_page.custom_links.url_placeholder')} bind:value={link.url} />
-            </Field.Field>
-          </div>
-          <div class="flex items-center justify-between">
-            <Field.Field orientation="horizontal">
-              <Checkbox id="new-tab-{link.id}" bind:checked={link.openInNewTab} />
-              <Field.Label class="text-sm">{$t('settings.landing_page.custom_links.new_tab')}</Field.Label>
-            </Field.Field>
-            <Button variant="ghost" size="icon" onclick={() => deleteCustomLink(link.id)}>
-              <TrashIcon size={16} />
-            </Button>
-          </div>
-
-          <Field.Separator />
-        </div>
-      {/each}
-
-      {#if creatingNewCustomLink}
-        <div class="mb-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
-          <div class="mb-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field.Field>
-              <Field.Label>{$t('settings.landing_page.custom_links.label')}</Field.Label>
-              <Input
-                placeholder={$t('settings.landing_page.custom_links.label_placeholder')}
-                bind:value={newCustomLink.label}
-              />
-            </Field.Field>
-            <Field.Field>
-              <Field.Label>{$t('settings.landing_page.custom_links.url')}</Field.Label>
-              <Input
-                placeholder={$t('settings.landing_page.custom_links.url_placeholder')}
-                bind:value={newCustomLink.url}
-              />
-            </Field.Field>
-          </div>
-          <div class="flex items-center justify-between">
-            <Field.Field orientation="horizontal">
-              <input type="checkbox" bind:checked={newCustomLink.openInNewTab} class="mr-2" />
-              <Field.Label class="text-sm">{$t('settings.landing_page.custom_links.new_tab')}</Field.Label>
-            </Field.Field>
-            <div class="flex gap-2">
-              <Button variant="outline" onclick={saveNewCustomLink} class="px-3 py-1 text-sm">
-                {$t('settings.landing_page.custom_links.save')}
-              </Button>
-              <Button variant="outline" onclick={cancelNewCustomLink} class="px-3 py-1 text-sm">
-                {$t('settings.landing_page.custom_links.cancel')}
-              </Button>
+            <div class="space-y-1 px-2 pb-2">
+              <p class="text-base font-semibold">{$t(themeCard.titleKey)}</p>
+              <p class="ui:text-muted-foreground h-[40px] text-sm">{$t(themeCard.descriptionKey)}</p>
             </div>
-          </div>
-        </div>
-      {:else}
-        <Field.Field orientation="horizontal">
-          <Button variant="outline" onclick={createNewCustomLink}>
-            {$t('settings.landing_page.custom_links.add')}
-          </Button>
-        </Field.Field>
-      {/if}
-    </Field.Group>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('settings.landing_page.footer.heading')}</Field.Legend>
-    <Field.Field orientation="horizontal">
-      <Switch bind:checked={$landingPageSettings.footer.show} onCheckedChange={() => (hasUnsavedChanges = true)} />
-      <Field.Label class="text-gray-600">
-        {$landingPageSettings.footer.show
-          ? $t('settings.landing_page.footer.show_section')
-          : $t('settings.landing_page.footer.hide_section')}
-      </Field.Label>
+          </button>
+        {/each}
+      </RadioGroup.Root>
     </Field.Field>
-
-    <Field.Group>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.footer.facebook')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.facebook')}
-          bind:value={$landingPageSettings.footer.facebook}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-      <!-- <InputField
-        label="Instagram"
-        placeholder="Write your Instagram link here"
-        className="mb-5"
-        bind:value={$landingPageSettings.footer.instagram}
-      /> -->
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.footer.twitter')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.twitter')}
-          bind:value={$landingPageSettings.footer.twitter}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-      <Field.Field>
-        <Field.Label>{$t('settings.landing_page.footer.linkedin')}</Field.Label>
-        <Input
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.linkedin')}
-          bind:value={$landingPageSettings.footer.linkedin}
-          oninput={() => (hasUnsavedChanges = true)}
-        />
-      </Field.Field>
-    </Field.Group>
   </Field.Set>
 </Field.Group>
-
-<style>
-  :global(.dark) {
-    --cp-text-color: #fff;
-    --cp-border-color: white;
-    --cp-text-color: white;
-    --cp-input-color: #555;
-    --cp-button-hover-color: #777;
-  }
-
-  :global(.dark .alpha) {
-    background: #333 !important;
-  }
-</style>

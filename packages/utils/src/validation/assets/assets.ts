@@ -1,7 +1,8 @@
 import * as z from 'zod';
 
 const AssetKind = z.enum(['video', 'document', 'image', 'audio', 'other']);
-const AssetProvider = z.enum(['upload', 'youtube', 'generic', 'external_url']);
+const AssetProvider = z.enum(['upload', 'youtube', 'generic', 'external_url', 'google_drive']);
+export type TAssetProvider = z.infer<typeof AssetProvider>;
 const AssetStatus = z.enum(['active', 'archived']);
 const AssetTargetType = z.enum(['lesson', 'exercise', 'question']);
 

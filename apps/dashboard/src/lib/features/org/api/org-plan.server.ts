@@ -1,7 +1,14 @@
 import type { TCancelOrgPlan, TCreateOrgPlan, TUpdateOrgPlan } from '@cio/utils/validation/organization';
 
-import { classroomio } from '$lib/utils/services/api';
-import { getApiKeyHeaders } from '$lib/utils/services/api/server';
+import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import { getApiKeyHeaders, safeServerApi } from '$lib/utils/services/api/server';
+
+type CreateOrgPlanRequest = typeof classroomio.organization.plan.$post;
+type CreateOrgPlanSuccess = Extract<InferResponseType<CreateOrgPlanRequest>, { success: true }>;
+type UpdateOrgPlanRequest = typeof classroomio.organization.plan.$put;
+type UpdateOrgPlanSuccess = Extract<InferResponseType<UpdateOrgPlanRequest>, { success: true }>;
+type CancelOrgPlanRequest = typeof classroomio.organization.plan.cancel.$post;
+type CancelOrgPlanSuccess = Extract<InferResponseType<CancelOrgPlanRequest>, { success: true }>;
 
 /**
  * Server-side API methods for organization plan operations
@@ -15,20 +22,21 @@ export class OrgPlanApiServer {
    * @returns Response data or null on error
    */
   static async createOrgPlan(params: TCreateOrgPlan) {
-    try {
-      const response = await classroomio.organization.plan.$post(
+    const result = await safeServerApi<CreateOrgPlanSuccess>(() =>
+      classroomio.organization.plan.$post(
         {
           json: params
         },
         getApiKeyHeaders()
-      );
+      )
+    );
 
-      const data = await response.json();
-      return data.success ? data.data : null;
-    } catch (error) {
-      console.error('Error creating org plan (server):', error);
+    if (!result.ok) {
+      console.error('Error creating org plan (server):', result);
       return null;
     }
+
+    return result.body.data;
   }
 
   /**
@@ -37,20 +45,21 @@ export class OrgPlanApiServer {
    * @returns Response data or null on error
    */
   static async updateOrgPlan(params: TUpdateOrgPlan) {
-    try {
-      const response = await classroomio.organization.plan.$put(
+    const result = await safeServerApi<UpdateOrgPlanSuccess>(() =>
+      classroomio.organization.plan.$put(
         {
           json: params
         },
         getApiKeyHeaders()
-      );
+      )
+    );
 
-      const data = await response.json();
-      return data.success ? data.data : null;
-    } catch (error) {
-      console.error('Error updating org plan (server):', error);
+    if (!result.ok) {
+      console.error('Error updating org plan (server):', result);
       return null;
     }
+
+    return result.body.data;
   }
 
   /**
@@ -59,19 +68,20 @@ export class OrgPlanApiServer {
    * @returns Response data or null on error
    */
   static async cancelOrgPlan(params: TCancelOrgPlan) {
-    try {
-      const response = await classroomio.organization.plan.cancel.$post(
+    const result = await safeServerApi<CancelOrgPlanSuccess>(() =>
+      classroomio.organization.plan.cancel.$post(
         {
           json: params
         },
         getApiKeyHeaders()
-      );
+      )
+    );
 
-      const data = await response.json();
-      return data.success ? data.data : null;
-    } catch (error) {
-      console.error('Error canceling org plan (server):', error);
+    if (!result.ok) {
+      console.error('Error canceling org plan (server):', result);
       return null;
     }
+
+    return result.body.data;
   }
 }

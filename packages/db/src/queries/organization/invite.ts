@@ -273,6 +273,59 @@ export async function getLatestOrgInvitesByEmails(
 }
 
 /**
+ * Returns the latest active (non-revoked, non-accepted, non-expired) org invite for a given org+email.
+ * Used to surface a pending invite to a logged-in student on the LMS dashboard.
+ */
+export async function getActivePendingOrgInviteForEmail(
+  organizationId: string,
+  email: string
+): Promise<TOrganizationInviteTokenData | null> {
+  const normalized = email.toLowerCase().trim();
+  if (!normalized) {
+    return null;
+  }
+
+  try {
+    const [row] = await db
+      .select({
+        invite: schema.organizationInvite,
+        organization: {
+          id: schema.organization.id,
+          name: schema.organization.name,
+          siteName: schema.organization.siteName
+        }
+      })
+      .from(schema.organizationInvite)
+      .innerJoin(schema.organization, eq(schema.organizationInvite.organizationId, schema.organization.id))
+      .where(
+        and(
+          eq(schema.organizationInvite.organizationId, organizationId),
+          eq(schema.organizationInvite.email, normalized),
+          eq(schema.organizationInvite.isRevoked, false),
+          isNull(schema.organizationInvite.acceptedAt),
+          gt(schema.organizationInvite.expiresAt, sql`NOW()`)
+        )
+      )
+      .orderBy(desc(schema.organizationInvite.createdAt))
+      .limit(1);
+
+    if (!row) {
+      return null;
+    }
+
+    return {
+      ...row,
+      organization: { ...row.organization, siteName: row.organization.siteName ?? '' }
+    };
+  } catch (error) {
+    console.error('getActivePendingOrgInviteForEmail error:', error);
+    throw new Error(
+      `Failed to get active pending org invite: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
  * Latest organization_invite row for an org + email (by created_at), for metadata when resending.
  */
 export async function getLatestOrganizationInviteRowByOrgAndEmail(

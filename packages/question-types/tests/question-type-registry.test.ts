@@ -111,6 +111,22 @@ const EXPECTED_REGISTRY = [
     autoGradable: false,
     supportsPartialCredit: false,
     manualGradingRequired: true
+  },
+  {
+    key: QUESTION_TYPE_KEY.WORD_BANK,
+    typename: 'WORD_BANK',
+    id: 13,
+    autoGradable: true,
+    supportsPartialCredit: true,
+    manualGradingRequired: false
+  },
+  {
+    key: QUESTION_TYPE_KEY.STAR,
+    typename: 'STAR',
+    id: 14,
+    autoGradable: true,
+    supportsPartialCredit: false,
+    manualGradingRequired: false
   }
 ] as const;
 

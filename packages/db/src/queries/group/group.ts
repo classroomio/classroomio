@@ -1,23 +1,23 @@
 import * as schema from '@db/schema';
 
 import { TNewGroup, TNewGroupmember } from '@db/types';
-import { and, eq, inArray, isNotNull, or } from 'drizzle-orm';
+import { and, asc, eq, inArray, isNotNull, or } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 
-export async function createGroup(values: TNewGroup) {
+export async function createGroup(values: TNewGroup, dbClient: DbOrTxClient = db) {
   try {
-    return db.insert(schema.group).values(values).returning();
+    return dbClient.insert(schema.group).values(values).returning();
   } catch (error) {
     console.error('createGroup error:', error);
     throw new Error(`Failed to create group: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
-export async function addGroupMember(values: TNewGroupmember) {
+export async function addGroupMember(values: TNewGroupmember, dbClient: DbOrTxClient = db) {
   try {
-    return db.insert(schema.groupmember).values(values).returning();
+    return dbClient.insert(schema.groupmember).values(values).returning();
   } catch (error) {
     console.error('addGroupMember error:', error);
     throw new Error(`Failed to add group member: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -222,6 +222,59 @@ export const isCourseTeamMemberOrOrgAdmin = async (courseId: string, profileId: 
 
   return result.length > 0;
 };
+
+/**
+ * Resolves program-based access to a course.
+ * Returns the course group/org context plus the matched program member role.
+ */
+export async function getCourseProgramAccess(
+  courseId: string,
+  profileId: string
+): Promise<{
+  courseId: string;
+  courseGroupId: string;
+  organizationId: string | null;
+  profileEmail: string | null;
+  roleId: number;
+} | null> {
+  try {
+    const result = await db
+      .select({
+        courseId: schema.course.id,
+        courseGroupId: schema.group.id,
+        organizationId: schema.group.organizationId,
+        profileEmail: schema.profile.email,
+        roleId: schema.programMember.roleId
+      })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(schema.programCourse, eq(schema.course.id, schema.programCourse.courseId))
+      .innerJoin(
+        schema.program,
+        and(eq(schema.program.id, schema.programCourse.programId), eq(schema.program.status, 'ACTIVE'))
+      )
+      .innerJoin(
+        schema.programMember,
+        and(eq(schema.programMember.programId, schema.program.id), eq(schema.programMember.profileId, profileId))
+      )
+      .leftJoin(schema.profile, eq(schema.programMember.profileId, schema.profile.id))
+      .where(eq(schema.course.id, courseId))
+      .orderBy(asc(schema.programMember.roleId))
+      .limit(1);
+
+    if (result.length === 0) {
+      return null;
+    }
+
+    return {
+      ...result[0],
+      roleId: Number(result[0].roleId)
+    };
+  } catch (error) {
+    console.error('getCourseProgramAccess error:', error);
+    throw new Error(`Failed to get course program access: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
 
 /**
  * Gets the group member ID for a user in a course

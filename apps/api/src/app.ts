@@ -20,11 +20,13 @@ import { organizationRouter } from '@api/routes/organization';
 import { licenseRouter } from '@api/routes/license';
 import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
+import { v1Router } from '@api/routes/v1';
 import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
 import { prettyJSON } from 'hono/pretty-json';
 import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
 import { signupGuard } from '@api/middlewares/signup-guard';
+import { programRouter } from '@api/routes/program';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 
 // Create Hono app with chaining for RPC support
@@ -94,6 +96,8 @@ export const app = new Hono()
   .route('/dash', dashAnalyticsRouter)
   .route('/community', communityRouter)
   .route('/invite', inviteRouter)
+  .route('/public-api/v1', v1Router)
+  .route('/program', programRouter)
   .route('/unsplash', unsplashRouter)
 
   // Error handling

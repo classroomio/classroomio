@@ -364,6 +364,32 @@
       "created": "Ключ автоматизации создан. Сохраните его сейчас, потому что полный секрет отображается только один раз.",
       "rotated": "Ключ автоматики повернут. Сохраните новый секрет сейчас, потому что он больше не будет отображаться.",
       "revoked": "Ключ автоматизации отозван."
+    },
+    "program": {
+      "error": {
+        "reaction_error": "Произошла ошибка при реакции на сообщение",
+        "news_feed_fail": "Не удалось получить ленту новостей программы.",
+        "post_create_failed": "Не удалось создать публикацию",
+        "post_update_failed": "Не удалось обновить публикацию",
+        "code": {
+          "program_forbidden": "Для выполнения этого действия вы должны быть участником этой программы.",
+          "program_member_check_failed": "Нам не удалось подтвердить ваше участие в программе. Попробуйте еще раз.",
+          "program_not_found": "Эту программу не удалось найти.",
+          "program_create_failed": "Не удалось создать программу.",
+          "program_update_failed": "Не удалось обновить программу.",
+          "program_delete_failed": "Не удалось удалить программу.",
+          "program_member_not_found": "Этот участник программы не найден.",
+          "program_newsfeed_not_found": "Этот пост не найден.",
+          "program_newsfeed_comment_not_found": "Этот комментарий не найден."
+        }
+      },
+      "success": {
+        "comment_deleted": "Комментарий удален",
+        "comment_added": "Комментарий добавлен",
+        "feed_delete_success": "Сообщение успешно удалено",
+        "post_created": "Сообщение успешно создано",
+        "post_updated": "Сообщение успешно обновлено"
+      }
     }
   },
   "explore": {
@@ -396,7 +422,8 @@
     "community": "Сообщество",
     "explore": "Исследуйте",
     "help": "Помощь",
-    "settings": "Настройки"
+    "settings": "Настройки",
+    "programs": "Программы"
   },
   "upgrade": {
     "certificate": "Обновите свой план для создания сертификатов",
@@ -517,12 +544,23 @@
       "all_courses": "Все курсы",
       "select_courses": "Выберите конкретные курсы",
       "select_courses_placeholder": "Выбирайте курсы...",
+      "program_access": "Доступ к программам",
+      "no_programs": "Без назначения программы",
+      "all_programs": "Все программы",
+      "select_programs": "Выберите конкретные программы",
+      "select_programs_placeholder": "Выберите программы...",
       "send_email": "Отправить электронное письмо с приглашением импортированным пользователям",
       "submit": "Импортировать пользователей",
       "back": "Вернуться к аудитории",
       "snackbar_success": "{imported} новых приглашений, {assigned} существующих студентов с доступом к курсу, {pendingInvitesRenewed} обновлённых ожидающих приглашений (отправлено писем: {emailsSent})",
       "snackbar_no_emails": "Пожалуйста, введите хотя бы один адрес электронной почты",
-      "snackbar_failed": "Не удалось импортировать пользователей."
+      "snackbar_failed": "Не удалось импортировать пользователей.",
+      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like."
+    },
+    "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
+    "user_analytics": {
+      "title": "Learner profile",
+      "page_subtitle": "Progress, grades, and activity across their courses."
     }
   },
   "community": {
@@ -554,7 +592,12 @@
       "edit": "Редактировать",
       "cancel": "Отмена",
       "give": "Дайте ответ",
-      "comment": "Комментарий"
+      "comment": "Комментарий",
+      "page_subtitle": "Start a thread the whole community can see, and tie it to a course if you want."
+    },
+    "page_subtitle": "Questions and answers shared across your organization's courses.",
+    "question": {
+      "page_subtitle": "Follow answers, vote, and join the discussion."
     }
   },
   "course": {
@@ -1146,7 +1189,9 @@
                 "matching": "Соответствие",
                 "ordering": "Заказ",
                 "hotspot": "Точка доступа",
-                "link": "Ссылки"
+                "link": "Ссылки",
+                "word_bank": "Банк слов",
+                "star": "Звездный рейтинг"
               },
               "select_type": "Выберите тип",
               "question_type_auto_gradable": "Auto",
@@ -1374,6 +1419,49 @@
                 "correct_badge": "Правильно",
                 "not_set": "Не установлено",
                 "incorrect_badge": "Неправильный"
+              },
+              "word_bank": {
+                "review": {
+                  "your_answer_label": "Ваши ответы",
+                  "correct_label": "Правильные ответы"
+                },
+                "preview": {
+                  "filled_label": "Ожидаемые ответы в контексте"
+                },
+                "take": {
+                  "helper": "Щелкните слово, чтобы поместить его в первый пустой пробел, или перетащите его на пустой пробел. Нажмите на заполненный пробел, чтобы вернуть слово в банк.",
+                  "bank_heading": "Банк слов",
+                  "clear_blank_sr": "Удалить слово из пустого места"
+                },
+                "edit": {
+                  "template_label": "Шаблон предложения",
+                  "template_placeholder": "Измерения для описания наших данных называются ___. ___ - это функция...",
+                  "template_helper": "Используйте три подчеркивания (___) для каждого пробела. Учащиеся увидят банк слов с правильными ответами и отвлекающими факторами.",
+                  "no_blanks_warning": "Добавьте в шаблон хотя бы один пустой маркер ___.",
+                  "correct_answers_heading": "Правильный ответ на каждый пропуск",
+                  "blank_label": "Пустой",
+                  "correct_placeholder": "Правильный термин или фраза",
+                  "distractors_heading": "Лишние слова (отвлекающие слова)",
+                  "distractor_placeholder": "Неправильный вариант",
+                  "add_distractor": "Добавить отвлекающий фактор"
+                }
+              },
+              "star": {
+                "preview": {
+                  "correct_label": "Правильный ответ"
+                },
+                "take": {
+                  "helper": "Выберите свой рейтинг.",
+                  "star_sr": "Звезда '{'n'}' из '{'max'}'"
+                },
+                "edit": {
+                  "correct_value_label": "Правильное значение звезды",
+                  "correct_value_info": "Учащиеся со звездным подсчетом должны выбрать, чтобы заработать полные баллы.",
+                  "max_stars_label": "Максимум звезд",
+                  "max_stars_info": "Сколько звезд видят учащиеся (1–10). По умолчанию — 5.",
+                  "correct_value_placeholder": "например 3",
+                  "max_stars_placeholder": "например 5"
+                }
               }
             },
             "settings": "Настройки",
@@ -1498,10 +1586,16 @@
                 "cancel_upload": "Отменить загрузку",
                 "upload_cancelled": "Загрузка отменена пользователем",
                 "max_files": "{count, множественное число, one {Вы можете загрузить # файл} Other {Вы можете загрузить # файла}}",
-                "max_files_and_size": "(до {size} каждый)"
+                "max_files_and_size": "(до {size} каждый)",
+                "google_drive_choose": "Выберите на Google Диске",
+                "google_drive_opening": "Открытие выбора…",
+                "google_drive_hint": "Выберите видео из своей учетной записи Google. Всем, кто просматривает урок, необходим доступ. Установите для общего доступа на Диске значение «Все, у кого есть ссылка, могут просматривать» (или его эквивалент в вашей организации).",
+                "google_drive_not_configured": "Импорт с Google Диска не настроен для этого развертывания. Добавьте PUBLIC_GOOGLE_PICKER_CLIENT_ID и PUBLIC_GOOGLE_PICKER_API_KEY в свою среду.",
+                "google_drive_error": "Не удалось открыть Google Диск. Убедитесь, что в вашем браузере разрешены всплывающие окна и что Google Picker настроен правильно."
               },
               "empty_title": "Видео пока нет",
-              "empty_description": "Добавляйте видео с YouTube, загружайте их или из своей медиатеки."
+              "empty_description": "Добавляйте видео с YouTube, загружайте их или из своей медиатеки.",
+              "google_drive": "Гугл Диск"
             },
             "slide": {
               "title": "Слайд",
@@ -1697,6 +1791,7 @@
       "empty_description": "Поделитесь своими знаниями со всем миром, создавая увлекательные курсы для своих учеников.",
       "error_message": "Произошла ошибка.",
       "lessons_number": "уроки",
+      "exercise": "упражнение",
       "students": "студенты",
       "published": "Опубликовано",
       "unpublished": "Неопубликовано",
@@ -1716,7 +1811,8 @@
         "clone": "Клонировать",
         "share": "Поделиться",
         "invite": "Пригласить",
-        "delete": "Удалить"
+        "delete": "Удалить",
+        "open": "Открыть"
       }
     },
     "course_filter": {
@@ -1741,7 +1837,8 @@
       "descending": "Desc",
       "tags": "Теги",
       "empty_tags": "Нет доступных тегов"
-    }
+    },
+    "page_subtitle": "Where lessons turn into courses and courses turn into enrollments."
   },
   "ai": {
     "help_me": "Помогите мне написать",
@@ -1768,8 +1865,13 @@
     "lms_dashboard_hero": "Сегодня еще один день, который приблизит вас к вашим целям обучения. Не сдавайтесь, чем больше вы узнаете, тем лучше у вас получится.",
     "lessons_completed": "Уроки завершены",
     "no_courses_started": "Курсы не начались",
-    "revenue": "Доход",
-    "revenue_description": "Примерный доход от продажи курсов",
+    "certificates_earned": "Certificates earned",
+    "certificates_earned_description": "Total certificates issued to students in your organization",
+    "certification_rate": "certification rate",
+    "recent_certifications": "Recent certifications",
+    "no_certifications_yet": "No certificates earned yet",
+    "no_certifications_yet_description": "When students complete a course and earn a certificate, they will appear here",
+    "view_courses": "View courses",
     "no_of_courses": "Количество курсов",
     "no_courses_description": "Курсы, созданные в этой организации",
     "total_students": "Всего студентов",
@@ -1819,7 +1921,8 @@
           "banner_text": "Текст баннера",
           "banner_text_label": "Обновить текст баннера",
           "banner_text_placeholder": "Напишите текст здесь"
-        }
+        },
+        "page_subtitle": "Choose which tabs, banners, course tools, and extras learners see."
       },
       "domains": {
         "title": "Пользовательский домен",
@@ -1853,7 +1956,8 @@
         "pending_dns_description": "Добавьте записи DNS ниже, затем обновите проверку.",
         "pending_verification_description": "DNS-записи были найдены. Выдача или проверка SSL все еще продолжается.",
         "reconnect_description": "Этот домен необходимо снова подключить с помощью нового процесса настройки Cloudflare.",
-        "error_description": "Этот личный домен существует, но проверка еще не завершена."
+        "error_description": "Этот личный домен существует, но проверка еще не завершена.",
+        "page_subtitle": "Run your public learning site on a web address you own."
       }
     },
     "quiz": {
@@ -1977,6 +2081,9 @@
   },
   "org_navigation": {
     "platform": "Платформа",
+    "home": "Главная",
+    "content": "Контент",
+    "people": "Люди",
     "dashboard": "Панель управления",
     "courses": "Курсы",
     "community": "Сообщество",
@@ -1989,7 +2096,8 @@
     "unlock": "Разблокируйте неограниченные возможности и инвестируйте в наше будущее",
     "upgrade": "Обновите сейчас",
     "tags": "Теги",
-    "automation": "Автоматизация"
+    "automation": "Автоматизация",
+    "programs": "Программы"
   },
   "media_manager": {
     "page_title": "Медиа-менеджер — ClassroomIO",
@@ -2061,7 +2169,8 @@
       "upload": "Загрузить",
       "youtube": "Ютуб",
       "generic": "Общий",
-      "external_url": "Внешний URL-адрес"
+      "external_url": "Внешний URL-адрес",
+      "google_drive": "Гугл Диск"
     },
     "kind": {
       "video": "Видео",
@@ -2097,7 +2206,8 @@
     "common": {
       "not_available": "Н/Д"
     },
-    "empty_description": "Актив не существует или недоступен в этой организации."
+    "empty_description": "Актив не существует или недоступен в этой организации.",
+    "page_subtitle": "Keep files, videos, and links for your courses in one library."
   },
   "settings": {
     "heading": "Настройки",
@@ -2107,7 +2217,8 @@
       "active": "У вас нет активных платежных данных.",
       "provider": "Мы используем Polar, чтобы управлять вашими платежами.",
       "open_billing": "Открыть биллинг",
-      "error": "Произошла ошибка при открытии счета."
+      "error": "Произошла ошибка при открытии счета.",
+      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO."
     },
     "integrations": {
       "heading": "Телеграмма",
@@ -2117,7 +2228,8 @@
       "step_chatId": "Шаг 2. Введите идентификатор чата, предоставленный вам ботом.",
       "connect_button": "Подключиться",
       "success_message": "Интеграция прошла успешно",
-      "disconnect": "Отключить"
+      "disconnect": "Отключить",
+      "page_subtitle": "Connect Telegram to get notified when important things happen."
     },
     "landing_page": {
       "heading": "Целевая страница",
@@ -2212,6 +2324,99 @@
         "title": "Фоновое изображение",
         "show_background": "Показать фон",
         "hide_background": "Скрыть фон"
+      },
+      "page_subtitle": "Shape the marketing page people see before they sign up or enroll.",
+      "editor": {
+        "save": "Сохранить",
+        "close": "Закрыть",
+        "page_builder": "Конструктор страниц",
+        "footer": {
+          "text": "Текст нижнего колонтитула",
+          "add": "Добавить ссылку в нижнем колонтитуле",
+          "default_label": "Новая ссылка",
+          "link_label": "Ярлык ссылки",
+          "link_href": "URL-адрес ссылки",
+          "remove": "Удалить ссылку в нижнем колонтитуле"
+        },
+        "embed": {
+          "toggle": "Показать раздел для встраивания",
+          "title": "Название раздела",
+          "title_placeholder": "Название раздела",
+          "description": "Описание",
+          "description_placeholder": "Дополнительное описание",
+          "code": "Встроить код",
+          "code_placeholder": "Вставьте сюда код для вставки",
+          "code_description": "Вставьте полный фрагмент кода для встраивания или код iframe.",
+          "secondary_label": "Метка вторичной кнопки",
+          "secondary_href": "Ссылка на дополнительную кнопку"
+        },
+        "callout": {
+          "toggle": "Показать раздел уточнений",
+          "heading": "Заголовок",
+          "heading_default": "Готовы начать обучение?",
+          "heading_placeholder": "Введите заголовок",
+          "description": "Описание",
+          "description_placeholder": "Добавьте краткое описание или оставьте пустым",
+          "action_label": "Метка кнопки",
+          "action_label_default": "Начать",
+          "action_label_placeholder": "Текст кнопки",
+          "action_href": "Ссылка на кнопку",
+          "action_href_placeholder": "https://..."
+        },
+        "navigation": {
+          "add": "Добавить навигационную ссылку",
+          "default_label": "Новая ссылка",
+          "link_label": "Ярлык ссылки",
+          "link_href": "URL-адрес ссылки",
+          "remove": "Удалить навигационную ссылку"
+        },
+        "hero": {
+          "heading": "Заголовок",
+          "subheading": "Подзаголовок",
+          "primary_label": "Метка основной кнопки",
+          "primary_href": "Ссылка на основную кнопку",
+          "secondary_toggle": "Показать дополнительное действие",
+          "secondary_label": "Метка вторичной кнопки",
+          "secondary_href": "Ссылка на дополнительную кнопку",
+          "image": "Изображение героя",
+          "upload": "Загрузить изображение",
+          "clear": "Очистить изображение"
+        },
+        "sections": {
+          "hero": "Герой",
+          "hero_desc": "Заголовок, кнопки действий и главное изображение.",
+          "navigation": "Навигация",
+          "navigation_desc": "Ссылки показаны в заголовке целевой страницы.",
+          "callout": "Выноска",
+          "callout_desc": "Дополнительный рекламный баннер, демонстрируемый после курсов.",
+          "embed": "Встроить",
+          "embed_desc": "Дополнительный раздел iframe, отображаемый после курсов.",
+          "footer": "Нижний колонтитул",
+          "footer_desc": "Текст нижнего колонтитула и ссылки."
+        }
+      },
+      "content": {
+        "heading": "Редактировать контент",
+        "description": "Обновите главный герой, навигацию, встраивание и нижний колонтитул, которые появляются в каждой теме.",
+        "edit": "Редактировать контент"
+      },
+      "theme": {
+        "heading": "Выберите тему",
+        "description": "Выберите визуальный стиль, который посетители увидят на вашей общедоступной целевой странице.",
+        "cards": {
+          "classic": {
+            "title": "Классический",
+            "description": "Традиционная планировка со сбалансированной иерархией"
+          },
+          "bold": {
+            "title": "Жирный",
+            "description": "Высокая контрастность, редакционный и яркий дизайн"
+          },
+          "minimal": {
+            "title": "Минимальный",
+            "description": "Чистый, яркий и ориентированный на курс"
+          }
+        }
       }
     },
     "organization": {
@@ -2244,7 +2449,8 @@
           "custom_theme": "Пользовательская тема",
           "add_theme": "Добавить тему"
         }
-      }
+      },
+      "page_subtitle": "Set the name, logo, and theme learners see for this organization."
     },
     "profile": {
       "heading": "Профиль",
@@ -2266,7 +2472,8 @@
         "file_size": "Максимальный размер файла:",
         "accepted": "Принято:",
         "validation_error": "Размер файла превышает максимальный предел:"
-      }
+      },
+      "page_subtitle": "Your name, email, and how you appear wherever you work in ClassroomIO."
     },
     "tabs": {
       "profile_tab": "Профиль",
@@ -2386,7 +2593,8 @@
         "general": "Общий",
         "sso": "система единого входа",
         "token_auth": "Токен аутентификации"
-      }
+      },
+      "page_subtitle": "Control sign-up, login, SSO, and token-based access for this org."
     },
     "token_auth": {
       "heading": "Токен аутентификации",
@@ -2407,6 +2615,9 @@
       "integration_description": "Подпишите JWT с секретом и перенаправьте пользователей на URL-адрес обмена токенами.",
       "no_config": "Авторизация по токену не настроена. Для начала создайте секрет подписи.",
       "actions_menu": "Действия по авторизации токена"
+    },
+    "teams": {
+      "page_subtitle": "Invite teammates and control who helps run this organization."
     }
   },
   "profileMenu": {
@@ -2457,7 +2668,8 @@
   "app": {
     "search": {
       "placeholder": "Поиск"
-    }
+    },
+    "cancel": "Отмена"
   },
   "welcome_modal": {
     "we_at": "Мы в",
@@ -2611,7 +2823,8 @@
     },
     "common": {
       "not_available": "Н/Д"
-    }
+    },
+    "page_subtitle": "Organize courses with labels so filters and lists stay easy to scan."
   },
   "invite": {
     "organization": {
@@ -2671,7 +2884,28 @@
         "rate_limits_title": "Ограничения ставок",
         "rate_limits_description": "Запросы на чтение/запись/публикацию разрешены в минуту.",
         "used_label": "Использовано:"
-      }
+      },
+      "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime."
+    },
+    "api": {
+      "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
+      "keys": {
+        "title": "API keys",
+        "description": "These keys authenticate the current organization when calling the ClassroomIO public API.",
+        "generate": "Generate API key",
+        "secret_once": "This secret is shown once. Copy it and store it securely.",
+        "empty_title": "No API keys yet",
+        "empty_description": "Create the first org-scoped API key to use the ClassroomIO public API.",
+        "modal": {
+          "title": "Create API key",
+          "description": "Choose a name for this API key before it is generated.",
+          "name_label": "Key name",
+          "name_placeholder": "My API integration",
+          "cancel": "Cancel",
+          "save": "Create key"
+        }
+      },
+      "view_docs": "View Docs"
     },
     "keys": {
       "active": "Активный",
@@ -2705,6 +2939,145 @@
     "permissions": {
       "disabled_title": "Доступ только для чтения",
       "disabled_description": "Только администраторы организации могут создавать, менять или отзывать ключи автоматизации. Учителя могут ознакомиться с инструкциями по настройке здесь."
+    },
+    "zapier": {
+      "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
+    }
+  },
+  "programs": {
+    "heading": "Программы",
+    "page_title": "Программы",
+    "create": "Новая программа",
+    "create_success": "Программа создана",
+    "update_success": "Программа обновлена",
+    "delete_success": "Программа удалена",
+    "members_added": "Добавлены участники",
+    "member_removed": "Участник удален",
+    "course_added": "Курс добавлен",
+    "course_removed": "Курс удален.",
+    "empty_title": "Пока нет программ",
+    "empty_description": "Создайте свою первую программу сертификации или соответствия требованиям.",
+    "settings": {
+      "general": "Общий",
+      "name_label": "Имя",
+      "description_label": "Описание",
+      "status_label": "Статус",
+      "save": "Сохранить изменения",
+      "danger_zone": "Опасная зона",
+      "delete": "Удалить программу",
+      "delete_description": "После удаления эту программу и все ее данные невозможно восстановить.",
+      "confirm_delete": "Вы уверены, что хотите удалить эту программу? Это невозможно отменить."
+    },
+    "lms": {
+      "empty_title": "Пока нет программ",
+      "empty_description": "Вы не были зарегистрированы ни в одной программе."
+    },
+    "people": {
+      "invite": "Пригласить",
+      "invite_modal_title": "Пригласить участников",
+      "invite_modal_description": "Добавляйте людей в эту программу по электронной почте.",
+      "email_label": "электронная почта",
+      "role_label": "Роль",
+      "add_another": "Добавить еще",
+      "invite_submit": "Отправить приглашения",
+      "empty_title": "Пока нет участников",
+      "empty_description": "Пригласите людей присоединиться к этой программе."
+    },
+    "courses": {
+      "add": "Добавить курс",
+      "add_modal_title": "Добавить курс в программу",
+      "select_course": "Выберите курс",
+      "select_placeholder": "Выбрать курс…",
+      "empty_title": "Курсов пока нет",
+      "empty_description": "Добавьте курсы в эту программу.",
+      "select_courses": "Выберите курсы",
+      "search_placeholder": "Поиск курсов",
+      "no_available_courses": "Нет доступных курсов для добавления.",
+      "no_matching_courses": "Нет курсов, соответствующих вашему запросу.",
+      "no_matching_program_courses": "Никакие курсы программы не соответствуют вашему запросу.",
+      "pagination_status": "Страница {page} из {totalPages}",
+      "published_access_callout_title": "Доступ для студентов",
+      "published_access_callout_description": "Студенты имеют доступ только к опубликованным курсам. Курсы могут быть включены в эту программу для вашей команды, будучи еще неопубликованными, и оставаться скрытыми от учащихся, пока вы их не опубликуете."
+    },
+    "newsfeed": {
+      "post": "Новое сообщение",
+      "post_placeholder": "Что у тебя на уме?",
+      "post_submit": "Сообщение",
+      "empty_title": "Пока нет сообщений",
+      "empty_description": "Будьте первым, кто опубликует что-либо.",
+      "heading": "Лента новостей",
+      "make_a_post": "Сделать публикацию",
+      "edit_post": "Редактировать сообщение",
+      "editor_placeholder": "Поделитесь обновлением своей программы",
+      "cancel": "Отмена",
+      "pinned": "Закреплено",
+      "delete_feed_title": "Удалить сообщение",
+      "delete_feed_description": "Вы уверены, что хотите удалить этот пост?",
+      "confirm_delete": "Удалить",
+      "user_avatar_alt": "Аватар пользователя",
+      "comments": {
+        "comment": "комментарий",
+        "showing_of": "Показаны {показано} из {всего}",
+        "hide": "Скрыть комментарии",
+        "placeholder": "Добавить комментарий к программе",
+        "submit_aria": "Отправить комментарий",
+        "delete": "Удалить"
+      },
+      "card": {
+        "pin": "Пин-код",
+        "unpin": "Открепить",
+        "edit": "Редактировать",
+        "delete": "Удалить"
+      }
+    },
+    "create_modal": {
+      "title": "Создать программу",
+      "description": "Добавьте новую программу сертификации или соответствия.",
+      "name_label": "Имя",
+      "name_placeholder": "например Сертификация безопасности OSHA",
+      "description_label": "Описание",
+      "description_placeholder": "О чем эта программа?",
+      "submit": "Создать"
+    },
+    "sidebar": {
+      "newsfeed": "Лента новостей",
+      "courses": "Курсы",
+      "people": "Люди",
+      "settings": "Настройки"
+    },
+    "status": {
+      "active": "Активный",
+      "inactive": "Неактивный",
+      "archived": "В архиве"
+    },
+    "description": "Предоставьте группе людей доступ к нескольким курсам, например к классу.",
+    "search_placeholder": "Поиск программ",
+    "multiple_added": "Курсы добавлены",
+    "no_matching_programs": "Ни одна программа не соответствует вашим фильтрам.",
+    "card": {
+      "courses": "Курсы",
+      "students": "Студенты"
+    },
+    "table": {
+      "name": "Имя",
+      "courses": "Курсы",
+      "students": "Студенты",
+      "status": "Статус",
+      "description": "Описание"
+    },
+    "filters": {
+      "filter": "Фильтр",
+      "clear_all": "Очистить все",
+      "popover_title": "Фильтры",
+      "sort": "Сортировать",
+      "order": "Заказать",
+      "status": "Статус",
+      "ascending": "по возрастанию",
+      "descending": "Описание",
+      "sort_name": "Имя",
+      "sort_courses": "Курсы",
+      "sort_students": "Студенты",
+      "sort_status": "Статус"
     }
   }
 }

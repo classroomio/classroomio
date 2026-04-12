@@ -53,7 +53,6 @@
   let deleteCandidate = $state<OrganizationAudienceMember | null>(null);
   let deleteDialogOpen = $state(false);
   let searchValue = $state(query.search ?? '');
-  let sortValue = $state(`${query.sortBy}:${query.sortOrder}`);
 
   async function handleResendInvite(email: string) {
     inviteActionEmail = email;
@@ -126,7 +125,6 @@
 
   $effect(() => {
     searchValue = query.search ?? '';
-    sortValue = `${query.sortBy}:${query.sortOrder}`;
   });
 
   $effect(() => {
@@ -179,23 +177,11 @@
     });
   }
 
-  function handleSortChange(nextSortValue: string) {
-    if (nextSortValue === sortValue) {
-      return;
-    }
-
-    sortValue = nextSortValue;
-    const [sortBy, sortOrder] = nextSortValue.split(':') as [
-      OrganizationAudienceQuery['sortBy'],
-      OrganizationAudienceQuery['sortOrder']
-    ];
-
-    void navigateAudience({
-      ...query,
-      page: 1,
-      sortBy,
-      sortOrder
-    });
+  function handleSortChange(
+    sortBy: OrganizationAudienceQuery['sortBy'],
+    sortOrder: OrganizationAudienceQuery['sortOrder']
+  ) {
+    void navigateAudience({ ...query, page: 1, sortBy, sortOrder });
   }
 
   function openDeleteConfirmation(member: OrganizationAudienceMember) {
@@ -236,7 +222,8 @@
   {hasSelection}
   selectedCount={selectedIds.size}
   bind:searchValue
-  {sortValue}
+  sortBy={query.sortBy}
+  sortOrder={query.sortOrder}
   onSortChange={handleSortChange}
   onOpenAssign={() => (assignModalOpen = true)}
 />

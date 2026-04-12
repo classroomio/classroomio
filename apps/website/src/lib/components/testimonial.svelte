@@ -1,19 +1,19 @@
 <script>
   import { SenjaEmbed } from '$lib/components';
-  import { Button } from '@cio/ui/base/button';
 </script>
 
-<section id="testimonial" class="flex flex-col items-center space-y-2 px-3 py-[5%] lg:px-0">
-  <h1 class="mx-auto my-0 flex flex-col items-center gap-4 text-3xl leading-normal font-normal md:text-4xl lg:text-5xl">
-    Hear from Happy ClassroomIO Users
-  </h1>
+<section id="testimonial" class="bg-white px-6 py-16 lg:px-12 lg:py-24">
+  <div class="mx-auto max-w-[1100px] text-center">
+    <div class="mb-3.5 text-xs font-bold tracking-widest text-blue-700 uppercase">Testimonials</div>
+    <h2 class="mb-4 text-[clamp(2rem,3vw,2.8rem)] leading-[1.15] font-bold tracking-tight">
+      Hear from happy ClassroomIO users
+    </h2>
+    <p class="mx-auto mb-10 max-w-[520px] text-base leading-relaxed text-gray-500 lg:text-lg">
+      See what excites them about building and managing training programs with ClassroomIO.
+    </p>
 
-  <p class="ui:text-muted-foreground mx-auto px-4 text-center text-base leading-6 tracking-wide lg:w-2/4 lg:p-0">
-    See what excites them about building and managing bootcamps with ClassroomIO.
-  </p>
-  <Button href="/signup" target="_blank" rel="noopener noreferrer nofollow">Sign Up for Free</Button>
-
-  <div class="relative my-5 w-[85%] md:my-10 lg:w-[70%]">
-    <SenjaEmbed id="3e847d7a-13d3-483e-8a71-5b35273dcc6c" />
+    <div class="relative mx-auto w-full">
+      <SenjaEmbed id="3e847d7a-13d3-483e-8a71-5b35273dcc6c" />
+    </div>
   </div>
 </section>

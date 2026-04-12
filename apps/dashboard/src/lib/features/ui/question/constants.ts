@@ -4,7 +4,8 @@ import { QUESTION_TYPE_KEY, QUESTION_TYPE_REGISTRY, type QuestionTypeKey } from 
 export const PREMIUM_QUESTION_TYPE_KEYS = new Set<QuestionTypeKey>([
   QUESTION_TYPE_KEY.FILE_UPLOAD,
   QUESTION_TYPE_KEY.ORDERING,
-  QUESTION_TYPE_KEY.LINK
+  QUESTION_TYPE_KEY.LINK,
+  QUESTION_TYPE_KEY.STAR
 ]);
 
 const QUESTION_TYPE_LABEL_KEYS: Partial<Record<QuestionTypeKey, string>> = {
@@ -21,7 +22,9 @@ const QUESTION_TYPE_LABEL_KEYS: Partial<Record<QuestionTypeKey, string>> = {
   [QUESTION_TYPE_KEY.MATCHING]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.matching',
   [QUESTION_TYPE_KEY.ORDERING]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.ordering',
   [QUESTION_TYPE_KEY.HOTSPOT]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.hotspot',
-  [QUESTION_TYPE_KEY.LINK]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.link'
+  [QUESTION_TYPE_KEY.LINK]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.link',
+  [QUESTION_TYPE_KEY.WORD_BANK]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.word_bank',
+  [QUESTION_TYPE_KEY.STAR]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.star'
 };
 
 // Temp hidden: MATCHING, HOTSPOT

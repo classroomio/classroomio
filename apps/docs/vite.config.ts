@@ -1,13 +1,12 @@
 import { defineConfig } from 'vite';
 import mdx from 'fumadocs-mdx/vite';
-import { nitro } from 'nitro/vite';
-import react from '@vitejs/plugin-react';
+import { reactRouter } from '@react-router/dev/vite';
 import tailwindcss from '@tailwindcss/vite';
-import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import tsConfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   server: {
+    host: '127.0.0.1',
     port: 3000
   },
   base: '/docs',
@@ -17,12 +16,6 @@ export default defineConfig({
     tsConfigPaths({
       projects: ['./tsconfig.json']
     }),
-    tanstackStart(),
-    react(),
-    // see https://tanstack.com/start/latest/docs/framework/react/guide/hosting for hosting config
-    // we configured nitro by default
-    nitro({
-      baseURL: '/docs'
-    })
+    reactRouter()
   ]
 });

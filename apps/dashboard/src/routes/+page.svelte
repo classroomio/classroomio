@@ -1,38 +1,101 @@
-<script>
-  import { appInitApi } from '$features/app/init.svelte';
-  import { Spinner } from '@cio/ui/base/spinner';
-  import { Button } from '@cio/ui/base/button';
-  import FrownIcon from '@lucide/svelte/icons/frown';
-  import { Empty } from '@cio/ui/custom/empty';
-  import { SimpleLogoNav } from '@cio/ui/custom/simple-logo-nav';
-  import { authClient } from '$lib/utils/services/auth/client';
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import { resolve } from '$app/paths';
+  import type { Component } from 'svelte';
 
-  const session = authClient.useSession();
-  const isSessionLoading = $derived($session.isPending || $session.isRefetching);
-  const isLoadingApp = $derived(isSessionLoading || appInitApi.loading);
+  import { Spinner } from '@cio/ui/base/spinner';
+  import { SimpleLogoNav } from '@cio/ui/custom/simple-logo-nav';
+  import {
+    buildOrgLandingPageProps,
+    importThemeComponent,
+    normalizeLandingPageSettings
+  } from '$features/org/utils/landing-page';
+  import { basePath } from '$lib/utils/store/app';
+  import { globalStore } from '$lib/utils/store/app';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { setTheme } from '$lib/utils/functions/theme';
+  import { t } from '$lib/utils/functions/translations';
+  import { user } from '$lib/utils/store/user';
+  import PageLoader from '$features/org/components/landing-page/page-loader.svelte';
+
+  let { data } = $props();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let ThemeComponent = $state<Component<any> | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let DashboardEntry = $state<Component<any> | null>(null);
+
+  const pageTitle = $derived(
+    data.isOrgSite && data.org ? data.org.name : "ClassroomIO - The Course Platform That's Actually Easy To Use"
+  );
+
+  const authAction = $derived(
+    $user.isLoggedIn
+      ? {
+          label: t.get($basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'),
+          href: resolve($basePath !== '#' ? $basePath : '/lms', {})
+        }
+      : {
+          label: t.get('navigation.login'),
+          href: '/login'
+        }
+  );
+
+  const landingPageProps = $derived.by(() => {
+    if (!data.isOrgSite || !data.org) return null;
+
+    return buildOrgLandingPageProps(
+      data.org,
+      normalizeLandingPageSettings(data.org.landingpage),
+      data.courses,
+      data.hasMoreCourses,
+      authAction
+    );
+  });
+
+  onMount(async () => {
+    const loadingIndicator = document.getElementById('app-loading-indicator');
+    if (loadingIndicator) {
+      loadingIndicator.style.display = 'none';
+    }
+
+    if (!data.isOrgSite || !data.org) {
+      const mod = await import('./_dashboard-entry.svelte');
+      DashboardEntry = mod.default;
+      return;
+    }
+
+    if (data.locals?.user) {
+      user.set({
+        ...$user,
+        isLoggedIn: true,
+        currentSession: data.locals.user
+      });
+    }
+
+    $globalStore.orgSiteName = data.orgSiteName || '';
+    $globalStore.isOrgSite = true;
+    currentOrg.set(data.org);
+    setTheme(data.org.theme || 'blue');
+
+    const settings = normalizeLandingPageSettings(data.org.landingpage);
+    const mod = await importThemeComponent(settings.theme);
+    ThemeComponent = mod.default;
+  });
 </script>
 
 <svelte:head>
-  <title>ClassroomIO - The Course Platform That’s Actually Easy To Use</title>
+  <title>{pageTitle}</title>
 </svelte:head>
 
-{#if !isLoadingApp && appInitApi.error}
-  <Empty
-    title="Something Went Wrong"
-    description="We encountered an unexpected error. Please reload the page or contact us for support."
-    icon={FrownIcon}
-    variant="page"
-    layout="full-page"
-    showLogo={true}
-  >
-    {#if appInitApi.error}
-      <p class="my-2 text-red-500">{appInitApi.error}</p>
-    {/if}
-    <div class="flex gap-2">
-      <Button variant="secondary" onclick={() => window.location.reload()}>Reload Page</Button>
-      <Button variant="default" href="https://classroomio.com/contact">Contact Us</Button>
-    </div>
-  </Empty>
+{#if data.isOrgSite && data.org}
+  {#if ThemeComponent && landingPageProps}
+    <ThemeComponent {...landingPageProps} />
+  {:else}
+    <PageLoader />
+  {/if}
+{:else if DashboardEntry}
+  <DashboardEntry />
 {:else}
   <div class="m-2 flex h-screen w-screen flex-col items-center justify-center font-sans sm:m-0">
     <SimpleLogoNav />

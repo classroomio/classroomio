@@ -18,6 +18,9 @@ export const ZGetCoursesBySiteName = z.object({
 export type TGetCoursesBySiteName = z.infer<typeof ZGetCoursesBySiteName>;
 
 export const ZGetOrganizationCoursesQuery = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().trim().optional(),
   tags: z.string().optional()
 });
 

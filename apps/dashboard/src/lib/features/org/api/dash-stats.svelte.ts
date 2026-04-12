@@ -7,9 +7,9 @@ import type { DashStatsSuccess } from '$features/org/utils/types';
  */
 class DashStatApi extends BaseApi {
   stats = $state<DashStatsSuccess['data']>({
-    enrollments: [],
+    recentCertifications: [],
     numberOfCourses: 0,
-    revenue: 0,
+    totalCertificates: 0,
     totalStudents: 0,
     topCourses: []
   });
@@ -18,7 +18,7 @@ class DashStatApi extends BaseApi {
    * Fetches dashboard statistics for an organization
    * @param orgId Optional organization ID
    * @param siteName Optional site name
-   * @returns Organization analytics data (enrollments, courses, revenue, students, top courses)
+   * @returns Organization analytics data (certifications, courses, students, top courses)
    */
   async fetchOrgStats({ orgId, siteName }: { orgId?: string; siteName?: string }) {
     await this.execute<typeof classroomio.dash.stats.$get>({

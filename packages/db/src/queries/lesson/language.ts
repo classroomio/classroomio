@@ -44,6 +44,15 @@ export async function updateLessonLanguage(
   return language;
 }
 
+export async function deleteLessonLanguage(lessonId: string, locale: TLocale): Promise<TLessonLanguage | null> {
+  const [language] = await db
+    .delete(schema.lessonLanguage)
+    .where(and(eq(schema.lessonLanguage.lessonId, lessonId), eq(schema.lessonLanguage.locale, locale)))
+    .returning();
+
+  return language || null;
+}
+
 export async function upsertLessonLanguage(data: TNewLessonLanguage): Promise<TLessonLanguage> {
   // Check if exists
   const existing = await getLessonLanguageByLessonIdAndLocale(data.lessonId!, data.locale || 'en');

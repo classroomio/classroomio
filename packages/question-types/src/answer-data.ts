@@ -5,6 +5,7 @@ export type TextareaAnswerData = { type: 'TEXTAREA'; text: string };
 export type ShortAnswerData = { type: 'SHORT_ANSWER'; text: string };
 export type NumericAnswerData = { type: 'NUMERIC'; value: number };
 export type FillBlankAnswerData = { type: 'FILL_BLANK'; values: string[] };
+export type WordBankAnswerData = { type: 'WORD_BANK'; filledBlanks: string[] };
 export type FileUploadAnswerData = {
   type: 'FILE_UPLOAD';
   fileKey: string;
@@ -16,6 +17,7 @@ export type MatchingAnswerData = { type: 'MATCHING'; pairs: Array<{ left: string
 export type OrderingAnswerData = { type: 'ORDERING'; orderedValues: string[] };
 export type LinkAnswerData = { type: 'LINK'; urls: string[] };
 export type HotspotAnswerData = { type: 'HOTSPOT'; coordinates: Array<{ x: number; y: number }> };
+export type StarAnswerData = { type: 'STAR'; value: number };
 
 export type AnswerData =
   | RadioAnswerData
@@ -25,8 +27,10 @@ export type AnswerData =
   | ShortAnswerData
   | NumericAnswerData
   | FillBlankAnswerData
+  | WordBankAnswerData
   | FileUploadAnswerData
   | MatchingAnswerData
   | OrderingAnswerData
   | LinkAnswerData
-  | HotspotAnswerData;
+  | HotspotAnswerData
+  | StarAnswerData;

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="none">
+  <rect width="1600" height="900" fill="#F8FAFC"/>
+  <rect x="48" y="48" width="1504" height="804" rx="28" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="4"/>
+  <rect x="96" y="96" width="360" height="28" rx="14" fill="#0F172A"/>
+  <rect x="1256" y="88" width="200" height="52" rx="16" fill="#0F172A"/>
+  <text x="1356" y="122" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">New Post</text>
+  <rect x="240" y="190" width="1072" height="500" rx="24" fill="#FFFFFF" stroke="#94A3B8" stroke-dasharray="14 10" stroke-width="4"/>
+  <text x="776" y="426" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0F172A">Program Newsfeed Placeholder</text>
+  <text x="776" y="484" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#475569">Replace with a screenshot of posts, reactions, and comments.</text>
+</svg>

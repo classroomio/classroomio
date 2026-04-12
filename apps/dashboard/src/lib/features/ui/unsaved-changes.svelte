@@ -4,10 +4,11 @@
 
   interface Props {
     hasUnsavedChanges?: boolean;
+    skipPrompt?: boolean;
     children?: import('svelte').Snippet;
   }
 
-  let { hasUnsavedChanges = $bindable(false), children }: Props = $props();
+  let { hasUnsavedChanges = $bindable(false), skipPrompt = false, children }: Props = $props();
 
   beforeNavigate(({ cancel }) => {
     if (!shouldAbandonChanges()) {
@@ -20,6 +21,7 @@
 
   function shouldAbandonChanges() {
     if (!hasUnsavedChanges) return true;
+    if (skipPrompt) return true;
     return window.confirm($t('common.unsaved_changes.message'));
   }
 </script>

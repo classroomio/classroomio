@@ -8,7 +8,7 @@
 
   import BadgeCheckIcon from '@lucide/svelte/icons/badge-check';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
+  import { ExternalLinkIcon, HoverableItem } from '@cio/ui/custom/moving-icons';
   import ShieldAlertIcon from '@lucide/svelte/icons/shield-alert';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
@@ -362,15 +362,19 @@
       </Item.Root>
       <Item.Root variant="outline">
         {#snippet child({ props })}
-          <a href="#/" target="_blank" rel="noopener noreferrer" {...props}>
-            <Item.Content>
-              <Item.Title>External resource</Item.Title>
-              <Item.Description>Opens in a new tab with security attributes.</Item.Description>
-            </Item.Content>
-            <Item.Actions>
-              <ExternalLinkIcon class="size-4" />
-            </Item.Actions>
-          </a>
+          <HoverableItem>
+            {#snippet children(isHovered)}
+              <a href="#/" target="_blank" rel="noopener noreferrer" {...props}>
+                <Item.Content>
+                  <Item.Title>External resource</Item.Title>
+                  <Item.Description>Opens in a new tab with security attributes.</Item.Description>
+                </Item.Content>
+                <Item.Actions>
+                  <ExternalLinkIcon {isHovered} size={16} ariaHidden={true} />
+                </Item.Actions>
+              </a>
+            {/snippet}
+          </HoverableItem>
         {/snippet}
       </Item.Root>
     </div>

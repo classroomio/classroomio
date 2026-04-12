@@ -13,8 +13,10 @@
     ORDERING_FIXTURE,
     RADIO_FIXTURE,
     SHORT_ANSWER_FIXTURE,
+    STAR_FIXTURE,
     TEXTAREA_FIXTURE,
-    TRUE_FALSE_FIXTURE
+    TRUE_FALSE_FIXTURE,
+    WORD_BANK_FIXTURE
   } from './question-fixtures';
 
   const { Story } = defineMeta({
@@ -53,6 +55,16 @@
       question={FILL_BLANK_FIXTURE.question}
       answer={FILL_BLANK_FIXTURE.answer}
       wrongAnswer={FILL_BLANK_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="WordBank">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={WORD_BANK_FIXTURE.question}
+      answer={WORD_BANK_FIXTURE.answer}
+      wrongAnswer={WORD_BANK_FIXTURE.wrongAnswer}
     />
   {/snippet}
 </Story>
@@ -123,6 +135,25 @@
       question={NUMERIC_FIXTURE.question}
       answer={NUMERIC_FIXTURE.answer}
       wrongAnswer={NUMERIC_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story
+  name="Star"
+  parameters={{
+    docs: {
+      description: {
+        story: '**Premium in the app** – Gated behind a paid plan in the exercise editor.'
+      }
+    }
+  }}
+>
+  {#snippet template()}
+    <QuestionTypeModes
+      question={STAR_FIXTURE.question}
+      answer={STAR_FIXTURE.answer}
+      wrongAnswer={STAR_FIXTURE.wrongAnswer}
     />
   {/snippet}
 </Story>

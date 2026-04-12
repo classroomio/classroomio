@@ -64,6 +64,18 @@ export async function seedQuestionTypes() {
       typename: 'LINK',
       createdAt: '2021-08-07 18:49:46.246529+00',
       updatedAt: '2021-08-15 00:57:38.634665+00'
+    },
+    {
+      label: 'Word bank',
+      typename: 'WORD_BANK',
+      createdAt: '2021-08-07 18:49:46.246529+00',
+      updatedAt: '2021-08-15 00:57:38.634665+00'
+    },
+    {
+      label: 'Star rating',
+      typename: 'STAR',
+      createdAt: '2021-08-07 18:49:46.246529+00',
+      updatedAt: '2021-08-15 00:57:38.634665+00'
     }
   ].filter((q) => !questionTypeNames.includes(q.typename));
 

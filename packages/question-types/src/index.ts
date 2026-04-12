@@ -14,3 +14,4 @@ export * from './answer-data';
 export * from './answer-codecs';
 export * from './renderer-registry';
 export * from './textarea-validation';
+export * from './star-rating-settings';

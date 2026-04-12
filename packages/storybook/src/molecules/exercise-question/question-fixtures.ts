@@ -131,6 +131,18 @@ export const NUMERIC_FIXTURE: QuestionStoryFixture = {
   wrongAnswer: { type: 'NUMERIC', value: 42 }
 };
 
+export const STAR_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-star',
+    key: 'q-star',
+    title: 'How clear were the lesson objectives? [STAR]',
+    questionType: 'STAR',
+    settings: { correctValue: 4, maxStars: 5 }
+  },
+  answer: { type: 'STAR', value: 4 },
+  wrongAnswer: { type: 'STAR', value: 2 }
+};
+
 export const FILL_BLANK_FIXTURE: QuestionStoryFixture = {
   question: {
     id: 'q-fill-blank',
@@ -141,6 +153,29 @@ export const FILL_BLANK_FIXTURE: QuestionStoryFixture = {
   },
   answer: { type: 'FILL_BLANK', values: ['API'] },
   wrongAnswer: { type: 'FILL_BLANK', values: ['SOAP'] }
+};
+
+export const WORD_BANK_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-word-bank',
+    key: 'q-word-bank',
+    title: 'Match each term with the sentence. [WORD_BANK]',
+    questionType: 'WORD_BANK',
+    settings: {
+      template:
+        'Measurements to describe our data are called ___. The ___ shows values and how often they occur. Outliers appear when data is skewed or has ___.',
+      correctAnswers: ['summary statistics', 'distribution', 'outliers'],
+      distractors: ['categorical variables', 'linear relationships', 'numeric variables']
+    }
+  },
+  answer: {
+    type: 'WORD_BANK',
+    filledBlanks: ['summary statistics', 'distribution', 'outliers']
+  },
+  wrongAnswer: {
+    type: 'WORD_BANK',
+    filledBlanks: ['numeric variables', 'distribution', 'linear relationships']
+  }
 };
 
 export const FILE_UPLOAD_FIXTURE: QuestionStoryFixture = {

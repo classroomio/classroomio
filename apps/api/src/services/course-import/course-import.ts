@@ -16,7 +16,11 @@ import {
   updateCourseSectionService
 } from '@api/services/course/section';
 import { createLesson, listLessons, updateLessonService, deleteLessonService } from '@api/services/lesson';
-import { upsertLessonLanguageService, updateLessonLanguageService } from '@api/services/lesson-language';
+import {
+  deleteLessonLanguageService,
+  upsertLessonLanguageService,
+  updateLessonLanguageService
+} from '@api/services/lesson-language';
 import {
   createCourseImportDraft,
   getCourseImportDraftById,
@@ -76,6 +80,10 @@ type PublishDraftToExistingCourseResult = PublishDraftResult & {
   updatedExercises: number;
   createdLessonLanguages: number;
   updatedLessonLanguages: number;
+  deletedSections: number;
+  deletedLessons: number;
+  deletedExercises: number;
+  deletedLessonLanguages: number;
   untouchedSections: number;
   untouchedLessons: number;
   untouchedExercises: number;
@@ -579,7 +587,7 @@ export async function createCourseImportDraftFromCourseService(
 
 export async function getCourseImportStructureService(orgId: string, courseId: string) {
   try {
-    return await buildCourseStructureSnapshot(orgId, courseId);
+    return buildCourseStructureSnapshot(orgId, courseId);
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -863,6 +871,7 @@ export async function publishCourseImportDraftToExistingCourseService(
     const existingDraft = await getCourseImportDraftService(orgId, draftId);
     const draft = parseStoredDraft(existingDraft);
     const course = await getCourseRecord(orgId, overrides.courseId);
+    const syncMode = overrides.syncMode ?? 'merge';
     const courseTitle = overrides.title ?? draft.course.title;
     const courseDescription = overrides.description ?? draft.course.description;
     const courseType = overrides.type ?? draft.course.type;
@@ -1003,10 +1012,10 @@ export async function publishCourseImportDraftToExistingCourseService(
     }
 
     const appliedTagNames = normalizeDraftTagNames(draft.tags);
-    if (appliedTagNames.length > 0) {
+    if (appliedTagNames.length > 0 || syncMode === 'replace') {
       await assignCourseTagsByName(orgId, course.id, {
         tagNames: appliedTagNames,
-        mode: 'merge'
+        mode: syncMode
       });
     }
 
@@ -1015,6 +1024,72 @@ export async function publishCourseImportDraftToExistingCourseService(
     const referencedExerciseIds = new Set(
       (draft.exercises ?? []).map((exercise) => exercise.externalId).filter((id) => existingExerciseIds.has(id))
     );
+    let deletedLessonLanguages = 0;
+    let deletedExercises = 0;
+    let deletedLessons = 0;
+    let deletedSections = 0;
+
+    if (syncMode === 'replace') {
+      const referencedLanguageKeys = new Set(
+        draft.lessonLanguages
+          .map((lessonLanguage) => {
+            const lessonId = lessonIdMap.get(lessonLanguage.lessonExternalId);
+            if (!lessonId || !referencedLessonIds.has(lessonId)) {
+              return null;
+            }
+
+            return `${lessonId}:${lessonLanguage.locale}`;
+          })
+          .filter((languageKey): languageKey is string => Boolean(languageKey))
+      );
+
+      for (const lessonLanguage of existingLessonLanguages) {
+        const lessonId = lessonLanguage.lessonId;
+        if (!lessonId) {
+          continue;
+        }
+
+        if (!referencedLessonIds.has(lessonId)) {
+          continue;
+        }
+
+        const languageKey = `${lessonId}:${lessonLanguage.locale}`;
+        if (referencedLanguageKeys.has(languageKey)) {
+          continue;
+        }
+
+        await deleteLessonLanguageService(lessonId, lessonLanguage.locale as TLocale);
+        deletedLessonLanguages += 1;
+      }
+
+      for (const existingExercise of existingExercises) {
+        if (referencedExerciseIds.has(existingExercise.id)) {
+          continue;
+        }
+
+        await deleteExerciseService(existingExercise.id);
+        deletedExercises += 1;
+      }
+
+      for (const existingLesson of existingLessons) {
+        if (referencedLessonIds.has(existingLesson.id)) {
+          continue;
+        }
+
+        await deleteLessonService(existingLesson.id);
+        deletedLessons += 1;
+      }
+
+      for (const existingSection of existingSections) {
+        if (referencedSectionIds.has(existingSection.id)) {
+          continue;
+        }
+
+        await deleteCourseSectionService(existingSection.id);
+        deletedSections += 1;
+      }
+    }
+
     const courseUrl = await resolveCourseUrl(orgId, course.id, courseTitle);
 
     await updateCourseImportDraft(orgId, draftId, {
@@ -1026,8 +1101,14 @@ export async function publishCourseImportDraftToExistingCourseService(
         publishedCourseId: course.id,
         updatedSections,
         updatedLessons,
+        updatedExercises,
         createdLessonLanguages,
-        updatedLessonLanguages
+        updatedLessonLanguages,
+        deletedSections,
+        deletedLessons,
+        deletedExercises,
+        deletedLessonLanguages,
+        syncMode
       }
     });
 
@@ -1044,9 +1125,13 @@ export async function publishCourseImportDraftToExistingCourseService(
       updatedExercises,
       createdLessonLanguages,
       updatedLessonLanguages,
-      untouchedSections: existingSections.length - referencedSectionIds.size,
-      untouchedLessons: existingLessons.length - referencedLessonIds.size,
-      untouchedExercises: existingExercises.length - referencedExerciseIds.size,
+      deletedSections,
+      deletedLessons,
+      deletedExercises,
+      deletedLessonLanguages,
+      untouchedSections: Math.max(existingSections.length - referencedSectionIds.size - deletedSections, 0),
+      untouchedLessons: Math.max(existingLessons.length - referencedLessonIds.size - deletedLessons, 0),
+      untouchedExercises: Math.max(existingExercises.length - referencedExerciseIds.size - deletedExercises, 0),
       localeCount: new Set(draft.lessonLanguages.map((item) => item.locale)).size
     };
   } catch (error) {

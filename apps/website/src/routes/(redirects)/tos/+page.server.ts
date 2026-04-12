@@ -1,4 +1,3 @@
-import { redirect } from '@sveltejs/kit';
 import { client } from '$lib/utils/posthog';
 
 export const prerender = false;
@@ -6,8 +5,13 @@ export const prerender = false;
 export const load = async ({ request }) => {
   client.capture({
     distinctId: request.headers.get('x-forwarded-for') || new Date().getTime().toString(),
-    event: 'privacy page visited'
+    event: 'terms of service page visited'
   });
 
-  redirect(307, 'https://app.enzuzo.com/policies/tos/958fc978-5477-11ee-a03b-7b111830c594');
+  return {
+    pageMetaTags: {
+      title: 'Terms of Service | ClassroomIO',
+      description: 'Terms governing your access to and use of ClassroomIO websites, content, and services.'
+    }
+  };
 };

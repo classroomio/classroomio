@@ -30,7 +30,7 @@ export const ZLessonUpdate = z.object({
   videos: z
     .array(
       z.object({
-        type: z.enum(['youtube', 'generic', 'upload']),
+        type: z.enum(['youtube', 'generic', 'upload', 'google_drive']),
         link: z.string(),
         key: z.string().optional(),
         assetId: z.string().uuid().optional(),

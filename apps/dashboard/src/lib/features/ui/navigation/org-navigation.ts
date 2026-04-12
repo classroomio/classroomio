@@ -1,17 +1,20 @@
 import {
+  ApiIcon,
   AttachmentIcon,
   CommunityIcon,
   CourseIcon,
   DashboardIcon,
+  GoalIcon,
   PeopleIcon,
   SettingsIcon,
-  SetupIcon
+  SetupIcon,
+  TagIcon,
+  ZapIcon
 } from '@cio/ui/custom/moving-icons';
 
 import type { AccountOrg } from '$features/app/types';
 import type { Component } from 'svelte';
-import BracesIcon from '@lucide/svelte/icons/braces';
-import TagIcon from '@lucide/svelte/icons/tag';
+import BotIcon from '@lucide/svelte/icons/bot';
 import { isActive } from '$lib/utils/functions/app';
 
 export interface NavItem {
@@ -42,6 +45,12 @@ export interface NavItemConfig {
   supportsDynamicSegment?: boolean; // Supports dynamic segments (like [slug])
   matchPattern?: string | ((orgSlug: string) => string); // Regex pattern for route matching
   isPaid?: boolean; // Show upgrade indicator for free plan users
+  group?: string | null; // Group label key for sidebar grouping
+}
+
+export interface NavGroup {
+  labelKey: string | null;
+  items: NavItem[];
 }
 
 export interface NestedRouteConfig {
@@ -52,18 +61,43 @@ export interface NestedRouteConfig {
 // Base navigation configuration structure
 const baseNavConfig: NavItemConfig[] = [
   {
+    group: 'home',
     titleKey: 'org_navigation.dashboard',
     path: '',
     icon: DashboardIcon,
     matchPattern: '^/org/[^/]+/?$' // Exact match only
   },
   {
+    group: 'home',
+    titleKey: 'org_navigation.setup',
+    path: '/setup',
+    icon: SetupIcon,
+    requiresAdmin: true,
+    matchPattern: '^/org/[^/]+/setup(/.*)?$' // Matches nested routes
+  },
+  {
+    group: 'content',
     titleKey: 'org_navigation.courses',
     path: '/courses',
     icon: CourseIcon,
     matchPattern: '^/org/[^/]+/courses(/.*)?$' // Matches nested routes
   },
   {
+    group: 'content',
+    titleKey: 'org_navigation.programs',
+    path: '/programs',
+    icon: GoalIcon,
+    matchPattern: '^/org/[^/]+/programs(/.*)?$'
+  },
+  {
+    group: 'content',
+    titleKey: 'org_navigation.media',
+    path: '/media',
+    icon: AttachmentIcon,
+    matchPattern: '^/org/[^/]+/media(/.*)?$'
+  },
+  {
+    group: 'content',
     titleKey: 'org_navigation.tags',
     path: '/tags',
     icon: TagIcon,
@@ -71,6 +105,7 @@ const baseNavConfig: NavItemConfig[] = [
     matchPattern: '^/org/[^/]+/tags(/.*)?$'
   },
   {
+    group: 'people',
     titleKey: 'org_navigation.community',
     path: '/community',
     icon: CommunityIcon,
@@ -84,60 +119,38 @@ const baseNavConfig: NavItemConfig[] = [
     ]
   },
   {
+    group: 'people',
     titleKey: 'org_navigation.audience',
     path: '/audience',
     icon: PeopleIcon,
     matchPattern: '^/org/[^/]+/audience(/.*)?$' // Matches nested routes
   },
   {
-    titleKey: 'org_navigation.media',
-    path: '/media',
-    icon: AttachmentIcon,
-    matchPattern: '^/org/[^/]+/media(/.*)?$'
-  },
-  {
-    titleKey: 'org_navigation.setup',
-    path: '/setup',
-    icon: SetupIcon,
-    requiresAdmin: true,
-    matchPattern: '^/org/[^/]+/setup(/.*)?$' // Matches nested routes
-  },
-  {
-    titleKey: 'org_navigation.automation',
-    path: '/automation',
-    icon: BracesIcon,
+    group: 'automation',
+    titleKey: 'automation.tabs.mcp',
+    path: '/mcp',
+    icon: BotIcon,
     requiresAdmin: true,
     disableWhenNotAdmin: true,
-    useHashUrl: true,
-    matchPattern: '^/org/[^/]+/automation(/.*)?$',
-    items: [
-      {
-        titleKey: 'automation.tabs.mcp',
-        path: '/automation/mcp'
-      },
-      {
-        titleKey: 'automation.tabs.zapier',
-        path: '/automation/zapier'
-      },
-      {
-        titleKey: 'automation.tabs.api',
-        path: '/automation/api'
-      }
-    ],
-    nestedRoutes: [
-      {
-        path: 'mcp',
-        titleKey: 'automation.tabs.mcp'
-      },
-      {
-        path: 'zapier',
-        titleKey: 'automation.tabs.zapier'
-      },
-      {
-        path: 'api',
-        titleKey: 'automation.tabs.api'
-      }
-    ]
+    matchPattern: '^/org/[^/]+/mcp(/.*)?$'
+  },
+  {
+    group: 'automation',
+    titleKey: 'automation.tabs.api',
+    path: '/api',
+    icon: ApiIcon,
+    requiresAdmin: true,
+    disableWhenNotAdmin: true,
+    matchPattern: '^/org/[^/]+/api(/.*)?$'
+  },
+  {
+    group: 'automation',
+    titleKey: 'automation.tabs.zapier',
+    path: '/zapier',
+    icon: ZapIcon,
+    requiresAdmin: true,
+    disableWhenNotAdmin: true,
+    matchPattern: '^/org/[^/]+/zapier(/.*)?$'
   },
   {
     titleKey: 'org_navigation.settings',
@@ -260,4 +273,80 @@ export function getOrgNavigationItems(
   }
 
   return items;
+}
+
+const GROUP_ORDER: Array<{ key: string | null; labelKey: string | null }> = [
+  { key: 'home', labelKey: 'org_navigation.home' },
+  { key: 'content', labelKey: 'org_navigation.content' },
+  { key: 'people', labelKey: 'org_navigation.people' },
+  { key: 'automation', labelKey: 'org_navigation.automation' },
+  { key: null, labelKey: null }
+];
+
+/**
+ * Get navigation items grouped for the sidebar
+ */
+export function getOrgNavigationGroups(
+  currentOrgPath: string,
+  currentOrg: AccountOrg,
+  isOrgAdmin: boolean | null,
+  t: (key: string) => string,
+  pagePathname: string
+): NavGroup[] {
+  const groupedMap = new Map<string | null, NavItem[]>();
+
+  for (const groupDef of GROUP_ORDER) {
+    groupedMap.set(groupDef.key, []);
+  }
+
+  for (const config of baseNavConfig) {
+    if (config.requiresAdmin && !isOrgAdmin && !config.disableWhenNotAdmin) {
+      continue;
+    }
+
+    const url = config.path === '' ? currentOrgPath : `${currentOrgPath}${config.path}`;
+    const fullPath = config.path === '' ? `/org/${currentOrg.siteName}` : `/org/${currentOrg.siteName}${config.path}`;
+    const matchPattern =
+      typeof config.matchPattern === 'function' ? config.matchPattern(currentOrg.siteName!) : config.matchPattern;
+
+    const item: NavItem = {
+      title: t(config.titleKey),
+      url: config.useHashUrl ? '#' : url,
+      path: config.path,
+      icon: config.icon,
+      isActive: isActive(pagePathname, fullPath, matchPattern),
+      isExpanded: config.items ? isActive(pagePathname, fullPath, matchPattern) : undefined,
+      disabled: Boolean(config.disableWhenNotAdmin && !isOrgAdmin),
+      useHashUrl: config.useHashUrl,
+      nestedRoutes: config.nestedRoutes,
+      supportsDynamicSegment: config.supportsDynamicSegment,
+      isPaid: config.isPaid
+    };
+
+    if (config.items) {
+      item.items = config.items.map((subConfig) => {
+        const subMatchPattern =
+          typeof subConfig.matchPattern === 'function'
+            ? subConfig.matchPattern(currentOrg.siteName!)
+            : subConfig.matchPattern;
+        const subUrl = `${currentOrgPath}${subConfig.path}`;
+        return {
+          title: t(subConfig.titleKey),
+          isActive: isActive(pagePathname, subUrl, subMatchPattern, true),
+          url: subUrl,
+          path: subConfig.path,
+          isPaid: subConfig.isPaid
+        };
+      });
+    }
+
+    const groupKey = config.group !== undefined ? config.group : null;
+    const bucket = groupedMap.get(groupKey) ?? groupedMap.get(null)!;
+    bucket.push(item);
+  }
+
+  return GROUP_ORDER.filter(({ key }) => (groupedMap.get(key) ?? []).length > 0).map(({ key, labelKey }) => ({
+    labelKey,
+    items: groupedMap.get(key) ?? []
+  }));
 }

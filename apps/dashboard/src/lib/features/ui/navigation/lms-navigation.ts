@@ -3,6 +3,7 @@ import {
   CourseIcon,
   ExerciseIcon,
   ExploreIcon,
+  GoalIcon,
   HomeIcon,
   SettingsIcon
 } from '@cio/ui/custom/moving-icons';
@@ -55,6 +56,12 @@ const baseNavConfig: NavItemConfig[] = [
     path: '/mylearning',
     icon: CourseIcon,
     matchPattern: '^/lms/mylearning(/.*)?$'
+  },
+  {
+    titleKey: 'lms_navigation.programs',
+    path: '/programs',
+    icon: GoalIcon,
+    matchPattern: '^/lms/programs(/.*)?$'
   },
   {
     titleKey: 'lms_navigation.exercise',

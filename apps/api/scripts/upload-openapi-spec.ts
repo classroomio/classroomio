@@ -16,6 +16,35 @@ interface UploadOptions {
   contentType?: string;
 }
 
+function filterPublicApiSpec(spec: Record<string, unknown>) {
+  const paths = (spec.paths ?? {}) as Record<string, unknown>;
+  const publicApiPaths = Object.fromEntries(
+    Object.entries(paths).filter(([path]) => path.startsWith('/public-api/v1/'))
+  );
+
+  const tags = Array.isArray(spec.tags)
+    ? spec.tags.filter((tag) => {
+        if (!tag || typeof tag !== 'object' || !('name' in tag)) {
+          return false;
+        }
+
+        return typeof tag.name === 'string' && tag.name.startsWith('Public API');
+      })
+    : undefined;
+
+  return {
+    ...spec,
+    openapi: spec.openapi ?? '3.1.0',
+    info: {
+      title: 'ClassroomIO Public API',
+      version: '1.0.0',
+      description: 'Public API for managing organizations, audience members, and courses in ClassroomIO.'
+    },
+    paths: publicApiPaths,
+    tags
+  };
+}
+
 class OpenAPISpecGenerator {
   private s3Client: S3Client | null = null;
 
@@ -68,7 +97,8 @@ class OpenAPISpecGenerator {
         }
       });
 
-      const specString = JSON.stringify(spec, null, 2);
+      const publicApiSpec = filterPublicApiSpec(spec as Record<string, unknown>);
+      const specString = JSON.stringify(publicApiSpec, null, 2);
       console.log('✅ OpenAPI specification generated successfully');
 
       return specString;
@@ -80,7 +110,7 @@ class OpenAPISpecGenerator {
 
   async saveLocalSpec(spec: string): Promise<string> {
     try {
-      const outputDir = join(process.cwd(), 'dist', 'openapi');
+      const outputDir = join(process.cwd(), 'dist', 'openapi', 'public-api');
       mkdirSync(outputDir, { recursive: true });
 
       const filePath = join(outputDir, 'openapi.json');
@@ -122,10 +152,10 @@ class OpenAPISpecGenerator {
     try {
       const spec = await this.generateSpec();
 
-      // await this.saveLocalSpec(spec);
+      await this.saveLocalSpec(spec);
 
       if (this.s3Client) {
-        const uploadKey = `openapi/openapi-${new Date().toISOString().split('T')[0]}.json`;
+        const uploadKey = `openapi/public-api/openapi-${new Date().toISOString().split('T')[0]}.json`;
         await this.uploadToR2({
           key: uploadKey,
           content: spec,
@@ -134,7 +164,7 @@ class OpenAPISpecGenerator {
 
         // Also upload as latest version
         await this.uploadToR2({
-          key: 'openapi/openapi-latest.json',
+          key: 'openapi/public-api/openapi-latest.json',
           content: spec,
           contentType: 'application/json'
         });

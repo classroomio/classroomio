@@ -235,6 +235,7 @@
         case 'RADIO':
         case 'TRUE_FALSE':
         case 'NUMERIC':
+        case 'STAR':
           return true;
         case 'CHECKBOX':
           return answerValue.optionIds.length > 0;
@@ -244,6 +245,10 @@
           return answerValue.text.trim().length > 0;
         case 'FILL_BLANK':
           return answerValue.values.length > 0;
+        case 'WORD_BANK': {
+          const filled = answerValue.filledBlanks ?? [];
+          return filled.length > 0 && filled.every((v) => String(v).trim().length > 0);
+        }
         case 'FILE_UPLOAD':
           return !!answerValue.fileKey;
         case 'MATCHING':
@@ -470,9 +475,12 @@
   });
 </script>
 
-{#if !preview && $questionnaire.questions.length && !$questionnaireMetaData.isFinished}
-  <div class="mb-6">
-    <Progress value={$questionnaireMetaData.progressValue} />
+{#if !preview && $questionnaire.questions.length && !$questionnaireMetaData.isFinished && $questionnaireMetaData.currentQuestionIndex > 0}
+  <div class="mb-6 flex min-w-0 items-center gap-3">
+    <span class="ui:text-muted-foreground shrink-0 text-sm tabular-nums">
+      {$questionnaireMetaData.currentQuestionIndex}/{$questionnaire.questions.length}
+    </span>
+    <Progress class="min-w-0 flex-1" value={$questionnaireMetaData.progressValue} />
   </div>
 {/if}
 
@@ -605,7 +613,9 @@
     {/if}
 
     <Preview
-      questions={$questionnaire.questions.sort((a, b) => a.order - b.order)}
+      questions={[...$questionnaire.questions].sort(
+        (leftQuestion, rightQuestion) => leftQuestion.order - rightQuestion.order
+      )}
       questionnaireMetaData={$questionnaireMetaData}
       grades={$questionnaireMetaData.grades}
       disableGrading={true}

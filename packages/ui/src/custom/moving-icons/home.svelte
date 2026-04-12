@@ -1,25 +1,45 @@
 <script>
   /**
    * @typedef {Object} Props
+   * @property {boolean} [isHovered] - from parent HoverableItem; combined with internal mouseenter pulse
    * @property {string} [color]
    * @property {number} [size]
    * @property {number} [strokeWidth]
-   * @property {boolean} [isHovered]
+   * @property {boolean} [ariaHidden] - when true, icon is treated as decorative (e.g. next to visible text)
    * @property {string} [class]
    */
 
   /** @type {Props} */
-  let { color = 'currentColor', size = 24, strokeWidth = 2, isHovered = false, class: className = '' } = $props();
+  let {
+    isHovered = false,
+    color = 'currentColor',
+    size = 24,
+    strokeWidth = 2,
+    ariaHidden = false,
+    class: className = ''
+  } = $props();
+
+  let pulseFromMouseEnter = $state(false);
 
   function handleMouseEnter() {
-    isHovered = true;
+    if (pulseFromMouseEnter) return;
+
+    pulseFromMouseEnter = true;
     setTimeout(() => {
-      isHovered = false;
+      pulseFromMouseEnter = false;
     }, 800);
   }
+
+  const iconAnimates = $derived(isHovered || pulseFromMouseEnter);
 </script>
 
-<div class={className} aria-label="house" role="img" onmouseenter={handleMouseEnter}>
+<div
+  class={className}
+  aria-hidden={ariaHidden ? true : undefined}
+  aria-label={ariaHidden ? undefined : 'house'}
+  role={ariaHidden ? undefined : 'img'}
+  onmouseenter={handleMouseEnter}
+>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={size}
@@ -31,7 +51,7 @@
     stroke-linecap="round"
     stroke-linejoin="round"
     class="house-icon"
-    class:animate={isHovered}
+    class:animate={iconAnimates}
   >
     <path
       d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"

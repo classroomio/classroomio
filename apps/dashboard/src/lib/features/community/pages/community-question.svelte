@@ -145,6 +145,7 @@
             />
             <Page.Title>{communityApi.question.title}</Page.Title>
           </div>
+          <Page.Subtitle>{$t('community.question.page_subtitle')}</Page.Subtitle>
         {/if}
       </Page.HeaderContent>
       {#if communityApi.question.authorId === $profile.id}
