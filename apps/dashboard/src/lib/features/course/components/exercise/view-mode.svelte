@@ -33,7 +33,6 @@
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { openCourseCompletionModal } from '$features/course/store/course-completion-modal';
-  import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
   import { toExerciseQuestionModel } from './question-type-utils';
   import { getExerciseQuestionLabels } from './question-labels';
   import axios from 'axios';
@@ -574,7 +573,7 @@
             </div>
           </div>
         </div>
-      {:else if isSelfPacedLikeCourse(courseApi.course?.type)}
+      {:else if courseApi.course?.type === 'SELF_PACED'}
         <Badge
           variant="success"
           title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_submitted')}

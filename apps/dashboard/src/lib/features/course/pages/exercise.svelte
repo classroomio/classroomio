@@ -37,7 +37,6 @@
   import UpdateDescription from '$features/course/components/exercise/update-description.svelte';
   import { ContentNavigationActions } from '$features/course/components/lesson';
   import { RefreshPageData, RoleBasedSecurity } from '$features/ui';
-  import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import { Empty } from '@cio/ui/custom/empty';
   import VideoIcon from '@lucide/svelte/icons/video';
@@ -232,7 +231,7 @@
   );
   const isExerciseUnlocked = $derived(exerciseContentItem?.isUnlocked ?? false);
 
-  const isSelfPacedCourse = $derived(isSelfPacedLikeCourse(courseApi.course?.type));
+  const isSelfPacedCourse = $derived(courseApi.course?.type === 'SELF_PACED');
   const activeQuestionTypeIds = $derived(
     ($questionnaire.questions ?? []).filter((q) => !q.deletedAt).map((q) => getQuestionTypeId(q))
   );
