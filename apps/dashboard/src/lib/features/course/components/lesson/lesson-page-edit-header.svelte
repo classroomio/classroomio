@@ -7,7 +7,7 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import * as Page from '@cio/ui/base/page';
   import MODES from '$lib/utils/constants/mode';
-  import { globalStore } from '$lib/utils/store/app';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { RoleBasedSecurity } from '$features/ui';
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
@@ -41,7 +41,7 @@
 
 <div class="flex w-full items-center justify-between gap-2">
   <div class="min-w-0 flex-1">
-    {#if mode === MODES.edit && !$globalStore.isStudent}
+    {#if mode === MODES.edit && !$isOrgStudent}
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <InputField
           className="max-w-xl"
@@ -55,7 +55,7 @@
     {/if}
   </div>
 
-  {#if mode === MODES.edit && !$globalStore.isStudent}
+  {#if mode === MODES.edit && !$isOrgStudent}
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <div class="flex items-center gap-2">
         <IconButton onclick={onToggleLock} aria-label={lockLabel} title={lockLabel}>

@@ -8,7 +8,7 @@
 
   import { profile } from '$lib/utils/store/user';
   import { ROLE } from '@cio/utils/constants';
-  import { globalStore } from '$lib/utils/store/app';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi, attendanceApi } from '$features/course/api';
   import { getLectureNo } from '$features/course/utils/functions';
@@ -23,7 +23,7 @@
   let { courseId }: Props = $props();
 
   const students: CourseMembers = $derived(
-    $globalStore.isStudent
+    $isOrgStudent
       ? courseApi.group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
       : courseApi.group.people.filter((person) => !!person.profile && Number(person.roleId) === ROLE.STUDENT)
   );
@@ -71,7 +71,7 @@
   }
 
   async function handleAttendanceChange(e: any, student: CourseMember, lesson: CourseContentItem) {
-    if ($globalStore.isStudent) return;
+    if ($isOrgStudent) return;
 
     const isPresent = e.target.checked;
 
@@ -167,7 +167,7 @@
               <Table.Cell class="text-center">
                 <div class="flex justify-center">
                   <Checkbox
-                    disabled={$globalStore.isStudent}
+                    disabled={$isOrgStudent}
                     checked={getAttendanceStatus(student.id, lesson.id)}
                     onCheckedChange={(checked) => {
                       const e = { target: { checked } };

@@ -12,7 +12,7 @@
     clearQuestionnaireValidation,
     reset
   } from '$features/course/components/exercise/store';
-  import { globalStore } from '$lib/utils/store/app';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import type { Question } from '$features/course/types';
   import {
@@ -24,7 +24,7 @@
   let { data = $bindable() } = $props();
 
   const path = `/courses/${data.courseId}/lessons`;
-  const isLockedForStudent = $derived($globalStore.isStudent && data.exercise?.isUnlocked === false);
+  const isLockedForStudent = $derived($isOrgStudent && data.exercise?.isUnlocked === false);
 
   $effect(() => {
     if (!data.exercise || isLockedForStudent) return;

@@ -6,7 +6,7 @@
   import { setTheme } from '$lib/utils/functions/theme';
   import { setupCloudAnalytics } from '$lib/utils/functions/appSetup';
   import { globalStore } from '$lib/utils/store/app';
-  import { currentOrg, isOrgStudent } from '$lib/utils/store/org';
+  import { currentOrg } from '$lib/utils/store/org';
   import { appInitApi } from '$features/app/init.svelte';
   import { onMount } from 'svelte';
   import { authClient } from '$lib/utils/services/auth/client';
@@ -98,13 +98,6 @@
     }
   });
 
-  $effect(() => {
-    if ($isOrgStudent === null) return;
-
-    if ($isOrgStudent !== $globalStore.isStudent) {
-      globalStore.update((s) => ({ ...s, isStudent: !!$isOrgStudent }));
-    }
-  });
 </script>
 
 <UpgradeModal />

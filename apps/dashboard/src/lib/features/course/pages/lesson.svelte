@@ -15,7 +15,7 @@
 
   import MODES from '$lib/utils/constants/mode';
   import { profile } from '$lib/utils/store/user';
-  import { globalStore } from '$lib/utils/store/app';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$features/ui/snackbar/store';
   import { RefreshPageData, UnsavedChanges } from '$features/ui';
@@ -365,7 +365,7 @@
   </Page.HeaderContent>
   <Page.Action>
     <div class="flex items-center gap-2">
-      {#if mode === MODES.view && $globalStore.isStudent}
+      {#if mode === MODES.view && $isOrgStudent}
         <ContentNavigationActions {lessonId} {courseId} />
       {/if}
 
@@ -406,7 +406,7 @@
 <Page.Body>
   {#snippet child()}
     <div class="overflow-x-hidden lg:w-full xl:w-11/12">
-      {#if $globalStore.isStudent && lessonApi.lesson && !isLessonUnlocked}
+      {#if $isOrgStudent && lessonApi.lesson && !isLessonUnlocked}
         <Empty
           title={$t('course.navItem.lessons.content_locked_title')}
           description={$t('course.navItem.lessons.content_locked_description')}
@@ -488,7 +488,7 @@
           variant="page"
           class="text-center"
         >
-          {#if !$globalStore.isStudent}
+          {#if !$isOrgStudent}
             <Button onclick={toggleMode}>
               {$t('course.navItem.lessons.materials.get_started')}
             </Button>

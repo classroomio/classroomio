@@ -14,7 +14,7 @@
   import { HoverableItem, AttachmentIcon } from '@cio/ui/custom/moving-icons';
   import formatDate from '$lib/utils/functions/formatDate';
   import { t } from '$lib/utils/functions/translations';
-  import { globalStore } from '$lib/utils/store/app';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { contentApi, courseApi, exerciseApi, lessonApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import { profile } from '$lib/utils/store/user';
@@ -27,6 +27,7 @@
   import ContentActions from './content-actions.svelte';
   import SectionHeader from './section-header.svelte';
   import { deleteContent, saveContent, toggleLock } from './content-action-helpers';
+  import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
 
   type CrudParam = {
     sectionId?: string;
@@ -52,9 +53,9 @@
   const courseId = $derived(courseApi.course?.id || '');
   const profileId = $derived($profile?.id || '');
   const contentData = $derived(getCourseContent(courseApi.course));
-  const isStudentView = $derived($globalStore.isStudent === true);
+  const isStudentView = $derived($isOrgStudent === true);
   const isLiveCourse = $derived(courseApi.course?.type === 'LIVE_CLASS');
-  const isSelfPacedCourse = $derived(courseApi.course?.type === 'SELF_PACED');
+  const isSelfPacedCourse = $derived(isSelfPacedLikeCourse(courseApi.course?.type));
   const metaChipClass =
     'inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-[10px] text-gray-700 dark:bg-neutral-700 dark:text-gray-200';
 

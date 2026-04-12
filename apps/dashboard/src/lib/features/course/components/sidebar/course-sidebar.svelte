@@ -4,7 +4,7 @@
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { profile } from '$lib/utils/store/user';
   import { orgs } from '$lib/utils/store/org';
-  import { globalStore } from '$lib/utils/store/app';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { isFreePlan } from '$lib/utils/store/org';
 
   import OrgLogo from '$features/ui/sidebar/org-sidebar/org-logo.svelte';
@@ -41,7 +41,7 @@
 
     <Sidebar.Content>
       {#if isCourseReady}
-        <Navigation path={currentPath} {id} isStudent={$globalStore.isStudent} />
+        <Navigation path={currentPath} {id} isStudent={$isOrgStudent ?? undefined} />
       {:else}
         <Sidebar.Group class="pt-0!">
           <div class="flex h-8 items-center gap-2 rounded-md px-2">

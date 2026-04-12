@@ -24,7 +24,7 @@
   import { ZExerciseUpdate } from '@cio/utils/validation/exercise';
   import { mapZodErrorsToTranslations } from '$lib/utils/validation';
   import { transformQuestionsToApiFormat } from '$features/course/components/exercise/functions';
-  import { globalStore } from '$lib/utils/store/app';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { exerciseApi } from '$features/course/api';
@@ -37,6 +37,7 @@
   import UpdateDescription from '$features/course/components/exercise/update-description.svelte';
   import { ContentNavigationActions } from '$features/course/components/lesson';
   import { RefreshPageData, RoleBasedSecurity } from '$features/ui';
+  import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import { Empty } from '@cio/ui/custom/empty';
   import VideoIcon from '@lucide/svelte/icons/video';
@@ -94,7 +95,7 @@
   }
 
   async function handleSave() {
-    if ($globalStore.isStudent || !courseApi.course?.id) return;
+    if ($isOrgStudent || !courseApi.course?.id) return;
 
     // Transform questionnaire to API format for validation
     // Include all non-deleted options (even empty ones) so Zod can catch validation errors
@@ -231,7 +232,7 @@
   );
   const isExerciseUnlocked = $derived(exerciseContentItem?.isUnlocked ?? false);
 
-  const isSelfPacedCourse = $derived(courseApi.course?.type === 'SELF_PACED');
+  const isSelfPacedCourse = $derived(isSelfPacedLikeCourse(courseApi.course?.type));
   const activeQuestionTypeIds = $derived(
     ($questionnaire.questions ?? []).filter((q) => !q.deletedAt).map((q) => getQuestionTypeId(q))
   );
@@ -244,7 +245,7 @@
     isSelfPacedCourse && isExerciseFullyAutoGradable(activeQuestionTypeIds)
   );
   const teacherAutoGradeBadge = $derived.by(() => {
-    if ($globalStore.isStudent || !isSelfPacedCourse || activeQuestionTypeIds.length === 0) return null;
+    if ($isOrgStudent || !isSelfPacedCourse || activeQuestionTypeIds.length === 0) return null;
     return isExerciseFullyAutoGradable(activeQuestionTypeIds) ? ('auto' as const) : ('manual' as const);
   });
 </script>
@@ -268,7 +269,7 @@
   </Page.HeaderContent>
   <Page.Action>
     <div class="flex items-center gap-2">
-      {#if $globalStore.isStudent && courseApi.course?.id && exerciseId}
+      {#if $isOrgStudent && courseApi.course?.id && exerciseId}
         <ContentNavigationActions courseId={courseApi.course.id} {exerciseId} />
       {/if}
 
@@ -332,7 +333,7 @@
 <Page.Body>
   {#snippet child()}
     <div class="overflow-x-hidden">
-      {#if $globalStore.isStudent}
+      {#if $isOrgStudent}
         {#if isExerciseUnlocked}
           <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmissions} />
         {:else}

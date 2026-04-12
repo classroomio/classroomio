@@ -43,12 +43,6 @@ export const isOrgAdmin = derived(currentOrg, ($currentOrg) => {
 
   return $currentOrg.roleId === ROLE.ADMIN;
 });
-export const isOrgStudent = derived(currentOrg, ($currentOrg) => {
-  if ($currentOrg.roleId === 0) return null;
-
-  return $currentOrg.roleId === ROLE.STUDENT;
-});
-
 const getActivePlan = (org: AccountOrg) => {
   return org.plans.find((p) => p.isActive);
 };

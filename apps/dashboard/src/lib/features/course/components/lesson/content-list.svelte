@@ -13,7 +13,7 @@
   import { Button } from '@cio/ui/base/button';
   import { Chip } from '@cio/ui/custom/chip';
   import { lessonApi, exerciseApi, courseApi, contentApi } from '$features/course/api';
-  import { globalStore } from '$lib/utils/store/app';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import formatDate from '$lib/utils/functions/formatDate';
   import { t } from '$lib/utils/functions/translations';
   import type { CourseContentItem } from '$features/course/utils/types';
@@ -25,6 +25,7 @@
   import ContentRow from './content-row.svelte';
   import ContentActions from './content-actions.svelte';
   import { deleteContent, saveContent, toggleLock } from './content-action-helpers';
+  import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
 
   const flipDurationMs = 300;
 
@@ -43,9 +44,9 @@
   let courseId = $derived(courseApi.course?.id || '');
   const profileId = $derived($profile?.id || '');
   const contentData = $derived(getCourseContent(courseApi.course));
-  const isStudentView = $derived($globalStore.isStudent === true);
+  const isStudentView = $derived($isOrgStudent === true);
   const isLiveCourse = $derived(courseApi.course?.type === 'LIVE_CLASS');
-  const isSelfPacedCourse = $derived(courseApi.course?.type === 'SELF_PACED');
+  const isSelfPacedCourse = $derived(isSelfPacedLikeCourse(courseApi.course?.type));
   const metaChipClass =
     'inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-[10px] text-gray-700 dark:bg-neutral-700 dark:text-gray-200';
 

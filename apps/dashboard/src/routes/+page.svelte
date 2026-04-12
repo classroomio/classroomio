@@ -10,8 +10,7 @@
     importThemeComponent,
     normalizeLandingPageSettings
   } from '$features/org/utils/landing-page';
-  import { basePath } from '$lib/utils/store/app';
-  import { globalStore } from '$lib/utils/store/app';
+  import { basePath, globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
   import { t } from '$lib/utils/functions/translations';
@@ -82,6 +81,7 @@
     const mod = await importThemeComponent(settings.theme);
     ThemeComponent = mod.default;
   });
+
 </script>
 
 <svelte:head>

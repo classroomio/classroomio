@@ -6,7 +6,7 @@
   import { CircleCheckIcon } from '$features/ui/icons';
   import { Button } from '@cio/ui/base/button';
   import * as Tooltip from '@cio/ui/base/tooltip';
-  import { globalStore } from '$lib/utils/store/app';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi, lessonApi } from '$features/course/api';
   import { getOrderedNavigableContent, getContentRoute } from '$features/course/utils/content';
@@ -64,7 +64,7 @@
 
   const currentLessonItem = $derived(lessonId ? lessonItems.find((l) => l.id === lessonId) : null);
   const isLessonLocked = $derived(
-    $globalStore.isStudent && currentLessonItem && !(currentLessonItem.isUnlocked ?? false)
+    $isOrgStudent && currentLessonItem && !(currentLessonItem.isUnlocked ?? false)
   );
   const isMarkCompleteDisabled = $derived(isMarkingComplete || isLessonLocked || isLessonComplete);
 
@@ -83,7 +83,7 @@
       updateCourseContentCompletion(currentLessonId, isComplete);
 
       const allComplete =
-        $globalStore.isStudent &&
+        $isOrgStudent &&
         isComplete &&
         navigableContentItems.length > 0 &&
         navigableContentItems.every((item) => item.isComplete);

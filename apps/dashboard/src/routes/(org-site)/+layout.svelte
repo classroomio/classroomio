@@ -41,6 +41,7 @@
     currentOrg.set(data.org);
     setTheme(data.org.theme || 'blue');
   });
+
 </script>
 
 {#if data.org?.isRestricted || $currentOrg.isRestricted}

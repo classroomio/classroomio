@@ -1,34 +1,34 @@
+import { currentOrg, currentOrgPath } from './org';
 import { derived, writable } from 'svelte/store';
 
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-import { currentOrgPath } from './org';
+import { ROLE } from '@cio/utils/constants';
 
 export const globalStore = writable<{
   isDark: boolean;
   isOrgSite: boolean;
   orgSiteName: string;
-  isStudent?: boolean;
 }>({
   isDark: false,
   isOrgSite: false,
-  orgSiteName: '',
-  isStudent: undefined
+  orgSiteName: ''
+});
+
+export const isOrgStudent = derived(currentOrg, ($currentOrg) => {
+  if ($currentOrg.roleId === 0) return null;
+
+  return $currentOrg.roleId === ROLE.STUDENT;
 });
 
 /**
- * Single source of truth: is this a student experience?
- * Cloud: orgSite is always student. Self-hosted: check role.
- *
- * why are we not using isOrgStudent from org store?
- * because this is derived from the currentOrg which returns null if no org OR boolean if org is present. Once org data is set, we then update globalStore.isStudent to the same value.
- *
- * why  are we not using only globalStore.isStudent for this?
- * because in the cloud instance, when a teacher logs into the lms aka org site, they need to be treated as a student so they see what the student sees.
+ * Cloud: orgSite is always student (a teacher on an org subdomain sees the student view).
+ * Self-hosted: derived from isOrgStudent (role-based).
  */
-export const isStudentExperience = derived(globalStore, ($gs) => {
+export const isStudentExperience = derived([globalStore, isOrgStudent], ([$gs, $isStudent]) => {
   const isCloud = PUBLIC_IS_SELFHOSTED !== 'true';
   if (isCloud) return $gs.isOrgSite;
-  return $gs.isStudent ?? false;
+
+  return $isStudent ?? false;
 });
 
 /**
