@@ -6,6 +6,7 @@ import Root, {
   type ButtonProps,
   type ButtonSize,
   type ButtonVariant,
+  type ButtonAnimate,
   type AnchorElementProps,
   type ButtonElementProps,
   type ButtonPropsWithoutHTML,
@@ -21,6 +22,7 @@ export {
   type ButtonProps,
   type ButtonSize,
   type ButtonVariant,
+  type ButtonAnimate,
   type AnchorElementProps,
   type ButtonElementProps,
   type ButtonPropsWithoutHTML

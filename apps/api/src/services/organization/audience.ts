@@ -28,6 +28,7 @@ import { ROLE } from '@cio/utils/constants';
 import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { getProfilesByEmails } from '@cio/db/queries/auth';
+import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ORG_INVITE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
@@ -186,6 +187,10 @@ async function enrollAudienceStudentProfilesInCourses(
         email: profileEmailMap.get(p.profileId) || undefined
       }))
     );
+  }
+
+  if (validProfiles.length > 0) {
+    await ensureComplianceEnrollmentRecordsForProfiles(courseIds, validProfiles);
   }
 
   let emailsSent = 0;
@@ -534,6 +539,10 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
         if (profiles.length > 0) {
           const users = profiles.map((p) => ({ profileId: p.id, email: p.email ?? undefined }));
           await enrollUsersInCourseGroups(validGroupIds, users, ROLE.STUDENT);
+          await ensureComplianceEnrollmentRecordsForProfiles(
+            courseIds,
+            profiles.map((profile) => profile.id)
+          );
         }
       }
     }

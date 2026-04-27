@@ -1,9 +1,11 @@
 <script lang="ts">
+  import { Badge } from '@cio/ui/base/badge';
   import type { Component, Snippet } from 'svelte';
   import { resolve } from '$app/paths';
   import { CourseCard, DEFAULT_COURSE_BANNER_IMAGE } from '@cio/ui';
   import UserIcon from '@lucide/svelte/icons/user';
   import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
+  import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
   import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 
@@ -17,6 +19,11 @@
   import { calcCourseDiscount } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { calcCourseProgress, calcProgressRate } from '$features/course/utils/functions';
+  import {
+    getStudentCourseComplianceDate,
+    getStudentCourseComplianceStatusKey,
+    getStudentCourseComplianceStatusVariant
+  } from '$features/course/utils/compliance-utils';
   import CardDropdown from './card-dropdown.svelte';
   import CoursePublishBadge from './course-publish-badge.svelte';
   import CourseTagsOverflow from './course-tags-overflow.svelte';
@@ -117,6 +124,12 @@
       icon: UserIcon,
       iconStyle: 'custom ui:text-primary'
     },
+    ['COMPLIANCE']: {
+      style: '',
+      label: $t('course.navItem.settings.compliance'),
+      icon: ShieldCheckIcon,
+      iconStyle: 'custom text-emerald-700'
+    },
     SPECIALIZATION: {
       style: '',
       label: $t('specialization.course_tag'),
@@ -126,9 +139,21 @@
 
   let cost = $derived(calcCourseDiscount(pricingData.discount, pricingData.cost ?? 0, !!pricingData.showDiscount));
 
-  let courseUrl = $derived(
-    href ?? (isOnLandingPage || isExplore ? `/course/${slug}` : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`)
-  );
+  let courseUrl = $derived.by(() => {
+    if (href) {
+      return href;
+    }
+
+    if (isOnLandingPage || isExplore) {
+      if (!slug) {
+        return undefined;
+      }
+
+      return `/course/${slug}`;
+    }
+
+    return `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
+  });
 
   const typeBadge = $derived(
     type && COURSE_TAG[type]
@@ -139,9 +164,46 @@
         }
       : undefined
   );
+
+  const complianceStatusKey = $derived(
+    isLMS && type === 'COMPLIANCE' && !isExplore
+      ? getStudentCourseComplianceStatusKey(course as UserEnrolledCourses[number])
+      : null
+  );
+  const complianceStatusVariant = $derived(
+    isLMS && type === 'COMPLIANCE' && !isExplore
+      ? getStudentCourseComplianceStatusVariant(course as UserEnrolledCourses[number])
+      : 'outline'
+  );
+  const complianceDate = $derived(
+    isLMS && type === 'COMPLIANCE' && !isExplore
+      ? getStudentCourseComplianceDate(course as UserEnrolledCourses[number])
+      : null
+  );
+
+  function formatDate(value: string | null | undefined) {
+    if (!value) {
+      return '';
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return '';
+    }
+
+    return new Intl.DateTimeFormat('en-US', {
+      dateStyle: 'medium'
+    }).format(date);
+  }
 </script>
 
-<CourseCard href={resolve(courseUrl, {})} {title} {description} {typeBadge} class="group relative">
+<CourseCard
+  href={courseUrl ? resolve(courseUrl, {}) : undefined}
+  {title}
+  {description}
+  {typeBadge}
+  class="group relative"
+>
   {#snippet media()}
     <Image src={bannerImage} alt="Course banner image" className="w-full h-full rounded-sm object-cover" />
   {/snippet}
@@ -150,7 +212,7 @@
     {#if actions}
       {@render actions()}
     {:else if !isLMS && !isOnLandingPage}
-      <CardDropdown {id} {title} {description} />
+      <CardDropdown {id} {title} {description} {isPublished} />
     {/if}
   {/snippet}
 
@@ -195,6 +257,22 @@
                 <Progress value={progressRate} />
                 <p class="ui:text-muted-foreground text-xs">{progressRate}%</p>
               </div>
+
+              {#if type === 'COMPLIANCE'}
+                <div class="mt-2 flex flex-wrap items-center gap-2">
+                  {#if complianceStatusKey}
+                    <Badge variant={complianceStatusVariant}>
+                      {$t(complianceStatusKey)}
+                    </Badge>
+                  {/if}
+
+                  {#if complianceDate?.value}
+                    <p class="ui:text-muted-foreground text-xs">
+                      {$t(complianceDate.labelKey)}: {formatDate(complianceDate.value)}
+                    </p>
+                  {/if}
+                </div>
+              {/if}
             {/if}
           {:else}
             <CoursePublishBadge {isPublished} />

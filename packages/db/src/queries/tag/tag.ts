@@ -1,5 +1,5 @@
 import type { TNewTag, TNewTagGroup, TTag, TTagAssignment, TTagGroup } from '@db/types';
-import { and, asc, eq, inArray, sql } from 'drizzle-orm';
+import { and, asc, eq, ilike, inArray, sql } from 'drizzle-orm';
 
 import * as schema from '@db/schema';
 import { db } from '@db/drizzle';
@@ -18,6 +18,26 @@ export interface TCourseTagPreview {
   slug: string;
   color: string;
 }
+
+export type TSearchOrgTag =
+  | {
+      kind: 'group';
+      id: string;
+      name: string;
+      slug: string;
+      description: string | null;
+      color: null;
+      groupName: null;
+    }
+  | {
+      kind: 'tag';
+      id: string;
+      name: string;
+      slug: string;
+      description: string | null;
+      color: string;
+      groupName: string;
+    };
 
 interface GetTagGroupsWithTagsOptions {
   onlyPublishedCourses?: boolean;
@@ -148,6 +168,47 @@ export async function getTagsByIds(orgId: string, tagIds: string[]): Promise<TTa
   } catch (error) {
     console.error('getTagsByIds error:', error);
     throw new Error('Failed to get tags by ids');
+  }
+}
+
+export async function searchOrgTagsAndGroups(orgId: string, search: string, limit: number): Promise<TSearchOrgTag[]> {
+  try {
+    const searchValue = `%${search.trim()}%`;
+    const [groups, tags] = await Promise.all([
+      db
+        .select({
+          id: schema.tagGroup.id,
+          name: schema.tagGroup.name,
+          slug: schema.tagGroup.slug,
+          description: schema.tagGroup.description
+        })
+        .from(schema.tagGroup)
+        .where(and(eq(schema.tagGroup.organizationId, orgId), ilike(schema.tagGroup.name, searchValue)))
+        .orderBy(asc(schema.tagGroup.name))
+        .limit(limit),
+      db
+        .select({
+          id: schema.tag.id,
+          name: schema.tag.name,
+          slug: schema.tag.slug,
+          description: schema.tag.description,
+          color: schema.tag.color,
+          groupName: schema.tagGroup.name
+        })
+        .from(schema.tag)
+        .innerJoin(schema.tagGroup, eq(schema.tag.groupId, schema.tagGroup.id))
+        .where(and(eq(schema.tag.organizationId, orgId), ilike(schema.tag.name, searchValue)))
+        .orderBy(asc(schema.tag.name))
+        .limit(limit)
+    ]);
+
+    return [
+      ...groups.map((group): TSearchOrgTag => ({ ...group, kind: 'group', color: null, groupName: null })),
+      ...tags.map((tag): TSearchOrgTag => ({ ...tag, kind: 'tag' }))
+    ].slice(0, limit);
+  } catch (error) {
+    console.error('searchOrgTagsAndGroups error:', error);
+    throw new Error('Failed to search tags and tag groups');
   }
 }
 

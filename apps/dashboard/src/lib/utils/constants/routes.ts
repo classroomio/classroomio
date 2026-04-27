@@ -33,7 +33,9 @@ export const PUBLIC_ROUTES = [
   `^${ROUTE.COURSES}/?$`,
   '/404',
   `^${ROUTE.VERIFY_EMAIL_ERROR}$`,
-  ROUTE.AUTH_FAILED
+  ROUTE.AUTH_FAILED,
+  '^/csp-report$',
+  '^/sticky-debug$'
 ];
 
 export const PUBLIC_API_ROUTES = ['/api/polar', '/api/lmz', '/api/verify'];

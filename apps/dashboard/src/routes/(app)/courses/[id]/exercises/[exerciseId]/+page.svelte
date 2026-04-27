@@ -6,20 +6,10 @@
   import LockIcon from '@lucide/svelte/icons/lock';
   import * as Page from '@cio/ui/base/page';
   import { ExercisePage } from '$features/course/pages';
-  import {
-    questionnaire,
-    questionnaireMetaData,
-    clearQuestionnaireValidation,
-    reset
-  } from '$features/course/components/exercise/store';
+  import { questionnaireMetaData, reset } from '$features/course/components/exercise/store';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import type { Question } from '$features/course/types';
-  import {
-    getQuestionTypeId,
-    getQuestionTypeOptionById
-  } from '$features/course/components/exercise/question-type-utils';
-  import { normalizeQuestionOrder } from '$features/course/components/exercise/order-utils';
+  import { hydrateExercisePageData } from '$features/course/utils/exercise-page-utils';
 
   let { data = $bindable() } = $props();
 
@@ -37,36 +27,7 @@
       reset();
     }
 
-    clearQuestionnaireValidation();
-
-    const exercise = data.exercise;
-
-    // Transform questions and set questionnaire store
-    let questions: Question[] = [];
-    if (exercise.questions && Array.isArray(exercise.questions)) {
-      const mapped = exercise.questions.map((question) => {
-        const questionType = getQuestionTypeOptionById(getQuestionTypeId(question));
-        return {
-          ...question,
-          questionTypeId: questionType.id,
-          questionType
-        };
-      });
-      questions = normalizeQuestionOrder(mapped);
-    }
-
-    questionnaire.set({
-      title: exercise.title,
-      description: exercise.description,
-      dueBy: exercise.dueBy,
-      isTitleDirty: false,
-      isDescriptionDirty: false,
-      isDueByDirty: false,
-      questions: questions,
-      totalSubmissions: 0,
-      allowMultipleAttempts: !!exercise.allowMultipleAttempts
-    });
-    questionnaireMetaData.update((m) => ({ ...m, exerciseId: data.exerciseId }));
+    hydrateExercisePageData(data.exercise, data.exerciseId);
   });
 </script>
 

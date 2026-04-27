@@ -1,34 +1,45 @@
 <script>
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
+  import Palette from '@lucide/svelte/icons/palette';
+  import Globe from '@lucide/svelte/icons/globe';
+  import Code2 from '@lucide/svelte/icons/code-2';
+  import Settings2 from '@lucide/svelte/icons/settings-2';
 
   const features = [
     {
-      icon: '🎨',
+      Icon: Palette,
+      iconBg: 'bg-rose-50',
+      iconColor: 'text-rose-600',
       title: 'Full Theming',
-      description:
-        "Match your brand exactly. Custom colors, fonts, logos, and layouts. Your learners will never know it's ClassroomIO under the hood.",
+      description: 'Pick the colors, fonts, and logo. Your brand shows up everywhere your learners look.',
       tags: ['Custom colors', 'Logo upload', 'Font control']
     },
     {
-      icon: '🌐',
+      Icon: Globe,
+      iconBg: 'bg-blue-50',
+      iconColor: 'text-blue-600',
       title: 'Custom Domain',
       description:
-        'Serve your LMS from learn.yourcompany.com. Full SSL, zero ClassroomIO branding. Just your platform, your way.',
+        'Host the LMS on learn.yourcompany.com with SSL included. No ClassroomIO branding anywhere on the page.',
       tags: ['SSL included', 'White label', 'DNS setup guide']
     },
     {
-      icon: '⚙️',
-      title: 'Deep LMS Customization',
+      Icon: Code2,
+      iconBg: 'bg-violet-50',
+      iconColor: 'text-violet-600',
+      title: 'Embed courses on your site',
       description:
-        'Modern codebase means any developer can go in and change anything. No Moodle plugin archaeology. No undocumented hacks.',
-      tags: ['Modern stack', 'Clean codebase', 'Extensible']
+        'Add one script tag to any page. Your courses render right there and send learners back to your LMS to enroll.',
+      tags: ['One-line script', 'Auto-styled', 'Links to your domain']
     },
     {
-      icon: '📊',
-      title: 'Manager Dashboards',
+      Icon: Settings2,
+      iconBg: 'bg-emerald-50',
+      iconColor: 'text-emerald-600',
+      title: 'Deep LMS Customization',
       description:
-        'See exactly where your team stands. Completion rates, overdue courses, certificate expiry dates, all in one view and exportable to CSV.',
-      tags: ['Team views', 'CSV export', 'Audit logs']
+        'The codebase is modern and readable. Your developers can change anything without fighting a plugin system.',
+      tags: ['Modern stack', 'Clean codebase', 'Extensible']
     }
   ];
 </script>
@@ -49,8 +60,10 @@
       {#each features as feature, i}
         <BlurFade delay={0.1 * i} once>
           <div class="rounded-2xl border border-gray-200 bg-white p-8 lg:p-9">
-            <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-2xl">
-              {feature.icon}
+            <div
+              class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl {feature.iconBg} {feature.iconColor}"
+            >
+              <feature.Icon class="h-6 w-6" strokeWidth={1.75} />
             </div>
             <h3 class="mb-2.5 text-xl font-medium tracking-tight">{feature.title}</h3>
             <p class="mb-5 text-sm leading-relaxed text-gray-500">{feature.description}</p>

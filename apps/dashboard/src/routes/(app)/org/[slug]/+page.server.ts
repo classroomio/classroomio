@@ -1,9 +1,23 @@
-import type { DashStatsSuccess } from '$features/org/utils/types';
+import type { DashStatsSuccess, LoginActivityData, LoginActivitySuccess } from '$features/org/utils/types';
 import { classroomio, getApiHeaders } from '$lib/utils/services/api';
-import { safeServerApi } from '$lib/utils/services/api/server';
+import { type ServerApiResult, safeServerApi } from '$lib/utils/services/api/server';
 
 // TODO - Replace with actual cache
 const cache: Record<string, DashStatsSuccess['data'] | null> = {};
+
+function loginActivityDataFromSettled(
+  result: PromiseSettledResult<ServerApiResult<LoginActivitySuccess>>
+): LoginActivityData {
+  if (result.status === 'rejected') {
+    return [];
+  }
+
+  if (!result.value.ok) {
+    return [];
+  }
+
+  return result.value.body.data;
+}
 
 export const load = async ({ params, parent, cookies }) => {
   const { orgId } = await parent();
@@ -12,29 +26,37 @@ export const load = async ({ params, parent, cookies }) => {
   if (!orgId) {
     return {
       orgName: siteName,
-      stats: null
+      stats: null,
+      loginActivity: [] as LoginActivityData
     };
   }
 
   if (orgId in cache) {
+    const loginActivityResult = await safeServerApi<LoginActivitySuccess>(() =>
+      classroomio.dash['login-activity'].$get({ query: { orgId } }, getApiHeaders(cookies, orgId))
+    );
+
     return {
       orgName: siteName,
-      stats: cache[orgId]
+      stats: cache[orgId],
+      loginActivity: loginActivityResult.ok ? loginActivityResult.body.data : []
     };
   }
 
-  try {
-    const result = await safeServerApi<DashStatsSuccess>(() =>
+  const [statsResult, loginActivityResult] = await Promise.allSettled([
+    safeServerApi<DashStatsSuccess>(() =>
       classroomio.dash.stats.$get({ query: { siteName } }, getApiHeaders(cookies, orgId))
-    );
-    cache[orgId] = result.ok ? result.body.data : null;
-  } catch (error) {
-    console.error('Failed to fetch dashboard stats:', error);
-    cache[orgId] = null;
-  }
+    ),
+    safeServerApi<LoginActivitySuccess>(() =>
+      classroomio.dash['login-activity'].$get({ query: { orgId } }, getApiHeaders(cookies, orgId))
+    )
+  ]);
+
+  cache[orgId] = statsResult.status === 'fulfilled' && statsResult.value.ok ? statsResult.value.body.data : null;
 
   return {
     orgName: siteName,
-    stats: cache[orgId]
+    stats: cache[orgId],
+    loginActivity: loginActivityDataFromSettled(loginActivityResult)
   };
 };

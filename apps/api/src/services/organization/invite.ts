@@ -23,6 +23,7 @@ import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { parseCourseIdsFromInviteMetadata, parseProgramIdsFromInviteMetadata } from '@api/utils/org';
 import { markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { sendEmail } from '@cio/email';
+import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 
 type OrganizationInviteStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'ACCEPTED';
 
@@ -440,6 +441,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
           [{ profileId: user.id, email: normalizedEmail }],
           invite.invite.roleId
         );
+        await ensureComplianceEnrollmentRecordsForProfiles(courseIds, [user.id]);
       } catch (error) {
         console.error('acceptOrganizationInvite course enrollment error:', error);
       }
@@ -652,6 +654,7 @@ export async function acceptOrganizationInviteById(
         [{ profileId: user.id, email: normalizedEmail }],
         result.invite.roleId
       );
+      await ensureComplianceEnrollmentRecordsForProfiles(courseIds, [user.id]);
     } catch (error) {
       console.error('acceptOrganizationInviteById course enrollment error:', error);
     }

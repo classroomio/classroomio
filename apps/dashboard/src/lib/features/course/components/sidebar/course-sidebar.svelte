@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
   import { page } from '$app/state';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Skeleton } from '@cio/ui/base/skeleton';
@@ -12,6 +13,8 @@
   import SidebarSkeleton from '$features/ui/sidebar/sidebar-skeleton.svelte';
   import UpgradePoweredBy from '$features/ui/upgrade-powered-by.svelte';
   import { useSidebar } from '@cio/ui/base/sidebar';
+  import { startResizablePanelDrag } from '$lib/utils/functions/resizable-panel';
+  import { COURSE_SIDEBAR_DEFAULT_WIDTH, COURSE_SIDEBAR_MAX_WIDTH, COURSE_SIDEBAR_MIN_WIDTH } from './constants';
 
   const isOrgLoaded = $derived($orgs.length > 0 && $profile.id);
 
@@ -23,12 +26,86 @@
     id: string;
     /** If false, sidebar nav shows loading skeletons. Omit or true = show real nav. */
     isCourseReady?: boolean;
+    sidebarWidth?: number;
+    onSidebarWidthPreview?: (width: number) => void;
+    onSidebarWidthChange?: (width: number) => void;
   }
 
-  let { path, id, isCourseReady = true }: Props = $props();
+  let {
+    path,
+    id,
+    isCourseReady = true,
+    sidebarWidth = COURSE_SIDEBAR_DEFAULT_WIDTH,
+    onSidebarWidthPreview = () => {},
+    onSidebarWidthChange = () => {}
+  }: Props = $props();
 
   const sidebar = useSidebar();
   const currentPath = $derived(path || page.url.pathname);
+  let shouldIgnoreRailClick = $state(false);
+  let stopSidebarResize: (() => void) | null = null;
+
+  function clampSidebarWidth(width: number) {
+    return Math.min(COURSE_SIDEBAR_MAX_WIDTH, Math.max(COURSE_SIDEBAR_MIN_WIDTH, width));
+  }
+
+  function clearSidebarResizeListeners() {
+    stopSidebarResize?.();
+    stopSidebarResize = null;
+  }
+
+  function handleRailPointerDown(event: PointerEvent) {
+    if (sidebar.isMobile || !sidebar.open) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    clearSidebarResizeListeners();
+
+    const startWidth = sidebarWidth;
+
+    stopSidebarResize = startResizablePanelDrag({
+      event,
+      startWidth,
+      resolveWidth: ({ startWidth, deltaX }) => clampSidebarWidth(startWidth + deltaX),
+      onPreview: onSidebarWidthPreview,
+      onCommit: ({ hasDragged, width }) => {
+        if (hasDragged) {
+          onSidebarWidthChange(width);
+        }
+      },
+      onDragStart: () => {
+        document.body.dataset.courseSidebarResizing = 'true';
+      },
+      onDragEnd: ({ hasDragged }) => {
+        shouldIgnoreRailClick = hasDragged;
+        delete document.body.dataset.courseSidebarResizing;
+        stopSidebarResize = null;
+
+        if (hasDragged) {
+          window.setTimeout(() => {
+            shouldIgnoreRailClick = false;
+          }, 0);
+        }
+      }
+    });
+  }
+
+  function handleRailClick(event: MouseEvent) {
+    if (shouldIgnoreRailClick) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
+    sidebar.toggle();
+  }
+
+  onDestroy(() => {
+    clearSidebarResizeListeners();
+  });
 </script>
 
 {#if !isOrgLoaded}
@@ -62,7 +139,7 @@
       {/if}
     </Sidebar.Content>
 
-    <Sidebar.Rail />
+    <Sidebar.Rail onclick={handleRailClick} onpointerdown={handleRailPointerDown} />
 
     {#if $isFreePlan}
       <Sidebar.Footer>
@@ -74,3 +151,10 @@
     {/if}
   </Sidebar.Root>
 {/if}
+
+<style>
+  :global(body[data-course-sidebar-resizing='true'] [data-slot='sidebar-gap']),
+  :global(body[data-course-sidebar-resizing='true'] [data-slot='sidebar-container']) {
+    transition: none !important;
+  }
+</style>

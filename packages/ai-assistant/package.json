@@ -1,0 +1,47 @@
+{
+  "name": "@cio/ai-assistant",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./providers": {
+      "types": "./dist/providers/index.d.ts",
+      "default": "./dist/providers/index.js"
+    },
+    "./tools": {
+      "types": "./dist/tools/index.d.ts",
+      "default": "./dist/tools/index.js"
+    },
+    "./prompt": {
+      "types": "./dist/prompt/index.d.ts",
+      "default": "./dist/prompt/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias",
+    "dev": "tsc --watch",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.69",
+    "@ai-sdk/google": "^3.0.0",
+    "@ai-sdk/openai": "^3.0.52",
+    "ai": "^6.0.158",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@cio/tsconfig": "workspace:*",
+    "@types/node": "^24.10.1",
+    "prettier": "^3.2.5",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.5.2"
+  }
+}

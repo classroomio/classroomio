@@ -21,16 +21,7 @@ The audience page as you already know allows you to view the students in your **
 
 <br />
 
-<video
-loop
-muted
-autoplay
-preload="auto"
-autoPictureInPicture
-class="rounded-md"
-src="https://assets.cdn.clsrio.com/blog/organisation-student-analytics.mp4"
-
-> </video>
+<video loop muted autoplay preload="auto" autoPictureInPicture class="rounded-md" src="https://assets.cdn.clsrio.com/blog/organisation-student-analytics.mp4"></video>
 
 ## Course Student Analytics
 
@@ -43,17 +34,7 @@ Further more, when you go into any course and go to the people tab, you can view
 
 <br />
 
-<video
-loop
-muted
-autoplay
-preload="auto"
-autoPictureInPicture
-class="rounded-md"
-src="https://assets.cdn.clsrio.com/blog/course-students-analytics.mp4"
-controls
-
-> </video>
+<video loop muted autoplay preload="auto" autoPictureInPicture class="rounded-md" src="https://assets.cdn.clsrio.com/blog/course-students-analytics.mp4" controls></video>
 
 ## What's Next?
 

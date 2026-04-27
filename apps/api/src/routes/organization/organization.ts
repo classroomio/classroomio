@@ -61,7 +61,9 @@ import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { orgMemberOrAutomationKeyMiddleware } from '@api/middlewares/org-member-or-automation-key';
 import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
 import { quizRouter } from '@api/routes/organization/quiz';
+import { searchRouter } from '@api/routes/organization/search';
 import { tagsRouter } from '@api/routes/organization/tags';
+import { widgetsRouter } from '@api/routes/organization/widgets';
 import { zValidator } from '@hono/zod-validator';
 
 export const organizationRouter = new Hono()
@@ -664,6 +666,8 @@ export const organizationRouter = new Hono()
   )
   .route('/automation', automationRouter)
   .route('/course-import', courseImportRouter)
+  .route('/search', searchRouter)
   .route('/tags', tagsRouter)
+  .route('/widgets', widgetsRouter)
   .route('/assets', assetsRouter)
   .route('/:orgId/quiz', quizRouter);

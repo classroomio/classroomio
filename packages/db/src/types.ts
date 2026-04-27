@@ -60,6 +60,12 @@ export type TNewSubmissionstatus = typeof schema.submissionstatus.$inferInsert;
 
 export type TCourse = typeof schema.course.$inferSelect;
 export type TNewCourse = typeof schema.course.$inferInsert;
+export type TCourseCompletionRecord = typeof schema.courseCompletionRecord.$inferSelect;
+export type TNewCourseCompletionRecord = typeof schema.courseCompletionRecord.$inferInsert;
+export type TCourseCompletionNotificationEvent = typeof schema.courseCompletionNotificationEvent.$inferSelect;
+export type TNewCourseCompletionNotificationEvent = typeof schema.courseCompletionNotificationEvent.$inferInsert;
+export type TCourseCertificateIssue = typeof schema.courseCertificateIssue.$inferSelect;
+export type TNewCourseCertificateIssue = typeof schema.courseCertificateIssue.$inferInsert;
 
 export type TAppsPoll = typeof schema.appsPoll.$inferSelect;
 export type TNewAppsPoll = typeof schema.appsPoll.$inferInsert;
@@ -156,6 +162,12 @@ export type TNewTag = typeof schema.tag.$inferInsert;
 
 export type TTagAssignment = typeof schema.tagAssignment.$inferSelect;
 export type TNewTagAssignment = typeof schema.tagAssignment.$inferInsert;
+export type TWidget = typeof schema.widget.$inferSelect;
+export type TNewWidget = typeof schema.widget.$inferInsert;
+export type TWidgetCourse = typeof schema.widgetCourse.$inferSelect;
+export type TNewWidgetCourse = typeof schema.widgetCourse.$inferInsert;
+export type TWidgetVersion = typeof schema.widgetVersion.$inferSelect;
+export type TNewWidgetVersion = typeof schema.widgetVersion.$inferInsert;
 
 export type TExerciseTemplate = typeof schema.exerciseTemplate.$inferSelect;
 export type TNewExerciseTemplate = typeof schema.exerciseTemplate.$inferInsert;
@@ -195,3 +207,6 @@ export type TAutomationUsageCategory = (typeof schema.automationUsageCategory.en
 export type TCourseImportSourceType = (typeof schema.courseImportSourceType.enumValues)[number];
 
 export type TCourseImportDraftStatus = (typeof schema.courseImportDraftStatus.enumValues)[number];
+export type TWidgetStatus = (typeof schema.widgetStatus.enumValues)[number];
+export type TWidgetLayoutType = (typeof schema.widgetLayoutType.enumValues)[number];
+export type TWidgetSelectionMode = (typeof schema.widgetSelectionMode.enumValues)[number];

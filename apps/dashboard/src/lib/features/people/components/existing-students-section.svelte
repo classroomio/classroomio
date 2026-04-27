@@ -143,9 +143,7 @@
 
   <CheckboxField name="notify-existing-students" label={$t(notifyLabelKey)} bind:checked={sendEmail} />
 
-  <div class="flex justify-end">
-    <Button variant="secondary" onclick={assignStudents} loading={isSubmitting} disabled={isLoading || isSubmitting}>
-      {$t(submitKey)}
-    </Button>
-  </div>
+  <Button variant="secondary" onclick={assignStudents} loading={isSubmitting} disabled={isLoading || isSubmitting}>
+    {$t(submitKey)}
+  </Button>
 </div>

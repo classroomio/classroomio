@@ -26,6 +26,7 @@
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
   import { generateSlug } from '@cio/utils/functions';
+  import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
   import { DeleteModal } from '$features/ui';
   import { courseApi } from '$features/course/api';
   import { tagApi } from '$features/tag/api';
@@ -147,6 +148,10 @@
 
       if (!courseApi.course) return;
 
+      if ($settings.isPublished && !courseApi.course.slug) {
+        courseApi.course.slug = generateSlug($settings.courseTitle, { appendTimestamp: true });
+      }
+
       const metadataPayload = {
         ...(isObject(courseApi.course.metadata) ? courseApi.course.metadata : {}),
         lessonTabsOrder: $settings.tabs,
@@ -163,7 +168,9 @@
         logo: logoUrl,
         isPublished: $settings.isPublished,
         metadata: metadataPayload,
-        slug: courseApi.course.slug ?? undefined
+        slug: courseApi.course.slug ?? undefined,
+        compliance:
+          $settings.type === 'COMPLIANCE' ? (courseApi.course.compliance ?? DEFAULT_COMPLIANCE_SETTINGS) : undefined
       };
 
       const normalizedSelectedTagIds = normalizeTagIds(selectedTagIds);
@@ -524,6 +531,10 @@
         <div class="flex items-center space-x-2">
           <RadioGroup.Item value={'SELF_PACED' as TCourseType} id="self-paced" />
           <Label for="self-paced">{$t('course.navItem.settings.self_paced')}</Label>
+        </div>
+        <div class="mt-3 flex items-center space-x-2">
+          <RadioGroup.Item value={'COMPLIANCE' as TCourseType} id="compliance-course" />
+          <Label for="compliance-course">{$t('course.navItem.settings.compliance')}</Label>
         </div>
       </RadioGroup.Root>
     </Field.Field>

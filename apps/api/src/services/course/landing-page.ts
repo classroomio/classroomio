@@ -20,7 +20,7 @@ type CourseLandingPageUpdateResult = {
   bannerImageUrl: string | null;
 };
 
-async function generateUniqueCourseSlug(baseSlug: string): Promise<string> {
+export async function generateUniqueCourseSlug(baseSlug: string): Promise<string> {
   let suffix = 0;
   let candidate = baseSlug;
 
@@ -40,7 +40,7 @@ async function generateUniqueCourseSlug(baseSlug: string): Promise<string> {
   }
 }
 
-async function ensureCourseSlug(courseId: string, title: string | null | undefined): Promise<string> {
+export async function ensureCourseSlug(courseId: string, title: string | null | undefined): Promise<string> {
   const [course] = await getCourseById(courseId);
   if (course?.slug) {
     return course.slug;
@@ -52,7 +52,9 @@ async function ensureCourseSlug(courseId: string, title: string | null | undefin
   return uniqueSlug;
 }
 
-function buildCourseBaseUrl(organization: TOrganization) {
+export function buildCourseBaseUrl(
+  organization: Pick<TOrganization, 'customDomain' | 'isCustomDomainVerified' | 'siteName'>
+) {
   if (organization.customDomain && organization.isCustomDomainVerified) {
     return `https://${organization.customDomain}`;
   }
@@ -60,7 +62,7 @@ function buildCourseBaseUrl(organization: TOrganization) {
   return getDashboardBaseUrl(organization.siteName ?? undefined);
 }
 
-async function resolveCourseUrl(organizationId: string, courseId: string, title: string) {
+export async function resolveCourseUrl(organizationId: string, courseId: string, title: string) {
   const organization = await getOrganizationById(organizationId);
   if (!organization) {
     throw new AppError('Organization not found', ErrorCodes.ORG_NOT_FOUND, 404);

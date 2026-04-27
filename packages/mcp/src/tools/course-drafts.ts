@@ -3,7 +3,21 @@ import {
   ZAutomationDraftTagAssignment,
   ZAutomationDraftTagParam
 } from '@cio/utils/validation/tag';
-import { ZGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
+import {
+  ZCourseContentReorder,
+  ZCourseContentReorderBase,
+  ZCourseLandingPageUpdate
+} from '@cio/utils/validation/course';
+import {
+  ZCourseImportCourseParam,
+  ZCourseImportDraftCreate,
+  ZCourseImportDraftCreateFromCourse,
+  ZCourseImportDraftGetParam,
+  ZCourseImportDraftPublishBase,
+  ZCourseImportDraftPublishToCourse,
+  ZCourseImportDraftPublishToCourseBase,
+  ZCourseImportDraftUpdate
+} from '@cio/utils/validation/course-import';
 import {
   ZExerciseCreate,
   ZExerciseFromTemplate,
@@ -11,24 +25,11 @@ import {
   ZExerciseListQuery,
   ZExerciseUpdate
 } from '@cio/utils/validation/exercise';
-import {
-  ZCourseImportCourseParam,
-  ZCourseImportDraftCreate,
-  ZCourseImportDraftCreateFromCourse,
-  ZCourseImportDraftGetParam,
-  ZCourseImportDraftPublish,
-  ZCourseImportDraftPublishToCourse,
-  ZCourseImportDraftUpdate
-} from '@cio/utils/validation/course-import';
-import {
-  ZCourseContentReorder,
-  ZCourseContentReorderBase,
-  ZCourseLandingPageUpdate
-} from '@cio/utils/validation/course';
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
 
-import type { ClassroomIoApiClient } from '../api-client.js';
+import type { ClassroomIoApiClient } from '../api-client';
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { ZGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
+import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
 
 export const ZUpdateCourseDraftToolInput = ZCourseImportDraftUpdate.extend({
   draftId: ZCourseImportDraftGetParam.shape.draftId
@@ -69,12 +70,18 @@ export const ZReorderCourseContentToolInput = ZCourseContentReorderBase.extend({
   courseId: ZCourseImportCourseParam.shape.courseId
 });
 
-export const ZPublishCourseDraftToolInput = ZCourseImportDraftPublish.extend({
+export const ZPublishCourseDraftToolInput = ZCourseImportDraftPublishBase.extend({
   draftId: ZCourseImportDraftGetParam.shape.draftId
+}).refine((data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined, {
+  message: 'Compliance settings are required for COMPLIANCE courses',
+  path: ['compliance']
 });
 
-export const ZPublishCourseDraftToExistingCourseToolInput = ZCourseImportDraftPublishToCourse.extend({
+export const ZPublishCourseDraftToExistingCourseToolInput = ZCourseImportDraftPublishToCourseBase.extend({
   draftId: ZCourseImportDraftGetParam.shape.draftId
+}).refine((data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined, {
+  message: 'Compliance settings are required for COMPLIANCE courses',
+  path: ['compliance']
 });
 
 const createCourseDraftShape = ZCourseImportDraftCreate.shape as unknown as ZodRawShapeCompat;

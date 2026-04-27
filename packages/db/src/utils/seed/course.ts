@@ -6,15 +6,17 @@ interface SeedCourse {
   mvcGroupId: string;
   reactGroupId: string;
   pandasGroupId: string;
+  earlyAdopterGroupId: string;
 }
 
-export async function seedCourses({ mvcGroupId, reactGroupId, pandasGroupId }: SeedCourse) {
+export async function seedCourses({ mvcGroupId, reactGroupId, pandasGroupId, earlyAdopterGroupId }: SeedCourse) {
   const existingCourses = await db.select().from(course);
   const existingCourseIds = existingCourses.map((c) => c.id);
 
   const mvcCourseId = '98e6e798-f0bd-4f9d-a6f5-ce0816a4f97e';
   const reactCourseId = '16e3bc8d-5d1b-4708-988e-93abae288ccf';
   const pandasCourseId = 'f0a85d18-aff4-412f-b8e6-3b34ef098dce';
+  const earlyAdopterCourseId = '9bd496cc-c494-4a7e-e12c-6baeef246f8b';
 
   const coursesToInsert: TNewCourse[] = [
     {
@@ -88,6 +90,33 @@ export async function seedCourses({ mvcGroupId, reactGroupId, pandasGroupId }: S
         description: '',
         requirements: '',
         lessonDownload: true,
+        allowNewStudent: true
+      },
+      cost: 0,
+      currency: 'NGN',
+      isPublished: true,
+      certificate: {
+        isDownloadable: false,
+        theme: 'professional'
+      },
+      status: 'ACTIVE'
+    },
+    {
+      id: earlyAdopterCourseId,
+      title: 'Product Management Fundamentals',
+      description:
+        'A practical introduction to product management covering roadmaps, prioritization frameworks, user research, and cross-functional collaboration skills needed to ship great products.',
+      overview: 'Welcome to Product Management Fundamentals 🚀',
+      groupId: earlyAdopterGroupId,
+      isTemplate: false,
+      logo: '',
+      slug: 'product-management-fundamentals',
+      metadata: {
+        goals: '',
+        grading: false,
+        description: '',
+        requirements: '',
+        lessonDownload: false,
         allowNewStudent: true
       },
       cost: 0,

@@ -2,7 +2,7 @@ import { Context, Next } from 'hono';
 import type { TOrganizationApiKeyScope } from '@cio/utils/validation/organization';
 
 import { ErrorCodes } from '@api/utils/errors';
-import { isUserOrgAdmin } from '@cio/db/queries/organization';
+import { ROLE } from '@cio/utils/constants';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
 
 export const orgAdminOrAutomationKeyMiddleware =
@@ -55,8 +55,8 @@ export const orgAdminOrAutomationKeyMiddleware =
         );
       }
 
-      const isAdmin = await isUserOrgAdmin(orgId, user.id);
-      if (!isAdmin) {
+      const orgRoles = (c.get('orgRoles') as Record<string, number> | undefined) ?? {};
+      if (orgRoles[orgId] !== ROLE.ADMIN) {
         return c.json(
           {
             success: false,

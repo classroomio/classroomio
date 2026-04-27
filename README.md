@@ -179,6 +179,23 @@ The repository also contains shared packages under `packages/` (for example `pac
 
     To learn more about how to login with a dummy account, [go here.](https://classroomio.com/docs/contributor-guides/demo-accounts)
 
+### Enabling the AI Course Assistant
+
+The in-course AI chat (course authoring, plan generation, lesson edits) is **disabled by default**. Enable it by setting at least one provider API key in `apps/api/.env` (or the root `.env` for the Docker stack):
+
+```bash
+# Pick one or more — the dashboard model picker exposes Gemini 2.5 Flash and GPT-4o.
+OPENAI_API_KEY=sk-...        # enables GPT-4o
+GOOGLE_API_KEY=AIza...       # enables Gemini 2.5 Flash (default model in the picker)
+ANTHROPIC_API_KEY=sk-ant-... # supported in code; not currently in the picker UI
+```
+
+Notes:
+- The `GET /agent/status` endpoint flips to `enabled: true` as soon as any of those keys is set, which is what the dashboard checks before showing the AI button on a course.
+- Each chat request sends the user-selected `model` (persisted in `localStorage` as `classroomio-ai-chat-model`). The API resolves the provider for that model (`packages/utils/src/agent-models`) and returns 503 `AI_NOT_CONFIGURED` if that provider's key is missing.
+- Optional Tinybird observability: set `TINYBIRD_TOKEN` (and optionally `TINYBIRD_BASE_URL`) in `apps/api/.env`. Events are silently skipped when the token is absent.
+- More detail on architecture, tools, and routes lives in [`prd/ai-course-assistant/README.md`](prd/ai-course-assistant/README.md).
+
 ### Docker Compose (Full Stack)
 
 ```bash

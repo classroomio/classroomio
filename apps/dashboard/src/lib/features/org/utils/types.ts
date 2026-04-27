@@ -57,6 +57,10 @@ export type GetDashStatsRequest = typeof classroomio.dash.stats.$get;
 export type DashStatsResponse = InferResponseType<GetDashStatsRequest> | null;
 export type DashStatsSuccess = Extract<InferResponseType<GetDashStatsRequest>, { success: true }>;
 
+export type GetLoginActivityRequest = (typeof classroomio.dash)['login-activity']['$get'];
+export type LoginActivitySuccess = Extract<InferResponseType<GetLoginActivityRequest>, { success: true }>;
+export type LoginActivityData = LoginActivitySuccess['data'];
+
 // invite team types
 export type InviteTeamRequest = (typeof classroomio.organization)['team']['invite']['$post'];
 export type InviteTeamSuccess = Extract<InferResponseType<InviteTeamRequest>, { success: true }>;

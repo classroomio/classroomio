@@ -1,7 +1,8 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import { Button, type ButtonVariant } from '@cio/ui/base/button';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
-  import { currentOrgDomain } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { t } from '$lib/utils/functions/translations';
   import { user } from '$lib/utils/store/user';
@@ -20,7 +21,22 @@
     variant = 'default'
   }: Props = $props();
 
-  let href = $derived(isLMS && $user.isLoggedIn ? `${$currentOrgDomain}/home` : $currentOrgDomain);
+  let href = $derived.by(() => {
+    const origin = $currentOrgDomain || (browser ? window.location.origin : '');
+
+    if (!origin) {
+      return '';
+    }
+
+    const pathname = isLMS && $user.isLoggedIn ? '/home' : '/';
+    const url = new URL(pathname, origin);
+
+    if (browser && window.location.host.includes('localhost') && $currentOrg.siteName) {
+      url.searchParams.set('org', $currentOrg.siteName);
+    }
+
+    return url.toString();
+  });
 </script>
 
 <Button {href} target="_blank" {variant} class={`ml-2 ${className}`.trim()}>

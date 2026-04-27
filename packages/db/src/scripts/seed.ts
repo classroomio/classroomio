@@ -10,7 +10,7 @@ import { seedGroupmembers } from '@db/utils/seed/groupmember';
 import { type LessonTemplate, seedLessons } from '@db/utils/seed/lesson';
 import { seedOrganization } from '@db/utils/seed/organization';
 import { seedOrganizationMember } from '@db/utils/seed/organizationmember';
-import { seedEnterpriseOrganizationPlan } from '@db/utils/seed/organizationPlan';
+import { seedEarlyAdopterOrganizationPlan, seedEnterpriseOrganizationPlan } from '@db/utils/seed/organizationPlan';
 import { seedProfile } from '@db/utils/seed/profile';
 import { seedQuestionTypes } from '@db/utils/seed/questionType';
 import { seedQuestions } from '@db/utils/seed/question';
@@ -32,6 +32,10 @@ const STUDENT_USER_ID = '0c256e75-aa40-4f62-8d30-0217ca1c60d9';
 const ENTERPRISE_ORG_ID = '2b8f4a1c-6d3e-4b2a-9f7e-1c4d8a6e9b0f';
 const ENTERPRISE_ADMIN_USER_ID = '3c9052de-7e4f-4c3a-8d8e-2d5e9b7f1a3c';
 const ENTERPRISE_STUDENT_USER_ID = '4da163ef-8050-4d4b-9c9f-3e6fac802b4d';
+const EARLY_ADOPTER_ORG_ID = '5c7d4b2e-8f5a-4c3b-ae8f-2d6e9c1b0f5a';
+const EARLY_ADOPTER_ADMIN_USER_ID = '6e0163ff-9161-4d4b-be9f-3e7fbd913c5e';
+const EARLY_ADOPTER_STUDENT_USER_ID = '7fb274aa-a272-4e5c-cf0a-4f8cce024d6f';
+const EARLY_ADOPTER_GROUP_ID = '8ac385bb-b383-4f6d-d01b-5a9ddf135e7a';
 
 // Parse command line arguments
 function parseFlags(): Set<string> {
@@ -66,7 +70,7 @@ Flags:
   --accounts                  Seed accounts
   --organizations             Seed organizations
   --organization-members      Seed organization members
-  --organization-plan         Seed enterprise plan for Coursera Test org
+  --organization-plan         Seed enterprise + early adopter plans
   --groups                    Seed groups
   --group-members             Seed group members
   --courses                  Seed courses
@@ -113,7 +117,11 @@ const seedFunctions = {
   },
   organizations: async () => {
     console.log('📝 Seeding organizations...');
-    await seedOrganization({ testOrgId: TEST_ORG_ID, enterpriseOrgId: ENTERPRISE_ORG_ID });
+    await seedOrganization({
+      testOrgId: TEST_ORG_ID,
+      enterpriseOrgId: ENTERPRISE_ORG_ID,
+      earlyAdopterOrgId: EARLY_ADOPTER_ORG_ID
+    });
   },
   'organization-members': async () => {
     console.log('📝 Seeding organization members...');
@@ -123,12 +131,17 @@ const seedFunctions = {
       studentUserId: STUDENT_USER_ID,
       enterpriseOrgId: ENTERPRISE_ORG_ID,
       enterpriseAdminUserId: ENTERPRISE_ADMIN_USER_ID,
-      enterpriseStudentUserId: ENTERPRISE_STUDENT_USER_ID
+      enterpriseStudentUserId: ENTERPRISE_STUDENT_USER_ID,
+      earlyAdopterOrgId: EARLY_ADOPTER_ORG_ID,
+      earlyAdopterAdminUserId: EARLY_ADOPTER_ADMIN_USER_ID,
+      earlyAdopterStudentUserId: EARLY_ADOPTER_STUDENT_USER_ID
     });
   },
   'organization-plan': async () => {
     console.log('📝 Seeding enterprise organization plan...');
     await seedEnterpriseOrganizationPlan({ enterpriseOrgId: ENTERPRISE_ORG_ID });
+    console.log('📝 Seeding early adopter organization plan...');
+    await seedEarlyAdopterOrganizationPlan({ earlyAdopterOrgId: EARLY_ADOPTER_ORG_ID });
   },
   groups: async () => {
     console.log('📝 Seeding groups...');
@@ -136,7 +149,9 @@ const seedFunctions = {
       mvcGroupId: MVC_GROUP_ID,
       reactGroupId: REACT_GROUP_ID,
       pandasGroupId: PANDAS_GROUP_ID,
-      testOrgId: TEST_ORG_ID
+      testOrgId: TEST_ORG_ID,
+      earlyAdopterGroupId: EARLY_ADOPTER_GROUP_ID,
+      earlyAdopterOrgId: EARLY_ADOPTER_ORG_ID
     });
   },
   'group-members': async () => {
@@ -146,12 +161,20 @@ const seedFunctions = {
       reactGroupId: REACT_GROUP_ID,
       pandasGroupId: PANDAS_GROUP_ID,
       adminUserId: ADMIN_USER_ID,
-      studentUserId: STUDENT_USER_ID
+      studentUserId: STUDENT_USER_ID,
+      earlyAdopterGroupId: EARLY_ADOPTER_GROUP_ID,
+      earlyAdopterAdminUserId: EARLY_ADOPTER_ADMIN_USER_ID,
+      earlyAdopterStudentUserId: EARLY_ADOPTER_STUDENT_USER_ID
     });
   },
   courses: async () => {
     console.log('📝 Seeding courses...');
-    await seedCourses({ mvcGroupId: MVC_GROUP_ID, reactGroupId: REACT_GROUP_ID, pandasGroupId: PANDAS_GROUP_ID });
+    await seedCourses({
+      mvcGroupId: MVC_GROUP_ID,
+      reactGroupId: REACT_GROUP_ID,
+      pandasGroupId: PANDAS_GROUP_ID,
+      earlyAdopterGroupId: EARLY_ADOPTER_GROUP_ID
+    });
   },
   sections: async () => {
     console.log('📝 Seeding course sections...');

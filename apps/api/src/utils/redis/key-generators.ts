@@ -96,3 +96,39 @@ export const endpointKeyGenerator =
     const baseKey = userKeyGenerator(c);
     return `${baseKey}:${endpoint}`;
   };
+
+// ─── Agent Document Keys ─────────────────────────────────────────────────────
+
+/**
+ * Redis key for storing extracted document text from AI assistant uploads.
+ * TTL: 3600 seconds (1 hour).
+ */
+export const agentDocumentKey = (documentId: string): string => {
+  return `agent:document:${documentId}`;
+};
+
+/**
+ * Rate limit key for agent chat endpoint (per-user).
+ */
+export const agentChatKeyGenerator = (c: Context): string => {
+  const baseKey = userKeyGenerator(c);
+  return `${baseKey}:agent:chat`;
+};
+
+// ─── Dashboard / analytics cache ─────────────────────────────────────────────
+
+/**
+ * Redis key for `getStudentLoginActivity` (day-of-week chart per org and window).
+ * Value: JSON array `{ day, count }[]`. TTL: 24h.
+ */
+export function dashLoginActivityKey(orgId: string, days: number): string {
+  return `dash:login-activity:${orgId}:${days}`;
+}
+
+/**
+ * Rate limit key for agent upload endpoint (per-user).
+ */
+export const agentUploadKeyGenerator = (c: Context): string => {
+  const baseKey = userKeyGenerator(c);
+  return `${baseKey}:agent:upload`;
+};

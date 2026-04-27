@@ -18,6 +18,7 @@ function buildCspExtensions(): Record<string, string[]> {
   const frameSrc = or('CSP_FRAME_SRC_DOMAINS');
   const fontSrc = or('CSP_FONT_SRC_DOMAINS');
   const mediaSrc = or('CSP_MEDIA_SRC_DOMAINS');
+  const frameAncestorsExtra = or('CSP_FRAME_ANCESTORS_DOMAINS');
 
   const serverUrl = process.env.PUBLIC_SERVER_URL;
   const connectSrc = serverUrl ? [...connectSrcBase, serverUrl] : connectSrcBase;
@@ -34,6 +35,9 @@ function buildCspExtensions(): Record<string, string[]> {
   if (mediaSrc.length) {
     extensions['img-src'] = mediaSrc;
     extensions['media-src'] = mediaSrc;
+  }
+  if (frameAncestorsExtra.length) {
+    extensions['frame-ancestors'] = frameAncestorsExtra;
   }
 
   return extensions;

@@ -21,6 +21,7 @@
   let { data } = $props();
 
   $effect(() => {
+    console.log('data', data);
     if (data.setupProgress && data.orgSiteName) {
       setupProgressApi.initializeFromServerData(data.setupProgress, data.orgSiteName);
     }

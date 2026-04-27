@@ -1,6 +1,5 @@
 <script lang="ts">
   import * as Avatar from '../../base/avatar';
-  import UserIcon from '@lucide/svelte/icons/user';
 
   interface Props {
     src?: string | null;
@@ -17,6 +16,6 @@
     <Avatar.Image {src} {alt} />
   {/if}
   <Avatar.Fallback>
-    <UserIcon class="ui:text-muted-foreground {iconClass || 'h-1/2 w-1/2'}" />
+    <img src="/images/avatar.svg" alt="User avatar" class="size-10 rounded-md {iconClass}" />
   </Avatar.Fallback>
 </Avatar.Root>

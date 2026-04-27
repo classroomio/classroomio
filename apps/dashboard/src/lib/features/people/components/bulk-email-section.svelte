@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as Field from '@cio/ui/base/field';
   import { Button } from '@cio/ui/base/button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { CheckboxField } from '@cio/ui/custom/checkbox-field';
@@ -42,27 +43,22 @@
   }
 </script>
 
-<div class="rounded-md border p-4">
-  <p class="mb-2 text-base font-semibold">{$t(titleKey)}</p>
-  <p class="ui:text-muted-foreground mb-2 text-sm">
-    {$t(descriptionKey)}
-  </p>
-  <TextareaField
-    label={$t('audience.import.emails_label')}
-    bind:value={recipientCsv}
-    rows={4}
-    className="w-full"
-    placeholder={$t('audience.import.emails_placeholder')}
-  />
-  <CheckboxField
-    className="mt-2"
-    name="send-invite-emails"
-    label={$t('audience.import.send_email')}
-    bind:checked={sendInviteEmails}
-  />
-  <div class="mt-3">
-    <Button variant="secondary" onclick={inviteStudents} loading={isSubmitting}>
-      {$t(submitKey)}
-    </Button>
-  </div>
-</div>
+<Field.Set>
+  <Field.Legend>{$t(titleKey)}</Field.Legend>
+  <Field.Description>{$t(descriptionKey)}</Field.Description>
+
+  <Field.Group>
+    <TextareaField
+      label={$t('audience.import.emails_label')}
+      bind:value={recipientCsv}
+      rows={4}
+      className="w-full"
+      placeholder={$t('audience.import.emails_placeholder')}
+    />
+    <CheckboxField name="send-invite-emails" label={$t('audience.import.send_email')} bind:checked={sendInviteEmails} />
+  </Field.Group>
+
+  <Button variant="secondary" onclick={inviteStudents} loading={isSubmitting}>
+    {$t(submitKey)}
+  </Button>
+</Field.Set>

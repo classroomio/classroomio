@@ -61,7 +61,9 @@
     "live_class_label": "Live Class",
     "live_class_subtitle": "Ideal for bootcamps where lessons are time based",
     "self_paced_label": "Self Paced",
-    "self_paced_subtitle": "Best for courses where students can take lessons at their own pace"
+    "self_paced_subtitle": "Best for courses where students can take lessons at their own pace",
+    "compliance_label": "Compliance",
+    "compliance_subtitle": "Recurring training with retakes, reminders, and renewal tracking"
   },
   "onboarding": {
     "sell": "Sell courses online",
@@ -90,12 +92,39 @@
   },
   "app": {
     "cancel": "Cancel",
+    "save": "Save",
     "search": {
-      "placeholder": "Search"
+      "placeholder": "Search",
+      "command_palette": {
+        "title": "Command palette",
+        "description": "Search and navigate across your organization",
+        "placeholder": "Search courses, programs, widgets, students, tags, settings...",
+        "org_placeholder": "Search courses, programs, widgets, students, tags, settings...",
+        "lms_placeholder": "Search your courses, programs, and learning pages...",
+        "lms_description": "Search and navigate your learning workspace",
+        "empty": "No results found",
+        "loading": "Searching...",
+        "clear_recents": "Clear recents",
+        "groups": {
+          "recent": "Recent",
+          "suggested": "Suggested",
+          "courses": "Courses",
+          "programs": "Programs",
+          "widgets": "Widgets",
+          "tags": "Tags",
+          "students": "Students",
+          "settings": "Settings"
+        },
+        "result_types": {
+          "page": "Page"
+        }
+      }
     }
   },
   "common": {
-    "refresh": "Refresh"
+    "unsaved_changes": {
+      "message": "You have unsaved changes. Are you sure you want to leave?"
+    }
   },
   "login": {
     "welcome": "Welcome back",
@@ -530,8 +559,7 @@
         "save": "Save",
         "cancel": "Cancel",
         "add": "Add New Link"
-      },
-      "save_changes": "Save Changes"
+      }
     },
     "integrations": {
       "page_subtitle": "Connect Telegram to get notified when important things happen.",
@@ -551,7 +579,10 @@
       "active": "You don't have any active billing",
       "provider": "We use Polar to help manage your billing",
       "open_billing": "Open billing",
-      "error": "An error occurred while opening billing"
+      "error": "An error occurred while opening billing",
+      "ai_credits": "AI Assistant Usage",
+      "ai_tokens_used": "tokens used this month",
+      "ai_bonus_credits": "bonus credits available"
     }
   },
   "media_manager": {
@@ -742,6 +773,7 @@
     "community": "Community",
     "audience": "Audience",
     "media": "Media",
+    "widgets": "Widgets",
     "setup": "Setup",
     "automation": "Automation",
     "help": "Help",
@@ -768,6 +800,207 @@
       "annually": "Annually",
       "popular": "Popular",
       "per_org": "Per Organization"
+    }
+  },
+  "widgets": {
+    "heading": "Widgets",
+    "subtitle": "Publish branded course collections for external websites.",
+    "empty_state": "No widgets yet. Create one to generate an embeddable course block.",
+    "empty": {
+      "heading": "No widgets yet",
+      "description": "Create a widget to generate an embeddable course block for external websites."
+    },
+    "defaults": {
+      "name_prefix": "Course Widget"
+    },
+    "tabs": {
+      "select_courses": "Select Courses",
+      "layout": "Layout",
+      "design": "Design",
+      "embed": "Embed Code"
+    },
+    "editor": {
+      "sources": "Widget Source",
+      "available_courses": "Available Courses",
+      "layout": "Layout",
+      "content": "Content",
+      "design": "Design",
+      "version_history": "Version History",
+      "save_changes": "Save changes",
+      "rename_widget": "Rename widget",
+      "continue_to_layout": "Continue to layout",
+      "pick_layout": "Choose a layout",
+      "pick_design": "Appearance",
+      "panel_subtitle": "Configure how your widget looks and behaves.",
+      "embed_share": "Embed & share",
+      "discard_short": "Discard",
+      "canvas_status": "Preview",
+      "viewport": {
+        "mobile": "Mobile",
+        "tablet": "Tablet",
+        "desktop": "Desktop"
+      },
+      "finish_editing_name": "Done",
+      "waiting_org": "Loading organization…",
+      "load_failed": "Could not load this widget. Try again from the widgets list.",
+      "nav": {
+        "courses": "Courses",
+        "layout": "Layout",
+        "design": "Design",
+        "embed": "Embed"
+      }
+    },
+    "selection": {
+      "manual": "Manual selection",
+      "published": "All published courses"
+    },
+    "layout": {
+      "card_grid": "Card grid",
+      "tag_filter": "Tag filter",
+      "carousel": "Carousel",
+      "primary_course": "Primary course",
+      "compact_list": "Compact list",
+      "editorial_spotlight": "Editorial spotlight",
+      "category_shelf": "Category shelf"
+    },
+    "layout_description": {
+      "card_grid": "General-purpose catalog with lots of breathing room.",
+      "tag_filter": "Let students narrow down a wide catalog by topic.",
+      "carousel": "Featured rows in tight homepage sections.",
+      "primary_course": "Promote a flagship or newly launched course.",
+      "compact_list": "Sidebar embeds and minimal-footprint pages.",
+      "editorial_spotlight": "Blog-style landing pages and curated picks.",
+      "category_shelf": "Large catalogs grouped by topic, easy to scan."
+    },
+    "layoutOptions": {
+      "section": "Layout options",
+      "columns": "Columns",
+      "max_count": "Max courses",
+      "show_rating": "Show rating",
+      "tag_source": "Tag source",
+      "tag_source_auto": "Auto from courses",
+      "tag_source_manual": "Manual selection",
+      "default_tag": "Default tag",
+      "show_all_option": "Show \"All\" option",
+      "visible_cards": "Visible cards",
+      "auto_play": "Auto play",
+      "auto_play_interval": "Auto play interval (ms)",
+      "show_dots": "Show dots",
+      "show_arrows": "Show arrows",
+      "loop": "Loop",
+      "featured_course": "Featured course",
+      "featured_course_required": "A featured course is required for this layout.",
+      "main_course": "Main spotlight course",
+      "main_course_required": "Pick a course to spotlight.",
+      "eyebrow_label": "Eyebrow label",
+      "cta_label": "CTA label",
+      "secondary_max_count": "Secondary courses",
+      "density": "Density",
+      "density_comfortable": "Comfortable",
+      "density_compact": "Compact",
+      "show_thumbnail": "Show thumbnail",
+      "show_tags": "Show tags",
+      "title_style": "Title style",
+      "title_style_serif": "Serif",
+      "title_style_sans": "Sans",
+      "category_tags": "Category tags",
+      "category_tags_required": "Select at least one tag for the category shelf.",
+      "default_category": "Default category",
+      "show_all_tab": "Show \"All\" tab",
+      "max_per_category": "Max courses per category",
+      "none": "None"
+    },
+    "sort": {
+      "manual": "Manual",
+      "newest": "Newest",
+      "title": "Title"
+    },
+    "status": {
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived",
+      "live": "Live"
+    },
+    "plan": {
+      "free": "Free plan",
+      "paid": "Paid plan"
+    },
+    "preview": {
+      "heading": "Preview",
+      "saved": "Saved",
+      "unsaved": "Unsaved changes",
+      "load_failed": "Preview could not load. Try refreshing the page.",
+      "empty": "Preview unavailable.",
+      "all_tags": "All",
+      "none": "None",
+      "lessons_suffix": "lessons",
+      "last_synced": "Synced",
+      "refresh": "Refresh",
+      "columns": {
+        "course": "Course",
+        "lessons": "Lessons",
+        "tags": "Tags"
+      },
+      "exercises_suffix": "exercises"
+    },
+    "actions": {
+      "create": "Create Widget",
+      "edit": "Edit",
+      "back": "Back to widgets",
+      "save": "Save",
+      "discard": "Discard changes",
+      "publish": "Publish",
+      "archive": "Archive",
+      "restore": "Restore",
+      "copy_embed": "Copy embed",
+      "rename": "Rename",
+      "delete": "Delete"
+    },
+    "create": {
+      "description": "Give your widget a name to get started."
+    },
+    "form": {
+      "name": "Widget name",
+      "selection_mode": "Selection mode",
+      "course_search": "Search courses",
+      "layout_type": "Layout type",
+      "sort_by": "Sort by",
+      "cta_label": "CTA label",
+      "load_more_label": "Load more label",
+      "limit_courses": "Limit courses",
+      "max_count": "Max course count",
+      "show_course_image": "Show course image",
+      "show_type_badge": "Show course type badge",
+      "show_lessons_count": "Show lessons count",
+      "show_description": "Show description excerpt",
+      "shorten_long_description": "Shorten long description",
+      "show_price": "Show price",
+      "show_rating": "Show rating",
+      "theme_preset": "Theme preset",
+      "primary_color": "Primary color",
+      "background_color": "Background color",
+      "text_color": "Text color",
+      "border_color": "Border color",
+      "border_radius": "Border radius",
+      "font_family": "Font family",
+      "font_scale": "Font size scale",
+      "show_powered_by": "Show Classroomio branding",
+      "custom_css": "Custom CSS",
+      "custom_css_locked": "Upgrade to enable custom CSS.",
+      "embed_code": "Embed code"
+    },
+    "notifications": {
+      "created": "Widget created",
+      "saved": "Widget saved",
+      "published": "Widget published",
+      "rolled_back": "Widget restored",
+      "deleted": "Widget archived"
+    },
+    "filter": {
+      "status": "Status",
+      "all": "All",
+      "unpublished": "Unpublished",
+      "course_type": "Course Type"
     }
   },
   "setup": {
@@ -949,18 +1182,35 @@
     "view_site": "View Site",
     "visit_site": "Visit Website",
     "current_lesson": "Currently Learning",
+    "currently_learning": "Currently Learning",
+    "learner": "Learner",
     "your_progress": "Your Progress",
+    "progress": "Progress",
     "continue": "Continue",
     "continue_learning": "Continue Learning",
+    "pick_up_where_you_left_off": "Pick up where you left off",
+    "course_awaits_you": "{title} awaits you",
+    "learning_awaits_you": "Your next course awaits you",
+    "lms_today_progress": "You're {progress}% through your learning - every step counts.",
+    "lms_today_empty": "Your learning path is ready when you are.",
+    "compliance_score": "Compliance Score",
+    "compliance": "Compliance",
+    "compliance_score_subtitle": "{completed} of {total} compliance courses currently satisfied",
+    "compliance_score_empty": "No compliance courses assigned yet",
+    "compliance_met": "{completed} of {total} met",
+    "required_courses_completed": "{completed} of {total} required courses completed",
+    "streak": "Streak",
+    "days_active": "days active",
     "no_courses": "No courses in progress yet",
     "start_course": "Once you start a course, your progress will reflect here",
     "lms_dashboard_hero": "Today is another day to bring you closer to your learning goals. Don’t give up, the more you learn the better you get.",
     "lessons_completed": "Lessons completed",
     "items_completed": "Items completed",
+    "items_done": "{completed} of {total} done",
     "no_courses_started": "No courses started",
-    "certificates_earned": "Certificates earned",
+    "certificates_earned": "Certificates issued",
     "certificates_earned_description": "Total certificates issued to students in your organization",
-    "certification_rate": "certification rate",
+    "certification_rate": "Certified",
     "recent_certifications": "Recent certifications",
     "no_certifications_yet": "No certificates earned yet",
     "no_certifications_yet_description": "When students complete a course and earn a certificate, they will appear here",
@@ -978,7 +1228,11 @@
     "recent_enrollments": "Recent Enrollments",
     "publish_first_course": "Publish Your First Course",
     "publish_first_course_description": "To track enrollments, publish a course and invite students",
-    "publish_course": "Publish Course"
+    "publish_course": "Publish Course",
+    "login_activity_title": "Student Login Activity",
+    "login_activity_description": "Most active days of the week (last 90 days)",
+    "login_activity_no_data": "No login activity yet",
+    "login_activity_logins": "logins"
   },
   "ai": {
     "help_me": "Help me write",
@@ -1161,7 +1415,8 @@
         "clone": "Clone",
         "share": "Share",
         "invite": "Invite",
-        "delete": "Delete"
+        "delete": "Delete",
+        "open_course_site": "Open course site"
       },
       "error_message": "An error occurred.",
       "lessons_number": "lessons",
@@ -1171,6 +1426,8 @@
       "unpublished": "Unpublished",
       "continue_course": "Continue",
       "learn_more": "Learn more",
+      "due_date": "Due",
+      "valid_until": "Valid until",
       "tags_overflow_aria": "{count} more tags",
       "list_view": {
         "title": "Title",
@@ -1213,14 +1470,21 @@
       "nav_attendance": "Attendance",
       "nav_submissions": "Submissions",
       "nav_marks": "Marks",
+      "nav_compliance": "Compliance",
       "nav_people": "People",
       "nav_analytics": "Analytics",
       "nav_certificates": "Certificates",
       "nav_landing_page": "Landing Page",
-      "nav_settings": "Settings"
+      "nav_settings": "Settings",
+      "nav_ai_assistant": "Assistant"
     },
     "sidebar": {
       "back_to_course": "Back to course",
+      "compliance": {
+        "title": "Compliance",
+        "due_date": "Due",
+        "valid_until": "Valid until"
+      },
       "content_count": {
         "lessons": "{count} lessons",
         "exercises": "{count} exercises"
@@ -1572,7 +1836,7 @@
             "finish": "Finish",
             "next": "Next",
             "check": "Check",
-            "auto_graded_badge": "Auto-graded",
+            "auto_graded_badge": "Auto-grade",
             "manual_grading_required_badge": "Manual grading required",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "description": {
@@ -2025,6 +2289,81 @@
         },
         "no_student": "No Student Added"
       },
+      "compliance": {
+        "title": "Compliance",
+        "not_compliance_title": "Compliance is not enabled",
+        "not_compliance_description": "This course is not configured as a compliance course.",
+        "loading": "Loading compliance records...",
+        "learners": "Learners",
+        "learners_description": "This table shows the latest cycle for each learner.",
+        "current_cycle": "Current cycle",
+        "current_cycle_description": "Your active compliance cycle and renewal dates.",
+        "history": "Past cycles",
+        "history_description": "Each row is one recorded compliance cycle for this course.",
+        "no_active_cycle": "No active compliance cycle",
+        "empty_history": "No compliance history has been recorded yet.",
+        "empty_overview": "No learner compliance records are available yet.",
+        "not_available": "Not available",
+        "tabs": {
+          "overview": "Overview",
+          "learners": "Learners"
+        },
+        "bulk_actions": {
+          "title": "Bulk actions",
+          "description": "Select learners and apply a compliance action to their current cycle.",
+          "select_all": "Select all visible learners",
+          "selected_count": "{count} selected",
+          "clear_selection": "Clear selection",
+          "due_date_label": "Due date",
+          "due_date_helper": "Used for reset and extend actions.",
+          "reset_action": "Reset cycle",
+          "extend_action": "Extend due date",
+          "waive_title": "Waive selected learners",
+          "waive_description": "Apply a waiver to the selected learners. You can leave the expiration empty for an open-ended waiver.",
+          "waiver_reason_label": "Waiver reason",
+          "waiver_reason_helper": "Optional context for audits and future reviews.",
+          "waiver_expires_at_label": "Waiver expires at",
+          "waiver_expires_at_helper": "Leave empty if the waiver should not expire automatically.",
+          "waive_action": "Apply waiver",
+          "modal": {
+            "description": "You are updating {count} selected learners.",
+            "cancel": "Cancel",
+            "apply": "Apply action"
+          }
+        },
+        "fields": {
+          "learner": "Learner",
+          "email": "Email",
+          "status": "Status",
+          "cycle": "Cycle",
+          "due_date": "Due date",
+          "completed_at": "Completed at",
+          "valid_until": "Valid until",
+          "score": "Score",
+          "attempts": "Attempts"
+        },
+        "summary": {
+          "total_learners": "Total learners",
+          "no_record": "No record",
+          "not_started": "Not started",
+          "in_progress": "In progress",
+          "compliant": "Compliant",
+          "expiring_soon": "Expiring soon",
+          "in_grace_period": "In grace period",
+          "non_compliant": "Non-compliant",
+          "waived": "Waived"
+        },
+        "status": {
+          "no_record": "No record",
+          "not_started": "Not started",
+          "in_progress": "In progress",
+          "compliant": "Compliant",
+          "expiring_soon": "Expiring soon",
+          "in_grace_period": "In grace period",
+          "non_compliant": "Non-compliant",
+          "waived": "Waived"
+        }
+      },
       "people": {
         "title": "People",
         "add": "Add",
@@ -2346,6 +2685,7 @@
         "course_type_desc": "Update the course type for a more personalized experience",
         "live_class": "Live class",
         "self_paced": "Self paced",
+        "compliance": "Compliance",
         "tags": {
           "title": "Tags",
           "description": "Assign tags so learners can discover this course with filters.",
@@ -2765,6 +3105,23 @@
         "failed_deletion": "Deletion Failed, please try again later"
       }
     },
+    "course": {
+      "success": {
+        "comment_deleted": "Comment Deleted",
+        "comment_added": "Comment added",
+        "pinned": "Pinned",
+        "unpinned": "Unpinned",
+        "successfully": "Successfully",
+        "feed_delete_success": "Feed deleted successfully"
+      },
+      "error": {
+        "reaction_error": "An error occurred while reacting to news feed",
+        "commenting_error": "An error occurred while creating comment",
+        "toggle_error": "Failed to toggle pinned feed",
+        "news_feed_fail": "Failed to fetch news feeds",
+        "feed_fetch_error": "An error occured while fetching feed"
+      }
+    },
     "lms": {
       "error": {
         "username_exists": "username already exists",
@@ -2797,23 +3154,6 @@
       },
       "success": {
         "complete": "Complete :)"
-      }
-    },
-    "course": {
-      "success": {
-        "comment_deleted": "Comment Deleted",
-        "comment_added": "Comment added",
-        "pinned": "Pinned",
-        "unpinned": "Unpinned",
-        "successfully": "Successfully",
-        "feed_delete_success": "Feed deleted successfully"
-      },
-      "error": {
-        "reaction_error": "An error occurred while reacting to news feed",
-        "commenting_error": "An error occurred while creating comment",
-        "toggle_error": "Failed to toggle pinned feed",
-        "news_feed_fail": "Failed to fetch news feeds",
-        "feed_fetch_error": "An error occured while fetching feed"
       }
     },
     "program": {
@@ -2855,7 +3195,7 @@
       "lesson_update_failed": "Failed to update lesson",
       "section_created": "Course section created successfully",
       "section_create_failed": "Failed to create course section",
-      "section_updated": "Course section updated successfully",
+      "section_deleted": "Course section deleted successfully",
       "section_update_failed": "Failed to update course section",
       "sections_reordered": "Course sections reordered successfully",
       "sections_reorder_failed": "Failed to reorder course sections",
@@ -3078,9 +3418,24 @@
       "invalid_field": "Invalid value"
     }
   },
-  "common": {
-    "unsaved_changes": {
-      "message": "You have unsaved changes. Are you sure you want to leave?"
-    }
+  "ai_assistant": {
+    "empty_state": "Ask me to help with your course content — draft lessons, generate questions, or plan a course from a document.",
+    "input_placeholder": "Ask the AI assistant...",
+    "attach_document": "Attach a document (PDF, DOCX, PPTX)",
+    "upgrade_to_upload": "Upgrade to upload documents",
+    "tokens_exhausted": "Monthly AI token limit reached. Buy more credits in Settings > Billing or wait for reset.",
+    "chat_history": "Chat History",
+    "no_conversations": "No conversations yet",
+    "untitled": "Untitled",
+    "new_chat": "New chat",
+    "tokens_label": "tokens",
+    "implementing_course_plan": "Implementing Course Plan",
+    "resume": "Resume",
+    "stopped_content_kept": "Stopped. Created content has been kept.",
+    "mention_lesson": "Lesson",
+    "mention_exercise": "Exercise",
+    "mention_section": "Section",
+    "mention_no_results": "No matching content",
+    "uploading_document": "Uploading document..."
   }
 }

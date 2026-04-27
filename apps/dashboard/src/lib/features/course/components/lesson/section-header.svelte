@@ -67,7 +67,7 @@
   {:else}
     <div class="flex w-4/6 items-center gap-2">
       <CourseContentIcon type={ContentType.Section} size={16} />
-      <p class="font-semibold">{section.title}</p>
+      <p class="text-sm">{section.title}</p>
       <ContentCountBadges lessons={sectionCount.lessons} exercises={sectionCount.exercises} />
     </div>
   {/if}

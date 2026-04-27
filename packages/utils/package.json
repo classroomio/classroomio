@@ -25,6 +25,10 @@
       "types": "./dist/senja/index.d.ts",
       "default": "./dist/senja/index.js"
     },
+    "./agent-models": {
+      "types": "./dist/agent-models/index.d.ts",
+      "default": "./dist/agent-models/index.js"
+    },
     "./validation": {
       "types": "./dist/validation/index.d.ts",
       "default": "./dist/validation/index.js"

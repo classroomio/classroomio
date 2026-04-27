@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Sticky Test</title>
+    <link rel="stylesheet" href="/sticky-test.css" />
+    <style>
+      :root {
+        --sidebar-width: 16rem;
+        --sidebar-width-icon: 3rem;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .marker {
+        position: fixed;
+        right: 8px;
+        top: 8px;
+        background: red;
+        color: white;
+        padding: 4px 8px;
+        z-index: 9999;
+        font-family: sans-serif;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body class="ui:bg-background">
+    <div class="marker">Scroll the page. Header below should stick.</div>
+
+    <!-- Replicates Sidebar.Provider -->
+    <div
+      class="ui:group/sidebar-wrapper ui:has-data-[variant=inset]:bg-sidebar ui:flex ui:max-h-svh ui:w-full"
+    >
+      <!-- Replicates a sidebar -->
+      <div
+        style="width: var(--sidebar-width); flex-shrink: 0;"
+        class="ui:bg-sidebar"
+      >
+        <div style="padding: 16px;">Sidebar</div>
+      </div>
+
+      <!-- Replicates Sidebar.Inset -->
+      <main
+        data-slot="sidebar-inset"
+        class="ui:bg-background ui:relative ui:flex ui:w-full ui:flex-1 ui:flex-col ui:h-full ui:md:peer-data-[variant=inset]:m-2 ui:md:peer-data-[variant=inset]:ml-0 ui:md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2 ui:md:peer-data-[variant=inset]:rounded-xl ui:md:peer-data-[variant=inset]:shadow-sm ui:overflow-x-hidden"
+      >
+        <!-- Replicates AppHeader -->
+        <header
+          class="border-border ui:bg-background sticky top-0 z-50 flex h-12 w-full shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear"
+          style="background: lightyellow;"
+        >
+          <div style="padding: 0 16px;">AppHeader (should stick)</div>
+        </header>
+
+        <!-- Replicates org +layout's wrapper div + children -->
+        <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4">
+          <div style="padding: 16px;">
+            <h1>Page Content</h1>
+            <div id="filler"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const filler = document.getElementById('filler');
+      for (let i = 0; i < 200; i++) {
+        const p = document.createElement('p');
+        p.textContent = 'Filler line ' + i + ' — Scroll down to see if header sticks.';
+        filler.appendChild(p);
+      }
+      const inset = document.querySelector('main[data-slot=sidebar-inset]');
+      const header = document.querySelector('header');
+      const wrapper = inset.parentElement;
+      const debug = document.createElement('div');
+      debug.style.cssText = 'position:fixed;left:8px;bottom:8px;background:black;color:lime;font:11px monospace;padding:8px;z-index:9999;white-space:pre;max-width:600px;';
+      const cs = (el) => getComputedStyle(el);
+      function update() {
+        const text = [
+          'window.innerHeight=' + window.innerHeight + ' scrollY=' + Math.round(window.scrollY),
+          'html scrollH=' + document.documentElement.scrollHeight + ' clientH=' + document.documentElement.clientHeight + ' overflowY=' + cs(document.documentElement).overflowY,
+          'body scrollH=' + document.body.scrollHeight + ' clientH=' + document.body.clientHeight + ' overflowY=' + cs(document.body).overflowY,
+          'wrapper rect.top=' + Math.round(wrapper.getBoundingClientRect().top) + ' h=' + Math.round(wrapper.getBoundingClientRect().height) + ' overflowY=' + cs(wrapper).overflowY + ' max-h=' + cs(wrapper).maxHeight,
+          'inset rect.top=' + Math.round(inset.getBoundingClientRect().top) + ' h=' + Math.round(inset.getBoundingClientRect().height) + ' scrollH=' + inset.scrollHeight + ' clientH=' + inset.clientHeight + ' overflowX=' + cs(inset).overflowX + ' overflowY=' + cs(inset).overflowY + ' h-css=' + cs(inset).height,
+          'header rect.top=' + Math.round(header.getBoundingClientRect().top) + ' position=' + cs(header).position + ' top=' + cs(header).top
+        ].join('\n');
+        debug.textContent = text;
+        console.log('[STICKY-DEBUG]\n' + text);
+      }
+      update();
+      window.addEventListener('scroll', update, { passive: true });
+      inset.addEventListener('scroll', update, { passive: true });
+      setTimeout(update, 100);
+      setTimeout(update, 500);
+      setTimeout(update, 1500);
+      document.body.appendChild(debug);
+    </script>
+  </body>
+</html>

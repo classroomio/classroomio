@@ -20,6 +20,7 @@ import {
 
 import { ContentType, ROLE } from '@cio/utils/constants';
 import type { TCourse } from '@cio/db/types';
+import type { TCourseCreate } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
 import * as schema from '@db/schema';
 import { exerciseBelongsToCourse } from '@cio/db/queries/course/certification-exercise';
@@ -168,7 +169,7 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
  */
 export async function createCourse(
   profileId: string,
-  data: { title: string; description: string; type: 'LIVE_CLASS' | 'SELF_PACED'; organizationId: string }
+  data: TCourseCreate
 ): Promise<{ course: TCourse; groupId: string; memberId: string }> {
   try {
     const description = sanitizeHtml(data.description);
@@ -192,7 +193,8 @@ export async function createCourse(
           title: data.title,
           description,
           type: data.type,
-          groupId: newGroup.id
+          groupId: newGroup.id,
+          compliance: data.compliance ? sanitizeUnknownStrings(data.compliance) : undefined
         },
         tx
       );

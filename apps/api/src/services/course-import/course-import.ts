@@ -499,7 +499,8 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
       description: course.description,
       type: course.type,
       locale: fallbackLocale,
-      metadata: course.metadata
+      metadata: course.metadata,
+      compliance: course.compliance ?? undefined
     },
     tags: tags.map((tag) => tag.name),
     sections: normalizedSections,
@@ -721,6 +722,7 @@ export async function publishCourseImportDraftService(
     const courseDescription = overrides.description ?? draft.course.description;
     const courseType = overrides.type ?? draft.course.type;
     const courseMetadata = overrides.metadata ?? draft.course.metadata;
+    const courseCompliance = overrides.compliance ?? draft.course.compliance;
     const courseUpdateFields: Partial<TCourse> = {
       title: courseTitle,
       description: courseDescription,
@@ -728,6 +730,9 @@ export async function publishCourseImportDraftService(
     };
     if (courseMetadata) {
       courseUpdateFields.metadata = courseMetadata;
+    }
+    if (courseCompliance) {
+      courseUpdateFields.compliance = courseCompliance;
     }
 
     const sectionExternalIds = new Set(draft.sections.map((section) => section.externalId));
@@ -754,7 +759,8 @@ export async function publishCourseImportDraftService(
         title: courseTitle,
         description: courseDescription,
         type: courseType,
-        organizationId: orgId
+        organizationId: orgId,
+        compliance: courseCompliance
       });
 
       courseId = courseResult.course.id;
@@ -876,6 +882,7 @@ export async function publishCourseImportDraftToExistingCourseService(
     const courseDescription = overrides.description ?? draft.course.description;
     const courseType = overrides.type ?? draft.course.type;
     const courseMetadata = overrides.metadata ?? draft.course.metadata;
+    const courseCompliance = overrides.compliance ?? draft.course.compliance;
     const preferredLocale = draft.course.locale as TLocale;
     const bannerImageUrl = await resolvePublishBannerImage(courseTitle, overrides);
 
@@ -883,7 +890,8 @@ export async function publishCourseImportDraftToExistingCourseService(
       title: courseTitle,
       description: courseDescription,
       type: courseType,
-      metadata: courseMetadata
+      metadata: courseMetadata,
+      compliance: courseCompliance
     });
 
     await maybeApplyCourseBannerImage(course.id, bannerImageUrl);

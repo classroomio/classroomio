@@ -124,7 +124,7 @@
   };
 </script>
 
-<section class="border-t border-gray-200 p-3">
+<section class="ui:border-t p-3">
   <div class="flex w-full items-center justify-between">
     <Button
       variant="ghost"
@@ -201,7 +201,7 @@
         bind:value={comment}
         onkeydown={handleAddNewComment}
         placeholder={$t('course.navItem.news_feed.comments.placeholder')}
-        class="w-full rounded-3xl border border-gray-200 bg-transparent p-1 pl-2 text-sm disabled:opacity-50"
+        class="ui:border w-full rounded-3xl bg-transparent p-1 pl-2 text-sm disabled:opacity-50"
         disabled={isSubmitting}
         required
       />

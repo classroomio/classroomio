@@ -24,49 +24,82 @@
         <Collapsible.Root open={item.isActive || item.isExpanded} class="group/collapsible">
           {#snippet child({ props })}
             <Sidebar.MenuItem {...props}>
-              <Collapsible.Trigger>
-                {#snippet child({ props })}
-                  <Sidebar.MenuButton {...props} tooltipContent={item.title} isActive={item.isActive}>
-                    {#snippet child({ props })}
-                      <HoverableItem>
-                        {#snippet children(isHovered)}
-                          {#if item.disabled}
-                            <span
-                              {...props}
-                              aria-disabled="true"
-                              class="flex cursor-not-allowed items-center gap-2 opacity-50"
-                            >
-                              {#if item.icon}
-                                {@const Icon = item.icon}
-                                <Icon {isHovered} size={16} class="custom" />
-                                <span>{item.title}</span>
-                              {:else}
-                                <span>{item.title}</span>
-                              {/if}
-                            </span>
-                          {:else}
-                            <a href={item.url} {...props}>
-                              {#if item.icon}
-                                {@const Icon = item.icon}
-                                <Icon {isHovered} size={16} class="custom" />
-
-                                <span>{item.title}</span>
-                              {:else}
-                                <span>{item.title}</span>
-                              {/if}
-                              {#if item.items}
+              {#if item.items}
+                <Collapsible.Trigger>
+                  {#snippet child({ props })}
+                    <Sidebar.MenuButton {...props} tooltipContent={item.title} isActive={item.isActive}>
+                      {#snippet child({ props })}
+                        <HoverableItem>
+                          {#snippet children(isHovered)}
+                            {#if item.disabled}
+                              <span
+                                {...props}
+                                aria-disabled="true"
+                                class="flex cursor-not-allowed items-center gap-2 opacity-50"
+                              >
+                                {#if item.icon}
+                                  {@const Icon = item.icon}
+                                  <Icon {isHovered} size={16} class="custom" />
+                                  <span>{item.title}</span>
+                                {:else}
+                                  <span>{item.title}</span>
+                                {/if}
+                              </span>
+                            {:else}
+                              <a href={item.url} {...props}>
+                                {#if item.icon}
+                                  {@const Icon = item.icon}
+                                  <Icon {isHovered} size={16} class="custom" />
+                                  <span>{item.title}</span>
+                                {:else}
+                                  <span>{item.title}</span>
+                                {/if}
                                 <ChevronRightIcon
                                   class="custom ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
                                 />
-                              {/if}
-                            </a>
-                          {/if}
-                        {/snippet}
-                      </HoverableItem>
-                    {/snippet}
-                  </Sidebar.MenuButton>
-                {/snippet}
-              </Collapsible.Trigger>
+                              </a>
+                            {/if}
+                          {/snippet}
+                        </HoverableItem>
+                      {/snippet}
+                    </Sidebar.MenuButton>
+                  {/snippet}
+                </Collapsible.Trigger>
+              {:else}
+                <Sidebar.MenuButton tooltipContent={item.title} isActive={item.isActive}>
+                  {#snippet child({ props })}
+                    <HoverableItem>
+                      {#snippet children(isHovered)}
+                        {#if item.disabled}
+                          <span
+                            {...props}
+                            aria-disabled="true"
+                            class="flex cursor-not-allowed items-center gap-2 opacity-50"
+                          >
+                            {#if item.icon}
+                              {@const Icon = item.icon}
+                              <Icon {isHovered} size={16} class="custom" />
+                              <span>{item.title}</span>
+                            {:else}
+                              <span>{item.title}</span>
+                            {/if}
+                          </span>
+                        {:else}
+                          <a href={item.url} {...props}>
+                            {#if item.icon}
+                              {@const Icon = item.icon}
+                              <Icon {isHovered} size={16} class="custom" />
+                              <span>{item.title}</span>
+                            {:else}
+                              <span>{item.title}</span>
+                            {/if}
+                          </a>
+                        {/if}
+                      {/snippet}
+                    </HoverableItem>
+                  {/snippet}
+                </Sidebar.MenuButton>
+              {/if}
               {#if item.items}
                 <Collapsible.Content>
                   <Sidebar.MenuSub>

@@ -27,19 +27,19 @@
   const themeCards = [
     {
       value: 'minimal',
-      preview: 'https://assets.cdn.clsrio.com/www/templates/minimal.png',
+      preview: '/templates/minimal.png',
       titleKey: 'settings.landing_page.theme.cards.minimal.title',
       descriptionKey: 'settings.landing_page.theme.cards.minimal.description'
     },
     {
       value: 'bold',
-      preview: 'https://assets.cdn.clsrio.com/www/templates/bold.png',
+      preview: '/templates/bold.png',
       titleKey: 'settings.landing_page.theme.cards.bold.title',
       descriptionKey: 'settings.landing_page.theme.cards.bold.description'
     },
     {
       value: 'classic',
-      preview: 'https://assets.cdn.clsrio.com/www/templates/classic.png',
+      preview: '/templates/classic.png',
       titleKey: 'settings.landing_page.theme.cards.classic.title',
       descriptionKey: 'settings.landing_page.theme.cards.classic.description'
     }
@@ -162,7 +162,7 @@
                 Upgrade
               </div>
             {/if}
-            <div class="bg-background mb-4 overflow-hidden rounded-xl">
+            <div class="bg-background mb-4 overflow-hidden rounded-t-xl">
               <img src={themeCard.preview} alt={$t(themeCard.titleKey)} class="h-50 w-full object-cover object-top" />
             </div>
             <div class="space-y-1 px-2 pb-2">

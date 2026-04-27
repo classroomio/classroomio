@@ -5,19 +5,12 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { coursesApi } from '$features/course/api';
-  import { calcCourseProgress } from '$features/course/utils/functions';
+  import { isStudentCourseComplete } from '$features/course/utils/compliance-utils';
 
   let searchValue = $state('');
 
   function isCourseComplete(course: (typeof coursesApi.enrolledCourses)[number]): boolean {
-    const c = course as { exerciseCount?: number; exercisesCompleted?: number };
-    const progress = calcCourseProgress({
-      lessonsCompleted: course.progressRate ?? 0,
-      totalLessons: course.lessonCount ?? 0,
-      exercisesCompleted: typeof c.exercisesCompleted === 'number' ? c.exercisesCompleted : 0,
-      totalExercises: typeof c.exerciseCount === 'number' ? c.exerciseCount : 0
-    });
-    return progress >= 100;
+    return isStudentCourseComplete(course);
   }
 
   const coursesInProgress = $derived(coursesApi.enrolledCourses.filter((course) => !isCourseComplete(course)));

@@ -21,8 +21,10 @@
 
       <BlurFade delay={0.1} once>
         <h1 class="mb-6 text-[clamp(2.4rem,4vw,3.4rem)] leading-[1.12] font-medium tracking-tight text-gray-950">
-          Nail your compliance training and your
-          <em class="text-blue-700 not-italic">certification program.</em>
+          The LMS for
+          <em class="text-blue-700 not-italic">compliance training</em>
+          and
+          <em class="text-blue-700 not-italic">certification programs.</em>
         </h1>
       </BlurFade>
 

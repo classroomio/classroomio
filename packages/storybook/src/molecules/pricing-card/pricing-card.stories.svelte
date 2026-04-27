@@ -30,6 +30,7 @@
       'Unlimited Q/A',
       '20 Students',
       'AI Course Builder (no video upload)',
+      '50K AI credits / month',
       'ClassroomIO branding'
     ],
     CTA: {

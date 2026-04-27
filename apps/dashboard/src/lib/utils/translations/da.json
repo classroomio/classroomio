@@ -219,7 +219,8 @@
         "complete_marked": "Markeret som komplet",
         "complete_download": "Download fuldført",
         "version_restored": "Version blev gendannet"
-      }
+      },
+      "section_deleted": "Kursusafsnittet blev slettet"
     },
     "attendance": {
       "error": {
@@ -654,7 +655,8 @@
           "add": "Tilføj tag",
           "popover_title": "Vælg tags",
           "empty_groups": "Ingen tags tilgængelige endnu"
-        }
+        },
+        "compliance": "Overholdelse"
       },
       "analytics": {
         "title": "Analytics"
@@ -1117,7 +1119,7 @@
             "finish": "Afslut",
             "next": "Næste",
             "check": "Tjek",
-            "auto_graded_badge": "Auto-graded",
+            "auto_graded_badge": "Auto-grade",
             "manual_grading_required_badge": "Manual grading required",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
@@ -1697,6 +1699,81 @@
           "edit": "Rediger",
           "delete": "Slet"
         }
+      },
+      "compliance": {
+        "title": "Overholdelse",
+        "not_compliance_title": "Overholdelse er ikke aktiveret",
+        "not_compliance_description": "Dette kursus er ikke konfigureret som et compliance-kursus.",
+        "loading": "Indlæser overholdelsesposter...",
+        "learners": "Elever",
+        "learners_description": "Denne tabel viser den seneste cyklus for hver elev.",
+        "current_cycle": "Nuværende cyklus",
+        "current_cycle_description": "Din aktive overholdelsescyklus og fornyelsesdatoer.",
+        "history": "Tidligere cyklusser",
+        "history_description": "Hver række er en registreret overholdelsescyklus for dette kursus.",
+        "no_active_cycle": "Ingen aktiv compliance-cyklus",
+        "empty_history": "Der er ikke registreret nogen overholdelseshistorik endnu.",
+        "empty_overview": "Der er endnu ingen registrering af elevoverholdelse.",
+        "not_available": "Ikke tilgængelig",
+        "status": {
+          "no_record": "Ingen rekord",
+          "not_started": "Ikke startet",
+          "in_progress": "I gang",
+          "compliant": "Overensstemmende",
+          "expiring_soon": "Udløber snart",
+          "in_grace_period": "I afdragsfri periode",
+          "non_compliant": "Ikke-kompatibel",
+          "waived": "Frafaldet"
+        },
+        "summary": {
+          "total_learners": "Samlede elever",
+          "no_record": "Ingen rekord",
+          "not_started": "Ikke startet",
+          "in_progress": "I gang",
+          "compliant": "Overensstemmende",
+          "expiring_soon": "Udløber snart",
+          "in_grace_period": "I afdragsfri periode",
+          "non_compliant": "Ikke-kompatibel",
+          "waived": "Frafaldet"
+        },
+        "fields": {
+          "learner": "Lærer",
+          "email": "E-mail",
+          "status": "Status",
+          "cycle": "Cyklus",
+          "due_date": "Forfaldsdato",
+          "completed_at": "Afsluttet kl",
+          "valid_until": "Gælder indtil kl",
+          "score": "Score",
+          "attempts": "Forsøg"
+        },
+        "bulk_actions": {
+          "title": "Massehandlinger",
+          "description": "Vælg elever og anvend en overholdelseshandling på deres nuværende cyklus.",
+          "select_all": "Vælg alle synlige elever",
+          "selected_count": "{count} valgt",
+          "clear_selection": "Ryd markering",
+          "due_date_label": "Forfaldsdato",
+          "due_date_helper": "Bruges til nulstilling og forlængelse.",
+          "reset_action": "Nulstil cyklus",
+          "extend_action": "Forlæng forfaldsdatoen",
+          "waive_title": "Giv afkald på udvalgte elever",
+          "waive_description": "Anvend dispensation til de valgte elever. Du kan lade udløbsdatoen stå tom for en tidsubegrænset dispensation.",
+          "waiver_reason_label": "Årsag til afkald",
+          "waiver_reason_helper": "Valgfri kontekst for revisioner og fremtidige anmeldelser.",
+          "waiver_expires_at_label": "Afkaldet udløber kl",
+          "waiver_expires_at_helper": "Lad stå tom, hvis dispensationen ikke udløber automatisk.",
+          "waive_action": "Anvend dispensation",
+          "modal": {
+            "description": "Du opdaterer {count} valgte elever.",
+            "cancel": "Annuller",
+            "apply": "Anvend handling"
+          }
+        },
+        "tabs": {
+          "overview": "Oversigt",
+          "learners": "Elever"
+        }
       }
     },
     "search": {
@@ -1712,6 +1789,11 @@
       "content_count": {
         "lessons": "{count} lektioner",
         "exercises": "{count} øvelser"
+      },
+      "compliance": {
+        "title": "Overholdelse",
+        "due_date": "Forfalder",
+        "valid_until": "Gælder indtil kl"
       }
     },
     "navItems": {
@@ -1724,7 +1806,9 @@
       "nav_analytics": "Analytics",
       "nav_certificates": "Certifikater",
       "nav_landing_page": "Landingsside",
-      "nav_settings": "Indstillinger"
+      "nav_settings": "Indstillinger",
+      "nav_compliance": "Overholdelse",
+      "nav_ai_assistant": "Assistent"
     },
     "completion": {
       "modal": {
@@ -1812,8 +1896,11 @@
         "share": "Del",
         "invite": "Inviter",
         "delete": "Slet",
-        "open": "Åbn"
-      }
+        "open": "Åbn",
+        "open_course_site": "Åben kursusside"
+      },
+      "due_date": "Forfalder",
+      "valid_until": "Gælder indtil kl"
     },
     "course_filter": {
       "date_created_newest": "Date Created: Newest first",
@@ -1865,9 +1952,9 @@
     "lms_dashboard_hero": "I dag er endnu en dag til at bringe dig tættere på dine læringsmål. Giv ikke op, jo mere du lærer, jo bedre bliver du.",
     "lessons_completed": "Lektioner afsluttet",
     "no_courses_started": "Ingen kurser startet",
-    "certificates_earned": "Certificates earned",
+    "certificates_earned": "Certificates issued",
     "certificates_earned_description": "Total certificates issued to students in your organization",
-    "certification_rate": "certification rate",
+    "certification_rate": "Certificeret",
     "recent_certifications": "Recent certifications",
     "no_certifications_yet": "No certificates earned yet",
     "no_certifications_yet_description": "When students complete a course and earn a certificate, they will appear here",
@@ -1886,7 +1973,28 @@
     "publish_first_course": "Udgiv dit første kursus",
     "publish_first_course_description": "For at spore tilmeldinger skal du udgive et kursus og invitere elever",
     "publish_course": "Udgiv kursus",
-    "items_completed": "Varer afsluttet"
+    "items_completed": "Varer afsluttet",
+    "currently_learning": "Lærer i øjeblikket",
+    "learner": "Lærer",
+    "progress": "Fremskridt",
+    "pick_up_where_you_left_off": "Fortsæt hvor du slap",
+    "course_awaits_you": "{title} venter på dig",
+    "learning_awaits_you": "Dit næste kursus venter på dig",
+    "lms_today_progress": "Du er {progress} % gennem din læring - hvert skridt tæller.",
+    "lms_today_empty": "Din læringsvej er klar, når du er.",
+    "compliance_score": "Overholdelsesscore",
+    "compliance": "Overholdelse",
+    "compliance_score_subtitle": "{completed} af {total} overholdelseskurser er i øjeblikket opfyldt",
+    "compliance_score_empty": "Ingen overholdelseskurser tildelt endnu",
+    "compliance_met": "{completed} af {total} opfyldt",
+    "required_courses_completed": "{completed} af {total} obligatoriske kurser gennemført",
+    "streak": "Streak",
+    "days_active": "dage aktive",
+    "items_done": "{completed} af {total} udført",
+    "login_activity_title": "Student login aktivitet",
+    "login_activity_description": "Ugens mest aktive dage (sidste 90 dage)",
+    "login_activity_no_data": "Ingen login-aktivitet endnu",
+    "login_activity_logins": "logins"
   },
   "schedule": {
     "title": "Dit skema",
@@ -2097,7 +2205,8 @@
     "upgrade": "Opgrader nu",
     "tags": "Tags",
     "automation": "Automatisering",
-    "programs": "Programmer"
+    "programs": "Programmer",
+    "widgets": "Widgets"
   },
   "media_manager": {
     "page_title": "Media Manager - ClassroomIO",
@@ -2218,7 +2327,10 @@
       "provider": "Vi bruger Polar til at hjælpe med at administrere din fakturering",
       "open_billing": "Åben fakturering",
       "error": "Der opstod en fejl under åbning af fakturering",
-      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO."
+      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
+      "ai_credits": "Brug af AI-assistent",
+      "ai_tokens_used": "tokens brugt denne måned",
+      "ai_bonus_credits": "tilgængelige bonuskreditter"
     },
     "integrations": {
       "heading": "Telegram",
@@ -2667,9 +2779,34 @@
   },
   "app": {
     "search": {
-      "placeholder": "Søg"
+      "placeholder": "Søg",
+      "command_palette": {
+        "title": "Kommandopalet",
+        "description": "Søg og naviger på tværs af din organisation",
+        "placeholder": "Søg i kurser, programmer, widgets, studerende, tags, indstillinger...",
+        "org_placeholder": "Søg i kurser, programmer, widgets, studerende, tags, indstillinger...",
+        "lms_placeholder": "Søg på dine kurser, programmer og læringssider...",
+        "lms_description": "Søg og naviger dit læringsarbejdsområde",
+        "empty": "Ingen resultater fundet",
+        "loading": "Søger...",
+        "clear_recents": "Ryd seneste",
+        "result_types": {
+          "page": "Side"
+        },
+        "groups": {
+          "recent": "Seneste",
+          "suggested": "Foreslået",
+          "courses": "Kurser",
+          "programs": "Programmer",
+          "widgets": "Widgets",
+          "tags": "Tags",
+          "students": "studerende",
+          "settings": "Indstillinger"
+        }
+      }
     },
-    "cancel": "Annuller"
+    "cancel": "Annuller",
+    "save": "Gem"
   },
   "welcome_modal": {
     "we_at": "Vi kl",
@@ -2700,7 +2837,9 @@
     "live_class_label": "Live klasse",
     "live_class_subtitle": "Ideel til bootcamps, hvor undervisningen er tidsbaseret",
     "self_paced_label": "Selv tempo",
-    "self_paced_subtitle": "Bedst til kurser, hvor eleverne kan tage lektioner i deres eget tempo"
+    "self_paced_subtitle": "Bedst til kurser, hvor eleverne kan tage lektioner i deres eget tempo",
+    "compliance_label": "Overholdelse",
+    "compliance_subtitle": "Tilbagevendende træning med gentagninger, påmindelser og fornyelsessporing"
   },
   "delete_modal": {
     "label": "Slet",
@@ -3078,6 +3217,227 @@
       "sort_courses": "Kurser",
       "sort_students": "studerende",
       "sort_status": "Status"
+    }
+  },
+  "ai_assistant": {
+    "empty_state": "Bed mig om at hjælpe med dit kursusindhold - lav lektioner, generer spørgsmål, eller planlæg et kursus ud fra et dokument.",
+    "input_placeholder": "Spørg AI-assistenten...",
+    "attach_document": "Vedhæft et dokument (PDF, DOCX, PPTX)",
+    "upgrade_to_upload": "Opgrader for at uploade dokumenter",
+    "tokens_exhausted": "Månedlig AI-token-grænse nået. Køb flere kreditter i Indstillinger > Fakturering, eller vent på nulstilling.",
+    "chat_history": "Chat historie",
+    "no_conversations": "Ingen samtaler endnu",
+    "untitled": "Uden titel",
+    "new_chat": "Ny chat",
+    "tokens_label": "tokens",
+    "implementing_course_plan": "Implementering af kursusplan",
+    "resume": "Genoptag",
+    "stopped_content_kept": "Stoppet. Oprettet indhold er blevet bevaret.",
+    "mention_lesson": "Lektion",
+    "mention_exercise": "Motion",
+    "mention_section": "Sektion",
+    "mention_no_results": "Intet matchende indhold",
+    "uploading_document": "Uploader dokument..."
+  },
+  "widgets": {
+    "heading": "Widgets",
+    "subtitle": "Udgive brandede kursussamlinger til eksterne hjemmesider.",
+    "empty_state": "Ingen widgets endnu. Opret en for at generere en indlejrbar kursusblok.",
+    "filter": {
+      "status": "Status",
+      "all": "Alle",
+      "unpublished": "Upubliceret",
+      "course_type": "Kursustype"
+    },
+    "notifications": {
+      "created": "Widget oprettet",
+      "saved": "Widget er gemt",
+      "published": "Widget offentliggjort",
+      "rolled_back": "Widget gendannet",
+      "deleted": "Widget arkiveret"
+    },
+    "form": {
+      "name": "Widget navn",
+      "selection_mode": "Valgtilstand",
+      "course_search": "Søg efter kurser",
+      "layout_type": "Layout type",
+      "sort_by": "Sorter efter",
+      "cta_label": "CTA-mærke",
+      "load_more_label": "Indlæs mere etiket",
+      "limit_courses": "Begræns kurser",
+      "max_count": "Max antal kurser",
+      "show_course_image": "Vis kursusbillede",
+      "show_type_badge": "Vis kursustypemærke",
+      "show_lessons_count": "Vis lektioner tæller",
+      "show_description": "Vis beskrivelsesuddrag",
+      "shorten_long_description": "Forkort lang beskrivelse",
+      "show_price": "Vis pris",
+      "show_rating": "Vis bedømmelse",
+      "theme_preset": "Forudindstillet tema",
+      "primary_color": "Primær farve",
+      "background_color": "Baggrundsfarve",
+      "text_color": "Tekstfarve",
+      "border_color": "Kantfarve",
+      "border_radius": "Grænseradius",
+      "font_family": "Fontfamilie",
+      "font_scale": "Skriftstørrelsesskala",
+      "show_powered_by": "Vis Classroomio branding",
+      "custom_css": "Brugerdefineret CSS",
+      "custom_css_locked": "Opgrader for at aktivere tilpasset CSS.",
+      "embed_code": "Integrer kode"
+    },
+    "create": {
+      "description": "Giv din widget et navn for at komme i gang."
+    },
+    "actions": {
+      "create": "Opret widget",
+      "edit": "Rediger",
+      "back": "Tilbage til widgets",
+      "save": "Gem",
+      "discard": "Kassér ændringer",
+      "publish": "Udgiv",
+      "archive": "Arkiv",
+      "restore": "Gendan",
+      "copy_embed": "Kopiér indlejring",
+      "rename": "Omdøb",
+      "delete": "Slet"
+    },
+    "preview": {
+      "heading": "Forhåndsvisning",
+      "saved": "Gemt",
+      "unsaved": "Ikke-gemte ændringer",
+      "load_failed": "Forhåndsvisningen kunne ikke indlæses. Prøv at opdatere siden.",
+      "empty": "Forhåndsvisning er ikke tilgængelig.",
+      "all_tags": "Alle",
+      "none": "Ingen",
+      "lessons_suffix": "lektioner",
+      "last_synced": "Synkroniseret",
+      "refresh": "Opdater",
+      "exercises_suffix": "øvelser",
+      "columns": {
+        "course": "Kursus",
+        "lessons": "Lektioner",
+        "tags": "Tags"
+      }
+    },
+    "plan": {
+      "free": "Gratis plan",
+      "paid": "Betalt plan"
+    },
+    "status": {
+      "draft": "Udkast",
+      "published": "Udgivet",
+      "archived": "Arkiveret",
+      "live": "Live"
+    },
+    "sort": {
+      "manual": "Manual",
+      "newest": "Nyeste",
+      "title": "Titel"
+    },
+    "layoutOptions": {
+      "section": "Layout muligheder",
+      "columns": "Kolonner",
+      "max_count": "Max kurser",
+      "show_rating": "Vis bedømmelse",
+      "tag_source": "Tagkilde",
+      "tag_source_auto": "Auto fra kurser",
+      "tag_source_manual": "Manuelt valg",
+      "default_tag": "Standard tag",
+      "show_all_option": "Vis indstillingen \"Alle\".",
+      "visible_cards": "Synlige kort",
+      "auto_play": "Automatisk afspilning",
+      "auto_play_interval": "Automatisk afspilningsinterval (ms)",
+      "show_dots": "Vis prikker",
+      "show_arrows": "Vis pile",
+      "loop": "Løkke",
+      "featured_course": "Udvalgt kursus",
+      "featured_course_required": "Et udvalgt kursus er påkrævet til dette layout.",
+      "main_course": "Hoved spotlight kursus",
+      "main_course_required": "Vælg et kursus for at sætte fokus på.",
+      "eyebrow_label": "Etiket af øjenbryn",
+      "cta_label": "CTA-mærke",
+      "secondary_max_count": "Sekundære kurser",
+      "density": "Tæthed",
+      "density_comfortable": "Komfortabel",
+      "density_compact": "Kompakt",
+      "show_thumbnail": "Vis thumbnail",
+      "show_tags": "Vis tags",
+      "title_style": "Titel stil",
+      "title_style_serif": "Serif",
+      "title_style_sans": "Sans",
+      "category_tags": "Kategori tags",
+      "category_tags_required": "Vælg mindst ét tag til kategorihylden.",
+      "default_category": "Standardkategori",
+      "show_all_tab": "Vis fanen \"Alle\".",
+      "max_per_category": "Max kurser pr. kategori",
+      "none": "Ingen"
+    },
+    "layout_description": {
+      "card_grid": "Universalkatalog med masser af pusterum.",
+      "tag_filter": "Lad eleverne indsnævre et bredt katalog efter emne.",
+      "carousel": "Udvalgte rækker i stramme hjemmesidesektioner.",
+      "primary_course": "Markedsfør et flagskib eller et nystartet kursus.",
+      "compact_list": "Indlejret sidepanel og sider med minimalt fodaftryk.",
+      "editorial_spotlight": "Landingssider i blogstil og udvalgte udvalg.",
+      "category_shelf": "Store kataloger grupperet efter emne, nemme at scanne."
+    },
+    "layout": {
+      "card_grid": "Kortgitter",
+      "tag_filter": "Tag filter",
+      "carousel": "Karrusel",
+      "primary_course": "Primær kursus",
+      "compact_list": "Kompakt liste",
+      "editorial_spotlight": "Redaktionelt fokus",
+      "category_shelf": "Kategori hylde"
+    },
+    "selection": {
+      "manual": "Manuelt valg",
+      "published": "Alle offentliggjorte kurser"
+    },
+    "editor": {
+      "sources": "Widget Kilde",
+      "available_courses": "Tilgængelige kurser",
+      "layout": "Layout",
+      "content": "Indhold",
+      "design": "Design",
+      "version_history": "Versionshistorik",
+      "save_changes": "Gem ændringer",
+      "rename_widget": "Omdøb widget",
+      "continue_to_layout": "Fortsæt til layout",
+      "pick_layout": "Vælg et layout",
+      "pick_design": "Udseende",
+      "panel_subtitle": "Konfigurer, hvordan din widget ser ud og opfører sig.",
+      "embed_share": "Integrer og del",
+      "discard_short": "Kassér",
+      "canvas_status": "Forhåndsvisning",
+      "finish_editing_name": "Færdig",
+      "waiting_org": "Indlæser organisation...",
+      "load_failed": "Kunne ikke indlæse denne widget. Prøv igen fra widgetlisten.",
+      "nav": {
+        "courses": "Kurser",
+        "layout": "Layout",
+        "design": "Design",
+        "embed": "Integrer"
+      },
+      "viewport": {
+        "mobile": "Mobil",
+        "tablet": "Tablet",
+        "desktop": "Desktop"
+      }
+    },
+    "tabs": {
+      "select_courses": "Vælg Kurser",
+      "layout": "Layout",
+      "design": "Design",
+      "embed": "Integrer kode"
+    },
+    "defaults": {
+      "name_prefix": "Kursus-widget"
+    },
+    "empty": {
+      "heading": "Ingen widgets endnu",
+      "description": "Opret en widget for at generere en indlejrbar kursusblok til eksterne websteder."
     }
   }
 }

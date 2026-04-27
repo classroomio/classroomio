@@ -14,6 +14,7 @@ export default {
       'Unlimited Programs',
       '20 Students',
       'Advanced Course Builder (no video upload)',
+      '50K AI credits / month',
       'MCP access with 20 automation credits / month',
       'ClassroomIO branding'
     ],
@@ -69,7 +70,8 @@ export default {
       'Unlimited students',
       'Unlimited API requests',
       'SSO',
-      '24/7 Support'
+      '24/7 Support',
+      'Need on-prem deployment, SSO, or a commercial license? Contact us.'
     ],
     CTA: {
       LABEL: 'Contact Us',

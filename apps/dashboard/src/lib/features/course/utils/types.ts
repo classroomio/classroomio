@@ -376,6 +376,31 @@ export type GetCourseAnalyticsResponse = InferResponseType<GetCourseAnalyticsReq
 export type GetCourseAnalyticsSuccess = Extract<GetCourseAnalyticsResponse, { success: true }>;
 export type CourseAnalytics = GetCourseAnalyticsSuccess['data'];
 
+export type GetCourseComplianceOverviewRequest = (typeof classroomio.course)[':courseId']['compliance']['$get'];
+export type GetCourseComplianceOverviewResponse = InferResponseType<GetCourseComplianceOverviewRequest>;
+export type GetCourseComplianceOverviewSuccess = Extract<GetCourseComplianceOverviewResponse, { success: true }>;
+export type CourseComplianceOverview = GetCourseComplianceOverviewSuccess['data'];
+export type CourseComplianceLearner = CourseComplianceOverview['learners'][number];
+
+export type GetLearnerComplianceHistoryRequest =
+  (typeof classroomio.course)[':courseId']['compliance']['learners'][':profileId']['$get'];
+export type GetLearnerComplianceHistoryResponse = InferResponseType<GetLearnerComplianceHistoryRequest>;
+export type GetLearnerComplianceHistorySuccess = Extract<GetLearnerComplianceHistoryResponse, { success: true }>;
+export type LearnerComplianceHistory = GetLearnerComplianceHistorySuccess['data'];
+export type LearnerComplianceRecord = LearnerComplianceHistory['history'][number];
+
+export type ResetCourseComplianceRequest = (typeof classroomio.course)[':courseId']['compliance']['reset']['$post'];
+export type ResetCourseComplianceResponse = InferResponseType<ResetCourseComplianceRequest>;
+export type ResetCourseComplianceSuccess = Extract<ResetCourseComplianceResponse, { success: true }>;
+
+export type ExtendCourseComplianceRequest = (typeof classroomio.course)[':courseId']['compliance']['extend']['$post'];
+export type ExtendCourseComplianceResponse = InferResponseType<ExtendCourseComplianceRequest>;
+export type ExtendCourseComplianceSuccess = Extract<ExtendCourseComplianceResponse, { success: true }>;
+
+export type WaiveCourseComplianceRequest = (typeof classroomio.course)[':courseId']['compliance']['waive']['$post'];
+export type WaiveCourseComplianceResponse = InferResponseType<WaiveCourseComplianceRequest>;
+export type WaiveCourseComplianceSuccess = Extract<WaiveCourseComplianceResponse, { success: true }>;
+
 // Derived types from Lesson
 export type LessonVideoType = NonNullable<Lesson['videos']>[number]['type'];
 export type LessonDocument = NonNullable<Lesson['documents']>[number];

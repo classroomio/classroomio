@@ -85,7 +85,7 @@
   id={feed.id}
   class="mb-7 flex w-full max-w-3xl flex-col justify-between gap-2 rounded-md {isActive
     ? 'border-primary-700 border-2'
-    : 'border border-gray-200'}"
+    : 'ui:border'}"
 >
   <Header
     {feed}

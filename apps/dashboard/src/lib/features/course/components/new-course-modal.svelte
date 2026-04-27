@@ -30,6 +30,13 @@
       subtitle: $t('new_course_modal.self_paced_subtitle'),
       type: 'SELF_PACED' as TCourseType,
       isDisabled: false
+    },
+    {
+      id: 'compliance',
+      title: $t('new_course_modal.compliance_label'),
+      subtitle: $t('new_course_modal.compliance_subtitle'),
+      type: 'COMPLIANCE' as TCourseType,
+      isDisabled: false
     }
   ];
   const courseTypeOptionsForGroup = options.map((o) => ({
@@ -68,7 +75,7 @@
 {#snippet course_type_selector()}
   <Field.Description>{$t('courses.new_course_modal.type_selector_title')}</Field.Description>
 
-  <RadioOptionCardGroup options={courseTypeOptionsForGroup} bind:value={type} class="grid-cols-2" />
+  <RadioOptionCardGroup options={courseTypeOptionsForGroup} bind:value={type} class="grid-cols-1 md:grid-cols-3" />
 {/snippet}
 
 <Dialog.Root

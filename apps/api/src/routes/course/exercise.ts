@@ -11,6 +11,7 @@ import { ZTemplateById, ZTemplateByTag } from '@cio/utils/validation/mocks';
 import {
   createExercise,
   createExerciseFromTemplate,
+  deleteExerciseForCourseService,
   deleteExerciseService,
   getExercise,
   listExercises,
@@ -222,8 +223,9 @@ export const exerciseRouter = new Hono()
   )
   .delete('/:exerciseId', authMiddleware, courseMemberMiddleware, zValidator('param', ZExerciseGetParam), async (c) => {
     try {
+      const courseId = c.req.param('courseId')!;
       const { exerciseId } = c.req.valid('param');
-      const exercise = await deleteExerciseService(exerciseId);
+      const exercise = await deleteExerciseForCourseService(courseId, exerciseId);
 
       return c.json({ success: true, data: exercise }, 200);
     } catch (error) {

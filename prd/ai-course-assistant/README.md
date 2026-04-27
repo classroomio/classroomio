@@ -57,10 +57,10 @@ The LLM sees a set of **tools** (mapped to existing service functions) and decid
 
 - `ai` — core (`streamText`, `tool`, types) — in `packages/ai-assistant` and `apps/api`
 - `@ai-sdk/svelte` — Svelte 5 `Chat` class (runes-based, matches project's `LessonApi` / `BaseApiWithErrors` pattern)
-- `@ai-sdk/openai` + `@ai-sdk/anthropic` — provider packages
+- `@ai-sdk/openai` + `@ai-sdk/anthropic` + `@ai-sdk/google` — provider packages
 - `streamText()` returns `toUIMessageStreamResponse()` which works directly as a Hono response
 - Tool calling is built-in with Zod schemas; SDK handles function-calling protocol, multi-step execution, streaming tool results
-- Provider abstraction lets us swap between OpenAI and Anthropic by changing one line
+- Provider abstraction lets us swap between OpenAI, Google, and Anthropic per request via the dashboard model picker
 
 ---
 
@@ -121,23 +121,26 @@ The two modes represent different phases of a workflow, not a toggle. A typical 
 
 **What happens for plan execution**:
 
+A typical plan with 4 sections and 12 lessons needs ~40+ tool calls (create section + create lesson + write content + create exercise for each). This exceeds what a single `streamText()` call can handle in one pass. Plan execution uses a **sequential multi-round approach**:
+
 1. Agent receives the approved plan
-2. Creates sections first (in order), capturing the returned section IDs
-3. Creates lessons within each section (in order), capturing lesson IDs
-4. For each lesson, generates full content based on the source document + lesson description, then calls `update_lesson_content` to populate it
-5. Optionally creates exercises with generated questions for lessons marked `hasExercise`
-6. Shows real-time progress via tool status cards in the chat:
-   - "Creating section: Cell Biology..." -> checkmark
-   - "Creating lesson: Cell Structure and Function..." -> checkmark
-   - "Writing lesson content..." -> checkmark
-   - "Creating exercise with 5 questions..." -> checkmark
-7. After completion, `onFinish` callback refreshes the course content tree
+2. The first `streamText()` round creates all sections and the first few lessons (within `maxSteps: 15`)
+3. When `maxSteps` is reached, the `onFinish` callback automatically sends a continuation message: "Continue implementing the plan from where you left off"
+4. The agent sees the conversation history (including tool results from prior rounds) and picks up where it stopped
+5. This repeats until the plan is fully executed
+6. Each round checks the token balance before starting — if tokens run out mid-plan, the agent stops cleanly and reports what was completed
+
+Within each round, the agent:
+- Creates sections first (in order), capturing the returned section IDs
+- Creates lessons within each section (in order), capturing lesson IDs
+- For each lesson, generates full content based on the source document + lesson description, then calls `update_lesson_content` to populate it
+- Optionally creates exercises with generated questions for lessons marked `hasExercise`
 
 **What happens for individual actions** (update lesson, generate questions, etc.):
 
-Same as the standard agent flow — LLM decides which tool to call, executes it, streams the result.
+Same as the standard agent flow — LLM decides which tool to call, executes it, streams the result. Single-round, `maxSteps: 15` is sufficient.
 
-**Progress tracking**: During plan execution, the agent emits structured progress events that the UI renders as a checklist:
+**Progress tracking**: During plan execution, the agent emits structured progress events that the UI renders as a checklist. This persists across multi-round execution:
 
 ```
 [x] Section 1: Cell Biology (created)
@@ -147,6 +150,33 @@ Same as the standard agent flow — LLM decides which tool to call, executes it,
 [ ]   Lesson 2: Cell Division
 [ ] Section 2: Genetics
 ```
+
+### Partial Failure & Resume
+
+Plan execution can fail partway through — tokens run out, LLM rate limit, network error, or teacher hits Stop. When this happens:
+
+- **Already-created content is kept.** Sections and lessons created before the failure exist in the database and are visible in the course content tree.
+- **The progress card shows what was completed vs. what remains.** Completed items have checkmarks; the failed/stopped item shows an error or stop icon; remaining items show empty circles.
+- **The teacher can resume.** After the failure, the chat shows a "Resume" button. Clicking it sends a message: "Continue implementing the plan." The agent calls `get_course_structure` to see what already exists, compares it against the plan, and picks up from the first uncreated item.
+- **Token exhaustion is explicit.** If the failure was due to running out of tokens, the progress card shows: "Paused — token limit reached. [Buy more credits] or wait for reset on [date]." The plan state is preserved in the conversation — the teacher can resume after purchasing credits or next month.
+
+### Existing Course Content
+
+Before executing a plan, the agent checks if the course already has content via `get_course_structure`. If sections or lessons already exist:
+
+- The agent reports what it found: "This course already has 3 sections and 8 lessons."
+- It asks the teacher how to proceed: **"Should I add the new content after the existing sections, or would you like to start fresh?"**
+- **Append** (default): new sections are created with `order` values starting after the last existing section. Existing content is untouched.
+- **Start fresh**: the agent warns that this is destructive ("This will not delete existing content, but the new sections will be added alongside it. You can remove old content manually."). In v1, the agent cannot delete content — it can only append. Deletion tools are added in Phase 4.
+
+### Token Cost Estimation
+
+Before executing a plan, the agent estimates the token cost and warns the teacher:
+
+- The estimate is based on plan size: `(sectionCount * ~500) + (lessonCount * ~3,000) + (exerciseCount * ~1,500)` tokens per item (rough heuristic based on typical generation lengths + tool call overhead)
+- Displayed in the plan card before "Implement Plan": *"Estimated cost: ~45,000 tokens (9% of your monthly allowance)"*
+- If the estimate exceeds 50% of remaining tokens: stronger warning — *"This plan will use a significant portion of your remaining tokens (estimated ~45,000 of 62,000 remaining). Proceed?"*
+- This is a best-effort estimate, not a guarantee. Actual usage varies based on content complexity.
 
 ### Mode Detection
 
@@ -185,26 +215,33 @@ Maximum upload size: **5MB** (aligns with the existing `MAX_DOCUMENT_SIZE` const
 - Client validates before upload as well (check `file.size` on selection) and shows an inline error: "File is too large. Maximum size is 5MB."
 - 5MB is sufficient for most textbook chapters, syllabi, and course outlines. Full textbook PDFs (50MB+) are out of scope — teachers should upload individual chapters.
 
+### One Document Per Conversation
+
+Only one document can be uploaded per conversation. If the teacher uploads a second file, it replaces the first — the previous `documentId` in Redis is deleted and the new one takes its place. This keeps the context simple and avoids confusion about which document the agent is referencing. If a teacher needs to combine multiple sources, they should merge them into one document before uploading.
+
 ### Upload Flow
 
 1. Teacher clicks the attachment icon in the chat input
 2. **Plan check**: if BASIC plan, trigger upgrade modal and stop. If EARLY_ADOPTER+, continue.
-3. Selects a PDF or DOCX file
+3. Selects a PDF, DOCX, or PPTX file
 4. **Size check**: if file > 5MB, show inline error and stop
 5. File is uploaded to `POST /agent/upload` which:
    - Validates plan (EARLY_ADOPTER+ required)
-   - Validates file type (PDF/DOCX only) and size (max 5MB)
+   - Validates file type (PDF/DOCX/PPTX only) and size (max 5MB)
    - Extracts text content server-side
-   - Returns `{ documentId, fileName, pageCount, textPreview }` (first ~200 chars)
+   - **Truncates** extracted text to a maximum of 100,000 characters (~75K tokens) to stay within LLM context limits. If truncated, the response includes `truncated: true` so the UI can show: "Document was large — only the first portion was analyzed."
+   - Returns `{ documentId, fileName, pageCount, textPreview, truncated }` (first ~200 chars for preview)
    - Stores extracted text in Redis with a TTL (keyed by `documentId`, expires after 1 hour)
 6. The `documentId` is attached to the next chat message
 7. When the agent processes the message, it retrieves the full extracted text from Redis and includes it in the LLM context
 
-### Text Extraction
+### Supported File Types & Text Extraction
 
 **PDF**: Use `pdf-parse` (lightweight, pure JS, no native dependencies). Extracts text content from all pages. Handles multi-column layouts reasonably well for structured content like textbooks/syllabi.
 
 **DOCX**: Use `mammoth` (pure JS). Extracts text content preserving heading structure (H1, H2, etc.) which helps the LLM understand document hierarchy for course structure generation.
+
+**PPTX**: Use `pptx-parser` (pure JS). Extracts text from slides, preserving slide order as a natural section boundary. Slide titles become potential lesson titles; slide body text becomes content context. This covers the common case of teachers converting existing slide decks into courses.
 
 ### Why Server-Side Extraction
 
@@ -218,7 +255,7 @@ Maximum upload size: **5MB** (aligns with the existing `MAX_DOCUMENT_SIZE` const
 ```
 POST /agent/upload
   Content-Type: multipart/form-data
-  Body: file (PDF or DOCX, max 5MB)
+  Body: file (PDF, DOCX, or PPTX, max 5MB)
   Auth: authMiddleware + orgMemberMiddleware + courseTeamMemberMiddleware
   Plan: EARLY_ADOPTER+ required (BASIC returns 403)
 
@@ -226,15 +263,16 @@ POST /agent/upload
     documentId: string,
     fileName: string,
     mimeType: string,
-    pageCount: number | null,    // PDF only
+    pageCount: number | null,    // PDF and PPTX (slide count)
     wordCount: number,
-    textPreview: string           // first ~200 chars
+    textPreview: string,          // first ~200 chars
+    truncated: boolean            // true if text exceeded 100K char limit
   }
 
   Error Responses:
     403: { error: "document_upload_requires_upgrade", upgradeRequired: true }  // BASIC plan
     413: { error: "file_too_large", maxSize: 5242880 }                         // > 5MB
-    415: { error: "unsupported_file_type", allowed: ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"] }
+    415: { error: "unsupported_file_type", allowed: ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.openxmlformats-officedocument.presentationml.presentation"] }
 ```
 
 The extracted text is NOT returned in the upload response (it can be very large). It lives in Redis and is fetched internally by the agent chat endpoint when `documentId` is provided in the chat message.
@@ -256,7 +294,7 @@ A thin, backend-focused package consumed by `apps/api`. No UI code. The heavy li
 
 ### Responsibilities
 
-- **Provider factory** — creates the right AI SDK `LanguageModel` from env vars (`AI_PROVIDER`, `AI_API_KEY`, `AI_MODEL`)
+- **Provider factory** — creates the right AI SDK `LanguageModel` for a given provider (`createModel`); `getProviderConfigForProvider(provider)` reads the per-provider key (`OPENAI_API_KEY` / `GOOGLE_API_KEY` / `ANTHROPIC_API_KEY`); `pickAnyConfiguredProvider()` returns the first provider with a key set, used by the status route and title generation
 - **Role-aware tool registry** — `getToolSchemas(role)` returns Zod schemas per role
 - **Role-aware system prompt** — `buildSystemPrompt(context)` generates different LLM instructions for teachers vs students, including Plan Mode vs Agent Mode behavior
 - **Course plan types** — `CoursePlan`, `CoursePlanSection`, `CoursePlanLesson` types used by both API and dashboard
@@ -382,6 +420,60 @@ The system prompt includes an explicit list of what the agent CANNOT do. The age
 
 ---
 
+## Locale Detection
+
+`upsertLessonLanguageService` requires a `locale` parameter. The agent determines the locale as follows:
+
+1. **Check existing course content first.** If the course already has lessons with content in a specific locale (e.g., lessons with `lesson_language` rows in `fr`), use that locale. This ensures consistency with existing content.
+2. **If the course is empty**, default to `en`.
+3. **For document uploads**, the agent does NOT auto-detect the document's language. The content is generated in the course's locale regardless of the source document language. If a teacher uploads a French textbook but the course is in English, the agent generates English content based on the French source material. This is a feature, not a bug — teachers often want to create courses in a different language than their source material.
+4. **The teacher can override.** If they say "Write the content in Spanish," the agent uses `es`. The system prompt instructs: "Default to the course's existing locale. If the teacher requests a specific language, use that locale instead."
+
+Supported locales match the existing `lesson_language.locale` enum: `en`, `hi`, `fr`, `pt`, `de`, `vi`, `ru`, `es`, `pl`, `da`.
+
+---
+
+## Lesson Content Format
+
+The lesson editor uses **TipTap** (ProseMirror-based) and expects `HTMLContent` — standard HTML that TipTap can parse. The agent must generate content that renders correctly in the editor.
+
+### Allowed HTML Tags
+
+The system prompt includes explicit formatting guidance:
+
+```
+When generating lesson content, use only these HTML elements:
+- <h2>, <h3> for section headings (never <h1> — that's the lesson title)
+- <p> for paragraphs
+- <ul><li> for unordered lists, <ol><li> for ordered lists
+- <strong> for bold, <em> for italic
+- <blockquote> for callouts or important notes
+- <code> for inline code, <pre><code> for code blocks
+- <a href="..."> for links (only if referencing a specific URL the teacher provided)
+
+Do NOT use: <div>, <span>, <table>, <img>, <iframe>, <script>, <style>,
+or any custom elements. Content is sanitized before storage — unsupported
+tags will be stripped.
+```
+
+This aligns with TipTap's default schema and the existing `sanitizeHtml()` / `sanitizeOptionalHtml()` functions used throughout the codebase.
+
+### Content Length Guidance
+
+The system prompt includes guidance on lesson length:
+
+```
+When writing lesson content:
+- Aim for 800-2,000 words per lesson (roughly 3-8 minutes reading time)
+- Use headings to break content into scannable sections
+- Include practical examples where relevant
+- For plan execution: match the depth to the lesson description — a lesson
+  described as "brief overview" should be shorter than one described as
+  "deep dive into..."
+```
+
+---
+
 ## Token-Based Usage Tracking
 
 AI usage is metered by tokens. Each org gets a monthly base allowance from their plan, with the option to buy extra credit packs when exhausted.
@@ -449,10 +541,68 @@ Four layers:
 
 ---
 
+## Observability: Tinybird Event Tracking
+
+Agent actions are tracked via **Tinybird** — a real-time analytics backend for high-volume event data. This keeps observability data out of the main Postgres database and provides instant SQL-based querying for debugging and analytics.
+
+### Why Tinybird (not Postgres)
+
+- Agent events are **append-only, high-volume** — every tool call, every conversation turn generates an event. This is analytics workload, not transactional.
+- The main Postgres DB should not carry this load. Token usage tracking (`ai_token_usage` table) stays in Postgres because it's used for balance enforcement (transactional). Observability events go to Tinybird.
+- Tinybird provides **real-time ingestion** via HTTP API and **instant SQL querying** — investigate issues within seconds of them happening.
+- Dashboards and alerts can be built on top without custom infrastructure.
+
+### Events to Track
+
+| Event | When | Key Fields |
+|-------|------|------------|
+| `agent.chat.started` | Chat request received | `orgId`, `userId`, `courseId`, `role`, `hasDocument`, `messageCount` |
+| `agent.chat.completed` | Stream finished | `orgId`, `userId`, `courseId`, `promptTokens`, `completionTokens`, `model`, `durationMs`, `toolCallCount` |
+| `agent.chat.error` | LLM or service error | `orgId`, `userId`, `courseId`, `errorCode`, `errorMessage`, `model` |
+| `agent.tool.called` | Tool execution starts | `orgId`, `userId`, `courseId`, `toolName`, `toolArgs` (sanitized) |
+| `agent.tool.completed` | Tool execution finishes | `orgId`, `userId`, `courseId`, `toolName`, `success`, `durationMs`, `resultSummary` |
+| `agent.tool.failed` | Tool execution errors | `orgId`, `userId`, `courseId`, `toolName`, `errorCode`, `errorMessage` |
+| `agent.document.uploaded` | Document parsed | `orgId`, `userId`, `courseId`, `mimeType`, `fileSize`, `wordCount`, `truncated` |
+| `agent.plan.generated` | Course plan proposed | `orgId`, `userId`, `courseId`, `sectionCount`, `lessonCount` |
+| `agent.plan.executed` | Plan execution completed | `orgId`, `userId`, `courseId`, `sectionsCreated`, `lessonsCreated`, `exercisesCreated`, `durationMs`, `completedFully` |
+
+### Ingestion Pattern
+
+Events are sent to Tinybird via its **Events API** (`POST https://api.tinybird.co/v0/events`). The API fires events asynchronously (fire-and-forget) — agent performance is never blocked by analytics.
+
+```typescript
+// Thin wrapper in apps/api/src/utils/tinybird.ts
+async function trackAgentEvent(eventName: string, data: Record<string, unknown>) {
+  if (!TINYBIRD_TOKEN) return; // Skip silently when not configured (self-hosted)
+  fetch(`${TINYBIRD_BASE_URL}/v0/events?name=${eventName}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${TINYBIRD_TOKEN}` },
+    body: JSON.stringify({ ...data, timestamp: new Date().toISOString() })
+  }).catch(() => {}); // Fire-and-forget, never block the agent
+}
+```
+
+### Environment Variables
+
+- `TINYBIRD_TOKEN` — Tinybird API token for event ingestion
+- `TINYBIRD_BASE_URL` — Tinybird API base URL (default: `https://api.tinybird.co`)
+
+When not configured (self-hosted, or dev environments), events are silently skipped. No errors, no impact on functionality.
+
+### What This Enables
+
+- **Debugging**: "Teacher X says the AI created wrong content" -> query `agent.tool.called` and `agent.tool.completed` events for that user + course to see exactly which tools fired and what arguments were passed
+- **Usage analytics**: aggregate tool call frequency, popular actions, average conversation length per org
+- **Error monitoring**: track `agent.chat.error` and `agent.tool.failed` rates by model, tool, or org
+- **Plan execution monitoring**: track `agent.plan.executed` to see completion rates, average plan sizes, how often teachers modify vs. accept plans as-is
+- **Cost analysis**: correlate token usage with tool call patterns to understand what drives cost
+
+---
+
 ## Self-Hosted vs Cloud
 
 - **Cloud**: AI assistant enabled by default. ClassroomIO provides the LLM API key server-side. Usage metered per plan tier.
-- **Self-hosted**: AI assistant **disabled by default**. To enable, admin sets `AI_API_KEY` and optionally `AI_PROVIDER` / `AI_MODEL` in env. When configured, assistant becomes available. When not configured, button is hidden. No token metering for self-hosted (user's own API key, their cost).
+- **Self-hosted**: AI assistant **disabled by default**. To enable, admin sets at least one of `OPENAI_API_KEY`, `GOOGLE_API_KEY`, or `ANTHROPIC_API_KEY`. The dashboard model picker exposes Gemini 2.5 Flash (Google) and GPT-4o (OpenAI); each option requires its own provider key. Anthropic is supported in code but not exposed in the picker. The assistant button is hidden when no provider key is set. No token metering for self-hosted (user's own API key, their cost).
 
 ---
 
@@ -478,7 +628,7 @@ Right sidebar using `@cio/ui` Sheet (`side="right"`, ~420px). Does NOT replace t
 
 - Attachment icon next to the text input (paperclip icon)
 - **BASIC plan users**: clicking the attachment icon triggers the upgrade modal (`openUpgradeModal()`). File picker does not open. A subtle tooltip or label can hint "Upgrade to upload documents".
-- **EARLY_ADOPTER+ users**: clicking opens file picker filtered to `.pdf, .docx`
+- **EARLY_ADOPTER+ users**: clicking opens file picker filtered to `.pdf, .docx, .pptx`
 - **Client-side size check**: if selected file exceeds 5MB, show inline error below the input: "File is too large. Maximum size is 5MB." File is not uploaded.
 - Selected file shows as a chip above the input: `[Biology-Textbook.pdf (24 pages)] [x]`
 - On send, file is uploaded first (`POST /agent/upload`), then `documentId` is included in the chat message
@@ -592,7 +742,7 @@ New route domain: `/agent`
 |--------|-------|-------------|------|
 | `GET` | `/agent/status` | Feature flag + role + usage info | auth + orgMember |
 | `POST` | `/agent/chat` | Main chat endpoint (SSE stream) | auth + orgMember + courseMember |
-| `POST` | `/agent/upload` | Upload PDF/DOCX for parsing | auth + orgMember + courseTeamMember |
+| `POST` | `/agent/upload` | Upload PDF/DOCX/PPTX for parsing (EARLY_ADOPTER+ only) | auth + orgMember + courseTeamMember |
 | `GET` | `/agent/usage` | Detailed usage stats | auth + orgMember |
 | `POST` | `/agent/credits` | Purchase credits | auth + orgAdmin |
 
@@ -617,7 +767,7 @@ Flow:
 2. Check token balance
 3. If `documentId` provided, fetch extracted text from Redis and inject into context
 4. Load tools + system prompt based on role
-5. Call `streamText()` with `maxSteps: 10` (plan execution may need more steps than simple queries)
+5. Call `streamText()` with `maxSteps: 15`. Plan execution uses multi-round continuation (see Plan Mode section).
 6. Stream response to client
 7. Record token usage after completion
 
@@ -642,11 +792,15 @@ Registered in `apps/api/src/app.ts` as `.route('/agent', agentRouter)`.
 
 ## LLM Provider Abstraction
 
-Configurable via environment variables:
+Per-provider API keys configure which models are available:
 
-- `AI_PROVIDER` — `openai` | `anthropic` (default: `openai`)
-- `AI_API_KEY` — the provider API key
-- `AI_MODEL` — model name override (default: provider's recommended model)
+- `OPENAI_API_KEY` — enables GPT-4o (and `gpt-4o-mini` for title generation)
+- `GOOGLE_API_KEY` — enables Gemini 2.5 Flash
+- `ANTHROPIC_API_KEY` — enables Claude (Sonnet 4.5 / Haiku for titles); supported in code, not in the picker UI
+- `TINYBIRD_TOKEN` — Tinybird API token for event ingestion (optional; events silently skipped when not set)
+- `TINYBIRD_BASE_URL` — Tinybird API base URL (default: `https://api.tinybird.co`)
+
+The dashboard model picker (above the chat input) is persisted per browser in `localStorage` under `classroomio-ai-chat-model`. Each chat request sends a `model` field; `apps/api/src/routes/agent/chat.ts` looks it up in `AGENT_MODELS` (`packages/utils/src/agent-models`) to resolve provider + backend model id, then 503s with `AI_NOT_CONFIGURED` if that provider's key is missing. Anthropic stays in `AGENT_MODELS` so backend code keeps working; it's gated out of the UI by the `UI_PICKER_MODEL_IDS` subset.
 
 Provider factory in `packages/ai-assistant` normalizes into a single `LanguageModel` instance for `streamText()`.
 
@@ -724,27 +878,29 @@ Plan Mode works without a document too — the teacher can describe what they wa
 
 ### Phase 1: Foundation
 
-- Create `packages/ai-assistant` with types (`AgentRole`, `AgentContext`, `CoursePlan`), provider factory, tool registry (9 v1 tools), system prompt with Plan/Agent mode instructions and no-hallucination boundary
+- Create `packages/ai-assistant` with types (`AgentRole`, `AgentContext`, `CoursePlan`), provider factory, tool registry (9 v1 tools), system prompt with Plan/Agent mode instructions, content format guidance, locale handling, and no-hallucination boundary
 - Add `ai_token_usage` and `ai_credit_balance` tables to DB schema
 - Add `GET /agent/status` and `POST /agent/chat` route skeleton with role detection (students get 403 in v1) and token balance check
-- Add `POST /agent/upload` route with PDF/DOCX parsing (`pdf-parse`, `mammoth`)
-- Add Redis key management for uploaded document text
+- Add `POST /agent/upload` route with PDF/DOCX/PPTX parsing (`pdf-parse`, `mammoth`, `pptx-parser`), 100K char text truncation, EARLY_ADOPTER+ plan gating
+- Add Redis key management for uploaded document text (one document per conversation, replacement on re-upload)
+- Set up Tinybird data sources and add `trackAgentEvent()` utility
 - Add "AI Assistant" button to course sidebar (gated on status endpoint + plan check)
 - Build right sidebar Sheet with basic chat UI (hardcoded echo responses)
-- Add file upload UI (attachment icon, file chip, upload progress)
+- Add file upload UI (attachment icon, file chip, upload progress, plan-gated upgrade modal for BASIC users)
 
 ### Phase 2: Agent Core
 
 - Implement provider factory (OpenAI + Anthropic) using `createModel(config)`
-- Wire 9 v1 tools to existing services via `streamText()` with `maxSteps: 10`
-- Implement `generate_course_plan` tool with `CoursePlan` JSON schema
-- Record token usage after each call; enforce balance check before each call
+- Wire 9 v1 tools to existing services via `streamText()` with `maxSteps: 15`
+- Implement `generate_course_plan` tool with `CoursePlan` JSON schema and token cost estimation
+- Implement multi-round plan execution with automatic continuation and partial failure/resume
+- Add existing course content detection — append vs. inform teacher before plan execution
+- Record token usage after each call; enforce balance check before each call (including mid-plan checks)
+- Instrument all tool calls and chat completions with Tinybird events
 - Connect chat UI to streaming API via `@ai-sdk/svelte` `Chat` class
 - Render streamed tokens and tool status cards
-- Build Plan View component (structured plan card with sections/lessons)
-- Build Agent Mode progress card (checklist with real-time updates)
-- Implement "Implement Plan" button -> plan execution flow
-- Add usage meter to AI assistant sidebar header
+- Build Plan View component (structured plan card with sections/lessons + cost estimate + "Implement Plan" / "Ask for Changes")
+- Build Agent Mode progress card (checklist with real-time updates, persists across multi-round execution, shows partial completion state + "Resume" button on failure)
 - Implement `onFinish` store refresh for course content tree, lessons, exercises
 
 ### Phase 3: Polish + Safeguards + Credits
@@ -784,9 +940,12 @@ Plan Mode works without a document too — the teacher can describe what they wa
 | `ai` | `packages/ai-assistant`, `apps/api` | Vercel AI SDK core (`streamText`, `tool`, types) |
 | `@ai-sdk/svelte` | `apps/dashboard` | Svelte 5 `Chat` class for streaming chat |
 | `@ai-sdk/openai` | `packages/ai-assistant` | OpenAI provider |
+| `@ai-sdk/google` | `packages/ai-assistant` | Google (Gemini) provider |
 | `@ai-sdk/anthropic` | `packages/ai-assistant` | Anthropic provider |
 | `pdf-parse` | `apps/api` | PDF text extraction |
 | `mammoth` | `apps/api` | DOCX text extraction |
+| `pptx-parser` | `apps/api` | PPTX text extraction |
+| `@tinybird-sdk/node` | `apps/api` | Tinybird event ingestion (or raw fetch — see Observability section) |
 
 ---
 
@@ -797,6 +956,7 @@ Plan Mode works without a document too — the teacher can describe what they wa
 - `packages/ai-assistant/` — entire new package (types, providers, tools, prompts)
 - `apps/api/src/routes/agent/` — agent route handlers (chat, upload, status, usage, credits)
 - `apps/api/src/services/agent/` — agent service (document parsing, token tracking)
+- `apps/api/src/utils/tinybird.ts` — Tinybird event tracking utility
 - `apps/dashboard/src/lib/features/ai-assistant/` — UI components (sheet, chat, plan view, progress card, file upload)
 
 ### Modified files
@@ -818,11 +978,17 @@ Plan Mode works without a document too — the teacher can describe what they wa
 
 ## Success Criteria
 
-- Teacher can upload a PDF/DOCX and get a proposed course structure within 30 seconds
+- Teacher can upload a PDF/DOCX/PPTX and get a proposed course structure within 30 seconds
+- BASIC plan users see upgrade modal when attempting to upload a document
 - Teacher can review, edit, and approve the plan before any content is created
-- Agent can execute an approved plan end-to-end: creating sections, lessons, and content
+- Agent shows estimated token cost before plan execution
+- Agent can execute an approved plan end-to-end: creating sections, lessons, and content, with multi-round continuation for large plans
+- Plan execution can resume after failure (token exhaustion, network error, or manual stop)
+- Agent checks for existing course content and handles append correctly
+- Generated lesson content renders correctly in the TipTap editor
 - Teacher can see real-time progress during plan execution
 - All standard agent actions work: update lesson text, generate questions, draft lessons
 - No user can modify another org's data; all actions pass permission checks
 - Self-hosted instances can enable/disable the assistant via env var
 - Token usage is tracked and metered per org plan
+- All agent events (tool calls, errors, plan executions) are tracked in Tinybird for observability

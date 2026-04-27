@@ -2,6 +2,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { sanitizeHtml, sanitizeOptionalHtml, sanitizeUnknownStrings } from '@api/utils/sanitize-html';
 import type { TExercise, TExerciseTemplate, TNewOption, TNewQuestion } from '@cio/db/types';
 import type { TExerciseCreate, TExerciseUpdate } from '@cio/utils/validation/exercise';
+import { getLessonById } from '@cio/db/queries/lesson';
 import {
   createExercises,
   syncOptionIdSequence,
@@ -63,6 +64,20 @@ function sanitizeExercisePayload(data: TExerciseCreate | TExerciseUpdate): TExer
     description: sanitizeOptionalHtml(data.description),
     questions: sanitizeExerciseQuestions(data.questions)
   };
+}
+
+async function resolveExerciseCourseId(exercise: TExercise): Promise<string | null> {
+  if (exercise.courseId) {
+    return exercise.courseId;
+  }
+
+  if (!exercise.lessonId) {
+    return null;
+  }
+
+  const lesson = await getLessonById(exercise.lessonId);
+
+  return lesson?.courseId ?? null;
 }
 
 /**
@@ -358,6 +373,39 @@ export async function deleteExerciseService(exerciseId: string): Promise<TExerci
     if (exercise.courseId) {
       await touchCourseUpdatedAt(exercise.courseId);
     }
+
+    return deleted;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to delete exercise',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+export async function deleteExerciseForCourseService(courseId: string, exerciseId: string): Promise<TExercise> {
+  try {
+    const exercise = await getExerciseById(exerciseId);
+    if (!exercise) {
+      throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
+    }
+
+    const exerciseCourseId = await resolveExerciseCourseId(exercise);
+    if (exerciseCourseId !== courseId) {
+      throw new AppError('Exercise does not belong to this course', ErrorCodes.EXERCISE_NOT_FOUND, 404);
+    }
+
+    const deleted = await deleteExercise(exerciseId);
+    if (!deleted) {
+      throw new AppError('Failed to delete exercise', ErrorCodes.INTERNAL_ERROR, 500);
+    }
+
+    await touchCourseUpdatedAt(courseId);
 
     return deleted;
   } catch (error) {

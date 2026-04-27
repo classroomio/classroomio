@@ -15,8 +15,6 @@ export const load = async ({ parent, locals, cookies }) => {
     classroomio.program.$get({ query: { organizationId: orgId } }, getApiHeaders(cookies, orgId))
   );
 
-  console.log('result', result.ok ? result.body.data : []);
-
   return {
     programs: result.ok ? result.body.data : []
   };

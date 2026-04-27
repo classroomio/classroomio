@@ -2,6 +2,7 @@ import * as CONSTANTS from './constants';
 import * as schema from '@db/schema';
 
 import { admin, anonymous } from 'better-auth/plugins';
+import { customSession } from 'better-auth/plugins/custom-session';
 import { sendChangeEmailConfirmation, sendVerificationEmail } from './auth/email-verification';
 
 import { betterAuth } from 'better-auth/minimal';
@@ -13,6 +14,8 @@ import { loginLink } from './auth/plugins/login-link';
 import { sso } from '@better-auth/sso';
 import { syncUserWithProfile } from './auth/hooks/sync-user';
 import { tokenExchange } from './auth/plugins/token-exchange';
+import { trackLoginHook } from './auth/hooks/track-login';
+import { getUserOrgRolesMap } from './queries/organization/organization';
 
 export const auth: ReturnType<typeof betterAuth> = betterAuth({
   baseURL: CONSTANTS.BASE_URL,
@@ -76,6 +79,18 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
           await syncUserWithProfile(user);
         }
       }
+    },
+    session: {
+      create: {
+        after: async (session) => {
+          await trackLoginHook(session);
+        }
+      },
+      update: {
+        after: async (session) => {
+          await trackLoginHook(session);
+        }
+      }
     }
   },
   plugins: [
@@ -86,6 +101,20 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
       // via the admin API (auth.api.registerSSOProvider)
     }),
     loginLink(),
-    tokenExchange()
+    tokenExchange(),
+    // Attaches the user's org memberships ({ [orgId]: roleId }) to the session
+    // so org-scoped middlewares can authorize without a per-request DB query.
+    // Refreshes when the session cookie cache expires (see session.cookieCache.maxAge).
+    customSession(async ({ user, session }) => {
+      let orgRoles: Record<string, number> = {};
+      try {
+        if (user?.id) {
+          orgRoles = await getUserOrgRolesMap(user.id);
+        }
+      } catch (error) {
+        console.error('customSession: failed to load orgRoles', error);
+      }
+      return { user, session, orgRoles };
+    })
   ]
 });

@@ -41,7 +41,7 @@
   <main>
     <BoldHero {hero} />
 
-    <section class="ui:relative ui:bg-muted/30 ui:px-6 ui:overflow-hidden">
+    <section class="ui:relative ui:bg-muted/30 ui:px-6 ui:overflow-hidden ui:mb-12">
       <DotPattern class="ui:opacity-[0.15]" />
       <div class="ui:relative ui:max-w-7xl ui:mx-auto">
         <div class="ui:flex ui:items-end ui:justify-between ui:mb-12">
@@ -108,7 +108,7 @@
                       variant="outline"
                       class="ui:rounded-lg ui:font-bold ui:text-sm {disableCourseLinks
                         ? 'ui:pointer-events-none'
-                        : 'ui:group-hover:bg-primary ui:group-hover:text-primary-foreground ui:transition-colors'}"
+                        : 'ui:hover:bg-primary ui:hover:text-primary-foreground ui:group-hover:bg-primary ui:group-hover:text-primary-foreground ui:transition-colors'}"
                       aria-disabled={disableCourseLinks}
                       tabindex={disableCourseLinks ? -1 : undefined}
                     >

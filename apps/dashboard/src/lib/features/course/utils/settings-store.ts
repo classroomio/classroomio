@@ -6,7 +6,7 @@ type CourseSettings = {
   courseTitle: string;
   courseDescription: string;
   grading: boolean;
-  type: 'LIVE_CLASS' | 'SELF_PACED';
+  type: 'LIVE_CLASS' | 'SELF_PACED' | 'COMPLIANCE';
   allowNewStudents: boolean;
   tabs: { id: number; name: string }[];
   lessonDownload: boolean;

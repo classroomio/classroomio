@@ -37,7 +37,9 @@
   import UpdateDescription from '$features/course/components/exercise/update-description.svelte';
   import { ContentNavigationActions } from '$features/course/components/lesson';
   import { RefreshPageData, RoleBasedSecurity } from '$features/ui';
+  import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
+  import { refreshExercisePageData } from '$features/course/utils/exercise-page-utils';
   import { Empty } from '@cio/ui/custom/empty';
   import VideoIcon from '@lucide/svelte/icons/video';
   import {
@@ -48,6 +50,7 @@
   import type { SubmissionListItem } from '$features/course/utils/types';
   import { Badge } from '@cio/ui/base/badge';
   import { isAutoGradableQuestionType } from '@cio/question-types';
+  import * as Dialog from '@cio/ui/base/dialog';
 
   interface Props {
     exerciseId?: string;
@@ -81,7 +84,22 @@
   let preview: boolean = $state(false);
   let shouldDeleteExercise = $state(false);
   let isSaving = $state(false);
+  let isDeleting = $state(false);
   let selectedTab = $state<ExerciseTab>('questions');
+
+  async function handleDeleteExercise() {
+    if (!courseApi.course?.id) return;
+    isDeleting = true;
+
+    await exerciseApi.delete(courseApi.course.id, exerciseId);
+
+    if (exerciseApi.success) {
+      courseApi.removeContentItem(exerciseId, ContentType.Exercise);
+      goBack();
+    }
+    isDeleting = false;
+    shouldDeleteExercise = false;
+  }
 
   function patchExerciseListItemLocally() {
     const nonDeletedQuestionsCount = ($questionnaire.questions || []).filter((question) => !question.deletedAt).length;
@@ -231,7 +249,7 @@
   );
   const isExerciseUnlocked = $derived(exerciseContentItem?.isUnlocked ?? false);
 
-  const isSelfPacedCourse = $derived(courseApi.course?.type === 'SELF_PACED');
+  const isSelfPacedCourse = $derived(isSelfPacedLikeCourse(courseApi.course?.type));
   const activeQuestionTypeIds = $derived(
     ($questionnaire.questions ?? []).filter((q) => !q.deletedAt).map((q) => getQuestionTypeId(q))
   );
@@ -255,7 +273,7 @@
       <span>{$questionnaire.title || 'Exercise'}</span>
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         {#if teacherAutoGradeBadge === 'auto'}
-          <Badge variant="success" class="font-normal">
+          <Badge variant="outline" class="font-normal">
             {$t('course.navItem.lessons.exercises.all_exercises.auto_graded_badge')}
           </Badge>
         {:else if teacherAutoGradeBadge === 'manual'}
@@ -323,7 +341,7 @@
           </div>
         {/if}
 
-        <RefreshPageData />
+        <RefreshPageData onRefresh={() => refreshExercisePageData(courseApi.course?.id ?? '', exerciseId)} />
       </RoleBasedSecurity>
     </div>
   </Page.Action>
@@ -356,14 +374,13 @@
             <UnderlineTabs.Trigger value="submissions">
               {$t('course.navItem.lessons.exercises.all_exercises.analytics.submissions')}
 
-              <Badge>{submissions.length}</Badge>
+              <Badge variant="outline">{submissions.length}</Badge>
             </UnderlineTabs.Trigger>
           </UnderlineTabs.List>
           <UnderlineTabs.Content value="questions">
             <UpdateDescription {preview} />
             {#if !preview}
               <EditMode
-                bind:shouldDeleteExercise
                 {exerciseId}
                 {goBack}
                 {requiresPositivePointsForAutoGrade}
@@ -380,6 +397,35 @@
             <Submissions bind:exerciseId {submissions} />
           </UnderlineTabs.Content>
         </UnderlineTabs.Root>
+
+        <Dialog.Root
+          bind:open={shouldDeleteExercise}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) shouldDeleteExercise = false;
+          }}
+        >
+          <Dialog.Content class="w-2/4">
+            <Dialog.Header>
+              <Dialog.Title>{$t('course.navItem.lessons.exercises.all_exercises.edit_mode.delete_modal')}</Dialog.Title>
+            </Dialog.Header>
+            <form onsubmit={(e) => e.preventDefault()}>
+              <h1 class="text-xl dark:text-white">
+                {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.sure')}
+              </h1>
+
+              <div class="mt-5 flex items-center justify-between">
+                <Button variant="outline" type="submit" onclick={() => (shouldDeleteExercise = false)}>
+                  {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.no')}
+                </Button>
+                <Button disabled={isDeleting} onclick={handleDeleteExercise} loading={isDeleting}>
+                  {isDeleting
+                    ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.deleting')
+                    : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.yes')}
+                </Button>
+              </div>
+            </form>
+          </Dialog.Content>
+        </Dialog.Root>
       {/if}
     </div>
   {/snippet}

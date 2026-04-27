@@ -49,7 +49,9 @@
             {@const primaryTag = getPrimaryCourseTag(course)}
             <BlurFade delay={0.1 * index} once={true}>
               <a
-                href={disableCourseLinks ? undefined : course.link || `/course/${course.slug || course.id}`}
+                href={disableCourseLinks
+                  ? undefined
+                  : course.link || (course.slug ? `/course/${course.slug}` : undefined)}
                 class="ui:block ui:h-full ui:no-underline {disableCourseLinks
                   ? 'ui:cursor-default'
                   : 'ui:transition-colors'}"

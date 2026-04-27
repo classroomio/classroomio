@@ -29,10 +29,12 @@
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { toggleConfetti } from '$features/ui/confetti/store';
   import { ContentType } from '@cio/utils/constants/content';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { openCourseCompletionModal } from '$features/course/store/course-completion-modal';
+  import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
   import { toExerciseQuestionModel } from './question-type-utils';
   import { getExerciseQuestionLabels } from './question-labels';
   import axios from 'axios';
@@ -151,6 +153,9 @@
           }));
         }
         courseApi.updateContentItem(exerciseId, ContentType.Exercise, { isComplete: true });
+
+        toggleConfetti();
+        setTimeout(toggleConfetti, 3000);
 
         const allContentItems = getOrderedNavigableContent(courseApi.course);
         const allComplete =
@@ -573,7 +578,7 @@
             </div>
           </div>
         </div>
-      {:else if courseApi.course?.type === 'SELF_PACED'}
+      {:else if isSelfPacedLikeCourse(courseApi.course?.type)}
         <Badge
           variant="success"
           title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_submitted')}

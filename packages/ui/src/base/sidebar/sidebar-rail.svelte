@@ -6,6 +6,8 @@
   let {
     ref = $bindable(null),
     class: className,
+    onclick,
+    onpointerdown,
     children,
     ...restProps
   }: WithElementRef<HTMLAttributes<HTMLButtonElement>, HTMLButtonElement> = $props();
@@ -19,7 +21,15 @@
   data-slot="sidebar-rail"
   aria-label="Toggle Sidebar"
   tabIndex={-1}
-  onclick={sidebar.toggle}
+  onclick={(event) => {
+    if (onclick) {
+      onclick(event);
+      return;
+    }
+
+    sidebar.toggle();
+  }}
+  {onpointerdown}
   title="Toggle Sidebar"
   class={cn(
     'ui:hover:after:bg-sidebar-border ui:absolute ui:inset-y-0 ui:z-20 ui:hidden ui:w-4 ui:-translate-x-1/2 ui:transition-all ui:ease-linear ui:after:absolute ui:after:inset-y-0 ui:after:left-[calc(1/2*100%-1px)] ui:after:w-[2px] ui:sm:flex ui:group-data-[side=left]:-right-4 ui:group-data-[side=right]:left-0',

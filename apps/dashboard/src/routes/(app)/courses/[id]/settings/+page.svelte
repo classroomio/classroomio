@@ -23,7 +23,7 @@
 </script>
 
 <Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
-  <Page.Header class="sticky top-13 z-10 bg-white">
+  <Page.Header isSticky class="ui:bg-background z-10">
     <Page.HeaderContent>
       <Page.Title>
         {$t('course.navItem.settings.heading')}

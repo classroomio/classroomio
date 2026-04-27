@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite dev --port 5180",
     "prebuild": "pnpm --filter @cio/ui run build",
-    "build": "rm -rf dist && vite build",
+    "build:question-type-picker": "vite build --mode question-type-picker",
+    "build:course-widget": "vite build --mode course-widget",
+    "build": "rm -rf dist && pnpm build:question-type-picker && pnpm build:course-widget",
     "format": "prettier --write .",
     "preview": "vite preview --port 4180",
     "upload:embeds": "tsx scripts/upload-embeds.ts",
@@ -26,6 +28,7 @@
   },
   "dependencies": {
     "@cio/ui": "workspace:*",
+    "@cio/utils": "workspace:*",
     "@cio/question-types": "workspace:*",
     "@lucide/svelte": "^0.562.0"
   }

@@ -19,7 +19,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | 1 | `prd/ai-course-assistant` | todo |
 | - | 2 | `prd/compliance-training-platform` | todo |
 | - | 4 | `prd/course-content-search` | todo |
-| - | 6 | `prd/course-widget-embed` | todo |
+| - | 6 | `prd/course-widget-embed` | in-progress (core API, dashboard, public runtime, and embed build flow done; iframe preview parity, Shadow DOM, tests, and rollout hardening left) |
 | - | 9 | `prd/onboarding-ai-bootstrap` | todo |
 | - | 10 | `prd/pricing-improvements` | todo |
 | - | 11 | `prd/public-api` | todo |

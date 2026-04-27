@@ -2,9 +2,9 @@ import 'dotenv/config';
 
 import adapterAuto from '@sveltejs/adapter-auto';
 import adapterNode from '@sveltejs/adapter-node';
+import { getCspDomains } from './src/lib/utils/csp-domains.js';
 import path from 'path';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import { getCspDomains } from './src/lib/utils/csp-domains.js';
 
 const isSelfHosted = process.env.PUBLIC_IS_SELFHOSTED === 'true';
 const IS_CLOUDFLARE = process.env.CI_ENVIRONMENT === 'cloudflare';
@@ -54,7 +54,8 @@ const config = {
         'object-src': ['none'],
         'base-uri': ['self'],
         'form-action': ['self'],
-        'frame-ancestors': ['none'],
+        // 'self' allows same-origin iframes (e.g. widget preview at /widget-preview). 'none' blocks all embedding.
+        'frame-ancestors': ['self'],
         'upgrade-insecure-requests': true
       },
       reportOnly: {
@@ -78,7 +79,7 @@ const config = {
         'object-src': ['none'],
         'base-uri': ['self'],
         'form-action': ['self'],
-        'frame-ancestors': ['none'],
+        'frame-ancestors': ['self'],
         'report-uri': ['/csp-report']
       }
     }

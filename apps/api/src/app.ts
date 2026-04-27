@@ -22,12 +22,22 @@ import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
 import { v1Router } from '@api/routes/v1';
 import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
+import { publicWidgetsRouter } from '@api/routes/widgets';
 import { prettyJSON } from 'hono/pretty-json';
 import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
 import { signupGuard } from '@api/middlewares/signup-guard';
 import { programRouter } from '@api/routes/program';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
+import {
+  agentStatusRouter,
+  agentChatRouter,
+  agentUploadRouter,
+  agentUsageRouter,
+  agentCreditsRouter,
+  agentHistoryRouter
+} from '@api/routes/agent';
+import { internalComplianceRouter } from '@api/routes/internal/compliance';
 
 // Create Hono app with chaining for RPC support
 export const app = new Hono()
@@ -53,6 +63,7 @@ export const app = new Hono()
     if (!session) {
       c.set('user', null);
       c.set('session', null);
+      c.set('orgRoles', {});
       await next();
 
       return;
@@ -60,6 +71,7 @@ export const app = new Hono()
 
     c.set('user', session.user);
     c.set('session', session.session);
+    c.set('orgRoles', (session as { orgRoles?: Record<string, number> }).orgRoles ?? {});
     await next();
   })
 
@@ -99,6 +111,14 @@ export const app = new Hono()
   .route('/public-api/v1', v1Router)
   .route('/program', programRouter)
   .route('/unsplash', unsplashRouter)
+  .route('/widgets', publicWidgetsRouter)
+  .route('/internal/compliance', internalComplianceRouter)
+  .route('/agent', agentStatusRouter)
+  .route('/agent', agentChatRouter)
+  .route('/agent', agentUploadRouter)
+  .route('/agent', agentUsageRouter)
+  .route('/agent', agentCreditsRouter)
+  .route('/agent', agentHistoryRouter)
 
   // Error handling
   .onError((err, c) => {

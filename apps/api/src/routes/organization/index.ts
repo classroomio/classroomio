@@ -4,3 +4,4 @@ export * from './tags';
 export * from './token-auth';
 export * from './course-import';
 export * from './automation';
+export * from './widgets';

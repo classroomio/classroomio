@@ -283,6 +283,7 @@
       const wasDeleted = await contentApi.deleteContent(courseId, { sectionId: deletingData.id });
       if (wasDeleted) {
         removeSection(deletingData.id);
+        snackbar.success('snackbar.lessons.section_deleted');
       }
       return;
     }
@@ -438,7 +439,7 @@
 <DeleteLessonConfirmation bind:openDeleteModal {deleteLesson} />
 
 <section
-  class="mx-auto w-full p-3 lg:w-11/12 lg:px-4"
+  class="mx-auto w-full p-3 lg:w-11/12"
   use:dndzone={{
     items: sections,
     flipDurationMs,
@@ -462,7 +463,8 @@
         : `${$t('course.navItem.lessons.add_lesson.unlock')} ${$t('course.navItem.lessons.add_lesson.all')}`
       : undefined}
     <div
-      class="border-border m-auto mb-3 max-w-xl rounded-md border transition dark:bg-neutral-800"
+      id={isUngrouped ? undefined : `section-${section.id}`}
+      class="border-border m-auto mb-3 max-w-xl scroll-mt-24 rounded-md border transition dark:bg-neutral-800"
       style={reorder ? 'border: 2px #1d4ed8 solid; border-style: dashed; cursor: grab;' : ''}
     >
       <SectionHeader
@@ -518,7 +520,7 @@
           {@const actionDisabled = Boolean($contentEditingStore && !isEditingItem)}
 
           <div
-            class="mb-2 flex min-h-[50px] max-w-xl items-start justify-between rounded-md border border-gray-200 px-3 py-1 transition"
+            class="ui:border mb-2 flex min-h-[50px] max-w-xl items-start justify-between rounded-md px-3 py-1 transition"
             style={reorder ? 'border: 2px #1d4ed8 solid; border-style: dashed; cursor: grab;' : ''}
             animate:flip={{ duration: flipDurationMs }}
           >

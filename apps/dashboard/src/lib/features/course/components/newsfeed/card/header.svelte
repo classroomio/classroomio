@@ -1,13 +1,12 @@
 <script lang="ts">
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
-  import * as Avatar from '@cio/ui/base/avatar';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
-  import UserIcon from '@lucide/svelte/icons/user';
 
   import { calDateDiff } from '$lib/utils/functions/date';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import { t } from '$lib/utils/functions/translations';
+  import { UserAvatar } from '@cio/ui/custom/user-avatar';
 
   import type { Feed } from '$features/course/utils/types';
   import { HTMLRender, RoleBasedSecurity } from '$features/ui';
@@ -25,19 +24,7 @@
 <div class="px-3 pt-3 pb-0">
   <div class="mb-2 flex justify-between">
     <span class="flex items-center gap-3">
-      <div class="h-9 w-9">
-        <Avatar.Root class="h-full w-full">
-          <Avatar.Image
-            src={feed.authorAvatarUrl ?? ''}
-            alt={$t('course.navItem.news_feed.user_avatar_alt')}
-            loading="lazy"
-            decoding="async"
-          />
-          <Avatar.Fallback aria-hidden="true">
-            <UserIcon class="text-muted-foreground h-5 w-5" />
-          </Avatar.Fallback>
-        </Avatar.Root>
-      </div>
+      <UserAvatar src={feed.authorAvatarUrl} />
       <span>
         <p class="text-base font-semibold capitalize">{feed.authorFullname || ''}</p>
         <p class="text-sm font-medium text-gray-600">{calDateDiff(feed.createdAt)}</p>

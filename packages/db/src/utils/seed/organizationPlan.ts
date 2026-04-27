@@ -26,3 +26,30 @@ export async function seedEnterpriseOrganizationPlan({ enterpriseOrgId }: { ente
   });
   console.log('   ✓ Inserted enterprise organization plan');
 }
+
+export async function seedEarlyAdopterOrganizationPlan({ earlyAdopterOrgId }: { earlyAdopterOrgId: string }) {
+  const existing = await db
+    .select()
+    .from(organizationPlan)
+    .where(
+      and(
+        eq(organizationPlan.orgId, earlyAdopterOrgId),
+        eq(organizationPlan.planName, 'EARLY_ADOPTER'),
+        eq(organizationPlan.isActive, true)
+      )
+    );
+
+  if (existing.length > 0) {
+    console.log('   ✓ Early adopter organization plan already exists, skipping');
+    return;
+  }
+
+  await db.insert(organizationPlan).values({
+    orgId: earlyAdopterOrgId,
+    planName: 'EARLY_ADOPTER',
+    isActive: true,
+    subscriptionId: 'seed-skillshare-test-early-adopter',
+    provider: 'seed'
+  });
+  console.log('   ✓ Inserted early adopter organization plan');
+}

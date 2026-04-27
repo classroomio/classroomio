@@ -39,6 +39,26 @@ function buildContentKey(item: { id: string; type: string }) {
   return `${item.type}-${item.id}`;
 }
 
+function normalizeDeleteItems<TItem extends { id: string; type: string }>(items: TItem[]): TItem[] {
+  const seenKeys = new Set<string>();
+  const uniqueItems: TItem[] = [];
+
+  for (const item of items) {
+    const itemKey = buildContentKey(item);
+    if (seenKeys.has(itemKey)) {
+      continue;
+    }
+
+    seenKeys.add(itemKey);
+    uniqueItems.push(item);
+  }
+
+  const exercises = uniqueItems.filter((item) => item.type === ContentType.Exercise);
+  const lessons = uniqueItems.filter((item) => item.type === ContentType.Lesson);
+
+  return [...exercises, ...lessons];
+}
+
 async function getCourseContentMap(courseId: string) {
   const contentItems = await getCourseContentItems(courseId);
   const contentMap = new Map<string, CourseContentItemRow>();
@@ -307,11 +327,14 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
       }
 
       const contentItems = await getCourseContentItems(courseId);
-      const itemsToDelete = contentItems.filter(
-        (item) =>
-          (item.type === ContentType.Lesson || item.type === ContentType.Exercise) && item.sectionId === sectionId
+      const itemsToDelete = normalizeDeleteItems(
+        contentItems.filter(
+          (item) =>
+            (item.type === ContentType.Lesson || item.type === ContentType.Exercise) && item.sectionId === sectionId
+        )
       );
 
+      console.log('Items to delete:', itemsToDelete);
       await db.transaction(async (tx) => {
         for (const item of itemsToDelete) {
           if (item.type === ContentType.Lesson) {
@@ -324,6 +347,7 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
 
           const deleted = await deleteExercise(item.id, tx);
           if (!deleted) {
+            console.log('delete exercise failed for id:', item.id);
             throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
           }
         }
@@ -343,9 +367,10 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
 
     const items = payload.items;
     await assertCourseContentItems(courseId, items);
+    const normalizedItems = normalizeDeleteItems(items);
 
     await db.transaction(async (tx) => {
-      for (const item of items) {
+      for (const item of normalizedItems) {
         if (item.type === ContentType.Lesson) {
           const deleted = await deleteLesson(item.id, tx);
           if (!deleted) {

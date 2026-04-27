@@ -16,8 +16,16 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 
 const BUCKET = 'assets';
 
-/** R2 object key prefix (no trailing slash). */
-const EMBED_WIDGET_PREFIX = 'embeds/question-type-picker';
+const EMBED_WIDGET_TARGETS = [
+  {
+    buildDirName: 'question-type-picker',
+    prefix: 'embeds/question-type-picker'
+  },
+  {
+    buildDirName: 'course-widget',
+    prefix: 'embeds/course-widget'
+  }
+] as const;
 
 /** Cloudflare allows a limited number of URLs per purge request. */
 const PURGE_URL_BATCH = 30;
@@ -88,10 +96,10 @@ async function purgeCloudflareCdnForUrls(urls: string[]): Promise<void> {
 
 class EmbedsUploader {
   private s3Client: S3Client | null = null;
-  private readonly buildDir: string;
+  private readonly buildRootDir: string;
 
   constructor() {
-    this.buildDir = join(process.cwd(), 'dist');
+    this.buildRootDir = join(process.cwd(), 'dist');
     this.initializeS3Client();
   }
 
@@ -138,7 +146,7 @@ class EmbedsUploader {
     if (filePath.match(/\.(js|mjs)$/)) {
       const baseName = filePath.split(/[/\\]/).pop() ?? filePath;
       // Stable bootstrap URL must revalidate quickly so new chunk hashes roll out after deploy.
-      if (baseName === 'question-type-picker.js') {
+      if (baseName === 'question-type-picker.js' || baseName === 'course-widget.js') {
         return 'public, max-age=300, must-revalidate';
       }
       return 'public, max-age=31536000, immutable';
@@ -167,17 +175,17 @@ class EmbedsUploader {
     return files;
   }
 
-  async uploadFile(relativePath: string): Promise<void> {
+  async uploadFile(targetPrefix: string, buildDir: string, relativePath: string): Promise<void> {
     if (!this.s3Client) {
       throw new Error('S3 client not initialized');
     }
 
-    const fullPath = join(this.buildDir, relativePath);
+    const fullPath = join(buildDir, relativePath);
     const content = readFileSync(fullPath);
     const contentType = this.getContentType(relativePath);
     const cacheControl = this.getCacheControl(relativePath);
-    const key = `${EMBED_WIDGET_PREFIX}/${relativePath.split('\\').join('/')}`;
-
+    const normalizedRelativePath = relativePath.split('\\').join('/');
+    const key = `${targetPrefix}/${normalizedRelativePath}`;
     const command = new PutObjectCommand({
       Bucket: BUCKET,
       Key: key,
@@ -191,36 +199,45 @@ class EmbedsUploader {
   }
 
   async uploadAll(): Promise<void> {
-    try {
-      statSync(this.buildDir);
-    } catch {
-      throw new Error(`Build directory not found: ${this.buildDir}. Run pnpm build in apps/embeds first.`);
-    }
-
     console.log('Uploading embeds to R2...');
-    console.log(`Build directory: ${this.buildDir}`);
-    console.log(`Key prefix: ${EMBED_WIDGET_PREFIX}/`);
+    console.log(`Build root directory: ${this.buildRootDir}`);
 
-    const files = this.getAllFiles(this.buildDir);
-    if (files.length === 0) {
-      throw new Error('No files in dist/. Run pnpm build first.');
-    }
-
-    console.log(`Found ${files.length} files to upload`);
-
+    const purgeUrls: string[] = [];
+    const publicBase = normalizePublicBaseUrl(process.env.EMBED_CDN_BASE_URL);
     const batchSize = 10;
-    for (let i = 0; i < files.length; i += batchSize) {
-      const batch = files.slice(i, i + batchSize);
-      await Promise.all(batch.map((file) => this.uploadFile(file)));
-      console.log(`Batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(files.length / batchSize)}`);
+
+    for (const target of EMBED_WIDGET_TARGETS) {
+      const buildDir = join(this.buildRootDir, target.buildDirName);
+
+      try {
+        statSync(buildDir);
+      } catch {
+        throw new Error(`Build directory not found: ${buildDir}. Run pnpm build in apps/embeds first.`);
+      }
+
+      console.log(`Target prefix: ${target.prefix}`);
+
+      const files = this.getAllFiles(buildDir);
+      if (files.length === 0) {
+        throw new Error(`No files found in ${buildDir}. Run pnpm build first.`);
+      }
+
+      console.log(`Found ${files.length} file(s) for ${target.buildDirName}`);
+
+      for (let i = 0; i < files.length; i += batchSize) {
+        const batch = files.slice(i, i + batchSize);
+        await Promise.all(batch.map((file) => this.uploadFile(target.prefix, buildDir, file)));
+        console.log(
+          `Batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(files.length / batchSize)} for ${target.buildDirName}`
+        );
+      }
+
+      purgeUrls.push(
+        ...files.map((relativePath) => `${publicBase}/${target.prefix}/${relativePath.split('\\').join('/')}`)
+      );
     }
 
     console.log('Embeds upload completed.');
-
-    const publicBase = normalizePublicBaseUrl(process.env.EMBED_CDN_BASE_URL);
-    const purgeUrls = files.map(
-      (relativePath) => `${publicBase}/${EMBED_WIDGET_PREFIX}/${relativePath.split('\\').join('/')}`
-    );
     await purgeCloudflareCdnForUrls(purgeUrls);
   }
 }
@@ -232,7 +249,8 @@ async function main(): Promise<void> {
     console.log(`
 Usage: tsx scripts/upload-embeds.ts
 
-Uploads apps/embeds/dist/* to R2 under ${EMBED_WIDGET_PREFIX}/
+Uploads widget-specific embed builds under:
+${EMBED_WIDGET_TARGETS.map((target) => `  - dist/${target.buildDirName} -> ${target.prefix}`).join('\n')}
 
 Environment (same as Storybook R2 upload):
   CLOUDFLARE_ACCESS_KEY
@@ -264,4 +282,4 @@ if (isMain) {
     });
 }
 
-export { EmbedsUploader, EMBED_WIDGET_PREFIX };
+export { EmbedsUploader, EMBED_WIDGET_TARGETS };

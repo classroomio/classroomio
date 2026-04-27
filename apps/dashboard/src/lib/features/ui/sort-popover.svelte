@@ -92,33 +92,35 @@
         </Button>
       </div>
 
-      <div class="space-y-2">
-        <p class="ui:text-muted-foreground text-xs font-semibold uppercase">
-          {$t('courses.tag_filters.sort')}
-        </p>
-        <div class="flex flex-wrap gap-2">
-          {#each sortOptions as option (option.value)}
-            <Button
-              type="button"
-              size="sm"
-              variant={sortKey === option.value ? 'secondary' : 'outline'}
-              onclick={() => setSortKey(option.value)}
-            >
-              {option.label}
-            </Button>
-          {/each}
+      {#if sortOptions.length > 0}
+        <div class="space-y-2">
+          <p class="ui:text-muted-foreground text-xs font-semibold uppercase">
+            {$t('courses.tag_filters.sort')}
+          </p>
+          <div class="flex flex-wrap gap-2">
+            {#each sortOptions as option (option.value)}
+              <Button
+                type="button"
+                size="sm"
+                variant={sortKey === option.value ? 'secondary' : 'outline'}
+                onclick={() => setSortKey(option.value)}
+              >
+                {option.label}
+              </Button>
+            {/each}
+          </div>
         </div>
-      </div>
 
-      <div class="space-y-2">
-        <p class="ui:text-muted-foreground text-xs font-semibold uppercase">
-          {$t('courses.tag_filters.order')}
-        </p>
-        <ToggleGroup.Root type="single" variant="outline" size="sm" value={selectedOrder} onValueChange={setOrder}>
-          <ToggleGroup.Item value="asc">{$t('courses.tag_filters.ascending')}</ToggleGroup.Item>
-          <ToggleGroup.Item value="desc">{$t('courses.tag_filters.descending')}</ToggleGroup.Item>
-        </ToggleGroup.Root>
-      </div>
+        <div class="space-y-2">
+          <p class="ui:text-muted-foreground text-xs font-semibold uppercase">
+            {$t('courses.tag_filters.order')}
+          </p>
+          <ToggleGroup.Root type="single" variant="outline" size="sm" value={selectedOrder} onValueChange={setOrder}>
+            <ToggleGroup.Item value="asc">{$t('courses.tag_filters.ascending')}</ToggleGroup.Item>
+            <ToggleGroup.Item value="desc">{$t('courses.tag_filters.descending')}</ToggleGroup.Item>
+          </ToggleGroup.Root>
+        </div>
+      {/if}
 
       {@render additionalContent?.()}
     </div>

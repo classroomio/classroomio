@@ -127,38 +127,36 @@
     {/if}
   </div>
 
-  {#if programs.length > 0}
-    <div class="space-y-3">
-      <Label class="text-sm font-medium">{$t('audience.import.program_access')}</Label>
-      <RadioGroup.Root bind:value={programAccessMode} class="space-y-2">
-        <div class="flex items-center gap-2">
-          <RadioGroup.Item value="none" id="program-none" />
-          <Label for="program-none" class="font-normal">{$t('audience.import.no_programs')}</Label>
-        </div>
-        <div class="flex items-center gap-2">
-          <RadioGroup.Item value="all" id="program-all" />
-          <Label for="program-all" class="font-normal">{$t('audience.import.all_programs')}</Label>
-        </div>
-        <div class="flex items-center gap-2">
-          <RadioGroup.Item value="select" id="program-select" />
-          <Label for="program-select" class="font-normal">{$t('audience.import.select_programs')}</Label>
-        </div>
-      </RadioGroup.Root>
+  <div class="space-y-3">
+    <Label class="text-sm font-medium">{$t('audience.import.program_access')}</Label>
+    <RadioGroup.Root bind:value={programAccessMode} class="space-y-2">
+      <div class="flex items-center gap-2">
+        <RadioGroup.Item value="none" id="program-none" />
+        <Label for="program-none" class="font-normal">{$t('audience.import.no_programs')}</Label>
+      </div>
+      <div class="flex items-center gap-2">
+        <RadioGroup.Item value="all" id="program-all" />
+        <Label for="program-all" class="font-normal">{$t('audience.import.all_programs')}</Label>
+      </div>
+      <div class="flex items-center gap-2">
+        <RadioGroup.Item value="select" id="program-select" />
+        <Label for="program-select" class="font-normal">{$t('audience.import.select_programs')}</Label>
+      </div>
+    </RadioGroup.Root>
 
-      {#if programAccessMode === 'select'}
-        <MultiSelectList
-          class="ml-6"
-          listClass="max-h-40"
-          heading={$t('audience.import.select_programs')}
-          emptyMessage={$t('audience.import.select_programs_placeholder')}
-          items={programs.map((p) => ({ id: p.id, label: p.name || p.id }))}
-          isSelected={(id) => selectedProgramIds.has(id)}
-          onToggle={toggleProgram}
-          namePrefix="import-program"
-        />
-      {/if}
-    </div>
-  {/if}
+    {#if programAccessMode === 'select'}
+      <MultiSelectList
+        class="ml-6"
+        listClass="max-h-40"
+        heading={$t('audience.import.select_programs')}
+        emptyMessage={$t('audience.import.select_programs_placeholder')}
+        items={programs.map((p) => ({ id: p.id, label: p.name || p.id }))}
+        isSelected={(id) => selectedProgramIds.has(id)}
+        onToggle={toggleProgram}
+        namePrefix="import-program"
+      />
+    {/if}
+  </div>
 
   <!-- <CheckboxField name="send-email" label={$t('audience.import.send_email')} bind:checked={sendEmail} /> -->
 </form>

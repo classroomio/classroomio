@@ -25,6 +25,7 @@
   import ContentRow from './content-row.svelte';
   import ContentActions from './content-actions.svelte';
   import { deleteContent, saveContent, toggleLock } from './content-action-helpers';
+  import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
 
   const flipDurationMs = 300;
 
@@ -45,7 +46,7 @@
   const contentData = $derived(getCourseContent(courseApi.course));
   const isStudentView = $derived($isOrgStudent === true);
   const isLiveCourse = $derived(courseApi.course?.type === 'LIVE_CLASS');
-  const isSelfPacedCourse = $derived(courseApi.course?.type === 'SELF_PACED');
+  const isSelfPacedCourse = $derived(isSelfPacedLikeCourse(courseApi.course?.type));
   const metaChipClass =
     'inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-[10px] text-gray-700 dark:bg-neutral-700 dark:text-gray-200';
 
@@ -262,7 +263,7 @@
 />
 
 <section
-  class="mx-auto w-full p-3 lg:w-11/12 lg:px-4 {reorder ? 'cursor-grab active:cursor-grabbing' : ''}"
+  class="mx-auto w-full p-3 lg:w-11/12 {reorder ? 'cursor-grab active:cursor-grabbing' : ''}"
   use:dndzone={{
     items: contentItems,
     flipDurationMs,

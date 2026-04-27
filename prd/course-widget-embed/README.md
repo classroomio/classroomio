@@ -17,9 +17,80 @@ Ship an organization-scoped widget system so admins can embed selected courses o
 - `Widgets`
 - `Design`
 5. Published widgets deploy to Cloudflare-backed static hosting/edge delivery (R2 + Workers).
-6. Dashboard editing imports the widget package in dev mode for real preview parity.
+6. Dashboard editing reuses the existing `@cio/embeds` renderer in dev mode for real preview parity.
 7. Dashboard preview does not call a preview endpoint; it uses already-fetched dashboard state and passes payload into an iframe.
-8. Public embed fetches computed widget payload (courses + design config) from server endpoints.
+8. Public embed fetches a dedicated published widget payload from server endpoints.
+
+## Current State Alignment (2026-04-13)
+1. The existing third-party embed runtime already lives in `apps/embeds` and is published as `@cio/embeds`; this feature should extend that app rather than introduce a new `@cio/widgets` package.
+2. The existing embed publish path already lives in `apps/embeds/scripts/upload-embeds.ts` and `.github/workflows/deploy-embeds.yml`; the course widget should plug into that release flow.
+3. The closest current public course route is `/organization/courses/public`, but it is not suitable as the widget first-render path because it does multiple DB round-trips and has no dedicated public cache strategy.
+4. Public widget rendering therefore needs a dedicated published payload fast path:
+- compute canonical payload on publish
+- persist it with the published widget version
+- serve it from a compact public endpoint with CDN/browser cache headers
+5. If first-render latency later becomes the top priority, a single published JS endpoint with payload embedded is a valid follow-on optimization, but v1 should start with cached published JSON payload + static `@cio/embeds` assets.
+
+## Implementation Status (2026-04-13)
+
+### Completed
+1. Shared widget validation and canonical payload contracts were added in `packages/utils/src/validation/widget/widget.ts`.
+2. Widget persistence was added in the DB layer for `widget`, `widget_course`, and `widget_version`.
+3. Widget query helpers were added in `packages/db/src/queries/widget/widget.ts`.
+4. Organization widget API routes are implemented for list, create, detail, update, archive, publish, and rollback.
+5. Public payload delivery is implemented at `GET /widgets/:publicKey/payload`.
+6. Widget payload computation, public key generation, embed code generation, and CSS sanitization were added in `apps/api/src/services/widget-payload.ts`.
+7. Dashboard widgets UI is implemented at `/org/[slug]/widgets` and `/org/[slug]/widgets/[widgetId]`.
+8. The dashboard includes a widget list page, editor page, local live preview, save/discard flow, publish and rollback actions, embed code copy flow, and an org sidebar navigation entry.
+9. A course widget runtime was added to `apps/embeds/src/widgets/course-widget/*`.
+10. Embed publishing/build plumbing was extended so `question-type-picker` and `course-widget` build and upload independently.
+11. The course widget bundle was reduced back into the intended budget range after splitting embed builds per target:
+- loader: `6.41 kB` (`2.20 kB` gzip)
+- runtime chunk: `80.03 kB` (`22.35 kB` gzip)
+12. Shadow DOM isolation was implemented for the public embed runtime:
+- Widget CSS extracted to `widget.css` and injected into shadow root
+- Custom element `<cio-course-widget>` with `attachShadow({ mode: 'open' })`
+- Host page CSS cannot break widget visuals
+13. Dashboard preview now uses an iframe + postMessage pipeline:
+- Preview route at `/widget-preview` renders the widget component
+- `widget-iframe-preview.svelte` handles the parent-side protocol
+- `preview-protocol.ts` defines typed message contract (`READY/RENDER/ERROR/RESIZE`)
+- Strict origin validation and exponential backoff retry (3 attempts)
+14. Data freshness controls were added to the widget editor:
+- "Last synced" timestamp display
+- Manual "Refresh" button to reload widget data from server
+- `onSynced` callback from iframe when render completes
+15. Rate limiting was added to the public widget payload endpoint:
+- 100 req/min per IP address
+- 1000 req/min per widget key
+- Uses existing `createRateLimiter` middleware with Redis-backed limiter
+16. Widget validation and payload tests were added (47 tests passing):
+- Zod schema tests for create/update/config/public-key
+- Plan gating tests (free vs paid theme/colors/CSS/branding)
+- Base58 encoding and key generation tests
+- Embed code generation tests
+
+### Verified
+1. `pnpm --filter @cio/utils build`
+2. `pnpm --filter @cio/api build`
+3. `pnpm --filter @cio/dashboard build`
+4. `pnpm --filter @cio/embeds build`
+5. `node --import tsx apps/embeds/scripts/upload-embeds.ts --help`
+
+### Remaining / Not Yet Implemented
+1. Bundle-size enforcement in CI is not implemented yet; the runtime is small enough now, but there is no automated budget gate.
+2. Analytics ingestion is still deferred.
+3. Accessibility work is partial:
+- focus-visible states and basic labels exist in the runtime
+- there is no dedicated axe-core or accessibility verification pass yet
+4. Translation coverage is only updated in `en.json`; other locales were not expanded.
+5. Manual end-to-end publish smoke testing on a real embedded host page is still pending.
+6. Plan-gating UX polish (disabled state tooltips) not yet done.
+7. Cloudflare delivery policy automation not yet configured.
+8. Feature flag for controlled rollout not yet implemented.
+
+### Important Note
+The code path is implemented, but the database portion still depends on the corresponding SQL migration being applied anywhere this feature is expected to run against a real database. Updating `schema.ts` alone is not enough for runtime availability.
 
 ## Problem Statement
 Organizations currently show courses mainly on their own landing pages. There is no first-class way to publish reusable, brandable, copy-paste course widgets for external websites.
@@ -99,7 +170,7 @@ This creates gaps:
   - `Widgets`
   - `Design`
 - Main panel:
-  - live preview using the same shared render package as embed
+  - live preview using the same `@cio/embeds` renderer contract as public embed
   - desktop/mobile preview toggle
   - embed code tab
 - Live preview behavior:
@@ -185,14 +256,16 @@ Design panel is grouped as:
   - custom CSS enabled
 
 ### 7. Public Embed Contract
-- Copy-paste script embed:
-  - `<script async src="https://widgets.classroomio.com/v1/loader.js" data-widget="wgt_xxx"></script>`
-- Loader pulls published widget payload via public key and mounts Svelte widget.
+- Copy-paste embed pattern:
+  - `<div data-cio-widget="course-widget" data-widget-key="wgt_xxx"></div>`
+  - `<script async type="module" src="https://<public-embed-host>/embeds/course-widget/course-widget.js"></script>`
+- Bootstrap script loads the existing `@cio/embeds` course-widget entry.
+- Runtime fetches the compact published widget payload via public key and mounts the widget.
 - Host page should not require framework dependencies.
 - Payload shape must match dashboard preview payload contract.
 
 ### 8. Runtime Constraints (Lightweight Requirement)
-- Plain Svelte runtime package (`packages/widgets`) compiled in library mode (Vite `build.lib`).
+- Plain Svelte runtime delivered from the existing `apps/embeds` app output.
 - No SvelteKit runtime in embed bundle.
 - Use style isolation: **Shadow DOM custom element** (`<widget-root>`) with `:host` selector support.
 - Performance budgets:
@@ -246,7 +319,7 @@ Design panel is grouped as:
   - normalized design tokens and defaults
   - plan-gated fields
 - Dashboard preview builds payload client-side from already-fetched state and passes it to iframe.
-- Public embed builds/fetches payload server-side from persisted widget config and course queries.
+- Public embed fetches a published payload snapshot from a dedicated widget endpoint; it must not recompute from generic live course queries on every request.
 - The embed renderer accepts only this payload schema + minimal runtime options.
 - No separate dashboard-only renderer data shape is allowed.
 
@@ -258,12 +331,11 @@ Design panel is grouped as:
    ```
    a. API receives publish request
    b. Compute final payload with resolved courses + design config
-   c. Trigger build worker (Cloudflare Worker or GitHub Actions)
-   d. Build @cio/widgets package with embedded design tokens
-   e. Generate hashed filenames (e.g., `widget.a3f2b1c.js`)
-   f. Upload to R2 bucket: `widgets/{orgId}/{widgetId}/v{version}/`
-   g. Return manifest URLs to API
-   h. API saves `artifact_manifest` to `widget_version` table
+   c. Persist payload snapshot to `widget_version`
+   d. Build or reuse the current `@cio/embeds` course-widget runtime release
+   e. Upload immutable static assets to R2 under `embeds/course-widget/`
+   f. Purge/bootstrap refresh via existing embeds deployment flow
+   g. API saves the published payload snapshot and runtime release metadata to `widget_version`
    ```
 
 #### Artifact Manifest Format
@@ -273,17 +345,13 @@ Design panel is grouped as:
   "widgetId": "wgt_xxx",
   "orgId": "org_yyy",
   "createdAt": "2026-02-19T12:00:00Z",
-  "files": {
-    "js": {
-      "url": "https://cdn.classroomio.com/widgets/org_yyy/wgt_xxx/v3/widget.a3f2b1c.js",
-      "integrity": "sha384-abc123...",
-      "size": 24567
-    },
-    "css": {
-      "url": "https://cdn.classroomio.com/widgets/org_yyy/wgt_xxx/v3/styles.7e8d9f0.css",
-      "integrity": "sha384-def456...",
-      "size": 3456
-    }
+  "runtime": {
+    "entryUrl": "https://assets.cdn.clsrio.com/embeds/course-widget/course-widget.js",
+    "release": "2026-02-19-1"
+  },
+  "payload": {
+    "schemaVersion": "v1",
+    "cacheKey": "widget:payload:wgt_xxx:v3"
   },
   "designHash": "sha256:abc..."
 }
@@ -298,14 +366,15 @@ Design panel is grouped as:
 ```
 User's Website                    Cloudflare
 |                                 |
-|-- script src="loader.js" -----> |-- Worker: validate key
-|                                 |-- Check cache (KV)
-|                                 |-- Cache miss: fetch from R2
-|<-- loader.js -------------------|
+|-- script src="course-widget.js"->|-- Serve static `@cio/embeds` asset
+|<-- course-widget.js ------------|
 |                                 |
-|-- loader fetches manifest ----->|-- Return artifact_manifest
+|-- runtime fetches payload ----->|-- Validate widget key
+|                                 |-- Check CDN/cache
+|                                 |-- Cache miss: read published payload snapshot
+|<-- payload JSON ----------------|
 |                                 |
-|-- loader injects JS/CSS ------->|-- Serve from R2 (immutable cache)
+|-- runtime mounts widget ------->|-- Static assets already cached/immutable
 ```
 
 ---
@@ -313,31 +382,32 @@ User's Website                    Cloudflare
 ## Proposed Architecture
 
 ### Package and App Boundaries
-1. `packages/widgets`
-- plain Svelte renderer components
-- layout implementations
-- shared design token mapping
-- build output: ESM + browser bundle
+1. `apps/embeds`
+- plain Svelte runtime entrypoints for third-party sites
+- layout implementations for course widget
+- shared mount/bootstrap logic
+- build output: browser-ready ESM bundle + hashed chunks
 
 2. `apps/dashboard`
 - widget editor UI and preview
-- imports renderer from `@cio/widgets` in dev/prod build
+- imports or mirrors the same renderer contract used by `@cio/embeds` in dev/prod preview
 
 3. `apps/api`
 - org-protected widget CRUD/publish routes
 - public widget payload route
-- shared `computeWidgetPayload(...)` service used for public payload routes
+- shared `computeWidgetPayload(...)` service used during publish and for controlled cache rebuilds
 
 4. Cloudflare publish target
-- stores versioned JS/CSS artifacts
-- serves loader + static assets + cache headers
+- stores versioned embed assets
+- serves bootstrap/chunks with immutable cache headers
+- serves compact public payload with shorter CDN/browser cache headers
 
 ### Render Data Flow
 1. Dashboard editor loads widget draft and related data into state (courses/tags/config).
 2. Left panel changes update local draft JSON in state.
 3. Dashboard builds preview payload from state and sends it to preview iframe via `postMessage`.
-4. Preview iframe mounts `@cio/widgets` renderer with received payload.
-5. Publish stores snapshot; public loader requests server-computed payload for published version and mounts same renderer.
+4. Preview iframe mounts the same renderer contract used by `@cio/embeds`.
+5. Publish stores a payload snapshot; public runtime requests the published payload for the current version and mounts the same renderer.
 
 ### Data Model (Proposed)
 1. `widget`
@@ -351,7 +421,8 @@ User's Website                    Cloudflare
 3. `widget_version`
 - `id`, `widget_id`, `version`
 - `config_snapshot` (jsonb)
-- `artifact_manifest` (jsonb: js/css URLs + integrity)
+- `payload_snapshot` (jsonb: canonical public payload)
+- `runtime_manifest` (jsonb: embed entry URL + release metadata)
 - `published_at`, `published_by`
 
 ## API Contract Additions (Target)
@@ -407,8 +478,8 @@ User's Website                    Cloudflare
 
 ### Caching Strategy
 - Public payload endpoint: `Cache-Control: public, max-age=60, stale-while-revalidate=300`
-- Widget JS/CSS artifacts: `Cache-Control: public, max-age=31536000, immutable`
-- Loader script: `Cache-Control: public, max-age=3600` (versioned via query param)
+- Widget JS/chunk artifacts: `Cache-Control: public, max-age=31536000, immutable`
+- Bootstrap script: short TTL + revalidation so new chunk references propagate quickly after publish
 
 ## Expanded TODOs (Priority)
 
@@ -497,7 +568,7 @@ Parent (Dashboard)          Iframe (Widget Runtime)
 
 #### Documentation Output
 - Spec file: `prd/course-widget-embed/iframe-protocol.md` (this section)
-- Implementation: `packages/widgets/src/preview/iframe-bridge.ts` + `apps/dashboard/src/lib/features/widget/preview/iframe-parent.ts`
+- Implementation: `apps/embeds/src/widgets/course-widget/preview/iframe-bridge.ts` + `apps/dashboard/src/lib/features/widget/preview/iframe-parent.ts`
 
 ### TODO-3: Preview Data Freshness (Implementation Details)
 
@@ -639,12 +710,11 @@ const CSS_SANITIZER_CONFIG = {
 
 #### CI Configuration
 ```yaml
-# packages/widgets/bundle-size.json
+# apps/embeds/bundle-size.json
 {
   "limits": {
-    "loader.js": "3kb",
-    "runtime.js": "35kb",
-    "runtime.css": "5kb"
+    "course-widget.js": "3kb",
+    "course-widget-runtime.js": "35kb"
   },
   "failOnViolation": true
 }
@@ -653,13 +723,13 @@ const CSS_SANITIZER_CONFIG = {
 #### Build Script
 ```bash
 #!/bin/bash
-# packages/widgets/scripts/check-bundle-size.sh
+# apps/embeds/scripts/check-bundle-size.sh
 
 max_size_loader=$((3 * 1024))     # 3KB
 max_size_runtime=$((35 * 1024))   # 35KB
 
-loader_size=$(gzip -c dist/loader.js | wc -c)
-runtime_size=$(gzip -c dist/runtime.js | wc -c)
+loader_size=$(gzip -c dist/course-widget.js | wc -c)
+runtime_size=$(gzip -c dist/course-widget-runtime.js | wc -c)
 
 if [ $loader_size -gt $max_size_loader ]; then
   echo "❌ Loader exceeds budget: ${loader_size}B > ${max_size_loader}B"

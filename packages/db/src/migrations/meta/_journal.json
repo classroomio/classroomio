@@ -29,34 +29,6 @@
       "when": 1769931903954,
       "tag": "0003_fancy_harry_osborn",
       "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1769982690239,
-      "tag": "0004_medical_true_believers",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1770622627497,
-      "tag": "0005_outgoing_doomsday",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1771176910627,
-      "tag": "0006_modern_the_initiative",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1774154467188,
-      "tag": "0007_rainy_vivisector",
-      "breakpoints": true
     }
   ]
 }

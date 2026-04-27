@@ -17,6 +17,7 @@ import type {
 } from '../utils/types';
 import type { TCourseType } from '@cio/db/types';
 import { ZCourseCreate, ZCourseUpdate, type TCourseUpdate } from '@cio/utils/validation/course/course';
+import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
 import { capturePosthogEvent } from '$lib/utils/services/posthog';
 import { currentOrg } from '$lib/utils/store/org';
 import { get } from 'svelte/store';
@@ -357,7 +358,8 @@ export class CourseApi extends BaseApiWithErrors {
       title: fields.title,
       description: fields.description,
       type: fields.type,
-      organizationId: org.id
+      organizationId: org.id,
+      compliance: fields.type === 'COMPLIANCE' ? DEFAULT_COMPLIANCE_SETTINGS : undefined
     };
 
     // Client-side validation

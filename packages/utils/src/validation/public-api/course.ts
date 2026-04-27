@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { ZCourseCreate, ZCourseUpdate } from '../course/course';
+import { ZCourseCreateBase, ZCourseUpdateBase } from '../course/course';
 import { ZCourseImportDraftPayload } from '../course-import/course-import';
 
 export const ZPublicApiCoursesQuery = z.object({
@@ -13,13 +13,19 @@ export const ZPublicApiCourseParam = z.object({
 });
 export type TPublicApiCourseParam = z.infer<typeof ZPublicApiCourseParam>;
 
-export const ZPublicApiCreateCourse = ZCourseCreate.omit({
+export const ZPublicApiCreateCourse = ZCourseCreateBase.omit({
   organizationId: true
+}).refine((data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined, {
+  message: 'Compliance settings are required for COMPLIANCE courses',
+  path: ['compliance']
 });
 export type TPublicApiCreateCourse = z.infer<typeof ZPublicApiCreateCourse>;
 
-export const ZPublicApiUpdateCourse = ZCourseUpdate.omit({
+export const ZPublicApiUpdateCourse = ZCourseUpdateBase.omit({
   tagIds: true
+}).refine((data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined, {
+  message: 'Compliance settings are required when changing a course to COMPLIANCE',
+  path: ['compliance']
 });
 export type TPublicApiUpdateCourse = z.infer<typeof ZPublicApiUpdateCourse>;
 

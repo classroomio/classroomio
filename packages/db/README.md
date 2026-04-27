@@ -61,3 +61,57 @@ It performs three steps in order:
 **Optional:** Add `--seed` (or `-s`) to run the full seed, including demo users, organizations, courses, and other example data.
 
 Requires `DATABASE_URL` or `PRIVATE_DATABASE_URL` in the environment.
+
+## Seeding
+
+The seed script populates the database with demo data for local development. It is idempotent — running it multiple times is safe; existing records are skipped.
+
+### Run all seeds
+
+```bash
+pnpm seed
+# or explicitly
+pnpm seed --all
+```
+
+### Run individual seeds
+
+Pass one or more flags to run only specific steps:
+
+```bash
+pnpm seed --users --profiles
+pnpm seed --organizations --organization-members --organization-plan
+```
+
+| Flag                     | What it seeds                                          |
+| ------------------------ | ------------------------------------------------------ |
+| `--roles`                | ADMIN, TUTOR, STUDENT roles                            |
+| `--submissions`          | Submission statuses                                    |
+| `--question-types`       | Question types                                         |
+| `--users`                | Auth users (from `users.json`)                         |
+| `--profiles`             | User profiles                                          |
+| `--accounts`             | User accounts                                          |
+| `--organizations`        | Demo organizations                                     |
+| `--organization-members` | Org membership records                                 |
+| `--organization-plan`    | Organization plan records (enterprise + early adopter) |
+| `--groups`               | Course groups                                          |
+| `--group-members`        | Group membership records                               |
+| `--courses`              | Demo courses                                           |
+| `--sections`             | Course sections                                        |
+| `--lessons`              | Lessons                                                |
+| `--exercises`            | Exercises                                              |
+| `--questions`            | Questions                                              |
+| `--templates`            | Exercise templates                                     |
+
+### Demo accounts
+
+| Email                            | Password   | Role    | Plan          |
+| -------------------------------- | ---------- | ------- | ------------- |
+| `test@test.com`                  | `password` | Admin   | Basic (free)  |
+| `student@test.com`               | `password` | Student | Basic (free)  |
+| `enterprise@test.com`            | `password` | Admin   | Enterprise    |
+| `enterprise-student@test.com`    | `password` | Student | Enterprise    |
+| `early-adopter@test.com`         | `password` | Admin   | Early Adopter |
+| `early-adopter-student@test.com` | `password` | Student | Early Adopter |
+
+Mock user credentials are defined in `users.json`. The encrypted password above corresponds to the literal string `password`.

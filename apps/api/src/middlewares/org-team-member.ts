@@ -1,12 +1,15 @@
 import { Context, Next } from 'hono';
 
 import { ErrorCodes } from '@api/utils/errors';
-import { isUserOrgTeamMember } from '@cio/db/queries/organization';
+import { ROLE } from '@cio/utils/constants';
 
 /**
- * Middleware to check if the authenticated user is a team member (ADMIN or TUTOR) of the organization
- * Requires authMiddleware to be applied first
- * Expects orgId in the 'cio-org-id' header
+ * Middleware to check if the authenticated user is a team member (ADMIN or TUTOR) of the organization.
+ * Reads the role from the Better Auth session (populated by the customSession plugin),
+ * so no per-request DB query is performed.
+ *
+ * Requires authMiddleware to be applied first.
+ * Expects orgId in the 'cio-org-id' header.
  */
 export const orgTeamMemberMiddleware = async (c: Context, next: Next) => {
   try {
@@ -35,8 +38,10 @@ export const orgTeamMemberMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    const isTeamMember = await isUserOrgTeamMember(orgId, user.id);
-    if (!isTeamMember) {
+    const orgRoles = (c.get('orgRoles') as Record<string, number> | undefined) ?? {};
+    const roleId = orgRoles[orgId];
+
+    if (roleId !== ROLE.ADMIN && roleId !== ROLE.TUTOR) {
       return c.json(
         {
           success: false,

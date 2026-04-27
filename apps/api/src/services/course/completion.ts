@@ -152,6 +152,7 @@ async function buildCertificationEvaluation(
 ): Promise<CourseCompletionEvaluation> {
   const progress = progressArg ?? (await getCourseProgressQuery(courseId, profileId));
   const certificate = courseRow.certificate ?? {};
+  const complianceMinScore = courseRow.type === 'COMPLIANCE' ? (courseRow.compliance?.passingScore ?? null) : null;
 
   const threshold = certificate.threshold ?? 100;
   const progressPercent = calcCourseProgressPercent({
@@ -184,7 +185,7 @@ async function buildCertificationEvaluation(
   const finalEval = await evaluateFinalExerciseRule({
     courseId,
     requiredExerciseId: certificate.requiredExerciseId,
-    minScorePercent: certificate.exerciseMinScorePercent,
+    minScorePercent: certificate.exerciseMinScorePercent ?? complianceMinScore,
     groupMemberId: progress.groupMemberId
   });
 

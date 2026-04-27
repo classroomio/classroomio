@@ -1,7 +1,7 @@
 <script lang="ts">
   import Cropper from 'svelte-easy-crop';
-  import { useImageCropperCropper } from './image-cropper.svelte.js';
-  import type { ImageCropperCropperProps } from './types.js';
+  import { useImageCropperCropper } from './image-cropper-context.svelte';
+  import type { ImageCropperCropperProps } from './types';
 
   let { cropShape = 'round', aspect = 1, showGrid = false, ...rest }: ImageCropperCropperProps = $props();
 

@@ -319,8 +319,7 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
     const tags = Array.isArray(courseRecord.tags)
       ? (courseRecord.tags as OrgLandingPageProps['courses'][number]['tags'])
       : undefined;
-    const courseSlug =
-      typeof courseRecord.slug === 'string' && courseRecord.slug.length > 0 ? courseRecord.slug : course.id;
+    const courseSlug = typeof courseRecord.slug === 'string' && courseRecord.slug.length > 0 ? courseRecord.slug : '';
     const courseCost = typeof courseRecord.cost === 'number' ? courseRecord.cost : undefined;
     const courseCurrency = typeof courseRecord.currency === 'string' ? courseRecord.currency : undefined;
     const lessonCount = typeof courseRecord.lessonCount === 'number' ? courseRecord.lessonCount : undefined;
@@ -356,7 +355,7 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
         : undefined,
       tags,
       image,
-      link: `/course/${courseSlug}`,
+      link: courseSlug ? `/course/${courseSlug}` : undefined,
       price,
       duration,
       level

@@ -1,4 +1,10 @@
 import type {
+  TAutomationCourseTagAssignment,
+  TAutomationDraftTagAssignment,
+  TAutomationDraftTagParam
+} from '@cio/utils/validation/tag';
+import type { TCourseContentReorder, TCourseLandingPageUpdate, TCourseUpdateParam } from '@cio/utils/validation/course';
+import type {
   TCourseImportCourseParam,
   TCourseImportDraftCreate,
   TCourseImportDraftCreateFromCourse,
@@ -6,7 +12,6 @@ import type {
   TCourseImportDraftPublishToCourse,
   TCourseImportDraftUpdate
 } from '@cio/utils/validation/course-import';
-import type { TCourseContentReorder, TCourseLandingPageUpdate, TCourseUpdateParam } from '@cio/utils/validation/course';
 import type {
   TExerciseCreate,
   TExerciseFromTemplate,
@@ -14,14 +19,9 @@ import type {
   TExerciseListQuery,
   TExerciseUpdate
 } from '@cio/utils/validation/exercise';
-import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
-import type {
-  TAutomationCourseTagAssignment,
-  TAutomationDraftTagAssignment,
-  TAutomationDraftTagParam
-} from '@cio/utils/validation/tag';
 
-import type { McpServerConfig } from './config.js';
+import type { McpServerConfig } from './config';
+import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 
 type ApiSuccess<T> = {
   success: true;

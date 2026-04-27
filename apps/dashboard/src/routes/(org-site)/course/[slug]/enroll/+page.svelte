@@ -25,6 +25,10 @@
           data.course?.status === 'ACTIVE' &&
           Boolean(data.course?.isPublished)
   );
+  $inspect(data.requiresPaymentOrInvite);
+  $inspect(canJoinCourse);
+  $inspect(data);
+  $inspect('loading', loading);
 
   function getBlockedMessage(): string {
     if (data.requiresPaymentOrInvite) {
@@ -56,6 +60,7 @@
       snackbar.error(getBlockedMessage());
       return;
     }
+    console.log('profile', $profile);
 
     loading = true;
 
@@ -133,7 +138,7 @@
   </div>
 
   <div class="my-4 flex w-full items-center justify-center">
-    <Button type="submit" disabled={!canJoinCourse || loading} loading={loading || !$profile.id}>
+    <Button type="submit" disabled={!canJoinCourse || loading} {loading}>
       {$t('course.navItem.landing_page.enroll_page.join_course')}
     </Button>
   </div>

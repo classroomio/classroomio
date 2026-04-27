@@ -31,7 +31,7 @@
     <span class="grow"></span>
 
     {#if !hideSearch}
-      <Search />
+      <Search scope="lms" />
 
       <Popover.Root>
         <Popover.Trigger>

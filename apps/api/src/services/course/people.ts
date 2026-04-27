@@ -15,6 +15,7 @@ import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { getCourseWithOrgData } from '@cio/db/queries/course';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, sendEmail } from '@cio/email';
+import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
 
 /**
  * Gets all course members (people) for a course
@@ -52,6 +53,10 @@ export async function addMember(
     }
 
     const addedMember = await addCourseMember(courseId, data);
+
+    if (data.roleId === ROLE.STUDENT && data.profileId) {
+      await ensureComplianceEnrollmentRecordsForProfiles([courseId], [data.profileId]);
+    }
 
     // Send emails when a student joins
     if (data.roleId === ROLE.STUDENT) {
@@ -176,6 +181,13 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
 
     // Add all members
     const addedMembers = await Promise.all(members.map((member) => addCourseMember(courseId, member)));
+    const studentProfileIds = members
+      .filter((member) => member.roleId === ROLE.STUDENT && member.profileId)
+      .map((member) => member.profileId!);
+
+    if (studentProfileIds.length > 0) {
+      await ensureComplianceEnrollmentRecordsForProfiles([courseId], studentProfileIds);
+    }
 
     // Send welcome emails for teachers (TUTOR role = 2, ADMIN role = 1)
     const baseUrl = getDashboardBaseUrl(orgSiteName);

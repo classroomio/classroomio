@@ -191,7 +191,7 @@
       </UnderlineTabs.List>
 
       <UnderlineTabs.Content value="tutors">
-        <div class="mt-6 space-y-6">
+        <div class="space-y-3">
           <TutorSelectSection
             {tutors}
             bind:selectedIds
@@ -208,13 +208,14 @@
       </UnderlineTabs.Content>
 
       <UnderlineTabs.Content value="students">
-        <div class="mt-6 space-y-6">
+        <div class="space-y-6">
           <ExistingStudentsSection
             students={availableStudents}
             isLoading={isLoadingStudents}
             onSearchValueChange={handleStudentSearch}
             onAssign={assignExistingStudents}
           />
+
           <BulkEmailSection onInvite={inviteNewStudents} />
         </div>
       </UnderlineTabs.Content>

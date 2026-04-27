@@ -1,6 +1,7 @@
 import {
   bigint,
   boolean,
+  date,
   doublePrecision,
   foreignKey,
   index,
@@ -22,13 +23,24 @@ import {
 import type { AnswerData } from '@cio/question-types';
 import { sql } from 'drizzle-orm';
 
-export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS']);
+export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE']);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
 export const courseImportDraftStatus = pgEnum('COURSE_IMPORT_DRAFT_STATUS', ['DRAFT', 'PUBLISHED', 'ARCHIVED']);
 export const organizationApiKeyType = pgEnum('ORGANIZATION_API_KEY_TYPE', ['mcp', 'api', 'zapier']);
 export const automationUsageCategory = pgEnum('AUTOMATION_USAGE_CATEGORY', ['read', 'write', 'publish']);
+export const widgetStatus = pgEnum('WIDGET_STATUS', ['DRAFT', 'PUBLISHED', 'ARCHIVED']);
+export const widgetLayoutType = pgEnum('WIDGET_LAYOUT_TYPE', [
+  'card_grid',
+  'tag_filter',
+  'carousel',
+  'primary_course',
+  'compact_list',
+  'editorial_spotlight',
+  'category_shelf'
+]);
+export const widgetSelectionMode = pgEnum('WIDGET_SELECTION_MODE', ['manual', 'published']);
 export const courseInviteEventType = pgEnum('COURSE_INVITE_EVENT_TYPE', [
   'CREATED',
   'REVOKED',
@@ -150,7 +162,10 @@ export const analyticsLoginEvents = pgTable(
       .primaryKey()
       .notNull(),
     userId: uuid('user_id').notNull(),
-    loggedInAt: timestamp('logged_in_at', { withTimezone: true, mode: 'string' }).defaultNow()
+    loggedInAt: timestamp('logged_in_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    loggedInDate: date('logged_in_date')
+      .default(sql`CURRENT_DATE`)
+      .notNull()
   },
   (table) => [
     index('idx_analytics_login_events_logged_in_at').using(
@@ -158,12 +173,16 @@ export const analyticsLoginEvents = pgTable(
       table.loggedInAt.asc().nullsLast().op('timestamptz_ops')
     ),
     index('idx_analytics_login_events_user_id').using('btree', table.userId.asc().nullsLast().op('uuid_ops')),
+    index('idx_analytics_login_events_logged_in_date').using(
+      'btree',
+      table.loggedInDate.asc().nullsLast().op('date_ops')
+    ),
     foreignKey({
       columns: [table.userId],
       foreignColumns: [user.id],
       name: 'analytics_login_events_user_id_fkey'
     }),
-    unique('analytics_login_events_user_id_unique').on(table.userId)
+    unique('analytics_login_events_user_id_date_unique').on(table.userId, table.loggedInDate)
   ]
 );
 
@@ -596,6 +615,15 @@ export const course = pgTable(
       exerciseMinScorePercent?: number | null;
       emailMessage?: string | null;
     }>(),
+    compliance: jsonb().$type<{
+      retakeIntervalMonths: number;
+      gracePeriodDays?: number;
+      reminderDaysBefore?: number[];
+      isMandatory?: boolean;
+      framework?: 'HIPAA' | 'OSHA' | 'SOX' | 'GDPR' | 'PCI_DSS' | 'FERPA' | 'ISO' | 'CUSTOM' | null;
+      maxRetakeAttempts?: number | null;
+      passingScore?: number;
+    }>(),
     status: text().default('ACTIVE').notNull(),
     type: courseType().default('LIVE_CLASS')
   },
@@ -607,6 +635,127 @@ export const course = pgTable(
     }),
     unique('course_slug_key').on(table.slug),
     index('idx_course_group_id').on(table.groupId)
+  ]
+);
+
+export const courseCompletionRecord = pgTable(
+  'course_completion_record',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    courseId: uuid('course_id').notNull(),
+    groupMemberId: uuid('group_member_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    cycleNumber: integer('cycle_number').default(1).notNull(),
+    status: varchar().default('not_started').notNull(),
+    dueDate: timestamp('due_date', { withTimezone: true, mode: 'string' }).notNull(),
+    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    validUntil: timestamp('valid_until', { withTimezone: true, mode: 'string' }),
+    expiredAt: timestamp('expired_at', { withTimezone: true, mode: 'string' }),
+    score: integer(),
+    attempts: integer().default(0),
+    timeSpentMinutes: integer('time_spent_minutes').default(0),
+    waivedBy: uuid('waived_by'),
+    waiverReason: text('waiver_reason'),
+    waiverExpiresAt: timestamp('waiver_expires_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'course_completion_record_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.groupMemberId],
+      foreignColumns: [groupmember.id],
+      name: 'course_completion_record_group_member_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'course_completion_record_profile_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.waivedBy],
+      foreignColumns: [profile.id],
+      name: 'course_completion_record_waived_by_fkey'
+    }).onDelete('set null'),
+    unique('course_completion_record_course_profile_cycle_key').on(table.courseId, table.profileId, table.cycleNumber),
+    index('idx_course_completion_record_course_id').on(table.courseId),
+    index('idx_course_completion_record_profile_id').on(table.profileId),
+    index('idx_course_completion_record_status').on(table.status),
+    index('idx_course_completion_record_due_date').on(table.dueDate),
+    index('idx_course_completion_record_valid_until').on(table.validUntil)
+  ]
+);
+
+export const courseCompletionNotificationEvent = pgTable(
+  'course_completion_notification_event',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    courseCompletionRecordId: uuid('course_completion_record_id').notNull(),
+    channel: varchar().notNull(),
+    eventType: varchar('event_type').notNull(),
+    sentAt: timestamp('sent_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.courseCompletionRecordId],
+      foreignColumns: [courseCompletionRecord.id],
+      name: 'course_completion_notification_event_record_id_fkey'
+    }).onDelete('cascade'),
+    unique('course_completion_notification_event_record_channel_type_key').on(
+      table.courseCompletionRecordId,
+      table.channel,
+      table.eventType
+    )
+  ]
+);
+
+export const courseCertificateIssue = pgTable(
+  'course_certificate_issue',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    courseId: uuid('course_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    courseCompletionRecordId: uuid('course_completion_record_id').notNull(),
+    cycleNumber: integer('cycle_number').notNull(),
+    issuedAt: timestamp('issued_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
+    status: varchar().default('valid').notNull(),
+    fileUrl: text('file_url')
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'course_certificate_issue_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'course_certificate_issue_profile_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseCompletionRecordId],
+      foreignColumns: [courseCompletionRecord.id],
+      name: 'course_certificate_issue_record_id_fkey'
+    }).onDelete('cascade'),
+    unique('course_certificate_issue_record_id_key').on(table.courseCompletionRecordId),
+    index('idx_course_certificate_issue_course_id').on(table.courseId),
+    index('idx_course_certificate_issue_profile_id').on(table.profileId),
+    index('idx_course_certificate_issue_status').on(table.status)
   ]
 );
 
@@ -1859,6 +2008,132 @@ export const tagAssignment = pgTable(
   ]
 );
 
+export const widget = pgTable(
+  'widget',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    name: varchar({ length: 120 }).notNull(),
+    status: widgetStatus('status').default('DRAFT').notNull(),
+    layoutType: widgetLayoutType('layout_type').default('card_grid').notNull(),
+    selectionMode: widgetSelectionMode('selection_mode').default('manual').notNull(),
+    publicKey: varchar('public_key', { length: 64 }).notNull(),
+    config: jsonb('config')
+      .default(sql`'{}'::jsonb`)
+      .notNull(),
+    hasUnpublishedChanges: boolean('has_unpublished_changes').default(false).notNull(),
+    latestPublishedVersionId: uuid('latest_published_version_id'),
+    createdByUserId: uuid('created_by_user_id').notNull(),
+    updatedByUserId: uuid('updated_by_user_id'),
+    deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'widget_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByUserId],
+      foreignColumns: [user.id],
+      name: 'widget_created_by_user_id_fkey'
+    }).onDelete('restrict'),
+    foreignKey({
+      columns: [table.updatedByUserId],
+      foreignColumns: [user.id],
+      name: 'widget_updated_by_user_id_fkey'
+    }).onDelete('set null'),
+    index('idx_widget_organization_id').on(table.organizationId),
+    index('idx_widget_status').on(table.status),
+    unique('widget_public_key_key').on(table.publicKey)
+  ]
+);
+
+export const widgetCourse = pgTable(
+  'widget_course',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    widgetId: uuid('widget_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    order: integer().default(0).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.widgetId],
+      foreignColumns: [widget.id],
+      name: 'widget_course_widget_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'widget_course_course_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_widget_course_widget_id').on(table.widgetId),
+    index('idx_widget_course_course_id').on(table.courseId),
+    unique('widget_course_widget_course_key').on(table.widgetId, table.courseId)
+  ]
+);
+
+export const widgetVersion = pgTable(
+  'widget_version',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    widgetId: uuid('widget_id').notNull(),
+    version: integer().notNull(),
+    configSnapshot: jsonb('config_snapshot')
+      .default(sql`'{}'::jsonb`)
+      .notNull(),
+    payloadSnapshot: jsonb('payload_snapshot')
+      .default(sql`'{}'::jsonb`)
+      .notNull(),
+    runtimeManifest: jsonb('runtime_manifest')
+      .default(sql`'{}'::jsonb`)
+      .notNull(),
+    rolledBackFromVersionId: uuid('rolled_back_from_version_id'),
+    publishedByUserId: uuid('published_by_user_id').notNull(),
+    publishedAt: timestamp('published_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.widgetId],
+      foreignColumns: [widget.id],
+      name: 'widget_version_widget_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.publishedByUserId],
+      foreignColumns: [user.id],
+      name: 'widget_version_published_by_user_id_fkey'
+    }).onDelete('restrict'),
+    foreignKey({
+      columns: [table.rolledBackFromVersionId],
+      foreignColumns: [table.id],
+      name: 'widget_version_rolled_back_from_version_id_fkey'
+    }).onDelete('set null'),
+    index('idx_widget_version_widget_id').on(table.widgetId),
+    unique('widget_version_widget_version_key').on(table.widgetId, table.version)
+  ]
+);
+
 export const dashOrgStats = pgView('dash_org_stats', {
   orgId: uuid('org_id'),
   // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -2271,5 +2546,109 @@ export const programNewsfeedComment = pgTable(
       foreignColumns: [programNewsfeed.id],
       name: 'program_newsfeed_comment_program_newsfeed_id_fkey'
     }).onDelete('cascade')
+  ]
+);
+
+// ─── AI Token Usage ──────────────────────────────────────────────────────────
+
+export const aiTokenUsage = pgTable(
+  'ai_token_usage',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'ai_token_usage_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    orgId: uuid('org_id').notNull(),
+    userId: uuid('user_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    promptTokens: integer('prompt_tokens').notNull(),
+    completionTokens: integer('completion_tokens').notNull(),
+    model: text().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.orgId],
+      foreignColumns: [organization.id],
+      name: 'ai_token_usage_org_id_fkey'
+    }),
+    index('idx_ai_token_usage_org_month').on(table.orgId, table.createdAt)
+  ]
+);
+
+// ─── AI Credit Balance ───────────────────────────────────────────────────────
+
+export const aiCreditBalance = pgTable(
+  'ai_credit_balance',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'ai_credit_balance_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    orgId: uuid('org_id').notNull(),
+    balance: integer().notNull().default(0),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.orgId],
+      foreignColumns: [organization.id],
+      name: 'ai_credit_balance_org_id_fkey'
+    }),
+    unique('ai_credit_balance_org_id_key').on(table.orgId)
+  ]
+);
+
+export const aiChatConversation = pgTable(
+  'ai_chat_conversation',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey(),
+    courseId: uuid('course_id').notNull(),
+    userId: uuid('user_id').notNull(),
+    title: text().default('New conversation'),
+    messages: jsonb().notNull().default([]),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'ai_chat_conversation_course_id_fkey'
+    }),
+    index('idx_ai_chat_conversation_course_user').on(table.courseId, table.userId)
+  ]
+);
+
+export const aiChatDocument = pgTable(
+  'ai_chat_document',
+  {
+    id: text().primaryKey(),
+    conversationId: uuid('conversation_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    userId: uuid('user_id').notNull(),
+    assetId: uuid('asset_id'),
+    fileName: text('file_name').notNull(),
+    mimeType: text('mime_type').notNull(),
+    text: text().notNull(),
+    wordCount: integer('word_count').notNull().default(0),
+    pageCount: integer('page_count'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.conversationId],
+      foreignColumns: [aiChatConversation.id],
+      name: 'ai_chat_document_conversation_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_ai_chat_document_conversation').on(table.conversationId)
   ]
 );

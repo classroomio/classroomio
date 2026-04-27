@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Empty } from '@cio/ui/custom/empty';
@@ -12,10 +13,17 @@
   import { courseApi } from '$features/course/api';
   import ContentCreateModal from '$features/course/components/content/content-create-modal.svelte';
   import CourseCompletionModal from '$features/course/components/ceritficate/course-completion-modal.svelte';
+  import { AiCourseChat } from '$features/ai-assistant';
   import { profile } from '$lib/utils/store/user';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import type { CourseMember } from '$features/course/utils/types';
+  import {
+    COURSE_SIDEBAR_DEFAULT_WIDTH,
+    COURSE_SIDEBAR_MAX_WIDTH,
+    COURSE_SIDEBAR_MIN_WIDTH,
+    COURSE_SIDEBAR_STORAGE_KEY
+  } from '$features/course/components/sidebar/constants';
 
   interface Props {
     children?: import('svelte').Snippet;
@@ -28,6 +36,9 @@
   }
 
   let { children, path, data }: Props = $props();
+  let sidebarWidth = $state(COURSE_SIDEBAR_DEFAULT_WIDTH);
+  let hasLoadedSidebarWidth = $state(false);
+  let sidebarProviderElement = $state<HTMLDivElement | null>(null);
 
   // Initialize course store on the client (fetch once, then reuse store data).
   $effect(() => {
@@ -60,6 +71,46 @@
   });
 
   const isExercisePage = $derived(!!data.exerciseId);
+
+  function clampSidebarWidth(width: number) {
+    return Math.min(COURSE_SIDEBAR_MAX_WIDTH, Math.max(COURSE_SIDEBAR_MIN_WIDTH, width));
+  }
+
+  function handleSidebarWidthChange(width: number) {
+    sidebarWidth = clampSidebarWidth(width);
+  }
+
+  function handleSidebarWidthPreview(width: number) {
+    const nextWidth = clampSidebarWidth(width);
+
+    sidebarProviderElement?.style.setProperty('--sidebar-width', `${nextWidth}px`);
+  }
+
+  onMount(() => {
+    try {
+      const storedWidth = Number(localStorage.getItem(COURSE_SIDEBAR_STORAGE_KEY));
+
+      if (Number.isFinite(storedWidth)) {
+        sidebarWidth = clampSidebarWidth(storedWidth);
+      }
+    } catch {
+      // localStorage unavailable
+    }
+
+    hasLoadedSidebarWidth = true;
+  });
+
+  $effect(() => {
+    if (!hasLoadedSidebarWidth) {
+      return;
+    }
+
+    try {
+      localStorage.setItem(COURSE_SIDEBAR_STORAGE_KEY, String(Math.round(sidebarWidth)));
+    } catch {
+      // localStorage unavailable
+    }
+  });
 </script>
 
 <svelte:head>
@@ -91,12 +142,21 @@
   </Dialog.Root>
 {/if}
 
-<Sidebar.Provider data-sveltekit-preload-data="off">
-  <CourseSidebar {path} id={data.courseId} {isCourseReady} />
+<Sidebar.Provider
+  bind:ref={sidebarProviderElement}
+  data-sveltekit-preload-data="off"
+  style={`--sidebar-width: ${sidebarWidth}px;`}
+>
+  <CourseSidebar
+    {path}
+    id={data.courseId}
+    {isCourseReady}
+    {sidebarWidth}
+    onSidebarWidthPreview={handleSidebarWidthPreview}
+    onSidebarWidthChange={handleSidebarWidthChange}
+  />
 
-  <Sidebar.Inset
-    class="w-[calc(100vw-var(--sidebar-width))] group-data-[collapsible=icon]:w-[calc(100vw-var(--sidebar-width-icon))]"
-  >
+  <Sidebar.Inset class="ui:min-w-0 ui:flex-1">
     <CourseHeader />
     <ContentCreateModal />
     <CourseCompletionModal />
@@ -119,4 +179,6 @@
       {@render children?.()}
     {/if}
   </Sidebar.Inset>
+
+  <AiCourseChat />
 </Sidebar.Provider>

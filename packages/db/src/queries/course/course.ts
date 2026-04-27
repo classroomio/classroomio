@@ -42,6 +42,10 @@ export interface TAdminCourse extends TBaseCourse {
 export interface TStudentCourse extends TBaseCourse {
   progressRate: number;
   exercisesCompleted: number;
+  complianceStatus: string | null;
+  complianceCycleNumber: number | null;
+  complianceDueDate: string | null;
+  complianceValidUntil: string | null;
 }
 
 /**
@@ -257,8 +261,7 @@ export const getCoursesBySiteNameForSetup = async (siteName: string) => {
     .from(schema.course)
     .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
     .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
-    .where(eq(schema.organization.siteName, siteName))
-    .limit(1);
+    .where(eq(schema.organization.siteName, siteName));
 
   return result.map((row) => ({
     ...row.course
@@ -592,6 +595,16 @@ export async function getCourseProgress(
 
 /** Course + org fields needed for certification email and threshold rules */
 export type TCourseCertificationRow = {
+  type: string | null;
+  compliance: {
+    retakeIntervalMonths: number;
+    gracePeriodDays?: number;
+    reminderDaysBefore?: number[];
+    isMandatory?: boolean;
+    framework?: 'HIPAA' | 'OSHA' | 'SOX' | 'GDPR' | 'PCI_DSS' | 'FERPA' | 'ISO' | 'CUSTOM' | null;
+    maxRetakeAttempts?: number | null;
+    passingScore?: number;
+  } | null;
   certificate: {
     isDownloadable?: boolean;
     theme?: string;
@@ -610,6 +623,8 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
   try {
     const [row] = await db
       .select({
+        type: schema.course.type,
+        compliance: schema.course.compliance,
         certificate: schema.course.certificate,
         title: schema.course.title,
         orgSiteName: schema.organization.siteName,
@@ -761,6 +776,99 @@ export const getOrgCourses = async ({
   }
 };
 
+export interface TSearchOrgCourse {
+  id: string;
+  title: string;
+  slug: string | null;
+  description: string;
+  updatedAt: string | null;
+}
+
+export async function searchOrgCourses(orgId: string, search: string, limit: number): Promise<TSearchOrgCourse[]> {
+  try {
+    const searchValue = `%${search.trim()}%`;
+
+    return await db
+      .select({
+        id: schema.course.id,
+        title: schema.course.title,
+        slug: schema.course.slug,
+        description: schema.course.description,
+        updatedAt: schema.course.updatedAt
+      })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .where(
+        and(
+          eq(schema.group.organizationId, orgId),
+          eq(schema.course.status, 'ACTIVE'),
+          or(ilike(schema.course.title, searchValue), ilike(schema.course.description, searchValue))
+        )
+      )
+      .orderBy(desc(schema.course.updatedAt))
+      .limit(limit);
+  } catch (error) {
+    console.error('searchOrgCourses error:', error);
+    throw new Error(`Failed to search org courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function searchLmsCourses(
+  orgId: string,
+  profileId: string,
+  search: string,
+  limit: number
+): Promise<TSearchOrgCourse[]> {
+  try {
+    const searchValue = `%${search.trim()}%`;
+
+    const result = await db
+      .select({
+        id: schema.course.id,
+        title: schema.course.title,
+        slug: schema.course.slug,
+        description: schema.course.description,
+        updatedAt: schema.course.updatedAt
+      })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .leftJoin(
+        schema.groupmember,
+        and(eq(schema.group.id, schema.groupmember.groupId), eq(schema.groupmember.profileId, profileId))
+      )
+      .leftJoin(schema.programCourse, eq(schema.course.id, schema.programCourse.courseId))
+      .leftJoin(
+        schema.program,
+        and(
+          eq(schema.programCourse.programId, schema.program.id),
+          eq(schema.program.organizationId, orgId),
+          eq(schema.program.status, 'ACTIVE')
+        )
+      )
+      .leftJoin(
+        schema.programMember,
+        and(eq(schema.program.id, schema.programMember.programId), eq(schema.programMember.profileId, profileId))
+      )
+      .where(
+        and(
+          eq(schema.group.organizationId, orgId),
+          eq(schema.course.status, 'ACTIVE'),
+          eq(schema.course.isPublished, true),
+          or(isNotNull(schema.groupmember.id), isNotNull(schema.programMember.id)),
+          or(ilike(schema.course.title, searchValue), ilike(schema.course.description, searchValue))
+        )
+      )
+      .groupBy(schema.course.id)
+      .orderBy(desc(schema.course.updatedAt))
+      .limit(limit);
+
+    return result;
+  } catch (error) {
+    console.error('searchLmsCourses error:', error);
+    throw new Error(`Failed to search LMS courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 interface GetEnrolledCoursesOptions {
   /** Organization ID (required) */
   orgId: string;
@@ -780,6 +888,17 @@ export const getEnrolledCourses = async ({
   profileId
 }: GetEnrolledCoursesOptions): Promise<TStudentCourse[]> => {
   try {
+    const latestComplianceCycles = db
+      .select({
+        courseId: schema.courseCompletionRecord.courseId,
+        profileId: schema.courseCompletionRecord.profileId,
+        latestCycleNumber: sql<number>`MAX(${schema.courseCompletionRecord.cycleNumber})`.as('latest_cycle_number')
+      })
+      .from(schema.courseCompletionRecord)
+      .where(eq(schema.courseCompletionRecord.profileId, profileId))
+      .groupBy(schema.courseCompletionRecord.courseId, schema.courseCompletionRecord.profileId)
+      .as('latest_enrolled_course_compliance_cycles');
+
     // Single query covering both access paths:
     //   1. Direct enrollment: student has a groupmember row for the course's group
     //   2. Program membership: student is a program_member of a program that contains the course
@@ -817,13 +936,29 @@ export const getEnrolledCourses = async ({
             or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id)),
             sql`gm.profile_id = ${sql.raw(`'${profileId}'::uuid`)}`
           )}
-        )`.as('exercises_completed')
+        )`.as('exercises_completed'),
+        complianceStatus: schema.courseCompletionRecord.status,
+        complianceCycleNumber: schema.courseCompletionRecord.cycleNumber,
+        complianceDueDate: schema.courseCompletionRecord.dueDate,
+        complianceValidUntil: schema.courseCompletionRecord.validUntil
       })
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
       .leftJoin(
         schema.groupmember,
         and(eq(schema.group.id, schema.groupmember.groupId), eq(schema.groupmember.profileId, profileId))
+      )
+      .leftJoin(
+        latestComplianceCycles,
+        and(eq(latestComplianceCycles.courseId, schema.course.id), eq(latestComplianceCycles.profileId, profileId))
+      )
+      .leftJoin(
+        schema.courseCompletionRecord,
+        and(
+          eq(schema.courseCompletionRecord.courseId, schema.course.id),
+          eq(schema.courseCompletionRecord.profileId, profileId),
+          eq(schema.courseCompletionRecord.cycleNumber, latestComplianceCycles.latestCycleNumber)
+        )
       )
       .leftJoin(schema.programCourse, eq(schema.course.id, schema.programCourse.courseId))
       .leftJoin(
@@ -847,7 +982,7 @@ export const getEnrolledCourses = async ({
           or(isNotNull(schema.groupmember.id), isNotNull(schema.programMember.id))
         )
       )
-      .groupBy(schema.course.id)
+      .groupBy(schema.course.id, schema.courseCompletionRecord.id)
       .orderBy(desc(schema.course.createdAt));
 
     return result.map((row) => ({
@@ -855,7 +990,11 @@ export const getEnrolledCourses = async ({
       lessonCount: Number(row.lessonCount),
       progressRate: Number(row.progressRate),
       exerciseCount: Number(row.exerciseCount),
-      exercisesCompleted: Number(row.exercisesCompleted)
+      exercisesCompleted: Number(row.exercisesCompleted),
+      complianceStatus: row.complianceStatus ?? null,
+      complianceCycleNumber: row.complianceCycleNumber ?? null,
+      complianceDueDate: row.complianceDueDate ?? null,
+      complianceValidUntil: row.complianceValidUntil ?? null
     }));
   } catch (error) {
     console.error('getEnrolledCourses error:', error);

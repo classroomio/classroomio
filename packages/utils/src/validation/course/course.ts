@@ -188,18 +188,57 @@ export const ZCourseContentDelete = z
     sectionId: z.string().min(1).optional(),
     items: z.array(ZCourseContentDeleteItem).min(1).optional()
   })
-  .refine((data) => Boolean(data.sectionId) !== Boolean(data.items), {
-    message: 'Provide either sectionId or items',
-    path: ['sectionId']
+  .superRefine((data, ctx) => {
+    if (Boolean(data.sectionId) === Boolean(data.items)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['sectionId'],
+        message: 'Provide either sectionId or items'
+      });
+    }
+
+    const itemKeys = new Set<string>();
+    data.items?.forEach((item, index) => {
+      const itemKey = `${item.type}:${item.id}`;
+      if (itemKeys.has(itemKey)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['items', index, 'id'],
+          message: 'Item IDs must be unique per content type'
+        });
+      }
+
+      itemKeys.add(itemKey);
+    });
   });
 export type TCourseContentDelete = z.infer<typeof ZCourseContentDelete>;
 
-export const ZCourseCreate = z.object({
+export const ZComplianceSettings = z.object({
+  retakeIntervalMonths: z.number().int().min(1).max(120),
+  gracePeriodDays: z.number().int().min(0).max(365).optional().default(0),
+  reminderDaysBefore: z.array(z.number().int().min(1).max(365)).max(10).optional().default([30, 7, 1]),
+  isMandatory: z.boolean().optional().default(true),
+  framework: z.enum(['HIPAA', 'OSHA', 'SOX', 'GDPR', 'PCI_DSS', 'FERPA', 'ISO', 'CUSTOM']).nullable().optional(),
+  maxRetakeAttempts: z.number().int().min(1).nullable().optional(),
+  passingScore: z.number().int().min(0).max(100).optional().default(80)
+});
+export type TComplianceSettings = z.infer<typeof ZComplianceSettings>;
+
+export const ZCourseCreateBase = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
-  type: z.enum(['LIVE_CLASS', 'SELF_PACED']),
-  organizationId: z.string().min(1)
+  type: z.enum(['LIVE_CLASS', 'SELF_PACED', 'COMPLIANCE']),
+  organizationId: z.string().min(1),
+  compliance: ZComplianceSettings.optional()
 });
+
+export const ZCourseCreate = ZCourseCreateBase.refine(
+  (data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined,
+  {
+    message: 'Compliance settings are required for COMPLIANCE courses',
+    path: ['compliance']
+  }
+);
 export type TCourseCreate = z.infer<typeof ZCourseCreate>;
 
 export const ZCourseReward = z.object({
@@ -291,10 +330,10 @@ export const ZCertificationSettings = z.object({
 });
 export type TCertificationSettings = z.infer<typeof ZCertificationSettings>;
 
-export const ZCourseUpdate = z.object({
+export const ZCourseUpdateBase = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
-  type: z.enum(['LIVE_CLASS', 'SELF_PACED']).optional(),
+  type: z.enum(['LIVE_CLASS', 'SELF_PACED', 'COMPLIANCE']).optional(),
   logo: z.string().optional(),
   slug: z.string().optional(),
   isPublished: z.boolean().optional(),
@@ -303,8 +342,17 @@ export const ZCourseUpdate = z.object({
   cost: z.number().int().min(0).optional(),
   currency: z.enum(['NGN', 'USD']).optional(),
   certificate: ZCertificationSettings.optional(),
-  tagIds: z.array(z.uuid()).max(100).optional()
+  tagIds: z.array(z.uuid()).max(100).optional(),
+  compliance: ZComplianceSettings.optional()
 });
+
+export const ZCourseUpdate = ZCourseUpdateBase.refine(
+  (data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined,
+  {
+    message: 'Compliance settings are required when changing a course to COMPLIANCE',
+    path: ['compliance']
+  }
+);
 export type TCourseUpdate = z.infer<typeof ZCourseUpdate>;
 
 export const ZCourseUpdateParam = z.object({

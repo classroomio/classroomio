@@ -65,6 +65,15 @@
   const allowNewStudent = $derived(get(courseData, 'metadata.allowNewStudent'));
   const bannerImage = $derived(get(courseData, 'logo'));
   const instructor = $derived(get(courseData, 'metadata.instructor') || {});
+  const organizationName = $derived(get(courseData, 'org.name') || $currentOrg.name || '');
+  const instructorName = $derived.by(() => {
+    const name = get(instructor, 'name');
+    return typeof name === 'string' && name.trim() ? name : organizationName;
+  });
+  const instructorImageUrl = $derived.by(() => {
+    const imageUrl = get(instructor, 'imgUrl');
+    return typeof imageUrl === 'string' && imageUrl.trim() ? imageUrl : '/images/avatar.svg';
+  });
   const certificate = $derived(
     get(courseData, 'metadata.certificate', {
       templateUrl: '/images/certificate-template.svg'
@@ -148,7 +157,7 @@
 
           <BlurFade delay={0.3}>
             <p class="mb-6 text-sm text-blue-300">
-              {get(courseData, 'metadata.instructor.name', '')}
+              {instructorName}
             </p>
           </BlurFade>
 
@@ -528,11 +537,11 @@
               <img
                 alt="Author Avatar"
                 class="block h-20 w-20 rounded-full object-cover ring-2 ring-gray-200 dark:ring-neutral-700"
-                src={get(instructor, 'imgUrl', $currentOrg.avatarUrl || '/logo-512.png')}
+                src={instructorImageUrl}
               />
               <div>
                 <p class="text-base font-medium dark:text-white">
-                  {get(instructor, 'name', $currentOrg.name)}
+                  {instructorName}
                 </p>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
                   {get(instructor, 'role', '')}

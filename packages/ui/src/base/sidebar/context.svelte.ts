@@ -1,6 +1,6 @@
 import { IsMobile } from '../../hooks/is-mobile.svelte';
 import { getContext, setContext } from 'svelte';
-import { SIDEBAR_KEYBOARD_SHORTCUT } from './constants.js';
+import { SIDEBAR_KEYBOARD_SHORTCUT } from './constants';
 
 type Getter<T> = () => T;
 

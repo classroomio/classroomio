@@ -44,7 +44,7 @@ export interface NavItemConfig {
 }
 
 // Base navigation configuration structure
-const baseNavConfig: NavItemConfig[] = [
+export const baseNavConfig: NavItemConfig[] = [
   {
     titleKey: 'lms_navigation.home',
     path: '',

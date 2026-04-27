@@ -7,6 +7,9 @@ interface SeedOrganizationMember {
   enterpriseOrgId: string;
   enterpriseAdminUserId: string;
   enterpriseStudentUserId: string;
+  earlyAdopterOrgId: string;
+  earlyAdopterAdminUserId: string;
+  earlyAdopterStudentUserId: string;
 }
 
 export async function seedOrganizationMember({
@@ -15,7 +18,10 @@ export async function seedOrganizationMember({
   studentUserId,
   enterpriseOrgId,
   enterpriseAdminUserId,
-  enterpriseStudentUserId
+  enterpriseStudentUserId,
+  earlyAdopterOrgId,
+  earlyAdopterAdminUserId,
+  earlyAdopterStudentUserId
 }: SeedOrganizationMember) {
   const existingOrgMembers = await db.select().from(organizationmember);
   const existingOrgMemberKeys = existingOrgMembers.map((om) => `${om.organizationId}-${om.profileId}`);
@@ -43,6 +49,18 @@ export async function seedOrganizationMember({
       organizationId: enterpriseOrgId,
       roleId: 3, // STUDENT
       profileId: enterpriseStudentUserId,
+      verified: false
+    },
+    {
+      organizationId: earlyAdopterOrgId,
+      roleId: 1, // ADMIN
+      profileId: earlyAdopterAdminUserId,
+      verified: false
+    },
+    {
+      organizationId: earlyAdopterOrgId,
+      roleId: 3, // STUDENT
+      profileId: earlyAdopterStudentUserId,
       verified: false
     }
   ].filter((om) => !existingOrgMemberKeys.includes(`${om.organizationId}-${om.profileId}`));

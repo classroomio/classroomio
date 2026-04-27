@@ -25,6 +25,7 @@ import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, sendEmail } from '@cio/email';
 import { getProfileByEmail, markUserAndProfileEmailVerified } from '@cio/db/queries/auth';
 import { generateSlug } from '@cio/utils/functions';
+import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
 
 type InviteStatus = 'ACTIVE' | 'EXPIRED' | 'USED_UP' | 'REVOKED';
 type InvitePreset = 'ONE_TIME_24H' | 'MULTI_USE_7D' | 'MULTI_USE_30D' | 'CUSTOM';
@@ -647,6 +648,8 @@ export async function enrollInCourse(
     .limit(1);
 
   if (existingMember) {
+    await ensureComplianceEnrollmentRecordsForProfiles([courseId], [user.id]);
+
     return {
       success: true,
       alreadyJoined: true,
@@ -676,6 +679,8 @@ export async function enrollInCourse(
     profileId: user.id,
     email: normalizedEmail
   });
+
+  await ensureComplianceEnrollmentRecordsForProfiles([courseId], [user.id]);
 
   await sendStudentJoinEmails({
     courseId,
@@ -1070,6 +1075,8 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       orgSiteName: organization.siteName
     };
   });
+
+  await ensureComplianceEnrollmentRecordsForProfiles([result.courseId], [user.id]);
 
   if (!result.alreadyJoined) {
     await sendStudentJoinEmails({

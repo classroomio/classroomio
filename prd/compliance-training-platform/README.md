@@ -82,36 +82,39 @@ When a course is created or updated with type `COMPLIANCE`, the following settin
 | `maxRetakeAttempts` | integer \| null | — | `null` | Max attempts per retake cycle. `null` = unlimited |
 | `passingScore` | integer | — | `80` | Minimum score (0–100) to count as a valid completion |
 
-**CCT-3: Completion Validity Window**
-- When a learner completes a compliance course (meets passing score), their completion is **valid for `retakeIntervalMonths` months**
+**CCT-3: Due Date Ownership**
+- The initial `dueDate` for cycle 1 is set by the course admin/teacher when learners are assigned or enrolled into a compliance course
+- `dueDate` is the operational deadline used for reminder scheduling, grace period handling, extensions, and overdue status
+- For renewal cycles, the system automatically creates the next cycle with `dueDate = validUntil` from the previous compliant cycle
+- Admin actions such as extend or reset may override the current cycle's `dueDate`
+
+**CCT-4: Completion Validity Window**
+- When a learner completes a compliance course, their completion is valid for `retakeIntervalMonths` months
 - `validUntil` = `completedAt` + `retakeIntervalMonths`
+- `validUntil` is the date that triggers renewal into the next cycle
 - The system tracks this validity window per learner per course in the `course_completion_record` table
 - A valid completion satisfies compliance; an expired completion does not
 
-**CCT-4: Retake Lifecycle**
+**CCT-5: Retake Lifecycle**
 A learner's relationship to a compliance course follows this cycle:
 
 ```
-Enrolled → In Progress → Completed (Compliant)
-                              ↓
-                    [retakeIntervalMonths pass]
-                              ↓
-                      Expiring Soon  ← reminder notifications sent
-                              ↓
-                    [validity expires]
-                              ↓
-                      In Grace Period  ← if gracePeriodDays > 0
-                              ↓
-                    [grace period ends]
-                              ↓
-                      Non-Compliant  ← escalation triggers
-                              ↓
-                    [learner re-enrolled automatically]
-                              ↓
-                         In Progress → Completed (Compliant) → ...
+Cycle 1 created → Not Started → In Progress → Completed (Compliant)
+                                               ↓
+                             [validUntil reaches current date]
+                                               ↓
+                         Cycle 2 created automatically as new active cycle
+                                               ↓
+       Not Started → Expiring Soon → In Grace Period → Non-Compliant → Completed
 ```
 
-**CCT-5: Compliance Status per Learner**
+- There is exactly one active cycle per learner per compliance course
+- The active cycle owns the learner's current `status`, `dueDate`, reminder schedule, and overdue state
+- When a learner completes a cycle, that cycle becomes historical and remains visible in history
+- When `validUntil` is reached, the system creates the next cycle as the new active record with status `not_started`
+- The previous cycle is preserved for audit/history and is no longer used as the source of current reminder or overdue state
+
+**CCT-6: Compliance Status per Learner**
 Each learner enrolled in a compliance course has one of these statuses (tracked on `course_completion_record`):
 
 | Status | Condition |
@@ -124,16 +127,22 @@ Each learner enrolled in a compliance course has one of these statuses (tracked 
 | `non_compliant` | Past expiry + grace period with no valid completion |
 | `waived` | Exempted by admin (with reason and optional expiration) |
 
-**CCT-6: Automatic Re-enrollment**
+**CCT-7: Automatic Re-enrollment**
 - When a learner's completion validity expires, the system automatically creates a new completion record with status `not_started` and a new `dueDate`
 - Previous completions are preserved in history (never deleted)
 - The learner sees the course reappear in their "Due" list
 - A background job (`compliance-expiry-checker`) runs daily to process expirations
 
-**CCT-7: Auto-grading Behavior**
-- Like `SELF_PACED` courses, `COMPLIANCE` courses auto-grade submissions when all questions are auto-gradable
-- If the learner's score meets or exceeds `passingScore`, the completion is recorded as valid
+**CCT-8: Completion Rule**
+- Compliance completion is determined by the course completion rule, not by any single passing submission in isolation
+- For v1, a compliance cycle is complete when the learner satisfies the course's configured completion requirements and achieves `passingScore` on the designated final assessment for the cycle
+- Submission and lesson events may trigger a re-check, but a centralized compliance completion service decides whether the cycle becomes `compliant`
 - If below `passingScore` and `maxRetakeAttempts` is not reached, the learner may retry
+
+**CCT-9: Auto-grading Behavior**
+- Like `SELF_PACED` courses, `COMPLIANCE` courses auto-grade submissions when all questions are auto-gradable
+- Auto-graded results feed into the centralized compliance completion evaluation
+- Manually graded assessments may also complete the cycle once grading is finished and the completion rule is satisfied
 
 ---
 
@@ -161,6 +170,11 @@ Automatically remind learners before their compliance course deadlines and notif
 - When a new retake cycle is created (automatic re-enrollment), notify the learner
 - Email includes: course name, new due date, link to start
 
+**NR-5: Notification Idempotency**
+- Reminder and alert delivery is persisted per cycle so scheduled jobs can be re-run safely
+- The system records reminder events such as `reminder_30d`, `reminder_7d`, `reminder_1d`, `renewal_created`, and `became_non_compliant`
+- A given reminder or alert may be sent at most once per cycle per channel unless an admin explicitly triggers a manual resend
+
 > **Note**: The notification system PRD (`prd/notification-system`) covers the general delivery infrastructure (templates, channels, preferences). This section only defines the compliance-specific triggers.
 
 ---
@@ -185,7 +199,10 @@ Certificates issued for compliance courses should carry an expiration date match
 - Certificate PDF shows: completion date, expiration date, cycle number, framework tag (if set)
 - Certificate list view in dashboard shows validity status badge (valid/expiring/expired)
 
-> **Note**: This builds on the existing certificate system (`course.certificate` JSONB settings). No new certificate tables are needed — the `course_completion_record.cycle_number` links each certificate to its retake cycle.
+**CL-4: Certificate Persistence**
+- Compliance certificates are stored per cycle in a dedicated issuance table linked to `course_completion_record`
+- Each issuance stores `issuedAt`, `expiresAt`, `status`, and the associated `cycleNumber`
+- The existing course-level certificate settings remain the configuration source, but per-cycle issuance history is persisted separately so learners and admins can view all historical certificates
 
 ---
 
@@ -278,7 +295,9 @@ On the organization dashboard, show a summary card for compliance courses:
    - Course card turns orange: "In Grace Period" (if grace period > 0)
    - OR red: "Non-Compliant" (if no grace period)
    ↓
-5. Student clicks course → Sees their previous completion history:
+5. Student clicks the same course → Sees the active cycle plus prior cycle history:
+   - This is not a separate course and not a course-switcher in nav
+   - The learner stays in the same course shell and sees a "Current Cycle" panel plus a "Past Cycles" history list
    "Cycle 1: Completed Jan 2025 (Score: 92%) — Expired"
    "Cycle 2: Due by Jan 2026 — [Start Retake]"
    ↓
@@ -369,6 +388,36 @@ CREATE INDEX idx_ccr_profile ON course_completion_record(profile_id);
 CREATE INDEX idx_ccr_status ON course_completion_record(status);
 CREATE INDEX idx_ccr_due_date ON course_completion_record(due_date);
 CREATE INDEX idx_ccr_valid_until ON course_completion_record(valid_until);
+```
+
+### New Table: `course_completion_notification_event`
+```sql
+CREATE TABLE course_completion_notification_event (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  course_completion_record_id UUID NOT NULL REFERENCES course_completion_record(id) ON DELETE CASCADE,
+  channel VARCHAR NOT NULL,      -- 'email', 'in_app'
+  event_type VARCHAR NOT NULL,   -- 'reminder_30d', 'renewal_created', 'became_non_compliant', etc.
+  sent_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+  UNIQUE(course_completion_record_id, channel, event_type)
+);
+```
+
+### New Table: `course_certificate_issue`
+```sql
+CREATE TABLE course_certificate_issue (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  course_id UUID NOT NULL REFERENCES course(id) ON DELETE CASCADE,
+  profile_id UUID NOT NULL REFERENCES profile(id) ON DELETE CASCADE,
+  course_completion_record_id UUID NOT NULL REFERENCES course_completion_record(id) ON DELETE CASCADE,
+  cycle_number INTEGER NOT NULL,
+  issued_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  expires_at TIMESTAMPTZ NOT NULL,
+  status VARCHAR NOT NULL DEFAULT 'valid', -- 'valid', 'expiring_soon', 'expired', 'renewed'
+  file_url TEXT,
+
+  UNIQUE(course_completion_record_id)
+);
 ```
 
 ### Drizzle Schema (TypeScript)
@@ -527,8 +576,8 @@ Two new routes under `/internal/`, protected by the existing `PRIVATE_SERVER_KEY
 ```
 POST /internal/compliance/check-expiry
   → Checks valid_until dates across all compliance courses
-  → Transitions statuses: compliant → expiring_soon → in_grace_period → non_compliant
-  → Creates new cycle records (automatic re-enrollment) when expired
+  → Creates the next cycle when a compliant cycle reaches valid_until
+  → Transitions only the active cycle through: not_started/in_progress → expiring_soon → in_grace_period → non_compliant
   → Returns: { processed: number, transitioned: number, reEnrolled: number }
 
 POST /internal/compliance/send-reminders
@@ -617,6 +666,7 @@ apps/dashboard/src/lib/features/course/
 apps/course-app/  (learner-facing)
   # Updated: show compliance status badge, due date, retake history on course page
   # Updated: course card shows "Due by" and color-coded status
+  # Updated: same course page shows "Current Cycle" and "Past Cycles" history instead of separate course entries
 ```
 
 ### Files That Need Code Changes

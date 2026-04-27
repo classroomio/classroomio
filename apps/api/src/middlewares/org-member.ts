@@ -1,12 +1,13 @@
 import { Context, Next } from 'hono';
 
-import { getUserOrgRole } from '@cio/db/queries/organization';
-
 /**
- * Middleware to check if the authenticated user is a member of the organization
- * Requires authMiddleware to be applied first
- * Expects orgId in the 'cio-org-id' header
- * Stores orgRole and orgId in context for use in route handlers
+ * Middleware to check if the authenticated user is a member of the organization.
+ * Reads the role from the Better Auth session (populated by the customSession plugin),
+ * so no per-request DB query is performed.
+ *
+ * Requires authMiddleware to be applied first.
+ * Expects orgId in the 'cio-org-id' header.
+ * Stores orgRole and orgId in context for use in route handlers.
  */
 export const orgMemberMiddleware = async (c: Context, next: Next) => {
   try {
@@ -34,8 +35,10 @@ export const orgMemberMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    const roleId = await getUserOrgRole(orgId, user.id);
-    if (roleId === null) {
+    const orgRoles = (c.get('orgRoles') as Record<string, number> | undefined) ?? {};
+    const roleId = orgRoles[orgId];
+
+    if (roleId === undefined) {
       return c.json(
         {
           success: false,
@@ -46,7 +49,6 @@ export const orgMemberMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    // Store orgRole and orgId in context for use in route handlers
     c.set('userRole', roleId);
     c.set('orgId', orgId);
 

@@ -63,9 +63,7 @@
   const showMarkComplete = $derived(!!lessonId && !exerciseId);
 
   const currentLessonItem = $derived(lessonId ? lessonItems.find((l) => l.id === lessonId) : null);
-  const isLessonLocked = $derived(
-    $isOrgStudent && currentLessonItem && !(currentLessonItem.isUnlocked ?? false)
-  );
+  const isLessonLocked = $derived($isOrgStudent && currentLessonItem && !(currentLessonItem.isUnlocked ?? false));
   const isMarkCompleteDisabled = $derived(isMarkingComplete || isLessonLocked || isLessonComplete);
 
   async function markLessonComplete(currentLessonId: string) {

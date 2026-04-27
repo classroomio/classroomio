@@ -20,7 +20,6 @@
 
   import OrderModal from './order-modal.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import * as Dialog from '@cio/ui/base/dialog';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import DeleteConfirmationModal from './delete-confirmation.svelte';
@@ -57,7 +56,6 @@
   }: Props = $props();
 
   let questionIdToDelete = $state(null);
-  let isDeleting = $state(false);
   let errors = $derived($questionnaireValidation);
   const questionLabels = $derived(getExerciseQuestionLabels());
 
@@ -181,53 +179,11 @@
       return { ...q, questions: next };
     });
   }
-
-  async function handleDelete() {
-    if (!courseApi.course?.id) return;
-    isDeleting = true;
-
-    await exerciseApi.delete(courseApi.course.id, exerciseId);
-
-    if (exerciseApi.success) {
-      courseApi.removeContentItem(exerciseId, ContentType.Exercise);
-      goBack();
-    }
-    isDeleting = false;
-  }
 </script>
 
 <DeleteConfirmationModal onCancel={() => (questionIdToDelete = null)} onDelete={onFinalDeleteClicked} />
 
 <OrderModal />
-
-<Dialog.Root
-  bind:open={shouldDeleteExercise}
-  onOpenChange={(isOpen) => {
-    if (!isOpen) shouldDeleteExercise = false;
-  }}
->
-  <Dialog.Content class="w-2/4">
-    <Dialog.Header>
-      <Dialog.Title>{$t('course.navItem.lessons.exercises.all_exercises.edit_mode.delete_modal')}</Dialog.Title>
-    </Dialog.Header>
-    <form onsubmit={preventDefault()}>
-      <h1 class="text-xl dark:text-white">
-        {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.sure')}
-      </h1>
-
-      <div class="mt-5 flex items-center justify-between">
-        <Button variant="outline" type="submit" onclick={() => (shouldDeleteExercise = false)}>
-          {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.no')}
-        </Button>
-        <Button disabled={isDeleting} onclick={handleDelete} loading={isDeleting}>
-          {isDeleting
-            ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.deleting')
-            : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.yes')}
-        </Button>
-      </div>
-    </form>
-  </Dialog.Content>
-</Dialog.Root>
 
 <div class="mb-20 w-full">
   {#if Object.values(errors).length}

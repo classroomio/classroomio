@@ -10,10 +10,13 @@
   import * as Empty from '@cio/ui/base/empty';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { isStudentExperience } from '$lib/utils/store/app';
+  import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import { courseApi } from '$features/course/api';
   import { openCoursePreview } from '$features/course/utils/course-preview';
+  import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
   import { t } from '$lib/utils/functions/translations';
+  import { isFreePlan } from '$lib/utils/store/org';
   import CoursePublishBadge from './course-publish-badge.svelte';
 
   const siteName = $derived($currentOrg.siteName);
@@ -55,6 +58,13 @@
     </div>
 
     <span class="grow"></span>
+
+    {#if !$isFreePlan}
+      <Button variant="outline" size="sm" onclick={toggleAiAssistant}>
+        <SparklesIcon size={14} />
+        {$t('course.navItems.nav_ai_assistant')}
+      </Button>
+    {/if}
 
     <Popover.Root>
       <Popover.Trigger>

@@ -1,6 +1,7 @@
 export * from './organization';
 export * from './auth';
 export * from './attendance';
+export * from './audience';
 export * from './assets';
 export * from './course';
 export * from './group';
@@ -13,3 +14,4 @@ export * from './submission';
 export * from './tag';
 export * from './course-import';
 export * from './program';
+export * from './widget';

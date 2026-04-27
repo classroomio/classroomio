@@ -198,6 +198,7 @@ export async function updateUngroupedExercisesSectionId(
 export async function deleteExercise(exerciseId: string, dbClient: DbOrTxClient = db) {
   try {
     const [deleted] = await dbClient.delete(schema.exercise).where(eq(schema.exercise.id, exerciseId)).returning();
+    console.log('Deleted exercise:', deleted);
     return deleted || null;
   } catch (error) {
     console.error('deleteExercise error:', error);

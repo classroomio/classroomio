@@ -36,6 +36,7 @@ import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
 
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { generateDocumentDownloadPresignedUrls } from '@api/utils/s3';
+import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 
 type SubmissionGradingState = 'queued' | 'processing' | 'awaiting_manual' | 'completed' | 'failed';
 type SubmissionOverallStatus = 'auto_graded' | 'manual_required' | 'hybrid';
@@ -573,7 +574,9 @@ export async function createSubmissionService(
     }
 
     const shouldAutoGrade =
-      course?.type === 'SELF_PACED' && overallStatus === 'auto_graded' && exerciseWithRelations.questions.length > 0;
+      (course?.type === 'SELF_PACED' || course?.type === 'COMPLIANCE') &&
+      overallStatus === 'auto_graded' &&
+      exerciseWithRelations.questions.length > 0;
 
     if (shouldAutoGrade) {
       const answeredIds = new Set(answerByQuestionId.keys());
@@ -631,6 +634,8 @@ export async function createSubmissionService(
           console.error('Failed to send exercise submission update email:', emailError);
         });
 
+        await syncComplianceProgressFromSubmission(courseId, submittedBy);
+
         const enrichedAnswers =
           answersWithPoints.length > 0 ? await enrichFileUploadAnswersArray(answersWithPoints) : answersWithPoints;
         return { ...submission, answers: enrichedAnswers };
@@ -640,6 +645,8 @@ export async function createSubmissionService(
     void sendExerciseSubmissionUpdateEmail(courseId, exerciseId, submittedBy).catch((emailError) => {
       console.error('Failed to send exercise submission update email:', emailError);
     });
+
+    await syncComplianceProgressFromSubmission(courseId, submittedBy);
 
     return submission;
   } catch (error) {
@@ -693,6 +700,10 @@ export async function updateSubmissionService(submissionId: string, data: TSubmi
       void sendSubmissionUpdateEmail(submissionId, nextLegacyStatusId).catch((emailError) => {
         console.error('Failed to send submission update email:', emailError);
       });
+    }
+
+    if (updated.gradingState === 'completed' && updated.courseId && updated.submittedBy) {
+      await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
     }
 
     return updated;
@@ -791,6 +802,10 @@ export async function updateSubmissionGradesBatch(
       void sendSubmissionUpdateEmail(submissionId, targetStatusId).catch((emailError) => {
         console.error('Failed to send submission update email:', emailError);
       });
+    }
+
+    if (updated.courseId && updated.submittedBy) {
+      await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
     }
 
     return updated;

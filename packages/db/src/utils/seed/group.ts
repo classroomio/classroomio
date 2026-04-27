@@ -5,9 +5,18 @@ interface SeedGroup {
   reactGroupId: string;
   pandasGroupId: string;
   testOrgId: string;
+  earlyAdopterGroupId: string;
+  earlyAdopterOrgId: string;
 }
 
-export async function seedGroup({ mvcGroupId, reactGroupId, pandasGroupId, testOrgId }: SeedGroup) {
+export async function seedGroup({
+  mvcGroupId,
+  reactGroupId,
+  pandasGroupId,
+  testOrgId,
+  earlyAdopterGroupId,
+  earlyAdopterOrgId
+}: SeedGroup) {
   const existingGroups = await db.select().from(group);
   const existingGroupIds = existingGroups.map((g) => g.id);
 
@@ -32,6 +41,13 @@ export async function seedGroup({ mvcGroupId, reactGroupId, pandasGroupId, testO
       description:
         'Unlock the power of data with our "Data Science with Python and Pandas" course. Dive into Python programming fundamentals and then journey into the world of Pandas for efficient data manipulation and analysis.',
       organizationId: testOrgId
+    },
+    {
+      id: earlyAdopterGroupId,
+      name: 'Product Management Fundamentals',
+      description:
+        'A practical introduction to product management covering roadmaps, prioritization frameworks, user research, and cross-functional collaboration skills needed to ship great products.',
+      organizationId: earlyAdopterOrgId
     }
   ].filter((g) => !existingGroupIds.includes(g.id));
 

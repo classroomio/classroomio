@@ -5,6 +5,7 @@ import {
   CourseIcon,
   DashboardIcon,
   GoalIcon,
+  LandingPageIcon,
   PeopleIcon,
   SettingsIcon,
   SetupIcon,
@@ -13,8 +14,8 @@ import {
 } from '@cio/ui/custom/moving-icons';
 
 import type { AccountOrg } from '$features/app/types';
-import type { Component } from 'svelte';
 import BotIcon from '@lucide/svelte/icons/bot';
+import type { Component } from 'svelte';
 import { isActive } from '$lib/utils/functions/app';
 
 export interface NavItem {
@@ -59,7 +60,7 @@ export interface NestedRouteConfig {
 }
 
 // Base navigation configuration structure
-const baseNavConfig: NavItemConfig[] = [
+export const baseNavConfig: NavItemConfig[] = [
   {
     group: 'home',
     titleKey: 'org_navigation.dashboard',
@@ -103,6 +104,13 @@ const baseNavConfig: NavItemConfig[] = [
     icon: TagIcon,
     requiresAdmin: true,
     matchPattern: '^/org/[^/]+/tags(/.*)?$'
+  },
+  {
+    group: 'content',
+    titleKey: 'org_navigation.widgets',
+    path: '/widgets',
+    icon: LandingPageIcon,
+    matchPattern: '^(/org/[^/]+/widgets(/.*)?|/widgets/[^/]+(/.*)?)$'
   },
   {
     group: 'people',

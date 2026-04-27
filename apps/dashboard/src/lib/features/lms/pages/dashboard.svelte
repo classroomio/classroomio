@@ -1,97 +1,299 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { Learning } from '$features/lms';
+  import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
+  import { Progress } from '@cio/ui/base/progress';
+  import { Empty } from '@cio/ui/custom/empty';
+  import { BlurFade } from '@cio/ui/custom/animation/blurfade';
+  import { ActivityCard } from '$features/ui';
+  import BookOpenIcon from '@lucide/svelte/icons/book-open';
+  import ClipboardCheckIcon from '@lucide/svelte/icons/clipboard-check';
+  import FlameIcon from '@lucide/svelte/icons/flame';
+  import TargetIcon from '@lucide/svelte/icons/target';
+  import UserRoundIcon from '@lucide/svelte/icons/user-round';
   import { t } from '$lib/utils/functions/translations';
+  import { classroomio } from '$lib/utils/services/api';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { coursesApi } from '$features/course/api';
-  import { resolve } from '$app/paths';
-  import { BlurFade } from '@cio/ui/custom/animation/blurfade';
+  import {
+    getStudentCourseComplianceDate,
+    getStudentCourseComplianceStatusKey,
+    getStudentCourseComplianceStatusVariant,
+    getStudentCourseProgressPercent,
+    isStudentCourseComplete
+  } from '$features/course/utils/compliance-utils';
+
+  type EnrolledCourse = (typeof coursesApi.enrolledCourses)[number];
+
+  let loginStreak = $state<number | null>(null);
+  let hasLoadedLoginStreak = $state(false);
 
   let totalCompleted = $derived(
-    coursesApi.enrolledCourses.reduce((acc, cur) => {
-      const exercises =
-        'exercisesCompleted' in cur && typeof cur.exercisesCompleted === 'number' ? cur.exercisesCompleted : 0;
-      return acc + (cur.progressRate || 0) + exercises;
-    }, 0)
+    coursesApi.enrolledCourses.reduce((acc, course) => acc + getCourseCompletedItems(course), 0)
   );
 
-  let totalLessons = $derived(
-    coursesApi.enrolledCourses.reduce((acc, cur) => {
-      const exercises = 'exerciseCount' in cur && typeof cur.exerciseCount === 'number' ? cur.exerciseCount : 0;
-      return acc + (cur.lessonCount || 0) + exercises;
-    }, 0)
-  );
+  let totalLessons = $derived(coursesApi.enrolledCourses.reduce((acc, course) => acc + getCourseTotalItems(course), 0));
 
   let progressPercentage = $derived(totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0);
+  let complianceCourses = $derived(coursesApi.enrolledCourses.filter((course) => course.type === 'COMPLIANCE'));
+  let completedComplianceCourses = $derived(complianceCourses.filter((course) => isStudentCourseComplete(course)));
+  let complianceScore = $derived(
+    complianceCourses.length > 0
+      ? Math.round((completedComplianceCourses.length / complianceCourses.length) * 100)
+      : null
+  );
+
+  let inProgressCourses = $derived(coursesApi.enrolledCourses.filter((course) => !isStudentCourseComplete(course)));
+  let highlightedCourses = $derived.by(() => getHighlightedCourses(inProgressCourses));
+  let currentCourse = $derived(highlightedCourses[0] ?? coursesApi.enrolledCourses[0] ?? null);
 
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
 
     coursesApi.getEnrolledCourses();
   });
+
+  $effect(() => {
+    if (!$profile.id || hasLoadedLoginStreak) return;
+
+    hasLoadedLoginStreak = true;
+    loadLoginStreak();
+  });
+
+  function getCourseCompletedItems(course: EnrolledCourse) {
+    const exercisesCompleted =
+      'exercisesCompleted' in course && typeof course.exercisesCompleted === 'number' ? course.exercisesCompleted : 0;
+
+    return (course.progressRate || 0) + exercisesCompleted;
+  }
+
+  function getCourseTotalItems(course: EnrolledCourse) {
+    const exercises = 'exerciseCount' in course && typeof course.exerciseCount === 'number' ? course.exerciseCount : 0;
+
+    return (course.lessonCount || 0) + exercises;
+  }
+
+  function getHighlightedCourses(courses: EnrolledCourse[]) {
+    return [...courses]
+      .sort((leftCourse, rightCourse) => {
+        const leftComplianceDate = getStudentCourseComplianceDate(leftCourse)?.value;
+        const rightComplianceDate = getStudentCourseComplianceDate(rightCourse)?.value;
+
+        if (leftComplianceDate || rightComplianceDate) {
+          const leftTimestamp = leftComplianceDate ? new Date(leftComplianceDate).getTime() : Number.POSITIVE_INFINITY;
+          const rightTimestamp = rightComplianceDate
+            ? new Date(rightComplianceDate).getTime()
+            : Number.POSITIVE_INFINITY;
+
+          return leftTimestamp - rightTimestamp;
+        }
+
+        return getStudentCourseProgressPercent(rightCourse) - getStudentCourseProgressPercent(leftCourse);
+      })
+      .slice(0, 3);
+  }
+
+  async function loadLoginStreak() {
+    try {
+      const response = await classroomio.dash['login-streak'].$get();
+      const result = await response.json();
+
+      if (result.success) {
+        loginStreak = result.data.daysActive;
+      }
+    } catch (error) {
+      console.error('Failed to load login streak', error);
+      loginStreak = 0;
+    }
+  }
+
+  function gotoCourse(id: string | undefined) {
+    if (!id) return;
+
+    goto(`/courses/${id}/lessons?next=true`);
+  }
 </script>
 
-<BlurFade delay={0} once>
-  <div
-    class="flex h-fit w-full flex-col-reverse justify-between rounded-md border px-4 py-2 md:flex-row md:items-center"
-  >
-    <div class="w-full md:w-[75%] lg:w-[80%]">
-      <p class="mb-5 w-4/6 font-normal lg:text-xl">
-        {$currentOrg.customization.dashboard.bannerText
-          ? $currentOrg.customization.dashboard.bannerText
-          : $t('dashboard.lms_dashboard_hero')}
-      </p>
-      <Button onclick={() => goto(resolve('/lms/mylearning', {}))}>
-        {$t('dashboard.continue_learning')}
-      </Button>
-    </div>
-    <img
-      src={$currentOrg.customization.dashboard.bannerImage
-        ? $currentOrg.customization.dashboard.bannerImage
-        : '/images/student-learning.svg'}
-      alt="student Learning Pictogram"
-      class="mb-3 aspect-square size-48 md:mb-0 md:block"
-    />
-  </div>
-</BlurFade>
-<section class="flex w-full flex-col md:gap-4 lg:flex-row">
-  <BlurFade delay={0.1} once class="mt-10 w-full lg:w-[50%] xl:mt-2">
-    <Learning />
-  </BlurFade>
-  <BlurFade delay={0.2} once class="mt-10 w-full lg:w-[50%] xl:mt-2">
-    <p class="pb-3 text-base font-semibold text-[#040F2D] dark:text-white">
-      {$t('dashboard.your_progress')}
-    </p>
-    <div
-      class="flex h-fit items-center justify-center gap-2 rounded border border-[#EAEAEA] p-3 lg:h-[40vh] lg:overflow-y-auto dark:bg-neutral-800"
-    >
-      <div
-        class="flex h-full w-full flex-col items-center justify-between gap-5 sm:flex-row lg:items-center lg:justify-around"
-      >
-        <div>
-          <img src="/images/target.svg" alt="student Learning score" />
-        </div>
-        <span class="text-center xl:text-start">
-          <p class="py-2 text-base font-semibold text-[#040F2D] dark:text-white">
-            {$t('dashboard.your_progress')}
+<div class="space-y-6 pb-8">
+  <BlurFade delay={0.05} once>
+    <section class="ui:border-primary/20 ui:bg-primary/10 rounded border p-4 md:p-6">
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div class="max-w-xl space-y-2">
+          <p class="ui:text-primary text-xs font-semibold tracking-[0.18em] uppercase">
+            {$t('dashboard.pick_up_where_you_left_off')}
           </p>
-          {#if totalLessons > 0}
-            <p class="text-xs font-normal text-[#656565] dark:text-white">
-              {totalCompleted}/{totalLessons}
-              {$t('dashboard.items_completed')}
-            </p>
+          <h2 class="text-xl font-semibold tracking-tight">
+            {#if currentCourse}
+              {$t('dashboard.course_awaits_you', { title: currentCourse.title })}
+            {:else}
+              {$t('dashboard.learning_awaits_you')}
+            {/if}
+          </h2>
+        </div>
+
+        <Button
+          variant="outline"
+          class="shrink-0"
+          onclick={() => (currentCourse ? gotoCourse(currentCourse.id) : goto('/lms/explore'))}
+        >
+          {#if currentCourse}
+            {$t('dashboard.continue_learning')}
           {:else}
-            <p class="text-xs font-normal text-[#656565] dark:text-white">
-              {$t('dashboard.no_courses_started')}
-            </p>
+            {$t('dashboard.view_courses')}
           {/if}
-        </span>
-        <h1 class="my-0 text-5xl whitespace-nowrap text-[#262626] lg:text-6xl dark:text-white">
-          {progressPercentage} %
-        </h1>
+        </Button>
       </div>
-    </div>
+    </section>
   </BlurFade>
-</section>
+
+  <section class="mb-10 flex flex-wrap items-start">
+    <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <BlurFade delay={0.1} once>
+        <ActivityCard
+          activity={{
+            icon: TargetIcon,
+            title: $t('dashboard.progress'),
+            percentage: progressPercentage,
+            description: $t('dashboard.items_done', { completed: totalCompleted, total: totalLessons })
+          }}
+        />
+      </BlurFade>
+
+      <BlurFade delay={0.15} once>
+        <ActivityCard
+          activity={{
+            icon: ClipboardCheckIcon,
+            title: $t('dashboard.compliance'),
+            percentage: complianceScore ?? '--',
+            description: $t('dashboard.compliance_met', {
+              completed: completedComplianceCourses.length,
+              total: complianceCourses.length
+            }),
+            hidePercentage: complianceScore === null
+          }}
+        />
+      </BlurFade>
+
+      <BlurFade delay={0.2} once>
+        <ActivityCard
+          activity={{
+            icon: FlameIcon,
+            title: $t('dashboard.streak'),
+            percentage: loginStreak ?? 0,
+            description: $t('dashboard.days_active'),
+            hidePercentage: true
+          }}
+        />
+      </BlurFade>
+    </div>
+  </section>
+
+  <div class="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)]">
+    <section class="flex h-full flex-col space-y-4">
+      <h2 class="ui:text-muted-foreground text-sm font-semibold tracking-[0.14em] uppercase">
+        {$t('dashboard.currently_learning')}
+      </h2>
+
+      <div class="flex flex-1 flex-col space-y-3">
+        {#if highlightedCourses.length > 0}
+          {#each highlightedCourses as course}
+            {@const courseProgress = getStudentCourseProgressPercent(course)}
+            {@const totalItems = getCourseTotalItems(course)}
+            {@const completedItems = getCourseCompletedItems(course)}
+            <article class="ui:bg-card ui:text-card-foreground rounded border p-4">
+              <div
+                class="flex flex-col gap-4 md:flex-row md:items-center lg:flex-col lg:items-stretch xl:flex-row xl:items-center"
+              >
+                <div class="flex min-w-0 flex-1 items-start gap-4">
+                  <div class="ui:bg-primary/10 flex size-12 shrink-0 items-center justify-center rounded">
+                    {#if course.logo}
+                      <img src={course.logo} alt="" class="size-full rounded object-cover" />
+                    {:else}
+                      <UserRoundIcon class="ui:text-primary size-5" />
+                    {/if}
+                  </div>
+
+                  <div class="min-w-0 flex-1">
+                    <h3 class="truncate text-base font-semibold">{course.title}</h3>
+                    {#if course.description}
+                      <p class="ui:text-muted-foreground mt-1 line-clamp-2 text-sm">{course.description}</p>
+                    {/if}
+
+                    {#if course.type === 'COMPLIANCE'}
+                      {@const complianceStatusKey = getStudentCourseComplianceStatusKey(course)}
+                      <div class="mt-3">
+                        {#if complianceStatusKey}
+                          <Badge variant={getStudentCourseComplianceStatusVariant(course)}>
+                            {$t(complianceStatusKey)}
+                          </Badge>
+                        {/if}
+                      </div>
+                    {/if}
+                  </div>
+                </div>
+
+                <Button variant="outline" class="shrink-0" onclick={() => gotoCourse(course.id)}>
+                  {$t('dashboard.continue')}
+                </Button>
+              </div>
+
+              <div class="mt-5 flex items-center gap-4">
+                <div class="min-w-0 flex-1">
+                  <div class="mb-2 flex items-center justify-between text-xs">
+                    <span class="ui:text-muted-foreground">
+                      {$t('dashboard.items_done', { completed: completedItems, total: totalItems })}
+                    </span>
+                    <span class="ui:text-muted-foreground">{courseProgress}%</span>
+                  </div>
+                  <Progress value={courseProgress} max={100} class="ui:h-1.5" />
+                </div>
+              </div>
+            </article>
+          {/each}
+        {:else}
+          <div class="ui:bg-card rounded border p-4">
+            <Empty title={$t('dashboard.no_courses')} description={$t('dashboard.start_course')} icon={BookOpenIcon} />
+          </div>
+        {/if}
+      </div>
+    </section>
+
+    <section class="flex h-full flex-col space-y-4">
+      <h2 class="ui:text-muted-foreground text-sm font-semibold tracking-[0.14em] uppercase">
+        {$t('dashboard.compliance')}
+      </h2>
+
+      <article class="ui:bg-card ui:text-card-foreground flex flex-1 rounded border p-4">
+        <div class="flex items-center justify-between gap-4 lg:flex-col lg:items-start xl:flex-row xl:items-center">
+          <div class="flex min-w-0 items-center gap-4">
+            <div class="ui:bg-primary/10 flex size-12 shrink-0 items-center justify-center rounded">
+              <ClipboardCheckIcon class="ui:text-primary size-5" />
+            </div>
+            <div class="min-w-0">
+              <h3 class="font-semibold">{$t('dashboard.compliance_score')}</h3>
+              <p class="ui:text-muted-foreground mt-1 text-sm">
+                {#if complianceCourses.length > 0}
+                  {$t('dashboard.required_courses_completed', {
+                    completed: completedComplianceCourses.length,
+                    total: complianceCourses.length
+                  })}
+                {:else}
+                  {$t('dashboard.compliance_score_empty')}
+                {/if}
+              </p>
+            </div>
+          </div>
+
+          <p class="ui:text-primary shrink-0 text-2xl font-semibold">
+            {#if complianceScore === null}
+              --
+            {:else}
+              {complianceScore}%
+            {/if}
+          </p>
+        </div>
+      </article>
+    </section>
+  </div>
+</div>

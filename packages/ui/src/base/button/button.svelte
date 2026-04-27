@@ -40,11 +40,13 @@
 
   export type ButtonVariant = VariantProps<typeof buttonVariants>['variant'];
   export type ButtonSize = VariantProps<typeof buttonVariants>['size'];
+  export type ButtonAnimate = 'border' | 'bg-shine';
 
   export type ButtonPropsWithoutHTML = WithChildren<{
     ref?: HTMLElement | null;
     variant?: ButtonVariant;
     size?: ButtonSize;
+    animate?: ButtonAnimate;
     loading?: boolean;
     onClickPromise?: (
       e: MouseEvent & {
@@ -78,6 +80,7 @@
     ref = $bindable(null),
     variant = 'default',
     size = 'default',
+    animate = undefined,
     href = undefined,
     type = 'button',
     loading = false,
@@ -89,6 +92,12 @@
     children,
     ...rest
   }: ButtonProps = $props();
+
+  const animateClasses: Record<ButtonAnimate, string> = {
+    border: '',
+    'bg-shine':
+      'ui:animate-shine ui:border ui:border-neutral-800 ui:bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] ui:bg-[length:200%_100%] ui:text-white'
+  };
 </script>
 
 <!-- This approach to disabled links is inspired by bits-ui see: https://github.com/huntabyte/bits-ui/pull/1055 -->
@@ -102,7 +111,7 @@
   aria-disabled={href ? disabled : undefined}
   role={href && disabled ? 'link' : undefined}
   tabindex={href && disabled ? -1 : tabindex}
-  class={cn(buttonVariants({ variant, size }), className)}
+  class={cn(buttonVariants({ variant, size }), animate && animateClasses[animate], className)}
   bind:this={ref}
   onclick={async (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

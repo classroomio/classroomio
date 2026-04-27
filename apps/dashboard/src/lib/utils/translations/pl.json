@@ -219,7 +219,8 @@
         "complete_marked": "Oznaczono jako ukończone",
         "complete_download": "Pobierz ukończono",
         "version_restored": "Wersja została przywrócona pomyślnie"
-      }
+      },
+      "section_deleted": "Sekcja kursu została pomyślnie usunięta"
     },
     "attendance": {
       "error": {
@@ -654,7 +655,8 @@
           "add": "Dodaj tag",
           "popover_title": "Wybierz tagi",
           "empty_groups": "Brak dostępnych tagów"
-        }
+        },
+        "compliance": "Zgodność"
       },
       "analytics": {
         "title": "Analityka"
@@ -1117,7 +1119,7 @@
             "finish": "Zakończ",
             "next": "Następny",
             "check": "Sprawdź",
-            "auto_graded_badge": "Auto-graded",
+            "auto_graded_badge": "Auto-grade",
             "manual_grading_required_badge": "Manual grading required",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
@@ -1697,6 +1699,81 @@
           "edit": "Edytuj",
           "delete": "Usuń"
         }
+      },
+      "compliance": {
+        "title": "Zgodność",
+        "not_compliance_title": "Zgodność nie jest włączona",
+        "not_compliance_description": "Ten kurs nie jest skonfigurowany jako kurs dotyczący zgodności.",
+        "loading": "Ładowanie rekordów zgodności...",
+        "learners": "Uczniowie",
+        "learners_description": "Ta tabela pokazuje najnowszy cykl dla każdego ucznia.",
+        "current_cycle": "Aktualny cykl",
+        "current_cycle_description": "Twój aktywny cykl zgodności i daty odnowienia.",
+        "history": "Poprzednie cykle",
+        "history_description": "Każdy wiersz to jeden zarejestrowany cykl zgodności dla tego kursu.",
+        "no_active_cycle": "Brak aktywnego cyklu zgodności",
+        "empty_history": "Nie zarejestrowano jeszcze żadnej historii zgodności.",
+        "empty_overview": "Nie są jeszcze dostępne żadne zapisy dotyczące przestrzegania zasad przez ucznia.",
+        "not_available": "Niedostępne",
+        "status": {
+          "no_record": "Brak rekordu",
+          "not_started": "Nie rozpoczęte",
+          "in_progress": "W toku",
+          "compliant": "Zgodny",
+          "expiring_soon": "Wkrótce wygaśnie",
+          "in_grace_period": "W okresie karencji",
+          "non_compliant": "Niezgodny",
+          "waived": "Zrzeczenie się"
+        },
+        "summary": {
+          "total_learners": "Wszystkich uczniów",
+          "no_record": "Brak rekordu",
+          "not_started": "Nie rozpoczęte",
+          "in_progress": "W toku",
+          "compliant": "Zgodny",
+          "expiring_soon": "Wkrótce wygaśnie",
+          "in_grace_period": "W okresie karencji",
+          "non_compliant": "Niezgodny",
+          "waived": "Zrzeczenie się"
+        },
+        "fields": {
+          "learner": "Uczeń",
+          "email": "E-mail",
+          "status": "Stan",
+          "cycle": "Cykl",
+          "due_date": "Termin",
+          "completed_at": "Zakończono o godz",
+          "valid_until": "Ważne do",
+          "score": "Wynik",
+          "attempts": "Próby"
+        },
+        "bulk_actions": {
+          "title": "Działania zbiorcze",
+          "description": "Wybierz uczniów i zastosuj akcję zgodności w ich bieżącym cyklu.",
+          "select_all": "Wybierz wszystkich widocznych uczniów",
+          "selected_count": "Wybrano {count}",
+          "clear_selection": "Wyczyść wybór",
+          "due_date_label": "Termin",
+          "due_date_helper": "Używane do resetowania i rozszerzania działań.",
+          "reset_action": "Zresetuj cykl",
+          "extend_action": "Przedłuż termin",
+          "waive_title": "Zrezygnuj z wybranych uczniów",
+          "waive_description": "Zastosuj zwolnienie do wybranych uczniów. W przypadku zrzeczenia się na czas nieokreślony możesz pozostawić pole wygaśnięcia puste.",
+          "waiver_reason_label": "Powód odstąpienia",
+          "waiver_reason_helper": "Opcjonalny kontekst audytów i przyszłych przeglądów.",
+          "waiver_expires_at_label": "Zrzeczenie się wygasa o godz",
+          "waiver_expires_at_helper": "Pozostaw puste, jeśli zrzeczenie się nie powinno wygasać automatycznie.",
+          "waive_action": "Zastosuj zwolnienie",
+          "modal": {
+            "description": "Aktualizujesz {count} wybranych uczniów.",
+            "cancel": "Anuluj",
+            "apply": "Zastosuj działanie"
+          }
+        },
+        "tabs": {
+          "overview": "Przegląd",
+          "learners": "Uczniowie"
+        }
       }
     },
     "search": {
@@ -1712,6 +1789,11 @@
       "content_count": {
         "lessons": "{count} lekcji",
         "exercises": "Ćwiczenia: {count}"
+      },
+      "compliance": {
+        "title": "Zgodność",
+        "due_date": "Termin",
+        "valid_until": "Ważne do"
       }
     },
     "navItems": {
@@ -1724,7 +1806,9 @@
       "nav_analytics": "Analityka",
       "nav_certificates": "Certyfikaty",
       "nav_landing_page": "Strona docelowa",
-      "nav_settings": "Ustawienia"
+      "nav_settings": "Ustawienia",
+      "nav_compliance": "Zgodność",
+      "nav_ai_assistant": "Asystent"
     },
     "completion": {
       "modal": {
@@ -1812,8 +1896,11 @@
         "share": "Udostępnij",
         "invite": "Zaproś",
         "delete": "Usuń",
-        "open": "Otwórz"
-      }
+        "open": "Otwórz",
+        "open_course_site": "Otwarta strona kursu"
+      },
+      "due_date": "Termin",
+      "valid_until": "Ważne do"
     },
     "course_filter": {
       "date_created_newest": "Date Created: Newest first",
@@ -1865,9 +1952,9 @@
     "lms_dashboard_hero": "Dziś jest kolejny dzień, który przybliży Cię do Twoich celów edukacyjnych. Nie poddawaj się, im więcej się uczysz, tym jesteś lepszy.",
     "lessons_completed": "Lekcje zakończone",
     "no_courses_started": "Żadne kursy nie zostały rozpoczęte",
-    "certificates_earned": "Certificates earned",
+    "certificates_earned": "Certificates issued",
     "certificates_earned_description": "Total certificates issued to students in your organization",
-    "certification_rate": "certification rate",
+    "certification_rate": "Certyfikowani",
     "recent_certifications": "Recent certifications",
     "no_certifications_yet": "No certificates earned yet",
     "no_certifications_yet_description": "When students complete a course and earn a certificate, they will appear here",
@@ -1886,7 +1973,28 @@
     "publish_first_course": "Opublikuj swój pierwszy kurs",
     "publish_first_course_description": "Aby śledzić zapisy, opublikuj kurs i zaproś uczniów",
     "publish_course": "Publikuj kurs",
-    "items_completed": "Elementy ukończone"
+    "items_completed": "Elementy ukończone",
+    "currently_learning": "Aktualnie się uczę",
+    "learner": "Uczeń",
+    "progress": "Postęp",
+    "pick_up_where_you_left_off": "Rozpocznij od miejsca, w którym skończyłeś",
+    "course_awaits_you": "{title} czeka na Ciebie",
+    "learning_awaits_you": "Kolejny kurs już na Ciebie czeka",
+    "lms_today_progress": "Twoje postępy w nauce są następujące: liczy się każdy krok.",
+    "lms_today_empty": "Twoja ścieżka edukacyjna jest gotowa, gdy Ty jesteś.",
+    "compliance_score": "Wynik zgodności",
+    "compliance": "Zgodność",
+    "compliance_score_subtitle": "Obecnie ukończone {completed} z {total} kursów compliance",
+    "compliance_score_empty": "Nie przydzielono jeszcze żadnych kursów z zakresu zgodności",
+    "compliance_met": "Osiągnięto {ukończone} z {total}",
+    "required_courses_completed": "Ukończono {completed} z {total} wymaganych kursów",
+    "streak": "Smuga",
+    "days_active": "dni aktywne",
+    "items_done": "Wykonano {ukończone} z {total}",
+    "login_activity_title": "Aktywność logowania ucznia",
+    "login_activity_description": "Najbardziej aktywne dni tygodnia (ostatnie 90 dni)",
+    "login_activity_no_data": "Brak aktywności związanej z logowaniem",
+    "login_activity_logins": "logowania"
   },
   "schedule": {
     "title": "Twój harmonogram",
@@ -2097,7 +2205,8 @@
     "upgrade": "Uaktualnij teraz",
     "tags": "Tagi",
     "automation": "Automatyzacja",
-    "programs": "Programy"
+    "programs": "Programy",
+    "widgets": "Widżety"
   },
   "media_manager": {
     "page_title": "Menedżer multimediów - ClassroomIO",
@@ -2218,7 +2327,10 @@
       "provider": "Używamy Polar do zarządzania Twoimi rozliczeniami",
       "open_billing": "Otwórz rozliczenia",
       "error": "Wystąpił błąd podczas otwierania rozliczeń",
-      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO."
+      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
+      "ai_credits": "Użycie Asystenta AI",
+      "ai_tokens_used": "tokeny wykorzystane w tym miesiącu",
+      "ai_bonus_credits": "dostępne kredyty bonusowe"
     },
     "integrations": {
       "heading": "Telegram",
@@ -2667,9 +2779,34 @@
   },
   "app": {
     "search": {
-      "placeholder": "Szukaj"
+      "placeholder": "Szukaj",
+      "command_palette": {
+        "title": "Paleta poleceń",
+        "description": "Wyszukuj i poruszaj się po organizacji",
+        "placeholder": "Szukaj kursów, programów, widżetów, uczniów, tagów, ustawień...",
+        "org_placeholder": "Szukaj kursów, programów, widżetów, uczniów, tagów, ustawień...",
+        "lms_placeholder": "Przeszukuj swoje kursy, programy i strony edukacyjne...",
+        "lms_description": "Wyszukuj i poruszaj się po swoim obszarze roboczym do nauki",
+        "empty": "Nie znaleziono żadnych wyników",
+        "loading": "Wyszukiwanie...",
+        "clear_recents": "Wyczyść ostatnie",
+        "result_types": {
+          "page": "Strona"
+        },
+        "groups": {
+          "recent": "Najnowsze",
+          "suggested": "Sugerowane",
+          "courses": "Kursy",
+          "programs": "Programy",
+          "widgets": "Widżety",
+          "tags": "Tagi",
+          "students": "Studenci",
+          "settings": "Ustawienia"
+        }
+      }
     },
-    "cancel": "Anuluj"
+    "cancel": "Anuluj",
+    "save": "Zapisz"
   },
   "welcome_modal": {
     "we_at": "My o",
@@ -2700,7 +2837,9 @@
     "live_class_label": "Zajęcia na żywo",
     "live_class_subtitle": "Idealny na bootcampy, gdzie lekcje zależą od czasu",
     "self_paced_label": "Samodzielne tempo",
-    "self_paced_subtitle": "Najlepsze rozwiązanie w przypadku kursów, w których uczniowie mogą brać udział w lekcjach we własnym tempie"
+    "self_paced_subtitle": "Najlepsze rozwiązanie w przypadku kursów, w których uczniowie mogą brać udział w lekcjach we własnym tempie",
+    "compliance_label": "Zgodność",
+    "compliance_subtitle": "Szkolenia cykliczne z powtórzeniami, przypomnieniami i śledzeniem odnowień"
   },
   "delete_modal": {
     "label": "Usuń",
@@ -3078,6 +3217,227 @@
       "sort_courses": "Kursy",
       "sort_students": "Studenci",
       "sort_status": "Stan"
+    }
+  },
+  "ai_assistant": {
+    "empty_state": "Poproś mnie o pomoc w przygotowaniu treści kursu — szkicuj lekcje, generuj pytania lub planuj kurs na podstawie dokumentu.",
+    "input_placeholder": "Zapytaj asystenta AI...",
+    "attach_document": "Załącz dokument (PDF, DOCX, PPTX)",
+    "upgrade_to_upload": "Uaktualnij, aby przesyłać dokumenty",
+    "tokens_exhausted": "Osiągnięto miesięczny limit tokenów AI. Kup więcej kredytów w Ustawieniach > Rozliczenia lub poczekaj na reset.",
+    "chat_history": "Historia czatu",
+    "no_conversations": "Nie ma jeszcze żadnych rozmów",
+    "untitled": "Bez tytułu",
+    "new_chat": "Nowy czat",
+    "tokens_label": "żetony",
+    "implementing_course_plan": "Wdrażanie planu kursu",
+    "resume": "Wznów",
+    "stopped_content_kept": "Zatrzymany. Utworzona treść została zachowana.",
+    "mention_lesson": "Lekcja",
+    "mention_exercise": "Ćwicz",
+    "mention_section": "Sekcja",
+    "mention_no_results": "Brak pasującej treści",
+    "uploading_document": "Przesyłanie dokumentu..."
+  },
+  "widgets": {
+    "heading": "Widżety",
+    "subtitle": "Publikuj markowe zbiory kursów na zewnętrznych stronach internetowych.",
+    "empty_state": "Nie ma jeszcze widżetów. Utwórz go, aby wygenerować osadzony blok kursu.",
+    "filter": {
+      "status": "Stan",
+      "all": "Wszystko",
+      "unpublished": "Niepublikowane",
+      "course_type": "Typ kursu"
+    },
+    "notifications": {
+      "created": "Widżet został utworzony",
+      "saved": "Widżet został zapisany",
+      "published": "Widżet opublikowany",
+      "rolled_back": "Widżet przywrócony",
+      "deleted": "Widżet zarchiwizowany"
+    },
+    "form": {
+      "name": "Nazwa widgetu",
+      "selection_mode": "Tryb selekcji",
+      "course_search": "Wyszukaj kursy",
+      "layout_type": "Typ układu",
+      "sort_by": "Sortuj według",
+      "cta_label": "Etykieta CTA",
+      "load_more_label": "Załaduj więcej etykiet",
+      "limit_courses": "Ogranicz kursy",
+      "max_count": "Maksymalna liczba kursów",
+      "show_course_image": "Pokaż obraz kursu",
+      "show_type_badge": "Pokaż plakietkę typu kursu",
+      "show_lessons_count": "Pokaż liczbę lekcji",
+      "show_description": "Pokaż fragment opisu",
+      "shorten_long_description": "Skróć długi opis",
+      "show_price": "Pokaż cenę",
+      "show_rating": "Pokaż ocenę",
+      "theme_preset": "Wstępnie ustawiony motyw",
+      "primary_color": "Kolor podstawowy",
+      "background_color": "Kolor tła",
+      "text_color": "Kolor tekstu",
+      "border_color": "Kolor obramowania",
+      "border_radius": "Promień granicy",
+      "font_family": "Rodzina czcionek",
+      "font_scale": "Skala wielkości czcionki",
+      "show_powered_by": "Pokaż markę Classroomio",
+      "custom_css": "Niestandardowy CSS",
+      "custom_css_locked": "Uaktualnij, aby włączyć niestandardowy CSS.",
+      "embed_code": "Wstaw kod"
+    },
+    "create": {
+      "description": "Nadaj swojemu widżetowi nazwę, aby rozpocząć."
+    },
+    "actions": {
+      "create": "Utwórz widget",
+      "edit": "Edytuj",
+      "back": "Powrót do widżetów",
+      "save": "Zapisz",
+      "discard": "Odrzuć zmiany",
+      "publish": "Publikuj",
+      "archive": "Archiwum",
+      "restore": "Przywróć",
+      "copy_embed": "Skopiuj osadzenie",
+      "rename": "Zmień nazwę",
+      "delete": "Usuń"
+    },
+    "preview": {
+      "heading": "Podgląd",
+      "saved": "Zapisano",
+      "unsaved": "Niezapisane zmiany",
+      "load_failed": "Nie udało się wczytać podglądu. Spróbuj odświeżyć stronę.",
+      "empty": "Podgląd niedostępny.",
+      "all_tags": "Wszystko",
+      "none": "Żadne",
+      "lessons_suffix": "lekcje",
+      "last_synced": "Zsynchronizowane",
+      "refresh": "Odśwież",
+      "exercises_suffix": "ćwiczenia",
+      "columns": {
+        "course": "Kurs",
+        "lessons": "Lekcje",
+        "tags": "Tagi"
+      }
+    },
+    "plan": {
+      "free": "Darmowy plan",
+      "paid": "Płatny plan"
+    },
+    "status": {
+      "draft": "Wersja robocza",
+      "published": "Opublikowano",
+      "archived": "Zarchiwizowane",
+      "live": "Na żywo"
+    },
+    "sort": {
+      "manual": "Instrukcja",
+      "newest": "Najnowszy",
+      "title": "Tytuł"
+    },
+    "layoutOptions": {
+      "section": "Opcje układu",
+      "columns": "Kolumny",
+      "max_count": "Maksymalne kursy",
+      "show_rating": "Pokaż ocenę",
+      "tag_source": "Źródło tagu",
+      "tag_source_auto": "Auto z kursów",
+      "tag_source_manual": "Wybór ręczny",
+      "default_tag": "Domyślny tag",
+      "show_all_option": "Pokaż opcję „Wszystkie”.",
+      "visible_cards": "Widoczne karty",
+      "auto_play": "Automatyczne odtwarzanie",
+      "auto_play_interval": "Interwał automatycznego odtwarzania (ms)",
+      "show_dots": "Pokaż kropki",
+      "show_arrows": "Pokaż strzałki",
+      "loop": "Pętla",
+      "featured_course": "Polecany kurs",
+      "featured_course_required": "Dla tego układu wymagany jest polecany kurs.",
+      "main_course": "Główny kurs w centrum uwagi",
+      "main_course_required": "Wybierz kurs, który chcesz wyróżnić.",
+      "eyebrow_label": "Etykieta brwi",
+      "cta_label": "Etykieta CTA",
+      "secondary_max_count": "Kursy średnie",
+      "density": "Gęstość",
+      "density_comfortable": "Wygodne",
+      "density_compact": "Kompaktowy",
+      "show_thumbnail": "Pokaż miniaturę",
+      "show_tags": "Pokaż tagi",
+      "title_style": "Styl tytułu",
+      "title_style_serif": "Szeryf",
+      "title_style_sans": "Bez",
+      "category_tags": "Tagi kategorii",
+      "category_tags_required": "Wybierz co najmniej jeden tag dla półki kategorii.",
+      "default_category": "Kategoria domyślna",
+      "show_all_tab": "Pokaż zakładkę „Wszystkie”.",
+      "max_per_category": "Maksymalna liczba kursów na kategorię",
+      "none": "Żadne"
+    },
+    "layout_description": {
+      "card_grid": "Katalog ogólnego przeznaczenia z dużą ilością miejsca do oddychania.",
+      "tag_filter": "Pozwól uczniom zawęzić szeroki katalog według tematów.",
+      "carousel": "Polecane wiersze w ciasnych sekcjach strony głównej.",
+      "primary_course": "Promuj sztandarowy lub nowo uruchomiony kurs.",
+      "compact_list": "Osadzone paski boczne i strony o minimalnej powierzchni.",
+      "editorial_spotlight": "Strony docelowe w stylu bloga i wybrane typy.",
+      "category_shelf": "Duże katalogi pogrupowane tematycznie, łatwe do skanowania."
+    },
+    "layout": {
+      "card_grid": "Siatka kart",
+      "tag_filter": "Filtr tagów",
+      "carousel": "Karuzela",
+      "primary_course": "Kurs podstawowy",
+      "compact_list": "Lista kompaktowa",
+      "editorial_spotlight": "Uwaga redakcyjna",
+      "category_shelf": "Półka kategorii"
+    },
+    "selection": {
+      "manual": "Wybór ręczny",
+      "published": "Wszystkie opublikowane kursy"
+    },
+    "editor": {
+      "sources": "Źródło widgetu",
+      "available_courses": "Dostępne kursy",
+      "layout": "Układ",
+      "content": "Treść",
+      "design": "Projekt",
+      "version_history": "Historia wersji",
+      "save_changes": "Zapisz zmiany",
+      "rename_widget": "Zmień nazwę widżetu",
+      "continue_to_layout": "Kontynuuj układ",
+      "pick_layout": "Wybierz układ",
+      "pick_design": "Wygląd",
+      "panel_subtitle": "Skonfiguruj wygląd i zachowanie widgetu.",
+      "embed_share": "Umieść i udostępnij",
+      "discard_short": "Odrzuć",
+      "canvas_status": "Podgląd",
+      "finish_editing_name": "Gotowe",
+      "waiting_org": "Ładowanie organizacji…",
+      "load_failed": "Nie można załadować tego widgetu. Spróbuj ponownie, korzystając z listy widżetów.",
+      "nav": {
+        "courses": "Kursy",
+        "layout": "Układ",
+        "design": "Projekt",
+        "embed": "Osadź"
+      },
+      "viewport": {
+        "mobile": "Mobilny",
+        "tablet": "Tablet",
+        "desktop": "Pulpit"
+      }
+    },
+    "tabs": {
+      "select_courses": "Wybierz Kursy",
+      "layout": "Układ",
+      "design": "Projekt",
+      "embed": "Wstaw kod"
+    },
+    "defaults": {
+      "name_prefix": "Widżet kursu"
+    },
+    "empty": {
+      "heading": "Nie ma jeszcze widżetów",
+      "description": "Utwórz widżet, aby wygenerować osadzony blok kursu dla zewnętrznych stron internetowych."
     }
   }
 }

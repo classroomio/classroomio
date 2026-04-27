@@ -21,7 +21,7 @@
 <LearnerSection />
 <QuestionTypes />
 <!-- <AutomateSection /> -->
-<DeploySection />
+<!-- <DeploySection /> -->
 <EnterpriseSection />
 <Testimonial />
 <PageSignupCTA

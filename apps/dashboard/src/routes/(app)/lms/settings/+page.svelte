@@ -1,6 +1,5 @@
 <script lang="ts">
   import { ProfilePage } from '$features/settings/pages';
-  import { VisitOrgSiteButton } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
   import { Button } from '@cio/ui/base/button';
   import * as Page from '@cio/ui/base/page';
@@ -30,8 +29,6 @@
     <Button variant="secondary" loading={isLoading} onclick={handleUpdate}>
       {$t('settings.profile.update_profile')}
     </Button>
-
-    <VisitOrgSiteButton />
   </Page.Action>
 </Page.Header>
 <Page.Body>

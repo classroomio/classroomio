@@ -15,8 +15,17 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { ROLE } from '@cio/utils/constants';
 
   const sidebar = useSidebar();
+
+  function getRoleLabel(roleId: number): string {
+    if (roleId === ROLE.ADMIN) return $t('course.navItem.people.roles.admin');
+    if (roleId === ROLE.TUTOR) return $t('course.navItem.people.roles.tutor');
+    if (roleId === ROLE.STUDENT) return $t('course.navItem.people.roles.student');
+    return '';
+  }
 </script>
 
 <!--
@@ -32,10 +41,22 @@
   </div>
 {/snippet}
 
+{#snippet triggeravatar()}
+  <UserAvatar src={$profile.avatarUrl} alt={$profile.fullname} />
+  <div class="grid flex-1 text-left text-sm leading-tight font-normal">
+    <span class="truncate">{$profile.fullname}</span>
+    <span class="truncate text-xs">{getRoleLabel($currentOrg.roleId)}</span>
+  </div>
+{/snippet}
+
 {#snippet usertrigger()}
   <DropdownMenu.Label class="p-0">
     <a href={resolve(`${$basePath}/settings`, {})} class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-      {@render avatarblock()}
+      <UserAvatar src={$profile.avatarUrl} alt={$profile.fullname} />
+      <div class="grid flex-1 text-left text-sm leading-tight font-normal">
+        <span class="truncate">{$profile.fullname}</span>
+        <span class="truncate text-xs">{$profile.email}</span>
+      </div>
     </a>
   </DropdownMenu.Label>
 {/snippet}
@@ -62,7 +83,7 @@
             class="ui:data-[state=open]:bg-sidebar-accent ui:data-[state=open]:text-sidebar-accent-foreground"
             {...props}
           >
-            {@render avatarblock()}
+            {@render triggeravatar()}
             <ChevronsUpDownIcon class="ml-auto size-4" />
           </Sidebar.MenuButton>
         {/snippet}

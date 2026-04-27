@@ -1,0 +1,44 @@
+:host {
+  all: initial;
+  display: block;
+  width: 100%;
+}
+
+.cio-widget-shell {
+  font-family: 'DM Sans', Inter, ui-sans-serif, system-ui, sans-serif;
+  color: rgba(15, 23, 42, 0.8);
+  background: transparent;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px;
+}
+
+.cio-widget-loading,
+.cio-widget-error {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cio-widget-error p {
+  margin: 0;
+  font-size: 14px;
+  color: #b91c1c;
+}
+
+.cio-widget-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(15, 23, 42, 0.1);
+  border-top-color: rgba(15, 23, 42, 0.6);
+  border-radius: 999px;
+  animation: cio-widget-spin 0.8s linear infinite;
+}
+
+@keyframes cio-widget-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

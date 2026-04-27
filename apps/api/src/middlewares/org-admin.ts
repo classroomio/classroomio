@@ -1,12 +1,15 @@
 import { Context, Next } from 'hono';
 
 import { ErrorCodes } from '@api/utils/errors';
-import { isUserOrgAdmin } from '@cio/db/queries/organization';
+import { ROLE } from '@cio/utils/constants';
 
 /**
- * Middleware to check if the authenticated user is an admin of the organization
- * Requires authMiddleware to be applied first
- * Expects orgId in the 'cio-org-id' header
+ * Middleware to check if the authenticated user is an admin of the organization.
+ * Reads the role from the Better Auth session (populated by the customSession plugin),
+ * so no per-request DB query is performed.
+ *
+ * Requires authMiddleware to be applied first.
+ * Expects orgId in the 'cio-org-id' header.
  */
 export const orgAdminMiddleware = async (c: Context, next: Next) => {
   try {
@@ -23,7 +26,6 @@ export const orgAdminMiddleware = async (c: Context, next: Next) => {
     }
 
     const orgId = c.req.header('cio-org-id');
-
     if (!orgId) {
       return c.json(
         {
@@ -35,8 +37,10 @@ export const orgAdminMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    const isAdmin = await isUserOrgAdmin(orgId, user.id);
-    if (!isAdmin) {
+    const orgRoles = (c.get('orgRoles') as Record<string, number> | undefined) ?? {};
+    const roleId = orgRoles[orgId];
+
+    if (roleId !== ROLE.ADMIN) {
       return c.json(
         {
           success: false,

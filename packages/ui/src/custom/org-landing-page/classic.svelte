@@ -63,7 +63,9 @@
           })}
           <BlurFade delay={0.1 * index} once={true} class="ui:w-full ui:flex ui:justify-center">
             <CourseCard
-              href={disableCourseLinks ? undefined : course.link || `/course/${course.slug || course.id}`}
+              href={disableCourseLinks
+                ? undefined
+                : course.link || (course.slug ? `/course/${course.slug}` : undefined)}
               bannerImage={course.logo || ''}
               bannerAlt={course.title}
               title={course.title}

@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
+  import { Badge } from '@cio/ui/base/badge';
   import Plus from '@lucide/svelte/icons/plus';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { BackButton } from '@cio/ui';
@@ -27,7 +28,7 @@
   import ContentCountBadges from '../content-count-badges.svelte';
 
   import { NAV_IDS } from './constants';
-  import { courseApi } from '$features/course/api';
+  import { complianceApi, courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg, isFreePlan, currentOrgPath } from '$lib/utils/store/org';
   import { isStudentExperience } from '$lib/utils/store/app';
@@ -35,6 +36,7 @@
   import { useSidebar } from '@cio/ui/base/sidebar';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import { profile } from '$lib/utils/store/user';
 
   interface Props {
     path: string;
@@ -61,6 +63,7 @@
     };
   });
   const showContentCount = $derived(sidebar.open && !sidebar.isMobile && contentCount.total > 0);
+  const studentComplianceRecord = $derived(complianceApi.learnerHistory?.currentRecord ?? null);
 
   const navItems = $derived(
     [
@@ -131,6 +134,16 @@
         icon: getNavIcon(NAV_IDS.MARKS)
       },
       {
+        id: NAV_IDS.COMPLIANCE,
+        title: $t('course.navItems.nav_compliance'),
+        url: getNavItemRoute(id, 'compliance'),
+        isActive: (path || page.url.pathname) === getNavItemRoute(id, 'compliance'),
+        show() {
+          return courseApi.course?.type === 'COMPLIANCE';
+        },
+        icon: getNavIcon(NAV_IDS.COMPLIANCE)
+      },
+      {
         id: NAV_IDS.CERTIFICATES,
         title: $t('course.navItems.nav_certificates'),
         url: getNavItemRoute(id, 'certificates'),
@@ -176,6 +189,14 @@
     ].filter((item) => !item.show || item.show())
   );
 
+  $effect(() => {
+    if (!isStudent || courseApi.course?.type !== 'COMPLIANCE' || !courseApi.course?.id || !$profile.id) {
+      return;
+    }
+
+    void complianceApi.ensureLearnerHistory(courseApi.course.id, $profile.id);
+  });
+
   function openContentModal(courseId: string, sectionId = '') {
     goto(resolve(`/courses/${courseId}/lessons`, {}));
     contentEditingStore.set(undefined);
@@ -213,6 +234,8 @@
       return SubmissionIcon;
     } else if (id === NAV_IDS.MARKS) {
       return MarksIcon;
+    } else if (id === NAV_IDS.COMPLIANCE) {
+      return CertificateIcon;
     } else if (id === NAV_IDS.PEOPLE) {
       return PeopleIcon;
     } else if (id === NAV_IDS.ANALYTICS) {
@@ -227,10 +250,76 @@
 
     return null;
   }
+
+  function getStatusVariant(status: string | null | undefined) {
+    if (status === 'compliant') {
+      return 'success';
+    }
+
+    if (status === 'expiring_soon' || status === 'in_progress' || status === 'in_grace_period') {
+      return 'warning';
+    }
+
+    if (status === 'non_compliant') {
+      return 'destructive';
+    }
+
+    if (status === 'waived') {
+      return 'secondary';
+    }
+
+    return 'outline';
+  }
+
+  function formatDate(value: string | null | undefined) {
+    if (!value) {
+      return '';
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return '';
+    }
+
+    return new Intl.DateTimeFormat('en-US', {
+      dateStyle: 'medium'
+    }).format(date);
+  }
 </script>
 
 <Sidebar.Group class="pt-0!">
   <BackButton href={resolve(coursesListPath, {})} label={$t('org_navigation.courses')} class="px-2! py-2!" />
+
+  {#if isStudent && courseApi.course?.type === 'COMPLIANCE'}
+    <div
+      class="mx-2 mb-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900/50 dark:bg-emerald-950/20"
+    >
+      <div class="flex items-center justify-between gap-2">
+        <p class="text-xs font-semibold tracking-wide text-emerald-900 uppercase dark:text-emerald-100">
+          {$t('course.sidebar.compliance.title')}
+        </p>
+        {#if studentComplianceRecord?.status}
+          <Badge variant={getStatusVariant(studentComplianceRecord.status)}>
+            {$t(`course.navItem.compliance.status.${studentComplianceRecord.status}`)}
+          </Badge>
+        {/if}
+      </div>
+
+      <div class="mt-2 space-y-1 text-xs text-emerald-900 dark:text-emerald-100">
+        {#if studentComplianceRecord?.dueDate}
+          <p>
+            {$t('course.sidebar.compliance.due_date')}: {formatDate(studentComplianceRecord.dueDate)}
+          </p>
+        {/if}
+
+        {#if studentComplianceRecord?.validUntil}
+          <p>
+            {$t('course.sidebar.compliance.valid_until')}: {formatDate(studentComplianceRecord.validUntil)}
+          </p>
+        {/if}
+      </div>
+    </div>
+  {/if}
 
   <Sidebar.Menu>
     {#each navItems as item (item.id)}

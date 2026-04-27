@@ -1,6 +1,7 @@
 export * from './constants';
 
 export * from './account';
+export * from './agent';
 export * from './attendance';
 export * from './assets';
 export * from './course';
@@ -17,3 +18,4 @@ export * from './submission';
 export * from './dash';
 export * from './tag';
 export * from './program';
+export * from './widget';

@@ -11,7 +11,7 @@
       <p class="mr-2 mb-5 text-sm leading-7 tracking-wide text-gray-600 lg:text-base lg:leading-7">
         The Open Source Learning Management System for Companies
         <br />
-        Nail your compliance training and your certification program.
+        The LMS for compliance training and certification programs.
       </p>
       <!-- <a
         href="https://www.producthunt.com/posts/classroomio?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-classroomio"

@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
   import { copyCourseModal, deleteCourseModal } from '$features/course/utils/store';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { t } from '$lib/utils/functions/translations';
@@ -12,9 +13,10 @@
     id: string;
     title: string;
     description: string;
+    isPublished?: boolean;
   }
 
-  let { id, title, description }: Props = $props();
+  let { id, title, description, isPublished = false }: Props = $props();
 
   function redirect(url: string) {
     goto(resolve(url, {}));
@@ -40,6 +42,10 @@
     $copyCourseModal.title = title;
     $copyCourseModal.description = description;
   }
+
+  function handleOpenCourseSite() {
+    window.open(`/courses/${id}`, '_blank');
+  }
 </script>
 
 <DropdownMenu.Root>
@@ -52,6 +58,13 @@
     </IconButton>
   </DropdownMenu.Trigger>
   <DropdownMenu.Content align="end">
+    {#if isPublished}
+      <DropdownMenu.Item onclick={handleOpenCourseSite}>
+        <ExternalLinkIcon size={16} class="mr-2" />
+        {$t('courses.course_card.context_menu.open_course_site')}
+      </DropdownMenu.Item>
+      <DropdownMenu.Separator />
+    {/if}
     <DropdownMenu.Item onclick={handleCloneCourse}>
       {$t('courses.course_card.context_menu.clone')}
     </DropdownMenu.Item>

@@ -2,7 +2,7 @@
   import * as Sheet from '../sheet';
   import { cn, type WithElementRef } from '../../../src/tools';
   import type { HTMLAttributes } from 'svelte/elements';
-  import { SIDEBAR_WIDTH_MOBILE } from './constants.js';
+  import { SIDEBAR_WIDTH_MOBILE } from './constants';
   import { useSidebar } from './context.svelte';
 
   let {
@@ -77,7 +77,7 @@
     <div
       data-slot="sidebar-container"
       class={cn(
-        'ui:w-(--sidebar-width) ui:fixed ui:inset-y-0 ui:z-10 ui:hidden ui:max-h-svh ui:transition-[left,right,width] ui:duration-200 ui:ease-linear ui:md:flex',
+        'ui:w-(--sidebar-width) ui:fixed ui:inset-y-0 ui:z-100 ui:hidden ui:max-h-svh ui:transition-[left,right,width] ui:duration-200 ui:ease-linear ui:md:flex',
         side === 'left'
           ? 'ui:left-0 ui:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
           : 'ui:right-0 ui:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',

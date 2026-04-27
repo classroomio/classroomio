@@ -1,9 +1,9 @@
+import { ClassroomIoApiClient, ClassroomIoApiError } from './api-client';
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-
-import { ClassroomIoApiClient, ClassroomIoApiError } from './api-client.js';
-import { getConfig } from './config.js';
-import { registerCourseDraftTools } from './tools/course-drafts.js';
+import { getConfig } from './config';
+import { registerCourseDraftTools } from './tools/course-drafts';
 
 async function main() {
   const config = getConfig();

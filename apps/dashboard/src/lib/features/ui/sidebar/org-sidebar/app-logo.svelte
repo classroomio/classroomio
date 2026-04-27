@@ -3,8 +3,9 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { currentOrg } from '$lib/utils/store/org';
   import { Badge } from '@cio/ui/base/badge';
+  import { PLAN_NAMES, PLAN } from '@cio/utils/plans';
 
-  const planName = $derived($currentOrg.plans?.[0]?.planName || 'FREE');
+  const plan = $derived($currentOrg.plans?.[0]?.planName || PLAN.BASIC);
 </script>
 
 <Sidebar.Menu>
@@ -26,7 +27,7 @@
 
           <span class="truncate font-normal">ClassroomIO</span>
           <Badge variant="outline" class="capitalize">
-            {planName.toLowerCase()}
+            {PLAN_NAMES[plan] || plan}
           </Badge>
         </a>
       {/snippet}

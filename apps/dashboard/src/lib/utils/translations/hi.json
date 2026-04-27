@@ -219,7 +219,8 @@
         "complete_marked": "पूर्ण के रूप में चिह्नित",
         "complete_download": "पूर्ण डाउनलोड करें",
         "version_restored": "संस्करण सफलतापूर्वक पुनर्स्थापित किया गया"
-      }
+      },
+      "section_deleted": "पाठ्यक्रम अनुभाग सफलतापूर्वक हटा दिया गया"
     },
     "attendance": {
       "error": {
@@ -654,7 +655,8 @@
           "add": "टैग जोड़ें",
           "popover_title": "टैग चुनें",
           "empty_groups": "अभी तक कोई टैग उपलब्ध नहीं है"
-        }
+        },
+        "compliance": "अनुपालन"
       },
       "analytics": {
         "title": "विश्लेषिकी"
@@ -1117,7 +1119,7 @@
             "finish": "ख़त्म करो",
             "next": "अगला",
             "check": "जांचें",
-            "auto_graded_badge": "Auto-graded",
+            "auto_graded_badge": "Auto-grade",
             "manual_grading_required_badge": "Manual grading required",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
@@ -1697,6 +1699,81 @@
           "edit": "संपादित करें",
           "delete": "हटाएँ"
         }
+      },
+      "compliance": {
+        "title": "अनुपालन",
+        "not_compliance_title": "अनुपालन सक्षम नहीं है",
+        "not_compliance_description": "यह पाठ्यक्रम अनुपालन पाठ्यक्रम के रूप में कॉन्फ़िगर नहीं किया गया है।",
+        "loading": "अनुपालन रिकॉर्ड लोड हो रहा है...",
+        "learners": "शिक्षार्थी",
+        "learners_description": "यह तालिका प्रत्येक शिक्षार्थी के लिए नवीनतम चक्र दिखाती है।",
+        "current_cycle": "वर्तमान चक्र",
+        "current_cycle_description": "आपका सक्रिय अनुपालन चक्र और नवीनीकरण तिथियाँ।",
+        "history": "विगत कल्प",
+        "history_description": "प्रत्येक पंक्ति इस पाठ्यक्रम के लिए एक रिकॉर्ड किया गया अनुपालन चक्र है।",
+        "no_active_cycle": "कोई सक्रिय अनुपालन चक्र नहीं",
+        "empty_history": "अभी तक कोई अनुपालन इतिहास दर्ज नहीं किया गया है।",
+        "empty_overview": "अभी तक कोई शिक्षार्थी अनुपालन रिकॉर्ड उपलब्ध नहीं है।",
+        "not_available": "उपलब्ध नहीं है",
+        "status": {
+          "no_record": "कोई रिकॉर्ड नहीं",
+          "not_started": "शुरू नहीं हुआ",
+          "in_progress": "प्रगति पर है",
+          "compliant": "आज्ञाकारी",
+          "expiring_soon": "जल्द ही समाप्त हो रहा है",
+          "in_grace_period": "अनुग्रह अवधि में",
+          "non_compliant": "अनुपालन न करने वाला",
+          "waived": "माफ़ कर दिया गया"
+        },
+        "summary": {
+          "total_learners": "कुल शिक्षार्थी",
+          "no_record": "कोई रिकॉर्ड नहीं",
+          "not_started": "शुरू नहीं हुआ",
+          "in_progress": "प्रगति पर है",
+          "compliant": "आज्ञाकारी",
+          "expiring_soon": "जल्द ही समाप्त हो रहा है",
+          "in_grace_period": "अनुग्रह अवधि में",
+          "non_compliant": "अनुपालन न करने वाला",
+          "waived": "माफ़ कर दिया गया"
+        },
+        "fields": {
+          "learner": "शिक्षार्थी",
+          "email": "ईमेल",
+          "status": "स्थिति",
+          "cycle": "साइकिल",
+          "due_date": "नियत तिथि",
+          "completed_at": "पर पूरा हुआ",
+          "valid_until": "तक वैध है",
+          "score": "स्कोर",
+          "attempts": "प्रयास"
+        },
+        "bulk_actions": {
+          "title": "थोक क्रियाएं",
+          "description": "शिक्षार्थियों का चयन करें और उनके वर्तमान चक्र पर अनुपालन कार्रवाई लागू करें।",
+          "select_all": "सभी दृश्यमान शिक्षार्थियों का चयन करें",
+          "selected_count": "{गिनती} चयनित",
+          "clear_selection": "स्पष्ट चयन",
+          "due_date_label": "नियत तिथि",
+          "due_date_helper": "कार्यों को रीसेट करने और विस्तारित करने के लिए उपयोग किया जाता है।",
+          "reset_action": "चक्र रीसेट करें",
+          "extend_action": "देय तिथि बढ़ाएँ",
+          "waive_title": "चयनित शिक्षार्थियों को माफ करें",
+          "waive_description": "चयनित शिक्षार्थियों के लिए छूट लागू करें। आप ओपन-एंडेड छूट के लिए समाप्ति तिथि को खाली छोड़ सकते हैं।",
+          "waiver_reason_label": "छूट का कारण",
+          "waiver_reason_helper": "ऑडिट और भविष्य की समीक्षाओं के लिए वैकल्पिक संदर्भ।",
+          "waiver_expires_at_label": "छूट समाप्त हो रही है",
+          "waiver_expires_at_helper": "यदि छूट स्वतः समाप्त नहीं होनी चाहिए तो खाली छोड़ दें।",
+          "waive_action": "छूट लागू करें",
+          "modal": {
+            "description": "आप चयनित शिक्षार्थियों की {गिनती} अद्यतन कर रहे हैं।",
+            "cancel": "रद्द करें",
+            "apply": "कार्रवाई लागू करें"
+          }
+        },
+        "tabs": {
+          "overview": "सिंहावलोकन",
+          "learners": "शिक्षार्थी"
+        }
       }
     },
     "search": {
@@ -1712,6 +1789,11 @@
       "content_count": {
         "lessons": "{गिनती} पाठ",
         "exercises": "{गिनती} अभ्यास"
+      },
+      "compliance": {
+        "title": "अनुपालन",
+        "due_date": "देय",
+        "valid_until": "तक वैध है"
       }
     },
     "navItems": {
@@ -1724,7 +1806,9 @@
       "nav_analytics": "विश्लेषिकी",
       "nav_certificates": "प्रमाणपत्र",
       "nav_landing_page": "लैंडिंग पृष्ठ",
-      "nav_settings": "सेटिंग्स"
+      "nav_settings": "सेटिंग्स",
+      "nav_compliance": "अनुपालन",
+      "nav_ai_assistant": "सहायक"
     },
     "completion": {
       "modal": {
@@ -1812,8 +1896,11 @@
         "share": "साझा करें",
         "invite": "आमंत्रित करें",
         "delete": "हटाएँ",
-        "open": "खुला"
-      }
+        "open": "खुला",
+        "open_course_site": "पाठ्यक्रम साइट खोलें"
+      },
+      "due_date": "देय",
+      "valid_until": "तक वैध है"
     },
     "course_filter": {
       "date_created_newest": "Date Created: Newest first",
@@ -1865,9 +1952,9 @@
     "lms_dashboard_hero": "आज का दिन आपको आपके सीखने के लक्ष्यों के करीब लाने का एक और दिन है। हार मत मानो, जितना अधिक सीखोगे उतना बेहतर हो जाओगे।",
     "lessons_completed": "पाठ पूरा हुआ",
     "no_courses_started": "कोई पाठ्यक्रम शुरू नहीं हुआ",
-    "certificates_earned": "Certificates earned",
+    "certificates_earned": "Certificates issued",
     "certificates_earned_description": "Total certificates issued to students in your organization",
-    "certification_rate": "certification rate",
+    "certification_rate": "प्रमाणित",
     "recent_certifications": "Recent certifications",
     "no_certifications_yet": "No certificates earned yet",
     "no_certifications_yet_description": "When students complete a course and earn a certificate, they will appear here",
@@ -1886,7 +1973,28 @@
     "publish_first_course": "अपना पहला पाठ्यक्रम प्रकाशित करें",
     "publish_first_course_description": "नामांकन पर नज़र रखने के लिए, एक पाठ्यक्रम प्रकाशित करें और छात्रों को आमंत्रित करें",
     "publish_course": "पाठ्यक्रम प्रकाशित करें",
-    "items_completed": "आइटम पूरे हो गए"
+    "items_completed": "आइटम पूरे हो गए",
+    "currently_learning": "वर्तमान में सीख रहा हूँ",
+    "learner": "शिक्षार्थी",
+    "progress": "प्रगति",
+    "pick_up_where_you_left_off": "वहीं से शुरू करें जहां आपने छोड़ा था",
+    "course_awaits_you": "{शीर्षक} आपकी प्रतीक्षा कर रहा है",
+    "learning_awaits_you": "आपका अगला कोर्स आपका इंतजार कर रहा है",
+    "lms_today_progress": "आप अपने सीखने के माध्यम से {प्रगति}% कर रहे हैं - हर कदम मायने रखता है।",
+    "lms_today_empty": "जब आप हों तो आपका सीखने का मार्ग तैयार है।",
+    "compliance_score": "अनुपालन स्कोर",
+    "compliance": "अनुपालन",
+    "compliance_score_subtitle": "वर्तमान में संतुष्ट {कुल} अनुपालन पाठ्यक्रमों में से {पूर्ण}",
+    "compliance_score_empty": "अभी तक कोई अनुपालन पाठ्यक्रम नहीं सौंपा गया है",
+    "compliance_met": "{कुल} में से {पूर्ण} मिले",
+    "required_courses_completed": "कुल आवश्यक पाठ्यक्रमों में से {पूर्ण} पूर्ण",
+    "streak": "लकीर",
+    "days_active": "सक्रिय दिन",
+    "items_done": "{कुल} का {पूर्ण} हो गया",
+    "login_activity_title": "छात्र लॉगिन गतिविधि",
+    "login_activity_description": "सप्ताह के सर्वाधिक सक्रिय दिन (पिछले 90 दिन)",
+    "login_activity_no_data": "अभी तक कोई लॉगिन गतिविधि नहीं",
+    "login_activity_logins": "लॉगिन"
   },
   "schedule": {
     "title": "आपका शेड्यूल",
@@ -2097,7 +2205,8 @@
     "upgrade": "अभी अपग्रेड करें",
     "tags": "टैग",
     "automation": "स्वचालन",
-    "programs": "कार्यक्रम"
+    "programs": "कार्यक्रम",
+    "widgets": "विजेट्स"
   },
   "media_manager": {
     "page_title": "मीडिया मैनेजर - क्लासरूमआईओ",
@@ -2218,7 +2327,10 @@
       "provider": "हम आपकी बिलिंग प्रबंधित करने में सहायता के लिए पोलर का उपयोग करते हैं",
       "open_billing": "बिलिंग खोलें",
       "error": "बिलिंग खोलते समय एक त्रुटि उत्पन्न हुई",
-      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO."
+      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
+      "ai_credits": "एआई सहायक उपयोग",
+      "ai_tokens_used": "इस महीने उपयोग किए गए टोकन",
+      "ai_bonus_credits": "बोनस क्रेडिट उपलब्ध"
     },
     "integrations": {
       "heading": "टेलीग्राम",
@@ -2667,9 +2779,34 @@
   },
   "app": {
     "search": {
-      "placeholder": "खोजें"
+      "placeholder": "खोजें",
+      "command_palette": {
+        "title": "कमांड पैलेट",
+        "description": "अपने संगठन में खोजें और नेविगेट करें",
+        "placeholder": "पाठ्यक्रम, कार्यक्रम, विजेट, छात्र, टैग, सेटिंग्स खोजें...",
+        "org_placeholder": "पाठ्यक्रम, कार्यक्रम, विजेट, छात्र, टैग, सेटिंग्स खोजें...",
+        "lms_placeholder": "अपने पाठ्यक्रम, कार्यक्रम और शिक्षण पृष्ठ खोजें...",
+        "lms_description": "अपने शिक्षण कार्यक्षेत्र को खोजें और नेविगेट करें",
+        "empty": "कोई परिणाम नहीं मिला",
+        "loading": "खोज रहे हैं...",
+        "clear_recents": "हालिया साफ़ करें",
+        "result_types": {
+          "page": "पेज"
+        },
+        "groups": {
+          "recent": "हाल का",
+          "suggested": "सुझाव दिया",
+          "courses": "पाठ्यक्रम",
+          "programs": "कार्यक्रम",
+          "widgets": "विजेट्स",
+          "tags": "टैग",
+          "students": "छात्र",
+          "settings": "सेटिंग्स"
+        }
+      }
     },
-    "cancel": "रद्द करें"
+    "cancel": "रद्द करें",
+    "save": "सहेजें"
   },
   "welcome_modal": {
     "we_at": "हम पर",
@@ -2700,7 +2837,9 @@
     "live_class_label": "लाइव क्लास",
     "live_class_subtitle": "बूटकैंप के लिए आदर्श जहां पाठ समय आधारित होते हैं",
     "self_paced_label": "स्वयं गति",
-    "self_paced_subtitle": "उन पाठ्यक्रमों के लिए सर्वोत्तम जहां छात्र अपनी गति से पाठ ले सकते हैं"
+    "self_paced_subtitle": "उन पाठ्यक्रमों के लिए सर्वोत्तम जहां छात्र अपनी गति से पाठ ले सकते हैं",
+    "compliance_label": "अनुपालन",
+    "compliance_subtitle": "रीटेक, रिमाइंडर और नवीनीकरण ट्रैकिंग के साथ आवर्ती प्रशिक्षण"
   },
   "delete_modal": {
     "label": "हटाएँ",
@@ -3078,6 +3217,227 @@
       "sort_courses": "पाठ्यक्रम",
       "sort_students": "छात्र",
       "sort_status": "स्थिति"
+    }
+  },
+  "ai_assistant": {
+    "empty_state": "मुझसे अपने पाठ्यक्रम की सामग्री में मदद करने के लिए कहें - पाठों का मसौदा तैयार करें, प्रश्न तैयार करें, या किसी दस्तावेज़ से पाठ्यक्रम की योजना बनाएं।",
+    "input_placeholder": "एआई सहायक से पूछें...",
+    "attach_document": "एक दस्तावेज़ संलग्न करें (पीडीएफ, DOCX, PPTX)",
+    "upgrade_to_upload": "दस्तावेज़ अपलोड करने के लिए अपग्रेड करें",
+    "tokens_exhausted": "मासिक एआई टोकन सीमा पूरी हो गई। सेटिंग्स > बिलिंग में अधिक क्रेडिट खरीदें या रीसेट की प्रतीक्षा करें।",
+    "chat_history": "चैट इतिहास",
+    "no_conversations": "अभी तक कोई बातचीत नहीं",
+    "untitled": "शीर्षकहीन",
+    "new_chat": "नई चैट",
+    "tokens_label": "टोकन",
+    "implementing_course_plan": "पाठ्यक्रम योजना का कार्यान्वयन",
+    "resume": "बायोडाटा",
+    "stopped_content_kept": "रुक गया. निर्मित सामग्री रखी गई है.",
+    "mention_lesson": "पाठ",
+    "mention_exercise": "व्यायाम",
+    "mention_section": "धारा",
+    "mention_no_results": "कोई मेल खाती सामग्री नहीं",
+    "uploading_document": "दस्तावेज़ अपलोड हो रहा है..."
+  },
+  "widgets": {
+    "heading": "विजेट्स",
+    "subtitle": "बाहरी वेबसाइटों के लिए ब्रांडेड पाठ्यक्रम संग्रह प्रकाशित करें।",
+    "empty_state": "अभी तक कोई विजेट नहीं. एम्बेड करने योग्य पाठ्यक्रम ब्लॉक बनाने के लिए एक बनाएं।",
+    "filter": {
+      "status": "स्थिति",
+      "all": "सब",
+      "unpublished": "अप्रकाशित",
+      "course_type": "कोर्स का प्रकार"
+    },
+    "notifications": {
+      "created": "विजेट बनाया गया",
+      "saved": "विजेट सहेजा गया",
+      "published": "विजेट प्रकाशित",
+      "rolled_back": "विजेट पुनर्स्थापित किया गया",
+      "deleted": "विजेट संग्रहीत"
+    },
+    "form": {
+      "name": "विजेट नाम",
+      "selection_mode": "चयन मोड",
+      "course_search": "पाठ्यक्रम खोजें",
+      "layout_type": "लेआउट प्रकार",
+      "sort_by": "क्रमबद्ध करें",
+      "cta_label": "सीटीए लेबल",
+      "load_more_label": "अधिक लेबल लोड करें",
+      "limit_courses": "पाठ्यक्रम सीमित करें",
+      "max_count": "अधिकतम कोर्स गिनती",
+      "show_course_image": "पाठ्यक्रम छवि दिखाएँ",
+      "show_type_badge": "पाठ्यक्रम प्रकार का बैज दिखाएँ",
+      "show_lessons_count": "पाठों की गिनती दिखाएँ",
+      "show_description": "विवरण अंश दिखाएँ",
+      "shorten_long_description": "लंबे विवरण को छोटा करें",
+      "show_price": "कीमत दिखाएँ",
+      "show_rating": "रेटिंग दिखाएँ",
+      "theme_preset": "थीम पूर्व निर्धारित",
+      "primary_color": "प्राथमिक रंग",
+      "background_color": "पृष्ठभूमि का रंग",
+      "text_color": "पाठ का रंग",
+      "border_color": "सीमा का रंग",
+      "border_radius": "सीमा त्रिज्या",
+      "font_family": "फ़ॉन्ट परिवार",
+      "font_scale": "फ़ॉन्ट आकार पैमाना",
+      "show_powered_by": "क्लासरूमियो ब्रांडिंग दिखाएं",
+      "custom_css": "कस्टम सीएसएस",
+      "custom_css_locked": "कस्टम सीएसएस सक्षम करने के लिए अपग्रेड करें।",
+      "embed_code": "कोड एंबेड करें"
+    },
+    "create": {
+      "description": "आरंभ करने के लिए अपने विजेट को एक नाम दें."
+    },
+    "actions": {
+      "create": "विजेट बनाएं",
+      "edit": "संपादित करें",
+      "back": "विजेट्स पर वापस जाएँ",
+      "save": "सहेजें",
+      "discard": "परिवर्तन त्यागें",
+      "publish": "प्रकाशित करें",
+      "archive": "पुरालेख",
+      "restore": "पुनर्स्थापित करें",
+      "copy_embed": "एंबेड कॉपी करें",
+      "rename": "नाम बदलें",
+      "delete": "हटाएँ"
+    },
+    "preview": {
+      "heading": "पूर्वावलोकन",
+      "saved": "सहेजा गया",
+      "unsaved": "सहेजे न गए परिवर्तन",
+      "load_failed": "पूर्वावलोकन लोड नहीं हो सका. पृष्ठ को ताज़ा करने का प्रयास करें.",
+      "empty": "पूर्वावलोकन अनुपलब्ध.",
+      "all_tags": "सब",
+      "none": "कोई नहीं",
+      "lessons_suffix": "सबक",
+      "last_synced": "समन्वयित",
+      "refresh": "ताज़ा करें",
+      "exercises_suffix": "व्यायाम",
+      "columns": {
+        "course": "पाठ्यक्रम",
+        "lessons": "सबक",
+        "tags": "टैग"
+      }
+    },
+    "plan": {
+      "free": "निःशुल्क योजना",
+      "paid": "सशुल्क योजना"
+    },
+    "status": {
+      "draft": "ड्राफ्ट",
+      "published": "प्रकाशित",
+      "archived": "संग्रहीत",
+      "live": "जियो"
+    },
+    "sort": {
+      "manual": "मैनुअल",
+      "newest": "नवीनतम",
+      "title": "शीर्षक"
+    },
+    "layoutOptions": {
+      "section": "लेआउट विकल्प",
+      "columns": "कॉलम",
+      "max_count": "अधिकतम पाठ्यक्रम",
+      "show_rating": "रेटिंग दिखाएँ",
+      "tag_source": "टैग स्रोत",
+      "tag_source_auto": "पाठ्यक्रम से ऑटो",
+      "tag_source_manual": "मैन्युअल चयन",
+      "default_tag": "डिफ़ॉल्ट टैग",
+      "show_all_option": "\"सभी\" विकल्प दिखाएँ",
+      "visible_cards": "दर्शनीय कार्ड",
+      "auto_play": "ऑटो प्ले",
+      "auto_play_interval": "ऑटो प्ले अंतराल (एमएस)",
+      "show_dots": "बिंदु दिखाएँ",
+      "show_arrows": "तीर दिखाओ",
+      "loop": "पाश",
+      "featured_course": "विशेष पाठ्यक्रम",
+      "featured_course_required": "इस लेआउट के लिए एक विशेष पाठ्यक्रम की आवश्यकता है।",
+      "main_course": "मुख्य स्पॉटलाइट कोर्स",
+      "main_course_required": "सुर्खियों में आने के लिए एक कोर्स चुनें।",
+      "eyebrow_label": "भौंह लेबल",
+      "cta_label": "सीटीए लेबल",
+      "secondary_max_count": "माध्यमिक पाठ्यक्रम",
+      "density": "घनत्व",
+      "density_comfortable": "आरामदायक",
+      "density_compact": "सघन",
+      "show_thumbnail": "थंबनेल दिखाएँ",
+      "show_tags": "टैग दिखाएँ",
+      "title_style": "शीर्षक शैली",
+      "title_style_serif": "सेरिफ़",
+      "title_style_sans": "सं",
+      "category_tags": "श्रेणी टैग",
+      "category_tags_required": "श्रेणी शेल्फ़ के लिए कम से कम एक टैग चुनें.",
+      "default_category": "डिफ़ॉल्ट श्रेणी",
+      "show_all_tab": "\"सभी\" टैब दिखाएँ",
+      "max_per_category": "प्रति श्रेणी अधिकतम पाठ्यक्रम",
+      "none": "कोई नहीं"
+    },
+    "layout_description": {
+      "card_grid": "बहुत सारी सांस लेने की जगह के साथ सामान्य प्रयोजन कैटलॉग।",
+      "tag_filter": "छात्रों को विषय के आधार पर एक विस्तृत सूची बनाने दें।",
+      "carousel": "मुखपृष्ठ के तंग अनुभागों में विशेष पंक्तियाँ।",
+      "primary_course": "किसी फ्लैगशिप या नए लॉन्च किए गए पाठ्यक्रम का प्रचार करें।",
+      "compact_list": "साइडबार एम्बेड और न्यूनतम-फ़ुटप्रिंट पृष्ठ।",
+      "editorial_spotlight": "ब्लॉग-शैली के लैंडिंग पृष्ठ और क्यूरेटेड चयन।",
+      "category_shelf": "विषय के आधार पर समूहीकृत बड़े कैटलॉग, स्कैन करने में आसान।"
+    },
+    "layout": {
+      "card_grid": "कार्ड ग्रिड",
+      "tag_filter": "टैग फ़िल्टर",
+      "carousel": "हिंडोला",
+      "primary_course": "प्राथमिक पाठ्यक्रम",
+      "compact_list": "संक्षिप्त सूची",
+      "editorial_spotlight": "संपादकीय स्पॉटलाइट",
+      "category_shelf": "श्रेणी शेल्फ"
+    },
+    "selection": {
+      "manual": "मैन्युअल चयन",
+      "published": "सभी प्रकाशित पाठ्यक्रम"
+    },
+    "editor": {
+      "sources": "विजेट स्रोत",
+      "available_courses": "उपलब्ध पाठ्यक्रम",
+      "layout": "लेआउट",
+      "content": "सामग्री",
+      "design": "डिज़ाइन",
+      "version_history": "संस्करण इतिहास",
+      "save_changes": "परिवर्तन सहेजें",
+      "rename_widget": "विजेट का नाम बदलें",
+      "continue_to_layout": "लेआउट करना जारी रखें",
+      "pick_layout": "एक लेआउट चुनें",
+      "pick_design": "दिखावट",
+      "panel_subtitle": "कॉन्फ़िगर करें कि आपका विजेट कैसा दिखता है और व्यवहार करता है।",
+      "embed_share": "एम्बेड करें और साझा करें",
+      "discard_short": "त्यागें",
+      "canvas_status": "पूर्वावलोकन",
+      "finish_editing_name": "हो गया",
+      "waiting_org": "संगठन लोड हो रहा है...",
+      "load_failed": "यह विजेट लोड नहीं किया जा सका. विजेट सूची से पुनः प्रयास करें.",
+      "nav": {
+        "courses": "पाठ्यक्रम",
+        "layout": "लेआउट",
+        "design": "डिज़ाइन",
+        "embed": "एम्बेड करें"
+      },
+      "viewport": {
+        "mobile": "मोबाइल",
+        "tablet": "गोली",
+        "desktop": "डेस्कटॉप"
+      }
+    },
+    "tabs": {
+      "select_courses": "पाठ्यक्रम चुनें",
+      "layout": "लेआउट",
+      "design": "डिज़ाइन",
+      "embed": "कोड एम्बेड करें"
+    },
+    "defaults": {
+      "name_prefix": "पाठ्यक्रम विजेट"
+    },
+    "empty": {
+      "heading": "अभी तक कोई विजेट नहीं",
+      "description": "बाहरी वेबसाइटों के लिए एम्बेड करने योग्य पाठ्यक्रम ब्लॉक तैयार करने के लिए एक विजेट बनाएं।"
     }
   }
 }

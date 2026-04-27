@@ -40,6 +40,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.388.0",
     "@aws-sdk/s3-request-presigner": "^3.675.0",
+    "@cio/ai-assistant": "workspace:*",
     "@cio/db": "workspace:*",
     "@cio/email": "workspace:*",
     "@cio/question-types": "workspace:*",
@@ -49,6 +50,7 @@
     "@hono/zod-validator": "^0.7.6",
     "@scalar/hono-api-reference": "^0.9.18",
     "@sentry/profiling-node": "^7.110.1",
+    "ai": "^6.0.158",
     "axios": "^1.4.0",
     "dotenv": "^16.3.1",
     "drizzle-orm": "^0.44.7",
@@ -56,9 +58,12 @@
     "hono-openapi": "^1.0.8",
     "hono-rate-limiter": "^0.4.2",
     "isomorphic-dompurify": "^3.7.1",
+    "jszip": "^3.10.1",
     "katex": "^0.16.10",
+    "mammoth": "^1.9.0",
     "marked": "^7.0.3",
     "nanoid": "^5.1.5",
+    "pdf-parse": "^1.1.1",
     "redis": "^4.7.0",
     "zod": "^4.1.8",
     "zod-openapi": "^5.4.1"
@@ -66,6 +71,7 @@
   "devDependencies": {
     "@types/katex": "^0.16.7",
     "@types/node": "^20.19.0",
+    "@types/pdf-parse": "^1.1.5",
     "@typescript-eslint/eslint-plugin": "7.0.1",
     "@typescript-eslint/parser": "7.0.1",
     "@vitest/coverage-v8": "^1.2.2",

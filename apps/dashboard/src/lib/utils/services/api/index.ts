@@ -102,13 +102,18 @@ class ApiClient {
       }
     }
 
+    if (isFormData) {
+      // Let the browser set the multipart boundary, but keep auth/org headers.
+      headers.delete('Content-Type');
+    }
+
     // Create abort controller for timeout
     const timeoutController = new AbortController();
     const timeoutId = setTimeout(() => timeoutController.abort(), timeout);
 
     const requestInit: RequestInit = {
       ...fetchConfig,
-      headers: isFormData ? undefined : headers,
+      headers,
       body: requestBody,
       signal: mergeAbortSignals(fetchConfig.signal, timeoutController.signal)
     };

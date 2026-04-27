@@ -1,7 +1,15 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { onMount } from 'svelte';
 
   import { Snackbar } from '$features/ui';
+  import { appInitApi } from '$features/app/init.svelte';
+  import { setupCloudAnalytics } from '$lib/utils/functions/appSetup';
+  import { globalStore } from '$lib/utils/store/app';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { user } from '$lib/utils/store/user';
+  import { setTheme } from '$lib/utils/functions/theme';
+  import { authClient } from '$lib/utils/services/auth/client';
   import merge from 'lodash/merge';
   import { MetaTags } from 'svelte-meta-tags';
   import { ModeWatcher } from '@cio/ui/base/dark-mode';
@@ -11,6 +19,42 @@
   let { data, children } = $props();
 
   const metaTags = $derived(merge(data.baseMetaTags, page.data.pageMetaTags));
+
+  onMount(() => {
+    const loadingIndicator = document.getElementById('app-loading-indicator');
+    if (loadingIndicator) {
+      loadingIndicator.style.display = 'none';
+    }
+
+    setupCloudAnalytics();
+
+    if (data?.locals?.user) {
+      user.set({
+        ...$user,
+        isLoggedIn: true,
+        currentSession: data.locals.user
+      });
+    }
+
+    if (data.isOrgSite && data.org) {
+      $globalStore.orgSiteName = data.orgSiteName || '';
+      $globalStore.isOrgSite = true;
+      currentOrg.set(data.org);
+      setTheme(data.org.theme || 'blue');
+    }
+  });
+
+  const session = authClient.useSession();
+  const isSessionReady = $derived(!$session.isPending && !$session.isRefetching && $session.data);
+
+  $effect(() => {
+    if (isSessionReady && !appInitApi.isInitializedAndReady && !appInitApi.loading) {
+      appInitApi.setupApp($session.data as App.Locals, {
+        isOrgSite: data.isOrgSite,
+        orgSiteName: data.orgSiteName
+      });
+    }
+  });
 </script>
 
 <div>

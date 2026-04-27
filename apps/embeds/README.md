@@ -128,3 +128,61 @@ pnpm build && npx serve . -p 5190
 
 1. Add `src/widgets/<name>/widget.svelte` and a bootstrap entry (same pattern as `question-type-picker`).
 2. Add a dedicated `build.lib.entry` or Vite config if you need a separate publishable script.
+
+## Course widget host split
+
+The course widget uses three different URL concerns:
+
+1. **Embed script host**
+
+- this is where the browser downloads `course-widget.js`
+- production example: `https://assets.cdn.clsrio.com/embeds/course-widget/course-widget.js`
+- configured on the API side with `PUBLIC_EMBED_BASE_URL`
+
+2. **Payload API host**
+
+- this is where the widget fetches `GET /widgets/:publicKey/payload`
+- it reuses the existing API public URL via `PUBLIC_SERVER_URL`
+- the generated embed snippet includes that host as `data-api-base-url`
+
+3. **Course destination host**
+
+- this is where end users are sent when they click a course
+- it comes from the organization public site or custom domain, not the API host
+
+These are intentionally separate. The widget fetches data from the API host, but links users to the organization’s public course pages.
+
+## Course widget local development
+
+Local development should not depend on deployed CDN assets.
+
+### Expected local hosts
+
+- embed script host: `PUBLIC_EMBED_BASE_URL`
+- payload API host: existing `PUBLIC_SERVER_URL`
+
+When `PUBLIC_EMBED_BASE_URL` is unset and the API runs in development, widget embed code falls back to:
+
+```text
+http://localhost:5180
+```
+
+That matches the `@cio/embeds` Vite dev server.
+
+When `PUBLIC_SERVER_URL` is set to your local API URL, the generated snippet will look like:
+
+```html
+<div data-cio-widget="course-widget" data-widget-key="wgt_xxx" data-api-base-url="http://localhost:3002"></div>
+<script async type="module" src="http://localhost:5180/embeds/course-widget/course-widget.js"></script>
+```
+
+### Dev server path shape
+
+The embeds Vite dev server rewrites these stable production-style paths:
+
+- `/embeds/question-type-picker/question-type-picker.js`
+- `/embeds/course-widget/course-widget.js`
+
+to the underlying source entry files during development.
+
+That means dashboard-generated widget embed snippets can use the same path shape in local development and production without requiring the CDN to exist first.

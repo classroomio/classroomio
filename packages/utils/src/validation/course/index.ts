@@ -6,6 +6,7 @@
  */
 
 export * from './course';
+export * from './compliance';
 export * from './section';
 export * from './invite';
 export { ZCourseGetParam, type TCourseGetParam } from './course';

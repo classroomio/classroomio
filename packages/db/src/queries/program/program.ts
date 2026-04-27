@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@db/drizzle';
@@ -115,6 +115,77 @@ export async function getProgramsByOrg(
     throw new Error(
       `Failed to get programs for org "${organizationId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+export interface TSearchOrgProgram {
+  id: string;
+  name: string;
+  description: string | null;
+  status: string;
+  updatedAt: string | null;
+}
+
+export async function searchOrgPrograms(orgId: string, search: string, limit: number): Promise<TSearchOrgProgram[]> {
+  try {
+    const searchValue = `%${search.trim()}%`;
+
+    return await db
+      .select({
+        id: schema.program.id,
+        name: schema.program.name,
+        description: schema.program.description,
+        status: schema.program.status,
+        updatedAt: schema.program.updatedAt
+      })
+      .from(schema.program)
+      .where(
+        and(
+          eq(schema.program.organizationId, orgId),
+          eq(schema.program.status, 'ACTIVE'),
+          or(ilike(schema.program.name, searchValue), ilike(schema.program.description, searchValue))
+        )
+      )
+      .orderBy(desc(schema.program.updatedAt))
+      .limit(limit);
+  } catch (error) {
+    console.error('searchOrgPrograms error:', error);
+    throw new Error(`Failed to search org programs: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function searchLmsPrograms(
+  orgId: string,
+  profileId: string,
+  search: string,
+  limit: number
+): Promise<TSearchOrgProgram[]> {
+  try {
+    const searchValue = `%${search.trim()}%`;
+
+    return await db
+      .select({
+        id: schema.program.id,
+        name: schema.program.name,
+        description: schema.program.description,
+        status: schema.program.status,
+        updatedAt: schema.program.updatedAt
+      })
+      .from(schema.programMember)
+      .innerJoin(schema.program, eq(schema.programMember.programId, schema.program.id))
+      .where(
+        and(
+          eq(schema.programMember.profileId, profileId),
+          eq(schema.program.organizationId, orgId),
+          eq(schema.program.status, 'ACTIVE'),
+          or(ilike(schema.program.name, searchValue), ilike(schema.program.description, searchValue))
+        )
+      )
+      .orderBy(desc(schema.program.updatedAt))
+      .limit(limit);
+  } catch (error) {
+    console.error('searchLmsPrograms error:', error);
+    throw new Error(`Failed to search LMS programs: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

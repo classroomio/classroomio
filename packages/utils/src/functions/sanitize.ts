@@ -10,7 +10,7 @@ export const FORBID_TAGS = [
   'button',
   'meta',
   'link',
-  'svg',
+  'foreignObject',
   'math'
 ] as const;
 

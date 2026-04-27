@@ -13,12 +13,20 @@
       }
     </style>
   </head>
+
   <body>
-    <p style="max-width: 56rem; margin: 0 auto 1rem; color: #52525b; font-size: 0.875rem">
+    <!-- <p style="max-width: 56rem; margin: 0 auto 1rem; color: #52525b; font-size: 0.875rem">
       Serve this directory over HTTP (e.g. <code>npx serve .</code> from <code>apps/embeds</code> after
       <code>pnpm build</code>). File URLs will not load the script correctly.
     </p>
     <div style="max-width: 56rem; margin: 0 auto" data-cio-widget="question-type-picker"></div>
-    <script type="module" src="./dist/question-type-picker.js"></script>
+    <script type="module" src="./dist/question-type-picker.js"></script> -->
+
+    <div
+      data-cio-widget="course-widget"
+      data-widget-key="wgt_UG2yRrPmQC8mbKLL"
+      data-api-base-url="http://localhost:3002"
+    ></div>
+    <script async type="module" src="http://localhost:5180/embeds/course-widget/course-widget.js"></script>
   </body>
 </html>

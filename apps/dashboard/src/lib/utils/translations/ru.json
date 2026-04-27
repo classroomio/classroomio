@@ -219,7 +219,8 @@
         "complete_marked": "Помечено как завершенное",
         "complete_download": "Загрузка завершена",
         "version_restored": "Версия успешно восстановлена"
-      }
+      },
+      "section_deleted": "Раздел курса успешно удален"
     },
     "attendance": {
       "error": {
@@ -654,7 +655,8 @@
           "add": "Добавить тег",
           "popover_title": "Выберите теги",
           "empty_groups": "Тегов пока нет"
-        }
+        },
+        "compliance": "Соответствие"
       },
       "analytics": {
         "title": "Аналитика"
@@ -1117,7 +1119,7 @@
             "finish": "Готово",
             "next": "Далее",
             "check": "Проверить",
-            "auto_graded_badge": "Auto-graded",
+            "auto_graded_badge": "Auto-grade",
             "manual_grading_required_badge": "Manual grading required",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
@@ -1697,6 +1699,81 @@
           "edit": "Редактировать",
           "delete": "Удалить"
         }
+      },
+      "compliance": {
+        "title": "Соответствие",
+        "not_compliance_title": "Соответствие не включено",
+        "not_compliance_description": "Этот курс не настроен как курс соответствия.",
+        "loading": "Загрузка записей о соответствии...",
+        "learners": "Учащиеся",
+        "learners_description": "В этой таблице показан последний цикл для каждого учащегося.",
+        "current_cycle": "Текущий цикл",
+        "current_cycle_description": "Ваш активный цикл соответствия и даты продления.",
+        "history": "Прошлые циклы",
+        "history_description": "Каждая строка представляет собой один записанный цикл соответствия для этого курса.",
+        "no_active_cycle": "Нет активного цикла соответствия",
+        "empty_history": "История соответствия еще не зарегистрирована.",
+        "empty_overview": "Записей о соблюдении требований учащимися пока нет.",
+        "not_available": "Недоступно",
+        "status": {
+          "no_record": "Нет записи",
+          "not_started": "Не запущено",
+          "in_progress": "В процессе",
+          "compliant": "Соответствует",
+          "expiring_soon": "Срок действия скоро истекает",
+          "in_grace_period": "В льготный период",
+          "non_compliant": "Не соответствует",
+          "waived": "Отказано"
+        },
+        "summary": {
+          "total_learners": "Всего учащихся",
+          "no_record": "Нет записи",
+          "not_started": "Не запущено",
+          "in_progress": "В процессе",
+          "compliant": "Соответствует",
+          "expiring_soon": "Срок действия скоро истекает",
+          "in_grace_period": "В льготный период",
+          "non_compliant": "Не соответствует",
+          "waived": "Отказано"
+        },
+        "fields": {
+          "learner": "Учащийся",
+          "email": "электронная почта",
+          "status": "Статус",
+          "cycle": "Цикл",
+          "due_date": "Срок сдачи",
+          "completed_at": "Завершено в",
+          "valid_until": "Действительно до",
+          "score": "Оценка",
+          "attempts": "Попытки"
+        },
+        "bulk_actions": {
+          "title": "Массовые действия",
+          "description": "Выберите учащихся и примените действие по обеспечению соответствия к их текущему циклу.",
+          "select_all": "Выбрать всех видимых учащихся",
+          "selected_count": "{count} выбрано",
+          "clear_selection": "Очистить выбор",
+          "due_date_label": "Срок сдачи",
+          "due_date_helper": "Используется для действий сброса и продления.",
+          "reset_action": "Сброс цикла",
+          "extend_action": "Продлить срок выполнения",
+          "waive_title": "Отказаться от участия выбранных учащихся",
+          "waive_description": "Примените отказ к выбранным учащимся. Вы можете оставить срок действия пустым для бессрочного отказа.",
+          "waiver_reason_label": "Причина отказа",
+          "waiver_reason_helper": "Дополнительный контекст для аудитов и будущих проверок.",
+          "waiver_expires_at_label": "Отказ истекает в",
+          "waiver_expires_at_helper": "Оставьте пустым, если срок действия отказа не истекает автоматически.",
+          "waive_action": "Применить отказ",
+          "modal": {
+            "description": "Вы обновляете {count} выбранных учащихся.",
+            "cancel": "Отмена",
+            "apply": "Применить действие"
+          }
+        },
+        "tabs": {
+          "overview": "Обзор",
+          "learners": "Учащиеся"
+        }
       }
     },
     "search": {
@@ -1712,6 +1789,11 @@
       "content_count": {
         "lessons": "{count} уроков",
         "exercises": "{count} упражнений"
+      },
+      "compliance": {
+        "title": "Соответствие",
+        "due_date": "Срок погашения",
+        "valid_until": "Действительно до"
       }
     },
     "navItems": {
@@ -1724,7 +1806,9 @@
       "nav_analytics": "Аналитика",
       "nav_certificates": "Сертификаты",
       "nav_landing_page": "Целевая страница",
-      "nav_settings": "Настройки"
+      "nav_settings": "Настройки",
+      "nav_compliance": "Соответствие",
+      "nav_ai_assistant": "Ассистент"
     },
     "completion": {
       "modal": {
@@ -1812,8 +1896,11 @@
         "share": "Поделиться",
         "invite": "Пригласить",
         "delete": "Удалить",
-        "open": "Открыть"
-      }
+        "open": "Открыть",
+        "open_course_site": "Открытый сайт курса"
+      },
+      "due_date": "Срок погашения",
+      "valid_until": "Действительно до"
     },
     "course_filter": {
       "date_created_newest": "Date Created: Newest first",
@@ -1865,9 +1952,9 @@
     "lms_dashboard_hero": "Сегодня еще один день, который приблизит вас к вашим целям обучения. Не сдавайтесь, чем больше вы узнаете, тем лучше у вас получится.",
     "lessons_completed": "Уроки завершены",
     "no_courses_started": "Курсы не начались",
-    "certificates_earned": "Certificates earned",
+    "certificates_earned": "Certificates issued",
     "certificates_earned_description": "Total certificates issued to students in your organization",
-    "certification_rate": "certification rate",
+    "certification_rate": "Сертифицированы",
     "recent_certifications": "Recent certifications",
     "no_certifications_yet": "No certificates earned yet",
     "no_certifications_yet_description": "When students complete a course and earn a certificate, they will appear here",
@@ -1886,7 +1973,28 @@
     "publish_first_course": "Опубликуйте свой первый курс",
     "publish_first_course_description": "Чтобы отслеживать зачисления, опубликуйте курс и пригласите студентов.",
     "publish_course": "Опубликовать курс",
-    "items_completed": "Объекты завершены"
+    "items_completed": "Объекты завершены",
+    "currently_learning": "В настоящее время учусь",
+    "learner": "Учащийся",
+    "progress": "Прогресс",
+    "pick_up_where_you_left_off": "Продолжайте с того места, где вы остановились",
+    "course_awaits_you": "{title} ждет вас",
+    "learning_awaits_you": "Следующий курс ждет вас",
+    "lms_today_progress": "Ваш прогресс в обучении – {progress} %. Каждый шаг имеет значение.",
+    "lms_today_empty": "Ваш путь обучения готов, когда вы будете готовы.",
+    "compliance_score": "Оценка соответствия",
+    "compliance": "Соответствие",
+    "compliance_score_subtitle": "{completed} из {total} курсов по обеспечению соответствия требованиям, пройденных на данный момент",
+    "compliance_score_empty": "Курсы соответствия еще не назначены",
+    "compliance_met": "выполнено {завершено} из {total}",
+    "required_courses_completed": "Пройдено {completed} из {total} обязательных курсов",
+    "streak": "Полоса",
+    "days_active": "дней активности",
+    "items_done": "{завершено} из {total} выполнено",
+    "login_activity_title": "Активность входа учащихся",
+    "login_activity_description": "Самые активные дни недели (последние 90 дней)",
+    "login_activity_no_data": "Пока нет активности входа",
+    "login_activity_logins": "логины"
   },
   "schedule": {
     "title": "Ваше расписание",
@@ -2097,7 +2205,8 @@
     "upgrade": "Обновите сейчас",
     "tags": "Теги",
     "automation": "Автоматизация",
-    "programs": "Программы"
+    "programs": "Программы",
+    "widgets": "Виджеты"
   },
   "media_manager": {
     "page_title": "Медиа-менеджер — ClassroomIO",
@@ -2218,7 +2327,10 @@
       "provider": "Мы используем Polar, чтобы управлять вашими платежами.",
       "open_billing": "Открыть биллинг",
       "error": "Произошла ошибка при открытии счета.",
-      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO."
+      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
+      "ai_credits": "Использование AI-помощника",
+      "ai_tokens_used": "жетоны, использованные в этом месяце",
+      "ai_bonus_credits": "доступны бонусные кредиты"
     },
     "integrations": {
       "heading": "Телеграмма",
@@ -2667,9 +2779,34 @@
   },
   "app": {
     "search": {
-      "placeholder": "Поиск"
+      "placeholder": "Поиск",
+      "command_palette": {
+        "title": "Палитра команд",
+        "description": "Ищите и перемещайтесь по вашей организации",
+        "placeholder": "Поиск курсов, программ, виджетов, студентов, тегов, настроек...",
+        "org_placeholder": "Поиск курсов, программ, виджетов, студентов, тегов, настроек...",
+        "lms_placeholder": "Выполняйте поиск по своим курсам, программам и страницам обучения...",
+        "lms_description": "Ищите и перемещайтесь по своему учебному рабочему пространству",
+        "empty": "Результаты не найдены",
+        "loading": "Поиск...",
+        "clear_recents": "Очистить последние",
+        "result_types": {
+          "page": "Страница"
+        },
+        "groups": {
+          "recent": "Недавние",
+          "suggested": "Предлагается",
+          "courses": "Курсы",
+          "programs": "Программы",
+          "widgets": "Виджеты",
+          "tags": "Теги",
+          "students": "Студенты",
+          "settings": "Настройки"
+        }
+      }
     },
-    "cancel": "Отмена"
+    "cancel": "Отмена",
+    "save": "Сохранить"
   },
   "welcome_modal": {
     "we_at": "Мы в",
@@ -2700,7 +2837,9 @@
     "live_class_label": "Живой урок",
     "live_class_subtitle": "Идеально подходит для учебных курсов, где уроки основаны на времени",
     "self_paced_label": "Самостоятельный темп",
-    "self_paced_subtitle": "Лучше всего подходит для курсов, где студенты могут брать уроки в удобном для них темпе."
+    "self_paced_subtitle": "Лучше всего подходит для курсов, где студенты могут брать уроки в удобном для них темпе.",
+    "compliance_label": "Соответствие",
+    "compliance_subtitle": "Регулярное обучение с повторной сдачей, напоминаниями и отслеживанием продлений"
   },
   "delete_modal": {
     "label": "Удалить",
@@ -3078,6 +3217,227 @@
       "sort_courses": "Курсы",
       "sort_students": "Студенты",
       "sort_status": "Статус"
+    }
+  },
+  "ai_assistant": {
+    "empty_state": "Попросите меня помочь с содержанием вашего курса: набросайте уроки, сформулируйте вопросы или спланируйте курс на основе документа.",
+    "input_placeholder": "Спросите ИИ-помощника...",
+    "attach_document": "Прикрепите документ (PDF, DOCX, PPTX)",
+    "upgrade_to_upload": "Обновите, чтобы загружать документы",
+    "tokens_exhausted": "Достигнут месячный лимит токенов AI. Купите больше кредитов в «Настройки» > «Оплата» или дождитесь сброса.",
+    "chat_history": "История чата",
+    "no_conversations": "Пока нет разговоров",
+    "untitled": "Без названия",
+    "new_chat": "Новый чат",
+    "tokens_label": "жетоны",
+    "implementing_course_plan": "Реализация плана курса",
+    "resume": "Резюме",
+    "stopped_content_kept": "Остановился. Созданный контент сохранен.",
+    "mention_lesson": "Урок",
+    "mention_exercise": "Упражнение",
+    "mention_section": "Раздел",
+    "mention_no_results": "Нет подходящего контента",
+    "uploading_document": "Загрузка документа..."
+  },
+  "widgets": {
+    "heading": "Виджеты",
+    "subtitle": "Публикуйте фирменные коллекции курсов для внешних веб-сайтов.",
+    "empty_state": "Виджетов пока нет. Создайте его, чтобы создать встраиваемый блок курса.",
+    "filter": {
+      "status": "Статус",
+      "all": "Все",
+      "unpublished": "Неопубликовано",
+      "course_type": "Тип курса"
+    },
+    "notifications": {
+      "created": "Виджет создан",
+      "saved": "Виджет сохранен.",
+      "published": "Виджет опубликован",
+      "rolled_back": "Виджет восстановлен",
+      "deleted": "Виджет заархивирован"
+    },
+    "form": {
+      "name": "Название виджета",
+      "selection_mode": "Режим выбора",
+      "course_search": "Поиск курсов",
+      "layout_type": "Тип макета",
+      "sort_by": "Сортировать по",
+      "cta_label": "Метка призыва к действию",
+      "load_more_label": "Загрузить еще этикетку",
+      "limit_courses": "Ограничить курсы",
+      "max_count": "Максимальное количество курсов",
+      "show_course_image": "Показать изображение курса",
+      "show_type_badge": "Показать значок типа курса",
+      "show_lessons_count": "Показать количество уроков",
+      "show_description": "Показать отрывок из описания",
+      "shorten_long_description": "Сократить длинное описание",
+      "show_price": "Показать цену",
+      "show_rating": "Показать рейтинг",
+      "theme_preset": "Предустановка темы",
+      "primary_color": "Основной цвет",
+      "background_color": "Цвет фона",
+      "text_color": "Цвет текста",
+      "border_color": "Цвет границы",
+      "border_radius": "Радиус границы",
+      "font_family": "Семейство шрифтов",
+      "font_scale": "Шкала размера шрифта",
+      "show_powered_by": "Показать брендинг Classroomio",
+      "custom_css": "Пользовательский CSS",
+      "custom_css_locked": "Обновите, чтобы включить пользовательский CSS.",
+      "embed_code": "Встроить код"
+    },
+    "create": {
+      "description": "Дайте вашему виджету имя, чтобы начать."
+    },
+    "actions": {
+      "create": "Создать виджет",
+      "edit": "Редактировать",
+      "back": "Вернуться к виджетам",
+      "save": "Сохранить",
+      "discard": "Отменить изменения",
+      "publish": "Опубликовать",
+      "archive": "Архив",
+      "restore": "Восстановить",
+      "copy_embed": "Копировать встроить",
+      "rename": "Переименовать",
+      "delete": "Удалить"
+    },
+    "preview": {
+      "heading": "Предварительный просмотр",
+      "saved": "Сохранено",
+      "unsaved": "Несохраненные изменения",
+      "load_failed": "Не удалось загрузить предварительный просмотр. Попробуйте обновить страницу.",
+      "empty": "Предварительный просмотр недоступен.",
+      "all_tags": "Все",
+      "none": "Нет",
+      "lessons_suffix": "уроки",
+      "last_synced": "Синхронизировано",
+      "refresh": "Обновить",
+      "exercises_suffix": "упражнения",
+      "columns": {
+        "course": "Курс",
+        "lessons": "Уроки",
+        "tags": "Теги"
+      }
+    },
+    "plan": {
+      "free": "Бесплатный план",
+      "paid": "Платный план"
+    },
+    "status": {
+      "draft": "Черновик",
+      "published": "Опубликовано",
+      "archived": "В архиве",
+      "live": "Живи"
+    },
+    "sort": {
+      "manual": "Руководство",
+      "newest": "Новейший",
+      "title": "Название"
+    },
+    "layoutOptions": {
+      "section": "Варианты макета",
+      "columns": "Столбцы",
+      "max_count": "Макс курсы",
+      "show_rating": "Показать рейтинг",
+      "tag_source": "Источник тега",
+      "tag_source_auto": "Авто с курсов",
+      "tag_source_manual": "Ручной выбор",
+      "default_tag": "Тег по умолчанию",
+      "show_all_option": "Показать опцию «Все»",
+      "visible_cards": "Видимые карты",
+      "auto_play": "Автоматическое воспроизведение",
+      "auto_play_interval": "Интервал автоматического воспроизведения (мс)",
+      "show_dots": "Показать точки",
+      "show_arrows": "Показать стрелки",
+      "loop": "Петля",
+      "featured_course": "Рекомендуемый курс",
+      "featured_course_required": "Для этого макета требуется рекомендуемый курс.",
+      "main_course": "Основной курс",
+      "main_course_required": "Выберите курс, на который стоит обратить внимание.",
+      "eyebrow_label": "Этикетка для бровей",
+      "cta_label": "Метка призыва к действию",
+      "secondary_max_count": "Средние курсы",
+      "density": "Плотность",
+      "density_comfortable": "Удобный",
+      "density_compact": "Компактный",
+      "show_thumbnail": "Показать миниатюру",
+      "show_tags": "Показать теги",
+      "title_style": "Стиль заголовка",
+      "title_style_serif": "с засечками",
+      "title_style_sans": "Санс",
+      "category_tags": "Теги категорий",
+      "category_tags_required": "Выберите хотя бы один тег для полки категории.",
+      "default_category": "Категория по умолчанию",
+      "show_all_tab": "Показать вкладку «Все»",
+      "max_per_category": "Максимальное количество курсов по категории",
+      "none": "Нет"
+    },
+    "layout_description": {
+      "card_grid": "Каталог общего назначения с большим пространством для передышки.",
+      "tag_filter": "Позвольте учащимся сузить широкий каталог по темам.",
+      "carousel": "Избранные строки в узких разделах главной страницы.",
+      "primary_course": "Продвигайте флагманский или недавно запущенный курс.",
+      "compact_list": "Встраивание боковой панели и страницы минимального размера.",
+      "editorial_spotlight": "Целевые страницы в стиле блога и тщательно подобранные подборки.",
+      "category_shelf": "Большие каталоги, сгруппированные по темам, легко сканируются."
+    },
+    "layout": {
+      "card_grid": "Сетка карточек",
+      "tag_filter": "Фильтр тегов",
+      "carousel": "Карусель",
+      "primary_course": "Начальный курс",
+      "compact_list": "Компактный список",
+      "editorial_spotlight": "В центре внимания редакции",
+      "category_shelf": "Категория полка"
+    },
+    "selection": {
+      "manual": "Ручной выбор",
+      "published": "Все опубликованные курсы"
+    },
+    "editor": {
+      "sources": "Источник виджета",
+      "available_courses": "Доступные курсы",
+      "layout": "Макет",
+      "content": "Содержание",
+      "design": "Дизайн",
+      "version_history": "История версий",
+      "save_changes": "Сохранить изменения",
+      "rename_widget": "Переименовать виджет",
+      "continue_to_layout": "Продолжить оформление",
+      "pick_layout": "Выберите макет",
+      "pick_design": "Внешний вид",
+      "panel_subtitle": "Настройте внешний вид и поведение вашего виджета.",
+      "embed_share": "Встроить и поделиться",
+      "discard_short": "Отбросить",
+      "canvas_status": "Предварительный просмотр",
+      "finish_editing_name": "Готово",
+      "waiting_org": "Загрузка организации…",
+      "load_failed": "Не удалось загрузить этот виджет. Попробуйте еще раз из списка виджетов.",
+      "nav": {
+        "courses": "Курсы",
+        "layout": "Макет",
+        "design": "Дизайн",
+        "embed": "Встроить"
+      },
+      "viewport": {
+        "mobile": "мобильный",
+        "tablet": "Таблетка",
+        "desktop": "Рабочий стол"
+      }
+    },
+    "tabs": {
+      "select_courses": "Выберите курсы",
+      "layout": "Макет",
+      "design": "Дизайн",
+      "embed": "Встроить код"
+    },
+    "defaults": {
+      "name_prefix": "Виджет курса"
+    },
+    "empty": {
+      "heading": "Виджетов пока нет",
+      "description": "Создайте виджет для создания встраиваемого блока курса для внешних веб-сайтов."
     }
   }
 }

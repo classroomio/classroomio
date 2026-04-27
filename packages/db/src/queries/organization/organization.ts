@@ -368,6 +368,33 @@ export const getUserOrgRole = async (orgId: string, profileId: string): Promise<
 };
 
 /**
+ * Gets all org memberships for a user as { [orgId]: roleId }.
+ * Used to attach org roles to the Better Auth session so middleware can
+ * read membership/role from the session cookie cache instead of hitting the DB.
+ */
+export const getUserOrgRolesMap = async (profileId: string): Promise<Record<string, number>> => {
+  try {
+    const rows = await db
+      .select({
+        organizationId: schema.organizationmember.organizationId,
+        roleId: schema.organizationmember.roleId
+      })
+      .from(schema.organizationmember)
+      .where(eq(schema.organizationmember.profileId, profileId));
+
+    const map: Record<string, number> = {};
+    for (const row of rows) {
+      map[row.organizationId] = Number(row.roleId);
+    }
+
+    return map;
+  } catch (error) {
+    console.error('getUserOrgRolesMap error:', error);
+    throw new Error('Failed to fetch user org roles map');
+  }
+};
+
+/**
  * Checks if a user is a team member (ADMIN or TUTOR) of an organization
  * @param orgId Organization ID
  * @param profileId Profile ID to check

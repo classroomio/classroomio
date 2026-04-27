@@ -219,7 +219,8 @@
         "complete_marked": "Marqué comme terminé",
         "complete_download": "Téléchargement terminé",
         "version_restored": "Version restaurée avec succès"
-      }
+      },
+      "section_deleted": "Section de cours supprimée avec succès"
     },
     "attendance": {
       "error": {
@@ -654,7 +655,8 @@
           "add": "Ajouter une balise",
           "popover_title": "Sélectionnez les balises",
           "empty_groups": "Aucun tag disponible pour l'instant"
-        }
+        },
+        "compliance": "Conformité"
       },
       "analytics": {
         "title": "Analyse"
@@ -1117,7 +1119,7 @@
             "finish": "Terminer",
             "next": "Suivant",
             "check": "Vérifier",
-            "auto_graded_badge": "Auto-graded",
+            "auto_graded_badge": "Auto-grade",
             "manual_grading_required_badge": "Manual grading required",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
@@ -1697,6 +1699,81 @@
           "edit": "Modifier",
           "delete": "Supprimer"
         }
+      },
+      "compliance": {
+        "title": "Conformité",
+        "not_compliance_title": "La conformité n'est pas activée",
+        "not_compliance_description": "Ce cours n'est pas configuré comme cours de conformité.",
+        "loading": "Chargement des enregistrements de conformité...",
+        "learners": "Apprenants",
+        "learners_description": "Ce tableau montre le dernier cycle pour chaque apprenant.",
+        "current_cycle": "Cycle actuel",
+        "current_cycle_description": "Votre cycle de conformité actif et vos dates de renouvellement.",
+        "history": "Cycles passés",
+        "history_description": "Chaque ligne correspond à un cycle de conformité enregistré pour ce cours.",
+        "no_active_cycle": "Aucun cycle de conformité actif",
+        "empty_history": "Aucun historique de conformité n’a encore été enregistré.",
+        "empty_overview": "Aucun dossier de conformité des apprenants n’est encore disponible.",
+        "not_available": "Non disponible",
+        "status": {
+          "no_record": "Aucun enregistrement",
+          "not_started": "Pas commencé",
+          "in_progress": "En cours",
+          "compliant": "Conforme",
+          "expiring_soon": "Expire bientôt",
+          "in_grace_period": "En période de grâce",
+          "non_compliant": "Non conforme",
+          "waived": "Renoncé"
+        },
+        "summary": {
+          "total_learners": "Nombre total d'apprenants",
+          "no_record": "Aucun enregistrement",
+          "not_started": "Pas démarré",
+          "in_progress": "En cours",
+          "compliant": "Conforme",
+          "expiring_soon": "Expire bientôt",
+          "in_grace_period": "En période de grâce",
+          "non_compliant": "Non conforme",
+          "waived": "Renoncé"
+        },
+        "fields": {
+          "learner": "Apprenant",
+          "email": "Courriel",
+          "status": "Statut",
+          "cycle": "Cycle",
+          "due_date": "Date d'échéance",
+          "completed_at": "Terminé à",
+          "valid_until": "Valable jusqu'au",
+          "score": "Score",
+          "attempts": "Tentatives"
+        },
+        "bulk_actions": {
+          "title": "Actions groupées",
+          "description": "Sélectionnez les apprenants et appliquez une action de conformité à leur cycle actuel.",
+          "select_all": "Sélectionnez tous les apprenants visibles",
+          "selected_count": "{count} sélectionnés",
+          "clear_selection": "Effacer la sélection",
+          "due_date_label": "Date d'échéance",
+          "due_date_helper": "Utilisé pour les actions de réinitialisation et d’extension.",
+          "reset_action": "Cycle de réinitialisation",
+          "extend_action": "Prolonger la date d'échéance",
+          "waive_title": "Renoncer aux apprenants sélectionnés",
+          "waive_description": "Appliquer une dérogation aux apprenants sélectionnés. Vous pouvez laisser l’expiration vide pour une renonciation illimitée.",
+          "waiver_reason_label": "Raison de la renonciation",
+          "waiver_reason_helper": "Contexte facultatif pour les audits et les examens futurs.",
+          "waiver_expires_at_label": "La renonciation expire à",
+          "waiver_expires_at_helper": "Laissez vide si la renonciation ne doit pas expirer automatiquement.",
+          "waive_action": "Demander une renonciation",
+          "modal": {
+            "description": "Vous mettez à jour {count} apprenants sélectionnés.",
+            "cancel": "Annuler",
+            "apply": "Appliquer l'action"
+          }
+        },
+        "tabs": {
+          "overview": "Aperçu",
+          "learners": "Apprenants"
+        }
       }
     },
     "search": {
@@ -1712,6 +1789,11 @@
       "content_count": {
         "lessons": "{count} leçons",
         "exercises": "{count} exercices"
+      },
+      "compliance": {
+        "title": "Conformité",
+        "due_date": "Due",
+        "valid_until": "Valable jusqu'au"
       }
     },
     "navItems": {
@@ -1724,7 +1806,9 @@
       "nav_analytics": "Analyse",
       "nav_certificates": "Certificats",
       "nav_landing_page": "Page de destination",
-      "nav_settings": "Paramètres"
+      "nav_settings": "Paramètres",
+      "nav_compliance": "Conformité",
+      "nav_ai_assistant": "Assistante"
     },
     "completion": {
       "modal": {
@@ -1812,8 +1896,11 @@
         "share": "Partager",
         "invite": "Inviter",
         "delete": "Supprimer",
-        "open": "Ouvert"
-      }
+        "open": "Ouvert",
+        "open_course_site": "Site de cours ouvert"
+      },
+      "due_date": "Due",
+      "valid_until": "Valable jusqu'au"
     },
     "course_filter": {
       "date_created_newest": "Date Created: Newest first",
@@ -1865,9 +1952,9 @@
     "lms_dashboard_hero": "Aujourd'hui est un autre jour pour vous rapprocher de vos objectifs d'apprentissage. N'abandonnez pas, plus vous apprenez, mieux vous vous améliorez.",
     "lessons_completed": "Leçons terminées",
     "no_courses_started": "Aucun cours n'a commencé",
-    "certificates_earned": "Certificates earned",
+    "certificates_earned": "Certificates issued",
     "certificates_earned_description": "Total certificates issued to students in your organization",
-    "certification_rate": "certification rate",
+    "certification_rate": "Certifiés",
     "recent_certifications": "Recent certifications",
     "no_certifications_yet": "No certificates earned yet",
     "no_certifications_yet_description": "When students complete a course and earn a certificate, they will appear here",
@@ -1886,7 +1973,28 @@
     "publish_first_course": "Publiez votre premier cours",
     "publish_first_course_description": "Pour suivre les inscriptions, publier un cours et inviter des étudiants",
     "publish_course": "Publier le cours",
-    "items_completed": "Éléments terminés"
+    "items_completed": "Éléments terminés",
+    "currently_learning": "En cours d'apprentissage",
+    "learner": "Apprenant",
+    "progress": "Progrès",
+    "pick_up_where_you_left_off": "Reprenez là où vous vous étiez arrêté",
+    "course_awaits_you": "{titre} vous attend",
+    "learning_awaits_you": "Votre prochain cours vous attend",
+    "lms_today_progress": "Vous avez progressé de {progress} % dans votre apprentissage : chaque étape compte.",
+    "lms_today_empty": "Votre parcours d’apprentissage est prêt quand vous l’êtes.",
+    "compliance_score": "Score de conformité",
+    "compliance": "Conformité",
+    "compliance_score_subtitle": "{terminé} sur {total} cours de conformité actuellement suivis",
+    "compliance_score_empty": "Aucun cours de conformité attribué pour l'instant",
+    "compliance_met": "{terminé} sur {total} atteint",
+    "required_courses_completed": "{terminé} sur {total} cours obligatoires terminés",
+    "streak": "Série",
+    "days_active": "jours d'activité",
+    "items_done": "{terminé} sur {total} réalisé",
+    "login_activity_title": "Activité de connexion des étudiants",
+    "login_activity_description": "Jours les plus actifs de la semaine (90 derniers jours)",
+    "login_activity_no_data": "Aucune activité de connexion pour le moment",
+    "login_activity_logins": "connexions"
   },
   "schedule": {
     "title": "Votre emploi du temps",
@@ -2097,7 +2205,8 @@
     "upgrade": "Mettre à niveau maintenant",
     "tags": "Balises",
     "automation": "Automation",
-    "programs": "Programmes"
+    "programs": "Programmes",
+    "widgets": "Widgets"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",
@@ -2218,7 +2327,10 @@
       "provider": "Nous utilisons Polar pour vous aider à gérer votre facturation",
       "open_billing": "Facturation ouverte",
       "error": "Une erreur s'est produite lors de l'ouverture de la facturation",
-      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO."
+      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
+      "ai_credits": "Utilisation de l'assistant IA",
+      "ai_tokens_used": "jetons utilisés ce mois-ci",
+      "ai_bonus_credits": "crédits bonus disponibles"
     },
     "integrations": {
       "heading": "Télégramme",
@@ -2667,9 +2779,34 @@
   },
   "app": {
     "search": {
-      "placeholder": "Rechercher"
+      "placeholder": "Rechercher",
+      "command_palette": {
+        "title": "Palette de commandes",
+        "description": "Recherchez et naviguez dans votre organisation",
+        "placeholder": "Rechercher des cours, des programmes, des widgets, des étudiants, des tags, des paramètres...",
+        "org_placeholder": "Rechercher des cours, des programmes, des widgets, des étudiants, des tags, des paramètres...",
+        "lms_placeholder": "Recherchez vos cours, programmes et pages d'apprentissage...",
+        "lms_description": "Recherchez et parcourez votre espace de travail d'apprentissage",
+        "empty": "Aucun résultat trouvé",
+        "loading": "Recherche...",
+        "clear_recents": "Effacer les récents",
+        "result_types": {
+          "page": "Pages"
+        },
+        "groups": {
+          "recent": "Récent",
+          "suggested": "Suggéré",
+          "courses": "Cours",
+          "programs": "Programmes",
+          "widgets": "Widgets",
+          "tags": "Balises",
+          "students": "Étudiants",
+          "settings": "Paramètres"
+        }
+      }
     },
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "save": "Enregistrer"
   },
   "welcome_modal": {
     "we_at": "Nous à",
@@ -2700,7 +2837,9 @@
     "live_class_label": "Cours en direct",
     "live_class_subtitle": "Idéal pour les bootcamps où les cours sont basés sur le temps",
     "self_paced_label": "À votre rythme",
-    "self_paced_subtitle": "Idéal pour les cours où les étudiants peuvent suivre des cours à leur propre rythme"
+    "self_paced_subtitle": "Idéal pour les cours où les étudiants peuvent suivre des cours à leur propre rythme",
+    "compliance_label": "Conformité",
+    "compliance_subtitle": "Formation récurrente avec reprises, rappels et suivi de renouvellement"
   },
   "delete_modal": {
     "label": "Supprimer",
@@ -3078,6 +3217,227 @@
       "sort_courses": "Cours",
       "sort_students": "Étudiants",
       "sort_status": "Statut"
+    }
+  },
+  "ai_assistant": {
+    "empty_state": "Demandez-moi de vous aider avec le contenu de votre cours : rédigez des leçons, générez des questions ou planifiez un cours à partir d'un document.",
+    "input_placeholder": "Demandez à l'assistant IA...",
+    "attach_document": "Joindre un document (PDF, DOCX, PPTX)",
+    "upgrade_to_upload": "Mise à niveau pour télécharger des documents",
+    "tokens_exhausted": "Limite mensuelle de jetons IA atteinte. Achetez plus de crédits dans Paramètres > Facturation ou attendez la réinitialisation.",
+    "chat_history": "Historique des discussions",
+    "no_conversations": "Aucune conversation pour l'instant",
+    "untitled": "Sans titre",
+    "new_chat": "Nouvelle discussion",
+    "tokens_label": "jetons",
+    "implementing_course_plan": "Mise en œuvre du plan de cours",
+    "resume": "CV",
+    "stopped_content_kept": "Arrêté. Le contenu créé a été conservé.",
+    "mention_lesson": "Leçon",
+    "mention_exercise": "Exercice",
+    "mention_section": "Section",
+    "mention_no_results": "Aucun contenu correspondant",
+    "uploading_document": "Téléchargement du document..."
+  },
+  "widgets": {
+    "heading": "Widgets",
+    "subtitle": "Publiez des collections de cours de marque pour des sites Web externes.",
+    "empty_state": "Aucun widget pour l'instant. Créez-en un pour générer un bloc de cours intégrable.",
+    "filter": {
+      "status": "Statut",
+      "all": "Tout",
+      "unpublished": "Inédit",
+      "course_type": "Type de cours"
+    },
+    "notifications": {
+      "created": "Widget créé",
+      "saved": "Widget enregistré",
+      "published": "Widget publié",
+      "rolled_back": "Widget restauré",
+      "deleted": "Widget archivé"
+    },
+    "form": {
+      "name": "Nom du widget",
+      "selection_mode": "Mode de sélection",
+      "course_search": "Rechercher des cours",
+      "layout_type": "Type de mise en page",
+      "sort_by": "Trier par",
+      "cta_label": "Étiquette CTA",
+      "load_more_label": "Charger plus d'étiquette",
+      "limit_courses": "Cours limités",
+      "max_count": "Nombre maximum de cours",
+      "show_course_image": "Afficher l'image du cours",
+      "show_type_badge": "Afficher le badge du type de cours",
+      "show_lessons_count": "Afficher le nombre de leçons",
+      "show_description": "Afficher l'extrait de la description",
+      "shorten_long_description": "Raccourcir la description longue",
+      "show_price": "Afficher le prix",
+      "show_rating": "Afficher la note",
+      "theme_preset": "Thème prédéfini",
+      "primary_color": "Couleur primaire",
+      "background_color": "Couleur de fond",
+      "text_color": "Couleur du texte",
+      "border_color": "Couleur de la bordure",
+      "border_radius": "Rayon de la frontière",
+      "font_family": "Famille de polices",
+      "font_scale": "Échelle de taille de police",
+      "show_powered_by": "Afficher la marque Classroomio",
+      "custom_css": "CSS personnalisé",
+      "custom_css_locked": "Mettez à niveau pour activer le CSS personnalisé.",
+      "embed_code": "Code intégré"
+    },
+    "create": {
+      "description": "Donnez un nom à votre widget pour commencer."
+    },
+    "actions": {
+      "create": "Créer un widget",
+      "edit": "Modifier",
+      "back": "Retour aux widgets",
+      "save": "Enregistrer",
+      "discard": "Ignorer les modifications",
+      "publish": "Publier",
+      "archive": "Archiver",
+      "restore": "Restaurer",
+      "copy_embed": "Copier l'intégration",
+      "rename": "Renommer",
+      "delete": "Supprimer"
+    },
+    "preview": {
+      "heading": "Aperçu",
+      "saved": "Enregistré",
+      "unsaved": "Modifications non enregistrées",
+      "load_failed": "L'aperçu n'a pas pu se charger. Essayez d'actualiser la page.",
+      "empty": "Aperçu indisponible.",
+      "all_tags": "Tout",
+      "none": "Aucun",
+      "lessons_suffix": "leçons",
+      "last_synced": "Synchronisé",
+      "refresh": "Actualiser",
+      "exercises_suffix": "exercices",
+      "columns": {
+        "course": "Cours",
+        "lessons": "Leçons",
+        "tags": "Balises"
+      }
+    },
+    "plan": {
+      "free": "Forfait gratuit",
+      "paid": "Forfait payant"
+    },
+    "status": {
+      "draft": "Brouillon",
+      "published": "Publié",
+      "archived": "Archivé",
+      "live": "En direct"
+    },
+    "sort": {
+      "manual": "Manuel",
+      "newest": "Le plus récent",
+      "title": "Titre"
+    },
+    "layoutOptions": {
+      "section": "Options de mise en page",
+      "columns": "Colonnes",
+      "max_count": "Cours maximum",
+      "show_rating": "Afficher la note",
+      "tag_source": "Source de la balise",
+      "tag_source_auto": "Auto à partir des cours",
+      "tag_source_manual": "Sélection manuelle",
+      "default_tag": "Balise par défaut",
+      "show_all_option": "Afficher l'option \"Tous\"",
+      "visible_cards": "Cartes visibles",
+      "auto_play": "Lecture automatique",
+      "auto_play_interval": "Intervalle de lecture automatique (ms)",
+      "show_dots": "Afficher les points",
+      "show_arrows": "Afficher les flèches",
+      "loop": "Boucle",
+      "featured_course": "Cours en vedette",
+      "featured_course_required": "Un cours vedette est requis pour cette mise en page.",
+      "main_course": "Cours principal",
+      "main_course_required": "Choisissez un cours à mettre en lumière.",
+      "eyebrow_label": "Étiquette de sourcil",
+      "cta_label": "Étiquette CTA",
+      "secondary_max_count": "Cours secondaires",
+      "density": "Densité",
+      "density_comfortable": "Confortable",
+      "density_compact": "Compacte",
+      "show_thumbnail": "Afficher la vignette",
+      "show_tags": "Afficher les balises",
+      "title_style": "Style de titre",
+      "title_style_serif": "Serif",
+      "title_style_sans": "Sans",
+      "category_tags": "Balises de catégorie",
+      "category_tags_required": "Sélectionnez au moins une balise pour l’étagère des catégories.",
+      "default_category": "Catégorie par défaut",
+      "show_all_tab": "Afficher l'onglet \"Tous\"",
+      "max_per_category": "Max de cours par catégorie",
+      "none": "Aucun"
+    },
+    "layout_description": {
+      "card_grid": "Catalogue à usage général avec beaucoup de marge de manœuvre.",
+      "tag_filter": "Laissez les étudiants affiner un large catalogue par sujet.",
+      "carousel": "Lignes en vedette dans des sections étroites de la page d'accueil.",
+      "primary_course": "Faites la promotion d’un cours phare ou nouvellement lancé.",
+      "compact_list": "Intégrations de la barre latérale et pages à empreinte minimale.",
+      "editorial_spotlight": "Pages de destination de style blog et sélections organisées.",
+      "category_shelf": "Grands catalogues regroupés par thème, faciles à numériser."
+    },
+    "layout": {
+      "card_grid": "Grille de cartes",
+      "tag_filter": "Filtre de balises",
+      "carousel": "Carrousel",
+      "primary_course": "Cours primaire",
+      "compact_list": "Liste compacte",
+      "editorial_spotlight": "Coup de projecteur éditorial",
+      "category_shelf": "Étagère de catégorie"
+    },
+    "selection": {
+      "manual": "Sélection manuelle",
+      "published": "Tous les cours publiés"
+    },
+    "editor": {
+      "sources": "Source du widget",
+      "available_courses": "Cours disponibles",
+      "layout": "Disposition",
+      "content": "Contenu",
+      "design": "Conception",
+      "version_history": "Historique des versions",
+      "save_changes": "Enregistrer les modifications",
+      "rename_widget": "Renommer le widget",
+      "continue_to_layout": "Continuer la mise en page",
+      "pick_layout": "Choisissez une mise en page",
+      "pick_design": "Apparence",
+      "panel_subtitle": "Configurez l'apparence et le comportement de votre widget.",
+      "embed_share": "Intégrer et partager",
+      "discard_short": "Jeter",
+      "canvas_status": "Aperçu",
+      "finish_editing_name": "Terminé",
+      "waiting_org": "Chargement de l'organisation…",
+      "load_failed": "Impossible de charger ce widget. Réessayez à partir de la liste des widgets.",
+      "nav": {
+        "courses": "Cours",
+        "layout": "Disposition",
+        "design": "Conception",
+        "embed": "Intégrer"
+      },
+      "viewport": {
+        "mobile": "Mobile",
+        "tablet": "Tablette",
+        "desktop": "Bureau"
+      }
+    },
+    "tabs": {
+      "select_courses": "Sélectionnez des cours",
+      "layout": "Disposition",
+      "design": "Conception",
+      "embed": "Code intégré"
+    },
+    "defaults": {
+      "name_prefix": "Widget de cours"
+    },
+    "empty": {
+      "heading": "Pas encore de widget",
+      "description": "Créez un widget pour générer un bloc de cours intégrable pour les sites Web externes."
     }
   }
 }
