@@ -363,6 +363,20 @@
   {#key currentQuestion.id}
     <!-- <div transition:fade id="question"> -->
     <div in:fly={{ x: 500, duration: 1000 }} id="question">
+      {#if $questionnaire.description}
+        <details
+          class="mb-4 rounded-md border border-gray-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900"
+          open={$questionnaireMetaData.currentQuestionIndex === 1}
+        >
+          <summary class="cursor-pointer text-sm font-semibold dark:text-white">
+            Exercise instructions
+          </summary>
+          <article class="preview prose prose-sm sm:prose mt-3">
+            {@html sanitizeHtml($questionnaire.description)}
+          </article>
+        </details>
+      {/if}
+
       {#if QUESTION_TYPE.RADIO === currentQuestion.question_type.id}
         <RadioQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
       {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.question_type.id}
