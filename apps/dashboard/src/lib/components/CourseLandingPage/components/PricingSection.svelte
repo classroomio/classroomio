@@ -27,9 +27,14 @@
   let discount = 0;
   let formatter: Intl.NumberFormat | undefined;
   let isFree = false;
+  let courseOrgSiteName = '';
+  let canJoinCourse = false;
 
   function handleJoinCourse() {
-    if (editMode) return;
+    if (editMode || !canJoinCourse) {
+      startCoursePayment = false;
+      return;
+    }
 
     capturePosthogEvent('join_course', {
       course_id: courseData.id,
@@ -39,7 +44,8 @@
     });
 
     if (isFree) {
-      const link = getStudentInviteLink(courseData, $currentOrg.siteName, $currentOrgDomain);
+      const inviteOrigin = $currentOrgDomain || window.location.origin;
+      const link = getStudentInviteLink(courseData, courseOrgSiteName, inviteOrigin);
 
       goto(link);
     } else {
@@ -61,6 +67,10 @@
   }
 
   $: setFormatter(courseData.currency);
+
+  $: courseOrgSiteName =
+    $currentOrg.siteName || get(courseData, 'group.organization.siteName', '');
+  $: canJoinCourse = !!courseData?.metadata?.allowNewStudent && !!courseOrgSiteName;
 
   $: discount = get(courseData, 'metadata.discount', 0);
   $: calculatedCost = calcCourseDiscount(
@@ -124,7 +134,7 @@
               : $t('course.navItem.landing_page.pricing_section.buy')}
             className="w-full sm:w-full h-[40px]"
             onClick={handleJoinCourse}
-            isDisabled={!courseData.metadata.allowNewStudent}
+            isDisabled={!canJoinCourse}
           />
         </div>
       </div>
@@ -171,7 +181,7 @@
             : $t('course.navItem.landing_page.pricing_section.buy')}
           className="w-full sm:w-full py-3 mb-3"
           onClick={handleJoinCourse}
-          isDisabled={!courseData.metadata.allowNewStudent}
+          isDisabled={!canJoinCourse}
         />
         {#if courseData?.metadata?.showDiscount && courseData.metadata.allowNewStudent}
           <p class="text-sm font-light text-gray-500 dark:text-white">

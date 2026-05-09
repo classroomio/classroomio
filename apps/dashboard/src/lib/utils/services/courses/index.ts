@@ -86,6 +86,12 @@ const SLUG_QUERY = `
   version,
   currency,
   metadata,
+  group(
+    id,
+    organization(
+      siteName
+    )
+  ),
   is_certificate_downloadable,
   certificate_theme,
   lesson_section(id, title, order),
