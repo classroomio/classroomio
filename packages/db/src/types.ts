@@ -91,6 +91,9 @@ export type TNewAppsPollSubmission = typeof schema.appsPollSubmission.$inferInse
 export type TExercise = typeof schema.exercise.$inferSelect;
 export type TNewExercise = typeof schema.exercise.$inferInsert;
 
+export type TExerciseSection = typeof schema.exerciseSection.$inferSelect;
+export type TNewExerciseSection = typeof schema.exerciseSection.$inferInsert;
+
 export type TGroupmember = typeof schema.groupmember.$inferSelect;
 export type TNewGroupmember = typeof schema.groupmember.$inferInsert;
 

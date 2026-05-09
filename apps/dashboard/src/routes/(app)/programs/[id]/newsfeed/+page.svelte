@@ -14,7 +14,7 @@
   import type { ProgramNewsfeedItem } from '$features/program/utils/types';
   import PinIcon from '@lucide/svelte/icons/pin';
   import { BookIcon } from '@lucide/svelte';
-  import { buildNextNewsfeedReaction } from '@cio/ui/custom/newsfeed-reactions';
+  import { buildNextNewsfeedReaction, type NewsfeedReactionType } from '@cio/ui/custom/newsfeed-reactions';
 
   interface Props {
     data: {
@@ -75,13 +75,13 @@
     await programNewsfeedApi.deleteComment(programId, feedId, commentId);
   };
 
-  const addNewReaction = async (reactionType: string, feedId: string, authorId: string) => {
+  const addNewReaction = async (reactionType: NewsfeedReactionType, feedId: string, authorId: string) => {
     if (!authorId || isReactingByFeedId[feedId]) return;
 
     const reactedFeed = programNewsfeedApi.feeds.find((feed) => feed.id === feedId);
     if (!reactedFeed) return;
 
-    const updatedReaction = buildNextNewsfeedReaction(reactedFeed.reaction, reactionType, authorId);
+    const updatedReaction = buildNextNewsfeedReaction(reactedFeed.reaction ?? undefined, reactionType, authorId);
 
     isReactingByFeedId = { ...isReactingByFeedId, [feedId]: true };
 

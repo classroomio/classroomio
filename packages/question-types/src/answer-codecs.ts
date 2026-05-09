@@ -15,7 +15,8 @@ import type {
   OrderingAnswerData,
   LinkAnswerData,
   HotspotAnswerData,
-  StarAnswerData
+  StarAnswerData,
+  VideoRecordingAnswerData
 } from './answer-data';
 
 import { QUESTION_TYPE_KEY } from './question-type-keys';
@@ -247,6 +248,62 @@ const STAR_CODEC: AnswerCodec<StarAnswerData> = {
   }
 };
 
+function isVideoRecordingAnswer(value: unknown): value is Omit<VideoRecordingAnswerData, 'type'> & { type?: string } {
+  if (!value || typeof value !== 'object') return false;
+
+  const data = value as Partial<VideoRecordingAnswerData>;
+  return (
+    typeof data.assetId === 'string' &&
+    data.assetId.length > 0 &&
+    typeof data.storageKey === 'string' &&
+    data.storageKey.length > 0 &&
+    typeof data.fileName === 'string' &&
+    typeof data.mimeType === 'string' &&
+    data.mimeType.startsWith('video/') &&
+    typeof data.size === 'number' &&
+    Number.isFinite(data.size) &&
+    data.size > 0 &&
+    typeof data.durationSeconds === 'number' &&
+    Number.isFinite(data.durationSeconds) &&
+    data.durationSeconds > 0 &&
+    typeof data.recordedAt === 'string' &&
+    typeof data.uploadedAt === 'string' &&
+    data.provider === 'cloudflare'
+  );
+}
+
+const VIDEO_RECORDING_CODEC: AnswerCodec<VideoRecordingAnswerData> = {
+  type: 'VIDEO_RECORDING',
+  toApiPayload(data, questionId) {
+    const { playbackUrl: _playbackUrl, ...answerData } = data;
+    return { questionId, answer: JSON.stringify(answerData) };
+  },
+  fromApiPayload(payload) {
+    if (!payload.answer) return null;
+
+    try {
+      const parsed = JSON.parse(payload.answer) as Partial<VideoRecordingAnswerData>;
+      if (parsed?.type !== 'VIDEO_RECORDING' || !isVideoRecordingAnswer(parsed)) return null;
+
+      return {
+        type: 'VIDEO_RECORDING',
+        assetId: parsed.assetId,
+        storageKey: parsed.storageKey,
+        fileName: parsed.fileName,
+        mimeType: parsed.mimeType,
+        size: parsed.size,
+        durationSeconds: parsed.durationSeconds,
+        recordedAt: parsed.recordedAt,
+        uploadedAt: parsed.uploadedAt,
+        provider: 'cloudflare',
+        retakeCount: typeof parsed.retakeCount === 'number' ? parsed.retakeCount : undefined
+      };
+    } catch {
+      return null;
+    }
+  }
+};
+
 export const ANSWER_CODECS: Record<QuestionTypeKey, AnswerCodec> = {
   [QUESTION_TYPE_KEY.RADIO]: RADIO_CODEC,
   [QUESTION_TYPE_KEY.CHECKBOX]: CHECKBOX_CODEC,
@@ -261,7 +318,8 @@ export const ANSWER_CODECS: Record<QuestionTypeKey, AnswerCodec> = {
   [QUESTION_TYPE_KEY.ORDERING]: ORDERING_CODEC,
   [QUESTION_TYPE_KEY.LINK]: LINK_CODEC,
   [QUESTION_TYPE_KEY.HOTSPOT]: HOTSPOT_CODEC,
-  [QUESTION_TYPE_KEY.STAR]: STAR_CODEC
+  [QUESTION_TYPE_KEY.STAR]: STAR_CODEC,
+  [QUESTION_TYPE_KEY.VIDEO_RECORDING]: VIDEO_RECORDING_CODEC
 };
 
 /** Convert any answer to API submission payload */
@@ -320,6 +378,7 @@ export function extractAnswerDisplayValues(data: AnswerData): {
     case 'ORDERING':
     case 'HOTSPOT':
     case 'FILE_UPLOAD':
+    case 'VIDEO_RECORDING':
       return { selectedIds: [], selectedValues: [] };
     default:
       return { selectedIds: [], selectedValues: [] };

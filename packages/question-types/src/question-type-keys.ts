@@ -12,7 +12,8 @@ export const QUESTION_TYPE_KEY = {
   HOTSPOT: 'HOTSPOT',
   LINK: 'LINK',
   WORD_BANK: 'WORD_BANK',
-  STAR: 'STAR'
+  STAR: 'STAR',
+  VIDEO_RECORDING: 'VIDEO_RECORDING'
 } as const;
 
 export type QuestionTypeKey = (typeof QUESTION_TYPE_KEY)[keyof typeof QUESTION_TYPE_KEY];

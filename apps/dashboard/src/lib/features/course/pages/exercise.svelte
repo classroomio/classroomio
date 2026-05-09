@@ -6,7 +6,7 @@
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import EyeIcon from '@lucide/svelte/icons/eye';
   import PencilIcon from '@lucide/svelte/icons/pencil';
-  import { onDestroy, onMount, untrack } from 'svelte';
+  import { onDestroy, onMount, tick, untrack } from 'svelte';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
@@ -14,7 +14,11 @@
   import { ContentType } from '@cio/utils/constants/content';
 
   import {
+    type ExerciseEditorErrors,
     handleAddQuestion,
+    handleAddSection,
+    getQuestionsForSection,
+    hasSections,
     questionnaire,
     questionnaireOrder,
     reset,
@@ -36,21 +40,28 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import UpdateDescription from '$features/course/components/exercise/update-description.svelte';
   import { ContentNavigationActions } from '$features/course/components/lesson';
-  import { RefreshPageData, RoleBasedSecurity } from '$features/ui';
+  import {
+    // RefreshPageData,
+    RoleBasedSecurity,
+    UnsavedChanges
+  } from '$features/ui';
   import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
-  import { refreshExercisePageData } from '$features/course/utils/exercise-page-utils';
+  import {
+    hydrateExercisePageData
+    // , refreshExercisePageData
+  } from '$features/course/utils/exercise-page-utils';
   import { Empty } from '@cio/ui/custom/empty';
   import VideoIcon from '@lucide/svelte/icons/video';
   import {
     getQuestionTypeId,
-    getQuestionTypeKeyFromId,
-    getQuestionTypeOptionById
+    getQuestionTypeKeyFromId
   } from '$features/course/components/exercise/question-type-utils';
   import type { SubmissionListItem } from '$features/course/utils/types';
   import { Badge } from '@cio/ui/base/badge';
   import { isAutoGradableQuestionType } from '@cio/question-types';
   import * as Dialog from '@cio/ui/base/dialog';
+  import type { ExerciseSectionState } from '$features/course/components/exercise/store';
 
   interface Props {
     exerciseId?: string;
@@ -85,7 +96,32 @@
   let shouldDeleteExercise = $state(false);
   let isSaving = $state(false);
   let isDeleting = $state(false);
+  let reorderQuestions = $state(false);
   let selectedTab = $state<ExerciseTab>('questions');
+  // eslint-disable-next-line svelte/prefer-writable-derived -- must be writable: cleared before intentional navigations and bound to UnsavedChanges
+  let hasUnsavedChanges = $state(false);
+
+  function isTemporaryId(id: string | number | undefined) {
+    return typeof id === 'string' && id.includes('-form');
+  }
+
+  function hasDirtyQuestionnaire() {
+    const hasDirtyQuestion = ($questionnaire.questions ?? []).some((question) => {
+      const hasDirtyOption = (question.options ?? []).some((option) => option.isDirty || isTemporaryId(option.id));
+      return question.isDirty || Boolean(question.deletedAt) || isTemporaryId(question.id) || hasDirtyOption;
+    });
+    const hasDirtySection = ($questionnaire.sections ?? []).some(
+      (section) => section.isDirty || Boolean(section.deletedAt)
+    );
+
+    return Boolean(
+      $questionnaire.isTitleDirty ||
+        $questionnaire.isDescriptionDirty ||
+        $questionnaire.isDueByDirty ||
+        hasDirtyQuestion ||
+        hasDirtySection
+    );
+  }
 
   async function handleDeleteExercise() {
     if (!courseApi.course?.id) return;
@@ -94,6 +130,7 @@
     await exerciseApi.delete(courseApi.course.id, exerciseId);
 
     if (exerciseApi.success) {
+      hasUnsavedChanges = false;
       courseApi.removeContentItem(exerciseId, ContentType.Exercise);
       goBack();
     }
@@ -111,6 +148,25 @@
     });
   }
 
+  function getSectionValidationErrors(sections: ExerciseSectionState[]): ExerciseEditorErrors {
+    const sectionErrors: ExerciseEditorErrors = {};
+    const requiredFieldMessage = t.get('validations.generic.required_field');
+
+    for (const section of sections) {
+      const nextSectionErrors: ExerciseEditorErrors[string] = {};
+
+      if (!section.title?.trim()) {
+        nextSectionErrors.title = requiredFieldMessage;
+      }
+
+      if (Object.keys(nextSectionErrors).length === 0) continue;
+
+      sectionErrors[section.id] = nextSectionErrors;
+    }
+
+    return sectionErrors;
+  }
+
   async function handleSave() {
     if ($isOrgStudent || !courseApi.course?.id) return;
 
@@ -119,16 +175,33 @@
     const transformedQuestions = transformQuestionsToApiFormat($questionnaire.questions, {
       shouldFilterEmptyLabels: false
     });
+    const activeSections = $questionnaire.sections.filter((section) => !section.deletedAt);
+    const sectionsPayload = activeSections.map((section) => ({
+      id: section.id,
+      title: section.title,
+      description: section.description,
+      order: section.order,
+      colorTheme: section.colorTheme,
+      afterBehavior: section.afterBehavior,
+      questionIds: getQuestionsForSection($questionnaire.questions, section.id).map((question) => question.id)
+    }));
+    const shouldSyncSections = $questionnaire.sections.length > 0 || hasSections($questionnaire.sections);
+    const sectionValidationErrors = getSectionValidationErrors(activeSections);
 
     // Validate using Zod schema
     const zodResult = ZExerciseUpdate.safeParse({
-      questions: transformedQuestions
+      questions: transformedQuestions,
+      sections: shouldSyncSections ? sectionsPayload : undefined,
+      sectionDisplayMode: $questionnaire.sectionDisplayMode
     });
 
-    if (!zodResult.success) {
-      const zodErrors = mapZodErrorsToTranslations(zodResult.error);
+    if (!zodResult.success || Object.keys(sectionValidationErrors).length > 0) {
+      const zodErrors = !zodResult.success ? mapZodErrorsToTranslations(zodResult.error) : {};
       const questionErrors = mapZodErrorsToQuestionErrors(zodErrors, $questionnaire.questions);
-      questionnaireValidation.set(questionErrors);
+      questionnaireValidation.set({
+        ...questionErrors,
+        ...sectionValidationErrors
+      });
       snackbar.error('Please fix all validation errors before saving');
       return;
     }
@@ -167,7 +240,9 @@
         title: $questionnaire.title ?? '',
         description: $questionnaire.description ?? '',
         dueBy: $questionnaire.dueBy ?? '',
-        questions: questions
+        questions: questions,
+        sections: shouldSyncSections ? sectionsPayload : undefined,
+        sectionDisplayMode: $questionnaire.sectionDisplayMode
       });
 
       // Check if there are validation errors from the API
@@ -179,20 +254,10 @@
       }
 
       if (exerciseApi.success) {
-        questionnaire.update((q) => ({
-          ...q,
-          isTitleDirty: false,
-          isDescriptionDirty: false,
-          questions:
-            exerciseApi.exercise?.questions?.map((question) => {
-              const questionType = getQuestionTypeOptionById(getQuestionTypeId(question));
-              return {
-                ...question,
-                questionTypeId: questionType.id,
-                questionType
-              };
-            }) || q.questions
-        }));
+        if (exerciseApi.exercise) {
+          hydrateExercisePageData(exerciseApi.exercise, exerciseId);
+        }
+        hasUnsavedChanges = false;
         patchExerciseListItemLocally();
         snackbar.success('snackbar.exercise.success');
       }
@@ -214,6 +279,17 @@
     const nextTab = normalizeExerciseTab(page.url.searchParams.get('tab'));
     if (nextTab === untrack(() => selectedTab)) return;
     selectedTab = nextTab;
+  });
+
+  $effect(() => {
+    hasUnsavedChanges = !$isOrgStudent && hasDirtyQuestionnaire();
+  });
+
+  $effect(() => {
+    const hasActiveSections = hasSections($questionnaire.sections);
+    if (!hasActiveSections && reorderQuestions) {
+      reorderQuestions = false;
+    }
   });
 
   $effect(() => {
@@ -250,6 +326,7 @@
   const isExerciseUnlocked = $derived(exerciseContentItem?.isUnlocked ?? false);
 
   const isSelfPacedCourse = $derived(isSelfPacedLikeCourse(courseApi.course?.type));
+  const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const activeQuestionTypeIds = $derived(
     ($questionnaire.questions ?? []).filter((q) => !q.deletedAt).map((q) => getQuestionTypeId(q))
   );
@@ -265,11 +342,42 @@
     if ($isOrgStudent || !isSelfPacedCourse || activeQuestionTypeIds.length === 0) return null;
     return isExerciseFullyAutoGradable(activeQuestionTypeIds) ? ('auto' as const) : ('manual' as const);
   });
+
+  async function scrollToExerciseElement(elementId: string) {
+    await tick();
+    requestAnimationFrame(() => {
+      document.getElementById(elementId)?.scrollIntoView({
+        block: 'start',
+        behavior: 'smooth',
+        inline: 'nearest'
+      });
+    });
+  }
+
+  function getFirstActiveSectionId() {
+    const [firstActiveSection] = [...($questionnaire.sections ?? [])]
+      .filter((section) => !section.deletedAt)
+      .sort((leftSection, rightSection) => leftSection.order - rightSection.order);
+
+    return firstActiveSection?.id ?? null;
+  }
+
+  async function addQuestionFromHeader() {
+    preview = false;
+    const questionId = handleAddQuestion(getFirstActiveSectionId());
+    await scrollToExerciseElement(`exercise-question-${questionId}`);
+  }
+
+  async function addSectionFromHeader() {
+    preview = false;
+    const sectionId = handleAddSection();
+    await scrollToExerciseElement(`exercise-section-${sectionId}`);
+  }
 </script>
 
-<Page.Header isSticky={true} class="z-50! min-h-[36px]">
+<Page.Header isSticky={true} class="z-100! min-h-[36px]">
   <Page.HeaderContent>
-    <Page.Title class="flex flex-wrap items-center gap-2">
+    <Page.Title class="flex flex-col gap-2">
       <span>{$questionnaire.title || 'Exercise'}</span>
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         {#if teacherAutoGradeBadge === 'auto'}
@@ -298,7 +406,10 @@
                 {$t('course.navItem.lessons.exercises.all_exercises.save')}
               </Button>
               <IconButton
-                onclick={() => (preview = !preview)}
+                onclick={() => {
+                  preview = !preview;
+                  reorderQuestions = false;
+                }}
                 tooltip={preview
                   ? $t('course.navItem.lessons.exercises.all_exercises.view_mode.edit')
                   : $t('course.navItem.lessons.exercises.all_exercises.preview')}
@@ -310,13 +421,22 @@
                   <EyeIcon size={20} />
                 {/if}
               </IconButton>
-              <IconButton
-                onclick={handleAddQuestion}
-                tooltip={$t('course.navItem.lessons.exercises.all_exercises.add_question')}
-                tooltipSide="bottom"
-              >
-                <CirclePlusIcon size={20} />
-              </IconButton>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  <Button type="button" variant="ghost" size="icon" class="h-8 w-8">
+                    <CirclePlusIcon size={20} />
+                    <span class="sr-only">{$t('course.navItem.lessons.exercises.all_exercises.add')}</span>
+                  </Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="center" class="z-201!">
+                  <DropdownMenu.Item onclick={addQuestionFromHeader}>
+                    {$t('course.navItem.lessons.exercises.all_exercises.add_question')}
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item onclick={addSectionFromHeader}>
+                    {$t('course.navItem.lessons.exercises.all_exercises.add_section')}
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
                   <Button variant="ghost" size="icon" class="h-8 w-8">
@@ -325,10 +445,19 @@
                   </Button>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content align="end">
-                  <DropdownMenu.Item onclick={() => ($questionnaireOrder.open = true)}>
-                    {$t('course.navItem.lessons.exercises.all_exercises.reorder')}
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Separator />
+                  {#if hasSections($questionnaire.sections)}
+                    <DropdownMenu.Item onclick={() => (reorderQuestions = !reorderQuestions)}>
+                      {reorderQuestions
+                        ? $t('course.navItem.lessons.exercises.all_exercises.reorder_done')
+                        : $t('course.navItem.lessons.exercises.all_exercises.reorder')}
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                  {:else}
+                    <DropdownMenu.Item onclick={() => ($questionnaireOrder.open = true)}>
+                      {$t('course.navItem.lessons.exercises.all_exercises.reorder')}
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                  {/if}
                   <DropdownMenu.Item
                     class="text-red-600 focus:text-red-600 dark:text-red-400"
                     onclick={() => (shouldDeleteExercise = true)}
@@ -341,7 +470,7 @@
           </div>
         {/if}
 
-        <RefreshPageData onRefresh={() => refreshExercisePageData(courseApi.course?.id ?? '', exerciseId)} />
+        <!-- <RefreshPageData onRefresh={() => refreshExercisePageData(courseApi.course?.id ?? '', exerciseId)} /> -->
       </RoleBasedSecurity>
     </div>
   </Page.Action>
@@ -377,7 +506,7 @@
               <Badge variant="outline">{submissions.length}</Badge>
             </UnderlineTabs.Trigger>
           </UnderlineTabs.List>
-          <UnderlineTabs.Content value="questions">
+          <UnderlineTabs.Content value="questions" class="mx-auto w-full md:max-w-3xl">
             <UpdateDescription {preview} />
             {#if !preview}
               <EditMode
@@ -385,6 +514,8 @@
                 {goBack}
                 {requiresPositivePointsForAutoGrade}
                 selfPacedCourse={isSelfPacedCourse}
+                {isPublicCourse}
+                {reorderQuestions}
               />
             {:else}
               <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmissions} />
@@ -430,3 +561,5 @@
     </div>
   {/snippet}
 </Page.Body>
+
+<UnsavedChanges bind:hasUnsavedChanges />

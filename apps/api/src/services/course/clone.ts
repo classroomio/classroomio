@@ -9,13 +9,17 @@ import {
   createLessons,
   createOptions,
   createQuestions,
+  syncOptionIdSequence,
   getCourseById,
   getExercisesByLessonIds,
   getLessonLanguagesByLessonIds,
   getLessonsByCourseId,
   getOptionsByQuestionIds,
   getQuestionsByExerciseIds,
-  getCourseSectionsByCourseId
+  getCourseSectionsByCourseId,
+  getExerciseSectionsByExerciseIds,
+  createExerciseSections,
+  updateExerciseSection
 } from '@db/queries';
 
 import { ROLE } from '@cio/utils/constants';
@@ -72,7 +76,8 @@ async function cloneExercises(newLessons: TLesson[], oldLessons: TLesson[]): Pro
       title: exercise.title,
       description: exercise.description,
       dueBy: new Date().toISOString(),
-      lessonId: lessonIdMap.get(exercise.lessonId!)!
+      lessonId: lessonIdMap.get(exercise.lessonId!)!,
+      sectionDisplayMode: exercise.sectionDisplayMode
     }))
   );
 
@@ -84,6 +89,47 @@ async function cloneExercises(newLessons: TLesson[], oldLessons: TLesson[]): Pro
 
   // 6. Fetch all questions for old exercises
   const oldExerciseIds = oldExercises.map((ex) => ex.id);
+  const oldSections = await getExerciseSectionsByExerciseIds(oldExerciseIds);
+  const exerciseSectionIdMap = new Map<string, string>();
+
+  if (oldSections.length > 0) {
+    const newSections = await createExerciseSections(
+      oldSections.map((section) => ({
+        title: section.title,
+        description: section.description,
+        order: section.order,
+        colorTheme: section.colorTheme,
+        afterBehavior: section.afterBehavior,
+        exerciseId: exerciseIdMap.get(section.exerciseId)!
+      }))
+    );
+
+    oldSections.forEach((oldSection, index) => {
+      const newSection = newSections[index];
+      if (newSection) {
+        exerciseSectionIdMap.set(oldSection.id, newSection.id);
+      }
+    });
+
+    await Promise.all(
+      newSections.map((newSection) => {
+        const behavior = newSection.afterBehavior as { action?: string; exerciseSectionId?: string };
+        if (behavior.action !== 'go_to_section' || !behavior.exerciseSectionId) {
+          return null;
+        }
+
+        const remappedId = exerciseSectionIdMap.get(behavior.exerciseSectionId);
+        if (!remappedId) {
+          return null;
+        }
+
+        return updateExerciseSection(newSection.id, {
+          afterBehavior: { action: 'go_to_section', exerciseSectionId: remappedId }
+        });
+      })
+    );
+  }
+
   const oldQuestions = await getQuestionsByExerciseIds(oldExerciseIds);
 
   if (!oldQuestions || oldQuestions.length === 0) {
@@ -99,6 +145,9 @@ async function cloneExercises(newLessons: TLesson[], oldLessons: TLesson[]): Pro
       order: question.order,
       questionTypeId: question.questionTypeId,
       settings: question.settings,
+      exerciseSectionId: question.exerciseSectionId
+        ? (exerciseSectionIdMap.get(question.exerciseSectionId) ?? null)
+        : null,
       exerciseId: exerciseIdMap.get(question.exerciseId)!
     }))
   );
@@ -130,6 +179,7 @@ async function cloneExercises(newLessons: TLesson[], oldLessons: TLesson[]): Pro
   }
 
   // 10. Insert options with new question IDs
+  await syncOptionIdSequence();
   await createOptions(
     oldOptions
       .map((option) => {

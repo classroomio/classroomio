@@ -105,6 +105,23 @@ class AiAssistantApi extends BaseApiWithErrors {
     });
   }
 
+  async generateCourseMeta(prompt: string): Promise<{ title: string; description: string } | null> {
+    let meta: { title: string; description: string } | null = null;
+
+    await this.execute<(typeof classroomio.agent)['generate-course-title']['$post']>({
+      requestFn: () =>
+        classroomio.agent['generate-course-title'].$post({
+          json: { prompt }
+        }),
+      logContext: 'generating course meta',
+      onSuccess: (result) => {
+        meta = (result as { data: { title: string; description: string } }).data;
+      }
+    });
+
+    return meta;
+  }
+
   async uploadDocument(
     file: File,
     courseId: string,

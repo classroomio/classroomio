@@ -18,13 +18,6 @@
 
   const options = [
     {
-      id: 'live-class',
-      title: $t('new_course_modal.live_class_label'),
-      subtitle: $t('new_course_modal.live_class_subtitle'),
-      type: 'LIVE_CLASS' as TCourseType,
-      isDisabled: false
-    },
-    {
       id: 'self-paced',
       title: $t('new_course_modal.self_paced_label'),
       subtitle: $t('new_course_modal.self_paced_subtitle'),
@@ -32,10 +25,24 @@
       isDisabled: false
     },
     {
+      id: 'live-class',
+      title: $t('new_course_modal.live_class_label'),
+      subtitle: $t('new_course_modal.live_class_subtitle'),
+      type: 'LIVE_CLASS' as TCourseType,
+      isDisabled: false
+    },
+    {
       id: 'compliance',
       title: $t('new_course_modal.compliance_label'),
       subtitle: $t('new_course_modal.compliance_subtitle'),
       type: 'COMPLIANCE' as TCourseType,
+      isDisabled: false
+    },
+    {
+      id: 'public',
+      title: $t('new_course_modal.public_label'),
+      subtitle: $t('new_course_modal.public_subtitle'),
+      type: 'PUBLIC' as TCourseType,
       isDisabled: false
     }
   ];
@@ -75,7 +82,7 @@
 {#snippet course_type_selector()}
   <Field.Description>{$t('courses.new_course_modal.type_selector_title')}</Field.Description>
 
-  <RadioOptionCardGroup options={courseTypeOptionsForGroup} bind:value={type} class="grid-cols-1 md:grid-cols-3" />
+  <RadioOptionCardGroup options={courseTypeOptionsForGroup} bind:value={type} class="grid-cols-1 md:grid-cols-2" />
 {/snippet}
 
 <Dialog.Root

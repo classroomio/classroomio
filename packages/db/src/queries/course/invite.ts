@@ -2,7 +2,7 @@ import type { TCourseInvite, TCourseInviteAudit, TNewCourseInvite, TNewCourseInv
 import * as schema from '@db/schema';
 
 import { and, desc, eq, gte, sql } from 'drizzle-orm';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 
 export async function createCourseInvite(values: TNewCourseInvite): Promise<TCourseInvite> {
   try {
@@ -330,6 +330,102 @@ export async function getCourseInviteByTokenHash(tokenHash: string): Promise<TCo
     console.error('getCourseInviteByTokenHash error:', error);
     throw new Error(
       `Failed to get course invite by token: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export type TCourseInviteAcceptBundle = {
+  invite: TCourseInvite;
+  course: {
+    id: string;
+    title: string;
+    status: string;
+    isPublished: boolean;
+    metadata: Record<string, unknown> | null;
+    groupId: string;
+  };
+  organization: {
+    id: string;
+    name: string;
+    siteName: string;
+  };
+};
+
+export async function selectCourseInviteAcceptBundleByTokenHash(
+  dbClient: DbOrTxClient,
+  tokenHash: string
+): Promise<TCourseInviteAcceptBundle | null> {
+  try {
+    const [row] = await dbClient
+      .select({
+        invite: schema.courseInvite,
+        course: {
+          id: schema.course.id,
+          title: schema.course.title,
+          status: schema.course.status,
+          isPublished: schema.course.isPublished,
+          metadata: schema.course.metadata,
+          groupId: schema.group.id
+        },
+        organization: {
+          id: schema.organization.id,
+          name: schema.organization.name,
+          siteName: schema.organization.siteName
+        }
+      })
+      .from(schema.courseInvite)
+      .innerJoin(schema.course, eq(schema.courseInvite.courseId, schema.course.id))
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+      .where(eq(schema.courseInvite.tokenHash, tokenHash))
+      .limit(1);
+
+    if (!row) {
+      return null;
+    }
+
+    return {
+      ...row,
+      course: {
+        ...row.course,
+        isPublished: !!row.course.isPublished
+      },
+      organization: {
+        ...row.organization,
+        siteName: row.organization.siteName ?? ''
+      }
+    };
+  } catch (error) {
+    console.error('selectCourseInviteAcceptBundleByTokenHash error:', error);
+    throw new Error(
+      `Failed to load course invite for accept: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function optimisticIncrementCourseInviteUsedCount(
+  dbClient: DbOrTxClient,
+  inviteId: string,
+  priorUsedCount: number
+): Promise<{ id: string } | undefined> {
+  try {
+    const [consumeInvite] = await dbClient
+      .update(schema.courseInvite)
+      .set({
+        usedCount: priorUsedCount + 1,
+        updatedAt: new Date().toISOString(),
+        lastUsedAt: new Date().toISOString()
+      })
+      .where(and(eq(schema.courseInvite.id, inviteId), eq(schema.courseInvite.usedCount, priorUsedCount)))
+      .returning({
+        id: schema.courseInvite.id
+      });
+
+    return consumeInvite;
+  } catch (error) {
+    console.error('optimisticIncrementCourseInviteUsedCount error:', error);
+    throw new Error(
+      `Failed to update course invite usage: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

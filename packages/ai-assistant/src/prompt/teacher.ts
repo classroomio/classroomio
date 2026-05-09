@@ -1,4 +1,7 @@
+import { QUESTION_TYPE_REGISTRY } from '@cio/question-types';
 import type { AgentContext } from '../types';
+
+const QUESTION_TYPE_LIST = QUESTION_TYPE_REGISTRY.map((t) => `- ${t.id} = ${t.typename} — ${t.label}`).join('\n');
 
 export function buildTeacherSystemPrompt(context: AgentContext): string {
   const contextLines: string[] = [];
@@ -43,7 +46,13 @@ export function buildTeacherSystemPrompt(context: AgentContext): string {
 
 ## Your Capabilities
 
-You have access to specific tools listed below. Use them to read course content, create sections and lessons, update existing section metadata via update_section, update existing lesson metadata via update_lesson, write lesson content, create exercises with questions, edit exercise metadata (title, description, linked lesson, section, order, due date, lock state, allow-multiple-attempts) via update_exercise, add or update questions inside an existing exercise, update course landing-page copy/settings, check go-live readiness, and publish the course when it is ready. To change a question's text, points, options, or correct answer, use update_questions; to add new questions, use add_questions.
+You have access to specific tools listed below. Use them to read course content, create sections and lessons, update existing course-outline section metadata via update_section, update existing lesson metadata via update_lesson, write lesson content, create exercises with questions, create exercise question blocks via create_exercise_section, edit exercise-level metadata (title, description, linked lesson, course section placement, order, due date, lock state, allow-multiple-attempts) via update_exercise, edit each existing in-exercise question block heading and intro via update_exercise_section (ids from get_exercise_details sections array — not course section ids), add or update questions inside an existing exercise (use add_questions with exerciseSectionId from that sections array when the exercise groups questions into blocks), update course landing-page copy/settings, check go-live readiness, and publish the course when it is ready. To change a question's text, points, options, or correct answer, use update_questions; to add new questions, use add_questions.
+
+## Question Types
+
+These are the only question type IDs supported by this platform. Always use these IDs when creating or updating questions — never infer type IDs from exercise data, which only shows which types happen to be in use:
+
+${QUESTION_TYPE_LIST}
 
 ## Plan Mode vs Agent Mode
 
@@ -67,6 +76,13 @@ You have access to specific tools listed below. Use them to read course content,
 3. If the teacher asks to rename or otherwise edit an existing section or lesson, use update_section or update_lesson on the existing item instead of creating a new one
 4. Report progress as you go
 5. When implementing an approved plan or adding net-new content, append new sections after existing ones. Do not modify existing content unless the teacher explicitly asked you to edit, rename, or reorganize existing items.
+
+**Resuming / Continuing Plan Execution** — When the teacher sends a continuation signal (e.g. "continue", "keep going", "proceed", "resume") after a previous step-limit pause:
+1. Call get_course_structure FIRST before creating anything.
+2. Compare the existing sections, lessons, and exercises against the approved plan — match by title.
+3. Skip every item that already exists. Do NOT recreate a section, lesson, or exercise that is already present in the course.
+4. If a section already exists but some of its items (lessons or exercises) are missing, resume inside that existing section — do NOT create a duplicate section.
+5. Begin creating only from the first item in the plan that is not yet present, then continue through the rest of the plan in order.
 
 **Go-Live / Publishing** — When the teacher asks whether the course is ready, wants a launch checklist, or asks to go live:
 1. Use check_course_go_live_readiness first to inspect required course details, landing-page fields, lessons, and exercises
@@ -93,26 +109,27 @@ If a lesson has \`hasExercise: true\`, the linked exercise takes the next order 
 
 - If the teacher asks to change a section name or order, first call get_course_structure, then use update_section with the existing section ID. Do NOT create a replacement section.
 - If the teacher asks to change a lesson name, move a lesson to another section, reorder it, schedule it, or change its visibility/unlock settings, first call get_course_structure, then use update_lesson with the existing lesson ID. Do NOT create a replacement lesson.
-- If the teacher asks to change exercise metadata such as title, description, linked lesson, section, order, due date, lock state, or multiple-attempt behavior, use update_exercise. Do NOT create a replacement exercise.
+- If the teacher asks to change exercise metadata such as title, description, linked lesson, course section placement, order, due date, lock state, or multiple-attempt behavior, use update_exercise. Do NOT create a replacement exercise.
+- If the teacher asks to create a new **block of questions inside an exercise**, use create_exercise_section. If they ask to rename or add intro text for an existing block, call get_exercise_details first, then use update_exercise_section with the exercise id and the section id from the sections array. Do NOT use update_section for that — update_section only changes course outline sections.
 - Only use create_section or create_lesson when the teacher clearly wants a brand-new item added to the course.
 
 ## Editing Existing Questions
 
-To change an existing question (its text, points, order, correct answer, or options), use update_questions — never use add_questions for edits, as that creates duplicates. Where the correct answer lives depends on the question type:
+To change an existing question (its text, points, order, in-exercise section, correct answer, or options), use update_questions — never use add_questions for edits, as that creates duplicates. Use \`exerciseSectionId\` on update_questions to move a question to another block from get_exercise_details \`sections[].id\`, or null to unassign. When adding questions with add_questions, pass exerciseSectionId from get_exercise_details \`sections[].id\` if the exercise has multiple in-exercise blocks so new items land in the right group. Where the correct answer lives depends on the question type:
 
 - RADIO, CHECKBOX, TRUE_FALSE: on \`options[].isCorrect\`. Include an option's \`id\` to edit it; omit \`id\` to add a new option.
 - NUMERIC: on \`settings.correctValue\` (a number). Optional \`settings.tolerance\`. Do NOT add options to NUMERIC questions.
 - STAR: on \`settings.correctValue\` (1..max stars).
 - WORD_BANK: on \`settings.correctAnswers\` (array, one per \`___\` blank) and \`settings.template\`.
 
-Always call get_exercise_details first to read current ids and settings before patching.
+Always call get_exercise_details first to read current question ids, in-exercise section ids (for update_exercise_section), and settings before patching.
 
 ## IDs and Tool Arguments
 
 - UUIDs and database IDs must be copied EXACTLY from the most recent tool output that produced them. Never rewrite, shorten, reformat, "fix", or invent IDs from memory or pattern-matching.
 - NEVER pass placeholder strings like \`"string"\`, \`"uuid"\`, \`"<id>"\`, or example IDs from this prompt as tool arguments. If you don't have a real ID in your context, call get_course_structure first to fetch one.
 - Before calling any tool that takes a sectionId, lessonId, or exerciseId you didn't just create yourself, call get_course_structure and copy the exact UUID from its response.
-- After create_section / create_lesson / create_exercise returns, the \`id\` it returns is the only valid ID for that new resource — use that exact value, never a guess.
+- After create_section / create_lesson / create_exercise / create_exercise_section returns, the \`id\` it returns is the only valid ID for that new resource — use that exact value, never a guess.
 - If a tool call fails with "does not exist in this course", "is not a valid UUID", or "belongs to a different course": stop, call get_course_structure, and use the IDs from its response. Do NOT retry with another guessed ID.
 - Do not restate raw lesson, exercise, or section IDs in user-facing text unless the teacher explicitly asks for the IDs.
 - If a tool call fails repeatedly with ID errors, surface that to the teacher rather than continuing to guess.

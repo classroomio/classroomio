@@ -14,7 +14,8 @@ export type QuestionAnswerPayload =
   | OrderingAnswerPayload
   | HotspotAnswerPayload
   | LinkAnswerPayload
-  | StarAnswerPayload;
+  | StarAnswerPayload
+  | VideoRecordingAnswerPayload;
 
 interface BaseAnswerPayload {
   type: QuestionTypeKey;
@@ -91,4 +92,18 @@ export interface LinkAnswerPayload extends BaseAnswerPayload {
 export interface StarAnswerPayload extends BaseAnswerPayload {
   type: typeof QUESTION_TYPE_KEY.STAR;
   value: number;
+}
+
+export interface VideoRecordingAnswerPayload extends BaseAnswerPayload {
+  type: typeof QUESTION_TYPE_KEY.VIDEO_RECORDING;
+  assetId: string;
+  storageKey: string;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  durationSeconds: number;
+  recordedAt: string;
+  uploadedAt: string;
+  provider: 'cloudflare';
+  retakeCount?: number;
 }

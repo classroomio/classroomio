@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy, onMount, tick } from 'svelte';
   import ChatHeader from '$features/ai-assistant/chat-header.svelte';
   import ChatMessageList from '$features/ai-assistant/chat-message-list.svelte';
   import ChatInput from '$features/ai-assistant/chat-input.svelte';
@@ -13,7 +13,13 @@
     isAgentToolPart,
     type AgentToolPart
   } from '$features/ai-assistant/utils/tool-parts';
-  import { isAiAssistantOpen } from '$features/ai-assistant/utils/store';
+  import {
+    isAiAssistantOpen,
+    initialChatModel,
+    initialChatPrompt,
+    clearInitialChatModel,
+    clearInitialChatPrompt
+  } from '$features/ai-assistant/utils/store';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { Chat } from '@ai-sdk/svelte';
@@ -23,9 +29,15 @@
   import { refreshExercisePageData } from '$features/course/utils/exercise-page-utils';
   import { getRequestBaseUrl, apiClient } from '$lib/utils/services/api';
   import { startResizablePanelDrag } from '$lib/utils/functions/resizable-panel';
+  import { openUpgradeModal } from '$lib/utils/functions/org';
+  import { isFreePlan } from '$lib/utils/store/org';
   import { aiAssistantApi } from '$features/ai-assistant/api/ai-assistant.svelte';
   import { profile } from '$lib/utils/store/user';
-  import type { AiAssistantMessage, UploadedDocument } from '$features/ai-assistant/utils/types';
+  import type {
+    AiAssistantMessage,
+    AiAssistantMessageMetadata,
+    UploadedDocument
+  } from '$features/ai-assistant/utils/types';
   import {
     AI_CHAT_MODEL_STORAGE_KEY,
     AI_COURSE_CHAT_DEFAULT_WIDTH,
@@ -33,7 +45,22 @@
     AI_COURSE_CHAT_MIN_WIDTH,
     AI_COURSE_CHAT_STORAGE_KEY
   } from '$features/ai-assistant/utils/constants';
-  import { AGENT_MODEL_IDS, DEFAULT_PICKER_MODEL_ID, type AgentModelId } from '@cio/utils/agent-models';
+  import {
+    AGENT_MODELS,
+    AGENT_MODEL_IDS,
+    DEFAULT_PICKER_MODEL_ID,
+    UI_PICKER_MODEL_IDS,
+    type AgentModelId
+  } from '@cio/utils/agent-models';
+
+  const CONTINUE_IMPLEMENTATION_PROMPT = 'Continue implementing the plan from where you left off.';
+
+  interface Props {
+    /** Course id from route / layout `data` (authoritative for this page). */
+    courseId: string;
+  }
+
+  let { courseId }: Props = $props();
 
   // Extract current lessonId/exerciseId from route params
   const currentLessonId = $derived(page.params?.lessonId as string | undefined);
@@ -43,8 +70,8 @@
   let uploadedDocument: UploadedDocument | null = $state(null);
   let isUploading = $state(false);
 
-  let usageFetched = $state(false);
-  let conversationsLoaded = $state(false);
+  let statusFetchedForCourseId: string | null = $state(null);
+  let conversationsLoadedForCourseId: string | null = $state(null);
   let activeConversationId: string | null = $state(null);
   let chatWidth = $state(AI_COURSE_CHAT_DEFAULT_WIDTH);
   let hasLoadedChatWidth = $state(false);
@@ -52,12 +79,18 @@
   let stopChatResize: (() => void) | null = null;
   let chatShellElement: HTMLDivElement | null = null;
   let selectedModel: AgentModelId = $state(DEFAULT_PICKER_MODEL_ID);
+  const paidModelIds = UI_PICKER_MODEL_IDS.filter((id) => !AGENT_MODELS[id].isFree);
 
   function isAgentModelId(value: unknown): value is AgentModelId {
     return typeof value === 'string' && (AGENT_MODEL_IDS as readonly string[]).includes(value);
   }
 
   function handleSelectModel(id: AgentModelId) {
+    if ($isFreePlan && paidModelIds.includes(id)) {
+      openUpgradeModal();
+      return;
+    }
+
     selectedModel = id;
 
     try {
@@ -67,7 +100,25 @@
     }
   }
 
+  function handleLockedModelSelect() {
+    openUpgradeModal();
+  }
+
   const tokenUsage = $derived(aiAssistantApi.status?.usage ?? null);
+
+  $effect(() => {
+    if (!$isFreePlan || !paidModelIds.includes(selectedModel)) {
+      return;
+    }
+
+    selectedModel = DEFAULT_PICKER_MODEL_ID;
+
+    try {
+      localStorage.setItem(AI_CHAT_MODEL_STORAGE_KEY, DEFAULT_PICKER_MODEL_ID);
+    } catch {
+      // localStorage unavailable
+    }
+  });
 
   function clampChatWidth(width: number) {
     return Math.min(AI_COURSE_CHAT_MAX_WIDTH, Math.max(AI_COURSE_CHAT_MIN_WIDTH, width));
@@ -105,8 +156,6 @@
   }
 
   async function loadConversation(conversationId: string) {
-    const courseId = courseApi.course?.id;
-
     if (!courseId) return;
 
     await aiAssistantApi.loadConversation(conversationId);
@@ -114,14 +163,19 @@
     const conversation = aiAssistantApi.currentConversation;
 
     if (conversation) {
-      chat.messages = (conversation.messages ?? []) as AiAssistantMessage[];
+      const loadedMessages = (conversation.messages ?? []) as AiAssistantMessage[];
+      // Only overwrite in-memory messages if the loaded conversation actually has saved
+      // messages. An empty result means the conversation was just created and the first
+      // message hasn't been persisted yet — overwriting would wipe the optimistic message
+      // that chat.sendMessage already placed in the UI.
+      if (loadedMessages.length > 0) {
+        chat.messages = loadedMessages;
+      }
       setActiveConversationId(courseId, conversationId);
     }
   }
 
   async function startNewChat() {
-    const courseId = courseApi.course?.id;
-
     if (!courseId) return;
 
     const created = await aiAssistantApi.createConversation(courseId);
@@ -133,8 +187,6 @@
   }
 
   async function handleDeleteConversation(conversationId: string) {
-    const courseId = courseApi.course?.id;
-
     if (!courseId) return;
 
     await aiAssistantApi.deleteConversation(conversationId);
@@ -145,21 +197,35 @@
     }
   }
 
-  // Fetch status and load conversations when panel opens
+  // Fetch status and load conversations when the panel opens or route `courseId` changes
   $effect(() => {
-    const courseId = courseApi.course?.id;
+    if (!$isAiAssistantOpen) {
+      statusFetchedForCourseId = null;
+      conversationsLoadedForCourseId = null;
 
-    if ($isAiAssistantOpen && !usageFetched && courseId) {
-      usageFetched = true;
+      return;
+    }
+
+    if (!courseId) return;
+
+    if (statusFetchedForCourseId !== courseId) {
+      statusFetchedForCourseId = courseId;
       aiAssistantApi.fetchStatus(courseId);
     }
 
-    if ($isAiAssistantOpen && !conversationsLoaded && courseId) {
-      conversationsLoaded = true;
+    if (conversationsLoadedForCourseId !== courseId) {
+      conversationsLoadedForCourseId = courseId;
 
-      const savedId = getActiveConversationId(courseId);
+      const listForCourseId = courseId;
+      const savedId = getActiveConversationId(listForCourseId);
 
-      aiAssistantApi.listConversations(courseId).then(() => {
+      aiAssistantApi.listConversations(listForCourseId).then(() => {
+        if (courseId !== listForCourseId) return;
+
+        // If the initial-prompt flow already created and claimed a conversation while
+        // listConversations was in-flight, don't clobber it by loading another one.
+        if (activeConversationId) return;
+
         if (savedId) {
           loadConversation(savedId);
         } else if (aiAssistantApi.conversations.length > 0) {
@@ -167,12 +233,70 @@
         }
       });
     }
-
-    if (!$isAiAssistantOpen) {
-      usageFetched = false;
-      conversationsLoaded = false;
-    }
   });
+
+  function refreshCourseStateAfterChat() {
+    const profileId = $profile.id;
+
+    // Force refetch course data so new sections/lessons/exercises show in the UI
+    if (courseId && profileId) {
+      void courseApi.refreshCourse(courseId, profileId);
+    }
+
+    // Refresh current lesson content if viewing a lesson
+    if (courseId && currentLessonId) {
+      void lessonApi.get(courseId, currentLessonId);
+    }
+
+    // Refresh current exercise if viewing an exercise
+    if (courseId && currentExerciseId) {
+      void refreshExercisePageData(courseId, currentExerciseId);
+    }
+
+    // Refresh usage meter
+    if (courseId) {
+      void aiAssistantApi.fetchStatus(courseId);
+    }
+  }
+
+  async function persistFinishedChat(messages: AiAssistantMessage[], conversationId: string | null) {
+    if (conversationId) {
+      await aiAssistantApi.saveMessages(conversationId, messages);
+
+      // Generate a smart title after the first exchange (when title is still default)
+      const activeConv = aiAssistantApi.conversations.find((c) => c.id === conversationId);
+      const isDefaultTitle = !activeConv?.title || activeConv.title === 'New conversation';
+      const firstUserMsg = messages.find((message) => message.role === 'user');
+      const textPart = firstUserMsg?.parts?.find(
+        (part): part is Extract<typeof part, { type: 'text' }> => part.type === 'text'
+      );
+
+      if (isDefaultTitle && textPart?.text) {
+        await aiAssistantApi.generateTitle(conversationId, textPart.text.slice(0, 500));
+      }
+
+      return;
+    }
+
+    if (!courseId) return;
+
+    // No active conversation yet — create one and save
+    const created = await aiAssistantApi.createConversation(courseId);
+
+    if (!created) return;
+
+    setActiveConversationId(courseId, created.id);
+    await aiAssistantApi.saveMessages(created.id, messages);
+
+    const firstUserMsg = messages.find((message) => message.role === 'user');
+    const textPart = firstUserMsg?.parts?.find(
+      (part): part is Extract<typeof part, { type: 'text' }> => part.type === 'text'
+    );
+
+    if (textPart?.text) {
+      await aiAssistantApi.generateTitle(created.id, textPart.text.slice(0, 500));
+    }
+  }
 
   const chat = new Chat({
     id: 'ai-assistant',
@@ -180,7 +304,7 @@
       api: `${getRequestBaseUrl()}/agent/chat`,
       credentials: 'include',
       body: () => ({
-        courseId: courseApi.course?.id ?? '',
+        courseId,
         model: selectedModel,
         context: {
           lessonId: page.params?.lessonId,
@@ -190,64 +314,12 @@
       }),
       fetch: (input, init) => apiClient.request(input, init)
     }),
-    onFinish: async () => {
-      const courseId = courseApi.course?.id;
-      const profileId = $profile.id;
-
-      // Force refetch course data so new sections/lessons/exercises show in the UI
-      if (courseId && profileId) {
-        courseApi.refreshCourse(courseId, profileId);
-      }
-
-      // Refresh current lesson content if viewing a lesson
-      if (courseId && currentLessonId) {
-        lessonApi.get(courseId, currentLessonId);
-      }
-
-      // Refresh current exercise if viewing an exercise
-      if (courseId && currentExerciseId) {
-        await refreshExercisePageData(courseId, currentExerciseId);
-      }
-
-      // Refresh usage meter
-      if (courseId) {
-        aiAssistantApi.fetchStatus(courseId);
-      }
-
+    onFinish: () => {
       // Clear document attachment after message is processed
       uploadedDocument = null;
 
-      // Persist messages to the active conversation
-      if (activeConversationId) {
-        await aiAssistantApi.saveMessages(activeConversationId, chat.messages as AiAssistantMessage[]);
-
-        // Generate a smart title after the first exchange (when title is still default)
-        const activeConv = aiAssistantApi.conversations.find((c) => c.id === activeConversationId);
-        const isDefaultTitle = !activeConv?.title || activeConv.title === 'New conversation';
-        const firstUserMsg = chat.messages.find((m) => m.role === 'user');
-        const textPart = firstUserMsg?.parts?.find((p): p is Extract<typeof p, { type: 'text' }> => p.type === 'text');
-
-        if (isDefaultTitle && textPart?.text) {
-          await aiAssistantApi.generateTitle(activeConversationId, textPart.text.slice(0, 500));
-        }
-      } else if (courseId) {
-        // No active conversation yet — create one and save
-        const created = await aiAssistantApi.createConversation(courseId);
-
-        if (created) {
-          setActiveConversationId(courseId, created.id);
-          await aiAssistantApi.saveMessages(created.id, chat.messages as AiAssistantMessage[]);
-
-          const firstUserMsg = chat.messages.find((m) => m.role === 'user');
-          const textPart = firstUserMsg?.parts?.find(
-            (p): p is Extract<typeof p, { type: 'text' }> => p.type === 'text'
-          );
-
-          if (textPart?.text) {
-            await aiAssistantApi.generateTitle(created.id, textPart.text.slice(0, 500));
-          }
-        }
-      }
+      refreshCourseStateAfterChat();
+      void persistFinishedChat(chat.messages as AiAssistantMessage[], activeConversationId);
     }
   });
 
@@ -255,8 +327,8 @@
     'Upload a document to create a course',
     'Draft a lesson',
     'Generate questions from this lesson',
-    "Improve this lesson's text",
-    'Summarize this lesson'
+    'Summarize this lesson',
+    'Help me publish this course'
   ];
 
   function handleSend() {
@@ -274,8 +346,6 @@
 
     // Create conversation eagerly before sending the first message
     if (!activeConversationId) {
-      const courseId = courseApi.course?.id;
-
       if (!courseId) return;
 
       aiAssistantApi.createConversation(courseId).then((created) => {
@@ -304,8 +374,6 @@
   }
 
   async function handleFileSelect(file: File) {
-    const courseId = courseApi.course?.id;
-
     if (!courseId) return;
 
     const conversationId = await ensureActiveConversation(courseId);
@@ -339,8 +407,6 @@
 
     inputValue = '';
 
-    const courseId = courseApi.course?.id;
-
     if (!activeConversationId) {
       if (!courseId) return;
 
@@ -367,7 +433,7 @@
   }
 
   function handleResume() {
-    inputValue = 'Continue implementing the plan from where you left off.';
+    inputValue = CONTINUE_IMPLEMENTATION_PROMPT;
     handleSend();
   }
 
@@ -393,6 +459,8 @@
 
     if (!lastAssistantMsg) return null;
 
+    const continuation = (lastAssistantMsg.metadata as AiAssistantMessageMetadata | undefined)?.continuation;
+    const reachedStepLimit = continuation?.reason === 'step_limit';
     const allToolParts = lastAssistantMsg.parts.filter((part: Record<string, unknown>) =>
       isAgentToolPart(part)
     ) as AgentToolPart[];
@@ -417,10 +485,10 @@
     });
 
     const allDone = steps.every((s) => s.status === 'completed');
-    const isStopped = !isStreaming && !allDone;
+    const isStopped = !isStreaming && (!allDone || reachedStepLimit);
 
     // Hide the card once the agent finishes cleanly — the text response takes over
-    if (allDone && !isStreaming) return null;
+    if (allDone && !isStreaming && !reachedStepLimit) return null;
 
     const hasMutations = toolParts.some((part) => {
       const toolName = getAgentToolName(part);
@@ -497,6 +565,30 @@
   });
 
   $effect(() => {
+    const prompt = $initialChatPrompt;
+
+    if (!prompt || !$isAiAssistantOpen || !courseId) return;
+
+    const model = $initialChatModel;
+    clearInitialChatPrompt();
+    clearInitialChatModel();
+
+    tick().then(() => {
+      if (model && isAgentModelId(model)) {
+        if ($isFreePlan && paidModelIds.includes(model)) {
+          openUpgradeModal();
+          return;
+        }
+
+        handleSelectModel(model);
+      }
+
+      inputValue = prompt;
+      handleSend();
+    });
+  });
+
+  $effect(() => {
     if (!hasLoadedChatWidth) {
       return;
     }
@@ -525,7 +617,7 @@
     messages={chat.messages}
     status={chat.status}
     {isStreaming}
-    courseId={courseApi.course?.id ?? ''}
+    {courseId}
     {planExecutionState}
     {quickActions}
     onQuickAction={handleQuickAction}
@@ -544,12 +636,14 @@
     {uploadedDocument}
     {mentionItems}
     {selectedModel}
+    lockedModelIds={$isFreePlan ? paidModelIds : []}
     error={chat.error}
     onSend={handleSend}
     onStop={handleStop}
     onFileSelect={handleFileSelect}
     onRemoveDocument={handleRemoveDocument}
     onSelectModel={handleSelectModel}
+    onLockedModelSelect={handleLockedModelSelect}
   />
 {/snippet}
 

@@ -7,6 +7,7 @@
   import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
   import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
   import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
+  import GlobeIcon from '@lucide/svelte/icons/globe';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 
   import { Button } from '@cio/ui/base/button';
@@ -165,6 +166,18 @@
       : undefined
   );
 
+  const visibilityBadge = $derived(
+    type === 'PUBLIC'
+      ? {
+          label: $t('courses.course_card.public_badge'),
+          icon: GlobeIcon,
+          iconClass: 'custom ui:text-primary size-3.5 shrink-0'
+        }
+      : undefined
+  );
+
+  const showLmsPublicCourseMenu = $derived(isLMS && type === 'PUBLIC' && !!slug?.trim() && isPublished);
+
   const complianceStatusKey = $derived(
     isLMS && type === 'COMPLIANCE' && !isExplore
       ? getStudentCourseComplianceStatusKey(course as UserEnrolledCourses[number])
@@ -202,6 +215,7 @@
   {title}
   {description}
   {typeBadge}
+  {visibilityBadge}
   class="group relative"
 >
   {#snippet media()}
@@ -211,8 +225,12 @@
   {#snippet overlay()}
     {#if actions}
       {@render actions()}
-    {:else if !isLMS && !isOnLandingPage}
-      <CardDropdown {id} {title} {description} {isPublished} />
+    {:else if !isOnLandingPage}
+      {#if !isLMS}
+        <CardDropdown {id} {title} {description} {isPublished} courseType={type} {slug} />
+      {:else if showLmsPublicCourseMenu}
+        <CardDropdown {id} {title} {description} {isPublished} courseType={type} {slug} lmsPublicQuickOnly={true} />
+      {/if}
     {/if}
   {/snippet}
 

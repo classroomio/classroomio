@@ -1,4 +1,5 @@
 export * from './constants';
+export * from './shared';
 
 export * from './account';
 export * from './agent';

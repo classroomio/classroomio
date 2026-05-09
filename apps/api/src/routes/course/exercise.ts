@@ -5,7 +5,11 @@ import {
   ZExerciseGetParam,
   ZExerciseListQuery,
   ZExerciseSubmissionCreate,
-  ZExerciseUpdate
+  ZExerciseUpdate,
+  ZExerciseVideoRecordingParam,
+  ZExerciseVideoRecordingPlaybackParam,
+  ZExerciseVideoRecordingUploadComplete,
+  ZExerciseVideoRecordingUploadInit
 } from '@cio/utils/validation/exercise';
 import { ZTemplateById, ZTemplateByTag } from '@cio/utils/validation/mocks';
 import {
@@ -19,6 +23,11 @@ import {
 } from '@api/services/exercise/exercise';
 import { fetchAllTemplatesMetadata, fetchTemplateById, fetchTemplatesByTag } from '@api/services/exercise/template';
 import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
+import {
+  completeVideoRecordingUpload,
+  getVideoRecordingPlaybackUrl,
+  initVideoRecordingUpload
+} from '@api/services/exercise/video-recording';
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
@@ -256,6 +265,67 @@ export const exerciseRouter = new Hono()
         return c.json({ success: true, data: submission }, 201);
       } catch (error) {
         return handleError(c, error, 'Failed to submit exercise');
+      }
+    }
+  )
+  .post(
+    '/:exerciseId/question/:questionId/video-recording/upload/init',
+    authMiddleware,
+    courseMemberMiddleware,
+    zValidator('param', ZExerciseVideoRecordingParam),
+    zValidator('json', ZExerciseVideoRecordingUploadInit),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const courseId = c.req.param('courseId')!;
+        const { exerciseId, questionId } = c.req.valid('param');
+        const data = c.req.valid('json');
+
+        const upload = await initVideoRecordingUpload(courseId, exerciseId, questionId, user.id, data);
+
+        return c.json({ success: true, data: upload }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to initialize video recording upload');
+      }
+    }
+  )
+  .post(
+    '/:exerciseId/question/:questionId/video-recording/upload/complete',
+    authMiddleware,
+    courseMemberMiddleware,
+    zValidator('param', ZExerciseVideoRecordingParam),
+    zValidator('json', ZExerciseVideoRecordingUploadComplete),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const courseId = c.req.param('courseId')!;
+        const { exerciseId, questionId } = c.req.valid('param');
+        const data = c.req.valid('json');
+
+        const answer = await completeVideoRecordingUpload(courseId, exerciseId, questionId, user.id, data);
+
+        return c.json({ success: true, data: answer }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to complete video recording upload');
+      }
+    }
+  )
+  .get(
+    '/:exerciseId/submission/:submissionId/question/:questionId/video-recording/playback',
+    authMiddleware,
+    courseMemberMiddleware,
+    zValidator('param', ZExerciseVideoRecordingPlaybackParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const courseId = c.req.param('courseId')!;
+        const { exerciseId, submissionId, questionId } = c.req.valid('param');
+
+        const playback = await getVideoRecordingPlaybackUrl(courseId, exerciseId, submissionId, questionId, user.id);
+
+        return c.json({ success: true, data: playback }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to get video recording playback URL');
       }
     }
   )

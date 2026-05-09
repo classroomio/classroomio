@@ -13,9 +13,14 @@
   import UserRoundIcon from '@lucide/svelte/icons/user-round';
   import { t } from '$lib/utils/functions/translations';
   import { classroomio } from '$lib/utils/services/api';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { coursesApi } from '$features/course/api';
+  import CoursePublicBadge from '$features/course/components/course-public-badge.svelte';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
+  import CopyIcon from '@lucide/svelte/icons/copy';
+  import { copyPublicCoursePageUrl, openCoursePreview } from '$features/course/utils/course-preview';
   import {
     getStudentCourseComplianceDate,
     getStudentCourseComplianceStatusKey,
@@ -113,6 +118,44 @@
 
     goto(`/courses/${id}/lessons?next=true`);
   }
+
+  function showPublishedPublicCourseLinks(course: EnrolledCourse | null) {
+    if (!course || course.type !== 'PUBLIC') {
+      return false;
+    }
+
+    const publicSlug = typeof course.slug === 'string' ? course.slug : '';
+
+    if (!publicSlug.trim()) {
+      return false;
+    }
+
+    return !!course.isPublished;
+  }
+
+  function openPublicCoursePage(course: EnrolledCourse | null) {
+    if (!course?.id || !showPublishedPublicCourseLinks(course)) {
+      return;
+    }
+
+    const publicSlug = typeof course.slug === 'string' ? course.slug : '';
+
+    openCoursePreview({
+      courseId: course.id,
+      courseSlug: publicSlug,
+      currentOrgDomain: $currentOrgDomain
+    });
+  }
+
+  async function copyPublicCourseLink(course: EnrolledCourse | null) {
+    if (!course || !showPublishedPublicCourseLinks(course)) {
+      return;
+    }
+
+    const publicSlug = typeof course.slug === 'string' ? course.slug : '';
+
+    await copyPublicCoursePageUrl(publicSlug, $currentOrgDomain);
+  }
 </script>
 
 <div class="space-y-6 pb-8">
@@ -132,17 +175,37 @@
           </h2>
         </div>
 
-        <Button
-          variant="outline"
-          class="shrink-0"
-          onclick={() => (currentCourse ? gotoCourse(currentCourse.id) : goto('/lms/explore'))}
-        >
-          {#if currentCourse}
-            {$t('dashboard.continue_learning')}
-          {:else}
-            {$t('dashboard.view_courses')}
+        <div class="flex shrink-0 flex-wrap items-center gap-2">
+          {#if currentCourse && showPublishedPublicCourseLinks(currentCourse)}
+            <IconButton
+              variant="outline"
+              onclick={() => openPublicCoursePage(currentCourse)}
+              tooltip={$t('courses.course_card.context_menu.open_public_course')}
+              aria-label={$t('courses.course_card.context_menu.open_public_course')}
+            >
+              <ExternalLinkIcon class="size-4" />
+            </IconButton>
+            <IconButton
+              variant="outline"
+              onclick={() => void copyPublicCourseLink(currentCourse)}
+              tooltip={$t('courses.course_card.context_menu.copy_course_url')}
+              aria-label={$t('courses.course_card.context_menu.copy_course_url')}
+            >
+              <CopyIcon class="size-4" />
+            </IconButton>
           {/if}
-        </Button>
+          <Button
+            variant="outline"
+            class="shrink-0"
+            onclick={() => (currentCourse ? gotoCourse(currentCourse.id) : goto('/lms/explore'))}
+          >
+            {#if currentCourse}
+              {$t('dashboard.continue_learning')}
+            {:else}
+              {$t('dashboard.view_courses')}
+            {/if}
+          </Button>
+        </div>
       </div>
     </section>
   </BlurFade>
@@ -215,7 +278,12 @@
                   </div>
 
                   <div class="min-w-0 flex-1">
-                    <h3 class="truncate text-base font-semibold">{course.title}</h3>
+                    <div class="flex min-w-0 flex-wrap items-center gap-2">
+                      <h3 class="truncate text-base font-semibold">{course.title}</h3>
+                      {#if course.type === 'PUBLIC'}
+                        <CoursePublicBadge class="shrink-0" />
+                      {/if}
+                    </div>
                     {#if course.description}
                       <p class="ui:text-muted-foreground mt-1 line-clamp-2 text-sm">{course.description}</p>
                     {/if}
@@ -233,9 +301,29 @@
                   </div>
                 </div>
 
-                <Button variant="outline" class="shrink-0" onclick={() => gotoCourse(course.id)}>
-                  {$t('dashboard.continue')}
-                </Button>
+                <div class="flex shrink-0 items-center gap-2">
+                  {#if showPublishedPublicCourseLinks(course)}
+                    <IconButton
+                      variant="outline"
+                      onclick={() => openPublicCoursePage(course)}
+                      tooltip={$t('courses.course_card.context_menu.open_public_course')}
+                      aria-label={$t('courses.course_card.context_menu.open_public_course')}
+                    >
+                      <ExternalLinkIcon class="size-4" />
+                    </IconButton>
+                    <IconButton
+                      variant="outline"
+                      onclick={() => void copyPublicCourseLink(course)}
+                      tooltip={$t('courses.course_card.context_menu.copy_course_url')}
+                      aria-label={$t('courses.course_card.context_menu.copy_course_url')}
+                    >
+                      <CopyIcon class="size-4" />
+                    </IconButton>
+                  {/if}
+                  <Button variant="outline" class="shrink-0" onclick={() => gotoCourse(course.id)}>
+                    {$t('dashboard.continue')}
+                  </Button>
+                </div>
               </div>
 
               <div class="mt-5 flex items-center gap-4">

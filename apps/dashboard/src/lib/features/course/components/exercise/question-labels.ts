@@ -289,6 +289,111 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'file_upload.preview.max_size_label': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.preview.max_size_label'
     ),
+    'video_recording.edit.max_duration_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.edit.max_duration_label'
+    ),
+    'video_recording.edit.max_duration_helper': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.edit.max_duration_helper'
+    ),
+    'video_recording.edit.max_duration_placeholder': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.edit.max_duration_placeholder'
+    ),
+    'video_recording.edit.manual_grading': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.edit.manual_grading'
+    ),
+    'video_recording.take.unsupported': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.unsupported'
+    ),
+    'video_recording.take.permission_prompt': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.permission_prompt'
+    ),
+    'video_recording.take.permission_denied': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.permission_denied'
+    ),
+    'video_recording.take.start_camera': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.start_camera'
+    ),
+    'video_recording.take.camera_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.camera_label'
+    ),
+    'video_recording.take.camera_placeholder': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.camera_placeholder'
+    ),
+    'video_recording.take.play_preview': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.play_preview'
+    ),
+    'video_recording.take.pause_preview': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.pause_preview'
+    ),
+    'video_recording.take.start_recording': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.start_recording'
+    ),
+    'video_recording.take.stop_recording': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.stop_recording'
+    ),
+    'video_recording.take.elapsed': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.elapsed'
+    ),
+    'video_recording.take.remaining': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.remaining'
+    ),
+    'video_recording.take.max_duration': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.max_duration'
+    ),
+    'video_recording.take.too_short': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.too_short'
+    ),
+    'video_recording.take.use_recording': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.use_recording'
+    ),
+    'video_recording.take.retake': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.retake'
+    ),
+    'video_recording.take.delete': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.delete'
+    ),
+    'video_recording.take.retry_upload': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.retry_upload'
+    ),
+    'video_recording.take.uploading': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.uploading'
+    ),
+    'video_recording.take.uploaded': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.uploaded'
+    ),
+    'video_recording.take.upload_failed': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.upload_failed'
+    ),
+    'video_recording.take.replaces_previous': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.take.replaces_previous'
+    ),
+    'video_recording.preview.max_duration_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.preview.max_duration_label'
+    ),
+    'video_recording.preview.manual_grading': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.preview.manual_grading'
+    ),
+    'video_recording.submission.no_video': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.submission.no_video'
+    ),
+    'video_recording.submission.unavailable': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.submission.unavailable'
+    ),
+    'video_recording.submission.duration': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.submission.duration'
+    ),
+    'video_recording.submission.file_size': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.submission.file_size'
+    ),
+    'video_recording.submission.recorded_at': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.submission.recorded_at'
+    ),
+    'video_recording.submission.uploaded_at': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.submission.uploaded_at'
+    ),
+    'video_recording.submission.retake_count': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.video_recording.submission.retake_count'
+    ),
     'link.edit.instructions_placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.link.edit.instructions_placeholder'
     ),

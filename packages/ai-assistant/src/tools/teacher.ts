@@ -1,5 +1,8 @@
 import { z } from 'zod';
+import { QUESTION_TYPE_REGISTRY } from '@cio/question-types';
 import { CoursePlanSchema } from '../types';
+
+const QUESTION_TYPE_ID_DESCRIPTION = QUESTION_TYPE_REGISTRY.map((t) => `${t.id}=${t.typename} (${t.label})`).join(', ');
 
 /**
  * Mutation tool schemas available only to teachers.
@@ -14,6 +17,12 @@ export const createSectionSchema = {
     order: z.number().int().min(0).describe('Display order (0-based). Set after existing sections when appending.')
   })
 };
+
+const exerciseSectionAfterBehaviorSchema = z.discriminatedUnion('action', [
+  z.object({ action: z.literal('continue') }),
+  z.object({ action: z.literal('submit') }),
+  z.object({ action: z.literal('go_to_section'), exerciseSectionId: z.string().uuid() })
+]);
 
 export const updateSectionSchema = {
   description:
@@ -117,9 +126,9 @@ export const createExerciseSchema = {
             .number()
             .int()
             .min(1)
-            .max(14)
+            .max(QUESTION_TYPE_REGISTRY.length)
             .default(1)
-            .describe('Question type: 1=RADIO (single answer), 2=CHECKBOX (multiple), 4=TRUE_FALSE, 3=TEXTAREA'),
+            .describe(`Question type ID. Supported types: ${QUESTION_TYPE_ID_DESCRIPTION}`),
           points: z.number().min(0).default(1).describe('Points for this question'),
           order: z.number().int().min(0).describe('Display order'),
           options: z
@@ -139,6 +148,36 @@ export const createExerciseSchema = {
         'Aim for 6-10 questions per exercise when assessing a full lesson. Spread across all sub-topics, mix difficulty, and vary question types.'
       )
   })
+};
+
+export const createExerciseSectionSchema = {
+  description:
+    'Create a new section inside an existing exercise. Use this to add a new question block before adding questions into it.',
+  parameters: z.object({
+    courseId: z.string().describe('The course ID'),
+    exerciseId: z.string().describe('The exercise that will contain this section'),
+    title: z.string().min(1).describe('Section heading shown above questions in this block'),
+    description: z.string().optional().describe('Optional intro HTML for this block'),
+    order: z.number().int().min(0).describe('Display order within the exercise (0-based)'),
+    colorTheme: z.enum(['blue', 'green', 'amber', 'rose', 'violet', 'slate']).optional(),
+    afterBehavior: exerciseSectionAfterBehaviorSchema.optional()
+  })
+};
+
+export const updateExerciseSectionSchema = {
+  description:
+    'Update the title and/or description of one question block inside an exercise (from get_exercise_details sections). Not the same as update_section (course outline).',
+  parameters: z
+    .object({
+      courseId: z.string().describe('The course ID'),
+      exerciseId: z.string().describe('The exercise containing this block'),
+      exerciseSectionId: z.string().describe('Section id from get_exercise_details sections[].id'),
+      title: z.string().min(1).optional().describe('Heading shown above questions in this block'),
+      description: z.string().optional().describe('Optional intro HTML for this block; empty string clears it')
+    })
+    .refine((data) => data.title !== undefined || data.description !== undefined, {
+      message: 'Provide at least title or description'
+    })
 };
 
 export const updateExerciseSchema = {
@@ -181,10 +220,17 @@ export const updateExerciseSchema = {
 
 export const addQuestionsSchema = {
   description:
-    'Add questions to an existing exercise. Use this when the exercise already exists and you want to add more questions.',
+    'Add questions to an existing exercise. Use this when the exercise already exists and you want to add more questions. When get_exercise_details returns a non-empty sections array, pass exerciseSectionId so new questions are placed in the right in-exercise block (same ids as update_exercise_section).',
   parameters: z.object({
     courseId: z.string().describe('The course ID'),
     exerciseId: z.string().describe('The existing exercise ID'),
+    exerciseSectionId: z
+      .string()
+      .uuid()
+      .optional()
+      .describe(
+        'In-exercise section id from get_exercise_details `sections[].id` (not a course outline section id). Use when the exercise has question blocks/sections; omit only when questions are not grouped into sections.'
+      ),
     questions: z.array(
       z.object({
         question: z.string().min(1).describe('The question text'),
@@ -192,9 +238,9 @@ export const addQuestionsSchema = {
           .number()
           .int()
           .min(1)
-          .max(14)
+          .max(QUESTION_TYPE_REGISTRY.length)
           .default(1)
-          .describe('Question type: 1=RADIO, 2=CHECKBOX, 4=TRUE_FALSE, 3=TEXTAREA'),
+          .describe(`Question type ID. Supported types: ${QUESTION_TYPE_ID_DESCRIPTION}`),
         points: z.number().min(0).default(1).describe('Points for this question'),
         order: z.number().int().min(0).describe('Display order'),
         options: z.array(
@@ -210,7 +256,7 @@ export const addQuestionsSchema = {
 
 export const updateQuestionsSchema = {
   description:
-    'Update existing questions in an exercise. Pass only the fields you want to change; `id` identifies the question. For NUMERIC the correct answer is `settings.correctValue` (a number), not an option — do NOT add options to NUMERIC questions. For STAR use `settings.correctValue` (1..max). For WORD_BANK use `settings.correctAnswers` and `settings.template`. RADIO/CHECKBOX/TRUE_FALSE use `options[].isCorrect`: include an option `id` to edit it, omit `id` to add a new one. `settings` is shallow-merged with the existing settings. Omit `options` entirely to leave existing options unchanged — if you pass an options array, any existing option not listed in it will be removed.',
+    'Update existing questions in an exercise. Pass only the fields you want to change; `id` identifies the question. Optional `exerciseSectionId` (from get_exercise_details sections) moves the question to another in-exercise block; use null to clear section assignment. For NUMERIC the correct answer is `settings.correctValue` (a number), not an option — do NOT add options to NUMERIC questions. For STAR use `settings.correctValue` (1..max). For WORD_BANK use `settings.correctAnswers` and `settings.template`. RADIO/CHECKBOX/TRUE_FALSE use `options[].isCorrect`: include an option `id` to edit it, omit `id` to add a new one. `settings` is shallow-merged with the existing settings. Omit `options` entirely to leave existing options unchanged — if you pass an options array, any existing option not listed in it will be removed.',
   parameters: z.object({
     courseId: z.string().describe('The course ID'),
     exerciseId: z.string().describe('The existing exercise ID'),
@@ -218,9 +264,23 @@ export const updateQuestionsSchema = {
       z.object({
         id: z.number().int().describe('Existing question id. Required.'),
         question: z.string().min(1).optional().describe('New question text. Omit to keep unchanged.'),
-        questionTypeId: z.number().int().min(1).max(14).optional(),
+        questionTypeId: z
+          .number()
+          .int()
+          .min(1)
+          .max(QUESTION_TYPE_REGISTRY.length)
+          .optional()
+          .describe(`Question type ID. Supported types: ${QUESTION_TYPE_ID_DESCRIPTION}`),
         points: z.number().min(0).optional(),
         order: z.number().int().min(0).optional(),
+        exerciseSectionId: z
+          .string()
+          .uuid()
+          .nullable()
+          .optional()
+          .describe(
+            'In-exercise section id from get_exercise_details (not course outline). Omit to leave unchanged; pass null to unassign from a section.'
+          ),
         settings: z
           .record(z.string(), z.unknown())
           .optional()

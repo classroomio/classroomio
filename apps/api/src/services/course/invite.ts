@@ -1,7 +1,3 @@
-import * as schema from '@cio/db/schema';
-
-import { AppError, ErrorCodes } from '@api/utils/errors';
-import { and, eq } from 'drizzle-orm';
 import {
   countInviteDistinctPreviewIps,
   createCourseInvite,
@@ -11,14 +7,25 @@ import {
   listCourseInviteAudit,
   listCourseInviteAuditStats,
   listCourseInvites,
-  revokeCourseInvite
+  optimisticIncrementCourseInviteUsedCount,
+  revokeCourseInvite,
+  selectCourseInviteAcceptBundleByTokenHash
 } from '@cio/db/queries/course/invite';
-import { getCourseById, getCourseWithOrgData, getCourseWithRelations } from '@cio/db/queries/course';
+import { createOrganizationMember, getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
+import { addGroupMember, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
+import {
+  getCourseById,
+  getCourseWithOrgData,
+  getCourseWithRelations,
+  isCourseSlugTaken,
+  updateCourseSlug
+} from '@cio/db/queries/course';
 
+import { AppError, ErrorCodes } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
 import type { TCreateCourseInvite } from '@cio/utils/validation/course/invite';
+import type { TNewCourseInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
-import { db } from '@cio/db/drizzle';
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
@@ -26,6 +33,7 @@ import { buildEmailFromName, sendEmail } from '@cio/email';
 import { getProfileByEmail, markUserAndProfileEmailVerified } from '@cio/db/queries/auth';
 import { generateSlug } from '@cio/utils/functions';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
+import { db } from '@cio/db/drizzle';
 
 type InviteStatus = 'ACTIVE' | 'EXPIRED' | 'USED_UP' | 'REVOKED';
 type InvitePreset = 'ONE_TIME_24H' | 'MULTI_USE_7D' | 'MULTI_USE_30D' | 'CUSTOM';
@@ -46,13 +54,9 @@ async function generateUniqueCourseSlug(baseSlug: string): Promise<string> {
   let candidate = baseSlug;
 
   while (true) {
-    const existing = await db
-      .select({ id: schema.course.id })
-      .from(schema.course)
-      .where(eq(schema.course.slug, candidate))
-      .limit(1);
+    const taken = await isCourseSlugTaken(candidate);
 
-    if (existing.length === 0) {
+    if (!taken) {
       return candidate;
     }
 
@@ -65,11 +69,7 @@ async function ensureCourseSlug(courseId: string, title: string | null | undefin
   const baseSlug = generateSlug(title, { fallback: 'course' });
   const uniqueSlug = await generateUniqueCourseSlug(baseSlug);
 
-  const [updated] = await db
-    .update(schema.course)
-    .set({ slug: uniqueSlug, updatedAt: new Date().toISOString() })
-    .where(eq(schema.course.id, courseId))
-    .returning({ slug: schema.course.slug });
+  const updated = await updateCourseSlug(courseId, uniqueSlug);
 
   return updated?.slug ?? uniqueSlug;
 }
@@ -276,7 +276,7 @@ function toInviteResponse(
 async function recordInviteAudit(
   inviteId: string,
   courseId: string,
-  eventType: (typeof schema.courseInviteEventType.enumValues)[number],
+  eventType: TNewCourseInviteAudit['eventType'],
   context: {
     actorProfileId?: string | null;
     targetEmail?: string | null;
@@ -641,13 +641,9 @@ export async function enrollInCourse(
 
   const normalizedEmail = user.email.toLowerCase().trim();
 
-  const [existingMember] = await db
-    .select({ id: schema.groupmember.id })
-    .from(schema.groupmember)
-    .where(and(eq(schema.groupmember.groupId, groupId), eq(schema.groupmember.profileId, user.id)))
-    .limit(1);
+  const existingMemberId = await getGroupMemberIdByGroupAndProfile(groupId, user.id);
 
-  if (existingMember) {
+  if (existingMemberId) {
     await ensureComplianceEnrollmentRecordsForProfiles([courseId], [user.id]);
 
     return {
@@ -657,14 +653,10 @@ export async function enrollInCourse(
     };
   }
 
-  const [orgMember] = await db
-    .select({ id: schema.organizationmember.id })
-    .from(schema.organizationmember)
-    .where(and(eq(schema.organizationmember.organizationId, org.id), eq(schema.organizationmember.profileId, user.id)))
-    .limit(1);
+  const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(org.id, user.id);
 
-  if (!orgMember) {
-    await db.insert(schema.organizationmember).values({
+  if (!orgMemberId) {
+    await createOrganizationMember({
       organizationId: org.id,
       roleId: ROLE.STUDENT,
       profileId: user.id,
@@ -673,7 +665,7 @@ export async function enrollInCourse(
     });
   }
 
-  await db.insert(schema.groupmember).values({
+  await addGroupMember({
     groupId,
     roleId: ROLE.STUDENT,
     profileId: user.id,
@@ -901,29 +893,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
   const tokenHash = hashToken(token);
 
   const result = await db.transaction(async (tx) => {
-    const [inviteRow] = await tx
-      .select({
-        invite: schema.courseInvite,
-        course: {
-          id: schema.course.id,
-          title: schema.course.title,
-          status: schema.course.status,
-          isPublished: schema.course.isPublished,
-          metadata: schema.course.metadata,
-          groupId: schema.group.id
-        },
-        organization: {
-          id: schema.organization.id,
-          name: schema.organization.name,
-          siteName: schema.organization.siteName
-        }
-      })
-      .from(schema.courseInvite)
-      .innerJoin(schema.course, eq(schema.courseInvite.courseId, schema.course.id))
-      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
-      .where(eq(schema.courseInvite.tokenHash, tokenHash))
-      .limit(1);
+    const inviteRow = await selectCourseInviteAcceptBundleByTokenHash(tx, tokenHash);
 
     if (!inviteRow) {
       throw new AppError('Invalid invite link', ErrorCodes.NOT_FOUND, 404);
@@ -948,15 +918,9 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
     }
 
     // Idempotent behavior: if user is already enrolled, don't consume invite again.
-    const [existingMember] = await tx
-      .select({
-        id: schema.groupmember.id
-      })
-      .from(schema.groupmember)
-      .where(and(eq(schema.groupmember.groupId, course.groupId), eq(schema.groupmember.profileId, user.id)))
-      .limit(1);
+    const existingMemberId = await getGroupMemberIdByGroupAndProfile(course.groupId, user.id, tx);
 
-    if (existingMember) {
+    if (existingMemberId) {
       await markUserAndProfileEmailVerified(user.id, tx);
 
       await recordInviteAudit(invite.id, invite.courseId, 'ACCEPTED', {
@@ -1011,49 +975,34 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       throw new AppError('This invite is restricted to specific email domains', ErrorCodes.UNAUTHORIZED, 403);
     }
 
-    const [orgMember] = await tx
-      .select({
-        id: schema.organizationmember.id
-      })
-      .from(schema.organizationmember)
-      .where(
-        and(
-          eq(schema.organizationmember.organizationId, organization.id),
-          eq(schema.organizationmember.profileId, user.id)
-        )
-      )
-      .limit(1);
+    const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(organization.id, user.id, tx);
 
-    if (!orgMember) {
-      await tx.insert(schema.organizationmember).values({
-        organizationId: organization.id,
-        roleId: ROLE.STUDENT,
-        profileId: user.id,
-        email: normalizedEmail,
-        verified: true
-      });
+    if (!orgMemberId) {
+      await createOrganizationMember(
+        {
+          organizationId: organization.id,
+          roleId: ROLE.STUDENT,
+          profileId: user.id,
+          email: normalizedEmail,
+          verified: true
+        },
+        tx
+      );
     }
 
-    await tx.insert(schema.groupmember).values({
-      groupId: course.groupId,
-      roleId: ROLE.STUDENT,
-      profileId: user.id,
-      email: normalizedEmail
-    });
+    await addGroupMember(
+      {
+        groupId: course.groupId,
+        roleId: ROLE.STUDENT,
+        profileId: user.id,
+        email: normalizedEmail
+      },
+      tx
+    );
 
     await markUserAndProfileEmailVerified(user.id, tx);
 
-    const [consumeInvite] = await tx
-      .update(schema.courseInvite)
-      .set({
-        usedCount: invite.usedCount + 1,
-        updatedAt: new Date().toISOString(),
-        lastUsedAt: new Date().toISOString()
-      })
-      .where(and(eq(schema.courseInvite.id, invite.id), eq(schema.courseInvite.usedCount, invite.usedCount)))
-      .returning({
-        id: schema.courseInvite.id
-      });
+    const consumeInvite = await optimisticIncrementCourseInviteUsedCount(tx, invite.id, invite.usedCount);
 
     if (!consumeInvite) {
       throw new AppError('This invite was already used. Please try another link.', ErrorCodes.VALIDATION_ERROR, 409);

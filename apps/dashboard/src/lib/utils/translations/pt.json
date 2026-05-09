@@ -391,6 +391,14 @@
         "post_created": "Postagem criada com sucesso",
         "post_updated": "Postagem atualizada com sucesso"
       }
+    },
+    "ai_credits": {
+      "purchase_success": "Pacote de tokens adicionado ao seu saldo.",
+      "checkout_failed": "Não foi possível iniciar a finalização da compra. Por favor, tente novamente."
+    },
+    "public_course": {
+      "url_copied": "URL do curso copiada",
+      "url_copy_failed": "Não foi possível copiar a URL"
     }
   },
   "explore": {
@@ -656,7 +664,30 @@
           "popover_title": "Selecione tags",
           "empty_groups": "Nenhuma tag disponível ainda"
         },
-        "compliance": "Conformidade"
+        "compliance": "Conformidade",
+        "public": "Público",
+        "convert_to_public_blocked": "Este curso tem perguntas que não podem ser avaliadas automaticamente, portanto ainda não pode ser tornado público.",
+        "fix_blocking_questions": "Corrigir perguntas de bloqueio",
+        "slug": {
+          "label": "Slug de URL",
+          "description": "O último segmento do URL público deste item. Apenas letras, números e travessões.",
+          "public_only": "Slugs só são editáveis ​​em cursos públicos.",
+          "in_use": "Esse slug já é usado por outro item deste curso."
+        },
+        "callout": {
+          "legend": "Chamada pública do curso",
+          "description": "Mostrado na parte inferior de cada lição e no lugar dos itens bloqueados. Use-o para direcionar os alunos ao seu site ou a um curso pago.",
+          "title_label": "Título",
+          "title_placeholder": "Quer se aprofundar nisso?",
+          "description_label": "Descrição",
+          "description_placeholder": "Junte-se ao grupo completo para enviar um projeto de nível de produção em 4 semanas.",
+          "button_label": "Etiqueta do botão",
+          "button_label_placeholder": "Leia mais no meu site",
+          "button_url_label": "URL do botão",
+          "button_url_placeholder": "https://example.com",
+          "clear": "Limpar frase de destaque",
+          "public_only": "As frases de destaque aparecem apenas em cursos públicos."
+        }
       },
       "analytics": {
         "title": "Análise"
@@ -1167,7 +1198,10 @@
               "attempt_counter": "Tentativa {atual} de {total}",
               "previous_try": "Tentativa anterior",
               "next_try": "Próxima tentativa",
-              "try_again": "Tente novamente"
+              "try_again": "Tente novamente",
+              "back": "Voltar",
+              "begin_section": "Seção inicial",
+              "complete_section": "Seção completa"
             },
             "edit_mode": {
               "delete_modal": "Excluir exercício",
@@ -1193,7 +1227,8 @@
                 "hotspot": "Ponto de acesso",
                 "link": "Ligações",
                 "word_bank": "Banco de palavras",
-                "star": "Classificação por estrelas"
+                "star": "Classificação por estrelas",
+                "video_recording": "Gravação de vídeo"
               },
               "select_type": "Selecione o tipo",
               "question_type_auto_gradable": "Auto",
@@ -1204,7 +1239,9 @@
               "title": "Excluir pergunta",
               "sure": "Tem certeza de que deseja excluir esta pergunta",
               "no": "Não, por favor, não",
-              "yes": "Sim, excluir"
+              "yes": "Sim, excluir",
+              "section_title": "Excluir seção",
+              "section_sure": "Esta seção será excluída. Suas perguntas serão movidas para a seção mais próxima."
             },
             "description": {
               "title": "Título",
@@ -1464,12 +1501,76 @@
                   "correct_value_placeholder": "por exemplo 3",
                   "max_stars_placeholder": "por exemplo 5"
                 }
+              },
+              "video_recording": {
+                "submission": {
+                  "no_video": "Nenhum vídeo enviado.",
+                  "unavailable": "Vídeo indisponível.",
+                  "duration": "Duração",
+                  "file_size": "Tamanho do arquivo",
+                  "recorded_at": "Gravado",
+                  "uploaded_at": "Enviado",
+                  "retake_count": "Repetições"
+                },
+                "preview": {
+                  "max_duration_label": "Duração máxima",
+                  "manual_grading": "Os alunos gravam uma breve resposta em vídeo. É necessária classificação manual."
+                },
+                "take": {
+                  "unsupported": "A gravação de vídeo não é compatível com este navegador.",
+                  "permission_prompt": "Permita o acesso à câmera e ao microfone para gravar sua resposta.",
+                  "permission_denied": "O acesso à câmera ou ao microfone foi bloqueado. Verifique as permissões do navegador.",
+                  "start_camera": "Configurar câmera",
+                  "camera_label": "Câmera",
+                  "camera_placeholder": "Selecione a câmera",
+                  "play_preview": "Reproduzir pré-visualização da gravação",
+                  "pause_preview": "Pausar visualização da gravação",
+                  "start_recording": "Comece a gravar",
+                  "stop_recording": "Pare de gravar",
+                  "elapsed": "Decorrido",
+                  "remaining": "Restante",
+                  "max_duration": "Máx.",
+                  "too_short": "Grave por pelo menos 1 segundo.",
+                  "use_recording": "Usar gravação",
+                  "retake": "Retomar",
+                  "delete": "Excluir gravação",
+                  "retry_upload": "Tentar enviar novamente",
+                  "uploading": "Carregando gravação...",
+                  "uploaded": "Gravação enviada",
+                  "upload_failed": "Falha no upload. Tente novamente.",
+                  "replaces_previous": "Uma nova tomada aceita substitui a resposta anterior após o upload."
+                },
+                "edit": {
+                  "max_duration_label": "Duração máxima",
+                  "max_duration_helper": "Os alunos gravam no navegador e podem refazer antes de enviar. O máximo é 2 minutos.",
+                  "max_duration_placeholder": "60",
+                  "manual_grading": "Requer classificação manual"
+                }
               }
             },
             "settings": "Configurações",
             "settings_allow_multiple": "Permitir múltiplas tentativas",
             "settings_allow_multiple_helper": "Os alunos podem enviar mais de uma vez e revisar as tentativas anteriores na tela de resultados.",
-            "settings_save": "Salvar configurações"
+            "settings_save": "Salvar configurações",
+            "add": "Adicionar",
+            "add_section": "Adicionar seção",
+            "reorder_done": "Reordenação concluída",
+            "section": {
+              "fallback_title": "Seção",
+              "questions": "perguntas",
+              "short_questions": "q",
+              "required": "obrigatório",
+              "add_question": "Adicionar pergunta",
+              "delete": "Excluir seção",
+              "move_up": "Mover seção para cima",
+              "move_down": "Mover seção para baixo",
+              "color": "Cor da seção",
+              "description_placeholder": "Descreva esta seção",
+              "after_section": "Depois da seção",
+              "continue": "Continuar para a próxima seção",
+              "go_to_section": "Vá para a seção",
+              "submit": "Enviar exercício"
+            }
           },
           "new_exercise_modal": {
             "heading": "Novo exercício",
@@ -1657,7 +1758,12 @@
         "content_locked_description": "Seu instrutor ainda não desbloqueou este conteúdo. Conclua o conteúdo anterior ou volte mais tarde.",
         "saving": "Salvando…",
         "saved": "Salvo",
-        "draft_recovery": "Um rascunho não salvo foi encontrado para esta lição. Você gostaria de restaurá-lo?"
+        "draft_recovery": "Um rascunho não salvo foi encontrado para esta lição. Você gostaria de restaurá-lo?",
+        "stats": {
+          "sections": "Seções",
+          "lessons": "Lições",
+          "exercises": "Exercícios"
+        }
       },
       "news_feed": {
         "heading": "Feed de notícias",
@@ -1782,7 +1888,8 @@
     },
     "header": {
       "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing."
+      "preview_missing_slug": "Generate and save a course slug before previewing.",
+      "public_course_helper": "Visível no site público do seu curso"
     },
     "sidebar": {
       "back_to_course": "De volta ao curso",
@@ -1841,6 +1948,26 @@
       "blocker_final_misconfigured": "O exercício de certificação \"{exerciseTitle}\" não possui pontos configurados; peça ao seu instrutor para consertar.",
       "email_message_label": "Mensagem de e-mail",
       "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!"
+    },
+    "creator": {
+      "heading": "Qual curso você deseja criar?",
+      "placeholder": "Peça ao ClassroomIO para criar um curso para você...",
+      "type": {
+        "self_paced": "Individualizado",
+        "live_class": "Aula ao vivo"
+      },
+      "level": {
+        "beginner": "Iniciante",
+        "intermediate": "Intermediário",
+        "advanced": "Avançado"
+      },
+      "drafting": {
+        "heading": "Elaborando sua ideia de curso",
+        "subtext": "Estamos transformando seu prompt em um título de curso e espaço de trabalho.",
+        "step_reading": "Lendo seu prompt",
+        "step_naming": "Nomeando seu curso",
+        "step_building": "Criando seu espaço de trabalho"
+      }
     }
   },
   "courses": {
@@ -1881,6 +2008,8 @@
       "unpublished": "Não publicado",
       "continue_course": "Continuar",
       "learn_more": "Saiba mais",
+      "public_badge": "Público",
+      "actions_menu_aria": "Ações do curso",
       "tags_overflow_aria": "Mais {count} tags",
       "list_view": {
         "title": "Título",
@@ -1897,7 +2026,8 @@
         "invite": "Convidar",
         "delete": "Excluir",
         "open": "Abrir",
-        "open_course_site": "Abrir site do curso"
+        "open_public_course": "Abrir curso público",
+        "copy_course_url": "Copiar URL do curso"
       },
       "due_date": "Devido",
       "valid_until": "Válido até"
@@ -2599,7 +2729,8 @@
       "token_auth_tab": "Autenticação de token",
       "customize_lms_tab": "Personalizar LMS",
       "domains_tab": "Domínios",
-      "teams_tab": "Equipes"
+      "teams_tab": "Equipes",
+      "ai_credits_tab": "Créditos de IA"
     },
     "subheadings": {
       "view_site": "Ver site"
@@ -2730,6 +2861,45 @@
     },
     "teams": {
       "page_subtitle": "Invite teammates and control who helps run this organization."
+    },
+    "ai_credits": {
+      "sub_title": "Créditos de IA",
+      "page_subtitle": "Rastreie o uso do assistente de IA, o consumo da equipe e compre pacotes de tokens.",
+      "cost_note": "O uso do crédito é ponderado pelo custo do modelo. Gemini 2.5 Flash e GPT-5.4 Mini contam como 1 unidade de crédito por token. Claude Sonnet 4.6 conta como 36× por token, refletindo seu custo mais alto de API.",
+      "buy_tokens": {
+        "title": "Compre mais fichas",
+        "description": "Cada pacote adiciona 5.000.000 de créditos por US$ 5. Escolha quantos pacotes você precisa.",
+        "quantity_hint": "pacotes",
+        "preview": "{quantidade} pacote(s) · {tokens} tokens · ${dollars}",
+        "buy_button": "Compre por ${dólares}"
+      },
+      "leaderboard": {
+        "title": "Uso da equipe",
+        "this_month": "Mês atual",
+        "user": "Usuário",
+        "favorite_model": "Modelo favorito",
+        "tokens": "Fichas",
+        "empty": "Ninguém na sua equipe usou o assistente de IA este mês."
+      },
+      "chart": {
+        "heading": "Uso",
+        "subheading": "Consumo diário de tokens este mês.",
+        "tokens": "Fichas",
+        "total_tokens": "Totais de fichas",
+        "total_requests": "Total de solicitações",
+        "empty": "Nenhum uso registrado neste mês ainda."
+      },
+      "purchased": {
+        "title": "Uso adquirido",
+        "subtitle": "Tokens extras que você comprou acumulam até serem usados.",
+        "lifetime": "{tokens} tokens comprados · ${dollars} gastos",
+        "buy_more": "Compre mais"
+      },
+      "included": {
+        "title": "Seu uso incluído",
+        "subtitle": "Tokens mensais incluídos no seu plano.",
+        "resets_on": "Reinicializações em {data}"
+      }
     }
   },
   "profileMenu": {
@@ -2839,7 +3009,9 @@
     "self_paced_label": "Individualizado",
     "self_paced_subtitle": "Melhor para cursos onde os alunos podem ter aulas em seu próprio ritmo",
     "compliance_label": "Conformidade",
-    "compliance_subtitle": "Treinamento recorrente com repetições, lembretes e acompanhamento de renovação"
+    "compliance_subtitle": "Treinamento recorrente com repetições, lembretes e acompanhamento de renovação",
+    "public_label": "Público",
+    "public_subtitle": "Páginas de cursos gratuitas e sem inscrição que você pode compartilhar publicamente - ótimas para geração de leads"
   },
   "delete_modal": {
     "label": "Excluir",
@@ -3224,7 +3396,8 @@
     "input_placeholder": "Pergunte ao assistente de IA...",
     "attach_document": "Anexe um documento (PDF, DOCX, PPTX)",
     "upgrade_to_upload": "Atualize para fazer upload de documentos",
-    "tokens_exhausted": "Limite mensal de tokens de IA atingido. Compre mais créditos em Configurações > Faturamento ou aguarde a redefinição.",
+    "tokens_exhausted": "Limite mensal de tokens de IA atingido.",
+    "tokens_exhausted_buy_more": "Comprar mais",
     "chat_history": "Histórico de bate-papo",
     "no_conversations": "Ainda não há conversas",
     "untitled": "Sem título",
@@ -3237,7 +3410,8 @@
     "mention_exercise": "Exercício",
     "mention_section": "Seção",
     "mention_no_results": "Nenhum conteúdo correspondente",
-    "uploading_document": "Carregando documento..."
+    "uploading_document": "Carregando documento...",
+    "agent_running_warning": "As alterações aparecerão no curso assim que o agente terminar. Não recarregue a página."
   },
   "widgets": {
     "heading": "Widgets",

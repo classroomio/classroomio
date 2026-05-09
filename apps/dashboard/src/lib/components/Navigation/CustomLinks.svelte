@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { resolve } from '$app/paths';
   import type { TCustomLinks } from './types';
   import { Button } from '@cio/ui/base/button';
 

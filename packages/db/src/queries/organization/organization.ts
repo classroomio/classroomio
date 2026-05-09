@@ -95,6 +95,32 @@ export const createOrganizationMember = async (data: TNewOrganizationmember, dbC
   return member;
 };
 
+export async function getOrganizationMemberIdByOrgAndProfile(
+  organizationId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<number | null> {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.organizationmember.id })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          eq(schema.organizationmember.profileId, profileId)
+        )
+      )
+      .limit(1);
+
+    return row?.id ?? null;
+  } catch (error) {
+    console.error('getOrganizationMemberIdByOrgAndProfile error:', error);
+    throw new Error(
+      `Failed to resolve organization membership: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 /**
  * Creates multiple organization members in a single query
  * @param data Array of organization member creation data
@@ -105,6 +131,24 @@ export const createOrganizationMembers = async (data: TNewOrganizationmember[]) 
 
   return members;
 };
+
+export async function insertOrganizationMembersOnConflictDoNothing(
+  data: TNewOrganizationmember[],
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  if (data.length === 0) {
+    return;
+  }
+
+  try {
+    await dbClient.insert(schema.organizationmember).values(data).onConflictDoNothing();
+  } catch (error) {
+    console.error('insertOrganizationMembersOnConflictDoNothing error:', error);
+    throw new Error(
+      `Failed to insert organization members: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
 
 export const checkSiteNameExists = async (siteName: string): Promise<boolean> => {
   const result = await db

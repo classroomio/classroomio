@@ -73,6 +73,8 @@
 
   const lessonTitle = $derived(lessonApi.lesson?.title || 'Lesson');
   const isLessonUnlocked = $derived(lessonApi.lesson?.isUnlocked ?? false);
+  const lessonSlug = $derived(lessonApi.lesson?.slug ?? '');
+  const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
 
   function setModeQueryParam(value: (typeof MODES)[keyof typeof MODES]) {
     const params = new SvelteURLSearchParams($page.url.searchParams);
@@ -202,7 +204,8 @@
         isUnlocked: lessonApi.lesson.isUnlocked ?? undefined,
         slideUrl: lessonApi.lesson.slideUrl || undefined,
         videos: lessonApi.lesson.videos || [],
-        documents: lessonApi.lesson.documents || []
+        documents: lessonApi.lesson.documents || [],
+        slug: isPublicCourse && lessonApi.lesson.slug ? lessonApi.lesson.slug : undefined
       }),
       saveOrUpdateTranslation(lessonApi.currentLocale, lessonId)
     ]);
@@ -216,6 +219,10 @@
 
   function handleLessonTitleChange(value: string) {
     lessonApi.updateLessonState('title', value);
+  }
+
+  function handleLessonSlugChange(value: string) {
+    lessonApi.updateLessonState('slug', value);
   }
 
   function handleToggleLessonLock() {
@@ -361,6 +368,10 @@
       onTitleChange={handleLessonTitleChange}
       onToggleLock={handleToggleLessonLock}
       onDeleteLesson={handleDeleteLesson}
+      slug={lessonSlug}
+      showSlugEditor={isPublicCourse}
+      slugError={lessonApi.errors.slug}
+      onSlugChange={handleLessonSlugChange}
     />
   </Page.HeaderContent>
   <Page.Action>

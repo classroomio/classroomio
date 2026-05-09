@@ -13,8 +13,8 @@
     "postinstall": "test -d .git && lefthook install || true",
     "release": "standard-version",
     "db:reset": "pnpm --filter @cio/db db:reset",
-    "dashboard:dev": "pnpm dev --filter=@cio/dashboard --filter=@cio/ui --filter=@cio/question-types --filter=@cio/db --filter=@cio/utils",
-    "api:dev": "pnpm dev --filter=@cio/api --filter=@cio/email --filter=@cio/db --filter=@cio/utils",
+    "dashboard:dev": "pnpm dev --filter=@cio/dashboard --filter=@cio/ui",
+    "api:dev": "pnpm dev --filter=@cio/api",
     "docs:dev": "pnpm --filter @cio/docs dev",
     "docs:build": "pnpm --filter @cio/docs build",
     "docs:types:check": "pnpm --filter @cio/docs types:check",
@@ -49,6 +49,10 @@
     ],
     "patchedDependencies": {
       "layerchart@2.0.0-next.27": "patches/layerchart@2.0.0-next.27.patch"
+    },
+    "overrides": {
+      "zod": "^4.1.8",
+      "miniflare>zod": "3.22.3"
     }
   },
   "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8"

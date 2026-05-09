@@ -107,6 +107,7 @@ export async function parseAndStoreDocument(
       text: extractedText,
       fileName: file.name,
       mimeType,
+      userId,
       uploadedAt: new Date().toISOString()
     }),
     { EX: DOCUMENT_REDIS_TTL }
@@ -150,16 +151,18 @@ export async function parseAndStoreDocument(
  * Retrieve stored document text. Tries the Redis hot cache first; on miss
  * falls back to Postgres and rehydrates Redis for next time.
  */
-export async function getDocumentText(documentId: string, redis: RedisClient): Promise<string | null> {
+export async function getDocumentText(documentId: string, userId: string, redis: RedisClient): Promise<string | null> {
   const raw = await redis.get(agentDocumentKey(documentId));
 
   if (raw) {
-    const parsed = JSON.parse(raw) as { text: string };
+    const parsed = JSON.parse(raw) as { text: string; userId?: string };
+
+    if (parsed.userId && parsed.userId !== userId) return null;
 
     return parsed.text;
   }
 
-  const record = await getChatDocument(documentId);
+  const record = await getChatDocument(documentId, userId);
 
   if (!record) return null;
 
@@ -169,6 +172,7 @@ export async function getDocumentText(documentId: string, redis: RedisClient): P
       text: record.text,
       fileName: record.fileName,
       mimeType: record.mimeType,
+      userId: record.userId,
       uploadedAt: record.createdAt
     }),
     { EX: DOCUMENT_REDIS_TTL }

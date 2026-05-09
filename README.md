@@ -194,7 +194,7 @@ Notes:
 - The `GET /agent/status` endpoint flips to `enabled: true` as soon as any of those keys is set, which is what the dashboard checks before showing the AI button on a course.
 - Each chat request sends the user-selected `model` (persisted in `localStorage` as `classroomio-ai-chat-model`). The API resolves the provider for that model (`packages/utils/src/agent-models`) and returns 503 `AI_NOT_CONFIGURED` if that provider's key is missing.
 - Optional Tinybird observability: set `TINYBIRD_TOKEN` (and optionally `TINYBIRD_BASE_URL`) in `apps/api/.env`. Events are silently skipped when the token is absent.
-- More detail on architecture, tools, and routes lives in [`prd/ai-course-assistant/README.md`](prd/ai-course-assistant/README.md).
+- More detail on architecture, tools, and routes lives in [`prd/ai-course-assistant [DONE]/README.md`](prd/ai-course-assistant%20[DONE]/README.md).
 
 ### Docker Compose (Full Stack)
 
@@ -206,3 +206,12 @@ cp .env.example .env   # copy env template, edit for your domain
 The script reads root `.env` via `docker compose --env-file .env` and auto-generates secure values for `AUTH_BEARER_TOKEN` and `PRIVATE_SERVER_KEY` when missing.
 
 See [`.env.example`](.env.example) for the full list of environment variables with required/optional grouping, and [`docker/docs/SELF_HOST.md`](docker/docs/SELF_HOST.md) for the complete Docker self-hosting guide.
+
+## Publishing
+
+When cutting releases for hosted assets or the npm MCP package, run:
+
+- **Storybook** — `pnpm --filter @cio/storybook storybook:publish`
+- **Course widget embed** — `pnpm --filter @cio/embeds embeds:publish`
+- **Question type picker** — `pnpm --filter @cio/embeds embeds:publish` (same script builds and uploads both embeds)
+- **MCP (`@classroomio/mcp`)** — bump the version in `packages/mcp/package.json`, then `pnpm mcp:build` and `pnpm --filter @classroomio/mcp publish`

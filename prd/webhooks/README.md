@@ -44,7 +44,7 @@ Today, ClassroomIO has no outbound webhook product:
 - `apps/api/src/routes/course/payment-request.ts`
 - `apps/dashboard/src/routes/org/[slug]/settings/integrations/+page.svelte`
 - `apps/dashboard/src/lib/features/settings/pages/integrations.svelte`
-- `prd/public-api/README.md`
+- `prd/public-api [DONE]/README.md`
 
 ## Product Goals
 

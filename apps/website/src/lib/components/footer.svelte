@@ -55,9 +55,9 @@
           <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
             <a href="/#ai"> AI Content </a>
           </li>
-          <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
+          <!-- <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
             <a href="/#deploy"> Deploy </a>
-          </li>
+          </li> -->
           <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
             <a href="/#testimonial"> Testimonials </a>
           </li>

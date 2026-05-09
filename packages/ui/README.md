@@ -64,6 +64,7 @@ Components in the `custom` directory come from various sources or are built on t
 - `custom/image-cropper/` - Custom image cropping component
 - `custom/checkbox-field/` - Field component built on top of base Checkbox
 - `custom/newsfeed-reactions/` - Newsfeed reaction picker and summary used by course and program feeds
+- `custom/course-creator/` - ChatGPT-style course creation input with level and type selects
 
 ### Exercise question (`src/custom/exercise-question/`)
 

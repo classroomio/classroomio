@@ -1,27 +1,31 @@
-/**
- * Trims conversation message history to stay within token budget.
- *
- * Strategy:
- * - Always keep the first message (often contains the initial request/document context)
- * - Always keep the last N messages (recent context is most relevant)
- * - Drop middle messages when the array is too long
- *
- * This is a message-count heuristic, not a token counter. Each message averages
- * ~200-500 tokens, so capping at ~40 messages keeps us under ~20K tokens of
- * history, leaving room for the system prompt + document text + LLM response.
- */
+const MAX_MESSAGES = 20;
+const KEEP_RECENT = 16;
+const MAX_TOOL_OUTPUT_CHARS = 2000;
 
-const MAX_MESSAGES = 40;
-const KEEP_RECENT = 30;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function trimToolOutputs(messages: any[]): any[] {
+  return messages.map((message) => {
+    if (!Array.isArray(message.parts)) return message;
+
+    const trimmedParts = message.parts.map((part: any) => {
+      if (part.state !== 'output-available' || part.output == null) return part;
+
+      const serialized = typeof part.output === 'string' ? part.output : JSON.stringify(part.output);
+      if (serialized.length <= MAX_TOOL_OUTPUT_CHARS) return part;
+
+      const truncated = serialized.slice(0, MAX_TOOL_OUTPUT_CHARS) + '…[truncated]';
+      return { ...part, output: truncated };
+    });
+
+    if (trimmedParts === message.parts) return message;
+
+    return { ...message, parts: trimmedParts };
+  });
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function trimMessageHistory(messages: any[]): any[] {
-  if (messages.length <= MAX_MESSAGES) {
-    return messages;
-  }
+  const countTrimmed = messages.length <= MAX_MESSAGES ? messages : [messages[0], ...messages.slice(-KEEP_RECENT)];
 
-  const firstMessage = messages[0];
-  const recentMessages = messages.slice(-KEEP_RECENT);
-
-  return [firstMessage, ...recentMessages];
+  return trimToolOutputs(countTrimmed);
 }

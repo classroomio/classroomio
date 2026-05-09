@@ -4,6 +4,7 @@
   import { page } from '$app/state';
   import { onMount, onDestroy } from 'svelte';
   import { resolve } from '$app/paths';
+  import type { Component } from 'svelte';
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import PlayIcon from '@lucide/svelte/icons/play';
   import UserIcon from '@lucide/svelte/icons/user';
@@ -13,23 +14,20 @@
   import ClockIcon from '@lucide/svelte/icons/clock';
 
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
-  import { BlurIn } from '@cio/ui/custom/animation/blurin';
-  import { DotPattern } from '@cio/ui/custom/animation/dot-pattern';
-  import { HeroVideoDialog } from '@cio/ui/custom/animation/hero-video-dialog';
   import { Sparkle } from '@cio/ui/custom/animation/sparkle';
   import { MagicCard } from '@cio/ui/custom/animation/magic-card';
 
   import { getLectureNo } from '$features/course/utils/functions';
+  import { normalizeLandingPageSettings } from '$features/org/utils/landing-page';
   import { currentOrg } from '$lib/utils/store/org';
-  import { globalStore } from '$lib/utils/store/app';
-  import Navigation from '$lib/components/Navigation/index.svelte';
+  import { basePath } from '$lib/utils/store/app';
+  import { user } from '$lib/utils/store/user';
   import { NAV_ITEM_KEY, NAV_ITEMS } from './constants';
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { handleOpenWidget, reviewsModalStore } from './store';
   import type { Course, CourseMetadata } from '$features/course/utils/types';
   import { courseApi } from '$features/course/api';
-  import { formatYoutubeEmbedUrl, isYoutubeUrl } from '@cio/ui/custom/media-player';
   import { filterNavItems, getCourseLessons, getCourseSections, getTotalLessons } from './utils';
   import { Button } from '@cio/ui/base/button';
 
@@ -52,27 +50,110 @@
     showStandaloneShell?: boolean;
   }
 
-  let { editMode = false, courseData = $bindable(), showStandaloneShell = true }: Props = $props();
+  let { editMode = false, courseData = $bindable(), showStandaloneShell = false }: Props = $props();
+
+  /** Editor / standalone shell: show org-theme hero + nav from `currentOrg.landingpage`. Org-site embed omits (parent provides hero). */
+  const showMarketingHero = $derived(showStandaloneShell || editMode);
+
+  const landingSettings = $derived(normalizeLandingPageSettings($currentOrg.landingpage));
+
+  const heroShellClass = $derived(
+    landingSettings.theme === 'classic'
+      ? 'ui:w-full ui:bg-muted/10 ui:text-foreground ui:font-sans'
+      : 'ui:w-full ui:bg-background ui:text-foreground ui:font-sans'
+  );
+
+  const orgNameForNav = $derived($currentOrg.name || get(courseData, 'org.name', '') || 'ClassroomIO');
+  const logoUrlForNav = $derived($currentOrg.avatarUrl || undefined);
+
+  const authAction = $derived(
+    $user.isLoggedIn
+      ? {
+          label: t.get($basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'),
+          href: resolve($basePath !== '#' ? $basePath : '/lms', {})
+        }
+      : {
+          label: t.get('navigation.login'),
+          href: '/login'
+        }
+  );
+
+  const courseHero = $derived.by(() => {
+    const slug = typeof courseData.slug === 'string' && courseData.slug.length > 0 ? courseData.slug : '';
+    const enrollHref = slug ? resolve(`/course/${slug}/enroll`, {}) : '#';
+    const enrollmentsOpen = get(courseData, 'metadata.allowNewStudent') === true;
+
+    return {
+      ...landingSettings.hero,
+      heading: get(courseData, 'title', '') || landingSettings.hero.heading,
+      subheading: get(courseData, 'description', '') || landingSettings.hero.subheading,
+      primaryAction: {
+        label: t.get('course.navItem.landing_page.start_course'),
+        href: enrollHref,
+        disabled: editMode || !enrollmentsOpen
+      },
+      image: get(courseData, 'logo', '') || landingSettings.hero.image
+    };
+  });
+
+  /** Matches API `buildCourseContent` — do not use `metadata.isContentGroupingEnabled` (dashboard normalizes undefined → true). */
+  const lessonsLayoutIsGrouped = $derived(courseData.content?.grouped === true);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let NavComponent = $state<Component<any> | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let HeroComponent = $state<Component<any> | null>(null);
+
+  $effect(() => {
+    if (!showMarketingHero) {
+      NavComponent = null;
+      HeroComponent = null;
+
+      return;
+    }
+
+    const theme = landingSettings.theme;
+    let cancelled = false;
+
+    void Promise.all([
+      theme === 'bold'
+        ? import('@cio/ui/custom/org-landing-page/bold/nav.svelte')
+        : theme === 'classic'
+          ? import('@cio/ui/custom/org-landing-page/classic/nav.svelte')
+          : import('@cio/ui/custom/org-landing-page/minimal/nav.svelte'),
+      theme === 'bold'
+        ? import('@cio/ui/custom/org-landing-page/bold/hero.svelte')
+        : theme === 'classic'
+          ? import('@cio/ui/custom/org-landing-page/classic/hero.svelte')
+          : import('@cio/ui/custom/org-landing-page/minimal/hero.svelte')
+    ]).then(([navMod, heroMod]) => {
+      if (!cancelled) {
+        NavComponent = navMod.default;
+        HeroComponent = heroMod.default;
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  });
 
   const reviews = $derived(get(courseData, 'metadata.reviews') || []);
-  const video = $derived(get(courseData, 'metadata.videoUrl'));
 
   const lessons = $derived(getCourseLessons(courseData));
   const totalRatings = $derived(reviews?.reduce((acc = 0, review) => acc + (review?.rating || 0), 0));
   const averageRating = $derived(reviews?.length ? (totalRatings / reviews.length).toFixed(1) : null);
   const expandDescription = $derived(Array(reviews?.length ?? 0).fill(false));
 
-  const allowNewStudent = $derived(get(courseData, 'metadata.allowNewStudent'));
-  const bannerImage = $derived(get(courseData, 'logo'));
-  const instructor = $derived(get(courseData, 'metadata.instructor') || {});
+  const instructor = $derived((get(courseData, 'metadata.instructor') || {}) as Record<string, unknown>);
   const organizationName = $derived(get(courseData, 'org.name') || $currentOrg.name || '');
   const instructorName = $derived.by(() => {
     const name = get(instructor, 'name');
-    return typeof name === 'string' && name.trim() ? name : organizationName;
+    return typeof name === 'string' && name.trim().length > 0 ? name : organizationName;
   });
   const instructorImageUrl = $derived.by(() => {
     const imageUrl = get(instructor, 'imgUrl');
-    return typeof imageUrl === 'string' && imageUrl.trim() ? imageUrl : '/images/avatar.svg';
+    return typeof imageUrl === 'string' && imageUrl.trim().length > 0 ? imageUrl : '/images/avatar.svg';
   });
   const certificate = $derived(
     get(courseData, 'metadata.certificate', {
@@ -92,8 +173,6 @@
   const courseSections = $derived(getCourseSections(courseData));
   const totalLessons = $derived(getTotalLessons(courseSections));
   const studentCount = $derived(courseData.group?.members?.length ?? 0);
-
-  const videoEmbedUrl = $derived(video ? (isYoutubeUrl(video) ? formatYoutubeEmbedUrl(video) : video) : '');
 
   function locationHashChanged() {
     activeNav = window.location.hash;
@@ -121,90 +200,38 @@
   <PoweredBy />
 {/if}
 
-{#if !editMode && showStandaloneShell}
-  <Navigation
-    logo={$currentOrg.avatarUrl || '/logo-192.png'}
-    orgName={$currentOrg.name}
-    disableSignup={$currentOrg.disableSignup || ($currentOrg.settings?.signup?.inviteOnly ?? false)}
-    isOrgSite={$globalStore.isOrgSite}
-    customLinks={$currentOrg.landingpage?.customLinks}
-  />
-{/if}
-
 <div class="flex w-full flex-col items-center bg-white dark:bg-black">
-  {#if showStandaloneShell}
-    <!-- Hero Section -->
-    <header class="relative w-full overflow-hidden bg-[#040f2d] py-12 md:py-20">
-      <DotPattern
-        class="[mask-image:radial-gradient(ellipse_at_center,white,transparent_80%)] opacity-10"
-        fillColor="rgb(255 255 255 / 0.5)"
-      />
-
-      <div
-        class="relative z-10 mx-auto flex w-full max-w-6xl flex-col-reverse items-center gap-8 px-6 md:flex-row md:gap-12"
-      >
-        <!-- Course Description -->
-        <div class="w-full py-4 md:w-1/2">
-          <BlurIn class="my-4 text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
-            {get(courseData, 'title', '')}
-          </BlurIn>
-
-          <BlurFade delay={0.2}>
-            <p class="mb-6 text-base leading-relaxed text-gray-300 md:text-lg">
-              {get(courseData, 'description', '')}
-            </p>
-          </BlurFade>
-
-          <BlurFade delay={0.3}>
-            <p class="mb-6 text-sm text-blue-300">
-              {instructorName}
-            </p>
-          </BlurFade>
-
-          <BlurFade delay={0.4}>
-            <Button
-              class="hidden h-12 px-8 text-base font-semibold sm:w-fit md:block"
-              onclick={() => {
-                if (editMode) return;
-                startCoursePayment = true;
-              }}
-              disabled={!allowNewStudent}
-            >
-              {$t('course.navItem.landing_page.start_course')}
-            </Button>
-          </BlurFade>
-
-          {#if $handleOpenWidget.open}
-            <UploadWidget
-              imageURL={courseApi.course?.logo}
-              onchange={(newLogo) => (courseApi.course!.logo = newLogo)}
-            />
-          {/if}
-        </div>
-
-        <!-- Banner Image / Video -->
-        <div class="w-full md:w-1/2">
-          <BlurFade delay={0.3} yOffset={20}>
-            {#if video}
-              <HeroVideoDialog
-                videoSrc={videoEmbedUrl}
-                thumbnailSrc={bannerImage || '/images/classroomio-course-img-template.jpg'}
-                thumbnailAlt={get(courseData, 'title', 'Course video')}
-                animationStyle="from-center"
+  {#if showMarketingHero}
+    <div class={heroShellClass}>
+      {#if NavComponent && HeroComponent}
+        {#if landingSettings.theme === 'minimal'}
+          <HeroComponent hero={courseHero}>
+            {#snippet navigation()}
+              <NavComponent
+                orgName={orgNameForNav}
+                logoUrl={logoUrlForNav}
+                navItems={landingSettings.navItems}
+                {authAction}
               />
-            {:else}
-              <div class="overflow-hidden rounded-xl shadow-2xl">
-                <img
-                  alt="Course banner"
-                  src={bannerImage ? bannerImage : '/images/classroomio-course-img-template.jpg'}
-                  class="h-auto w-full rounded-xl object-cover"
-                />
-              </div>
-            {/if}
-          </BlurFade>
+            {/snippet}
+          </HeroComponent>
+        {:else}
+          <NavComponent
+            orgName={orgNameForNav}
+            logoUrl={logoUrlForNav}
+            navItems={landingSettings.navItems}
+            {authAction}
+          />
+          <HeroComponent hero={courseHero} />
+        {/if}
+      {/if}
+
+      {#if editMode && $handleOpenWidget.open}
+        <div class="mx-auto w-full max-w-7xl px-6 py-2">
+          <UploadWidget imageURL={courseApi.course?.logo} onchange={(newLogo) => (courseApi.course!.logo = newLogo)} />
         </div>
-      </div>
-    </header>
+      {/if}
+    </div>
 
     <!-- Social Proof Strip -->
     {#if reviews.length > 0 || studentCount > 0 || lessons.length > 0}
@@ -252,7 +279,7 @@
       <!-- Course Details -->
       <div class="w-full max-w-[680px] min-w-[60%] p-3 lg:mr-10">
         <!-- Navigation -->
-        <UnderlineTabs.Root bind:value={activeNav} class="ui:bg-background sticky top-0 z-20 py-2">
+        <UnderlineTabs.Root bind:value={activeNav} class="py-2">
           <UnderlineTabs.List>
             {#each navItems as navItem (navItem.key)}
               <UnderlineTabs.Trigger value={navItem.key}>
@@ -323,8 +350,8 @@
           </NavSection>
         {/if}
 
-        <!-- Sections - Lessons -->
-        {#if !courseData.metadata?.isContentGroupingEnabled}
+        <!-- Sections - Lessons (layout follows `content.grouped` from API, not client-normalized metadata) -->
+        {#if !lessonsLayoutIsGrouped}
           <NavSection id="lessons">
             <BlurFade delay={0.1}>
               <div class="mb-3 flex w-full items-center justify-between">
@@ -352,7 +379,7 @@
               </div>
             </BlurFade>
           </NavSection>
-        {:else if courseData.metadata?.isContentGroupingEnabled}
+        {:else}
           <NavSection id="lessons">
             <BlurFade delay={0.1}>
               <!-- header -->
@@ -419,10 +446,10 @@
                         <p class="mb-0.5 font-medium">{review.name}</p>
                         <!-- ratings -->
                         <div class="mb-2 flex items-center gap-0.5">
-                          {#each Array(5) as _, i}
+                          {#each Array(5) as _, starIndex (starIndex)}
                             <StarIcon
                               size={14}
-                              class={i < (review.rating || 0)
+                              class={starIndex < (review.rating || 0)
                                 ? 'fill-yellow-400 text-yellow-400'
                                 : 'text-gray-300 dark:text-neutral-600'}
                             />
@@ -496,10 +523,10 @@
                           <!-- ratings -->
                           <div class="flex flex-row items-center gap-1">
                             <div class="flex items-center gap-0.5">
-                              {#each Array(5) as _, i}
+                              {#each Array(5) as _, starIndex (starIndex)}
                                 <StarIcon
                                   size={14}
-                                  class={i < (review.rating || 0)
+                                  class={starIndex < (review.rating || 0)
                                     ? 'fill-yellow-400 text-yellow-400'
                                     : 'text-gray-300 dark:text-neutral-600'}
                                 />

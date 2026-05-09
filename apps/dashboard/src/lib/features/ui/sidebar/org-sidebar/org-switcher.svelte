@@ -14,7 +14,7 @@
   import { setTheme } from '$lib/utils/functions/theme';
   import { currentOrg, currentOrgPath, orgs } from '$lib/utils/store/org';
 
-  import { ComingSoon } from '$features/ui';
+  import ComingSoon from '$features/ui/coming-soon.svelte';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
   const sidebar = useSidebar();
@@ -41,7 +41,7 @@
   <!-- Self-hosted: show org name only, no switching -->
   {#if variant === 'breadcrumb'}
     <Breadcrumb.Link href={$currentOrgPath} class="flex items-center gap-2">
-      {#if $currentOrg.name}sfsf
+      {#if $currentOrg.name}
         <Avatar.Root class="flex size-6! items-center justify-center rounded-md!">
           <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />
           <Avatar.Fallback class="rounded-md! text-xs">{shortenName($currentOrg.name)}</Avatar.Fallback>

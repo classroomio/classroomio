@@ -11,8 +11,13 @@
   import { Image } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
   import { copyCourseModal, deleteCourseModal } from '$features/course/utils/store';
+  import { copyPublicCoursePageUrl, openCoursePreview } from '$features/course/utils/course-preview';
+  import { currentOrgDomain } from '$lib/utils/store/org';
   import { buildCoursePlaceholderAvatarUrl } from '$features/course/utils/course-list-row-utils';
   import CourseContentIcon from './course-content-icon.svelte';
+  import CoursePublicBadge from './course-public-badge.svelte';
+  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
+  import CopyIcon from '@lucide/svelte/icons/copy';
 
   interface Tag {
     id: string;
@@ -59,10 +64,14 @@
 
   const bannerImage = $derived(logo?.trim() ? logo : '/images/classroomio-course-img-template.jpg');
 
+  const showPublicCourseLinks = $derived(isPublished && type === 'PUBLIC' && slug.trim().length > 0);
+
+  const showActionsColumn = $derived(!isLMS || (isLMS && showPublicCourseLinks));
+
   const gridTemplateColumns = $derived(
-    isLMS
-      ? '7rem minmax(0, 2fr) 5.5rem minmax(0, 2fr) 4.5rem 6rem'
-      : '7rem minmax(0, 2fr) 5.5rem minmax(0, 2fr) 4.5rem 6rem 2.5rem'
+    showActionsColumn
+      ? '7rem minmax(0, 2fr) 5.5rem minmax(0, 2fr) 4.5rem 6rem 2.5rem'
+      : '7rem minmax(0, 2fr) 5.5rem minmax(0, 2fr) 4.5rem 6rem'
   );
 
   const studentPlaceholderAvatarUrls = $derived.by(() => [
@@ -112,6 +121,10 @@
     $deleteCourseModal.id = id;
     $deleteCourseModal.title = title;
   }
+
+  async function handleCopyCourseUrl() {
+    await copyPublicCoursePageUrl(slug, $currentOrgDomain);
+  }
 </script>
 
 <ResourceListRow.Root
@@ -133,7 +146,12 @@
 
     <!-- Title / type / updated -->
     <div class="flex min-w-0 flex-col gap-0.5">
-      <p class="line-clamp-2 text-base">{title}</p>
+      <div class="flex min-w-0 flex-wrap items-center gap-2">
+        <p class="line-clamp-2 min-w-0 flex-1 text-base">{title}</p>
+        {#if type === 'PUBLIC'}
+          <CoursePublicBadge class="shrink-0" />
+        {/if}
+      </div>
       {#if typeLabel}
         <p class="ui:text-muted-foreground mt-0.5 text-sm">{typeLabel}</p>
       {/if}
@@ -225,7 +243,7 @@
     </div>
 
     <!-- Actions -->
-    {#if !isLMS}
+    {#if showActionsColumn}
       <div class="flex justify-end">
         <DropdownMenu.Root>
           <DropdownMenu.Trigger>
@@ -235,7 +253,7 @@
                 variant="ghost"
                 size="icon"
                 class="size-8"
-                aria-label="Course actions"
+                aria-label={$t('courses.course_card.actions_menu_aria')}
                 onclick={(e) => e.stopPropagation()}
               >
                 <EllipsisVerticalIcon class="size-4" />
@@ -243,16 +261,38 @@
             {/snippet}
           </DropdownMenu.Trigger>
           <DropdownMenu.Content align="end">
-            <DropdownMenu.Item onclick={handleOpen}>
-              {$t('courses.course_card.context_menu.open')}
-            </DropdownMenu.Item>
-            <DropdownMenu.Item onclick={handleClone}>
-              {$t('courses.course_card.context_menu.clone')}
-            </DropdownMenu.Item>
-            <DropdownMenu.Separator />
-            <DropdownMenu.Item variant="destructive" onclick={handleDelete}>
-              {$t('courses.course_card.context_menu.delete')}
-            </DropdownMenu.Item>
+            {#if showPublicCourseLinks}
+              <DropdownMenu.Item
+                onclick={() =>
+                  openCoursePreview({
+                    courseId: id,
+                    courseSlug: slug,
+                    currentOrgDomain: $currentOrgDomain
+                  })}
+              >
+                <ExternalLinkIcon class="mr-2 size-4" />
+                {$t('courses.course_card.context_menu.open_public_course')}
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onclick={() => void handleCopyCourseUrl()}>
+                <CopyIcon class="mr-2 size-4" />
+                {$t('courses.course_card.context_menu.copy_course_url')}
+              </DropdownMenu.Item>
+            {/if}
+            {#if !isLMS}
+              {#if showPublicCourseLinks}
+                <DropdownMenu.Separator />
+              {/if}
+              <DropdownMenu.Item onclick={handleOpen}>
+                {$t('courses.course_card.context_menu.open')}
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onclick={handleClone}>
+                {$t('courses.course_card.context_menu.clone')}
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item variant="destructive" onclick={handleDelete}>
+                {$t('courses.course_card.context_menu.delete')}
+              </DropdownMenu.Item>
+            {/if}
           </DropdownMenu.Content>
         </DropdownMenu.Root>
       </div>

@@ -1,24 +1,29 @@
-import * as schema from '@cio/db/schema';
-
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { and, eq, isNull } from 'drizzle-orm';
 import {
   checkEmailsExistInOrg,
+  claimPendingOrganizationInvite,
   createOrganizationInvite,
   createOrganizationInviteAudit,
+  createOrganizationMember,
   createOrganizationMembers,
   getActivePendingOrgInviteForEmail,
   getOrganizationById,
   getOrganizationInviteByTokenHash,
-  revokeActiveOrganizationInvitesByEmails
+  revokeActiveOrganizationInvitesByEmails,
+  selectOrganizationInviteWithOrgByInviteId,
+  selectOrganizationInviteWithOrgByTokenHash,
+  selectOrganizationMemberByOrgAndNormalizedEmail,
+  selectOrganizationMemberByOrgAndProfile,
+  updateOrganizationMemberById
 } from '@cio/db/queries/organization';
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
 import { addProgramMember, getExistingProgramMembers } from '@cio/db/queries/program';
 
 import { ROLE } from '@cio/utils/constants';
+import type { TNewOrganizationInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
-import { db } from '@cio/db/drizzle';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { parseCourseIdsFromInviteMetadata, parseProgramIdsFromInviteMetadata } from '@api/utils/org';
 import { markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
@@ -90,10 +95,59 @@ function getExpiryLabel(expiresAtIso: string): string {
   });
 }
 
+async function syncOrgMemberForOrgInvite(
+  tx: DbOrTxClient,
+  params: { organizationId: string; roleId: number; normalizedEmail: string; userId: string }
+): Promise<void> {
+  const orgMemberByEmail = await selectOrganizationMemberByOrgAndNormalizedEmail(
+    tx,
+    params.organizationId,
+    params.normalizedEmail
+  );
+
+  if (orgMemberByEmail) {
+    if (orgMemberByEmail.profileId && orgMemberByEmail.profileId !== params.userId) {
+      throw new AppError('This invite is linked to another account', ErrorCodes.UNAUTHORIZED, 403);
+    }
+
+    await updateOrganizationMemberById(tx, orgMemberByEmail.id, {
+      profileId: params.userId,
+      roleId: params.roleId,
+      email: params.normalizedEmail,
+      verified: true
+    });
+
+    return;
+  }
+
+  const orgMemberByProfile = await selectOrganizationMemberByOrgAndProfile(tx, params.organizationId, params.userId);
+
+  if (orgMemberByProfile) {
+    await updateOrganizationMemberById(tx, orgMemberByProfile.id, {
+      roleId: params.roleId,
+      email: params.normalizedEmail,
+      verified: true
+    });
+
+    return;
+  }
+
+  await createOrganizationMember(
+    {
+      organizationId: params.organizationId,
+      roleId: params.roleId,
+      profileId: params.userId,
+      email: params.normalizedEmail,
+      verified: true
+    },
+    tx
+  );
+}
+
 async function recordOrganizationInviteAudit(
   inviteId: string,
   organizationId: string,
-  eventType: (typeof schema.organizationInviteEventType.enumValues)[number],
+  eventType: TNewOrganizationInviteAudit['eventType'],
   context: {
     actorProfileId?: string | null;
     targetEmail?: string | null;
@@ -281,19 +335,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
   const tokenHash = hashToken(token);
 
   const result = await db.transaction(async (tx) => {
-    const [row] = await tx
-      .select({
-        invite: schema.organizationInvite,
-        organization: {
-          id: schema.organization.id,
-          name: schema.organization.name,
-          siteName: schema.organization.siteName
-        }
-      })
-      .from(schema.organizationInvite)
-      .innerJoin(schema.organization, eq(schema.organizationInvite.organizationId, schema.organization.id))
-      .where(eq(schema.organizationInvite.tokenHash, tokenHash))
-      .limit(1);
+    const row = await selectOrganizationInviteWithOrgByTokenHash(tx, tokenHash);
 
     if (!row) {
       throw new AppError('Invalid invite link', ErrorCodes.NOT_FOUND, 404);
@@ -321,82 +363,16 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
       };
     }
 
-    const [orgMemberByEmail] = await tx
-      .select()
-      .from(schema.organizationmember)
-      .where(
-        and(
-          eq(schema.organizationmember.organizationId, row.invite.organizationId),
-          eq(schema.organizationmember.email, normalizedEmail)
-        )
-      )
-      .limit(1);
-
-    if (orgMemberByEmail) {
-      if (orgMemberByEmail.profileId && orgMemberByEmail.profileId !== user.id) {
-        throw new AppError('This invite is linked to another account', ErrorCodes.UNAUTHORIZED, 403);
-      }
-
-      await tx
-        .update(schema.organizationmember)
-        .set({
-          profileId: user.id,
-          roleId: row.invite.roleId,
-          email: normalizedEmail,
-          verified: true
-        })
-        .where(eq(schema.organizationmember.id, orgMemberByEmail.id));
-    } else {
-      const [orgMemberByProfile] = await tx
-        .select()
-        .from(schema.organizationmember)
-        .where(
-          and(
-            eq(schema.organizationmember.organizationId, row.invite.organizationId),
-            eq(schema.organizationmember.profileId, user.id)
-          )
-        )
-        .limit(1);
-
-      if (orgMemberByProfile) {
-        await tx
-          .update(schema.organizationmember)
-          .set({
-            roleId: row.invite.roleId,
-            email: normalizedEmail,
-            verified: true
-          })
-          .where(eq(schema.organizationmember.id, orgMemberByProfile.id));
-      } else {
-        await tx.insert(schema.organizationmember).values({
-          organizationId: row.invite.organizationId,
-          roleId: row.invite.roleId,
-          profileId: user.id,
-          email: normalizedEmail,
-          verified: true
-        });
-      }
-    }
+    await syncOrgMemberForOrgInvite(tx, {
+      organizationId: row.invite.organizationId,
+      roleId: row.invite.roleId,
+      normalizedEmail,
+      userId: user.id
+    });
 
     await markUserAndProfileEmailVerified(user.id, tx);
 
-    const [acceptedInvite] = await tx
-      .update(schema.organizationInvite)
-      .set({
-        acceptedAt: new Date().toISOString(),
-        acceptedByProfileId: user.id,
-        updatedAt: new Date().toISOString()
-      })
-      .where(
-        and(
-          eq(schema.organizationInvite.id, row.invite.id),
-          eq(schema.organizationInvite.isRevoked, false),
-          isNull(schema.organizationInvite.acceptedAt)
-        )
-      )
-      .returning({
-        id: schema.organizationInvite.id
-      });
+    const acceptedInvite = await claimPendingOrganizationInvite(tx, row.invite.id, user.id);
 
     if (!acceptedInvite) {
       throw new AppError('Invite is no longer available', ErrorCodes.VALIDATION_ERROR, 409);
@@ -523,19 +499,7 @@ export async function acceptOrganizationInviteById(
   const normalizedEmail = user.email.toLowerCase().trim();
 
   const result = await db.transaction(async (tx) => {
-    const [row] = await tx
-      .select({
-        invite: schema.organizationInvite,
-        organization: {
-          id: schema.organization.id,
-          name: schema.organization.name,
-          siteName: schema.organization.siteName
-        }
-      })
-      .from(schema.organizationInvite)
-      .innerJoin(schema.organization, eq(schema.organizationInvite.organizationId, schema.organization.id))
-      .where(eq(schema.organizationInvite.id, inviteId))
-      .limit(1);
+    const row = await selectOrganizationInviteWithOrgByInviteId(tx, inviteId);
 
     if (!row) {
       throw new AppError('Invalid invite', ErrorCodes.NOT_FOUND, 404);
@@ -560,71 +524,16 @@ export async function acceptOrganizationInviteById(
       return { organization: row.organization, invite: row.invite, roleId: row.invite.roleId, alreadyAccepted: true };
     }
 
-    const [orgMemberByEmail] = await tx
-      .select()
-      .from(schema.organizationmember)
-      .where(
-        and(
-          eq(schema.organizationmember.organizationId, row.invite.organizationId),
-          eq(schema.organizationmember.email, normalizedEmail)
-        )
-      )
-      .limit(1);
-
-    if (orgMemberByEmail) {
-      if (orgMemberByEmail.profileId && orgMemberByEmail.profileId !== user.id) {
-        throw new AppError('This invite is linked to another account', ErrorCodes.UNAUTHORIZED, 403);
-      }
-
-      await tx
-        .update(schema.organizationmember)
-        .set({ profileId: user.id, roleId: row.invite.roleId, email: normalizedEmail, verified: true })
-        .where(eq(schema.organizationmember.id, orgMemberByEmail.id));
-    } else {
-      const [orgMemberByProfile] = await tx
-        .select()
-        .from(schema.organizationmember)
-        .where(
-          and(
-            eq(schema.organizationmember.organizationId, row.invite.organizationId),
-            eq(schema.organizationmember.profileId, user.id)
-          )
-        )
-        .limit(1);
-
-      if (orgMemberByProfile) {
-        await tx
-          .update(schema.organizationmember)
-          .set({ roleId: row.invite.roleId, email: normalizedEmail, verified: true })
-          .where(eq(schema.organizationmember.id, orgMemberByProfile.id));
-      } else {
-        await tx.insert(schema.organizationmember).values({
-          organizationId: row.invite.organizationId,
-          roleId: row.invite.roleId,
-          profileId: user.id,
-          email: normalizedEmail,
-          verified: true
-        });
-      }
-    }
+    await syncOrgMemberForOrgInvite(tx, {
+      organizationId: row.invite.organizationId,
+      roleId: row.invite.roleId,
+      normalizedEmail,
+      userId: user.id
+    });
 
     await markUserAndProfileEmailVerified(user.id, tx);
 
-    const [acceptedInvite] = await tx
-      .update(schema.organizationInvite)
-      .set({
-        acceptedAt: new Date().toISOString(),
-        acceptedByProfileId: user.id,
-        updatedAt: new Date().toISOString()
-      })
-      .where(
-        and(
-          eq(schema.organizationInvite.id, row.invite.id),
-          eq(schema.organizationInvite.isRevoked, false),
-          isNull(schema.organizationInvite.acceptedAt)
-        )
-      )
-      .returning({ id: schema.organizationInvite.id });
+    const acceptedInvite = await claimPendingOrganizationInvite(tx, row.invite.id, user.id);
 
     if (!acceptedInvite) {
       throw new AppError('Invite is no longer available', ErrorCodes.VALIDATION_ERROR, 409);

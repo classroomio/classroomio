@@ -35,6 +35,7 @@ export interface OrgLandingPageHero {
   primaryAction: {
     label: string;
     href: string;
+    disabled?: boolean;
   };
   secondaryAction?: {
     label: string;
@@ -69,6 +70,15 @@ export interface OrgAudience {
   email: string;
   avatar_url: string;
   date_joined: string;
+}
+
+/** Vercel project domain GET (subset used by domain helpers). */
+export interface DomainResponse {
+  name?: string;
+  verified?: boolean;
+  apexName?: string;
+  projectId?: string;
+  error?: { code: string; message: string };
 }
 
 export interface DomainConfigResponse {

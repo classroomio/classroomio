@@ -1,16 +1,22 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { sanitizeHtml, sanitizeOptionalHtml, sanitizeUnknownStrings } from '@api/utils/sanitize-html';
-import { addGroupMember, createGroup, getCourseProgramAccess } from '@cio/db/queries/group';
 import {
   createCourseNewsfeed,
   createCourse as createCourseQuery,
   createCourseSections,
   deleteCourse as deleteCourseQuery,
   getCourseProgress as getCourseProgressQuery,
+  getCourseTypeById,
   getCourseWithRelations,
   updateCourse as updateCourseQuery,
   updateLessonsSectionId
 } from '@cio/db/queries/course';
+import {
+  addGroupMember,
+  createGroup,
+  getCourseProgramAccess,
+  insertGroupMembersOnConflictDoNothing
+} from '@cio/db/queries/group';
 import {
   getLastLogin,
   getLessonsWithCompletion,
@@ -22,11 +28,12 @@ import { ContentType, ROLE } from '@cio/utils/constants';
 import type { TCourse } from '@cio/db/types';
 import type { TCourseCreate } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
-import * as schema from '@db/schema';
 import { exerciseBelongsToCourse } from '@cio/db/queries/course/certification-exercise';
 import { updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { getProfileById } from '@cio/db/queries/auth';
+import { insertOrganizationMembersOnConflictDoNothing } from '@cio/db/queries/organization';
 import { buildCourseContent, calcPercentageWithRounding, formatLastSeen, type CourseContent } from './utils';
+import { guardCourseTypeTransition } from './public-course-guard';
 
 const DEFAULT_CONTENT_GROUPING = true;
 const DEFAULT_SECTION_TITLE = 'First Section [edit me]';
@@ -45,26 +52,30 @@ export async function ensureProgramCourseAccess(courseId: string, profileId: str
   const normalizedEmail = access.profileEmail?.trim() || undefined;
 
   await db.transaction(async (tx) => {
-    await tx
-      .insert(schema.organizationmember)
-      .values({
-        organizationId,
-        roleId: access.roleId,
-        profileId,
-        email: normalizedEmail,
-        verified: true
-      })
-      .onConflictDoNothing();
+    await insertOrganizationMembersOnConflictDoNothing(
+      [
+        {
+          organizationId,
+          roleId: access.roleId,
+          profileId,
+          email: normalizedEmail,
+          verified: true
+        }
+      ],
+      tx
+    );
 
-    await tx
-      .insert(schema.groupmember)
-      .values({
-        groupId: access.courseGroupId,
-        roleId: access.roleId,
-        profileId,
-        email: normalizedEmail
-      })
-      .onConflictDoNothing();
+    await insertGroupMembersOnConflictDoNothing(
+      [
+        {
+          groupId: access.courseGroupId,
+          roleId: access.roleId,
+          profileId,
+          email: normalizedEmail ?? undefined
+        }
+      ],
+      tx
+    );
   });
 
   return true;
@@ -265,6 +276,16 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
       logo: data.logo,
       slug: data.slug
     };
+
+    if (data.type !== undefined) {
+      const currentType = await getCourseTypeById(courseId);
+
+      await guardCourseTypeTransition({
+        courseId,
+        currentType: currentType ?? null,
+        nextType: data.type
+      });
+    }
 
     if (data.certificate?.requiredExerciseId) {
       const ok = await exerciseBelongsToCourse(data.certificate.requiredExerciseId, courseId);

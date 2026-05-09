@@ -5,7 +5,7 @@
 
   interface Props {
     contract: ExerciseQuestionListRenderContract;
-    onAnswerChange?: (question: ExerciseQuestionModel, answer: AnswerData) => void;
+    onAnswerChange?: (question: ExerciseQuestionModel, answer: AnswerData | null) => void;
     onQuestionChange?: (question: ExerciseQuestionModel, updatedQuestion: ExerciseQuestionModel) => void;
     itemClass?: string;
     showContainer?: boolean;
@@ -33,10 +33,13 @@
         disabled: contract.disabled,
         labels: contract.labels,
         onImageUpload: contract.onImageUpload,
-        onFileUpload: contract.onFileUpload
+        onFileUpload: contract.onFileUpload,
+        onVideoRecordingUpload: contract.onVideoRecordingUpload
       }}
       onAnswerChange={(answer) => onAnswerChange(question, answer)}
       onQuestionChange={(updatedQuestion) => onQuestionChange(question, updatedQuestion)}
+      questionNumber={index + 1}
+      questionNumberActive={false}
       {showContainer}
     />
   </div>

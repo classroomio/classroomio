@@ -16,7 +16,7 @@
   import Empty from '@cio/ui/custom/empty/empty.svelte';
   import { BookIcon } from '@lucide/svelte';
   import { ROLE } from '@cio/utils/constants';
-  import { buildNextNewsfeedReaction } from '@cio/ui/custom/newsfeed-reactions';
+  import { buildNextNewsfeedReaction, type NewsfeedReactionType } from '@cio/ui/custom/newsfeed-reactions';
 
   interface Props {
     courseId: string;
@@ -48,13 +48,13 @@
     await newsfeedApi.deleteComment(courseId, feedId, commentId);
   };
 
-  const addNewReaction = async (reactionType: string, feedId: string, authorId: string) => {
+  const addNewReaction = async (reactionType: NewsfeedReactionType, feedId: string, authorId: string) => {
     if (!authorId || isReactingByFeedId[feedId]) return;
 
     const reactedFeed = newsfeedApi.feeds.find((feed) => feed.id === feedId);
     if (!reactedFeed) return;
 
-    const updatedReaction = buildNextNewsfeedReaction(reactedFeed.reaction, reactionType, authorId);
+    const updatedReaction = buildNextNewsfeedReaction(reactedFeed.reaction ?? undefined, reactionType, authorId);
 
     isReactingByFeedId = { ...isReactingByFeedId, [feedId]: true };
 

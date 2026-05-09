@@ -14,7 +14,8 @@ export type AgentRole = (typeof AgentRole)[keyof typeof AgentRole];
 export const AIProvider = {
   OPENAI: 'openai',
   ANTHROPIC: 'anthropic',
-  GOOGLE: 'google'
+  GOOGLE: 'google',
+  MOONSHOT: 'moonshot'
 } as const;
 
 export type AIProvider = (typeof AIProvider)[keyof typeof AIProvider];
@@ -92,7 +93,9 @@ export const ToolName = {
   UPDATE_LESSON: 'update_lesson',
   UPDATE_LESSON_CONTENT: 'update_lesson_content',
   CREATE_EXERCISE: 'create_exercise',
+  CREATE_EXERCISE_SECTION: 'create_exercise_section',
   UPDATE_EXERCISE: 'update_exercise',
+  UPDATE_EXERCISE_SECTION: 'update_exercise_section',
   ADD_QUESTIONS: 'add_questions',
   UPDATE_QUESTIONS: 'update_questions',
   UPDATE_COURSE_LANDING_PAGE: 'update_course_landing_page',

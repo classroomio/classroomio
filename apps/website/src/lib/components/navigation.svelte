@@ -25,72 +25,134 @@
     key: string;
   };
 
-  let showDrawer = false;
-  let showSolutions = false;
+  type NavCollectionItem = {
+    key: string;
+    title: string;
+    subtitle: string;
+    href: string;
+  };
+
+  type NavItem = {
+    key: string;
+    title: string;
+    href?: string;
+    items?: NavCollectionItem[];
+  };
+
+  let expandedMobileGroup = $state<string | null>(null);
+  let showSolutions = $state(false);
   let activeLink = $derived(page.url.pathname);
-  let activeHash = $derived(page.url.hash);
 
-  $effect(() => {
-    console.log('activeLink', activeLink);
-    console.log('activeHash', activeHash);
-    console.log('isSolutionsActive', isSolutionsActive);
-  });
-
-  function handleShowDrawer() {
-    showDrawer = !showDrawer;
+  function handleMobileGroupToggle(groupKey: string) {
+    expandedMobileGroup = expandedMobileGroup === groupKey ? null : groupKey;
   }
 
   function handleShowSolutions() {
     showSolutions = !showSolutions;
+
+    if (!showSolutions) {
+      expandedMobileGroup = null;
+    }
   }
 
-  const solutions = [
+  function closeMobileMenu() {
+    showSolutions = false;
+    expandedMobileGroup = null;
+  }
+
+  const solutions: NavCollectionItem[] = [
     {
       key: 'employee-training',
       title: 'Employee Training',
-      subtitle: 'Keep your team in sync.'
+      subtitle: 'Keep your team in sync.',
+      href: '/employee-training'
     },
     {
       key: 'bootcamps',
       title: 'Bootcamps',
-      subtitle: 'Drive student satisfaction.'
+      subtitle: 'Drive student satisfaction.',
+      href: '/bootcamps'
     },
     {
       key: 'customer-education',
       title: 'Customer Education',
-      subtitle: 'Teach customers your product.'
+      subtitle: 'Teach customers your product.',
+      href: '/customer-education'
     }
   ];
 
-  const freeTools = [
+  const freeTools: NavCollectionItem[] = [
     {
       key: 'progress',
       title: 'Progress Tracker',
-      subtitle: 'Monitor learning journeys.'
+      subtitle: 'Monitor learning journeys.',
+      href: '/tools/progress'
     },
     {
       key: 'pomodoro',
       title: 'Pomodoro Timer',
-      subtitle: 'Boost focus and productivity.'
+      subtitle: 'Boost focus and productivity.',
+      href: '/tools/pomodoro'
     },
     {
       key: 'name-picker',
       title: 'Name Picker',
-      subtitle: 'Randomly select names.'
+      subtitle: 'Randomly select names.',
+      href: '/tools/name-picker'
     },
     {
       key: 'stopwatch',
       title: 'Activity Stopwatch',
-      subtitle: 'Track time accurately.'
+      subtitle: 'Track time accurately.',
+      href: '/tools/stopwatch'
     },
     {
       key: 'tic-tac-toe',
       title: 'Tic Tac Toe',
-      subtitle: 'Play the classic game.'
+      subtitle: 'Play the classic game.',
+      href: '/tools/tic-tac-toe'
+    }
+  ];
+
+  const navItems: NavItem[] = [
+    {
+      key: 'solutions',
+      title: 'Solutions',
+      href: '/',
+      items: solutions
+    },
+    {
+      key: 'free-tools',
+      title: 'Free Tools',
+      href: '/tools',
+      items: freeTools
+    },
+    {
+      key: 'blog',
+      title: 'Blog',
+      href: '/blog'
+    },
+    {
+      key: 'pricing',
+      title: 'Pricing',
+      href: '/pricing'
     }
   ];
 
   let isSolutionsActive = $derived(!!solutions.some((s) => activeLink.includes(s.key)));
+  let isFreeToolsActive = $derived(activeLink.startsWith('/tools'));
+
+  function isNavItemActive(navItem: NavItem) {
+    if (navItem.key === 'solutions') {
+      return isSolutionsActive;
+    }
+
+    if (navItem.key === 'free-tools') {
+      return isFreeToolsActive;
+    }
+
+    return navItem.href ? activeLink.startsWith(navItem.href) : false;
+  }
 </script>
 
 {#snippet list_item({ title, subtitle, href, key, class: className, ...restProps }: ListItemProps)}
@@ -147,88 +209,51 @@
     <section class="hidden lg:block">
       <NavigationMenu.Root class="p-1">
         <NavigationMenu.List class="flex w-full items-center justify-center gap-1">
-          <NavigationMenu.Item>
-            <NavigationMenu.Trigger
-              class={cn(
-                'flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100',
-                isSolutionsActive && 'bg-gray-100!'
-              )}
-            >
-              <a href="/" class="no-underline"> Solutions </a>
-            </NavigationMenu.Trigger>
-            <NavigationMenu.Content>
-              <ul class="grid w-[560px] grid-cols-2 gap-2 p-2">
-                {#each solutions as solution}
-                  {@render list_item({
-                    href: `/${solution.key}`,
-                    title: solution.title,
-                    subtitle: solution.subtitle,
-                    key: solution.key
-                  })}
-                {/each}
-              </ul>
-            </NavigationMenu.Content>
-          </NavigationMenu.Item>
-
-          <NavigationMenu.Item>
-            <NavigationMenu.Trigger
-              class={cn(
-                'flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100',
-                activeLink.startsWith('/tools') && 'bg-gray-100!'
-              )}
-            >
-              <a href="/tools" class="no-underline"> Free Tools </a>
-            </NavigationMenu.Trigger>
-            <NavigationMenu.Content>
-              <ul class="grid w-[560px] grid-cols-2 gap-2 p-2">
-                {#each freeTools as tool}
-                  {@render list_item({
-                    href: `/tools/${tool.key}`,
-                    title: tool.title,
-                    subtitle: tool.subtitle,
-                    key: tool.key
-                  })}
-                {/each}
-              </ul>
-            </NavigationMenu.Content>
-          </NavigationMenu.Item>
-
-          <NavigationMenu.Item>
-            <NavigationMenu.Link>
-              {#snippet child()}
-                <a
-                  href="/blog"
+          {#each navItems as navItem}
+            <NavigationMenu.Item>
+              {#if navItem.items}
+                <NavigationMenu.Trigger
                   class={cn(
-                    'cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-gray-800 no-underline transition-all duration-200 hover:bg-gray-100',
-                    activeLink.startsWith('/blog') && 'bg-gray-100'
+                    'flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100',
+                    isNavItemActive(navItem) && 'bg-gray-100!'
                   )}
                 >
-                  Blog
-                </a>
-              {/snippet}
-            </NavigationMenu.Link>
-          </NavigationMenu.Item>
-
-          <NavigationMenu.Item>
-            <NavigationMenu.Link>
-              {#snippet child()}
-                <a
-                  href="/pricing"
-                  class={cn(
-                    'cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-gray-800 no-underline transition-all duration-200 hover:bg-gray-100',
-                    activeLink.startsWith('/pricing') && 'bg-gray-100'
-                  )}
-                >
-                  Pricing
-                </a>
-              {/snippet}
-            </NavigationMenu.Link>
-          </NavigationMenu.Item>
+                  <a href={navItem.href} class="no-underline">{navItem.title}</a>
+                </NavigationMenu.Trigger>
+                <NavigationMenu.Content>
+                  <ul class="grid w-[560px] grid-cols-2 gap-2 p-2">
+                    {#each navItem.items as item}
+                      {@render list_item({
+                        href: item.href,
+                        title: item.title,
+                        subtitle: item.subtitle,
+                        key: item.key
+                      })}
+                    {/each}
+                  </ul>
+                </NavigationMenu.Content>
+              {:else}
+                <NavigationMenu.Link>
+                  {#snippet child()}
+                    <a
+                      href={navItem.href}
+                      class={cn(
+                        'cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-gray-800 no-underline transition-all duration-200 hover:bg-gray-100',
+                        isNavItemActive(navItem) && 'bg-gray-100'
+                      )}
+                    >
+                      {navItem.title}
+                    </a>
+                  {/snippet}
+                </NavigationMenu.Link>
+              {/if}
+            </NavigationMenu.Item>
+          {/each}
         </NavigationMenu.List>
       </NavigationMenu.Root>
     </section>
 
-    <div class="hidden flex-row items-center justify-between gap-3 md:hidden lg:flex">
+    <div class="hidden flex-row items-center justify-between gap-3 lg:flex">
       <a href="/discord" target="_blank" class="flex items-center transition-opacity duration-200 hover:opacity-80">
         <img loading="lazy" alt="discord logo" src="/discord-blue.png" class="h-5 w-6 cursor-pointer" />
       </a>
@@ -259,7 +284,7 @@
       </a>
     </div>
 
-    <button type="button" aria-label="Hamburger Menu" class="block md:block lg:hidden" onclick={handleShowSolutions}>
+    <button type="button" aria-label="Hamburger Menu" class="shrink-0 lg:hidden" onclick={handleShowSolutions}>
       <Menu size={24} />
     </button>
 
@@ -277,78 +302,48 @@
         </div>
         <nav>
           <ul class="flex w-full flex-col items-center justify-between lg:flex-row">
-            <li class="w-full cursor-pointer text-sm font-semibold text-gray-800 md:text-lg">
-              <button
-                class={cn(
-                  'flex w-full items-center justify-between rounded-lg px-4 py-3 transition-all duration-200 hover:bg-gray-100',
-                  isSolutionsActive && 'bg-gray-100'
-                )}
-                onclick={handleShowDrawer}
-              >
-                Our Superpowers <ChevronDown />
-              </button>
-              {#if showDrawer}
-                <div in:fly={{ y: -20, duration: 700 }} out:fly={{ y: 20, duration: 400 }}>
-                  {#each solutions as solution}
-                    <a
-                      href="/{solution.key}"
-                      onclick={() => {
-                        handleShowSolutions();
-                      }}
-                    >
-                      <p
-                        class="rounded-lg py-2.5 pl-5 text-xs font-normal text-gray-700 transition-colors duration-200 hover:bg-gray-100"
-                      >
-                        {solution.title}
-                      </p>
-                    </a>
-                  {/each}
-                </div>
-              {/if}
-            </li>
-            <a
-              class="w-full cursor-pointer rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg"
-              onclick={handleShowSolutions}
-              href="/tools"
-            >
-              <li>Free Tools</li>
-            </a>
-            <a
-              class={cn(
-                'w-full cursor-pointer rounded-md px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg',
-                activeLink.startsWith('/morefeatures') && 'bg-gray-100'
-              )}
-              onclick={() => {
-                handleShowSolutions();
-              }}
-              href="/blog"
-            >
-              <li>Blog</li>
-            </a>
-            <a
-              class={cn(
-                'w-full cursor-pointer rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg',
-                activeLink.startsWith('/pricing') && 'bg-gray-100'
-              )}
-              onclick={() => {
-                handleShowSolutions();
-              }}
-              href="/pricing"
-            >
-              <li>Pricing</li>
-            </a>
-            <a
-              class={cn(
-                'w-full cursor-pointer rounded-md px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg',
-                activeHash.includes('morefeatures') && 'bg-gray-100'
-              )}
-              onclick={() => {
-                handleShowSolutions();
-              }}
-              href="/#morefeatures"
-            >
-              <li>More features</li>
-            </a>
+            {#each navItems as navItem}
+              <li class="w-full cursor-pointer text-sm font-semibold text-gray-800 md:text-lg">
+                {#if navItem.items}
+                  <button
+                    class={cn(
+                      'flex w-full items-center justify-between rounded-lg px-4 py-3 transition-all duration-200 hover:bg-gray-100',
+                      isNavItemActive(navItem) && 'bg-gray-100'
+                    )}
+                    onclick={() => {
+                      handleMobileGroupToggle(navItem.key);
+                    }}
+                  >
+                    {navItem.title}
+                    <ChevronDown />
+                  </button>
+                  {#if expandedMobileGroup === navItem.key}
+                    <div in:fly={{ y: -20, duration: 700 }} out:fly={{ y: 20, duration: 400 }}>
+                      {#each navItem.items as item}
+                        <a href={item.href} onclick={closeMobileMenu}>
+                          <p
+                            class="rounded-lg py-2.5 pl-5 text-xs font-normal text-gray-700 transition-colors duration-200 hover:bg-gray-100"
+                          >
+                            {item.title}
+                          </p>
+                        </a>
+                      {/each}
+                    </div>
+                  {/if}
+                {:else}
+                  <a
+                    class={cn(
+                      'block w-full rounded-md px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg',
+                      isNavItemActive(navItem) && 'bg-gray-100'
+                    )}
+                    onclick={closeMobileMenu}
+                    href={navItem.href}
+                  >
+                    {navItem.title}
+                  </a>
+                {/if}
+              </li>
+            {/each}
           </ul>
         </nav>
         <div class="mt-5 flex flex-col items-start gap-y-2 border-t pt-5">

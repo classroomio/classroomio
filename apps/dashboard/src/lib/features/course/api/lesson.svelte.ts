@@ -163,9 +163,20 @@ export class LessonApi extends BaseApiWithErrors {
           json: result.data
         }),
       logContext: 'updating lesson',
+      onSuccess: () => {
+        this.errors = {};
+      },
       onError: (result) => {
-        console.log('onError', result);
-        snackbar.error('snackbar.lessons.lesson_update_failed');
+        if (typeof result === 'string') {
+          snackbar.error('snackbar.lessons.lesson_update_failed');
+          return;
+        }
+        if ('error' in result && 'field' in result && result.field) {
+          this.errors[result.field] = result.error;
+          snackbar.error(result.error);
+        } else {
+          snackbar.error('snackbar.lessons.lesson_update_failed');
+        }
       }
     });
 

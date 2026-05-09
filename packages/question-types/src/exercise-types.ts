@@ -1,5 +1,5 @@
 import type { QuestionTypeKey } from './question-type-keys';
-import type { AnswerData } from './answer-data';
+import type { AnswerData, VideoRecordingAnswerData } from './answer-data';
 
 export type ExerciseQuestionTypeKey = QuestionTypeKey;
 
@@ -105,6 +105,41 @@ export type ExerciseQuestionLabelKey =
   | 'file_upload.take.view'
   | 'file_upload.preview.accepted_types_label'
   | 'file_upload.preview.max_size_label'
+  | 'video_recording.edit.max_duration_label'
+  | 'video_recording.edit.max_duration_helper'
+  | 'video_recording.edit.max_duration_placeholder'
+  | 'video_recording.edit.manual_grading'
+  | 'video_recording.take.unsupported'
+  | 'video_recording.take.permission_prompt'
+  | 'video_recording.take.permission_denied'
+  | 'video_recording.take.start_camera'
+  | 'video_recording.take.camera_label'
+  | 'video_recording.take.camera_placeholder'
+  | 'video_recording.take.play_preview'
+  | 'video_recording.take.pause_preview'
+  | 'video_recording.take.start_recording'
+  | 'video_recording.take.stop_recording'
+  | 'video_recording.take.elapsed'
+  | 'video_recording.take.remaining'
+  | 'video_recording.take.max_duration'
+  | 'video_recording.take.too_short'
+  | 'video_recording.take.use_recording'
+  | 'video_recording.take.retake'
+  | 'video_recording.take.delete'
+  | 'video_recording.take.retry_upload'
+  | 'video_recording.take.uploading'
+  | 'video_recording.take.uploaded'
+  | 'video_recording.take.upload_failed'
+  | 'video_recording.take.replaces_previous'
+  | 'video_recording.preview.max_duration_label'
+  | 'video_recording.preview.manual_grading'
+  | 'video_recording.submission.no_video'
+  | 'video_recording.submission.unavailable'
+  | 'video_recording.submission.duration'
+  | 'video_recording.submission.file_size'
+  | 'video_recording.submission.recorded_at'
+  | 'video_recording.submission.uploaded_at'
+  | 'video_recording.submission.retake_count'
   | 'link.edit.instructions_placeholder'
   | 'link.edit.helper'
   | 'link.take.helper'
@@ -195,6 +230,17 @@ export type ExerciseQuestionFileUploader = (
   file: File
 ) => Promise<{ fileKey: string; fileName: string; fileUrl?: string }>;
 
+export type ExerciseQuestionVideoRecordingUploader = (input: {
+  questionId: number | string;
+  blob: Blob;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  durationSeconds: number;
+  recordedAt: string;
+  retakeCount: number;
+}) => Promise<VideoRecordingAnswerData>;
+
 export interface ExerciseRendererDefinition<TRenderer = unknown> {
   edit: TRenderer;
   take: TRenderer;
@@ -211,8 +257,9 @@ export interface ExerciseQuestionRendererProps {
   maxSubmissionItems?: number;
   disabled?: boolean;
   labels?: ExerciseQuestionLabels;
-  onAnswerChange?: (answer: AnswerData) => void;
+  onAnswerChange?: (answer: AnswerData | null) => void;
   onQuestionChange?: (question: ExerciseQuestionModel) => void;
   onImageUpload?: ExerciseQuestionImageUploader;
   onFileUpload?: ExerciseQuestionFileUploader;
+  onVideoRecordingUpload?: ExerciseQuestionVideoRecordingUploader;
 }

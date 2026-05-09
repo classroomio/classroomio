@@ -4,7 +4,13 @@
   import { fly } from 'svelte/transition';
   import { cubicInOut } from 'svelte/easing';
   import { courseApi } from '$features/course/api';
-  import { questionnaire, questionnaireMetaData, resetStudentExerciseTake } from './store';
+  import {
+    getQuestionsForSection,
+    hasSections,
+    questionnaire,
+    questionnaireMetaData,
+    resetStudentExerciseTake
+  } from './store';
   import Preview from './preview.svelte';
   import { ExerciseQuestion } from '@cio/ui';
   import * as Alert from '@cio/ui/base/alert';
@@ -22,6 +28,7 @@
     getTextareaAnswerCharacterCount,
     toApiPayload,
     type AnswerData,
+    type ExerciseQuestionVideoRecordingUploader,
     validateTextareaAnswer
   } from '@cio/question-types';
   import { exerciseApi, presignApi } from '$features/course/api';
@@ -37,10 +44,12 @@
   import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
   import { toExerciseQuestionModel } from './question-type-utils';
   import { getExerciseQuestionLabels } from './question-labels';
+  import { getExerciseSectionDisplayTitle } from '$features/course/utils/exercise-section-utils';
   import axios from 'axios';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import type { Question } from '$features/course/types';
 
   interface Props {
     preview?: boolean;
@@ -61,11 +70,17 @@
   let slideDirection = $state<'next' | 'prev'>('next');
   let selectedTryIndex = $state(-1);
   const questionLabels = $derived(getExerciseQuestionLabels());
+  const sectionFallbackTitle = $derived($t('course.navItem.lessons.exercises.all_exercises.section.fallback_title'));
 
   const submissionList = $derived(Array.isArray(mySubmissions) ? mySubmissions : []);
 
   function handleStart() {
-    questionnaireMetaData.update((m) => ({ ...m, currentQuestionIndex: m.currentQuestionIndex + 1 }));
+    questionnaireMetaData.update((m) => ({
+      ...m,
+      currentQuestionIndex: 1,
+      currentSectionIndex: 0,
+      sectionPhase: hasSectionedExercise ? 'overview' : 'questions'
+    }));
   }
 
   function normalizeAnswerValue(
@@ -84,11 +99,107 @@
     return toApiPayload(answerData, questionId);
   }
 
+  async function submitExercise() {
+    if (!courseApi.course?.id || isSubmitting) return;
+
+    isSubmitting = true;
+
+    const updated = get(questionnaireMetaData);
+    localStorage.removeItem(`autosave-exercise-${exerciseId}`);
+    const totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
+
+    const answersForApi = Object.entries(updated.answers)
+      .map(([questionKey, val]) => {
+        const question = $questionnaire.questions.find(
+          (item) => getExerciseQuestionContractKey(toExerciseQuestionModel(item)) === questionKey
+        );
+        if (!question) return null;
+        return mapAnswerToApiPayload(question, val);
+      })
+      .filter((answer) => answer !== null) as Array<{ questionId: number; optionId?: number; answer?: string }>;
+
+    if (answersForApi.length === 0) {
+      isSubmitting = false;
+      snackbar.error(t.get('course.navItem.lessons.exercises.all_exercises.view_mode.answers_required'));
+      return;
+    }
+
+    const submitResult = await exerciseApi.submit(courseApi.course.id, exerciseId, answersForApi);
+
+    if (exerciseApi.success && submitResult?.data) {
+      skipHydrateFromSubmissions = false;
+      const sub = submitResult.data as unknown as SubmissionListItem & { gradingState?: string };
+      if (sub.gradingState === 'completed' && sub.statusId === STATUS.GRADED && Array.isArray(sub.answers)) {
+        applyMySubmission(sub);
+      } else {
+        questionnaireMetaData.update((m) => ({
+          ...m,
+          status: 1,
+          totalPossibleGrade,
+          grades: {},
+          comment: '',
+          isFinished: true,
+          exerciseId
+        }));
+      }
+      courseApi.updateContentItem(exerciseId, ContentType.Exercise, { isComplete: true });
+
+      toggleConfetti();
+      setTimeout(toggleConfetti, 3000);
+
+      const allContentItems = getOrderedNavigableContent(courseApi.course);
+      const allComplete =
+        $isOrgStudent && allContentItems.length > 0 && allContentItems.every((item) => item.isComplete);
+
+      if (allComplete && courseApi.course?.id) {
+        openCourseCompletionModal(courseApi.course.id);
+      }
+    }
+
+    isSubmitting = false;
+  }
+
+  function evaluateSectionAfterBehavior() {
+    if (!currentSection) return;
+
+    const behavior = currentSection.afterBehavior;
+    if (behavior.action === 'submit') {
+      submitExercise();
+      return;
+    }
+
+    if (behavior.action === 'go_to_section' && behavior.exerciseSectionId) {
+      const targetIndex = activeSections.findIndex((section) => section.id === behavior.exerciseSectionId);
+      if (targetIndex >= 0) {
+        questionnaireMetaData.update((m) => ({
+          ...m,
+          currentSectionIndex: targetIndex,
+          currentQuestionIndex: 1,
+          sectionPhase: 'overview'
+        }));
+        return;
+      }
+    }
+
+    const nextSectionIndex = $questionnaireMetaData.currentSectionIndex + 1;
+    if (nextSectionIndex < activeSections.length) {
+      questionnaireMetaData.update((m) => ({
+        ...m,
+        currentSectionIndex: nextSectionIndex,
+        currentQuestionIndex: 1,
+        sectionPhase: 'overview'
+      }));
+      return;
+    }
+
+    submitExercise();
+  }
+
   async function onSubmit(id, value) {
     if (!courseApi.course?.id) return;
 
     const { answers } = $questionnaireMetaData;
-    const { questions } = $questionnaire;
+    const questions = hasSectionedExercise ? currentSectionQuestions : $questionnaire.questions;
     const prevAnswer = answers[id];
     const formattedAnswer = normalizeAnswerValue(prevAnswer, value);
 
@@ -110,63 +221,11 @@
     const isLastQuestion = currentIndex === questions.length;
 
     if (isLastQuestion) {
-      // Stay on last question, show spinner, submit to server
-      if (isSubmitting) return;
-      isSubmitting = true;
-
-      const updated = get(questionnaireMetaData);
-      localStorage.removeItem(`autosave-exercise-${exerciseId}`);
-      const totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
-
-      const answersForApi = Object.entries(updated.answers)
-        .map(([questionKey, val]) => {
-          const question = questions.find(
-            (item) => getExerciseQuestionContractKey(toExerciseQuestionModel(item)) === questionKey
-          );
-          if (!question) return null;
-          return mapAnswerToApiPayload(question, val);
-        })
-        .filter((answer) => answer !== null) as Array<{ questionId: number; optionId?: number; answer?: string }>;
-
-      if (answersForApi.length === 0) {
-        isSubmitting = false;
-        snackbar.error(t.get('course.navItem.lessons.exercises.all_exercises.view_mode.answers_required'));
-        return;
+      if (hasSectionedExercise) {
+        evaluateSectionAfterBehavior();
+      } else {
+        await submitExercise();
       }
-
-      const submitResult = await exerciseApi.submit(courseApi.course.id, exerciseId, answersForApi);
-
-      if (exerciseApi.success && submitResult?.data) {
-        skipHydrateFromSubmissions = false;
-        const sub = submitResult.data as unknown as SubmissionListItem & { gradingState?: string };
-        if (sub.gradingState === 'completed' && sub.statusId === STATUS.GRADED && Array.isArray(sub.answers)) {
-          applyMySubmission(sub);
-        } else {
-          questionnaireMetaData.update((m) => ({
-            ...m,
-            status: 1,
-            totalPossibleGrade,
-            grades: {},
-            comment: '',
-            isFinished: true,
-            exerciseId
-          }));
-        }
-        courseApi.updateContentItem(exerciseId, ContentType.Exercise, { isComplete: true });
-
-        toggleConfetti();
-        setTimeout(toggleConfetti, 3000);
-
-        const allContentItems = getOrderedNavigableContent(courseApi.course);
-        const allComplete =
-          $isOrgStudent && allContentItems.length > 0 && allContentItems.every((item) => item.isComplete);
-
-        if (allComplete && courseApi.course?.id) {
-          openCourseCompletionModal(courseApi.course.id);
-        }
-      }
-
-      isSubmitting = false;
     } else {
       // Advance to next question
       slideDirection = 'next';
@@ -177,6 +236,11 @@
   }
 
   function onPrevious() {
+    if (hasSectionedExercise && $questionnaireMetaData.currentQuestionIndex <= 1) {
+      questionnaireMetaData.update((m) => ({ ...m, sectionPhase: 'overview' }));
+      return;
+    }
+
     slideDirection = 'prev';
     questionnaireMetaData.update((m) => ({ ...m, currentQuestionIndex: m.currentQuestionIndex - 1 }));
   }
@@ -184,6 +248,14 @@
   function getProgressValue(currentQuestionIndex) {
     if ($questionnaireMetaData.isFinished) {
       return 100;
+    }
+
+    if (hasSectionedExercise) {
+      const activeQuestionCount = $questionnaire.questions.filter((question) => !question.deletedAt).length;
+      const answeredCount = Object.values($questionnaireMetaData.answers).filter((answer) =>
+        hasAnswerValue(answer)
+      ).length;
+      return Math.round((answeredCount / activeQuestionCount) * 100) || 0;
     }
 
     return Math.round(((currentQuestionIndex - 1) / $questionnaire.questions.length) * 100) || 0;
@@ -233,6 +305,48 @@
     return { fileKey: uploadResult.fileKey, fileName: file.name, fileUrl };
   }
 
+  const handleVideoRecordingUpload: ExerciseQuestionVideoRecordingUploader = async (input) => {
+    if (!courseApi.course?.id || !exerciseId) {
+      throw new Error('Exercise is not ready for upload');
+    }
+
+    const initResult = await exerciseApi.initVideoRecordingUpload(courseApi.course.id, exerciseId, input.questionId, {
+      fileName: input.fileName,
+      mimeType: input.mimeType as 'video/webm' | 'video/mp4' | 'video/quicktime',
+      size: input.size
+    });
+    if (!initResult?.data) {
+      throw new Error('Failed to get upload URL');
+    }
+
+    await axios.put(initResult.data.uploadUrl, input.blob, {
+      headers: { 'Content-Type': input.mimeType },
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity
+    });
+
+    const completeResult = await exerciseApi.completeVideoRecordingUpload(
+      courseApi.course.id,
+      exerciseId,
+      input.questionId,
+      {
+        assetId: initResult.data.assetId,
+        storageKey: initResult.data.storageKey,
+        fileName: input.fileName,
+        mimeType: input.mimeType as 'video/webm' | 'video/mp4' | 'video/quicktime',
+        size: input.size,
+        durationSeconds: input.durationSeconds,
+        recordedAt: input.recordedAt,
+        retakeCount: input.retakeCount
+      }
+    );
+    if (!completeResult?.data) {
+      throw new Error('Failed to complete upload');
+    }
+
+    return completeResult.data;
+  };
+
   function hasAnswerValue(answerValue: AnswerData | null | undefined): boolean {
     if (answerValue === null || answerValue === undefined) return false;
     if (typeof answerValue === 'object' && 'type' in answerValue) {
@@ -256,6 +370,8 @@
         }
         case 'FILE_UPLOAD':
           return !!answerValue.fileKey;
+        case 'VIDEO_RECORDING':
+          return !!answerValue.assetId && !!answerValue.storageKey;
         case 'MATCHING':
           return answerValue.pairs.length > 0;
         case 'ORDERING':
@@ -271,16 +387,22 @@
     return false;
   }
 
-  function onSharedAnswerChange(answerValue) {
+  function onSharedAnswerChange(answerValue: AnswerData | null) {
     if (!sharedCurrentQuestionKey) return;
 
-    questionnaireMetaData.update((metaData) => ({
-      ...metaData,
-      answers: {
-        ...metaData.answers,
-        [sharedCurrentQuestionKey]: answerValue
+    questionnaireMetaData.update((metaData) => {
+      const answers = { ...metaData.answers };
+      if (answerValue === null) {
+        delete answers[sharedCurrentQuestionKey];
+      } else {
+        answers[sharedCurrentQuestionKey] = answerValue;
       }
-    }));
+
+      return {
+        ...metaData,
+        answers
+      };
+    });
   }
 
   function onSharedNext(valueOverride?: AnswerData) {
@@ -300,7 +422,59 @@
     onSubmit(sharedCurrentQuestionKey, valueToUse);
   }
 
+  function beginCurrentSection() {
+    questionnaireMetaData.update((m) => ({
+      ...m,
+      currentQuestionIndex: 1,
+      sectionPhase: 'questions'
+    }));
+  }
+
+  function goBackFromSectionOverview() {
+    if ($questionnaireMetaData.currentSectionIndex <= 0) {
+      questionnaireMetaData.update((m) => ({
+        ...m,
+        currentQuestionIndex: 0,
+        sectionPhase: 'overview'
+      }));
+      return;
+    }
+
+    questionnaireMetaData.update((m) => ({
+      ...m,
+      currentSectionIndex: m.currentSectionIndex - 1,
+      currentQuestionIndex: 1,
+      sectionPhase: 'overview'
+    }));
+  }
+
+  function onSectionQuestionAnswerChange(question: Question, answerValue: AnswerData) {
+    const questionKey = getExerciseQuestionContractKey(toExerciseQuestionModel(question));
+    questionnaireMetaData.update((metaData) => ({
+      ...metaData,
+      answers: {
+        ...metaData.answers,
+        [questionKey]: answerValue
+      }
+    }));
+  }
+
+  function completeAllQuestionsSection() {
+    const missingAnswer = currentSectionQuestions.find((question) => {
+      const questionKey = getExerciseQuestionContractKey(toExerciseQuestionModel(question));
+      return !hasAnswerValue($questionnaireMetaData.answers[questionKey]);
+    });
+
+    if (missingAnswer) {
+      snackbar.error(t.get('course.navItem.lessons.exercises.all_exercises.view_mode.answer_required'));
+      return;
+    }
+
+    evaluateSectionAfterBehavior();
+  }
+
   function handleEnterKey(e: KeyboardEvent) {
+    if (hasSectionedExercise && $questionnaire.sectionDisplayMode === 'all_questions') return;
     if (e.key !== 'Enter' || isSubmitting || !currentQuestion) return;
 
     const target = e.target as HTMLElement;
@@ -374,9 +548,34 @@
   });
 
   const progressValue = $derived(getProgressValue($questionnaireMetaData.currentQuestionIndex));
-  const currentQuestion = $derived($questionnaire.questions[$questionnaireMetaData.currentQuestionIndex - 1]);
+  const activeSections = $derived(
+    [...($questionnaire.sections ?? [])].filter((section) => !section.deletedAt).sort((a, b) => a.order - b.order)
+  );
+  const hasSectionedExercise = $derived(hasSections($questionnaire.sections ?? []));
+  const currentSection = $derived(
+    hasSectionedExercise ? activeSections[$questionnaireMetaData.currentSectionIndex] : null
+  );
+  const currentSectionQuestions = $derived(
+    currentSection ? getQuestionsForSection($questionnaire.questions, currentSection.id) : []
+  );
+  const currentSectionDisplayTitle = $derived(
+    currentSection
+      ? getExerciseSectionDisplayTitle({
+          title: currentSection.title,
+          sectionNumber: $questionnaireMetaData.currentSectionIndex + 1,
+          sectionLabel: sectionFallbackTitle
+        })
+      : ''
+  );
+  const currentQuestionList = $derived(hasSectionedExercise ? currentSectionQuestions : $questionnaire.questions);
+  const currentQuestion = $derived(currentQuestionList[$questionnaireMetaData.currentQuestionIndex - 1]);
   const isExerciseLoaded = $derived(alreadyCheckedAutoSavedData && $questionnaire.questions.length > 0);
-  const isFinished = $derived(isExerciseLoaded && $questionnaireMetaData.currentQuestionIndex > 0 && !currentQuestion);
+  const isFinished = $derived(
+    isExerciseLoaded &&
+      $questionnaireMetaData.currentQuestionIndex > 0 &&
+      !currentQuestion &&
+      (!hasSectionedExercise || $questionnaireMetaData.isFinished)
+  );
   const sharedQuestionModel = $derived(currentQuestion ? toExerciseQuestionModel(currentQuestion) : null);
   const sharedCurrentQuestionKey = $derived(
     sharedQuestionModel ? getExerciseQuestionContractKey(sharedQuestionModel) : null
@@ -385,6 +584,33 @@
     sharedCurrentQuestionKey ? $questionnaireMetaData.answers[sharedCurrentQuestionKey] : undefined
   );
   const canGoNextForSharedQuestion = $derived(hasAnswerValue(sharedCurrentAnswer));
+  const sectionQuestionTotalPoints = $derived(getTotalPossibleGrade(currentSectionQuestions));
+  const sectionNavigationGroups = $derived(
+    activeSections.map((section, sectionIndex) => {
+      const sectionQuestions = getQuestionsForSection($questionnaire.questions, section.id);
+      return {
+        id: section.id,
+        title: getExerciseSectionDisplayTitle({
+          title: section.title,
+          sectionNumber: sectionIndex + 1,
+          sectionLabel: sectionFallbackTitle
+        }),
+        isCurrent: currentSection?.id === section.id,
+        questions: sectionQuestions.map((question, questionIndex) => {
+          const questionKey = getExerciseQuestionContractKey(toExerciseQuestionModel(question));
+          return {
+            key: questionKey,
+            label: `Q${questionIndex + 1}`,
+            isAnswered: hasAnswerValue($questionnaireMetaData.answers[questionKey]),
+            isCurrent:
+              sectionIndex === $questionnaireMetaData.currentSectionIndex &&
+              questionIndex === $questionnaireMetaData.currentQuestionIndex - 1 &&
+              $questionnaireMetaData.sectionPhase === 'questions'
+          };
+        })
+      };
+    })
+  );
 
   const flyX = $derived(slideDirection === 'next' ? 300 : -300);
   const flyOutX = $derived(-flyX);
@@ -459,6 +685,8 @@
       answers,
       totalPossibleGrade,
       currentQuestionIndex: $questionnaire.questions.length,
+      currentSectionIndex: activeSections.length > 0 ? activeSections.length - 1 : 0,
+      sectionPhase: 'questions',
       isFinished: true,
       status: submission.statusId ?? STATUS.PENDING,
       finalTotalGrade,
@@ -470,7 +698,7 @@
 
   $effect(() => {
     if (prevExerciseId === exerciseId) return;
-    if (!!prevExerciseId) {
+    if (prevExerciseId) {
       isSubmitting = false;
       alreadyCheckedAutoSavedData = false;
       skipHydrateFromSubmissions = false;
@@ -483,7 +711,12 @@
 {#if !preview && $questionnaire.questions.length && !$questionnaireMetaData.isFinished && $questionnaireMetaData.currentQuestionIndex > 0}
   <div class="mb-6 flex min-w-0 items-center gap-3">
     <span class="ui:text-muted-foreground shrink-0 text-sm tabular-nums">
-      {$questionnaireMetaData.currentQuestionIndex}/{$questionnaire.questions.length}
+      {#if hasSectionedExercise}
+        {Object.values($questionnaireMetaData.answers).filter((answer) => hasAnswerValue(answer))
+          .length}/{$questionnaire.questions.length}
+      {:else}
+        {$questionnaireMetaData.currentQuestionIndex}/{$questionnaire.questions.length}
+      {/if}
     </span>
     <Progress class="min-w-0 flex-1" value={$questionnaireMetaData.progressValue} />
   </div>
@@ -493,7 +726,11 @@
 
 {#if preview}
   <RoleBasedSecurity allowedRoles={[1, 2]}>
-    <Preview questions={filterOutDeleted($questionnaire.questions)} questionnaireMetaData={$questionnaireMetaData} />
+    <Preview
+      questions={filterOutDeleted($questionnaire.questions)}
+      sections={$questionnaire.sections}
+      questionnaireMetaData={$questionnaireMetaData}
+    />
   </RoleBasedSecurity>
 {:else if !$questionnaire.questions.length}
   <Empty
@@ -621,6 +858,7 @@
       questions={[...$questionnaire.questions].sort(
         (leftQuestion, rightQuestion) => leftQuestion.order - rightQuestion.order
       )}
+      sections={$questionnaire.sections}
       questionnaireMetaData={$questionnaireMetaData}
       grades={$questionnaireMetaData.grades}
       disableGrading={true}
@@ -636,44 +874,133 @@
       {/if}
     </RoleBasedSecurity>
   {/if}
-{:else if currentQuestion && currentQuestion?.id}
-  <div class="flex flex-col gap-4">
-    <div class="grid overflow-hidden" style="grid-template-areas: 'slot';">
-      {#key currentQuestion.id}
-        <div
-          id="question"
-          class="min-w-0 [grid-area:slot]"
-          in:fly={{ x: flyX, duration: 350, easing: cubicInOut }}
-          out:fly={{ x: flyOutX, duration: 350, easing: cubicInOut }}
-        >
-          {#if sharedQuestionModel}
-            <ExerciseQuestion.QuestionRenderer
-              contract={{
-                mode: 'take',
-                question: sharedQuestionModel,
-                answer: sharedCurrentAnswer,
-                labels: questionLabels,
-                disabled: isSubmitting,
-                onFileUpload: handleFileUpload
-              }}
-              onAnswerChange={onSharedAnswerChange}
-            />
-          {/if}
-        </div>
-      {/key}
-    </div>
-    <div>
-      <ExerciseQuestion.QuestionNavigation
-        canGoBack={$questionnaireMetaData.currentQuestionIndex > 1}
-        canGoNext={canGoNextForSharedQuestion && !isSubmitting}
-        isLast={$questionnaireMetaData.currentQuestionIndex === $questionnaire.questions.length}
-        {isSubmitting}
-        previousLabel={t.get('course.navItem.lessons.exercises.all_exercises.previous')}
-        nextLabel={t.get('course.navItem.lessons.exercises.all_exercises.next')}
-        finishLabel={t.get('course.navItem.lessons.exercises.all_exercises.finish')}
-        {onPrevious}
-        onNext={onSharedNext}
+{:else if hasSectionedExercise && currentSection && $questionnaireMetaData.sectionPhase === 'overview'}
+  <ExerciseQuestion.SectionOverview
+    sectionTitle={currentSectionDisplayTitle}
+    sectionDescription={currentSection.description}
+    sectionNumber={$questionnaireMetaData.currentSectionIndex + 1}
+    totalSections={activeSections.length}
+    questionCount={currentSectionQuestions.length}
+    totalPoints={sectionQuestionTotalPoints}
+    colorTheme={currentSection.colorTheme}
+    onBegin={beginCurrentSection}
+    onBack={goBackFromSectionOverview}
+    labels={{
+      beginSection: $t('course.navItem.lessons.exercises.all_exercises.view_mode.begin_section'),
+      back: $t('course.navItem.lessons.exercises.all_exercises.view_mode.back'),
+      questions: $t('course.navItem.lessons.exercises.all_exercises.view_mode.questions'),
+      points: $t('course.navItem.lessons.exercises.all_exercises.view_mode.points'),
+      section: $t('course.navItem.lessons.exercises.all_exercises.section.fallback_title')
+    }}
+  />
+{:else if hasSectionedExercise && currentSection && $questionnaire.sectionDisplayMode === 'all_questions' && $questionnaireMetaData.sectionPhase === 'questions'}
+  <div class="grid gap-4 lg:grid-cols-[180px_minmax(0,1fr)]">
+    <ExerciseQuestion.SectionNavigationSidebar sections={sectionNavigationGroups} />
+    <section class="space-y-4">
+      <ExerciseQuestion.SectionHeader
+        title={currentSectionDisplayTitle}
+        description={currentSection.description}
+        sectionNumber={$questionnaireMetaData.currentSectionIndex + 1}
+        totalSections={activeSections.length}
+        colorTheme={currentSection.colorTheme}
+        questionCount={currentSectionQuestions.length}
+        totalPoints={sectionQuestionTotalPoints}
+        labels={{
+          section: $t('course.navItem.lessons.exercises.all_exercises.section.fallback_title'),
+          questions: $t('course.navItem.lessons.exercises.all_exercises.view_mode.questions'),
+          points: $t('course.navItem.lessons.exercises.all_exercises.view_mode.points')
+        }}
       />
+
+      {#each currentSectionQuestions as sectionQuestion, sectionQuestionIndex (sectionQuestion.id)}
+        {@const sectionQuestionModel = toExerciseQuestionModel(sectionQuestion)}
+        {@const sectionQuestionKey = getExerciseQuestionContractKey(toExerciseQuestionModel(sectionQuestion))}
+        <ExerciseQuestion.QuestionRenderer
+          contract={{
+            mode: 'take',
+            question: sectionQuestionModel,
+            answer: $questionnaireMetaData.answers[sectionQuestionKey],
+            labels: questionLabels,
+            disabled: isSubmitting,
+            onFileUpload: handleFileUpload,
+            onVideoRecordingUpload: handleVideoRecordingUpload
+          }}
+          questionNumber={sectionQuestionIndex + 1}
+          questionNumberActive={false}
+          onAnswerChange={(answerValue) => onSectionQuestionAnswerChange(sectionQuestion, answerValue)}
+        />
+      {/each}
+
+      <div class="flex justify-end">
+        <Button type="button" onclick={completeAllQuestionsSection} disabled={isSubmitting} loading={isSubmitting}>
+          {$questionnaireMetaData.currentSectionIndex === activeSections.length - 1
+            ? $t('course.navItem.lessons.exercises.all_exercises.finish')
+            : $t('course.navItem.lessons.exercises.all_exercises.view_mode.complete_section')}
+        </Button>
+      </div>
+    </section>
+  </div>
+{:else if currentQuestion && currentQuestion?.id}
+  <div class={hasSectionedExercise ? 'grid gap-4 lg:grid-cols-[180px_minmax(0,1fr)]' : ''}>
+    {#if hasSectionedExercise}
+      <ExerciseQuestion.SectionNavigationSidebar sections={sectionNavigationGroups} />
+    {/if}
+    <div class="flex min-w-0 flex-col gap-4">
+      {#if hasSectionedExercise && currentSection}
+        <ExerciseQuestion.SectionHeader
+          title={currentSectionDisplayTitle}
+          description={currentSection.description}
+          sectionNumber={$questionnaireMetaData.currentSectionIndex + 1}
+          totalSections={activeSections.length}
+          colorTheme={currentSection.colorTheme}
+          questionCount={currentSectionQuestions.length}
+          totalPoints={sectionQuestionTotalPoints}
+          labels={{
+            section: $t('course.navItem.lessons.exercises.all_exercises.section.fallback_title'),
+            questions: $t('course.navItem.lessons.exercises.all_exercises.view_mode.questions'),
+            points: $t('course.navItem.lessons.exercises.all_exercises.view_mode.points')
+          }}
+        />
+      {/if}
+      <div class="grid overflow-hidden" style="grid-template-areas: 'slot';">
+        {#key currentQuestion.id}
+          <div
+            id="question"
+            class="min-w-0 [grid-area:slot]"
+            in:fly={{ x: flyX, duration: 350, easing: cubicInOut }}
+            out:fly={{ x: flyOutX, duration: 350, easing: cubicInOut }}
+          >
+            {#if sharedQuestionModel}
+              <ExerciseQuestion.QuestionRenderer
+                contract={{
+                  mode: 'take',
+                  question: sharedQuestionModel,
+                  answer: sharedCurrentAnswer,
+                  labels: questionLabels,
+                  disabled: isSubmitting,
+                  onFileUpload: handleFileUpload,
+                  onVideoRecordingUpload: handleVideoRecordingUpload
+                }}
+                questionNumber={$questionnaireMetaData.currentQuestionIndex}
+                onAnswerChange={onSharedAnswerChange}
+              />
+            {/if}
+          </div>
+        {/key}
+      </div>
+      <div>
+        <ExerciseQuestion.QuestionNavigation
+          canGoBack={hasSectionedExercise || $questionnaireMetaData.currentQuestionIndex > 1}
+          canGoNext={canGoNextForSharedQuestion && !isSubmitting}
+          isLast={$questionnaireMetaData.currentQuestionIndex === currentQuestionList.length}
+          {isSubmitting}
+          previousLabel={t.get('course.navItem.lessons.exercises.all_exercises.previous')}
+          nextLabel={t.get('course.navItem.lessons.exercises.all_exercises.next')}
+          finishLabel={t.get('course.navItem.lessons.exercises.all_exercises.finish')}
+          {onPrevious}
+          onNext={onSharedNext}
+        />
+      </div>
     </div>
   </div>
 {/if}

@@ -14,6 +14,8 @@
   import ContentCreateModal from '$features/course/components/content/content-create-modal.svelte';
   import CourseCompletionModal from '$features/course/components/ceritficate/course-completion-modal.svelte';
   import { AiCourseChat } from '$features/ai-assistant';
+  import { initialChatPrompt, openAiAssistant } from '$features/ai-assistant/utils/store';
+  import { get } from 'svelte/store';
   import { profile } from '$lib/utils/store/user';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
@@ -98,6 +100,10 @@
     }
 
     hasLoadedSidebarWidth = true;
+
+    if (get(initialChatPrompt)) {
+      openAiAssistant();
+    }
   });
 
   $effect(() => {
@@ -180,5 +186,5 @@
     {/if}
   </Sidebar.Inset>
 
-  <AiCourseChat />
+  <AiCourseChat courseId={data.courseId} />
 </Sidebar.Provider>

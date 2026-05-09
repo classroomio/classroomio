@@ -349,7 +349,10 @@ export class CourseApi extends BaseApiWithErrors {
    * @param fields Course creation fields (title, description, type)
    * @returns The created course data or null on error
    */
-  async create(fields: { title: string; description: string; type: TCourseType }) {
+  async create(
+    fields: { title: string; description: string; type: TCourseType },
+    onCreated?: (courseId: string) => void
+  ) {
     const org = get(currentOrg);
     const userProfile = get(profile);
 
@@ -390,11 +393,12 @@ export class CourseApi extends BaseApiWithErrors {
             user_email: userProfile.email
           });
 
-          // Navigate to the new course
-          goto(resolve(`/courses/${newCourse.id}`, {}));
-
-          // Show success message
-          snackbar.success('Course created successfully');
+          if (onCreated) {
+            onCreated(newCourse.id);
+          } else {
+            goto(resolve(`/courses/${newCourse.id}`, {}));
+            snackbar.success('Course created successfully');
+          }
 
           // Mark as successful
           this.success = true;

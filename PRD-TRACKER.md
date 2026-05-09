@@ -9,20 +9,13 @@ Use this file to keep a single prioritized view of all PRDs.
 | 1 | - | `prd/notification-system` | todo |
 | 2 | 14 | `prd/course-templates` | todo |
 | 3 | 5 | `prd/course-import` | todo |
-| 4 | 8 | `prd/exercise-question-types` | in-progress (A3, A6, A7, C3, C7, C13, C14 done) |
+| 4 | 8 | `prd/exercise-question-types [DONE]` | in-progress (dedicated shipped work: exercise sections + video recording; see DONE) |
 | 5 | 3 | `prd/course-cohorts` | todo |
-| 6 | - | `prd/programs` | todo |
-| 7 | 13 | `prd/self-host-single-org.md` | done |
-| 8 | 7 | `prd/email-template-customization` | todo |
-| 9 | - | `prd/selective-exercise-assignment` | todo |
-| - | - | `prd/mcp-course-authoring` | todo |
-| - | 1 | `prd/ai-course-assistant` | todo |
-| - | 2 | `prd/compliance-training-platform` | todo |
+| 6 | 7 | `prd/email-template-customization` | todo |
+| 7 | - | `prd/selective-exercise-assignment` | todo |
 | - | 4 | `prd/course-content-search` | todo |
-| - | 6 | `prd/course-widget-embed` | in-progress (core API, dashboard, public runtime, and embed build flow done; iframe preview parity, Shadow DOM, tests, and rollout hardening left) |
 | - | 9 | `prd/onboarding-ai-bootstrap` | todo |
 | - | 10 | `prd/pricing-improvements` | todo |
-| - | 11 | `prd/public-api` | todo |
 | - | 12 | `prd/public-courses` | todo |
 | - | - | `prd/customer-course-documentation` | todo |
 | - | 15 | `prd/webhooks` | todo |
@@ -31,9 +24,20 @@ Use this file to keep a single prioritized view of all PRDs.
 
 | PRD | Status |
 | --- | --- |
-| `prd/enterprise-sso` | done |
+| `prd/ai-course-assistant [DONE]` | done |
+| `prd/compliance-training-platform [DONE]` | done |
+| `prd/course-widget-embed [DONE]` | done |
+| `prd/custom-domain-cloudflare [DONE]` | done |
+| `prd/enterprise-sso [DONE]` | done |
+| `prd/exercise-sections [DONE]` | done |
 | `prd/lesson-edit [DONE]` | done |
 | `prd/lessons-list [DONE]` | done |
 | `prd/media-manager [DONE]` | done |
+| `prd/mcp-course-authoring [DONE]` | done |
+| `prd/org-landing-page-theme-picker [DONE]` | done |
+| `prd/programs [DONE]` | done |
+| `prd/public-api [DONE]` | done |
 | `prd/secure-student-invites [DONE]` | done |
+| `prd/self-host-single-org.md` | done |
 | `prd/tags-feature [DONE]` | done |
+| `prd/video-recording-question-type [DONE]` | done |

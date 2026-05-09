@@ -8,8 +8,18 @@ import {
 } from '@cio/question-types';
 import type { Question } from '$features/course/types';
 import { DEFAULT_QUESTION_TYPE, QUESTION_TYPES } from '$features/ui/question/constants';
+import { t } from '$lib/utils/functions/translations';
 
 type QuestionTypeOption = (typeof QUESTION_TYPES)[number];
+
+/** Label for exercise editor picker and lists (translations via labelKey when present). */
+export function getExerciseEditorQuestionTypeLabel(
+  questionType: Question['questionType'] | QuestionTypeOption | null | undefined
+): string {
+  if (!questionType) return t.get('course.navItem.lessons.exercises.all_exercises.edit_mode.select_type');
+  if ('labelKey' in questionType && questionType.labelKey) return t.get(questionType.labelKey);
+  return questionType.label ?? t.get('course.navItem.lessons.exercises.all_exercises.edit_mode.select_type');
+}
 
 const OPTION_QUESTION_TYPE_KEYS = new Set<ExerciseQuestionTypeKey>([
   QUESTION_TYPE_KEY.RADIO,
@@ -54,6 +64,12 @@ export function toExerciseQuestionModel(question: Question): ExerciseQuestionMod
 
   const rawSettings = (question as Question & { settings?: Record<string, unknown> }).settings;
   const settings = rawSettings && typeof rawSettings === 'object' ? rawSettings : {};
+  const required =
+    typeof (question as Question & { required?: boolean }).required === 'boolean'
+      ? (question as Question & { required?: boolean }).required
+      : typeof settings.required === 'boolean'
+        ? settings.required
+        : true;
 
   return {
     id: question.id,
@@ -61,6 +77,7 @@ export function toExerciseQuestionModel(question: Question): ExerciseQuestionMod
     title: question.title || '',
     questionType: getQuestionTypeKey(question),
     points: Number(question.points || 0),
+    required,
     options,
     settings
   };

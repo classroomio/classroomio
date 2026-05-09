@@ -1,4 +1,5 @@
 export * from './organization';
+export * from './query-errors';
 export * from './auth';
 export * from './attendance';
 export * from './audience';

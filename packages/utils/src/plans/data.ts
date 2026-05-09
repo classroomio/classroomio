@@ -14,7 +14,7 @@ export default {
       'Unlimited Programs',
       '20 Students',
       'Advanced Course Builder (no video upload)',
-      '50K AI credits / month',
+      '500K AI credits / month',
       'MCP access with 20 automation credits / month',
       'ClassroomIO branding'
     ],
@@ -40,6 +40,7 @@ export default {
       'Unlimited Collaborators',
       '10K Students',
       'Course Builder with Video Upload & Certificate',
+      '3M AI credits / month',
       'MCP access with 500 automation credits / month',
       'Custom Branding',
       'Custom Domain',
@@ -68,6 +69,7 @@ export default {
     FEATURES: [
       'Everything in Early Adopters plus:',
       'Unlimited students',
+      '15M AI credits / month',
       'Unlimited API requests',
       'SSO',
       '24/7 Support',

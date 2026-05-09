@@ -31,7 +31,7 @@
 </script>
 
 <div class={cn('flex justify-center space-x-1', containerClass)}>
-  <AnimatePresence let:item list={[{ key: wordsspilit }]}>
+  <AnimatePresence let:_item list={[{ key: wordsspilit }]}>
     {#each wordsspilit as char, i}
       <Motion
         initial="hidden"

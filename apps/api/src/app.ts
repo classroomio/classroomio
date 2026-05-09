@@ -17,6 +17,7 @@ import { mailRouter } from '@api/routes/mail';
 import { mediaRouter } from '@api/routes/media';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
+import { publicCourseRouter } from '@api/routes/org-site';
 import { licenseRouter } from '@api/routes/license';
 import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
@@ -29,14 +30,7 @@ import { secureHeaders } from 'hono/secure-headers';
 import { signupGuard } from '@api/middlewares/signup-guard';
 import { programRouter } from '@api/routes/program';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
-import {
-  agentStatusRouter,
-  agentChatRouter,
-  agentUploadRouter,
-  agentUsageRouter,
-  agentCreditsRouter,
-  agentHistoryRouter
-} from '@api/routes/agent';
+import { agentRouter } from '@api/routes/agent';
 import { internalComplianceRouter } from '@api/routes/internal/compliance';
 
 // Create Hono app with chaining for RPC support
@@ -108,17 +102,13 @@ export const app = new Hono()
   .route('/dash', dashAnalyticsRouter)
   .route('/community', communityRouter)
   .route('/invite', inviteRouter)
+  .route('/org-site/course', publicCourseRouter)
   .route('/public-api/v1', v1Router)
   .route('/program', programRouter)
   .route('/unsplash', unsplashRouter)
   .route('/widgets', publicWidgetsRouter)
   .route('/internal/compliance', internalComplianceRouter)
-  .route('/agent', agentStatusRouter)
-  .route('/agent', agentChatRouter)
-  .route('/agent', agentUploadRouter)
-  .route('/agent', agentUsageRouter)
-  .route('/agent', agentCreditsRouter)
-  .route('/agent', agentHistoryRouter)
+  .route('/agent', agentRouter)
 
   // Error handling
   .onError((err, c) => {

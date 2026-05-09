@@ -1,6 +1,7 @@
 import type {
   ExerciseQuestionFileUploader,
   ExerciseQuestionImageUploader,
+  ExerciseQuestionVideoRecordingUploader,
   ExerciseQuestionLabelKey,
   ExerciseQuestionLabels,
   ExerciseQuestionModel,
@@ -19,6 +20,7 @@ export interface ExerciseQuestionRenderContract {
   labels?: ExerciseQuestionLabels;
   onImageUpload?: ExerciseQuestionImageUploader;
   onFileUpload?: ExerciseQuestionFileUploader;
+  onVideoRecordingUpload?: ExerciseQuestionVideoRecordingUploader;
 }
 
 export interface ExerciseQuestionListRenderContract {
@@ -31,6 +33,7 @@ export interface ExerciseQuestionListRenderContract {
   labels?: ExerciseQuestionLabels;
   onImageUpload?: ExerciseQuestionImageUploader;
   onFileUpload?: ExerciseQuestionFileUploader;
+  onVideoRecordingUpload?: ExerciseQuestionVideoRecordingUploader;
 }
 
 export function getExerciseQuestionLabel(

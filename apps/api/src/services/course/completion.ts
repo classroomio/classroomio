@@ -1,5 +1,3 @@
-import * as schema from '@cio/db/schema';
-
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   calcCourseProgressPercent,
@@ -12,14 +10,12 @@ import {
   getStudentSubmissionsForExercise
 } from '@cio/db/queries/course/certification-exercise';
 import {
+  getCourseById,
   getCourseCertificationRow,
   getCourseProgress as getCourseProgressQuery,
   type TCourseCertificationRow
 } from '@cio/db/queries/course/course';
-
 import { ROLE } from '@cio/utils/constants';
-import { db } from '@cio/db/drizzle';
-import { eq } from 'drizzle-orm';
 
 export type CertificationBlocker = {
   code:
@@ -255,15 +251,9 @@ export async function evaluateCourseCertification(
 export async function assertCertificateDownloadAllowed(courseId: string, profileId: string): Promise<void> {
   const evaluation = await evaluateCourseCertification(courseId, profileId);
 
-  const [courseMeta] = await db
-    .select({
-      certificate: schema.course.certificate
-    })
-    .from(schema.course)
-    .where(eq(schema.course.id, courseId))
-    .limit(1);
+  const [courseRow] = await getCourseById(courseId);
 
-  if (!courseMeta?.certificate?.isDownloadable) {
+  if (!courseRow?.certificate?.isDownloadable) {
     throw new AppError('Certificate download is not enabled for this course', ErrorCodes.VALIDATION_ERROR, 403);
   }
 

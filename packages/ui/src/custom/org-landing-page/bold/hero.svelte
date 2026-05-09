@@ -23,6 +23,7 @@
       <div class="ui:flex ui:flex-wrap ui:gap-4">
         <Button
           href={hero.primaryAction.href}
+          disabled={hero.primaryAction.disabled ?? false}
           size="lg"
           class="ui:rounded-xl ui:px-8 ui:py-6 ui:text-base ui:font-bold ui:shadow-lg ui:shadow-primary/20 ui:hover:-translate-y-1 ui:transition-all"
         >

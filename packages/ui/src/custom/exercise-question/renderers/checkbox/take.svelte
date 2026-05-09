@@ -61,10 +61,12 @@
       {@const optionValue = getOptionValue(option, index)}
       {@const optionId = `checkbox-${question.id ?? 'question'}-${index}`}
       {@const optionImageUrl = getOptionImageUrl(option)}
+      {@const isSelected = isOptionSelected(option, index)}
 
       <div
         class={cn(
           'ui:rounded-md ui:p-2 ui:border',
+          isSelected ? 'ui:border-primary' : 'ui:border-border',
           optionsHaveImages ? 'ui:space-y-2' : 'ui:flex ui:items-center ui:gap-2'
         )}
       >

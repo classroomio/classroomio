@@ -14,6 +14,7 @@
   import { Textarea } from '../../base/textarea';
   import { IconButton } from '../icon-button';
   import { MediaPlayer, isYoutubeUrl } from '../media-player';
+  import NumberBadge from '$src/base/number-badge/number-badge.svelte';
   import QuestionTitle from './question-title.svelte';
   import { YoutubeLinkForm } from '../youtube-link-form';
   import QuestionSurface from './question-surface.svelte';
@@ -22,10 +23,14 @@
 
   interface Props {
     contract: ExerciseQuestionRenderContract;
-    onAnswerChange?: (answer: AnswerData) => void;
+    onAnswerChange?: (answer: AnswerData | null) => void;
     onQuestionChange?: (question: ExerciseQuestionRendererProps['question']) => void;
     showContainer?: boolean;
     questionTypeSelect?: Snippet;
+    /** When set, a numbered badge is shown to the left of the title (non-edit modes). */
+    questionNumber?: number;
+    /** When false, the badge uses muted styling (e.g. question lists). Defaults to true. */
+    questionNumberActive?: boolean;
   }
 
   let {
@@ -33,7 +38,9 @@
     onAnswerChange = () => {},
     onQuestionChange = () => {},
     showContainer = true,
-    questionTypeSelect
+    questionTypeSelect,
+    questionNumber,
+    questionNumberActive = true
   }: Props = $props();
 
   const Renderer = $derived(getExerciseQuestionRenderer(contract.question.questionType, contract.mode));
@@ -265,8 +272,8 @@
 {#snippet content()}
   {#if contract.mode === 'edit'}
     <div class="ui:space-y-3">
-      <div class="ui:flex ui:items-end ui:gap-2">
-        <div class="ui:space-y-1 ui:w-full">
+      <div class="ui:flex ui:min-w-0 ui:flex-col ui:items-stretch ui:gap-2 ui:sm:flex-row ui:sm:items-end">
+        <div class="ui:min-w-0 ui:flex-1 ui:space-y-1">
           <p class="ui:text-sm ui:font-medium">{label('question.edit.title_label')}</p>
           <Input
             class="ui:w-full"
@@ -413,7 +420,14 @@
 
   {#if contract.mode !== 'edit'}
     <div class="ui:mb-4 ui:space-y-3">
-      {#if contract.question.title.trim().length > 0}
+      {#if questionNumber !== undefined}
+        <div class="ui:flex ui:items-center ui:gap-2">
+          <NumberBadge number={questionNumber} active={questionNumberActive} />
+          {#if contract.question.title.trim().length > 0}
+            <QuestionTitle title={contract.question.title} class="ui:min-w-0 ui:flex-1" />
+          {/if}
+        </div>
+      {:else if contract.question.title.trim().length > 0}
         <QuestionTitle title={contract.question.title} />
       {/if}
 
@@ -463,6 +477,7 @@
     labels={contract.labels}
     onImageUpload={contract.onImageUpload}
     onFileUpload={contract.onFileUpload}
+    onVideoRecordingUpload={contract.onVideoRecordingUpload}
     {onAnswerChange}
     {onQuestionChange}
   />

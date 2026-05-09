@@ -1,4 +1,4 @@
-import type { GetCourseBySlugRequest } from '$features/course/utils/types';
+import type { CourseBySlugWithOrg, GetCourseBySlugRequest } from '$features/course/utils/types';
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 import { getApiKeyHeaders, safeServerApi } from '$lib/utils/services/api/server';
 import { calcCourseDiscount } from '$lib/utils/functions/course';
@@ -66,7 +66,7 @@ export const load = async ({ params, url }) => {
     throw error(404, 'Not found');
   }
 
-  const courseData = courseResult.body.data;
+  const courseData = courseResult.body.data as CourseBySlugWithOrg;
   const discount = (courseData.metadata as { discount?: number } | null)?.discount ?? 0;
   const showDiscount = (courseData.metadata as { showDiscount?: boolean } | null)?.showDiscount ?? false;
   const calculatedCost = calcCourseDiscount(discount, Number(courseData.cost ?? 0), showDiscount);

@@ -4,6 +4,10 @@ export { default as QuestionRenderer } from './question-renderer.svelte';
 export { default as QuestionList } from './question-list.svelte';
 export { default as QuestionSurface } from './question-surface.svelte';
 export { default as QuestionTitle } from './question-title.svelte';
+export { default as SectionAfterBehavior } from './section-after-behavior.svelte';
+export { default as SectionHeader } from './section-header.svelte';
+export { default as SectionNavigationSidebar } from './section-navigation-sidebar.svelte';
+export { default as SectionOverview } from './section-overview.svelte';
 export * from './renderer-contract';
 
 export { default as TrueFalseEdit } from './renderers/true-false/edit.svelte';
@@ -17,6 +21,7 @@ export { default as TextareaEdit } from './renderers/textarea/edit.svelte';
 export { default as MatchingEdit } from './renderers/matching/edit.svelte';
 export { default as OrderingEdit } from './renderers/ordering/edit.svelte';
 export { default as HotspotEdit } from './renderers/hotspot/edit.svelte';
+export { default as VideoRecordingEdit } from './renderers/video-recording/edit.svelte';
 
 export { default as TrueFalseTake } from './renderers/true-false/take.svelte';
 export { default as ShortAnswerTake } from './renderers/short-answer/take.svelte';
@@ -29,6 +34,7 @@ export { default as TextareaTake } from './renderers/textarea/take.svelte';
 export { default as MatchingTake } from './renderers/matching/take.svelte';
 export { default as OrderingTake } from './renderers/ordering/take.svelte';
 export { default as HotspotTake } from './renderers/hotspot/take.svelte';
+export { default as VideoRecordingTake } from './renderers/video-recording/take.svelte';
 
 export { default as TrueFalsePreview } from './renderers/true-false/preview.svelte';
 export { default as ShortAnswerPreview } from './renderers/short-answer/preview.svelte';
@@ -42,6 +48,7 @@ export { default as MatchingPreview } from './renderers/matching/preview.svelte'
 export { default as OrderingPreview } from './renderers/ordering/preview.svelte';
 export { default as OrderingDisplay } from './renderers/ordering/ordering-display.svelte';
 export { default as HotspotPreview } from './renderers/hotspot/preview.svelte';
+export { default as VideoRecordingPreview } from './renderers/video-recording/preview.svelte';
 
 export { default as TrueFalseSubmission } from './renderers/true-false/submission.svelte';
 export { default as ShortAnswerSubmission } from './renderers/short-answer/submission.svelte';
@@ -55,3 +62,4 @@ export { default as MatchingSubmission } from './renderers/matching/submission.s
 export { default as OrderingSubmission } from './renderers/ordering/submission.svelte';
 export { default as HotspotSubmission } from './renderers/hotspot/submission.svelte';
 export { default as LinkSubmission } from './renderers/link/submission.svelte';
+export { default as VideoRecordingSubmission } from './renderers/video-recording/submission.svelte';

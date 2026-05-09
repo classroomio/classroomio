@@ -2,7 +2,7 @@
 
 ## Status
 
-- In progress
+- In progress (remaining question-type work; exercise question sections and video recording are tracked as separate shipped PRDs — see PRD-TRACKER DONE)
 
 ## Date
 

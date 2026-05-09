@@ -127,6 +127,15 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     autoGradable: true,
     supportsPartialCredit: false,
     manualGradingRequired: false
+  },
+  {
+    key: QUESTION_TYPE_KEY.VIDEO_RECORDING,
+    typename: 'VIDEO_RECORDING',
+    label: 'Video recording',
+    id: 15,
+    autoGradable: false,
+    supportsPartialCredit: false,
+    manualGradingRequired: true
   }
 ] as const;
 

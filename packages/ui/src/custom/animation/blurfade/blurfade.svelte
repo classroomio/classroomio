@@ -35,7 +35,7 @@
   });
 </script>
 
-<AnimatePresence let:item list={[{ key: id }]}>
+<AnimatePresence let:_item list={[{ key: id }]}>
   <Motion
     initial="hidden"
     animate={isInView}

@@ -8,6 +8,7 @@
   import { closeAiAssistant } from '$features/ai-assistant/utils/store';
   import { t } from '$lib/utils/functions/translations';
   import { IconButton } from '@cio/ui/custom/icon-button';
+  import { Button } from '@cio/ui/base/button';
 
   interface Conversation {
     id: string;
@@ -75,11 +76,19 @@
 
       <Popover.Root bind:open={historyPopoverOpen}>
         <Popover.Trigger>
-          <IconButton variant="outline" size="icon-xs" tooltip={$t('ai_assistant.chat_history')}>
-            <HistoryIcon size={16} />
-          </IconButton>
+          {#snippet child({ props })}
+            <Button
+              variant="outline"
+              size="icon-xs"
+              {...props}
+              aria-label={$t('ai_assistant.chat_history')}
+              title={$t('ai_assistant.chat_history')}
+            >
+              <HistoryIcon size={16} />
+            </Button>
+          {/snippet}
         </Popover.Trigger>
-        <Popover.Content class="ui:p-0! w-72" align="end">
+        <Popover.Content class="ui:p-0! z-200! w-72" align="center">
           <ChatHistoryPopover
             {conversations}
             {activeConversationId}
@@ -94,12 +103,13 @@
       </IconButton>
     </div>
   </div>
-  {#if tokenUsage && tokenUsage.allowance > 0}
-    {@const usagePercent = Math.min(100, Math.round((tokenUsage.used / tokenUsage.allowance) * 100))}
+  {#if tokenUsage && tokenUsage.used + tokenUsage.remaining > 0}
+    {@const totalBudget = tokenUsage.used + tokenUsage.remaining}
+    {@const usagePercent = Math.min(100, Math.round((tokenUsage.used / totalBudget) * 100))}
     <div class="mt-2">
       <div class="ui:text-muted-foreground flex justify-between text-[10px]">
         <span
-          >{tokenUsage.used.toLocaleString()} / {tokenUsage.allowance.toLocaleString()}
+          >{tokenUsage.used.toLocaleString()} / {totalBudget.toLocaleString()}
           {$t('ai_assistant.tokens_label')}</span
         >
         <span>{usagePercent}%</span>

@@ -295,3 +295,36 @@ export const getGroupMemberIdByCourseAndProfile = async (
 
   return result.length > 0 ? result[0].id : null;
 };
+
+export async function getGroupMemberIdByGroupAndProfile(
+  groupId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<string | null> {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.groupmember.id })
+      .from(schema.groupmember)
+      .where(and(eq(schema.groupmember.groupId, groupId), eq(schema.groupmember.profileId, profileId)))
+      .limit(1);
+
+    return row?.id ?? null;
+  } catch (error) {
+    console.error('getGroupMemberIdByGroupAndProfile error:', error);
+    throw new Error(`Failed to resolve group membership: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function insertGroupMembersOnConflictDoNothing(
+  values: TNewGroupmember[],
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  if (values.length === 0) return;
+
+  try {
+    await dbClient.insert(schema.groupmember).values(values).onConflictDoNothing();
+  } catch (error) {
+    console.error('insertGroupMembersOnConflictDoNothing error:', error);
+    throw new Error(`Failed to insert group members: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}

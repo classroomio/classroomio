@@ -158,6 +158,7 @@ export function transformQuestionsToApiFormat(
     question: q.title,
     points: q.points || 0,
     questionTypeId: q.questionTypeId,
+    exerciseSectionId: q.exerciseSectionId ?? null,
     order: typeof (q as { order?: number }).order === 'number' ? (q as { order: number }).order : index + 1,
     settings: getQuestionSettings(q),
     options: questionTypeSupportsOptions(getQuestionTypeKey(q)) ? formatOptions(q.options) : [],

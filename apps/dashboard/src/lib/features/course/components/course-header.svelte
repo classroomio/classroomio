@@ -16,11 +16,12 @@
   import { openCoursePreview } from '$features/course/utils/course-preview';
   import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
   import { t } from '$lib/utils/functions/translations';
-  import { isFreePlan } from '$lib/utils/store/org';
   import CoursePublishBadge from './course-publish-badge.svelte';
+  import CoursePublicBadge from './course-public-badge.svelte';
 
   const siteName = $derived($currentOrg.siteName);
   const showCoursePublishBadge = $derived(!$isStudentExperience);
+  const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
 
   $effect(() => {
     if (!siteName) return;
@@ -38,7 +39,9 @@
 </script>
 
 <header
-  class="border-border ui:bg-background sticky top-0 z-100 flex h-12 w-full shrink-0 items-center gap-2 border-b backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8"
+  class="border-border ui:bg-background sticky top-0 z-100 flex w-full shrink-0 items-center gap-2 border-b backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8 {isPublicCourse
+    ? 'h-auto min-h-14 py-1.5'
+    : 'h-12'}"
 >
   <div class="flex w-full items-center gap-2 px-4">
     <Sidebar.Trigger />
@@ -47,24 +50,34 @@
       <Separator orientation="vertical" />
     </div>
 
-    <div class="flex min-w-0 items-center gap-2">
-      <p class="max-w-2xs truncate text-sm font-medium">
-        {courseApi.course?.title || ''}
-      </p>
+    <div class="flex w-[60%] min-w-0 flex-1 flex-col justify-center gap-0.5">
+      <div class="flex min-w-0 items-center gap-2">
+        <p class="max-w-xs truncate text-sm font-medium">
+          {courseApi.course?.title || ''}
+        </p>
 
-      {#if showCoursePublishBadge}
-        <CoursePublishBadge isPublished={courseApi.course?.isPublished} />
+        {#if isPublicCourse}
+          <CoursePublicBadge class="shrink-0" />
+        {/if}
+
+        {#if showCoursePublishBadge}
+          <CoursePublishBadge isPublished={courseApi.course?.isPublished ?? false} />
+        {/if}
+      </div>
+
+      {#if isPublicCourse}
+        <p class="ui:text-muted-foreground max-w-xl truncate text-xs">
+          {$t('course.header.public_course_helper')}
+        </p>
       {/if}
     </div>
 
     <span class="grow"></span>
 
-    {#if !$isFreePlan}
-      <Button variant="outline" size="sm" onclick={toggleAiAssistant}>
-        <SparklesIcon size={14} />
-        {$t('course.navItems.nav_ai_assistant')}
-      </Button>
-    {/if}
+    <Button variant="outline" size="sm" onclick={toggleAiAssistant}>
+      <SparklesIcon size={14} />
+      {$t('course.navItems.nav_ai_assistant')}
+    </Button>
 
     <Popover.Root>
       <Popover.Trigger>

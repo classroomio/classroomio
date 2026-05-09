@@ -1,6 +1,7 @@
 import * as z from 'zod';
 
 import { ALLOWED_CONTENT_TYPES, ALLOWED_DOCUMENT_TYPES } from '../constants';
+import { ZCourseCalloutInput } from './callout';
 
 export const ZCourseClone = z.object({
   title: z.string().min(1),
@@ -227,7 +228,7 @@ export type TComplianceSettings = z.infer<typeof ZComplianceSettings>;
 export const ZCourseCreateBase = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
-  type: z.enum(['LIVE_CLASS', 'SELF_PACED', 'COMPLIANCE']),
+  type: z.enum(['LIVE_CLASS', 'SELF_PACED', 'COMPLIANCE', 'PUBLIC']),
   organizationId: z.string().min(1),
   compliance: ZComplianceSettings.optional()
 });
@@ -333,7 +334,7 @@ export type TCertificationSettings = z.infer<typeof ZCertificationSettings>;
 export const ZCourseUpdateBase = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
-  type: z.enum(['LIVE_CLASS', 'SELF_PACED', 'COMPLIANCE']).optional(),
+  type: z.enum(['LIVE_CLASS', 'SELF_PACED', 'COMPLIANCE', 'PUBLIC']).optional(),
   logo: z.string().optional(),
   slug: z.string().optional(),
   isPublished: z.boolean().optional(),
@@ -343,7 +344,8 @@ export const ZCourseUpdateBase = z.object({
   currency: z.enum(['NGN', 'USD']).optional(),
   certificate: ZCertificationSettings.optional(),
   tagIds: z.array(z.uuid()).max(100).optional(),
-  compliance: ZComplianceSettings.optional()
+  compliance: ZComplianceSettings.optional(),
+  callout: ZCourseCalloutInput.optional()
 });
 
 export const ZCourseUpdate = ZCourseUpdateBase.refine(

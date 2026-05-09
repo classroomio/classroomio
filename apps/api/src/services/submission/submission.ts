@@ -1,5 +1,10 @@
-import type { AnswerData, FileUploadAnswerData } from '@cio/question-types';
-import { scoreSubmissionAnswers, type ScoreSubmissionResult, validateTextareaAnswer } from '@cio/question-types';
+import type { AnswerData, FileUploadAnswerData, VideoRecordingAnswerData } from '@cio/question-types';
+import {
+  getVideoRecordingMaxDurationSeconds,
+  scoreSubmissionAnswers,
+  type ScoreSubmissionResult,
+  validateTextareaAnswer
+} from '@cio/question-types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { TNewQuestionAnswer, TNewSubmission, TSubmission } from '@cio/db/types';
 import type {
@@ -21,6 +26,7 @@ import {
   updateSubmission,
   updateSubmissionGrades
 } from '@cio/db/queries/submission';
+import { createAssetUsage, getAssetById } from '@cio/db/queries/assets';
 import {
   fromApiPayload,
   getQuestionTypeById,
@@ -35,7 +41,7 @@ import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from
 import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
 
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
-import { generateDocumentDownloadPresignedUrls } from '@api/utils/s3';
+import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@api/utils/s3';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 
 type SubmissionGradingState = 'queued' | 'processing' | 'awaiting_manual' | 'completed' | 'failed';
@@ -139,6 +145,10 @@ function isFileUpload(data: unknown): data is FileUploadAnswerData {
   return !!data && typeof data === 'object' && (data as { type: string }).type === 'FILE_UPLOAD';
 }
 
+function isVideoRecording(data: unknown): data is VideoRecordingAnswerData {
+  return !!data && typeof data === 'object' && (data as { type: string }).type === 'VIDEO_RECORDING';
+}
+
 /**
  * Enriches FILE_UPLOAD answers from DB rows (question_answer[]) with presigned download URLs.
  * Used by getSubmission and listSubmissionsByExercise.
@@ -148,15 +158,27 @@ async function enrichFileUploadAnswersArray<T extends { answerData?: unknown }>(
     .map((a) => a.answerData)
     .filter(isFileUpload)
     .map((d) => d.fileKey);
+  const videoKeys = answers
+    .map((a) => a.answerData)
+    .filter(isVideoRecording)
+    .map((d) => d.storageKey);
 
-  if (fileKeys.length === 0) return answers;
+  if (fileKeys.length === 0 && videoKeys.length === 0) return answers;
 
   try {
-    const urls = await generateDocumentDownloadPresignedUrls(fileKeys);
+    const [documentUrls, videoUrls] = await Promise.all([
+      generateDocumentDownloadPresignedUrls(fileKeys),
+      generateVideoDownloadPresignedUrls(videoKeys)
+    ]);
     return answers.map((answer) => {
-      if (!isFileUpload(answer.answerData)) return answer;
-      const url = urls[answer.answerData.fileKey];
-      return url ? { ...answer, answerData: { ...answer.answerData, fileUrl: url } } : answer;
+      if (isFileUpload(answer.answerData)) {
+        const url = documentUrls[answer.answerData.fileKey];
+        return url ? { ...answer, answerData: { ...answer.answerData, fileUrl: url } } : answer;
+      }
+
+      if (!isVideoRecording(answer.answerData)) return answer;
+      const url = videoUrls[answer.answerData.storageKey];
+      return url ? { ...answer, answerData: { ...answer.answerData, playbackUrl: url } } : answer;
     });
   } catch (error) {
     console.error('enrichFileUploadAnswersArray error:', error);
@@ -172,22 +194,57 @@ async function enrichFileUploadAnswersObject(answers: Record<string, AnswerData>
   const fileKeys = Object.values(answers)
     .filter(isFileUpload)
     .map((d) => d.fileKey);
+  const videoKeys = Object.values(answers)
+    .filter(isVideoRecording)
+    .map((d) => d.storageKey);
 
-  if (fileKeys.length === 0) return answers;
+  if (fileKeys.length === 0 && videoKeys.length === 0) return answers;
 
   try {
-    const urls = await generateDocumentDownloadPresignedUrls(fileKeys);
+    const [documentUrls, videoUrls] = await Promise.all([
+      generateDocumentDownloadPresignedUrls(fileKeys),
+      generateVideoDownloadPresignedUrls(videoKeys)
+    ]);
     return Object.fromEntries(
       Object.entries(answers).map(([key, data]) => {
-        if (!isFileUpload(data)) return [key, data];
-        const url = urls[data.fileKey];
-        return url ? [key, { ...data, fileUrl: url }] : [key, data];
+        if (isFileUpload(data)) {
+          const url = documentUrls[data.fileKey];
+          return url ? [key, { ...data, fileUrl: url }] : [key, data];
+        }
+
+        if (!isVideoRecording(data)) return [key, data];
+        const url = videoUrls[data.storageKey];
+        return url ? [key, { ...data, playbackUrl: url }] : [key, data];
       })
     );
   } catch (error) {
     console.error('enrichFileUploadAnswersObject error:', error);
     return answers;
   }
+}
+
+async function createVideoRecordingAssetUsages(answers: Array<TNewQuestionAnswer & { id?: number }>): Promise<void> {
+  const videoAnswers = answers.filter((answer) => isVideoRecording(answer.answerData));
+  if (videoAnswers.length === 0) return;
+
+  await Promise.all(
+    videoAnswers.map(async (answer) => {
+      if (!answer.id || !isVideoRecording(answer.answerData)) return;
+
+      const asset = await getAssetById(answer.answerData.assetId);
+      if (!asset) return;
+
+      await createAssetUsage({
+        organizationId: asset.organizationId,
+        assetId: answer.answerData.assetId,
+        targetType: 'submission_answer',
+        targetId: String(answer.id),
+        slotType: 'video_recording_answer',
+        slotKey: String(answer.questionId),
+        createdByProfileId: null
+      });
+    })
+  );
 }
 
 /**
@@ -563,6 +620,13 @@ export async function createSubmissionService(
         }
       }
 
+      if (answerData.type === 'VIDEO_RECORDING') {
+        const maxDurationSeconds = getVideoRecordingMaxDurationSeconds(question.settings);
+        if (answerData.durationSeconds > maxDurationSeconds + 2) {
+          throw new AppError('Recording exceeds the configured duration', ErrorCodes.VALIDATION_ERROR, 400);
+        }
+      }
+
       answerByQuestionId.set(ans.questionId, answerData);
 
       answerRows.push({
@@ -594,6 +658,7 @@ export async function createSubmissionService(
     }
 
     const insertedAnswers = answerRows.length > 0 ? await insertQuestionAnswersBatch(answerRows) : [];
+    await createVideoRecordingAssetUsages(insertedAnswers);
 
     if (shouldAutoGrade) {
       const dbQuestions = exerciseWithRelations.questions

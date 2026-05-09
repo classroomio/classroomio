@@ -6,6 +6,7 @@
   import PencilIcon from '@lucide/svelte/icons/pencil';
   import { Button } from '@cio/ui/base/button';
   import { SvelteSet } from 'svelte/reactivity';
+  import type { CoursePlan } from './utils/course-plan';
 
   /** Token cost estimation heuristics (tokens per item) */
   const TOKEN_COST_ESTIMATES = {
@@ -13,25 +14,6 @@
     LESSON_CREATE_AND_CONTENT: 3000,
     EXERCISE_CREATE: 1500
   } as const;
-
-  interface PlanItem {
-    type: 'lesson' | 'exercise';
-    title: string;
-    description: string;
-    order: number;
-    hasExercise: boolean;
-  }
-
-  interface PlanSection {
-    title: string;
-    order: number;
-    items: PlanItem[];
-  }
-
-  interface CoursePlan {
-    title: string;
-    sections: PlanSection[];
-  }
 
   interface Props {
     plan: CoursePlan;

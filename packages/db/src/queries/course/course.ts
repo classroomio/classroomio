@@ -1287,3 +1287,51 @@ export async function getOrgCourseGroups(orgId: string, courseIds: string[]) {
     throw new Error(`Failed to get org course groups: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
+
+/** True when any course row exists with this slug. */
+export async function isCourseSlugTaken(slug: string): Promise<boolean> {
+  try {
+    const rows = await db
+      .select({ id: schema.course.id })
+      .from(schema.course)
+      .where(eq(schema.course.slug, slug))
+      .limit(1);
+
+    return rows.length > 0;
+  } catch (error) {
+    console.error('isCourseSlugTaken error:', error);
+    throw new Error(`Failed to check course slug: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Course `type` only; `undefined` when the course does not exist. */
+export async function getCourseTypeById(courseId: string): Promise<string | undefined> {
+  try {
+    const [row] = await db
+      .select({ type: schema.course.type })
+      .from(schema.course)
+      .where(eq(schema.course.id, courseId))
+      .limit(1);
+
+    return row?.type ?? undefined;
+  } catch (error) {
+    console.error('getCourseTypeById error:', error);
+    throw new Error(`Failed to get course type: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Updates slug + updatedAt; returns the new slug row or null if the course was missing. */
+export async function updateCourseSlug(courseId: string, slug: string): Promise<{ slug: string | null } | null> {
+  try {
+    const [updated] = await db
+      .update(schema.course)
+      .set({ slug, updatedAt: new Date().toISOString() })
+      .where(eq(schema.course.id, courseId))
+      .returning({ slug: schema.course.slug });
+
+    return updated ?? null;
+  } catch (error) {
+    console.error('updateCourseSlug error:', error);
+    throw new Error(`Failed to update course slug: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}

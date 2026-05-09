@@ -28,7 +28,7 @@ export const agentHistoryRouter = new Hono()
    * GET /agent/history?courseId=...
    * List all conversations for the current user in a course.
    */
-  .get('/history', authMiddleware, orgMemberMiddleware, zValidator('query', ZAgentHistoryQuery), async (c) => {
+  .get('/', authMiddleware, orgMemberMiddleware, zValidator('query', ZAgentHistoryQuery), async (c) => {
     try {
       const user = c.get('user')!;
       const { courseId } = c.req.valid('query');
@@ -46,7 +46,7 @@ export const agentHistoryRouter = new Hono()
    * Get a single conversation with its messages.
    */
   .get(
-    '/history/:conversationId',
+    '/:conversationId',
     authMiddleware,
     orgMemberMiddleware,
     zValidator('param', ZAgentConversationParam),
@@ -72,31 +72,25 @@ export const agentHistoryRouter = new Hono()
    * POST /agent/history
    * Create a new conversation.
    */
-  .post(
-    '/history',
-    authMiddleware,
-    orgMemberMiddleware,
-    zValidator('json', ZAgentConversationCreateBody),
-    async (c) => {
-      try {
-        const user = c.get('user')!;
-        const { courseId, title } = c.req.valid('json');
+  .post('/', authMiddleware, orgMemberMiddleware, zValidator('json', ZAgentConversationCreateBody), async (c) => {
+    try {
+      const user = c.get('user')!;
+      const { courseId, title } = c.req.valid('json');
 
-        const conversation = await createChatConversation(courseId, user.id, title);
+      const conversation = await createChatConversation(courseId, user.id, title);
 
-        return c.json({ success: true as const, data: conversation }, 201);
-      } catch (error) {
-        return handleError(c, error, 'Failed to create conversation');
-      }
+      return c.json({ success: true as const, data: conversation }, 201);
+    } catch (error) {
+      return handleError(c, error, 'Failed to create conversation');
     }
-  )
+  })
 
   /**
    * PUT /agent/history/:conversationId
    * Save messages to a conversation.
    */
   .put(
-    '/history/:conversationId',
+    '/:conversationId',
     authMiddleware,
     orgMemberMiddleware,
     zValidator('param', ZAgentConversationParam),
@@ -121,7 +115,7 @@ export const agentHistoryRouter = new Hono()
    * Delete a conversation.
    */
   .delete(
-    '/history/:conversationId',
+    '/:conversationId',
     authMiddleware,
     orgMemberMiddleware,
     zValidator('param', ZAgentHistoryDeleteParam),
@@ -144,7 +138,7 @@ export const agentHistoryRouter = new Hono()
    * Generate a short title from the first user message using a cheap model.
    */
   .post(
-    '/history/:conversationId/generate-title',
+    '/:conversationId/generate-title',
     authMiddleware,
     orgMemberMiddleware,
     zValidator('param', ZAgentGenerateTitleParam),
@@ -160,7 +154,12 @@ export const agentHistoryRouter = new Hono()
           throw new AppError('AI assistant is not configured', 'AI_NOT_CONFIGURED', 503);
         }
 
-        const title = await generateConversationTitle(firstMessageText, providerConfig);
+        let title: string;
+        try {
+          title = await generateConversationTitle(firstMessageText, providerConfig);
+        } catch {
+          title = firstMessageText.slice(0, 60).trim();
+        }
 
         await updateConversationTitle(conversationId, user.id, title);
 

@@ -391,6 +391,14 @@
         "post_created": "Bài viết được tạo thành công",
         "post_updated": "Đã cập nhật bài đăng thành công"
       }
+    },
+    "ai_credits": {
+      "purchase_success": "Gói mã thông báo được thêm vào số dư của bạn.",
+      "checkout_failed": "Không thể bắt đầu thanh toán. Vui lòng thử lại."
+    },
+    "public_course": {
+      "url_copied": "Đã sao chép URL khóa học",
+      "url_copy_failed": "Không thể sao chép URL"
     }
   },
   "explore": {
@@ -656,7 +664,30 @@
           "popover_title": "Chọn thẻ",
           "empty_groups": "Chưa có thẻ nào"
         },
-        "compliance": "Tuân thủ"
+        "compliance": "Tuân thủ",
+        "public": "công cộng",
+        "convert_to_public_blocked": "Khóa học này có các câu hỏi không thể tự động chấm điểm nên chưa thể công khai.",
+        "fix_blocking_questions": "Sửa câu hỏi chặn",
+        "slug": {
+          "label": "sên URL",
+          "description": "Đoạn cuối cùng của URL công khai của mục này. Chỉ có chữ cái, số và dấu gạch ngang.",
+          "public_only": "Slug chỉ có thể chỉnh sửa được trên các khóa học Công khai.",
+          "in_use": "Slug đó đã được sử dụng bởi một mục khác trong khóa học này."
+        },
+        "callout": {
+          "legend": "Chú thích khóa học công khai",
+          "description": "Hiển thị ở cuối mỗi bài học và thay cho các đồ vật bị khóa. Sử dụng nó để thu hút người học đến trang web của bạn hoặc một khóa học trả phí.",
+          "title_label": "Tiêu đề",
+          "title_placeholder": "Bạn muốn đi sâu hơn về điều này?",
+          "description_label": "Mô tả",
+          "description_placeholder": "Tham gia nhóm đầy đủ để hoàn thành một dự án cấp sản xuất trong 4 tuần.",
+          "button_label": "Nhãn nút",
+          "button_label_placeholder": "Đọc thêm trên trang web của tôi",
+          "button_url_label": "URL nút",
+          "button_url_placeholder": "https://example.com",
+          "clear": "Xóa chú thích",
+          "public_only": "Chú thích chỉ xuất hiện trên các khóa học Công khai."
+        }
       },
       "analytics": {
         "title": "Phân tích"
@@ -1167,7 +1198,10 @@
               "attempt_counter": "Hãy thử {current} trong tổng số {total}",
               "previous_try": "Lần thử trước",
               "next_try": "Lần thử tiếp theo",
-              "try_again": "Thử lại"
+              "try_again": "Thử lại",
+              "back": "Quay lại",
+              "begin_section": "Phần bắt đầu",
+              "complete_section": "Hoàn thành phần"
             },
             "edit_mode": {
               "delete_modal": "Xóa bài tập",
@@ -1193,7 +1227,8 @@
                 "hotspot": "Điểm phát sóng",
                 "link": "Liên kết",
                 "word_bank": "Ngân hàng từ",
-                "star": "Xếp hạng sao"
+                "star": "Xếp hạng sao",
+                "video_recording": "Quay video"
               },
               "select_type": "Chọn loại",
               "question_type_auto_gradable": "Auto",
@@ -1204,7 +1239,9 @@
               "title": "Xóa câu hỏi",
               "sure": "Bạn có chắc chắn muốn xóa câu hỏi này",
               "no": "Không, làm ơn đừng",
-              "yes": "Có, xóa"
+              "yes": "Có, xóa",
+              "section_title": "Xóa phần",
+              "section_sure": "Phần này sẽ bị xóa. Các câu hỏi của nó sẽ được chuyển đến phần gần nhất."
             },
             "description": {
               "title": "Tiêu đề",
@@ -1464,12 +1501,76 @@
                   "correct_value_placeholder": "ví dụ: 3",
                   "max_stars_placeholder": "ví dụ: 5"
                 }
+              },
+              "video_recording": {
+                "submission": {
+                  "no_video": "Không có video nào được gửi.",
+                  "unavailable": "Video không có sẵn.",
+                  "duration": "Thời lượng",
+                  "file_size": "Kích thước tệp",
+                  "recorded_at": "Đã ghi lại",
+                  "uploaded_at": "Đã tải lên",
+                  "retake_count": "Thi lại"
+                },
+                "preview": {
+                  "max_duration_label": "Thời lượng tối đa",
+                  "manual_grading": "Người học ghi lại một đoạn video ngắn phản hồi. Yêu cầu phân loại thủ công."
+                },
+                "take": {
+                  "unsupported": "Quay video không được hỗ trợ trong trình duyệt này.",
+                  "permission_prompt": "Cho phép truy cập vào máy ảnh và micrô để ghi lại câu trả lời của bạn.",
+                  "permission_denied": "Quyền truy cập vào máy ảnh hoặc micrô đã bị chặn. Kiểm tra quyền của trình duyệt.",
+                  "start_camera": "Thiết lập máy ảnh",
+                  "camera_label": "Máy ảnh",
+                  "camera_placeholder": "Chọn máy ảnh",
+                  "play_preview": "Phát bản xem trước bản ghi",
+                  "pause_preview": "Tạm dừng xem trước bản ghi",
+                  "start_recording": "Bắt đầu ghi",
+                  "stop_recording": "Dừng ghi",
+                  "elapsed": "Đã qua",
+                  "remaining": "Còn lại",
+                  "max_duration": "Tối đa",
+                  "too_short": "Ghi ít nhất 1 giây.",
+                  "use_recording": "Sử dụng ghi âm",
+                  "retake": "Thi lại",
+                  "delete": "Xóa bản ghi",
+                  "retry_upload": "Thử tải lên lại",
+                  "uploading": "Đang tải bản ghi lên...",
+                  "uploaded": "Đã tải lên bản ghi",
+                  "upload_failed": "Tải lên không thành công. Hãy thử lại.",
+                  "replaces_previous": "Một câu trả lời mới được chấp nhận sẽ thay thế câu trả lời trước đó sau khi tải lên."
+                },
+                "edit": {
+                  "max_duration_label": "Thời lượng tối đa",
+                  "max_duration_helper": "Học sinh ghi bài trên trình duyệt và có thể thi lại trước khi nộp. Tối đa là 2 phút.",
+                  "max_duration_placeholder": "60",
+                  "manual_grading": "Yêu cầu phân loại thủ công"
+                }
               }
             },
             "settings": "Cài đặt",
             "settings_allow_multiple": "Cho phép thử nhiều lần",
             "settings_allow_multiple_helper": "Học sinh có thể gửi nhiều lần và xem lại các lần thử trước đây trên màn hình kết quả.",
-            "settings_save": "Lưu cài đặt"
+            "settings_save": "Lưu cài đặt",
+            "add": "Thêm",
+            "add_section": "Thêm phần",
+            "reorder_done": "Sắp xếp lại xong",
+            "section": {
+              "fallback_title": "Phần",
+              "questions": "câu hỏi",
+              "short_questions": "q",
+              "required": "bắt buộc",
+              "add_question": "Thêm câu hỏi",
+              "delete": "Xóa phần",
+              "move_up": "Di chuyển phần lên",
+              "move_down": "Di chuyển phần xuống",
+              "color": "Màu phần",
+              "description_placeholder": "Mô tả phần này",
+              "after_section": "Phần sau",
+              "continue": "Tiếp tục đến phần tiếp theo",
+              "go_to_section": "Đi đến phần",
+              "submit": "Gửi bài tập"
+            }
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",
@@ -1657,7 +1758,12 @@
         "content_locked_description": "Người hướng dẫn của bạn chưa mở khóa nội dung này. Hoàn thành nội dung trước đó hoặc kiểm tra lại sau.",
         "saving": "Đang lưu…",
         "saved": "Đã lưu",
-        "draft_recovery": "Đã tìm thấy một bản nháp chưa được lưu cho bài học này. Bạn có muốn khôi phục nó không?"
+        "draft_recovery": "Đã tìm thấy một bản nháp chưa được lưu cho bài học này. Bạn có muốn khôi phục nó không?",
+        "stats": {
+          "sections": "Phần",
+          "lessons": "Bài học",
+          "exercises": "Bài tập"
+        }
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",
@@ -1782,7 +1888,8 @@
     },
     "header": {
       "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing."
+      "preview_missing_slug": "Generate and save a course slug before previewing.",
+      "public_course_helper": "Hiển thị trên trang khóa học công khai của bạn"
     },
     "sidebar": {
       "back_to_course": "Quay lại khóa học",
@@ -1841,6 +1948,26 @@
       "blocker_final_misconfigured": "Bài tập chứng nhận \"{exerciseTitle}\" không có cấu hình điểm nào; nhờ người hướng dẫn khắc phục.",
       "email_message_label": "Tin nhắn email",
       "email_message_placeholder": "ví dụ: Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!"
+    },
+    "creator": {
+      "heading": "Bạn muốn tạo khóa học nào?",
+      "placeholder": "Hãy yêu cầu ClassroomIO tạo một khóa học cho bạn...",
+      "type": {
+        "self_paced": "tự nhịp độ",
+        "live_class": "Lớp học trực tiếp"
+      },
+      "level": {
+        "beginner": "Người mới bắt đầu",
+        "intermediate": "Trung cấp",
+        "advanced": "Nâng cao"
+      },
+      "drafting": {
+        "heading": "Soạn thảo ý tưởng khóa học của bạn",
+        "subtext": "Chúng tôi đang biến lời nhắc của bạn thành tiêu đề khóa học và không gian làm việc.",
+        "step_reading": "Đọc lời nhắc của bạn",
+        "step_naming": "Đặt tên cho khóa học của bạn",
+        "step_building": "Tạo không gian làm việc của bạn"
+      }
     }
   },
   "courses": {
@@ -1881,6 +2008,8 @@
       "unpublished": "Chưa được xuất bản",
       "continue_course": "Tiếp tục",
       "learn_more": "Tìm hiểu thêm",
+      "public_badge": "Công khai",
+      "actions_menu_aria": "Thao tác khóa học",
       "tags_overflow_aria": "Thêm {count} thẻ",
       "list_view": {
         "title": "Tiêu đề",
@@ -1897,7 +2026,8 @@
         "invite": "Mời",
         "delete": "Xóa",
         "open": "Mở",
-        "open_course_site": "Mở trang web khóa học"
+        "open_public_course": "Mở khóa học công khai",
+        "copy_course_url": "Sao chép URL khóa học"
       },
       "due_date": "Đến hạn",
       "valid_until": "Có hiệu lực cho đến khi"
@@ -2599,7 +2729,8 @@
       "token_auth_tab": "Xác thực mã thông báo",
       "customize_lms_tab": "Tùy chỉnh LMS",
       "domains_tab": "Tên miền",
-      "teams_tab": "Đội"
+      "teams_tab": "Đội",
+      "ai_credits_tab": "Tín dụng AI"
     },
     "subheadings": {
       "view_site": "Xem trang web"
@@ -2730,6 +2861,45 @@
     },
     "teams": {
       "page_subtitle": "Invite teammates and control who helps run this organization."
+    },
+    "ai_credits": {
+      "sub_title": "tín dụng AI",
+      "page_subtitle": "Theo dõi việc sử dụng trợ lý AI, mức tiêu thụ của nhóm và mua gói mã thông báo.",
+      "cost_note": "Việc sử dụng tín dụng được tính theo chi phí mô hình. Gemini 2.5 Flash và GPT-5.4 Mini được tính là 1 đơn vị tín dụng cho mỗi mã thông báo. Claude Sonnet 4.6 được tính là 36× mỗi mã thông báo, phản ánh chi phí API cao hơn.",
+      "buy_tokens": {
+        "title": "Mua thêm token",
+        "description": "Mỗi gói bổ sung thêm 5.000.000 tín dụng với giá 5 USD. Chọn số lượng gói bạn cần.",
+        "quantity_hint": "gói",
+        "preview": "{quantity} gói · {tokens} token · ${dollars}",
+        "buy_button": "Mua với giá ${dollars}"
+      },
+      "leaderboard": {
+        "title": "Cách sử dụng nhóm",
+        "this_month": "Tháng hiện tại",
+        "user": "người dùng",
+        "favorite_model": "Người mẫu yêu thích",
+        "tokens": "Mã thông báo",
+        "empty": "Không ai trong nhóm của bạn sử dụng trợ lý AI trong tháng này."
+      },
+      "chart": {
+        "heading": "Cách sử dụng",
+        "subheading": "Mức tiêu thụ token hàng ngày trong tháng này.",
+        "tokens": "Mã thông báo",
+        "total_tokens": "Tổng số token",
+        "total_requests": "Tổng số yêu cầu",
+        "empty": "Chưa có mức sử dụng nào được ghi lại trong tháng này."
+      },
+      "purchased": {
+        "title": "Mức sử dụng đã mua",
+        "subtitle": "Các token bổ sung bạn đã mua sẽ được sử dụng tiếp cho đến khi sử dụng.",
+        "lifetime": "Đã mua {tokens} token · chi tiêu ${dollars}",
+        "buy_more": "Mua thêm"
+      },
+      "included": {
+        "title": "Mức sử dụng đi kèm của bạn",
+        "subtitle": "Mã thông báo hàng tháng đi kèm với gói của bạn.",
+        "resets_on": "Đặt lại {ngày}"
+      }
     }
   },
   "profileMenu": {
@@ -2839,7 +3009,9 @@
     "self_paced_label": "tự nhịp độ",
     "self_paced_subtitle": "Tốt nhất cho các khóa học mà sinh viên có thể học theo tốc độ của riêng mình",
     "compliance_label": "Tuân thủ",
-    "compliance_subtitle": "Đào tạo định kỳ với tính năng thi lại, nhắc nhở và theo dõi gia hạn"
+    "compliance_subtitle": "Đào tạo định kỳ với tính năng thi lại, nhắc nhở và theo dõi gia hạn",
+    "public_label": "công cộng",
+    "public_subtitle": "Các trang khóa học miễn phí, không cần đăng ký mà bạn có thể chia sẻ công khai - rất tốt cho thế hệ khách hàng tiềm năng"
   },
   "delete_modal": {
     "label": "Xóa",
@@ -3224,7 +3396,8 @@
     "input_placeholder": "Hãy hỏi trợ lý AI...",
     "attach_document": "Đính kèm tài liệu (PDF, DOCX, PPTX)",
     "upgrade_to_upload": "Nâng cấp để tải lên tài liệu",
-    "tokens_exhausted": "Đã đạt đến giới hạn mã thông báo AI hàng tháng. Mua thêm tín dụng trong Cài đặt > Thanh toán hoặc đợi đặt lại.",
+    "tokens_exhausted": "Đã đạt đến giới hạn mã thông báo AI hàng tháng.",
+    "tokens_exhausted_buy_more": "Mua thêm",
     "chat_history": "Lịch sử trò chuyện",
     "no_conversations": "Chưa có cuộc trò chuyện nào",
     "untitled": "Không có tiêu đề",
@@ -3237,7 +3410,8 @@
     "mention_exercise": "tập thể dục",
     "mention_section": "Phần",
     "mention_no_results": "Không có nội dung phù hợp",
-    "uploading_document": "Đang tải tài liệu lên..."
+    "uploading_document": "Đang tải tài liệu lên...",
+    "agent_running_warning": "Những thay đổi sẽ xuất hiện trong khóa học sau khi tác nhân hoàn tất. Đừng tải lại trang."
   },
   "widgets": {
     "heading": "Widget",

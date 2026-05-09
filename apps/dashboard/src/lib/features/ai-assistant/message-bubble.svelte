@@ -9,6 +9,8 @@
   import { renderMentions } from '$features/ai-assistant/utils/mentions';
   import PlanView from '$features/ai-assistant/plan-view.svelte';
   import { getToolLabel, getToolResultLabel } from '$features/ai-assistant/utils/tool-labels';
+  import type { CoursePlan } from '$features/ai-assistant/utils/course-plan';
+  import { t } from '$lib/utils/functions/translations';
   import {
     getAgentToolName,
     getAgentToolResult,
@@ -42,6 +44,7 @@
   }
 
   const messageAttachment = $derived((message.metadata as AiAssistantMessageMetadata | undefined)?.attachment);
+  const tokenUsage = $derived((message.metadata as AiAssistantMessageMetadata | undefined)?.tokenUsage);
 
   function isDeferredPlanPart(part: Record<string, unknown>) {
     if (!isAgentToolPart(part)) {
@@ -108,7 +111,7 @@
         {@const toolStatus = getAgentToolStatus(part)}
         {@const errorText = getPartErrorText(part)}
         {#if toolName === 'generate_course_plan' && toolStatus === 'completed'}
-          <PlanView plan={toolResult} onImplement={onImplementPlan} onAskChanges={onAskPlanChanges} />
+          <PlanView plan={toolResult as CoursePlan} onImplement={onImplementPlan} onAskChanges={onAskPlanChanges} />
         {:else}
           <div class="ui:bg-background/70 flex items-center gap-2 rounded-md px-2 py-1.5 text-xs">
             {#if toolStatus === 'completed' && toolName}
@@ -148,7 +151,7 @@
       {@const errorText = getPartErrorText(part)}
       {#if toolName === 'generate_course_plan' && toolStatus === 'completed'}
         <div class="mt-3">
-          <PlanView plan={toolResult} onImplement={onImplementPlan} onAskChanges={onAskPlanChanges} />
+          <PlanView plan={toolResult as CoursePlan} onImplement={onImplementPlan} onAskChanges={onAskPlanChanges} />
         </div>
       {:else}
         <div class="ui:bg-background/70 mt-3 flex items-center gap-2 rounded-md px-2 py-1.5 text-xs">
@@ -180,6 +183,15 @@
         </div>
       {/if}
     {/each}
+
+    {#if message.role === 'assistant' && tokenUsage}
+      <div class="mt-1 flex justify-end">
+        <span class="ui:text-muted-foreground text-[10px]">
+          {tokenUsage.totalTokens.toLocaleString()}
+          {$t('ai_assistant.tokens_label')}
+        </span>
+      </div>
+    {/if}
   </div>
 </div>
 

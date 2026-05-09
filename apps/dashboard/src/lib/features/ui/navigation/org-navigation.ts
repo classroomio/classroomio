@@ -5,6 +5,7 @@ import {
   CourseIcon,
   DashboardIcon,
   GoalIcon,
+  HomeIcon,
   LandingPageIcon,
   PeopleIcon,
   SettingsIcon,
@@ -63,10 +64,17 @@ export interface NestedRouteConfig {
 export const baseNavConfig: NavItemConfig[] = [
   {
     group: 'home',
-    titleKey: 'org_navigation.dashboard',
+    titleKey: 'org_navigation.home',
     path: '',
+    icon: HomeIcon,
+    matchPattern: '^/org/[^/]+/?$'
+  },
+  {
+    group: 'home',
+    titleKey: 'org_navigation.dashboard',
+    path: '/dash',
     icon: DashboardIcon,
-    matchPattern: '^/org/[^/]+/?$' // Exact match only
+    matchPattern: '^/org/[^/]+/dash(/.*)?$'
   },
   {
     group: 'home',
@@ -74,7 +82,7 @@ export const baseNavConfig: NavItemConfig[] = [
     path: '/setup',
     icon: SetupIcon,
     requiresAdmin: true,
-    matchPattern: '^/org/[^/]+/setup(/.*)?$' // Matches nested routes
+    matchPattern: '^/org/[^/]+/setup(/.*)?$'
   },
   {
     group: 'content',
@@ -184,6 +192,10 @@ export const baseNavConfig: NavItemConfig[] = [
         path: '/settings/billing'
       },
       {
+        titleKey: 'settings.tabs.ai_credits_tab',
+        path: '/settings/ai-credits'
+      },
+      {
         titleKey: 'settings.tabs.auth_tab',
         matchPattern: '^/org/[^/]+/settings/auth(/.*)?$',
         path: '/settings/auth',
@@ -191,6 +203,14 @@ export const baseNavConfig: NavItemConfig[] = [
       }
     ],
     nestedRoutes: [
+      {
+        path: 'billing',
+        titleKey: 'settings.tabs.billing_tab'
+      },
+      {
+        path: 'ai-credits',
+        titleKey: 'settings.tabs.ai_credits_tab'
+      },
       {
         path: 'customize-lms',
         titleKey: 'settings.tabs.customize_lms_tab'

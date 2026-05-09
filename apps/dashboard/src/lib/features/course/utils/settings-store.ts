@@ -1,4 +1,5 @@
 import type { TCourseType } from '@cio/db/types';
+import type { TCourseCallout } from '@cio/utils/validation/course';
 import { writable } from 'svelte/store';
 
 type CourseSettings = {
@@ -6,12 +7,13 @@ type CourseSettings = {
   courseTitle: string;
   courseDescription: string;
   grading: boolean;
-  type: 'LIVE_CLASS' | 'SELF_PACED' | 'COMPLIANCE';
+  type: TCourseType;
   allowNewStudents: boolean;
   tabs: { id: number; name: string }[];
   lessonDownload: boolean;
   isPublished: boolean;
   isContentGroupingEnabled: boolean;
+  callout: TCourseCallout | null;
 };
 
 export const settings = writable<CourseSettings>({
@@ -19,7 +21,7 @@ export const settings = writable<CourseSettings>({
   courseTitle: '',
   courseDescription: '',
   grading: false,
-  type: 'LIVE_CLASS' as TCourseType,
+  type: 'SELF_PACED' as TCourseType,
   allowNewStudents: false,
   tabs: [
     { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
@@ -29,5 +31,6 @@ export const settings = writable<CourseSettings>({
   ],
   lessonDownload: false,
   isPublished: false,
-  isContentGroupingEnabled: true
+  isContentGroupingEnabled: true,
+  callout: null
 });

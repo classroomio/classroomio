@@ -4,18 +4,20 @@
   import { ExerciseQuestion } from '@cio/ui';
 
   import { submissions } from './store';
-  import { questionnaire } from '../store';
+  import { getQuestionsForSection, questionnaire } from '../store';
   import { t } from '$lib/utils/functions/translations';
   import type { Question } from '$features/course/types';
   import type { ExerciseSubmissions } from './types';
   import type { AnswerData, ExerciseQuestionLabels, ExerciseSubmissionModel } from '@cio/question-types';
   import { toExerciseQuestionModel } from '../question-type-utils';
+  import { getExerciseSectionDisplayTitle } from '$features/course/utils/exercise-section-utils';
 
   interface Props {
     isLoading?: boolean;
   }
 
   let { isLoading = $bindable(true) }: Props = $props();
+  const sectionFallbackTitle = $derived($t('course.navItem.lessons.exercises.all_exercises.section.fallback_title'));
 
   function toAnswerData(answerData: unknown): AnswerData | null {
     if (!answerData || typeof answerData !== 'object' || !('type' in answerData)) return null;
@@ -31,13 +33,6 @@
         questionId: answer.questionId,
         answerData: toAnswerData(answer.answerData)
       }))
-    };
-  }
-
-  function toSubmissionQuestionModel(question: Question, index: number) {
-    return {
-      ...toExerciseQuestionModel(question),
-      title: `${index + 1}. ${question.title || ''}`
     };
   }
 
@@ -59,8 +54,16 @@
   const submissionQuestions = $derived(
     $questionnaire.questions
       .filter((question) => !question.deletedAt)
-      .map((question, index) => toSubmissionQuestionModel(question, index))
+      .map((question) => toExerciseQuestionModel(question))
   );
+  const activeSections = $derived(
+    [...($questionnaire.sections ?? [])].filter((section) => !section.deletedAt).sort((a, b) => a.order - b.order)
+  );
+  const hasSectionGroups = $derived(activeSections.length > 0);
+
+  function getSectionPoints(questions: Question[]) {
+    return questions.reduce((total, question) => total + Number(question.points ?? 0), 0);
+  }
 </script>
 
 {#if isLoading}
@@ -71,14 +74,52 @@
       {$t('course.navItem.lessons.exercises.all_exercises.analytics.summary.question_chart')}
     </p>
 
-    <ExerciseQuestion.QuestionList
-      contract={{
-        mode: 'submission',
-        questions: submissionQuestions,
-        submissions: submissionModels,
-        labels: submissionLabels,
-        disabled: true
-      }}
-    />
+    {#if hasSectionGroups}
+      <div class="space-y-8">
+        {#each activeSections as section, sectionIndex (section.id)}
+          {@const sectionQuestions = getQuestionsForSection($questionnaire.questions, section.id)}
+          <section class="space-y-4">
+            <ExerciseQuestion.SectionHeader
+              title={getExerciseSectionDisplayTitle({
+                title: section.title,
+                sectionNumber: sectionIndex + 1,
+                sectionLabel: sectionFallbackTitle
+              })}
+              description={section.description}
+              sectionNumber={sectionIndex + 1}
+              totalSections={activeSections.length}
+              colorTheme={section.colorTheme}
+              questionCount={sectionQuestions.length}
+              totalPoints={getSectionPoints(sectionQuestions)}
+              labels={{
+                section: $t('course.navItem.lessons.exercises.all_exercises.section.fallback_title'),
+                questions: $t('course.navItem.lessons.exercises.all_exercises.view_mode.questions'),
+                points: $t('course.navItem.lessons.exercises.all_exercises.view_mode.points')
+              }}
+            />
+
+            <ExerciseQuestion.QuestionList
+              contract={{
+                mode: 'submission',
+                questions: sectionQuestions.map((question) => toExerciseQuestionModel(question)),
+                submissions: submissionModels,
+                labels: submissionLabels,
+                disabled: true
+              }}
+            />
+          </section>
+        {/each}
+      </div>
+    {:else}
+      <ExerciseQuestion.QuestionList
+        contract={{
+          mode: 'submission',
+          questions: submissionQuestions,
+          submissions: submissionModels,
+          labels: submissionLabels,
+          disabled: true
+        }}
+      />
+    {/if}
   </div>
 {/if}

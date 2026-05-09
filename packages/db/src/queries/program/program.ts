@@ -3,7 +3,7 @@ import * as schema from '@db/schema';
 import { and, asc, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -309,9 +309,9 @@ export async function isOrgAdminByProgramId(programId: string, profileId: string
   }
 }
 
-export async function addProgramMember(data: TNewProgramMember): Promise<TProgramMember> {
+export async function addProgramMember(data: TNewProgramMember, dbClient: DbOrTxClient = db): Promise<TProgramMember> {
   try {
-    const [member] = await db.insert(schema.programMember).values(data).returning();
+    const [member] = await dbClient.insert(schema.programMember).values(data).returning();
     if (!member) throw new Error('Failed to add program member');
     return member;
   } catch (error) {

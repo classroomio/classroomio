@@ -14,6 +14,7 @@
     /** Extra hint under points row (e.g. auto-grade requires non-zero points) */
     pointsHint?: string | null;
     onPointsChange?: any;
+    elementId?: string;
     key?: string;
     children?: import('svelte').Snippet;
   }
@@ -27,6 +28,7 @@
     errorMsg = null,
     pointsHint = null,
     onPointsChange = () => {},
+    elementId,
     children
   }: Props = $props();
 
@@ -44,6 +46,7 @@
 </script>
 
 <div
+  id={elementId}
   bind:this={ref}
   class="border-border border bg-white dark:bg-black {hasError ? 'border-red-700' : ''} root relative mb-6 rounded-md"
 >

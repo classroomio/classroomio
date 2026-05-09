@@ -391,6 +391,14 @@
         "post_created": "Message créé avec succès",
         "post_updated": "Message mis à jour avec succès"
       }
+    },
+    "ai_credits": {
+      "purchase_success": "Pack de jetons ajouté à votre solde.",
+      "checkout_failed": "Impossible de démarrer le paiement. Veuillez réessayer."
+    },
+    "public_course": {
+      "url_copied": "URL du cours copiée",
+      "url_copy_failed": "Impossible de copier l’URL"
     }
   },
   "explore": {
@@ -656,7 +664,30 @@
           "popover_title": "Sélectionnez les balises",
           "empty_groups": "Aucun tag disponible pour l'instant"
         },
-        "compliance": "Conformité"
+        "compliance": "Conformité",
+        "public": "Publique",
+        "convert_to_public_blocked": "Ce cours comporte des questions qui ne peuvent pas être notées automatiquement et ne peut donc pas encore être rendu public.",
+        "fix_blocking_questions": "Corriger les questions bloquantes",
+        "slug": {
+          "label": "Limace d'URL",
+          "description": "Le dernier segment de l’URL publique de cet élément. Uniquement des lettres, des chiffres et des tirets.",
+          "public_only": "Les Slugs ne sont modifiables que sur les cours publics.",
+          "in_use": "Ce slug est déjà utilisé par un autre élément de ce cours."
+        },
+        "callout": {
+          "legend": "Appel du cours public",
+          "description": "Affiché au bas de chaque leçon et à la place des éléments verrouillés. Utilisez-le pour diriger les apprenants vers votre site ou vers un cours payant.",
+          "title_label": "Titre",
+          "title_placeholder": "Vous voulez approfondir ce sujet ?",
+          "description_label": "Descriptif",
+          "description_placeholder": "Rejoignez la cohorte complète pour expédier un projet de qualité production en 4 semaines.",
+          "button_label": "Etiquette du bouton",
+          "button_label_placeholder": "En savoir plus sur mon site",
+          "button_url_label": "URL du bouton",
+          "button_url_placeholder": "https://exemple.com",
+          "clear": "Effacer la légende",
+          "public_only": "Les légendes n'apparaissent que dans les cours publics."
+        }
       },
       "analytics": {
         "title": "Analyse"
@@ -1167,7 +1198,10 @@
               "attempt_counter": "Tentative {actuelle} de {total}",
               "previous_try": "Tentative précédente",
               "next_try": "Prochaine tentative",
-              "try_again": "Réessayez"
+              "try_again": "Réessayez",
+              "back": "Retour",
+              "begin_section": "Section de démarrage",
+              "complete_section": "Rubrique complète"
             },
             "edit_mode": {
               "delete_modal": "Supprimer l'exercice",
@@ -1193,7 +1227,8 @@
                 "hotspot": "Point d'accès",
                 "link": "Liens",
                 "word_bank": "Banque de mots",
-                "star": "Nombre d'étoiles"
+                "star": "Nombre d'étoiles",
+                "video_recording": "Enregistrement vidéo"
               },
               "select_type": "Sélectionnez le type",
               "question_type_auto_gradable": "Auto",
@@ -1204,7 +1239,9 @@
               "title": "Supprimer la question",
               "sure": "Êtes-vous sûr de vouloir supprimer cette question",
               "no": "Non, s'il te plaît, ne le fais pas",
-              "yes": "Oui, supprimer"
+              "yes": "Oui, supprimer",
+              "section_title": "Supprimer la rubrique",
+              "section_sure": "Cette rubrique sera supprimée. Ses questions seront déplacées vers la section la plus proche."
             },
             "description": {
               "title": "Titre",
@@ -1464,12 +1501,76 @@
                   "correct_value_placeholder": "par ex. 3",
                   "max_stars_placeholder": "par ex. 5"
                 }
+              },
+              "video_recording": {
+                "submission": {
+                  "no_video": "Aucune vidéo soumise.",
+                  "unavailable": "Vidéo indisponible.",
+                  "duration": "Durée",
+                  "file_size": "Taille du fichier",
+                  "recorded_at": "Enregistré",
+                  "uploaded_at": "Téléchargé",
+                  "retake_count": "Reprises"
+                },
+                "preview": {
+                  "max_duration_label": "Durée maximale",
+                  "manual_grading": "Les apprenants enregistrent une courte réponse vidéo. Classement manuel requis."
+                },
+                "take": {
+                  "unsupported": "L'enregistrement vidéo n'est pas pris en charge dans ce navigateur.",
+                  "permission_prompt": "Autorisez l’accès à la caméra et au microphone pour enregistrer votre réponse.",
+                  "permission_denied": "L'accès à la caméra ou au microphone a été bloqué. Vérifiez les autorisations du navigateur.",
+                  "start_camera": "Configurer la caméra",
+                  "camera_label": "Appareil photo",
+                  "camera_placeholder": "Sélectionnez la caméra",
+                  "play_preview": "Lire l'aperçu de l'enregistrement",
+                  "pause_preview": "Suspendre l'aperçu de l'enregistrement",
+                  "start_recording": "Commencer l'enregistrement",
+                  "stop_recording": "Arrêter l'enregistrement",
+                  "elapsed": "Écoulé",
+                  "remaining": "Restant",
+                  "max_duration": "Max.",
+                  "too_short": "Enregistrez pendant au moins 1 seconde.",
+                  "use_recording": "Utiliser l'enregistrement",
+                  "retake": "Reprendre",
+                  "delete": "Supprimer l'enregistrement",
+                  "retry_upload": "Réessayez de télécharger",
+                  "uploading": "Téléchargement de l'enregistrement...",
+                  "uploaded": "Enregistrement téléchargé",
+                  "upload_failed": "Le téléchargement a échoué. Essayer à nouveau.",
+                  "replaces_previous": "Une nouvelle prise acceptée remplace la réponse précédente après le téléchargement."
+                },
+                "edit": {
+                  "max_duration_label": "Durée maximale",
+                  "max_duration_helper": "Les étudiants enregistrent dans le navigateur et peuvent reprendre avant de soumettre. Le maximum est de 2 minutes.",
+                  "max_duration_placeholder": "60",
+                  "manual_grading": "Nécessite une notation manuelle"
+                }
               }
             },
             "settings": "Paramètres",
             "settings_allow_multiple": "Autoriser plusieurs tentatives",
             "settings_allow_multiple_helper": "Les étudiants peuvent soumettre plus d'une fois et revoir leurs tentatives antérieures sur l'écran des résultats.",
-            "settings_save": "Enregistrer les paramètres"
+            "settings_save": "Enregistrer les paramètres",
+            "add": "Ajouter",
+            "add_section": "Ajouter une rubrique",
+            "reorder_done": "Réorganisation terminée",
+            "section": {
+              "fallback_title": "Section",
+              "questions": "des questions",
+              "short_questions": "q",
+              "required": "requis",
+              "add_question": "Ajouter une question",
+              "delete": "Supprimer la rubrique",
+              "move_up": "Déplacer la section vers le haut",
+              "move_down": "Déplacer la section vers le bas",
+              "color": "Couleur des sections",
+              "description_placeholder": "Décrivez cette rubrique",
+              "after_section": "Après la section",
+              "continue": "Passer à la section suivante",
+              "go_to_section": "Aller à la rubrique",
+              "submit": "Soumettre l'exercice"
+            }
           },
           "new_exercise_modal": {
             "heading": "Nouvel exercice",
@@ -1657,7 +1758,12 @@
         "content_locked_description": "Votre instructeur n'a pas encore débloqué ce contenu. Complétez le contenu précédent ou revenez plus tard.",
         "saving": "Sauvegarde…",
         "saved": "Enregistré",
-        "draft_recovery": "Un brouillon non enregistré a été trouvé pour cette leçon. Souhaitez-vous le restaurer ?"
+        "draft_recovery": "Un brouillon non enregistré a été trouvé pour cette leçon. Souhaitez-vous le restaurer ?",
+        "stats": {
+          "sections": "Sections",
+          "lessons": "Leçons",
+          "exercises": "Exercices"
+        }
       },
       "news_feed": {
         "heading": "Fil d'actualité",
@@ -1782,7 +1888,8 @@
     },
     "header": {
       "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing."
+      "preview_missing_slug": "Generate and save a course slug before previewing.",
+      "public_course_helper": "Visible sur votre site public de cours"
     },
     "sidebar": {
       "back_to_course": "Retour au cours",
@@ -1841,6 +1948,26 @@
       "blocker_final_misconfigured": "L'exercice de certification « {exerciseTitle} » n'a aucun point configuré ; demandez à votre instructeur de le réparer.",
       "email_message_label": "Message électronique",
       "email_message_placeholder": "par ex. Nous sommes fiers de vos progrès – continuez à apprendre !"
+    },
+    "creator": {
+      "heading": "Quel cours souhaitez-vous créer ?",
+      "placeholder": "Demandez à ClassroomIO de créer un cours pour vous...",
+      "type": {
+        "self_paced": "À votre rythme",
+        "live_class": "Cours en direct"
+      },
+      "level": {
+        "beginner": "Débutant",
+        "intermediate": "Intermédiaire",
+        "advanced": "Avancé"
+      },
+      "drafting": {
+        "heading": "Rédiger votre idée de cours",
+        "subtext": "Nous transformons votre invite en titre de cours et en espace de travail.",
+        "step_reading": "Lire votre invite",
+        "step_naming": "Nommer votre cours",
+        "step_building": "Création de votre espace de travail"
+      }
     }
   },
   "courses": {
@@ -1881,6 +2008,8 @@
       "unpublished": "Inédit",
       "continue_course": "Continuer",
       "learn_more": "En savoir plus",
+      "public_badge": "Public",
+      "actions_menu_aria": "Actions du cours",
       "tags_overflow_aria": "{count} autres tags",
       "list_view": {
         "title": "Titre",
@@ -1897,7 +2026,8 @@
         "invite": "Inviter",
         "delete": "Supprimer",
         "open": "Ouvert",
-        "open_course_site": "Site de cours ouvert"
+        "open_public_course": "Ouvrir le cours public",
+        "copy_course_url": "Copier l’URL du cours"
       },
       "due_date": "Due",
       "valid_until": "Valable jusqu'au"
@@ -2599,7 +2729,8 @@
       "token_auth_tab": "Authentification du jeton",
       "customize_lms_tab": "Personnaliser le LMS",
       "domains_tab": "Domaines",
-      "teams_tab": "Équipes"
+      "teams_tab": "Équipes",
+      "ai_credits_tab": "Crédits IA"
     },
     "subheadings": {
       "view_site": "Voir le site"
@@ -2730,6 +2861,45 @@
     },
     "teams": {
       "page_subtitle": "Invite teammates and control who helps run this organization."
+    },
+    "ai_credits": {
+      "sub_title": "Crédits IA",
+      "page_subtitle": "Suivez l’utilisation de l’assistant IA, la consommation de l’équipe et achetez des packs de jetons.",
+      "cost_note": "L'utilisation du crédit est pondérée par le coût du modèle. Gemini 2.5 Flash et GPT-5.4 Mini comptent pour 1 unité de crédit par jeton. Claude Sonnet 4.6 compte pour 36 × par jeton, reflétant son coût API plus élevé.",
+      "buy_tokens": {
+        "title": "Achetez plus de jetons",
+        "description": "Chaque pack ajoute 5 000 000 de crédits pour 5 $ USD. Choisissez le nombre de packs dont vous avez besoin.",
+        "quantity_hint": "paquets",
+        "preview": "{quantité} pack(s) · {tokens} jetons · ${dollars}",
+        "buy_button": "Achetez pour ${dollars}"
+      },
+      "leaderboard": {
+        "title": "Utilisation de l'équipe",
+        "this_month": "Mois en cours",
+        "user": "Utilisateur",
+        "favorite_model": "Modèle préféré",
+        "tokens": "Jetons",
+        "empty": "Personne dans votre équipe n'a utilisé l'assistant IA ce mois-ci."
+      },
+      "chart": {
+        "heading": "Utilisation",
+        "subheading": "Consommation quotidienne de jetons ce mois-ci.",
+        "tokens": "Jetons",
+        "total_tokens": "Total des jetons",
+        "total_requests": "Total des demandes",
+        "empty": "Aucune utilisation enregistrée ce mois-ci pour l'instant."
+      },
+      "purchased": {
+        "title": "Utilisation achetée",
+        "subtitle": "Les jetons supplémentaires que vous avez achetés sont reportés jusqu'à ce qu'ils soient utilisés.",
+        "lifetime": "{tokens} jetons achetés · ${dollars} dépensés",
+        "buy_more": "Achetez plus"
+      },
+      "included": {
+        "title": "Votre utilisation incluse",
+        "subtitle": "Jetons mensuels inclus avec votre forfait.",
+        "resets_on": "Réinitialise {date}"
+      }
     }
   },
   "profileMenu": {
@@ -2839,7 +3009,9 @@
     "self_paced_label": "À votre rythme",
     "self_paced_subtitle": "Idéal pour les cours où les étudiants peuvent suivre des cours à leur propre rythme",
     "compliance_label": "Conformité",
-    "compliance_subtitle": "Formation récurrente avec reprises, rappels et suivi de renouvellement"
+    "compliance_subtitle": "Formation récurrente avec reprises, rappels et suivi de renouvellement",
+    "public_label": "Publique",
+    "public_subtitle": "Pages de cours gratuites et sans inscription que vous pouvez partager publiquement – idéales pour la génération de leads"
   },
   "delete_modal": {
     "label": "Supprimer",
@@ -3224,7 +3396,8 @@
     "input_placeholder": "Demandez à l'assistant IA...",
     "attach_document": "Joindre un document (PDF, DOCX, PPTX)",
     "upgrade_to_upload": "Mise à niveau pour télécharger des documents",
-    "tokens_exhausted": "Limite mensuelle de jetons IA atteinte. Achetez plus de crédits dans Paramètres > Facturation ou attendez la réinitialisation.",
+    "tokens_exhausted": "Limite mensuelle de jetons IA atteinte.",
+    "tokens_exhausted_buy_more": "Acheter plus",
     "chat_history": "Historique des discussions",
     "no_conversations": "Aucune conversation pour l'instant",
     "untitled": "Sans titre",
@@ -3237,7 +3410,8 @@
     "mention_exercise": "Exercice",
     "mention_section": "Section",
     "mention_no_results": "Aucun contenu correspondant",
-    "uploading_document": "Téléchargement du document..."
+    "uploading_document": "Téléchargement du document...",
+    "agent_running_warning": "Les modifications apparaîtront dans le cours une fois que l'agent aura terminé. Ne rechargez pas la page."
   },
   "widgets": {
     "heading": "Widgets",

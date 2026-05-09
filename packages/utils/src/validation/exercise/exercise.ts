@@ -1,8 +1,14 @@
 import * as z from 'zod';
 
-import { getStarRatingMaxFromSettings, isValidStarRatingValue } from '@cio/question-types';
+import {
+  VIDEO_RECORDING_PLATFORM_MAX_DURATION_SECONDS,
+  getStarRatingMaxFromSettings,
+  isValidStarRatingValue
+} from '@cio/question-types';
 
 import { QUESTION_TYPE } from '../constants';
+import { ZSlug } from '../shared/slug';
+import { ZExerciseSection } from './exercise-section';
 
 const EXERCISE_QUESTION_TYPE_ID_LITERALS = [
   z.literal(QUESTION_TYPE.RADIO),
@@ -18,7 +24,8 @@ const EXERCISE_QUESTION_TYPE_ID_LITERALS = [
   z.literal(QUESTION_TYPE.HOTSPOT),
   z.literal(QUESTION_TYPE.LINK),
   z.literal(QUESTION_TYPE.WORD_BANK),
-  z.literal(QUESTION_TYPE.STAR)
+  z.literal(QUESTION_TYPE.STAR),
+  z.literal(QUESTION_TYPE.VIDEO_RECORDING)
 ] as const;
 
 export const ZExerciseQuestionTypeId = z.union(EXERCISE_QUESTION_TYPE_ID_LITERALS);
@@ -112,12 +119,29 @@ const QUESTION_VALIDATION_RULES: Record<number, Array<(question: QuestionRuleInp
 
       return null;
     }
+  ],
+  [QUESTION_TYPE.VIDEO_RECORDING]: [
+    (question) => {
+      const settings = question.settings ?? {};
+      const rawDuration = settings.maxDurationSeconds;
+      const maxDurationSeconds =
+        typeof rawDuration === 'number' ? rawDuration : rawDuration != null ? Number(rawDuration) : NaN;
+      if (!Number.isFinite(maxDurationSeconds) || maxDurationSeconds <= 0) {
+        return 'Set a recording duration greater than 0 seconds';
+      }
+      if (maxDurationSeconds > VIDEO_RECORDING_PLATFORM_MAX_DURATION_SECONDS) {
+        return `Recording duration cannot exceed ${VIDEO_RECORDING_PLATFORM_MAX_DURATION_SECONDS} seconds`;
+      }
+
+      return null;
+    }
   ]
 };
 
 // Base schema for exercise update question (without refinement)
 const ZExerciseUpdateQuestionBase = z.object({
   id: z.number().int().optional(),
+  exerciseSectionId: z.string().uuid().nullable().optional(),
   question: z.string().min(1),
   questionTypeId: ZExerciseQuestionTypeId.optional(),
   points: z.number().int().min(0).optional(),
@@ -183,6 +207,7 @@ export const ZExerciseCreate = z.object({
   order: z.number().int().optional(),
   courseId: z.string().min(1),
   dueBy: z.string().optional(),
+  slug: ZSlug.optional(),
   questions: z.array(ZExerciseCreateQuestion).optional()
 });
 export type TExerciseCreate = z.infer<typeof ZExerciseCreate>;
@@ -196,7 +221,10 @@ export const ZExerciseUpdate = z.object({
   isUnlocked: z.boolean().optional(),
   dueBy: z.string().optional(), // Changed from iso.datetime() to string to match frontend format
   allowMultipleAttempts: z.boolean().optional(),
-  questions: z.array(ZExerciseUpdateQuestion).optional()
+  slug: ZSlug.optional(),
+  questions: z.array(ZExerciseUpdateQuestion).optional(),
+  sections: z.array(ZExerciseSection).optional(),
+  sectionDisplayMode: z.enum(['one_question', 'all_questions']).optional()
 });
 export type TExerciseUpdate = z.infer<typeof ZExerciseUpdate>;
 

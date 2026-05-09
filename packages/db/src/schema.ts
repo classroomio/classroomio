@@ -23,7 +23,7 @@ import {
 import type { AnswerData } from '@cio/question-types';
 import { sql } from 'drizzle-orm';
 
-export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE']);
+export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE', 'PUBLIC']);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
@@ -541,7 +541,7 @@ export const submissionstatus = pgTable(
     label: varchar().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
   },
-  (table) => []
+  () => []
 );
 
 export const course = pgTable(
@@ -625,7 +625,13 @@ export const course = pgTable(
       passingScore?: number;
     }>(),
     status: text().default('ACTIVE').notNull(),
-    type: courseType().default('LIVE_CLASS')
+    type: courseType().default('SELF_PACED'),
+    callout: jsonb().$type<{
+      title: string;
+      description: string;
+      buttonLabel: string;
+      buttonUrl: string;
+    } | null>()
   },
   (table) => [
     foreignKey({
@@ -877,7 +883,8 @@ export const lesson = pgTable(
         assetId?: string;
       }[]
     >(),
-    sectionId: uuid('section_id')
+    sectionId: uuid('section_id'),
+    slug: varchar()
   },
   (table) => [
     foreignKey({
@@ -896,7 +903,8 @@ export const lesson = pgTable(
       name: 'public_course_section_id_fkey'
     })
       .onUpdate('cascade')
-      .onDelete('cascade')
+      .onDelete('cascade'),
+    index('idx_lesson_course_slug').on(table.courseId, table.slug)
   ]
 );
 
@@ -1059,7 +1067,9 @@ export const exercise = pgTable(
       .notNull(),
     isUnlocked: boolean('is_unlocked').default(true),
     dueBy: timestamp('due_by', { mode: 'string' }),
-    allowMultipleAttempts: boolean('allow_multiple_attempts').default(false).notNull()
+    allowMultipleAttempts: boolean('allow_multiple_attempts').default(false).notNull(),
+    sectionDisplayMode: varchar('section_display_mode').default('one_question'),
+    slug: varchar()
   },
   (table) => [
     foreignKey({
@@ -1076,7 +1086,34 @@ export const exercise = pgTable(
       columns: [table.sectionId],
       foreignColumns: [courseSection.id],
       name: 'exercise_section_id_fkey'
-    })
+    }),
+    index('idx_exercise_course_slug').on(table.courseId, table.slug)
+  ]
+);
+
+export const exerciseSection = pgTable(
+  'exercise_section',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    exerciseId: uuid('exercise_id').notNull(),
+    title: varchar().notNull().default('Untitled Section'),
+    description: text(),
+    order: bigint({ mode: 'number' }).notNull().default(0),
+    colorTheme: varchar('color_theme').notNull().default('blue'),
+    afterBehavior: jsonb('after_behavior').notNull().default({ action: 'continue' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.exerciseId],
+      foreignColumns: [exercise.id],
+      name: 'exercise_section_exercise_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_exercise_section_exercise_id').on(table.exerciseId)
   ]
 );
 
@@ -1656,6 +1693,7 @@ export const question = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     exerciseId: uuid('exercise_id').notNull(),
+    exerciseSectionId: uuid('exercise_section_id'),
     name: uuid().default(sql`gen_random_uuid()`),
     points: doublePrecision(),
     settings: jsonb().default({}),
@@ -1668,6 +1706,11 @@ export const question = pgTable(
       foreignColumns: [exercise.id],
       name: 'question_exercise_id_fkey'
     }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.exerciseSectionId],
+      foreignColumns: [exerciseSection.id],
+      name: 'question_exercise_section_id_fkey'
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.questionTypeId],
       foreignColumns: [questionType.id],
@@ -1721,7 +1764,8 @@ export const questionAnswer = pgTable(
 /**
  * Exercise question kinds (`typename` matches `@cio/question-types` keys). Expected ids:
  * 1 RADIO, 2 CHECKBOX, 3 TEXTAREA, 4 TRUE_FALSE, 5 SHORT_ANSWER, 6 NUMERIC, 7 FILL_BLANK,
- * 8 FILE_UPLOAD, 9 MATCHING, 10 ORDERING, 11 HOTSPOT, 12 LINK, 13 WORD_BANK, 14 STAR.
+ * 8 FILE_UPLOAD, 9 MATCHING, 10 ORDERING, 11 HOTSPOT, 12 LINK, 13 WORD_BANK, 14 STAR,
+ * 15 VIDEO_RECORDING.
  */
 export const questionType = pgTable(
   'question_type',
@@ -1739,7 +1783,7 @@ export const questionType = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     typename: varchar()
   },
-  (table) => []
+  () => []
 );
 
 export const role = pgTable(
@@ -1758,7 +1802,7 @@ export const role = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow()
   },
-  (table) => []
+  () => []
 );
 
 export const waitinglist = pgTable(
@@ -2566,6 +2610,7 @@ export const aiTokenUsage = pgTable(
     courseId: uuid('course_id').notNull(),
     promptTokens: integer('prompt_tokens').notNull(),
     completionTokens: integer('completion_tokens').notNull(),
+    costUnits: integer('cost_units'),
     model: text().notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
@@ -2602,6 +2647,43 @@ export const aiCreditBalance = pgTable(
       name: 'ai_credit_balance_org_id_fkey'
     }),
     unique('ai_credit_balance_org_id_key').on(table.orgId)
+  ]
+);
+
+export const aiCreditPurchase = pgTable(
+  'ai_credit_purchase',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'ai_credit_purchase_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    orgId: uuid('org_id').notNull(),
+    triggeredBy: uuid('triggered_by'),
+    provider: text().notNull().default('polar'),
+    providerOrderId: text('provider_order_id').notNull(),
+    tokens: integer().notNull(),
+    quantity: integer().notNull().default(1),
+    unitPriceCents: integer('unit_price_cents').notNull().default(0),
+    currency: text().notNull().default('USD'),
+    payload: jsonb(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.orgId],
+      foreignColumns: [organization.id],
+      name: 'ai_credit_purchase_org_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.triggeredBy],
+      foreignColumns: [profile.id],
+      name: 'ai_credit_purchase_triggered_by_fkey'
+    }),
+    unique('ai_credit_purchase_provider_order_id_key').on(table.providerOrderId),
+    index('idx_ai_credit_purchase_org_created').on(table.orgId, table.createdAt)
   ]
 );
 

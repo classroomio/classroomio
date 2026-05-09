@@ -1,10 +1,12 @@
 import { z } from 'zod';
 import { AGENT_MODEL_IDS } from '../../agent-models';
 
+const ZAgentCourseId = z.string().min(1);
+
 // ─── POST /agent/chat ────────────────────────────────────────────────────────
 
 export const ZAgentChatBody = z.object({
-  courseId: z.string().uuid(),
+  courseId: ZAgentCourseId,
   messages: z.array(z.any()), // UIMessage[] from Vercel AI SDK — validated by the SDK itself
   model: z.enum(AGENT_MODEL_IDS).optional(),
   context: z
@@ -21,7 +23,7 @@ export type TAgentChatBody = z.infer<typeof ZAgentChatBody>;
 // ─── POST /agent/upload ──────────────────────────────────────────────────────
 
 export const ZAgentUploadQuery = z.object({
-  courseId: z.string().uuid(),
+  courseId: ZAgentCourseId,
   conversationId: z.string().uuid()
 });
 
@@ -30,7 +32,7 @@ export type TAgentUploadQuery = z.infer<typeof ZAgentUploadQuery>;
 // ─── GET /agent/status ───────────────────────────────────────────────────────
 
 export const ZAgentStatusQuery = z.object({
-  courseId: z.string().uuid()
+  courseId: ZAgentCourseId
 });
 
 export type TAgentStatusQuery = z.infer<typeof ZAgentStatusQuery>;
@@ -42,6 +44,19 @@ export const ZAgentCreditsBody = z.object({
 });
 
 export type TAgentCreditsBody = z.infer<typeof ZAgentCreditsBody>;
+
+export const ZAgentCreditPurchase = z.object({
+  orgId: z.string().uuid(),
+  triggeredBy: z.string().uuid().optional(),
+  providerOrderId: z.string().min(1),
+  tokens: z.number().int().positive(),
+  quantity: z.number().int().positive(),
+  unitPriceCents: z.number().int().nonnegative(),
+  currency: z.string().default('USD'),
+  payload: z.record(z.string(), z.unknown()).optional()
+});
+
+export type TAgentCreditPurchase = z.infer<typeof ZAgentCreditPurchase>;
 
 // ─── Supported MIME types ────────────────────────────────────────────────────
 
@@ -56,7 +71,7 @@ export const MAX_AGENT_DOCUMENT_SIZE = 5 * 1024 * 1024; // 5MB
 // ─── GET /agent/history (list conversations) ────────────────────────────────
 
 export const ZAgentHistoryQuery = z.object({
-  courseId: z.string().uuid()
+  courseId: ZAgentCourseId
 });
 
 export type TAgentHistoryQuery = z.infer<typeof ZAgentHistoryQuery>;
@@ -72,7 +87,7 @@ export type TAgentConversationParam = z.infer<typeof ZAgentConversationParam>;
 // ─── POST /agent/history (create conversation) ──────────────────────────────
 
 export const ZAgentConversationCreateBody = z.object({
-  courseId: z.string().uuid(),
+  courseId: ZAgentCourseId,
   title: z.string().optional()
 });
 
@@ -107,3 +122,11 @@ export const ZAgentGenerateTitleBody = z.object({
 
 export type TAgentGenerateTitleParam = z.infer<typeof ZAgentGenerateTitleParam>;
 export type TAgentGenerateTitleBody = z.infer<typeof ZAgentGenerateTitleBody>;
+
+// ─── POST /agent/generate-course-title ───────────────────────────────────────
+
+export const ZAgentGenerateCourseTitleBody = z.object({
+  prompt: z.string().min(1).max(2000)
+});
+
+export type TAgentGenerateCourseTitleBody = z.infer<typeof ZAgentGenerateCourseTitleBody>;

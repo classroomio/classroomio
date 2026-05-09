@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  AUTO_GRADABLE_QUESTION_TYPE_IDS,
   QUESTION_TYPE_BY_KEY,
   QUESTION_TYPE_ID_TO_KEY,
   QUESTION_TYPE_IDS,
@@ -11,6 +12,7 @@ import {
   getQuestionTypeByTypename,
   getQuestionTypeId,
   isAutoGradableQuestionType,
+  isAutoGradableQuestionTypeId,
   requiresManualGrading,
   supportsPartialCredit
 } from '../src';
@@ -127,6 +129,14 @@ const EXPECTED_REGISTRY = [
     autoGradable: true,
     supportsPartialCredit: false,
     manualGradingRequired: false
+  },
+  {
+    key: QUESTION_TYPE_KEY.VIDEO_RECORDING,
+    typename: 'VIDEO_RECORDING',
+    id: 15,
+    autoGradable: false,
+    supportsPartialCredit: false,
+    manualGradingRequired: true
   }
 ] as const;
 
@@ -169,5 +179,18 @@ describe('question type registry', () => {
   it('returns undefined for unknown typename and id lookups', () => {
     expect(getQuestionTypeByTypename('UNKNOWN')).toBeUndefined();
     expect(getQuestionTypeById(999)).toBeUndefined();
+  });
+
+  it('AUTO_GRADABLE_QUESTION_TYPE_IDS matches registry flag by id', () => {
+    const expectedIds = QUESTION_TYPE_REGISTRY.filter((entry) => entry.autoGradable).map((entry) => entry.id);
+    expect(AUTO_GRADABLE_QUESTION_TYPE_IDS).toEqual(expectedIds);
+  });
+
+  it('isAutoGradableQuestionTypeId agrees with isAutoGradableQuestionType for every registry entry', () => {
+    for (const entry of QUESTION_TYPE_REGISTRY) {
+      expect(isAutoGradableQuestionTypeId(entry.id)).toBe(entry.autoGradable);
+      expect(isAutoGradableQuestionTypeId(entry.id)).toBe(isAutoGradableQuestionType(entry.key));
+    }
+    expect(isAutoGradableQuestionTypeId(9999)).toBe(false);
   });
 });

@@ -58,7 +58,7 @@
   <PageHeader
     className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 md:px-16 px-8"
   >
-    <Badge class="px-4! py-2!" variant="outline">Invest in your people</Badge>
+    <Badge class="bg-white px-4! py-2!" variant="outline">Invest in your people</Badge>
 
     <div class="flex w-full flex-col items-start justify-start gap-y-8 lg:items-center lg:justify-center">
       <div class="flex w-full max-w-7xl flex-col items-start justify-start gap-y-4 lg:items-center lg:justify-center">
@@ -79,7 +79,7 @@
     class="flex w-full max-w-7xl flex-col justify-center gap-x-6 gap-y-8 px-8 py-16 md:px-16 lg:flex-row lg:items-center lg:justify-between lg:px-28 lg:py-24"
   >
     <div class="flex w-full flex-col items-start justify-start gap-y-4 lg:w-[35%]">
-      <Badge variant="outline">Why it matters</Badge>
+      <Badge class="bg-white" variant="outline">Why it matters</Badge>
 
       <div class="flex flex-col items-start justify-start gap-y-4 md:w-full">
         <h1 class="text-3xl">Great teams are built, not hired</h1>
@@ -116,7 +116,7 @@
     class="flex w-full flex-col items-center justify-start gap-y-16 bg-[#F1F6FF] px-8 py-16 md:px-16 lg:px-28 lg:py-24"
   >
     <div class="flex w-full flex-col items-start justify-start gap-y-4 lg:items-center lg:justify-center">
-      <Badge class="px-4! py-2!" variant="outline">How it works</Badge>
+      <Badge class="bg-white px-4! py-2!" variant="outline">How it works</Badge>
 
       <div
         class="flex max-w-7xl flex-col items-start justify-start gap-y-4 lg:w-full lg:items-center lg:justify-center"

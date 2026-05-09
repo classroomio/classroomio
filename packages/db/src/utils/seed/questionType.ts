@@ -76,6 +76,12 @@ export async function seedQuestionTypes() {
       typename: 'STAR',
       createdAt: '2021-08-07 18:49:46.246529+00',
       updatedAt: '2021-08-15 00:57:38.634665+00'
+    },
+    {
+      label: 'Video recording',
+      typename: 'VIDEO_RECORDING',
+      createdAt: '2026-04-30 00:00:00+00',
+      updatedAt: '2026-04-30 00:00:00+00'
     }
   ].filter((q) => !questionTypeNames.includes(q.typename));
 

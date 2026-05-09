@@ -33,7 +33,9 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.69",
     "@ai-sdk/google": "^3.0.0",
+    "@ai-sdk/moonshotai": "^2.0.21",
     "@ai-sdk/openai": "^3.0.52",
+    "@cio/question-types": "workspace:*",
     "ai": "^6.0.158",
     "zod": "^3.24.4"
   },

@@ -11,8 +11,22 @@ export interface AiAssistantMessageAttachment {
   name: string;
 }
 
+export interface AiAssistantMessageTokenUsage {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+}
+
+export interface AiAssistantMessageContinuation {
+  reason: 'step_limit';
+  maxSteps: number;
+  finishReason?: string;
+}
+
 export interface AiAssistantMessageMetadata {
   attachment?: AiAssistantMessageAttachment;
+  tokenUsage?: AiAssistantMessageTokenUsage;
+  continuation?: AiAssistantMessageContinuation;
 }
 
 export type AiAssistantMessage = UIMessage<AiAssistantMessageMetadata>;
@@ -47,3 +61,7 @@ export type AgentConversationCreateData = AgentConversationCreateSuccess['data']
 export type AgentHistorySaveRequest = (typeof classroomio.agent.history)[':conversationId']['$put'];
 
 export type AgentHistoryDeleteRequest = (typeof classroomio.agent.history)[':conversationId']['$delete'];
+
+export type GenerateCourseTitleRequest = (typeof classroomio.agent)['generate-course-title']['$post'];
+export type GenerateCourseTitleSuccess = Extract<InferResponseType<GenerateCourseTitleRequest>, { success: true }>;
+export type GenerateCourseTitleData = GenerateCourseTitleSuccess['data'];

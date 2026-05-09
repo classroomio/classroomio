@@ -27,7 +27,7 @@ import {
   getCourseImportDraftByIdempotencyKey,
   updateCourseImportDraft
 } from '@cio/db/queries/course-import';
-import { getCourseById } from '@cio/db/queries/course';
+import { getCourseById, isCourseSlugTaken, updateCourseSlug } from '@cio/db/queries/course';
 import { getLessonLanguagesByLessonIds } from '@cio/db/queries/lesson';
 import { getOrganizationById } from '@cio/db/queries/organization';
 import { getCourseTagsForOrganization } from '@cio/db/queries/tag';
@@ -45,10 +45,7 @@ import {
 } from '@cio/utils/validation/course-import';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { assignCourseTagsByName } from '@api/services/tag';
-import { db } from '@cio/db/drizzle';
-import * as schema from '@cio/db/schema';
 import { generateSlug } from '@cio/utils/functions';
-import { eq } from 'drizzle-orm';
 
 type DraftSummary = {
   sectionCount: number;
@@ -104,13 +101,8 @@ async function generateUniqueCourseSlug(baseSlug: string): Promise<string> {
   let candidate = baseSlug;
 
   while (true) {
-    const existing = await db
-      .select({ id: schema.course.id })
-      .from(schema.course)
-      .where(eq(schema.course.slug, candidate))
-      .limit(1);
-
-    if (existing.length === 0) {
+    const taken = await isCourseSlugTaken(candidate);
+    if (!taken) {
       return candidate;
     }
 
@@ -127,8 +119,13 @@ async function ensureCourseSlug(courseId: string, title: string | null | undefin
 
   const baseSlug = generateSlug(title, { fallback: 'course' });
   const uniqueSlug = await generateUniqueCourseSlug(baseSlug);
-  await updateCourse(courseId, { slug: uniqueSlug });
-  return uniqueSlug;
+  const updated = await updateCourseSlug(courseId, uniqueSlug);
+
+  if (!updated) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+
+  return updated.slug ?? uniqueSlug;
 }
 
 function buildCourseBaseUrl(organization: TOrganization) {

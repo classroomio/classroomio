@@ -20,6 +20,7 @@ import {
 } from '@cio/db/queries/lesson';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { enrichLessonWithPresignedUrls } from '@api/utils/lesson-media';
+import { resolveItemSlug } from '@api/services/course/slug';
 
 /**
  * Creates a new lesson
@@ -29,9 +30,16 @@ import { enrichLessonWithPresignedUrls } from '@api/utils/lesson-media';
  */
 export async function createLesson(courseId: string, data: TLessonCreate): Promise<TLesson> {
   try {
+    const slug = await resolveItemSlug({
+      courseId,
+      title: data.title,
+      requestedSlug: data.slug
+    });
+
     const lessonData = {
       ...data,
-      courseId
+      courseId,
+      slug
     };
 
     const [lesson] = await createLessons([lessonData]);
@@ -89,7 +97,26 @@ export async function getLesson(lessonId: string): Promise<LessonById> {
  */
 export async function updateLessonService(lessonId: string, data: TLessonUpdate): Promise<TLesson> {
   try {
-    const updated = await updateLesson(lessonId, data);
+    const payload: TLessonUpdate = { ...data };
+
+    if (payload.slug !== undefined) {
+      const existing = await getLessonById(lessonId);
+      if (!existing) {
+        throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+      }
+      if (!existing.courseId) {
+        throw new AppError('Lesson has no course', ErrorCodes.LESSON_NOT_FOUND, 404);
+      }
+
+      payload.slug = await resolveItemSlug({
+        courseId: existing.courseId,
+        title: payload.title ?? existing.title,
+        requestedSlug: payload.slug,
+        ignoreItemSlug: existing.slug ?? undefined
+      });
+    }
+
+    const updated = await updateLesson(lessonId, payload);
     if (!updated) {
       throw new AppError('Failed to update lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }

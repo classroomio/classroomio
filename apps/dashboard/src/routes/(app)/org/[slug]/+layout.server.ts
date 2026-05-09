@@ -30,7 +30,7 @@ export const load = async ({ params, url, cookies }) => {
   if (!orgId) {
     const apiKeyHeaders = getApiKeyHeaders();
     const org = await getOrgBySiteName(siteName, apiKeyHeaders);
-    console.log('org', org);
+
     if (org?.id) {
       orgId = org.id;
 

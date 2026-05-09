@@ -5,6 +5,7 @@
   interface Props {
     question: Record;
     answer?: unknown;
+    viewAnswer?: unknown;
     /** When set, renders an additional Review block with this incorrect `AnswerData`. */
     wrongAnswer?: unknown;
   }
@@ -17,7 +18,7 @@
     settings?: Record<string, unknown>;
   };
 
-  let { question, answer = null, wrongAnswer = undefined }: Props = $props();
+  let { question, answer = null, viewAnswer: initialViewAnswer = answer, wrongAnswer = undefined }: Props = $props();
 
   function cloneQuestion(source: Record) {
     return JSON.parse(JSON.stringify(source));
@@ -109,6 +110,21 @@
           fileName: `lesson-plan-${index + 1}.pdf`,
           mimeType: 'application/pdf'
         };
+      case 'VIDEO_RECORDING':
+        return {
+          type: 'VIDEO_RECORDING',
+          assetId: `00000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+          storageKey: `exercise-recordings/story/submission-${index + 1}.webm`,
+          fileName: `reflection-${index + 1}.webm`,
+          mimeType: 'video/webm',
+          size: 900_000 + index * 25_000,
+          durationSeconds: 30 + (index % 6) * 5,
+          recordedAt: '2026-04-30T12:00:00.000Z',
+          uploadedAt: '2026-04-30T12:01:00.000Z',
+          provider: 'cloudflare',
+          retakeCount: index % 4,
+          playbackUrl: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm'
+        };
       case 'MATCHING': {
         const pairs = Array.isArray(storyQuestion.settings?.pairs)
           ? (storyQuestion.settings?.pairs as Array<{ left: string; right: string }>)
@@ -168,7 +184,7 @@
 
   $effect(() => {
     editQuestion = cloneQuestion(question);
-    viewAnswer = answer;
+    viewAnswer = initialViewAnswer;
   });
 </script>
 
@@ -224,7 +240,7 @@
       contract={{
         mode: 'review',
         question,
-        answer: viewAnswer,
+        answer,
         labels: QUESTION_LABELS,
         disabled: true
       }}

@@ -1,18 +1,21 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createMoonshotAI } from '@ai-sdk/moonshotai';
 import { AIProvider, type AIProviderConfig } from '../types';
 
 const DEFAULT_MODELS: Record<AIProvider, string> = {
-  [AIProvider.OPENAI]: 'gpt-4o',
+  [AIProvider.OPENAI]: 'gpt-5.4-mini',
   [AIProvider.ANTHROPIC]: 'claude-sonnet-4-20250514',
-  [AIProvider.GOOGLE]: 'gemini-2.5-flash'
+  [AIProvider.GOOGLE]: 'gemini-2.5-flash',
+  [AIProvider.MOONSHOT]: 'kimi-k2.6'
 };
 
 const PROVIDER_API_KEY_ENV: Record<AIProvider, string> = {
   [AIProvider.OPENAI]: 'OPENAI_API_KEY',
   [AIProvider.ANTHROPIC]: 'ANTHROPIC_API_KEY',
-  [AIProvider.GOOGLE]: 'GOOGLE_API_KEY'
+  [AIProvider.GOOGLE]: 'GOOGLE_API_KEY',
+  [AIProvider.MOONSHOT]: 'MOONSHOT_API_KEY'
 };
 
 /**
@@ -34,6 +37,10 @@ export function createModel(config: AIProviderConfig) {
     case AIProvider.GOOGLE: {
       const google = createGoogleGenerativeAI({ apiKey: config.apiKey });
       return google(modelName);
+    }
+    case AIProvider.MOONSHOT: {
+      const moonshot = createMoonshotAI({ apiKey: config.apiKey });
+      return moonshot(modelName);
     }
     default:
       throw new Error(`Unsupported AI provider: ${config.provider}`);

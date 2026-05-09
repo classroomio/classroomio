@@ -272,8 +272,6 @@ export async function deleteQuestion(questionId: number, dbClient: DbOrTxClient 
 export async function createOptions(values: TNewOption[], dbClient: DbOrTxClient = db) {
   if (values.length === 0) return [];
   try {
-    // Keep the identity sequence aligned before bulk inserts so restored data
-    // or manual imports cannot reuse an existing option id.
     await syncOptionIdSequence(dbClient);
     return dbClient.insert(schema.option).values(values).returning();
   } catch (error) {

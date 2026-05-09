@@ -18,6 +18,12 @@
       icon: Component;
       iconClass?: string;
     };
+    /** e.g. public-course indicator on the banner */
+    visibilityBadge?: {
+      label: string;
+      icon: Component;
+      iconClass?: string;
+    };
     class?: string;
     /** Custom banner area (e.g. optimized `Image`); overrides `bannerImage` */
     media?: Snippet;
@@ -34,6 +40,7 @@
     bannerImage,
     bannerAlt = 'Course banner image',
     typeBadge,
+    visibilityBadge,
     class: className = '',
     media,
     overlay,
@@ -70,6 +77,20 @@
               >
                 <Icon class={typeBadge.iconClass} />
                 {typeBadge.label}
+              </Badge>
+            {/if}
+
+            {#if visibilityBadge}
+              {@const VIcon = visibilityBadge.icon}
+              <Badge
+                class={cn(
+                  'ui:absolute ui:bottom-2 ui:z-10 ui:flex ui:items-center ui:rounded-md! ui:gap-1 ui:capitalize',
+                  typeBadge ? 'ui:right-2 ui:left-auto' : 'ui:left-2'
+                )}
+                variant="secondary"
+              >
+                <VIcon class={visibilityBadge.iconClass} />
+                {visibilityBadge.label}
               </Badge>
             {/if}
           </Item.Media>
@@ -116,6 +137,20 @@
               >
                 <Icon class={typeBadge.iconClass} />
                 {typeBadge.label}
+              </Badge>
+            {/if}
+
+            {#if visibilityBadge}
+              {@const VIcon = visibilityBadge.icon}
+              <Badge
+                class={cn(
+                  'ui:absolute ui:bottom-2 ui:z-10 ui:flex ui:items-center ui:rounded-md! ui:gap-1 ui:capitalize',
+                  typeBadge ? 'ui:right-2 ui:left-auto' : 'ui:left-2'
+                )}
+                variant="secondary"
+              >
+                <VIcon class={visibilityBadge.iconClass} />
+                {visibilityBadge.label}
               </Badge>
             {/if}
           </Item.Media>

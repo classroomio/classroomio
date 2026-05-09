@@ -261,6 +261,21 @@ export type UpdateSubmissionGradesRequest =
 export type CreateCourseRequest = typeof classroomio.course.$post;
 export type GetCourseRequest = (typeof classroomio.course)[':courseId']['$get'];
 export type GetCourseBySlugRequest = (typeof classroomio.course)['slug'][':slug']['$get'];
+export type GetCourseBySlugSuccess = Extract<InferResponseType<GetCourseBySlugRequest>, { success: true }>;
+export type GetCourseBySlugData = GetCourseBySlugSuccess['data'];
+
+/** Org snippet returned with course slug payload for org-site flows */
+export type CourseSlugPayloadOrg = {
+  id: string;
+  name: string;
+  siteName: string | null;
+  theme?: unknown;
+};
+
+/** Slug course shape including optional org (RPC unions omit `org` on some branches). */
+export type CourseBySlugWithOrg = GetCourseBySlugData & {
+  org?: CourseSlugPayloadOrg | null;
+};
 export type UpdateCourseRequest = (typeof classroomio.course)[':courseId']['$put'];
 export type DeleteCourseRequest = (typeof classroomio.course)[':courseId']['$delete'];
 export type UpdateCourseContentRequest = (typeof classroomio.course)[':courseId']['content']['$put'];
@@ -444,3 +459,10 @@ export type VideoUploadPresignSuccess = Extract<InferResponseType<VideoUploadPre
 
 export type VideoDownloadPresignRequest = (typeof classroomio.course)['presign']['video']['download']['$post'];
 export type VideoDownloadPresignSuccess = Extract<InferResponseType<VideoDownloadPresignRequest>, { success: true }>;
+
+export type VideoRecordingUploadInitRequest =
+  (typeof classroomio.course)[':courseId']['exercise'][':exerciseId']['question'][':questionId']['video-recording']['upload']['init']['$post'];
+export type VideoRecordingUploadCompleteRequest =
+  (typeof classroomio.course)[':courseId']['exercise'][':exerciseId']['question'][':questionId']['video-recording']['upload']['complete']['$post'];
+export type VideoRecordingPlaybackRequest =
+  (typeof classroomio.course)[':courseId']['exercise'][':exerciseId']['submission'][':submissionId']['question'][':questionId']['video-recording']['playback']['$get'];

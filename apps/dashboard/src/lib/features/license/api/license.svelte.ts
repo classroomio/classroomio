@@ -22,7 +22,7 @@ class LicenseApi {
     const deduped: LicenseFeatureId[] = [];
 
     for (const feature of features) {
-      if (LICENSE_FEATURE_IDS.includes(feature)) {
+      if ((LICENSE_FEATURE_IDS as readonly string[]).includes(feature)) {
         const typedFeature = feature as LicenseFeatureId;
         if (!deduped.includes(typedFeature)) {
           deduped.push(typedFeature);

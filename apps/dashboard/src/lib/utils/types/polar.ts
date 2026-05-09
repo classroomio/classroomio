@@ -78,7 +78,7 @@ interface Product {
   attachedCustomFields: any[];
 }
 
-interface SubscriptionData {
+export interface SubscriptionData {
   createdAt: string;
   modifiedAt: string | null;
   id: string;
@@ -104,6 +104,7 @@ interface SubscriptionData {
     orgId: string;
     orgSlug: string;
     triggeredBy: string;
+    kind?: string;
   };
   customFieldData: Record<string, any>;
   customer: Customer;
@@ -114,7 +115,34 @@ interface SubscriptionData {
   discount: any | null;
 }
 
-export interface PolarWebhookPayload {
-  type: string;
+export interface PolarOrderWebhookData {
+  id: string;
+  amount?: number;
+  totalAmount?: number;
+  currency?: string;
+  metadata?: Record<string, string>;
+  items?: Array<{ quantity?: number; amount?: number }>;
+  [key: string]: unknown;
+}
+
+export interface PolarOrderWebhookPayload {
+  type: 'order.paid' | 'order.created' | 'order.refunded';
+  data: PolarOrderWebhookData;
+}
+
+export interface PolarSubscriptionWebhookPayload {
+  type:
+    | 'checkout.created'
+    | 'checkout.updated'
+    | 'subscription.created'
+    | 'subscription.updated'
+    | 'subscription.active'
+    | 'subscription.revoked'
+    | 'subscription.canceled';
   data: SubscriptionData;
 }
+
+export type PolarWebhookPayload =
+  | PolarSubscriptionWebhookPayload
+  | PolarOrderWebhookPayload
+  | { type: string; data: Record<string, unknown> };

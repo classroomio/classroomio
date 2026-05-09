@@ -12,10 +12,12 @@
     NUMERIC_FIXTURE,
     ORDERING_FIXTURE,
     RADIO_FIXTURE,
+    SECTIONED_EXERCISE_FIXTURE,
     SHORT_ANSWER_FIXTURE,
     STAR_FIXTURE,
     TEXTAREA_FIXTURE,
     TRUE_FALSE_FIXTURE,
+    VIDEO_RECORDING_FIXTURE,
     WORD_BANK_FIXTURE
   } from './question-fixtures';
 
@@ -27,6 +29,16 @@
     },
     tags: ['autodocs']
   });
+
+  const sectionLabels = { section: 'Section', questions: 'questions', points: 'points' };
+  const sectionOverviewLabels = { ...sectionLabels, back: 'Back', beginSection: 'Start section' };
+  const autoGroupedSection = {
+    ...SECTIONED_EXERCISE_FIXTURE[0],
+    id: 'section-auto-grouped',
+    title: 'Section 1',
+    description: null,
+    colorTheme: 'blue' as const
+  };
 </script>
 
 <Story name="Checkbox">
@@ -39,12 +51,155 @@
   {/snippet}
 </Story>
 
+<Story name="Exercise Sections - Section Intro">
+  {#snippet template()}
+    <div class="ui:max-w-5xl">
+      <ExerciseQuestion.SectionOverview
+        sectionTitle={SECTIONED_EXERCISE_FIXTURE[0].title}
+        sectionDescription={SECTIONED_EXERCISE_FIXTURE[0].description}
+        sectionNumber={1}
+        totalSections={SECTIONED_EXERCISE_FIXTURE.length}
+        questionCount={SECTIONED_EXERCISE_FIXTURE[0].questions.length}
+        totalPoints={10}
+        colorTheme={SECTIONED_EXERCISE_FIXTURE[0].colorTheme}
+        onBegin={() => {}}
+        onBack={() => {}}
+        labels={sectionOverviewLabels}
+      />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Exercise Sections - Auto Grouped Existing Questions">
+  {#snippet template()}
+    <div class="ui:max-w-5xl">
+      <ExerciseQuestion.SectionOverview
+        sectionTitle={autoGroupedSection.title}
+        sectionDescription={autoGroupedSection.description}
+        sectionNumber={1}
+        totalSections={2}
+        questionCount={autoGroupedSection.questions.length}
+        totalPoints={10}
+        colorTheme={autoGroupedSection.colorTheme}
+        onBegin={() => {}}
+        onBack={() => {}}
+        labels={sectionOverviewLabels}
+      />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Exercise Sections - Question In Progress">
+  {#snippet template()}
+    <div class="ui:grid ui:max-w-5xl ui:gap-6 ui:lg:grid-cols-[190px_minmax(0,1fr)]">
+      <ExerciseQuestion.SectionNavigationSidebar
+        sections={SECTIONED_EXERCISE_FIXTURE.map((section, sectionIndex) => ({
+          id: section.id,
+          title: section.title,
+          isCurrent: sectionIndex === 0,
+          questions: section.questions.map((question, questionIndex) => ({
+            key: String(question.id),
+            label: `Q${questionIndex + 1}`,
+            isAnswered: questionIndex === 0,
+            isCurrent: sectionIndex === 0 && questionIndex === 1
+          }))
+        }))}
+      />
+
+      <section class="ui:space-y-4">
+        <ExerciseQuestion.SectionHeader
+          title={SECTIONED_EXERCISE_FIXTURE[0].title}
+          description={SECTIONED_EXERCISE_FIXTURE[0].description}
+          sectionNumber={1}
+          totalSections={SECTIONED_EXERCISE_FIXTURE.length}
+          colorTheme={SECTIONED_EXERCISE_FIXTURE[0].colorTheme}
+          questionCount={SECTIONED_EXERCISE_FIXTURE[0].questions.length}
+          totalPoints={10}
+          labels={sectionLabels}
+        />
+
+        <ExerciseQuestion.QuestionRenderer
+          contract={{
+            mode: 'take',
+            question: SECTIONED_EXERCISE_FIXTURE[0].questions[1],
+            answer: TRUE_FALSE_FIXTURE.answer,
+            disabled: false
+          }}
+        />
+      </section>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Exercise Sections - Grading View">
+  {#snippet template()}
+    <div class="ui:max-w-4xl ui:space-y-8">
+      {#each SECTIONED_EXERCISE_FIXTURE as section, sectionIndex (section.id)}
+        <section class="ui:space-y-4">
+          <ExerciseQuestion.SectionHeader
+            title={section.title}
+            description={section.description}
+            sectionNumber={sectionIndex + 1}
+            totalSections={SECTIONED_EXERCISE_FIXTURE.length}
+            colorTheme={section.colorTheme}
+            questionCount={section.questions.length}
+            totalPoints={section.questions.length * 5}
+            labels={sectionLabels}
+          />
+
+          <ExerciseQuestion.QuestionList
+            contract={{
+              mode: 'review',
+              questions: section.questions.map((question, questionIndex) => ({
+                ...question,
+                title: `${questionIndex + 1}. ${question.title}`
+              })),
+              answersByKey: {
+                'q-radio': RADIO_FIXTURE.answer,
+                'q-true-false': TRUE_FALSE_FIXTURE.answer,
+                'q-short-answer': SHORT_ANSWER_FIXTURE.answer,
+                'q-ordering': ORDERING_FIXTURE.answer
+              },
+              disabled: true
+            }}
+            itemClass="ui:mb-4"
+          />
+
+          <div class="ui:flex ui:justify-end ui:border-t ui:pt-3 ui:text-sm ui:font-medium">
+            Section subtotal: {section.questions.length * 4}/{section.questions.length * 5}
+          </div>
+        </section>
+      {/each}
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="FileUpload">
   {#snippet template()}
     <QuestionTypeModes
       question={FILE_UPLOAD_FIXTURE.question}
       answer={FILE_UPLOAD_FIXTURE.answer}
       wrongAnswer={FILE_UPLOAD_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story
+  name="VideoRecording"
+  parameters={{
+    docs: {
+      description: {
+        story:
+          'Browser-recorded video answer with a circular student recording UI, upload states, retakes, and manual grading metadata.'
+      }
+    }
+  }}
+>
+  {#snippet template()}
+    <QuestionTypeModes
+      question={VIDEO_RECORDING_FIXTURE.question}
+      answer={VIDEO_RECORDING_FIXTURE.answer}
+      viewAnswer={null}
     />
   {/snippet}
 </Story>

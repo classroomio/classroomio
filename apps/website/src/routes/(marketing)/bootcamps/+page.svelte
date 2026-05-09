@@ -78,7 +78,7 @@
   <PageHeader
     className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 md:px-16 px-8"
   >
-    <Badge class="px-4! py-2!" variant="outline">Solution for Bootcamps</Badge>
+    <Badge class="bg-white px-4! py-2!" variant="outline">Solution for Bootcamps</Badge>
 
     <div class="flex w-full flex-col items-start justify-start gap-y-8 lg:items-center lg:justify-center">
       <div class="flex w-full max-w-7xl flex-col items-start justify-start gap-y-4 lg:items-center lg:justify-center">
@@ -99,7 +99,7 @@
     class="flex w-full flex-col justify-center gap-y-12 px-6 py-16 md:px-16 lg:items-center lg:justify-between lg:px-28 lg:py-24"
   >
     <div class="flex w-full flex-col items-start justify-start gap-y-4 lg:items-center lg:justify-center">
-      <Badge class="px-4! py-2!" variant="outline">Our benefits</Badge>
+      <Badge class="bg-white px-4! py-2!" variant="outline">Our benefits</Badge>
 
       <div
         class="flex max-w-7xl flex-col items-start justify-start gap-y-4 lg:w-full lg:items-center lg:justify-center"
@@ -144,7 +144,7 @@
     class="flex w-full flex-col items-center justify-center gap-y-16 bg-[#F1F6FF] px-8 py-16 md:px-16 lg:px-28 lg:py-24"
   >
     <div class="flex w-full max-w-7xl flex-col items-start justify-start gap-y-4 lg:items-center lg:justify-center">
-      <Badge class="px-4! py-2!" variant="outline">Explore our features</Badge>
+      <Badge class="bg-white px-4! py-2!" variant="outline">Explore our features</Badge>
 
       <div class="flex w-full flex-col items-start justify-start gap-y-4 lg:items-center lg:justify-center">
         <h1 class="text-3xl">Why We're the Perfect Fit</h1>

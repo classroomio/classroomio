@@ -296,6 +296,22 @@ const QUESTION_TYPE_PICKER_ENTRIES: QuestionTypePickerEntry[] = [
       questionType: 'STAR',
       settings: { correctValue: 4, maxStars: 5 }
     }
+  },
+  {
+    key: QUESTION_TYPE_KEY.VIDEO_RECORDING,
+    displayLabel: 'Video recording',
+    description: 'Learners record a short camera response — useful for reflection, speaking, and demos.',
+    demoQuestion: {
+      id: 'picker-video-recording',
+      key: 'picker-video-recording',
+      title: 'Record a short reflection explaining one idea from this module that you would apply at work.',
+      questionType: 'VIDEO_RECORDING',
+      settings: {
+        description: 'Keep it concise. You can retake before submitting.',
+        maxDurationSeconds: 120,
+        allowRetakes: true
+      }
+    }
   }
 ];
 

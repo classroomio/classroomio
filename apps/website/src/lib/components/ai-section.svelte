@@ -48,8 +48,8 @@
             Let your agent do<br />the course building.
           </h2>
           <p class="mb-14 max-w-[520px] text-base leading-relaxed text-gray-500 lg:text-lg">
-            Connect your favorite coding agent to ClassroomIO via MCP. Create, update, and publish entire courses from
-            your terminal in seconds.
+            Connect your favorite AI agent to ClassroomIO via MCP. Create, update, and publish entire courses from your
+            terminal in seconds.
           </p>
         </BlurFade>
 

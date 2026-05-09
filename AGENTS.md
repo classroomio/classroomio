@@ -20,17 +20,32 @@ export const ZUpdateProfile = z.object({
 export type TUpdateProfile = z.infer<typeof ZUpdateProfile>;
 ```
 
-### Step 2: Service
+### Step 2: Database query
+Put all direct database access in pure query functions under `packages/db/src/queries/{domain}/`. Routes and services never call Drizzle/`db` (or equivalent) directly—they import and compose these helpers.
+
+```typescript
+// packages/db/src/queries/auth/profile.ts
+export async function updateProfile(userId: string, data: Partial<TProfile>) {
+  // …db update returning the row or null if missing
+}
+```
+
+### Step 3: Service
+Services orchestrate one or more query functions (often inside a transaction), apply business rules, and raise `AppError` when something is invalid or missing. **Do not put SQL or other direct DB access in services**—only call query-layer functions and handle in-memory shaping or validation there.
+
 ```typescript
 // apps/api/src/services/account.ts
+import { updateProfile } from '@cio/db/queries/auth';
+
 export async function updateUser(userId: string, data: Partial<TProfile>) {
   const updated = await updateProfile(userId, data);
   if (!updated) throw new AppError('Profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
+
   return updated;
 }
 ```
 
-### Step 3: Route
+### Step 4: Route
 Routes must return a single type (or a response shape whose `data` is a single type). If multiple shapes are needed, use separate endpoints or a keyed structure (e.g. `data` indexed by a key) so clients get one type per endpoint or key. Do not return a union of shapes from one route based on query parameters.
 
 ```typescript
@@ -52,7 +67,7 @@ export const accountRouter = new Hono().put(
 );
 ```
 
-### Step 4: Register
+### Step 5: Register
 ```typescript
 // apps/api/src/routes/account/index.ts
 export * from './account';
@@ -62,12 +77,12 @@ import { accountRouter } from '@api/routes/account';
 export const app = new Hono().route('/account', accountRouter);
 ```
 
-### Step 5: Build
+### Step 6: Build
 ```bash
 pnpm --filter @cio/api build
 ```
 
-### Step 6: Frontend Types & API Class
+### Step 7: Frontend Types & API Class
 ```typescript
 // apps/dashboard/src/lib/features/account/utils/types.ts
 import { classroomio } from '$lib/utils/services/api';

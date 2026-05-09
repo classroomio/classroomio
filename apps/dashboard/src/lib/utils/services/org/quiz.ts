@@ -1,10 +1,10 @@
 import { createQuizModal, deleteModal } from '$lib/utils/store/org';
 
-export function onEdit(quiz) {}
+export function onEdit(_quiz: unknown) {}
 
-export function onShare(quiz) {}
+export function onShare(_quiz: unknown) {}
 
-export function onReport(quiz) {}
+export function onReport(_quiz: unknown) {}
 
 export function onRename(quiz) {
   createQuizModal.update((m) => ({
@@ -15,7 +15,7 @@ export function onRename(quiz) {
   }));
 }
 
-export function onMakeCopy(quiz) {}
+export function onMakeCopy(_quiz: unknown) {}
 
 export function onDelete(quiz) {
   deleteModal.update((m) => ({

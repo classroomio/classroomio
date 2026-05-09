@@ -6,6 +6,7 @@
     BorderBeam,
     CardBody,
     CardContainer,
+    DotField,
     DotPattern,
     GradualSpacing,
     HeroVideoDialog,
@@ -43,6 +44,30 @@
     <div class="ui:relative ui:mx-auto ui:h-48 ui:w-80 ui:overflow-hidden ui:rounded-xl ui:border ui:bg-background">
       <DotPattern />
       <div class="ui:relative ui:z-10 ui:flex ui:h-full ui:items-center ui:justify-center ui:text-sm">Dot pattern</div>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="DotField">
+  {#snippet template()}
+    <div
+      class="ui:relative ui:mx-auto ui:h-[500px] ui:w-full ui:max-w-3xl ui:overflow-hidden ui:rounded-xl ui:border ui:bg-background"
+    >
+      <DotField
+        dotRadius={1.5}
+        dotSpacing={14}
+        cursorRadius={500}
+        cursorForce={0.1}
+        bulgeOnly={true}
+        bulgeStrength={67}
+        glowRadius={160}
+        sparkle={false}
+        waveAmplitude={0}
+        class="ui:absolute ui:inset-0 ui:h-full ui:w-full"
+      />
+      <div class="ui:relative ui:z-10 ui:flex ui:h-full ui:items-center ui:justify-center ui:text-sm">
+        Move the cursor over this area
+      </div>
     </div>
   {/snippet}
 </Story>

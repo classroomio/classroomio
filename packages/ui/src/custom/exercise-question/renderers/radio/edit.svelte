@@ -152,7 +152,7 @@
   <div class="ui:space-y-2">
     {#each question.options ?? [] as option, index}
       {@const optionImageUrl = getOptionImageUrl(option)}
-      <div class="ui:flex ui:items-start ui:gap-2">
+      <div class="ui:flex ui:min-w-0 ui:items-start ui:gap-2">
         <IconButton
           type="button"
           {disabled}
@@ -172,7 +172,7 @@
           <span class="ui:sr-only">{label('radio.edit.mark_correct_sr')}</span>
         </IconButton>
 
-        <div class="ui:flex-1 ui:space-y-2">
+        <div class="ui:min-w-0 ui:flex-1 ui:space-y-2">
           <Input
             class="ui:w-full"
             placeholder={[label('common.option_prefix'), String(index + 1)].filter(Boolean).join(' ').trim()}

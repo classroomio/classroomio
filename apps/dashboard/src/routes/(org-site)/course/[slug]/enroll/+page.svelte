@@ -103,13 +103,17 @@
 
   $effect(() => {
     if (!data.currentOrg) return;
-    setTheme(data.currentOrg?.theme);
+
+    const rawTheme = data.currentOrg.theme;
+    const themeString = typeof rawTheme === 'string' ? rawTheme : '';
+
+    setTheme(themeString);
     currentOrg.update((o) => ({
       ...o,
       id: data.currentOrg?.id ?? o.id,
       name: data.currentOrg?.name ?? o.name,
       siteName: data.currentOrg?.siteName ?? o.siteName,
-      theme: data.currentOrg?.theme ?? o.theme
+      theme: themeString || o.theme
     }));
   });
 </script>

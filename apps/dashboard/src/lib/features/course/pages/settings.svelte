@@ -170,7 +170,8 @@
         metadata: metadataPayload,
         slug: courseApi.course.slug ?? undefined,
         compliance:
-          $settings.type === 'COMPLIANCE' ? (courseApi.course.compliance ?? DEFAULT_COMPLIANCE_SETTINGS) : undefined
+          $settings.type === 'COMPLIANCE' ? (courseApi.course.compliance ?? DEFAULT_COMPLIANCE_SETTINGS) : undefined,
+        callout: $settings.type === 'PUBLIC' ? sanitizeCalloutForSave($settings.callout) : null
       };
 
       const normalizedSelectedTagIds = normalizeTagIds(selectedTagIds);
@@ -220,9 +221,44 @@
         lessonDownload: !!course.metadata?.lessonDownload,
         isPublished: !!course.isPublished,
         allowNewStudents: !!course.metadata?.allowNewStudent,
-        isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true
+        isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
+        callout: normalizeCallout(course.callout)
       });
     });
+  }
+
+  function sanitizeCalloutForSave(value: typeof $settings.callout) {
+    if (!value) return null;
+
+    const title = value.title.trim();
+    const description = value.description.trim();
+    const buttonLabel = value.buttonLabel.trim();
+    const buttonUrl = value.buttonUrl.trim();
+
+    if (!title && !description && !buttonLabel && !buttonUrl) return null;
+
+    return { title, description, buttonLabel, buttonUrl };
+  }
+
+  function normalizeCallout(value: unknown): typeof $settings.callout {
+    if (!value || typeof value !== 'object') return null;
+
+    const candidate = value as Record<string, unknown>;
+    if (
+      typeof candidate.title !== 'string' ||
+      typeof candidate.description !== 'string' ||
+      typeof candidate.buttonLabel !== 'string' ||
+      typeof candidate.buttonUrl !== 'string'
+    ) {
+      return null;
+    }
+
+    return {
+      title: candidate.title,
+      description: candidate.description,
+      buttonLabel: candidate.buttonLabel,
+      buttonUrl: candidate.buttonUrl
+    };
   }
 
   // Initialize course from page data
@@ -237,6 +273,15 @@
   $effect(() => {
     if (courseApi.course) {
       setDefault(courseApi.course);
+    }
+  });
+
+  $effect(() => {
+    if ($settings.type === 'PUBLIC' && $settings.callout === null) {
+      settings.update((prev) => ({
+        ...prev,
+        callout: { title: '', description: '', buttonLabel: '', buttonUrl: '' }
+      }));
     }
   });
 
@@ -525,20 +570,96 @@
         }}
       >
         <div class="mb-3 flex items-center space-x-2">
-          <RadioGroup.Item value={'LIVE_CLASS' as TCourseType} id="live-class" />
-          <Label for="live-class">{$t('course.navItem.settings.live_class')}</Label>
-        </div>
-        <div class="flex items-center space-x-2">
           <RadioGroup.Item value={'SELF_PACED' as TCourseType} id="self-paced" />
           <Label for="self-paced">{$t('course.navItem.settings.self_paced')}</Label>
         </div>
-        <div class="mt-3 flex items-center space-x-2">
+        <div class="mb-3 flex items-center space-x-2">
+          <RadioGroup.Item value={'LIVE_CLASS' as TCourseType} id="live-class" />
+          <Label for="live-class">{$t('course.navItem.settings.live_class')}</Label>
+        </div>
+        <div class="mb-3 flex items-center space-x-2">
           <RadioGroup.Item value={'COMPLIANCE' as TCourseType} id="compliance-course" />
           <Label for="compliance-course">{$t('course.navItem.settings.compliance')}</Label>
         </div>
+        <div class="flex items-center space-x-2">
+          <RadioGroup.Item value={'PUBLIC' as TCourseType} id="public-course" />
+          <Label for="public-course">{$t('course.navItem.settings.public')}</Label>
+        </div>
       </RadioGroup.Root>
     </Field.Field>
+
+    {#if courseApi.errors.type}
+      <div
+        class="ui:mt-2 ui:rounded-md ui:border ui:border-destructive/30 ui:bg-destructive/5 ui:p-3 ui:text-sm ui:text-destructive"
+        role="alert"
+      >
+        <div class="ui:font-medium">{$t('course.navItem.settings.convert_to_public_blocked')}</div>
+        <p class="ui:mt-1 ui:text-destructive/90">{courseApi.errors.type}</p>
+      </div>
+    {/if}
   </Field.Set>
+
+  {#if $settings.type === 'PUBLIC' && $settings.callout}
+    <Field.Separator />
+
+    <Field.Set>
+      <Field.Legend>{$t('course.navItem.settings.callout.legend')}</Field.Legend>
+      <Field.Description>{$t('course.navItem.settings.callout.description')}</Field.Description>
+
+      <Field.Group>
+        <Field.Field>
+          <Field.Label>{$t('course.navItem.settings.callout.title_label')}</Field.Label>
+          <InputField
+            bind:value={$settings.callout.title}
+            onInputChange={() => (hasUnsavedChanges = true)}
+            placeholder={$t('course.navItem.settings.callout.title_placeholder')}
+          />
+        </Field.Field>
+
+        <Field.Field>
+          <Field.Label>{$t('course.navItem.settings.callout.description_label')}</Field.Label>
+          <TextareaField
+            bind:value={$settings.callout.description}
+            oninput={() => (hasUnsavedChanges = true)}
+            rows={3}
+            placeholder={$t('course.navItem.settings.callout.description_placeholder')}
+          />
+        </Field.Field>
+
+        <Field.Field>
+          <Field.Label>{$t('course.navItem.settings.callout.button_label')}</Field.Label>
+          <InputField
+            bind:value={$settings.callout.buttonLabel}
+            onInputChange={() => (hasUnsavedChanges = true)}
+            placeholder={$t('course.navItem.settings.callout.button_label_placeholder')}
+          />
+        </Field.Field>
+
+        <Field.Field>
+          <Field.Label>{$t('course.navItem.settings.callout.button_url_label')}</Field.Label>
+          <InputField
+            bind:value={$settings.callout.buttonUrl}
+            onInputChange={() => (hasUnsavedChanges = true)}
+            placeholder={$t('course.navItem.settings.callout.button_url_placeholder')}
+            type="url"
+          />
+        </Field.Field>
+      </Field.Group>
+
+      <Field.Field>
+        <Button
+          variant="outline"
+          size="sm"
+          onclick={() => {
+            settings.update((prev) => ({ ...prev, callout: null }));
+            hasUnsavedChanges = true;
+          }}
+        >
+          {$t('course.navItem.settings.callout.clear')}
+        </Button>
+      </Field.Field>
+    </Field.Set>
+  {/if}
 
   <Field.Separator />
 

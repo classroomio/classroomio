@@ -1,488 +1,301 @@
 # Public Courses PRD
 
 ## Purpose
-Enable course creators to publish "Public Courses" - a new course type where lesson content is fully accessible without signup, while interactive features (quizzes, exercises, progress tracking) require authentication. This creates a low-friction entry point for learners and a lead generation channel for organizations.
-
-## Problem Statement
-Currently, all courses require signup before accessing any content. This creates friction:
-- Learners abandon at signup gate before seeing course value
-- Organizations can't use courses as top-of-funnel content marketing
-- No way to offer "try before you buy" experiences
-- SEO discoverability is limited (landing pages only, not deep content)
+Enable course creators to publish **Public Courses** — a new course type where content is fully accessible without signup. Public courses treat every visitor as a guest: there is no "sign in to unlock" flow, no progress tracking, no submissions sent to the server. The goal is a low-friction, SEO-indexable surface that creators can use as top-of-funnel content marketing.
 
 ## Product Goals
-1. Create a third course type: **Public Course** (alongside Live Class, Self Paced)
-2. Allow anonymous browsing of full lesson content
-3. Gate interactive features behind authentication (soft nudge, not hard wall)
-4. Drive conversions through value demonstration, not forced signup
-5. Maintain clear UX distinction between guest and authenticated modes
+1. Add a third course type: **Public** (alongside Live Class and Self Paced; Compliance stays unchanged).
+2. Allow anonymous browsing of a public course's full tree (sections, lessons, exercises) with clean readable URLs.
+3. Keep the implementation deliberately small: no auth gating on public courses, no server-side submissions, no analytics, no donations, no live viewer counts.
+4. Give creators a single customizable **Callout** to drive viewers somewhere (main site, sign-up, paid course, etc.).
+5. Design the lesson surface as a focused, distraction-free reading/watching experience.
 
 ## Non-Goals (v1)
-- Partial lesson locking (first X lessons free)
-- Per-lesson public/private toggles
-- Anonymous quiz attempts with delayed signup
+Everything below is explicitly out of scope for this PRD:
+- Guest vs authenticated distinction on public courses (everyone is treated the same)
+- Progress tracking (server, database, or localStorage)
+- Server-side exercise submissions and scoring
+- Guest-to-account conversion / progress merge
+- Analytics, guest events, conversion funnels
+- Live viewer counts / "people learning now"
+- Donations / Stripe payment links on public courses
+- Public-courses directory or landing-page tab
+- Feature flag / phased rollout gating
+- Downloadable asset gating
+- Discussion / community for public courses
+- Per-lesson public/private toggle beyond the existing lock state
 - Public course certificates
-- Revenue sharing for public courses
 
-## User Roles & Permissions
+## User Roles
 
-### Anonymous/Guest User
-- View all lesson content (video, text, embeds)
-- Navigate between lessons
-- See course outline/structure
-- **Cannot:** Take quizzes, submit exercises, track progress, bookmark
+Public courses have **one** viewer role: everyone. Authentication state does not change what a viewer can do on a public course — a logged-in user visiting a public course is treated identically to an anonymous visitor.
 
-### Authenticated User
-- All guest capabilities PLUS:
-- Take quizzes and exercises
-- Track progress (lessons completed, quiz scores)
-- Bookmark/save courses
-- Participate in discussions (if enabled)
-
-### Course Creator/Admin
-- Choose course type at creation: Live Class | Self Paced | **Public Course**
-- Convert existing courses to Public (with warning about implications)
-- View analytics: guest views vs authenticated engagement
+### Course Creator / Admin
+- Selects course type at creation: **Live Class | Self Paced | Public** (Compliance remains a separate flow).
+- Can convert an existing course between types (behavior of conversion is not changed by this PRD).
+- When the course type is `PUBLIC`:
+  - The question-type picker is filtered to **only auto-gradable** question types.
+  - Per-item slugs (lesson / exercise) are editable; otherwise they are auto-generated from the title.
+  - A **Callout** settings panel is available (title, description, button label, button URL).
 
 ## Functional Requirements
 
 ### 1. Course Type Selection
 
-#### At Course Creation
+`COURSE_TYPE` enum today is `['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE']` with default `'LIVE_CLASS'`. This PRD changes it to:
+
 ```
-Create New Course
-
-[○] Live Class      - Scheduled sessions with instructor
-[○] Self Paced      - Learner progresses at own pace  
-[●] Public Course   - Open access, signup required for quizzes
-
-[Continue] → Course Setup Wizard
+enum COURSE_TYPE = ['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE', 'PUBLIC']
+default = 'SELF_PACED'
 ```
 
-#### Course Type Indicator
-- Public courses show "Public" badge on cards (landing page, dashboard)
-- Icon: `Globe` or `Unlock` to signify openness
-- Color: Distinct from Live (red) and Self Paced (blue) - suggest green or teal
+Changing the default from `LIVE_CLASS` to `SELF_PACED` is intentional.
 
-### 2. Anonymous Content Access
+A public course must still have `isPublished = true` to be reachable at its public URL. An unpublished public course behaves like any other unpublished course (not accessible).
 
-#### Lesson View (Guest Mode)
+### 2. Only Auto-Gradable Question Types in Public Courses
+
+Public courses are graded **entirely on the client**. The question-type registry already exposes an `autoGradable: boolean` flag on every question type.
+
+- When the course type is `PUBLIC`, the question-type picker only shows question types with `autoGradable === true`.
+- The API rejects attempts to attach a non-auto-gradable question to an exercise belonging to a public course.
+- If a course is converted **into** `PUBLIC` and it already contains non-auto-gradable questions, the conversion is blocked with a clear error listing the offending questions. (No silent data loss.)
+
+### 3. Lock State (reuse existing)
+
+Public courses reuse the existing `lesson.isUnlocked` flag (and the existing `exercise.isUnlocked` flag) as the gate for "free vs gated" content.
+
+- `isUnlocked = true` → content renders normally.
+- `isUnlocked = false` → the content area is replaced by the course's **Callout** (see §5). The sidebar row for a locked item still renders, with a lock icon next to the number.
+
+Since every visitor is treated as a guest, there is no "sign in to unlock" path. A locked item is a call-to-action surface for the creator's callout.
+
+### 4. Public URLs and Slugs
+
+#### Routes
 ```
-┌─────────────────────────────────────────────────────────┐
-│ Course: Introduction to Python              [Sign In]   │
-│                                                         │
-│ ┌──────────────┐  ┌─────────────────────────────────┐   │
-│ │ Lesson 3/12  │  │ Video Player / Lesson Content   │   │
-│ │              │  │                                 │   │
-│ │ ◉ Lesson 1   │  │ [Full content accessible]       │   │
-│ │ ◉ Lesson 2   │  │                                 │   │
-│ │ ◍ Lesson 3   │  │                                 │   │
-│ │ ○ Lesson 4   │  │                                 │   │
-│ │ ...          │  │                                 │   │
-│ └──────────────┘  └─────────────────────────────────┘   │
-│                                                         │
-│                    ┌───────────────────────────────┐    │
-│                    │ 💡 Sign in to:                │    │
-│                    │ • Track your progress         │    │
-│                    │ • Take practice quizzes       │    │
-│                    │ • Earn a certificate          │    │
-│                    │                               │    │
-│                    │ [Create Free Account]         │    │
-│                    └───────────────────────────────┘    │
-└─────────────────────────────────────────────────────────┘
+(org-site)/course/[courseSlug]                    # course overview: tree of sections/lessons/exercises
+(org-site)/course/[courseSlug]/lesson/[itemSlug]  # a single lesson or exercise page
 ```
 
-#### Access Rules
-| Feature | Guest | Authenticated |
-|---------|-------|---------------|
-| View lesson content | ✅ | ✅ |
-| Navigate lessons | ✅ | ✅ |
-| See course outline | ✅ | ✅ |
-| View quiz content | ✅ (read-only) | ✅ |
-| Submit quiz answers | ❌ | ✅ |
-| Submit exercises | ❌ | ✅ |
-| Progress tracking | ❌ (localStorage only) | ✅ |
-| Bookmark/continue | ❌ | ✅ |
-| Discussion forum | Read-only | Read + Write |
+The URL segment is always `/lesson/` whether the item is a lesson or an exercise. The `itemSlug` resolves to one or the other.
 
-### 3. Conversion Nudges (Soft Gates)
+#### Slug storage
+- Add `slug VARCHAR` to `lesson` and `exercise` tables.
+- Slugs are **unique per course** across both `lesson` and `exercise` (they share the same URL segment).
+- On lesson / exercise create, slug is auto-generated from the title (kebab-case, collision-resolved by appending `-2`, `-3`, ...).
+- On title rename, slug is **not** automatically updated (URLs are stable).
+- When the course type is `PUBLIC`, creators can edit the slug from the lesson / exercise settings UI.
+- When the course type is not `PUBLIC`, slugs are still generated and stored (so converting a course to `PUBLIC` later works) but are not surfaced in the UI.
 
-#### Contextual Prompts
-1. **On Quiz View** (guest):
-   ```
-   ┌────────────────────────────────────────┐
-   │ 📋 Practice Quiz: Variables & Types    │
-   │                                        │
-   │ [Question content visible]             │
-   │                                        │
-   │ ┌────────────────────────────────────┐ │
-   │ │ 🚀 Ready to test your knowledge?   │ │
-   │ │                                    │ │
-   │ │ Sign in to take this quiz and      │ │
-   │ │ track your progress.               │ │
-   │ │                                    │ │
-   │ │ [Sign In to Continue]              │ │
-   │ └────────────────────────────────────┘ │
-   └────────────────────────────────────────┘
-   ```
+#### Slug format
+- 1–80 chars, `[a-z0-9]` with single `-` separators, no leading/trailing `-`.
+- Validated on both client and server with a shared Zod schema.
 
-2. **After Lesson Completion** (guest):
-   ```
-   Nice work completing this lesson! 🎉
-   
-   [Sign in] to save your progress and pick up 
-   where you left off next time.
-   
-   [Continue as Guest] [Create Account]
-   ```
+### 5. Data Loading Strategy
 
-3. **Progress Persistence Banner** (guest, after 2+ lessons):
-   ```
-   ⚠️ You're making great progress! Sign in to save 
-   your place before you leave.
-   [Dismiss] [Save My Progress]
-   ```
+- `GET (org-site) /course/[courseSlug]` loads the **full tree** server-side: course metadata, sections, lessons, exercises, slugs, titles, order, and `isUnlocked`. No lesson bodies, no exercise question bodies.
+- `GET (org-site) /course/[courseSlug]/lesson/[itemSlug]` loads the **content** of the single item server-side (video URL, lesson body, or exercise questions with answer keys). This render is SSR for SEO.
+- The tree is not re-fetched when the client navigates between lesson URLs — it is passed down through the shared `+layout.server.ts`.
 
-#### Nudge Strategy
-- **Never block content** with modal on page load
-- **Inline prompts** within context (quiz area, lesson end)
-- **Dismissible** - guests can continue browsing
-- **Frequency cap** - max 1 prompt per session per nudge type
+### 6. Lesson Page Layout
 
-### 4. Anonymous Progress (localStorage)
+Reference designs in `prd/public-courses/design/`:
+- `lesson-page-reference.png` — overall layout
+- `lesson-page-full.png` — full composition (hero video + title + body)
+- `sidebar-active-state.png` — active lesson state in the sidebar
 
-#### What We Track (Guest)
+Two-column, non-collapsible layout. No hamburger toggle, no accordion on the sidebar, no hide/show. Sidebar is always visible on desktop.
+
+#### Left sidebar (navigation)
+- Grouped by the course's **sections** (existing `courseSection` / lesson-section concept).
+- Each section renders:
+  - A small, muted section heading (e.g. "AI Foundations"). Plain text — not a button, not collapsible.
+  - A vertical list of that section's lessons and exercises, in their existing `order`.
+- Each row contains:
+  - A **square number badge** on the left with the per-section index (1, 2, 3, …). Numbering resets at the start of each section and is shared across lessons + exercises (they interleave by `order`).
+  - The item title to the right of the badge.
+  - If the item's `isUnlocked === false`, a lock icon replaces the number badge or sits next to it (final placement: TBD with design).
+- The active item (matching the current `itemSlug`) renders with:
+  - **Primary color** (the app's `--primary` token, *not* the hard-coded orange in the screenshots) filling the number badge background, white number text.
+  - **Primary color** title text.
+  - A subtle primary-colored vertical accent bar on the far left edge (outside the sidebar content area, aligned with the row).
+- Hover state (non-active rows):
+  - Number badge gets a slightly darker muted fill.
+  - Title text gets a subtle color shift (muted-foreground → foreground).
+  - Cursor is pointer.
+- No icons on normal rows, no progress rings, no status dots. Keep it text-first.
+
+#### Right content column
+Vertical order, top to bottom:
+1. **Video** (if the item has one) — full-width within the content column, rounded corners, single centered play affordance. Omitted entirely if no video (no empty placeholder).
+2. **Section label** — small, muted text above the title (the name of the section this item belongs to).
+3. **Item title** — large, prominent heading.
+4. **Body** — prose / rich text for lessons, or the rendered question UI for exercises. Readable line length, generous line-height.
+5. **Callout** (see §7) — rendered as an inline card at the bottom of the body, only if the course has a callout configured.
+
+If the item is **locked** (`isUnlocked = false`), the body and video are replaced by the callout card rendered in a larger, centered variant; steps 1–4 above are skipped.
+
+No top banner, no hero image above the video, no breadcrumb. Minimal page chrome.
+
+#### Responsive
+
+**Desktop (≥ `lg`)**
+- Two columns: sidebar fixed width on the left, content column fluid on the right.
+- Sidebar is always visible (not collapsible).
+- No bottom navigation bar.
+
+**Mobile / tablet (< `lg`)**
+- The left sidebar is **hidden**.
+- A **fixed bottom navigation bar** is pinned to the viewport. It has three regions:
+  - **Left**: previous-item button (arrow-left icon). Navigates to the previous item in the flattened, section-ordered sequence. Disabled visually at the first item.
+  - **Center**: large tap target. Shows the current item's position (e.g. the per-section number badge + the item title, or "3 / 12"). Tapping opens a bottom sheet.
+  - **Right**: next-item button (arrow-right icon). Disabled visually at the last item.
+- The bottom sheet (built on `@cio/ui/base/drawer` — vaul-based) slides up from the bottom and contains the **full sidebar tree**: every section with its heading and every numbered row. The sheet supports the native drag-to-dismiss gesture ("swiper from bottom up"). The current item is visually active in the sheet. Tapping a row navigates and auto-closes the sheet.
+- The content column takes the full viewport width minus the bottom bar's height. The page adds bottom padding equal to the bar's height so the callout / body never sits under the bar.
+- The bottom bar uses `--primary` for the center button's accent (matching the sidebar active state) and solid surface background with a top hairline border.
+
+**Shared**
+- "Prev / next sequence" is the flat `ORDER BY sections.order, items.order` across all items (lessons + exercises interleaved). Locked items are part of the sequence — tapping prev/next into a locked item still navigates; the locked state is then rendered in the content column as described in §6.
+- Keyboard shortcuts on desktop: `←` / `→` also move through this sequence (nice-to-have, not required for v1 acceptance).
+
+#### Colors
+All accent colors in the sidebar must resolve to the app's **primary** color token (`--primary`), not the hard-coded orange visible in the reference screenshots. The screenshots are from Cursor Learn and are included purely as a layout reference.
+
+### 7. Creator Callout (per-course setting)
+
+Each public course has an optional **Callout** configured by the creator:
+
 ```typescript
-// localStorage key: `guest_progress_{courseId}`
-{
-  courseId: "course_xxx",
-  lastVisitedLessonId: "lesson_123",
-  completedLessons: ["lesson_001", "lesson_002"],
-  totalTimeSpent: 1847, // seconds
-  firstVisit: "2026-02-19T10:00:00Z",
-  lastVisit: "2026-02-19T14:30:00Z"
-}
+type CourseCallout = {
+  title: string;        // short, 1 line
+  description: string;  // 1–3 lines
+  buttonLabel: string;  // e.g. "Read more on my site"
+  buttonUrl: string;    // absolute URL, validated
+} | null;
 ```
 
-#### Conversion to Authenticated
-- On signup/login, prompt: "Continue course from where you left off?"
-- Merge localStorage progress into authenticated account
-- Clear localStorage after successful merge
+- Stored as a nullable JSONB column on `course` (e.g. `callout`).
+- Configured from the course settings page (only visible when course type is `PUBLIC`).
+- Rendered on the public lesson page:
+  - As an inline card at the bottom of the lesson/exercise body (on every item).
+  - As the full replacement when an item is locked (larger centered variant).
+- Opens `buttonUrl` in a new tab (`target="_blank" rel="noopener"`).
 
-### 5. Landing Page Integration
+When `callout` is `null`, no callout is rendered anywhere (lesson still reads cleanly without it; locked items show a plain "This lesson is locked" state).
 
-#### New "Public Courses" Section
+### 8. Client-Side Grading
+
+For exercises on a public course:
+- The server ships full question data including answer keys to the client.
+- Grading happens entirely in the browser — correctness, explanations, and "you got X / Y correct" all computed locally.
+- No submission is sent to the server.
+- No attempt history is recorded.
+- Refreshing the page resets the exercise state.
+
+This is an intentional trade-off: public courses are marketing surfaces, so answer keys are not considered sensitive.
+
+### 9. SEO
+
+- Public course lesson URLs render server-side (SvelteKit SSR).
+- Each lesson page sets:
+  - `<title>` = item title + course title
+  - `<meta name="description">` = course description or first ~150 chars of the item body
+  - `<link rel="canonical">` = the public URL
+  - `og:type=article`, `og:title`, `og:description`, `og:image` (course banner)
+- Locked items still render meta tags but the body is replaced by the callout; the `<description>` falls back to the course description.
+- No `robots` meta restrictions beyond what the org already sets globally.
+
+## Data Model Changes
+
+### `course` table
+- `type` enum: add `'PUBLIC'`, change default to `'SELF_PACED'`.
+- New column `callout JSONB NULL` (shape described in §7).
+
+### `lesson` table
+- New column `slug VARCHAR NULL`.
+- Backfill existing rows with kebab-cased titles (collision-resolved per course).
+- After backfill, `slug` becomes `NOT NULL` in a follow-up migration.
+- Existing `public BOOLEAN` column is deprecated — not referenced in new code. Column is **not** dropped in this PRD (to keep the migration small).
+
+### `exercise` table
+- New column `slug VARCHAR NULL`, same treatment as `lesson.slug`.
+
+### Slug uniqueness
+- Enforced at the application layer: a slug is unique per-course across the union of `lesson.slug` and `exercise.slug`.
+- A DB-level constraint is not added in v1 (would require a materialized view or a trigger across two tables); application code must check before insert/update.
+
+## API Changes
+
+### New / modified endpoints (high level)
+
 ```
-Our Courses
+GET  (public) /org-site/course/:courseSlug
+  → Returns course metadata + tree (sections, lessons, exercises with slugs, titles, order, isUnlocked).
+  → No auth required when course.type === 'PUBLIC' && course.isPublished === true.
 
-[Live Classes] [Self Paced] [Public Courses]
+GET  (public) /org-site/course/:courseSlug/item/:itemSlug
+  → Returns either a lesson content payload or an exercise payload (with answer keys).
+  → Response is a single shape with a discriminator field (e.g. `kind: 'lesson' | 'exercise'`).
+  → No auth required under the same conditions as above.
 
-Explore free courses - no signup required to start learning!
+PATCH (authed) /courses/:courseId/lessons/:lessonId
+  → Accepts `slug` field (validated against slug regex and per-course uniqueness).
+PATCH (authed) /courses/:courseId/exercises/:exerciseId
+  → Accepts `slug` field (same validation).
 
-┌─────────────┐ ┌─────────────┐ ┌─────────────┐
-│ [thumbnail] │ │ [thumbnail] │ │ [thumbnail] │
-│             │ │             │ │             │
-│ Python      │ │ Web Design  │ │ Excel       │
-│ Basics      │ │ Fundamentals│ │ for Work    │
-│             │ │             │ │             │
-│ 🌐 Public   │ │ 🌐 Public   │ │ 🌐 Public   │
-│ ⭐ 4.8 (234)│ │ ⭐ 4.6 (189)│ │ ⭐ 4.9 (512)│
-│             │ │             │ │             │
-│ [Start      │ │ [Start      │ │ [Start      │
-│  Learning]  │ │  Learning]  │ │  Learning]  │
-└─────────────┘ └─────────────┘ └─────────────┘
-```
+POST (authed)  /courses/:courseId/exercises/:exerciseId/questions
+PATCH (authed) /courses/:courseId/exercises/:exerciseId/questions/:questionId
+  → Reject non-auto-gradable question types when the parent course is PUBLIC.
 
-#### Course Card Badges
-- **Live Class**: "📅 Live" badge (red)
-- **Self Paced**: "📚 Self Paced" badge (blue)
-- **Public Course**: "🌐 Public" badge (green/teal)
-
-### 6. URL Structure
-
-```
-# Public course lesson (accessible to all)
-/course/{courseSlug}/lesson/{lessonSlug}
-
-# Same URL works for both guest and authenticated
-# Server renders content based on auth state
-# No separate /public/ prefix needed
-```
-
-### 7. SEO & Sharing
-
-#### Meta Tags for Public Courses
-```html
-<meta name="description" content="Free course: Learn Python basics. No signup required.">
-<meta property="og:type" content="article">
-<meta property="og:availability" content="public">
-```
-
-#### Social Sharing Card
-```
-┌────────────────────────┐
-│                        │
-│    [Course Thumbnail]  │
-│                        │
-├────────────────────────┤
-│ Python Basics          │
-│ Free course - start    │
-│ learning instantly!    │
-│                        │
-│ 🌐 classroomio.com     │
-└────────────────────────┘
-```
-
-## Technical Requirements
-
-### Data Model Changes
-
-#### Course Table
-```typescript
-// Add to existing course schema
-type CourseType = 'LIVE_CLASS' | 'SELF_PACED' | 'PUBLIC';
-
-interface Course {
-  id: string;
-  name: string;
-  slug: string;
-  // ... existing fields
-  
-  // NEW
-  type: CourseType; // default: 'SELF_PACED'
-  isPublic: boolean; // computed: type === 'PUBLIC'
-  
-  // Analytics (NEW)
-  guestViews: number; // counter
-  authenticatedViews: number; // counter
-  conversionCount: number; // guests who signed up and enrolled
-}
+PATCH (authed) /courses/:courseId
+  → Accepts `callout` object (nullable).
+  → Accepts `type` (validates transition, including the "no non-auto-gradable questions exist" check when converting to PUBLIC).
 ```
 
-#### Enrollment Handling
-- **Guest**: No enrollment record, localStorage tracking only
-- **Authenticated**: Auto-enrolled on first authenticated interaction (quiz attempt, etc.)
-- No explicit "Enroll" button for public courses - just start learning
+Per the repo's single-response-shape rule: the item endpoint returns one response shape with a `kind` discriminator; client narrows on `kind`.
 
-### API Changes
+## UI Components Needed
 
-#### New/Modified Endpoints
-```typescript
-// GET /courses/:slug/lessons/:lessonId
-// Response changes based on auth:
-// - Guest: lesson content + "requiresAuth" flags for interactive elements
-// - Auth: lesson content + user's progress + full interactivity
+- `PublicCourseShell` (layout wrapper: sidebar + content)
+- `PublicCourseSidebar` (the numbered, sectioned nav — reusable for any item count)
+- `PublicCourseSidebarRow` (number badge + title + lock state)
+- `PublicLessonView` (video + section label + title + body + callout)
+- `PublicExerciseView` (exercise questions rendered for client-side grading)
+- `PublicCourseCallout` (inline + locked variants)
+- `CourseCalloutSettings` (creator settings panel, only visible when course is PUBLIC)
+- `LessonSlugField` / `ExerciseSlugField` (editable slug inputs in item settings, only visible when course is PUBLIC)
 
-// POST /courses/:slug/enroll (auto-triggered for public courses)
-// Called implicitly when authenticated user first interacts
+Existing components (`QuestionRenderer`, `QuestionList`, etc.) are reused for exercise rendering, configured with the client-grading mode.
 
-// GET /courses/public
-// List public courses for landing page
-// No auth required
+## Storybook-First Build
 
-// POST /analytics/guest-event
-// Fire-and-forget guest activity tracking (privacy-safe)
-```
+The public course UI is built as a set of Storybook components and consumed by the `(org-site)` routes. Stories are the primary development + review surface — reviewers test desktop and mobile layouts in Storybook before the routes are wired up.
 
-### Permission Matrix
+Required stories (at minimum):
+- `PublicCourseShell` — desktop and mobile viewports, with and without callout.
+- `PublicCourseSidebar` — default state, with a locked item, with many sections.
+- `PublicCourseSidebarRow` — default, hover, active, locked variants as individual stories.
+- `PublicCourseBottomNav` — first item (prev disabled), middle item, last item (next disabled).
+- `PublicCourseMobileSheet` — closed and open states (open state is the default story for review).
+- `PublicLessonView` — with video, without video, long body, short body.
+- `PublicExerciseView` — unanswered, mid-answer, after-grade (client-side).
+- `PublicCourseCallout` — inline and full (locked) variants, and "no callout configured" fallback.
+- `PublicCoursePage` — composed story showing the full page; run with Storybook's viewport addon to verify desktop and mobile side-by-side.
 
-| Action | Guest | Authenticated | Admin |
-|--------|-------|---------------|-------|
-| View lesson content | ✅ | ✅ | ✅ |
-| View quiz questions | ✅ (no answers) | ✅ | ✅ |
-| Submit quiz | ❌ | ✅ | ✅ |
-| Submit exercise | ❌ | ✅ | ✅ |
-| See "correct answers" | ❌ | ✅ | ✅ |
-| Post in discussion | ❌ | ✅ | ✅ |
-| View progress stats | ❌ (local only) | ✅ | ✅ |
-| Download resources | Configurable* | ✅ | ✅ |
-\* Depends on `allowGuestDownloads` setting |
+All stories must resolve colors through the app's theme tokens (`--primary`, etc.), not hard-coded values.
 
-## Analytics & Success Metrics
+## Open Items (non-blocking)
 
-### Key Metrics
-1. **Guest to Auth Conversion Rate**: % of guests who sign up
-2. **Guest Engagement**: Avg lessons viewed per guest session
-3. **Time to Signup**: How many lessons before conversion
-4. **Public Course Traffic**: % of total site traffic from public courses
-5. **SEO Impact**: Organic search traffic to course pages
-
-### Tracking Events
-```typescript
-// Guest events (anonymous, privacy-safe)
-- public_course_viewed
-- public_lesson_completed
-- conversion_prompt_shown
-- conversion_prompt_clicked
-- guest_signup_initiated (from course context)
-
-// Post-conversion
-- guest_progress_merged
-- public_course_enrolled (after signup)
-```
-
-## UX Considerations
-
-### Clear Communication
-- Banner on first visit: "You're browsing in guest mode. [Sign in] for full features."
-- Persistent subtle indicator: "👤 Guest Mode" in header
-- Tooltips on locked features explain why signup is needed
-
-### Seamless Transition
-- After signup, return to exact lesson/position
-- Preserve scroll position
-- Auto-merge localStorage progress
-
-### No Dead Ends
-- Every "locked" feature has clear path forward
-- Alternative actions for guests (e.g., "Preview quiz questions" instead of "Take quiz")
-
-## Future Enhancements (Post-v1)
-
-1. **Course Previews**: Any course can have first lesson public
-2. **Anonymous Quiz Attempts**: Try once, see score, signup to save
-3. **Public Course Analytics Dashboard**: Creator insights on guest engagement
-4. **Email Capture**: "Get notified when new public courses launch"
-5. **Paywall Option**: Public → Paid conversion for premium tier
+- Precise placement of the lock icon in a sidebar row (inside the number badge, replacing it, or beside it) — design review later.
+- Center button content in the mobile bottom bar — "3 / 12" vs "Section • item title" vs both — finalized during Storybook review.
 
 ## Success Criteria
 
-1. Guest users can view full course content without any signup friction
-2. Conversion prompts appear contextually without being intrusive
-3. Public courses appear on landing page with clear distinction
-4. Post-signup experience seamlessly continues from guest session
-5. No significant bounce rate increase on public course pages
-6. Measurable conversion rate from guest to authenticated user
-
-## Open Questions (Resolved)
-
-1. ✅ **Downloadables** - Configurable per course (creator decides: public or gated)
-2. ✅ **Live viewer count** - Yes, show "X people learning now" for social proof
-3. ✅ **Donations** - Configurable Stripe link for "support this course"
-4. ✅ **Revert to private** - Yes, creators can convert public → self-paced (with warning)
-
-## Additional Course Settings for Public Courses
-
-### Creator Configuration Options
-
-When creating/editing a public course, creators can configure:
-
-```typescript
-interface PublicCourseSettings {
-  // Access control
-  allowGuestDownloads: boolean; // default: true
-  
-  // Social proof
-  showLiveViewerCount: boolean; // default: true
-  
-  // Monetization
-  acceptDonations: boolean; // default: false
-  donationLink?: string; // Stripe payment link
-  suggestedAmount?: number; // e.g., 5, 10, 25 USD
-  
-  // Conversion
-  showConversionNudges: boolean; // default: true
-  nudgeFrequency: 'low' | 'medium' | 'high'; // default: 'medium'
-}
-```
-
-#### UI: Public Course Settings Panel
-```
-Public Course Settings
-─────────────────────────────
-
-☑ Allow guests to download resources
-  [?] When checked, PDFs and files are downloadable without signup
-
-☑ Show live viewer count
-  [?] Displays "X people learning now" on course page
-
-☐ Accept donations via Stripe
-  Stripe Payment Link: [____________________]
-  Suggested Amount: $[10] USD
-  [?] Add a "Support this course" button
-
-Conversion Nudges
-(•) Low - After 3+ lessons and quiz views
-( ) Medium - After 2+ lessons and at quizzes  
-( ) High - After every lesson and on all interactive elements
-```
-
-### Live Viewer Count Display
-
-```
-┌────────────────────────────────────────┐
-│ Python Basics                🌐 Public │
-│                                        │
-│ 👥 24 people learning now              │
-│ ⭐ 4.8 (234 reviews)                   │
-│                                        │
-│ [💝 Support $10]  [Start Learning →]   │
-└────────────────────────────────────────┘
-```
-
-**Implementation:**
-- WebSocket or polling for real-time count
-- Count unique sessions in last 15 minutes
-- Fallback to "Popular" badge if count < 5
-
-### Download Access Control
-
-| Resource Type | Guest (allowed) | Guest (blocked) |
-|--------------|-----------------|-----------------|
-| Video lessons | ✅ Always | ✅ Always |
-| Text content | ✅ Always | ✅ Always |
-| PDF resources | ✅ Download | 🔒 Sign in to download |
-| Code files | ✅ Download | 🔒 Sign in to download |
-| Worksheets | ✅ Download | 🔒 Sign in to download |
-
-### Reverting Public → Private
-
-Creators can change course type, but with safeguards:
-
-```
-⚠️ Change Course Type
-
-You are about to convert "Python Basics" from Public to Self Paced.
-
-This will:
-• Require login to access all content
-• Preserve existing enrolled students' access
-• Remove course from Public Courses listing
-• Break any shared public links (will redirect to login)
-
-[X] I understand this affects [1,247] guest learners
-
-[Cancel] [Convert to Self Paced]
-```
-
-**Grace Period:**
-- Existing guest sessions get 7-day grace period
-- Show banner: "This course is now private. Sign up to continue."
-- After 7 days, all guest access revoked
-
-## Updated Data Model
-
-### Course Table Additions
-```typescript
-interface Course {
-  // ... existing fields
-  type: 'LIVE_CLASS' | 'SELF_PACED' | 'PUBLIC';
-  
-  // Public course settings (nullable for non-public)
-  publicSettings?: {
-    allowGuestDownloads: boolean;
-    showLiveViewerCount: boolean;
-    acceptDonations: boolean;
-    donationLink?: string;
-    suggestedAmount?: number;
-    showConversionNudges: boolean;
-    nudgeFrequency: 'low' | 'medium' | 'high';
-  };
-  
-  // Analytics
-  currentViewers: number; // real-time-ish count
-  totalGuestViews: number; // lifetime
-  donationTotal?: number; // if accepting donations
-}
-```
+1. A creator can set a course's type to `PUBLIC` and the course becomes reachable at `(org-site)/course/[slug]` with no sign-in required.
+2. The question-type picker hides non-auto-gradable types when the course type is `PUBLIC`.
+3. Lesson and exercise slugs are auto-generated and editable (for public courses).
+4. Locked items on a public course render the creator's callout in place of content; unlocked items render normally.
+5. Exercises on public courses are graded entirely in the browser with no server submission.
+6. The lesson page layout matches the reference designs: non-collapsible sidebar, per-section numbering, content column order (video → section label → title → body → callout).
+7. All accent colors resolve to `--primary`, not a hard-coded orange.

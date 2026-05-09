@@ -69,6 +69,9 @@
         {/each}
       </div>
     </div>
+    <p class="mt-6 text-center text-sm text-slate-500">
+      Need more AI credits? Purchase additional token packs at $5 per 2M tokens from your dashboard.
+    </p>
   </div>
 </section>
 

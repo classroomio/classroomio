@@ -18,6 +18,20 @@ export type OrderingAnswerData = { type: 'ORDERING'; orderedValues: string[] };
 export type LinkAnswerData = { type: 'LINK'; urls: string[] };
 export type HotspotAnswerData = { type: 'HOTSPOT'; coordinates: Array<{ x: number; y: number }> };
 export type StarAnswerData = { type: 'STAR'; value: number };
+export type VideoRecordingAnswerData = {
+  type: 'VIDEO_RECORDING';
+  assetId: string;
+  storageKey: string;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  durationSeconds: number;
+  recordedAt: string;
+  uploadedAt: string;
+  provider: 'cloudflare';
+  retakeCount?: number;
+  playbackUrl?: string;
+};
 
 export type AnswerData =
   | RadioAnswerData
@@ -33,4 +47,5 @@ export type AnswerData =
   | OrderingAnswerData
   | LinkAnswerData
   | HotspotAnswerData
-  | StarAnswerData;
+  | StarAnswerData
+  | VideoRecordingAnswerData;

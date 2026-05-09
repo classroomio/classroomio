@@ -33,7 +33,12 @@
     </BlurFade>
     <BlurFade delay={0.3} once={true}>
       <div class="ui:flex ui:flex-col ui:sm:flex-row ui:justify-center ui:gap-4">
-        <Button href={hero.primaryAction.href} size="lg" class="ui:px-8 ui:font-semibold">
+        <Button
+          href={hero.primaryAction.href}
+          disabled={hero.primaryAction.disabled ?? false}
+          size="lg"
+          class="ui:px-8 ui:font-semibold"
+        >
           {hero.primaryAction.label}
         </Button>
         {#if hero.secondaryAction}

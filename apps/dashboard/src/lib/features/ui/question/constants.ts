@@ -5,7 +5,8 @@ export const PREMIUM_QUESTION_TYPE_KEYS = new Set<QuestionTypeKey>([
   QUESTION_TYPE_KEY.FILE_UPLOAD,
   QUESTION_TYPE_KEY.ORDERING,
   QUESTION_TYPE_KEY.LINK,
-  QUESTION_TYPE_KEY.STAR
+  QUESTION_TYPE_KEY.STAR,
+  QUESTION_TYPE_KEY.VIDEO_RECORDING
 ]);
 
 const QUESTION_TYPE_LABEL_KEYS: Partial<Record<QuestionTypeKey, string>> = {
@@ -24,7 +25,9 @@ const QUESTION_TYPE_LABEL_KEYS: Partial<Record<QuestionTypeKey, string>> = {
   [QUESTION_TYPE_KEY.HOTSPOT]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.hotspot',
   [QUESTION_TYPE_KEY.LINK]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.link',
   [QUESTION_TYPE_KEY.WORD_BANK]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.word_bank',
-  [QUESTION_TYPE_KEY.STAR]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.star'
+  [QUESTION_TYPE_KEY.STAR]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.star',
+  [QUESTION_TYPE_KEY.VIDEO_RECORDING]:
+    'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.video_recording'
 };
 
 // Temp hidden: MATCHING, HOTSPOT

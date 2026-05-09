@@ -53,12 +53,12 @@ export async function createChatDocument(record: {
   }
 }
 
-export async function getChatDocument(documentId: string): Promise<ChatDocumentRecord | null> {
+export async function getChatDocument(documentId: string, userId: string): Promise<ChatDocumentRecord | null> {
   try {
     const [row] = await db
       .select()
       .from(schema.aiChatDocument)
-      .where(eq(schema.aiChatDocument.id, documentId))
+      .where(and(eq(schema.aiChatDocument.id, documentId), eq(schema.aiChatDocument.userId, userId)))
       .limit(1);
 
     return row ?? null;

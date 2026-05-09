@@ -19,6 +19,7 @@
   import Trash2Icon from '@lucide/svelte/icons/trash-2';
   import { t } from '$lib/utils/functions/translations';
   import { programApi } from '$features/program/api';
+  import type { OrgCourses } from '$features/course/types';
   import AddCourseToProgramModal from '$features/program/components/add-course-to-program-modal.svelte';
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
@@ -51,7 +52,7 @@
       description: item.course.description ?? '',
       lessonCount: 0,
       totalStudents: 0,
-      isPublished: item.course.isPublished ?? false,
+      isPublished: item.course.status === 'ACTIVE',
       tags: []
     }))
   );
@@ -160,7 +161,7 @@
                     <p>{item.course.description}</p>
                   </Table.Cell>
                   <Table.Cell>
-                    <CoursePublishBadge isPublished={item.course.isPublished ?? false} />
+                    <CoursePublishBadge isPublished={item.course.status === 'ACTIVE'} />
                   </Table.Cell>
                   <Table.Cell class="text-center">
                     <Button
@@ -183,7 +184,7 @@
       {:else}
         <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {#each courseCards as course (course.id)}
-            <CourseCard {course} href={`/courses/${course.id}`}>
+            <CourseCard course={course as unknown as OrgCourses[number]} href={`/courses/${course.id}`}>
               {#snippet actions()}
                 <Button
                   variant="outline"

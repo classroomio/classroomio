@@ -6,6 +6,7 @@ export { default as OrgPage } from './org.svelte';
 export { default as LandingpagePage } from './landingpage.svelte';
 export { default as LandingpageEditor } from './landingpage-editor.svelte';
 export { default as BillingPage } from './billing.svelte';
+export { default as AiCreditsPage } from './ai-credits.svelte';
 export { default as IntegrationsPage } from './integrations.svelte';
 export { default as AuthPage } from './auth.svelte';
 // Keep old exports for backward compatibility

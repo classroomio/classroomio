@@ -30,12 +30,12 @@ export const PUBLIC_ROUTES = [
   ROUTE.RESET,
   `^${ROUTE.PAGES}/.*`,
   `^${ROUTE.COURSE}/[^/]+(/enroll)?/?$`,
+  `^${ROUTE.COURSE}/[^/]+/lesson/.*`,
   `^${ROUTE.COURSES}/?$`,
   '/404',
   `^${ROUTE.VERIFY_EMAIL_ERROR}$`,
   ROUTE.AUTH_FAILED,
-  '^/csp-report$',
-  '^/sticky-debug$'
+  '^/csp-report$'
 ];
 
 export const PUBLIC_API_ROUTES = ['/api/polar', '/api/lmz', '/api/verify'];

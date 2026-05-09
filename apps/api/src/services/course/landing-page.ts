@@ -1,14 +1,10 @@
-import * as schema from '@cio/db/schema';
-
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { TCourse, TOrganization } from '@db/types';
 import type { TCourseLandingPageMetadataUpdate, TCourseLandingPageUpdate } from '@cio/utils/validation/course';
 
-import { db } from '@cio/db/drizzle';
 import { env } from '@api/config/env';
-import { eq } from 'drizzle-orm';
 import { generateSlug } from '@cio/utils/functions';
-import { getCourseById } from '@cio/db/queries/course';
+import { getCourseById, isCourseSlugTaken, updateCourseSlug } from '@cio/db/queries/course';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { getOrganizationById } from '@cio/db/queries/organization';
@@ -25,13 +21,8 @@ export async function generateUniqueCourseSlug(baseSlug: string): Promise<string
   let candidate = baseSlug;
 
   while (true) {
-    const existing = await db
-      .select({ id: schema.course.id })
-      .from(schema.course)
-      .where(eq(schema.course.slug, candidate))
-      .limit(1);
-
-    if (existing.length === 0) {
+    const taken = await isCourseSlugTaken(candidate);
+    if (!taken) {
       return candidate;
     }
 
@@ -48,8 +39,13 @@ export async function ensureCourseSlug(courseId: string, title: string | null | 
 
   const baseSlug = generateSlug(title, { fallback: 'course' });
   const uniqueSlug = await generateUniqueCourseSlug(baseSlug);
-  await updateCourse(courseId, { slug: uniqueSlug });
-  return uniqueSlug;
+  const updated = await updateCourseSlug(courseId, uniqueSlug);
+
+  if (!updated) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+
+  return updated.slug ?? uniqueSlug;
 }
 
 export function buildCourseBaseUrl(

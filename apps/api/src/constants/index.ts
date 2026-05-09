@@ -8,7 +8,6 @@ export const TRUSTED_ORIGINS = env.TRUSTED_ORIGINS
   ? env.TRUSTED_ORIGINS.split(',')
   : ['http://localhost:5173', 'http://localhost:5180', 'http://*.classroomio.*'];
 
-console.log('TRUSTED_ORIGINSs', TRUSTED_ORIGINS);
 const {
   CLOUDFLARE_BUCKET_DOMAIN,
   CLOUDFLARE_ACCESS_KEY,

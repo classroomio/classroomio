@@ -2,12 +2,13 @@ import type {
   TNewOrganizationInvite,
   TNewOrganizationInviteAudit,
   TOrganizationInvite,
-  TOrganizationInviteAudit
+  TOrganizationInviteAudit,
+  TNewOrganizationmember
 } from '@db/types';
 import * as schema from '@db/schema';
 
 import { and, desc, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 
 export async function createOrganizationInvite(values: TNewOrganizationInvite): Promise<TOrganizationInvite> {
   try {
@@ -355,6 +356,177 @@ export async function getLatestOrganizationInviteRowByOrgAndEmail(
     console.error('getLatestOrganizationInviteRowByOrgAndEmail error:', error);
     throw new Error(
       `Failed to get latest organization invite: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export type TOrganizationInviteAcceptRow = {
+  invite: TOrganizationInvite;
+  organization: {
+    id: string;
+    name: string;
+    siteName: string;
+  };
+};
+
+export async function selectOrganizationInviteWithOrgByTokenHash(
+  dbClient: DbOrTxClient,
+  tokenHash: string
+): Promise<TOrganizationInviteAcceptRow | null> {
+  try {
+    const [row] = await dbClient
+      .select({
+        invite: schema.organizationInvite,
+        organization: {
+          id: schema.organization.id,
+          name: schema.organization.name,
+          siteName: schema.organization.siteName
+        }
+      })
+      .from(schema.organizationInvite)
+      .innerJoin(schema.organization, eq(schema.organizationInvite.organizationId, schema.organization.id))
+      .where(eq(schema.organizationInvite.tokenHash, tokenHash))
+      .limit(1);
+
+    if (!row) {
+      return null;
+    }
+
+    return {
+      ...row,
+      organization: { ...row.organization, siteName: row.organization.siteName ?? '' }
+    };
+  } catch (error) {
+    console.error('selectOrganizationInviteWithOrgByTokenHash error:', error);
+    throw new Error(`Failed to load organization invite: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function selectOrganizationInviteWithOrgByInviteId(
+  dbClient: DbOrTxClient,
+  inviteId: string
+): Promise<TOrganizationInviteAcceptRow | null> {
+  try {
+    const [row] = await dbClient
+      .select({
+        invite: schema.organizationInvite,
+        organization: {
+          id: schema.organization.id,
+          name: schema.organization.name,
+          siteName: schema.organization.siteName
+        }
+      })
+      .from(schema.organizationInvite)
+      .innerJoin(schema.organization, eq(schema.organizationInvite.organizationId, schema.organization.id))
+      .where(eq(schema.organizationInvite.id, inviteId))
+      .limit(1);
+
+    if (!row) {
+      return null;
+    }
+
+    return {
+      ...row,
+      organization: { ...row.organization, siteName: row.organization.siteName ?? '' }
+    };
+  } catch (error) {
+    console.error('selectOrganizationInviteWithOrgByInviteId error:', error);
+    throw new Error(`Failed to load organization invite: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function selectOrganizationMemberByOrgAndNormalizedEmail(
+  dbClient: DbOrTxClient,
+  organizationId: string,
+  normalizedEmail: string
+) {
+  try {
+    const [row] = await dbClient
+      .select()
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          eq(schema.organizationmember.email, normalizedEmail)
+        )
+      )
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('selectOrganizationMemberByOrgAndNormalizedEmail error:', error);
+    throw new Error(`Failed to load organization member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function selectOrganizationMemberByOrgAndProfile(
+  dbClient: DbOrTxClient,
+  organizationId: string,
+  profileId: string
+) {
+  try {
+    const [row] = await dbClient
+      .select()
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          eq(schema.organizationmember.profileId, profileId)
+        )
+      )
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('selectOrganizationMemberByOrgAndProfile error:', error);
+    throw new Error(`Failed to load organization member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function updateOrganizationMemberById(
+  dbClient: DbOrTxClient,
+  memberId: number,
+  data: Partial<TNewOrganizationmember>
+) {
+  try {
+    await dbClient.update(schema.organizationmember).set(data).where(eq(schema.organizationmember.id, memberId));
+  } catch (error) {
+    console.error('updateOrganizationMemberById error:', error);
+    throw new Error(
+      `Failed to update organization member: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function claimPendingOrganizationInvite(
+  dbClient: DbOrTxClient,
+  inviteId: string,
+  acceptedByProfileId: string
+): Promise<{ id: string } | undefined> {
+  try {
+    const [acceptedInvite] = await dbClient
+      .update(schema.organizationInvite)
+      .set({
+        acceptedAt: new Date().toISOString(),
+        acceptedByProfileId,
+        updatedAt: new Date().toISOString()
+      })
+      .where(
+        and(
+          eq(schema.organizationInvite.id, inviteId),
+          eq(schema.organizationInvite.isRevoked, false),
+          isNull(schema.organizationInvite.acceptedAt)
+        )
+      )
+      .returning({
+        id: schema.organizationInvite.id
+      });
+
+    return acceptedInvite;
+  } catch (error) {
+    console.error('claimPendingOrganizationInvite error:', error);
+    throw new Error(
+      `Failed to finalize organization invite: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

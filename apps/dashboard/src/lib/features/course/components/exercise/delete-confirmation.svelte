@@ -4,18 +4,23 @@
   import { t } from '$lib/utils/functions/translations';
   import { deleteConfirmation } from './store';
 
-  let { onDelete = () => {}, onCancel = () => {} } = $props();
+  let {
+    title = $t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.title'),
+    description = $t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.sure'),
+    cancelLabel = $t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.no'),
+    confirmLabel = $t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.yes'),
+    onDelete = () => {},
+    onCancel = () => {}
+  } = $props();
 </script>
 
 <Dialog.Root bind:open={$deleteConfirmation.open}>
   <Dialog.Content class="w-96">
     <Dialog.Header>
-      <Dialog.Title>{$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.title')}</Dialog.Title>
+      <Dialog.Title>{title}</Dialog.Title>
     </Dialog.Header>
     <div>
-      <p class="mt-0 text-base dark:text-white">
-        {$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.sure')}
-      </p>
+      <p class="mt-0 text-base dark:text-white">{description}</p>
 
       <div class="mt-5 flex items-center justify-between">
         <Button
@@ -25,7 +30,7 @@
             onCancel();
           }}
         >
-          {$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.no')}
+          {cancelLabel}
         </Button>
         <Button
           onclick={() => {
@@ -33,7 +38,7 @@
             $deleteConfirmation.open = false;
           }}
         >
-          {$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.yes')}
+          {confirmLabel}
         </Button>
       </div>
     </div>

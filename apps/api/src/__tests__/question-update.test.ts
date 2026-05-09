@@ -290,6 +290,38 @@ describe('buildUpdatedQuestions', () => {
     });
   });
 
+  describe('in-exercise section assignment', () => {
+    const sectionA = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+    const sectionB = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+
+    it('sets exerciseSectionId when provided', () => {
+      const current = makeQuestion({ exerciseSectionId: sectionA });
+      const patch: QuestionPatch = { id: 1, exerciseSectionId: sectionB };
+
+      const [result] = buildUpdatedQuestions([current], [patch], EXERCISE_ID);
+
+      expect(result.exerciseSectionId).toBe(sectionB);
+    });
+
+    it('clears exerciseSectionId when patch passes null', () => {
+      const current = makeQuestion({ exerciseSectionId: sectionA });
+      const patch: QuestionPatch = { id: 1, exerciseSectionId: null };
+
+      const [result] = buildUpdatedQuestions([current], [patch], EXERCISE_ID);
+
+      expect(result.exerciseSectionId).toBeNull();
+    });
+
+    it('omits exerciseSectionId when patch does not mention it', () => {
+      const current = makeQuestion({ exerciseSectionId: sectionA });
+      const patch: QuestionPatch = { id: 1, points: 2 };
+
+      const [result] = buildUpdatedQuestions([current], [patch], EXERCISE_ID);
+
+      expect(result).not.toHaveProperty('exerciseSectionId');
+    });
+  });
+
   describe('safety guarantees', () => {
     it('throws when the patched id is not in the exercise', () => {
       const current = makeQuestion({ id: 1 });

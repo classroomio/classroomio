@@ -33,6 +33,8 @@ export const defaultCourse: Course = {
   bannerImage: null,
   attendance: [],
   group: null,
+  compliance: null,
+  callout: null,
   content: {
     grouped: false,
     sections: [],

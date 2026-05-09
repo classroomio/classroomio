@@ -7,7 +7,7 @@
   import { user } from '$lib/utils/store/user';
   import { CourseLandingPage } from '$features/ui';
   import { PoweredBy } from '$features/ui';
-  import { normalizeLandingPageSettings, importThemeComponent } from '$features/org/utils/landing-page';
+  import { normalizeLandingPageSettings } from '$features/org/utils/landing-page';
 
   import { OrgLandingPageFooter } from '@cio/ui/custom/org-landing-page';
   import type { Component } from 'svelte';
@@ -39,13 +39,16 @@
       return landingSettings.hero;
     }
 
+    const enrollmentsOpen = data.course.metadata?.allowNewStudent === true;
+
     return {
       ...landingSettings.hero,
       heading: data.course.title,
       subheading: data.course.description || landingSettings.hero.subheading,
       primaryAction: {
         label: t.get('course.navItem.landing_page.start_course'),
-        href: resolve(`/course/${data.course.slug}/enroll`, {})
+        href: resolve(`/course/${data.course.slug}/enroll`, {}),
+        disabled: !enrollmentsOpen
       },
       image: data.course.logo || landingSettings.hero.image
     };
@@ -97,7 +100,7 @@
       {/if}
     {/if}
 
-    <CourseLandingPage courseData={data.course} showStandaloneShell={false} />
+    <CourseLandingPage courseData={data.course} />
 
     <OrgLandingPageFooter
       {orgName}

@@ -14,7 +14,6 @@
   const maxIndex = $derived(Math.max(courses.length - visible, 0));
 
   let position = $state(0);
-  let trackEl = $state<HTMLDivElement | null>(null);
   let timer: ReturnType<typeof setInterval> | null = null;
 
   const cardBasis = $derived(`calc((100% - ${(visible - 1) * 12}px) / ${visible})`);
@@ -68,7 +67,7 @@
     aria-roledescription="carousel"
   >
     <div class="cio-cr-outer">
-      <div class="cio-cr-track" bind:this={trackEl} style={`transform: translateX(${translatePct})`}>
+      <div class="cio-cr-track" style={`transform: translateX(${translatePct})`}>
         {#each courses as course (course.id)}
           <a
             class="cio-cr-card"

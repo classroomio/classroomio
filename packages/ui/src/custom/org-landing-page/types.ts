@@ -64,7 +64,7 @@ export interface OrgLandingPageProps {
   hero: {
     heading: string;
     subheading: string;
-    primaryAction: { label: string; href: string };
+    primaryAction: { label: string; href: string; disabled?: boolean };
     secondaryAction?: { label: string; href: string };
     image?: string;
   };

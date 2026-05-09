@@ -9,9 +9,10 @@
   import LoaderIcon from '@lucide/svelte/icons/loader';
   import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
   import { t } from '$lib/utils/functions/translations';
-  import { isFreePlan } from '$lib/utils/store/org';
+  import { resolve } from '$app/paths';
+  import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { openUpgradeModal } from '$lib/utils/functions/org';
-  import ModelPicker from '$features/ai-assistant/model-picker.svelte';
+  import { ModelPicker } from '@cio/ui/custom/model-picker';
   import type { AgentModelId } from '@cio/utils/agent-models';
 
   interface UploadedDocument {
@@ -28,11 +29,13 @@
     mentionItems: MentionItem[];
     uploadedDocument: UploadedDocument | null;
     selectedModel: AgentModelId;
+    lockedModelIds?: readonly AgentModelId[];
     onSend: () => void;
     onStop: () => void;
     onFileSelect: (file: File) => void;
     onRemoveDocument: () => void;
     onSelectModel: (id: AgentModelId) => void;
+    onLockedModelSelect?: (id: AgentModelId) => void;
   }
 
   let {
@@ -44,11 +47,13 @@
     mentionItems,
     uploadedDocument,
     selectedModel,
+    lockedModelIds = [],
     onSend,
     onStop,
     onFileSelect,
     onRemoveDocument,
-    onSelectModel
+    onSelectModel,
+    onLockedModelSelect
   }: Props = $props();
 
   let fileInputEl: HTMLInputElement | undefined = $state();
@@ -110,11 +115,29 @@
 <div class="border-t px-3 pt-3 pb-1.5">
   {#if isExhausted}
     <div
-      class="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-300"
+      class="flex flex-col gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 sm:flex-row sm:items-center sm:justify-between dark:border-amber-800 dark:bg-amber-950 dark:text-amber-300"
     >
-      {$t('ai_assistant.tokens_exhausted')}
+      <span>{$t('ai_assistant.tokens_exhausted')}</span>
+      {#if $currentOrgPath !== '#'}
+        <Button
+          variant="outline"
+          size="sm"
+          href={`${resolve(`${$currentOrgPath}/settings/ai-credits`)}#buy-tokens`}
+          class="w-full shrink-0 sm:w-auto"
+        >
+          {$t('ai_assistant.tokens_exhausted_buy_more')}
+        </Button>
+      {/if}
     </div>
   {:else}
+    {#if isStreaming}
+      <div
+        class="mb-2 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-300"
+      >
+        {$t('ai_assistant.agent_running_warning')}
+      </div>
+    {/if}
+
     {#if error}
       <div
         class="mb-2 rounded border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
@@ -181,7 +204,13 @@
               <SquareIcon size={12} />
             </Button>
           {:else}
-            <ModelPicker value={selectedModel} disabled={isStreaming} onChange={onSelectModel} />
+            <ModelPicker
+              value={selectedModel}
+              disabled={isStreaming}
+              {lockedModelIds}
+              onChange={onSelectModel}
+              onLockedSelect={onLockedModelSelect}
+            />
           {/if}
         {/snippet}
       </ChatTextarea>

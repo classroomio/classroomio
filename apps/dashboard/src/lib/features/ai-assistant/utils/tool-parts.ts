@@ -12,12 +12,18 @@ export interface AgentToolPart {
   };
 }
 
-export function isAgentToolPart(part: Record<string, unknown>): part is AgentToolPart {
-  if (part.type === 'tool-invocation') {
+export function isAgentToolPart(part: unknown): part is AgentToolPart {
+  if (!part || typeof part !== 'object') {
+    return false;
+  }
+
+  const record = part as Record<string, unknown>;
+
+  if (record.type === 'tool-invocation') {
     return true;
   }
 
-  return typeof part.type === 'string' && part.type.startsWith('tool-');
+  return typeof record.type === 'string' && record.type.startsWith('tool-');
 }
 
 export function getAgentToolName(part: AgentToolPart): string | null {

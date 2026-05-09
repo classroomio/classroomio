@@ -1,4 +1,5 @@
 export * from './border-beam';
+export * from './dot-field';
 export * from './dot-pattern';
 export * from './card';
 export * from './blurfade';

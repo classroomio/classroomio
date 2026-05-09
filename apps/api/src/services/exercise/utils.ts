@@ -25,6 +25,7 @@ type ExerciseAnswer = Pick<
 
 export type QuestionWithRelations = {
   id: number | string;
+  exerciseSectionId?: string | null;
   value: string;
   name: string;
   title: string;
@@ -80,6 +81,8 @@ export function buildExerciseUpdateFields(data: TExerciseUpdate): Partial<TExerc
   if (data.isUnlocked !== undefined) exerciseUpdate.isUnlocked = data.isUnlocked;
   if (data.dueBy !== undefined) exerciseUpdate.dueBy = data.dueBy || null;
   if (data.allowMultipleAttempts !== undefined) exerciseUpdate.allowMultipleAttempts = data.allowMultipleAttempts;
+  if (data.sectionDisplayMode !== undefined) exerciseUpdate.sectionDisplayMode = data.sectionDisplayMode;
+  if (data.slug !== undefined) exerciseUpdate.slug = data.slug;
   return exerciseUpdate;
 }
 
@@ -178,6 +181,10 @@ function diffQuestion(
   }
   if (incoming.order !== undefined && incoming.order !== (current.order ?? undefined)) {
     changes.order = incoming.order;
+    hasChanges = true;
+  }
+  if (incoming.exerciseSectionId !== undefined && incoming.exerciseSectionId !== current.exerciseSectionId) {
+    changes.exerciseSectionId = incoming.exerciseSectionId;
     hasChanges = true;
   }
   if (!areSettingsEqual(current.settings, incoming.settings)) {
@@ -336,6 +343,7 @@ export async function createNewQuestionsWithOptions(
       questionTypeId: q.questionTypeId || 1,
       points: q.points || 0,
       order: typeof q.order === 'number' ? q.order : undefined,
+      exerciseSectionId: q.exerciseSectionId ?? null,
       settings: normalizeSettings(q.settings)
     })),
     txClient
@@ -411,6 +419,7 @@ export function transformQuestion(
 
   return {
     id: question.id!,
+    exerciseSectionId: question.exerciseSectionId ?? null,
     value: question.title || '', // value field defaults to title
     name: question.name || '',
     title: question.title,

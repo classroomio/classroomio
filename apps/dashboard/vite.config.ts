@@ -51,6 +51,10 @@ function getServer(params) {
       }
     };
   }
+
+  return {
+    allowedHosts: ['f0aa-2605-59c0-e3a-7710-8142-4b4d-2b55-6bf3.ngrok-free.app']
+  };
 }
 
 // function getSentryConfig(params: any) {

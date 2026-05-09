@@ -1,0 +1,18 @@
+{
+  "type": "order.paid",
+  "data": {
+    "id": "ord_fixture_001",
+    "amount": 500,
+    "totalAmount": 1500,
+    "currency": "usd",
+    "metadata": {
+      "kind": "token_pack",
+      "orgId": "00000000-0000-4000-8000-000000000001",
+      "orgSlug": "demo-org",
+      "triggeredBy": "00000000-0000-4000-8000-000000000002",
+      "tokensPerUnit": "2000000",
+      "quantity": "3"
+    },
+    "items": [{ "quantity": 3, "amount": 1500 }]
+  }
+}

@@ -46,6 +46,7 @@ type QuestionOption = ApiOption & {
 
 // Extended question type with client-side fields
 export type Question = Omit<ApiQuestion, 'options'> & {
+  exerciseSectionId?: string | null;
   isDirty?: boolean;
   deletedAt?: string;
   options: QuestionOption[];

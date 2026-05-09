@@ -7,13 +7,15 @@
   import type { ComponentProps } from 'svelte';
   import { cn } from '../../tools';
 
+  type PasswordInputAutocomplete = ComponentProps<typeof InputGroup.Input>['autocomplete'];
+
   interface Props {
     placeholder?: string;
     value?: string;
     class?: string;
     disabled?: boolean;
     'aria-invalid'?: 'true' | 'false' | undefined;
-    autocomplete?: string;
+    autocomplete?: PasswordInputAutocomplete;
     showPasswordTooltip?: string;
     hidePasswordTooltip?: string;
     showPasswordAriaLabel?: string;

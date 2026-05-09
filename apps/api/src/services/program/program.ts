@@ -12,6 +12,7 @@ import {
 } from '@cio/utils/validation/program';
 import {
   addCourseToProgram,
+  addProgramMember,
   createProgramWithCreatorMembership,
   createProgramNewsfeed as createProgramNewsfeedQuery,
   createProgramNewsfeedComment as createProgramNewsfeedCommentQuery,
@@ -39,10 +40,11 @@ import {
   updateProgramNewsfeedReaction
 } from '@cio/db/queries/program';
 import { getCourseGroupIds } from '@cio/db/queries/course';
+import { insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
 import { getProfileByEmail } from '@cio/db/queries/auth';
+import { insertOrganizationMembersOnConflictDoNothing } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@cio/db/drizzle';
-import * as schema from '@db/schema';
 
 type ProgramMemberEnrollment = {
   profileId: string;
@@ -80,8 +82,8 @@ async function enrollProgramStudentsInGroups(
   );
 
   await db.transaction(async (tx) => {
-    await tx.insert(schema.organizationmember).values(organizationMemberRows).onConflictDoNothing();
-    await tx.insert(schema.groupmember).values(groupMemberRows).onConflictDoNothing();
+    await insertOrganizationMembersOnConflictDoNothing(organizationMemberRows, tx);
+    await insertGroupMembersOnConflictDoNothing(groupMemberRows, tx);
   });
 
   return groupMemberRows.length;
@@ -230,41 +232,41 @@ export async function addProgramMembers(programId: string, data: TAddProgramMemb
         }
 
         return db.transaction(async (tx) => {
-          const [member] = await tx
-            .insert(schema.programMember)
-            .values({
+          const member = await addProgramMember(
+            {
               programId,
               profileId,
               roleId,
               email: normalizedEmail ?? undefined
-            })
-            .returning();
+            },
+            tx
+          );
 
           if (member && member.roleId === ROLE.STUDENT && member.profileId && courseGroupIds.length > 0) {
             const validCourseGroupIds = courseGroupIds.filter((groupId): groupId is string => Boolean(groupId));
 
-            await tx
-              .insert(schema.organizationmember)
-              .values({
-                organizationId: program.organizationId,
-                roleId: ROLE.STUDENT,
-                profileId: member.profileId,
-                email: normalizedEmail ?? undefined,
-                verified: true
-              })
-              .onConflictDoNothing();
-
-            await tx
-              .insert(schema.groupmember)
-              .values(
-                validCourseGroupIds.map((groupId) => ({
-                  groupId,
+            await insertOrganizationMembersOnConflictDoNothing(
+              [
+                {
+                  organizationId: program.organizationId,
                   roleId: ROLE.STUDENT,
                   profileId: member.profileId,
-                  email: normalizedEmail ?? undefined
-                }))
-              )
-              .onConflictDoNothing();
+                  email: normalizedEmail ?? undefined,
+                  verified: true
+                }
+              ],
+              tx
+            );
+
+            await insertGroupMembersOnConflictDoNothing(
+              validCourseGroupIds.map((groupId) => ({
+                groupId,
+                roleId: ROLE.STUDENT,
+                profileId: member.profileId,
+                email: normalizedEmail ?? undefined
+              })),
+              tx
+            );
           }
 
           return member;

@@ -8,7 +8,9 @@ const TOOL_LABELS: Record<string, string> = {
   update_lesson: 'Updating lesson',
   update_lesson_content: 'Writing lesson content',
   create_exercise: 'Creating exercise',
+  create_exercise_section: 'Creating exercise section',
   update_exercise: 'Updating exercise',
+  update_exercise_section: 'Updating exercise section',
   add_questions: 'Adding questions',
   update_questions: 'Updating questions',
   reorder_content: 'Reordering content',
@@ -40,6 +42,8 @@ export function getToolResultLabel(toolName: string, result: unknown): string {
       return `Created exercise with ${r.questionCount} questions`;
     case 'update_exercise':
       return `Updated exercise: ${r.title}`;
+    case 'update_exercise_section':
+      return `Updated exercise section: ${r.title}`;
     case 'add_questions':
       return `Added ${r.addedCount} questions`;
     case 'update_questions':
@@ -78,7 +82,9 @@ export const MUTATION_TOOLS = [
   'update_lesson',
   'update_lesson_content',
   'create_exercise',
+  'create_exercise_section',
   'update_exercise',
+  'update_exercise_section',
   'add_questions',
   'update_questions',
   'reorder_content',

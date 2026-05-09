@@ -6,6 +6,7 @@ export type CurrentQuestionForPatch = {
   questionTypeId: number;
   points: number;
   order: number;
+  exerciseSectionId?: string | null;
   settings?: Record<string, unknown>;
   options: Array<{
     id: number | string;
@@ -21,6 +22,7 @@ export type QuestionPatch = {
   questionTypeId?: number;
   points?: number;
   order?: number;
+  exerciseSectionId?: string | null;
   settings?: Record<string, unknown>;
   options?: Array<{
     id?: number;
@@ -43,6 +45,7 @@ export type MergedQuestion = {
   questionTypeId: number;
   points: number;
   order: number;
+  exerciseSectionId?: string | null;
   settings?: Record<string, unknown>;
   options: MergedOption[];
 };
@@ -97,7 +100,7 @@ export function buildUpdatedQuestions(
       });
     }
 
-    return {
+    const merged: MergedQuestion = {
       id: patch.id,
       question: patch.question ?? current.title ?? '',
       questionTypeId: patch.questionTypeId ?? current.questionTypeId,
@@ -106,5 +109,11 @@ export function buildUpdatedQuestions(
       settings: mergedSettings,
       options: mergedOptions
     };
+
+    if (patch.exerciseSectionId !== undefined) {
+      merged.exerciseSectionId = patch.exerciseSectionId;
+    }
+
+    return merged;
   });
 }

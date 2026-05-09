@@ -391,6 +391,14 @@
         "post_created": "Indlægget er oprettet",
         "post_updated": "Opslaget blev opdateret"
       }
+    },
+    "ai_credits": {
+      "purchase_success": "Token-pakke føjet til din saldo.",
+      "checkout_failed": "Kunne ikke starte kassen. Prøv venligst igen."
+    },
+    "public_course": {
+      "url_copied": "Kursus-URL kopieret",
+      "url_copy_failed": "Kunne ikke kopiere URL"
     }
   },
   "explore": {
@@ -656,7 +664,30 @@
           "popover_title": "Vælg tags",
           "empty_groups": "Ingen tags tilgængelige endnu"
         },
-        "compliance": "Overholdelse"
+        "compliance": "Overholdelse",
+        "public": "Offentlig",
+        "convert_to_public_blocked": "Dette kursus har spørgsmål, der ikke kan automatisk bedømmes, så det kan ikke gøres offentligt endnu.",
+        "fix_blocking_questions": "Ret blokerende spørgsmål",
+        "slug": {
+          "label": "URL-slug",
+          "description": "Det sidste segment af denne vares offentlige webadresse. Kun bogstaver, tal og bindestreger.",
+          "public_only": "Snegle kan kun redigeres på offentlige kurser.",
+          "in_use": "Den snegl bruges allerede af et andet element i dette kursus."
+        },
+        "callout": {
+          "legend": "Offentlig kursusopkald",
+          "description": "Vist i bunden af hver lektion og i stedet for låste genstande. Brug det til at lede elever til dit websted eller et betalt kursus.",
+          "title_label": "Titel",
+          "title_placeholder": "Vil du gå dybere ind i dette?",
+          "description_label": "Beskrivelse",
+          "description_placeholder": "Slut dig til hele kohorten for at sende et projekt i produktionsgrad om 4 uger.",
+          "button_label": "Knap etiket",
+          "button_label_placeholder": "Læs mere på min side",
+          "button_url_label": "Knap-URL",
+          "button_url_placeholder": "https://example.com",
+          "clear": "Ryd billedforklaring",
+          "public_only": "Infoforklaringer vises kun på offentlige kurser."
+        }
       },
       "analytics": {
         "title": "Analytics"
@@ -1167,7 +1198,10 @@
               "attempt_counter": "Forsøg {current} af {total}",
               "previous_try": "Tidligere forsøg",
               "next_try": "Næste forsøg",
-              "try_again": "Prøv igen"
+              "try_again": "Prøv igen",
+              "back": "Tilbage",
+              "begin_section": "Start sektion",
+              "complete_section": "Fuldfør afsnit"
             },
             "edit_mode": {
               "delete_modal": "Slet øvelse",
@@ -1193,7 +1227,8 @@
                 "hotspot": "Hotspot",
                 "link": "Links",
                 "word_bank": "Ordbank",
-                "star": "Stjernebedømmelse"
+                "star": "Stjernebedømmelse",
+                "video_recording": "Videooptagelse"
               },
               "select_type": "Vælg type",
               "question_type_auto_gradable": "Auto",
@@ -1204,7 +1239,9 @@
               "title": "Slet spørgsmål",
               "sure": "Er du sikker på, at du vil slette dette spørgsmål",
               "no": "Nej, lad venligst være",
-              "yes": "Ja, slet"
+              "yes": "Ja, slet",
+              "section_title": "Slet afsnit",
+              "section_sure": "Dette afsnit vil blive slettet. Dens spørgsmål vil blive flyttet til den nærmeste sektion."
             },
             "description": {
               "title": "Titel",
@@ -1464,12 +1501,76 @@
                   "correct_value_placeholder": "f.eks. 3",
                   "max_stars_placeholder": "f.eks. 5"
                 }
+              },
+              "video_recording": {
+                "submission": {
+                  "no_video": "Ingen video indsendt.",
+                  "unavailable": "Videoen er ikke tilgængelig.",
+                  "duration": "Varighed",
+                  "file_size": "Filstørrelse",
+                  "recorded_at": "Optaget",
+                  "uploaded_at": "Uploadet",
+                  "retake_count": "Genoptager"
+                },
+                "preview": {
+                  "max_duration_label": "Max varighed",
+                  "manual_grading": "Eleverne optager et kort videosvar. Manuel klassificering påkrævet."
+                },
+                "take": {
+                  "unsupported": "Videooptagelse er ikke understøttet i denne browser.",
+                  "permission_prompt": "Giv kamera og mikrofon adgang til at optage dit svar.",
+                  "permission_denied": "Adgang til kamera eller mikrofon blev blokeret. Tjek browsertilladelser.",
+                  "start_camera": "Opsæt kamera",
+                  "camera_label": "Kamera",
+                  "camera_placeholder": "Vælg kamera",
+                  "play_preview": "Afspil optagelseseksempel",
+                  "pause_preview": "Sæt forhåndsvisning af optagelse på pause",
+                  "start_recording": "Start optagelsen",
+                  "stop_recording": "Stop optagelsen",
+                  "elapsed": "Forløbet",
+                  "remaining": "Tilbage",
+                  "max_duration": "Maks",
+                  "too_short": "Optag i mindst 1 sekund.",
+                  "use_recording": "Brug optagelse",
+                  "retake": "Gentag",
+                  "delete": "Slet optagelse",
+                  "retry_upload": "Prøv at uploade igen",
+                  "uploading": "Uploader optagelse...",
+                  "uploaded": "Optagelsen er uploadet",
+                  "upload_failed": "Upload mislykkedes. Prøv igen.",
+                  "replaces_previous": "Et nyt accepteret svar erstatter det tidligere svar efter upload."
+                },
+                "edit": {
+                  "max_duration_label": "Max varighed",
+                  "max_duration_helper": "Studerende optager i browseren og kan tage om, inden de afleverer. Maksimum er 2 minutter.",
+                  "max_duration_placeholder": "60",
+                  "manual_grading": "Kræver manuel klassificering"
+                }
               }
             },
             "settings": "Indstillinger",
             "settings_allow_multiple": "Tillad flere forsøg",
             "settings_allow_multiple_helper": "Studerende kan indsende mere end én gang og gennemgå tidligere forsøg på resultatskærmen.",
-            "settings_save": "Gem indstillinger"
+            "settings_save": "Gem indstillinger",
+            "add": "Tilføj",
+            "add_section": "Tilføj sektion",
+            "reorder_done": "Færdig genbestilling",
+            "section": {
+              "fallback_title": "Sektion",
+              "questions": "spørgsmål",
+              "short_questions": "q",
+              "required": "påkrævet",
+              "add_question": "Tilføj spørgsmål",
+              "delete": "Slet afsnit",
+              "move_up": "Flyt afsnittet op",
+              "move_down": "Flyt sektionen ned",
+              "color": "Sektionsfarve",
+              "description_placeholder": "Beskriv dette afsnit",
+              "after_section": "Efter afsnit",
+              "continue": "Fortsæt til næste afsnit",
+              "go_to_section": "Gå til afsnittet",
+              "submit": "Indsend øvelse"
+            }
           },
           "new_exercise_modal": {
             "heading": "Ny øvelse",
@@ -1657,7 +1758,12 @@
         "content_locked_description": "Din instruktør har ikke låst dette indhold op endnu. Fuldfør tidligere indhold, eller tjek tilbage senere.",
         "saving": "Gemmer...",
         "saved": "Gemt",
-        "draft_recovery": "Der blev fundet et ikke-gemt udkast til denne lektion. Vil du gendanne den?"
+        "draft_recovery": "Der blev fundet et ikke-gemt udkast til denne lektion. Vil du gendanne den?",
+        "stats": {
+          "sections": "Afsnit",
+          "lessons": "Lektioner",
+          "exercises": "Øvelser"
+        }
       },
       "news_feed": {
         "heading": "Nyhedsfeed",
@@ -1782,7 +1888,8 @@
     },
     "header": {
       "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing."
+      "preview_missing_slug": "Generate and save a course slug before previewing.",
+      "public_course_helper": "Synlig på dit offentlige kursussite"
     },
     "sidebar": {
       "back_to_course": "Tilbage til kurset",
@@ -1841,6 +1948,26 @@
       "blocker_final_misconfigured": "Certificeringsøvelsen \"{exerciseTitle}\" har ingen point konfigureret; bed din instruktør om at ordne det.",
       "email_message_label": "E-mail besked",
       "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!"
+    },
+    "creator": {
+      "heading": "Hvilket kursus vil du lave?",
+      "placeholder": "Bed ClassroomIO om at oprette et kursus til dig...",
+      "type": {
+        "self_paced": "Selv tempo",
+        "live_class": "Live klasse"
+      },
+      "level": {
+        "beginner": "Begynder",
+        "intermediate": "Mellemliggende",
+        "advanced": "Avanceret"
+      },
+      "drafting": {
+        "heading": "Udarbejdelse af din kursusidé",
+        "subtext": "Vi forvandler din prompt til en kursustitel og et arbejdsområde.",
+        "step_reading": "Læser din prompt",
+        "step_naming": "Navngiv dit kursus",
+        "step_building": "Oprettelse af dit arbejdsområde"
+      }
     }
   },
   "courses": {
@@ -1881,6 +2008,8 @@
       "unpublished": "Upubliceret",
       "continue_course": "Fortsæt",
       "learn_more": "Få flere oplysninger",
+      "public_badge": "Offentlig",
+      "actions_menu_aria": "Kursehandlinger",
       "tags_overflow_aria": "{count} flere tags",
       "list_view": {
         "title": "Titel",
@@ -1897,7 +2026,8 @@
         "invite": "Inviter",
         "delete": "Slet",
         "open": "Åbn",
-        "open_course_site": "Åben kursusside"
+        "open_public_course": "Åbn offentligt kursus",
+        "copy_course_url": "Kopiér kursus-URL"
       },
       "due_date": "Forfalder",
       "valid_until": "Gælder indtil kl"
@@ -2599,7 +2729,8 @@
       "token_auth_tab": "Token Auth",
       "customize_lms_tab": "Tilpas LMS",
       "domains_tab": "Domæner",
-      "teams_tab": "Hold"
+      "teams_tab": "Hold",
+      "ai_credits_tab": "AI Credits"
     },
     "subheadings": {
       "view_site": "Se webstedet"
@@ -2730,6 +2861,45 @@
     },
     "teams": {
       "page_subtitle": "Invite teammates and control who helps run this organization."
+    },
+    "ai_credits": {
+      "sub_title": "AI-kreditter",
+      "page_subtitle": "Spor brug af AI-assistent, teamforbrug og køb af tokenpakker.",
+      "cost_note": "Kreditforbrug vægtes efter modelomkostninger. Gemini 2.5 Flash og GPT-5.4 Mini tæller som 1 kreditenhed pr. token. Claude Sonnet 4.6 tæller som 36× pr. token, hvilket afspejler dens højere API-omkostninger.",
+      "buy_tokens": {
+        "title": "Køb flere tokens",
+        "description": "Hver pakke tilføjer 5.000.000 kreditter for $5 USD. Vælg, hvor mange pakker du har brug for.",
+        "quantity_hint": "pakker",
+        "preview": "{quantity} pakke(r) · {tokens} tokens · ${dollars}",
+        "buy_button": "Køb for ${dollars}"
+      },
+      "leaderboard": {
+        "title": "Teambrug",
+        "this_month": "Nuværende måned",
+        "user": "Bruger",
+        "favorite_model": "Yndlingsmodel",
+        "tokens": "Poletter",
+        "empty": "Ingen på dit hold har brugt AI-assistenten denne måned."
+      },
+      "chart": {
+        "heading": "Brug",
+        "subheading": "Dagligt tokenforbrug denne måned.",
+        "tokens": "Poletter",
+        "total_tokens": "Samlede tokens",
+        "total_requests": "Samlet antal anmodninger",
+        "empty": "Der er ikke registreret noget forbrug i denne måned endnu."
+      },
+      "purchased": {
+        "title": "Købt brug",
+        "subtitle": "Ekstra poletter, du har købt, ruller over, indtil de bliver brugt.",
+        "lifetime": "{tokens} tokens købt · ${dollars} brugt",
+        "buy_more": "Køb mere"
+      },
+      "included": {
+        "title": "Dit inkluderede forbrug",
+        "subtitle": "Månedlige tokens inkluderet i din plan.",
+        "resets_on": "Nulstiller {dato}"
+      }
     }
   },
   "profileMenu": {
@@ -2839,7 +3009,9 @@
     "self_paced_label": "Selv tempo",
     "self_paced_subtitle": "Bedst til kurser, hvor eleverne kan tage lektioner i deres eget tempo",
     "compliance_label": "Overholdelse",
-    "compliance_subtitle": "Tilbagevendende træning med gentagninger, påmindelser og fornyelsessporing"
+    "compliance_subtitle": "Tilbagevendende træning med gentagninger, påmindelser og fornyelsessporing",
+    "public_label": "Offentlig",
+    "public_subtitle": "Gratis kursussider uden tilmelding, du kan dele offentligt – fantastisk til leadgener"
   },
   "delete_modal": {
     "label": "Slet",
@@ -3224,7 +3396,8 @@
     "input_placeholder": "Spørg AI-assistenten...",
     "attach_document": "Vedhæft et dokument (PDF, DOCX, PPTX)",
     "upgrade_to_upload": "Opgrader for at uploade dokumenter",
-    "tokens_exhausted": "Månedlig AI-token-grænse nået. Køb flere kreditter i Indstillinger > Fakturering, eller vent på nulstilling.",
+    "tokens_exhausted": "Månedlig AI-token-grænse nået.",
+    "tokens_exhausted_buy_more": "Køb mere",
     "chat_history": "Chat historie",
     "no_conversations": "Ingen samtaler endnu",
     "untitled": "Uden titel",
@@ -3237,7 +3410,8 @@
     "mention_exercise": "Motion",
     "mention_section": "Sektion",
     "mention_no_results": "Intet matchende indhold",
-    "uploading_document": "Uploader dokument..."
+    "uploading_document": "Uploader dokument...",
+    "agent_running_warning": "Ændringerne vises i kurset, når agenten er færdig. Genindlæs ikke siden."
   },
   "widgets": {
     "heading": "Widgets",

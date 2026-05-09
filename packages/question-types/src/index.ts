@@ -8,6 +8,7 @@ export * from './question-scoring-rules';
 export * from './question-scoring';
 
 export * from './exercise-types';
+export * from './exercise-section-types';
 export * from './render-contract';
 export * from './form-state';
 export * from './answer-data';
@@ -15,3 +16,4 @@ export * from './answer-codecs';
 export * from './renderer-registry';
 export * from './textarea-validation';
 export * from './star-rating-settings';
+export * from './video-recording-settings';

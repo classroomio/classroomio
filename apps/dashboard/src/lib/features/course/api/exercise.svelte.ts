@@ -6,10 +6,25 @@ import type {
   Exercise,
   GetExerciseRequest,
   SubmitExerciseRequest,
-  UpdateExerciseRequest
+  UpdateExerciseRequest,
+  VideoRecordingPlaybackRequest,
+  VideoRecordingUploadCompleteRequest,
+  VideoRecordingUploadInitRequest
 } from '../utils/types';
-import type { TExerciseCreate, TExerciseSubmissionCreate, TExerciseUpdate } from '@cio/utils/validation/exercise';
-import { ZExerciseCreate, ZExerciseSubmissionCreate, ZExerciseUpdate } from '@cio/utils/validation/exercise';
+import type {
+  TExerciseCreate,
+  TExerciseSubmissionCreate,
+  TExerciseUpdate,
+  TExerciseVideoRecordingUploadComplete,
+  TExerciseVideoRecordingUploadInit
+} from '@cio/utils/validation/exercise';
+import {
+  ZExerciseCreate,
+  ZExerciseSubmissionCreate,
+  ZExerciseUpdate,
+  ZExerciseVideoRecordingUploadComplete,
+  ZExerciseVideoRecordingUploadInit
+} from '@cio/utils/validation/exercise';
 
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { snackbar } from '$features/ui/snackbar/store';
@@ -32,7 +47,7 @@ export class ExerciseApi extends BaseApiWithErrors {
       logContext: 'fetching exercise',
       onSuccess: (response) => {
         if (response.data) {
-          this.exercise = response.data as Exercise;
+          this.exercise = response.data as unknown as Exercise;
           this.success = true;
           this.errors = {};
         }
@@ -64,7 +79,7 @@ export class ExerciseApi extends BaseApiWithErrors {
       logContext: 'creating exercise',
       onSuccess: (response) => {
         if (response.data) {
-          this.exercise = response.data as Exercise;
+          this.exercise = response.data as unknown as Exercise;
           snackbar.success('Exercise created successfully');
           this.success = true;
           this.errors = {};
@@ -106,7 +121,7 @@ export class ExerciseApi extends BaseApiWithErrors {
       logContext: 'updating exercise',
       onSuccess: (response) => {
         if (response.data) {
-          this.exercise = response.data as Exercise;
+          this.exercise = response.data as unknown as Exercise;
           this.success = true;
           this.errors = {};
         }
@@ -193,6 +208,71 @@ export class ExerciseApi extends BaseApiWithErrors {
     });
   }
 
+  async initVideoRecordingUpload(
+    courseId: string,
+    exerciseId: string,
+    questionId: number | string,
+    fields: TExerciseVideoRecordingUploadInit
+  ) {
+    const result = ZExerciseVideoRecordingUploadInit.safeParse(fields);
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error, 'exercise');
+      return null;
+    }
+
+    return await this.execute<VideoRecordingUploadInitRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].exercise[':exerciseId'].question[':questionId'][
+          'video-recording'
+        ].upload.init.$post({
+          param: { courseId, exerciseId, questionId: String(questionId) },
+          json: result.data
+        }),
+      logContext: 'initializing video recording upload'
+    });
+  }
+
+  async completeVideoRecordingUpload(
+    courseId: string,
+    exerciseId: string,
+    questionId: number | string,
+    fields: TExerciseVideoRecordingUploadComplete
+  ) {
+    const result = ZExerciseVideoRecordingUploadComplete.safeParse(fields);
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error, 'exercise');
+      return null;
+    }
+
+    return await this.execute<VideoRecordingUploadCompleteRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].exercise[':exerciseId'].question[':questionId'][
+          'video-recording'
+        ].upload.complete.$post({
+          param: { courseId, exerciseId, questionId: String(questionId) },
+          json: result.data
+        }),
+      logContext: 'completing video recording upload'
+    });
+  }
+
+  async getVideoRecordingPlaybackUrl(
+    courseId: string,
+    exerciseId: string,
+    submissionId: string,
+    questionId: number | string
+  ) {
+    return await this.execute<VideoRecordingPlaybackRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].exercise[':exerciseId'].submission[':submissionId'].question[':questionId'][
+          'video-recording'
+        ].playback.$get({
+          param: { courseId, exerciseId, submissionId, questionId: String(questionId) }
+        }),
+      logContext: 'getting video recording playback URL'
+    });
+  }
+
   /**
    * Creates an exercise from a template
    * @param courseId Course ID
@@ -220,7 +300,7 @@ export class ExerciseApi extends BaseApiWithErrors {
       logContext: 'creating exercise from template',
       onSuccess: (response) => {
         if (response.data) {
-          this.exercise = response.data as Exercise;
+          this.exercise = response.data as unknown as Exercise;
           snackbar.success('Exercise created successfully');
           this.success = true;
           this.errors = {};

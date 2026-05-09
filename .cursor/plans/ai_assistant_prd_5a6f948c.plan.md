@@ -1,9 +1,9 @@
 ---
 name: AI assistant PRD
-overview: Write a new PRD from scratch for the AI Course Assistant feature, replacing the existing placeholder at prd/ai-course-assistant/README.md. The PRD will document a hybrid execution model, configurable LLM providers, streaming chat, and the full package/API/UI architecture.
+overview: Write a new PRD from scratch for the AI Course Assistant feature, replacing the existing placeholder at prd/ai-course-assistant [DONE]/README.md. The PRD will document a hybrid execution model, configurable LLM providers, streaming chat, and the full package/API/UI architecture.
 todos:
   - id: write-prd
-    content: "Write the full PRD markdown file at prd/ai-course-assistant/README.md with all sections: purpose, architecture, execution model, package design, tools, safeguards, UI spec, self-host gating, streaming, API routes, and implementation phases"
+    content: "Write the full PRD markdown file at prd/ai-course-assistant [DONE]/README.md with all sections: purpose, architecture, execution model, package design, tools, safeguards, UI spec, self-host gating, streaming, API routes, and implementation phases"
     status: pending
 isProject: false
 ---
@@ -12,7 +12,7 @@ isProject: false
 
 ## What We're Writing
 
-Replace [prd/ai-course-assistant/README.md](prd/ai-course-assistant/README.md) with a comprehensive PRD for an AI assistant embedded in the course UI. The PRD will be a single markdown file covering architecture, UI, safeguards, package design, and implementation phases.
+Replace [prd/ai-course-assistant [DONE]/README.md](prd/ai-course-assistant [DONE]/README.md) with a comprehensive PRD for an AI assistant embedded in the course UI. The PRD will be a single markdown file covering architecture, UI, safeguards, package design, and implementation phases.
 
 ## Key Architectural Decisions
 
@@ -612,7 +612,7 @@ Registered in [apps/api/src/app.ts](apps/api/src/app.ts) as `.route('/agent', ag
 
 **New files:**
 
-- `prd/ai-course-assistant/README.md` — this PRD (replace existing)
+- `prd/ai-course-assistant [DONE]/README.md` — this PRD (replace existing)
 
 **Files referenced (not modified in PRD phase):**
 

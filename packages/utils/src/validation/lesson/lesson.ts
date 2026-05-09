@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { ZSlug } from '../shared/slug';
+
 // Lesson Schemas
 export const ZLessonCreate = z.object({
   title: z.string().min(1),
@@ -10,7 +12,8 @@ export const ZLessonCreate = z.object({
   lessonAt: z.string().optional(),
   teacherId: z.string().optional(),
   isUnlocked: z.boolean().optional(),
-  public: z.boolean().optional()
+  public: z.boolean().optional(),
+  slug: ZSlug.optional()
 });
 export type TLessonCreate = z.infer<typeof ZLessonCreate>;
 
@@ -24,6 +27,7 @@ export const ZLessonUpdate = z.object({
   teacherId: z.string().optional(),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional(),
+  slug: ZSlug.optional(),
   isComplete: z.boolean().optional(),
   videoUrl: z.url().optional(),
   slideUrl: z.url().optional(),

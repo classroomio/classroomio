@@ -31,7 +31,7 @@
   });
 </script>
 
-<Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
+<Page.Root class="mx-auto flex w-full px-3 sm:w-[90%] sm:px-4 lg:max-w-5xl">
   {#if isLockedForStudent}
     <Empty
       title={$t('course.navItem.lessons.content_locked_title')}

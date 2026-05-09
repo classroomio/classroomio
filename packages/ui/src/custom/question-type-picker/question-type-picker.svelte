@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { AnswerData } from '@cio/question-types';
+  import type { AnswerData, ExerciseQuestionModel } from '@cio/question-types';
   import { QUESTION_TYPE_KEY, type QuestionTypeKey } from '@cio/question-types';
   import { cubicOut } from 'svelte/easing';
   import { fly } from 'svelte/transition';
@@ -10,14 +10,14 @@
   import SquareCheckIcon from '@lucide/svelte/icons/square-check';
   import StarIcon from '@lucide/svelte/icons/star';
   import UploadIcon from '@lucide/svelte/icons/upload';
-  import type { Component } from 'svelte';
+  import VideoIcon from '@lucide/svelte/icons/video';
   import { QuestionRenderer } from '../exercise-question';
   import { QUESTION_TYPE_PICKER_EXERCISE_LABELS } from './exercise-labels';
   import { QUESTION_TYPE_PICKER_ITEMS, getQuestionTypePickerItem } from './picker-data';
   import { cn } from '../../tools';
 
   /** Lucide icons for types without `sidebarGlyph` in picker data. */
-  function iconForKey(key: QuestionTypeKey): Component<{ class?: string; 'aria-hidden'?: string | boolean }> {
+  function iconForKey(key: QuestionTypeKey): typeof CircleDotIcon {
     switch (key) {
       case QUESTION_TYPE_KEY.RADIO:
         return CircleDotIcon;
@@ -33,6 +33,8 @@
         return Link2Icon;
       case QUESTION_TYPE_KEY.STAR:
         return StarIcon;
+      case QUESTION_TYPE_KEY.VIDEO_RECORDING:
+        return VideoIcon;
       default:
         return CircleDotIcon;
     }
@@ -68,6 +70,34 @@
       fileKey: `demo/${file.name}`,
       fileName: file.name,
       fileUrl: URL.createObjectURL(file)
+    };
+  }
+
+  async function demoVideoRecordingUpload(input: {
+    blob: Blob;
+    fileName: string;
+    mimeType: string;
+    size: number;
+    durationSeconds: number;
+    recordedAt: string;
+    retakeCount: number;
+  }) {
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 350);
+    });
+
+    return {
+      type: 'VIDEO_RECORDING' as const,
+      assetId: '00000000-0000-4000-8000-000000000001',
+      storageKey: `demo/${input.fileName}`,
+      fileName: input.fileName,
+      mimeType: input.mimeType,
+      size: input.size,
+      durationSeconds: input.durationSeconds,
+      recordedAt: input.recordedAt,
+      uploadedAt: new Date().toISOString(),
+      provider: 'cloudflare' as const,
+      retakeCount: input.retakeCount
     };
   }
 </script>
@@ -129,10 +159,11 @@
             showContainer={false}
             contract={{
               mode: 'take',
-              question: activeQuestion,
+              question: activeQuestion as ExerciseQuestionModel,
               answer,
               labels: QUESTION_TYPE_PICKER_EXERCISE_LABELS,
-              onFileUpload: demoFileUpload
+              onFileUpload: demoFileUpload,
+              onVideoRecordingUpload: demoVideoRecordingUpload
             }}
             onAnswerChange={(nextAnswer) => {
               answer = nextAnswer;

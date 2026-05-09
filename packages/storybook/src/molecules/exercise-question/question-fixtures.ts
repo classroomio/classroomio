@@ -6,6 +6,15 @@ export interface QuestionStoryFixture {
   wrongAnswer?: unknown;
 }
 
+export interface ExerciseSectionStoryFixture {
+  id: string;
+  title: string;
+  description?: string;
+  order: number;
+  colorTheme: 'blue' | 'green' | 'amber' | 'rose' | 'violet' | 'slate';
+  questions: Record<string, unknown>[];
+}
+
 const OPTION_IMAGE_A = 'https://brand.cdn.clsrio.com/classroomio-lms-courses.png';
 const OPTION_IMAGE_B = 'https://assets.cdn.clsrio.com/www/futuristic-classroom.jpg';
 
@@ -196,6 +205,34 @@ export const FILE_UPLOAD_FIXTURE: QuestionStoryFixture = {
   answer: 'lesson-plan-week-03.pdf'
 };
 
+export const VIDEO_RECORDING_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-video-recording',
+    key: 'q-video-recording',
+    title: 'Record a short reflection on what you learned. [VIDEO_RECORDING]',
+    questionType: 'VIDEO_RECORDING',
+    settings: {
+      description: 'Use the browser camera and microphone. You can retake before submitting.',
+      maxDurationSeconds: 120,
+      allowRetakes: true
+    }
+  },
+  answer: {
+    type: 'VIDEO_RECORDING',
+    assetId: '00000000-0000-4000-8000-000000000001',
+    storageKey: 'exercise-recordings/story/video-recording-demo.webm',
+    fileName: 'video-recording-demo.webm',
+    mimeType: 'video/webm',
+    size: 1_204_224,
+    durationSeconds: 42,
+    recordedAt: '2026-04-30T12:00:00.000Z',
+    uploadedAt: '2026-04-30T12:01:00.000Z',
+    provider: 'cloudflare',
+    retakeCount: 2,
+    playbackUrl: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm'
+  }
+};
+
 export const MATCHING_FIXTURE: QuestionStoryFixture = {
   question: {
     id: 'q-matching',
@@ -256,3 +293,22 @@ export const LINK_FIXTURE: QuestionStoryFixture = {
   },
   answer: ['https://classroomio.com/docs', 'https://www.svelte.dev']
 };
+
+export const SECTIONED_EXERCISE_FIXTURE: ExerciseSectionStoryFixture[] = [
+  {
+    id: 'section-foundations',
+    title: 'Foundations',
+    description: 'A short warm-up section before the applied scenario.',
+    order: 0,
+    colorTheme: 'blue',
+    questions: [RADIO_FIXTURE.question, TRUE_FALSE_FIXTURE.question]
+  },
+  {
+    id: 'section-application',
+    title: 'Applied Practice',
+    description: 'Students solve open-response and ordering tasks.',
+    order: 1,
+    colorTheme: 'green',
+    questions: [SHORT_ANSWER_FIXTURE.question, ORDERING_FIXTURE.question]
+  }
+];

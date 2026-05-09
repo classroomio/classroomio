@@ -23,6 +23,7 @@ import { default as ShortAnswerEdit } from './renderers/short-answer/edit.svelte
 import { default as StarEdit } from './renderers/star/edit.svelte';
 import { default as TextareaEdit } from './renderers/textarea/edit.svelte';
 import { default as TrueFalseEdit } from './renderers/true-false/edit.svelte';
+import { default as VideoRecordingEdit } from './renderers/video-recording/edit.svelte';
 
 import { default as CheckboxTake } from './renderers/checkbox/take.svelte';
 import { default as FileUploadTake } from './renderers/file-upload/take.svelte';
@@ -38,6 +39,7 @@ import { default as ShortAnswerTake } from './renderers/short-answer/take.svelte
 import { default as StarTake } from './renderers/star/take.svelte';
 import { default as TextareaTake } from './renderers/textarea/take.svelte';
 import { default as TrueFalseTake } from './renderers/true-false/take.svelte';
+import { default as VideoRecordingTake } from './renderers/video-recording/take.svelte';
 
 import { default as CheckboxPreview } from './renderers/checkbox/preview.svelte';
 import { default as FileUploadPreview } from './renderers/file-upload/preview.svelte';
@@ -53,6 +55,7 @@ import { default as ShortAnswerPreview } from './renderers/short-answer/preview.
 import { default as StarPreview } from './renderers/star/preview.svelte';
 import { default as TextareaPreview } from './renderers/textarea/preview.svelte';
 import { default as TrueFalsePreview } from './renderers/true-false/preview.svelte';
+import { default as VideoRecordingPreview } from './renderers/video-recording/preview.svelte';
 
 import { default as CheckboxSubmission } from './renderers/checkbox/submission.svelte';
 import { default as FileUploadSubmission } from './renderers/file-upload/submission.svelte';
@@ -68,6 +71,7 @@ import { default as ShortAnswerSubmission } from './renderers/short-answer/submi
 import { default as StarSubmission } from './renderers/star/submission.svelte';
 import { default as TextareaSubmission } from './renderers/textarea/submission.svelte';
 import { default as TrueFalseSubmission } from './renderers/true-false/submission.svelte';
+import { default as VideoRecordingSubmission } from './renderers/video-recording/submission.svelte';
 
 import { default as RadioReview } from './renderers/radio/review.svelte';
 import { default as CheckboxReview } from './renderers/checkbox/review.svelte';
@@ -172,6 +176,13 @@ export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<Share
     take: StarTake,
     preview: StarPreview,
     submission: StarSubmission
+  },
+  [QUESTION_TYPE_KEY.VIDEO_RECORDING]: {
+    edit: VideoRecordingEdit,
+    take: VideoRecordingTake,
+    preview: VideoRecordingPreview,
+    submission: VideoRecordingSubmission,
+    review: VideoRecordingSubmission
   }
 };
 
