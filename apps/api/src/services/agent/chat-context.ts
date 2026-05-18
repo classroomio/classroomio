@@ -3,7 +3,7 @@ import { getDocumentText } from '@api/services/agent/document';
 import { redis } from '@api/utils/redis/redis';
 import { getCourseSectionBinding, getExerciseCourseBinding, getLessonCourseBinding } from '@cio/db/queries/agent';
 import { z } from 'zod';
-import { CoursePlanSchema } from '@cio/ai-assistant';
+import { CoursePlanFieldsSchema, type CourseTemplateId } from '@cio/ai-assistant';
 
 type ResourceOwnershipRow = {
   courseId: string | null;
@@ -137,7 +137,7 @@ type PlanMetadataMessage = {
   };
 };
 
-export function getLatestImplementationPlan(messages: unknown[]): z.infer<typeof CoursePlanSchema> | undefined {
+export function getLatestImplementationPlan(messages: unknown[]): z.infer<typeof CoursePlanFieldsSchema> | undefined {
   for (let index = messages.length - 1; index >= 0; index--) {
     const message = messages[index] as PlanMetadataMessage;
 
@@ -149,10 +149,33 @@ export function getLatestImplementationPlan(messages: unknown[]): z.infer<typeof
       continue;
     }
 
-    const parsedPlan = CoursePlanSchema.safeParse(message.metadata.plan.payload);
+    const parsedPlan = CoursePlanFieldsSchema.safeParse(message.metadata.plan.payload);
 
     if (parsedPlan.success) {
       return parsedPlan.data;
+    }
+  }
+
+  return undefined;
+}
+
+const COURSE_TEMPLATE_ID_SET = new Set<CourseTemplateId>(['product_101', 'product_onboarding', 'expert_on_x']);
+
+export function getActiveCourseTemplateId(messages: unknown[]): CourseTemplateId | undefined {
+  for (const message of messages) {
+    const candidate = message as {
+      role?: string;
+      metadata?: { template?: { id?: string } };
+    };
+
+    if (candidate.role !== 'user') {
+      continue;
+    }
+
+    const id = candidate.metadata?.template?.id;
+
+    if (id && COURSE_TEMPLATE_ID_SET.has(id as CourseTemplateId)) {
+      return id as CourseTemplateId;
     }
   }
 

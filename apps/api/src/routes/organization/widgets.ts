@@ -3,19 +3,12 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
-import {
-  ZCreateWidget,
-  ZPreviewWidget,
-  ZRollbackWidget,
-  ZUpdateWidget,
-  ZWidgetIdParams
-} from '@cio/utils/validation/widget';
+import { ZCreateWidget, ZRollbackWidget, ZUpdateWidget, ZWidgetIdParams } from '@cio/utils/validation/widget';
 import {
   createOrganizationWidget,
   deleteOrganizationWidget,
   getOrganizationWidgetDetail,
   listOrganizationWidgets,
-  previewOrganizationWidget,
   publishOrganizationWidget,
   rollbackOrganizationWidget,
   updateOrganizationWidget
@@ -87,25 +80,6 @@ export const widgetsRouter = new Hono()
       return handleError(c, error, 'Failed to delete widget');
     }
   })
-  .post(
-    '/:widgetId/preview',
-    authMiddleware,
-    orgTeamMemberMiddleware,
-    zValidator('param', ZWidgetIdParams),
-    zValidator('json', ZPreviewWidget),
-    async (c) => {
-      try {
-        const orgId = c.req.header('cio-org-id')!;
-        const { widgetId } = c.req.valid('param');
-        const data = c.req.valid('json');
-        const payload = await previewOrganizationWidget(orgId, widgetId, data);
-
-        return c.json({ success: true, data: payload });
-      } catch (error) {
-        return handleError(c, error, 'Failed to build widget preview');
-      }
-    }
-  )
   .post('/:widgetId/publish', authMiddleware, orgAdminMiddleware, zValidator('param', ZWidgetIdParams), async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;

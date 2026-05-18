@@ -12,7 +12,8 @@ import type {
   TSubmissionGradesUpdate,
   TSubmissionUpdate
 } from '@cio/utils/validation/submission';
-import { buildEmailFromName, deliverEmail } from '@cio/email';
+import { buildEmailFromName } from '@cio/email';
+import { enqueueRawEmail } from '@api/services/jobs';
 import {
   createSubmission,
   deleteSubmission,
@@ -977,14 +978,13 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
     `;
   }
 
-  await deliverEmail([
-    {
-      from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-      to: fullSubmission.groupmember.profile.email,
-      subject: 'Submission Update',
-      content
-    }
-  ]);
+  await enqueueRawEmail({
+    from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
+    to: fullSubmission.groupmember.profile.email,
+    subject: 'Submission Update',
+    content,
+    idempotencyKey: `submission-update:${submissionId}:${newStatusId}`
+  });
 }
 
 /**
@@ -1035,18 +1035,14 @@ async function sendExerciseSubmissionUpdateEmail(courseId: string, exerciseId: s
     </div>
   `;
 
-  // Send email to all tutors
-  const emailPromises = tutorsResult.map((tutor) => {
-    if (!tutor.email) return Promise.resolve();
-    return deliverEmail([
-      {
-        from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-        to: tutor.email,
-        subject: `[Submitted]: ${exercise.title}`,
-        content
-      }
-    ]);
-  });
+  const tutorEmails = tutorsResult.map((tutor) => tutor.email).filter((email): email is string => Boolean(email));
+  if (tutorEmails.length === 0) return;
 
-  await Promise.all(emailPromises);
+  await enqueueRawEmail({
+    from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
+    to: tutorEmails,
+    subject: `[Submitted]: ${exercise.title}`,
+    content,
+    idempotencyKey: `exercise-submitted:${courseId}:${exerciseId}:${submittedBy}`
+  });
 }

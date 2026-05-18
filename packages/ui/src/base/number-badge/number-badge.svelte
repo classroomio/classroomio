@@ -29,7 +29,7 @@
 
 <span class={badgeClass} aria-hidden="true">
   {#if locked}
-    <LockIcon class="ui:size-3.5" />
+    <LockIcon class="ui:size-3.5 custom" />
   {:else}
     {number}
   {/if}

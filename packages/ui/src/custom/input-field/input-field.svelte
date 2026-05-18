@@ -20,11 +20,14 @@
     isDisabled?: boolean;
     min?: string | number | null | undefined;
     max?: string | number | null | undefined;
+    step?: string | number | null | undefined;
+    maxLength?: number;
     errorMessage?: string;
     helperMessage?: string;
     autoComplete?: boolean;
     onchange?: (e: InputOnChangeEvent) => void;
     onInputChange?: (e: InputOnChangeEvent) => void;
+    labelAction?: import('svelte').Snippet;
   }
 
   let {
@@ -42,11 +45,14 @@
     isDisabled = false,
     min = undefined,
     max = undefined,
+    step = undefined,
+    maxLength = undefined,
     errorMessage = '',
     helperMessage = '',
     autoComplete = true,
     onchange = () => {},
-    onInputChange = () => {}
+    onInputChange = () => {},
+    labelAction
   }: Props = $props();
 
   let inputRef: HTMLInputElement | null = $state(null);
@@ -70,12 +76,15 @@
 
 <Field.Field class={className}>
   {#if label}
-    <Field.Label for={name || 'input-field'} class={labelClassName}>
-      {label}
-      {#if isRequired}
-        <span class="ui:text-red-700">*</span>
-      {/if}
-    </Field.Label>
+    <div class="flex items-center justify-between">
+      <Field.Label for={name || 'input-field'} class={labelClassName}>
+        {label}
+        {#if isRequired}
+          <span class="ui:text-red-700">*</span>
+        {/if}
+      </Field.Label>
+      {@render labelAction?.()}
+    </div>
   {/if}
 
   <Input
@@ -88,6 +97,8 @@
     {name}
     {min}
     {max}
+    {step}
+    maxlength={maxLength}
     required={isRequired}
     disabled={isDisabled}
     autocomplete={autoComplete ? 'on' : 'off'}

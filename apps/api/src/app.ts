@@ -14,6 +14,7 @@ import { inviteRouter } from '@api/routes/invite';
 import { logger } from 'hono/logger';
 // ROUTES
 import { mailRouter } from '@api/routes/mail';
+import { jobsRouter } from '@api/routes/jobs';
 import { mediaRouter } from '@api/routes/media';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
@@ -31,7 +32,8 @@ import { signupGuard } from '@api/middlewares/signup-guard';
 import { programRouter } from '@api/routes/program';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { agentRouter } from '@api/routes/agent';
-import { internalComplianceRouter } from '@api/routes/internal/compliance';
+import { internalRouter } from '@api/routes/internal';
+import { mountQueueDashboard } from '@api/routes/admin/queues';
 
 // Create Hono app with chaining for RPC support
 export const app = new Hono()
@@ -43,7 +45,7 @@ export const app = new Hono()
     '*',
     cors({
       origin: TRUSTED_ORIGINS,
-      allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowHeaders: ['Content-Type', 'Authorization', 'Cio-org-id'],
       exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
       maxAge: 600,
@@ -94,6 +96,7 @@ export const app = new Hono()
   .route('/domain', domainRouter)
   .route('/mail', mailRouter)
   .route('/media', mediaRouter)
+  .route('/jobs', jobsRouter)
   .route('/license', licenseRouter)
   .route('/organization', organizationRouter)
   .route('/organization/sso', organizationSsoRouter)
@@ -107,7 +110,7 @@ export const app = new Hono()
   .route('/program', programRouter)
   .route('/unsplash', unsplashRouter)
   .route('/widgets', publicWidgetsRouter)
-  .route('/internal/compliance', internalComplianceRouter)
+  .route('/internal', internalRouter)
   .route('/agent', agentRouter)
 
   // Error handling
@@ -115,3 +118,7 @@ export const app = new Hono()
     console.error('Error:', err);
     return c.json({ error: 'Internal Server Error' }, 500);
   });
+
+// Dev-only BullMQ dashboard at /admin/queues. Mounted after the typed RPC
+// chain so it doesn't pollute the client type.
+mountQueueDashboard(app);

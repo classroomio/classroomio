@@ -234,10 +234,11 @@
     const description = value.description.trim();
     const buttonLabel = value.buttonLabel.trim();
     const buttonUrl = value.buttonUrl.trim();
+    const animation = value.animation ?? 'waves';
 
     if (!title && !description && !buttonLabel && !buttonUrl) return null;
 
-    return { title, description, buttonLabel, buttonUrl };
+    return { title, description, buttonLabel, buttonUrl, animation };
   }
 
   function normalizeCallout(value: unknown): typeof $settings.callout {
@@ -253,11 +254,17 @@
       return null;
     }
 
+    const animation =
+      candidate.animation === 'dotted' || candidate.animation === 'none' || candidate.animation === 'waves'
+        ? candidate.animation
+        : 'waves';
+
     return {
       title: candidate.title,
       description: candidate.description,
       buttonLabel: candidate.buttonLabel,
-      buttonUrl: candidate.buttonUrl
+      buttonUrl: candidate.buttonUrl,
+      animation
     };
   }
 
@@ -280,7 +287,7 @@
     if ($settings.type === 'PUBLIC' && $settings.callout === null) {
       settings.update((prev) => ({
         ...prev,
-        callout: { title: '', description: '', buttonLabel: '', buttonUrl: '' }
+        callout: { title: '', description: '', buttonLabel: '', buttonUrl: '', animation: 'waves' }
       }));
     }
   });
@@ -643,6 +650,44 @@
             placeholder={$t('course.navItem.settings.callout.button_url_placeholder')}
             type="url"
           />
+        </Field.Field>
+
+        <Field.Field>
+          <Field.Label>{$t('course.navItem.settings.callout.animation_label')}</Field.Label>
+          <Field.Description>
+            {$t('course.navItem.settings.callout.animation_description')}
+          </Field.Description>
+          <RadioGroup.Root
+            value={$settings.callout.animation ?? 'waves'}
+            onValueChange={(value) => {
+              if (!$settings.callout) return;
+              const next = value === 'dotted' || value === 'none' ? value : 'waves';
+              settings.update((prev) =>
+                prev.callout ? { ...prev, callout: { ...prev.callout, animation: next } } : prev
+              );
+              hasUnsavedChanges = true;
+            }}
+            class="ui:mt-1 flex flex-col gap-2"
+          >
+            <Field.Field orientation="horizontal">
+              <RadioGroup.Item value="waves" id="callout-animation-waves" />
+              <Label for="callout-animation-waves">
+                {$t('course.navItem.settings.callout.animation_waves')}
+              </Label>
+            </Field.Field>
+            <Field.Field orientation="horizontal">
+              <RadioGroup.Item value="dotted" id="callout-animation-dotted" />
+              <Label for="callout-animation-dotted">
+                {$t('course.navItem.settings.callout.animation_dotted')}
+              </Label>
+            </Field.Field>
+            <Field.Field orientation="horizontal">
+              <RadioGroup.Item value="none" id="callout-animation-none" />
+              <Label for="callout-animation-none">
+                {$t('course.navItem.settings.callout.animation_none')}
+              </Label>
+            </Field.Field>
+          </RadioGroup.Root>
         </Field.Field>
       </Field.Group>
 

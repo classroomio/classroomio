@@ -14,7 +14,8 @@ import type { TGroupmember } from '@cio/db/types';
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { getCourseWithOrgData } from '@cio/db/queries/course';
 import { getProfileById } from '@cio/db/queries/auth';
-import { buildEmailFromName, sendEmail } from '@cio/email';
+import { buildEmailFromName } from '@cio/email';
+import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
 
 /**
@@ -85,45 +86,44 @@ export async function addMember(
             studentName = data.name || null;
           }
 
-          // Send welcome email to student
           if (studentEmail) {
             try {
-              await sendEmail('studentCourseWelcome', {
+              await enqueueTransactionalEmail('studentCourseWelcome', {
                 to: studentEmail,
                 fields: {
                   orgName,
                   courseName,
                   loginUrl
                 },
-                from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`)
+                from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
+                idempotencyKey: `course-people-student-welcome:${courseId}:${studentEmail}`
               });
             } catch (emailError) {
-              console.error('Failed to send student welcome email:', emailError);
+              console.error('Failed to enqueue student welcome email:', emailError);
             }
           }
 
-          // Get all teachers (ADMIN or TUTOR) in the course
           const teachersResult = await getCourseTeachers({ courseId });
 
-          // Send notification to all teachers
           if (teachersResult.length > 0 && studentEmail && studentName) {
             const teacherEmails = teachersResult.map((t) => t.email).filter((email): email is string => email !== null);
 
-            await Promise.all(
-              teacherEmails.map((teacherEmail) =>
-                sendEmail('teacherStudentJoined', {
-                  to: teacherEmail,
+            if (teacherEmails.length > 0) {
+              try {
+                await enqueueTransactionalEmail('teacherStudentJoined', {
+                  to: teacherEmails,
                   fields: {
                     courseName,
                     studentName,
                     studentEmail
                   },
-                  from: buildEmailFromName('ClassroomIO')
-                }).catch((emailError) => {
-                  console.error(`Failed to send teacher notification email to ${teacherEmail}:`, emailError);
-                })
-              )
-            );
+                  from: buildEmailFromName('ClassroomIO'),
+                  idempotencyKey: `course-people-teacher-joined:${courseId}:${studentEmail}`
+                });
+              } catch (emailError) {
+                console.error('Failed to enqueue teacher notification email:', emailError);
+              }
+            }
           }
         }
       } catch (emailError) {
@@ -193,19 +193,17 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
     const baseUrl = getDashboardBaseUrl(orgSiteName);
     const inviteLink = `${baseUrl}/org/${orgSiteName}/courses`;
 
-    // Send welcome emails to teachers
     const teacherEmailPromises: Promise<unknown>[] = [];
 
     addedMembers.forEach((member, index) => {
       const memberData = members[index];
-      // Only send emails to teachers (TUTOR or ADMIN role) who have email
       const roleId = memberData.roleId;
       const email = memberData.email;
       const name = memberData.name;
 
       if ((roleId === ROLE.ADMIN || roleId === ROLE.TUTOR) && email && name) {
         teacherEmailPromises.push(
-          sendEmail('teacherCourseWelcome', {
+          enqueueTransactionalEmail('teacherCourseWelcome', {
             to: email,
             fields: {
               name,
@@ -213,9 +211,10 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
               courseName,
               inviteLink
             },
-            from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`)
+            from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
+            idempotencyKey: `teacher-course-welcome:${courseId}:${email}`
           }).catch((emailError) => {
-            console.error(`Failed to send welcome email to ${email}:`, emailError);
+            console.error(`Failed to enqueue welcome email to ${email}:`, emailError);
             return [];
           })
         );
@@ -226,8 +225,7 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       try {
         await Promise.all(teacherEmailPromises);
       } catch (emailError) {
-        // Log but don't fail the request if email fails
-        console.error('Failed to send welcome emails:', emailError);
+        console.error('Failed to enqueue welcome emails:', emailError);
       }
     }
 

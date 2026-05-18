@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Meridian Institute — Corporate template</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #0a0a0a;
+        --ink-2: #2a2a2a;
+        --muted: #5e5e5e;
+        --muted-2: #8a8a8a;
+        --line: #e5e5e5;
+        --line-soft: #f1f1f1;
+        --bg: #ffffff;
+        --bg-soft: #f7f7f5;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background: var(--bg); color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        font-size: 15px; line-height: 1.5;
+      }
+      a { color: inherit; text-decoration: none; }
+      button { font: inherit; cursor: pointer; }
+      .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+      /* ============ NAV ============ */
+      .nav-wrap {
+        border-bottom: 1px solid var(--line);
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(8px);
+        position: sticky; top: 0; z-index: 50;
+      }
+      .nav {
+        display: flex; align-items: center; justify-content: space-between;
+        height: 56px;
+      }
+      .brand {
+        display: flex; align-items: center; gap: 8px;
+        font-weight: 600; font-size: 15px;
+        letter-spacing: -0.005em;
+      }
+      .brand-mark {
+        width: 18px; height: 18px;
+        background: var(--ink);
+        position: relative;
+      }
+      .brand-mark::after {
+        content: '';
+        position: absolute; inset: 4px;
+        background: #fff;
+      }
+      .nav-mid { display: flex; gap: 28px; }
+      .nav-mid a {
+        font-size: 14px; color: var(--ink-2);
+        transition: color 0.15s;
+      }
+      .nav-mid a:hover { color: var(--ink); }
+      .nav-cta { display: flex; align-items: center; gap: 12px; }
+      .nav-cta a { font-size: 14px; color: var(--ink-2); }
+
+      .btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 7px 14px;
+        font-size: 14px; font-weight: 500;
+        border-radius: 0;
+        border: 1px solid transparent;
+        transition: opacity 0.15s, background 0.15s, color 0.15s;
+      }
+      .btn-dark { background: var(--ink); color: #fff; }
+      .btn-dark:hover { opacity: 0.85; }
+      .btn-outline { border-color: var(--ink); color: var(--ink); background: #fff; }
+      .btn-outline:hover { background: var(--ink); color: #fff; }
+      .btn-lg { padding: 10px 20px; font-size: 14px; }
+
+      /* ============ HERO ============ */
+      .hero { padding: 96px 0 96px; }
+      .hero h1 {
+        font-size: 56px; line-height: 1.05;
+        letter-spacing: -0.025em;
+        font-weight: 600;
+        margin: 0 0 24px;
+        max-width: 760px;
+      }
+      .hero p.lead {
+        font-size: 18px; color: var(--muted);
+        max-width: 540px; margin: 0 0 32px;
+        line-height: 1.5;
+      }
+      .hero .actions {
+        display: flex; gap: 10px; align-items: center;
+      }
+      .hero .actions .note {
+        margin-left: 12px;
+        font-size: 13px; color: var(--muted-2);
+      }
+
+      /* ============ COMMON SECTION ============ */
+      .section { padding: 96px 0; }
+      .section-head { max-width: 720px; margin-bottom: 48px; }
+      .eyebrow {
+        font-size: 12px; font-weight: 600;
+        letter-spacing: 0.08em; text-transform: uppercase;
+        color: var(--ink);
+        margin-bottom: 16px;
+      }
+      .section-title {
+        font-size: 36px; font-weight: 600;
+        margin: 0 0 12px;
+        letter-spacing: -0.02em; line-height: 1.1;
+      }
+      .section-sub {
+        font-size: 16px; color: var(--muted);
+        margin: 0; line-height: 1.5;
+      }
+
+      /* ============ COURSES ============ */
+      .courses-head {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        margin-bottom: 40px;
+      }
+      .courses-head .left { max-width: 540px; }
+      .course-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid var(--line);
+        border-left: 1px solid var(--line);
+      }
+      /* 1 course → centered card (drops grid frame) */
+      .course-grid:has(> .course:only-child) {
+        display: flex;
+        justify-content: center;
+        border: none;
+      }
+      .course-grid:has(> .course:only-child) > .course {
+        width: 100%;
+        max-width: 460px;
+        border: 1px solid var(--line);
+      }
+      .course {
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        padding: 24px;
+        display: flex; flex-direction: column; gap: 8px;
+        transition: background 0.15s;
+      }
+      .course:hover { background: var(--bg-soft); }
+      .course .tag {
+        font-size: 11px; font-weight: 600;
+        letter-spacing: 0.08em; text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .course h3 {
+        font-size: 18px; font-weight: 600;
+        margin: 0; letter-spacing: -0.015em;
+      }
+      .course p {
+        font-size: 13px; color: var(--muted);
+        margin: 0; line-height: 1.5; flex: 1;
+      }
+      .course .foot {
+        display: flex; align-items: center; justify-content: space-between;
+        padding-top: 14px; margin-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+      .course .foot .price { font-weight: 600; font-size: 14px; }
+      .course .foot a {
+        font-size: 13px;
+        border-bottom: 1px solid var(--ink);
+        padding-bottom: 1px;
+      }
+      .more-courses {
+        display: flex; justify-content: center;
+        margin-top: 40px;
+      }
+
+      /* ============ LINKS ============ */
+      .links-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        border-top: 1px solid var(--line);
+        border-left: 1px solid var(--line);
+      }
+      .link {
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        padding: 28px;
+        display: flex; gap: 18px; align-items: flex-start;
+        background: #fff;
+        transition: background 0.15s;
+      }
+      .link:hover { background: var(--bg-soft); }
+      .link .glyph {
+        width: 36px; height: 36px;
+        background: var(--ink); color: #fff;
+        display: grid; place-items: center;
+        font-weight: 700; font-size: 14px;
+        flex-shrink: 0;
+      }
+      .link h3 {
+        font-size: 16px; font-weight: 600;
+        margin: 0 0 6px; letter-spacing: -0.015em;
+      }
+      .link p {
+        margin: 0; font-size: 14px;
+        color: var(--muted); line-height: 1.55;
+      }
+
+      /* ============ EMBED ============ */
+      .embed-section { background: var(--bg-soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+      .embed-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+      }
+      .embed-text h2 {
+        font-size: 36px; font-weight: 600;
+        letter-spacing: -0.02em;
+        margin: 0 0 16px;
+        line-height: 1.1;
+      }
+      .embed-text p {
+        font-size: 16px; color: var(--muted);
+        margin: 0 0 24px; line-height: 1.55;
+      }
+      .embed-snippet {
+        background: var(--ink);
+        color: #fff;
+        font-family: ui-monospace, SFMono-Regular, monospace;
+        font-size: 13px; line-height: 1.7;
+        border: 1px solid var(--ink);
+      }
+      .embed-snippet .head {
+        padding: 10px 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 12px; color: rgba(255,255,255,0.55);
+      }
+      .embed-snippet pre {
+        margin: 0; padding: 22px;
+        white-space: pre; overflow-x: auto;
+      }
+      .embed-snippet .kw { color: #d4b3ff; }
+      .embed-snippet .str { color: #f5d480; }
+      .embed-snippet .cm { color: #888aa5; font-style: italic; }
+
+      /* ============ CALLOUT ============ */
+      .callout {
+        text-align: center;
+        padding: 96px 0;
+      }
+      .callout h2 {
+        font-size: 40px; font-weight: 600;
+        letter-spacing: -0.025em;
+        margin: 0 auto 16px;
+        max-width: 640px;
+        line-height: 1.1;
+      }
+      .callout p {
+        color: var(--muted);
+        margin: 0 auto 28px;
+        max-width: 480px;
+      }
+      .callout .actions {
+        display: flex; gap: 10px;
+        justify-content: center; align-items: center;
+      }
+      .callout .note {
+        font-size: 12px; color: var(--muted-2);
+        margin-top: 16px;
+      }
+
+      /* ============ FOOTER ============ */
+      footer {
+        border-top: 1px solid var(--line);
+        padding: 48px 0 28px;
+      }
+      .footer-top {
+        display: grid;
+        grid-template-columns: 1.6fr repeat(4, 1fr);
+        gap: 32px;
+        padding-bottom: 48px;
+      }
+      .footer-brand p {
+        font-size: 13px; color: var(--muted);
+        margin: 14px 0 18px;
+        max-width: 260px; line-height: 1.5;
+      }
+      .footer-socials { display: flex; gap: 14px; font-size: 13px; }
+      .footer-socials a { color: var(--muted); }
+      .footer-col h4 {
+        font-size: 12px; font-weight: 600;
+        letter-spacing: 0.04em;
+        margin: 0 0 14px;
+        color: var(--ink);
+      }
+      .footer-col ul { list-style: none; padding: 0; margin: 0; }
+      .footer-col li { margin-bottom: 8px; }
+      .footer-col a { font-size: 13px; color: var(--muted); }
+      .footer-col a:hover { color: var(--ink); }
+      .footer-bottom {
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+        display: flex; justify-content: space-between;
+        font-size: 12px; color: var(--muted);
+      }
+      .footer-bottom .right a { margin-left: 18px; }
+
+      @media (max-width: 900px) {
+        .hero h1 { font-size: 36px; }
+        .course-grid { grid-template-columns: 1fr; }
+        .links-grid { grid-template-columns: 1fr; }
+        .embed-grid { grid-template-columns: 1fr; }
+        .footer-top { grid-template-columns: 1fr 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============ NAV ============ -->
+    <div class="nav-wrap">
+      <div class="container">
+        <nav class="nav">
+          <div class="brand">
+            <div class="brand-mark"></div>
+            <span>Meridian</span>
+          </div>
+          <div class="nav-mid">
+            <a href="#">Programs</a>
+            <a href="#">Solutions</a>
+            <a href="#">Customers</a>
+            <a href="#">Pricing</a>
+            <a href="#">Docs</a>
+          </div>
+          <div class="nav-cta">
+            <a href="#">Sign in</a>
+            <a class="btn btn-dark" href="#">Get started</a>
+          </div>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <div class="container">
+        <h1>One platform for workforce learning, compliance, and certification.</h1>
+        <p class="lead">
+          Unify training, audits, and credentials for your entire organization. Real-time progress, governed access, zero spreadsheet hell.
+        </p>
+        <div class="actions">
+          <a class="btn btn-dark btn-lg" href="#">Start free</a>
+          <a class="btn btn-outline btn-lg" href="#">Book a demo</a>
+          <span class="note">Free for up to 10 learners.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ COURSES ============ -->
+    <section class="section" style="border-top: 1px solid var(--line);">
+      <div class="container">
+        <div class="courses-head">
+          <div class="left">
+            <div class="eyebrow">Catalog</div>
+            <h2 class="section-title">Programs your teams are taking</h2>
+          </div>
+          <a class="btn btn-outline" href="#">Browse catalog →</a>
+        </div>
+        <div class="course-grid">
+          <article class="course">
+            <span class="tag">Compliance</span>
+            <h3>SOC 2 Readiness Bootcamp</h3>
+            <p>Six-week curriculum walking your team through controls, evidence collection, and audit interviews.</p>
+            <div class="foot">
+              <span class="price">$1,490 / seat</span>
+              <a href="#">Enroll →</a>
+            </div>
+          </article>
+          <article class="course">
+            <span class="tag">Live Class</span>
+            <h3>People-Manager Foundations</h3>
+            <p>An eight-week cohort for new managers covering feedback, performance, and operating cadences.</p>
+            <div class="foot">
+              <span class="price">$890 / seat</span>
+              <a href="#">Enroll →</a>
+            </div>
+          </article>
+          <article class="course">
+            <span class="tag">Self-paced</span>
+            <h3>Workplace Security Essentials</h3>
+            <p>Mandatory annual training updated each quarter to reflect the latest threat landscape and policy changes.</p>
+            <div class="foot">
+              <span class="price">Included</span>
+              <a href="#">Enroll →</a>
+            </div>
+          </article>
+          <article class="course">
+            <span class="tag">Self-paced</span>
+            <h3>Financial Controls 101</h3>
+            <p>Foundations of segregation of duties, approval workflows, and month-end reconciliation.</p>
+            <div class="foot">
+              <span class="price">$190 / seat</span>
+              <a href="#">Enroll →</a>
+            </div>
+          </article>
+          <article class="course">
+            <span class="tag">Live Class</span>
+            <h3>Privacy &amp; Data Stewardship</h3>
+            <p>Hands-on workshop covering GDPR, CPRA, and internal data-classification policies.</p>
+            <div class="foot">
+              <span class="price">$640 / seat</span>
+              <a href="#">Enroll →</a>
+            </div>
+          </article>
+          <article class="course">
+            <span class="tag">Certification</span>
+            <h3>Certified Internal Auditor</h3>
+            <p>Full prep track with mock exams, instructor office hours, and printable wallet-card credential.</p>
+            <div class="foot">
+              <span class="price">$2,400 / seat</span>
+              <a href="#">Enroll →</a>
+            </div>
+          </article>
+        </div>
+        <div class="more-courses">
+          <a class="btn btn-dark btn-lg" href="#">View more programs</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LINKS ============ -->
+    <section class="section" style="background: var(--bg-soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">Resources</div>
+          <h2 class="section-title">More from Meridian</h2>
+        </div>
+        <div class="links-grid">
+          <a class="link" href="#">
+            <div class="glyph">D</div>
+            <div>
+              <h3>Documentation</h3>
+              <p>Set up your organization, invite learners, integrate SSO, and connect Meridian to your HRIS.</p>
+            </div>
+          </a>
+          <a class="link" href="#">
+            <div class="glyph">C</div>
+            <div>
+              <h3>Customer stories</h3>
+              <p>How regulated teams replaced three legacy tools and shipped audit-ready training in six weeks.</p>
+            </div>
+          </a>
+          <a class="link" href="#">
+            <div class="glyph">B</div>
+            <div>
+              <h3>Blog &amp; insights</h3>
+              <p>Templates, frameworks, and benchmark reports on workforce learning and compliance.</p>
+            </div>
+          </a>
+          <a class="link" href="#">
+            <div class="glyph">S</div>
+            <div>
+              <h3>Status &amp; trust center</h3>
+              <p>Real-time platform status, SOC 2 reports, and security disclosures for buyers and auditors.</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EMBED ============ -->
+    <section class="section embed-section">
+      <div class="container">
+        <div class="embed-grid">
+          <div class="embed-text">
+            <div class="eyebrow">Developer</div>
+            <h2>Embed Meridian inside your onboarding stack.</h2>
+            <p>Provision learners from your HRIS, enroll them in the right programs, and post completions back to your system of record.</p>
+            <a class="btn btn-outline" href="#">Read the docs →</a>
+          </div>
+          <div class="embed-snippet">
+            <div class="head">
+              <span>onboarding.ts</span>
+              <span>↗ View example</span>
+            </div>
+<pre><span class="kw">import</span> { Meridian } <span class="kw">from</span> <span class="str">"@meridian/sdk"</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> Meridian({ apiKey: env.MERIDIAN });
+
+<span class="kw">await</span> client.programs.enroll({
+  programId: <span class="str">"soc2-readiness"</span>,
+  email:     hire.email,
+  <span class="cm">// idempotent, posts back to your HRIS</span>
+});</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CALLOUT ============ -->
+    <section class="callout">
+      <div class="container">
+        <div class="eyebrow">Ready when you are</div>
+        <h2>Replace your LMS, your compliance tracker, and your credential printer — in one platform.</h2>
+        <p>Free for up to 10 learners. White-glove migration from your current stack.</p>
+        <div class="actions">
+          <a class="btn btn-dark btn-lg" href="#">Start free</a>
+          <a class="btn btn-outline btn-lg" href="#">Book a demo</a>
+        </div>
+        <p class="note">No credit card required. Cancel anytime.</p>
+      </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+      <div class="container">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <div class="brand">
+              <div class="brand-mark"></div>
+              <span>Meridian</span>
+            </div>
+            <p>An audit-grade learning platform built for teams that train critically and report quietly.</p>
+            <div class="footer-socials">
+              <a href="#">𝕏</a>
+              <a href="#">LinkedIn</a>
+              <a href="#">YouTube</a>
+            </div>
+          </div>
+          <div class="footer-col">
+            <h4>Product</h4>
+            <ul>
+              <li><a href="#">Programs</a></li>
+              <li><a href="#">Compliance</a></li>
+              <li><a href="#">Certifications</a></li>
+              <li><a href="#">Integrations</a></li>
+              <li><a href="#">Pricing</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Solutions</h4>
+            <ul>
+              <li><a href="#">For HR teams</a></li>
+              <li><a href="#">For risk &amp; audit</a></li>
+              <li><a href="#">For engineering</a></li>
+              <li><a href="#">For agencies</a></li>
+              <li><a href="#">For enterprise</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Resources</h4>
+            <ul>
+              <li><a href="#">Docs</a></li>
+              <li><a href="#">Customer stories</a></li>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Trust center</a></li>
+              <li><a href="#">Status</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Company</h4>
+            <ul>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a href="#">Press</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© 2026 Meridian Inc.</span>
+          <div class="right">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Cookie policy</a>
+            <a href="#">DPA</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

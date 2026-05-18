@@ -1,10 +1,13 @@
 <script lang="ts">
+  import { mergeProps } from 'bits-ui';
+  import * as Tooltip from '../../base/tooltip';
   import { cn } from '../../tools';
   import PoweredBy from './powered-by.svelte';
   import SidebarRow from './sidebar-row.svelte';
   import type { PublicCourseSidebarItem, PublicCourseSidebarSection } from './types';
 
   interface Props {
+    // Sections
     sections: PublicCourseSidebarSection[];
     /** Slug of the active item. Matches against `item.slug`. */
     activeSlug?: string | null;
@@ -43,27 +46,47 @@
 
 <div class={cn('ui:flex ui:h-full ui:flex-col ui:bg-sidebar', className)}>
   <nav class="ui:flex ui:flex-1 ui:flex-col ui:gap-6 ui:py-6 ui:px-2" aria-label="Course outline">
-    {#each sections as section (section.id)}
-      <div class="ui:flex ui:flex-col ui:gap-2">
-        <h2
-          class="ui:px-3 ui:text-xs ui:font-medium ui:uppercase ui:text-[11px] ui:text-muted-foreground ui:tracking-wider ui:transition-colors ui:whitespace-nowrap"
-        >
-          {section.title}
-        </h2>
-        <div class="ui:flex ui:flex-col">
-          {#each section.items as item, index (item.id)}
-            <SidebarRow
-              number={index + 1}
-              title={item.title}
-              active={item.slug === activeSlug}
-              locked={!item.isUnlocked}
-              href={hrefFor?.(item)}
-              onClick={() => onItemClick?.(item)}
-            />
-          {/each}
+    <Tooltip.Provider delayDuration={300}>
+      {#each sections as section (section.id)}
+        <div class="ui:flex ui:min-w-0 ui:flex-col ui:gap-2">
+          <h2 class="ui:m-0 ui:min-w-0 ui:w-full">
+            <Tooltip.Root>
+              <Tooltip.Trigger>
+                {#snippet child({ props })}
+                  <span
+                    {...mergeProps(
+                      {
+                        class: cn(
+                          'ui:block ui:w-full ui:min-w-0 ui:truncate ui:px-3 ui:font-medium ui:uppercase ui:text-[11px] ui:text-muted-foreground ui:transition-colors'
+                        )
+                      },
+                      props
+                    )}
+                  >
+                    {section.title}
+                  </span>
+                {/snippet}
+              </Tooltip.Trigger>
+              <Tooltip.Content side="top" sideOffset={6} class="ui:max-w-xs">
+                {section.title}
+              </Tooltip.Content>
+            </Tooltip.Root>
+          </h2>
+          <div class="ui:flex ui:flex-col">
+            {#each section.items as item, index (item.id)}
+              <SidebarRow
+                number={index + 1}
+                title={item.title}
+                active={item.slug === activeSlug}
+                locked={!item.isUnlocked}
+                href={hrefFor?.(item)}
+                onClick={() => onItemClick?.(item)}
+              />
+            {/each}
+          </div>
         </div>
-      </div>
-    {/each}
+      {/each}
+    </Tooltip.Provider>
   </nav>
 
   {#if showPoweredBy}

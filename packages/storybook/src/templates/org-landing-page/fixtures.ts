@@ -118,16 +118,71 @@ export const mockProps: OrgLandingPageProps = {
       href: '#contact'
     }
   },
+  links: {
+    heading: 'Resources',
+    description: 'Everything you need beyond the catalog.',
+    boldVisitLabel: 'Visit',
+    classicLearnMoreLabel: 'Learn more',
+    cards: [
+      {
+        icon: 'help-circle',
+        title: 'Help Center',
+        description: 'Guides, FAQs, and how-to articles for admins and learners.',
+        href: 'https://example.com/help'
+      },
+      {
+        icon: 'video',
+        title: 'Webinars',
+        description: 'Live sessions and recordings on compliance and product updates.',
+        href: 'https://example.com/webinars'
+      },
+      {
+        icon: 'users',
+        title: 'Community',
+        description: 'Connect with peers, share templates, and ask questions.',
+        href: 'https://example.com/community'
+      }
+    ]
+  },
   callout: {
     heading: 'Ready to simplify compliance?',
     description:
       'Launch your first certification program in minutes. Automate tracking, reduce risk, and keep your team certified.',
     action: { label: 'Start Free', href: '#courses' }
   },
-  footerLinks: [
-    { label: 'Terms of Service', href: '#terms' },
-    { label: 'Privacy Policy', href: '#privacy' },
-    { label: 'Support', href: '#support' }
-  ],
-  footerText: '© 2026 Certifi Academy. All rights reserved.'
+  footer: {
+    brand: {
+      socials: [
+        { platform: 'linkedin', href: 'https://linkedin.com/company/example' },
+        { platform: 'x', href: 'https://x.com/example' }
+      ]
+    },
+    columns: [
+      {
+        id: 'col-company',
+        heading: 'Company',
+        links: [
+          { id: 'col-company-about', label: 'About', href: '#about' },
+          { id: 'col-company-careers', label: 'Careers', href: '#careers' }
+        ],
+        cta: { label: 'Explore more', href: '#more' }
+      },
+      {
+        id: 'col-resources',
+        heading: 'Resources',
+        links: [
+          { id: 'col-resources-help', label: 'Help Center', href: '#help' },
+          { id: 'col-resources-blog', label: 'Blog', href: '#blog' }
+        ]
+      }
+    ],
+    bottom: {
+      text: '© 2026 Certifi Academy. All rights reserved.',
+      links: [
+        { id: 'bottom-terms', label: 'Terms of Service', href: '#terms' },
+        { id: 'bottom-privacy', label: 'Privacy Policy', href: '#privacy' },
+        { id: 'bottom-support', label: 'Support', href: '#support' }
+      ]
+    }
+  }
 };

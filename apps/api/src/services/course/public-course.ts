@@ -1,5 +1,13 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
+  generateTranscriptVttPresignedUrl,
+  generateVideoDownloadPresignedUrls,
+  TRANSCRIPT_VTT_PRESIGN_SECONDS
+} from '@api/utils/s3';
+import { fetchQuestionsAndOptions, transformQuestions } from '@api/services/exercise/utils';
+import { getMediaTranscriptByAsset } from '@cio/db/queries';
+import { getAssetsByIds } from '@cio/db/queries/assets';
+import {
   getCourseRowBySlug,
   getPublicCourseItem as getPublicCourseItemQuery,
   getPublicCourseTreeBySlug,
@@ -8,7 +16,6 @@ import {
 } from '@cio/db/queries/course';
 import { getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
 import { getExerciseSectionsByExerciseId } from '@cio/db/queries/exercise/exercise-section';
-import { fetchQuestionsAndOptions, transformQuestions } from '@api/services/exercise/utils';
 
 /**
  * Anonymous-safe: fetch the full tree for a published public course by slug.
@@ -24,7 +31,7 @@ export async function getPublicCourseTreeService(courseSlug: string): Promise<Pu
 }
 
 export type PublicItemResponse =
-  | (Extract<PublicCourseItemContent, { kind: 'lesson' }> & { kind: 'lesson' })
+  | (Omit<Extract<PublicCourseItemContent, { kind: 'lesson' }>, 'courseOrganizationId'> & { kind: 'lesson' })
   | (Extract<PublicCourseItemContent, { kind: 'exercise' }> & {
       kind: 'exercise';
       questions: PublicExercisePayload;
@@ -74,7 +81,69 @@ export async function getPublicCourseItemService(
     if (!baseItem) return null;
 
     if (baseItem.kind === 'lesson') {
-      return baseItem;
+      const { courseOrganizationId, ...lesson } = baseItem;
+
+      let video = lesson.video;
+
+      if (video?.type === 'upload') {
+        let storageKey: string | undefined;
+
+        if (video.assetId) {
+          const assets = await getAssetsByIds([video.assetId], courseOrganizationId ?? undefined);
+          storageKey = assets[0]?.storageKey ?? undefined;
+        }
+
+        if (!storageKey && video.key) {
+          storageKey = video.key;
+        }
+
+        if (storageKey) {
+          const urls = await generateVideoDownloadPresignedUrls([storageKey]);
+          const signedLink = urls[storageKey];
+
+          if (signedLink) {
+            const { key: _omitKey, ...rest } = video;
+            video = { ...rest, link: signedLink };
+          }
+        }
+      }
+
+      if (video?.assetId && courseOrganizationId) {
+        const transcriptRow = await getMediaTranscriptByAsset(video.assetId, courseOrganizationId);
+        let transcript: {
+          vttUrl: string;
+          vttUrlExpiresAt: string;
+          language: string;
+        } | null = null;
+
+        if (transcriptRow) {
+          const vttUrl = await generateTranscriptVttPresignedUrl(transcriptRow.vttStorageKey, transcriptRow.vttBucket);
+          transcript = {
+            vttUrl,
+            vttUrlExpiresAt: new Date(Date.now() + TRANSCRIPT_VTT_PRESIGN_SECONDS * 1000).toISOString(),
+            language: transcriptRow.language
+          };
+        }
+
+        video = { ...video, transcript };
+      }
+
+      if (video?.key !== undefined) {
+        const { key: _omitS3Key, ...withoutKey } = video;
+        video = withoutKey;
+      }
+
+      return { ...lesson, video };
+    }
+
+    if (!baseItem.isUnlocked) {
+      return {
+        ...baseItem,
+        questions: {
+          unsectioned: [],
+          sections: []
+        }
+      };
     }
 
     const { exercise, questions } = await getExerciseWithRelationsOptimized(baseItem.id);

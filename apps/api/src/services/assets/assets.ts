@@ -9,6 +9,7 @@ import type {
   TAssetUpdate,
   TYouTubeMetadataQuery
 } from '@cio/utils/validation/assets';
+import type { TTranscriptResponse } from '@cio/utils/validation/media';
 import {
   countAssetUsagesByAsset,
   createAssetUsage,
@@ -22,6 +23,9 @@ import {
   listAssetUsagesByAsset,
   updateAsset
 } from '@cio/db/queries/assets';
+import { getMediaTranscriptByAsset } from '@cio/db/queries';
+
+import { generateTranscriptVttPresignedUrl, TRANSCRIPT_VTT_PRESIGN_SECONDS } from '@api/utils/s3';
 
 const YOUTUBE_VIDEO_ID_REGEX = /^[a-zA-Z0-9_-]{11}$/;
 
@@ -210,7 +214,7 @@ export async function listOrganizationAssetsService(orgId: string, query: TAsset
 
 export async function createAssetFromUploadService(orgId: string, profileId: string, data: TAssetCreateUpload) {
   try {
-    return await createOrGetAssetByStorageKey({
+    const asset = await createOrGetAssetByStorageKey({
       organizationId: orgId,
       kind: data.kind,
       provider: data.provider,
@@ -230,12 +234,45 @@ export async function createAssetFromUploadService(orgId: string, profileId: str
       metadata: data.metadata ?? {},
       createdByProfileId: profileId
     });
+
+    // Fire-and-forget: enqueue lesson-video post-processing for new uploads.
+    // Errors are logged but never block the asset create response.
+    if (asset.kind === 'video' && asset.provider === 'upload' && asset.storageKey) {
+      void enqueueMediaPostProcessingForAsset({
+        organizationId: orgId,
+        assetId: asset.id,
+        storageKey: asset.storageKey,
+        triggeredByProfileId: profileId
+      });
+    }
+
+    return asset;
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to create asset',
       ErrorCodes.ASSET_CREATE_FAILED,
       500
     );
+  }
+}
+
+async function enqueueMediaPostProcessingForAsset(input: {
+  organizationId: string;
+  assetId: string;
+  storageKey: string;
+  triggeredByProfileId: string;
+}): Promise<void> {
+  try {
+    const { startMediaJob } = await import('@api/services/jobs');
+    await startMediaJob({
+      organizationId: input.organizationId,
+      assetId: input.assetId,
+      storageKey: input.storageKey,
+      triggeredByProfileId: input.triggeredByProfileId,
+      withTranscription: Boolean(process.env.OPENAI_API_KEY)
+    });
+  } catch (error) {
+    console.error('enqueueMediaPostProcessingForAsset failed:', error);
   }
 }
 
@@ -389,6 +426,42 @@ export async function getOrganizationAssetStorageService(orgId: string, query: T
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch asset storage summary',
       ErrorCodes.ASSET_STORAGE_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+export async function getTranscriptForOrganizationAssetService(
+  orgId: string,
+  assetId: string
+): Promise<TTranscriptResponse | null> {
+  try {
+    const asset = assertAssetExists(await getAssetById(assetId));
+
+    if (asset.organizationId !== orgId) {
+      throw new AppError('Asset not found', ErrorCodes.ASSET_NOT_FOUND, 404);
+    }
+
+    const row = await getMediaTranscriptByAsset(assetId, orgId);
+    if (!row) {
+      return null;
+    }
+
+    const vttUrl = await generateTranscriptVttPresignedUrl(row.vttStorageKey, row.vttBucket);
+    const vttUrlExpiresAt = new Date(Date.now() + TRANSCRIPT_VTT_PRESIGN_SECONDS * 1000).toISOString();
+
+    return {
+      language: row.language,
+      segments: row.segments,
+      vttUrl,
+      vttUrlExpiresAt,
+      durationSeconds: row.durationSeconds ?? null
+    };
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch transcript',
+      ErrorCodes.ASSET_FETCH_FAILED,
       500
     );
   }

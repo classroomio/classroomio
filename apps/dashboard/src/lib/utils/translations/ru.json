@@ -342,7 +342,11 @@
       "thumbnail_uploaded": "Значок загружен",
       "thumbnail_upload_failed": "Не удалось загрузить миниатюру",
       "thumbnail_too_large": "Миниатюрное изображение слишком велико",
-      "thumbnail_invalid": "Неверный файл миниатюр"
+      "thumbnail_invalid": "Неверный файл миниатюр",
+      "transcription_started": "Транскрипция началась",
+      "transcription_start_failed": "Не удалось начать транскрипцию",
+      "transcription_completed": "Транскрипция завершена",
+      "transcript_fetch_failed": "Не удалось загрузить расшифровку"
     },
     "tags": {
       "group_created": "Группа тегов создана.",
@@ -399,6 +403,19 @@
     "public_course": {
       "url_copied": "URL курса скопирован",
       "url_copy_failed": "Не удалось скопировать URL"
+    },
+    "transcription_started": "Transcription started",
+    "transcription_start_failed": "Could not start transcription",
+    "transcription_completed": "Transcription finished",
+    "transcript_fetch_failed": "Could not load transcript",
+    "account": {
+      "workspaceCreated": "Рабочая область создана",
+      "workspaceDeleted": "Рабочая область удалена.",
+      "workspace_limit_reached": "Вы достигли предела рабочего пространства. Свяжитесь с нами для расширения.",
+      "plan_upgrade_required": "Мультирабочее пространство — это функция Enterprise. Обновите, чтобы добавить больше рабочих пространств.",
+      "workspace_is_primary": "Вы не можете удалить основное рабочее пространство.",
+      "workspace_not_found": "Рабочее пространство не найдено.",
+      "not_primary_workspace": "Переключитесь на основное рабочее пространство, чтобы управлять рабочими пространствами учетной записи."
     }
   },
   "explore": {
@@ -502,7 +519,76 @@
     "no_grade_data": "Нет данных об оценках",
     "loading_chart": "Загрузка диаграммы...",
     "no_data_default": "Нет доступных данных",
-    "no_data_default_description": "В настоящее время нет данных для отображения."
+    "no_data_default_description": "В настоящее время нет данных для отображения.",
+    "subtitle": "Узнайте, как посетители находят ваши курсы и превращаются в учеников.",
+    "refresh": "Обновить",
+    "popularTypes": {
+      "heading": "Популярные типы курсов",
+      "description": "Зачисления сгруппированы по типу курса",
+      "subtitle": "{total} зачислений по всем типам",
+      "empty": "Данных о регистрации пока нет",
+      "course_count": "{число, множественное число, один {# курс} другой {# курс}}",
+      "views_short": "просмотры",
+      "types": {
+        "SELF_PACED": "Самостоятельный темп",
+        "LIVE_CLASS": "Живой урок",
+        "COMPLIANCE": "Соответствие",
+        "PUBLIC": "Общественный"
+      }
+    },
+    "countries": {
+      "heading": "Топ стран",
+      "subtitle": "Всего посетителей: {total}",
+      "empty": "Данных о местоположении пока нет.",
+      "country": "Страна",
+      "visitors": "Посетители",
+      "enrollments_short": "зачислен"
+    },
+    "funnel": {
+      "heading": "Воронка конверсий",
+      "description": "От первого посещения до завершения курса",
+      "empty": "Данных о воронке пока нет.",
+      "step": {
+        "landing_view": "Посадочные просмотры",
+        "course_page_view": "Просмотры страниц курса",
+        "enrollment_completed": "Зачисления",
+        "course_completed": "Завершения"
+      }
+    },
+    "trend": {
+      "heading": "Трафик с течением времени",
+      "description": "Просмотры страниц и регистрации по дням",
+      "empty": "Нет трафика в выбранном диапазоне",
+      "views": "Просмотры",
+      "enrollments": "Зачисления"
+    },
+    "kpi": {
+      "landing_views": "Посадочные просмотры",
+      "unique_visitors": "Уникальные посетители",
+      "course_page_views": "Просмотры страниц курса",
+      "enrollments": "Зачисления",
+      "range_description": "В выбранном диапазоне"
+    },
+    "range": {
+      "7d": "Последние 7 дней",
+      "30d": "Последние 30 дней",
+      "90d": "Последние 90 дней"
+    },
+    "tabs": {
+      "overview": "Обзор",
+      "funnel": "Воронка",
+      "geography": "География",
+      "course_types": "Типы курсов"
+    },
+    "course_metrics": {
+      "page_subtitle": "Зачисление, завершение уроков, оценки и прогресс каждого учащегося по этому курсу.",
+      "progress_distribution_card_description": "Сколько учащихся попадает в каждую группу завершения.",
+      "grade_distribution_card_description": "Сколько учащихся попадает в каждую группу классов.",
+      "students_table_description": "Сортируемый обзор со ссылками на профили учащихся.",
+      "kpi_team_tutors": "{count, множественное число, one {# репетитор в команде курса}other {# репетитора в команде курса}}",
+      "kpi_lessons_exercises": "{count, множественное число, одно {# упражнения} другое {# упражнений}} сопоставлено с уроками",
+      "kpi_progress_grade": "{grade} % средняя оценка за упражнения среди зачисленных учащихся"
+    }
   },
   "audience": {
     "title": "Аудитория",
@@ -686,7 +772,12 @@
           "button_url_label": "URL-адрес кнопки",
           "button_url_placeholder": "https://example.com",
           "clear": "Очистить выноску",
-          "public_only": "Уточнения появляются только на общедоступных курсах."
+          "public_only": "Уточнения появляются только на общедоступных курсах.",
+          "animation_label": "Фоновая анимация",
+          "animation_description": "Выберите движение, которое воспроизводится за сноской.",
+          "animation_waves": "Волны",
+          "animation_dotted": "Пунктирный",
+          "animation_none": "Нет"
         }
       },
       "analytics": {
@@ -851,7 +942,58 @@
         "complete_to_download_subtitle": "Ваш сертификат будет доступен после завершения всех уроков и упражнений этого курса.",
         "description_error": "Описание не может превышать 200 символов.",
         "characters": "персонажи",
-        "unexpected_error": "Произошла непредвиденная ошибка"
+        "unexpected_error": "Произошла непредвиденная ошибка",
+        "download_image": "Скачать как изображение",
+        "editor": {
+          "title": "Дизайн сертификата",
+          "back": "Вернуться к сертификатам",
+          "save": "Сохранить изменения",
+          "discard": "Отбросить",
+          "saved": "Дизайн сертификата сохранен.",
+          "unsaved": "несохраненный",
+          "free_plan": "Бесплатный план",
+          "preview": "Предварительный просмотр в реальном времени",
+          "sections": "Разделы редактора",
+          "panel_templates": "Шаблоны",
+          "panel_templates_subtitle": "Выберите шаблон, чтобы закрепить визуальный стиль.",
+          "panel_content": "Содержание",
+          "panel_content_subtitle": "Настройте слова, которые появляются в сертификате.",
+          "panel_colors": "Акцентный цвет",
+          "panel_colors_subtitle": "Используется для линии получателя, акцентов и штампа.",
+          "panel_export": "Экспорт",
+          "panel_export_subtitle": "Предварительный просмотр текущего дизайна по мере его реализации.",
+          "section_header": "Копия заголовка",
+          "section_signatories": "Подписавшиеся",
+          "section_reference": "Ссылка",
+          "subtitle": "Субтитры",
+          "subtitle_placeholder": "Награжден высшим отличием",
+          "description_override": "Переопределение описания",
+          "description_override_placeholder": "По умолчанию соответствует описанию курса.",
+          "description_override_hint": "Оставьте пустым, чтобы вернуться к описанию курса при сохранении.",
+          "signatory_one_name": "Имя подписанта 1",
+          "signatory_one_role": "Подписавшееся лицо 1 роль",
+          "signatory_two_name": "Имя подписавшего 2",
+          "signatory_two_role": "Подписант 2 роль",
+          "id_format": "Формат идентификатора сертификата",
+          "id_format_hint": "Используйте '{'seq'}' для последних четырех цифр, '{'year'}' для года выпуска, '{'month'}' для месяца.",
+          "accent_hint": "Цвет акцента отображается в правиле получателя, штампах и выделении заголовка шаблона.",
+          "templates_hint": "Шаблоны обрабатываются с помощью того же средства визуализации, которое используется для загруженных PDF и PNG.",
+          "download_pdf": "Скачать PDF",
+          "download_png": "Скачать PNG",
+          "print": "Распечатать",
+          "export_hint": "При экспорте в качестве получателя используется ваше имя, чтобы вы могли просмотреть окончательный макет.",
+          "preview_failed": "Не удалось создать предварительный просмотр сертификата",
+          "sample_recipient": "Элеонора Вэнс",
+          "sample_course": "Сертификат качества",
+          "sample_description": "В знак признания выдающихся достижений и образцовой преданности делу.",
+          "sample_org": "Королевская академия художеств",
+          "summary_title": "Активный дизайн",
+          "summary_subtitle": "Снимок того, как будет выглядеть сертификат после выдачи.",
+          "field_template": "Шаблон",
+          "field_accent": "Акцент",
+          "field_signatories": "Подписавшиеся",
+          "customize_design": "Настроить дизайн"
+        }
       },
       "people": {
         "title": "Люди",
@@ -1177,6 +1319,7 @@
               "edit": "Редактировать",
               "button": "кнопка для добавления",
               "questions": "вопросы",
+              "sections": "разделы",
               "points": "очки",
               "all": "Все необходимое",
               "due": "К оплате",
@@ -1569,7 +1712,9 @@
               "after_section": "После раздела",
               "continue": "Перейти к следующему разделу",
               "go_to_section": "Перейти в раздел",
-              "submit": "Отправить упражнение"
+              "submit": "Отправить упражнение",
+              "collapse_section": "Свернуть раздел",
+              "expand_section": "Развернуть раздел"
             }
           },
           "new_exercise_modal": {
@@ -1694,11 +1839,40 @@
                 "google_drive_opening": "Открытие выбора…",
                 "google_drive_hint": "Выберите видео из своей учетной записи Google. Всем, кто просматривает урок, необходим доступ. Установите для общего доступа на Диске значение «Все, у кого есть ссылка, могут просматривать» (или его эквивалент в вашей организации).",
                 "google_drive_not_configured": "Импорт с Google Диска не настроен для этого развертывания. Добавьте PUBLIC_GOOGLE_PICKER_CLIENT_ID и PUBLIC_GOOGLE_PICKER_API_KEY в свою среду.",
-                "google_drive_error": "Не удалось открыть Google Диск. Убедитесь, что в вашем браузере разрешены всплывающие окна и что Google Picker настроен правильно."
+                "google_drive_error": "Не удалось открыть Google Диск. Убедитесь, что в вашем браузере разрешены всплывающие окна и что Google Picker настроен правильно.",
+                "processing": {
+                  "queued": "В очереди на обработку…",
+                  "probing": "Чтение метаданных видео…",
+                  "thumbnailing": "Создание миниатюры…",
+                  "extracting_audio": "Извлечение аудио…",
+                  "transcribing": "Расшифровка…",
+                  "compressing": "Сжатие видео…",
+                  "completed": "Обработка завершена",
+                  "failed": "Обработка не удалась",
+                  "canceled": "Обработка отменена"
+                }
               },
               "empty_title": "Видео пока нет",
               "empty_description": "Добавляйте видео с YouTube, загружайте их или из своей медиатеки.",
-              "google_drive": "Гугл Диск"
+              "google_drive": "Гугл Диск",
+              "generate_transcript": "Generate transcription",
+              "generate_transcript_in_progress": "Transcribing…",
+              "transcript": {
+                "title": "Transcript",
+                "captions_label": "Captions",
+                "language": "Language: {language}",
+                "empty": "No transcript yet. You can generate one from this card’s menu after the video is uploaded.",
+                "loading": "Loading transcript…",
+                "open_side_panel": "Открыть панель стенограммы"
+              },
+              "simple_card": {
+                "kind_youtube": "Ютуб",
+                "kind_upload": "Загрузить",
+                "kind_google_drive": "Гугл Диск",
+                "kind_generic": "Встроенный",
+                "course_fallback": "Курс",
+                "menu_aria": "Параметры видео"
+              }
             },
             "slide": {
               "title": "Слайд",
@@ -1744,7 +1918,8 @@
           "save": "Сохранить",
           "edit": "Редактировать",
           "delete": "Удалить",
-          "cancel": "Отмена"
+          "cancel": "Отмена",
+          "delete_tooltip": "Удалить этот урок"
         },
         "section_prompt": {
           "cta": "Включить разделы",
@@ -1879,6 +2054,10 @@
         "tabs": {
           "overview": "Обзор",
           "learners": "Учащиеся"
+        },
+        "overview_metrics": {
+          "heading": "Снимок курса",
+          "description": "Учащиеся учитываются по статусу для этого курса."
         }
       }
     },
@@ -1888,8 +2067,7 @@
     },
     "header": {
       "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing.",
-      "public_course_helper": "Доступен на публичном сайте вашего курса"
+      "preview_missing_slug": "Generate and save a course slug before previewing."
     },
     "sidebar": {
       "back_to_course": "Вернуться к курсу",
@@ -1915,7 +2093,8 @@
       "nav_landing_page": "Целевая страница",
       "nav_settings": "Настройки",
       "nav_compliance": "Соответствие",
-      "nav_ai_assistant": "Ассистент"
+      "nav_ai_assistant": "Ассистент",
+      "nav_ai_tutor": "Репетитор по искусственному интеллекту"
     },
     "completion": {
       "modal": {
@@ -1967,6 +2146,42 @@
         "step_reading": "Читаю вашу подсказку",
         "step_naming": "Название вашего курса",
         "step_building": "Создание своего рабочего пространства"
+      },
+      "untitled_course": "Курс без названия",
+      "untitled_course_description": "Детали курса будут заполнены ассистентом после настройки.",
+      "template": {
+        "heading": "Или начните с шаблона",
+        "submit": "Продолжить",
+        "skip": "Вместо этого ответьте в чате",
+        "submitted_summary": "Ответы отправлены",
+        "skipped_summary": "Перешел на чат вопросов и ответов.",
+        "field": {
+          "product_name": "Название продукта",
+          "product_summary": "Что делает продукт?",
+          "audience": "Кто аудитория?",
+          "outcome": "Что должны уметь учащиеся после курса?",
+          "depth": "Насколько глубоким должен быть курс?",
+          "topic": "Тема или ниша",
+          "expertise_level": "Целевой уровень экспертизы",
+          "documentation_url": {
+            "hint": "Мы прочитаем этот сайт, чтобы закрепить курс на вашем реальном продукте."
+          }
+        },
+        "expert_on_x": {
+          "title": "Станьте экспертом по X",
+          "description": "Углубленный курс, превращающий учащихся в экспертов по определенной теме или нише.",
+          "form_title": "Расскажите нам о теме"
+        },
+        "product_onboarding": {
+          "title": "Обучение внедрению продукта",
+          "description": "Обучение, которое поможет новым пользователям продуктивно работать уже в первую неделю.",
+          "form_title": "Расскажите нам о своих целях адаптации"
+        },
+        "product_101": {
+          "title": "Курс продукта 101",
+          "description": "Базовый курс, обучающий клиентов использованию вашего продукта.",
+          "form_title": "Расскажите нам о своем продукте"
+        }
       }
     }
   },
@@ -2160,6 +2375,12 @@
           "banner_text_label": "Обновить текст баннера",
           "banner_text_placeholder": "Напишите текст здесь"
         },
+        "auth_background": {
+          "title": "Экран входа",
+          "description": "Необязательное фоновое изображение за страницами входа, регистрации и другими страницами аккаунта на сайте вашей организации.",
+          "paid_plan_note": "Обновите тарифный план, чтобы настроить фон экрана входа.",
+          "preview_alt": "Предпросмотр фона экрана входа"
+        },
         "page_subtitle": "Choose which tabs, banners, course tools, and extras learners see."
       },
       "domains": {
@@ -2336,7 +2557,10 @@
     "tags": "Теги",
     "automation": "Автоматизация",
     "programs": "Программы",
-    "widgets": "Виджеты"
+    "widgets": "Виджеты",
+    "stats": "Статистика",
+    "analytics": "Аналитика",
+    "compliance": "Соответствие"
   },
   "media_manager": {
     "page_title": "Медиа-менеджер — ClassroomIO",
@@ -2578,7 +2802,52 @@
           "default_label": "Новая ссылка",
           "link_label": "Ярлык ссылки",
           "link_href": "URL-адрес ссылки",
-          "remove": "Удалить ссылку в нижнем колонтитуле"
+          "remove": "Удалить ссылку в нижнем колонтитуле",
+          "brand": {
+            "legend": "Brand",
+            "description": "Your organization logo and name always appear here (from organization settings). Add optional details below.",
+            "preview_label": "Footer brand preview",
+            "tagline": "Tagline",
+            "tagline_placeholder": "Small line under your brand",
+            "copyright": "Copyright",
+            "copyright_placeholder": "© 2026 Your Organization",
+            "social_label": "Social links",
+            "platform_field": "Platform",
+            "url_label": "Profile URL",
+            "add_social": "Add social link",
+            "remove_social": "Remove social link",
+            "platforms": {
+              "instagram": "Instagram",
+              "x": "X",
+              "linkedin": "LinkedIn",
+              "facebook": "Facebook",
+              "youtube": "YouTube",
+              "github": "GitHub",
+              "tiktok": "TikTok",
+              "website": "Website"
+            }
+          },
+          "columns": {
+            "legend": "Link columns",
+            "description": "Add grouped links (like Company or Resources). Enables a multi-column footer layout.",
+            "empty_hint": "No columns yet — add one to show a multi-column footer beside your brand.",
+            "add": "Add column",
+            "remove": "Remove column",
+            "heading_label": "Column heading",
+            "heading_placeholder": "e.g. Company",
+            "add_link": "Add link",
+            "remove_link": "Remove link",
+            "links_max_reached": "Up to 10 links per column",
+            "cta_toggle": "Add CTA link",
+            "cta_label": "CTA label",
+            "cta_href": "CTA URL",
+            "cta_default_label": "Explore more",
+            "max_reached": "Up to 6 columns"
+          },
+          "bottom": {
+            "legend": "Bottom row",
+            "add_link": "Add bottom link"
+          }
         },
         "embed": {
           "toggle": "Показать раздел для встраивания",
@@ -2622,7 +2891,17 @@
           "secondary_href": "Ссылка на дополнительную кнопку",
           "image": "Изображение героя",
           "upload": "Загрузить изображение",
-          "clear": "Очистить изображение"
+          "clear": "Очистить изображение",
+          "stats": {
+            "label": "Статистика",
+            "description": "Дополнительная статистика, отображаемая рядом с героем (используется шаблонами, которые ее поддерживают, например, Corporate).",
+            "add": "Добавить статистику",
+            "remove": "Удалить статистику",
+            "label_field": "Этикетка",
+            "value_field": "Значение",
+            "label_placeholder": "Активные ученики",
+            "value_placeholder": "1200"
+          }
         },
         "sections": {
           "hero": "Герой",
@@ -2634,7 +2913,46 @@
           "embed": "Встроить",
           "embed_desc": "Дополнительный раздел iframe, отображаемый после курсов.",
           "footer": "Нижний колонтитул",
-          "footer_desc": "Текст нижнего колонтитула и ссылки."
+          "footer_desc": "Brand line, socials, multi-column links, and bottom legal row.",
+          "links": "Ссылки",
+          "links_desc": "Дополнительный блок внешних ссылок (справочный центр, сообщество, вебинары), отображаемых после курсов."
+        },
+        "links": {
+          "toggle": "Показать раздел ссылок",
+          "heading": "Заголовок раздела",
+          "heading_default": "Узнайте больше",
+          "heading_placeholder": "Узнайте больше",
+          "description": "Описание",
+          "description_placeholder": "Дополнительное описание",
+          "bold_visit_label": "Жирная тема — надпись кнопки",
+          "bold_visit_default": "Посетите",
+          "classic_learn_more_label": "Классическая тема — метка ссылки",
+          "classic_learn_more_default": "Узнать больше",
+          "card_title": "Название карты",
+          "card_title_placeholder": "например Справочный центр",
+          "card_placeholder_help": "Справочный центр",
+          "card_placeholder_webinars": "Вебинары",
+          "card_placeholder_community": "Сообщество",
+          "card_description": "Описание карты",
+          "card_description_placeholder": "например Просмотрите руководства и часто задаваемые вопросы",
+          "card_href": "URL-адрес ссылки",
+          "card_href_placeholder": "https://...",
+          "card_icon": "Значок",
+          "add_card": "Добавить карточку со ссылкой",
+          "remove_card": "Удалить карту",
+          "max_reached": "До 3 карт",
+          "icons": {
+            "help_circle": "Помощь и поддержка",
+            "life_buoy": "Поддержка",
+            "book_open": "Документация",
+            "video": "Видео/вебинары",
+            "users": "Сообщество",
+            "message_circle": "Чат",
+            "newspaper": "Новости",
+            "rocket": "Начать",
+            "calendar": "События",
+            "mail": "электронная почта"
+          }
         }
       },
       "content": {
@@ -2657,8 +2975,46 @@
           "minimal": {
             "title": "Минимальный",
             "description": "Чистый, яркий и ориентированный на курс"
+          },
+          "terminal": {
+            "title": "Терминал",
+            "description": "Темная поверхность, призрачная надпись, каталог в стиле CLI"
+          },
+          "corporate": {
+            "title": "Корпоративный",
+            "description": "Строгая типографика, сетки с границами, внешний вид, готовый к аудиту"
+          },
+          "studio": {
+            "title": "Студия",
+            "description": "Бордюры по линии роста волос, градиентное сияние героя, полировка изделия"
+          },
+          "tech": {
+            "title": "Технология",
+            "description": "Яркая фирменная полоса, монокосмическая навигация, ощущение инженерной академии."
+          },
+          "saas": {
+            "title": "SaaS",
+            "description": "Пунктирная рамка, мягкие акценты, современный вид продукта"
           }
         }
+      },
+      "gallery": {
+        "heading": "Популярные темы",
+        "description": "Создан с использованием основных функций, которые можно легко настроить — кодирование не требуется.",
+        "by_classroomio": "от ClassroomIO",
+        "add": "Добавить",
+        "upgrade": "Обновление"
+      },
+      "current": {
+        "title": "Текущая тема",
+        "description": "Это тема, которую видят ваши посетители. Настройте контент или выберите другой вид ниже.",
+        "field_theme": "Тема",
+        "field_hero": "Главный заголовок",
+        "field_nav": "Навигация",
+        "field_nav_count_one": "{количество} ссылки",
+        "field_nav_count_other": "{count} ссылок",
+        "hero_empty": "—",
+        "customize": "Настройте целевую страницу"
       }
     },
     "organization": {
@@ -2730,7 +3086,8 @@
       "customize_lms_tab": "Настроить систему управления обучением",
       "domains_tab": "Домены",
       "teams_tab": "Команды",
-      "ai_credits_tab": "Кредиты ИИ"
+      "ai_credits_tab": "Кредиты ИИ",
+      "ai_tutor_tab": "Репетитор по искусственному интеллекту"
     },
     "subheadings": {
       "view_site": "Посмотреть сайт"
@@ -3389,11 +3746,82 @@
       "sort_courses": "Курсы",
       "sort_students": "Студенты",
       "sort_status": "Статус"
+    },
+    "invite_sent": "Приглашения отправлены",
+    "goals": {
+      "heading": "Цели обучения",
+      "description": "Установите измеримые цели, охватывающие несколько курсов для всех участников этой программы.",
+      "add": "Новая цель",
+      "empty_title": "Целей пока нет",
+      "empty_description": "Создайте цель для отслеживания прогресса команды на нескольких курсах.",
+      "created": "Цель создана",
+      "updated": "Цель обновлена",
+      "deleted": "Цель удалена",
+      "delete_confirm": "Удалить эту цель? История статусов каждого учащегося будет удалена.",
+      "lms": {
+        "heading": "Ваши цели",
+        "empty_title": "Цели не назначены",
+        "empty_description": "Когда ваши преподаватели поставят цели, они появятся здесь.",
+        "due_in_days": "Срок оплаты: {days} дн.",
+        "due_tomorrow": "Срок завтра",
+        "due_today": "Срок оплаты сегодня",
+        "overdue": "Просрочено",
+        "no_deadline": "Нет срока"
+      },
+      "tile": {
+        "on_track": "на ходу",
+        "completed_short": "завершено",
+        "overdue_short": "просроченный",
+        "at_risk_short": "в опасности"
+      },
+      "status": {
+        "completed": "Завершено",
+        "in_progress": "В процессе",
+        "at_risk": "В зоне риска",
+        "overdue": "Просрочено",
+        "not_started": "Не запущено",
+        "waived": "Отказано"
+      },
+      "deadline_kind": {
+        "absolute": "Абсолютная дата",
+        "relative_to_join": "Относительно присоединения учащегося",
+        "recurring": "повторяющийся",
+        "none": "Нет срока"
+      },
+      "type": {
+        "complete_all": "Завершить все выбранные курсы",
+        "n_of_m": "Завершить выбранные курсы N из M",
+        "score": "Оценка выше порога на каждом курсе",
+        "pass_rate": "Порог проходимости команды",
+        "readiness": "Готовность (без сроков)"
+      },
+      "modal": {
+        "create_title": "Новая цель",
+        "edit_title": "Изменить цель",
+        "title_label": "Название",
+        "title_placeholder": "например Посадочная рампа",
+        "description_label": "Описание",
+        "description_placeholder": "Дополнительный контекст для команды",
+        "type_label": "Тип",
+        "courses_label": "Курсы",
+        "required_count_label": "Необходимое количество курсов",
+        "score_threshold_label": "Проходной балл на одного учащегося (%)",
+        "team_pass_rate_label": "Процент проходов команды (%)",
+        "deadline_label": "Крайний срок",
+        "deadline_date_label": "Крайний срок",
+        "relative_days_label": "Дни с момента присоединения учащегося",
+        "recurring_months_label": "Повторять каждые (месяцев)",
+        "reminders_label": "Напоминания (за несколько дней до наступления срока)",
+        "reminders_helper": "Через запятую. Пример: 7, 3, 1",
+        "save": "Сохранить",
+        "cancel": "Отмена"
+      }
     }
   },
   "ai_assistant": {
     "empty_state": "Попросите меня помочь с содержанием вашего курса: набросайте уроки, сформулируйте вопросы или спланируйте курс на основе документа.",
     "input_placeholder": "Спросите ИИ-помощника...",
+    "quote_lesson_note": "Quote in assistant",
     "attach_document": "Прикрепите документ (PDF, DOCX, PPTX)",
     "upgrade_to_upload": "Обновите, чтобы загружать документы",
     "tokens_exhausted": "Достигнут месячный лимит токенов AI.",
@@ -3411,7 +3839,112 @@
     "mention_section": "Раздел",
     "mention_no_results": "Нет подходящего контента",
     "uploading_document": "Загрузка документа...",
-    "agent_running_warning": "Изменения появятся в курсе, как только агент завершит работу. Не перезагружайте страницу."
+    "agent_running_warning": "Изменения появятся в курсе, как только агент завершит работу. Не перезагружайте страницу.",
+    "agent_running_warning_dismiss": "Закрыть",
+    "quick_action": {
+      "upload_document_course": "Upload a document to create a course",
+      "draft_lesson": "Draft a lesson",
+      "generate_questions_from_lesson": "Generate questions from this lesson",
+      "summarize_lesson": "Summarize this lesson",
+      "publish_course": "Help me publish this course"
+    },
+    "plan_applying_changes": "Applying changes",
+    "plan_working": "Working",
+    "plan_progress": "{completed} / {total} steps completed",
+    "stop": "Stop",
+    "copy_full_error": "Copy full error",
+    "resize_panel_aria_label": "Resize AI assistant panel",
+    "generic_working": "Working",
+    "run_failed_after": "{action} did not finish successfully.",
+    "tool": {
+      "pending": {
+        "working": "Working",
+        "unknown_tool": "Running {toolName}",
+        "get_course_structure": "Reading course structure",
+        "get_lesson_content": "Reading lesson content",
+        "get_exercise_details": "Reading exercise",
+        "create_section": "Creating section",
+        "update_section": "Updating section",
+        "create_lesson": "Creating lesson",
+        "update_lesson": "Updating lesson",
+        "update_lesson_content": "Writing lesson content",
+        "create_exercise": "Creating exercise",
+        "create_exercise_section": "Creating exercise section",
+        "update_exercise": "Updating exercise",
+        "update_exercise_section": "Updating exercise section",
+        "add_questions": "Adding questions",
+        "update_questions": "Updating questions",
+        "reorder_content": "Reordering content",
+        "update_course_landing_page": "Updating landing page",
+        "check_course_go_live_readiness": "Checking go-live readiness",
+        "go_live_course": "Publishing course",
+        "generate_course_plan": "Generating course plan",
+        "ask_template_questions": "Подготовка шаблонной формы",
+        "fetch_documentation_url": "Чтение страницы документации",
+        "fetch_documentation_url_with_url": "Чтение {url}"
+      },
+      "meta": {
+        "lesson_char_count": "({count, plural, one {# character} other {# characters}})",
+        "landing_page_preview": "· Preview changes",
+        "exercise_questions_added": "· {count, plural, one {# question added} other {# questions added}}",
+        "exercise_questions_updated": "· {count, plural, one {# question updated} other {# questions updated}}"
+      },
+      "done": {
+        "generic": "Done",
+        "create_section": "Created section: {title}",
+        "update_section": "Updated section: {title}",
+        "create_lesson": "Created lesson: {title}",
+        "update_lesson": "Updated lesson: {title}",
+        "update_lesson_content_fallback": "Wrote {count, plural, one {# character} other {# characters}}",
+        "create_exercise": "Created exercise «{title}» · {count, plural, one {# question} other {# questions}}",
+        "update_exercise": "Updated exercise: {title}",
+        "update_exercise_section": "Updated exercise section: {title}",
+        "add_questions_fallback": "{count, plural, one {Added # question} other {Added # questions}}",
+        "update_questions_fallback": "{count, plural, one {Updated # question} other {Updated # questions}}",
+        "create_exercise_section": "Created exercise section: {title}",
+        "get_course_structure": "Course structure loaded",
+        "get_lesson_content": "Lesson content loaded",
+        "get_exercise_details": "Exercise loaded",
+        "reorder_content": "Content reordered",
+        "update_course_landing_page": "Updated landing page: {title}",
+        "check_go_live_ready": "{warningCount, plural, =0{Ready to go live} other{Ready to go live — # warnings}}",
+        "check_go_live_blocked": "{blockerCount, plural, one{# blocker before go-live} other{# blockers before go-live}}",
+        "go_live_published": "Published course: {title}",
+        "go_live_not_published": "Course was not published",
+        "generate_course_plan": "Course plan generated",
+        "ask_template_questions": "Шаблон формы готов.",
+        "fetch_documentation_url": "Прочитать {url}"
+      }
+    },
+    "student_empty_state": "Спросите меня о чем-нибудь об этом курсе — получите объяснения, пройдите тест или подведите итог прочитанному.",
+    "messages_used_label": "сообщения в этом месяце",
+    "plan_thinking": "Обдумывая вашу просьбу…",
+    "plan_implement": "Реализация плана",
+    "plan_ask_changes_placeholder": "Подскажите, что изменить в плане…",
+    "plan_ask_changes_send_aria": "Отправить запрос на изменение",
+    "send": "Отправить",
+    "rename_chat_aria": "Переименовать беседу",
+    "rename_chat_input_aria": "Название беседы",
+    "rename_chat_placeholder": "Название беседы",
+    "rename_chat_failed": "Не удалось переименовать этот чат. Попробуйте еще раз.",
+    "error_rate_limit": "Служба AI временно занята. Пожалуйста, повторите попытку через минуту.",
+    "error_rate_limit_with_wait": "Служба AI временно занята. Повторите попытку через {секунды} сек.",
+    "error_context_too_long": "Разговор слишком длинный. Попробуйте начать новый чат или сократить сообщение.",
+    "error_network": "Ошибка сети. Пожалуйста, проверьте подключение и повторите попытку.",
+    "context_usage_tooltip": "{used} / {max} использовано токенов",
+    "context_full_title": "Контекстное окно заполнено",
+    "context_full_description": "Этот разговор достиг предела памяти. Сожмите его, чтобы продолжить общение в этом чате, или начните новый.",
+    "context_full_compact": "Компактный разговор",
+    "context_full_compacting": "Уплотнение...",
+    "context_full_new_chat": "Начать новый чат с кратким описанием",
+    "context_full_summarizing": "Создание сводки...",
+    "context_compacted_badge": "Разговор сжат (предыдущие сообщения: {count})",
+    "student_quick_action": {
+      "explain_lesson": "Объясните этот урок",
+      "quiz_me": "спроси меня об этом",
+      "summarize_section": "Подведите итоги этого раздела",
+      "what_to_review": "Что мне следует проверить дальше?"
+    }
   },
   "widgets": {
     "heading": "Виджеты",
@@ -3428,7 +3961,8 @@
       "saved": "Виджет сохранен.",
       "published": "Виджет опубликован",
       "rolled_back": "Виджет восстановлен",
-      "deleted": "Виджет заархивирован"
+      "deleted": "Виджет заархивирован",
+      "validation_failed": "Некоторые поля недействительны. Проверьте выделенные входы."
     },
     "form": {
       "name": "Название виджета",
@@ -3458,7 +3992,10 @@
       "show_powered_by": "Показать брендинг Classroomio",
       "custom_css": "Пользовательский CSS",
       "custom_css_locked": "Обновите, чтобы включить пользовательский CSS.",
-      "embed_code": "Встроить код"
+      "embed_code": "Встроить код",
+      "custom_css_hint": "Максимум 5000 символов.",
+      "border_radius_hint": "0 – 32 пикселей.",
+      "font_scale_hint": "0,8–1,4 (1 = по умолчанию)."
     },
     "create": {
       "description": "Дайте вашему виджету имя, чтобы начать."
@@ -3612,6 +4149,229 @@
     "empty": {
       "heading": "Виджетов пока нет",
       "description": "Создайте виджет для создания встраиваемого блока курса для внешних веб-сайтов."
+    }
+  },
+  "side_panel": {
+    "close_aria": "Close panel",
+    "resize_panel_aria_label": "Resize panel",
+    "titles": {
+      "ai_assistant": "AI Assistant",
+      "transcript": "Transcript"
+    }
+  },
+  "compliance": {
+    "title": "Соответствие",
+    "subtitle": "Отслеживайте статус сертификации по каждому курсу соответствия в вашей организации.",
+    "learners": {
+      "heading": "Учащиеся",
+      "subtitle": "{count, число} совпадение",
+      "empty": "Ни один учащийся не соответствует этому фильтру",
+      "learner": "Учащийся",
+      "course": "Курс",
+      "status": "Статус",
+      "due_date": "Срок погашения",
+      "expires": "Срок действия истекает"
+    },
+    "courses": {
+      "heading": "Курсы",
+      "description": "Курсы соответствия с подсчетом статуса учащегося",
+      "empty": "Курсов соответствия пока нет",
+      "course": "Курс",
+      "learners": "Учащиеся",
+      "completion": "Завершение"
+    },
+    "filter": {
+      "all": "Все",
+      "compliant": "Соответствует",
+      "expiring_soon": "Срок действия скоро истекает",
+      "in_grace_period": "В благодати",
+      "non_compliant": "Не соответствует",
+      "in_progress": "В процессе",
+      "not_started": "Не запущено",
+      "waived": "Отказано",
+      "no_record": "Нет записи"
+    },
+    "status": {
+      "compliant": "Соответствует",
+      "expiring_soon": "Срок действия скоро истекает",
+      "in_grace_period": "В льготный период",
+      "non_compliant": "Не соответствует",
+      "in_progress": "В процессе",
+      "not_started": "Не запущено",
+      "waived": "Отказано",
+      "no_record": "Нет записи"
+    },
+    "tabs": {
+      "courses": "По курсу",
+      "learners": "Учащиеся"
+    },
+    "summary": {
+      "heading": "Статус учащегося",
+      "description": "Имеет значение для учащихся на всех курсах по соблюдению требований."
+    }
+  },
+  "public_course": {
+    "exercise": {
+      "submit": "Проверьте мои ответы",
+      "try_again": "Попробуйте еще раз",
+      "practice_again": "Практикуйтесь снова",
+      "attempt_option": "Попытка {attemptNumber} – {правильно}/{всего}",
+      "attempts_select_aria": "Ваши попытки",
+      "privacy_hint": "Оценивается мгновенно в вашем браузере — ничего не отправляется.",
+      "summary_template": "Вы ответили [[правильно]] / [[всего]] правильно."
+    },
+    "powered_by": {
+      "label": "При поддержке",
+      "brand": "КлассIO"
+    },
+    "footer_nav": {
+      "previous": "Предыдущий",
+      "next": "Далее"
+    },
+    "header": {
+      "explore_courses": "Изучите курсы",
+      "sign_in": "Войти"
+    }
+  },
+  "account": {
+    "workspaces": {
+      "page_title": "Рабочие пространства",
+      "page_description": "Управляйте рабочими пространствами под своей учетной записью. Рабочие области имеют единую подписку и объединенное использование.",
+      "create_cta": "Создать рабочую область",
+      "create_cta_used": "использовано {used} из {allowance}",
+      "create_cta_disabled_limit": "Вы достигли предела рабочего пространства {allowance}. Свяжитесь с нами для расширения.",
+      "create_cta_disabled_upgrade": "Мультирабочее пространство — это функция Enterprise.",
+      "upgrade_link": "Обновление",
+      "primary_badge": "Первичный",
+      "delete_action": "Удалить",
+      "delete_confirm_title": "Удалить это рабочее пространство?",
+      "delete_confirm_body": "При этом рабочая область, ее участники и курсы будут удалены без возможности восстановления. Это невозможно отменить.",
+      "name_label": "Имя рабочей области",
+      "site_name_label": "Название сайта",
+      "create_modal_title": "Создать новое рабочее пространство",
+      "create_modal_submit": "Создать рабочую область",
+      "cancel": "Отмена",
+      "read_only_badge": "Только чтение",
+      "usage_banner": "Учащиеся: {learners} и токены AI ({tokens}), использованные в рабочих пространствах {workspaces} в этом месяце",
+      "secondary_billing_notice": "Платежи управляются вашим основным рабочим пространством ({primaryName}).",
+      "go_to_primary": "Перейти в основное рабочее пространство"
+    },
+    "switcher": {
+      "your_account": "Ваш аккаунт",
+      "other_organizations": "Другие организации"
+    }
+  },
+  "aiTutor": {
+    "creditsPage": {
+      "tutorSummaryTitle": "Репетитор по искусственному интеллекту, добросовестное использование",
+      "atCap": "В кепке",
+      "approaching": "Приближаемся к шапке",
+      "totalActive": "Активные ученики в этом месяце",
+      "learnersHeading": "Учащиеся",
+      "headerLearner": "Учащийся",
+      "headerMessages": "Сообщения",
+      "headerTokens": "Токены",
+      "headerStatus": "Статус",
+      "statusUnder": "Под крышкой",
+      "statusApproaching": "Приближаясь",
+      "statusAtCap": "В кепке"
+    },
+    "takeABreak": {
+      "title": "Ваш преподаватель по искусственному интеллекту берет перерыв",
+      "learnerCap": "Вы исчерпали лимит сообщений репетитора в этом месяце. Ваши сообщения будут сброшены 1-го числа следующего месяца.",
+      "poolExhausted": "В этом месяце в вашем рабочем пространстве исчерпались возможности преподавателей искусственного интеллекта. Пожалуйста, зайдите позже или обратитесь к преподавателю.",
+      "disabled": "Репетитор искусственного интеллекта не включен для этой рабочей области."
+    },
+    "groundingScope": {
+      "course": "Весь курс",
+      "lesson": "Только текущий урок",
+      "workspace": "Все рабочее пространство"
+    },
+    "codePolicy": {
+      "hints_only": "Только подсказки",
+      "allowed": "Разрешить полные примеры кода",
+      "forbidden": "Нет кода в ответах"
+    },
+    "assessmentMode": {
+      "hint_only": "Только подсказки (без прямых ответов)",
+      "direct_answer": "Разрешить прямые ответы",
+      "block_during_exercise": "Блокировать помощь, пока учащийся выполняет упражнение"
+    },
+    "responseLength": {
+      "short": "Короткий (1–3 предложения)",
+      "medium": "Средний (1–2 коротких абзаца)",
+      "long": "Длинные (структурированные объяснения)"
+    },
+    "persona": {
+      "encouraging": "Поощрение",
+      "friendly": "Дружелюбный",
+      "formal": "Формальный",
+      "socratic": "Сократический",
+      "custom": "Пользовательский"
+    },
+    "field": {
+      "enabled": "Репетитор по искусственному интеллекту включен",
+      "persona": "Образ репетитора",
+      "customPersona": "Пользовательский персонаж",
+      "customPersona_description": "Опишите, как должен звучать преподаватель — тон, стиль обращения, что-то особенное для вашей аудитории.",
+      "responseLength": "Длина ответа",
+      "welcomeMessage": "Приветственное сообщение",
+      "welcomeMessage_description": "Отображается над первым ответом преподавателя в каждом новом разговоре.",
+      "disclaimerFooter": "Нижний колонтитул об отказе от ответственности",
+      "disclaimerFooter_description": "Прилагается к каждому ответу репетитора, чтобы учащиеся помнили, что репетитор — не человек.",
+      "thingsToSay": "Что сказать",
+      "thingsToSay_description": "Примеры: «Всегда напоминайте учащимся, чтобы они прочитали учебную программу до третьей недели». «Поощряйте учащихся обобщать уроки своими словами».",
+      "thingsNotToSay": "Вещи, которые не следует говорить",
+      "thingsNotToSay_description": "Примеры: «Не раскрывайте ответы на выпускном экзамене». «Никогда не сообщайте учащимся, какой отзыв вы написали».",
+      "forbiddenTopics": "Запрещенные темы",
+      "forbiddenTopics_description": "Список, разделенный запятыми. Преподаватель откажется обсуждать это.",
+      "forbiddenTopics_placeholder": "политика, религия, персональные медицинские консультации",
+      "blockOffTopic": "Блокировать вопросы не по теме",
+      "profanityFilter": "Фильтр ненормативной лексики и деликатного контента",
+      "assessmentMode": "Режим оценки",
+      "revealSolutionsAfterAttempts": "Выявить решения после N попыток",
+      "revealSolutionsAfterAttempts_description": "После многих неудачных попыток преподаватель может предложить проработанный пример. Установите значение 0, чтобы разрешить прямые ответы.",
+      "codePolicy": "Политика кода",
+      "groundingScope": "Объем заземления",
+      "requireCitations": "Требовать ссылки на материалы курса",
+      "escalationEnabled": "Предложите человеческую эскалацию",
+      "escalationEmail": "Контактный адрес электронной почты инструктора",
+      "inheritFromOrg": "Использовать настройки рабочей области по умолчанию"
+    },
+    "section": {
+      "availability": "Доступность",
+      "availability_description": "Включите или отключите репетитора по искусственному интеллекту для учащихся в этой рабочей области.",
+      "personality": "Личность",
+      "personality_description": "Как репетитор представляется и как долго он отвечает.",
+      "guidance": "Что сказать · чего не сказать",
+      "guidance_description": "Свободное текстовое руководство, которому преподаватель будет следовать в каждом ответе, а также дополнительный список запрещенных тем.",
+      "assessment": "Упражнения и оценки",
+      "assessment_description": "Как ведет себя репетитор, когда ученик просит помочь с упражнением.",
+      "grounding": "Обоснование и цитаты",
+      "grounding_description": "Ограничьте то, о чем может говорить преподаватель и цитирует ли он материалы курса.",
+      "escalation": "Эскалация",
+      "escalation_description": "Куда указать учащимся, когда им нужен настоящий человек.",
+      "inheritance": "Наследование курса",
+      "inheritance_description": "Наследуйте настройки рабочей области по умолчанию или установите переопределения для каждого курса."
+    },
+    "snackbar": {
+      "saved": "Настройки AI-репетитора сохранены."
+    },
+    "state": {
+      "loading": "Загрузка настроек AI-репетитора…"
+    },
+    "action": {
+      "save": "Сохранить изменения"
+    },
+    "page": {
+      "course": {
+        "title": "AI Tutor для этого курса",
+        "description": "Наследуйте настройки AI Tutor по умолчанию в вашей рабочей области или переопределите поведение преподавателя в этом курсе."
+      },
+      "org": {
+        "title": "Настройки AI Tutor",
+        "description": "Значения по умолчанию для каждого курса в этой рабочей области. Курсы могут наследовать их или переопределять."
+      }
     }
   }
 }

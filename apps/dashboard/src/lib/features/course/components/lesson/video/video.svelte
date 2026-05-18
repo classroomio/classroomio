@@ -1,6 +1,5 @@
 <script lang="ts">
   import { lessonApi } from '$features/course/api';
-  import { MediaPlayer } from '@cio/ui/custom/media-player';
   import { DeleteModal } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
@@ -9,7 +8,8 @@
   import { t } from '$lib/utils/functions/translations';
   import MODES from '$lib/utils/constants/mode';
   import VideoIcon from '@lucide/svelte/icons/video';
-  import VideoCard from './video-card.svelte';
+  import LessonVideoSimpleCard from './lesson-video-simple-card.svelte';
+  import LessonVideoPlayer from './lesson-video-player.svelte';
 
   interface Props {
     mode?: (typeof MODES)[keyof typeof MODES];
@@ -41,20 +41,8 @@
 </script>
 
 {#snippet content(video)}
-  {#key video.link}
-    <MediaPlayer
-      source={{
-        type: video.type,
-        url: video.link,
-        metadata: video.metadata
-      }}
-      options={{
-        maxHeight: '569px',
-        width: '100%',
-        controls: true,
-        playsinline: true
-      }}
-    />
+  {#key video.type === 'upload' ? ((video as typeof video & { assetId?: string }).assetId ?? video.link) : video.link}
+    <LessonVideoPlayer {video} />
   {/key}
 {/snippet}
 
@@ -65,9 +53,9 @@
   </Button>
 
   {#if videos.length}
-    <Item.Group class="grid! w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <Item.Group class="grid! w-full grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
       {#each videos as video, index}
-        <VideoCard {video} {index} isEditMode={true} onRemove={() => requestRemoveVideo(index)} />
+        <LessonVideoSimpleCard {video} {index} isEditMode={true} onRemove={() => requestRemoveVideo(index)} />
       {/each}
     </Item.Group>
   {:else}

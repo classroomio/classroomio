@@ -32,13 +32,15 @@ const PLAN_TOKEN_ALLOWANCES: Record<string, number> = {
 
 // ─── Model Cost Multipliers ───────────────────────────────────────────────────
 
-// Blended multiplier vs Gemini 2.5 Flash baseline ($0.15/1M); ~80/20 input/output mix; unknown → 1×.
+// Blended multiplier vs Gemini 3.1 Flash Lite baseline ($0.50/1M blended at 80/20 input/output mix); unknown → 1×.
+// gemini-2.5-flash kept for backward compat with historical usage records.
 const MODEL_COST_MULTIPLIER: Record<string, number> = {
-  'gemini-2.5-flash': 1,
-  'gpt-5.4-mini': 3,
+  'gemini-3.1-flash-lite': 1,
+  'gemini-2.5-flash': 1.5,
+  'gpt-5.4-mini': 4,
   'claude-sonnet-4-6': 11,
-  'claude-haiku-4-5-20251001': 1,
-  'kimi-k2.6': 3
+  'claude-haiku-4-5-20251001': 1.5,
+  'kimi-k2.6': 4
 };
 
 function computeCostUnits(promptTokens: number, completionTokens: number, model: string): number {

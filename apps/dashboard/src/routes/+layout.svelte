@@ -6,7 +6,7 @@
   import { appInitApi } from '$features/app/init.svelte';
   import { setupCloudAnalytics } from '$lib/utils/functions/appSetup';
   import { globalStore } from '$lib/utils/store/app';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, mergeAccountOrgFromServer } from '$lib/utils/store/org';
   import { user } from '$lib/utils/store/user';
   import { setTheme } from '$lib/utils/functions/theme';
   import { authClient } from '$lib/utils/services/auth/client';
@@ -39,7 +39,7 @@
     if (data.isOrgSite && data.org) {
       $globalStore.orgSiteName = data.orgSiteName || '';
       $globalStore.isOrgSite = true;
-      currentOrg.set(data.org);
+      currentOrg.set(mergeAccountOrgFromServer(data.org));
       setTheme(data.org.theme || 'blue');
     }
   });

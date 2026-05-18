@@ -1,35 +1,43 @@
 <script lang="ts">
   import { cn } from '../../tools';
   import { SafeHtmlContent } from '../safe-html-content';
+  import { MediaPlayer } from '../media-player';
   import Callout from './callout.svelte';
-  import type { PublicCourseCalloutData, PublicLessonViewData } from './types';
+  import type { PublicCourseCalloutAnimation, PublicCourseCalloutData, PublicLessonViewData } from './types';
 
   interface Props {
     lesson: PublicLessonViewData;
+    /** Shown in the player captions menu; supplied by the host app (`$t(...)`) — see authenticated `lesson-video-player`. */
+    videoCaptionsLabel: string;
     callout?: PublicCourseCalloutData | null;
+    calloutAnimation?: PublicCourseCalloutAnimation;
     class?: string;
+    id?: string;
   }
 
-  let { lesson, callout = null, class: className }: Props = $props();
+  let { lesson, videoCaptionsLabel, callout = null, calloutAnimation, class: className, id }: Props = $props();
 
-  const isYoutube = $derived(lesson.video?.type === 'youtube');
+  const resolvedCalloutAnimation = $derived<PublicCourseCalloutAnimation>(
+    calloutAnimation ?? callout?.animation ?? 'waves'
+  );
 
-  function toEmbedUrl(link: string): string {
-    try {
-      const url = new URL(link);
-      if (url.hostname.includes('youtu.be')) {
-        const videoId = url.pathname.replace(/^\//, '');
-        return `https://www.youtube.com/embed/${videoId}`;
-      }
-      if (url.hostname.includes('youtube.com')) {
-        const videoId = url.searchParams.get('v');
-        if (videoId) return `https://www.youtube.com/embed/${videoId}`;
-      }
-      return link;
-    } catch {
-      return link;
+  const captionTracks = $derived.by(() => {
+    const transcript = lesson.video?.transcript;
+
+    if (!transcript?.vttUrl) {
+      return [];
     }
-  }
+
+    return [
+      {
+        kind: 'captions' as const,
+        src: transcript.vttUrl,
+        srclang: transcript.language,
+        label: videoCaptionsLabel,
+        default: false
+      }
+    ];
+  });
 </script>
 
 <!--
@@ -39,26 +47,29 @@
   a public link. The `prose` class (no `ui:` prefix) hooks into the dashboard's
   app.css typography rules.
 -->
-<article class={cn('ui:mx-auto ui:w-full ui:max-w-3xl ui:px-4 ui:py-8 ui:sm:px-6 ui:lg:py-10', className)}>
+<div {id} class={cn('ui:mx-auto ui:w-full ui:max-w-3xl ui:px-4 ui:py-8 ui:sm:px-6 ui:lg:py-10', className)}>
   {#if !lesson.isUnlocked}
-    <Callout variant="full" {callout} />
+    <Callout variant="full" {callout} animation={resolvedCalloutAnimation} />
   {:else}
     {#if lesson.video}
-      <div class="ui:mb-6 ui:overflow-hidden ui:rounded-xl ui:bg-black">
-        {#if isYoutube}
-          <iframe
-            class="ui:aspect-video ui:w-full"
-            src={toEmbedUrl(lesson.video.link)}
-            title={lesson.title}
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen
-          ></iframe>
-        {:else}
-          <video class="ui:aspect-video ui:w-full" controls playsinline src={lesson.video.link}>
-            <track kind="captions" />
-          </video>
-        {/if}
+      <div class="ui:mb-6 ui:w-full ui:overflow-hidden ui:bg-muted ui:rounded-lg">
+        <MediaPlayer
+          source={{
+            type: lesson.video.type,
+            url: lesson.video.link,
+            metadata: {
+              ...(lesson.video.metadata ?? {}),
+              title: lesson.video.metadata?.title ?? lesson.title
+            },
+            tracks: captionTracks
+          }}
+          options={{
+            maxHeight: '569px',
+            width: '100%',
+            controls: true,
+            playsinline: true
+          }}
+        />
       </div>
     {/if}
 
@@ -80,6 +91,6 @@
       {/if}
     </div>
 
-    <Callout variant="inline" {callout} />
+    <Callout variant="inline" {callout} animation={resolvedCalloutAnimation} />
   {/if}
-</article>
+</div>

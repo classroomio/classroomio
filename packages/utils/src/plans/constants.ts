@@ -17,7 +17,8 @@ export const FEATURES = {
   EA_CERTIFICATE: 'EA_CERTIFICATE',
   EA_UPCOMING_FEATURES: 'EA_UPCOMING_FEATURES',
   ENTERPRISE_STUDENTS_UNLIMITED: 'ENTERPRISE_STUDENTS_UNLIMITED',
-  ENTERPRISE_CUSTOM_DOMAIN: 'ENTERPRISE_CUSTOM_DOMAIN'
+  ENTERPRISE_CUSTOM_DOMAIN: 'ENTERPRISE_CUSTOM_DOMAIN',
+  ENTERPRISE_MULTI_WORKSPACE: 'ENTERPRISE_MULTI_WORKSPACE'
 };
 
 export const BASIC_FEATURES = [FEATURES.BACIC_STUDENTS_50];
@@ -33,7 +34,8 @@ export const EARYL_ADOPTER_FEATURES = [
 export const ENTERPRISE_FEATURES = [
   ...EARYL_ADOPTER_FEATURES,
   FEATURES.ENTERPRISE_STUDENTS_UNLIMITED,
-  FEATURES.ENTERPRISE_CUSTOM_DOMAIN
+  FEATURES.ENTERPRISE_CUSTOM_DOMAIN,
+  FEATURES.ENTERPRISE_MULTI_WORKSPACE
 ];
 
 export const PLANS_BY_FEATURE = {
@@ -41,3 +43,22 @@ export const PLANS_BY_FEATURE = {
   [PLAN.EARLY_ADOPTER]: EARYL_ADOPTER_FEATURES,
   [PLAN.ENTERPRISE]: ENTERPRISE_FEATURES
 };
+
+/**
+ * Total workspaces (primary + secondaries) allowed per plan.
+ * Multi-workspace is an Enterprise-only feature in v1.
+ */
+export const WORKSPACES_INCLUDED: Record<string, number> = {
+  [PLAN.BASIC]: 1,
+  [PLAN.EARLY_ADOPTER]: 1,
+  [PLAN.ENTERPRISE]: 4
+};
+
+export function getWorkspaceAllowance(planName: string | null | undefined): number {
+  if (!planName) return WORKSPACES_INCLUDED[PLAN.BASIC];
+  return WORKSPACES_INCLUDED[planName] ?? WORKSPACES_INCLUDED[PLAN.BASIC];
+}
+
+export function canCreateWorkspaces(planName: string | null | undefined): boolean {
+  return planName === PLAN.ENTERPRISE;
+}

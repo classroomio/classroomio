@@ -7,16 +7,14 @@
         'Full API access to every object in your LMS. Create users, enroll learners, pull completions. All programmatically, at scale.'
     },
     {
-      icon: '⚡',
-      title: 'Zapier Integration',
-      comingSoon: true,
+      icon: '🤖',
+      title: 'MCP server',
       description:
-        'Connect to 6,000+ apps without writing a line of code. Auto-enroll from your CRM, send Slack alerts on completion, update your spreadsheet.'
+        'Drive course authoring from Cursor, Claude Code, Codex, or OpenCode. The MCP server exposes the API surface as agent tools — list, create, update, publish.'
     },
     {
       icon: '🪝',
       title: 'Webhooks',
-      comingSoon: true,
       description:
         'Real-time event notifications for every action. Course enrolled, lesson completed, certificate issued. Push to any endpoint instantly.'
     }
@@ -40,15 +38,7 @@
           class="rounded-2xl border border-gray-200 bg-white p-8 transition-all duration-200 hover:border-gray-950 hover:shadow-lg hover:shadow-black/5"
         >
           <div class="mb-4 text-3xl">{item.icon}</div>
-          <h3 class="mb-2 text-base font-medium">
-            {item.title}
-            {#if item.comingSoon}
-              <span
-                class="ml-1 rounded-full bg-blue-700 px-1.5 py-0.5 align-middle text-[0.6rem] tracking-wide text-white uppercase"
-                >Soon</span
-              >
-            {/if}
-          </h3>
+          <h3 class="mb-2 text-base font-medium">{item.title}</h3>
           <p class="text-sm leading-relaxed text-gray-500">{item.description}</p>
         </div>
       {/each}

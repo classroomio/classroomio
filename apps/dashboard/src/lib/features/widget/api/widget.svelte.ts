@@ -5,8 +5,6 @@ import type {
   DeleteWidgetRequest,
   GetWidgetDetailRequest,
   GetWidgetsRequest,
-  PreviewWidgetInput,
-  PreviewWidgetRequest,
   PublishWidgetRequest,
   RollbackWidgetRequest,
   UpdateWidgetInput,
@@ -50,6 +48,7 @@ class WidgetApi extends BaseApiWithErrors {
     const result = ZCreateWidget.safeParse(fields);
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error);
+      snackbar.error('widgets.notifications.validation_failed');
       return null;
     }
 
@@ -72,6 +71,7 @@ class WidgetApi extends BaseApiWithErrors {
     const result = ZUpdateWidget.safeParse(fields);
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error);
+      snackbar.error('widgets.notifications.validation_failed');
       return null;
     }
 
@@ -84,21 +84,9 @@ class WidgetApi extends BaseApiWithErrors {
       logContext: 'updating widget',
       onSuccess: (response) => {
         if (!silent) snackbar.success('widgets.notifications.saved');
+        this.errors = {};
         this.widgets = this.widgets.map((widget) => (widget.id === widgetId ? response.data : widget));
       }
-    });
-
-    return response?.data ?? null;
-  }
-
-  async previewWidget(widgetId: string, fields: PreviewWidgetInput) {
-    const response = await this.execute<PreviewWidgetRequest>({
-      requestFn: () =>
-        classroomio.organization.widgets[':widgetId'].preview.$post({
-          param: { widgetId },
-          json: fields
-        }),
-      logContext: 'previewing widget'
     });
 
     return response?.data ?? null;

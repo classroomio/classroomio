@@ -5,6 +5,7 @@
   import * as Field from '@cio/ui/base/field';
   import { Switch } from '@cio/ui/base/switch';
   import { Textarea } from '@cio/ui/base/textarea';
+  import AIGenerateButton from '$features/agent/components/ai-generate-button.svelte';
   import type { OrgLandingPageEmbed, OrgLandingPageJson } from '$lib/utils/types/org';
   import ButtonLinkFields from './button-link-fields.svelte';
   import { Input } from '@cio/ui/base/input';
@@ -88,7 +89,13 @@
 
       {#if settings.embed}
         <Field.Field>
-          <Field.Label>{$t('settings.landing_page.editor.embed.title')}</Field.Label>
+          <div class="flex items-center justify-between">
+            <Field.Label>{$t('settings.landing_page.editor.embed.title')}</Field.Label>
+            <AIGenerateButton
+              context="the embed section title on an organization's course platform landing page"
+              onInsert={(text) => setter(text, 'embed.title')}
+            />
+          </div>
           <Input
             value={settings.embed.title}
             placeholder={$t('settings.landing_page.editor.embed.title_placeholder')}
@@ -97,7 +104,13 @@
         </Field.Field>
 
         <Field.Field class="min-w-0">
-          <Field.Label>{$t('settings.landing_page.editor.embed.description')}</Field.Label>
+          <div class="flex items-center justify-between">
+            <Field.Label>{$t('settings.landing_page.editor.embed.description')}</Field.Label>
+            <AIGenerateButton
+              context="the embed section description on an organization's course platform landing page"
+              onInsert={(text) => setter(text, 'embed.description')}
+            />
+          </div>
           <Textarea
             class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y"
             value={settings.embed.description ?? ''}

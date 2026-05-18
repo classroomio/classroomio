@@ -28,6 +28,7 @@
     variant?: EmptyVariant;
     layout?: 'block' | 'full-page';
     showLogo?: boolean;
+    animatedBackground?: boolean;
   }
 
   let {
@@ -40,6 +41,7 @@
     variant = 'default',
     layout = 'block',
     showLogo = false,
+    animatedBackground = false,
     ...restProps
   }: Props & Omit<ComponentProps<typeof EmptyBase.Root>, 'class' | 'children'> = $props();
 
@@ -47,6 +49,7 @@
     class: cn(emptyVariants({ variant }), className),
     'data-slot': 'empty',
     'data-variant': variant,
+    animatedBackground,
     ...restProps
   });
 </script>

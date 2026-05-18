@@ -114,11 +114,11 @@ html .dark {
 .prose p,
 .prose li,
 .prose blockquote {
-  @apply leading-7;
+  @apply leading-relaxed;
 }
 
 .prose p {
-  @apply my-0;
+  @apply mb-4;
 }
 
 .prose a {
@@ -236,7 +236,7 @@ body {
 
 iframe.iframe {
   width: 100%;
-  max-width: 800px;
+  max-width: 48rem;
   margin: 0 auto;
   height: 450px;
   border: 1px solid gray;

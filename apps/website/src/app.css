@@ -6,9 +6,6 @@
 
 body {
   overflow-x: hidden;
-}
-
-* {
   font-family: 'Geist', sans-serif;
 }
 
@@ -138,11 +135,7 @@ body {
 }
 
 svg.lucide-icon:not(.custom) {
-  color: #666666;
-}
-
-.dark svg.lucide-icon:not(.custom) {
-  color: #fff;
+  color: inherit;
 }
 
 @media (min-width: 640px) {

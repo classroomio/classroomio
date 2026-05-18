@@ -8,7 +8,22 @@
     <!-- Fonts as <link> (not @import in app.css) so Tailwind isn’t blocked on first paint -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Geist (site body font) — synchronous so first paint has the brand font. -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" />
+
+    <!-- JetBrains Mono (code blocks) — non-blocking. Preload as a stylesheet, then swap rel to apply. -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap"
+      />
+    </noscript>
 
     <!-- <title>ClassroomIO –&nbsp;The Open Source Learning Management System for Companies</title>
   <meta name="description" content="ClassroomIO" />
@@ -53,18 +68,6 @@
       src="https://umami.hz.oncws.com/script.js"
       data-website-id="5321d227-751a-4d43-8556-f516fba60891"
     ></script>
-
-    <script defer type="text/javascript">
-      window.$crisp = [];
-      window.CRISP_WEBSITE_ID = '69176b47-5f63-42cc-bb9b-68d4927b6276';
-      (function () {
-        d = document;
-        s = d.createElement('script');
-        s.src = 'https://client.crisp.chat/l.js';
-        s.async = 1;
-        d.getElementsByTagName('head')[0].appendChild(s);
-      })();
-    </script>
 
     <script defer type="text/javascript">
       (function (C, A, L) {

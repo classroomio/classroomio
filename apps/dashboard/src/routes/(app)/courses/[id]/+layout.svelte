@@ -13,8 +13,10 @@
   import { courseApi } from '$features/course/api';
   import ContentCreateModal from '$features/course/components/content/content-create-modal.svelte';
   import CourseCompletionModal from '$features/course/components/ceritficate/course-completion-modal.svelte';
-  import { AiCourseChat } from '$features/ai-assistant';
+  import { aiAssistantPanelDefinition } from '$features/ai-assistant';
   import { initialChatPrompt, openAiAssistant } from '$features/ai-assistant/utils/store';
+  import { sidePanel, SidePanelRail } from '$features/side-panel';
+  import { transcriptPanelDefinition } from '$features/course/components/lesson/video/transcript-panel-definition';
   import { get } from 'svelte/store';
   import { profile } from '$lib/utils/store/user';
   import { isOrgAdmin } from '$lib/utils/store/org';
@@ -26,6 +28,9 @@
     COURSE_SIDEBAR_MIN_WIDTH,
     COURSE_SIDEBAR_STORAGE_KEY
   } from '$features/course/components/sidebar/constants';
+
+  sidePanel.register(aiAssistantPanelDefinition);
+  sidePanel.register(transcriptPanelDefinition);
 
   interface Props {
     children?: import('svelte').Snippet;
@@ -186,5 +191,5 @@
     {/if}
   </Sidebar.Inset>
 
-  <AiCourseChat courseId={data.courseId} />
+  <SidePanelRail />
 </Sidebar.Provider>

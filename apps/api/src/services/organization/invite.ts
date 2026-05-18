@@ -27,7 +27,7 @@ import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { parseCourseIdsFromInviteMetadata, parseProgramIdsFromInviteMetadata } from '@api/utils/org';
 import { markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
-import { sendEmail } from '@cio/email';
+import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 
 type OrganizationInviteStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'ACCEPTED';
@@ -244,7 +244,7 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
       const inviteLink = buildInviteLink(token);
 
       try {
-        const responses = await sendEmail('inviteTeacher', {
+        await enqueueTransactionalEmail('inviteTeacher', {
           to: email,
           fields: {
             email,
@@ -253,25 +253,14 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
             roleName,
             expiresAt: getExpiryLabel(expiresAt),
             inviteLink
-          }
+          },
+          idempotencyKey: `org-invite-teacher:${invite.id}`
         });
 
-        const allSuccessful = responses.every((response) => response.success);
-        if (!allSuccessful) {
-          const message = responses
-            .filter((response) => !response.success)
-            .map((response) => response.error || 'Unknown email error')
-            .join('; ');
-
-          await recordOrganizationInviteAudit(invite.id, orgId, 'EMAIL_FAILED', {
-            actorProfileId: invitedByProfileId,
-            targetEmail: email,
-            metadata: { error: message }
-          });
-
-          continue;
-        }
-
+        // Record EMAIL_SENT optimistically — the worker retries up to 5 times,
+        // and a final failure flips the email_delivery row to `failed` for
+        // operator follow-up. EMAIL_FAILED here only means the enqueue itself
+        // failed (DB outbox write or transient validation error).
         await recordOrganizationInviteAudit(invite.id, orgId, 'EMAIL_SENT', {
           actorProfileId: invitedByProfileId,
           targetEmail: email

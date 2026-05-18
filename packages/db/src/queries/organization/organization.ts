@@ -953,7 +953,24 @@ export const getActiveOrganizationPlan = async (orgId: string) => {
     .where(and(eq(schema.organizationPlan.orgId, orgId), eq(schema.organizationPlan.isActive, true)))
     .limit(1);
 
-  return plan ?? null;
+  if (plan) return plan;
+
+  // Secondary workspaces inherit their primary's plan.
+  const [org] = await db
+    .select({ parentOrganizationId: schema.organization.parentOrganizationId })
+    .from(schema.organization)
+    .where(eq(schema.organization.id, orgId))
+    .limit(1);
+
+  if (!org?.parentOrganizationId) return null;
+
+  const [parentPlan] = await db
+    .select()
+    .from(schema.organizationPlan)
+    .where(and(eq(schema.organizationPlan.orgId, org.parentOrganizationId), eq(schema.organizationPlan.isActive, true)))
+    .limit(1);
+
+  return parentPlan ?? null;
 };
 
 /**

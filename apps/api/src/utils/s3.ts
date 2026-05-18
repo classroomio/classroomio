@@ -156,6 +156,22 @@ export async function generateUploadPresignedUrl(
   return presignedUrl;
 }
 
+/** 6h presigned GET for private transcript VTT objects (not Redis-cached). */
+export const TRANSCRIPT_VTT_PRESIGN_SECONDS = 21_600;
+
+export async function generateTranscriptVttPresignedUrl(key: string, bucketName: string): Promise<string> {
+  const client = getPresignS3Client();
+
+  const command = new GetObjectCommand({
+    Bucket: bucketName,
+    Key: key
+  }) as GetSignedUrlParameters[1];
+
+  return getSignedUrl(client as GetSignedUrlParameters[0], command, {
+    expiresIn: TRANSCRIPT_VTT_PRESIGN_SECONDS
+  });
+}
+
 /**
  * Generates presigned URLs for video download
  * @param keys Array of video keys

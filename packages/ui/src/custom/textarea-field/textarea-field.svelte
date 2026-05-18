@@ -12,9 +12,7 @@
     isRequired?: boolean;
     className?: string;
     bgColor?: string;
-    isAIEnabled?: boolean;
-    initAIPrompt?: string;
-    aiAlignPopover?: string;
+    labelAction?: import('svelte').Snippet;
     iconbutton?: import('svelte').Snippet;
   }
 
@@ -26,6 +24,7 @@
     isRequired = false,
     className = '',
     bgColor = '',
+    labelAction,
     iconbutton,
     value = $bindable(),
     ...textareaProps
@@ -34,12 +33,15 @@
 
 <Field.Field class={className}>
   {#if label}
-    <Field.Label class={labelClassName}>
-      {label}
-      {#if isRequired}
-        <span class="ui:text-red-700">*</span>
-      {/if}
-    </Field.Label>
+    <div class="flex items-center justify-between">
+      <Field.Label class={labelClassName}>
+        {label}
+        {#if isRequired}
+          <span class="ui:text-red-700">*</span>
+        {/if}
+      </Field.Label>
+      {@render labelAction?.()}
+    </div>
   {/if}
 
   <Textarea

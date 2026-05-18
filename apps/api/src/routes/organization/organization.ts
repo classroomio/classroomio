@@ -48,6 +48,7 @@ import { Hono } from '@api/utils/hono';
 import { ROLE } from '@cio/utils/constants';
 import { TOrganization } from '@db/types';
 import { assetsRouter } from '@api/routes/organization/assets';
+import { organizationAiTutorRouter } from '@api/routes/organization/ai-tutor';
 import { authMiddleware } from '@api/middlewares/auth';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
@@ -670,4 +671,5 @@ export const organizationRouter = new Hono()
   .route('/tags', tagsRouter)
   .route('/widgets', widgetsRouter)
   .route('/assets', assetsRouter)
+  .route('/ai-tutor', organizationAiTutorRouter)
   .route('/:orgId/quiz', quizRouter);

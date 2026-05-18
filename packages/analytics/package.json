@@ -1,0 +1,36 @@
+{
+  "name": "@cio/analytics",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf dist tsconfig.tsbuildinfo && tsc && tsc-alias",
+    "dev": "tsc --watch",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "default": "./dist/client/index.js"
+    }
+  },
+  "dependencies": {
+    "@cio/db": "workspace:*",
+    "@cio/tsconfig": "workspace:*",
+    "@cio/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "prettier": "^3.2.5",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.5.2"
+  }
+}

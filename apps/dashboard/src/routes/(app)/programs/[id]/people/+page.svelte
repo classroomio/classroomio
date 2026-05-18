@@ -24,6 +24,7 @@
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import InviteMembersModal from '$features/program/components/invite-members-modal.svelte';
+  import GoalsOverviewTiles from '$features/program/components/goals/goals-overview-tiles.svelte';
   import { programApi } from '$features/program/api';
 
   let { data } = $props();
@@ -147,6 +148,8 @@
 
   <Page.Body>
     {#snippet child()}
+      <GoalsOverviewTiles programId={data.programId} />
+
       <section class="space-y-2">
         <div class="flex flex-col items-center justify-end gap-2 md:flex-row">
           <Search placeholder={$t('course.navItem.people.search')} bind:value={searchValue} />

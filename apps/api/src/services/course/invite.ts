@@ -29,11 +29,13 @@ import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
-import { buildEmailFromName, sendEmail } from '@cio/email';
+import { buildEmailFromName } from '@cio/email';
+import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { getProfileByEmail, markUserAndProfileEmailVerified } from '@cio/db/queries/auth';
 import { generateSlug } from '@cio/utils/functions';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
 import { db } from '@cio/db/drizzle';
+import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 
 type InviteStatus = 'ACTIVE' | 'EXPIRED' | 'USED_UP' | 'REVOKED';
 type InvitePreset = 'ONE_TIME_24H' | 'MULTI_USE_7D' | 'MULTI_USE_30D' | 'CUSTOM';
@@ -350,17 +352,18 @@ async function sendStudentJoinEmails(input: {
 }) {
   try {
     const loginUrl = getDashboardBaseUrl(input.orgSiteName ?? undefined);
-    await sendEmail('studentCourseWelcome', {
+    await enqueueTransactionalEmail('studentCourseWelcome', {
       to: input.studentEmail,
       fields: {
         orgName: input.orgName,
         courseName: input.courseName,
         loginUrl
       },
-      from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`)
+      from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`),
+      idempotencyKey: `course-welcome:${input.courseId}:${input.studentId}`
     });
   } catch (error) {
-    console.error('Failed to send student welcome email:', error);
+    console.error('Failed to enqueue student welcome email:', error);
   }
 
   try {
@@ -372,26 +375,22 @@ async function sendStudentJoinEmails(input: {
     const studentProfile = await getProfileById(input.studentId);
     const studentName = studentProfile?.fullname || input.studentEmail;
 
-    await Promise.all(
-      teachers
-        .map((teacher) => teacher.email)
-        .filter((email): email is string => !!email)
-        .map((teacherEmail) =>
-          sendEmail('teacherStudentJoined', {
-            to: teacherEmail,
-            fields: {
-              courseName: input.courseName,
-              studentName,
-              studentEmail: input.studentEmail
-            },
-            from: buildEmailFromName('ClassroomIO')
-          }).catch((error) => {
-            console.error(`Failed to send teacher notification email to ${teacherEmail}:`, error);
-          })
-        )
-    );
+    const teacherEmails = teachers.map((teacher) => teacher.email).filter((email): email is string => !!email);
+
+    if (teacherEmails.length === 0) return;
+
+    await enqueueTransactionalEmail('teacherStudentJoined', {
+      to: teacherEmails,
+      fields: {
+        courseName: input.courseName,
+        studentName,
+        studentEmail: input.studentEmail
+      },
+      from: buildEmailFromName('ClassroomIO'),
+      idempotencyKey: `teacher-student-joined:${input.courseId}:${input.studentId}`
+    });
   } catch (error) {
-    console.error('Failed to send teacher join notification emails:', error);
+    console.error('Failed to enqueue teacher join notification emails:', error);
   }
 }
 
@@ -434,7 +433,7 @@ async function createEmailInviteAndSend(input: {
   }
 
   try {
-    const responses = await sendEmail('studentCourseInvite', {
+    await enqueueTransactionalEmail('studentCourseInvite', {
       to: input.recipientEmail,
       fields: {
         orgName: input.orgName,
@@ -442,29 +441,11 @@ async function createEmailInviteAndSend(input: {
         inviteLink: createdInvite.inviteLink,
         expiresAt: getExpiryLabel(createdInvite.expiresAt)
       },
-      from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`)
+      from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`),
+      idempotencyKey: `course-invite-email:${createdInvite.id}`
     });
 
-    const allSuccessful = responses.every((response) => response.success);
-    if (!allSuccessful) {
-      const errorMessage = responses
-        .filter((response) => !response.success)
-        .map((response) => response.error || 'Unknown email error')
-        .join('; ');
-
-      await recordInviteAudit(createdInvite.id, input.courseId, 'EMAIL_FAILED', {
-        actorProfileId: input.createdByProfileId,
-        targetEmail: input.recipientEmail,
-        metadata: { error: errorMessage }
-      });
-
-      return {
-        invite: createdInvite,
-        sent: false,
-        error: errorMessage
-      };
-    }
-
+    // Optimistic EMAIL_SENT — see comment in services/organization/invite.ts.
     await recordInviteAudit(createdInvite.id, input.courseId, 'EMAIL_SENT', {
       actorProfileId: input.createdByProfileId,
       targetEmail: input.recipientEmail
@@ -681,6 +662,14 @@ export async function enrollInCourse(
     orgSiteName: org.siteName,
     studentId: user.id,
     studentEmail: normalizedEmail
+  });
+
+  trackServerEvent({
+    eventType: SERVER_EVENTS.ENROLLMENT_COMPLETED,
+    orgId: org.id,
+    userId: user.id,
+    courseId,
+    props: { path: 'free-enrollment' }
   });
 
   return {
@@ -1035,6 +1024,13 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       orgSiteName: result.orgSiteName,
       studentId: user.id,
       studentEmail: normalizedEmail
+    });
+
+    trackServerEvent({
+      eventType: SERVER_EVENTS.ENROLLMENT_COMPLETED,
+      userId: user.id,
+      courseId: result.courseId,
+      props: { path: 'invite' }
     });
   }
 

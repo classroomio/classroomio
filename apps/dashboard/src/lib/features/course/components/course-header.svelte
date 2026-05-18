@@ -8,12 +8,14 @@
   import { HoverableItem, PreviewIcon } from '@cio/ui/custom/moving-icons';
   import RefreshCcwIcon from '@lucide/svelte/icons/refresh-ccw';
   import * as Empty from '@cio/ui/base/empty';
+  import { page } from '$app/state';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { isStudentExperience } from '$lib/utils/store/app';
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import { courseApi } from '$features/course/api';
   import { openCoursePreview } from '$features/course/utils/course-preview';
+  import { getActiveCourseNavKey } from '$features/course/utils/functions';
   import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
   import { t } from '$lib/utils/functions/translations';
   import CoursePublishBadge from './course-publish-badge.svelte';
@@ -22,6 +24,7 @@
   const siteName = $derived($currentOrg.siteName);
   const showCoursePublishBadge = $derived(!$isStudentExperience);
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
+  const activeNavKey = $derived(getActiveCourseNavKey(page.url.pathname, courseApi.course?.id ?? ''));
 
   $effect(() => {
     if (!siteName) return;
@@ -39,9 +42,7 @@
 </script>
 
 <header
-  class="border-border ui:bg-background sticky top-0 z-100 flex w-full shrink-0 items-center gap-2 border-b backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8 {isPublicCourse
-    ? 'h-auto min-h-14 py-1.5'
-    : 'h-12'}"
+  class="border-border ui:bg-background sticky top-0 z-100 flex h-12 w-full shrink-0 items-center gap-2 border-b backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8"
 >
   <div class="flex w-full items-center gap-2 px-4">
     <Sidebar.Trigger />
@@ -53,7 +54,7 @@
     <div class="flex w-[60%] min-w-0 flex-1 flex-col justify-center gap-0.5">
       <div class="flex min-w-0 items-center gap-2">
         <p class="max-w-xs truncate text-sm font-medium">
-          {courseApi.course?.title || ''}
+          {activeNavKey ? $t(activeNavKey) : ''}
         </p>
 
         {#if isPublicCourse}
@@ -64,12 +65,6 @@
           <CoursePublishBadge isPublished={courseApi.course?.isPublished ?? false} />
         {/if}
       </div>
-
-      {#if isPublicCourse}
-        <p class="ui:text-muted-foreground max-w-xl truncate text-xs">
-          {$t('course.header.public_course_helper')}
-        </p>
-      {/if}
     </div>
 
     <span class="grow"></span>

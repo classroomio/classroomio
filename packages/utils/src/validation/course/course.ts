@@ -46,16 +46,42 @@ export const ZCourseDownloadParam = z.object({
 });
 export type TCourseDownloadParam = z.infer<typeof ZCourseDownloadParam>;
 
-export const ZCertificateDownload = z.object({
-  theme: z.string().min(1),
-  studentName: z.string().min(1),
-  courseName: z.string().min(1),
-  courseDescription: z.string().min(1),
-  orgName: z.string().min(1),
-  orgLogoUrl: z.string().url().optional(),
-  facilitator: z.string().optional()
+/**
+ * Per-course certificate design. Stored on `course.certificate.design`.
+ * The 5 supported template ids match `@cio/certificates`.
+ */
+export const ZCertificateSignatory = z.object({
+  name: z.string().max(80).default(''),
+  role: z.string().max(80).default('')
 });
-export type TCertificateDownload = z.infer<typeof ZCertificateDownload>;
+export type TCertificateSignatory = z.infer<typeof ZCertificateSignatory>;
+
+export const ZCertificateTemplateId = z.enum(['classique', 'brutalist', 'noir', 'poster', 'minimal']);
+export type TCertificateTemplateId = z.infer<typeof ZCertificateTemplateId>;
+
+export const ZCertificateDesign = z.object({
+  templateId: ZCertificateTemplateId,
+  accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, { message: 'Accent must be a 6-digit hex color' }),
+  subtitle: z.string().max(120).optional(),
+  descriptionOverride: z.string().max(500).optional(),
+  signatories: z.tuple([ZCertificateSignatory, ZCertificateSignatory]),
+  idFormat: z.string().max(40).optional()
+});
+export type TCertificateDesign = z.infer<typeof ZCertificateDesign>;
+
+/**
+ * Body for `POST /:courseId/download/certificate(/png)`.
+ * The server reads design + course + org from the DB; the client only sends
+ * the per-recipient fields it cannot infer.
+ */
+export const ZCertificateDownloadRequest = z.object({
+  studentName: z.string().min(1).max(120),
+  studentId: z.string().min(1).max(64).optional(),
+  issuedAt: z.string().datetime().optional(),
+  /** When true, skips the eligibility check (course owner previewing their own design). */
+  previewMode: z.boolean().optional()
+});
+export type TCertificateDownloadRequest = z.infer<typeof ZCertificateDownloadRequest>;
 
 export const ZCourseDownloadContent = z.object({
   courseTitle: z.string().min(1),
@@ -321,7 +347,10 @@ export type TCourseLandingPageMetadataUpdate = z.infer<typeof ZCourseLandingPage
 
 export const ZCertificationSettings = z.object({
   isDownloadable: z.boolean().optional(),
+  /** Legacy theme id (one of the 6 original themes). Kept for read compatibility; new courses use `design.templateId`. */
   theme: z.string().optional(),
+  /** Atelier-era certificate design (template, accent, signatories, subtitle, etc.). */
+  design: ZCertificateDesign.optional(),
   /** ISO 8601 datetime string or null to clear */
   deadline: z.union([z.string().min(1), z.null()]).optional(),
   threshold: z.number().int().min(0).max(100).optional(),

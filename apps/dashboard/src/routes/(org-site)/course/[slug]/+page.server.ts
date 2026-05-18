@@ -11,7 +11,7 @@ type GetOrganizationSuccess = Extract<InferResponseType<GetOrganizationRequest>,
 type GetPublicCourseRequest = (typeof classroomio)['org-site']['course'][':courseSlug']['$get'];
 type GetPublicCourseSuccess = Extract<InferResponseType<GetPublicCourseRequest>, { success: true }>;
 
-export const load = async ({ params = { slug: '' }, parent }) => {
+export const load = async ({ params = { slug: '' }, parent, url }) => {
   const { org: parentOrg } = await parent();
 
   // PUBLIC courses are served by the anonymous org-site endpoint and bypass the
@@ -67,18 +67,23 @@ export const load = async ({ params = { slug: '' }, parent }) => {
     }
   }
 
+  const canonicalUrl = new URL(url.pathname, url.origin).href;
+
   const pageMetaTags = Object.freeze({
     title: course.title,
     description: course.description,
+    canonical: canonicalUrl,
     openGraph: {
+      type: 'website',
+      url: canonicalUrl,
       title: course.title,
       description: course.description,
       images: [
         {
           url: course.logo || '',
           alt: course.title,
-          width: 280,
-          height: 200,
+          width: 1200,
+          height: 630,
           secureUrl: course.logo,
           type: 'image/jpeg'
         }
@@ -91,7 +96,7 @@ export const load = async ({ params = { slug: '' }, parent }) => {
       title: course.title,
       description: course.description,
       image: course.logo,
-      imageAlt: 'ClassroomIO OG Image'
+      imageAlt: course.title
     }
   }) satisfies MetaTagsProps;
 

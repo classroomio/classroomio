@@ -66,11 +66,20 @@
       console.log('catch error', error);
     }
   }
+
+  const authBackgroundUrl = $derived($currentOrg.customization.auth?.backgroundImage?.trim() ?? '');
 </script>
 
 <div class="auth-ui-background relative flex min-h-screen w-full items-center justify-center overflow-hidden p-4">
-  <DotPattern fillColor="rgb(2 51 189 / 0.25)" class="absolute inset-0 h-full w-full" />
-  <Card.Root class="ui:w-full relative z-10 max-w-[400px]">
+  {#if authBackgroundUrl}
+    <div class="absolute inset-0 z-0">
+      <img src={authBackgroundUrl} alt="" class="h-full w-full object-cover" decoding="async" />
+      <div class="absolute inset-0 bg-black/45" aria-hidden="true"></div>
+    </div>
+  {:else}
+    <DotPattern fillColor="rgb(2 51 189 / 0.25)" class="absolute inset-0 z-0 h-full w-full" />
+  {/if}
+  <Card.Root class="ui:w-full relative z-10 max-w-[400px] shadow-sm">
     {#if !showOnlyContent || showLogo}
       <Card.Header class="ui:flex ui:flex-col ui:items-center ui:gap-4">
         <Avatar.Root>

@@ -5,12 +5,31 @@ import { type Handle, redirect } from '@sveltejs/kit';
 import { isPublicApiRoute, isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
 import { ROUTE } from '$lib/utils/constants/routes';
 
+const ANALYTICS_SESSION_COOKIE = 'cio_aid';
+const ANALYTICS_SESSION_MAX_AGE = 60 * 60 * 24 * 90;
+
+function ensureAnalyticsSessionCookie(cookies: Parameters<Handle>[0]['event']['cookies']) {
+  if (cookies.get(ANALYTICS_SESSION_COOKIE)) return;
+
+  cookies.set(ANALYTICS_SESSION_COOKIE, crypto.randomUUID(), {
+    path: '/',
+    httpOnly: false,
+    sameSite: 'lax',
+    secure: true,
+    maxAge: ANALYTICS_SESSION_MAX_AGE
+  });
+}
+
 export const handle: Handle = async (args) => {
   const { event } = args;
   const sessionData = await getSessionData(event.cookies);
 
   if (sessionData) {
     event.locals = sessionData;
+  }
+
+  if (!event.url.pathname.includes('/api')) {
+    ensureAnalyticsSessionCookie(event.cookies);
   }
 
   let response: Response;

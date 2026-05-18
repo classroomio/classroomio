@@ -25,7 +25,11 @@
       "@cio/utils": ["./node_modules/@cio/utils/dist/index.ts"],
       "@cio/utils/*": ["./node_modules/@cio/utils/dist/*"],
       "@cio/email/*": ["./node_modules/@cio/email/dist/*"],
-      "@cio/email": ["./node_modules/@cio/email/dist/index.d.ts"]
+      "@cio/email": ["./node_modules/@cio/email/dist/index.d.ts"],
+      "@cio/jobs": ["./node_modules/@cio/jobs/dist/index.d.ts"],
+      "@cio/jobs/*": ["./node_modules/@cio/jobs/dist/*"],
+      "@cio/analytics": ["./node_modules/@cio/analytics/dist/index.d.ts"],
+      "@cio/analytics/*": ["./node_modules/@cio/analytics/dist/*"]
     }
   },
   "include": ["src/**/*"],
@@ -33,7 +37,9 @@
   "references": [
     { "path": "../../packages/db" },
     { "path": "../../packages/utils" },
-    { "path": "../../packages/email" }
+    { "path": "../../packages/email" },
+    { "path": "../../packages/jobs" },
+    { "path": "../../packages/analytics" }
   ],
   "tsc-alias": {
     "resolveFullPaths": true,

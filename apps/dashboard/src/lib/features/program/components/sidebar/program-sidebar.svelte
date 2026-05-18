@@ -3,12 +3,12 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { profile } from '$lib/utils/store/user';
-  import { orgs, isFreePlan } from '$lib/utils/store/org';
+  import { orgs } from '$lib/utils/store/org';
 
   import OrgLogo from '$features/ui/sidebar/org-sidebar/org-logo.svelte';
   import Navigation from './program-sidebar-navigation.svelte';
   import SidebarSkeleton from '$features/ui/sidebar/sidebar-skeleton.svelte';
-  import UpgradePoweredBy from '$features/ui/upgrade-powered-by.svelte';
+  import PoweredBy from '$features/ui/powered-by.svelte';
   import { useSidebar } from '@cio/ui/base/sidebar';
 
   const SIDEBAR_ITEM_SKELETON_COUNT = 4;
@@ -59,13 +59,12 @@
 
     <Sidebar.Rail />
 
-    {#if $isFreePlan}
-      <Sidebar.Footer>
-        <UpgradePoweredBy
-          class="static [&_span]:font-normal [&_span]:shadow-none"
-          showOnlyLogo={!sidebar.open || sidebar.isMobile}
-        />
-      </Sidebar.Footer>
-    {/if}
+    <Sidebar.Footer>
+      <PoweredBy
+        variant="sidebar"
+        sidebarUtmSource="lms-program-sidebar"
+        showOnlyLogo={!sidebar.open || sidebar.isMobile}
+      />
+    </Sidebar.Footer>
   </Sidebar.Root>
 {/if}

@@ -46,6 +46,10 @@ export function getAgentToolResult(part: AgentToolPart): unknown {
   return part.output;
 }
 
+export function getAgentToolInput(part: AgentToolPart): unknown {
+  return (part as { input?: unknown }).input;
+}
+
 export function getAgentToolStatus(part: AgentToolPart): ProgressStep['status'] {
   if (part.state === 'result' || part.state === 'output-available') {
     return 'completed';

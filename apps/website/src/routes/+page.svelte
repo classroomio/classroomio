@@ -1,31 +1,42 @@
 <script>
   import {
     Hero,
-    CertSection,
+    RoiBand,
+    AiBuildsSection,
     FeaturesSection,
-    AiSection,
-    LearnerSection,
-    QuestionTypes,
-    AutomateSection,
-    DeploySection,
-    EnterpriseSection,
+    AiTutorSection,
+    AutomationBand,
+    MultiAcademySection,
     Testimonial,
     PageSignupCTA
   } from '$lib/components';
 </script>
 
 <Hero />
-<AiSection />
+
+<RoiBand />
+
+<AiBuildsSection />
+
 <FeaturesSection />
-<CertSection />
-<LearnerSection />
-<QuestionTypes />
-<!-- <AutomateSection /> -->
-<!-- <DeploySection /> -->
-<EnterpriseSection />
+
+<AiTutorSection
+  accent=""
+  title="AI-powered Teaching Assistant"
+  description="An AI teaching assistant that adapts to each student — answering questions in their own words, adjusting to their pace, and catching the ones that would otherwise land in your support inbox."
+  ctaLabel="See the academy"
+  ctaHref="/customer-education"
+  vimeoVideoId="1192910311"
+/>
+
+<AutomationBand />
+
+<MultiAcademySection />
+
 <Testimonial />
+
 <PageSignupCTA
-  header="Ready to replace Moodle with something you'll actually enjoy?"
-  subText="Get up and running in an afternoon. No vendor calls, no implementation fees, no surprises."
+  header="Stop forwarding help articles."
+  subText="Launch a branded academy on your domain in days."
   btnLabel="Book a Demo"
 />

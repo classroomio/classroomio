@@ -11,6 +11,7 @@
 
   let { source, options = {}, class: className = '' }: Props = $props();
 
+  const tracks = $derived(source.tracks ?? []);
   const isMuse = $derived.by(() => source.type === 'muse' && source.metadata?.svid);
   const isGoogleDrive = $derived(source.type === 'google_drive');
   const poster = $derived(source.type === 'upload' ? source.metadata?.thumbnailUrl : undefined);
@@ -39,6 +40,6 @@
       ></iframe>
     </div>
   {:else}
-    <PlyrPlayer src={source.url} {poster} {options} />
+    <PlyrPlayer src={source.url} {poster} {options} {tracks} />
   {/if}
 </div>

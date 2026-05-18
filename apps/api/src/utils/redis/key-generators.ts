@@ -132,3 +132,15 @@ export const agentUploadKeyGenerator = (c: Context): string => {
   const baseKey = userKeyGenerator(c);
   return `${baseKey}:agent:upload`;
 };
+
+/**
+ * Redis keys for engagement analytics read endpoints (landing-stats, funnel,
+ * country breakdown, time-to-enrollment). Value: JSON.
+ */
+export function dashAnalyticsKey(route: string, orgId: string, days: number, extra?: string): string {
+  const suffix = extra ? `:${extra}` : '';
+  return `dash:analytics:${route}:${orgId}:${days}${suffix}`;
+}
+
+/** TTL for engagement analytics caches (10 min). */
+export const DASH_ANALYTICS_TTL_SECONDS = 600;

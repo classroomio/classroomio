@@ -8,6 +8,7 @@
   import { BackButton } from '@cio/ui';
 
   import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
+  import BotIcon from '@lucide/svelte/icons/bot';
   import {
     AnalyticsIcon,
     AttendanceIcon,
@@ -177,6 +178,16 @@
         icon: getNavIcon(NAV_IDS.PEOPLE)
       },
       {
+        id: NAV_IDS.AI_ASSISTANT,
+        title: $t('course.navItems.nav_ai_tutor'),
+        url: getNavItemRoute(id, 'ai-tutor'),
+        isActive: (path || page.url.pathname) === getNavItemRoute(id, 'ai-tutor'),
+        show() {
+          return !isStudent;
+        },
+        icon: getNavIcon(NAV_IDS.AI_ASSISTANT)
+      },
+      {
         id: NAV_IDS.SETTINGS,
         title: $t('course.navItems.nav_settings'),
         url: getNavItemRoute(id, 'settings'),
@@ -246,6 +257,8 @@
       return CertificateIcon;
     } else if (id === NAV_IDS.SETTINGS) {
       return SettingsIcon;
+    } else if (id === NAV_IDS.AI_ASSISTANT) {
+      return BotIcon;
     }
 
     return null;

@@ -1,5 +1,6 @@
 import { browser, dev } from '$app/environment';
 import { derived, writable } from 'svelte/store';
+import merge from 'lodash/merge';
 
 import type { AccountOrg } from '$features/app/types';
 import type { OrgTeamMember } from '../types/org';
@@ -9,6 +10,21 @@ import { ROLE } from '@cio/utils/constants';
 import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
 
+/** Deep-merge with this when hydrating an org from the API so nested `customization` keys stay stable. */
+export const DEFAULT_ORG_CUSTOMIZATION = {
+  apps: { poll: true, comments: true },
+  course: { grading: true, newsfeed: true },
+  dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' },
+  auth: { backgroundImage: '' }
+} as NonNullable<AccountOrg['customization']>;
+
+export function mergeAccountOrgFromServer(org: AccountOrg): AccountOrg {
+  return {
+    ...org,
+    customization: merge({}, DEFAULT_ORG_CUSTOMIZATION, org.customization ?? {}) as AccountOrg['customization']
+  };
+}
+
 export const orgs = writable<AccountOrg[]>([]);
 
 export const currentOrg: Writable<AccountOrg> = writable({
@@ -17,9 +33,7 @@ export const currentOrg: Writable<AccountOrg> = writable({
   customCode: '',
   customDomain: '',
   customization: {
-    apps: { poll: true, comments: true },
-    course: { grading: true, newsfeed: true },
-    dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
+    ...DEFAULT_ORG_CUSTOMIZATION
   },
   disableEmailPassword: false,
   disableGoogleAuth: false,
@@ -31,12 +45,21 @@ export const currentOrg: Writable<AccountOrg> = writable({
   isRestricted: false,
   landingpage: {},
   name: '',
+  parentOrganizationId: null,
   plans: [],
+  readOnlyUntil: null,
   roleId: 0,
   settings: {},
   siteName: '',
   theme: ''
 });
+
+export const isSecondaryWorkspace = derived(currentOrg, ($currentOrg) => Boolean($currentOrg.parentOrganizationId));
+
+export const isPrimaryWorkspace = derived(
+  currentOrg,
+  ($currentOrg) => Boolean($currentOrg.id) && !$currentOrg.parentOrganizationId
+);
 export const orgTeam = writable<OrgTeamMember[]>([]);
 export const isOrgAdmin = derived(currentOrg, ($currentOrg) => {
   if ($currentOrg.roleId === 0) return null;

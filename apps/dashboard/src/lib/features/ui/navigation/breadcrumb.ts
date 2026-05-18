@@ -43,10 +43,9 @@ export function generateBreadcrumbs(
   }
 
   if (!matchedNavItem) {
-    // Try to match by checking if pathname matches the item path
     for (const item of navItems) {
       const fullItemPath = `${currentOrgPath}${item.path}`;
-      if (isActive(pathname, fullItemPath)) {
+      if (isActive(pathname, fullItemPath, item.matchPattern)) {
         matchedNavItem = item;
         break;
       }
@@ -54,8 +53,9 @@ export function generateBreadcrumbs(
   }
 
   if (matchedNavItem) {
-    // Handle hash URLs (like settings) - use the actual path instead of '#'
-    const href = matchedNavItem.useHashUrl ? `${currentOrgPath}${matchedNavItem.path}` : matchedNavItem.url;
+    const parentCrumbPath =
+      matchedNavItem.useHashUrl && matchedNavItem.items?.length ? matchedNavItem.items[0].path : matchedNavItem.path;
+    const href = matchedNavItem.useHashUrl ? `${currentOrgPath}${parentCrumbPath}` : matchedNavItem.url;
 
     breadcrumbs.push({
       label: t(matchedNavItem.title),
@@ -72,6 +72,26 @@ export function generateBreadcrumbs(
         href: subItem.url
       });
       return breadcrumbs;
+    }
+  }
+
+  // Collapsible nav children matched by full path (e.g. Stats → Analytics, Settings → Billing)
+  if (matchedNavItem?.items && !searchParams) {
+    const parentBase = `${currentOrgPath}${matchedNavItem.path}`.replace(/\/$/, '');
+    const normalizedPathname = pathname.replace(/\/$/, '');
+
+    if (normalizedPathname !== parentBase) {
+      const activeSub = matchedNavItem.items.find((sub) => {
+        const subBase = sub.url.replace(/\/$/, '');
+        return normalizedPathname === subBase || normalizedPathname.startsWith(`${subBase}/`);
+      });
+      if (activeSub) {
+        breadcrumbs.push({
+          label: t(activeSub.title),
+          href: activeSub.url
+        });
+        return breadcrumbs;
+      }
     }
   }
 

@@ -320,3 +320,376 @@ export async function getProfileCourseProgress(courseId: string, profileId: stri
     };
   }
 }
+
+// ---------------------------------------------------------------------------
+// Engagement analytics — page event ingest + daily rollup upserts
+// Consumed by the @cio/analytics package.
+// ---------------------------------------------------------------------------
+
+type PageEventInsert = typeof schema.analyticsPageEvent.$inferInsert;
+type OrgDailyInsert = typeof schema.analyticsOrgDaily.$inferInsert;
+type CourseDailyInsert = typeof schema.analyticsCourseDaily.$inferInsert;
+type CountryDailyInsert = typeof schema.analyticsCountryDaily.$inferInsert;
+
+export async function insertPageEvents(events: PageEventInsert[]) {
+  if (events.length === 0) {
+    return 0;
+  }
+
+  try {
+    const inserted = await db
+      .insert(schema.analyticsPageEvent)
+      .values(events)
+      .returning({ id: schema.analyticsPageEvent.id });
+    return inserted.length;
+  } catch (error) {
+    console.error('insertPageEvents error:', error);
+    throw new Error('Failed to insert page events');
+  }
+}
+
+export async function upsertOrgDailyRows(rows: OrgDailyInsert[]) {
+  if (rows.length === 0) {
+    return 0;
+  }
+
+  try {
+    const result = await db
+      .insert(schema.analyticsOrgDaily)
+      .values(rows)
+      .onConflictDoUpdate({
+        target: [schema.analyticsOrgDaily.orgId, schema.analyticsOrgDaily.date],
+        set: {
+          landingViews: sql`excluded.landing_views`,
+          uniqueVisitors: sql`excluded.unique_visitors`,
+          coursePageViews: sql`excluded.course_page_views`,
+          enrollments: sql`excluded.enrollments`,
+          completions: sql`excluded.completions`,
+          updatedAt: new Date().toISOString()
+        }
+      })
+      .returning({ id: schema.analyticsOrgDaily.id });
+    return result.length;
+  } catch (error) {
+    console.error('upsertOrgDailyRows error:', error);
+    throw new Error('Failed to upsert analytics_org_daily rows');
+  }
+}
+
+export async function upsertCourseDailyRows(rows: CourseDailyInsert[]) {
+  if (rows.length === 0) {
+    return 0;
+  }
+
+  try {
+    const result = await db
+      .insert(schema.analyticsCourseDaily)
+      .values(rows)
+      .onConflictDoUpdate({
+        target: [schema.analyticsCourseDaily.courseId, schema.analyticsCourseDaily.date],
+        set: {
+          orgId: sql`excluded.org_id`,
+          views: sql`excluded.views`,
+          uniqueVisitors: sql`excluded.unique_visitors`,
+          enrollments: sql`excluded.enrollments`,
+          completions: sql`excluded.completions`,
+          updatedAt: new Date().toISOString()
+        }
+      })
+      .returning({ id: schema.analyticsCourseDaily.id });
+    return result.length;
+  } catch (error) {
+    console.error('upsertCourseDailyRows error:', error);
+    throw new Error('Failed to upsert analytics_course_daily rows');
+  }
+}
+
+export async function upsertCountryDailyRows(rows: CountryDailyInsert[]) {
+  if (rows.length === 0) {
+    return 0;
+  }
+
+  try {
+    const result = await db
+      .insert(schema.analyticsCountryDaily)
+      .values(rows)
+      .onConflictDoUpdate({
+        target: [
+          schema.analyticsCountryDaily.orgId,
+          schema.analyticsCountryDaily.date,
+          schema.analyticsCountryDaily.country
+        ],
+        set: {
+          views: sql`excluded.views`,
+          enrollments: sql`excluded.enrollments`,
+          updatedAt: new Date().toISOString()
+        }
+      })
+      .returning({ id: schema.analyticsCountryDaily.id });
+    return result.length;
+  } catch (error) {
+    console.error('upsertCountryDailyRows error:', error);
+    throw new Error('Failed to upsert analytics_country_daily rows');
+  }
+}
+
+/**
+ * Pre-aggregated org/date counts pulled from raw page events for the rollup job.
+ * One row per (org_id, date) for events in [fromIso, toIso).
+ */
+export async function selectOrgDailyAggregates(fromIso: string, toIso: string) {
+  try {
+    return await db
+      .select({
+        orgId: schema.analyticsPageEvent.orgId,
+        date: sql<string>`(${schema.analyticsPageEvent.occurredAt} AT TIME ZONE 'UTC')::date`.as('date'),
+        landingViews:
+          sql<number>`COUNT(*) FILTER (WHERE ${schema.analyticsPageEvent.eventType} = 'landing_view')::int`.as(
+            'landing_views'
+          ),
+        coursePageViews:
+          sql<number>`COUNT(*) FILTER (WHERE ${schema.analyticsPageEvent.eventType} = 'course_page_view')::int`.as(
+            'course_page_views'
+          ),
+        uniqueVisitors: sql<number>`COUNT(DISTINCT ${schema.analyticsPageEvent.sessionId})::int`.as('unique_visitors'),
+        enrollments:
+          sql<number>`COUNT(*) FILTER (WHERE ${schema.analyticsPageEvent.eventType} = 'enrollment_completed')::int`.as(
+            'enrollments'
+          ),
+        completions:
+          sql<number>`COUNT(*) FILTER (WHERE ${schema.analyticsPageEvent.eventType} = 'course_completed')::int`.as(
+            'completions'
+          )
+      })
+      .from(schema.analyticsPageEvent)
+      .where(
+        and(
+          sql`${schema.analyticsPageEvent.occurredAt} >= ${fromIso}`,
+          sql`${schema.analyticsPageEvent.occurredAt} < ${toIso}`,
+          sql`${schema.analyticsPageEvent.orgId} IS NOT NULL`
+        )
+      )
+      .groupBy(schema.analyticsPageEvent.orgId, sql`date`);
+  } catch (error) {
+    console.error('selectOrgDailyAggregates error:', error);
+    throw new Error('Failed to aggregate org/date page events');
+  }
+}
+
+/**
+ * Pre-aggregated course/date counts from raw page events for the rollup job.
+ */
+export async function selectCourseDailyAggregates(fromIso: string, toIso: string) {
+  try {
+    return await db
+      .select({
+        courseId: schema.analyticsPageEvent.courseId,
+        orgId: schema.analyticsPageEvent.orgId,
+        date: sql<string>`(${schema.analyticsPageEvent.occurredAt} AT TIME ZONE 'UTC')::date`.as('date'),
+        views: sql<number>`COUNT(*) FILTER (WHERE ${schema.analyticsPageEvent.eventType} = 'course_page_view')::int`.as(
+          'views'
+        ),
+        uniqueVisitors: sql<number>`COUNT(DISTINCT ${schema.analyticsPageEvent.sessionId})::int`.as('unique_visitors'),
+        enrollments:
+          sql<number>`COUNT(*) FILTER (WHERE ${schema.analyticsPageEvent.eventType} = 'enrollment_completed')::int`.as(
+            'enrollments'
+          ),
+        completions:
+          sql<number>`COUNT(*) FILTER (WHERE ${schema.analyticsPageEvent.eventType} = 'course_completed')::int`.as(
+            'completions'
+          )
+      })
+      .from(schema.analyticsPageEvent)
+      .where(
+        and(
+          sql`${schema.analyticsPageEvent.occurredAt} >= ${fromIso}`,
+          sql`${schema.analyticsPageEvent.occurredAt} < ${toIso}`,
+          sql`${schema.analyticsPageEvent.courseId} IS NOT NULL`,
+          sql`${schema.analyticsPageEvent.orgId} IS NOT NULL`
+        )
+      )
+      .groupBy(schema.analyticsPageEvent.courseId, schema.analyticsPageEvent.orgId, sql`date`);
+  } catch (error) {
+    console.error('selectCourseDailyAggregates error:', error);
+    throw new Error('Failed to aggregate course/date page events');
+  }
+}
+
+/**
+ * Pre-aggregated org/date/country counts from raw page events for the rollup job.
+ */
+export async function selectCountryDailyAggregates(fromIso: string, toIso: string) {
+  try {
+    return await db
+      .select({
+        orgId: schema.analyticsPageEvent.orgId,
+        date: sql<string>`(${schema.analyticsPageEvent.occurredAt} AT TIME ZONE 'UTC')::date`.as('date'),
+        country: schema.analyticsPageEvent.country,
+        views:
+          sql<number>`COUNT(*) FILTER (WHERE ${schema.analyticsPageEvent.eventType} IN ('landing_view', 'course_page_view'))::int`.as(
+            'views'
+          ),
+        enrollments:
+          sql<number>`COUNT(*) FILTER (WHERE ${schema.analyticsPageEvent.eventType} = 'enrollment_completed')::int`.as(
+            'enrollments'
+          )
+      })
+      .from(schema.analyticsPageEvent)
+      .where(
+        and(
+          sql`${schema.analyticsPageEvent.occurredAt} >= ${fromIso}`,
+          sql`${schema.analyticsPageEvent.occurredAt} < ${toIso}`,
+          sql`${schema.analyticsPageEvent.orgId} IS NOT NULL`,
+          sql`${schema.analyticsPageEvent.country} IS NOT NULL`
+        )
+      )
+      .groupBy(schema.analyticsPageEvent.orgId, sql`date`, schema.analyticsPageEvent.country);
+  } catch (error) {
+    console.error('selectCountryDailyAggregates error:', error);
+    throw new Error('Failed to aggregate country page events');
+  }
+}
+
+/**
+ * Aggregate enrollments and course-page views by `course.type` for an org
+ * in a date range. Joins the daily course rollup with the canonical course
+ * row so the result groups by the enum (SELF_PACED / LIVE_CLASS / COMPLIANCE
+ * / PUBLIC).
+ */
+export async function selectPopularCourseTypes(orgId: string, fromDate: string, toDate: string) {
+  try {
+    return await db
+      .select({
+        type: schema.course.type,
+        enrollments: sql<number>`SUM(${schema.analyticsCourseDaily.enrollments})::int`.as('enrollments'),
+        views: sql<number>`SUM(${schema.analyticsCourseDaily.views})::int`.as('views'),
+        completions: sql<number>`SUM(${schema.analyticsCourseDaily.completions})::int`.as('completions'),
+        courseCount: sql<number>`COUNT(DISTINCT ${schema.analyticsCourseDaily.courseId})::int`.as('course_count')
+      })
+      .from(schema.analyticsCourseDaily)
+      .innerJoin(schema.course, eq(schema.course.id, schema.analyticsCourseDaily.courseId))
+      .where(
+        and(
+          eq(schema.analyticsCourseDaily.orgId, orgId),
+          sql`${schema.analyticsCourseDaily.date} >= ${fromDate}`,
+          sql`${schema.analyticsCourseDaily.date} <= ${toDate}`
+        )
+      )
+      .groupBy(schema.course.type)
+      .orderBy(desc(sql`SUM(${schema.analyticsCourseDaily.enrollments})`));
+  } catch (error) {
+    console.error('selectPopularCourseTypes error:', error);
+    throw new Error('Failed to select popular course types');
+  }
+}
+
+/**
+ * Right-to-be-forgotten: null out user_id on past events for a given user.
+ * Rollups remain (aggregate only); raw events stay queryable but anonymous.
+ */
+export async function deidentifyPageEventsForUser(userId: string) {
+  try {
+    const result = await db
+      .update(schema.analyticsPageEvent)
+      .set({ userId: null })
+      .where(eq(schema.analyticsPageEvent.userId, userId))
+      .returning({ id: schema.analyticsPageEvent.id });
+    return result.length;
+  } catch (error) {
+    console.error('deidentifyPageEventsForUser error:', error);
+    throw new Error('Failed to deidentify page events for user');
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Read-side aggregations for dashboard analytics endpoints.
+// All return rollup-derived data so reads are O(daysInRange) at most.
+// ---------------------------------------------------------------------------
+
+/**
+ * Per-day org rollup rows for a date range, ordered ascending by date.
+ * Used by landing-stats (totals + sparkline) and course-funnel.
+ */
+export async function selectOrgDailyRange(orgId: string, fromDate: string, toDate: string) {
+  try {
+    return await db
+      .select({
+        date: schema.analyticsOrgDaily.date,
+        landingViews: schema.analyticsOrgDaily.landingViews,
+        uniqueVisitors: schema.analyticsOrgDaily.uniqueVisitors,
+        coursePageViews: schema.analyticsOrgDaily.coursePageViews,
+        enrollments: schema.analyticsOrgDaily.enrollments,
+        completions: schema.analyticsOrgDaily.completions
+      })
+      .from(schema.analyticsOrgDaily)
+      .where(
+        and(
+          eq(schema.analyticsOrgDaily.orgId, orgId),
+          sql`${schema.analyticsOrgDaily.date} >= ${fromDate}`,
+          sql`${schema.analyticsOrgDaily.date} <= ${toDate}`
+        )
+      )
+      .orderBy(schema.analyticsOrgDaily.date);
+  } catch (error) {
+    console.error('selectOrgDailyRange error:', error);
+    throw new Error('Failed to select org daily range');
+  }
+}
+
+/**
+ * Per-day rows for a single course in a date range. If the courseId belongs
+ * to a different org the result is empty (no row matches both filters).
+ */
+export async function selectCourseDailyRange(courseId: string, orgId: string, fromDate: string, toDate: string) {
+  try {
+    return await db
+      .select({
+        date: schema.analyticsCourseDaily.date,
+        views: schema.analyticsCourseDaily.views,
+        uniqueVisitors: schema.analyticsCourseDaily.uniqueVisitors,
+        enrollments: schema.analyticsCourseDaily.enrollments,
+        completions: schema.analyticsCourseDaily.completions
+      })
+      .from(schema.analyticsCourseDaily)
+      .where(
+        and(
+          eq(schema.analyticsCourseDaily.courseId, courseId),
+          eq(schema.analyticsCourseDaily.orgId, orgId),
+          sql`${schema.analyticsCourseDaily.date} >= ${fromDate}`,
+          sql`${schema.analyticsCourseDaily.date} <= ${toDate}`
+        )
+      )
+      .orderBy(schema.analyticsCourseDaily.date);
+  } catch (error) {
+    console.error('selectCourseDailyRange error:', error);
+    throw new Error('Failed to select course daily range');
+  }
+}
+
+/**
+ * Top countries by views for an org over a date range.
+ */
+export async function selectCountryBreakdown(orgId: string, fromDate: string, toDate: string, limit: number = 20) {
+  try {
+    return await db
+      .select({
+        country: schema.analyticsCountryDaily.country,
+        views: sql<number>`SUM(${schema.analyticsCountryDaily.views})::int`.as('views'),
+        enrollments: sql<number>`SUM(${schema.analyticsCountryDaily.enrollments})::int`.as('enrollments')
+      })
+      .from(schema.analyticsCountryDaily)
+      .where(
+        and(
+          eq(schema.analyticsCountryDaily.orgId, orgId),
+          sql`${schema.analyticsCountryDaily.date} >= ${fromDate}`,
+          sql`${schema.analyticsCountryDaily.date} <= ${toDate}`
+        )
+      )
+      .groupBy(schema.analyticsCountryDaily.country)
+      .orderBy(desc(sql`SUM(${schema.analyticsCountryDaily.views})`))
+      .limit(limit);
+  } catch (error) {
+    console.error('selectCountryBreakdown error:', error);
+    throw new Error('Failed to select country breakdown');
+  }
+}

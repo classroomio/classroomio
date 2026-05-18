@@ -2,6 +2,7 @@
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import { Checkbox } from '@cio/ui/base/checkbox';
+  import * as Card from '@cio/ui/base/card';
   import * as Dialog from '@cio/ui/base/dialog';
   import { Empty } from '@cio/ui/custom/empty';
   import * as Field from '@cio/ui/base/field';
@@ -470,14 +471,26 @@
     </Tabs.List>
 
     <Tabs.Content value="overview" class="mt-4">
-      <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {#each summaryCards as card}
-          <div class="ui:bg-muted/40 rounded-lg p-4">
-            <p class="ui:text-muted-foreground text-xs tracking-wide uppercase">{$t(card.labelKey)}</p>
-            <p class="mt-2 text-lg font-semibold">{card.value}</p>
+      <Card.Root class="ui:bg-card">
+        <Card.Header class="pb-2">
+          <Card.Title class="text-base font-semibold"
+            >{$t('course.navItem.compliance.overview_metrics.heading')}</Card.Title
+          >
+          <Card.Description>{$t('course.navItem.compliance.overview_metrics.description')}</Card.Description>
+        </Card.Header>
+        <Card.Content class="pt-0">
+          <div class="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3">
+            {#each summaryCards as card}
+              <div class="flex min-w-0 flex-col gap-1">
+                <p class="ui:text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                  {$t(card.labelKey)}
+                </p>
+                <p class="ui:text-foreground text-2xl font-semibold tabular-nums">{card.value}</p>
+              </div>
+            {/each}
           </div>
-        {/each}
-      </div>
+        </Card.Content>
+      </Card.Root>
     </Tabs.Content>
 
     <Tabs.Content value="learners" class="mt-4 space-y-4">

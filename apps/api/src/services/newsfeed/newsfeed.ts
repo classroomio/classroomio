@@ -18,7 +18,8 @@ import {
 } from '@cio/db/queries/newsfeed';
 
 import { env } from '@api/config/env';
-import { buildEmailFromName, sendEmail } from '@cio/email';
+import { buildEmailFromName } from '@cio/email';
+import { enqueueTransactionalEmail } from '@api/services/jobs';
 
 /**
  * Lists newsfeed items for a course
@@ -359,25 +360,25 @@ async function sendNewsfeedPostEmail(feedId: string, authorId: string) {
     const orgSiteName = feedData.organization?.siteName || 'app';
     const postLink = `https://${orgSiteName}.classroomio.com/courses/${feedData.courseId}?feedId=${feedData.feedId}`;
 
-    // Send email to all course members
-    const emailPromises = feedData.courseMembers.map((member) => {
-      if (!member.email) return Promise.resolve();
+    const recipients = feedData.courseMembers
+      .map((member) => member.email)
+      .filter((email): email is string => Boolean(email));
 
-      return sendEmail('newsfeedPost', {
-        to: member.email,
-        fields: {
-          courseTitle: feedData.courseTitle!,
-          teacherName: feedData.author?.fullname || 'A teacher',
-          content: feedData.content || '',
-          postLink,
-          orgName
-        },
-        from: buildEmailFromName(`${orgName} - ClassroomIO`),
-        replyTo: feedData.author?.email || 'noreply@classroomio.com'
-      });
+    if (recipients.length === 0) return;
+
+    await enqueueTransactionalEmail('newsfeedPost', {
+      to: recipients,
+      fields: {
+        courseTitle: feedData.courseTitle!,
+        teacherName: feedData.author?.fullname || 'A teacher',
+        content: feedData.content || '',
+        postLink,
+        orgName
+      },
+      from: buildEmailFromName(`${orgName} - ClassroomIO`),
+      replyTo: feedData.author?.email || 'noreply@classroomio.com',
+      idempotencyKey: `newsfeed:post:${feedId}`
     });
-
-    await Promise.all(emailPromises);
   } catch (error) {
     console.error('Error sending newsfeed post email:', error);
     // Don't throw - email failures shouldn't break the API
@@ -403,7 +404,7 @@ async function sendNewsfeedCommentEmail(feedId: string, commentContent: string) 
     const orgSiteName = feedData.organization?.siteName || 'app';
     const postLink = `https://${orgSiteName}.classroomio.com/courses/${feedData.courseId}?feedId=${feedData.feedId}`;
 
-    await sendEmail('newsfeedComment', {
+    await enqueueTransactionalEmail('newsfeedComment', {
       to: feedData.author.email,
       fields: {
         courseTitle: feedData.courseTitle,

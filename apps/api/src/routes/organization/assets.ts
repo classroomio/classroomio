@@ -19,6 +19,7 @@ import {
   getAssetService,
   getAssetUsageGraphService,
   getOrganizationAssetStorageService,
+  getTranscriptForOrganizationAssetService,
   getYouTubeMetadataService,
   listOrganizationAssetsService,
   updateAssetService
@@ -150,6 +151,27 @@ export const assetsRouter = new Hono()
       }
     }
   )
+  /**
+   * GET /organization/assets/:assetId/transcript
+   * Whisper transcript + presigned VTT URL for captions (or null if none).
+   */
+  .get('/:assetId/transcript', authMiddleware, orgMemberMiddleware, zValidator('param', ZAssetGetParam), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const { assetId } = c.req.valid('param');
+      const data = await getTranscriptForOrganizationAssetService(orgId, assetId);
+
+      return c.json(
+        {
+          success: true,
+          data
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch transcript');
+    }
+  })
   /**
    * GET /organization/assets/:assetId
    * Get a single asset by id

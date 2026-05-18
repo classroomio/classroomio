@@ -40,3 +40,26 @@ export type CreateProgramNewsfeedCommentRequest =
   (typeof classroomio.program)[':programId']['newsfeed'][':feedId']['comment']['$post'];
 export type DeleteProgramNewsfeedCommentRequest =
   (typeof classroomio.program)[':programId']['newsfeed'][':feedId']['comment'][':commentId']['$delete'];
+
+// ─── Goals ───────────────────────────────────────────────────────────────────
+
+export type ListProgramGoalsRequest = (typeof classroomio.program)[':programId']['goals']['$get'];
+type ListProgramGoalsResponse = InferResponseType<ListProgramGoalsRequest>;
+type ListProgramGoalsSuccess = Extract<ListProgramGoalsResponse, { success: true }>;
+export type ProgramGoal = ListProgramGoalsSuccess['data'][number];
+export type ProgramGoalStatusCounts = ProgramGoal['statusCounts'];
+
+export type CreateProgramGoalRequest = (typeof classroomio.program)[':programId']['goals']['$post'];
+export type UpdateProgramGoalRequest = (typeof classroomio.program)[':programId']['goals'][':goalId']['$put'];
+export type DeleteProgramGoalRequest = (typeof classroomio.program)[':programId']['goals'][':goalId']['$delete'];
+
+export type MyGoalsRequest = typeof classroomio.program.my.goals.$get;
+type MyGoalsResponse = InferResponseType<MyGoalsRequest>;
+type MyGoalsSuccess = Extract<MyGoalsResponse, { success: true }>;
+export type MyGoalAssignment = MyGoalsSuccess['data'][number];
+
+export type GoalsOverviewRequest = typeof classroomio.program.goals.overview.$get;
+type GoalsOverviewResponse = InferResponseType<GoalsOverviewRequest>;
+type GoalsOverviewSuccess = Extract<GoalsOverviewResponse, { success: true }>;
+export type GoalsOverview = GoalsOverviewSuccess['data'];
+export type GoalsOverviewRow = GoalsOverview['goals'][number];

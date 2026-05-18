@@ -1,6 +1,5 @@
 <script>
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
-  import { BorderBeam } from '@cio/ui/custom/animation/border-beam';
 
   const learnerModes = [
     {
@@ -77,7 +76,6 @@
       <!-- Lesson Mock UI -->
       <BlurFade delay={0.2} once>
         <div class="relative overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 shadow-2xl/5">
-          <BorderBeam size={200} duration={14} colorFrom="#0233BD" colorTo="#93c5fd" />
           <div class="flex items-center justify-between border-b border-gray-200 bg-white px-5 py-4">
             <div class="text-sm font-medium">Data Privacy & Compliance</div>
             <div class="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs text-gray-500">

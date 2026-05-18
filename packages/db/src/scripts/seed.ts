@@ -1,6 +1,7 @@
 import 'dotenv/config';
 
 import { seedAccount } from '@db/utils/seed/account';
+import { seedCompliance } from '@db/utils/seed/compliance';
 import { MVC_SECTION_ID, PANDAS_SECTION_ID, REACT_SECTION_ID, seedCourseSections } from '@db/utils/seed/courseSection';
 import { seedCourses } from '@db/utils/seed/course';
 import { seedExercise } from '@db/utils/seed/exercise';
@@ -79,6 +80,7 @@ Flags:
   --exercises                Seed exercises
   --questions                Seed questions
   --templates                Seed exercise templates
+  --compliance               Seed compliance demo data (coursera-test org)
   --help, -h                  Show this help message
 
 Examples:
@@ -216,6 +218,10 @@ const seedFunctions = {
   templates: async () => {
     console.log('📝 Seeding exercise templates...');
     await seedExerciseTemplates();
+  },
+  compliance: async () => {
+    console.log('📝 Seeding compliance demo data (coursera-test)...');
+    await seedCompliance({ enterpriseOrgId: ENTERPRISE_ORG_ID });
   }
 };
 
@@ -253,6 +259,7 @@ async function seed() {
       await seedFunctions.exercises();
       await seedFunctions.questions();
       await seedFunctions.templates();
+      await seedFunctions.compliance();
     } else {
       // Run only specified seed functions
       // Order matters for dependencies, so we maintain the original order
@@ -273,7 +280,8 @@ async function seed() {
         'lessons',
         'exercises',
         'questions',
-        'templates'
+        'templates',
+        'compliance'
       ];
 
       for (const seedName of orderedSeeds) {

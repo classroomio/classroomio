@@ -11,3 +11,18 @@ export const ZMediaImagePresignUrlUpload = z.object({
   fileType: z.enum(ALLOWED_IMAGE_TYPES)
 });
 export type TMediaImagePresignUrlUpload = z.infer<typeof ZMediaImagePresignUrlUpload>;
+
+export const ZTranscriptSegment = z.object({
+  start: z.number(),
+  end: z.number(),
+  text: z.string()
+});
+
+export const ZTranscriptResponse = z.object({
+  language: z.string(),
+  segments: z.array(ZTranscriptSegment),
+  vttUrl: z.string().min(1),
+  vttUrlExpiresAt: z.string(),
+  durationSeconds: z.number().nullable()
+});
+export type TTranscriptResponse = z.infer<typeof ZTranscriptResponse>;

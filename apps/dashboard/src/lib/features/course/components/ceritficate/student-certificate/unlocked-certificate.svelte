@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import DownloadIcon from '@lucide/svelte/icons/download';
+  import ImageIcon from '@lucide/svelte/icons/image';
 
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
@@ -14,6 +14,7 @@
   import { openCourseCompletionModal } from '$features/course/store/course-completion-modal';
 
   let isLoading = $state(false);
+  let isPngLoading = $state(false);
   let isCourseComplete = $state(false);
   let evaluation = $state<CertificationEvaluationData | null>(null);
 
@@ -54,6 +55,25 @@
     }
   }
 
+  function buildBody() {
+    return {
+      studentName: $profile.fullname || 'Recipient',
+      studentId: $profile.id || undefined,
+      issuedAt: new Date().toISOString()
+    } as const;
+  }
+
+  async function triggerSave(blob: Blob, filename: string) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    document.body.append(link);
+    link.download = filename;
+    link.href = url;
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
   const downLoadCertificate = async () => {
     if (!isCourseComplete || !courseId) return;
 
@@ -61,33 +81,41 @@
     try {
       const response = await classroomio.course[':courseId']['download']['certificate']['$post']({
         param: { courseId },
-        json: {
-          theme: `${courseApi.course?.certificate?.theme ?? 'professional'}`,
-          studentName: `${$profile.fullname}`,
-          courseName: `${courseApi.course?.title}`,
-          courseDescription: `${courseApi.course?.description}`,
-          orgLogoUrl: $currentOrg.avatarUrl || `${$currentOrgDomain}/logo-512.png`,
-          orgName: `${$currentOrg.name}`
-        }
+        json: buildBody()
       });
-
       const blobResponse = await response.blob();
-
-      const file = new Blob([blobResponse], { type: 'application/pdf' });
-      const fileURL = URL.createObjectURL(file);
-
-      let a = document.createElement('a');
-      document.body.append(a);
-      a.download = 'Certificate of Completion - ' + $currentOrg.name;
-      a.href = fileURL;
-      a.click();
-      a.remove();
+      await triggerSave(
+        new Blob([blobResponse], { type: 'application/pdf' }),
+        `certificate-${courseApi.course?.title ?? 'course'}.pdf`
+      );
     } catch (error) {
       console.error('Error downloading', error);
       snackbar.error($t('course.navItem.certificates.unexpected_error'));
     }
 
     isLoading = false;
+  };
+
+  const downloadCertificateImage = async () => {
+    if (!isCourseComplete || !courseId) return;
+
+    isPngLoading = true;
+    try {
+      const response = await classroomio.course[':courseId']['download']['certificate']['png']['$post']({
+        param: { courseId },
+        json: buildBody()
+      });
+      const blobResponse = await response.blob();
+      await triggerSave(
+        new Blob([blobResponse], { type: 'image/png' }),
+        `certificate-${courseApi.course?.title ?? 'course'}.png`
+      );
+    } catch (error) {
+      console.error('Error downloading image', error);
+      snackbar.error($t('course.navItem.certificates.unexpected_error'));
+    }
+
+    isPngLoading = false;
   };
 
   const loadEvaluation = async () => {
@@ -149,9 +177,15 @@
         {/each}
       {/if}
     </div>
-    <Button onclick={downLoadCertificate} disabled={!isCourseComplete} loading={isLoading}>
-      <DownloadIcon size={16} />
-      {$t('course.navItem.certificates.download_certificate')}
-    </Button>
+    <div class="flex flex-wrap items-center justify-center gap-2">
+      <Button onclick={downLoadCertificate} disabled={!isCourseComplete} loading={isLoading}>
+        <DownloadIcon size={16} />
+        {$t('course.navItem.certificates.download_certificate')}
+      </Button>
+      <Button variant="outline" onclick={downloadCertificateImage} disabled={!isCourseComplete} loading={isPngLoading}>
+        <ImageIcon size={16} />
+        {$t('course.navItem.certificates.download_image')}
+      </Button>
+    </div>
   </Empty>
 </div>

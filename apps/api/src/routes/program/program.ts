@@ -3,10 +3,14 @@ import * as z from 'zod';
 import {
   ZAddCourseToProgram,
   ZAddProgramMembers,
+  ZAssignExistingStudentsToProgram,
   ZCreateProgram,
+  ZCreateProgramGoal,
   ZCreateProgramNewsfeed,
   ZCreateProgramNewsfeedComment,
+  ZInviteStudentsToProgram,
   ZUpdateProgram,
+  ZUpdateProgramGoal,
   ZUpdateProgramMember,
   ZUpdateProgramNewsfeed,
   ZUpdateProgramReaction
@@ -34,9 +38,23 @@ import {
   updateProgramNewsfeedReactionService,
   updateProgramNewsfeedService
 } from '@api/services/program/program';
+import { assignExistingStudentsToProgram, inviteStudentsToProgram } from '@api/services/program/invite';
+import {
+  archiveGoal,
+  createGoal,
+  evaluateGoal,
+  evaluateProgramGoals,
+  getGoal,
+  getMyGoals,
+  getOrgGoalsOverview,
+  listGoals,
+  removeGoal,
+  updateGoal
+} from '@api/services/program/goal';
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
+import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
 import { programMemberMiddleware } from '@api/middlewares/program-member';
 import { programTeamMemberMiddleware } from '@api/middlewares/program-team-member';
 import { programNewsfeedCommentAuthorOrTeamMiddleware } from '@api/middlewares/program-newsfeed-comment-author-or-team';
@@ -52,6 +70,7 @@ const ZCommentParam = z.object({
   feedId: z.string().uuid(),
   commentId: z.coerce.number().int()
 });
+const ZGoalParam = z.object({ programId: z.string().uuid(), goalId: z.string().uuid() });
 const ZListQuery = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(50).default(10)
@@ -243,6 +262,56 @@ export const programRouter = new Hono()
         return c.json({ success: true, data: member }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to remove program member');
+      }
+    }
+  )
+
+  // ── Invite ────────────────────────────────────────────────────────────────
+
+  /**
+   * POST /program/:programId/invite
+   * Invite new students to a program by CSV emails. Issues org invites
+   * pre-tagged with this program so accept auto-enrolls them.
+   * Gated by program-team-member middleware — Program ADMINs/TUTORs can
+   * invite into their own program without org-admin rights.
+   */
+  .post(
+    '/:programId/invite',
+    authMiddleware,
+    programTeamMemberMiddleware,
+    zValidator('param', ZProgramParam),
+    zValidator('json', ZInviteStudentsToProgram),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { programId } = c.req.valid('param');
+        const data = c.req.valid('json');
+        const result = await inviteStudentsToProgram(programId, data, user.id);
+        return c.json({ success: true, data: result }, 201);
+      } catch (error) {
+        return handleError(c, error, 'Failed to invite students to program');
+      }
+    }
+  )
+
+  /**
+   * POST /program/:programId/invite/assign
+   * Assign existing org-audience student profiles to a program.
+   */
+  .post(
+    '/:programId/invite/assign',
+    authMiddleware,
+    programTeamMemberMiddleware,
+    zValidator('param', ZProgramParam),
+    zValidator('json', ZAssignExistingStudentsToProgram),
+    async (c) => {
+      try {
+        const { programId } = c.req.valid('param');
+        const data = c.req.valid('json');
+        const result = await assignExistingStudentsToProgram(programId, data);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to assign students to program');
       }
     }
   )
@@ -482,6 +551,192 @@ export const programRouter = new Hono()
         return c.json({ success: true, data: comment }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to delete program newsfeed comment');
+      }
+    }
+  )
+
+  // ── Goals ─────────────────────────────────────────────────────────────────
+
+  /**
+   * GET /program/my/goals
+   * Goal assignments for the current authenticated user across all their programs.
+   * Used by the LMS "Your Goals" widget.
+   */
+  .get('/my/goals', authMiddleware, async (c) => {
+    try {
+      const user = c.get('user')!;
+      const goals = await getMyGoals(user.id);
+      return c.json({ success: true, data: goals }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to load goals');
+    }
+  })
+
+  /**
+   * GET /program/goals/overview?organizationId=...
+   * Cross-program goal roll-up for the org owner. One entry per active goal
+   * with per-status learner counts, scoped to the org via header + query.
+   */
+  .get('/goals/overview', authMiddleware, orgTeamMemberMiddleware, zValidator('query', ZOrgQuery), async (c) => {
+    try {
+      const { organizationId } = c.req.valid('query');
+      const overview = await getOrgGoalsOverview(organizationId);
+      return c.json({ success: true, data: overview }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to load goals overview');
+    }
+  })
+
+  /**
+   * GET /program/:programId/goals
+   */
+  .get('/:programId/goals', authMiddleware, programMemberMiddleware, zValidator('param', ZProgramParam), async (c) => {
+    try {
+      const { programId } = c.req.valid('param');
+      const goals = await listGoals(programId);
+      return c.json({ success: true, data: goals }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to list program goals');
+    }
+  })
+
+  /**
+   * POST /program/:programId/goals
+   */
+  .post(
+    '/:programId/goals',
+    authMiddleware,
+    programTeamMemberMiddleware,
+    zValidator('param', ZProgramParam),
+    zValidator('json', ZCreateProgramGoal),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { programId } = c.req.valid('param');
+        const data = c.req.valid('json');
+        const goal = await createGoal(programId, user.id, data);
+        return c.json({ success: true, data: goal }, 201);
+      } catch (error) {
+        return handleError(c, error, 'Failed to create program goal');
+      }
+    }
+  )
+
+  /**
+   * GET /program/:programId/goals/:goalId
+   */
+  .get(
+    '/:programId/goals/:goalId',
+    authMiddleware,
+    programMemberMiddleware,
+    zValidator('param', ZGoalParam),
+    async (c) => {
+      try {
+        const { goalId } = c.req.valid('param');
+        const goal = await getGoal(goalId);
+        return c.json({ success: true, data: goal }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to get program goal');
+      }
+    }
+  )
+
+  /**
+   * PUT /program/:programId/goals/:goalId
+   */
+  .put(
+    '/:programId/goals/:goalId',
+    authMiddleware,
+    programTeamMemberMiddleware,
+    zValidator('param', ZGoalParam),
+    zValidator('json', ZUpdateProgramGoal),
+    async (c) => {
+      try {
+        const { goalId } = c.req.valid('param');
+        const data = c.req.valid('json');
+        const goal = await updateGoal(goalId, data);
+        return c.json({ success: true, data: goal }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update program goal');
+      }
+    }
+  )
+
+  /**
+   * DELETE /program/:programId/goals/:goalId
+   * Hard delete (vs. archive). Use PUT with status=archived to preserve history.
+   */
+  .delete(
+    '/:programId/goals/:goalId',
+    authMiddleware,
+    programTeamMemberMiddleware,
+    zValidator('param', ZGoalParam),
+    async (c) => {
+      try {
+        const { goalId } = c.req.valid('param');
+        const goal = await removeGoal(goalId);
+        return c.json({ success: true, data: goal }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to delete program goal');
+      }
+    }
+  )
+
+  /**
+   * POST /program/:programId/goals/:goalId/archive
+   */
+  .post(
+    '/:programId/goals/:goalId/archive',
+    authMiddleware,
+    programTeamMemberMiddleware,
+    zValidator('param', ZGoalParam),
+    async (c) => {
+      try {
+        const { goalId } = c.req.valid('param');
+        const goal = await archiveGoal(goalId);
+        return c.json({ success: true, data: goal }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to archive program goal');
+      }
+    }
+  )
+
+  /**
+   * POST /program/:programId/goals/:goalId/evaluate
+   * Force a re-evaluation of one goal's per-learner statuses.
+   */
+  .post(
+    '/:programId/goals/:goalId/evaluate',
+    authMiddleware,
+    programTeamMemberMiddleware,
+    zValidator('param', ZGoalParam),
+    async (c) => {
+      try {
+        const { goalId } = c.req.valid('param');
+        const result = await evaluateGoal(goalId);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to evaluate program goal');
+      }
+    }
+  )
+
+  /**
+   * POST /program/:programId/goals/evaluate-all
+   * Force a re-evaluation of every active goal in the program.
+   */
+  .post(
+    '/:programId/goals/evaluate-all',
+    authMiddleware,
+    programTeamMemberMiddleware,
+    zValidator('param', ZProgramParam),
+    async (c) => {
+      try {
+        const { programId } = c.req.valid('param');
+        const result = await evaluateProgramGoals(programId);
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to evaluate program goals');
       }
     }
   );

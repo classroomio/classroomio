@@ -18,6 +18,7 @@ export {
 export type { PublicExerciseStoredAttempt } from './public-exercise-attempts-storage';
 
 export type {
+  PublicCourseCalloutAnimation,
   PublicCourseCalloutData,
   PublicCourseOrgData,
   PublicCourseSidebarItem,

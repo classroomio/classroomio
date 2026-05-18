@@ -117,7 +117,7 @@ export const groupRelations = relations(group, ({ one, many }) => ({
   groupmembers: many(groupmember)
 }));
 
-export const organizationRelations = relations(organization, ({ many }) => ({
+export const organizationRelations = relations(organization, ({ one, many }) => ({
   groups: many(group),
   assets: many(asset),
   assetUsages: many(assetUsage),
@@ -128,7 +128,13 @@ export const organizationRelations = relations(organization, ({ many }) => ({
   organizationPlans: many(organizationPlan),
   organizationmembers: many(organizationmember),
   tagGroups: many(tagGroup),
-  tags: many(tag)
+  tags: many(tag),
+  parentOrganization: one(organization, {
+    fields: [organization.parentOrganizationId],
+    references: [organization.id],
+    relationName: 'organizationAccount'
+  }),
+  childWorkspaces: many(organization, { relationName: 'organizationAccount' })
 }));
 
 export const tagGroupRelations = relations(tagGroup, ({ one, many }) => ({

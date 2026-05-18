@@ -14,7 +14,7 @@ import { env } from '@api/config/env';
 import { ROLE } from '@cio/utils/constants';
 import { PLAN } from '@cio/utils/plans';
 import { db } from '@cio/db/drizzle';
-import { sendEmail } from '@cio/email';
+import { enqueueTransactionalEmail } from '@api/services/jobs';
 
 export async function createOrganizationWithOwner(
   profileId: string,
@@ -125,11 +125,12 @@ export async function completeOnboarding(user: Partial<TUser> & { id: string; em
       throw new AppError('Profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
     }
 
-    await sendEmail('welcome', {
+    await enqueueTransactionalEmail('welcome', {
       to: user.email,
       fields: {
         name: profile.fullname
-      }
+      },
+      idempotencyKey: `onboarding:welcome:${user.id}`
     });
   } catch (error) {
     if (error instanceof AppError) {

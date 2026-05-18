@@ -16,7 +16,8 @@
     ShinnyText,
     Sparkle,
     SquareCardBody,
-    SquareCardIcon
+    SquareCardIcon,
+    Waves
   } from '@cio/ui/custom/animation';
 
   const { Story } = defineMeta({
@@ -67,6 +68,19 @@
       />
       <div class="ui:relative ui:z-10 ui:flex ui:h-full ui:items-center ui:justify-center ui:text-sm">
         Move the cursor over this area
+      </div>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Waves">
+  {#snippet template()}
+    <div
+      class="ui:relative ui:mx-auto ui:h-[500px] ui:w-full ui:max-w-3xl ui:overflow-hidden ui:rounded-xl ui:border ui:bg-background"
+    >
+      <Waves class="ui:absolute ui:inset-0 ui:h-full ui:w-full" />
+      <div class="ui:relative ui:z-10 ui:flex ui:h-full ui:items-center ui:justify-center ui:text-sm">
+        Move the cursor — animated waves use the theme primary stroke
       </div>
     </div>
   {/snippet}

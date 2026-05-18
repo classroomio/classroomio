@@ -29,9 +29,9 @@
   </div>
 
   <PageSignupCTA
-    header="Ready To Scale Your Training Efforts?"
-    subText="It's free to sign up and start getting value out of the product."
-    btnLabel="Sign me up"
+    header="Turn what your team already knows into training."
+    subText="ClassroomIO helps you convert docs, policies, videos, and internal knowledge into courses, quizzes, certificates, and completion evidence."
+    btnLabel="Start for free"
     link="/signup"
     demo={false}
   />

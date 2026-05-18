@@ -21,6 +21,7 @@ export interface PublicCourseHeader {
     description: string;
     buttonLabel: string;
     buttonUrl: string;
+    animation: 'waves' | 'dotted' | 'none';
   } | null;
   org: {
     id: string;
@@ -245,13 +246,17 @@ export async function getPublicCourseTreeBySlug(courseSlug: string): Promise<Pub
     });
 
     const rawCallout = courseRow.callout;
-    const callout =
+    const callout: PublicCourseHeader['callout'] =
       rawCallout && typeof rawCallout === 'object' && 'title' in rawCallout
         ? {
             title: String((rawCallout as { title: unknown }).title ?? ''),
             description: String((rawCallout as { description: unknown }).description ?? ''),
             buttonLabel: String((rawCallout as { buttonLabel: unknown }).buttonLabel ?? ''),
-            buttonUrl: String((rawCallout as { buttonUrl: unknown }).buttonUrl ?? '')
+            buttonUrl: String((rawCallout as { buttonUrl: unknown }).buttonUrl ?? ''),
+            animation: (() => {
+              const raw = (rawCallout as { animation: unknown }).animation;
+              return raw === 'dotted' || raw === 'none' ? raw : 'waves';
+            })()
           }
         : null;
 
@@ -287,7 +292,17 @@ export interface PublicLessonContent {
   video: {
     type: 'youtube' | 'generic' | 'upload' | 'google_drive';
     link: string;
+    /** S3 object key for uploads; used server-side for presigning (stripped before API response). */
+    key?: string;
+    assetId?: string;
+    transcript?: {
+      vttUrl: string;
+      vttUrlExpiresAt: string;
+      language: string;
+    } | null;
   } | null;
+  /** Internal: resolved in the API layer for presigned transcript URLs; not returned to clients. */
+  courseOrganizationId?: string | null;
 }
 
 export interface PublicExerciseContent {
@@ -320,11 +335,13 @@ export async function getPublicCourseItem(
     const [courseRow] = await db
       .select({
         id: schema.course.id,
+        organizationId: schema.group.organizationId,
         type: schema.course.type,
         isPublished: schema.course.isPublished,
         status: schema.course.status
       })
       .from(schema.course)
+      .leftJoin(schema.group, eq(schema.course.groupId, schema.group.id))
       .where(eq(schema.course.slug, courseSlug))
       .limit(1);
 
@@ -376,11 +393,15 @@ export async function getPublicCourseItem(
         Array.isArray(lessonRow.videos) && lessonRow.videos.length > 0
           ? {
               type: lessonRow.videos[0].type,
-              link: lessonRow.videos[0].link
+              link: lessonRow.videos[0].link,
+              assetId: lessonRow.videos[0].assetId,
+              ...(lessonRow.videos[0].key ? { key: lessonRow.videos[0].key } : {})
             }
           : lessonRow.videoUrl
             ? { type: 'generic' as const, link: lessonRow.videoUrl }
             : null;
+
+      const isLocked = !lessonRow.isUnlocked;
 
       return {
         kind: 'lesson',
@@ -389,8 +410,9 @@ export async function getPublicCourseItem(
         title: lessonRow.title,
         sectionTitle: section[0]?.title ?? null,
         isUnlocked: lessonRow.isUnlocked ?? false,
-        body,
-        video: firstVideo
+        body: isLocked ? '' : body,
+        video: isLocked ? null : firstVideo,
+        courseOrganizationId: courseRow.organizationId
       };
     }
 
@@ -437,7 +459,7 @@ export async function getPublicCourseItem(
       id: exerciseRow.id,
       slug: exerciseRow.slug ?? itemSlug,
       title: exerciseRow.title,
-      description: exerciseRow.description,
+      description: exerciseRow.isUnlocked ? exerciseRow.description : null,
       sectionTitle: section[0]?.title ?? null,
       isUnlocked: exerciseRow.isUnlocked ?? true,
       allowMultipleAttempts: exerciseRow.allowMultipleAttempts,

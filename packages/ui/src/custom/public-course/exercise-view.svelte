@@ -13,13 +13,14 @@
   import { QuestionList } from '../exercise-question';
   import { cn } from '../../tools';
   import Callout from './callout.svelte';
-  import type { PublicCourseCalloutData, PublicExerciseViewData } from './types';
+  import type { PublicCourseCalloutAnimation, PublicCourseCalloutData, PublicExerciseViewData } from './types';
   import type { PublicExerciseStoredAttempt } from './public-exercise-attempts-storage';
   import { readPublicExerciseAttempts, writePublicExerciseAttempts } from './public-exercise-attempts-storage';
 
   interface Props {
     exercise: PublicExerciseViewData;
     callout?: PublicCourseCalloutData | null;
+    calloutAnimation?: PublicCourseCalloutAnimation;
     labels?: ExerciseQuestionLabels;
     /** When set, completed attempts persist and hydrate from `localStorage`. */
     attemptsPersistenceKey?: string | null;
@@ -36,6 +37,7 @@
   let {
     exercise,
     callout = null,
+    calloutAnimation,
     labels,
     attemptsPersistenceKey = null,
     formatAttemptOption = ({ attemptNumber, correct, total }) => `Attempt ${attemptNumber} - ${correct}/${total}`,
@@ -47,6 +49,10 @@
     summaryTemplate = 'You got [[correct]] / [[total]] correct.',
     class: className
   }: Props = $props();
+
+  const resolvedCalloutAnimation = $derived<PublicCourseCalloutAnimation>(
+    calloutAnimation ?? callout?.animation ?? 'waves'
+  );
 
   let persistedAttempts = $state<PublicExerciseStoredAttempt[]>([]);
   /** `'live'` = unsaved/new round; `'0'`.. = index into persisted attempts. */
@@ -335,7 +341,7 @@
 
 <article class={cn('ui:mx-auto ui:w-full ui:max-w-3xl ui:px-4 ui:py-8 ui:sm:px-6 ui:lg:py-10', className)}>
   {#if !exercise.isUnlocked}
-    <Callout variant="full" {callout} />
+    <Callout variant="full" {callout} animation={resolvedCalloutAnimation} />
   {:else}
     {#if exercise.sectionTitle}
       <div class="ui:text-xs ui:font-medium ui:uppercase ui:tracking-wide ui:text-muted-foreground">
@@ -417,6 +423,6 @@
       {/if}
     </div>
 
-    <Callout variant="inline" {callout} />
+    <Callout variant="inline" {callout} animation={resolvedCalloutAnimation} />
   {/if}
 </article>

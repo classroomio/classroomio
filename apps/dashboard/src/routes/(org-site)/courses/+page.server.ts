@@ -1,3 +1,4 @@
+import type { MetaTagsProps } from 'svelte-meta-tags';
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 import { safeServerApi } from '$lib/utils/services/api/server';
 import { redirect } from '@sveltejs/kit';
@@ -49,12 +50,40 @@ export const load = async ({ parent, url }) => {
     )
   ]);
   const courseData = coursesResult.ok ? coursesResult.body.data : { courses: [], hasMoreCourses: false };
+  const canonicalUrl = new URL(url.pathname, url.origin).href;
+  const orgTitle = `${org.name} – All Courses`;
+  const orgDescription = `Browse all courses offered by ${org.name}`;
+
+  const pageMetaTags = Object.freeze({
+    title: orgTitle,
+    description: orgDescription,
+    canonical: canonicalUrl,
+    openGraph: {
+      type: 'website',
+      url: canonicalUrl,
+      title: orgTitle,
+      description: orgDescription,
+      ...(org.avatarUrl
+        ? {
+            images: [
+              {
+                url: org.avatarUrl,
+                alt: `${org.name} logo`,
+                secureUrl: org.avatarUrl,
+                type: 'image/jpeg'
+              }
+            ]
+          }
+        : {})
+    }
+  } satisfies MetaTagsProps);
 
   return {
     org,
     courses: courseData.courses,
     hasMoreCourses: courseData.hasMoreCourses,
     tagGroups: tagsResult.ok ? tagsResult.body.data : [],
-    activeTags: normalizedTags
+    activeTags: normalizedTags,
+    pageMetaTags
   };
 };

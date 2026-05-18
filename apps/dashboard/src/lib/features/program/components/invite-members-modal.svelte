@@ -150,31 +150,11 @@
   }
 
   async function assignExistingStudents(profileIds: string[], sendEmail: boolean) {
-    const result = await orgApi.assignAudienceToCourses({
-      profileIds,
-      programIds: [programId],
-      sendEmail
-    });
-
-    if (!result) {
-      return;
-    }
-
-    await programApi.listMembers(programId, true);
+    await programApi.assignExistingStudentsToProgram(programId, { profileIds, sendEmail });
   }
 
   async function inviteNewStudents(recipientCsv: string, sendEmail: boolean) {
-    const result = await orgApi.importAudienceMembers({
-      recipientCsv,
-      programIds: [programId],
-      sendEmail
-    });
-
-    if (!result) {
-      return;
-    }
-
-    await programApi.listMembers(programId, true);
+    await programApi.inviteStudentsToProgram(programId, { recipientCsv, sendEmail });
   }
 
   $effect(() => {

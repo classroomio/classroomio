@@ -4,8 +4,11 @@
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
   import FileQuestionIcon from '@lucide/svelte/icons/file-question';
   import PencilIcon from '@lucide/svelte/icons/pencil';
+  import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';
   import { Button } from '@cio/ui/base/button';
+  import { Textarea } from '@cio/ui/base/textarea';
   import { SvelteSet } from 'svelte/reactivity';
+  import { t } from '$lib/utils/functions/translations';
   import type { CoursePlan } from './utils/course-plan';
 
   /** Token cost estimation heuristics (tokens per item) */
@@ -18,11 +21,31 @@
   interface Props {
     plan: CoursePlan;
     onImplement: (editedPlan: CoursePlan) => void;
-    onAskChanges: () => void;
+    onAskChanges: (message: string) => void;
+    /** When true, disables the inline change-request composer (agent is already working). */
+    isBusy?: boolean;
     remainingTokens?: number;
   }
 
-  let { plan, onImplement, onAskChanges, remainingTokens }: Props = $props();
+  let { plan, onImplement, onAskChanges, isBusy = false, remainingTokens }: Props = $props();
+
+  let changeRequest = $state('');
+  const canSendChange = $derived(!isBusy && changeRequest.trim().length > 0);
+
+  function submitChangeRequest() {
+    if (!canSendChange) return;
+
+    const message = changeRequest.trim();
+    changeRequest = '';
+    onAskChanges(message);
+  }
+
+  function handleChangeKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      submitChangeRequest();
+    }
+  }
 
   // CoursePlan is plain JSON; structuredClone fails when the AI SDK part carries
   // non-cloneable internals, so JSON round-trip is both safer and sufficient.
@@ -237,9 +260,29 @@
       </p>
     {/if}
 
-    <div class="flex gap-2">
-      <Button size="sm" onclick={() => onImplement(editablePlan)} class="flex-1">Implement Plan</Button>
-      <Button size="sm" variant="outline" onclick={onAskChanges} class="flex-1">Ask for Changes</Button>
+    <div class="flex flex-col gap-2">
+      <Button size="sm" onclick={() => onImplement(editablePlan)} class="w-full">
+        {$t('ai_assistant.plan_implement')}
+      </Button>
+      <div class="flex items-end gap-2">
+        <Textarea
+          bind:value={changeRequest}
+          placeholder={$t('ai_assistant.plan_ask_changes_placeholder')}
+          rows={1}
+          disabled={isBusy}
+          onkeydown={handleChangeKeydown}
+          class="ui:min-h-9! ui:resize-none ui:py-2 ui:text-sm"
+        />
+        <Button
+          size="icon-sm"
+          variant="default"
+          disabled={!canSendChange}
+          onclick={submitChangeRequest}
+          aria-label={$t('ai_assistant.plan_ask_changes_send_aria')}
+        >
+          <ArrowUpIcon class="ui:size-4" />
+        </Button>
+      </div>
     </div>
   </div>
 </div>

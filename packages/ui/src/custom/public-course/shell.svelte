@@ -7,6 +7,7 @@
   import { Button } from '../../base/button';
   import { cn } from '../../tools';
   import type { PublicCourseOrgData, PublicCourseSidebarItem, PublicCourseSidebarSection } from './types';
+  import { ModeSwitcher } from '../../base/dark-mode';
 
   interface Props {
     sections: PublicCourseSidebarSection[];
@@ -120,7 +121,7 @@
 <div class={cn('ui:min-h-dvh ui:bg-background ui:text-foreground', className)}>
   <!--
     Top header. Sticky so it stays visible as guests scroll long lessons.
-    Layout: [org logo · org name | course title]  ··· [Explore courses] [Sign in]
+    Layout: [org logo · org name | course title]  ··· [Explore courses] [Sign in] [Theme]
     Height intentionally compact (h-12) to maximize content vertical space.
   -->
   <header
@@ -168,6 +169,7 @@
           </Button>
           <Button href={signInHref} variant="default" size="sm">{signInLabel}</Button>
         {/if}
+        <ModeSwitcher />
       </div>
     </div>
   </header>
@@ -186,7 +188,7 @@
         {sections}
         {activeSlug}
         {hrefFor}
-        {onItemClick}
+        onItemClick={hrefFor ? undefined : onItemClick}
         {showPoweredBy}
         {courseSlug}
         orgSlug={org?.siteName ?? org?.name ?? null}
@@ -204,7 +206,7 @@
             prev={prevItem}
             next={nextItem}
             {hrefFor}
-            onNavigate={(item) => onItemClick?.(item)}
+            onNavigate={hrefFor ? undefined : (item) => onItemClick?.(item)}
             prevLabel={footerPrevLabel}
             nextLabel={footerNextLabel}
           />
@@ -236,7 +238,9 @@
     {poweredByLabel}
     {poweredByBrand}
     onItemClick={(item) => {
-      onItemClick?.(item);
+      if (!hrefFor) {
+        onItemClick?.(item);
+      }
       sheetOpen = false;
     }}
   />

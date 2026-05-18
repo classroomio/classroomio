@@ -15,7 +15,12 @@ export default ({ mode }) => {
       }
     },
     plugins: [sveltekit()],
-    server: getServer(process.env),
+    server: {
+      ...getServer(process.env),
+      watch: {
+        ignored: ['**/node_modules/!(@cio)/**', '**/.git/**']
+      }
+    },
     build: {
       sourcemap: false
     },
@@ -33,7 +38,10 @@ export default ({ mode }) => {
     },
     optimizeDeps: {
       entries: ['src/routes/**/+*.{js,ts,svelte}'],
-      include: ['@cio/api/rpc-types']
+      include: ['@cio/api/rpc-types'],
+      // Workspace packages must be processed by Svelte/Vite (not pre-bundled)
+      // so HMR fires when editing files under packages/*.
+      exclude: ['@cio/ui', '@cio/utils', '@cio/question-types']
     },
     resolve: {
       mainFields: ['browser']
@@ -53,7 +61,7 @@ function getServer(params) {
   }
 
   return {
-    allowedHosts: ['f0aa-2605-59c0-e3a-7710-8142-4b4d-2b55-6bf3.ngrok-free.app']
+    allowedHosts: []
   };
 }
 

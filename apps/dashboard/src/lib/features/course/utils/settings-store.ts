@@ -24,9 +24,9 @@ export const settings = writable<CourseSettings>({
   type: 'SELF_PACED' as TCourseType,
   allowNewStudents: false,
   tabs: [
+    { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
     { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
     { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
-    { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
     { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
   ],
   lessonDownload: false,

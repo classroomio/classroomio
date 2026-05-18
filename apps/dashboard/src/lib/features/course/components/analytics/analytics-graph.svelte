@@ -1,5 +1,9 @@
 <script lang="ts">
   import * as Chart from '@cio/ui/base/chart';
+  import { Spinner } from '@cio/ui/base/spinner';
+  import { Empty } from '@cio/ui/custom/empty';
+  import BarChartIcon from '@lucide/svelte/icons/bar-chart-3';
+  import { AnalyticsPanelCard } from '$features/analytics';
   import type { CourseAnalytics } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
 
@@ -29,10 +33,9 @@
     }
   } satisfies Chart.ChartConfig);
 
-  let hasStudentData = $derived(Boolean(courseAnalytics?.students?.length));
+  const hasStudentData = $derived(Boolean(courseAnalytics?.students?.length));
 
-  // Transform data for progress distribution chart
-  let progressChartData = $derived<DistributionChartData[]>(
+  const progressChartData = $derived<DistributionChartData[]>(
     courseAnalytics?.students
       ? [
           {
@@ -55,8 +58,7 @@
       : []
   );
 
-  // Transform data for grade distribution chart
-  let gradeChartData = $derived<DistributionChartData[]>(
+  const gradeChartData = $derived<DistributionChartData[]>(
     courseAnalytics?.students
       ? [
           {
@@ -83,7 +85,7 @@
       : []
   );
 
-  let progressChartProps = $derived({
+  const progressChartProps = $derived({
     xAxis: {
       label: $t('analytics.progress_range')
     },
@@ -92,7 +94,7 @@
     }
   });
 
-  let gradeChartProps = $derived({
+  const gradeChartProps = $derived({
     xAxis: {
       label: $t('analytics.grade_range')
     },
@@ -101,7 +103,7 @@
     }
   });
 
-  let progressSeries = $derived([
+  const progressSeries = $derived([
     {
       key: 'students',
       value: 'value',
@@ -110,7 +112,7 @@
     }
   ]);
 
-  let gradeSeries = $derived([
+  const gradeSeries = $derived([
     {
       key: 'students',
       value: 'value',
@@ -118,50 +120,52 @@
       color: 'var(--color-students)'
     }
   ]);
+
+  const chartsLoading = $derived(!courseAnalytics);
 </script>
 
-<div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-  <!-- Progress Distribution Chart -->
-  <div class="">
-    <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
-      {$t('analytics.student_progress_distribution')}
-    </h3>
-    {#if !courseAnalytics}
-      <div class="flex h-[300px] items-center justify-center">
-        <div class="animate-pulse text-gray-500 dark:text-gray-400">{$t('analytics.loading_chart')}</div>
-      </div>
-    {:else if hasStudentData}
-      <Chart.ChartContainer class="h-[300px] w-full" config={progressChartConfig}>
-        <Chart.BarChart
-          data={progressChartData}
-          x="group"
-          axis="x"
-          props={progressChartProps}
-          series={progressSeries}
-        />
-      </Chart.ChartContainer>
-    {:else}
-      <div class="flex h-[300px] items-center justify-center text-gray-500 dark:text-gray-400">
-        {$t('analytics.no_progress_data')}
-      </div>
-    {/if}
-  </div>
+<div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+  <AnalyticsPanelCard
+    title={$t('analytics.student_progress_distribution')}
+    description={$t('analytics.course_metrics.progress_distribution_card_description')}
+  >
+    {#snippet children()}
+      {#if chartsLoading}
+        <div class="flex h-[280px] items-center justify-center">
+          <Spinner class="ui:text-muted-foreground size-6" />
+        </div>
+      {:else if hasStudentData}
+        <Chart.ChartContainer class="h-[280px] w-full" config={progressChartConfig}>
+          <Chart.BarChart
+            data={progressChartData}
+            x="group"
+            axis="x"
+            props={progressChartProps}
+            series={progressSeries}
+          />
+        </Chart.ChartContainer>
+      {:else}
+        <Empty icon={BarChartIcon} title={$t('analytics.no_progress_data')} class="h-[280px]" />
+      {/if}
+    {/snippet}
+  </AnalyticsPanelCard>
 
-  <!-- Grade Distribution Chart -->
-  <div class="">
-    <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">{$t('analytics.grade_distribution')}</h3>
-    {#if !courseAnalytics}
-      <div class="flex h-[300px] items-center justify-center">
-        <div class="animate-pulse text-gray-500 dark:text-gray-400">{$t('analytics.loading_chart')}</div>
-      </div>
-    {:else if hasStudentData}
-      <Chart.ChartContainer class="h-[300px] w-full" config={gradeChartConfig}>
-        <Chart.BarChart data={gradeChartData} x="group" axis="x" props={gradeChartProps} series={gradeSeries} />
-      </Chart.ChartContainer>
-    {:else}
-      <div class="flex h-[300px] items-center justify-center text-gray-500 dark:text-gray-400">
-        {$t('analytics.no_grade_data')}
-      </div>
-    {/if}
-  </div>
+  <AnalyticsPanelCard
+    title={$t('analytics.grade_distribution')}
+    description={$t('analytics.course_metrics.grade_distribution_card_description')}
+  >
+    {#snippet children()}
+      {#if chartsLoading}
+        <div class="flex h-[280px] items-center justify-center">
+          <Spinner class="ui:text-muted-foreground size-6" />
+        </div>
+      {:else if hasStudentData}
+        <Chart.ChartContainer class="h-[280px] w-full" config={gradeChartConfig}>
+          <Chart.BarChart data={gradeChartData} x="group" axis="x" props={gradeChartProps} series={gradeSeries} />
+        </Chart.ChartContainer>
+      {:else}
+        <Empty icon={BarChartIcon} title={$t('analytics.no_grade_data')} class="h-[280px]" />
+      {/if}
+    {/snippet}
+  </AnalyticsPanelCard>
 </div>

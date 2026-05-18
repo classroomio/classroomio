@@ -1,6 +1,12 @@
 import { z } from 'zod';
 import { QUESTION_TYPE_REGISTRY } from '@cio/question-types';
 import { CoursePlanSchema } from '../types';
+import { CourseTemplateIdSchema, TemplateFormFieldSchema } from '../templates';
+import {
+  LANDING_PAGE_COURSE_DESCRIPTION_PLAIN_HINT,
+  LANDING_PAGE_METADATA_DESCRIPTION_SECTION_HINT,
+  LANDING_PAGE_SECTION_HTML_AGENT_HINT
+} from './landing-page-html-hint';
 
 const QUESTION_TYPE_ID_DESCRIPTION = QUESTION_TYPE_REGISTRY.map((t) => `${t.id}=${t.typename} (${t.label})`).join(', ');
 
@@ -127,8 +133,9 @@ export const createExerciseSchema = {
             .int()
             .min(1)
             .max(QUESTION_TYPE_REGISTRY.length)
-            .default(1)
-            .describe(`Question type ID. Supported types: ${QUESTION_TYPE_ID_DESCRIPTION}`),
+            .describe(
+              `Required on every question — never omit. Supported types: ${QUESTION_TYPE_ID_DESCRIPTION}. Vary types across questions (do not default everything to RADIO/1).`
+            ),
           points: z.number().min(0).default(1).describe('Points for this question'),
           order: z.number().int().min(0).describe('Display order'),
           options: z
@@ -239,8 +246,9 @@ export const addQuestionsSchema = {
           .int()
           .min(1)
           .max(QUESTION_TYPE_REGISTRY.length)
-          .default(1)
-          .describe(`Question type ID. Supported types: ${QUESTION_TYPE_ID_DESCRIPTION}`),
+          .describe(
+            `Required on every question — never omit. Supported types: ${QUESTION_TYPE_ID_DESCRIPTION}. Vary types across questions (do not default everything to RADIO/1).`
+          ),
         points: z.number().min(0).default(1).describe('Points for this question'),
         order: z.number().int().min(0).describe('Display order'),
         options: z.array(
@@ -308,12 +316,12 @@ export const updateQuestionsSchema = {
 
 export const updateCourseLandingPageSchema = {
   description:
-    'Update public course landing-page fields, including title, description, overview, goals, requirements, instructor details, pricing, and banner image.',
+    'Update public course landing-page fields. The top-level course description is plain text (no HTML). The metadata description field is the Description block after Requirements and must be HTML, along with overview, goals, requirements, and instructor bio—paragraphs and bold/italic only, never h1–h6. Title is plain text.',
   parameters: z.object({
     courseId: z.string().describe('The course ID'),
-    title: z.string().min(1).optional().describe('Public course title'),
-    description: z.string().min(1).optional().describe('Short public course description'),
-    overview: z.string().optional().describe('Landing-page overview copy'),
+    title: z.string().min(1).optional().describe('Plain-text public course title (no HTML)'),
+    description: z.string().min(1).optional().describe(LANDING_PAGE_COURSE_DESCRIPTION_PLAIN_HINT),
+    overview: z.string().optional().describe(LANDING_PAGE_SECTION_HTML_AGENT_HINT),
     cost: z.number().int().min(0).optional().describe('Course price in the selected currency'),
     currency: z.enum(['NGN', 'USD']).optional().describe('Course price currency'),
     imageUrl: z.string().url().optional().describe('Banner image URL to use directly'),
@@ -321,9 +329,9 @@ export const updateCourseLandingPageSchema = {
     imageQuery: z.string().min(1).max(120).optional().describe('Search query for a generated/selected banner image'),
     metadata: z
       .object({
-        requirements: z.string().optional(),
-        description: z.string().optional(),
-        goals: z.string().optional(),
+        requirements: z.string().optional().describe(LANDING_PAGE_SECTION_HTML_AGENT_HINT),
+        description: z.string().optional().describe(LANDING_PAGE_METADATA_DESCRIPTION_SECTION_HINT),
+        goals: z.string().optional().describe(LANDING_PAGE_SECTION_HTML_AGENT_HINT),
         videoUrl: z.string().optional(),
         showDiscount: z.boolean().optional(),
         discount: z.number().optional(),
@@ -333,7 +341,7 @@ export const updateCourseLandingPageSchema = {
             name: z.string().optional(),
             role: z.string().optional(),
             coursesNo: z.number().optional(),
-            description: z.string().optional(),
+            description: z.string().optional().describe(LANDING_PAGE_SECTION_HTML_AGENT_HINT),
             imgUrl: z.string().optional()
           })
           .optional()
@@ -362,10 +370,29 @@ export const goLiveCourseSchema = {
 
 export const generateCoursePlanSchema = {
   description:
-    'Generate a structured course plan with sections and lessons based on a topic or uploaded document. Returns a JSON plan that the teacher can review and approve before any content is created. Always use this tool when the teacher asks you to design, structure, or plan a course.',
+    'Generate a structured course plan with sections and lessons based on a topic or uploaded document. Returns a JSON plan that the teacher can review and approve before any content is created. Always use this tool when the teacher asks you to design, structure, or plan a course. The LAST section MUST be the comprehensive final examination (see plan schema): at least one exercise item that will cover every prior course section with multiple in-exercise question blocks and 3–5 questions per prior section.',
   parameters: z.object({
     plan: CoursePlanSchema.describe(
-      'The proposed course structure with sections and lessons. Each lesson includes a short description and whether it should have an exercise.'
+      'The proposed course structure. Instructional content lives in prior sections; the final section is always the course final examination (see schema). Each lesson includes a short description and whether it should have a linked exercise.'
     )
+  })
+};
+
+export const askTemplateQuestionsSchema = {
+  description:
+    'Render a structured questionnaire card to the teacher for a template flow. Pause until the teacher submits answers via a user message with metadata.template.action="submit_template_answers" or skips via metadata.template.action="skip_template_form".',
+  parameters: z.object({
+    templateId: CourseTemplateIdSchema,
+    title: z.string().min(1),
+    description: z.string().optional(),
+    fields: z.array(TemplateFormFieldSchema).min(1)
+  })
+};
+
+export const fetchDocumentationUrlSchema = {
+  description:
+    'Fetch a public documentation URL via Jina Reader and return cleaned markdown plus a list of same-origin sub-page links. Use this iteratively when the teacher provided a documentation URL: start with the root, then call again with the most relevant 5–15 sub-pages until you have enough product context.',
+  parameters: z.object({
+    url: z.string().url()
   })
 };

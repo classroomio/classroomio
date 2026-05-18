@@ -393,6 +393,13 @@ export const ZWidgetDetail = z.object({
     embedCode: z.string(),
     publicScriptUrl: z.string()
   }),
+  organization: z.object({
+    id: z.uuid(),
+    name: z.string(),
+    siteName: z.string(),
+    customDomain: z.string().nullable().optional()
+  }),
+  orgBaseUrl: z.string(),
   availableCourses: z.array(ZWidgetEditorCourse),
   availableTags: z.array(
     z.object({
@@ -403,9 +410,9 @@ export const ZWidgetDetail = z.object({
       groupId: z.uuid()
     })
   ),
-  previewPayload: ZWidgetPayload.nullable(),
   versions: z.array(ZWidgetVersionRecord),
-  planGatedFields: ZWidgetPlanGatedFields
+  planGatedFields: ZWidgetPlanGatedFields,
+  planName: z.string().nullable()
 });
 
 /**
@@ -496,13 +503,6 @@ export const ZRollbackWidget = z.object({
   versionId: z.uuid()
 });
 
-export const ZPreviewWidget = z.object({
-  layoutType: ZWidgetLayoutType.optional(),
-  selectionMode: ZWidgetSelectionMode.optional(),
-  config: ZWidgetConfig.optional(),
-  selectedCourseIds: z.array(z.uuid()).optional()
-});
-
 export const ZWidgetIdParams = z.object({
   widgetId: z.uuid()
 });
@@ -536,7 +536,6 @@ export type TWidgetDetail = z.infer<typeof ZWidgetDetail>;
 export type TCreateWidget = z.infer<typeof ZCreateWidget>;
 export type TUpdateWidget = z.infer<typeof ZUpdateWidget>;
 export type TRollbackWidget = z.infer<typeof ZRollbackWidget>;
-export type TPreviewWidget = z.infer<typeof ZPreviewWidget>;
 
 export function getDefaultWidgetConfig(): TWidgetConfig {
   return ZWidgetConfig.parse(DEFAULT_WIDGET_CONFIG);

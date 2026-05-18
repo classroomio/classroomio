@@ -45,9 +45,16 @@ function fallbackSanitize(html: string): string {
   // Remove data:image/svg URLs which can contain XSS
   html = html.replace(/src\s*=\s*["']data:image\/svg[^"']*["']/gi, 'src=""');
 
-  // Remove on* event handlers (onclick, onload, onerror, etc.)
-  html = html.replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '');
-  html = html.replace(/\s*on\w+\s*=\s*[^\s>]*/gi, '');
+  // Remove on* event handlers (onclick, onload, onerror, etc.).
+  // `\s+` (not `\s*`) is required so we only match real tag attributes — which
+  // are always preceded by whitespace inside `<tag …>`. Using `\s*` lets the
+  // regex anchor mid-word (e.g. `onse` inside `response`) and chew through
+  // unrelated text content, including closing tags, which produces unclosed
+  // elements that the browser's adoption-agency parser then re-opens on every
+  // sibling. See: lesson body containing `response = httpClient.fetch(url);`.
+  html = html.replace(/\s+on\w+\s*=\s*"[^"]*"/gi, '');
+  html = html.replace(/\s+on\w+\s*=\s*'[^']*'/gi, '');
+  html = html.replace(/\s+on\w+\s*=\s*[^\s"'>]+/gi, '');
 
   // Remove data: protocol for script execution
   html = html.replace(/\bdata:\s*text\/html/gi, 'data:text/plain');
@@ -73,11 +80,35 @@ function fallbackSanitize(html: string): string {
 
 export type ContentSegment = { type: 'html'; content: string } | { type: 'svg'; content: string };
 
+function fallbackSanitizeSvg(svg: string): string {
+  let output = svg.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  output = output.replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '');
+  output = output.replace(/\s*on\w+\s*=\s*[^\s>]*/gi, '');
+
+  return output;
+}
+
 /**
- * Splits HTML into safe-HTML segments and raw SVG segments.
- * HTML segments are sanitized; SVG segments are left raw so the caller
- * can render them inside a sandboxed iframe (sandbox="") where scripts,
- * forms, and cookie access are all disabled by the browser.
+ * SVG shown inside `srcdoc` + `sandbox=""` cannot run scripts; stripping
+ * script and handler vectors avoids console errors and matches the sandbox intent.
+ */
+export function sanitizeSvgForSandbox(svg: string): string {
+  if (typeof svg !== 'string' || !svg) return '';
+
+  if (!browser) {
+    return fallbackSanitizeSvg(svg);
+  }
+
+  return DOMPurify.sanitize(svg, {
+    USE_PROFILES: { svg: true, svgFilters: true }
+  });
+}
+
+/**
+ * Splits HTML into safe-HTML segments and sandbox-safe SVG segments.
+ * HTML segments are sanitized; SVG segments are sanitized for iframe `srcdoc`
+ * so embedded scripts are removed (the iframe stays `sandbox=""` without
+ * `allow-scripts`).
  */
 export function splitHtmlAndSvg(html: string): ContentSegment[] {
   if (typeof html !== 'string' || !html) return [];
@@ -91,7 +122,7 @@ export function splitHtmlAndSvg(html: string): ContentSegment[] {
     if (match.index > lastIndex) {
       segments.push({ type: 'html', content: sanitizeHtml(html.slice(lastIndex, match.index)) });
     }
-    segments.push({ type: 'svg', content: match[0] });
+    segments.push({ type: 'svg', content: sanitizeSvgForSandbox(match[0]) });
     lastIndex = svgRegex.lastIndex;
   }
 

@@ -1,5 +1,5 @@
 import {
-  ZCertificateDownload,
+  ZCertificateDownloadRequest,
   ZCourseClone,
   ZCourseCloneParam,
   ZCourseCreate,
@@ -31,6 +31,7 @@ import { getCourseTags, replaceCourseTags } from '@api/services/tag';
 
 import { Hono } from '@api/utils/hono';
 import { attendanceRouter } from '@api/routes/course/attendance';
+import { courseAiTutorRouter } from '@api/routes/course/ai-tutor';
 import { authMiddleware } from '@api/middlewares/auth';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { cloneCourse } from '@api/services/course/clone';
@@ -43,9 +44,11 @@ import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { enrollInCourse } from '@api/services/course/invite';
 import { exerciseRouter } from '@api/routes/course/exercise';
 import { extractClientIp } from '@api/utils/redis/key-generators';
-import { generateCertificate } from '@api/utils/certificate';
+import { generateCertificatePdf, generateCertificatePng } from '@api/utils/certificate';
+import { assembleCertificateRender, assembleOwnerPreviewRender } from '@api/services/course/certificate';
+import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { generateCoursePdf } from '@api/utils/course';
-import { handleError } from '@api/utils/errors';
+import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
 import { invitesRouter } from '@api/routes/course/invite';
 import { katexRouter } from '@api/routes/course/katex';
 import { lessonRouter } from '@api/routes/course/lesson';
@@ -61,6 +64,36 @@ import { sectionRouter } from '@api/routes/course/section';
 import { submissionRouter } from '@api/routes/course/submission';
 import { updateCourseLandingPageService } from '@api/services/course/landing-page';
 import { zValidator } from '@hono/zod-validator';
+
+function slugifyForFilename(value: string): string {
+  return (
+    value
+      .normalize('NFKD')
+      .replace(/[^a-zA-Z0-9 ]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .slice(0, 60) || 'certificate'
+  );
+}
+
+async function loadCertificateInput(
+  courseId: string,
+  userId: string,
+  body: import('@cio/utils/validation/course').TCertificateDownloadRequest
+) {
+  if (body.previewMode) {
+    const isTeam = await isCourseTeamMemberOrOrgAdmin(courseId, userId);
+    if (!isTeam) {
+      throw new AppError('Only course team members can preview certificate designs', ErrorCodes.UNAUTHORIZED, 403);
+    }
+
+    return assembleOwnerPreviewRender(courseId, userId, body);
+  }
+
+  await assertCertificateDownloadAllowed(courseId, userId);
+
+  return assembleCertificateRender(courseId, body);
+}
 
 const enrollRateLimit = createRateLimiter({
   windowMs: 60 * 60 * 1000,
@@ -454,27 +487,67 @@ export const courseRouter = new Hono()
     authMiddleware,
     courseMemberMiddleware,
     zValidator('param', ZCourseDownloadParam),
-    zValidator('json', ZCertificateDownload),
+    zValidator('json', ZCertificateDownloadRequest),
     async (c) => {
-      const { courseId } = c.req.valid('param');
-      const user = c.get('user')!;
-      await assertCertificateDownloadAllowed(courseId, user.id);
+      try {
+        const { courseId } = c.req.valid('param');
+        const user = c.get('user')!;
+        const body = c.req.valid('json');
 
-      const validatedData = c.req.valid('json');
+        const input = await loadCertificateInput(courseId, user.id, body);
+        const buffer = await generateCertificatePdf(input);
 
-      const result = await generateCertificate(validatedData);
+        c.header('Content-Type', 'application/pdf');
+        c.header(
+          'Content-Disposition',
+          `attachment; filename="certificate-${slugifyForFilename(input.data.courseName)}.pdf"`
+        );
 
-      c.header('Content-Type', 'application/pdf');
-      c.header('Content-Disposition', `attachment; filename="certificate-${validatedData.courseName}.pdf"`);
+        return c.body(
+          new ReadableStream({
+            start(controller) {
+              controller.enqueue(buffer);
+              controller.close();
+            }
+          })
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to download certificate');
+      }
+    }
+  )
+  .post(
+    '/:courseId/download/certificate/png',
+    authMiddleware,
+    courseMemberMiddleware,
+    zValidator('param', ZCourseDownloadParam),
+    zValidator('json', ZCertificateDownloadRequest),
+    async (c) => {
+      try {
+        const { courseId } = c.req.valid('param');
+        const user = c.get('user')!;
+        const body = c.req.valid('json');
 
-      return c.body(
-        new ReadableStream({
-          start(controller) {
-            controller.enqueue(result);
-            controller.close();
-          }
-        })
-      );
+        const input = await loadCertificateInput(courseId, user.id, body);
+        const buffer = await generateCertificatePng(input);
+
+        c.header('Content-Type', 'image/png');
+        c.header(
+          'Content-Disposition',
+          `attachment; filename="certificate-${slugifyForFilename(input.data.courseName)}.png"`
+        );
+
+        return c.body(
+          new ReadableStream({
+            start(controller) {
+              controller.enqueue(buffer);
+              controller.close();
+            }
+          })
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to download certificate image');
+      }
     }
   )
   .post(
@@ -542,4 +615,5 @@ export const courseRouter = new Hono()
   .route('/:courseId/newsfeed', newsfeedRouter)
   .route('/:courseId/members', membersRouter)
   .route('/:courseId/invites', invitesRouter)
+  .route('/:courseId/ai-tutor', courseAiTutorRouter)
   .route('/presign', presignRouter);

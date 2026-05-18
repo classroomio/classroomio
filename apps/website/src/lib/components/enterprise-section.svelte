@@ -1,6 +1,5 @@
 <script>
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
-  import { BorderBeam } from '@cio/ui/custom/animation/border-beam';
   import { DotPattern } from '@cio/ui/custom/animation/dot-pattern';
 
   const features = [
@@ -146,8 +145,6 @@
 
           <div class="relative">
             <div class="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
-              <BorderBeam colorFrom="#3b82f6" colorTo="#0233BD" size={200} duration={8} />
-
               <div class="mb-5 flex items-center gap-2">
                 <div class="h-3 w-3 rounded-full bg-white/[0.15]"></div>
                 <div class="h-3 w-3 rounded-full bg-white/[0.1]"></div>

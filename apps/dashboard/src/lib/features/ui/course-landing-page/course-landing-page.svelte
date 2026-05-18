@@ -35,7 +35,7 @@
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import * as Dialog from '@cio/ui/base/dialog';
   import Image from '$features/ui/image.svelte';
-  import PoweredBy from '$features/ui/upgrade-powered-by.svelte';
+  import PoweredBy from '$features/ui/powered-by.svelte';
   import UploadWidget from '$features/ui/upload-widget/upload-widget.svelte';
   import HTMLRender from '$features/ui/html-render.svelte';
   import * as Avatar from '@cio/ui/base/avatar';
@@ -298,9 +298,9 @@
               <h3 class="mt-0 mb-3 text-2xl font-semibold">
                 {$t('course.navItem.landing_page.requirement')}
               </h3>
-              <ul class="list font-light">
-                <HTMLRender><SafeHtmlContent content={get(courseData, 'metadata.requirements', '')} /></HTMLRender>
-              </ul>
+              <HTMLRender className="text-sm font-light leading-relaxed">
+                <SafeHtmlContent content={get(courseData, 'metadata.requirements', '')} />
+              </HTMLRender>
             </BlurFade>
           </NavSection>
         {/if}
@@ -324,9 +324,9 @@
           <NavSection id="goals">
             <BlurFade delay={0.1}>
               <h3 class="mt-0 mb-3 text-2xl font-semibold">{$t('course.navItem.landing_page.learn')}</h3>
-              <ul class="list font-light">
-                <HTMLRender><SafeHtmlContent content={get(courseData, 'metadata.goals', '')} /></HTMLRender>
-              </ul>
+              <HTMLRender className="text-sm font-light leading-relaxed">
+                <SafeHtmlContent content={get(courseData, 'metadata.goals', '')} />
+              </HTMLRender>
             </BlurFade>
           </NavSection>
         {/if}

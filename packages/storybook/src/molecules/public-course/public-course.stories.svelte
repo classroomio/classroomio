@@ -44,7 +44,7 @@
       onPrev={() => console.log('prev')}
       onNext={() => console.log('next')}
     >
-      <PublicCourse.PublicLessonView lesson={LESSON_FIXTURE} callout={CALLOUT_FIXTURE} />
+      <PublicCourse.PublicLessonView lesson={LESSON_FIXTURE} videoCaptionsLabel="Captions" callout={CALLOUT_FIXTURE} />
     </PublicCourse.PublicCourseShell>
   {/snippet}
 </Story>
@@ -68,7 +68,11 @@
       hasPrev
       hasNext={false}
     >
-      <PublicCourse.PublicLessonView lesson={LESSON_LOCKED_FIXTURE} callout={CALLOUT_FIXTURE} />
+      <PublicCourse.PublicLessonView
+        lesson={LESSON_LOCKED_FIXTURE}
+        videoCaptionsLabel="Captions"
+        callout={CALLOUT_FIXTURE}
+      />
     </PublicCourse.PublicCourseShell>
   {/snippet}
 </Story>
@@ -105,12 +109,26 @@
   {#snippet template()}
     <div class="ui:mx-auto ui:max-w-2xl ui:space-y-8 ui:p-8">
       <div>
-        <h3 class="ui:mb-2 ui:text-sm ui:font-semibold ui:text-muted-foreground">Inline (at bottom of lessons)</h3>
-        <PublicCourse.PublicCourseCallout callout={CALLOUT_FIXTURE} variant="inline" />
+        <h3 class="ui:mb-2 ui:text-sm ui:font-semibold ui:text-muted-foreground">Inline · waves (default)</h3>
+        <PublicCourse.PublicCourseCallout callout={CALLOUT_FIXTURE} variant="inline" animation="waves" />
       </div>
       <div>
-        <h3 class="ui:mb-2 ui:text-sm ui:font-semibold ui:text-muted-foreground">Full (locked item replacement)</h3>
-        <PublicCourse.PublicCourseCallout callout={CALLOUT_FIXTURE} variant="full" />
+        <h3 class="ui:mb-2 ui:text-sm ui:font-semibold ui:text-muted-foreground">Inline · dotted</h3>
+        <PublicCourse.PublicCourseCallout callout={CALLOUT_FIXTURE} variant="inline" animation="dotted" />
+      </div>
+      <div>
+        <h3 class="ui:mb-2 ui:text-sm ui:font-semibold ui:text-muted-foreground">
+          Full (locked item replacement) · waves
+        </h3>
+        <PublicCourse.PublicCourseCallout callout={CALLOUT_FIXTURE} variant="full" animation="waves" />
+      </div>
+      <div>
+        <h3 class="ui:mb-2 ui:text-sm ui:font-semibold ui:text-muted-foreground">Full · dotted</h3>
+        <PublicCourse.PublicCourseCallout callout={CALLOUT_FIXTURE} variant="full" animation="dotted" />
+      </div>
+      <div>
+        <h3 class="ui:mb-2 ui:text-sm ui:font-semibold ui:text-muted-foreground">Inline · none (no motion)</h3>
+        <PublicCourse.PublicCourseCallout callout={CALLOUT_FIXTURE} variant="inline" animation="none" />
       </div>
       <div>
         <h3 class="ui:mb-2 ui:text-sm ui:font-semibold ui:text-muted-foreground">Full (no callout configured)</h3>

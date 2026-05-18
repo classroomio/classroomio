@@ -14,7 +14,7 @@
 <header class="relative w-full overflow-hidden border-b border-slate-100 pt-32 pb-16 lg:min-h-[20rem]">
   <DotField
     dotRadius={1.5}
-    dotSpacing={14}
+    dotSpacing={15}
     cursorRadius={420}
     bulgeOnly={true}
     bulgeStrength={56}

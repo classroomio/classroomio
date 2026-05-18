@@ -23,11 +23,12 @@
   let { imageURL = $bindable(''), onchange }: Props = $props();
 
   const tabs = [
-    { label: 'Unsplash', value: 'unsplash' },
-    { label: 'Upload', value: 'upload' }
+    { label: 'Upload', value: 'upload' },
+    { label: 'Unsplash', value: 'unsplash' }
   ];
 
   let isUploading = $state(false);
+  let isSearching = $state(false);
   let currentTab = $state(tabs[0].value);
   let searchQuery = $state('');
   let unsplashImages: {
@@ -80,11 +81,15 @@
   };
 
   async function handleSubmit() {
+    isSearching = true;
+
     try {
       unsplashImages = await queryUnsplash(searchQuery || 'rocks');
     } catch (error) {
       snackbar.error('snackbar.landing_page_settings.error.fetch_error');
       console.error('Error fetching images from Unsplash:', error);
+    } finally {
+      isSearching = false;
     }
   }
 
@@ -101,7 +106,7 @@
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.landing_page.upload_widget.title')}</Dialog.Title>
     </Dialog.Header>
-    <div class="w-full bg-white p-5 dark:bg-inherit">
+    <div class="w-full bg-white p-2 dark:bg-inherit">
       <UnderlineTabs.Root bind:value={currentTab}>
         <UnderlineTabs.List>
           {#each tabs as tab}
@@ -110,7 +115,7 @@
             </UnderlineTabs.Trigger>
           {/each}
         </UnderlineTabs.List>
-        <UnderlineTabs.Content value={tabs[1].value}>
+        <UnderlineTabs.Content value="upload">
           <div class="w-full {isUploading ? 'ui:opacity-50 ui:pointer-events-none' : ''}">
             <FileDropZone.Root
               accept={FileDropZone.ACCEPT_IMAGE}
@@ -127,12 +132,12 @@
             </FileDropZone.Root>
           </div>
         </UnderlineTabs.Content>
-        <UnderlineTabs.Content value={tabs[0].value}>
+        <UnderlineTabs.Content value="unsplash">
           <!-- Your Images content here -->
           <div class="h-full overflow-y-scroll">
             <form onsubmit={preventDefault(handleSubmit)} class="mt-1 flex gap-2 pb-3">
               <InputField className="ml-2 w-[85%]" bind:value={searchQuery} />
-              <Button type="submit" variant="outline">
+              <Button type="submit" variant="outline" loading={isSearching}>
                 {$t('course.navItem.landing_page.upload_widget.submit')}
               </Button>
             </form>

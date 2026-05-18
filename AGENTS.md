@@ -2,6 +2,10 @@
 
 This document collects implementation rules and workflow conventions for code changes.
 
+## Research Requirements
+
+When a task requires factual information (API specifications, context window sizes, library versions, pricing, rate limits, etc.), **look it up** using web search. Do not rely on educated guesses or assumptions from training data. If you're unsure whether something is a guess, look it up anyway.
+
 ## Naming Convention
 
 - Use kebab-case for files (e.g. `user-profile.svelte`, `org.svelte.ts`).
@@ -75,6 +79,40 @@ export * from './account';
 // apps/api/src/app.ts
 import { accountRouter } from '@api/routes/account';
 export const app = new Hono().route('/account', accountRouter);
+```
+
+**Route mounts in `app.ts` must use a single root segment.** Do not mount nested paths like `.route('/internal/compliance', ...)` directly in `app.ts`. If a domain has sub-routers, compose them inside the domain's `routes/{domain}/index.ts` and expose a single aggregate router that `app.ts` mounts at `/${domain}`.
+
+```typescript
+// apps/api/src/routes/internal/index.ts
+import { Hono } from '@api/utils/hono';
+import { internalAnalyticsRouter } from './analytics';
+import { internalComplianceRouter } from './compliance';
+
+export const internalRouter = new Hono()
+  .route('/compliance', internalComplianceRouter)
+  .route('/analytics', internalAnalyticsRouter);
+
+// apps/api/src/app.ts
+import { internalRouter } from '@api/routes/internal';
+export const app = new Hono().route('/internal', internalRouter);
+```
+
+**Route mounts in `app.ts` must use a single root segment.** Do not mount nested paths like `.route('/internal/compliance', ...)` directly in `app.ts`. If a domain has sub-routers, compose them inside the domain's `routes/{domain}/index.ts` and expose a single aggregate router that `app.ts` mounts at `/${domain}`.
+
+```typescript
+// apps/api/src/routes/internal/index.ts
+import { Hono } from '@api/utils/hono';
+import { internalAnalyticsRouter } from './analytics';
+import { internalComplianceRouter } from './compliance';
+
+export const internalRouter = new Hono()
+  .route('/compliance', internalComplianceRouter)
+  .route('/analytics', internalAnalyticsRouter);
+
+// apps/api/src/app.ts
+import { internalRouter } from '@api/routes/internal';
+export const app = new Hono().route('/internal', internalRouter);
 ```
 
 ### Step 6: Build

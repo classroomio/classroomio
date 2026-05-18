@@ -48,7 +48,47 @@ const envSchema = z.object({
   /** License key for enterprise features (SSO, token-auth, no-tracking, etc.) */
   LICENSE_KEY: z.string().optional(),
   /** Dashboard origin for invite/email links (e.g. https://app.yourdomain.com). When set, all email links point here instead of app.classroomio.com. Required for self-hosted. */
-  DASHBOARD_ORIGIN: z.string().optional()
+  DASHBOARD_ORIGIN: z.string().optional(),
+  /**
+   * Comma-separated list of Better Auth user emails allowed to access the
+   * BullMQ dashboard at /admin/queues in production. Leave unset to keep the
+   * dashboard hidden everywhere except dev.
+   */
+  QUEUE_DASHBOARD_ADMIN_EMAILS: z.string().optional(),
+  /**
+   * Bearer-token escape hatch for /admin/queues — useful for curl scripts or
+   * when SSO is unavailable. When set, requests with `Authorization: Bearer
+   * <token>` (or `?token=<token>`) bypass the email allowlist.
+   */
+  QUEUE_DASHBOARD_TOKEN: z.string().optional(),
+  /** Optional Bearer token for Jina Reader (higher rate limits). */
+  JINA_API_KEY: z.string().optional(),
+  /** Max completed fetch_documentation_url calls per agent conversation (default 15). */
+  AGENT_MAX_FETCHES_PER_CONVERSATION: z
+    .string()
+    .optional()
+    .transform((v) => {
+      if (v === undefined || v === '') {
+        return 15;
+      }
+
+      const parsed = Number(v);
+
+      return Number.isFinite(parsed) && parsed >= 1 ? Math.trunc(parsed) : 15;
+    }),
+  /** Max fetch_documentation_url calls per org per UTC day (default 500). */
+  AGENT_MAX_FETCHES_PER_ORG_PER_DAY: z
+    .string()
+    .optional()
+    .transform((v) => {
+      if (v === undefined || v === '') {
+        return 500;
+      }
+
+      const parsed = Number(v);
+
+      return Number.isFinite(parsed) && parsed >= 1 ? Math.trunc(parsed) : 500;
+    })
 });
 
 export const env = envSchema.parse(process.env);

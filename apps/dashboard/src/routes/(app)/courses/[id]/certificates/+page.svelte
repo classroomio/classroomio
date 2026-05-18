@@ -22,8 +22,6 @@
 
   const certificateTheme = $derived(courseApi.course?.certificate?.theme ?? '');
 
-  const currentCertificateState = $derived.by(() => getCertificateStateSnapshot(courseApi.course));
-
   const userRole = $derived.by(() => {
     const user = courseApi.group.people.find((person) => person.profileId === $profile.id);
     return user ? Number(user.roleId) : null;
@@ -40,7 +38,8 @@
       description: course.description ?? '',
       certificate: {
         isDownloadable: course.certificate?.isDownloadable ?? false,
-        theme: parseCertificateThemeId(course.certificate?.theme) ?? 'professional',
+        theme: parseCertificateThemeId(course.certificate?.theme),
+        design: course.certificate?.design ?? null,
         deadline: course.certificate?.deadline ?? null,
         threshold: typeof course.certificate?.threshold === 'number' ? course.certificate.threshold : 100,
         requiredExerciseId: course.certificate?.requiredExerciseId ?? null,
@@ -92,7 +91,8 @@
       description: courseApi.course.description ?? '',
       certificate: {
         isDownloadable: courseApi.course.certificate?.isDownloadable ?? false,
-        theme: certificateTheme || 'professional',
+        theme: certificateTheme || 'classique',
+        design: courseApi.course.certificate?.design,
         deadline: courseApi.course.certificate?.deadline ?? null,
         threshold:
           typeof courseApi.course.certificate?.threshold === 'number' ? courseApi.course.certificate.threshold : 100,

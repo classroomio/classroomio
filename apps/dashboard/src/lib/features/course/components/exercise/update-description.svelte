@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { questionnaire } from './store';
+  import { hasSections, questionnaire } from './store';
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import { t } from '$lib/utils/functions/translations';
 
@@ -19,6 +19,11 @@
       return acc;
     }, 0);
   }
+
+  const activeExerciseSectionsCount = $derived(
+    [...($questionnaire.sections ?? [])].filter((section) => !section.deletedAt).length
+  );
+  const showSectionsInPreviewSummary = $derived(hasSections($questionnaire.sections ?? []));
 </script>
 
 <div class="mb-5 {!preview ? 'px-6' : 'px-2'}">
@@ -31,6 +36,13 @@
           {$t('course.navItem.lessons.exercises.all_exercises.view_mode.questions')}
         </p>
         |
+        {#if showSectionsInPreviewSummary}
+          <p class="mx-2 dark:text-white">
+            <strong>{activeExerciseSectionsCount}</strong>
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.sections')}
+          </p>
+          |
+        {/if}
         <p class="mx-2 dark:text-white">
           <strong>{getTotalPossibleGrade($questionnaire.questions)}</strong>
           {$t('course.navItem.lessons.exercises.all_exercises.view_mode.points')}.

@@ -6,11 +6,13 @@ import {
   getCourseComplianceHistoryRows,
   getCourseCurrentComplianceRows,
   getLatestComplianceRecordsByProfiles,
+  getOrgComplianceLearnerRows,
   getStudentCourseMembersForCompliance,
   listComplianceRecordsReadyForExpiry,
   listLatestComplianceRecordsForReminderScan,
   updateCourseCertificateIssueStatusByRecordId,
-  updateCourseCompletionRecord
+  updateCourseCompletionRecord,
+  type OrgComplianceLearnerRow
 } from '@cio/db/queries/course/compliance';
 import { db } from '@cio/db/drizzle';
 import { getCourseById } from '@cio/db/queries/course';
@@ -710,5 +712,110 @@ export async function runComplianceReminderScan() {
     scannedCount,
     statusUpdatedCount,
     reminderEventCount
+  };
+}
+
+type OrgComplianceStatus = ComplianceStatus | 'no_record';
+
+const STATUS_KEYS: OrgComplianceStatus[] = [
+  'compliant',
+  'expiring_soon',
+  'in_grace_period',
+  'non_compliant',
+  'waived',
+  'in_progress',
+  'not_started',
+  'no_record'
+];
+
+function emptyStatusCounts() {
+  const counts = {} as Record<OrgComplianceStatus, number>;
+  for (const status of STATUS_KEYS) counts[status] = 0;
+  return counts;
+}
+
+export type OrgComplianceOverview = {
+  summary: {
+    totalLearners: number;
+    totalCourses: number;
+    counts: Record<OrgComplianceStatus, number>;
+  };
+  courses: Array<{
+    courseId: string;
+    courseTitle: string;
+    learnerCount: number;
+    counts: Record<OrgComplianceStatus, number>;
+  }>;
+  learners: Array<{
+    groupMemberId: string;
+    profileId: string | null;
+    fullname: string | null;
+    email: string | null;
+    avatarUrl: string | null;
+    courseId: string;
+    courseTitle: string;
+    status: OrgComplianceStatus;
+    cycleNumber: number | null;
+    dueDate: string | null;
+    completedAt: string | null;
+    validUntil: string | null;
+  }>;
+};
+
+/**
+ * Aggregates compliance state across every COMPLIANCE course in an
+ * organization. Returns status tallies, per-course breakdown, and the
+ * flat learner-by-course list for the dashboard table.
+ */
+export async function getOrgComplianceOverview(orgId: string): Promise<OrgComplianceOverview> {
+  const rows = await getOrgComplianceLearnerRows(orgId);
+
+  const summaryCounts = emptyStatusCounts();
+  const courseMap = new Map<
+    string,
+    { title: string; learnerCount: number; counts: Record<OrgComplianceStatus, number> }
+  >();
+  const uniqueLearners = new Set<string>();
+
+  for (const row of rows) {
+    const status = row.status as OrgComplianceStatus;
+    summaryCounts[status] = (summaryCounts[status] ?? 0) + 1;
+    if (row.profileId) uniqueLearners.add(row.profileId);
+
+    let courseAcc = courseMap.get(row.courseId);
+    if (!courseAcc) {
+      courseAcc = { title: row.courseTitle, learnerCount: 0, counts: emptyStatusCounts() };
+      courseMap.set(row.courseId, courseAcc);
+    }
+    courseAcc.learnerCount += 1;
+    courseAcc.counts[status] = (courseAcc.counts[status] ?? 0) + 1;
+  }
+
+  return {
+    summary: {
+      totalLearners: uniqueLearners.size,
+      totalCourses: courseMap.size,
+      counts: summaryCounts
+    },
+    courses: Array.from(courseMap.entries()).map(([courseId, c]) => ({
+      courseId,
+      courseTitle: c.title,
+      learnerCount: c.learnerCount,
+      counts: c.counts
+    })),
+    learners: rows.map((row: OrgComplianceLearnerRow) => ({
+      groupMemberId: row.groupMemberId,
+      profileId: row.profileId,
+      fullname: row.profile?.fullname ?? null,
+      email: row.email,
+      avatarUrl: row.profile?.avatarUrl ?? null,
+      courseId: row.courseId,
+      courseTitle: row.courseTitle,
+      status: row.status as OrgComplianceStatus,
+      cycleNumber: row.cycleNumber,
+      dueDate: row.dueDate,
+      completedAt: row.completedAt,
+      validUntil: row.validUntil
+    }))
   };
 }

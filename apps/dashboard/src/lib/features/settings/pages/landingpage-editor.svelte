@@ -9,10 +9,20 @@
   import { useSidebar } from '@cio/ui/base/sidebar';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import type { OrgLandingPageJson } from '$lib/utils/types/org';
-  import { ContentIcon, ExternalLinkIcon, GoalIcon, HeaderIcon, SettingsIcon } from '@cio/ui/custom/moving-icons';
+  import type { LandingSectionKey } from '@cio/ui/custom/org-landing-page';
+  import { landingPageEditorSelection } from '$features/settings/utils/store';
+  import {
+    ContentIcon,
+    ExploreIcon,
+    ExternalLinkIcon,
+    GoalIcon,
+    HeaderIcon,
+    SettingsIcon
+  } from '@cio/ui/custom/moving-icons';
 
   import HeroSection from './landingpage-editor/hero-section.svelte';
   import NavigationSection from './landingpage-editor/navigation-section.svelte';
+  import LinksSection from './landingpage-editor/links-section.svelte';
   import CalloutSection from './landingpage-editor/callout-section.svelte';
   import EmbedSection from './landingpage-editor/embed-section.svelte';
   import FooterSection from './landingpage-editor/footer-section.svelte';
@@ -23,7 +33,7 @@
     onClose: () => void;
   }
 
-  type SectionKey = 'hero' | 'navigation' | 'callout' | 'embed' | 'footer';
+  type SectionKey = LandingSectionKey;
 
   interface SectionDefinition {
     key: SectionKey;
@@ -36,7 +46,6 @@
 
   const sidebar = useSidebar();
 
-  let selectedSection = $state<SectionKey | null>(null);
   let isSaving = $state(false);
   let hasUnsavedChanges = $state(false);
 
@@ -52,6 +61,12 @@
       title: t.get('settings.landing_page.editor.sections.hero'),
       icon: HeaderIcon,
       component: HeroSection
+    },
+    {
+      key: 'links',
+      title: t.get('settings.landing_page.editor.sections.links'),
+      icon: ExploreIcon,
+      component: LinksSection
     },
     {
       key: 'embed',
@@ -73,15 +88,17 @@
     }
   ];
 
-  const selectedSectionDefinition = $derived(sections.find((section) => section.key === selectedSection) ?? null);
+  const selectedSectionDefinition = $derived(
+    sections.find((section) => section.key === $landingPageEditorSelection) ?? null
+  );
 
   function markDirty() {
     hasUnsavedChanges = true;
   }
 
   function handleClose() {
-    if (selectedSection) {
-      selectedSection = null;
+    if ($landingPageEditorSelection) {
+      $landingPageEditorSelection = null;
       return;
     }
 
@@ -105,7 +122,7 @@
 <Sidebar.Header
   class="flex flex-row! items-center {sidebar.open ? 'justify-between' : 'justify-center'} border-b px-2 py-2"
 >
-  {#if !selectedSection}
+  {#if !$landingPageEditorSelection}
     {#if sidebar.open}
       <CloseButton onClick={handleClose} />
 
@@ -119,7 +136,7 @@
     {/if}
   {:else if sidebar.open || !sidebar.isMobile}
     <div class="flex items-center gap-2">
-      <IconButton onclick={() => (selectedSection = null)}>
+      <IconButton onclick={() => ($landingPageEditorSelection = null)}>
         <ArrowLeftIcon size={16} />
       </IconButton>
       <h3 class="text-sm font-semibold">
@@ -127,14 +144,14 @@
       </h3>
     </div>
   {:else}
-    <IconButton onclick={() => (selectedSection = null)} tooltip={selectedSectionDefinition?.title ?? ''}>
+    <IconButton onclick={() => ($landingPageEditorSelection = null)} tooltip={selectedSectionDefinition?.title ?? ''}>
       <ArrowLeftIcon size={16} />
     </IconButton>
   {/if}
 </Sidebar.Header>
 
 <Sidebar.Content class="flex-1 overflow-y-auto">
-  {#if !selectedSection}
+  {#if !$landingPageEditorSelection}
     <Sidebar.Group>
       <Sidebar.GroupLabel class="px-2">
         {$t('settings.landing_page.editor.page_builder')}
@@ -143,7 +160,10 @@
         <Sidebar.Menu>
           {#each sections as section (section.key)}
             <Sidebar.MenuItem>
-              <Sidebar.MenuButton onclick={() => (selectedSection = section.key)} tooltipContent={section.title}>
+              <Sidebar.MenuButton
+                onclick={() => ($landingPageEditorSelection = section.key)}
+                tooltipContent={section.title}
+              >
                 {@const SectionIcon = section.icon}
                 <SectionIcon size={16} />
                 <span>{section.title}</span>

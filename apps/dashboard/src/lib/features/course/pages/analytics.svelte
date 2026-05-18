@@ -1,21 +1,17 @@
 <script lang="ts">
   import ChartBarIcon from '@lucide/svelte/icons/chart-bar';
-  import { t } from '$lib/utils/functions/translations';
+  import { AnalyticsPanelCard } from '$features/analytics';
   import type { CourseAnalytics } from '$features/course/utils/types';
+  import { t } from '$lib/utils/functions/translations';
   import { fade } from 'svelte/transition';
-  import StudentTable from '$features/course/components/analytics/student-table.svelte';
   import AnalyticsGraph from '$features/course/components/analytics/analytics-graph.svelte';
   import AnalyticsSkeleton from '$features/course/components/analytics/analytics-skeleton.svelte';
-  import AnalyticsCard from '$features/course/components/analytics/analytics-card.svelte';
-  import StudentsIcon from '$features/course/components/analytics/icons/students-icon.svelte';
-  import LessonsIcon from '$features/course/components/analytics/icons/lessons-icon.svelte';
-  import ProgressIcon from '$features/course/components/analytics/icons/progress-icon.svelte';
-  import ExercisesIcon from '$features/course/components/analytics/icons/exercises-icon.svelte';
+  import CourseAnalyticsKpis from '$features/course/components/analytics/course-analytics-kpis.svelte';
   import EmptyState from '$features/course/components/analytics/empty-state.svelte';
+  import StudentTable from '$features/course/components/analytics/student-table.svelte';
   import { courseApi } from '../api/course.svelte';
 
   interface Props {
-    courseId: string;
     courseAnalytics: CourseAnalytics | null;
   }
 
@@ -35,70 +31,25 @@
 {#if isLoading}
   <AnalyticsSkeleton />
 {:else if courseAnalytics}
-  <div class="min-h-screen" in:fade>
-    <!-- Main Content Area -->
-    <div class="px-4 py-8">
-      <!-- Course Overview Cards -->
-      <div class="mb-12">
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <!-- Students Card -->
-          <AnalyticsCard
-            title={$t('analytics.students')}
-            value={courseAnalytics?.totalStudents || 0}
-            subtitle="{$t('analytics.tutors')}: {courseAnalytics?.totalTutors || 0}"
-            icon={StudentsIcon}
-            iconColor="blue"
-          />
+  <div class="space-y-6" in:fade>
+    <CourseAnalyticsKpis data={courseAnalytics} />
 
-          <!-- Lessons Card -->
-          <AnalyticsCard
-            title={$t('analytics.lessons')}
-            value={courseAnalytics?.totalLessons || 0}
-            subtitle="{$t('analytics.exercises')}: {courseAnalytics?.totalExercises || 0}"
-            icon={LessonsIcon}
-            iconColor="green"
-          />
+    <AnalyticsGraph {courseAnalytics} />
 
-          <!-- Progress Card -->
-          <AnalyticsCard
-            title={$t('analytics.progress')}
-            value="{courseAnalytics?.lessonCompletionRate || 0}%"
-            subtitle="{$t('analytics.avg_grade')}: {courseAnalytics?.averageGrade || 0}%"
-            icon={ProgressIcon}
-            iconColor="purple"
-          />
-
-          <!-- Exercise Completion Card -->
-          <AnalyticsCard
-            title={$t('analytics.exercises')}
-            value="{courseAnalytics?.exerciseCompletionRate || 0}%"
-            subtitle={$t('analytics.completion_rate')}
-            icon={ExercisesIcon}
-            iconColor="orange"
-          />
-        </div>
-      </div>
-
-      <!-- Charts Section -->
-      <div class="mb-12">
-        <AnalyticsGraph {courseAnalytics} />
-      </div>
-
-      <!-- Students Overview Table -->
-      <div class="space-y-4">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-          {$t('analytics.student_progress_overview')}
-        </h3>
-
-        <StudentTable students={courseAnalytics?.students || []} />
-      </div>
-    </div>
+    <AnalyticsPanelCard
+      title={$t('analytics.student_progress_overview')}
+      description={$t('analytics.course_metrics.students_table_description')}
+    >
+      {#snippet children()}
+        <StudentTable students={courseAnalytics?.students ?? []} />
+      {/snippet}
+    </AnalyticsPanelCard>
   </div>
 {:else}
   <EmptyState
     title={$t('analytics.no_analytics_data')}
     description={$t('analytics.no_analytics_description')}
     icon={ChartBarIcon}
-    className="h-screen"
+    className="min-h-[480px]"
   />
 {/if}

@@ -59,11 +59,11 @@
   />
 {:else}
   <!-- Responsive Table -->
-  <div class="relative h-[300px] overflow-auto rounded-md border">
+  <div class="ui:border-border relative max-h-[min(480px,70vh)] overflow-auto rounded-md border">
     <Table.Root class="min-w-[800px]">
-      <Table.Header class="sticky top-0 z-10 bg-white dark:bg-neutral-800">
+      <Table.Header class="ui:bg-muted/80 sticky top-0 z-10 backdrop-blur-sm">
         <Table.Row>
-          <Table.Head class="sticky top-0 left-0 z-20 min-w-[200px] bg-white px-4 py-3 dark:bg-neutral-800">
+          <Table.Head class="ui:bg-muted/95 sticky top-0 left-0 z-20 min-w-[200px] px-4 py-3 backdrop-blur-sm">
             {$t('analytics.student_name')}
           </Table.Head>
           <Table.Head class="min-w-[150px] px-4 py-3">{$t('analytics.lessons_completed')}</Table.Head>
@@ -77,7 +77,7 @@
         {#each paginatedStudents as student (student.id)}
           <Table.Row class="group h-[100px]">
             <Table.Cell
-              class="sticky left-0 z-10 min-w-[200px] bg-white px-4 py-3 transition-colors group-hover:bg-gray-50 dark:bg-neutral-800 dark:group-hover:bg-gray-700"
+              class="ui:bg-card group-hover:ui:bg-muted/50 sticky left-0 z-10 min-w-[200px] px-4 py-3 transition-colors"
             >
               <div class="flex items-center gap-3">
                 <UserAvatar
@@ -86,10 +86,10 @@
                   class="size-8"
                 />
                 <div class="min-w-0 flex-1">
-                  <p class="truncate font-medium text-gray-900 dark:text-white">
+                  <p class="ui:text-foreground truncate font-medium">
                     {student.profile.fullname}
                   </p>
-                  <p class="truncate text-sm text-gray-500 dark:text-gray-400">
+                  <p class="ui:text-muted-foreground truncate text-sm">
                     {student.profile.email}
                   </p>
                 </div>
@@ -97,18 +97,18 @@
             </Table.Cell>
             <Table.Cell class="min-w-[150px] px-4 py-3">
               <div class="flex items-center gap-3">
-                <span class="text-sm font-medium text-gray-900 dark:text-white">
+                <span class="ui:text-foreground text-sm font-medium">
                   {student.lessonsCompleted}/{student.totalLessons}
                 </span>
                 <div class="w-20 flex-shrink-0">
-                  <div class="h-2 rounded-full bg-gray-200 dark:bg-neutral-700">
+                  <div class="ui:bg-muted h-2 rounded-full">
                     <div class="h-2 rounded-full bg-blue-500" style="width: {student.progressPercentage}%"></div>
                   </div>
                 </div>
               </div>
             </Table.Cell>
             <Table.Cell class="min-w-[140px] px-4 py-3">
-              <span class="text-sm font-medium text-gray-900 dark:text-white">
+              <span class="ui:text-foreground text-sm font-medium">
                 {student.exercisesSubmitted} out of {student.totalExercises}
               </span>
             </Table.Cell>
@@ -124,7 +124,7 @@
               </Badge>
             </Table.Cell>
             <Table.Cell class="min-w-[120px] px-4 py-3">
-              <span class="text-sm text-gray-500 dark:text-gray-400">
+              <span class="ui:text-muted-foreground text-sm">
                 {student.lastSeen}
               </span>
             </Table.Cell>
@@ -141,8 +141,8 @@
 
   <!-- Pagination Controls -->
   {#if students.length > pageSize}
-    <div class="mt-4 flex items-center justify-between border-t border-gray-200 px-4 py-3">
-      <div class="text-sm text-gray-700 dark:text-gray-300">
+    <div class="ui:border-border mt-4 flex items-center justify-between border-t px-4 py-3">
+      <div class="ui:text-muted-foreground text-sm">
         {$t('analytics.showing_students', {
           start: startItem,
           end: endItem,

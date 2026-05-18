@@ -37,18 +37,25 @@ export type CourseSortOrder = (typeof CourseSortOrder)[keyof typeof CourseSortOr
 
 export const DEFAULT_SORT_ORDER: CourseSortOrder = CourseSortOrder.Desc;
 
-export const CERTIFICATE_THEME_IDS = [
-  'professional',
-  'plain',
-  'purpleProfessionalBadge',
-  'blueProfessionalBadge',
-  'purpleBadgePattern',
-  'blueBadgePattern'
-] as const;
+import type { CertificateTemplateId } from '@cio/certificates';
 
-export type CertificateThemeId = (typeof CERTIFICATE_THEME_IDS)[number];
+export {
+  ACCENT_COLORS,
+  CERTIFICATE_TEMPLATE_IDS,
+  CERTIFICATE_TEMPLATES,
+  DEFAULT_ACCENT_COLOR,
+  DEFAULT_CERTIFICATE_DESIGN,
+  LEGACY_THEME_MAP
+} from '@cio/certificates';
+export type { CertificateTemplateId } from '@cio/certificates';
 
-export const DEFAULT_CERTIFICATE_THEME_ID: CertificateThemeId = 'professional';
+/**
+ * @deprecated Use `CertificateTemplateId` from `@cio/certificates`. Kept here so the
+ * existing `CertificateThemeId` import sites compile during the migration.
+ */
+export type CertificateThemeId = CertificateTemplateId;
+
+export const DEFAULT_CERTIFICATE_THEME_ID: CertificateThemeId = 'classique';
 
 const COURSE_SORT_ORDER_VALUES = new Set<string>(Object.values(CourseSortOrder));
 

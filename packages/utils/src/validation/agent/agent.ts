@@ -102,6 +102,14 @@ export const ZAgentHistorySaveBody = z.object({
 
 export type TAgentHistorySaveBody = z.infer<typeof ZAgentHistorySaveBody>;
 
+// ─── PATCH /agent/history/:conversationId (rename only) ────────────────────
+
+export const ZAgentHistoryRenameBody = z.object({
+  title: z.string().min(1).max(120)
+});
+
+export type TAgentHistoryRenameBody = z.infer<typeof ZAgentHistoryRenameBody>;
+
 // ─── DELETE /agent/history/:conversationId ───────────────────────────────────
 
 export const ZAgentHistoryDeleteParam = z.object({
@@ -130,3 +138,24 @@ export const ZAgentGenerateCourseTitleBody = z.object({
 });
 
 export type TAgentGenerateCourseTitleBody = z.infer<typeof ZAgentGenerateCourseTitleBody>;
+
+// ─── POST /agent/summarize ────────────────────────────────────────────────────
+
+export const ZAgentSummarizeBody = z.object({
+  messages: z.array(z.any()),
+  courseId: ZAgentCourseId
+});
+
+export type TAgentSummarizeBody = z.infer<typeof ZAgentSummarizeBody>;
+
+// ─── POST /agent/generate-text ───────────────────────────────────────────────
+
+export const ZAgentGenerateTextBody = z.object({
+  prompt: z.string().min(1).max(1000),
+  tone: z.enum(['professional', 'casual', 'expert', 'friendly']),
+  format: z.enum(['plain', 'html']).default('plain'),
+  context: z.string().max(500).optional(),
+  courseId: z.string().uuid().optional()
+});
+
+export type TAgentGenerateTextBody = z.infer<typeof ZAgentGenerateTextBody>;

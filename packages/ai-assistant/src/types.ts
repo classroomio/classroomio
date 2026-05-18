@@ -66,18 +66,40 @@ export const CoursePlanSectionSchema = z.object({
     .array(CoursePlanItemSchema)
     .min(1)
     .describe(
-      'Ordered list of lessons and exercises in this section. Use type "exercise" for standalone quizzes/assessments at the end of a section.'
+      'Ordered list of lessons and exercises. Use type "exercise" for standalone quizzes (e.g. end-of-section). The final course section’s items must include the comprehensive final examination exercise as specified in the course plan rules.'
     )
 });
 
-export const CoursePlanSchema = z.object({
+export const CoursePlanFieldsSchema = z.object({
   title: z.string().min(1),
-  sections: z.array(CoursePlanSectionSchema).min(1)
+  sections: z
+    .array(CoursePlanSectionSchema)
+    .min(1)
+    .describe(
+      'Instructional sections in teaching order, then a final section for the comprehensive course examination. The LAST section must hold the final exam (validated when the plan is submitted). Earlier sections cover the curriculum; each prior section should be represented in the exam by its own in-exercise question block with 3–5 questions when the plan is implemented.'
+    )
+});
+
+/** Validated when calling `generate_course_plan` — enforces a final examination section. */
+export const CoursePlanSchema = CoursePlanFieldsSchema.superRefine((plan, ctx) => {
+  const lastIndex = plan.sections.length - 1;
+  const lastSection = plan.sections[lastIndex];
+  if (!lastSection) return;
+
+  const hasFinalExamExercise = lastSection.items.some((item) => item.type === 'exercise');
+  if (!hasFinalExamExercise) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message:
+        'The last section must include at least one exercise item for the comprehensive final examination (in implementation: one exercise with create_exercise_section blocks—one per prior course section—each with 3–5 questions).',
+      path: ['sections', lastIndex]
+    });
+  }
 });
 
 export type CoursePlanItem = z.infer<typeof CoursePlanItemSchema>;
 export type CoursePlanSection = z.infer<typeof CoursePlanSectionSchema>;
-export type CoursePlan = z.infer<typeof CoursePlanSchema>;
+export type CoursePlan = z.infer<typeof CoursePlanFieldsSchema>;
 
 // ─── Tool Names ──────────────────────────────────────────────────────────────
 
@@ -102,7 +124,14 @@ export const ToolName = {
   CHECK_COURSE_GO_LIVE_READINESS: 'check_course_go_live_readiness',
   GO_LIVE_COURSE: 'go_live_course',
   // Agent tools
-  GENERATE_COURSE_PLAN: 'generate_course_plan'
+  GENERATE_COURSE_PLAN: 'generate_course_plan',
+  ASK_TEMPLATE_QUESTIONS: 'ask_template_questions',
+  FETCH_DOCUMENTATION_URL: 'fetch_documentation_url',
+  // Student read tools (course-scoped, read-only)
+  LIST_COURSE_OUTLINE: 'list_course_outline',
+  READ_LESSON: 'read_lesson',
+  READ_EXERCISE: 'read_exercise',
+  SEARCH_COURSE: 'search_course'
 } as const;
 
 export type ToolName = (typeof ToolName)[keyof typeof ToolName];
@@ -124,10 +153,22 @@ export interface TokenBalance {
 
 // ─── Agent Status (returned by GET /agent/status) ────────────────────────────
 
+export interface AgentTutorStatus {
+  /** Whether AI tutor is enabled for this workspace. */
+  enabled: boolean;
+  /** Remaining tutor messages for the current learner this calendar month (only set for students). */
+  capRemaining: number | null;
+  /** Per-learner monthly cap value (only set for students). */
+  cap: number | null;
+  /** Whether cap enforcement is on in this environment (Phase 3+). */
+  enforced: boolean;
+}
+
 export interface AgentStatus {
   enabled: boolean;
   role: AgentRole;
   usage: TokenBalance;
+  tutor: AgentTutorStatus;
 }
 
 // ─── Document Upload ─────────────────────────────────────────────────────────

@@ -7,6 +7,7 @@ import {
   ZAgentConversationParam,
   ZAgentConversationCreateBody,
   ZAgentHistorySaveBody,
+  ZAgentHistoryRenameBody,
   ZAgentHistoryDeleteParam,
   ZAgentGenerateTitleParam,
   ZAgentGenerateTitleBody
@@ -20,6 +21,7 @@ import {
   deleteChatConversation,
   updateConversationTitle
 } from '@api/services/agent/chat-history';
+import { compactConversation } from '@api/services/agent/compact';
 import { generateConversationTitle } from '@api/services/agent/title-generation';
 import { pickAnyConfiguredProvider } from '@cio/ai-assistant/providers';
 
@@ -111,6 +113,37 @@ export const agentHistoryRouter = new Hono()
   )
 
   /**
+   * PATCH /agent/history/:conversationId
+   * Rename a conversation without re-uploading messages.
+   */
+  .patch(
+    '/:conversationId',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZAgentConversationParam),
+    zValidator('json', ZAgentHistoryRenameBody),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { conversationId } = c.req.valid('param');
+        const { title } = c.req.valid('json');
+
+        const conversation = await getChatConversation(conversationId, user.id);
+
+        if (!conversation) {
+          return c.json({ success: false as const, error: 'Conversation not found' }, 404);
+        }
+
+        await updateConversationTitle(conversationId, user.id, title);
+
+        return c.json({ success: true as const, data: { id: conversationId, title } });
+      } catch (error) {
+        return handleError(c, error, 'Failed to rename conversation');
+      }
+    }
+  )
+
+  /**
    * DELETE /agent/history/:conversationId
    * Delete a conversation.
    */
@@ -129,6 +162,28 @@ export const agentHistoryRouter = new Hono()
         return c.json({ success: true as const });
       } catch (error) {
         return handleError(c, error, 'Failed to delete conversation');
+      }
+    }
+  )
+
+  /**
+   * POST /agent/history/:conversationId/compact
+   * Summarize and replace persisted messages with a single seed message.
+   */
+  .post(
+    '/:conversationId/compact',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZAgentConversationParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { conversationId } = c.req.valid('param');
+        const data = await compactConversation(conversationId, user.id);
+
+        return c.json({ success: true as const, data });
+      } catch (error) {
+        return handleError(c, error, 'Failed to compact conversation');
       }
     }
   )

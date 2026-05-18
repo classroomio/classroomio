@@ -1,14 +1,51 @@
-export type OrgLandingPageTheme = 'minimal' | 'bold' | 'classic';
+export type OrgLandingPageTheme =
+  | 'minimal'
+  | 'bold'
+  | 'classic'
+  | 'saas'
+  | 'tech'
+  | 'studio'
+  | 'corporate'
+  | 'terminal';
 
 export interface OrgLandingPageNavItem {
   label: string;
   href: string;
 }
 
-export interface OrgLandingPageFooterLink {
-  label: string;
-  href: string;
-}
+export type FooterSocialPlatform =
+  | 'instagram'
+  | 'x'
+  | 'linkedin'
+  | 'facebook'
+  | 'youtube'
+  | 'github'
+  | 'tiktok'
+  | 'website';
+
+export type FooterSocial = { platform: FooterSocialPlatform; href: string };
+
+export type FooterColumnLink = { id: string; label: string; href: string };
+
+export type FooterColumn = {
+  id: string;
+  heading: string;
+  links: FooterColumnLink[];
+  cta?: { label: string; href: string };
+};
+
+export type OrgLandingPageFooterConfig = {
+  brand: {
+    tagline?: string;
+    copyright?: string;
+    socials: FooterSocial[];
+  };
+  columns: FooterColumn[];
+  bottom?: {
+    text?: string;
+    links: FooterColumnLink[];
+  };
+};
 
 export interface OrgLandingPageEmbed {
   title: string;
@@ -29,6 +66,38 @@ export interface OrgLandingPageCallout {
   };
 }
 
+export type OrgLandingPageLinkIcon =
+  | 'help-circle'
+  | 'life-buoy'
+  | 'book-open'
+  | 'video'
+  | 'users'
+  | 'message-circle'
+  | 'newspaper'
+  | 'rocket'
+  | 'calendar'
+  | 'mail';
+
+export interface OrgLandingPageLinkCard {
+  icon: OrgLandingPageLinkIcon;
+  title: string;
+  description: string;
+  href: string;
+}
+
+export interface OrgLandingPageLinks {
+  heading: string;
+  description?: string;
+  boldVisitLabel?: string;
+  classicLearnMoreLabel?: string;
+  cards: OrgLandingPageLinkCard[];
+}
+
+export interface OrgLandingPageHeroStat {
+  label: string;
+  value: string;
+}
+
 export interface OrgLandingPageHero {
   heading: string;
   subheading: string;
@@ -42,16 +111,17 @@ export interface OrgLandingPageHero {
     href: string;
   };
   image?: string;
+  stats?: OrgLandingPageHeroStat[];
 }
 
 export interface OrgLandingPageJson {
   theme: OrgLandingPageTheme;
   hero: OrgLandingPageHero;
   navItems: OrgLandingPageNavItem[];
-  footerLinks: OrgLandingPageFooterLink[];
-  footerText: string;
+  footer: OrgLandingPageFooterConfig;
   embed?: OrgLandingPageEmbed;
   callout?: OrgLandingPageCallout;
+  links?: OrgLandingPageLinks;
 }
 
 export interface OrgTeamMember {

@@ -472,3 +472,94 @@ export async function listLatestComplianceRecordsForReminderScan(): Promise<Cour
     );
   }
 }
+
+export type OrgComplianceLearnerRow = {
+  courseId: string;
+  courseTitle: string;
+  groupMemberId: string;
+  profileId: string | null;
+  profile: CourseMemberProfile | null;
+  email: string | null;
+  status: TCourseCompletionRecord['status'] | 'no_record';
+  cycleNumber: number | null;
+  dueDate: string | null;
+  completedAt: string | null;
+  validUntil: string | null;
+};
+
+/**
+ * Latest compliance record per (course, learner) for every COMPLIANCE-type
+ * course in the org. One row per enrolled student × course.
+ */
+export async function getOrgComplianceLearnerRows(orgId: string): Promise<OrgComplianceLearnerRow[]> {
+  try {
+    const latestCycles = db
+      .select({
+        courseId: schema.courseCompletionRecord.courseId,
+        profileId: schema.courseCompletionRecord.profileId,
+        latestCycleNumber: sql<number>`max(${schema.courseCompletionRecord.cycleNumber})`.as('latest_cycle_number')
+      })
+      .from(schema.courseCompletionRecord)
+      .groupBy(schema.courseCompletionRecord.courseId, schema.courseCompletionRecord.profileId)
+      .as('latest_org_compliance_cycles');
+
+    const result = await db
+      .select({
+        courseId: schema.course.id,
+        courseTitle: schema.course.title,
+        member: schema.groupmember,
+        profile: {
+          id: schema.profile.id,
+          fullname: schema.profile.fullname,
+          username: schema.profile.username,
+          avatarUrl: schema.profile.avatarUrl,
+          email: schema.profile.email
+        },
+        record: schema.courseCompletionRecord
+      })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.group.id, schema.course.groupId))
+      .innerJoin(schema.groupmember, eq(schema.groupmember.groupId, schema.group.id))
+      .leftJoin(schema.profile, eq(schema.profile.id, schema.groupmember.profileId))
+      .leftJoin(
+        latestCycles,
+        and(eq(latestCycles.courseId, schema.course.id), eq(latestCycles.profileId, schema.groupmember.profileId))
+      )
+      .leftJoin(
+        schema.courseCompletionRecord,
+        and(
+          eq(schema.courseCompletionRecord.courseId, schema.course.id),
+          eq(schema.courseCompletionRecord.profileId, schema.groupmember.profileId),
+          eq(schema.courseCompletionRecord.cycleNumber, latestCycles.latestCycleNumber)
+        )
+      )
+      .where(
+        and(
+          eq(schema.group.organizationId, orgId),
+          eq(schema.course.type, 'COMPLIANCE'),
+          eq(schema.groupmember.roleId, ROLE.STUDENT),
+          isNotNull(schema.groupmember.profileId)
+        )
+      )
+      .orderBy(asc(schema.course.title), asc(schema.profile.fullname));
+
+    return result.map((row) => ({
+      courseId: row.courseId,
+      courseTitle: row.courseTitle,
+      groupMemberId: row.member.id,
+      profileId: row.member.profileId,
+      profile: row.profile ?? null,
+      email: row.profile?.email ?? row.member.email ?? null,
+      status: (row.record?.status as TCourseCompletionRecord['status'] | undefined) ?? 'no_record',
+      cycleNumber: row.record?.cycleNumber ?? null,
+      dueDate: row.record?.dueDate ?? null,
+      completedAt: row.record?.completedAt ?? null,
+      validUntil: row.record?.validUntil ?? null
+    }));
+  } catch (error) {
+    console.error('getOrgComplianceLearnerRows error:', error);
+    throw new Error(
+      `Failed to get org compliance learner rows: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}

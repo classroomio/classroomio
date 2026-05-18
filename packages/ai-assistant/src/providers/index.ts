@@ -7,7 +7,7 @@ import { AIProvider, type AIProviderConfig } from '../types';
 const DEFAULT_MODELS: Record<AIProvider, string> = {
   [AIProvider.OPENAI]: 'gpt-5.4-mini',
   [AIProvider.ANTHROPIC]: 'claude-sonnet-4-20250514',
-  [AIProvider.GOOGLE]: 'gemini-2.5-flash',
+  [AIProvider.GOOGLE]: 'gemini-3.1-flash-lite',
   [AIProvider.MOONSHOT]: 'kimi-k2.6'
 };
 

@@ -23,16 +23,18 @@
   }
 </script>
 
-{#each segments as segment}
-  {#if segment.type === 'html'}
-    {@html segment.content}
-  {:else}
-    {@const dims = svgDimensions(segment.content)}
-    <iframe
-      sandbox=""
-      srcdoc={svgSrcdoc(segment.content)}
-      title="Embedded diagram"
-      style="border:none;overflow:hidden;width:{dims.width};height:{dims.height}"
-    ></iframe>
-  {/if}
-{/each}
+{#key content}
+  {#each segments as segment, i (i)}
+    {#if segment.type === 'html'}
+      {@html segment.content}
+    {:else}
+      {@const dims = svgDimensions(segment.content)}
+      <iframe
+        sandbox=""
+        srcdoc={svgSrcdoc(segment.content)}
+        title="Embedded diagram"
+        style="border:none;overflow:hidden;width:{dims.width};height:{dims.height}"
+      ></iframe>
+    {/if}
+  {/each}
+{/key}

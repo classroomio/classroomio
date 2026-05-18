@@ -25,6 +25,14 @@
   let selectedOrder = $state<CourseSortOrder>(DEFAULT_SORT_ORDER);
 
   let selectedTags = $state<string[]>(getInitialSelectedTags());
+  let courseType = $state<string>('all');
+
+  const courseTypeOptions = $derived([
+    { value: 'SELF_PACED', label: $t('new_course_modal.self_paced_label') },
+    { value: 'LIVE_CLASS', label: $t('new_course_modal.live_class_label') },
+    { value: 'COMPLIANCE', label: $t('new_course_modal.compliance_label') },
+    { value: 'PUBLIC', label: $t('new_course_modal.public_label') }
+  ]);
 
   let hasInitializedFilters = $state(false);
   let hasCompletedInitialUrlSync = false;
@@ -59,6 +67,12 @@
       nextUrl.searchParams.set('order', selectedOrder);
     } else {
       nextUrl.searchParams.delete('order');
+    }
+
+    if (courseType !== 'all') {
+      nextUrl.searchParams.set('type', courseType);
+    } else {
+      nextUrl.searchParams.delete('type');
     }
 
     const nextPath = `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
@@ -107,21 +121,30 @@
   async function clearFilters() {
     sortKey = DEFAULT_COURSE_SORT;
     selectedOrder = DEFAULT_SORT_ORDER;
+    courseType = 'all';
 
     if (selectedTags.length === 0) {
+      updateFiltersUrl();
       return;
     }
 
     await applyTagFilters([]);
   }
 
+  function setCourseType(nextType: string) {
+    courseType = nextType;
+    updateFiltersUrl();
+  }
+
   const filteredCourses = $derived.by(() => {
     const filteredCourses = (coursesApi.orgCourses ?? []).filter((course) => {
-      if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
-        return true;
-      }
+      const matchesSearch = !searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase());
 
-      return false;
+      if (!matchesSearch) return false;
+
+      if (courseType !== 'all' && course.type !== courseType) return false;
+
+      return true;
     });
 
     const sortedCourses = [...filteredCourses];
@@ -169,6 +192,11 @@
       selectedOrder = orderFromStorage;
     }
 
+    const typeFromUrl = searchParams.get('type');
+    if (typeFromUrl && courseTypeOptions.some((opt) => opt.value === typeFromUrl)) {
+      courseType = typeFromUrl;
+    }
+
     hasInitializedFilters = true;
   });
 </script>
@@ -194,10 +222,13 @@
           <CourseFilterPopover
             bind:sortKey
             bind:selectedOrder
+            bind:courseType
+            {courseTypeOptions}
             {selectedTags}
             tagGroups={data.tagGroups}
             {isFiltering}
             onToggleTag={toggleTag}
+            onCourseTypeChange={setCourseType}
             onClearFilters={clearFilters}
           />
         {/snippet}

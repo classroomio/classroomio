@@ -19,14 +19,15 @@ import {
   getDefaultWidgetConfig,
   normalizeWidgetConfig,
   type TCreateWidget,
-  type TPreviewWidget,
   type TRollbackWidget,
   type TUpdateWidget
 } from '@cio/utils/validation/widget';
 
+import { getOrganizationById } from '@cio/db/queries/organization';
 import {
   buildWidgetPayload,
   generateWidgetPublicKey,
+  getCourseBaseUrl,
   getCourseWidgetScriptUrl,
   getWidgetEmbedCode,
   listWidgetAvailableEditorData
@@ -82,26 +83,37 @@ export async function getOrganizationWidgetDetail(orgId: string, widgetId: strin
       throw new AppError('Widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
     }
 
-    const [selectedCourses, versions, editorData, previewPayload] = await Promise.all([
+    const organization = await getOrganizationById(orgId);
+    if (!organization) {
+      throw new AppError('Organization not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
+    }
+
+    const [selectedCourses, versions, editorData] = await Promise.all([
       listWidgetCourses(widget.id),
       listWidgetVersions(orgId, widget.id),
-      listWidgetAvailableEditorData(orgId),
-      buildWidgetPayload(widget)
+      listWidgetAvailableEditorData(orgId)
     ]);
 
     return {
       widget: {
         ...widget,
-        config: normalizeWidgetConfig(widget.config as Record<string, unknown>),
+        config: normalizeWidgetConfig(widget.config as Record<string, unknown>, editorData.planName),
         selectedCourseIds: selectedCourses.map((course) => course.courseId),
         embedCode: getWidgetEmbedCode(widget.publicKey),
         publicScriptUrl: getCourseWidgetScriptUrl()
       },
+      organization: {
+        id: organization.id,
+        name: organization.name,
+        siteName: organization.siteName ?? '',
+        customDomain: organization.customDomain
+      },
+      orgBaseUrl: getCourseBaseUrl(organization.siteName ?? '', organization.customDomain),
       availableCourses: editorData.availableCourses,
       availableTags: editorData.availableTags,
-      previewPayload,
       versions,
-      planGatedFields: editorData.planGatedFields
+      planGatedFields: editorData.planGatedFields,
+      planName: editorData.planName
     };
   } catch (error) {
     if (error instanceof AppError) {
@@ -280,34 +292,6 @@ export async function rollbackOrganizationWidget(
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to rollback widget',
       ErrorCodes.WIDGET_ROLLBACK_FAILED,
-      500
-    );
-  }
-}
-
-export async function previewOrganizationWidget(orgId: string, widgetId: string, data: TPreviewWidget) {
-  try {
-    const widget = await getWidgetById(orgId, widgetId);
-    if (!widget) {
-      throw new AppError('Widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
-    }
-
-    const overriddenWidget = {
-      ...widget,
-      layoutType: data.layoutType ?? widget.layoutType,
-      selectionMode: data.selectionMode ?? widget.selectionMode,
-      config: data.config ?? widget.config
-    };
-
-    return buildWidgetPayload(overriddenWidget, data.selectedCourseIds);
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to build widget preview',
-      ErrorCodes.WIDGET_FETCH_FAILED,
       500
     );
   }

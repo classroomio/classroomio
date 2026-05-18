@@ -1,5 +1,6 @@
 import {
   ApiIcon,
+  ChartColumnIcon,
   AttachmentIcon,
   CommunityIcon,
   CourseIcon,
@@ -20,12 +21,14 @@ import type { Component } from 'svelte';
 import { isActive } from '$lib/utils/functions/app';
 
 export interface NavItem {
-  title: string; // translation key
+  title: string;
   url: string;
   path: string; // Actual path (e.g., '/settings') for breadcrumb generation
   icon?: Component;
   isActive?: boolean;
   isExpanded?: boolean;
+  /** When set, `isActive` for this item is determined by this regex on the pathname */
+  matchPattern?: string;
   items?: NavItem[]; // for nested items like settings
   isPaid?: boolean; // Show upgrade indicator for free plan users
   disabled?: boolean;
@@ -75,6 +78,27 @@ export const baseNavConfig: NavItemConfig[] = [
     path: '/dash',
     icon: DashboardIcon,
     matchPattern: '^/org/[^/]+/dash(/.*)?$'
+  },
+  {
+    group: 'home',
+    titleKey: 'org_navigation.stats',
+    path: '/stats',
+    icon: ChartColumnIcon,
+    useHashUrl: true,
+    matchPattern: '^/org/[^/]+/(analytics|compliance)(/.*)?$',
+    items: [
+      {
+        titleKey: 'org_navigation.analytics',
+        path: '/analytics',
+        matchPattern: '^/org/[^/]+/analytics(/.*)?$'
+      },
+      {
+        titleKey: 'org_navigation.compliance',
+        path: '/compliance',
+        requiresAdmin: true,
+        matchPattern: '^/org/[^/]+/compliance(/.*)?$'
+      }
+    ]
   },
   {
     group: 'home',
@@ -196,6 +220,10 @@ export const baseNavConfig: NavItemConfig[] = [
         path: '/settings/ai-credits'
       },
       {
+        titleKey: 'settings.tabs.ai_tutor_tab',
+        path: '/settings/ai-tutor'
+      },
+      {
         titleKey: 'settings.tabs.auth_tab',
         matchPattern: '^/org/[^/]+/settings/auth(/.*)?$',
         path: '/settings/auth',
@@ -210,6 +238,10 @@ export const baseNavConfig: NavItemConfig[] = [
       {
         path: 'ai-credits',
         titleKey: 'settings.tabs.ai_credits_tab'
+      },
+      {
+        path: 'ai-tutor',
+        titleKey: 'settings.tabs.ai_tutor_tab'
       },
       {
         path: 'customize-lms',
@@ -257,6 +289,12 @@ export function getOrgNavigationItems(
       continue;
     }
 
+    const visibleSubConfigs = config.items?.filter((sub) => !sub.requiresAdmin || isOrgAdmin) ?? [];
+
+    if (config.items && visibleSubConfigs.length === 0) {
+      continue;
+    }
+
     const url = config.path === '' ? currentOrgPath : `${currentOrgPath}${config.path}`;
     const fullPath = config.path === '' ? `/org/${currentOrg.siteName}` : `/org/${currentOrg.siteName}${config.path}`;
 
@@ -269,6 +307,7 @@ export function getOrgNavigationItems(
       url: config.useHashUrl ? '#' : url,
       path: config.path, // Store actual path for breadcrumb generation
       icon: config.icon,
+      matchPattern,
       isActive: isActive(pagePathname, fullPath, matchPattern),
       isExpanded: config.items ? isActive(pagePathname, fullPath, matchPattern) : undefined,
       disabled: Boolean(config.disableWhenNotAdmin && !isOrgAdmin),
@@ -279,18 +318,18 @@ export function getOrgNavigationItems(
     };
 
     // Handle nested items (like settings sub-items)
-    if (config.items) {
-      item.items = config.items.map((subConfig) => {
-        const matchPattern =
+    if (visibleSubConfigs.length > 0) {
+      item.items = visibleSubConfigs.map((subConfig) => {
+        const subMatchPattern =
           typeof subConfig.matchPattern === 'function'
             ? subConfig.matchPattern(currentOrg.siteName!)
             : subConfig.matchPattern;
-        const url = `${currentOrgPath}${subConfig.path}`;
+        const subUrl = `${currentOrgPath}${subConfig.path}`;
 
         return {
           title: t(subConfig.titleKey),
-          isActive: isActive(pagePathname, url, matchPattern, true),
-          url: url,
+          isActive: isActive(pagePathname, subUrl, subMatchPattern, true),
+          url: subUrl,
           path: subConfig.path,
           isPaid: subConfig.isPaid
         };
@@ -321,6 +360,7 @@ export function getOrgNavigationGroups(
   t: (key: string) => string,
   pagePathname: string
 ): NavGroup[] {
+  const pathnameOnly = pagePathname.split('?')[0];
   const groupedMap = new Map<string | null, NavItem[]>();
 
   for (const groupDef of GROUP_ORDER) {
@@ -329,6 +369,12 @@ export function getOrgNavigationGroups(
 
   for (const config of baseNavConfig) {
     if (config.requiresAdmin && !isOrgAdmin && !config.disableWhenNotAdmin) {
+      continue;
+    }
+
+    const visibleSubConfigs = config.items?.filter((sub) => !sub.requiresAdmin || isOrgAdmin) ?? [];
+
+    if (config.items && visibleSubConfigs.length === 0) {
       continue;
     }
 
@@ -342,8 +388,9 @@ export function getOrgNavigationGroups(
       url: config.useHashUrl ? '#' : url,
       path: config.path,
       icon: config.icon,
-      isActive: isActive(pagePathname, fullPath, matchPattern),
-      isExpanded: config.items ? isActive(pagePathname, fullPath, matchPattern) : undefined,
+      matchPattern,
+      isActive: isActive(pathnameOnly, fullPath, matchPattern),
+      isExpanded: config.items ? isActive(pathnameOnly, fullPath, matchPattern) : undefined,
       disabled: Boolean(config.disableWhenNotAdmin && !isOrgAdmin),
       useHashUrl: config.useHashUrl,
       nestedRoutes: config.nestedRoutes,
@@ -351,8 +398,8 @@ export function getOrgNavigationGroups(
       isPaid: config.isPaid
     };
 
-    if (config.items) {
-      item.items = config.items.map((subConfig) => {
+    if (visibleSubConfigs.length > 0) {
+      item.items = visibleSubConfigs.map((subConfig) => {
         const subMatchPattern =
           typeof subConfig.matchPattern === 'function'
             ? subConfig.matchPattern(currentOrg.siteName!)
@@ -360,7 +407,7 @@ export function getOrgNavigationGroups(
         const subUrl = `${currentOrgPath}${subConfig.path}`;
         return {
           title: t(subConfig.titleKey),
-          isActive: isActive(pagePathname, subUrl, subMatchPattern, true),
+          isActive: isActive(pathnameOnly, subUrl, subMatchPattern, true),
           url: subUrl,
           path: subConfig.path,
           isPaid: subConfig.isPaid

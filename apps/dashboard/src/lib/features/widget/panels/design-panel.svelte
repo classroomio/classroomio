@@ -14,6 +14,8 @@
     canUseCustomColors: boolean;
     canUseCustomCss: boolean;
     isBrandingForced: boolean;
+    /** Zod-keyed validation errors from the last save attempt (e.g. `config.colors.primaryColor`). */
+    errors?: Record<string, string>;
   }
 
   let {
@@ -21,8 +23,11 @@
     availableThemes,
     canUseCustomColors,
     canUseCustomCss,
-    isBrandingForced
+    isBrandingForced,
+    errors = {}
   }: Props = $props();
+
+  const errFor = (path: string) => errors[path] ?? '';
 </script>
 
 <div class="space-y-6">
@@ -40,32 +45,58 @@
           </Select.Content>
         </Select.Root>
       </Field.Field>
-      <InputField label={$t('widgets.form.primary_color')} bind:value={draftConfig.colors.primaryColor} />
+      <InputField
+        label={$t('widgets.form.primary_color')}
+        bind:value={draftConfig.colors.primaryColor}
+        maxLength={64}
+        errorMessage={errFor('config.colors.primaryColor')}
+      />
       <InputField
         label={$t('widgets.form.background_color')}
         bind:value={draftConfig.colors.backgroundColor}
         isDisabled={!canUseCustomColors}
+        maxLength={64}
+        errorMessage={errFor('config.colors.backgroundColor')}
       />
       <InputField
         label={$t('widgets.form.text_color')}
         bind:value={draftConfig.colors.textColor}
         isDisabled={!canUseCustomColors}
+        maxLength={64}
+        errorMessage={errFor('config.colors.textColor')}
       />
       <InputField
         label={$t('widgets.form.border_color')}
         bind:value={draftConfig.colors.borderColor}
         isDisabled={!canUseCustomColors}
+        maxLength={64}
+        errorMessage={errFor('config.colors.borderColor')}
       />
       <InputField
         type="number"
         label={$t('widgets.form.border_radius')}
         bind:value={draftConfig.content.borderRadius}
+        min={0}
+        max={32}
+        step={1}
+        helperMessage={errFor('config.content.borderRadius') ? '' : $t('widgets.form.border_radius_hint')}
+        errorMessage={errFor('config.content.borderRadius')}
       />
-      <InputField label={$t('widgets.form.font_family')} bind:value={draftConfig.typography.fontFamily} />
+      <InputField
+        label={$t('widgets.form.font_family')}
+        bind:value={draftConfig.typography.fontFamily}
+        maxLength={120}
+        errorMessage={errFor('config.typography.fontFamily')}
+      />
       <InputField
         type="number"
         label={$t('widgets.form.font_scale')}
         bind:value={draftConfig.typography.fontSizeScale}
+        min={0.8}
+        max={1.4}
+        step={0.1}
+        helperMessage={errFor('config.typography.fontSizeScale') ? '' : $t('widgets.form.font_scale_hint')}
+        errorMessage={errFor('config.typography.fontSizeScale')}
       />
       <Field.Field orientation="horizontal">
         <Switch bind:checked={draftConfig.branding.showPoweredBy} disabled={isBrandingForced} />
@@ -75,8 +106,14 @@
         label={$t('widgets.form.custom_css')}
         bind:value={draftConfig.advanced.customCss}
         rows={6}
+        maxlength={5000}
         disabled={!canUseCustomCss}
-        helperMessage={!canUseCustomCss ? $t('widgets.form.custom_css_locked') : ''}
+        helperMessage={!canUseCustomCss
+          ? $t('widgets.form.custom_css_locked')
+          : errFor('config.advanced.customCss')
+            ? ''
+            : $t('widgets.form.custom_css_hint')}
+        errorMessage={errFor('config.advanced.customCss')}
       />
     </Field.Set>
   </Field.Group>

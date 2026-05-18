@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { OrgLandingPageProps } from './types';
   import OrgLandingPageEmbed from './embed.svelte';
+  import OrgLandingPageLinks from './links.svelte';
   import OrgLandingPageCallout from './callout.svelte';
   import OrgLandingPageFooter from './landing-page-footer.svelte';
   import BoldNav from './bold/nav.svelte';
@@ -12,7 +13,7 @@
   import { DotPattern } from '../animation/dot-pattern';
   import ClockIcon from '@lucide/svelte/icons/clock';
   import TagIcon from '@lucide/svelte/icons/tag';
-  import { getPrimaryCourseTag } from './landing-page-utils';
+  import { getCourseTypeLandingMeta, getPrimaryCourseTag } from './landing-page-utils';
 
   let {
     orgName,
@@ -25,8 +26,8 @@
     disableCourseLinks = false,
     embed,
     callout,
-    footerLinks,
-    footerText
+    links,
+    footer
   }: OrgLandingPageProps = $props();
 
   function formatCurrency(cost?: number, currency = 'USD') {
@@ -49,6 +50,7 @@
         </div>
         <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:gap-8">
           {#each courses as course, index (course.id)}
+            {@const courseTypeMeta = getCourseTypeLandingMeta(course)}
             {@const primaryTag = getPrimaryCourseTag(course)}
             <BlurFade delay={0.1 * index} once={true}>
               <Card.Root
@@ -80,6 +82,15 @@
                       >
                         <ClockIcon class="ui:size-3.5" />
                         <span>{course.duration}</span>
+                      </div>
+                    {/if}
+                    {#if courseTypeMeta}
+                      {@const TypeIcon = courseTypeMeta.icon}
+                      <div
+                        class="ui:flex ui:items-center ui:gap-1.5 ui:text-foreground ui:bg-muted ui:px-2.5 ui:py-1 ui:rounded-md"
+                      >
+                        <TypeIcon class={courseTypeMeta.iconClass} />
+                        <span>{courseTypeMeta.label}</span>
                       </div>
                     {/if}
                     {#if primaryTag}
@@ -137,9 +148,11 @@
     </section>
   </main>
 
+  <OrgLandingPageLinks {links} variant="bold" />
+
   <OrgLandingPageEmbed {embed} variant="bold" />
 
   <OrgLandingPageCallout {callout} variant="bold" />
 
-  <OrgLandingPageFooter {orgName} {logoUrl} {footerLinks} {footerText} variant="bold" />
+  <OrgLandingPageFooter {orgName} {logoUrl} {footer} variant="bold" />
 </div>

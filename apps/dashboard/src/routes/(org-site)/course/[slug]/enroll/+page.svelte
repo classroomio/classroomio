@@ -120,6 +120,7 @@
 
 <svelte:head>
   <title>Join {data.course?.title ?? 'Course'} on ClassroomIO</title>
+  <meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <AuthUI isLogin={false} {handleSubmit} isLoading={loading || !$profile.id} showOnlyContent={true} showLogo={true}>

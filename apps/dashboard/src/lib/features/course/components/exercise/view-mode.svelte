@@ -761,6 +761,13 @@
           {$t('course.navItem.lessons.exercises.all_exercises.view_mode.questions')}
         </p>
         |
+        {#if hasSectionedExercise}
+          <p class="mx-2 dark:text-white">
+            <strong>{activeSections.length}</strong>
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.sections')}
+          </p>
+          |
+        {/if}
         <p class="mx-2 dark:text-white">
           <strong>{getTotalPossibleGrade($questionnaire.questions)}</strong>
           {$t('course.navItem.lessons.exercises.all_exercises.view_mode.points')}.

@@ -57,7 +57,7 @@ export function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): MetaTagsPro
     openGraph: {
       type: 'website',
       url: new URL(url.pathname, url.origin).href,
-      locale: 'en_IE',
+      locale: 'en_US',
       title,
       description,
       siteName,

@@ -16,6 +16,7 @@ import {
   type TCourseCertificationRow
 } from '@cio/db/queries/course/course';
 import { ROLE } from '@cio/utils/constants';
+import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 
 export type CertificationBlocker = {
   code:
@@ -240,6 +241,22 @@ export async function evaluateCourseCertification(
       courseRow,
       earnedAt
     });
+
+    trackServerEvent({
+      eventType: SERVER_EVENTS.COURSE_COMPLETED,
+      userId: profileId,
+      courseId,
+      props: { path: 'standard', earnedAt }
+    });
+
+    if (courseRow.certificate?.isDownloadable) {
+      trackServerEvent({
+        eventType: SERVER_EVENTS.CERTIFICATE_ISSUED,
+        userId: profileId,
+        courseId,
+        props: { path: 'standard', earnedAt }
+      });
+    }
   }
 
   return { ...evaluation, certificateEarnedAt, isNewCompletion };

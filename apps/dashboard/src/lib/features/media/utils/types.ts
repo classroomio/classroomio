@@ -52,5 +52,10 @@ export type GetYouTubeMetadataResponse = InferResponseType<GetYouTubeMetadataReq
 export type GetYouTubeMetadataSuccess = Extract<GetYouTubeMetadataResponse, { success: true }>;
 export type YouTubeMetadata = GetYouTubeMetadataSuccess['data'];
 
+export type GetAssetTranscriptRequest = (typeof classroomio.organization)['assets'][':assetId']['transcript']['$get'];
+export type GetAssetTranscriptResponse = InferResponseType<GetAssetTranscriptRequest>;
+export type GetAssetTranscriptSuccess = Extract<GetAssetTranscriptResponse, { success: true }>;
+export type AssetTranscriptPayload = GetAssetTranscriptSuccess['data'];
+
 export type AssetKindFilter = 'all' | 'video' | 'document' | 'image' | 'audio' | 'other';
 export type AssetStatusFilter = 'all' | 'active' | 'archived';

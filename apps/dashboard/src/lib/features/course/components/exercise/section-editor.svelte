@@ -10,6 +10,8 @@
   import XIcon from '@lucide/svelte/icons/x';
   import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';
   import ArrowDownIcon from '@lucide/svelte/icons/arrow-down';
+  import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 
   const COLOR_THEMES: ExerciseSectionColorTheme[] = ['blue', 'green', 'amber', 'rose', 'violet', 'slate'];
 
@@ -82,6 +84,8 @@
   let localTitle = $derived(title);
   let localDescription = $derived(description ?? '');
 
+  let sectionCollapsed = $state(false);
+
   function handleTitleInput() {
     onTitleChange?.(localTitle);
   }
@@ -94,12 +98,49 @@
 <section
   id={`exercise-section-${exerciseSectionId}`}
   class={`overflow-hidden rounded-lg border bg-white shadow-xs dark:bg-zinc-950 ${BORDER_CLASSES[colorTheme]}`}
+  aria-expanded={!sectionCollapsed}
 >
-  <div class="flex items-center gap-3 border-b bg-zinc-50 px-4 py-3 dark:bg-zinc-900">
+  <div class="group/sectionhead flex items-center gap-3 border-b bg-zinc-50 px-4 py-3 dark:bg-zinc-900">
     {#if showReorderHandles}
       <GripVerticalIcon class="ui:text-muted-foreground h-4 w-4 shrink-0" aria-hidden="true" />
     {/if}
-    <span class={`h-2.5 w-2.5 shrink-0 rounded-full ${COLOR_CLASSES[colorTheme]}`}></span>
+    <div class="relative h-7 w-7 shrink-0">
+      {#if !sectionCollapsed}
+        <span
+          class={`pointer-events-none absolute top-1/2 left-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-100 transition-opacity ${COLOR_CLASSES[colorTheme]} group-hover/sectionhead:opacity-0`}
+          aria-hidden="true"
+        ></span>
+        <div
+          class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover/sectionhead:opacity-100"
+        >
+          <IconButton
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onclick={() => (sectionCollapsed = true)}
+            tooltip={labels.collapseSection ?? 'Collapse section'}
+            tooltipSide="bottom"
+            class="shrink-0"
+          >
+            <ChevronUpIcon class="h-4 w-4" aria-hidden="true" />
+          </IconButton>
+        </div>
+      {:else}
+        <div class="flex h-full w-full items-center justify-center">
+          <IconButton
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onclick={() => (sectionCollapsed = false)}
+            tooltip={labels.expandSection ?? 'Expand section'}
+            tooltipSide="bottom"
+            class="shrink-0"
+          >
+            <ChevronDownIcon class="h-4 w-4" aria-hidden="true" />
+          </IconButton>
+        </div>
+      {/if}
+    </div>
     <Input
       bind:value={localTitle}
       oninput={handleTitleInput}
@@ -137,48 +178,50 @@
     </div>
   {/if}
 
-  <div class="border-b bg-white px-4 py-3 dark:bg-zinc-950">
-    <TextareaField
-      bind:value={localDescription}
-      rows={2}
-      oninput={handleDescriptionInput}
-      placeholder={labels.descriptionPlaceholder ?? 'Describe this section'}
-      errorMessage={descriptionError}
-      className="m-0"
-      bgColor="resize-none border-dashed bg-transparent text-sm"
-    />
-  </div>
-
-  <div class="space-y-4 bg-white px-4 py-4 dark:bg-zinc-950">
-    {@render children?.()}
-
-    <div class="flex justify-center">
-      <Button variant="outline" onclick={onAddQuestion}>+ {labels.addQuestion ?? 'Add question'}</Button>
+  {#if !sectionCollapsed}
+    <div class="border-b bg-white px-4 py-3 dark:bg-zinc-950">
+      <TextareaField
+        bind:value={localDescription}
+        rows={2}
+        oninput={handleDescriptionInput}
+        placeholder={labels.descriptionPlaceholder ?? 'Describe this section'}
+        errorMessage={descriptionError}
+        className="m-0"
+        bgColor="resize-none border-dashed bg-transparent text-sm"
+      />
     </div>
-  </div>
 
-  <div class="flex items-center justify-between border-t bg-zinc-50 px-4 py-3 dark:bg-zinc-900">
-    <p class="ui:text-muted-foreground text-sm">
-      {requiredQuestionCount}
-      {labels.required ?? 'required'}
-    </p>
-    <div class="flex items-center gap-1">
-      <IconButton
-        onclick={onMoveUp}
-        disabled={!canMoveUp}
-        tooltip={labels.moveUp ?? 'Move section up'}
-        tooltipSide="bottom"
-      >
-        <ArrowUpIcon size={16} />
-      </IconButton>
-      <IconButton
-        onclick={onMoveDown}
-        disabled={!canMoveDown}
-        tooltip={labels.moveDown ?? 'Move section down'}
-        tooltipSide="bottom"
-      >
-        <ArrowDownIcon size={16} />
-      </IconButton>
+    <div class="space-y-4 bg-white px-4 py-4 dark:bg-zinc-950">
+      {@render children?.()}
+
+      <div class="flex justify-center">
+        <Button variant="outline" onclick={onAddQuestion}>+ {labels.addQuestion ?? 'Add question'}</Button>
+      </div>
     </div>
-  </div>
+
+    <div class="flex items-center justify-between border-t bg-zinc-50 px-4 py-3 dark:bg-zinc-900">
+      <p class="ui:text-muted-foreground text-sm">
+        {requiredQuestionCount}
+        {labels.required ?? 'required'}
+      </p>
+      <div class="flex items-center gap-1">
+        <IconButton
+          onclick={onMoveUp}
+          disabled={!canMoveUp}
+          tooltip={labels.moveUp ?? 'Move section up'}
+          tooltipSide="bottom"
+        >
+          <ArrowUpIcon size={16} />
+        </IconButton>
+        <IconButton
+          onclick={onMoveDown}
+          disabled={!canMoveDown}
+          tooltip={labels.moveDown ?? 'Move section down'}
+          tooltipSide="bottom"
+        >
+          <ArrowDownIcon size={16} />
+        </IconButton>
+      </div>
+    </div>
+  {/if}
 </section>

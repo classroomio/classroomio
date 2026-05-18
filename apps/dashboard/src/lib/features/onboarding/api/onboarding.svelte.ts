@@ -1,5 +1,5 @@
 import type { OnboardingField, OnboardingStep } from '../utils/types';
-import { currentOrg, orgs } from '$lib/utils/store/org';
+import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
 
 import { ONBOARDING_STEPS } from '../utils/constants';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
@@ -38,8 +38,8 @@ export class OnboardingApi extends BaseApiWithErrors {
       onSuccess: (result) => {
         const { organizations } = result.data;
 
-        orgs.set(organizations);
-        currentOrg.set(organizations[0]);
+        orgs.set(organizations.map((org) => mergeAccountOrgFromServer(org)));
+        currentOrg.set(mergeAccountOrgFromServer(organizations[0]));
 
         this.errors = {};
         this.step = ONBOARDING_STEPS.USER_METADATA;

@@ -28,6 +28,7 @@ import {
 } from '@api/services/agent/chat-context';
 import {
   addQuestionsParam,
+  askTemplateQuestionsParam,
   coursePlanParam,
   createExerciseParam,
   createExerciseSectionParam,
@@ -35,6 +36,7 @@ import {
   createSectionParam,
   emptyParam,
   exerciseReadParam,
+  fetchDocumentationUrlParam,
   goLiveParam,
   lessonReadParam,
   reorderContentParam,
@@ -46,6 +48,7 @@ import {
   updateQuestionsParam,
   updateSectionParam
 } from '@api/services/agent/agent-tool-schemas';
+import { fetchDocumentationUrl } from '@api/services/agent/fetch-url';
 
 function summarizeAgentDebugValue(value: unknown, depth = 0): unknown {
   if (value == null) return value;
@@ -184,7 +187,7 @@ async function executeAgentTool<TArgs, TResult>(
   }
 }
 
-export function buildAgentTools(orgId: string, userId: string, courseId: string) {
+export function buildAgentTools(orgId: string, userId: string, courseId: string, priorMessages: unknown[]) {
   return {
     get_course_structure: tool({
       description:
@@ -316,6 +319,7 @@ export function buildAgentTools(orgId: string, userId: string, courseId: string)
           });
           return {
             lessonId: args.lessonId,
+            lessonTitle: lesson.title,
             locale: args.locale,
             contentLength: normalizedContent.length,
             updated: true
@@ -488,7 +492,12 @@ export function buildAgentTools(orgId: string, userId: string, courseId: string)
           ];
 
           await updateExerciseService(args.exerciseId, { questions: allQuestions });
-          return { exerciseId: args.exerciseId, addedCount: args.questions.length, totalCount: allQuestions.length };
+          return {
+            exerciseId: args.exerciseId,
+            exerciseTitle: existingExercise.title,
+            addedCount: args.questions.length,
+            totalCount: allQuestions.length
+          };
         });
       }
     }),
@@ -545,7 +554,11 @@ export function buildAgentTools(orgId: string, userId: string, courseId: string)
 
           await updateExerciseService(args.exerciseId, { questions: merged });
 
-          return { exerciseId: args.exerciseId, updatedCount: merged.length };
+          return {
+            exerciseId: args.exerciseId,
+            exerciseTitle: existing.title,
+            updatedCount: merged.length
+          };
         });
       }
     }),
@@ -586,7 +599,7 @@ export function buildAgentTools(orgId: string, userId: string, courseId: string)
 
     update_course_landing_page: tool({
       description:
-        'Update course-level landing page fields for this course, including public title, description, overview, goals, requirements, instructor metadata, pricing, and banner image. The courseId is automatically set — do not pass it.',
+        'Update course-level landing page fields for this course (public title, course description, overview, goals, requirements, the Description section after Requirements, instructor bio, pricing, banner image). The top-level course description field is plain text only—no HTML. All other narrative sections (overview, metadata goals/requirements, metadata description for the block after Requirements, instructor description, etc.) are HTML: paragraphs, lists, line breaks, bold, and italic only—never heading tags (h1–h6) because the UI shows section titles. Title is plain text. The courseId is automatically set — do not pass it.',
       inputSchema: updateCourseLandingPageParam,
       execute: async (args) => {
         return executeAgentTool('update_course_landing_page', { orgId, userId, courseId, args }, async () => {
@@ -648,6 +661,42 @@ export function buildAgentTools(orgId: string, userId: string, courseId: string)
           trackAgentEvent(AgentEvent.PLAN_GENERATED, { orgId, userId, courseId, sectionCount, itemCount });
 
           return plan;
+        });
+      }
+    }),
+
+    ask_template_questions: tool({
+      description:
+        'Render a structured questionnaire card to the teacher. Pause until the teacher submits via metadata.template.action submit_template_answers or skips via skip_template_form.',
+      inputSchema: askTemplateQuestionsParam,
+      execute: async (args) => {
+        return executeAgentTool(
+          'ask_template_questions',
+          { orgId, userId, courseId, args },
+          async () =>
+            ({
+              awaiting_user: true as const,
+              templateId: args.templateId,
+              title: args.title,
+              description: args.description,
+              fields: args.fields
+            }) as const
+        );
+      }
+    }),
+
+    fetch_documentation_url: tool({
+      description:
+        'Fetch a public documentation URL via Jina Reader. Returns markdown wrapped as untrusted external content plus same-origin links for follow-up fetches.',
+      inputSchema: fetchDocumentationUrlParam,
+      execute: async (args) => {
+        return executeAgentTool('fetch_documentation_url', { orgId, userId, courseId, args }, async () => {
+          return fetchDocumentationUrl({
+            url: args.url,
+            orgId,
+            courseId,
+            priorMessages
+          });
         });
       }
     })

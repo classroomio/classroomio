@@ -11,7 +11,7 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google';
 const TITLE_MODELS: Record<AIProvider, string> = {
   [AIProvider.OPENAI]: 'gpt-4o-mini',
   [AIProvider.ANTHROPIC]: 'claude-haiku-4-5-20251001',
-  [AIProvider.GOOGLE]: 'gemini-2.5-flash',
+  [AIProvider.GOOGLE]: 'gemini-3.1-flash-lite',
   [AIProvider.MOONSHOT]: 'kimi-k2.6'
 };
 
@@ -55,7 +55,7 @@ export async function generateConversationTitle(
 
   const truncatedMessage = firstMessageText.slice(0, 1000);
 
-  // Gemini 2.5 counts thinking toward maxOutputTokens; disable thinking and allow headroom for the title text.
+  // Gemini 3.x counts thinking toward maxOutputTokens; disable thinking and allow headroom for the title text.
   const { text } = await generateText(
     providerConfig.provider === AIProvider.GOOGLE
       ? {

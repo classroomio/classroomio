@@ -1,13 +1,17 @@
 <script lang="ts">
   import ChevronDown from '@lucide/svelte/icons/chevron-down';
   import Gamepad from '@lucide/svelte/icons/gamepad';
+  import Github from '@lucide/svelte/icons/github';
   import Hourglass from '@lucide/svelte/icons/hourglass';
   import LoaderCircle from '@lucide/svelte/icons/loader-circle';
   import LocateFixed from '@lucide/svelte/icons/locate-fixed';
   import Menu from '@lucide/svelte/icons/menu';
   import MessagesSquare from '@lucide/svelte/icons/messages-square';
   import MousePointerClick from '@lucide/svelte/icons/mouse-pointer-click';
+  import Server from '@lucide/svelte/icons/server';
+  import Sparkles from '@lucide/svelte/icons/sparkles';
   import Timer from '@lucide/svelte/icons/timer';
+  import Webhook from '@lucide/svelte/icons/webhook';
   import X from '@lucide/svelte/icons/x';
   import { page } from '$app/state';
   import { fly } from 'svelte/transition';
@@ -62,22 +66,49 @@
 
   const solutions: NavCollectionItem[] = [
     {
-      key: 'employee-training',
-      title: 'Employee Training',
-      subtitle: 'Keep your team in sync.',
-      href: '/employee-training'
-    },
-    {
-      key: 'bootcamps',
-      title: 'Bootcamps',
-      subtitle: 'Drive student satisfaction.',
-      href: '/bootcamps'
-    },
-    {
       key: 'customer-education',
       title: 'Customer Education',
-      subtitle: 'Teach customers your product.',
+      subtitle: 'Customer academies for SaaS.',
       href: '/customer-education'
+    },
+    {
+      key: 'compliance-training',
+      title: 'Compliance Training',
+      subtitle: 'Turn policies and SOPs into proof.',
+      href: '/compliance-training'
+    },
+    {
+      key: 'partner-training',
+      title: 'Partner Training',
+      subtitle: 'A separate academy for your channel.',
+      href: '/partner-training'
+    }
+  ];
+
+  const developers: NavCollectionItem[] = [
+    {
+      key: 'automation',
+      title: 'Automation',
+      subtitle: 'API, Webhooks, and MCP server.',
+      href: '/automation'
+    },
+    {
+      key: 'self-hosting',
+      title: 'Self-hosting & Docs',
+      subtitle: 'Run ClassroomIO in your own VPC.',
+      href: 'https://docs.classroomio.com'
+    },
+    {
+      key: 'mcp-recipes',
+      title: 'MCP Recipes',
+      subtitle: 'Ready-to-run agent prompts.',
+      href: '/mcp-recipes'
+    },
+    {
+      key: 'github',
+      title: 'GitHub',
+      subtitle: 'Star, read the source, fork.',
+      href: '/github'
     }
   ];
 
@@ -122,6 +153,12 @@
       items: solutions
     },
     {
+      key: 'developers',
+      title: 'Developers',
+      href: '/automation',
+      items: developers
+    },
+    {
       key: 'free-tools',
       title: 'Free Tools',
       href: '/tools',
@@ -140,11 +177,16 @@
   ];
 
   let isSolutionsActive = $derived(!!solutions.some((s) => activeLink.includes(s.key)));
+  let isDevelopersActive = $derived(!!developers.some((d) => activeLink.includes(d.key)));
   let isFreeToolsActive = $derived(activeLink.startsWith('/tools'));
 
   function isNavItemActive(navItem: NavItem) {
     if (navItem.key === 'solutions') {
       return isSolutionsActive;
+    }
+
+    if (navItem.key === 'developers') {
+      return isDevelopersActive;
     }
 
     if (navItem.key === 'free-tools') {
@@ -165,12 +207,20 @@
           {...restProps}
         >
           <div class="shrink-0">
-            {#if key === 'employee-training'}
+            {#if key === 'compliance-training'}
               <LibraryBigIcon size={24} />
-            {:else if key === 'bootcamps'}
+            {:else if key === 'partner-training'}
               <LocateFixed size={24} />
             {:else if key === 'customer-education'}
               <MessagesSquare size={24} />
+            {:else if key === 'automation'}
+              <Webhook size={24} />
+            {:else if key === 'self-hosting'}
+              <Server size={24} />
+            {:else if key === 'mcp-recipes'}
+              <Sparkles size={24} />
+            {:else if key === 'github'}
+              <Github size={24} />
             {:else if key === 'progress'}
               <LoaderCircle size={24} />
             {:else if key === 'pomodoro'}
@@ -206,7 +256,7 @@
       </div>
     </a>
 
-    <section class="hidden lg:block">
+    <section class="hidden! lg:block!">
       <NavigationMenu.Root class="p-1">
         <NavigationMenu.List class="flex w-full items-center justify-center gap-1">
           {#each navItems as navItem}
@@ -253,7 +303,7 @@
       </NavigationMenu.Root>
     </section>
 
-    <div class="hidden flex-row items-center justify-between gap-3 lg:flex">
+    <div class="hidden! flex-row items-center justify-between gap-3 lg:flex!">
       <a href="/discord" target="_blank" class="flex items-center transition-opacity duration-200 hover:opacity-80">
         <img loading="lazy" alt="discord logo" src="/discord-blue.png" class="h-5 w-6 cursor-pointer" />
       </a>
@@ -284,7 +334,7 @@
       </a>
     </div>
 
-    <button type="button" aria-label="Hamburger Menu" class="shrink-0 lg:hidden" onclick={handleShowSolutions}>
+    <button type="button" aria-label="Hamburger Menu" class="shrink-0 lg:hidden!" onclick={handleShowSolutions}>
       <Menu size={24} />
     </button>
 

@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "declaration": true,
+    "composite": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "resolveJsonModule": false,
+    "skipLibCheck": true,
+    "target": "ESNext",
+    "typeRoots": ["../../node_modules/@types", "./node_modules/@types"],
+    "types": ["node"],
+    "paths": {
+      "@jobs-worker/*": ["src/*"],
+      "@db/types": ["./node_modules/@cio/db/dist/types.d.ts"],
+      "@db/*": ["./node_modules/@cio/db/dist/*"],
+      "@cio/db/*": ["./node_modules/@cio/db/dist/*"],
+      "@cio/db/types": ["./node_modules/@cio/db/dist/types.d.ts"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "tsconfig.tsbuildinfo"],
+  "references": [
+    { "path": "../../packages/db" },
+    { "path": "../../packages/email" },
+    { "path": "../../packages/jobs" },
+    { "path": "../../packages/utils" }
+  ],
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": false
+  }
+}

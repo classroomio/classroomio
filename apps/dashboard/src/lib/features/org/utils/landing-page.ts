@@ -1,16 +1,34 @@
 import type { AccountOrg } from '$features/app/types';
 import type {
+  FooterColumn,
+  FooterColumnLink,
+  FooterSocial,
   OrgLandingPageCallout,
-  OrgLandingPageFooterLink,
+  OrgLandingPageFooterConfig,
   OrgLandingPageHero,
   OrgLandingPageJson,
+  OrgLandingPageLinks,
   OrgLandingPageNavItem,
   OrgLandingPageTheme
 } from '$lib/utils/types/org';
 import type { OrgPublicCourses } from './types';
 import type { OrgLandingPageProps } from '@cio/ui/custom/org-landing-page/types';
+import { resolveLandingPageLinkIcon } from '@cio/ui/custom/org-landing-page/landing-page-link-icons';
+import {
+  labelMatchesSocialPlatform,
+  resolveFooterSocialPlatform
+} from '@cio/ui/custom/org-landing-page/footer-social-platform';
 
-export const landingPageThemes = ['minimal', 'bold', 'classic'] as const satisfies OrgLandingPageTheme[];
+export const landingPageThemes = [
+  'minimal',
+  'bold',
+  'classic',
+  'saas',
+  'tech',
+  'studio',
+  'corporate',
+  'terminal'
+] as const satisfies OrgLandingPageTheme[];
 
 export const defaultLandingPageHero: OrgLandingPageHero = {
   heading: 'Become a Certified AI Engineer',
@@ -26,6 +44,39 @@ export const defaultLandingPageHero: OrgLandingPageHero = {
   image: '/images/learn-on-cio.jpg'
 };
 
+function newFooterColumnId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  return `footer-col_${Math.random().toString(36).slice(2, 11)}`;
+}
+
+export function newFooterLinkId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  return `footer-link_${Math.random().toString(36).slice(2, 11)}`;
+}
+
+export function createDefaultFooterConfig(): OrgLandingPageFooterConfig {
+  return {
+    brand: {
+      socials: []
+    },
+    columns: [],
+    bottom: {
+      text: '',
+      links: [
+        { id: newFooterLinkId(), label: 'Terms', href: '/terms' },
+        { id: newFooterLinkId(), label: 'Privacy', href: '/privacy' },
+        { id: newFooterLinkId(), label: 'Contact', href: '#contact' }
+      ]
+    }
+  };
+}
+
 export const defaultLandingPageSettings: OrgLandingPageJson = {
   theme: 'minimal',
   hero: defaultLandingPageHero,
@@ -33,12 +84,7 @@ export const defaultLandingPageSettings: OrgLandingPageJson = {
     { label: 'Programs', href: '#courses' },
     { label: 'Contact', href: '#contact' }
   ],
-  footerLinks: [
-    { label: 'Terms', href: '/terms' },
-    { label: 'Privacy', href: '/privacy' },
-    { label: 'Contact', href: '#contact' }
-  ],
-  footerText: ''
+  footer: createDefaultFooterConfig()
 };
 
 export function createDefaultLandingPageSettings(): OrgLandingPageJson {
@@ -70,7 +116,9 @@ type LegacyLandingPageJson = {
   };
   hero?: OrgLandingPageHero;
   navItems?: OrgLandingPageNavItem[];
-  footerLinks?: OrgLandingPageFooterLink[];
+  /** @deprecated migrated to `footer` */
+  footerLinks?: Array<{ label?: string; href?: string }>;
+  /** @deprecated migrated to `footer.bottom.text` */
   footerText?: string;
   theme?: OrgLandingPageTheme;
   embed?: {
@@ -94,6 +142,7 @@ type LegacyLandingPageJson = {
       href?: string;
     };
   };
+  links?: unknown;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -106,6 +155,223 @@ function normalizeText(value: unknown, fallback = '') {
 
 function normalizeHref(value: unknown, fallback = '#') {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
+}
+
+function isLegacyFooterSocialBlock(value: Record<string, unknown>): boolean {
+  return (
+    typeof value.facebook === 'string' ||
+    typeof value.instagram === 'string' ||
+    typeof value.twitter === 'string' ||
+    typeof value.linkedin === 'string'
+  );
+}
+
+function isModernFooterConfig(value: unknown): boolean {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  if (!('brand' in value) || !('columns' in value)) {
+    return false;
+  }
+
+  const brand = value.brand;
+  if (!isRecord(brand)) {
+    return false;
+  }
+
+  return Array.isArray(brand.socials) && Array.isArray(value.columns);
+}
+
+function normalizeFooterShape(raw: Record<string, unknown>): OrgLandingPageFooterConfig {
+  const defaultFooter = createDefaultFooterConfig();
+  const brandRaw = isRecord(raw.brand) ? raw.brand : {};
+  const socialsRaw = Array.isArray(brandRaw.socials) ? brandRaw.socials : [];
+
+  const socials: FooterSocial[] = socialsRaw
+    .map((entry) => {
+      if (!isRecord(entry)) {
+        return null;
+      }
+
+      const href = normalizeHref(entry.href, '');
+      if (!href || href === '#') {
+        return null;
+      }
+
+      return {
+        platform: resolveFooterSocialPlatform(entry.platform),
+        href
+      };
+    })
+    .filter((item): item is FooterSocial => item !== null);
+
+  const tagline = normalizeText(brandRaw.tagline, '');
+  const copyright = normalizeText(brandRaw.copyright, '');
+
+  const columnsRaw = Array.isArray(raw.columns) ? raw.columns : [];
+  const columns: FooterColumn[] = columnsRaw.slice(0, 6).flatMap((columnRaw) => {
+    if (!isRecord(columnRaw)) {
+      return [];
+    }
+
+    const id =
+      typeof columnRaw.id === 'string' && columnRaw.id.trim().length > 0 ? columnRaw.id.trim() : newFooterColumnId();
+    const heading = normalizeText(columnRaw.heading, '');
+    const linksRaw = Array.isArray(columnRaw.links) ? columnRaw.links : [];
+    const links: FooterColumnLink[] = linksRaw.slice(0, 10).flatMap((linkRaw) => {
+      if (!isRecord(linkRaw)) {
+        return [];
+      }
+
+      const label = normalizeText(linkRaw.label, '');
+      const href = normalizeHref(linkRaw.href, '#');
+      if (!label) {
+        return [];
+      }
+
+      const linkId =
+        typeof linkRaw.id === 'string' && linkRaw.id.trim().length > 0 ? linkRaw.id.trim() : newFooterLinkId();
+      return [{ id: linkId, label, href }];
+    });
+
+    let cta: FooterColumn['cta'];
+    const ctaRaw = columnRaw.cta;
+    if (isRecord(ctaRaw)) {
+      const ctaLabel = normalizeText(ctaRaw.label, '');
+      const ctaHref = normalizeHref(ctaRaw.href, '');
+      if (ctaLabel && ctaHref && ctaHref !== '#') {
+        cta = { label: ctaLabel, href: ctaHref };
+      }
+    }
+
+    if (links.length === 0 && !heading && !cta) {
+      return [];
+    }
+
+    return [{ id, heading, links, cta }];
+  });
+
+  let bottom: OrgLandingPageFooterConfig['bottom'];
+  const bottomRaw = raw.bottom;
+  if (isRecord(bottomRaw)) {
+    const text = normalizeText(bottomRaw.text, '');
+    const linksRaw = Array.isArray(bottomRaw.links) ? bottomRaw.links : [];
+    const bottomLinks: FooterColumnLink[] = linksRaw.flatMap((linkRaw) => {
+      if (!isRecord(linkRaw)) {
+        return [];
+      }
+
+      const label = normalizeText(linkRaw.label, '');
+      const href = normalizeHref(linkRaw.href, '#');
+      if (!label) {
+        return [];
+      }
+
+      const linkId =
+        typeof linkRaw.id === 'string' && linkRaw.id.trim().length > 0 ? linkRaw.id.trim() : newFooterLinkId();
+      return [{ id: linkId, label, href }];
+    });
+
+    if (text || bottomLinks.length > 0) {
+      bottom = {
+        text: text || undefined,
+        links: bottomLinks
+      };
+    }
+  }
+
+  return {
+    brand: {
+      socials,
+      tagline: tagline || undefined,
+      copyright: copyright || undefined
+    },
+    columns,
+    bottom: bottom ?? defaultFooter.bottom
+  };
+}
+
+function legacySocialsFromFooterBlock(footer: LegacyLandingPageJson['footer']): FooterSocial[] {
+  if (!footer || !isRecord(footer as Record<string, unknown>)) {
+    return [];
+  }
+
+  const block = footer as Record<string, unknown>;
+  if (!isLegacyFooterSocialBlock(block)) {
+    return [];
+  }
+
+  const out: FooterSocial[] = [];
+  const fb = normalizeHref(block.facebook, '');
+  const ig = normalizeHref(block.instagram, '');
+  const tw = normalizeHref(block.twitter, '');
+  const li = normalizeHref(block.linkedin, '');
+
+  if (fb && fb !== '#') {
+    out.push({ platform: 'facebook', href: fb });
+  }
+
+  if (ig && ig !== '#') {
+    out.push({ platform: 'instagram', href: ig });
+  }
+
+  if (tw && tw !== '#') {
+    out.push({ platform: 'x', href: tw });
+  }
+
+  if (li && li !== '#') {
+    out.push({ platform: 'linkedin', href: li });
+  }
+
+  return out;
+}
+
+function migrateFooterFromLegacy(landingPage: LegacyLandingPageJson): OrgLandingPageFooterConfig {
+  const defaults = createDefaultFooterConfig();
+  const socials: FooterSocial[] = [...legacySocialsFromFooterBlock(landingPage.footer)];
+  const bottomLinks: FooterColumnLink[] = [];
+
+  if (Array.isArray(landingPage.footerLinks) && landingPage.footerLinks.length > 0) {
+    for (const link of landingPage.footerLinks) {
+      const label = normalizeText(link?.label, '');
+      const href = normalizeHref(link?.href, '#');
+      if (!label) {
+        continue;
+      }
+
+      const platform = labelMatchesSocialPlatform(label);
+      if (platform) {
+        socials.push({ platform, href });
+      } else {
+        bottomLinks.push({ id: newFooterLinkId(), label, href });
+      }
+    }
+  }
+
+  const bottomText = normalizeText(landingPage.footerText, '');
+  const resolvedBottomLinks = bottomLinks.length > 0 ? bottomLinks : (defaults.bottom?.links ?? []);
+
+  return {
+    brand: {
+      socials
+    },
+    columns: [],
+    bottom: {
+      text: bottomText || undefined,
+      links: resolvedBottomLinks
+    }
+  };
+}
+
+function resolveFooterConfig(landingPage: LegacyLandingPageJson & Record<string, unknown>): OrgLandingPageFooterConfig {
+  const footerRaw = landingPage.footer;
+
+  if (footerRaw && isModernFooterConfig(footerRaw)) {
+    return normalizeFooterShape(footerRaw as Record<string, unknown>);
+  }
+
+  return migrateFooterFromLegacy(landingPage);
 }
 
 function normalizeEmbedCode(embed: {
@@ -139,7 +405,9 @@ function normalizeEmbedCode(embed: {
 
 function normalizeCallout(callout: NonNullable<LegacyLandingPageJson['callout']>): OrgLandingPageCallout | undefined {
   const heading = normalizeText(callout.heading, '');
-  if (!heading) return undefined;
+  if (!heading) {
+    return undefined;
+  }
 
   return {
     heading,
@@ -151,6 +419,103 @@ function normalizeCallout(callout: NonNullable<LegacyLandingPageJson['callout']>
   };
 }
 
+function normalizeLinks(raw: unknown): OrgLandingPageLinks | undefined {
+  if (!isRecord(raw)) {
+    return undefined;
+  }
+
+  const heading = normalizeText(raw.heading, '');
+  if (!heading) {
+    return undefined;
+  }
+
+  const cardsRaw = raw.cards;
+  if (!Array.isArray(cardsRaw)) {
+    return undefined;
+  }
+
+  const cards: OrgLandingPageLinks['cards'] = cardsRaw
+    .slice(0, 3)
+    .map((item) => {
+      if (!isRecord(item)) {
+        return null;
+      }
+
+      const title = normalizeText(item.title, '');
+      const hrefSource = typeof item.href === 'string' ? item.href.trim() : '';
+      if (!title || !hrefSource) {
+        return null;
+      }
+
+      return {
+        icon: resolveLandingPageLinkIcon(item.icon),
+        title,
+        description: normalizeText(item.description, ''),
+        href: hrefSource
+      };
+    })
+    .filter((card): card is NonNullable<typeof card> => card !== null);
+
+  if (cards.length === 0) {
+    return undefined;
+  }
+
+  const description = normalizeText(raw.description, '');
+  const boldVisitLabel = normalizeText(raw.boldVisitLabel, '');
+  const classicLearnMoreLabel = normalizeText(raw.classicLearnMoreLabel, '');
+
+  return {
+    heading,
+    description: description || undefined,
+    boldVisitLabel: boldVisitLabel || undefined,
+    classicLearnMoreLabel: classicLearnMoreLabel || undefined,
+    cards
+  };
+}
+
+const MAX_HERO_STATS = 4;
+
+function normalizeHeroStats(raw: unknown): OrgLandingPageHero['stats'] {
+  if (!Array.isArray(raw)) {
+    return undefined;
+  }
+
+  const stats = raw.slice(0, MAX_HERO_STATS).flatMap((entry) => {
+    if (!isRecord(entry)) {
+      return [];
+    }
+
+    const label = normalizeText(entry.label, '');
+    const value = normalizeText(entry.value, '');
+    if (!label || !value) {
+      return [];
+    }
+
+    return [{ label, value }];
+  });
+
+  return stats.length > 0 ? stats : undefined;
+}
+
+function normalizeHero(hero: NonNullable<LegacyLandingPageJson['hero']>): OrgLandingPageHero {
+  return {
+    heading: normalizeText(hero.heading, defaultLandingPageHero.heading),
+    subheading: normalizeText(hero.subheading, defaultLandingPageHero.subheading),
+    primaryAction: {
+      label: normalizeText(hero.primaryAction?.label, defaultLandingPageHero.primaryAction.label),
+      href: normalizeHref(hero.primaryAction?.href, defaultLandingPageHero.primaryAction.href)
+    },
+    secondaryAction: hero.secondaryAction
+      ? {
+          label: normalizeText(hero.secondaryAction.label, defaultLandingPageHero.secondaryAction?.label ?? ''),
+          href: normalizeHref(hero.secondaryAction.href, defaultLandingPageHero.secondaryAction?.href ?? '#')
+        }
+      : undefined,
+    image: normalizeText(hero.image, ''),
+    stats: normalizeHeroStats((hero as { stats?: unknown }).stats)
+  };
+}
+
 export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson {
   const defaultSettings = createDefaultLandingPageSettings();
 
@@ -158,44 +523,19 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
     return defaultSettings;
   }
 
-  const landingPage = value as LegacyLandingPageJson;
-  if (landingPage.hero && landingPage.navItems && landingPage.footerLinks && landingPage.theme) {
+  const landingPage = value as LegacyLandingPageJson & Record<string, unknown>;
+
+  if (landingPage.hero && landingPage.navItems && landingPage.theme) {
     return {
       theme: landingPage.theme,
-      hero: {
-        heading: normalizeText(landingPage.hero.heading, defaultLandingPageHero.heading),
-        subheading: normalizeText(landingPage.hero.subheading, defaultLandingPageHero.subheading),
-        primaryAction: {
-          label: normalizeText(landingPage.hero.primaryAction?.label, defaultLandingPageHero.primaryAction.label),
-          href: normalizeHref(landingPage.hero.primaryAction?.href, defaultLandingPageHero.primaryAction.href)
-        },
-        secondaryAction: landingPage.hero.secondaryAction
-          ? {
-              label: normalizeText(
-                landingPage.hero.secondaryAction.label,
-                defaultLandingPageHero.secondaryAction?.label ?? ''
-              ),
-              href: normalizeHref(
-                landingPage.hero.secondaryAction.href,
-                defaultLandingPageHero.secondaryAction?.href ?? '#'
-              )
-            }
-          : undefined,
-        image: normalizeText(landingPage.hero.image, '')
-      },
+      hero: normalizeHero(landingPage.hero),
       navItems: landingPage.navItems
         .map((navItem) => ({
           label: normalizeText(navItem.label, ''),
           href: normalizeHref(navItem.href, '#')
         }))
         .filter((navItem) => navItem.label.length > 0),
-      footerLinks: landingPage.footerLinks
-        .map((footerLink) => ({
-          label: normalizeText(footerLink.label, ''),
-          href: normalizeHref(footerLink.href, '#')
-        }))
-        .filter((footerLink) => footerLink.label.length > 0),
-      footerText: normalizeText(landingPage.footerText, defaultSettings.footerText),
+      footer: resolveFooterConfig(landingPage),
       embed: landingPage.embed
         ? {
             title: normalizeText(landingPage.embed.title, 'Section title'),
@@ -209,7 +549,8 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
               : undefined
           }
         : undefined,
-      callout: landingPage.callout ? normalizeCallout(landingPage.callout) : undefined
+      callout: landingPage.callout ? normalizeCallout(landingPage.callout) : undefined,
+      links: normalizeLinks(landingPage.links)
     };
   }
 
@@ -217,12 +558,7 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
     return {
       theme: landingPage.theme ?? 'minimal',
       hero: {
-        heading: normalizeText(landingPage.hero.heading, defaultLandingPageHero.heading),
-        subheading: normalizeText(landingPage.hero.subheading, defaultLandingPageHero.subheading),
-        primaryAction: {
-          label: normalizeText(landingPage.hero.primaryAction?.label, defaultLandingPageHero.primaryAction.label),
-          href: normalizeHref(landingPage.hero.primaryAction?.href, defaultLandingPageHero.primaryAction.href)
-        },
+        ...normalizeHero(landingPage.hero),
         secondaryAction: landingPage.hero.secondaryAction
           ? {
               label: normalizeText(
@@ -245,15 +581,7 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
             }))
             .filter((navItem) => navItem.label.length > 0)
         : [...defaultSettings.navItems],
-      footerLinks: landingPage.footerLinks?.length
-        ? landingPage.footerLinks
-            .map((footerLink) => ({
-              label: normalizeText(footerLink.label, ''),
-              href: normalizeHref(footerLink.href, '#')
-            }))
-            .filter((footerLink) => footerLink.label.length > 0)
-        : [...defaultSettings.footerLinks],
-      footerText: normalizeText(landingPage.footerText, defaultSettings.footerText),
+      footer: resolveFooterConfig(landingPage),
       embed: landingPage.embed
         ? {
             title: normalizeText(landingPage.embed.title, 'Section title'),
@@ -261,7 +589,8 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
             code: normalizeEmbedCode(landingPage.embed)
           }
         : undefined,
-      callout: landingPage.callout ? normalizeCallout(landingPage.callout) : undefined
+      callout: landingPage.callout ? normalizeCallout(landingPage.callout) : undefined,
+      links: normalizeLinks(landingPage.links)
     };
   }
 
@@ -289,13 +618,7 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
           }))
           .filter((navItem) => navItem.label.length > 0)
       : [...defaultSettings.navItems],
-    footerLinks: [
-      landingPage.footer?.facebook ? { label: 'Facebook', href: landingPage.footer.facebook } : null,
-      landingPage.footer?.instagram ? { label: 'Instagram', href: landingPage.footer.instagram } : null,
-      landingPage.footer?.twitter ? { label: 'Twitter', href: landingPage.footer.twitter } : null,
-      landingPage.footer?.linkedin ? { label: 'LinkedIn', href: landingPage.footer.linkedin } : null
-    ].filter(Boolean) as OrgLandingPageFooterLink[],
-    footerText: defaultSettings.footerText,
+    footer: resolveFooterConfig(landingPage),
     embed: landingPage.embed
       ? {
           title: normalizeText(landingPage.embed.title, 'Section title'),
@@ -308,7 +631,8 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
               }
             : undefined
         }
-      : undefined
+      : undefined,
+    links: normalizeLinks(landingPage.links)
   };
 }
 
@@ -390,6 +714,16 @@ export function importThemeComponent(theme: LandingPageThemeKey) {
       return import('@cio/ui/custom/org-landing-page/bold.svelte');
     case 'classic':
       return import('@cio/ui/custom/org-landing-page/classic.svelte');
+    case 'saas':
+      return import('@cio/ui/custom/org-landing-page/saas.svelte');
+    case 'tech':
+      return import('@cio/ui/custom/org-landing-page/tech.svelte');
+    case 'studio':
+      return import('@cio/ui/custom/org-landing-page/studio.svelte');
+    case 'corporate':
+      return import('@cio/ui/custom/org-landing-page/corporate.svelte');
+    case 'terminal':
+      return import('@cio/ui/custom/org-landing-page/terminal.svelte');
     default:
       return import('@cio/ui/custom/org-landing-page/minimal.svelte');
   }

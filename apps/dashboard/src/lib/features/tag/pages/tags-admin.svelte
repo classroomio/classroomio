@@ -375,7 +375,7 @@
       <div class="space-y-2">
         <p class="text-sm font-medium">{$t('tags_admin.tag_modal.category')}</p>
         <Select.Root type="single" bind:value={tagGroupId}>
-          <Select.Trigger>
+          <Select.Trigger class="w-full">
             <p>
               {tagGroupId
                 ? tagApi.tagGroups.find((group) => group.id === tagGroupId)?.name ||
@@ -383,7 +383,7 @@
                 : $t('tags_admin.tag_modal.select_category')}
             </p>
           </Select.Trigger>
-          <Select.Content>
+          <Select.Content class="ui:z-[250]">
             {#each tagApi.tagGroups as group (group.id)}
               <Select.Item value={group.id}>{group.name}</Select.Item>
             {/each}

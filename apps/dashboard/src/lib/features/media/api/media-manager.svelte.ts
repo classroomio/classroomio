@@ -1,10 +1,12 @@
-import { presignApi } from '$features/course/api';
+import { presignApi } from '$features/course/api/presign.svelte';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
   AssetStorageSummary,
+  AssetTranscriptPayload,
   AssetUsage,
   AssetUsageGraph,
   CreateAssetRequest,
+  GetAssetTranscriptRequest,
   GetAssetUsageRequest,
   GetYouTubeMetadataRequest,
   ListAssetsRequest,
@@ -37,6 +39,7 @@ import type { AttachAssetRequest } from '../utils/types';
 import type { DetachAssetRequest } from '../utils/types';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { snackbar } from '$features/ui/snackbar/store';
+import type { StartAssetTranscriptionRequest } from '$features/jobs/utils/types';
 
 export class MediaApi extends BaseApiWithErrors {
   assets = $state<OrganizationAsset[]>([]);
@@ -379,6 +382,44 @@ export class MediaApi extends BaseApiWithErrors {
       url,
       key: asset.storageKey
     });
+  }
+
+  /**
+   * Returns transcript payload or null when none exists yet.
+   */
+  async getAssetTranscript(assetId: string): Promise<AssetTranscriptPayload | null> {
+    let data: AssetTranscriptPayload | null = null;
+
+    await this.execute<GetAssetTranscriptRequest>({
+      requestFn: () => classroomio.organization.assets[':assetId'].transcript.$get({ param: { assetId } }),
+      logContext: 'fetching asset transcript',
+      onSuccess: (response) => {
+        data = response.data;
+      },
+      onError: () => {
+        snackbar.error('snackbar.media_manager.transcript_fetch_failed');
+      }
+    });
+
+    return data;
+  }
+
+  /** Enqueue extract-audio + Whisper for an existing upload. */
+  async generateTranscript(assetId: string): Promise<boolean> {
+    let ok = false;
+    await this.execute<StartAssetTranscriptionRequest>({
+      requestFn: () => classroomio.jobs.media.asset[':assetId'].transcribe.$post({ param: { assetId } }),
+      logContext: 'starting transcription job',
+      onSuccess: () => {
+        ok = true;
+        snackbar.success('snackbar.media_manager.transcription_started');
+      },
+      onError: () => {
+        snackbar.error('snackbar.media_manager.transcription_start_failed');
+      }
+    });
+
+    return ok;
   }
 }
 

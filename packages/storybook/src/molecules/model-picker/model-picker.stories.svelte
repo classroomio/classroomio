@@ -1,4 +1,4 @@
-<script module>
+<script module lang="ts">
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { ModelPicker } from '@cio/ui/custom/model-picker';
 
@@ -12,7 +12,7 @@
   });
 </script>
 
-<script>
+<script lang="ts">
   import { DEFAULT_PICKER_MODEL_ID, type AgentModelId } from '@cio/utils/agent-models';
 
   let selected = $state<AgentModelId>(DEFAULT_PICKER_MODEL_ID);

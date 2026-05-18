@@ -675,6 +675,24 @@ export class CourseApi extends BaseApiWithErrors {
           lessonTabsOrder.push(tab);
         }
       });
+
+      /** Legacy stacked-lesson materials order [Note, Slide, Video, Documents]; migrated to Video first in view mode */
+      const legacyDefaultLessonTabIds: Array<1 | 2 | 3 | 4> = [1, 2, 3, 4];
+      const lessonMaterialsVideoFirstTabIds: Array<1 | 2 | 3 | 4> = [3, 1, 2, 4];
+
+      const isLegacyDefaultLessonMaterialsOrder =
+        lessonTabsOrder.length === legacyDefaultLessonTabIds.length &&
+        lessonTabsOrder.every((tab, index) => tab.id === legacyDefaultLessonTabIds[index]);
+
+      if (isLegacyDefaultLessonMaterialsOrder) {
+        const entriesById = new Map(lessonTabsOrder.map((tab) => [tab.id, tab]));
+
+        lessonTabsOrder.length = 0;
+        lessonMaterialsVideoFirstTabIds.forEach((id) => {
+          const entry = entriesById.get(id);
+          if (entry) lessonTabsOrder.push(entry);
+        });
+      }
     }
 
     if (data.metadata && data.metadata.isContentGroupingEnabled === undefined) {

@@ -342,7 +342,11 @@
       "thumbnail_uploaded": "Miniature téléchargée",
       "thumbnail_upload_failed": "Échec du téléchargement de la miniature",
       "thumbnail_too_large": "L'image miniature est trop grande",
-      "thumbnail_invalid": "Fichier miniature invalide"
+      "thumbnail_invalid": "Fichier miniature invalide",
+      "transcription_started": "Transcription commencée",
+      "transcription_start_failed": "Impossible de démarrer la transcription",
+      "transcription_completed": "Transcription terminée",
+      "transcript_fetch_failed": "Impossible de charger la transcription"
     },
     "tags": {
       "group_created": "Groupe de balises créé",
@@ -399,6 +403,19 @@
     "public_course": {
       "url_copied": "URL du cours copiée",
       "url_copy_failed": "Impossible de copier l’URL"
+    },
+    "transcription_started": "Transcription started",
+    "transcription_start_failed": "Could not start transcription",
+    "transcription_completed": "Transcription finished",
+    "transcript_fetch_failed": "Could not load transcript",
+    "account": {
+      "workspaceCreated": "Espace de travail créé",
+      "workspaceDeleted": "Espace de travail supprimé",
+      "workspace_limit_reached": "Vous avez atteint la limite de votre espace de travail. Contactez-nous pour vous développer.",
+      "plan_upgrade_required": "Le multi-espace de travail est une fonctionnalité d'entreprise. Effectuez une mise à niveau pour ajouter plus d'espaces de travail.",
+      "workspace_is_primary": "Vous ne pouvez pas supprimer l'espace de travail principal.",
+      "workspace_not_found": "Espace de travail introuvable.",
+      "not_primary_workspace": "Basculez vers votre espace de travail principal pour gérer les espaces de travail de compte."
     }
   },
   "explore": {
@@ -502,7 +519,76 @@
     "no_grade_data": "Aucune donnée de note disponible",
     "loading_chart": "Chargement du graphique...",
     "no_data_default": "Aucune donnée disponible",
-    "no_data_default_description": "Il n'y a aucune donnée à afficher pour le moment."
+    "no_data_default_description": "Il n'y a aucune donnée à afficher pour le moment.",
+    "subtitle": "Comprenez comment les visiteurs découvrent vos cours et se transforment en apprenants.",
+    "refresh": "Actualiser",
+    "popularTypes": {
+      "heading": "Types de cours populaires",
+      "description": "Inscriptions regroupées par type de cours",
+      "subtitle": "{total} inscriptions dans tous les types",
+      "empty": "Aucune donnée d'inscription pour l'instant",
+      "course_count": "{count, pluriel, un {# cours} autre {# cours}}",
+      "views_short": "vues",
+      "types": {
+        "SELF_PACED": "À votre rythme",
+        "LIVE_CLASS": "Cours en direct",
+        "COMPLIANCE": "Conformité",
+        "PUBLIC": "Publique"
+      }
+    },
+    "countries": {
+      "heading": "Principaux pays",
+      "subtitle": "{total} visiteurs au total",
+      "empty": "Aucune donnée de localisation pour l'instant",
+      "country": "Pays",
+      "visitors": "Visiteurs",
+      "enrollments_short": "inscrit"
+    },
+    "funnel": {
+      "heading": "Entonnoir de conversion",
+      "description": "De la première visite à la fin du cours",
+      "empty": "Aucune donnée d'entonnoir pour l'instant",
+      "step": {
+        "landing_view": "Vues d'atterrissage",
+        "course_page_view": "Consultations des pages du cours",
+        "enrollment_completed": "Inscriptions",
+        "course_completed": "Achèvements"
+      }
+    },
+    "trend": {
+      "heading": "Trafic au fil du temps",
+      "description": "Pages vues et inscriptions par jour",
+      "empty": "Aucun trafic dans la plage sélectionnée",
+      "views": "Vues",
+      "enrollments": "Inscriptions"
+    },
+    "kpi": {
+      "landing_views": "Vues d'atterrissage",
+      "unique_visitors": "Visiteurs uniques",
+      "course_page_views": "Consultations des pages du cours",
+      "enrollments": "Inscriptions",
+      "range_description": "Dans la plage sélectionnée"
+    },
+    "range": {
+      "7d": "7 derniers jours",
+      "30d": "30 derniers jours",
+      "90d": "90 derniers jours"
+    },
+    "tabs": {
+      "overview": "Aperçu",
+      "funnel": "Entonnoir",
+      "geography": "Géographie",
+      "course_types": "Types de cours"
+    },
+    "course_metrics": {
+      "page_subtitle": "Inscription, achèvement des cours, notes et progrès par apprenant pour ce cours.",
+      "progress_distribution_card_description": "Combien d’apprenants entrent dans chaque tranche d’achèvement.",
+      "grade_distribution_card_description": "Combien d’apprenants appartiennent à chaque tranche scolaire.",
+      "students_table_description": "Aperçu triable avec des liens vers les profils d'apprenants.",
+      "kpi_team_tutors": "{count, pluriel, un {# tuteur dans l'équipe du cours} autre {# tuteurs dans l'équipe du cours}}",
+      "kpi_lessons_exercises": "{compte, pluriel, un {# exercice} autre {# exercices}} mappés aux leçons",
+      "kpi_progress_grade": "{grade} % de note moyenne d'exercice parmi les apprenants inscrits"
+    }
   },
   "audience": {
     "title": "Public",
@@ -686,7 +772,12 @@
           "button_url_label": "URL du bouton",
           "button_url_placeholder": "https://exemple.com",
           "clear": "Effacer la légende",
-          "public_only": "Les légendes n'apparaissent que dans les cours publics."
+          "public_only": "Les légendes n'apparaissent que dans les cours publics.",
+          "animation_label": "Animation d'arrière-plan",
+          "animation_description": "Choisissez le mouvement qui se joue derrière la carte de légende.",
+          "animation_waves": "Vagues",
+          "animation_dotted": "Pointillé",
+          "animation_none": "Aucun"
         }
       },
       "analytics": {
@@ -851,7 +942,58 @@
         "complete_to_download_subtitle": "Votre certificat sera disponible une fois que vous aurez terminé toutes les leçons et exercices de ce cours.",
         "description_error": "La description ne peut pas dépasser 200 caractères",
         "characters": "personnages",
-        "unexpected_error": "Une erreur inattendue s'est produite"
+        "unexpected_error": "Une erreur inattendue s'est produite",
+        "download_image": "Télécharger comme image",
+        "editor": {
+          "title": "Conception de certificat",
+          "back": "Retour aux certificats",
+          "save": "Enregistrer les modifications",
+          "discard": "Jeter",
+          "saved": "Modèle de certificat enregistré",
+          "unsaved": "Non enregistré",
+          "free_plan": "Forfait gratuit",
+          "preview": "Aperçu en direct",
+          "sections": "Sections de l'éditeur",
+          "panel_templates": "Modèles",
+          "panel_templates_subtitle": "Choisissez un modèle pour ancrer le style visuel.",
+          "panel_content": "Contenu",
+          "panel_content_subtitle": "Affinez les mots qui apparaissent sur le certificat.",
+          "panel_colors": "Couleur d'accentuation",
+          "panel_colors_subtitle": "Utilisé pour la ligne du destinataire, les accents et le tampon.",
+          "panel_export": "Exporter",
+          "panel_export_subtitle": "Prévisualisez la conception actuelle telle qu’elle sera livrée.",
+          "section_header": "Copie d'en-tête",
+          "section_signatories": "Signataires",
+          "section_reference": "Référence",
+          "subtitle": "Sous-titre",
+          "subtitle_placeholder": "Récompensé par la plus haute distinction",
+          "description_override": "Remplacement de la description",
+          "description_override_placeholder": "La valeur par défaut est la description du cours.",
+          "description_override_hint": "Laissez vide pour revenir à la description du cours lors de la sauvegarde.",
+          "signatory_one_name": "Signataire 1 nom",
+          "signatory_one_role": "Signataire 1 rôle",
+          "signatory_two_name": "Nom du signataire 2",
+          "signatory_two_role": "Rôle du signataire 2",
+          "id_format": "Format de l'identifiant du certificat",
+          "id_format_hint": "Utilisez '{'seq'}' pour les quatre derniers chiffres, '{'year'}' pour l'année d'émission, '{'month'}' pour le mois.",
+          "accent_hint": "La couleur d'accent apparaît sur la règle du destinataire, les tampons et le surlignage du titre du modèle.",
+          "templates_hint": "Les modèles s'affichent avec le même moteur de rendu que celui utilisé pour les fichiers PDF et PNG téléchargés.",
+          "download_pdf": "Télécharger le PDF",
+          "download_png": "Télécharger PNG",
+          "print": "Imprimer",
+          "export_hint": "Les exportations utilisent votre nom comme destinataire afin que vous puissiez prévisualiser la mise en page finale.",
+          "preview_failed": "Impossible de générer un aperçu du certificat",
+          "sample_recipient": "Éléonore Vance",
+          "sample_course": "Certificat d'excellence",
+          "sample_description": "En reconnaissance de réalisations exceptionnelles et d’un dévouement exemplaire au métier.",
+          "sample_org": "L'Académie Royale des Arts",
+          "summary_title": "Conception active",
+          "summary_subtitle": "Aperçu de l'apparence du certificat une fois émis.",
+          "field_template": "Modèle",
+          "field_accent": "Accent",
+          "field_signatories": "Signataires",
+          "customize_design": "Personnaliser le design"
+        }
       },
       "people": {
         "title": "Les gens",
@@ -1177,6 +1319,7 @@
               "edit": "Modifier",
               "button": "bouton pour ajouter",
               "questions": "des questions",
+              "sections": "sections",
               "points": "points",
               "all": "Tout est requis",
               "due": "Due par",
@@ -1569,7 +1712,9 @@
               "after_section": "Après la section",
               "continue": "Passer à la section suivante",
               "go_to_section": "Aller à la rubrique",
-              "submit": "Soumettre l'exercice"
+              "submit": "Soumettre l'exercice",
+              "collapse_section": "Réduire la section",
+              "expand_section": "Développer la section"
             }
           },
           "new_exercise_modal": {
@@ -1694,11 +1839,40 @@
                 "google_drive_opening": "Sélecteur d’ouverture…",
                 "google_drive_hint": "Choisissez une vidéo sur votre compte Google. Toute personne qui consulte la leçon doit y accéder : définissez le partage dans Drive sur \"Toute personne disposant du lien peut consulter\" (ou l'équivalent de votre organisation).",
                 "google_drive_not_configured": "L'importation Google Drive n'est pas configurée pour ce déploiement. Ajoutez PUBLIC_GOOGLE_PICKER_CLIENT_ID et PUBLIC_GOOGLE_PICKER_API_KEY à votre environnement.",
-                "google_drive_error": "Impossible d'ouvrir Google Drive. Vérifiez que votre navigateur autorise les pop-ups et que Google Picker est correctement configuré."
+                "google_drive_error": "Impossible d'ouvrir Google Drive. Vérifiez que votre navigateur autorise les pop-ups et que Google Picker est correctement configuré.",
+                "processing": {
+                  "queued": "En file d'attente pour traitement…",
+                  "probing": "Lecture des métadonnées vidéo…",
+                  "thumbnailing": "Générer une vignette…",
+                  "extracting_audio": "Extraction du son…",
+                  "transcribing": "Transcription…",
+                  "compressing": "Compression de la vidéo…",
+                  "completed": "Traitement terminé",
+                  "failed": "Échec du traitement",
+                  "canceled": "Traitement annulé"
+                }
               },
               "empty_title": "Aucune vidéo pour l'instant",
               "empty_description": "Ajoutez des vidéos de YouTube, téléchargez-les ou de votre bibliothèque multimédia",
-              "google_drive": "Google Drive"
+              "google_drive": "Google Drive",
+              "generate_transcript": "Generate transcription",
+              "generate_transcript_in_progress": "Transcribing…",
+              "transcript": {
+                "title": "Transcript",
+                "captions_label": "Captions",
+                "language": "Language: {language}",
+                "empty": "No transcript yet. You can generate one from this card’s menu after the video is uploaded.",
+                "loading": "Loading transcript…",
+                "open_side_panel": "Ouvrir le panneau de transcription"
+              },
+              "simple_card": {
+                "kind_youtube": "YouTube",
+                "kind_upload": "Télécharger",
+                "kind_google_drive": "Google Drive",
+                "kind_generic": "Intégré",
+                "course_fallback": "Cours",
+                "menu_aria": "Options vidéo"
+              }
             },
             "slide": {
               "title": "Diapositive",
@@ -1744,7 +1918,8 @@
           "save": "Enregistrer",
           "edit": "Modifier",
           "delete": "Supprimer",
-          "cancel": "Annuler"
+          "cancel": "Annuler",
+          "delete_tooltip": "Supprimer cette leçon"
         },
         "section_prompt": {
           "cta": "Activer les sections",
@@ -1879,6 +2054,10 @@
         "tabs": {
           "overview": "Aperçu",
           "learners": "Apprenants"
+        },
+        "overview_metrics": {
+          "heading": "Aperçu du cours",
+          "description": "L'apprenant compte par statut pour ce cours."
         }
       }
     },
@@ -1888,8 +2067,7 @@
     },
     "header": {
       "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing.",
-      "public_course_helper": "Visible sur votre site public de cours"
+      "preview_missing_slug": "Generate and save a course slug before previewing."
     },
     "sidebar": {
       "back_to_course": "Retour au cours",
@@ -1915,7 +2093,8 @@
       "nav_landing_page": "Page de destination",
       "nav_settings": "Paramètres",
       "nav_compliance": "Conformité",
-      "nav_ai_assistant": "Assistante"
+      "nav_ai_assistant": "Assistante",
+      "nav_ai_tutor": "Tuteur IA"
     },
     "completion": {
       "modal": {
@@ -1967,6 +2146,42 @@
         "step_reading": "Lire votre invite",
         "step_naming": "Nommer votre cours",
         "step_building": "Création de votre espace de travail"
+      },
+      "untitled_course": "Cours sans titre",
+      "untitled_course_description": "Les détails du cours seront renseignés par l'assistant après la configuration.",
+      "template": {
+        "heading": "Ou partir d'un modèle",
+        "submit": "Continuer",
+        "skip": "Répondez plutôt dans le chat",
+        "submitted_summary": "Réponses soumises",
+        "skipped_summary": "Passage aux questions et réponses basées sur le chat",
+        "field": {
+          "product_name": "Nom du produit",
+          "product_summary": "Que fait le produit ?",
+          "audience": "Quel est le public ?",
+          "outcome": "Que devraient être capables les apprenants de faire après le cours ?",
+          "depth": "Jusqu’où doit aller le cours ?",
+          "topic": "Sujet ou niche",
+          "expertise_level": "Niveau d’expertise cible",
+          "documentation_url": {
+            "hint": "Nous lirons ce site pour ancrer le cours dans votre produit réel."
+          }
+        },
+        "expert_on_x": {
+          "title": "Devenez un expert sur X",
+          "description": "Un cours approfondi transformant les apprenants en experts sur un sujet ou une niche spécifique.",
+          "form_title": "Parlez-nous du sujet"
+        },
+        "product_onboarding": {
+          "title": "Formation d'intégration des produits",
+          "description": "Une formation d'intégration qui permet aux nouveaux utilisateurs d'être productifs dès leur première semaine.",
+          "form_title": "Parlez-nous de vos objectifs d'intégration"
+        },
+        "product_101": {
+          "title": "Cours Produit 101",
+          "description": "Un cours de base enseignant aux clients comment utiliser votre produit.",
+          "form_title": "Parlez-nous de votre produit"
+        }
       }
     }
   },
@@ -2160,6 +2375,12 @@
           "banner_text_label": "Mettre à jour le texte de la bannière",
           "banner_text_placeholder": "Écrivez le texte ici"
         },
+        "auth_background": {
+          "title": "Écran de connexion",
+          "description": "Image d’arrière-plan facultative derrière la connexion, l'inscription et les autres pages de compte sur le site de votre organisation.",
+          "paid_plan_note": "Passez à une offre supérieure pour personnaliser l’arrière-plan de connexion.",
+          "preview_alt": "Aperçu de l’arrière-plan de connexion"
+        },
         "page_subtitle": "Choose which tabs, banners, course tools, and extras learners see."
       },
       "domains": {
@@ -2336,7 +2557,10 @@
     "tags": "Balises",
     "automation": "Automation",
     "programs": "Programmes",
-    "widgets": "Widgets"
+    "widgets": "Widgets",
+    "stats": "Statistiques",
+    "analytics": "Analyse",
+    "compliance": "Conformité"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",
@@ -2578,7 +2802,52 @@
           "default_label": "Nouveau lien",
           "link_label": "Libellé du lien",
           "link_href": "URL du lien",
-          "remove": "Supprimer le lien de pied de page"
+          "remove": "Supprimer le lien de pied de page",
+          "brand": {
+            "legend": "Brand",
+            "description": "Your organization logo and name always appear here (from organization settings). Add optional details below.",
+            "preview_label": "Footer brand preview",
+            "tagline": "Tagline",
+            "tagline_placeholder": "Small line under your brand",
+            "copyright": "Copyright",
+            "copyright_placeholder": "© 2026 Your Organization",
+            "social_label": "Social links",
+            "platform_field": "Platform",
+            "url_label": "Profile URL",
+            "add_social": "Add social link",
+            "remove_social": "Remove social link",
+            "platforms": {
+              "instagram": "Instagram",
+              "x": "X",
+              "linkedin": "LinkedIn",
+              "facebook": "Facebook",
+              "youtube": "YouTube",
+              "github": "GitHub",
+              "tiktok": "TikTok",
+              "website": "Website"
+            }
+          },
+          "columns": {
+            "legend": "Link columns",
+            "description": "Add grouped links (like Company or Resources). Enables a multi-column footer layout.",
+            "empty_hint": "No columns yet — add one to show a multi-column footer beside your brand.",
+            "add": "Add column",
+            "remove": "Remove column",
+            "heading_label": "Column heading",
+            "heading_placeholder": "e.g. Company",
+            "add_link": "Add link",
+            "remove_link": "Remove link",
+            "links_max_reached": "Up to 10 links per column",
+            "cta_toggle": "Add CTA link",
+            "cta_label": "CTA label",
+            "cta_href": "CTA URL",
+            "cta_default_label": "Explore more",
+            "max_reached": "Up to 6 columns"
+          },
+          "bottom": {
+            "legend": "Bottom row",
+            "add_link": "Add bottom link"
+          }
         },
         "embed": {
           "toggle": "Afficher la section d'intégration",
@@ -2622,7 +2891,17 @@
           "secondary_href": "Lien du bouton secondaire",
           "image": "Image du héros",
           "upload": "Télécharger une image",
-          "clear": "Image claire"
+          "clear": "Image claire",
+          "stats": {
+            "label": "Statistiques",
+            "description": "Statistiques facultatives affichées à côté du héros (utilisées par les modèles qui le prennent en charge, par exemple Corporate).",
+            "add": "Ajouter une statistique",
+            "remove": "Supprimer la statistique",
+            "label_field": "Étiquette",
+            "value_field": "Valeur",
+            "label_placeholder": "Apprenants actifs",
+            "value_placeholder": "1 200"
+          }
         },
         "sections": {
           "hero": "Héros",
@@ -2634,7 +2913,46 @@
           "embed": "Intégrer",
           "embed_desc": "Section iframe facultative affichée après les cours.",
           "footer": "Pied de page",
-          "footer_desc": "Texte de pied de page et liens."
+          "footer_desc": "Brand line, socials, multi-column links, and bottom legal row.",
+          "links": "Liens",
+          "links_desc": "Bloc optionnel de liens externes (centre d'aide, communauté, webinaires) affichés après les cours."
+        },
+        "links": {
+          "toggle": "Afficher la section des liens",
+          "heading": "Titre de section",
+          "heading_default": "Explorer davantage",
+          "heading_placeholder": "Explorer davantage",
+          "description": "Descriptif",
+          "description_placeholder": "Description facultative",
+          "bold_visit_label": "Thème audacieux – étiquette du bouton",
+          "bold_visit_default": "Visite",
+          "classic_learn_more_label": "Thème classique – libellé du lien",
+          "classic_learn_more_default": "En savoir plus",
+          "card_title": "Titre de la carte",
+          "card_title_placeholder": "par ex. Centre d'aide",
+          "card_placeholder_help": "Centre d'aide",
+          "card_placeholder_webinars": "Webinaires",
+          "card_placeholder_community": "Communauté",
+          "card_description": "Description de la carte",
+          "card_description_placeholder": "par ex. Parcourir les guides et les FAQ",
+          "card_href": "URL du lien",
+          "card_href_placeholder": "https://...",
+          "card_icon": "Icône",
+          "add_card": "Ajouter une carte de lien",
+          "remove_card": "Supprimer la carte",
+          "max_reached": "Jusqu'à 3 cartes",
+          "icons": {
+            "help_circle": "Aide et assistance",
+            "life_buoy": "Assistance",
+            "book_open": "Documentation",
+            "video": "Vidéo / webinaires",
+            "users": "Communauté",
+            "message_circle": "Discuter",
+            "newspaper": "Actualités",
+            "rocket": "Commencez",
+            "calendar": "Événements",
+            "mail": "Courriel"
+          }
         }
       },
       "content": {
@@ -2657,8 +2975,46 @@
           "minimal": {
             "title": "Minime",
             "description": "Propre, lumineux et axé sur le cours"
+          },
+          "terminal": {
+            "title": "Borne",
+            "description": "Surface sombre, mot-symbole fantôme, catalogue inspiré de la CLI"
+          },
+          "corporate": {
+            "title": "Entreprise",
+            "description": "Typographie sobre, grilles bordées, look prêt à auditer"
+          },
+          "studio": {
+            "title": "Atelier",
+            "description": "Bordures capillaires, lueur de héros dégradé, vernis artisanal"
+          },
+          "tech": {
+            "title": "Technologie",
+            "description": "Bande de marque audacieuse, navigation monospace, ambiance académie d'ingénierie"
+          },
+          "saas": {
+            "title": "SaaS",
+            "description": "Cadre en pointillés, accents doux, sensation de produit moderne"
           }
         }
+      },
+      "gallery": {
+        "heading": "Thèmes populaires",
+        "description": "Conçu avec des fonctionnalités de base que vous pouvez facilement personnaliser – aucun codage requis.",
+        "by_classroomio": "par ClassroomIO",
+        "add": "Ajouter",
+        "upgrade": "Mise à niveau"
+      },
+      "current": {
+        "title": "Thème actuel",
+        "description": "C'est le thème que vos visiteurs voient. Personnalisez le contenu ou choisissez un look différent ci-dessous.",
+        "field_theme": "Thème",
+        "field_hero": "Titre du héros",
+        "field_nav": "Navigation",
+        "field_nav_count_one": "{count} lien",
+        "field_nav_count_other": "{count} liens",
+        "hero_empty": "—",
+        "customize": "Personnaliser la page de destination"
       }
     },
     "organization": {
@@ -2730,7 +3086,8 @@
       "customize_lms_tab": "Personnaliser le LMS",
       "domains_tab": "Domaines",
       "teams_tab": "Équipes",
-      "ai_credits_tab": "Crédits IA"
+      "ai_credits_tab": "Crédits IA",
+      "ai_tutor_tab": "Tuteur IA"
     },
     "subheadings": {
       "view_site": "Voir le site"
@@ -3389,11 +3746,82 @@
       "sort_courses": "Cours",
       "sort_students": "Étudiants",
       "sort_status": "Statut"
+    },
+    "invite_sent": "Invitations envoyées",
+    "goals": {
+      "heading": "Objectifs d'apprentissage",
+      "description": "Fixez des objectifs mesurables couvrant plusieurs cours pour tous les participants à ce programme.",
+      "add": "Nouvel objectif",
+      "empty_title": "Pas encore de but",
+      "empty_description": "Créez un objectif pour suivre les progrès de l’équipe sur plusieurs cours.",
+      "created": "Objectif créé",
+      "updated": "Objectif mis à jour",
+      "deleted": "Objectif supprimé",
+      "delete_confirm": "Supprimer cet objectif ? L’historique du statut de chaque apprenant sera supprimé.",
+      "lms": {
+        "heading": "Vos objectifs",
+        "empty_title": "Aucun objectif assigné",
+        "empty_description": "Lorsque vos instructeurs fixent des objectifs, ils s'affichent ici.",
+        "due_in_days": "À rendre dans {days} jours",
+        "due_tomorrow": "À rendre demain",
+        "due_today": "À rendre aujourd'hui",
+        "overdue": "En retard",
+        "no_deadline": "Pas de date limite"
+      },
+      "tile": {
+        "on_track": "en bonne voie",
+        "completed_short": "terminé",
+        "overdue_short": "en retard",
+        "at_risk_short": "à risque"
+      },
+      "status": {
+        "completed": "Terminé",
+        "in_progress": "En cours",
+        "at_risk": "À risque",
+        "overdue": "En retard",
+        "not_started": "Pas commencé",
+        "waived": "Renoncé"
+      },
+      "deadline_kind": {
+        "absolute": "Date absolue",
+        "relative_to_join": "Par rapport à l'adhésion de l'apprenant",
+        "recurring": "Récurrent",
+        "none": "Pas de date limite"
+      },
+      "type": {
+        "complete_all": "Terminez tous les cours sélectionnés",
+        "n_of_m": "Terminer les cours sélectionnés par N sur M",
+        "score": "Score supérieur au seuil sur chaque cours",
+        "pass_rate": "Seuil de réussite de l'équipe",
+        "readiness": "Préparation (pas de date limite)"
+      },
+      "modal": {
+        "create_title": "Nouvel objectif",
+        "edit_title": "Modifier l'objectif",
+        "title_label": "Titre",
+        "title_placeholder": "par ex. Rampe d'embarquement",
+        "description_label": "Descriptif",
+        "description_placeholder": "Contexte facultatif pour l'équipe",
+        "type_label": "Tapez",
+        "courses_label": "Cours",
+        "required_count_label": "Nombre de cours requis",
+        "score_threshold_label": "Note de réussite par apprenant (%)",
+        "team_pass_rate_label": "Taux de réussite des équipes (%)",
+        "deadline_label": "Date limite",
+        "deadline_date_label": "Date limite",
+        "relative_days_label": "Jours à compter de l'arrivée de l'apprenant",
+        "recurring_months_label": "Répéter tous les (mois)",
+        "reminders_label": "Rappels (jours avant l'échéance)",
+        "reminders_helper": "Séparés par des virgules. Exemple : 7, 3, 1",
+        "save": "Enregistrer",
+        "cancel": "Annuler"
+      }
     }
   },
   "ai_assistant": {
     "empty_state": "Demandez-moi de vous aider avec le contenu de votre cours : rédigez des leçons, générez des questions ou planifiez un cours à partir d'un document.",
     "input_placeholder": "Demandez à l'assistant IA...",
+    "quote_lesson_note": "Quote in assistant",
     "attach_document": "Joindre un document (PDF, DOCX, PPTX)",
     "upgrade_to_upload": "Mise à niveau pour télécharger des documents",
     "tokens_exhausted": "Limite mensuelle de jetons IA atteinte.",
@@ -3411,7 +3839,112 @@
     "mention_section": "Section",
     "mention_no_results": "Aucun contenu correspondant",
     "uploading_document": "Téléchargement du document...",
-    "agent_running_warning": "Les modifications apparaîtront dans le cours une fois que l'agent aura terminé. Ne rechargez pas la page."
+    "agent_running_warning": "Les modifications apparaîtront dans le cours une fois que l'agent aura terminé. Ne rechargez pas la page.",
+    "agent_running_warning_dismiss": "Fermer",
+    "quick_action": {
+      "upload_document_course": "Upload a document to create a course",
+      "draft_lesson": "Draft a lesson",
+      "generate_questions_from_lesson": "Generate questions from this lesson",
+      "summarize_lesson": "Summarize this lesson",
+      "publish_course": "Help me publish this course"
+    },
+    "plan_applying_changes": "Applying changes",
+    "plan_working": "Working",
+    "plan_progress": "{completed} / {total} steps completed",
+    "stop": "Stop",
+    "copy_full_error": "Copy full error",
+    "resize_panel_aria_label": "Resize AI assistant panel",
+    "generic_working": "Working",
+    "run_failed_after": "{action} did not finish successfully.",
+    "tool": {
+      "pending": {
+        "working": "Working",
+        "unknown_tool": "Running {toolName}",
+        "get_course_structure": "Reading course structure",
+        "get_lesson_content": "Reading lesson content",
+        "get_exercise_details": "Reading exercise",
+        "create_section": "Creating section",
+        "update_section": "Updating section",
+        "create_lesson": "Creating lesson",
+        "update_lesson": "Updating lesson",
+        "update_lesson_content": "Writing lesson content",
+        "create_exercise": "Creating exercise",
+        "create_exercise_section": "Creating exercise section",
+        "update_exercise": "Updating exercise",
+        "update_exercise_section": "Updating exercise section",
+        "add_questions": "Adding questions",
+        "update_questions": "Updating questions",
+        "reorder_content": "Reordering content",
+        "update_course_landing_page": "Updating landing page",
+        "check_course_go_live_readiness": "Checking go-live readiness",
+        "go_live_course": "Publishing course",
+        "generate_course_plan": "Generating course plan",
+        "ask_template_questions": "Préparation du formulaire modèle",
+        "fetch_documentation_url": "Lecture de la page de documentation",
+        "fetch_documentation_url_with_url": "Lecture de {url}"
+      },
+      "meta": {
+        "lesson_char_count": "({count, plural, one {# character} other {# characters}})",
+        "landing_page_preview": "· Preview changes",
+        "exercise_questions_added": "· {count, plural, one {# question added} other {# questions added}}",
+        "exercise_questions_updated": "· {count, plural, one {# question updated} other {# questions updated}}"
+      },
+      "done": {
+        "generic": "Done",
+        "create_section": "Created section: {title}",
+        "update_section": "Updated section: {title}",
+        "create_lesson": "Created lesson: {title}",
+        "update_lesson": "Updated lesson: {title}",
+        "update_lesson_content_fallback": "Wrote {count, plural, one {# character} other {# characters}}",
+        "create_exercise": "Created exercise «{title}» · {count, plural, one {# question} other {# questions}}",
+        "update_exercise": "Updated exercise: {title}",
+        "update_exercise_section": "Updated exercise section: {title}",
+        "add_questions_fallback": "{count, plural, one {Added # question} other {Added # questions}}",
+        "update_questions_fallback": "{count, plural, one {Updated # question} other {Updated # questions}}",
+        "create_exercise_section": "Created exercise section: {title}",
+        "get_course_structure": "Course structure loaded",
+        "get_lesson_content": "Lesson content loaded",
+        "get_exercise_details": "Exercise loaded",
+        "reorder_content": "Content reordered",
+        "update_course_landing_page": "Updated landing page: {title}",
+        "check_go_live_ready": "{warningCount, plural, =0{Ready to go live} other{Ready to go live — # warnings}}",
+        "check_go_live_blocked": "{blockerCount, plural, one{# blocker before go-live} other{# blockers before go-live}}",
+        "go_live_published": "Published course: {title}",
+        "go_live_not_published": "Course was not published",
+        "generate_course_plan": "Course plan generated",
+        "ask_template_questions": "Formulaire modèle prêt",
+        "fetch_documentation_url": "Lire {url}"
+      }
+    },
+    "student_empty_state": "Demandez-moi n'importe quoi sur ce cours : obtenez des explications, posez-vous des questions ou résumez ce que vous lisez.",
+    "messages_used_label": "messages ce mois-ci",
+    "plan_thinking": "Réfléchir à votre demande…",
+    "plan_implement": "Plan de mise en œuvre",
+    "plan_ask_changes_placeholder": "Dites-moi ce qu'il faut changer dans le plan…",
+    "plan_ask_changes_send_aria": "Envoyer une demande de modification",
+    "send": "Envoyer",
+    "rename_chat_aria": "Renommer la conversation",
+    "rename_chat_input_aria": "Titre de la conversation",
+    "rename_chat_placeholder": "Titre de la conversation",
+    "rename_chat_failed": "Impossible de renommer cette conversation. Essayer à nouveau.",
+    "error_rate_limit": "Le service AI est temporairement occupé. Veuillez réessayer dans un instant.",
+    "error_rate_limit_with_wait": "Le service AI est temporairement occupé. Veuillez réessayer dans {seconds} secondes.",
+    "error_context_too_long": "La conversation est trop longue. Essayez de démarrer une nouvelle discussion ou de raccourcir votre message.",
+    "error_network": "Erreur réseau. Veuillez vérifier votre connexion et réessayer.",
+    "context_usage_tooltip": "{utilisé} / {max} jetons utilisés",
+    "context_full_title": "La fenêtre contextuelle est pleine",
+    "context_full_description": "Cette conversation a atteint sa limite de mémoire. Compactez-le pour continuer dans cette discussion ou démarrez-en une nouvelle.",
+    "context_full_compact": "Conversation compacte",
+    "context_full_compacting": "Compactage...",
+    "context_full_new_chat": "Démarrer une nouvelle discussion avec résumé",
+    "context_full_summarizing": "Création d'un résumé...",
+    "context_compacted_badge": "Conversation compactée ({count} messages précédents)",
+    "student_quick_action": {
+      "explain_lesson": "Expliquez cette leçon",
+      "quiz_me": "Questionnez-moi à ce sujet",
+      "summarize_section": "Résumer cette section",
+      "what_to_review": "Que dois-je réviser ensuite ?"
+    }
   },
   "widgets": {
     "heading": "Widgets",
@@ -3428,7 +3961,8 @@
       "saved": "Widget enregistré",
       "published": "Widget publié",
       "rolled_back": "Widget restauré",
-      "deleted": "Widget archivé"
+      "deleted": "Widget archivé",
+      "validation_failed": "Certains champs ne sont pas valides. Vérifiez les entrées en surbrillance."
     },
     "form": {
       "name": "Nom du widget",
@@ -3458,7 +3992,10 @@
       "show_powered_by": "Afficher la marque Classroomio",
       "custom_css": "CSS personnalisé",
       "custom_css_locked": "Mettez à niveau pour activer le CSS personnalisé.",
-      "embed_code": "Code intégré"
+      "embed_code": "Code intégré",
+      "custom_css_hint": "Maximum 5 000 caractères.",
+      "border_radius_hint": "0 – 32 pixels.",
+      "font_scale_hint": "0,8 – 1,4 (1 = par défaut)."
     },
     "create": {
       "description": "Donnez un nom à votre widget pour commencer."
@@ -3612,6 +4149,229 @@
     "empty": {
       "heading": "Pas encore de widget",
       "description": "Créez un widget pour générer un bloc de cours intégrable pour les sites Web externes."
+    }
+  },
+  "side_panel": {
+    "close_aria": "Close panel",
+    "resize_panel_aria_label": "Resize panel",
+    "titles": {
+      "ai_assistant": "AI Assistant",
+      "transcript": "Transcript"
+    }
+  },
+  "compliance": {
+    "title": "Conformité",
+    "subtitle": "Suivez le statut de la certification pour chaque cours de conformité de votre organisation.",
+    "learners": {
+      "heading": "Apprenants",
+      "subtitle": "{count, number} correspondant",
+      "empty": "Aucun apprenant ne correspond à ce filtre",
+      "learner": "Apprenant",
+      "course": "Cours",
+      "status": "Statut",
+      "due_date": "Due",
+      "expires": "Expire"
+    },
+    "courses": {
+      "heading": "Cours",
+      "description": "Cours de conformité avec décompte du statut d'apprenant",
+      "empty": "Pas encore de cours de conformité",
+      "course": "Cours",
+      "learners": "Apprenants",
+      "completion": "Achèvement"
+    },
+    "filter": {
+      "all": "Tout",
+      "compliant": "Conforme",
+      "expiring_soon": "Expire bientôt",
+      "in_grace_period": "En grâce",
+      "non_compliant": "Non conforme",
+      "in_progress": "En cours",
+      "not_started": "Pas commencé",
+      "waived": "Renoncé",
+      "no_record": "Aucun enregistrement"
+    },
+    "status": {
+      "compliant": "Conforme",
+      "expiring_soon": "Expire bientôt",
+      "in_grace_period": "En période de grâce",
+      "non_compliant": "Non conforme",
+      "in_progress": "En cours",
+      "not_started": "Pas commencé",
+      "waived": "Renoncé",
+      "no_record": "Aucun enregistrement"
+    },
+    "tabs": {
+      "courses": "Par cours",
+      "learners": "Apprenants"
+    },
+    "summary": {
+      "heading": "Statut d'apprenant",
+      "description": "Compte parmi les apprenants dans tous les cours de conformité."
+    }
+  },
+  "public_course": {
+    "exercise": {
+      "submit": "Vérifiez mes réponses",
+      "try_again": "Réessayez",
+      "practice_again": "Entraînez-vous à nouveau",
+      "attempt_option": "Tentative {attemptNumber} – {correct}/{total}",
+      "attempts_select_aria": "Vos tentatives",
+      "privacy_hint": "Noté instantanément dans votre navigateur – rien n’est soumis.",
+      "summary_template": "Vous avez obtenu [[correct]] / [[total]] correct."
+    },
+    "powered_by": {
+      "label": "Alimenté par",
+      "brand": "Salle de classeIO"
+    },
+    "footer_nav": {
+      "previous": "Précédent",
+      "next": "Suivant"
+    },
+    "header": {
+      "explore_courses": "Explorer les cours",
+      "sign_in": "Connectez-vous"
+    }
+  },
+  "account": {
+    "workspaces": {
+      "page_title": "Espaces de travail",
+      "page_description": "Gérez les espaces de travail sous votre compte. Les espaces de travail partagent un abonnement unique et une utilisation mutualisée.",
+      "create_cta": "Créer un espace de travail",
+      "create_cta_used": "{utilisé} sur {allocation} utilisé",
+      "create_cta_disabled_limit": "Vous avez atteint la limite d'espace de travail {allowance}. Contactez-nous pour vous développer.",
+      "create_cta_disabled_upgrade": "Le multi-espace de travail est une fonctionnalité d'entreprise.",
+      "upgrade_link": "Mise à niveau",
+      "primary_badge": "Primaire",
+      "delete_action": "Supprimer",
+      "delete_confirm_title": "Supprimer cet espace de travail ?",
+      "delete_confirm_body": "Cela supprime définitivement l'espace de travail, ses membres et ses cours. Cela ne peut pas être annulé.",
+      "name_label": "Nom de l'espace de travail",
+      "site_name_label": "Nom du site",
+      "create_modal_title": "Créer un nouvel espace de travail",
+      "create_modal_submit": "Créer un espace de travail",
+      "cancel": "Annuler",
+      "read_only_badge": "Lecture seule",
+      "usage_banner": "{learners} apprenants et {tokens} jetons IA utilisés dans {workspaces} espaces de travail ce mois-ci",
+      "secondary_billing_notice": "La facturation est gérée par votre espace de travail principal ({primaryName}).",
+      "go_to_primary": "Accéder à l'espace de travail principal"
+    },
+    "switcher": {
+      "your_account": "Votre compte",
+      "other_organizations": "Autres organisations"
+    }
+  },
+  "aiTutor": {
+    "creditsPage": {
+      "tutorSummaryTitle": "Utilisation équitable du tuteur IA",
+      "atCap": "Au plafond",
+      "approaching": "Cap en approche",
+      "totalActive": "Apprenants actifs ce mois-ci",
+      "learnersHeading": "Apprenants",
+      "headerLearner": "Apprenant",
+      "headerMessages": "Messages",
+      "headerTokens": "Jetons",
+      "headerStatus": "Statut",
+      "statusUnder": "Sous casquette",
+      "statusApproaching": "Approche",
+      "statusAtCap": "Au plafond"
+    },
+    "takeABreak": {
+      "title": "Votre tuteur en IA fait une pause",
+      "learnerCap": "Vous avez atteint la limite de messages du tuteur pour ce mois-ci. Vos messages sont réinitialisés le 1er du mois prochain.",
+      "poolExhausted": "Votre espace de travail n’a plus de capacité de tuteur IA pour ce mois-ci. Veuillez revenir plus tard ou contacter votre instructeur.",
+      "disabled": "Le tuteur IA n'est pas activé pour cet espace de travail."
+    },
+    "groundingScope": {
+      "course": "Cours entier",
+      "lesson": "Leçon en cours uniquement",
+      "workspace": "Espace de travail entier"
+    },
+    "codePolicy": {
+      "hints_only": "Conseils uniquement",
+      "allowed": "Autoriser les exemples de code complets",
+      "forbidden": "Pas de code dans les réponses"
+    },
+    "assessmentMode": {
+      "hint_only": "Conseils uniquement (pas de réponses directes)",
+      "direct_answer": "Autoriser les réponses directes",
+      "block_during_exercise": "Bloquer l'aide pendant que l'apprenant est dans un exercice"
+    },
+    "responseLength": {
+      "short": "Court (1 à 3 phrases)",
+      "medium": "Moyen (1 à 2 paragraphes courts)",
+      "long": "Long (explications structurées)"
+    },
+    "persona": {
+      "encouraging": "Encourageant",
+      "friendly": "Amical",
+      "formal": "Formel",
+      "socratic": "Socratique",
+      "custom": "Personnalisé"
+    },
+    "field": {
+      "enabled": "Tuteur IA activé",
+      "persona": "Personnalité du tuteur",
+      "customPersona": "Personnalité personnalisée",
+      "customPersona_description": "Décrivez comment le tuteur doit s'exprimer : ton, style d'adressage, tout ce qui est spécifique à votre public.",
+      "responseLength": "Longueur de réponse",
+      "welcomeMessage": "Message de bienvenue",
+      "welcomeMessage_description": "Affiché au-dessus de la première réponse du tuteur dans chaque nouvelle conversation.",
+      "disclaimerFooter": "Pied de page",
+      "disclaimerFooter_description": "Ajouté à chaque réponse du tuteur pour que les apprenants se souviennent que le tuteur n'est pas une personne.",
+      "thingsToSay": "Choses à dire",
+      "thingsToSay_description": "Exemples : « Rappelez toujours aux apprenants de lire le programme avant la semaine 3. » \"Encouragez les apprenants à résumer les leçons dans leurs propres mots.\"",
+      "thingsNotToSay": "Choses à ne pas dire",
+      "thingsNotToSay_description": "Exemples : « Ne révélez pas les réponses à l'examen final. » \"Ne dites jamais aux apprenants quelle critique vous avez rédigée.\"",
+      "forbiddenTopics": "Sujets interdits",
+      "forbiddenTopics_description": "Liste séparée par des virgules. Le tuteur refusera d’en discuter.",
+      "forbiddenTopics_placeholder": "politique, religion, conseils médicaux personnels",
+      "blockOffTopic": "Bloquer les questions hors sujet",
+      "profanityFilter": "Filtre de grossièretés et de contenu sensible",
+      "assessmentMode": "Mode d'évaluation",
+      "revealSolutionsAfterAttempts": "Révéler des solutions après N tentatives",
+      "revealSolutionsAfterAttempts_description": "Après ces nombreuses tentatives infructueuses, le tuteur peut proposer un exemple concret. Réglez sur 0 pour autoriser les réponses directes.",
+      "codePolicy": "Politique de code",
+      "groundingScope": "Portée de mise à la terre",
+      "requireCitations": "Exiger des citations du matériel de cours",
+      "escalationEnabled": "Proposer une escalade humaine",
+      "escalationEmail": "E-mail de contact de l'instructeur",
+      "inheritFromOrg": "Utiliser les valeurs par défaut de l'espace de travail"
+    },
+    "section": {
+      "availability": "Disponibilité",
+      "availability_description": "Activez ou désactivez le tuteur IA pour les apprenants de cet espace de travail.",
+      "personality": "Personnalité",
+      "personality_description": "Comment le tuteur se présente et combien de temps durent ses réponses.",
+      "guidance": "Choses à dire · choses à ne pas dire",
+      "guidance_description": "Des conseils en texte libre que le tuteur suivra dans chaque réponse, ainsi qu'une liste facultative de sujets interdits.",
+      "assessment": "Exercices et évaluations",
+      "assessment_description": "Comment se comporte le tuteur lorsqu'un apprenant demande de l'aide pour un exercice.",
+      "grounding": "Fondement et citations",
+      "grounding_description": "Limitez ce dont le tuteur peut parler et s'il cite du matériel de cours.",
+      "escalation": "Escalade",
+      "escalation_description": "Où diriger les apprenants lorsqu’ils ont besoin d’un véritable humain.",
+      "inheritance": "Héritage de cours",
+      "inheritance_description": "Héritez des valeurs par défaut de l'espace de travail ou définissez des remplacements par cours."
+    },
+    "snackbar": {
+      "saved": "Paramètres du tuteur IA enregistrés"
+    },
+    "state": {
+      "loading": "Chargement des paramètres du tuteur IA…"
+    },
+    "action": {
+      "save": "Enregistrer les modifications"
+    },
+    "page": {
+      "course": {
+        "title": "Tuteur IA pour ce cours",
+        "description": "Héritez des valeurs par défaut de votre espace de travail AI Tutor ou remplacez le comportement du tuteur dans ce cours."
+      },
+      "org": {
+        "title": "Paramètres du tuteur AI",
+        "description": "Valeurs par défaut pour chaque cours de cet espace de travail. Les cours peuvent en hériter ou les remplacer."
+      }
     }
   }
 }

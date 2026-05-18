@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { Component } from 'svelte';
   import type { OrgLandingPageProps } from './types';
   import OrgLandingPageEmbed from './embed.svelte';
+  import OrgLandingPageLinks from './links.svelte';
   import OrgLandingPageCallout from './callout.svelte';
   import OrgLandingPageFooter from './landing-page-footer.svelte';
   import ClassicNav from './classic/nav.svelte';
@@ -10,8 +10,7 @@
   import * as Item from '../../base/item';
   import { BlurFade } from '../animation/blurfade';
   import { CourseCard } from '../course-card';
-  import TagIcon from '@lucide/svelte/icons/tag';
-  import { calcCourseDiscount, formatExerciseCountLabel, getPrimaryCourseTag } from './landing-page-utils';
+  import { calcCourseDiscount, formatExerciseCountLabel, getCourseTypeLandingMeta } from './landing-page-utils';
   import { cn } from '../../tools';
 
   let {
@@ -25,11 +24,9 @@
     disableCourseLinks = false,
     embed,
     callout,
-    footerLinks,
-    footerText
+    links,
+    footer
   }: OrgLandingPageProps = $props();
-
-  const COURSE_TAG_ICON: Component = TagIcon;
 </script>
 
 <div class="ui:min-h-screen ui:bg-muted/10 ui:text-foreground ui:font-sans">
@@ -50,7 +47,7 @@
 
       <div class="ui:grid ui:grid-cols-1 ui:sm:grid-cols-2 ui:lg:grid-cols-3 ui:gap-8 ui:justify-items-center">
         {#each courses as course, index (course.id)}
-          {@const primaryTag = getPrimaryCourseTag(course)}
+          {@const courseTypeMeta = getCourseTypeLandingMeta(course)}
           {@const pricingData = {
             cost: course.cost ?? 0,
             discount: course.metadata?.discount ?? 0,
@@ -70,11 +67,11 @@
               bannerAlt={course.title}
               title={course.title}
               description={course.description}
-              typeBadge={primaryTag
+              typeBadge={courseTypeMeta
                 ? {
-                    label: primaryTag.name,
-                    icon: COURSE_TAG_ICON,
-                    iconClass: primaryTag.color ? '' : 'custom ui:text-primary'
+                    label: courseTypeMeta.label,
+                    icon: courseTypeMeta.icon,
+                    iconClass: courseTypeMeta.iconClass
                   }
                 : undefined}
               class={cn('ui:group ui:relative', !disableCourseLinks && 'ui:hover:shadow-md ui:transition-shadow')}
@@ -146,9 +143,11 @@
     </section>
   </main>
 
+  <OrgLandingPageLinks {links} variant="classic" />
+
   <OrgLandingPageEmbed {embed} variant="classic" />
 
   <OrgLandingPageCallout {callout} variant="classic" />
 
-  <OrgLandingPageFooter {orgName} {logoUrl} {footerLinks} {footerText} variant="classic" />
+  <OrgLandingPageFooter {orgName} {logoUrl} {footer} variant="classic" />
 </div>

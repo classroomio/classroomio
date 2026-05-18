@@ -1,6 +1,23 @@
 <script>
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
-  import { BorderBeam } from '@cio/ui/custom/animation/border-beam';
+  import CodeBlock from './code-block.svelte';
+
+  // mcp.json — sky-300 keys · emerald-300 strings · slate-500 punctuation
+  // 2-space indent (real spaces; body uses whitespace-pre).
+  const mcpJsonLines = [
+    '<span class="text-slate-500">{</span>',
+    '  <span class="text-sky-300">"mcpServers"</span><span class="text-slate-500">: {</span>',
+    '    <span class="text-sky-300">"classroomio"</span><span class="text-slate-500">: {</span>',
+    '      <span class="text-sky-300">"command"</span><span class="text-slate-500">:</span> <span class="text-emerald-300">"npx"</span><span class="text-slate-500">,</span>',
+    '      <span class="text-sky-300">"args"</span><span class="text-slate-500">: [</span><span class="text-emerald-300">"-y"</span><span class="text-slate-500">,</span> <span class="text-emerald-300">"@classroomio/mcp"</span><span class="text-slate-500">],</span>',
+    '      <span class="text-sky-300">"env"</span><span class="text-slate-500">: {</span>',
+    '        <span class="text-sky-300">"CLASSROOMIO_API_URL"</span><span class="text-slate-500">:</span> <span class="text-emerald-300">"https://api.classroomio.com"</span><span class="text-slate-500">,</span>',
+    '        <span class="text-sky-300">"CLASSROOMIO_API_KEY"</span><span class="text-slate-500">:</span> <span class="text-emerald-300">"&lt;your-mcp-key&gt;"</span>',
+    '      <span class="text-slate-500">}</span>',
+    '    <span class="text-slate-500">}</span>',
+    '  <span class="text-slate-500">}</span>',
+    '<span class="text-slate-500">}</span>'
+  ];
 
   const aiFeatures = [
     {
@@ -72,29 +89,12 @@
 
       <BlurFade delay={0.2} once>
         <div>
-          <!-- Code Block -->
-          <div class="relative overflow-hidden rounded-2xl border border-gray-800 bg-[#0d0d0d]">
-            <BorderBeam size={200} duration={10} colorFrom="#0233BD" colorTo="#6b8fff" />
-            <div class="flex items-center gap-2 border-b border-gray-800 bg-gray-900 px-5 py-3.5">
-              <div class="h-2.5 w-2.5 rounded-full bg-red-400"></div>
-              <div class="h-2.5 w-2.5 rounded-full bg-yellow-400"></div>
-              <div class="h-2.5 w-2.5 rounded-full bg-green-500"></div>
-              <span class="ml-2 text-xs text-gray-600">mcp.json</span>
-            </div>
-            <div class="p-6 font-mono text-xs leading-loose whitespace-pre text-gray-400 lg:text-sm">
-              {'{'}<br />{'    '}<span class="text-blue-400">"mcpServers"</span>: {'{'}<br />{'        '}<span
-                class="text-blue-400">"classroomio"</span
-              >: {'{'}<br />{'            '}<span class="text-blue-400">"command"</span>:
-              <span class="text-green-400">"npx"</span>,<br />{'            '}<span class="text-blue-400">"args"</span>:
-              [<span class="text-green-400">"-y"</span>, <span class="text-green-400">"@classroomio/mcp"</span>],<br
-              />{'            '}<span class="text-blue-400">"env"</span>: {'{'}<br />{'                '}<span
-                class="text-blue-400">"CLASSROOMIO_API_URL"</span
-              >: <span class="text-green-400">"https://api.classroomio.com"</span>,<br />{'                '}<span
-                class="text-blue-400">"CLASSROOMIO_API_KEY"</span
-              >: <span class="text-green-400">"&lt;your-mcp-key&gt;"</span><br />{'            }'}<br />{'        }'}<br
-              />{'    }'}<br />{'}'}
-            </div>
-          </div>
+          <CodeBlock
+            fileName="mcp.json"
+            lang="JSON"
+            codeLines={mcpJsonLines}
+            statusBar="paste into ~/.claude/mcp.json · restart your client"
+          />
 
           <!-- Supported Agents -->
           <div class="mt-6">

@@ -14,6 +14,12 @@ interface MaterialTab {
 
 export const tabs: MaterialTab[] = [
   {
+    label: 'course.navItem.lessons.materials.tabs.video.title',
+    icon: VideoIcon,
+    value: 3,
+    badgeValue: 0
+  },
+  {
     label: 'course.navItem.lessons.materials.tabs.note.title',
     icon: BookOpenIcon,
     value: 1,
@@ -23,12 +29,6 @@ export const tabs: MaterialTab[] = [
     label: 'course.navItem.lessons.materials.tabs.slide.title',
     icon: PresentationIcon,
     value: 2,
-    badgeValue: 0
-  },
-  {
-    label: 'course.navItem.lessons.materials.tabs.video.title',
-    icon: VideoIcon,
-    value: 3,
     badgeValue: 0
   },
   {

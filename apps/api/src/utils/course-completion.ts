@@ -5,7 +5,8 @@ import {
 } from '@cio/db/queries/course/course';
 import { setMemberCertificateEarned, setMemberCertificationEmailSent } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
-import { buildEmailFromName, sendEmail } from '@cio/email';
+import { buildEmailFromName } from '@cio/email';
+import { enqueueTransactionalEmail } from '@api/services/jobs';
 
 export function calcCourseProgressPercent(params: {
   lessonsCompleted: number;
@@ -69,7 +70,7 @@ export function scheduleCertificationCompletionWork(params: {
       const base = getDashboardBaseUrl(courseRow.orgSiteName ?? undefined);
       const certificateUrl = `${base}/courses/${courseId}/certificates`;
 
-      await sendEmail('studentCourseCompletion', {
+      await enqueueTransactionalEmail('studentCourseCompletion', {
         to: studentEmail,
         fields: {
           orgName: courseRow.orgName,
@@ -78,7 +79,8 @@ export function scheduleCertificationCompletionWork(params: {
           certificateUrl,
           customMessage: courseRow.certificate?.emailMessage ?? null
         },
-        from: buildEmailFromName(`${courseRow.orgName} (via ClassroomIO.com)`)
+        from: buildEmailFromName(`${courseRow.orgName} (via ClassroomIO.com)`),
+        idempotencyKey: `course-completion:${groupMemberId}`
       });
 
       await setMemberCertificationEmailSent(groupMemberId, new Date().toISOString());

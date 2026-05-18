@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
+  import { Waves } from '@cio/ui/custom/animation/waves';
 
   interface Props {
     header?: string;
@@ -13,19 +14,40 @@
 </script>
 
 <div
-  class="floating grad relative mx-auto my-5 flex h-[61vh] w-full max-w-4xl flex-col items-center justify-center space-y-8 px-6 py-12 text-center shadow-2xl lg:h-[50vh] lg:w-[70%] lg:rounded-3xl"
+  class="relative mx-auto my-5 flex h-[61vh] w-full max-w-4xl flex-col items-center justify-center overflow-hidden bg-gray-950 px-6 py-12 text-center shadow-2xl lg:h-[50vh] lg:w-[70%] lg:rounded-3xl"
 >
-  <div>
-    <h3 class="font-display mt-3 max-w-2xl text-xl tracking-tight text-white lg:mt-2 lg:text-4xl">
+  <div
+    class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(2,51,189,0.92)_0%,rgba(4,15,45,0.98)_58%,rgb(3,7,18)_100%)]"
+  ></div>
+  <Waves
+    lineColor="rgba(255,255,255,0.18)"
+    class="ui:pointer-events-none ui:absolute ui:inset-0 ui:h-full ui:w-full"
+    xGap={14}
+    yGap={34}
+    waveAmpX={24}
+    waveAmpY={12}
+    maxCursorMove={72}
+  />
+  <div
+    class="pointer-events-none absolute inset-0 bg-linear-to-t from-gray-950/40 via-transparent to-white/[0.04]"
+  ></div>
+
+  <div class="relative z-10 flex w-full flex-col items-center text-center">
+    <h3 class="font-display mx-auto mt-3 max-w-2xl text-center text-xl tracking-tight text-white lg:mt-2 lg:text-4xl">
       {header}
     </h3>
-    <p class="text-md mt-6 text-gray-300">
+    <p class="text-md mx-auto mt-6 max-w-2xl text-center text-gray-300">
       {subText}
     </p>
   </div>
 
   {#if demo}
-    <Button variant="ghost" data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo" class="bg-white!">
+    <Button
+      variant="ghost"
+      data-cal-config="'layout':'month_view'"
+      data-cal-link="classroomio/demo"
+      class="relative z-10 mt-8 bg-white!"
+    >
       {btnLabel}
     </Button>
   {:else}
@@ -33,21 +55,10 @@
       href={link}
       variant="link"
       target="_blank"
-      class="ui:bg-secondary ui:text-secondary-foreground"
+      class="ui:bg-secondary ui:text-secondary-foreground relative z-10 mt-8"
       rel="noopener noreferrer nofollow"
     >
       {btnLabel}
     </Button>
   {/if}
 </div>
-
-<style>
-  .grad {
-    /* background: rgb(2, 51, 189);
-    background: radial-gradient(circle at 50% 100%, rgba(2, 51, 189, 1) 1%, rgb(4, 2, 56) 100%); */
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-image: url('https://brand.cdn.clsrio.com/cta-bg.png');
-  }
-</style>

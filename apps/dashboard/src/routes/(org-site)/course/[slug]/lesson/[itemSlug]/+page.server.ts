@@ -4,31 +4,24 @@ import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 import { getApiKeyHeaders, safeServerApi } from '$lib/utils/services/api/server';
 import { error } from '@sveltejs/kit';
 
-type GetPublicCourseRequest = (typeof classroomio)['org-site']['course'][':courseSlug']['$get'];
 type GetPublicCourseItemRequest =
   (typeof classroomio)['org-site']['course'][':courseSlug']['item'][':itemSlug']['$get'];
-
-type GetPublicCourseSuccess = Extract<InferResponseType<GetPublicCourseRequest>, { success: true }>;
 type GetPublicCourseItemSuccess = Extract<InferResponseType<GetPublicCourseItemRequest>, { success: true }>;
 
-export const load = async ({ params = { slug: '', itemSlug: '' } }) => {
-  const [treeResult, itemResult] = await Promise.all([
-    safeServerApi<GetPublicCourseSuccess>(() =>
-      classroomio['org-site'].course[':courseSlug'].$get({ param: { courseSlug: params.slug } }, getApiKeyHeaders())
-    ),
-    safeServerApi<GetPublicCourseItemSuccess>(() =>
-      classroomio['org-site'].course[':courseSlug'].item[':itemSlug'].$get(
-        { param: { courseSlug: params.slug, itemSlug: params.itemSlug } },
-        getApiKeyHeaders()
-      )
-    )
-  ]);
+export const load = async ({ params = { slug: '', itemSlug: '' }, url, parent }) => {
+  const { tree } = await parent();
 
-  if (!treeResult.ok || !itemResult.ok) {
+  const itemResult = await safeServerApi<GetPublicCourseItemSuccess>(() =>
+    classroomio['org-site'].course[':courseSlug'].item[':itemSlug'].$get(
+      { param: { courseSlug: params.slug, itemSlug: params.itemSlug } },
+      getApiKeyHeaders()
+    )
+  );
+
+  if (!itemResult.ok) {
     throw error(404, 'Public course or lesson not found');
   }
 
-  const tree = treeResult.body.data;
   const item = itemResult.body.data;
 
   const itemTitle = 'title' in item ? item.title : tree.course.title;
@@ -37,29 +30,45 @@ export const load = async ({ params = { slug: '', itemSlug: '' } }) => {
       ? item.body.replace(/<[^>]+>/g, '').slice(0, 155)
       : (tree.course.description ?? '');
 
+  const canonicalUrl = new URL(url.pathname, url.origin).href;
+  const fullTitle = `${itemTitle} · ${tree.course.title}`;
+  const description = itemSummary || tree.course.description || '';
+  const ogImage = tree.course.bannerImage || null;
+
   const pageMetaTags = Object.freeze({
-    title: `${itemTitle} · ${tree.course.title}`,
-    description: itemSummary || tree.course.description || '',
+    title: fullTitle,
+    description,
+    canonical: canonicalUrl,
     openGraph: {
+      type: 'article',
+      url: canonicalUrl,
       title: itemTitle,
-      description: itemSummary || tree.course.description || '',
-      images: tree.course.bannerImage
+      description,
+      images: ogImage
         ? [
             {
-              url: tree.course.bannerImage,
+              url: ogImage,
               alt: tree.course.title,
               width: 1200,
               height: 630,
-              secureUrl: tree.course.bannerImage,
+              secureUrl: ogImage,
               type: 'image/jpeg'
             }
           ]
         : []
+    },
+    twitter: {
+      handle: '@classroomio',
+      site: '@classroomio',
+      cardType: 'summary_large_image' as const,
+      title: fullTitle,
+      description,
+      image: ogImage ?? undefined,
+      imageAlt: tree.course.title
     }
   }) satisfies MetaTagsProps;
 
   return {
-    tree,
     item,
     pageMetaTags
   };

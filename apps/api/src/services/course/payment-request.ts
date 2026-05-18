@@ -2,7 +2,9 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getCourseWithOrgData } from '@cio/db/queries/course';
-import { buildEmailFromName, sendEmail } from '@cio/email';
+import { buildEmailFromName } from '@cio/email';
+import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 
 export interface PaymentRequestData {
   courseId: string;
@@ -40,25 +42,23 @@ export async function createPaymentRequest(data: PaymentRequestData) {
 
     const teacherEmail = teacherResult[0].email;
 
-    // Send email to teacher about student buy request
     try {
-      await sendEmail('teacherStudentBuyRequest', {
+      await enqueueTransactionalEmail('teacherStudentBuyRequest', {
         to: teacherEmail,
         fields: {
           courseName,
           studentEmail: data.studentEmail,
           studentFullname: data.studentFullname
         },
-        from: buildEmailFromName('ClassroomIO')
+        from: buildEmailFromName('ClassroomIO'),
+        idempotencyKey: `payment-request:teacher:${data.courseId}:${data.studentEmail}`
       });
     } catch (emailError) {
-      console.error('Failed to send teacher buy request email:', emailError);
-      // Don't fail the request if email fails
+      console.error('Failed to enqueue teacher buy request email:', emailError);
     }
 
-    // Send email to student with payment instructions
     try {
-      await sendEmail('studentProvePayment', {
+      await enqueueTransactionalEmail('studentProvePayment', {
         to: data.studentEmail,
         fields: {
           courseName,
@@ -67,12 +67,18 @@ export async function createPaymentRequest(data: PaymentRequestData) {
           orgName
         },
         from: buildEmailFromName(`${orgName} - ClassroomIO`),
-        replyTo: teacherEmail
+        replyTo: teacherEmail,
+        idempotencyKey: `payment-request:student:${data.courseId}:${data.studentEmail}`
       });
     } catch (emailError) {
-      console.error('Failed to send student payment proof email:', emailError);
-      // Don't fail the request if email fails
+      console.error('Failed to enqueue student payment proof email:', emailError);
     }
+
+    trackServerEvent({
+      eventType: SERVER_EVENTS.ENROLLMENT_STARTED,
+      courseId: data.courseId,
+      props: { path: 'payment-request', orgName }
+    });
 
     return {
       success: true,

@@ -13,11 +13,15 @@
 
 import type { ExerciseQuestionLabels, ExerciseQuestionModel } from '@cio/question-types';
 
+/** Background motion behind the public course marketing callout. */
+export type PublicCourseCalloutAnimation = 'dotted' | 'waves' | 'none';
+
 export interface PublicCourseCalloutData {
   title: string;
   description: string;
   buttonLabel: string;
   buttonUrl: string;
+  animation?: PublicCourseCalloutAnimation;
 }
 
 /** Org / creator info shown in the top header (logo, name) of public course pages. */
@@ -52,6 +56,16 @@ export interface PublicLessonViewData {
   video: {
     type: 'youtube' | 'generic' | 'upload' | 'google_drive';
     link: string;
+    metadata?: {
+      svid?: string;
+      thumbnailUrl?: string;
+      title?: string;
+    };
+    transcript?: {
+      vttUrl: string;
+      vttUrlExpiresAt: string;
+      language: string;
+    } | null;
   } | null;
   isUnlocked: boolean;
 }

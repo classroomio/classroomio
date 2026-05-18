@@ -1,0 +1,1414 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quartz Academy — SaaS template</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #0e0e10;
+        --ink-2: #1c1c22;
+        --muted: #6b6b75;
+        --muted-2: #9a9aa6;
+        --line: #e8e8ee;
+        --line-soft: #f1f1f5;
+        --bg: #ffffff;
+        --bg-soft: #f7f7f9;
+        --lavender: #b4a4ff;
+        --lavender-2: #a48eff;
+        --lavender-soft: #f0ecff;
+        --lavender-tint: #f7f4ff;
+        --green: #5fc88f;
+        --orange: #ffb066;
+        --pink: #ff9ec7;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+
+      /* ============ FRAME / GRID LINES ============ */
+      .frame {
+        position: relative;
+        max-width: 1180px;
+        margin: 0 auto;
+        width: 100%;
+        background-image:
+          radial-gradient(circle at center, rgba(0,0,0,0.035) 1px, transparent 1.5px);
+        background-size: 24px 24px;
+      }
+      .frame::before, .frame::after {
+        content: '';
+        position: absolute;
+        top: 0; bottom: 0;
+        width: 1px;
+        background: var(--line);
+        pointer-events: none;
+        z-index: 0;
+      }
+      .frame::before { left: 0; }
+      .frame::after { right: 0; }
+
+      .plus-row {
+        position: relative;
+        height: 0;
+        border-top: 1px dashed var(--line);
+        margin: 0;
+      }
+      .plus-row::before, .plus-row::after {
+        content: '+';
+        position: absolute;
+        top: -8px;
+        font-family: ui-monospace, SFMono-Regular, monospace;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--muted-2);
+        line-height: 1;
+        background: var(--bg);
+        padding: 1px 3px;
+      }
+      .plus-row::before { left: -8px; }
+      .plus-row::after { right: -8px; }
+
+      .plus-row.solid { border-top-style: solid; }
+
+      /* keep section content above the lines */
+      .frame > * { position: relative; z-index: 1; }
+      a { color: inherit; text-decoration: none; }
+      button { font: inherit; cursor: pointer; }
+
+      .container { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+      .container-narrow { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+
+      /* ============ NAV ============ */
+      .nav-wrap {
+        position: sticky;
+        top: 16px;
+        z-index: 50;
+        padding: 0 24px;
+      }
+      .nav {
+        max-width: 1180px;
+        margin: 0 auto;
+        background: rgba(255,255,255,0.85);
+        backdrop-filter: saturate(180%) blur(14px);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 8px 8px 8px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 24px -8px rgba(14,14,16,0.08);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 15px;
+        letter-spacing: -0.01em;
+      }
+      .brand-mark {
+        width: 22px; height: 22px;
+        background: var(--ink);
+        position: relative;
+        transform: rotate(45deg);
+        border-radius: 4px;
+      }
+      .brand-mark::after {
+        content: '';
+        position: absolute;
+        inset: 5px;
+        background: var(--lavender);
+        border-radius: 1px;
+      }
+      .nav-mid {
+        display: flex;
+        gap: 4px;
+      }
+      .nav-mid a {
+        padding: 6px 14px;
+        font-size: 14px;
+        color: var(--ink-2);
+        border-radius: 999px;
+        transition: background 0.15s;
+      }
+      .nav-mid a:hover { background: var(--bg-soft); }
+      .nav-cta {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      }
+      .btn:active { transform: translateY(1px); }
+      .btn-ghost { color: var(--ink-2); }
+      .btn-ghost:hover { background: var(--bg-soft); }
+      .btn-dark { background: var(--ink); color: #fff; }
+      .btn-dark:hover { background: #2a2a30; }
+      .btn-outline { border-color: var(--line); background: #fff; color: var(--ink); }
+      .btn-outline:hover { border-color: #cbcbd4; }
+      .btn-lavender { background: var(--lavender); color: var(--ink); }
+      .btn-lavender:hover { background: var(--lavender-2); color: #fff; }
+      .btn-lg { padding: 10px 22px; font-size: 14px; }
+
+      /* ============ HERO ============ */
+      .hero {
+        padding: 80px 0 64px;
+        text-align: center;
+      }
+      .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 14px 5px 6px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 28px;
+        box-shadow: 0 1px 2px rgba(14,14,16,0.04);
+      }
+      .hero-eyebrow .pill {
+        background: var(--lavender-soft);
+        color: var(--lavender-2);
+        padding: 2px 10px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 11px;
+      }
+      .hero-title {
+        font-size: 56px;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+        font-weight: 700;
+        margin: 0 auto 20px;
+        max-width: 760px;
+      }
+      .hero-sub {
+        font-size: 17px;
+        color: var(--muted);
+        max-width: 540px;
+        margin: 0 auto 32px;
+        line-height: 1.55;
+      }
+      .hero-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+      }
+      .hero-note {
+        font-size: 12px;
+        color: var(--muted-2);
+        margin-top: 14px;
+      }
+
+      /* hero image: pair of preview cards */
+      .hero-preview-grid {
+        max-width: 920px;
+        margin: 64px auto 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .preview-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 22px;
+        text-align: left;
+        position: relative;
+      }
+      .preview-card .pc-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+      .preview-card .pc-head .dot { width: 14px; height: 14px; background: var(--lavender); border-radius: 3px; }
+      .preview-card .pc-head .dot.green { background: var(--green); }
+      .preview-card h3 {
+        font-size: 16px;
+        font-weight: 700;
+        margin: 0 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .preview-card p {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0 0 16px;
+        line-height: 1.5;
+      }
+      .pc-inner {
+        background: var(--bg-soft);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 14px;
+        font-size: 12px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .pc-inner .col {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px;
+      }
+      .pc-inner .col .lbl {
+        font-size: 10px;
+        color: var(--muted-2);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 4px;
+      }
+      .pc-inner .col .val { font-weight: 600; font-size: 13px; }
+      .pc-foot {
+        margin-top: 14px;
+        font-size: 12px;
+        color: var(--muted-2);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .pc-foot a { color: var(--lavender-2); font-weight: 600; }
+      .pc-badge {
+        position: absolute;
+        right: 22px; bottom: 22px;
+        background: var(--lavender);
+        color: var(--ink);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 5px 10px;
+        border-radius: 6px;
+      }
+
+      /* ============ SECTION COMMONS ============ */
+      .section {
+        padding: 100px 0;
+        position: relative;
+      }
+      .section-head {
+        text-align: center;
+        max-width: 620px;
+        margin: 0 auto 56px;
+      }
+      .eyebrow {
+        display: inline-block;
+        font-size: 12px;
+        color: var(--lavender-2);
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+      }
+      .section-title {
+        font-size: 40px;
+        line-height: 1.1;
+        letter-spacing: -0.025em;
+        font-weight: 700;
+        margin: 0 0 14px;
+      }
+      .section-sub {
+        font-size: 16px;
+        color: var(--muted);
+        margin: 0;
+        line-height: 1.55;
+      }
+
+      /* ============ COURSES ============ */
+      .course-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 1px;
+        background: var(--line);
+        border: 1px solid var(--line);
+        position: relative;
+      }
+      .course-grid::before, .course-grid::after {
+        content: '+';
+        position: absolute;
+        top: -8px;
+        font-family: ui-monospace, SFMono-Regular, monospace;
+        font-size: 13px;
+        color: var(--muted-2);
+        line-height: 1;
+        background: var(--bg);
+        padding: 1px 3px;
+        z-index: 2;
+      }
+      .course-grid::before { left: -8px; }
+      .course-grid::after { right: -8px; }
+      .course-card {
+        background: #fff;
+        border: none;
+        border-radius: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: background 0.2s;
+        grid-column: span 2;
+        position: relative;
+      }
+      .course-card:hover { background: var(--bg-soft); }
+      .course-card.featured { grid-column: span 3; }
+      .course-card.wide { grid-column: span 3; }
+
+      /* ---- Adaptive layout by course count ---- */
+      /* 1 course → single centered card (drops line frame) */
+      .course-grid:has(> .course-card:only-child) {
+        display: flex;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        gap: 0;
+      }
+      .course-grid:has(> .course-card:only-child)::before,
+      .course-grid:has(> .course-card:only-child)::after {
+        display: none;
+      }
+      .course-grid:has(> .course-card:only-child) > .course-card {
+        width: 100%;
+        max-width: 520px;
+        border: 1px solid var(--line);
+      }
+      /* 2 courses → two half-width side by side */
+      .course-grid:has(> .course-card:nth-child(2):last-child) > .course-card {
+        grid-column: span 3;
+      }
+      /* 3 courses → three thirds in a single row */
+      .course-grid:has(> .course-card:nth-child(3):last-child) > .course-card {
+        grid-column: span 2;
+      }
+      /* 4 courses → 2×2 half-width grid */
+      .course-grid:has(> .course-card:nth-child(4):last-child) > .course-card {
+        grid-column: span 3;
+      }
+      /* 5 courses → 2 wide on top + 3 thirds below (default w/ .wide) */
+      /* 6+ courses → all thirds, 3-per-row (overrides .wide) */
+      .course-grid:has(> .course-card:nth-child(6)) > .course-card,
+      .course-grid:has(> .course-card:nth-child(6)) > .course-card.wide {
+        grid-column: span 2;
+      }
+
+      .course-cover {
+        height: 160px;
+        position: relative;
+        overflow: hidden;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .course-card.featured .course-cover { height: 220px; }
+      .cover-a { background: linear-gradient(135deg, #f0ecff 0%, var(--lavender) 100%); }
+      .cover-b { background: linear-gradient(135deg, #e6f7ee 0%, var(--green) 100%); }
+      .cover-c { background: linear-gradient(135deg, #fff1de 0%, var(--orange) 100%); }
+      .cover-d { background: linear-gradient(135deg, #ffe9f1 0%, var(--pink) 100%); }
+      .cover-e { background: linear-gradient(135deg, #e0f0ff 0%, #6ba8ff 100%); }
+      .cover-f { background: linear-gradient(135deg, #fff8e6 0%, #fac661 100%); }
+      .course-cover::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle at center, rgba(255,255,255,0.5) 1px, transparent 1.5px);
+        background-size: 14px 14px;
+        opacity: 0.3;
+        pointer-events: none;
+      }
+
+      .cover-chips {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        position: relative;
+      }
+      .chip {
+        background: rgba(255,255,255,0.95);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--ink);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .chip .pulse {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulse 1.4s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.85); }
+      }
+      .chip.dark { background: rgba(14,14,16,0.85); color: #fff; }
+
+      /* ---- cover widgets ---- */
+      .widget {
+        background: rgba(255,255,255,0.92);
+        border: 1px solid rgba(255,255,255,0.6);
+        border-radius: 10px;
+        padding: 10px 12px;
+        box-shadow: 0 8px 20px -10px rgba(14,14,16,0.15);
+        position: relative;
+        backdrop-filter: blur(6px);
+      }
+      .widget .wlbl {
+        font-size: 10px;
+        color: var(--muted-2);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 4px;
+        font-weight: 600;
+      }
+
+      /* line-chart widget (AI cohort) */
+      .widget-chart {
+        align-self: flex-end;
+        width: 60%;
+      }
+      .chart-line {
+        height: 36px;
+        position: relative;
+      }
+      .chart-line svg { width: 100%; height: 100%; display: block; }
+
+      /* checklist widget (frontend) */
+      .widget-checklist {
+        align-self: flex-end;
+        width: 75%;
+      }
+      .widget-checklist .check-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: var(--ink);
+        padding: 2px 0;
+      }
+      .widget-checklist .box {
+        width: 11px; height: 11px;
+        border: 1.4px solid var(--line);
+        border-radius: 3px;
+        flex-shrink: 0;
+      }
+      .widget-checklist .box.done {
+        background: var(--ink); border-color: var(--ink);
+        position: relative;
+      }
+      .widget-checklist .box.done::after {
+        content: '✓';
+        position: absolute;
+        color: #fff;
+        font-size: 8px;
+        top: -1px; left: 1px;
+      }
+
+      /* calendar widget (system design) */
+      .widget-cal {
+        align-self: flex-end;
+        display: flex;
+        align-items: stretch;
+        padding: 0;
+        overflow: hidden;
+      }
+      .widget-cal .cal-date {
+        background: var(--ink);
+        color: #fff;
+        padding: 8px 12px;
+        text-align: center;
+        min-width: 50px;
+      }
+      .widget-cal .cal-date .m {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        opacity: 0.7;
+      }
+      .widget-cal .cal-date .d {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1;
+        margin-top: 2px;
+      }
+      .widget-cal .cal-body { padding: 8px 12px; }
+      .widget-cal .cal-body .ev {
+        font-size: 11px;
+        color: var(--ink);
+        font-weight: 600;
+      }
+      .widget-cal .cal-body .ev-sub {
+        font-size: 10px;
+        color: var(--muted-2);
+        margin-top: 1px;
+      }
+
+      /* avatar stack widget (mgmt) */
+      .widget-avatars {
+        align-self: flex-end;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .avatar-stack {
+        display: flex;
+      }
+      .avatar-stack .av {
+        width: 26px; height: 26px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        margin-left: -8px;
+        background: linear-gradient(135deg, var(--lavender), var(--pink));
+      }
+      .avatar-stack .av:first-child { margin-left: 0; }
+      .avatar-stack .av.b { background: linear-gradient(135deg, var(--green), #6ba8ff); }
+      .avatar-stack .av.c { background: linear-gradient(135deg, var(--orange), var(--pink)); }
+      .avatar-stack .av.d { background: linear-gradient(135deg, var(--lavender-2), var(--lavender)); }
+      .avatar-stack .av.more {
+        background: var(--ink); color: #fff;
+        font-size: 9px; font-weight: 700;
+        display: grid; place-items: center;
+      }
+      .widget-avatars .label {
+        font-size: 11px;
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      /* palette widget (design systems) */
+      .widget-palette {
+        align-self: flex-end;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .swatch {
+        width: 26px; height: 26px;
+        border-radius: 6px;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 6px rgba(14,14,16,0.1);
+      }
+
+      /* badge widget (cert) */
+      .widget-badge {
+        align-self: center;
+        margin: auto;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+      }
+      .medal {
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #fac661, #f0a830);
+        display: grid;
+        place-items: center;
+        font-size: 20px;
+        box-shadow: 0 6px 18px -6px rgba(240,168,48,0.5);
+        position: relative;
+      }
+      .medal::after {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        border: 1.5px dashed rgba(255,255,255,0.7);
+      }
+      .widget-badge .info .t { font-size: 12px; font-weight: 700; }
+      .widget-badge .info .s { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+      /* progress widget */
+      .widget-progress {
+        align-self: flex-end;
+        width: 70%;
+      }
+      .progress-bar {
+        height: 6px;
+        background: var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+        margin-top: 6px;
+      }
+      .progress-bar .fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--lavender), var(--lavender-2));
+        border-radius: 999px;
+      }
+
+      /* ---- card body ---- */
+      .course-body {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .course-body h3 {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+      .course-card.featured .course-body h3 { font-size: 22px; }
+      .course-body p {
+        font-size: 13.5px;
+        color: var(--muted);
+        margin: 0;
+        line-height: 1.5;
+        flex: 1;
+      }
+      .meta-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .meta-chip {
+        background: var(--bg-soft);
+        border: 1px solid var(--line);
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-size: 11px;
+        color: var(--muted);
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .meta-chip .dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: var(--lavender);
+      }
+      .meta-chip .dot.green { background: var(--green); }
+      .meta-chip .dot.orange { background: var(--orange); }
+
+      .instructor-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line-soft);
+        margin-top: 4px;
+      }
+      .instructor-row .ic-text {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .instructor-row .ic-text strong { color: var(--ink); font-weight: 600; }
+
+      .course-foot {
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 12px;
+        border-top: 1px solid var(--line-soft);
+      }
+      .course-foot .price {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .course-foot .price .strike {
+        font-size: 12px;
+        color: var(--muted-2);
+        font-weight: 500;
+        text-decoration: line-through;
+        margin-right: 6px;
+      }
+      .course-foot .enroll-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--ink);
+        color: #fff;
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 12.5px;
+        font-weight: 600;
+        transition: background 0.15s, transform 0.15s;
+      }
+      .course-card:hover .enroll-btn { background: var(--lavender-2); }
+      .more-courses {
+        display: flex;
+        justify-content: center;
+        margin-top: 48px;
+      }
+
+      /* ============ LINKS ============ */
+      .links-wrap {
+        background: var(--bg-soft);
+      }
+      .link-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--line);
+        border: 1px solid var(--line);
+        position: relative;
+      }
+      .link-grid::before, .link-grid::after {
+        content: '+';
+        position: absolute;
+        top: -8px;
+        font-family: ui-monospace, SFMono-Regular, monospace;
+        font-size: 13px;
+        color: var(--muted-2);
+        line-height: 1;
+        background: var(--bg-soft);
+        padding: 1px 3px;
+        z-index: 2;
+      }
+      .link-grid::before { left: -8px; }
+      .link-grid::after { right: -8px; }
+      .link {
+        background: var(--bg-soft);
+        border: none;
+        border-radius: 0;
+        padding: 32px 24px;
+        text-align: center;
+        transition: background 0.15s;
+      }
+      .link:hover { background: #fff; }
+      .link .glyph {
+        width: 36px;
+        height: 36px;
+        margin: 0 auto 16px;
+        border-radius: 10px;
+        background: var(--lavender-tint);
+        color: var(--lavender-2);
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .link h3 {
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .link p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      /* ============ EMBED ============ */
+      .embed-wrap {
+        background: var(--bg);
+      }
+      .embed-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        padding: 48px;
+        display: grid;
+        grid-template-columns: 1fr 1.1fr;
+        gap: 48px;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .embed-card::before {
+        content: '';
+        position: absolute;
+        top: -100px; right: -100px;
+        width: 300px; height: 300px;
+        border-radius: 50%;
+        background: var(--lavender-tint);
+        opacity: 0.6;
+      }
+      .embed-card > * { position: relative; }
+      .embed-text h2 {
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin: 0 0 12px;
+        line-height: 1.15;
+      }
+      .embed-text p {
+        font-size: 15px;
+        color: var(--muted);
+        margin: 0 0 24px;
+        line-height: 1.55;
+      }
+      .embed-snippet {
+        background: var(--ink);
+        border-radius: 14px;
+        font-family: ui-monospace, SFMono-Regular, monospace;
+        font-size: 13px;
+        line-height: 1.7;
+        overflow: hidden;
+      }
+      .embed-snippet .head {
+        padding: 12px 18px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11px;
+        color: rgba(255,255,255,0.55);
+      }
+      .embed-snippet .dots { display: flex; gap: 6px; }
+      .embed-snippet .dots span {
+        width: 10px; height: 10px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+      }
+      .embed-snippet pre {
+        margin: 0;
+        padding: 22px;
+        white-space: pre;
+        color: #e1e2f5;
+        overflow-x: auto;
+      }
+      .embed-snippet .kw { color: var(--lavender); }
+      .embed-snippet .str { color: #ffd470; }
+      .embed-snippet .cm { color: #7c7faa; font-style: italic; }
+
+      /* ============ CALLOUT ============ */
+      .callout {
+        text-align: center;
+        padding: 110px 0;
+      }
+      .callout h2 {
+        font-size: 48px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        margin: 0 auto 16px;
+        max-width: 640px;
+        line-height: 1.1;
+      }
+      .callout p {
+        font-size: 17px;
+        color: var(--muted);
+        max-width: 480px;
+        margin: 0 auto 28px;
+      }
+      .callout .actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+      }
+      .callout .note {
+        font-size: 12px;
+        color: var(--muted-2);
+        margin-top: 16px;
+      }
+
+      /* ============ FOOTER ============ */
+      footer {
+        background: #fff;
+        border-top: 1px solid var(--line);
+        padding: 64px 0 32px;
+      }
+      .footer-top {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr;
+        gap: 48px;
+        padding-bottom: 48px;
+      }
+      .footer-brand p {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 14px 0 16px;
+        max-width: 260px;
+        line-height: 1.55;
+      }
+      .socials { display: flex; gap: 8px; }
+      .social {
+        width: 30px; height: 30px;
+        border-radius: 50%;
+        background: var(--bg-soft);
+        border: 1px solid var(--line);
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .footer-col h4 {
+        font-size: 13px;
+        font-weight: 700;
+        margin: 0 0 14px;
+        color: var(--ink);
+      }
+      .footer-col ul { list-style: none; padding: 0; margin: 0; }
+      .footer-col li { margin-bottom: 10px; }
+      .footer-col a {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .footer-col a:hover { color: var(--ink); }
+      .footer-bottom {
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .footer-bottom a { margin-left: 16px; color: var(--muted); }
+
+      @media (max-width: 900px) {
+        .nav-mid { display: none; }
+        .hero-title { font-size: 38px; }
+        .section-title { font-size: 28px; }
+        .hero-preview-grid { grid-template-columns: 1fr; }
+        .course-grid { grid-template-columns: 1fr; }
+        .link-grid { grid-template-columns: 1fr; }
+        .embed-card { grid-template-columns: 1fr; padding: 28px; }
+        .footer-top { grid-template-columns: 1fr 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+    <!-- ============ NAV ============ -->
+    <div class="nav-wrap">
+      <nav class="nav">
+        <div class="brand">
+          <div class="brand-mark"></div>
+          <span>quartz</span>
+        </div>
+        <div class="nav-mid">
+          <a href="#">Catalog</a>
+          <a href="#">Solutions</a>
+          <a href="#">Pricing</a>
+          <a href="#">Company</a>
+        </div>
+        <div class="nav-cta">
+          <a class="btn btn-ghost" href="#">Login</a>
+          <a class="btn btn-dark" href="#">Get Started</a>
+        </div>
+      </nav>
+    </div>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-eyebrow">
+          <span class="pill">New</span>
+          <span>Spring '26 cohort enrollment is open</span>
+        </div>
+        <h1 class="hero-title">Modern learning for<br />customer-obsessed teams.</h1>
+        <p class="hero-sub">
+          A comprehensive learning and certification platform that empowers your team to make data-driven decisions and ship better products.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-dark btn-lg" href="#">Start Learning for Free</a>
+        </div>
+        <p class="hero-note">No credit card required.</p>
+
+        <!-- hero image: pair of preview cards -->
+        <div class="hero-preview-grid">
+          <div class="preview-card">
+            <div class="pc-head">
+              <span class="dot"></span>
+              <span>Live cohort</span>
+            </div>
+            <h3>Launch and run cohorts seamlessly.</h3>
+            <p>Collaborate with your team to deliver impactful learning programs to every learner.</p>
+            <div class="pc-inner">
+              <div class="col">
+                <div class="lbl">Cohort</div>
+                <div class="val">Loyalty program</div>
+              </div>
+              <div class="col">
+                <div class="lbl">Start date</div>
+                <div class="val">May 21, '26</div>
+              </div>
+            </div>
+            <div class="pc-foot">
+              <span>Connected to</span>
+              <a href="#">Marketing campaign →</a>
+            </div>
+          </div>
+          <div class="preview-card">
+            <div class="pc-head">
+              <span class="dot green"></span>
+              <span>Collaborative learning</span>
+            </div>
+            <h3>Work together for greater impact.</h3>
+            <p>Bring teams together with shared programs, peer reviews, and one source of truth.</p>
+            <div class="pc-inner" style="grid-template-columns: 1fr;">
+              <div class="col">
+                <div class="lbl">May 21</div>
+                <div class="val" style="font-size:11px; color: var(--muted);">Loyalty cohort live now • 248 active</div>
+              </div>
+            </div>
+            <div class="pc-badge">Live now</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="plus-row"></div>
+
+    <!-- ============ COURSES ============ -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Catalog</span>
+          <h2 class="section-title">Featured programs your teams are taking.</h2>
+          <p class="section-sub">From foundations to certifications — programs designed by practitioners, reviewed every quarter.</p>
+        </div>
+        <div class="course-grid">
+          <!-- Wide: AI cohort with line chart -->
+          <article class="course-card wide">
+            <div class="course-cover cover-a">
+              <div class="cover-chips">
+                <span class="chip"><span class="pulse"></span> Live cohort</span>
+                <span class="chip dark">Intermediate</span>
+              </div>
+              <div class="widget widget-chart">
+                <div class="wlbl">Enrollment trend</div>
+                <div class="chart-line">
+                  <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+                    <polyline fill="none" stroke="#a48eff" stroke-width="1.5" points="0,24 14,20 28,21 42,15 56,12 70,14 84,7 100,9" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="course-body">
+              <h3>Shipping AI-powered features</h3>
+              <p>An 8-week cohort building production AI features with evaluation and observability baked in.</p>
+              <div class="meta-chips">
+                <span class="meta-chip"><span class="dot"></span> 8 weeks</span>
+                <span class="meta-chip"><span class="dot green"></span> Cohort</span>
+                <span class="meta-chip"><span class="dot orange"></span> 6 seats left</span>
+              </div>
+              <div class="instructor-row">
+                <div class="avatar-stack">
+                  <div class="av"></div>
+                  <div class="av b"></div>
+                  <div class="av more">+2</div>
+                </div>
+                <div class="ic-text">Taught by <strong>Aria K.</strong> + 3 others</div>
+              </div>
+              <div class="course-foot">
+                <span class="price"><span class="strike">$1,200</span>$890</span>
+                <a class="enroll-btn" href="#">Enroll →</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Wide: Frontend with checklist -->
+          <article class="course-card wide">
+            <div class="course-cover cover-b">
+              <div class="cover-chips">
+                <span class="chip">Self-paced</span>
+                <span class="chip dark">Advanced</span>
+              </div>
+              <div class="widget widget-checklist">
+                <div class="wlbl">Course modules</div>
+                <div class="check-row"><span class="box done"></span> Server components &amp; islands</div>
+                <div class="check-row"><span class="box done"></span> Signals, runes, and reactivity</div>
+                <div class="check-row"><span class="box"></span> Edge runtimes &amp; caching</div>
+              </div>
+            </div>
+            <div class="course-body">
+              <h3>Modern frontend patterns</h3>
+              <p>Server components, signals, and edge runtimes — taught through 22 build-along projects.</p>
+              <div class="meta-chips">
+                <span class="meta-chip"><span class="dot green"></span> Self-paced</span>
+                <span class="meta-chip"><span class="dot"></span> 22 lessons</span>
+                <span class="meta-chip"><span class="dot orange"></span> ~14 hrs</span>
+              </div>
+              <div class="instructor-row">
+                <div class="avatar-stack">
+                  <div class="av c"></div>
+                  <div class="av d"></div>
+                </div>
+                <div class="ic-text">Taught by <strong>Jin P.</strong> &amp; <strong>Sasha L.</strong></div>
+              </div>
+              <div class="course-foot">
+                <span class="price">$149</span>
+                <a class="enroll-btn" href="#">Enroll →</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Standard: System design with calendar -->
+          <article class="course-card">
+            <div class="course-cover cover-e">
+              <div class="cover-chips">
+                <span class="chip">Self-paced</span>
+              </div>
+              <div class="widget widget-cal">
+                <div class="cal-date">
+                  <div class="m">Jun</div>
+                  <div class="d">03</div>
+                </div>
+                <div class="cal-body">
+                  <div class="ev">Mock interview</div>
+                  <div class="ev-sub">Distributed systems</div>
+                </div>
+              </div>
+            </div>
+            <div class="course-body">
+              <h3>System design fundamentals</h3>
+              <p>From single-server to distributed systems. Patterns, tradeoffs, and interview-grade case studies.</p>
+              <div class="meta-chips">
+                <span class="meta-chip"><span class="dot green"></span> 14 lessons</span>
+                <span class="meta-chip"><span class="dot"></span> Free</span>
+              </div>
+              <div class="course-foot">
+                <span class="price">Free</span>
+                <a class="enroll-btn" href="#">Enroll →</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Standard: Eng management with avatars -->
+          <article class="course-card">
+            <div class="course-cover cover-d">
+              <div class="cover-chips">
+                <span class="chip"><span class="pulse"></span> Live cohort</span>
+              </div>
+              <div class="widget widget-avatars">
+                <div class="avatar-stack">
+                  <div class="av"></div>
+                  <div class="av b"></div>
+                  <div class="av c"></div>
+                  <div class="av d"></div>
+                  <div class="av more">+8</div>
+                </div>
+                <div class="label">12 in cohort</div>
+              </div>
+            </div>
+            <div class="course-body">
+              <h3>Engineering management</h3>
+              <p>For new managers: feedback loops, performance reviews, and shipping cadences that scale.</p>
+              <div class="meta-chips">
+                <span class="meta-chip"><span class="dot orange"></span> 6 weeks</span>
+                <span class="meta-chip"><span class="dot"></span> Cohort</span>
+              </div>
+              <div class="course-foot">
+                <span class="price">$640</span>
+                <a class="enroll-btn" href="#">Enroll →</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Standard: Design systems with palette -->
+          <article class="course-card">
+            <div class="course-cover cover-c">
+              <div class="cover-chips">
+                <span class="chip">Self-paced</span>
+              </div>
+              <div class="widget widget-palette">
+                <span class="swatch" style="background: #b4a4ff;"></span>
+                <span class="swatch" style="background: #5fc88f;"></span>
+                <span class="swatch" style="background: #ffb066;"></span>
+                <span class="swatch" style="background: #ff9ec7;"></span>
+                <span class="swatch" style="background: #1c1c22;"></span>
+              </div>
+            </div>
+            <div class="course-body">
+              <h3>Design systems in production</h3>
+              <p>Build a token-driven design system used by real product teams. Figma + Storybook included.</p>
+              <div class="meta-chips">
+                <span class="meta-chip"><span class="dot green"></span> 18 lessons</span>
+                <span class="meta-chip"><span class="dot"></span> Project</span>
+              </div>
+              <div class="course-foot">
+                <span class="price">$299</span>
+                <a class="enroll-btn" href="#">Enroll →</a>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div class="more-courses">
+          <a class="btn btn-dark btn-lg" href="#">Browse all 32 programs</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="plus-row"></div>
+
+    <!-- ============ LINKS ============ -->
+    <section class="section links-wrap">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Resources</span>
+          <h2 class="section-title">More from Quartz.</h2>
+          <p class="section-sub">Documentation, community, and tooling — everything you need to bring Quartz into your team.</p>
+        </div>
+        <div class="link-grid">
+          <a class="link" href="#">
+            <div class="glyph">D</div>
+            <h3>Documentation</h3>
+            <p>Set up your organization, invite learners, and integrate with your HRIS.</p>
+          </a>
+          <a class="link" href="#">
+            <div class="glyph">C</div>
+            <h3>Community</h3>
+            <p>Learn alongside 12,000 educators, instructional designers, and engineers.</p>
+          </a>
+          <a class="link" href="#">
+            <div class="glyph">B</div>
+            <h3>Blog</h3>
+            <p>Templates, frameworks, and benchmark reports from teams that ship.</p>
+          </a>
+          <a class="link" href="#">
+            <div class="glyph">R</div>
+            <h3>Roadmap</h3>
+            <p>See what's next on the product canvas. Vote and request features.</p>
+          </a>
+          <a class="link" href="#">
+            <div class="glyph">★</div>
+            <h3>Changelog</h3>
+            <p>New blocks, workflows, and integrations shipped every week.</p>
+          </a>
+          <a class="link" href="#">
+            <div class="glyph">S</div>
+            <h3>Status</h3>
+            <p>Realtime uptime and incident history across the entire platform.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <div class="plus-row"></div>
+
+    <!-- ============ EMBED ============ -->
+    <section class="section embed-wrap">
+      <div class="container">
+        <div class="embed-card">
+          <div class="embed-text">
+            <span class="eyebrow">Developer</span>
+            <h2>Embed Quartz inside your onboarding stack.</h2>
+            <p>Drop a program, a quiz, or a full track into your product. SSO, deep links, and white-label theming included out of the box.</p>
+            <a class="btn btn-outline" href="#">Read the docs →</a>
+          </div>
+          <div class="embed-snippet">
+            <div class="head">
+              <div class="dots"><span></span><span></span><span></span></div>
+              <span>quartz-embed.tsx</span>
+            </div>
+<pre><span class="kw">import</span> { QuartzTrack } <span class="kw">from</span> <span class="str">"@quartz/react"</span>;
+
+<span class="kw">export default function</span> Onboarding() {
+  <span class="kw">return</span> (
+    &lt;<span class="kw">QuartzTrack</span>
+      slug=<span class="str">"product-onboarding"</span>
+      theme=<span class="str">"light"</span>
+      onComplete={notifyHRIS}
+    /&gt;
+  );
+}
+<span class="cm">// fully themed, fully tracked.</span></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="plus-row"></div>
+
+    <!-- ============ CALLOUT ============ -->
+    <section class="callout">
+      <div class="container-narrow">
+        <span class="eyebrow">Get started</span>
+        <h2>Learn, Certify and Grow with Quartz.</h2>
+        <p>Join a community of over 1,000 companies and learners who already trust Quartz to ship better products.</p>
+        <div class="actions">
+          <a class="btn btn-dark btn-lg" href="#">Start Learning for Free</a>
+          <a class="btn btn-outline btn-lg" href="#">Book a demo</a>
+        </div>
+        <p class="note">Free for up to 10 learners. Cancel anytime.</p>
+      </div>
+    </section>
+
+    </div><!-- /frame -->
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+      <div class="container">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <div class="brand">
+              <div class="brand-mark"></div>
+              <span>quartz</span>
+            </div>
+            <p>A modern learning platform for teams shipping products their customers love.</p>
+            <div class="socials">
+              <a class="social" href="#">𝕏</a>
+              <a class="social" href="#">in</a>
+              <a class="social" href="#">⌗</a>
+              <a class="social" href="#">▶</a>
+            </div>
+          </div>
+          <div class="footer-col">
+            <h4>Product</h4>
+            <ul>
+              <li><a href="#">Catalog</a></li>
+              <li><a href="#">Cohorts</a></li>
+              <li><a href="#">Certifications</a></li>
+              <li><a href="#">Pricing</a></li>
+              <li><a href="#">Changelog</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Company</h4>
+            <ul>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">Customers</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a href="#">Brand</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Community</h4>
+            <ul>
+              <li><a href="#">Docs</a></li>
+              <li><a href="#">Discord</a></li>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Roadmap</a></li>
+              <li><a href="#">Status</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© 2026 Quartz Inc. All rights reserved.</span>
+          <div>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">DPA</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

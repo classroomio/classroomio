@@ -14,7 +14,8 @@
     "classroomio-mcp": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc --noEmit && rm -rf dist tsconfig.tsbuildinfo && node ./scripts/build.mjs",
+    "build": "rm -rf dist tsconfig.tsbuildinfo && node ./scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
     "format": "prettier --write \"src/**/*.ts\""
@@ -34,15 +35,18 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.27.1",
+    "@cio/utils": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.27.1"
+  },
+  "peerDependencies": {
     "zod": "^4.1.8"
   },
   "devDependencies": {
     "@cio/tsconfig": "workspace:*",
-    "@cio/utils": "workspace:*",
     "@types/node": "^24.10.1",
     "esbuild": "^0.25.11",
     "tsx": "^4.20.3",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "zod": "^4.1.8"
   }
 }

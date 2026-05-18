@@ -6,12 +6,11 @@
   import { profile } from '$lib/utils/store/user';
   import { orgs } from '$lib/utils/store/org';
   import { isOrgStudent } from '$lib/utils/store/app';
-  import { isFreePlan } from '$lib/utils/store/org';
-
-  import OrgLogo from '$features/ui/sidebar/org-sidebar/org-logo.svelte';
+  import CourseSidebarLogo from './course-sidebar-logo.svelte';
   import Navigation from './course-sidebar-navigation.svelte';
   import SidebarSkeleton from '$features/ui/sidebar/sidebar-skeleton.svelte';
-  import UpgradePoweredBy from '$features/ui/upgrade-powered-by.svelte';
+  import PoweredBy from '$features/ui/powered-by.svelte';
+  import { courseApi } from '$features/course/api';
   import { useSidebar } from '@cio/ui/base/sidebar';
   import { startResizablePanelDrag } from '$lib/utils/functions/resizable-panel';
   import { COURSE_SIDEBAR_DEFAULT_WIDTH, COURSE_SIDEBAR_MAX_WIDTH, COURSE_SIDEBAR_MIN_WIDTH } from './constants';
@@ -44,6 +43,8 @@
   const currentPath = $derived(path || page.url.pathname);
   let shouldIgnoreRailClick = $state(false);
   let stopSidebarResize: (() => void) | null = null;
+
+  const attributionCourseSlug = $derived(courseApi.course?.slug ?? null);
 
   function clampSidebarWidth(width: number) {
     return Math.min(COURSE_SIDEBAR_MAX_WIDTH, Math.max(COURSE_SIDEBAR_MIN_WIDTH, width));
@@ -113,7 +114,7 @@
 {:else}
   <Sidebar.Root collapsible="icon">
     <Sidebar.Header>
-      <OrgLogo />
+      <CourseSidebarLogo />
     </Sidebar.Header>
 
     <Sidebar.Content>
@@ -141,14 +142,14 @@
 
     <Sidebar.Rail onclick={handleRailClick} onpointerdown={handleRailPointerDown} />
 
-    {#if $isFreePlan}
-      <Sidebar.Footer>
-        <UpgradePoweredBy
-          class="static [&_span]:font-normal [&_span]:shadow-none"
-          showOnlyLogo={!sidebar.open || sidebar.isMobile}
-        />
-      </Sidebar.Footer>
-    {/if}
+    <Sidebar.Footer>
+      <PoweredBy
+        variant="sidebar"
+        sidebarUtmSource="lms-course-sidebar"
+        courseSlug={attributionCourseSlug}
+        showOnlyLogo={!sidebar.open || sidebar.isMobile}
+      />
+    </Sidebar.Footer>
   </Sidebar.Root>
 {/if}
 

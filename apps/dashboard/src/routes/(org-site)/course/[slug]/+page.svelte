@@ -1,5 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
+  import { page } from '$app/state';
   import { onMount } from 'svelte';
 
   import { basePath } from '$lib/utils/store/app';
@@ -57,6 +58,25 @@
   const orgName = $derived(data.org?.name ?? data.course?.org?.name ?? 'ClassroomIO');
   const logoUrl = $derived(data.org?.avatarUrl ?? undefined);
 
+  const courseJsonLd = $derived.by(() => {
+    if (!data.course) return null;
+
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'Course',
+      name: data.course.title,
+      description: data.course.description || '',
+      provider: {
+        '@type': 'Organization',
+        name: orgName
+      },
+      url: page.url.href,
+      ...(data.course.logo ? { image: data.course.logo } : {})
+    };
+
+    return JSON.stringify(schema).replace(/</g, '\\u003c');
+  });
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let NavComponent = $state<Component<any> | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,6 +103,12 @@
   });
 </script>
 
+<svelte:head>
+  {#if courseJsonLd}
+    {@html `<script type="application/ld+json">${courseJsonLd}</script>`}
+  {/if}
+</svelte:head>
+
 {#if data.course}
   <PoweredBy />
 
@@ -102,12 +128,6 @@
 
     <CourseLandingPage courseData={data.course} />
 
-    <OrgLandingPageFooter
-      {orgName}
-      {logoUrl}
-      footerLinks={landingSettings.footerLinks}
-      footerText={landingSettings.footerText}
-      variant={landingSettings.theme}
-    />
+    <OrgLandingPageFooter {orgName} {logoUrl} footer={landingSettings.footer} variant={landingSettings.theme} />
   </main>
 {/if}

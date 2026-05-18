@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Atlas Engineering Academy — Tech template</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Big+Shoulders+Display:wght@600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --blue: #1d2bd6;
+        --blue-deep: #141e9c;
+        --blue-100: #e6e9ff;
+        --blue-50: #f1f3ff;
+        --ink: #0b0d20;
+        --muted: #5e6280;
+        --line: #d6d9ed;
+        --line-soft: #ecedf6;
+        --bg: #f5f6ff;
+        --lime: #d9ff2c;
+        --code-bg: #0a0c25;
+        --code-line: #1c2049;
+        --code-comment: #7a82c8;
+        --code-keyword: #c0a8ff;
+        --code-string: #ffd66b;
+        --code-fn: #95d5ff;
+        --code-pn: #ff85c2;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        color: var(--ink);
+        background: #fff;
+        -webkit-font-smoothing: antialiased;
+      }
+      .display { font-family: 'Big Shoulders Display', 'Inter', sans-serif; }
+      a { color: inherit; text-decoration: none; }
+      button { font: inherit; cursor: pointer; }
+      .wrap { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+
+      /* ============ HERO BAND (nav + hero) ============ */
+      .hero-band {
+        background: var(--blue);
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        padding-bottom: 80px;
+      }
+      .hero-band::before {
+        content: '';
+        position: absolute; inset: 0;
+        background-image:
+          linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+        background-size: 56px 56px;
+        pointer-events: none;
+      }
+      .hero-band > * { position: relative; }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+      }
+      .brand {
+        display: flex; align-items: center; gap: 10px;
+        font-weight: 700;
+      }
+      .brand-mark {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 800;
+        font-size: 15px;
+        color: var(--lime);
+        letter-spacing: 0.04em;
+        line-height: 1;
+        background: transparent;
+      }
+      .brand-mark::before { content: '['; opacity: 0.7; margin-right: 1px; }
+      .brand-mark::after { content: ']'; opacity: 0.7; margin-left: 1px; }
+      .nav-links {
+        display: flex; gap: 6px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12.5px;
+      }
+      .nav-links a {
+        padding: 5px 12px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        opacity: 0.85;
+        transition: opacity 0.15s, border-color 0.15s, background 0.15s, color 0.15s;
+      }
+      .nav-links a:hover {
+        opacity: 1;
+        border-color: rgba(255,255,255,0.25);
+        background: rgba(0,0,0,0.15);
+      }
+      .nav-links a.active {
+        border-color: var(--lime);
+        color: var(--lime);
+        opacity: 1;
+      }
+      .nav-cta { display: flex; gap: 8px; align-items: center; }
+
+      .btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 9px 16px;
+        font-weight: 600; font-size: 13px;
+        border: 1px solid transparent;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
+      }
+      .btn-ghost-light { color: #fff; }
+      .btn-ghost-light:hover { background: rgba(255,255,255,0.12); }
+      .btn-lime { background: var(--lime); color: var(--ink); }
+      .btn-lime:hover { background: #c7ec1f; }
+      .btn-outline-light { border: 1px solid rgba(255,255,255,0.4); color: #fff; }
+      .btn-outline-light:hover { background: #fff; color: var(--blue); }
+      .btn-primary { background: var(--blue); color: #fff; }
+      .btn-primary:hover { background: var(--blue-deep); }
+      .btn-outline { border: 1px solid var(--line); color: var(--ink); background: #fff; }
+      .btn-outline:hover { border-color: #9aa0c8; }
+      .btn-lg { padding: 14px 24px; font-size: 14px; }
+
+      /* HERO */
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 56px;
+        align-items: center;
+        padding: 80px 0 40px;
+      }
+      .hero-tag {
+        display: inline-block;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        color: var(--lime);
+        background: rgba(0,0,0,0.2);
+        padding: 5px 10px;
+        margin-bottom: 24px;
+        letter-spacing: 0.05em;
+      }
+      .hero-title {
+        font-family: 'Big Shoulders Display', 'Inter', sans-serif;
+        font-weight: 800;
+        font-size: 92px;
+        line-height: 0.92;
+        letter-spacing: -0.03em;
+        margin: 0 0 24px;
+      }
+      .hero-title .accent { color: var(--lime); }
+      .hero-sub {
+        font-size: 18px;
+        line-height: 1.55;
+        opacity: 0.85;
+        margin: 0 0 32px;
+        max-width: 480px;
+      }
+      .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+      /* hero image = product screenshot mock */
+      .hero-image { position: relative; }
+      .mock-card {
+        background: #fff;
+        color: var(--ink);
+        box-shadow: 0 30px 80px -20px rgba(7,12,80,0.55);
+        overflow: hidden;
+      }
+      .mock-top {
+        background: #ecedf6;
+        padding: 10px 14px;
+        display: flex; align-items: center; gap: 8px;
+        border-bottom: 1px solid var(--line);
+      }
+      .mock-dots { display: flex; gap: 6px; }
+      .mock-dots span { width: 10px; height: 10px; border-radius: 50%; background: #c5c9e0; }
+      .mock-url {
+        background: #fff;
+        border: 1px solid var(--line);
+        padding: 4px 12px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: var(--muted);
+        margin-left: 12px;
+        flex: 1;
+      }
+      .mock-body { padding: 18px 20px; min-height: 360px; }
+      .mock-title {
+        display: flex; align-items: center; gap: 10px;
+        font-size: 16px; font-weight: 700;
+        margin-bottom: 14px;
+      }
+      .mock-title .icon {
+        width: 20px; height: 20px;
+        background: var(--blue); color: #fff;
+        display: grid; place-items: center;
+        font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      }
+      .mock-table-head {
+        display: grid;
+        grid-template-columns: 24px 1.4fr 90px 80px 70px;
+        gap: 14px;
+        padding: 8px 6px;
+        border-bottom: 1px solid var(--line);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px; color: var(--muted);
+        text-transform: uppercase; letter-spacing: 0.05em;
+      }
+      .mock-row {
+        display: grid;
+        grid-template-columns: 24px 1.4fr 90px 80px 70px;
+        gap: 14px;
+        padding: 10px 6px;
+        border-bottom: 1px solid var(--line-soft);
+        font-size: 12.5px;
+        align-items: center;
+      }
+      .mock-row .check {
+        width: 13px; height: 13px;
+        border: 1.5px solid var(--line);
+      }
+      .mock-row .check.done { background: var(--blue); border-color: var(--blue); }
+      .mock-pill {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        padding: 2px 7px;
+        font-weight: 600;
+        background: var(--blue-100);
+        color: var(--blue-deep);
+        display: inline-block;
+        width: fit-content;
+      }
+      .mock-pill.lime { background: var(--lime); color: var(--ink); }
+      .mock-pill.gray { background: var(--line-soft); color: var(--muted); }
+      .mock-row .muted { color: var(--muted); font-size: 11px; }
+
+      .annot {
+        position: absolute;
+        background: #fff; color: var(--ink);
+        padding: 9px 13px;
+        font-size: 11.5px;
+        box-shadow: 0 10px 30px -10px rgba(7,12,80,0.4);
+        display: flex; align-items: center; gap: 10px;
+        z-index: 2;
+      }
+      .annot .ico {
+        width: 20px; height: 20px;
+        background: var(--lime);
+        display: grid; place-items: center;
+        color: var(--ink);
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 800; font-size: 10px;
+      }
+      .annot.tr { top: 30px; right: -28px; }
+      .annot.bl { bottom: 40px; left: -28px; }
+
+      /* ============ SECTION COMMONS ============ */
+      .section { padding: 110px 0; }
+      .section-head { margin-bottom: 56px; max-width: 720px; }
+      .eyebrow {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        color: var(--blue);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+      }
+      .section-title {
+        font-size: 52px;
+        letter-spacing: -0.035em;
+        font-weight: 800;
+        margin: 0;
+        line-height: 1.02;
+      }
+      .section-title .accent { background: var(--lime); padding: 0 8px; }
+
+      /* ============ COURSES ============ */
+      .courses-head {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        margin-bottom: 48px;
+      }
+      .course-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid var(--line);
+        border-left: 1px solid var(--line);
+      }
+      /* 1 course → centered card (drops grid frame) */
+      .course-grid:has(> .course:only-child) {
+        display: flex;
+        justify-content: center;
+        border: none;
+      }
+      .course-grid:has(> .course:only-child) > .course {
+        width: 100%;
+        max-width: 520px;
+        border: 1px solid var(--line);
+      }
+      .course {
+        background: #fff;
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        padding: 28px;
+        display: flex; flex-direction: column; gap: 14px;
+        transition: background 0.15s;
+      }
+      .course:hover { background: var(--blue-50); }
+      .course-tag {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px; font-weight: 600;
+        letter-spacing: 0.01em;
+        padding: 0;
+        background: transparent;
+        color: var(--blue);
+        align-self: flex-start;
+      }
+      .course-tag::before { content: '/ '; color: var(--muted); opacity: 0.7; }
+      .course-tag.lime { color: var(--blue-deep); }
+      .course-tag.lime::before { color: var(--blue); opacity: 0.5; }
+      .course-tag.outline { color: var(--muted); }
+      .course h3 {
+        font-size: 22px; font-weight: 800;
+        margin: 0;
+        letter-spacing: -0.02em; line-height: 1.15;
+      }
+      .course p {
+        color: var(--muted);
+        font-size: 14px; line-height: 1.55;
+        margin: 0; flex: 1;
+      }
+      .course .meta {
+        display: flex; align-items: center; justify-content: space-between;
+        padding-top: 16px;
+        border-top: 1px dashed var(--line);
+      }
+      .course .price {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700; font-size: 14px;
+      }
+      .course .arrow {
+        color: var(--blue); font-weight: 700;
+        font-family: 'JetBrains Mono', monospace; font-size: 13px;
+      }
+      .more-courses {
+        display: flex; justify-content: center;
+        margin-top: 48px;
+      }
+
+      /* ============ LINKS ============ */
+      .links-section {
+        background: var(--blue);
+        color: #fff;
+        padding: 110px 0;
+        position: relative; overflow: hidden;
+      }
+      .links-section::before {
+        content: '';
+        position: absolute; inset: 0;
+        background-image:
+          linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+        background-size: 56px 56px;
+      }
+      .links-section > * { position: relative; }
+      .links-head h2 {
+        font-size: 52px; font-weight: 800;
+        margin: 0 0 14px;
+        letter-spacing: -0.035em; line-height: 1.02;
+      }
+      .links-head h2 .lime { color: var(--lime); }
+      .links-head p {
+        font-size: 17px; opacity: 0.85;
+        max-width: 580px; margin: 0 0 56px;
+      }
+      .link-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border: 1px solid rgba(255,255,255,0.2);
+      }
+      .link-card {
+        padding: 30px;
+        border-right: 1px solid rgba(255,255,255,0.15);
+        border-bottom: 1px solid rgba(255,255,255,0.15);
+        transition: background 0.2s;
+      }
+      .link-card:hover { background: rgba(255,255,255,0.06); }
+      .link-card:nth-child(3n) { border-right: none; }
+      .link-card:nth-last-child(-n+3) { border-bottom: none; }
+      .link-icon {
+        width: 36px; height: 36px;
+        background: var(--lime); color: var(--ink);
+        display: grid; place-items: center;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 800; font-size: 12px;
+        margin-bottom: 20px;
+      }
+      .link-card h3 {
+        font-size: 18px; margin: 0 0 6px;
+        font-weight: 700; letter-spacing: -0.01em;
+      }
+      .link-card p {
+        font-size: 13px; margin: 0;
+        opacity: 0.78; line-height: 1.55;
+      }
+
+      /* ============ EMBED (code card) ============ */
+      .embed-section { padding: 110px 0; background: var(--bg); }
+      .embed-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 60px;
+        align-items: center;
+      }
+      .embed-text h2 {
+        font-size: 44px; font-weight: 800;
+        letter-spacing: -0.03em;
+        margin: 0 0 16px;
+        line-height: 1.05;
+      }
+      .embed-text p {
+        color: var(--muted);
+        font-size: 17px; line-height: 1.55;
+        margin: 0 0 28px;
+      }
+      .code-card {
+        background: var(--code-bg);
+        overflow: hidden;
+        border: 1px solid var(--code-line);
+        box-shadow: 0 20px 60px -30px rgba(29,43,214,0.5);
+      }
+      .code-head {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--code-line);
+        background: linear-gradient(180deg, #131635 0%, var(--code-bg) 100%);
+      }
+      .code-filename {
+        color: #fff;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px; font-weight: 600;
+      }
+      .code-filename .dim { color: var(--code-comment); }
+      .code-link {
+        color: var(--lime);
+        font-size: 12px;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .code-body {
+        padding: 20px 22px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px; line-height: 1.7;
+        color: #e7eaff;
+        white-space: pre;
+        overflow-x: auto;
+      }
+      .kw { color: var(--code-keyword); }
+      .str { color: var(--code-string); }
+      .fn { color: var(--code-fn); }
+      .cmt { color: var(--code-comment); font-style: italic; }
+      .num { color: #ffb066; }
+
+      /* ============ CALLOUT ============ */
+      .callout-section { padding: 0 0 110px; }
+      .callout {
+        margin: 0 auto; max-width: 1232px;
+        background: var(--ink); color: #fff;
+        padding: 64px;
+        position: relative; overflow: hidden;
+      }
+      .callout::before {
+        content: '';
+        position: absolute; inset: 0;
+        background-image:
+          linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+      .callout > * { position: relative; }
+      .callout-inner {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 48px;
+      }
+      .callout h2 {
+        font-size: 44px; font-weight: 800;
+        letter-spacing: -0.03em;
+        margin: 0 0 12px;
+        max-width: 520px; line-height: 1.05;
+      }
+      .callout h2 .lime { color: var(--lime); }
+      .callout p {
+        margin: 0; opacity: 0.7;
+        font-size: 16px; max-width: 480px;
+      }
+
+      /* ============ FOOTER ============ */
+      footer {
+        background: var(--ink);
+        color: #fff;
+        padding: 80px 0 32px;
+        position: relative; overflow: hidden;
+        border-top: 1px solid rgba(255,255,255,0.06);
+      }
+      footer::before {
+        content: '';
+        position: absolute; inset: 0;
+        background-image:
+          linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 56px 56px;
+      }
+      footer > * { position: relative; }
+      .footer-top {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
+        gap: 48px;
+        padding-bottom: 56px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+      .footer-brand .brand { color: #fff; }
+      .footer-tag {
+        color: rgba(255,255,255,0.6);
+        font-size: 14px; margin: 16px 0 20px;
+        max-width: 260px; line-height: 1.55;
+      }
+      .socials { display: flex; gap: 8px; }
+      .social {
+        width: 34px; height: 34px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.1);
+        display: grid; place-items: center;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        color: rgba(255,255,255,0.8);
+      }
+      .footer-col h4 {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        text-transform: uppercase; letter-spacing: 0.08em;
+        color: var(--lime);
+        margin: 0 0 18px;
+      }
+      .footer-col ul { list-style: none; padding: 0; margin: 0; }
+      .footer-col li { margin-bottom: 12px; }
+      .footer-col a {
+        font-size: 13px;
+        color: rgba(255,255,255,0.75);
+      }
+      .footer-col a:hover { color: var(--lime); }
+      .footer-bottom {
+        padding-top: 24px;
+        display: flex; justify-content: space-between;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        color: rgba(255,255,255,0.5);
+      }
+      .footer-bottom a { margin-left: 18px; color: rgba(255,255,255,0.5); }
+
+      @media (max-width: 1000px) {
+        .hero { grid-template-columns: 1fr; }
+        .hero-title { font-size: 56px; }
+        .section-title { font-size: 36px; }
+        .course-grid { grid-template-columns: 1fr; }
+        .link-grid { grid-template-columns: 1fr; }
+        .link-card { border-right: none !important; }
+        .embed-grid { grid-template-columns: 1fr; }
+        .callout-inner { flex-direction: column; align-items: flex-start; }
+        .footer-top { grid-template-columns: 1fr 1fr; }
+        .annot { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============ HERO BAND (nav + hero) ============ -->
+    <header class="hero-band">
+      <div class="wrap">
+        <nav class="nav">
+          <div class="brand">
+            <div class="brand-mark">A</div>
+            <span>atlas</span>
+          </div>
+          <div class="nav-links">
+            <a class="active" href="#">( catalog )</a>
+            <a href="#">( tracks )</a>
+            <a href="#">( live )</a>
+            <a href="#">( blog )</a>
+            <a href="#">( pricing )</a>
+          </div>
+          <div class="nav-cta">
+            <a class="btn btn-ghost-light" href="#">Log in</a>
+            <a class="btn btn-lime" href="#">Get started →</a>
+          </div>
+        </nav>
+      </div>
+
+      <div class="wrap">
+        <section class="hero">
+          <div class="hero-text">
+            <span class="hero-tag">// atlas/eng · class of '26</span>
+            <h1 class="hero-title display">
+              Ship engineers,<br />
+              not just <span class="accent">courses.</span>
+            </h1>
+            <p class="hero-sub">
+              Hands-on tracks, real codebases, and instructor-graded reviews — built for engineering teams adopting modern AI tooling and infra.
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-lime btn-lg" href="#">Browse courses</a>
+              <a class="btn btn-outline-light btn-lg" href="#">Talk to sales</a>
+            </div>
+          </div>
+
+          <div class="hero-image">
+            <div class="annot tr">
+              <div class="ico">★</div>
+              <div>
+                <strong style="display:block; font-size:12px;">Spring '26 cohort</strong>
+                <span style="color:var(--muted); font-size:10.5px;">graded by senior engineers</span>
+              </div>
+            </div>
+            <div class="annot bl">
+              <div class="ico">→</div>
+              <span><strong>Pass rate:</strong> 91%</span>
+            </div>
+
+            <div class="mock-card">
+              <div class="mock-top">
+                <div class="mock-dots"><span></span><span></span><span></span></div>
+                <div class="mock-url">atlas.dev/cohorts/distsys-spring-26</div>
+              </div>
+              <div class="mock-body">
+                <div class="mock-title">
+                  <div class="icon">⧉</div>
+                  Modules
+                </div>
+                <div class="mock-table-head">
+                  <span></span><span>Title</span><span>Type</span><span>Status</span><span>Score</span>
+                </div>
+                <div class="mock-row">
+                  <div class="check done"></div>
+                  <span>01 — CAP &amp; consistency</span>
+                  <span><span class="mock-pill">SELF</span></span>
+                  <span><span class="mock-pill lime">SHIPPED</span></span>
+                  <span class="muted">98</span>
+                </div>
+                <div class="mock-row">
+                  <div class="check done"></div>
+                  <span>02 — Replication &amp; quorums</span>
+                  <span><span class="mock-pill">LIVE</span></span>
+                  <span><span class="mock-pill lime">SHIPPED</span></span>
+                  <span class="muted">92</span>
+                </div>
+                <div class="mock-row">
+                  <div class="check"></div>
+                  <span>03 — Idempotency</span>
+                  <span><span class="mock-pill">LAB</span></span>
+                  <span><span class="mock-pill gray">REVIEW</span></span>
+                  <span class="muted">—</span>
+                </div>
+                <div class="mock-row">
+                  <div class="check"></div>
+                  <span>04 — Sharding patterns</span>
+                  <span><span class="mock-pill">CASE</span></span>
+                  <span><span class="mock-pill gray">QUEUED</span></span>
+                  <span class="muted">—</span>
+                </div>
+                <div class="mock-row">
+                  <div class="check"></div>
+                  <span>05 — Raft task queue</span>
+                  <span><span class="mock-pill">LAB</span></span>
+                  <span><span class="mock-pill gray">QUEUED</span></span>
+                  <span class="muted">—</span>
+                </div>
+                <div class="mock-row">
+                  <div class="check"></div>
+                  <span>06 — Capstone project</span>
+                  <span><span class="mock-pill">CAP</span></span>
+                  <span><span class="mock-pill gray">QUEUED</span></span>
+                  <span class="muted">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </header>
+
+    <!-- ============ COURSES ============ -->
+    <section class="section">
+      <div class="wrap">
+        <div class="courses-head">
+          <div>
+            <div class="eyebrow">// catalog</div>
+            <h2 class="section-title display">Latest courses</h2>
+          </div>
+          <a class="btn btn-outline" href="#" style="font-family:'JetBrains Mono', monospace;">view all 24 →</a>
+        </div>
+        <div class="course-grid">
+          <article class="course">
+            <span class="course-tag">self-paced</span>
+            <h3>Production backend engineering</h3>
+            <p>Build, deploy, and scale a real-world API with Postgres, Redis, and Kubernetes — reviewed each week by Atlas engineers.</p>
+            <div class="meta">
+              <span class="price">$249</span>
+              <a class="arrow" href="#">enroll →</a>
+            </div>
+          </article>
+          <article class="course">
+            <span class="course-tag lime">live-cohort</span>
+            <h3>Distributed systems patterns</h3>
+            <p>8-week cohort exploring consensus, replication, and fault tolerance. Weekly office hours and graded projects.</p>
+            <div class="meta">
+              <span class="price">$890</span>
+              <a class="arrow" href="#">enroll →</a>
+            </div>
+          </article>
+          <article class="course">
+            <span class="course-tag outline">free</span>
+            <h3>Type-safe APIs with tRPC</h3>
+            <p>From zero to end-to-end type safety. Build a SaaS scaffold and deploy it to the edge in under three hours.</p>
+            <div class="meta">
+              <span class="price">$0</span>
+              <a class="arrow" href="#">enroll →</a>
+            </div>
+          </article>
+          <article class="course">
+            <span class="course-tag">self-paced</span>
+            <h3>AI agent infrastructure</h3>
+            <p>Vector stores, evals, observability, and tool use — patterns from teams already shipping agents to millions of users.</p>
+            <div class="meta">
+              <span class="price">$349</span>
+              <a class="arrow" href="#">enroll →</a>
+            </div>
+          </article>
+          <article class="course">
+            <span class="course-tag lime">live-cohort</span>
+            <h3>Frontend at scale</h3>
+            <p>Server components, signals, edge runtimes. Build a real product alongside engineers from Vercel and Linear.</p>
+            <div class="meta">
+              <span class="price">$640</span>
+              <a class="arrow" href="#">enroll →</a>
+            </div>
+          </article>
+          <article class="course">
+            <span class="course-tag outline">cert</span>
+            <h3>Atlas Certified — Senior Engineer</h3>
+            <p>The capstone certification. Eight weeks, three reviewed projects, and a final panel with senior staff engineers.</p>
+            <div class="meta">
+              <span class="price">$2,400</span>
+              <a class="arrow" href="#">enroll →</a>
+            </div>
+          </article>
+        </div>
+        <div class="more-courses">
+          <a class="btn btn-primary btn-lg" href="#" style="font-family:'JetBrains Mono', monospace;">view more courses →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LINKS ============ -->
+    <section class="links-section">
+      <div class="wrap">
+        <div class="links-head">
+          <h2 class="display">Everything you need to <span class="lime">level up.</span></h2>
+          <p>Documentation, community, and live workshops — all in one place.</p>
+        </div>
+        <div class="link-grid">
+          <a class="link-card" href="#">
+            <div class="link-icon">D</div>
+            <h3>Documentation</h3>
+            <p>Reference for every API, integration, and curriculum primitive in the platform.</p>
+          </a>
+          <a class="link-card" href="#">
+            <div class="link-icon">C</div>
+            <h3>Community</h3>
+            <p>10,000+ engineers helping each other ship faster. Always-on Discord channels.</p>
+          </a>
+          <a class="link-card" href="#">
+            <div class="link-icon">W</div>
+            <h3>Workshops</h3>
+            <p>Live weekly sessions on AI tools, infra, and modern app architecture.</p>
+          </a>
+          <a class="link-card" href="#">
+            <div class="link-icon">R</div>
+            <h3>Roadmaps</h3>
+            <p>Curated learning paths from staff engineers at top product companies.</p>
+          </a>
+          <a class="link-card" href="#">
+            <div class="link-icon">E</div>
+            <h3>Events</h3>
+            <p>Hackathons, AMAs, and the annual Atlas Engineering Summit in Berlin.</p>
+          </a>
+          <a class="link-card" href="#">
+            <div class="link-icon">S</div>
+            <h3>Status</h3>
+            <p>Realtime uptime and incident history across the entire learning platform.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EMBED (code) ============ -->
+    <section class="embed-section">
+      <div class="wrap">
+        <div class="embed-grid">
+          <div class="embed-text">
+            <div class="eyebrow">// integrate</div>
+            <h2 class="display">Drop Atlas into your onboarding.</h2>
+            <p>One snippet provisions seats, enrolls new hires in the right track, and reports completion back to your HRIS.</p>
+            <a class="btn btn-outline" href="#" style="font-family:'JetBrains Mono', monospace;">read the docs →</a>
+          </div>
+          <div class="code-card">
+            <div class="code-head">
+              <span class="code-filename">onboarding<span class="dim">.atlas.ts</span></span>
+              <a href="#" class="code-link">⌗ see example</a>
+            </div>
+<div class="code-body"><span class="kw">import</span> { Atlas } <span class="kw">from</span> <span class="str">"@atlas/sdk"</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">Atlas</span>({ apiKey: <span class="fn">process</span>.env.ATLAS });
+
+<span class="kw">await</span> client.cohorts.<span class="fn">enroll</span>({
+  trackId: <span class="str">"distsys-12w"</span>,
+  email:   user.email,
+  <span class="cmt">// auto-creates seat + sends welcome</span>
+});</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CALLOUT ============ -->
+    <section class="callout-section">
+      <div class="wrap">
+        <div class="callout">
+          <div class="callout-inner">
+            <div>
+              <h2 class="display">Ready to <span class="lime">onboard your engineers?</span></h2>
+              <p>Pilot Atlas with up to 10 seats. No credit card. Concierge migration from your current LMS.</p>
+            </div>
+            <a class="btn btn-lime btn-lg" href="#">Start the pilot →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+      <div class="wrap">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <div class="brand">
+              <div class="brand-mark">A</div>
+              <span>atlas</span>
+            </div>
+            <p class="footer-tag">The engineering academy for teams shipping in production.</p>
+            <div class="socials">
+              <a class="social" href="#">𝕏</a>
+              <a class="social" href="#">in</a>
+              <a class="social" href="#">⌗</a>
+              <a class="social" href="#">▶</a>
+            </div>
+          </div>
+          <div class="footer-col">
+            <h4>[ product ]</h4>
+            <ul>
+              <li><a href="#">Catalog</a></li>
+              <li><a href="#">Live cohorts</a></li>
+              <li><a href="#">Certifications</a></li>
+              <li><a href="#">Pricing</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>[ resources ]</h4>
+            <ul>
+              <li><a href="#">Docs</a></li>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Roadmaps</a></li>
+              <li><a href="#">Status</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>[ company ]</h4>
+            <ul>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">Customers</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>[ legal ]</h4>
+            <ul>
+              <li><a href="#">Terms</a></li>
+              <li><a href="#">Privacy</a></li>
+              <li><a href="#">Security</a></li>
+              <li><a href="#">DPA</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© 2026 atlas engineering inc.</span>
+          <div>
+            <a href="#">cookie policy</a>
+            <a href="#">trust</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

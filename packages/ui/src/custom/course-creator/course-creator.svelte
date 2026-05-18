@@ -28,6 +28,7 @@
     onModelChange?: (model: AgentModelId) => void;
     onLockedModelSelect?: (model: AgentModelId) => void;
     onsubmit?: (payload: SubmitPayload) => void;
+    prompt?: string;
   }
 
   let {
@@ -39,10 +40,10 @@
     lockedModelIds = [],
     onModelChange,
     onLockedModelSelect,
-    onsubmit
+    onsubmit,
+    prompt = $bindable('')
   }: Props = $props();
 
-  let prompt = $state('');
   let level = $state('beginner');
   let selectedModel = $state<AgentModelId>(model);
 
@@ -86,7 +87,7 @@
       rows={4}
       disabled={loading}
       onkeydown={handleKeydown}
-      class="ui:w-full ui:resize-none ui:border-0! ui:focus-visible:ring-0! ui:focus-visible:ring-offset-0!"
+      class="ui:w-full ui:resize-none ui:border-0! ui:focus-visible:ring-0! ui:focus-visible:ring-offset-0! ui:dark:bg-card!"
     />
 
     <div class="ui:mt-3 ui:flex ui:items-center ui:gap-2">
@@ -113,7 +114,7 @@
       />
 
       <div class="ui:ml-auto">
-        <Button variant="secondary" size="icon" disabled={!canSubmit} onclick={handleSubmit}>
+        <Button variant="default" size="icon" disabled={!canSubmit} onclick={handleSubmit}>
           {#if loading}
             <LoaderCircleIcon class="ui:h-4 ui:w-4 ui:animate-spin" />
           {:else}

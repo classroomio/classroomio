@@ -43,6 +43,7 @@
     "vaul-svelte": "1.0.0-next.7"
   },
   "dependencies": {
+    "@cio/certificates": "workspace:*",
     "@cio/question-types": "workspace:*",
     "@cio/utils": "workspace:*",
     "@floating-ui/dom": "^1.7.4",

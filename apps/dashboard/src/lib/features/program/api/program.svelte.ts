@@ -5,7 +5,9 @@ import type {
   TUpdateProgram,
   TAddProgramMembers,
   TUpdateProgramMember,
-  TAddCourseToProgram
+  TAddCourseToProgram,
+  TInviteStudentsToProgram,
+  TAssignExistingStudentsToProgram
 } from '@cio/utils/validation/program';
 import { currentOrg } from '$lib/utils/store/org';
 import { get } from 'svelte/store';
@@ -293,6 +295,50 @@ class ProgramApi extends BaseApiWithErrors {
       },
       logContext: 'removeCourseFromProgram'
     });
+  }
+
+  // Invitations (program-scoped)
+
+  /**
+   * Invite new students to a program by CSV. Goes through the program-scoped
+   * endpoint so a Program ADMIN/TUTOR can invite without org-admin rights.
+   * Returns whether the call succeeded so callers can refresh their lists.
+   */
+  async inviteStudentsToProgram(programId: string, data: TInviteStudentsToProgram): Promise<boolean> {
+    let ok = false;
+
+    await this.execute<(typeof classroomio.program)[':programId']['invite']['$post']>({
+      requestFn: () => classroomio.program[':programId'].invite.$post({ param: { programId }, json: data }),
+      onSuccess: async () => {
+        await this.listMembers(programId, true);
+        snackbar.success(t.get('programs.invite_sent') || 'Invites sent');
+        ok = true;
+      },
+      logContext: 'inviteStudentsToProgram'
+    });
+
+    return ok;
+  }
+
+  /**
+   * Assign existing org audience student profiles to this program.
+   * Same scoping as `inviteStudentsToProgram` — caller only needs program-team
+   * membership for this program.
+   */
+  async assignExistingStudentsToProgram(programId: string, data: TAssignExistingStudentsToProgram): Promise<boolean> {
+    let ok = false;
+
+    await this.execute<(typeof classroomio.program)[':programId']['invite']['assign']['$post']>({
+      requestFn: () => classroomio.program[':programId'].invite.assign.$post({ param: { programId }, json: data }),
+      onSuccess: async () => {
+        await this.listMembers(programId, true);
+        snackbar.success(t.get('programs.members_added') || 'Members added');
+        ok = true;
+      },
+      logContext: 'assignExistingStudentsToProgram'
+    });
+
+    return ok;
   }
 
   // Newsfeed

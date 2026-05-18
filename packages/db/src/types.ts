@@ -213,3 +213,19 @@ export type TCourseImportDraftStatus = (typeof schema.courseImportDraftStatus.en
 export type TWidgetStatus = (typeof schema.widgetStatus.enumValues)[number];
 export type TWidgetLayoutType = (typeof schema.widgetLayoutType.enumValues)[number];
 export type TWidgetSelectionMode = (typeof schema.widgetSelectionMode.enumValues)[number];
+
+// ─── Job state ───────────────────────────────────────────────────────────────
+
+export type TJobStatus = (typeof schema.jobStatus.enumValues)[number];
+
+export type TMediaJob = typeof schema.mediaJob.$inferSelect;
+export type TNewMediaJob = typeof schema.mediaJob.$inferInsert;
+
+export type TMediaTranscript = typeof schema.mediaTranscript.$inferSelect;
+export type TNewMediaTranscript = typeof schema.mediaTranscript.$inferInsert;
+
+export type TJobStep = typeof schema.jobStep.$inferSelect;
+export type TNewJobStep = typeof schema.jobStep.$inferInsert;
+
+export type TDeadLetterJob = typeof schema.deadLetterJob.$inferSelect;
+export type TNewDeadLetterJob = typeof schema.deadLetterJob.$inferInsert;

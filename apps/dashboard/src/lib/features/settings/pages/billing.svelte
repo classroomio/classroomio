@@ -1,7 +1,7 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { currentOrgPlan, isFreePlan, currentOrg } from '$lib/utils/store/org';
+  import { currentOrgPlan, isFreePlan, currentOrg, isSecondaryWorkspace } from '$lib/utils/store/org';
   import HourglassIcon from '@lucide/svelte/icons/hourglass';
   import { openUpgradeModal } from '$lib/utils/functions/org';
   import ReceiptIcon from '@lucide/svelte/icons/receipt';
@@ -48,7 +48,18 @@
 <div class="flex w-full max-w-lg! flex-col gap-4 px-2">
   <p class="text-md font-medium">{$t('settings.billing.manage')}</p>
 
-  {#if $isFreePlan}
+  {#if $isSecondaryWorkspace}
+    <Item.Root variant="outline">
+      <Item.Media variant="icon">
+        <ReceiptIcon />
+      </Item.Media>
+      <Item.Content>
+        <Item.Description>
+          {$t('account.workspaces.secondary_billing_notice', { primaryName: $currentOrg.name })}
+        </Item.Description>
+      </Item.Content>
+    </Item.Root>
+  {:else if $isFreePlan}
     <Item.Root variant="outline">
       <Item.Media variant="icon">
         <HourglassIcon />

@@ -10,8 +10,11 @@
   import { Button } from '@cio/ui/base/button';
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
   import { mediaApi } from '$features/media/api';
+  import { JobPoller, jobsApi, type MediaJobEnvelope } from '$features/jobs';
+  import { onDestroy } from 'svelte';
 
   const ADD_VIDEO = 'course.navItem.lessons.materials.tabs.video.add_video';
+  const PROCESSING_BASE = `${ADD_VIDEO}.processing`;
 
   interface Props {
     lessonId?: string;
@@ -31,11 +34,63 @@
   } | null = $state(null);
   let isLoaded = $state(false);
   let fileName = $state('');
+  let processingJob: MediaJobEnvelope['job'] | null = $state(null);
+  let activePoller: JobPoller<MediaJobEnvelope> | null = null;
 
   const isDisabled = $derived($lessonVideoUpload.isUploading || $isFreePlan);
 
   const videoUploader = new VideoUploader();
   const mediaUploader = new MediaUploader();
+
+  function processingLabel(stage: string | null, status: string): string | null {
+    if (status === 'failed') return t.get(`${PROCESSING_BASE}.failed`);
+    if (status === 'canceled') return t.get(`${PROCESSING_BASE}.canceled`);
+    if (status === 'completed') return t.get(`${PROCESSING_BASE}.completed`);
+
+    switch (stage) {
+      case 'probing':
+        return t.get(`${PROCESSING_BASE}.probing`);
+      case 'thumbnailing':
+        return t.get(`${PROCESSING_BASE}.thumbnailing`);
+      case 'extracting-audio':
+        return t.get(`${PROCESSING_BASE}.extracting_audio`);
+      case 'transcribing':
+        return t.get(`${PROCESSING_BASE}.transcribing`);
+      case 'compressing':
+        return t.get(`${PROCESSING_BASE}.compressing`);
+      default:
+        return t.get(`${PROCESSING_BASE}.queued`);
+    }
+  }
+
+  function startProcessingPoll(assetId: string) {
+    activePoller?.stop();
+    activePoller = null;
+    processingJob = null;
+
+    void (async () => {
+      const runs = await jobsApi.getMediaJobsForAsset(assetId);
+      const latest = runs?.[0];
+      if (!latest) return;
+
+      processingJob = latest.job;
+      if (latest.job.status === 'completed' || latest.job.status === 'failed' || latest.job.status === 'canceled') {
+        return;
+      }
+
+      activePoller = new JobPoller<MediaJobEnvelope>({
+        fetch: () => jobsApi.getMediaJob(latest.job.id),
+        onUpdate: (envelope) => {
+          processingJob = envelope.job;
+        }
+      });
+      activePoller.start();
+    })();
+  }
+
+  onDestroy(() => {
+    activePoller?.stop();
+  });
 
   async function handleUpload(files: File[]) {
     const videoFile = files[0];
@@ -149,6 +204,10 @@
         { append: true }
       );
 
+      if (assetId) {
+        startProcessingPoll(assetId);
+      }
+
       isLoaded = false;
     } catch (err: any) {
       console.error('Error uploading video', err, '\n\n', err.response);
@@ -217,13 +276,13 @@
     <div
       class="border-primary-300 flex h-full w-full flex-col items-center justify-center rounded-xl border border-dashed"
     >
-      <div class="flex w-[60%] max-w-[500px] flex-col justify-center gap-5">
-        <p class="mt-5 text-center">
+      <div class="flex w-full max-w-[500px] flex-col items-center gap-5 px-6 text-center">
+        <p>
           {$t(`${ADD_VIDEO}.uploading`)}
         </p>
         <Progress class="w-full" value={$lessonVideoUpload.uploadProgress} max={100} />
         <p class="text-sm">{helperText}</p>
-        <div class="mt-3">
+        <div class="mt-3 flex justify-center">
           <Button variant="outline" onclick={cancelUpload}>
             {$t(`${ADD_VIDEO}.cancel_upload`)}
           </Button>
@@ -236,7 +295,7 @@
         accept="video/*"
         maxFiles={1}
         fileCount={0}
-        maxFileSize={500 * FileDropZone.MEGABYTE}
+        maxFileSize={800 * FileDropZone.MEGABYTE}
         onUpload={handleUpload}
         {onFileRejected}
       >
@@ -299,6 +358,15 @@
           </video>
         {/if}
         <p>{fileName}</p>
+        {#if processingJob}
+          {@const label = processingLabel(processingJob.stage, processingJob.status)}
+          {#if label}
+            <p class="ui:text-muted-foreground text-xs">{label}</p>
+            {#if processingJob.status !== 'completed' && processingJob.status !== 'failed' && processingJob.status !== 'canceled'}
+              <Progress class="w-[200px]" value={processingJob.progressPercent ?? 0} max={100} />
+            {/if}
+          {/if}
+        {/if}
       </div>
       <Button onclick={() => ($lessonVideoUpload.isModalOpen = false)}>
         {$t('course.navItem.lessons.materials.button_done')}

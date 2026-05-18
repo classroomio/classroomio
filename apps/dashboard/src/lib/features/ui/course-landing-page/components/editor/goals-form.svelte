@@ -2,6 +2,7 @@
   import get from 'lodash/get';
   import { Label } from '@cio/ui/base/label';
   import { Switch } from '@cio/ui/base/switch';
+  import AIGenerateButton from '$features/agent/components/ai-generate-button.svelte';
 
   import type { Course } from '$features/course/utils/types';
   import { NAV_ITEM_KEY } from '../../constants';
@@ -23,7 +24,16 @@
   });
 </script>
 
-<div class="">
+<div>
+  <div class="mb-2 flex items-center justify-between">
+    <span class="ui:text-sm ui:font-medium">{$t('course.navItem.landing_page.editor.title.goals')}</span>
+    <AIGenerateButton
+      courseId={course.id}
+      format="html"
+      context={`the "what you'll learn" goals section on the landing page${course.title ? ` for a course called "${course.title}"` : ''}`}
+      onInsert={(text) => setter(text, 'metadata.goals')}
+    />
+  </div>
   <TextEditor content={course.metadata.goals} onChange={(content) => setter(content, `metadata.goals`)} />
 </div>
 

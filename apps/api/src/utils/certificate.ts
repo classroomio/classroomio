@@ -1,114 +1,66 @@
-import type { TCertificateDownload } from '@cio/utils/validation/course';
-import { getCloudflarePdfBuffer } from '@api/utils/cloudflare';
+import {
+  DEFAULT_CERTIFICATE_DESIGN,
+  renderCertificate,
+  resolveTemplateId,
+  type CertificateDesign,
+  type CertificateRenderData
+} from '@cio/certificates';
 
-export interface CertificateGenerationResult {
-  success: boolean;
-  buffer?: Buffer;
-  error?: string;
+import { getCloudflarePdfBuffer, getCloudflarePngBuffer } from '@api/utils/cloudflare';
+
+export interface CertificateRenderInput {
+  design: CertificateDesign;
+  data: CertificateRenderData;
 }
 
-export const generateCertificate = async (data: TCertificateDownload) => {
-  const { html, styles } = generateCertificateHtml(data);
-  return getCloudflarePdfBuffer(html, styles);
-};
+/**
+ * Coerces a stored `course.certificate` JSONB blob (legacy or current) into a
+ * complete `CertificateDesign` suitable for `renderCertificate`.
+ */
+export function resolveCertificateDesign(stored: unknown): CertificateDesign {
+  const blob = stored && typeof stored === 'object' ? (stored as Record<string, unknown>) : {};
+  const legacyTheme = typeof blob.theme === 'string' ? (blob.theme as string) : undefined;
+  const storedDesign =
+    blob.design && typeof blob.design === 'object' ? (blob.design as Partial<CertificateDesign>) : undefined;
 
-function generateCertificateHtml(data: TCertificateDownload): { html: string; styles: string } {
-  const { studentName, courseName, courseDescription, orgLogoUrl, orgName, facilitator } = data;
+  const templateId = resolveTemplateId(storedDesign?.templateId ?? legacyTheme);
 
-  const html = `
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <title>Certificate of Completion</title>
-      </head>
-      <body>
-        <div class="certificate">
-          <div class="header">
-            <img src="${orgLogoUrl}" alt="${orgName} Logo" class="logo">
-            <h1 class="title">Certificate of Completion</h1>
-          </div>
-          <div class="content">
-            <h2 class="student-name">${studentName}</h2>
-            <p class="course-name">${courseName}</p>
-            <p class="description">${courseDescription}</p>
-          </div>
-          <div class="footer">
-            <div class="signature">
-              <p>${facilitator || 'Course Facilitator'}</p>
-              <p>${orgName}</p>
-            </div>
-            <p class="date">${new Date().toLocaleDateString()}</p>
-          </div>
-        </div>
-      </body>
-    </html>
-  `;
+  const accentColor =
+    storedDesign?.accentColor && /^#[0-9a-fA-F]{6}$/.test(storedDesign.accentColor)
+      ? storedDesign.accentColor
+      : DEFAULT_CERTIFICATE_DESIGN.accentColor;
 
-  const styles = `
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f5f5;
+  const storedSignatories = Array.isArray(storedDesign?.signatories) ? storedDesign?.signatories : undefined;
+
+  const signatories: CertificateDesign['signatories'] = [
+    {
+      name: storedSignatories?.[0]?.name ?? DEFAULT_CERTIFICATE_DESIGN.signatories[0].name,
+      role: storedSignatories?.[0]?.role ?? DEFAULT_CERTIFICATE_DESIGN.signatories[0].role
+    },
+    {
+      name: storedSignatories?.[1]?.name ?? DEFAULT_CERTIFICATE_DESIGN.signatories[1].name,
+      role: storedSignatories?.[1]?.role ?? DEFAULT_CERTIFICATE_DESIGN.signatories[1].role
     }
-    .certificate {
-      width: 1123px;
-      height: 794px;
-      margin: 0 auto;
-      background-color: white;
-      position: relative;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .header {
-      text-align: center;
-      padding: 20px;
-    }
-    .logo {
-      max-width: 200px;
-      margin-bottom: 20px;
-    }
-    .title {
-      font-size: 36px;
-      color: #333;
-      margin-bottom: 10px;
-    }
-    .content {
-      text-align: center;
-      padding: 40px;
-    }
-    .student-name {
-      font-size: 48px;
-      color: #2c3e50;
-      margin-bottom: 20px;
-    }
-    .course-name {
-      font-size: 24px;
-      color: #34495e;
-      margin-bottom: 10px;
-    }
-    .description {
-      font-size: 18px;
-      color: #7f8c8d;
-      margin-bottom: 30px;
-    }
-    .footer {
-      position: absolute;
-      bottom: 40px;
-      width: 100%;
-      text-align: center;
-    }
-    .signature {
-      margin-top: 20px;
-    }
-    .date {
-      margin-top: 10px;
-      color: #95a5a6;
-    }
-  `;
-  const pdf = {
-    html: html,
-    styles: styles
+  ];
+
+  return {
+    templateId,
+    accentColor,
+    subtitle: storedDesign?.subtitle ?? DEFAULT_CERTIFICATE_DESIGN.subtitle,
+    descriptionOverride: storedDesign?.descriptionOverride,
+    signatories,
+    idFormat: storedDesign?.idFormat ?? DEFAULT_CERTIFICATE_DESIGN.idFormat
   };
+}
 
-  return pdf;
+export async function generateCertificatePdf(input: CertificateRenderInput) {
+  const { html, styles } = renderCertificate(input.design, input.data);
+
+  return getCloudflarePdfBuffer(html, styles);
+}
+
+export async function generateCertificatePng(input: CertificateRenderInput) {
+  const { html, styles } = renderCertificate(input.design, input.data);
+
+  return getCloudflarePngBuffer(html, styles);
 }

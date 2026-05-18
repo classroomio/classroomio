@@ -94,7 +94,9 @@
     moveUp: t.get('course.navItem.lessons.exercises.all_exercises.section.move_up'),
     moveDown: t.get('course.navItem.lessons.exercises.all_exercises.section.move_down'),
     color: t.get('course.navItem.lessons.exercises.all_exercises.section.color'),
-    descriptionPlaceholder: t.get('course.navItem.lessons.exercises.all_exercises.section.description_placeholder')
+    descriptionPlaceholder: t.get('course.navItem.lessons.exercises.all_exercises.section.description_placeholder'),
+    collapseSection: t.get('course.navItem.lessons.exercises.all_exercises.section.collapse_section'),
+    expandSection: t.get('course.navItem.lessons.exercises.all_exercises.section.expand_section')
   });
   const sectionAfterBehaviorLabels = $derived({
     afterSectionPrefix: t.get('course.navItem.lessons.exercises.all_exercises.section.after_section'),

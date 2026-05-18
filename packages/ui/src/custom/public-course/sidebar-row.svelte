@@ -29,12 +29,29 @@
 
   const titleClass = $derived(
     cn(
-      'ui:text-wrap ui:transition-colors',
+      'ui:text-wrap ui:transition-colors ui:text-[13px]',
       'ui:group-hover:text-primary',
       active ? 'ui:text-primary' : 'ui:text-foreground/70 ui:group-hover:text-foreground',
       locked && !active && 'ui:text-muted-foreground'
     )
   );
+
+  // function handleAnchorClick(event: MouseEvent) {
+  //   if (
+  //     !onClick ||
+  //     event.defaultPrevented ||
+  //     event.button !== 0 ||
+  //     event.metaKey ||
+  //     event.ctrlKey ||
+  //     event.shiftKey ||
+  //     event.altKey
+  //   ) {
+  //     return;
+  //   }
+
+  //   event.preventDefault();
+  //   onClick();
+  // }
 </script>
 
 {#snippet body()}
@@ -43,7 +60,7 @@
 {/snippet}
 
 {#if href}
-  <a {href} class={rowClass} aria-current={active ? 'page' : undefined} onclick={onClick}>
+  <a {href} class={rowClass} aria-current={active ? 'page' : undefined}>
     {@render body()}
   </a>
 {:else}

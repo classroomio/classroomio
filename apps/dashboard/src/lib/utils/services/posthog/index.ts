@@ -23,24 +23,3 @@ export const initPosthog = (): void => {
     api_host: 'https://eu.posthog.com'
   });
 };
-
-export const initOrgAnalytics = (siteId: string) => {
-  if (dev || hasNoTracking()) return;
-
-  // add js to head of page
-  const script1 = document.createElement('script');
-  script1.textContent = `
-    (function () {
-        window.counterscale = {
-            q: [["set", "siteId", "${siteId}"], ["trackPageview"]],
-        };
-    })();
-  `;
-  document.head.appendChild(script1);
-
-  const script2 = document.createElement('script');
-  script2.id = 'counterscale-script';
-  script2.src = 'https://be13a4b3.counterscale-5jn.pages.dev/tracker.js';
-  script2.defer = true;
-  document.head.appendChild(script2);
-};

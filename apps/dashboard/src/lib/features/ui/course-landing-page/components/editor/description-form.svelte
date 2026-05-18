@@ -2,6 +2,7 @@
   import get from 'lodash/get';
   import { Label } from '@cio/ui/base/label';
   import { Switch } from '@cio/ui/base/switch';
+  import AIGenerateButton from '$features/agent/components/ai-generate-button.svelte';
 
   import type { Course } from '$features/course/utils/types';
   import { NAV_ITEM_KEY } from '../../constants';
@@ -24,6 +25,15 @@
 </script>
 
 <div>
+  <div class="mb-2 flex items-center justify-between">
+    <span class="ui:text-sm ui:font-medium">{$t('course.navItem.landing_page.editor.title.description')}</span>
+    <AIGenerateButton
+      courseId={course.id}
+      format="html"
+      context={`the detailed description section on the course landing page${course.title ? ` for a course called "${course.title}"` : ''}`}
+      onInsert={(text) => setter(text, 'metadata.description')}
+    />
+  </div>
   <TextEditor content={course.metadata.description} onChange={(content) => setter(content, `metadata.description`)} />
 </div>
 

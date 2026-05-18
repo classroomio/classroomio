@@ -31,9 +31,7 @@
 {@render children?.()}
 
 <PageSignupCTA
-  header="Scale Your Bootcamp Today with ClassroomIO"
-  subText="ClassroomIO gives small and medium bootcamps the power of online learning, simplified."
-  btnLabel="Sign me up"
-  link="/signup"
-  demo={false}
+  header="Stop forwarding help articles."
+  subText="Launch a branded academy on your domain in days."
+  btnLabel="Book a Demo"
 />

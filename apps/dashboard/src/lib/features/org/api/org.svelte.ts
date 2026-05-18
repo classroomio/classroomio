@@ -25,7 +25,7 @@ import type {
   TUpdateOrganization
 } from '@cio/utils/validation/organization';
 import { ZCreateOrganization, ZUpdateOrganization } from '@cio/utils/validation/organization';
-import { currentOrg, orgs } from '$lib/utils/store/org';
+import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
 
 import type { AccountOrg } from '$features/app/types';
 import type { GetTeamRequest } from '../utils/types';
@@ -230,10 +230,10 @@ class OrgApi extends BaseApiWithErrors {
         const { organization, organizations } = response.data;
 
         // Update stores
-        orgs.set(organizations);
+        orgs.set(organizations.map((org) => mergeAccountOrgFromServer(org)));
         const createdOrg = organizations.find((org) => org.id === organization.id);
         if (createdOrg) {
-          currentOrg.set(createdOrg);
+          currentOrg.set(mergeAccountOrgFromServer(createdOrg));
         }
 
         snackbar.success('snackbar.success_update');
@@ -319,7 +319,7 @@ class OrgApi extends BaseApiWithErrors {
         orgs.update((_orgs) =>
           _orgs.map((org) => {
             if (org.id === orgId) {
-              return { ...org, ...response.data };
+              return mergeAccountOrgFromServer({ ...org, ...response.data } as AccountOrg);
             }
 
             return org;
@@ -328,10 +328,7 @@ class OrgApi extends BaseApiWithErrors {
         const currentOrgData = get(currentOrg);
 
         if (currentOrgData.id === orgId) {
-          currentOrg.update((org) => ({
-            ...org,
-            ...response.data
-          }));
+          currentOrg.update((org) => mergeAccountOrgFromServer({ ...org, ...response.data } as AccountOrg));
         }
 
         snackbar.success('snackbar.course_settings.success.update_successful');

@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { WidgetDetail } from '../utils/types';
   import { widgetEditorStore } from '../store/widget-editor.store.svelte';
-  import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import WidgetIframePreview from '../components/widget-iframe-preview.svelte';
@@ -20,12 +19,6 @@
   let { detail: initialDetail }: { detail: WidgetDetail } = $props();
 
   $effect(() => store.syncFromInitial(initialDetail));
-
-  $effect(() => {
-    if (!store.detail || !$currentOrg.id) return;
-
-    return store.startPreviewEffect();
-  });
 
   function navButtonVariant(id: typeof store.activePanel): 'default' | 'ghost' {
     return store.activePanel === id ? 'default' : 'ghost';
@@ -146,6 +139,7 @@
               canUseCustomColors={store.detail.planGatedFields.canUseCustomColors}
               canUseCustomCss={store.detail.planGatedFields.canUseCustomCss}
               isBrandingForced={store.detail.planGatedFields.isBrandingForced}
+              errors={store.validationErrors}
             />
           {:else}
             <EmbedPanel

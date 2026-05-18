@@ -10,7 +10,10 @@
   import { programApi } from '$features/program/api';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import { ROLE } from '@cio/utils/constants';
+  import GoalsSection from '$features/program/components/goals/goals-section.svelte';
 
   let { data } = $props();
   const programId = data.programId as string;
@@ -28,6 +31,11 @@
       status = (p.status as 'ACTIVE' | 'INACTIVE' | 'ARCHIVED') ?? 'ACTIVE';
     }
   });
+
+  const currentMemberRole = $derived(programApi.members.find((m) => m.profileId === $profile.id)?.roleId ?? null);
+  const canManageGoals = $derived(
+    Boolean($isOrgAdmin) || currentMemberRole === ROLE.ADMIN || currentMemberRole === ROLE.TUTOR
+  );
 
   const statusOptions = [
     { value: 'ACTIVE', label: $t('programs.status.active') || 'Active' },
@@ -118,6 +126,10 @@
               </div>
             </div>
           </section>
+
+          <Separator />
+
+          <GoalsSection {programId} canManage={canManageGoals} />
 
           <Separator />
 

@@ -10,7 +10,16 @@
   import { CourseCreator } from '@cio/ui/custom/course-creator';
   import { aiAssistantApi } from '$features/ai-assistant/api/ai-assistant.svelte';
   import { courseApi } from '$features/course/api';
-  import { setInitialChatModel, setInitialChatPrompt } from '$features/ai-assistant/utils/store';
+  import {
+    setInitialChatModel,
+    setInitialChatPrompt,
+    setInitialChatTemplateId
+  } from '$features/ai-assistant/utils/store';
+  import { DISPLAY_BY_ID } from '$features/ai-assistant/utils/template-display';
+  import { COURSE_TEMPLATES, type CourseTemplate, type CourseTemplateId } from '@cio/ai-assistant';
+  import GraduationCapIcon from '@lucide/svelte/icons/graduation-cap';
+  import CompassIcon from '@lucide/svelte/icons/compass';
+  import AwardIcon from '@lucide/svelte/icons/award';
   import { openUpgradeModal } from '$lib/utils/functions/org';
   import { isFreePlan } from '$lib/utils/store/org';
   import { AI_CHAT_MODEL_STORAGE_KEY } from '$features/ai-assistant/utils/constants';
@@ -33,6 +42,9 @@
   let creatingState: 'idle' | 'creating' = $state('idle');
   let creatingStep: CreatingStep = $state('reading');
   let draftingPrompt = $state('');
+  let composerPrompt = $state('');
+  let pinnedTemplatePrompt: string | null = $state(null);
+  let selectedTemplateId: CourseTemplateId | null = $state(null);
   let selectedModel: AgentModelId = $state(DEFAULT_PICKER_MODEL_ID);
   const paidModelIds = UI_PICKER_MODEL_IDS.filter((id) => !AGENT_MODELS[id].isFree);
 
@@ -86,6 +98,23 @@
     }
   });
 
+  function selectTemplate(template: CourseTemplate) {
+    composerPrompt = template.promptTemplate;
+    pinnedTemplatePrompt = template.promptTemplate;
+    selectedTemplateId = template.id;
+  }
+
+  $effect(() => {
+    if (!selectedTemplateId || pinnedTemplatePrompt === null) {
+      return;
+    }
+
+    if (composerPrompt !== pinnedTemplatePrompt) {
+      selectedTemplateId = null;
+      pinnedTemplatePrompt = null;
+    }
+  });
+
   async function handleCreate({ prompt, level, model }: { prompt: string; level: string; model?: string }) {
     if (isAgentModelId(model)) {
       if ($isFreePlan && paidModelIds.includes(model)) {
@@ -103,16 +132,33 @@
     await new Promise((r) => setTimeout(r, 700));
 
     creatingStep = 'naming';
-    const meta = await aiAssistantApi.generateCourseMeta(prompt);
-    const title = meta?.title ?? prompt.slice(0, 80);
-    const description = meta?.description ?? prompt.slice(0, 150);
+
+    const template = selectedTemplateId ? COURSE_TEMPLATES.find((tpl) => tpl.id === selectedTemplateId) : undefined;
+
+    const promptIsStillTemplateDefault = template !== undefined && prompt.trim() === template.promptTemplate.trim();
+
+    let title: string;
+    let description: string;
+
+    if (promptIsStillTemplateDefault) {
+      title = t.get('course.creator.untitled_course');
+      description = t.get('course.creator.untitled_course_description');
+    } else {
+      const meta = await aiAssistantApi.generateCourseMeta(prompt);
+      title = meta?.title ?? prompt.slice(0, 80);
+      description = meta?.description ?? prompt.slice(0, 150);
+    }
 
     creatingStep = 'building';
     setInitialChatPrompt(`${prompt}\n\nCourse type: Self-paced. Level: ${level}.`);
     setInitialChatModel(selectedModel);
 
+    if (selectedTemplateId) {
+      setInitialChatTemplateId(selectedTemplateId);
+    }
+
     await courseApi.create({ title, description, type: 'SELF_PACED' as TCourseType }, (courseId) => {
-      goto(resolve(`/courses/${courseId}`, {}));
+      goto(resolve(`/courses/${courseId}/lessons`, {}));
     });
   }
 
@@ -177,11 +223,12 @@
     </div>
   </div>
 {:else}
-  <div class="flex min-h-[80vh] items-center justify-center px-4 py-12">
+  <div class="flex min-h-[90vh] items-center justify-center px-4 py-12">
     <div class="w-full max-w-3xl">
       <CourseCreator
         heading={$t('course.creator.heading')}
         placeholder={$t('course.creator.placeholder')}
+        bind:prompt={composerPrompt}
         model={selectedModel}
         levelOptions={[
           { value: 'beginner', label: $t('course.creator.level.beginner') },
@@ -193,6 +240,41 @@
         onLockedModelSelect={handleLockedModelSelect}
         onsubmit={handleCreate}
       />
+
+      <p class="ui:text-muted-foreground my-3 text-center text-sm font-medium">
+        {$t('course.creator.template.heading')}
+      </p>
+      <div class="grid gap-3 sm:grid-cols-3">
+        {#each COURSE_TEMPLATES as template (template.id)}
+          {@const display = DISPLAY_BY_ID[template.id]}
+          {@const isSelected = selectedTemplateId === template.id}
+          <button
+            type="button"
+            class="group ui:border ui:transition-colors focus-visible:ui:ring-[3px] focus-visible:ui:ring-ring/50 focus-visible:ui:outline-none flex h-full min-h-[168px] w-full cursor-pointer flex-col items-start gap-3 rounded-2xl p-5 text-left sm:p-6 {isSelected
+              ? 'ui:bg-primary/5 ui:border-primary ui:ring-primary/20 ui:ring-2'
+              : 'ui:bg-card ui:border-border ui:hover:border-primary'}"
+            onclick={() => selectTemplate(template)}
+            aria-label={$t(display.titleKey)}
+            aria-pressed={isSelected}
+          >
+            <div class="ui:text-primary ui:bg-primary/10 flex size-10 shrink-0 items-center justify-center rounded-lg">
+              {#if display.iconName === 'GraduationCap'}
+                <GraduationCapIcon class="size-6" />
+              {:else if display.iconName === 'Compass'}
+                <CompassIcon class="size-6" />
+              {:else}
+                <AwardIcon class="size-6" />
+              {/if}
+            </div>
+            <span class="ui:text-foreground text-sm leading-tight font-semibold">
+              {$t(display.titleKey)}
+            </span>
+            <span class="ui:text-muted-foreground text-xs leading-snug">
+              {$t(display.descriptionKey)}
+            </span>
+          </button>
+        {/each}
+      </div>
     </div>
   </div>
 {/if}

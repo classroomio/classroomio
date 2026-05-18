@@ -11,7 +11,6 @@
   import type { Course } from '$features/course/utils/types';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
-  import { BorderBeam } from '@cio/ui/custom/animation/border-beam';
 
   interface Props {
     className?: string;
@@ -123,12 +122,10 @@
   </div>
 {:else}
   <aside
-    class="relative w-[90%] max-w-[405px] overflow-hidden rounded-xl border border-gray-200 shadow-lg lg:sticky lg:w-[350px] lg:min-w-[250px] xl:w-[405px] xl:min-w-[330px] {editMode
+    class="ui:relative ui:w-[90%] ui:max-w-[405px] ui:rounded-lg ui:border ui:border-border ui:bg-card lg:sticky lg:w-[350px] lg:min-w-[250px] xl:w-[405px] xl:min-w-[330px] {editMode
       ? 'lg:top-0'
-      : 'lg:top-10'} h-fit dark:border-neutral-700 dark:bg-neutral-800 {className}"
+      : 'lg:top-10'} h-fit {className}"
   >
-    <BorderBeam size={150} duration={12} colorFrom="#3b82f6" colorTo="#8b5cf6" borderWidth={1.5} />
-
     <div class="p-4 lg:p-10">
       <!-- Pricing -->
       <div class="mb-6">
@@ -177,8 +174,8 @@
 
     <!-- Gift Container -->
     {#if courseData?.metadata?.reward?.show}
-      <div class="flex flex-col items-center border-t border-gray-200 p-10 dark:border-neutral-700">
-        <HTMLRender>
+      <div class="ui:border-t ui:border-border flex flex-col items-center p-10">
+        <HTMLRender className="text-sm font-light leading-relaxed">
           <SafeHtmlContent content={get(courseData, 'metadata.reward.description', '') as string} />
         </HTMLRender>
       </div>

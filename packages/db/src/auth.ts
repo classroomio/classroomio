@@ -58,7 +58,7 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
     storeAccountCookie: true
   },
   session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    expiresIn: 60 * 60 * 24 * 30, // 30 days
     updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
     cookieCache: {
       enabled: true,

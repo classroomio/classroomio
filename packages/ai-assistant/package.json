@@ -23,6 +23,10 @@
     "./prompt": {
       "types": "./dist/prompt/index.d.ts",
       "default": "./dist/prompt/index.js"
+    },
+    "./tutor-config": {
+      "types": "./dist/tutor-config/index.d.ts",
+      "default": "./dist/tutor-config/index.js"
     }
   },
   "scripts": {

@@ -5,7 +5,8 @@ import type {
   TImportAudienceMembers
 } from '@cio/utils/validation/organization';
 import { addGroupMembers, enrollUsersInCourseGroups, getExistingGroupMembers } from '@cio/db/queries/group';
-import { buildEmailFromName, sendEmail } from '@cio/email';
+import { buildEmailFromName } from '@cio/email';
+import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { addProgramMember, getExistingProgramMembers, getProgramsByOrg } from '@cio/db/queries/program';
 import {
   createOrganizationInvite,
@@ -202,18 +203,19 @@ async function enrollAudienceStudentProfilesInCourses(
       .map(async (p) => {
         const email = profileEmailMap.get(p.profileId)!;
         try {
-          await sendEmail('studentCourseWelcome', {
+          await enqueueTransactionalEmail('studentCourseWelcome', {
             to: email,
             fields: {
               orgName: organization.name,
               courseName: courseTitleByGroupId.get(p.groupId) || 'Course',
               loginUrl
             },
-            from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`)
+            from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
+            idempotencyKey: `audience-course-welcome:${p.groupId}:${p.profileId}`
           });
           emailsSent++;
         } catch (emailError) {
-          console.error(`enrollAudienceStudentProfilesInCourses email error for ${email}:`, emailError);
+          console.error(`enrollAudienceStudentProfilesInCourses enqueue error for ${email}:`, emailError);
         }
       });
 
@@ -283,18 +285,19 @@ async function enrollAudienceStudentProfilesInPrograms(
           const email = profileEmailMap.get(pair.profileId)!;
 
           try {
-            await sendEmail('studentProgramWelcome', {
+            await enqueueTransactionalEmail('studentProgramWelcome', {
               to: email,
               fields: {
                 orgName: organization.name,
                 programName: programNameById.get(pair.programId) || 'Program',
                 loginUrl
               },
-              from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`)
+              from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
+              idempotencyKey: `audience-program-welcome:${pair.programId}:${pair.profileId}`
             });
             emailsSent++;
           } catch (emailError) {
-            console.error(`enrollAudienceStudentProfilesInPrograms email error for ${email}:`, emailError);
+            console.error(`enrollAudienceStudentProfilesInPrograms enqueue error for ${email}:`, emailError);
           }
         })
     );
@@ -385,7 +388,7 @@ async function createStudentOrgInvitesAndSendEmails(input: {
       const token = tokenByEmail.get(email)!;
       try {
         const inviteLink = buildInviteLink(token);
-        const responses = await sendEmail('studentOrgInvite', {
+        await enqueueTransactionalEmail('studentOrgInvite', {
           to: email,
           fields: {
             email,
@@ -394,26 +397,16 @@ async function createStudentOrgInvitesAndSendEmails(input: {
             expiresAt: getExpiryLabel(expiresAt),
             courseNames: accessNamesLabel
           },
-          from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`)
+          from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
+          idempotencyKey: `student-org-invite:${invite.id}`
         });
 
-        const allSuccessful = responses.every((r) => r.success);
-        if (allSuccessful) {
-          return {
-            inviteId: invite.id,
-            email,
-            success: true as const,
-            error: undefined as string | undefined
-          };
-        }
+        // Optimistic — see comment in services/organization/invite.ts.
         return {
           inviteId: invite.id,
           email,
-          success: false as const,
-          error: responses
-            .filter((r) => !r.success)
-            .map((r) => r.error || 'Unknown')
-            .join('; ')
+          success: true as const,
+          error: undefined as string | undefined
         };
       } catch (emailError) {
         const message = emailError instanceof Error ? emailError.message : 'Unknown email error';
@@ -685,7 +678,7 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
   let emailSent = false;
   try {
     const inviteLink = buildInviteLink(token);
-    const responses = await sendEmail('studentOrgInvite', {
+    await enqueueTransactionalEmail('studentOrgInvite', {
       to: emailToUse,
       fields: {
         email: emailToUse,
@@ -694,27 +687,23 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
         expiresAt: getExpiryLabel(expiresAt),
         courseNames: accessNamesLabel
       },
-      from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`)
+      from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
+      idempotencyKey: `student-org-invite:${invite.id}`
     });
-    const allSuccessful = responses.every((r) => r.success);
-    emailSent = allSuccessful;
+
+    emailSent = true;
+    // Optimistic EMAIL_SENT — worker handles retries; final failure flips
+    // email_delivery to `failed` for operator follow-up.
     await createOrganizationInviteAudits([
       {
         inviteId: invite.id,
         organizationId: orgId,
-        eventType: allSuccessful ? 'EMAIL_SENT' : 'EMAIL_FAILED',
+        eventType: 'EMAIL_SENT',
         actorProfileId: invitedByProfileId,
         targetEmail: emailToUse,
         ipAddress: null,
         userAgent: null,
-        metadata: allSuccessful
-          ? {}
-          : {
-              error: responses
-                .filter((r) => !r.success)
-                .map((r) => r.error || 'Unknown')
-                .join('; ')
-            }
+        metadata: {}
       }
     ]);
   } catch (emailError) {

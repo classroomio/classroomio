@@ -16,8 +16,17 @@ import {
   updateCourseLandingPageSchema,
   checkCourseGoLiveReadinessSchema,
   goLiveCourseSchema,
-  generateCoursePlanSchema
+  generateCoursePlanSchema,
+  askTemplateQuestionsSchema,
+  fetchDocumentationUrlSchema
 } from './teacher';
+import { listCourseOutlineSchema, readLessonSchema, readExerciseSchema, searchCourseSchema } from './student';
+
+export {
+  LANDING_PAGE_COURSE_DESCRIPTION_PLAIN_HINT,
+  LANDING_PAGE_METADATA_DESCRIPTION_SECTION_HINT,
+  LANDING_PAGE_SECTION_HTML_AGENT_HINT
+} from './landing-page-html-hint';
 
 export type ToolSchema = {
   description: string;
@@ -47,11 +56,17 @@ const teacherTools: ToolRegistry = {
   [ToolName.UPDATE_COURSE_LANDING_PAGE]: updateCourseLandingPageSchema,
   [ToolName.CHECK_COURSE_GO_LIVE_READINESS]: checkCourseGoLiveReadinessSchema,
   [ToolName.GO_LIVE_COURSE]: goLiveCourseSchema,
-  [ToolName.GENERATE_COURSE_PLAN]: generateCoursePlanSchema
+  [ToolName.GENERATE_COURSE_PLAN]: generateCoursePlanSchema,
+  [ToolName.ASK_TEMPLATE_QUESTIONS]: askTemplateQuestionsSchema,
+  [ToolName.FETCH_DOCUMENTATION_URL]: fetchDocumentationUrlSchema
 };
 
-// v2: student tools will be added here
-const studentTools: ToolRegistry = {};
+const studentTools: ToolRegistry = {
+  [ToolName.LIST_COURSE_OUTLINE]: listCourseOutlineSchema,
+  [ToolName.READ_LESSON]: readLessonSchema,
+  [ToolName.READ_EXERCISE]: readExerciseSchema,
+  [ToolName.SEARCH_COURSE]: searchCourseSchema
+};
 
 /**
  * Returns tool schemas available for a given role.
@@ -88,5 +103,11 @@ export {
   updateCourseLandingPageSchema,
   checkCourseGoLiveReadinessSchema,
   goLiveCourseSchema,
-  generateCoursePlanSchema
+  generateCoursePlanSchema,
+  askTemplateQuestionsSchema,
+  fetchDocumentationUrlSchema,
+  listCourseOutlineSchema,
+  readLessonSchema,
+  readExerciseSchema,
+  searchCourseSchema
 };

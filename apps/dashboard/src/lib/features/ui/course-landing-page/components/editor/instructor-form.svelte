@@ -2,6 +2,7 @@
   import get from 'lodash/get';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
+  import AIGenerateButton from '$features/agent/components/ai-generate-button.svelte';
   import UploadImage from '$features/ui/upload-image.svelte';
   import { uploadImage } from '$lib/utils/services/upload';
   import type { Course } from '$features/course/utils/types';
@@ -87,7 +88,15 @@
   className="mt-5"
   labelClassName="font-bold"
   bind:value={description}
-/>
+>
+  {#snippet labelAction()}
+    <AIGenerateButton
+      courseId={course.id}
+      context={`the instructor bio on the landing page${course.title ? ` for a course called "${course.title}"` : ''}${name ? `. The instructor's name is ${name}` : ''}`}
+      onInsert={(text) => (description = text)}
+    />
+  {/snippet}
+</TextareaField>
 
 <InputField
   className="mt-5"

@@ -1,13 +1,13 @@
 <script module lang="ts">
   const TWO_PI = Math.PI * 2;
 
-  /** Resolves `color-mix(in srgb, var(--primary) …)` for canvas dot fills (inherits `--primary` from this component’s DOM subtree). */
+  /** Resolves `color-mix(in srgb, var(--primary) …%, transparent)` for canvas dot fills (inherits `--primary` from this component’s DOM subtree). */
   function primaryMixOnRoot(el: HTMLElement, primaryPercent: number): string {
     const probe = document.createElement('span');
     probe.setAttribute('aria-hidden', 'true');
     probe.style.cssText =
       'position:fixed;left:0;top:0;width:0;height:0;overflow:hidden;visibility:hidden;pointer-events:none;' +
-      `color:var(--primary)`;
+      `color:color-mix(in srgb, var(--primary) ${primaryPercent}%, transparent)`;
     el.appendChild(probe);
     const resolved = getComputedStyle(probe).color;
     probe.remove();
@@ -40,7 +40,13 @@
     glowRadius?: number;
     sparkle?: boolean;
     waveAmplitude?: number;
+    /** When set, forces this glow color in all themes. Omit for theme-default cursor glow. */
     glowColor?: string;
+    /**
+     * Caps how opaque the SVG cursor glow becomes (multiplies motion-driven 0→1 fade).
+     * Below `1` the dots always remain visible through the glow; use `1` for strongest cover.
+     */
+    maxGlowOpacity?: number;
     class?: string;
   };
 
@@ -54,7 +60,8 @@
     glowRadius = 160,
     sparkle = false,
     waveAmplitude = 0,
-    glowColor = '#ffffff',
+    glowColor,
+    maxGlowOpacity = 0.2,
     class: className = ''
   }: Props = $props();
 
@@ -65,7 +72,7 @@
 
   let dots: Dot[] = [];
   const mouse = { x: -9999, y: -9999, prevX: -9999, prevY: -9999, speed: 0 };
-  let size = { w: 0, h: 0, offsetX: 0, offsetY: 0 };
+  let size = { w: 0, h: 0 };
   let glowOpacity = 0;
   let engagement = 0;
 
@@ -78,7 +85,7 @@
     void bulgeStrength;
     void sparkle;
     void waveAmplitude;
-    void glowColor;
+    void maxGlowOpacity;
 
     const currentGlow = glowEl;
     if (!canvas || !root) return;
@@ -86,8 +93,8 @@
     const canvasEl: HTMLCanvasElement = canvas;
     const rootEl: HTMLDivElement = root;
 
-    const fillGradientFrom = primaryMixOnRoot(rootEl, 40);
-    const fillGradientTo = primaryMixOnRoot(rootEl, 22);
+    const fillGradientFrom = primaryMixOnRoot(rootEl, 70);
+    const fillGradientTo = primaryMixOnRoot(rootEl, 45);
 
     const ctx = canvasEl.getContext('2d', { alpha: true });
 
@@ -132,9 +139,7 @@
 
       size = {
         w,
-        h,
-        offsetX: rect.left + window.scrollX,
-        offsetY: rect.top + window.scrollY
+        h
       };
 
       buildDots(w, h);
@@ -146,8 +151,9 @@
     }
 
     function onMouseMove(e: MouseEvent) {
-      mouse.x = e.pageX - size.offsetX;
-      mouse.y = e.pageY - size.offsetY;
+      const rect = rootEl.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
     }
 
     function updateMouseSpeed() {
@@ -161,6 +167,7 @@
     }
 
     const speedInterval = setInterval(updateMouseSpeed, 20);
+    const glowOpacityCap = Math.min(1, Math.max(0, maxGlowOpacity));
 
     function tick() {
       frameCount++;
@@ -176,7 +183,7 @@
       if (currentGlow) {
         currentGlow.setAttribute('cx', String(mouse.x));
         currentGlow.setAttribute('cy', String(mouse.y));
-        currentGlow.style.opacity = String(glowOpacity);
+        currentGlow.style.opacity = String(glowOpacity * glowOpacityCap);
       }
 
       context.clearRect(0, 0, w, h);
@@ -265,13 +272,21 @@
   });
 </script>
 
-<div bind:this={root} class={cn('relative h-full w-full', className)}>
+<div
+  bind:this={root}
+  class={cn(
+    'relative h-full w-full',
+    glowColor == null && 'ui:[--dot-field-glow:#fff] ui:dark:[--dot-field-glow:#0a0a0a]',
+    className
+  )}
+  style={glowColor != null ? `--dot-field-glow: ${glowColor}` : undefined}
+>
   <canvas bind:this={canvas} class="absolute inset-0 h-full w-full"></canvas>
   <svg class="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true">
     <defs>
       <radialGradient id={glowId}>
-        <stop offset="0%" stop-color="#fff" />
-        <stop offset="100%" stop-color="#fff" />
+        <stop offset="0%" stop-color="var(--dot-field-glow, #fff)" />
+        <stop offset="100%" stop-color="var(--dot-field-glow, #fff)" />
       </radialGradient>
     </defs>
     <circle

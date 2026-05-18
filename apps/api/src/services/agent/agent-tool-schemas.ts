@@ -1,5 +1,11 @@
 import { z } from 'zod';
 import { CoursePlanSchema } from '@cio/ai-assistant';
+import {
+  LANDING_PAGE_COURSE_DESCRIPTION_PLAIN_HINT,
+  LANDING_PAGE_METADATA_DESCRIPTION_SECTION_HINT,
+  LANDING_PAGE_SECTION_HTML_AGENT_HINT
+} from '@cio/ai-assistant/tools';
+import { QUESTION_TYPE_REGISTRY } from '@cio/question-types';
 import { ZExerciseSectionAfterBehavior } from '@cio/utils/validation/exercise';
 import { ZCourseLandingPageUpdate, ZCourseLandingPageMetadataUpdate } from '@cio/utils/validation/course';
 
@@ -56,7 +62,14 @@ export const updateContentParam = z.object({
 
 export const questionSchema = z.object({
   question: z.string().min(1),
-  questionTypeId: z.number().int().min(1).max(14).default(1),
+  questionTypeId: z
+    .number()
+    .int()
+    .min(1)
+    .max(QUESTION_TYPE_REGISTRY.length)
+    .describe(
+      'Required. Use the numeric question type IDs from the teacher system prompt (Question Types). Omitting this field is invalid — set an explicit type on every question and vary types within each exercise.'
+    ),
   points: z.number().min(0).default(1),
   order: z.number().int().min(0),
   options: z.array(z.object({ label: z.string().min(1), isCorrect: z.boolean() }))
@@ -150,36 +163,99 @@ export const addQuestionsParam = z.object({
   questions: z.array(questionSchema)
 });
 
+export const updateQuestionSettingsSchema = z
+  .object({
+    correctValue: z.union([z.number(), z.string(), z.boolean()]).optional(),
+    tolerance: z.number().min(0).optional(),
+    correctAnswers: z.array(z.string().min(1)).optional(),
+    template: z.string().min(1).optional(),
+    maxStars: z.number().int().min(1).optional(),
+    caseSensitive: z.boolean().optional(),
+    distractors: z.array(z.string().min(1)).optional()
+  })
+  .passthrough()
+  .refine((settings) => Object.keys(settings).length > 0, {
+    message: 'Provide at least one settings field'
+  })
+  .describe(
+    'Per-type correct-answer storage. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.'
+  );
+
 export const updateOptionSchema = z.object({
   id: z.number().int().optional(),
   label: z.string().min(1).optional(),
   isCorrect: z.boolean().optional(),
-  settings: z.record(z.string(), z.unknown()).optional()
+  settings: updateQuestionSettingsSchema.optional()
 });
 
-export const updateQuestionPatchSchema = z.object({
-  id: z.number().int(),
-  question: z.string().min(1).optional(),
-  questionTypeId: z.number().int().min(1).max(14).optional(),
-  points: z.number().min(0).optional(),
-  order: z.number().int().min(0).optional(),
-  exerciseSectionId: z
-    .string()
-    .uuid()
-    .nullable()
-    .optional()
-    .describe(
-      'Move the question to this in-exercise block (get_exercise_details sections[].id). Use null to clear section assignment.'
-    ),
-  settings: z.record(z.string(), z.unknown()).optional(),
-  options: z.array(updateOptionSchema).optional()
-});
+export const updateQuestionPatchSchema = z
+  .object({
+    id: z.number().int(),
+    question: z.string().min(1).optional(),
+    questionTypeId: z.number().int().min(1).max(QUESTION_TYPE_REGISTRY.length).optional(),
+    points: z.number().min(0).optional(),
+    order: z.number().int().min(0).optional(),
+    exerciseSectionId: z
+      .string()
+      .uuid()
+      .nullable()
+      .optional()
+      .describe(
+        'Move the question to this in-exercise block (get_exercise_details sections[].id). Use null to clear section assignment.'
+      ),
+    settings: updateQuestionSettingsSchema.optional(),
+    options: z.array(updateOptionSchema).optional()
+  })
+  .refine(
+    (patch) =>
+      patch.question !== undefined ||
+      patch.questionTypeId !== undefined ||
+      patch.points !== undefined ||
+      patch.order !== undefined ||
+      patch.exerciseSectionId !== undefined ||
+      patch.settings !== undefined ||
+      patch.options !== undefined,
+    {
+      message: 'Provide at least one field to update besides id'
+    }
+  );
 
 export const updateQuestionsParam = z.object({
   exerciseId: z.string(),
   questions: z.array(updateQuestionPatchSchema).min(1)
 });
 export const coursePlanParam = z.object({ plan: CoursePlanSchema });
+
+const courseTemplateIdParam = z.enum(['product_101', 'product_onboarding', 'expert_on_x']);
+
+const agentTemplateFormFieldBase = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  description: z.string().optional(),
+  required: z.boolean().optional(),
+  placeholder: z.string().optional()
+});
+
+const agentTemplateFormFieldParam = z.discriminatedUnion('type', [
+  agentTemplateFormFieldBase.extend({ type: z.literal('text') }),
+  agentTemplateFormFieldBase.extend({ type: z.literal('textarea') }),
+  agentTemplateFormFieldBase.extend({ type: z.literal('url') }),
+  agentTemplateFormFieldBase.extend({
+    type: z.literal('select'),
+    options: z.array(z.object({ value: z.string().min(1), label: z.string().min(1) })).min(1)
+  })
+]);
+
+export const askTemplateQuestionsParam = z.object({
+  templateId: courseTemplateIdParam,
+  title: z.string().min(1),
+  description: z.string().optional(),
+  fields: z.array(agentTemplateFormFieldParam).min(1)
+});
+
+export const fetchDocumentationUrlParam = z.object({
+  url: z.string().url()
+});
 
 // Gemini's tool-schema validator only accepts string enums, so numeric/boolean
 // `z.literal` values must be relaxed to plain types in the schemas the model sees.
@@ -190,9 +266,36 @@ export const agentLessonTabsOrder = z.array(
   })
 );
 export const agentLandingPageMetadataUpdate = ZCourseLandingPageMetadataUpdate.extend({
-  lessonTabsOrder: agentLessonTabsOrder.optional()
+  lessonTabsOrder: agentLessonTabsOrder.optional(),
+  requirements: z.string().optional().describe(LANDING_PAGE_SECTION_HTML_AGENT_HINT),
+  description: z.string().optional().describe(LANDING_PAGE_METADATA_DESCRIPTION_SECTION_HINT),
+  goals: z.string().optional().describe(LANDING_PAGE_SECTION_HTML_AGENT_HINT),
+  instructor: z
+    .object({
+      name: z.string().optional(),
+      role: z.string().optional(),
+      coursesNo: z.number().optional(),
+      description: z.string().optional().describe(LANDING_PAGE_SECTION_HTML_AGENT_HINT),
+      imgUrl: z.string().optional()
+    })
+    .optional()
 });
 export const updateCourseLandingPageParam = ZCourseLandingPageUpdate.extend({
+  title: z.string().min(1).optional().describe('Plain-text public course title (no HTML).'),
+  description: z.string().min(1).optional().describe(LANDING_PAGE_COURSE_DESCRIPTION_PLAIN_HINT),
+  overview: z.string().optional().describe(LANDING_PAGE_SECTION_HTML_AGENT_HINT),
+  generateImage: z
+    .boolean()
+    .optional()
+    .describe(
+      'Set true to auto-resolve a banner image from Unsplash. The server searches Unsplash using imageQuery if provided, otherwise the course title. Use this to fix a missing-banner blocker — do NOT ask the teacher to describe an image.'
+    ),
+  imageQuery: z
+    .string()
+    .min(1)
+    .max(120)
+    .optional()
+    .describe('Optional Unsplash search query (1–120 chars). Omit to let the server use the course title.'),
   metadata: agentLandingPageMetadataUpdate.optional()
 }).refine(
   (data) =>

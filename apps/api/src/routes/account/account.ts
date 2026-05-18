@@ -2,12 +2,14 @@ import { getAccountData, updateUser } from '@api/services/account';
 
 import { Hono } from '@api/utils/hono';
 import { ZUpdateProfile } from '@cio/utils/validation/account';
+import { accountWorkspacesRouter } from '@api/routes/account/workspaces';
 import { authMiddleware } from '@api/middlewares/auth';
 import { getProfileById } from '@cio/db/queries/auth';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
 export const accountRouter = new Hono()
+  .route('/', accountWorkspacesRouter)
   .get('/', authMiddleware, async (c) => {
     const user = c.get('user')!;
 

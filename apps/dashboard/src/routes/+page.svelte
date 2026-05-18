@@ -54,7 +54,13 @@
   });
 
   onMount(async () => {
-    if (!data.isOrgSite || !data.org) return;
+    if (!data.isOrgSite || !data.org) {
+      if (!appInitApi.loading) {
+        appInitApi.routeUserToNextPage({ isOrgSite: false, orgSiteName: '' });
+      }
+
+      return;
+    }
 
     const settings = normalizeLandingPageSettings(data.org.landingpage);
     const mod = await importThemeComponent(settings.theme);

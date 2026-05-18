@@ -1,6 +1,6 @@
 import { BaseApi, classroomio } from '$lib/utils/services/api';
 import { isOrgStudent } from '$lib/utils/store/app';
-import { currentOrg, orgs } from '$lib/utils/store/org';
+import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
 import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils/store/user';
 
 import type { AccountResponse } from './types';
@@ -93,12 +93,12 @@ class AppInitApi extends BaseApi {
       return;
     }
 
-    orgs.set(this.data.organizations);
+    orgs.set(this.data.organizations.map((org) => mergeAccountOrgFromServer(org)));
 
     const lastOrgSiteName = localStorage.getItem('classroomio_org_sitename');
     const lastOrg = this.data.organizations.find((org) => org.siteName === lastOrgSiteName);
 
-    currentOrg.set(lastOrg || this.data.organizations[0]);
+    currentOrg.set(mergeAccountOrgFromServer(lastOrg || this.data.organizations[0]));
 
     const theme = get(currentOrg)?.theme;
 

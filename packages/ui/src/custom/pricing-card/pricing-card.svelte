@@ -39,8 +39,7 @@
 
 <div
   class={cn(
-    'ui:relative ui:flex ui:max-w-sm ui:flex-col ui:rounded-xl ui:p-8 ui:shadow-sm ui:transition-all ui:hover:shadow-md',
-    isPopular ? 'animate-gradient-border' : 'ui:border',
+    'ui:relative ui:flex ui:max-w-sm ui:flex-col ui:rounded-lg ui:border ui:border-border ui:bg-card ui:p-8',
     className
   )}
 >

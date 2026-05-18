@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { OrgLandingPageProps } from './types';
   import OrgLandingPageEmbed from './embed.svelte';
+  import OrgLandingPageLinks from './links.svelte';
   import OrgLandingPageCallout from './callout.svelte';
   import OrgLandingPageFooter from './landing-page-footer.svelte';
   import MinimalNav from './minimal/nav.svelte';
@@ -10,7 +11,7 @@
   import * as Card from '../../base/card';
   import ClockIcon from '@lucide/svelte/icons/clock';
   import TagIcon from '@lucide/svelte/icons/tag';
-  import { getPrimaryCourseTag } from './landing-page-utils';
+  import { getCourseTypeLandingMeta, getPrimaryCourseTag } from './landing-page-utils';
 
   let {
     orgName,
@@ -23,8 +24,8 @@
     disableCourseLinks = false,
     embed,
     callout,
-    footerLinks,
-    footerText
+    links,
+    footer
   }: OrgLandingPageProps = $props();
 
   function formatCurrency(cost?: number, currency = 'USD') {
@@ -46,6 +47,7 @@
         <h2 class="ui:text-2xl ui:font-semibold ui:mb-8">Our Courses</h2>
         <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:gap-6">
           {#each courses as course, index (course.id)}
+            {@const courseTypeMeta = getCourseTypeLandingMeta(course)}
             {@const primaryTag = getPrimaryCourseTag(course)}
             <BlurFade delay={0.1 * index} once={true}>
               <a
@@ -74,6 +76,13 @@
                         <div class="ui:flex ui:items-center ui:gap-1.5 ui:text-muted-foreground">
                           <ClockIcon class="ui:size-4" />
                           <span>{course.duration}</span>
+                        </div>
+                      {/if}
+                      {#if courseTypeMeta}
+                        {@const TypeIcon = courseTypeMeta.icon}
+                        <div class="ui:flex ui:items-center ui:gap-1.5 ui:text-muted-foreground">
+                          <TypeIcon class={courseTypeMeta.iconClass} />
+                          <span>{courseTypeMeta.label}</span>
                         </div>
                       {/if}
                       {#if primaryTag}
@@ -116,9 +125,11 @@
     </section>
   </main>
 
+  <OrgLandingPageLinks {links} variant="minimal" />
+
   <OrgLandingPageEmbed {embed} variant="minimal" />
 
   <OrgLandingPageCallout {callout} variant="minimal" />
 
-  <OrgLandingPageFooter {orgName} {logoUrl} {footerLinks} {footerText} variant="minimal" />
+  <OrgLandingPageFooter {orgName} {logoUrl} {footer} variant="minimal" />
 </div>

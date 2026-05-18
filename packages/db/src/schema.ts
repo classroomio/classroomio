@@ -186,6 +186,92 @@ export const analyticsLoginEvents = pgTable(
   ]
 );
 
+export const analyticsPageEvent = pgTable(
+  'analytics_page_event',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    occurredAt: timestamp('occurred_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    orgId: uuid('org_id'),
+    sessionId: text('session_id').notNull(),
+    userId: uuid('user_id'),
+    eventType: text('event_type').notNull(),
+    courseId: uuid('course_id'),
+    path: text('path'),
+    referrerHost: text('referrer_host'),
+    utmSource: text('utm_source'),
+    utmMedium: text('utm_medium'),
+    utmCampaign: text('utm_campaign'),
+    country: varchar('country', { length: 2 }),
+    deviceType: varchar('device_type', { length: 16 }),
+    locale: varchar('locale', { length: 8 }),
+    props: jsonb().default({}).notNull()
+  },
+  (table) => [
+    index('idx_ape_org_occurred').on(table.orgId, table.occurredAt),
+    index('idx_ape_course_occurred').on(table.courseId, table.occurredAt),
+    index('idx_ape_session').on(table.sessionId),
+    index('idx_ape_event_type').on(table.eventType),
+    index('idx_ape_user').on(table.userId)
+  ]
+);
+
+export const analyticsOrgDaily = pgTable(
+  'analytics_org_daily',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    orgId: uuid('org_id').notNull(),
+    date: date('date').notNull(),
+    landingViews: integer('landing_views').default(0).notNull(),
+    uniqueVisitors: integer('unique_visitors').default(0).notNull(),
+    coursePageViews: integer('course_page_views').default(0).notNull(),
+    enrollments: integer('enrollments').default(0).notNull(),
+    completions: integer('completions').default(0).notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('analytics_org_daily_org_date_unique').on(table.orgId, table.date),
+    index('idx_aod_org_date').on(table.orgId, table.date)
+  ]
+);
+
+export const analyticsCourseDaily = pgTable(
+  'analytics_course_daily',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    courseId: uuid('course_id').notNull(),
+    orgId: uuid('org_id').notNull(),
+    date: date('date').notNull(),
+    views: integer('views').default(0).notNull(),
+    uniqueVisitors: integer('unique_visitors').default(0).notNull(),
+    enrollments: integer('enrollments').default(0).notNull(),
+    completions: integer('completions').default(0).notNull(),
+    avgTimeToEnrollSeconds: integer('avg_time_to_enroll_seconds'),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('analytics_course_daily_course_date_unique').on(table.courseId, table.date),
+    index('idx_acd_org_date').on(table.orgId, table.date),
+    index('idx_acd_course_date').on(table.courseId, table.date)
+  ]
+);
+
+export const analyticsCountryDaily = pgTable(
+  'analytics_country_daily',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    orgId: uuid('org_id').notNull(),
+    date: date('date').notNull(),
+    country: varchar('country', { length: 2 }).notNull(),
+    views: integer('views').default(0).notNull(),
+    enrollments: integer('enrollments').default(0).notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('analytics_country_daily_org_date_country_unique').on(table.orgId, table.date, table.country),
+    index('idx_acntd_org_date').on(table.orgId, table.date)
+  ]
+);
+
 export const courseSection = pgTable(
   'course_section',
   {
@@ -600,6 +686,27 @@ export const course = pgTable(
       allowNewStudent: boolean;
       sectionDisplay?: Record<string, boolean>;
       isContentGroupingEnabled?: boolean;
+      /** Per-course AI tutor override; missing fields inherit from org defaults. */
+      aiTutor?: {
+        inheritFromOrg?: boolean;
+        enabled?: boolean;
+        persona?: 'friendly' | 'formal' | 'encouraging' | 'socratic' | 'custom';
+        customPersona?: string;
+        responseLength?: 'short' | 'medium' | 'long';
+        welcomeMessage?: string;
+        disclaimerFooter?: string;
+        thingsToSay?: string;
+        thingsNotToSay?: string;
+        forbiddenTopics?: string[];
+        groundingScope?: 'lesson' | 'course' | 'workspace';
+        requireCitations?: boolean;
+        assessmentMode?: 'direct_answer' | 'hint_only' | 'block_during_exercise';
+        revealSolutionsAfterAttempts?: number;
+        codePolicy?: 'allowed' | 'hints_only' | 'forbidden';
+        blockOffTopic?: boolean;
+        profanityFilter?: boolean;
+        escalation?: { enabled?: boolean; email?: string };
+      };
     }>(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     cost: bigint({ mode: 'number' }).default(sql`'0'`),
@@ -608,7 +715,17 @@ export const course = pgTable(
     isPublished: boolean('is_published').default(false),
     certificate: jsonb().default({}).$type<{
       isDownloadable?: boolean;
+      /** @deprecated Use `design.templateId`. Legacy 6-theme id; mapped on read via LEGACY_THEME_MAP. */
       theme?: string;
+      /** Atelier-era certificate design. Source of truth for new courses. */
+      design?: {
+        templateId: 'classique' | 'brutalist' | 'noir' | 'poster' | 'minimal';
+        accentColor: string;
+        subtitle?: string;
+        descriptionOverride?: string;
+        signatories: [{ name: string; role: string }, { name: string; role: string }];
+        idFormat?: string;
+      };
       deadline?: string | null;
       threshold?: number;
       requiredExerciseId?: string | null;
@@ -631,6 +748,7 @@ export const course = pgTable(
       description: string;
       buttonLabel: string;
       buttonUrl: string;
+      animation?: 'waves' | 'dotted' | 'none';
     } | null>()
   },
   (table) => [
@@ -1904,13 +2022,41 @@ export const organization = pgTable(
           openInNewTab: boolean;
         }>;
       };
-      footer?: {
-        facebook: string;
-        instagram: string;
-        twitter: string;
-        linkedin: string;
-        show: boolean;
-      };
+      /** Legacy social URLs-only footer block */
+      footer?:
+        | {
+            facebook?: string;
+            instagram?: string;
+            twitter?: string;
+            linkedin?: string;
+            show?: boolean;
+          }
+        | {
+            brand: {
+              tagline?: string;
+              copyright?: string;
+              socials: Array<{ platform: string; href: string }>;
+            };
+            columns: Array<{
+              id: string;
+              heading: string;
+              links: Array<{ label: string; href: string }>;
+              cta?: { label: string; href: string };
+            }>;
+            bottom?: {
+              text?: string;
+              links: Array<{ label: string; href: string }>;
+            };
+          };
+      /** Current landing JSON shape (stored alongside legacy keys above) */
+      theme?: string;
+      hero?: Record<string, unknown>;
+      navItems?: Array<{ label: string; href: string }>;
+      footerLinks?: Array<{ label: string; href: string }>;
+      footerText?: string;
+      embed?: Record<string, unknown>;
+      callout?: Record<string, unknown>;
+      links?: Record<string, unknown>;
     }>(),
     theme: text().default('blue'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
@@ -1947,11 +2093,59 @@ export const organization = pgTable(
     disableSignup: boolean('disable_signup').default(false),
     disableSignupMessage: text('disable_signup_message'),
     disableEmailPassword: boolean('disable_email_password').default(false),
-    disableGoogleAuth: boolean('disable_google_auth').default(false)
+    disableGoogleAuth: boolean('disable_google_auth').default(false),
+    parentOrganizationId: uuid('parent_organization_id'),
+    readOnlyUntil: timestamp('read_only_until', { withTimezone: true, mode: 'string' }),
+    aiTutorSettings: jsonb('ai_tutor_settings')
+      .default({
+        enabled: true,
+        persona: 'encouraging',
+        customPersona: '',
+        responseLength: 'medium',
+        welcomeMessage: '',
+        disclaimerFooter: 'I am an AI tutor, not your instructor.',
+        thingsToSay: '',
+        thingsNotToSay: '',
+        forbiddenTopics: [],
+        groundingScope: 'course',
+        requireCitations: true,
+        assessmentMode: 'hint_only',
+        revealSolutionsAfterAttempts: 3,
+        codePolicy: 'hints_only',
+        blockOffTopic: true,
+        profanityFilter: true,
+        escalation: { enabled: false, email: '' }
+      })
+      .$type<{
+        enabled: boolean;
+        persona: 'friendly' | 'formal' | 'encouraging' | 'socratic' | 'custom';
+        customPersona: string;
+        responseLength: 'short' | 'medium' | 'long';
+        welcomeMessage: string;
+        disclaimerFooter: string;
+        thingsToSay: string;
+        thingsNotToSay: string;
+        forbiddenTopics: string[];
+        groundingScope: 'lesson' | 'course' | 'workspace';
+        requireCitations: boolean;
+        assessmentMode: 'direct_answer' | 'hint_only' | 'block_during_exercise';
+        revealSolutionsAfterAttempts: number;
+        codePolicy: 'allowed' | 'hints_only' | 'forbidden';
+        blockOffTopic: boolean;
+        profanityFilter: boolean;
+        escalation: { enabled: boolean; email: string };
+      }>()
+      .notNull()
   },
   (table) => [
     unique('organization_siteName_key').on(table.siteName),
-    unique('organization_customDomain_key').on(table.customDomain)
+    unique('organization_customDomain_key').on(table.customDomain),
+    foreignKey({
+      columns: [table.parentOrganizationId],
+      foreignColumns: [table.id],
+      name: 'organization_parent_organization_id_fkey'
+    }).onDelete('set null'),
+    index('idx_organization_parent_id').on(table.parentOrganizationId)
   ]
 );
 
@@ -2593,6 +2787,127 @@ export const programNewsfeedComment = pgTable(
   ]
 );
 
+// ─── Program Goals ────────────────────────────────────────────────────────────
+//
+// A team-level "is the team done" target. A small generalisation of the
+// per-course `course.compliance` field: applies across multiple courses, scoped
+// to a program's members, and aggregated for owner roll-ups. Per-learner status
+// is materialised in `programGoalAssignment` so dashboards stay cheap.
+
+export const programGoalType = pgEnum('PROGRAM_GOAL_TYPE', [
+  'complete_all',
+  'n_of_m',
+  'score',
+  'pass_rate',
+  'readiness'
+]);
+
+export const programGoalDeadlineKind = pgEnum('PROGRAM_GOAL_DEADLINE_KIND', [
+  'absolute',
+  'relative_to_join',
+  'recurring',
+  'none'
+]);
+
+export const programGoalStatus = pgEnum('PROGRAM_GOAL_STATUS', ['active', 'archived']);
+
+export const programGoalAssignmentStatus = pgEnum('PROGRAM_GOAL_ASSIGNMENT_STATUS', [
+  'not_started',
+  'in_progress',
+  'completed',
+  'at_risk',
+  'overdue',
+  'waived'
+]);
+
+export const programGoal = pgTable(
+  'program_goal',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    programId: uuid('program_id').notNull(),
+    title: varchar({ length: 255 }).notNull(),
+    description: text(),
+    type: programGoalType().notNull(),
+    /** Course IDs the goal targets. JSONB so we can attach per-course config later if needed. */
+    courseIds: jsonb('course_ids').$type<string[]>().default([]).notNull(),
+    /** Required only for n_of_m. */
+    requiredCount: integer('required_count'),
+    /** Per-learner score threshold (0–100). Required for `score` and `pass_rate`. */
+    scoreThreshold: integer('score_threshold'),
+    /** Team-wide pass-rate threshold (0–100). Required for `pass_rate`. */
+    teamPassRateThreshold: integer('team_pass_rate_threshold'),
+    deadlineKind: programGoalDeadlineKind('deadline_kind').default('none').notNull(),
+    /** Used when deadlineKind = 'absolute'. */
+    deadlineDate: timestamp('deadline_date', { withTimezone: true, mode: 'string' }),
+    /** Used when deadlineKind = 'relative_to_join'. */
+    relativeDays: integer('relative_days'),
+    /** Used when deadlineKind = 'recurring'. */
+    recurringMonths: integer('recurring_months'),
+    /** Reminder cadence (days before due). Mirrors `course.compliance.reminderDaysBefore`. */
+    reminderDaysBefore: jsonb('reminder_days_before').$type<number[]>().default([7, 1]).notNull(),
+    status: programGoalStatus().default('active').notNull(),
+    createdByProfileId: uuid('created_by_profile_id'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.programId],
+      foreignColumns: [program.id],
+      name: 'program_goal_program_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'program_goal_created_by_profile_id_fkey'
+    }).onDelete('set null'),
+    index('idx_program_goal_program_id').on(table.programId),
+    index('idx_program_goal_status').on(table.status)
+  ]
+);
+
+export const programGoalAssignment = pgTable(
+  'program_goal_assignment',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    goalId: uuid('goal_id').notNull(),
+    programMemberId: uuid('program_member_id').notNull(),
+    /** Resolved due date for this learner (null when goal has no deadline). */
+    dueDate: timestamp('due_date', { withTimezone: true, mode: 'string' }),
+    status: programGoalAssignmentStatus().default('not_started').notNull(),
+    /** Cached count of completed required courses (for n_of_m / complete_all dashboards). */
+    completedCount: integer('completed_count').default(0).notNull(),
+    /** Cached numerator for the requirement (e.g. courses required to complete). */
+    requiredCount: integer('required_count').default(0).notNull(),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    lastEvaluatedAt: timestamp('last_evaluated_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.goalId],
+      foreignColumns: [programGoal.id],
+      name: 'program_goal_assignment_goal_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.programMemberId],
+      foreignColumns: [programMember.id],
+      name: 'program_goal_assignment_program_member_id_fkey'
+    }).onDelete('cascade'),
+    unique('program_goal_assignment_goal_id_program_member_id_unique').on(table.goalId, table.programMemberId),
+    index('idx_program_goal_assignment_goal_id').on(table.goalId),
+    index('idx_program_goal_assignment_program_member_id').on(table.programMemberId),
+    index('idx_program_goal_assignment_due_date').on(table.dueDate)
+  ]
+);
+
 // ─── AI Token Usage ──────────────────────────────────────────────────────────
 
 export const aiTokenUsage = pgTable(
@@ -2687,6 +3002,78 @@ export const aiCreditPurchase = pgTable(
   ]
 );
 
+// ─── AI Tutor Fair-Use ───────────────────────────────────────────────────────
+
+export const aiTutorMessageCount = pgTable(
+  'ai_tutor_message_count',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'ai_tutor_message_count_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    orgId: uuid('org_id').notNull(),
+    userId: uuid('user_id').notNull(),
+    /** First day of the calendar month this counter covers. */
+    periodStart: date('period_start').notNull(),
+    messageCount: integer('message_count').notNull().default(0),
+    lastMessageAt: timestamp('last_message_at', { withTimezone: true, mode: 'string' }),
+    capHitAt: timestamp('cap_hit_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.orgId],
+      foreignColumns: [organization.id],
+      name: 'ai_tutor_message_count_org_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [profile.id],
+      name: 'ai_tutor_message_count_user_id_fkey'
+    }).onDelete('cascade'),
+    unique('ai_tutor_message_count_org_user_period_key').on(table.orgId, table.userId, table.periodStart),
+    index('idx_ai_tutor_message_count_org_period').on(table.orgId, table.periodStart),
+    index('idx_ai_tutor_message_count_user').on(table.userId, table.periodStart)
+  ]
+);
+
+export const aiTutorCapEvent = pgTable(
+  'ai_tutor_cap_event',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'ai_tutor_cap_event_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    orgId: uuid('org_id').notNull(),
+    userId: uuid('user_id').notNull(),
+    courseId: uuid('course_id'),
+    /** 'cap_reached' | 'pool_exhausted' | 'tutor_disabled' */
+    eventType: text('event_type').notNull(),
+    occurredAt: timestamp('occurred_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.orgId],
+      foreignColumns: [organization.id],
+      name: 'ai_tutor_cap_event_org_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [profile.id],
+      name: 'ai_tutor_cap_event_user_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_ai_tutor_cap_event_org_occurred').on(table.orgId, table.occurredAt),
+    index('idx_ai_tutor_cap_event_user').on(table.userId, table.occurredAt)
+  ]
+);
+
 export const aiChatConversation = pgTable(
   'ai_chat_conversation',
   {
@@ -2732,5 +3119,194 @@ export const aiChatDocument = pgTable(
       name: 'ai_chat_document_conversation_id_fkey'
     }).onDelete('cascade'),
     index('idx_ai_chat_document_conversation').on(table.conversationId)
+  ]
+);
+
+// ─── BullMQ Job State (Postgres source of truth) ─────────────────────────────
+// User-visible status for queued/long-running domain runs. BullMQ holds the
+// operational job; these tables hold the entity the dashboard polls and
+// resumes against. See prd/notification-system and the bullmq plan.
+
+export const jobStatus = pgEnum('JOB_STATUS', ['queued', 'running', 'completed', 'failed', 'canceled']);
+
+/**
+ * `media_job` — one user-facing media post-processing run (per uploaded asset).
+ * The BullMQ FlowProducer orchestrates one or more attempts; this row stores
+ * the latest status the dashboard polls.
+ */
+export const mediaJob = pgTable(
+  'media_job',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    assetId: uuid('asset_id').notNull(),
+    /** Snapshot of who started this run; never re-derived inside the worker. */
+    triggeredByProfileId: uuid('triggered_by_profile_id'),
+    status: jobStatus().default('queued').notNull(),
+    stage: varchar({ length: 64 }),
+    progressPercent: integer('progress_percent').default(0),
+    /** Latest BullMQ root job id from the FlowProducer tree. Operational only. */
+    rootJobId: text('root_job_id'),
+    /** All BullMQ job ids for this run, keyed by job name (operational). */
+    jobIds: jsonb('job_ids').default({}).$type<Record<string, string>>(),
+    attempt: integer().default(0).notNull(),
+    maxAttempts: integer('max_attempts').default(3).notNull(),
+    cancelRequestedAt: timestamp('cancel_requested_at', { withTimezone: true, mode: 'string' }),
+    /** Provider/cost data once we wire transcription billing. */
+    costCents: integer('cost_cents').default(0),
+    result: jsonb().$type<Record<string, unknown> | null>(),
+    error: jsonb().$type<{ code: string; message: string; details?: unknown } | null>(),
+    warnings: jsonb().default([]).$type<string[]>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'media_job_organization_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.assetId],
+      foreignColumns: [asset.id],
+      name: 'media_job_asset_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.triggeredByProfileId],
+      foreignColumns: [profile.id],
+      name: 'media_job_triggered_by_profile_id_fkey'
+    }).onDelete('set null'),
+    index('idx_media_job_asset_id').on(table.assetId),
+    index('idx_media_job_org_status').on(table.organizationId, table.status),
+    index('idx_media_job_updated_at').on(table.updatedAt)
+  ]
+);
+
+/**
+ * `job_step` — generic checkpoint ledger for any queued domain run. Workers
+ * look up `(runId, stepKey)` first and short-circuit if the step has a result,
+ * which makes BullMQ retries safe against partial completion.
+ */
+export const jobStep = pgTable(
+  'job_step',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    /** The owning domain (e.g. `media`, `course-import`, `onboarding-bootstrap`). */
+    domain: varchar({ length: 64 }).notNull(),
+    /** Domain run id (e.g. `media_job.id`). */
+    runId: uuid('run_id').notNull(),
+    /** Stable key for this step (e.g. `probe-metadata`). */
+    stepKey: varchar('step_key', { length: 96 }).notNull(),
+    status: jobStatus().default('queued').notNull(),
+    /** Hash of inputs to detect changed inputs across retries. */
+    inputHash: text('input_hash'),
+    /** Provider id (whisper job id, ffmpeg run id, etc.) for de-dup. */
+    providerId: text('provider_id'),
+    result: jsonb().$type<Record<string, unknown> | null>(),
+    error: jsonb().$type<{ code: string; message: string; details?: unknown } | null>(),
+    attempt: integer().default(0).notNull(),
+    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }),
+    finishedAt: timestamp('finished_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('job_step_run_step_unique').on(table.domain, table.runId, table.stepKey),
+    index('idx_job_step_run').on(table.domain, table.runId)
+  ]
+);
+
+/**
+ * Whisper-derived transcript + captions artifact for an uploaded video asset.
+ * One row per asset (re-transcribe replaces via upsert on asset_id).
+ */
+export const mediaTranscript = pgTable(
+  'media_transcript',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    assetId: uuid('asset_id').notNull(),
+    mediaJobId: uuid('media_job_id'),
+    language: varchar({ length: 8 }).notNull(),
+    provider: varchar({ length: 32 }).default('openai').notNull(),
+    model: varchar({ length: 64 }).default('whisper-1').notNull(),
+    text: text().notNull(),
+    segments: jsonb().$type<{ start: number; end: number; text: string }[]>().notNull(),
+    vttStorageKey: text('vtt_storage_key').notNull(),
+    vttBucket: text('vtt_bucket').notNull(),
+    durationSeconds: integer('duration_seconds'),
+    costCents: integer('cost_cents').default(0).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'media_transcript_organization_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.assetId],
+      foreignColumns: [asset.id],
+      name: 'media_transcript_asset_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.mediaJobId],
+      foreignColumns: [mediaJob.id],
+      name: 'media_transcript_media_job_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    unique('media_transcript_asset_id_unique').on(table.assetId),
+    index('idx_media_transcript_asset').on(table.assetId)
+  ]
+);
+
+/**
+ * `dead_letter_job` — terminal failure record after BullMQ exhausts attempts
+ * or a domain explicitly dead-letters a run. Drives the admin retry/replay UI
+ * and Tinybird/Slack alerting.
+ */
+export const deadLetterJob = pgTable(
+  'dead_letter_job',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id'),
+    domain: varchar({ length: 64 }).notNull(),
+    runId: uuid('run_id'),
+    queueName: varchar('queue_name', { length: 64 }).notNull(),
+    jobName: varchar('job_name', { length: 96 }).notNull(),
+    /** Original BullMQ job id. */
+    bullmqJobId: text('bullmq_job_id'),
+    payload: jsonb().$type<Record<string, unknown>>(),
+    error: jsonb().$type<{ code: string; message: string; stack?: string }>(),
+    attempts: integer().default(0).notNull(),
+    /** Optional pointer to a replay job once an operator retries. */
+    replayedAt: timestamp('replayed_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    index('idx_dead_letter_job_domain_created').on(table.domain, table.createdAt),
+    index('idx_dead_letter_job_org_created').on(table.organizationId, table.createdAt)
   ]
 );

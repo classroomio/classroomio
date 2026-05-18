@@ -158,6 +158,7 @@
       slug: course.slug!,
       isPublished: course.isPublished ?? undefined,
       overview: course.overview ?? undefined,
+      compliance: course.compliance ?? undefined,
       certificate: course.certificate
         ? {
             ...course.certificate,
@@ -232,54 +233,26 @@
 
 <Sidebar.Content class="flex-1 overflow-y-auto">
   {#if !selectedSection}
-    {#if sidebar.open}
-      <Sidebar.Group>
-        <Sidebar.GroupLabel class="px-2">
-          {$t('course.navItem.landing_page.editor.page_builder')}
-        </Sidebar.GroupLabel>
-        <Sidebar.GroupContent>
-          <Sidebar.Menu>
-            {#each sections as section (section.key)}
-              {@const SectionIcon = section.icon}
-              <HoverableItem>
-                {#snippet children(isHovered)}
-                  <Sidebar.MenuItem>
-                    <Sidebar.MenuButton
-                      onclick={handleSectionSelect(section.key)}
-                      tooltipContent={section.title + ' ' + $t('course.navItem.landing_page.editor.section')}
-                    >
-                      <SectionIcon {isHovered} size={16} />
-                      <span>{section.title} {$t('course.navItem.landing_page.editor.section')}</span>
-                      <ChevronRightIcon size={16} />
-                    </Sidebar.MenuButton>
-                  </Sidebar.MenuItem>
-                {/snippet}
-              </HoverableItem>
-            {/each}
-          </Sidebar.Menu>
-        </Sidebar.GroupContent>
-      </Sidebar.Group>
-    {:else}
-      <Sidebar.Menu>
-        {#each sections as section (section.key)}
-          {@const SectionIcon = section.icon}
-          <HoverableItem>
-            {#snippet children(isHovered)}
-              <Sidebar.MenuItem>
-                <Sidebar.MenuButton
-                  onclick={handleSectionSelect(section.key)}
-                  tooltipContent={section.title + ' ' + $t('course.navItem.landing_page.editor.section')}
-                >
-                  <SectionIcon {isHovered} size={16} />
-                  <span>{section.title} {$t('course.navItem.landing_page.editor.section')}</span>
-                </Sidebar.MenuButton>
-              </Sidebar.MenuItem>
-            {/snippet}
-          </HoverableItem>
-        {/each}
-      </Sidebar.Menu>
-    {/if}
-  {:else if sidebar.open || !sidebar.isMobile}
+    <Sidebar.Group>
+      <Sidebar.GroupLabel class="px-2">
+        {$t('course.navItem.landing_page.editor.page_builder')}
+      </Sidebar.GroupLabel>
+      <Sidebar.GroupContent>
+        <Sidebar.Menu>
+          {#each sections as section (section.key)}
+            {@const SectionIcon = section.icon}
+            <Sidebar.MenuItem>
+              <Sidebar.MenuButton onclick={handleSectionSelect(section.key)} tooltipContent={section.title}>
+                <SectionIcon size={16} />
+                <span>{section.title}</span>
+                <ChevronRightIcon size={16} />
+              </Sidebar.MenuButton>
+            </Sidebar.MenuItem>
+          {/each}
+        </Sidebar.Menu>
+      </Sidebar.GroupContent>
+    </Sidebar.Group>
+  {:else}
     <div class="p-4">
       {#if selectedSection.key === 1}
         <HeaderForm bind:course />
@@ -298,10 +271,6 @@
       {:else if selectedSection.key === 8}
         <PricingForm bind:course {setter} />
       {/if}
-    </div>
-  {:else}
-    <div class="flex items-center justify-center p-4">
-      <p class="text-muted-foreground text-sm">Expand sidebar to edit</p>
     </div>
   {/if}
 </Sidebar.Content>

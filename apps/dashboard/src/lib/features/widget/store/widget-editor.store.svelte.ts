@@ -1,5 +1,4 @@
-import { getDefaultWidgetConfig } from '@cio/utils/validation/widget';
-import type { TWidgetPayload } from '@cio/utils/validation/widget';
+import { buildWidgetPayload, getDefaultWidgetConfig } from '@cio/utils/validation/widget';
 import type { WidgetDetail } from '../utils/types';
 import { widgetApi } from '../api/widget.svelte';
 import { deepPlain, buildCourseFilterPredicate, type FilterPublished } from '../utils/widget-editor-utils';
@@ -28,10 +27,6 @@ class WidgetEditorStore {
   filterPublished = $state<FilterPublished>('all');
   filterCourseType = $state('all');
   filterTagSlugs = $state<string[]>([]);
-
-  // ── preview ────────────────────────────────────────────────────────────────
-  previewPayload = $state<TWidgetPayload | null>(null);
-  #previewRequestSeq = 0;
 
   // ── sync guard ─────────────────────────────────────────────────────────────
   #syncedDetailSignature = $state('');
@@ -87,6 +82,37 @@ class WidgetEditorStore {
   readonly activeFilterCount = $derived(
     (this.filterPublished !== 'all' ? 1 : 0) + (this.filterCourseType !== 'all' ? 1 : 0) + this.filterTagSlugs.length
   );
+
+  /**
+   * Field-keyed validation errors from the last save attempt, keyed by Zod path
+   * (e.g. `config.typography.fontSizeScale`). Cleared when the user edits the draft
+   * or successfully saves.
+   */
+  readonly validationErrors = $derived<Record<string, string>>(widgetApi.errors);
+
+  readonly previewPayload = $derived.by(() => {
+    if (!this.detail) return null;
+    try {
+      return buildWidgetPayload({
+        widget: {
+          id: this.detail.widget.id,
+          publicKey: this.detail.widget.publicKey,
+          layoutType: this.draftLayoutType,
+          selectionMode: this.draftSelectionMode,
+          config: deepPlain(this.draftConfig)
+        },
+        organization: this.detail.organization,
+        orgBaseUrl: this.detail.orgBaseUrl,
+        allCourses: this.detail.availableCourses,
+        selectedCourseIds: [...this.selectedCourseIds],
+        planGatedFields: this.detail.planGatedFields,
+        planName: this.detail.planName
+      });
+    } catch (error) {
+      console.warn('Failed to build widget preview payload:', error);
+      return null;
+    }
+  });
 
   readonly isDirty = $derived(
     this.detail !== null &&
@@ -154,6 +180,8 @@ class WidgetEditorStore {
   async saveWidget(silent = false): Promise<boolean> {
     if (!this.detail) return false;
 
+    widgetApi.resetErrors();
+
     const updatedWidget = await widgetApi.updateWidget(
       this.detail.widget.id,
       {
@@ -206,40 +234,6 @@ class WidgetEditorStore {
 
     await widgetApi.deleteWidget(this.detail.widget.id);
     goto(resolve(`${get(currentOrgPath)}/widgets`, {}));
-  }
-
-  /** Kicks off a debounced preview fetch. Call inside a `$effect`. */
-  startPreviewEffect() {
-    if (!this.detail) return;
-
-    // Subscribing to JSON.stringify forces deep reactivity on nested $state mutations.
-    void JSON.stringify({
-      config: this.draftConfig,
-      layoutType: this.draftLayoutType,
-      selectionMode: this.draftSelectionMode,
-      selectedCourseIds: this.selectedCourseIds
-    });
-
-    const snapshot = {
-      config: deepPlain(this.draftConfig),
-      layoutType: this.draftLayoutType,
-      selectionMode: this.draftSelectionMode,
-      selectedCourseIds: [...this.selectedCourseIds]
-    };
-
-    const widgetId = this.detail.widget.id;
-    const seq = ++this.#previewRequestSeq;
-    let cancelled = false;
-
-    void (async () => {
-      const payload = await widgetApi.previewWidget(widgetId, snapshot);
-      if (cancelled || seq !== this.#previewRequestSeq || !payload) return;
-      this.previewPayload = payload;
-    })();
-
-    return () => {
-      cancelled = true;
-    };
   }
 }
 

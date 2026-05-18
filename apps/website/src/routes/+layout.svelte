@@ -5,7 +5,6 @@
   import extend from 'just-extend';
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
-  import PageTransition from './transition.svelte';
 
   import '../app.css';
 
@@ -25,13 +24,11 @@
 <div class="overflow-hidden bg-white">
   <Navigation stars={data.stars} />
 
-  <PageTransition url={data.url}>
-    {#if page.status === 404}
-      <NotFound className="mt-5" />
-    {:else}
-      {@render children?.()}
-    {/if}
-  </PageTransition>
+  {#if page.status === 404}
+    <NotFound className="mt-5" />
+  {:else}
+    {@render children?.()}
+  {/if}
 
   <Footer />
 </div>

@@ -34,6 +34,23 @@
 
   const prevHref = $derived(prev ? hrefFor?.(prev) : undefined);
   const nextHref = $derived(next ? hrefFor?.(next) : undefined);
+
+  function handleAnchorClick(event: MouseEvent, item: PublicCourseSidebarItem) {
+    if (
+      !onNavigate ||
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    onNavigate(item);
+  }
 </script>
 
 {#snippet prevBody(item: PublicCourseSidebarItem, label: string)}
@@ -67,7 +84,7 @@
   >
     {#if prev}
       {#if prevHref}
-        <a href={prevHref} class={cardClass} onclick={() => onNavigate?.(prev)}>
+        <a href={prevHref} class={cardClass} onclick={(event) => handleAnchorClick(event, prev)}>
           {@render prevBody(prev, prevLabel)}
         </a>
       {:else}
@@ -81,7 +98,11 @@
 
     {#if next}
       {#if nextHref}
-        <a href={nextHref} class={cn(cardClass, 'ui:justify-end ui:text-right')} onclick={() => onNavigate?.(next)}>
+        <a
+          href={nextHref}
+          class={cn(cardClass, 'ui:justify-end ui:text-right')}
+          onclick={(event) => handleAnchorClick(event, next)}
+        >
           {@render nextBody(next, nextLabel)}
         </a>
       {:else}

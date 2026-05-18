@@ -24,11 +24,17 @@
 
 <Dialog.Root
   bind:open={$lessonVideoUpload.isModalOpen}
-  onOpenChange={(isOpen) => {
-    if (!isOpen) onClose();
+  onOpenChange={(details) => {
+    if (!details.open && $lessonVideoUpload.isUploading) return;
+    if (!details.open) onClose();
   }}
 >
-  <Dialog.Content class="flex max-h-[680px] max-w-2xl! flex-col overflow-hidden">
+  <Dialog.Content
+    class="flex max-h-[680px] max-w-2xl! flex-col overflow-hidden"
+    onCloseAutoFocus={(e) => {
+      if ($lessonVideoUpload.isUploading) e.preventDefault();
+    }}
+  >
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.materials.tabs.video.add_video.title')}</Dialog.Title>
     </Dialog.Header>

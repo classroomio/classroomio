@@ -21,7 +21,10 @@
   "dependencies": {
     "@ai-sdk/svelte": "^4.0.158",
     "@better-auth/sso": "1.4.18",
+    "@cio/ai-assistant": "workspace:*",
+    "@cio/analytics": "workspace:*",
     "@cio/api": "workspace:*",
+    "@cio/certificates": "workspace:*",
     "@cio/db": "workspace:*",
     "@cio/question-types": "workspace:*",
     "@cio/ui": "workspace:*",

@@ -7,10 +7,13 @@
   import { Input } from '@cio/ui/base/input';
   import { Switch } from '@cio/ui/base/switch';
   import { Textarea } from '@cio/ui/base/textarea';
+  import AIGenerateButton from '$features/agent/components/ai-generate-button.svelte';
   import { UploadWidget } from '$features/ui';
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
-  import type { OrgLandingPageJson } from '$lib/utils/types/org';
+  import type { OrgLandingPageHeroStat, OrgLandingPageJson } from '$lib/utils/types/org';
   import ButtonLinkFields from './button-link-fields.svelte';
+  import TrashIcon from '@lucide/svelte/icons/trash-2';
+  import PlusIcon from '@lucide/svelte/icons/plus';
 
   interface Props {
     settings: OrgLandingPageJson;
@@ -20,6 +23,36 @@
   let { settings = $bindable(), markDirty }: Props = $props();
 
   let activeWidget = $state<'hero-image' | ''>('');
+
+  const MAX_STATS = 4;
+
+  function updateStats(next: OrgLandingPageHeroStat[]) {
+    settings = {
+      ...settings,
+      hero: {
+        ...settings.hero,
+        stats: next.length > 0 ? next : undefined
+      }
+    };
+    markDirty();
+  }
+
+  function addStat() {
+    const current = settings.hero.stats ?? [];
+    if (current.length >= MAX_STATS) return;
+    updateStats([...current, { label: '', value: '' }]);
+  }
+
+  function removeStat(index: number) {
+    const current = settings.hero.stats ?? [];
+    updateStats(current.filter((_, i) => i !== index));
+  }
+
+  function updateStatField(index: number, field: 'label' | 'value', nextValue: string) {
+    const current = settings.hero.stats ?? [];
+    const next = current.map((stat, i) => (i === index ? { ...stat, [field]: nextValue } : stat));
+    updateStats(next);
+  }
 
   function setter(value: unknown, setterKey: string) {
     if (typeof value === 'undefined') {
@@ -61,12 +94,24 @@
 
     <div class="space-y-4">
       <Field.Field>
-        <Field.Label>{$t('settings.landing_page.editor.hero.heading')}</Field.Label>
+        <div class="flex items-center justify-between">
+          <Field.Label>{$t('settings.landing_page.editor.hero.heading')}</Field.Label>
+          <AIGenerateButton
+            context="the main hero heading on an organization's course platform landing page"
+            onInsert={(text) => setter(text, 'hero.heading')}
+          />
+        </div>
         <Input value={settings.hero.heading} oninput={(event) => setter(event.currentTarget.value, 'hero.heading')} />
       </Field.Field>
 
       <Field.Field>
-        <Field.Label>{$t('settings.landing_page.editor.hero.subheading')}</Field.Label>
+        <div class="flex items-center justify-between">
+          <Field.Label>{$t('settings.landing_page.editor.hero.subheading')}</Field.Label>
+          <AIGenerateButton
+            context="the hero subheading/tagline on an organization's course platform landing page"
+            onInsert={(text) => setter(text, 'hero.subheading')}
+          />
+        </div>
         <Textarea
           value={settings.hero.subheading}
           oninput={(event) => setter(event.currentTarget.value, 'hero.subheading')}
@@ -104,6 +149,63 @@
           onHrefInput={(value) => setter(value, 'hero.secondaryAction.href')}
         />
       {/if}
+
+      <Field.Field>
+        <div class="flex items-center justify-between">
+          <Field.Label>{$t('settings.landing_page.editor.hero.stats.label')}</Field.Label>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            class="gap-1"
+            disabled={(settings.hero.stats?.length ?? 0) >= MAX_STATS}
+            onclick={addStat}
+          >
+            <PlusIcon class="size-3.5" />
+            {$t('settings.landing_page.editor.hero.stats.add')}
+          </Button>
+        </div>
+        <Field.Description>{$t('settings.landing_page.editor.hero.stats.description')}</Field.Description>
+
+        {#if settings.hero.stats && settings.hero.stats.length > 0}
+          <div class="space-y-3">
+            {#each settings.hero.stats as stat, index (index)}
+              <div class="flex items-end gap-2">
+                <div class="flex-1">
+                  <Field.Label class="text-muted-foreground mb-1 text-xs">
+                    {$t('settings.landing_page.editor.hero.stats.label_field')}
+                  </Field.Label>
+                  <Input
+                    value={stat.label}
+                    placeholder={$t('settings.landing_page.editor.hero.stats.label_placeholder')}
+                    oninput={(event) => updateStatField(index, 'label', event.currentTarget.value)}
+                  />
+                </div>
+                <div class="w-32">
+                  <Field.Label class="text-muted-foreground mb-1 text-xs">
+                    {$t('settings.landing_page.editor.hero.stats.value_field')}
+                  </Field.Label>
+                  <Input
+                    value={stat.value}
+                    placeholder={$t('settings.landing_page.editor.hero.stats.value_placeholder')}
+                    oninput={(event) => updateStatField(index, 'value', event.currentTarget.value)}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  class="text-muted-foreground hover:text-destructive"
+                  onclick={() => removeStat(index)}
+                  aria-label={$t('settings.landing_page.editor.hero.stats.remove')}
+                >
+                  <TrashIcon class="size-4" />
+                </Button>
+              </div>
+            {/each}
+          </div>
+        {/if}
+      </Field.Field>
 
       <Field.Field>
         <Field.Label>{$t('settings.landing_page.editor.hero.image')}</Field.Label>

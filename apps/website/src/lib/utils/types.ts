@@ -24,12 +24,3 @@ export type OssFriend = {
   description: string;
   href: string;
 };
-
-export type FORM_TYPE_KEY = keyof typeof FORM_TYPE;
-
-export enum FORM_TYPE {
-  BUG = 'BUG',
-  HELP = 'HELP',
-  FEATURE = 'FEATURE',
-  FEEDBACK = 'FEEDBACK'
-}

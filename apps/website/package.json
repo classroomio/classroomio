@@ -32,6 +32,7 @@
     "node": "^20.19.3"
   },
   "dependencies": {
+    "@cio/certificates": "workspace:*",
     "@cio/ui": "workspace:*",
     "@cio/utils": "workspace:*",
     "@lucide/svelte": "^0.545.0",

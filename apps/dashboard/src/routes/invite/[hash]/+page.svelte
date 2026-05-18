@@ -4,7 +4,7 @@
   import { onMount } from 'svelte';
   import { Button } from '@cio/ui/base/button';
   import { AuthUI } from '$features/ui';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, mergeAccountOrgFromServer } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
   import { classroomio } from '$lib/utils/services/api';
   import { profile } from '$lib/utils/store/user';
@@ -114,7 +114,7 @@
     if (!data.currentOrg) return;
 
     setTheme(data.currentOrg?.theme || '');
-    currentOrg.set(data.currentOrg);
+    currentOrg.set(mergeAccountOrgFromServer(data.currentOrg));
   });
 </script>
 

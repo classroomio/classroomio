@@ -18,7 +18,7 @@
   data-slot="page-header"
   class={cn(
     'ui:flex ui:my-4 ui:py-2 ui:flex-col',
-    isSticky && 'ui:sticky ui:top-14 ui:z-10 ui:bg-background',
+    isSticky && 'ui:sticky ui:top-11 ui:z-10 ui:bg-background',
     className
   )}
   {...restProps}

@@ -1,134 +1,118 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { Label } from '@cio/ui/base/label';
-  import * as RadioGroup from '@cio/ui/base/radio-group';
   import { Button } from '@cio/ui/base/button';
-  import { Textarea } from '@cio/ui/base/textarea';
-  import * as Field from '@cio/ui/base/field';
+  import { Badge } from '@cio/ui/base/badge';
+  import { Certificate } from '@cio/ui';
+  import * as Card from '@cio/ui/base/card';
+  import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+  import ZapIcon from '@lucide/svelte/icons/zap';
   import { t } from '$lib/utils/functions/translations';
 
   import { courseApi } from '$features/course/api';
-  import { CERTIFICATE_THEME_IDS, type CertificateThemeId } from '$features/course/utils/constants';
-  import { parseCertificateThemeId } from '$features/course/utils/certificate-utils';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
-  import Plain from './templates/plain.svelte';
-  import Professional from './templates/professional.svelte';
-  import BlueBadgePattern from './templates/blue-badge-pattern.svelte';
-  import PurpleBadgePattern from './templates/purple-badge-pattern.svelte';
-  import BlueProfessionalBadge from './templates/blue-professional-badge.svelte';
-  import PurpleProfessionalBadge from './templates/purple-professional-badge.svelte';
+  import {
+    CERTIFICATE_TEMPLATES,
+    DEFAULT_CERTIFICATE_DESIGN,
+    type CertificateDesign,
+    resolveTemplateId
+  } from '@cio/certificates';
 
   type Props = {
-    errors: Record<string, string>;
+    errors?: Record<string, string>;
   };
 
-  let { errors }: Props = $props();
+  let { errors: _errors }: Props = $props();
 
-  const studentNamePlaceholder = 'Name of student';
+  const design: CertificateDesign = $derived.by(() => {
+    const certificate = courseApi.course?.certificate;
+    const stored = certificate?.design as Partial<CertificateDesign> | undefined;
+    const legacyTheme = certificate?.theme as string | undefined;
 
-  const certificateTheme = $derived(parseCertificateThemeId(courseApi.course?.certificate?.theme));
+    return {
+      templateId: resolveTemplateId(stored?.templateId ?? legacyTheme),
+      accentColor: stored?.accentColor ?? DEFAULT_CERTIFICATE_DESIGN.accentColor,
+      subtitle: stored?.subtitle ?? DEFAULT_CERTIFICATE_DESIGN.subtitle,
+      descriptionOverride: stored?.descriptionOverride,
+      signatories: [
+        {
+          name: stored?.signatories?.[0]?.name ?? DEFAULT_CERTIFICATE_DESIGN.signatories[0].name,
+          role: stored?.signatories?.[0]?.role ?? DEFAULT_CERTIFICATE_DESIGN.signatories[0].role
+        },
+        {
+          name: stored?.signatories?.[1]?.name ?? DEFAULT_CERTIFICATE_DESIGN.signatories[1].name,
+          role: stored?.signatories?.[1]?.role ?? DEFAULT_CERTIFICATE_DESIGN.signatories[1].role
+        }
+      ],
+      idFormat: stored?.idFormat ?? DEFAULT_CERTIFICATE_DESIGN.idFormat
+    };
+  });
 
-  const helperText = $derived(
-    `${courseApi.course?.description?.length || 0}/200 ${$t('course.navItem.certificates.characters')}`
+  const previewData = $derived({
+    recipientName: 'Eleanor Vance',
+    courseName: courseApi.course?.title ?? 'Course Title',
+    courseDescription: design.descriptionOverride || courseApi.course?.description || '',
+    orgName: $currentOrg.name || 'Organization',
+    orgLogoUrl: $currentOrg.avatarUrl || undefined,
+    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' }),
+    certificateId: (design.idFormat ?? 'N° {seq}').replace('{seq}', '0247')
+  });
+
+  const templateLabel = $derived(
+    CERTIFICATE_TEMPLATES.find((tpl) => tpl.id === design.templateId)?.label ?? design.templateId
   );
 
-  function onDescriptionInput(e: Event) {
-    if (!courseApi.course) return;
-    courseApi.course.description = (e.currentTarget as HTMLTextAreaElement).value;
-  }
-
-  function goToOrgSettings() {
-    goto(
-      resolve('/org/[slug]/settings', {
-        slug: $currentOrg.siteName || ''
-      })
-    );
-  }
+  const courseId = $derived(courseApi.course?.id ?? '');
+  const editorHref = $derived(courseId ? resolve('/courses/[id]/certificates/editor', { id: courseId }) : '#');
 </script>
 
-<div class="mb-3 flex h-4/5 w-full flex-1 flex-col justify-between gap-3 lg:flex-row">
-  <section class="h-full w-full lg:w-2/5">
-    <Field.Group class="w-full max-w-md! px-2">
-      <Field.Set>
-        <Field.Legend>{$t('course.navItem.certificates.certificate_settings')}</Field.Legend>
+<div class="grid w-full gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+  <div class="aspect-[1.4/1] w-full">
+    <Certificate.Preview {design} data={previewData} zoom="fit" />
+  </div>
 
-        <Field.Group>
-          <Field.Field>
-            <Field.Label>{$t('course.navItem.certificates.theme')}</Field.Label>
-            <RadioGroup.Root
-              value={certificateTheme}
-              onValueChange={(value) => {
-                if (!courseApi.course) return;
-
-                courseApi.course.certificate = {
-                  ...(courseApi.course.certificate ?? {}),
-                  theme: value as CertificateThemeId
-                };
-              }}
-              disabled={$isFreePlan}
-              class="mb-6"
-            >
-              <div class="flex flex-wrap justify-between gap-y-5">
-                {#each CERTIFICATE_THEME_IDS as theme (theme)}
-                  <div class="mr-3 flex items-start space-x-2">
-                    <RadioGroup.Item value={theme} id={theme} />
-                    <Label for={theme} class="cursor-pointer">
-                      <img src={`/images/certificate_theme_${theme}.png`} alt="" class="h-[82px] w-[110px]" />
-                    </Label>
-                  </div>
-                {/each}
-              </div>
-            </RadioGroup.Root>
-          </Field.Field>
-
-          <Field.Field>
-            <Field.Label>{$t('course.navItem.certificates.logo')}</Field.Label>
-            <Field.Description>
-              {$t('course.navItem.certificates.to_update')}
-              <strong class="font-semibold">{$t('course.navItem.certificates.settings')}</strong>
-              {$t('course.navItem.certificates.and_upload')}
-            </Field.Description>
-            <Button variant="outline" class="mt-3" onclick={goToOrgSettings}>
-              {$t('course.navItem.certificates.goto_settings')}
-            </Button>
-          </Field.Field>
-
-          <Field.Field>
-            <Field.Label for="cert-design-description">{$t('course.navItem.certificates.description')}</Field.Label>
-            <Textarea
-              id="cert-design-description"
-              rows={6}
-              class="w-full"
-              placeholder={$t('course.navItem.certificates.placeholder')}
-              value={courseApi.course?.description ?? ''}
-              oninput={onDescriptionInput}
-              disabled={$isFreePlan}
-            />
-            <Field.Description>{helperText}</Field.Description>
-            {#if errors.description}
-              <Field.Error>{errors.description}</Field.Error>
-            {/if}
-          </Field.Field>
-        </Field.Group>
-      </Field.Set>
-    </Field.Group>
-  </section>
-  <section class="flex w-full rounded-md lg:w-3/5">
-    <div class="w-[95%]">
-      {#if certificateTheme === 'professional'}
-        <Professional studentName={studentNamePlaceholder} />
-      {:else if certificateTheme === 'plain'}
-        <Plain studentName={studentNamePlaceholder} />
-      {:else if certificateTheme === 'purpleProfessionalBadge'}
-        <PurpleProfessionalBadge studentName={studentNamePlaceholder} />
-      {:else if certificateTheme === 'blueProfessionalBadge'}
-        <BlueProfessionalBadge studentName={studentNamePlaceholder} />
-      {:else if certificateTheme === 'purpleBadgePattern'}
-        <PurpleBadgePattern studentName={studentNamePlaceholder} />
-      {:else if certificateTheme === 'blueBadgePattern'}
-        <BlueBadgePattern studentName={studentNamePlaceholder} />
-      {/if}
-    </div>
-  </section>
+  <div class="flex flex-col gap-3">
+    <Card.Root>
+      <Card.Header>
+        <Card.Title class="text-base">{$t('course.navItem.certificates.editor.summary_title')}</Card.Title>
+        <Card.Description>{$t('course.navItem.certificates.editor.summary_subtitle')}</Card.Description>
+      </Card.Header>
+      <Card.Content class="space-y-3 pb-4">
+        <div class="flex items-center justify-between">
+          <span class="ui:text-muted-foreground text-xs tracking-wider uppercase">
+            {$t('course.navItem.certificates.editor.field_template')}
+          </span>
+          <Badge variant="secondary" class="text-[10px] uppercase">{templateLabel}</Badge>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="ui:text-muted-foreground text-xs tracking-wider uppercase">
+            {$t('course.navItem.certificates.editor.field_accent')}
+          </span>
+          <span class="ui:border-border inline-flex items-center gap-2 rounded-full border px-2 py-0.5 text-xs">
+            <span class="size-3.5 rounded-full" style:background-color={design.accentColor} aria-hidden="true"></span>
+            {design.accentColor}
+          </span>
+        </div>
+        <div class="flex items-start justify-between gap-2">
+          <span class="ui:text-muted-foreground text-xs tracking-wider uppercase">
+            {$t('course.navItem.certificates.editor.field_signatories')}
+          </span>
+          <div class="text-right text-xs">
+            <div class="font-medium">{design.signatories[0].name}</div>
+            <div class="ui:text-muted-foreground">{design.signatories[0].role}</div>
+            <div class="mt-1 font-medium">{design.signatories[1].name}</div>
+            <div class="ui:text-muted-foreground">{design.signatories[1].role}</div>
+          </div>
+        </div>
+      </Card.Content>
+      <Card.Footer>
+        <Button class="w-full justify-center" disabled={$isFreePlan || !courseId} href={editorHref}>
+          {#if $isFreePlan}
+            <ZapIcon class="size-4" />
+          {/if}
+          {$t('course.navItem.certificates.editor.customize_design')}
+          <ArrowRightIcon class="size-4" />
+        </Button>
+      </Card.Footer>
+    </Card.Root>
+  </div>
 </div>

@@ -13,6 +13,7 @@
     "storybook:publish": "pnpm build-storybook && pnpm storybook:upload"
   },
   "dependencies": {
+    "@cio/certificates": "workspace:*",
     "@cio/ui": "workspace:*",
     "@cio/utils": "workspace:*",
     "svelte-inview": "^4.0.4",

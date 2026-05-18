@@ -6,6 +6,7 @@
   import { Input } from '@cio/ui/base/input';
   import { Switch } from '@cio/ui/base/switch';
   import { Textarea } from '@cio/ui/base/textarea';
+  import AIGenerateButton from '$features/agent/components/ai-generate-button.svelte';
   import type { OrgLandingPageCallout, OrgLandingPageJson } from '$lib/utils/types/org';
 
   interface Props {
@@ -78,7 +79,13 @@
 
       {#if settings.callout}
         <Field.Field>
-          <Field.Label>{$t('settings.landing_page.editor.callout.heading')}</Field.Label>
+          <div class="flex items-center justify-between">
+            <Field.Label>{$t('settings.landing_page.editor.callout.heading')}</Field.Label>
+            <AIGenerateButton
+              context="the callout/CTA section heading on an organization's course platform landing page"
+              onInsert={(text) => setter(text, 'callout.heading')}
+            />
+          </div>
           <Input
             value={settings.callout.heading}
             placeholder={$t('settings.landing_page.editor.callout.heading_placeholder')}
@@ -87,7 +94,13 @@
         </Field.Field>
 
         <Field.Field>
-          <Field.Label>{$t('settings.landing_page.editor.callout.description')}</Field.Label>
+          <div class="flex items-center justify-between">
+            <Field.Label>{$t('settings.landing_page.editor.callout.description')}</Field.Label>
+            <AIGenerateButton
+              context="the callout/CTA section description on an organization's course platform landing page"
+              onInsert={(text) => setter(text, 'callout.description')}
+            />
+          </div>
           <Textarea
             class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y"
             value={settings.callout.description}

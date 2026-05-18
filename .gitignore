@@ -46,6 +46,14 @@ vite.config.ts*.mjs
 
 tsconfig.tsbuildinfo*
 
+# Stray TS build artifacts emitted next to sources (e.g. from `tsc <file>` without project)
+apps/api/src/**/*.js
+apps/api/src/**/*.js.map
+apps/api/src/**/*.d.ts
+!apps/api/src/types/css-tree.d.ts
+
 storybook-static
 
 .svelte-kit/
+
+company/

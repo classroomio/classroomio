@@ -1,0 +1,60 @@
+{
+  "name": "@cio/jobs",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./connection": {
+      "types": "./dist/connection.d.ts",
+      "default": "./dist/connection.js"
+    },
+    "./queues": {
+      "types": "./dist/queues/index.d.ts",
+      "default": "./dist/queues/index.js"
+    },
+    "./queues/*": {
+      "types": "./dist/queues/*.d.ts",
+      "default": "./dist/queues/*.js"
+    },
+    "./payloads": {
+      "types": "./dist/payloads/index.d.ts",
+      "default": "./dist/payloads/index.js"
+    },
+    "./payloads/*": {
+      "types": "./dist/payloads/*.d.ts",
+      "default": "./dist/payloads/*.js"
+    },
+    "./status": {
+      "types": "./dist/status.d.ts",
+      "default": "./dist/status.js"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist tsconfig.tsbuildinfo && tsc && tsc-alias",
+    "dev": "tsc --watch",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@cio/tsconfig": "workspace:*",
+    "bullmq": "^5.34.0",
+    "ioredis": "^5.4.1"
+  },
+  "peerDependencies": {
+    "zod": "^4.1.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.0",
+    "tsc-alias": "^1.8.16",
+    "tsx": "^4.20.3",
+    "typescript": "^5.5.2",
+    "zod": "^4.1.8"
+  }
+}

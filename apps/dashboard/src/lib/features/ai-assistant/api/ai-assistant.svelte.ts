@@ -4,7 +4,9 @@ import type {
   AgentConversationCreateData,
   AgentConversationSummary,
   AgentStatusData,
-  AiAssistantMessage
+  AiAssistantMessage,
+  CompactConversationRequest,
+  CompactConversationSuccess
 } from '../utils/types';
 
 class AiAssistantApi extends BaseApiWithErrors {
@@ -182,6 +184,71 @@ class AiAssistantApi extends BaseApiWithErrors {
     });
 
     return generatedTitle;
+  }
+
+  async renameConversation(conversationId: string, title: string): Promise<string | null> {
+    let newTitle: string | null = null;
+
+    await this.execute<(typeof classroomio.agent.history)[':conversationId']['$patch']>({
+      requestFn: () =>
+        classroomio.agent.history[':conversationId'].$patch({
+          param: { conversationId },
+          json: { title }
+        }),
+      logContext: 'renaming conversation',
+      onSuccess: (result) => {
+        newTitle = (result.data as { id: string; title: string }).title;
+
+        this.conversations = this.conversations.map((c) => (c.id === conversationId ? { ...c, title: newTitle } : c));
+
+        if (this.currentConversation?.id === conversationId) {
+          this.currentConversation = { ...this.currentConversation, title: newTitle };
+        }
+      }
+    });
+
+    return newTitle;
+  }
+
+  async summarizeConversation(messages: AiAssistantMessage[], courseId: string): Promise<string | null> {
+    let summary: string | null = null;
+
+    await this.execute<(typeof classroomio.agent)['summarize']['$post']>({
+      requestFn: () =>
+        classroomio.agent.summarize.$post({
+          json: { messages, courseId }
+        }),
+      logContext: 'summarizing conversation',
+      onSuccess: (result) => {
+        summary = (result.data as { summary: string }).summary;
+      }
+    });
+
+    return summary;
+  }
+
+  async compactConversation(conversationId: string): Promise<CompactConversationSuccess['data']['messages'] | null> {
+    let compacted: CompactConversationSuccess['data']['messages'] | null = null;
+
+    await this.execute<CompactConversationRequest>({
+      requestFn: () =>
+        classroomio.agent.history[':conversationId'].compact.$post({
+          param: { conversationId }
+        }),
+      logContext: 'compacting conversation',
+      onSuccess: (result) => {
+        compacted = result.data.messages;
+
+        if (this.currentConversation?.id === conversationId) {
+          this.currentConversation = {
+            ...this.currentConversation,
+            messages: compacted as AiAssistantMessage[]
+          };
+        }
+      }
+    });
+
+    return compacted;
   }
 }
 

@@ -17,11 +17,12 @@
 <section>
   <PageHeader className="flex flex-col items-center justify-center text-center">
     <h1 class="mx-auto flex flex-col items-center text-4xl text-slate-900 md:text-6xl">
-      <span>There is room for</span>
-      <span class="relative text-blue-700">Everyone.</span>
+      <span>Certified training for</span>
+      <span class="relative text-blue-700">every team.</span>
     </h1>
     <p class="mt-10 w-[90%] text-center text-lg font-normal text-slate-700 md:w-[60%] lg:mt-7">
-      You get a customizable LMS, AI integration for productive educators and many more...
+      Start with your docs, policies, and videos. Choose the plan that helps you turn them into courses, certificates,
+      and completion evidence.
     </p>
     <div class="mt-8">
       <PricingToggle
@@ -76,8 +77,8 @@
 </section>
 
 <PageSignupCTA
-  header="Migrate your certification program to ClassroomIO"
-  subText="Try before you buy. No credit card required."
+  header="Choose the plan that fits your training program."
+  subText="Start small, prove completion, and scale certified training across your teams, customers, and partners."
   btnLabel="Sign up for free"
   link="/signup"
   demo={false}

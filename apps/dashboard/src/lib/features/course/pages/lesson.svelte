@@ -416,7 +416,7 @@
 
 <Page.Body>
   {#snippet child()}
-    <div class="overflow-x-hidden lg:w-full xl:w-11/12">
+    <div class={`overflow-x-hidden py-6 ${mode === MODES.edit ? 'lg:w-full xl:w-11/12' : 'mx-auto w-full max-w-3xl'}`}>
       {#if $isOrgStudent && lessonApi.lesson && !isLessonUnlocked}
         <Empty
           title={$t('course.navItem.lessons.content_locked_title')}

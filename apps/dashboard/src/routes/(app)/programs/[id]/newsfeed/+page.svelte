@@ -6,6 +6,7 @@
   import { Empty } from '@cio/ui/custom/empty';
   import { NewsFeedLoader } from '$features/course/components/newsfeed';
   import { NewFeedModal, NewsFeedCard } from '$features/program/components/newsfeed';
+  import MyGoalsWidget from '$features/program/components/goals/my-goals-widget.svelte';
   import { programApi, programNewsfeedApi } from '$features/program/api';
   import { t } from '$lib/utils/functions/translations';
   import { isOrgAdmin } from '$lib/utils/store/org';
@@ -125,6 +126,8 @@
   <Page.Body>
     {#snippet child()}
       <NewFeedModal {programId} bind:edit bind:editFeed />
+
+      <MyGoalsWidget {programId} />
 
       {#if isListing}
         <div class="flex w-full flex-col items-center">

@@ -32,6 +32,7 @@ import {
   getPublishedCoursesBySiteName
 } from '@cio/db/queries/course';
 import { getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
+import { getAccountPrimary } from '@cio/db/queries/account';
 import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
 
 import type { OrganizationWithPlans } from '@cio/db/queries/organization/types';
@@ -524,8 +525,13 @@ export async function getOrgSetupData(siteName: string) {
  */
 export async function createOrgPlan(data: TNewOrganizationPlan) {
   try {
+    // Subscriptions always attach to the primary workspace, even if a
+    // secondary org id was supplied at checkout.
+    const primary = data.orgId ? await getAccountPrimary(data.orgId) : null;
+    const targetOrgId = primary?.id ?? data.orgId;
+
     const plan = await createOrganizationPlan({
-      orgId: data.orgId,
+      orgId: targetOrgId,
       planName: data.planName,
       subscriptionId: data.subscriptionId,
       triggeredBy: data.triggeredBy,

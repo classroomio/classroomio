@@ -117,10 +117,6 @@
   });
 </script>
 
-<svelte:head>
-  <title>{$t('public_courses.page_title')}</title>
-</svelte:head>
-
 <PoweredBy />
 
 <main class={shellClass}>
@@ -227,8 +223,7 @@
   <OrgLandingPageFooter
     orgName={data.org.name}
     logoUrl={data.org.avatarUrl ?? undefined}
-    footerLinks={landingSettings.footerLinks}
-    footerText={landingSettings.footerText}
+    footer={landingSettings.footer}
     variant={landingSettings.theme}
   />
 </main>

@@ -1,5 +1,6 @@
 import type { UIMessage } from 'ai';
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import type { CourseTemplateId } from '@cio/ai-assistant';
 
 export interface UploadedDocument {
   id: string;
@@ -23,10 +24,22 @@ export interface AiAssistantMessageContinuation {
   finishReason?: string;
 }
 
+export type AiAssistantTemplateMetadata =
+  | { id: CourseTemplateId }
+  | { action: 'submit_template_answers'; templateId: CourseTemplateId; answers: Record<string, string> }
+  | { action: 'skip_template_form'; templateId: CourseTemplateId };
+
+export interface AiAssistantCompactionMetadata {
+  compactedAt: string;
+  originalMessageCount: number;
+}
+
 export interface AiAssistantMessageMetadata {
   attachment?: AiAssistantMessageAttachment;
   tokenUsage?: AiAssistantMessageTokenUsage;
   continuation?: AiAssistantMessageContinuation;
+  template?: AiAssistantTemplateMetadata;
+  compaction?: AiAssistantCompactionMetadata;
 }
 
 export type AiAssistantMessage = UIMessage<AiAssistantMessageMetadata>;
@@ -60,7 +73,12 @@ export type AgentConversationCreateData = AgentConversationCreateSuccess['data']
 
 export type AgentHistorySaveRequest = (typeof classroomio.agent.history)[':conversationId']['$put'];
 
+export type AgentHistoryRenameRequest = (typeof classroomio.agent.history)[':conversationId']['$patch'];
+
 export type AgentHistoryDeleteRequest = (typeof classroomio.agent.history)[':conversationId']['$delete'];
+
+export type CompactConversationRequest = (typeof classroomio.agent.history)[':conversationId']['compact']['$post'];
+export type CompactConversationSuccess = Extract<InferResponseType<CompactConversationRequest>, { success: true }>;
 
 export type GenerateCourseTitleRequest = (typeof classroomio.agent)['generate-course-title']['$post'];
 export type GenerateCourseTitleSuccess = Extract<InferResponseType<GenerateCourseTitleRequest>, { success: true }>;

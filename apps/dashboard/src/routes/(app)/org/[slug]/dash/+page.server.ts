@@ -8,13 +8,8 @@ const cache: Record<string, DashStatsSuccess['data'] | null> = {};
 function loginActivityDataFromSettled(
   result: PromiseSettledResult<ServerApiResult<LoginActivitySuccess>>
 ): LoginActivityData {
-  if (result.status === 'rejected') {
-    return [];
-  }
-
-  if (!result.value.ok) {
-    return [];
-  }
+  if (result.status === 'rejected') return [];
+  if (!result.value.ok) return [];
 
   return result.value.body.data;
 }
