@@ -4,16 +4,16 @@
   "scripts": {
     "dev": "react-router dev",
     "build": "react-router build",
-    "preview": "react-router-serve ./build/server/index.js",
-    "start": "react-router-serve ./build/server/index.js",
-    "types:check": "fumadocs-mdx && tsc --noEmit",
+    "preview": "wrangler dev --port 4173",
+    "start": "wrangler dev --port 3000",
+    "deploy": "pnpm run build && wrangler deploy",
+    "cf-typegen": "wrangler types && react-router typegen",
+    "types:check": "fumadocs-mdx && wrangler types && react-router typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
     "@scalar/core": "^0.3.28",
     "@react-router/dev": "^7.9.4",
-    "@react-router/node": "^7.9.4",
-    "@react-router/serve": "^7.9.4",
     "fumadocs-core": "16.2.1",
     "fumadocs-mdx": "14.0.4",
     "fumadocs-ui": "16.2.1",
@@ -27,6 +27,7 @@
     "vite": "^7.2.0"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "1.15.3",
     "@tailwindcss/vite": "^4.1.16",
     "@types/mdx": "^2.0.13",
     "@types/node": "^24.10.0",
@@ -34,6 +35,10 @@
     "@types/react-dom": "^19.2.2",
     "tailwindcss": "^4.1.16",
     "typescript": "^5.9.3",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "wrangler": "4.86.0"
+  },
+  "engines": {
+    "node": "^20.19.3"
   }
 }
