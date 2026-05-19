@@ -5,6 +5,7 @@ import { ZWidgetPublicKeyParams } from '@cio/utils/validation/widget';
 import { zValidator } from '@hono/zod-validator';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { DEFAULT_WINDOW_MS } from '@api/constants/rate-limiter';
+import { publicApiCors } from '@api/middlewares/cors';
 
 const widgetPayloadIpLimiter = createRateLimiter({
   maxRequests: 100,
@@ -19,7 +20,7 @@ const widgetPayloadKeyLimiter = createRateLimiter({
   keyGenerator: (c) => `widget_payload_key:${c.req.param('publicKey')}`
 });
 
-export const publicWidgetsRouter = new Hono().get(
+export const publicWidgetsRouter = new Hono().use('*', publicApiCors).get(
   '/:publicKey/payload',
   zValidator('param', ZWidgetPublicKeyParams),
   widgetPayloadIpLimiter,

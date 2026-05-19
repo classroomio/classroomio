@@ -251,8 +251,8 @@
   <div class="mx-auto flex w-full items-center justify-between gap-20 px-4 py-1 lg:w-[90%] lg:px-0">
     <a href="/" class="w-[10%]">
       <div class="flex w-full items-center">
-        <img loading="lazy" width="28" height="28" src="/logo-512.png" alt="classroomio logo" class="w-6 md:w-7" />
-        <h1 class="ml-2 text-xs font-medium md:text-base">ClassroomIO</h1>
+        <img loading="lazy" width="28" height="28" src="/logo-512.png" alt="classroomio logo" class="w-7" />
+        <h1 class="ml-2 text-base font-medium">ClassroomIO</h1>
       </div>
     </a>
 

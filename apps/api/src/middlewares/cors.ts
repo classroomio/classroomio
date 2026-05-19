@@ -28,9 +28,16 @@ export const sessionCors = cors({
   credentials: true
 });
 
-/** Path prefix considered "public REST API" for CORS / session bypass. */
-export const PUBLIC_API_PATH_PREFIX = '/public-api/';
+/**
+ * Path prefixes that must accept requests from any third-party origin (no cookies):
+ *
+ * - `/public-api/`: Bearer-token REST API (automation keys).
+ * - `/widgets/`: Anonymous payload endpoint hit by the course-widget embed script on customer sites.
+ *
+ * Requests under these prefixes use `publicApiCors` and skip the Better Auth session lookup.
+ */
+export const PUBLIC_CORS_PATH_PREFIXES = ['/public-api/', '/widgets/'] as const;
 
-export function isPublicApiPath(path: string): boolean {
-  return path.startsWith(PUBLIC_API_PATH_PREFIX);
+export function isPublicCorsPath(path: string): boolean {
+  return PUBLIC_CORS_PATH_PREFIXES.some((prefix) => path.startsWith(prefix));
 }

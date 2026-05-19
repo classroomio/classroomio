@@ -6,7 +6,7 @@ import { Hono } from '@api/utils/hono';
 import { accountRouter } from '@api/routes/account';
 import { auth } from '@cio/db/auth';
 import { communityRouter } from '@api/routes/community';
-import { isPublicApiPath, sessionCors } from '@api/middlewares/cors';
+import { isPublicCorsPath, sessionCors } from '@api/middlewares/cors';
 import { courseRouter } from '@api/routes/course';
 import { dashAnalyticsRouter } from '@api/routes/dash';
 import { domainRouter } from '@api/routes/domain/domain';
@@ -42,13 +42,13 @@ export const app = new Hono()
   .use('*', prettyJSON())
   .use('*', secureHeaders())
   .use('*', async (c, next) => {
-    if (isPublicApiPath(c.req.path)) return next();
+    if (isPublicCorsPath(c.req.path)) return next();
 
     return sessionCors(c, next);
   })
   .use('*', rateLimiter)
   .use('*', async (c, next) => {
-    if (isPublicApiPath(c.req.path)) {
+    if (isPublicCorsPath(c.req.path)) {
       c.set('user', null);
       c.set('session', null);
       c.set('orgRoles', {});
