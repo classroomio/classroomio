@@ -13,7 +13,8 @@ const embedEntries = {
 } as const;
 const embedDevEntrypoints = {
   '/embeds/question-type-picker/question-type-picker.js': '/src/widgets/question-type-picker/bootstrap.ts',
-  '/embeds/course-widget/course-widget.js': '/src/widgets/course-widget/bootstrap.ts'
+  '/embeds/course-widget/course-widget.js': '/src/widgets/course-widget/bootstrap.ts',
+  '/embeds/course-widget/embed.html': '/src/widgets/course-widget/embed.html'
 } as const;
 
 function embedDevEntryPlugin() {

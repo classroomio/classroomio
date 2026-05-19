@@ -391,6 +391,7 @@ export const ZWidgetDetail = z.object({
     config: ZWidgetConfig,
     selectedCourseIds: z.array(z.uuid()),
     embedCode: z.string(),
+    hostedEmbedUrl: z.string(),
     publicScriptUrl: z.string()
   }),
   organization: z.object({

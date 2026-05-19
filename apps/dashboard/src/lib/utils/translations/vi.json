@@ -4010,8 +4010,17 @@
       "archive": "Lưu trữ",
       "restore": "Khôi phục",
       "copy_embed": "Sao chép nhúng",
+      "copy_url": "Sao chép URL",
       "rename": "Đổi tên",
       "delete": "Xóa"
+    },
+    "embed": {
+      "tabs": {
+        "html": "HTML",
+        "url": "URL"
+      },
+      "url_label": "URL nhúng được lưu trữ",
+      "url_helper": "Sử dụng URL này trên các nền tảng như Notion hoặc Confluence chỉ chấp nhận liên kết."
     },
     "preview": {
       "heading": "Xem trước",

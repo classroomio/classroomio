@@ -171,6 +171,16 @@ export function getWidgetEmbedCode(publicKey: string): string {
   return `<div data-cio-widget="course-widget" data-widget-key="${publicKey}" data-api-base-url="${apiBaseUrl}"></div>\n<script async type="module" src="${scriptUrl}"></script>`;
 }
 
+export function getWidgetHostedEmbedUrl(publicKey: string): string {
+  const embedBaseUrl = (
+    env.PUBLIC_EMBED_BASE_URL ||
+    (env.NODE_ENV === 'development' ? DEFAULT_LOCAL_EMBED_BASE_URL : DEFAULT_EMBED_CDN_BASE_URL)
+  ).replace(/\/$/, '');
+  const apiBaseUrl = getWidgetApiBaseUrl();
+
+  return `${embedBaseUrl}/embeds/course-widget/embed.html?key=${encodeURIComponent(publicKey)}&api=${encodeURIComponent(apiBaseUrl)}`;
+}
+
 type OrgCourse = Awaited<ReturnType<typeof getOrgCourses>>['items'][number];
 
 export function formatCourseForWidget(

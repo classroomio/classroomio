@@ -30,6 +30,7 @@ import {
   getCourseBaseUrl,
   getCourseWidgetScriptUrl,
   getWidgetEmbedCode,
+  getWidgetHostedEmbedUrl,
   listWidgetAvailableEditorData
 } from './widget-payload';
 
@@ -100,6 +101,7 @@ export async function getOrganizationWidgetDetail(orgId: string, widgetId: strin
         config: normalizeWidgetConfig(widget.config as Record<string, unknown>, editorData.planName),
         selectedCourseIds: selectedCourses.map((course) => course.courseId),
         embedCode: getWidgetEmbedCode(widget.publicKey),
+        hostedEmbedUrl: getWidgetHostedEmbedUrl(widget.publicKey),
         publicScriptUrl: getCourseWidgetScriptUrl()
       },
       organization: {
@@ -227,6 +229,7 @@ export async function publishOrganizationWidget(orgId: string, widgetId: string,
       version,
       payload,
       embedCode: getWidgetEmbedCode(widget.publicKey),
+      hostedEmbedUrl: getWidgetHostedEmbedUrl(widget.publicKey),
       publicScriptUrl: getCourseWidgetScriptUrl()
     };
   } catch (error) {

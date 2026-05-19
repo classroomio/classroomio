@@ -4010,8 +4010,17 @@
       "archive": "Archiwum",
       "restore": "Przywróć",
       "copy_embed": "Skopiuj osadzenie",
+      "copy_url": "Kopiuj URL",
       "rename": "Zmień nazwę",
       "delete": "Usuń"
+    },
+    "embed": {
+      "tabs": {
+        "html": "HTML",
+        "url": "URL"
+      },
+      "url_label": "Hostowany URL osadzania",
+      "url_helper": "Użyj tego adresu URL na platformach takich jak Notion lub Confluence, które akceptują tylko linki."
     },
     "preview": {
       "heading": "Podgląd",

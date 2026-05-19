@@ -66,6 +66,19 @@
   let lastStepsCount = $state(0);
   let lastCurrentActionSig = $state('');
   let lastStreamingSig = $state(0);
+  // True when the user is at (or very near) the bottom. Streaming auto-scroll is gated on this
+  // so scrolling up doesn't get clobbered by the next token.
+  let isPinnedToBottom = $state(true);
+
+  const SCROLL_PIN_THRESHOLD = 60;
+
+  function handleScroll() {
+    if (!messagesContainer) return;
+
+    const distanceFromBottom =
+      messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight;
+    isPinnedToBottom = distanceFromBottom <= SCROLL_PIN_THRESHOLD;
+  }
 
   const isEmpty = $derived(messages.length === 0);
 
@@ -101,6 +114,8 @@
     if (messages.length === lastMessageCount) return;
 
     lastMessageCount = messages.length;
+    // A new message (typically the user's) — force scroll and re-pin.
+    isPinnedToBottom = true;
     scrollToBottom();
   });
 
@@ -110,6 +125,9 @@
     if (streamingContentSig === lastStreamingSig) return;
 
     lastStreamingSig = streamingContentSig;
+
+    if (!isPinnedToBottom) return;
+
     // Use 'auto' during streaming — smooth scrolls queue up per token and lag behind the cursor.
     scrollToBottom('auto');
   });
@@ -120,7 +138,7 @@
     const stepsCount = planExecutionState.steps.length;
     if (stepsCount !== lastStepsCount) {
       lastStepsCount = stepsCount;
-      scrollToBottom();
+      if (isPinnedToBottom) scrollToBottom();
       return;
     }
 
@@ -128,12 +146,12 @@
 
     if (actionSig !== lastCurrentActionSig) {
       lastCurrentActionSig = actionSig;
-      scrollToBottom();
+      if (isPinnedToBottom) scrollToBottom();
     }
   });
 </script>
 
-<div class="flex-1 overflow-y-auto p-4" bind:this={messagesContainer}>
+<div class="flex-1 overflow-y-auto p-4" bind:this={messagesContainer} onscroll={handleScroll}>
   {#if isEmpty}
     <!-- Empty state with quick actions -->
     <div class="flex h-full flex-col items-center justify-center gap-4">

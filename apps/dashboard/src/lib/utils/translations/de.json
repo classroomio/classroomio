@@ -4010,8 +4010,17 @@
       "archive": "Archiv",
       "restore": "Wiederherstellen",
       "copy_embed": "Einbetten kopieren",
+      "copy_url": "URL kopieren",
       "rename": "Umbenennen",
       "delete": "Löschen"
+    },
+    "embed": {
+      "tabs": {
+        "html": "HTML",
+        "url": "URL"
+      },
+      "url_label": "Gehostete Embed-URL",
+      "url_helper": "Verwenden Sie diese URL auf Plattformen wie Notion oder Confluence, die nur Links akzeptieren."
     },
     "preview": {
       "heading": "Vorschau",

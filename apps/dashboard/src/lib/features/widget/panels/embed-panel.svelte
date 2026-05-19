@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
+  import * as Tabs from '@cio/ui/base/tabs';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { t } from '$lib/utils/functions/translations';
   import type { WidgetDetail } from '../utils/types';
@@ -11,15 +12,36 @@
   }
 
   let { detail, onRollback, onDelete }: Props = $props();
+
+  let activeFormat = $state<'html' | 'url'>('html');
 </script>
 
 <div class="space-y-6">
-  <TextareaField label={$t('widgets.form.embed_code')} value={detail.widget.embedCode} rows={6} readonly />
-  <div class="flex flex-wrap gap-2">
-    <Button variant="outline" onclick={() => navigator.clipboard.writeText(detail.widget.embedCode)}>
-      {$t('widgets.actions.copy_embed')}
-    </Button>
-  </div>
+  <Tabs.Root bind:value={activeFormat} class="w-full">
+    <Tabs.List class="inline-flex w-auto">
+      <Tabs.Trigger value="html">{$t('widgets.embed.tabs.html')}</Tabs.Trigger>
+      <Tabs.Trigger value="url">{$t('widgets.embed.tabs.url')}</Tabs.Trigger>
+    </Tabs.List>
+
+    <Tabs.Content value="html" class="mt-4 space-y-3">
+      <TextareaField label={$t('widgets.form.embed_code')} value={detail.widget.embedCode} rows={6} readonly />
+      <div class="flex flex-wrap gap-2">
+        <Button variant="outline" onclick={() => navigator.clipboard.writeText(detail.widget.embedCode)}>
+          {$t('widgets.actions.copy_embed')}
+        </Button>
+      </div>
+    </Tabs.Content>
+
+    <Tabs.Content value="url" class="mt-4 space-y-3">
+      <TextareaField label={$t('widgets.embed.url_label')} value={detail.widget.hostedEmbedUrl} rows={2} readonly />
+      <p class="ui:text-muted-foreground text-xs">{$t('widgets.embed.url_helper')}</p>
+      <div class="flex flex-wrap gap-2">
+        <Button variant="outline" onclick={() => navigator.clipboard.writeText(detail.widget.hostedEmbedUrl)}>
+          {$t('widgets.actions.copy_url')}
+        </Button>
+      </div>
+    </Tabs.Content>
+  </Tabs.Root>
 
   {#if detail.versions.length > 0}
     <div class="space-y-2">

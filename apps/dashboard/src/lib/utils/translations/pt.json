@@ -4010,8 +4010,17 @@
       "archive": "Arquivo",
       "restore": "Restaurar",
       "copy_embed": "Copiar incorporação",
+      "copy_url": "Copiar URL",
       "rename": "Renomear",
       "delete": "Excluir"
+    },
+    "embed": {
+      "tabs": {
+        "html": "HTML",
+        "url": "URL"
+      },
+      "url_label": "URL de incorporação hospedada",
+      "url_helper": "Use esta URL em plataformas como Notion ou Confluence que só aceitam links."
     },
     "preview": {
       "heading": "Visualização",

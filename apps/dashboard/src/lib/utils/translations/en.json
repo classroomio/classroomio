@@ -1343,8 +1343,17 @@
       "archive": "Archive",
       "restore": "Restore",
       "copy_embed": "Copy embed",
+      "copy_url": "Copy URL",
       "rename": "Rename",
       "delete": "Delete"
+    },
+    "embed": {
+      "tabs": {
+        "html": "HTML",
+        "url": "URL"
+      },
+      "url_label": "Hosted embed URL",
+      "url_helper": "Use this URL on platforms like Notion or Confluence that only accept a link."
     },
     "create": {
       "description": "Give your widget a name to get started."

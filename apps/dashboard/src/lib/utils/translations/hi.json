@@ -4010,8 +4010,17 @@
       "archive": "पुरालेख",
       "restore": "पुनर्स्थापित करें",
       "copy_embed": "एंबेड कॉपी करें",
+      "copy_url": "URL कॉपी करें",
       "rename": "नाम बदलें",
       "delete": "हटाएँ"
+    },
+    "embed": {
+      "tabs": {
+        "html": "HTML",
+        "url": "URL"
+      },
+      "url_label": "होस्ट किया गया एम्बेड URL",
+      "url_helper": "Notion या Confluence जैसी प्लेटफ़ॉर्म पर इस URL का उपयोग करें जो केवल लिंक स्वीकार करती हैं।"
     },
     "preview": {
       "heading": "पूर्वावलोकन",

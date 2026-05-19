@@ -4010,8 +4010,17 @@
       "archive": "Архив",
       "restore": "Восстановить",
       "copy_embed": "Копировать встроить",
+      "copy_url": "Копировать URL",
       "rename": "Переименовать",
       "delete": "Удалить"
+    },
+    "embed": {
+      "tabs": {
+        "html": "HTML",
+        "url": "URL"
+      },
+      "url_label": "URL встраивания",
+      "url_helper": "Используйте этот URL на платформах вроде Notion или Confluence, которые принимают только ссылки."
     },
     "preview": {
       "heading": "Предварительный просмотр",

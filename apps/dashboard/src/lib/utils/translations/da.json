@@ -4010,8 +4010,17 @@
       "archive": "Arkiv",
       "restore": "Gendan",
       "copy_embed": "Kopiér indlejring",
+      "copy_url": "Kopiér URL",
       "rename": "Omdøb",
       "delete": "Slet"
+    },
+    "embed": {
+      "tabs": {
+        "html": "HTML",
+        "url": "URL"
+      },
+      "url_label": "Hostet embed-URL",
+      "url_helper": "Brug denne URL på platforme som Notion eller Confluence, der kun accepterer links."
     },
     "preview": {
       "heading": "Forhåndsvisning",

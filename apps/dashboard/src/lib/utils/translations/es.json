@@ -4010,8 +4010,17 @@
       "archive": "Archivo",
       "restore": "Restaurar",
       "copy_embed": "Copiar incrustado",
+      "copy_url": "Copiar URL",
       "rename": "Cambiar nombre",
       "delete": "Eliminar"
+    },
+    "embed": {
+      "tabs": {
+        "html": "HTML",
+        "url": "URL"
+      },
+      "url_label": "URL de incrustación alojada",
+      "url_helper": "Usa esta URL en plataformas como Notion o Confluence que solo aceptan enlaces."
     },
     "preview": {
       "heading": "Vista previa",
