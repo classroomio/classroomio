@@ -2,6 +2,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createMoonshotAI } from '@ai-sdk/moonshotai';
+import type { LanguageModel } from 'ai';
 import { AIProvider, type AIProviderConfig } from '../types';
 
 const DEFAULT_MODELS: Record<AIProvider, string> = {
@@ -22,7 +23,7 @@ const PROVIDER_API_KEY_ENV: Record<AIProvider, string> = {
  * Creates an AI SDK LanguageModel from provider configuration.
  * Normalizes OpenAI, Anthropic, and Google into a single interface for streamText().
  */
-export function createModel(config: AIProviderConfig) {
+export function createModel(config: AIProviderConfig): LanguageModel {
   const modelName = config.model || DEFAULT_MODELS[config.provider];
 
   switch (config.provider) {
