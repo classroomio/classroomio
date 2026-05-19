@@ -1,8 +1,5 @@
 import { generateText } from 'ai';
-import { AIProvider, type AIProviderConfig } from '@cio/ai-assistant';
-import { createOpenAI } from '@ai-sdk/openai';
-import { createAnthropic } from '@ai-sdk/anthropic';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { AIProvider, type AIProviderConfig, createModel } from '@cio/ai-assistant';
 
 const TEXT_GEN_MODELS: Record<AIProvider, string> = {
   [AIProvider.OPENAI]: 'gpt-4o-mini',
@@ -10,31 +7,6 @@ const TEXT_GEN_MODELS: Record<AIProvider, string> = {
   [AIProvider.GOOGLE]: 'gemini-3.1-flash-lite',
   [AIProvider.MOONSHOT]: 'kimi-k2.6'
 };
-
-function createTextGenModel(config: AIProviderConfig) {
-  const modelName = TEXT_GEN_MODELS[config.provider];
-
-  switch (config.provider) {
-    case AIProvider.OPENAI: {
-      const openai = createOpenAI({ apiKey: config.apiKey });
-      return openai(modelName);
-    }
-    case AIProvider.ANTHROPIC: {
-      const anthropic = createAnthropic({ apiKey: config.apiKey });
-      return anthropic(modelName);
-    }
-    case AIProvider.GOOGLE: {
-      const google = createGoogleGenerativeAI({ apiKey: config.apiKey });
-      return google(modelName);
-    }
-    case AIProvider.MOONSHOT: {
-      const moonshot = createOpenAI({ apiKey: config.apiKey, baseURL: 'https://api.moonshot.cn/v1' });
-      return moonshot(modelName);
-    }
-    default:
-      throw new Error(`Unsupported AI provider: ${config.provider}`);
-  }
-}
 
 export interface GenerateFieldTextResult {
   text: string;
@@ -49,8 +21,8 @@ export async function generateFieldText(
   context: string | undefined,
   providerConfig: AIProviderConfig
 ): Promise<GenerateFieldTextResult> {
-  const model = createTextGenModel(providerConfig);
   const modelName = TEXT_GEN_MODELS[providerConfig.provider];
+  const model = createModel({ ...providerConfig, model: modelName });
 
   const contextLine = context ? `Context: ${context}.` : '';
   const formatLine =

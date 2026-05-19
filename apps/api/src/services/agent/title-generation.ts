@@ -1,9 +1,6 @@
 import { generateText, generateObject } from 'ai';
 import { z } from 'zod';
-import { AIProvider, type AIProviderConfig } from '@cio/ai-assistant';
-import { createOpenAI } from '@ai-sdk/openai';
-import { createAnthropic } from '@ai-sdk/anthropic';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { AIProvider, type AIProviderConfig, createModel } from '@cio/ai-assistant';
 
 /**
  * Cheap models used specifically for title generation to minimize token cost.
@@ -16,28 +13,7 @@ const TITLE_MODELS: Record<AIProvider, string> = {
 };
 
 function createTitleModel(config: AIProviderConfig) {
-  const modelName = TITLE_MODELS[config.provider];
-
-  switch (config.provider) {
-    case AIProvider.OPENAI: {
-      const openai = createOpenAI({ apiKey: config.apiKey });
-      return openai(modelName);
-    }
-    case AIProvider.ANTHROPIC: {
-      const anthropic = createAnthropic({ apiKey: config.apiKey });
-      return anthropic(modelName);
-    }
-    case AIProvider.GOOGLE: {
-      const google = createGoogleGenerativeAI({ apiKey: config.apiKey });
-      return google(modelName);
-    }
-    case AIProvider.MOONSHOT: {
-      const moonshot = createOpenAI({ apiKey: config.apiKey, baseURL: 'https://api.moonshot.cn/v1' });
-      return moonshot(modelName);
-    }
-    default:
-      throw new Error(`Unsupported AI provider: ${config.provider}`);
-  }
+  return createModel({ ...config, model: TITLE_MODELS[config.provider] });
 }
 
 /**
