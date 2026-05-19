@@ -464,7 +464,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
     .from(course)
     .where(inArray(course.id, [HIPAA_COURSE_ID, SOC2_COURSE_ID]));
   const existingCourseIds = new Set(existingCourses.map((c) => c.id));
-  const coursesToInsert: TNewCourse[] = [
+  const allComplianceCourses: TNewCourse[] = [
     {
       id: HIPAA_COURSE_ID,
       title: 'HIPAA Awareness 2026',
@@ -531,7 +531,8 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       status: 'ACTIVE',
       type: 'COMPLIANCE'
     }
-  ].filter((c) => !existingCourseIds.has(c.id!));
+  ];
+  const coursesToInsert = allComplianceCourses.filter((c) => !existingCourseIds.has(c.id!));
   if (coursesToInsert.length > 0) {
     await db.insert(course).values(coursesToInsert);
     console.log(`   ✓ Inserted ${coursesToInsert.length} compliance course(s)`);

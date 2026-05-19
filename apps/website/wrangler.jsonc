@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "classroomio-website",
+  "name": "cio-web",
   "main": ".svelte-kit/cloudflare/_worker.js",
   "compatibility_date": "2026-03-13",
   "compatibility_flags": ["nodejs_compat"],
