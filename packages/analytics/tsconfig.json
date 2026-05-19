@@ -16,10 +16,10 @@
     "typeRoots": ["../../node_modules/@types", "./node_modules/@types"],
     "types": ["node"],
     "paths": {
-      "@cio/db": ["../db/dist/index.d.ts"],
-      "@cio/db/*": ["../db/dist/*"],
-      "@cio/utils": ["../utils/dist/index.d.ts"],
-      "@cio/utils/*": ["../utils/dist/*"]
+      "@cio/db": ["./node_modules/@cio/db/dist/index.d.ts"],
+      "@cio/db/*": ["./node_modules/@cio/db/dist/*"],
+      "@cio/utils": ["./node_modules/@cio/utils/dist/index.d.ts"],
+      "@cio/utils/*": ["./node_modules/@cio/utils/dist/*"]
     }
   },
   "include": ["src/**/*"],

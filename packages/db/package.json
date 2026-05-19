@@ -4,6 +4,44 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "default": "./dist/types.js"
+    },
+    "./drizzle": {
+      "types": "./dist/drizzle.d.ts",
+      "default": "./dist/drizzle.js"
+    },
+    "./schema": {
+      "types": "./dist/schema.d.ts",
+      "default": "./dist/schema.js"
+    },
+    "./auth": {
+      "types": "./dist/auth.d.ts",
+      "default": "./dist/auth.js"
+    },
+    "./queries": {
+      "types": "./dist/queries/index.d.ts",
+      "default": "./dist/queries/index.js"
+    },
+    "./queries/query-errors": {
+      "types": "./dist/queries/query-errors.d.ts",
+      "default": "./dist/queries/query-errors.js"
+    },
+    "./queries/*": {
+      "types": "./dist/queries/*/index.d.ts",
+      "default": "./dist/queries/*/index.js"
+    },
+    "./queries/*/*": {
+      "types": "./dist/queries/*/*.d.ts",
+      "default": "./dist/queries/*/*.js"
+    }
+  },
   "files": [
     "dist"
   ],
