@@ -82,7 +82,7 @@
   </div>
 
   <!-- Particle cloud — same component used in the footer at lower intensity -->
-  <ParticleField class="absolute inset-0 z-[2] h-full w-full" />
+  <ParticleField class="pointer-events-none absolute inset-0 z-[2] hidden h-full w-full md:block" />
 
   <!-- Bottom fade to next section -->
   <div

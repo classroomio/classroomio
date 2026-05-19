@@ -8,7 +8,7 @@ import type {
   TOrganization,
   TOrganizationPlan
 } from '@db/types';
-import { and, asc, count, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, inArray, isNotNull, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -16,6 +16,26 @@ import type { TAudienceSortBy, TAudienceSortOrder } from '@cio/utils/validation/
 
 export function getOrgIdBySiteName(siteName: string) {
   return db.select().from(schema.organization).where(eq(schema.organization.siteName, siteName)).limit(1);
+}
+
+/**
+ * Hostnames (lowercase) for organizations with a verified custom domain.
+ * Used by the API to warm an in-memory CORS / trusted-origin registry at startup.
+ */
+export async function getVerifiedCustomDomainHostnames(): Promise<string[]> {
+  try {
+    const rows = await db
+      .select({ customDomain: schema.organization.customDomain })
+      .from(schema.organization)
+      .where(and(eq(schema.organization.isCustomDomainVerified, true), isNotNull(schema.organization.customDomain)));
+
+    return [...new Set(rows.map((row) => row.customDomain?.trim().toLowerCase()).filter(Boolean) as string[])];
+  } catch (error) {
+    console.error('getVerifiedCustomDomainHostnames error:', error);
+    throw new Error(
+      `Failed to load verified custom domains: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
 }
 
 export const getOrganizationByProfileId = async (profileId: string): Promise<OrganizationWithMemberAndPlans[]> => {

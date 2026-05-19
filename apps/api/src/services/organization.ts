@@ -13,6 +13,7 @@ import {
   getOrgIdBySiteName,
   getOrganizationAudience,
   getOrganizationAudienceMember,
+  getOrganizationById,
   getOrganizationBySiteName,
   getOrganizationTeam,
   getOrganizations,
@@ -42,6 +43,7 @@ import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
 import { getProfileById } from '@cio/db/queries/auth';
 import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/invite';
+import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
 
 const PUBLIC_ORG_LANDING_PAGE_COURSE_LIMIT = 4;
 
@@ -572,10 +574,32 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
       }
     }
 
+    let previousCustomDomainHostname: string | undefined;
+
+    if (data.customDomain !== undefined || data.isCustomDomainVerified !== undefined) {
+      const previousOrg = await getOrganizationById(orgId);
+      const oldHost = previousOrg?.customDomain?.trim().toLowerCase();
+
+      if (oldHost) {
+        previousCustomDomainHostname = oldHost;
+      }
+    }
+
     const organization = await updateOrganization(orgId, data);
     if (!organization) {
       throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
     }
+
+    if (previousCustomDomainHostname) {
+      untrustCustomDomainHostname(previousCustomDomainHostname);
+    }
+
+    const newCustomDomainHostname = organization.customDomain?.trim().toLowerCase();
+
+    if (newCustomDomainHostname && organization.isCustomDomainVerified) {
+      trustCustomDomainHostname(newCustomDomainHostname);
+    }
+
     return organization;
   } catch (error) {
     if (error instanceof AppError) {

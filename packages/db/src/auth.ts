@@ -1,4 +1,5 @@
 import * as CONSTANTS from './constants';
+import { resolveTrustedBrowserOrigin } from './utils';
 import * as schema from '@db/schema';
 
 import { admin, anonymous } from 'better-auth/plugins';
@@ -43,7 +44,17 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
       prompt: 'select_account consent'
     }
   },
-  trustedOrigins: CONSTANTS.TRUSTED_ORIGINS,
+  trustedOrigins: (request) => {
+    const origins = [...CONSTANTS.TRUSTED_ORIGINS];
+    const originHeader = request?.headers.get('origin');
+    const resolved = resolveTrustedBrowserOrigin(originHeader, CONSTANTS.TRUSTED_ORIGINS);
+
+    if (resolved && !origins.includes(resolved)) {
+      origins.push(resolved);
+    }
+
+    return origins;
+  },
   advanced: {
     cookiePrefix: 'classroomio',
     crossSubDomainCookies: {

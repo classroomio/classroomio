@@ -1,6 +1,7 @@
 import 'dotenv/config';
 
-import { API_SERVER_URL, TRUSTED_ORIGINS } from '@api/constants';
+import { API_SERVER_URL } from '@api/constants';
+import { resolveTrustedBrowserOriginForCors } from '@api/utils/origins';
 
 import { Hono } from '@api/utils/hono';
 import { accountRouter } from '@api/routes/account';
@@ -44,7 +45,7 @@ export const app = new Hono()
   .use(
     '*',
     cors({
-      origin: TRUSTED_ORIGINS,
+      origin: (origin) => resolveTrustedBrowserOriginForCors(origin),
       allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowHeaders: ['Content-Type', 'Authorization', 'Cio-org-id'],
       exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],

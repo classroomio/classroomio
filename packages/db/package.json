@@ -25,6 +25,10 @@
       "types": "./dist/auth.d.ts",
       "default": "./dist/auth.js"
     },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "default": "./dist/utils/index.js"
+    },
     "./queries": {
       "types": "./dist/queries/index.d.ts",
       "default": "./dist/queries/index.js"

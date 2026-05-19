@@ -2,9 +2,10 @@ import 'dotenv/config';
 
 import { API_PORT } from '@api/constants';
 import { app } from '@api/app';
-import { env } from '@api/config/env';
 import { configureOpenAPI } from '@api/utils/openapi';
 import { connectRedis } from '@api/utils/redis/redis';
+import { env } from '@api/config/env';
+import { preloadVerifiedCustomDomainOriginsRegistry } from '@api/utils/origins';
 import { serve } from '@hono/node-server';
 import { showRoutes } from 'hono/dev';
 
@@ -14,6 +15,10 @@ async function startServer() {
 
   // Connect to Redis (non-blocking: API starts even if Redis fails)
   await connectRedis();
+
+  preloadVerifiedCustomDomainOriginsRegistry().then(() => {
+    console.log('Verified custom domain origins preloaded');
+  });
 
   serve({ fetch: app.fetch, port: API_PORT });
 
