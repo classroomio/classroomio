@@ -13,7 +13,7 @@
     "postinstall": "test -d .git && lefthook install || true",
     "release": "standard-version",
     "db:reset": "pnpm --filter @cio/db db:reset",
-    "dashboard:dev": "pnpm --filter=@cio/dashboard --filter=@cio/ui run dev",
+    "dashboard:dev": "pnpm --filter=@cio/dashboard run dev",
     "api:dev": "pnpm --filter=@cio/api --filter=@cio/jobs-worker run dev",
     "jobs:dev": "pnpm --filter=@cio/jobs-worker run dev",
     "dev:all": "pnpm concurrently -n dash,api,jobs -c green,blue,yellow \"pnpm dashboard:dev\" \"pnpm api:dev\" \"pnpm jobs:dev\"",

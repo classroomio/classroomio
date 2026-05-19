@@ -1,3 +1,5 @@
+backups/
+
 dist
 node_modules
 *.log

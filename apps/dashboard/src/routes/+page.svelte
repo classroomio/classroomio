@@ -56,7 +56,10 @@
   onMount(async () => {
     if (!data.isOrgSite || !data.org) {
       if (!appInitApi.loading) {
-        appInitApi.routeUserToNextPage({ isOrgSite: false, orgSiteName: '' });
+        appInitApi.setupApp(data.locals, {
+          isOrgSite: data.isOrgSite,
+          orgSiteName: data.orgSiteName
+        });
       }
 
       return;

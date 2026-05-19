@@ -24,7 +24,12 @@
     "generate-types": "tsx scripts/generate-types.ts && pnpm format",
     "seed": "tsx src/scripts/seed.ts",
     "format": "prettier . --write",
-    "db:supabase-to-betterauth": "tsx src/scripts/supabase-to-betterauth.ts"
+    "db:supabase-to-betterauth": "tsx src/scripts/supabase-to-betterauth.ts",
+    "db:dump-backup": "tsx src/scripts/pg-dump-backup.ts",
+    "db:push-dump-to-new-db": "tsx src/scripts/push-dump-to-new-db.ts",
+    "db:restore-lesson-section-from-dump": "tsx src/scripts/restore-lesson-section-from-dump.ts",
+    "db:restore-organizationmember-from-dump": "tsx src/scripts/restore-organizationmember-from-dump.ts",
+    "db:disable-v1-content-grouping-from-dump": "tsx src/scripts/disable-v1-content-grouping-from-dump.ts"
   },
   "dependencies": {
     "@better-auth/sso": "^1.4.18",

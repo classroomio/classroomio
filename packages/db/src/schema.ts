@@ -272,27 +272,18 @@ export const analyticsCountryDaily = pgTable(
   ]
 );
 
-export const courseSection = pgTable(
-  'course_section',
-  {
-    id: uuid().defaultRandom().primaryKey().notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-    title: varchar(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    order: bigint({ mode: 'number' }).default(sql`'0'`),
-    courseId: uuid('course_id')
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.courseId],
-      foreignColumns: [course.id],
-      name: 'public_course_section_course_id_fkey'
-    })
-      .onUpdate('cascade')
-      .onDelete('cascade')
-  ]
-);
+export const courseSection = pgTable('course_section', {
+  id: uuid().defaultRandom().primaryKey().notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+  title: varchar(),
+  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+  order: bigint({ mode: 'number' }).default(sql`'0'`),
+  courseId: uuid('course_id').references(() => course.id, {
+    onDelete: 'cascade',
+    onUpdate: 'cascade'
+  })
+});
 
 export const group = pgTable(
   'group',
@@ -1001,7 +992,10 @@ export const lesson = pgTable(
         assetId?: string;
       }[]
     >(),
-    sectionId: uuid('section_id'),
+    sectionId: uuid('section_id').references(() => courseSection.id, {
+      onDelete: 'cascade',
+      onUpdate: 'cascade'
+    }),
     slug: varchar()
   },
   (table) => [
@@ -1015,13 +1009,6 @@ export const lesson = pgTable(
       foreignColumns: [profile.id],
       name: 'lesson_teacher_id_fkey'
     }),
-    foreignKey({
-      columns: [table.sectionId],
-      foreignColumns: [courseSection.id],
-      name: 'public_course_section_id_fkey'
-    })
-      .onUpdate('cascade')
-      .onDelete('cascade'),
     index('idx_lesson_course_slug').on(table.courseId, table.slug)
   ]
 );

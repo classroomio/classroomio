@@ -1,5 +1,4 @@
 import { BaseApi, classroomio } from '$lib/utils/services/api';
-import { isOrgStudent } from '$lib/utils/store/app';
 import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
 import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils/store/user';
 
@@ -10,6 +9,7 @@ import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
 import { identifyPosthogUser } from '$lib/utils/services/posthog';
+import { isOrgStudent } from '$lib/utils/store/app';
 import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
 import { licenseApi } from '$features/license/api/license.svelte';
 import { logout } from '$lib/utils/functions/logout';
