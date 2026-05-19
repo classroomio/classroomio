@@ -114,6 +114,9 @@ importers:
       axios:
         specifier: ^1.4.0
         version: 1.13.2
+      css-tree:
+        specifier: ^3.2.1
+        version: 3.2.1
       dotenv:
         specifier: ^16.3.1
         version: 16.6.1

@@ -57,6 +57,7 @@
     "@sentry/profiling-node": "^7.110.1",
     "ai": "^6.0.158",
     "axios": "^1.4.0",
+    "css-tree": "^3.2.1",
     "dotenv": "^16.3.1",
     "drizzle-orm": "^0.44.7",
     "hono": "^4.11.3",
