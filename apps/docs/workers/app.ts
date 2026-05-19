@@ -23,7 +23,7 @@ export default {
     // The app is built with base: '/docs', so HTML references assets at
     // /docs/assets/... and /docs/*.webp, but the ASSETS binding only knows
     // about the flat build/client/ layout. Re-fetch with the prefix stripped
-    // so static files resolve before we fall through to SSR.
+    // so static files resolve before we fall through to SSR
     if (url.pathname.startsWith(`${BASENAME}/`)) {
       const strippedUrl = new URL(url);
       strippedUrl.pathname = url.pathname.slice(BASENAME.length);
