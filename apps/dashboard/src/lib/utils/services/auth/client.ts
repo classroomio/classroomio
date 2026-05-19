@@ -1,12 +1,20 @@
 import { createAuthClient } from 'better-auth/svelte';
-import { getRequestBaseUrl } from '$lib/utils/services/api';
+import { env } from '$env/dynamic/public';
 import { ssoClient } from '@better-auth/sso/client';
 
-// Server: PRIVATE_SERVER_URL (Render internal). Browser: same-origin /api
-// through the Cloudflare Worker proxy, so auth cookies stay host-only on
-// whichever domain the user is on (app, tenant subdomain, or BYOD).
+// Browser: same-origin `/api` via the Cloudflare Worker, so auth cookies
+// stay host-only on whichever domain the user is currently on
+// (app.classroomio.com, <org>.classroomio.school, or a BYOD domain).
+// SSR: `authClient`'s methods aren't called server-side — the dashboard uses
+// `authServerClient` for that — but Better Auth's constructor still validates
+// the baseURL with `new URL(...)`, so we hand it the public API URL as a
+// placeholder. PRIVATE_SERVER_URL is deliberately not used here: it's the
+// internal Render hostname, never reachable from a browser.
+const baseURL =
+  typeof window !== 'undefined' ? `${window.location.origin}/api` : env.PUBLIC_SERVER_URL || 'http://localhost:3002';
+
 export const authClient = createAuthClient({
-  baseURL: getRequestBaseUrl(),
+  baseURL,
   fetchOptions: {
     credentials: 'include' // Include cookies in requests
   },
