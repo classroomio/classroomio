@@ -16,7 +16,10 @@ export const getRequestBaseUrl = () => {
     return process.env.PRIVATE_SERVER_URL || env.PUBLIC_SERVER_URL;
   }
 
-  return env.PUBLIC_SERVER_URL;
+  // Browser: same-origin via the Cloudflare Worker /api proxy. Keeps auth
+  // cookies host-only on whichever domain the user is currently visiting
+  // (app.classroomio.com, <org>.classroomio.school, or a BYOD domain).
+  return `${window.location.origin}/api`;
 };
 
 function mergeAbortSignals(...signals: Array<AbortSignal | null | undefined>) {
