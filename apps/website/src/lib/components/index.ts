@@ -11,7 +11,6 @@ export { default as CertEditorSection } from './cert-editor-section.svelte';
 export { default as CertSection } from './cert-section.svelte';
 export { default as CodeBlock } from './code-block.svelte';
 export { default as CoreFeatureSection } from './core-feature-section.svelte';
-export { default as CoreFeatures } from './core-features.svelte';
 export { default as CustomImg } from './custom-img.svelte';
 export { default as DeploySection } from './deploy-section.svelte';
 export { default as EmbedCodePreview } from './embed-code-preview.svelte';
