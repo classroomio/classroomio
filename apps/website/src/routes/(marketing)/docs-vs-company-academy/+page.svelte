@@ -168,49 +168,38 @@
 <section class="bg-white">
   <PageHeader className="px-6 lg:px-12">
     <div class="mx-auto flex max-w-[820px] flex-col items-center text-center">
-      <BlurFade delay={0} once>
-        <Badge variant="outline" class="mb-6 gap-2! bg-white px-3.5! py-1.5!">
-          <BookOpen size={14} class="text-blue-700" />
-          Docs vs Company Academy
-        </Badge>
-      </BlurFade>
+      <Badge variant="outline" class="mb-6 gap-2! bg-white px-3.5! py-1.5!">
+        <BookOpen size={14} class="text-blue-700" />
+        Docs vs Company Academy
+      </Badge>
 
-      <BlurFade delay={0.1} once>
-        <h1 class="text-[clamp(2.4rem,4vw,3.6rem)] leading-[1.08] font-medium tracking-tight text-gray-950">
-          Documentation answers questions.
-          <em class="text-blue-700 not-italic">A company academy teaches them to do the job.</em>
-        </h1>
-      </BlurFade>
+      <h1 class="text-[clamp(2.4rem,4vw,3.6rem)] leading-[1.08] font-medium tracking-tight text-gray-950">
+        Documentation answers questions.
+        <em class="text-blue-700 not-italic">A company academy teaches them to do the job.</em>
+      </h1>
 
-      <BlurFade delay={0.2} once>
-        <p class="mt-6 text-sm leading-relaxed lg:text-base">
-          Most teams do not need to choose one forever. They need to understand the job each format performs. This guide
-          explains when docs are enough, when a company academy is the better tool, and how the two should work
-          together.
-        </p>
-      </BlurFade>
+      <p class="mt-6 text-sm leading-relaxed lg:text-base">
+        Most teams do not need to choose one forever. They need to understand the job each format performs. This guide
+        explains when docs are enough, when a company academy is the better tool, and how the two should work together.
+      </p>
 
-      <BlurFade delay={0.3} once>
-        <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Button data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</Button>
-          <Button href="/customer-education" variant="outline">Explore academies</Button>
-        </div>
-      </BlurFade>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <Button data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</Button>
+        <Button href="/customer-education" variant="outline">Explore academies</Button>
+      </div>
     </div>
 
-    <BlurFade delay={0.35} once>
-      <div class="mx-auto mt-14 w-full max-w-[1100px]">
-        <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
-          <img
-            src="/docs-vs-customer-site.jpeg"
-            alt="Docs answering questions, customer academy building capability — side by side"
-            class="block h-auto w-full"
-            loading="eager"
-            decoding="async"
-          />
-        </div>
+    <div class="mx-auto mt-14 w-full max-w-[1100px]">
+      <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
+        <img
+          src="/docs-vs-customer-site.jpeg"
+          alt="Docs answering questions, customer academy building capability — side by side"
+          class="block h-auto w-full"
+          loading="eager"
+          decoding="async"
+        />
       </div>
-    </BlurFade>
+    </div>
   </PageHeader>
 
   <section class="bg-gray-50 px-6 py-16 lg:px-12 lg:py-24">

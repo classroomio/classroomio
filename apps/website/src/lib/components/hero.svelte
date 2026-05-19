@@ -1,5 +1,4 @@
 <script>
-  import { BlurFade } from '@cio/ui/custom/animation/blurfade';
   import { Button } from '@cio/ui/base/button';
   import ParticleField from './particle-field.svelte';
 </script>
@@ -91,42 +90,34 @@
   ></div>
 
   <div class="relative z-10 mx-auto flex max-w-[1100px] flex-col items-center text-center">
-    <BlurFade delay={0} once>
-      <h1 class="max-w-[820px] text-[clamp(2rem,4vw,3.25rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
-        Teach your customers your product
-        <em class="text-blue-700 not-italic">before support has to.</em>
-      </h1>
-    </BlurFade>
+    <h1 class="max-w-[820px] text-[clamp(2rem,4vw,3.25rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
+      Teach your customers your product
+      <em class="text-blue-700 not-italic">before support has to.</em>
+    </h1>
 
-    <BlurFade delay={0.1} once>
-      <p class="mt-5 max-w-[580px] text-sm leading-relaxed lg:text-base">
-        Launch a branded customer academy in days. Train customers, certify power users, and drive adoption on your own
-        domain, with an AI tutor in every lesson.
-      </p>
-    </BlurFade>
+    <p class="mt-5 max-w-[580px] text-sm leading-relaxed lg:text-base">
+      Launch a branded customer academy in days. Train customers, certify power users, and drive adoption on your own
+      domain, with an AI tutor in every lesson.
+    </p>
 
-    <BlurFade delay={0.2} once>
-      <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
-        <Button data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</Button>
-        <Button href="/signup" variant="outline">Start free</Button>
-      </div>
-    </BlurFade>
+    <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
+      <Button data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</Button>
+      <Button href="/signup" variant="outline">Start free</Button>
+    </div>
   </div>
 
   <div class="relative z-30 mx-auto mt-14 w-full max-w-[1100px]">
-    <BlurFade delay={0.3} once>
-      <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
-        <img
-          src="/hero-academy.jpeg"
-          alt="Branded customer academy on a custom domain — catalog, programs, AI tutor"
-          width="2560"
-          height="1440"
-          class="block h-auto w-full"
-          loading="eager"
-          decoding="async"
-        />
-      </div>
-    </BlurFade>
+    <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
+      <img
+        src="/hero-academy.jpeg"
+        alt="Branded customer academy on a custom domain — catalog, programs, AI tutor"
+        width="2560"
+        height="1440"
+        class="block h-auto w-full"
+        loading="eager"
+        decoding="async"
+      />
+    </div>
   </div>
 </section>
 

@@ -96,7 +96,7 @@
       key: 'self-hosting',
       title: 'Self-hosting & Docs',
       subtitle: 'Run ClassroomIO in your own VPC.',
-      href: 'https://docs.classroomio.com'
+      href: 'https://classroomio.com/docs'
     },
     {
       key: 'mcp-recipes',

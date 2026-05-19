@@ -41,34 +41,24 @@
 <section class="bg-white">
   <PageHeader className="px-6 lg:px-12">
     <div class="mx-auto max-w-[1100px]">
-      <BlurFade delay={0} once>
-        <Badge variant="outline" class="mb-6 gap-2! bg-white px-3.5! py-1.5!">Customer academy vs help docs</Badge>
-      </BlurFade>
+      <Badge variant="outline" class="mb-6 gap-2! bg-white px-3.5! py-1.5!">Customer academy vs help docs</Badge>
 
-      <BlurFade delay={0.1} once>
-        <h1
-          class="max-w-[820px] text-[clamp(2rem,3.4vw,2.8rem)] leading-[1.1] font-medium tracking-tight text-gray-950"
-        >
-          Why your help center
-          <em class="text-blue-700 not-italic">isn't teaching</em>
-          your customers.
-        </h1>
-      </BlurFade>
+      <h1 class="max-w-[820px] text-[clamp(2rem,3.4vw,2.8rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
+        Why your help center
+        <em class="text-blue-700 not-italic">isn't teaching</em>
+        your customers.
+      </h1>
 
-      <BlurFade delay={0.2} once>
-        <HeroSubtitle>
-          Intercom Articles, Zendesk Guide, and Confluence are excellent at one thing — answering "how do I do X?" when
-          the user already knows what they need. They were never designed to take a brand-new customer from zero to
-          confident product use. That's what a customer academy is for.
-        </HeroSubtitle>
-      </BlurFade>
+      <HeroSubtitle>
+        Intercom Articles, Zendesk Guide, and Confluence are excellent at one thing — answering "how do I do X?" when
+        the user already knows what they need. They were never designed to take a brand-new customer from zero to
+        confident product use. That's what a customer academy is for.
+      </HeroSubtitle>
 
-      <BlurFade delay={0.3} once>
-        <div class="mt-8 flex flex-wrap items-center gap-3">
-          <Button href="/signup">Launch your academy free</Button>
-          <Button href="/customer-education" variant="outline">See a live academy</Button>
-        </div>
-      </BlurFade>
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <Button href="/signup">Launch your academy free</Button>
+        <Button href="/customer-education" variant="outline">See a live academy</Button>
+      </div>
     </div>
   </PageHeader>
 
