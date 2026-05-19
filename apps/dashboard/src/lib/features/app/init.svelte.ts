@@ -38,6 +38,11 @@ class AppInitApi extends BaseApi {
 
   async setupApp(locals: App.Locals, params: AppSetupParams): Promise<boolean | undefined> {
     if (!locals.user) {
+      if (!params.isOrgSite) {
+        goto(resolve('/login', {}));
+        return false;
+      }
+
       console.log('No user found in locals');
       return;
     }

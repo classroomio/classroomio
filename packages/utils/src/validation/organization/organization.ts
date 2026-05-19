@@ -5,7 +5,13 @@ import { blockedSubdomain } from '@cio/utils/constants';
 export const ZGetOrganizations = z.object({
   siteName: z.string().min(1).optional(),
   customDomain: z.string().min(1).optional(),
-  isCustomDomainVerified: z.boolean().optional()
+  /**
+   * Accepts a real boolean (server-side direct calls) or the URL-encoded `'true'`/`'false'`
+   * string Hono RPC produces when serializing query params.
+   */
+  isCustomDomainVerified: z
+    .union([z.boolean(), z.literal('true').transform(() => true), z.literal('false').transform(() => false)])
+    .optional()
 });
 
 export type TGetOrganizations = z.infer<typeof ZGetOrganizations>;

@@ -1,13 +1,12 @@
 import 'dotenv/config';
 
 import { API_SERVER_URL } from '@api/constants';
-import { resolveTrustedBrowserOriginForCors } from '@api/utils/origins';
 
 import { Hono } from '@api/utils/hono';
 import { accountRouter } from '@api/routes/account';
 import { auth } from '@cio/db/auth';
 import { communityRouter } from '@api/routes/community';
-import { cors } from 'hono/cors';
+import { isPublicApiPath, sessionCors } from '@api/middlewares/cors';
 import { courseRouter } from '@api/routes/course';
 import { dashAnalyticsRouter } from '@api/routes/dash';
 import { domainRouter } from '@api/routes/domain/domain';
@@ -42,19 +41,21 @@ export const app = new Hono()
   .use('*', logger())
   .use('*', prettyJSON())
   .use('*', secureHeaders())
-  .use(
-    '*',
-    cors({
-      origin: (origin) => resolveTrustedBrowserOriginForCors(origin),
-      allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowHeaders: ['Content-Type', 'Authorization', 'Cio-org-id'],
-      exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
-      maxAge: 600,
-      credentials: true
-    })
-  )
+  .use('*', async (c, next) => {
+    if (isPublicApiPath(c.req.path)) return next();
+
+    return sessionCors(c, next);
+  })
   .use('*', rateLimiter)
   .use('*', async (c, next) => {
+    if (isPublicApiPath(c.req.path)) {
+      c.set('user', null);
+      c.set('session', null);
+      c.set('orgRoles', {});
+
+      return next();
+    }
+
     let session: Awaited<ReturnType<typeof auth.api.getSession>> | null = null;
 
     try {
