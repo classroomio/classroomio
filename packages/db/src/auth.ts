@@ -1,22 +1,22 @@
 import * as CONSTANTS from './constants';
-import { resolveTrustedBrowserOrigin } from './utils';
 import * as schema from '@db/schema';
 
 import { admin, anonymous } from 'better-auth/plugins';
-import { customSession } from 'better-auth/plugins/custom-session';
 import { sendChangeEmailConfirmation, sendVerificationEmail } from './auth/email-verification';
 
 import { betterAuth } from 'better-auth/minimal';
 import { createProfileHook } from './auth/hooks/create-profile';
+import { customSession } from 'better-auth/plugins/custom-session';
 import { db } from '@db/drizzle';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { config as emailAndPassword } from './auth/email-password';
+import { getUserOrgRolesMap } from './queries/organization/organization';
 import { loginLink } from './auth/plugins/login-link';
+import { resolveTrustedBrowserOrigin } from './utils';
 import { sso } from '@better-auth/sso';
 import { syncUserWithProfile } from './auth/hooks/sync-user';
 import { tokenExchange } from './auth/plugins/token-exchange';
 import { trackLoginHook } from './auth/hooks/track-login';
-import { getUserOrgRolesMap } from './queries/organization/organization';
 
 export const auth: ReturnType<typeof betterAuth> = betterAuth({
   baseURL: CONSTANTS.BASE_URL,
@@ -53,6 +53,7 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
       origins.push(resolved);
     }
 
+    console.log('ba origins', origins);
     return origins;
   },
   advanced: {
