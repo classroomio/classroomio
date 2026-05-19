@@ -238,7 +238,7 @@ export function assertSupportedCustomDomain(domain: string) {
     );
   }
 
-  if (domain.includes('classroomio.com')) {
+  if (domain.includes('classroomio.com') || domain.includes('classroomio.school')) {
     throw new AppError("Domain cannot contain 'classroomio'", ErrorCodes.VALIDATION_ERROR, 400, 'domain');
   }
 }
@@ -252,21 +252,15 @@ async function getCustomHostnameByDomain(hostname: string) {
 }
 
 async function createCustomHostname(hostname: string) {
-  const body: Record<string, unknown> = {
-    hostname,
-    ssl: {
-      method: 'txt',
-      type: 'dv'
-    }
-  };
-
-  if (env.CLOUDFLARE_CUSTOM_HOSTNAME_ORIGIN) {
-    body.custom_origin_server = env.CLOUDFLARE_CUSTOM_HOSTNAME_ORIGIN;
-  }
-
   return cloudflareRequest<CloudflareCustomHostname>('', {
     method: 'POST',
-    body: JSON.stringify(body)
+    body: JSON.stringify({
+      hostname,
+      ssl: {
+        method: 'txt',
+        type: 'dv'
+      }
+    })
   });
 }
 

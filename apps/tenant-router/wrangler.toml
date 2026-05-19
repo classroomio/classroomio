@@ -1,0 +1,25 @@
+name = "cio-tenant-router"
+main = "src/index.ts"
+compatibility_date = "2026-05-01"
+
+# Production routes — bind the Worker to every browser-facing host.
+# Tenant subdomains and the apex live on the `classroomio.school` zone.
+# The admin app `app.classroomio.com` is routed through the Worker so
+# it can use same-origin `/api/*` paths with host-only auth cookies.
+routes = [
+  { pattern = "*.classroomio.school/*", zone_name = "classroomio.school" },
+  { pattern = "classroomio.school/*", zone_name = "classroomio.school" },
+  { pattern = "app.classroomio.com/*", zone_name = "classroomio.com" }
+]
+
+# Override per environment. Both values are the `.onrender.com` hostnames
+# of the dashboard and API services (no scheme, no path).
+[vars]
+# Despite the name, `cio-api.onrender.com` is the **dashboard** service
+# (apps/dashboard). The actual API service is `cio-api-vymh.onrender.com`.
+DASHBOARD_UPSTREAM_HOST = "cio-api.onrender.com"
+API_UPSTREAM_HOST = "cio-api-vymh.onrender.com"
+APEX_REDIRECT_TARGET = "https://classroomio.com"
+
+[observability]
+enabled = true

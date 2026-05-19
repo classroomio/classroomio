@@ -11,7 +11,6 @@ const envSchema = z.object({
   CLOUDFLARE_CUSTOM_HOSTNAMES_API_TOKEN: z.string().optional(),
   CLOUDFLARE_CUSTOM_HOSTNAMES_ZONE_ID: z.string().optional(),
   CLOUDFLARE_CUSTOM_HOSTNAME_CNAME_TARGET: z.string().optional(),
-  CLOUDFLARE_CUSTOM_HOSTNAME_ORIGIN: z.string().optional(),
   // S3-compatible storage (MinIO, AWS S3, or other S3-compatible backends)
   OBJECT_STORAGE_ENDPOINT: z.string().optional(),
   OBJECT_STORAGE_REGION: z.string().optional(),

@@ -1,12 +1,9 @@
-const {
-  TRUSTED_ORIGINS: TRUSTED_ORIGINS_STRING,
-  PUBLIC_SERVER_URL,
-  AUTH_COOKIE_DOMAIN: AUTH_COOKIE_DOMAIN_STRING
-} = process.env;
+const { TRUSTED_ORIGINS: TRUSTED_ORIGINS_STRING, PUBLIC_SERVER_URL } = process.env;
 
 const DEFAULT_TRUSTED_ORIGINS = [
   'http://localhost:5173',
   'https://*.classroomio.com',
+  'https://*.classroomio.school',
   // Common OIDC IdP discovery origins (SSO registration fetches .well-known/openid-configuration)
   'https://accounts.google.com',
   'https://account.google.com', // common typo for Google
@@ -29,5 +26,3 @@ export const TRUSTED_ORIGINS = TRUSTED_ORIGINS_STRING
   : DEFAULT_TRUSTED_ORIGINS;
 
 export const BASE_URL = PUBLIC_SERVER_URL || 'http://localhost:3002';
-
-export const AUTH_COOKIE_DOMAIN = AUTH_COOKIE_DOMAIN_STRING?.trim() || undefined;

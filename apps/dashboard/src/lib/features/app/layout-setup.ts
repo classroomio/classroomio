@@ -99,7 +99,7 @@ function isURLCustomDomain(url: URL) {
     return false;
   }
 
-  const notCustomDomainHosts = [env.PRIVATE_APP_HOST || '', 'classroomio.com', 'vercel.app'].filter(Boolean);
+  const notCustomDomainHosts = [env.PRIVATE_APP_HOST || '', 'classroomio.com', 'classroomio.school'].filter(Boolean);
 
   return !notCustomDomainHosts.some((host) => url.host.endsWith(host));
 }
