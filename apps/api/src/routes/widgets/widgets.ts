@@ -20,21 +20,23 @@ const widgetPayloadKeyLimiter = createRateLimiter({
   keyGenerator: (c) => `widget_payload_key:${c.req.param('publicKey')}`
 });
 
-export const publicWidgetsRouter = new Hono().use('*', publicApiCors).get(
-  '/:publicKey/payload',
-  zValidator('param', ZWidgetPublicKeyParams),
-  widgetPayloadIpLimiter,
-  widgetPayloadKeyLimiter,
-  async (c) => {
-    try {
-      const { publicKey } = c.req.valid('param');
-      const payload = await getPublishedWidgetPayload(publicKey);
+export const publicWidgetsRouter = new Hono()
+  .use('*', publicApiCors)
+  .get(
+    '/:publicKey/payload',
+    zValidator('param', ZWidgetPublicKeyParams),
+    widgetPayloadIpLimiter,
+    widgetPayloadKeyLimiter,
+    async (c) => {
+      try {
+        const { publicKey } = c.req.valid('param');
+        const payload = await getPublishedWidgetPayload(publicKey);
 
-      c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+        c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
 
-      return c.json({ success: true, data: payload });
-    } catch (error) {
-      return handleError(c, error, 'Failed to fetch widget payload');
+        return c.json({ success: true, data: payload });
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch widget payload');
+      }
     }
-  }
-);
+  );
