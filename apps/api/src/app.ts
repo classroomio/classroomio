@@ -54,7 +54,13 @@ export const app = new Hono()
   )
   .use('*', rateLimiter)
   .use('*', async (c, next) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
+    let session: Awaited<ReturnType<typeof auth.api.getSession>> | null = null;
+
+    try {
+      session = await auth.api.getSession({ headers: c.req.raw.headers });
+    } catch (error) {
+      console.error('auth.api.getSession error:', error);
+    }
 
     if (!session) {
       c.set('user', null);

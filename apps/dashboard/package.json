@@ -11,7 +11,7 @@
     "lint:fix": "eslint ./src --fix",
     "clean": "rm -rf node_modules",
     "format": "prettier --write .",
-    "start": "node build",
+    "start": "node build/index.js",
     "prepare": "svelte-kit sync",
     "test": "jest",
     "test:watch": "pnpm run test --watch",

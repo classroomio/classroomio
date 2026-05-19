@@ -49,7 +49,13 @@ function resolveUrl(override?: string): string {
 export function createRedisConnection(options: RedisConnectionOptions = {}): Redis {
   const { url, ...rest } = options;
   const resolved = resolveUrl(url);
-  return new IORedis(resolved, { ...DEFAULT_OPTIONS, ...rest });
+  const connection = new IORedis(resolved, { ...DEFAULT_OPTIONS, ...rest });
+
+  connection.on('error', (error) => {
+    console.error('BullMQ Redis connection error:', error);
+  });
+
+  return connection;
 }
 
 let sharedConnection: Redis | undefined;

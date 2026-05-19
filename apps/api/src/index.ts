@@ -2,6 +2,7 @@ import 'dotenv/config';
 
 import { API_PORT } from '@api/constants';
 import { app } from '@api/app';
+import { env } from '@api/config/env';
 import { configureOpenAPI } from '@api/utils/openapi';
 import { connectRedis } from '@api/utils/redis/redis';
 import { serve } from '@hono/node-server';
@@ -16,12 +17,17 @@ async function startServer() {
 
   serve({ fetch: app.fetch, port: API_PORT });
 
-  showRoutes(app, { colorize: true });
+  if (env.NODE_ENV !== 'production') {
+    showRoutes(app, { colorize: true });
+  }
 }
 
 configureOpenAPI(app);
 
 startServer().catch((error) => {
   console.error('Failed to start server:', error);
+  if (error instanceof Error && error.stack) {
+    console.error(error.stack);
+  }
   process.exit(1);
 });

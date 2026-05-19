@@ -1,22 +1,22 @@
 import 'dotenv/config';
 
-import adapterAuto from '@sveltejs/adapter-auto';
 import adapterNode from '@sveltejs/adapter-node';
 import { getCspDomains } from './src/lib/utils/csp-domains.js';
 import path from 'path';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-const isSelfHosted = process.env.PUBLIC_IS_SELFHOSTED === 'true';
 const IS_CLOUDFLARE = process.env.CI_ENVIRONMENT === 'cloudflare';
 
 const adapterCloudflare = IS_CLOUDFLARE ? (await import('@sveltejs/adapter-cloudflare')).default : null;
+const isSelfHosted = process.env.PUBLIC_IS_SELFHOSTED === 'true';
 const csp = getCspDomains(isSelfHosted, process.env.PUBLIC_SERVER_URL);
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   preprocess: [vitePreprocess({})],
   kit: {
-    adapter: IS_CLOUDFLARE ? adapterCloudflare() : isSelfHosted ? adapterNode() : adapterAuto(),
+    // Default: Node server (Render, Docker). Opt into Cloudflare Pages only when CI_ENVIRONMENT=cloudflare.
+    adapter: IS_CLOUDFLARE ? adapterCloudflare() : adapterNode(),
     alias: {
       $lib: path.resolve('./src/lib'),
       $features: path.resolve('./src/lib/features'),

@@ -28,8 +28,8 @@ export function mountQueueDashboard(app: Hono<any, any, any>): void {
 
   const isProduction = env.NODE_ENV === 'production';
   if (isProduction && !canEnforceProdAuth()) {
-    console.warn(
-      'Queue dashboard not mounted: NODE_ENV=production requires QUEUE_DASHBOARD_ADMIN_EMAILS or QUEUE_DASHBOARD_TOKEN.'
+    console.info(
+      'BullMQ dashboard (/admin/queues) not mounted in production. Set QUEUE_DASHBOARD_ADMIN_EMAILS or QUEUE_DASHBOARD_TOKEN to enable it.'
     );
     return;
   }
