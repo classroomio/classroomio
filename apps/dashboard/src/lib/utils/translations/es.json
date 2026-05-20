@@ -2164,7 +2164,9 @@
           "depth": "¿Qué profundidad debe tener el curso?",
           "topic": "Tema o nicho",
           "expertise_level": "Nivel de experiencia objetivo",
-          "documentation_url": "URL de documentación (opcional)"
+          "documentation_url": {
+            "hint": "Leeremos este sitio para basar el curso en su producto real."
+          }
         },
         "expert_on_x": {
           "title": "Conviértete en un experto en X",
@@ -2415,7 +2417,9 @@
         "pending_verification_description": "Se encontraron registros DNS. La emisión o validación de SSL aún está en curso.",
         "reconnect_description": "Este dominio debe conectarse nuevamente a través del nuevo flujo de configuración de Cloudflare.",
         "error_description": "Este dominio personalizado existe, pero la verificación aún no se ha completado.",
-        "page_subtitle": "Run your public learning site on a web address you own."
+        "page_subtitle": "Run your public learning site on a web address you own.",
+        "dns_record": "registro DNS",
+        "verified_snackbar": "Dominio personalizado verificado"
       }
     },
     "quiz": {

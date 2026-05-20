@@ -5,6 +5,7 @@ import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils
 import type { AccountResponse } from './types';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import type { TUser } from '@cio/db/types';
+import { authClient } from '$lib/utils/services/auth/client';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
@@ -23,6 +24,8 @@ import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAu
 type AppSetupParams = {
   isOrgSite: boolean;
   orgSiteName: string;
+  /** Tenant org id from `getOrgSiteInfo`; used to auto-enroll the user if they aren't a member yet. */
+  orgId?: string | null;
 };
 
 /*
@@ -49,14 +52,22 @@ class AppInitApi extends BaseApi {
 
     this.session = locals;
 
+    // Auto-enroll on tenant sites for first-time signups. Idempotent on the
+    // API side (no-ops for existing members so invited admins/tutors keep
+    // their roles). Runs BEFORE the account fetch so the returned org list
+    // already reflects the new membership.
+    if (params.isOrgSite && params.orgId) {
+      await this.autoEnrollOnTenantSite(params.orgId);
+    }
+
     await this.execute<typeof classroomio.account.$get>({
       requestFn: () => classroomio.account.$get(),
       logContext: 'fetching account',
-      onSuccess: (accountData) => {
-        this.data = accountData;
-        licenseApi.setFeatures(accountData.licenseFeatures);
+      onSuccess: (data) => {
+        this.data = data;
+        licenseApi.setFeatures(data.licenseFeatures);
         setupAnalyticsBasedOnLicense();
-        this.setupStores();
+        this.setupStores(params);
         this.setUserAnalytics();
         this.routeUserToNextPage(params);
       },
@@ -66,12 +77,36 @@ class AppInitApi extends BaseApi {
     });
   }
 
+  private async autoEnrollOnTenantSite(orgId: string): Promise<void> {
+    try {
+      const response = await classroomio.organization['auto-enroll-student'].$post(
+        {},
+        { headers: { 'cio-org-id': orgId } }
+      );
+
+      if (!response.ok) {
+        // 403 is expected for invite-only / disabled-signup orgs — the user
+        // visited a tenant site but isn't allowed to enroll. Other failures
+        // shouldn't block the rest of setupApp.
+        console.warn('auto-enroll-student failed', response.status, await response.text().catch(() => ''));
+        return;
+      }
+
+      // The user is a new member, so the session cookie cache (orgRoles)
+      // is stale. Force Better Auth to refetch from DB and rewrite the
+      // session_data cookie — Better Auth manages the cookie name itself.
+      await authClient.getSession({ query: { disableCookieCache: true } });
+    } catch (error) {
+      console.warn('auto-enroll-student threw', error);
+    }
+  }
+
   /*
     1. Update user store
     2. Update profile store
     3. Update organizations store
   */
-  setupStores() {
+  setupStores(params?: AppSetupParams) {
     if (!this.data?.success || !this.session) {
       return;
     }
@@ -86,10 +121,10 @@ class AppInitApi extends BaseApi {
     profile.set(this.data.profile);
     handleLocaleChange(this.data.profile.locale ?? 'en');
 
-    this.setOrgStore();
+    this.setOrgStore(params);
   }
 
-  setOrgStore() {
+  setOrgStore(params?: AppSetupParams) {
     if (!this.data?.success || !this.data) {
       return;
     }
@@ -100,10 +135,20 @@ class AppInitApi extends BaseApi {
 
     orgs.set(this.data.organizations.map((org) => mergeAccountOrgFromServer(org)));
 
-    const lastOrgSiteName = localStorage.getItem('classroomio_org_sitename');
-    const lastOrg = this.data.organizations.find((org) => org.siteName === lastOrgSiteName);
+    // On a tenant site, pin currentOrg to that tenant — never fall back to
+    // localStorage / the user's first org, which is what was making a user
+    // logged in on dblocked.* see the Dblocked dashboard on ciodevs.*.
+    let nextOrg: (typeof this.data.organizations)[number] | undefined;
+    if (params?.isOrgSite && params.orgSiteName) {
+      nextOrg = this.data.organizations.find((org) => org.siteName === params.orgSiteName);
+    }
 
-    currentOrg.set(mergeAccountOrgFromServer(lastOrg || this.data.organizations[0]));
+    if (!nextOrg) {
+      const lastOrgSiteName = localStorage.getItem('classroomio_org_sitename');
+      nextOrg = this.data.organizations.find((org) => org.siteName === lastOrgSiteName) ?? this.data.organizations[0];
+    }
+
+    currentOrg.set(mergeAccountOrgFromServer(nextOrg));
 
     const theme = get(currentOrg)?.theme;
 

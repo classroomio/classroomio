@@ -1,10 +1,10 @@
 <script lang="ts">
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
-  import Copy from '@lucide/svelte/icons/copy';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import TrashIcon from '@lucide/svelte/icons/trash';
   import type { DomainRequestData, DomainRequestStatus } from '$features/org/utils/types';
   import isValidDomain from 'is-valid-domain';
+  import { parse as parseDomain } from 'tldts';
   import { goto } from '$app/navigation';
   import { onMount, untrack } from 'svelte';
 
@@ -13,13 +13,13 @@
   import { orgApi } from '$features/org/api/org.svelte';
   import { blockedSubdomain } from '$lib/utils/constants/app';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
-  import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
   import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
   import { sanitizeDomain, sendDomainRequest } from '$lib/utils/functions/domain';
   import { BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
+  import { CopyButton } from '@cio/ui/base/copy-button';
   import { Textarea } from '@cio/ui/base/textarea';
   import { DomainInput } from '@cio/ui/custom/domain-input';
   import { ComingSoon, UpgradeBanner, UploadImage, VisitOrgSiteButton } from '$features/ui';
@@ -39,6 +39,20 @@
     domainSetup?.status ??
       ($currentOrg.customDomain ? ($currentOrg.isCustomDomainVerified ? 'verified' : 'pending_verification') : null)
   );
+
+  function stripZone(recordName: string): string {
+    const hostname = $currentOrg.customDomain;
+    if (!hostname) return recordName;
+
+    const apex = parseDomain(hostname).domain;
+    if (!apex) return recordName;
+
+    const suffix = '.' + apex;
+    if (recordName === apex) return recordName;
+    if (recordName.endsWith(suffix)) return recordName.slice(0, -suffix.length);
+
+    return recordName;
+  }
 
   type Error = {
     siteName: string;
@@ -82,6 +96,7 @@
   }
 
   function applyDomainSetup(data: DomainRequestData) {
+    const wasVerified = $currentOrg.isCustomDomainVerified;
     domainSetup = data;
 
     if (data.status === 'removed') {
@@ -93,6 +108,10 @@
     $currentOrg.customDomain = data.hostname;
     $currentOrg.isCustomDomainVerified = data.verified;
     customDomain = '';
+
+    if (data.verified && !wasVerified) {
+      snackbar.success('components.settings.domains.verified_snackbar');
+    }
   }
 
   function getDomainStatusLabel(status: DomainRequestStatus | null) {
@@ -117,17 +136,17 @@
   function getDomainStatusClass(status: DomainRequestStatus | null) {
     switch (status) {
       case 'verified':
-        return 'bg-green-500 text-white';
+        return 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-900';
       case 'pending_dns':
       case 'pending_verification':
-        return 'bg-yellow-500 text-white';
+        return 'bg-amber-50 text-amber-800 ring-1 ring-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:ring-amber-900';
       case 'reconnect_required':
       case 'error':
-        return 'bg-red-500 text-white';
+        return 'bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-950/40 dark:text-red-300 dark:ring-red-900';
       case 'removed':
-        return 'bg-slate-500 text-white';
+        return 'bg-slate-100 text-slate-700 ring-1 ring-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-800';
       default:
-        return 'bg-yellow-500 text-white';
+        return 'bg-amber-50 text-amber-800 ring-1 ring-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:ring-amber-900';
     }
   }
 
@@ -336,35 +355,35 @@
 
         <Field.Description>{getDomainStatusDescription(currentDomainStatus)}</Field.Description>
 
-        {#if domainSetup?.dnsRecords?.length}
+        {#if currentDomainStatus !== 'verified' && domainSetup?.dnsRecords?.length}
           <Field.Field>
-            <div class="space-y-3 rounded-md border px-4 py-3">
-              {#each domainSetup.dnsRecords as record (record.name)}
-                <div class="grid gap-3 sm:grid-cols-[80px,1fr,1fr] sm:items-center">
-                  <div>
-                    <Field.Label class="font-light">{$t('components.settings.domains.dns_type')}</Field.Label>
-                    <p>{record.type}</p>
+            <div class="flex flex-col gap-3">
+              {#each domainSetup.dnsRecords as record, i (record.name + i)}
+                {@const rows = [
+                  { label: $t('components.settings.domains.dns_type'), value: record.type },
+                  { label: $t('components.settings.domains.dns_name'), value: stripZone(record.name) },
+                  { label: $t('components.settings.domains.dns_value'), value: record.value }
+                ]}
+                <div class="ui:bg-card overflow-hidden rounded-lg border">
+                  <div
+                    class="ui:bg-muted/40 ui:text-muted-foreground border-b px-4 py-2 text-xs font-medium tracking-wide uppercase"
+                  >
+                    {$t('components.settings.domains.dns_record')}
                   </div>
 
-                  <div class="min-w-0">
-                    <Field.Label class="font-light">{$t('components.settings.domains.dns_name')}</Field.Label>
-                    <div class="flex items-center gap-2">
-                      <p class="truncate">{record.name}</p>
-                      <Button variant="ghost" size="icon-sm" onclick={() => copyToClipboard(record.name)}>
-                        <Copy />
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div class="min-w-0">
-                    <Field.Label class="font-light">{$t('components.settings.domains.dns_value')}</Field.Label>
-                    <div class="flex items-center gap-2">
-                      <p class="truncate">{record.value}</p>
-                      <Button variant="ghost" size="icon-sm" onclick={() => copyToClipboard(record.value)}>
-                        <Copy />
-                      </Button>
-                    </div>
-                  </div>
+                  <dl class="divide-y">
+                    {#each rows as row (row.label)}
+                      <div class="grid grid-cols-[80px,1fr,auto] items-center gap-3 px-4 py-2.5">
+                        <dt class="ui:text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                          {row.label}
+                        </dt>
+                        <dd class="min-w-0">
+                          <span class="block truncate font-mono text-sm">{row.value}</span>
+                        </dd>
+                        <CopyButton text={row.value} variant="ghost" size="icon-sm" aria-label={'Copy ' + row.label} />
+                      </div>
+                    {/each}
+                  </dl>
                 </div>
               {/each}
             </div>
@@ -380,16 +399,14 @@
         <Field.Field orientation="horizontal">
           {#if currentDomainStatus === 'reconnect_required'}
             <Button
-              variant="outline"
               class="flex items-center gap-2 py-2"
               onclick={handleReconnectCustomDomain}
               loading={isCustomDomainLoading}
             >
               {$t('components.settings.domains.reconnect')}
             </Button>
-          {:else}
+          {:else if currentDomainStatus !== 'verified'}
             <Button
-              variant="outline"
               class="flex items-center gap-2 py-2"
               onclick={() => handleRefreshCustomDomain()}
               loading={isRefreshing}
@@ -402,8 +419,8 @@
           {/if}
 
           <Button
-            variant="destructive"
-            class="flex items-center gap-2 py-2"
+            variant="outline"
+            class="ui:text-destructive ui:hover:text-destructive ui:hover:bg-destructive/10 flex items-center gap-2 py-2"
             onclick={handleRemoveCustomDomain}
             loading={isCustomDomainLoading}
           >

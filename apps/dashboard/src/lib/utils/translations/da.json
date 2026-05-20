@@ -2164,7 +2164,9 @@
           "depth": "Hvor dybt skal kurset gå?",
           "topic": "Emne eller niche",
           "expertise_level": "Mål ekspertiseniveau",
-          "documentation_url": "Dokumentations-URL (valgfrit)"
+          "documentation_url": {
+            "hint": "Vi læser dette websted for at basere kurset på dit rigtige produkt."
+          }
         },
         "expert_on_x": {
           "title": "Bliv ekspert på X",
@@ -2415,7 +2417,9 @@
         "pending_verification_description": "DNS-poster blev fundet. SSL-udstedelse eller -validering er stadig i gang.",
         "reconnect_description": "Dette domæne skal forbindes igen gennem det nye Cloudflare-opsætningsflow.",
         "error_description": "Dette tilpassede domæne eksisterer, men bekræftelsen er ikke fuldført endnu.",
-        "page_subtitle": "Run your public learning site on a web address you own."
+        "page_subtitle": "Run your public learning site on a web address you own.",
+        "dns_record": "DNS-record",
+        "verified_snackbar": "Tilpasset domæne bekræftet"
       }
     },
     "quiz": {

@@ -83,17 +83,17 @@ The same flow works for `app.classroomio.com` (the proxy-skip branch in `oAuthPr
 
 ## Pieces and where they live
 
-| Concern | File | Notes |
-|---|---|---|
-| Better Auth + `oAuthProxy` plugin registration | `packages/db/src/auth.ts` | `productionURL: CONSTANTS.BASE_URL` makes `api.classroomio.com` the canonical OAuth-callback URL. |
-| Auth endpoint mount in Hono | `apps/api/src/app.ts` (`/api/auth/*` handler) | Rewrites `request.url` from `X-Forwarded-Host`/`-Proto` so the plugin sees the tenant host the user actually visited. |
-| Cookies → token swap (outbound + inbound) | `apps/api/src/app.ts` (`/api/auth/*` handler) | Stashes the encrypted `cookies=…` blob in Redis under a short token, drops Location header from 10KB+ to ~150 bytes. |
-| Redis storage helpers | `apps/api/src/utils/redis/oauth-handoff.ts` | `storeHandoffPayload` (2-minute TTL) + `consumeHandoffPayload` (single-use, GET-and-DEL). |
-| Cloudflare Worker | `apps/tenant-router/src/index.ts` | Forwards `/proxy/*` → API (stripping prefix) and `/api/auth/*` → API (as-is, no strip), everything else → dashboard. |
-| Browser-side base URL | `apps/dashboard/src/lib/utils/services/api/index.ts` (`getRequestBaseUrl`) | Returns `${origin}/proxy` in the browser so auth cookies stay host-only. |
-| Browser-side auth client baseURL | `apps/dashboard/src/lib/utils/services/auth/client.ts` | `${origin}/proxy/api/auth` — Better Auth's client treats a baseURL with a path as the full auth root, so we encode the post-Worker-strip path here. |
-| Auto-enrollment after first signup | `packages/db/src/auth/hooks/tenant-provisioning.ts` | Resolves the tenant org from `cio-org-id` header (email signup) or `x-forwarded-host` (OAuth host). Idempotent membership insert. |
-| `customSession` plugin (adds `orgRoles` to session) | `packages/db/src/auth.ts` | Loads `{ [orgId]: roleId }` via `getUserOrgRolesMap` and ships it inside the `session_data` cookie cache. Org-scoped middlewares read it from `c.get('orgRoles')` — no per-request DB query. |
+| Concern                                             | File                                                                       | Notes                                                                                                                                                                                        |
+| --------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Better Auth + `oAuthProxy` plugin registration      | `packages/db/src/auth.ts`                                                  | `productionURL: CONSTANTS.BASE_URL` makes `api.classroomio.com` the canonical OAuth-callback URL.                                                                                            |
+| Auth endpoint mount in Hono                         | `apps/api/src/app.ts` (`/api/auth/*` handler)                              | Rewrites `request.url` from `X-Forwarded-Host`/`-Proto` so the plugin sees the tenant host the user actually visited.                                                                        |
+| Cookies → token swap (outbound + inbound)           | `apps/api/src/app.ts` (`/api/auth/*` handler)                              | Stashes the encrypted `cookies=…` blob in Redis under a short token, drops Location header from 10KB+ to ~150 bytes.                                                                         |
+| Redis storage helpers                               | `apps/api/src/utils/redis/oauth-handoff.ts`                                | `storeHandoffPayload` (2-minute TTL) + `consumeHandoffPayload` (single-use, GET-and-DEL).                                                                                                    |
+| Cloudflare Worker                                   | `apps/tenant-router/src/index.ts`                                          | Forwards `/proxy/*` → API (stripping prefix) and `/api/auth/*` → API (as-is, no strip), everything else → dashboard.                                                                         |
+| Browser-side base URL                               | `apps/dashboard/src/lib/utils/services/api/index.ts` (`getRequestBaseUrl`) | Returns `${origin}/proxy` in the browser so auth cookies stay host-only.                                                                                                                     |
+| Browser-side auth client baseURL                    | `apps/dashboard/src/lib/utils/services/auth/client.ts`                     | `${origin}/proxy/api/auth` — Better Auth's client treats a baseURL with a path as the full auth root, so we encode the post-Worker-strip path here.                                          |
+| Auto-enrollment after first signup                  | `packages/db/src/auth/hooks/tenant-provisioning.ts`                        | Resolves the tenant org from `cio-org-id` header (email signup) or `x-forwarded-host` (OAuth host). Idempotent membership insert.                                                            |
+| `customSession` plugin (adds `orgRoles` to session) | `packages/db/src/auth.ts`                                                  | Loads `{ [orgId]: roleId }` via `getUserOrgRolesMap` and ships it inside the `session_data` cookie cache. Org-scoped middlewares read it from `c.get('orgRoles')` — no per-request DB query. |
 
 ## Why the Redis handoff exists
 
@@ -126,22 +126,22 @@ If Google's consent screen warns users that the app is requesting "sensitive" or
 
 On the **API** Render service:
 
-| Var | Value | Why |
-|---|---|---|
-| `BETTER_AUTH_SECRET` | random 32+ char string | Encrypts the oauth-proxy cookies blob and signs sessions. |
-| `PUBLIC_SERVER_URL` | `https://api.classroomio.com` | Better Auth's `baseURL` and the `oAuthProxy` plugin's `productionURL`. |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | from Google Cloud Console | OAuth client credentials. |
-| `REDIS_URL` | Render Key Value internal URL | Required for the cookies-→-token handoff. Without it the handoff falls back to inline cookies and the OAuth flow breaks on tenant subdomains. |
+| Var                                         | Value                         | Why                                                                                                                                           |
+| ------------------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `BETTER_AUTH_SECRET`                        | random 32+ char string        | Encrypts the oauth-proxy cookies blob and signs sessions.                                                                                     |
+| `PUBLIC_SERVER_URL`                         | `https://api.classroomio.com` | Better Auth's `baseURL` and the `oAuthProxy` plugin's `productionURL`.                                                                        |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | from Google Cloud Console     | OAuth client credentials.                                                                                                                     |
+| `REDIS_URL`                                 | Render Key Value internal URL | Required for the cookies-→-token handoff. Without it the handoff falls back to inline cookies and the OAuth flow breaks on tenant subdomains. |
 
 On the **dashboard** Render service:
 
-| Var | Value | Why |
-|---|---|---|
-| `HOST_HEADER` | `x-forwarded-host` | SvelteKit adapter-node reads the effective host from this so `event.url.host` is the tenant/admin host the user is on. |
-| `PROTOCOL_HEADER` | `x-forwarded-proto` | Same, for protocol. |
-| `PRIVATE_APP_HOST` | `classroomio.school` | Used by `getSubdomain` in `layout-setup.ts` to extract the org siteName. |
-| `PUBLIC_SERVER_URL` | `https://api.classroomio.com` | Used at runtime only as a fallback / for `authClient`'s SSR-time URL constructor; browser code uses `${origin}/proxy` via `getRequestBaseUrl`. |
-| `PRIVATE_SERVER_URL` | API's internal Render URL | Server-side dashboard → API calls bypass the public edge. |
+| Var                  | Value                         | Why                                                                                                                                            |
+| -------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HOST_HEADER`        | `x-forwarded-host`            | SvelteKit adapter-node reads the effective host from this so `event.url.host` is the tenant/admin host the user is on.                         |
+| `PROTOCOL_HEADER`    | `x-forwarded-proto`           | Same, for protocol.                                                                                                                            |
+| `PRIVATE_APP_HOST`   | `classroomio.school`          | Used by `getSubdomain` in `layout-setup.ts` to extract the org siteName.                                                                       |
+| `PUBLIC_SERVER_URL`  | `https://api.classroomio.com` | Used at runtime only as a fallback / for `authClient`'s SSR-time URL constructor; browser code uses `${origin}/proxy` via `getRequestBaseUrl`. |
+| `PRIVATE_SERVER_URL` | API's internal Render URL     | Server-side dashboard → API calls bypass the public edge.                                                                                      |
 
 ## Verifying the flow
 

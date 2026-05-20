@@ -122,7 +122,7 @@
   </div>
 {:else}
   <aside
-    class="ui:relative ui:w-[90%] ui:max-w-[405px] ui:rounded-lg ui:border ui:border-border ui:bg-card lg:sticky lg:w-[350px] lg:min-w-[250px] xl:w-[405px] xl:min-w-[330px] {editMode
+    class="ui:border-border ui:bg-card relative w-[90%] max-w-[405px] rounded-lg border lg:sticky lg:w-[350px] lg:min-w-[250px] xl:w-[405px] xl:min-w-[330px] {editMode
       ? 'lg:top-0'
       : 'lg:top-10'} h-fit {className}"
   >

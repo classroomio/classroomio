@@ -48,6 +48,7 @@ import { Hono } from '@api/utils/hono';
 import { ROLE } from '@cio/utils/constants';
 import { TOrganization } from '@db/types';
 import { assetsRouter } from '@api/routes/organization/assets';
+import { autoEnrollStudent } from '@api/services/organization/auto-enroll';
 import { organizationAiTutorRouter } from '@api/routes/organization/ai-tutor';
 import { authMiddleware } from '@api/middlewares/auth';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
@@ -115,6 +116,28 @@ export const organizationRouter = new Hono()
    * Gets organization team members (non-students)
    * Requires authentication
    */
+  /**
+   * POST /organization/auto-enroll-student
+   * Idempotently enrolls the authenticated user as a STUDENT in the org
+   * identified by the `cio-org-id` header. Called by the dashboard's
+   * `setupApp` after a user authenticates on a tenant site they aren't a
+   * member of yet. Respects `disableSignup` and `inviteOnly` policies.
+   */
+  .post('/auto-enroll-student', authMiddleware, async (c) => {
+    try {
+      const user = c.get('user')!;
+      const orgId = c.req.header('cio-org-id');
+
+      if (!orgId) {
+        return c.json({ success: false, error: 'Organization ID is required', code: 'ORG_ID_REQUIRED' }, 400);
+      }
+
+      const result = await autoEnrollStudent(user.id, orgId);
+      return c.json({ success: true, data: result }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to auto-enroll student');
+    }
+  })
   .get('/team', authMiddleware, orgTeamMemberMiddleware, async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;

@@ -2164,7 +2164,9 @@
           "depth": "Насколько глубоким должен быть курс?",
           "topic": "Тема или ниша",
           "expertise_level": "Целевой уровень экспертизы",
-          "documentation_url": "URL-адрес документации (необязательно)"
+          "documentation_url": {
+            "hint": "Мы прочитаем этот сайт, чтобы закрепить курс на вашем реальном продукте."
+          }
         },
         "expert_on_x": {
           "title": "Станьте экспертом по X",
@@ -2415,7 +2417,9 @@
         "pending_verification_description": "DNS-записи были найдены. Выдача или проверка SSL все еще продолжается.",
         "reconnect_description": "Этот домен необходимо снова подключить с помощью нового процесса настройки Cloudflare.",
         "error_description": "Этот личный домен существует, но проверка еще не завершена.",
-        "page_subtitle": "Run your public learning site on a web address you own."
+        "page_subtitle": "Run your public learning site on a web address you own.",
+        "dns_record": "DNS-запись",
+        "verified_snackbar": "Персональный домен подтвержден"
       }
     },
     "quiz": {

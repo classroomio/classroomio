@@ -2164,7 +2164,9 @@
           "depth": "पाठ्यक्रम कितना गहरा होना चाहिए?",
           "topic": "विषय या आला",
           "expertise_level": "लक्ष्य विशेषज्ञता स्तर",
-          "documentation_url": "दस्तावेज़ीकरण URL (वैकल्पिक)"
+          "documentation_url": {
+            "hint": "हम आपके वास्तविक उत्पाद में पाठ्यक्रम को आधार बनाने के लिए इस साइट को पढ़ेंगे।"
+          }
         },
         "expert_on_x": {
           "title": "एक्स पर विशेषज्ञ बनें",
@@ -2415,7 +2417,9 @@
         "pending_verification_description": "डीएनएस रिकॉर्ड पाए गए. एसएसएल जारी करना या सत्यापन अभी भी जारी है।",
         "reconnect_description": "इस डोमेन को नए क्लाउडफ़ेयर सेटअप फ़्लो के माध्यम से फिर से कनेक्ट करने की आवश्यकता है।",
         "error_description": "यह कस्टम डोमेन मौजूद है, लेकिन सत्यापन अभी तक पूरा नहीं हुआ है।",
-        "page_subtitle": "Run your public learning site on a web address you own."
+        "page_subtitle": "Run your public learning site on a web address you own.",
+        "dns_record": "डीएनएस रिकॉर्ड",
+        "verified_snackbar": "कस्टम डोमेन सत्यापित"
       }
     },
     "quiz": {

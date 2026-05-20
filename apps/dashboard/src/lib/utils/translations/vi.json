@@ -2164,7 +2164,9 @@
           "depth": "Khóa học nên đi sâu đến mức nào?",
           "topic": "Chủ đề hoặc niche",
           "expertise_level": "Mục tiêu trình độ chuyên môn",
-          "documentation_url": "URL tài liệu (tùy chọn)"
+          "documentation_url": {
+            "hint": "Chúng tôi sẽ đọc trang web này để xây dựng khóa học về sản phẩm thực của bạn."
+          }
         },
         "expert_on_x": {
           "title": "Trở thành chuyên gia về X",
@@ -2415,7 +2417,9 @@
         "pending_verification_description": "Bản ghi DNS đã được tìm thấy. Việc cấp hoặc xác thực SSL vẫn đang được tiến hành.",
         "reconnect_description": "Miền này cần được kết nối lại thông qua quy trình thiết lập Cloudflare mới.",
         "error_description": "Miền tùy chỉnh này tồn tại nhưng quá trình xác minh chưa hoàn tất.",
-        "page_subtitle": "Run your public learning site on a web address you own."
+        "page_subtitle": "Run your public learning site on a web address you own.",
+        "dns_record": "bản ghi DNS",
+        "verified_snackbar": "Đã xác minh miền tùy chỉnh"
       }
     },
     "quiz": {

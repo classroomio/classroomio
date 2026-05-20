@@ -53,7 +53,8 @@
     if (isSessionReady && !appInitApi.isInitializedAndReady && !appInitApi.loading) {
       appInitApi.setupApp($session.data as App.Locals, {
         isOrgSite: data.isOrgSite,
-        orgSiteName: data.orgSiteName
+        orgSiteName: data.orgSiteName,
+        orgId: data.org?.id ?? null
       });
     }
   });

@@ -14,7 +14,7 @@ export const NAV_IDS = {
   AI_ASSISTANT: 'AI_ASSISTANT'
 };
 
-export const COURSE_SIDEBAR_DEFAULT_WIDTH = 256;
+export const COURSE_SIDEBAR_DEFAULT_WIDTH = 320;
 export const COURSE_SIDEBAR_MIN_WIDTH = 220;
 export const COURSE_SIDEBAR_MAX_WIDTH = 420;
 export const COURSE_SIDEBAR_STORAGE_KEY = 'classroomio-course-sidebar-width';

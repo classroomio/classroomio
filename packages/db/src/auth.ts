@@ -98,13 +98,9 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        after: async (user, ctx) => {
+        after: async (user) => {
           console.log('[auth] databaseHooks.user.create.after: running', { userId: user.id });
-
-          const request =
-            (ctx as { context?: { request?: Request }; request?: Request } | undefined)?.context?.request ??
-            (ctx as { request?: Request } | undefined)?.request;
-          await createProfileHook(user, request);
+          await createProfileHook(user);
         }
       },
       update: {

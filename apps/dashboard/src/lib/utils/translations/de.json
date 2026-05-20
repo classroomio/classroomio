@@ -2164,7 +2164,9 @@
           "depth": "Wie tief soll der Kurs gehen?",
           "topic": "Thema oder Nische",
           "expertise_level": "Zielkompetenzniveau",
-          "documentation_url": "Dokumentations-URL (optional)"
+          "documentation_url": {
+            "hint": "Wir werden diese Website lesen, um den Kurs in Ihrem realen Produkt zu verankern."
+          }
         },
         "expert_on_x": {
           "title": "Werden Sie Experte für X",
@@ -2415,7 +2417,9 @@
         "pending_verification_description": "DNS-Einträge wurden gefunden. Die SSL-Ausstellung oder -Validierung ist noch im Gange.",
         "reconnect_description": "Diese Domäne muss über den neuen Cloudflare-Setup-Ablauf erneut verbunden werden.",
         "error_description": "Diese benutzerdefinierte Domäne existiert, aber die Überprüfung ist noch nicht abgeschlossen.",
-        "page_subtitle": "Run your public learning site on a web address you own."
+        "page_subtitle": "Run your public learning site on a web address you own.",
+        "dns_record": "DNS-Eintrag",
+        "verified_snackbar": "Benutzerdefinierte Domain verifiziert"
       }
     },
     "quiz": {
