@@ -1,7 +1,7 @@
-import { User } from 'better-auth';
 import { BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN, blockedSubdomain } from '@cio/utils/constants';
 import { getOrganizationByCustomDomain, getOrganizationBySiteName } from '@db/queries/organization';
 
+import { User } from 'better-auth';
 import { ensureOrgMembership } from './sso-provisioning';
 
 /**
@@ -70,14 +70,17 @@ async function resolveOrgIdFromHost(host: string): Promise<string | null> {
  */
 export const tenantProvisioningHook = async (user: User, request?: Request) => {
   if (!user.email || !request) return;
+  console.log('[auth] tenantProvisioningHook: running', { userId: user.id });
 
   const headerOrgId = request.headers.get('cio-org-id');
+  console.log('[auth] tenantProvisioningHook: headerOrgId', headerOrgId);
   if (headerOrgId) {
     await ensureOrgMembership(user.id, user.email, headerOrgId);
     return;
   }
 
   const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host');
+  console.log('[auth] tenantProvisioningHook: host', host);
   if (!host) return;
 
   const orgId = await resolveOrgIdFromHost(host);

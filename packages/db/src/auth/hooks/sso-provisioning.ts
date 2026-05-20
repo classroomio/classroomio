@@ -22,6 +22,12 @@ export async function ensureOrgMembership(
   roleId?: number
 ): Promise<void> {
   const emailLower = email.toLowerCase();
+  console.log('ensureOrgMembership', {
+    userId,
+    orgId,
+    roleId,
+    email
+  });
 
   const [existingByProfile] = await db
     .select()
