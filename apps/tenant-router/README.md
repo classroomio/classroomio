@@ -11,8 +11,14 @@ The Worker forwards each request to one of two Render services based on path:
 
 | Path | Upstream |
 |---|---|
-| `/api/*` | API service (`/api` prefix stripped) |
+| `/proxy/*` | API service (`/proxy` prefix stripped, rest forwarded as-is) |
 | anything else | Dashboard service |
+
+The `/proxy` prefix is the same-origin escape hatch the dashboard's
+browser code uses so its auth cookies stay host-only while still reaching
+the API. Example: a browser request to
+`https://app.classroomio.com/proxy/api/auth/sign-in/email` becomes
+`/api/auth/sign-in/email` on the API service (where Better Auth lives).
 
 It preserves the original host as `X-Forwarded-Host` so:
 

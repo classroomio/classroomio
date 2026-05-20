@@ -16,10 +16,11 @@ export const getRequestBaseUrl = () => {
     return process.env.PRIVATE_SERVER_URL || env.PUBLIC_SERVER_URL;
   }
 
-  // Browser: same-origin via the Cloudflare Worker /api proxy. Keeps auth
-  // cookies host-only on whichever domain the user is currently visiting
-  // (app.classroomio.com, <org>.classroomio.school, or a BYOD domain).
-  return `${window.location.origin}/api`;
+  // Browser: same-origin via the Cloudflare Worker `/proxy` prefix. Keeps
+  // auth cookies host-only on whichever domain the user is currently
+  // visiting (app.classroomio.com, <org>.classroomio.school, or BYOD).
+  // The Worker strips `/proxy` and forwards the remainder to the API.
+  return `${window.location.origin}/proxy`;
 };
 
 function mergeAbortSignals(...signals: Array<AbortSignal | null | undefined>) {

@@ -8,13 +8,19 @@
  *   - <BYOD>/*                      — customer-owned domains via Cloudflare for SaaS
  *
  * Per request, the Worker decides upstream by path:
- *   - /api/*  → API service (strips the /api prefix)
- *   - else    → Dashboard service
+ *   - /proxy/*  → API service (strips the /proxy prefix, forwards the rest)
+ *   - else      → Dashboard service
  *
- * It preserves the original Host as X-Forwarded-Host so the dashboard
- * (SvelteKit adapter-node `HOST_HEADER`) and Better Auth see the host the
- * browser actually called. Auth cookies are emitted without a Domain
- * attribute upstream, so they scope host-only on every domain naturally.
+ * The `/proxy` prefix is the same-origin escape hatch used by the
+ * dashboard's browser code so its auth cookies stay host-only while still
+ * reaching the API. Any path after `/proxy` is the real API path on the
+ * Hono server — e.g. `/proxy/api/auth/sign-in/email` strips to
+ * `/api/auth/sign-in/email`, which is where Better Auth is mounted.
+ *
+ * The Worker preserves the original Host as X-Forwarded-Host so the
+ * dashboard (SvelteKit adapter-node `HOST_HEADER`) and Better Auth see the
+ * host the browser actually called. Auth cookies are emitted without a
+ * Domain attribute upstream, so they scope host-only on every domain.
  */
 
 interface Env {
@@ -23,7 +29,7 @@ interface Env {
   APEX_REDIRECT_TARGET: string;
 }
 
-const API_PREFIX = '/api';
+const PROXY_PREFIX = '/proxy';
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -38,9 +44,9 @@ export default {
       return Response.redirect(target.toString(), 301);
     }
 
-    const isApiCall = url.pathname === API_PREFIX || url.pathname.startsWith(`${API_PREFIX}/`);
+    const isApiCall = url.pathname === PROXY_PREFIX || url.pathname.startsWith(`${PROXY_PREFIX}/`);
     const upstreamHost = isApiCall ? env.API_UPSTREAM_HOST : env.DASHBOARD_UPSTREAM_HOST;
-    const upstreamPath = isApiCall ? url.pathname.slice(API_PREFIX.length) || '/' : url.pathname;
+    const upstreamPath = isApiCall ? url.pathname.slice(PROXY_PREFIX.length) || '/' : url.pathname;
 
     const upstreamUrl = new URL(request.url);
     upstreamUrl.protocol = 'https:';
