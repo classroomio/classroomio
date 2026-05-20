@@ -1,11 +1,9 @@
 import { Context, Next } from 'hono';
-import { getOrgRolesForUser } from '@api/utils/redis/org-roles-cache';
 
 /**
  * Middleware to check if the authenticated user is a member of the organization.
- * Loads `orgRoles` from the Redis-backed cache (DB fallback on miss) so the
- * lookup stays out of the Better Auth session cookie — keeping that cookie
- * small enough for the oauth-proxy redirect to fit in a Location header.
+ * Reads the role from the Better Auth session (populated by the customSession plugin),
+ * so no per-request DB query is performed.
  *
  * Requires authMiddleware to be applied first.
  * Expects orgId in the 'cio-org-id' header.
@@ -37,7 +35,7 @@ export const orgMemberMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    const orgRoles = await getOrgRolesForUser(user.id);
+    const orgRoles = (c.get('orgRoles') as Record<string, number> | undefined) ?? {};
     const roleId = orgRoles[orgId];
 
     if (roleId === undefined) {

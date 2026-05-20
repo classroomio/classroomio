@@ -6,6 +6,7 @@ export type AuthSession = {
     actorId: string | null;
     automationKey: TOrganizationApiKey | null;
     orgId: string | null;
+    orgRoles: Record<string, number>;
     session: typeof auth.$Infer.Session.session | null;
     user: typeof auth.$Infer.Session.user | null;
     userRole: number | null;

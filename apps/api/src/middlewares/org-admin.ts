@@ -2,11 +2,11 @@ import { Context, Next } from 'hono';
 
 import { ErrorCodes } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
-import { getOrgRolesForUser } from '@api/utils/redis/org-roles-cache';
 
 /**
  * Middleware to check if the authenticated user is an admin of the organization.
- * Reads `orgRoles` from the Redis-backed cache (DB fallback on miss).
+ * Reads the role from the Better Auth session (populated by the customSession plugin),
+ * so no per-request DB query is performed.
  *
  * Requires authMiddleware to be applied first.
  * Expects orgId in the 'cio-org-id' header.
@@ -37,7 +37,7 @@ export const orgAdminMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    const orgRoles = await getOrgRolesForUser(user.id);
+    const orgRoles = (c.get('orgRoles') as Record<string, number> | undefined) ?? {};
     const roleId = orgRoles[orgId];
 
     if (roleId !== ROLE.ADMIN) {
