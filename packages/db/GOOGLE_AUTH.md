@@ -161,7 +161,6 @@ If you get `state_security_mismatch`, the `oAuthProxy` plugin didn't detect the 
 
 ## Known gotchas
 
-- **`storeAccountCookie: true` is fine again** with the Redis handoff. The size of the cookies blob no longer matters; it just has to fit in a Redis value (which has no practical ceiling here).
-- **`customSession` is gone.** `orgRoles` is fetched per-request from Redis in `org-member`, `org-admin`, and `org-admin-or-automation-key` middlewares (DB on cache miss, 1-hour TTL). Anywhere that mutates `organizationmember` for an **existing** user should call `invalidateOrgRolesCache(userId)` so the role change is visible immediately instead of after the TTL.
+- **`storeAccountCookie: true` and `customSession` (with `orgRoles`) are both fine** with the Redis handoff. The size of the cookies blob no longer matters; it just has to fit in a Redis value (which has no practical ceiling here). `orgRoles` lives in the session cookie cache and is refreshed when the cookie cache expires (`session.cookieCache.maxAge`, currently 1 hour).
 - **OAuth state cookie check is skipped** on the callback when the `oAuthProxy` plugin engages (`skipStateCookieCheck: true`). CSRF is still protected by the unguessable random state token stored in the DB (Better Auth's `verification` table) and the 10-minute expiry. This is the documented Better Auth mitigation.
 - **Render service name swap** — `cio-api.onrender.com` is the **dashboard** service, `cio-api-vymh.onrender.com` is the **API** service. Render doesn't allow renaming. See `apps/tenant-router/wrangler.toml` for the same warning.

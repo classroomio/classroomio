@@ -21,6 +21,8 @@
   const metaTags = $derived(merge(data.baseMetaTags, page.data.pageMetaTags));
 
   onMount(() => {
+    console.log('Layout', data);
+
     const loadingIndicator = document.getElementById('app-loading-indicator');
     if (loadingIndicator) {
       loadingIndicator.style.display = 'none';
