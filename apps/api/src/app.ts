@@ -95,23 +95,17 @@ export const app = new Hono()
     let request = c.req.raw;
     const fwdHost = c.req.header('x-forwarded-host');
     const fwdProto = c.req.header('x-forwarded-proto');
-    console.log('fwdHost', fwdHost);
-    console.log('fwdProto', fwdProto);
     if (fwdHost) {
       const url = new URL(request.url);
-      console.log('url', url);
       url.host = fwdHost;
       if (fwdProto === 'https' || fwdProto === 'http') {
         url.protocol = `${fwdProto}:`;
       }
-      console.log('url', url);
       request = new Request(url, request);
     }
-    console.log('request', request);
 
     const response = await auth.handler(request);
 
-    // Surface redirect targets so we can trace OAuth flow in Render logs.
     if (response.status >= 300 && response.status < 400) {
       console.log('[auth-handler]', c.req.method, c.req.path, '→', response.status, response.headers.get('location'));
     }
