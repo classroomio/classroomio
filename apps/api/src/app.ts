@@ -104,7 +104,18 @@ export const app = new Hono()
     const response = await auth.handler(request);
 
     if (response.status >= 300 && response.status < 400) {
-      console.log('[auth-handler]', c.req.method, c.req.path, '→', response.status, response.headers.get('location'));
+      const location = response.headers.get('location') ?? '';
+      const setCookies = response.headers.get('set-cookie') ?? '';
+      console.log(
+        '[auth-handler]',
+        c.req.method,
+        c.req.path,
+        '→',
+        response.status,
+        `location.length=${location.length}`,
+        `setCookie.length=${setCookies.length}`,
+        `location[0..200]=${location.slice(0, 200)}`
+      );
     }
 
     return response;

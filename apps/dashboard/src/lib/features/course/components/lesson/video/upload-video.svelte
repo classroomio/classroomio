@@ -274,7 +274,7 @@
 {#if !isLoaded}
   {#if $lessonVideoUpload.isUploading}
     <div
-      class="border-primary-300 flex h-full w-full flex-col items-center justify-center rounded-xl border border-dashed"
+      class="border-primary-300 flex h-full w-full flex-col items-center justify-center rounded-xl border border-dashed py-4"
     >
       <div class="flex w-full max-w-[500px] flex-col items-center gap-5 px-6 text-center">
         <p>
