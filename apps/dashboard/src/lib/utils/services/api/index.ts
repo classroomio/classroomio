@@ -66,14 +66,10 @@ class ApiClient {
   private async makeRequest(input: RequestInfo | URL, requestConfig: RequestConfig = {}): Promise<Response> {
     const { timeout = this.config.timeout, retries = this.config.retries, ...fetchConfig } = requestConfig;
 
-    const inputUrl = typeof input === 'string' ? input : input.toString();
-    const inputUrlObject = new URL(inputUrl, 'http://_');
-
-    // We are dynamically always getting the base URL to make sure we are getting the right url for the right environment.
-    // For example, when you use classroomio.account.$get(), on the server in a docker container, we want it to hit the api container directly instead of hitting the public url which is extra bandwidth.
-    // However when on the client, we want it to hit the public url which still points to the api container but this time with some bandwidth.
-    const base = (getRequestBaseUrl() ?? this.config.baseURL)?.replace(/\/$/, '') ?? '';
-    const fullUrl = `${base}${inputUrlObject.pathname}${inputUrlObject.search}`;
+    // The Hono RPC client already builds a full URL using the base it was
+    // constructed with (PRIVATE_SERVER_URL on the server, `${origin}/proxy`
+    // in the browser — see `getRequestBaseUrl()` above). Forward it as-is.
+    const fullUrl = typeof input === 'string' ? input : input.toString();
 
     // Prepare headers
     const headers = new Headers(fetchConfig.headers);
