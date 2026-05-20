@@ -1872,7 +1872,8 @@
                 "kind_generic": "Eingebettet",
                 "course_fallback": "Kurs",
                 "menu_aria": "Videooptionen"
-              }
+              },
+              "view_transcript": "Transkription ansehen"
             },
             "slide": {
               "title": "Rutsche",
@@ -2163,9 +2164,7 @@
           "depth": "Wie tief soll der Kurs gehen?",
           "topic": "Thema oder Nische",
           "expertise_level": "Zielkompetenzniveau",
-          "documentation_url": {
-            "hint": "Wir werden diese Website lesen, um den Kurs in Ihrem realen Produkt zu verankern."
-          }
+          "documentation_url": "Dokumentations-URL (optional)"
         },
         "expert_on_x": {
           "title": "Werden Sie Experte für X",

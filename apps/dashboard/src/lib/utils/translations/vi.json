@@ -1872,7 +1872,8 @@
                 "kind_generic": "Đã nhúng",
                 "course_fallback": "Khóa học",
                 "menu_aria": "Tùy chọn video"
-              }
+              },
+              "view_transcript": "Xem bản chép lời"
             },
             "slide": {
               "title": "Trượt",
@@ -2163,9 +2164,7 @@
           "depth": "Khóa học nên đi sâu đến mức nào?",
           "topic": "Chủ đề hoặc niche",
           "expertise_level": "Mục tiêu trình độ chuyên môn",
-          "documentation_url": {
-            "hint": "Chúng tôi sẽ đọc trang web này để xây dựng khóa học về sản phẩm thực của bạn."
-          }
+          "documentation_url": "URL tài liệu (tùy chọn)"
         },
         "expert_on_x": {
           "title": "Trở thành chuyên gia về X",

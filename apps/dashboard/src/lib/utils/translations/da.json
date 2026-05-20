@@ -1872,7 +1872,8 @@
                 "kind_generic": "Indlejret",
                 "course_fallback": "Kursus",
                 "menu_aria": "Video muligheder"
-              }
+              },
+              "view_transcript": "Se transskription"
             },
             "slide": {
               "title": "Slide",
@@ -2163,9 +2164,7 @@
           "depth": "Hvor dybt skal kurset gå?",
           "topic": "Emne eller niche",
           "expertise_level": "Mål ekspertiseniveau",
-          "documentation_url": {
-            "hint": "Vi læser dette websted for at basere kurset på dit rigtige produkt."
-          }
+          "documentation_url": "Dokumentations-URL (valgfrit)"
         },
         "expert_on_x": {
           "title": "Bliv ekspert på X",

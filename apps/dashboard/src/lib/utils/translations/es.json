@@ -1872,7 +1872,8 @@
                 "kind_generic": "Incrustado",
                 "course_fallback": "Curso",
                 "menu_aria": "Opciones de vídeo"
-              }
+              },
+              "view_transcript": "Ver transcripción"
             },
             "slide": {
               "title": "diapositiva",
@@ -2163,9 +2164,7 @@
           "depth": "¿Qué profundidad debe tener el curso?",
           "topic": "Tema o nicho",
           "expertise_level": "Nivel de experiencia objetivo",
-          "documentation_url": {
-            "hint": "Leeremos este sitio para basar el curso en su producto real."
-          }
+          "documentation_url": "URL de documentación (opcional)"
         },
         "expert_on_x": {
           "title": "Conviértete en un experto en X",

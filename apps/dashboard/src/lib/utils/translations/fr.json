@@ -1872,7 +1872,8 @@
                 "kind_generic": "Intégré",
                 "course_fallback": "Cours",
                 "menu_aria": "Options vidéo"
-              }
+              },
+              "view_transcript": "Voir la transcription"
             },
             "slide": {
               "title": "Diapositive",
@@ -2163,9 +2164,7 @@
           "depth": "Jusqu’où doit aller le cours ?",
           "topic": "Sujet ou niche",
           "expertise_level": "Niveau d’expertise cible",
-          "documentation_url": {
-            "hint": "Nous lirons ce site pour ancrer le cours dans votre produit réel."
-          }
+          "documentation_url": "URL de la documentation (facultatif)"
         },
         "expert_on_x": {
           "title": "Devenez un expert sur X",

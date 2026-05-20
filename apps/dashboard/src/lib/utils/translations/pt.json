@@ -1872,7 +1872,8 @@
                 "kind_generic": "Incorporado",
                 "course_fallback": "Curso",
                 "menu_aria": "Opções de vídeo"
-              }
+              },
+              "view_transcript": "Ver transcrição"
             },
             "slide": {
               "title": "Deslizar",
@@ -2163,9 +2164,7 @@
           "depth": "Quão profundo o curso deve ir?",
           "topic": "Tópico ou nicho",
           "expertise_level": "Nível de especialização alvo",
-          "documentation_url": {
-            "hint": "Leremos este site para fundamentar o curso em seu produto real."
-          }
+          "documentation_url": "URL da documentação (opcional)"
         },
         "expert_on_x": {
           "title": "Torne-se um especialista em X",

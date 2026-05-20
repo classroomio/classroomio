@@ -2276,6 +2276,7 @@
               },
               "generate_transcript": "Generate transcription",
               "generate_transcript_in_progress": "Transcribing…",
+              "view_transcript": "View transcription",
               "simple_card": {
                 "kind_youtube": "YouTube",
                 "kind_upload": "Upload",

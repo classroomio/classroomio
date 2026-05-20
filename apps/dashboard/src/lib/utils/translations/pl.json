@@ -1872,7 +1872,8 @@
                 "kind_generic": "Wbudowany",
                 "course_fallback": "Kurs",
                 "menu_aria": "Opcje wideo"
-              }
+              },
+              "view_transcript": "Zobacz transkrypcję"
             },
             "slide": {
               "title": "Przesuń",
@@ -2163,9 +2164,7 @@
           "depth": "Jak głęboko powinien sięgać kurs?",
           "topic": "Temat lub nisza",
           "expertise_level": "Docelowy poziom wiedzy",
-          "documentation_url": {
-            "hint": "Przeczytamy tę witrynę, aby oprzeć kurs na Twoim prawdziwym produkcie."
-          }
+          "documentation_url": "Adres URL dokumentacji (opcjonalnie)"
         },
         "expert_on_x": {
           "title": "Zostań ekspertem w dziedzinie X",

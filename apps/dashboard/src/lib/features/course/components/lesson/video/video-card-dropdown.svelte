@@ -4,10 +4,13 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { mediaApi } from '$features/media/api';
   import { JobPoller, jobsApi, type MediaJobEnvelope } from '$features/jobs';
+  import { sidePanel } from '$features/side-panel';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { onDestroy } from 'svelte';
   import type { LessonVideo } from './video-card-utils';
+  import { lessonVideoBus } from './lesson-video-bus.svelte';
+  import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
 
   interface Props {
     video: LessonVideo;
@@ -19,6 +22,8 @@
   let { video, onRemove, menuPlacement = 'inline' }: Props = $props();
 
   let isTranscribing = $state(false);
+  let hasTranscript = $state(false);
+  let hasCheckedTranscript = $state(false);
   let activePoller: JobPoller<MediaJobEnvelope> | null = null;
 
   const assetId = $derived((video as LessonVideo & { assetId?: string }).assetId ?? null);
@@ -28,6 +33,14 @@
   onDestroy(() => {
     activePoller?.stop();
   });
+
+  async function ensureTranscriptChecked() {
+    if (hasCheckedTranscript || !assetId) return;
+
+    hasCheckedTranscript = true;
+    const data = await mediaApi.getAssetTranscript(assetId);
+    hasTranscript = !!data?.segments?.length;
+  }
 
   async function startTranscriptionPoll(afterAssetId: string) {
     activePoller?.stop();
@@ -44,6 +57,7 @@
 
     if (latest.job.status === 'completed') {
       isTranscribing = false;
+      hasTranscript = true;
       snackbar.success('snackbar.media_manager.transcription_completed');
 
       return;
@@ -62,6 +76,7 @@
           activePoller?.stop();
           activePoller = null;
           isTranscribing = false;
+          hasTranscript = true;
           snackbar.success('snackbar.media_manager.transcription_completed');
         }
 
@@ -85,6 +100,22 @@
     await startTranscriptionPoll(assetId);
   }
 
+  async function handleViewTranscript() {
+    if (!assetId) return;
+
+    lessonVideoBus.assetId = assetId;
+    lessonVideoBus.transcriptLoading = true;
+    sidePanel.open(TRANSCRIPT_PANEL_ID);
+
+    try {
+      const data = await mediaApi.getAssetTranscript(assetId);
+      lessonVideoBus.transcript = data;
+      hasTranscript = !!data?.segments?.length;
+    } finally {
+      lessonVideoBus.transcriptLoading = false;
+    }
+  }
+
   const generateLabel = $derived(
     isTranscribing
       ? t.get('course.navItem.lessons.materials.tabs.video.generate_transcript_in_progress')
@@ -92,7 +123,13 @@
   );
 </script>
 
-<DropdownMenu.Root>
+<DropdownMenu.Root
+  onOpenChange={(open) => {
+    if (open && canGenerateTranscript) {
+      void ensureTranscriptChecked();
+    }
+  }}
+>
   <DropdownMenu.Trigger
     class={menuPlacement === 'corner'
       ? 'ui:data-[state=open]:opacity-100 absolute top-2 right-2 z-40 flex items-center justify-center opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100'
@@ -114,6 +151,15 @@
       >
         {generateLabel}
       </DropdownMenu.Item>
+      {#if hasTranscript}
+        <DropdownMenu.Item
+          onclick={() => {
+            void handleViewTranscript();
+          }}
+        >
+          {$t('course.navItem.lessons.materials.tabs.video.view_transcript')}
+        </DropdownMenu.Item>
+      {/if}
     {/if}
     <DropdownMenu.Item class="ui:text-red-600" onclick={onRemove}>
       {$t('course.navItem.lessons.materials.tabs.video.remove_video')}
