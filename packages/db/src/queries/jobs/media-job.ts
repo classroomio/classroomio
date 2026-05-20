@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, desc, eq, inArray, sql } from '@db/drizzle';
+import { and, desc, eq, inArray, lt, sql } from '@db/drizzle';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TJobStatus, TMediaJob, TNewMediaJob } from '@db/types';
 
@@ -106,6 +106,39 @@ export async function updateMediaJob(
   } catch (error) {
     console.error('updateMediaJob error:', error);
     throw new Error('Failed to update media job');
+  }
+}
+
+/**
+ * Flip any `queued` / `running` media_job rows untouched since `staleBeforeIso`
+ * to `failed`. These belong to crashed workers, Redis-less runs, or BullMQ
+ * jobs that vanished — without this sweep the active-job guard would keep
+ * blocking new runs forever.
+ *
+ * Returns the rows that were updated so callers can log or dead-letter them.
+ */
+export async function reapStuckMediaJobs(
+  staleBeforeIso: string,
+  dbClient: DbOrTxClient = db
+): Promise<Pick<TMediaJob, 'id' | 'organizationId' | 'assetId'>[]> {
+  try {
+    return await dbClient
+      .update(schema.mediaJob)
+      .set({
+        status: 'failed',
+        stage: 'failed',
+        error: { code: 'STUCK_AFTER_RESTART', message: 'No worker progress within the stale window' },
+        updatedAt: new Date().toISOString()
+      })
+      .where(and(inArray(schema.mediaJob.status, ['queued', 'running']), lt(schema.mediaJob.updatedAt, staleBeforeIso)))
+      .returning({
+        id: schema.mediaJob.id,
+        organizationId: schema.mediaJob.organizationId,
+        assetId: schema.mediaJob.assetId
+      });
+  } catch (error) {
+    console.error('reapStuckMediaJobs error:', error);
+    throw new Error('Failed to reap stuck media jobs');
   }
 }
 

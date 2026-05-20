@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, eq, inArray } from '@db/drizzle';
+import { and, eq, gte, inArray } from '@db/drizzle';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TMediaTranscript, TNewMediaTranscript } from '@db/types';
 
@@ -99,14 +99,28 @@ export async function listMediaTranscriptsByAssetIds(
 }
 
 /**
- * Returns true if any media_job for this asset is still queued or running.
+ * Default freshness window for "active" media_job rows. Rows older than this
+ * are assumed to belong to a crashed worker / a Redis-less run and are
+ * ignored by `hasActiveMediaJobForAsset` so users can retry. A separate
+ * sweeper (`reapStuckMediaJobs`) flips those stale rows to `failed`.
+ */
+export const MEDIA_JOB_STALE_AFTER_MINUTES = 30;
+
+/**
+ * Returns true if any media_job for this asset is still queued or running and
+ * has been touched within `staleAfterMinutes` (default 30). Stale rows are
+ * treated as dead: they shouldn't block new runs because the worker that
+ * owned them is gone (server restart, Redis flush, lost BullMQ job, etc.).
  */
 export async function hasActiveMediaJobForAsset(
   assetId: string,
   organizationId: string,
-  dbClient: DbOrTxClient = db
+  options: { staleAfterMinutes?: number; dbClient?: DbOrTxClient } = {}
 ): Promise<boolean> {
+  const { staleAfterMinutes = MEDIA_JOB_STALE_AFTER_MINUTES, dbClient = db } = options;
+
   try {
+    const freshSinceIso = new Date(Date.now() - staleAfterMinutes * 60 * 1_000).toISOString();
     const [row] = await dbClient
       .select({ id: schema.mediaJob.id })
       .from(schema.mediaJob)
@@ -114,7 +128,8 @@ export async function hasActiveMediaJobForAsset(
         and(
           eq(schema.mediaJob.assetId, assetId),
           eq(schema.mediaJob.organizationId, organizationId),
-          inArray(schema.mediaJob.status, ['queued', 'running'])
+          inArray(schema.mediaJob.status, ['queued', 'running']),
+          gte(schema.mediaJob.updatedAt, freshSinceIso)
         )
       )
       .limit(1);

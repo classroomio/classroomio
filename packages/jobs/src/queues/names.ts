@@ -37,6 +37,7 @@ export const JOB_NAMES = {
   },
   maintenance: {
     retentionCompact: 'retention-compact',
-    deadLetterCleanup: 'dead-letter-cleanup'
+    deadLetterCleanup: 'dead-letter-cleanup',
+    mediaJobReap: 'media-job-reap'
   }
 } as const;
