@@ -51,7 +51,6 @@ export const app = new Hono()
     if (isPublicCorsPath(c.req.path)) {
       c.set('user', null);
       c.set('session', null);
-      c.set('orgRoles', {});
 
       return next();
     }
@@ -67,7 +66,6 @@ export const app = new Hono()
     if (!session) {
       c.set('user', null);
       c.set('session', null);
-      c.set('orgRoles', {});
       await next();
 
       return;
@@ -75,7 +73,6 @@ export const app = new Hono()
 
     c.set('user', session.user);
     c.set('session', session.session);
-    c.set('orgRoles', (session as { orgRoles?: Record<string, number> }).orgRoles ?? {});
     await next();
   })
 

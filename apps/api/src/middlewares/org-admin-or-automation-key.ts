@@ -3,6 +3,7 @@ import type { TOrganizationApiKeyScope } from '@cio/utils/validation/organizatio
 
 import { ErrorCodes } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
+import { getOrgRolesForUser } from '@api/utils/redis/org-roles-cache';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
 
 export const orgAdminOrAutomationKeyMiddleware =
@@ -55,7 +56,7 @@ export const orgAdminOrAutomationKeyMiddleware =
         );
       }
 
-      const orgRoles = (c.get('orgRoles') as Record<string, number> | undefined) ?? {};
+      const orgRoles = await getOrgRolesForUser(user.id);
       if (orgRoles[orgId] !== ROLE.ADMIN) {
         return c.json(
           {

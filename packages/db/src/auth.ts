@@ -6,11 +6,9 @@ import { sendChangeEmailConfirmation, sendVerificationEmail } from './auth/email
 
 import { betterAuth } from 'better-auth/minimal';
 import { createProfileHook } from './auth/hooks/create-profile';
-import { customSession } from 'better-auth/plugins/custom-session';
 import { db } from '@db/drizzle';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { config as emailAndPassword } from './auth/email-password';
-import { getUserOrgRolesMap } from './queries/organization/organization';
 import { loginLink } from './auth/plugins/login-link';
 import { oAuthProxy } from 'better-auth/plugins/oauth-proxy';
 import { resolveTrustedBrowserOrigin } from './utils';
@@ -121,20 +119,6 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
       productionURL: CONSTANTS.BASE_URL
     }),
     loginLink(),
-    tokenExchange(),
-    // Attaches the user's org memberships ({ [orgId]: roleId }) to the session
-    // so org-scoped middlewares can authorize without a per-request DB query.
-    // Refreshes when the session cookie cache expires (see session.cookieCache.maxAge).
-    customSession(async ({ user, session }) => {
-      let orgRoles: Record<string, number> = {};
-      try {
-        if (user?.id) {
-          orgRoles = await getUserOrgRolesMap(user.id);
-        }
-      } catch (error) {
-        console.error('customSession: failed to load orgRoles', error);
-      }
-      return { user, session, orgRoles };
-    })
+    tokenExchange()
   ]
 });
