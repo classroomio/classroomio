@@ -143,7 +143,7 @@
       </div>
     </div>
 
-    <div class="my-10 h-[75%] bg-[#F5F8FE] px-2 py-12 lg:h-[80%] lg:px-[12%]">
+    <div class="my-10 h-[75%] px-2 py-12 lg:h-[80%] lg:px-[12%]">
       <h1 class="flex items-center justify-center gap-3 text-center text-2xl">Word from our fufilled facilitators</h1>
 
       <div

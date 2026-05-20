@@ -1,39 +1,39 @@
 import 'dotenv/config';
 
-import { API_SERVER_URL } from '@api/constants';
+import { isPublicCorsPath, sessionCors } from '@api/middlewares/cors';
 
+import { API_SERVER_URL } from '@api/constants';
 import { Hono } from '@api/utils/hono';
 import { accountRouter } from '@api/routes/account';
+import { agentRouter } from '@api/routes/agent';
 import { auth } from '@cio/db/auth';
 import { communityRouter } from '@api/routes/community';
-import { isPublicCorsPath, sessionCors } from '@api/middlewares/cors';
 import { courseRouter } from '@api/routes/course';
 import { dashAnalyticsRouter } from '@api/routes/dash';
 import { domainRouter } from '@api/routes/domain/domain';
+import { internalRouter } from '@api/routes/internal';
 import { inviteRouter } from '@api/routes/invite';
+import { jobsRouter } from '@api/routes/jobs';
+import { licenseRouter } from '@api/routes/license';
 import { logger } from 'hono/logger';
 // ROUTES
 import { mailRouter } from '@api/routes/mail';
-import { jobsRouter } from '@api/routes/jobs';
 import { mediaRouter } from '@api/routes/media';
+import { mountQueueDashboard } from '@api/routes/admin/queues';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
-import { publicCourseRouter } from '@api/routes/org-site';
-import { licenseRouter } from '@api/routes/license';
 import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
-import { v1Router } from '@api/routes/v1';
-import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
-import { publicWidgetsRouter } from '@api/routes/widgets';
 import { prettyJSON } from 'hono/pretty-json';
+import { programRouter } from '@api/routes/program';
+import { publicCourseRouter } from '@api/routes/org-site';
+import { publicWidgetsRouter } from '@api/routes/widgets';
 import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
 import { signupGuard } from '@api/middlewares/signup-guard';
-import { programRouter } from '@api/routes/program';
+import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
-import { agentRouter } from '@api/routes/agent';
-import { internalRouter } from '@api/routes/internal';
-import { mountQueueDashboard } from '@api/routes/admin/queues';
+import { v1Router } from '@api/routes/v1';
 
 // Create Hono app with chaining for RPC support
 export const app = new Hono()
@@ -86,7 +86,7 @@ export const app = new Hono()
     })
   )
   .use('/api/auth/sign-up/*', signupGuard)
-  .on(['POST', 'GET'], '/api/auth/*', (c) => {
+  .on(['POST', 'GET'], '/api/auth/*', async (c) => {
     // Behind the Cloudflare Worker proxy the raw Request URL points at the
     // upstream `.onrender.com` host. Better Auth (and the oauth-proxy plugin)
     // need the original tenant/admin host to construct correct OAuth callback
@@ -95,15 +95,28 @@ export const app = new Hono()
     let request = c.req.raw;
     const fwdHost = c.req.header('x-forwarded-host');
     const fwdProto = c.req.header('x-forwarded-proto');
+    console.log('fwdHost', fwdHost);
+    console.log('fwdProto', fwdProto);
     if (fwdHost) {
       const url = new URL(request.url);
+      console.log('url', url);
       url.host = fwdHost;
       if (fwdProto === 'https' || fwdProto === 'http') {
         url.protocol = `${fwdProto}:`;
       }
+      console.log('url', url);
       request = new Request(url, request);
     }
-    return auth.handler(request);
+    console.log('request', request);
+
+    const response = await auth.handler(request);
+
+    // Surface redirect targets so we can trace OAuth flow in Render logs.
+    if (response.status >= 300 && response.status < 400) {
+      console.log('[auth-handler]', c.req.method, c.req.path, '→', response.status, response.headers.get('location'));
+    }
+
+    return response;
   })
   .get('/session', async (c) => {
     const session = c.get('session');
