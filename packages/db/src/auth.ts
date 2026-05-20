@@ -54,7 +54,6 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
       origins.push(resolved);
     }
 
-    console.log('ba origins', origins);
     return origins;
   },
   advanced: {
