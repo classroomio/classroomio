@@ -1,9 +1,22 @@
 import { getSessionData } from '$lib/utils/services/auth/session';
 import { getHasCioCookies } from '$lib/utils/functions/cookies';
 import { applyCspExtensions } from '$lib/utils/csp';
-import { type Handle, redirect } from '@sveltejs/kit';
+import { type Handle, type HandleServerError, redirect } from '@sveltejs/kit';
 import { isPublicApiRoute, isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
 import { ROUTE } from '$lib/utils/constants/routes';
+
+export const handleError: HandleServerError = ({ error, event, status, message }) => {
+  const err = error as Error;
+  console.error('[handleError]', {
+    status,
+    message,
+    method: event.request.method,
+    url: event.url.toString(),
+    name: err?.name,
+    msg: err?.message,
+    stack: err?.stack
+  });
+};
 
 const ANALYTICS_SESSION_COOKIE = 'cio_aid';
 const ANALYTICS_SESSION_MAX_AGE = 60 * 60 * 24 * 90;
