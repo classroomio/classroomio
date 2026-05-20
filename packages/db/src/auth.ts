@@ -19,6 +19,22 @@ import { syncUserWithProfile } from './auth/hooks/sync-user';
 import { tokenExchange } from './auth/plugins/token-exchange';
 import { trackLoginHook } from './auth/hooks/track-login';
 
+/**
+ * Cloud (multi-tenant) only. Routes OAuth/SSO callbacks to the canonical
+ * production URL while completing the flow on whichever tenant host the
+ * user signed in from (<org>.classroomio.school or a BYOD domain).
+ *
+ * Self-hosted instances run with one apex (api.<domain> + app.<domain>)
+ * and use AUTH_COOKIE_DOMAIN for cross-subdomain cookies, so the proxy
+ * isn't needed there.
+ */
+function buildOAuthProxyPlugin() {
+  if (process.env.PUBLIC_IS_SELFHOSTED === 'true') {
+    return [];
+  }
+  return [oAuthProxy({ productionURL: CONSTANTS.BASE_URL })];
+}
+
 export const auth: ReturnType<typeof betterAuth> = betterAuth({
   baseURL: CONSTANTS.BASE_URL,
   database: drizzleAdapter(db, {
@@ -58,7 +74,12 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
   },
   advanced: {
     cookiePrefix: 'classroomio',
-    crossSubDomainCookies: { enabled: false },
+    // Cloud (multi-tenant): host-only cookies on each tenant/BYOD domain.
+    // Self-hosted: cross-subdomain cookies under AUTH_COOKIE_DOMAIN so the
+    // session set on `api.<apex>` is also sent to `app.<apex>`.
+    crossSubDomainCookies: process.env.AUTH_COOKIE_DOMAIN?.trim()
+      ? { enabled: true, domain: process.env.AUTH_COOKIE_DOMAIN.trim() }
+      : { enabled: false },
     database: {
       generateId: false
     }
@@ -113,14 +134,7 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
       // OIDC providers are registered dynamically per organization
       // via the admin API (auth.api.registerSSOProvider)
     }),
-    // Lets OAuth/SSO callbacks land on the canonical production URL
-    // (api.classroomio.com) while still completing the flow on the tenant
-    // host the user signed in from (<org>.classroomio.school or a BYOD
-    // domain). Without this, the state cookie set on the tenant host isn't
-    // sent to the api host on the Google redirect → state_security_mismatch.
-    oAuthProxy({
-      productionURL: CONSTANTS.BASE_URL
-    }),
+    ...buildOAuthProxyPlugin(),
     loginLink(),
     tokenExchange(),
     // Attaches the user's org memberships ({ [orgId]: roleId }) to the session

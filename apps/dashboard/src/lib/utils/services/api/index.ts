@@ -16,10 +16,17 @@ export const getRequestBaseUrl = () => {
     return process.env.PRIVATE_SERVER_URL || env.PUBLIC_SERVER_URL;
   }
 
-  // Browser: same-origin via the Cloudflare Worker `/proxy` prefix. Keeps
-  // auth cookies host-only on whichever domain the user is currently
-  // visiting (app.classroomio.com, <org>.classroomio.school, or BYOD).
-  // The Worker strips `/proxy` and forwards the remainder to the API.
+  // Self-hosted: dashboard and API are on different subdomains of the
+  // operator's apex. Browser calls go straight to PUBLIC_SERVER_URL;
+  // cookies cross subdomains via AUTH_COOKIE_DOMAIN. No Worker proxy.
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+    return env.PUBLIC_SERVER_URL ?? '';
+  }
+
+  // Cloud (multi-tenant): same-origin via the Cloudflare Worker `/proxy`
+  // prefix so auth cookies stay host-only on whichever tenant or BYOD
+  // domain the user is currently visiting. The Worker strips `/proxy`
+  // before forwarding to the API.
   return `${window.location.origin}/proxy`;
 };
 
