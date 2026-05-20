@@ -1,6 +1,8 @@
 import 'dotenv/config';
 
+import { consumeHandoffPayload, storeHandoffPayload } from '@api/utils/redis/oauth-handoff';
 import { isPublicCorsPath, sessionCors } from '@api/middlewares/cors';
+import { randomBytes } from 'crypto';
 
 import { API_SERVER_URL } from '@api/constants';
 import { Hono } from '@api/utils/hono';
@@ -101,20 +103,65 @@ export const app = new Hono()
       request = new Request(url, request);
     }
 
+    // Inbound: if the browser is hitting `/oauth-proxy-callback?token=…`
+    // (our short handoff token), swap the token back to the original
+    // encrypted `cookies=…` payload before handing the request to Better
+    // Auth — the oauth-proxy plugin expects the cookies query param.
+    {
+      const inUrl = new URL(request.url);
+      if (inUrl.pathname.endsWith('/oauth-proxy-callback')) {
+        const token = inUrl.searchParams.get('token');
+        if (token && !inUrl.searchParams.has('cookies')) {
+          const cookies = await consumeHandoffPayload(token);
+          if (cookies) {
+            inUrl.searchParams.set('cookies', cookies);
+            inUrl.searchParams.delete('token');
+            request = new Request(inUrl, request);
+          }
+        }
+      }
+    }
+
     const response = await auth.handler(request);
+
+    // Outbound: if the OAuth callback redirected to
+    // `/oauth-proxy-callback?cookies=…<huge>`, stash the cookies payload
+    // in Redis under a short token and rewrite the Location header so the
+    // browser only carries the token across hosts. The companion swap on
+    // the inbound side restores the cookies before Better Auth's plugin
+    // tries to decrypt them. Without this, the encrypted cookies blob
+    // pushes the Location header past Render's response size ceiling and
+    // the redirect silently never reaches the browser.
+    if (response.status >= 300 && response.status < 400) {
+      const location = response.headers.get('location');
+      if (location && location.includes('/oauth-proxy-callback') && location.includes('cookies=')) {
+        try {
+          const outUrl = new URL(location);
+          const cookies = outUrl.searchParams.get('cookies');
+          if (cookies && cookies.length > 500) {
+            const token = randomBytes(16).toString('hex');
+            await storeHandoffPayload(token, cookies);
+            outUrl.searchParams.delete('cookies');
+            outUrl.searchParams.set('token', token);
+            const headers = new Headers(response.headers);
+            headers.set('location', outUrl.toString());
+            return new Response(response.body, { status: response.status, headers });
+          }
+        } catch (error) {
+          console.error('[auth-handler] failed to swap cookies → token, falling back to inline cookies:', error);
+        }
+      }
+    }
 
     if (response.status >= 300 && response.status < 400) {
       const location = response.headers.get('location') ?? '';
-      const setCookies = response.headers.get('set-cookie') ?? '';
       console.log(
         '[auth-handler]',
         c.req.method,
         c.req.path,
         '→',
         response.status,
-        `location.length=${location.length}`,
-        `setCookie.length=${setCookies.length}`,
-        `location[0..200]=${location.slice(0, 200)}`
+        `location.length=${location.length}`
       );
     }
 

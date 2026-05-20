@@ -6,7 +6,7 @@ import type { AccountOrg } from '$features/app/types';
 import type { OrgTeamMember } from '../types/org';
 import { PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-import { ROLE } from '@cio/utils/constants';
+import { ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
 
@@ -81,24 +81,12 @@ export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
 
   const browserOrigin = dev && browser && window.location.origin;
 
-  // Get the root domain from window.location
-  let rootDomain = '';
-  if (browser && typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    const parts = host.split('.');
-    if (parts.length >= 2) {
-      rootDomain = parts.slice(-2).join('.');
-    } else {
-      rootDomain = host;
-    }
-  }
-
   return browserOrigin
     ? browserOrigin
     : $currentOrg.customDomain && $currentOrg.isCustomDomainVerified
       ? `https://${$currentOrg.customDomain}`
       : $currentOrg.siteName
-        ? `https://${$currentOrg.siteName}.${rootDomain}`
+        ? `https://${$currentOrg.siteName}.${TENANT_ROOT_DOMAIN}`
         : '';
 });
 
