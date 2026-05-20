@@ -1,8 +1,12 @@
+import * as schema from '@db/schema';
+
 import { BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN, blockedSubdomain } from '@cio/utils/constants';
 import { getOrganizationByCustomDomain, getOrganizationBySiteName } from '@db/queries/organization';
 
 import { User } from 'better-auth';
+import { db } from '@db/drizzle';
 import { ensureOrgMembership } from './sso-provisioning';
+import { eq } from 'drizzle-orm';
 
 /**
  * Subdomains under the brand/tenant root that are NOT a tenant org.
@@ -55,19 +59,43 @@ async function resolveOrgIdFromHost(host: string): Promise<string | null> {
  * time this runs — so any signup that reaches the hook is allowed to join.
  *
  * Org resolution order:
- *   1. `cio-org-id` request header (set by the dashboard on every API call)
- *   2. Host header: tenant subdomain, brand subdomain, or verified custom domain.
- *      Prefers `x-forwarded-host` (set by the Cloudflare Worker proxy) over the
- *      raw `Host`, which behind the proxy is the upstream service name and not
- *      the tenant host the user actually visited.
- *
- * TODO(oauth): OAuth/SSO signups lose both the header and the original host —
- * the callback lands on `api.classroomio.com/api/auth/callback/<provider>`, so
- * neither path here can resolve the tenant. To fix, encode the org id in
- * Better Auth's OAuth `state` (or `additionalParams`) at signup initiation and
- * pull it out of `request` here. Until then, OAuth signups on a tenant site
- * will not be auto-enrolled and must be invited manually.
+ *   1. `cio-org-id` request header (set by the dashboard on email signup)
+ *   2. OAuth `state` → verification row → `callbackURL` host. Used for Google
+ *      and other OAuth/SSO flows where the callback lands on `api.<root>`
+ *      directly with no tenant host header. The dashboard always sets
+ *      `callbackURL` to the tenant origin, so its host is the trusted signal.
+ *   3. `x-forwarded-host` / `host`: tenant subdomain, brand subdomain, or
+ *      verified custom domain. Fallback for non-OAuth flows.
  */
+async function resolveHostFromOAuthState(request: Request): Promise<string | null> {
+  const requestUrl = new URL(request.url);
+  const state = requestUrl.searchParams.get('state');
+  console.log('[auth] tenantProvisioningHook: oauth state', state);
+  if (!state) return null;
+
+  try {
+    const [row] = await db
+      .select({ value: schema.verification.value })
+      .from(schema.verification)
+      .where(eq(schema.verification.identifier, state))
+      .limit(1);
+
+    console.log('[auth] tenantProvisioningHook: verification row?', !!row);
+    if (!row?.value) return null;
+
+    const stateData = JSON.parse(row.value) as { callbackURL?: string };
+    console.log('[auth] tenantProvisioningHook: state.callbackURL', stateData.callbackURL);
+    if (!stateData.callbackURL) return null;
+
+    const host = new URL(stateData.callbackURL).host;
+    console.log('[auth] tenantProvisioningHook: host from state.callbackURL', host);
+    return host;
+  } catch (error) {
+    console.error('[auth] tenantProvisioningHook: failed to resolve OAuth state', error);
+    return null;
+  }
+}
+
 export const tenantProvisioningHook = async (user: User, request?: Request) => {
   if (!user.email || !request) return;
   console.log('[auth] tenantProvisioningHook: running', { userId: user.id });
@@ -75,16 +103,32 @@ export const tenantProvisioningHook = async (user: User, request?: Request) => {
   const headerOrgId = request.headers.get('cio-org-id');
   console.log('[auth] tenantProvisioningHook: headerOrgId', headerOrgId);
   if (headerOrgId) {
+    console.log('[auth] tenantProvisioningHook: enrolling via header', { userId: user.id, orgId: headerOrgId });
     await ensureOrgMembership(user.id, user.email, headerOrgId);
     return;
   }
 
-  const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host');
-  console.log('[auth] tenantProvisioningHook: host', host);
-  if (!host) return;
+  // Prefer the OAuth state's callbackURL host (set by the dashboard on the
+  // tenant origin) before falling back to forwarded/host headers, which on a
+  // direct Google → api.classroomio.com callback won't reflect the tenant.
+  const stateHost = await resolveHostFromOAuthState(request);
+  const fwdHost = request.headers.get('x-forwarded-host');
+  const rawHost = request.headers.get('host');
+  console.log('[auth] tenantProvisioningHook: candidate hosts', { stateHost, fwdHost, rawHost });
+
+  const host = stateHost ?? fwdHost ?? rawHost;
+  if (!host) {
+    console.log('[auth] tenantProvisioningHook: no host candidate, skipping enrollment');
+    return;
+  }
 
   const orgId = await resolveOrgIdFromHost(host);
-  if (!orgId) return;
+  console.log('[auth] tenantProvisioningHook: resolved orgId from host', { host, orgId });
+  if (!orgId) {
+    console.log('[auth] tenantProvisioningHook: no org for host, skipping enrollment');
+    return;
+  }
 
+  console.log('[auth] tenantProvisioningHook: enrolling', { userId: user.id, orgId });
   await ensureOrgMembership(user.id, user.email, orgId);
 };
