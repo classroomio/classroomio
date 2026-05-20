@@ -38,7 +38,7 @@ async function isSelfHostedFirstSignup(): Promise<boolean> {
  * Self-hosted first signup: auto-verify email (no orgs exist yet, this user will create the only org).
  */
 export const createProfileHook = async (user: User, request?: Request) => {
-  console.log('[auth] createProfileHook: running', { userId: user.id, request });
+  console.log('[auth] createProfileHook: running', { userId: user.id });
 
   const existingProfile = await db.select().from(schema.profile).where(eq(schema.profile.id, user.id)).limit(1);
   console.debug('existingProfile', existingProfile);
