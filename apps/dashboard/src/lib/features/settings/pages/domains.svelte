@@ -16,6 +16,7 @@
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
   import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
   import { sanitizeDomain, sendDomainRequest } from '$lib/utils/functions/domain';
+  import { BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
@@ -164,7 +165,7 @@
       return;
     }
 
-    if (sanitizedDomain.includes('classroomio.com')) {
+    if (sanitizedDomain.includes(BRAND_ROOT_DOMAIN) || sanitizedDomain.includes(TENANT_ROOT_DOMAIN)) {
       errors.customDomain = $t('components.settings.domains.custom_domain_not_classroomio');
       return;
     }
@@ -284,7 +285,7 @@
         onchange={(e) => (siteName = (e.target as HTMLInputElement)?.value ?? '')}
         placeholder="myschool"
         prefix="https://"
-        suffix=".classroomio.com"
+        suffix=".{TENANT_ROOT_DOMAIN}"
       />
       {#if errors.siteName}
         <Field.Error>{errors.siteName}</Field.Error>

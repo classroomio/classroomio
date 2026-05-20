@@ -12,6 +12,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { config as emailAndPassword } from './auth/email-password';
 import { getUserOrgRolesMap } from './queries/organization/organization';
 import { loginLink } from './auth/plugins/login-link';
+import { oAuthProxy } from 'better-auth/plugins/oauth-proxy';
 import { resolveTrustedBrowserOrigin } from './utils';
 import { sso } from '@better-auth/sso';
 import { syncUserWithProfile } from './auth/hooks/sync-user';
@@ -77,9 +78,12 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        after: async (user) => {
-          console.log('[auth] databaseHooks.user.create.after: running', { userId: user.id });
-          await createProfileHook(user);
+        after: async (user, ctx) => {
+          console.log('[auth] databaseHooks.user.create.after: running', { userId: user.id, ctx });
+          const request =
+            (ctx as { context?: { request?: Request }; request?: Request } | undefined)?.context?.request ??
+            (ctx as { request?: Request } | undefined)?.request;
+          await createProfileHook(user, request);
         }
       },
       update: {
@@ -108,6 +112,14 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
     sso({
       // OIDC providers are registered dynamically per organization
       // via the admin API (auth.api.registerSSOProvider)
+    }),
+    // Lets OAuth/SSO callbacks land on the canonical production URL
+    // (api.classroomio.com) while still completing the flow on the tenant
+    // host the user signed in from (<org>.classroomio.school or a BYOD
+    // domain). Without this, the state cookie set on the tenant host isn't
+    // sent to the api host on the Google redirect → state_security_mismatch.
+    oAuthProxy({
+      productionURL: CONSTANTS.BASE_URL
     }),
     loginLink(),
     tokenExchange(),

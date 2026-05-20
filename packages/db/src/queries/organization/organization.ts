@@ -198,6 +198,26 @@ export const getOrganizationBySiteName = async (siteName: string): Promise<TOrga
 };
 
 /**
+ * Gets an organization by its verified custom domain.
+ * Only matches rows where isCustomDomainVerified is true so we never auto-enroll
+ * a signup into an org just because someone pointed DNS at us.
+ */
+export const getOrganizationByCustomDomain = async (customDomain: string): Promise<TOrganization | null> => {
+  const [organization] = await db
+    .select()
+    .from(schema.organization)
+    .where(
+      and(
+        eq(schema.organization.customDomain, customDomain.toLowerCase()),
+        eq(schema.organization.isCustomDomainVerified, true)
+      )
+    )
+    .limit(1);
+
+  return organization || null;
+};
+
+/**
  * Gets an organization by ID
  * @param id Organization ID
  * @returns Organization or null if not found

@@ -3,6 +3,7 @@ import { getActiveOrganizationPlan, getOrganizationById } from '@cio/db/queries/
 import { getCourseTagsByCourseIdsForOrganization, getTagGroupsWithTags } from '@cio/db/queries/tag';
 import { listWidgetCourses } from '@cio/db/queries/widget';
 import { PLAN } from '@cio/utils/plans';
+import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import {
   buildWidgetPayload as buildWidgetPayloadShared,
   normalizeWidgetConfig,
@@ -148,7 +149,7 @@ export function getCourseBaseUrl(siteName: string, customDomain?: string | null)
     return `https://${customDomain}`;
   }
 
-  return siteName ? `https://${siteName}.classroomio.com` : DEFAULT_WIDGET_APP_BASE_URL;
+  return siteName ? `https://${siteName}.${TENANT_ROOT_DOMAIN}` : DEFAULT_WIDGET_APP_BASE_URL;
 }
 
 export function getCourseWidgetScriptUrl(): string {

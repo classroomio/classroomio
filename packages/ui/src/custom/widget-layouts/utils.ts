@@ -1,3 +1,4 @@
+import { BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import {
   getWidgetThemeSerifStack,
   type TWidgetConfig,
@@ -62,7 +63,7 @@ export function formatLessonsLine(course: TWidgetPayloadCourse): string {
   return parts.join(' · ');
 }
 
-/** Hostname used in UTM (custom domain or `{siteName}.classroomio.com`). */
+/** Hostname used in UTM (custom domain or `{siteName}.${TENANT_ROOT_DOMAIN}`). */
 export function getOrgDomainForUtm(organization: TWidgetPayload['organization']): string {
   const custom = organization.customDomain?.trim();
   if (custom) {
@@ -76,7 +77,7 @@ export function getOrgDomainForUtm(organization: TWidgetPayload['organization'])
     return custom.replace(/^\/+/, '').split('/')[0] || organization.siteName;
   }
   const site = organization.siteName.trim();
-  return site ? `${site}.classroomio.com` : 'classroomio.com';
+  return site ? `${site}.${TENANT_ROOT_DOMAIN}` : BRAND_ROOT_DOMAIN;
 }
 
 /** Marketing homepage link with widget + org attribution for analytics. */
@@ -89,5 +90,5 @@ export function buildPoweredByMarketingUrl(payload: TWidgetPayload): string {
     utm_content: payload.widgetId,
     utm_term: orgDomain
   });
-  return `https://classroomio.com/?${params.toString()}`;
+  return `https://${BRAND_ROOT_DOMAIN}/?${params.toString()}`;
 }

@@ -10,7 +10,7 @@
   let { children } = $props();
 </script>
 
-<PageHeader className="flex flex-col items-center justify-center bg-[#F5F8FE] text-center pb-8">
+<PageHeader className="flex flex-col items-center justify-center text-center pb-8">
   <div class="mb-2 flex w-full items-center justify-center">
     <span
       class="rounded-full border-2 border-[#C2D2FF] bg-[#DCE5FF] px-4 py-1 text-sm font-medium text-blue-700"

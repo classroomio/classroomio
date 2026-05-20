@@ -6,6 +6,7 @@ import { User } from 'better-auth';
 import { db } from '@db/drizzle';
 import { getOrganizationCount } from '@db/queries/organization';
 import { ssoProvisioningHook } from './sso-provisioning';
+import { tenantProvisioningHook } from './tenant-provisioning';
 
 /**
  * True if the user has any non-credential account (OAuth/SSO). Those providers verify email.
@@ -36,8 +37,8 @@ async function isSelfHostedFirstSignup(): Promise<boolean> {
  *
  * Self-hosted first signup: auto-verify email (no orgs exist yet, this user will create the only org).
  */
-export const createProfileHook = async (user: User) => {
-  console.log('[auth] createProfileHook: running', { userId: user.id });
+export const createProfileHook = async (user: User, request?: Request) => {
+  console.log('[auth] createProfileHook: running', { userId: user.id, request });
 
   const existingProfile = await db.select().from(schema.profile).where(eq(schema.profile.id, user.id)).limit(1);
   console.debug('existingProfile', existingProfile);
@@ -81,8 +82,12 @@ export const createProfileHook = async (user: User) => {
     });
     console.debug('newProfile', newProfile);
 
-    // Run SSO provisioning hook for JIT org membership
+    // Run SSO provisioning hook for JIT org membership (email-domain match)
     await ssoProvisioningHook(user);
+
+    // Run tenant provisioning hook for signups on a tenant subdomain
+    // (signupGuard has already enforced disableSignup / inviteOnly)
+    await tenantProvisioningHook(user, request);
   } catch (error) {
     console.error('Error creating profile for user:', error);
   }

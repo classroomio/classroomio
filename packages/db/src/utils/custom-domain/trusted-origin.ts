@@ -1,6 +1,7 @@
+import { BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import { getVerifiedCustomDomainHostnames } from '../../queries/organization/organization';
 
-const CLASSROOMIO_ROOT = 'classroomio.com';
+const FIRST_PARTY_ROOTS: readonly string[] = [BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN];
 
 /** Lowercase hostnames with verified custom domains ( warmed at API boot + updated on domain routes ). */
 const verifiedCustomDomainHostnames = new Set<string>();
@@ -25,7 +26,7 @@ function originMatchesStaticEntry(origin: string, entry: string): boolean {
 function isClassroomioHost(hostname: string): boolean {
   const host = hostname.toLowerCase();
 
-  return host === CLASSROOMIO_ROOT || host.endsWith(`.${CLASSROOMIO_ROOT}`);
+  return FIRST_PARTY_ROOTS.some((root) => host === root || host.endsWith(`.${root}`));
 }
 
 export function trustCustomDomainHostname(hostname: string): void {

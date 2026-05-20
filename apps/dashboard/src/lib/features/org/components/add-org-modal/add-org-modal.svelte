@@ -10,6 +10,7 @@
   import { newOrgModal } from '../new-org-modal-store';
   import { t } from '$lib/utils/functions/translations';
   import { orgApi } from '$features/org/api/org.svelte';
+  import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 
   let orgName = $state('');
   let siteName = $derived(generateSitename(orgName));
@@ -52,7 +53,7 @@
 
         <Field.Field>
           <Field.Label>{$t('add_org.org_sitename')}</Field.Label>
-          <DomainInput bind:value={siteName} placeholder="myschool" prefix="https://" suffix=".classroomio.com" />
+          <DomainInput bind:value={siteName} placeholder="myschool" prefix="https://" suffix=".{TENANT_ROOT_DOMAIN}" />
           {#if orgApi.errors.siteName || orgApi.errors.general}
             <Field.Error>{orgApi.errors.siteName || orgApi.errors.general}</Field.Error>
           {/if}

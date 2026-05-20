@@ -86,7 +86,25 @@ export const app = new Hono()
     })
   )
   .use('/api/auth/sign-up/*', signupGuard)
-  .on(['POST', 'GET'], '/api/auth/*', (c) => auth.handler(c.req.raw))
+  .on(['POST', 'GET'], '/api/auth/*', (c) => {
+    // Behind the Cloudflare Worker proxy the raw Request URL points at the
+    // upstream `.onrender.com` host. Better Auth (and the oauth-proxy plugin)
+    // need the original tenant/admin host to construct correct OAuth callback
+    // URLs and to decide whether to engage the proxy flow. Rebuild from
+    // X-Forwarded-Host / X-Forwarded-Proto when present.
+    let request = c.req.raw;
+    const fwdHost = c.req.header('x-forwarded-host');
+    const fwdProto = c.req.header('x-forwarded-proto');
+    if (fwdHost) {
+      const url = new URL(request.url);
+      url.host = fwdHost;
+      if (fwdProto === 'https' || fwdProto === 'http') {
+        url.protocol = `${fwdProto}:`;
+      }
+      request = new Request(url, request);
+    }
+    return auth.handler(request);
+  })
   .get('/session', async (c) => {
     const session = c.get('session');
     const user = c.get('user');

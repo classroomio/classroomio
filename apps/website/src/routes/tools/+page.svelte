@@ -67,7 +67,7 @@
           class="flex w-full rounded-md border shadow-sm transition-all ease-in-out hover:scale-95 md:max-w-[370px]"
         >
           <img class="w-[30%] rounded-l-md" src={tool.src} alt="" />
-          <div class="w-[70%] rounded-r-md bg-[#F5F8FE] p-5">
+          <div class="w-[70%] rounded-r-md p-5">
             <h1 class="text-sm md:text-base">{tool.title}</h1>
             <p class="mt-1.5 text-xs text-gray-600">
               {tool.subText}
