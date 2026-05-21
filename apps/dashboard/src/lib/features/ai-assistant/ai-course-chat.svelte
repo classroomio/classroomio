@@ -51,7 +51,6 @@
     AI_ASSISTANT_QUICK_ACTION_ENTRIES,
     STUDENT_QUICK_ACTION_ENTRIES
   } from '$features/ai-assistant/utils/constants';
-  import { calculateContextUsage } from '$features/ai-assistant/utils/context-utils';
   import {
     AGENT_MODELS,
     AGENT_MODEL_IDS,
@@ -80,7 +79,6 @@
   let inputValue = $state('');
   let uploadedDocument: UploadedDocument | null = $state(null);
   let isUploading = $state(false);
-  let contextFullBusy = $state<null | 'compact' | 'new_chat'>(null);
 
   let pendingInitialTemplateId: CourseTemplateId | null = $state(null);
 
@@ -321,6 +319,7 @@
       credentials: 'include',
       body: () => ({
         courseId,
+        conversationId: activeConversationId ?? undefined,
         model: selectedModel,
         context: {
           lessonId: page.params?.lessonId,
@@ -379,8 +378,9 @@
     return lines.join('\n');
   }
 
-  function handleSend() {
+  async function handleSend() {
     if (!inputValue.trim() || chat.status === 'streaming') return;
+    if (!courseId) return;
 
     const text = inputValue;
     const userMessageCount = chat.messages.filter((message) => message.role === 'user').length;
@@ -402,21 +402,16 @@
     if (templateForFirstMessage) {
       const templateMeta: AiAssistantTemplateMetadata = { id: templateForFirstMessage };
       metadata.template = templateMeta;
+    }
+
+    const conversationId = await ensureActiveConversation(courseId);
+    if (!conversationId) return;
+
+    if (templateForFirstMessage) {
       pendingInitialTemplateId = null;
     }
 
     inputValue = '';
-
-    // Create conversation eagerly before sending the first message
-    if (!activeConversationId) {
-      if (!courseId) return;
-
-      aiAssistantApi.createConversation(courseId).then((created) => {
-        if (created) {
-          setActiveConversationId(courseId, created.id);
-        }
-      });
-    }
 
     chat.sendMessage({
       text,
@@ -433,7 +428,8 @@
       return;
     }
 
-    await ensureActiveConversation(courseId);
+    const conversationId = await ensureActiveConversation(courseId);
+    if (!conversationId) return;
 
     chat.sendMessage({
       text: buildTemplateAnswersSummary(payload.templateId, payload.answers, payload.fields),
@@ -452,7 +448,8 @@
       return;
     }
 
-    await ensureActiveConversation(courseId);
+    const conversationId = await ensureActiveConversation(courseId);
+    if (!conversationId) return;
 
     chat.sendMessage({
       text: "I'll answer your questions in chat instead of the form.",
@@ -499,27 +496,21 @@
 
   function handleQuickAction(action: string) {
     inputValue = action;
-    handleSend();
+    void handleSend();
   }
 
   function handleStop() {
     chat.stop();
   }
 
-  function handleImplementPlan(editedPlan: unknown) {
+  async function handleImplementPlan(editedPlan: unknown) {
     if (chat.status === 'streaming') return;
+    if (!courseId) return;
+
+    const conversationId = await ensureActiveConversation(courseId);
+    if (!conversationId) return;
 
     inputValue = '';
-
-    if (!activeConversationId) {
-      if (!courseId) return;
-
-      aiAssistantApi.createConversation(courseId).then((created) => {
-        if (created) {
-          setActiveConversationId(courseId, created.id);
-        }
-      });
-    }
 
     chat.sendMessage({
       text: 'Implement this plan.',
@@ -532,72 +523,25 @@
     });
   }
 
-  function handleAskPlanChanges(message: string) {
+  async function handleAskPlanChanges(message: string) {
     const trimmed = message.trim();
 
     if (!trimmed || chat.status === 'streaming') return;
+    if (!courseId) return;
 
-    if (!activeConversationId && courseId) {
-      aiAssistantApi.createConversation(courseId).then((created) => {
-        if (created) {
-          setActiveConversationId(courseId, created.id);
-        }
-      });
-    }
+    const conversationId = await ensureActiveConversation(courseId);
+    if (!conversationId) return;
 
     chat.sendMessage({ text: trimmed });
   }
 
   function handleResume() {
     inputValue = CONTINUE_IMPLEMENTATION_PROMPT;
-    handleSend();
+    void handleSend();
   }
 
   function handleMentionClick(route: string) {
     goto(resolve(route, {}));
-  }
-
-  async function handleStartNewChatWithSummary() {
-    if (!courseId || contextFullBusy) return;
-
-    contextFullBusy = 'new_chat';
-
-    try {
-      const summary = await aiAssistantApi.summarizeConversation(chat.messages as AiAssistantMessage[], courseId);
-
-      chat.messages = [];
-      setActiveConversationId(courseId, null);
-
-      const created = await aiAssistantApi.createConversation(courseId);
-
-      if (created) {
-        setActiveConversationId(courseId, created.id);
-      }
-
-      if (summary) {
-        inputValue = summary;
-        handleSend();
-      }
-    } finally {
-      contextFullBusy = null;
-    }
-  }
-
-  async function handleCompactConversation() {
-    if (!courseId || !activeConversationId || contextFullBusy) return;
-
-    contextFullBusy = 'compact';
-
-    try {
-      const compacted = await aiAssistantApi.compactConversation(activeConversationId);
-
-      if (compacted && compacted.length > 0) {
-        chat.messages = compacted as AiAssistantMessage[];
-        await chat.regenerate();
-      }
-    } finally {
-      contextFullBusy = null;
-    }
   }
 
   const isStreaming = $derived(chat.status === 'streaming' || chat.status === 'submitted');
@@ -640,10 +584,6 @@
       cap: tutorStatus.cap
     };
   });
-
-  const contextUsage = $derived(
-    calculateContextUsage(chat.messages as AiAssistantMessage[], AGENT_MODELS[selectedModel].contextWindow)
-  );
 
   const mentionItems = $derived(
     getMentionableContent(courseApi.course).map((item) => ({
@@ -829,7 +769,7 @@
       }
 
       inputValue = prompt;
-      handleSend();
+      void handleSend();
     });
   });
 
@@ -897,13 +837,9 @@
     {isStreaming}
     {isExhausted}
     {isUploading}
-    {contextFullBusy}
-    compactConversationDisabled={!activeConversationId}
-    onCompactConversation={handleCompactConversation}
     {uploadedDocument}
     {mentionItems}
     {selectedModel}
-    {contextUsage}
     {isStudent}
     {tutorBlocked}
     lockedModelIds={$isFreePlan ? paidModelIds : []}
@@ -914,6 +850,5 @@
     onRemoveDocument={handleRemoveDocument}
     onSelectModel={handleSelectModel}
     onLockedModelSelect={handleLockedModelSelect}
-    onStartNewChatWithSummary={handleStartNewChatWithSummary}
   />
 </div>

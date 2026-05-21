@@ -30,6 +30,15 @@ export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prom
 export const courseImportDraftStatus = pgEnum('COURSE_IMPORT_DRAFT_STATUS', ['DRAFT', 'PUBLISHED', 'ARCHIVED']);
 export const organizationApiKeyType = pgEnum('ORGANIZATION_API_KEY_TYPE', ['mcp', 'api', 'zapier']);
 export const automationUsageCategory = pgEnum('AUTOMATION_USAGE_CATEGORY', ['read', 'write', 'publish']);
+export const aiAgentRunStatus = pgEnum('AI_AGENT_RUN_STATUS', [
+  'queued',
+  'running',
+  'waiting_for_input',
+  'paused',
+  'completed',
+  'failed',
+  'canceled'
+]);
 export const widgetStatus = pgEnum('WIDGET_STATUS', ['DRAFT', 'PUBLISHED', 'ARCHIVED']);
 export const widgetLayoutType = pgEnum('WIDGET_LAYOUT_TYPE', [
   'card_grid',
@@ -3084,6 +3093,38 @@ export const aiChatConversation = pgTable(
   ]
 );
 
+export const aiChatModelContext = pgTable(
+  'ai_chat_model_context',
+  {
+    conversationId: uuid('conversation_id').primaryKey(),
+    courseId: uuid('course_id').notNull(),
+    userId: uuid('user_id').notNull(),
+    modelSummary: text('model_summary').notNull().default(''),
+    compactedThroughMessageId: text('compacted_through_message_id'),
+    sourceIds: jsonb('source_ids').default([]).notNull().$type<string[]>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.conversationId],
+      foreignColumns: [aiChatConversation.id],
+      name: 'ai_chat_model_context_conversation_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'ai_chat_model_context_course_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [profile.id],
+      name: 'ai_chat_model_context_user_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_ai_chat_model_context_course_user').on(table.courseId, table.userId)
+  ]
+);
+
 export const aiChatDocument = pgTable(
   'ai_chat_document',
   {
@@ -3106,6 +3147,128 @@ export const aiChatDocument = pgTable(
       name: 'ai_chat_document_conversation_id_fkey'
     }).onDelete('cascade'),
     index('idx_ai_chat_document_conversation').on(table.conversationId)
+  ]
+);
+
+export const aiAgentRun = pgTable(
+  'ai_agent_run',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    orgId: uuid('org_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    conversationId: uuid('conversation_id'),
+    userId: uuid('user_id').notNull(),
+    status: aiAgentRunStatus('status').default('queued').notNull(),
+    phase: varchar({ length: 64 }).default('planning').notNull(),
+    progressPercent: integer('progress_percent').default(0).notNull(),
+    currentStepKey: varchar('current_step_key', { length: 128 }),
+    approvedPlan: jsonb('approved_plan').$type<Record<string, unknown> | null>(),
+    executionCursor: jsonb('execution_cursor').default({}).notNull().$type<Record<string, unknown>>(),
+    sourceIds: jsonb('source_ids').default([]).notNull().$type<string[]>(),
+    modelSummary: text('model_summary').notNull().default(''),
+    queuedInstructions: jsonb('queued_instructions')
+      .default([])
+      .notNull()
+      .$type<Array<{ id: string; text: string; createdBy: string; createdAt: string }>>(),
+    lastError: jsonb('last_error').$type<{ code: string; message: string; details?: unknown } | null>(),
+    attempt: integer().default(0).notNull(),
+    maxAttempts: integer('max_attempts').default(3).notNull(),
+    workerId: text('worker_id'),
+    lockedAt: timestamp('locked_at', { withTimezone: true, mode: 'string' }),
+    cancelRequestedAt: timestamp('cancel_requested_at', { withTimezone: true, mode: 'string' }),
+    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }),
+    finishedAt: timestamp('finished_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.orgId],
+      foreignColumns: [organization.id],
+      name: 'ai_agent_run_org_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'ai_agent_run_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.conversationId],
+      foreignColumns: [aiChatConversation.id],
+      name: 'ai_agent_run_conversation_id_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [profile.id],
+      name: 'ai_agent_run_user_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_ai_agent_run_course_user').on(table.courseId, table.userId),
+    index('idx_ai_agent_run_org_status').on(table.orgId, table.status),
+    index('idx_ai_agent_run_conversation').on(table.conversationId),
+    index('idx_ai_agent_run_updated_at').on(table.updatedAt)
+  ]
+);
+
+export const aiAgentRunStep = pgTable(
+  'ai_agent_run_step',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    runId: uuid('run_id').notNull(),
+    stepKey: varchar('step_key', { length: 128 }).notNull(),
+    stepType: varchar('step_type', { length: 64 }).notNull(),
+    status: aiAgentRunStatus('status').default('queued').notNull(),
+    inputHash: text('input_hash'),
+    input: jsonb().$type<Record<string, unknown> | null>(),
+    output: jsonb().$type<Record<string, unknown> | null>(),
+    outputIds: jsonb('output_ids').default([]).notNull().$type<string[]>(),
+    idempotencyKey: text('idempotency_key'),
+    error: jsonb().$type<{ code: string; message: string; details?: unknown } | null>(),
+    attempt: integer().default(0).notNull(),
+    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }),
+    finishedAt: timestamp('finished_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.runId],
+      foreignColumns: [aiAgentRun.id],
+      name: 'ai_agent_run_step_run_id_fkey'
+    }).onDelete('cascade'),
+    unique('ai_agent_run_step_run_step_unique').on(table.runId, table.stepKey),
+    index('idx_ai_agent_run_step_run_status').on(table.runId, table.status)
+  ]
+);
+
+export const aiAgentRunEvent = pgTable(
+  'ai_agent_run_event',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'ai_agent_run_event_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    runId: uuid('run_id').notNull(),
+    eventType: varchar('event_type', { length: 64 }).notNull(),
+    message: text(),
+    payload: jsonb().$type<Record<string, unknown> | null>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.runId],
+      foreignColumns: [aiAgentRun.id],
+      name: 'ai_agent_run_event_run_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_ai_agent_run_event_run_created').on(table.runId, table.createdAt)
   ]
 );
 

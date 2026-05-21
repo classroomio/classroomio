@@ -2,11 +2,26 @@ import { z } from 'zod';
 import { AGENT_MODEL_IDS } from '../../agent-models';
 
 const ZAgentCourseId = z.string().min(1);
+const ZAgentJsonRecord = z.record(z.string(), z.unknown());
+
+export const AGENT_RUN_STATUSES = [
+  'queued',
+  'running',
+  'waiting_for_input',
+  'paused',
+  'completed',
+  'failed',
+  'canceled'
+] as const;
+
+export const ZAgentRunStatus = z.enum(AGENT_RUN_STATUSES);
+export type TAgentRunStatus = z.infer<typeof ZAgentRunStatus>;
 
 // ─── POST /agent/chat ────────────────────────────────────────────────────────
 
 export const ZAgentChatBody = z.object({
   courseId: ZAgentCourseId,
+  conversationId: z.string().uuid().optional(),
   messages: z.array(z.any()), // UIMessage[] from Vercel AI SDK — validated by the SDK itself
   model: z.enum(AGENT_MODEL_IDS).optional(),
   context: z
@@ -159,3 +174,35 @@ export const ZAgentGenerateTextBody = z.object({
 });
 
 export type TAgentGenerateTextBody = z.infer<typeof ZAgentGenerateTextBody>;
+
+// ─── Agent durable runs ─────────────────────────────────────────────────────
+
+export const ZAgentRunCourseQuery = z.object({
+  courseId: ZAgentCourseId
+});
+
+export type TAgentRunCourseQuery = z.infer<typeof ZAgentRunCourseQuery>;
+
+export const ZAgentRunParam = z.object({
+  runId: z.string().uuid()
+});
+
+export type TAgentRunParam = z.infer<typeof ZAgentRunParam>;
+
+export const ZAgentRunCreateBody = z.object({
+  courseId: ZAgentCourseId,
+  conversationId: z.string().uuid().optional(),
+  phase: z.string().min(1).max(64).optional(),
+  approvedPlan: ZAgentJsonRecord.optional(),
+  executionCursor: ZAgentJsonRecord.optional(),
+  sourceIds: z.array(z.string().min(1)).optional(),
+  modelSummary: z.string().max(100_000).optional()
+});
+
+export type TAgentRunCreateBody = z.infer<typeof ZAgentRunCreateBody>;
+
+export const ZAgentRunInstructionBody = z.object({
+  text: z.string().min(1).max(4_000)
+});
+
+export type TAgentRunInstructionBody = z.infer<typeof ZAgentRunInstructionBody>;

@@ -38,6 +38,10 @@ export interface SummarizeOptions {
   messages: InboundMessage[];
 }
 
+export interface SummarizeDeltaOptions extends SummarizeOptions {
+  existingSummary?: string | null;
+}
+
 function truncate(input: string, max: number): string {
   if (input.length <= max) return input;
 
@@ -132,6 +136,48 @@ export async function summarizeConversation(options: SummarizeOptions): Promise<
     model,
     system: SUMMARIZE_SYSTEM_PROMPT,
     prompt: `Here is the conversation to summarize. Tool calls appear as [tool:name] input=… output=… lines.\n\n${truncatedText}\n\nReturn the structured handoff message described in the system prompt.`,
+    maxOutputTokens: MAX_OUTPUT_TOKENS,
+    maxRetries: 0
+  });
+
+  return result.text.trim();
+}
+
+export async function summarizeConversationDelta(options: SummarizeDeltaOptions): Promise<string> {
+  if (!options.existingSummary?.trim()) {
+    return summarizeConversation({ messages: options.messages });
+  }
+
+  const providerConfig = pickAnyConfiguredProvider();
+
+  if (!providerConfig) {
+    throw new AppError('AI assistant is not configured', 'AI_NOT_CONFIGURED', 503);
+  }
+
+  const model = createModel(providerConfig);
+  const conversationLines: string[] = [];
+
+  for (const message of options.messages ?? []) {
+    const role = message.role === 'user' ? 'User' : 'Assistant';
+    const body = partsToText(message);
+
+    if (!body.trim()) {
+      continue;
+    }
+
+    conversationLines.push(`${role}: ${body}`);
+  }
+
+  const conversationText = conversationLines.join('\n\n');
+  const truncatedText =
+    conversationText.length > MAX_CONVERSATION_CHARS
+      ? conversationText.slice(conversationText.length - MAX_CONVERSATION_CHARS)
+      : conversationText;
+
+  const result = await generateText({
+    model,
+    system: SUMMARIZE_SYSTEM_PROMPT,
+    prompt: `Existing structured handoff summary:\n\n${options.existingSummary.trim()}\n\nNew conversation messages to merge into that summary:\n\n${truncatedText}\n\nReturn one updated structured handoff message using the required section headings. Preserve concrete plan status, template answers, fetched documentation URLs/source identifiers, created course items, open decisions, and the next action.`,
     maxOutputTokens: MAX_OUTPUT_TOKENS,
     maxRetries: 0
   });

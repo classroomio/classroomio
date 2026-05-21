@@ -63,7 +63,6 @@ import { eq } from 'drizzle-orm';
 import { listCourseSections } from '@api/services/course/section';
 import { getLesson } from '@api/services/lesson/lesson';
 import { getExercise } from '@api/services/exercise/exercise';
-import { trimMessageHistory } from '@api/services/agent/context-window';
 import { sanitizeDanglingToolCalls } from '@api/services/agent/sanitize-tool-calls';
 import {
   collectDocumentIds,
@@ -74,8 +73,10 @@ import {
   verifyLessonBelongsToCourse
 } from '@api/services/agent/chat-context';
 import { buildAgentTools } from '@api/services/agent/chat-tools';
+import { buildModelContextMessages } from '@api/services/agent/model-context';
 import { summarizeConversation } from '@api/services/agent/summarize';
 import { agentHistoryRouter } from './history';
+import { agentRunsRouter } from './runs';
 
 const agentCoreRouter = new Hono()
   .get('/status', authMiddleware, orgMemberMiddleware, zValidator('query', ZAgentStatusQuery), async (c) => {
@@ -385,7 +386,7 @@ const agentCoreRouter = new Hono()
     const orgId = c.req.header('cio-org-id')!;
 
     try {
-      const { courseId, messages, context, model: requestedModel } = c.req.valid('json');
+      const { courseId, conversationId, messages, context, model: requestedModel } = c.req.valid('json');
 
       const isTeamMember = await isCourseTeamMemberOrOrgAdmin(courseId, user.id);
       const role = isTeamMember ? AgentRole.TEACHER : AgentRole.STUDENT;
@@ -421,6 +422,14 @@ const agentCoreRouter = new Hono()
 
       if (courseRow.organizationId !== orgId) {
         throw new AppError('Course does not belong to this organization', 'COURSE_ORG_MISMATCH', 403);
+      }
+
+      if (conversationId) {
+        const conversation = await getChatConversation(conversationId, user.id);
+
+        if (!conversation || conversation.courseId !== courseId) {
+          throw new AppError('Conversation not found for this course', 'CONVERSATION_NOT_FOUND', 404);
+        }
       }
 
       if (role === AgentRole.TEACHER && !modelDescriptor.isFree) {
@@ -524,8 +533,13 @@ const agentCoreRouter = new Hono()
           ? buildStudentAgentTools(orgId, user.id, courseId, studentPolicy!.settings)
           : buildAgentTools(orgId, user.id, courseId, messages);
 
-      const trimmedMessages = trimMessageHistory(messages);
-      const convertedMessages = sanitizeDanglingToolCalls(await convertToModelMessages(trimmedMessages));
+      const contextManaged = await buildModelContextMessages({
+        conversationId,
+        courseId,
+        userId: user.id,
+        messages
+      });
+      const convertedMessages = sanitizeDanglingToolCalls(await convertToModelMessages(contextManaged.messages as any));
       let completedStepCount = 0;
       let finishReason: string | undefined;
 
@@ -695,4 +709,5 @@ const agentCoreRouter = new Hono()
 export const agentRouter = new Hono()
   .use('*', agentContentTypeRewrite)
   .route('/', agentCoreRouter)
-  .route('/history', agentHistoryRouter);
+  .route('/history', agentHistoryRouter)
+  .route('/runs', agentRunsRouter);

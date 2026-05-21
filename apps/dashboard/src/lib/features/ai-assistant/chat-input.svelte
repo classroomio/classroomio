@@ -18,9 +18,6 @@
   import { ModelPicker } from '@cio/ui/custom/model-picker';
   import type { AgentModelId } from '@cio/utils/agent-models';
   import { AI_AGENT_RUNNING_WARNING_DISMISSED_KEY } from '$features/ai-assistant/utils/constants';
-  import ContextIndicator from './context-indicator.svelte';
-  import ContextFullState from './context-full-state.svelte';
-  import type { ContextUsage } from './utils/context-utils';
 
   interface UploadedDocument {
     id: string;
@@ -32,14 +29,11 @@
     isStreaming: boolean;
     isExhausted: boolean;
     isUploading: boolean;
-    contextFullBusy: null | 'compact' | 'new_chat';
-    compactConversationDisabled?: boolean;
     error: Error | null | undefined;
     mentionItems: MentionItem[];
     uploadedDocument: UploadedDocument | null;
     selectedModel: AgentModelId;
     lockedModelIds?: readonly AgentModelId[];
-    contextUsage: ContextUsage | null;
     isStudent?: boolean;
     /** Set to 'LEARNER_CAP_REACHED' | 'POOL_EXHAUSTED' | 'AI_TUTOR_DISABLED' to render the take-a-break empty state. */
     tutorBlocked?: 'LEARNER_CAP_REACHED' | 'POOL_EXHAUSTED' | 'AI_TUTOR_DISABLED' | null;
@@ -49,8 +43,6 @@
     onRemoveDocument: () => void;
     onSelectModel: (id: AgentModelId) => void;
     onLockedModelSelect?: (id: AgentModelId) => void;
-    onStartNewChatWithSummary: () => void;
-    onCompactConversation: () => void;
   }
 
   let {
@@ -58,14 +50,11 @@
     isStreaming,
     isExhausted,
     isUploading,
-    contextFullBusy,
-    compactConversationDisabled = false,
     error,
     mentionItems,
     uploadedDocument,
     selectedModel,
     lockedModelIds = [],
-    contextUsage,
     isStudent = false,
     tutorBlocked = null,
     onSend,
@@ -73,9 +62,7 @@
     onFileSelect,
     onRemoveDocument,
     onSelectModel,
-    onLockedModelSelect,
-    onStartNewChatWithSummary,
-    onCompactConversation
+    onLockedModelSelect
   }: Props = $props();
 
   function tutorBlockedMessage(reason: NonNullable<typeof tutorBlocked>): string {
@@ -200,13 +187,6 @@
       <p class="text-xs">{tutorBlockedMessage(tutorBlocked)}</p>
     </div>
   </div>
-{:else if contextUsage?.isFull && !isStreaming}
-  <ContextFullState
-    {contextFullBusy}
-    {compactConversationDisabled}
-    {onCompactConversation}
-    onStartNewChat={onStartNewChatWithSummary}
-  />
 {:else}
   <div class="border-t px-3 pt-3 pb-1.5">
     {#if isExhausted}
@@ -306,10 +286,6 @@
             {/if}
 
             <div class="flex-1"></div>
-
-            {#if contextUsage && contextUsage.usedTokens > 0}
-              <ContextIndicator {contextUsage} />
-            {/if}
 
             {#if isStreaming}
               <Button size="icon" variant="outline" onclick={onStop} class="size-7 shrink-0">

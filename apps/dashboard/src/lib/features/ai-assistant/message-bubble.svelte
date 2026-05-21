@@ -149,7 +149,7 @@
       {#each inlineParts as part, partIndex (partIndex)}
         {#if part.type === 'text'}
           <div
-            class="ai-chat-prose prose prose-sm dark:prose-invert max-w-none {message.role === 'user' &&
+            class="ai-chat-prose prose prose-sm dark:prose-invert max-w-none break-all {message.role === 'user' &&
               'ui:text-primary-foreground!'}"
           >
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->

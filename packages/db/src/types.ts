@@ -206,6 +206,7 @@ export type TSsoProvider = (typeof schema.organizationSsoProviderType.enumValues
 
 export type TOrganizationApiKeyType = (typeof schema.organizationApiKeyType.enumValues)[number];
 export type TAutomationUsageCategory = (typeof schema.automationUsageCategory.enumValues)[number];
+export type TAiAgentRunStatus = (typeof schema.aiAgentRunStatus.enumValues)[number];
 
 export type TCourseImportSourceType = (typeof schema.courseImportSourceType.enumValues)[number];
 
@@ -213,6 +214,17 @@ export type TCourseImportDraftStatus = (typeof schema.courseImportDraftStatus.en
 export type TWidgetStatus = (typeof schema.widgetStatus.enumValues)[number];
 export type TWidgetLayoutType = (typeof schema.widgetLayoutType.enumValues)[number];
 export type TWidgetSelectionMode = (typeof schema.widgetSelectionMode.enumValues)[number];
+
+// ─── AI agent durable runs ───────────────────────────────────────────────────
+
+export type TAiAgentRun = typeof schema.aiAgentRun.$inferSelect;
+export type TNewAiAgentRun = typeof schema.aiAgentRun.$inferInsert;
+
+export type TAiAgentRunStep = typeof schema.aiAgentRunStep.$inferSelect;
+export type TNewAiAgentRunStep = typeof schema.aiAgentRunStep.$inferInsert;
+
+export type TAiAgentRunEvent = typeof schema.aiAgentRunEvent.$inferSelect;
+export type TNewAiAgentRunEvent = typeof schema.aiAgentRunEvent.$inferInsert;
 
 // ─── Job state ───────────────────────────────────────────────────────────────
 

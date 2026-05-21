@@ -8,7 +8,6 @@ export const getSessionData = async (cookies: Cookies): Promise<App.Locals | nul
   try {
     const cioCookies = getCioCookieString(cookies);
 
-    console.log('cioCookies', cioCookies);
     if (!cioCookies) return null;
 
     const locals = await getThroughAuthClient(cioCookies);
