@@ -289,8 +289,6 @@ export function getApiHeaders(
 ): { headers: { cookie: string; 'cio-org-id'?: string } } {
   const cioCookies = getCioCookieString(cookies);
 
-  console.log('cioCookies', cioCookies);
-  console.log('cookies', cookies.getAll());
   const headers: { cookie: string; 'cio-org-id'?: string } = {
     cookie: cioCookies || ''
   };

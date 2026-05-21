@@ -54,7 +54,7 @@
     "@hono/standard-validator": "^0.1.5",
     "@hono/zod-validator": "^0.7.6",
     "@scalar/hono-api-reference": "^0.9.18",
-    "@sentry/profiling-node": "^7.110.1",
+    "@sentry/node": "^10.53.1",
     "ai": "^6.0.158",
     "axios": "^1.4.0",
     "css-tree": "^3.2.1",

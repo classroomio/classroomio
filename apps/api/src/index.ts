@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import './instrument';
 
 import { API_PORT } from '@api/constants';
 import { app } from '@api/app';

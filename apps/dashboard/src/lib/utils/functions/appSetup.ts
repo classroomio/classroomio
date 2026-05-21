@@ -1,6 +1,5 @@
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { initPosthog, type PosthogBootstrapUser } from '$lib/utils/services/posthog';
-import { initSentry } from '$lib/utils/services/sentry';
 import { initUmami } from '$lib/utils/services/umami';
 import { licenseApi } from '$features/license/api/license.svelte';
 
@@ -10,7 +9,6 @@ export function setupAnalytics(user?: PosthogBootstrapUser) {
   if (isInitialized) return;
   isInitialized = true;
 
-  initSentry();
   initPosthog(user);
   initUmami();
 }

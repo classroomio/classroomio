@@ -1,5 +1,6 @@
 import 'dotenv/config';
 
+import * as Sentry from '@sentry/node';
 import { consumeHandoffPayload, storeHandoffPayload } from '@api/utils/redis/oauth-handoff';
 import { isPublicCorsPath, sessionCors } from '@api/middlewares/cors';
 import { randomBytes } from 'crypto';
@@ -78,6 +79,13 @@ export const app = new Hono()
     c.set('user', session.user);
     c.set('session', session.session);
     c.set('orgRoles', (session as { orgRoles?: Record<string, number> }).orgRoles ?? {});
+
+    Sentry.setUser({
+      id: session.user.id,
+      ...(session.user.email && { email: session.user.email }),
+      ...(session.user.name && { username: session.user.name })
+    });
+
     await next();
   })
 
@@ -206,6 +214,7 @@ export const app = new Hono()
 
   // Error handling
   .onError((err, c) => {
+    Sentry.captureException(err);
     console.error('Error:', err);
     return c.json({ error: 'Internal Server Error' }, 500);
   });

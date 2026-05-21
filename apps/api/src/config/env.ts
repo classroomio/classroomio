@@ -78,6 +78,10 @@ const envSchema = z.object({
 
       return Number.isFinite(parsed) && parsed >= 1 ? Math.trunc(parsed) : 15;
     }),
+  /** Sentry error tracking (server-side). Leave SENTRY_DSN unset to disable. */
+  SENTRY_DSN: z.string().optional(),
+  SENTRY_ENVIRONMENT: z.string().optional(),
+  SENTRY_TRACES_SAMPLE_RATE: z.string().optional(),
   /** Max fetch_documentation_url calls per org per UTC day (default 500). */
   AGENT_MAX_FETCHES_PER_ORG_PER_DAY: z
     .string()

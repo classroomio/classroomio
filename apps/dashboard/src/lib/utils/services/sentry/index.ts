@@ -1,26 +1,30 @@
+import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
-// import * as Sentry from '@sentry/browser';
-// import { CaptureConsole } from '@sentry/integrations';
+import { env } from '$env/dynamic/public';
 
-export const initSentry = (): void => {
-  if (dev) return;
+const isEnabled = () =>
+  Boolean(env.PUBLIC_SENTRY_DSN?.trim()) && !dev && env.PUBLIC_IS_SELFHOSTED !== 'true';
 
-  // Sentry.init({
-  //   dsn: 'https://c966f7e8cb1d4306be20b26bb4f0cc96@o476906.ingest.sentry.io/5999999',
-  //   integrations: [
-  //     new CaptureConsole({
-  //       levels: ['error']
-  //     }),
-  //     new Sentry.Replay()
-  //   ],
-  //   environment: 'production',
-  //   replaysSessionSampleRate: 0.5,
-  //   replaysOnErrorSampleRate: 1.0
-  // });
+export type SentryUser = {
+  id: string;
+  email?: string | null;
+  username?: string | null;
+  fullname?: string | null;
 };
 
-export const setSentryUser = (user: Record<string, unknown>): void => {
-  if (dev) return;
+export const setSentryUser = (user: SentryUser): void => {
+  if (!isEnabled()) return;
 
-  // Sentry.setUser(user);
+  Sentry.setUser({
+    id: user.id,
+    ...(user.email && { email: user.email }),
+    ...(user.username && { username: user.username }),
+    ...(user.fullname && { fullname: user.fullname })
+  });
+};
+
+export const clearSentryUser = (): void => {
+  if (!isEnabled()) return;
+
+  Sentry.setUser(null);
 };
