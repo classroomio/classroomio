@@ -46,7 +46,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm i
+        run: pnpm install --frozen-lockfile
 
       - name: Build @cio/embeds workspace dependencies
         run: pnpm turbo run build --filter=@cio/embeds^...

@@ -4,9 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/api/src/**'
-      - 'apps/api/scripts/**'
-      - 'apps/api/package.json'
+      - 'apps/api/**'
   workflow_dispatch:
 
 env:
@@ -46,7 +44,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm i
+        run: pnpm install --frozen-lockfile
 
       - name: Build @cio/api workspace dependencies
         run: pnpm turbo run build --filter=@cio/api^...
