@@ -2164,9 +2164,7 @@
           "depth": "Jak głęboko powinien sięgać kurs?",
           "topic": "Temat lub nisza",
           "expertise_level": "Docelowy poziom wiedzy",
-          "documentation_url": {
-            "hint": "Przeczytamy tę witrynę, aby oprzeć kurs na Twoim prawdziwym produkcie."
-          }
+          "documentation_url": "Adres URL dokumentacji (opcjonalnie)"
         },
         "expert_on_x": {
           "title": "Zostań ekspertem w dziedzinie X",
@@ -2419,7 +2417,12 @@
         "error_description": "Ta domena niestandardowa istnieje, ale weryfikacja nie została jeszcze ukończona.",
         "page_subtitle": "Run your public learning site on a web address you own.",
         "dns_record": "Rekord DNS",
-        "verified_snackbar": "Zweryfikowano domenę niestandardową"
+        "verified_snackbar": "Zweryfikowano domenę niestandardową",
+        "record_active": "Wykryto",
+        "record_pending": "Oczekujące",
+        "ssl_pending_heading": "Certyfikat SSL jest wydawany",
+        "ssl_pending_body": "Własność Twojej domeny została zweryfikowana. Czekamy teraz, aż Cloudflare wystawi i wdroży certyfikat SSL. Zwykle zajmuje to kilka minut, gdy wszystkie poniższe rekordy DNS są już na swoim miejscu.",
+        "validation_errors_heading": "Wystawienie certyfikatu jest zablokowane"
       }
     },
     "quiz": {

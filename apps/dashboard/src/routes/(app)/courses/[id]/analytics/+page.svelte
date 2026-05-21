@@ -7,7 +7,7 @@
   let { data } = $props();
 </script>
 
-<Page.Root class="w-full">
+<Page.Root class="max-auto w-[90%] px-4">
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>

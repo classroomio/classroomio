@@ -2164,9 +2164,7 @@
           "depth": "Quão profundo o curso deve ir?",
           "topic": "Tópico ou nicho",
           "expertise_level": "Nível de especialização alvo",
-          "documentation_url": {
-            "hint": "Leremos este site para fundamentar o curso em seu produto real."
-          }
+          "documentation_url": "URL da documentação (opcional)"
         },
         "expert_on_x": {
           "title": "Torne-se um especialista em X",
@@ -2419,7 +2417,12 @@
         "error_description": "Este domínio personalizado existe, mas a verificação ainda não foi concluída.",
         "page_subtitle": "Run your public learning site on a web address you own.",
         "dns_record": "Registro DNS",
-        "verified_snackbar": "Domínio personalizado verificado"
+        "verified_snackbar": "Domínio personalizado verificado",
+        "record_active": "Detectado",
+        "record_pending": "Pendente",
+        "ssl_pending_heading": "O certificado SSL está sendo emitido",
+        "ssl_pending_body": "A propriedade do seu domínio é verificada. Agora estamos aguardando a Cloudflare emitir e implantar o certificado SSL. Isso geralmente leva alguns minutos depois que todos os registros DNS abaixo estiverem em vigor.",
+        "validation_errors_heading": "A emissão do certificado está bloqueada"
       }
     },
     "quiz": {

@@ -1,10 +1,13 @@
 <script lang="ts">
+  import AlertTriangleIcon from '@lucide/svelte/icons/alert-triangle';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+  import CheckIcon from '@lucide/svelte/icons/check';
+  import ClockIcon from '@lucide/svelte/icons/clock';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
+  import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
   import TrashIcon from '@lucide/svelte/icons/trash';
   import type { DomainRequestData, DomainRequestStatus } from '$features/org/utils/types';
   import isValidDomain from 'is-valid-domain';
-  import { parse as parseDomain } from 'tldts';
   import { goto } from '$app/navigation';
   import { onMount, untrack } from 'svelte';
 
@@ -18,6 +21,9 @@
   import { BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 
   import { Badge } from '@cio/ui/base/badge';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import { Spinner } from '@cio/ui/base/spinner';
+
   import { Button } from '@cio/ui/base/button';
   import { CopyButton } from '@cio/ui/base/copy-button';
   import { Textarea } from '@cio/ui/base/textarea';
@@ -33,6 +39,7 @@
   let isCustomDomainLoading = $state(false);
   let isRefreshing = $state(false);
   let domainSetup = $state<DomainRequestData | null>(null);
+  let domainApex = $state<string | null>(null);
 
   const isDomainValid = $derived(isValidDomain(sanitizeDomain(customDomain), { subdomain: true }));
   const currentDomainStatus = $derived<DomainRequestStatus | null>(
@@ -40,15 +47,20 @@
       ($currentOrg.customDomain ? ($currentOrg.isCustomDomainVerified ? 'verified' : 'pending_verification') : null)
   );
 
+  async function refreshDomainApex(hostname: string | null | undefined) {
+    if (!hostname) {
+      domainApex = null;
+      return;
+    }
+    const { parse } = await import('tldts/dist/es6/index.js');
+    domainApex = parse(hostname).domain ?? null;
+  }
+
   function stripZone(recordName: string): string {
-    const hostname = $currentOrg.customDomain;
-    if (!hostname) return recordName;
+    if (!domainApex) return recordName;
 
-    const apex = parseDomain(hostname).domain;
-    if (!apex) return recordName;
-
-    const suffix = '.' + apex;
-    if (recordName === apex) return recordName;
+    const suffix = '.' + domainApex;
+    if (recordName === domainApex) return recordName;
     if (recordName.endsWith(suffix)) return recordName.slice(0, -suffix.length);
 
     return recordName;
@@ -102,12 +114,14 @@
     if (data.status === 'removed') {
       $currentOrg.customDomain = '';
       $currentOrg.isCustomDomainVerified = false;
+      domainApex = null;
       return;
     }
 
     $currentOrg.customDomain = data.hostname;
     $currentOrg.isCustomDomainVerified = data.verified;
     customDomain = '';
+    void refreshDomainApex(data.hostname);
 
     if (data.verified && !wasVerified) {
       snackbar.success('components.settings.domains.verified_snackbar');
@@ -282,6 +296,7 @@
 
   onMount(() => {
     if ($currentOrg.customDomain) {
+      void refreshDomainApex($currentOrg.customDomain);
       void handleRefreshCustomDomain(true);
     }
   });
@@ -332,7 +347,13 @@
             <div class="flex items-center gap-2">
               <p class="text-md flex items-center gap-2 font-medium">
                 {$currentOrg.customDomain}
-                <Button variant="outline" size="icon-sm" onclick={() => goto(`https://${$currentOrg.customDomain}`)}>
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  onclick={() => {
+                    window.open(`https://${$currentOrg.customDomain}`, '_blank');
+                  }}
+                >
                   <ArrowUpRightIcon size={16} />
                 </Button>
               </p>
@@ -350,40 +371,119 @@
             <Badge variant="default" class={`px-3 text-xs ${getDomainStatusClass(currentDomainStatus)}`}>
               {getDomainStatusLabel(currentDomainStatus)}
             </Badge>
+
+            <IconButton onclick={handleRemoveCustomDomain} loading={isCustomDomainLoading}>
+              {#if isCustomDomainLoading}
+                <Spinner class="ui:text-muted-foreground size-4" />
+              {:else}
+                <TrashIcon size={16} />
+              {/if}
+            </IconButton>
           </div>
         </Field.Field>
 
         <Field.Description>{getDomainStatusDescription(currentDomainStatus)}</Field.Description>
 
+        {#if domainSetup?.validationErrors?.length}
+          <Field.Field>
+            <div
+              class="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm dark:border-red-900 dark:bg-red-950/40"
+            >
+              <AlertTriangleIcon class="mt-0.5 size-4 shrink-0 text-red-600 dark:text-red-400" />
+              <div class="min-w-0 flex-1">
+                <p class="font-medium text-red-900 dark:text-red-200">
+                  {$t('components.settings.domains.validation_errors_heading')}
+                </p>
+                <ul class="mt-1 space-y-1 text-red-800 dark:text-red-300">
+                  {#each domainSetup.validationErrors as message, i (i)}
+                    <li>{message}</li>
+                  {/each}
+                </ul>
+              </div>
+            </div>
+          </Field.Field>
+        {/if}
+
+        {#if currentDomainStatus === 'pending_verification'}
+          <Field.Field>
+            <div
+              class="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm dark:border-amber-900 dark:bg-amber-950/40"
+            >
+              <ShieldCheckIcon class="mt-0.5 size-4 shrink-0 text-amber-700 dark:text-amber-400" />
+              <div class="min-w-0 flex-1">
+                <p class="font-medium text-amber-900 dark:text-amber-200">
+                  {$t('components.settings.domains.ssl_pending_heading')}
+                </p>
+                <p class="mt-1 text-amber-800 dark:text-amber-300">
+                  {$t('components.settings.domains.ssl_pending_body')}
+                </p>
+              </div>
+            </div>
+          </Field.Field>
+        {/if}
+
         {#if currentDomainStatus !== 'verified' && domainSetup?.dnsRecords?.length}
           <Field.Field>
-            <div class="flex flex-col gap-3">
+            <div class="ui:bg-card overflow-hidden rounded-lg border">
               {#each domainSetup.dnsRecords as record, i (record.name + i)}
-                {@const rows = [
-                  { label: $t('components.settings.domains.dns_type'), value: record.type },
+                {@const fields = [
                   { label: $t('components.settings.domains.dns_name'), value: stripZone(record.name) },
                   { label: $t('components.settings.domains.dns_value'), value: record.value }
                 ]}
-                <div class="ui:bg-card overflow-hidden rounded-lg border">
-                  <div
-                    class="ui:bg-muted/40 ui:text-muted-foreground border-b px-4 py-2 text-xs font-medium tracking-wide uppercase"
-                  >
-                    {$t('components.settings.domains.dns_record')}
+                <div class={'p-4 ' + (i > 0 ? 'border-t' : '')}>
+                  <div class="mb-3 flex items-center gap-2">
+                    <span
+                      class={'inline-flex items-center rounded-md px-2 py-0.5 font-mono text-xs font-semibold tracking-wide ' +
+                        (record.type === 'CNAME'
+                          ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:ring-blue-900'
+                          : 'bg-slate-100 text-slate-700 ring-1 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700')}
+                    >
+                      {record.type}
+                    </span>
+                    <span class="ui:text-muted-foreground text-xs">
+                      Record {i + 1} of {domainSetup.dnsRecords.length}
+                    </span>
+
+                    <span
+                      class={'ml-auto inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ' +
+                        (record.status === 'active'
+                          ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-900'
+                          : 'bg-amber-50 text-amber-800 ring-1 ring-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:ring-amber-900')}
+                      aria-label={record.status === 'active'
+                        ? $t('components.settings.domains.record_active')
+                        : $t('components.settings.domains.record_pending')}
+                    >
+                      {#if record.status === 'active'}
+                        <CheckIcon class="size-3" />
+                        <span>{$t('components.settings.domains.record_active')}</span>
+                      {:else}
+                        <ClockIcon class="size-3" />
+                        <span>{$t('components.settings.domains.record_pending')}...</span>
+                      {/if}
+                    </span>
                   </div>
 
-                  <dl class="divide-y">
-                    {#each rows as row (row.label)}
-                      <div class="grid grid-cols-[80px,1fr,auto] items-center gap-3 px-4 py-2.5">
-                        <dt class="ui:text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                          {row.label}
-                        </dt>
-                        <dd class="min-w-0">
-                          <span class="block truncate font-mono text-sm">{row.value}</span>
-                        </dd>
-                        <CopyButton text={row.value} variant="ghost" size="icon-sm" aria-label={'Copy ' + row.label} />
+                  <div class="flex flex-wrap gap-x-6 gap-y-3">
+                    {#each fields as field (field.label)}
+                      <div class="min-w-[240px] flex-1">
+                        <div class="ui:text-muted-foreground mb-1 text-xs font-medium tracking-wide uppercase">
+                          {field.label}
+                        </div>
+                        <div class="flex items-center gap-2">
+                          <span class="min-w-0 flex-1 truncate font-mono text-sm" title={field.value}
+                            >{field.value}</span
+                          >
+                          <CopyButton
+                            text={field.value}
+                            variant="outline"
+                            size="icon-sm"
+                            aria-label={'Copy ' + field.label}
+                            class="shrink-0"
+                          />
+                        </div>
                       </div>
                     {/each}
-                  </dl>
+                  </div>
                 </div>
               {/each}
             </div>
@@ -407,6 +507,7 @@
             </Button>
           {:else if currentDomainStatus !== 'verified'}
             <Button
+              variant="outline"
               class="flex items-center gap-2 py-2"
               onclick={() => handleRefreshCustomDomain()}
               loading={isRefreshing}
@@ -416,19 +517,18 @@
               {/if}
               {$t('components.settings.domains.refresh')}
             </Button>
+            <Button
+              variant="destructive"
+              class="flex items-center gap-2 py-2"
+              onclick={handleRemoveCustomDomain}
+              loading={isCustomDomainLoading}
+            >
+              {#if !isCustomDomainLoading}
+                <TrashIcon size={16} />
+              {/if}
+              {$t('components.settings.domains.remove')}
+            </Button>
           {/if}
-
-          <Button
-            variant="outline"
-            class="ui:text-destructive ui:hover:text-destructive ui:hover:bg-destructive/10 flex items-center gap-2 py-2"
-            onclick={handleRemoveCustomDomain}
-            loading={isCustomDomainLoading}
-          >
-            {#if !isCustomDomainLoading}
-              <TrashIcon size={16} />
-            {/if}
-            {$t('components.settings.domains.remove')}
-          </Button>
         </Field.Field>
       {:else}
         <Field.Field>
