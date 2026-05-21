@@ -113,9 +113,9 @@
     return (part as { errorText?: string }).errorText;
   }
 
-  const inlineParts = $derived(message.parts.filter((part) => (part as { type?: string }).type === 'text'));
+  const inlineParts = $derived((message.parts ?? []).filter((part) => (part as { type?: string }).type === 'text'));
   const deferredPlanParts = $derived(
-    message.parts.filter((part) => isDeferredPlanPart(part as Record<string, unknown>))
+    (message.parts ?? []).filter((part) => isDeferredPlanPart(part as Record<string, unknown>))
   );
   const hasBubbleContent = $derived(inlineParts.length > 0 || deferredPlanParts.length > 0 || !!messageAttachment);
   const showStreamingSpinner = $derived(message.role === 'assistant' && !hasBubbleContent && isStreaming && isLast);

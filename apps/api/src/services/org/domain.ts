@@ -57,6 +57,14 @@ function ensureApproximatedConfig() {
       500
     );
   }
+
+  if (!env.APPROXIMATED_DNS_TARGET_IP && !env.APPROXIMATED_DNS_TARGET_CNAME) {
+    throw new AppError(
+      'Set APPROXIMATED_DNS_TARGET_IP and/or APPROXIMATED_DNS_TARGET_CNAME so customers know where to point their DNS.',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
 }
 
 async function approximatedRequest<T>(path: string, init: RequestInit = {}): Promise<T | null> {
@@ -92,20 +100,31 @@ async function approximatedRequest<T>(path: string, init: RequestInit = {}): Pro
     );
   }
 
+  if (payload && typeof payload === 'object' && 'data' in payload) {
+    return (payload as { data: T }).data;
+  }
+
   return payload as T;
 }
 
 function buildDnsRecords(hostname: string, vhost?: ApproximatedVhost | null): DomainDnsRecord[] {
-  if (!vhost?.dns_pointed_at) return [];
+  const targetIp = env.APPROXIMATED_DNS_TARGET_IP;
+  const targetCname = env.APPROXIMATED_DNS_TARGET_CNAME;
 
-  return [
-    {
-      type: 'A',
-      name: hostname,
-      value: vhost.dns_pointed_at,
-      status: vhost.is_resolving ? 'active' : 'pending'
-    }
-  ];
+  const records: DomainDnsRecord[] = [];
+  const isResolvingToTarget = Boolean(
+    vhost?.is_resolving && (vhost?.dns_pointed_at === targetIp || vhost?.dns_pointed_at === targetCname)
+  );
+  const status: 'pending' | 'active' = isResolvingToTarget ? 'active' : 'pending';
+
+  if (targetIp) {
+    records.push({ type: 'A', name: hostname, value: targetIp, status });
+  }
+  if (targetCname) {
+    records.push({ type: 'CNAME', name: hostname, value: targetCname, status });
+  }
+
+  return records;
 }
 
 function mapDomainStatus(vhost?: ApproximatedVhost | null): DomainSetupStatus {
@@ -113,7 +132,7 @@ function mapDomainStatus(vhost?: ApproximatedVhost | null): DomainSetupStatus {
     return 'reconnect_required';
   }
 
-  if (vhost.has_ssl && vhost.is_resolving && vhost.apx_hit) {
+  if (vhost.has_ssl && vhost.is_resolving) {
     return 'verified';
   }
 
@@ -145,6 +164,7 @@ function getStatusMessage(status: DomainSetupStatus) {
 
 function toDomainSetupResult(hostname: string, vhost?: ApproximatedVhost | null): DomainSetupResult {
   const status = mapDomainStatus(vhost);
+  console.log('status', status);
 
   return {
     hostname,
@@ -201,6 +221,8 @@ async function createVhost(hostname: string): Promise<ApproximatedVhost> {
   if (!created) {
     throw new AppError('Approximated did not return a vhost', ErrorCodes.INTERNAL_ERROR, 500);
   }
+
+  console.log('created', created);
   return created;
 }
 
@@ -212,6 +234,7 @@ export async function connectDomain(hostname: string): Promise<DomainSetupResult
 
 export async function refreshDomain(hostname: string): Promise<DomainSetupResult> {
   const vhost = await getVhost(hostname);
+  console.log('existing', vhost);
   return toDomainSetupResult(hostname, vhost);
 }
 

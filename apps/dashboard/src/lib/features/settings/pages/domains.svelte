@@ -294,6 +294,8 @@
     });
   }
 
+  const DOMAIN_POLL_INTERVAL_MS = 15000;
+
   onMount(() => {
     if ($currentOrg.customDomain) {
       void refreshDomainApex($currentOrg.customDomain);
@@ -303,6 +305,20 @@
 
   $effect(() => {
     resetErrors(siteName, customDomain);
+  });
+
+  $effect(() => {
+    const shouldPoll =
+      Boolean($currentOrg.customDomain) && currentDomainStatus !== null && currentDomainStatus !== 'verified';
+
+    if (!shouldPoll) return;
+
+    const interval = window.setInterval(() => {
+      if (isRefreshing || isCustomDomainLoading || document.hidden) return;
+      void handleRefreshCustomDomain(true);
+    }, DOMAIN_POLL_INTERVAL_MS);
+
+    return () => window.clearInterval(interval);
   });
 </script>
 
@@ -330,7 +346,7 @@
       <Button variant="outline" onclick={handleSaveSiteName} disabled={isLoading}>
         {$t('components.settings.domains.update')}
       </Button>
-      <VisitOrgSiteButton />
+      <VisitOrgSiteButton forceSubdomain />
     </Field.Field>
   </Field.Set>
 

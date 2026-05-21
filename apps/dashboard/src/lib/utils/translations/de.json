@@ -2164,7 +2164,9 @@
           "depth": "Wie tief soll der Kurs gehen?",
           "topic": "Thema oder Nische",
           "expertise_level": "Zielkompetenzniveau",
-          "documentation_url": "Dokumentations-URL (optional)"
+          "documentation_url": {
+            "hint": "Wir werden diese Website lesen, um den Kurs in Ihrem realen Produkt zu verankern."
+          }
         },
         "expert_on_x": {
           "title": "Werden Sie Experte für X",
@@ -2417,12 +2419,12 @@
         "error_description": "Diese benutzerdefinierte Domäne existiert, aber die Überprüfung ist noch nicht abgeschlossen.",
         "page_subtitle": "Run your public learning site on a web address you own.",
         "dns_record": "DNS-Eintrag",
-        "verified_snackbar": "Benutzerdefinierte Domain verifiziert",
         "record_active": "Erkannt",
         "record_pending": "Ausstehend",
         "ssl_pending_heading": "SSL-Zertifikat wird ausgestellt",
-        "ssl_pending_body": "Der Besitz Ihrer Domain wird bestätigt. Wir warten nun darauf, dass Cloudflare das SSL-Zertifikat ausstellt und bereitstellt. Dies dauert normalerweise einige Minuten, sobald alle unten aufgeführten DNS-Einträge vorhanden sind.",
-        "validation_errors_heading": "Die Ausstellung des Zertifikats ist gesperrt"
+        "ssl_pending_body": "Ihre Domain verweist auf uns. Wir warten nun darauf, dass das SSL-Zertifikat ausgestellt und bereitgestellt wird. Dies dauert normalerweise einige Minuten, sobald alle unten aufgeführten DNS-Einträge vorhanden sind.",
+        "validation_errors_heading": "Die Ausstellung des Zertifikats ist gesperrt",
+        "verified_snackbar": "Benutzerdefinierte Domain verifiziert"
       }
     },
     "quiz": {

@@ -9,6 +9,7 @@ import { currentOrg } from '$lib/utils/store/org';
 import type { Cookies } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 import { getCioCookieString } from '$lib/utils/functions/cookies';
+import { AGENT_CONTENT_TYPE } from '@cio/utils/constants';
 
 export const getRequestBaseUrl = () => {
   if (typeof window === 'undefined') {
@@ -30,6 +31,16 @@ export const getRequestBaseUrl = () => {
   // before forwarding to the API.
   return `${window.location.origin}/proxy`;
 };
+
+function isAgentRequest(input: RequestInfo | URL): boolean {
+  try {
+    const raw = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+    const pathname = new URL(raw, 'http://placeholder').pathname;
+    return pathname.includes('/agent/');
+  } catch {
+    return false;
+  }
+}
 
 function mergeAbortSignals(...signals: Array<AbortSignal | null | undefined>) {
   const activeSignals = signals.filter((signal): signal is AbortSignal => Boolean(signal));
@@ -113,6 +124,10 @@ class ApiClient {
     if (isFormData) {
       // Let the browser set the multipart boundary, but keep auth/org headers.
       headers.delete('Content-Type');
+    }
+
+    if (requestBody && !isFormData && isAgentRequest(input)) {
+      headers.set('Content-Type', AGENT_CONTENT_TYPE);
     }
 
     // Create abort controller for timeout

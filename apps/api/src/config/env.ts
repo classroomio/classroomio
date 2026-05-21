@@ -10,6 +10,10 @@ const envSchema = z.object({
   CLOUDFLARE_IMAGE_BUCKET_DOMAIN: z.string().optional(),
   APPROXIMATED_API_KEY: z.string().optional(),
   APPROXIMATED_TARGET_ADDRESS: z.string().optional(),
+  /** Public IP customers point their A record to (Approximated edge IP). */
+  APPROXIMATED_DNS_TARGET_IP: z.string().optional(),
+  /** Optional CNAME target customers can point to instead of A record. */
+  APPROXIMATED_DNS_TARGET_CNAME: z.string().optional(),
   // S3-compatible storage (MinIO, AWS S3, or other S3-compatible backends)
   OBJECT_STORAGE_ENDPOINT: z.string().optional(),
   OBJECT_STORAGE_REGION: z.string().optional(),

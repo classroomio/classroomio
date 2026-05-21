@@ -139,7 +139,7 @@ On the **dashboard** Render service:
 | -------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `HOST_HEADER`        | `x-forwarded-host`            | SvelteKit adapter-node reads the effective host from this so `event.url.host` is the tenant/admin host the user is on.                         |
 | `PROTOCOL_HEADER`    | `x-forwarded-proto`           | Same, for protocol.                                                                                                                            |
-| `PRIVATE_APP_HOST`   | `myclassroomio.com`          | Used by `getSubdomain` in `layout-setup.ts` to extract the org siteName.                                                                       |
+| `PRIVATE_APP_HOST`   | `myclassroomio.com`           | Used by `getSubdomain` in `layout-setup.ts` to extract the org siteName.                                                                       |
 | `PUBLIC_SERVER_URL`  | `https://api.classroomio.com` | Used at runtime only as a fallback / for `authClient`'s SSR-time URL constructor; browser code uses `${origin}/proxy` via `getRequestBaseUrl`. |
 | `PRIVATE_SERVER_URL` | API's internal Render URL     | Server-side dashboard → API calls bypass the public edge.                                                                                      |
 

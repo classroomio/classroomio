@@ -3,6 +3,7 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
+import { agentContentTypeRewrite } from '@api/middlewares/agent-content-type';
 import { handleError, AppError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 import { streamText, stepCountIs, convertToModelMessages } from 'ai';
@@ -691,4 +692,7 @@ const agentCoreRouter = new Hono()
     }
   });
 
-export const agentRouter = new Hono().route('/', agentCoreRouter).route('/history', agentHistoryRouter);
+export const agentRouter = new Hono()
+  .use('*', agentContentTypeRewrite)
+  .route('/', agentCoreRouter)
+  .route('/history', agentHistoryRouter);

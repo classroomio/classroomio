@@ -2164,7 +2164,9 @@
           "depth": "Khóa học nên đi sâu đến mức nào?",
           "topic": "Chủ đề hoặc niche",
           "expertise_level": "Mục tiêu trình độ chuyên môn",
-          "documentation_url": "URL tài liệu (tùy chọn)"
+          "documentation_url": {
+            "hint": "Chúng tôi sẽ đọc trang web này để xây dựng khóa học về sản phẩm thực của bạn."
+          }
         },
         "expert_on_x": {
           "title": "Trở thành chuyên gia về X",
@@ -2417,12 +2419,12 @@
         "error_description": "Miền tùy chỉnh này tồn tại nhưng quá trình xác minh chưa hoàn tất.",
         "page_subtitle": "Run your public learning site on a web address you own.",
         "dns_record": "bản ghi DNS",
-        "verified_snackbar": "Đã xác minh miền tùy chỉnh",
         "record_active": "Đã phát hiện",
         "record_pending": "Đang chờ xử lý",
         "ssl_pending_heading": "Chứng chỉ SSL đang được cấp",
-        "ssl_pending_body": "Quyền sở hữu tên miền của bạn đã được xác minh. Hiện chúng tôi đang chờ Cloudflare phát hành và triển khai chứng chỉ SSL. Quá trình này thường mất vài phút sau khi tất cả bản ghi DNS bên dưới đã sẵn sàng.",
-        "validation_errors_heading": "Việc cấp chứng chỉ bị chặn"
+        "ssl_pending_body": "Tên miền của bạn đang trỏ đến chúng tôi. Hiện chúng tôi đang chờ chứng chỉ SSL được cấp và triển khai. Quá trình này thường mất vài phút sau khi tất cả bản ghi DNS bên dưới đã sẵn sàng.",
+        "validation_errors_heading": "Việc cấp chứng chỉ bị chặn",
+        "verified_snackbar": "Đã xác minh miền tùy chỉnh"
       }
     },
     "quiz": {

@@ -2,6 +2,7 @@
   import { browser } from '$app/environment';
   import { Button, type ButtonVariant } from '@cio/ui/base/button';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+  import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { t } from '$lib/utils/functions/translations';
@@ -12,17 +13,22 @@
     isLMS?: boolean;
     labelKey?: string;
     variant?: ButtonVariant;
+    forceSubdomain?: boolean;
   }
 
   let {
     className = '',
     isLMS = false,
     labelKey = 'settings.subheadings.view_site',
-    variant = 'default'
+    variant = 'default',
+    forceSubdomain = false
   }: Props = $props();
 
   let href = $derived.by(() => {
-    const origin = $currentOrgDomain || (browser ? window.location.origin : '');
+    const subdomainOrigin = $currentOrg.siteName ? `https://${$currentOrg.siteName}.${TENANT_ROOT_DOMAIN}` : '';
+    const origin = forceSubdomain
+      ? subdomainOrigin || (browser ? window.location.origin : '')
+      : $currentOrgDomain || (browser ? window.location.origin : '');
 
     if (!origin) {
       return '';

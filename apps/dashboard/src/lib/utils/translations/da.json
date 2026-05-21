@@ -2164,7 +2164,9 @@
           "depth": "Hvor dybt skal kurset gå?",
           "topic": "Emne eller niche",
           "expertise_level": "Mål ekspertiseniveau",
-          "documentation_url": "Dokumentations-URL (valgfrit)"
+          "documentation_url": {
+            "hint": "Vi læser dette websted for at basere kurset på dit rigtige produkt."
+          }
         },
         "expert_on_x": {
           "title": "Bliv ekspert på X",
@@ -2417,12 +2419,12 @@
         "error_description": "Dette tilpassede domæne eksisterer, men bekræftelsen er ikke fuldført endnu.",
         "page_subtitle": "Run your public learning site on a web address you own.",
         "dns_record": "DNS-record",
-        "verified_snackbar": "Tilpasset domæne bekræftet",
         "record_active": "Opdaget",
         "record_pending": "Afventer",
         "ssl_pending_heading": "SSL-certifikat er ved at blive udstedt",
-        "ssl_pending_body": "Ejerskabet af dit domæne er bekræftet. Vi venter nu på, at Cloudflare udsteder og implementerer SSL-certifikatet. Dette tager normalt et par minutter, når alle nedenstående DNS-poster er på plads.",
-        "validation_errors_heading": "Certifikatudstedelse er blokeret"
+        "ssl_pending_body": "Dit domæne peger på os. Vi venter nu på, at SSL-certifikatet bliver udstedt og implementeret. Dette tager normalt et par minutter, når alle nedenstående DNS-poster er på plads.",
+        "validation_errors_heading": "Certifikatudstedelse er blokeret",
+        "verified_snackbar": "Tilpasset domæne bekræftet"
       }
     },
     "quiz": {
