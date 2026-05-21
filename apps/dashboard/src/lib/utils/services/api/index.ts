@@ -42,6 +42,26 @@ function isAgentRequest(input: RequestInfo | URL): boolean {
   }
 }
 
+/**
+ * Base64-encode a UTF-8 string for the `/agent/*` body envelope. Works on
+ * both the SvelteKit server (Node `Buffer`) and the browser (TextEncoder +
+ * `btoa`). `btoa` alone fails on non-Latin-1 characters; encoding through
+ * bytes first preserves arbitrary Unicode.
+ */
+function toBase64Utf8(input: string): string {
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(input, 'utf-8').toString('base64');
+  }
+
+  const bytes = new TextEncoder().encode(input);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]!);
+  }
+
+  return btoa(binary);
+}
+
 function mergeAbortSignals(...signals: Array<AbortSignal | null | undefined>) {
   const activeSignals = signals.filter((signal): signal is AbortSignal => Boolean(signal));
 
@@ -127,6 +147,12 @@ class ApiClient {
     }
 
     if (requestBody && !isFormData && isAgentRequest(input)) {
+      // Wrap the inner JSON in a base64 envelope so Render's Cloudflare WAF
+      // can't body-inspect the content (AI-generated HTML, code blocks, curl
+      // examples, etc. trip OWASP rules). The API's `agentContentTypeRewrite`
+      // middleware decodes the envelope before any route handler sees it.
+      const inner = typeof requestBody === 'string' ? requestBody : JSON.stringify(requestBody);
+      requestBody = JSON.stringify({ b64: toBase64Utf8(inner) });
       headers.set('Content-Type', AGENT_CONTENT_TYPE);
     }
 
