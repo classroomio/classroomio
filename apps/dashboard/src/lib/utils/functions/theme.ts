@@ -2,10 +2,10 @@ import { darken, lighten } from 'color2k';
 
 import { tc } from '$lib/utils/functions/trycatch';
 
-export function setTheme(theme: string) {
+export function setTheme(theme: string = '') {
   localStorage.setItem('theme', theme);
 
-  if (theme.includes('#')) {
+  if (theme?.includes('#')) {
     const escapedHex = theme.replace(/"/g, '\\"');
     document.body.setAttribute('data-theme', escapedHex);
 
