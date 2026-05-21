@@ -66,7 +66,9 @@ class AppInitApi extends BaseApi {
       onSuccess: (data) => {
         this.data = data;
         licenseApi.setFeatures(data.licenseFeatures);
-        setupAnalyticsBasedOnLicense();
+        setupAnalyticsBasedOnLicense(
+          data.profile?.id ? { id: data.profile.id, email: data.profile.email, name: data.profile.fullname } : undefined
+        );
         this.setupStores(params);
         this.setUserAnalytics();
         this.routeUserToNextPage(params);

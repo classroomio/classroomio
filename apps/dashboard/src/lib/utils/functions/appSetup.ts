@@ -1,31 +1,31 @@
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-import { initPosthog } from '$lib/utils/services/posthog';
+import { initPosthog, type PosthogBootstrapUser } from '$lib/utils/services/posthog';
 import { initSentry } from '$lib/utils/services/sentry';
 import { initUmami } from '$lib/utils/services/umami';
 import { licenseApi } from '$features/license/api/license.svelte';
 
 let isInitialized = false;
 
-export function setupAnalytics() {
+export function setupAnalytics(user?: PosthogBootstrapUser) {
   if (isInitialized) return;
   isInitialized = true;
 
   initSentry();
-  initPosthog();
+  initPosthog(user);
   initUmami();
 }
 
 /** Checks if this is cloud deployment and initializes analytics */
-export function setupCloudAnalytics() {
+export function setupCloudAnalytics(user?: PosthogBootstrapUser) {
   if (PUBLIC_IS_SELFHOSTED !== 'true') {
-    setupAnalytics();
+    setupAnalytics(user);
   }
 }
 
-export function setupAnalyticsBasedOnLicense() {
+export function setupAnalyticsBasedOnLicense(user?: PosthogBootstrapUser) {
   if (licenseApi.hasAccess('no-tracking')) {
     return;
   }
 
-  setupAnalytics();
+  setupAnalytics(user);
 }

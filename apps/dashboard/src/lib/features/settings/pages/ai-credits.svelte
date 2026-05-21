@@ -26,7 +26,6 @@
   onMount(() => {
     if (page.url.searchParams.get('tokens') === 'success') {
       snackbar.success('snackbar.ai_credits.purchase_success');
-      void aiCreditsApi.fetchAll();
     }
   });
 </script>

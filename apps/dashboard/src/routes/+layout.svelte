@@ -28,7 +28,10 @@
       loadingIndicator.style.display = 'none';
     }
 
-    setupCloudAnalytics();
+    const sessionUser = data?.locals?.user;
+    setupCloudAnalytics(
+      sessionUser ? { id: sessionUser.id, email: sessionUser.email, name: sessionUser.name } : undefined
+    );
 
     if (data?.locals?.user) {
       user.set({
