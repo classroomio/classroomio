@@ -3941,7 +3941,7 @@
     "error_network": "Ошибка сети. Пожалуйста, проверьте подключение и повторите попытку.",
     "context_usage_tooltip": "{used} / {max} использовано токенов",
     "context_full_title": "Контекстное окно заполнено",
-    "context_full_description": "Этот разговор достиг предела памяти. Сожмите его, чтобы продолжить общение в этом чате, или начните новый.",
+    "context_full_description": "The assistant will summarize older messages automatically so you can keep working in this chat.",
     "context_full_compact": "Компактный разговор",
     "context_full_compacting": "Уплотнение...",
     "context_full_new_chat": "Начать новый чат с кратким описанием",

@@ -3941,7 +3941,7 @@
     "error_network": "Netværksfejl. Tjek venligst din forbindelse og prøv igen.",
     "context_usage_tooltip": "{used} / {max} tokens brugt",
     "context_full_title": "Kontekstvinduet er fuldt",
-    "context_full_description": "Denne samtale har nået sin hukommelsesgrænse. Komprimer den for at fortsætte i denne chat, eller start en ny.",
+    "context_full_description": "The assistant will summarize older messages automatically so you can keep working in this chat.",
     "context_full_compact": "Kompakt samtale",
     "context_full_compacting": "Komprimerer...",
     "context_full_new_chat": "Start ny chat med resumé",

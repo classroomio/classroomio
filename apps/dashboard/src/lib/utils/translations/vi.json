@@ -3941,7 +3941,7 @@
     "error_network": "Lỗi mạng. Vui lòng kiểm tra kết nối của bạn và thử lại.",
     "context_usage_tooltip": "Đã sử dụng mã thông báo {used} / {max}",
     "context_full_title": "Cửa sổ ngữ cảnh đã đầy",
-    "context_full_description": "Cuộc trò chuyện này đã đạt đến giới hạn bộ nhớ. Hãy thu gọn nó để tiếp tục tham gia cuộc trò chuyện này hoặc bắt đầu một cuộc trò chuyện mới.",
+    "context_full_description": "The assistant will summarize older messages automatically so you can keep working in this chat.",
     "context_full_compact": "Cuộc trò chuyện nhỏ gọn",
     "context_full_compacting": "Đang nén...",
     "context_full_new_chat": "Bắt đầu cuộc trò chuyện mới với bản tóm tắt",

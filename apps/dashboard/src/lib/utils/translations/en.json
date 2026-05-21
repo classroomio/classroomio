@@ -4366,7 +4366,7 @@
     "error_network": "Network error. Please check your connection and try again.",
     "context_usage_tooltip": "{used} / {max} tokens used",
     "context_full_title": "Context window is full",
-    "context_full_description": "This conversation has reached its memory limit. Compact it to keep going in this chat, or start a new one.",
+    "context_full_description": "The assistant will summarize older messages automatically so you can keep working in this chat.",
     "context_full_compact": "Compact conversation",
     "context_full_compacting": "Compacting...",
     "context_full_new_chat": "Start new chat with summary",

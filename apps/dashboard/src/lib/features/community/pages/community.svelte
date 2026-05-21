@@ -36,6 +36,14 @@
     }
   });
 
+  let isQuestionsFetched = $state(false);
+  $effect(() => {
+    if (questions || !$currentOrg.id || isQuestionsFetched) return;
+
+    communityApi.fetchCommunityQuestions({ orgId: $currentOrg.id });
+    isQuestionsFetched = true;
+  });
+
   let isCoursesFetched = $state(false);
   $effect(() => {
     if (!$profile.id || !$currentOrg.id || isCoursesFetched) return;

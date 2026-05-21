@@ -3941,7 +3941,7 @@
     "error_network": "नेटवर्क त्रुटि। अपने कनेक्शन की जांच करें और पुन: प्रयास करें।",
     "context_usage_tooltip": "{प्रयुक्त} / {अधिकतम} टोकन का उपयोग किया गया",
     "context_full_title": "प्रसंग विंडो भरी हुई है",
-    "context_full_description": "यह बातचीत अपनी स्मृति सीमा तक पहुंच गई है. इस चैट को जारी रखने के लिए, या एक नई शुरुआत करने के लिए इसे संक्षिप्त करें।",
+    "context_full_description": "The assistant will summarize older messages automatically so you can keep working in this chat.",
     "context_full_compact": "संक्षिप्त बातचीत",
     "context_full_compacting": "संघनन...",
     "context_full_new_chat": "सारांश के साथ नई चैट प्रारंभ करें",

@@ -3941,7 +3941,7 @@
     "error_network": "Błąd sieci. Sprawdź połączenie i spróbuj ponownie.",
     "context_usage_tooltip": "Wykorzystano {used} / {max} tokenów",
     "context_full_title": "Okno kontekstowe jest pełne",
-    "context_full_description": "W tej rozmowie osiągnięto limit pamięci. Kompaktuj go, aby kontynuować udział w tym czacie, lub rozpocznij nowy.",
+    "context_full_description": "The assistant will summarize older messages automatically so you can keep working in this chat.",
     "context_full_compact": "Kompaktowa rozmowa",
     "context_full_compacting": "Zagęszczanie...",
     "context_full_new_chat": "Rozpocznij nowy czat z podsumowaniem",

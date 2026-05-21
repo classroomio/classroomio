@@ -3941,7 +3941,7 @@
     "error_network": "Error de red. Por favor verifique su conexión e inténtelo nuevamente.",
     "context_usage_tooltip": "{usados} / {max} tokens usados",
     "context_full_title": "La ventana de contexto está llena",
-    "context_full_description": "Esta conversación ha alcanzado su límite de memoria. Compactarlo para continuar en este chat o iniciar uno nuevo.",
+    "context_full_description": "The assistant will summarize older messages automatically so you can keep working in this chat.",
     "context_full_compact": "Conversación compacta",
     "context_full_compacting": "Compactando...",
     "context_full_new_chat": "Iniciar nuevo chat con resumen",

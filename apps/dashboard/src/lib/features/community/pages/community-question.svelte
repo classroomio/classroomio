@@ -31,7 +31,7 @@
     question?: CommunityQuestionSuccess['data'] | null;
   }
 
-  let { question, backHref }: Props = $props();
+  let { slug, question, backHref }: Props = $props();
 
   let commentEditor: TiptapEditor | undefined = $state();
   let isValidAnswer = false; // V2 allow admin mark an answer as accepted
@@ -52,6 +52,14 @@
       communityApi.question = question;
       currentCommunityQuestion.set({ title: question.title });
     }
+  });
+
+  let isQuestionFetched = $state(false);
+  $effect(() => {
+    if (question || !slug || isQuestionFetched) return;
+
+    communityApi.fetchCommunityQuestion({ slug });
+    isQuestionFetched = true;
   });
 
   $effect(() => {

@@ -3941,7 +3941,7 @@
     "error_network": "Erreur réseau. Veuillez vérifier votre connexion et réessayer.",
     "context_usage_tooltip": "{utilisé} / {max} jetons utilisés",
     "context_full_title": "La fenêtre contextuelle est pleine",
-    "context_full_description": "Cette conversation a atteint sa limite de mémoire. Compactez-le pour continuer dans cette discussion ou démarrez-en une nouvelle.",
+    "context_full_description": "The assistant will summarize older messages automatically so you can keep working in this chat.",
     "context_full_compact": "Conversation compacte",
     "context_full_compacting": "Compactage...",
     "context_full_new_chat": "Démarrer une nouvelle discussion avec résumé",
