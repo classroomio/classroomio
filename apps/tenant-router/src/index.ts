@@ -2,8 +2,8 @@
  * @cio/tenant-router — Cloudflare Worker that fronts every browser-facing host.
  *
  * Routes (see wrangler.toml):
- *   - *.classroomio.school/*        — free-tier tenant sites (acme.classroomio.school)
- *   - classroomio.school/*          — apex (301 → classroomio.com)
+ *   - *.myclassroomio.com/*         — free-tier tenant sites (acme.myclassroomio.com)
+ *   - myclassroomio.com/*           — apex (301 → classroomio.com)
  *   - app.classroomio.com/*         — admin dashboard
  *   - <BYOD>/*                      — customer-owned domains via Cloudflare for SaaS
  *
@@ -45,8 +45,8 @@ export default {
     const url = new URL(request.url);
     const originalHost = request.headers.get('host') ?? url.host;
 
-    // Apex on classroomio.school → permanent redirect to marketing apex.
-    if (originalHost === 'classroomio.school') {
+    // Apex on myclassroomio.com → permanent redirect to marketing apex.
+    if (originalHost === 'myclassroomio.com') {
       const target = new URL(env.APEX_REDIRECT_TARGET);
       target.pathname = url.pathname;
       target.search = url.search;

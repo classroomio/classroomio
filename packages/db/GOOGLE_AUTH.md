@@ -3,21 +3,21 @@
 This doc explains how Google sign-in works for ClassroomIO across three different host families:
 
 - `app.classroomio.com` — admin dashboard
-- `<orgSiteName>.classroomio.school` — free-tier tenant sites
+- `<orgSiteName>.myclassroomio.com` — free-tier tenant sites
 - `<customer-owned>.com` — BYOD custom domains via Cloudflare for SaaS
 
 All three need to sign users in via Google, set host-only auth cookies on the originating host, and land the user back on the page they started from.
 
 ## The problem
 
-Google OAuth requires every callback URL to be **registered ahead of time** in Google Cloud Console. Wildcards are not allowed in standard apps. We can't register `*.classroomio.school` or every BYOD customer's domain.
+Google OAuth requires every callback URL to be **registered ahead of time** in Google Cloud Console. Wildcards are not allowed in standard apps. We can't register `*.myclassroomio.com` or every BYOD customer's domain.
 
-We also can't share auth cookies across apex domains: a cookie on `api.classroomio.com` won't be sent to a request on `acme.classroomio.school`. Even setting `Domain=.classroomio.school` won't help — the OAuth callback always lands on `api.classroomio.com` per the registered URI, and that response can only set cookies for `api.classroomio.com`.
+We also can't share auth cookies across apex domains: a cookie on `api.classroomio.com` won't be sent to a request on `acme.myclassroomio.com`. Even setting `Domain=.myclassroomio.com` won't help — the OAuth callback always lands on `api.classroomio.com` per the registered URI, and that response can only set cookies for `api.classroomio.com`.
 
 ## The architecture
 
 ```
-acme.classroomio.school                         api.classroomio.com                 Google
+acme.myclassroomio.com                         api.classroomio.com                 Google
 ─────────────────────────                       ─────────────────────               ──────
 
 POST /proxy/api/auth/sign-in/social
@@ -29,7 +29,7 @@ POST /proxy/api/auth/sign-in/social
                                                        │ oAuthProxy plugin sees
                                                        │ currentURL ≠ productionURL,
                                                        │ rewrites callbackURL to
-                                                       │   acme.classroomio.school/
+                                                       │   acme.myclassroomio.com/
                                                        │     api/auth/oauth-proxy-callback
                                                        │ and forces redirect_uri to
                                                        │   api.classroomio.com/.../callback/google
@@ -76,7 +76,7 @@ POST /proxy/api/auth/sign-in/social
                                                        │   tenant host)
                                                        ▼
    ◀────────────────────────────────────── 302 to original callbackURL ──────────────────────────
-   browser lands on acme.classroomio.school/, logged in.
+   browser lands on acme.myclassroomio.com/, logged in.
 ```
 
 The same flow works for `app.classroomio.com` (the proxy-skip branch in `oAuthProxy` kicks in when `currentURL === productionURL`) and for BYOD domains (`learn.acme.com`) routed through Cloudflare for SaaS.
@@ -116,7 +116,7 @@ You only ever need **one** OAuth client and **one** registered callback URI for 
 - **Authorized JavaScript origins**: `https://api.classroomio.com`
 - **Authorized redirect URIs**: `https://api.classroomio.com/api/auth/callback/google`
 
-Do **not** add tenant subdomains, `*.classroomio.school`, or BYOD customer domains — Google rejects wildcards for standard apps and the `oAuthProxy` plugin handles the redirect to the original tenant host on its own.
+Do **not** add tenant subdomains, `*.myclassroomio.com`, or BYOD customer domains — Google rejects wildcards for standard apps and the `oAuthProxy` plugin handles the redirect to the original tenant host on its own.
 
 ### Sensitive scopes warning
 
@@ -139,7 +139,7 @@ On the **dashboard** Render service:
 | -------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `HOST_HEADER`        | `x-forwarded-host`            | SvelteKit adapter-node reads the effective host from this so `event.url.host` is the tenant/admin host the user is on.                         |
 | `PROTOCOL_HEADER`    | `x-forwarded-proto`           | Same, for protocol.                                                                                                                            |
-| `PRIVATE_APP_HOST`   | `classroomio.school`          | Used by `getSubdomain` in `layout-setup.ts` to extract the org siteName.                                                                       |
+| `PRIVATE_APP_HOST`   | `myclassroomio.com`          | Used by `getSubdomain` in `layout-setup.ts` to extract the org siteName.                                                                       |
 | `PUBLIC_SERVER_URL`  | `https://api.classroomio.com` | Used at runtime only as a fallback / for `authClient`'s SSR-time URL constructor; browser code uses `${origin}/proxy` via `getRequestBaseUrl`. |
 | `PRIVATE_SERVER_URL` | API's internal Render URL     | Server-side dashboard → API calls bypass the public edge.                                                                                      |
 

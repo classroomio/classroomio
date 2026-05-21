@@ -1,5 +1,6 @@
 import { type ApiClientConfig, ApiError, type RequestConfig } from './types';
 
+import { dev } from '$app/environment';
 import { DEFAULT_CONFIG } from './constants';
 import { delay } from './utils';
 import { hcWithType } from '@cio/api/rpc-types';
@@ -19,7 +20,7 @@ export const getRequestBaseUrl = () => {
   // Self-hosted: dashboard and API are on different subdomains of the
   // operator's apex. Browser calls go straight to PUBLIC_SERVER_URL;
   // cookies cross subdomains via AUTH_COOKIE_DOMAIN. No Worker proxy.
-  if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+  if (env.PUBLIC_IS_SELFHOSTED === 'true' || dev) {
     return env.PUBLIC_SERVER_URL ?? '';
   }
 

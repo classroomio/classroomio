@@ -3,12 +3,12 @@ main = "src/index.ts"
 compatibility_date = "2026-05-01"
 
 # Production routes — bind the Worker to every browser-facing host.
-# Tenant subdomains and the apex live on the `classroomio.school` zone.
+# Tenant subdomains and the apex live on the `myclassroomio.com` zone.
 # The admin app `app.classroomio.com` is routed through the Worker so
 # it can use same-origin `/api/*` paths with host-only auth cookies.
 routes = [
-  { pattern = "*.classroomio.school/*", zone_name = "classroomio.school" },
-  { pattern = "classroomio.school/*", zone_name = "classroomio.school" },
+  { pattern = "*.myclassroomio.com/*", zone_name = "myclassroomio.com" },
+  { pattern = "myclassroomio.com/*", zone_name = "myclassroomio.com" },
   { pattern = "app.classroomio.com/*", zone_name = "classroomio.com" }
 ]
 

@@ -3,7 +3,7 @@
  * The `apps/cio-tenant-router` Cloudflare Worker terminates traffic for this zone and forwards
  * to the dashboard service. Marketing apex (classroomio.com) is intentionally separate.
  */
-export const TENANT_ROOT_DOMAIN = 'classroomio.school';
+export const TENANT_ROOT_DOMAIN = 'myclassroomio.com';
 
 /** The marketing / admin / api zone. */
 export const BRAND_ROOT_DOMAIN = 'classroomio.com';

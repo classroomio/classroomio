@@ -1,6 +1,7 @@
 import { createAuthClient } from 'better-auth/svelte';
 import { env } from '$env/dynamic/public';
 import { ssoClient } from '@better-auth/sso/client';
+import { dev } from '$app/environment';
 
 // Browser baseURL depends on deployment shape:
 //
@@ -22,7 +23,7 @@ function resolveBaseURL() {
   if (typeof window === 'undefined') {
     return env.PUBLIC_SERVER_URL || 'http://localhost:3002';
   }
-  if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+  if (env.PUBLIC_IS_SELFHOSTED === 'true' || dev) {
     return env.PUBLIC_SERVER_URL || `${window.location.origin}/api/auth`;
   }
   return `${window.location.origin}/proxy/api/auth`;

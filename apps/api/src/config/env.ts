@@ -8,9 +8,8 @@ const envSchema = z.object({
   CLOUDFLARE_RENDERING_API_KEY: z.string().optional(),
   CLOUDFLARE_SECRET_ACCESS_KEY: z.string().optional(),
   CLOUDFLARE_IMAGE_BUCKET_DOMAIN: z.string().optional(),
-  CLOUDFLARE_CUSTOM_HOSTNAMES_API_TOKEN: z.string().optional(),
-  CLOUDFLARE_CUSTOM_HOSTNAMES_ZONE_ID: z.string().optional(),
-  CLOUDFLARE_CUSTOM_HOSTNAME_CNAME_TARGET: z.string().optional(),
+  APPROXIMATED_API_KEY: z.string().optional(),
+  APPROXIMATED_TARGET_ADDRESS: z.string().optional(),
   // S3-compatible storage (MinIO, AWS S3, or other S3-compatible backends)
   OBJECT_STORAGE_ENDPOINT: z.string().optional(),
   OBJECT_STORAGE_REGION: z.string().optional(),

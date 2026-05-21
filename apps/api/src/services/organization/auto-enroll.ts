@@ -21,7 +21,7 @@ export interface AutoEnrollResult {
 /**
  * Auto-enroll the authenticated user as a STUDENT in the given org. Used by
  * the dashboard when a newly-signed-in user lands on a tenant site they
- * aren't yet a member of (free-tier `<org>.classroomio.school` or a verified
+ * aren't yet a member of (free-tier `<org>.myclassroomio.com` or a verified
  * BYOD domain).
  *
  * Idempotent: existing members get an `alreadyMember: true` no-op so invited
