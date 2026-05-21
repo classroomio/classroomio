@@ -82,9 +82,9 @@ export default {
       redirect: 'manual'
     });
 
-    if (isProxiedApiCall) {
+    if (isProxiedApiCall && upstreamResponse.status >= 400) {
       console.log(
-        `[proxy] ${request.method} ${url.pathname} → ${upstreamHost}${upstreamPath} status=${upstreamResponse.status} ct=${request.headers.get('content-type') ?? ''}`
+        `[proxy] ${request.method} ${url.pathname} → ${upstreamHost}${upstreamPath} status=${upstreamResponse.status} ct=${request.headers.get('content-type') ?? ''} upstream-cf-ray=${upstreamResponse.headers.get('cf-ray') ?? 'none'} upstream-server=${upstreamResponse.headers.get('server') ?? 'none'}`
       );
     }
 
