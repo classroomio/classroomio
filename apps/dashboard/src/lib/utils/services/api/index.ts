@@ -28,7 +28,7 @@ export const getRequestBaseUrl = () => {
   // Cloud (multi-tenant): same-origin via the Cloudflare Worker `/proxy`
   // prefix so auth cookies stay host-only on whichever tenant or BYOD
   // domain the user is currently visiting. The Worker strips `/proxy`
-  // before forwarding to the API.
+  // before forwarding to the API
   return `${window.location.origin}/proxy`;
 };
 
