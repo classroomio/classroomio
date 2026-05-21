@@ -2,8 +2,7 @@ import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
 
-const isEnabled = () =>
-  Boolean(env.PUBLIC_SENTRY_DSN?.trim()) && !dev && env.PUBLIC_IS_SELFHOSTED !== 'true';
+const isEnabled = () => Boolean(env.PUBLIC_SENTRY_DSN?.trim()) && !dev && env.PUBLIC_IS_SELFHOSTED !== 'true';
 
 export type SentryUser = {
   id: string;

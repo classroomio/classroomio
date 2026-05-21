@@ -48,6 +48,9 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
+      - name: Build @cio/embeds workspace dependencies
+        run: pnpm turbo run build --filter=@cio/embeds^...
+
       - name: Build and upload embeds to R2
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: pnpm --filter @cio/embeds run embeds:publish

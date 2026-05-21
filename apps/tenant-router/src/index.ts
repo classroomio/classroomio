@@ -75,11 +75,19 @@ export default {
       upstreamHeaders.set('x-forwarded-for', clientIp);
     }
 
-    return fetch(upstreamUrl.toString(), {
+    const upstreamResponse = await fetch(upstreamUrl.toString(), {
       method: request.method,
       headers: upstreamHeaders,
       body: request.body,
       redirect: 'manual'
     });
+
+    if (isProxiedApiCall) {
+      console.log(
+        `[proxy] ${request.method} ${url.pathname} → ${upstreamHost}${upstreamPath} status=${upstreamResponse.status} ct=${request.headers.get('content-type') ?? ''}`
+      );
+    }
+
+    return upstreamResponse;
   }
 } satisfies ExportedHandler<Env>;

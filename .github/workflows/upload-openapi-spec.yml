@@ -48,6 +48,9 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
+      - name: Build @cio/api workspace dependencies
+        run: pnpm turbo run build --filter=@cio/api^...
+
       - name: Upload to Cloudflare R2
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: |
