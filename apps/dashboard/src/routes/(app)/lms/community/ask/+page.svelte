@@ -13,7 +13,7 @@
   <title>Ask the Community - ClassroomIO</title>
 </svelte:head>
 
-<Page.Root class="w-full">
+<Page.Root class="mx-auto w-[90%]!">
   <Page.Header>
     <Page.HeaderContent>
       <BackButton href={resolve(communityPath, {})} label={$t('community.ask.go_back')} />
