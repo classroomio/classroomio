@@ -581,12 +581,22 @@
           </Table.Body>
         </Table.Root>
       {:else}
-        <Empty title={$t('course.navItem.compliance.empty_overview')} icon={ShieldCheckIcon} variant="page" />
+        <Empty
+          title={$t('course.navItem.compliance.empty_overview')}
+          description={$t('course.navItem.compliance.empty_overview_description')}
+          icon={ShieldCheckIcon}
+          variant="page"
+        />
       {/if}
     </Tabs.Content>
   </Tabs.Root>
 {:else}
-  <Empty title={$t('course.navItem.compliance.empty_overview')} icon={ShieldCheckIcon} variant="page" />
+  <Empty
+    title={$t('course.navItem.compliance.empty_overview')}
+    description={$t('course.navItem.compliance.empty_overview_description')}
+    icon={ShieldCheckIcon}
+    variant="page"
+  />
 {/if}
 
 <Dialog.Root bind:open={isBulkActionModalOpen} onOpenChange={handleBulkActionModalChange}>

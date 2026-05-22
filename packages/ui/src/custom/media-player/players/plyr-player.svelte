@@ -153,17 +153,26 @@
   });
 </script>
 
-<div class="ui:relative" style="max-height: {maxHeight}; min-height: {options.minHeight}; height: {options.height};">
+<div
+  class="ui:relative ui:aspect-video ui:w-full ui:overflow-hidden ui:bg-muted"
+  style="max-height: {maxHeight}; min-height: {options.minHeight}; height: {options.height};"
+>
   {#if isYouTube && youtubeVideoId}
     <div
       bind:this={containerElement}
-      class="plyr__video-embed"
+      class="plyr__video-embed ui:absolute ui:inset-0 ui:h-full ui:w-full"
       data-plyr-provider="youtube"
       data-plyr-embed-id={youtubeVideoId}
     ></div>
   {:else}
     <!-- svelte-ignore a11y_media_has_caption -->
-    <video bind:this={videoElement} {src} {poster} {playsinline} class="plyr-player">
+    <video
+      bind:this={videoElement}
+      {src}
+      {poster}
+      {playsinline}
+      class="plyr-player ui:absolute ui:inset-0 ui:h-full ui:w-full ui:object-contain"
+    >
       {#each tracks as track (track.src + track.srclang)}
         <track
           kind={track.kind ?? 'captions'}

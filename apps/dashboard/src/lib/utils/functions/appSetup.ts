@@ -1,6 +1,7 @@
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { initPosthog, type PosthogBootstrapUser } from '$lib/utils/services/posthog';
 import { initUmami } from '$lib/utils/services/umami';
+import { initUserJot } from '$lib/utils/services/userjot';
 import { licenseApi } from '$features/license/api/license.svelte';
 
 let isInitialized = false;
@@ -11,6 +12,7 @@ export function setupAnalytics(user?: PosthogBootstrapUser) {
 
   initPosthog(user);
   initUmami();
+  initUserJot();
 }
 
 /** Checks if this is cloud deployment and initializes analytics */

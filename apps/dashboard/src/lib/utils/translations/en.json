@@ -1035,7 +1035,8 @@
     "actions": {
       "edit": "Edit",
       "where_used": "Where used",
-      "download": "Download"
+      "download": "Download",
+      "manage_thumbnails": "Manage thumbnails"
     },
     "pagination": {
       "previous": "Previous",
@@ -1060,6 +1061,21 @@
       "thumbnail_preview": "Thumbnail Preview",
       "thumbnail_alt": "Asset thumbnail",
       "status": "Status"
+    },
+    "thumbnails": {
+      "manage_title": "Manage thumbnails",
+      "manage_description": "Preview the video, pick one of the auto-generated frames, or upload your own.",
+      "preview_unavailable": "Preview unavailable",
+      "generated": "Generated thumbnails",
+      "slot_start": "Start",
+      "slot_middle": "Middle",
+      "slot_end": "End",
+      "none_generated_warning": "No thumbnails generated yet. Try regenerating or upload a custom image.",
+      "upload_custom": "Upload custom thumbnail",
+      "custom_selected_hint": "Custom upload will be saved when you save your selection.",
+      "custom_preview_alt": "Custom thumbnail preview",
+      "regenerate": "Regenerate",
+      "save_selection": "Save thumbnail"
     },
     "usage": {
       "title": "Where Used",
@@ -1597,6 +1613,7 @@
     "create_course": "Create Course",
     "view_site": "View Site",
     "visit_site": "Visit Website",
+    "open_academy": "Open Academy",
     "current_lesson": "Currently Learning",
     "currently_learning": "Currently Learning",
     "learner": "Learner",
@@ -2957,6 +2974,7 @@
         "no_active_cycle": "No active compliance cycle",
         "empty_history": "No compliance history has been recorded yet.",
         "empty_overview": "No learner compliance records are available yet.",
+        "empty_overview_description": "Keep your employees compliant and track who is behind.",
         "not_available": "Not available",
         "tabs": {
           "overview": "Overview",
@@ -3868,6 +3886,10 @@
       "thumbnail_upload_failed": "Failed to upload thumbnail",
       "thumbnail_too_large": "Thumbnail image is too large",
       "thumbnail_invalid": "Invalid thumbnail file",
+      "thumbnail_updated": "Thumbnail updated",
+      "thumbnail_update_failed": "Failed to update thumbnail",
+      "thumbnail_regen_started": "Regenerating thumbnails…",
+      "thumbnail_regen_failed": "Failed to regenerate thumbnails",
       "transcription_started": "Transcription started",
       "transcription_start_failed": "Could not start transcription",
       "transcription_completed": "Transcription finished",
