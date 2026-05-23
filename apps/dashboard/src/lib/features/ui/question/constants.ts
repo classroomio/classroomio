@@ -1,13 +1,6 @@
 import { QUESTION_TYPE_KEY, QUESTION_TYPE_REGISTRY, type QuestionTypeKey } from '@cio/question-types';
 
-/** Question types that require a paid plan. On free plan, these show a premium icon and open upgrade modal on click. */
-export const PREMIUM_QUESTION_TYPE_KEYS = new Set<QuestionTypeKey>([
-  QUESTION_TYPE_KEY.FILE_UPLOAD,
-  QUESTION_TYPE_KEY.ORDERING,
-  QUESTION_TYPE_KEY.LINK,
-  QUESTION_TYPE_KEY.STAR,
-  QUESTION_TYPE_KEY.VIDEO_RECORDING
-]);
+export { PREMIUM_QUESTION_TYPE_KEYS } from '@cio/question-types';
 
 const QUESTION_TYPE_LABEL_KEYS: Partial<Record<QuestionTypeKey, string>> = {
   [QUESTION_TYPE_KEY.RADIO]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.single',

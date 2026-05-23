@@ -719,6 +719,31 @@ export class LessonApi extends BaseApiWithErrors {
   }
 
   /**
+   * Updates the thumbnail URL on a lesson video's metadata so the card preview
+   * reflects the asset's new thumbnail without waiting for a reload.
+   */
+  updateLessonVideoThumbnail(videoIndex: number, thumbnailUrl: string) {
+    if (!this.lesson) return;
+
+    const videos = Array.isArray(this.lesson.videos) ? [...this.lesson.videos] : [];
+    const target = videos[videoIndex];
+    if (!target) return;
+
+    const metadata =
+      target.metadata && typeof target.metadata === 'object' && !Array.isArray(target.metadata)
+        ? (target.metadata as Record<string, unknown>)
+        : {};
+
+    videos[videoIndex] = {
+      ...target,
+      metadata: { ...metadata, thumbnailUrl }
+    };
+
+    this.lesson = { ...this.lesson, videos };
+    this.isDirty = true;
+  }
+
+  /**
    * Deletes a document from lesson materials
    */
   async deleteLessonDocument(documentIndex: number) {

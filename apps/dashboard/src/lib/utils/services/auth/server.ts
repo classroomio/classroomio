@@ -9,4 +9,3 @@ export const authServerClient = createAuthClient({
   }
 });
 console.log('baseURL', baseURL);
-console.log('authServerClient', authServerClient);

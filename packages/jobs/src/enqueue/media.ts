@@ -119,6 +119,40 @@ export async function enqueueLessonVideoPipeline(
 }
 
 /**
+ * Enqueue only generate-thumbnail (new `media_job` row required). Used by the
+ * "regenerate thumbnails" action from the media manager. Skips probe — the
+ * asset already has a duration from the original pipeline.
+ */
+export async function enqueueGenerateThumbnailOnly(input: {
+  mediaJobId: string;
+  assetId: string;
+  storageKey: string;
+  actorContext: TActorContext;
+}): Promise<EnqueueLessonVideoPipelineResult> {
+  const { mediaJobId, assetId, storageKey, actorContext } = input;
+  const sharedData = {
+    mediaJobId,
+    assetId,
+    storageKey,
+    actorContext,
+    markJobCompleteOnSuccess: true
+  };
+
+  const job = await getQueue(QUEUE_NAMES.media).add(
+    JOB_NAMES.media.generateThumbnail,
+    sharedData,
+    QUEUE_DEFAULTS[QUEUE_NAMES.media]
+  );
+
+  return {
+    rootJobId: job.id ?? '',
+    jobIds: {
+      [JOB_NAMES.media.generateThumbnail]: job.id ?? ''
+    }
+  };
+}
+
+/**
  * Enqueue only extract-audio → transcribe-audio (new `media_job` row required).
  * Used for manual “generate transcript” when the initial pipeline had no OpenAI key.
  */

@@ -346,7 +346,11 @@
       "transcription_started": "प्रतिलेखन प्रारंभ हुआ",
       "transcription_start_failed": "प्रतिलेखन प्रारंभ नहीं किया जा सका",
       "transcription_completed": "प्रतिलेखन समाप्त हुआ",
-      "transcript_fetch_failed": "प्रतिलेख लोड नहीं किया जा सका"
+      "transcript_fetch_failed": "प्रतिलेख लोड नहीं किया जा सका",
+      "thumbnail_updated": "थंबनेल अपडेट किया गया",
+      "thumbnail_update_failed": "थंबनेल अपडेट करने में विफल",
+      "thumbnail_regen_started": "थंबनेल पुनर्जीवित हो रहे हैं…",
+      "thumbnail_regen_failed": "थंबनेल पुन: उत्पन्न करने में विफल"
     },
     "tags": {
       "group_created": "टैग समूह बनाया गया",
@@ -2059,7 +2063,8 @@
         "overview_metrics": {
           "heading": "कोर्स स्नैपशॉट",
           "description": "इस पाठ्यक्रम के लिए शिक्षार्थी की गणना उसकी स्थिति के आधार पर की जाती है।"
-        }
+        },
+        "empty_overview_description": "अपने कर्मचारियों को आज्ञाकारी रखें और ट्रैक करें कि पीछे कौन है।"
       }
     },
     "search": {
@@ -2164,9 +2169,7 @@
           "depth": "पाठ्यक्रम कितना गहरा होना चाहिए?",
           "topic": "विषय या आला",
           "expertise_level": "लक्ष्य विशेषज्ञता स्तर",
-          "documentation_url": {
-            "hint": "हम आपके वास्तविक उत्पाद में पाठ्यक्रम को आधार बनाने के लिए इस साइट को पढ़ेंगे।"
-          }
+          "documentation_url": "दस्तावेज़ीकरण URL (वैकल्पिक)"
         },
         "expert_on_x": {
           "title": "एक्स पर विशेषज्ञ बनें",
@@ -2340,7 +2343,8 @@
     "login_activity_title": "छात्र लॉगिन गतिविधि",
     "login_activity_description": "सप्ताह के सर्वाधिक सक्रिय दिन (पिछले 90 दिन)",
     "login_activity_no_data": "अभी तक कोई लॉगिन गतिविधि नहीं",
-    "login_activity_logins": "लॉगिन"
+    "login_activity_logins": "लॉगिन",
+    "open_academy": "अकादमी खोलें"
   },
   "schedule": {
     "title": "आपका शेड्यूल",
@@ -2621,7 +2625,8 @@
     "actions": {
       "edit": "संपादित करें",
       "where_used": "कहां उपयोग किया जाता है",
-      "download": "डाउनलोड करें"
+      "download": "डाउनलोड करें",
+      "manage_thumbnails": "थंबनेल प्रबंधित करें"
     },
     "table": {
       "title": "शीर्षक",
@@ -2678,7 +2683,22 @@
       "not_available": "एन/ए"
     },
     "empty_description": "संपत्ति इस संगठन में मौजूद नहीं है या उपलब्ध नहीं है.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library."
+    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "thumbnails": {
+      "manage_title": "थंबनेल प्रबंधित करें",
+      "manage_description": "वीडियो का पूर्वावलोकन करें, स्वतः-निर्मित फ़्रेमों में से एक चुनें, या अपना स्वयं का अपलोड करें।",
+      "preview_unavailable": "पूर्वावलोकन अनुपलब्ध",
+      "generated": "जेनरेट किए गए थंबनेल",
+      "slot_start": "प्रारंभ करें",
+      "slot_middle": "मध्य",
+      "slot_end": "ख़त्म",
+      "none_generated_warning": "अभी तक कोई थंबनेल उत्पन्न नहीं हुआ. एक कस्टम छवि पुनः बनाने या अपलोड करने का प्रयास करें।",
+      "upload_custom": "कस्टम थंबनेल अपलोड करें",
+      "custom_selected_hint": "जब आप अपना चयन सहेजेंगे तो कस्टम अपलोड सहेजा जाएगा।",
+      "custom_preview_alt": "कस्टम थंबनेल पूर्वावलोकन",
+      "regenerate": "पुनर्जीवित करें",
+      "save_selection": "थंबनेल सहेजें"
+    }
   },
   "settings": {
     "heading": "सेटिंग्स",
@@ -3003,6 +3023,14 @@
           "saas": {
             "title": "सास",
             "description": "बिंदीदार रेखा फ्रेम, नरम लहजे, आधुनिक उत्पाद अनुभव"
+          },
+          "vibrant": {
+            "title": "जीवंत",
+            "description": "बोल्ड प्राइमरी पैनल, सनसेट ग्रेडिएंट हीरो, ऊर्जावान पोस्टर लुक"
+          },
+          "editorial": {
+            "title": "सम्पादकीय",
+            "description": "गर्म क्रीम पैलेट, चित्रकारी नायक, परिष्कृत पत्रिका अनुभव"
           }
         }
       },
@@ -3011,7 +3039,10 @@
         "description": "मुख्य विशेषताओं के साथ बनाया गया जिसे आप आसानी से अनुकूलित कर सकते हैं - किसी कोडिंग की आवश्यकता नहीं है।",
         "by_classroomio": "क्लासरूमआईओ द्वारा",
         "add": "जोड़ें",
-        "upgrade": "अपग्रेड करें"
+        "upgrade": "अपग्रेड करें",
+        "apply_theme": "थीम लागू करें",
+        "preview": "पूर्वावलोकन",
+        "card_menu_label": "थीम विकल्प"
       },
       "current": {
         "title": "वर्तमान विषय",
@@ -3952,6 +3983,54 @@
       "quiz_me": "इस पर मुझसे प्रश्नोत्तरी करें",
       "summarize_section": "इस अनुभाग को सारांशित करें",
       "what_to_review": "मुझे आगे क्या समीक्षा करनी चाहिए?"
+    },
+    "run_running": "जनरेटिंग कोर्स",
+    "run_completed": "पाठ्यक्रम निर्माण पूर्ण",
+    "run_failed": "पाठ्यक्रम निर्माण विफल रहा",
+    "run_canceled": "पाठ्यक्रम निर्माण रद्द कर दिया गया",
+    "run_waiting_for_worker": "पृष्ठभूमि कार्यकर्ता की प्रतीक्षा की जा रही है",
+    "run_checkpoint": "प्रगति चेकप्वाइंट सहेजा जा रहा है",
+    "retry": "पुनः प्रयास करें",
+    "run_monitor_aria": "पाठ्यक्रम सृजन प्रगति पर है",
+    "run_summary": {
+      "completed": "रन पूरा हुआ.",
+      "completed_with_counts": "रन पूरा हुआ - {गिनती} बनाई गई।",
+      "failed": "रन विफल.",
+      "failed_with_reason": "रन विफल - {कारण}।",
+      "canceled": "चलाना रद्द कर दिया गया.",
+      "canceled_with_counts": "दौड़ रद्द कर दी गई - रुकने से पहले {गिनती} बनाई गई।",
+      "paused": "रन रुका हुआ. जारी रखने के लिए फिर से शुरू करें.",
+      "paused_with_counts": "रन रोका गया - अब तक {गिनती} बनाई गई। जारी रखने के लिए फिर से शुरू करें."
+    },
+    "changes_card": {
+      "summary_count": "{गिनती} आइटम बदल गए",
+      "expand": "परिवर्तनों का विस्तार करें",
+      "collapse": "परिवर्तन संक्षिप्त करें",
+      "action": {
+        "created": "बनाया गया",
+        "metadata_updated": "मेटाडेटा अपडेट किया गया",
+        "content_written": "सामग्री लिखी गई",
+        "questions_added": "+{गिनती} प्रश्न",
+        "questions_updated": "{गिनती} प्रश्न संपादित",
+        "section_added": "ब्लॉक जोड़ा गया",
+        "section_edited": "ब्लॉक संपादित"
+      },
+      "status": {
+        "completed": "पूरा हुआ",
+        "failed": "असफल",
+        "canceled": "रद्द कर दिया गया",
+        "paused": "रुका हुआ"
+      }
+    },
+    "plan_view": {
+      "expand": "योजना का विस्तार करें",
+      "collapse": "संक्षिप्त योजना"
+    },
+    "run_monitor": {
+      "cancel": "चलाएँ रद्द करें",
+      "dismiss": "ख़ारिज करें",
+      "now_doing": "अभी",
+      "input_disabled_hint": "जब एजेंट पाठ्यक्रम का निर्माण पूरा कर लेता है तो चैट रोक दी जाती है। रद्द करें या इसके पूरा होने तक प्रतीक्षा करें।"
     }
   },
   "widgets": {

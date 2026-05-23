@@ -6,12 +6,9 @@
   import OrgLandingPageFooter from './landing-page-footer.svelte';
   import MinimalNav from './minimal/nav.svelte';
   import MinimalHero from './minimal/hero.svelte';
+  import MinimalCourseCard from './minimal/course-card.svelte';
   import { Button } from '../../base/button';
-  import { BlurFade } from '../animation/blurfade';
-  import * as Card from '../../base/card';
-  import ClockIcon from '@lucide/svelte/icons/clock';
-  import TagIcon from '@lucide/svelte/icons/tag';
-  import { getCourseTypeLandingMeta, getPrimaryCourseTag } from './landing-page-utils';
+  import { themeStyle } from './theme-style';
 
   let {
     orgName,
@@ -25,16 +22,15 @@
     embed,
     callout,
     links,
-    footer
+    footer,
+    labels
   }: OrgLandingPageProps = $props();
-
-  function formatCurrency(cost?: number, currency = 'USD') {
-    if (!cost) return 'Free';
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(cost);
-  }
 </script>
 
-<div class="ui:min-h-screen ui:bg-background ui:text-foreground ui:font-sans">
+<div
+  class="ui:min-h-screen ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:font-sans"
+  style={themeStyle('minimal')}
+>
   <main>
     <MinimalHero {hero}>
       {#snippet navigation()}
@@ -44,68 +40,10 @@
 
     <section class="ui:py-20 ui:px-4">
       <div class="ui:max-w-[1200px] ui:mx-auto">
-        <h2 class="ui:text-2xl ui:font-semibold ui:mb-8">Our Courses</h2>
+        <h2 class="ui:text-2xl ui:font-semibold ui:mb-8">{labels?.catalogHeading ?? 'Our Courses'}</h2>
         <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:gap-6">
           {#each courses as course, index (course.id)}
-            {@const courseTypeMeta = getCourseTypeLandingMeta(course)}
-            {@const primaryTag = getPrimaryCourseTag(course)}
-            <BlurFade delay={0.1 * index} once={true}>
-              <a
-                href={disableCourseLinks
-                  ? undefined
-                  : course.link || (course.slug ? `/course/${course.slug}` : undefined)}
-                class="ui:block ui:h-full ui:no-underline {disableCourseLinks
-                  ? 'ui:cursor-default'
-                  : 'ui:transition-colors'}"
-                aria-disabled={disableCourseLinks}
-                tabindex={disableCourseLinks ? -1 : undefined}
-              >
-                <Card.Root
-                  class="ui:rounded-none ui:border-border/60 ui:shadow-none ui:h-full ui:p-0 ui:gap-0 {disableCourseLinks
-                    ? ''
-                    : 'ui:hover:border-border ui:transition-colors'}"
-                >
-                  <Card.Content class="ui:p-8 ui:flex ui:flex-col ui:flex-1">
-                    <Card.Title class="ui:text-xl ui:font-normal ui:mb-4">{course.title}</Card.Title>
-                    <Card.Description class="ui:mb-8 ui:line-clamp-3 ui:text-base ui:leading-relaxed">
-                      {course.description}
-                    </Card.Description>
-
-                    <div class="ui:flex ui:items-center ui:gap-6 ui:text-sm ui:mt-auto">
-                      {#if course.duration}
-                        <div class="ui:flex ui:items-center ui:gap-1.5 ui:text-muted-foreground">
-                          <ClockIcon class="ui:size-4" />
-                          <span>{course.duration}</span>
-                        </div>
-                      {/if}
-                      {#if courseTypeMeta}
-                        {@const TypeIcon = courseTypeMeta.icon}
-                        <div class="ui:flex ui:items-center ui:gap-1.5 ui:text-muted-foreground">
-                          <TypeIcon class={courseTypeMeta.iconClass} />
-                          <span>{courseTypeMeta.label}</span>
-                        </div>
-                      {/if}
-                      {#if primaryTag}
-                        <div class="ui:flex ui:items-center ui:gap-1.5 ui:text-muted-foreground">
-                          <TagIcon class="ui:size-4" />
-                          {#if primaryTag.color}
-                            <span
-                              class="ui:inline-block ui:h-2 ui:w-2 ui:rounded-full"
-                              style={`background-color: ${primaryTag.color}`}
-                              aria-hidden="true"
-                            ></span>
-                          {/if}
-                          <span>{primaryTag.name}</span>
-                        </div>
-                      {/if}
-                      <div class="ui:ml-auto ui:font-semibold">
-                        {course.price || formatCurrency(course.cost, course.currency)}
-                      </div>
-                    </div>
-                  </Card.Content>
-                </Card.Root>
-              </a>
-            </BlurFade>
+            <MinimalCourseCard {course} {disableCourseLinks} {labels} />
           {/each}
         </div>
 
@@ -117,7 +55,7 @@
               size="lg"
               disabled={disableCourseLinks}
             >
-              View more courses
+              {labels?.browseCoursesLabel ?? 'View more courses'}
             </Button>
           </div>
         {/if}
@@ -125,11 +63,11 @@
     </section>
   </main>
 
-  <OrgLandingPageLinks {links} variant="minimal" />
+  <OrgLandingPageLinks {links} {labels} variant="minimal" />
 
-  <OrgLandingPageEmbed {embed} variant="minimal" />
+  <OrgLandingPageEmbed {embed} {labels} variant="minimal" />
 
-  <OrgLandingPageCallout {callout} variant="minimal" />
+  <OrgLandingPageCallout {callout} {labels} variant="minimal" />
 
   <OrgLandingPageFooter {orgName} {logoUrl} {footer} variant="minimal" />
 </div>

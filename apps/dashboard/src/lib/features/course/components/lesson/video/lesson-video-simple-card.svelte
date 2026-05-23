@@ -3,7 +3,7 @@
   import { Image } from '$features/ui';
   import VideoIcon from '@lucide/svelte/icons/video';
   import { ExternalLinkIcon, HoverableItem } from '@cio/ui/custom/moving-icons';
-  import { courseApi } from '$features/course/api';
+  import { courseApi, lessonApi } from '$features/course/api';
   import VideoCardDropdown from './video-card-dropdown.svelte';
   import {
     getVideoThumbnailUrl,
@@ -138,7 +138,12 @@
           {/if}
         </div>
         {#if isEditMode}
-          <VideoCardDropdown {video} {onRemove} menuPlacement="inline" />
+          <VideoCardDropdown
+            {video}
+            {onRemove}
+            onThumbnailSaved={(url) => lessonApi.updateLessonVideoThumbnail(index, url)}
+            menuPlacement="inline"
+          />
         {/if}
       </div>
       <p class="ui:text-muted-foreground mt-0.5 line-clamp-1 text-sm leading-snug">

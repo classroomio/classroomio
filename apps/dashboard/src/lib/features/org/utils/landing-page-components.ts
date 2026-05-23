@@ -8,6 +8,9 @@ import {
   CorporateLandingHero,
   CorporateLandingNav,
   CorporateLandingPage,
+  EditorialLandingHero,
+  EditorialLandingNav,
+  EditorialLandingPage,
   MinimalLandingHero,
   MinimalLandingNav,
   MinimalLandingPage,
@@ -22,7 +25,10 @@ import {
   TechLandingPage,
   TerminalLandingHero,
   TerminalLandingNav,
-  TerminalLandingPage
+  TerminalLandingPage,
+  VibrantLandingHero,
+  VibrantLandingNav,
+  VibrantLandingPage
 } from '@cio/ui/custom/org-landing-page';
 
 export const landingPageThemeComponents = {
@@ -33,7 +39,9 @@ export const landingPageThemeComponents = {
   tech: TechLandingPage,
   studio: StudioLandingPage,
   corporate: CorporateLandingPage,
-  terminal: TerminalLandingPage
+  terminal: TerminalLandingPage,
+  editorial: EditorialLandingPage,
+  vibrant: VibrantLandingPage
 } as const;
 
 export const landingPageNavComponents = {
@@ -44,7 +52,9 @@ export const landingPageNavComponents = {
   tech: TechLandingNav,
   studio: StudioLandingNav,
   corporate: CorporateLandingNav,
-  terminal: TerminalLandingNav
+  terminal: TerminalLandingNav,
+  editorial: EditorialLandingNav,
+  vibrant: VibrantLandingNav
 } as const;
 
 export const landingPageHeroComponents = {
@@ -55,5 +65,7 @@ export const landingPageHeroComponents = {
   tech: TechLandingHero,
   studio: StudioLandingHero,
   corporate: CorporateLandingHero,
-  terminal: TerminalLandingHero
+  terminal: TerminalLandingHero,
+  editorial: EditorialLandingHero,
+  vibrant: VibrantLandingHero
 } as const;

@@ -19,6 +19,42 @@ export function formatBytes(bytes: number | null | undefined): string {
   return `${size.toFixed(size >= 100 || exponent === 0 ? 0 : 2)} ${units[exponent]}`;
 }
 
+/**
+ * For values that already render in GB or TB, return the equivalent in the
+ * next-smaller unit so users keep a feel for the scale (e.g. `1.50 GB` →
+ * `≈ 1,536 MB`). Returns `null` for sub-GB sizes where no extra context is
+ * helpful.
+ */
+export function formatBytesSecondary(bytes: number | null | undefined): string | null {
+  if (bytes == null || Number.isNaN(bytes) || bytes <= 0) {
+    return null;
+  }
+
+  const KB = 1024;
+  const MB = KB * 1024;
+  const GB = MB * 1024;
+  const TB = GB * 1024;
+
+  if (bytes >= TB) {
+    const inGb = bytes / GB;
+    return `≈ ${formatNumber(inGb, inGb >= 100 ? 0 : 2)} GB`;
+  }
+
+  if (bytes >= GB) {
+    const inMb = bytes / MB;
+    return `≈ ${formatNumber(inMb, inMb >= 100 ? 0 : 2)} MB`;
+  }
+
+  return null;
+}
+
+function formatNumber(value: number, fractionDigits: number): string {
+  return value.toLocaleString(undefined, {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits
+  });
+}
+
 export function mapAssetProviderToLessonVideoType(provider: string): LessonVideoType {
   if (provider === 'youtube') return 'youtube';
   if (provider === 'google_drive') return 'google_drive';

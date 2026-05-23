@@ -26,6 +26,7 @@ import {
 import { getMediaTranscriptByAsset } from '@cio/db/queries';
 
 import { generateTranscriptVttPresignedUrl, TRANSCRIPT_VTT_PRESIGN_SECONDS } from '@api/utils/s3';
+import { getStorageConfig } from '@api/config/storage';
 
 const YOUTUBE_VIDEO_ID_REGEX = /^[a-zA-Z0-9_-]{11}$/;
 
@@ -304,6 +305,45 @@ export async function updateAssetService(orgId: string, assetId: string, data: T
 
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to update asset',
+      ErrorCodes.ASSET_UPDATE_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Set the chosen thumbnail URL for an asset. Accepts URLs that are either
+ * (a) one of the asset's auto-generated candidates, or (b) a freshly uploaded
+ * URL on the org's media bucket. Anything else is rejected so callers can't
+ * point the asset at an arbitrary remote image.
+ */
+export async function selectAssetThumbnailService(orgId: string, assetId: string, thumbnailUrl: string) {
+  try {
+    const asset = await getAssetById(assetId, orgId);
+    assertAssetExists(asset);
+
+    const candidates = (asset?.thumbnailCandidates ?? []) as string[];
+    const mediaBase = getStorageConfig().mediaPublicBaseUrl?.replace(/\/$/, '') ?? null;
+    const isCandidate = candidates.includes(thumbnailUrl);
+    const isOnMediaBucket = Boolean(mediaBase && thumbnailUrl.startsWith(`${mediaBase}/`));
+
+    if (!isCandidate && !isOnMediaBucket) {
+      throw new AppError(
+        'Thumbnail URL must be a generated candidate or a media-bucket upload',
+        ErrorCodes.VALIDATION_ERROR,
+        400
+      );
+    }
+
+    const updated = await updateAsset(assetId, orgId, { thumbnailUrl });
+    return assertAssetExists(updated);
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to update asset thumbnail',
       ErrorCodes.ASSET_UPDATE_FAILED,
       500
     );

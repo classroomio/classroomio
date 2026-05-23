@@ -8,7 +8,13 @@
   import { user } from '$lib/utils/store/user';
   import { CourseLandingPage } from '$features/ui';
   import { PoweredBy } from '$features/ui';
-  import { normalizeLandingPageSettings } from '$features/org/utils/landing-page';
+  import {
+    importThemeNavHero,
+    normalizeLandingPageSettings,
+    themeHeaderShellClass,
+    themeStyle,
+    themeRendersNavInsideHero
+  } from '$features/org/utils/landing-page';
 
   import { OrgLandingPageFooter } from '@cio/ui/custom/org-landing-page';
   import type { Component } from 'svelte';
@@ -29,11 +35,9 @@
         }
   );
 
-  const shellClass = $derived(
-    landingSettings.theme === 'classic'
-      ? 'ui:min-h-screen ui:bg-muted/10 ui:text-foreground ui:font-sans'
-      : 'ui:min-h-screen ui:bg-background ui:text-foreground ui:font-sans'
-  );
+  const shellClass = $derived(`ui:min-h-screen ${themeHeaderShellClass(landingSettings.theme)}`);
+  const shellStyle = $derived(themeStyle(landingSettings.theme));
+  const navInsideHero = $derived(themeRendersNavInsideHero(landingSettings.theme));
 
   const courseHero = $derived.by(() => {
     if (!data.course) {
@@ -83,23 +87,9 @@
   let HeroComponent = $state<Component<any> | null>(null);
 
   onMount(async () => {
-    const theme = landingSettings.theme;
-
-    const [navMod, heroMod] = await Promise.all([
-      theme === 'bold'
-        ? import('@cio/ui/custom/org-landing-page/bold/nav.svelte')
-        : theme === 'classic'
-          ? import('@cio/ui/custom/org-landing-page/classic/nav.svelte')
-          : import('@cio/ui/custom/org-landing-page/minimal/nav.svelte'),
-      theme === 'bold'
-        ? import('@cio/ui/custom/org-landing-page/bold/hero.svelte')
-        : theme === 'classic'
-          ? import('@cio/ui/custom/org-landing-page/classic/hero.svelte')
-          : import('@cio/ui/custom/org-landing-page/minimal/hero.svelte')
-    ]);
-
-    NavComponent = navMod.default;
-    HeroComponent = heroMod.default;
+    const { NavComponent: nav, HeroComponent: hero } = await importThemeNavHero(landingSettings.theme);
+    NavComponent = nav;
+    HeroComponent = hero;
   });
 </script>
 
@@ -112,17 +102,17 @@
 {#if data.course}
   <PoweredBy />
 
-  <main class={shellClass}>
+  <main class={shellClass} style={shellStyle}>
     {#if NavComponent && HeroComponent}
-      {#if landingSettings.theme === 'minimal'}
-        <HeroComponent hero={courseHero}>
+      {#if navInsideHero}
+        <HeroComponent hero={courseHero} {orgName}>
           {#snippet navigation()}
             <NavComponent {orgName} {logoUrl} navItems={landingSettings.navItems} {authAction} />
           {/snippet}
         </HeroComponent>
       {:else}
         <NavComponent {orgName} {logoUrl} navItems={landingSettings.navItems} {authAction} />
-        <HeroComponent hero={courseHero} />
+        <HeroComponent hero={courseHero} {orgName} />
       {/if}
     {/if}
 

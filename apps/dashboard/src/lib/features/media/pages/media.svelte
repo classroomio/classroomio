@@ -7,7 +7,14 @@
 
   import type { TAssetUpdate } from '@cio/utils/validation/assets';
 
-  import { AssetCard, AssetUsageDialog, EditAssetDialog, MediaFilters, StorageCards } from '$features/media/components';
+  import {
+    AssetCard,
+    AssetUsageDialog,
+    EditAssetDialog,
+    ManageThumbnailsDialog,
+    MediaFilters,
+    StorageCards
+  } from '$features/media/components';
   import { mediaApi } from '$features/media/api';
   import type { AssetKindFilter, AssetStatusFilter, AssetUsageGraph, OrganizationAsset } from '$features/media/utils';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -28,6 +35,7 @@
   let isRefreshing = $state(false);
   let editOpen = $state(false);
   let usageOpen = $state(false);
+  let manageThumbsOpen = $state(false);
   let isSavingAsset = $state(false);
   let isUsageLoading = $state(false);
   let downloadingAssetId = $state<string | null>(null);
@@ -64,6 +72,11 @@
   function openEditAsset(asset: OrganizationAsset) {
     selectedAsset = asset;
     editOpen = true;
+  }
+
+  function openManageThumbnails(asset: OrganizationAsset) {
+    selectedAsset = asset;
+    manageThumbsOpen = true;
   }
 
   async function saveAsset(fields: TAssetUpdate) {
@@ -148,7 +161,14 @@
 {:else}
   <Item.Group class="grid! w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
     {#each assets as asset (asset.id)}
-      <AssetCard {asset} {downloadingAssetId} onEdit={openEditAsset} onUsage={openUsage} onDownload={downloadAsset} />
+      <AssetCard
+        {asset}
+        {downloadingAssetId}
+        onEdit={openEditAsset}
+        onUsage={openUsage}
+        onDownload={downloadAsset}
+        onManageThumbnails={openManageThumbnails}
+      />
     {/each}
   </Item.Group>
 {/if}
@@ -180,6 +200,8 @@
 {/if}
 
 <EditAssetDialog bind:open={editOpen} asset={selectedAsset} isSaving={isSavingAsset} onSave={saveAsset} />
+
+<ManageThumbnailsDialog bind:open={manageThumbsOpen} asset={selectedAsset} />
 
 <AssetUsageDialog
   bind:open={usageOpen}

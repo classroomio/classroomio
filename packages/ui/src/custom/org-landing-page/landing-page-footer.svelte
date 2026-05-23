@@ -3,7 +3,6 @@
   import { getFooterTokens } from './landing-page-footer.tokens';
   import FooterSocialIcon from './footer-social-icon.svelte';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-  import { BlurFade } from '../animation/blurfade';
   import EditableLandingSection from './editable-section.svelte';
 
   interface Props {
@@ -64,7 +63,7 @@
             class="ui:grid ui:grid-cols-1 ui:gap-y-10 ui:gap-x-8 ui:sm:grid-cols-2 ui:md:gap-x-12 ui:md:gap-y-12 ui:md:grid-cols-[minmax(0,1.4fr)_repeat(auto-fit,minmax(140px,1fr))]"
           >
             <div class="ui:sm:col-span-2 ui:md:col-span-1 ui:min-w-0">
-              <a href="/" class={tokens.brandName}>
+              <a href="/" class="{tokens.brandName} ui:cursor-pointer">
                 {#if logoUrl}
                   <img src={logoUrl} alt="" class={tokens.logoImg} />
                 {/if}
@@ -79,7 +78,7 @@
                     <li class="ui:list-none">
                       <a
                         href={social.href}
-                        class={tokens.socialIcon}
+                        class="{tokens.socialIcon} ui:cursor-pointer"
                         target="_blank"
                         rel="noreferrer noopener"
                         aria-label={social.platform}
@@ -103,12 +102,12 @@
                 <ul class="ui:list-none ui:m-0 ui:p-0 ui:space-y-1">
                   {#each column.links as link (link.id)}
                     <li>
-                      <a href={link.href} class={tokens.columnLink}>{link.label}</a>
+                      <a href={link.href} class="{tokens.columnLink} ui:cursor-pointer">{link.label}</a>
                     </li>
                   {/each}
                 </ul>
                 {#if hasCta(column)}
-                  <a href={column.cta!.href} class={tokens.columnCta}>
+                  <a href={column.cta!.href} class="{tokens.columnCta} ui:cursor-pointer">
                     {column.cta!.label}
                     <ArrowRightIcon class="ui:size-4 ui:shrink-0" aria-hidden="true" />
                   </a>
@@ -119,11 +118,9 @@
         {/snippet}
 
         {#if variant === 'minimal' || variant === 'bold' || variant === 'saas' || variant === 'tech' || variant === 'studio' || variant === 'corporate' || variant === 'terminal'}
-          <BlurFade delay={0} once={true}>
-            {#snippet children()}
-              {@render gridInner()}
-            {/snippet}
-          </BlurFade>
+          {#snippet children()}
+            {@render gridInner()}
+          {/snippet}
         {:else}
           {@render gridInner()}
         {/if}
@@ -139,7 +136,7 @@
             {#if bottomLinks.length > 0}
               <div class={tokens.bottomLinksWrap}>
                 {#each bottomLinks as link (link.id)}
-                  <a href={link.href} class={tokens.bottomLink}>{link.label}</a>
+                  <a href={link.href} class="{tokens.bottomLink} ui:cursor-pointer">{link.label}</a>
                 {/each}
               </div>
             {/if}
@@ -147,7 +144,7 @@
         {/if}
       {:else}
         <div class={tokens.compactRow}>
-          <a href="/" class={tokens.brandName}>
+          <a href="/" class="{tokens.brandName} ui:cursor-pointer">
             {#if logoUrl}
               <img src={logoUrl} alt="" class={tokens.logoImg} />
             {/if}
@@ -158,7 +155,7 @@
               class="ui:flex ui:flex-wrap ui:justify-start ui:gap-6 ui:md:justify-center ui:md:gap-8 ui:w-full ui:md:w-auto"
             >
               {#each bottomLinks as link (link.id)}
-                <a href={link.href} class={tokens.bottomLink}>{link.label}</a>
+                <a href={link.href} class="{tokens.bottomLink} ui:cursor-pointer">{link.label}</a>
               {/each}
             </div>
           {/if}

@@ -346,7 +346,11 @@
       "transcription_started": "Rozpoczęto transkrypcję",
       "transcription_start_failed": "Nie można rozpocząć transkrypcji",
       "transcription_completed": "Transkrypcja zakończona",
-      "transcript_fetch_failed": "Nie udało się wczytać transkrypcji"
+      "transcript_fetch_failed": "Nie udało się wczytać transkrypcji",
+      "thumbnail_updated": "Miniatura zaktualizowana",
+      "thumbnail_update_failed": "Nie udało się zaktualizować miniatury",
+      "thumbnail_regen_started": "Regeneruję miniatury…",
+      "thumbnail_regen_failed": "Nie udało się ponownie wygenerować miniatur"
     },
     "tags": {
       "group_created": "Utworzono grupę tagów",
@@ -2059,7 +2063,8 @@
         "overview_metrics": {
           "heading": "Migawka kursu",
           "description": "Uczestnicy są zliczani według statusu tego kursu."
-        }
+        },
+        "empty_overview_description": "Dbaj o przestrzeganie zasad przez swoich pracowników i śledź, kto ma zaległości."
       }
     },
     "search": {
@@ -2164,9 +2169,7 @@
           "depth": "Jak głęboko powinien sięgać kurs?",
           "topic": "Temat lub nisza",
           "expertise_level": "Docelowy poziom wiedzy",
-          "documentation_url": {
-            "hint": "Przeczytamy tę witrynę, aby oprzeć kurs na Twoim prawdziwym produkcie."
-          }
+          "documentation_url": "Adres URL dokumentacji (opcjonalnie)"
         },
         "expert_on_x": {
           "title": "Zostań ekspertem w dziedzinie X",
@@ -2340,7 +2343,8 @@
     "login_activity_title": "Aktywność logowania ucznia",
     "login_activity_description": "Najbardziej aktywne dni tygodnia (ostatnie 90 dni)",
     "login_activity_no_data": "Brak aktywności związanej z logowaniem",
-    "login_activity_logins": "logowania"
+    "login_activity_logins": "logowania",
+    "open_academy": "Otwarta Akademia"
   },
   "schedule": {
     "title": "Twój harmonogram",
@@ -2621,7 +2625,8 @@
     "actions": {
       "edit": "Edytuj",
       "where_used": "Gdzie używany",
-      "download": "Pobierz"
+      "download": "Pobierz",
+      "manage_thumbnails": "Zarządzaj miniaturami"
     },
     "table": {
       "title": "Tytuł",
@@ -2678,7 +2683,22 @@
       "not_available": "Nie dotyczy"
     },
     "empty_description": "Zasób nie istnieje lub nie jest dostępny w tej organizacji.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library."
+    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "thumbnails": {
+      "manage_title": "Zarządzaj miniaturami",
+      "manage_description": "Obejrzyj podgląd wideo, wybierz jedną z automatycznie wygenerowanych klatek lub prześlij własną.",
+      "preview_unavailable": "Podgląd niedostępny",
+      "generated": "Wygenerowane miniatury",
+      "slot_start": "Zacznij",
+      "slot_middle": "Środek",
+      "slot_end": "Koniec",
+      "none_generated_warning": "Nie wygenerowano jeszcze żadnych miniatur. Spróbuj zregenerować lub prześlij niestandardowy obraz.",
+      "upload_custom": "Prześlij niestandardową miniaturę",
+      "custom_selected_hint": "Przesyłanie niestandardowe zostanie zapisane po zapisaniu wyboru.",
+      "custom_preview_alt": "Niestandardowy podgląd miniatur",
+      "regenerate": "Zregeneruj się",
+      "save_selection": "Zapisz miniaturę"
+    }
   },
   "settings": {
     "heading": "Ustawienia",
@@ -3003,6 +3023,14 @@
           "saas": {
             "title": "SaaS",
             "description": "Ramka w postaci przerywanej linii, miękkie akcenty, nowoczesny wygląd produktu"
+          },
+          "vibrant": {
+            "title": "Żywy",
+            "description": "Odważne panele główne, bohater gradientu zachodu słońca, energetyczny wygląd plakatu"
+          },
+          "editorial": {
+            "title": "Redakcja",
+            "description": "Ciepła kremowa paleta, malarski bohater, wyrafinowany klimat magazynu"
           }
         }
       },
@@ -3011,7 +3039,10 @@
         "description": "Zawiera podstawowe funkcje, które można łatwo dostosować — bez konieczności kodowania.",
         "by_classroomio": "przez ClassroomIO",
         "add": "Dodaj",
-        "upgrade": "Uaktualnij"
+        "upgrade": "Uaktualnij",
+        "apply_theme": "Zastosuj motyw",
+        "preview": "Podgląd",
+        "card_menu_label": "Opcje motywu"
       },
       "current": {
         "title": "Aktualny temat",
@@ -3952,6 +3983,54 @@
       "quiz_me": "Przepytaj mnie na ten temat",
       "summarize_section": "Podsumuj tę sekcję",
       "what_to_review": "Co powinienem zrecenzować dalej?"
+    },
+    "run_running": "Generowanie kursu",
+    "run_completed": "Zakończono generowanie kursu",
+    "run_failed": "Wygenerowanie kursu nie powiodło się",
+    "run_canceled": "Generowanie kursu anulowane",
+    "run_waiting_for_worker": "Czekam na pracownika w tle",
+    "run_checkpoint": "Zapisywanie punktu kontrolnego postępu",
+    "retry": "Spróbuj ponownie",
+    "run_monitor_aria": "Trwa generowanie kursu",
+    "run_summary": {
+      "completed": "Uruchomienie zakończone.",
+      "completed_with_counts": "Uruchomienie zakończone — utworzono {counts}.",
+      "failed": "Uruchomienie nie powiodło się.",
+      "failed_with_reason": "Uruchomienie nie powiodło się — {powód}.",
+      "canceled": "Bieg odwołany.",
+      "canceled_with_counts": "Uruchomienie anulowane — utworzono {counts} przed zatrzymaniem.",
+      "paused": "Uruchomienie wstrzymane. Wznów, aby kontynuować.",
+      "paused_with_counts": "Uruchomienie wstrzymane — do tej pory utworzono {counts}. Wznów, aby kontynuować."
+    },
+    "changes_card": {
+      "summary_count": "Zmieniono {count} elementów",
+      "expand": "Rozwiń zmiany",
+      "collapse": "Zwiń zmiany",
+      "action": {
+        "created": "Utworzono",
+        "metadata_updated": "Metadane zaktualizowane",
+        "content_written": "Treść napisana",
+        "questions_added": "+{count} pytań",
+        "questions_updated": "Edytowano {count} pytań",
+        "section_added": "Dodano blok",
+        "section_edited": "Blok edytowany"
+      },
+      "status": {
+        "completed": "Ukończono",
+        "failed": "Nie udało się",
+        "canceled": "Anulowano",
+        "paused": "Wstrzymano"
+      }
+    },
+    "plan_view": {
+      "expand": "Rozwiń plan",
+      "collapse": "Zwiń plan"
+    },
+    "run_monitor": {
+      "cancel": "Anuluj bieg",
+      "dismiss": "Odrzuć",
+      "now_doing": "Teraz",
+      "input_disabled_hint": "Czat zostaje wstrzymany, gdy agent kończy tworzenie kursu. Anuluj lub poczekaj na zakończenie."
     }
   },
   "widgets": {

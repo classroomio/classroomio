@@ -23,15 +23,17 @@
     },
     bold: {
       className:
-        'ui:rounded-xl ui:px-8 ui:py-6 ui:text-base ui:font-bold ui:border-2 ui:hover:border-primary ui:transition-all',
+        'ui:rounded-xl ui:px-8 ui:py-6 ui:text-base ui:font-bold ui:border-2 ui:hover:border-[var(--landing-accent)] ui:transition-all',
       variant: 'outline'
     },
     classic: {
-      className: 'ui:px-8 ui:font-semibold ui:bg-background ui:text-foreground ui:border-border ui:transition-colors',
+      className:
+        'ui:px-8 ui:font-semibold ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:border-[var(--landing-border)] ui:transition-colors',
       variant: 'outline'
     },
     saas: {
-      className: 'ui:rounded-full ui:px-6 ui:border-border ui:text-foreground ui:hover:bg-accent',
+      className:
+        'ui:rounded-full ui:px-6 ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-accent',
       variant: 'outline'
     },
     tech: {
@@ -41,17 +43,27 @@
     },
     studio: {
       className:
-        'ui:rounded-md ui:px-5 ui:border-border ui:bg-background ui:text-foreground ui:hover:bg-muted ui:transition-colors',
+        'ui:rounded-md ui:px-5 ui:border-[var(--landing-border)] ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:hover:bg-[var(--landing-card-soft)] ui:transition-colors',
       variant: 'outline'
     },
     corporate: {
       className:
-        'ui:rounded-none ui:px-6 ui:font-medium ui:border-foreground ui:text-foreground ui:hover:bg-foreground ui:hover:text-background ui:transition-colors',
+        'ui:rounded-none ui:px-6 ui:font-medium ui:border-[var(--landing-fg)] ui:text-[var(--landing-fg)] ui:hover:bg-[var(--landing-fg)] ui:hover:text-[var(--landing-bg)] ui:transition-colors',
       variant: 'outline'
     },
     terminal: {
       className:
         'ui:rounded-full ui:px-5 ui:font-medium ui:bg-white/5 ui:border-[#262a35] ui:text-[#e9eaed] ui:hover:bg-white/10 ui:transition-colors',
+      variant: 'outline'
+    },
+    editorial: {
+      className:
+        'ui:rounded-full ui:px-5 ui:font-medium ui:bg-transparent ui:border-[#d9d8d0] ui:text-[#1a1a1a] ui:hover:bg-[#ebeae3] ui:transition-colors',
+      variant: 'outline'
+    },
+    vibrant: {
+      className:
+        'ui:rounded-md ui:px-6 ui:py-3 ui:text-base ui:font-medium ui:bg-transparent ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-[var(--landing-card-soft)] ui:transition-colors',
       variant: 'outline'
     }
   };

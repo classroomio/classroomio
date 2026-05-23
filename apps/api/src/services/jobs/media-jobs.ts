@@ -11,7 +11,12 @@ import {
   hasActiveMediaJobForAsset
 } from '@cio/db/queries';
 import { getAssetById } from '@cio/db/queries/assets';
-import { enqueueLessonVideoPipeline, enqueueTranscriptionOnly, isRedisConfigured } from '@cio/jobs';
+import {
+  enqueueGenerateThumbnailOnly,
+  enqueueLessonVideoPipeline,
+  enqueueTranscriptionOnly,
+  isRedisConfigured
+} from '@cio/jobs';
 
 import { logRedisUnavailableOnce } from '@api/utils/redis/redis';
 import type { TMediaJob } from '@db/types';
@@ -92,6 +97,85 @@ export async function startTranscriptionOnlyMediaJob(input: StartTranscriptionOn
 
     throw new AppError(
       error instanceof Error ? error : 'Failed to enqueue transcription job',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+export interface StartThumbnailRegenInput {
+  organizationId: string;
+  assetId: string;
+  triggeredByProfileId: string | null;
+}
+
+/**
+ * Manual thumbnail regeneration: create a new `media_job` row and enqueue only
+ * the `generate-thumbnail` step. Rejects when the asset has no usable storage
+ * key or when another media job is already running for it.
+ */
+export async function startThumbnailRegenJob(input: StartThumbnailRegenInput): Promise<TMediaJob> {
+  const asset = await getAssetById(input.assetId);
+  if (!asset || asset.organizationId !== input.organizationId) {
+    throw new AppError('Asset not found', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  if (asset.kind !== 'video' || asset.provider !== 'upload' || !asset.storageKey) {
+    throw new AppError('Asset cannot be thumbnailed', ErrorCodes.ASSET_NOT_TRANSCRIBABLE, 400);
+  }
+
+  const hasActive = await hasActiveMediaJobForAsset(input.assetId, input.organizationId);
+  if (hasActive) {
+    throw new AppError('A media job is already running for this asset', ErrorCodes.CONFLICT, 409);
+  }
+
+  const job = await createMediaJob({
+    organizationId: input.organizationId,
+    assetId: input.assetId,
+    triggeredByProfileId: input.triggeredByProfileId,
+    status: 'queued',
+    stage: 'thumbnailing',
+    progressPercent: 0
+  });
+
+  if (!isRedisConfigured()) {
+    logRedisUnavailableOnce(
+      'Redis not configured: thumbnail regen media job created but no BullMQ flow enqueued. ' +
+        'Set REDIS_URL and run apps/jobs to process this job.'
+    );
+    return job;
+  }
+
+  try {
+    const enqueueResult = await enqueueGenerateThumbnailOnly({
+      mediaJobId: job.id,
+      assetId: input.assetId,
+      storageKey: asset.storageKey,
+      actorContext: {
+        userId: input.triggeredByProfileId,
+        organizationId: input.organizationId
+      }
+    });
+
+    const updated = await updateMediaJob(job.id, {
+      rootJobId: enqueueResult.rootJobId,
+      jobIds: enqueueResult.jobIds
+    });
+
+    return updated ?? job;
+  } catch (error) {
+    console.error('startThumbnailRegenJob enqueue failed:', error);
+    await updateMediaJob(job.id, {
+      status: 'failed',
+      stage: 'failed',
+      error: {
+        code: 'ENQUEUE_FAILED',
+        message: error instanceof Error ? error.message : 'Failed to enqueue thumbnail job'
+      }
+    });
+
+    throw new AppError(
+      error instanceof Error ? error : 'Failed to enqueue thumbnail job',
       ErrorCodes.INTERNAL_ERROR,
       500
     );

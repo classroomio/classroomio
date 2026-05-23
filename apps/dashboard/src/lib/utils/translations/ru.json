@@ -346,7 +346,11 @@
       "transcription_started": "Транскрипция началась",
       "transcription_start_failed": "Не удалось начать транскрипцию",
       "transcription_completed": "Транскрипция завершена",
-      "transcript_fetch_failed": "Не удалось загрузить расшифровку"
+      "transcript_fetch_failed": "Не удалось загрузить расшифровку",
+      "thumbnail_updated": "Значок обновлен.",
+      "thumbnail_update_failed": "Не удалось обновить миниатюру.",
+      "thumbnail_regen_started": "Восстановление миниатюр…",
+      "thumbnail_regen_failed": "Не удалось восстановить миниатюры."
     },
     "tags": {
       "group_created": "Группа тегов создана.",
@@ -2059,7 +2063,8 @@
         "overview_metrics": {
           "heading": "Снимок курса",
           "description": "Учащиеся учитываются по статусу для этого курса."
-        }
+        },
+        "empty_overview_description": "Следите за тем, чтобы ваши сотрудники соблюдали требования и отслеживали, кто отстает."
       }
     },
     "search": {
@@ -2164,9 +2169,7 @@
           "depth": "Насколько глубоким должен быть курс?",
           "topic": "Тема или ниша",
           "expertise_level": "Целевой уровень экспертизы",
-          "documentation_url": {
-            "hint": "Мы прочитаем этот сайт, чтобы закрепить курс на вашем реальном продукте."
-          }
+          "documentation_url": "URL-адрес документации (необязательно)"
         },
         "expert_on_x": {
           "title": "Станьте экспертом по X",
@@ -2340,7 +2343,8 @@
     "login_activity_title": "Активность входа учащихся",
     "login_activity_description": "Самые активные дни недели (последние 90 дней)",
     "login_activity_no_data": "Пока нет активности входа",
-    "login_activity_logins": "логины"
+    "login_activity_logins": "логины",
+    "open_academy": "Открытая Академия"
   },
   "schedule": {
     "title": "Ваше расписание",
@@ -2621,7 +2625,8 @@
     "actions": {
       "edit": "Редактировать",
       "where_used": "Где используется",
-      "download": "Скачать"
+      "download": "Скачать",
+      "manage_thumbnails": "Управление миниатюрами"
     },
     "table": {
       "title": "Название",
@@ -2678,7 +2683,22 @@
       "not_available": "Н/Д"
     },
     "empty_description": "Актив не существует или недоступен в этой организации.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library."
+    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "thumbnails": {
+      "manage_title": "Управление миниатюрами",
+      "manage_description": "Просмотрите видео, выберите один из автоматически созданных кадров или загрузите свой собственный.",
+      "preview_unavailable": "Предварительный просмотр недоступен",
+      "generated": "Созданные миниатюры",
+      "slot_start": "Старт",
+      "slot_middle": "Средний",
+      "slot_end": "Конец",
+      "none_generated_warning": "Миниатюры еще не созданы. Попробуйте восстановить или загрузить собственное изображение.",
+      "upload_custom": "Загрузить собственный значок",
+      "custom_selected_hint": "Пользовательская загрузка будет сохранена, когда вы сохраните свой выбор.",
+      "custom_preview_alt": "Пользовательский предварительный просмотр миниатюр",
+      "regenerate": "Регенерировать",
+      "save_selection": "Сохранить миниатюру"
+    }
   },
   "settings": {
     "heading": "Настройки",
@@ -3003,6 +3023,14 @@
           "saas": {
             "title": "SaaS",
             "description": "Пунктирная рамка, мягкие акценты, современный вид продукта"
+          },
+          "vibrant": {
+            "title": "Яркий",
+            "description": "Яркие основные панели, герой градиента заката, энергичный вид плаката"
+          },
+          "editorial": {
+            "title": "Редакционный",
+            "description": "Теплая кремовая палитра, живописный герой, изысканная журнальная атмосфера."
           }
         }
       },
@@ -3011,7 +3039,10 @@
         "description": "Создан с использованием основных функций, которые можно легко настроить — кодирование не требуется.",
         "by_classroomio": "от ClassroomIO",
         "add": "Добавить",
-        "upgrade": "Обновление"
+        "upgrade": "Обновление",
+        "apply_theme": "Применить тему",
+        "preview": "Предварительный просмотр",
+        "card_menu_label": "Опции темы"
       },
       "current": {
         "title": "Текущая тема",
@@ -3952,6 +3983,54 @@
       "quiz_me": "спроси меня об этом",
       "summarize_section": "Подведите итоги этого раздела",
       "what_to_review": "Что мне следует проверить дальше?"
+    },
+    "run_running": "Генерация курса",
+    "run_completed": "Генерация курса завершена",
+    "run_failed": "Не удалось создать курс.",
+    "run_canceled": "Создание курса отменено.",
+    "run_waiting_for_worker": "Ожидание фонового работника",
+    "run_checkpoint": "Сохранение контрольной точки прогресса",
+    "retry": "Повторить попытку",
+    "run_monitor_aria": "Выполняется создание курса",
+    "run_summary": {
+      "completed": "Запуск завершен.",
+      "completed_with_counts": "Запуск завершен — создано {counts}.",
+      "failed": "Запуск не удался.",
+      "failed_with_reason": "Не удалось выполнить запуск — {причина}.",
+      "canceled": "Забег отменен.",
+      "canceled_with_counts": "Запуск отменен — перед остановкой создано {counts}.",
+      "paused": "Бег остановился. Возобновите, чтобы продолжить.",
+      "paused_with_counts": "Выполнение приостановлено — на данный момент создано {counts}. Возобновите, чтобы продолжить."
+    },
+    "changes_card": {
+      "summary_count": "Изменено элементов: {count}",
+      "expand": "Развернуть изменения",
+      "collapse": "Свернуть изменения",
+      "action": {
+        "created": "Создано",
+        "metadata_updated": "Метаданные обновлены.",
+        "content_written": "Содержание написано",
+        "questions_added": "+{count} вопросов",
+        "questions_updated": "Отредактировано {count} вопросов",
+        "section_added": "Блок добавлен",
+        "section_edited": "Блок изменен"
+      },
+      "status": {
+        "completed": "Завершено",
+        "failed": "Не удалось",
+        "canceled": "Отменено",
+        "paused": "Приостановлено"
+      }
+    },
+    "plan_view": {
+      "expand": "Развернуть план",
+      "collapse": "Свернуть план"
+    },
+    "run_monitor": {
+      "cancel": "Отменить запуск",
+      "dismiss": "Уволить",
+      "now_doing": "Сейчас",
+      "input_disabled_hint": "Чат приостановлен, пока агент завершает создание курса. Отмените или дождитесь завершения."
     }
   },
   "widgets": {

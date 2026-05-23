@@ -633,6 +633,14 @@
           "terminal": {
             "title": "Terminal",
             "description": "Dark surface, ghosted wordmark, CLI-inspired catalog"
+          },
+          "editorial": {
+            "title": "Editorial",
+            "description": "Warm cream palette, painterly hero, refined magazine feel"
+          },
+          "vibrant": {
+            "title": "Vibrant",
+            "description": "Bold primary panels, sunset gradient hero, energetic poster look"
           }
         }
       },
@@ -657,7 +665,10 @@
         "description": "Made with core features you can easily customize — no coding needed.",
         "by_classroomio": "by ClassroomIO",
         "add": "Add",
-        "upgrade": "Upgrade"
+        "upgrade": "Upgrade",
+        "apply_theme": "Apply Theme",
+        "preview": "Preview",
+        "card_menu_label": "Theme options"
       },
       "editor": {
         "save": "Save",
@@ -4288,6 +4299,12 @@
     "plan_working": "Working",
     "plan_thinking": "Thinking through your request…",
     "plan_progress": "{completed} / {total} steps completed",
+    "run_running": "Generating course",
+    "run_completed": "Course generation complete",
+    "run_failed": "Course generation failed",
+    "run_canceled": "Course generation canceled",
+    "run_waiting_for_worker": "Waiting for the background worker",
+    "run_checkpoint": "Saving progress checkpoint",
     "plan_implement": "Implement Plan",
     "plan_ask_changes_placeholder": "Tell me what to change about the plan…",
     "plan_ask_changes_send_aria": "Send change request",
@@ -4313,6 +4330,48 @@
     "tokens_label": "tokens",
     "implementing_course_plan": "Implementing Course Plan",
     "resume": "Resume",
+    "retry": "Retry",
+    "run_monitor_aria": "Course generation in progress",
+    "run_monitor": {
+      "cancel": "Cancel run",
+      "dismiss": "Dismiss",
+      "now_doing": "Now",
+      "input_disabled_hint": "Chat is paused while the agent finishes building the course. Cancel or wait for it to complete."
+    },
+    "plan_view": {
+      "expand": "Expand plan",
+      "collapse": "Collapse plan"
+    },
+    "changes_card": {
+      "summary_count": "{count} items changed",
+      "expand": "Expand changes",
+      "collapse": "Collapse changes",
+      "status": {
+        "completed": "Completed",
+        "failed": "Failed",
+        "canceled": "Canceled",
+        "paused": "Paused"
+      },
+      "action": {
+        "created": "Created",
+        "metadata_updated": "Metadata updated",
+        "content_written": "Content written",
+        "questions_added": "+{count} questions",
+        "questions_updated": "{count} questions edited",
+        "section_added": "Block added",
+        "section_edited": "Block edited"
+      }
+    },
+    "run_summary": {
+      "completed": "Run completed.",
+      "completed_with_counts": "Run completed — created {counts}.",
+      "failed": "Run failed.",
+      "failed_with_reason": "Run failed — {reason}.",
+      "canceled": "Run canceled.",
+      "canceled_with_counts": "Run canceled — created {counts} before stopping.",
+      "paused": "Run paused. Resume to continue.",
+      "paused_with_counts": "Run paused — created {counts} so far. Resume to continue."
+    },
     "stopped_content_kept": "Stopped. Created content has been kept.",
     "run_failed_after": "{action} did not finish successfully.",
     "tool": {

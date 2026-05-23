@@ -4,7 +4,7 @@
   import Link2Icon from '@lucide/svelte/icons/link-2';
 
   import { ActivityCard } from '$features/ui';
-  import { formatBytes } from '$features/media/utils';
+  import { formatBytes, formatBytesSecondary } from '$features/media/utils';
   import type { AssetStorageSummary } from '$features/media/utils';
   import { t } from '$lib/utils/functions/translations';
 
@@ -14,19 +14,23 @@
 
   let { storageSummary }: Props = $props();
 
+  function bytesDescription(bytes: number | null | undefined, fallbackKey: string): string {
+    return formatBytesSecondary(bytes) ?? t.get(fallbackKey);
+  }
+
   const storageCards = $derived([
     {
       icon: FileIcon,
       title: t.get('media_manager.storage.total_bytes'),
       percentage: formatBytes(storageSummary?.totalBytes ?? 0),
-      description: t.get('media_manager.storage.total_bytes'),
+      description: bytesDescription(storageSummary?.totalBytes, 'media_manager.storage.total_bytes'),
       hidePercentage: true
     },
     {
       icon: FileVideoIcon,
       title: t.get('media_manager.storage.internal_bytes'),
       percentage: formatBytes(storageSummary?.internalBytes ?? 0),
-      description: t.get('media_manager.storage.internal_bytes'),
+      description: bytesDescription(storageSummary?.internalBytes, 'media_manager.storage.internal_bytes'),
       hidePercentage: true
     },
     {

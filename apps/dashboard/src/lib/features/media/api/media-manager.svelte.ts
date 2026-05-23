@@ -11,6 +11,8 @@ import type {
   GetYouTubeMetadataRequest,
   ListAssetsRequest,
   OrganizationAsset,
+  RegenerateAssetThumbnailRequest,
+  SelectAssetThumbnailRequest,
   UpdateAssetData,
   UpdateAssetRequest,
   YouTubeMetadata
@@ -402,6 +404,67 @@ export class MediaApi extends BaseApiWithErrors {
     });
 
     return data;
+  }
+
+  /** Persist the chosen thumbnail URL (must be a generated candidate or a fresh upload). */
+  async selectThumbnail(assetId: string, thumbnailUrl: string): Promise<OrganizationAsset | null> {
+    let updated: OrganizationAsset | null = null;
+    await this.execute<SelectAssetThumbnailRequest>({
+      requestFn: () =>
+        classroomio.organization.assets[':assetId'].thumbnail.$put({
+          param: { assetId },
+          json: { thumbnailUrl }
+        }),
+      logContext: 'selecting asset thumbnail',
+      onSuccess: (response) => {
+        updated = response.data;
+        this.assets = this.assets.map((asset) => (asset.id === response.data.id ? response.data : asset));
+        snackbar.success('snackbar.media_manager.thumbnail_updated');
+      },
+      onError: () => {
+        snackbar.error('snackbar.media_manager.thumbnail_update_failed');
+      }
+    });
+
+    return updated;
+  }
+
+  /** Enqueue a fresh generate-thumbnail job and return the media_job id. */
+  async regenerateThumbnails(assetId: string): Promise<string | null> {
+    let jobId: string | null = null;
+    await this.execute<RegenerateAssetThumbnailRequest>({
+      requestFn: () =>
+        classroomio.jobs.media.asset[':assetId']['regenerate-thumbnail'].$post({
+          param: { assetId }
+        }),
+      logContext: 'regenerating asset thumbnail',
+      onSuccess: (response) => {
+        jobId = response.data.id;
+        snackbar.success('snackbar.media_manager.thumbnail_regen_started');
+      },
+      onError: () => {
+        snackbar.error('snackbar.media_manager.thumbnail_regen_failed');
+      }
+    });
+
+    return jobId;
+  }
+
+  async refreshAsset(assetId: string): Promise<OrganizationAsset | null> {
+    let updated: OrganizationAsset | null = null;
+    await this.execute<(typeof classroomio.organization.assets)[':assetId']['$get']>({
+      requestFn: () =>
+        classroomio.organization.assets[':assetId'].$get({
+          param: { assetId }
+        }),
+      logContext: 'refreshing asset',
+      onSuccess: (response) => {
+        updated = response.data;
+        this.assets = this.assets.map((asset) => (asset.id === response.data.id ? response.data : asset));
+      }
+    });
+
+    return updated;
   }
 
   /** Enqueue extract-audio + Whisper for an existing upload. */

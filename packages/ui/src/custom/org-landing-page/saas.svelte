@@ -6,12 +6,9 @@
   import OrgLandingPageFooter from './landing-page-footer.svelte';
   import SaasNav from './saas/nav.svelte';
   import SaasHero from './saas/hero.svelte';
+  import SaasCourseCard from './saas/course-card.svelte';
   import { Button } from '../../base/button';
-  import { BlurFade } from '../animation/blurfade';
-  import ClockIcon from '@lucide/svelte/icons/clock';
-  import TagIcon from '@lucide/svelte/icons/tag';
-  import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-  import { getCourseTypeLandingMeta, getPrimaryCourseTag } from './landing-page-utils';
+  import { themeStyle } from './theme-style';
 
   let {
     orgName,
@@ -25,16 +22,15 @@
     embed,
     callout,
     links,
-    footer
+    footer,
+    labels
   }: OrgLandingPageProps = $props();
-
-  function formatCurrency(cost?: number, currency = 'USD') {
-    if (!cost) return 'Free';
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(cost);
-  }
 </script>
 
-<div class="saas-root ui:min-h-screen ui:bg-background ui:text-foreground ui:font-sans">
+<div
+  class="saas-root ui:min-h-screen ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:font-sans"
+  style={themeStyle('saas')}
+>
   <div class="frame">
     <SaasHero {hero}>
       {#snippet navigation()}
@@ -49,8 +45,14 @@
         <div class="ui:max-w-[1180px] ui:mx-auto">
           <div class="ui:flex ui:flex-col ui:md:flex-row ui:md:items-end ui:md:justify-between ui:gap-4 ui:mb-12">
             <div>
-              <p class="ui:text-xs ui:font-semibold ui:tracking-widest ui:uppercase ui:text-primary ui:mb-3">Catalog</p>
-              <h2 class="ui:text-3xl ui:md:text-4xl ui:font-bold ui:tracking-tight">Featured programs.</h2>
+              <p
+                class="ui:text-xs ui:font-semibold ui:tracking-widest ui:uppercase ui:text-[var(--landing-accent)] ui:mb-3"
+              >
+                {labels?.catalogEyebrow ?? 'Catalog'}
+              </p>
+              <h2 class="ui:text-3xl ui:md:text-4xl ui:font-bold ui:tracking-tight">
+                {labels?.catalogHeading ?? 'Featured programs.'}
+              </h2>
             </div>
             {#if hasMoreCourses}
               <Button
@@ -59,90 +61,14 @@
                 class="ui:rounded-full ui:self-start ui:md:self-auto"
                 disabled={disableCourseLinks}
               >
-                Browse catalog
+                {labels?.browseCoursesLabel ?? 'Browse catalog'}
               </Button>
             {/if}
           </div>
 
           <div class="course-grid ui:relative">
             {#each courses as course, index (course.id)}
-              {@const courseTypeMeta = getCourseTypeLandingMeta(course)}
-              {@const primaryTag = getPrimaryCourseTag(course)}
-              <BlurFade delay={0.06 * index} once={true} class="course-card-wrap">
-                <a
-                  href={disableCourseLinks
-                    ? undefined
-                    : course.link || (course.slug ? `/course/${course.slug}` : undefined)}
-                  class="course-card ui:flex ui:flex-col ui:h-full ui:no-underline ui:bg-background ui:transition-colors {disableCourseLinks
-                    ? 'ui:cursor-default'
-                    : 'ui:hover:bg-muted/40'}"
-                  aria-disabled={disableCourseLinks}
-                  tabindex={disableCourseLinks ? -1 : undefined}
-                >
-                  {#if course.logo}
-                    <div
-                      class="ui:h-40 ui:w-full ui:bg-cover ui:bg-center ui:relative"
-                      style={`background-image: url(${course.logo});`}
-                    >
-                      {#if courseTypeMeta}
-                        <span
-                          class="ui:absolute ui:top-3 ui:left-3 ui:bg-background/95 ui:text-foreground ui:text-[11px] ui:font-semibold ui:px-2.5 ui:py-1 ui:rounded-full"
-                        >
-                          {courseTypeMeta.label}
-                        </span>
-                      {/if}
-                    </div>
-                  {/if}
-
-                  <div class="ui:p-5 ui:flex ui:flex-col ui:flex-1 ui:gap-2">
-                    <h3 class="ui:text-lg ui:font-bold ui:tracking-tight ui:leading-snug ui:m-0">
-                      {course.title}
-                    </h3>
-                    <p class="ui:text-sm ui:text-muted-foreground ui:line-clamp-2 ui:leading-relaxed ui:m-0 ui:flex-1">
-                      {course.description}
-                    </p>
-
-                    <div
-                      class="ui:flex ui:items-center ui:gap-2 ui:flex-wrap ui:text-xs ui:text-muted-foreground ui:mt-2"
-                    >
-                      {#if course.duration}
-                        <span class="ui:inline-flex ui:items-center ui:gap-1">
-                          <ClockIcon class="ui:size-3.5" />
-                          {course.duration}
-                        </span>
-                      {/if}
-                      {#if primaryTag}
-                        <span class="ui:inline-flex ui:items-center ui:gap-1">
-                          <TagIcon class="ui:size-3.5" />
-                          {#if primaryTag.color}
-                            <span
-                              class="ui:inline-block ui:size-2 ui:rounded-full"
-                              style={`background-color: ${primaryTag.color}`}
-                              aria-hidden="true"
-                            ></span>
-                          {/if}
-                          {primaryTag.name}
-                        </span>
-                      {/if}
-                    </div>
-
-                    <div
-                      class="ui:flex ui:items-center ui:justify-between ui:pt-4 ui:mt-2 ui:border-t ui:border-border/60"
-                    >
-                      <span class="ui:text-sm ui:font-bold">
-                        {course.price || formatCurrency(course.cost, course.currency)}
-                      </span>
-                      <span
-                        class="ui:inline-flex ui:items-center ui:gap-1 ui:text-xs ui:font-semibold ui:text-primary"
-                        aria-hidden="true"
-                      >
-                        Enroll
-                        <ArrowRightIcon class="ui:size-3.5" />
-                      </span>
-                    </div>
-                  </div>
-                </a>
-              </BlurFade>
+              <SaasCourseCard {course} {disableCourseLinks} {labels} />
             {/each}
           </div>
         </div>
@@ -151,17 +77,17 @@
 
     {#if links && links.cards.length > 0}
       <div class="plus-row"></div>
-      <OrgLandingPageLinks {links} variant="saas" />
+      <OrgLandingPageLinks {links} {labels} variant="saas" />
     {/if}
 
     {#if embed}
       <div class="plus-row"></div>
-      <OrgLandingPageEmbed {embed} variant="saas" />
+      <OrgLandingPageEmbed {embed} {labels} variant="saas" />
     {/if}
 
     {#if callout}
       <div class="plus-row"></div>
-      <OrgLandingPageCallout {callout} variant="saas" />
+      <OrgLandingPageCallout {callout} {labels} variant="saas" />
     {/if}
   </div>
 
@@ -177,7 +103,7 @@
     width: 100%;
     background-image: radial-gradient(
       circle at center,
-      color-mix(in oklab, var(--foreground) 5%, transparent) 1px,
+      color-mix(in oklab, var(--landing-fg) 5%, transparent) 1px,
       transparent 1.5px
     );
     background-size: 24px 24px;
@@ -189,7 +115,7 @@
     top: 0;
     bottom: 0;
     width: 1px;
-    background: var(--border);
+    background: var(--landing-border);
     pointer-events: none;
     z-index: 0;
   }
@@ -208,7 +134,7 @@
   .saas-root :global(.plus-row) {
     position: relative;
     height: 0;
-    border-top: 1px dashed var(--border);
+    border-top: 1px dashed var(--landing-border);
     margin: 0;
   }
   .saas-root :global(.plus-row::before),
@@ -219,9 +145,9 @@
     font-family: ui-monospace, SFMono-Regular, monospace;
     font-size: 13px;
     font-weight: 400;
-    color: var(--muted-foreground);
+    color: var(--landing-fg-muted);
     line-height: 1;
-    background: var(--background);
+    background: var(--landing-bg);
     padding: 1px 3px;
     z-index: 2;
   }
@@ -237,8 +163,8 @@
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
+    background: var(--landing-border);
+    border: 1px solid var(--landing-border);
   }
   .saas-root :global(.course-grid > .course-card-wrap) {
     grid-column: span 2;
@@ -256,7 +182,7 @@
     max-width: 520px;
   }
   .saas-root :global(.course-grid:has(> .course-card-wrap:only-child) .course-card) {
-    border: 1px solid var(--border);
+    border: 1px solid var(--landing-border);
     border-radius: 0.5rem;
     overflow: hidden;
   }

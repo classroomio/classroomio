@@ -6,7 +6,9 @@ export type OrgLandingPageTheme =
   | 'tech'
   | 'studio'
   | 'corporate'
-  | 'terminal';
+  | 'terminal'
+  | 'editorial'
+  | 'vibrant';
 
 export interface OrgLandingPageNavItem {
   label: string;

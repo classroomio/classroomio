@@ -57,5 +57,14 @@ export type GetAssetTranscriptResponse = InferResponseType<GetAssetTranscriptReq
 export type GetAssetTranscriptSuccess = Extract<GetAssetTranscriptResponse, { success: true }>;
 export type AssetTranscriptPayload = GetAssetTranscriptSuccess['data'];
 
+export type SelectAssetThumbnailRequest = (typeof classroomio.organization)['assets'][':assetId']['thumbnail']['$put'];
+export type SelectAssetThumbnailResponse = InferResponseType<SelectAssetThumbnailRequest>;
+export type SelectAssetThumbnailSuccess = Extract<SelectAssetThumbnailResponse, { success: true }>;
+
+export type RegenerateAssetThumbnailRequest =
+  (typeof classroomio.jobs.media.asset)[':assetId']['regenerate-thumbnail']['$post'];
+export type RegenerateAssetThumbnailResponse = InferResponseType<RegenerateAssetThumbnailRequest>;
+export type RegenerateAssetThumbnailSuccess = Extract<RegenerateAssetThumbnailResponse, { success: true }>;
+
 export type AssetKindFilter = 'all' | 'video' | 'document' | 'image' | 'audio' | 'other';
 export type AssetStatusFilter = 'all' | 'active' | 'archived';

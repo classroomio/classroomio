@@ -346,7 +346,11 @@
       "transcription_started": "Transskription startede",
       "transcription_start_failed": "Kunne ikke starte transskription",
       "transcription_completed": "Transskription afsluttet",
-      "transcript_fetch_failed": "Kunne ikke indlæse transskription"
+      "transcript_fetch_failed": "Kunne ikke indlæse transskription",
+      "thumbnail_updated": "Miniaturebilledet er opdateret",
+      "thumbnail_update_failed": "Kunne ikke opdatere thumbnail",
+      "thumbnail_regen_started": "Regenererer thumbnails...",
+      "thumbnail_regen_failed": "Kunne ikke genskabe miniaturebilleder"
     },
     "tags": {
       "group_created": "Taggruppe oprettet",
@@ -2059,7 +2063,8 @@
         "overview_metrics": {
           "heading": "Kursus øjebliksbillede",
           "description": "Eleven tæller efter status for dette kursus."
-        }
+        },
+        "empty_overview_description": "Hold dine medarbejdere kompatible og hold øje med, hvem der står bag."
       }
     },
     "search": {
@@ -2164,9 +2169,7 @@
           "depth": "Hvor dybt skal kurset gå?",
           "topic": "Emne eller niche",
           "expertise_level": "Mål ekspertiseniveau",
-          "documentation_url": {
-            "hint": "Vi læser dette websted for at basere kurset på dit rigtige produkt."
-          }
+          "documentation_url": "Dokumentations-URL (valgfrit)"
         },
         "expert_on_x": {
           "title": "Bliv ekspert på X",
@@ -2340,7 +2343,8 @@
     "login_activity_title": "Student login aktivitet",
     "login_activity_description": "Ugens mest aktive dage (sidste 90 dage)",
     "login_activity_no_data": "Ingen login-aktivitet endnu",
-    "login_activity_logins": "logins"
+    "login_activity_logins": "logins",
+    "open_academy": "Åbent Akademi"
   },
   "schedule": {
     "title": "Dit skema",
@@ -2621,7 +2625,8 @@
     "actions": {
       "edit": "Rediger",
       "where_used": "Hvor brugt",
-      "download": "Download"
+      "download": "Download",
+      "manage_thumbnails": "Administrer thumbnails"
     },
     "table": {
       "title": "Titel",
@@ -2678,7 +2683,22 @@
       "not_available": "N/A"
     },
     "empty_description": "Aktivet findes ikke eller er ikke tilgængeligt i denne organisation.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library."
+    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "thumbnails": {
+      "manage_title": "Administrer thumbnails",
+      "manage_description": "Se forhåndsvisning af videoen, vælg en af de automatisk genererede frames, eller upload din egen.",
+      "preview_unavailable": "Forhåndsvisning er ikke tilgængelig",
+      "generated": "Genererede thumbnails",
+      "slot_start": "Start",
+      "slot_middle": "Midten",
+      "slot_end": "Slut",
+      "none_generated_warning": "Der er endnu ikke genereret miniaturebilleder. Prøv at genskabe eller uploade et brugerdefineret billede.",
+      "upload_custom": "Upload tilpasset miniaturebillede",
+      "custom_selected_hint": "Tilpasset upload vil blive gemt, når du gemmer dit valg.",
+      "custom_preview_alt": "Forhåndsvisning af tilpasset miniaturebillede",
+      "regenerate": "Regenerer",
+      "save_selection": "Gem thumbnail"
+    }
   },
   "settings": {
     "heading": "Indstillinger",
@@ -3003,6 +3023,14 @@
           "saas": {
             "title": "SaaS",
             "description": "Stiplet ramme, bløde accenter, moderne produktfølelse"
+          },
+          "vibrant": {
+            "title": "Levende",
+            "description": "Fed primære paneler, solnedgangsgradienthelt, energisk plakatlook"
+          },
+          "editorial": {
+            "title": "Redaktionel",
+            "description": "Varm cremepalette, malerisk helt, raffineret magasinfølelse"
           }
         }
       },
@@ -3011,7 +3039,10 @@
         "description": "Lavet med kernefunktioner, du nemt kan tilpasse - ingen kodning nødvendig.",
         "by_classroomio": "af ClassroomIO",
         "add": "Tilføj",
-        "upgrade": "Opgrader"
+        "upgrade": "Opgrader",
+        "apply_theme": "Anvend tema",
+        "preview": "Forhåndsvisning",
+        "card_menu_label": "Temamuligheder"
       },
       "current": {
         "title": "Aktuelt tema",
@@ -3952,6 +3983,54 @@
       "quiz_me": "Quiz mig om dette",
       "summarize_section": "Opsummer dette afsnit",
       "what_to_review": "Hvad skal jeg gennemgå næste gang?"
+    },
+    "run_running": "Genererende kursus",
+    "run_completed": "Kursusgenerering afsluttet",
+    "run_failed": "Kursusgenerering mislykkedes",
+    "run_canceled": "Kursusgenerering aflyst",
+    "run_waiting_for_worker": "Venter på baggrundsarbejderen",
+    "run_checkpoint": "Gemmer fremskridtskontrolpunkt",
+    "retry": "Prøv igen",
+    "run_monitor_aria": "Kursusgenerering i gang",
+    "run_summary": {
+      "completed": "Kørsel afsluttet.",
+      "completed_with_counts": "Kørsel afsluttet — oprettet {counts}.",
+      "failed": "Kørsel mislykkedes.",
+      "failed_with_reason": "Kørsel mislykkedes — {reason}.",
+      "canceled": "Kørsel annulleret.",
+      "canceled_with_counts": "Kørsel annulleret — oprettet {counts} før stop.",
+      "paused": "Løb sat på pause. Genoptag for at fortsætte.",
+      "paused_with_counts": "Kør på pause – oprettet {counts} indtil videre. Genoptag for at fortsætte."
+    },
+    "changes_card": {
+      "summary_count": "{count} elementer blev ændret",
+      "expand": "Udvid ændringer",
+      "collapse": "Skjul ændringer",
+      "action": {
+        "created": "Oprettet",
+        "metadata_updated": "Metadata opdateret",
+        "content_written": "Indhold skrevet",
+        "questions_added": "+{count} spørgsmål",
+        "questions_updated": "{count} spørgsmål redigeret",
+        "section_added": "Blok tilføjet",
+        "section_edited": "Blok redigeret"
+      },
+      "status": {
+        "completed": "Afsluttet",
+        "failed": "Mislykkedes",
+        "canceled": "Annulleret",
+        "paused": "Pause"
+      }
+    },
+    "plan_view": {
+      "expand": "Udvid planen",
+      "collapse": "Kollaps plan"
+    },
+    "run_monitor": {
+      "cancel": "Annuller kørsel",
+      "dismiss": "Afvis",
+      "now_doing": "Nu",
+      "input_disabled_hint": "Chatten er sat på pause, mens agenten er færdig med at bygge kurset. Annuller eller vent på, at det er fuldført."
     }
   },
   "widgets": {

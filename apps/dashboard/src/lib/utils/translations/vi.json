@@ -346,7 +346,11 @@
       "transcription_started": "Đã bắt đầu phiên âm",
       "transcription_start_failed": "Không thể bắt đầu phiên âm",
       "transcription_completed": "Phiên âm đã hoàn tất",
-      "transcript_fetch_failed": "Không thể tải bản ghi"
+      "transcript_fetch_failed": "Không thể tải bản ghi",
+      "thumbnail_updated": "Đã cập nhật hình thu nhỏ",
+      "thumbnail_update_failed": "Không cập nhật được hình thu nhỏ",
+      "thumbnail_regen_started": "Đang tạo lại hình thu nhỏ…",
+      "thumbnail_regen_failed": "Không thể tạo lại hình thu nhỏ"
     },
     "tags": {
       "group_created": "Đã tạo nhóm thẻ",
@@ -2059,7 +2063,8 @@
         "overview_metrics": {
           "heading": "Ảnh chụp nhanh khóa học",
           "description": "Người học đếm theo trạng thái cho khóa học này."
-        }
+        },
+        "empty_overview_description": "Giúp nhân viên của bạn luôn tuân thủ và theo dõi xem ai đứng sau."
       }
     },
     "search": {
@@ -2164,9 +2169,7 @@
           "depth": "Khóa học nên đi sâu đến mức nào?",
           "topic": "Chủ đề hoặc niche",
           "expertise_level": "Mục tiêu trình độ chuyên môn",
-          "documentation_url": {
-            "hint": "Chúng tôi sẽ đọc trang web này để xây dựng khóa học về sản phẩm thực của bạn."
-          }
+          "documentation_url": "URL tài liệu (tùy chọn)"
         },
         "expert_on_x": {
           "title": "Trở thành chuyên gia về X",
@@ -2340,7 +2343,8 @@
     "login_activity_title": "Hoạt động đăng nhập của sinh viên",
     "login_activity_description": "Những ngày hoạt động tích cực nhất trong tuần (90 ngày qua)",
     "login_activity_no_data": "Chưa có hoạt động đăng nhập",
-    "login_activity_logins": "thông tin đăng nhập"
+    "login_activity_logins": "thông tin đăng nhập",
+    "open_academy": "Học viện mở"
   },
   "schedule": {
     "title": "Lịch trình của bạn",
@@ -2621,7 +2625,8 @@
     "actions": {
       "edit": "Chỉnh sửa",
       "where_used": "Nơi sử dụng",
-      "download": "Tải xuống"
+      "download": "Tải xuống",
+      "manage_thumbnails": "Quản lý hình thu nhỏ"
     },
     "table": {
       "title": "Tiêu đề",
@@ -2678,7 +2683,22 @@
       "not_available": "không áp dụng"
     },
     "empty_description": "Tài sản không tồn tại hoặc không có sẵn trong tổ chức này.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library."
+    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "thumbnails": {
+      "manage_title": "Quản lý hình thu nhỏ",
+      "manage_description": "Xem trước video, chọn một trong các khung được tạo tự động hoặc tải lên khung của riêng bạn.",
+      "preview_unavailable": "Xem trước không có sẵn",
+      "generated": "Hình thu nhỏ được tạo",
+      "slot_start": "Bắt đầu",
+      "slot_middle": "giữa",
+      "slot_end": "Kết thúc",
+      "none_generated_warning": "Chưa có hình thu nhỏ nào được tạo. Hãy thử tạo lại hoặc tải lên một hình ảnh tùy chỉnh.",
+      "upload_custom": "Tải hình thu nhỏ tùy chỉnh lên",
+      "custom_selected_hint": "Tải lên tùy chỉnh sẽ được lưu khi bạn lưu lựa chọn của mình.",
+      "custom_preview_alt": "Xem trước hình thu nhỏ tùy chỉnh",
+      "regenerate": "tái sinh",
+      "save_selection": "Lưu hình thu nhỏ"
+    }
   },
   "settings": {
     "heading": "Cài đặt",
@@ -3003,6 +3023,14 @@
           "saas": {
             "title": "SaaS",
             "description": "Khung nét chấm, điểm nhấn mềm mại, cảm giác sản phẩm hiện đại"
+          },
+          "vibrant": {
+            "title": "Sống động",
+            "description": "Bảng điều khiển chính táo bạo, anh hùng chuyển màu hoàng hôn, giao diện poster tràn đầy năng lượng"
+          },
+          "editorial": {
+            "title": "biên tập",
+            "description": "Bảng màu kem ấm áp, anh hùng họa sĩ, cảm giác tạp chí tinh tế"
           }
         }
       },
@@ -3011,7 +3039,10 @@
         "description": "Được tạo bằng các tính năng cốt lõi, bạn có thể dễ dàng tùy chỉnh — không cần mã hóa.",
         "by_classroomio": "bởi ClassroomIO",
         "add": "Thêm",
-        "upgrade": "Nâng cấp"
+        "upgrade": "Nâng cấp",
+        "apply_theme": "Áp dụng chủ đề",
+        "preview": "Xem trước",
+        "card_menu_label": "Tùy chọn chủ đề"
       },
       "current": {
         "title": "Chủ đề hiện tại",
@@ -3952,6 +3983,54 @@
       "quiz_me": "Đố tôi về điều này",
       "summarize_section": "Tóm tắt phần này",
       "what_to_review": "Tôi nên xem xét gì tiếp theo?"
+    },
+    "run_running": "Tạo khóa học",
+    "run_completed": "Quá trình tạo khóa học đã hoàn tất",
+    "run_failed": "Tạo khóa học không thành công",
+    "run_canceled": "Việc tạo khóa học đã bị hủy",
+    "run_waiting_for_worker": "Đang chờ nhân viên nền",
+    "run_checkpoint": "Đang lưu điểm kiểm tra tiến độ",
+    "retry": "Thử lại",
+    "run_monitor_aria": "Đang tạo khóa học",
+    "run_summary": {
+      "completed": "Chạy xong.",
+      "completed_with_counts": "Đã hoàn thành chạy — đã tạo {counts}.",
+      "failed": "Chạy không thành công.",
+      "failed_with_reason": "Chạy không thành công — {reason}.",
+      "canceled": "Cuộc chạy bị hủy.",
+      "canceled_with_counts": "Cuộc chạy đã bị hủy — đã tạo {counts} trước khi dừng.",
+      "paused": "Chạy bị tạm dừng. Tiếp tục để tiếp tục.",
+      "paused_with_counts": "Cuộc chạy bị tạm dừng — đã tạo {counts} cho đến nay. Tiếp tục để tiếp tục."
+    },
+    "changes_card": {
+      "summary_count": "{count} mục đã thay đổi",
+      "expand": "Mở rộng các thay đổi",
+      "collapse": "Thu gọn các thay đổi",
+      "action": {
+        "created": "Đã tạo",
+        "metadata_updated": "Đã cập nhật siêu dữ liệu",
+        "content_written": "Nội dung viết",
+        "questions_added": "+{đếm} câu hỏi",
+        "questions_updated": "{count} câu hỏi đã được chỉnh sửa",
+        "section_added": "Đã thêm khối",
+        "section_edited": "Đã chỉnh sửa khối"
+      },
+      "status": {
+        "completed": "Đã hoàn thành",
+        "failed": "thất bại",
+        "canceled": "Đã hủy",
+        "paused": "Đã tạm dừng"
+      }
+    },
+    "plan_view": {
+      "expand": "Mở rộng kế hoạch",
+      "collapse": "Thu gọn kế hoạch"
+    },
+    "run_monitor": {
+      "cancel": "Hủy chạy",
+      "dismiss": "Loại bỏ",
+      "now_doing": "bây giờ",
+      "input_disabled_hint": "Cuộc trò chuyện bị tạm dừng trong khi nhân viên hỗ trợ hoàn tất việc xây dựng khóa học. Hủy bỏ hoặc đợi cho đến khi nó hoàn thành."
     }
   },
   "widgets": {

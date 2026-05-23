@@ -346,7 +346,11 @@
       "transcription_started": "Transcripción iniciada",
       "transcription_start_failed": "No se pudo iniciar la transcripción",
       "transcription_completed": "Transcripción finalizada",
-      "transcript_fetch_failed": "No se pudo cargar la transcripción"
+      "transcript_fetch_failed": "No se pudo cargar la transcripción",
+      "thumbnail_updated": "Miniatura actualizada",
+      "thumbnail_update_failed": "No se pudo actualizar la miniatura",
+      "thumbnail_regen_started": "Regenerando miniaturas…",
+      "thumbnail_regen_failed": "No se pudieron regenerar las miniaturas"
     },
     "tags": {
       "group_created": "Grupo de etiquetas creado",
@@ -2059,7 +2063,8 @@
         "overview_metrics": {
           "heading": "Resumen del curso",
           "description": "El alumno cuenta por estado para este curso."
-        }
+        },
+        "empty_overview_description": "Haga que sus empleados cumplan y realice un seguimiento de quién está detrás."
       }
     },
     "search": {
@@ -2164,9 +2169,7 @@
           "depth": "¿Qué profundidad debe tener el curso?",
           "topic": "Tema o nicho",
           "expertise_level": "Nivel de experiencia objetivo",
-          "documentation_url": {
-            "hint": "Leeremos este sitio para basar el curso en su producto real."
-          }
+          "documentation_url": "URL de documentación (opcional)"
         },
         "expert_on_x": {
           "title": "Conviértete en un experto en X",
@@ -2340,7 +2343,8 @@
     "login_activity_title": "Actividad de inicio de sesión del estudiante",
     "login_activity_description": "Días más activos de la semana (últimos 90 días)",
     "login_activity_no_data": "Aún no hay actividad de inicio de sesión",
-    "login_activity_logins": "inicios de sesión"
+    "login_activity_logins": "inicios de sesión",
+    "open_academy": "Academia Abierta"
   },
   "schedule": {
     "title": "Tu horario",
@@ -2621,7 +2625,8 @@
     "actions": {
       "edit": "Editar",
       "where_used": "donde se usa",
-      "download": "Descargar"
+      "download": "Descargar",
+      "manage_thumbnails": "Administrar miniaturas"
     },
     "table": {
       "title": "Título",
@@ -2678,7 +2683,22 @@
       "not_available": "N/A"
     },
     "empty_description": "El activo no existe o no está disponible en esta organización.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library."
+    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "thumbnails": {
+      "manage_title": "Administrar miniaturas",
+      "manage_description": "Obtenga una vista previa del vídeo, elija uno de los fotogramas generados automáticamente o cargue el suyo propio.",
+      "preview_unavailable": "Vista previa no disponible",
+      "generated": "Miniaturas generadas",
+      "slot_start": "Empezar",
+      "slot_middle": "Medio",
+      "slot_end": "Fin",
+      "none_generated_warning": "Aún no se han generado miniaturas. Intente regenerar o cargar una imagen personalizada.",
+      "upload_custom": "Subir miniatura personalizada",
+      "custom_selected_hint": "La carga personalizada se guardará cuando guarde su selección.",
+      "custom_preview_alt": "Vista previa en miniatura personalizada",
+      "regenerate": "regenerar",
+      "save_selection": "Guardar miniatura"
+    }
   },
   "settings": {
     "heading": "Configuración",
@@ -3003,6 +3023,14 @@
           "saas": {
             "title": "SaaS",
             "description": "Marco de líneas punteadas, detalles suaves, sensación de producto moderno."
+          },
+          "vibrant": {
+            "title": "Vibrante",
+            "description": "Paneles primarios atrevidos, héroe degradado al atardecer, aspecto de póster enérgico"
+          },
+          "editorial": {
+            "title": "Redacción",
+            "description": "Paleta de crema cálida, héroe pictórico, sensación refinada de revista"
           }
         }
       },
@@ -3011,7 +3039,10 @@
         "description": "Creado con funciones principales que puedes personalizar fácilmente, sin necesidad de codificación.",
         "by_classroomio": "por ClassroomIO",
         "add": "Añadir",
-        "upgrade": "Actualizar"
+        "upgrade": "Actualizar",
+        "apply_theme": "Aplicar tema",
+        "preview": "Vista previa",
+        "card_menu_label": "Opciones de tema"
       },
       "current": {
         "title": "Tema actual",
@@ -3952,6 +3983,54 @@
       "quiz_me": "Pregúntame sobre esto",
       "summarize_section": "Resumir esta sección",
       "what_to_review": "¿Qué debo revisar a continuación?"
+    },
+    "run_running": "Generando curso",
+    "run_completed": "Generación del curso completa",
+    "run_failed": "Falló la generación del curso",
+    "run_canceled": "Generación de curso cancelada",
+    "run_waiting_for_worker": "Esperando al trabajador en segundo plano.",
+    "run_checkpoint": "Guardar punto de control de progreso",
+    "retry": "Reintentar",
+    "run_monitor_aria": "Generación de cursos en progreso",
+    "run_summary": {
+      "completed": "Ejecución completada.",
+      "completed_with_counts": "Ejecución completada: creada {counts}.",
+      "failed": "La ejecución falló.",
+      "failed_with_reason": "La ejecución falló: {motivo}.",
+      "canceled": "Ejecución cancelada.",
+      "canceled_with_counts": "Ejecución cancelada: creó {counts} antes de detenerse.",
+      "paused": "Ejecución pausada. Reanudar para continuar.",
+      "paused_with_counts": "Ejecución pausada: creado {counts} hasta el momento. Reanudar para continuar."
+    },
+    "changes_card": {
+      "summary_count": "{count} elementos cambiados",
+      "expand": "Ampliar cambios",
+      "collapse": "Contraer cambios",
+      "action": {
+        "created": "Creado",
+        "metadata_updated": "Metadatos actualizados",
+        "content_written": "Contenido escrito",
+        "questions_added": "+{count} preguntas",
+        "questions_updated": "{count} preguntas editadas",
+        "section_added": "Bloque agregado",
+        "section_edited": "Bloque editado"
+      },
+      "status": {
+        "completed": "Completado",
+        "failed": "Fallido",
+        "canceled": "Cancelado",
+        "paused": "En pausa"
+      }
+    },
+    "plan_view": {
+      "expand": "Ampliar plano",
+      "collapse": "Plan de colapso"
+    },
+    "run_monitor": {
+      "cancel": "Cancelar ejecución",
+      "dismiss": "Descartar",
+      "now_doing": "ahora",
+      "input_disabled_hint": "El chat se pausa mientras el agente termina de crear el curso. Cancele o espere a que se complete."
     }
   },
   "widgets": {

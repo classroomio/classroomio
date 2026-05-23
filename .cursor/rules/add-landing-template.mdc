@@ -1,0 +1,31 @@
+---
+description: Workflow for adding a new org landing-page template (editorial, vibrant, terminal, etc.) to the ClassroomIO monorepo. Activate when the user asks to add/create/build a new landing template or theme, or hands over a design reference for a new landing visual style.
+globs:
+  - prototypes/org-landing-page/**
+  - packages/ui/src/custom/org-landing-page/**
+  - packages/storybook/src/templates/org-landing-page/**
+  - apps/dashboard/src/lib/features/org/utils/landing-page*.ts
+  - apps/dashboard/src/lib/features/settings/pages/landingpage.svelte
+  - apps/dashboard/src/lib/utils/types/org.ts
+  - apps/dashboard/static/templates/**
+alwaysApply: false
+---
+
+# Add a new landing template
+
+This is a three-phase workflow with **explicit approval gates between phases**. The canonical instructions live in [`skills/add-landing-template/SKILL.md`](mdc:skills/add-landing-template/SKILL.md) — read that file in full before starting, then follow it step-by-step.
+
+## Phase order — never skip ahead
+
+1. **Prototype** — single HTML file at `prototypes/org-landing-page/<theme>.html` using `--primary` as the only color token. **Ask the user for approval before moving on.**
+2. **packages/ui + Storybook** — define `LANDING_THEME_VARS` entry, build nav/hero/course-card subcomponents and the page composer, wire variant branches into shared sections (callout, links, footer-tokens, secondary-action-button), export from `index.ts`, add a Storybook story. **Ask the user for approval before moving on.**
+3. **Dashboard integration** — add to all four registries (three lazy switches + one eager map), settings theme-card picker, translations, preview image (< 500KB). Run `pnpm --filter @cio/ui build` and `svelte-check` once each, grep the captured output. **Ask the user for final approval.**
+
+## Critical correctness rules (full list in the canonical SKILL.md)
+
+- Components read colors **only** from `var(--landing-*)`. No `bg-background`, no inline hex (except decorative gradients).
+- Heroes that consume `courses` / `orgName` must declare defensive defaults (`courses = []`, `orgName = ''`) — they're mounted from course pages without the full prop set.
+- Use `<LandingButton variant="primary|secondary|tertiary">` for non-template-signature CTAs. The button's colors come from per-theme `--landing-button-*` variables.
+- Hardcoded user-facing strings route through `labels?.foo ?? 'default'`.
+- The dashboard has **three lazy switches** (`importThemeComponent`, `importThemeNavHero`, `importThemeCourseCard` in `landing-page.ts`) and **one eager map** (`landing-page-components.ts`) — all four must be updated, or the live org-site routes silently fall back to `minimal`.
+- Run `svelte-check` once, capture to `/tmp/check.log`, grep many times. Do not re-run for each grep.

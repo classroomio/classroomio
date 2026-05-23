@@ -1,7 +1,8 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { Button, type ButtonVariant } from '@cio/ui/base/button';
-  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+  import SquareArrowOutUpRight from '@lucide/svelte/icons/square-arrow-out-up-right';
+
   import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
@@ -45,13 +46,15 @@
   });
 </script>
 
-<Button {href} target="_blank" {variant} class={`ml-2 ${className}`.trim()}>
+<Button {href} target="_blank" {variant} class={`&_span:hidden! md:&_span:block ml-2 ${className}`.trim()}>
   {#if !$isMobile}
-    {#if isLMS}
-      {$t('dashboard.visit_site')}
-    {:else}
-      {$t(labelKey)}
-    {/if}
+    <span>
+      {#if isLMS}
+        {$t('dashboard.visit_site')}
+      {:else}
+        {$t(labelKey)}
+      {/if}
+    </span>
   {/if}
-  <ArrowUpRightIcon class="custom" />
+  <SquareArrowOutUpRight class="custom" />
 </Button>

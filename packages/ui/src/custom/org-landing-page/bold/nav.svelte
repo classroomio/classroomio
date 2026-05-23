@@ -17,11 +17,13 @@
 </script>
 
 <EditableLandingSection sectionKey="navigation">
-  <header class="ui:sticky ui:top-0 ui:z-10 ui:bg-background/90 ui:backdrop-blur-xl ui:border-b ui:border-border/40">
+  <header
+    class="ui:sticky ui:top-0 ui:z-10 ui:bg-[var(--landing-bg)]/90 ui:backdrop-blur-xl ui:border-b ui:border-[var(--landing-border)]/40"
+  >
     <div class="ui:flex ui:items-center ui:justify-between ui:px-6 ui:py-5 ui:max-w-7xl ui:mx-auto">
       <a
         href="/"
-        class="ui:font-black ui:text-2xl ui:tracking-tighter ui:flex ui:items-center ui:gap-3 ui:no-underline"
+        class="ui:font-black ui:text-2xl ui:tracking-tighter ui:flex ui:items-center ui:gap-3 ui:no-underline ui:cursor-pointer"
       >
         {#if logoUrl}
           <img src={logoUrl} alt={orgName} class="ui:h-8 ui:w-auto" />
@@ -33,7 +35,7 @@
           {#each navItems as item}
             <a
               href={item.href}
-              class="ui:text-sm ui:font-bold ui:uppercase ui:tracking-widest ui:hover:text-primary ui:transition-colors"
+              class="ui:text-sm ui:font-bold ui:uppercase ui:tracking-widest ui:hover:text-[var(--landing-accent)] ui:transition-colors ui:cursor-pointer"
               >{item.label}</a
             >
           {/each}

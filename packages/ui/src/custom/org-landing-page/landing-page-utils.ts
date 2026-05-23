@@ -72,3 +72,15 @@ export function calcCourseDiscount(percent = 0, cost: number, showDiscount: bool
   const discountedPrice = cost - discountAmount;
   return Math.round(discountedPrice);
 }
+
+export function defaultLessonsLabel(count: number): string {
+  return count === 1 ? '1 lesson' : `${count.toLocaleString()} lessons`;
+}
+
+export function defaultExercisesLabel(count: number): string {
+  return count === 1 ? '1 exercise' : `${count.toLocaleString()} exercises`;
+}
+
+export function defaultEnrolledLabel(count: number): string {
+  return `${count.toLocaleString()} enrolled`;
+}

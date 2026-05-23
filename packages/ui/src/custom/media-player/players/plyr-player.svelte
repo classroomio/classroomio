@@ -160,7 +160,7 @@
   {#if isYouTube && youtubeVideoId}
     <div
       bind:this={containerElement}
-      class="plyr__video-embed ui:absolute ui:inset-0 ui:h-full ui:w-full"
+      class="plyr__video-embed ui:h-full ui:w-full"
       data-plyr-provider="youtube"
       data-plyr-embed-id={youtubeVideoId}
     ></div>
@@ -171,7 +171,7 @@
       {src}
       {poster}
       {playsinline}
-      class="plyr-player ui:absolute ui:inset-0 ui:h-full ui:w-full ui:object-contain"
+      class="plyr-player ui:h-full ui:w-full ui:object-contain"
     >
       {#each tracks as track (track.src + track.srclang)}
         <track

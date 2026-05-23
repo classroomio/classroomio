@@ -16,6 +16,7 @@
 
   const cssVars = $derived(payload ? buildCssVarsFromDesign(payload.design) : '');
   const poweredByHref = $derived(payload ? buildPoweredByMarketingUrl(payload) : '');
+  const customCss = $derived(payload?.design.advanced.customCss?.trim() ?? '');
 
   $effect(() => {
     if (!payload || !rootEl) return;
@@ -27,6 +28,9 @@
   <div class="cio-widget cio-widget--empty">No widget payload provided.</div>
 {:else}
   <div bind:this={rootEl} class="cio-widget" style={cssVars} data-cio-layout={payload.layoutType}>
+    {#if customCss}
+      <svelte:element this={'style'} data-cio-widget-custom-css="">{customCss}</svelte:element>
+    {/if}
     {#if payload.layoutType === 'card_grid'}
       <CardGrid {payload} />
     {:else if payload.layoutType === 'tag_filter'}

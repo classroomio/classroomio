@@ -346,7 +346,11 @@
       "transcription_started": "Transcription commencée",
       "transcription_start_failed": "Impossible de démarrer la transcription",
       "transcription_completed": "Transcription terminée",
-      "transcript_fetch_failed": "Impossible de charger la transcription"
+      "transcript_fetch_failed": "Impossible de charger la transcription",
+      "thumbnail_updated": "Miniature mise à jour",
+      "thumbnail_update_failed": "Échec de la mise à jour de la vignette",
+      "thumbnail_regen_started": "Régénération des vignettes…",
+      "thumbnail_regen_failed": "Échec de la régénération des miniatures"
     },
     "tags": {
       "group_created": "Groupe de balises créé",
@@ -2059,7 +2063,8 @@
         "overview_metrics": {
           "heading": "Aperçu du cours",
           "description": "L'apprenant compte par statut pour ce cours."
-        }
+        },
+        "empty_overview_description": "Gardez vos employés conformes et suivez qui est derrière."
       }
     },
     "search": {
@@ -2164,9 +2169,7 @@
           "depth": "Jusqu’où doit aller le cours ?",
           "topic": "Sujet ou niche",
           "expertise_level": "Niveau d’expertise cible",
-          "documentation_url": {
-            "hint": "Nous lirons ce site pour ancrer le cours dans votre produit réel."
-          }
+          "documentation_url": "URL de la documentation (facultatif)"
         },
         "expert_on_x": {
           "title": "Devenez un expert sur X",
@@ -2340,7 +2343,8 @@
     "login_activity_title": "Activité de connexion des étudiants",
     "login_activity_description": "Jours les plus actifs de la semaine (90 derniers jours)",
     "login_activity_no_data": "Aucune activité de connexion pour le moment",
-    "login_activity_logins": "connexions"
+    "login_activity_logins": "connexions",
+    "open_academy": "Académie ouverte"
   },
   "schedule": {
     "title": "Votre emploi du temps",
@@ -2621,7 +2625,8 @@
     "actions": {
       "edit": "Modifier",
       "where_used": "Où utilisé",
-      "download": "Télécharger"
+      "download": "Télécharger",
+      "manage_thumbnails": "Gérer les vignettes"
     },
     "table": {
       "title": "Titre",
@@ -2678,7 +2683,22 @@
       "not_available": "N/D"
     },
     "empty_description": "L'actif n'existe pas ou n'est pas disponible dans cette organisation.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library."
+    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "thumbnails": {
+      "manage_title": "Gérer les vignettes",
+      "manage_description": "Prévisualisez la vidéo, choisissez l'une des images générées automatiquement ou téléchargez la vôtre.",
+      "preview_unavailable": "Aperçu indisponible",
+      "generated": "Miniatures générées",
+      "slot_start": "Commencer",
+      "slot_middle": "Milieu",
+      "slot_end": "Fin",
+      "none_generated_warning": "Aucune vignette générée pour l'instant. Essayez de régénérer ou de télécharger une image personnalisée.",
+      "upload_custom": "Télécharger une miniature personnalisée",
+      "custom_selected_hint": "Le téléchargement personnalisé sera enregistré lorsque vous enregistrerez votre sélection.",
+      "custom_preview_alt": "Aperçu miniature personnalisé",
+      "regenerate": "Régénérer",
+      "save_selection": "Enregistrer la vignette"
+    }
   },
   "settings": {
     "heading": "Paramètres",
@@ -3003,6 +3023,14 @@
           "saas": {
             "title": "SaaS",
             "description": "Cadre en pointillés, accents doux, sensation de produit moderne"
+          },
+          "vibrant": {
+            "title": "Vibrant",
+            "description": "Panneaux primaires audacieux, héros dégradé au coucher du soleil, look d'affiche énergique"
+          },
+          "editorial": {
+            "title": "Éditorial",
+            "description": "Palette de crème chaude, héros pictural, sensation de magazine raffinée"
           }
         }
       },
@@ -3011,7 +3039,10 @@
         "description": "Conçu avec des fonctionnalités de base que vous pouvez facilement personnaliser – aucun codage requis.",
         "by_classroomio": "par ClassroomIO",
         "add": "Ajouter",
-        "upgrade": "Mise à niveau"
+        "upgrade": "Mise à niveau",
+        "apply_theme": "Appliquer le thème",
+        "preview": "Aperçu",
+        "card_menu_label": "Options de thème"
       },
       "current": {
         "title": "Thème actuel",
@@ -3952,6 +3983,54 @@
       "quiz_me": "Questionnez-moi à ce sujet",
       "summarize_section": "Résumer cette section",
       "what_to_review": "Que dois-je réviser ensuite ?"
+    },
+    "run_running": "Génération de cours",
+    "run_completed": "Génération de cours terminée",
+    "run_failed": "La génération du cours a échoué",
+    "run_canceled": "Génération de cours annulée",
+    "run_waiting_for_worker": "En attendant le travailleur d'arrière-plan",
+    "run_checkpoint": "Enregistrement du point de contrôle de progression",
+    "retry": "Réessayer",
+    "run_monitor_aria": "Génération de cours en cours",
+    "run_summary": {
+      "completed": "Exécution terminée.",
+      "completed_with_counts": "Exécution terminée – créé {counts}.",
+      "failed": "L'exécution a échoué.",
+      "failed_with_reason": "Échec de l'exécution – {raison}.",
+      "canceled": "Exécution annulée.",
+      "canceled_with_counts": "Exécution annulée – créé {counts} avant de s'arrêter.",
+      "paused": "Exécution en pause. Reprendre pour continuer.",
+      "paused_with_counts": "Exécution en pause – créé {counts} jusqu'à présent. Reprendre pour continuer."
+    },
+    "changes_card": {
+      "summary_count": "{count} éléments modifiés",
+      "expand": "Développer les modifications",
+      "collapse": "Réduire les modifications",
+      "action": {
+        "created": "Créé",
+        "metadata_updated": "Métadonnées mises à jour",
+        "content_written": "Contenu écrit",
+        "questions_added": "+{count} questions",
+        "questions_updated": "{count} questions modifiées",
+        "section_added": "Bloc ajouté",
+        "section_edited": "Bloc modifié"
+      },
+      "status": {
+        "completed": "Terminé",
+        "failed": "Échec",
+        "canceled": "Annulé",
+        "paused": "En pause"
+      }
+    },
+    "plan_view": {
+      "expand": "Élargir le plan",
+      "collapse": "Plan d'effondrement"
+    },
+    "run_monitor": {
+      "cancel": "Annuler l'exécution",
+      "dismiss": "Rejeter",
+      "now_doing": "Maintenant",
+      "input_disabled_hint": "La conversation est suspendue pendant que l'agent termine la création du cours. Annulez ou attendez qu'il soit terminé."
     }
   },
   "widgets": {
