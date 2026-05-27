@@ -32,7 +32,7 @@
   });
 
   async function handleClick(plan, planName: string) {
-    if (plan.CTA.IS_DISABLED || !$profile.id || !$profile.email) {
+    if (plan.CTA.IS_DISABLED || !$profile.id || !$profile.email || !$currentOrg.memberId) {
       return;
     }
 
@@ -52,7 +52,7 @@
       checkoutURL.searchParams.set(
         'metadata',
         JSON.stringify({
-          triggeredBy: $currentOrg.roleId,
+          triggeredBy: $currentOrg.memberId,
           orgId: $currentOrg.id,
           orgSlug: $currentOrg.siteName
         })

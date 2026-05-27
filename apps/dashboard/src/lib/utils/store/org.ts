@@ -48,6 +48,7 @@ export const currentOrg: Writable<AccountOrg> = writable({
   parentOrganizationId: null,
   plans: [],
   readOnlyUntil: null,
+  memberId: 0,
   roleId: 0,
   settings: {},
   siteName: '',

@@ -15,6 +15,9 @@ import {
   getOrganizationAudienceMember,
   getOrganizationById,
   getOrganizationBySiteName,
+  getOrganizationMemberByIdAndOrg,
+  getOrganizationMemberIdByOrgAndProfile,
+  getOrganizationPlanBySubscriptionId,
   getOrganizationTeam,
   getOrganizations,
   revokeActiveOrganizationInvitesByEmails,
@@ -41,7 +44,7 @@ import { PLAN } from '@cio/utils/plans';
 import { ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
-import { getProfileById } from '@cio/db/queries/auth';
+import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
 import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/invite';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
 
@@ -520,6 +523,45 @@ export async function getOrgSetupData(siteName: string) {
   }
 }
 
+async function resolveOrgPlanTriggeredBy(params: {
+  checkoutOrgId: string;
+  targetOrgId: string;
+  triggeredBy: number;
+  payload: Record<string, unknown> | null | undefined;
+}): Promise<number> {
+  const { checkoutOrgId, targetOrgId, triggeredBy, payload } = params;
+  const checkoutMember = await getOrganizationMemberByIdAndOrg(triggeredBy, checkoutOrgId);
+
+  if (checkoutMember?.profileId) {
+    if (targetOrgId === checkoutOrgId) {
+      return triggeredBy;
+    }
+
+    const primaryMemberId = await getOrganizationMemberIdByOrgAndProfile(targetOrgId, checkoutMember.profileId);
+
+    if (primaryMemberId) {
+      return primaryMemberId;
+    }
+  }
+
+  const customer = payload?.customer;
+
+  if (customer && typeof customer === 'object' && 'email' in customer && typeof customer.email === 'string') {
+    const profile = await getProfileByEmail(customer.email);
+    const memberId = profile ? await getOrganizationMemberIdByOrgAndProfile(targetOrgId, profile.id) : null;
+
+    if (memberId) {
+      return memberId;
+    }
+  }
+
+  throw new AppError(
+    'Could not resolve organization member for plan',
+    ErrorCodes.ORG_PLAN_CREATE_FAILED,
+    400
+  );
+}
+
 /**
  * Creates a new organization plan
  * @param data - Organization plan creation data
@@ -527,22 +569,42 @@ export async function getOrgSetupData(siteName: string) {
  */
 export async function createOrgPlan(data: TNewOrganizationPlan) {
   try {
+    if (!data.orgId || data.triggeredBy == null || !data.subscriptionId) {
+      throw new AppError('Missing organization plan fields', ErrorCodes.ORG_PLAN_CREATE_FAILED, 400);
+    }
+
+    const existingPlan = await getOrganizationPlanBySubscriptionId(data.subscriptionId);
+
+    if (existingPlan) {
+      return existingPlan;
+    }
+
     // Subscriptions always attach to the primary workspace, even if a
     // secondary org id was supplied at checkout.
-    const primary = data.orgId ? await getAccountPrimary(data.orgId) : null;
+    const primary = await getAccountPrimary(data.orgId);
     const targetOrgId = primary?.id ?? data.orgId;
+    const triggeredBy = await resolveOrgPlanTriggeredBy({
+      checkoutOrgId: data.orgId,
+      targetOrgId,
+      triggeredBy: data.triggeredBy,
+      payload: data.payload as Record<string, unknown> | null | undefined
+    });
 
     const plan = await createOrganizationPlan({
       orgId: targetOrgId,
       planName: data.planName,
       subscriptionId: data.subscriptionId,
-      triggeredBy: data.triggeredBy,
+      triggeredBy,
       payload: data.payload,
       isActive: true,
       provider: 'polar'
     });
     return plan;
   } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to create organization plan',
       ErrorCodes.ORG_PLAN_CREATE_FAILED,
