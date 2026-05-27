@@ -5,11 +5,22 @@ import {
   RATE_LIMIT_HEADERS
 } from '@api/constants/rate-limiter';
 
-import type { MiddlewareHandler } from 'hono';
+import type { Context, MiddlewareHandler } from 'hono';
 import { RedisRateLimiter } from '@api/utils/redis/limiter';
 import { userKeyGenerator } from '../utils/redis/key-generators';
 import { env } from '@api/config/env';
 import { logRedisUnavailableOnce, redis } from '@api/utils/redis/redis';
+
+/** Dashboard SSR and other internal callers authenticate with PRIVATE_SERVER_KEY. */
+export function isTrustedServerApiKeyRequest(c: Context): boolean {
+  const expectedKey = env.PRIVATE_SERVER_KEY;
+  if (!expectedKey) return false;
+
+  const authHeader = c.req.header('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) return false;
+
+  return authHeader.slice('Bearer '.length).trim() === expectedKey;
+}
 
 export interface RateLimiterOptions {
   windowMs?: number;
@@ -86,7 +97,21 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
   };
 };
 
+function defaultMaxRequests(c: Context): number {
+  // Org lookup runs on every SSR layout load; keep it out of the tight global bucket.
+  if (c.req.method === 'GET' && c.req.path === '/organization') return 500;
+
+  return DEFAULT_RATE_LIMITER_OPTIONS.maxRequests;
+}
+
+function shouldSkipRateLimit(c: Context): boolean {
+  if (isTrustedServerApiKeyRequest(c)) return true;
+
+  return c.req.path === '/api/auth/get-session';
+}
+
 // Default rate limiter middleware with standard configuration
 export default createRateLimiter({
-  maxRequests: (c) => (c.req.path === '/api/auth/get-session' ? 1000 : DEFAULT_RATE_LIMITER_OPTIONS.maxRequests)
+  maxRequests: defaultMaxRequests,
+  skip: shouldSkipRateLimit
 });
