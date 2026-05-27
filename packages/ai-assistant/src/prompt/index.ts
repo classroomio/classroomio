@@ -10,14 +10,17 @@ import type { AiTutorSettings } from '../tutor-config';
  * Anthropic prompt-cache prefix. Per-request volatile context belongs in
  * `buildContextMessage` and is sent as a user-turn message.
  */
-export function buildSystemPrompt(context: AgentContext, options?: { tutorSettings?: AiTutorSettings }): string {
+export function buildSystemPrompt(
+  context: AgentContext,
+  options?: { tutorSettings?: AiTutorSettings; isOrgOnPaidPlan?: boolean }
+): string {
   switch (context.role) {
     case AgentRole.TEACHER:
-      return buildTeacherSystemPrompt(context);
+      return buildTeacherSystemPrompt(context, { isOrgOnPaidPlan: options?.isOrgOnPaidPlan });
     case AgentRole.STUDENT:
       return buildStudentSystemPrompt(context, options?.tutorSettings);
     default:
-      return buildTeacherSystemPrompt(context);
+      return buildTeacherSystemPrompt(context, { isOrgOnPaidPlan: options?.isOrgOnPaidPlan });
   }
 }
 
