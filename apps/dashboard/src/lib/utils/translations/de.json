@@ -7,17 +7,17 @@
   },
   "validations": {
     "generic": {
-      "invalid_type": "Ungültiger Typ {erwartet, ausgewählt, undefiniert{} andere{. Erwartet {erwartet}}}{received, select, undefiniert{} other{ (received {received})}}",
-      "too_big": "Der Wert ist zu groß{maximum, select, undefiniert{} other{. Maximum {maximum}}}",
-      "too_small": "Der Wert ist zu klein{minimum, select, undefiniert{} other{. Minimum {Minimum}}}",
-      "invalid_format": "Ungültiges Format{validation, select, undefiniert{} other{ für {validation}}}",
+      "invalid_type": "Ungültiger Typ {expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "too_big": "Der Wert ist zu groß{maximum, select, undefined{} other{. Maximum {maximum}}}",
+      "too_small": "Der Wert ist zu klein{minimum, select, undefined{} other{. Minimum {minimum}}}",
+      "invalid_format": "Ungültiges Format{validation, select, undefined{} other{ für {validation}}}",
       "not_multiple_of": "Der Wert muss ein Vielfaches von {multipleOf} sein",
-      "unrecognized_keys": "Enthält nicht erkannte Schlüssel{keys, select, undefiniert{} other{: {keys}}}",
+      "unrecognized_keys": "Enthält nicht erkannte Schlüssel{keys, select, undefined{} other{: {keys}}}",
       "invalid_union": "Ungültiger Wert für die bereitgestellten Optionen {unionErrors, select, undefined{} other{. {unionErrors}-Option(en) fehlgeschlagen}}",
-      "invalid_key": "Ungültiger Schlüssel{key, select, undefiniert{} other{: {key}}}",
-      "invalid_element": "Ungültiges Element{index, select, undefiniert{} other{ am Index {index}}}",
-      "invalid_value": "Ungültiger Wert{erwartet, ausgewählt, undefiniert{} andere{. Erwartet {erwartet}}}{received, select, undefiniert{} other{ (received {received})}}",
-      "custom": "{Nachricht}",
+      "invalid_key": "Ungültiger Schlüssel{key, select, undefined{} other{: {key}}}",
+      "invalid_element": "Ungültiges Element{index, select, undefined{} other{ am Index {index}}}",
+      "invalid_value": "Ungültiger Wert{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "custom": "{message}",
       "required_field": "Dieses Feld ist erforderlich",
       "invalid_field": "Ungültiger Wert"
     },
@@ -118,7 +118,7 @@
     },
     "exercise": {
       "options": {
-        "custom": "{Nachricht}"
+        "custom": "{message}"
       },
       "points": {
         "too_small": "Die Punkte müssen mindestens 0 sein"
@@ -531,7 +531,7 @@
       "description": "Anmeldungen gruppiert nach Kurstyp",
       "subtitle": "{total} Anmeldungen für alle Typen",
       "empty": "Noch keine Anmeldedaten",
-      "course_count": "{Anzahl, Plural, eins {# Kurs} andere {# Kurse}}",
+      "course_count": "{count, plural, one {# course} other {# courses}}",
       "views_short": "Ansichten",
       "types": {
         "SELF_PACED": "Im eigenen Tempo",
@@ -589,8 +589,8 @@
       "progress_distribution_card_description": "Wie viele Lernende fallen in jedes Abschlussband?",
       "grade_distribution_card_description": "Wie viele Lernende fallen in jede Klassenstufe?",
       "students_table_description": "Sortierbare Übersicht mit Links zu Lernprofilen.",
-      "kpi_team_tutors": "{count, plural, one {# Tutor im Kursteam} other {# Tutor im Kursteam}}",
-      "kpi_lessons_exercises": "{count, plural, one {#Übung} andere {#Übungen}}, zugeordnet zu Lektionen",
+      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
+      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}}, zugeordnet zu Lektionen",
       "kpi_progress_grade": "{grade} % durchschnittliche Übungsnote aller eingeschriebenen Lernenden"
     }
   },
@@ -979,7 +979,7 @@
           "signatory_two_name": "Name des Unterzeichners 2",
           "signatory_two_role": "Rolle des Unterzeichners 2",
           "id_format": "Zertifikat-ID-Format",
-          "id_format_hint": "Verwenden Sie „{'seq‘}‘ für die letzten vier Ziffern, „{‘year‘}‘ für das Ausgabejahr und „{‘month‘}‘ für den Monat.",
+          "id_format_hint": "Verwenden Sie „{'seq'}‘ für die letzten vier Ziffern, „{'year'}‘ für das Ausgabejahr und „{'month'}‘ für den Monat.",
           "accent_hint": "Die Akzentfarbe wird auf der Empfängerregel, den Stempeln und der Überschriftenhervorhebung der Vorlage angezeigt.",
           "templates_hint": "Vorlagen werden mit demselben Renderer gerendert, der für die heruntergeladenen PDF- und PNG-Dateien verwendet wird.",
           "download_pdf": "PDF herunterladen",
@@ -1379,7 +1379,9 @@
               },
               "select_type": "Typ auswählen",
               "question_type_auto_gradable": "Auto",
+              "question_type_auto_gradable_description": "Scored automatically by the system",
               "question_type_manual_grading": "Manual",
+              "question_type_manual_grading_description": "Requires human review to score",
               "premium_question_type": "Führen Sie ein Upgrade durch, um diesen Fragetyp zu verwenden"
             },
             "delete_confirmation": {
@@ -1837,7 +1839,7 @@
                 "add_from_library": "Aus Bibliothek hinzufügen",
                 "cancel_upload": "Hochladen abbrechen",
                 "upload_cancelled": "Der Upload wurde vom Benutzer abgebrochen",
-                "max_files": "{count, plural, one {Sie können # Datei hochladen} other {Sie können # Dateien hochladen}}",
+                "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
                 "max_files_and_size": "(jeweils bis zu {size})",
                 "google_drive_choose": "Wählen Sie aus Google Drive",
                 "google_drive_opening": "Auswahl öffnen…",
@@ -3294,7 +3296,7 @@
       "included": {
         "title": "Ihr inbegriffener Verbrauch",
         "subtitle": "Monatliche Token sind in Ihrem Plan enthalten.",
-        "resets_on": "Setzt {Datum} zurück"
+        "resets_on": "Setzt {date} zurück"
       }
     }
   },

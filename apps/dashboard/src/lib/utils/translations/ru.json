@@ -7,17 +7,17 @@
   },
   "validations": {
     "generic": {
-      "invalid_type": "Неверный тип {ожидаемый, выбранный, неопределенный{} другое{. Ожидается {ожидается}}}{получено, выберите, неопределенное{} другое { (получено {получено})}}",
-      "too_big": "Значение слишком велико{максимум, выберите, неопределенное{} другое{. Максимум {максимум}}}",
-      "too_small": "Значение слишком мало{минимальное, выберите, неопределенное{} другое{. Минимум {минимум}}}",
-      "invalid_format": "Неверный формат{проверка, выбор, неопределенное{} другое{ для {проверка}}}",
+      "invalid_type": "Неверный тип {expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "too_big": "Значение слишком велико{maximum, select, undefined{} other{. Maximum {maximum}}}",
+      "too_small": "Значение слишком мало{minimum, select, undefined{} other{. Minimum {minimum}}}",
+      "invalid_format": "Неверный формат{validation, select, undefined{} other{ for {validation}}}",
       "not_multiple_of": "Значение должно быть кратно {multipleOf}.",
-      "unrecognized_keys": "Содержит нераспознанные ключи{keys, select, undefine{}other{: {keys}}}",
-      "invalid_union": "Недопустимое значение для предоставленных параметров{unionErrors, select, undefine{}other{. Вариант(ы) {unionErrors} не выполнен}}",
-      "invalid_key": "Неверный ключ{key, select, undefine{}other{: {key}}}",
-      "invalid_element": "Неверный элемент{index, select, undefined{}other{ по индексу {index}}}",
-      "invalid_value": "Недопустимое значение{ожидаемое, выбранное, неопределенное{} другое{. Ожидается {ожидается}}}{получено, выберите, неопределенное{} другое { (получено {получено})}}",
-      "custom": "{сообщение}",
+      "unrecognized_keys": "Содержит нераспознанные ключи{keys, select, undefined{} other{: {keys}}}",
+      "invalid_union": "Недопустимое значение для предоставленных параметров{unionErrors, select, undefined{} other{. Вариант(ы) {unionErrors} не выполнен}}",
+      "invalid_key": "Неверный ключ{key, select, undefined{} other{: {key}}}",
+      "invalid_element": "Неверный элемент{index, select, undefined{} other{ по индексу {index}}}",
+      "invalid_value": "Недопустимое значение{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "custom": "{message}",
       "required_field": "Это поле обязательно для заполнения",
       "invalid_field": "Недопустимое значение"
     },
@@ -118,7 +118,7 @@
     },
     "exercise": {
       "options": {
-        "custom": "{сообщение}"
+        "custom": "{message}"
       },
       "points": {
         "too_small": "Баллов должно быть не менее 0."
@@ -470,7 +470,7 @@
     "title": "Аналитика",
     "courses": "Курсы",
     "progress": "Прогресс",
-    "progress_description": "{value, Number} из {total, Number} завершено",
+    "progress_description": "{value, number} из {total, number} завершено",
     "incomplete": "Неполный",
     "completed": "Завершено",
     "complete": "полный",
@@ -531,7 +531,7 @@
       "description": "Зачисления сгруппированы по типу курса",
       "subtitle": "{total} зачислений по всем типам",
       "empty": "Данных о регистрации пока нет",
-      "course_count": "{число, множественное число, один {# курс} другой {# курс}}",
+      "course_count": "{count, plural, one {# course} other {# courses}}",
       "views_short": "просмотры",
       "types": {
         "SELF_PACED": "Самостоятельный темп",
@@ -589,8 +589,8 @@
       "progress_distribution_card_description": "Сколько учащихся попадает в каждую группу завершения.",
       "grade_distribution_card_description": "Сколько учащихся попадает в каждую группу классов.",
       "students_table_description": "Сортируемый обзор со ссылками на профили учащихся.",
-      "kpi_team_tutors": "{count, множественное число, one {# репетитор в команде курса}other {# репетитора в команде курса}}",
-      "kpi_lessons_exercises": "{count, множественное число, одно {# упражнения} другое {# упражнений}} сопоставлено с уроками",
+      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
+      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} сопоставлено с уроками",
       "kpi_progress_grade": "{grade} % средняя оценка за упражнения среди зачисленных учащихся"
     }
   },
@@ -1109,7 +1109,7 @@
           "snackbar_failed_revoke_invite": "Не удалось отозвать приглашение.",
           "snackbar_failed_load_audit": "Не удалось загрузить аудит приглашений.",
           "snackbar_metadata_copied": "Метаданные приглашения скопированы.",
-          "snackbar_email_invites_success": "Создано приглашений: {count}. Отправлено {отправлено}, ошибка {failed}. Пропущено дубликатов: {duulates}.",
+          "snackbar_email_invites_success": "Создано приглашений: {count}. Отправлено {sent}, ошибка {failed}. Пропущено дубликатов: {duplicates}.",
           "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "Одноразовый (24 часа)",
@@ -1342,7 +1342,7 @@
               "checking_submission": "Проверка вашей заявки...",
               "answer_required": "Пожалуйста, ответьте на этот вопрос, прежде чем продолжить.",
               "instructor_feedback": "Отзывы инструктора",
-              "attempt_counter": "Попытка {текущая} из {total}",
+              "attempt_counter": "Попытка {current} из {total}",
               "previous_try": "Предыдущая попытка",
               "next_try": "Следующая попытка",
               "try_again": "Попробуйте еще раз",
@@ -1379,7 +1379,9 @@
               },
               "select_type": "Выберите тип",
               "question_type_auto_gradable": "Auto",
+              "question_type_auto_gradable_description": "Scored automatically by the system",
               "question_type_manual_grading": "Manual",
+              "question_type_manual_grading_description": "Requires human review to score",
               "premium_question_type": "Обновите, чтобы использовать этот тип вопроса"
             },
             "delete_confirmation": {
@@ -1439,7 +1441,7 @@
                   "helper": "Перетащите элементы, чтобы определить правильный порядок.",
                   "add_step": "Добавить шаг",
                   "empty": "Добавьте шаги, затем перетащите их, чтобы установить ожидаемый порядок.",
-                  "step_placeholder": "Шаг '{'индекс'}'",
+                  "step_placeholder": "Шаг '{'index'}'",
                   "remove_step_tooltip": "Удалить шаг"
                 }
               },
@@ -1457,7 +1459,7 @@
               "link": {
                 "preview": {
                   "empty": "Ссылки не предоставлены.",
-                  "item_label": "Ссылка '{'индекс'}'"
+                  "item_label": "Ссылка '{'index'}'"
                 },
                 "take": {
                   "helper": "Добавьте одну или несколько ссылок. Принимаются только действительные URL-адреса http/https.",
@@ -1837,7 +1839,7 @@
                 "add_from_library": "Добавить из библиотеки",
                 "cancel_upload": "Отменить загрузку",
                 "upload_cancelled": "Загрузка отменена пользователем",
-                "max_files": "{count, множественное число, one {Вы можете загрузить # файл} Other {Вы можете загрузить # файла}}",
+                "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
                 "max_files_and_size": "(до {size} каждый)",
                 "google_drive_choose": "Выберите на Google Диске",
                 "google_drive_opening": "Открытие выбора…",
@@ -1973,7 +1975,7 @@
         "user_avatar_alt": "Аватар пользователя",
         "comments": {
           "comment": "комментарий",
-          "showing_of": "Показаны {показано} из {всего}",
+          "showing_of": "Показаны {shown} из {total}",
           "hide": "Скрыть комментарии",
           "placeholder": "Добавить комментарий к классу",
           "submit_aria": "Отправить комментарий",
@@ -2127,10 +2129,10 @@
       "blocker_progress": "Ваш прогресс по курсу составляет {current}%; Требуется {required}%.",
       "blocker_deadline": "Срок сертификации прошел.",
       "blocker_no_content": "В этом курсе нет уроков или упражнений, которые необходимо выполнить.",
-      "blocker_final_not_submitted": "Чтобы получить сертификат, отправьте необходимое упражнение «{exercisionTitle}».",
-      "blocker_final_pending": "Ваша попытка выполнения \"{exercisionTitle}\" все еще оценивается.",
-      "blocker_final_score": "Ваш лучший результат в «{exercisionTitle}» — {bestPercent}%; Требуется {requiredPercent}%.",
-      "blocker_final_misconfigured": "Для сертификационного упражнения «{exercisionTitle}» не настроены баллы; попросите инструктора это исправить.",
+      "blocker_final_not_submitted": "Чтобы получить сертификат, отправьте необходимое упражнение «{exerciseTitle}».",
+      "blocker_final_pending": "Ваша попытка выполнения \"{exerciseTitle}\" все еще оценивается.",
+      "blocker_final_score": "Ваш лучший результат в «{exerciseTitle}» — {bestPercent}%; Требуется {requiredPercent}%.",
+      "blocker_final_misconfigured": "Для сертификационного упражнения «{exerciseTitle}» не настроены баллы; попросите инструктора это исправить.",
       "email_message_label": "Сообщение электронной почты",
       "email_message_placeholder": "например Мы гордимся вашим прогрессом — продолжайте учиться!"
     },
@@ -2335,11 +2337,11 @@
     "compliance": "Соответствие",
     "compliance_score_subtitle": "{completed} из {total} курсов по обеспечению соответствия требованиям, пройденных на данный момент",
     "compliance_score_empty": "Курсы соответствия еще не назначены",
-    "compliance_met": "выполнено {завершено} из {total}",
+    "compliance_met": "выполнено {completed} из {total}",
     "required_courses_completed": "Пройдено {completed} из {total} обязательных курсов",
     "streak": "Полоса",
     "days_active": "дней активности",
-    "items_done": "{завершено} из {total} выполнено",
+    "items_done": "{completed} из {total} выполнено",
     "login_activity_title": "Активность входа учащихся",
     "login_activity_description": "Самые активные дни недели (последние 90 дней)",
     "login_activity_no_data": "Пока нет активности входа",
@@ -3050,7 +3052,7 @@
         "field_theme": "Тема",
         "field_hero": "Главный заголовок",
         "field_nav": "Навигация",
-        "field_nav_count_one": "{количество} ссылки",
+        "field_nav_count_one": "{count} ссылки",
         "field_nav_count_other": "{count} ссылок",
         "hero_empty": "—",
         "customize": "Настройте целевую страницу"
@@ -3266,8 +3268,8 @@
         "title": "Купить больше жетонов",
         "description": "Каждый пакет добавляет 5 000 000 кредитов за 5 долларов США. Выберите, сколько упаковок вам нужно.",
         "quantity_hint": "пакеты",
-        "preview": "Пакет(ы) {quantity} · жетоны {tokens} · ${доллары}",
-        "buy_button": "Купить за ${долларов}"
+        "preview": "Пакет(ы) {quantity} · жетоны {tokens} · ${dollars}",
+        "buy_button": "Купить за ${dollars}"
       },
       "leaderboard": {
         "title": "Использование команды",
@@ -3294,7 +3296,7 @@
       "included": {
         "title": "Ваше включенное использование",
         "subtitle": "Ежемесячные токены включены в ваш план.",
-        "resets_on": "Сбрасывает {дата}"
+        "resets_on": "Сбрасывает {date}"
       }
     }
   },
@@ -3724,7 +3726,7 @@
       "user_avatar_alt": "Аватар пользователя",
       "comments": {
         "comment": "комментарий",
-        "showing_of": "Показаны {показано} из {всего}",
+        "showing_of": "Показаны {shown} из {total}",
         "hide": "Скрыть комментарии",
         "placeholder": "Добавить комментарий к программе",
         "submit_aria": "Отправить комментарий",
@@ -3967,7 +3969,7 @@
     "rename_chat_placeholder": "Название беседы",
     "rename_chat_failed": "Не удалось переименовать этот чат. Попробуйте еще раз.",
     "error_rate_limit": "Служба AI временно занята. Пожалуйста, повторите попытку через минуту.",
-    "error_rate_limit_with_wait": "Служба AI временно занята. Повторите попытку через {секунды} сек.",
+    "error_rate_limit_with_wait": "Служба AI временно занята. Повторите попытку через {seconds} сек.",
     "error_context_too_long": "Разговор слишком длинный. Попробуйте начать новый чат или сократить сообщение.",
     "error_network": "Ошибка сети. Пожалуйста, проверьте подключение и повторите попытку.",
     "context_usage_tooltip": "{used} / {max} использовано токенов",
@@ -3996,7 +3998,7 @@
       "completed": "Запуск завершен.",
       "completed_with_counts": "Запуск завершен — создано {counts}.",
       "failed": "Запуск не удался.",
-      "failed_with_reason": "Не удалось выполнить запуск — {причина}.",
+      "failed_with_reason": "Не удалось выполнить запуск — {reason}.",
       "canceled": "Забег отменен.",
       "canceled_with_counts": "Запуск отменен — перед остановкой создано {counts}.",
       "paused": "Бег остановился. Возобновите, чтобы продолжить.",
@@ -4260,7 +4262,7 @@
     "subtitle": "Отслеживайте статус сертификации по каждому курсу соответствия в вашей организации.",
     "learners": {
       "heading": "Учащиеся",
-      "subtitle": "{count, число} совпадение",
+      "subtitle": "{count, number} совпадение",
       "empty": "Ни один учащийся не соответствует этому фильтру",
       "learner": "Учащийся",
       "course": "Курс",
@@ -4311,7 +4313,7 @@
       "submit": "Проверьте мои ответы",
       "try_again": "Попробуйте еще раз",
       "practice_again": "Практикуйтесь снова",
-      "attempt_option": "Попытка {attemptNumber} – {правильно}/{всего}",
+      "attempt_option": "Попытка {attemptNumber} – {correct}/{total}",
       "attempts_select_aria": "Ваши попытки",
       "privacy_hint": "Оценивается мгновенно в вашем браузере — ничего не отправляется.",
       "summary_template": "Вы ответили [[правильно]] / [[всего]] правильно."

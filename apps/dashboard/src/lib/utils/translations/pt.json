@@ -7,17 +7,17 @@
   },
   "validations": {
     "generic": {
-      "invalid_type": "Tipo inválido{esperado, selecionado, indefinido{} outro{. Esperado {esperado}}}{recebido, selecionado, indefinido{} outro{ (recebido {recebido})}}",
-      "too_big": "O valor é muito grande{máximo, seleção, indefinido{} outro{. Máximo {máximo}}}",
-      "too_small": "O valor é muito pequeno{mínimo, selecione, indefinido{} outro{. Mínimo {mínimo}}}",
-      "invalid_format": "Formato inválido{validação, seleção, indefinido{} outro{ para {validação}}}",
+      "invalid_type": "Tipo inválido{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "too_big": "O valor é muito grande{maximum, select, undefined{} other{. Maximum {maximum}}}",
+      "too_small": "O valor é muito pequeno{minimum, select, undefined{} other{. Minimum {minimum}}}",
+      "invalid_format": "Formato inválido{validation, select, undefined{} other{ for {validation}}}",
       "not_multiple_of": "O valor precisa ser um múltiplo de {multipleOf}",
       "unrecognized_keys": "Contém chaves não reconhecidas{keys, select, undefined{} other{: {keys}}}",
-      "invalid_union": "Valor inválido para opções fornecidas{unionErrors, select, indefinido{} other{. Falha na(s) opção(ões) {unionErrors}}}",
-      "invalid_key": "Chave inválida{chave, seleção, indefinida{} outra{: {chave}}}",
-      "invalid_element": "Elemento inválido{index, select, indefinido{} other{ no índice {index}}}",
-      "invalid_value": "Valor inválido{esperado, selecionado, indefinido{} outro{. Esperado {esperado}}}{recebido, selecionado, indefinido{} outro{ (recebido {recebido})}}",
-      "custom": "{mensagem}",
+      "invalid_union": "Valor inválido para opções fornecidas{unionErrors, select, undefined{} other{. Falha na(s) opção(ões) {unionErrors}}}",
+      "invalid_key": "Chave inválida{key, select, undefined{} other{: {key}}}",
+      "invalid_element": "Elemento inválido{index, select, undefined{} other{ no índice {index}}}",
+      "invalid_value": "Valor inválido{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "custom": "{message}",
       "required_field": "Este campo é obrigatório",
       "invalid_field": "Valor inválido"
     },
@@ -118,7 +118,7 @@
     },
     "exercise": {
       "options": {
-        "custom": "{mensagem}"
+        "custom": "{message}"
       },
       "points": {
         "too_small": "Os pontos devem ser pelo menos 0"
@@ -470,7 +470,7 @@
     "title": "Análise",
     "courses": "Cursos",
     "progress": "Progresso",
-    "progress_description": "{valor, número} de {total, número} concluído",
+    "progress_description": "{value, number} de {total, number} concluído",
     "incomplete": "Incompleto",
     "completed": "Concluído",
     "complete": "completo",
@@ -503,7 +503,7 @@
     "view_details": "Ver detalhes",
     "no_students_found": "Nenhum aluno encontrado",
     "no_students_description": "Ainda não há alunos matriculados neste curso. Os alunos aparecerão aqui assim que ingressarem no curso.",
-    "showing_students": "Mostrando {início} a {fim} de {total} alunos",
+    "showing_students": "Mostrando {start} a {end} de {total} alunos",
     "no_analytics_data": "Sem dados analíticos",
     "no_analytics_description": "Não foi possível carregar dados analíticos para este curso. Tente novamente mais tarde ou entre em contato com o suporte se o problema persistir.",
     "student": "Estudante",
@@ -531,7 +531,7 @@
       "description": "Matrículas agrupadas por tipo de curso",
       "subtitle": "{total} matrículas em todos os tipos",
       "empty": "Ainda não há dados de inscrição",
-      "course_count": "{contagem, plural, um {# curso} outro {# cursos}}",
+      "course_count": "{count, plural, one {# course} other {# courses}}",
       "views_short": "visualizações",
       "types": {
         "SELF_PACED": "Individualizado",
@@ -589,8 +589,8 @@
       "progress_distribution_card_description": "Quantos alunos se enquadram em cada faixa de conclusão.",
       "grade_distribution_card_description": "Quantos alunos se enquadram em cada faixa de série.",
       "students_table_description": "Visão geral classificável com links para perfis de alunos.",
-      "kpi_team_tutors": "{contagem, plural, um {# tutor na equipe do curso} other {# tutores na equipe do curso}}",
-      "kpi_lessons_exercises": "{contagem, plural, um {# exercício} outro {# exercícios}} mapeados para lições",
+      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
+      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} mapeados para lições",
       "kpi_progress_grade": "{grade}% da nota média do exercício entre os alunos matriculados"
     }
   },
@@ -611,7 +611,7 @@
     "status_expired": "Expirado",
     "status_revoked": "Revogado",
     "select_all": "Selecionar tudo",
-    "selected_count": "{contagem} selecionados",
+    "selected_count": "{count} selecionados",
     "assign_courses": "Atribuir a cursos",
     "invite": {
       "row_actions_aria": "Ações abertas",
@@ -1109,7 +1109,7 @@
           "snackbar_failed_revoke_invite": "Falha ao revogar o convite",
           "snackbar_failed_load_audit": "Falha ao carregar auditoria de convite",
           "snackbar_metadata_copied": "Metadados do convite copiados",
-          "snackbar_email_invites_success": "Foram criados {count} convite(s). Enviado {enviado}, falhou {falhou}. {duplicatas} duplicatas ignoradas.",
+          "snackbar_email_invites_success": "Foram criados {count} convite(s). Enviado {sent}, falhou {failed}. {duplicates} duplicatas ignoradas.",
           "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "Única (24h)",
@@ -1342,7 +1342,7 @@
               "checking_submission": "Verificando seu envio...",
               "answer_required": "Por favor, responda a esta pergunta antes de prosseguir.",
               "instructor_feedback": "Feedback do instrutor",
-              "attempt_counter": "Tentativa {atual} de {total}",
+              "attempt_counter": "Tentativa {current} de {total}",
               "previous_try": "Tentativa anterior",
               "next_try": "Próxima tentativa",
               "try_again": "Tente novamente",
@@ -1379,7 +1379,9 @@
               },
               "select_type": "Selecione o tipo",
               "question_type_auto_gradable": "Auto",
+              "question_type_auto_gradable_description": "Scored automatically by the system",
               "question_type_manual_grading": "Manual",
+              "question_type_manual_grading_description": "Requires human review to score",
               "premium_question_type": "Atualize para usar este tipo de pergunta"
             },
             "delete_confirmation": {
@@ -1439,7 +1441,7 @@
                   "helper": "Arraste os itens para definir a ordem correta.",
                   "add_step": "Adicionar etapa",
                   "empty": "Adicione etapas e arraste para definir a ordem esperada.",
-                  "step_placeholder": "Etapa '{'índice'}'",
+                  "step_placeholder": "Etapa '{'index'}'",
                   "remove_step_tooltip": "Remover etapa"
                 }
               },
@@ -1457,7 +1459,7 @@
               "link": {
                 "preview": {
                   "empty": "Nenhum link enviado.",
-                  "item_label": "Link '{'índice'}'"
+                  "item_label": "Link '{'index'}'"
                 },
                 "take": {
                   "helper": "Adicione um ou mais links. Somente URLs http/https válidos são aceitos.",
@@ -1781,7 +1783,7 @@
               "upload_success": "Documento enviado com sucesso!",
               "upload_error": "Falha ao carregar o documento",
               "file_type_error": "Tipo de arquivo não suportado. Faça upload de arquivos PDF, DOCX ou DOC.",
-              "file_size_error": "Tamanho do arquivo muito grande. O tamanho máximo é {tamanho}.",
+              "file_size_error": "Tamanho do arquivo muito grande. O tamanho máximo é {size}.",
               "type": "Tipo",
               "size": "Tamanho",
               "upload_error_title": "Erro ao carregar",
@@ -1795,7 +1797,7 @@
               "view_pdf": "Ver PDF",
               "remove_document": "Remover documento",
               "delete": "Excluir",
-              "page_of": "Página {página} de {total}",
+              "page_of": "Página {page} de {total}",
               "loading_pdf": "Carregando PDF...",
               "failed_to_load_pdf": "Falha ao carregar o documento PDF",
               "failed_to_render_pdf": "Falha ao renderizar a página PDF",
@@ -1837,8 +1839,8 @@
                 "add_from_library": "Adicionar da biblioteca",
                 "cancel_upload": "Cancelar upload",
                 "upload_cancelled": "Upload cancelado pelo usuário",
-                "max_files": "{count, plural, one {Você pode fazer upload de # arquivo} other {Você pode fazer upload de # arquivos}}",
-                "max_files_and_size": "(até {tamanho} cada)",
+                "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
+                "max_files_and_size": "(até {size} cada)",
                 "google_drive_choose": "Escolha no Google Drive",
                 "google_drive_opening": "Abrindo seletor…",
                 "google_drive_hint": "Escolha um vídeo da sua conta do Google. Qualquer pessoa que esteja visualizando a lição precisa de acesso. Defina o compartilhamento no Drive como “Qualquer pessoa com o link pode visualizar” (ou equivalente na sua organização).",
@@ -1973,7 +1975,7 @@
         "user_avatar_alt": "Avatar do usuário",
         "comments": {
           "comment": "comentar",
-          "showing_of": "Exibindo {mostrado} de {total}",
+          "showing_of": "Exibindo {shown} de {total}",
           "hide": "Ocultar comentários",
           "placeholder": "Adicionar comentário da turma",
           "submit_aria": "Enviar comentário",
@@ -2037,7 +2039,7 @@
           "title": "Ações em massa",
           "description": "Selecione os alunos e aplique uma ação de conformidade ao seu ciclo atual.",
           "select_all": "Selecione todos os alunos visíveis",
-          "selected_count": "{contagem} selecionados",
+          "selected_count": "{count} selecionados",
           "clear_selection": "Limpar seleção",
           "due_date_label": "Data de vencimento",
           "due_date_helper": "Usado para redefinir e estender ações.",
@@ -2078,8 +2080,8 @@
     "sidebar": {
       "back_to_course": "De volta ao curso",
       "content_count": {
-        "lessons": "{contar} aulas",
-        "exercises": "{contar} exercícios"
+        "lessons": "{count} aulas",
+        "exercises": "{count} exercícios"
       },
       "compliance": {
         "title": "Conformidade",
@@ -2124,7 +2126,7 @@
       "final_exercise_helper": "Quando definido, os alunos devem atingir pelo menos a pontuação mínima neste exercício (melhores tentativas contam), além do percentual de conclusão acima.",
       "min_exercise_score_label": "Nota mínima no exercício final (%)",
       "min_exercise_score_helper": "A pontuação é uma porcentagem do total de pontos possíveis naquele exercício (0–100).",
-      "blocker_progress": "O progresso do seu curso é {current}%; {obrigatório}% é obrigatório.",
+      "blocker_progress": "O progresso do seu curso é {current}%; {required}% é obrigatório.",
       "blocker_deadline": "O prazo de certificação expirou.",
       "blocker_no_content": "Este curso não possui lições ou exercícios para serem concluídos.",
       "blocker_final_not_submitted": "Envie o exercício obrigatório \"{exerciseTitle}\" para se qualificar para o certificado.",
@@ -2333,13 +2335,13 @@
     "lms_today_empty": "Seu caminho de aprendizagem estará pronto quando você estiver.",
     "compliance_score": "Pontuação de Conformidade",
     "compliance": "Conformidade",
-    "compliance_score_subtitle": "{concluído} de {total} cursos de conformidade atualmente satisfeitos",
+    "compliance_score_subtitle": "{completed} de {total} cursos de conformidade atualmente satisfeitos",
     "compliance_score_empty": "Nenhum curso de compliance atribuído ainda",
-    "compliance_met": "{concluído} de {total} alcançado",
-    "required_courses_completed": "{concluído} de {total} cursos obrigatórios concluídos",
+    "compliance_met": "{completed} de {total} alcançado",
+    "required_courses_completed": "{completed} de {total} cursos obrigatórios concluídos",
     "streak": "Sequência",
     "days_active": "dias ativos",
-    "items_done": "{concluído} de {total} concluído",
+    "items_done": "{completed} de {total} concluído",
     "login_activity_title": "Atividade de login do aluno",
     "login_activity_description": "Dias mais ativos da semana (últimos 90 dias)",
     "login_activity_no_data": "Nenhuma atividade de login ainda",
@@ -3050,8 +3052,8 @@
         "field_theme": "Tema",
         "field_hero": "Título do herói",
         "field_nav": "Navegação",
-        "field_nav_count_one": "{contar} link",
-        "field_nav_count_other": "{contar} links",
+        "field_nav_count_one": "{count} link",
+        "field_nav_count_other": "{count} links",
         "hero_empty": "-",
         "customize": "Personalize a página de destino"
       }
@@ -3220,7 +3222,7 @@
       "login": {
         "sso_redirect_error": "O login do SSO está configurado incorretamente. Defina PUBLIC_SERVER_URL para seu servidor API.",
         "sso_required": "Faça login com SSO. O login por senha está desabilitado.",
-        "sign_in_with_sso": "Faça login com {provedor}",
+        "sign_in_with_sso": "Faça login com {provider}",
         "email_password_disabled": "O login por e-mail/senha está desativado. Por favor, use SSO.",
         "email_password_disabled_message": "O login por e-mail/senha está desativado para esta organização.",
         "google_auth_disabled": "A autenticação do Google está desativada.",
@@ -3266,8 +3268,8 @@
         "title": "Compre mais fichas",
         "description": "Cada pacote adiciona 5.000.000 de créditos por US$ 5. Escolha quantos pacotes você precisa.",
         "quantity_hint": "pacotes",
-        "preview": "{quantidade} pacote(s) · {tokens} tokens · ${dollars}",
-        "buy_button": "Compre por ${dólares}"
+        "preview": "{quantity} pacote(s) · {tokens} tokens · ${dollars}",
+        "buy_button": "Compre por ${dollars}"
       },
       "leaderboard": {
         "title": "Uso da equipe",
@@ -3294,7 +3296,7 @@
       "included": {
         "title": "Seu uso incluído",
         "subtitle": "Tokens mensais incluídos no seu plano.",
-        "resets_on": "Reinicializações em {data}"
+        "resets_on": "Reinicializações em {date}"
       }
     }
   },
@@ -3702,7 +3704,7 @@
       "no_available_courses": "Não há cursos disponíveis para adicionar.",
       "no_matching_courses": "Nenhum curso corresponde à sua pesquisa.",
       "no_matching_program_courses": "Nenhum curso do programa corresponde à sua pesquisa.",
-      "pagination_status": "Página {página} de {totalPages}",
+      "pagination_status": "Página {page} de {totalPages}",
       "published_access_callout_title": "Acesso de estudante",
       "published_access_callout_description": "Os alunos só têm acesso aos cursos publicados. Os cursos podem estar neste programa para sua equipe enquanto ainda não foram publicados, enquanto permanecem ocultos aos alunos até que você os publique."
     },
@@ -3724,7 +3726,7 @@
       "user_avatar_alt": "Avatar do usuário",
       "comments": {
         "comment": "comentar",
-        "showing_of": "Exibindo {mostrado} de {total}",
+        "showing_of": "Exibindo {shown} de {total}",
         "hide": "Ocultar comentários",
         "placeholder": "Adicionar comentário do programa",
         "submit_aria": "Enviar comentário",
@@ -3970,7 +3972,7 @@
     "error_rate_limit_with_wait": "O serviço AI está temporariamente ocupado. Tente novamente em {seconds} segundos.",
     "error_context_too_long": "A conversa é muito longa. Tente iniciar um novo bate-papo ou encurtar sua mensagem.",
     "error_network": "Erro de rede. Verifique sua conexão e tente novamente.",
-    "context_usage_tooltip": "{usados} / {max} tokens usados",
+    "context_usage_tooltip": "{used} / {max} tokens usados",
     "context_full_title": "A janela de contexto está cheia",
     "context_full_description": "The assistant will summarize older messages automatically so you can keep working in this chat.",
     "context_full_compact": "Conversa compacta",
@@ -3996,7 +3998,7 @@
       "completed": "Execução concluída.",
       "completed_with_counts": "Execução concluída — criada {counts}.",
       "failed": "Falha na execução.",
-      "failed_with_reason": "Falha na execução — {motivo}.",
+      "failed_with_reason": "Falha na execução — {reason}.",
       "canceled": "Execução cancelada.",
       "canceled_with_counts": "Execução cancelada — criou {counts} antes de parar.",
       "paused": "Execução pausada. Retomar para continuar.",
@@ -4010,7 +4012,7 @@
         "created": "Criado",
         "metadata_updated": "Metadados atualizados",
         "content_written": "Conteúdo escrito",
-        "questions_added": "+{contar} perguntas",
+        "questions_added": "+{count} perguntas",
         "questions_updated": "{count} perguntas editadas",
         "section_added": "Bloco adicionado",
         "section_edited": "Bloco editado"
@@ -4260,7 +4262,7 @@
     "subtitle": "Acompanhe o status da certificação em todos os cursos de conformidade da sua organização.",
     "learners": {
       "heading": "Alunos",
-      "subtitle": "{contagem, número} correspondente",
+      "subtitle": "{count, number} correspondente",
       "empty": "Nenhum aluno corresponde a este filtro",
       "learner": "Aluno",
       "course": "Curso",
@@ -4311,7 +4313,7 @@
       "submit": "Verifique minhas respostas",
       "try_again": "Tente novamente",
       "practice_again": "Pratique novamente",
-      "attempt_option": "Tentativa {attemptNumber} - {correto}/{total}",
+      "attempt_option": "Tentativa {attemptNumber} - {correct}/{total}",
       "attempts_select_aria": "Suas tentativas",
       "privacy_hint": "Avaliado instantaneamente no seu navegador – nada é enviado.",
       "summary_template": "Você acertou [[correto]] / [[total]]."
@@ -4334,7 +4336,7 @@
       "page_title": "Espaços de trabalho",
       "page_description": "Gerencie os espaços de trabalho em sua conta. Os espaços de trabalho compartilham uma única assinatura e uso em pool.",
       "create_cta": "Criar espaço de trabalho",
-      "create_cta_used": "{usado} de {subsídio} usado",
+      "create_cta_used": "{used} de {allowance} usado",
       "create_cta_disabled_limit": "Você atingiu o limite de {allowance}-workspace. Entre em contato conosco para expandir.",
       "create_cta_disabled_upgrade": "Multi-espaço de trabalho é um recurso empresarial.",
       "upgrade_link": "Atualizar",

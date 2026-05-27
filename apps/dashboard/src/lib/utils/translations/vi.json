@@ -7,17 +7,17 @@
   },
   "validations": {
     "generic": {
-      "invalid_type": "Loại không hợp lệ{dự kiến, chọn, không xác định{} khác{. Dự kiến {mong đợi}}}{đã nhận, chọn, không xác định{} khác{ (đã nhận {đã nhận})}}",
-      "too_big": "Giá trị quá lớn{tối đa, chọn, không xác định{} khác{. Tối đa {tối đa}}}",
-      "too_small": "Giá trị quá nhỏ{tối thiểu, chọn, không xác định{} khác{. Tối thiểu {tối thiểu}}}",
-      "invalid_format": "Định dạng không hợp lệ{xác thực, chọn, không xác định{} khác{ cho {xác thực}}}",
+      "invalid_type": "Loại không hợp lệ{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "too_big": "Giá trị quá lớn{maximum, select, undefined{} other{. Maximum {maximum}}}",
+      "too_small": "Giá trị quá nhỏ{minimum, select, undefined{} other{. Minimum {minimum}}}",
+      "invalid_format": "Định dạng không hợp lệ{validation, select, undefined{} other{ for {validation}}}",
       "not_multiple_of": "Giá trị phải là bội số của {multipleOf}",
-      "unrecognized_keys": "Chứa các khóa không được nhận dạng{keys, select, undefind{} other{: {keys}}}",
-      "invalid_union": "Giá trị không hợp lệ cho các tùy chọn được cung cấp{unionErrors, select, unknown{} other{. {unionErrors} tùy chọn không thành công}}",
-      "invalid_key": "Khóa không hợp lệ{khóa, chọn, không xác định{} khác{: {key}}}",
-      "invalid_element": "Phần tử không hợp lệ{chỉ mục, chọn, không xác định{} khác{ tại chỉ mục {index}}}",
-      "invalid_value": "Giá trị không hợp lệ{dự kiến, chọn, không xác định{} khác{. Dự kiến {mong đợi}}}{đã nhận, chọn, không xác định{} khác{ (đã nhận {đã nhận})}}",
-      "custom": "{tin nhắn}",
+      "unrecognized_keys": "Chứa các khóa không được nhận dạng{keys, select, undefined{} other{: {keys}}}",
+      "invalid_union": "Giá trị không hợp lệ cho các tùy chọn được cung cấp{unionErrors, select, undefined{} other{. {unionErrors} tùy chọn không thành công}}",
+      "invalid_key": "Khóa không hợp lệ{key, select, undefined{} other{: {key}}}",
+      "invalid_element": "Phần tử không hợp lệ{index, select, undefined{} other{ at index {index}}}",
+      "invalid_value": "Giá trị không hợp lệ{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "custom": "{message}",
       "required_field": "Trường này là bắt buộc",
       "invalid_field": "Giá trị không hợp lệ"
     },
@@ -118,7 +118,7 @@
     },
     "exercise": {
       "options": {
-        "custom": "{tin nhắn}"
+        "custom": "{message}"
       },
       "points": {
         "too_small": "Điểm ít nhất phải bằng 0"
@@ -503,7 +503,7 @@
     "view_details": "Xem chi tiết",
     "no_students_found": "Không tìm thấy sinh viên nào",
     "no_students_description": "Hiện chưa có học viên nào đăng ký khóa học này. Học sinh sẽ xuất hiện ở đây khi họ tham gia khóa học.",
-    "showing_students": "Đang hiển thị {bắt đầu} cho {cuối} trong tổng số {total} sinh viên",
+    "showing_students": "Đang hiển thị {start} cho {end} trong tổng số {total} sinh viên",
     "no_analytics_data": "Không có dữ liệu phân tích",
     "no_analytics_description": "Không thể tải dữ liệu phân tích cho khóa học này. Vui lòng thử lại sau hoặc liên hệ với bộ phận hỗ trợ nếu sự cố vẫn tiếp diễn.",
     "student": "sinh viên",
@@ -531,7 +531,7 @@
       "description": "Tuyển sinh được nhóm theo loại khóa học",
       "subtitle": "{total} lượt đăng ký trên tất cả các loại",
       "empty": "Chưa có dữ liệu tuyển sinh",
-      "course_count": "{đếm, số nhiều, một {# khóa học} khác {# khóa học}}",
+      "course_count": "{count, plural, one {# course} other {# courses}}",
       "views_short": "lượt xem",
       "types": {
         "SELF_PACED": "Tự nhịp độ",
@@ -589,8 +589,8 @@
       "progress_distribution_card_description": "Có bao nhiêu người học rơi vào từng mức độ hoàn thành.",
       "grade_distribution_card_description": "Có bao nhiêu học sinh rơi vào từng nhóm lớp.",
       "students_table_description": "Tổng quan có thể sắp xếp với các liên kết đến hồ sơ người học.",
-      "kpi_team_tutors": "{đếm, số nhiều, một {# gia sư trong nhóm khóa học} khác {# gia sư trong nhóm khóa học}}",
-      "kpi_lessons_exercises": "{đếm, số nhiều, một {# bài tập} khác {# bài tập}} được ánh xạ tới bài học",
+      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
+      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} được ánh xạ tới bài học",
       "kpi_progress_grade": "{grade}% điểm bài tập trung bình của những người học đã đăng ký"
     }
   },
@@ -629,7 +629,7 @@
       "send_email": "Gửi email thông báo",
       "submit": "Chỉ định",
       "cancel": "Hủy bỏ",
-      "snackbar_success": "Đã chỉ định người dùng {được chỉ định} cho các khóa học ({alreadyEnrolled} đã đăng ký, đã gửi {emailsSent} email)",
+      "snackbar_success": "Đã chỉ định người dùng {assigned} cho các khóa học ({alreadyEnrolled} đã đăng ký, đã gửi {emailsSent} email)",
       "snackbar_no_courses": "Vui lòng chọn ít nhất một khóa học",
       "snackbar_failed": "Không thể chỉ định khóa học"
     },
@@ -1109,7 +1109,7 @@
           "snackbar_failed_revoke_invite": "Không thể thu hồi lời mời",
           "snackbar_failed_load_audit": "Không tải được lời mời kiểm tra",
           "snackbar_metadata_copied": "Đã sao chép siêu dữ liệu lời mời",
-          "snackbar_email_invites_success": "Đã tạo {count} lời mời. Đã gửi {đã gửi}, không thành công {không thành công}. Đã bỏ qua {trùng lặp} bản sao.",
+          "snackbar_email_invites_success": "Đã tạo {count} lời mời. Đã gửi {sent}, không thành công {failed}. Đã bỏ qua {duplicates} bản sao.",
           "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "Một lần (24h)",
@@ -1379,7 +1379,9 @@
               },
               "select_type": "Chọn loại",
               "question_type_auto_gradable": "Auto",
+              "question_type_auto_gradable_description": "Scored automatically by the system",
               "question_type_manual_grading": "Manual",
+              "question_type_manual_grading_description": "Requires human review to score",
               "premium_question_type": "Nâng cấp để sử dụng loại câu hỏi này"
             },
             "delete_confirmation": {
@@ -1439,7 +1441,7 @@
                   "helper": "Kéo các mục để xác định thứ tự chính xác.",
                   "add_step": "Thêm bước",
                   "empty": "Thêm các bước, sau đó kéo để đặt thứ tự dự kiến.",
-                  "step_placeholder": "Bước '{'chỉ mục'}'",
+                  "step_placeholder": "Bước '{'index'}'",
                   "remove_step_tooltip": "Xóa bước"
                 }
               },
@@ -1457,7 +1459,7 @@
               "link": {
                 "preview": {
                   "empty": "Không có liên kết nào được gửi.",
-                  "item_label": "Liên kết '{'chỉ mục'}'"
+                  "item_label": "Liên kết '{'index'}'"
                 },
                 "take": {
                   "helper": "Thêm một hoặc nhiều liên kết. Chỉ các URL http/https hợp lệ mới được chấp nhận.",
@@ -1795,7 +1797,7 @@
               "view_pdf": "Xem PDF",
               "remove_document": "Xóa tài liệu",
               "delete": "Xóa",
-              "page_of": "Trang {trang} trong tổng số {total}",
+              "page_of": "Trang {page} trong tổng số {total}",
               "loading_pdf": "Đang tải PDF...",
               "failed_to_load_pdf": "Không tải được tài liệu PDF",
               "failed_to_render_pdf": "Không thể hiển thị trang PDF",
@@ -1837,7 +1839,7 @@
                 "add_from_library": "Thêm từ thư viện",
                 "cancel_upload": "Hủy tải lên",
                 "upload_cancelled": "Tải lên bị người dùng hủy",
-                "max_files": "{đếm, số nhiều, một {Bạn có thể tải lên # tệp} khác {Bạn có thể tải lên # tệp}}",
+                "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
                 "max_files_and_size": "(tối đa {size} mỗi cái)",
                 "google_drive_choose": "Chọn từ Google Drive",
                 "google_drive_opening": "Đang mở bộ chọn…",
@@ -1973,7 +1975,7 @@
         "user_avatar_alt": "Hình đại diện của người dùng",
         "comments": {
           "comment": "bình luận",
-          "showing_of": "Đang hiển thị {được hiển thị} trong tổng số {toàn bộ}",
+          "showing_of": "Đang hiển thị {shown} trong tổng số {total}",
           "hide": "Ẩn bình luận",
           "placeholder": "Thêm nhận xét của lớp",
           "submit_aria": "Gửi bình luận",
@@ -2078,8 +2080,8 @@
     "sidebar": {
       "back_to_course": "Quay lại khóa học",
       "content_count": {
-        "lessons": "{đếm} bài học",
-        "exercises": "bài tập {đếm}"
+        "lessons": "{count} bài học",
+        "exercises": "bài tập {count}"
       },
       "compliance": {
         "title": "Tuân thủ",
@@ -2329,17 +2331,17 @@
     "pick_up_where_you_left_off": "Tiếp tục nơi bạn đã dừng lại",
     "course_awaits_you": "{title} đang chờ bạn",
     "learning_awaits_you": "Khóa học tiếp theo đang chờ bạn",
-    "lms_today_progress": "Bạn đã đạt được {tiến bộ}% trong quá trình học tập - mỗi bước đều có giá trị.",
+    "lms_today_progress": "Bạn đã đạt được {progress}% trong quá trình học tập - mỗi bước đều có giá trị.",
     "lms_today_empty": "Con đường học tập của bạn đã sẵn sàng khi bạn sẵn sàng.",
     "compliance_score": "Điểm tuân thủ",
     "compliance": "Tuân thủ",
     "compliance_score_subtitle": "{completed} trong số {total} khóa học tuân thủ hiện đã được đáp ứng",
     "compliance_score_empty": "Chưa có khóa học tuân thủ nào được chỉ định",
-    "compliance_met": "{hoàn thành} trong tổng số {tổng} đã đáp ứng",
+    "compliance_met": "{completed} trong tổng số {total} đã đáp ứng",
     "required_courses_completed": "Đã hoàn thành {completed} trong số {total} khóa học bắt buộc",
     "streak": "Vệt",
     "days_active": "ngày hoạt động",
-    "items_done": "{đã hoàn thành} trong tổng số {tổng} đã hoàn thành",
+    "items_done": "{completed} trong tổng số {total} đã hoàn thành",
     "login_activity_title": "Hoạt động đăng nhập của sinh viên",
     "login_activity_description": "Những ngày hoạt động tích cực nhất trong tuần (90 ngày qua)",
     "login_activity_no_data": "Chưa có hoạt động đăng nhập",
@@ -3050,8 +3052,8 @@
         "field_theme": "chủ đề",
         "field_hero": "Tiêu đề anh hùng",
         "field_nav": "Điều hướng",
-        "field_nav_count_one": "liên kết {đếm}",
-        "field_nav_count_other": "{đếm} liên kết",
+        "field_nav_count_one": "liên kết {count}",
+        "field_nav_count_other": "{count} liên kết",
         "hero_empty": "—",
         "customize": "Tùy chỉnh trang đích"
       }
@@ -3220,7 +3222,7 @@
       "login": {
         "sso_redirect_error": "Đăng nhập SSO bị định cấu hình sai. Vui lòng đặt PUBLIC_SERVER_URL cho máy chủ API của bạn.",
         "sso_required": "Vui lòng đăng nhập bằng SSO. Đăng nhập bằng mật khẩu bị vô hiệu hóa.",
-        "sign_in_with_sso": "Đăng nhập bằng {nhà cung cấp}",
+        "sign_in_with_sso": "Đăng nhập bằng {provider}",
         "email_password_disabled": "Đăng nhập email/mật khẩu bị vô hiệu hóa. Vui lòng sử dụng SSO.",
         "email_password_disabled_message": "Đăng nhập email/mật khẩu bị vô hiệu hóa đối với tổ chức này.",
         "google_auth_disabled": "Xác thực Google bị vô hiệu hóa.",
@@ -3294,7 +3296,7 @@
       "included": {
         "title": "Mức sử dụng đi kèm của bạn",
         "subtitle": "Mã thông báo hàng tháng đi kèm với gói của bạn.",
-        "resets_on": "Đặt lại {ngày}"
+        "resets_on": "Đặt lại {date}"
       }
     }
   },
@@ -3702,7 +3704,7 @@
       "no_available_courses": "Không có khóa học có sẵn để thêm.",
       "no_matching_courses": "Không có khóa học phù hợp với tìm kiếm của bạn.",
       "no_matching_program_courses": "Không có chương trình khóa học phù hợp với tìm kiếm của bạn.",
-      "pagination_status": "Trang {trang} trong tổng số {totalPages}",
+      "pagination_status": "Trang {page} trong tổng số {totalPages}",
       "published_access_callout_title": "Quyền truy cập của sinh viên",
       "published_access_callout_description": "Sinh viên chỉ có quyền truy cập vào các khóa học được xuất bản. Các khóa học có thể có trong chương trình này cho nhóm của bạn trong khi vẫn chưa được xuất bản và các khóa học đó sẽ bị ẩn với sinh viên cho đến khi bạn xuất bản chúng."
     },
@@ -3724,7 +3726,7 @@
       "user_avatar_alt": "Hình đại diện của người dùng",
       "comments": {
         "comment": "bình luận",
-        "showing_of": "Đang hiển thị {được hiển thị} trong tổng số {toàn bộ}",
+        "showing_of": "Đang hiển thị {shown} trong tổng số {total}",
         "hide": "Ẩn bình luận",
         "placeholder": "Thêm bình luận chương trình",
         "submit_aria": "Gửi bình luận",
@@ -3801,7 +3803,7 @@
         "heading": "Mục tiêu của bạn",
         "empty_title": "Không có mục tiêu nào được giao",
         "empty_description": "Khi người hướng dẫn của bạn đặt mục tiêu, họ sẽ hiển thị ở đây.",
-        "due_in_days": "Đến hạn sau {ngày} ngày nữa",
+        "due_in_days": "Đến hạn sau {days} ngày nữa",
         "due_tomorrow": "Hạn chót vào ngày mai",
         "due_today": "Hạn chót hôm nay",
         "overdue": "Quá hạn",
@@ -3967,7 +3969,7 @@
     "rename_chat_placeholder": "Tiêu đề cuộc trò chuyện",
     "rename_chat_failed": "Không thể đổi tên cuộc trò chuyện này. Hãy thử lại.",
     "error_rate_limit": "Dịch vụ AI tạm thời bận. Vui lòng thử lại sau giây lát.",
-    "error_rate_limit_with_wait": "Dịch vụ AI tạm thời bận. Vui lòng thử lại sau {giây} giây.",
+    "error_rate_limit_with_wait": "Dịch vụ AI tạm thời bận. Vui lòng thử lại sau {seconds} giây.",
     "error_context_too_long": "Cuộc trò chuyện quá dài. Hãy thử bắt đầu một cuộc trò chuyện mới hoặc rút ngắn tin nhắn của bạn.",
     "error_network": "Lỗi mạng. Vui lòng kiểm tra kết nối của bạn và thử lại.",
     "context_usage_tooltip": "Đã sử dụng mã thông báo {used} / {max}",
@@ -4010,7 +4012,7 @@
         "created": "Đã tạo",
         "metadata_updated": "Đã cập nhật siêu dữ liệu",
         "content_written": "Nội dung viết",
-        "questions_added": "+{đếm} câu hỏi",
+        "questions_added": "+{count} câu hỏi",
         "questions_updated": "{count} câu hỏi đã được chỉnh sửa",
         "section_added": "Đã thêm khối",
         "section_edited": "Đã chỉnh sửa khối"
@@ -4260,7 +4262,7 @@
     "subtitle": "Theo dõi trạng thái chứng nhận trên mọi khóa học tuân thủ trong tổ chức của bạn.",
     "learners": {
       "heading": "Người học",
-      "subtitle": "{đếm, số} khớp",
+      "subtitle": "{count, number} khớp",
       "empty": "Không có người học nào phù hợp với bộ lọc này",
       "learner": "Người học",
       "course": "Khóa học",
@@ -4311,7 +4313,7 @@
       "submit": "Kiểm tra câu trả lời của tôi",
       "try_again": "Thử lại",
       "practice_again": "Luyện tập lại",
-      "attempt_option": "Hãy thử {attemptNumber} - {đúng}/{total}",
+      "attempt_option": "Hãy thử {attemptNumber} - {correct}/{total}",
       "attempts_select_aria": "nỗ lực của bạn",
       "privacy_hint": "Được chấm điểm ngay lập tức trong trình duyệt của bạn - không có gì được gửi.",
       "summary_template": "Bạn đã nhận được [[đúng]]/[[tổng]] đúng."
@@ -4334,7 +4336,7 @@
       "page_title": "Không gian làm việc",
       "page_description": "Quản lý không gian làm việc trong tài khoản của bạn. Không gian làm việc chia sẻ một gói đăng ký và mức sử dụng chung.",
       "create_cta": "Tạo không gian làm việc",
-      "create_cta_used": "{đã sử dụng} trong số {phụ cấp} đã sử dụng",
+      "create_cta_used": "{used} trong số {allowance} đã sử dụng",
       "create_cta_disabled_limit": "Bạn đã đạt đến giới hạn {allowance}-không gian làm việc. Liên hệ với chúng tôi để mở rộng.",
       "create_cta_disabled_upgrade": "Đa không gian làm việc là một tính năng của Doanh nghiệp.",
       "upgrade_link": "Nâng cấp",
