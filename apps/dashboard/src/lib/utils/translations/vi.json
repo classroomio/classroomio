@@ -915,8 +915,17 @@
             "reviews": "Đánh giá",
             "instructor": "Người hướng dẫn",
             "pricing": "Định giá",
-            "certificate": "Giấy chứng nhận"
-          }
+            "certificate": "Giấy chứng nhận",
+            "curriculum": "chương trình giảng dạy",
+            "chips": "Kỹ năng & Công cụ",
+            "skills": "Những kỹ năng bạn sẽ đạt được",
+            "tools": "Công cụ bạn sẽ học"
+          },
+          "skills_help": "Nhấn Enter để thêm. Chúng xuất hiện dưới dạng chip bên dưới chương trình giảng dạy.",
+          "tools_help": "Nhấn Enter để thêm. Chúng xuất hiện dưới dạng chip bên dưới chương trình giảng dạy.",
+          "skills_placeholder": "ví dụ. Phân tích dữ liệu",
+          "tools_placeholder": "ví dụ: hình ảnh",
+          "remove": "Xóa"
         }
       },
       "certificates": {
@@ -1721,7 +1730,8 @@
               "submit": "Gửi bài tập",
               "collapse_section": "Thu gọn phần",
               "expand_section": "Mở rộng phần"
-            }
+            },
+            "more": "hành động"
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",
@@ -2171,7 +2181,10 @@
           "depth": "Khóa học nên đi sâu đến mức nào?",
           "topic": "Chủ đề hoặc niche",
           "expertise_level": "Mục tiêu trình độ chuyên môn",
-          "documentation_url": "URL tài liệu (tùy chọn)"
+          "documentation_url": {
+            "label": "URL tài liệu (tùy chọn)",
+            "hint": "Chúng tôi sẽ đọc trang web này để xây dựng khóa học về sản phẩm thực của bạn."
+          }
         },
         "expert_on_x": {
           "title": "Trở thành chuyên gia về X",
@@ -4032,7 +4045,14 @@
       "cancel": "Hủy chạy",
       "dismiss": "Loại bỏ",
       "now_doing": "bây giờ",
-      "input_disabled_hint": "Cuộc trò chuyện bị tạm dừng trong khi nhân viên hỗ trợ hoàn tất việc xây dựng khóa học. Hủy bỏ hoặc đợi cho đến khi nó hoàn thành."
+      "input_disabled_hint": "Cuộc trò chuyện bị tạm dừng trong khi nhân viên hỗ trợ hoàn tất việc xây dựng khóa học. Hủy bỏ hoặc đợi cho đến khi nó hoàn thành.",
+      "dismiss_confirm": "Bỏ đi",
+      "dismiss_cancel": "Tiếp tục chạy",
+      "dismiss_confirm_body": "Rời khỏi cuộc chạy bị hủy bỏ này? Nút Tiếp tục sẽ biến mất - mọi cuộc trò chuyện tiếp theo sẽ bắt đầu mới và sẽ không tiếp tục kế hoạch.",
+      "stuck_queued": {
+        "title": "Công nhân không phản hồi",
+        "body": "Lần chạy này đã chờ hơn 30 giây mà không có công nhân đón. Nhân viên chạy nền có thể không hoạt động hoặc đang khởi động lại."
+      }
     }
   },
   "widgets": {
@@ -4470,6 +4490,28 @@
         "title": "Cài đặt AI Tutor",
         "description": "Mặc định cho mọi khóa học trong không gian làm việc này. Các khóa học có thể kế thừa hoặc ghi đè chúng."
       }
+    }
+  },
+  "hls_upload": {
+    "rungs": {
+      "p360": "360p",
+      "p720": "720p",
+      "p1080": "1080p"
+    },
+    "error": {
+      "webcodecs_unsupported": "Trình duyệt của bạn không hỗ trợ mã hóa video phần cứng. Sử dụng phiên bản Chrome, Edge hoặc Safari gần đây.",
+      "encode_failed": "Mã hóa không thành công. Hãy thử một tệp nguồn khác hoặc làm mới và thử lại.",
+      "upload_failed": "Không thể tải lên một đoạn video. Kiểm tra kết nối của bạn và thử lại.",
+      "finalize_failed": "Không lưu được video đã tải lên."
+    },
+    "stage": {
+      "probing": "Đang đọc video…",
+      "encoding": "Mã hóa {rung} ({percent}%)",
+      "uploading": "Đang tải lên các phân đoạn ({uploaded}/{total})",
+      "thumbnail": "Đang tạo hình thu nhỏ…",
+      "finalizing": "Đang lưu…",
+      "done": "Sẵn sàng",
+      "failed": "Tải lên không thành công"
     }
   }
 }

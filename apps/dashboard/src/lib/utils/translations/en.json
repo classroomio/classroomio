@@ -983,6 +983,28 @@
       }
     }
   },
+  "hls_upload": {
+    "stage": {
+      "probing": "Reading video…",
+      "encoding": "Encoding {rung} ({percent}%)",
+      "uploading": "Uploading segments ({uploaded}/{total})",
+      "thumbnail": "Generating thumbnail…",
+      "finalizing": "Saving…",
+      "done": "Ready",
+      "failed": "Upload failed"
+    },
+    "error": {
+      "webcodecs_unsupported": "Your browser does not support hardware video encoding. Use a recent version of Chrome, Edge, or Safari.",
+      "encode_failed": "Encoding failed. Try a different source file or refresh and try again.",
+      "upload_failed": "Failed to upload a video segment. Check your connection and retry.",
+      "finalize_failed": "Failed to save the uploaded video."
+    },
+    "rungs": {
+      "p360": "360p",
+      "p720": "720p",
+      "p1080": "1080p"
+    }
+  },
   "media_manager": {
     "page_title": "Media Manager - ClassroomIO",
     "heading": "Media Manager",
@@ -2031,8 +2053,10 @@
           "depth": "How deep should the course go?",
           "topic": "Topic or niche",
           "expertise_level": "Target expertise level",
-          "documentation_url": "Documentation URL (optional)",
-          "documentation_url.hint": "We'll read this site to ground the course in your real product."
+          "documentation_url": {
+            "label": "Documentation URL (optional)",
+            "hint": "We'll read this site to ground the course in your real product."
+          }
         }
       }
     },
@@ -2422,7 +2446,8 @@
             "save": "Save",
             "preview": "Preview",
             "add": "Add",
-            "add_question": "Add a question",
+            "more": "Actions",
+            "add_question": "Add question",
             "add_section": "Add section",
             "reorder": "Reorder Questions",
             "reorder_done": "Done reordering",
@@ -2490,7 +2515,9 @@
               "yes": "Yes, delete",
               "select_type": "Select type",
               "question_type_auto_gradable": "Auto",
+              "question_type_auto_gradable_description": "Scored automatically by the system",
               "question_type_manual_grading": "Manual",
+              "question_type_manual_grading_description": "Requires human review to score",
               "premium_question_type": "Upgrade to use this question type",
               "deleting": "Deleting...",
               "error": "You have some errors",
@@ -3261,8 +3288,17 @@
             "reviews": "Reviews",
             "instructor": "Instructor",
             "pricing": "Pricing",
-            "certificate": "Certificate"
+            "certificate": "Certificate",
+            "curriculum": "Curriculum",
+            "chips": "Skills & Tools",
+            "skills": "Skills you'll gain",
+            "tools": "Tools you'll learn"
           },
+          "skills_help": "Press Enter to add. These appear as chips below the curriculum.",
+          "tools_help": "Press Enter to add. These appear as chips below the curriculum.",
+          "skills_placeholder": "e.g. Data Analysis",
+          "tools_placeholder": "e.g. Figma",
+          "remove": "Remove",
           "save": "Save",
           "page_builder": "Page Builder",
           "section": "section",
@@ -4335,8 +4371,15 @@
     "run_monitor": {
       "cancel": "Cancel run",
       "dismiss": "Dismiss",
+      "dismiss_confirm": "Walk away",
+      "dismiss_cancel": "Keep run",
+      "dismiss_confirm_body": "Walk away from this canceled run? The Resume button will be gone — any further chat will start fresh and won't continue the plan.",
       "now_doing": "Now",
-      "input_disabled_hint": "Chat is paused while the agent finishes building the course. Cancel or wait for it to complete."
+      "input_disabled_hint": "Chat is paused while the agent finishes building the course. Cancel or wait for it to complete.",
+      "stuck_queued": {
+        "title": "Worker not responding",
+        "body": "This run has been waiting more than 30 seconds with no worker pickup. The background worker may be down or restarting."
+      }
     },
     "plan_view": {
       "expand": "Expand plan",

@@ -20,7 +20,7 @@ export const DISPLAY_BY_ID: Record<CourseTemplateId, CourseTemplateDisplay> = {
       audience: 'course.creator.template.field.audience',
       outcome: 'course.creator.template.field.outcome',
       depth: 'course.creator.template.field.depth',
-      documentation_url: 'course.creator.template.field.documentation_url'
+      documentation_url: 'course.creator.template.field.documentation_url.label'
     }
   },
   product_onboarding: {
@@ -32,7 +32,7 @@ export const DISPLAY_BY_ID: Record<CourseTemplateId, CourseTemplateDisplay> = {
       product_name: 'course.creator.template.field.product_name',
       audience: 'course.creator.template.field.audience',
       outcome: 'course.creator.template.field.outcome',
-      documentation_url: 'course.creator.template.field.documentation_url'
+      documentation_url: 'course.creator.template.field.documentation_url.label'
     }
   },
   expert_on_x: {
@@ -44,7 +44,7 @@ export const DISPLAY_BY_ID: Record<CourseTemplateId, CourseTemplateDisplay> = {
       topic: 'course.creator.template.field.topic',
       expertise_level: 'course.creator.template.field.expertise_level',
       outcome: 'course.creator.template.field.outcome',
-      documentation_url: 'course.creator.template.field.documentation_url'
+      documentation_url: 'course.creator.template.field.documentation_url.label'
     }
   }
 };

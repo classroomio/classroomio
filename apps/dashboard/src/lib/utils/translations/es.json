@@ -915,8 +915,17 @@
             "reviews": "Reseñas",
             "instructor": "Instructor",
             "pricing": "Precios",
-            "certificate": "Certificado"
-          }
+            "certificate": "Certificado",
+            "curriculum": "Plan de estudios",
+            "chips": "Habilidades y herramientas",
+            "skills": "Habilidades que obtendrás",
+            "tools": "Herramientas que aprenderás"
+          },
+          "skills_help": "Presione Entrar para agregar. Estos aparecen como fichas debajo del plan de estudios.",
+          "tools_help": "Presione Entrar para agregar. Estos aparecen como fichas debajo del plan de estudios.",
+          "skills_placeholder": "p.ej. Análisis de datos",
+          "tools_placeholder": "por ej. figura",
+          "remove": "Quitar"
         }
       },
       "certificates": {
@@ -1721,7 +1730,8 @@
               "submit": "Enviar ejercicio",
               "collapse_section": "Contraer sección",
               "expand_section": "Expandir sección"
-            }
+            },
+            "more": "Acciones"
           },
           "new_exercise_modal": {
             "heading": "Nuevo ejercicio",
@@ -2171,7 +2181,10 @@
           "depth": "¿Qué profundidad debe tener el curso?",
           "topic": "Tema o nicho",
           "expertise_level": "Nivel de experiencia objetivo",
-          "documentation_url": "URL de documentación (opcional)"
+          "documentation_url": {
+            "label": "URL de documentación (opcional)",
+            "hint": "Leeremos este sitio para basar el curso en su producto real."
+          }
         },
         "expert_on_x": {
           "title": "Conviértete en un experto en X",
@@ -4032,7 +4045,14 @@
       "cancel": "Cancelar ejecución",
       "dismiss": "Descartar",
       "now_doing": "ahora",
-      "input_disabled_hint": "El chat se pausa mientras el agente termina de crear el curso. Cancele o espere a que se complete."
+      "input_disabled_hint": "El chat se pausa mientras el agente termina de crear el curso. Cancele o espere a que se complete.",
+      "dismiss_confirm": "alejarse",
+      "dismiss_cancel": "seguir corriendo",
+      "dismiss_confirm_body": "¿Abandonarse de esta carrera cancelada? El botón Reanudar desaparecerá; cualquier conversación adicional comenzará de nuevo y no continuará con el plan.",
+      "stuck_queued": {
+        "title": "trabajador no responde",
+        "body": "Esta ejecución ha estado esperando más de 30 segundos sin que ningún trabajador haya sido recogido. Es posible que el trabajador en segundo plano esté inactivo o reiniciándose."
+      }
     }
   },
   "widgets": {
@@ -4470,6 +4490,28 @@
         "title": "Configuración del tutor de IA",
         "description": "Valores predeterminados para cada curso en este espacio de trabajo. Los cursos pueden heredar estos o anularlos."
       }
+    }
+  },
+  "hls_upload": {
+    "rungs": {
+      "p360": "360p",
+      "p720": "720p",
+      "p1080": "1080p"
+    },
+    "error": {
+      "webcodecs_unsupported": "Su navegador no admite codificación de video por hardware. Utilice una versión reciente de Chrome, Edge o Safari.",
+      "encode_failed": "Error de codificación. Pruebe con un archivo fuente diferente o actualice e inténtelo de nuevo.",
+      "upload_failed": "No se pudo cargar un segmento de video. Verifique su conexión y vuelva a intentarlo.",
+      "finalize_failed": "No se pudo guardar el video subido."
+    },
+    "stage": {
+      "probing": "Leyendo vídeo…",
+      "encoding": "Codificación {rung} ({percent}%)",
+      "uploading": "Subiendo segmentos ({uploaded}/{total})",
+      "thumbnail": "Generando miniatura…",
+      "finalizing": "Guardando…",
+      "done": "Listo",
+      "failed": "Error al subir"
     }
   }
 }

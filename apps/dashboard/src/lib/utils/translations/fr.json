@@ -915,8 +915,17 @@
             "reviews": "Avis",
             "instructor": "Instructeur",
             "pricing": "Tarifs",
-            "certificate": "Certificat"
-          }
+            "certificate": "Certificat",
+            "curriculum": "Programme d'études",
+            "chips": "Compétences et outils",
+            "skills": "Compétences que vous gagnerez",
+            "tools": "Outils que vous apprendrez"
+          },
+          "skills_help": "Appuyez sur Entrée pour ajouter. Ceux-ci apparaissent sous forme de puces sous le programme.",
+          "tools_help": "Appuyez sur Entrée pour ajouter. Ceux-ci apparaissent sous forme de puces sous le programme.",
+          "skills_placeholder": "par ex. Analyse des données",
+          "tools_placeholder": "par ex. Figma",
+          "remove": "Supprimer"
         }
       },
       "certificates": {
@@ -1721,7 +1730,8 @@
               "submit": "Soumettre l'exercice",
               "collapse_section": "Réduire la section",
               "expand_section": "Développer la section"
-            }
+            },
+            "more": "Actions"
           },
           "new_exercise_modal": {
             "heading": "Nouvel exercice",
@@ -2171,7 +2181,10 @@
           "depth": "Jusqu’où doit aller le cours ?",
           "topic": "Sujet ou niche",
           "expertise_level": "Niveau d’expertise cible",
-          "documentation_url": "URL de la documentation (facultatif)"
+          "documentation_url": {
+            "label": "URL de documentation (facultatif)",
+            "hint": "Nous lirons ce site pour ancrer le cours dans votre produit réel."
+          }
         },
         "expert_on_x": {
           "title": "Devenez un expert sur X",
@@ -4032,7 +4045,14 @@
       "cancel": "Annuler l'exécution",
       "dismiss": "Rejeter",
       "now_doing": "Maintenant",
-      "input_disabled_hint": "La conversation est suspendue pendant que l'agent termine la création du cours. Annulez ou attendez qu'il soit terminé."
+      "input_disabled_hint": "La conversation est suspendue pendant que l'agent termine la création du cours. Annulez ou attendez qu'il soit terminé.",
+      "dismiss_confirm": "S'éloigner",
+      "dismiss_cancel": "Continuez à courir",
+      "dismiss_confirm_body": "S'éloigner de cette course annulée ? Le bouton Reprendre disparaîtra : toute nouvelle discussion recommencera à zéro et ne poursuivra pas le plan.",
+      "stuck_queued": {
+        "title": "Le travailleur ne répond pas",
+        "body": "Cette exécution attend depuis plus de 30 secondes sans qu'aucun travailleur ne soit récupéré. Le travailleur en arrière-plan est peut-être en panne ou redémarre."
+      }
     }
   },
   "widgets": {
@@ -4470,6 +4490,28 @@
         "title": "Paramètres du tuteur AI",
         "description": "Valeurs par défaut pour chaque cours de cet espace de travail. Les cours peuvent en hériter ou les remplacer."
       }
+    }
+  },
+  "hls_upload": {
+    "rungs": {
+      "p360": "360p",
+      "p720": "720p",
+      "p1080": "1080p"
+    },
+    "error": {
+      "webcodecs_unsupported": "Votre navigateur ne prend pas en charge l'encodage vidéo matériel. Utilisez une version récente de Chrome, Edge ou Safari.",
+      "encode_failed": "L'encodage a échoué. Essayez un autre fichier source ou actualisez et réessayez.",
+      "upload_failed": "Échec du téléchargement d'un segment vidéo. Vérifiez votre connexion et réessayez.",
+      "finalize_failed": "Échec de l'enregistrement de la vidéo téléchargée."
+    },
+    "stage": {
+      "probing": "Lecture de la vidéo…",
+      "encoding": "Encodage de {rung} ({percent} %)",
+      "uploading": "Segments en ligne ({uploaded}/{total})",
+      "thumbnail": "Générer une vignette…",
+      "finalizing": "Sauvegarde…",
+      "done": "Prêt",
+      "failed": "Échec du téléchargement"
     }
   }
 }

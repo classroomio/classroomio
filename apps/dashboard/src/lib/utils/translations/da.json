@@ -915,8 +915,17 @@
             "reviews": "Anmeldelser",
             "instructor": "Instruktør",
             "pricing": "Prissætning",
-            "certificate": "Certifikat"
-          }
+            "certificate": "Certifikat",
+            "curriculum": "Læreplan",
+            "chips": "Færdigheder og værktøjer",
+            "skills": "Færdigheder du får",
+            "tools": "Værktøjer du lærer"
+          },
+          "skills_help": "Tryk på Enter for at tilføje. Disse vises som chips under læseplanen.",
+          "tools_help": "Tryk på Enter for at tilføje. Disse vises som chips under læseplanen.",
+          "skills_placeholder": "f.eks. Dataanalyse",
+          "tools_placeholder": "f.eks. Figma",
+          "remove": "Fjern"
         }
       },
       "certificates": {
@@ -1721,7 +1730,8 @@
               "submit": "Indsend øvelse",
               "collapse_section": "Skjul afsnit",
               "expand_section": "Udvid afsnit"
-            }
+            },
+            "more": "Handlinger"
           },
           "new_exercise_modal": {
             "heading": "Ny øvelse",
@@ -2171,7 +2181,10 @@
           "depth": "Hvor dybt skal kurset gå?",
           "topic": "Emne eller niche",
           "expertise_level": "Mål ekspertiseniveau",
-          "documentation_url": "Dokumentations-URL (valgfrit)"
+          "documentation_url": {
+            "label": "Dokumentations-URL (valgfrit)",
+            "hint": "Vi læser dette websted for at basere kurset på dit rigtige produkt."
+          }
         },
         "expert_on_x": {
           "title": "Bliv ekspert på X",
@@ -4032,7 +4045,14 @@
       "cancel": "Annuller kørsel",
       "dismiss": "Afvis",
       "now_doing": "Nu",
-      "input_disabled_hint": "Chatten er sat på pause, mens agenten er færdig med at bygge kurset. Annuller eller vent på, at det er fuldført."
+      "input_disabled_hint": "Chatten er sat på pause, mens agenten er færdig med at bygge kurset. Annuller eller vent på, at det er fuldført.",
+      "dismiss_confirm": "Gå væk",
+      "dismiss_cancel": "Fortsæt løb",
+      "dismiss_confirm_body": "Vil du gå væk fra dette aflyste løb? Genoptag-knappen forsvinder - enhver yderligere chat starter på en frisk og fortsætter ikke planen.",
+      "stuck_queued": {
+        "title": "Arbejder reagerer ikke",
+        "body": "Denne kørsel har ventet i mere end 30 sekunder uden nogen afhentning af arbejderen. Baggrundsarbejderen er muligvis nede eller genstarter."
+      }
     }
   },
   "widgets": {
@@ -4470,6 +4490,28 @@
         "title": "AI Tutor-indstillinger",
         "description": "Standarder for hvert kursus i dette arbejdsområde. Kurser kan arve disse eller tilsidesætte dem."
       }
+    }
+  },
+  "hls_upload": {
+    "rungs": {
+      "p360": "360p",
+      "p720": "720p",
+      "p1080": "1080p"
+    },
+    "error": {
+      "webcodecs_unsupported": "Din browser understøtter ikke hardware-videokodning. Brug en nyere version af Chrome, Edge eller Safari.",
+      "encode_failed": "Kodning mislykkedes. Prøv en anden kildefil, eller opdater, og prøv igen.",
+      "upload_failed": "Kunne ikke uploade et videosegment. Tjek din forbindelse og prøv igen.",
+      "finalize_failed": "Kunne ikke gemme den uploadede video."
+    },
+    "stage": {
+      "probing": "Læser video...",
+      "encoding": "Kodning {rung} ({percent}%)",
+      "uploading": "Uploader segmenter ({uploaded}/{total})",
+      "thumbnail": "Genererer thumbnail...",
+      "finalizing": "Gemmer...",
+      "done": "Klar",
+      "failed": "Upload mislykkedes"
     }
   }
 }

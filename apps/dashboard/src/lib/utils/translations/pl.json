@@ -915,8 +915,17 @@
             "reviews": "Recenzje",
             "instructor": "Instruktor",
             "pricing": "Ceny",
-            "certificate": "Certyfikat"
-          }
+            "certificate": "Certyfikat",
+            "curriculum": "Program nauczania",
+            "chips": "Umiejętności i narzędzia",
+            "skills": "Umiejętności, które zyskasz",
+            "tools": "Narzędzia, których się nauczysz"
+          },
+          "skills_help": "Naciśnij Enter, aby dodać. Pojawiają się one jako elementy poniżej programu nauczania.",
+          "tools_help": "Naciśnij Enter, aby dodać. Pojawiają się one jako elementy poniżej programu nauczania.",
+          "skills_placeholder": "np. Analiza danych",
+          "tools_placeholder": "np. Figma",
+          "remove": "Usuń"
         }
       },
       "certificates": {
@@ -1721,7 +1730,8 @@
               "submit": "Prześlij ćwiczenie",
               "collapse_section": "Zwiń sekcję",
               "expand_section": "Rozwiń sekcję"
-            }
+            },
+            "more": "Działania"
           },
           "new_exercise_modal": {
             "heading": "Nowe ćwiczenie",
@@ -2171,7 +2181,10 @@
           "depth": "Jak głęboko powinien sięgać kurs?",
           "topic": "Temat lub nisza",
           "expertise_level": "Docelowy poziom wiedzy",
-          "documentation_url": "Adres URL dokumentacji (opcjonalnie)"
+          "documentation_url": {
+            "label": "Adres URL dokumentacji (opcjonalnie)",
+            "hint": "Przeczytamy tę witrynę, aby oprzeć kurs na Twoim prawdziwym produkcie."
+          }
         },
         "expert_on_x": {
           "title": "Zostań ekspertem w dziedzinie X",
@@ -4032,7 +4045,14 @@
       "cancel": "Anuluj bieg",
       "dismiss": "Odrzuć",
       "now_doing": "Teraz",
-      "input_disabled_hint": "Czat zostaje wstrzymany, gdy agent kończy tworzenie kursu. Anuluj lub poczekaj na zakończenie."
+      "input_disabled_hint": "Czat zostaje wstrzymany, gdy agent kończy tworzenie kursu. Anuluj lub poczekaj na zakończenie.",
+      "dismiss_confirm": "Odejdź",
+      "dismiss_cancel": "Biegnij dalej",
+      "dismiss_confirm_body": "Czy chcesz zrezygnować z tego odwołanego biegu? Przycisk Wznów zniknie — każdy kolejny czat rozpocznie się od nowa i nie będzie kontynuowany planu.",
+      "stuck_queued": {
+        "title": "Pracownik nie odpowiada",
+        "body": "Ten przebieg czekał ponad 30 sekund bez odbioru pracownika. Proces roboczy działający w tle może być wyłączony lub uruchamiany ponownie."
+      }
     }
   },
   "widgets": {
@@ -4470,6 +4490,28 @@
         "title": "Ustawienia AI Tutora",
         "description": "Wartości domyślne dla każdego kursu w tym obszarze roboczym. Kursy mogą je dziedziczyć lub zastępować."
       }
+    }
+  },
+  "hls_upload": {
+    "rungs": {
+      "p360": "360p",
+      "p720": "720p",
+      "p1080": "1080p"
+    },
+    "error": {
+      "webcodecs_unsupported": "Twoja przeglądarka nie obsługuje sprzętowego kodowania wideo. Użyj najnowszej wersji przeglądarki Chrome, Edge lub Safari.",
+      "encode_failed": "Kodowanie nie powiodło się. Wypróbuj inny plik źródłowy lub odśwież i spróbuj ponownie.",
+      "upload_failed": "Nie udało się przesłać segmentu wideo. Sprawdź połączenie i spróbuj ponownie.",
+      "finalize_failed": "Nie udało się zapisać przesłanego filmu."
+    },
+    "stage": {
+      "probing": "Czytanie wideo…",
+      "encoding": "Kodowanie {rung} ({percent}%)",
+      "uploading": "Przesyłanie segmentów ({uploaded}/{total})",
+      "thumbnail": "Generuję miniaturę…",
+      "finalizing": "Zapisuję…",
+      "done": "Gotowy",
+      "failed": "Przesyłanie nie powiodło się"
     }
   }
 }

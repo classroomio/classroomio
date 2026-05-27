@@ -915,8 +915,17 @@
             "reviews": "Rezensionen",
             "instructor": "Lehrer",
             "pricing": "Preise",
-            "certificate": "Zertifikat"
-          }
+            "certificate": "Zertifikat",
+            "curriculum": "Lehrplan",
+            "chips": "Fähigkeiten und Werkzeuge",
+            "skills": "Fähigkeiten, die Sie erwerben werden",
+            "tools": "Werkzeuge, die Sie lernen werden"
+          },
+          "skills_help": "Drücken Sie zum Hinzufügen die Eingabetaste. Diese erscheinen als Chips unterhalb des Lehrplans.",
+          "tools_help": "Drücken Sie zum Hinzufügen die Eingabetaste. Diese erscheinen als Chips unterhalb des Lehrplans.",
+          "skills_placeholder": "z.B. Datenanalyse",
+          "tools_placeholder": "z.B. Figma",
+          "remove": "Entfernen"
         }
       },
       "certificates": {
@@ -1721,7 +1730,8 @@
               "submit": "Übung einreichen",
               "collapse_section": "Abschnitt einklappen",
               "expand_section": "Abschnitt ausklappen"
-            }
+            },
+            "more": "Aktionen"
           },
           "new_exercise_modal": {
             "heading": "Neue Übung",
@@ -2171,7 +2181,10 @@
           "depth": "Wie tief soll der Kurs gehen?",
           "topic": "Thema oder Nische",
           "expertise_level": "Zielkompetenzniveau",
-          "documentation_url": "Dokumentations-URL (optional)"
+          "documentation_url": {
+            "label": "Dokumentations-URL (optional)",
+            "hint": "Wir werden diese Website lesen, um den Kurs in Ihrem realen Produkt zu verankern."
+          }
         },
         "expert_on_x": {
           "title": "Werden Sie Experte für X",
@@ -4032,7 +4045,14 @@
       "cancel": "Lauf abbrechen",
       "dismiss": "Entlassen",
       "now_doing": "Jetzt",
-      "input_disabled_hint": "Der Chat wird angehalten, während der Agent mit der Erstellung des Kurses fertig ist. Brechen Sie den Vorgang ab oder warten Sie, bis der Vorgang abgeschlossen ist."
+      "input_disabled_hint": "Der Chat wird angehalten, während der Agent mit der Erstellung des Kurses fertig ist. Brechen Sie den Vorgang ab oder warten Sie, bis der Vorgang abgeschlossen ist.",
+      "dismiss_confirm": "Geh weg",
+      "dismiss_cancel": "Lauf weiter",
+      "dismiss_confirm_body": "Von diesem abgesagten Lauf weggehen? Die Schaltfläche „Fortsetzen“ wird nicht mehr angezeigt – jeder weitere Chat beginnt neu und führt den Plan nicht fort.",
+      "stuck_queued": {
+        "title": "Arbeiter reagiert nicht",
+        "body": "Dieser Lauf hat mehr als 30 Sekunden gewartet, ohne dass ein Arbeiter abgeholt wurde. Der Hintergrund-Worker ist möglicherweise nicht verfügbar oder wird neu gestartet."
+      }
     }
   },
   "widgets": {
@@ -4470,6 +4490,28 @@
         "title": "AI Tutor-Einstellungen",
         "description": "Standardwerte für jeden Kurs in diesem Arbeitsbereich. Kurse können diese erben oder überschreiben."
       }
+    }
+  },
+  "hls_upload": {
+    "rungs": {
+      "p360": "360p",
+      "p720": "720p",
+      "p1080": "1080p"
+    },
+    "error": {
+      "webcodecs_unsupported": "Ihr Browser unterstützt keine Hardware-Videokodierung. Verwenden Sie eine aktuelle Version von Chrome, Edge oder Safari.",
+      "encode_failed": "Die Codierung ist fehlgeschlagen. Versuchen Sie es mit einer anderen Quelldatei oder aktualisieren Sie die Datei und versuchen Sie es erneut.",
+      "upload_failed": "Ein Videosegment konnte nicht hochgeladen werden. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+      "finalize_failed": "Das hochgeladene Video konnte nicht gespeichert werden."
+    },
+    "stage": {
+      "probing": "Video lesen…",
+      "encoding": "Codierung {rung} ({percent}%)",
+      "uploading": "Segmente werden hochgeladen ({uploaded}/{total})",
+      "thumbnail": "Miniaturbild wird erstellt…",
+      "finalizing": "Sparen…",
+      "done": "Bereit",
+      "failed": "Der Upload ist fehlgeschlagen"
     }
   }
 }
