@@ -401,7 +401,7 @@
       }
     },
     "ai_credits": {
-      "purchase_success": "Gói mã thông báo được thêm vào số dư của bạn.",
+      "purchase_success": "Gói AI credits đã được thêm vào số dư của bạn.",
       "checkout_failed": "Không thể bắt đầu thanh toán. Vui lòng thử lại."
     },
     "public_course": {
@@ -2725,9 +2725,9 @@
       "open_billing": "Thanh toán mở",
       "error": "Đã xảy ra lỗi khi mở thanh toán",
       "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
-      "ai_credits": "Cách sử dụng trợ lý AI",
-      "ai_tokens_used": "mã thông báo được sử dụng trong tháng này",
-      "ai_bonus_credits": "tín dụng thưởng có sẵn"
+      "ai_credits": "AI credits",
+      "ai_tokens_used": "AI credits đã dùng trong tháng này",
+      "ai_bonus_credits": "AI credits thưởng có sẵn"
     },
     "integrations": {
       "heading": "điện tín",
@@ -3140,7 +3140,7 @@
       "customize_lms_tab": "Tùy chỉnh LMS",
       "domains_tab": "Tên miền",
       "teams_tab": "Đội",
-      "ai_credits_tab": "Tín dụng AI",
+      "ai_credits_tab": "AI Credits",
       "ai_tutor_tab": "Gia sư AI"
     },
     "subheadings": {
@@ -3274,42 +3274,42 @@
       "page_subtitle": "Invite teammates and control who helps run this organization."
     },
     "ai_credits": {
-      "sub_title": "tín dụng AI",
-      "page_subtitle": "Theo dõi việc sử dụng trợ lý AI, mức tiêu thụ của nhóm và mua gói mã thông báo.",
-      "cost_note": "Việc sử dụng tín dụng được tính theo chi phí mô hình. Gemini 2.5 Flash và GPT-5.4 Mini được tính là 1 đơn vị tín dụng cho mỗi mã thông báo. Claude Sonnet 4.6 được tính là 36× mỗi mã thông báo, phản ánh chi phí API cao hơn.",
-      "buy_tokens": {
-        "title": "Mua thêm token",
-        "description": "Mỗi gói bổ sung thêm 5.000.000 tín dụng với giá 5 USD. Chọn số lượng gói bạn cần.",
-        "quantity_hint": "gói",
-        "preview": "{quantity} gói · {tokens} token · ${dollars}",
-        "buy_button": "Mua với giá ${dollars}"
-      },
-      "leaderboard": {
-        "title": "Cách sử dụng nhóm",
-        "this_month": "Tháng hiện tại",
-        "user": "người dùng",
-        "favorite_model": "Người mẫu yêu thích",
-        "tokens": "Mã thông báo",
-        "empty": "Không ai trong nhóm của bạn sử dụng trợ lý AI trong tháng này."
-      },
-      "chart": {
-        "heading": "Cách sử dụng",
-        "subheading": "Mức tiêu thụ token hàng ngày trong tháng này.",
-        "tokens": "Mã thông báo",
-        "total_tokens": "Tổng số token",
-        "total_requests": "Tổng số yêu cầu",
-        "empty": "Chưa có mức sử dụng nào được ghi lại trong tháng này."
+      "sub_title": "AI credits",
+      "page_subtitle": "Theo dõi việc sử dụng trợ lý AI, mức tiêu thụ của nhóm và mua các gói AI credits.",
+      "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
+      "included": {
+        "title": "Mức sử dụng được bao gồm",
+        "subtitle": "AI credits hàng tháng có trong gói của bạn.",
+        "resets_on": "Đặt lại {date}"
       },
       "purchased": {
-        "title": "Mức sử dụng đã mua",
-        "subtitle": "Các token bổ sung bạn đã mua sẽ được sử dụng tiếp cho đến khi sử dụng.",
-        "lifetime": "Đã mua {tokens} token · chi tiêu ${dollars}",
+        "title": "Sử dụng đã mua",
+        "subtitle": "AI credits bổ sung bạn mua sẽ được chuyển sang cho đến khi sử dụng.",
+        "lifetime": "{tokens} credits đã mua · ${dollars} đã chi",
         "buy_more": "Mua thêm"
       },
-      "included": {
-        "title": "Mức sử dụng đi kèm của bạn",
-        "subtitle": "Mã thông báo hàng tháng đi kèm với gói của bạn.",
-        "resets_on": "Đặt lại {date}"
+      "chart": {
+        "heading": "Sử dụng",
+        "subheading": "Mức tiêu thụ AI credits hàng ngày trong tháng này.",
+        "tokens": "Credits",
+        "total_tokens": "Total credits",
+        "total_requests": "Tổng số yêu cầu",
+        "empty": "Chưa ghi nhận mức sử dụng nào trong tháng này."
+      },
+      "leaderboard": {
+        "title": "Sử dụng của nhóm",
+        "this_month": "Tháng hiện tại",
+        "user": "Người dùng",
+        "favorite_model": "Model yêu thích",
+        "tokens": "Credits",
+        "empty": "Không ai trong nhóm của bạn đã sử dụng trợ lý AI trong tháng này."
+      },
+      "buy_tokens": {
+        "title": "Mua thêm credits",
+        "description": "Mỗi gói bổ sung thêm 5,000,000 credits với giá $5 USD. Chọn số lượng gói bạn cần.",
+        "quantity_hint": "gói",
+        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
+        "buy_button": "Mua với ${dollars}"
       }
     }
   },

@@ -401,8 +401,8 @@
       }
     },
     "ai_credits": {
-      "purchase_success": "Pacote de tokens adicionado ao seu saldo.",
-      "checkout_failed": "Não foi possível iniciar a finalização da compra. Por favor, tente novamente."
+      "purchase_success": "Pacote de AI credits adicionado ao seu saldo.",
+      "checkout_failed": "Não foi possível iniciar o checkout. Tente novamente."
     },
     "public_course": {
       "url_copied": "URL do curso copiada",
@@ -2725,9 +2725,9 @@
       "open_billing": "Faturamento aberto",
       "error": "Ocorreu um erro ao abrir o faturamento",
       "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
-      "ai_credits": "Uso do assistente de IA",
-      "ai_tokens_used": "tokens usados este mês",
-      "ai_bonus_credits": "créditos de bônus disponíveis"
+      "ai_credits": "AI credits",
+      "ai_tokens_used": "AI credits usados este mês",
+      "ai_bonus_credits": "AI credits bônus disponíveis"
     },
     "integrations": {
       "heading": "Telegrama",
@@ -3140,7 +3140,7 @@
       "customize_lms_tab": "Personalizar LMS",
       "domains_tab": "Domínios",
       "teams_tab": "Equipes",
-      "ai_credits_tab": "Créditos de IA",
+      "ai_credits_tab": "AI Credits",
       "ai_tutor_tab": "Tutor de IA"
     },
     "subheadings": {
@@ -3274,42 +3274,42 @@
       "page_subtitle": "Invite teammates and control who helps run this organization."
     },
     "ai_credits": {
-      "sub_title": "Créditos de IA",
-      "page_subtitle": "Rastreie o uso do assistente de IA, o consumo da equipe e compre pacotes de tokens.",
-      "cost_note": "O uso do crédito é ponderado pelo custo do modelo. Gemini 2.5 Flash e GPT-5.4 Mini contam como 1 unidade de crédito por token. Claude Sonnet 4.6 conta como 36× por token, refletindo seu custo mais alto de API.",
-      "buy_tokens": {
-        "title": "Compre mais fichas",
-        "description": "Cada pacote adiciona 5.000.000 de créditos por US$ 5. Escolha quantos pacotes você precisa.",
-        "quantity_hint": "pacotes",
-        "preview": "{quantity} pacote(s) · {tokens} tokens · ${dollars}",
-        "buy_button": "Compre por ${dollars}"
+      "sub_title": "AI credits",
+      "page_subtitle": "Acompanhe o uso do assistente de IA, o consumo da equipe e compre pacotes de AI credits.",
+      "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
+      "included": {
+        "title": "Seu uso incluído",
+        "subtitle": "AI credits mensais incluídos no seu plano.",
+        "resets_on": "Reinicia em {date}"
+      },
+      "purchased": {
+        "title": "Uso comprado",
+        "subtitle": "AI credits extras que você comprou acumulam até serem usados.",
+        "lifetime": "{tokens} credits comprados · ${dollars} gastos",
+        "buy_more": "Comprar mais"
+      },
+      "chart": {
+        "heading": "Uso",
+        "subheading": "Consumo diário de AI credits neste mês.",
+        "tokens": "Credits",
+        "total_tokens": "Total credits",
+        "total_requests": "Total de solicitações",
+        "empty": "Nenhum uso registrado neste mês ainda."
       },
       "leaderboard": {
         "title": "Uso da equipe",
         "this_month": "Mês atual",
         "user": "Usuário",
         "favorite_model": "Modelo favorito",
-        "tokens": "Fichas",
+        "tokens": "Credits",
         "empty": "Ninguém na sua equipe usou o assistente de IA este mês."
       },
-      "chart": {
-        "heading": "Uso",
-        "subheading": "Consumo diário de tokens este mês.",
-        "tokens": "Fichas",
-        "total_tokens": "Totais de fichas",
-        "total_requests": "Total de solicitações",
-        "empty": "Nenhum uso registrado neste mês ainda."
-      },
-      "purchased": {
-        "title": "Uso adquirido",
-        "subtitle": "Tokens extras que você comprou acumulam até serem usados.",
-        "lifetime": "{tokens} tokens comprados · ${dollars} gastos",
-        "buy_more": "Compre mais"
-      },
-      "included": {
-        "title": "Seu uso incluído",
-        "subtitle": "Tokens mensais incluídos no seu plano.",
-        "resets_on": "Reinicializações em {date}"
+      "buy_tokens": {
+        "title": "Comprar mais credits",
+        "description": "Cada pacote adiciona 5,000,000 credits por $5 USD. Escolha quantos pacotes você precisa.",
+        "quantity_hint": "pacotes",
+        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
+        "buy_button": "Comprar por ${dollars}"
       }
     }
   },

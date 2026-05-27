@@ -401,8 +401,8 @@
       }
     },
     "ai_credits": {
-      "purchase_success": "टोकन पैक आपके बैलेंस में जोड़ा गया।",
-      "checkout_failed": "चेकआउट प्रारंभ नहीं किया जा सका. कृपया पुन: प्रयास करें।"
+      "purchase_success": "AI credit pack आपके balance में जोड़ा गया।",
+      "checkout_failed": "Checkout शुरू नहीं हो सका। कृपया पुनः प्रयास करें।"
     },
     "public_course": {
       "url_copied": "कोर्स URL कॉपी हो गया",
@@ -2725,9 +2725,9 @@
       "open_billing": "बिलिंग खोलें",
       "error": "बिलिंग खोलते समय एक त्रुटि उत्पन्न हुई",
       "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
-      "ai_credits": "एआई सहायक उपयोग",
-      "ai_tokens_used": "इस महीने उपयोग किए गए टोकन",
-      "ai_bonus_credits": "बोनस क्रेडिट उपलब्ध"
+      "ai_credits": "AI credits",
+      "ai_tokens_used": "इस महीने उपयोग किए गए AI credits",
+      "ai_bonus_credits": "bonus AI credits उपलब्ध"
     },
     "integrations": {
       "heading": "टेलीग्राम",
@@ -3140,7 +3140,7 @@
       "customize_lms_tab": "एलएमएस को अनुकूलित करें",
       "domains_tab": "डोमेन",
       "teams_tab": "टीमें",
-      "ai_credits_tab": "एआई क्रेडिट",
+      "ai_credits_tab": "AI Credits",
       "ai_tutor_tab": "एआई ट्यूटर"
     },
     "subheadings": {
@@ -3274,42 +3274,42 @@
       "page_subtitle": "Invite teammates and control who helps run this organization."
     },
     "ai_credits": {
-      "sub_title": "एआई क्रेडिट",
-      "page_subtitle": "एआई सहायक उपयोग, टीम की खपत और टोकन पैक की खरीद को ट्रैक करें।",
-      "cost_note": "क्रेडिट उपयोग को मॉडल लागत के आधार पर भारित किया जाता है। जेमिनी 2.5 फ्लैश और जीपीटी-5.4 मिनी की गणना प्रति टोकन 1 क्रेडिट यूनिट के रूप में की जाती है। क्लाउड सॉनेट 4.6 की गणना 36× प्रति टोकन के रूप में की जाती है, जो इसकी उच्च एपीआई लागत को दर्शाता है।",
-      "buy_tokens": {
-        "title": "अधिक टोकन खरीदें",
-        "description": "प्रत्येक पैक $5 USD के लिए 5,000,000 क्रेडिट जोड़ता है। चुनें कि आपको कितने पैक चाहिए.",
-        "quantity_hint": "पैक",
-        "preview": "{quantity} पैक · {tokens} टोकन · ${dollars}",
-        "buy_button": "${dollars} में खरीदें"
+      "sub_title": "AI credits",
+      "page_subtitle": "AI assistant उपयोग, टीम की खपत और AI credit packs खरीदारी को ट्रैक करें।",
+      "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
+      "included": {
+        "title": "आपका शामिल उपयोग",
+        "subtitle": "आपकी योजना में मासिक AI credits शामिल हैं।",
+        "resets_on": "{date} को reset होता है"
+      },
+      "purchased": {
+        "title": "खरीदा गया उपयोग",
+        "subtitle": "आपके द्वारा खरीदे गए अतिरिक्त AI credits उपयोग होने तक carry forward रहेंगे।",
+        "lifetime": "{tokens} credits खरीदे गए · ${dollars} खर्च",
+        "buy_more": "और खरीदें"
+      },
+      "chart": {
+        "heading": "उपयोग",
+        "subheading": "इस महीने दैनिक AI credits की खपत।",
+        "tokens": "Credits",
+        "total_tokens": "Total credits",
+        "total_requests": "कुल अनुरोध",
+        "empty": "इस महीने अभी तक कोई उपयोग दर्ज नहीं किया गया है।"
       },
       "leaderboard": {
         "title": "टीम का उपयोग",
         "this_month": "चालू माह",
         "user": "उपयोगकर्ता",
-        "favorite_model": "पसंदीदा मॉडल",
-        "tokens": "टोकन",
-        "empty": "इस महीने आपकी टीम में किसी ने भी एआई असिस्टेंट का उपयोग नहीं किया है।"
+        "favorite_model": "पसंदीदा model",
+        "tokens": "Credits",
+        "empty": "इस महीने आपकी टीम में किसी ने भी AI assistant का उपयोग नहीं किया है।"
       },
-      "chart": {
-        "heading": "उपयोग",
-        "subheading": "इस महीने दैनिक टोकन खपत।",
-        "tokens": "टोकन",
-        "total_tokens": "कुल टोकन",
-        "total_requests": "कुल अनुरोध",
-        "empty": "इस महीने अभी तक कोई उपयोग दर्ज नहीं किया गया है।"
-      },
-      "purchased": {
-        "title": "खरीदा गया उपयोग",
-        "subtitle": "आपके द्वारा खरीदे गए अतिरिक्त टोकन उपयोग होने तक रोल ओवर रहेंगे।",
-        "lifetime": "{tokens} टोकन खरीदे गए · ${dollars} खर्च किए गए",
-        "buy_more": "और अधिक खरीदें"
-      },
-      "included": {
-        "title": "आपका सम्मिलित उपयोग",
-        "subtitle": "आपकी योजना में मासिक टोकन शामिल हैं।",
-        "resets_on": "{date} रीसेट करता है"
+      "buy_tokens": {
+        "title": "और credits खरीदें",
+        "description": "प्रत्येक pack $5 USD में 5,000,000 credits जोड़ता है। चुनें कि आपको कितने packs चाहिए।",
+        "quantity_hint": "packs",
+        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
+        "buy_button": "${dollars} में खरीदें"
       }
     }
   },

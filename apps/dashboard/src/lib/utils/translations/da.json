@@ -401,8 +401,8 @@
       }
     },
     "ai_credits": {
-      "purchase_success": "Token-pakke føjet til din saldo.",
-      "checkout_failed": "Kunne ikke starte kassen. Prøv venligst igen."
+      "purchase_success": "AI credit pack tilføjet til din saldo.",
+      "checkout_failed": "Kunne ikke starte betaling. Prøv igen."
     },
     "public_course": {
       "url_copied": "Kursus-URL kopieret",
@@ -2725,9 +2725,9 @@
       "open_billing": "Åben fakturering",
       "error": "Der opstod en fejl under åbning af fakturering",
       "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
-      "ai_credits": "Brug af AI-assistent",
-      "ai_tokens_used": "tokens brugt denne måned",
-      "ai_bonus_credits": "tilgængelige bonuskreditter"
+      "ai_credits": "AI credits",
+      "ai_tokens_used": "AI credits brugt denne måned",
+      "ai_bonus_credits": "bonus AI credits tilgængelige"
     },
     "integrations": {
       "heading": "Telegram",
@@ -3274,42 +3274,42 @@
       "page_subtitle": "Invite teammates and control who helps run this organization."
     },
     "ai_credits": {
-      "sub_title": "AI-kreditter",
-      "page_subtitle": "Spor brug af AI-assistent, teamforbrug og køb af tokenpakker.",
-      "cost_note": "Kreditforbrug vægtes efter modelomkostninger. Gemini 2.5 Flash og GPT-5.4 Mini tæller som 1 kreditenhed pr. token. Claude Sonnet 4.6 tæller som 36× pr. token, hvilket afspejler dens højere API-omkostninger.",
-      "buy_tokens": {
-        "title": "Køb flere tokens",
-        "description": "Hver pakke tilføjer 5.000.000 kreditter for $5 USD. Vælg, hvor mange pakker du har brug for.",
-        "quantity_hint": "pakker",
-        "preview": "{quantity} pakke(r) · {tokens} tokens · ${dollars}",
-        "buy_button": "Køb for ${dollars}"
+      "sub_title": "AI credits",
+      "page_subtitle": "Spor brug af AI-assistent, teamforbrug og køb af AI credit packs.",
+      "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
+      "included": {
+        "title": "Dit inkluderede forbrug",
+        "subtitle": "Månedlige AI credits inkluderet i din plan.",
+        "resets_on": "Nulstiller {date}"
+      },
+      "purchased": {
+        "title": "Købt forbrug",
+        "subtitle": "Ekstra AI credits, du har købt, overføres, indtil de er brugt.",
+        "lifetime": "{tokens} credits købt · ${dollars} brugt",
+        "buy_more": "Køb mere"
+      },
+      "chart": {
+        "heading": "Brug",
+        "subheading": "Dagligt AI credits-forbrug denne måned.",
+        "tokens": "Credits",
+        "total_tokens": "Total credits",
+        "total_requests": "Samlet antal anmodninger",
+        "empty": "Der er ikke registreret noget forbrug i denne måned endnu."
       },
       "leaderboard": {
         "title": "Teambrug",
         "this_month": "Nuværende måned",
         "user": "Bruger",
         "favorite_model": "Yndlingsmodel",
-        "tokens": "Poletter",
+        "tokens": "Credits",
         "empty": "Ingen på dit hold har brugt AI-assistenten denne måned."
       },
-      "chart": {
-        "heading": "Brug",
-        "subheading": "Dagligt tokenforbrug denne måned.",
-        "tokens": "Poletter",
-        "total_tokens": "Samlede tokens",
-        "total_requests": "Samlet antal anmodninger",
-        "empty": "Der er ikke registreret noget forbrug i denne måned endnu."
-      },
-      "purchased": {
-        "title": "Købt brug",
-        "subtitle": "Ekstra poletter, du har købt, ruller over, indtil de bliver brugt.",
-        "lifetime": "{tokens} tokens købt · ${dollars} brugt",
-        "buy_more": "Køb mere"
-      },
-      "included": {
-        "title": "Dit inkluderede forbrug",
-        "subtitle": "Månedlige tokens inkluderet i din plan.",
-        "resets_on": "Nulstiller {date}"
+      "buy_tokens": {
+        "title": "Køb flere credits",
+        "description": "Hver pakke tilføjer 5,000,000 credits for $5 USD. Vælg, hvor mange pakker du har brug for.",
+        "quantity_hint": "pakker",
+        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
+        "buy_button": "Køb for ${dollars}"
       }
     }
   },

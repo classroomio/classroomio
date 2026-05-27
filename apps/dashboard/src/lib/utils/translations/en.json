@@ -945,24 +945,24 @@
     },
     "ai_credits": {
       "sub_title": "AI credits",
-      "page_subtitle": "Track AI assistant usage, team consumption, and purchase token packs.",
+      "page_subtitle": "Track AI assistant usage, team consumption, and purchase AI credit packs.",
       "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
       "included": {
         "title": "Your included usage",
-        "subtitle": "Monthly tokens included with your plan.",
+        "subtitle": "Monthly AI credits included with your plan.",
         "resets_on": "Resets {date}"
       },
       "purchased": {
         "title": "Purchased usage",
-        "subtitle": "Extra tokens you bought roll over until used.",
-        "lifetime": "{tokens} tokens purchased · ${dollars} spent",
+        "subtitle": "Extra AI credits you bought roll over until used.",
+        "lifetime": "{tokens} credits purchased · ${dollars} spent",
         "buy_more": "Buy more"
       },
       "chart": {
         "heading": "Usage",
-        "subheading": "Daily token consumption this month.",
-        "tokens": "Tokens",
-        "total_tokens": "Total tokens",
+        "subheading": "Daily AI credits consumption this month.",
+        "tokens": "Credits",
+        "total_tokens": "Total credits",
         "total_requests": "Total requests",
         "empty": "No usage recorded this month yet."
       },
@@ -971,14 +971,14 @@
         "this_month": "Current month",
         "user": "User",
         "favorite_model": "Favorite model",
-        "tokens": "Tokens",
+        "tokens": "Credits",
         "empty": "Nobody on your team has used the AI assistant this month."
       },
       "buy_tokens": {
-        "title": "Buy more tokens",
+        "title": "Buy more credits",
         "description": "Each pack adds 5,000,000 credits for $5 USD. Choose how many packs you need.",
         "quantity_hint": "packs",
-        "preview": "{quantity} pack(s) · {tokens} tokens · ${dollars}",
+        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
         "buy_button": "Buy for ${dollars}"
       }
     }
@@ -3899,7 +3899,7 @@
       "deactivated": "Token auth disabled."
     },
     "ai_credits": {
-      "purchase_success": "Token pack added to your balance.",
+      "purchase_success": "AI credit pack added to your balance.",
       "checkout_failed": "Could not start checkout. Please try again."
     },
     "account": {

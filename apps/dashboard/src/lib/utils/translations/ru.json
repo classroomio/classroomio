@@ -401,8 +401,8 @@
       }
     },
     "ai_credits": {
-      "purchase_success": "Пакет токенов добавлен на ваш баланс.",
-      "checkout_failed": "Не удалось начать оформление заказа. Пожалуйста, попробуйте еще раз."
+      "purchase_success": "Пакет AI credits добавлен на баланс.",
+      "checkout_failed": "Не удалось начать оплату. Попробуйте снова."
     },
     "public_course": {
       "url_copied": "URL курса скопирован",
@@ -2725,9 +2725,9 @@
       "open_billing": "Открыть биллинг",
       "error": "Произошла ошибка при открытии счета.",
       "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
-      "ai_credits": "Использование AI-помощника",
-      "ai_tokens_used": "жетоны, использованные в этом месяце",
-      "ai_bonus_credits": "доступны бонусные кредиты"
+      "ai_credits": "AI credits",
+      "ai_tokens_used": "AI credits использовано в этом месяце",
+      "ai_bonus_credits": "доступны bonus AI credits"
     },
     "integrations": {
       "heading": "Телеграмма",
@@ -3140,7 +3140,7 @@
       "customize_lms_tab": "Настроить систему управления обучением",
       "domains_tab": "Домены",
       "teams_tab": "Команды",
-      "ai_credits_tab": "Кредиты ИИ",
+      "ai_credits_tab": "AI Credits",
       "ai_tutor_tab": "Репетитор по искусственному интеллекту"
     },
     "subheadings": {
@@ -3274,42 +3274,42 @@
       "page_subtitle": "Invite teammates and control who helps run this organization."
     },
     "ai_credits": {
-      "sub_title": "кредиты ИИ",
-      "page_subtitle": "Отслеживайте использование ИИ-помощника, потребление командой и покупайте пакеты токенов.",
-      "cost_note": "Использование кредита взвешивается по стоимости модели. Gemini 2.5 Flash и GPT-5.4 Mini считаются за 1 кредитную единицу за токен. Claude Sonnet 4.6 считается 36× на токен, что отражает более высокую стоимость API.",
-      "buy_tokens": {
-        "title": "Купить больше жетонов",
-        "description": "Каждый пакет добавляет 5 000 000 кредитов за 5 долларов США. Выберите, сколько упаковок вам нужно.",
-        "quantity_hint": "пакеты",
-        "preview": "Пакет(ы) {quantity} · жетоны {tokens} · ${dollars}",
-        "buy_button": "Купить за ${dollars}"
+      "sub_title": "AI credits",
+      "page_subtitle": "Отслеживайте использование AI-ассистента, расход команды и покупайте пакеты AI credits.",
+      "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
+      "included": {
+        "title": "Включённое использование",
+        "subtitle": "Ежемесячные AI credits включены в ваш план.",
+        "resets_on": "Сброс {date}"
       },
-      "leaderboard": {
-        "title": "Использование команды",
-        "this_month": "Текущий месяц",
-        "user": "Пользователь",
-        "favorite_model": "Любимая модель",
-        "tokens": "Токены",
-        "empty": "Никто из вашей команды в этом месяце не пользовался ИИ-помощником."
+      "purchased": {
+        "title": "Купленное использование",
+        "subtitle": "Дополнительные AI credits переносятся до использования.",
+        "lifetime": "{tokens} credits куплено · ${dollars} потрачено",
+        "buy_more": "Купить ещё"
       },
       "chart": {
         "heading": "Использование",
-        "subheading": "Ежедневное потребление токенов в этом месяце.",
-        "tokens": "Токены",
-        "total_tokens": "Всего токенов",
+        "subheading": "Ежедневное потребление AI credits в этом месяце.",
+        "tokens": "Credits",
+        "total_tokens": "Total credits",
         "total_requests": "Всего запросов",
-        "empty": "В этом месяце использования еще не зафиксировано."
+        "empty": "В этом месяце использование пока не зафиксировано."
       },
-      "purchased": {
-        "title": "Приобретенное использование",
-        "subtitle": "Дополнительные жетоны, которые вы купили, переносятся до тех пор, пока не будут использованы.",
-        "lifetime": "Токенов: {tokens} куплено · потрачено ${dollars}",
-        "buy_more": "Купить больше"
+      "leaderboard": {
+        "title": "Использование командой",
+        "this_month": "Текущий месяц",
+        "user": "Пользователь",
+        "favorite_model": "Любимая model",
+        "tokens": "Credits",
+        "empty": "Никто в вашей команде не использовал AI-ассистента в этом месяце."
       },
-      "included": {
-        "title": "Ваше включенное использование",
-        "subtitle": "Ежемесячные токены включены в ваш план.",
-        "resets_on": "Сбрасывает {date}"
+      "buy_tokens": {
+        "title": "Купить больше credits",
+        "description": "Каждый пакет добавляет 5,000,000 credits за $5 USD. Выберите, сколько пакетов вам нужно.",
+        "quantity_hint": "пакеты",
+        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
+        "buy_button": "Купить за ${dollars}"
       }
     }
   },
