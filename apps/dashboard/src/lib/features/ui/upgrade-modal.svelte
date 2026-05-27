@@ -46,7 +46,7 @@
     try {
       const checkoutURL = new URL('/api/polar/subscribe', page.url);
 
-      checkoutURL.searchParams.set('productId', isYearlyPlan ? plan.CTA.PRODUCT_ID_YEARLY : plan.CTA.PRODUCT_ID);
+      checkoutURL.searchParams.set('products', isYearlyPlan ? plan.CTA.PRODUCT_ID_YEARLY : plan.CTA.PRODUCT_ID);
       checkoutURL.searchParams.set('customerEmail', $profile.email);
       checkoutURL.searchParams.set('customerName', $profile.fullname);
       checkoutURL.searchParams.set(
