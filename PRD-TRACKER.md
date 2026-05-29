@@ -18,6 +18,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | 10 | `prd/pricing-improvements` | todo |
 | - | 12 | `prd/public-courses` | todo |
 | - | - | `prd/customer-course-documentation` | todo |
+| - | - | `prd/walkthrough-widget` | draft |
 | - | 15 | `prd/webhooks` | todo |
 
 ## DONE (Completed PRDs)
