@@ -11,6 +11,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import AppSetup from './app-setup.svelte';
+  import VisitOrgSiteBtn from '$features/ui/visit-org-site-btn.svelte';
 
   const siteName = $derived($currentOrg.siteName);
 
@@ -36,6 +37,8 @@
     <span class="grow"></span>
 
     <AppSetup />
+    <VisitOrgSiteBtn variant="outline" labelKey="dashboard.open_academy" />
+
     <Search />
 
     <Popover.Root>

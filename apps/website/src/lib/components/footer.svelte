@@ -176,8 +176,11 @@
         <p class="ui:text-foreground mb-4 text-sm font-semibold">Company</p>
         <ul class="space-y-3">
           <li>
-            <a href="/roadmap" class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
-              >Roadmap</a
+            <a
+              href="https://feedback.classroomio.com"
+              target="_blank"
+              rel="noopener"
+              class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors">Roadmap</a
             >
           </li>
           <li>

@@ -1,6 +1,7 @@
 export * from './question-type-keys';
 export * from './question-type-types';
 export * from './question-type-registry';
+export * from './premium-question-types';
 export * from './question-type-lookup';
 export * from './question-type-capabilities';
 export * from './question-answer-payload';

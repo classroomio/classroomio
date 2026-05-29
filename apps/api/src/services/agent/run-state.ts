@@ -29,6 +29,7 @@ export interface CreateAgentRunStateInput {
   executionCursor?: Record<string, unknown>;
   sourceIds?: string[];
   modelSummary?: string;
+  modelId?: string;
 }
 
 export interface AgentRunDetail {
@@ -107,6 +108,11 @@ export async function createAgentRunState(input: CreateAgentRunStateInput): Prom
   await assertCourseRunAccess(input.courseId, input.userId, input.orgId);
   await assertConversationBelongsToCourse(input.conversationId, input.courseId, input.userId);
 
+  const executionCursor = {
+    ...(input.executionCursor ?? {}),
+    ...(input.modelId ? { modelId: input.modelId } : {})
+  };
+
   const run = await createAgentRun({
     orgId: input.orgId,
     courseId: input.courseId,
@@ -114,7 +120,7 @@ export async function createAgentRunState(input: CreateAgentRunStateInput): Prom
     userId: input.userId,
     phase: input.phase,
     approvedPlan: input.approvedPlan ?? null,
-    executionCursor: input.executionCursor,
+    executionCursor,
     sourceIds: input.sourceIds,
     modelSummary: input.modelSummary
   });

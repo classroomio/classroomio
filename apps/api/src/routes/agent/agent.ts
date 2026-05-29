@@ -432,12 +432,10 @@ const agentCoreRouter = new Hono()
         }
       }
 
-      if (role === AgentRole.TEACHER && !modelDescriptor.isFree) {
-        const isPaid = await isOrgOnPaidPlan(orgId);
+      const isOrgPaid = role === AgentRole.TEACHER ? await isOrgOnPaidPlan(orgId) : false;
 
-        if (!isPaid) {
-          throw new AppError('Upgrade required to use this AI model', 'UPGRADE_REQUIRED', 403);
-        }
+      if (role === AgentRole.TEACHER && !modelDescriptor.isFree && !isOrgPaid) {
+        throw new AppError('Upgrade required to use this AI model', 'UPGRADE_REQUIRED', 403);
       }
 
       // Students go through tutor policy (workspace toggle, pool, per-learner cap).
@@ -520,7 +518,8 @@ const agentCoreRouter = new Hono()
       // approved plan/active template) is sent as a user-turn message instead so
       // it doesn't invalidate the tools+system cache.
       const systemPrompt = buildSystemPrompt(agentContext, {
-        tutorSettings: studentPolicy?.settings
+        tutorSettings: studentPolicy?.settings,
+        isOrgOnPaidPlan: isOrgPaid
       });
 
       const contextMessageText = buildContextMessage(agentContext, {
@@ -531,7 +530,7 @@ const agentCoreRouter = new Hono()
       const agentTools =
         role === AgentRole.STUDENT
           ? buildStudentAgentTools(orgId, user.id, courseId, studentPolicy!.settings)
-          : buildAgentTools(orgId, user.id, courseId, messages);
+          : buildAgentTools(orgId, user.id, courseId, messages, { isOrgOnPaidPlan: isOrgPaid });
 
       const contextManaged = await buildModelContextMessages({
         conversationId,
@@ -569,27 +568,7 @@ const agentCoreRouter = new Hono()
             ]
           : convertedMessages;
 
-      console.log(
-        '[agent.chat] modelMessages →',
-        JSON.stringify(
-          modelMessages.map((m, i) => ({
-            i,
-            role: m.role,
-            parts: Array.isArray(m.content)
-              ? m.content.map((p: any) => ({
-                  type: p.type,
-                  toolCallId: p.toolCallId,
-                  toolName: p.toolName,
-                  textPreview: typeof p.text === 'string' ? p.text.slice(0, 60) : undefined
-                }))
-              : typeof m.content === 'string'
-                ? m.content.slice(0, 80)
-                : m.content
-          })),
-          null,
-          2
-        )
-      );
+      console.log(`[agent.chat] user=${user.id} messages=${modelMessages.length}`);
 
       // Cache the growing conversation prefix: each turn reads the prior
       // transcript at ~0.1x cost instead of reprocessing it at full price.

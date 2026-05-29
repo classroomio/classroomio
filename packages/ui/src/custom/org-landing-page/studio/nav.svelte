@@ -17,12 +17,14 @@
 </script>
 
 <EditableLandingSection sectionKey="navigation">
-  <header class="ui:sticky ui:top-0 ui:z-50 ui:bg-background/75 ui:backdrop-blur-md ui:border-b ui:border-border">
+  <header
+    class="ui:sticky ui:top-0 ui:z-50 ui:bg-[var(--landing-bg)]/75 ui:backdrop-blur-md ui:border-b ui:border-[var(--landing-border)]"
+  >
     <div class="ui:max-w-[1080px] ui:mx-auto ui:px-6">
       <div class="ui:grid ui:grid-cols-[1fr_auto_1fr] ui:items-center ui:h-14">
         <a
           href="/"
-          class="ui:flex ui:items-center ui:gap-2 ui:font-semibold ui:text-[14px] ui:tracking-tight ui:text-foreground ui:no-underline"
+          class="ui:flex ui:items-center ui:gap-2 ui:font-semibold ui:text-[14px] ui:tracking-tight ui:text-[var(--landing-fg)] ui:no-underline ui:cursor-pointer"
         >
           {#if logoUrl}
             <img src={logoUrl} alt={orgName} class="ui:h-5 ui:w-auto" />
@@ -35,7 +37,7 @@
             {#each navItems as item (item.href + item.label)}
               <a
                 href={item.href}
-                class="ui:px-3 ui:py-1.5 ui:text-[13px] ui:text-muted-foreground ui:hover:text-foreground ui:hover:bg-muted ui:rounded-md ui:transition-colors ui:no-underline"
+                class="ui:px-3 ui:py-1.5 ui:text-[13px] ui:text-[var(--landing-fg-muted)] ui:hover:text-[var(--landing-fg)] ui:hover:bg-[var(--landing-card-soft)] ui:rounded-md ui:transition-colors ui:no-underline ui:cursor-pointer"
               >
                 {item.label}
               </a>

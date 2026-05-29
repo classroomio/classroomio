@@ -32,7 +32,7 @@
   });
 
   async function handleClick(plan, planName: string) {
-    if (plan.CTA.IS_DISABLED || !$profile.id || !$profile.email) {
+    if (plan.CTA.IS_DISABLED || !$profile.id || !$profile.email || !$currentOrg.memberId) {
       return;
     }
 
@@ -46,13 +46,13 @@
     try {
       const checkoutURL = new URL('/api/polar/subscribe', page.url);
 
-      checkoutURL.searchParams.set('productId', isYearlyPlan ? plan.CTA.PRODUCT_ID_YEARLY : plan.CTA.PRODUCT_ID);
+      checkoutURL.searchParams.set('products', isYearlyPlan ? plan.CTA.PRODUCT_ID_YEARLY : plan.CTA.PRODUCT_ID);
       checkoutURL.searchParams.set('customerEmail', $profile.email);
       checkoutURL.searchParams.set('customerName', $profile.fullname);
       checkoutURL.searchParams.set(
         'metadata',
         JSON.stringify({
-          triggeredBy: $currentOrg.roleId,
+          triggeredBy: $currentOrg.memberId,
           orgId: $currentOrg.id,
           orgSlug: $currentOrg.siteName
         })

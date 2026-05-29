@@ -33,6 +33,15 @@ export function baseOptions(): BaseLayoutProps {
       {
         text: (
           <div className="flex items-center gap-2">
+            Feedback <SquareArrowOutUpRight />
+          </div>
+        ),
+        url: 'https://feedback.classroomio.com',
+        external: true
+      },
+      {
+        text: (
+          <div className="flex items-center gap-2">
             Dashboard <SquareArrowOutUpRight />
           </div>
         ),

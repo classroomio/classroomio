@@ -6,8 +6,9 @@
   import OrgLandingPageFooter from './landing-page-footer.svelte';
   import TerminalNav from './terminal/nav.svelte';
   import TerminalHero from './terminal/hero.svelte';
+  import TerminalCourseCard from './terminal/course-card.svelte';
   import { Button } from '../../base/button';
-  import { BlurFade } from '../animation/blurfade';
+  import { themeStyle } from './theme-style';
   import { getCourseTypeLandingMeta } from './landing-page-utils';
 
   let {
@@ -22,12 +23,13 @@
     embed,
     callout,
     links,
-    footer
+    footer,
+    labels
   }: OrgLandingPageProps = $props();
 
   function priceLabel(course: CourseItem): string {
     if (course.price) return course.price;
-    if (!course.cost) return 'Free';
+    if (!course.cost) return labels?.freeLabel ?? 'Free';
 
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -43,7 +45,7 @@
   );
 
   const tabs = $derived<{ key: TabKey; label: string }[]>([
-    { key: 'all', label: 'All' },
+    { key: 'all', label: labels?.filterAllLabel ?? 'All' },
     ...courseTypeKeys.map((type) => {
       const meta = getCourseTypeLandingMeta({ id: '', title: '', description: '', type } as CourseItem);
 
@@ -69,22 +71,8 @@
 </script>
 
 <div
-  class="ui:min-h-screen ui:font-sans ui:w-full"
-  style="
-    background: #06070a;
-    color: #e9eaed;
-    --terminal-bg: #06070a;
-    --terminal-bg-soft: #0c0e13;
-    --terminal-bg-card: #0f1218;
-    --terminal-bg-elevated: #14171f;
-    --terminal-line: #1c1f28;
-    --terminal-line-soft: #161922;
-    --terminal-line-strong: #262a35;
-    --terminal-ink: #e9eaed;
-    --terminal-ink-dim: #9da1ab;
-    --terminal-ink-muted: #61656f;
-    --terminal-ink-faint: #3d4049;
-  "
+  class="ui:min-h-screen ui:font-sans ui:w-full ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)]"
+  style={themeStyle('terminal')}
 >
   <main>
     <TerminalHero {orgName} {hero} {courses}>
@@ -95,109 +83,59 @@
 
     {#if courses.length > 0}
       <section
-        class="ui:py-24 ui:px-6"
-        style="border-top: 1px solid var(--terminal-line); background: var(--terminal-bg);"
+        class="ui:py-24 ui:px-6 ui:bg-[var(--landing-bg)]"
+        style="border-top: 1px solid var(--landing-border-soft);"
       >
         <div class="ui:max-w-[1120px] ui:mx-auto">
-          <BlurFade delay={0} once={true}>
-            <p
-              class="ui:font-mono ui:text-[11px] ui:tracking-[0.12em] ui:uppercase ui:mb-3 ui:inline-flex ui:items-center ui:gap-2"
-              style="color: var(--primary);"
-            >
-              <span
-                class="ui:size-1.5 ui:rounded-full"
-                style="background: var(--primary); box-shadow: 0 0 12px var(--primary);"
-              ></span>
-              Catalog
-            </p>
-          </BlurFade>
+          <p
+            class="ui:font-mono ui:text-[11px] ui:tracking-[0.12em] ui:uppercase ui:mb-3 ui:inline-flex ui:items-center ui:gap-2"
+            style="color: var(--landing-accent);"
+          >
+            <span
+              class="ui:size-1.5 ui:rounded-full"
+              style="background: var(--landing-accent); box-shadow: 0 0 12px var(--landing-accent);"
+            ></span>
+            {labels?.catalogEyebrow ?? 'Catalog'}
+          </p>
 
-          <BlurFade delay={0.08} once={true}>
-            <h2
-              class="ui:text-4xl ui:lg:text-[40px] ui:font-semibold ui:tracking-tight ui:leading-[1.08] ui:m-0 ui:mb-3 ui:max-w-[700px]"
-              style="color: var(--terminal-ink);"
-            >
-              Programs your team can actually finish.
-            </h2>
-          </BlurFade>
+          <h2
+            class="ui:text-4xl ui:lg:text-[40px] ui:font-semibold ui:tracking-tight ui:leading-[1.08] ui:m-0 ui:mb-3 ui:max-w-[700px] ui:text-[var(--landing-fg)]"
+          >
+            {labels?.catalogHeading ?? 'Programs your team can actually finish.'}
+          </h2>
 
-          <BlurFade delay={0.14} once={true}>
-            <p class="ui:text-[15px] ui:max-w-xl ui:m-0 ui:mb-8" style="color: var(--terminal-ink-dim);">
-              Tracks built around real-world artifacts — pull requests, postmortems, and runbooks. No filler.
-            </p>
-          </BlurFade>
+          <p class="ui:text-[15px] ui:max-w-xl ui:m-0 ui:mb-8 ui:text-[var(--landing-fg-muted)]">
+            {labels?.catalogDescription ??
+              'Tracks built around real-world artifacts — pull requests, postmortems, and runbooks. No filler.'}
+          </p>
 
           {#if tabs.length > 1}
-            <BlurFade delay={0.2} once={true}>
-              <div
-                class="ui:inline-flex ui:items-center ui:gap-0.5 ui:p-1 ui:rounded-full ui:mb-8"
-                style="border: 1px solid var(--terminal-line-strong); background: var(--terminal-bg-card);"
-                role="tablist"
-              >
-                {#each tabs as tab (tab.key)}
-                  {@const isActive = activeTab === tab.key}
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    onclick={() => (activeTab = tab.key)}
-                    class="ui:px-3.5 ui:py-1.5 ui:text-[13px] ui:font-medium ui:rounded-full ui:transition-colors"
-                    style={isActive
-                      ? 'background: var(--terminal-ink); color: var(--terminal-bg);'
-                      : 'background: transparent; color: var(--terminal-ink-dim);'}
-                  >
-                    {tab.label}
-                  </button>
-                {/each}
-              </div>
-            </BlurFade>
+            <div
+              class="ui:inline-flex ui:items-center ui:gap-0.5 ui:p-1 ui:rounded-full ui:mb-8 ui:bg-[var(--landing-card)]"
+              style="border: 1px solid var(--landing-border);"
+              role="tablist"
+            >
+              {#each tabs as tab (tab.key)}
+                {@const isActive = activeTab === tab.key}
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onclick={() => (activeTab = tab.key)}
+                  class="ui:px-3.5 ui:py-1.5 ui:text-[13px] ui:font-medium ui:rounded-full ui:transition-colors ui:cursor-pointer"
+                  style={isActive
+                    ? 'background: var(--landing-fg); color: var(--landing-bg);'
+                    : 'background: transparent; color: var(--landing-fg-muted);'}
+                >
+                  {tab.label}
+                </button>
+              {/each}
+            </div>
           {/if}
 
           <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-[14px]">
             {#each visibleCourses as course, index (course.id)}
-              <BlurFade delay={0.04 * index} once={true}>
-                <a
-                  href={disableCourseLinks
-                    ? undefined
-                    : course.link || (course.slug ? `/course/${course.slug}` : undefined)}
-                  aria-disabled={disableCourseLinks}
-                  tabindex={disableCourseLinks ? -1 : undefined}
-                  class="ui:relative ui:flex ui:flex-col ui:gap-2.5 ui:p-6 ui:rounded-xl ui:no-underline ui:transition-colors ui:h-full"
-                  style="
-                    background: linear-gradient(180deg, var(--terminal-bg-card) 0%, var(--terminal-bg-soft) 100%);
-                    border: 1px solid var(--terminal-line);
-                    color: var(--terminal-ink);
-                    min-height: 180px;
-                    cursor: {disableCourseLinks ? 'default' : 'pointer'};
-                  "
-                  onmouseenter={(e) =>
-                    !disableCourseLinks && (e.currentTarget.style.borderColor = 'var(--terminal-line-strong)')}
-                  onmouseleave={(e) => (e.currentTarget.style.borderColor = 'var(--terminal-line)')}
-                >
-                  <span class="ui:font-mono ui:text-[11px] ui:tracking-[0.04em]" style="color: var(--primary);">
-                    $ {slugify(course)}
-                  </span>
-                  <h3
-                    class="ui:text-[17px] ui:font-semibold ui:leading-snug ui:m-0"
-                    style="color: var(--terminal-ink); letter-spacing: -0.01em;"
-                  >
-                    {course.title}
-                  </h3>
-                  <p
-                    class="ui:text-[13.5px] ui:leading-[1.5] ui:m-0 ui:flex-1 ui:line-clamp-3"
-                    style="color: var(--terminal-ink-dim);"
-                  >
-                    {course.description}
-                  </p>
-                  <div
-                    class="ui:flex ui:items-center ui:justify-between ui:pt-3.5 ui:font-mono ui:text-[12px]"
-                    style="border-top: 1px dashed var(--terminal-line);"
-                  >
-                    <span style="color: var(--terminal-ink);">{priceLabel(course)}</span>
-                    <span aria-hidden="true" style="color: var(--terminal-ink-dim);">→</span>
-                  </div>
-                </a>
-              </BlurFade>
+              <TerminalCourseCard {course} {disableCourseLinks} {labels} />
             {/each}
           </div>
 
@@ -207,9 +145,9 @@
                 href={disableCourseLinks ? undefined : '/courses'}
                 variant="outline"
                 disabled={disableCourseLinks}
-                class="ui:rounded-full ui:px-5 ui:bg-transparent ui:border-[var(--terminal-line-strong)] ui:text-[var(--terminal-ink)] ui:hover:bg-white/5"
+                class="ui:rounded-full ui:px-5 ui:bg-transparent ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-white/5"
               >
-                View all programs →
+                {labels?.browseCoursesLabel ?? 'View all programs →'}
               </Button>
             </div>
           {/if}
@@ -218,11 +156,11 @@
     {/if}
   </main>
 
-  <OrgLandingPageLinks {links} variant="terminal" />
+  <OrgLandingPageLinks {links} {labels} variant="terminal" />
 
-  <OrgLandingPageEmbed {embed} variant="terminal" />
+  <OrgLandingPageEmbed {embed} {labels} variant="terminal" />
 
-  <OrgLandingPageCallout {callout} variant="terminal" />
+  <OrgLandingPageCallout {callout} {labels} variant="terminal" />
 
   <OrgLandingPageFooter {orgName} {logoUrl} {footer} variant="terminal" />
 </div>

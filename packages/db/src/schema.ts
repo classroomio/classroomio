@@ -1041,6 +1041,10 @@ export const asset = pgTable(
     title: text(),
     description: text(),
     thumbnailUrl: text('thumbnail_url'),
+    thumbnailCandidates: text('thumbnail_candidates')
+      .array()
+      .default(sql`'{}'::text[]`)
+      .notNull(),
     durationSeconds: integer('duration_seconds'),
     aspectRatio: text('aspect_ratio'),
     isExternal: boolean('is_external').default(false).notNull(),

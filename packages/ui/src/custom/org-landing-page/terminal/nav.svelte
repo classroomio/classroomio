@@ -17,15 +17,14 @@
 </script>
 
 <EditableLandingSection sectionKey="navigation">
-  <header class="ui:relative ui:z-50 ui:px-6" style="background: transparent;">
+  <header class="ui:relative ui:z-50 ui:px-6 ui:bg-transparent">
     <div class="ui:max-w-[1120px] ui:mx-auto">
       <div class="ui:flex ui:items-center ui:justify-between ui:h-16">
         <div class="ui:flex ui:items-center ui:gap-8">
           <a
             href="/"
             aria-label={orgName}
-            class="ui:flex ui:items-center ui:gap-2 ui:no-underline ui:text-foreground"
-            style="color: var(--terminal-ink, #e9eaed);"
+            class="ui:flex ui:items-center ui:gap-2 ui:no-underline ui:text-[var(--landing-fg)] ui:cursor-pointer"
           >
             {#if logoUrl}
               <img src={logoUrl} alt={orgName} class="ui:h-6 ui:w-auto" />
@@ -47,16 +46,12 @@
               {#each navItems as item (item.href + item.label)}
                 <a
                   href={item.href}
-                  class="ui:text-[11px] ui:font-medium ui:tracking-[0.12em] ui:uppercase ui:no-underline ui:transition-colors"
-                  style="color: var(--terminal-ink-dim, #9da1ab);"
-                  onmouseenter={(e) => (e.currentTarget.style.color = 'var(--terminal-ink, #e9eaed)')}
-                  onmouseleave={(e) => (e.currentTarget.style.color = 'var(--terminal-ink-dim, #9da1ab)')}
+                  class="ui:text-[11px] ui:font-medium ui:tracking-[0.12em] ui:uppercase ui:no-underline ui:transition-colors ui:text-[var(--landing-fg-muted)] ui:hover:text-[var(--landing-fg)] ui:cursor-pointer"
                 >
                   {item.label}
                 </a>
               {/each}
-              <span class="ui:select-none" style="color: var(--terminal-ink-faint, #3d4049);" aria-hidden="true">/</span
-              >
+              <span class="ui:select-none ui:text-[var(--landing-fg-faint)]" aria-hidden="true">/</span>
             </nav>
           {/if}
         </div>
@@ -67,7 +62,7 @@
               href={authAction.href}
               size="sm"
               variant="outline"
-              class="ui:rounded-full ui:px-4 ui:font-medium ui:bg-transparent ui:border-[var(--terminal-line-strong,#262a35)] ui:text-[var(--terminal-ink,#e9eaed)] ui:hover:bg-white/5"
+              class="ui:rounded-full ui:px-4 ui:font-medium ui:bg-transparent ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-white/5"
             >
               {authAction.label}
             </Button>

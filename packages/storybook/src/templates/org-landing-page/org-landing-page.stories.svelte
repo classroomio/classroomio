@@ -8,9 +8,11 @@
     TechLandingPage,
     StudioLandingPage,
     CorporateLandingPage,
-    TerminalLandingPage
+    TerminalLandingPage,
+    EditorialLandingPage,
+    VibrantLandingPage,
+    mockOrgLandingPageProps as mockProps
   } from '@cio/ui/custom/org-landing-page';
-  import { mockProps } from './fixtures';
 
   const { Story } = defineMeta({
     title: 'Templates/Org Landing Page',
@@ -19,6 +21,27 @@
     },
     tags: ['autodocs']
   });
+
+  /** Example of overriding UI chrome labels (e.g. via the dashboard's translations). */
+  const localizedLabels = {
+    catalogEyebrow: 'Catálogo',
+    catalogHeading: 'Programas que empiezan esta temporada.',
+    catalogDescription:
+      'Cohortes y a tu propio ritmo — cada programa termina con un proyecto revisado y un certificado.',
+    browseCoursesLabel: 'Ver todos →',
+    enrollLabel: 'Inscribirme',
+    freeLabel: 'Gratis',
+    featuredLabel: 'Destacado',
+    filterAllLabel: 'Todos',
+    startCourseLabel: 'Empezar curso',
+    resourcesEyebrow: 'Recursos',
+    embedEyebrow: 'Integración',
+    calloutEyebrow: 'Cuando quieras',
+    learnMoreLabel: 'Visitar',
+    lessonsLabel: (n) => (n === 1 ? '1 lección' : `${n} lecciones`),
+    exercisesLabel: (n) => (n === 1 ? '1 ejercicio' : `${n} ejercicios`),
+    enrolledLabel: (n) => `${n.toLocaleString()} inscritos`
+  };
 </script>
 
 <Story name="Minimal">
@@ -51,4 +74,20 @@
 
 <Story name="Terminal">
   <TerminalLandingPage {...mockProps} />
+</Story>
+
+<Story name="Editorial">
+  <EditorialLandingPage {...mockProps} />
+</Story>
+
+<Story name="Vibrant">
+  <VibrantLandingPage {...mockProps} />
+</Story>
+
+<!--
+  Demonstrates the OrgLandingPageLabels override surface. Every UI-chrome
+  string is replaced via the `labels` prop; per-template defaults disappear.
+-->
+<Story name="Editorial (localized labels)">
+  <EditorialLandingPage {...mockProps} labels={localizedLabels} />
 </Story>

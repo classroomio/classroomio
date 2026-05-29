@@ -120,3 +120,8 @@ export const ZYouTubeMetadataQuery = z.object({
   url: z.string().url()
 });
 export type TYouTubeMetadataQuery = z.infer<typeof ZYouTubeMetadataQuery>;
+
+export const ZAssetThumbnailSelect = z.object({
+  thumbnailUrl: z.string().url()
+});
+export type TAssetThumbnailSelect = z.infer<typeof ZAssetThumbnailSelect>;

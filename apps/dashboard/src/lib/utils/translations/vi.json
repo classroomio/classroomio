@@ -7,17 +7,17 @@
   },
   "validations": {
     "generic": {
-      "invalid_type": "Loại không hợp lệ{dự kiến, chọn, không xác định{} khác{. Dự kiến {mong đợi}}}{đã nhận, chọn, không xác định{} khác{ (đã nhận {đã nhận})}}",
-      "too_big": "Giá trị quá lớn{tối đa, chọn, không xác định{} khác{. Tối đa {tối đa}}}",
-      "too_small": "Giá trị quá nhỏ{tối thiểu, chọn, không xác định{} khác{. Tối thiểu {tối thiểu}}}",
-      "invalid_format": "Định dạng không hợp lệ{xác thực, chọn, không xác định{} khác{ cho {xác thực}}}",
+      "invalid_type": "Loại không hợp lệ{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "too_big": "Giá trị quá lớn{maximum, select, undefined{} other{. Maximum {maximum}}}",
+      "too_small": "Giá trị quá nhỏ{minimum, select, undefined{} other{. Minimum {minimum}}}",
+      "invalid_format": "Định dạng không hợp lệ{validation, select, undefined{} other{ for {validation}}}",
       "not_multiple_of": "Giá trị phải là bội số của {multipleOf}",
-      "unrecognized_keys": "Chứa các khóa không được nhận dạng{keys, select, undefind{} other{: {keys}}}",
-      "invalid_union": "Giá trị không hợp lệ cho các tùy chọn được cung cấp{unionErrors, select, unknown{} other{. {unionErrors} tùy chọn không thành công}}",
-      "invalid_key": "Khóa không hợp lệ{khóa, chọn, không xác định{} khác{: {key}}}",
-      "invalid_element": "Phần tử không hợp lệ{chỉ mục, chọn, không xác định{} khác{ tại chỉ mục {index}}}",
-      "invalid_value": "Giá trị không hợp lệ{dự kiến, chọn, không xác định{} khác{. Dự kiến {mong đợi}}}{đã nhận, chọn, không xác định{} khác{ (đã nhận {đã nhận})}}",
-      "custom": "{tin nhắn}",
+      "unrecognized_keys": "Chứa các khóa không được nhận dạng{keys, select, undefined{} other{: {keys}}}",
+      "invalid_union": "Giá trị không hợp lệ cho các tùy chọn được cung cấp{unionErrors, select, undefined{} other{. {unionErrors} tùy chọn không thành công}}",
+      "invalid_key": "Khóa không hợp lệ{key, select, undefined{} other{: {key}}}",
+      "invalid_element": "Phần tử không hợp lệ{index, select, undefined{} other{ at index {index}}}",
+      "invalid_value": "Giá trị không hợp lệ{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "custom": "{message}",
       "required_field": "Trường này là bắt buộc",
       "invalid_field": "Giá trị không hợp lệ"
     },
@@ -118,7 +118,7 @@
     },
     "exercise": {
       "options": {
-        "custom": "{tin nhắn}"
+        "custom": "{message}"
       },
       "points": {
         "too_small": "Điểm ít nhất phải bằng 0"
@@ -346,7 +346,11 @@
       "transcription_started": "Đã bắt đầu phiên âm",
       "transcription_start_failed": "Không thể bắt đầu phiên âm",
       "transcription_completed": "Phiên âm đã hoàn tất",
-      "transcript_fetch_failed": "Không thể tải bản ghi"
+      "transcript_fetch_failed": "Không thể tải bản ghi",
+      "thumbnail_updated": "Đã cập nhật hình thu nhỏ",
+      "thumbnail_update_failed": "Không cập nhật được hình thu nhỏ",
+      "thumbnail_regen_started": "Đang tạo lại hình thu nhỏ…",
+      "thumbnail_regen_failed": "Không thể tạo lại hình thu nhỏ"
     },
     "tags": {
       "group_created": "Đã tạo nhóm thẻ",
@@ -397,7 +401,7 @@
       }
     },
     "ai_credits": {
-      "purchase_success": "Gói mã thông báo được thêm vào số dư của bạn.",
+      "purchase_success": "Gói AI credits đã được thêm vào số dư của bạn.",
       "checkout_failed": "Không thể bắt đầu thanh toán. Vui lòng thử lại."
     },
     "public_course": {
@@ -499,7 +503,7 @@
     "view_details": "Xem chi tiết",
     "no_students_found": "Không tìm thấy sinh viên nào",
     "no_students_description": "Hiện chưa có học viên nào đăng ký khóa học này. Học sinh sẽ xuất hiện ở đây khi họ tham gia khóa học.",
-    "showing_students": "Đang hiển thị {bắt đầu} cho {cuối} trong tổng số {total} sinh viên",
+    "showing_students": "Đang hiển thị {start} cho {end} trong tổng số {total} sinh viên",
     "no_analytics_data": "Không có dữ liệu phân tích",
     "no_analytics_description": "Không thể tải dữ liệu phân tích cho khóa học này. Vui lòng thử lại sau hoặc liên hệ với bộ phận hỗ trợ nếu sự cố vẫn tiếp diễn.",
     "student": "sinh viên",
@@ -527,7 +531,7 @@
       "description": "Tuyển sinh được nhóm theo loại khóa học",
       "subtitle": "{total} lượt đăng ký trên tất cả các loại",
       "empty": "Chưa có dữ liệu tuyển sinh",
-      "course_count": "{đếm, số nhiều, một {# khóa học} khác {# khóa học}}",
+      "course_count": "{count, plural, one {# course} other {# courses}}",
       "views_short": "lượt xem",
       "types": {
         "SELF_PACED": "Tự nhịp độ",
@@ -585,8 +589,8 @@
       "progress_distribution_card_description": "Có bao nhiêu người học rơi vào từng mức độ hoàn thành.",
       "grade_distribution_card_description": "Có bao nhiêu học sinh rơi vào từng nhóm lớp.",
       "students_table_description": "Tổng quan có thể sắp xếp với các liên kết đến hồ sơ người học.",
-      "kpi_team_tutors": "{đếm, số nhiều, một {# gia sư trong nhóm khóa học} khác {# gia sư trong nhóm khóa học}}",
-      "kpi_lessons_exercises": "{đếm, số nhiều, một {# bài tập} khác {# bài tập}} được ánh xạ tới bài học",
+      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
+      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} được ánh xạ tới bài học",
       "kpi_progress_grade": "{grade}% điểm bài tập trung bình của những người học đã đăng ký"
     }
   },
@@ -625,7 +629,7 @@
       "send_email": "Gửi email thông báo",
       "submit": "Chỉ định",
       "cancel": "Hủy bỏ",
-      "snackbar_success": "Đã chỉ định người dùng {được chỉ định} cho các khóa học ({alreadyEnrolled} đã đăng ký, đã gửi {emailsSent} email)",
+      "snackbar_success": "Đã chỉ định người dùng {assigned} cho các khóa học ({alreadyEnrolled} đã đăng ký, đã gửi {emailsSent} email)",
       "snackbar_no_courses": "Vui lòng chọn ít nhất một khóa học",
       "snackbar_failed": "Không thể chỉ định khóa học"
     },
@@ -911,8 +915,17 @@
             "reviews": "Đánh giá",
             "instructor": "Người hướng dẫn",
             "pricing": "Định giá",
-            "certificate": "Giấy chứng nhận"
-          }
+            "certificate": "Giấy chứng nhận",
+            "curriculum": "chương trình giảng dạy",
+            "chips": "Kỹ năng & Công cụ",
+            "skills": "Những kỹ năng bạn sẽ đạt được",
+            "tools": "Công cụ bạn sẽ học"
+          },
+          "skills_help": "Nhấn Enter để thêm. Chúng xuất hiện dưới dạng chip bên dưới chương trình giảng dạy.",
+          "tools_help": "Nhấn Enter để thêm. Chúng xuất hiện dưới dạng chip bên dưới chương trình giảng dạy.",
+          "skills_placeholder": "ví dụ. Phân tích dữ liệu",
+          "tools_placeholder": "ví dụ: hình ảnh",
+          "remove": "Xóa"
         }
       },
       "certificates": {
@@ -1105,7 +1118,7 @@
           "snackbar_failed_revoke_invite": "Không thể thu hồi lời mời",
           "snackbar_failed_load_audit": "Không tải được lời mời kiểm tra",
           "snackbar_metadata_copied": "Đã sao chép siêu dữ liệu lời mời",
-          "snackbar_email_invites_success": "Đã tạo {count} lời mời. Đã gửi {đã gửi}, không thành công {không thành công}. Đã bỏ qua {trùng lặp} bản sao.",
+          "snackbar_email_invites_success": "Đã tạo {count} lời mời. Đã gửi {sent}, không thành công {failed}. Đã bỏ qua {duplicates} bản sao.",
           "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "Một lần (24h)",
@@ -1375,7 +1388,9 @@
               },
               "select_type": "Chọn loại",
               "question_type_auto_gradable": "Auto",
+              "question_type_auto_gradable_description": "Scored automatically by the system",
               "question_type_manual_grading": "Manual",
+              "question_type_manual_grading_description": "Requires human review to score",
               "premium_question_type": "Nâng cấp để sử dụng loại câu hỏi này"
             },
             "delete_confirmation": {
@@ -1435,7 +1450,7 @@
                   "helper": "Kéo các mục để xác định thứ tự chính xác.",
                   "add_step": "Thêm bước",
                   "empty": "Thêm các bước, sau đó kéo để đặt thứ tự dự kiến.",
-                  "step_placeholder": "Bước '{'chỉ mục'}'",
+                  "step_placeholder": "Bước '{'index'}'",
                   "remove_step_tooltip": "Xóa bước"
                 }
               },
@@ -1453,7 +1468,7 @@
               "link": {
                 "preview": {
                   "empty": "Không có liên kết nào được gửi.",
-                  "item_label": "Liên kết '{'chỉ mục'}'"
+                  "item_label": "Liên kết '{'index'}'"
                 },
                 "take": {
                   "helper": "Thêm một hoặc nhiều liên kết. Chỉ các URL http/https hợp lệ mới được chấp nhận.",
@@ -1715,7 +1730,8 @@
               "submit": "Gửi bài tập",
               "collapse_section": "Thu gọn phần",
               "expand_section": "Mở rộng phần"
-            }
+            },
+            "more": "hành động"
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",
@@ -1791,7 +1807,7 @@
               "view_pdf": "Xem PDF",
               "remove_document": "Xóa tài liệu",
               "delete": "Xóa",
-              "page_of": "Trang {trang} trong tổng số {total}",
+              "page_of": "Trang {page} trong tổng số {total}",
               "loading_pdf": "Đang tải PDF...",
               "failed_to_load_pdf": "Không tải được tài liệu PDF",
               "failed_to_render_pdf": "Không thể hiển thị trang PDF",
@@ -1833,7 +1849,7 @@
                 "add_from_library": "Thêm từ thư viện",
                 "cancel_upload": "Hủy tải lên",
                 "upload_cancelled": "Tải lên bị người dùng hủy",
-                "max_files": "{đếm, số nhiều, một {Bạn có thể tải lên # tệp} khác {Bạn có thể tải lên # tệp}}",
+                "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
                 "max_files_and_size": "(tối đa {size} mỗi cái)",
                 "google_drive_choose": "Chọn từ Google Drive",
                 "google_drive_opening": "Đang mở bộ chọn…",
@@ -1969,7 +1985,7 @@
         "user_avatar_alt": "Hình đại diện của người dùng",
         "comments": {
           "comment": "bình luận",
-          "showing_of": "Đang hiển thị {được hiển thị} trong tổng số {toàn bộ}",
+          "showing_of": "Đang hiển thị {shown} trong tổng số {total}",
           "hide": "Ẩn bình luận",
           "placeholder": "Thêm nhận xét của lớp",
           "submit_aria": "Gửi bình luận",
@@ -2059,7 +2075,8 @@
         "overview_metrics": {
           "heading": "Ảnh chụp nhanh khóa học",
           "description": "Người học đếm theo trạng thái cho khóa học này."
-        }
+        },
+        "empty_overview_description": "Giúp nhân viên của bạn luôn tuân thủ và theo dõi xem ai đứng sau."
       }
     },
     "search": {
@@ -2073,8 +2090,8 @@
     "sidebar": {
       "back_to_course": "Quay lại khóa học",
       "content_count": {
-        "lessons": "{đếm} bài học",
-        "exercises": "bài tập {đếm}"
+        "lessons": "{count} bài học",
+        "exercises": "bài tập {count}"
       },
       "compliance": {
         "title": "Tuân thủ",
@@ -2165,6 +2182,7 @@
           "topic": "Chủ đề hoặc niche",
           "expertise_level": "Mục tiêu trình độ chuyên môn",
           "documentation_url": {
+            "label": "URL tài liệu (tùy chọn)",
             "hint": "Chúng tôi sẽ đọc trang web này để xây dựng khóa học về sản phẩm thực của bạn."
           }
         },
@@ -2326,21 +2344,22 @@
     "pick_up_where_you_left_off": "Tiếp tục nơi bạn đã dừng lại",
     "course_awaits_you": "{title} đang chờ bạn",
     "learning_awaits_you": "Khóa học tiếp theo đang chờ bạn",
-    "lms_today_progress": "Bạn đã đạt được {tiến bộ}% trong quá trình học tập - mỗi bước đều có giá trị.",
+    "lms_today_progress": "Bạn đã đạt được {progress}% trong quá trình học tập - mỗi bước đều có giá trị.",
     "lms_today_empty": "Con đường học tập của bạn đã sẵn sàng khi bạn sẵn sàng.",
     "compliance_score": "Điểm tuân thủ",
     "compliance": "Tuân thủ",
     "compliance_score_subtitle": "{completed} trong số {total} khóa học tuân thủ hiện đã được đáp ứng",
     "compliance_score_empty": "Chưa có khóa học tuân thủ nào được chỉ định",
-    "compliance_met": "{hoàn thành} trong tổng số {tổng} đã đáp ứng",
+    "compliance_met": "{completed} trong tổng số {total} đã đáp ứng",
     "required_courses_completed": "Đã hoàn thành {completed} trong số {total} khóa học bắt buộc",
     "streak": "Vệt",
     "days_active": "ngày hoạt động",
-    "items_done": "{đã hoàn thành} trong tổng số {tổng} đã hoàn thành",
+    "items_done": "{completed} trong tổng số {total} đã hoàn thành",
     "login_activity_title": "Hoạt động đăng nhập của sinh viên",
     "login_activity_description": "Những ngày hoạt động tích cực nhất trong tuần (90 ngày qua)",
     "login_activity_no_data": "Chưa có hoạt động đăng nhập",
-    "login_activity_logins": "thông tin đăng nhập"
+    "login_activity_logins": "thông tin đăng nhập",
+    "open_academy": "Học viện mở"
   },
   "schedule": {
     "title": "Lịch trình của bạn",
@@ -2621,7 +2640,8 @@
     "actions": {
       "edit": "Chỉnh sửa",
       "where_used": "Nơi sử dụng",
-      "download": "Tải xuống"
+      "download": "Tải xuống",
+      "manage_thumbnails": "Quản lý hình thu nhỏ"
     },
     "table": {
       "title": "Tiêu đề",
@@ -2678,7 +2698,22 @@
       "not_available": "không áp dụng"
     },
     "empty_description": "Tài sản không tồn tại hoặc không có sẵn trong tổ chức này.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library."
+    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "thumbnails": {
+      "manage_title": "Quản lý hình thu nhỏ",
+      "manage_description": "Xem trước video, chọn một trong các khung được tạo tự động hoặc tải lên khung của riêng bạn.",
+      "preview_unavailable": "Xem trước không có sẵn",
+      "generated": "Hình thu nhỏ được tạo",
+      "slot_start": "Bắt đầu",
+      "slot_middle": "giữa",
+      "slot_end": "Kết thúc",
+      "none_generated_warning": "Chưa có hình thu nhỏ nào được tạo. Hãy thử tạo lại hoặc tải lên một hình ảnh tùy chỉnh.",
+      "upload_custom": "Tải hình thu nhỏ tùy chỉnh lên",
+      "custom_selected_hint": "Tải lên tùy chỉnh sẽ được lưu khi bạn lưu lựa chọn của mình.",
+      "custom_preview_alt": "Xem trước hình thu nhỏ tùy chỉnh",
+      "regenerate": "tái sinh",
+      "save_selection": "Lưu hình thu nhỏ"
+    }
   },
   "settings": {
     "heading": "Cài đặt",
@@ -2690,9 +2725,9 @@
       "open_billing": "Thanh toán mở",
       "error": "Đã xảy ra lỗi khi mở thanh toán",
       "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
-      "ai_credits": "Cách sử dụng trợ lý AI",
-      "ai_tokens_used": "mã thông báo được sử dụng trong tháng này",
-      "ai_bonus_credits": "tín dụng thưởng có sẵn"
+      "ai_credits": "AI credits",
+      "ai_tokens_used": "AI credits đã dùng trong tháng này",
+      "ai_bonus_credits": "AI credits thưởng có sẵn"
     },
     "integrations": {
       "heading": "điện tín",
@@ -3003,6 +3038,14 @@
           "saas": {
             "title": "SaaS",
             "description": "Khung nét chấm, điểm nhấn mềm mại, cảm giác sản phẩm hiện đại"
+          },
+          "vibrant": {
+            "title": "Sống động",
+            "description": "Bảng điều khiển chính táo bạo, anh hùng chuyển màu hoàng hôn, giao diện poster tràn đầy năng lượng"
+          },
+          "editorial": {
+            "title": "biên tập",
+            "description": "Bảng màu kem ấm áp, anh hùng họa sĩ, cảm giác tạp chí tinh tế"
           }
         }
       },
@@ -3011,7 +3054,10 @@
         "description": "Được tạo bằng các tính năng cốt lõi, bạn có thể dễ dàng tùy chỉnh — không cần mã hóa.",
         "by_classroomio": "bởi ClassroomIO",
         "add": "Thêm",
-        "upgrade": "Nâng cấp"
+        "upgrade": "Nâng cấp",
+        "apply_theme": "Áp dụng chủ đề",
+        "preview": "Xem trước",
+        "card_menu_label": "Tùy chọn chủ đề"
       },
       "current": {
         "title": "Chủ đề hiện tại",
@@ -3019,8 +3065,8 @@
         "field_theme": "chủ đề",
         "field_hero": "Tiêu đề anh hùng",
         "field_nav": "Điều hướng",
-        "field_nav_count_one": "liên kết {đếm}",
-        "field_nav_count_other": "{đếm} liên kết",
+        "field_nav_count_one": "liên kết {count}",
+        "field_nav_count_other": "{count} liên kết",
         "hero_empty": "—",
         "customize": "Tùy chỉnh trang đích"
       }
@@ -3094,7 +3140,7 @@
       "customize_lms_tab": "Tùy chỉnh LMS",
       "domains_tab": "Tên miền",
       "teams_tab": "Đội",
-      "ai_credits_tab": "Tín dụng AI",
+      "ai_credits_tab": "AI Credits",
       "ai_tutor_tab": "Gia sư AI"
     },
     "subheadings": {
@@ -3189,7 +3235,7 @@
       "login": {
         "sso_redirect_error": "Đăng nhập SSO bị định cấu hình sai. Vui lòng đặt PUBLIC_SERVER_URL cho máy chủ API của bạn.",
         "sso_required": "Vui lòng đăng nhập bằng SSO. Đăng nhập bằng mật khẩu bị vô hiệu hóa.",
-        "sign_in_with_sso": "Đăng nhập bằng {nhà cung cấp}",
+        "sign_in_with_sso": "Đăng nhập bằng {provider}",
         "email_password_disabled": "Đăng nhập email/mật khẩu bị vô hiệu hóa. Vui lòng sử dụng SSO.",
         "email_password_disabled_message": "Đăng nhập email/mật khẩu bị vô hiệu hóa đối với tổ chức này.",
         "google_auth_disabled": "Xác thực Google bị vô hiệu hóa.",
@@ -3228,42 +3274,42 @@
       "page_subtitle": "Invite teammates and control who helps run this organization."
     },
     "ai_credits": {
-      "sub_title": "tín dụng AI",
-      "page_subtitle": "Theo dõi việc sử dụng trợ lý AI, mức tiêu thụ của nhóm và mua gói mã thông báo.",
-      "cost_note": "Việc sử dụng tín dụng được tính theo chi phí mô hình. Gemini 2.5 Flash và GPT-5.4 Mini được tính là 1 đơn vị tín dụng cho mỗi mã thông báo. Claude Sonnet 4.6 được tính là 36× mỗi mã thông báo, phản ánh chi phí API cao hơn.",
-      "buy_tokens": {
-        "title": "Mua thêm token",
-        "description": "Mỗi gói bổ sung thêm 5.000.000 tín dụng với giá 5 USD. Chọn số lượng gói bạn cần.",
-        "quantity_hint": "gói",
-        "preview": "{quantity} gói · {tokens} token · ${dollars}",
-        "buy_button": "Mua với giá ${dollars}"
-      },
-      "leaderboard": {
-        "title": "Cách sử dụng nhóm",
-        "this_month": "Tháng hiện tại",
-        "user": "người dùng",
-        "favorite_model": "Người mẫu yêu thích",
-        "tokens": "Mã thông báo",
-        "empty": "Không ai trong nhóm của bạn sử dụng trợ lý AI trong tháng này."
-      },
-      "chart": {
-        "heading": "Cách sử dụng",
-        "subheading": "Mức tiêu thụ token hàng ngày trong tháng này.",
-        "tokens": "Mã thông báo",
-        "total_tokens": "Tổng số token",
-        "total_requests": "Tổng số yêu cầu",
-        "empty": "Chưa có mức sử dụng nào được ghi lại trong tháng này."
+      "sub_title": "AI credits",
+      "page_subtitle": "Theo dõi việc sử dụng trợ lý AI, mức tiêu thụ của nhóm và mua các gói AI credits.",
+      "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
+      "included": {
+        "title": "Mức sử dụng được bao gồm",
+        "subtitle": "AI credits hàng tháng có trong gói của bạn.",
+        "resets_on": "Đặt lại {date}"
       },
       "purchased": {
-        "title": "Mức sử dụng đã mua",
-        "subtitle": "Các token bổ sung bạn đã mua sẽ được sử dụng tiếp cho đến khi sử dụng.",
-        "lifetime": "Đã mua {tokens} token · chi tiêu ${dollars}",
+        "title": "Sử dụng đã mua",
+        "subtitle": "AI credits bổ sung bạn mua sẽ được chuyển sang cho đến khi sử dụng.",
+        "lifetime": "{tokens} credits đã mua · ${dollars} đã chi",
         "buy_more": "Mua thêm"
       },
-      "included": {
-        "title": "Mức sử dụng đi kèm của bạn",
-        "subtitle": "Mã thông báo hàng tháng đi kèm với gói của bạn.",
-        "resets_on": "Đặt lại {ngày}"
+      "chart": {
+        "heading": "Sử dụng",
+        "subheading": "Mức tiêu thụ AI credits hàng ngày trong tháng này.",
+        "tokens": "Credits",
+        "total_tokens": "Total credits",
+        "total_requests": "Tổng số yêu cầu",
+        "empty": "Chưa ghi nhận mức sử dụng nào trong tháng này."
+      },
+      "leaderboard": {
+        "title": "Sử dụng của nhóm",
+        "this_month": "Tháng hiện tại",
+        "user": "Người dùng",
+        "favorite_model": "Model yêu thích",
+        "tokens": "Credits",
+        "empty": "Không ai trong nhóm của bạn đã sử dụng trợ lý AI trong tháng này."
+      },
+      "buy_tokens": {
+        "title": "Mua thêm credits",
+        "description": "Mỗi gói bổ sung thêm 5,000,000 credits với giá $5 USD. Chọn số lượng gói bạn cần.",
+        "quantity_hint": "gói",
+        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
+        "buy_button": "Mua với ${dollars}"
       }
     }
   },
@@ -3671,7 +3717,7 @@
       "no_available_courses": "Không có khóa học có sẵn để thêm.",
       "no_matching_courses": "Không có khóa học phù hợp với tìm kiếm của bạn.",
       "no_matching_program_courses": "Không có chương trình khóa học phù hợp với tìm kiếm của bạn.",
-      "pagination_status": "Trang {trang} trong tổng số {totalPages}",
+      "pagination_status": "Trang {page} trong tổng số {totalPages}",
       "published_access_callout_title": "Quyền truy cập của sinh viên",
       "published_access_callout_description": "Sinh viên chỉ có quyền truy cập vào các khóa học được xuất bản. Các khóa học có thể có trong chương trình này cho nhóm của bạn trong khi vẫn chưa được xuất bản và các khóa học đó sẽ bị ẩn với sinh viên cho đến khi bạn xuất bản chúng."
     },
@@ -3693,7 +3739,7 @@
       "user_avatar_alt": "Hình đại diện của người dùng",
       "comments": {
         "comment": "bình luận",
-        "showing_of": "Đang hiển thị {được hiển thị} trong tổng số {toàn bộ}",
+        "showing_of": "Đang hiển thị {shown} trong tổng số {total}",
         "hide": "Ẩn bình luận",
         "placeholder": "Thêm bình luận chương trình",
         "submit_aria": "Gửi bình luận",
@@ -3770,7 +3816,7 @@
         "heading": "Mục tiêu của bạn",
         "empty_title": "Không có mục tiêu nào được giao",
         "empty_description": "Khi người hướng dẫn của bạn đặt mục tiêu, họ sẽ hiển thị ở đây.",
-        "due_in_days": "Đến hạn sau {ngày} ngày nữa",
+        "due_in_days": "Đến hạn sau {days} ngày nữa",
         "due_tomorrow": "Hạn chót vào ngày mai",
         "due_today": "Hạn chót hôm nay",
         "overdue": "Quá hạn",
@@ -3936,7 +3982,7 @@
     "rename_chat_placeholder": "Tiêu đề cuộc trò chuyện",
     "rename_chat_failed": "Không thể đổi tên cuộc trò chuyện này. Hãy thử lại.",
     "error_rate_limit": "Dịch vụ AI tạm thời bận. Vui lòng thử lại sau giây lát.",
-    "error_rate_limit_with_wait": "Dịch vụ AI tạm thời bận. Vui lòng thử lại sau {giây} giây.",
+    "error_rate_limit_with_wait": "Dịch vụ AI tạm thời bận. Vui lòng thử lại sau {seconds} giây.",
     "error_context_too_long": "Cuộc trò chuyện quá dài. Hãy thử bắt đầu một cuộc trò chuyện mới hoặc rút ngắn tin nhắn của bạn.",
     "error_network": "Lỗi mạng. Vui lòng kiểm tra kết nối của bạn và thử lại.",
     "context_usage_tooltip": "Đã sử dụng mã thông báo {used} / {max}",
@@ -3952,6 +3998,61 @@
       "quiz_me": "Đố tôi về điều này",
       "summarize_section": "Tóm tắt phần này",
       "what_to_review": "Tôi nên xem xét gì tiếp theo?"
+    },
+    "run_running": "Tạo khóa học",
+    "run_completed": "Quá trình tạo khóa học đã hoàn tất",
+    "run_failed": "Tạo khóa học không thành công",
+    "run_canceled": "Việc tạo khóa học đã bị hủy",
+    "run_waiting_for_worker": "Đang chờ nhân viên nền",
+    "run_checkpoint": "Đang lưu điểm kiểm tra tiến độ",
+    "retry": "Thử lại",
+    "run_monitor_aria": "Đang tạo khóa học",
+    "run_summary": {
+      "completed": "Chạy xong.",
+      "completed_with_counts": "Đã hoàn thành chạy — đã tạo {counts}.",
+      "failed": "Chạy không thành công.",
+      "failed_with_reason": "Chạy không thành công — {reason}.",
+      "canceled": "Cuộc chạy bị hủy.",
+      "canceled_with_counts": "Cuộc chạy đã bị hủy — đã tạo {counts} trước khi dừng.",
+      "paused": "Chạy bị tạm dừng. Tiếp tục để tiếp tục.",
+      "paused_with_counts": "Cuộc chạy bị tạm dừng — đã tạo {counts} cho đến nay. Tiếp tục để tiếp tục."
+    },
+    "changes_card": {
+      "summary_count": "{count} mục đã thay đổi",
+      "expand": "Mở rộng các thay đổi",
+      "collapse": "Thu gọn các thay đổi",
+      "action": {
+        "created": "Đã tạo",
+        "metadata_updated": "Đã cập nhật siêu dữ liệu",
+        "content_written": "Nội dung viết",
+        "questions_added": "+{count} câu hỏi",
+        "questions_updated": "{count} câu hỏi đã được chỉnh sửa",
+        "section_added": "Đã thêm khối",
+        "section_edited": "Đã chỉnh sửa khối"
+      },
+      "status": {
+        "completed": "Đã hoàn thành",
+        "failed": "thất bại",
+        "canceled": "Đã hủy",
+        "paused": "Đã tạm dừng"
+      }
+    },
+    "plan_view": {
+      "expand": "Mở rộng kế hoạch",
+      "collapse": "Thu gọn kế hoạch"
+    },
+    "run_monitor": {
+      "cancel": "Hủy chạy",
+      "dismiss": "Loại bỏ",
+      "now_doing": "bây giờ",
+      "input_disabled_hint": "Cuộc trò chuyện bị tạm dừng trong khi nhân viên hỗ trợ hoàn tất việc xây dựng khóa học. Hủy bỏ hoặc đợi cho đến khi nó hoàn thành.",
+      "dismiss_confirm": "Bỏ đi",
+      "dismiss_cancel": "Tiếp tục chạy",
+      "dismiss_confirm_body": "Rời khỏi cuộc chạy bị hủy bỏ này? Nút Tiếp tục sẽ biến mất - mọi cuộc trò chuyện tiếp theo sẽ bắt đầu mới và sẽ không tiếp tục kế hoạch.",
+      "stuck_queued": {
+        "title": "Công nhân không phản hồi",
+        "body": "Lần chạy này đã chờ hơn 30 giây mà không có công nhân đón. Nhân viên chạy nền có thể không hoạt động hoặc đang khởi động lại."
+      }
     }
   },
   "widgets": {
@@ -4181,7 +4282,7 @@
     "subtitle": "Theo dõi trạng thái chứng nhận trên mọi khóa học tuân thủ trong tổ chức của bạn.",
     "learners": {
       "heading": "Người học",
-      "subtitle": "{đếm, số} khớp",
+      "subtitle": "{count, number} khớp",
       "empty": "Không có người học nào phù hợp với bộ lọc này",
       "learner": "Người học",
       "course": "Khóa học",
@@ -4232,7 +4333,7 @@
       "submit": "Kiểm tra câu trả lời của tôi",
       "try_again": "Thử lại",
       "practice_again": "Luyện tập lại",
-      "attempt_option": "Hãy thử {attemptNumber} - {đúng}/{total}",
+      "attempt_option": "Hãy thử {attemptNumber} - {correct}/{total}",
       "attempts_select_aria": "nỗ lực của bạn",
       "privacy_hint": "Được chấm điểm ngay lập tức trong trình duyệt của bạn - không có gì được gửi.",
       "summary_template": "Bạn đã nhận được [[đúng]]/[[tổng]] đúng."
@@ -4255,7 +4356,7 @@
       "page_title": "Không gian làm việc",
       "page_description": "Quản lý không gian làm việc trong tài khoản của bạn. Không gian làm việc chia sẻ một gói đăng ký và mức sử dụng chung.",
       "create_cta": "Tạo không gian làm việc",
-      "create_cta_used": "{đã sử dụng} trong số {phụ cấp} đã sử dụng",
+      "create_cta_used": "{used} trong số {allowance} đã sử dụng",
       "create_cta_disabled_limit": "Bạn đã đạt đến giới hạn {allowance}-không gian làm việc. Liên hệ với chúng tôi để mở rộng.",
       "create_cta_disabled_upgrade": "Đa không gian làm việc là một tính năng của Doanh nghiệp.",
       "upgrade_link": "Nâng cấp",
@@ -4389,6 +4490,28 @@
         "title": "Cài đặt AI Tutor",
         "description": "Mặc định cho mọi khóa học trong không gian làm việc này. Các khóa học có thể kế thừa hoặc ghi đè chúng."
       }
+    }
+  },
+  "hls_upload": {
+    "rungs": {
+      "p360": "360p",
+      "p720": "720p",
+      "p1080": "1080p"
+    },
+    "error": {
+      "webcodecs_unsupported": "Trình duyệt của bạn không hỗ trợ mã hóa video phần cứng. Sử dụng phiên bản Chrome, Edge hoặc Safari gần đây.",
+      "encode_failed": "Mã hóa không thành công. Hãy thử một tệp nguồn khác hoặc làm mới và thử lại.",
+      "upload_failed": "Không thể tải lên một đoạn video. Kiểm tra kết nối của bạn và thử lại.",
+      "finalize_failed": "Không lưu được video đã tải lên."
+    },
+    "stage": {
+      "probing": "Đang đọc video…",
+      "encoding": "Mã hóa {rung} ({percent}%)",
+      "uploading": "Đang tải lên các phân đoạn ({uploaded}/{total})",
+      "thumbnail": "Đang tạo hình thu nhỏ…",
+      "finalizing": "Đang lưu…",
+      "done": "Sẵn sàng",
+      "failed": "Tải lên không thành công"
     }
   }
 }

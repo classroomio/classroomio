@@ -193,6 +193,7 @@ export const ZAgentRunCreateBody = z.object({
   courseId: ZAgentCourseId,
   conversationId: z.string().uuid().optional(),
   phase: z.string().min(1).max(64).optional(),
+  model: z.enum(AGENT_MODEL_IDS).optional(),
   approvedPlan: ZAgentJsonRecord.optional(),
   executionCursor: ZAgentJsonRecord.optional(),
   sourceIds: z.array(z.string().min(1)).optional(),

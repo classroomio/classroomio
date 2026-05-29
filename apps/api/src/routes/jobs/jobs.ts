@@ -10,6 +10,7 @@ import {
   getMediaJobSteps,
   listMediaJobEnvelopes,
   listMediaJobsForAssetEnvelopes,
+  startThumbnailRegenJob,
   startTranscriptionOnlyMediaJob
 } from '@api/services/jobs';
 
@@ -105,6 +106,27 @@ export const jobsRouter = new Hono()
         return c.json({ success: true, data: job }, 202);
       } catch (error) {
         return handleError(c, error, 'Failed to start transcription');
+      }
+    }
+  )
+  .post(
+    '/media/asset/:assetId/regenerate-thumbnail',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZAssetJobsParam),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const user = c.get('user')!;
+        const { assetId } = c.req.valid('param');
+        const job = await startThumbnailRegenJob({
+          organizationId: orgId,
+          assetId,
+          triggeredByProfileId: user?.id ?? null
+        });
+        return c.json({ success: true, data: job }, 202);
+      } catch (error) {
+        return handleError(c, error, 'Failed to start thumbnail regeneration');
       }
     }
   )

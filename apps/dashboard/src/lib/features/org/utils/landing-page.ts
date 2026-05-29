@@ -27,7 +27,9 @@ export const landingPageThemes = [
   'tech',
   'studio',
   'corporate',
-  'terminal'
+  'terminal',
+  'editorial',
+  'vibrant'
 ] as const satisfies OrgLandingPageTheme[];
 
 export const defaultLandingPageHero: OrgLandingPageHero = {
@@ -724,7 +726,154 @@ export function importThemeComponent(theme: LandingPageThemeKey) {
       return import('@cio/ui/custom/org-landing-page/corporate.svelte');
     case 'terminal':
       return import('@cio/ui/custom/org-landing-page/terminal.svelte');
+    case 'editorial':
+      return import('@cio/ui/custom/org-landing-page/editorial.svelte');
+    case 'vibrant':
+      return import('@cio/ui/custom/org-landing-page/vibrant.svelte');
     default:
       return import('@cio/ui/custom/org-landing-page/minimal.svelte');
+  }
+}
+
+const NAV_SNIPPET_THEMES: ReadonlySet<LandingPageThemeKey> = new Set([
+  'minimal',
+  'saas',
+  'tech',
+  'studio',
+  'corporate',
+  'terminal',
+  'editorial',
+  'vibrant'
+]);
+
+export function themeRendersNavInsideHero(theme: LandingPageThemeKey): boolean {
+  return NAV_SNIPPET_THEMES.has(theme);
+}
+
+export function themeHeaderShellClass(_theme: LandingPageThemeKey): string {
+  return 'ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:font-sans';
+}
+
+export { themeStyle } from '@cio/ui/custom/org-landing-page/theme-style';
+
+export async function importThemeCourseCard(theme: LandingPageThemeKey) {
+  switch (theme) {
+    case 'bold':
+      return (await import('@cio/ui/custom/org-landing-page/bold/course-card.svelte')).default;
+    case 'classic':
+      return (await import('@cio/ui/custom/org-landing-page/classic/course-card.svelte')).default;
+    case 'saas':
+      return (await import('@cio/ui/custom/org-landing-page/saas/course-card.svelte')).default;
+    case 'tech':
+      return (await import('@cio/ui/custom/org-landing-page/tech/course-card.svelte')).default;
+    case 'studio':
+      return (await import('@cio/ui/custom/org-landing-page/studio/course-card.svelte')).default;
+    case 'corporate':
+      return (await import('@cio/ui/custom/org-landing-page/corporate/course-card.svelte')).default;
+    case 'terminal':
+      return (await import('@cio/ui/custom/org-landing-page/terminal/course-card.svelte')).default;
+    case 'editorial':
+      return (await import('@cio/ui/custom/org-landing-page/editorial/course-card.svelte')).default;
+    case 'vibrant':
+      return (await import('@cio/ui/custom/org-landing-page/vibrant/course-card.svelte')).default;
+    default:
+      return (await import('@cio/ui/custom/org-landing-page/minimal/course-card.svelte')).default;
+  }
+}
+
+export function themeCourseGridClass(theme: LandingPageThemeKey): string {
+  switch (theme) {
+    case 'corporate':
+    case 'tech':
+      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:border-t ui:border-l ui:border-[var(--landing-border)]';
+    case 'saas':
+      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-px ui:bg-[var(--landing-border)] ui:border ui:border-[var(--landing-border)]';
+    case 'minimal':
+      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:gap-6';
+    case 'studio':
+      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-3';
+    case 'terminal':
+      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-[14px]';
+    case 'editorial':
+      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-4';
+    case 'vibrant':
+      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-5';
+    default:
+      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-6';
+  }
+}
+
+export async function importThemeNavHero(theme: LandingPageThemeKey) {
+  switch (theme) {
+    case 'bold': {
+      const [nav, hero] = await Promise.all([
+        import('@cio/ui/custom/org-landing-page/bold/nav.svelte'),
+        import('@cio/ui/custom/org-landing-page/bold/hero.svelte')
+      ]);
+      return { NavComponent: nav.default, HeroComponent: hero.default };
+    }
+    case 'classic': {
+      const [nav, hero] = await Promise.all([
+        import('@cio/ui/custom/org-landing-page/classic/nav.svelte'),
+        import('@cio/ui/custom/org-landing-page/classic/hero.svelte')
+      ]);
+      return { NavComponent: nav.default, HeroComponent: hero.default };
+    }
+    case 'saas': {
+      const [nav, hero] = await Promise.all([
+        import('@cio/ui/custom/org-landing-page/saas/nav.svelte'),
+        import('@cio/ui/custom/org-landing-page/saas/hero.svelte')
+      ]);
+      return { NavComponent: nav.default, HeroComponent: hero.default };
+    }
+    case 'tech': {
+      const [nav, hero] = await Promise.all([
+        import('@cio/ui/custom/org-landing-page/tech/nav.svelte'),
+        import('@cio/ui/custom/org-landing-page/tech/hero.svelte')
+      ]);
+      return { NavComponent: nav.default, HeroComponent: hero.default };
+    }
+    case 'studio': {
+      const [nav, hero] = await Promise.all([
+        import('@cio/ui/custom/org-landing-page/studio/nav.svelte'),
+        import('@cio/ui/custom/org-landing-page/studio/hero.svelte')
+      ]);
+      return { NavComponent: nav.default, HeroComponent: hero.default };
+    }
+    case 'corporate': {
+      const [nav, hero] = await Promise.all([
+        import('@cio/ui/custom/org-landing-page/corporate/nav.svelte'),
+        import('@cio/ui/custom/org-landing-page/corporate/hero.svelte')
+      ]);
+      return { NavComponent: nav.default, HeroComponent: hero.default };
+    }
+    case 'terminal': {
+      const [nav, hero] = await Promise.all([
+        import('@cio/ui/custom/org-landing-page/terminal/nav.svelte'),
+        import('@cio/ui/custom/org-landing-page/terminal/hero.svelte')
+      ]);
+      return { NavComponent: nav.default, HeroComponent: hero.default };
+    }
+    case 'editorial': {
+      const [nav, hero] = await Promise.all([
+        import('@cio/ui/custom/org-landing-page/editorial/nav.svelte'),
+        import('@cio/ui/custom/org-landing-page/editorial/hero.svelte')
+      ]);
+      return { NavComponent: nav.default, HeroComponent: hero.default };
+    }
+    case 'vibrant': {
+      const [nav, hero] = await Promise.all([
+        import('@cio/ui/custom/org-landing-page/vibrant/nav.svelte'),
+        import('@cio/ui/custom/org-landing-page/vibrant/hero.svelte')
+      ]);
+      return { NavComponent: nav.default, HeroComponent: hero.default };
+    }
+    default: {
+      const [nav, hero] = await Promise.all([
+        import('@cio/ui/custom/org-landing-page/minimal/nav.svelte'),
+        import('@cio/ui/custom/org-landing-page/minimal/hero.svelte')
+      ]);
+      return { NavComponent: nav.default, HeroComponent: hero.default };
+    }
   }
 }

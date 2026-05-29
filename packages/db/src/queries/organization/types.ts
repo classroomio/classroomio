@@ -5,6 +5,7 @@ export type OrganizationPlan = Pick<TOrganizationPlan, 'planName' | 'isActive' |
 };
 
 export type OrganizationWithMemberAndPlans = TOrganization & {
+  memberId?: number;
   roleId?: number;
   plans: OrganizationPlan[];
 };

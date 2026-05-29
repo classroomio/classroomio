@@ -52,6 +52,7 @@ export const agentRunsRouter = new Hono()
         courseId: data.courseId,
         conversationId: data.conversationId,
         phase: data.phase,
+        modelId: data.model,
         approvedPlan: data.approvedPlan,
         executionCursor: data.executionCursor,
         sourceIds: data.sourceIds,

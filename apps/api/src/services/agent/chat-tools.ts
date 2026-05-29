@@ -187,7 +187,13 @@ async function executeAgentTool<TArgs, TResult>(
   }
 }
 
-export function buildAgentTools(orgId: string, userId: string, courseId: string, priorMessages: unknown[]) {
+export function buildAgentTools(
+  orgId: string,
+  userId: string,
+  courseId: string,
+  priorMessages: unknown[],
+  _options?: { isOrgOnPaidPlan?: boolean }
+) {
   return {
     get_course_structure: tool({
       description:

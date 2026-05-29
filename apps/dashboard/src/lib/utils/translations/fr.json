@@ -7,16 +7,16 @@
   },
   "validations": {
     "generic": {
-      "invalid_type": "Type non valide{attendu, sélectionné, non défini{} autre{. Attendu {attendu}}}{reçu, sélectionné, non défini{} autre{ (reçu {reçu})}}",
-      "too_big": "La valeur est trop grande{maximum, select, undefined{} autre{. Maximum {maximum}}}",
-      "too_small": "La valeur est trop petite{minimum, select, undefined{} autre{. Minimum {minimum}}}",
-      "invalid_format": "Format invalide{validation, select, non défini{} autre{ pour {validation}}}",
+      "invalid_type": "Type non valide{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "too_big": "La valeur est trop grande{maximum, select, undefined{} other{. Maximum {maximum}}}",
+      "too_small": "La valeur est trop petite{minimum, select, undefined{} other{. Minimum {minimum}}}",
+      "invalid_format": "Format invalide{validation, select, undefined{} other{ for {validation}}}",
       "not_multiple_of": "La valeur doit être un multiple de {multipleOf}",
       "unrecognized_keys": "Contient des clés non reconnues{keys, select, undefined{} other{: {keys}}}",
       "invalid_union": "Valeur non valide pour les options fournies {unionErrors, select, undefined{} other{. {unionErrors} option(s) a échoué}}",
       "invalid_key": "Clé invalide{key, select, undefined{} other{: {key}}}",
-      "invalid_element": "Élément invalide{index, select, undefined{} autre{ à l'index {index}}}",
-      "invalid_value": "Valeur non valide{attendue, sélectionnée, non définie{} autre{. Attendu {attendu}}}{reçu, sélectionné, non défini{} autre{ (reçu {reçu})}}",
+      "invalid_element": "Élément invalide{index, select, undefined{} other{ at index {index}}}",
+      "invalid_value": "Valeur non valide{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
       "custom": "{message}",
       "required_field": "Ce champ est obligatoire",
       "invalid_field": "Valeur invalide"
@@ -346,7 +346,11 @@
       "transcription_started": "Transcription commencée",
       "transcription_start_failed": "Impossible de démarrer la transcription",
       "transcription_completed": "Transcription terminée",
-      "transcript_fetch_failed": "Impossible de charger la transcription"
+      "transcript_fetch_failed": "Impossible de charger la transcription",
+      "thumbnail_updated": "Miniature mise à jour",
+      "thumbnail_update_failed": "Échec de la mise à jour de la vignette",
+      "thumbnail_regen_started": "Régénération des vignettes…",
+      "thumbnail_regen_failed": "Échec de la régénération des miniatures"
     },
     "tags": {
       "group_created": "Groupe de balises créé",
@@ -397,7 +401,7 @@
       }
     },
     "ai_credits": {
-      "purchase_success": "Pack de jetons ajouté à votre solde.",
+      "purchase_success": "Pack d'AI credits ajouté à votre solde.",
       "checkout_failed": "Impossible de démarrer le paiement. Veuillez réessayer."
     },
     "public_course": {
@@ -527,7 +531,7 @@
       "description": "Inscriptions regroupées par type de cours",
       "subtitle": "{total} inscriptions dans tous les types",
       "empty": "Aucune donnée d'inscription pour l'instant",
-      "course_count": "{count, pluriel, un {# cours} autre {# cours}}",
+      "course_count": "{count, plural, one {# course} other {# courses}}",
       "views_short": "vues",
       "types": {
         "SELF_PACED": "À votre rythme",
@@ -585,8 +589,8 @@
       "progress_distribution_card_description": "Combien d’apprenants entrent dans chaque tranche d’achèvement.",
       "grade_distribution_card_description": "Combien d’apprenants appartiennent à chaque tranche scolaire.",
       "students_table_description": "Aperçu triable avec des liens vers les profils d'apprenants.",
-      "kpi_team_tutors": "{count, pluriel, un {# tuteur dans l'équipe du cours} autre {# tuteurs dans l'équipe du cours}}",
-      "kpi_lessons_exercises": "{compte, pluriel, un {# exercice} autre {# exercices}} mappés aux leçons",
+      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
+      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} mappés aux leçons",
       "kpi_progress_grade": "{grade} % de note moyenne d'exercice parmi les apprenants inscrits"
     }
   },
@@ -911,8 +915,17 @@
             "reviews": "Avis",
             "instructor": "Instructeur",
             "pricing": "Tarifs",
-            "certificate": "Certificat"
-          }
+            "certificate": "Certificat",
+            "curriculum": "Programme d'études",
+            "chips": "Compétences et outils",
+            "skills": "Compétences que vous gagnerez",
+            "tools": "Outils que vous apprendrez"
+          },
+          "skills_help": "Appuyez sur Entrée pour ajouter. Ceux-ci apparaissent sous forme de puces sous le programme.",
+          "tools_help": "Appuyez sur Entrée pour ajouter. Ceux-ci apparaissent sous forme de puces sous le programme.",
+          "skills_placeholder": "par ex. Analyse des données",
+          "tools_placeholder": "par ex. Figma",
+          "remove": "Supprimer"
         }
       },
       "certificates": {
@@ -1105,7 +1118,7 @@
           "snackbar_failed_revoke_invite": "Échec de la révocation de l'invitation",
           "snackbar_failed_load_audit": "Échec du chargement de l'audit d'invitation",
           "snackbar_metadata_copied": "Métadonnées d'invitation copiées",
-          "snackbar_email_invites_success": "{count} invitation(s) créée(s). Envoyé {envoyé}, échec {échec}. {duplicates} doublon(s) ignoré(s).",
+          "snackbar_email_invites_success": "{count} invitation(s) créée(s). Envoyé {sent}, échec {failed}. {duplicates} doublon(s) ignoré(s).",
           "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "Une fois (24h)",
@@ -1338,7 +1351,7 @@
               "checking_submission": "Vérification de votre soumission...",
               "answer_required": "Veuillez répondre à cette question avant de continuer.",
               "instructor_feedback": "Commentaires de l'instructeur",
-              "attempt_counter": "Tentative {actuelle} de {total}",
+              "attempt_counter": "Tentative {current} de {total}",
               "previous_try": "Tentative précédente",
               "next_try": "Prochaine tentative",
               "try_again": "Réessayez",
@@ -1375,7 +1388,9 @@
               },
               "select_type": "Sélectionnez le type",
               "question_type_auto_gradable": "Auto",
+              "question_type_auto_gradable_description": "Scored automatically by the system",
               "question_type_manual_grading": "Manual",
+              "question_type_manual_grading_description": "Requires human review to score",
               "premium_question_type": "Mettre à niveau pour utiliser ce type de question"
             },
             "delete_confirmation": {
@@ -1715,7 +1730,8 @@
               "submit": "Soumettre l'exercice",
               "collapse_section": "Réduire la section",
               "expand_section": "Développer la section"
-            }
+            },
+            "more": "Actions"
           },
           "new_exercise_modal": {
             "heading": "Nouvel exercice",
@@ -1833,8 +1849,8 @@
                 "add_from_library": "Ajouter depuis la bibliothèque",
                 "cancel_upload": "Annuler le téléchargement",
                 "upload_cancelled": "Téléchargement annulé par l'utilisateur",
-                "max_files": "{count, plural, one {Vous pouvez télécharger # fichier} other {Vous pouvez télécharger # fichiers}}",
-                "max_files_and_size": "(jusqu'à {taille} chacun)",
+                "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
+                "max_files_and_size": "(jusqu'à {size} chacun)",
                 "google_drive_choose": "Choisissez parmi Google Drive",
                 "google_drive_opening": "Sélecteur d’ouverture…",
                 "google_drive_hint": "Choisissez une vidéo sur votre compte Google. Toute personne qui consulte la leçon doit y accéder : définissez le partage dans Drive sur \"Toute personne disposant du lien peut consulter\" (ou l'équivalent de votre organisation).",
@@ -1969,7 +1985,7 @@
         "user_avatar_alt": "Avatar de l'utilisateur",
         "comments": {
           "comment": "commentaire",
-          "showing_of": "Affichage de {montré} sur {total}",
+          "showing_of": "Affichage de {shown} sur {total}",
           "hide": "Masquer les commentaires",
           "placeholder": "Ajouter un commentaire de classe",
           "submit_aria": "Soumettre un commentaire",
@@ -2059,7 +2075,8 @@
         "overview_metrics": {
           "heading": "Aperçu du cours",
           "description": "L'apprenant compte par statut pour ce cours."
-        }
+        },
+        "empty_overview_description": "Gardez vos employés conformes et suivez qui est derrière."
       }
     },
     "search": {
@@ -2119,7 +2136,7 @@
       "final_exercise_helper": "Une fois défini, les élèves doivent atteindre au moins le score minimum pour cet exercice (la meilleure tentative compte) en plus du pourcentage d'achèvement ci-dessus.",
       "min_exercise_score_label": "Note minimale à l'exercice final (%)",
       "min_exercise_score_helper": "Le score est un pourcentage du total de points possibles sur cet exercice (0 à 100).",
-      "blocker_progress": "La progression de votre cours est de {current} % ; {obligatoire} % est requis.",
+      "blocker_progress": "La progression de votre cours est de {current} % ; {required} % est requis.",
       "blocker_deadline": "La date limite de certification est dépassée.",
       "blocker_no_content": "Ce cours ne comporte aucune leçon ni exercice à réaliser.",
       "blocker_final_not_submitted": "Soumettez l'exercice requis \"{exerciseTitle}\" pour être admissible au certificat.",
@@ -2165,6 +2182,7 @@
           "topic": "Sujet ou niche",
           "expertise_level": "Niveau d’expertise cible",
           "documentation_url": {
+            "label": "URL de documentation (facultatif)",
             "hint": "Nous lirons ce site pour ancrer le cours dans votre produit réel."
           }
         },
@@ -2324,23 +2342,24 @@
     "learner": "Apprenant",
     "progress": "Progrès",
     "pick_up_where_you_left_off": "Reprenez là où vous vous étiez arrêté",
-    "course_awaits_you": "{titre} vous attend",
+    "course_awaits_you": "{title} vous attend",
     "learning_awaits_you": "Votre prochain cours vous attend",
     "lms_today_progress": "Vous avez progressé de {progress} % dans votre apprentissage : chaque étape compte.",
     "lms_today_empty": "Votre parcours d’apprentissage est prêt quand vous l’êtes.",
     "compliance_score": "Score de conformité",
     "compliance": "Conformité",
-    "compliance_score_subtitle": "{terminé} sur {total} cours de conformité actuellement suivis",
+    "compliance_score_subtitle": "{completed} sur {total} cours de conformité actuellement suivis",
     "compliance_score_empty": "Aucun cours de conformité attribué pour l'instant",
-    "compliance_met": "{terminé} sur {total} atteint",
-    "required_courses_completed": "{terminé} sur {total} cours obligatoires terminés",
+    "compliance_met": "{completed} sur {total} atteint",
+    "required_courses_completed": "{completed} sur {total} cours obligatoires terminés",
     "streak": "Série",
     "days_active": "jours d'activité",
-    "items_done": "{terminé} sur {total} réalisé",
+    "items_done": "{completed} sur {total} réalisé",
     "login_activity_title": "Activité de connexion des étudiants",
     "login_activity_description": "Jours les plus actifs de la semaine (90 derniers jours)",
     "login_activity_no_data": "Aucune activité de connexion pour le moment",
-    "login_activity_logins": "connexions"
+    "login_activity_logins": "connexions",
+    "open_academy": "Académie ouverte"
   },
   "schedule": {
     "title": "Votre emploi du temps",
@@ -2621,7 +2640,8 @@
     "actions": {
       "edit": "Modifier",
       "where_used": "Où utilisé",
-      "download": "Télécharger"
+      "download": "Télécharger",
+      "manage_thumbnails": "Gérer les vignettes"
     },
     "table": {
       "title": "Titre",
@@ -2678,7 +2698,22 @@
       "not_available": "N/D"
     },
     "empty_description": "L'actif n'existe pas ou n'est pas disponible dans cette organisation.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library."
+    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "thumbnails": {
+      "manage_title": "Gérer les vignettes",
+      "manage_description": "Prévisualisez la vidéo, choisissez l'une des images générées automatiquement ou téléchargez la vôtre.",
+      "preview_unavailable": "Aperçu indisponible",
+      "generated": "Miniatures générées",
+      "slot_start": "Commencer",
+      "slot_middle": "Milieu",
+      "slot_end": "Fin",
+      "none_generated_warning": "Aucune vignette générée pour l'instant. Essayez de régénérer ou de télécharger une image personnalisée.",
+      "upload_custom": "Télécharger une miniature personnalisée",
+      "custom_selected_hint": "Le téléchargement personnalisé sera enregistré lorsque vous enregistrerez votre sélection.",
+      "custom_preview_alt": "Aperçu miniature personnalisé",
+      "regenerate": "Régénérer",
+      "save_selection": "Enregistrer la vignette"
+    }
   },
   "settings": {
     "heading": "Paramètres",
@@ -2690,9 +2725,9 @@
       "open_billing": "Facturation ouverte",
       "error": "Une erreur s'est produite lors de l'ouverture de la facturation",
       "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
-      "ai_credits": "Utilisation de l'assistant IA",
-      "ai_tokens_used": "jetons utilisés ce mois-ci",
-      "ai_bonus_credits": "crédits bonus disponibles"
+      "ai_credits": "AI credits",
+      "ai_tokens_used": "AI credits utilisés ce mois-ci",
+      "ai_bonus_credits": "AI credits bonus disponibles"
     },
     "integrations": {
       "heading": "Télégramme",
@@ -3003,6 +3038,14 @@
           "saas": {
             "title": "SaaS",
             "description": "Cadre en pointillés, accents doux, sensation de produit moderne"
+          },
+          "vibrant": {
+            "title": "Vibrant",
+            "description": "Panneaux primaires audacieux, héros dégradé au coucher du soleil, look d'affiche énergique"
+          },
+          "editorial": {
+            "title": "Éditorial",
+            "description": "Palette de crème chaude, héros pictural, sensation de magazine raffinée"
           }
         }
       },
@@ -3011,7 +3054,10 @@
         "description": "Conçu avec des fonctionnalités de base que vous pouvez facilement personnaliser – aucun codage requis.",
         "by_classroomio": "par ClassroomIO",
         "add": "Ajouter",
-        "upgrade": "Mise à niveau"
+        "upgrade": "Mise à niveau",
+        "apply_theme": "Appliquer le thème",
+        "preview": "Aperçu",
+        "card_menu_label": "Options de thème"
       },
       "current": {
         "title": "Thème actuel",
@@ -3094,7 +3140,7 @@
       "customize_lms_tab": "Personnaliser le LMS",
       "domains_tab": "Domaines",
       "teams_tab": "Équipes",
-      "ai_credits_tab": "Crédits IA",
+      "ai_credits_tab": "AI Credits",
       "ai_tutor_tab": "Tuteur IA"
     },
     "subheadings": {
@@ -3228,42 +3274,42 @@
       "page_subtitle": "Invite teammates and control who helps run this organization."
     },
     "ai_credits": {
-      "sub_title": "Crédits IA",
-      "page_subtitle": "Suivez l’utilisation de l’assistant IA, la consommation de l’équipe et achetez des packs de jetons.",
-      "cost_note": "L'utilisation du crédit est pondérée par le coût du modèle. Gemini 2.5 Flash et GPT-5.4 Mini comptent pour 1 unité de crédit par jeton. Claude Sonnet 4.6 compte pour 36 × par jeton, reflétant son coût API plus élevé.",
-      "buy_tokens": {
-        "title": "Achetez plus de jetons",
-        "description": "Chaque pack ajoute 5 000 000 de crédits pour 5 $ USD. Choisissez le nombre de packs dont vous avez besoin.",
-        "quantity_hint": "paquets",
-        "preview": "{quantité} pack(s) · {tokens} jetons · ${dollars}",
-        "buy_button": "Achetez pour ${dollars}"
+      "sub_title": "AI credits",
+      "page_subtitle": "Suivez l'utilisation de l'assistant IA, la consommation de l'équipe et achetez des packs d'AI credits.",
+      "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
+      "included": {
+        "title": "Votre utilisation incluse",
+        "subtitle": "AI credits mensuels inclus avec votre forfait.",
+        "resets_on": "Réinitialise {date}"
+      },
+      "purchased": {
+        "title": "Utilisation achetée",
+        "subtitle": "Les AI credits supplémentaires que vous avez achetés sont reportés jusqu'à utilisation.",
+        "lifetime": "{tokens} credits achetés · ${dollars} dépensés",
+        "buy_more": "Acheter plus"
+      },
+      "chart": {
+        "heading": "Utilisation",
+        "subheading": "Consommation quotidienne d'AI credits ce mois-ci.",
+        "tokens": "Credits",
+        "total_tokens": "Total credits",
+        "total_requests": "Total des demandes",
+        "empty": "Aucune utilisation enregistrée ce mois-ci pour l'instant."
       },
       "leaderboard": {
         "title": "Utilisation de l'équipe",
         "this_month": "Mois en cours",
         "user": "Utilisateur",
         "favorite_model": "Modèle préféré",
-        "tokens": "Jetons",
+        "tokens": "Credits",
         "empty": "Personne dans votre équipe n'a utilisé l'assistant IA ce mois-ci."
       },
-      "chart": {
-        "heading": "Utilisation",
-        "subheading": "Consommation quotidienne de jetons ce mois-ci.",
-        "tokens": "Jetons",
-        "total_tokens": "Total des jetons",
-        "total_requests": "Total des demandes",
-        "empty": "Aucune utilisation enregistrée ce mois-ci pour l'instant."
-      },
-      "purchased": {
-        "title": "Utilisation achetée",
-        "subtitle": "Les jetons supplémentaires que vous avez achetés sont reportés jusqu'à ce qu'ils soient utilisés.",
-        "lifetime": "{tokens} jetons achetés · ${dollars} dépensés",
-        "buy_more": "Achetez plus"
-      },
-      "included": {
-        "title": "Votre utilisation incluse",
-        "subtitle": "Jetons mensuels inclus avec votre forfait.",
-        "resets_on": "Réinitialise {date}"
+      "buy_tokens": {
+        "title": "Acheter plus de credits",
+        "description": "Chaque pack ajoute 5,000,000 credits pour $5 USD. Choisissez le nombre de packs dont vous avez besoin.",
+        "quantity_hint": "packs",
+        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
+        "buy_button": "Acheter pour ${dollars}"
       }
     }
   },
@@ -3693,7 +3739,7 @@
       "user_avatar_alt": "Avatar de l'utilisateur",
       "comments": {
         "comment": "commentaire",
-        "showing_of": "Affichage de {montré} sur {total}",
+        "showing_of": "Affichage de {shown} sur {total}",
         "hide": "Masquer les commentaires",
         "placeholder": "Ajouter un commentaire sur le programme",
         "submit_aria": "Soumettre un commentaire",
@@ -3939,7 +3985,7 @@
     "error_rate_limit_with_wait": "Le service AI est temporairement occupé. Veuillez réessayer dans {seconds} secondes.",
     "error_context_too_long": "La conversation est trop longue. Essayez de démarrer une nouvelle discussion ou de raccourcir votre message.",
     "error_network": "Erreur réseau. Veuillez vérifier votre connexion et réessayer.",
-    "context_usage_tooltip": "{utilisé} / {max} jetons utilisés",
+    "context_usage_tooltip": "{used} / {max} jetons utilisés",
     "context_full_title": "La fenêtre contextuelle est pleine",
     "context_full_description": "The assistant will summarize older messages automatically so you can keep working in this chat.",
     "context_full_compact": "Conversation compacte",
@@ -3952,6 +3998,61 @@
       "quiz_me": "Questionnez-moi à ce sujet",
       "summarize_section": "Résumer cette section",
       "what_to_review": "Que dois-je réviser ensuite ?"
+    },
+    "run_running": "Génération de cours",
+    "run_completed": "Génération de cours terminée",
+    "run_failed": "La génération du cours a échoué",
+    "run_canceled": "Génération de cours annulée",
+    "run_waiting_for_worker": "En attendant le travailleur d'arrière-plan",
+    "run_checkpoint": "Enregistrement du point de contrôle de progression",
+    "retry": "Réessayer",
+    "run_monitor_aria": "Génération de cours en cours",
+    "run_summary": {
+      "completed": "Exécution terminée.",
+      "completed_with_counts": "Exécution terminée – créé {counts}.",
+      "failed": "L'exécution a échoué.",
+      "failed_with_reason": "Échec de l'exécution – {reason}.",
+      "canceled": "Exécution annulée.",
+      "canceled_with_counts": "Exécution annulée – créé {counts} avant de s'arrêter.",
+      "paused": "Exécution en pause. Reprendre pour continuer.",
+      "paused_with_counts": "Exécution en pause – créé {counts} jusqu'à présent. Reprendre pour continuer."
+    },
+    "changes_card": {
+      "summary_count": "{count} éléments modifiés",
+      "expand": "Développer les modifications",
+      "collapse": "Réduire les modifications",
+      "action": {
+        "created": "Créé",
+        "metadata_updated": "Métadonnées mises à jour",
+        "content_written": "Contenu écrit",
+        "questions_added": "+{count} questions",
+        "questions_updated": "{count} questions modifiées",
+        "section_added": "Bloc ajouté",
+        "section_edited": "Bloc modifié"
+      },
+      "status": {
+        "completed": "Terminé",
+        "failed": "Échec",
+        "canceled": "Annulé",
+        "paused": "En pause"
+      }
+    },
+    "plan_view": {
+      "expand": "Élargir le plan",
+      "collapse": "Plan d'effondrement"
+    },
+    "run_monitor": {
+      "cancel": "Annuler l'exécution",
+      "dismiss": "Rejeter",
+      "now_doing": "Maintenant",
+      "input_disabled_hint": "La conversation est suspendue pendant que l'agent termine la création du cours. Annulez ou attendez qu'il soit terminé.",
+      "dismiss_confirm": "S'éloigner",
+      "dismiss_cancel": "Continuez à courir",
+      "dismiss_confirm_body": "S'éloigner de cette course annulée ? Le bouton Reprendre disparaîtra : toute nouvelle discussion recommencera à zéro et ne poursuivra pas le plan.",
+      "stuck_queued": {
+        "title": "Le travailleur ne répond pas",
+        "body": "Cette exécution attend depuis plus de 30 secondes sans qu'aucun travailleur ne soit récupéré. Le travailleur en arrière-plan est peut-être en panne ou redémarre."
+      }
     }
   },
   "widgets": {
@@ -4255,7 +4356,7 @@
       "page_title": "Espaces de travail",
       "page_description": "Gérez les espaces de travail sous votre compte. Les espaces de travail partagent un abonnement unique et une utilisation mutualisée.",
       "create_cta": "Créer un espace de travail",
-      "create_cta_used": "{utilisé} sur {allocation} utilisé",
+      "create_cta_used": "{used} sur {allowance} utilisé",
       "create_cta_disabled_limit": "Vous avez atteint la limite d'espace de travail {allowance}. Contactez-nous pour vous développer.",
       "create_cta_disabled_upgrade": "Le multi-espace de travail est une fonctionnalité d'entreprise.",
       "upgrade_link": "Mise à niveau",
@@ -4389,6 +4490,28 @@
         "title": "Paramètres du tuteur AI",
         "description": "Valeurs par défaut pour chaque cours de cet espace de travail. Les cours peuvent en hériter ou les remplacer."
       }
+    }
+  },
+  "hls_upload": {
+    "rungs": {
+      "p360": "360p",
+      "p720": "720p",
+      "p1080": "1080p"
+    },
+    "error": {
+      "webcodecs_unsupported": "Votre navigateur ne prend pas en charge l'encodage vidéo matériel. Utilisez une version récente de Chrome, Edge ou Safari.",
+      "encode_failed": "L'encodage a échoué. Essayez un autre fichier source ou actualisez et réessayez.",
+      "upload_failed": "Échec du téléchargement d'un segment vidéo. Vérifiez votre connexion et réessayez.",
+      "finalize_failed": "Échec de l'enregistrement de la vidéo téléchargée."
+    },
+    "stage": {
+      "probing": "Lecture de la vidéo…",
+      "encoding": "Encodage de {rung} ({percent} %)",
+      "uploading": "Segments en ligne ({uploaded}/{total})",
+      "thumbnail": "Générer une vignette…",
+      "finalizing": "Sauvegarde…",
+      "done": "Prêt",
+      "failed": "Échec du téléchargement"
     }
   }
 }

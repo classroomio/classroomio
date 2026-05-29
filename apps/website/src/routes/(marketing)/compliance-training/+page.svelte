@@ -135,6 +135,16 @@
   <title>Compliance Training | ClassroomIO</title>
   <meta
     name="description"
+    content="Keep your employees compliant and track who's falling behind. Turn policies and SOPs into certified training with renewals, grace periods, and audit evidence."
+  />
+  <meta property="og:title" content="Keep your employees compliant and track who's falling behind." />
+  <meta
+    property="og:description"
+    content="Turn policies and SOPs into certified training. Track compliance, renewals, grace periods, and audit evidence in one place."
+  />
+  <meta name="twitter:title" content="Keep your employees compliant and track who's falling behind." />
+  <meta
+    name="twitter:description"
     content="Turn policies and SOPs into certified training. Track compliance, renewals, grace periods, and audit evidence in one place."
   />
   <script
@@ -154,8 +164,8 @@
         Compliance Training
       </Badge>
       <h1 class="text-[clamp(2rem,3.4vw,2.8rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
-        Audit-ready training,
-        <em class="text-blue-700 not-italic">without the spreadsheets.</em>
+        Keep your employees compliant and
+        <em class="text-blue-700 not-italic">track who's falling behind.</em>
       </h1>
       <HeroSubtitle class="mx-auto">
         Turn policies, SOPs, docs, and videos into assigned courses with quizzes, certificates, renewal rules, and
@@ -341,7 +351,7 @@
   </section>
 
   <PageSignupCTA
-    header="Stop chasing compliance manually."
+    header="Keep your employees compliant and track who's falling behind."
     subText="Build certified training from your existing policies, assign it to the right people, and keep proof of completion in one place."
     btnLabel="Book a Demo"
   />

@@ -10,6 +10,7 @@ import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
 import { identifyPosthogUser } from '$lib/utils/services/posthog';
+import { identifyUserJotUser } from '$lib/utils/services/userjot';
 import { isOrgStudent } from '$lib/utils/store/app';
 import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
 import { licenseApi } from '$features/license/api/license.svelte';
@@ -230,6 +231,13 @@ class AppInitApi extends BaseApi {
     identifyPosthogUser(profileStore.id, {
       email: profileStore.email,
       name: profileStore.fullname
+    });
+
+    identifyUserJotUser({
+      id: profileStore.id,
+      email: profileStore.email,
+      fullname: profileStore.fullname,
+      avatarUrl: profileStore.avatarUrl
     });
   }
 

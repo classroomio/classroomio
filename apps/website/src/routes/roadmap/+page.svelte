@@ -69,8 +69,10 @@
   <p class="mt-10 w-[80%] text-start text-slate-700 md:w-[40%] md:text-center">
     This is a live document, and will be updated regularly. To submit an idea, or to view a list of feature requests and
     ideas that we're considering, check out our <a
-      href="https://github.com/classroomio/classroomio/discussion"
-      class="underline">GitHub Discussions</a
+      href="https://feedback.classroomio.com"
+      target="_blank"
+      rel="noopener"
+      class="underline">feedback portal</a
     >
   </p>
 </PageHeader>

@@ -18,7 +18,13 @@
   import { MagicCard } from '@cio/ui/custom/animation/magic-card';
 
   import { getLectureNo } from '$features/course/utils/functions';
-  import { normalizeLandingPageSettings } from '$features/org/utils/landing-page';
+  import {
+    importThemeNavHero,
+    normalizeLandingPageSettings,
+    themeHeaderShellClass,
+    themeStyle,
+    themeRendersNavInsideHero
+  } from '$features/org/utils/landing-page';
   import { currentOrg } from '$lib/utils/store/org';
   import { basePath } from '$lib/utils/store/app';
   import { user } from '$lib/utils/store/user';
@@ -57,11 +63,9 @@
 
   const landingSettings = $derived(normalizeLandingPageSettings($currentOrg.landingpage));
 
-  const heroShellClass = $derived(
-    landingSettings.theme === 'classic'
-      ? 'ui:w-full ui:bg-muted/10 ui:text-foreground ui:font-sans'
-      : 'ui:w-full ui:bg-background ui:text-foreground ui:font-sans'
-  );
+  const heroShellClass = $derived(`ui:w-full ${themeHeaderShellClass(landingSettings.theme)}`);
+  const heroShellStyle = $derived(themeStyle(landingSettings.theme));
+  const navInsideHero = $derived(themeRendersNavInsideHero(landingSettings.theme));
 
   const orgNameForNav = $derived($currentOrg.name || get(courseData, 'org.name', '') || 'ClassroomIO');
   const logoUrlForNav = $derived($currentOrg.avatarUrl || undefined);
@@ -115,21 +119,10 @@
     const theme = landingSettings.theme;
     let cancelled = false;
 
-    void Promise.all([
-      theme === 'bold'
-        ? import('@cio/ui/custom/org-landing-page/bold/nav.svelte')
-        : theme === 'classic'
-          ? import('@cio/ui/custom/org-landing-page/classic/nav.svelte')
-          : import('@cio/ui/custom/org-landing-page/minimal/nav.svelte'),
-      theme === 'bold'
-        ? import('@cio/ui/custom/org-landing-page/bold/hero.svelte')
-        : theme === 'classic'
-          ? import('@cio/ui/custom/org-landing-page/classic/hero.svelte')
-          : import('@cio/ui/custom/org-landing-page/minimal/hero.svelte')
-    ]).then(([navMod, heroMod]) => {
+    void importThemeNavHero(theme).then(({ NavComponent: nav, HeroComponent: hero }) => {
       if (!cancelled) {
-        NavComponent = navMod.default;
-        HeroComponent = heroMod.default;
+        NavComponent = nav;
+        HeroComponent = hero;
       }
     });
 
@@ -202,10 +195,10 @@
 
 <div class="flex w-full flex-col items-center bg-white dark:bg-black">
   {#if showMarketingHero}
-    <div class={heroShellClass}>
+    <div class={heroShellClass} style={heroShellStyle}>
       {#if NavComponent && HeroComponent}
-        {#if landingSettings.theme === 'minimal'}
-          <HeroComponent hero={courseHero}>
+        {#if navInsideHero}
+          <HeroComponent hero={courseHero} orgName={orgNameForNav}>
             {#snippet navigation()}
               <NavComponent
                 orgName={orgNameForNav}
@@ -222,7 +215,7 @@
             navItems={landingSettings.navItems}
             {authAction}
           />
-          <HeroComponent hero={courseHero} />
+          <HeroComponent hero={courseHero} orgName={orgNameForNav} />
         {/if}
       {/if}
 

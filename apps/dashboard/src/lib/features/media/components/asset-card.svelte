@@ -7,6 +7,9 @@
 
   import DownloadIcon from '@lucide/svelte/icons/download';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import ImageIcon from '@lucide/svelte/icons/image';
+  import LinkIcon from '@lucide/svelte/icons/link';
+  import PencilIcon from '@lucide/svelte/icons/pencil';
 
   import { t } from '$lib/utils/functions/translations';
   import {
@@ -23,6 +26,7 @@
     onEdit?: (asset: OrganizationAsset) => void;
     onUsage?: (asset: OrganizationAsset) => void;
     onDownload?: (asset: OrganizationAsset) => void;
+    onManageThumbnails?: (asset: OrganizationAsset) => void;
   }
 
   let {
@@ -30,13 +34,14 @@
     downloadingAssetId = null,
     onEdit = () => {},
     onUsage = () => {},
-    onDownload = () => {}
+    onDownload = () => {},
+    onManageThumbnails = () => {}
   }: Props = $props();
 </script>
 
 <Item.Root
   variant="outline"
-  class="group relative max-w-[300px] cursor-pointer p-4!"
+  class="group relative w-full! max-w-75 cursor-pointer p-4!"
   onclick={() => onEdit(asset)}
   onkeydown={(event) => {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -57,10 +62,24 @@
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="end" onclick={(event) => event.stopPropagation()}>
         <DropdownMenu.Item onclick={() => onEdit(asset)}>
-          {$t('media_manager.actions.edit')}
+          <span class="flex items-center gap-2">
+            <PencilIcon size={14} />
+            {$t('media_manager.actions.edit')}
+          </span>
         </DropdownMenu.Item>
+        {#if asset.kind === 'video'}
+          <DropdownMenu.Item onclick={() => onManageThumbnails(asset)}>
+            <span class="flex items-center gap-2">
+              <ImageIcon size={14} />
+              {$t('media_manager.actions.manage_thumbnails')}
+            </span>
+          </DropdownMenu.Item>
+        {/if}
         <DropdownMenu.Item onclick={() => onUsage(asset)}>
-          {$t('media_manager.actions.where_used')}
+          <span class="flex items-center gap-2">
+            <LinkIcon size={14} />
+            {$t('media_manager.actions.where_used')}
+          </span>
         </DropdownMenu.Item>
         <DropdownMenu.Item onclick={() => onDownload(asset)} disabled={downloadingAssetId === asset.id}>
           <span class="flex items-center gap-2">

@@ -1,8 +1,14 @@
 <script lang="ts">
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import CaptionsIcon from '@lucide/svelte/icons/captions';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import EyeIcon from '@lucide/svelte/icons/eye';
+  import ImageIcon from '@lucide/svelte/icons/image';
+  import Trash2Icon from '@lucide/svelte/icons/trash-2';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { mediaApi } from '$features/media/api';
+  import { ManageThumbnailsDialog } from '$features/media/components';
+  import type { OrganizationAsset } from '$features/media/utils';
   import { JobPoller, jobsApi, type MediaJobEnvelope } from '$features/jobs';
   import { sidePanel } from '$features/side-panel';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -15,11 +21,16 @@
   interface Props {
     video: LessonVideo;
     onRemove: () => void;
+    onThumbnailSaved?: (thumbnailUrl: string) => void;
     /** `inline` aligns with the title row (YouTube-style). `corner` is top-right overlay on the nearest `relative` ancestor. */
     menuPlacement?: 'inline' | 'corner';
   }
 
-  let { video, onRemove, menuPlacement = 'inline' }: Props = $props();
+  let { video, onRemove, onThumbnailSaved, menuPlacement = 'inline' }: Props = $props();
+
+  let manageThumbsOpen = $state(false);
+  let manageThumbsAsset = $state<OrganizationAsset | null>(null);
+  let isLoadingAsset = $state(false);
 
   let isTranscribing = $state(false);
   let hasTranscript = $state(false);
@@ -29,6 +40,7 @@
   const assetId = $derived((video as LessonVideo & { assetId?: string }).assetId ?? null);
 
   const canGenerateTranscript = $derived(video.type === 'upload' && !!assetId);
+  const canManageThumbnails = $derived(video.type === 'upload' && !!assetId);
 
   onDestroy(() => {
     activePoller?.stop();
@@ -116,6 +128,31 @@
     }
   }
 
+  async function handleManageThumbnails() {
+    if (!assetId || isLoadingAsset) return;
+
+    isLoadingAsset = true;
+    try {
+      const asset = await mediaApi.refreshAsset(assetId);
+      if (!asset) {
+        snackbar.error('snackbar.media_manager.list_failed');
+        return;
+      }
+
+      manageThumbsAsset = asset;
+      manageThumbsOpen = true;
+    } finally {
+      isLoadingAsset = false;
+    }
+  }
+
+  function handleThumbnailSaved(asset: OrganizationAsset) {
+    manageThumbsAsset = asset;
+    if (asset.thumbnailUrl) {
+      onThumbnailSaved?.(asset.thumbnailUrl);
+    }
+  }
+
   const generateLabel = $derived(
     isTranscribing
       ? t.get('course.navItem.lessons.materials.tabs.video.generate_transcript_in_progress')
@@ -142,6 +179,19 @@
     </IconButton>
   </DropdownMenu.Trigger>
   <DropdownMenu.Content align="end">
+    {#if canManageThumbnails}
+      <DropdownMenu.Item
+        disabled={isLoadingAsset}
+        onclick={() => {
+          void handleManageThumbnails();
+        }}
+      >
+        <span class="flex items-center gap-2">
+          <ImageIcon size={14} />
+          {$t('media_manager.actions.manage_thumbnails')}
+        </span>
+      </DropdownMenu.Item>
+    {/if}
     {#if canGenerateTranscript}
       <DropdownMenu.Item
         disabled={isTranscribing}
@@ -149,7 +199,10 @@
           void handleGenerateTranscript();
         }}
       >
-        {generateLabel}
+        <span class="flex items-center gap-2">
+          <CaptionsIcon size={14} />
+          {generateLabel}
+        </span>
       </DropdownMenu.Item>
       {#if hasTranscript}
         <DropdownMenu.Item
@@ -157,12 +210,24 @@
             void handleViewTranscript();
           }}
         >
-          {$t('course.navItem.lessons.materials.tabs.video.view_transcript')}
+          <span class="flex items-center gap-2">
+            <EyeIcon size={14} />
+            {$t('course.navItem.lessons.materials.tabs.video.view_transcript')}
+          </span>
         </DropdownMenu.Item>
       {/if}
     {/if}
     <DropdownMenu.Item class="ui:text-red-600" onclick={onRemove}>
-      {$t('course.navItem.lessons.materials.tabs.video.remove_video')}
+      <span class="flex items-center gap-2">
+        <Trash2Icon size={14} />
+        {$t('course.navItem.lessons.materials.tabs.video.remove_video')}
+      </span>
     </DropdownMenu.Item>
   </DropdownMenu.Content>
 </DropdownMenu.Root>
+
+<ManageThumbnailsDialog
+  bind:open={manageThumbsOpen}
+  asset={manageThumbsAsset}
+  onThumbnailSaved={handleThumbnailSaved}
+/>

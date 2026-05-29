@@ -1,0 +1,1166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Spark Academy — Vibrant template</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* PRIMARY — single source of color truth.
+           In storybook/ui this becomes var(--primary) and the shades use color-mix(). */
+        --primary: #ee5c2b;
+        --primary-hover: color-mix(in oklab, var(--primary) 88%, #000);
+        --primary-soft: color-mix(in oklab, var(--primary) 22%, #ffffff);
+        --primary-tint: color-mix(in oklab, var(--primary) 8%, #ffffff);
+        --primary-ink: #ffffff;
+
+        /* Surfaces */
+        --bg: #ffffff;
+        --bg-cream: #f8f5ef;
+        --bg-dark: #0c1118;
+        --bg-dark-2: #131923;
+
+        /* Ink / muted */
+        --ink: #1c2531;
+        --ink-2: #2a3340;
+        --muted: #6a7280;
+        --muted-2: #9aa1ab;
+
+        /* Lines & cards */
+        --line: #e8e8e8;
+        --line-soft: #f0f0f0;
+        --line-dark: #1c2330;
+        --card-soft: #f0f1f2;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        letter-spacing: -0.005em;
+      }
+      a { color: inherit; text-decoration: none; }
+      button { font: inherit; cursor: pointer; }
+      img { display: block; max-width: 100%; }
+
+      .container { max-width: 1320px; margin: 0 auto; padding: 0 32px; }
+
+      /* ============ NAV ============ */
+      .nav-wrap {
+        position: sticky; top: 0; z-index: 60;
+        background: var(--bg);
+        border-bottom: 1px solid transparent;
+      }
+      .nav {
+        display: flex; align-items: center; justify-content: space-between;
+        height: 72px;
+        gap: 24px;
+      }
+      .nav-left { display: flex; align-items: center; gap: 32px; }
+      .brand {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-weight: 600; font-size: 22px;
+        letter-spacing: -0.025em;
+        color: var(--ink);
+      }
+      .brand-mark {
+        width: 22px; height: 22px;
+        position: relative;
+      }
+      .brand-mark::before, .brand-mark::after {
+        content: '';
+        position: absolute;
+        background: var(--primary);
+        border-radius: 3px;
+      }
+      .brand-mark::before { left: 0; top: 0; width: 10px; height: 22px; }
+      .brand-mark::after { right: 0; top: 6px; width: 10px; height: 10px; }
+
+      .nav-mid { display: flex; gap: 4px; align-items: center; }
+      .nav-mid a {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 8px 14px;
+        font-size: 15px;
+        color: var(--ink);
+        font-weight: 500;
+        border-radius: 6px;
+        transition: background 0.15s;
+      }
+      .nav-mid a:hover { background: var(--line-soft); }
+      .nav-mid a .caret { font-size: 10px; color: var(--muted); }
+
+      .nav-right { display: flex; align-items: center; gap: 18px; }
+      .nav-right .pill-badge {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 6px 6px 6px 12px;
+        background: var(--primary);
+        color: var(--primary-ink);
+        border-radius: 999px;
+        font-size: 13.5px;
+        font-weight: 500;
+      }
+      .pill-badge .count {
+        background: rgba(0,0,0,0.18);
+        color: #fff;
+        padding: 1px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+      .nav-right .link {
+        font-size: 15px; color: var(--ink);
+        font-weight: 500;
+      }
+      .nav-right .link:hover { color: var(--ink-2); text-decoration: underline; text-underline-offset: 4px; }
+
+      .btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 9px 18px;
+        font-size: 15px; font-weight: 500;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        transition: background 0.15s, opacity 0.15s, color 0.15s, border-color 0.15s;
+        white-space: nowrap;
+      }
+      .btn-primary { background: var(--primary); color: var(--primary-ink); }
+      .btn-primary:hover { background: var(--primary-hover); }
+      .btn-lg { padding: 13px 26px; font-size: 16px; }
+      .btn-xl { padding: 14px 28px; font-size: 17px; }
+
+      /* ============ HERO ============ */
+      .hero {
+        padding: 96px 0 80px;
+        text-align: center;
+        position: relative;
+      }
+      .hero h1 {
+        font-size: 110px;
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+        font-weight: 500;
+        color: var(--ink);
+        margin: 0 auto 28px;
+        max-width: 1100px;
+      }
+      .hero p.lead {
+        font-size: 22px;
+        line-height: 1.4;
+        color: var(--muted);
+        max-width: 640px;
+        margin: 0 auto 40px;
+        letter-spacing: -0.012em;
+      }
+      .hero .actions { display: inline-flex; gap: 12px; align-items: center; }
+
+      /* Logo strip below hero */
+      .logo-strip {
+        margin-top: 96px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 48px;
+        flex-wrap: wrap;
+        padding: 0 16px;
+      }
+      .logo-strip .logo {
+        font-weight: 700;
+        font-size: 22px;
+        letter-spacing: -0.025em;
+        color: var(--ink);
+        opacity: 0.9;
+        white-space: nowrap;
+        font-family: 'Inter', sans-serif;
+      }
+      .logo-strip .logo.serif {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-style: italic;
+        font-weight: 500;
+        font-size: 24px;
+      }
+      .logo-strip .logo.uppercase {
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      /* Sunset gradient that bleeds into next section */
+      .sunset {
+        height: 220px;
+        background: linear-gradient(
+          to bottom,
+          var(--bg) 0%,
+          var(--bg) 18%,
+          color-mix(in oklab, var(--primary) 12%, var(--bg)) 38%,
+          color-mix(in oklab, var(--primary) 40%, var(--bg)) 58%,
+          color-mix(in oklab, var(--primary) 78%, var(--bg)) 78%,
+          var(--primary) 100%
+        );
+      }
+
+      /* ============ ORANGE PRODUCT SECTION ============ */
+      .product {
+        background: var(--primary);
+        color: var(--primary-ink);
+        padding: 60px 0 140px;
+      }
+      .product-row {
+        display: grid;
+        grid-template-columns: 1.15fr 1fr;
+        gap: 80px;
+        align-items: center;
+        margin-bottom: 120px;
+      }
+      .product-row:last-child { margin-bottom: 0; }
+      .product-row.reverse { grid-template-columns: 1fr 1.15fr; }
+      .product-row.reverse .product-visual { order: 2; }
+      .product-row.reverse .product-text { order: 1; }
+
+      .product-visual {
+        position: relative;
+        height: 480px;
+        border-radius: 24px;
+        background:
+          radial-gradient(50% 60% at 40% 40%, rgba(255,255,255,0.55) 0%, transparent 70%),
+          radial-gradient(60% 70% at 70% 65%, rgba(255,255,255,0.32) 0%, transparent 70%),
+          radial-gradient(40% 50% at 25% 75%, rgba(255,235,210,0.5) 0%, transparent 70%),
+          linear-gradient(135deg, #b0a8a0 0%, #d4cabd 50%, #c8c0b5 100%);
+        overflow: hidden;
+        filter: blur(0px);
+      }
+      .product-visual::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at 50% 45%, rgba(255,255,255,0.4) 0%, transparent 50%);
+      }
+
+      /* Floating mockup card on product visual */
+      .product-mock {
+        position: absolute;
+        left: 50%; top: 50%;
+        transform: translate(-50%, -50%);
+        width: 78%;
+        background: #0c1320;
+        border-radius: 14px;
+        padding: 22px 22px 20px;
+        box-shadow: 0 30px 60px -20px rgba(0,0,0,0.35);
+        color: #fff;
+      }
+      .product-mock h4 {
+        margin: 0 0 4px;
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: -0.005em;
+      }
+      .product-mock .sub {
+        font-size: 13px;
+        color: #8a93a0;
+        margin: 0 0 16px;
+      }
+      .mock-row {
+        display: flex; align-items: center; gap: 10px;
+        padding: 12px 14px;
+        background: #131c2c;
+        border-radius: 8px;
+        margin-bottom: 8px;
+      }
+      .mock-row .ic {
+        width: 22px; height: 22px;
+        border-radius: 5px;
+        background: #2a3548;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+      .mock-row .ic.figma { background: #1c2735; color: #f24e1e; }
+      .mock-row .ic.github { background: #1c2735; }
+      .mock-row .ic.bolt { background: #1c2735; color: #f5b400; }
+      .mock-row .ic.lovable { background: #1c2735; color: #ff7eb6; }
+      .mock-row .label-block { flex: 1; min-width: 0; }
+      .mock-row .title {
+        font-size: 13px;
+        color: #fff;
+        font-weight: 500;
+        margin-bottom: 1px;
+      }
+      .mock-row .desc {
+        font-size: 11.5px;
+        color: #6c7585;
+      }
+      .mock-row .arrow { color: #6c7585; font-size: 14px; flex-shrink: 0; }
+
+      .mock-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      /* Color picker mock (second product row) */
+      .picker-mock {
+        position: absolute;
+        right: 4%; bottom: 6%;
+        width: 86%;
+        background: #0c1320;
+        border-radius: 16px 16px 0 0;
+        padding: 22px 28px 28px;
+        color: #fff;
+        box-shadow: 0 -30px 60px -20px rgba(0,0,0,0.4);
+      }
+      .picker-mock .label-sm {
+        font-size: 13px;
+        color: #b0b8c4;
+        margin: 0 0 8px;
+      }
+      .picker-input {
+        display: flex; align-items: center;
+        background: transparent;
+        border: 1px solid #2a3548;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 15px;
+        color: #fff;
+      }
+      .picker-input .swatch {
+        width: 16px; height: 16px;
+        background: #2563eb;
+        border-radius: 3px;
+        margin-right: 10px;
+      }
+      .picker-input .hex { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+      .picker-input .pipette { color: #8a93a0; }
+      .picker-canvas {
+        margin-top: 14px;
+        height: 140px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #5d80f5 0%, #2563eb 50%, #ffffff 50%, #c9d5fa 100%);
+        position: relative;
+      }
+      .picker-canvas::after {
+        content: '';
+        position: absolute;
+        left: 38%; top: 32%;
+        width: 18px; height: 18px;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.4);
+      }
+      .picker-cursor {
+        position: absolute;
+        left: 36%; top: 38%;
+        width: 22px; height: 22px;
+        background: var(--ink);
+        clip-path: polygon(0 0, 0 70%, 30% 55%, 50% 100%, 60% 90%, 40% 50%, 75% 50%);
+        z-index: 5;
+        pointer-events: none;
+      }
+
+      .product-text h2 {
+        font-size: 44px;
+        line-height: 1.1;
+        font-weight: 500;
+        margin: 0 0 28px;
+        letter-spacing: -0.02em;
+        color: var(--primary-ink);
+        max-width: 460px;
+      }
+      .product-text p {
+        font-size: 17px;
+        line-height: 1.5;
+        margin: 0 0 18px;
+        color: rgba(255,255,255,0.95);
+        max-width: 480px;
+      }
+      .product-text p:last-child { margin-bottom: 0; }
+
+      /* ============ EMPOWER (use cases) ============ */
+      .empower { padding: 130px 0 100px; }
+      .empower h2 {
+        text-align: center;
+        font-size: 64px;
+        line-height: 1.05;
+        font-weight: 500;
+        letter-spacing: -0.025em;
+        margin: 0 auto 80px;
+        max-width: 920px;
+      }
+      .empower-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 48px 64px;
+      }
+      .empower-card {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 28px;
+        align-items: start;
+      }
+      .empower-thumb {
+        width: 100%;
+        height: 200px;
+        border-radius: 18px;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center;
+      }
+      .thumb-1 { background: linear-gradient(135deg, #d4cfc4 0%, #c2b9ad 100%); position: relative; }
+      .thumb-2 { background: linear-gradient(135deg, #f4e4a8 0%, #c0a868 100%); position: relative; }
+      .thumb-3 { background: linear-gradient(135deg, #6b4f3a 0%, #3a2c20 100%); position: relative; }
+      .thumb-4 { background: linear-gradient(135deg, #88a09b 0%, #4f6a74 100%); position: relative; }
+      .empower-thumb::after {
+        content: '';
+        position: absolute; inset: 0;
+        background:
+          repeating-linear-gradient(45deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 1px, transparent 1px, transparent 6px),
+          radial-gradient(60% 80% at 40% 40%, rgba(255,255,255,0.18) 0%, transparent 60%);
+      }
+      .empower-card h3 {
+        font-size: 22px;
+        font-weight: 600;
+        margin: 0 0 12px;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+      }
+      .empower-card p {
+        font-size: 15.5px;
+        color: var(--muted);
+        line-height: 1.55;
+        margin: 0;
+      }
+
+      /* ============ COMMUNITY (testimonials) ============ */
+      .community { padding: 100px 0 130px; }
+      .community h2 {
+        text-align: center;
+        font-size: 48px;
+        line-height: 1.1;
+        font-weight: 500;
+        letter-spacing: -0.025em;
+        margin: 0 0 64px;
+      }
+      .community-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 20px;
+      }
+      .testimonial {
+        background: var(--card-soft);
+        border-radius: 20px;
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        min-height: 420px;
+      }
+      .testimonial .quote {
+        font-size: 19px;
+        line-height: 1.4;
+        color: var(--ink);
+        letter-spacing: -0.01em;
+        margin: 0;
+        flex: 1;
+      }
+      .testimonial .person {
+        margin-top: 28px;
+        display: flex; align-items: center; gap: 12px;
+      }
+      .testimonial .av {
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #a8a8a8, #6a6a6a);
+      }
+      .testimonial .person .name {
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--ink);
+        margin-bottom: 2px;
+      }
+      .testimonial .person .role {
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      /* Embedded social post in middle card */
+      .social-card {
+        background: var(--card-soft);
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 420px;
+      }
+      .social-embed {
+        background: #fff;
+        margin: 16px;
+        margin-bottom: 0;
+        border-radius: 14px;
+        padding: 16px;
+        flex: 1;
+      }
+      .social-head {
+        display: flex; align-items: center; gap: 10px;
+        margin-bottom: 8px;
+      }
+      .social-head .av {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #888, #555);
+      }
+      .social-head .name {
+        font-size: 14px; font-weight: 600;
+        color: var(--ink);
+        display: flex; align-items: center; gap: 4px;
+      }
+      .social-head .verified {
+        width: 14px; height: 14px;
+        background: var(--primary);
+        border-radius: 50%;
+        font-size: 9px;
+        color: #fff;
+        display: inline-flex; align-items: center; justify-content: center;
+      }
+      .social-head .handle {
+        font-size: 12px; color: var(--muted);
+      }
+      .social-head .member-pill {
+        font-size: 11px;
+        background: #f0f0f0;
+        padding: 1px 6px;
+        border-radius: 4px;
+        color: var(--muted);
+        margin-left: auto;
+      }
+      .social-text {
+        font-size: 14px;
+        color: var(--ink);
+        line-height: 1.45;
+        margin: 0 0 10px;
+      }
+      .social-text a { color: var(--primary); }
+      .social-img {
+        height: 180px;
+        border-radius: 10px;
+        background:
+          radial-gradient(50% 70% at 50% 40%, rgba(255,140,80,0.45) 0%, transparent 60%),
+          linear-gradient(135deg, #2a2520 0%, #3a3025 50%, #1a1813 100%);
+        position: relative;
+        margin-bottom: 8px;
+      }
+      .social-img .play {
+        position: absolute;
+        left: 50%; top: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0,0,0,0.6);
+        color: #fff;
+        font-size: 14px;
+        padding: 6px 10px;
+        border-radius: 6px;
+      }
+      .social-time {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .social-quote {
+        padding: 16px 24px 24px;
+      }
+      .social-quote .qtext {
+        font-size: 14.5px;
+        color: var(--ink);
+        line-height: 1.45;
+        margin: 0 0 6px;
+        font-style: italic;
+      }
+      .social-quote .qsrc {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      /* ============ DARK SECTION (live sessions) ============ */
+      .dark-section {
+        background: var(--bg-dark);
+        color: #fff;
+        position: relative;
+        padding: 80px 0 100px;
+      }
+      .dark-section::before, .dark-section::after {
+        content: '';
+        position: absolute;
+        top: 0; bottom: 0;
+        width: 1px;
+        background: rgba(255,255,255,0.06);
+      }
+      .dark-section::before { left: max(32px, calc((100vw - 1320px) / 2 + 32px)); }
+      .dark-section::after { right: max(32px, calc((100vw - 1320px) / 2 + 32px)); }
+      .dark-head {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 24px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        margin-bottom: 0;
+      }
+      .dark-head .brand-row {
+        display: flex; align-items: center; gap: 12px;
+        font-size: 17px;
+        color: #fff;
+        font-weight: 500;
+      }
+      .dark-head .brand-row .brand-mark::before { background: var(--primary); }
+      .dark-head .brand-row .brand-mark::after { background: var(--primary); }
+      .dark-head .socials { display: flex; gap: 0; }
+      .dark-head .socials a {
+        width: 56px; height: 56px;
+        display: inline-flex; align-items: center; justify-content: center;
+        color: #d8dae0;
+        font-size: 16px;
+        border-left: 1px solid rgba(255,255,255,0.08);
+        transition: background 0.15s;
+      }
+      .dark-head .socials a:hover { background: rgba(255,255,255,0.05); }
+
+      .dark-sub {
+        padding: 20px 0 36px;
+        font-size: 17px;
+        color: #fff;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        margin-bottom: 28px;
+      }
+      .session-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 24px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      .session {
+        background: transparent;
+        color: #fff;
+      }
+      .session-thumb {
+        height: 200px;
+        border-radius: 8px;
+        margin-bottom: 18px;
+        position: relative;
+        overflow: hidden;
+      }
+      .thumb-s-1 {
+        background:
+          linear-gradient(135deg, #ee6428 0%, #f08840 50%, #d44820 100%);
+      }
+      .thumb-s-2 {
+        background:
+          radial-gradient(60% 80% at 30% 50%, #f4a070 0%, transparent 60%),
+          linear-gradient(135deg, #ee6428 0%, #d04818 100%);
+      }
+      .thumb-s-3 {
+        background:
+          linear-gradient(135deg, #ee6428 0%, #f08840 60%, #2d2520 100%);
+      }
+      .session-thumb .icons {
+        position: absolute;
+        left: 50%; top: 50%;
+        transform: translate(-50%, -50%);
+        display: flex; align-items: center; gap: 16px;
+        font-size: 24px;
+        font-weight: 700;
+        color: #fff;
+      }
+      .session-thumb .live-badge {
+        position: absolute;
+        top: 12px; left: 12px;
+        background: #f23e3e;
+        color: #fff;
+        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+      .session-thumb .session-label {
+        position: absolute;
+        top: 12px; left: 72px;
+        background: rgba(0,0,0,0.4);
+        color: #fff;
+        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-weight: 500;
+      }
+      .session-thumb .corner-text {
+        position: absolute;
+        bottom: 18px; left: 18px;
+        font-size: 26px;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        text-transform: uppercase;
+      }
+      .session .date {
+        font-size: 14px;
+        color: #b0b6c0;
+        margin: 0 0 10px;
+      }
+      .session h4 {
+        font-size: 22px;
+        font-weight: 600;
+        line-height: 1.2;
+        margin: 0 0 14px;
+        letter-spacing: -0.015em;
+        color: #fff;
+      }
+      .session p {
+        font-size: 14.5px;
+        color: #8a93a0;
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      /* ============ BIG CTA ============ */
+      .big-cta {
+        padding: 160px 0 140px;
+        text-align: center;
+        background: var(--bg);
+      }
+      .big-cta h2 {
+        font-size: 88px;
+        line-height: 1.02;
+        letter-spacing: -0.03em;
+        font-weight: 500;
+        margin: 0 0 48px;
+        color: var(--ink);
+      }
+
+      /* ============ FOOTER ============ */
+      footer {
+        background: var(--bg-cream);
+        padding: 80px 0 60px;
+        border-top: 1px solid var(--line-soft);
+      }
+      .footer-top {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr 1fr;
+        gap: 64px;
+        align-items: start;
+      }
+      .footer-brand .brand {
+        font-size: 56px;
+        gap: 14px;
+        font-weight: 700;
+      }
+      .footer-brand .brand-mark {
+        width: 56px; height: 56px;
+      }
+      .footer-brand .brand-mark::before { width: 24px; height: 56px; }
+      .footer-brand .brand-mark::after { width: 24px; height: 24px; top: 16px; right: 0; }
+
+      .footer-meta {
+        margin-top: 56px;
+        display: flex; align-items: center; gap: 16px;
+      }
+      .globe {
+        width: 56px; height: 56px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 22px;
+        color: var(--ink-2);
+        background: var(--bg);
+      }
+      .time-pill {
+        display: inline-flex; flex-direction: column;
+        align-items: center;
+        padding: 8px 12px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-size: 11px;
+        color: var(--ink-2);
+        line-height: 1.2;
+        min-width: 56px;
+      }
+      .time-pill .city { font-weight: 600; font-size: 11px; }
+      .time-pill .clock { font-size: 11px; font-variant-numeric: tabular-nums; margin-top: 1px; }
+
+      .footer-meta .meta-text {
+        font-size: 15px;
+        color: var(--ink-2);
+      }
+      .footer-meta .meta-text .copy {
+        display: block;
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 6px;
+      }
+
+      .footer-col h5 {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin: 0 0 24px;
+      }
+      .footer-col a {
+        display: block;
+        font-size: 20px;
+        font-weight: 500;
+        color: var(--ink);
+        padding: 6px 0;
+        letter-spacing: -0.015em;
+      }
+      .footer-col a:hover { color: var(--primary); }
+
+      /* ============ RESPONSIVE ============ */
+      @media (max-width: 1100px) {
+        .hero h1 { font-size: 76px; }
+        .big-cta h2 { font-size: 60px; }
+        .empower h2 { font-size: 44px; }
+        .product-row, .product-row.reverse { grid-template-columns: 1fr; gap: 40px; }
+        .product-row.reverse .product-visual { order: 1; }
+        .product-row.reverse .product-text { order: 2; }
+        .product-visual { height: 380px; }
+        .empower-grid { grid-template-columns: 1fr; }
+        .empower-card { grid-template-columns: 1fr; }
+        .empower-thumb { height: 220px; }
+        .community-grid, .session-grid { grid-template-columns: 1fr; }
+        .footer-top { grid-template-columns: 1fr; gap: 48px; }
+        .footer-brand .brand { font-size: 40px; }
+        .nav-mid { display: none; }
+        .logo-strip { gap: 24px; }
+        .logo-strip .logo { font-size: 16px; }
+        .logo-strip .logo.serif { font-size: 18px; }
+        .logo-strip .logo.uppercase { font-size: 12px; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- =================== NAV =================== -->
+    <header class="nav-wrap">
+      <div class="container">
+        <nav class="nav">
+          <div class="nav-left">
+            <a href="#" class="brand">
+              <span class="brand-mark"></span>
+              <span>Spark</span>
+            </a>
+            <div class="nav-mid">
+              <a href="#">Programs <span class="caret">▾</span></a>
+              <a href="#">For teams <span class="caret">▾</span></a>
+              <a href="#">Resources <span class="caret">▾</span></a>
+              <a href="#">Faculty</a>
+              <a href="#">Pricing</a>
+              <a href="#">Stories</a>
+              <a href="#" class="pill-badge">
+                Live <span class="count">4</span>
+              </a>
+            </div>
+          </div>
+          <div class="nav-right">
+            <a href="#" class="link">Contact admissions</a>
+            <a href="#" class="link">Log in</a>
+            <a href="#" class="btn btn-primary">Enroll</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- =================== HERO =================== -->
+    <section class="hero">
+      <div class="container">
+        <h1>From curious<br />to capable.</h1>
+        <p class="lead">Cohort-based and self-paced courses in design, brand, code, and craft — taught by people who ship the work.</p>
+        <div class="actions">
+          <a href="#" class="btn btn-primary btn-xl">Start learning free</a>
+        </div>
+
+        <div class="logo-strip">
+          <span class="logo uppercase">Lumen</span>
+          <span class="logo serif">Northbound</span>
+          <span class="logo">◆ Halcyon</span>
+          <span class="logo">Atlas</span>
+          <span class="logo uppercase">ANTHROPIC</span>
+          <span class="logo">coinbase</span>
+          <span class="logo">⌖ Vector</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sunset gradient that bleeds into product section -->
+    <div class="sunset"></div>
+
+    <!-- =================== ORANGE PRODUCT SECTION =================== -->
+    <section class="product">
+      <div class="container">
+        <div class="product-row">
+          <div class="product-visual">
+            <div class="product-mock">
+              <h4>Bring your work into Spark</h4>
+              <p class="sub">Continue where you left off — across tools, files, and devices.</p>
+              <div class="mock-grid-2">
+                <div class="mock-row">
+                  <span class="ic github">◐</span>
+                  <div class="label-block">
+                    <div class="title">GitHub</div>
+                    <div class="desc">Import a repo or starter project.</div>
+                  </div>
+                  <span class="arrow">→</span>
+                </div>
+                <div class="mock-row">
+                  <span class="ic figma">▲</span>
+                  <div class="label-block">
+                    <div class="title">Figma</div>
+                    <div class="desc">Bring designs into a live brief.</div>
+                  </div>
+                  <span class="arrow">→</span>
+                </div>
+                <div class="mock-row">
+                  <span class="ic lovable">♥</span>
+                  <div class="label-block">
+                    <div class="title">Notion</div>
+                    <div class="desc">Pull notes into your portfolio.</div>
+                  </div>
+                  <span class="arrow">→</span>
+                </div>
+                <div class="mock-row">
+                  <span class="ic bolt">⚡</span>
+                  <div class="label-block">
+                    <div class="title">Drive</div>
+                    <div class="desc">Sync references and PDFs.</div>
+                  </div>
+                  <span class="arrow">→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="product-text">
+            <h2>Pick up where your craft left off.</h2>
+            <p>Bring in work from anywhere — Figma files, GitHub repos, notes, references — and turn it into the starting point for a Spark program.</p>
+            <p>Your coach picks up the same materials you do. Critique gets specific, fast.</p>
+            <p>Finish each cohort with a portfolio-grade piece you actually want to show.</p>
+          </div>
+        </div>
+
+        <div class="product-row reverse">
+          <div class="product-visual">
+            <div class="picker-mock">
+              <div class="label-sm">Capstone — Brand color</div>
+              <div class="picker-input">
+                <span class="swatch"></span>
+                <span class="hex">#2563eb</span>
+                <span class="pipette">⌖</span>
+              </div>
+              <div class="picker-canvas">
+                <div class="picker-cursor"></div>
+              </div>
+            </div>
+          </div>
+          <div class="product-text">
+            <h2>Critique on the work, not the slide.</h2>
+            <p>Spark instructors review your real files — colors, type, components, code — and leave notes inline.</p>
+            <p>No more "looks good" feedback. Every cohort ends with a critique log you can take with you.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== EMPOWER =================== -->
+    <section class="empower">
+      <div class="container">
+        <h2>Built for people who want<br />to ship better work.</h2>
+        <div class="empower-grid">
+          <div class="empower-card">
+            <div class="empower-thumb thumb-1"></div>
+            <div>
+              <h3>Career switchers</h3>
+              <p>Move from adjacent fields into design, brand, or product without a year-long bootcamp. Spark programs are six to twelve weeks and end with a portfolio piece.</p>
+            </div>
+          </div>
+          <div class="empower-card">
+            <div class="empower-thumb thumb-2"></div>
+            <div>
+              <h3>Working practitioners</h3>
+              <p>Sharpen the part of your craft that's been holding you back. Type, motion, leadership — pick the specific tool that needs work.</p>
+            </div>
+          </div>
+          <div class="empower-card">
+            <div class="empower-thumb thumb-3"></div>
+            <div>
+              <h3>Studios and teams</h3>
+              <p>Bring your whole team through a Spark cohort. Custom scheduling, group critique, and a shared dashboard of progress.</p>
+            </div>
+          </div>
+          <div class="empower-card">
+            <div class="empower-thumb thumb-4"></div>
+            <div>
+              <h3>Faculty and writers</h3>
+              <p>Run your own cohort on Spark — we handle the platform, payments, certificates, and student support so you can focus on teaching.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== COMMUNITY =================== -->
+    <section class="community">
+      <div class="container">
+        <h2>Heard from our graduates</h2>
+        <div class="community-grid">
+          <div class="testimonial">
+            <p class="quote">"[…] Spark feels like the perfect combination of just enough access to real practitioners — feedback that's specific, fast, and a portfolio you'd actually use to apply for jobs."</p>
+            <div class="person">
+              <div class="av"></div>
+              <div>
+                <div class="name">— Andrew Wilkinson</div>
+                <div class="role">Co-founder of Tiny (35+ companies)</div>
+              </div>
+            </div>
+          </div>
+          <div class="social-card">
+            <div class="social-embed">
+              <div class="social-head">
+                <div class="av"></div>
+                <div>
+                  <div class="name">Spanky McDoob <span class="verified">✓</span></div>
+                  <div class="handle">@56thProfile</div>
+                </div>
+                <span class="member-pill">Member</span>
+              </div>
+              <p class="social-text">Before <a href="#">@figma</a> integrated with <a href="#">@Spark</a> versus after. Speaks for itself i think</p>
+              <div class="social-img">
+                <span class="play">▶ 0:00</span>
+              </div>
+              <span class="social-time">9:22 AM · Jun 14, 2025 · 8,864 Views</span>
+            </div>
+            <div class="social-quote">
+              <p class="qtext">"The before @figma integrated with @Spark versus after. Speaks for itself i think"</p>
+              <p class="qsrc">— Spanky McDoob (@56thProfile)</p>
+            </div>
+          </div>
+          <div class="testimonial">
+            <p class="quote">"The days of half-baked design courses are over — Spark delivers near pixel-level critique on the work I actually want to show. Anything else is a waste of time at this point."</p>
+            <div class="person">
+              <div class="av"></div>
+              <div>
+                <div class="name">— Max Miner</div>
+                <div class="role">@MxMnr</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== DARK SECTION =================== -->
+    <section class="dark-section">
+      <div class="container">
+        <div class="dark-head">
+          <div class="brand-row">
+            <span class="brand-mark"></span>
+            <span>Follow @Spark</span>
+          </div>
+          <div class="socials">
+            <a href="#" aria-label="Twitter">𝕏</a>
+            <a href="#" aria-label="Facebook">f</a>
+            <a href="#" aria-label="Link">⌘</a>
+          </div>
+        </div>
+
+        <div class="dark-sub">More</div>
+
+        <div class="session-grid">
+          <div class="session">
+            <div class="session-thumb thumb-s-1">
+              <span class="live-badge">● Live</span>
+              <span class="session-label">Build session — Webinar</span>
+              <span class="corner-text">Vibe Code<br />Data Apps<br />Part 2</span>
+            </div>
+            <p class="date">Fri, Feb 13, 2026</p>
+            <h4>Vibe Coding Data Apps with Spark + Snowflake — Part 2 [webinar]</h4>
+            <p>Turn Snowflake dashboards into real data apps with Spark. Forecasting, drill-downs, Slack alerts, and an embedded assistant—...</p>
+          </div>
+          <div class="session">
+            <div class="session-thumb thumb-s-2">
+              <div class="icons">
+                <span>●</span>
+                <span>→</span>
+                <span>❄</span>
+              </div>
+            </div>
+            <p class="date">Fri, Jan 30, 2026</p>
+            <h4>Vibe Coding Data Apps with Spark + Snowflake [webinar]</h4>
+            <p>Build data applications with Spark's Snowflake connector using natural language. No coding required—go from id...</p>
+          </div>
+          <div class="session">
+            <div class="session-thumb thumb-s-3">
+              <span class="live-badge">● Live</span>
+              <span class="session-label">Build session</span>
+              <span class="corner-text">Build a<br />Browser<br />Extension</span>
+            </div>
+            <p class="date">Fri, Jan 23, 2026</p>
+            <h4>Building a Private Bookmark Manager and Browser Extension in Spark [webinar]</h4>
+            <p>We build a bookmark manager with Chrome extension live using Agent 3. Learn prompt engineering, debugging, and production...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== BIG CTA =================== -->
+    <section class="big-cta">
+      <div class="container">
+        <h2>What are you waiting for?</h2>
+        <a href="#" class="btn btn-primary btn-xl">Start learning free</a>
+      </div>
+    </section>
+
+    <!-- =================== FOOTER =================== -->
+    <footer>
+      <div class="container">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <a href="#" class="brand">
+              <span class="brand-mark"></span>
+              <span>Spark</span>
+            </a>
+            <div class="footer-meta">
+              <span class="globe">🜨</span>
+              <div class="time-pill">
+                <span class="city">SF</span>
+                <span class="clock">9:17 AM</span>
+              </div>
+              <div class="meta-text">
+                Made in sunny California.
+                <span class="copy">All rights reserved. Copyright © 2026 Spark Academy, Inc.</span>
+              </div>
+            </div>
+          </div>
+          <div class="footer-col">
+            <h5>Handy links</h5>
+            <a href="#">About us</a>
+            <a href="#">Coaching 101</a>
+            <a href="#">Help</a>
+            <a href="#">How-to guides</a>
+            <a href="#">Import from GitHub</a>
+            <a href="#">Status</a>
+            <a href="#">Additional resources</a>
+          </div>
+          <div class="footer-col">
+            <h5>Legal</h5>
+            <a href="#">Terms of service</a>
+            <a href="#">Enrollment agreement</a>
+            <a href="#">Privacy</a>
+            <a href="#">Subprocessors</a>
+            <a href="#">DPA</a>
+            <a href="#">Report abuse</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -7,17 +7,17 @@
   },
   "validations": {
     "generic": {
-      "invalid_type": "Неверный тип {ожидаемый, выбранный, неопределенный{} другое{. Ожидается {ожидается}}}{получено, выберите, неопределенное{} другое { (получено {получено})}}",
-      "too_big": "Значение слишком велико{максимум, выберите, неопределенное{} другое{. Максимум {максимум}}}",
-      "too_small": "Значение слишком мало{минимальное, выберите, неопределенное{} другое{. Минимум {минимум}}}",
-      "invalid_format": "Неверный формат{проверка, выбор, неопределенное{} другое{ для {проверка}}}",
+      "invalid_type": "Неверный тип {expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "too_big": "Значение слишком велико{maximum, select, undefined{} other{. Maximum {maximum}}}",
+      "too_small": "Значение слишком мало{minimum, select, undefined{} other{. Minimum {minimum}}}",
+      "invalid_format": "Неверный формат{validation, select, undefined{} other{ for {validation}}}",
       "not_multiple_of": "Значение должно быть кратно {multipleOf}.",
-      "unrecognized_keys": "Содержит нераспознанные ключи{keys, select, undefine{}other{: {keys}}}",
-      "invalid_union": "Недопустимое значение для предоставленных параметров{unionErrors, select, undefine{}other{. Вариант(ы) {unionErrors} не выполнен}}",
-      "invalid_key": "Неверный ключ{key, select, undefine{}other{: {key}}}",
-      "invalid_element": "Неверный элемент{index, select, undefined{}other{ по индексу {index}}}",
-      "invalid_value": "Недопустимое значение{ожидаемое, выбранное, неопределенное{} другое{. Ожидается {ожидается}}}{получено, выберите, неопределенное{} другое { (получено {получено})}}",
-      "custom": "{сообщение}",
+      "unrecognized_keys": "Содержит нераспознанные ключи{keys, select, undefined{} other{: {keys}}}",
+      "invalid_union": "Недопустимое значение для предоставленных параметров{unionErrors, select, undefined{} other{. Вариант(ы) {unionErrors} не выполнен}}",
+      "invalid_key": "Неверный ключ{key, select, undefined{} other{: {key}}}",
+      "invalid_element": "Неверный элемент{index, select, undefined{} other{ по индексу {index}}}",
+      "invalid_value": "Недопустимое значение{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "custom": "{message}",
       "required_field": "Это поле обязательно для заполнения",
       "invalid_field": "Недопустимое значение"
     },
@@ -118,7 +118,7 @@
     },
     "exercise": {
       "options": {
-        "custom": "{сообщение}"
+        "custom": "{message}"
       },
       "points": {
         "too_small": "Баллов должно быть не менее 0."
@@ -346,7 +346,11 @@
       "transcription_started": "Транскрипция началась",
       "transcription_start_failed": "Не удалось начать транскрипцию",
       "transcription_completed": "Транскрипция завершена",
-      "transcript_fetch_failed": "Не удалось загрузить расшифровку"
+      "transcript_fetch_failed": "Не удалось загрузить расшифровку",
+      "thumbnail_updated": "Значок обновлен.",
+      "thumbnail_update_failed": "Не удалось обновить миниатюру.",
+      "thumbnail_regen_started": "Восстановление миниатюр…",
+      "thumbnail_regen_failed": "Не удалось восстановить миниатюры."
     },
     "tags": {
       "group_created": "Группа тегов создана.",
@@ -397,8 +401,8 @@
       }
     },
     "ai_credits": {
-      "purchase_success": "Пакет токенов добавлен на ваш баланс.",
-      "checkout_failed": "Не удалось начать оформление заказа. Пожалуйста, попробуйте еще раз."
+      "purchase_success": "Пакет AI credits добавлен на баланс.",
+      "checkout_failed": "Не удалось начать оплату. Попробуйте снова."
     },
     "public_course": {
       "url_copied": "URL курса скопирован",
@@ -466,7 +470,7 @@
     "title": "Аналитика",
     "courses": "Курсы",
     "progress": "Прогресс",
-    "progress_description": "{value, Number} из {total, Number} завершено",
+    "progress_description": "{value, number} из {total, number} завершено",
     "incomplete": "Неполный",
     "completed": "Завершено",
     "complete": "полный",
@@ -527,7 +531,7 @@
       "description": "Зачисления сгруппированы по типу курса",
       "subtitle": "{total} зачислений по всем типам",
       "empty": "Данных о регистрации пока нет",
-      "course_count": "{число, множественное число, один {# курс} другой {# курс}}",
+      "course_count": "{count, plural, one {# course} other {# courses}}",
       "views_short": "просмотры",
       "types": {
         "SELF_PACED": "Самостоятельный темп",
@@ -585,8 +589,8 @@
       "progress_distribution_card_description": "Сколько учащихся попадает в каждую группу завершения.",
       "grade_distribution_card_description": "Сколько учащихся попадает в каждую группу классов.",
       "students_table_description": "Сортируемый обзор со ссылками на профили учащихся.",
-      "kpi_team_tutors": "{count, множественное число, one {# репетитор в команде курса}other {# репетитора в команде курса}}",
-      "kpi_lessons_exercises": "{count, множественное число, одно {# упражнения} другое {# упражнений}} сопоставлено с уроками",
+      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
+      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} сопоставлено с уроками",
       "kpi_progress_grade": "{grade} % средняя оценка за упражнения среди зачисленных учащихся"
     }
   },
@@ -911,8 +915,17 @@
             "reviews": "Отзывы",
             "instructor": "Инструктор",
             "pricing": "Цены",
-            "certificate": "Сертификат"
-          }
+            "certificate": "Сертификат",
+            "curriculum": "учебная программа",
+            "chips": "Навыки и инструменты",
+            "skills": "Навыки, которые вы получите",
+            "tools": "Инструменты, которые вы изучите"
+          },
+          "skills_help": "Нажмите Enter, чтобы добавить. Они отображаются в виде фишек под учебной программой.",
+          "tools_help": "Нажмите Enter, чтобы добавить. Они отображаются в виде фишек под учебной программой.",
+          "skills_placeholder": "например Анализ данных",
+          "tools_placeholder": "например Фигма",
+          "remove": "Удалить"
         }
       },
       "certificates": {
@@ -1105,7 +1118,7 @@
           "snackbar_failed_revoke_invite": "Не удалось отозвать приглашение.",
           "snackbar_failed_load_audit": "Не удалось загрузить аудит приглашений.",
           "snackbar_metadata_copied": "Метаданные приглашения скопированы.",
-          "snackbar_email_invites_success": "Создано приглашений: {count}. Отправлено {отправлено}, ошибка {failed}. Пропущено дубликатов: {duulates}.",
+          "snackbar_email_invites_success": "Создано приглашений: {count}. Отправлено {sent}, ошибка {failed}. Пропущено дубликатов: {duplicates}.",
           "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "Одноразовый (24 часа)",
@@ -1338,7 +1351,7 @@
               "checking_submission": "Проверка вашей заявки...",
               "answer_required": "Пожалуйста, ответьте на этот вопрос, прежде чем продолжить.",
               "instructor_feedback": "Отзывы инструктора",
-              "attempt_counter": "Попытка {текущая} из {total}",
+              "attempt_counter": "Попытка {current} из {total}",
               "previous_try": "Предыдущая попытка",
               "next_try": "Следующая попытка",
               "try_again": "Попробуйте еще раз",
@@ -1375,7 +1388,9 @@
               },
               "select_type": "Выберите тип",
               "question_type_auto_gradable": "Auto",
+              "question_type_auto_gradable_description": "Scored automatically by the system",
               "question_type_manual_grading": "Manual",
+              "question_type_manual_grading_description": "Requires human review to score",
               "premium_question_type": "Обновите, чтобы использовать этот тип вопроса"
             },
             "delete_confirmation": {
@@ -1435,7 +1450,7 @@
                   "helper": "Перетащите элементы, чтобы определить правильный порядок.",
                   "add_step": "Добавить шаг",
                   "empty": "Добавьте шаги, затем перетащите их, чтобы установить ожидаемый порядок.",
-                  "step_placeholder": "Шаг '{'индекс'}'",
+                  "step_placeholder": "Шаг '{'index'}'",
                   "remove_step_tooltip": "Удалить шаг"
                 }
               },
@@ -1453,7 +1468,7 @@
               "link": {
                 "preview": {
                   "empty": "Ссылки не предоставлены.",
-                  "item_label": "Ссылка '{'индекс'}'"
+                  "item_label": "Ссылка '{'index'}'"
                 },
                 "take": {
                   "helper": "Добавьте одну или несколько ссылок. Принимаются только действительные URL-адреса http/https.",
@@ -1715,7 +1730,8 @@
               "submit": "Отправить упражнение",
               "collapse_section": "Свернуть раздел",
               "expand_section": "Развернуть раздел"
-            }
+            },
+            "more": "Действия"
           },
           "new_exercise_modal": {
             "heading": "Новое упражнение",
@@ -1833,7 +1849,7 @@
                 "add_from_library": "Добавить из библиотеки",
                 "cancel_upload": "Отменить загрузку",
                 "upload_cancelled": "Загрузка отменена пользователем",
-                "max_files": "{count, множественное число, one {Вы можете загрузить # файл} Other {Вы можете загрузить # файла}}",
+                "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
                 "max_files_and_size": "(до {size} каждый)",
                 "google_drive_choose": "Выберите на Google Диске",
                 "google_drive_opening": "Открытие выбора…",
@@ -1969,7 +1985,7 @@
         "user_avatar_alt": "Аватар пользователя",
         "comments": {
           "comment": "комментарий",
-          "showing_of": "Показаны {показано} из {всего}",
+          "showing_of": "Показаны {shown} из {total}",
           "hide": "Скрыть комментарии",
           "placeholder": "Добавить комментарий к классу",
           "submit_aria": "Отправить комментарий",
@@ -2059,7 +2075,8 @@
         "overview_metrics": {
           "heading": "Снимок курса",
           "description": "Учащиеся учитываются по статусу для этого курса."
-        }
+        },
+        "empty_overview_description": "Следите за тем, чтобы ваши сотрудники соблюдали требования и отслеживали, кто отстает."
       }
     },
     "search": {
@@ -2122,10 +2139,10 @@
       "blocker_progress": "Ваш прогресс по курсу составляет {current}%; Требуется {required}%.",
       "blocker_deadline": "Срок сертификации прошел.",
       "blocker_no_content": "В этом курсе нет уроков или упражнений, которые необходимо выполнить.",
-      "blocker_final_not_submitted": "Чтобы получить сертификат, отправьте необходимое упражнение «{exercisionTitle}».",
-      "blocker_final_pending": "Ваша попытка выполнения \"{exercisionTitle}\" все еще оценивается.",
-      "blocker_final_score": "Ваш лучший результат в «{exercisionTitle}» — {bestPercent}%; Требуется {requiredPercent}%.",
-      "blocker_final_misconfigured": "Для сертификационного упражнения «{exercisionTitle}» не настроены баллы; попросите инструктора это исправить.",
+      "blocker_final_not_submitted": "Чтобы получить сертификат, отправьте необходимое упражнение «{exerciseTitle}».",
+      "blocker_final_pending": "Ваша попытка выполнения \"{exerciseTitle}\" все еще оценивается.",
+      "blocker_final_score": "Ваш лучший результат в «{exerciseTitle}» — {bestPercent}%; Требуется {requiredPercent}%.",
+      "blocker_final_misconfigured": "Для сертификационного упражнения «{exerciseTitle}» не настроены баллы; попросите инструктора это исправить.",
       "email_message_label": "Сообщение электронной почты",
       "email_message_placeholder": "например Мы гордимся вашим прогрессом — продолжайте учиться!"
     },
@@ -2165,6 +2182,7 @@
           "topic": "Тема или ниша",
           "expertise_level": "Целевой уровень экспертизы",
           "documentation_url": {
+            "label": "URL документации (необязательно)",
             "hint": "Мы прочитаем этот сайт, чтобы закрепить курс на вашем реальном продукте."
           }
         },
@@ -2332,15 +2350,16 @@
     "compliance": "Соответствие",
     "compliance_score_subtitle": "{completed} из {total} курсов по обеспечению соответствия требованиям, пройденных на данный момент",
     "compliance_score_empty": "Курсы соответствия еще не назначены",
-    "compliance_met": "выполнено {завершено} из {total}",
+    "compliance_met": "выполнено {completed} из {total}",
     "required_courses_completed": "Пройдено {completed} из {total} обязательных курсов",
     "streak": "Полоса",
     "days_active": "дней активности",
-    "items_done": "{завершено} из {total} выполнено",
+    "items_done": "{completed} из {total} выполнено",
     "login_activity_title": "Активность входа учащихся",
     "login_activity_description": "Самые активные дни недели (последние 90 дней)",
     "login_activity_no_data": "Пока нет активности входа",
-    "login_activity_logins": "логины"
+    "login_activity_logins": "логины",
+    "open_academy": "Открытая Академия"
   },
   "schedule": {
     "title": "Ваше расписание",
@@ -2621,7 +2640,8 @@
     "actions": {
       "edit": "Редактировать",
       "where_used": "Где используется",
-      "download": "Скачать"
+      "download": "Скачать",
+      "manage_thumbnails": "Управление миниатюрами"
     },
     "table": {
       "title": "Название",
@@ -2678,7 +2698,22 @@
       "not_available": "Н/Д"
     },
     "empty_description": "Актив не существует или недоступен в этой организации.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library."
+    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "thumbnails": {
+      "manage_title": "Управление миниатюрами",
+      "manage_description": "Просмотрите видео, выберите один из автоматически созданных кадров или загрузите свой собственный.",
+      "preview_unavailable": "Предварительный просмотр недоступен",
+      "generated": "Созданные миниатюры",
+      "slot_start": "Старт",
+      "slot_middle": "Средний",
+      "slot_end": "Конец",
+      "none_generated_warning": "Миниатюры еще не созданы. Попробуйте восстановить или загрузить собственное изображение.",
+      "upload_custom": "Загрузить собственный значок",
+      "custom_selected_hint": "Пользовательская загрузка будет сохранена, когда вы сохраните свой выбор.",
+      "custom_preview_alt": "Пользовательский предварительный просмотр миниатюр",
+      "regenerate": "Регенерировать",
+      "save_selection": "Сохранить миниатюру"
+    }
   },
   "settings": {
     "heading": "Настройки",
@@ -2690,9 +2725,9 @@
       "open_billing": "Открыть биллинг",
       "error": "Произошла ошибка при открытии счета.",
       "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
-      "ai_credits": "Использование AI-помощника",
-      "ai_tokens_used": "жетоны, использованные в этом месяце",
-      "ai_bonus_credits": "доступны бонусные кредиты"
+      "ai_credits": "AI credits",
+      "ai_tokens_used": "AI credits использовано в этом месяце",
+      "ai_bonus_credits": "доступны bonus AI credits"
     },
     "integrations": {
       "heading": "Телеграмма",
@@ -3003,6 +3038,14 @@
           "saas": {
             "title": "SaaS",
             "description": "Пунктирная рамка, мягкие акценты, современный вид продукта"
+          },
+          "vibrant": {
+            "title": "Яркий",
+            "description": "Яркие основные панели, герой градиента заката, энергичный вид плаката"
+          },
+          "editorial": {
+            "title": "Редакционный",
+            "description": "Теплая кремовая палитра, живописный герой, изысканная журнальная атмосфера."
           }
         }
       },
@@ -3011,7 +3054,10 @@
         "description": "Создан с использованием основных функций, которые можно легко настроить — кодирование не требуется.",
         "by_classroomio": "от ClassroomIO",
         "add": "Добавить",
-        "upgrade": "Обновление"
+        "upgrade": "Обновление",
+        "apply_theme": "Применить тему",
+        "preview": "Предварительный просмотр",
+        "card_menu_label": "Опции темы"
       },
       "current": {
         "title": "Текущая тема",
@@ -3019,7 +3065,7 @@
         "field_theme": "Тема",
         "field_hero": "Главный заголовок",
         "field_nav": "Навигация",
-        "field_nav_count_one": "{количество} ссылки",
+        "field_nav_count_one": "{count} ссылки",
         "field_nav_count_other": "{count} ссылок",
         "hero_empty": "—",
         "customize": "Настройте целевую страницу"
@@ -3094,7 +3140,7 @@
       "customize_lms_tab": "Настроить систему управления обучением",
       "domains_tab": "Домены",
       "teams_tab": "Команды",
-      "ai_credits_tab": "Кредиты ИИ",
+      "ai_credits_tab": "AI Credits",
       "ai_tutor_tab": "Репетитор по искусственному интеллекту"
     },
     "subheadings": {
@@ -3228,42 +3274,42 @@
       "page_subtitle": "Invite teammates and control who helps run this organization."
     },
     "ai_credits": {
-      "sub_title": "кредиты ИИ",
-      "page_subtitle": "Отслеживайте использование ИИ-помощника, потребление командой и покупайте пакеты токенов.",
-      "cost_note": "Использование кредита взвешивается по стоимости модели. Gemini 2.5 Flash и GPT-5.4 Mini считаются за 1 кредитную единицу за токен. Claude Sonnet 4.6 считается 36× на токен, что отражает более высокую стоимость API.",
-      "buy_tokens": {
-        "title": "Купить больше жетонов",
-        "description": "Каждый пакет добавляет 5 000 000 кредитов за 5 долларов США. Выберите, сколько упаковок вам нужно.",
-        "quantity_hint": "пакеты",
-        "preview": "Пакет(ы) {quantity} · жетоны {tokens} · ${доллары}",
-        "buy_button": "Купить за ${долларов}"
+      "sub_title": "AI credits",
+      "page_subtitle": "Отслеживайте использование AI-ассистента, расход команды и покупайте пакеты AI credits.",
+      "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
+      "included": {
+        "title": "Включённое использование",
+        "subtitle": "Ежемесячные AI credits включены в ваш план.",
+        "resets_on": "Сброс {date}"
       },
-      "leaderboard": {
-        "title": "Использование команды",
-        "this_month": "Текущий месяц",
-        "user": "Пользователь",
-        "favorite_model": "Любимая модель",
-        "tokens": "Токены",
-        "empty": "Никто из вашей команды в этом месяце не пользовался ИИ-помощником."
+      "purchased": {
+        "title": "Купленное использование",
+        "subtitle": "Дополнительные AI credits переносятся до использования.",
+        "lifetime": "{tokens} credits куплено · ${dollars} потрачено",
+        "buy_more": "Купить ещё"
       },
       "chart": {
         "heading": "Использование",
-        "subheading": "Ежедневное потребление токенов в этом месяце.",
-        "tokens": "Токены",
-        "total_tokens": "Всего токенов",
+        "subheading": "Ежедневное потребление AI credits в этом месяце.",
+        "tokens": "Credits",
+        "total_tokens": "Total credits",
         "total_requests": "Всего запросов",
-        "empty": "В этом месяце использования еще не зафиксировано."
+        "empty": "В этом месяце использование пока не зафиксировано."
       },
-      "purchased": {
-        "title": "Приобретенное использование",
-        "subtitle": "Дополнительные жетоны, которые вы купили, переносятся до тех пор, пока не будут использованы.",
-        "lifetime": "Токенов: {tokens} куплено · потрачено ${dollars}",
-        "buy_more": "Купить больше"
+      "leaderboard": {
+        "title": "Использование командой",
+        "this_month": "Текущий месяц",
+        "user": "Пользователь",
+        "favorite_model": "Любимая model",
+        "tokens": "Credits",
+        "empty": "Никто в вашей команде не использовал AI-ассистента в этом месяце."
       },
-      "included": {
-        "title": "Ваше включенное использование",
-        "subtitle": "Ежемесячные токены включены в ваш план.",
-        "resets_on": "Сбрасывает {дата}"
+      "buy_tokens": {
+        "title": "Купить больше credits",
+        "description": "Каждый пакет добавляет 5,000,000 credits за $5 USD. Выберите, сколько пакетов вам нужно.",
+        "quantity_hint": "пакеты",
+        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
+        "buy_button": "Купить за ${dollars}"
       }
     }
   },
@@ -3693,7 +3739,7 @@
       "user_avatar_alt": "Аватар пользователя",
       "comments": {
         "comment": "комментарий",
-        "showing_of": "Показаны {показано} из {всего}",
+        "showing_of": "Показаны {shown} из {total}",
         "hide": "Скрыть комментарии",
         "placeholder": "Добавить комментарий к программе",
         "submit_aria": "Отправить комментарий",
@@ -3936,7 +3982,7 @@
     "rename_chat_placeholder": "Название беседы",
     "rename_chat_failed": "Не удалось переименовать этот чат. Попробуйте еще раз.",
     "error_rate_limit": "Служба AI временно занята. Пожалуйста, повторите попытку через минуту.",
-    "error_rate_limit_with_wait": "Служба AI временно занята. Повторите попытку через {секунды} сек.",
+    "error_rate_limit_with_wait": "Служба AI временно занята. Повторите попытку через {seconds} сек.",
     "error_context_too_long": "Разговор слишком длинный. Попробуйте начать новый чат или сократить сообщение.",
     "error_network": "Ошибка сети. Пожалуйста, проверьте подключение и повторите попытку.",
     "context_usage_tooltip": "{used} / {max} использовано токенов",
@@ -3952,6 +3998,61 @@
       "quiz_me": "спроси меня об этом",
       "summarize_section": "Подведите итоги этого раздела",
       "what_to_review": "Что мне следует проверить дальше?"
+    },
+    "run_running": "Генерация курса",
+    "run_completed": "Генерация курса завершена",
+    "run_failed": "Не удалось создать курс.",
+    "run_canceled": "Создание курса отменено.",
+    "run_waiting_for_worker": "Ожидание фонового работника",
+    "run_checkpoint": "Сохранение контрольной точки прогресса",
+    "retry": "Повторить попытку",
+    "run_monitor_aria": "Выполняется создание курса",
+    "run_summary": {
+      "completed": "Запуск завершен.",
+      "completed_with_counts": "Запуск завершен — создано {counts}.",
+      "failed": "Запуск не удался.",
+      "failed_with_reason": "Не удалось выполнить запуск — {reason}.",
+      "canceled": "Забег отменен.",
+      "canceled_with_counts": "Запуск отменен — перед остановкой создано {counts}.",
+      "paused": "Бег остановился. Возобновите, чтобы продолжить.",
+      "paused_with_counts": "Выполнение приостановлено — на данный момент создано {counts}. Возобновите, чтобы продолжить."
+    },
+    "changes_card": {
+      "summary_count": "Изменено элементов: {count}",
+      "expand": "Развернуть изменения",
+      "collapse": "Свернуть изменения",
+      "action": {
+        "created": "Создано",
+        "metadata_updated": "Метаданные обновлены.",
+        "content_written": "Содержание написано",
+        "questions_added": "+{count} вопросов",
+        "questions_updated": "Отредактировано {count} вопросов",
+        "section_added": "Блок добавлен",
+        "section_edited": "Блок изменен"
+      },
+      "status": {
+        "completed": "Завершено",
+        "failed": "Не удалось",
+        "canceled": "Отменено",
+        "paused": "Приостановлено"
+      }
+    },
+    "plan_view": {
+      "expand": "Развернуть план",
+      "collapse": "Свернуть план"
+    },
+    "run_monitor": {
+      "cancel": "Отменить запуск",
+      "dismiss": "Уволить",
+      "now_doing": "Сейчас",
+      "input_disabled_hint": "Чат приостановлен, пока агент завершает создание курса. Отмените или дождитесь завершения.",
+      "dismiss_confirm": "Уйти",
+      "dismiss_cancel": "Продолжайте бежать",
+      "dismiss_confirm_body": "Уйти с отмененного забега? Кнопка «Возобновить» исчезнет — любой дальнейший чат начнется заново и не будет продолжать выполнение плана.",
+      "stuck_queued": {
+        "title": "Работник не отвечает",
+        "body": "Этот запуск ожидает более 30 секунд, а работник не подъезжает. Фоновый рабочий процесс может быть отключен или перезапущен."
+      }
     }
   },
   "widgets": {
@@ -4181,7 +4282,7 @@
     "subtitle": "Отслеживайте статус сертификации по каждому курсу соответствия в вашей организации.",
     "learners": {
       "heading": "Учащиеся",
-      "subtitle": "{count, число} совпадение",
+      "subtitle": "{count, number} совпадение",
       "empty": "Ни один учащийся не соответствует этому фильтру",
       "learner": "Учащийся",
       "course": "Курс",
@@ -4232,7 +4333,7 @@
       "submit": "Проверьте мои ответы",
       "try_again": "Попробуйте еще раз",
       "practice_again": "Практикуйтесь снова",
-      "attempt_option": "Попытка {attemptNumber} – {правильно}/{всего}",
+      "attempt_option": "Попытка {attemptNumber} – {correct}/{total}",
       "attempts_select_aria": "Ваши попытки",
       "privacy_hint": "Оценивается мгновенно в вашем браузере — ничего не отправляется.",
       "summary_template": "Вы ответили [[правильно]] / [[всего]] правильно."
@@ -4389,6 +4490,28 @@
         "title": "Настройки AI Tutor",
         "description": "Значения по умолчанию для каждого курса в этой рабочей области. Курсы могут наследовать их или переопределять."
       }
+    }
+  },
+  "hls_upload": {
+    "rungs": {
+      "p360": "360p",
+      "p720": "720p",
+      "p1080": "1080p"
+    },
+    "error": {
+      "webcodecs_unsupported": "Ваш браузер не поддерживает аппаратное кодирование видео. Используйте последнюю версию Chrome, Edge или Safari.",
+      "encode_failed": "Кодирование не удалось. Попробуйте другой исходный файл или обновите и повторите попытку.",
+      "upload_failed": "Не удалось загрузить фрагмент видео. Проверьте соединение и повторите попытку.",
+      "finalize_failed": "Не удалось сохранить загруженное видео."
+    },
+    "stage": {
+      "probing": "Чтение видео…",
+      "encoding": "Кодирование {rung} ({percent}%)",
+      "uploading": "Загрузка сегментов ({uploaded}/{total})",
+      "thumbnail": "Создание миниатюры…",
+      "finalizing": "Сохранение…",
+      "done": "Готово",
+      "failed": "Загрузка не удалась"
     }
   }
 }

@@ -7,17 +7,17 @@
   },
   "validations": {
     "generic": {
-      "invalid_type": "Ugyldig type{forventet, vælg, udefineret{} anden{. Forventet {expected}}}{received, select, undefined{} other{ (received {received})}}",
-      "too_big": "Værdien er for stor{maksimum, vælg, udefineret{} andet{. Maksimum {maksimum}}}",
-      "too_small": "Værdien er for lille{minimum, vælg, udefineret{} andet{. Minimum {minimum}}}",
-      "invalid_format": "Ugyldigt format{validering, vælg, udefineret{} andet{ for {validation}}}",
+      "invalid_type": "Ugyldig type{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "too_big": "Værdien er for stor{maximum, select, undefined{} other{. Maximum {maximum}}}",
+      "too_small": "Værdien er for lille{minimum, select, undefined{} other{. Minimum {minimum}}}",
+      "invalid_format": "Ugyldigt format{validation, select, undefined{} other{ for {validation}}}",
       "not_multiple_of": "Værdien skal være et multiplum af {multipleOf}",
-      "unrecognized_keys": "Indeholder ikke-genkendte nøgler{nøgler, vælg, udefineret{} andet{: {nøgler}}}",
+      "unrecognized_keys": "Indeholder ikke-genkendte nøgler{keys, select, undefined{} other{: {keys}}}",
       "invalid_union": "Ugyldig værdi for angivne muligheder{unionErrors, select, undefined{} other{. {unionErrors} valgmulighed(er) mislykkedes}}",
-      "invalid_key": "Ugyldig nøgle{nøgle, vælg, udefineret{} anden{: {nøgle}}}",
-      "invalid_element": "Ugyldigt element{indeks, vælg, udefineret{} andet{ ved indeks {indeks}}}",
-      "invalid_value": "Ugyldig værdi{forventet, vælg, udefineret{} anden{. Forventet {expected}}}{received, select, undefined{} other{ (received {received})}}",
-      "custom": "{besked}",
+      "invalid_key": "Ugyldig nøgle{key, select, undefined{} other{: {key}}}",
+      "invalid_element": "Ugyldigt element{index, select, undefined{} other{ at index {index}}}",
+      "invalid_value": "Ugyldig værdi{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "custom": "{message}",
       "required_field": "Dette felt er påkrævet",
       "invalid_field": "Ugyldig værdi"
     },
@@ -118,7 +118,7 @@
     },
     "exercise": {
       "options": {
-        "custom": "{besked}"
+        "custom": "{message}"
       },
       "points": {
         "too_small": "Point skal være mindst 0"
@@ -346,7 +346,11 @@
       "transcription_started": "Transskription startede",
       "transcription_start_failed": "Kunne ikke starte transskription",
       "transcription_completed": "Transskription afsluttet",
-      "transcript_fetch_failed": "Kunne ikke indlæse transskription"
+      "transcript_fetch_failed": "Kunne ikke indlæse transskription",
+      "thumbnail_updated": "Miniaturebilledet er opdateret",
+      "thumbnail_update_failed": "Kunne ikke opdatere thumbnail",
+      "thumbnail_regen_started": "Regenererer thumbnails...",
+      "thumbnail_regen_failed": "Kunne ikke genskabe miniaturebilleder"
     },
     "tags": {
       "group_created": "Taggruppe oprettet",
@@ -397,8 +401,8 @@
       }
     },
     "ai_credits": {
-      "purchase_success": "Token-pakke føjet til din saldo.",
-      "checkout_failed": "Kunne ikke starte kassen. Prøv venligst igen."
+      "purchase_success": "AI credit pack tilføjet til din saldo.",
+      "checkout_failed": "Kunne ikke starte betaling. Prøv igen."
     },
     "public_course": {
       "url_copied": "Kursus-URL kopieret",
@@ -911,8 +915,17 @@
             "reviews": "Anmeldelser",
             "instructor": "Instruktør",
             "pricing": "Prissætning",
-            "certificate": "Certifikat"
-          }
+            "certificate": "Certifikat",
+            "curriculum": "Læreplan",
+            "chips": "Færdigheder og værktøjer",
+            "skills": "Færdigheder du får",
+            "tools": "Værktøjer du lærer"
+          },
+          "skills_help": "Tryk på Enter for at tilføje. Disse vises som chips under læseplanen.",
+          "tools_help": "Tryk på Enter for at tilføje. Disse vises som chips under læseplanen.",
+          "skills_placeholder": "f.eks. Dataanalyse",
+          "tools_placeholder": "f.eks. Figma",
+          "remove": "Fjern"
         }
       },
       "certificates": {
@@ -1105,7 +1118,7 @@
           "snackbar_failed_revoke_invite": "Invitationen kunne ikke tilbagekaldes",
           "snackbar_failed_load_audit": "Invitationsrevision kunne ikke indlæses",
           "snackbar_metadata_copied": "Invitationsmetadata er kopieret",
-          "snackbar_email_invites_success": "Oprettet {count} invitation(er). Sendt {sent}, mislykkedes {failed}. Sprang over {duplikater} dubletter.",
+          "snackbar_email_invites_success": "Oprettet {count} invitation(er). Sendt {sent}, mislykkedes {failed}. Sprang over {duplicates} dubletter.",
           "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "Engangs (24 timer)",
@@ -1375,7 +1388,9 @@
               },
               "select_type": "Vælg type",
               "question_type_auto_gradable": "Auto",
+              "question_type_auto_gradable_description": "Scored automatically by the system",
               "question_type_manual_grading": "Manual",
+              "question_type_manual_grading_description": "Requires human review to score",
               "premium_question_type": "Opgrader for at bruge denne spørgsmålstype"
             },
             "delete_confirmation": {
@@ -1435,7 +1450,7 @@
                   "helper": "Træk elementer for at definere den korrekte rækkefølge.",
                   "add_step": "Tilføj trin",
                   "empty": "Tilføj trin, og træk derefter for at indstille den forventede rækkefølge.",
-                  "step_placeholder": "Trin '{'indeks'}'",
+                  "step_placeholder": "Trin '{'index'}'",
                   "remove_step_tooltip": "Fjern trin"
                 }
               },
@@ -1453,11 +1468,11 @@
               "link": {
                 "preview": {
                   "empty": "Ingen links indsendt.",
-                  "item_label": "Link '{'indeks'}'"
+                  "item_label": "Link '{'index'}'"
                 },
                 "take": {
                   "helper": "Tilføj et eller flere links. Kun gyldige http/https URL'er accepteres.",
-                  "placeholder": "https://example.com/ressource-'{'indeks'}'",
+                  "placeholder": "https://example.com/ressource-'{'index'}'",
                   "remove_tooltip": "Fjern link",
                   "remove_sr": "Fjern link",
                   "invalid_url_error": "Indtast venligst en gyldig URL (http/https).",
@@ -1715,7 +1730,8 @@
               "submit": "Indsend øvelse",
               "collapse_section": "Skjul afsnit",
               "expand_section": "Udvid afsnit"
-            }
+            },
+            "more": "Handlinger"
           },
           "new_exercise_modal": {
             "heading": "Ny øvelse",
@@ -2059,7 +2075,8 @@
         "overview_metrics": {
           "heading": "Kursus øjebliksbillede",
           "description": "Eleven tæller efter status for dette kursus."
-        }
+        },
+        "empty_overview_description": "Hold dine medarbejdere kompatible og hold øje med, hvem der står bag."
       }
     },
     "search": {
@@ -2165,6 +2182,7 @@
           "topic": "Emne eller niche",
           "expertise_level": "Mål ekspertiseniveau",
           "documentation_url": {
+            "label": "Dokumentations-URL (valgfrit)",
             "hint": "Vi læser dette websted for at basere kurset på dit rigtige produkt."
           }
         },
@@ -2340,7 +2358,8 @@
     "login_activity_title": "Student login aktivitet",
     "login_activity_description": "Ugens mest aktive dage (sidste 90 dage)",
     "login_activity_no_data": "Ingen login-aktivitet endnu",
-    "login_activity_logins": "logins"
+    "login_activity_logins": "logins",
+    "open_academy": "Åbent Akademi"
   },
   "schedule": {
     "title": "Dit skema",
@@ -2621,7 +2640,8 @@
     "actions": {
       "edit": "Rediger",
       "where_used": "Hvor brugt",
-      "download": "Download"
+      "download": "Download",
+      "manage_thumbnails": "Administrer thumbnails"
     },
     "table": {
       "title": "Titel",
@@ -2678,7 +2698,22 @@
       "not_available": "N/A"
     },
     "empty_description": "Aktivet findes ikke eller er ikke tilgængeligt i denne organisation.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library."
+    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "thumbnails": {
+      "manage_title": "Administrer thumbnails",
+      "manage_description": "Se forhåndsvisning af videoen, vælg en af de automatisk genererede frames, eller upload din egen.",
+      "preview_unavailable": "Forhåndsvisning er ikke tilgængelig",
+      "generated": "Genererede thumbnails",
+      "slot_start": "Start",
+      "slot_middle": "Midten",
+      "slot_end": "Slut",
+      "none_generated_warning": "Der er endnu ikke genereret miniaturebilleder. Prøv at genskabe eller uploade et brugerdefineret billede.",
+      "upload_custom": "Upload tilpasset miniaturebillede",
+      "custom_selected_hint": "Tilpasset upload vil blive gemt, når du gemmer dit valg.",
+      "custom_preview_alt": "Forhåndsvisning af tilpasset miniaturebillede",
+      "regenerate": "Regenerer",
+      "save_selection": "Gem thumbnail"
+    }
   },
   "settings": {
     "heading": "Indstillinger",
@@ -2690,9 +2725,9 @@
       "open_billing": "Åben fakturering",
       "error": "Der opstod en fejl under åbning af fakturering",
       "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
-      "ai_credits": "Brug af AI-assistent",
-      "ai_tokens_used": "tokens brugt denne måned",
-      "ai_bonus_credits": "tilgængelige bonuskreditter"
+      "ai_credits": "AI credits",
+      "ai_tokens_used": "AI credits brugt denne måned",
+      "ai_bonus_credits": "bonus AI credits tilgængelige"
     },
     "integrations": {
       "heading": "Telegram",
@@ -3003,6 +3038,14 @@
           "saas": {
             "title": "SaaS",
             "description": "Stiplet ramme, bløde accenter, moderne produktfølelse"
+          },
+          "vibrant": {
+            "title": "Levende",
+            "description": "Fed primære paneler, solnedgangsgradienthelt, energisk plakatlook"
+          },
+          "editorial": {
+            "title": "Redaktionel",
+            "description": "Varm cremepalette, malerisk helt, raffineret magasinfølelse"
           }
         }
       },
@@ -3011,7 +3054,10 @@
         "description": "Lavet med kernefunktioner, du nemt kan tilpasse - ingen kodning nødvendig.",
         "by_classroomio": "af ClassroomIO",
         "add": "Tilføj",
-        "upgrade": "Opgrader"
+        "upgrade": "Opgrader",
+        "apply_theme": "Anvend tema",
+        "preview": "Forhåndsvisning",
+        "card_menu_label": "Temamuligheder"
       },
       "current": {
         "title": "Aktuelt tema",
@@ -3228,42 +3274,42 @@
       "page_subtitle": "Invite teammates and control who helps run this organization."
     },
     "ai_credits": {
-      "sub_title": "AI-kreditter",
-      "page_subtitle": "Spor brug af AI-assistent, teamforbrug og køb af tokenpakker.",
-      "cost_note": "Kreditforbrug vægtes efter modelomkostninger. Gemini 2.5 Flash og GPT-5.4 Mini tæller som 1 kreditenhed pr. token. Claude Sonnet 4.6 tæller som 36× pr. token, hvilket afspejler dens højere API-omkostninger.",
-      "buy_tokens": {
-        "title": "Køb flere tokens",
-        "description": "Hver pakke tilføjer 5.000.000 kreditter for $5 USD. Vælg, hvor mange pakker du har brug for.",
-        "quantity_hint": "pakker",
-        "preview": "{quantity} pakke(r) · {tokens} tokens · ${dollars}",
-        "buy_button": "Køb for ${dollars}"
+      "sub_title": "AI credits",
+      "page_subtitle": "Spor brug af AI-assistent, teamforbrug og køb af AI credit packs.",
+      "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
+      "included": {
+        "title": "Dit inkluderede forbrug",
+        "subtitle": "Månedlige AI credits inkluderet i din plan.",
+        "resets_on": "Nulstiller {date}"
+      },
+      "purchased": {
+        "title": "Købt forbrug",
+        "subtitle": "Ekstra AI credits, du har købt, overføres, indtil de er brugt.",
+        "lifetime": "{tokens} credits købt · ${dollars} brugt",
+        "buy_more": "Køb mere"
+      },
+      "chart": {
+        "heading": "Brug",
+        "subheading": "Dagligt AI credits-forbrug denne måned.",
+        "tokens": "Credits",
+        "total_tokens": "Total credits",
+        "total_requests": "Samlet antal anmodninger",
+        "empty": "Der er ikke registreret noget forbrug i denne måned endnu."
       },
       "leaderboard": {
         "title": "Teambrug",
         "this_month": "Nuværende måned",
         "user": "Bruger",
         "favorite_model": "Yndlingsmodel",
-        "tokens": "Poletter",
+        "tokens": "Credits",
         "empty": "Ingen på dit hold har brugt AI-assistenten denne måned."
       },
-      "chart": {
-        "heading": "Brug",
-        "subheading": "Dagligt tokenforbrug denne måned.",
-        "tokens": "Poletter",
-        "total_tokens": "Samlede tokens",
-        "total_requests": "Samlet antal anmodninger",
-        "empty": "Der er ikke registreret noget forbrug i denne måned endnu."
-      },
-      "purchased": {
-        "title": "Købt brug",
-        "subtitle": "Ekstra poletter, du har købt, ruller over, indtil de bliver brugt.",
-        "lifetime": "{tokens} tokens købt · ${dollars} brugt",
-        "buy_more": "Køb mere"
-      },
-      "included": {
-        "title": "Dit inkluderede forbrug",
-        "subtitle": "Månedlige tokens inkluderet i din plan.",
-        "resets_on": "Nulstiller {dato}"
+      "buy_tokens": {
+        "title": "Køb flere credits",
+        "description": "Hver pakke tilføjer 5,000,000 credits for $5 USD. Vælg, hvor mange pakker du har brug for.",
+        "quantity_hint": "pakker",
+        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
+        "buy_button": "Køb for ${dollars}"
       }
     }
   },
@@ -3952,6 +3998,61 @@
       "quiz_me": "Quiz mig om dette",
       "summarize_section": "Opsummer dette afsnit",
       "what_to_review": "Hvad skal jeg gennemgå næste gang?"
+    },
+    "run_running": "Genererende kursus",
+    "run_completed": "Kursusgenerering afsluttet",
+    "run_failed": "Kursusgenerering mislykkedes",
+    "run_canceled": "Kursusgenerering aflyst",
+    "run_waiting_for_worker": "Venter på baggrundsarbejderen",
+    "run_checkpoint": "Gemmer fremskridtskontrolpunkt",
+    "retry": "Prøv igen",
+    "run_monitor_aria": "Kursusgenerering i gang",
+    "run_summary": {
+      "completed": "Kørsel afsluttet.",
+      "completed_with_counts": "Kørsel afsluttet — oprettet {counts}.",
+      "failed": "Kørsel mislykkedes.",
+      "failed_with_reason": "Kørsel mislykkedes — {reason}.",
+      "canceled": "Kørsel annulleret.",
+      "canceled_with_counts": "Kørsel annulleret — oprettet {counts} før stop.",
+      "paused": "Løb sat på pause. Genoptag for at fortsætte.",
+      "paused_with_counts": "Kør på pause – oprettet {counts} indtil videre. Genoptag for at fortsætte."
+    },
+    "changes_card": {
+      "summary_count": "{count} elementer blev ændret",
+      "expand": "Udvid ændringer",
+      "collapse": "Skjul ændringer",
+      "action": {
+        "created": "Oprettet",
+        "metadata_updated": "Metadata opdateret",
+        "content_written": "Indhold skrevet",
+        "questions_added": "+{count} spørgsmål",
+        "questions_updated": "{count} spørgsmål redigeret",
+        "section_added": "Blok tilføjet",
+        "section_edited": "Blok redigeret"
+      },
+      "status": {
+        "completed": "Afsluttet",
+        "failed": "Mislykkedes",
+        "canceled": "Annulleret",
+        "paused": "Pause"
+      }
+    },
+    "plan_view": {
+      "expand": "Udvid planen",
+      "collapse": "Kollaps plan"
+    },
+    "run_monitor": {
+      "cancel": "Annuller kørsel",
+      "dismiss": "Afvis",
+      "now_doing": "Nu",
+      "input_disabled_hint": "Chatten er sat på pause, mens agenten er færdig med at bygge kurset. Annuller eller vent på, at det er fuldført.",
+      "dismiss_confirm": "Gå væk",
+      "dismiss_cancel": "Fortsæt løb",
+      "dismiss_confirm_body": "Vil du gå væk fra dette aflyste løb? Genoptag-knappen forsvinder - enhver yderligere chat starter på en frisk og fortsætter ikke planen.",
+      "stuck_queued": {
+        "title": "Arbejder reagerer ikke",
+        "body": "Denne kørsel har ventet i mere end 30 sekunder uden nogen afhentning af arbejderen. Baggrundsarbejderen er muligvis nede eller genstarter."
+      }
     }
   },
   "widgets": {
@@ -4232,7 +4333,7 @@
       "submit": "Tjek mine svar",
       "try_again": "Prøv igen",
       "practice_again": "Øv igen",
-      "attempt_option": "Forsøg {attemptNumber} - {korrekt}/{total}",
+      "attempt_option": "Forsøg {attemptNumber} - {correct}/{total}",
       "attempts_select_aria": "Dine forsøg",
       "privacy_hint": "Bedømmes øjeblikkeligt i din browser - intet indsendes.",
       "summary_template": "Du fik [[korrekt]] / [[total]] korrekt."
@@ -4389,6 +4490,28 @@
         "title": "AI Tutor-indstillinger",
         "description": "Standarder for hvert kursus i dette arbejdsområde. Kurser kan arve disse eller tilsidesætte dem."
       }
+    }
+  },
+  "hls_upload": {
+    "rungs": {
+      "p360": "360p",
+      "p720": "720p",
+      "p1080": "1080p"
+    },
+    "error": {
+      "webcodecs_unsupported": "Din browser understøtter ikke hardware-videokodning. Brug en nyere version af Chrome, Edge eller Safari.",
+      "encode_failed": "Kodning mislykkedes. Prøv en anden kildefil, eller opdater, og prøv igen.",
+      "upload_failed": "Kunne ikke uploade et videosegment. Tjek din forbindelse og prøv igen.",
+      "finalize_failed": "Kunne ikke gemme den uploadede video."
+    },
+    "stage": {
+      "probing": "Læser video...",
+      "encoding": "Kodning {rung} ({percent}%)",
+      "uploading": "Uploader segmenter ({uploaded}/{total})",
+      "thumbnail": "Genererer thumbnail...",
+      "finalizing": "Gemmer...",
+      "done": "Klar",
+      "failed": "Upload mislykkedes"
     }
   }
 }

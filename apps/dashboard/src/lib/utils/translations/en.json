@@ -633,6 +633,14 @@
           "terminal": {
             "title": "Terminal",
             "description": "Dark surface, ghosted wordmark, CLI-inspired catalog"
+          },
+          "editorial": {
+            "title": "Editorial",
+            "description": "Warm cream palette, painterly hero, refined magazine feel"
+          },
+          "vibrant": {
+            "title": "Vibrant",
+            "description": "Bold primary panels, sunset gradient hero, energetic poster look"
           }
         }
       },
@@ -657,7 +665,10 @@
         "description": "Made with core features you can easily customize — no coding needed.",
         "by_classroomio": "by ClassroomIO",
         "add": "Add",
-        "upgrade": "Upgrade"
+        "upgrade": "Upgrade",
+        "apply_theme": "Apply Theme",
+        "preview": "Preview",
+        "card_menu_label": "Theme options"
       },
       "editor": {
         "save": "Save",
@@ -934,24 +945,24 @@
     },
     "ai_credits": {
       "sub_title": "AI credits",
-      "page_subtitle": "Track AI assistant usage, team consumption, and purchase token packs.",
+      "page_subtitle": "Track AI assistant usage, team consumption, and purchase AI credit packs.",
       "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
       "included": {
         "title": "Your included usage",
-        "subtitle": "Monthly tokens included with your plan.",
+        "subtitle": "Monthly AI credits included with your plan.",
         "resets_on": "Resets {date}"
       },
       "purchased": {
         "title": "Purchased usage",
-        "subtitle": "Extra tokens you bought roll over until used.",
-        "lifetime": "{tokens} tokens purchased · ${dollars} spent",
+        "subtitle": "Extra AI credits you bought roll over until used.",
+        "lifetime": "{tokens} credits purchased · ${dollars} spent",
         "buy_more": "Buy more"
       },
       "chart": {
         "heading": "Usage",
-        "subheading": "Daily token consumption this month.",
-        "tokens": "Tokens",
-        "total_tokens": "Total tokens",
+        "subheading": "Daily AI credits consumption this month.",
+        "tokens": "Credits",
+        "total_tokens": "Total credits",
         "total_requests": "Total requests",
         "empty": "No usage recorded this month yet."
       },
@@ -960,16 +971,38 @@
         "this_month": "Current month",
         "user": "User",
         "favorite_model": "Favorite model",
-        "tokens": "Tokens",
+        "tokens": "Credits",
         "empty": "Nobody on your team has used the AI assistant this month."
       },
       "buy_tokens": {
-        "title": "Buy more tokens",
+        "title": "Buy more credits",
         "description": "Each pack adds 5,000,000 credits for $5 USD. Choose how many packs you need.",
         "quantity_hint": "packs",
-        "preview": "{quantity} pack(s) · {tokens} tokens · ${dollars}",
+        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
         "buy_button": "Buy for ${dollars}"
       }
+    }
+  },
+  "hls_upload": {
+    "stage": {
+      "probing": "Reading video…",
+      "encoding": "Encoding {rung} ({percent}%)",
+      "uploading": "Uploading segments ({uploaded}/{total})",
+      "thumbnail": "Generating thumbnail…",
+      "finalizing": "Saving…",
+      "done": "Ready",
+      "failed": "Upload failed"
+    },
+    "error": {
+      "webcodecs_unsupported": "Your browser does not support hardware video encoding. Use a recent version of Chrome, Edge, or Safari.",
+      "encode_failed": "Encoding failed. Try a different source file or refresh and try again.",
+      "upload_failed": "Failed to upload a video segment. Check your connection and retry.",
+      "finalize_failed": "Failed to save the uploaded video."
+    },
+    "rungs": {
+      "p360": "360p",
+      "p720": "720p",
+      "p1080": "1080p"
     }
   },
   "media_manager": {
@@ -1035,7 +1068,8 @@
     "actions": {
       "edit": "Edit",
       "where_used": "Where used",
-      "download": "Download"
+      "download": "Download",
+      "manage_thumbnails": "Manage thumbnails"
     },
     "pagination": {
       "previous": "Previous",
@@ -1060,6 +1094,21 @@
       "thumbnail_preview": "Thumbnail Preview",
       "thumbnail_alt": "Asset thumbnail",
       "status": "Status"
+    },
+    "thumbnails": {
+      "manage_title": "Manage thumbnails",
+      "manage_description": "Preview the video, pick one of the auto-generated frames, or upload your own.",
+      "preview_unavailable": "Preview unavailable",
+      "generated": "Generated thumbnails",
+      "slot_start": "Start",
+      "slot_middle": "Middle",
+      "slot_end": "End",
+      "none_generated_warning": "No thumbnails generated yet. Try regenerating or upload a custom image.",
+      "upload_custom": "Upload custom thumbnail",
+      "custom_selected_hint": "Custom upload will be saved when you save your selection.",
+      "custom_preview_alt": "Custom thumbnail preview",
+      "regenerate": "Regenerate",
+      "save_selection": "Save thumbnail"
     },
     "usage": {
       "title": "Where Used",
@@ -1597,6 +1646,7 @@
     "create_course": "Create Course",
     "view_site": "View Site",
     "visit_site": "Visit Website",
+    "open_academy": "Open Academy",
     "current_lesson": "Currently Learning",
     "currently_learning": "Currently Learning",
     "learner": "Learner",
@@ -2003,8 +2053,10 @@
           "depth": "How deep should the course go?",
           "topic": "Topic or niche",
           "expertise_level": "Target expertise level",
-          "documentation_url": "Documentation URL (optional)",
-          "documentation_url.hint": "We'll read this site to ground the course in your real product."
+          "documentation_url": {
+            "label": "Documentation URL (optional)",
+            "hint": "We'll read this site to ground the course in your real product."
+          }
         }
       }
     },
@@ -2394,7 +2446,8 @@
             "save": "Save",
             "preview": "Preview",
             "add": "Add",
-            "add_question": "Add a question",
+            "more": "Actions",
+            "add_question": "Add question",
             "add_section": "Add section",
             "reorder": "Reorder Questions",
             "reorder_done": "Done reordering",
@@ -2462,7 +2515,9 @@
               "yes": "Yes, delete",
               "select_type": "Select type",
               "question_type_auto_gradable": "Auto",
+              "question_type_auto_gradable_description": "Scored automatically by the system",
               "question_type_manual_grading": "Manual",
+              "question_type_manual_grading_description": "Requires human review to score",
               "premium_question_type": "Upgrade to use this question type",
               "deleting": "Deleting...",
               "error": "You have some errors",
@@ -2957,6 +3012,7 @@
         "no_active_cycle": "No active compliance cycle",
         "empty_history": "No compliance history has been recorded yet.",
         "empty_overview": "No learner compliance records are available yet.",
+        "empty_overview_description": "Keep your employees compliant and track who is behind.",
         "not_available": "Not available",
         "tabs": {
           "overview": "Overview",
@@ -3232,8 +3288,17 @@
             "reviews": "Reviews",
             "instructor": "Instructor",
             "pricing": "Pricing",
-            "certificate": "Certificate"
+            "certificate": "Certificate",
+            "curriculum": "Curriculum",
+            "chips": "Skills & Tools",
+            "skills": "Skills you'll gain",
+            "tools": "Tools you'll learn"
           },
+          "skills_help": "Press Enter to add. These appear as chips below the curriculum.",
+          "tools_help": "Press Enter to add. These appear as chips below the curriculum.",
+          "skills_placeholder": "e.g. Data Analysis",
+          "tools_placeholder": "e.g. Figma",
+          "remove": "Remove",
           "save": "Save",
           "page_builder": "Page Builder",
           "section": "section",
@@ -3834,7 +3899,7 @@
       "deactivated": "Token auth disabled."
     },
     "ai_credits": {
-      "purchase_success": "Token pack added to your balance.",
+      "purchase_success": "AI credit pack added to your balance.",
       "checkout_failed": "Could not start checkout. Please try again."
     },
     "account": {
@@ -3868,6 +3933,10 @@
       "thumbnail_upload_failed": "Failed to upload thumbnail",
       "thumbnail_too_large": "Thumbnail image is too large",
       "thumbnail_invalid": "Invalid thumbnail file",
+      "thumbnail_updated": "Thumbnail updated",
+      "thumbnail_update_failed": "Failed to update thumbnail",
+      "thumbnail_regen_started": "Regenerating thumbnails…",
+      "thumbnail_regen_failed": "Failed to regenerate thumbnails",
       "transcription_started": "Transcription started",
       "transcription_start_failed": "Could not start transcription",
       "transcription_completed": "Transcription finished",
@@ -4266,6 +4335,12 @@
     "plan_working": "Working",
     "plan_thinking": "Thinking through your request…",
     "plan_progress": "{completed} / {total} steps completed",
+    "run_running": "Generating course",
+    "run_completed": "Course generation complete",
+    "run_failed": "Course generation failed",
+    "run_canceled": "Course generation canceled",
+    "run_waiting_for_worker": "Waiting for the background worker",
+    "run_checkpoint": "Saving progress checkpoint",
     "plan_implement": "Implement Plan",
     "plan_ask_changes_placeholder": "Tell me what to change about the plan…",
     "plan_ask_changes_send_aria": "Send change request",
@@ -4291,6 +4366,55 @@
     "tokens_label": "tokens",
     "implementing_course_plan": "Implementing Course Plan",
     "resume": "Resume",
+    "retry": "Retry",
+    "run_monitor_aria": "Course generation in progress",
+    "run_monitor": {
+      "cancel": "Cancel run",
+      "dismiss": "Dismiss",
+      "dismiss_confirm": "Walk away",
+      "dismiss_cancel": "Keep run",
+      "dismiss_confirm_body": "Walk away from this canceled run? The Resume button will be gone — any further chat will start fresh and won't continue the plan.",
+      "now_doing": "Now",
+      "input_disabled_hint": "Chat is paused while the agent finishes building the course. Cancel or wait for it to complete.",
+      "stuck_queued": {
+        "title": "Worker not responding",
+        "body": "This run has been waiting more than 30 seconds with no worker pickup. The background worker may be down or restarting."
+      }
+    },
+    "plan_view": {
+      "expand": "Expand plan",
+      "collapse": "Collapse plan"
+    },
+    "changes_card": {
+      "summary_count": "{count} items changed",
+      "expand": "Expand changes",
+      "collapse": "Collapse changes",
+      "status": {
+        "completed": "Completed",
+        "failed": "Failed",
+        "canceled": "Canceled",
+        "paused": "Paused"
+      },
+      "action": {
+        "created": "Created",
+        "metadata_updated": "Metadata updated",
+        "content_written": "Content written",
+        "questions_added": "+{count} questions",
+        "questions_updated": "{count} questions edited",
+        "section_added": "Block added",
+        "section_edited": "Block edited"
+      }
+    },
+    "run_summary": {
+      "completed": "Run completed.",
+      "completed_with_counts": "Run completed — created {counts}.",
+      "failed": "Run failed.",
+      "failed_with_reason": "Run failed — {reason}.",
+      "canceled": "Run canceled.",
+      "canceled_with_counts": "Run canceled — created {counts} before stopping.",
+      "paused": "Run paused. Resume to continue.",
+      "paused_with_counts": "Run paused — created {counts} so far. Resume to continue."
+    },
     "stopped_content_kept": "Stopped. Created content has been kept.",
     "run_failed_after": "{action} did not finish successfully.",
     "tool": {

@@ -49,7 +49,6 @@ export const app = new Hono()
 
     return sessionCors(c, next);
   })
-  .use('*', rateLimiter)
   .use('*', async (c, next) => {
     if (isPublicCorsPath(c.req.path)) {
       c.set('user', null);
@@ -88,6 +87,7 @@ export const app = new Hono()
 
     await next();
   })
+  .use('*', rateLimiter)
 
   // Routes
   .get('/', (c) =>

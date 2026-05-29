@@ -7,17 +7,17 @@
   },
   "validations": {
     "generic": {
-      "invalid_type": "अमान्य प्रकार{अपेक्षित, चयन, अपरिभाषित{} अन्य{। अपेक्षित {अपेक्षित}} {प्राप्त, चयन, अपरिभाषित {} अन्य { (प्राप्त {प्राप्त})}}",
-      "too_big": "मान बहुत बड़ा है {अधिकतम, चयन करें, अपरिभाषित {} अन्य {। अधिकतम {अधिकतम}}}",
-      "too_small": "मान बहुत छोटा है {न्यूनतम, चयन करें, अपरिभाषित {} अन्य {। न्यूनतम {न्यूनतम}}}",
-      "invalid_format": "अमान्य प्रारूप{सत्यापन, चयन, अपरिभाषित{} अन्य{ {सत्यापन}}} के लिए",
+      "invalid_type": "अमान्य प्रकार{expected, select, undefined{} other{। अपेक्षित {expected}}}{received, select, undefined{} other{ (प्राप्त {received})}}",
+      "too_big": "मान बहुत बड़ा है {maximum, select, undefined{} other{. Maximum {maximum}}}",
+      "too_small": "मान बहुत छोटा है {minimum, select, undefined{} other{. Minimum {minimum}}}",
+      "invalid_format": "अमान्य प्रारूप{validation, select, undefined{} other{ {validation} के लिए}}",
       "not_multiple_of": "मान {multipleOf} का गुणज होना चाहिए",
-      "unrecognized_keys": "अज्ञात कुंजियाँ शामिल हैं {कुंजियाँ, चयन करें, अपरिभाषित{} अन्य{: {कुंजियाँ}}}",
-      "invalid_union": "प्रदत्त विकल्पों के लिए अमान्य मान {संघत्रुटि, चयन, अपरिभाषित{} अन्य{। {unionErrors} विकल्प विफल रहे}}",
-      "invalid_key": "अमान्य कुंजी{कुंजी, चयन, अपरिभाषित{} अन्य{: {कुंजी}}}",
-      "invalid_element": "अमान्य तत्व {सूचकांक, चयन, अपरिभाषित {} अन्य {सूचकांक {सूचकांक}}} पर",
-      "invalid_value": "अमान्य मान{अपेक्षित, चयन, अपरिभाषित{} अन्य{। अपेक्षित {अपेक्षित}} {प्राप्त, चयन, अपरिभाषित {} अन्य { (प्राप्त {प्राप्त})}}",
-      "custom": "{संदेश}",
+      "unrecognized_keys": "अज्ञात कुंजियाँ शामिल हैं {keys, select, undefined{} other{: {keys}}}",
+      "invalid_union": "प्रदत्त विकल्पों के लिए अमान्य मान {unionErrors, select, undefined{} other{. {unionErrors} option(s) failed}}",
+      "invalid_key": "अमान्य कुंजी{key, select, undefined{} other{: {key}}}",
+      "invalid_element": "अमान्य तत्व{index, select, undefined{} other{ {index} पर}}",
+      "invalid_value": "अमान्य मान{expected, select, undefined{} other{। अपेक्षित {expected}}}{received, select, undefined{} other{ (प्राप्त {received})}}",
+      "custom": "{message}",
       "required_field": "यह फ़ील्ड आवश्यक है",
       "invalid_field": "अमान्य मान"
     },
@@ -118,7 +118,7 @@
     },
     "exercise": {
       "options": {
-        "custom": "{संदेश}"
+        "custom": "{message}"
       },
       "points": {
         "too_small": "अंक कम से कम 0 होने चाहिए"
@@ -346,7 +346,11 @@
       "transcription_started": "प्रतिलेखन प्रारंभ हुआ",
       "transcription_start_failed": "प्रतिलेखन प्रारंभ नहीं किया जा सका",
       "transcription_completed": "प्रतिलेखन समाप्त हुआ",
-      "transcript_fetch_failed": "प्रतिलेख लोड नहीं किया जा सका"
+      "transcript_fetch_failed": "प्रतिलेख लोड नहीं किया जा सका",
+      "thumbnail_updated": "थंबनेल अपडेट किया गया",
+      "thumbnail_update_failed": "थंबनेल अपडेट करने में विफल",
+      "thumbnail_regen_started": "थंबनेल पुनर्जीवित हो रहे हैं…",
+      "thumbnail_regen_failed": "थंबनेल पुन: उत्पन्न करने में विफल"
     },
     "tags": {
       "group_created": "टैग समूह बनाया गया",
@@ -397,8 +401,8 @@
       }
     },
     "ai_credits": {
-      "purchase_success": "टोकन पैक आपके बैलेंस में जोड़ा गया।",
-      "checkout_failed": "चेकआउट प्रारंभ नहीं किया जा सका. कृपया पुन: प्रयास करें।"
+      "purchase_success": "AI credit pack आपके balance में जोड़ा गया।",
+      "checkout_failed": "Checkout शुरू नहीं हो सका। कृपया पुनः प्रयास करें।"
     },
     "public_course": {
       "url_copied": "कोर्स URL कॉपी हो गया",
@@ -466,7 +470,7 @@
     "title": "विश्लेषिकी",
     "courses": "पाठ्यक्रम",
     "progress": "प्रगति",
-    "progress_description": "{कुल, संख्या} का {मूल्य, संख्या} पूर्ण",
+    "progress_description": "{value, number} का {total, number} पूर्ण",
     "incomplete": "अधूरा",
     "completed": "पूरा हुआ",
     "complete": "पूर्ण",
@@ -499,7 +503,7 @@
     "view_details": "विवरण देखें",
     "no_students_found": "कोई छात्र नहीं मिला",
     "no_students_description": "इस पाठ्यक्रम में अभी तक कोई भी छात्र नामांकित नहीं है। पाठ्यक्रम में शामिल होने के बाद छात्र यहां उपस्थित होंगे।",
-    "showing_students": "{कुल} छात्रों को {प्रारंभ} से {अंत} तक दिखाया जा रहा है",
+    "showing_students": "{start} छात्रों को {end} से {total} तक दिखाया जा रहा है",
     "no_analytics_data": "कोई एनालिटिक्स डेटा नहीं",
     "no_analytics_description": "इस पाठ्यक्रम के लिए विश्लेषणात्मक डेटा लोड करने में असमर्थ. कृपया बाद में पुनः प्रयास करें या यदि समस्या बनी रहती है तो सहायता से संपर्क करें।",
     "student": "छात्र",
@@ -525,9 +529,9 @@
     "popularTypes": {
       "heading": "लोकप्रिय पाठ्यक्रम प्रकार",
       "description": "नामांकन पाठ्यक्रम प्रकार के आधार पर समूहीकृत किए गए",
-      "subtitle": "सभी प्रकार के लिए {कुल} नामांकन",
+      "subtitle": "सभी प्रकार के लिए {total} नामांकन",
       "empty": "अभी तक कोई नामांकन डेटा नहीं है",
-      "course_count": "{गिनती, बहुवचन, एक {# पाठ्यक्रम} अन्य {# पाठ्यक्रम}}",
+      "course_count": "{count, plural, one {# course} other {# courses}}",
       "views_short": "विचार",
       "types": {
         "SELF_PACED": "स्वयं गतिमान",
@@ -538,7 +542,7 @@
     },
     "countries": {
       "heading": "शीर्ष देश",
-      "subtitle": "कुल {कुल} विज़िटर",
+      "subtitle": "कुल {total} विज़िटर",
       "empty": "अभी तक कोई स्थान डेटा नहीं",
       "country": "देश",
       "visitors": "आगंतुक",
@@ -585,9 +589,9 @@
       "progress_distribution_card_description": "प्रत्येक समापन बैंड में कितने शिक्षार्थी आते हैं।",
       "grade_distribution_card_description": "प्रत्येक ग्रेड बैंड में कितने शिक्षार्थी आते हैं।",
       "students_table_description": "शिक्षार्थी प्रोफाइल के लिंक के साथ क्रमबद्ध अवलोकन।",
-      "kpi_team_tutors": "{गिनती, बहुवचन, एक {# पाठ्यक्रम टीम पर शिक्षक} अन्य {# पाठ्यक्रम टीम पर शिक्षक}}",
-      "kpi_lessons_exercises": "{गिनती, बहुवचन, एक {# व्यायाम} अन्य {# अभ्यास}} पाठों के अनुसार मैप किया गया",
-      "kpi_progress_grade": "नामांकित शिक्षार्थियों में {ग्रेड}% औसत व्यायाम ग्रेड"
+      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
+      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} पाठों के अनुसार मैप किया गया",
+      "kpi_progress_grade": "नामांकित शिक्षार्थियों में {grade}% औसत व्यायाम ग्रेड"
     }
   },
   "audience": {
@@ -607,7 +611,7 @@
     "status_expired": "समाप्त हो गया",
     "status_revoked": "निरस्त किया गया",
     "select_all": "सभी का चयन करें",
-    "selected_count": "{गिनती} चयनित",
+    "selected_count": "{count} चयनित",
     "assign_courses": "पाठ्यक्रमों को असाइन करें",
     "invite": {
       "row_actions_aria": "खुली कार्रवाइयां",
@@ -911,8 +915,17 @@
             "reviews": "समीक्षाएँ",
             "instructor": "प्रशिक्षक",
             "pricing": "मूल्य निर्धारण",
-            "certificate": "प्रमाणपत्र"
-          }
+            "certificate": "प्रमाणपत्र",
+            "curriculum": "पाठ्यचर्या",
+            "chips": "कौशल एवं उपकरण",
+            "skills": "कौशल आप हासिल करेंगे",
+            "tools": "उपकरण आप सीखेंगे"
+          },
+          "skills_help": "जोड़ने के लिए Enter दबाएँ. ये पाठ्यक्रम के नीचे चिप्स के रूप में दिखाई देते हैं।",
+          "tools_help": "जोड़ने के लिए Enter दबाएँ. ये पाठ्यक्रम के नीचे चिप्स के रूप में दिखाई देते हैं।",
+          "skills_placeholder": "जैसे डेटा विश्लेषण",
+          "tools_placeholder": "जैसे फिग्मा",
+          "remove": "हटाओ"
         }
       },
       "certificates": {
@@ -1105,7 +1118,7 @@
           "snackbar_failed_revoke_invite": "आमंत्रण रद्द करने में विफल",
           "snackbar_failed_load_audit": "आमंत्रण ऑडिट लोड करने में विफल",
           "snackbar_metadata_copied": "आमंत्रण मेटाडेटा कॉपी किया गया",
-          "snackbar_email_invites_success": "{गिनती} आमंत्रण बनाया गया। भेजा गया {भेजा गया}, असफल हुआ {असफल}। {डुप्लिकेट} डुप्लिकेट को छोड़ दिया गया।",
+          "snackbar_email_invites_success": "{count} आमंत्रण बनाया गया। भेजा गया {sent}, असफल हुआ {failed}। {duplicates} डुप्लिकेट को छोड़ दिया गया।",
           "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "एक बार (24 घंटे)",
@@ -1338,7 +1351,7 @@
               "checking_submission": "आपके सबमिशन की जाँच की जा रही है...",
               "answer_required": "कृपया आगे बढ़ने से पहले इस प्रश्न का उत्तर दें।",
               "instructor_feedback": "प्रशिक्षक प्रतिक्रिया",
-              "attempt_counter": "{कुल} का {वर्तमान} प्रयास करें",
+              "attempt_counter": "{current} का {total} प्रयास करें",
               "previous_try": "पिछला प्रयास",
               "next_try": "अगला प्रयास",
               "try_again": "पुनः प्रयास करें",
@@ -1375,7 +1388,9 @@
               },
               "select_type": "प्रकार चुनें",
               "question_type_auto_gradable": "Auto",
+              "question_type_auto_gradable_description": "Scored automatically by the system",
               "question_type_manual_grading": "Manual",
+              "question_type_manual_grading_description": "Requires human review to score",
               "premium_question_type": "इस प्रश्न प्रकार का उपयोग करने के लिए अपग्रेड करें"
             },
             "delete_confirmation": {
@@ -1435,7 +1450,7 @@
                   "helper": "सही क्रम परिभाषित करने के लिए आइटम खींचें।",
                   "add_step": "चरण जोड़ें",
                   "empty": "चरण जोड़ें, फिर अपेक्षित क्रम सेट करने के लिए खींचें।",
-                  "step_placeholder": "चरण '{'सूचकांक'}'",
+                  "step_placeholder": "चरण '{'index'}'",
                   "remove_step_tooltip": "चरण हटाएँ"
                 }
               },
@@ -1453,7 +1468,7 @@
               "link": {
                 "preview": {
                   "empty": "कोई लिंक सबमिट नहीं किया गया.",
-                  "item_label": "लिंक '{'सूचकांक'}'"
+                  "item_label": "लिंक '{'index'}'"
                 },
                 "take": {
                   "helper": "एक या अधिक लिंक जोड़ें. केवल वैध http/https यूआरएल ही स्वीकार किए जाते हैं।",
@@ -1634,7 +1649,7 @@
                 },
                 "take": {
                   "helper": "अपनी रेटिंग चुनें.",
-                  "star_sr": "'{'अधिकतम'}' का तारा '{'n'}'"
+                  "star_sr": "'{'n'}' का तारा '{'max'}'"
                 },
                 "edit": {
                   "correct_value_label": "सही तारा मान",
@@ -1715,7 +1730,8 @@
               "submit": "व्यायाम सबमिट करें",
               "collapse_section": "अनुभाग संकुचित करें",
               "expand_section": "अनुभाग विस्तारित करें"
-            }
+            },
+            "more": "क्रियाएँ"
           },
           "new_exercise_modal": {
             "heading": "नया व्यायाम",
@@ -1791,7 +1807,7 @@
               "view_pdf": "पीडीएफ देखें",
               "remove_document": "दस्तावेज़ हटाएँ",
               "delete": "हटाएँ",
-              "page_of": "{कुल} का पेज {पेज}",
+              "page_of": "{page} का पेज {total}",
               "loading_pdf": "पीडीएफ लोड हो रहा है...",
               "failed_to_load_pdf": "पीडीएफ दस्तावेज़ लोड करने में विफल",
               "failed_to_render_pdf": "पीडीएफ पेज प्रस्तुत करने में विफल",
@@ -1833,8 +1849,8 @@
                 "add_from_library": "लाइब्रेरी से जोड़ें",
                 "cancel_upload": "अपलोड रद्द करें",
                 "upload_cancelled": "उपयोगकर्ता द्वारा अपलोड रद्द कर दिया गया",
-                "max_files": "{गिनती, बहुवचन, एक {आप # फ़ाइल अपलोड कर सकते हैं} अन्य {आप # फ़ाइलें अपलोड कर सकते हैं}}",
-                "max_files_and_size": "(प्रत्येक {आकार} तक)",
+                "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
+                "max_files_and_size": "(प्रत्येक {size} तक)",
                 "google_drive_choose": "Google Drive से चुनें",
                 "google_drive_opening": "पिकर खुल रहा है...",
                 "google_drive_hint": "अपने Google खाते से एक वीडियो चुनें. पाठ को देखने वाले किसी भी व्यक्ति को एक्सेस की आवश्यकता है - ड्राइव में साझाकरण को \"लिंक वाला कोई भी व्यक्ति देख सकता है\" (या आपके संगठन के समकक्ष) पर सेट करें।",
@@ -1969,7 +1985,7 @@
         "user_avatar_alt": "उपयोगकर्ता अवतार",
         "comments": {
           "comment": "टिप्पणी",
-          "showing_of": "{कुल} में से {दिखाया गया}",
+          "showing_of": "{shown} में से {total}",
           "hide": "टिप्पणियाँ छिपाएँ",
           "placeholder": "कक्षा टिप्पणी जोड़ें",
           "submit_aria": "टिप्पणी सबमिट करें",
@@ -2033,7 +2049,7 @@
           "title": "थोक क्रियाएं",
           "description": "शिक्षार्थियों का चयन करें और उनके वर्तमान चक्र पर अनुपालन कार्रवाई लागू करें।",
           "select_all": "सभी दृश्यमान शिक्षार्थियों का चयन करें",
-          "selected_count": "{गिनती} चयनित",
+          "selected_count": "{count} चयनित",
           "clear_selection": "स्पष्ट चयन",
           "due_date_label": "नियत तिथि",
           "due_date_helper": "कार्यों को रीसेट करने और विस्तारित करने के लिए उपयोग किया जाता है।",
@@ -2047,7 +2063,7 @@
           "waiver_expires_at_helper": "यदि छूट स्वतः समाप्त नहीं होनी चाहिए तो खाली छोड़ दें।",
           "waive_action": "छूट लागू करें",
           "modal": {
-            "description": "आप चयनित शिक्षार्थियों की {गिनती} अद्यतन कर रहे हैं।",
+            "description": "आप चयनित शिक्षार्थियों की {count} अद्यतन कर रहे हैं।",
             "cancel": "रद्द करें",
             "apply": "कार्रवाई लागू करें"
           }
@@ -2059,7 +2075,8 @@
         "overview_metrics": {
           "heading": "कोर्स स्नैपशॉट",
           "description": "इस पाठ्यक्रम के लिए शिक्षार्थी की गणना उसकी स्थिति के आधार पर की जाती है।"
-        }
+        },
+        "empty_overview_description": "अपने कर्मचारियों को आज्ञाकारी रखें और ट्रैक करें कि पीछे कौन है।"
       }
     },
     "search": {
@@ -2073,8 +2090,8 @@
     "sidebar": {
       "back_to_course": "पाठ्यक्रम पर वापस जाएँ",
       "content_count": {
-        "lessons": "{गिनती} पाठ",
-        "exercises": "{गिनती} अभ्यास"
+        "lessons": "{count} पाठ",
+        "exercises": "{count} अभ्यास"
       },
       "compliance": {
         "title": "अनुपालन",
@@ -2106,7 +2123,7 @@
       }
     },
     "certificates": {
-      "progress_hint": "{वर्तमान}% पूर्ण (डाउनलोड करने के लिए {आवश्यक}% आवश्यक)"
+      "progress_hint": "{current}% पूर्ण (डाउनलोड करने के लिए {required}% आवश्यक)"
     },
     "certification": {
       "rules_heading": "नियम",
@@ -2119,7 +2136,7 @@
       "final_exercise_helper": "निर्धारित होने पर, छात्रों को उपरोक्त पूर्णता प्रतिशत के अलावा इस अभ्यास पर कम से कम न्यूनतम अंक (सर्वोत्तम प्रयास मायने रखता है) तक पहुंचना होगा।",
       "min_exercise_score_label": "अंतिम अभ्यास पर न्यूनतम स्कोर (%)",
       "min_exercise_score_helper": "स्कोर उस अभ्यास पर संभावित कुल अंकों का एक प्रतिशत है (0-100)।",
-      "blocker_progress": "आपके पाठ्यक्रम की प्रगति {वर्तमान}% है; {आवश्यक}% आवश्यक है.",
+      "blocker_progress": "आपके पाठ्यक्रम की प्रगति {current}% है; {required}% आवश्यक है.",
       "blocker_deadline": "प्रमाणन की समय सीमा बीत चुकी है.",
       "blocker_no_content": "इस पाठ्यक्रम में पूरा करने के लिए कोई पाठ या अभ्यास नहीं है।",
       "blocker_final_not_submitted": "प्रमाणपत्र के लिए अर्हता प्राप्त करने के लिए आवश्यक अभ्यास \"{exerciseTitle}\" सबमिट करें।",
@@ -2165,6 +2182,7 @@
           "topic": "विषय या आला",
           "expertise_level": "लक्ष्य विशेषज्ञता स्तर",
           "documentation_url": {
+            "label": "दस्तावेज़ीकरण URL (वैकल्पिक)",
             "hint": "हम आपके वास्तविक उत्पाद में पाठ्यक्रम को आधार बनाने के लिए इस साइट को पढ़ेंगे।"
           }
         },
@@ -2324,23 +2342,24 @@
     "learner": "शिक्षार्थी",
     "progress": "प्रगति",
     "pick_up_where_you_left_off": "वहीं से शुरू करें जहां आपने छोड़ा था",
-    "course_awaits_you": "{शीर्षक} आपकी प्रतीक्षा कर रहा है",
+    "course_awaits_you": "{title} आपकी प्रतीक्षा कर रहा है",
     "learning_awaits_you": "आपका अगला कोर्स आपका इंतजार कर रहा है",
-    "lms_today_progress": "आप अपने सीखने के माध्यम से {प्रगति}% कर रहे हैं - हर कदम मायने रखता है।",
+    "lms_today_progress": "आप अपने सीखने के माध्यम से {progress}% कर रहे हैं - हर कदम मायने रखता है।",
     "lms_today_empty": "जब आप हों तो आपका सीखने का मार्ग तैयार है।",
     "compliance_score": "अनुपालन स्कोर",
     "compliance": "अनुपालन",
-    "compliance_score_subtitle": "वर्तमान में संतुष्ट {कुल} अनुपालन पाठ्यक्रमों में से {पूर्ण}",
+    "compliance_score_subtitle": "वर्तमान में संतुष्ट {completed} अनुपालन पाठ्यक्रमों में से {total}",
     "compliance_score_empty": "अभी तक कोई अनुपालन पाठ्यक्रम नहीं सौंपा गया है",
-    "compliance_met": "{कुल} में से {पूर्ण} मिले",
-    "required_courses_completed": "कुल आवश्यक पाठ्यक्रमों में से {पूर्ण} पूर्ण",
+    "compliance_met": "{completed} में से {total} मिले",
+    "required_courses_completed": "{total} आवश्यक पाठ्यक्रमों में से {completed} पूर्ण",
     "streak": "लकीर",
     "days_active": "सक्रिय दिन",
-    "items_done": "{कुल} का {पूर्ण} हो गया",
+    "items_done": "{completed} का {total} हो गया",
     "login_activity_title": "छात्र लॉगिन गतिविधि",
     "login_activity_description": "सप्ताह के सर्वाधिक सक्रिय दिन (पिछले 90 दिन)",
     "login_activity_no_data": "अभी तक कोई लॉगिन गतिविधि नहीं",
-    "login_activity_logins": "लॉगिन"
+    "login_activity_logins": "लॉगिन",
+    "open_academy": "अकादमी खोलें"
   },
   "schedule": {
     "title": "आपका शेड्यूल",
@@ -2621,7 +2640,8 @@
     "actions": {
       "edit": "संपादित करें",
       "where_used": "कहां उपयोग किया जाता है",
-      "download": "डाउनलोड करें"
+      "download": "डाउनलोड करें",
+      "manage_thumbnails": "थंबनेल प्रबंधित करें"
     },
     "table": {
       "title": "शीर्षक",
@@ -2678,7 +2698,22 @@
       "not_available": "एन/ए"
     },
     "empty_description": "संपत्ति इस संगठन में मौजूद नहीं है या उपलब्ध नहीं है.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library."
+    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "thumbnails": {
+      "manage_title": "थंबनेल प्रबंधित करें",
+      "manage_description": "वीडियो का पूर्वावलोकन करें, स्वतः-निर्मित फ़्रेमों में से एक चुनें, या अपना स्वयं का अपलोड करें।",
+      "preview_unavailable": "पूर्वावलोकन अनुपलब्ध",
+      "generated": "जेनरेट किए गए थंबनेल",
+      "slot_start": "प्रारंभ करें",
+      "slot_middle": "मध्य",
+      "slot_end": "ख़त्म",
+      "none_generated_warning": "अभी तक कोई थंबनेल उत्पन्न नहीं हुआ. एक कस्टम छवि पुनः बनाने या अपलोड करने का प्रयास करें।",
+      "upload_custom": "कस्टम थंबनेल अपलोड करें",
+      "custom_selected_hint": "जब आप अपना चयन सहेजेंगे तो कस्टम अपलोड सहेजा जाएगा।",
+      "custom_preview_alt": "कस्टम थंबनेल पूर्वावलोकन",
+      "regenerate": "पुनर्जीवित करें",
+      "save_selection": "थंबनेल सहेजें"
+    }
   },
   "settings": {
     "heading": "सेटिंग्स",
@@ -2690,9 +2725,9 @@
       "open_billing": "बिलिंग खोलें",
       "error": "बिलिंग खोलते समय एक त्रुटि उत्पन्न हुई",
       "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
-      "ai_credits": "एआई सहायक उपयोग",
-      "ai_tokens_used": "इस महीने उपयोग किए गए टोकन",
-      "ai_bonus_credits": "बोनस क्रेडिट उपलब्ध"
+      "ai_credits": "AI credits",
+      "ai_tokens_used": "इस महीने उपयोग किए गए AI credits",
+      "ai_bonus_credits": "bonus AI credits उपलब्ध"
     },
     "integrations": {
       "heading": "टेलीग्राम",
@@ -3003,6 +3038,14 @@
           "saas": {
             "title": "सास",
             "description": "बिंदीदार रेखा फ्रेम, नरम लहजे, आधुनिक उत्पाद अनुभव"
+          },
+          "vibrant": {
+            "title": "जीवंत",
+            "description": "बोल्ड प्राइमरी पैनल, सनसेट ग्रेडिएंट हीरो, ऊर्जावान पोस्टर लुक"
+          },
+          "editorial": {
+            "title": "सम्पादकीय",
+            "description": "गर्म क्रीम पैलेट, चित्रकारी नायक, परिष्कृत पत्रिका अनुभव"
           }
         }
       },
@@ -3011,7 +3054,10 @@
         "description": "मुख्य विशेषताओं के साथ बनाया गया जिसे आप आसानी से अनुकूलित कर सकते हैं - किसी कोडिंग की आवश्यकता नहीं है।",
         "by_classroomio": "क्लासरूमआईओ द्वारा",
         "add": "जोड़ें",
-        "upgrade": "अपग्रेड करें"
+        "upgrade": "अपग्रेड करें",
+        "apply_theme": "थीम लागू करें",
+        "preview": "पूर्वावलोकन",
+        "card_menu_label": "थीम विकल्प"
       },
       "current": {
         "title": "वर्तमान विषय",
@@ -3019,8 +3065,8 @@
         "field_theme": "थीम",
         "field_hero": "हीरो शीर्षक",
         "field_nav": "नेविगेशन",
-        "field_nav_count_one": "{गिनती} लिंक",
-        "field_nav_count_other": "{गिनती} लिंक",
+        "field_nav_count_one": "{count} लिंक",
+        "field_nav_count_other": "{count} लिंक",
         "hero_empty": "—",
         "customize": "लैंडिंग पृष्ठ अनुकूलित करें"
       }
@@ -3094,7 +3140,7 @@
       "customize_lms_tab": "एलएमएस को अनुकूलित करें",
       "domains_tab": "डोमेन",
       "teams_tab": "टीमें",
-      "ai_credits_tab": "एआई क्रेडिट",
+      "ai_credits_tab": "AI Credits",
       "ai_tutor_tab": "एआई ट्यूटर"
     },
     "subheadings": {
@@ -3189,13 +3235,13 @@
       "login": {
         "sso_redirect_error": "SSO साइन-इन ग़लत कॉन्फ़िगर किया गया है. कृपया अपने एपीआई सर्वर पर PUBLIC_SERVER_URL सेट करें।",
         "sso_required": "कृपया एसएसओ के साथ साइन इन करें। पासवर्ड लॉगिन अक्षम है.",
-        "sign_in_with_sso": "{प्रदाता} के साथ साइन इन करें",
+        "sign_in_with_sso": "{provider} के साथ साइन इन करें",
         "email_password_disabled": "ईमेल/पासवर्ड लॉगिन अक्षम है. कृपया एसएसओ का उपयोग करें.",
         "email_password_disabled_message": "इस संगठन के लिए ईमेल/पासवर्ड लॉगिन अक्षम है।",
         "google_auth_disabled": "Google प्रमाणीकरण अक्षम है.",
         "signup_disabled_error": "इस संगठन के लिए साइनअप अक्षम है. कृपया अपने व्यवस्थापक से संपर्क करें.",
         "or_continue_with": "या ईमेल और पासवर्ड के साथ जारी रखें",
-        "sso_enabled": "इस संगठन के लिए {प्रदाता} सक्षम है"
+        "sso_enabled": "इस संगठन के लिए {provider} सक्षम है"
       },
       "tabs": {
         "general": "सामान्य",
@@ -3228,42 +3274,42 @@
       "page_subtitle": "Invite teammates and control who helps run this organization."
     },
     "ai_credits": {
-      "sub_title": "एआई क्रेडिट",
-      "page_subtitle": "एआई सहायक उपयोग, टीम की खपत और टोकन पैक की खरीद को ट्रैक करें।",
-      "cost_note": "क्रेडिट उपयोग को मॉडल लागत के आधार पर भारित किया जाता है। जेमिनी 2.5 फ्लैश और जीपीटी-5.4 मिनी की गणना प्रति टोकन 1 क्रेडिट यूनिट के रूप में की जाती है। क्लाउड सॉनेट 4.6 की गणना 36× प्रति टोकन के रूप में की जाती है, जो इसकी उच्च एपीआई लागत को दर्शाता है।",
-      "buy_tokens": {
-        "title": "अधिक टोकन खरीदें",
-        "description": "प्रत्येक पैक $5 USD के लिए 5,000,000 क्रेडिट जोड़ता है। चुनें कि आपको कितने पैक चाहिए.",
-        "quantity_hint": "पैक",
-        "preview": "{मात्रा} पैक · {टोकन} टोकन · ${डॉलर}",
-        "buy_button": "${डॉलर} में खरीदें"
+      "sub_title": "AI credits",
+      "page_subtitle": "AI assistant उपयोग, टीम की खपत और AI credit packs खरीदारी को ट्रैक करें।",
+      "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
+      "included": {
+        "title": "आपका शामिल उपयोग",
+        "subtitle": "आपकी योजना में मासिक AI credits शामिल हैं।",
+        "resets_on": "{date} को reset होता है"
+      },
+      "purchased": {
+        "title": "खरीदा गया उपयोग",
+        "subtitle": "आपके द्वारा खरीदे गए अतिरिक्त AI credits उपयोग होने तक carry forward रहेंगे।",
+        "lifetime": "{tokens} credits खरीदे गए · ${dollars} खर्च",
+        "buy_more": "और खरीदें"
+      },
+      "chart": {
+        "heading": "उपयोग",
+        "subheading": "इस महीने दैनिक AI credits की खपत।",
+        "tokens": "Credits",
+        "total_tokens": "Total credits",
+        "total_requests": "कुल अनुरोध",
+        "empty": "इस महीने अभी तक कोई उपयोग दर्ज नहीं किया गया है।"
       },
       "leaderboard": {
         "title": "टीम का उपयोग",
         "this_month": "चालू माह",
         "user": "उपयोगकर्ता",
-        "favorite_model": "पसंदीदा मॉडल",
-        "tokens": "टोकन",
-        "empty": "इस महीने आपकी टीम में किसी ने भी एआई असिस्टेंट का उपयोग नहीं किया है।"
+        "favorite_model": "पसंदीदा model",
+        "tokens": "Credits",
+        "empty": "इस महीने आपकी टीम में किसी ने भी AI assistant का उपयोग नहीं किया है।"
       },
-      "chart": {
-        "heading": "उपयोग",
-        "subheading": "इस महीने दैनिक टोकन खपत।",
-        "tokens": "टोकन",
-        "total_tokens": "कुल टोकन",
-        "total_requests": "कुल अनुरोध",
-        "empty": "इस महीने अभी तक कोई उपयोग दर्ज नहीं किया गया है।"
-      },
-      "purchased": {
-        "title": "खरीदा गया उपयोग",
-        "subtitle": "आपके द्वारा खरीदे गए अतिरिक्त टोकन उपयोग होने तक रोल ओवर रहेंगे।",
-        "lifetime": "{टोकन} टोकन खरीदे गए · ${डॉलर} खर्च किए गए",
-        "buy_more": "और अधिक खरीदें"
-      },
-      "included": {
-        "title": "आपका सम्मिलित उपयोग",
-        "subtitle": "आपकी योजना में मासिक टोकन शामिल हैं।",
-        "resets_on": "{दिनांक} रीसेट करता है"
+      "buy_tokens": {
+        "title": "और credits खरीदें",
+        "description": "प्रत्येक pack $5 USD में 5,000,000 credits जोड़ता है। चुनें कि आपको कितने packs चाहिए।",
+        "quantity_hint": "packs",
+        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
+        "buy_button": "${dollars} में खरीदें"
       }
     }
   },
@@ -3671,7 +3717,7 @@
       "no_available_courses": "जोड़ने के लिए कोई पाठ्यक्रम उपलब्ध नहीं है.",
       "no_matching_courses": "कोई भी पाठ्यक्रम आपकी खोज से मेल नहीं खाता.",
       "no_matching_program_courses": "कोई भी प्रोग्राम पाठ्यक्रम आपकी खोज से मेल नहीं खाता।",
-      "pagination_status": "{totalPages} का पेज {page}",
+      "pagination_status": "{page} का पेज {totalPages}",
       "published_access_callout_title": "छात्र प्रवेश",
       "published_access_callout_description": "छात्रों को केवल प्रकाशित पाठ्यक्रमों तक ही पहुंच है। पाठ्यक्रम अप्रकाशित रहते हुए भी आपकी टीम के लिए इस कार्यक्रम में हो सकते हैं, जबकि जब तक आप उन्हें प्रकाशित नहीं करते तब तक वे छात्रों से छिपे रहते हैं।"
     },
@@ -3693,7 +3739,7 @@
       "user_avatar_alt": "उपयोगकर्ता अवतार",
       "comments": {
         "comment": "टिप्पणी",
-        "showing_of": "{कुल} में से {दिखाया गया}",
+        "showing_of": "{shown} में से {total}",
         "hide": "टिप्पणियाँ छिपाएँ",
         "placeholder": "प्रोग्राम टिप्पणी जोड़ें",
         "submit_aria": "टिप्पणी सबमिट करें",
@@ -3770,7 +3816,7 @@
         "heading": "आपके लक्ष्य",
         "empty_title": "कोई लक्ष्य नहीं सौंपा गया",
         "empty_description": "जब आपके प्रशिक्षक लक्ष्य निर्धारित करेंगे, तो वे यहां दिखाई देंगे।",
-        "due_in_days": "{दिनों} दिनों में देय",
+        "due_in_days": "{days} दिनों में देय",
         "due_tomorrow": "कल देय",
         "due_today": "आज देय",
         "overdue": "अतिदेय",
@@ -3889,7 +3935,7 @@
         "generate_course_plan": "Generating course plan",
         "ask_template_questions": "टेम्प्लेट फॉर्म तैयार किया जा रहा है",
         "fetch_documentation_url": "दस्तावेज़ पृष्ठ पढ़ना",
-        "fetch_documentation_url_with_url": "पढ़ना {यूआरएल}"
+        "fetch_documentation_url_with_url": "पढ़ना {url}"
       },
       "meta": {
         "lesson_char_count": "({count, plural, one {# character} other {# characters}})",
@@ -3921,7 +3967,7 @@
         "go_live_not_published": "Course was not published",
         "generate_course_plan": "Course plan generated",
         "ask_template_questions": "टेम्प्लेट फॉर्म तैयार",
-        "fetch_documentation_url": "पढ़ें {यूआरएल}"
+        "fetch_documentation_url": "पढ़ें {url}"
       }
     },
     "student_empty_state": "इस पाठ्यक्रम के बारे में मुझसे कुछ भी पूछें - स्पष्टीकरण प्राप्त करें, स्वयं प्रश्नोत्तरी करें, या आप जो पढ़ रहे हैं उसे संक्षेप में प्रस्तुत करें।",
@@ -3936,22 +3982,77 @@
     "rename_chat_placeholder": "बातचीत का शीर्षक",
     "rename_chat_failed": "इस वार्तालाप का नाम नहीं बदला जा सका. पुनः प्रयास करें।",
     "error_rate_limit": "AI सेवा अस्थायी रूप से व्यस्त है. कृपया एक क्षण में पुनः प्रयास करें.",
-    "error_rate_limit_with_wait": "AI सेवा अस्थायी रूप से व्यस्त है. कृपया {सेकंड} सेकंड में पुनः प्रयास करें।",
+    "error_rate_limit_with_wait": "AI सेवा अस्थायी रूप से व्यस्त है. कृपया {seconds} सेकंड में पुनः प्रयास करें।",
     "error_context_too_long": "बातचीत बहुत लंबी है. एक नई चैट शुरू करने या अपना संदेश छोटा करने का प्रयास करें।",
     "error_network": "नेटवर्क त्रुटि। अपने कनेक्शन की जांच करें और पुन: प्रयास करें।",
-    "context_usage_tooltip": "{प्रयुक्त} / {अधिकतम} टोकन का उपयोग किया गया",
+    "context_usage_tooltip": "{used} / {max} टोकन का उपयोग किया गया",
     "context_full_title": "प्रसंग विंडो भरी हुई है",
     "context_full_description": "The assistant will summarize older messages automatically so you can keep working in this chat.",
     "context_full_compact": "संक्षिप्त बातचीत",
     "context_full_compacting": "संघनन...",
     "context_full_new_chat": "सारांश के साथ नई चैट प्रारंभ करें",
     "context_full_summarizing": "सारांश बनाया जा रहा है...",
-    "context_compacted_badge": "बातचीत संक्षिप्त (पहले के संदेशों की गिनती)",
+    "context_compacted_badge": "बातचीत संक्षिप्त ({count} पहले के संदेश)",
     "student_quick_action": {
       "explain_lesson": "इस पाठ को स्पष्ट करें",
       "quiz_me": "इस पर मुझसे प्रश्नोत्तरी करें",
       "summarize_section": "इस अनुभाग को सारांशित करें",
       "what_to_review": "मुझे आगे क्या समीक्षा करनी चाहिए?"
+    },
+    "run_running": "जनरेटिंग कोर्स",
+    "run_completed": "पाठ्यक्रम निर्माण पूर्ण",
+    "run_failed": "पाठ्यक्रम निर्माण विफल रहा",
+    "run_canceled": "पाठ्यक्रम निर्माण रद्द कर दिया गया",
+    "run_waiting_for_worker": "पृष्ठभूमि कार्यकर्ता की प्रतीक्षा की जा रही है",
+    "run_checkpoint": "प्रगति चेकप्वाइंट सहेजा जा रहा है",
+    "retry": "पुनः प्रयास करें",
+    "run_monitor_aria": "पाठ्यक्रम सृजन प्रगति पर है",
+    "run_summary": {
+      "completed": "रन पूरा हुआ.",
+      "completed_with_counts": "रन पूरा हुआ - {counts} बनाई गई।",
+      "failed": "रन विफल.",
+      "failed_with_reason": "रन विफल - {reason}।",
+      "canceled": "चलाना रद्द कर दिया गया.",
+      "canceled_with_counts": "दौड़ रद्द कर दी गई - रुकने से पहले {counts} बनाई गई।",
+      "paused": "रन रुका हुआ. जारी रखने के लिए फिर से शुरू करें.",
+      "paused_with_counts": "रन रोका गया - अब तक {counts} बनाई गई। जारी रखने के लिए फिर से शुरू करें."
+    },
+    "changes_card": {
+      "summary_count": "{count} आइटम बदल गए",
+      "expand": "परिवर्तनों का विस्तार करें",
+      "collapse": "परिवर्तन संक्षिप्त करें",
+      "action": {
+        "created": "बनाया गया",
+        "metadata_updated": "मेटाडेटा अपडेट किया गया",
+        "content_written": "सामग्री लिखी गई",
+        "questions_added": "+{count} प्रश्न",
+        "questions_updated": "{count} प्रश्न संपादित",
+        "section_added": "ब्लॉक जोड़ा गया",
+        "section_edited": "ब्लॉक संपादित"
+      },
+      "status": {
+        "completed": "पूरा हुआ",
+        "failed": "असफल",
+        "canceled": "रद्द कर दिया गया",
+        "paused": "रुका हुआ"
+      }
+    },
+    "plan_view": {
+      "expand": "योजना का विस्तार करें",
+      "collapse": "संक्षिप्त योजना"
+    },
+    "run_monitor": {
+      "cancel": "चलाएँ रद्द करें",
+      "dismiss": "ख़ारिज करें",
+      "now_doing": "अभी",
+      "input_disabled_hint": "जब एजेंट पाठ्यक्रम का निर्माण पूरा कर लेता है तो चैट रोक दी जाती है। रद्द करें या इसके पूरा होने तक प्रतीक्षा करें।",
+      "dismiss_confirm": "चले जाओ",
+      "dismiss_cancel": "भागते रहो",
+      "dismiss_confirm_body": "इस रद्द किए गए रन से दूर चले जाएं? बायोडाटा बटन गायब हो जाएगा - आगे की कोई भी बातचीत नए सिरे से शुरू होगी और योजना जारी नहीं रहेगी।",
+      "stuck_queued": {
+        "title": "कर्मी जवाब नहीं दे रहा है",
+        "body": "इस रन के लिए 30 सेकंड से अधिक समय से प्रतीक्षा की जा रही है और कोई कर्मचारी पिकअप नहीं कर रहा है। बैकग्राउंड वर्कर डाउन या रीस्टार्ट हो सकता है।"
+      }
     }
   },
   "widgets": {
@@ -4181,7 +4282,7 @@
     "subtitle": "अपने संगठन में प्रत्येक अनुपालन पाठ्यक्रम में प्रमाणन स्थिति को ट्रैक करें।",
     "learners": {
       "heading": "शिक्षार्थी",
-      "subtitle": "{गिनती, संख्या} मिलान",
+      "subtitle": "{count, number} मिलान",
       "empty": "कोई भी शिक्षार्थी इस फ़िल्टर से मेल नहीं खाता",
       "learner": "शिक्षार्थी",
       "course": "पाठ्यक्रम",
@@ -4232,7 +4333,7 @@
       "submit": "मेरे उत्तर जांचें",
       "try_again": "पुनः प्रयास करें",
       "practice_again": "पुनः अभ्यास करें",
-      "attempt_option": "प्रयास {प्रयास संख्या} - {सही}/{कुल}",
+      "attempt_option": "प्रयास {attemptNumber} - {correct}/{total}",
       "attempts_select_aria": "आपके प्रयास",
       "privacy_hint": "आपके ब्राउज़र में तुरंत ग्रेड किया गया - कुछ भी सबमिट नहीं किया गया है।",
       "summary_template": "आपको [[सही]] / [[कुल]] सही मिला।"
@@ -4255,8 +4356,8 @@
       "page_title": "कार्यस्थान",
       "page_description": "अपने खाते के अंतर्गत कार्यस्थान प्रबंधित करें. कार्यस्थान एकल सदस्यता और एकत्रित उपयोग साझा करते हैं।",
       "create_cta": "कार्यक्षेत्र बनाएं",
-      "create_cta_used": "{प्रयुक्त} का {भत्ता} उपयोग किया गया",
-      "create_cta_disabled_limit": "आप {भत्ता}-कार्यस्थान सीमा तक पहुंच गए हैं। विस्तार करने के लिए हमसे संपर्क करें.",
+      "create_cta_used": "{used} का {allowance} उपयोग किया गया",
+      "create_cta_disabled_limit": "आप {allowance}-कार्यस्थान सीमा तक पहुंच गए हैं। विस्तार करने के लिए हमसे संपर्क करें.",
       "create_cta_disabled_upgrade": "मल्टी-वर्कस्पेस एक एंटरप्राइज़ सुविधा है।",
       "upgrade_link": "अपग्रेड करें",
       "primary_badge": "प्राथमिक",
@@ -4269,8 +4370,8 @@
       "create_modal_submit": "कार्यक्षेत्र बनाएं",
       "cancel": "रद्द करें",
       "read_only_badge": "केवल पढ़ने योग्य",
-      "usage_banner": "{शिक्षार्थी} शिक्षार्थी और {टोकन} एआई टोकन इस महीने {कार्यस्थानों} कार्यस्थानों में उपयोग किए गए",
-      "secondary_billing_notice": "बिलिंग का प्रबंधन आपके प्राथमिक कार्यक्षेत्र ({प्राइमरीनाम}) द्वारा किया जाता है।",
+      "usage_banner": "{learners} शिक्षार्थी और {tokens} एआई टोकन इस महीने {workspaces} कार्यस्थानों में उपयोग किए गए",
+      "secondary_billing_notice": "बिलिंग का प्रबंधन आपके प्राथमिक कार्यक्षेत्र ({primaryName}) द्वारा किया जाता है।",
       "go_to_primary": "प्राथमिक कार्यक्षेत्र पर जाएँ"
     },
     "switcher": {
@@ -4389,6 +4490,28 @@
         "title": "एआई ट्यूटर सेटिंग्स",
         "description": "इस कार्यक्षेत्र में प्रत्येक पाठ्यक्रम के लिए डिफ़ॉल्ट. पाठ्यक्रम इन्हें विरासत में प्राप्त कर सकते हैं या उन्हें ओवरराइड कर सकते हैं।"
       }
+    }
+  },
+  "hls_upload": {
+    "rungs": {
+      "p360": "360पी",
+      "p720": "720पी",
+      "p1080": "1080p"
+    },
+    "error": {
+      "webcodecs_unsupported": "आपका ब्राउज़र हार्डवेयर वीडियो एन्कोडिंग का समर्थन नहीं करता है. Chrome, Edge, या Safari के नवीनतम संस्करण का उपयोग करें।",
+      "encode_failed": "एन्कोडिंग विफल. कोई भिन्न स्रोत फ़ाइल आज़माएँ या ताज़ा करें और पुनः प्रयास करें।",
+      "upload_failed": "वीडियो खंड अपलोड करने में विफल. अपना कनेक्शन जांचें और पुनः प्रयास करें.",
+      "finalize_failed": "अपलोड किया गया वीडियो सहेजने में विफल."
+    },
+    "stage": {
+      "probing": "वीडियो पढ़ रहा हूँ...",
+      "encoding": "एन्कोडिंग {rung} ({percent}%)",
+      "uploading": "सेगमेंट अपलोड हो रहे हैं ({uploaded}/{total})",
+      "thumbnail": "थंबनेल जनरेट किया जा रहा है...",
+      "finalizing": "सहेजा जा रहा है...",
+      "done": "तैयार",
+      "failed": "अपलोड विफल रहा"
     }
   }
 }

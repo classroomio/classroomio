@@ -1,0 +1,1346 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Forge Academy — Editorial template</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* Warm editorial palette inspired by Cursor */
+        --bg: #f4f3ed;
+        --bg-2: #ebeae3;
+        --bg-3: #e2e1d9;
+        --card: #fafaf5;
+        --card-2: #ecebe5;
+        --line: #d9d8d0;
+        --line-soft: #e3e2da;
+        --ink: #1a1a1a;
+        --ink-2: #2c2b29;
+        --muted: #76746c;
+        --muted-2: #98968e;
+        --accent: #c25237;        /* rust link */
+        --accent-soft: #d68a72;
+        --tag-bg: #ebeae3;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        font-size: 15px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+        letter-spacing: -0.005em;
+      }
+      a { color: inherit; text-decoration: none; }
+      button { font: inherit; cursor: pointer; }
+      img { display: block; max-width: 100%; }
+
+      .container { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+
+      /* ============ NAV ============ */
+      .nav-wrap {
+        position: sticky; top: 0; z-index: 50;
+        background: rgba(244,243,237,0.85);
+        backdrop-filter: saturate(180%) blur(12px);
+      }
+      .nav {
+        display: flex; align-items: center; justify-content: space-between;
+        height: 64px;
+      }
+      .brand {
+        display: flex; align-items: center; gap: 10px;
+        font-weight: 600; font-size: 15px; letter-spacing: -0.01em;
+      }
+      .brand-mark {
+        width: 22px; height: 22px;
+        background: var(--ink);
+        border-radius: 4px;
+        position: relative;
+        transform: rotate(45deg);
+      }
+      .brand-mark::after {
+        content: '';
+        position: absolute; inset: 5px;
+        background: var(--bg);
+        border-radius: 1px;
+      }
+      .nav-mid { display: flex; gap: 32px; }
+      .nav-mid a {
+        font-size: 14px; color: var(--ink-2);
+        transition: color .15s;
+      }
+      .nav-mid a:hover { color: var(--ink); }
+      .nav-cta { display: flex; align-items: center; gap: 10px; }
+      .nav-cta .signin { font-size: 14px; color: var(--ink-2); padding: 0 8px; }
+
+      /* ============ BUTTONS ============ */
+      .btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 8px 16px;
+        font-size: 14px; font-weight: 500;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        transition: opacity .15s, background .15s, color .15s, border-color .15s;
+        white-space: nowrap;
+      }
+      .btn-dark { background: var(--ink); color: #fff; }
+      .btn-dark:hover { opacity: 0.88; }
+      .btn-outline { border-color: var(--line); color: var(--ink); background: transparent; }
+      .btn-outline:hover { background: var(--card); }
+      .btn-ghost { color: var(--ink-2); background: transparent; }
+      .btn-ghost:hover { background: var(--card-2); }
+      .btn-lg { padding: 11px 22px; font-size: 14.5px; }
+      .btn .arrow { font-size: 14px; }
+
+      /* ============ HERO ============ */
+      .hero {
+        padding: 88px 0 64px;
+        display: grid;
+        grid-template-columns: 1fr 1.05fr;
+        gap: 56px;
+        align-items: start;
+      }
+      .hero .eyebrow {
+        font-size: 13px; color: var(--muted);
+        margin: 0 0 16px;
+        letter-spacing: 0.01em;
+      }
+      .hero h1 {
+        font-size: 60px; line-height: 1.02;
+        letter-spacing: -0.03em;
+        font-weight: 500;
+        margin: 0 0 18px;
+        color: var(--ink);
+      }
+      .hero p.lead {
+        font-size: 21px; line-height: 1.3;
+        color: var(--muted);
+        margin: 0 0 36px;
+        letter-spacing: -0.012em;
+        font-weight: 400;
+      }
+      .hero .actions { display: flex; gap: 10px; align-items: center; }
+      .hero .note { font-size: 13px; color: var(--muted); margin-left: 6px; }
+
+      /* Hero visual — featured course card on painterly canvas */
+      .hero-visual {
+        position: relative;
+        height: 480px;
+        border-radius: 8px;
+        overflow: hidden;
+        background:
+          radial-gradient(60% 80% at 20% 30%, #b8a877 0%, transparent 60%),
+          radial-gradient(50% 60% at 80% 70%, #6b7a4a 0%, transparent 65%),
+          radial-gradient(40% 50% at 50% 50%, #d4c89a 0%, transparent 70%),
+          linear-gradient(135deg, #8a9460 0%, #c4a878 50%, #8b7a4f 100%);
+      }
+      .hero-visual::before {
+        content: '';
+        position: absolute; inset: 0;
+        background-image:
+          repeating-linear-gradient(45deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 4px),
+          repeating-linear-gradient(-45deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 6px);
+        mix-blend-mode: overlay;
+      }
+
+      .course-preview {
+        position: absolute;
+        left: 50%; top: 50%;
+        transform: translate(-50%, -50%);
+        width: 84%;
+        background: rgba(250,250,245,0.98);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 24px 60px -20px rgba(0,0,0,0.28);
+      }
+      .course-preview .meta {
+        padding: 14px 18px 0;
+        display: flex; align-items: center; gap: 8px;
+        font-size: 12px; color: var(--muted);
+      }
+      .course-preview .meta .tag {
+        background: var(--bg-2);
+        padding: 2px 10px;
+        border-radius: 999px;
+        font-size: 11.5px;
+        color: var(--ink-2);
+        font-weight: 500;
+      }
+      .course-preview h3 {
+        margin: 6px 18px 8px;
+        font-size: 22px; font-weight: 500;
+        letter-spacing: -0.02em;
+      }
+      .course-preview .lead-small {
+        margin: 0 18px 14px;
+        font-size: 13px; color: var(--muted);
+        line-height: 1.5;
+      }
+      .course-preview .player {
+        margin: 0 18px;
+        height: 130px;
+        border-radius: 6px;
+        background:
+          radial-gradient(60% 80% at 30% 30%, rgba(220,210,170,0.4) 0%, transparent 60%),
+          linear-gradient(135deg, #2a2820 0%, #3a3a30 100%);
+        position: relative;
+        overflow: hidden;
+      }
+      .course-preview .player::after {
+        content: '▶';
+        position: absolute;
+        left: 50%; top: 50%;
+        transform: translate(-50%, -50%);
+        width: 42px; height: 42px;
+        background: rgba(250,250,245,0.95);
+        color: var(--ink);
+        font-size: 14px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        padding-left: 3px;
+      }
+      .course-preview .syllabus {
+        padding: 14px 18px 18px;
+      }
+      .course-preview .syllabus-row {
+        display: flex; align-items: center; gap: 10px;
+        padding: 6px 0;
+        font-size: 13px;
+        color: var(--ink-2);
+        border-top: 1px solid var(--line-soft);
+      }
+      .course-preview .syllabus-row:first-child { border-top: none; }
+      .course-preview .syllabus-row .num {
+        font-size: 11px; color: var(--muted-2);
+        width: 16px; flex-shrink: 0;
+        font-variant-numeric: tabular-nums;
+      }
+      .course-preview .syllabus-row .duration {
+        margin-left: auto; font-size: 11.5px; color: var(--muted);
+        font-variant-numeric: tabular-nums;
+      }
+      .course-preview .syllabus-row .check {
+        color: #5fa86b; font-size: 12px;
+      }
+      .course-preview .foot {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 18px;
+        border-top: 1px solid var(--line-soft);
+        background: var(--bg);
+      }
+      .course-preview .foot .price {
+        font-size: 14px; font-weight: 600; letter-spacing: -0.01em;
+      }
+      .course-preview .foot .seats {
+        font-size: 12.5px; color: var(--muted);
+      }
+
+      /* ============ LOGO BAND ============ */
+      .logo-band { padding: 32px 0 96px; }
+      .logo-band-title {
+        text-align: center;
+        font-size: 14px; color: var(--muted);
+        margin: 0 0 24px;
+      }
+      .logo-grid {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 1px;
+        background: var(--line-soft);
+        border: 1px solid var(--line-soft);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .logo-cell {
+        background: var(--bg);
+        display: flex; align-items: center; justify-content: center;
+        height: 88px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        font-size: 18px;
+      }
+      .logo-cell.serif {
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-weight: 500; font-style: italic; font-size: 22px;
+      }
+      .logo-cell.uppercase {
+        text-transform: uppercase;
+        font-size: 14px;
+        letter-spacing: 0.18em;
+        font-weight: 600;
+      }
+
+      /* ============ SECTION HEADERS ============ */
+      section { padding: 100px 0; }
+      .section-eyebrow {
+        text-align: center;
+        font-size: 13px; color: var(--muted);
+        margin: 0 0 8px;
+      }
+      .section-title {
+        text-align: center;
+        font-size: 44px; line-height: 1.08;
+        letter-spacing: -0.025em;
+        font-weight: 500;
+        color: var(--ink);
+        margin: 0 0 12px;
+      }
+      .section-sub {
+        text-align: center;
+        font-size: 20px;
+        color: var(--muted);
+        max-width: 640px;
+        margin: 0 auto 56px;
+        letter-spacing: -0.01em;
+      }
+      .section-head-row {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        margin-bottom: 40px;
+        gap: 24px;
+      }
+      .section-head-row h2 {
+        font-size: 38px; line-height: 1.1;
+        letter-spacing: -0.025em;
+        font-weight: 500;
+        margin: 0 0 6px;
+      }
+      .section-head-row .lead {
+        color: var(--muted); font-size: 16px;
+        max-width: 520px; margin: 0;
+      }
+
+      /* ============ COURSE CATALOG ============ */
+      .filter-bar {
+        display: flex; align-items: center; gap: 6px;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+      }
+      .filter-chip {
+        padding: 6px 14px;
+        font-size: 13.5px;
+        background: transparent;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--ink-2);
+      }
+      .filter-chip.active {
+        background: var(--ink); color: #fff; border-color: var(--ink);
+      }
+      .filter-chip .count {
+        opacity: 0.6;
+        font-size: 11.5px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .course-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .course-card {
+        background: var(--card-2);
+        border-radius: 8px;
+        padding: 0;
+        display: flex; flex-direction: column;
+        overflow: hidden;
+        transition: transform .15s ease;
+      }
+      .course-card:hover { transform: translateY(-2px); }
+      .course-thumb {
+        height: 168px;
+        position: relative;
+        overflow: hidden;
+      }
+      .course-thumb .tag {
+        position: absolute; top: 14px; left: 14px;
+        z-index: 2;
+        font-size: 11px;
+        padding: 3px 10px;
+        background: rgba(250,250,245,0.95);
+        color: var(--ink);
+        border-radius: 999px;
+        font-weight: 500;
+        letter-spacing: 0.005em;
+      }
+      .course-thumb .duration {
+        position: absolute; bottom: 14px; right: 14px;
+        z-index: 2;
+        font-size: 11px;
+        padding: 3px 10px;
+        background: rgba(26,26,26,0.7);
+        color: #fff;
+        border-radius: 999px;
+        font-variant-numeric: tabular-nums;
+      }
+      .thumb-a {
+        background:
+          radial-gradient(60% 80% at 30% 30%, #c4b78b 0%, transparent 60%),
+          linear-gradient(135deg, #8a9460 0%, #c4a878 100%);
+      }
+      .thumb-b {
+        background:
+          radial-gradient(50% 70% at 70% 40%, #d4a48a 0%, transparent 60%),
+          linear-gradient(135deg, #6f5a4a 0%, #b08868 100%);
+      }
+      .thumb-c {
+        background:
+          radial-gradient(60% 80% at 30% 30%, #8aa4b8 0%, transparent 60%),
+          linear-gradient(135deg, #3a4858 0%, #6a7e92 100%);
+      }
+      .thumb-d {
+        background:
+          radial-gradient(60% 80% at 40% 60%, #b8a4a4 0%, transparent 60%),
+          linear-gradient(135deg, #5e4848 0%, #a87a78 100%);
+      }
+      .thumb-e {
+        background:
+          radial-gradient(60% 80% at 50% 50%, #c4c08a 0%, transparent 60%),
+          linear-gradient(135deg, #6a6840 0%, #a8a468 100%);
+      }
+      .thumb-f {
+        background:
+          radial-gradient(60% 80% at 30% 30%, #aab8c4 0%, transparent 60%),
+          linear-gradient(135deg, #4a5868 0%, #788a9a 100%);
+      }
+      .course-thumb::before {
+        content: '';
+        position: absolute; inset: 0;
+        background-image:
+          repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 5px);
+        mix-blend-mode: overlay;
+      }
+
+      .course-body {
+        padding: 20px 24px 24px;
+        display: flex; flex-direction: column;
+        flex: 1;
+      }
+      .course-body h3 {
+        font-size: 19px; line-height: 1.25;
+        letter-spacing: -0.015em;
+        font-weight: 500;
+        margin: 0 0 8px;
+      }
+      .course-body p {
+        font-size: 14px; color: var(--muted);
+        margin: 0 0 18px;
+        line-height: 1.5;
+        flex: 1;
+      }
+      .course-body .meta-row {
+        display: flex; align-items: center; gap: 12px;
+        font-size: 12.5px; color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .course-body .meta-row .dot { color: var(--muted-2); }
+      .course-body .foot {
+        display: flex; align-items: center; justify-content: space-between;
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+      }
+      .course-body .foot .price {
+        font-size: 16px; font-weight: 600; letter-spacing: -0.01em;
+      }
+      .course-body .foot .price .free { color: #4a7c52; }
+      .course-body .foot .enroll {
+        font-size: 14px; color: var(--accent); font-weight: 500;
+        display: inline-flex; align-items: center; gap: 4px;
+      }
+
+      .more-courses { text-align: center; margin-top: 40px; }
+
+      /* ============ STATS ============ */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .stat {
+        background: var(--card-2);
+        border-radius: 8px;
+        padding: 36px 32px;
+        min-height: 220px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .stat .num {
+        font-size: 64px; line-height: 1;
+        letter-spacing: -0.035em;
+        font-weight: 500;
+      }
+      .stat .desc {
+        font-size: 15px; color: var(--muted);
+        max-width: 280px;
+      }
+
+      /* ============ WHY US — TRUST GRID ============ */
+      .why-section {
+        background: var(--bg-2);
+        padding: 110px 0;
+      }
+      .why-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--line);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .why-tile {
+        background: var(--bg-2);
+        padding: 28px 30px;
+      }
+      .why-tile h4 {
+        font-size: 16px; font-weight: 600;
+        margin: 0 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .why-tile p {
+        font-size: 14px; color: var(--muted);
+        margin: 0;
+      }
+
+      /* ============ INSTRUCTORS ============ */
+      .instructor-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .instructor {
+        background: var(--card-2);
+        border-radius: 8px;
+        padding: 28px;
+        display: flex; flex-direction: column;
+      }
+      .instructor .portrait {
+        width: 72px; height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #b9b09a, #6b6a5e);
+        margin-bottom: 18px;
+      }
+      .instructor .name {
+        font-size: 17px; font-weight: 600;
+        letter-spacing: -0.01em;
+        margin-bottom: 2px;
+      }
+      .instructor .title {
+        font-size: 13.5px; color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .instructor .bio {
+        font-size: 14px; color: var(--ink-2);
+        line-height: 1.55;
+        margin-bottom: 20px;
+        flex: 1;
+      }
+      .instructor .teaches {
+        font-size: 12.5px; color: var(--muted);
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+      }
+      .instructor .teaches b { color: var(--ink-2); font-weight: 500; }
+
+      /* ============ TESTIMONIALS ============ */
+      .testimonials {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .testimonial {
+        background: var(--card-2);
+        border-radius: 8px;
+        padding: 28px 28px 24px;
+        display: flex;
+        flex-direction: column;
+        min-height: 280px;
+      }
+      .testimonial .quote {
+        font-size: 15px;
+        color: var(--ink-2);
+        line-height: 1.55;
+        flex: 1;
+      }
+      .testimonial .person {
+        margin-top: 24px;
+        display: flex; align-items: center; gap: 10px;
+      }
+      .testimonial .av {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #b9b09a, #6b6a5e);
+      }
+      .testimonial .name { font-size: 13.5px; font-weight: 600; }
+      .testimonial .title { font-size: 12.5px; color: var(--muted); }
+      .cta-center { text-align: center; margin-top: 40px; }
+
+      /* ============ RESOURCES ============ */
+      .resources-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+      .resource {
+        background: var(--card-2);
+        border-radius: 8px;
+        padding: 26px 24px;
+        display: flex; flex-direction: column;
+        min-height: 200px;
+      }
+      .resource .icon {
+        width: 36px; height: 36px;
+        border-radius: 8px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 16px;
+        margin-bottom: 18px;
+      }
+      .resource h4 {
+        font-size: 16px; font-weight: 600;
+        margin: 0 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .resource p {
+        font-size: 13.5px; color: var(--muted);
+        margin: 0 0 16px;
+        flex: 1;
+      }
+      .resource .link {
+        font-size: 13.5px; color: var(--accent); font-weight: 500;
+      }
+
+      /* ============ FAQ ============ */
+      .faq-section { background: var(--bg-2); padding: 110px 0; }
+      .faq-wrap {
+        display: grid;
+        grid-template-columns: 1fr 1.6fr;
+        gap: 64px;
+        align-items: start;
+      }
+      .faq-wrap h2 {
+        font-size: 36px; letter-spacing: -0.025em;
+        font-weight: 500; margin: 0;
+        line-height: 1.1;
+      }
+      .faq-list { border-top: 1px solid var(--line); }
+      .faq-item {
+        border-bottom: 1px solid var(--line);
+        padding: 18px 0;
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 16px;
+        cursor: pointer;
+      }
+      .faq-item .q {
+        font-size: 15px;
+        color: var(--ink);
+        letter-spacing: -0.005em;
+      }
+      .faq-item .caret { color: var(--muted); font-size: 12px; }
+
+      /* ============ BIG CTA ============ */
+      .big-cta {
+        background: var(--bg-3);
+        padding: 140px 0 160px;
+        text-align: center;
+      }
+      .big-cta h2 {
+        font-size: 56px;
+        letter-spacing: -0.03em;
+        font-weight: 500;
+        margin: 0 0 16px;
+        line-height: 1.05;
+      }
+      .big-cta p {
+        font-size: 18px;
+        color: var(--muted);
+        margin: 0 0 32px;
+      }
+      .big-cta .actions {
+        display: flex; gap: 10px; justify-content: center;
+      }
+
+      /* ============ FOOTER ============ */
+      footer { padding: 64px 0 40px; background: var(--bg-2); }
+      .footer-top {
+        display: grid;
+        grid-template-columns: 1.2fr repeat(4, 1fr);
+        gap: 32px;
+        padding-bottom: 48px;
+        border-bottom: 1px solid var(--line);
+      }
+      .footer-brand .brand-mark { width: 28px; height: 28px; }
+      .footer-brand .brand-name {
+        font-weight: 600; font-size: 16px;
+        margin-top: 14px;
+      }
+      .footer-brand p {
+        font-size: 13.5px; color: var(--muted);
+        margin: 8px 0 16px;
+        max-width: 240px;
+      }
+      .footer-col h5 {
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 400;
+        margin: 0 0 14px;
+      }
+      .footer-col a {
+        display: block;
+        font-size: 14px;
+        color: var(--ink-2);
+        padding: 4px 0;
+      }
+      .footer-col a:hover { color: var(--ink); }
+      .footer-meta {
+        margin-top: 32px;
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 13px; color: var(--muted);
+      }
+      .footer-meta .left { display: flex; gap: 16px; align-items: center; }
+      .footer-meta .pill {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 10px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-size: 12.5px;
+      }
+      .footer-meta .right { display: flex; gap: 10px; }
+      .footer-toggle {
+        display: inline-flex; gap: 2px;
+        padding: 3px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+      }
+      .footer-toggle button {
+        width: 26px; height: 22px;
+        border: none; background: transparent;
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .footer-toggle button.active { background: var(--bg-2); color: var(--ink); }
+      .footer-lang {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 4px 12px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-size: 12.5px;
+      }
+
+      /* ============ RESPONSIVE ============ */
+      @media (max-width: 980px) {
+        .hero { grid-template-columns: 1fr; gap: 40px; padding-top: 56px; }
+        .hero h1 { font-size: 44px; }
+        .hero p.lead { font-size: 18px; }
+        .stats, .why-grid, .testimonials, .instructor-grid, .course-grid { grid-template-columns: 1fr; }
+        .resources-grid { grid-template-columns: 1fr 1fr; }
+        .logo-grid { grid-template-columns: repeat(4, 1fr); }
+        .footer-top { grid-template-columns: 1fr 1fr; }
+        .section-title { font-size: 32px; }
+        .big-cta h2 { font-size: 36px; }
+        .faq-wrap { grid-template-columns: 1fr; gap: 24px; }
+        .nav-mid { display: none; }
+        .section-head-row { flex-direction: column; align-items: flex-start; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- =================== NAV =================== -->
+    <header class="nav-wrap">
+      <div class="container">
+        <nav class="nav">
+          <a href="#" class="brand">
+            <span class="brand-mark"></span>
+            <span>Forge Academy</span>
+          </a>
+          <div class="nav-mid">
+            <a href="#courses">Courses</a>
+            <a href="#instructors">Instructors</a>
+            <a href="#why">Why Forge</a>
+            <a href="#">Pricing</a>
+          </div>
+          <div class="nav-cta">
+            <a href="#" class="signin">Sign in</a>
+            <a href="#" class="btn btn-outline">For teams</a>
+            <a href="#courses" class="btn btn-dark">Enroll</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- =================== HERO =================== -->
+    <section class="hero container">
+      <div>
+        <p class="eyebrow">Spring '26 enrollment now open · 14 cohorts starting</p>
+        <h1>Learn the<br />craft. Ship<br />the work.</h1>
+        <p class="lead">Live cohorts and self-paced courses in design, brand, motion, and engineering — taught by practitioners shipping at the world's best studios.</p>
+        <div class="actions">
+          <a href="#courses" class="btn btn-dark btn-lg">Browse courses <span class="arrow">→</span></a>
+          <a href="#" class="btn btn-outline btn-lg">Talk to admissions</a>
+          <span class="note">Financial aid available.</span>
+        </div>
+      </div>
+
+      <!-- Featured course card on painterly canvas -->
+      <div class="hero-visual">
+        <div class="course-preview">
+          <div class="meta">
+            <span class="tag">Live class · Featured</span>
+            <span>·</span>
+            <span>Starts June 3 · 8 weeks</span>
+          </div>
+          <h3>Design Systems at Scale</h3>
+          <p class="lead-small">From tokens to governance — build a system real teams will adopt. Weekly studio critique with Maya Reyes.</p>
+          <div class="player"></div>
+          <div class="syllabus">
+            <div class="syllabus-row">
+              <span class="num">01</span>
+              <span>Foundations & tokens</span>
+              <span class="check">✓</span>
+              <span class="duration">42 min</span>
+            </div>
+            <div class="syllabus-row">
+              <span class="num">02</span>
+              <span>Components & composition</span>
+              <span class="duration">1h 12m</span>
+            </div>
+            <div class="syllabus-row">
+              <span class="num">03</span>
+              <span>Documentation & governance</span>
+              <span class="duration">58 min</span>
+            </div>
+            <div class="syllabus-row">
+              <span class="num">04</span>
+              <span>Capstone — adopt the system</span>
+              <span class="duration">2h 30m</span>
+            </div>
+          </div>
+          <div class="foot">
+            <span class="price">$1,490</span>
+            <span class="seats">14 seats remaining of 24</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== LOGO BAND — graduate placements =================== -->
+    <section class="logo-band">
+      <div class="container">
+        <p class="logo-band-title">Graduates of Forge now ship at —</p>
+        <div class="logo-grid">
+          <div class="logo-cell uppercase">Lumen</div>
+          <div class="logo-cell serif">Northbound</div>
+          <div class="logo-cell">◆ Halcyon</div>
+          <div class="logo-cell uppercase">Atlas</div>
+          <div class="logo-cell serif">Foreword</div>
+          <div class="logo-cell">⌖ Vector</div>
+          <div class="logo-cell uppercase">Prism</div>
+          <div class="logo-cell">▣ Quadra</div>
+          <div class="logo-cell serif">Marlowe</div>
+          <div class="logo-cell uppercase">Helix</div>
+          <div class="logo-cell">◐ Ember</div>
+          <div class="logo-cell uppercase">Cobalt</div>
+          <div class="logo-cell serif">Westwood</div>
+          <div class="logo-cell">▲ Apex</div>
+          <div class="logo-cell uppercase">Onyx</div>
+          <div class="logo-cell serif">Brightwater</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== COURSE CATALOG (centerpiece) =================== -->
+    <section id="courses">
+      <div class="container">
+        <div class="section-head-row">
+          <div>
+            <p style="font-size: 13px; color: var(--muted); margin: 0 0 6px;">Catalog</p>
+            <h2>Programs starting this season.</h2>
+            <p class="lead">Six- to twelve-week cohorts, plus self-paced tracks you can begin today. Every course ends with a reviewed capstone and a certificate of completion.</p>
+          </div>
+          <a href="#" class="btn btn-outline">Browse all 42 courses <span class="arrow">→</span></a>
+        </div>
+
+        <div class="filter-bar">
+          <button class="filter-chip active">All <span class="count">42</span></button>
+          <button class="filter-chip">Live class <span class="count">14</span></button>
+          <button class="filter-chip">Self-paced <span class="count">22</span></button>
+          <button class="filter-chip">Compliance <span class="count">4</span></button>
+          <button class="filter-chip">Public <span class="count">2</span></button>
+        </div>
+
+        <div class="course-grid">
+          <article class="course-card">
+            <div class="course-thumb thumb-a">
+              <span class="tag">Live class</span>
+              <span class="duration">8 weeks · 24 seats</span>
+            </div>
+            <div class="course-body">
+              <h3>Design Systems at Scale</h3>
+              <p>Build a real system from tokens to governance. Weekly critique with Maya Reyes, ends with a portfolio-grade capstone.</p>
+              <div class="meta-row">
+                <span>Starts Jun 3</span>
+                <span class="dot">·</span>
+                <span>Intermediate</span>
+                <span class="dot">·</span>
+                <span>★ 4.9</span>
+              </div>
+              <div class="foot">
+                <span class="price">$1,490</span>
+                <a href="#" class="enroll">Enroll <span>→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="course-card">
+            <div class="course-thumb thumb-b">
+              <span class="tag">Live class</span>
+              <span class="duration">6 weeks · 18 seats</span>
+            </div>
+            <div class="course-body">
+              <h3>Brand Identity Studio</h3>
+              <p>Wordmark, type, motion, signage — design a full identity from brief to launch. Hands-on with Priya Shah.</p>
+              <div class="meta-row">
+                <span>Starts Jun 10</span>
+                <span class="dot">·</span>
+                <span>All levels</span>
+                <span class="dot">·</span>
+                <span>★ 4.8</span>
+              </div>
+              <div class="foot">
+                <span class="price">$1,290</span>
+                <a href="#" class="enroll">Enroll <span>→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="course-card">
+            <div class="course-thumb thumb-c">
+              <span class="tag">Self-paced</span>
+              <span class="duration">12 hours</span>
+            </div>
+            <div class="course-body">
+              <h3>Motion Principles for Product</h3>
+              <p>Twelve hours of recorded lessons with downloadable Lottie files and Figma exercises. Start any time.</p>
+              <div class="meta-row">
+                <span>Start anytime</span>
+                <span class="dot">·</span>
+                <span>Beginner</span>
+                <span class="dot">·</span>
+                <span>★ 4.9</span>
+              </div>
+              <div class="foot">
+                <span class="price">$290</span>
+                <a href="#" class="enroll">Enroll <span>→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="course-card">
+            <div class="course-thumb thumb-d">
+              <span class="tag">Live class</span>
+              <span class="duration">10 weeks · 16 seats</span>
+            </div>
+            <div class="course-body">
+              <h3>Design Leadership Foundations</h3>
+              <p>For new and aspiring leads. Feedback, performance, hiring, operating cadences — taught with Theo Karras.</p>
+              <div class="meta-row">
+                <span>Starts Jun 17</span>
+                <span class="dot">·</span>
+                <span>Advanced</span>
+                <span class="dot">·</span>
+                <span>★ 4.9</span>
+              </div>
+              <div class="foot">
+                <span class="price">$2,200</span>
+                <a href="#" class="enroll">Enroll <span>→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="course-card">
+            <div class="course-thumb thumb-e">
+              <span class="tag">Self-paced</span>
+              <span class="duration">6 hours</span>
+            </div>
+            <div class="course-body">
+              <h3>Type at Scale</h3>
+              <p>Pairing serifs and grotesques, building modular scales, and shipping typography across products and brand.</p>
+              <div class="meta-row">
+                <span>Start anytime</span>
+                <span class="dot">·</span>
+                <span>Intermediate</span>
+                <span class="dot">·</span>
+                <span>★ 4.7</span>
+              </div>
+              <div class="foot">
+                <span class="price">$190</span>
+                <a href="#" class="enroll">Enroll <span>→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="course-card">
+            <div class="course-thumb thumb-f">
+              <span class="tag">Public</span>
+              <span class="duration">2 hours</span>
+            </div>
+            <div class="course-body">
+              <h3>Intro to Critique — Free</h3>
+              <p>A two-hour primer on giving and receiving design feedback. Open to anyone — no application required.</p>
+              <div class="meta-row">
+                <span>Start anytime</span>
+                <span class="dot">·</span>
+                <span>Beginner</span>
+                <span class="dot">·</span>
+                <span>★ 4.8</span>
+              </div>
+              <div class="foot">
+                <span class="price"><span class="free">Free</span></span>
+                <a href="#" class="enroll">Enroll <span>→</span></a>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="more-courses">
+          <a href="#" class="btn btn-dark btn-lg">View all 42 courses</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== STATS =================== -->
+    <section style="padding-top: 40px;">
+      <div class="container">
+        <div class="stats">
+          <div class="stat">
+            <div class="num">28,400+</div>
+            <div class="desc">learners have completed a Forge program since 2019.</div>
+          </div>
+          <div class="stat">
+            <div class="num">94%</div>
+            <div class="desc">of cohort graduates lead a launch within twelve months.</div>
+          </div>
+          <div class="stat">
+            <div class="num">4.9 / 5</div>
+            <div class="desc">average rating across instructors and capstones.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== WHY FORGE =================== -->
+    <section id="why" class="why-section">
+      <div class="container">
+        <p class="section-eyebrow">Why Forge</p>
+        <h2 class="section-title">A school built around how craft is actually learned.</h2>
+        <p class="section-sub">Practitioner-led, peer-driven, finished with work you're proud to show.</p>
+
+        <div class="why-grid">
+          <div class="why-tile">
+            <h4>Taught by practitioners</h4>
+            <p>Every instructor is a working designer or engineer shipping at a recognized studio or product team.</p>
+          </div>
+          <div class="why-tile">
+            <h4>Weekly studio critique</h4>
+            <p>Live, recorded critique with your cohort — the part of learning the craft you can't get from a video.</p>
+          </div>
+          <div class="why-tile">
+            <h4>A real capstone</h4>
+            <p>Every program ends with a portfolio-grade piece, reviewed by your instructor and three peers.</p>
+          </div>
+          <div class="why-tile">
+            <h4>Verified certificates</h4>
+            <p>Earn a Forge credential with a public verification page you can share with employers or clients.</p>
+          </div>
+          <div class="why-tile">
+            <h4>Small cohorts</h4>
+            <p>Live classes are capped at 24 learners so feedback stays specific and conversations stay real.</p>
+          </div>
+          <div class="why-tile">
+            <h4>Alumni network</h4>
+            <p>Lifetime access to the Forge community — job referrals, project critique, and city meetups.</p>
+          </div>
+          <div class="why-tile">
+            <h4>Financial aid</h4>
+            <p>Need-based scholarships and a 6-month installment plan available on every cohort program.</p>
+          </div>
+          <div class="why-tile">
+            <h4>Forge for teams</h4>
+            <p>Bring your whole team — group seats, custom cohort scheduling, and shared progress dashboards.</p>
+          </div>
+          <div class="why-tile">
+            <h4>Open to everyone</h4>
+            <p>No application gate. Pick the program, enroll, and start your work the day the cohort opens.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== INSTRUCTORS =================== -->
+    <section id="instructors">
+      <div class="container">
+        <div class="section-head-row">
+          <div>
+            <p style="font-size: 13px; color: var(--muted); margin: 0 0 6px;">Faculty</p>
+            <h2>Taught by people doing the work.</h2>
+          </div>
+          <a href="#" class="btn btn-outline">Meet the full faculty <span class="arrow">→</span></a>
+        </div>
+
+        <div class="instructor-grid">
+          <div class="instructor">
+            <div class="portrait"></div>
+            <div class="name">Maya Reyes</div>
+            <div class="title">Principal Designer, Northbound</div>
+            <p class="bio">Twelve years building design systems for fintech and consumer products. Previously led the design platform at Vector.</p>
+            <div class="teaches">Teaches <b>Design Systems at Scale</b> &amp; <b>Type at Scale</b></div>
+          </div>
+          <div class="instructor">
+            <div class="portrait" style="background: linear-gradient(135deg, #a8a474, #5e5a40);"></div>
+            <div class="name">Theo Karras</div>
+            <div class="title">VP Design, Halcyon</div>
+            <p class="bio">Led design through three acquisitions. Writes a weekly journal on the operating side of design leadership.</p>
+            <div class="teaches">Teaches <b>Design Leadership Foundations</b></div>
+          </div>
+          <div class="instructor">
+            <div class="portrait" style="background: linear-gradient(135deg, #b89888, #6e504a);"></div>
+            <div class="name">Priya Shah</div>
+            <div class="title">Founder, Studio Bright</div>
+            <p class="bio">Independent identity designer with a client list spanning museums, restaurants, and tech. Three D&amp;AD pencils.</p>
+            <div class="teaches">Teaches <b>Brand Identity Studio</b></div>
+          </div>
+          <div class="instructor">
+            <div class="portrait" style="background: linear-gradient(135deg, #8a9eb4, #45526a);"></div>
+            <div class="name">Jonas Lindqvist</div>
+            <div class="title">Motion Lead, Foreword</div>
+            <p class="bio">Motion designer behind some of the most-watched product launch films of the last three years.</p>
+            <div class="teaches">Teaches <b>Motion Principles for Product</b></div>
+          </div>
+          <div class="instructor">
+            <div class="portrait" style="background: linear-gradient(135deg, #b8a8a4, #6a5e5a);"></div>
+            <div class="name">Aria Nakamura</div>
+            <div class="title">Staff Engineer, Atlas</div>
+            <p class="bio">Engineering and design overlap. Author of "Composing Interfaces" and maintainer of two design tooling libraries.</p>
+            <div class="teaches">Teaches <b>Building for Designers</b></div>
+          </div>
+          <div class="instructor">
+            <div class="portrait" style="background: linear-gradient(135deg, #a4b48a, #5e6a44);"></div>
+            <div class="name">Devon Fitzgerald</div>
+            <div class="title">Independent designer &amp; writer</div>
+            <p class="bio">Writes Spread, a weekly letter on editorial design. Previously creative director at Brightwater.</p>
+            <div class="teaches">Teaches <b>Editorial Foundations</b> &amp; the <b>Critique Studio</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== STUDENT TESTIMONIALS =================== -->
+    <section style="padding-top: 0;">
+      <div class="container">
+        <h2 class="section-title">Heard from graduates.</h2>
+        <p class="section-sub">A few words from learners who finished a Forge cohort in the last year.</p>
+
+        <div class="testimonials">
+          <div class="testimonial">
+            <div class="quote">"The critique studio alone was worth the tuition. I came in confident; I left with taste. My portfolio is unrecognizable from where it was eight weeks ago."</div>
+            <div class="person">
+              <div class="av"></div>
+              <div>
+                <div class="name">Patricia Olu</div>
+                <div class="title">Now Product Designer at Lumen</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial">
+            <div class="quote">"Maya is the most generous teacher I've ever worked with. She gave my work the kind of attention I assumed only senior designers got."</div>
+            <div class="person">
+              <div class="av" style="background: linear-gradient(135deg, #b48a78, #6a4a3a);"></div>
+              <div>
+                <div class="name">Albert Strathorn</div>
+                <div class="title">Graduate — Design Systems at Scale</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial">
+            <div class="quote">"I'd taken three online courses before Forge. None of them stuck. The cohort cadence and the capstone are what make this one different — you actually finish the work."</div>
+            <div class="person">
+              <div class="av" style="background: linear-gradient(135deg, #88a4b4, #4a5e6a);"></div>
+              <div>
+                <div class="name">Cody Larkin</div>
+                <div class="title">Graduate — Brand Identity Studio</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== RESOURCES =================== -->
+    <section style="padding-top: 0;">
+      <div class="container">
+        <div class="section-head-row">
+          <div>
+            <p style="font-size: 13px; color: var(--muted); margin: 0 0 6px;">Resources</p>
+            <h2>More from Forge.</h2>
+          </div>
+        </div>
+
+        <div class="resources-grid">
+          <a href="#" class="resource">
+            <div class="icon">✦</div>
+            <h4>Journal</h4>
+            <p>Essays from faculty on craft, leadership, and the work behind the work.</p>
+            <span class="link">Read the journal ↗</span>
+          </a>
+          <a href="#" class="resource">
+            <div class="icon">◆</div>
+            <h4>Student stories</h4>
+            <p>How graduates landed roles, launched products, and started studios after Forge.</p>
+            <span class="link">Read the stories ↗</span>
+          </a>
+          <a href="#" class="resource">
+            <div class="icon">⏵</div>
+            <h4>Free intros</h4>
+            <p>Two-hour public primers — no application, no fee. Try a Forge instructor for free.</p>
+            <span class="link">Browse intros ↗</span>
+          </a>
+          <a href="#" class="resource">
+            <div class="icon">◐</div>
+            <h4>For teams</h4>
+            <p>Bring Forge to your studio with group seats, custom cohorts, and shared dashboards.</p>
+            <span class="link">Forge for teams ↗</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== FAQ =================== -->
+    <section class="faq-section">
+      <div class="container">
+        <div class="faq-wrap">
+          <h2>Questions<br />& Answers</h2>
+          <div class="faq-list">
+            <div class="faq-item">
+              <span class="q">Do I need an application to enroll?</span>
+              <span class="caret">⌄</span>
+            </div>
+            <div class="faq-item">
+              <span class="q">What's the difference between live cohorts and self-paced courses?</span>
+              <span class="caret">⌄</span>
+            </div>
+            <div class="faq-item">
+              <span class="q">What happens if I can't make a live session?</span>
+              <span class="caret">⌄</span>
+            </div>
+            <div class="faq-item">
+              <span class="q">Is there a certificate when I finish?</span>
+              <span class="caret">⌄</span>
+            </div>
+            <div class="faq-item">
+              <span class="q">Can my employer pay for the course?</span>
+              <span class="caret">⌄</span>
+            </div>
+            <div class="faq-item">
+              <span class="q">Do you offer financial aid?</span>
+              <span class="caret">⌄</span>
+            </div>
+            <div class="faq-item">
+              <span class="q">What's your refund policy?</span>
+              <span class="caret">⌄</span>
+            </div>
+            <div class="faq-item">
+              <span class="q">How can I bring Forge to my team?</span>
+              <span class="caret">⌄</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== BIG CTA =================== -->
+    <section class="big-cta">
+      <div class="container">
+        <h2>Enroll in the next<br />Forge cohort.</h2>
+        <p>Spring '26 cohorts open in 14 days. Financial aid available on every program.</p>
+        <div class="actions">
+          <a href="#courses" class="btn btn-dark btn-lg">Browse courses <span class="arrow">→</span></a>
+          <a href="#" class="btn btn-outline btn-lg">Talk to admissions</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== FOOTER =================== -->
+    <footer>
+      <div class="container">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <div class="brand-mark"></div>
+            <div class="brand-name">Forge Academy</div>
+            <p>A school for designers, builders, and writers learning to ship work they're proud of.</p>
+          </div>
+          <div class="footer-col">
+            <h5>Courses</h5>
+            <a href="#">Live cohorts</a>
+            <a href="#">Self-paced</a>
+            <a href="#">Free intros</a>
+            <a href="#">For teams</a>
+            <a href="#">Gift a seat</a>
+            <a href="#">Financial aid</a>
+          </div>
+          <div class="footer-col">
+            <h5>Faculty</h5>
+            <a href="#">All instructors</a>
+            <a href="#">Become an instructor</a>
+            <a href="#">Guest lectures</a>
+            <a href="#">Critique studio</a>
+          </div>
+          <div class="footer-col">
+            <h5>Resources</h5>
+            <a href="#">Journal</a>
+            <a href="#">Student stories</a>
+            <a href="#">Library</a>
+            <a href="#">Help center</a>
+            <a href="#">Status</a>
+          </div>
+          <div class="footer-col">
+            <h5>Forge</h5>
+            <a href="#">About</a>
+            <a href="#">Careers</a>
+            <a href="#">Press kit</a>
+            <a href="#">Contact</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+          </div>
+        </div>
+
+        <div class="footer-meta">
+          <div class="left">
+            <span>© 2026 Forge Academy</span>
+            <span class="pill">◐ SOC 2 Certified</span>
+          </div>
+          <div class="right">
+            <div class="footer-toggle">
+              <button class="active">⏷</button>
+              <button>☀</button>
+              <button>☾</button>
+            </div>
+            <div class="footer-lang">⏵ English</div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

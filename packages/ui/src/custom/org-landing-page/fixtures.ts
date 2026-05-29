@@ -1,6 +1,6 @@
-import type { OrgLandingPageProps } from '@cio/ui/custom/org-landing-page/types';
+import type { OrgLandingPageProps } from './types';
 
-export const mockProps: OrgLandingPageProps = {
+export const mockOrgLandingPageProps: OrgLandingPageProps = {
   orgName: 'Certifi Academy',
   logoUrl: 'https://ui-avatars.com/api/?name=CA&background=0f172a&color=fff',
   navItems: [
@@ -154,25 +154,100 @@ export const mockProps: OrgLandingPageProps = {
     brand: {
       socials: [
         { platform: 'linkedin', href: 'https://linkedin.com/company/example' },
-        { platform: 'x', href: 'https://x.com/example' }
+        { platform: 'x', href: 'https://x.com/example' },
+        { platform: 'youtube', href: 'https://youtube.com/@example' },
+        { platform: 'github', href: 'https://github.com/example' },
+        { platform: 'instagram', href: 'https://instagram.com/example' },
+        { platform: 'facebook', href: 'https://facebook.com/example' },
+        { platform: 'tiktok', href: 'https://tiktok.com/@example' },
+        { platform: 'website', href: 'https://example.com' }
       ]
     },
     columns: [
       {
-        id: 'col-company',
-        heading: 'Company',
+        id: 'col-product',
+        heading: 'Product',
         links: [
-          { id: 'col-company-about', label: 'About', href: '#about' },
-          { id: 'col-company-careers', label: 'Careers', href: '#careers' }
-        ],
-        cta: { label: 'Explore more', href: '#more' }
+          { id: 'col-product-overview', label: 'Overview', href: '#overview' },
+          { id: 'col-product-features', label: 'Features', href: '#features' },
+          { id: 'col-product-integrations', label: 'Integrations', href: '#integrations' },
+          { id: 'col-product-automations', label: 'Automations', href: '#automations' },
+          { id: 'col-product-certifications', label: 'Certifications', href: '#certifications' },
+          { id: 'col-product-analytics', label: 'Analytics', href: '#analytics' },
+          { id: 'col-product-mobile', label: 'Mobile app', href: '#mobile' },
+          { id: 'col-product-changelog', label: 'Changelog', href: '#changelog' },
+          { id: 'col-product-roadmap', label: 'Roadmap', href: '#roadmap' }
+        ]
+      },
+      {
+        id: 'col-solutions',
+        heading: 'Solutions',
+        links: [
+          { id: 'col-solutions-compliance', label: 'Compliance training', href: '#compliance' },
+          { id: 'col-solutions-onboarding', label: 'Employee onboarding', href: '#onboarding' },
+          { id: 'col-solutions-customer-ed', label: 'Customer education', href: '#customer-education' },
+          { id: 'col-solutions-partner', label: 'Partner enablement', href: '#partner' },
+          { id: 'col-solutions-sales', label: 'Sales enablement', href: '#sales' },
+          { id: 'col-solutions-healthcare', label: 'Healthcare', href: '#healthcare' },
+          { id: 'col-solutions-finance', label: 'Financial services', href: '#finance' },
+          { id: 'col-solutions-government', label: 'Government', href: '#government' }
+        ]
       },
       {
         id: 'col-resources',
         heading: 'Resources',
         links: [
-          { id: 'col-resources-help', label: 'Help Center', href: '#help' },
-          { id: 'col-resources-blog', label: 'Blog', href: '#blog' }
+          { id: 'col-resources-blog', label: 'Blog', href: '#blog' },
+          { id: 'col-resources-help', label: 'Help center', href: '#help' },
+          { id: 'col-resources-guides', label: 'Guides', href: '#guides' },
+          { id: 'col-resources-webinars', label: 'Webinars', href: '#webinars' },
+          { id: 'col-resources-podcast', label: 'Podcast', href: '#podcast' },
+          { id: 'col-resources-templates', label: 'Templates', href: '#templates' },
+          { id: 'col-resources-case-studies', label: 'Case studies', href: '#case-studies' },
+          { id: 'col-resources-research', label: 'Research', href: '#research' },
+          { id: 'col-resources-glossary', label: 'Glossary', href: '#glossary' }
+        ]
+      },
+      {
+        id: 'col-developers',
+        heading: 'Developers',
+        links: [
+          { id: 'col-developers-docs', label: 'Documentation', href: '#docs' },
+          { id: 'col-developers-api', label: 'API reference', href: '#api' },
+          { id: 'col-developers-sdks', label: 'SDKs', href: '#sdks' },
+          { id: 'col-developers-webhooks', label: 'Webhooks', href: '#webhooks' },
+          { id: 'col-developers-mcp', label: 'MCP server', href: '#mcp' },
+          { id: 'col-developers-cli', label: 'CLI', href: '#cli' },
+          { id: 'col-developers-status', label: 'System status', href: '#status' },
+          { id: 'col-developers-changelog', label: 'API changelog', href: '#api-changelog' }
+        ]
+      },
+      {
+        id: 'col-company',
+        heading: 'Company',
+        links: [
+          { id: 'col-company-about', label: 'About', href: '#about' },
+          { id: 'col-company-customers', label: 'Customers', href: '#customers' },
+          { id: 'col-company-careers', label: 'Careers', href: '#careers' },
+          { id: 'col-company-press', label: 'Press', href: '#press' },
+          { id: 'col-company-partners', label: 'Partners', href: '#partners' },
+          { id: 'col-company-contact', label: 'Contact', href: '#contact' },
+          { id: 'col-company-events', label: 'Events', href: '#events' },
+          { id: 'col-company-newsroom', label: 'Newsroom', href: '#newsroom' }
+        ]
+      },
+      {
+        id: 'col-trust',
+        heading: 'Trust & Legal',
+        links: [
+          { id: 'col-trust-security', label: 'Security', href: '#security' },
+          { id: 'col-trust-soc2', label: 'SOC 2', href: '#soc2' },
+          { id: 'col-trust-gdpr', label: 'GDPR', href: '#gdpr' },
+          { id: 'col-trust-hipaa', label: 'HIPAA', href: '#hipaa' },
+          { id: 'col-trust-iso', label: 'ISO 27001', href: '#iso' },
+          { id: 'col-trust-dpa', label: 'Data processing addendum', href: '#dpa' },
+          { id: 'col-trust-subprocessors', label: 'Subprocessors', href: '#subprocessors' },
+          { id: 'col-trust-responsible-disclosure', label: 'Responsible disclosure', href: '#responsible-disclosure' }
         ]
       }
     ],
@@ -181,6 +256,10 @@ export const mockProps: OrgLandingPageProps = {
       links: [
         { id: 'bottom-terms', label: 'Terms of Service', href: '#terms' },
         { id: 'bottom-privacy', label: 'Privacy Policy', href: '#privacy' },
+        { id: 'bottom-cookies', label: 'Cookie Settings', href: '#cookies' },
+        { id: 'bottom-acceptable-use', label: 'Acceptable Use', href: '#acceptable-use' },
+        { id: 'bottom-accessibility', label: 'Accessibility', href: '#accessibility' },
+        { id: 'bottom-sitemap', label: 'Sitemap', href: '#sitemap' },
         { id: 'bottom-support', label: 'Support', href: '#support' }
       ]
     }

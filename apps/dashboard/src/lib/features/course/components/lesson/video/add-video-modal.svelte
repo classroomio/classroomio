@@ -24,13 +24,19 @@
 
 <Dialog.Root
   bind:open={$lessonVideoUpload.isModalOpen}
-  onOpenChange={(details) => {
-    if (!details.open && $lessonVideoUpload.isUploading) return;
-    if (!details.open) onClose();
+  onOpenChange={(open) => {
+    if (!open) onClose();
   }}
 >
   <Dialog.Content
     class="flex max-h-[680px] max-w-2xl! flex-col overflow-hidden"
+    showCloseButton={!$lessonVideoUpload.isUploading}
+    onEscapeKeydown={(e) => {
+      if ($lessonVideoUpload.isUploading) e.preventDefault();
+    }}
+    onInteractOutside={(e) => {
+      if ($lessonVideoUpload.isUploading) e.preventDefault();
+    }}
     onCloseAutoFocus={(e) => {
       if ($lessonVideoUpload.isUploading) e.preventDefault();
     }}
@@ -42,7 +48,11 @@
     <UnderlineTabs.Root bind:value={currentTab} class="">
       <UnderlineTabs.List>
         {#each tabs as item (item.value)}
-          <UnderlineTabs.Trigger value={String(item.value)} class="ui:flex ui:items-center ui:gap-2">
+          <UnderlineTabs.Trigger
+            value={String(item.value)}
+            disabled={$lessonVideoUpload.isUploading && currentTab !== String(item.value)}
+            class="ui:flex ui:items-center ui:gap-2"
+          >
             {#if $isFreePlan && item.value === 3}
               <ZapIcon size={16} class="filled" />
             {:else}

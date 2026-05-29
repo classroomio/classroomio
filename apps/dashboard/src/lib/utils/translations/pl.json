@@ -7,17 +7,17 @@
   },
   "validations": {
     "generic": {
-      "invalid_type": "Nieprawidłowy typ{oczekiwany, wybierz, niezdefiniowany{} inny{. Oczekiwany {oczekiwany}}}{otrzymany, wybierz, niezdefiniowany{} inny{ (otrzymany {otrzymany})}}",
-      "too_big": "Wartość jest za duża{maksymalna, wybierz, niezdefiniowana{} inna{. Maksymalnie {maksimum}}}",
-      "too_small": "Wartość jest za mała{minimum, wybierz, niezdefiniowane{} inne{. Minimum {minimum}}}",
-      "invalid_format": "Nieprawidłowy format{validacja, wybierz, niezdefiniowany{} other{ for {validation}}}",
+      "invalid_type": "Nieprawidłowy typ{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "too_big": "Wartość jest za duża{maximum, select, undefined{} other{. Maximum {maximum}}}",
+      "too_small": "Wartość jest za mała{minimum, select, undefined{} other{. Minimum {minimum}}}",
+      "invalid_format": "Nieprawidłowy format{validation, select, undefined{} other{ for {validation}}}",
       "not_multiple_of": "Wartość musi być wielokrotnością {multipleOf}",
-      "unrecognized_keys": "Zawiera nierozpoznane klucze{klucze, wybierz, niezdefiniowane{} inne{: {klucze}}}",
-      "invalid_union": "Nieprawidłowa wartość podanych opcji{unionErrors, wybierz, niezdefiniowane{} inne{. Niepowodzenie opcji: {unionErrors}}}",
-      "invalid_key": "Nieprawidłowy klucz{klucz, wybierz, niezdefiniowany{} inny{: {klucz}}}",
-      "invalid_element": "Nieprawidłowy element{index, wybierz, niezdefiniowany{} other{ w indeksie {index}}}",
-      "invalid_value": "Nieprawidłowa wartość{oczekiwana, wybierz, niezdefiniowana{} inna{. Oczekiwany {oczekiwany}}}{otrzymany, wybierz, niezdefiniowany{} inny{ (otrzymany {otrzymany})}}",
-      "custom": "{wiadomość}",
+      "unrecognized_keys": "Zawiera nierozpoznane klucze{keys, select, undefined{} other{: {keys}}}",
+      "invalid_union": "Nieprawidłowa wartość podanych opcji{unionErrors, select, undefined{} other{. {unionErrors} option(s) failed}}",
+      "invalid_key": "Nieprawidłowy klucz{key, select, undefined{} other{: {key}}}",
+      "invalid_element": "Nieprawidłowy element{index, select, undefined{} other{ w indeksie {index}}}",
+      "invalid_value": "Nieprawidłowa wartość{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "custom": "{message}",
       "required_field": "To pole jest wymagane",
       "invalid_field": "Nieprawidłowa wartość"
     },
@@ -118,7 +118,7 @@
     },
     "exercise": {
       "options": {
-        "custom": "{wiadomość}"
+        "custom": "{message}"
       },
       "points": {
         "too_small": "Punkty muszą wynosić co najmniej 0"
@@ -346,7 +346,11 @@
       "transcription_started": "Rozpoczęto transkrypcję",
       "transcription_start_failed": "Nie można rozpocząć transkrypcji",
       "transcription_completed": "Transkrypcja zakończona",
-      "transcript_fetch_failed": "Nie udało się wczytać transkrypcji"
+      "transcript_fetch_failed": "Nie udało się wczytać transkrypcji",
+      "thumbnail_updated": "Miniatura zaktualizowana",
+      "thumbnail_update_failed": "Nie udało się zaktualizować miniatury",
+      "thumbnail_regen_started": "Regeneruję miniatury…",
+      "thumbnail_regen_failed": "Nie udało się ponownie wygenerować miniatur"
     },
     "tags": {
       "group_created": "Utworzono grupę tagów",
@@ -397,8 +401,8 @@
       }
     },
     "ai_credits": {
-      "purchase_success": "Pakiet tokenów dodany do Twojego salda.",
-      "checkout_failed": "Nie można rozpocząć realizacji transakcji. Spróbuj ponownie."
+      "purchase_success": "Pakiet AI credits dodany do salda.",
+      "checkout_failed": "Nie udało się rozpocząć płatności. Spróbuj ponownie."
     },
     "public_course": {
       "url_copied": "Skopiowano adres URL kursu",
@@ -527,7 +531,7 @@
       "description": "Zapisy pogrupowane według typu kursu",
       "subtitle": "Liczba rejestracji wszystkich typów: {total}",
       "empty": "Nie ma jeszcze danych zapisów",
-      "course_count": "{count, plural, one {# kurs} other {# kursy}}",
+      "course_count": "{count, plural, one {# course} other {# courses}}",
       "views_short": "widoki",
       "types": {
         "SELF_PACED": "We własnym tempie",
@@ -585,8 +589,8 @@
       "progress_distribution_card_description": "Ilu uczniów mieści się w każdym przedziale ukończenia.",
       "grade_distribution_card_description": "Ilu uczniów należy do każdego przedziału ocen.",
       "students_table_description": "Sortowalny przegląd z linkami do profili uczniów.",
-      "kpi_team_tutors": "{count, plural, one {# korepetytor w zespole kursu} other {# korepetytorów w zespole kursu}}",
-      "kpi_lessons_exercises": "{count, plural, one {# ćwiczenie} inne {# ćwiczenia}} przypisane do lekcji",
+      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
+      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} przypisane do lekcji",
       "kpi_progress_grade": "{grade}% średniej oceny z ćwiczeń wśród zapisanych uczniów"
     }
   },
@@ -625,7 +629,7 @@
       "send_email": "Wyślij e-mail z powiadomieniem",
       "submit": "Przypisz",
       "cancel": "Anuluj",
-      "snackbar_success": "Przypisano {przydzielonych} użytkowników do kursów ({alreadyEnrolled} jest już zapisanych, wysłano e-maile: {emailsSent})",
+      "snackbar_success": "Przypisano {assigned} użytkowników do kursów ({alreadyEnrolled} jest już zapisanych, wysłano e-maile: {emailsSent})",
       "snackbar_no_courses": "Proszę wybrać przynajmniej jeden kurs",
       "snackbar_failed": "Nie udało się przypisać kursów"
     },
@@ -911,8 +915,17 @@
             "reviews": "Recenzje",
             "instructor": "Instruktor",
             "pricing": "Ceny",
-            "certificate": "Certyfikat"
-          }
+            "certificate": "Certyfikat",
+            "curriculum": "Program nauczania",
+            "chips": "Umiejętności i narzędzia",
+            "skills": "Umiejętności, które zyskasz",
+            "tools": "Narzędzia, których się nauczysz"
+          },
+          "skills_help": "Naciśnij Enter, aby dodać. Pojawiają się one jako elementy poniżej programu nauczania.",
+          "tools_help": "Naciśnij Enter, aby dodać. Pojawiają się one jako elementy poniżej programu nauczania.",
+          "skills_placeholder": "np. Analiza danych",
+          "tools_placeholder": "np. Figma",
+          "remove": "Usuń"
         }
       },
       "certificates": {
@@ -1105,7 +1118,7 @@
           "snackbar_failed_revoke_invite": "Nie udało się odwołać zaproszenia",
           "snackbar_failed_load_audit": "Nie udało się wczytać audytu zaproszeń",
           "snackbar_metadata_copied": "Zaproś skopiowane metadane",
-          "snackbar_email_invites_success": "Utworzono zaproszenia ({count}). Wysłano {wysłano}, nie udało się {nie udało się}. Pominięte duplikaty: {duplikaty}.",
+          "snackbar_email_invites_success": "Utworzono zaproszenia ({count}). Wysłano {sent}, nie udało się {failed}. Pominięte duplikaty: {duplicates}.",
           "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "Jednorazowo (24h)",
@@ -1338,7 +1351,7 @@
               "checking_submission": "Sprawdzam Twoje zgłoszenie...",
               "answer_required": "Zanim przejdziesz dalej, odpowiedz na to pytanie.",
               "instructor_feedback": "Informacje zwrotne od instruktora",
-              "attempt_counter": "Próba {bieżąca} z {total}",
+              "attempt_counter": "Próba {current} z {total}",
               "previous_try": "Poprzednia próba",
               "next_try": "Następna próba",
               "try_again": "Spróbuj ponownie",
@@ -1375,7 +1388,9 @@
               },
               "select_type": "Wybierz typ",
               "question_type_auto_gradable": "Auto",
+              "question_type_auto_gradable_description": "Scored automatically by the system",
               "question_type_manual_grading": "Manual",
+              "question_type_manual_grading_description": "Requires human review to score",
               "premium_question_type": "Uaktualnij, aby używać tego typu pytań"
             },
             "delete_confirmation": {
@@ -1435,7 +1450,7 @@
                   "helper": "Przeciągnij elementy, aby określić właściwą kolejność.",
                   "add_step": "Dodaj krok",
                   "empty": "Dodaj kroki, a następnie przeciągnij, aby ustawić oczekiwaną kolejność.",
-                  "step_placeholder": "Krok „{'indeks'}'",
+                  "step_placeholder": "Krok „{'index'}'",
                   "remove_step_tooltip": "Usuń krok"
                 }
               },
@@ -1453,7 +1468,7 @@
               "link": {
                 "preview": {
                   "empty": "Nie przesłano żadnych linków.",
-                  "item_label": "Link „{'indeks'}'"
+                  "item_label": "Link „{'index'}'"
                 },
                 "take": {
                   "helper": "Dodaj jeden lub więcej linków. Akceptowane są tylko prawidłowe adresy URL http/https.",
@@ -1715,7 +1730,8 @@
               "submit": "Prześlij ćwiczenie",
               "collapse_section": "Zwiń sekcję",
               "expand_section": "Rozwiń sekcję"
-            }
+            },
+            "more": "Działania"
           },
           "new_exercise_modal": {
             "heading": "Nowe ćwiczenie",
@@ -1791,7 +1807,7 @@
               "view_pdf": "Zobacz PDF",
               "remove_document": "Usuń dokument",
               "delete": "Usuń",
-              "page_of": "Strona {strona} z {total}",
+              "page_of": "Strona {page} z {total}",
               "loading_pdf": "Ładowanie pliku PDF...",
               "failed_to_load_pdf": "Nie udało się załadować dokumentu PDF",
               "failed_to_render_pdf": "Nie udało się wyrenderować strony PDF",
@@ -1833,8 +1849,8 @@
                 "add_from_library": "Dodaj z biblioteki",
                 "cancel_upload": "Anuluj przesyłanie",
                 "upload_cancelled": "Przesyłanie anulowane przez użytkownika",
-                "max_files": "{count, plural, one {Możesz przesłać # plik} other {Możesz przesłać # plików}}",
-                "max_files_and_size": "(do {rozmiar} każdy)",
+                "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
+                "max_files_and_size": "(do {size} każdy)",
                 "google_drive_choose": "Wybierz z Dysku Google",
                 "google_drive_opening": "Otwieram selektor…",
                 "google_drive_hint": "Wybierz film ze swojego konta Google. Każda osoba przeglądająca lekcję potrzebuje dostępu — ustaw udostępnianie na Dysku na „Każda osoba mająca link może wyświetlać” (lub odpowiednik w Twojej organizacji).",
@@ -1969,7 +1985,7 @@
         "user_avatar_alt": "Awatar użytkownika",
         "comments": {
           "comment": "komentarz",
-          "showing_of": "Wyświetlanie {pokazane} z {total}",
+          "showing_of": "Wyświetlanie {shown} z {total}",
           "hide": "Ukryj komentarze",
           "placeholder": "Dodaj komentarz do zajęć",
           "submit_aria": "Prześlij komentarz",
@@ -2059,7 +2075,8 @@
         "overview_metrics": {
           "heading": "Migawka kursu",
           "description": "Uczestnicy są zliczani według statusu tego kursu."
-        }
+        },
+        "empty_overview_description": "Dbaj o przestrzeganie zasad przez swoich pracowników i śledź, kto ma zaległości."
       }
     },
     "search": {
@@ -2106,7 +2123,7 @@
       }
     },
     "certificates": {
-      "progress_hint": "{bieżący}% ukończenia ({required}% wymagane do pobrania)"
+      "progress_hint": "{current}% ukończenia ({required}% wymagane do pobrania)"
     },
     "certification": {
       "rules_heading": "Zasady",
@@ -2165,6 +2182,7 @@
           "topic": "Temat lub nisza",
           "expertise_level": "Docelowy poziom wiedzy",
           "documentation_url": {
+            "label": "Adres URL dokumentacji (opcjonalnie)",
             "hint": "Przeczytamy tę witrynę, aby oprzeć kurs na Twoim prawdziwym produkcie."
           }
         },
@@ -2326,21 +2344,22 @@
     "pick_up_where_you_left_off": "Rozpocznij od miejsca, w którym skończyłeś",
     "course_awaits_you": "{title} czeka na Ciebie",
     "learning_awaits_you": "Kolejny kurs już na Ciebie czeka",
-    "lms_today_progress": "Twoje postępy w nauce są następujące: liczy się każdy krok.",
+    "lms_today_progress": "Twój postęp w nauce wynosi {progress}% – każdy krok się liczy.",
     "lms_today_empty": "Twoja ścieżka edukacyjna jest gotowa, gdy Ty jesteś.",
     "compliance_score": "Wynik zgodności",
     "compliance": "Zgodność",
     "compliance_score_subtitle": "Obecnie ukończone {completed} z {total} kursów compliance",
     "compliance_score_empty": "Nie przydzielono jeszcze żadnych kursów z zakresu zgodności",
-    "compliance_met": "Osiągnięto {ukończone} z {total}",
+    "compliance_met": "Osiągnięto {completed} z {total}",
     "required_courses_completed": "Ukończono {completed} z {total} wymaganych kursów",
     "streak": "Smuga",
     "days_active": "dni aktywne",
-    "items_done": "Wykonano {ukończone} z {total}",
+    "items_done": "Wykonano {completed} z {total}",
     "login_activity_title": "Aktywność logowania ucznia",
     "login_activity_description": "Najbardziej aktywne dni tygodnia (ostatnie 90 dni)",
     "login_activity_no_data": "Brak aktywności związanej z logowaniem",
-    "login_activity_logins": "logowania"
+    "login_activity_logins": "logowania",
+    "open_academy": "Otwarta Akademia"
   },
   "schedule": {
     "title": "Twój harmonogram",
@@ -2621,7 +2640,8 @@
     "actions": {
       "edit": "Edytuj",
       "where_used": "Gdzie używany",
-      "download": "Pobierz"
+      "download": "Pobierz",
+      "manage_thumbnails": "Zarządzaj miniaturami"
     },
     "table": {
       "title": "Tytuł",
@@ -2678,7 +2698,22 @@
       "not_available": "Nie dotyczy"
     },
     "empty_description": "Zasób nie istnieje lub nie jest dostępny w tej organizacji.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library."
+    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "thumbnails": {
+      "manage_title": "Zarządzaj miniaturami",
+      "manage_description": "Obejrzyj podgląd wideo, wybierz jedną z automatycznie wygenerowanych klatek lub prześlij własną.",
+      "preview_unavailable": "Podgląd niedostępny",
+      "generated": "Wygenerowane miniatury",
+      "slot_start": "Zacznij",
+      "slot_middle": "Środek",
+      "slot_end": "Koniec",
+      "none_generated_warning": "Nie wygenerowano jeszcze żadnych miniatur. Spróbuj zregenerować lub prześlij niestandardowy obraz.",
+      "upload_custom": "Prześlij niestandardową miniaturę",
+      "custom_selected_hint": "Przesyłanie niestandardowe zostanie zapisane po zapisaniu wyboru.",
+      "custom_preview_alt": "Niestandardowy podgląd miniatur",
+      "regenerate": "Zregeneruj się",
+      "save_selection": "Zapisz miniaturę"
+    }
   },
   "settings": {
     "heading": "Ustawienia",
@@ -2690,9 +2725,9 @@
       "open_billing": "Otwórz rozliczenia",
       "error": "Wystąpił błąd podczas otwierania rozliczeń",
       "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
-      "ai_credits": "Użycie Asystenta AI",
-      "ai_tokens_used": "tokeny wykorzystane w tym miesiącu",
-      "ai_bonus_credits": "dostępne kredyty bonusowe"
+      "ai_credits": "AI credits",
+      "ai_tokens_used": "AI credits wykorzystane w tym miesiącu",
+      "ai_bonus_credits": "dostępne bonusowe AI credits"
     },
     "integrations": {
       "heading": "Telegram",
@@ -3003,6 +3038,14 @@
           "saas": {
             "title": "SaaS",
             "description": "Ramka w postaci przerywanej linii, miękkie akcenty, nowoczesny wygląd produktu"
+          },
+          "vibrant": {
+            "title": "Żywy",
+            "description": "Odważne panele główne, bohater gradientu zachodu słońca, energetyczny wygląd plakatu"
+          },
+          "editorial": {
+            "title": "Redakcja",
+            "description": "Ciepła kremowa paleta, malarski bohater, wyrafinowany klimat magazynu"
           }
         }
       },
@@ -3011,7 +3054,10 @@
         "description": "Zawiera podstawowe funkcje, które można łatwo dostosować — bez konieczności kodowania.",
         "by_classroomio": "przez ClassroomIO",
         "add": "Dodaj",
-        "upgrade": "Uaktualnij"
+        "upgrade": "Uaktualnij",
+        "apply_theme": "Zastosuj motyw",
+        "preview": "Podgląd",
+        "card_menu_label": "Opcje motywu"
       },
       "current": {
         "title": "Aktualny temat",
@@ -3019,8 +3065,8 @@
         "field_theme": "Temat",
         "field_hero": "Nagłówek bohatera",
         "field_nav": "Nawigacja",
-        "field_nav_count_one": "{liczba} linków",
-        "field_nav_count_other": "Liczba linków",
+        "field_nav_count_one": "{count} linków",
+        "field_nav_count_other": "{count} linków",
         "hero_empty": "—",
         "customize": "Dostosuj stronę docelową"
       }
@@ -3094,7 +3140,7 @@
       "customize_lms_tab": "Dostosuj LMS-a",
       "domains_tab": "Domeny",
       "teams_tab": "Zespoły",
-      "ai_credits_tab": "Kredyty AI",
+      "ai_credits_tab": "AI Credits",
       "ai_tutor_tab": "Nauczyciel AI"
     },
     "subheadings": {
@@ -3228,42 +3274,42 @@
       "page_subtitle": "Invite teammates and control who helps run this organization."
     },
     "ai_credits": {
-      "sub_title": "Kredyty AI",
-      "page_subtitle": "Śledź wykorzystanie asystenta AI, wykorzystanie zespołu i kupuj pakiety tokenów.",
-      "cost_note": "Wykorzystanie kredytu jest ważone kosztem modelu. Gemini 2.5 Flash i GPT-5.4 Mini liczą się jako 1 jednostka kredytowa na token. Claude Sonnet 4.6 liczy się jako 36× na token, co odzwierciedla wyższy koszt interfejsu API.",
-      "buy_tokens": {
-        "title": "Kup więcej tokenów",
-        "description": "Każdy pakiet dodaje 5 000 000 kredytów za 5 USD. Wybierz, ile opakowań potrzebujesz.",
-        "quantity_hint": "paczki",
-        "preview": "{ilość} paczek · {tokens} tokenów · ${dolary}",
-        "buy_button": "Kup za ${dolarów}"
+      "sub_title": "AI credits",
+      "page_subtitle": "Śledź wykorzystanie asystenta AI, zużycie zespołu i kupuj pakiety AI credits.",
+      "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
+      "included": {
+        "title": "Twoje uwzględnione wykorzystanie",
+        "subtitle": "Miesięczne AI credits wliczone w Twój plan.",
+        "resets_on": "Resetuje się {date}"
+      },
+      "purchased": {
+        "title": "Zakupione wykorzystanie",
+        "subtitle": "Dodatkowe AI credits, które kupiłeś, przechodzą na kolejny okres do wykorzystania.",
+        "lifetime": "{tokens} credits zakupionych · ${dollars} wydane",
+        "buy_more": "Kup więcej"
+      },
+      "chart": {
+        "heading": "Wykorzystanie",
+        "subheading": "Dzienne zużycie AI credits w tym miesiącu.",
+        "tokens": "Credits",
+        "total_tokens": "Total credits",
+        "total_requests": "Łączna liczba żądań",
+        "empty": "W tym miesiącu nie zarejestrowano jeszcze żadnego wykorzystania."
       },
       "leaderboard": {
         "title": "Wykorzystanie zespołu",
         "this_month": "Bieżący miesiąc",
         "user": "Użytkownik",
         "favorite_model": "Ulubiony model",
-        "tokens": "Żetony",
-        "empty": "Nikt w Twoim zespole nie korzystał w tym miesiącu z asystenta AI."
+        "tokens": "Credits",
+        "empty": "Nikt w Twoim zespole nie korzystał z asystenta AI w tym miesiącu."
       },
-      "chart": {
-        "heading": "Użycie",
-        "subheading": "Dzienne zużycie tokenów w tym miesiącu.",
-        "tokens": "Żetony",
-        "total_tokens": "Suma tokenów",
-        "total_requests": "Łączna liczba żądań",
-        "empty": "W tym miesiącu nie zarejestrowano jeszcze żadnego użycia."
-      },
-      "purchased": {
-        "title": "Zakupione użycie",
-        "subtitle": "Dodatkowe zakupione żetony przechodzą na inne, dopóki nie zostaną wykorzystane.",
-        "lifetime": "Zakupiono {tokens} tokenów · Wydano ${dolarów}",
-        "buy_more": "Kup więcej"
-      },
-      "included": {
-        "title": "Twoje uwzględnione wykorzystanie",
-        "subtitle": "Tokeny miesięczne zawarte w Twoim planie.",
-        "resets_on": "Resetuje {data}"
+      "buy_tokens": {
+        "title": "Kup więcej credits",
+        "description": "Każdy pakiet dodaje 5,000,000 credits za $5 USD. Wybierz, ile pakietów potrzebujesz.",
+        "quantity_hint": "pakiety",
+        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
+        "buy_button": "Kup za ${dollars}"
       }
     }
   },
@@ -3671,7 +3717,7 @@
       "no_available_courses": "Brak dostępnych kursów do dodania.",
       "no_matching_courses": "Żaden kurs nie pasuje do Twojego wyszukiwania.",
       "no_matching_program_courses": "Żaden kurs programowy nie pasuje do Twojego wyszukiwania.",
-      "pagination_status": "Strona {strona} z {totalPages}",
+      "pagination_status": "Strona {page} z {totalPages}",
       "published_access_callout_title": "Dostęp studencki",
       "published_access_callout_description": "Studenci mają dostęp wyłącznie do opublikowanych kursów. Kursy mogą znajdować się w tym programie dla Twojego zespołu, gdy nie są jeszcze opublikowane, ale pozostają ukryte przed uczniami, dopóki ich nie opublikujesz."
     },
@@ -3693,7 +3739,7 @@
       "user_avatar_alt": "Awatar użytkownika",
       "comments": {
         "comment": "komentarz",
-        "showing_of": "Wyświetlanie {pokazane} z {total}",
+        "showing_of": "Wyświetlanie {shown} z {total}",
         "hide": "Ukryj komentarze",
         "placeholder": "Dodaj komentarz do programu",
         "submit_aria": "Prześlij komentarz",
@@ -3770,7 +3816,7 @@
         "heading": "Twoje cele",
         "empty_title": "Brak przypisanych celów",
         "empty_description": "Kiedy Twoi instruktorzy wyznaczą cele, pojawią się tutaj.",
-        "due_in_days": "Termin za {day} dni",
+        "due_in_days": "Termin za {days} dni",
         "due_tomorrow": "Termin na jutro",
         "due_today": "Termin na dzisiaj",
         "overdue": "Zaległe",
@@ -3936,7 +3982,7 @@
     "rename_chat_placeholder": "Tytuł rozmowy",
     "rename_chat_failed": "Nie można zmienić nazwy tej rozmowy. Spróbuj ponownie.",
     "error_rate_limit": "Usługa AI jest chwilowo zajęta. Spróbuj ponownie za chwilę.",
-    "error_rate_limit_with_wait": "Usługa AI jest chwilowo zajęta. Spróbuj ponownie za {sekundy} sekund.",
+    "error_rate_limit_with_wait": "Usługa AI jest chwilowo zajęta. Spróbuj ponownie za {seconds} sekund.",
     "error_context_too_long": "Rozmowa jest za długa. Spróbuj rozpocząć nowy czat lub skrócić wiadomość.",
     "error_network": "Błąd sieci. Sprawdź połączenie i spróbuj ponownie.",
     "context_usage_tooltip": "Wykorzystano {used} / {max} tokenów",
@@ -3952,6 +3998,61 @@
       "quiz_me": "Przepytaj mnie na ten temat",
       "summarize_section": "Podsumuj tę sekcję",
       "what_to_review": "Co powinienem zrecenzować dalej?"
+    },
+    "run_running": "Generowanie kursu",
+    "run_completed": "Zakończono generowanie kursu",
+    "run_failed": "Wygenerowanie kursu nie powiodło się",
+    "run_canceled": "Generowanie kursu anulowane",
+    "run_waiting_for_worker": "Czekam na pracownika w tle",
+    "run_checkpoint": "Zapisywanie punktu kontrolnego postępu",
+    "retry": "Spróbuj ponownie",
+    "run_monitor_aria": "Trwa generowanie kursu",
+    "run_summary": {
+      "completed": "Uruchomienie zakończone.",
+      "completed_with_counts": "Uruchomienie zakończone — utworzono {counts}.",
+      "failed": "Uruchomienie nie powiodło się.",
+      "failed_with_reason": "Uruchomienie nie powiodło się — {reason}.",
+      "canceled": "Bieg odwołany.",
+      "canceled_with_counts": "Uruchomienie anulowane — utworzono {counts} przed zatrzymaniem.",
+      "paused": "Uruchomienie wstrzymane. Wznów, aby kontynuować.",
+      "paused_with_counts": "Uruchomienie wstrzymane — do tej pory utworzono {counts}. Wznów, aby kontynuować."
+    },
+    "changes_card": {
+      "summary_count": "Zmieniono {count} elementów",
+      "expand": "Rozwiń zmiany",
+      "collapse": "Zwiń zmiany",
+      "action": {
+        "created": "Utworzono",
+        "metadata_updated": "Metadane zaktualizowane",
+        "content_written": "Treść napisana",
+        "questions_added": "+{count} pytań",
+        "questions_updated": "Edytowano {count} pytań",
+        "section_added": "Dodano blok",
+        "section_edited": "Blok edytowany"
+      },
+      "status": {
+        "completed": "Ukończono",
+        "failed": "Nie udało się",
+        "canceled": "Anulowano",
+        "paused": "Wstrzymano"
+      }
+    },
+    "plan_view": {
+      "expand": "Rozwiń plan",
+      "collapse": "Zwiń plan"
+    },
+    "run_monitor": {
+      "cancel": "Anuluj bieg",
+      "dismiss": "Odrzuć",
+      "now_doing": "Teraz",
+      "input_disabled_hint": "Czat zostaje wstrzymany, gdy agent kończy tworzenie kursu. Anuluj lub poczekaj na zakończenie.",
+      "dismiss_confirm": "Odejdź",
+      "dismiss_cancel": "Biegnij dalej",
+      "dismiss_confirm_body": "Czy chcesz zrezygnować z tego odwołanego biegu? Przycisk Wznów zniknie — każdy kolejny czat rozpocznie się od nowa i nie będzie kontynuowany planu.",
+      "stuck_queued": {
+        "title": "Pracownik nie odpowiada",
+        "body": "Ten przebieg czekał ponad 30 sekund bez odbioru pracownika. Proces roboczy działający w tle może być wyłączony lub uruchamiany ponownie."
+      }
     }
   },
   "widgets": {
@@ -4232,7 +4333,7 @@
       "submit": "Sprawdź moje odpowiedzi",
       "try_again": "Spróbuj ponownie",
       "practice_again": "Poćwicz jeszcze raz",
-      "attempt_option": "Próba {attemptNumber} – {poprawna}/{total}",
+      "attempt_option": "Próba {attemptNumber} – {correct}/{total}",
       "attempts_select_aria": "Twoje próby",
       "privacy_hint": "Oceniane natychmiastowo w Twojej przeglądarce – nic nie jest przesyłane.",
       "summary_template": "Masz [[correct]] / [[total]] poprawnie."
@@ -4389,6 +4490,28 @@
         "title": "Ustawienia AI Tutora",
         "description": "Wartości domyślne dla każdego kursu w tym obszarze roboczym. Kursy mogą je dziedziczyć lub zastępować."
       }
+    }
+  },
+  "hls_upload": {
+    "rungs": {
+      "p360": "360p",
+      "p720": "720p",
+      "p1080": "1080p"
+    },
+    "error": {
+      "webcodecs_unsupported": "Twoja przeglądarka nie obsługuje sprzętowego kodowania wideo. Użyj najnowszej wersji przeglądarki Chrome, Edge lub Safari.",
+      "encode_failed": "Kodowanie nie powiodło się. Wypróbuj inny plik źródłowy lub odśwież i spróbuj ponownie.",
+      "upload_failed": "Nie udało się przesłać segmentu wideo. Sprawdź połączenie i spróbuj ponownie.",
+      "finalize_failed": "Nie udało się zapisać przesłanego filmu."
+    },
+    "stage": {
+      "probing": "Czytanie wideo…",
+      "encoding": "Kodowanie {rung} ({percent}%)",
+      "uploading": "Przesyłanie segmentów ({uploaded}/{total})",
+      "thumbnail": "Generuję miniaturę…",
+      "finalizing": "Zapisuję…",
+      "done": "Gotowy",
+      "failed": "Przesyłanie nie powiodło się"
     }
   }
 }

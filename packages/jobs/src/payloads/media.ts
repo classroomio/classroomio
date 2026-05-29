@@ -29,7 +29,13 @@ export const ZGenerateThumbnailPayload = z.object({
   storageKey: z.string().min(1),
   actorContext: ZActorContext,
   /** Seconds into the video to grab. Defaults to 1.0 in the worker. */
-  atSeconds: z.number().nonnegative().optional()
+  atSeconds: z.number().nonnegative().optional(),
+  /**
+   * When true, the processor marks the parent `media_job` as `completed`
+   * after a successful run. Set by `enqueueGenerateThumbnailOnly` because
+   * thumbnail is the only step and nothing else will flip status.
+   */
+  markJobCompleteOnSuccess: z.boolean().optional()
 });
 export type TGenerateThumbnailPayload = z.infer<typeof ZGenerateThumbnailPayload>;
 

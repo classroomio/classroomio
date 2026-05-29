@@ -42,6 +42,7 @@ export const getOrganizationByProfileId = async (profileId: string): Promise<Org
   const result = await db
     .select({
       organization: schema.organization,
+      memberId: schema.organizationmember.id,
       roleId: schema.organizationmember.roleId,
       plan: {
         planName: schema.organizationPlan.planName,
@@ -61,6 +62,7 @@ export const getOrganizationByProfileId = async (profileId: string): Promise<Org
     string,
     {
       organization: typeof schema.organization.$inferSelect;
+      memberId: number | undefined;
       roleId: number | undefined;
       plans: Array<OrganizationPlan>;
     }
@@ -72,6 +74,7 @@ export const getOrganizationByProfileId = async (profileId: string): Promise<Org
     if (!organizationMap.has(orgId)) {
       organizationMap.set(orgId, {
         organization: row.organization,
+        memberId: row.memberId ?? undefined,
         roleId: row.roleId ?? undefined,
         plans: []
       });
@@ -114,6 +117,32 @@ export const createOrganizationMember = async (data: TNewOrganizationmember, dbC
 
   return member;
 };
+
+export async function getOrganizationMemberByIdAndOrg(
+  memberId: number,
+  organizationId: string,
+  dbClient: DbOrTxClient = db
+): Promise<{ id: number; profileId: string | null } | null> {
+  try {
+    const [row] = await dbClient
+      .select({
+        id: schema.organizationmember.id,
+        profileId: schema.organizationmember.profileId
+      })
+      .from(schema.organizationmember)
+      .where(
+        and(eq(schema.organizationmember.id, memberId), eq(schema.organizationmember.organizationId, organizationId))
+      )
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('getOrganizationMemberByIdAndOrg error:', error);
+    throw new Error(
+      `Failed to resolve organization membership: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
 
 export async function getOrganizationMemberIdByOrgAndProfile(
   organizationId: string,
@@ -870,6 +899,26 @@ export const getOrganizationCount = async (): Promise<number> => {
  * @param dbClient Optional DB or transaction client for use within transactions
  * @returns Created organization plan record
  */
+export const getOrganizationPlanBySubscriptionId = async (
+  subscriptionId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationPlan | null> => {
+  try {
+    const [plan] = await dbClient
+      .select()
+      .from(schema.organizationPlan)
+      .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
+      .limit(1);
+
+    return plan ?? null;
+  } catch (error) {
+    console.error('getOrganizationPlanBySubscriptionId error:', error);
+    throw new Error(
+      `Failed to fetch organization plan: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+};
+
 export const createOrganizationPlan = async (
   data: TNewOrganizationPlan,
   dbClient: DbOrTxClient = db

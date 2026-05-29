@@ -2,7 +2,10 @@
   import { resolve } from '$app/paths';
   import { goto } from '$app/navigation';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import EyeIcon from '@lucide/svelte/icons/eye';
   import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
+  import PaintbrushIcon from '@lucide/svelte/icons/paintbrush';
   import ZapIcon from '@lucide/svelte/icons/zap';
 
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
@@ -10,11 +13,18 @@
   import { t } from '$lib/utils/functions/translations';
   import { user } from '$lib/utils/store/user';
   import { basePath } from '$lib/utils/store/app';
+  import type { AccountOrg } from '$features/app/types';
+  import { orgApi } from '$features/org/api/org.svelte';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   import { Button } from '@cio/ui/base/button';
   import { Badge } from '@cio/ui/base/badge';
   import * as Card from '@cio/ui/base/card';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import { PremiumIcon } from '@cio/ui/custom/moving-icons';
+
+  import ThemePreviewDialog from '$features/settings/components/theme-preview-dialog.svelte';
 
   import {
     createDefaultLandingPageSettings,
@@ -86,6 +96,18 @@
       preview: '/templates/terminal.png',
       titleKey: 'settings.landing_page.theme.cards.terminal.title',
       descriptionKey: 'settings.landing_page.theme.cards.terminal.description'
+    },
+    {
+      value: 'editorial',
+      preview: '/templates/editorial.png',
+      titleKey: 'settings.landing_page.theme.cards.editorial.title',
+      descriptionKey: 'settings.landing_page.theme.cards.editorial.description'
+    },
+    {
+      value: 'vibrant',
+      preview: '/templates/vibrant.png',
+      titleKey: 'settings.landing_page.theme.cards.vibrant.title',
+      descriptionKey: 'settings.landing_page.theme.cards.vibrant.description'
     }
   ] as const satisfies ReadonlyArray<{
     value: LandingPageTheme;
@@ -123,6 +145,37 @@
     }
 
     goto(resolve(`${$currentOrgPath}/settings/landingpage/edit?theme=${theme}`, {}));
+  }
+
+  async function handleApplyTheme(theme: LandingPageTheme) {
+    if (!$currentOrg.id) return;
+
+    if ($isFreePlan && isPaidTheme(theme)) {
+      openUpgradeModal();
+      return;
+    }
+
+    const updatedLandingPage = normalizeLandingPageSettings({
+      ...normalized,
+      theme
+    });
+
+    await orgApi.update($currentOrg.id, {
+      landingpage: updatedLandingPage as AccountOrg['landingpage']
+    });
+
+    normalized = updatedLandingPage;
+    snackbar.success('snackbar.success_update');
+  }
+
+  function handlePreviewTheme(theme: LandingPageTheme) {
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.set('preview', theme);
+    goto(`${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`, {
+      replaceState: false,
+      keepFocus: true,
+      noScroll: true
+    });
   }
 
   const navCount = $derived(normalized.navItems?.length ?? 0);
@@ -227,12 +280,31 @@
         <div class="ui:border-border bg-background relative overflow-hidden rounded-xl border">
           {#if isLocked}
             <div
-              class="absolute top-2 right-2 z-10 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-xs font-medium text-white shadow-sm"
+              class="absolute top-2 left-2 z-10 flex items-center gap-1 rounded-full bg-blue-600 px-2 py-0.5 text-xs font-medium text-white shadow-sm"
             >
               <PremiumIcon size={14} color="white" />
               {$t('settings.landing_page.gallery.upgrade')}
             </div>
           {/if}
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger class="absolute top-2 right-2 z-10">
+              <IconButton variant="secondary" aria-label={$t('settings.landing_page.gallery.card_menu_label')}>
+                <EllipsisVerticalIcon size={16} />
+              </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end">
+              <DropdownMenu.Item onclick={() => handlePreviewTheme(themeCard.value)}>
+                <EyeIcon size={16} class="mr-2" />
+                {$t('settings.landing_page.gallery.preview')}
+              </DropdownMenu.Item>
+              {#if !isLocked}
+                <DropdownMenu.Item onclick={() => handleApplyTheme(themeCard.value)}>
+                  <PaintbrushIcon size={16} class="mr-2" />
+                  {$t('settings.landing_page.gallery.apply_theme')}
+                </DropdownMenu.Item>
+              {/if}
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
           <div class="bg-background aspect-[4/3] w-full overflow-hidden">
             <img
               src={themeCard.preview}
@@ -257,3 +329,5 @@
     </div>
   </section>
 </div>
+
+<ThemePreviewDialog />
