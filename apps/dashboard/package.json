@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
-    "clean": "rm -rf node_modules",
+    "clean": "rimraf node_modules",
     "format": "prettier --write .",
     "start": "node build/index.js",
     "prepare": "svelte-kit sync",

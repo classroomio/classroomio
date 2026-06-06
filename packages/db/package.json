@@ -50,7 +50,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf dist tsconfig.tsbuildinfo && tsc && tsc-alias",
+    "build": "rimraf dist tsconfig.tsbuildinfo && tsc && tsc-alias",
     "dev": "tsc --watch",
     "db": "drizzle-kit",
     "db:reset": "tsx src/scripts/db-reset.ts --skip-seed",

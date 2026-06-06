@@ -164,7 +164,7 @@ docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up -
 docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml restart api dashboard
 
 # Run DB seed
-docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml run --rm db-init sh -c "pnpm --filter @cio/db db:setup -- --seed"
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml run --rm --entrypoint sh api -c "pnpm --filter @cio/db db:setup -- --seed"
 
 # Stop
 docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down

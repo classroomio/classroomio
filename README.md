@@ -128,22 +128,50 @@ The repository also contains shared packages under `packages/` (for example `pac
 
 5. Set up your `.env` files:
 
-   - Go to `apps/dashboard` and `apps/api`.
-   - Duplicate the `.env.example` file and rename it to `.env`
-     - Populate them with required values (at minimum):
-     - `apps/api/.env`: `DATABASE_URL`, `REDIS_URL`, `AUTH_BEARER_TOKEN`, `BETTER_AUTH_SECRET`
-     - `apps/dashboard/.env`: `PRIVATE_SERVER_URL`, `PRIVATE_SERVER_KEY`, `PUBLIC_IS_SELFHOSTED`, `DASHBOARD_ORIGIN`
-   - Optional for self-hosted Enterprise-only features (SSO, token-auth, no-tracking): set `LICENSE_KEY` in `apps/api/.env`
+   Each app reads its **own** `.env`. In `apps/api` and `apps/dashboard`, duplicate
+   `.env.example` to `.env` and fill the values below. These are safe local-dev values
+   (host ports). The two `PRIVATE_SERVER_KEY` values **must match** — they authenticate
+   the dashboard's server-to-server calls to the API.
+
+   - `apps/api/.env`:
+
+     ```bash
+     DATABASE_URL="postgresql://postgres:postgres@localhost:5432/classroomio"
+     REDIS_URL="redis://localhost:6379"
+     PUBLIC_SERVER_URL="http://localhost:3002"
+     TRUSTED_ORIGINS="http://localhost:5173"        # the dashboard dev origin
+     BETTER_AUTH_SECRET="local-dev-only-secret-change-this"
+     AUTH_BEARER_TOKEN="local-dev-api-key"
+     PRIVATE_SERVER_KEY="local-dev-api-key"          # must match the dashboard
+     DASHBOARD_ORIGIN="http://localhost:5173"        # optional; used for invite/email links back to the dashboard
+     ```
+
+   - `apps/dashboard/.env`:
+
+     ```bash
+     PUBLIC_SERVER_URL="http://localhost:3002"
+     PRIVATE_SERVER_URL="http://localhost:3002"      # used by the SSR auth proxy — required, or login returns "API upstream not configured"
+     PRIVATE_SERVER_KEY="local-dev-api-key"          # must match the API
+     PUBLIC_IS_SELFHOSTED=true
+     ```
+
+   - Running the background workers? Also create `apps/jobs/.env` (e.g. `cp apps/api/.env apps/jobs/.env`); it needs `REDIS_URL`. The `packages/db/.env` used by the DB scripts is set up in step 6.
+   - Optional for self-hosted Enterprise-only features (SSO, token-auth, no-tracking): set `LICENSE_KEY` in `apps/api/.env`.
+
+   > New to the project? See [`DEV_SETUP_NOTES.md`](DEV_SETUP_NOTES.md) for a full
+   > step-by-step setup walkthrough and a troubleshooting reference.
 
 6. Start local infrastructure for API (Postgres + Redis) and seed the DB:
 
    ```bash
-   docker compose -f docker/docker-compose.yaml up -d postgres redis db-init
+   docker compose -f docker/docker-compose.yaml up -d postgres redis
+   cp packages/db/.env.example packages/db/.env   # one-time (Windows: Copy-Item)
+   pnpm --filter @cio/db db:setup:seed
    ```
 
    - Connect with `DATABASE_URL=postgresql://postgres:postgres@localhost:5432/classroomio`
    - Connect with `REDIS_URL=redis://localhost:6379`
-   - The `db-init` container runs migrations/seed once Postgres is healthy.
+   - `db:setup:seed` creates the schema and seeds demo data once Postgres is up. The db scripts run with their own working directory, so they read `DATABASE_URL` from `packages/db/.env` (not `apps/api/.env`).
 
 7. (Optional) Start MinIO locally for object storage (media/documents):
 
@@ -171,6 +199,8 @@ The repository also contains shared packages under `packages/` (for example `pac
    ```bash
    pnpm dashboard:dev
    ```
+
+   - If you see `Failed to resolve entry for package "@cio/..."`, the shared workspace packages haven't been built yet (their `dist/` is missing). Build them once with `pnpm build`, then re-run the dev commands.
 
 9. Default local URLs:
 
