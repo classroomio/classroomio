@@ -1,4 +1,4 @@
-import { mkdir, stat } from 'node:fs/promises';
+import { mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 
@@ -46,6 +46,57 @@ function transcodeToMp3(inputPath: string, outputPath: string): Promise<void> {
 }
 
 /**
+ * Download an HLS media playlist and its segment objects from the videos
+ * bucket into a temp directory so ffmpeg can demux the audio track.
+ */
+async function downloadHlsPlaylistToTempFile(
+  bucket: string,
+  playlistKey: string
+): Promise<{ inputPath: string; tempDir: string }> {
+  const downloadedPlaylist = await downloadObjectToTempFile(bucket, playlistKey, 'playlist.m3u8');
+  const rawPlaylist = await readFile(downloadedPlaylist, 'utf-8');
+  await safeUnlink(downloadedPlaylist);
+
+  const tempDir = path.join(tmpdir(), 'cio-jobs', 'hls-audio', `${Date.now()}_${process.pid}`);
+  await mkdir(tempDir, { recursive: true });
+
+  const playlistPrefix = path.posix.dirname(playlistKey);
+  const localLines: string[] = [];
+
+  for (const line of rawPlaylist.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) {
+      localLines.push(line);
+      continue;
+    }
+
+    const segmentKey = trimmed.includes('/') ? trimmed : `${playlistPrefix}/${trimmed}`;
+    const localSegmentPath = path.join(tempDir, path.basename(trimmed));
+    const downloadedSegment = await downloadObjectToTempFile(bucket, segmentKey, path.basename(trimmed));
+    await rename(downloadedSegment, localSegmentPath);
+    localLines.push(path.basename(trimmed));
+  }
+
+  const inputPath = path.join(tempDir, 'playlist.m3u8');
+  await writeFile(inputPath, localLines.join('\n'));
+
+  return { inputPath, tempDir };
+}
+
+async function resolveAudioSourcePath(
+  bucket: string,
+  storageKey: string
+): Promise<{ inputPath: string; tempDir?: string }> {
+  if (storageKey.endsWith('.m3u8')) {
+    return downloadHlsPlaylistToTempFile(bucket, storageKey);
+  }
+
+  return {
+    inputPath: await downloadObjectToTempFile(bucket, storageKey, 'audio-source.bin')
+  };
+}
+
+/**
  * Extract a 16 kHz mono MP3 (32 kbps) from the source video for Whisper (25 MB
  * API limit). The transcribe step reads the object from the media bucket.
  */
@@ -71,9 +122,12 @@ export async function processExtractAudio(rawData: unknown): Promise<ExtractAudi
   });
 
   let inputPath: string | undefined;
+  let inputTempDir: string | undefined;
   let outputPath: string | undefined;
   try {
-    inputPath = await downloadObjectToTempFile(videosBucket(), storageKey, 'audio-source.bin');
+    const source = await resolveAudioSourcePath(videosBucket(), storageKey);
+    inputPath = source.inputPath;
+    inputTempDir = source.tempDir;
 
     const dir = path.join(tmpdir(), 'cio-jobs', 'audio');
     await mkdir(dir, { recursive: true });
@@ -112,7 +166,11 @@ export async function processExtractAudio(rawData: unknown): Promise<ExtractAudi
     });
     throw error;
   } finally {
-    await safeUnlink(inputPath);
+    if (inputTempDir) {
+      await rm(inputTempDir, { recursive: true, force: true }).catch(() => undefined);
+    } else {
+      await safeUnlink(inputPath);
+    }
     await safeUnlink(outputPath);
   }
 }

@@ -7,7 +7,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { VideoUploader } from '$lib/utils/services/courses/presign';
   import { MediaUploader } from './media-uploader';
-  import { encodeAndUploadHls, type HlsEncodeProgress } from './hls-encoder';
+  import { encodeAndUploadHls, cleanupAbortedHlsUpload, type HlsEncodeProgress } from './hls-encoder';
   import { env as publicEnv } from '$env/dynamic/public';
   import { Button } from '@cio/ui/base/button';
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
@@ -27,6 +27,7 @@
   let fileSize: number | undefined = $state();
   let hlsProgress: HlsEncodeProgress | null = $state(null);
   let hlsAbortController: AbortController | null = null;
+  let hlsReservedAssetId: string | null = $state(null);
 
   /**
    * HLS is the default upload path on Cloud. Self-hosted installs fall
@@ -122,16 +123,21 @@
 
     if (hlsEnabled) {
       hlsAbortController = new AbortController();
+      hlsReservedAssetId = null;
       try {
         const result = await encodeAndUploadHls({
           file: videoFile,
           title: videoFile.name,
           signal: hlsAbortController.signal,
+          onAssetReserved: (assetId) => {
+            hlsReservedAssetId = assetId;
+          },
           onProgress: (p) => {
             hlsProgress = p;
             $lessonVideoUpload.uploadProgress = p.percent;
           }
         });
+        hlsReservedAssetId = null;
 
         const lessonVideoPosition = Array.isArray(lessonApi.lesson?.videos) ? lessonApi.lesson?.videos.length : 0;
         if (_lessonId) {
@@ -184,6 +190,7 @@
         return;
       } catch (err) {
         console.error('HLS encode failed', err);
+        hlsReservedAssetId = null;
         formRes = {
           type: 'INTERNAL_ERROR',
           status: 500,
@@ -343,6 +350,12 @@
   function cancelUpload() {
     videoUploader.abortController?.abort();
     hlsAbortController?.abort();
+
+    const reservedAssetId = hlsReservedAssetId;
+    hlsReservedAssetId = null;
+    if (reservedAssetId) {
+      void cleanupAbortedHlsUpload(reservedAssetId);
+    }
 
     cancelVideoUpload();
 

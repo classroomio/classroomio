@@ -16,7 +16,6 @@ import {
   HlsOutputFormat,
   Input,
   MpegTsOutputFormat,
-  Mp4OutputFormat,
   Output,
   PathedTarget,
   ALL_FORMATS,
@@ -70,18 +69,34 @@ export const ALL_HLS_RUNGS: HlsRungConfig[] = [
 export const P1080_RUNG = ALL_HLS_RUNGS.find((rung) => rung.name === 'p1080')!;
 
 const DEFAULT_MAX_RUNG_HEIGHT = 720;
+/** Above this size, encode a single ladder rung to avoid doubling encode time on large sources. */
+const LARGE_FILE_SINGLE_RUNG_BYTES = 100 * 1024 * 1024;
 
 /** Source-capped rungs up to `maxHeight` — never upscales beyond the source. */
-export function selectRungsForSource(track: InputVideoTrack, maxHeight = DEFAULT_MAX_RUNG_HEIGHT): HlsRungConfig[] {
+export function selectRungsForSource(
+  track: InputVideoTrack,
+  maxHeight = DEFAULT_MAX_RUNG_HEIGHT,
+  fileSizeBytes?: number
+): HlsRungConfig[] {
   const sourceHeight = track.displayHeight ?? 0;
+  const eligible = ALL_HLS_RUNGS.filter((rung) => rung.height <= Math.min(maxHeight, sourceHeight));
 
-  return ALL_HLS_RUNGS.filter((rung) => rung.height <= Math.min(maxHeight, sourceHeight));
+  if (!eligible.length) return [];
+
+  // Large uploads spend most of the wait in WebCodecs. A single rung (typically
+  // 720p) finishes roughly twice as fast as a 360p+720p ladder while still
+  // delivering HD playback; smaller files keep the full ABR ladder.
+  if (fileSizeBytes != null && fileSizeBytes >= LARGE_FILE_SINGLE_RUNG_BYTES && eligible.length > 1) {
+    return [eligible[eligible.length - 1]!];
+  }
+
+  return eligible;
 }
 
 const AUDIO_BITRATE = 128_000;
 const HLS_TARGET_SEGMENT_SECONDS = 4;
 /** Cap parallel segment PUTs — unbounded concurrency can overwhelm R2 and fail mid-upload. */
-const HLS_UPLOAD_CONCURRENCY = 8;
+const HLS_UPLOAD_CONCURRENCY = 16;
 const HLS_PUT_MAX_ATTEMPTS = 4;
 /** Server validation allows up to 2000 paths per presign request. */
 const PRESIGN_BATCH_SIZE = 1500;
@@ -103,6 +118,7 @@ export interface EncodeAndUploadOptions {
   title?: string;
   rungs?: HlsRungConfig[];
   onProgress?: (progress: HlsEncodeProgress) => void;
+  onAssetReserved?: (assetId: string) => void;
   signal?: AbortSignal;
 }
 
@@ -111,6 +127,54 @@ export interface EncodeAndUpload1080Options {
   assetId: string;
   onProgress?: (progress: HlsEncodeProgress) => void;
   signal?: AbortSignal;
+}
+
+const CLEANUP_MAX_ATTEMPTS = 3;
+
+/** Best-effort cleanup for a reserved `processing` HLS asset after failure or cancel. */
+export async function cleanupAbortedHlsUpload(assetId: string, signal?: AbortSignal): Promise<void> {
+  for (let attempt = 1; attempt <= CLEANUP_MAX_ATTEMPTS; attempt += 1) {
+    try {
+      const response = await classroomio.organization.assets[':assetId'].hls.$delete({
+        param: { assetId },
+        signal
+      });
+
+      if (response.ok) return;
+
+      if (response.status === 404 || response.status === 409) return;
+    } catch (error) {
+      if (attempt === CLEANUP_MAX_ATTEMPTS) {
+        console.warn('Failed to abort HLS asset after encode error', error);
+        return;
+      }
+    }
+
+    await sleep(Math.min(500 * 2 ** (attempt - 1), 4000));
+  }
+}
+
+/** Best-effort cleanup for a failed manual p1080 rendition on an active asset. */
+export async function cleanupAbortedHls1080Upload(assetId: string, signal?: AbortSignal): Promise<void> {
+  for (let attempt = 1; attempt <= CLEANUP_MAX_ATTEMPTS; attempt += 1) {
+    try {
+      const response = await classroomio.organization.assets[':assetId'].hls['1080'].$delete({
+        param: { assetId },
+        signal
+      });
+
+      if (response.ok) return;
+
+      if (response.status === 404 || response.status === 409) return;
+    } catch (error) {
+      if (attempt === CLEANUP_MAX_ATTEMPTS) {
+        console.warn('Failed to abort partial 1080p HLS rendition', error);
+        return;
+      }
+    }
+
+    await sleep(Math.min(500 * 2 ** (attempt - 1), 4000));
+  }
 }
 
 /**
@@ -148,7 +212,7 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
     const aspectRatio = computeAspectRatioLabel(videoTrack);
     const sourceWidth = videoTrack.displayWidth ?? 0;
     const sourceHeight = videoTrack.displayHeight ?? 0;
-    const rungs = opts.rungs ?? selectRungsForSource(videoTrack, DEFAULT_MAX_RUNG_HEIGHT);
+    const rungs = opts.rungs ?? selectRungsForSource(videoTrack, DEFAULT_MAX_RUNG_HEIGHT, opts.file.size);
     if (rungs.length === 0) {
       throw new HlsEncoderError('encode_failed', 'Source resolution is too low for HLS encoding');
     }
@@ -168,6 +232,7 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
     }
     const { assetId } = initBody.data;
     reservedAssetId = assetId;
+    opts.onAssetReserved?.(assetId);
 
     // --- Pre-presign every file Mediabunny will write ------------------
     // Segments are deterministic from rung name + segment index, so we
@@ -177,12 +242,20 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
     emit({ stage: 'encoding', percent: 1 });
     const expectedPaths = predictHlsPaths(rungs, duration, Boolean(audioTrack));
     const presignedUrls = await batchPresignPaths(assetId, expectedPaths);
+    const expectedUploadBytes = estimateHlsUploadBytes(rungs, duration, Boolean(audioTrack));
 
     const uploader = new HlsUploader({
       assetId,
       presignedUrls,
       onUploaded: ({ totalBytes, count }) => {
-        emit({ uploadedBytes: totalBytes, uploadedCount: count });
+        const uploadFraction = Math.min(1, totalBytes / expectedUploadBytes);
+        const uploadPercent = 73 + Math.round(uploadFraction * 22);
+        emit({
+          uploadedBytes: totalBytes,
+          uploadedCount: count,
+          stage: uploadFraction > 0 ? 'uploading' : progress.stage,
+          percent: Math.max(progress.percent, uploadPercent)
+        });
       },
       signal: opts.signal
     });
@@ -247,8 +320,12 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
     });
 
     conversion.onProgress = (fraction) => {
-      // Reserve 70% of the bar for the encode itself; uploads finish behind it.
-      emit({ percent: Math.min(72, 2 + Math.round(fraction * 70)) });
+      // Reserve ~70% of the bar for encode; segment uploads continue in parallel.
+      const encodePercent = Math.min(72, 2 + Math.round(fraction * 70));
+      emit({
+        stage: progress.stage === 'uploading' ? 'uploading' : 'encoding',
+        percent: Math.max(progress.percent, encodePercent)
+      });
     };
 
     if (!conversion.isValid) {
@@ -259,30 +336,12 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
     }
 
     await conversion.execute();
+    emit({ stage: 'uploading', percent: 73 });
     await uploader.flush();
 
-    // --- Audio-only output for transcription --------------------------
-    let audioKey: string | undefined;
-    if (audioTrack) {
-      const audioOutput = new Output({
-        format: new Mp4OutputFormat(),
-        target: new BufferTarget({
-          onFinalize: async (buffer) => {
-            audioKey = await uploader.uploadSingle('audio.m4a', 'audio/mp4', buffer);
-          }
-        })
-      });
-      const audioConversion = await Conversion.init({
-        input,
-        output: audioOutput,
-        video: { discard: true },
-        audio: { codec: 'aac', bitrate: AUDIO_BITRATE, numberOfChannels: 1, sampleRate: 16_000 },
-        showWarnings: false
-      });
-      if (audioConversion.isValid) {
-        await audioConversion.execute();
-      }
-    }
+    // HLS audio segments are enough for server-side Whisper prep — no second
+    // full pass through the source file for a separate audio.m4a upload.
+    const audioKey = audioTrack ? `${assetId}/audio/playlist.m3u8` : undefined;
 
     // --- Thumbnails ----------------------------------------------------
     emit({ stage: 'thumbnail', percent: 86 });
@@ -339,11 +398,7 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
     // already sees the original failure, and a stuck `processing` row is
     // recoverable via an admin sweep anyway.
     if (reservedAssetId) {
-      try {
-        await classroomio.organization.assets[':assetId'].hls.$delete({ param: { assetId: reservedAssetId } });
-      } catch (cleanupError) {
-        console.warn('Failed to abort HLS asset after encode error', cleanupError);
-      }
+      await cleanupAbortedHlsUpload(reservedAssetId, opts.signal);
     }
 
     throw error;
@@ -484,6 +539,8 @@ export async function encodeAndUploadHls1080(opts: EncodeAndUpload1080Options): 
     const code = error instanceof HlsEncoderError ? error.code : 'encode_failed';
     const message = error instanceof Error ? error.message : 'Unknown encoder error';
     emit({ stage: 'failed', error: `${code}: ${message}` });
+
+    await cleanupAbortedHls1080Upload(opts.assetId, opts.signal);
     throw error;
   }
 }
@@ -512,9 +569,8 @@ interface PresignedUrl {
  *
  * When the source has audio, Mediabunny's HLS output emits a separate
  * `audio/` playlist + its own segments alongside the video rungs (the
- * master playlist groups them via `#EXT-X-MEDIA`). We presign those too.
- * The trailing `audio.m4a` is the separate transcription-only output we
- * run after the HLS conversion.
+ * master playlist groups them via `#EXT-X-MEDIA`). We presign those too;
+ * the jobs worker demuxes that playlist for Whisper transcription.
  */
 function predictHlsPaths(rungs: HlsRungConfig[], duration: number, hasAudio: boolean): string[] {
   const paths: string[] = ['master.m3u8'];
@@ -531,7 +587,6 @@ function predictHlsPaths(rungs: HlsRungConfig[], duration: number, hasAudio: boo
     for (let i = 1; i <= segmentCount; i++) {
       paths.push(`audio/seg-${pad(i, 5)}.ts`);
     }
-    paths.push('audio.m4a');
   }
 
   return paths;
@@ -705,8 +760,8 @@ class HlsUploader {
 
   targetFor(path: string, mimeType: string): BufferTarget {
     return new BufferTarget({
-      onFinalize: async (buffer) => {
-        await this.uploadSingle(path, mimeType, buffer);
+      onFinalize: (buffer) => {
+        void this.uploadSingle(path, mimeType, buffer);
       }
     });
   }
@@ -731,9 +786,7 @@ class HlsUploader {
       }
 
       const contentType = uploadContentTypeForPath(path, mimeType);
-      const owned = new Uint8Array(u8.byteLength);
-      owned.set(u8);
-      const body = new Blob([owned], { type: contentType });
+      const body = new Blob([u8], { type: contentType });
       presigned = await putPresignedObject({
         path,
         presigned,
@@ -748,7 +801,7 @@ class HlsUploader {
       });
       this.options.presignedUrls.set(path, presigned);
 
-      this.totalBytes += owned.byteLength;
+      this.totalBytes += u8.byteLength;
       this.uploadedCount += 1;
       this.options.onUploaded({ totalBytes: this.totalBytes, count: this.uploadedCount });
       return presigned.key;
@@ -905,6 +958,17 @@ function computeAspectRatioLabel(track: InputVideoTrack): string {
 
 function pad(n: number, width: number): string {
   return n.toString().padStart(width, '0');
+}
+
+/** Rough byte budget for progress UI — actual HLS output varies with content complexity. */
+function estimateHlsUploadBytes(rungs: HlsRungConfig[], durationSeconds: number, hasAudio: boolean): number {
+  const segmentCount = Math.max(1, Math.ceil(durationSeconds / HLS_TARGET_SEGMENT_SECONDS)) + 5;
+  const playlistOverhead = 32 * 1024 * (rungs.length + (hasAudio ? 2 : 1));
+  const videoBytes =
+    rungs.reduce((sum, rung) => sum + rung.videoBitrate * durationSeconds, 0) / 8 + segmentCount * rungs.length * 4096;
+  const audioBytes = hasAudio ? (AUDIO_BITRATE * durationSeconds) / 8 + segmentCount * 4096 : 0;
+
+  return Math.max(1, Math.round(playlistOverhead + videoBytes + audioBytes));
 }
 
 async function fetchExistingMasterManifest(assetId: string, signal?: AbortSignal): Promise<string> {

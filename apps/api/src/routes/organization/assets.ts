@@ -19,6 +19,7 @@ import {
 import { ZUpdateTranscript } from '@cio/utils/validation/media';
 import {
   abortHlsAssetService,
+  abortHls1080RenditionService,
   attachAssetService,
   batchPresignHlsService,
   batchPresignHls1080Service,
@@ -226,6 +227,22 @@ export const assetsRouter = new Hono()
       return c.json({ success: true, data: deleted }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to abort HLS asset');
+    }
+  })
+  /**
+   * DELETE /organization/assets/:assetId/hls/1080
+   * Drop a failed manual p1080 rendition: delete partial segments, restore
+   * the master manifest, and reset rendition metadata.
+   */
+  .delete('/:assetId/hls/1080', authMiddleware, orgMemberMiddleware, zValidator('param', ZAssetGetParam), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const { assetId } = c.req.valid('param');
+      const updated = await abortHls1080RenditionService(orgId, assetId);
+
+      return c.json({ success: true, data: updated }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to abort 1080p HLS rendition');
     }
   })
   /**

@@ -699,7 +699,11 @@ export async function issuePublicHlsCookie(assetId: string) {
 
 // --- HLS upload lifecycle ---
 
-async function deleteHlsAssetObjects(bucket: string, prefix: string): Promise<void> {
+function sleepMs(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function deleteHlsAssetObjectsOnce(bucket: string, prefix: string): Promise<void> {
   const { DeleteObjectsCommand, ListObjectsV2Command } = await import('@aws-sdk/client-s3');
   const client = getS3Client();
 
@@ -721,6 +725,66 @@ async function deleteHlsAssetObjects(bucket: string, prefix: string): Promise<vo
   } while (continuationToken);
 }
 
+async function deleteHlsAssetObjects(bucket: string, prefix: string, maxAttempts = 3): Promise<void> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      await deleteHlsAssetObjectsOnce(bucket, prefix);
+      return;
+    } catch (error) {
+      lastError = error;
+      console.error(`deleteHlsAssetObjects attempt ${attempt}/${maxAttempts} failed for prefix ${prefix}`, error);
+      if (attempt < maxAttempts) {
+        await sleepMs(Math.min(500 * 2 ** (attempt - 1), 4000));
+      }
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error(`Failed to delete HLS objects under ${prefix}`);
+}
+
+async function writeHlsManifestBody(bucket: string, key: string, body: string): Promise<void> {
+  const { PutObjectCommand } = await import('@aws-sdk/client-s3');
+  const client = getS3Client();
+  await client.send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: body,
+      ContentType: 'application/vnd.apple.mpegurl'
+    })
+  );
+}
+
+function stripP1080FromMasterManifest(manifest: string): string {
+  const lines = manifest.split('\n');
+  const result: string[] = [];
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index]?.trim() ?? '';
+    if (line === 'p1080/playlist.m3u8') {
+      const previous = result[result.length - 1]?.trim() ?? '';
+      if (previous.startsWith('#EXT-X-STREAM-INF')) {
+        result.pop();
+      }
+      continue;
+    }
+
+    if (line.startsWith('#EXT-X-STREAM-INF')) {
+      const nextLine = lines[index + 1]?.trim() ?? '';
+      if (nextLine === 'p1080/playlist.m3u8') {
+        index += 1;
+        continue;
+      }
+    }
+
+    result.push(lines[index]!);
+  }
+
+  return `${result.join('\n').trimEnd()}\n`;
+}
+
 /**
  * Abort a `processing` HLS asset: clean up any partial R2 objects under
  * `videos/{assetId}/` and delete the asset row. Idempotent — caller can
@@ -729,12 +793,23 @@ async function deleteHlsAssetObjects(bucket: string, prefix: string): Promise<vo
  */
 export async function abortHlsAssetService(orgId: string, assetId: string) {
   try {
-    const asset = assertAssetExists(await getAssetById(assetId, orgId));
+    const config = getStorageConfig();
+    const asset = await getAssetById(assetId, orgId);
+
+    if (!asset) {
+      try {
+        await deleteHlsAssetObjects(config.bucketVideos, `${assetId}/`);
+      } catch (error) {
+        console.error('abortHlsAssetService: orphan sweep failed for missing asset row', error);
+      }
+
+      throw new AppError('Asset not found', ErrorCodes.ASSET_NOT_FOUND, 404);
+    }
+
     if (asset.status !== 'processing') {
       throw new AppError('Asset is not in processing state', ErrorCodes.VALIDATION_ERROR, 409);
     }
 
-    const config = getStorageConfig();
     try {
       await deleteHlsAssetObjects(config.bucketVideos, `${assetId}/`);
     } catch (error) {
@@ -750,6 +825,53 @@ export async function abortHlsAssetService(orgId: string, assetId: string) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to abort HLS asset',
       ErrorCodes.ASSET_DELETE_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Drop a failed manual p1080 rendition: delete partial `p1080/` objects,
+ * restore the master manifest if it was patched, and reset rendition metadata.
+ */
+export async function abortHls1080RenditionService(orgId: string, assetId: string) {
+  try {
+    const asset = assertAssetExists(await getAssetById(assetId, orgId));
+    if (asset.status !== 'active' || !asset.hlsManifestKey) {
+      throw new AppError('Asset has no active HLS manifest', ErrorCodes.VALIDATION_ERROR, 409);
+    }
+
+    const config = getStorageConfig();
+    try {
+      await deleteHlsAssetObjects(config.bucketVideos, `${assetId}/p1080/`);
+    } catch (error) {
+      console.error('abortHls1080RenditionService: failed to delete p1080 objects', error);
+    }
+
+    const manifestKey = asset.hlsManifestKey;
+    const manifestBody = await readHlsManifestBody(config.bucketVideos, manifestKey);
+    const strippedManifest = stripP1080FromMasterManifest(manifestBody);
+    if (strippedManifest !== manifestBody) {
+      await writeHlsManifestBody(config.bucketVideos, manifestKey, strippedManifest);
+    }
+
+    const metadata = readHlsAssetMetadata(asset);
+    const renditions = (metadata.hlsRenditions ?? []).filter((rendition) => rendition !== 'p1080');
+    const mergedMetadata = {
+      ...(typeof asset.metadata === 'object' && asset.metadata !== null && !Array.isArray(asset.metadata)
+        ? asset.metadata
+        : {}),
+      hlsRenditions: renditions,
+      hls1080Status: 'none' as THls1080Status
+    };
+
+    const updated = await updateAsset(assetId, orgId, { metadata: mergedMetadata });
+    return assertAssetExists(updated);
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to abort 1080p HLS rendition',
+      ErrorCodes.ASSET_UPDATE_FAILED,
       500
     );
   }
