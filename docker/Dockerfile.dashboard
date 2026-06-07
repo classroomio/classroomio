@@ -12,16 +12,16 @@ COPY . .
 
 RUN pnpm install --frozen-lockfile --ignore-scripts --filter @cio/dashboard...
 RUN find . -name 'tsconfig.tsbuildinfo' -delete
-RUN NODE_OPTIONS="--max-old-space-size=3072" \
+RUN NODE_OPTIONS="--max-old-space-size=8072" \
     PUBLIC_IS_SELFHOSTED="${PUBLIC_IS_SELFHOSTED}" \
     pnpm -r --filter @cio/dashboard... build
 
 RUN test -f apps/dashboard/build/index.js || (echo "ERROR: Dashboard build output not found at apps/dashboard/build/index.js" && exit 1)
 
-EXPOSE 3082
+EXPOSE 3000
 
 ENV NODE_ENV=production \
-    PORT=3082 \
+    PORT=3000 \
     PUBLIC_IS_SELFHOSTED=true
 
 WORKDIR /app/apps/dashboard
