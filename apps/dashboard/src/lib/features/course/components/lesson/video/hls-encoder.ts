@@ -80,6 +80,18 @@ export function selectRungsForSource(track: InputVideoTrack, maxHeight = DEFAULT
 
 const AUDIO_BITRATE = 128_000;
 const HLS_TARGET_SEGMENT_SECONDS = 4;
+/** Cap parallel segment PUTs — unbounded concurrency can overwhelm R2 and fail mid-upload. */
+const HLS_UPLOAD_CONCURRENCY = 8;
+const HLS_PUT_MAX_ATTEMPTS = 4;
+/** Server validation allows up to 2000 paths per presign request. */
+const PRESIGN_BATCH_SIZE = 1500;
+/** Must match `HLS_CONTENT_TYPES` in `@cio/core` presign signing. */
+const HLS_UPLOAD_CONTENT_TYPES: Record<string, string> = {
+  '.m3u8': 'application/vnd.apple.mpegurl',
+  '.ts': 'video/mp2t',
+  '.m4a': 'audio/mp4',
+  '.mp4': 'video/mp4'
+};
 const THUMBNAIL_FRACTIONS = [0.3, 0.5, 0.7];
 /** Hard ceiling for a generated thumbnail (matches the server job). */
 const THUMBNAIL_MAX_BYTES = 500 * 1024;
@@ -526,19 +538,39 @@ function predictHlsPaths(rungs: HlsRungConfig[], duration: number, hasAudio: boo
 }
 
 async function batchPresignPaths(assetId: string, paths: string[]): Promise<Map<string, PresignedUrl>> {
-  const response = await classroomio.organization.assets[':assetId'].hls.presign.$post({
-    param: { assetId },
-    json: { paths }
-  });
-  return parsePresignResponse(paths, response);
+  return batchPresignPathChunks(assetId, paths, 'default');
 }
 
 async function batchPresign1080Paths(assetId: string, paths: string[]): Promise<Map<string, PresignedUrl>> {
-  const response = await classroomio.organization.assets[':assetId'].hls['1080'].presign.$post({
-    param: { assetId },
-    json: { paths }
-  });
-  return parsePresignResponse(paths, response);
+  return batchPresignPathChunks(assetId, paths, '1080');
+}
+
+async function batchPresignPathChunks(
+  assetId: string,
+  paths: string[],
+  endpoint: 'default' | '1080'
+): Promise<Map<string, PresignedUrl>> {
+  const map = new Map<string, PresignedUrl>();
+
+  for (let offset = 0; offset < paths.length; offset += PRESIGN_BATCH_SIZE) {
+    const chunk = paths.slice(offset, offset + PRESIGN_BATCH_SIZE);
+    const response =
+      endpoint === '1080'
+        ? await classroomio.organization.assets[':assetId'].hls['1080'].presign.$post({
+            param: { assetId },
+            json: { paths: chunk }
+          })
+        : await classroomio.organization.assets[':assetId'].hls.presign.$post({
+            param: { assetId },
+            json: { paths: chunk }
+          });
+    const chunkMap = await parsePresignResponse(chunk, response);
+    for (const [path, presigned] of chunkMap) {
+      map.set(path, presigned);
+    }
+  }
+
+  return map;
 }
 
 async function parsePresignResponse(paths: string[], response: Response): Promise<Map<string, PresignedUrl>> {
@@ -551,10 +583,99 @@ async function parsePresignResponse(paths: string[], response: Response): Promis
   for (const path of paths) {
     const url = body.data.urls[path];
     const key = body.data.keys[path];
-    if (url && key) map.set(path, { url, key });
+    if (!url || !key) {
+      throw new HlsEncoderError('upload_failed', `Presign missing url for ${path}`);
+    }
+
+    map.set(path, { url, key });
   }
 
   return map;
+}
+
+function uploadContentTypeForPath(path: string, fallbackMimeType: string): string {
+  const dotIndex = path.lastIndexOf('.');
+  if (dotIndex === -1) return fallbackMimeType;
+
+  return HLS_UPLOAD_CONTENT_TYPES[path.slice(dotIndex).toLowerCase()] ?? fallbackMimeType;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+class ConcurrencyGate {
+  private active = 0;
+  private queue: (() => void)[] = [];
+
+  constructor(private readonly limit: number) {}
+
+  async run<T>(task: () => Promise<T>): Promise<T> {
+    await this.acquire();
+
+    try {
+      return await task();
+    } finally {
+      this.release();
+    }
+  }
+
+  private acquire(): Promise<void> {
+    if (this.active < this.limit) {
+      this.active += 1;
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+      this.queue.push(() => {
+        this.active += 1;
+        resolve();
+      });
+    });
+  }
+
+  private release(): void {
+    this.active -= 1;
+    const next = this.queue.shift();
+    if (next) next();
+  }
+}
+
+async function putPresignedObject(options: {
+  path: string;
+  presigned: PresignedUrl;
+  body: Blob;
+  contentType: string;
+  signal?: AbortSignal;
+  refreshPresign: () => Promise<PresignedUrl>;
+}): Promise<PresignedUrl> {
+  let presigned = options.presigned;
+
+  for (let attempt = 1; attempt <= HLS_PUT_MAX_ATTEMPTS; attempt += 1) {
+    const response = await fetch(presigned.url, {
+      method: 'PUT',
+      headers: { 'Content-Type': options.contentType },
+      body: options.body,
+      signal: options.signal
+    });
+
+    if (response.ok) return presigned;
+
+    const retryable = response.status === 403 || response.status === 429 || response.status >= 500;
+    if (!retryable || attempt === HLS_PUT_MAX_ATTEMPTS) {
+      const detail = await response.text().catch(() => '');
+      const suffix = detail ? `: ${detail.slice(0, 160)}` : '';
+      throw new HlsEncoderError('upload_failed', `PUT ${options.path} → ${response.status}${suffix}`);
+    }
+
+    if (response.status === 403) {
+      presigned = await options.refreshPresign();
+    }
+
+    await sleep(Math.min(1000 * 2 ** (attempt - 1), 8000));
+  }
+
+  throw new HlsEncoderError('upload_failed', `PUT ${options.path} failed`);
 }
 
 /**
@@ -568,6 +689,7 @@ class HlsUploader {
   private uploadedCount = 0;
   private inflight: Promise<void>[] = [];
   private uploadFailures: unknown[] = [];
+  private readonly uploadGate = new ConcurrencyGate(HLS_UPLOAD_CONCURRENCY);
 
   constructor(
     private readonly options: {
@@ -595,7 +717,7 @@ class HlsUploader {
     buffer: ArrayBuffer | Uint8Array,
     options?: { force?: boolean }
   ): Promise<string> {
-    const upload = (async () => {
+    const upload = this.uploadGate.run(async () => {
       const u8 = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
       if (!options?.force && this.options.skipPaths?.has(path)) {
         this.options.capturedFiles?.set(path, u8);
@@ -608,24 +730,29 @@ class HlsUploader {
         this.options.presignedUrls.set(path, presigned);
       }
 
+      const contentType = uploadContentTypeForPath(path, mimeType);
       const owned = new Uint8Array(u8.byteLength);
       owned.set(u8);
-      const body = new Blob([owned], { type: mimeType });
-      const res = await fetch(presigned.url, {
-        method: 'PUT',
-        headers: { 'Content-Type': mimeType },
+      const body = new Blob([owned], { type: contentType });
+      presigned = await putPresignedObject({
+        path,
+        presigned,
         body,
-        signal: this.options.signal
+        contentType,
+        signal: this.options.signal,
+        refreshPresign: async () => {
+          const refreshed = await this.fallbackPresign(path);
+          this.options.presignedUrls.set(path, refreshed);
+          return refreshed;
+        }
       });
-      if (!res.ok) {
-        throw new HlsEncoderError('upload_failed', `PUT ${path} → ${res.status}`);
-      }
+      this.options.presignedUrls.set(path, presigned);
 
       this.totalBytes += owned.byteLength;
       this.uploadedCount += 1;
       this.options.onUploaded({ totalBytes: this.totalBytes, count: this.uploadedCount });
       return presigned.key;
-    })();
+    });
 
     const tracked = upload.then(
       () => undefined,
