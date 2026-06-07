@@ -1,4 +1,4 @@
-import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { GetObjectCommand, HeadObjectCommand, NotFound, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Readable } from 'node:stream';
 import { createWriteStream } from 'node:fs';
 import { mkdir, readFile, unlink } from 'node:fs/promises';
@@ -13,6 +13,24 @@ import { getS3Client, getStorageConfig } from '../config/storage';
  * Workers prefer disk over buffers so ffmpeg can seek without holding the
  * whole video in RAM.
  */
+export async function objectExists(bucket: string, key: string): Promise<boolean> {
+  try {
+    await getS3Client().send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
+    return true;
+  } catch (error) {
+    if (error instanceof NotFound || (error as { name?: string }).name === 'NotFound') {
+      return false;
+    }
+
+    const status = (error as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode;
+    if (status === 404) {
+      return false;
+    }
+
+    throw error;
+  }
+}
+
 export async function downloadObjectToTempFile(bucket: string, key: string, fileNameHint?: string): Promise<string> {
   const dir = path.join(tmpdir(), 'cio-jobs');
   await mkdir(dir, { recursive: true });

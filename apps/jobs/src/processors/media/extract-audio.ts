@@ -2,12 +2,13 @@ import { mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 
-import { getJobStep, updateMediaJob, upsertJobStep } from '@cio/db/queries';
+import { getAssetById, getJobStep, updateMediaJob, upsertJobStep } from '@cio/db/queries';
 import { ZExtractAudioPayload, type TExtractAudioPayload } from '@cio/jobs/payloads/media';
 
 import {
   downloadObjectToTempFile,
   mediaBucket,
+  objectExists,
   safeUnlink,
   uploadFileToBucket,
   videosBucket
@@ -83,6 +84,60 @@ async function downloadHlsPlaylistToTempFile(
   return { inputPath, tempDir };
 }
 
+type HlsAssetMetadata = {
+  hlsRenditions?: string[];
+};
+
+function readHlsRenditions(metadata: unknown): string[] {
+  if (typeof metadata !== 'object' || metadata === null || Array.isArray(metadata)) {
+    return [];
+  }
+
+  return (metadata as HlsAssetMetadata).hlsRenditions ?? [];
+}
+
+/**
+ * Pick the first videos-bucket object that actually exists. HLS assets may
+ * store a dedicated audio playlist, a legacy audio.m4a, or only muxed audio
+ * inside a video rendition playlist.
+ */
+async function resolveTranscriptionSourceKey(assetId: string, payloadStorageKey: string): Promise<string> {
+  const asset = await getAssetById(assetId);
+  if (!asset) {
+    throw new Error(`Asset ${assetId} not found`);
+  }
+
+  const candidates: string[] = [];
+  const push = (key: string | null | undefined) => {
+    if (key && !candidates.includes(key)) {
+      candidates.push(key);
+    }
+  };
+
+  push(asset.hlsAudioKey);
+  push(payloadStorageKey);
+  push(asset.storageKey);
+
+  if (asset.hlsManifestKey) {
+    const prefix = `${assetId}/`;
+    push(`${prefix}audio/playlist.m3u8`);
+    push(`${prefix}audio.m4a`);
+    for (const rung of [...readHlsRenditions(asset.metadata)].reverse()) {
+      push(`${prefix}${rung}/playlist.m3u8`);
+    }
+  }
+
+  const bucket = videosBucket();
+  for (const key of candidates) {
+    if (await objectExists(bucket, key)) {
+      log.info('extract-audio-source-resolved', { assetId, key });
+      return key;
+    }
+  }
+
+  throw new Error(`No transcription source object found for asset ${assetId} (tried ${candidates.join(', ')})`);
+}
+
 async function resolveAudioSourcePath(
   bucket: string,
   storageKey: string
@@ -125,7 +180,8 @@ export async function processExtractAudio(rawData: unknown): Promise<ExtractAudi
   let inputTempDir: string | undefined;
   let outputPath: string | undefined;
   try {
-    const source = await resolveAudioSourcePath(videosBucket(), storageKey);
+    const resolvedStorageKey = await resolveTranscriptionSourceKey(assetId, storageKey);
+    const source = await resolveAudioSourcePath(videosBucket(), resolvedStorageKey);
     inputPath = source.inputPath;
     inputTempDir = source.tempDir;
 

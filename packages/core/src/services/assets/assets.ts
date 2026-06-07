@@ -1209,10 +1209,9 @@ export async function finalizeHls1080Service(orgId: string, assetId: string, dat
 }
 
 /**
- * HLS assets ship audio as a separate `audio.m4a` already extracted by
- * Mediabunny in the browser. The existing transcription pipeline accepts
- * any media key in the videos bucket — its extract-audio leg is a no-op
- * on input that's already audio.
+ * HLS assets ship audio as HLS segments (dedicated `audio/` playlist or muxed
+ * into a video rendition). The transcription pipeline demuxes those segments
+ * server-side before calling Whisper.
  */
 async function enqueueAudioTranscriptionForAsset(input: {
   organizationId: string;

@@ -339,9 +339,9 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
     emit({ stage: 'uploading', percent: 73 });
     await uploader.flush();
 
-    // HLS audio segments are enough for server-side Whisper prep — no second
-    // full pass through the source file for a separate audio.m4a upload.
-    const audioKey = audioTrack ? `${assetId}/audio/playlist.m3u8` : undefined;
+    // Prefer the dedicated HLS audio playlist when present; otherwise fall
+    // back to the highest uploaded video rendition (muxed audio is fine for Whisper).
+    const audioKey = audioTrack ? resolveTranscriptionAudioKey(assetId, rungs, uploader) : undefined;
 
     // --- Thumbnails ----------------------------------------------------
     emit({ stage: 'thumbnail', percent: 86 });
@@ -744,6 +744,7 @@ class HlsUploader {
   private uploadedCount = 0;
   private inflight: Promise<void>[] = [];
   private uploadFailures: unknown[] = [];
+  private readonly uploadedPaths = new Set<string>();
   private readonly uploadGate = new ConcurrencyGate(HLS_UPLOAD_CONCURRENCY);
 
   constructor(
@@ -757,6 +758,10 @@ class HlsUploader {
       capturedFiles?: Map<string, Uint8Array>;
     }
   ) {}
+
+  hasUploaded(relativePath: string): boolean {
+    return this.uploadedPaths.has(relativePath);
+  }
 
   targetFor(path: string, mimeType: string): BufferTarget {
     return new BufferTarget({
@@ -801,6 +806,7 @@ class HlsUploader {
       });
       this.options.presignedUrls.set(path, presigned);
 
+      this.uploadedPaths.add(path);
       this.totalBytes += u8.byteLength;
       this.uploadedCount += 1;
       this.options.onUploaded({ totalBytes: this.totalBytes, count: this.uploadedCount });
@@ -958,6 +964,28 @@ function computeAspectRatioLabel(track: InputVideoTrack): string {
 
 function pad(n: number, width: number): string {
   return n.toString().padStart(width, '0');
+}
+
+function resolveTranscriptionAudioKey(
+  assetId: string,
+  rungs: HlsRungConfig[],
+  uploader: HlsUploader
+): string | undefined {
+  if (uploader.hasUploaded('audio/playlist.m3u8')) {
+    return `${assetId}/audio/playlist.m3u8`;
+  }
+
+  for (let index = rungs.length - 1; index >= 0; index -= 1) {
+    const rung = rungs[index];
+    if (!rung) continue;
+
+    const playlistPath = `${rung.name}/playlist.m3u8`;
+    if (uploader.hasUploaded(playlistPath)) {
+      return `${assetId}/${playlistPath}`;
+    }
+  }
+
+  return undefined;
 }
 
 /** Rough byte budget for progress UI — actual HLS output varies with content complexity. */
