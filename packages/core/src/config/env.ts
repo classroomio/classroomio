@@ -52,17 +52,12 @@ const envSchema = z.object({
   /** Dashboard origin for invite/email links (e.g. https://app.yourdomain.com). When set, all email links point here instead of app.classroomio.com. Required for self-hosted. */
   DASHBOARD_ORIGIN: z.string().optional(),
   /**
-   * Comma-separated list of Better Auth user emails allowed to access the
-   * BullMQ dashboard at /admin/queues in production. Leave unset to keep the
-   * dashboard hidden everywhere except dev.
+   * Shared password for the /admin/queues HTTP Basic Auth prompt. When set, the
+   * dashboard mounts in production and challenges with `WWW-Authenticate: Basic`,
+   * accepting any username with this password — keeps the secret out of the
+   * URL/history. Leave unset to keep the dashboard hidden outside dev.
    */
-  QUEUE_DASHBOARD_ADMIN_EMAILS: z.string().optional(),
-  /**
-   * Bearer-token escape hatch for /admin/queues — useful for curl scripts or
-   * when SSO is unavailable. When set, requests with `Authorization: Bearer
-   * <token>` (or `?token=<token>`) bypass the email allowlist.
-   */
-  QUEUE_DASHBOARD_TOKEN: z.string().optional(),
+  QUEUE_DASHBOARD_PASSWORD: z.string().optional(),
   /** Optional Bearer token for Jina Reader (higher rate limits). */
   JINA_API_KEY: z.string().optional(),
   /** Max completed fetch_documentation_url calls per agent conversation (default 15). */

@@ -10,7 +10,7 @@ interface OpenCoursePreviewOptions {
 }
 
 interface ViewAsStudentOptions {
-  courseSlug?: string | null;
+  courseId?: string | null;
   currentOrgDomain?: string;
 }
 
@@ -57,14 +57,12 @@ export function openCoursePreview({ courseId, courseSlug, currentOrgDomain = '' 
  * dashboard's own `hooks.server.ts` proxies `/api/auth/*` to the API. Either way the
  * cookie lands on `currentOrgDomain` and the relative `redirect` resolves there.
  */
-export async function viewAsStudent({ courseSlug, currentOrgDomain = '' }: ViewAsStudentOptions) {
+export async function viewAsStudent({ courseId, currentOrgDomain = '' }: ViewAsStudentOptions) {
   if (typeof window === 'undefined') {
     return false;
   }
 
-  if (!courseSlug) {
-    snackbar.info('course.header.preview_missing_slug');
-
+  if (!courseId) {
     return false;
   }
 
@@ -78,7 +76,7 @@ export async function viewAsStudent({ courseSlug, currentOrgDomain = '' }: ViewA
   const origin = currentOrgDomain?.trim() || window.location.origin;
   const loginLinkUrl = new URL('/api/auth/login-link', origin);
   loginLinkUrl.searchParams.set('token', token);
-  loginLinkUrl.searchParams.set('redirect', `/course/${courseSlug}`);
+  loginLinkUrl.searchParams.set('redirect', `/courses/${courseId}/lessons?next=true`);
 
   // Cross-origin handoff — open in a new tab so the teacher keeps their dashboard.
   window.open(loginLinkUrl.toString(), '_blank', 'noopener,noreferrer');

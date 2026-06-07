@@ -7,7 +7,7 @@
 
   interface Props {
     allowedRoles?: number[];
-    onDenied?: any;
+    onDenied?: () => void;
     // Since orgAdmin can see all, we need a way to show the content only to students
     onlyStudent?: boolean;
     children?: import('svelte').Snippet;

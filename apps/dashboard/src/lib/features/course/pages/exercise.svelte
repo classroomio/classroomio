@@ -30,7 +30,7 @@
   import { ZExerciseUpdate } from '@cio/utils/validation/exercise';
   import { mapZodErrorsToTranslations } from '$lib/utils/validation';
   import { transformQuestionsToApiFormat } from '$features/course/components/exercise/functions';
-  import { isOrgStudent } from '$lib/utils/store/app';
+  import { isOrgStudent, isStudentExperience } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { exerciseApi } from '$features/course/api';
@@ -400,7 +400,7 @@
   </Page.HeaderContent>
   <Page.Action>
     <div class="flex items-center gap-2">
-      {#if $isOrgStudent && courseApi.course?.id && exerciseId}
+      {#if $isStudentExperience && courseApi.course?.id && exerciseId}
         <ContentNavigationActions courseId={courseApi.course.id} {exerciseId} />
       {/if}
 
@@ -501,7 +501,7 @@
 <Page.Body>
   {#snippet child()}
     <div class="overflow-x-hidden pb-20">
-      {#if $isOrgStudent}
+      {#if $isStudentExperience}
         {#if isExerciseUnlocked}
           <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmissions} />
         {:else}

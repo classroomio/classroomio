@@ -10,11 +10,10 @@ import { env } from '@cio/core/config/env';
  *
  * Access control:
  * - Development: open (matches existing dev ergonomics).
- * - Production: requires either
- *   - a Better Auth session whose `user.email` is in
- *     `QUEUE_DASHBOARD_ADMIN_EMAILS` (comma-separated), or
- *   - the `QUEUE_DASHBOARD_TOKEN` bearer escape hatch via header or `?token=`.
- *   Failures return `404` so the route doesn't reveal its existence.
+ * - Production: HTTP Basic Auth with `QUEUE_DASHBOARD_PASSWORD` (browser-native
+ *   prompt, keeps the secret out of the URL/history). Any username is accepted;
+ *   only the password is checked. Leave the var unset to keep the dashboard
+ *   unmounted (and the route hidden) outside dev.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mountQueueDashboard(app: Hono<any, any, any>): void {
@@ -24,9 +23,9 @@ export function mountQueueDashboard(app: Hono<any, any, any>): void {
   }
 
   const isProduction = env.NODE_ENV === 'production';
-  if (isProduction && !canEnforceProdAuth()) {
+  if (isProduction && !env.QUEUE_DASHBOARD_PASSWORD) {
     console.info(
-      'Queue dashboard (/admin/queues) not mounted in production. Set QUEUE_DASHBOARD_ADMIN_EMAILS or QUEUE_DASHBOARD_TOKEN to enable it.'
+      'Queue dashboard (/admin/queues) not mounted in production. Set QUEUE_DASHBOARD_PASSWORD to enable it.'
     );
     return;
   }
@@ -46,47 +45,34 @@ export function mountQueueDashboard(app: Hono<any, any, any>): void {
   );
 }
 
-function canEnforceProdAuth(): boolean {
-  return Boolean(adminEmailSet().size > 0 || env.QUEUE_DASHBOARD_TOKEN);
-}
-
-function adminEmailSet(): Set<string> {
-  const raw = env.QUEUE_DASHBOARD_ADMIN_EMAILS ?? '';
-  return new Set(
-    raw
-      .split(',')
-      .map((email) => email.trim().toLowerCase())
-      .filter(Boolean)
-  );
-}
-
 async function queueDashboardAuth(c: Context, next: Next): Promise<Response | void> {
-  if (matchesEscapeHatch(c)) {
+  if (matchesBasicAuth(c)) {
     return next();
   }
 
-  const user = c.get('user') as { email?: string | null } | null;
-  const email = user?.email?.toLowerCase();
-  if (email && adminEmailSet().has(email)) {
-    return next();
-  }
-
-  // Hide existence rather than 401/403 — fewer hints for crawlers/scanners.
-  return c.notFound();
+  return c.body(null, 401, {
+    'WWW-Authenticate': 'Basic realm="ClassroomIO Queues", charset="UTF-8"'
+  });
 }
 
-function matchesEscapeHatch(c: Context): boolean {
-  const expected = env.QUEUE_DASHBOARD_TOKEN;
+function matchesBasicAuth(c: Context): boolean {
+  const expected = env.QUEUE_DASHBOARD_PASSWORD;
   if (!expected) return false;
 
-  const headerToken = c.req
-    .header('Authorization')
-    ?.replace(/^Bearer\s+/i, '')
-    .trim();
-  const queryToken = c.req.query('token');
-  const provided = headerToken || queryToken;
+  const header = c.req.header('Authorization');
+  if (!header?.startsWith('Basic ')) return false;
 
-  return Boolean(provided && timingSafeEqual(provided, expected));
+  let decoded: string;
+  try {
+    decoded = Buffer.from(header.slice('Basic '.length).trim(), 'base64').toString('utf-8');
+  } catch {
+    return false;
+  }
+
+  // Credentials are `username:password`; the username is ignored.
+  const password = decoded.slice(decoded.indexOf(':') + 1);
+
+  return timingSafeEqual(password, expected);
 }
 
 function timingSafeEqual(a: string, b: string): boolean {

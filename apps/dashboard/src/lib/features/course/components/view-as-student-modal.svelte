@@ -6,11 +6,12 @@
 
   interface Props {
     open?: boolean;
+    courseId?: string | null;
     courseSlug?: string | null;
     currentOrgDomain?: string;
   }
 
-  let { open = $bindable(false), courseSlug = null, currentOrgDomain = '' }: Props = $props();
+  let { open = $bindable(false), courseId = null, courseSlug = null, currentOrgDomain = '' }: Props = $props();
 
   let isNavigating = $state(false);
 
@@ -24,7 +25,7 @@
     isNavigating = true;
 
     // Opens the student view in a new tab; close the modal once the handoff starts.
-    const ok = await viewAsStudent({ courseSlug, currentOrgDomain });
+    const ok = await viewAsStudent({ courseId, currentOrgDomain });
     isNavigating = false;
 
     if (ok) {
@@ -59,7 +60,7 @@
       <Button variant="secondary" onclick={handleCopyLink} disabled={!courseSlug || isNavigating}>
         {$t('course.view_as_student.copy_link')}
       </Button>
-      <Button variant="default" onclick={handleGoToLms} disabled={!courseSlug} loading={isNavigating}>
+      <Button variant="default" onclick={handleGoToLms} disabled={!courseId} loading={isNavigating}>
         {$t('course.view_as_student.go_to_lms')}
       </Button>
     </Dialog.Footer>

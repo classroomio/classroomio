@@ -15,7 +15,7 @@
 
   import MODES from '$lib/utils/constants/mode';
   import { profile } from '$lib/utils/store/user';
-  import { isOrgStudent } from '$lib/utils/store/app';
+  import { isOrgStudent, isStudentExperience } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$features/ui/snackbar/store';
   import { RefreshPageData, UnsavedChanges } from '$features/ui';
@@ -376,7 +376,7 @@
   </Page.HeaderContent>
   <Page.Action>
     <div class="flex items-center gap-2">
-      {#if mode === MODES.view && $isOrgStudent}
+      {#if mode === MODES.view && $isStudentExperience}
         <ContentNavigationActions {lessonId} {courseId} />
       {/if}
 
