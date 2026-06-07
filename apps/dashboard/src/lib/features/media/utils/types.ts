@@ -57,6 +57,12 @@ export type GetAssetTranscriptResponse = InferResponseType<GetAssetTranscriptReq
 export type GetAssetTranscriptSuccess = Extract<GetAssetTranscriptResponse, { success: true }>;
 export type AssetTranscriptPayload = GetAssetTranscriptSuccess['data'];
 
+export type UpdateAssetTranscriptRequest =
+  (typeof classroomio.organization)['assets'][':assetId']['transcript']['$put'];
+export type UpdateAssetTranscriptResponse = InferResponseType<UpdateAssetTranscriptRequest>;
+export type UpdateAssetTranscriptSuccess = Extract<UpdateAssetTranscriptResponse, { success: true }>;
+export type TranscriptSegment = NonNullable<AssetTranscriptPayload>['segments'][number];
+
 export type SelectAssetThumbnailRequest = (typeof classroomio.organization)['assets'][':assetId']['thumbnail']['$put'];
 export type SelectAssetThumbnailResponse = InferResponseType<SelectAssetThumbnailRequest>;
 export type SelectAssetThumbnailSuccess = Extract<SelectAssetThumbnailResponse, { success: true }>;

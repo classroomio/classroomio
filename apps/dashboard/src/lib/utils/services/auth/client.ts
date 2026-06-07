@@ -5,9 +5,9 @@ import { dev } from '$app/environment';
 
 // Browser baseURL depends on deployment shape:
 //
-//   - Self-hosted: dashboard and API are on different subdomains under
-//     one apex. Browser calls go straight to PUBLIC_SERVER_URL; cookies
-//     cross subdomains via AUTH_COOKIE_DOMAIN. No Worker proxy.
+//   - Self-hosted: browser auth calls stay on the dashboard origin at
+//     `/api/auth/*`; hooks.server.ts forwards them to the API over
+//     PRIVATE_SERVER_URL.
 //
 //   - Cloud (multi-tenant): same-origin via the Cloudflare Worker so
 //     auth cookies stay host-only on whichever tenant/BYOD domain the
@@ -23,8 +23,11 @@ function resolveBaseURL() {
   if (typeof window === 'undefined') {
     return env.PUBLIC_SERVER_URL || 'http://localhost:3002';
   }
-  if (env.PUBLIC_IS_SELFHOSTED === 'true' || dev) {
+  if (dev) {
     return env.PUBLIC_SERVER_URL || `${window.location.origin}/api/auth`;
+  }
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+    return `${window.location.origin}/api/auth`;
   }
   return `${window.location.origin}/proxy/api/auth`;
 }

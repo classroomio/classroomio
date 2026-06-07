@@ -25,6 +25,22 @@ packages/ui/
 └── jsrepo.json        # jsrepo configuration
 ```
 
+## Storybook
+
+We maintain a Storybook instance at `packages/storybook` to make it easy to browse, visualize, and reuse every UI component in the app. Instead of digging through source code or guessing how a component looks, you can see each piece rendered in isolation with its variants, props, and states documented.
+
+This is especially useful when you're building a new feature and need to find the right existing component — check Storybook first before creating something from scratch.
+
+<img alt="Storybook Preview" src="https://brand.cdn.clsrio.com/storybook-preview.png" />
+
+To run it locally:
+
+```bash
+cd packages/storybook && pnpm dev
+```
+
+See `packages/storybook/README.md` for detailed instructions on creating stories and publishing.
+
 ## Content Structure
 
 ### Base Components (`src/base/`)

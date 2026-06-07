@@ -41,6 +41,8 @@ export const handle: Handle = async (args) => {
     return proxyRequestToApi(event.request);
   }
 
+  const cookieString = event.cookies.getAll().map((c) => `${c.name}=${c.value}`);
+  console.log('event.cookies', cookieString);
   const sessionData = await getSessionData(event.cookies);
 
   if (sessionData) {

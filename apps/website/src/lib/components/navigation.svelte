@@ -105,10 +105,10 @@
       href: '/mcp-recipes'
     },
     {
-      key: 'github',
-      title: 'GitHub',
-      subtitle: 'Star, read the source, fork.',
-      href: '/github'
+      key: 'storybook',
+      title: 'Storybook',
+      subtitle: 'Browse and reuse UI components.',
+      href: 'https://ui.classroomio.dev'
     }
   ];
 
@@ -305,7 +305,12 @@
 
     <div class="hidden! flex-row items-center justify-between gap-3 lg:flex!">
       <a href="/discord" target="_blank" class="flex items-center transition-opacity duration-200 hover:opacity-80">
-        <img loading="lazy" alt="discord logo" src="/discord-blue.png" class="h-5 w-6 cursor-pointer" />
+        <img
+          loading="lazy"
+          alt="discord logo"
+          src="https://assets.cdn.clsrio.com/www/home/discord-blue.png"
+          class="h-5 w-6 cursor-pointer"
+        />
       </a>
       <div class="flex items-center">
         <a
@@ -316,7 +321,7 @@
           <img
             loading="lazy"
             alt="github logo"
-            src="/github-mark.png"
+            src="https://assets.cdn.clsrio.com/www/home/github-mark.png"
             class="h-5 w-5 cursor-pointer transition-transform duration-200 group-hover:scale-110"
           />
           <span
@@ -402,7 +407,12 @@
             target="_blank"
             class="flex w-full items-center rounded-md px-4 py-4 text-left text-sm transition-all duration-200 hover:bg-gray-100 md:text-lg"
           >
-            <img loading="lazy" alt="discord logo" src="/discord-blue.png" class="mr-2 h-5 w-6 cursor-pointer" />
+            <img
+              loading="lazy"
+              alt="discord logo"
+              src="https://assets.cdn.clsrio.com/www/home/discord-blue.png"
+              class="mr-2 h-5 w-6 cursor-pointer"
+            />
             <span>Discord</span>
           </a>
           <a
@@ -413,7 +423,7 @@
             <img
               loading="lazy"
               alt="github logo"
-              src="/github-mark.png"
+              src="https://assets.cdn.clsrio.com/www/home/github-mark.png"
               class="h-5 w-5 cursor-pointer transition-transform duration-200 group-hover:scale-110"
             />
             <span class="ml-3 transition-colors duration-200 group-hover:text-black">Github</span>

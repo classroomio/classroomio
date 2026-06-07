@@ -195,7 +195,7 @@ export function getFooterTokens(variant: OrgLandingPageTheme): FooterRegionToken
       bottomRow:
         'ui:flex ui:flex-col ui:gap-3 ui:sm:flex-row ui:sm:items-center ui:sm:justify-between ui:mt-14 ui:pt-6 ui:border-t ui:border-[var(--landing-border)]/60 ui:text-sm ui:text-[var(--landing-fg-muted)]',
       brandName:
-        'ui:font-bold ui:text-[42px] ui:md:text-[48px] ui:tracking-tight ui:text-[var(--landing-fg)] ui:flex ui:items-center ui:gap-3 ui:no-underline ui:break-words',
+        'ui:font-bold ui:text-2xl ui:md:text-3xl ui:tracking-tight ui:text-[var(--landing-fg)] ui:flex ui:items-center ui:gap-3 ui:no-underline ui:break-words',
       brandTagline:
         'ui:text-base ui:text-[var(--landing-fg-muted)] ui:break-words ui:mt-4 ui:max-w-[280px] ui:leading-relaxed',
       columnHeading:

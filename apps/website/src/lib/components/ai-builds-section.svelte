@@ -23,10 +23,10 @@
   ];
 
   const agents = [
-    { name: 'Cursor', logo: '/cursor-logo.png' },
-    { name: 'Claude Code', logo: '/claude-logo.svg' },
-    { name: 'Codex', logo: '/codex-logo.png' },
-    { name: 'OpenCode', logo: '/opencode-logo.svg' }
+    { name: 'Cursor', logo: 'https://assets.cdn.clsrio.com/www/home/cursor-logo.png' },
+    { name: 'Claude Code', logo: 'https://assets.cdn.clsrio.com/www/home/claude-logo.svg' },
+    { name: 'Codex', logo: 'https://assets.cdn.clsrio.com/www/home/codex-logo.png' },
+    { name: 'OpenCode', logo: 'https://assets.cdn.clsrio.com/www/home/opencode-logo.svg' }
   ];
 </script>
 
@@ -47,7 +47,7 @@
       <div class="mx-auto mt-10 w-full max-w-[1100px]">
         <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
           <img
-            src="/ai-course-builder.jpeg"
+            src="https://assets.cdn.clsrio.com/www/home/ai-course-builder.jpeg"
             alt="Course builder — plan, approve, implement. Templates, in-editor chat, and MCP."
             class="block h-auto w-full"
             loading="lazy"

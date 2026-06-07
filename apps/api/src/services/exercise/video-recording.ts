@@ -1,6 +1,6 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { getStorageConfig } from '@api/config/storage';
-import { generateVideoDownloadPresignedUrls, generateVideoUploadPresignedUrl } from '@api/utils/s3';
+import { getStorageConfig } from '@cio/core/config/storage';
+import { generateVideoDownloadPresignedUrls, generateVideoUploadPresignedUrl } from '@cio/core/utils/s3';
 import { createAsset, getAssetById, updateAsset } from '@cio/db/queries/assets';
 import { getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
 import { getQuestionAnswersBySubmissionId, getSubmissionById } from '@cio/db/queries/submission';

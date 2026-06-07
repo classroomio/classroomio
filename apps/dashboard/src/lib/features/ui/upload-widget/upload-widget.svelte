@@ -46,10 +46,10 @@
   const MAX_IMAGE_SIZE = 500 * FileDropZone.KILOBYTE;
 
   async function handleImageClick(img: string) {
-    $handleOpenWidget.open = false;
-
     onchange?.(img);
     imageURL = img;
+
+    $handleOpenWidget.open = false;
   }
 
   async function handleFilesUpload(files: File[]) {
@@ -84,7 +84,7 @@
     isSearching = true;
 
     try {
-      unsplashImages = await queryUnsplash(searchQuery || 'rocks');
+      unsplashImages = await queryUnsplash(searchQuery || 'nature landscape architecture');
     } catch (error) {
       snackbar.error('snackbar.landing_page_settings.error.fetch_error');
       console.error('Error fetching images from Unsplash:', error);
@@ -102,7 +102,7 @@
     if (!isOpen) $handleOpenWidget.open = false;
   }}
 >
-  <Dialog.Content class="ui:z-300! w-3/5">
+  <Dialog.Content class="ui:z-300! w-[95%] max-w-2xl!">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.landing_page.upload_widget.title')}</Dialog.Title>
     </Dialog.Header>
@@ -142,10 +142,10 @@
               </Button>
             </form>
             {#if unsplashImages && unsplashImages.length > 0}
-              <div class="hide-scrollbar flex max-h-[300px] flex-row flex-wrap items-center gap-2 px-[10px]">
+              <div class="hide-scrollbar grid max-h-[400px] grid-cols-4 gap-3 px-[10px]">
                 {#each unsplashImages as unsplashImages (unsplashImages.id)}
                   <div>
-                    <div class="relative h-[130px] w-[195px] overflow-hidden">
+                    <div class="relative aspect-[3/2] overflow-hidden">
                       <button onclick={() => handleImageClick(unsplashImages.urls.regular)}>
                         <img
                           src={unsplashImages.urls.regular}
@@ -155,7 +155,7 @@
                       </button>
                     </div>
                     {#if unsplashImages.user.name}
-                      <p class="mt-1 text-center text-xs font-light text-gray-500">
+                      <p class="mt-1 truncate text-center text-xs font-light text-gray-500">
                         By <a
                           href={`https://unsplash.com/@${unsplashImages.user.username}`}
                           target="_blank"

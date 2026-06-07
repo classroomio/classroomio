@@ -11,6 +11,7 @@ export { default as PublicCourseCallout } from './callout.svelte';
 
 export {
   PUBLIC_EXERCISE_ATTEMPTS_STORE_VERSION,
+  cloneAnswersByKey,
   publicExerciseAttemptsStorageKey,
   readPublicExerciseAttempts,
   writePublicExerciseAttempts

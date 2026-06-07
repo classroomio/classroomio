@@ -8,7 +8,7 @@ import {
   promoteUngroupedSection,
   reorderCourseSections,
   updateCourseSectionService
-} from '@api/services/course/section';
+} from '@cio/core/services/course/section';
 import {
   ZCourseSectionCreate,
   ZCourseSectionGetParam,

@@ -4,18 +4,47 @@
   import type { MediaPlayerOptions } from '../types';
   import { isYoutubeUrl, getYoutubeVideoId } from '../utils';
   import { PLYR_DEFAULT_CONTROLS } from './constants';
+  import { classroomio } from '$lib/utils/services/api';
   import type Plyr from 'plyr';
+
+  /**
+   * Resolve an HLS source. The caller passes either a full URL or the
+   * relative shape `/hls/{assetId}/{rest}` we store in `lesson.videos[].link`.
+   * Routes through the typed Hono client so playback uses the same base
+   * URL as every other API call — direct to `PUBLIC_SERVER_URL` in local dev,
+   * and `${origin}/proxy/...` in production. Cloud tenant-router intercepts
+   * `/proxy/hls/*` and serves directly from R2.
+   *
+   * Hono's `$url()` only substitutes named `:params`, leaving wildcards as
+   * a literal `/*` suffix — we strip it and append the real path.
+   */
+  function resolveHlsUrl(src: string): string {
+    if (/^https?:\/\//i.test(src)) return src;
+
+    const match = src.match(/^\/?hls\/([^/]+)\/(.+)$/);
+    if (!match) return src;
+
+    const [, assetId, rest] = match;
+    const built = classroomio.hls[':assetId']['*'].$url({ param: { assetId } });
+    return built.toString().replace(/\/\*$/, '') + '/' + rest;
+  }
 
   interface Props {
     src: string;
     poster?: string;
+    /**
+     * When true, `src` points at an HLS master playlist (.m3u8) and the
+     * player attaches hls.js to handle adaptive bitrate streaming.
+     */
+    hls?: boolean;
     options?: MediaPlayerOptions;
   }
 
-  let { src, poster, options = {} }: Props = $props();
+  let { src, poster, hls = false, options = {} }: Props = $props();
   let videoElement: HTMLVideoElement | null = null;
   let containerElement: HTMLDivElement | null = null;
   let playerInstance: Plyr | null = null;
+  let hlsInstance: import('hls.js').default | null = null;
 
   const playsinline = $derived(options.playsinline !== false);
   const maxHeight = $derived(options.maxHeight || '400px');
@@ -43,6 +72,36 @@
         iconPrefix: 'plyr'
       });
     } else if (videoElement) {
+      // For HLS, attach hls.js to feed the manifest into the video element
+      // before Plyr wraps it. Safari uses the native HLS playback path
+      // (`canPlayType('application/vnd.apple.mpegurl')`), no hls.js needed.
+      if (hls) {
+        const hlsUrl = resolveHlsUrl(src);
+        const supportsNativeHls = videoElement.canPlayType('application/vnd.apple.mpegurl') !== '';
+        if (supportsNativeHls) {
+          // Native HLS (Safari) — set src here since the markup branch sees
+          // canPlayType before videoElement mounts and may render undefined.
+          videoElement.src = hlsUrl;
+        } else {
+          const HlsModule = await import('hls.js');
+          const Hls = HlsModule.default;
+          if (Hls.isSupported()) {
+            hlsInstance = new Hls({
+              enableWorker: true,
+              // Browser needs to send session cookies to the API when the
+              // dashboard is on a different origin (dev / self-hosted).
+              xhrSetup: (xhr) => {
+                xhr.withCredentials = true;
+              }
+            });
+            hlsInstance.loadSource(hlsUrl);
+            hlsInstance.attachMedia(videoElement);
+          } else {
+            videoElement.src = hlsUrl;
+          }
+        }
+      }
+
       // For regular HTML5 video
       // playsinline is set as an HTML attribute on the video element, not a Plyr option
       playerInstance = new Plyr(videoElement, {
@@ -56,6 +115,15 @@
   });
 
   onDestroy(() => {
+    if (hlsInstance) {
+      try {
+        hlsInstance.destroy();
+      } catch {
+        // Ignore — hls.js may have already torn itself down.
+      } finally {
+        hlsInstance = null;
+      }
+    }
     if (playerInstance) {
       try {
         // Check if player is an embed (YouTube/Vimeo) and handle accordingly
@@ -93,8 +161,12 @@
   {:else}
     <!-- HTML5 video -->
     <!-- svelte-ignore a11y_media_has_caption -->
-    <!-- crossorigin omitted so cross-origin poster (e.g. R2 r2.dev) displays without CORS; r2.dev may not send CORS headers even when bucket CORS is set -->
-    <video bind:this={videoElement} {src} {poster} {playsinline} class="plyr-player"></video>
+    <!-- For HLS, hls.js or native HLS attaches programmatically in onMount; the bare <video> has no src here. -->
+    {#if hls}
+      <video bind:this={videoElement} {poster} {playsinline} class="plyr-player"></video>
+    {:else}
+      <video bind:this={videoElement} {src} {poster} {playsinline} class="plyr-player"></video>
+    {/if}
   {/if}
 
   <!-- ClassroomIO Logo Overlay -->

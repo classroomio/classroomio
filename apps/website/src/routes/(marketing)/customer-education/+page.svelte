@@ -239,7 +239,7 @@
     <div class="mx-auto mt-14 w-full max-w-[1100px]">
       <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
         <img
-          src="/beautiful-academy-site.jpeg"
+          src="https://assets.cdn.clsrio.com/www/customer-education/beautiful-academy-site.jpeg"
           alt="Branded customer academy on a custom domain — hero, catalog, themed branding"
           class="block h-auto w-full"
           loading="eager"
@@ -269,7 +269,7 @@
     eyebrow="Make it yours"
     title="Customize how your customer academy looks like."
     description="Theme the catalog, swap fonts and colors to match your brand, and build landing pages that feel like the rest of your product — without losing the LMS underneath."
-    imageSrc="/customizable-academy.jpeg"
+    imageSrc="https://assets.cdn.clsrio.com/www/customer-education/customizable-academy.jpeg"
     imageAlt="Customizable customer academy — catalog, course page, certificate"
   />
 
@@ -318,7 +318,7 @@
     ]}
     statusBar="connected · org: yourcompany · widget: getting-started"
     previewUrl="help.yourcompany.com / getting-started"
-    previewImageSrc="/embeddable-widget.jpeg"
+    previewImageSrc="https://assets.cdn.clsrio.com/www/customer-education/embeddable-widget.jpeg"
     previewAlt="Lesson widget embedded inside a help-center page"
     capabilities={[
       { label: 'One script tag', sub: 'Drop-in install, no SDK required' },

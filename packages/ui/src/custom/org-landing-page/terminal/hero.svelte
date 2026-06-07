@@ -9,9 +9,10 @@
     hero: OrgLandingPageProps['hero'];
     courses: OrgLandingPageProps['courses'];
     navigation: Snippet;
+    showActions?: boolean;
   }
 
-  let { orgName = '', hero, courses = [], navigation }: Props = $props();
+  let { orgName = '', hero, courses = [], navigation, showActions = true }: Props = $props();
 
   const programsCount = $derived(courses.length);
   const learnersCount = $derived(courses.reduce((sum, course) => sum + (course.totalStudents ?? 0), 0));
@@ -90,26 +91,28 @@
         {hero.heading}
       </h1>
 
-      <div class="ui:inline-flex ui:items-center ui:gap-2 ui:mb-8">
-        {#if hero.secondaryAction}
+      {#if showActions}
+        <div class="ui:inline-flex ui:items-center ui:gap-2 ui:mb-8">
+          {#if hero.secondaryAction}
+            <Button
+              href={hero.secondaryAction.href}
+              size="sm"
+              variant="outline"
+              class="ui:rounded-full ui:px-4 ui:font-medium ui:bg-white/5 ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-white/10"
+            >
+              {hero.secondaryAction.label}
+            </Button>
+          {/if}
           <Button
-            href={hero.secondaryAction.href}
+            href={hero.primaryAction.href}
+            disabled={hero.primaryAction.disabled ?? false}
             size="sm"
-            variant="outline"
-            class="ui:rounded-full ui:px-4 ui:font-medium ui:bg-white/5 ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-white/10"
+            class="ui:rounded-full ui:px-4 ui:font-medium ui:bg-[#f4f5f7] ui:text-[#0a0b0e] ui:hover:bg-white"
           >
-            {hero.secondaryAction.label}
+            {hero.primaryAction.label}
           </Button>
-        {/if}
-        <Button
-          href={hero.primaryAction.href}
-          disabled={hero.primaryAction.disabled ?? false}
-          size="sm"
-          class="ui:rounded-full ui:px-4 ui:font-medium ui:bg-[#f4f5f7] ui:text-[#0a0b0e] ui:hover:bg-white"
-        >
-          {hero.primaryAction.label}
-        </Button>
-      </div>
+        </div>
+      {/if}
 
       <p class="ui:text-[15px] ui:mb-7 ui:max-w-xl ui:mx-auto ui:text-[var(--landing-fg-muted)]">
         {hero.subheading}

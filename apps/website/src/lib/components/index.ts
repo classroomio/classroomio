@@ -27,7 +27,6 @@ export { default as ImagePlaceholder } from './image-placeholder.svelte';
 export { default as LanguageReel } from './language-reel.svelte';
 export { default as LearnerSection } from './learner-section.svelte';
 export { default as Modal } from './modal.svelte';
-export { default as MoreFeatures } from './more-features.svelte';
 export { default as McpServerSection } from './mcp-server-section.svelte';
 export { default as MultiAcademySection } from './multi-academy-section.svelte';
 export { default as Navigation } from './navigation.svelte';

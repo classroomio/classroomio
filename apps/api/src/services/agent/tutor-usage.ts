@@ -16,7 +16,7 @@ import {
 
 import { AppError } from '@api/utils/errors';
 import { getEffectiveAiTutorSettings } from './tutor-config';
-import { enforceTokenBalance } from './usage';
+import { enforceTokenBalance } from '@cio/core/services/agent/usage';
 
 export const STUDENT_TUTOR_CAP = STUDENT_TUTOR_MONTHLY_CAP;
 

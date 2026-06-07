@@ -1,0 +1,34 @@
+{
+  "extends": "@cio/tsconfig/base.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "declarationMap": true,
+    "lib": ["ES2022", "DOM"],
+    "typeRoots": ["../../node_modules/@types", "./node_modules/@types"],
+    "types": ["node"],
+    "paths": {
+      "@cio/db/types": ["./node_modules/@cio/db/dist/types.d.ts"],
+      "@cio/db/*": ["./node_modules/@cio/db/dist/*"],
+      "@cio/utils": ["./node_modules/@cio/utils/dist/index.d.ts"],
+      "@cio/utils/*": ["./node_modules/@cio/utils/dist/*"],
+      "@cio/jobs": ["./node_modules/@cio/jobs/dist/index.d.ts"],
+      "@cio/jobs/*": ["./node_modules/@cio/jobs/dist/*"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "tsconfig.tsbuildinfo"],
+  "references": [{ "path": "../db" }, { "path": "../utils" }, { "path": "../ai-assistant" }, { "path": "../jobs" }],
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": false
+  }
+}

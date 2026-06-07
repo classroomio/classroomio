@@ -27,6 +27,13 @@ type Slot = (typeof SLOT_ORDER)[number];
 /** Fallback time offsets (seconds) tried when a slot's primary frame is black. */
 const FALLBACK_OFFSETS = [0, -1.5, 1.5];
 const DEFAULT_DURATION_SECONDS = 10;
+/** Hard ceiling for a stored thumbnail. Frames over this are re-encoded at lower quality. */
+const MAX_THUMBNAIL_BYTES = 500 * 1024;
+/**
+ * mjpeg `-q:v` ladder (2 = best/largest, 31 = worst/smallest). We start at the
+ * top and step down only when a frame exceeds MAX_THUMBNAIL_BYTES.
+ */
+const QSCALE_LADDER = [2, 5, 9, 15] as const;
 
 interface CandidateUpload {
   slot: Slot;
@@ -58,7 +65,12 @@ function targetForSlot(slot: Slot, duration: number): number {
  * keyframe and is the most common source of black thumbnails for codecs whose
  * first keyframe sits past the requested offset.
  */
-async function extractFrame(localPath: string, atSeconds: number, outputPath: string): Promise<void> {
+async function extractFrame(
+  localPath: string,
+  atSeconds: number,
+  outputPath: string,
+  qscale: number = QSCALE_LADDER[0]
+): Promise<void> {
   await ffmpegRun([
     '-y',
     '-i',
@@ -68,9 +80,36 @@ async function extractFrame(localPath: string, atSeconds: number, outputPath: st
     '-vframes',
     '1',
     '-vf',
-    'scale=640:-1',
+    "scale='min(1280,iw)':-2",
+    '-q:v',
+    String(qscale),
     outputPath
   ]);
+}
+
+/**
+ * Re-encode the frame at `atSeconds` with progressively lower quality until it
+ * fits under MAX_THUMBNAIL_BYTES. Returns the smallest buffer produced if even
+ * the worst rung overshoots. Assumes the frame was already extracted once at
+ * QSCALE_LADDER[0].
+ */
+async function encodeUnderSizeCap(
+  localPath: string,
+  atSeconds: number,
+  outputPath: string,
+  buffer: Buffer
+): Promise<Buffer> {
+  if (buffer.length <= MAX_THUMBNAIL_BYTES) return buffer;
+
+  let smallest = buffer;
+  for (const qscale of QSCALE_LADDER.slice(1)) {
+    await extractFrame(localPath, atSeconds, outputPath, qscale);
+    const reencoded = await readFile(outputPath);
+    if (reencoded.length < smallest.length) smallest = reencoded;
+    if (reencoded.length <= MAX_THUMBNAIL_BYTES) return reencoded;
+  }
+
+  return smallest;
 }
 
 async function captureSlot(
@@ -86,7 +125,8 @@ async function captureSlot(
       await extractFrame(localPath, t, outputPath);
       const luma = await ffmpegProbeLuma(outputPath);
       if (luma >= BLACK_LUMA_THRESHOLD) {
-        const buffer = await readFile(outputPath);
+        const raw = await readFile(outputPath);
+        const buffer = await encodeUnderSizeCap(localPath, t, outputPath, raw);
         return { buffer, meanLuma: luma, atSeconds: t };
       }
       log.warn('generate-thumbnail-black-frame', { slot, atSeconds: t, luma });

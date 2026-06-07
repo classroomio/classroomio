@@ -1,4 +1,4 @@
-import { getDashboardBaseUrl } from '@api/config/dashboard-url';
+import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import {
   getCourseProgress as getCourseProgressQuery,
   type TCourseCertificationRow
@@ -67,7 +67,11 @@ export function scheduleCertificationCompletionWork(params: {
         return;
       }
 
-      const base = getDashboardBaseUrl(courseRow.orgSiteName ?? undefined);
+      const base = getDashboardBaseUrl({
+        siteName: courseRow.orgSiteName,
+        customDomain: courseRow.orgCustomDomain,
+        isCustomDomainVerified: courseRow.orgIsCustomDomainVerified
+      });
       const certificateUrl = `${base}/courses/${courseId}/certificates`;
 
       await enqueueTransactionalEmail('studentCourseCompletion', {

@@ -114,6 +114,10 @@ export async function getPublicOrganizationTagGroups(siteName: string) {
 
     for (const group of groups) {
       for (const tag of group.tags) {
+        if (tag.courseCount <= 0) {
+          continue;
+        }
+
         const groupId = tag.groupId || group.id;
         const existing = tagsByGroupId.get(groupId) ?? [];
 
@@ -124,10 +128,12 @@ export async function getPublicOrganizationTagGroups(siteName: string) {
       }
     }
 
-    return groups.map((group) => ({
-      ...group,
-      tags: tagsByGroupId.get(group.id) ?? []
-    }));
+    return groups
+      .map((group) => ({
+        ...group,
+        tags: tagsByGroupId.get(group.id) ?? []
+      }))
+      .filter((group) => group.tags.length > 0);
   } catch (error) {
     if (error instanceof AppError) {
       throw error;

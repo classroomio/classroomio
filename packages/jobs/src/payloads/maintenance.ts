@@ -23,6 +23,15 @@ export type TDeadLetterCleanupPayload = z.infer<typeof ZDeadLetterCleanupPayload
  * stops blocking new runs after a worker crash, server restart, or lost
  * BullMQ job.
  */
+/**
+ * Daily aggregation of raw analytics page events into the daily rollup tables.
+ * Defaults to rolling up yesterday's data.
+ */
+export const ZAnalyticsDailyRollupPayload = z.object({
+  daysAgo: z.number().int().positive().default(1)
+});
+export type TAnalyticsDailyRollupPayload = z.infer<typeof ZAnalyticsDailyRollupPayload>;
+
 export const ZMediaJobReapPayload = z.object({
   staleAfterMinutes: z.number().int().positive().default(30)
 });

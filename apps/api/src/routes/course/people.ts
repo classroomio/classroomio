@@ -9,7 +9,7 @@ import { addMembers, deleteMember, listCourseMembers, updateMember } from '@api/
 import { Hono } from '@api/utils/hono';
 import { ZCourseUserAnalyticsParam } from '@cio/utils/validation/course';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
-import { getUserCourseAnalytics } from '@api/services/course/course';
+import { getUserCourseAnalytics } from '@cio/core/services/course/course';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 

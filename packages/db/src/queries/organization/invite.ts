@@ -257,10 +257,12 @@ export async function getLatestOrgInvitesByEmails(
 
     const latestByEmail = new Map<string, TLatestOrgInviteByEmail>();
     for (const row of rows) {
+      if (!row.email) continue;
+
       const key = row.email.toLowerCase();
       const existing = latestByEmail.get(key);
       if (!existing || new Date(row.createdAt) > new Date(existing.createdAt)) {
-        latestByEmail.set(key, row);
+        latestByEmail.set(key, { ...row, email: row.email });
       }
     }
 

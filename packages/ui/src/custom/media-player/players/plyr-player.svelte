@@ -5,25 +5,50 @@
   import type { MediaPlayerOptions, VideoTextTrack } from '../types';
   import { getYoutubeVideoId, isYoutubeUrl } from '../utils';
   import { PLYR_DEFAULT_CONTROLS } from './constants';
+  import { Button } from '../../../base/button';
   import type Plyr from 'plyr';
 
   interface Props {
     src: string;
     poster?: string;
+    /**
+     * When true, `src` is an HLS master playlist (.m3u8). The player
+     * attaches hls.js (or uses native HLS on Safari) instead of setting
+     * the URL on the `<video>` element directly. Cookie minting (if any)
+     * happens via `options.onBeforeHlsLoad`.
+     */
+    hls?: boolean;
     options?: MediaPlayerOptions;
     tracks?: VideoTextTrack[];
   }
 
-  let { src, poster, options = {}, tracks = [] }: Props = $props();
+  let { src, poster, hls = false, options = {}, tracks = [] }: Props = $props();
+
+  let hlsInstance = $state<import('hls.js').default | null>(null);
 
   let videoElement = $state<HTMLVideoElement | null>(null);
   let containerElement = $state<HTMLDivElement | null>(null);
   let playerInstance = $state<Plyr | null>(null);
   let transcriptButtonElement = $state<HTMLButtonElement | null>(null);
+  let playbackFailed = $state(false);
+  let reloadInFlight = $state(false);
   let timeupdateCleanup: (() => void) | undefined;
   let firstPlayCleanup: (() => void) | undefined;
   let transcriptPanelCleanup: (() => void) | undefined;
+  let mediaErrorCleanup: (() => void) | undefined;
+  let plyrErrorCleanup: (() => void) | undefined;
+  let loadedSrc = $state<string | null>(null);
+  let hlsLoadGeneration = 0;
+  let hlsPlyrGeneration = 0;
+  let plyrConstructInFlight = false;
   let hasFiredFirstPlay = false;
+
+  interface HlsQualityConfig {
+    default: number;
+    options: number[];
+    forced: boolean;
+    onChange: (height: number) => void;
+  }
 
   const playsinline = $derived(options.playsinline !== false);
   const maxHeight = $derived(options.maxHeight || '400px');
@@ -51,6 +76,52 @@
     player.on('play', handler);
     return () => {
       player.off('play', handler);
+    };
+  }
+
+  function handlePlaybackFailure(): void {
+    if (playbackFailed) return;
+
+    playbackFailed = true;
+  }
+
+  async function handlePlaybackReloadClick(): Promise<void> {
+    if (reloadInFlight || !options.onPlaybackReload) return;
+
+    reloadInFlight = true;
+
+    try {
+      const reloaded = await options.onPlaybackReload();
+      if (!reloaded) return;
+
+      playbackFailed = false;
+
+      if (videoElement && !isYouTube) {
+        loadedSrc = null;
+        videoElement.load();
+      }
+    } finally {
+      reloadInFlight = false;
+    }
+  }
+
+  function attachMediaErrorHandler(element: HTMLVideoElement): () => void {
+    const handler = () => {
+      handlePlaybackFailure();
+    };
+    element.addEventListener('error', handler);
+    return () => {
+      element.removeEventListener('error', handler);
+    };
+  }
+
+  function attachPlyrErrorHandler(player: Plyr): () => void {
+    const handler = () => {
+      handlePlaybackFailure();
+    };
+    player.on('error', handler);
+    return () => {
+      player.off('error', handler);
     };
   }
 
@@ -88,13 +159,110 @@
     };
   }
 
+  function teardownPlyrInstance(): void {
+    timeupdateCleanup?.();
+    firstPlayCleanup?.();
+    transcriptPanelCleanup?.();
+    plyrErrorCleanup?.();
+    mediaErrorCleanup?.();
+    timeupdateCleanup = undefined;
+    firstPlayCleanup = undefined;
+    transcriptPanelCleanup = undefined;
+    plyrErrorCleanup = undefined;
+    mediaErrorCleanup = undefined;
+    if (!playerInstance) return;
+
+    try {
+      playerInstance.destroy();
+    } catch {
+      // Plyr may be mid-teardown if the user closed the dialog.
+    } finally {
+      playerInstance = null;
+    }
+  }
+
+  async function constructPlyrForVideoElement(qualityConfig?: HlsQualityConfig): Promise<void> {
+    if (!videoElement || playerInstance || plyrConstructInFlight) return;
+
+    plyrConstructInFlight = true;
+
+    const PlyrModule = await import('plyr');
+    const PlyrConstructor = PlyrModule.default;
+    const controls = showControls ? PLYR_DEFAULT_CONTROLS : [];
+
+    try {
+      // Recheck after the dynamic import resolves — the component may have
+      // unmounted (or the videoElement bind nulled out) while we awaited.
+      if (!videoElement || playerInstance) return;
+
+      mediaErrorCleanup = attachMediaErrorHandler(videoElement);
+
+      playerInstance = new PlyrConstructor(videoElement, {
+        controls,
+        autoplay,
+        // Match the YouTube branch: force 16:9 so non-16:9 sources (e.g.
+        // screen recordings at 4:3 or 5:4) get letterboxed inside the player
+        // container rather than overflowing it and clipping the controls.
+        ratio: '16:9',
+        iconUrl: '/plyr.svg',
+        iconPrefix: 'plyr',
+        ...(qualityConfig
+          ? {
+              quality: qualityConfig,
+              i18n: { qualityLabel: { 0: 'Auto' } }
+            }
+          : {})
+      });
+      timeupdateCleanup = attachTimeUpdates(playerInstance);
+      firstPlayCleanup = attachFirstPlay(playerInstance);
+      plyrErrorCleanup = attachPlyrErrorHandler(playerInstance);
+      options.onPlayerReady?.(playerInstance);
+    } finally {
+      plyrConstructInFlight = false;
+    }
+  }
+
+  async function initHlsPlyr(hls: import('hls.js').default, loadGeneration: number): Promise<void> {
+    if (loadGeneration !== hlsLoadGeneration || hlsInstance !== hls) return;
+    if (hlsPlyrGeneration === loadGeneration) return;
+
+    hlsPlyrGeneration = loadGeneration;
+
+    const heights = Array.from(new Set(hls.levels.map((level) => level.height).filter((height) => height > 0))).sort(
+      (a, b) => a - b
+    );
+
+    if (loadGeneration !== hlsLoadGeneration || hlsInstance !== hls || !videoElement) return;
+
+    if (!heights.length) {
+      await constructPlyrForVideoElement();
+      return;
+    }
+
+    await constructPlyrForVideoElement({
+      default: 0,
+      options: [0, ...heights],
+      forced: true,
+      onChange: (height: number) => {
+        if (hlsInstance !== hls) return;
+
+        if (height === 0) {
+          hls.currentLevel = -1;
+          return;
+        }
+
+        const levelIndex = hls.levels.findIndex((level) => level.height === height);
+        if (levelIndex >= 0) hls.currentLevel = levelIndex;
+      }
+    });
+  }
+
   onMount(() => {
     void (async () => {
-      const PlyrModule = await import('plyr');
-      const PlyrConstructor = PlyrModule.default;
-      const controls = showControls ? PLYR_DEFAULT_CONTROLS : [];
-
       if (isYouTube && youtubeVideoId && containerElement) {
+        const PlyrModule = await import('plyr');
+        const PlyrConstructor = PlyrModule.default;
+        const controls = showControls ? PLYR_DEFAULT_CONTROLS : [];
         playerInstance = new PlyrConstructor(containerElement, {
           controls,
           autoplay,
@@ -104,57 +272,202 @@
         });
         timeupdateCleanup = attachTimeUpdates(playerInstance);
         firstPlayCleanup = attachFirstPlay(playerInstance);
+        plyrErrorCleanup = attachPlyrErrorHandler(playerInstance);
         options.onPlayerReady?.(playerInstance);
         return;
       }
 
-      if (videoElement) {
-        playerInstance = new PlyrConstructor(videoElement, {
-          controls,
-          autoplay,
-          // Native files expose their own width/height — let Plyr fit to them instead of
-          // forcing 16:9 and showing black letterbox bars around smaller/portrait videos.
-          iconUrl: '/plyr.svg',
-          iconPrefix: 'plyr'
-        });
-        timeupdateCleanup = attachTimeUpdates(playerInstance);
-        firstPlayCleanup = attachFirstPlay(playerInstance);
-        if (options.transcriptPanelControl && transcriptButtonElement) {
-          transcriptPanelCleanup = attachTranscriptPanelControl(
-            playerInstance,
-            transcriptButtonElement,
-            options.transcriptPanelControl
-          );
-        }
-        options.onPlayerReady?.(playerInstance);
+      // HLS sources defer Plyr until hls.js parses the manifest — Plyr's
+      // quality menu must be configured at construction time, and tearing
+      // the player down after hls.js attaches breaks the video wrapper.
+      if (!hls && videoElement) {
+        await constructPlyrForVideoElement();
       }
     })();
   });
 
-  onDestroy(() => {
-    timeupdateCleanup?.();
-    firstPlayCleanup?.();
-    transcriptPanelCleanup?.();
-    if (!playerInstance) return;
-
+  /**
+   * Imperative poster setter. Plyr stores the poster as its own internal
+   * property after construction, so updating `<video poster>` reactively
+   * has no visible effect. Callers update the poster via this method.
+   * Exposed through `bind:this` on `MediaPlayer`.
+   */
+  export function setPoster(url: string): void {
+    if (!playerInstance || isYouTube) return;
     try {
-      if (playerInstance.isEmbed && playerInstance.playing) {
-        playerInstance.pause();
-      }
+      playerInstance.poster = url;
     } catch {
-      // No-op for player teardown safety.
+      // Plyr may not have finished its setup yet — caller can retry.
     }
+  }
+
+  $effect(() => {
+    const element = videoElement;
+    const nextSrc = src;
+    if (!element || isYouTube || !nextSrc || nextSrc === loadedSrc) return;
+
+    loadedSrc = nextSrc;
+    playbackFailed = false;
+
+    const onLoadedMetadata = () => {
+      element.removeEventListener('loadedmetadata', onLoadedMetadata);
+      options.onSourceLoaded?.(element);
+    };
+    element.addEventListener('loadedmetadata', onLoadedMetadata);
+
+    if (hls) {
+      void loadHlsSource(element, nextSrc, onLoadedMetadata);
+    } else {
+      element.src = nextSrc;
+      element.load();
+    }
+  });
+
+  function destroyHlsInstance(): void {
+    if (!hlsInstance) return;
 
     try {
-      playerInstance.destroy();
+      hlsInstance.destroy();
+    } catch {
+      // ignore — hls.js may already be torn down
     } finally {
-      playerInstance = null;
+      hlsInstance = null;
     }
+  }
+
+  async function loadHlsSource(element: HTMLVideoElement, manifestUrl: string, onLoaded: () => void): Promise<void> {
+    const loadGeneration = ++hlsLoadGeneration;
+    hlsPlyrGeneration = 0;
+    destroyHlsInstance();
+    teardownPlyrInstance();
+    playbackFailed = false;
+
+    if (options.onBeforeHlsLoad) {
+      try {
+        await options.onBeforeHlsLoad();
+      } catch (error) {
+        // The cookie endpoint may 503 in environments where HLS_SIGNING_SECRET
+        // isn't configured (local dev / self-hosted). Playback can still
+        // succeed via the API's session-auth streaming route — so we log and
+        // proceed rather than fail.
+        console.warn('onBeforeHlsLoad failed, continuing without cookie', error);
+      }
+    }
+
+    // Bail if the source changed underneath us while awaiting the cookie.
+    if (loadGeneration !== hlsLoadGeneration || loadedSrc !== manifestUrl) {
+      element.removeEventListener('loadedmetadata', onLoaded);
+      return;
+    }
+
+    // Prefer hls.js over native HLS. Chrome's `canPlayType` returns
+    // `'maybe'` for `application/vnd.apple.mpegurl` even though it can't
+    // actually play HLS — taking the native path on Chrome makes the
+    // `<video>` element fetch the manifest directly with
+    // `crossorigin="anonymous"`, which strips cookies and trips the api's
+    // 403. Only fall back to native HLS when hls.js isn't supported
+    // (real Safari + media-element-only environments).
+    const HlsModule = await import('hls.js');
+    const Hls = HlsModule.default;
+    const FetchLoader = HlsModule.FetchLoader;
+
+    if (loadGeneration !== hlsLoadGeneration || loadedSrc !== manifestUrl) {
+      element.removeEventListener('loadedmetadata', onLoaded);
+      return;
+    }
+
+    if (!Hls.isSupported()) {
+      element.src = manifestUrl;
+      element.load();
+      void constructPlyrForVideoElement();
+      return;
+    }
+
+    hlsInstance = new Hls({
+      enableWorker: true,
+      // Defer segment fetches until the user presses play. Manifest/variant
+      // playlist discovery still runs so duration metadata is available.
+      autoStartLoad: false,
+      // Use hls.js's fetch-based loader so we can set `credentials: 'include'`
+      // uniformly on the manifest GET, variant playlist GETs, and segment
+      // GETs. The default XhrLoader's `xhrSetup` doesn't always fire on
+      // every request type (some bypass it for the master playlist),
+      // leaving the request without cookies and the api returning 403.
+      // FetchLoader respects standard Fetch API credentials.
+      loader: FetchLoader,
+      fetchSetup: (context, initParams) => {
+        initParams.credentials = 'include';
+        return new Request(context.url, initParams);
+      }
+    });
+    const hls = hlsInstance;
+    const plyrFallbackTimer = setTimeout(() => {
+      if (loadGeneration !== hlsLoadGeneration || playerInstance) return;
+
+      void constructPlyrForVideoElement();
+    }, 4_000);
+
+    hls.on(Hls.Events.ERROR, (_event, data) => {
+      if (data.fatal) {
+        handlePlaybackFailure();
+        if (!playerInstance) {
+          void constructPlyrForVideoElement();
+        }
+      }
+    });
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      clearTimeout(plyrFallbackTimer);
+      void initHlsPlyr(hls, loadGeneration);
+    });
+
+    const startBufferingOnPlay = () => {
+      element.removeEventListener('play', startBufferingOnPlay);
+      if (loadGeneration !== hlsLoadGeneration || hlsInstance !== hls) return;
+
+      hls.startLoad(-1);
+    };
+    element.addEventListener('play', startBufferingOnPlay);
+
+    hls.loadSource(manifestUrl);
+    hls.attachMedia(element);
+  }
+
+  $effect(() => {
+    const player = playerInstance;
+    const control = options.transcriptPanelControl;
+    const template = transcriptButtonElement;
+    if (!player || !control || !template) return;
+
+    transcriptPanelCleanup?.();
+    transcriptPanelCleanup = attachTranscriptPanelControl(player, template, control);
+
+    return () => {
+      transcriptPanelCleanup?.();
+      transcriptPanelCleanup = undefined;
+    };
+  });
+
+  onDestroy(() => {
+    hlsLoadGeneration += 1;
+    hlsPlyrGeneration = 0;
+    destroyHlsInstance();
+
+    if (playerInstance) {
+      try {
+        if (playerInstance.isEmbed && playerInstance.playing) {
+          playerInstance.pause();
+        }
+      } catch {
+        // No-op for player teardown safety.
+      }
+    }
+
+    teardownPlyrInstance();
   });
 </script>
 
 <div
-  class="ui:relative ui:aspect-video ui:w-full ui:overflow-hidden ui:bg-muted"
+  class="ui:relative ui:aspect-video ui:w-full ui:overflow-hidden ui:rounded-md"
   style="max-height: {maxHeight}; min-height: {options.minHeight}; height: {options.height};"
 >
   {#if isYouTube && youtubeVideoId}
@@ -166,11 +479,15 @@
     ></div>
   {:else}
     <!-- svelte-ignore a11y_media_has_caption -->
+    <!-- For HLS sources the $effect above assigns src (native HLS) or attaches hls.js; the bare element has no src here. -->
+    <!-- `preload="metadata"` keeps the poster visible until the user clicks play. -->
+    <!-- `crossorigin` is intentionally omitted: posters live on r2.dev (no CORS), Plyr loads its own `blank.mp4` from cdn.plyr.io (no CORS), and `<track>` works with `blob:` URLs (which the host app fetches via its API client and passes via the `tracks` prop). -->
     <video
       bind:this={videoElement}
-      {src}
+      src={hls ? undefined : src}
       {poster}
       {playsinline}
+      preload="metadata"
       class="plyr-player ui:h-full ui:w-full ui:object-contain"
     >
       {#each tracks as track (track.src + track.srclang)}
@@ -183,6 +500,20 @@
         />
       {/each}
     </video>
+  {/if}
+
+  {#if playbackFailed && options.playbackErrorLabel}
+    <div
+      class="ui:absolute ui:inset-0 ui:z-20 ui:flex ui:flex-col ui:items-center ui:justify-center ui:gap-4 ui:bg-muted/95 ui:px-6 ui:text-center"
+      role="alert"
+    >
+      <p class="ui:text-sm ui:text-muted-foreground">{options.playbackErrorLabel}</p>
+      {#if options.onPlaybackReload && options.playbackReloadLabel}
+        <Button variant="outline" disabled={reloadInFlight} onclick={() => void handlePlaybackReloadClick()}>
+          {options.playbackReloadLabel}
+        </Button>
+      {/if}
+    </div>
   {/if}
 
   {#if options.transcriptPanelControl}

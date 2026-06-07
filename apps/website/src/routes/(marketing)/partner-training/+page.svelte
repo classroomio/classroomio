@@ -221,7 +221,7 @@
     <div class="mx-auto mt-14 w-full max-w-[1100px]">
       <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
         <img
-          src="/latest-courses.jpeg"
+          src="https://assets.cdn.clsrio.com/www/partner-training/latest-courses.jpeg"
           alt="Partner academy — latest courses, program structure, and learner state"
           class="block h-auto w-full"
           loading="eager"
@@ -254,7 +254,7 @@
     eyebrow="Public course pages"
     title="Open a few courses to the public, gate the rest."
     description="Pick the courses you want anyone to see. Partners (and the curious ones who aren’t partners yet) can jump in without signing up, watch a few lessons, and if they’re hooked they create an account to unlock the rest of your catalog."
-    imageSrc="/public-courses.jpeg"
+    imageSrc="https://assets.cdn.clsrio.com/www/partner-training/public-courses.jpeg"
     imageAlt="Public partner course pages — open courses up front, sign-up gates the rest"
   />
 
@@ -281,7 +281,7 @@
     ]}
     statusBar="connected · org: yourcompany · widget: partner-onboarding"
     previewUrl="partners.yourcompany.com / academy"
-    previewImageSrc="/embeddable-widget.jpeg"
+    previewImageSrc="https://assets.cdn.clsrio.com/www/partner-training/embeddable-widget.jpeg"
     previewAlt="Course widget embedded inside a partner portal"
     capabilities={[
       { label: 'One script tag', sub: 'Drop-in install, no SDK required' },

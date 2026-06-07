@@ -17,12 +17,13 @@
   });
 
   const poster = $derived(source.type === 'upload' ? source.metadata?.thumbnailUrl : undefined);
+  const isHls = $derived(Boolean(source.hls));
 </script>
 
 <div class="mb-5 {className}">
   {#if isMuse}
     <MusePlayer svid={source.metadata?.svid} {options} />
   {:else}
-    <PlyrPlayer src={source.url} {poster} {options} />
+    <PlyrPlayer src={source.url} {poster} hls={isHls} {options} />
   {/if}
 </div>

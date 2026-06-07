@@ -1,4 +1,4 @@
-import { getAccountData, updateUser } from '@api/services/account';
+import { createViewAsStudentToken, getAccountData, updateUser } from '@api/services/account';
 
 import { Hono } from '@api/utils/hono';
 import { ZUpdateProfile } from '@cio/utils/validation/account';
@@ -49,6 +49,25 @@ export const accountRouter = new Hono()
       );
     } catch (error) {
       return handleError(c, error, 'Failed to update profile');
+    }
+  })
+  .post('/view-as-student-token', authMiddleware, async (c) => {
+    const user = c.get('user')!;
+
+    try {
+      // Self sign-in only — mints a login-link token for the current user so they
+      // can be auto-authenticated on the org domain to preview the student experience.
+      const token = await createViewAsStudentToken({ id: user.id, email: user.email });
+
+      return c.json(
+        {
+          success: true,
+          data: { token }
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to create view-as-student token');
     }
   })
   .get('/profile', authMiddleware, async (c) => {

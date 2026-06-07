@@ -8,9 +8,10 @@
   interface Props {
     hero: OrgLandingPageProps['hero'];
     navigation: Snippet;
+    showActions?: boolean;
   }
 
-  let { hero, navigation }: Props = $props();
+  let { hero, navigation, showActions = true }: Props = $props();
 </script>
 
 <EditableLandingSection sectionKey="hero">
@@ -45,20 +46,26 @@
         >
           {hero.subheading}
         </p>
-        <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-3">
-          <Button
-            href={hero.primaryAction.href}
-            disabled={hero.primaryAction.disabled ?? false}
-            size="lg"
-            variant="secondary"
-            class="ui:rounded-none ui:px-7 ui:font-semibold ui:bg-[var(--landing-accent-fg)] ui:text-[var(--landing-accent)] ui:hover:bg-[var(--landing-accent-fg)]/90"
-          >
-            {hero.primaryAction.label}
-          </Button>
-          {#if hero.secondaryAction}
-            <SecondaryActionButton href={hero.secondaryAction.href} label={hero.secondaryAction.label} variant="tech" />
-          {/if}
-        </div>
+        {#if showActions}
+          <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-3">
+            <Button
+              href={hero.primaryAction.href}
+              disabled={hero.primaryAction.disabled ?? false}
+              size="lg"
+              variant="secondary"
+              class="ui:rounded-none ui:px-7 ui:font-semibold ui:bg-[var(--landing-accent-fg)] ui:text-[var(--landing-accent)] ui:hover:bg-[var(--landing-accent-fg)]/90"
+            >
+              {hero.primaryAction.label}
+            </Button>
+            {#if hero.secondaryAction}
+              <SecondaryActionButton
+                href={hero.secondaryAction.href}
+                label={hero.secondaryAction.label}
+                variant="tech"
+              />
+            {/if}
+          </div>
+        {/if}
       </div>
 
       {#if hero.image}

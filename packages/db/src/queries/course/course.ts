@@ -56,7 +56,8 @@ export interface TStudentCourse extends TBaseCourse {
 export const getPublishedCoursesBySiteName = async (
   siteName: string,
   courseIds?: string[],
-  limit?: number
+  limit?: number,
+  offset?: number
 ): Promise<TBaseCourse[]> => {
   try {
     if (courseIds && courseIds.length === 0) {
@@ -95,6 +96,7 @@ export const getPublishedCoursesBySiteName = async (
           .groupBy(schema.course.id)
           .orderBy(desc(schema.course.createdAt))
           .limit(limit)
+          .offset(offset ?? 0)
       : await db
           .select({
             course: schema.course,
@@ -300,6 +302,8 @@ export type CourseWithRelations = TCourse & {
     id: string;
     name: string;
     siteName: string | null;
+    customDomain: string | null;
+    isCustomDomainVerified: boolean | null;
     theme: string | null;
   } | null;
 };
@@ -342,6 +346,8 @@ export async function getCourseWithRelations(
         id: string;
         name: string;
         siteName: string | null;
+        customDomain: string | null;
+        isCustomDomainVerified: boolean | null;
         theme: string | null;
       } | null;
     };
@@ -362,6 +368,8 @@ export async function getCourseWithRelations(
               id: schema.organization.id,
               name: schema.organization.name,
               siteName: schema.organization.siteName,
+              customDomain: schema.organization.customDomain,
+              isCustomDomainVerified: schema.organization.isCustomDomainVerified,
               theme: schema.organization.theme
             }
           })
@@ -402,6 +410,8 @@ export async function getCourseWithRelations(
             id: groupData[0].organization.id,
             name: groupData[0].organization.name,
             siteName: groupData[0].organization.siteName ?? null,
+            customDomain: groupData[0].organization.customDomain ?? null,
+            isCustomDomainVerified: groupData[0].organization.isCustomDomainVerified ?? null,
             theme: groupData[0].organization.theme ?? null
           }
         : null;
@@ -616,6 +626,8 @@ export type TCourseCertificationRow = {
   } | null;
   title: string;
   orgSiteName: string | null;
+  orgCustomDomain: string | null;
+  orgIsCustomDomainVerified: boolean | null;
   orgName: string;
 };
 
@@ -628,6 +640,8 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
         certificate: schema.course.certificate,
         title: schema.course.title,
         orgSiteName: schema.organization.siteName,
+        orgCustomDomain: schema.organization.customDomain,
+        orgIsCustomDomainVerified: schema.organization.isCustomDomainVerified,
         orgName: schema.organization.name
       })
       .from(schema.course)
@@ -1065,6 +1079,8 @@ export async function getCourseWithOrgData(courseId: string): Promise<{
   courseTitle: string | null;
   orgName: string | null;
   orgSiteName: string | null;
+  orgCustomDomain: string | null;
+  orgIsCustomDomainVerified: boolean | null;
   groupId: string | null;
 } | null> {
   try {
@@ -1073,6 +1089,8 @@ export async function getCourseWithOrgData(courseId: string): Promise<{
         courseTitle: schema.course.title,
         orgName: schema.organization.name,
         orgSiteName: schema.organization.siteName,
+        orgCustomDomain: schema.organization.customDomain,
+        orgIsCustomDomainVerified: schema.organization.isCustomDomainVerified,
         groupId: schema.course.groupId
       })
       .from(schema.course)

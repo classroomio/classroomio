@@ -61,7 +61,7 @@ The worker writes to three tables:
 - `job_step` — per-step idempotency ledger so retries skip already-finished work (e.g. don't re-upload a thumbnail).
 - `dead_letter_job` — terminal failures after BullMQ exhausts retries. Used for operator triage.
 
-Email jobs intentionally don't have a parallel DB ledger — BullMQ's own job
+Email jobs intentionally don't have a parallel DB ledger - BullMQ's own job
 state (visible via bull-board, see below) is the source of truth for "did this
 email send?", and `dead_letter_job` captures final failures.
 
@@ -159,8 +159,8 @@ redis-cli LLEN bull:emails:active    # currently processing
 redis-cli LLEN bull:emails:failed    # exhausted retries
 ```
 
-For a real UI, drop in [`bull-board`](https://github.com/felixmosh/bull-board)
-in `apps/api` and mount it at `/admin/queues`.
+For a real UI, ClassroomIO mounts [Workbench](https://github.com/pontusab/workbench)
+in `apps/api` at `/admin/queues`.
 
 ## Behaviour matrix when the worker is down
 
@@ -174,8 +174,9 @@ in `apps/api` and mount it at `/admin/queues`.
 ## Production
 
 Run the worker as its own service alongside the API. They scale independently
-— typically you want N API instances for HTTP concurrency and a smaller fixed
-number of worker instances tuned via `*_WORKER_CONCURRENCY` env vars.
+
+- typically you want N API instances for HTTP concurrency and a smaller fixed
+  number of worker instances tuned via `*_WORKER_CONCURRENCY` env vars.
 
 Use `node dist/index.js` to run all queues in one process, or
 `node dist/workers/<name>.js` to run them as separate services (recommended for

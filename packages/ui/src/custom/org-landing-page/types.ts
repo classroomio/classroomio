@@ -1,4 +1,18 @@
+import type { Component } from 'svelte';
+
 export type NavItem = { label: string; href: string };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyComponent = Component<any>;
+
+export type LandingPageThemeBundle = {
+  nav: AnyComponent;
+  hero: AnyComponent;
+  courseCard: AnyComponent;
+  org: AnyComponent;
+  course: AnyComponent;
+  coursesGridClass: string;
+};
 
 export type OrgLandingPageTheme =
   | 'minimal'
@@ -164,6 +178,146 @@ export interface OrgLandingPageLabels {
   calloutEyebrow?: string;
   /** Card footer CTA on the resources/links section. Default per template ("Learn more", "Visit"). Separate from the existing per-template `boldVisitLabel` / `classicLearnMoreLabel` on `LandingPageLinks`, which still apply to those specific templates. */
   learnMoreLabel?: string;
+}
+
+export type CourseCurriculumLesson = {
+  id: string;
+  title: string;
+  durationMinutes?: number;
+};
+
+export type CourseCurriculumSection = {
+  id: string;
+  title: string;
+  lessons: CourseCurriculumLesson[];
+  exerciseCount?: number;
+};
+
+export type CourseReviewItem = {
+  id: string;
+  name: string;
+  avatarUrl?: string;
+  rating: number;
+  description: string;
+  createdAt?: string;
+};
+
+export type CourseInstructor = {
+  name: string;
+  role?: string;
+  imgUrl?: string;
+  description?: string;
+  coursesNo?: number;
+};
+
+export type CoursePricing = {
+  cost: number;
+  currency: string;
+  discount?: number;
+  showDiscount?: boolean;
+  ctaLabel: string;
+  ctaHref?: string;
+  features?: string[];
+  reward?: {
+    show: boolean;
+    description: string;
+  };
+};
+
+export type CourseSocialProof = {
+  rating?: number;
+  lessons?: number;
+  type?: string;
+  hasCertificate?: boolean;
+};
+
+export type CourseInfoBlocks = {
+  requirements?: string;
+  description?: string;
+  goals?: string;
+  certificateUrl?: string;
+};
+
+export type CourseChipSections = {
+  skills?: string[];
+  tools?: string[];
+};
+
+export type CourseCurriculum = {
+  grouped: boolean;
+  sections: CourseCurriculumSection[];
+};
+
+export interface CourseLandingPageLabels {
+  socialProofRatingLabel?: string;
+  socialProofLessonsLabel?: string;
+  socialProofTypeLabel?: string;
+  socialProofCertificateLabel?: string;
+  curriculumEyebrow?: string;
+  curriculumHeading?: string;
+  lessonsLabel?: (count: number) => string;
+  exercisesLabel?: (count: number) => string;
+  lecturePrefix?: (index: number) => string;
+  infoRequirementsHeading?: string;
+  infoRequirementsEyebrow?: string;
+  infoDescriptionHeading?: string;
+  infoDescriptionEyebrow?: string;
+  infoGoalsHeading?: string;
+  infoGoalsEyebrow?: string;
+  infoCertificateHeading?: string;
+  infoCertificateEyebrow?: string;
+  instructorEyebrow?: string;
+  instructorHeading?: string;
+  instructorCoursesLabel?: (count: number) => string;
+  reviewsEyebrow?: string;
+  reviewsHeading?: string;
+  reviewsAverageLabel?: (count: number) => string;
+  pricingEyebrow?: string;
+  freeLabel?: string;
+  pricingRewardLabel?: string;
+  chipsSkillsEyebrow?: string;
+  chipsSkillsHeading?: string;
+  chipsToolsEyebrow?: string;
+  chipsToolsHeading?: string;
+  chipsShowAllLabel?: string;
+  chipsShowLessLabel?: string;
+  navAboutLabel?: string;
+  navCurriculumLabel?: string;
+  navSkillsLabel?: string;
+  navInstructorLabel?: string;
+  navReviewsLabel?: string;
+  navPricingLabel?: string;
+}
+
+export interface CourseLandingPageProps {
+  theme: OrgLandingPageTheme;
+  orgName: string;
+  logoUrl?: string;
+  navItems: NavItem[];
+  authAction?: {
+    label: string;
+    href: string;
+  };
+  hero: {
+    heading: string;
+    subheading: string;
+    primaryAction: { label: string; href: string; disabled?: boolean };
+    secondaryAction?: { label: string; href: string };
+    image?: string;
+    stats?: Array<{ label: string; value: string }>;
+  };
+  socialProof: CourseSocialProof;
+  info: CourseInfoBlocks;
+  curriculum: CourseCurriculum;
+  chips?: CourseChipSections;
+  instructor: CourseInstructor;
+  reviews: {
+    items: CourseReviewItem[];
+    averageRating?: number;
+  };
+  pricing: CoursePricing;
+  footer: OrgLandingPageFooterConfig;
+  labels?: CourseLandingPageLabels;
 }
 
 export interface OrgLandingPageProps {

@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { Scalar } from '@scalar/hono-api-reference';
-import { env } from '@api/config/env';
+import { env } from '@cio/core/config/env';
 import { AuthSession } from '@api/types/auth';
 
 export function configureOpenAPI(app: Hono<AuthSession>) {

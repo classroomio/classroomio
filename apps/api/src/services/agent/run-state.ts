@@ -15,6 +15,7 @@ import {
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import type { TAiAgentRun, TAiAgentRunEvent, TAiAgentRunStatus, TAiAgentRunStep } from '@cio/db/types';
+import { QUEUE_NAMES, enqueueAgentCourseGenerationRun, getQueue, isRedisConfigured } from '@cio/jobs';
 import { AppError } from '@api/utils/errors';
 
 const ACTIVE_RUN_STATUSES = new Set<TAiAgentRunStatus>(['queued', 'running', 'waiting_for_input', 'paused']);
@@ -90,6 +91,106 @@ async function buildAgentRunDetail(run: TAiAgentRun): Promise<AgentRunDetail> {
   return { run, steps, events };
 }
 
+function getBullmqJobId(run: TAiAgentRun): string | null {
+  const bullmq = run.executionCursor.bullmq;
+
+  if (!bullmq || typeof bullmq !== 'object') {
+    return null;
+  }
+
+  const jobId = (bullmq as Record<string, unknown>).jobId;
+
+  return typeof jobId === 'string' && jobId.length > 0 ? jobId : null;
+}
+
+async function removeQueuedBullmqJob(run: TAiAgentRun): Promise<void> {
+  if (!isRedisConfigured()) return;
+
+  const jobId = getBullmqJobId(run);
+
+  if (!jobId) return;
+
+  try {
+    const removed = await getQueue(QUEUE_NAMES.agentCourseGeneration).remove(jobId);
+
+    await createAgentRunEvent({
+      runId: run.id,
+      eventType: 'run.queue_cancel_checked',
+      message: removed === 1 ? 'Queued BullMQ job removed' : 'BullMQ job was already active or missing',
+      payload: { jobId, removed }
+    });
+  } catch (error) {
+    await createAgentRunEvent({
+      runId: run.id,
+      eventType: 'run.queue_cancel_failed',
+      message: 'Could not remove queued BullMQ job; worker will stop at the next checkpoint',
+      payload: { jobId, error: error instanceof Error ? error.message : String(error) }
+    });
+  }
+}
+
+async function enqueueAgentRun(run: TAiAgentRun, reason: 'created' | 'resumed' | 'retried'): Promise<TAiAgentRun> {
+  if (!isRedisConfigured()) {
+    await createAgentRunEvent({
+      runId: run.id,
+      eventType: 'run.enqueue_skipped',
+      message: 'Redis is not configured; run state was saved but no BullMQ job was enqueued',
+      payload: { reason }
+    });
+
+    return run;
+  }
+
+  try {
+    const jobId = await enqueueAgentCourseGenerationRun(
+      {
+        runId: run.id,
+        requestedByUserId: run.userId,
+        organizationId: run.orgId
+      },
+      { attempt: run.attempt }
+    );
+    const updatedRun = await updateOwnedAgentRun(run.id, run.userId, {
+      status: 'queued',
+      executionCursor: {
+        ...run.executionCursor,
+        bullmq: {
+          queue: 'agent-course-generation',
+          jobId: jobId ?? null,
+          enqueuedAt: new Date().toISOString(),
+          reason
+        }
+      }
+    });
+
+    await createAgentRunEvent({
+      runId: run.id,
+      eventType: 'run.enqueued',
+      message: 'Run enqueued for background course generation',
+      payload: { jobId: jobId ?? null, reason }
+    });
+
+    return updatedRun;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to enqueue agent run';
+    await updateOwnedAgentRun(run.id, run.userId, {
+      status: 'failed',
+      phase: 'failed',
+      lastError: { code: 'AGENT_RUN_ENQUEUE_FAILED', message },
+      finishedAt: new Date().toISOString()
+    });
+
+    await createAgentRunEvent({
+      runId: run.id,
+      eventType: 'run.enqueue_failed',
+      message: 'Failed to enqueue background course generation',
+      payload: { reason, error: { code: 'AGENT_RUN_ENQUEUE_FAILED', message } }
+    });
+
+    throw new AppError(message, 'AGENT_RUN_ENQUEUE_FAILED', 500);
+  }
+}
+
 async function updateOwnedAgentRun(
   runId: string,
   userId: string,
@@ -132,7 +233,9 @@ export async function createAgentRunState(input: CreateAgentRunStateInput): Prom
     payload: { phase: run.phase, status: run.status }
   });
 
-  return buildAgentRunDetail(run);
+  const enqueuedRun = await enqueueAgentRun(run, 'created');
+
+  return buildAgentRunDetail(enqueuedRun);
 }
 
 export async function listAgentRunStates(courseId: string, userId: string, orgId: string): Promise<TAiAgentRun[]> {
@@ -158,6 +261,8 @@ export async function cancelAgentRunState(runId: string, userId: string, orgId: 
     throw new AppError('Completed agent runs cannot be canceled', 'AGENT_RUN_ALREADY_COMPLETED', 409);
   }
 
+  await removeQueuedBullmqJob(run);
+
   const now = new Date().toISOString();
   const updatedRun = await updateOwnedAgentRun(runId, userId, {
     status: 'canceled',
@@ -181,8 +286,14 @@ export async function cancelAgentRunState(runId: string, userId: string, orgId: 
 export async function resumeAgentRunState(runId: string, userId: string, orgId: string): Promise<AgentRunDetail> {
   const run = await getOwnedAgentRun(runId, userId, orgId);
 
-  if (run.status === 'queued' || run.status === 'running') {
+  if (run.status === 'running') {
     return buildAgentRunDetail(run);
+  }
+
+  if (run.status === 'queued') {
+    const enqueuedRun = await enqueueAgentRun(run, 'resumed');
+
+    return buildAgentRunDetail(enqueuedRun);
   }
 
   if (run.status === 'completed') {
@@ -212,7 +323,9 @@ export async function resumeAgentRunState(runId: string, userId: string, orgId: 
     payload: { previousStatus: run.status, phase: run.phase }
   });
 
-  return buildAgentRunDetail(updatedRun);
+  const enqueuedRun = await enqueueAgentRun(updatedRun, 'resumed');
+
+  return buildAgentRunDetail(enqueuedRun);
 }
 
 export async function retryAgentRunState(runId: string, userId: string, orgId: string): Promise<AgentRunDetail> {
@@ -243,7 +356,9 @@ export async function retryAgentRunState(runId: string, userId: string, orgId: s
     payload: { previousAttempt: run.attempt, nextAttempt: updatedRun.attempt }
   });
 
-  return buildAgentRunDetail(updatedRun);
+  const enqueuedRun = await enqueueAgentRun(updatedRun, 'retried');
+
+  return buildAgentRunDetail(enqueuedRun);
 }
 
 export async function appendAgentRunInstructionState(

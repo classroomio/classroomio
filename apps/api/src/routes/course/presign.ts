@@ -9,11 +9,11 @@ import {
   generateDocumentUploadPresignedUrl,
   generateVideoDownloadPresignedUrls,
   generateVideoUploadPresignedUrl
-} from '@api/utils/s3';
+} from '@cio/core/utils/s3';
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
-import { generateFileKey } from '@api/utils/upload';
+import { generateFileKey } from '@cio/core/utils/upload';
 
 // Response schemas for OpenAPI documentation
 const PresignUploadResponse = {

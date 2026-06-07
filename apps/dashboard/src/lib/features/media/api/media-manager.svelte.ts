@@ -13,8 +13,10 @@ import type {
   OrganizationAsset,
   RegenerateAssetThumbnailRequest,
   SelectAssetThumbnailRequest,
+  TranscriptSegment,
   UpdateAssetData,
   UpdateAssetRequest,
+  UpdateAssetTranscriptRequest,
   YouTubeMetadata
 } from '../utils/types';
 import type {
@@ -68,8 +70,18 @@ export class MediaApi extends BaseApiWithErrors {
       return;
     }
 
+    const { page, limit, kind, status, search, includeExternal } = parsed.data;
+    const rpcQuery = {
+      page: String(page),
+      limit: String(limit),
+      includeExternal: String(includeExternal),
+      ...(kind !== undefined ? { kind } : {}),
+      ...(status !== undefined ? { status } : {}),
+      ...(search !== undefined ? { search } : {})
+    };
+
     await this.execute<ListAssetsRequest>({
-      requestFn: () => classroomio.organization.assets.$get({ query: parsed.data }),
+      requestFn: () => classroomio.organization.assets.$get({ query: rpcQuery }),
       logContext: 'listing organization assets',
       onSuccess: (response) => {
         this.assets = response.data;
@@ -88,8 +100,13 @@ export class MediaApi extends BaseApiWithErrors {
       return;
     }
 
+    const rpcQuery = {
+      includeArchived: String(parsed.data.includeArchived),
+      includeExternal: String(parsed.data.includeExternal)
+    };
+
     await this.execute<typeof classroomio.organization.assets.storage.$get>({
-      requestFn: () => classroomio.organization.assets.storage.$get({ query: parsed.data }),
+      requestFn: () => classroomio.organization.assets.storage.$get({ query: rpcQuery }),
       logContext: 'fetching media manager storage summary',
       onSuccess: (response) => {
         this.storageSummary = response.data;
@@ -400,6 +417,29 @@ export class MediaApi extends BaseApiWithErrors {
       },
       onError: () => {
         snackbar.error('snackbar.media_manager.transcript_fetch_failed');
+      }
+    });
+
+    return data;
+  }
+
+  /** Save edited transcript segments (org admins only). Returns the updated payload or null on failure. */
+  async updateAssetTranscript(assetId: string, segments: TranscriptSegment[]): Promise<AssetTranscriptPayload | null> {
+    let data: AssetTranscriptPayload | null = null;
+
+    await this.execute<UpdateAssetTranscriptRequest>({
+      requestFn: () =>
+        classroomio.organization.assets[':assetId'].transcript.$put({
+          param: { assetId },
+          json: { segments }
+        }),
+      logContext: 'updating asset transcript',
+      onSuccess: (response) => {
+        data = response.data;
+        snackbar.success('snackbar.media_manager.transcript_saved');
+      },
+      onError: () => {
+        snackbar.error('snackbar.media_manager.transcript_save_failed');
       }
     });
 

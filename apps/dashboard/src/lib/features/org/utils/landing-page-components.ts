@@ -1,31 +1,41 @@
 import {
+  BoldCourseLanding,
   BoldLandingHero,
   BoldLandingNav,
   BoldLandingPage,
+  ClassicCourseLanding,
   ClassicLandingHero,
   ClassicLandingNav,
   ClassicLandingPage,
+  CorporateCourseLanding,
   CorporateLandingHero,
   CorporateLandingNav,
   CorporateLandingPage,
+  EditorialCourseLanding,
   EditorialLandingHero,
   EditorialLandingNav,
   EditorialLandingPage,
+  MinimalCourseLanding,
   MinimalLandingHero,
   MinimalLandingNav,
   MinimalLandingPage,
+  SaasCourseLanding,
   SaasLandingHero,
   SaasLandingNav,
   SaasLandingPage,
+  StudioCourseLanding,
   StudioLandingHero,
   StudioLandingNav,
   StudioLandingPage,
+  TechCourseLanding,
   TechLandingHero,
   TechLandingNav,
   TechLandingPage,
+  TerminalCourseLanding,
   TerminalLandingHero,
   TerminalLandingNav,
   TerminalLandingPage,
+  VibrantCourseLanding,
   VibrantLandingHero,
   VibrantLandingNav,
   VibrantLandingPage
@@ -42,6 +52,19 @@ export const landingPageThemeComponents = {
   terminal: TerminalLandingPage,
   editorial: EditorialLandingPage,
   vibrant: VibrantLandingPage
+} as const;
+
+export const courseLandingPageThemeComponents = {
+  minimal: MinimalCourseLanding,
+  bold: BoldCourseLanding,
+  classic: ClassicCourseLanding,
+  saas: SaasCourseLanding,
+  tech: TechCourseLanding,
+  studio: StudioCourseLanding,
+  corporate: CorporateCourseLanding,
+  terminal: TerminalCourseLanding,
+  editorial: EditorialCourseLanding,
+  vibrant: VibrantCourseLanding
 } as const;
 
 export const landingPageNavComponents = {

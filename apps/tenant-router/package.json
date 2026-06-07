@@ -7,11 +7,16 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "tail": "wrangler tail",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250109.0",
+    "@types/pg": "^8.16.0",
     "typescript": "^5.5.2",
     "wrangler": "4.21.x"
+  },
+  "dependencies": {
+    "pg": "^8.18.0"
   }
 }

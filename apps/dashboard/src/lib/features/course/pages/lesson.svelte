@@ -10,7 +10,7 @@
   import { fade } from 'svelte/transition';
   import Save from '@lucide/svelte/icons/save';
   import Pencil from '@lucide/svelte/icons/pencil';
-  import HistoryIcon from '@lucide/svelte/icons/history';
+  // import HistoryIcon from '@lucide/svelte/icons/history';
   import VideoIcon from '@lucide/svelte/icons/video';
 
   import MODES from '$lib/utils/constants/mode';
@@ -381,13 +381,15 @@
       {/if}
 
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        {#if mode === MODES.edit && window.innerWidth >= 1024}
-          <IconButton onclick={() => (isVersionDrawerOpen = true)}>
-            <HistoryIcon size={20} />
-          </IconButton>
-        {/if}
-
         <div class="flex flex-row items-center gap-2 lg:flex">
+          <!--
+          {#if mode === MODES.edit && window.innerWidth >= 1024}
+            <IconButton onclick={() => (isVersionDrawerOpen = true)}>
+              <HistoryIcon size={20} />
+            </IconButton>
+          {/if}
+          -->
+
           {#if mode === MODES.edit}
             <span class="ui:text-muted-foreground text-sm" aria-live="polite">
               {#if lessonApi.isSaving}
@@ -416,7 +418,9 @@
 
 <Page.Body>
   {#snippet child()}
-    <div class={`overflow-x-hidden py-6 ${mode === MODES.edit ? 'lg:w-full xl:w-11/12' : 'mx-auto w-full max-w-3xl'}`}>
+    <div
+      class={`overflow-x-hidden py-6 pb-20 ${mode === MODES.edit ? 'lg:w-full xl:w-11/12' : 'mx-auto w-full max-w-3xl'}`}
+    >
       {#if $isOrgStudent && lessonApi.lesson && !isLessonUnlocked}
         <Empty
           title={$t('course.navItem.lessons.content_locked_title')}

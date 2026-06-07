@@ -146,6 +146,12 @@
             >
           </li>
           <li>
+            <a
+              href="/public-courses"
+              class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors">Public Courses</a
+            >
+          </li>
+          <li>
             <a href="/teach" class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
               >Teach with us</a
             >
@@ -177,7 +183,7 @@
         <ul class="space-y-3">
           <li>
             <a
-              href="https://feedback.classroomio.com"
+              href="https://feedback.classroomio.com/roadmap"
               target="_blank"
               rel="noopener"
               class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors">Roadmap</a

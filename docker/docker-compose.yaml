@@ -88,8 +88,7 @@ services:
       NODE_ENV: production
       PORT: 3081
       PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-http://localhost:3081}
-      TRUSTED_ORIGINS: ${TRUSTED_ORIGINS:-http://localhost:3082}
-      AUTH_COOKIE_DOMAIN: ${AUTH_COOKIE_DOMAIN:-}
+      TRUSTED_ORIGINS: ${TRUSTED_ORIGINS:-}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
       PRIVATE_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
       REDIS_URL: redis://redis:6379
@@ -138,7 +137,6 @@ services:
       PORT: 3082
       ORIGIN: ${DASHBOARD_ORIGIN:-http://localhost:3082}
       PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
-      PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-http://localhost:3081}
       PRIVATE_SERVER_URL: ${PRIVATE_SERVER_URL:-http://api:3081}
       PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:-local-dev-api-key}
       PRIVATE_APP_HOST: ${PRIVATE_APP_HOST:-localhost}

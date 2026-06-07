@@ -26,7 +26,7 @@ import { ROLE } from '@cio/utils/constants';
 import type { TCreateCourseInvite } from '@cio/utils/validation/course/invite';
 import type { TNewCourseInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
-import { getDashboardBaseUrl } from '@api/config/dashboard-url';
+import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName } from '@cio/email';
@@ -36,6 +36,16 @@ import { generateSlug } from '@cio/utils/functions';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
 import { db } from '@cio/db/drizzle';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
+
+/**
+ * Minimal org-url bundle threaded through invite/email paths so every URL
+ * we generate respects the org's verified custom domain.
+ */
+type OrgUrlInfo = {
+  siteName: string | null;
+  customDomain: string | null;
+  isCustomDomainVerified: boolean | null;
+};
 
 type InviteStatus = 'ACTIVE' | 'EXPIRED' | 'USED_UP' | 'REVOKED';
 type InvitePreset = 'ONE_TIME_24H' | 'MULTI_USE_7D' | 'MULTI_USE_30D' | 'CUSTOM';
@@ -189,11 +199,12 @@ function getInviteStatus(invite: {
 }
 
 /**
- * Builds the course enroll URL for invite links (emails, etc.).
- * Uses DASHBOARD_URL when set (self-hosted), otherwise org subdomain in production.
+ * Builds the course enroll URL for invite links (emails, etc.). Respects the
+ * org's verified custom domain when present, otherwise falls back to the
+ * tenant subdomain.
  */
-export function buildEnrollLink(courseSlug: string, token: string, orgSiteName?: string): string {
-  const base = getDashboardBaseUrl(orgSiteName);
+export function buildEnrollLink(courseSlug: string, token: string, org?: OrgUrlInfo | null): string {
+  const base = getDashboardBaseUrl(org ?? undefined);
   return `${base}/course/${encodeURIComponent(courseSlug)}/enroll?invite_token=${encodeURIComponent(token)}`;
 }
 
@@ -308,7 +319,7 @@ async function createSingleInvite(
   metadata: Record<string, unknown> | undefined,
   targetEmail: string | null,
   courseSlug: string,
-  orgSiteName: string | null
+  org: OrgUrlInfo
 ) {
   const token = generateToken();
   const tokenHash = hashToken(token);
@@ -338,7 +349,7 @@ async function createSingleInvite(
 
   return {
     ...created,
-    inviteLink: buildEnrollLink(courseSlug, token, orgSiteName ?? undefined)
+    inviteLink: buildEnrollLink(courseSlug, token, org)
   };
 }
 
@@ -346,12 +357,12 @@ async function sendStudentJoinEmails(input: {
   courseId: string;
   courseName: string;
   orgName: string;
-  orgSiteName: string | null;
+  org: OrgUrlInfo;
   studentId: string;
   studentEmail: string;
 }) {
   try {
-    const loginUrl = getDashboardBaseUrl(input.orgSiteName ?? undefined);
+    const loginUrl = getDashboardBaseUrl(input.org);
     await enqueueTransactionalEmail('studentCourseWelcome', {
       to: input.studentEmail,
       fields: {
@@ -402,7 +413,7 @@ async function createEmailInviteAndSend(input: {
   orgName: string;
   courseName: string;
   courseSlug: string;
-  orgSiteName: string | null;
+  org: OrgUrlInfo;
   metadata?: Record<string, unknown>;
   shouldSend: boolean;
 }) {
@@ -421,7 +432,7 @@ async function createEmailInviteAndSend(input: {
     },
     input.recipientEmail,
     input.courseSlug,
-    input.orgSiteName
+    input.org
   );
 
   if (!input.shouldSend) {
@@ -503,7 +514,11 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
 
   const courseTitle = course[0].title;
   const courseSlug = course[0].slug ?? (await ensureCourseSlug(course[0].id, courseTitle));
-  const orgSiteName = courseOrgData.orgSiteName ?? null;
+  const orgUrlInfo: OrgUrlInfo = {
+    siteName: courseOrgData.orgSiteName ?? null,
+    customDomain: courseOrgData.orgCustomDomain ?? null,
+    isCustomDomainVerified: courseOrgData.orgIsCustomDomainVerified ?? null
+  };
 
   if (recipients.valid.length === 0) {
     const createdInvite = await createSingleInvite(
@@ -515,7 +530,7 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
       data.metadata,
       null,
       courseSlug,
-      orgSiteName
+      orgUrlInfo
     );
 
     return {
@@ -545,7 +560,7 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
         orgName,
         courseName,
         courseSlug,
-        orgSiteName,
+        org: orgUrlInfo,
         metadata: data.metadata,
         shouldSend: data.sendEmail
       })
@@ -659,7 +674,7 @@ export async function enrollInCourse(
     courseId,
     courseName: title,
     orgName: org.name,
-    orgSiteName: org.siteName,
+    org: { siteName: org.siteName, customDomain: org.customDomain, isCustomDomainVerified: org.isCustomDomainVerified },
     studentId: user.id,
     studentEmail: normalizedEmail
   });
@@ -925,7 +940,9 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
         courseId: course.id,
         courseName: course.title,
         orgName: organization.name,
-        orgSiteName: organization.siteName
+        orgSiteName: organization.siteName,
+        orgCustomDomain: organization.customDomain,
+        orgIsCustomDomainVerified: organization.isCustomDomainVerified
       };
     }
 
@@ -1010,7 +1027,9 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       courseId: course.id,
       courseName: course.title,
       orgName: organization.name,
-      orgSiteName: organization.siteName
+      orgSiteName: organization.siteName,
+      orgCustomDomain: organization.customDomain,
+      orgIsCustomDomainVerified: organization.isCustomDomainVerified
     };
   });
 
@@ -1021,7 +1040,11 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       courseId: result.courseId,
       courseName: result.courseName,
       orgName: result.orgName,
-      orgSiteName: result.orgSiteName,
+      org: {
+        siteName: result.orgSiteName,
+        customDomain: result.orgCustomDomain,
+        isCustomDomainVerified: result.orgIsCustomDomainVerified
+      },
       studentId: user.id,
       studentEmail: normalizedEmail
     });

@@ -1,3 +1,4 @@
+import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
@@ -28,7 +29,7 @@ import {
   getTokenBalance,
   isOrgOnPaidPlan,
   recordTokenUsage
-} from '@api/services/agent/usage';
+} from '@cio/core/services/agent/usage';
 import {
   enforceStudentTutorPolicy,
   getStudentTutorStatus,
@@ -38,7 +39,7 @@ import {
   incrementStudentTutorCount
 } from '@api/services/agent/tutor-usage';
 import { buildStudentAgentTools } from '@api/services/agent/student-tools';
-import { parseAndStoreDocument } from '@api/services/agent/document';
+import { parseAndStoreDocument } from '@cio/core/services/agent/document';
 import { recordCreditPurchase } from '@api/services/agent/credit-purchase';
 import { generateCourseMeta } from '@api/services/agent/title-generation';
 import { generateFieldText } from '@api/services/agent/text-generation';
@@ -55,15 +56,15 @@ import {
 import { createModel, getProviderConfigForProvider, pickAnyConfiguredProvider } from '@cio/ai-assistant/providers';
 import { AGENT_MODELS, DEFAULT_PICKER_MODEL_ID } from '@cio/utils/agent-models';
 import { buildSystemPrompt, buildContextMessage } from '@cio/ai-assistant/prompt';
-import { trackAgentEvent, AgentEvent } from '@api/utils/tinybird';
-import { redis } from '@api/utils/redis/redis';
+import { trackAgentEvent, AgentEvent } from '@cio/core/utils/tinybird';
+import { redis } from '@cio/core/utils/redis/redis';
 import { db } from '@cio/db';
 import * as schema from '@cio/db/schema';
 import { eq } from 'drizzle-orm';
-import { listCourseSections } from '@api/services/course/section';
-import { getLesson } from '@api/services/lesson/lesson';
-import { getExercise } from '@api/services/exercise/exercise';
-import { sanitizeDanglingToolCalls } from '@api/services/agent/sanitize-tool-calls';
+import { listCourseSections } from '@cio/core/services/course/section';
+import { getLesson } from '@cio/core/services/lesson/lesson';
+import { getExercise } from '@cio/core/services/exercise/exercise';
+import { sanitizeDanglingToolCalls } from '@cio/core/services/agent/sanitize-tool-calls';
 import {
   collectDocumentIds,
   getActiveCourseTemplateId,
@@ -71,10 +72,10 @@ import {
   loadDocumentsText,
   verifyExerciseBelongsToCourse,
   verifyLessonBelongsToCourse
-} from '@api/services/agent/chat-context';
-import { buildAgentTools } from '@api/services/agent/chat-tools';
-import { buildModelContextMessages } from '@api/services/agent/model-context';
-import { summarizeConversation } from '@api/services/agent/summarize';
+} from '@cio/core/services/agent/chat-context';
+import { buildAgentTools, filterToolsForChatMode } from '@cio/core/services/agent/chat-tools';
+import { buildModelContextMessages } from '@cio/core/services/agent/model-context';
+import { summarizeConversation } from '@cio/core/services/agent/summarize';
 import { agentHistoryRouter } from './history';
 import { agentRunsRouter } from './runs';
 
@@ -530,7 +531,7 @@ const agentCoreRouter = new Hono()
       const agentTools =
         role === AgentRole.STUDENT
           ? buildStudentAgentTools(orgId, user.id, courseId, studentPolicy!.settings)
-          : buildAgentTools(orgId, user.id, courseId, messages, { isOrgOnPaidPlan: isOrgPaid });
+          : filterToolsForChatMode(buildAgentTools(orgId, user.id, courseId, messages, { isOrgOnPaidPlan: isOrgPaid }));
 
       const contextManaged = await buildModelContextMessages({
         conversationId,
@@ -677,7 +678,10 @@ const agentCoreRouter = new Hono()
       });
 
       if (error instanceof AppError) {
-        return c.json({ success: false, error: error.message, code: error.code }, error.statusCode);
+        return c.json(
+          { success: false, error: error.message, code: error.code },
+          error.statusCode as ContentfulStatusCode
+        );
       }
 
       console.error('Agent chat error:', error);

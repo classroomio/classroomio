@@ -7,7 +7,7 @@
   import { page } from '$app/state';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { authClient } from '$lib/utils/services/auth/client';
   import * as Field from '@cio/ui/base/field';
   import { Input } from '@cio/ui/base/input';
@@ -177,7 +177,9 @@
   <title>Join ClassroomIO</title>
 </svelte:head>
 
-<SenjaEmbed id="aa054658-1e15-4d00-8920-91f424326c4e" />
+{#if !$globalStore.isOrgSite || $isFreePlan}
+  <SenjaEmbed id="aa054658-1e15-4d00-8920-91f424326c4e" />
+{/if}
 
 {#if signupRestricted}
   <div

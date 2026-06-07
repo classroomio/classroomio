@@ -11,6 +11,11 @@ export interface PublicExerciseStoredAttempt {
   totalGradable: number;
 }
 
+/** Plain deep clone — `structuredClone` throws on Svelte `$state` proxies. */
+export function cloneAnswersByKey(answersByKey: Record<string, AnswerData>): Record<string, AnswerData> {
+  return JSON.parse(JSON.stringify(answersByKey)) as Record<string, AnswerData>;
+}
+
 interface PersistedEnvelope {
   v: number;
   attempts: PublicExerciseStoredAttempt[];

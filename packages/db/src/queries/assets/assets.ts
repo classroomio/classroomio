@@ -217,6 +217,131 @@ export async function updateAsset(
   }
 }
 
+export interface InitHlsAssetInput {
+  organizationId: string;
+  createdByProfileId: string;
+  title: string | null;
+  byteSize: number | null;
+  mimeType: string | null;
+}
+
+/**
+ * Insert an asset row in `processing` status for an HLS upload. The
+ * storage layout (storageKey / hlsManifestKey / hlsAudioKey) is filled in
+ * by finalizeHlsAsset once the browser encoder has written everything to
+ * R2 — we just need an id to namespace the segments under.
+ */
+export async function createHlsAssetPlaceholder(
+  input: InitHlsAssetInput,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset> {
+  try {
+    const [created] = await dbClient
+      .insert(schema.asset)
+      .values({
+        organizationId: input.organizationId,
+        kind: 'video',
+        provider: 'upload',
+        storageProvider: 's3',
+        title: input.title,
+        byteSize: input.byteSize,
+        mimeType: input.mimeType,
+        isExternal: false,
+        status: 'processing',
+        createdByProfileId: input.createdByProfileId
+      })
+      .returning();
+
+    if (!created) {
+      throw new Error('Failed to create HLS asset placeholder');
+    }
+
+    return created;
+  } catch (error) {
+    console.error('createHlsAssetPlaceholder error:', error);
+    throw new Error(
+      `Failed to create HLS asset placeholder: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export interface FinalizeHlsAssetInput {
+  manifestKey: string;
+  audioKey: string | null;
+  durationSeconds: number | null;
+  aspectRatio: string | null;
+  byteSize: number;
+  thumbnailUrl: string | null;
+  thumbnailCandidates: string[];
+  metadata: Record<string, unknown>;
+}
+
+export async function finalizeHlsAsset(
+  assetId: string,
+  orgId: string,
+  input: FinalizeHlsAssetInput,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset | null> {
+  try {
+    const [updated] = await dbClient
+      .update(schema.asset)
+      .set({
+        hlsManifestKey: input.manifestKey,
+        hlsAudioKey: input.audioKey,
+        // storageKey stays null for HLS assets so lesson-media.ts (which
+        // signs storageKey as the canonical video URL) doesn't overwrite
+        // the HLS manifest URL. The transcription enqueue path reads
+        // hlsAudioKey for HLS assets — see startTranscriptionOnlyMediaJob.
+        durationSeconds: input.durationSeconds,
+        aspectRatio: input.aspectRatio,
+        byteSize: input.byteSize,
+        thumbnailUrl: input.thumbnailUrl,
+        thumbnailCandidates: input.thumbnailCandidates,
+        metadata: input.metadata,
+        status: 'active',
+        updatedAt: new Date().toISOString()
+      })
+      .where(and(eq(schema.asset.id, assetId), eq(schema.asset.organizationId, orgId)))
+      .returning();
+
+    return updated || null;
+  } catch (error) {
+    console.error('finalizeHlsAsset error:', error);
+    throw new Error(`Failed to finalize HLS asset: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export interface FinalizeHls1080Input {
+  byteSize: number;
+  metadata: Record<string, unknown>;
+}
+
+export async function finalizeHls1080Rendition(
+  assetId: string,
+  orgId: string,
+  input: FinalizeHls1080Input,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset | null> {
+  try {
+    const [updated] = await dbClient
+      .update(schema.asset)
+      .set({
+        byteSize: input.byteSize,
+        metadata: input.metadata,
+        updatedAt: new Date().toISOString()
+      })
+      .where(and(eq(schema.asset.id, assetId), eq(schema.asset.organizationId, orgId)))
+      .returning();
+
+    return updated || null;
+  } catch (error) {
+    console.error('finalizeHls1080Rendition error:', error);
+    throw new Error(
+      `Failed to finalize HLS 1080p rendition: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function archiveAsset(
   assetId: string,
   orgId: string,

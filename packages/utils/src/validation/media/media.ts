@@ -26,3 +26,8 @@ export const ZTranscriptResponse = z.object({
   durationSeconds: z.number().nullable()
 });
 export type TTranscriptResponse = z.infer<typeof ZTranscriptResponse>;
+
+export const ZUpdateTranscript = z.object({
+  segments: z.array(ZTranscriptSegment).min(1)
+});
+export type TUpdateTranscript = z.infer<typeof ZUpdateTranscript>;

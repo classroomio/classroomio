@@ -128,6 +128,14 @@ export type AssignAudienceCoursesData = AssignAudienceCoursesSuccess['data'];
 export type ResendAudienceInviteRequest = (typeof classroomio.organization)['audience']['resend-invite']['$post'];
 export type RevokeAudienceInviteRequest = (typeof classroomio.organization)['audience']['revoke-invite']['$post'];
 
+// Link invite types
+export type GetLinkInviteRequest = (typeof classroomio.organization)['link-invite']['$get'];
+export type CreateLinkInviteRequest = (typeof classroomio.organization)['link-invite']['$post'];
+export type ToggleLinkInviteRequest = (typeof classroomio.organization)['link-invite']['$patch'];
+
+export type GetLinkInviteSuccess = Extract<InferResponseType<GetLinkInviteRequest>, { success: true }>;
+export type OrgLinkInvite = GetLinkInviteSuccess['data'];
+
 // Token auth types
 export type CreateTokenAuthRequest = (typeof classroomio.organization)['token-auth']['$post'];
 export type GetTokenAuthRequest = (typeof classroomio.organization)['token-auth']['$get'];

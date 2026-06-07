@@ -10,7 +10,7 @@ import { getProfileByEmail, getProfileById, updateProfile } from '@cio/db/querie
 import type { OrganizationWithMemberAndPlans } from '@cio/db/queries/organization/types';
 import { ROLE } from '@cio/utils/constants';
 import type { TProfile } from '@cio/db/types';
-import { env } from '@api/config/env';
+import { env } from '@cio/core/config/env';
 import { getLicenseStatus } from '@api/services/license';
 
 export type GetAccountDataResult = {
@@ -26,10 +26,12 @@ export type GetAccountDataResult = {
  * @returns Account data with profile and organizations
  */
 export async function getAccountData(userId: string): Promise<GetAccountDataResult> {
+  const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
+
   let [profile, organizations, licenseStatus] = await Promise.all([
     getProfileById(userId),
     getOrganizationByProfileId(userId),
-    getLicenseStatus()
+    isSelfHosted ? getLicenseStatus() : Promise.resolve({ valid: true, features: [] as string[] })
   ]);
 
   if (!profile) {
@@ -59,7 +61,7 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
   return {
     profile,
     organizations,
-    licenseFeatures: licenseStatus.features
+    licenseFeatures: isSelfHosted ? licenseStatus.features : []
   };
 }
 

@@ -1,26 +1,29 @@
+<script module lang="ts">
+  // Module-level singleton: one Promise shared across all mounted instances.
+  // Dynamic imports are already cached by the JS engine after the first load,
+  // but reusing the same Promise avoids redundant microtask chains on remounts.
+  let pending: Promise<typeof import('@cio/ui/custom/editor')> | null = null;
+
+  function loadEditor() {
+    pending ??= import('@cio/ui/custom/editor');
+    return pending;
+  }
+</script>
+
 <script lang="ts">
-  import { Editor } from '@cio/ui/custom/editor';
+  // Type-only imports are erased at build time — no static TipTap dependency.
   import type { HTMLContent, TiptapEditor } from '@cio/ui/custom/editor';
 
   interface Props {
     placeholder?: string | ((node: any) => string);
-    // Content of the editor
     content?: HTMLContent;
-    // Whether the toolbar should be visible
     showToolBar?: boolean;
-    // Whether the editor is editable
     editable?: boolean;
-    // Whether to enable localStorage persistence
     enablePersistence?: boolean;
-    // localStorage key for content persistence
     contentStorageKey?: string;
-    // localStorage key for editable state persistence
     editableStorageKey?: string;
-    // CSS class for the editor wrapper
     class?: string;
-    // CSS class for the editor itself
     editorClass?: string;
-    // Callback functions
     onChange?: (content: HTMLContent) => void;
     onReady?: (editor: TiptapEditor) => void;
     onEditorDestroy?: () => void;
@@ -42,17 +45,21 @@
   }: Props = $props();
 </script>
 
-<Editor
-  {content}
-  {showToolBar}
-  {editable}
-  {enablePersistence}
-  {contentStorageKey}
-  {editableStorageKey}
-  class={className}
-  {editorClass}
-  {placeholder}
-  onContentChange={onChange}
-  onEditorReady={onReady}
-  {onEditorDestroy}
-/>
+{#await loadEditor()}
+  <div class="ui:animate-pulse ui:rounded-md ui:bg-muted ui:h-32 ui:w-full" />
+{:then { Editor }}
+  <Editor
+    {content}
+    {showToolBar}
+    {editable}
+    {enablePersistence}
+    {contentStorageKey}
+    {editableStorageKey}
+    class={className}
+    {editorClass}
+    {placeholder}
+    onContentChange={onChange}
+    onEditorReady={onReady}
+    {onEditorDestroy}
+  />
+{/await}

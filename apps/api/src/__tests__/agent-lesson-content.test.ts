@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeAgentLessonContent } from '../services/agent/lesson-content';
+import { normalizeAgentLessonContent } from '@cio/core/services/agent/lesson-content';
 
 describe('normalizeAgentLessonContent', () => {
   it('removes a leading heading that duplicates the lesson title', () => {

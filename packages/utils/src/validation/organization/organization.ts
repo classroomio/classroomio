@@ -18,7 +18,9 @@ export type TGetOrganizations = z.infer<typeof ZGetOrganizations>;
 
 export const ZGetCoursesBySiteName = z.object({
   siteName: z.string().min(1),
-  tags: z.string().optional()
+  tags: z.string().optional(),
+  page: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional()
 });
 
 export type TGetCoursesBySiteName = z.infer<typeof ZGetCoursesBySiteName>;
@@ -127,6 +129,18 @@ export const ZRemoveTeamMember = z.object({
 });
 
 export type TRemoveTeamMember = z.infer<typeof ZRemoveTeamMember>;
+
+export const ZCreateLinkInvite = z.object({
+  roleId: z.number().int().positive()
+});
+
+export type TCreateLinkInvite = z.infer<typeof ZCreateLinkInvite>;
+
+export const ZToggleLinkInvite = z.object({
+  isRevoked: z.boolean()
+});
+
+export type TToggleLinkInvite = z.infer<typeof ZToggleLinkInvite>;
 
 export const ZGetUserAnalytics = z.object({
   userId: z.uuid()

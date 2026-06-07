@@ -3,13 +3,15 @@
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { Button } from '@cio/ui/base/button';
+  import * as ButtonGroup from '@cio/ui/base/button-group';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import EyeIcon from '@lucide/svelte/icons/eye';
   import PencilIcon from '@lucide/svelte/icons/pencil';
   import { onDestroy, onMount, tick, untrack } from 'svelte';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
-  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import MoreHorizontalIcon from '@lucide/svelte/icons/more-horizontal';
   import * as Page from '@cio/ui/base/page';
   import { ContentType } from '@cio/utils/constants/content';
 
@@ -37,7 +39,6 @@
   import ExerciseSettingsTab from '$features/course/components/exercise/exercise-settings-tab.svelte';
   import ViewMode from '$features/course/components/exercise/view-mode.svelte';
   import Submissions from '$features/course/components/exercise/submissions/submissions.svelte';
-  import { IconButton } from '@cio/ui/custom/icon-button';
   import UpdateDescription from '$features/course/components/exercise/update-description.svelte';
   import { ContentNavigationActions } from '$features/course/components/lesson';
   import {
@@ -373,6 +374,11 @@
     const sectionId = handleAddSection();
     await scrollToExerciseElement(`exercise-section-${sectionId}`);
   }
+
+  function togglePreviewMode() {
+    preview = !preview;
+    reorderQuestions = false;
+  }
 </script>
 
 <Page.Header isSticky={true} class="top-12! z-100! min-h-[36px]">
@@ -401,71 +407,87 @@
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         {#if selectedTab === 'questions'}
           <div class="right-0 flex w-full items-center justify-end">
-            <div class="flex items-center gap-2">
-              <Button class="mr-2" onclick={handleSave} loading={isSaving}>
-                {$t('course.navItem.lessons.exercises.all_exercises.save')}
-              </Button>
-              <IconButton
-                onclick={() => {
-                  preview = !preview;
-                  reorderQuestions = false;
-                }}
-                tooltip={preview
-                  ? $t('course.navItem.lessons.exercises.all_exercises.view_mode.edit')
-                  : $t('course.navItem.lessons.exercises.all_exercises.preview')}
-                tooltipSide="bottom"
-              >
-                {#if preview}
-                  <PencilIcon size={20} />
-                {:else}
-                  <EyeIcon size={20} />
-                {/if}
-              </IconButton>
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger>
-                  <Button type="button" variant="ghost" size="icon" class="h-8 w-8">
-                    <CirclePlusIcon size={20} />
-                    <span class="sr-only">{$t('course.navItem.lessons.exercises.all_exercises.add')}</span>
-                  </Button>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content align="center" class="z-201!">
-                  <DropdownMenu.Item onclick={addQuestionFromHeader}>
-                    {$t('course.navItem.lessons.exercises.all_exercises.add_question')}
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item onclick={addSectionFromHeader}>
-                    {$t('course.navItem.lessons.exercises.all_exercises.add_section')}
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger>
-                  <Button variant="ghost" size="icon" class="h-8 w-8">
-                    <EllipsisVerticalIcon class="h-5 w-5" />
-                    <span class="sr-only">Open menu</span>
-                  </Button>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content align="end">
-                  {#if hasSections($questionnaire.sections)}
-                    <DropdownMenu.Item onclick={() => (reorderQuestions = !reorderQuestions)}>
-                      {reorderQuestions
-                        ? $t('course.navItem.lessons.exercises.all_exercises.reorder_done')
-                        : $t('course.navItem.lessons.exercises.all_exercises.reorder')}
+            <div class="flex flex-wrap items-center justify-end gap-2">
+              <ButtonGroup.Root>
+                <Button variant="outline" size="sm" onclick={addQuestionFromHeader}>
+                  <CirclePlusIcon size={16} />
+                  {$t('course.navItem.lessons.exercises.all_exercises.add_question')}
+                </Button>
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger>
+                    {#snippet child({ props })}
+                      <Button
+                        {...props}
+                        type="button"
+                        variant="outline"
+                        size="icon-sm"
+                        aria-label={$t('course.navItem.lessons.exercises.all_exercises.add')}
+                      >
+                        <ChevronDownIcon size={16} />
+                      </Button>
+                    {/snippet}
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content align="end" class="z-201!">
+                    <DropdownMenu.Item onclick={addSectionFromHeader}>
+                      {$t('course.navItem.lessons.exercises.all_exercises.add_section')}
                     </DropdownMenu.Item>
-                    <DropdownMenu.Separator />
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+              </ButtonGroup.Root>
+
+              <ButtonGroup.Root>
+                <Button variant="outline" size="sm" onclick={togglePreviewMode}>
+                  {#if preview}
+                    <PencilIcon size={16} />
+                    {$t('course.navItem.lessons.exercises.all_exercises.view_mode.edit')}
                   {:else}
-                    <DropdownMenu.Item onclick={() => ($questionnaireOrder.open = true)}>
-                      {$t('course.navItem.lessons.exercises.all_exercises.reorder')}
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Separator />
+                    <EyeIcon size={16} />
+                    {$t('course.navItem.lessons.exercises.all_exercises.preview')}
                   {/if}
-                  <DropdownMenu.Item
-                    class="text-red-600 focus:text-red-600 dark:text-red-400"
-                    onclick={() => (shouldDeleteExercise = true)}
-                  >
-                    {$t('course.navItem.lessons.exercises.all_exercises.delete_exercise')}
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
+                </Button>
+              </ButtonGroup.Root>
+
+              <ButtonGroup.Root>
+                <Button size="sm" onclick={handleSave} loading={isSaving}>
+                  {$t('course.navItem.lessons.exercises.all_exercises.save')}
+                </Button>
+                <ButtonGroup.Separator />
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger>
+                    {#snippet child({ props })}
+                      <Button
+                        {...props}
+                        type="button"
+                        variant="default"
+                        size="icon-sm"
+                        aria-label={$t('course.navItem.lessons.exercises.all_exercises.more')}
+                      >
+                        <MoreHorizontalIcon class="h-4 w-4" />
+                      </Button>
+                    {/snippet}
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content align="end" class="z-201!">
+                    {#if hasSections($questionnaire.sections)}
+                      <DropdownMenu.Item onclick={() => (reorderQuestions = !reorderQuestions)}>
+                        {reorderQuestions
+                          ? $t('course.navItem.lessons.exercises.all_exercises.reorder_done')
+                          : $t('course.navItem.lessons.exercises.all_exercises.reorder')}
+                      </DropdownMenu.Item>
+                    {:else}
+                      <DropdownMenu.Item onclick={() => ($questionnaireOrder.open = true)}>
+                        {$t('course.navItem.lessons.exercises.all_exercises.reorder')}
+                      </DropdownMenu.Item>
+                    {/if}
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Item
+                      class="text-red-600 focus:text-red-600 dark:text-red-400"
+                      onclick={() => (shouldDeleteExercise = true)}
+                    >
+                      {$t('course.navItem.lessons.exercises.all_exercises.delete_exercise')}
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+              </ButtonGroup.Root>
             </div>
           </div>
         {/if}
@@ -478,7 +500,7 @@
 
 <Page.Body>
   {#snippet child()}
-    <div class="overflow-x-hidden">
+    <div class="overflow-x-hidden pb-20">
       {#if $isOrgStudent}
         {#if isExerciseUnlocked}
           <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmissions} />

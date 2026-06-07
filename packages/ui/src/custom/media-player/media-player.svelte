@@ -11,6 +11,18 @@
 
   let { source, options = {}, class: className = '' }: Props = $props();
 
+  let plyrRef: ReturnType<typeof PlyrPlayer> | null = $state(null);
+
+  /**
+   * Update the player's poster image after construction. Plyr doesn't
+   * react to `<video poster>` attribute changes once it has wrapped the
+   * element; callers (e.g. the manage-thumbnails dialog) invoke this on
+   * thumbnail selection to refresh the preview.
+   */
+  export function setPoster(url: string): void {
+    plyrRef?.setPoster(url);
+  }
+
   const tracks = $derived(source.tracks ?? []);
   const isMuse = $derived.by(() => source.type === 'muse' && source.metadata?.svid);
   const isGoogleDrive = $derived(source.type === 'google_drive');
@@ -40,6 +52,6 @@
       ></iframe>
     </div>
   {:else}
-    <PlyrPlayer src={source.url} {poster} {options} {tracks} />
+    <PlyrPlayer bind:this={plyrRef} src={source.url} {poster} hls={source.hls === true} {options} {tracks} />
   {/if}
 </div>

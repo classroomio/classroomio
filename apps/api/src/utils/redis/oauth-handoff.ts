@@ -1,4 +1,4 @@
-import { logRedisUnavailableOnce, redis } from './redis';
+import { logRedisUnavailableOnce, redis } from '@cio/core/utils/redis/redis';
 
 const KEY = (token: string) => `oauth-handoff:${token}`;
 const TTL_SECONDS = 120; // OAuth callbacks usually finish in < 2s; 2 minutes gives plenty of slack.

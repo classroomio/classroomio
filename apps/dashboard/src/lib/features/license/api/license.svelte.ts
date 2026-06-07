@@ -1,4 +1,11 @@
-import { LICENSE_FEATURE_IDS, type LicenseFeatureId } from '@cio/utils/license';
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
+import type { AccountOrg } from '$features/app/types';
+import {
+  getActivePlanName,
+  getLicenseFeaturesForPlan,
+  LICENSE_FEATURE_IDS,
+  type LicenseFeatureId
+} from '@cio/utils/license';
 
 class LicenseApi {
   features = $state<LicenseFeatureId[]>([]);
@@ -7,6 +14,15 @@ class LicenseApi {
   setFeatures(features: string[] = []) {
     this.features = this.sanitize(features);
     this.isResolved = true;
+  }
+
+  syncFromAccount(instanceFeatures: string[] = [], org?: Pick<AccountOrg, 'plans'>) {
+    if (PUBLIC_IS_SELFHOSTED === 'true') {
+      this.setFeatures(instanceFeatures);
+      return;
+    }
+
+    this.setFeatures(getLicenseFeaturesForPlan(getActivePlanName(org?.plans)));
   }
 
   hasAccess(feature: LicenseFeatureId): boolean {

@@ -27,7 +27,7 @@ import { updateOrganizationAudienceMember } from '@cio/db/queries/organization';
 
 import { ROLE } from '@cio/utils/constants';
 import crypto from 'node:crypto';
-import { getDashboardBaseUrl } from '@api/config/dashboard-url';
+import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { getProfilesByEmails } from '@cio/db/queries/auth';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 
@@ -195,7 +195,7 @@ async function enrollAudienceStudentProfilesInCourses(
   }
 
   let emailsSent = 0;
-  const loginUrl = getDashboardBaseUrl(organization.siteName ?? undefined);
+  const loginUrl = getDashboardBaseUrl(organization);
 
   if (shouldSendEmail && toInsert.length > 0) {
     const emailPromises = toInsert
@@ -254,7 +254,7 @@ async function enrollAudienceStudentProfilesInPrograms(
   }
 
   const programNameById = new Map(programs.map((program) => [program.id, program.name || 'Program']));
-  const loginUrl = getDashboardBaseUrl(organization.siteName ?? undefined);
+  const loginUrl = getDashboardBaseUrl(organization);
   const validProgramIds = programs.map((program) => program.id);
   const validProfiles = uniqueProfileIds.filter((profileId) => validProfileIds.has(profileId));
   const pairs = validProfiles.flatMap((profileId) => validProgramIds.map((programId) => ({ programId, profileId })));
@@ -354,7 +354,7 @@ async function createStudentOrgInvitesAndSendEmails(input: {
   });
 
   const invites = await createOrganizationInvites(inviteInputs.map((i) => i.row));
-  const inviteByEmail = new Map(invites.map((inv) => [inv.email.toLowerCase(), inv]));
+  const inviteByEmail = new Map(invites.map((inv) => [(inv.email ?? '').toLowerCase(), inv]));
   const tokenByEmail = new Map(inviteInputs.map((i) => [i.email.toLowerCase(), i.token]));
 
   await createOrganizationInviteAudits(

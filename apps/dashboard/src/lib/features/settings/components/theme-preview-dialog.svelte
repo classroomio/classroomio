@@ -3,12 +3,18 @@
   import { goto } from '$app/navigation';
   import XIcon from '@lucide/svelte/icons/x';
   import * as Dialog from '@cio/ui/base/dialog';
+  import * as Tabs from '@cio/ui/base/tabs';
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import { mockOrgLandingPageProps } from '@cio/ui/custom/org-landing-page';
-  import { landingPageThemeComponents } from '$features/org/utils/landing-page-components';
+  import { mockOrgLandingPageProps, mockCourseLandingPageProps } from '@cio/ui/custom/org-landing-page';
+  import {
+    landingPageThemeComponents,
+    courseLandingPageThemeComponents
+  } from '$features/org/utils/landing-page-components';
   import { landingPageThemes } from '$features/org/utils/landing-page';
+  import { t } from '$lib/utils/functions/translations';
 
   type LandingPageTheme = (typeof landingPageThemes)[number];
+  type PreviewView = 'home' | 'course';
 
   const validThemes = new Set<LandingPageTheme>(landingPageThemes);
 
@@ -19,13 +25,31 @@
 
   const open = $derived(previewTheme !== null);
 
+  let previewView = $state<PreviewView>('home');
+
+  // Reset to the home view whenever a different theme is opened for preview.
+  $effect(() => {
+    if (previewTheme) {
+      previewView = 'home';
+    }
+  });
+
   const ThemeComponent = $derived(
     previewTheme ? (landingPageThemeComponents[previewTheme] ?? landingPageThemeComponents.minimal) : null
   );
 
-  const previewProps = $derived({
+  const CourseComponent = $derived(
+    previewTheme ? (courseLandingPageThemeComponents[previewTheme] ?? courseLandingPageThemeComponents.minimal) : null
+  );
+
+  const orgPreviewProps = $derived({
     ...mockOrgLandingPageProps,
     embed: undefined
+  });
+
+  const coursePreviewProps = $derived({
+    ...mockCourseLandingPageProps,
+    theme: previewTheme ?? mockCourseLandingPageProps.theme
   });
 
   function closePreview() {
@@ -62,9 +86,28 @@
     </div>
 
     <div class="h-full w-full overflow-y-auto">
-      {#if ThemeComponent}
-        <ThemeComponent {...previewProps} disableCourseLinks={true} />
+      {#if previewView === 'home' && ThemeComponent}
+        <ThemeComponent {...orgPreviewProps} disableCourseLinks={true} />
+      {:else if previewView === 'course' && CourseComponent}
+        <CourseComponent {...coursePreviewProps} />
       {/if}
     </div>
+
+    <Tabs.Root
+      bind:value={previewView}
+      class="ui:pointer-events-none ui:absolute ui:bottom-6 ui:left-1/2 ui:z-[9999] ui:-translate-x-1/2"
+    >
+      <Tabs.List
+        aria-label={$t('settings.landing_page.preview_tabs.label')}
+        class="ui:pointer-events-auto ui:bg-background/90 ui:supports-[backdrop-filter]:bg-background/70 ui:h-10 ui:gap-1 ui:rounded-full ui:border ui:p-1 ui:shadow-lg ui:backdrop-blur"
+      >
+        <Tabs.Trigger value="home" class="ui:rounded-full ui:px-4">
+          {$t('settings.landing_page.preview_tabs.home')}
+        </Tabs.Trigger>
+        <Tabs.Trigger value="course" class="ui:rounded-full ui:px-4">
+          {$t('settings.landing_page.preview_tabs.course')}
+        </Tabs.Trigger>
+      </Tabs.List>
+    </Tabs.Root>
   </Dialog.Content>
 </Dialog.Root>

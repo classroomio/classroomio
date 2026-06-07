@@ -18,7 +18,7 @@ import {
   isRedisConfigured
 } from '@cio/jobs';
 
-import { logRedisUnavailableOnce } from '@api/utils/redis/redis';
+import { logRedisUnavailableOnce } from '@cio/core/utils/redis/redis';
 import type { TMediaJob } from '@db/types';
 
 export interface StartTranscriptionOnlyMediaJobInput {
@@ -41,7 +41,11 @@ export async function startTranscriptionOnlyMediaJob(input: StartTranscriptionOn
     throw new AppError('Asset not found', ErrorCodes.NOT_FOUND, 404);
   }
 
-  if (asset.kind !== 'video' || asset.provider !== 'upload' || !asset.storageKey) {
+  // HLS uploads carry their pre-extracted audio in `hls_audio_key` and leave
+  // `storage_key` null. Raw MP4 uploads keep using `storage_key`.
+  const transcriptionSourceKey = asset.hlsAudioKey ?? asset.storageKey;
+
+  if (asset.kind !== 'video' || asset.provider !== 'upload' || !transcriptionSourceKey) {
     throw new AppError('Asset cannot be transcribed', ErrorCodes.ASSET_NOT_TRANSCRIBABLE, 400);
   }
 
@@ -71,7 +75,7 @@ export async function startTranscriptionOnlyMediaJob(input: StartTranscriptionOn
     const enqueueResult = await enqueueTranscriptionOnly({
       mediaJobId: job.id,
       assetId: input.assetId,
-      storageKey: asset.storageKey,
+      storageKey: transcriptionSourceKey,
       actorContext: {
         userId: input.triggeredByProfileId,
         organizationId: input.organizationId

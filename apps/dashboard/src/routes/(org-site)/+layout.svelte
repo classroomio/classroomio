@@ -3,8 +3,8 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { onMount } from 'svelte';
   import { afterNavigate } from '$app/navigation';
-  import { env } from '$env/dynamic/public';
   import { analytics } from '@cio/analytics/client';
+  import { getRequestBaseUrl } from '$lib/utils/services/api';
   import type { Snippet } from 'svelte';
   import type { AccountOrg } from '$features/app/types';
 
@@ -19,10 +19,11 @@
   let { children, data }: Props = $props();
 
   onMount(() => {
-    if (!env.PUBLIC_SERVER_URL) return;
+    const apiBaseUrl = getRequestBaseUrl();
+    if (!apiBaseUrl) return;
 
     analytics.init({
-      endpoint: `${env.PUBLIC_SERVER_URL.replace(/\/$/, '')}/dash/track`,
+      endpoint: `${apiBaseUrl.replace(/\/$/, '')}/dash/track`,
       orgId: data.org?.id ?? undefined
     });
     analytics.pageView({ kind: 'landing' });

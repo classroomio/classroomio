@@ -13,10 +13,9 @@
     "postinstall": "test -d .git && lefthook install || true",
     "release": "standard-version",
     "db:reset": "pnpm --filter @cio/db db:reset",
-    "dashboard:dev": "pnpm --filter=@cio/dashboard run dev",
-    "api:dev": "pnpm --filter=@cio/api --filter=@cio/jobs-worker run dev",
+    "dashboard:dev": "pnpm concurrently -n dashboard,ui -c blue,yellow \"pnpm --filter=@cio/dashboard run dev\" \"pnpm --filter=@cio/ui run dev\"",
+    "api:dev": "pnpm concurrently -n api,jobs -c blue,yellow \"pnpm --filter=@cio/api run dev\" \"pnpm --filter=@cio/jobs-worker run dev\"",
     "jobs:dev": "pnpm --filter=@cio/jobs-worker run dev",
-    "dev:all": "pnpm concurrently -n dash,api,jobs -c green,blue,yellow \"pnpm dashboard:dev\" \"pnpm api:dev\" \"pnpm jobs:dev\"",
     "docs:dev": "pnpm --filter @cio/docs dev",
     "docs:build": "pnpm --filter @cio/docs build",
     "docs:types:check": "pnpm --filter @cio/docs types:check",
@@ -55,7 +54,7 @@
       "layerchart@2.0.0-next.27": "patches/layerchart@2.0.0-next.27.patch"
     },
     "overrides": {
-      "zod": "^4.1.8",
+      "zod": "4.2.1",
       "miniflare>zod": "3.22.3"
     }
   },

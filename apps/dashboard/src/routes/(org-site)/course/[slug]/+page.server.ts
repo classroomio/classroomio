@@ -3,7 +3,7 @@ import type { CourseBySlugWithOrg, GetCourseBySlugRequest } from '$features/cour
 import type { GetOrganizationRequest } from '$features/org/utils/types';
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 import { getApiKeyHeaders, safeServerApi } from '$lib/utils/services/api/server';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 type GetCourseBySlugSuccess = Extract<InferResponseType<GetCourseBySlugRequest>, { success: true }>;
 type GetOrganizationSuccess = Extract<InferResponseType<GetOrganizationRequest>, { success: true }>;
@@ -37,12 +37,7 @@ export const load = async ({ params = { slug: '' }, parent, url }) => {
   if (!courseResult.ok || !courseResult.body.data) {
     console.error('Failed to fetch course:', courseResult);
 
-    return {
-      slug: params.slug,
-      course: null,
-      org: parentOrg ?? null,
-      pageMetaTags: null
-    };
+    throw error(404, 'Course not found');
   }
 
   const course = courseResult.body.data as CourseBySlugWithOrg;

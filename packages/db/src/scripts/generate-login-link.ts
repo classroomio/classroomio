@@ -3,23 +3,13 @@ import 'dotenv/config';
 import * as schema from '../schema';
 
 import { eq } from 'drizzle-orm';
-import { SignJWT } from 'jose';
 import { db } from '../drizzle';
+import { mintLoginLinkToken } from '../auth/login-link';
 
 const LOGIN_LINK_TTL_MINUTES = 10;
 
 function getBaseUrl(): string {
   return process.env.PUBLIC_SERVER_URL?.trim() || 'http://localhost:3002';
-}
-
-function getSecret(): Uint8Array {
-  const secret = process.env.BETTER_AUTH_SECRET?.trim();
-
-  if (!secret) {
-    throw new Error('BETTER_AUTH_SECRET is required');
-  }
-
-  return new TextEncoder().encode(secret);
 }
 
 function getArgs() {
@@ -42,15 +32,11 @@ async function main() {
     throw new Error(`User not found for email: ${email}`);
   }
 
-  const token = await new SignJWT({
+  const token = await mintLoginLinkToken({
+    userId: user.id,
     email,
-    type: 'login-link'
-  })
-    .setProtectedHeader({ alg: 'HS256' })
-    .setSubject(user.id)
-    .setIssuedAt()
-    .setExpirationTime(`${LOGIN_LINK_TTL_MINUTES}m`)
-    .sign(getSecret());
+    ttlMinutes: LOGIN_LINK_TTL_MINUTES
+  });
 
   const url = new URL('/api/auth/login-link', getBaseUrl());
   url.searchParams.set('token', token);

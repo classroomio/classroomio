@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computePurchasedTokenOverflow } from '@api/services/agent/usage';
+import { computePurchasedTokenOverflow } from '@cio/core/services/agent/usage';
 
 describe('computePurchasedTokenOverflow', () => {
   it('returns 0 when usage stays within allowance', () => {

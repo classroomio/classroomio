@@ -5,17 +5,17 @@
 
   const whyStart = [
     {
-      src: '/teach/teach-from-anywhere.svg',
+      src: 'https://assets.cdn.clsrio.com/www/teach/teach-from-anywhere.svg',
       header: 'Fully Online; Teach from anywhere',
       subText: ' Facilitate a subject from the comfort of your space, engaging students from highly diverse background'
     },
     {
-      src: '/teach/get-paid.svg',
+      src: 'https://assets.cdn.clsrio.com/www/teach/get-paid.svg',
       header: 'Get paid extra commission',
       subText: 'Get paid for the course you design and earn extra comission based on course perfomance'
     },
     {
-      src: '/teach/inspire-learners.svg',
+      src: 'https://assets.cdn.clsrio.com/www/teach/inspire-learners.svg',
       header: 'Inspire learners',
       subText: 'Your opportunity to inspire thousands of learners to achieve dreams and academic pursue exellence'
     }
@@ -93,14 +93,14 @@
     </div>
 
     <div class=" ">
-      <img src="/teach/teacher-hero.png" alt="" class="w-full" />
+      <img src="https://assets.cdn.clsrio.com/www/teach/teacher-hero.png" alt="" class="w-full" />
     </div>
   </PageHeader>
 
   <div class="mx-auto mt-10">
     <div class="border-b border-slate-100 px-[10%] pb-10">
       <h1 class="flex items-center justify-center gap-3 pb-28 text-center text-3xl">
-        Why you should teach with us? <img src="/teach/star.svg" alt="" />
+        Why you should teach with us? <img src="https://assets.cdn.clsrio.com/www/teach/star.svg" alt="" />
       </h1>
 
       <div class="mt-10 flex flex-wrap justify-center lg:justify-between">
@@ -122,7 +122,7 @@
 
     <div class="mt-10 px-[10%] py-10">
       <h1 class="mb-28 flex items-center justify-center gap-3 text-center text-3xl">
-        How to get started <img src="/teach/thumbs-up.svg" alt="" />
+        How to get started <img src="https://assets.cdn.clsrio.com/www/teach/thumbs-up.svg" alt="" />
       </h1>
 
       <div class="mx-auto mt-5 flex flex-wrap justify-between gap-y-10">
@@ -154,7 +154,7 @@
           my students are happy. Love the product
         </h1>
         <div class="mt-3 flex flex-row items-center justify-center gap-4">
-          <img src="/teach/user-profile.png" alt="" class="w-8" />
+          <img src="https://assets.cdn.clsrio.com/www/teach/user-profile.png" alt="" class="w-8" />
           <p class="text-sm">
             <span class="mr-2 font-semibold"> Bilik Diana </span> English tutor
           </p>

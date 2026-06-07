@@ -15,7 +15,11 @@
   import Callout from './callout.svelte';
   import type { PublicCourseCalloutAnimation, PublicCourseCalloutData, PublicExerciseViewData } from './types';
   import type { PublicExerciseStoredAttempt } from './public-exercise-attempts-storage';
-  import { readPublicExerciseAttempts, writePublicExerciseAttempts } from './public-exercise-attempts-storage';
+  import {
+    cloneAnswersByKey,
+    readPublicExerciseAttempts,
+    writePublicExerciseAttempts
+  } from './public-exercise-attempts-storage';
 
   interface Props {
     exercise: PublicExerciseViewData;
@@ -77,7 +81,7 @@
       const defaultIndex = rows.length - 1;
       selectValue = String(defaultIndex);
       const row = rows[defaultIndex];
-      answers = structuredClone(row.answersByKey);
+      answers = cloneAnswersByKey(row.answersByKey);
       submitted = true;
     });
   });
@@ -95,7 +99,7 @@
 
     selectValue = selected;
     submitted = true;
-    answers = structuredClone(persistedAttempts[idx].answersByKey);
+    answers = cloneAnswersByKey(persistedAttempts[idx].answersByKey);
   }
 
   function handleAnswerChange(question: ExerciseQuestionModel, answer: AnswerData | null) {
@@ -317,7 +321,7 @@
 
     const snapshot: PublicExerciseStoredAttempt = {
       savedAt: new Date().toISOString(),
-      answersByKey: structuredClone(answers),
+      answersByKey: cloneAnswersByKey(answers),
       correctCount: correct,
       totalGradable: tot
     };

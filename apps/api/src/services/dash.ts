@@ -1,5 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { env } from '@api/config/env';
+import { env } from '@cio/core/config/env';
 import {
   getCourseStats,
   getDashOrgStats,
@@ -9,7 +9,7 @@ import {
   getTotalCertificatesIssued
 } from '@cio/db/queries/dash';
 import { dashLoginActivityKey } from '@api/utils/redis/key-generators';
-import { logRedisUnavailableOnce, redis } from '@api/utils/redis/redis';
+import { logRedisUnavailableOnce, redis } from '@cio/core/utils/redis/redis';
 
 import { OrganisationAnalytics } from '@api/types';
 import { getOrgIdBySiteName } from '@cio/db/queries';

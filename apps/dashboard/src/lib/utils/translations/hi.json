@@ -350,7 +350,9 @@
       "thumbnail_updated": "थंबनेल अपडेट किया गया",
       "thumbnail_update_failed": "थंबनेल अपडेट करने में विफल",
       "thumbnail_regen_started": "थंबनेल पुनर्जीवित हो रहे हैं…",
-      "thumbnail_regen_failed": "थंबनेल पुन: उत्पन्न करने में विफल"
+      "thumbnail_regen_failed": "थंबनेल पुन: उत्पन्न करने में विफल",
+      "transcript_saved": "प्रतिलेख अद्यतन किया गया",
+      "transcript_save_failed": "प्रतिलेख सहेजा नहीं जा सका"
     },
     "tags": {
       "group_created": "टैग समूह बनाया गया",
@@ -420,6 +422,18 @@
       "workspace_is_primary": "आप प्राथमिक कार्यस्थान को हटा नहीं सकते.",
       "workspace_not_found": "कार्यस्थल नहीं मिला.",
       "not_primary_workspace": "खाता कार्यस्थान प्रबंधित करने के लिए अपने प्राथमिक कार्यस्थान पर स्विच करें।"
+    },
+    "link_invite": {
+      "generated": "लिंक आमंत्रण जनरेट हुआ",
+      "enabled": "लिंक आमंत्रण सक्षम किया गया",
+      "disabled": "लिंक आमंत्रण अक्षम किया गया"
+    },
+    "view_as_student": {
+      "failed": "विद्यार्थी दृश्य नहीं खुल सका. कृपया पुन: प्रयास करें।"
+    },
+    "lesson_video": {
+      "generate_1080_completed": "1080p प्रस्तुतिकरण जोड़ा गया",
+      "generate_1080_failed": "1080p प्रस्तुतिकरण उत्पन्न नहीं हो सका"
     }
   },
   "explore": {
@@ -905,7 +919,9 @@
             "short_video": "लघु वीडियो",
             "replace_cover": "कवर छवि बदलें",
             "replace": "बदलें",
-            "helper": "किसी यूट्यूब वीडियो का लिंक दर्ज करें"
+            "helper": "किसी यूट्यूब वीडियो का लिंक दर्ज करें",
+            "remove": "हटाओ",
+            "no_cover": "कोई कवर छवि सेट नहीं"
           },
           "title": {
             "header": "शीर्ष लेख",
@@ -1030,7 +1046,17 @@
           "members": "सदस्य",
           "invite_sent": "आमंत्रण भेजा गया",
           "you": "आप",
-          "remove": "हटाओ"
+          "remove": "हटाओ",
+          "link_invite": {
+            "heading": "लिंक आमंत्रण",
+            "description": "इस लिंक वाला कोई भी व्यक्ति आपके संगठन में शामिल हो सकता है।",
+            "generate": "लिंक जनरेट करें",
+            "copy": "प्रतिलिपि",
+            "copied": "नकल की गई!",
+            "toggle_label": "लिंक आमंत्रण सक्रिय",
+            "disabled_notice": "यह लिंक अक्षम है. नए सदस्यों को लिंक के माध्यम से जुड़ने की अनुमति देने के लिए इसे सक्षम करें।",
+            "select_role": "एक भूमिका चुनें"
+          }
         },
         "roles": {
           "admin": "व्यवस्थापक",
@@ -1879,7 +1905,11 @@
                 "language": "Language: {language}",
                 "empty": "No transcript yet. You can generate one from this card’s menu after the video is uploaded.",
                 "loading": "Loading transcript…",
-                "open_side_panel": "ट्रांस्क्रिप्ट पैनल खोलें"
+                "open_side_panel": "ट्रांस्क्रिप्ट पैनल खोलें",
+                "edit": "प्रतिलेख संपादित करें",
+                "save": "सहेजें",
+                "cancel": "रद्द करें",
+                "segment_label": "{timestamp} पर खंड"
               },
               "simple_card": {
                 "kind_youtube": "यूट्यूब",
@@ -1889,7 +1919,13 @@
                 "course_fallback": "पाठ्यक्रम",
                 "menu_aria": "वीडियो विकल्प"
               },
-              "view_transcript": "प्रतिलेखन देखें"
+              "view_transcript": "प्रतिलेखन देखें",
+              "playback_error": "इस वीडियो को लोड करना विफल रहा.",
+              "playback_reload": "वीडियो पुनः लोड करें",
+              "generate_1080": "1080p जनरेट करें",
+              "generate_1080_in_progress": "1080p जेनरेट हो रहा है...",
+              "generate_1080_ready": "1080p उपलब्ध",
+              "generate_1080_unavailable": "इस स्रोत वीडियो के लिए 1080p अनुपलब्ध है"
             },
             "slide": {
               "title": "फिसल पट्टी",
@@ -2085,7 +2121,8 @@
     },
     "header": {
       "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing."
+      "preview_missing_slug": "Generate and save a course slug before previewing.",
+      "view_as_student": "विद्यार्थी के रूप में देखें"
     },
     "sidebar": {
       "back_to_course": "पाठ्यक्रम पर वापस जाएँ",
@@ -2105,12 +2142,12 @@
       "nav_attendance": "उपस्थिति",
       "nav_submissions": "प्रस्तुतियाँ",
       "nav_marks": "निशान",
+      "nav_compliance": "अनुपालन",
       "nav_people": "लोग",
       "nav_analytics": "विश्लेषिकी",
       "nav_certificates": "प्रमाणपत्र",
       "nav_landing_page": "लैंडिंग पृष्ठ",
       "nav_settings": "सेटिंग्स",
-      "nav_compliance": "अनुपालन",
       "nav_ai_assistant": "सहायक",
       "nav_ai_tutor": "एआई ट्यूटर"
     },
@@ -2202,6 +2239,12 @@
           "form_title": "हमें अपने उत्पाद के बारे में बताएं"
         }
       }
+    },
+    "view_as_student": {
+      "title": "यह आपको स्टूडेंट एलएमएस पर रीडायरेक्ट करेगा।",
+      "description": "आप यह देखने वाले हैं कि इस पाठ्यक्रम में दाखिला लेने पर एक छात्र क्या देखेगा",
+      "copy_link": "लिंक कॉपी करें",
+      "go_to_lms": "एलएमएस पर जाएं"
     }
   },
   "courses": {
@@ -3069,6 +3112,11 @@
         "field_nav_count_other": "{count} लिंक",
         "hero_empty": "—",
         "customize": "लैंडिंग पृष्ठ अनुकूलित करें"
+      },
+      "preview_tabs": {
+        "label": "पूर्वावलोकन पृष्ठ",
+        "home": "घर",
+        "course": "पाठ्यक्रम"
       }
     },
     "organization": {
@@ -3322,7 +3370,10 @@
     "tic_tac": "टिकटैक पैर की अंगुली",
     "see_more": "और देखें",
     "whats_new": "नया क्या है",
-    "launch_week": "लॉन्च सप्ताह"
+    "launch_week": "लॉन्च सप्ताह",
+    "feedback": "प्रतिक्रिया",
+    "documentation": "दस्तावेज़ीकरण",
+    "need_help": "मदद चाहिए?"
   },
   "login": {
     "welcome": "पुनः स्वागत है",
@@ -3567,6 +3618,18 @@
         "joined": "संगठन से जुड़े",
         "join_failed": "संगठन में शामिल होने में विफल"
       }
+    },
+    "link": {
+      "page_title": "ClassroomIO पर {orgName} से जुड़ें",
+      "invitation_student": "आपको एक छात्र के रूप में {orgName} में शामिल होने के लिए आमंत्रित किया गया है।",
+      "invitation_teacher": "आपको एक शिक्षक के रूप में {orgName} में शामिल होने के लिए आमंत्रित किया गया है।",
+      "invitation_admin": "आपको एक व्यवस्थापक के रूप में {orgName} से जुड़ने के लिए आमंत्रित किया गया है।",
+      "invitation_fallback": "आपको {orgName} में {role} के रूप में शामिल होने के लिए आमंत्रित किया गया है।",
+      "accept_button": "संगठन से जुड़ें",
+      "go_to_dashboard": "डैशबोर्ड पर जाएँ",
+      "disabled": "यह आमंत्रण लिंक संगठन द्वारा अक्षम कर दिया गया है.",
+      "join_failed": "संगठन में शामिल होने में विफल",
+      "joined": "संगठन से जुड़े"
     }
   },
   "automation": {
@@ -3886,10 +3949,10 @@
     "new_chat": "नई चैट",
     "tokens_label": "टोकन",
     "implementing_course_plan": "पाठ्यक्रम योजना का कार्यान्वयन",
-    "resume": "बायोडाटा",
+    "resume": "जारी रखें",
     "stopped_content_kept": "रुक गया. निर्मित सामग्री रखी गई है.",
     "mention_lesson": "पाठ",
-    "mention_exercise": "व्यायाम",
+    "mention_exercise": "अभ्यास",
     "mention_section": "धारा",
     "mention_no_results": "कोई मेल खाती सामग्री नहीं",
     "uploading_document": "दस्तावेज़ अपलोड हो रहा है...",
@@ -4053,7 +4116,11 @@
         "title": "कर्मी जवाब नहीं दे रहा है",
         "body": "इस रन के लिए 30 सेकंड से अधिक समय से प्रतीक्षा की जा रही है और कोई कर्मचारी पिकअप नहीं कर रहा है। बैकग्राउंड वर्कर डाउन या रीस्टार्ट हो सकता है।"
       }
-    }
+    },
+    "ask_ai": "एआई से पूछें",
+    "content_input_placeholder": "इस सामग्री के बारे में पूछें...",
+    "ask_ai_expand_aria": "एआई इनपुट पूछें खोलें",
+    "ask_ai_input_aria": "इस सामग्री के बारे में AI से पूछें"
   },
   "widgets": {
     "heading": "विजेट्स",

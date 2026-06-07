@@ -1,5 +1,13 @@
+<script module lang="ts">
+  let pending: Promise<typeof import('@cio/ui/base/chart')> | null = null;
+  function loadChart() {
+    pending ??= import('@cio/ui/base/chart');
+    return pending;
+  }
+</script>
+
 <script lang="ts">
-  import * as Chart from '@cio/ui/base/chart';
+  import type * as Chart from '@cio/ui/base/chart';
   import { t } from '$lib/utils/functions/translations';
   import type { AiUsageData } from '$features/settings/utils/types';
 
@@ -48,9 +56,11 @@
   </div>
 
   {#if hasData}
-    <Chart.ChartContainer class="h-[260px] w-full" config={chartConfig}>
-      <Chart.BarChart {data} x="date" axis="x" {series} />
-    </Chart.ChartContainer>
+    {#await loadChart() then C}
+      <C.ChartContainer class="h-[260px] w-full" config={chartConfig}>
+        <C.BarChart {data} x="date" axis="x" {series} />
+      </C.ChartContainer>
+    {/await}
   {:else}
     <div class="ui:text-muted-foreground flex h-[260px] items-center justify-center text-sm">
       {$t('settings.ai_credits.chart.empty')}

@@ -400,7 +400,6 @@
             onValueChange={(nextValue) => onQuestionTypeChange(question.id, nextValue)}
             triggerQuestionType={question?.questionType}
             types={availableQuestionTypes}
-            {selfPacedCourse}
           />
         {/snippet}
       </ExerciseQuestion.QuestionRenderer>

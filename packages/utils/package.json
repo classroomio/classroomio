@@ -48,6 +48,10 @@
     "./functions/*": {
       "types": "./dist/functions/*.d.ts",
       "default": "./dist/functions/*.js"
+    },
+    "./errors": {
+      "types": "./dist/errors/index.d.ts",
+      "default": "./dist/errors/index.js"
     }
   },
   "scripts": {

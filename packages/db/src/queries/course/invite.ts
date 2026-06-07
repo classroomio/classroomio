@@ -348,6 +348,8 @@ export type TCourseInviteAcceptBundle = {
     id: string;
     name: string;
     siteName: string;
+    customDomain: string | null;
+    isCustomDomainVerified: boolean | null;
   };
 };
 
@@ -370,7 +372,9 @@ export async function selectCourseInviteAcceptBundleByTokenHash(
         organization: {
           id: schema.organization.id,
           name: schema.organization.name,
-          siteName: schema.organization.siteName
+          siteName: schema.organization.siteName,
+          customDomain: schema.organization.customDomain,
+          isCustomDomainVerified: schema.organization.isCustomDomainVerified
         }
       })
       .from(schema.courseInvite)
@@ -392,7 +396,9 @@ export async function selectCourseInviteAcceptBundleByTokenHash(
       },
       organization: {
         ...row.organization,
-        siteName: row.organization.siteName ?? ''
+        siteName: row.organization.siteName ?? '',
+        customDomain: row.organization.customDomain ?? null,
+        isCustomDomainVerified: row.organization.isCustomDomainVerified ?? null
       }
     };
   } catch (error) {

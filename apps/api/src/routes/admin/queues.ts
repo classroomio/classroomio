@@ -1,15 +1,12 @@
-import { createBullBoard } from '@bull-board/api';
-import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
-import { HonoAdapter } from '@bull-board/hono';
-import { serveStatic } from '@hono/node-server/serve-static';
+import { workbench } from '@getworkbench/hono';
 import type { Context, Hono, Next } from 'hono';
 
-import { QUEUE_NAMES, getQueue, isRedisConfigured } from '@cio/jobs';
-import { env } from '@api/config/env';
+import { getQueue, isRedisConfigured, listQueueNames } from '@cio/jobs';
+import { env } from '@cio/core/config/env';
 
 /**
- * Mounts the bull-board UI at `/admin/queues` for inspecting BullMQ state
- * (waiting/active/completed/failed jobs, payloads, retries, etc.).
+ * Mounts the Workbench UI at `/admin/queues` for inspecting BullMQ state
+ * (jobs, flows, metrics, schedulers, retries, etc.).
  *
  * Access control:
  * - Development: open (matches existing dev ergonomics).
@@ -29,25 +26,24 @@ export function mountQueueDashboard(app: Hono<any, any, any>): void {
   const isProduction = env.NODE_ENV === 'production';
   if (isProduction && !canEnforceProdAuth()) {
     console.info(
-      'BullMQ dashboard (/admin/queues) not mounted in production. Set QUEUE_DASHBOARD_ADMIN_EMAILS or QUEUE_DASHBOARD_TOKEN to enable it.'
+      'Queue dashboard (/admin/queues) not mounted in production. Set QUEUE_DASHBOARD_ADMIN_EMAILS or QUEUE_DASHBOARD_TOKEN to enable it.'
     );
     return;
   }
-
-  const serverAdapter = new HonoAdapter(serveStatic);
-  serverAdapter.setBasePath('/admin/queues');
-
-  createBullBoard({
-    queues: Object.values(QUEUE_NAMES).map((name) => new BullMQAdapter(getQueue(name))),
-    serverAdapter
-  });
 
   if (isProduction) {
     app.use('/admin/queues/*', queueDashboardAuth);
     app.use('/admin/queues', queueDashboardAuth);
   }
 
-  app.route('/admin/queues', serverAdapter.registerPlugin());
+  app.route(
+    '/admin/queues',
+    workbench({
+      basePath: '/admin/queues',
+      queues: listQueueNames().map((name) => getQueue(name)),
+      title: 'ClassroomIO Jobs'
+    })
+  );
 }
 
 function canEnforceProdAuth(): boolean {

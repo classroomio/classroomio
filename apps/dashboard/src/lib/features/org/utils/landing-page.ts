@@ -12,7 +12,7 @@ import type {
   OrgLandingPageTheme
 } from '$lib/utils/types/org';
 import type { OrgPublicCourses } from './types';
-import type { OrgLandingPageProps } from '@cio/ui/custom/org-landing-page/types';
+import type { OrgLandingPageProps, LandingPageThemeBundle } from '@cio/ui/custom/org-landing-page/types';
 import { resolveLandingPageLinkIcon } from '@cio/ui/custom/org-landing-page/landing-page-link-icons';
 import {
   labelMatchesSocialPlatform,
@@ -36,11 +36,11 @@ export const defaultLandingPageHero: OrgLandingPageHero = {
   heading: 'Become a Certified AI Engineer',
   subheading: 'Master the skills, earn your certification, and prove your expertise with hands-on training programs.',
   primaryAction: {
-    label: 'Get Started',
-    href: '#courses'
+    label: 'Start Learning',
+    href: '/login'
   },
   secondaryAction: {
-    label: 'View Programs',
+    label: 'Browse',
     href: '/courses'
   },
   image: '/images/learn-on-cio.jpg'
@@ -83,8 +83,8 @@ export const defaultLandingPageSettings: OrgLandingPageJson = {
   theme: 'minimal',
   hero: defaultLandingPageHero,
   navItems: [
-    { label: 'Programs', href: '#courses' },
-    { label: 'Contact', href: '#contact' }
+    { label: 'Courses', href: '/courses' }
+    // { label: 'Contact', href: '#contact' }
   ],
   footer: createDefaultFooterConfig()
 };
@@ -710,29 +710,34 @@ export function buildOrgLandingPageProps(
 
 export type LandingPageThemeKey = (typeof landingPageThemes)[number];
 
-export function importThemeComponent(theme: LandingPageThemeKey) {
-  switch (theme) {
-    case 'bold':
-      return import('@cio/ui/custom/org-landing-page/bold.svelte');
-    case 'classic':
-      return import('@cio/ui/custom/org-landing-page/classic.svelte');
-    case 'saas':
-      return import('@cio/ui/custom/org-landing-page/saas.svelte');
-    case 'tech':
-      return import('@cio/ui/custom/org-landing-page/tech.svelte');
-    case 'studio':
-      return import('@cio/ui/custom/org-landing-page/studio.svelte');
-    case 'corporate':
-      return import('@cio/ui/custom/org-landing-page/corporate.svelte');
-    case 'terminal':
-      return import('@cio/ui/custom/org-landing-page/terminal.svelte');
-    case 'editorial':
-      return import('@cio/ui/custom/org-landing-page/editorial.svelte');
-    case 'vibrant':
-      return import('@cio/ui/custom/org-landing-page/vibrant.svelte');
-    default:
-      return import('@cio/ui/custom/org-landing-page/minimal.svelte');
-  }
+export const DEFAULT_LANDING_PAGE_THEME: LandingPageThemeKey = 'minimal';
+
+const THEME_BUNDLE_LOADERS: Record<LandingPageThemeKey, () => Promise<LandingPageThemeBundle>> = {
+  minimal: () => import('@cio/ui/custom/org-landing-page/minimal'),
+  bold: () => import('@cio/ui/custom/org-landing-page/bold'),
+  classic: () => import('@cio/ui/custom/org-landing-page/classic'),
+  saas: () => import('@cio/ui/custom/org-landing-page/saas'),
+  tech: () => import('@cio/ui/custom/org-landing-page/tech'),
+  studio: () => import('@cio/ui/custom/org-landing-page/studio'),
+  corporate: () => import('@cio/ui/custom/org-landing-page/corporate'),
+  terminal: () => import('@cio/ui/custom/org-landing-page/terminal'),
+  editorial: () => import('@cio/ui/custom/org-landing-page/editorial'),
+  vibrant: () => import('@cio/ui/custom/org-landing-page/vibrant')
+};
+
+export function importThemeBundle(theme: LandingPageThemeKey): Promise<LandingPageThemeBundle> {
+  const load = THEME_BUNDLE_LOADERS[theme] ?? THEME_BUNDLE_LOADERS[DEFAULT_LANDING_PAGE_THEME];
+  return load();
+}
+
+export async function importThemeComponent(theme: LandingPageThemeKey) {
+  const mod = await importThemeBundle(theme);
+  return { default: mod.org };
+}
+
+export async function importCourseLandingPageTheme(theme: LandingPageThemeKey) {
+  const mod = await importThemeBundle(theme);
+  return { default: mod.course };
 }
 
 const NAV_SNIPPET_THEMES: ReadonlySet<LandingPageThemeKey> = new Set([
@@ -757,123 +762,10 @@ export function themeHeaderShellClass(_theme: LandingPageThemeKey): string {
 export { themeStyle } from '@cio/ui/custom/org-landing-page/theme-style';
 
 export async function importThemeCourseCard(theme: LandingPageThemeKey) {
-  switch (theme) {
-    case 'bold':
-      return (await import('@cio/ui/custom/org-landing-page/bold/course-card.svelte')).default;
-    case 'classic':
-      return (await import('@cio/ui/custom/org-landing-page/classic/course-card.svelte')).default;
-    case 'saas':
-      return (await import('@cio/ui/custom/org-landing-page/saas/course-card.svelte')).default;
-    case 'tech':
-      return (await import('@cio/ui/custom/org-landing-page/tech/course-card.svelte')).default;
-    case 'studio':
-      return (await import('@cio/ui/custom/org-landing-page/studio/course-card.svelte')).default;
-    case 'corporate':
-      return (await import('@cio/ui/custom/org-landing-page/corporate/course-card.svelte')).default;
-    case 'terminal':
-      return (await import('@cio/ui/custom/org-landing-page/terminal/course-card.svelte')).default;
-    case 'editorial':
-      return (await import('@cio/ui/custom/org-landing-page/editorial/course-card.svelte')).default;
-    case 'vibrant':
-      return (await import('@cio/ui/custom/org-landing-page/vibrant/course-card.svelte')).default;
-    default:
-      return (await import('@cio/ui/custom/org-landing-page/minimal/course-card.svelte')).default;
-  }
-}
-
-export function themeCourseGridClass(theme: LandingPageThemeKey): string {
-  switch (theme) {
-    case 'corporate':
-    case 'tech':
-      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:border-t ui:border-l ui:border-[var(--landing-border)]';
-    case 'saas':
-      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-px ui:bg-[var(--landing-border)] ui:border ui:border-[var(--landing-border)]';
-    case 'minimal':
-      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:gap-6';
-    case 'studio':
-      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-3';
-    case 'terminal':
-      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-[14px]';
-    case 'editorial':
-      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-4';
-    case 'vibrant':
-      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-5';
-    default:
-      return 'ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-6';
-  }
+  return (await importThemeBundle(theme)).courseCard;
 }
 
 export async function importThemeNavHero(theme: LandingPageThemeKey) {
-  switch (theme) {
-    case 'bold': {
-      const [nav, hero] = await Promise.all([
-        import('@cio/ui/custom/org-landing-page/bold/nav.svelte'),
-        import('@cio/ui/custom/org-landing-page/bold/hero.svelte')
-      ]);
-      return { NavComponent: nav.default, HeroComponent: hero.default };
-    }
-    case 'classic': {
-      const [nav, hero] = await Promise.all([
-        import('@cio/ui/custom/org-landing-page/classic/nav.svelte'),
-        import('@cio/ui/custom/org-landing-page/classic/hero.svelte')
-      ]);
-      return { NavComponent: nav.default, HeroComponent: hero.default };
-    }
-    case 'saas': {
-      const [nav, hero] = await Promise.all([
-        import('@cio/ui/custom/org-landing-page/saas/nav.svelte'),
-        import('@cio/ui/custom/org-landing-page/saas/hero.svelte')
-      ]);
-      return { NavComponent: nav.default, HeroComponent: hero.default };
-    }
-    case 'tech': {
-      const [nav, hero] = await Promise.all([
-        import('@cio/ui/custom/org-landing-page/tech/nav.svelte'),
-        import('@cio/ui/custom/org-landing-page/tech/hero.svelte')
-      ]);
-      return { NavComponent: nav.default, HeroComponent: hero.default };
-    }
-    case 'studio': {
-      const [nav, hero] = await Promise.all([
-        import('@cio/ui/custom/org-landing-page/studio/nav.svelte'),
-        import('@cio/ui/custom/org-landing-page/studio/hero.svelte')
-      ]);
-      return { NavComponent: nav.default, HeroComponent: hero.default };
-    }
-    case 'corporate': {
-      const [nav, hero] = await Promise.all([
-        import('@cio/ui/custom/org-landing-page/corporate/nav.svelte'),
-        import('@cio/ui/custom/org-landing-page/corporate/hero.svelte')
-      ]);
-      return { NavComponent: nav.default, HeroComponent: hero.default };
-    }
-    case 'terminal': {
-      const [nav, hero] = await Promise.all([
-        import('@cio/ui/custom/org-landing-page/terminal/nav.svelte'),
-        import('@cio/ui/custom/org-landing-page/terminal/hero.svelte')
-      ]);
-      return { NavComponent: nav.default, HeroComponent: hero.default };
-    }
-    case 'editorial': {
-      const [nav, hero] = await Promise.all([
-        import('@cio/ui/custom/org-landing-page/editorial/nav.svelte'),
-        import('@cio/ui/custom/org-landing-page/editorial/hero.svelte')
-      ]);
-      return { NavComponent: nav.default, HeroComponent: hero.default };
-    }
-    case 'vibrant': {
-      const [nav, hero] = await Promise.all([
-        import('@cio/ui/custom/org-landing-page/vibrant/nav.svelte'),
-        import('@cio/ui/custom/org-landing-page/vibrant/hero.svelte')
-      ]);
-      return { NavComponent: nav.default, HeroComponent: hero.default };
-    }
-    default: {
-      const [nav, hero] = await Promise.all([
-        import('@cio/ui/custom/org-landing-page/minimal/nav.svelte'),
-        import('@cio/ui/custom/org-landing-page/minimal/hero.svelte')
-      ]);
-      return { NavComponent: nav.default, HeroComponent: hero.default };
-    }
-  }
+  const mod = await importThemeBundle(theme);
+  return { NavComponent: mod.nav, HeroComponent: mod.hero };
 }

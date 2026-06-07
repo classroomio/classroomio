@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { resolve } from '$app/paths';
-  import type { Component } from 'svelte';
 
   import { appInitApi } from '$features/app/init.svelte';
   import { Spinner } from '@cio/ui/base/spinner';
@@ -9,24 +8,19 @@
   import FrownIcon from '@lucide/svelte/icons/frown';
   import { Empty } from '@cio/ui/custom/empty';
   import { SimpleLogoNav } from '@cio/ui/custom/simple-logo-nav';
-  import {
-    buildOrgLandingPageProps,
-    importThemeComponent,
-    normalizeLandingPageSettings
-  } from '$features/org/utils/landing-page';
+  import { buildOrgLandingPageProps, normalizeLandingPageSettings } from '$features/org/utils/landing-page';
   import { basePath } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { user } from '$lib/utils/store/user';
 
   let { data } = $props();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let ThemeComponent = $state<Component<any> | null>(null);
-
   const hasSetupError = $derived(!appInitApi.loading && !!appInitApi.error);
 
   const pageTitle = $derived(
-    data.isOrgSite && data.org ? data.org.name : "ClassroomIO - The Course Platform That's Actually Easy To Use"
+    data.isOrgSite && data.org
+      ? data.org.name
+      : 'ClassroomIO - The Most Customizable Platform for Customer, Partner, and Employee Education'
   );
 
   const authAction = $derived(
@@ -53,7 +47,7 @@
     );
   });
 
-  onMount(async () => {
+  onMount(() => {
     if (!data.isOrgSite || !data.org) {
       if (!appInitApi.loading) {
         appInitApi.setupApp(data.locals, {
@@ -61,13 +55,7 @@
           orgSiteName: data.orgSiteName
         });
       }
-
-      return;
     }
-
-    const settings = normalizeLandingPageSettings(data.org.landingpage);
-    const mod = await importThemeComponent(settings.theme);
-    ThemeComponent = mod.default;
   });
 </script>
 
@@ -76,10 +64,8 @@
 </svelte:head>
 
 {#if data.isOrgSite && data.org}
-  {#if ThemeComponent && landingPageProps}
-    <ThemeComponent {...landingPageProps} />
-  {:else}
-    <!-- Theme loading -->
+  {#if data.ThemeComponent && landingPageProps}
+    <svelte:component this={data.ThemeComponent} {...landingPageProps} />
   {/if}
 {:else if hasSetupError}
   <Empty

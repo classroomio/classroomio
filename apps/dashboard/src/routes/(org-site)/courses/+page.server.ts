@@ -32,11 +32,15 @@ export const load = async ({ parent, url }) => {
   const normalizedTags = normalizeTagsParam(url.searchParams.get('tags'));
   const normalizedTagsQuery = normalizedTags.length > 0 ? normalizedTags.join(',') : undefined;
 
+  const requestedPage = Number(url.searchParams.get('page'));
+  const currentPage = Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+
   const [coursesResult, tagsResult] = await Promise.all([
     safeServerApi<GetPublicCoursesSuccess>(() =>
       classroomio.organization.courses.public.$get({
         query: {
           siteName,
+          page: String(currentPage),
           ...(normalizedTagsQuery ? { tags: normalizedTagsQuery } : {})
         }
       })
@@ -49,7 +53,9 @@ export const load = async ({ parent, url }) => {
       })
     )
   ]);
-  const courseData = coursesResult.ok ? coursesResult.body.data : { courses: [], hasMoreCourses: false };
+  const courseData = coursesResult.ok
+    ? coursesResult.body.data
+    : { courses: [], hasMoreCourses: false, total: 0, page: currentPage, limit: 0, totalPages: 0 };
   const canonicalUrl = new URL(url.pathname, url.origin).href;
   const orgTitle = `${org.name} – All Courses`;
   const orgDescription = `Browse all courses offered by ${org.name}`;
@@ -81,9 +87,14 @@ export const load = async ({ parent, url }) => {
   return {
     org,
     courses: courseData.courses,
-    hasMoreCourses: courseData.hasMoreCourses,
     tagGroups: tagsResult.ok ? tagsResult.body.data : [],
     activeTags: normalizedTags,
+    pagination: {
+      page: courseData.page,
+      perPage: courseData.limit,
+      total: courseData.total,
+      totalPages: courseData.totalPages
+    },
     pageMetaTags
   };
 };

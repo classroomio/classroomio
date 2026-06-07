@@ -5,7 +5,7 @@ import {
   RATE_LIMIT_KEY_PREFIX
 } from '@api/constants/rate-limiter';
 
-import { redis, type RedisClient } from './redis';
+import { redis, type RedisClient } from '@cio/core/utils/redis/redis';
 
 export class RedisRateLimiter {
   private redis: RedisClient;

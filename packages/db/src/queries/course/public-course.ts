@@ -295,6 +295,12 @@ export interface PublicLessonContent {
     /** S3 object key for uploads; used server-side for presigning (stripped before API response). */
     key?: string;
     assetId?: string;
+    /**
+     * When true, `link` points at an HLS master playlist served by the
+     * tenant-router Worker (prod) or API streaming route (local). The
+     * shared media player attaches hls.js based on this flag.
+     */
+    hls?: boolean;
     transcript?: {
       vttUrl: string;
       vttUrlExpiresAt: string;

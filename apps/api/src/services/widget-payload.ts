@@ -13,7 +13,7 @@ import {
 } from '@cio/utils/validation/widget';
 import type { TWidget } from '@db/types';
 import * as csstree from 'css-tree';
-import { env } from '@api/config/env';
+import { env } from '@cio/core/config/env';
 
 const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 const DEFAULT_EMBED_CDN_BASE_URL = 'https://assets.cdn.clsrio.com';

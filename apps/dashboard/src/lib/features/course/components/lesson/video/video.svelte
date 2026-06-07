@@ -53,7 +53,15 @@
   </Button>
 
   {#if videos.length}
-    <Item.Group class="grid! w-full grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+    <!--
+      `auto-fill` + `minmax(200px, 1fr)` packs as many columns as fit while
+      each card stays at least 200px wide. Unlike `auto-fit`, empty tracks
+      are kept — so a single card on a wide container stays slim instead
+      of stretching across the full row. As the container narrows
+      (e.g. the transcript side panel opens) the grid drops columns
+      naturally instead of squeezing the cards.
+    -->
+    <Item.Group class="grid! w-full grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-5 gap-y-8">
       {#each videos as video, index}
         <LessonVideoSimpleCard {video} {index} isEditMode={true} onRemove={() => requestRemoveVideo(index)} />
       {/each}

@@ -6,12 +6,12 @@ import { db } from '@cio/db';
 import * as schema from '@cio/db/schema';
 import type { AiTutorSettings } from '@cio/ai-assistant';
 
-import { getLesson } from '@api/services/lesson/lesson';
-import { getExercise } from '@api/services/exercise/exercise';
-import { listCourseSections } from '@api/services/course/section';
+import { getLesson } from '@cio/core/services/lesson/lesson';
+import { getExercise } from '@cio/core/services/exercise/exercise';
+import { listCourseSections } from '@cio/core/services/course/section';
 import { AppError } from '@api/utils/errors';
-import { AgentEvent, trackAgentEvent } from '@api/utils/tinybird';
-import { verifyExerciseBelongsToCourse, verifyLessonBelongsToCourse } from './chat-context';
+import { AgentEvent, trackAgentEvent } from '@cio/core/utils/tinybird';
+import { verifyExerciseBelongsToCourse, verifyLessonBelongsToCourse } from '@cio/core/services/agent/chat-context';
 
 /**
  * Student agent tools — read-only, course-scoped.

@@ -10,9 +10,10 @@
   interface Props {
     hero: OrgLandingPageProps['hero'];
     navigation: Snippet;
+    showActions?: boolean;
   }
 
-  let { hero, navigation }: Props = $props();
+  let { hero, navigation, showActions = true }: Props = $props();
 
   const heroGradientBackground = `
     radial-gradient(
@@ -47,23 +48,25 @@
       >
         {hero.subheading}
       </ShinnyText>
-      <div class="ui:flex ui:items-center ui:justify-center ui:gap-4">
-        <Button
-          href={hero.primaryAction.href}
-          disabled={hero.primaryAction.disabled ?? false}
-          size="lg"
-          class="ui:rounded-full"
-        >
-          {hero.primaryAction.label}
-        </Button>
-        {#if hero.secondaryAction}
-          <SecondaryActionButton
-            href={hero.secondaryAction.href}
-            label={hero.secondaryAction.label}
-            variant="minimal"
-          />
-        {/if}
-      </div>
+      {#if showActions}
+        <div class="ui:flex ui:items-center ui:justify-center ui:gap-4">
+          <Button
+            href={hero.primaryAction.href}
+            disabled={hero.primaryAction.disabled ?? false}
+            size="lg"
+            class="ui:rounded-full"
+          >
+            {hero.primaryAction.label}
+          </Button>
+          {#if hero.secondaryAction}
+            <SecondaryActionButton
+              href={hero.secondaryAction.href}
+              label={hero.secondaryAction.label}
+              variant="minimal"
+            />
+          {/if}
+        </div>
+      {/if}
     </div>
   </section>
 </EditableLandingSection>

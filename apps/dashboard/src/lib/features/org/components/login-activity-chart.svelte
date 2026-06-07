@@ -1,5 +1,13 @@
+<script module lang="ts">
+  let pending: Promise<typeof import('@cio/ui/base/chart')> | null = null;
+  function loadChart() {
+    pending ??= import('@cio/ui/base/chart');
+    return pending;
+  }
+</script>
+
 <script lang="ts">
-  import * as Chart from '@cio/ui/base/chart';
+  import type * as Chart from '@cio/ui/base/chart';
   import { t } from '$lib/utils/functions/translations';
   import type { LoginActivityData } from '$features/org/utils/types';
 
@@ -40,9 +48,11 @@
 
   <div class="flex h-full flex-col justify-center">
     {#if hasData}
-      <Chart.ChartContainer class="h-[260px] w-full" config={chartConfig}>
-        <Chart.BarChart {data} x="day" axis="x" {series} />
-      </Chart.ChartContainer>
+      {#await loadChart() then C}
+        <C.ChartContainer class="h-[260px] w-full" config={chartConfig}>
+          <C.BarChart {data} x="day" axis="x" {series} />
+        </C.ChartContainer>
+      {/await}
     {:else}
       <div class="ui:text-muted-foreground flex h-[260px] items-center justify-center text-sm">
         {$t('dashboard.login_activity_no_data')}

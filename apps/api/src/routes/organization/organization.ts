@@ -2,6 +2,7 @@ import {
   ZAssignAudienceCourses,
   ZAudienceInviteByEmail,
   ZCancelOrgPlan,
+  ZCreateLinkInvite,
   ZCreateOrgPlan,
   ZCreateOrganization,
   ZGetAudienceQuery,
@@ -14,6 +15,7 @@ import {
   ZInviteTeamMembers,
   ZLMSExercisesParam,
   ZRemoveTeamMember,
+  ZToggleLinkInvite,
   ZUpdateOrgPlan,
   ZUpdateOrganization
 } from '@cio/utils/validation/organization';
@@ -57,7 +59,12 @@ import { automationRouter } from '@api/routes/organization/automation';
 import { courseImportRouter } from '@api/routes/organization/course-import';
 import { getLMSExercisesService } from '@api/services/exercise';
 import { handleError } from '@api/utils/errors';
-import { inviteTeamMembers } from '@api/services/organization/invite';
+import {
+  fetchOrgLinkInvite,
+  getOrCreateLinkInvite,
+  inviteTeamMembers,
+  toggleOrgLinkInvite
+} from '@api/services/organization/invite';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { orgMemberOrAutomationKeyMiddleware } from '@api/middlewares/org-member-or-automation-key';
@@ -176,6 +183,49 @@ export const organizationRouter = new Hono()
       );
     } catch (error) {
       return handleError(c, error, 'Failed to invite team members');
+    }
+  })
+  /**
+   * GET /organization/link-invite
+   * Returns the current org link invite (null if none created yet)
+   */
+  .get('/link-invite', authMiddleware, orgAdminMiddleware, async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const data = await fetchOrgLinkInvite(orgId);
+      return c.json({ success: true, data }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch link invite');
+    }
+  })
+  /**
+   * POST /organization/link-invite
+   * Get-or-create the org link invite
+   */
+  .post('/link-invite', authMiddleware, orgAdminMiddleware, zValidator('json', ZCreateLinkInvite), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const user = c.get('user')!;
+      const { roleId } = c.req.valid('json');
+      const data = await getOrCreateLinkInvite(orgId, roleId, user.id);
+      return c.json({ success: true, data }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to create link invite');
+    }
+  })
+  /**
+   * PATCH /organization/link-invite
+   * Enable or disable the org link invite
+   */
+  .patch('/link-invite', authMiddleware, orgAdminMiddleware, zValidator('json', ZToggleLinkInvite), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const user = c.get('user')!;
+      const { isRevoked } = c.req.valid('json');
+      const data = await toggleOrgLinkInvite(orgId, isRevoked, user.id);
+      return c.json({ success: true, data }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to update link invite');
     }
   })
   /**
@@ -332,12 +382,17 @@ export const organizationRouter = new Hono()
    */
   .get('/courses/public', zValidator('query', ZGetCoursesBySiteName), async (c) => {
     try {
-      const { siteName, tags } = c.req.valid('query');
+      const { siteName, tags, page, limit } = c.req.valid('query');
       const tagSlugs = tags
         ?.split(',')
         .map((value) => value.trim())
         .filter(Boolean);
-      const courses = await getPublicCourses(siteName, tagSlugs && tagSlugs.length > 0 ? tagSlugs : undefined);
+      const pagination = page !== undefined || limit !== undefined ? { page, limit } : undefined;
+      const courses = await getPublicCourses(
+        siteName,
+        tagSlugs && tagSlugs.length > 0 ? tagSlugs : undefined,
+        pagination
+      );
 
       return c.json(
         {

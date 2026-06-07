@@ -1,5 +1,5 @@
 import { ZCourseContentDelete, ZCourseContentReorder, ZCourseContentUpdate } from '@cio/utils/validation/course';
-import { deleteCourseContent, reorderCourseContent, updateCourseContent } from '@api/services/course/content';
+import { deleteCourseContent, reorderCourseContent, updateCourseContent } from '@cio/core/services/course/content';
 
 import { Hono } from '@api/utils/hono';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';

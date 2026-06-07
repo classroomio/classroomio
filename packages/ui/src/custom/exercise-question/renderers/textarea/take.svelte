@@ -1,3 +1,11 @@
+<script module lang="ts">
+  let pending: Promise<typeof import('../../../editor')> | null = null;
+  function loadEditor() {
+    pending ??= import('../../../editor');
+    return pending;
+  }
+</script>
+
 <script lang="ts">
   import { onDestroy } from 'svelte';
   import type { Editor } from '@tiptap/core';
@@ -7,7 +15,6 @@
     getTextareaCharacterLimits,
     type ExerciseQuestionRendererProps
   } from '@cio/question-types';
-  import { Editor as EditorComponent } from '../../../editor';
 
   let {
     question,
@@ -128,15 +135,19 @@
 </script>
 
 <div class="ui:space-y-2">
-  <EditorComponent
-    {content}
-    editable={!disabled}
-    showToolBar={!disabled}
-    placeholder={label('textarea.take.placeholder')}
-    editorClass="ui:h-40"
-    onContentChange={updateAnswer}
-    onEditorReady={handleEditorReady}
-  />
+  {#await loadEditor()}
+    <div class="ui:animate-pulse ui:rounded-md ui:bg-muted ui:h-40 ui:w-full" />
+  {:then { Editor: EditorComponent }}
+    <EditorComponent
+      {content}
+      editable={!disabled}
+      showToolBar={!disabled}
+      placeholder={label('textarea.take.placeholder')}
+      editorClass="ui:h-40"
+      onContentChange={updateAnswer}
+      onEditorReady={handleEditorReady}
+    />
+  {/await}
 
   {#if shouldShowCharacterCount}
     <span class="ui:text-muted-foreground ui:block ui:text-right ui:text-xs">

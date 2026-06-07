@@ -109,7 +109,7 @@
   <div class="relative z-30 mx-auto mt-14 w-full max-w-[1100px]">
     <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
       <img
-        src="/hero-academy.jpeg"
+        src="https://assets.cdn.clsrio.com/www/home/hero-academy.jpeg"
         alt="Branded customer academy on a custom domain — catalog, programs, AI tutor"
         width="2560"
         height="1440"

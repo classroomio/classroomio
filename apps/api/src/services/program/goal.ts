@@ -1,6 +1,6 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
-import { getDashboardBaseUrl } from '@api/config/dashboard-url';
+import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import {
   countAssignmentsByStatus,
   createProgramGoal,
@@ -408,7 +408,11 @@ export async function runProgramGoalReminderScan(): Promise<{
 
     if (!matchesReminder) continue;
 
-    const loginUrl = getDashboardBaseUrl(row.organizationSiteName ?? undefined);
+    const loginUrl = getDashboardBaseUrl({
+      siteName: row.organizationSiteName,
+      customDomain: row.organizationCustomDomain,
+      isCustomDomainVerified: row.organizationIsCustomDomainVerified
+    });
     const dayKey = now.toISOString().slice(0, 10);
 
     try {

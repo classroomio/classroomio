@@ -1,6 +1,6 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
-import { env } from '@api/config/env';
+import { env } from '@cio/core/config/env';
 
 export type DomainSetupStatus =
   | 'reconnect_required'

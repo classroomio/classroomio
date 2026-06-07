@@ -386,7 +386,9 @@
     "tic_tac": "Tictac toe",
     "see_more": "See more",
     "whats_new": "What's new",
-    "launch_week": "Launch week"
+    "feedback": "Feedback",
+    "documentation": "Documentation",
+    "need_help": "Need help?"
   },
   "settings": {
     "heading": "Settings",
@@ -669,6 +671,11 @@
         "apply_theme": "Apply Theme",
         "preview": "Preview",
         "card_menu_label": "Theme options"
+      },
+      "preview_tabs": {
+        "label": "Preview page",
+        "home": "Home",
+        "course": "Course"
       },
       "editor": {
         "save": "Save",
@@ -986,8 +993,8 @@
   "hls_upload": {
     "stage": {
       "probing": "Reading video…",
-      "encoding": "Encoding {rung} ({percent}%)",
-      "uploading": "Uploading segments ({uploaded}/{total})",
+      "encoding": "Encoding video…",
+      "uploading": "Uploading…",
       "thumbnail": "Generating thumbnail…",
       "finalizing": "Saving…",
       "done": "Ready",
@@ -2125,7 +2132,14 @@
     },
     "header": {
       "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing."
+      "preview_missing_slug": "Generate and save a course slug before previewing.",
+      "view_as_student": "View as student"
+    },
+    "view_as_student": {
+      "title": "This will redirect you to the Student LMS.",
+      "description": "You are about to see what a student will see when they enroll in this course",
+      "copy_link": "Copy link",
+      "go_to_lms": "Go to LMS"
     },
     "navItem": {
       "news_feed": {
@@ -2336,6 +2350,12 @@
               "generate_transcript": "Generate transcription",
               "generate_transcript_in_progress": "Transcribing…",
               "view_transcript": "View transcription",
+              "generate_1080": "Generate 1080p",
+              "generate_1080_in_progress": "Generating 1080p…",
+              "generate_1080_ready": "1080p available",
+              "generate_1080_unavailable": "1080p unavailable for this source video",
+              "playback_error": "Loading this video failed.",
+              "playback_reload": "Reload video",
               "simple_card": {
                 "kind_youtube": "YouTube",
                 "kind_upload": "Upload",
@@ -2350,7 +2370,11 @@
                 "captions_label": "Captions",
                 "language": "Language: {language}",
                 "empty": "No transcript yet. You can generate one from this card’s menu after the video is uploaded.",
-                "loading": "Loading transcript…"
+                "loading": "Loading transcript…",
+                "edit": "Edit transcript",
+                "save": "Save",
+                "cancel": "Cancel",
+                "segment_label": "Segment at {timestamp}"
               }
             },
             "document": {
@@ -3195,7 +3219,17 @@
           "members": "Members",
           "invite_sent": "Invite Sent",
           "you": "You",
-          "remove": "Remove"
+          "remove": "Remove",
+          "link_invite": {
+            "heading": "Link Invite",
+            "description": "Anyone with this link can join your organization.",
+            "generate": "Generate Link",
+            "copy": "Copy",
+            "copied": "Copied!",
+            "toggle_label": "Link invite active",
+            "disabled_notice": "This link is disabled. Enable it to allow new members to join via link.",
+            "select_role": "Select a role"
+          }
         }
       },
       "certificates": {
@@ -3307,8 +3341,10 @@
             "title": "Title",
             "description": "Description",
             "short_video": "Short Video",
-            "replace_cover": "Replace cover image",
+            "replace_cover": "Cover image",
             "replace": "Replace",
+            "remove": "Remove",
+            "no_cover": "No cover image set",
             "helper": "Enter a link to a youtube video"
           },
           "reviews_form": {
@@ -3915,6 +3951,9 @@
       "url_copied": "Course URL copied",
       "url_copy_failed": "Could not copy URL"
     },
+    "view_as_student": {
+      "failed": "Couldn't open the student view. Please try again."
+    },
     "something": "Something went wrong - Please try later",
     "update": "Update",
     "update_failed": "Update failed",
@@ -3940,7 +3979,13 @@
       "transcription_started": "Transcription started",
       "transcription_start_failed": "Could not start transcription",
       "transcription_completed": "Transcription finished",
-      "transcript_fetch_failed": "Could not load transcript"
+      "transcript_fetch_failed": "Could not load transcript",
+      "transcript_saved": "Transcript updated",
+      "transcript_save_failed": "Could not save transcript"
+    },
+    "lesson_video": {
+      "generate_1080_completed": "1080p rendition added",
+      "generate_1080_failed": "Could not generate 1080p rendition"
     },
     "poll": {
       "error": {
@@ -4031,6 +4076,11 @@
       "invite_fail": "Failed to send invite, please try again",
       "remove_fail": "Failed to remove user, please try again",
       "remove_success": "Member removed successfully"
+    },
+    "link_invite": {
+      "generated": "Link invite generated",
+      "enabled": "Link invite enabled",
+      "disabled": "Link invite disabled"
     },
     "tags": {
       "group_created": "Tag group created",
@@ -4177,6 +4227,18 @@
         "joined": "Joined organization",
         "join_failed": "Failed to join organization"
       }
+    },
+    "link": {
+      "page_title": "Join {orgName} on ClassroomIO",
+      "invitation_student": "You've been invited to join {orgName} as a student.",
+      "invitation_teacher": "You've been invited to join {orgName} as a teacher.",
+      "invitation_admin": "You've been invited to join {orgName} as an admin.",
+      "invitation_fallback": "You've been invited to join {orgName} as {role}.",
+      "accept_button": "Join organization",
+      "go_to_dashboard": "Go to Dashboard",
+      "disabled": "This invite link has been disabled by the organization.",
+      "join_failed": "Failed to join organization",
+      "joined": "Joined organization"
     }
   },
   "content": {
@@ -4339,7 +4401,7 @@
     "run_completed": "Course generation complete",
     "run_failed": "Course generation failed",
     "run_canceled": "Course generation canceled",
-    "run_waiting_for_worker": "Waiting for the background worker",
+    "run_waiting_for_worker": "Getting things ready…",
     "run_checkpoint": "Saving progress checkpoint",
     "plan_implement": "Implement Plan",
     "plan_ask_changes_placeholder": "Tell me what to change about the plan…",
@@ -4350,6 +4412,10 @@
     "resize_panel_aria_label": "Resize AI assistant panel",
     "generic_working": "Working",
     "input_placeholder": "Ask the AI assistant...",
+    "ask_ai": "Ask AI",
+    "content_input_placeholder": "Ask about this content…",
+    "ask_ai_expand_aria": "Open Ask AI input",
+    "ask_ai_input_aria": "Ask AI about this content",
     "quote_lesson_note": "Quote in assistant",
     "attach_document": "Attach a document (PDF, DOCX, PPTX)",
     "upgrade_to_upload": "Upgrade to upload documents",

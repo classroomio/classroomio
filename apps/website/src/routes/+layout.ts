@@ -15,6 +15,11 @@ export async function load({ url }) {
 const starsCache = new Map<string, { stars: number; lastUpdated: number }>();
 const CACHE_TIME = 1000 * 60 * 60 * 48; // 48 hours
 const CACHE_KEY = 'github-stars';
+const DEFAULT_META_TITLE = 'ClassroomIO | The Most Customizable Platform for Customer, Partner, and Employee Education';
+const DEFAULT_META_DESCRIPTION =
+  'One platform for customer academies, partner certification, and employee training. Build courses with AI, publish under your domain, and track completions.';
+const DEFAULT_OG_IMAGE_URL = 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.png';
+const DEFAULT_OG_IMAGE_ALT = 'ClassroomIO platform for customer, partner, and employee education';
 
 async function getStars() {
   const now = Date.now();
@@ -43,27 +48,27 @@ async function getStars() {
 }
 
 function getBaseMetaTags(url: URL) {
+  const canonicalUrl = new URL(url.pathname, url.origin).href;
+
   const metatags = Object.freeze({
-    title: 'ClassroomIO | The Open Source Learning Management System for Companies',
-    description:
-      'A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations',
-    canonical: new URL(url.pathname, url.origin).href,
+    title: DEFAULT_META_TITLE,
+    description: DEFAULT_META_DESCRIPTION,
+    canonical: canonicalUrl,
     openGraph: {
       type: 'website',
-      url: new URL(url.pathname, url.origin).href,
-      locale: 'en_IE',
-      title: 'ClassroomIO | The Open Source Learning Management System for Companies',
-      description:
-        'A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations',
+      url: canonicalUrl,
+      locale: 'en_US',
+      title: DEFAULT_META_TITLE,
+      description: DEFAULT_META_DESCRIPTION,
       siteName: 'ClassroomIO',
       images: [
         {
-          url: 'https://brand.cdn.clsrio.com/og/classroomio-og.png',
-          alt: 'ClassroomIO OG Image',
+          url: DEFAULT_OG_IMAGE_URL,
+          alt: DEFAULT_OG_IMAGE_ALT,
           width: 1920,
           height: 1080,
-          secureUrl: 'https://brand.cdn.clsrio.com/og/classroomio-og.png',
-          type: 'image/jpeg'
+          secureUrl: DEFAULT_OG_IMAGE_URL,
+          type: 'image/png'
         }
       ]
     },
@@ -71,11 +76,10 @@ function getBaseMetaTags(url: URL) {
       handle: '@classroomio',
       site: '@classroomio',
       cardType: 'summary_large_image' as const,
-      title: 'ClassroomIO | The Open Source Learning Management System for Companies',
-      description:
-        'A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations',
-      image: 'https://brand.cdn.clsrio.com/og/classroomio-og.png',
-      imageAlt: 'ClassroomIO OG Image'
+      title: DEFAULT_META_TITLE,
+      description: DEFAULT_META_DESCRIPTION,
+      image: DEFAULT_OG_IMAGE_URL,
+      imageAlt: DEFAULT_OG_IMAGE_ALT
     }
   }) satisfies MetaTagsProps;
 

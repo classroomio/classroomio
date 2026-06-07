@@ -4,13 +4,13 @@ import { getCourseById } from '@cio/db/queries/course';
 import { getCourseContentItems, type CourseContentItemRow } from '@cio/db/queries/course/content';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { getOrganizationById } from '@cio/db/queries/organization';
-import { updateCourse } from '../services/course/course';
-import { ensureCourseSlug, generateUniqueCourseSlug } from '../services/course/landing-page';
+import { updateCourse } from '@cio/core/services/course/course';
+import { ensureCourseSlug, generateUniqueCourseSlug } from '@cio/core/services/course/landing-page';
 import {
   evaluateCourseGoLiveReadiness,
   getCourseGoLiveReadiness,
   publishCourseWhenReady
-} from '../services/course/go-live-readiness';
+} from '@cio/core/services/course/go-live-readiness';
 
 vi.mock('@cio/db/queries/course', () => ({
   getCourseById: vi.fn()
@@ -28,14 +28,17 @@ vi.mock('@cio/db/queries/organization', () => ({
   getOrganizationById: vi.fn()
 }));
 
-vi.mock('../services/course/course', () => ({
+vi.mock('@cio/core/services/course/course', () => ({
   updateCourse: vi.fn()
 }));
 
-vi.mock('../services/course/landing-page', () => ({
-  buildCourseBaseUrl: vi.fn(() => 'https://school.example.com'),
+vi.mock('@cio/core/services/course/landing-page', () => ({
   ensureCourseSlug: vi.fn(),
   generateUniqueCourseSlug: vi.fn()
+}));
+
+vi.mock('@cio/core/config/dashboard-url', () => ({
+  getDashboardBaseUrl: vi.fn(() => 'https://school.example.com')
 }));
 
 const mockedGetCourseById = vi.mocked(getCourseById);

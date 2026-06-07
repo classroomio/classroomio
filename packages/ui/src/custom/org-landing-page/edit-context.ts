@@ -2,10 +2,32 @@ import { getContext, setContext } from 'svelte';
 import type { Component } from 'svelte';
 
 /**
- * Sections in the org landing page that the editor allows you to click in the preview
- * to open. Matches the keys used by the editor's section list.
+ * Sections that an editor allows you to click in the preview to open the
+ * corresponding form. Includes both the org landing page sections AND the
+ * course landing page sections — the same `EditableLandingSection` wrapper
+ * is used in both contexts.
+ *
+ * Org sections: hero, navigation, callout, embed, links, footer.
+ * Course sections: header (course hero), requirement, description, goals,
+ * certificate, curriculum, chips (skills/tools), instructor, reviews, pricing.
  */
-export type LandingSectionKey = 'hero' | 'navigation' | 'callout' | 'embed' | 'links' | 'footer';
+export type LandingSectionKey =
+  | 'hero'
+  | 'navigation'
+  | 'callout'
+  | 'embed'
+  | 'links'
+  | 'footer'
+  | 'header'
+  | 'requirement'
+  | 'description'
+  | 'goals'
+  | 'certificate'
+  | 'curriculum'
+  | 'chips'
+  | 'instructor'
+  | 'reviews'
+  | 'pricing';
 
 export interface LandingPageEditContext {
   /** Reactive read of the currently selected section (or null if none). */

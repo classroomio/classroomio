@@ -2,9 +2,9 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { MAX_IMAGE_SIZE } from '@api/constants/upload';
 
 import { ALLOWED_IMAGE_TYPES } from '@cio/utils/validation';
-import { getStorageConfig } from '@api/config/storage';
-import { generateFileKey } from '@api/utils/upload';
-import { uploadToS3 } from '@api/utils/s3';
+import { getStorageConfig } from '@cio/core/config/storage';
+import { generateFileKey } from '@cio/core/utils/upload';
+import { uploadToS3 } from '@cio/core/utils/s3';
 
 /**
  * Uploads an image file to object storage and returns the public URL

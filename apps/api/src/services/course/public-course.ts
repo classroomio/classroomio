@@ -3,10 +3,11 @@ import {
   generateTranscriptVttPresignedUrl,
   generateVideoDownloadPresignedUrls,
   TRANSCRIPT_VTT_PRESIGN_SECONDS
-} from '@api/utils/s3';
+} from '@cio/core/utils/s3';
 import { fetchQuestionsAndOptions, transformQuestions } from '@api/services/exercise/utils';
 import { getMediaTranscriptByAsset } from '@cio/db/queries';
 import { getAssetsByIds } from '@cio/db/queries/assets';
+import { mintHlsToken } from '@cio/core/services/assets/assets';
 import {
   getCourseRowBySlug,
   getPublicCourseItem as getPublicCourseItemQuery,
@@ -72,6 +73,43 @@ export interface PublicExerciseQuestion {
  * For exercises, questions + options are returned with answer keys included
  * because PUBLIC courses grade entirely on the client.
  */
+/**
+ * Mint a `cio_hls` cookie for an anonymous learner viewing a public
+ * lesson. The asset id is **derived from the public course tree**, not
+ * accepted from the caller — so a learner who only knows a random asset
+ * UUID cannot mint a cookie. They have to know a public course slug +
+ * lesson slug whose video actually exposes the asset.
+ */
+export async function issuePublicHlsCookieService(courseSlug: string, itemSlug: string) {
+  try {
+    const item = await getPublicCourseItemQuery(courseSlug, itemSlug);
+    if (!item || item.kind !== 'lesson') {
+      throw new AppError('Public lesson not found', ErrorCodes.NOT_FOUND, 404);
+    }
+
+    const video = item.video;
+    if (video?.type !== 'upload' || !video.assetId) {
+      throw new AppError('Lesson has no playable HLS asset', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    const assetId = video.assetId;
+    const assets = await getAssetsByIds([assetId], item.courseOrganizationId ?? undefined);
+    const asset = assets[0];
+    if (!asset?.hlsManifestKey) {
+      throw new AppError('Lesson has no playable HLS asset', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    return await mintHlsToken(assetId);
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to issue HLS cookie',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
 export async function getPublicCourseItemService(
   courseSlug: string,
   itemSlug: string
@@ -87,17 +125,30 @@ export async function getPublicCourseItemService(
 
       if (video?.type === 'upload') {
         let storageKey: string | undefined;
+        let hlsManifestKey: string | null = null;
 
         if (video.assetId) {
           const assets = await getAssetsByIds([video.assetId], courseOrganizationId ?? undefined);
           storageKey = assets[0]?.storageKey ?? undefined;
+          hlsManifestKey = assets[0]?.hlsManifestKey ?? null;
         }
 
         if (!storageKey && video.key) {
           storageKey = video.key;
         }
 
-        if (storageKey) {
+        // HLS assets: serve the manifest URL via the api route (auth'd by
+        // the cio_hls cookie that the public-cookie endpoint mints when the
+        // learner loads the lesson). Don't presign storageKey — for HLS
+        // it's null anyway.
+        if (hlsManifestKey) {
+          const { key: _omitKey, ...rest } = video;
+          video = {
+            ...rest,
+            link: `/hls/${hlsManifestKey}`.replace(/\/{2,}/g, '/'),
+            hls: true
+          };
+        } else if (storageKey) {
           const urls = await generateVideoDownloadPresignedUrls([storageKey]);
           const signedLink = urls[storageKey];
 

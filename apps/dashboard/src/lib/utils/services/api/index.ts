@@ -15,19 +15,20 @@ export const getRequestBaseUrl = () => {
   if (typeof window === 'undefined') {
     // When on the server, we want to hit the private url which is the docker container of `api` or the private network url of `api`.
     // if that isn't set then it will fallback to the public url of the `api`
+    // this doesn't need proxy because on the server we are using our api key to make queries.
     return process.env.PRIVATE_SERVER_URL || env.PUBLIC_SERVER_URL;
   }
 
-  // Self-hosted: dashboard and API are on different subdomains of the
-  // operator's apex. Browser calls go straight to PUBLIC_SERVER_URL;
-  // cookies cross subdomains via AUTH_COOKIE_DOMAIN. No Worker proxy.
-  if (env.PUBLIC_IS_SELFHOSTED === 'true' || dev) {
+  // Local dev keeps the direct API path so existing Vite/API workflows do not
+  // depend on the SvelteKit proxy.
+  if (dev) {
     return env.PUBLIC_SERVER_URL ?? '';
   }
 
-  // Cloud (multi-tenant): same-origin via the Cloudflare Worker `/proxy`
-  // prefix so auth cookies stay host-only on whichever tenant or BYOD
-  // domain the user is currently visiting. The Worker strips `/proxy` before forwarding to the API
+  // Browser calls are same-origin in production. For self-hosted Node builds,
+  // hooks.server.ts proxies `/proxy/*` to PRIVATE_SERVER_URL.
+  // For cloud multi-tenant builds, the Cloudflare Worker handles the same
+  // prefix. In both cases auth cookies stay first-party on the dashboard host.
   return `${window.location.origin}/proxy`;
 };
 

@@ -10,7 +10,7 @@ import {
 } from '@cio/db/queries';
 import { getProfileById, updateProfile } from '@cio/db/queries/auth';
 
-import { env } from '@api/config/env';
+import { env } from '@cio/core/config/env';
 import { ROLE } from '@cio/utils/constants';
 import { PLAN } from '@cio/utils/plans';
 import { db } from '@cio/db/drizzle';

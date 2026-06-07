@@ -2,7 +2,9 @@ import { getYoutubeVideoId } from '@cio/ui/custom/media-player';
 
 export type LessonVideo = NonNullable<import('$features/course/utils/types').Lesson['videos']>[number];
 
-type VideoMetadata = {
+export type Hls1080Status = 'none' | 'generating' | 'ready' | 'failed';
+
+export type VideoMetadata = {
   title?: string;
   fileName?: string;
   aspectRatio?: string;
@@ -11,7 +13,65 @@ type VideoMetadata = {
   thumbnailUrl?: string;
   googleDriveFileId?: string;
   mimeType?: string;
+  hls?: boolean;
+  sourceWidth?: number;
+  sourceHeight?: number;
+  hlsRenditions?: string[];
+  hls1080Status?: Hls1080Status;
 };
+
+export function getVideoMetadata(video: LessonVideo): VideoMetadata {
+  if (video.metadata && typeof video.metadata === 'object' && !Array.isArray(video.metadata)) {
+    return video.metadata as VideoMetadata;
+  }
+
+  return {};
+}
+
+export function isHlsUploadVideo(video: LessonVideo): boolean {
+  if (video.type !== 'upload') return false;
+
+  const metadata = getVideoMetadata(video);
+  if (metadata.hls === true) return true;
+
+  return typeof video.link === 'string' && video.link.includes('/hls/') && video.link.endsWith('.m3u8');
+}
+
+export function hasHls1080Rendition(video: LessonVideo): boolean {
+  const metadata = getVideoMetadata(video);
+  return metadata.hlsRenditions?.includes('p1080') ?? false;
+}
+
+export function canGenerateHls1080(video: LessonVideo): boolean {
+  if (!isHlsUploadVideo(video)) return false;
+
+  const assetId = (video as LessonVideo & { assetId?: string }).assetId;
+  if (!assetId) return false;
+
+  const metadata = getVideoMetadata(video);
+  const sourceHeight = metadata.sourceHeight;
+  if (sourceHeight != null && sourceHeight < 1080) return false;
+
+  if (hasHls1080Rendition(video)) return false;
+  if (metadata.hls1080Status === 'generating') return false;
+
+  return true;
+}
+
+export function getHls1080Status(video: LessonVideo): Hls1080Status | 'unavailable' | 'unknown' {
+  const metadata = getVideoMetadata(video);
+  if (!isHlsUploadVideo(video)) return 'unavailable';
+
+  if (hasHls1080Rendition(video) || metadata.hls1080Status === 'ready') {
+    return 'ready';
+  }
+
+  const sourceHeight = metadata.sourceHeight;
+  if (sourceHeight == null) return 'unknown';
+  if (sourceHeight < 1080) return 'unavailable';
+
+  return metadata.hls1080Status ?? 'none';
+}
 
 /**
  * Thumbnail URL for a lesson video. YouTube uses img.youtube.com; uploads use metadata.thumbnailUrl when present.

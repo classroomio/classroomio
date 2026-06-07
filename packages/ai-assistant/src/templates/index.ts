@@ -160,7 +160,7 @@ export const COURSE_TEMPLATES = [
     coreInstructions: `You are running the Product 101 Course template. The teacher wants a fundamentals course that takes a brand-new customer from zero to confidently using their product end-to-end.
 
 Step-by-step protocol:
-1. As your very first action, call ask_template_questions with the registry fields for this template.
+1. As your very first action, call ask_template_questions with only \`templateId\` for this template — the server fills in title and fields from the registry.
 2. Wait for a user message with metadata.template.action === 'submit_template_answers' OR 'skip_template_form'.
 3. **Immediately after submit_template_answers** (or after you have collected all answers via skip_template_form): your **first** action MUST be a single \`update_course_landing_page\` tool call — no assistant prose and no other tool before it. The course sidebar title was created from a placeholder prompt; you must replace it with real data from the submitted answers:
    - \`title\`: exactly \`"{product_name} 101"\` using the trimmed \`product_name\` value from the answers (e.g. answers "Acme CRM" → title "Acme CRM 101"). Never use angle brackets, square brackets, or the words "Product name" as literals.
@@ -222,7 +222,7 @@ If the user chose 'skip_template_form', ask the questions from the registry one 
     coreInstructions: `You are running the Product Onboarding Training template. The teacher wants a focused, action-oriented course that gets a specific audience productive within their first week of using the product.
 
 Step-by-step protocol:
-1. As your very first action, call ask_template_questions with the registry fields for this template.
+1. As your very first action, call ask_template_questions with only \`templateId\` for this template — the server fills in title and fields from the registry.
 2. Wait for metadata.template.action === 'submit_template_answers' OR 'skip_template_form'.
 3. **Immediately after submit_template_answers** (or after you have collected all answers via skip_template_form): your **first** action MUST be a single \`update_course_landing_page\` tool call — no assistant prose and no other tool before it. Replace the placeholder-derived course title with real data:
    - \`title\`: if \`audience\` is \`new_hire\`, use \`"{product_name} Team Onboarding"\`; otherwise use \`"{product_name} Onboarding"\` — always with the trimmed \`product_name\` from answers. Never use angle brackets or the literal substring "Product name".
@@ -282,7 +282,7 @@ If 'skip_template_form', ask the registry questions one at a time in plain text 
     coreInstructions: `You are running the Expert on X template. The teacher wants a depth course that genuinely makes a learner an expert on a specific topic or niche, not a surface-level overview.
 
 Step-by-step protocol:
-1. As your very first action, call ask_template_questions with the registry fields for this template.
+1. As your very first action, call ask_template_questions with only \`templateId\` for this template — the server fills in title and fields from the registry.
 2. Wait for metadata.template.action === 'submit_template_answers' OR 'skip_template_form'.
 3. **Immediately after submit_template_answers** (or after you have collected all answers via skip_template_form): your **first** action MUST be a single \`update_course_landing_page\` tool call — no assistant prose and no other tool before it. Replace the placeholder-derived course title with real data:
    - \`title\`: choose ONE style using the trimmed \`topic\` from answers: either \`Becoming an Expert on {topic}\` or \`{topic}: From Practitioner to Expert\`. Use the actual topic string (e.g. "PostgreSQL performance tuning"), never angle brackets, never the word "Topic" as a placeholder, never square brackets.

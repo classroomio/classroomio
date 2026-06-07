@@ -2,7 +2,7 @@ import { enqueueEmailSend, isRedisConfigured } from '@cio/jobs';
 import { EmailRegistry, type EmailId, type EmailSchemaFor } from '@cio/email';
 import * as z from 'zod';
 
-import { logRedisUnavailableOnce } from '@api/utils/redis/redis';
+import { logRedisUnavailableOnce } from '@cio/core/utils/redis/redis';
 
 type Recipient = string | string[];
 

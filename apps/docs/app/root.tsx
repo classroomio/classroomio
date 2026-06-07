@@ -15,18 +15,24 @@ import { RootProvider } from 'fumadocs-ui/provider/react-router';
 import { NotFound } from '@/components/not-found';
 import './app.css';
 
+const DEFAULT_META_TITLE =
+  'ClassroomIO Docs | Customer, Partner, and Employee Education';
+const DEFAULT_META_DESCRIPTION =
+  'Learn how to create customer academies, partner certification programs, and employee training workflows in ClassroomIO.';
+const DEFAULT_OG_IMAGE_URL = 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.png';
+const DEFAULT_OG_IMAGE_ALT = 'ClassroomIO documentation for customer, partner, and employee education';
+
 export const links: LinksFunction = () => [
   { rel: 'icon', href: '/docs/favicon.ico' }
 ];
 
 export const meta: MetaFunction = () => [
   {
-    title: 'ClassroomIO | The Open Source Learning Management System for Companies'
+    title: DEFAULT_META_TITLE
   },
   {
     name: 'description',
-    content:
-      'A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations'
+    content: DEFAULT_META_DESCRIPTION
   },
   {
     property: 'og:url',
@@ -38,12 +44,19 @@ export const meta: MetaFunction = () => [
   },
   {
     property: 'og:title',
-    content: 'ClassroomIO | The Open Source Learning Management System for Companies'
+    content: DEFAULT_META_TITLE
   },
   {
     property: 'og:description',
-    content:
-      'A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations'
+    content: DEFAULT_META_DESCRIPTION
+  },
+  {
+    property: 'og:image',
+    content: DEFAULT_OG_IMAGE_URL
+  },
+  {
+    property: 'og:image:alt',
+    content: DEFAULT_OG_IMAGE_ALT
   },
   {
     property: 'og:image:type',
@@ -59,7 +72,7 @@ export const meta: MetaFunction = () => [
   },
   {
     property: 'og:image:secure_url',
-    content: 'https://brand.cdn.clsrio.com/og/classroomio-og.png'
+    content: DEFAULT_OG_IMAGE_URL
   },
   {
     name: 'twitter:card',
@@ -75,12 +88,11 @@ export const meta: MetaFunction = () => [
   },
   {
     name: 'twitter:title',
-    content: 'ClassroomIO | The Open Source Learning Management System for Companies'
+    content: DEFAULT_META_TITLE
   },
   {
     name: 'twitter:description',
-    content:
-      'A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations'
+    content: DEFAULT_META_DESCRIPTION
   },
   {
     name: 'twitter:creator',
@@ -88,7 +100,11 @@ export const meta: MetaFunction = () => [
   },
   {
     name: 'twitter:image',
-    content: 'https://brand.cdn.clsrio.com/og/classroomio-og.png'
+    content: DEFAULT_OG_IMAGE_URL
+  },
+  {
+    name: 'twitter:image:alt',
+    content: DEFAULT_OG_IMAGE_ALT
   }
 ];
 

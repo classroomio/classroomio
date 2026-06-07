@@ -9,9 +9,10 @@
     hero: OrgLandingPageProps['hero'];
     labels?: OrgLandingPageProps['labels'];
     navigation: Snippet;
+    showActions?: boolean;
   }
 
-  let { hero, labels, navigation }: Props = $props();
+  let { hero, labels, navigation, showActions = true }: Props = $props();
 </script>
 
 {@render navigation()}
@@ -35,22 +36,24 @@
         {hero.subheading}
       </p>
 
-      <div class="ui:inline-flex ui:flex-wrap ui:justify-center ui:items-center ui:gap-3">
-        <Button
-          href={hero.primaryAction.href}
-          disabled={hero.primaryAction.disabled ?? false}
-          class="ui:rounded-md ui:px-7 ui:py-3.5 ui:text-base ui:font-medium ui:bg-[var(--landing-accent)] ui:text-[var(--landing-accent-fg)] ui:hover:opacity-90"
-        >
-          {hero.primaryAction.label}
-        </Button>
-        {#if hero.secondaryAction}
-          <SecondaryActionButton
-            href={hero.secondaryAction.href}
-            label={hero.secondaryAction.label}
-            variant="vibrant"
-          />
-        {/if}
-      </div>
+      {#if showActions}
+        <div class="ui:inline-flex ui:flex-wrap ui:justify-center ui:items-center ui:gap-3">
+          <Button
+            href={hero.primaryAction.href}
+            disabled={hero.primaryAction.disabled ?? false}
+            class="ui:rounded-md ui:px-7 ui:py-3.5 ui:text-base ui:font-medium ui:bg-[var(--landing-accent)] ui:text-[var(--landing-accent-fg)] ui:hover:opacity-90"
+          >
+            {hero.primaryAction.label}
+          </Button>
+          {#if hero.secondaryAction}
+            <SecondaryActionButton
+              href={hero.secondaryAction.href}
+              label={hero.secondaryAction.label}
+              variant="vibrant"
+            />
+          {/if}
+        </div>
+      {/if}
     </div>
   </section>
 

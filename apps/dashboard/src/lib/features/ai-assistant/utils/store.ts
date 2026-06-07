@@ -51,6 +51,18 @@ export function clearInitialChatModel() {
   initialChatModel.set(null);
 }
 
+/** Opens the AI assistant panel and sends `prompt` as the next user message. */
+export function sendPromptToAssistant(prompt: string) {
+  const trimmed = prompt.trim();
+
+  if (!trimmed) {
+    return;
+  }
+
+  setInitialChatPrompt(trimmed);
+  openAiAssistant();
+}
+
 /**
  * Pending composer action picked up by the chat component:
  * - `append` adds the text to whatever is already in the input (panel was open).

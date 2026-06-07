@@ -9,9 +9,10 @@
     hero: OrgLandingPageProps['hero'];
     courses: OrgLandingPageProps['courses'];
     navigation: Snippet;
+    showActions?: boolean;
   }
 
-  let { hero, courses = [], navigation }: Props = $props();
+  let { hero, courses = [], navigation, showActions = true }: Props = $props();
 
   const programsCount = $derived(courses.length);
 
@@ -58,18 +59,24 @@
         {hero.subheading}
       </p>
 
-      <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-2">
-        <Button
-          href={hero.primaryAction.href}
-          disabled={hero.primaryAction.disabled ?? false}
-          class="ui:rounded-md ui:px-5"
-        >
-          {hero.primaryAction.label}
-        </Button>
-        {#if hero.secondaryAction}
-          <SecondaryActionButton href={hero.secondaryAction.href} label={hero.secondaryAction.label} variant="studio" />
-        {/if}
-      </div>
+      {#if showActions}
+        <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-2">
+          <Button
+            href={hero.primaryAction.href}
+            disabled={hero.primaryAction.disabled ?? false}
+            class="ui:rounded-md ui:px-5"
+          >
+            {hero.primaryAction.label}
+          </Button>
+          {#if hero.secondaryAction}
+            <SecondaryActionButton
+              href={hero.secondaryAction.href}
+              label={hero.secondaryAction.label}
+              variant="studio"
+            />
+          {/if}
+        </div>
+      {/if}
 
       {#if hero.image}
         <div

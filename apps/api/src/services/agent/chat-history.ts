@@ -12,7 +12,13 @@ import {
 
 const MAX_PERSISTED_TOOL_OUTPUT_CHARS = 2000;
 const DROPPED_PART_TYPES = new Set(['step-start', 'reasoning']);
-const TOOLS_WITH_FULL_OUTPUT = new Set(['generate_course_plan', 'ask_template_questions', 'fetch_documentation_url']);
+const TOOLS_WITH_FULL_OUTPUT = new Set([
+  'generate_course_plan',
+  'ask_template_questions',
+  'fetch_documentation_url',
+  'get_course_structure',
+  'get_exercise_details'
+]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);

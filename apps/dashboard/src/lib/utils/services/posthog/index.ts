@@ -38,7 +38,10 @@ export const initPosthog = (user?: PosthogBootstrapUser): void => {
   if (dev || hasNoTracking()) return;
 
   posthog.init('phc_JfdHOZ6v0cVlGELBYx1Tmoen2nxNOrAzvgvrPA6Ksov', {
-    api_host: 'https://eu.posthog.com',
+    // Route PostHog through our own domain via the tenant-router Worker so the
+    // cookie is first-party and doesn't trigger the Lighthouse "third-party cookie" deduction.
+    api_host: `${window.location.origin}/ingest`,
+    ui_host: 'https://eu.posthog.com',
     ...(user && {
       bootstrap: { distinctID: user.id, isIdentifiedID: true }
     })

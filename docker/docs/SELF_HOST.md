@@ -11,7 +11,7 @@
 git clone https://github.com/classroomio/classroomio.git
 cd classroomio
 cp .env.example .env
-# Edit .env — set your domain, secrets, and ALLOWED_EXTERNAL_DOMAINS
+# Edit .env — set your dashboard domain and secrets
 ./run-docker-full-stack.sh
 ```
 
@@ -25,9 +25,11 @@ All Docker services read from a single root `.env` file. See [`.env.example`](..
 
 Key points:
 
-- **Required:** `PUBLIC_SERVER_URL`, `TRUSTED_ORIGINS`, `BETTER_AUTH_SECRET`, `PUBLIC_IS_SELFHOSTED=true`, `DASHBOARD_ORIGIN`.
-- **CSP (runtime):** `ALLOWED_EXTERNAL_DOMAINS` (overrides all) or per-directive: `CSP_SCRIPT_SRC_DOMAINS`, `CSP_STYLE_SRC_DOMAINS`, `CSP_CONNECT_SRC_DOMAINS`, `CSP_FRAME_SRC_DOMAINS`, `CSP_FONT_SRC_DOMAINS`, `CSP_MEDIA_SRC_DOMAINS`. These are read at container startup — no image rebuild needed.
-- **Auth cookies:** Set `AUTH_COOKIE_DOMAIN` to your root domain (e.g. `.yourdomain.com`) when API and dashboard use different subdomains. Without it, auth cookies may not be set and login will fail.
+- **Required:** `BETTER_AUTH_SECRET`, `PUBLIC_IS_SELFHOSTED=true`, `DASHBOARD_ORIGIN`.
+- **API routing:** Browser dashboard calls go to the dashboard origin and are proxied to `PRIVATE_SERVER_URL` (default: `http://api:3081`). You do not need API/dashboard cookie-domain matching for normal dashboard auth.
+- **Direct API access (optional):** Set `PUBLIC_SERVER_URL` and `TRUSTED_ORIGINS` only if browsers or third-party clients need to call the API origin directly.
+- **CSP (runtime):** `ALLOWED_EXTERNAL_DOMAINS` (overrides all) or per-directive: `CSP_SCRIPT_SRC_DOMAINS`, `CSP_STYLE_SRC_DOMAINS`, `CSP_CONNECT_SRC_DOMAINS`, `CSP_FRAME_SRC_DOMAINS`, `CSP_FONT_SRC_DOMAINS`, `CSP_MEDIA_SRC_DOMAINS`. These are read at container startup — no image rebuild needed. The API does not need to be added for normal dashboard calls.
+- **Auth cookies:** No cookie-domain env is needed. The dashboard proxy makes auth first-party and Better Auth sets host-only dashboard cookies.
 - **Auto-generated:** `AUTH_BEARER_TOKEN`, `PRIVATE_SERVER_KEY` (by `./run-docker-full-stack.sh`).
 - **Auto-configured:** All `MINIO_*` / `OBJECT_STORAGE_*` vars (by the startup script).
 - **Optional:** Email (SMTP or Zoho), Google OAuth, Unsplash, `LICENSE_KEY` (enterprise).

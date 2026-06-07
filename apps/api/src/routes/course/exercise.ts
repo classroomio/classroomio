@@ -20,7 +20,7 @@ import {
   getExercise,
   listExercises,
   updateExerciseService
-} from '@api/services/exercise/exercise';
+} from '@cio/core/services/exercise/exercise';
 import { fetchAllTemplatesMetadata, fetchTemplateById, fetchTemplatesByTag } from '@api/services/exercise/template';
 import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import {

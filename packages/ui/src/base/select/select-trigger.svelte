@@ -24,6 +24,8 @@
   )}
   {...restProps}
 >
-  {@render children?.()}
+  <span class="ui:flex ui:min-w-0 ui:flex-1 ui:items-center ui:gap-2 ui:truncate ui:text-left">
+    {@render children?.()}
+  </span>
   <ChevronDownIcon class="ui:size-4 ui:opacity-50" />
 </SelectPrimitive.Trigger>

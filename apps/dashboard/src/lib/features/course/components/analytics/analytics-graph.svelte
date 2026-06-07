@@ -1,5 +1,13 @@
+<script module lang="ts">
+  let pending: Promise<typeof import('@cio/ui/base/chart')> | null = null;
+  function loadChart() {
+    pending ??= import('@cio/ui/base/chart');
+    return pending;
+  }
+</script>
+
 <script lang="ts">
-  import * as Chart from '@cio/ui/base/chart';
+  import type * as Chart from '@cio/ui/base/chart';
   import { Spinner } from '@cio/ui/base/spinner';
   import { Empty } from '@cio/ui/custom/empty';
   import BarChartIcon from '@lucide/svelte/icons/bar-chart-3';
@@ -135,15 +143,17 @@
           <Spinner class="ui:text-muted-foreground size-6" />
         </div>
       {:else if hasStudentData}
-        <Chart.ChartContainer class="h-[280px] w-full" config={progressChartConfig}>
-          <Chart.BarChart
-            data={progressChartData}
-            x="group"
-            axis="x"
-            props={progressChartProps}
-            series={progressSeries}
-          />
-        </Chart.ChartContainer>
+        {#await loadChart() then C}
+          <C.ChartContainer class="h-[280px] w-full" config={progressChartConfig}>
+            <C.BarChart
+              data={progressChartData}
+              x="group"
+              axis="x"
+              props={progressChartProps}
+              series={progressSeries}
+            />
+          </C.ChartContainer>
+        {/await}
       {:else}
         <Empty icon={BarChartIcon} title={$t('analytics.no_progress_data')} class="h-[280px]" />
       {/if}
@@ -160,9 +170,11 @@
           <Spinner class="ui:text-muted-foreground size-6" />
         </div>
       {:else if hasStudentData}
-        <Chart.ChartContainer class="h-[280px] w-full" config={gradeChartConfig}>
-          <Chart.BarChart data={gradeChartData} x="group" axis="x" props={gradeChartProps} series={gradeSeries} />
-        </Chart.ChartContainer>
+        {#await loadChart() then C}
+          <C.ChartContainer class="h-[280px] w-full" config={gradeChartConfig}>
+            <C.BarChart data={gradeChartData} x="group" axis="x" props={gradeChartProps} series={gradeSeries} />
+          </C.ChartContainer>
+        {/await}
       {:else}
         <Empty icon={BarChartIcon} title={$t('analytics.no_grade_data')} class="h-[280px]" />
       {/if}

@@ -5,8 +5,8 @@ import {
   selectPopularCourseTypes
 } from '@cio/db/queries/analytics';
 import { DASH_ANALYTICS_TTL_SECONDS, dashAnalyticsKey } from '@api/utils/redis/key-generators';
-import { env } from '@api/config/env';
-import { logRedisUnavailableOnce, redis } from '@api/utils/redis/redis';
+import { env } from '@cio/core/config/env';
+import { logRedisUnavailableOnce, redis } from '@cio/core/utils/redis/redis';
 
 export type LandingStats = {
   totals: {
