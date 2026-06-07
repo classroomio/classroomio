@@ -1,5 +1,3 @@
-import { Client } from 'pg';
-
 /**
  * @cio/tenant-router — Cloudflare Worker that fronts every browser-facing host.
  *
@@ -45,20 +43,7 @@ interface Env {
   HLS_SIGNING_SECRET: string;
   /** R2 bucket binding for the videos bucket (HLS manifests + segments + audio). */
   VIDEOS_BUCKET: R2Bucket;
-  /** KV namespace for caching org lookups (60 s TTL). */
-  ORG_CACHE: KVNamespace;
-  /** Hyperdrive binding for direct Postgres access. */
-  HYPERDRIVE: Hyperdrive;
-  /**
-   * Shared secret the Dashboard SSR server sends as `Authorization: Bearer …`
-   * to call /internal/org-lookup. Must equal the Dashboard's PRIVATE_SERVER_KEY.
-   * Set via `wrangler secret put PRIVATE_SERVER_KEY`.
-   */
-  PRIVATE_SERVER_KEY: string;
 }
-
-const ORG_LOOKUP_PATH = '/internal/org-lookup';
-const ORG_CACHE_TTL = 60;
 
 // PostHog first-party proxy: requests to /ingest/* are forwarded to PostHog EU.
 // This makes PostHog cookies first-party (set on the org's domain, not eu.i.posthog.com),
@@ -218,38 +203,8 @@ async function handleHlsRequest(request: Request, env: Env): Promise<Response> {
   return new Response((object as R2ObjectBody).body, { status: 200, headers });
 }
 
-// Drizzle stores these columns in camelCase with no snake_case conversion, so
-// the identifiers are case-sensitive in Postgres and must be double-quoted.
-async function lookupOrgFromDb(
-  hyperdrive: Hyperdrive,
-  ctx: ExecutionContext,
-  params: { siteName: string | null; customDomain: string | null }
-): Promise<Record<string, unknown> | null> {
-  const client = new Client({ connectionString: hyperdrive.connectionString });
-  await client.connect();
-
-  try {
-    if (params.siteName) {
-      const result = await client.query('SELECT * FROM organization WHERE "siteName" = $1 LIMIT 1', [params.siteName]);
-      return result.rows[0] ?? null;
-    }
-    if (params.customDomain) {
-      const result = await client.query(
-        'SELECT * FROM organization WHERE "customDomain" = $1 AND "isCustomDomainVerified" = true LIMIT 1',
-        [params.customDomain.toLowerCase()]
-      );
-      return result.rows[0] ?? null;
-    }
-
-    return null;
-  } finally {
-    // Close in the background so connection teardown never blocks the response.
-    ctx.waitUntil(client.end());
-  }
-}
-
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     const originalHost = request.headers.get('host') ?? url.host;
 
@@ -283,49 +238,6 @@ export default {
         method: request.method,
         headers: request.headers,
         body: request.body
-      });
-    }
-
-    // Dedicated org lookup endpoint called directly by the Dashboard SSR server.
-    // Dashboard → Worker (KV hit: ~5ms | KV miss + Hyperdrive: ~50ms).
-    // The API server and Render are never in this path.
-    if (request.method === 'GET' && url.pathname === ORG_LOOKUP_PATH) {
-      // Server-to-server only: require the shared secret. This endpoint is
-      // reachable from the public internet, so without this anyone could read
-      // org config by site name.
-      const auth = request.headers.get('authorization');
-      const expected = `Bearer ${env.PRIVATE_SERVER_KEY}`;
-      if (!env.PRIVATE_SERVER_KEY || !auth || !timingSafeEqual(auth, expected)) {
-        return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
-          status: 401,
-          headers: { 'Content-Type': 'application/json' }
-        });
-      }
-
-      const siteName = url.searchParams.get('siteName');
-      const customDomain = url.searchParams.get('customDomain');
-      const lookupKey = siteName ? `siteName:${siteName}` : customDomain ? `customDomain:${customDomain}` : null;
-
-      if (!lookupKey) {
-        return new Response(JSON.stringify({ success: false, error: 'siteName or customDomain required' }), {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        });
-      }
-
-      const cached = await env.ORG_CACHE.get(lookupKey);
-      if (cached !== null) {
-        return new Response(cached, {
-          headers: { 'Content-Type': 'application/json', 'X-Cache': 'HIT' }
-        });
-      }
-
-      const org = await lookupOrgFromDb(env.HYPERDRIVE, ctx, { siteName, customDomain });
-      const body = JSON.stringify({ success: true, data: org });
-      await env.ORG_CACHE.put(lookupKey, body, { expirationTtl: ORG_CACHE_TTL });
-
-      return new Response(body, {
-        headers: { 'Content-Type': 'application/json', 'X-Cache': 'MISS' }
       });
     }
 

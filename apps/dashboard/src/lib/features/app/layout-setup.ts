@@ -1,6 +1,5 @@
 import { getFirstOrg, getOrgBySiteName, getOrgsByCustomDomain } from '$features/org/api/org.server';
 
-import { dev } from '$app/environment';
 import type { AccountOrg } from '$features/app/types';
 import type { Cookies } from '@sveltejs/kit';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
@@ -54,10 +53,15 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
   // Custom domain
   if (isURLCustomDomain(url)) {
     console.log('it is custom domain');
-    const org = await lookupOrgFromWorker(url.origin, { customDomain: url.host });
+    const apiKeyHeaders = getApiKeyHeaders();
+    const orgs = await getOrgsByCustomDomain(url.host, true, apiKeyHeaders);
+    console.log('orgs', orgs);
 
-    if (!org) return response;
+    if (!orgs || orgs.length === 0) {
+      return response;
+    }
 
+    const org = orgs[0];
     response.org = org as AccountOrg;
     response.isOrgSite = true;
     response.orgSiteName = response.org?.siteName || '';
@@ -78,7 +82,9 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
     response.orgSiteName = debugMode ? _orgSiteName : subdomain;
 
     if (response.orgSiteName) {
-      response.org = await lookupOrgFromWorker(url.origin, { siteName: response.orgSiteName });
+      const apiKeyHeaders = getApiKeyHeaders();
+      const org = await getOrgBySiteName(response.orgSiteName, apiKeyHeaders);
+      response.org = org ?? null;
     }
 
     const shouldDeleteCookie = !response.org && _orgSiteName;
@@ -88,47 +94,6 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
   }
 
   return response;
-}
-
-// Resolve the org via the tenant-router Worker. We call the *same origin* the
-// browser hit (e.g. https://<tenant>.myclassroomio.com) because that host is
-// fronted by the Worker, which serves /internal/org-lookup from KV (≈5ms) or
-// Hyperdrive→Postgres on a miss (≈50ms). No API/Render hop, no extra env var.
-//
-// In dev / self-hosted there is no Worker in front, so fall back to the
-// direct API call (same path the code used before the Worker cache existed).
-async function lookupOrgFromWorker(
-  origin: string,
-  params: { siteName?: string; customDomain?: string }
-): Promise<AccountOrg | null> {
-  if (dev || PUBLIC_IS_SELFHOSTED === 'true' || origin.includes('localhost')) {
-    const apiKeyHeaders = getApiKeyHeaders();
-    if (params.siteName) {
-      return (await getOrgBySiteName(params.siteName, apiKeyHeaders)) ?? null;
-    }
-    if (params.customDomain) {
-      const orgs = await getOrgsByCustomDomain(params.customDomain, true, apiKeyHeaders);
-      return (orgs?.[0] as AccountOrg) ?? null;
-    }
-
-    return null;
-  }
-
-  const qs = new URLSearchParams();
-  if (params.siteName) qs.set('siteName', params.siteName);
-  if (params.customDomain) qs.set('customDomain', params.customDomain);
-
-  try {
-    const res = await fetch(`${origin}/internal/org-lookup?${qs}`, {
-      headers: getApiKeyHeaders().headers
-    });
-    if (!res.ok) return null;
-
-    const json = (await res.json()) as { success: boolean; data: AccountOrg | null };
-    return json.success ? json.data : null;
-  } catch {
-    return null;
-  }
 }
 
 function isURLCustomDomain(url: URL) {

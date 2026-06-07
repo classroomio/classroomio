@@ -779,17 +779,10 @@ importers:
         version: 4.2.1
 
   apps/tenant-router:
-    dependencies:
-      pg:
-        specifier: ^8.18.0
-        version: 8.18.0
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20250109.0
         version: 4.20260511.1
-      '@types/pg':
-        specifier: ^8.16.0
-        version: 8.16.0
       typescript:
         specifier: ^5.5.2
         version: 5.9.3
