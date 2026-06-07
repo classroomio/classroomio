@@ -27,6 +27,7 @@ import {
 } from '../exercise/exercise';
 import { reorderCourseContent } from '../course/content';
 import { normalizeAgentLessonContent } from './lesson-content';
+import { getLessonVideoTranscript } from './lesson-transcript';
 import { buildUpdatedQuestions } from './question-update';
 import { updateCourseLandingPageService } from '../course/landing-page';
 import { getCourseGoLiveReadiness, publishCourseWhenReady } from '../course/go-live-readiness';
@@ -50,6 +51,7 @@ import {
   fetchDocumentationUrlParam,
   goLiveParam,
   lessonReadParam,
+  lessonTranscriptParam,
   reorderContentParam,
   updateContentParam,
   updateCourseLandingPageParam,
@@ -483,6 +485,19 @@ export function buildAgentTools(
           };
           const langContent = lessonWithLangs.lessonLanguages?.find((ll) => ll.locale === args.locale);
           return { id: lesson.id, title: lesson.title, content: langContent?.content || null, locale: args.locale };
+        });
+      }
+    }),
+
+    get_lesson_transcript: tool({
+      description:
+        "Get the transcript of a lesson's uploaded video(s). The spoken content of a video is NOT part of the lesson's HTML content, so call this whenever a question is about what the video says, explains, or demonstrates. Only uploaded videos are transcribed — embedded links (YouTube, etc.) return no transcript.",
+      inputSchema: lessonTranscriptParam,
+      execute: async (args) => {
+        return executeAgentTool('get_lesson_transcript', { orgId, userId, courseId, args }, async () => {
+          await verifyLessonBelongsToCourse(args.lessonId, courseId);
+
+          return getLessonVideoTranscript(args.lessonId, orgId);
         });
       }
     }),

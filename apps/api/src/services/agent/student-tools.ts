@@ -7,6 +7,7 @@ import * as schema from '@cio/db/schema';
 import type { AiTutorSettings } from '@cio/ai-assistant';
 
 import { getLesson } from '@cio/core/services/lesson/lesson';
+import { getLessonVideoTranscript } from '@cio/core/services/agent/lesson-transcript';
 import { getExercise } from '@cio/core/services/exercise/exercise';
 import { listCourseSections } from '@cio/core/services/course/section';
 import { AppError } from '@api/utils/errors';
@@ -187,6 +188,19 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
             content,
             note: lessonWithLangs.note ?? null
           };
+        });
+      }
+    }),
+
+    read_lesson_transcript: tool({
+      description:
+        "Read the transcript of a lesson's uploaded video(s). A video's spoken content is NOT part of the lesson body, so use this whenever the learner asks about what the video says, explains, or demonstrates. Only uploaded videos are transcribed — embedded links (YouTube, etc.) return no transcript.",
+      inputSchema: readLessonParam,
+      execute: async (args) => {
+        return executeStudentTool('read_lesson_transcript', { orgId, userId, courseId, args }, async () => {
+          await verifyLessonBelongsToCourse(args.lessonId, courseId);
+
+          return getLessonVideoTranscript(args.lessonId, orgId);
         });
       }
     }),

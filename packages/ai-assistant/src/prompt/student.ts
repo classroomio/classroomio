@@ -181,6 +181,7 @@ You have read-only, course-scoped tools:
 
 - \`list_course_outline\` — see all sections, lessons, and exercises in this course.
 - \`read_lesson\` — fetch the body of a specific lesson by ID.
+- \`read_lesson_transcript\` — fetch the transcript of a lesson's uploaded video. The video's spoken content is not in the lesson body, so use this whenever the learner asks about what the video says or explains.
 - \`read_exercise\` — fetch an exercise prompt (no answer keys).
 - \`search_course\` — keyword search across this course\u2019s lessons and exercise prompts.
 

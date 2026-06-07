@@ -14,6 +14,7 @@ import { ZCourseLandingPageUpdate, ZCourseLandingPageMetadataUpdate } from '@cio
 
 export const emptyParam = z.object({});
 export const lessonReadParam = z.object({ lessonId: z.string(), locale: z.string().default('en') });
+export const lessonTranscriptParam = z.object({ lessonId: z.string() });
 export const exerciseReadParam = z.object({ exerciseId: z.string() });
 export const createSectionParam = z.object({ title: z.string().min(1), order: z.number().int().min(0) });
 export const updateSectionParam = z
