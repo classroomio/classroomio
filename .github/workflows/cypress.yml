@@ -18,9 +18,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up pnpm
-        uses: pnpm/action-setup@v2.0.1
+        uses: pnpm/action-setup@v4
         with:
-          version: 6
           # Only install what we need to run the client in-action and tests against it
           # format:    `--filter <packagename>...`
           run_install: |

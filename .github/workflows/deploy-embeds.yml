@@ -11,7 +11,6 @@ on:
 
 env:
   NODE_VERSION: "20"
-  PNPM_VERSION: "8"
 
 jobs:
   build-and-deploy-embeds:
@@ -28,9 +27,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
+        uses: pnpm/action-setup@v4
 
       - name: Get pnpm store directory
         shell: bash
