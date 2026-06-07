@@ -41,6 +41,15 @@ function contentTypeFor(path: string): string {
   return HLS_CONTENT_TYPES[ext] ?? 'application/octet-stream';
 }
 
+/**
+ * Only `master.m3u8` is mutable — it gets patched when a p1080 rendition is
+ * added later, so it stays short-lived. Variant/media playlists and segments
+ * are write-once per assetId/path and never change, so cache them immutably.
+ */
+function cacheControlFor(relativePath: string): string {
+  return relativePath === 'master.m3u8' ? 'private, max-age=10' : 'private, max-age=31536000, immutable';
+}
+
 export const hlsRouter = new Hono()
   .options('/:assetId/*', (c) => {
     const origin = c.req.header('origin');
@@ -144,7 +153,7 @@ export const hlsRouter = new Hono()
         const head = await client.send(new HeadObjectCommand({ Bucket: config.bucketVideos, Key: objectKey }));
         const headHeaders: Record<string, string> = {
           'Content-Type': contentTypeFor(relative),
-          'Cache-Control': relative.endsWith('.m3u8') ? 'private, max-age=10' : 'private, max-age=31536000, immutable'
+          'Cache-Control': cacheControlFor(relative)
         };
         if (head.ContentLength != null) headHeaders['Content-Length'] = String(head.ContentLength);
         return withCors(null, 200, headHeaders);
@@ -157,7 +166,7 @@ export const hlsRouter = new Hono()
 
       const headers: Record<string, string> = {
         'Content-Type': contentTypeFor(relative),
-        'Cache-Control': relative.endsWith('.m3u8') ? 'private, max-age=10' : 'private, max-age=31536000, immutable'
+        'Cache-Control': cacheControlFor(relative)
       };
       if (result.ContentLength != null) headers['Content-Length'] = String(result.ContentLength);
 

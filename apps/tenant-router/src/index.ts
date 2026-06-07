@@ -187,9 +187,11 @@ async function handleHlsRequest(request: Request, env: Env): Promise<Response> {
 
   const headers = new Headers();
   headers.set('Content-Type', contentTypeFor(relativePath));
-  // Playlists must not be cached aggressively (small + may regenerate); segments are immutable per assetId/path.
-  const isManifest = relativePath.endsWith('.m3u8');
-  headers.set('Cache-Control', isManifest ? 'private, max-age=10' : 'private, max-age=31536000, immutable');
+  // Only `master.m3u8` is mutable — it gets patched when a p1080 rendition is
+  // added later, so it stays short-lived. Variant/media playlists and segments
+  // are write-once per assetId/path and never change, so cache them immutably.
+  const isMutableManifest = relativePath === 'master.m3u8';
+  headers.set('Cache-Control', isMutableManifest ? 'private, max-age=10' : 'private, max-age=31536000, immutable');
   if ('writeHttpMetadata' in object) {
     object.writeHttpMetadata(headers);
   }
