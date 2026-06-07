@@ -57,3 +57,7 @@ storybook-static
 .svelte-kit/
 
 company/
+
+# Claude Code local artifacts
+.claude/skills
+.claude/scheduled_tasks.lock
