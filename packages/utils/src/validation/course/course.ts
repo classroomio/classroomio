@@ -273,10 +273,39 @@ export const ZCourseReward = z.object({
   description: z.string()
 });
 
+const METADATA_NULLABLE_STRING_KEYS = ['requirements', 'description', 'goals', 'videoUrl', 'paymentLink'] as const;
+
+function preprocessCourseMetadata(value: unknown): unknown {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return value;
+  }
+
+  const metadata = { ...(value as Record<string, unknown>) };
+
+  for (const key of METADATA_NULLABLE_STRING_KEYS) {
+    if (metadata[key] === null) {
+      metadata[key] = undefined;
+    }
+  }
+
+  if (metadata.instructor && typeof metadata.instructor === 'object' && !Array.isArray(metadata.instructor)) {
+    const instructor = { ...(metadata.instructor as Record<string, unknown>) };
+
+    if (instructor.coursesNo === undefined && instructor.courseNo !== undefined) {
+      instructor.coursesNo = instructor.courseNo;
+    }
+
+    delete instructor.courseNo;
+    metadata.instructor = instructor;
+  }
+
+  return metadata;
+}
+
 export const ZCourseInstructor = z.object({
   name: z.string(),
   role: z.string(),
-  coursesNo: z.number(),
+  coursesNo: z.coerce.number(),
   description: z.string(),
   imgUrl: z.string()
 });
@@ -302,8 +331,7 @@ export const ZCourseLessonTabsOrder = z.array(
   })
 );
 
-// Course metadata schema matching the database structure
-export const ZCourseMetadata = z.object({
+const ZCourseMetadataFields = z.object({
   requirements: z.string().optional(),
   description: z.string().optional(),
   goals: z.string().optional(),
@@ -324,29 +352,20 @@ export const ZCourseMetadata = z.object({
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),
   isContentGroupingEnabled: z.boolean().optional()
 });
+
+// Course metadata schema matching the database structure
+export const ZCourseMetadata = z.preprocess(preprocessCourseMetadata, ZCourseMetadataFields);
 export type TCourseMetadata = z.infer<typeof ZCourseMetadata>;
 
-export const ZCourseLandingPageMetadataUpdate = z.object({
-  requirements: z.string().optional(),
-  description: z.string().optional(),
-  goals: z.string().optional(),
-  videoUrl: z.string().optional(),
-  showDiscount: z.boolean().optional(),
-  discount: z.number().optional(),
-  paymentLink: z.string().optional(),
-  reward: ZCourseReward.partial().optional(),
-  instructor: ZCourseInstructor.partial().optional(),
-  certificate: ZCourseCertificate.partial().optional(),
-  reviews: z.array(ZCourseReview).optional(),
-  skills: z.array(z.string().min(1).max(80)).max(60).optional(),
-  tools: z.array(z.string().min(1).max(80)).max(60).optional(),
-  lessonTabsOrder: ZCourseLessonTabsOrder.optional(),
-  grading: z.boolean().optional(),
-  lessonDownload: z.boolean().optional(),
-  allowNewStudent: z.boolean().optional(),
-  sectionDisplay: z.record(z.string(), z.boolean()).optional(),
-  isContentGroupingEnabled: z.boolean().optional()
-});
+export const ZCourseLandingPageMetadataUpdate = z.preprocess(
+  preprocessCourseMetadata,
+  ZCourseMetadataFields.omit({ allowNewStudent: true }).extend({
+    allowNewStudent: z.boolean().optional(),
+    reward: ZCourseReward.partial().optional(),
+    instructor: ZCourseInstructor.partial().optional(),
+    certificate: ZCourseCertificate.partial().optional()
+  })
+);
 export type TCourseLandingPageMetadataUpdate = z.infer<typeof ZCourseLandingPageMetadataUpdate>;
 
 export const ZCertificationSettings = z.object({

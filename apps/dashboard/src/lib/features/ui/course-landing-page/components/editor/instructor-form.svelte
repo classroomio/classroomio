@@ -19,7 +19,7 @@
   let role = $state(get(course, 'metadata.instructor.role'));
   let imgUrl = $state(get(course, 'metadata.instructor.imgUrl'));
   let description = $state(get(course, 'metadata.instructor.description'));
-  let courseNo = $state(get(course, 'metadata.instructor.coursesNo'));
+  let courseNo = $state(get(course, 'metadata.instructor.coursesNo') ?? get(course, 'metadata.instructor.courseNo'));
   let avatar: File | undefined = $state();
   let isUploading = $state(false);
 
