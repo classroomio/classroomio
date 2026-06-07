@@ -5,7 +5,16 @@
   import { t } from '$lib/utils/functions/translations';
   import { sidePanel } from './utils/store.svelte';
 
-  let railShellElement: HTMLDivElement | null = $state(null);
+  interface Props {
+    /**
+     * Live-resize hook. The host writes `--side-panel-width` directly to the
+     * shared shell element so the panel and fixed siblings (e.g. the Ask AI
+     * bar) follow the drag without a per-frame reactivity round-trip.
+     */
+    onWidthPreview?: (width: number) => void;
+  }
+
+  let { onWidthPreview }: Props = $props();
 
   let railWidth = $state(0);
   let isWidthLoaded = $state(false);
@@ -65,6 +74,12 @@
     isWidthLoaded = true;
   });
 
+  // Publish the effective width so the shared ancestor can expose it as a CSS
+  // variable that fixed siblings (e.g. the Ask AI bar) can offset against.
+  $effect(() => {
+    sidePanel.width = activeDefinition ? railWidth : 0;
+  });
+
   $effect(() => {
     if (!isWidthLoaded) return;
 
@@ -100,7 +115,7 @@
       startWidth,
       resolveWidth: ({ startWidth, deltaX }) => clampWidth(startWidth - deltaX),
       onPreview: (width) => {
-        railShellElement?.style.setProperty('--side-panel-width', `${width}px`);
+        onWidthPreview?.(width);
       },
       onCommit: ({ width }) => {
         railWidth = width;
@@ -129,12 +144,7 @@
 
 {#if activeDefinition}
   {@const def = activeDefinition}
-  <div
-    bind:this={railShellElement}
-    data-side-panel-resizing={isRailResizing}
-    class="contents"
-    style={`--side-panel-width: ${railWidth}px;`}
-  >
+  <div data-side-panel-resizing={isRailResizing} class="contents">
     <div class="hidden shrink-0 md:block md:w-(--side-panel-width)"></div>
 
     <aside

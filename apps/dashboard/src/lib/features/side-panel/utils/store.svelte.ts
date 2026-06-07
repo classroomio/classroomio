@@ -5,6 +5,7 @@ class SidePanelStore {
 
   activePanelId = $state<string | null>(null);
   panelProps = $state<Record<string, unknown>>({});
+  width = $state(0);
 
   register(definition: SidePanelDefinition) {
     this.definitions.set(definition.id, definition);
@@ -48,6 +49,7 @@ class SidePanelStore {
   close() {
     this.activePanelId = null;
     this.panelProps = {};
+    this.width = 0;
   }
 
   closeIfScope(scope: SidePanelScope) {

@@ -114,7 +114,7 @@
 
 {#if expanded}
   <div
-    class="ui:bg-background ui:border-border fixed right-0 bottom-0 left-0 z-40 border-t py-3 shadow-sm md:left-[var(--sidebar-width,0px)]"
+    class="ui:bg-background ui:border-border fixed right-0 bottom-0 left-0 z-40 border-t py-3 shadow-sm md:right-[var(--side-panel-width,0px)] md:left-[var(--sidebar-width,0px)]"
     in:fly={expandIn}
     out:fly={expandOut}
   >
@@ -135,7 +135,7 @@
   </div>
 {:else}
   <div
-    class="pointer-events-none fixed right-0 bottom-4 left-0 z-40 md:left-[var(--sidebar-width,0px)]"
+    class="pointer-events-none fixed right-0 bottom-4 left-0 z-40 md:right-[var(--side-panel-width,0px)] md:left-[var(--sidebar-width,0px)]"
     in:fade={collapseIn}
     out:fade={collapseOut}
   >

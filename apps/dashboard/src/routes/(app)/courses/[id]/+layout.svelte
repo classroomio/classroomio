@@ -122,6 +122,10 @@
     sidebarProviderElement?.style.setProperty('--sidebar-width', `${nextWidth}px`);
   }
 
+  function handleSidePanelWidthPreview(width: number) {
+    sidebarProviderElement?.style.setProperty('--side-panel-width', `${width}px`);
+  }
+
   onMount(() => {
     try {
       const storedWidth = Number(localStorage.getItem(COURSE_SIDEBAR_STORAGE_KEY));
@@ -185,7 +189,7 @@
 <Sidebar.Provider
   bind:ref={sidebarProviderElement}
   data-sveltekit-preload-data="off"
-  style={`--sidebar-width: ${sidebarWidth}px;`}
+  style={`--sidebar-width: ${sidebarWidth}px; --side-panel-width: ${sidePanel.width}px;`}
 >
   <CourseSidebar
     {path}
@@ -224,5 +228,5 @@
     {/if}
   </Sidebar.Inset>
 
-  <SidePanelRail />
+  <SidePanelRail onWidthPreview={handleSidePanelWidthPreview} />
 </Sidebar.Provider>
