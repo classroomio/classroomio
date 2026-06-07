@@ -913,9 +913,7 @@ export const getOrganizationPlanBySubscriptionId = async (
     return plan ?? null;
   } catch (error) {
     console.error('getOrganizationPlanBySubscriptionId error:', error);
-    throw new Error(
-      `Failed to fetch organization plan: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
+    throw new Error(`Failed to fetch organization plan: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
 

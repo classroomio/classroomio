@@ -1,7 +1,6 @@
 import { dev } from '$app/environment';
 import { get } from 'svelte/store';
 import { globalStore } from '$lib/utils/store/app';
-import { licenseApi } from '$features/license/api/license.svelte';
 
 const USERJOT_APP_ID = 'cm4a6vcmp00jpmdb5n66rmkzz';
 
@@ -9,7 +8,6 @@ let isInitialized = false;
 
 function isWidgetAllowed(): boolean {
   if (dev) return false;
-  if (licenseApi.hasAccess('no-tracking')) return false;
   if (get(globalStore).isOrgSite) return false;
 
   return true;
@@ -44,7 +42,7 @@ export function initUserJot(): void {
   ensureSdkLoaded();
 
   window.uj.init(USERJOT_APP_ID, {
-    widget: true,
+    trigger: 'custom',
     position: 'right',
     theme: 'auto'
   });
@@ -74,4 +72,22 @@ export function identifyUserJotUser({ id, email, fullname, avatarUrl }: UserJotI
     lastName: lastName || undefined,
     avatar: avatarUrl ?? undefined
   });
+}
+
+export function clearUserJotUser(): void {
+  if (!isWidgetAllowed()) return;
+
+  ensureSdkLoaded();
+
+  window.uj.identify(null);
+}
+
+export type UserJotWidgetSection = 'feedback' | 'roadmap' | 'updates';
+
+export function showUserJotWidget(section: UserJotWidgetSection): void {
+  if (!isWidgetAllowed()) return;
+
+  ensureSdkLoaded();
+
+  window.uj.showWidget({ section });
 }

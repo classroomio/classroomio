@@ -1,24 +1,13 @@
-import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import type { Context } from 'hono';
+import type { ContentfulStatusCode } from 'hono/utils/http-status';
 
-import { ErrorCodes, type ErrorCode } from '@cio/utils/constants';
+import { AppError, ErrorCodes, type ErrorCode } from '@cio/utils/errors';
 
-export { ErrorCodes, type ErrorCode };
-
-/**
- * Standard application error with code for easy identification
- */
-export class AppError extends Error {
-  constructor(
-    error: string | Error,
-    public code: string,
-    public statusCode: ContentfulStatusCode = 500,
-    public field?: string
-  ) {
-    super(error instanceof Error ? error.message : error);
-    this.name = 'AppError';
-  }
-}
+// AppError moved to `@cio/utils/errors` so it can be thrown from
+// non-api workspace packages (notably `@cio/core`). Re-exported
+// here to keep the long-standing `@api/utils/errors` import path working
+// for the rest of the api codebase.
+export { AppError, ErrorCodes, type ErrorCode };
 
 /**
  * Standard error response format
@@ -68,7 +57,7 @@ export const handleError = (
         code: responseCode,
         field: isServerError ? undefined : error.field
       },
-      error.statusCode
+      error.statusCode as ContentfulStatusCode
     );
   }
 

@@ -8,7 +8,8 @@ export * as Breadcrumb from './base/breadcrumb';
 export * as Button from './base/button';
 export * as ButtonGroup from './base/button-group';
 export * as Card from './base/card';
-export * as Chart from './base/chart';
+// Chart components are intentionally NOT re-exported from this barrel.
+// Import from '@cio/ui/base/chart' directly to keep layerchart/d3 out of the shared bundle.
 export * as Checkbox from './base/checkbox';
 export * as Code from './custom/code';
 export * as Collapsible from './base/collapsible';
@@ -50,13 +51,16 @@ export * as Tooltip from './base/tooltip';
 export * as NavigationMenu from './base/navigation-menu';
 
 export { Toaster } from './base/sonner';
-export { BarChart, LineChart, AreaChart, PieChart, scaleBand } from './base/chart';
+// BarChart, LineChart, AreaChart, PieChart, scaleBand: import from '@cio/ui/base/chart' directly.
 
 export * from './tools';
 
 export * as UnderlineTabs from './custom/underline-tabs';
 export * as FileDropZone from './custom/file-drop-zone';
-export * from './custom/editor/ui';
+// Editor UI components (EdraEditor, EdraToolBar, etc.) are intentionally NOT
+// re-exported from this barrel. They import TipTap with a CSS side-effect that
+// prevents tree-shaking, adding ~1MB to every page. Import from the path directly:
+// import { EdraEditor } from '@cio/ui/custom/editor/ui';
 export * as ImageCropper from './custom/image-cropper';
 export { Chip } from './custom/chip';
 export { IconButton } from './custom/icon-button';

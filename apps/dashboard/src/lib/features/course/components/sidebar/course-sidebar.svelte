@@ -5,7 +5,7 @@
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { profile } from '$lib/utils/store/user';
   import { orgs } from '$lib/utils/store/org';
-  import { isOrgStudent } from '$lib/utils/store/app';
+  import { isStudentExperience } from '$lib/utils/store/app';
   import CourseSidebarLogo from './course-sidebar-logo.svelte';
   import Navigation from './course-sidebar-navigation.svelte';
   import SidebarSkeleton from '$features/ui/sidebar/sidebar-skeleton.svelte';
@@ -112,14 +112,14 @@
 {#if !isOrgLoaded}
   <SidebarSkeleton />
 {:else}
-  <Sidebar.Root collapsible="icon">
+  <Sidebar.Root collapsible="icon" class="ui:z-150!">
     <Sidebar.Header>
       <CourseSidebarLogo />
     </Sidebar.Header>
 
     <Sidebar.Content>
       {#if isCourseReady}
-        <Navigation path={currentPath} {id} isStudent={$isOrgStudent ?? undefined} />
+        <Navigation path={currentPath} {id} isStudent={$isStudentExperience} />
       {:else}
         <Sidebar.Group class="pt-0!">
           <div class="flex h-8 items-center gap-2 rounded-md px-2">

@@ -49,6 +49,7 @@ import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/inv
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
 
 const PUBLIC_ORG_LANDING_PAGE_COURSE_LIMIT = 4;
+const ORG_COURSES_PAGE_SIZE = 6;
 
 /**
  * Creates a new organization with the current user as owner
@@ -252,7 +253,11 @@ export async function removeAudienceMember(orgId: string, memberId: number, remo
  * @param siteName - The organization siteName
  * @returns Array of published courses with lesson counts
  */
-export async function getPublicCourses(siteName: string, tagSlugs?: string[]) {
+export async function getPublicCourses(
+  siteName: string,
+  tagSlugs?: string[],
+  pagination?: { page?: number; limit?: number }
+) {
   try {
     const orgResult = await getOrgIdBySiteName(siteName);
     const org = orgResult[0];
@@ -261,23 +266,28 @@ export async function getPublicCourses(siteName: string, tagSlugs?: string[]) {
       throw new AppError('Organization not found', ErrorCodes.ORG_NOT_FOUND, 404);
     }
 
+    const isPaginated = pagination !== undefined;
+    const limit = isPaginated ? (pagination.limit ?? ORG_COURSES_PAGE_SIZE) : PUBLIC_ORG_LANDING_PAGE_COURSE_LIMIT;
+    const page = isPaginated ? (pagination.page ?? 1) : 1;
+    const offset = (page - 1) * limit;
+
     let filteredCourseIds: string[] | undefined = undefined;
     if (tagSlugs && tagSlugs.length > 0) {
       filteredCourseIds = await getCourseIdsByTagSlugs(org.id, tagSlugs);
       if (filteredCourseIds.length === 0) {
         return {
           courses: [],
-          hasMoreCourses: false
+          hasMoreCourses: false,
+          total: 0,
+          page,
+          limit,
+          totalPages: 0
         };
       }
     }
 
     const totalCourses = await countPublishedCoursesBySiteName(siteName, filteredCourseIds);
-    const courses = await getPublishedCoursesBySiteName(
-      siteName,
-      filteredCourseIds,
-      PUBLIC_ORG_LANDING_PAGE_COURSE_LIMIT
-    );
+    const courses = await getPublishedCoursesBySiteName(siteName, filteredCourseIds, limit, offset);
     const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
       org.id,
       courses.map((course) => course.id)
@@ -288,7 +298,11 @@ export async function getPublicCourses(siteName: string, tagSlugs?: string[]) {
         ...course,
         tags: tagsByCourseId[course.id] ?? []
       })),
-      hasMoreCourses: totalCourses > courses.length
+      hasMoreCourses: offset + courses.length < totalCourses,
+      total: totalCourses,
+      page,
+      limit,
+      totalPages: Math.ceil(totalCourses / limit)
     };
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -555,11 +569,7 @@ async function resolveOrgPlanTriggeredBy(params: {
     }
   }
 
-  throw new AppError(
-    'Could not resolve organization member for plan',
-    ErrorCodes.ORG_PLAN_CREATE_FAILED,
-    400
-  );
+  throw new AppError('Could not resolve organization member for plan', ErrorCodes.ORG_PLAN_CREATE_FAILED, 400);
 }
 
 /**

@@ -1,21 +1,31 @@
 <script lang="ts">
   import XIcon from '@lucide/svelte/icons/x';
+  import PencilIcon from '@lucide/svelte/icons/pencil';
   import CaptionsIcon from '@lucide/svelte/icons/captions';
   import { IconButton } from '@cio/ui/custom/icon-button';
+  import { Button } from '@cio/ui/base/button';
+  import { Textarea } from '@cio/ui/base/textarea';
   import { t } from '$lib/utils/functions/translations';
+  import { isOrgAdmin } from '$lib/utils/store/org';
   import { sidePanel } from '$features/side-panel';
+  import { mediaApi } from '$features/media/api';
   import { lessonVideoBus } from './lesson-video-bus.svelte';
-  import type { AssetTranscriptPayload } from '$features/media/utils/types';
-
-  type Segment = AssetTranscriptPayload['segments'][number];
+  import type { TranscriptSegment } from '$features/media/utils/types';
 
   const transcript = $derived(lessonVideoBus.transcript);
   const transcriptLoading = $derived(lessonVideoBus.transcriptLoading);
-  const segments = $derived<Segment[]>(transcript?.segments ?? []);
+  const segments = $derived<TranscriptSegment[]>(transcript?.segments ?? []);
   const language = $derived(transcript?.language ?? '');
+  const assetId = $derived(lessonVideoBus.assetId);
   const currentTimeSeconds = $derived(lessonVideoBus.currentTimeSeconds);
 
-  function isActiveSegment(segment: Segment, index: number): boolean {
+  let editing = $state(false);
+  let saving = $state(false);
+  let draft = $state<TranscriptSegment[]>([]);
+
+  const canEdit = $derived(Boolean($isOrgAdmin) && Boolean(assetId) && segments.length > 0);
+
+  function isActiveSegment(segment: TranscriptSegment, index: number): boolean {
     const isLast = index === segments.length - 1;
 
     if (isLast) {
@@ -40,6 +50,30 @@
 
     return `${m}:${s}`;
   }
+
+  function startEditing() {
+    draft = segments.map((segment) => ({ ...segment }));
+    editing = true;
+  }
+
+  function cancelEditing() {
+    editing = false;
+    draft = [];
+  }
+
+  async function save() {
+    if (!assetId) return;
+
+    saving = true;
+    const updated = await mediaApi.updateAssetTranscript(assetId, draft);
+    saving = false;
+
+    if (!updated) return;
+
+    lessonVideoBus.setTranscript(updated);
+    editing = false;
+    draft = [];
+  }
 </script>
 
 <div class="flex min-h-0 flex-1 flex-col">
@@ -57,18 +91,55 @@
         {/if}
       </div>
     </div>
-    <IconButton
-      onclick={() => sidePanel.close()}
-      variant="outline"
-      size="icon-xs"
-      tooltip={$t('side_panel.close_aria')}
-    >
-      <XIcon size={16} />
-    </IconButton>
+    <div class="flex shrink-0 items-center gap-1">
+      {#if editing}
+        <Button variant="ghost" size="sm" onclick={cancelEditing} disabled={saving}>
+          {$t('course.navItem.lessons.materials.tabs.video.transcript.cancel')}
+        </Button>
+        <Button size="sm" onclick={save} disabled={saving}>
+          {$t('course.navItem.lessons.materials.tabs.video.transcript.save')}
+        </Button>
+      {:else}
+        {#if canEdit}
+          <IconButton
+            onclick={startEditing}
+            variant="outline"
+            size="icon-xs"
+            tooltip={$t('course.navItem.lessons.materials.tabs.video.transcript.edit')}
+          >
+            <PencilIcon size={16} />
+          </IconButton>
+        {/if}
+        <IconButton
+          onclick={() => sidePanel.close()}
+          variant="outline"
+          size="icon-xs"
+          tooltip={$t('side_panel.close_aria')}
+        >
+          <XIcon size={16} />
+        </IconButton>
+      {/if}
+    </div>
   </header>
 
   <div class="min-h-0 flex-1 overflow-y-auto p-3">
-    {#if segments.length}
+    {#if editing}
+      {#each draft as segment, index (index)}
+        <div class="mb-3 last:mb-0">
+          <span class="ui:text-muted-foreground mb-1 block text-xs tabular-nums">
+            {formatTimestamp(segment.start)}
+          </span>
+          <Textarea
+            bind:value={draft[index].text}
+            rows={2}
+            disabled={saving}
+            aria-label={$t('course.navItem.lessons.materials.tabs.video.transcript.segment_label', {
+              timestamp: formatTimestamp(segment.start)
+            })}
+          />
+        </div>
+      {/each}
+    {:else if segments.length}
       {#each segments as segment, index (segment.start + segment.end + index)}
         {@const active = isActiveSegment(segment, index)}
         <button

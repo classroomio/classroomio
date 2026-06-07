@@ -301,6 +301,8 @@ export type CourseMetadata = (NonNullable<ApiCourse['metadata']> extends object
   ? NonNullable<ApiCourse['metadata']>
   : Record<string, unknown>) & {
   isContentGroupingEnabled?: boolean;
+  skills?: string[];
+  tools?: string[];
 };
 export type CourseCertificate =
   NonNullable<ApiCourse['certificate']> extends object

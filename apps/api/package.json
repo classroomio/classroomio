@@ -40,8 +40,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.388.0",
     "@aws-sdk/s3-request-presigner": "^3.675.0",
-    "@bull-board/api": "^7.0.0",
-    "@bull-board/hono": "^7.0.0",
+    "@cio/core": "workspace:*",
     "@cio/ai-assistant": "workspace:*",
     "@cio/analytics": "workspace:*",
     "@cio/certificates": "workspace:*",
@@ -50,6 +49,7 @@
     "@cio/jobs": "workspace:*",
     "@cio/question-types": "workspace:*",
     "@cio/utils": "workspace:*",
+    "@getworkbench/hono": "0.2.1",
     "@hono/node-server": "^1.19.7",
     "@hono/standard-validator": "^0.1.5",
     "@hono/zod-validator": "^0.7.6",

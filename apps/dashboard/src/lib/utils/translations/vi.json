@@ -350,7 +350,9 @@
       "thumbnail_updated": "Đã cập nhật hình thu nhỏ",
       "thumbnail_update_failed": "Không cập nhật được hình thu nhỏ",
       "thumbnail_regen_started": "Đang tạo lại hình thu nhỏ…",
-      "thumbnail_regen_failed": "Không thể tạo lại hình thu nhỏ"
+      "thumbnail_regen_failed": "Không thể tạo lại hình thu nhỏ",
+      "transcript_saved": "Đã cập nhật bản ghi",
+      "transcript_save_failed": "Không thể lưu bản ghi"
     },
     "tags": {
       "group_created": "Đã tạo nhóm thẻ",
@@ -420,6 +422,18 @@
       "workspace_is_primary": "Bạn không thể xóa không gian làm việc chính.",
       "workspace_not_found": "Không tìm thấy không gian làm việc.",
       "not_primary_workspace": "Chuyển sang không gian làm việc chính của bạn để quản lý không gian làm việc của tài khoản."
+    },
+    "link_invite": {
+      "generated": "Đã tạo liên kết lời mời",
+      "enabled": "Đã bật lời mời liên kết",
+      "disabled": "Lời mời liên kết đã bị vô hiệu hóa"
+    },
+    "view_as_student": {
+      "failed": "Không thể mở chế độ xem sinh viên. Vui lòng thử lại."
+    },
+    "lesson_video": {
+      "generate_1080_completed": "Đã thêm phiên bản 1080p",
+      "generate_1080_failed": "Không thể tạo phiên bản 1080p"
     }
   },
   "explore": {
@@ -905,7 +919,9 @@
             "short_video": "Video ngắn",
             "replace_cover": "Thay thế ảnh bìa",
             "replace": "Thay thế",
-            "helper": "Nhập liên kết tới video youtube"
+            "helper": "Nhập liên kết tới video youtube",
+            "remove": "Xóa",
+            "no_cover": "Chưa đặt ảnh bìa"
           },
           "title": {
             "header": "tiêu đề",
@@ -1030,7 +1046,17 @@
           "members": "Thành viên",
           "invite_sent": "Lời mời đã gửi",
           "you": "bạn",
-          "remove": "Xóa"
+          "remove": "Xóa",
+          "link_invite": {
+            "heading": "Liên kết mời",
+            "description": "Bất kỳ ai có liên kết này đều có thể tham gia tổ chức của bạn.",
+            "generate": "Tạo liên kết",
+            "copy": "Sao chép",
+            "copied": "Đã sao chép!",
+            "toggle_label": "Liên kết lời mời đang hoạt động",
+            "disabled_notice": "Liên kết này bị vô hiệu hóa. Kích hoạt nó để cho phép thành viên mới tham gia thông qua liên kết.",
+            "select_role": "Chọn một vai trò"
+          }
         },
         "roles": {
           "admin": "Quản trị viên",
@@ -1879,7 +1905,11 @@
                 "language": "Language: {language}",
                 "empty": "No transcript yet. You can generate one from this card’s menu after the video is uploaded.",
                 "loading": "Loading transcript…",
-                "open_side_panel": "Mở bảng chép lời"
+                "open_side_panel": "Mở bảng chép lời",
+                "edit": "Chỉnh sửa bản ghi",
+                "save": "Lưu",
+                "cancel": "Hủy bỏ",
+                "segment_label": "Đoạn tại {timestamp}"
               },
               "simple_card": {
                 "kind_youtube": "YouTube",
@@ -1889,7 +1919,13 @@
                 "course_fallback": "Khóa học",
                 "menu_aria": "Tùy chọn video"
               },
-              "view_transcript": "Xem bản chép lời"
+              "view_transcript": "Xem bản chép lời",
+              "playback_error": "Tải video này không thành công.",
+              "playback_reload": "Tải lại video",
+              "generate_1080": "Tạo 1080p",
+              "generate_1080_in_progress": "Đang tạo 1080p…",
+              "generate_1080_ready": "1080p có sẵn",
+              "generate_1080_unavailable": "1080p không có sẵn cho video nguồn này"
             },
             "slide": {
               "title": "Trượt",
@@ -2085,7 +2121,8 @@
     },
     "header": {
       "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing."
+      "preview_missing_slug": "Generate and save a course slug before previewing.",
+      "view_as_student": "Xem với tư cách sinh viên"
     },
     "sidebar": {
       "back_to_course": "Quay lại khóa học",
@@ -2105,12 +2142,12 @@
       "nav_attendance": "Tham dự",
       "nav_submissions": "bài nộp",
       "nav_marks": "Điểm",
+      "nav_compliance": "Tuân thủ",
       "nav_people": "mọi người",
       "nav_analytics": "Phân tích",
       "nav_certificates": "Chứng chỉ",
       "nav_landing_page": "Trang đích",
       "nav_settings": "Cài đặt",
-      "nav_compliance": "Tuân thủ",
       "nav_ai_assistant": "Trợ lý",
       "nav_ai_tutor": "Gia sư AI"
     },
@@ -2202,6 +2239,12 @@
           "form_title": "Hãy cho chúng tôi biết về sản phẩm của bạn"
         }
       }
+    },
+    "view_as_student": {
+      "title": "Thao tác này sẽ chuyển hướng bạn đến LMS dành cho sinh viên.",
+      "description": "Bạn sắp biết học viên sẽ thấy gì khi họ đăng ký khóa học này",
+      "copy_link": "Sao chép liên kết",
+      "go_to_lms": "Đi tới LMS"
     }
   },
   "courses": {
@@ -3069,6 +3112,11 @@
         "field_nav_count_other": "{count} liên kết",
         "hero_empty": "—",
         "customize": "Tùy chỉnh trang đích"
+      },
+      "preview_tabs": {
+        "label": "Trang xem trước",
+        "home": "Trang chủ",
+        "course": "Khóa học"
       }
     },
     "organization": {
@@ -3322,7 +3370,10 @@
     "tic_tac": "ngón chân tictac",
     "see_more": "Xem thêm",
     "whats_new": "Có gì mới",
-    "launch_week": "Tuần ra mắt"
+    "launch_week": "Tuần ra mắt",
+    "feedback": "Phản hồi",
+    "documentation": "Tài liệu",
+    "need_help": "Cần giúp đỡ?"
   },
   "login": {
     "welcome": "Chào mừng trở lại",
@@ -3567,6 +3618,18 @@
         "joined": "Đã tham gia tổ chức",
         "join_failed": "Không thể tham gia tổ chức"
       }
+    },
+    "link": {
+      "page_title": "Tham gia cùng {orgName} trên ClassroomIO",
+      "invitation_student": "Bạn đã được mời tham gia {orgName} với tư cách là sinh viên.",
+      "invitation_teacher": "Bạn đã được mời tham gia {orgName} với tư cách là giáo viên.",
+      "invitation_admin": "Bạn đã được mời tham gia {orgName} với tư cách quản trị viên.",
+      "invitation_fallback": "Bạn đã được mời tham gia {orgName} với tư cách là {role}.",
+      "accept_button": "Tham gia tổ chức",
+      "go_to_dashboard": "Đi tới Trang tổng quan",
+      "disabled": "Liên kết mời này đã bị tổ chức vô hiệu hóa.",
+      "join_failed": "Không thể tham gia tổ chức",
+      "joined": "Đã tham gia tổ chức"
     }
   },
   "automation": {
@@ -3889,7 +3952,7 @@
     "resume": "Tiếp tục",
     "stopped_content_kept": "Đã dừng lại. Nội dung được tạo đã được giữ lại.",
     "mention_lesson": "Bài học",
-    "mention_exercise": "tập thể dục",
+    "mention_exercise": "bài tập",
     "mention_section": "Phần",
     "mention_no_results": "Không có nội dung phù hợp",
     "uploading_document": "Đang tải tài liệu lên...",
@@ -4053,7 +4116,11 @@
         "title": "Công nhân không phản hồi",
         "body": "Lần chạy này đã chờ hơn 30 giây mà không có công nhân đón. Nhân viên chạy nền có thể không hoạt động hoặc đang khởi động lại."
       }
-    }
+    },
+    "ask_ai": "Hỏi AI",
+    "content_input_placeholder": "Hỏi về nội dung này…",
+    "ask_ai_expand_aria": "Mở đầu vào Hỏi AI",
+    "ask_ai_input_aria": "Hỏi AI về nội dung này"
   },
   "widgets": {
     "heading": "Widget",

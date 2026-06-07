@@ -9,9 +9,10 @@
     orgName: OrgLandingPageProps['orgName'];
     hero: OrgLandingPageProps['hero'];
     navigation: Snippet;
+    showActions?: boolean;
   }
 
-  let { orgName, hero, navigation }: Props = $props();
+  let { orgName, hero, navigation, showActions = true }: Props = $props();
 
   const stats = $derived(hero.stats ?? []);
 </script>
@@ -47,22 +48,24 @@
             {hero.subheading}
           </p>
 
-          <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-3">
-            <Button
-              href={hero.primaryAction.href}
-              disabled={hero.primaryAction.disabled ?? false}
-              class="ui:rounded-none ui:px-6 ui:font-medium"
-            >
-              {hero.primaryAction.label}
-            </Button>
-            {#if hero.secondaryAction}
-              <SecondaryActionButton
-                href={hero.secondaryAction.href}
-                label={hero.secondaryAction.label}
-                variant="corporate"
-              />
-            {/if}
-          </div>
+          {#if showActions}
+            <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-3">
+              <Button
+                href={hero.primaryAction.href}
+                disabled={hero.primaryAction.disabled ?? false}
+                class="ui:rounded-none ui:px-6 ui:font-medium"
+              >
+                {hero.primaryAction.label}
+              </Button>
+              {#if hero.secondaryAction}
+                <SecondaryActionButton
+                  href={hero.secondaryAction.href}
+                  label={hero.secondaryAction.label}
+                  variant="corporate"
+                />
+              {/if}
+            </div>
+          {/if}
         </div>
 
         {#if stats.length > 0}

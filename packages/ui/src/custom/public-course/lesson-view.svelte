@@ -9,13 +9,51 @@
     lesson: PublicLessonViewData;
     /** Shown in the player captions menu; supplied by the host app (`$t(...)`) — see authenticated `lesson-video-player`. */
     videoCaptionsLabel: string;
+    /**
+     * For HLS videos. Host app provides a callback that mints the public
+     * HLS cookie via `POST /org-site/course/.../hls-cookie`. The shared
+     * media player invokes it before hls.js loads the manifest, and again
+     * via `onPlaybackReload` when the learner clicks "Reload playback"
+     * after a cookie-expiry / segment failure.
+     */
+    onBeforeHlsLoad?: () => Promise<void>;
+    /**
+     * Resolves a relative HLS URL (e.g. `/hls/{assetId}/master.m3u8`) into
+     * an absolute URL the browser can fetch. Host app passes a resolver
+     * that knows the API base URL (typically built from the typed client).
+     */
+    resolveHlsUrl?: (link: string) => string;
+    /**
+     * Strings shown on the player's reload-after-failure surface. Defaults
+     * are English; host app should localise via `$t(...)` keys.
+     */
+    playbackErrorLabel?: string;
+    playbackReloadLabel?: string;
     callout?: PublicCourseCalloutData | null;
     calloutAnimation?: PublicCourseCalloutAnimation;
     class?: string;
     id?: string;
   }
 
-  let { lesson, videoCaptionsLabel, callout = null, calloutAnimation, class: className, id }: Props = $props();
+  let {
+    lesson,
+    videoCaptionsLabel,
+    onBeforeHlsLoad,
+    resolveHlsUrl,
+    playbackErrorLabel,
+    playbackReloadLabel,
+    callout = null,
+    calloutAnimation,
+    class: className,
+    id
+  }: Props = $props();
+
+  const isHls = $derived(Boolean(lesson.video?.hls));
+  const playbackUrl = $derived.by(() => {
+    if (!lesson.video) return '';
+    if (isHls && resolveHlsUrl) return resolveHlsUrl(lesson.video.link);
+    return lesson.video.link;
+  });
 
   const resolvedCalloutAnimation = $derived<PublicCourseCalloutAnimation>(
     calloutAnimation ?? callout?.animation ?? 'waves'
@@ -52,11 +90,12 @@
     <Callout variant="full" {callout} animation={resolvedCalloutAnimation} />
   {:else}
     {#if lesson.video}
-      <div class="ui:mb-6 ui:w-full ui:overflow-hidden ui:bg-muted ui:rounded-lg">
+      <div class="ui:mb-6 ui:w-full ui:overflow-hidden ui:rounded-lg">
         <MediaPlayer
           source={{
             type: lesson.video.type,
-            url: lesson.video.link,
+            url: playbackUrl,
+            hls: isHls,
             metadata: {
               ...(lesson.video.metadata ?? {}),
               title: lesson.video.metadata?.title ?? lesson.title
@@ -67,7 +106,11 @@
             maxHeight: '569px',
             width: '100%',
             controls: true,
-            playsinline: true
+            playsinline: true,
+            onBeforeHlsLoad: isHls ? onBeforeHlsLoad : undefined,
+            playbackErrorLabel,
+            playbackReloadLabel,
+            onPlaybackReload: isHls ? async () => true : undefined
           }}
         />
       </div>

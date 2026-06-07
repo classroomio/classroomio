@@ -723,6 +723,10 @@ export class LessonApi extends BaseApiWithErrors {
    * reflects the asset's new thumbnail without waiting for a reload.
    */
   updateLessonVideoThumbnail(videoIndex: number, thumbnailUrl: string) {
+    this.updateLessonVideoMetadata(videoIndex, { thumbnailUrl });
+  }
+
+  updateLessonVideoMetadata(videoIndex: number, patch: Record<string, unknown>) {
     if (!this.lesson) return;
 
     const videos = Array.isArray(this.lesson.videos) ? [...this.lesson.videos] : [];
@@ -736,7 +740,7 @@ export class LessonApi extends BaseApiWithErrors {
 
     videos[videoIndex] = {
       ...target,
-      metadata: { ...metadata, thumbnailUrl }
+      metadata: { ...metadata, ...patch }
     };
 
     this.lesson = { ...this.lesson, videos };

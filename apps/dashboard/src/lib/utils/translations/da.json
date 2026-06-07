@@ -350,7 +350,9 @@
       "thumbnail_updated": "Miniaturebilledet er opdateret",
       "thumbnail_update_failed": "Kunne ikke opdatere thumbnail",
       "thumbnail_regen_started": "Regenererer thumbnails...",
-      "thumbnail_regen_failed": "Kunne ikke genskabe miniaturebilleder"
+      "thumbnail_regen_failed": "Kunne ikke genskabe miniaturebilleder",
+      "transcript_saved": "Udskrift opdateret",
+      "transcript_save_failed": "Kunne ikke gemme transskription"
     },
     "tags": {
       "group_created": "Taggruppe oprettet",
@@ -420,6 +422,18 @@
       "workspace_is_primary": "Du kan ikke slette det primære arbejdsområde.",
       "workspace_not_found": "Arbejdsområdet blev ikke fundet.",
       "not_primary_workspace": "Skift til dit primære arbejdsområde for at administrere kontoarbejdsområder."
+    },
+    "link_invite": {
+      "generated": "Linkinvitation genereret",
+      "enabled": "Linkinvitation aktiveret",
+      "disabled": "Linkinvitation deaktiveret"
+    },
+    "view_as_student": {
+      "failed": "Elevvisningen kunne ikke åbnes. Prøv venligst igen."
+    },
+    "lesson_video": {
+      "generate_1080_completed": "1080p gengivelse tilføjet",
+      "generate_1080_failed": "Kunne ikke generere 1080p gengivelse"
     }
   },
   "explore": {
@@ -905,7 +919,9 @@
             "short_video": "Kort video",
             "replace_cover": "Udskift forsidebillede",
             "replace": "Udskift",
-            "helper": "Indtast et link til en youtube-video"
+            "helper": "Indtast et link til en youtube-video",
+            "remove": "Fjern",
+            "no_cover": "Intet forsidebillede indstillet"
           },
           "title": {
             "header": "Overskrift",
@@ -1030,7 +1046,17 @@
           "members": "Medlemmer",
           "invite_sent": "Invitation sendt",
           "you": "Dig",
-          "remove": "Fjern"
+          "remove": "Fjern",
+          "link_invite": {
+            "heading": "Link invitation",
+            "description": "Alle med dette link kan tilslutte sig din organisation.",
+            "generate": "Generer link",
+            "copy": "Kopiér",
+            "copied": "Kopieret!",
+            "toggle_label": "Linkinvitation aktiv",
+            "disabled_notice": "Dette link er deaktiveret. Aktiver det for at tillade nye medlemmer at deltage via link.",
+            "select_role": "Vælg en rolle"
+          }
         },
         "roles": {
           "admin": "Admin",
@@ -1879,7 +1905,11 @@
                 "language": "Language: {language}",
                 "empty": "No transcript yet. You can generate one from this card’s menu after the video is uploaded.",
                 "loading": "Loading transcript…",
-                "open_side_panel": "Åbn transskriptionspanelet"
+                "open_side_panel": "Åbn transskriptionspanelet",
+                "edit": "Rediger udskrift",
+                "save": "Gem",
+                "cancel": "Annuller",
+                "segment_label": "Segmenter kl. {timestamp}"
               },
               "simple_card": {
                 "kind_youtube": "YouTube",
@@ -1889,7 +1919,13 @@
                 "course_fallback": "Kursus",
                 "menu_aria": "Video muligheder"
               },
-              "view_transcript": "Se transskription"
+              "view_transcript": "Se transskription",
+              "playback_error": "Indlæsningen af denne video mislykkedes.",
+              "playback_reload": "Genindlæs video",
+              "generate_1080": "Generer 1080p",
+              "generate_1080_in_progress": "Genererer 1080p...",
+              "generate_1080_ready": "1080p tilgængelig",
+              "generate_1080_unavailable": "1080p ikke tilgængelig for denne kildevideo"
             },
             "slide": {
               "title": "Slide",
@@ -2085,7 +2121,8 @@
     },
     "header": {
       "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing."
+      "preview_missing_slug": "Generate and save a course slug before previewing.",
+      "view_as_student": "Se som studerende"
     },
     "sidebar": {
       "back_to_course": "Tilbage til kurset",
@@ -2105,12 +2142,12 @@
       "nav_attendance": "Fremmøde",
       "nav_submissions": "Indsendelser",
       "nav_marks": "Mærker",
+      "nav_compliance": "Overholdelse",
       "nav_people": "Mennesker",
       "nav_analytics": "Analytics",
       "nav_certificates": "Certifikater",
       "nav_landing_page": "Landingsside",
       "nav_settings": "Indstillinger",
-      "nav_compliance": "Overholdelse",
       "nav_ai_assistant": "Assistent",
       "nav_ai_tutor": "AI underviser"
     },
@@ -2202,6 +2239,12 @@
           "form_title": "Fortæl os om dit produkt"
         }
       }
+    },
+    "view_as_student": {
+      "title": "Dette vil omdirigere dig til Student LMS.",
+      "description": "Du er ved at se, hvad en studerende vil se, når de tilmelder sig dette kursus",
+      "copy_link": "Kopiér link",
+      "go_to_lms": "Gå til LMS"
     }
   },
   "courses": {
@@ -3069,6 +3112,11 @@
         "field_nav_count_other": "{count} links",
         "hero_empty": "—",
         "customize": "Tilpas landingsside"
+      },
+      "preview_tabs": {
+        "label": "Forhåndsvisningsside",
+        "home": "Hjem",
+        "course": "Kursus"
       }
     },
     "organization": {
@@ -3322,7 +3370,10 @@
     "tic_tac": "Tictac tå",
     "see_more": "Se mere",
     "whats_new": "Hvad er nyt",
-    "launch_week": "Lanceringsuge"
+    "launch_week": "Lanceringsuge",
+    "feedback": "Feedback",
+    "documentation": "Dokumentation",
+    "need_help": "Har du brug for hjælp?"
   },
   "login": {
     "welcome": "Velkommen tilbage",
@@ -3567,6 +3618,18 @@
         "joined": "Tilsluttet organisation",
         "join_failed": "Kunne ikke deltage i organisationen"
       }
+    },
+    "link": {
+      "page_title": "Tilmeld dig {orgName} på ClassroomIO",
+      "invitation_student": "Du er blevet inviteret til at deltage i {orgName} som elev.",
+      "invitation_teacher": "Du er blevet inviteret til at deltage i {orgName} som lærer.",
+      "invitation_admin": "Du er blevet inviteret til at deltage i {orgName} som administrator.",
+      "invitation_fallback": "Du er blevet inviteret til at deltage i {orgName} som {role}.",
+      "accept_button": "Deltag i organisationen",
+      "go_to_dashboard": "Gå til Dashboard",
+      "disabled": "Dette invitationslink er blevet deaktiveret af organisationen.",
+      "join_failed": "Kunne ikke deltage i organisationen",
+      "joined": "Tilsluttet organisation"
     }
   },
   "automation": {
@@ -3889,7 +3952,7 @@
     "resume": "Genoptag",
     "stopped_content_kept": "Stoppet. Oprettet indhold er blevet bevaret.",
     "mention_lesson": "Lektion",
-    "mention_exercise": "Motion",
+    "mention_exercise": "Øvelse",
     "mention_section": "Sektion",
     "mention_no_results": "Intet matchende indhold",
     "uploading_document": "Uploader dokument...",
@@ -4053,7 +4116,11 @@
         "title": "Arbejder reagerer ikke",
         "body": "Denne kørsel har ventet i mere end 30 sekunder uden nogen afhentning af arbejderen. Baggrundsarbejderen er muligvis nede eller genstarter."
       }
-    }
+    },
+    "ask_ai": "Spørg AI",
+    "content_input_placeholder": "Spørg om dette indhold...",
+    "ask_ai_expand_aria": "Åbn Spørg AI-input",
+    "ask_ai_input_aria": "Spørg AI om dette indhold"
   },
   "widgets": {
     "heading": "Widgets",

@@ -2,9 +2,11 @@ import { ZCourseInviteTokenParam } from '@cio/utils/validation/course/invite';
 import { previewStudentInvite } from '@api/services/course/invite';
 import { ZOrganizationInviteTokenParam } from '@cio/utils/validation/organization/invite';
 import {
+  acceptLinkInvite,
   acceptOrganizationInvite,
   acceptOrganizationInviteById,
   getPendingOrgInviteForUser,
+  previewLinkInvite,
   previewOrganizationInvite
 } from '@api/services/organization/invite';
 
@@ -39,6 +41,24 @@ const acceptOrganizationInviteRateLimit = createRateLimiter({
     const user = c.get('user');
     const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
     return `org_invite_accept:${actor}:${c.req.param('token')}`;
+  }
+});
+
+const previewLinkInviteRateLimit = createRateLimiter({
+  windowMs: 60 * 1000,
+  maxRequests: 30,
+  message: 'Too many link invite preview requests. Please try again later.',
+  keyGenerator: (c) => `link_invite_preview:${extractClientIp(c)}:${c.req.param('token')}`
+});
+
+const acceptLinkInviteRateLimit = createRateLimiter({
+  windowMs: 60 * 60 * 1000,
+  maxRequests: 20,
+  message: 'Too many link invite join attempts. Please try again later.',
+  keyGenerator: (c) => {
+    const user = c.get('user');
+    const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
+    return `link_invite_accept:${actor}:${c.req.param('token')}`;
   }
 });
 
@@ -201,6 +221,52 @@ export const inviteRouter = new Hono()
         );
       } catch (error) {
         return handleError(c, error, 'Failed to accept organization invite');
+      }
+    }
+  )
+  /**
+   * GET /invite/link/:token/preview
+   * Server-only preview for link invites (API key)
+   */
+  .get(
+    '/link/:token/preview',
+    apiKeyMiddleware,
+    previewLinkInviteRateLimit,
+    zValidator('param', ZOrganizationInviteTokenParam),
+    async (c) => {
+      try {
+        const { token } = c.req.valid('param');
+        const preview = await previewLinkInvite(token, {
+          ipAddress: extractClientIp(c),
+          userAgent: c.req.header('user-agent') || null
+        });
+        return c.json({ success: true, data: preview }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to load link invite');
+      }
+    }
+  )
+  /**
+   * POST /invite/link/:token/accept
+   * Authenticated link invite acceptance — adds the user to the org
+   */
+  .post(
+    '/link/:token/accept',
+    authMiddleware,
+    acceptLinkInviteRateLimit,
+    zValidator('param', ZOrganizationInviteTokenParam),
+    async (c) => {
+      try {
+        const { token } = c.req.valid('param');
+        const user = c.get('user')!;
+        const result = await acceptLinkInvite(
+          token,
+          { id: user.id, email: user.email },
+          { ipAddress: extractClientIp(c), userAgent: c.req.header('user-agent') || null }
+        );
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to accept link invite');
       }
     }
   );

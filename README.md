@@ -8,35 +8,46 @@
   </p>
 </a>
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/629e2bb8994345729513c4d69ccbe3d5)](https://app.codacy.com/gh/classroomio/classroomio?utm_source=github.com&utm_medium=referral&utm_content=classroomio/classroomio&utm_campaign=Badge_Grade)
-
 ## ✨ About ClassroomIO.com
 
-<img alt="ClassroomIO Courses page" src="https://raw.githubusercontent.com/classroomio/classroomio/main/apps/website/static/classroomio-courses.png" />
+<img alt="ClassroomIO Courses page" src="https://assets.cdn.clsrio.com/www/home/ai-course-builder.jpeg" />
 
-Streamline training for everyone with ClassroomIO.com. Our all-in-one platform empowers bootcamps, educators, and businesses to manage training programs easily. With our platform, anyone can run multiple classes and cohorts all from one UI. The application is mobile-first, which means that students can access your lesson materials from any device.
+ClassroomIO is an open source LMS for companies. Run compliance/employee training, customer education, and partner certification programs — all from one platform. Self-host it on your own infrastructure or use the cloud version.
 
-### Mission: Provide Students with the Best Learning Experience
+### Who It's For
 
-At ClassroomIO, our mission is to provide students with the best possible learning experience. We believe in empowering educators with the tools they need to deliver high-quality education that is accessible, engaging, and effective.
+| Use Case | What You Get |
+|---|---|
+| **Compliance Training** | Deadline tracking, renewals & retake intervals, grace periods, waivers, certificates with custom IDs |
+| **Customer Education** | Branded academy portal, programs (cohorts with goals), AI lesson tutor, multilingual content |
+| **Partner Training** | Partner workspaces, branded certificates, custom domains, embeddable widgets, multilingual support |
 
 ### Key Features
 
-1. **📚 Advanced Course Management:** You can create unlimited courses, create lessons, invite students, add assignments, grade their assignments, and even generate certificates.
-2. **👨‍👩‍👦 Multi-Teacher Management:** You can invite other teachers into your organization and assign them individual courses.
-3. **🤖 AI Integration:** We've got OpenAI integration for quick course creation where you can generate course content, lesson outlines, and even generate assignments right from your lesson notes.
-4. **💬 Forum:** Students can ask questions in your dedicated community and get answers from either you or other students.
-5. **💻 Dedicated Student Dashboard:** Once you create an account, you get a dedicated dashboard where your students can access all their courses, assignments, and more.
-6. **🔒 Fully open source:** You can self-host the entire stack on your servers.
+**Course & Content**
+- **Course management** — unlimited courses, lessons, exercises, grading, and certificates
+- **Programs** — group courses into cohorts with goals, team management, and progress tracking
+- **AI Course Builder** — generate outlines, lesson content, and assignments (Gemini, GPT-4o, Claude)
+- **AI Lesson Tutor** — in-lesson AI assistant that helps learners as they study
 
-### Roadmap Features
+**Compliance & Certification**
+- **Compliance tracking** — status, deadlines, grace periods, renewals, and waivers
+- **Certificates** — issue branded certificates with custom IDs
 
-1. **Forms:** Instead of using Google Forms to collect vital information from your students, you will be able to create forms directly within the dashboard.
-2. **Course Templates:** You can clone a full course or share templates with other people.
-3. **Analytics:** You can track data about your students across multiple courses.
-4. **Run Courses on Messengers:** Students can just join a channel on slack/discord/telegram and a bot automatically sends daily lesson content to your students without you doing anything.
+**Learner & Org Experience**
+- **Multi-org & multi-teacher** — invite teachers, assign courses, manage multiple organizations
+- **Student dashboard** — learners access all courses, assignments, and progress in one place
+- **Multilingual** — deliver content in 10+ languages
 
-Please reach out to me on [twitter](https://x.com/rotimi_best) if you have any feature request.
+**Integrations & Developer Tools**
+- **REST API + Webhooks** — enroll users, trigger automations, receive events (`certificate.issued`, `enrollment.completed`, and more)
+- **MCP server** — `@classroomio/mcp` on npm for AI-native integrations
+- **Embeddable widget** — embed your course catalog on any website
+
+**Platform**
+- **Fully open source** — self-host the entire stack on your own servers
+
+For what's coming next, see the [public roadmap](https://classroomio.com/roadmap).
 
 ## Built With
 
@@ -119,9 +130,9 @@ The repository also contains shared packages under `packages/` (for example `pac
 
    - Go to `apps/dashboard` and `apps/api`.
    - Duplicate the `.env.example` file and rename it to `.env`
-   - Populate them with required values (at minimum):
+     - Populate them with required values (at minimum):
      - `apps/api/.env`: `DATABASE_URL`, `REDIS_URL`, `AUTH_BEARER_TOKEN`, `BETTER_AUTH_SECRET`
-     - `apps/dashboard/.env`: `PUBLIC_SERVER_URL`, `PRIVATE_SERVER_KEY`, `PUBLIC_IS_SELFHOSTED`
+     - `apps/dashboard/.env`: `PRIVATE_SERVER_URL`, `PRIVATE_SERVER_KEY`, `PUBLIC_IS_SELFHOSTED`, `DASHBOARD_ORIGIN`
    - Optional for self-hosted Enterprise-only features (SSO, token-auth, no-tracking): set `LICENSE_KEY` in `apps/api/.env`
 
 6. Start local infrastructure for API (Postgres + Redis) and seed the DB:

@@ -1,0 +1,61 @@
+{
+  "name": "@cio/core",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./services/*": {
+      "types": "./dist/services/*.d.ts",
+      "default": "./dist/services/*.js"
+    },
+    "./services/*/*": {
+      "types": "./dist/services/*/*.d.ts",
+      "default": "./dist/services/*/*.js"
+    },
+    "./utils/*": {
+      "types": "./dist/utils/*.d.ts",
+      "default": "./dist/utils/*.js"
+    },
+    "./config/*": {
+      "types": "./dist/config/*.d.ts",
+      "default": "./dist/config/*.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias && node scripts/restore-bare-specifiers.mjs",
+    "dev": "tsc --watch",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^3.0.52",
+    "@aws-sdk/client-s3": "^3.388.0",
+    "@aws-sdk/s3-request-presigner": "^3.675.0",
+    "@cio/ai-assistant": "workspace:*",
+    "@cio/db": "workspace:*",
+    "@cio/jobs": "workspace:*",
+    "@cio/question-types": "workspace:*",
+    "@cio/tsconfig": "workspace:*",
+    "@cio/utils": "workspace:*",
+    "ai": "^6.0.158",
+    "axios": "^1.4.0",
+    "drizzle-orm": "^0.44.7",
+    "ioredis": "^5.4.1",
+    "isomorphic-dompurify": "^3.7.1",
+    "nanoid": "^5.1.5",
+    "zod": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.0",
+    "tsc-alias": "^1.8.16",
+    "tsx": "^4.7.1",
+    "typescript": "^5.5.2"
+  }
+}

@@ -1,10 +1,10 @@
-import type { OrgLandingPageProps } from './types';
+import type { CourseLandingPageProps, OrgLandingPageProps } from './types';
 
 export const mockOrgLandingPageProps: OrgLandingPageProps = {
   orgName: 'Certifi Academy',
   logoUrl: 'https://ui-avatars.com/api/?name=CA&background=0f172a&color=fff',
   navItems: [
-    { label: 'Programs', href: '#courses' },
+    { label: 'Courses', href: '/courses' },
     { label: 'About', href: '#about' },
     { label: 'Contact', href: '#contact' },
     { label: 'Sign In', href: '#signin' }
@@ -264,4 +264,173 @@ export const mockOrgLandingPageProps: OrgLandingPageProps = {
       ]
     }
   }
+};
+
+export const mockCourseLandingPageProps: CourseLandingPageProps = {
+  theme: 'minimal',
+  orgName: mockOrgLandingPageProps.orgName,
+  logoUrl: mockOrgLandingPageProps.logoUrl,
+  navItems: mockOrgLandingPageProps.navItems,
+  authAction: mockOrgLandingPageProps.authAction,
+  hero: {
+    heading: 'Information Security Certification',
+    subheading:
+      'A practitioner-led path to SOC 2 and ISO 27001 readiness — built around access controls, incident response, and the policies auditors actually look for.',
+    primaryAction: { label: 'Enroll now', href: '#pricing' },
+    secondaryAction: { label: 'View curriculum', href: '#curriculum' },
+    image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+    stats: [
+      { label: 'Lessons', value: '24' },
+      { label: 'Rating', value: '4.8' },
+      { label: 'Certificate', value: 'Included' }
+    ]
+  },
+  socialProof: {
+    rating: 4.8,
+    lessons: 24,
+    type: 'Self-paced',
+    hasCertificate: true
+  },
+  info: {
+    requirements:
+      '<ul><li>Working familiarity with a corporate IT environment.</li><li>Comfort reading vendor security questionnaires.</li><li>No prior audit experience required — we start from policy basics.</li></ul>',
+    description:
+      '<p>This program walks you through every control domain assessors examine, with worked examples drawn from real audit findings. You will produce a complete control matrix, an incident-response runbook, and an evidence-collection plan you can hand to your auditor on day one.</p>',
+    goals:
+      '<ul><li>Design an access-control model that maps cleanly to SOC 2 CC6.</li><li>Run a tabletop incident-response exercise and capture the evidence trail auditors expect.</li><li>Stand up a continuous-monitoring loop using the tools you already have.</li></ul>',
+    certificateUrl:
+      'https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
+  },
+  chips: {
+    skills: [
+      'SOC 2 controls',
+      'Access reviews',
+      'Incident response',
+      'ISO 27001 mapping',
+      'Evidence collection',
+      'Risk register',
+      'Vendor security',
+      'Policy authoring',
+      'Tabletop exercises',
+      'Audit readiness',
+      'Continuous monitoring',
+      'Joiner-mover-leaver'
+    ],
+    tools: ['Vanta', 'Drata', 'Okta', 'Jira', 'Notion', 'Slack', 'AWS IAM']
+  },
+  curriculum: {
+    grouped: true,
+    sections: [
+      {
+        id: 'sec-1',
+        title: '1 · Foundations of Information Security',
+        exerciseCount: 2,
+        lessons: [
+          { id: 'l-1', title: 'CIA triad and the modern threat landscape', durationMinutes: 12 },
+          { id: 'l-2', title: 'Reading a SOC 2 report end-to-end', durationMinutes: 18 },
+          { id: 'l-3', title: 'Mapping ISO 27001 Annex A to your controls', durationMinutes: 22 },
+          { id: 'l-4', title: 'Lab: classify a sample data inventory', durationMinutes: 25 }
+        ]
+      },
+      {
+        id: 'sec-2',
+        title: '2 · Access Controls & Identity',
+        exerciseCount: 3,
+        lessons: [
+          { id: 'l-5', title: 'Designing RBAC for a 200-person org', durationMinutes: 20 },
+          { id: 'l-6', title: 'MFA, SSO, and the JIT access pattern', durationMinutes: 16 },
+          { id: 'l-7', title: 'Joiner-mover-leaver automation', durationMinutes: 22 },
+          { id: 'l-8', title: 'Lab: audit a real privileged-access log', durationMinutes: 30 }
+        ]
+      },
+      {
+        id: 'sec-3',
+        title: '3 · Incident Response & Evidence',
+        exerciseCount: 2,
+        lessons: [
+          { id: 'l-9', title: 'Writing an IR runbook auditors trust', durationMinutes: 18 },
+          { id: 'l-10', title: 'Tabletop exercise: ransomware in week one', durationMinutes: 35 },
+          { id: 'l-11', title: 'Evidence collection without breaking velocity', durationMinutes: 20 }
+        ]
+      },
+      {
+        id: 'sec-4',
+        title: '4 · Continuous Monitoring',
+        exerciseCount: 2,
+        lessons: [
+          { id: 'l-12', title: 'Building a monitoring loop with what you own', durationMinutes: 24 },
+          { id: 'l-13', title: 'Quarterly access reviews that finish on time', durationMinutes: 18 },
+          { id: 'l-14', title: 'Capstone: ship a control matrix and IR plan', durationMinutes: 45 }
+        ]
+      }
+    ]
+  },
+  instructor: {
+    name: 'Amelia Okonkwo',
+    role: 'Director of Security Engineering, Lattice',
+    imgUrl:
+      'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+    description:
+      'Amelia has led SOC 2 Type II and ISO 27001 audits at four SaaS companies and built the security programs that passed them. She teaches the parts of compliance work that the textbooks skip.',
+    coursesNo: 5
+  },
+  reviews: {
+    averageRating: 4.8,
+    items: [
+      {
+        id: 'r-1',
+        name: 'Daniel R.',
+        avatarUrl: 'https://i.pravatar.cc/120?img=15',
+        rating: 5,
+        description:
+          'The IR runbook template alone paid for the course twice over. Walked into our Type II audit with zero scramble.',
+        createdAt: '2026-02-14'
+      },
+      {
+        id: 'r-2',
+        name: 'Priya S.',
+        avatarUrl: 'https://i.pravatar.cc/120?img=32',
+        rating: 5,
+        description:
+          'Best material I have seen on access reviews that actually finish. The joiner-mover-leaver lab is gold.',
+        createdAt: '2026-02-02'
+      },
+      {
+        id: 'r-3',
+        name: 'Marcus B.',
+        avatarUrl: 'https://i.pravatar.cc/120?img=8',
+        rating: 4,
+        description: 'Dense in the best way. Skipped almost no theory but every lesson ends with something you ship.',
+        createdAt: '2026-01-21'
+      },
+      {
+        id: 'r-4',
+        name: 'Helene D.',
+        avatarUrl: 'https://i.pravatar.cc/120?img=47',
+        rating: 5,
+        description:
+          'Finally a security course that respects my time. I finished it on a flight to Lisbon and shipped the capstone the next morning.',
+        createdAt: '2026-01-09'
+      }
+    ]
+  },
+  pricing: {
+    cost: 99,
+    currency: 'USD',
+    discount: 15,
+    showDiscount: true,
+    ctaLabel: 'Enroll now',
+    ctaHref: '#enroll',
+    features: [
+      'Lifetime access to all lessons',
+      'Auditor-ready IR runbook template',
+      'Capstone review by the instructor',
+      'Certificate of completion'
+    ],
+    reward: {
+      show: true,
+      description: 'Refer a teammate and unlock the bonus "Vendor risk in a week" module.'
+    }
+  },
+  footer: mockOrgLandingPageProps.footer
 };

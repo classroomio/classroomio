@@ -44,11 +44,11 @@
     }
   };
 
-  const downloadPDF = () => {
+  const downloadPDF = async () => {
     if (!data.marksData) return;
     isDownloading = true;
     try {
-      generateMarksPDF(
+      await generateMarksPDF(
         data.marksData.students,
         exercises,
         data.marksData.studentMarksByExerciseId,

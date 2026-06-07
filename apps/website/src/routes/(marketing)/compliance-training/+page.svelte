@@ -187,7 +187,7 @@
     <div class="mx-auto mt-14 w-full max-w-[1100px]">
       <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
         <img
-          src="/org-compliance.jpeg"
+          src="https://assets.cdn.clsrio.com/www/compliance-training/org-compliance.jpeg"
           alt="Compliance dashboard — required learners grouped by compliant, expiring soon, and non-compliant"
           class="block h-auto w-full"
           loading="eager"
@@ -215,7 +215,7 @@
     eyebrow="Inside a compliance program"
     title="A look inside a compliance program."
     description="From importing your team to issuing a certificate — the whole flow at a glance."
-    imageSrc="/compliance-dashboard.jpeg"
+    imageSrc="https://assets.cdn.clsrio.com/www/compliance-training/compliance-dashboard.jpeg"
     imageAlt="Compliance dashboard — required learners, status, and certificates"
   />
 
@@ -234,7 +234,7 @@
     eyebrow="Renewals on autopilot"
     title="Training that re-runs itself."
     description="Set a retake interval once. ClassroomIO automatically moves learners back into “expiring soon”, sends reminders, holds them in a grace period, and flags non-compliance — all without admin intervention."
-    imageSrc="/course-compliance.jpeg"
+    imageSrc="https://assets.cdn.clsrio.com/www/compliance-training/course-compliance.jpeg"
     imageAlt="Compliance settings panel — retake interval, grace period, reminders, waiver rules"
   >
     {#snippet bullets()}
@@ -317,7 +317,7 @@
     accent="In your dashboard"
     title="A personal course-authoring assistant."
     description="Drop in a policy doc or paste a URL. The assistant plans the compliance course, drafts each lesson, writes the quiz questions, and stops for your approval before publishing — so building required training drops from a week to an afternoon."
-    imageSrc="/ai-course-builder.jpeg"
+    imageSrc="https://assets.cdn.clsrio.com/www/compliance-training/ai-course-builder.jpeg"
     imageAlt="Course builder — plan, approve, implement. Templates, in-editor chat, and MCP."
   />
 

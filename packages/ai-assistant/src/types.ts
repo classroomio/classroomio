@@ -80,9 +80,23 @@ export const CoursePlanFieldsSchema = z.object({
     )
 });
 
-/** Validated when calling `generate_course_plan` — enforces a final examination section. */
+/**
+ * Course plan validated on `generate_course_plan`. The final-exam structure is
+ * enforced only when the plan actually looks like a multi-section course (≥2
+ * sections AND at least one lesson item across the whole plan). Single-lesson
+ * revisions, short reference handbooks, and exercise-only plans skip the check
+ * — they aren't shaped like "a course" and the comprehensive final exam doesn't
+ * fit them. When the check does apply, the last section must contain at least
+ * one exercise item so implementation has a target for the comprehensive exam.
+ */
 export const CoursePlanSchema = CoursePlanFieldsSchema.superRefine((plan, ctx) => {
-  const lastIndex = plan.sections.length - 1;
+  const sectionCount = plan.sections.length;
+  if (sectionCount < 2) return;
+
+  const hasAnyLesson = plan.sections.some((section) => section.items.some((item) => item.type === 'lesson'));
+  if (!hasAnyLesson) return;
+
+  const lastIndex = sectionCount - 1;
   const lastSection = plan.sections[lastIndex];
   if (!lastSection) return;
 
@@ -91,7 +105,7 @@ export const CoursePlanSchema = CoursePlanFieldsSchema.superRefine((plan, ctx) =
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message:
-        'The last section must include at least one exercise item for the comprehensive final examination (in implementation: one exercise with create_exercise_section blocks—one per prior course section—each with 3–5 questions).',
+        'For multi-section instructional courses, the last section must include at least one exercise item — the comprehensive final examination. Implement it as one exercise with create_exercise_section blocks (one per prior course section), each with 3–5 questions. Omit only for single-lesson revisions, short reference handbooks, or exercise-only plans, which should have <2 sections or contain no lesson items.',
       path: ['sections', lastIndex]
     });
   }

@@ -6,7 +6,7 @@ import {
   hasActiveOrganizationInviteForEmail
 } from '@cio/db/queries/organization';
 
-import { env } from '@api/config/env';
+import { env } from '@cio/core/config/env';
 
 type OrgSettings = {
   signup?: {

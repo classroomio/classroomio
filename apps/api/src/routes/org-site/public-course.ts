@@ -1,8 +1,13 @@
 import { ZPublicCourseBySlugParam, ZPublicCourseItemParam } from '@cio/utils/validation/course';
-import { getPublicCourseItemService, getPublicCourseTreeService } from '@api/services/course/public-course';
+import {
+  getPublicCourseItemService,
+  getPublicCourseTreeService,
+  issuePublicHlsCookieService
+} from '@api/services/course/public-course';
 
 import { Hono } from '@api/utils/hono';
 import { handleError } from '@api/utils/errors';
+import { setCookie } from 'hono/cookie';
 import { zValidator } from '@hono/zod-validator';
 
 /**
@@ -51,5 +56,31 @@ export const publicCourseRouter = new Hono()
       return c.json({ success: true as const, data: item });
     } catch (error) {
       return handleError(c, error, 'Failed to load public course item');
+    }
+  })
+  /**
+   * POST /org-site/course/:courseSlug/item/:itemSlug/hls-cookie
+   * Anonymous-safe. Verifies that the public lesson exposes an HLS asset
+   * and mints the short-lived `cio_hls` cookie the tenant-router Worker
+   * (prod) and API streaming route (local) both validate before serving
+   * segments. Caller is expected to call this once per lesson page load
+   * before attaching hls.js.
+   */
+  .post('/:courseSlug/item/:itemSlug/hls-cookie', zValidator('param', ZPublicCourseItemParam), async (c) => {
+    try {
+      const { courseSlug, itemSlug } = c.req.valid('param');
+      const result = await issuePublicHlsCookieService(courseSlug, itemSlug);
+
+      setCookie(c, result.cookieName, result.token, {
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'Lax',
+        maxAge: result.maxAgeSeconds
+      });
+
+      return c.json({ success: true as const, data: { expiresAt: result.expiresAt } });
+    } catch (error) {
+      return handleError(c, error, 'Failed to issue HLS cookie');
     }
   });

@@ -350,7 +350,9 @@
       "thumbnail_updated": "Miniature mise à jour",
       "thumbnail_update_failed": "Échec de la mise à jour de la vignette",
       "thumbnail_regen_started": "Régénération des vignettes…",
-      "thumbnail_regen_failed": "Échec de la régénération des miniatures"
+      "thumbnail_regen_failed": "Échec de la régénération des miniatures",
+      "transcript_saved": "Transcription mise à jour",
+      "transcript_save_failed": "Impossible d'enregistrer la transcription"
     },
     "tags": {
       "group_created": "Groupe de balises créé",
@@ -420,6 +422,18 @@
       "workspace_is_primary": "Vous ne pouvez pas supprimer l'espace de travail principal.",
       "workspace_not_found": "Espace de travail introuvable.",
       "not_primary_workspace": "Basculez vers votre espace de travail principal pour gérer les espaces de travail de compte."
+    },
+    "link_invite": {
+      "generated": "Invitation de lien générée",
+      "enabled": "Invitation de lien activée",
+      "disabled": "Invitation au lien désactivée"
+    },
+    "view_as_student": {
+      "failed": "Impossible d'ouvrir la vue étudiant. Veuillez réessayer."
+    },
+    "lesson_video": {
+      "generate_1080_completed": "Rendu 1080p ajouté",
+      "generate_1080_failed": "Impossible de générer un rendu 1080p"
     }
   },
   "explore": {
@@ -905,7 +919,9 @@
             "short_video": "Courte vidéo",
             "replace_cover": "Remplacer l'image de couverture",
             "replace": "Remplacer",
-            "helper": "Entrez un lien vers une vidéo YouTube"
+            "helper": "Entrez un lien vers une vidéo YouTube",
+            "remove": "Supprimer",
+            "no_cover": "Aucune image de couverture définie"
           },
           "title": {
             "header": "En-tête",
@@ -1030,7 +1046,17 @@
           "members": "Membres",
           "invite_sent": "Invitation envoyée",
           "you": "Vous",
-          "remove": "Supprimer"
+          "remove": "Supprimer",
+          "link_invite": {
+            "heading": "Inviter un lien",
+            "description": "Toute personne disposant de ce lien peut rejoindre votre organisation.",
+            "generate": "Générer un lien",
+            "copy": "Copier",
+            "copied": "Copié!",
+            "toggle_label": "Invitation de lien active",
+            "disabled_notice": "Ce lien est désactivé. Activez-le pour permettre aux nouveaux membres de rejoindre via un lien.",
+            "select_role": "Sélectionnez un rôle"
+          }
         },
         "roles": {
           "admin": "Administrateur",
@@ -1879,7 +1905,11 @@
                 "language": "Language: {language}",
                 "empty": "No transcript yet. You can generate one from this card’s menu after the video is uploaded.",
                 "loading": "Loading transcript…",
-                "open_side_panel": "Ouvrir le panneau de transcription"
+                "open_side_panel": "Ouvrir le panneau de transcription",
+                "edit": "Modifier la transcription",
+                "save": "Enregistrer",
+                "cancel": "Annuler",
+                "segment_label": "Segment à {timestamp}"
               },
               "simple_card": {
                 "kind_youtube": "YouTube",
@@ -1889,7 +1919,13 @@
                 "course_fallback": "Cours",
                 "menu_aria": "Options vidéo"
               },
-              "view_transcript": "Voir la transcription"
+              "view_transcript": "Voir la transcription",
+              "playback_error": "Le chargement de cette vidéo a échoué.",
+              "playback_reload": "Recharger la vidéo",
+              "generate_1080": "Générer 1080p",
+              "generate_1080_in_progress": "Génération de 1080p…",
+              "generate_1080_ready": "1080p disponible",
+              "generate_1080_unavailable": "1080p indisponible pour cette vidéo source"
             },
             "slide": {
               "title": "Diapositive",
@@ -2085,7 +2121,8 @@
     },
     "header": {
       "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing."
+      "preview_missing_slug": "Generate and save a course slug before previewing.",
+      "view_as_student": "Afficher en tant qu'étudiant"
     },
     "sidebar": {
       "back_to_course": "Retour au cours",
@@ -2105,12 +2142,12 @@
       "nav_attendance": "Participation",
       "nav_submissions": "Soumissions",
       "nav_marks": "Marques",
+      "nav_compliance": "Conformité",
       "nav_people": "Les gens",
       "nav_analytics": "Analyse",
       "nav_certificates": "Certificats",
       "nav_landing_page": "Page de destination",
       "nav_settings": "Paramètres",
-      "nav_compliance": "Conformité",
       "nav_ai_assistant": "Assistante",
       "nav_ai_tutor": "Tuteur IA"
     },
@@ -2202,6 +2239,12 @@
           "form_title": "Parlez-nous de votre produit"
         }
       }
+    },
+    "view_as_student": {
+      "title": "Cela vous redirigera vers le LMS Étudiant.",
+      "description": "Vous êtes sur le point de voir ce qu'un étudiant verra lorsqu'il s'inscrira à ce cours",
+      "copy_link": "Copier le lien",
+      "go_to_lms": "Aller au LMS"
     }
   },
   "courses": {
@@ -3069,6 +3112,11 @@
         "field_nav_count_other": "{count} liens",
         "hero_empty": "—",
         "customize": "Personnaliser la page de destination"
+      },
+      "preview_tabs": {
+        "label": "Page d'aperçu",
+        "home": "Accueil",
+        "course": "Cours"
       }
     },
     "organization": {
@@ -3322,7 +3370,10 @@
     "tic_tac": "Tic-tac",
     "see_more": "Voir plus",
     "whats_new": "Quoi de neuf",
-    "launch_week": "Semaine de lancement"
+    "launch_week": "Semaine de lancement",
+    "feedback": "Commentaires",
+    "documentation": "Documentation",
+    "need_help": "Besoin d'aide ?"
   },
   "login": {
     "welcome": "Bon retour",
@@ -3567,6 +3618,18 @@
         "joined": "Organisation rejointe",
         "join_failed": "Impossible de rejoindre l'organisation"
       }
+    },
+    "link": {
+      "page_title": "Rejoignez {orgName} sur ClassroomIO",
+      "invitation_student": "Vous avez été invité à rejoindre {orgName} en tant qu'étudiant.",
+      "invitation_teacher": "Vous avez été invité à rejoindre {orgName} en tant qu'enseignant.",
+      "invitation_admin": "Vous avez été invité à rejoindre {orgName} en tant qu'administrateur.",
+      "invitation_fallback": "Vous avez été invité à rejoindre {orgName} en tant que {role}.",
+      "accept_button": "Rejoindre l'organisation",
+      "go_to_dashboard": "Aller au tableau de bord",
+      "disabled": "Ce lien d'invitation a été désactivé par l'organisation.",
+      "join_failed": "Impossible de rejoindre l'organisation",
+      "joined": "Organisation rejointe"
     }
   },
   "automation": {
@@ -3886,7 +3949,7 @@
     "new_chat": "Nouvelle discussion",
     "tokens_label": "jetons",
     "implementing_course_plan": "Mise en œuvre du plan de cours",
-    "resume": "CV",
+    "resume": "Reprendre",
     "stopped_content_kept": "Arrêté. Le contenu créé a été conservé.",
     "mention_lesson": "Leçon",
     "mention_exercise": "Exercice",
@@ -4053,7 +4116,11 @@
         "title": "Le travailleur ne répond pas",
         "body": "Cette exécution attend depuis plus de 30 secondes sans qu'aucun travailleur ne soit récupéré. Le travailleur en arrière-plan est peut-être en panne ou redémarre."
       }
-    }
+    },
+    "ask_ai": "Demandez à l'IA",
+    "content_input_placeholder": "Renseignez-vous sur ce contenu…",
+    "ask_ai_expand_aria": "Ouvrir la saisie de Ask AI",
+    "ask_ai_input_aria": "Interrogez AI à propos de ce contenu"
   },
   "widgets": {
     "heading": "Widgets",

@@ -41,8 +41,8 @@ import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from
 
 import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
 
-import { getDashboardBaseUrl } from '@api/config/dashboard-url';
-import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@api/utils/s3';
+import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@cio/core/utils/s3';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 
 type SubmissionGradingState = 'queued' | 'processing' | 'awaiting_manual' | 'completed' | 'failed';

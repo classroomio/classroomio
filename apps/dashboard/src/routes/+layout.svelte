@@ -23,11 +23,6 @@
   onMount(() => {
     console.log('Layout', data);
 
-    const loadingIndicator = document.getElementById('app-loading-indicator');
-    if (loadingIndicator) {
-      loadingIndicator.style.display = 'none';
-    }
-
     const sessionUser = data?.locals?.user;
     setupCloudAnalytics(
       sessionUser ? { id: sessionUser.id, email: sessionUser.email, name: sessionUser.name } : undefined

@@ -1,1 +1,1 @@
-export * from './exercise';
+export * from '@cio/core/services/exercise/exercise';

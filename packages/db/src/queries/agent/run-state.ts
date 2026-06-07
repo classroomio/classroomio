@@ -253,6 +253,21 @@ export async function upsertAgentRunStep(input: UpsertAgentRunStepInput): Promis
   }
 }
 
+export async function getAgentRunStep(runId: string, stepKey: string): Promise<TAiAgentRunStep | null> {
+  try {
+    const [row] = await db
+      .select()
+      .from(schema.aiAgentRunStep)
+      .where(and(eq(schema.aiAgentRunStep.runId, runId), eq(schema.aiAgentRunStep.stepKey, stepKey)))
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('getAgentRunStep error:', error);
+    throw new Error('Failed to get agent run step');
+  }
+}
+
 export async function listAgentRunSteps(runId: string): Promise<TAiAgentRunStep[]> {
   try {
     return await db

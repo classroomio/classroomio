@@ -192,7 +192,7 @@
     <div class="mx-auto mt-14 w-full max-w-[1100px]">
       <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
         <img
-          src="/docs-vs-customer-site.jpeg"
+          src="https://assets.cdn.clsrio.com/www/docs-vs-company-academy/docs-vs-customer-site.jpeg"
           alt="Docs answering questions, customer academy building capability — side by side"
           class="block h-auto w-full"
           loading="eager"

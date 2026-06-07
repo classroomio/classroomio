@@ -1,7 +1,7 @@
 <script lang="ts">
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import LoaderIcon from '@lucide/svelte/icons/loader';
-  import { Button } from '@cio/ui/base/button';
+  import { Spinner } from '@cio/ui/base/spinner';
   import MessageBubble from '$features/ai-assistant/message-bubble.svelte';
   import ProgressCard from '$features/ai-assistant/progress-card.svelte';
   import { t } from '$lib/utils/functions/translations';
@@ -26,9 +26,12 @@
   interface Props {
     messages: AiAssistantMessage[];
     isStreaming: boolean;
+    isLoadingHistory: boolean;
     isStudent: boolean;
     courseId: string;
     planExecutionState: PlanExecutionState | null;
+    /** When true (e.g. implementation has started), historical PlanView cards default to collapsed. */
+    planShouldCollapse?: boolean;
     quickActions: QuickActionOption[];
     onQuickAction: (action: string) => void;
     onImplementPlan: (editedPlan: unknown) => void;
@@ -40,16 +43,17 @@
     }) => void;
     onSkipTemplateForm: (payload: { templateId: CourseTemplateId }) => void;
     onStop: () => void;
-    onResume: () => void;
     onMentionClick: (route: string) => void;
   }
 
   let {
     messages,
     isStreaming,
+    isLoadingHistory,
     isStudent,
     courseId,
     planExecutionState,
+    planShouldCollapse = false,
     quickActions,
     onQuickAction,
     onImplementPlan,
@@ -57,7 +61,6 @@
     onSubmitTemplateAnswers,
     onSkipTemplateForm,
     onStop,
-    onResume,
     onMentionClick
   }: Props = $props();
 
@@ -152,7 +155,11 @@
 </script>
 
 <div class="flex-1 overflow-y-auto p-4" bind:this={messagesContainer} onscroll={handleScroll}>
-  {#if isEmpty}
+  {#if isLoadingHistory}
+    <div class="flex h-full items-center justify-center">
+      <Spinner class="ui:size-6 ui:text-muted-foreground" />
+    </div>
+  {:else if isEmpty}
     <!-- Empty state with quick actions -->
     <div class="flex h-full flex-col items-center justify-center gap-4">
       <div class="flex flex-col items-center gap-2 text-center">
@@ -192,6 +199,7 @@
           {courseId}
           {isStreaming}
           {isLast}
+          {planShouldCollapse}
           {onImplementPlan}
           {onAskPlanChanges}
           {onSubmitTemplateAnswers}
@@ -219,11 +227,6 @@
             onStop={isStreaming ? onStop : undefined}
             isStopped={planExecutionState.isStopped}
           />
-          {#if planExecutionState.isStopped}
-            <Button size="sm" variant="outline" onclick={onResume} class="mt-2 w-full"
-              >{$t('ai_assistant.resume')}</Button
-            >
-          {/if}
         </div>
       {/if}
     </div>

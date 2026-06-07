@@ -24,6 +24,11 @@ class LessonVideoBus {
     this.seekFn(seconds);
   }
 
+  /** Replace the active transcript (e.g. after an edit is saved). */
+  setTranscript(transcript: AssetTranscriptPayload | null) {
+    this.transcript = transcript;
+  }
+
   /** Reset all per-lesson state (called when the upload asset changes or the player unmounts). */
   reset(opts?: { keepAssetId?: boolean }) {
     if (!opts?.keepAssetId) {

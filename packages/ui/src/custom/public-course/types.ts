@@ -56,6 +56,14 @@ export interface PublicLessonViewData {
   video: {
     type: 'youtube' | 'generic' | 'upload' | 'google_drive';
     link: string;
+    /**
+     * When true, `link` is an HLS master playlist URL served by the
+     * tenant-router Worker (prod) or API streaming route (local). The
+     * shared MediaPlayer attaches hls.js based on this flag. The host app
+     * must pass an `onBeforeHlsLoad` callback that mints a cookie via the
+     * public org-site endpoint before playback starts.
+     */
+    hls?: boolean;
     metadata?: {
       svid?: string;
       thumbnailUrl?: string;

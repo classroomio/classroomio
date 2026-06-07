@@ -9,4 +9,4 @@ export * from './newsfeed';
 export * from './onboarding';
 export * from './submission';
 export * from './dash';
-export * from './course/course';
+export * from '@cio/core/services/course/course';

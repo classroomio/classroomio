@@ -40,7 +40,14 @@ const config = {
         'style-src-elem': ['self', 'unsafe-inline', ...csp.styleSrc],
         'font-src': ['self', ...csp.fontSrc],
         'img-src': ['self', 'data:', ...csp.mediaSrc, 'blob:', 'http://localhost:9000'],
-        'media-src': ['self', ...csp.mediaSrc, 'data:', 'blob:', 'http://localhost:9000'],
+        'media-src': [
+          'self',
+          ...csp.mediaSrc,
+          'data:',
+          'blob:',
+          'http://localhost:9000',
+          ...(csp.apiOrigin ? [csp.apiOrigin] : [])
+        ],
         'frame-src': ['self', ...csp.frameSrc],
         'connect-src': [
           'self',
@@ -65,7 +72,14 @@ const config = {
         'style-src-elem': ['self', 'unsafe-inline', ...csp.styleSrc],
         'font-src': ['self', ...csp.fontSrc],
         'img-src': ['self', 'data:', ...csp.mediaSrc, 'blob:', 'http://localhost:9000'],
-        'media-src': ['self', ...csp.mediaSrc, 'data:', 'blob:', 'http://localhost:9000'],
+        'media-src': [
+          'self',
+          ...csp.mediaSrc,
+          'data:',
+          'blob:',
+          'http://localhost:9000',
+          ...(csp.apiOrigin ? [csp.apiOrigin] : [])
+        ],
         'frame-src': ['self', ...csp.frameSrc],
         'connect-src': [
           'self',

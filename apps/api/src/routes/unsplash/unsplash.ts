@@ -1,5 +1,5 @@
 import { Hono } from '@api/utils/hono';
-import { env } from '@api/config/env';
+import { env } from '@cio/core/config/env';
 import { handleError } from '@api/utils/errors';
 import { z } from 'zod';
 

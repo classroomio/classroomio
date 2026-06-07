@@ -9,6 +9,30 @@
   } from '@cio/ui/custom/public-course';
   import { getExerciseQuestionLabels } from '$features/course/components/exercise/question-labels';
   import { t } from '$lib/utils/functions/translations';
+  import { classroomio } from '$lib/utils/services/api';
+
+  /** Build a fully-qualified HLS URL from the relative `/hls/{assetId}/...` shape. */
+  function resolveHlsUrl(rawUrl: string): string {
+    if (/^https?:\/\//i.test(rawUrl)) return rawUrl;
+    const match = rawUrl.match(/^\/?hls\/([^/]+)\/(.+)$/);
+    if (!match) return rawUrl;
+
+    const [, assetId, rest] = match;
+    const built = classroomio.hls[':assetId']['*'].$url({ param: { assetId } });
+    return built.toString().replace(/\/\*$/, '') + '/' + rest;
+  }
+
+  /**
+   * Mint the public HLS cookie via the org-site endpoint. The server
+   * derives the actual asset id from the public course tree, so an
+   * anonymous learner can't request a cookie for any asset they don't
+   * already have access to via this lesson URL.
+   */
+  async function mintPublicHlsCookie(courseSlug: string, itemSlug: string): Promise<void> {
+    await classroomio['org-site'].course[':courseSlug'].item[':itemSlug']['hls-cookie'].$post({
+      param: { courseSlug, itemSlug }
+    });
+  }
 
   const exerciseLabels = $derived(getExerciseQuestionLabels());
 
@@ -62,6 +86,10 @@
     <PublicCourse.PublicLessonView
       lesson={lessonView}
       videoCaptionsLabel={$t('course.navItem.lessons.materials.tabs.video.transcript.captions_label')}
+      {resolveHlsUrl}
+      onBeforeHlsLoad={lessonView.video?.hls ? () => mintPublicHlsCookie(data.tree.course.slug, itemSlug) : undefined}
+      playbackErrorLabel={$t('course.navItem.lessons.materials.tabs.video.playback_error')}
+      playbackReloadLabel={$t('course.navItem.lessons.materials.tabs.video.playback_reload')}
       {callout}
     />
   {:else if exerciseView}

@@ -13,12 +13,14 @@ Use this file to keep a single prioritized view of all PRDs.
 | 5 | 3 | `prd/course-cohorts` | todo |
 | 6 | 7 | `prd/email-template-customization` | todo |
 | 7 | - | `prd/selective-exercise-assignment` | todo |
+| - | - | `prd/scorm-support` | todo |
 | - | 4 | `prd/course-content-search` | todo |
 | - | 9 | `prd/onboarding-ai-bootstrap` | todo |
 | - | 10 | `prd/pricing-improvements` | todo |
 | - | 12 | `prd/public-courses` | todo |
 | - | - | `prd/customer-course-documentation` | todo |
 | - | - | `prd/walkthrough-widget` | draft |
+| - | - | `prd/copy-page-as-markdown` | todo |
 | - | 15 | `prd/webhooks` | todo |
 
 ## DONE (Completed PRDs)

@@ -69,7 +69,9 @@ export function toPublicLessonView(lesson: Extract<PublicItem, { kind: 'lesson' 
     title: lesson.title,
     sectionTitle: lesson.sectionTitle,
     body: lesson.body ?? '',
-    video: lesson.video,
+    // `lesson.video.hls` may be present on the wire from the public-course
+    // API but isn't in the older inferred type; spread through verbatim.
+    video: lesson.video as PublicLessonViewData['video'],
     isUnlocked: lesson.isUnlocked
   };
 }

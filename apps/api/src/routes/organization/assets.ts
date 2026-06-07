@@ -6,23 +6,39 @@ import {
   ZAssetGetParam,
   ZAssetListQuery,
   ZAssetStorageQuery,
+  ZAssetThumbnailSelect,
   ZAssetUpdate,
   ZAssetUsageParams,
+  ZBatchPresignHls,
+  ZBatchPresignHls1080,
+  ZFinalizeHls1080,
+  ZFinalizeHlsAsset,
+  ZInitHlsAsset,
   ZYouTubeMetadataQuery
 } from '@cio/utils/validation/assets';
+import { ZUpdateTranscript } from '@cio/utils/validation/media';
 import {
+  abortHlsAssetService,
   attachAssetService,
+  batchPresignHlsService,
+  batchPresignHls1080Service,
   createAssetFromUploadService,
   deleteAssetService,
   detachAssetService,
   exportOrganizationAssetsService,
+  finalizeHls1080Service,
+  finalizeHlsAssetService,
   getAssetService,
   getAssetUsageGraphService,
   getOrganizationAssetStorageService,
   getTranscriptForOrganizationAssetService,
   getYouTubeMetadataService,
+  initHlsAssetService,
+  issueHlsCookieService,
   listOrganizationAssetsService,
-  updateAssetService
+  selectAssetThumbnailService,
+  updateAssetService,
+  updateTranscriptForOrganizationAssetService
 } from '@api/services/assets';
 
 import { Hono } from '@api/utils/hono';
@@ -31,6 +47,7 @@ import { handleError } from '@api/utils/errors';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { zValidator } from '@hono/zod-validator';
+import { setCookie } from 'hono/cookie';
 
 export const assetsRouter = new Hono()
   /**
@@ -80,6 +97,160 @@ export const assetsRouter = new Hono()
       );
     } catch (error) {
       return handleError(c, error, 'Failed to create asset');
+    }
+  })
+  /**
+   * POST /organization/assets/hls/init
+   * Reserve an assetId for an HLS upload. Returns the asset id and the
+   * key prefix the browser encoder should write segments under.
+   */
+  .post('/hls/init', authMiddleware, orgMemberMiddleware, zValidator('json', ZInitHlsAsset), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const user = c.get('user')!;
+      const data = c.req.valid('json');
+      const result = await initHlsAssetService(orgId, user.id, data);
+
+      return c.json({ success: true, data: result }, 201);
+    } catch (error) {
+      return handleError(c, error, 'Failed to init HLS asset');
+    }
+  })
+  /**
+   * POST /organization/assets/:assetId/hls/presign
+   * Batch-presign PUT URLs for segment/playlist/audio/thumbnail uploads.
+   */
+  .post(
+    '/:assetId/hls/presign',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZAssetGetParam),
+    zValidator('json', ZBatchPresignHls),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const { assetId } = c.req.valid('param');
+        const data = c.req.valid('json');
+        const result = await batchPresignHlsService(orgId, assetId, data);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to presign HLS uploads');
+      }
+    }
+  )
+  /**
+   * POST /organization/assets/:assetId/hls/finalize
+   * Flip an HLS asset from `processing` to `active` once the browser
+   * encoder has written everything and persist its metadata.
+   */
+  .post(
+    '/:assetId/hls/finalize',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZAssetGetParam),
+    zValidator('json', ZFinalizeHlsAsset),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const user = c.get('user')!;
+        const { assetId } = c.req.valid('param');
+        const data = c.req.valid('json');
+        const result = await finalizeHlsAssetService(orgId, assetId, user.id, data);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to finalize HLS asset');
+      }
+    }
+  )
+  /**
+   * POST /organization/assets/:assetId/hls/1080/presign
+   * Batch-presign PUT URLs for a manual p1080 rendition on an active HLS asset.
+   */
+  .post(
+    '/:assetId/hls/1080/presign',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZAssetGetParam),
+    zValidator('json', ZBatchPresignHls1080),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const { assetId } = c.req.valid('param');
+        const data = c.req.valid('json');
+        const result = await batchPresignHls1080Service(orgId, assetId, data);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to presign 1080p HLS uploads');
+      }
+    }
+  )
+  /**
+   * POST /organization/assets/:assetId/hls/1080/finalize
+   * Persist p1080 rendition metadata after the browser encoder updates the manifest.
+   */
+  .post(
+    '/:assetId/hls/1080/finalize',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZAssetGetParam),
+    zValidator('json', ZFinalizeHls1080),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const { assetId } = c.req.valid('param');
+        const data = c.req.valid('json');
+        const result = await finalizeHls1080Service(orgId, assetId, data);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to finalize 1080p HLS rendition');
+      }
+    }
+  )
+  /**
+   * DELETE /organization/assets/:assetId/hls
+   * Abort a `processing` HLS asset: best-effort delete R2 objects under
+   * `videos/{assetId}/` and remove the asset row. Called by the encoder
+   * when it errors or is aborted mid-upload, so we don't leak stale
+   * `processing` rows + partial segment trees.
+   */
+  .delete('/:assetId/hls', authMiddleware, orgMemberMiddleware, zValidator('param', ZAssetGetParam), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const { assetId } = c.req.valid('param');
+      const deleted = await abortHlsAssetService(orgId, assetId);
+
+      return c.json({ success: true, data: deleted }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to abort HLS asset');
+    }
+  })
+  /**
+   * POST /organization/assets/:assetId/hls/cookie
+   * After entitlement check, set a 15-minute HMAC-signed cookie scoped to
+   * this asset id. The tenant-router Worker verifies the cookie locally
+   * on every /hls/{assetId}/* segment request — no round-trip back to Render.
+   */
+  .post('/:assetId/hls/cookie', authMiddleware, orgMemberMiddleware, zValidator('param', ZAssetGetParam), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const { assetId } = c.req.valid('param');
+      const { token, expiresAt, cookieName, maxAgeSeconds } = await issueHlsCookieService(orgId, assetId);
+
+      setCookie(c, cookieName, token, {
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'Lax',
+        maxAge: maxAgeSeconds
+      });
+
+      return c.json({ success: true, data: { expiresAt } }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to issue HLS cookie');
     }
   })
   /**
@@ -173,6 +344,36 @@ export const assetsRouter = new Hono()
     }
   })
   /**
+   * PUT /organization/assets/:assetId/transcript
+   * Update transcript segment text (org admins only). Captions re-render from
+   * these segments — no R2 write.
+   */
+  .put(
+    '/:assetId/transcript',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZAssetGetParam),
+    zValidator('json', ZUpdateTranscript),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const { assetId } = c.req.valid('param');
+        const { segments } = c.req.valid('json');
+        const data = await updateTranscriptForOrganizationAssetService(orgId, assetId, segments);
+
+        return c.json(
+          {
+            success: true,
+            data
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to update transcript');
+      }
+    }
+  )
+  /**
    * GET /organization/assets/:assetId
    * Get a single asset by id
    */
@@ -219,6 +420,35 @@ export const assetsRouter = new Hono()
         );
       } catch (error) {
         return handleError(c, error, 'Failed to update asset');
+      }
+    }
+  )
+  /**
+   * PUT /organization/assets/:assetId/thumbnail
+   * Choose a thumbnail for an asset (from generated candidates or a fresh upload).
+   */
+  .put(
+    '/:assetId/thumbnail',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZAssetGetParam),
+    zValidator('json', ZAssetThumbnailSelect),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const { assetId } = c.req.valid('param');
+        const { thumbnailUrl } = c.req.valid('json');
+        const updated = await selectAssetThumbnailService(orgId, assetId, thumbnailUrl);
+
+        return c.json(
+          {
+            success: true,
+            data: updated
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to update asset thumbnail');
       }
     }
   )

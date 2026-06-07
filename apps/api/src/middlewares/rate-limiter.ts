@@ -8,8 +8,8 @@ import {
 import type { Context, MiddlewareHandler } from 'hono';
 import { RedisRateLimiter } from '@api/utils/redis/limiter';
 import { userKeyGenerator } from '../utils/redis/key-generators';
-import { env } from '@api/config/env';
-import { logRedisUnavailableOnce, redis } from '@api/utils/redis/redis';
+import { env } from '@cio/core/config/env';
+import { logRedisUnavailableOnce, redis } from '@cio/core/utils/redis/redis';
 
 /** Dashboard SSR and other internal callers authenticate with PRIVATE_SERVER_KEY. */
 export function isTrustedServerApiKeyRequest(c: Context): boolean {

@@ -5,3 +5,6 @@ packages:
 onlyBuiltDependencies:
   - esbuild
   - '@tailwindcss/oxide'
+minimumReleaseAgeExclude:
+  - '@getworkbench/hono'
+  - '@getworkbench/core'

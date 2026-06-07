@@ -9,7 +9,7 @@ import {
   listLessonLanguages,
   updateLessonLanguageService,
   upsertLessonLanguageService
-} from '@api/services/lesson-language';
+} from '@cio/core/services/lesson-language';
 
 import { Hono } from '@api/utils/hono';
 import type { TLocale } from '@db/types';

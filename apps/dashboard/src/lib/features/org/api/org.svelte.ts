@@ -1,19 +1,23 @@
 import type {
   AssignAudienceCoursesRequest,
+  CreateLinkInviteRequest,
   DeleteAudienceMemberRequest,
   DeleteTeamRequest,
   DomainRequestRequest,
   GetAudienceRequest,
+  GetLinkInviteRequest,
   GetOrgPublicCoursesRequest,
   ImportAudienceRequest,
   InviteTeamRequest,
+  OrgLinkInvite,
   OrgPublicCourses,
   OrganizationAudience,
   OrganizationAudiencePagination,
   OrganizationAudienceQuery,
   OrganizationTeamMembers,
   ResendAudienceInviteRequest,
-  RevokeAudienceInviteRequest
+  RevokeAudienceInviteRequest,
+  ToggleLinkInviteRequest
 } from '../utils/types';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
@@ -550,6 +554,44 @@ class OrgApi extends BaseApiWithErrors {
         }
 
         snackbar.error('error' in result ? result.error : result.message);
+      }
+    });
+  }
+
+  linkInvite = $state<OrgLinkInvite>(null);
+
+  async getLinkInvite() {
+    return this.execute<GetLinkInviteRequest>({
+      requestFn: () => classroomio.organization['link-invite'].$get(),
+      logContext: 'fetching link invite',
+      onSuccess: (response) => {
+        this.linkInvite = response.data;
+      }
+    });
+  }
+
+  async generateLinkInvite(roleId: number) {
+    return this.execute<CreateLinkInviteRequest>({
+      requestFn: () => classroomio.organization['link-invite'].$post({ json: { roleId } }),
+      logContext: 'generating link invite',
+      onSuccess: (response) => {
+        const wasNew = !this.linkInvite;
+        this.linkInvite = response.data;
+
+        if (wasNew) {
+          snackbar.success('snackbar.link_invite.generated');
+        }
+      }
+    });
+  }
+
+  async toggleLinkInvite(isRevoked: boolean) {
+    return this.execute<ToggleLinkInviteRequest>({
+      requestFn: () => classroomio.organization['link-invite'].$patch({ json: { isRevoked } }),
+      logContext: 'toggling link invite',
+      onSuccess: (response) => {
+        this.linkInvite = response.data;
+        snackbar.success(isRevoked ? 'snackbar.link_invite.disabled' : 'snackbar.link_invite.enabled');
       }
     });
   }

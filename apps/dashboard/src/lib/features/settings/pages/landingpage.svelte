@@ -48,64 +48,66 @@
 
   const currentTheme = $derived(normalized.theme as LandingPageTheme);
 
+  const CDN_BASE = 'https://assets.cdn.clsrio.com/templates';
+
   const themeCards = [
     {
       value: 'minimal',
-      preview: '/templates/minimal.png',
+      preview: `${CDN_BASE}/minimal.png`,
       titleKey: 'settings.landing_page.theme.cards.minimal.title',
       descriptionKey: 'settings.landing_page.theme.cards.minimal.description'
     },
     {
       value: 'bold',
-      preview: '/templates/bold.png',
+      preview: `${CDN_BASE}/bold.png`,
       titleKey: 'settings.landing_page.theme.cards.bold.title',
       descriptionKey: 'settings.landing_page.theme.cards.bold.description'
     },
     {
       value: 'classic',
-      preview: '/templates/classic.png',
+      preview: `${CDN_BASE}/classic.png`,
       titleKey: 'settings.landing_page.theme.cards.classic.title',
       descriptionKey: 'settings.landing_page.theme.cards.classic.description'
     },
     {
       value: 'saas',
-      preview: '/templates/saas.png',
+      preview: `${CDN_BASE}/saas.png`,
       titleKey: 'settings.landing_page.theme.cards.saas.title',
       descriptionKey: 'settings.landing_page.theme.cards.saas.description'
     },
     {
       value: 'tech',
-      preview: '/templates/tech.png',
+      preview: `${CDN_BASE}/tech.png`,
       titleKey: 'settings.landing_page.theme.cards.tech.title',
       descriptionKey: 'settings.landing_page.theme.cards.tech.description'
     },
     {
       value: 'studio',
-      preview: '/templates/studio.png',
+      preview: `${CDN_BASE}/studio.png`,
       titleKey: 'settings.landing_page.theme.cards.studio.title',
       descriptionKey: 'settings.landing_page.theme.cards.studio.description'
     },
     {
       value: 'corporate',
-      preview: '/templates/corporate.png',
+      preview: `${CDN_BASE}/corporate.png`,
       titleKey: 'settings.landing_page.theme.cards.corporate.title',
       descriptionKey: 'settings.landing_page.theme.cards.corporate.description'
     },
     {
       value: 'terminal',
-      preview: '/templates/terminal.png',
+      preview: `${CDN_BASE}/terminal.png`,
       titleKey: 'settings.landing_page.theme.cards.terminal.title',
       descriptionKey: 'settings.landing_page.theme.cards.terminal.description'
     },
     {
       value: 'editorial',
-      preview: '/templates/editorial.png',
+      preview: `${CDN_BASE}/editorial.png`,
       titleKey: 'settings.landing_page.theme.cards.editorial.title',
       descriptionKey: 'settings.landing_page.theme.cards.editorial.description'
     },
     {
       value: 'vibrant',
-      preview: '/templates/vibrant.png',
+      preview: `${CDN_BASE}/vibrant.png`,
       titleKey: 'settings.landing_page.theme.cards.vibrant.title',
       descriptionKey: 'settings.landing_page.theme.cards.vibrant.description'
     }

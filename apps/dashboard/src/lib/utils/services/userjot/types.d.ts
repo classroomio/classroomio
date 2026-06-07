@@ -10,7 +10,10 @@ declare global {
           theme?: 'auto' | 'light' | 'dark';
         }
       ) => void;
-      identify: (user: { id: string; email?: string; firstName?: string; lastName?: string; avatar?: string }) => void;
+      identify: (
+        user: { id: string; email?: string; firstName?: string; lastName?: string; avatar?: string } | null
+      ) => void;
+      showWidget: (options: { section: 'feedback' | 'roadmap' | 'updates' }) => void;
       [method: string]: (...args: unknown[]) => void;
     };
   }

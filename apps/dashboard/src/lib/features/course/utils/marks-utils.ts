@@ -2,8 +2,6 @@ import type { CourseContentItem, CourseMembers } from '$features/course/utils/ty
 import type { Marks } from './types';
 import { ContentType } from '@cio/utils/constants/content';
 import Papa from 'papaparse';
-import autoTable from 'jspdf-autotable';
-import jsPDF from 'jspdf';
 
 /** Exercise information for display in marks table (linear, no lesson grouping) */
 export interface ExerciseInfo {
@@ -188,13 +186,18 @@ export function generateMarksCSV(
  * @param studentMarksByExerciseId Student marks by exercise
  * @param courseTitle Course title for filename and header
  */
-export function generateMarksPDF(
+export async function generateMarksPDF(
   students: CourseMembers,
   exercises: ExerciseInfo[],
   studentMarksByExerciseId: StudentMarksByExercise,
   courseTitle: string
-): void {
+): Promise<void> {
   try {
+    const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+      import('jspdf'),
+      import('jspdf-autotable')
+    ]);
+
     const doc = new jsPDF({ orientation: 'landscape' });
     const head = [['Student', ...exercises.map((ex) => ex.title), 'Avg grade']];
 

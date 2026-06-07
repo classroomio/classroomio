@@ -78,7 +78,7 @@
 
 <!-- YouTube-like: thumbnail on top; avatar + stacked text + overflow menu -->
 <div class="group w-full max-w-full min-w-0 {isEditMode ? 'rounded-lg border' : ''}">
-  <div class="ui:bg-muted relative aspect-video w-full min-w-0 overflow-hidden rounded-xl">
+  <div class="ui:bg-muted ui:rounded-md relative aspect-video w-full min-w-0 overflow-hidden">
     {#if thumbnailUrl}
       <Image src={thumbnailUrl} alt={title} className="absolute inset-0 block h-full w-full object-cover" />
     {:else}
@@ -142,6 +142,7 @@
             {video}
             {onRemove}
             onThumbnailSaved={(url) => lessonApi.updateLessonVideoThumbnail(index, url)}
+            onHlsMetadataUpdated={(metadata) => lessonApi.updateLessonVideoMetadata(index, metadata)}
             menuPlacement="inline"
           />
         {/if}

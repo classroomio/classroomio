@@ -9,10 +9,10 @@ Cloudflare Worker that fronts every browser-facing ClassroomIO host:
 
 The Worker forwards each request to one of two Render services based on path:
 
-| Path | Upstream |
-|---|---|
-| `/proxy/*` | API service (`/proxy` prefix stripped, rest forwarded as-is) |
-| anything else | Dashboard service |
+| Path          | Upstream                                                     |
+| ------------- | ------------------------------------------------------------ |
+| `/proxy/*`    | API service (`/proxy` prefix stripped, rest forwarded as-is) |
+| anything else | Dashboard service                                            |
 
 The `/proxy` prefix is the same-origin escape hatch the dashboard's
 browser code uses so its auth cookies stay host-only while still reaching
@@ -39,11 +39,11 @@ pnpm --filter @cio/tenant-router tail
 
 ## Env vars (wrangler.toml `[vars]`)
 
-| Var | Value |
-|---|---|
-| `DASHBOARD_UPSTREAM_HOST` | `.onrender.com` host of the dashboard service (no scheme) |
-| `API_UPSTREAM_HOST` | `.onrender.com` host of the API service |
-| `APEX_REDIRECT_TARGET` | URL to redirect `myclassroomio.com` apex to (default `https://classroomio.com`) |
+| Var                       | Value                                                                           |
+| ------------------------- | ------------------------------------------------------------------------------- |
+| `DASHBOARD_UPSTREAM_HOST` | `.onrender.com` host of the dashboard service (no scheme)                       |
+| `API_UPSTREAM_HOST`       | `.onrender.com` host of the API service                                         |
+| `APEX_REDIRECT_TARGET`    | URL to redirect `myclassroomio.com` apex to (default `https://classroomio.com`) |
 
 Update the values in `wrangler.toml` after looking them up in the Render dashboard.
 

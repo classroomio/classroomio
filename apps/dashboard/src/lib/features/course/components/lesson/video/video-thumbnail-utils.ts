@@ -1,8 +1,51 @@
-const JPEG_QUALITY = 0.85;
 const DEFAULT_SEEK_SECONDS = 1;
 const THUMBNAIL_TIMEOUT_MS = 15_000;
+/** Cap the captured frame to this width so the preview matches the stored thumbnail. */
+const MAX_THUMBNAIL_WIDTH = 1280;
+/** Hard ceiling for the generated thumbnail (matches the server job). */
+const THUMBNAIL_MAX_BYTES = 500 * 1024;
+/** JPEG quality steps tried (best first) until the frame fits under the size cap. */
+const THUMBNAIL_QUALITY_LADDER = [0.9, 0.8, 0.7, 0.6, 0.5];
 
 export type ThumbnailResult = { blob: Blob; durationSeconds: number };
+
+/**
+ * Encode the canvas as JPEG, stepping quality down until the blob fits under
+ * `maxBytes`. Resolves with the first blob within the cap, the smallest one
+ * produced if none fit, or null on failure.
+ */
+function canvasToJpegBlobUnderCap(canvas: HTMLCanvasElement, maxBytes: number): Promise<Blob | null> {
+  return new Promise((resolve) => {
+    let smallest: Blob | null = null;
+    let index = 0;
+
+    const tryNext = () => {
+      if (index >= THUMBNAIL_QUALITY_LADDER.length) {
+        resolve(smallest);
+        return;
+      }
+
+      const quality = THUMBNAIL_QUALITY_LADDER[index];
+      index += 1;
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            if (!smallest || blob.size < smallest.size) smallest = blob;
+            if (blob.size <= maxBytes) {
+              resolve(blob);
+              return;
+            }
+          }
+          tryNext();
+        },
+        'image/jpeg',
+        quality
+      );
+    };
+
+    tryNext();
+  });
+}
 
 /**
  * Generates a thumbnail from a video file by capturing a frame to canvas.
@@ -44,13 +87,15 @@ export function generateVideoThumbnail(videoFile: File): Promise<ThumbnailResult
 
     video.addEventListener('seeked', () => {
       try {
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        if (canvas.width <= 0 || canvas.height <= 0) {
+        if (video.videoWidth <= 0 || video.videoHeight <= 0) {
           finish(null);
           return;
         }
+
+        const scale = video.videoWidth > MAX_THUMBNAIL_WIDTH ? MAX_THUMBNAIL_WIDTH / video.videoWidth : 1;
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(video.videoWidth * scale);
+        canvas.height = Math.round(video.videoHeight * scale);
         const ctx = canvas.getContext('2d');
         if (!ctx) {
           finish(null);
@@ -58,17 +103,13 @@ export function generateVideoThumbnail(videoFile: File): Promise<ThumbnailResult
         }
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const durationSeconds = video.duration;
-        canvas.toBlob(
-          (blob) => {
-            if (blob) {
-              finish({ blob, durationSeconds: Number.isFinite(durationSeconds) ? durationSeconds : 0 });
-            } else {
-              finish(null);
-            }
-          },
-          'image/jpeg',
-          JPEG_QUALITY
-        );
+        canvasToJpegBlobUnderCap(canvas, THUMBNAIL_MAX_BYTES).then((blob) => {
+          if (blob) {
+            finish({ blob, durationSeconds: Number.isFinite(durationSeconds) ? durationSeconds : 0 });
+          } else {
+            finish(null);
+          }
+        });
       } catch {
         finish(null);
       }

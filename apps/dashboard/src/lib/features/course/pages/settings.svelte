@@ -367,10 +367,10 @@
       <Field.Field>
         <div class="relative w-fit">
           <img
-            style="min-width:280px; min-height:200px"
+            style="min-width:320px; min-height:200px"
             alt="Course cover"
             src={$settings.logo ? $settings.logo : '/images/classroomio-course-img-template.jpg'}
-            class="relative mt-2 h-[200px] w-[280px] rounded-md md:mt-0"
+            class="relative mt-2 h-[200px] w-[320px] rounded-md md:mt-0"
           />
         </div>
       </Field.Field>

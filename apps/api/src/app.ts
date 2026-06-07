@@ -20,8 +20,10 @@ import { jobsRouter } from '@api/routes/jobs';
 import { licenseRouter } from '@api/routes/license';
 import { logger } from 'hono/logger';
 // ROUTES
+import { hlsRouter } from '@api/routes/hls';
 import { mailRouter } from '@api/routes/mail';
 import { mediaRouter } from '@api/routes/media';
+import { transcriptsRouter } from '@api/routes/transcripts';
 import { mountQueueDashboard } from '@api/routes/admin/queues';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
@@ -43,7 +45,13 @@ export const app = new Hono()
   // Middleware
   .use('*', logger())
   .use('*', prettyJSON())
-  .use('*', secureHeaders())
+  // `Cross-Origin-Resource-Policy: same-origin` (Hono's default) blocks the
+  // dashboard from embedding api-served media (e.g. HLS segments via
+  // `<video>`) when the dashboard and api live on different origins in
+  // local dev / self-hosted. We're an API server — every response is
+  // designed for cross-origin consumption, so the right value is
+  // `cross-origin`. CORS still gates which origins can read the bytes.
+  .use('*', secureHeaders({ crossOriginResourcePolicy: 'cross-origin' }))
   .use('*', async (c, next) => {
     if (isPublicCorsPath(c.req.path)) return next();
 
@@ -193,6 +201,8 @@ export const app = new Hono()
   .route('/account', accountRouter)
   .route('/course', courseRouter)
   .route('/domain', domainRouter)
+  .route('/hls', hlsRouter)
+  .route('/transcripts', transcriptsRouter)
   .route('/mail', mailRouter)
   .route('/media', mediaRouter)
   .route('/jobs', jobsRouter)

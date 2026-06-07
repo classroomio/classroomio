@@ -17,12 +17,21 @@ export default ({ mode }) => {
     plugins: [sveltekit()],
     server: {
       ...getServer(process.env),
+      fs: {
+        // `..` is `apps/` — covers the dashboard's own files. `../../packages`
+        // is required so Vite's `@fs` route can serve dynamic imports that
+        // workspace packages (e.g. `@cio/ui/custom/editor`) emit as absolute
+        // paths into their own source tree. Without it, dev 403s on those
+        // `@fs/.../packages/ui/...` URLs.
+        allow: ['..', '../../packages']
+      },
       watch: {
         ignored: ['**/node_modules/!(@cio)/**', '**/.git/**']
       }
     },
     build: {
-      sourcemap: false
+      sourcemap: true,
+      target: 'es2020'
     },
     ssr: {
       // svelte-motion uses directory imports without `/index.js`; Node ESM fails unless bundled for SSR.

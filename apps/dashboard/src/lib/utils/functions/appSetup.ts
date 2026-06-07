@@ -4,15 +4,19 @@ import { initUmami } from '$lib/utils/services/umami';
 import { initUserJot } from '$lib/utils/services/userjot';
 import { licenseApi } from '$features/license/api/license.svelte';
 
-let isInitialized = false;
+let isTrackingInitialized = false;
 
-export function setupAnalytics(user?: PosthogBootstrapUser) {
-  if (isInitialized) return;
-  isInitialized = true;
+function setupTracking(user?: PosthogBootstrapUser) {
+  if (isTrackingInitialized) return;
+  isTrackingInitialized = true;
 
   initPosthog(user);
   initUmami();
+}
+
+export function setupAnalytics(user?: PosthogBootstrapUser) {
   initUserJot();
+  setupTracking(user);
 }
 
 /** Checks if this is cloud deployment and initializes analytics */
@@ -23,9 +27,11 @@ export function setupCloudAnalytics(user?: PosthogBootstrapUser) {
 }
 
 export function setupAnalyticsBasedOnLicense(user?: PosthogBootstrapUser) {
+  initUserJot();
+
   if (licenseApi.hasAccess('no-tracking')) {
     return;
   }
 
-  setupAnalytics(user);
+  setupTracking(user);
 }

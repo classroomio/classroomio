@@ -38,6 +38,8 @@
     onAskPlanChanges: (message: string) => void;
     isStreaming: boolean;
     isLast?: boolean;
+    /** When true, historical PlanView cards default to their collapsed form. */
+    planShouldCollapse?: boolean;
     onSubmitTemplateAnswers: (payload: {
       templateId: CourseTemplateId;
       answers: Record<string, string>;
@@ -57,8 +59,16 @@
     onSkipTemplateForm,
     onMentionClick,
     isStreaming,
-    isLast = false
+    isLast = false,
+    planShouldCollapse = false
   }: Props = $props();
+
+  /**
+   * Collapse a PlanView card when implementation has started anywhere in the
+   * conversation OR when newer assistant messages have pushed it back. The
+   * very first plan card the teacher sees stays expanded.
+   */
+  const planCardDefaultCollapsed = $derived(planShouldCollapse || !isLast);
 
   function localizePendingTool(toolName: string): string {
     const vars = getPendingToolI18nVars(toolName);
@@ -170,6 +180,7 @@
               onImplement={onImplementPlan}
               onAskChanges={onAskPlanChanges}
               isBusy={isStreaming}
+              defaultCollapsed={planCardDefaultCollapsed}
             />
           </div>
         {:else if toolName === 'ask_template_questions' && (toolStatus === 'completed' || toolStatus === 'in_progress')}

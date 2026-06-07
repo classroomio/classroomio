@@ -4,6 +4,7 @@ export type ListAccountWorkspacesRequest = typeof classroomio.account.workspaces
 export type CreateAccountWorkspaceRequest = typeof classroomio.account.workspaces.$post;
 export type DeleteAccountWorkspaceRequest = (typeof classroomio.account.workspaces)[':workspaceId']['$delete'];
 export type GetAccountUsageRequest = typeof classroomio.account.usage.$get;
+export type ViewAsStudentTokenRequest = (typeof classroomio.account)['view-as-student-token']['$post'];
 
 type ListSuccess = Extract<InferResponseType<ListAccountWorkspacesRequest>, { success: true }>;
 type UsageSuccess = Extract<InferResponseType<GetAccountUsageRequest>, { success: true }>;

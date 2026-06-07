@@ -1,4 +1,4 @@
-import { env } from '@api/config/env';
+import { env } from '@cio/core/config/env';
 import { LICENSE_FEATURE, type LicenseFeatureId } from '@cio/utils/license';
 
 export type LicenseStatus = {

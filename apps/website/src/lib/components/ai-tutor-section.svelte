@@ -152,7 +152,7 @@
       <div class="mx-auto mt-10 w-full max-w-[960px] overflow-hidden rounded-lg">
         <div style="padding:{videoAspect} 0 0 0;position:relative;">
           <iframe
-            src="https://player.vimeo.com/video/{vimeoVideoId}?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1"
+            src="https://player.vimeo.com/video/{vimeoVideoId}?badge=0&autopause=0&player_id=0&app_id=58479&loop=1"
             frameborder="0"
             allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
             referrerpolicy="strict-origin-when-cross-origin"

@@ -1,1 +1,1 @@
-export * from './assets';
+export * from '@cio/core/services/assets/assets';

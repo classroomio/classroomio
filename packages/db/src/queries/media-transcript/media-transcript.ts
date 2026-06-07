@@ -54,6 +54,38 @@ export async function upsertMediaTranscript(
   }
 }
 
+/**
+ * Update only the editable content (segments + derived text) of an asset's
+ * transcript. Scoped by asset + organization. Returns the updated row or
+ * `null` when no transcript exists for the asset.
+ */
+export async function updateMediaTranscriptContent(
+  assetId: string,
+  organizationId: string,
+  patch: { segments: TMediaTranscript['segments']; text: string },
+  dbClient: DbOrTxClient = db
+): Promise<TMediaTranscript | null> {
+  try {
+    const now = new Date().toISOString();
+    const [row] = await dbClient
+      .update(schema.mediaTranscript)
+      .set({
+        segments: patch.segments,
+        text: patch.text,
+        updatedAt: now
+      })
+      .where(
+        and(eq(schema.mediaTranscript.assetId, assetId), eq(schema.mediaTranscript.organizationId, organizationId))
+      )
+      .returning();
+
+    return row ?? null;
+  } catch (error) {
+    console.error('updateMediaTranscriptContent error:', error);
+    throw new Error('Failed to update media transcript content');
+  }
+}
+
 export async function getMediaTranscriptByAsset(
   assetId: string,
   organizationId: string,

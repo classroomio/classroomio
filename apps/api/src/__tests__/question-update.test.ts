@@ -3,7 +3,7 @@ import {
   buildUpdatedQuestions,
   type CurrentQuestionForPatch,
   type QuestionPatch
-} from '@api/services/agent/question-update';
+} from '@cio/core/services/agent/question-update';
 import { QUESTION_TYPE } from '@cio/utils/validation/constants';
 
 const EXERCISE_ID = 'ex-1';

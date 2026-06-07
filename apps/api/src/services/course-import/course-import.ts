@@ -1,7 +1,7 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { env } from '@api/config/env';
-import { getDashboardBaseUrl } from '@api/config/dashboard-url';
-import { createCourse, updateCourse } from '@api/services/course/course';
+import { env } from '@cio/core/config/env';
+import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { createCourse, updateCourse } from '@cio/core/services/course/course';
 import {
   createExercise,
   deleteExerciseService,
@@ -14,13 +14,13 @@ import {
   deleteCourseSectionService,
   listCourseSections,
   updateCourseSectionService
-} from '@api/services/course/section';
+} from '@cio/core/services/course/section';
 import { createLesson, listLessons, updateLessonService, deleteLessonService } from '@api/services/lesson';
 import {
   deleteLessonLanguageService,
   upsertLessonLanguageService,
   updateLessonLanguageService
-} from '@api/services/lesson-language';
+} from '@cio/core/services/lesson-language';
 import {
   createCourseImportDraft,
   getCourseImportDraftById,
@@ -128,14 +128,6 @@ async function ensureCourseSlug(courseId: string, title: string | null | undefin
   return updated.slug ?? uniqueSlug;
 }
 
-function buildCourseBaseUrl(organization: TOrganization) {
-  if (organization.customDomain && organization.isCustomDomainVerified) {
-    return `https://${organization.customDomain}`;
-  }
-
-  return getDashboardBaseUrl(organization.siteName ?? undefined);
-}
-
 async function resolveCourseUrl(organizationId: string, courseId: string, title: string) {
   const organization = await getOrganizationById(organizationId);
   if (!organization) {
@@ -143,7 +135,7 @@ async function resolveCourseUrl(organizationId: string, courseId: string, title:
   }
 
   const slug = await ensureCourseSlug(courseId, title);
-  return `${buildCourseBaseUrl(organization)}/course/${encodeURIComponent(slug)}`;
+  return `${getDashboardBaseUrl(organization)}/course/${encodeURIComponent(slug)}`;
 }
 
 async function resolveUnsplashBannerImage(courseTitle: string, query?: string) {

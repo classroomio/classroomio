@@ -63,6 +63,35 @@ export async function ffmpegRun(args: string[]): Promise<void> {
 }
 
 /**
+ * Compute the mean luminance (`YAVG`) of an image or single video frame using
+ * ffmpeg's `signalstats` filter. Returned on the original 0-255 scale; a fully
+ * black frame is ~0, fully white ~255. Throws if ffmpeg fails or the value is
+ * not present in stderr.
+ */
+export async function ffmpegProbeLuma(filePath: string): Promise<number> {
+  const args = ['-hide_banner', '-nostats', '-i', filePath, '-vf', 'signalstats', '-f', 'null', '-'];
+  let stderr = '';
+  try {
+    const result = await execFileAsync(FFMPEG_BIN, args, { maxBuffer: MAX_OUTPUT_BYTES });
+    const raw = result.stderr as string | Buffer | undefined;
+    stderr = typeof raw === 'string' ? raw : (raw?.toString('utf8') ?? '');
+  } catch (error) {
+    const raw = (error as { stderr?: string | Buffer })?.stderr;
+    stderr = typeof raw === 'string' ? raw : (raw?.toString('utf8') ?? '');
+    if (!stderr) {
+      throw error as Error;
+    }
+  }
+
+  const match = stderr.match(/YAVG:([0-9]+(?:\.[0-9]+)?)/);
+  if (!match) {
+    throw new Error('ffmpegProbeLuma: signalstats YAVG not found in ffmpeg output');
+  }
+
+  return Number.parseFloat(match[1]);
+}
+
+/**
  * Probe for the binaries at worker startup. Logs a warning when missing so
  * media jobs surface a clearer failure than a raw ENOENT from the first
  * spawn. Non-media workers (emails, maintenance) keep booting either way.

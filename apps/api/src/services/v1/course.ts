@@ -12,7 +12,7 @@ import {
   deleteCourse as deleteCourseService,
   getCourse,
   updateCourse as updateCourseService
-} from '@api/services/course/course';
+} from '@cio/core/services/course/course';
 import {
   createCourseImportDraftService,
   getCourseImportStructureService,

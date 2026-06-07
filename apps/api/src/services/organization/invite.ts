@@ -6,14 +6,18 @@ import {
   createOrganizationInviteAudit,
   createOrganizationMember,
   createOrganizationMembers,
+  createLinkInvite,
   getActivePendingOrgInviteForEmail,
   getOrganizationById,
   getOrganizationInviteByTokenHash,
+  getOrgLinkInvite,
+  getOrgLinkInviteWithOrg,
   revokeActiveOrganizationInvitesByEmails,
   selectOrganizationInviteWithOrgByInviteId,
   selectOrganizationInviteWithOrgByTokenHash,
   selectOrganizationMemberByOrgAndNormalizedEmail,
   selectOrganizationMemberByOrgAndProfile,
+  setLinkInviteRevoked,
   updateOrganizationMemberById
 } from '@cio/db/queries/organization';
 import { getCourseGroupIds } from '@cio/db/queries/course';
@@ -24,7 +28,7 @@ import { ROLE } from '@cio/utils/constants';
 import type { TNewOrganizationInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
-import { getDashboardBaseUrl } from '@api/config/dashboard-url';
+import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { parseCourseIdsFromInviteMetadata, parseProgramIdsFromInviteMetadata } from '@api/utils/org';
 import { markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
@@ -338,7 +342,8 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
       throw new AppError('This invite has expired', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
-    if (row.invite.email.toLowerCase().trim() !== normalizedEmail) {
+    const inviteEmail = row.invite.email ?? '';
+    if (inviteEmail.toLowerCase().trim() !== normalizedEmail) {
       throw new AppError('This invite is for a different email address', ErrorCodes.UNAUTHORIZED, 403);
     }
 
@@ -447,6 +452,151 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
   };
 }
 
+// ─── Link Invite ────────────────────────────────────────────────────────────
+
+const LINK_INVITE_FAR_FUTURE_MS = 100 * 365 * 24 * 60 * 60 * 1000;
+
+/**
+ * Returns the current org link invite if one already exists, otherwise creates one.
+ * One link invite per org — subsequent calls return the same record.
+ */
+export async function getOrCreateLinkInvite(orgId: string, roleId: number, profileId: string) {
+  if (roleId !== ROLE.ADMIN && roleId !== ROLE.TUTOR) {
+    throw new AppError('Invalid organization role for link invite', ErrorCodes.VALIDATION_ERROR, 400, 'roleId');
+  }
+
+  const existing = await getOrgLinkInvite(orgId);
+
+  if (existing) {
+    const token = (existing.metadata as Record<string, unknown>)?.token as string | undefined;
+    return { id: existing.id, token: token ?? '', roleId: existing.roleId, isRevoked: existing.isRevoked };
+  }
+
+  const token = generateToken();
+  const tokenHash = hashToken(token);
+  const expiresAt = new Date(Date.now() + LINK_INVITE_FAR_FUTURE_MS).toISOString();
+
+  const invite = await createLinkInvite({
+    organizationId: orgId,
+    roleId,
+    tokenHash,
+    createdByProfileId: profileId,
+    expiresAt,
+    metadata: { token, source: 'ORG_SETTINGS_LINK_INVITE' }
+  });
+
+  await recordOrganizationInviteAudit(invite.id, orgId, 'CREATED', {
+    actorProfileId: profileId,
+    metadata: { roleId, type: 'LINK' }
+  });
+
+  return { id: invite.id, token, roleId: invite.roleId, isRevoked: invite.isRevoked };
+}
+
+/**
+ * Returns current link invite for the org (for GET endpoint — returns null if none created yet).
+ */
+export async function fetchOrgLinkInvite(orgId: string) {
+  const row = await getOrgLinkInvite(orgId);
+
+  if (!row) return null;
+
+  const token = (row.metadata as Record<string, unknown>)?.token as string | undefined;
+  return { id: row.id, token: token ?? '', roleId: row.roleId, isRevoked: row.isRevoked };
+}
+
+/**
+ * Enables or disables the org link invite (toggle isRevoked).
+ */
+export async function toggleOrgLinkInvite(orgId: string, isRevoked: boolean, profileId: string) {
+  const updated = await setLinkInviteRevoked(orgId, isRevoked, profileId);
+
+  if (!updated) {
+    throw new AppError('Link invite not found', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  const token = (updated.metadata as Record<string, unknown>)?.token as string | undefined;
+  return { id: updated.id, token: token ?? '', roleId: updated.roleId, isRevoked: updated.isRevoked };
+}
+
+/**
+ * Server-only preview for a link invite (API-key protected at route layer).
+ */
+export async function previewLinkInvite(token: string, context: TInviteRequestContext = {}) {
+  const tokenHash = hashToken(token);
+  const data = await getOrgLinkInviteWithOrg(db, tokenHash);
+
+  if (!data) {
+    throw new AppError('Invalid invite link', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  await recordOrganizationInviteAudit(data.invite.id, data.invite.organizationId, 'PREVIEWED', {
+    ipAddress: context.ipAddress,
+    userAgent: context.userAgent
+  });
+
+  return {
+    invite: {
+      id: data.invite.id,
+      roleId: data.invite.roleId,
+      roleLabel: getRoleLabel(data.invite.roleId),
+      isRevoked: data.invite.isRevoked
+    },
+    organization: data.organization
+  };
+}
+
+/**
+ * Accepts a link invite — adds the authenticated user to the org.
+ * The invite is NOT consumed (reusable). Anyone with the link can join.
+ */
+export async function acceptLinkInvite(token: string, user: TAuthUser, context: TInviteRequestContext = {}) {
+  if (!user.id || !user.email) {
+    throw new AppError('Authenticated user email is required', ErrorCodes.UNAUTHORIZED, 401);
+  }
+
+  const normalizedEmail = user.email.toLowerCase().trim();
+  const tokenHash = hashToken(token);
+
+  const result = await db.transaction(async (tx) => {
+    const row = await getOrgLinkInviteWithOrg(tx, tokenHash);
+
+    if (!row) {
+      throw new AppError('Invalid invite link', ErrorCodes.NOT_FOUND, 404);
+    }
+
+    if (row.invite.isRevoked) {
+      throw new AppError('This invite link has been disabled', ErrorCodes.UNAUTHORIZED, 403);
+    }
+
+    await syncOrgMemberForOrgInvite(tx, {
+      organizationId: row.invite.organizationId,
+      roleId: row.invite.roleId,
+      normalizedEmail,
+      userId: user.id
+    });
+
+    await markUserAndProfileEmailVerified(user.id, tx);
+
+    return { organization: row.organization, roleId: row.invite.roleId, inviteId: row.invite.id };
+  });
+
+  await recordOrganizationInviteAudit(result.inviteId, result.organization.id, 'ACCEPTED', {
+    actorProfileId: user.id,
+    targetEmail: normalizedEmail,
+    ipAddress: context.ipAddress,
+    userAgent: context.userAgent,
+    metadata: { source: 'LINK_INVITE' }
+  });
+
+  const siteName = result.organization.siteName || '';
+  const redirectTo = result.roleId === ROLE.STUDENT ? '/lms' : siteName ? `/org/${siteName}` : '/org';
+
+  return { organizationId: result.organization.id, roleId: result.roleId, redirectTo };
+}
+
+// ─── End Link Invite ─────────────────────────────────────────────────────────
+
 /**
  * Returns the pending org invite for the currently logged-in user, if one exists.
  * Used by the LMS dashboard to prompt the student to accept on first load.
@@ -503,7 +653,8 @@ export async function acceptOrganizationInviteById(
       throw new AppError('This invite has expired', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
-    if (row.invite.email.toLowerCase().trim() !== normalizedEmail) {
+    const inviteEmailById = row.invite.email ?? '';
+    if (inviteEmailById.toLowerCase().trim() !== normalizedEmail) {
       throw new AppError('This invite is for a different email address', ErrorCodes.UNAUTHORIZED, 403);
     }
 

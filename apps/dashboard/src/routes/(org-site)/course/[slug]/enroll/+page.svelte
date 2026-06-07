@@ -25,10 +25,6 @@
           data.course?.status === 'ACTIVE' &&
           Boolean(data.course?.isPublished)
   );
-  $inspect(data.requiresPaymentOrInvite);
-  $inspect(canJoinCourse);
-  $inspect(data);
-  $inspect('loading', loading);
 
   function getBlockedMessage(): string {
     if (data.requiresPaymentOrInvite) {

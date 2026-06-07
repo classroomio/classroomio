@@ -1,6 +1,6 @@
 import { Context, Next } from 'hono';
 
-import { env } from '@api/config/env';
+import { env } from '@cio/core/config/env';
 
 /**
  * Middleware to authenticate requests using API key

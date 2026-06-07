@@ -68,6 +68,7 @@
     "d3-array": "^3.2.4",
     "d3-scale": "^4.0.2",
     "dompurify": "^3.3.0",
+    "hls.js": "^1.6.16",
     "katex": "^0.16.25",
     "lowlight": "^3.3.0",
     "plyr": "^3.7.8",
@@ -79,8 +80,8 @@
     "tiptap-extension-auto-joiner": "^0.1.3"
   },
   "peerDependencies": {
-    "bits-ui": "^2.14.4",
     "@lucide/svelte": "^0.545.0 || ^0.562.0",
+    "bits-ui": "^2.14.4",
     "svelte-inview": "^4.0.4",
     "svelte-motion": "^0.12.2"
   }

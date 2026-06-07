@@ -350,7 +350,9 @@
       "thumbnail_updated": "Значок обновлен.",
       "thumbnail_update_failed": "Не удалось обновить миниатюру.",
       "thumbnail_regen_started": "Восстановление миниатюр…",
-      "thumbnail_regen_failed": "Не удалось восстановить миниатюры."
+      "thumbnail_regen_failed": "Не удалось восстановить миниатюры.",
+      "transcript_saved": "Стенограмма обновлена",
+      "transcript_save_failed": "Не удалось сохранить расшифровку"
     },
     "tags": {
       "group_created": "Группа тегов создана.",
@@ -420,6 +422,18 @@
       "workspace_is_primary": "Вы не можете удалить основное рабочее пространство.",
       "workspace_not_found": "Рабочее пространство не найдено.",
       "not_primary_workspace": "Переключитесь на основное рабочее пространство, чтобы управлять рабочими пространствами учетной записи."
+    },
+    "link_invite": {
+      "generated": "Приглашение по ссылке создано",
+      "enabled": "Приглашение по ссылке включено",
+      "disabled": "Приглашение по ссылке отключено"
+    },
+    "view_as_student": {
+      "failed": "Не удалось открыть представление учащихся. Пожалуйста, попробуйте еще раз."
+    },
+    "lesson_video": {
+      "generate_1080_completed": "добавлено воспроизведение 1080p",
+      "generate_1080_failed": "Не удалось создать воспроизведение 1080p."
     }
   },
   "explore": {
@@ -905,7 +919,9 @@
             "short_video": "Короткое видео",
             "replace_cover": "Заменить изображение обложки",
             "replace": "Заменить",
-            "helper": "Введите ссылку на видео на YouTube"
+            "helper": "Введите ссылку на видео на YouTube",
+            "remove": "Удалить",
+            "no_cover": "Обложка не установлена."
           },
           "title": {
             "header": "Заголовок",
@@ -1030,7 +1046,17 @@
           "members": "Члены",
           "invite_sent": "Приглашение отправлено",
           "you": "ты",
-          "remove": "Удалить"
+          "remove": "Удалить",
+          "link_invite": {
+            "heading": "Ссылка Пригласить",
+            "description": "Любой, у кого есть эта ссылка, может присоединиться к вашей организации.",
+            "generate": "Создать ссылку",
+            "copy": "Копировать",
+            "copied": "Скопировано!",
+            "toggle_label": "Приглашение по ссылке активно",
+            "disabled_notice": "Эта ссылка отключена. Включите его, чтобы позволить новым участникам присоединяться по ссылке.",
+            "select_role": "Выберите роль"
+          }
         },
         "roles": {
           "admin": "Админ",
@@ -1879,7 +1905,11 @@
                 "language": "Language: {language}",
                 "empty": "No transcript yet. You can generate one from this card’s menu after the video is uploaded.",
                 "loading": "Loading transcript…",
-                "open_side_panel": "Открыть панель стенограммы"
+                "open_side_panel": "Открыть панель стенограммы",
+                "edit": "Изменить стенограмму",
+                "save": "Сохранить",
+                "cancel": "Отмена",
+                "segment_label": "Сегмент в {timestamp}"
               },
               "simple_card": {
                 "kind_youtube": "Ютуб",
@@ -1889,7 +1919,13 @@
                 "course_fallback": "Курс",
                 "menu_aria": "Параметры видео"
               },
-              "view_transcript": "Посмотреть транскрипцию"
+              "view_transcript": "Посмотреть транскрипцию",
+              "playback_error": "Не удалось загрузить это видео.",
+              "playback_reload": "Перезагрузить видео",
+              "generate_1080": "Создать 1080p",
+              "generate_1080_in_progress": "Генерация 1080p…",
+              "generate_1080_ready": "доступно 1080p",
+              "generate_1080_unavailable": "Разрешение 1080p недоступно для этого исходного видео."
             },
             "slide": {
               "title": "Слайд",
@@ -2085,7 +2121,8 @@
     },
     "header": {
       "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing."
+      "preview_missing_slug": "Generate and save a course slug before previewing.",
+      "view_as_student": "Посмотреть как студент"
     },
     "sidebar": {
       "back_to_course": "Вернуться к курсу",
@@ -2105,12 +2142,12 @@
       "nav_attendance": "посещаемость",
       "nav_submissions": "Материалы",
       "nav_marks": "Знаки",
+      "nav_compliance": "Соответствие",
       "nav_people": "Люди",
       "nav_analytics": "Аналитика",
       "nav_certificates": "Сертификаты",
       "nav_landing_page": "Целевая страница",
       "nav_settings": "Настройки",
-      "nav_compliance": "Соответствие",
       "nav_ai_assistant": "Ассистент",
       "nav_ai_tutor": "Репетитор по искусственному интеллекту"
     },
@@ -2202,6 +2239,12 @@
           "form_title": "Расскажите нам о своем продукте"
         }
       }
+    },
+    "view_as_student": {
+      "title": "Вы будете перенаправлены в Student LMS.",
+      "description": "Вы скоро увидите, что увидит студент, записавшись на этот курс.",
+      "copy_link": "Копировать ссылку",
+      "go_to_lms": "Перейти в СДО"
     }
   },
   "courses": {
@@ -3069,6 +3112,11 @@
         "field_nav_count_other": "{count} ссылок",
         "hero_empty": "—",
         "customize": "Настройте целевую страницу"
+      },
+      "preview_tabs": {
+        "label": "Страница предварительного просмотра",
+        "home": "Главная",
+        "course": "Курс"
       }
     },
     "organization": {
@@ -3322,7 +3370,10 @@
     "tic_tac": "Крестики-палочки",
     "see_more": "Посмотреть больше",
     "whats_new": "Что нового",
-    "launch_week": "Неделя запуска"
+    "launch_week": "Неделя запуска",
+    "feedback": "Обратная связь",
+    "documentation": "Документация",
+    "need_help": "Нужна помощь?"
   },
   "login": {
     "welcome": "С возвращением",
@@ -3567,6 +3618,18 @@
         "joined": "Присоединившаяся организация",
         "join_failed": "Не удалось присоединиться к организации"
       }
+    },
+    "link": {
+      "page_title": "Присоединяйтесь к {orgName} в ClassroomIO.",
+      "invitation_student": "Вас пригласили присоединиться к {orgName} в качестве студента.",
+      "invitation_teacher": "Вас пригласили присоединиться к {orgName} в качестве преподавателя.",
+      "invitation_admin": "Вас пригласили присоединиться к {orgName} в качестве администратора.",
+      "invitation_fallback": "Вас пригласили присоединиться к {orgName} в качестве {role}.",
+      "accept_button": "Присоединиться к организации",
+      "go_to_dashboard": "Перейти на панель управления",
+      "disabled": "Эта ссылка для приглашения отключена организацией.",
+      "join_failed": "Не удалось присоединиться к организации",
+      "joined": "Присоединившаяся организация"
     }
   },
   "automation": {
@@ -3886,7 +3949,7 @@
     "new_chat": "Новый чат",
     "tokens_label": "жетоны",
     "implementing_course_plan": "Реализация плана курса",
-    "resume": "Резюме",
+    "resume": "Продолжить",
     "stopped_content_kept": "Остановился. Созданный контент сохранен.",
     "mention_lesson": "Урок",
     "mention_exercise": "Упражнение",
@@ -3995,7 +4058,7 @@
     "context_compacted_badge": "Разговор сжат (предыдущие сообщения: {count})",
     "student_quick_action": {
       "explain_lesson": "Объясните этот урок",
-      "quiz_me": "спроси меня об этом",
+      "quiz_me": "Протестируй меня",
       "summarize_section": "Подведите итоги этого раздела",
       "what_to_review": "Что мне следует проверить дальше?"
     },
@@ -4043,7 +4106,7 @@
     },
     "run_monitor": {
       "cancel": "Отменить запуск",
-      "dismiss": "Уволить",
+      "dismiss": "Отклонить",
       "now_doing": "Сейчас",
       "input_disabled_hint": "Чат приостановлен, пока агент завершает создание курса. Отмените или дождитесь завершения.",
       "dismiss_confirm": "Уйти",
@@ -4053,7 +4116,11 @@
         "title": "Работник не отвечает",
         "body": "Этот запуск ожидает более 30 секунд, а работник не подъезжает. Фоновый рабочий процесс может быть отключен или перезапущен."
       }
-    }
+    },
+    "ask_ai": "Спросите ИИ",
+    "content_input_placeholder": "Спросите об этом контенте…",
+    "ask_ai_expand_aria": "Открыть вход Ask AI",
+    "ask_ai_input_aria": "Спросите ИИ об этом контенте"
   },
   "widgets": {
     "heading": "Виджеты",

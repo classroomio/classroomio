@@ -3,16 +3,21 @@ import type {
   AgentConversation,
   AgentConversationCreateData,
   AgentConversationSummary,
+  AgentRunDetail,
+  AgentRunSummary,
   AgentStatusData,
   AiAssistantMessage,
   CompactConversationRequest,
   CompactConversationSuccess
 } from '../utils/types';
+import type { AgentModelId } from '@cio/utils/agent-models';
 
 class AiAssistantApi extends BaseApiWithErrors {
   status: AgentStatusData | null = $state(null);
   conversations: AgentConversationSummary[] = $state([]);
   currentConversation: AgentConversation | null = $state(null);
+  runs: AgentRunSummary[] = $state([]);
+  currentRun: AgentRunDetail | null = $state(null);
 
   async fetchStatus(courseId: string) {
     await this.execute<typeof classroomio.agent.status.$get>({
@@ -249,6 +254,144 @@ class AiAssistantApi extends BaseApiWithErrors {
     });
 
     return compacted;
+  }
+
+  async listRuns(courseId: string): Promise<AgentRunSummary[]> {
+    let runs: AgentRunSummary[] = [];
+
+    await this.execute<typeof classroomio.agent.runs.$get>({
+      requestFn: () =>
+        classroomio.agent.runs.$get({
+          query: { courseId }
+        }),
+      logContext: 'listing agent runs',
+      onSuccess: (result) => {
+        runs = result.data as AgentRunSummary[];
+        this.runs = runs;
+      }
+    });
+
+    return runs;
+  }
+
+  async loadActiveRun(courseId: string): Promise<AgentRunDetail | null> {
+    const runs = await this.listRuns(courseId);
+    const active = runs.find((run) =>
+      ['queued', 'running', 'waiting_for_input', 'paused', 'failed'].includes(run.status)
+    );
+
+    if (!active) {
+      this.currentRun = null;
+      return null;
+    }
+
+    return this.loadRun(active.id);
+  }
+
+  async createRun(input: {
+    courseId: string;
+    conversationId: string;
+    approvedPlan: Record<string, unknown>;
+    model: AgentModelId;
+  }): Promise<AgentRunDetail | null> {
+    let runDetail: AgentRunDetail | null = null;
+
+    await this.execute<typeof classroomio.agent.runs.$post>({
+      requestFn: () =>
+        classroomio.agent.runs.$post({
+          json: {
+            courseId: input.courseId,
+            conversationId: input.conversationId,
+            approvedPlan: input.approvedPlan,
+            model: input.model,
+            phase: 'implementing'
+          }
+        }),
+      logContext: 'creating agent run',
+      onSuccess: (result) => {
+        runDetail = result.data as AgentRunDetail;
+        this.currentRun = runDetail;
+        this.runs = [runDetail.run, ...this.runs.filter((run) => run.id !== runDetail.run.id)];
+      }
+    });
+
+    return runDetail;
+  }
+
+  async loadRun(runId: string): Promise<AgentRunDetail | null> {
+    let runDetail: AgentRunDetail | null = null;
+
+    await this.execute<(typeof classroomio.agent.runs)[':runId']['$get']>({
+      requestFn: () =>
+        classroomio.agent.runs[':runId'].$get({
+          param: { runId }
+        }),
+      logContext: 'loading agent run',
+      onSuccess: (result) => {
+        runDetail = result.data as AgentRunDetail;
+        this.currentRun = runDetail;
+        this.runs = this.runs.map((run) => (run.id === runDetail!.run.id ? runDetail!.run : run));
+      }
+    });
+
+    return runDetail;
+  }
+
+  async cancelRun(runId: string): Promise<AgentRunDetail | null> {
+    let runDetail: AgentRunDetail | null = null;
+
+    await this.execute<(typeof classroomio.agent.runs)[':runId']['cancel']['$post']>({
+      requestFn: () =>
+        classroomio.agent.runs[':runId'].cancel.$post({
+          param: { runId }
+        }),
+      logContext: 'canceling agent run',
+      onSuccess: (result) => {
+        runDetail = result.data as AgentRunDetail;
+        this.currentRun = runDetail;
+        this.runs = this.runs.map((run) => (run.id === runDetail!.run.id ? runDetail!.run : run));
+      }
+    });
+
+    return runDetail;
+  }
+
+  async retryRun(runId: string): Promise<AgentRunDetail | null> {
+    let runDetail: AgentRunDetail | null = null;
+
+    await this.execute<(typeof classroomio.agent.runs)[':runId']['retry']['$post']>({
+      requestFn: () =>
+        classroomio.agent.runs[':runId'].retry.$post({
+          param: { runId }
+        }),
+      logContext: 'retrying agent run',
+      onSuccess: (result) => {
+        runDetail = result.data as AgentRunDetail;
+        this.currentRun = runDetail;
+        this.runs = this.runs.map((run) => (run.id === runDetail!.run.id ? runDetail!.run : run));
+      }
+    });
+
+    return runDetail;
+  }
+
+  async resumeRun(runId: string): Promise<AgentRunDetail | null> {
+    let runDetail: AgentRunDetail | null = null;
+
+    await this.execute<(typeof classroomio.agent.runs)[':runId']['resume']['$post']>({
+      requestFn: () =>
+        classroomio.agent.runs[':runId'].resume.$post({
+          param: { runId }
+        }),
+      logContext: 'resuming agent run',
+      onSuccess: (result) => {
+        runDetail = result.data as AgentRunDetail;
+        this.currentRun = runDetail;
+        this.runs = this.runs.map((run) => (run.id === runDetail!.run.id ? runDetail!.run : run));
+      }
+    });
+
+    return runDetail;
   }
 }
 

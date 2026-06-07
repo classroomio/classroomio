@@ -13,7 +13,10 @@
 <div
   bind:this={ref}
   data-slot="page"
-  class={cn('ui:flex ui:flex-col ui:gap-4 ui:min-h-[calc(100vh-48px)] ui:w-full', className)}
+  class={cn(
+    'ui:flex ui:flex-col ui:gap-4 ui:min-h-[calc(100vh-48px)] ui:w-full ui:overflow-x-hidden ui:md:overflow-x-auto',
+    className
+  )}
   {...restProps}
 >
   {@render children?.()}

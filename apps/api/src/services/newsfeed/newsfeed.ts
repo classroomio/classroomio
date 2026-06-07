@@ -1,5 +1,6 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { sanitizeHtml } from '@api/utils/sanitize-html';
+import { sanitizeHtml } from '@cio/core/utils/sanitize-html';
+import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants/domains';
 import type { TCourseNewsfeed, TNewCourseNewsfeed, TNewCourseNewsfeedComment } from '@cio/db/types';
 import type { TNewsfeedCreate, TNewsfeedUpdate } from '@cio/utils/validation/newsfeed';
 import {
@@ -17,7 +18,7 @@ import {
   updateNewsfeedComment
 } from '@cio/db/queries/newsfeed';
 
-import { env } from '@api/config/env';
+import { env } from '@cio/core/config/env';
 import { buildEmailFromName } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 
@@ -358,7 +359,7 @@ async function sendNewsfeedPostEmail(feedId: string, authorId: string) {
 
     const orgName = feedData.organization?.name || 'ClassroomIO';
     const orgSiteName = feedData.organization?.siteName || 'app';
-    const postLink = `https://${orgSiteName}.classroomio.com/courses/${feedData.courseId}?feedId=${feedData.feedId}`;
+    const postLink = `https://${orgSiteName}.${TENANT_ROOT_DOMAIN}/courses/${feedData.courseId}?feedId=${feedData.feedId}`;
 
     const recipients = feedData.courseMembers
       .map((member) => member.email)
@@ -402,7 +403,7 @@ async function sendNewsfeedCommentEmail(feedId: string, commentContent: string) 
 
     const orgName = feedData.organization?.name || 'ClassroomIO';
     const orgSiteName = feedData.organization?.siteName || 'app';
-    const postLink = `https://${orgSiteName}.classroomio.com/courses/${feedData.courseId}?feedId=${feedData.feedId}`;
+    const postLink = `https://${orgSiteName}.${TENANT_ROOT_DOMAIN}/courses/${feedData.courseId}?feedId=${feedData.feedId}`;
 
     await enqueueTransactionalEmail('newsfeedComment', {
       to: feedData.author.email,

@@ -2,7 +2,7 @@ import { Context, Next } from 'hono';
 
 import { ErrorCodes } from '@api/utils/errors';
 import { isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
-import { ensureProgramCourseAccess } from '@api/services/course/course';
+import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
 
 /**
  * Middleware to check if the authenticated user is a member of a course's group

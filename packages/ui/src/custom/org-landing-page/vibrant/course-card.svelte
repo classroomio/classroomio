@@ -25,7 +25,7 @@
 
 <a
   {href}
-  class="ui:group ui:flex ui:flex-col ui:h-full ui:overflow-hidden ui:rounded-[20px] ui:bg-[var(--landing-card-soft)] ui:no-underline ui:transition-colors ui:hover:bg-[var(--landing-card)] {disableCourseLinks
+  class="ui:group ui:flex ui:flex-col ui:h-full ui:overflow-hidden ui:rounded-[20px] ui:border ui:border-[var(--landing-border)] ui:bg-[var(--landing-card-soft)] ui:no-underline ui:transition-colors ui:hover:bg-[var(--landing-card)] {disableCourseLinks
     ? 'ui:cursor-default'
     : 'ui:cursor-pointer'}"
   aria-disabled={disableCourseLinks}

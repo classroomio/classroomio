@@ -25,7 +25,7 @@ import {
   getCourseAnalytics,
   getCourseProgress,
   updateCourse
-} from '@api/services/course/course';
+} from '@cio/core/services/course/course';
 import { assertCertificateDownloadAllowed, evaluateCourseCertification } from '@api/services/course/completion';
 import { getCourseTags, replaceCourseTags } from '@api/services/tag';
 
@@ -62,7 +62,7 @@ import { presignRouter } from '@api/routes/course/presign';
 import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { sectionRouter } from '@api/routes/course/section';
 import { submissionRouter } from '@api/routes/course/submission';
-import { updateCourseLandingPageService } from '@api/services/course/landing-page';
+import { updateCourseLandingPageService } from '@cio/core/services/course/landing-page';
 import { zValidator } from '@hono/zod-validator';
 
 function slugifyForFilename(value: string): string {

@@ -1,7 +1,7 @@
 import { Context, Next } from 'hono';
 
 import { ErrorCodes } from '@api/utils/errors';
-import { env } from '@api/config/env';
+import { env } from '@cio/core/config/env';
 import { isUserOrgAdmin } from '@cio/db/queries/organization';
 
 export const orgAdminOrApiKeyMiddleware = async (c: Context, next: Next) => {

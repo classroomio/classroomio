@@ -104,6 +104,8 @@ export async function listAssignmentsForReminderScan(): Promise<
     programName: string;
     organizationName: string;
     organizationSiteName: string | null;
+    organizationCustomDomain: string | null;
+    organizationIsCustomDomainVerified: boolean | null;
   }>
 > {
   try {
@@ -116,7 +118,9 @@ export async function listAssignmentsForReminderScan(): Promise<
         programId: schema.program.id,
         programName: schema.program.name,
         organizationName: schema.organization.name,
-        organizationSiteName: schema.organization.siteName
+        organizationSiteName: schema.organization.siteName,
+        organizationCustomDomain: schema.organization.customDomain,
+        organizationIsCustomDomainVerified: schema.organization.isCustomDomainVerified
       })
       .from(schema.programGoalAssignment)
       .innerJoin(schema.programMember, eq(schema.programGoalAssignment.programMemberId, schema.programMember.id))
@@ -140,7 +144,9 @@ export async function listAssignmentsForReminderScan(): Promise<
         programId: row.programId,
         programName: row.programName,
         organizationName: row.organizationName,
-        organizationSiteName: row.organizationSiteName
+        organizationSiteName: row.organizationSiteName,
+        organizationCustomDomain: row.organizationCustomDomain,
+        organizationIsCustomDomainVerified: row.organizationIsCustomDomainVerified
       }));
   } catch (error) {
     console.error('listAssignmentsForReminderScan error:', error);

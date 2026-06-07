@@ -12,6 +12,6 @@
   </a>
 
   <p class="ui:text-muted-foreground ui:text-sm">
-    Finally, A Course Platform That’s <i>Beautiful</i> & <i>Easy To Use</i>
+    The Most Customizable Platform for Customer, Partner, and Employee Education
   </p>
 </div>

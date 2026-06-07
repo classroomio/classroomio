@@ -47,6 +47,12 @@ export const QUEUE_DEFAULTS: Record<QueueName, JobsOptions> = {
     removeOnComplete: { age: 7 * 86_400, count: 500 },
     removeOnFail: { age: 14 * 86_400 }
   },
+  [QUEUE_NAMES.agentCourseGeneration]: {
+    attempts: 3,
+    backoff: { type: 'exponential', delay: 60_000 },
+    removeOnComplete: { age: 7 * 86_400, count: 1_000 },
+    removeOnFail: { age: 14 * 86_400 }
+  },
   [QUEUE_NAMES.onboardingBootstrap]: {
     attempts: 3,
     backoff: { type: 'exponential', delay: 30_000 },

@@ -2,10 +2,12 @@ import './../bootstrap';
 
 import { Queue, Worker } from 'bullmq';
 
+import { runAnalyticsRollupDaily } from '@cio/analytics';
 import { pruneDeadLetterJobsOlderThan, reapStuckMediaJobs } from '@cio/db/queries';
 import {
   JOB_NAMES,
   QUEUE_NAMES,
+  ZAnalyticsDailyRollupPayload,
   ZDeadLetterCleanupPayload,
   ZMediaJobReapPayload,
   ZRetentionCompactPayload,
@@ -53,6 +55,13 @@ const worker = new Worker(
       return { reaped: reaped.length };
     }
 
+    if (job.name === JOB_NAMES.maintenance.analyticsDailyRollup) {
+      const data = ZAnalyticsDailyRollupPayload.parse(job.data ?? {});
+      const result = await runAnalyticsRollupDaily({ daysAgo: data.daysAgo });
+      log.info('analytics-rollup-done', result);
+      return result;
+    }
+
     throw new Error(`Unknown maintenance job: ${job.name}`);
   },
   { connection, concurrency: 1 }
@@ -79,6 +88,16 @@ async function registerSchedulers(): Promise<void> {
     log.info('maintenance-scheduler-registered', {
       name: JOB_NAMES.maintenance.mediaJobReap,
       everyMs: MEDIA_JOB_REAP_INTERVAL_MS
+    });
+
+    await maintenanceQueue.upsertJobScheduler(
+      'analytics-daily-rollup-scheduler',
+      { every: 86_400_000 },
+      { name: JOB_NAMES.maintenance.analyticsDailyRollup, data: {} }
+    );
+    log.info('analytics-rollup-scheduler-registered', {
+      name: JOB_NAMES.maintenance.analyticsDailyRollup,
+      everyMs: 86_400_000
     });
   } catch (err) {
     log.error('maintenance-scheduler-register-failed', { error: errorMessage(err) });

@@ -1,44 +1,33 @@
 <script lang="ts">
   import { Separator } from '@cio/ui/base/separator';
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import BellIcon from '@lucide/svelte/icons/bell';
+  import EyeIcon from '@lucide/svelte/icons/eye';
   import { Button } from '@cio/ui/base/button';
-  import { IconButton } from '@cio/ui/custom/icon-button';
-  import * as Popover from '@cio/ui/base/popover';
-  import { HoverableItem, PreviewIcon } from '@cio/ui/custom/moving-icons';
-  import RefreshCcwIcon from '@lucide/svelte/icons/refresh-ccw';
-  import * as Empty from '@cio/ui/base/empty';
   import { page } from '$app/state';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { isStudentExperience } from '$lib/utils/store/app';
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import { courseApi } from '$features/course/api';
-  import { openCoursePreview } from '$features/course/utils/course-preview';
   import { getActiveCourseNavKey } from '$features/course/utils/functions';
   import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
   import { t } from '$lib/utils/functions/translations';
   import CoursePublishBadge from './course-publish-badge.svelte';
   import CoursePublicBadge from './course-public-badge.svelte';
+  import ViewAsStudentModal from './view-as-student-modal.svelte';
 
   const siteName = $derived($currentOrg.siteName);
   const showCoursePublishBadge = $derived(!$isStudentExperience);
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const activeNavKey = $derived(getActiveCourseNavKey(page.url.pathname, courseApi.course?.id ?? ''));
 
+  let viewAsStudentOpen = $state(false);
+
   $effect(() => {
     if (!siteName) return;
 
     setupProgressApi.fetchSetupProgress(siteName);
   });
-
-  function handlePreview() {
-    openCoursePreview({
-      courseId: courseApi.course?.id ?? '',
-      courseSlug: courseApi.course?.slug,
-      currentOrgDomain: $currentOrgDomain
-    });
-  }
 </script>
 
 <header
@@ -74,42 +63,23 @@
       {$t('course.navItems.nav_ai_assistant')}
     </Button>
 
-    <Popover.Root>
-      <Popover.Trigger>
-        <Button variant="outline" size="icon">
-          <BellIcon class="custom rounded-full" />
-        </Button>
-      </Popover.Trigger>
-      <Popover.Content>
-        <Empty.Root class="ui:from-muted/50 ui:to-background ui:h-full ui:bg-gradient-to-b ui:from-30%">
-          <Empty.Header>
-            <Empty.Media variant="icon">
-              <BellIcon />
-            </Empty.Media>
-            <Empty.Title>No Notifications</Empty.Title>
-            <Empty.Description>You're all caught up. New notifications will appear here.</Empty.Description>
-          </Empty.Header>
-          <Empty.Content>
-            <Button variant="outline" size="sm">
-              <RefreshCcwIcon />
-              {$t('common.refresh')}
-            </Button>
-          </Empty.Content>
-        </Empty.Root>
-      </Popover.Content>
-    </Popover.Root>
-
-    <HoverableItem>
-      {#snippet children(isHovered)}
-        <IconButton
-          onclick={handlePreview}
-          disabled={!courseApi.course?.id}
-          tooltip={$t('course.header.preview')}
-          aria-label={$t('course.header.preview')}
-        >
-          <PreviewIcon {isHovered} size={16} />
-        </IconButton>
-      {/snippet}
-    </HoverableItem>
+    {#if !$isStudentExperience}
+      <Button
+        variant="outline"
+        size="sm"
+        onclick={() => (viewAsStudentOpen = true)}
+        disabled={!courseApi.course?.id}
+        aria-label={$t('course.header.view_as_student')}
+      >
+        <EyeIcon size={14} />
+        <span class="hidden sm:inline">{$t('course.header.view_as_student')}</span>
+      </Button>
+    {/if}
   </div>
 </header>
+
+<ViewAsStudentModal
+  bind:open={viewAsStudentOpen}
+  courseSlug={courseApi.course?.slug}
+  currentOrgDomain={$currentOrgDomain}
+/>

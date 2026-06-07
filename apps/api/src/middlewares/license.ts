@@ -1,7 +1,7 @@
 import type { Context, Next } from 'hono';
 
 import type { LicenseFeatureId } from '@cio/utils/license';
-import { env } from '@api/config/env';
+import { env } from '@cio/core/config/env';
 import { isFeatureLicensed } from '@api/services/license';
 
 /**

@@ -3,6 +3,7 @@
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import { Progress } from '@cio/ui/base/progress';
+  import { Spinner } from '@cio/ui/base/spinner';
   import { Empty } from '@cio/ui/custom/empty';
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
   import { ActivityCard } from '$features/ui';
@@ -259,7 +260,11 @@
       </h2>
 
       <div class="flex flex-1 flex-col space-y-3">
-        {#if highlightedCourses.length > 0}
+        {#if coursesApi.isLoading}
+          <div class="ui:text-muted-foreground flex flex-1 items-center justify-center py-16">
+            <Spinner class="size-6" />
+          </div>
+        {:else if highlightedCourses.length > 0}
           {#each highlightedCourses as course}
             {@const courseProgress = getStudentCourseProgressPercent(course)}
             {@const totalItems = getCourseTotalItems(course)}
@@ -352,36 +357,42 @@
         {$t('dashboard.compliance')}
       </h2>
 
-      <article class="ui:bg-card ui:text-card-foreground flex flex-1 rounded border p-4">
-        <div class="flex items-center justify-between gap-4 lg:flex-col lg:items-start xl:flex-row xl:items-center">
-          <div class="flex min-w-0 items-center gap-4">
-            <div class="ui:bg-primary/10 flex size-12 shrink-0 items-center justify-center rounded">
-              <ClipboardCheckIcon class="ui:text-primary size-5" />
-            </div>
-            <div class="min-w-0">
-              <h3 class="font-semibold">{$t('dashboard.compliance_score')}</h3>
-              <p class="ui:text-muted-foreground mt-1 text-sm">
-                {#if complianceCourses.length > 0}
-                  {$t('dashboard.required_courses_completed', {
-                    completed: completedComplianceCourses.length,
-                    total: complianceCourses.length
-                  })}
-                {:else}
-                  {$t('dashboard.compliance_score_empty')}
-                {/if}
-              </p>
-            </div>
-          </div>
-
-          <p class="ui:text-primary shrink-0 text-2xl font-semibold">
-            {#if complianceScore === null}
-              --
-            {:else}
-              {complianceScore}%
-            {/if}
-          </p>
+      {#if coursesApi.isLoading}
+        <div class="ui:text-muted-foreground flex flex-1 items-center justify-center rounded border py-16">
+          <Spinner class="size-6" />
         </div>
-      </article>
+      {:else}
+        <article class="ui:bg-card ui:text-card-foreground flex flex-1 rounded border p-4">
+          <div class="flex items-center justify-between gap-4 lg:flex-col lg:items-start xl:flex-row xl:items-center">
+            <div class="flex min-w-0 items-center gap-4">
+              <div class="ui:bg-primary/10 flex size-12 shrink-0 items-center justify-center rounded">
+                <ClipboardCheckIcon class="ui:text-primary size-5" />
+              </div>
+              <div class="min-w-0">
+                <h3 class="font-semibold">{$t('dashboard.compliance_score')}</h3>
+                <p class="ui:text-muted-foreground mt-1 text-sm">
+                  {#if complianceCourses.length > 0}
+                    {$t('dashboard.required_courses_completed', {
+                      completed: completedComplianceCourses.length,
+                      total: complianceCourses.length
+                    })}
+                  {:else}
+                    {$t('dashboard.compliance_score_empty')}
+                  {/if}
+                </p>
+              </div>
+            </div>
+
+            <p class="ui:text-primary shrink-0 text-2xl font-semibold">
+              {#if complianceScore === null}
+                --
+              {:else}
+                {complianceScore}%
+              {/if}
+            </p>
+          </div>
+        </article>
+      {/if}
     </section>
   </div>
 </div>

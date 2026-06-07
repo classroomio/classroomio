@@ -7,6 +7,8 @@
   import { t } from '$lib/utils/functions/translations';
   import { VideoUploader } from '$lib/utils/services/courses/presign';
   import { MediaUploader } from './media-uploader';
+  import { encodeAndUploadHls, type HlsEncodeProgress } from './hls-encoder';
+  import { env as publicEnv } from '$env/dynamic/public';
   import { Button } from '@cio/ui/base/button';
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
   import { mediaApi } from '$features/media/api';
@@ -23,6 +25,14 @@
   let { lessonId: _lessonId = '' }: Props = $props();
 
   let fileSize: number | undefined = $state();
+  let hlsProgress: HlsEncodeProgress | null = $state(null);
+  let hlsAbortController: AbortController | null = null;
+
+  /**
+   * HLS is the default upload path on Cloud. Self-hosted installs fall
+   * back to raw-MP4 upload (no R2 + tenant-router edge dependency).
+   */
+  const hlsEnabled = $derived(publicEnv.PUBLIC_IS_SELFHOSTED !== 'true');
 
   let formRes: {
     url?: string;
@@ -109,6 +119,82 @@
     videoUploader.initUpload();
     fileSize = videoFile.size / (1024 * 1024);
     fileName = videoFile.name;
+
+    if (hlsEnabled) {
+      hlsAbortController = new AbortController();
+      try {
+        const result = await encodeAndUploadHls({
+          file: videoFile,
+          title: videoFile.name,
+          signal: hlsAbortController.signal,
+          onProgress: (p) => {
+            hlsProgress = p;
+            $lessonVideoUpload.uploadProgress = p.percent;
+          }
+        });
+
+        const lessonVideoPosition = Array.isArray(lessonApi.lesson?.videos) ? lessonApi.lesson?.videos.length : 0;
+        if (_lessonId) {
+          await mediaApi.attachAsset(result.assetId, {
+            targetType: 'lesson',
+            targetId: _lessonId,
+            slotType: 'lesson_video',
+            position: lessonVideoPosition
+          });
+        }
+
+        const hlsManifestUrl = `/hls/${result.assetId}/master.m3u8`;
+        lessonApi.updateLessonState(
+          'videos',
+          [
+            {
+              type: 'upload',
+              link: hlsManifestUrl,
+              assetId: result.assetId,
+              fileName: videoFile.name,
+              metadata: {
+                fileName: videoFile.name,
+                createdAt: new Date().toISOString(),
+                hls: true,
+                sourceWidth: result.sourceWidth,
+                sourceHeight: result.sourceHeight,
+                hlsRenditions: result.hlsRenditions,
+                hls1080Status: result.hls1080Status,
+                ...(result.thumbnailUrl ? { thumbnailUrl: result.thumbnailUrl } : {})
+              }
+            } as {
+              type: 'upload';
+              link: string;
+              assetId?: string;
+              metadata?: Record<string, unknown>;
+              fileName?: string;
+            }
+          ],
+          { append: true }
+        );
+
+        formRes = {
+          url: hlsManifestUrl,
+          fileKey: result.manifestKey,
+          status: 200,
+          thumbnailUrl: result.thumbnailUrl
+        };
+        startProcessingPoll(result.assetId);
+        isLoaded = true;
+        return;
+      } catch (err) {
+        console.error('HLS encode failed', err);
+        formRes = {
+          type: 'INTERNAL_ERROR',
+          status: 500,
+          message: err instanceof Error ? err.message : t.get('hls_upload.error.encode_failed')
+        };
+        isLoaded = true;
+        return;
+      } finally {
+        $lessonVideoUpload.isUploading = false;
+      }
+    }
 
     try {
       const { url: presignedUrl, fileKey } = await videoUploader.getPresignedUrl(videoFile);
@@ -256,6 +342,7 @@
 
   function cancelUpload() {
     videoUploader.abortController?.abort();
+    hlsAbortController?.abort();
 
     cancelVideoUpload();
 
@@ -264,7 +351,13 @@
     $lessonVideoUpload.uploadProgress = 0;
   }
 
-  let helperText = $derived($lessonVideoUpload.uploadProgress + '%  of ' + Math.round(fileSize || 0) + 'MB');
+  let helperText = $derived.by(() => {
+    const hp = hlsProgress;
+    if (!hp) return $lessonVideoUpload.uploadProgress + '%  of ' + Math.round(fileSize || 0) + 'MB';
+
+    const stageLabel = t.get(`hls_upload.stage.${hp.stage}`);
+    return `${stageLabel} ${hp.percent}%`;
+  });
 </script>
 
 <UpgradeBanner className="mb-3" onClick={() => ($lessonVideoUpload.isModalOpen = false)}>

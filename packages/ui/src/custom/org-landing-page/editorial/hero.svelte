@@ -11,9 +11,10 @@
     courses: OrgLandingPageProps['courses'];
     labels?: OrgLandingPageProps['labels'];
     navigation: Snippet;
+    showActions?: boolean;
   }
 
-  let { hero, courses = [], labels, navigation }: Props = $props();
+  let { hero, courses = [], labels, navigation, showActions = true }: Props = $props();
 
   const featured = $derived(courses[0]);
   const featuredTypeMeta = $derived(featured ? getCourseTypeLandingMeta(featured) : undefined);
@@ -71,23 +72,25 @@
             {hero.subheading}
           </p>
 
-          <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-2.5 {featured ? '' : 'ui:justify-center'}">
-            <Button
-              href={hero.primaryAction.href}
-              disabled={hero.primaryAction.disabled ?? false}
-              size="lg"
-              class="ui:rounded-full ui:px-6 ui:font-medium ui:bg-[var(--landing-fg)] ui:text-[var(--landing-bg)] ui:hover:opacity-90"
-            >
-              {hero.primaryAction.label}
-            </Button>
-            {#if hero.secondaryAction}
-              <SecondaryActionButton
-                href={hero.secondaryAction.href}
-                label={hero.secondaryAction.label}
-                variant="editorial"
-              />
-            {/if}
-          </div>
+          {#if showActions}
+            <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-2.5 {featured ? '' : 'ui:justify-center'}">
+              <Button
+                href={hero.primaryAction.href}
+                disabled={hero.primaryAction.disabled ?? false}
+                size="lg"
+                class="ui:rounded-full ui:px-6 ui:font-medium ui:bg-[var(--landing-fg)] ui:text-[var(--landing-bg)] ui:hover:opacity-90"
+              >
+                {hero.primaryAction.label}
+              </Button>
+              {#if hero.secondaryAction}
+                <SecondaryActionButton
+                  href={hero.secondaryAction.href}
+                  label={hero.secondaryAction.label}
+                  variant="editorial"
+                />
+              {/if}
+            </div>
+          {/if}
         </div>
 
         {#if featured}

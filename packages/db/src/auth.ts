@@ -19,14 +19,15 @@ import { syncUserWithProfile } from './auth/hooks/sync-user';
 import { tokenExchange } from './auth/plugins/token-exchange';
 import { trackLoginHook } from './auth/hooks/track-login';
 
+export { mintLoginLinkToken } from './auth/login-link';
+
 /**
  * Cloud (multi-tenant) only. Routes OAuth/SSO callbacks to the canonical
  * production URL while completing the flow on whichever tenant host the
  * user signed in from (<org>.myclassroomio.com or a BYOD domain).
  *
- * Self-hosted instances run with one apex (api.<domain> + app.<domain>)
- * and use AUTH_COOKIE_DOMAIN for cross-subdomain cookies, so the proxy
- * isn't needed there.
+ * Self-hosted instances proxy browser auth through the dashboard origin, so
+ * the OAuth proxy plugin is only needed for cloud tenant/BYOD domains.
  */
 function buildOAuthProxyPlugin() {
   if (process.env.PUBLIC_IS_SELFHOSTED === 'true') {
@@ -74,12 +75,9 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
   },
   advanced: {
     cookiePrefix: 'classroomio',
-    // Cloud (multi-tenant): host-only cookies on each tenant/BYOD domain.
-    // Self-hosted: cross-subdomain cookies under AUTH_COOKIE_DOMAIN so the
-    // session set on `api.<apex>` is also sent to `app.<apex>`.
-    crossSubDomainCookies: process.env.AUTH_COOKIE_DOMAIN?.trim()
-      ? { enabled: true, domain: process.env.AUTH_COOKIE_DOMAIN.trim() }
-      : { enabled: false },
+    // Browser auth is first-party through tenant-router or the dashboard proxy,
+    // so cookies should stay host-only on the dashboard/public-site origin.
+    crossSubDomainCookies: { enabled: false },
     database: {
       generateId: false
     }

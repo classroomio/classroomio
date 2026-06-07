@@ -61,7 +61,7 @@
       </h3>
     </div>
     <span
-      class="ui:flex-shrink-0 ui:inline-flex ui:items-center ui:justify-center ui:size-8 ui:rounded-full ui:border ui:border-[var(--landing-border)] ui:text-[var(--landing-fg-muted)] ui:group-hover:bg-[var(--landing-fg)] ui:group-hover:text-[var(--landing-bg)] ui:group-hover:border-[var(--landing-fg)] ui:transition-colors"
+      class="ui:flex-shrink-0 ui:inline-flex ui:items-center ui:justify-center ui:size-8 ui:rounded-full ui:bg-secondary ui:text-secondary-foreground ui:group-hover:bg-secondary/80 ui:transition-colors"
       aria-hidden="true"
       aria-label={labels?.enrollLabel ?? 'Enroll'}
     >

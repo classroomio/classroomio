@@ -1,5 +1,13 @@
+<script module lang="ts">
+  let pending: Promise<typeof import('@cio/ui/base/chart')> | null = null;
+  function loadChart() {
+    pending ??= import('@cio/ui/base/chart');
+    return pending;
+  }
+</script>
+
 <script lang="ts">
-  import * as Chart from '@cio/ui/base/chart';
+  import type * as Chart from '@cio/ui/base/chart';
   import { Spinner } from '@cio/ui/base/spinner';
   import { Empty } from '@cio/ui/custom/empty';
   import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
@@ -42,9 +50,11 @@
         <Spinner class="ui:text-muted-foreground size-6" />
       </div>
     {:else if hasData && data}
-      <Chart.ChartContainer class="h-[280px] w-full" config={chartConfig}>
-        <Chart.AreaChart data={data.sparkline} x="date" axis="x" {series} />
-      </Chart.ChartContainer>
+      {#await loadChart() then C}
+        <C.ChartContainer class="h-[280px] w-full" config={chartConfig}>
+          <C.AreaChart data={data.sparkline} x="date" axis="x" {series} />
+        </C.ChartContainer>
+      {/await}
     {:else}
       <Empty icon={TrendingUpIcon} title={$t('analytics.trend.empty')} class="h-[280px]" />
     {/if}

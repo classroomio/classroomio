@@ -5,10 +5,10 @@ import { env } from '$env/dynamic/public';
 
 const isSelfHosted = PUBLIC_IS_SELFHOSTED === 'true';
 
-const DEFAULT_TITLE = 'ClassroomIO | The Open Source Learning Management System for Companies';
+const DEFAULT_TITLE = 'ClassroomIO | The Most Customizable Platform for Customer, Partner, and Employee Education';
 const DEFAULT_DESCRIPTION =
-  'A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations';
-const CLOUD_OG_IMAGE = 'https://brand.cdn.clsrio.com/og/classroomio-og.png';
+  'One platform for customer academies, partner certification, and employee training. Build courses with AI, publish under your domain, and track completions.';
+const CLOUD_OG_IMAGE = 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.png';
 
 function resolveOgImageUrl(url: URL, orgSiteInfo: OrgSiteInfo): string {
   const envUrl = env.PUBLIC_OG_IMAGE_URL?.trim();
@@ -64,7 +64,7 @@ export function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): MetaTagsPro
       images: [
         {
           url: ogImageUrl,
-          alt: `${siteName} OG Image`,
+          alt: `${siteName} platform for customer, partner, and employee education`,
           width: 1920,
           height: 1080,
           secureUrl: ogImageUrl,
@@ -79,7 +79,7 @@ export function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): MetaTagsPro
       title,
       description,
       image: ogImageUrl,
-      imageAlt: `${siteName} OG Image`
+      imageAlt: `${siteName} platform for customer, partner, and employee education`
     }
   });
 }

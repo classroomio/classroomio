@@ -15,10 +15,12 @@
     MoneyIcon,
     ReviewIcon,
     PersonIcon,
+    ContentIcon,
     HoverableItem,
     PreviewIcon
   } from '@cio/ui/custom/moving-icons';
   import type { TCourseUpdate } from '@cio/utils/validation/course';
+  import type { LandingSectionKey } from '@cio/ui/custom/org-landing-page';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { CloseButton } from '$features/ui';
@@ -30,6 +32,7 @@
   import ReviewsForm from './reviews-form.svelte';
   import CertificateForm from './certificate-form.svelte';
   import InstructorForm from './instructor-form.svelte';
+  import SkillsToolsForm from './skills-tools-form.svelte';
   import { Button } from '@cio/ui/base/button';
   import { courseApi } from '$features/course/api';
   import { generateSlug } from '@cio/utils/functions';
@@ -37,7 +40,6 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { useSidebar } from '@cio/ui/base/sidebar';
 
-  // import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
   import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
 
@@ -46,112 +48,122 @@
     courseId: string;
     syncCourseStore: (course: Course) => void;
     onClose?: () => void;
+    selectedSectionKey?: LandingSectionKey | null;
   }
 
-  let { course = $bindable(), courseId, syncCourseStore, onClose }: Props = $props();
+  let {
+    course = $bindable(),
+    courseId,
+    syncCourseStore,
+    onClose,
+    selectedSectionKey = $bindable(null)
+  }: Props = $props();
 
   const sidebar = useSidebar();
   let loading = $state(false);
 
   interface Section {
-    key: number;
-    path: string;
+    key: LandingSectionKey;
     title: string;
     icon: Component;
-    enableAIWriter?: boolean;
-    initPrompt?: string;
+    domId: string;
   }
 
-  const sections: Section[] = [
+  const sections: Section[] = $derived([
     {
-      key: 1,
-      path: '',
+      key: 'header',
       title: $t('course.navItem.landing_page.editor.title.header'),
-      icon: HeaderIcon
+      icon: HeaderIcon,
+      domId: 'header'
     },
     {
-      key: 2,
-      path: 'metadata.requirements',
+      key: 'requirement',
       title: $t('course.navItem.landing_page.editor.title.requirement'),
       icon: ExerciseIcon,
-      enableAIWriter: true,
-      initPrompt: $t('course.navItem.landing_page.editor.title.requirement')
+      domId: 'requirement'
     },
     {
-      key: 3,
-      path: 'metadata.description',
+      key: 'description',
       title: $t('course.navItem.landing_page.editor.title.description'),
       icon: LessonIcon,
-      enableAIWriter: true,
-      initPrompt: 'Please write a detailed course description for this course:'
+      domId: 'description'
     },
     {
-      key: 4,
-      path: 'metadata.goals',
+      key: 'goals',
       title: $t('course.navItem.landing_page.editor.title.goals'),
       icon: GoalIcon,
-      enableAIWriter: true,
-      initPrompt: 'What should a student expect to learn from this course:'
+      domId: 'goals'
     },
     {
-      key: 5,
-      path: '',
+      key: 'chips',
+      title: $t('course.navItem.landing_page.editor.title.chips'),
+      icon: ContentIcon,
+      domId: 'course-chips'
+    },
+    {
+      key: 'certificate',
       title: $t('course.navItem.landing_page.editor.title.certificate'),
-      icon: CertificateIcon
+      icon: CertificateIcon,
+      domId: 'certificate'
     },
     {
-      key: 6,
-      path: '',
+      key: 'reviews',
       title: $t('course.navItem.landing_page.editor.title.reviews'),
-      icon: ReviewIcon
+      icon: ReviewIcon,
+      domId: 'reviews'
     },
     {
-      key: 7,
-      path: '',
+      key: 'instructor',
       title: $t('course.navItem.landing_page.editor.title.instructor'),
-      icon: PersonIcon
+      icon: PersonIcon,
+      domId: 'instructor'
     },
     {
-      key: 8,
-      path: '',
+      key: 'pricing',
       title: $t('course.navItem.landing_page.editor.title.pricing'),
-      icon: MoneyIcon
+      icon: MoneyIcon,
+      domId: 'pricing'
     }
-  ];
-  let selectedSection: Section | null = $state(null);
+  ]);
+
+  const selectedSection = $derived(
+    selectedSectionKey ? (sections.find((s) => s.key === selectedSectionKey) ?? null) : null
+  );
 
   function handleClose() {
-    if (!selectedSection) {
+    if (!selectedSectionKey) {
       onClose?.();
       return;
     }
 
-    selectedSection = null;
+    selectedSectionKey = null;
   }
 
-  function handleSectionSelect(sectionKey: number) {
+  function handleSectionSelect(key: LandingSectionKey) {
     return () => {
-      selectedSection = sections.find((section) => section.key === sectionKey) || null;
-
-      if (selectedSection) {
-        const sectionId = selectedSection.title.toLowerCase();
-
-        const sectionEl = document.getElementById(sectionId);
-        if (sectionEl) {
-          sectionEl.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
+      selectedSectionKey = key;
+      const section = sections.find((s) => s.key === key);
+      if (section) {
+        const el = document.getElementById(section.domId);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     };
   }
+
+  $effect(() => {
+    if (!selectedSection) return;
+    const el = document.getElementById(selectedSection.domId);
+    if (el) {
+      untrack(() => {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  });
 
   async function handleSave() {
     loading = true;
     course.slug = course.slug || generateSlug(course.title, { appendTimestamp: true });
 
-    console.log('course', course);
     const updatePayload = {
       ...course,
       type: course.type!,
@@ -185,7 +197,6 @@
   function setter(value: unknown, setterKey: string) {
     if (typeof value === 'undefined') return;
 
-    // Untrack the course change to avoid unnecessary re-renders
     const _course = untrack(() => cloneDeep(course));
     set(_course, setterKey, value);
 
@@ -254,21 +265,23 @@
     </Sidebar.Group>
   {:else}
     <div class="p-4">
-      {#if selectedSection.key === 1}
+      {#if selectedSection.key === 'header'}
         <HeaderForm bind:course />
-      {:else if selectedSection.key === 2}
+      {:else if selectedSection.key === 'requirement'}
         <RequirementForm bind:course {setter} />
-      {:else if selectedSection.key === 3}
+      {:else if selectedSection.key === 'description'}
         <DescriptionForm bind:course {setter} />
-      {:else if selectedSection.key === 4}
+      {:else if selectedSection.key === 'goals'}
         <GoalsForm bind:course {setter} />
-      {:else if selectedSection.key === 5}
+      {:else if selectedSection.key === 'chips'}
+        <SkillsToolsForm bind:course {setter} />
+      {:else if selectedSection.key === 'certificate'}
         <CertificateForm bind:course {setter} />
-      {:else if selectedSection.key === 6}
+      {:else if selectedSection.key === 'reviews'}
         <ReviewsForm bind:course {setter} />
-      {:else if selectedSection.key === 7}
+      {:else if selectedSection.key === 'instructor'}
         <InstructorForm bind:course {setter} />
-      {:else if selectedSection.key === 8}
+      {:else if selectedSection.key === 'pricing'}
         <PricingForm bind:course {setter} />
       {/if}
     </div>

@@ -4,9 +4,19 @@
   import ChatHeader from '$features/ai-assistant/chat-header.svelte';
   import ChatMessageList from '$features/ai-assistant/chat-message-list.svelte';
   import ChatInput from '$features/ai-assistant/chat-input.svelte';
+  import RunMonitorPane from '$features/ai-assistant/run-monitor-pane.svelte';
+  import ChatChangesCard from '$features/ai-assistant/chat-changes-card.svelte';
+  import {
+    buildRunSummaryMetadata,
+    extractChangedItems,
+    extractChangedItemsFromMessages,
+    formatRunSummaryCounts,
+    type ExerciseTitleLookup
+  } from '$features/ai-assistant/utils/run-summary';
+  import type { AiAssistantRunSummaryMetadata, RunChangedItem } from '$features/ai-assistant/utils/types';
   import { resolve } from '$app/paths';
   import { getCompletedToolLine, getPendingToolLine, MUTATION_TOOLS } from '$features/ai-assistant/utils/tool-labels';
-  import type { ProgressStep } from '$features/ai-assistant/utils/tool-labels';
+  import type { ProgressStep, ToolLineUi } from '$features/ai-assistant/utils/tool-labels';
   import {
     getAgentToolInput,
     getAgentToolName,
@@ -43,6 +53,7 @@
     AiAssistantMessage,
     AiAssistantMessageMetadata,
     AiAssistantTemplateMetadata,
+    AgentRunStep,
     UploadedDocument
   } from '$features/ai-assistant/utils/types';
   import { getCourseTemplate, type CourseTemplateId, type TemplateFormField } from '@cio/ai-assistant';
@@ -66,7 +77,30 @@
   let agentMutationProgressThresholdsTriggered = new SvelteSet<number>();
   let lastSeenStreamingFlag = false;
 
-  const CONTINUE_IMPLEMENTATION_PROMPT = 'Continue implementing the plan from where you left off.';
+  /** Tracks the active durable run so we reset thresholds when a new run starts. */
+  let lastSeenDurableRunId = '';
+  /** Last step count seen for the active durable run; lets us skip recompute on no-op polls. */
+  let lastSeenDurableStepCount = 0;
+  /** Run ids we've already injected a synthetic summary message for in this session. */
+  let lastInjectedRunSummaryId = '';
+  /**
+   * Statuses that warrant injecting a synthetic summary message into the
+   * conversation. Only `completed` is auto-injected — canceled runs are
+   * resumable, so the summary is deferred until the user explicitly
+   * dismisses the canceled run.
+   */
+  const INJECTABLE_RUN_STATUSES = new Set(['completed']);
+  /**
+   * Statuses that keep the panel in run-mode (composer hidden). `canceled`
+   * stays here so the user can either Resume or Dismiss — only `completed`
+   * unconditionally flips back to planning.
+   */
+  const RUN_MODE_STATUSES = new Set(['queued', 'running', 'waiting_for_input', 'paused', 'failed', 'canceled']);
+
+  const RUN_POLL_INTERVAL_MS = 3_000;
+  const RUN_POLL_STATUSES = new Set(['queued', 'running', 'waiting_for_input']);
+  const RUN_RESUMABLE_STATUSES = new Set(['paused', 'waiting_for_input', 'canceled']);
+  const RUN_TERMINAL_STATUSES = new Set(['completed', 'failed', 'canceled', 'paused']);
 
   // Read course id from the route. The chat panel is only mounted inside the
   // course content layout, so `page.params.id` is always the active course.
@@ -84,7 +118,10 @@
 
   let statusFetchedForCourseId: string | null = $state(null);
   let conversationsLoadedForCourseId: string | null = $state(null);
+  let runsLoadedForCourseId: string | null = $state(null);
+  let lastRunStatusSig = $state('');
   let activeConversationId: string | null = $state(null);
+  let isLoadingHistory = $state(false);
   let selectedModel: AgentModelId = $state(DEFAULT_PICKER_MODEL_ID);
   const paidModelIds = UI_PICKER_MODEL_IDS.filter((id) => !AGENT_MODELS[id].isFree);
 
@@ -153,24 +190,40 @@
     }
   }
 
+  let pendingLoadId: string | null = null;
+
   async function loadConversation(conversationId: string) {
     if (!courseId) return;
 
+    pendingLoadId = conversationId;
     await aiAssistantApi.loadConversation(conversationId);
+
+    // Another switch was requested while this one was in flight — drop this result.
+    if (pendingLoadId !== conversationId) {
+      return;
+    }
 
     const conversation = aiAssistantApi.currentConversation;
 
-    if (conversation) {
-      const loadedMessages = (conversation.messages ?? []) as AiAssistantMessage[];
-      // Only overwrite in-memory messages if the loaded conversation actually has saved
-      // messages. An empty result means the conversation was just created and the first
-      // message hasn't been persisted yet — overwriting would wipe the optimistic message
-      // that chat.sendMessage already placed in the UI.
-      if (loadedMessages.length > 0) {
-        chat.messages = loadedMessages;
-      }
-      setActiveConversationId(courseId, conversationId);
+    if (!conversation) {
+      return;
     }
+
+    if (chat.status === 'streaming' || chat.status === 'submitted') {
+      return;
+    }
+
+    const loadedMessages = (conversation.messages ?? []) as AiAssistantMessage[];
+
+    // Only overwrite in-memory messages if the loaded conversation actually has saved
+    // messages. An empty result means the conversation was just created and the first
+    // message hasn't been persisted yet — overwriting would wipe the optimistic message
+    // that chat.sendMessage already placed in the UI.
+    if (loadedMessages.length > 0) {
+      chat.messages = loadedMessages;
+    }
+
+    setActiveConversationId(courseId, conversationId);
   }
 
   async function startNewChat() {
@@ -232,20 +285,41 @@
         return;
       }
 
+      // Content Ask AI bar (and org home) set this before opening the panel; loading a
+      // saved conversation would race handleSend and wipe the optimistic user message.
+      const pendingPrompt = get(initialChatPrompt);
+
+      if (pendingPrompt?.trim()) {
+        return;
+      }
+
       const listForCourseId = courseId;
       const savedId = getActiveConversationId(listForCourseId);
 
-      aiAssistantApi.listConversations(listForCourseId).then(() => {
-        if (courseId !== listForCourseId) return;
+      isLoadingHistory = true;
+      aiAssistantApi
+        .listConversations(listForCourseId)
+        .then(async () => {
+          if (courseId !== listForCourseId) return;
+          if (activeConversationId) return;
+          if (chat.status === 'streaming' || chat.status === 'submitted') return;
 
-        if (activeConversationId) return;
+          if (savedId) {
+            await loadConversation(savedId);
+          } else if (aiAssistantApi.conversations.length > 0) {
+            await loadConversation(aiAssistantApi.conversations[0].id);
+          }
+        })
+        .finally(() => {
+          if (courseId === listForCourseId) {
+            isLoadingHistory = false;
+          }
+        });
+    }
 
-        if (savedId) {
-          loadConversation(savedId);
-        } else if (aiAssistantApi.conversations.length > 0) {
-          loadConversation(aiAssistantApi.conversations[0].id);
-        }
-      });
+    if (runsLoadedForCourseId !== courseId) {
+      runsLoadedForCourseId = courseId;
+      void aiAssistantApi.loadActiveRun(courseId);
     }
   });
 
@@ -503,24 +577,144 @@
     chat.stop();
   }
 
+  function isRunActive(status: string | undefined): boolean {
+    return status === 'queued' || status === 'running' || status === 'waiting_for_input';
+  }
+
+  function getRunToolName(step: AgentRunStep): string | null {
+    if (step.stepType.startsWith('tool:')) {
+      return step.stepType.slice('tool:'.length);
+    }
+
+    const toolName = step.input?.toolName;
+
+    return typeof toolName === 'string' && toolName.length > 0 ? toolName : null;
+  }
+
+  function getRunStepInput(step: AgentRunStep): unknown {
+    const args = step.input?.args;
+
+    return args ?? step.input ?? undefined;
+  }
+
+  function getRunStepResult(step: AgentRunStep): unknown {
+    const output = step.output;
+
+    if (!output || typeof output !== 'object') {
+      return output ?? undefined;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(output, 'result')) {
+      return (output as Record<string, unknown>).result;
+    }
+
+    return output;
+  }
+
+  function getRunProgressStatus(status: string): ProgressStep['status'] {
+    if (status === 'completed') return 'completed';
+    if (status === 'running') return 'in_progress';
+    if (status === 'failed' || status === 'canceled') return 'failed';
+
+    return 'pending';
+  }
+
+  function toRunProgressStep(step: AgentRunStep): ProgressStep {
+    const toolName = getRunToolName(step);
+    const status = getRunProgressStatus(step.status);
+
+    if (!toolName) {
+      return {
+        status,
+        line: { shape: 'i18n', key: 'ai_assistant.run_checkpoint' }
+      };
+    }
+
+    return {
+      status,
+      line:
+        status === 'completed'
+          ? getCompletedToolLine(toolName, getRunStepResult(step))
+          : getPendingToolLine(toolName, getRunStepInput(step))
+    };
+  }
+
   async function handleImplementPlan(editedPlan: unknown) {
     if (chat.status === 'streaming') return;
     if (!courseId) return;
 
+    const existingRunStatus = aiAssistantApi.currentRun?.run.status;
+    if (isRunActive(existingRunStatus)) return;
+
     const conversationId = await ensureActiveConversation(courseId);
     if (!conversationId) return;
+    if (!editedPlan || typeof editedPlan !== 'object') return;
 
     inputValue = '';
+    await persistFinishedChat(chat.messages as AiAssistantMessage[], conversationId);
 
-    chat.sendMessage({
-      text: 'Implement this plan.',
-      metadata: {
-        plan: {
-          action: 'implement_course_plan',
-          payload: editedPlan
-        }
-      }
+    await aiAssistantApi.createRun({
+      courseId,
+      conversationId,
+      approvedPlan: editedPlan as Record<string, unknown>,
+      model: selectedModel
     });
+  }
+
+  async function handleCancelRun() {
+    const runId = aiAssistantApi.currentRun?.run.id;
+    if (!runId) return;
+
+    await aiAssistantApi.cancelRun(runId);
+    refreshCourseStateAfterChat();
+  }
+
+  async function handleRetryRun() {
+    const runId = aiAssistantApi.currentRun?.run.id;
+    if (!runId) return;
+
+    await aiAssistantApi.retryRun(runId);
+  }
+
+  async function handleResumeRun() {
+    const runId = aiAssistantApi.currentRun?.run.id;
+    if (!runId) return;
+
+    await aiAssistantApi.resumeRun(runId);
+  }
+
+  /**
+   * Walk away from a canceled run: inject the run-summary message into the
+   * conversation (the same one we used to auto-write on cancel) and clear
+   * the local currentRun so the panel flips back to planning. The run row
+   * itself stays in the DB — user could still find it in run history.
+   */
+  async function handleDismissRun() {
+    const runDetail = aiAssistantApi.currentRun;
+    if (!runDetail || !activeConversationId) return;
+    if (runDetail.run.conversationId !== activeConversationId) return;
+
+    const summaryMeta = buildRunSummaryMetadata({ runDetail, resolveExerciseTitle });
+    if (summaryMeta) {
+      const alreadyInConversation = (chat.messages as AiAssistantMessage[]).some(
+        (msg) => (msg.metadata as AiAssistantMessageMetadata | undefined)?.runSummary?.runId === summaryMeta.runId
+      );
+
+      if (!alreadyInConversation) {
+        const summaryMessage: AiAssistantMessage = {
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          parts: [{ type: 'text', text: buildRunSummaryText(summaryMeta) }],
+          metadata: { runSummary: summaryMeta } satisfies AiAssistantMessageMetadata
+        };
+
+        chat.messages = [...(chat.messages as AiAssistantMessage[]), summaryMessage];
+        lastInjectedRunSummaryId = summaryMeta.runId;
+        void aiAssistantApi.saveMessages(activeConversationId, chat.messages as AiAssistantMessage[]);
+      }
+    }
+
+    aiAssistantApi.currentRun = null;
   }
 
   async function handleAskPlanChanges(message: string) {
@@ -533,11 +727,6 @@
     if (!conversationId) return;
 
     chat.sendMessage({ text: trimmed });
-  }
-
-  function handleResume() {
-    inputValue = CONTINUE_IMPLEMENTATION_PROMPT;
-    void handleSend();
   }
 
   function handleMentionClick(route: string) {
@@ -686,6 +875,263 @@
     return { steps, currentActionLine, isStopped, titleKey, hasMutations };
   });
 
+  const durableRunState = $derived.by(() => {
+    const runDetail = aiAssistantApi.currentRun;
+
+    if (!runDetail || runDetail.run.courseId !== courseId) {
+      return null;
+    }
+
+    const run = runDetail.run;
+    const steps = runDetail.steps.map(toRunProgressStep);
+
+    const titleKey =
+      run.status === 'completed'
+        ? 'ai_assistant.run_completed'
+        : run.status === 'failed'
+          ? 'ai_assistant.run_failed'
+          : run.status === 'canceled'
+            ? 'ai_assistant.run_canceled'
+            : 'ai_assistant.run_running';
+
+    const waitingLine: ToolLineUi | undefined =
+      steps.length === 0 && run.status !== 'failed' && run.status !== 'canceled'
+        ? { shape: 'i18n' as const, key: 'ai_assistant.run_waiting_for_worker' }
+        : undefined;
+    const currentActionLine = steps.find((step) => step.status === 'in_progress')?.line ?? waitingLine;
+
+    return {
+      titleKey,
+      steps,
+      currentActionLine,
+      isStopped: run.status === 'failed' || run.status === 'canceled' || run.status === 'paused',
+      error: run.lastError?.message,
+      canCancel: run.status === 'queued' || run.status === 'running' || run.status === 'waiting_for_input',
+      canRetry: run.status === 'failed',
+      canResume: RUN_RESUMABLE_STATUSES.has(run.status)
+    };
+  });
+
+  /**
+   * Decides what the bottom of the chat panel is showing: the composer
+   * (`planning`) or the durable run monitor (`running`). The run must belong
+   * to the active conversation — a paused run on a different conversation
+   * should not hijack this one. Completed/canceled runs flip back to
+   * planning even if `currentRun` is still in memory.
+   */
+  const panelMode = $derived.by<'planning' | 'running'>(() => {
+    const runDetail = aiAssistantApi.currentRun;
+    if (!runDetail) return 'planning';
+    if (runDetail.run.courseId !== courseId) return 'planning';
+    if (activeConversationId && runDetail.run.conversationId !== activeConversationId) return 'planning';
+    return RUN_MODE_STATUSES.has(runDetail.run.status) ? 'running' : 'planning';
+  });
+
+  /**
+   * True when any historical `PlanView` card in this conversation should default
+   * to its collapsed form. We minimize either when the plan card has been
+   * pushed back by newer assistant content (no longer the latest message) or
+   * the moment implementation kicks off — both signal the user's attention is
+   * elsewhere. `PlanView` itself preserves manual expand/collapse overrides.
+   */
+  const planShouldCollapse = $derived(panelMode === 'running');
+
+  /** Statuses where the worker is still actively executing — hide the changes card. */
+  const ACTIVELY_EXECUTING = new Set(['queued', 'running', 'waiting_for_input']);
+
+  /**
+   * Build a map of every exercise id → title from the loaded course outline so
+   * the changes extractor can resolve titles for exercise-section actions
+   * (which only expose the parent exercise id, not its title).
+   */
+  const resolveExerciseTitle = $derived.by<ExerciseTitleLookup>(() => {
+    const course = courseApi.course;
+    if (!course?.content) return () => undefined;
+
+    const titles = new Map<string, string>();
+
+    const visitItems = (items: { id: string; title?: string; type?: unknown }[] | undefined) => {
+      if (!items) return;
+      for (const item of items) {
+        // Heuristic: only the exercise content type has a route-relevant id we care about.
+        // We index everything that has a title — the lookup is exercise-scoped at call time.
+        if (item.id && typeof item.title === 'string') {
+          titles.set(item.id, item.title);
+        }
+      }
+    };
+
+    visitItems(course.content.items as unknown as { id: string; title?: string; type?: unknown }[] | undefined);
+    for (const section of course.content.sections ?? []) {
+      visitItems((section as unknown as { items?: { id: string; title?: string; type?: unknown }[] }).items);
+    }
+
+    return (exerciseId: string) => titles.get(exerciseId);
+  });
+
+  /**
+   * Per-item changes the agent just made to this conversation's content.
+   * Three sources, in priority order:
+   *   1. The active background run, once it has stopped executing — covers
+   *      Agent-mode work (BullMQ runner) with a Completed/Canceled/Paused status.
+   *   2. The latest persisted `runSummary.changes` on a message — survives
+   *      refresh for runs that have already injected their summary message.
+   *   3. Inline chat-mode tool calls aggregated from `chat.messages` — covers
+   *      conversations where the agent updated content via tool calls embedded
+   *      directly in assistant messages (no background run involved). Carries
+   *      no status label.
+   */
+  const changedItems = $derived.by<RunChangedItem[]>(() => {
+    const runDetail = aiAssistantApi.currentRun;
+    if (runDetail && runDetail.run.conversationId === activeConversationId) {
+      if (!ACTIVELY_EXECUTING.has(runDetail.run.status)) {
+        return extractChangedItems(runDetail, resolveExerciseTitle);
+      }
+    }
+
+    const messages = chat.messages as AiAssistantMessage[];
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const summary = (messages[i].metadata as AiAssistantMessageMetadata | undefined)?.runSummary;
+      if (summary?.changes && summary.changes.length > 0) {
+        return summary.changes;
+      }
+    }
+
+    return extractChangedItemsFromMessages(messages, resolveExerciseTitle);
+  });
+
+  function runStatusLabel(status: string): string {
+    if (status === 'completed') return t.get('ai_assistant.changes_card.status.completed');
+    if (status === 'failed') return t.get('ai_assistant.changes_card.status.failed');
+    if (status === 'canceled') return t.get('ai_assistant.changes_card.status.canceled');
+    if (status === 'paused') return t.get('ai_assistant.changes_card.status.paused');
+    return '';
+  }
+
+  /** Status label shown next to the count in the changes card header ("Completed", …). */
+  const changedItemsStatusLabel = $derived.by<string | null>(() => {
+    const runDetail = aiAssistantApi.currentRun;
+    if (runDetail && runDetail.run.conversationId === activeConversationId) {
+      if (!ACTIVELY_EXECUTING.has(runDetail.run.status)) {
+        return runStatusLabel(runDetail.run.status) || null;
+      }
+    }
+
+    const messages = chat.messages as AiAssistantMessage[];
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const summary = (messages[i].metadata as AiAssistantMessageMetadata | undefined)?.runSummary;
+      if (summary?.changes && summary.changes.length > 0) {
+        return runStatusLabel(summary.status) || null;
+      }
+    }
+
+    return null;
+  });
+
+  function buildRunSummaryText(metadata: AiAssistantRunSummaryMetadata): string {
+    const countsText = formatRunSummaryCounts(metadata.counts);
+
+    if (metadata.status === 'completed') {
+      return countsText
+        ? t.get('ai_assistant.run_summary.completed_with_counts', { counts: countsText })
+        : t.get('ai_assistant.run_summary.completed');
+    }
+
+    if (metadata.status === 'canceled') {
+      return countsText
+        ? t.get('ai_assistant.run_summary.canceled_with_counts', { counts: countsText })
+        : t.get('ai_assistant.run_summary.canceled');
+    }
+
+    if (metadata.status === 'failed') {
+      return metadata.error
+        ? t.get('ai_assistant.run_summary.failed_with_reason', { reason: metadata.error })
+        : t.get('ai_assistant.run_summary.failed');
+    }
+
+    return countsText
+      ? t.get('ai_assistant.run_summary.paused_with_counts', { counts: countsText })
+      : t.get('ai_assistant.run_summary.paused');
+  }
+
+  /**
+   * Inject a synthetic assistant message summarising the run the first time
+   * we observe it reach a settled terminal status. Persists so a refresh
+   * still surfaces the summary — and dedupes via metadata.runSummary.runId
+   * so we don't double-write across refreshes.
+   */
+  $effect(() => {
+    const runDetail = aiAssistantApi.currentRun;
+    if (!runDetail) return;
+    if (runDetail.run.courseId !== courseId) return;
+    if (!activeConversationId) return;
+    if (runDetail.run.conversationId !== activeConversationId) return;
+    if (!INJECTABLE_RUN_STATUSES.has(runDetail.run.status)) return;
+
+    const runId = runDetail.run.id;
+    if (runId === lastInjectedRunSummaryId) return;
+
+    const alreadyInConversation = (chat.messages as AiAssistantMessage[]).some(
+      (msg) => (msg.metadata as AiAssistantMessageMetadata | undefined)?.runSummary?.runId === runId
+    );
+
+    if (alreadyInConversation) {
+      lastInjectedRunSummaryId = runId;
+      return;
+    }
+
+    const summaryMeta = buildRunSummaryMetadata({ runDetail, resolveExerciseTitle });
+    if (!summaryMeta) return;
+
+    const summaryMessage: AiAssistantMessage = {
+      id: crypto.randomUUID(),
+      role: 'assistant',
+      parts: [{ type: 'text', text: buildRunSummaryText(summaryMeta) }],
+      metadata: { runSummary: summaryMeta } satisfies AiAssistantMessageMetadata
+    };
+
+    chat.messages = [...(chat.messages as AiAssistantMessage[]), summaryMessage];
+    lastInjectedRunSummaryId = runId;
+
+    void aiAssistantApi.saveMessages(activeConversationId, chat.messages as AiAssistantMessage[]);
+  });
+
+  $effect(() => {
+    const run = aiAssistantApi.currentRun?.run;
+
+    if (!run) {
+      lastRunStatusSig = '';
+      return;
+    }
+
+    const nextSig = `${run.id}:${run.status}`;
+
+    if (nextSig === lastRunStatusSig) {
+      return;
+    }
+
+    const previousSig = lastRunStatusSig;
+    lastRunStatusSig = nextSig;
+
+    if (previousSig.startsWith(`${run.id}:`) && RUN_TERMINAL_STATUSES.has(run.status)) {
+      refreshCourseStateAfterChat();
+    }
+  });
+
+  $effect(() => {
+    const run = aiAssistantApi.currentRun?.run;
+
+    if (!run || !RUN_POLL_STATUSES.has(run.status)) {
+      return;
+    }
+
+    const pollTimer = window.setInterval(() => {
+      void aiAssistantApi.loadRun(run.id);
+    }, RUN_POLL_INTERVAL_MS);
+
+    return () => window.clearInterval(pollTimer);
+  });
+
   $effect(() => {
     const streamingNow = isStreaming;
 
@@ -714,6 +1160,49 @@
     }
 
     const completedStepCount = state.steps.filter((s) => s.status === 'completed').length;
+    const stepThresholds = [
+      ...new Set(
+        AGENT_STEP_PROGRESS_REFRESH_RATIOS.map((ratio) => Math.min(total, Math.max(1, Math.ceil(total * ratio))))
+      )
+    ].sort((a, b) => a - b);
+
+    for (const threshold of stepThresholds) {
+      if (completedStepCount >= threshold && !agentMutationProgressThresholdsTriggered.has(threshold)) {
+        agentMutationProgressThresholdsTriggered.add(threshold);
+
+        refreshCourseStateAfterChat();
+      }
+    }
+  });
+
+  // Mirrors the inline-streaming threshold refresh for durable background runs
+  // (the /agent/runs path). Recomputes only when the run's step count actually
+  // changes, so 2s polls that bring no new steps don't trigger work.
+  $effect(() => {
+    const runDetail = aiAssistantApi.currentRun;
+
+    if (!runDetail || runDetail.run.courseId !== courseId || !RUN_POLL_STATUSES.has(runDetail.run.status)) {
+      lastSeenDurableRunId = '';
+      lastSeenDurableStepCount = 0;
+      return;
+    }
+
+    const runId = runDetail.run.id;
+
+    if (runId !== lastSeenDurableRunId) {
+      agentMutationProgressThresholdsTriggered.clear();
+      lastSeenDurableRunId = runId;
+      lastSeenDurableStepCount = 0;
+    }
+
+    const total = runDetail.steps.length;
+    if (total === 0 || total === lastSeenDurableStepCount) {
+      return;
+    }
+
+    lastSeenDurableStepCount = total;
+
+    const completedStepCount = runDetail.steps.filter((step) => step.status === 'completed').length;
     const stepThresholds = [
       ...new Set(
         AGENT_STEP_PROGRESS_REFRESH_RATIOS.map((ratio) => Math.min(total, Math.max(1, Math.ceil(total * ratio))))
@@ -818,9 +1307,11 @@
   <ChatMessageList
     messages={chat.messages}
     {isStreaming}
+    {isLoadingHistory}
     {isStudent}
     {courseId}
     {planExecutionState}
+    {planShouldCollapse}
     {quickActions}
     onQuickAction={handleQuickAction}
     onImplementPlan={handleImplementPlan}
@@ -828,27 +1319,48 @@
     onSubmitTemplateAnswers={handleSubmitTemplateAnswers}
     onSkipTemplateForm={handleSkipTemplateForm}
     onStop={handleStop}
-    onResume={handleResume}
     onMentionClick={handleMentionClick}
   />
 
-  <ChatInput
-    bind:inputValue
-    {isStreaming}
-    {isExhausted}
-    {isUploading}
-    {uploadedDocument}
-    {mentionItems}
-    {selectedModel}
-    {isStudent}
-    {tutorBlocked}
-    lockedModelIds={$isFreePlan ? paidModelIds : []}
-    error={chat.error}
-    onSend={handleSend}
-    onStop={handleStop}
-    onFileSelect={handleFileSelect}
-    onRemoveDocument={handleRemoveDocument}
-    onSelectModel={handleSelectModel}
-    onLockedModelSelect={handleLockedModelSelect}
-  />
+  {#if panelMode === 'running' && durableRunState}
+    <RunMonitorPane
+      state={durableRunState}
+      {courseId}
+      onCancel={handleCancelRun}
+      onResume={handleResumeRun}
+      onRetry={handleRetryRun}
+      onDismiss={handleDismissRun}
+      runStatus={aiAssistantApi.currentRun?.run.status ?? null}
+      queuedSince={aiAssistantApi.currentRun?.run.createdAt ?? null}
+      onMentionClick={handleMentionClick}
+    />
+  {:else}
+    {#if changedItems.length > 0}
+      <ChatChangesCard
+        items={changedItems}
+        {courseId}
+        onNavigate={handleMentionClick}
+        statusLabel={changedItemsStatusLabel}
+      />
+    {/if}
+    <ChatInput
+      bind:inputValue
+      {isStreaming}
+      {isExhausted}
+      {isUploading}
+      {uploadedDocument}
+      {mentionItems}
+      {selectedModel}
+      {isStudent}
+      {tutorBlocked}
+      lockedModelIds={$isFreePlan ? paidModelIds : []}
+      error={chat.error}
+      onSend={handleSend}
+      onStop={handleStop}
+      onFileSelect={handleFileSelect}
+      onRemoveDocument={handleRemoveDocument}
+      onSelectModel={handleSelectModel}
+      onLockedModelSelect={handleLockedModelSelect}
+    />
+  {/if}
 </div>

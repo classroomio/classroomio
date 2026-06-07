@@ -28,7 +28,7 @@ function resolveApiUpstreamPath(pathname: string): string {
 }
 
 function resolveApiUpstreamBase(): string | null {
-  const base = process.env.PRIVATE_SERVER_URL || process.env.PUBLIC_SERVER_URL;
+  const base = process.env.PRIVATE_SERVER_URL;
   if (!base) return null;
 
   return base.replace(/\/$/, '');
@@ -43,7 +43,7 @@ export async function proxyRequestToApi(request: Request): Promise<Response> {
   const apiBase = resolveApiUpstreamBase();
 
   if (!apiBase) {
-    console.error('proxyRequestToApi: missing PRIVATE_SERVER_URL / PUBLIC_SERVER_URL');
+    console.error('proxyRequestToApi: missing PRIVATE_SERVER_URL');
     return new Response('API upstream not configured', { status: 502 });
   }
 

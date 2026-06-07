@@ -350,7 +350,9 @@
       "thumbnail_updated": "Miniatura zaktualizowana",
       "thumbnail_update_failed": "Nie udało się zaktualizować miniatury",
       "thumbnail_regen_started": "Regeneruję miniatury…",
-      "thumbnail_regen_failed": "Nie udało się ponownie wygenerować miniatur"
+      "thumbnail_regen_failed": "Nie udało się ponownie wygenerować miniatur",
+      "transcript_saved": "Transkrypcja zaktualizowana",
+      "transcript_save_failed": "Nie udało się zapisać transkrypcji"
     },
     "tags": {
       "group_created": "Utworzono grupę tagów",
@@ -420,6 +422,18 @@
       "workspace_is_primary": "Nie można usunąć podstawowego obszaru roboczego.",
       "workspace_not_found": "Nie znaleziono obszaru roboczego.",
       "not_primary_workspace": "Przejdź do podstawowego obszaru roboczego, aby zarządzać obszarami roboczymi konta."
+    },
+    "link_invite": {
+      "generated": "Wygenerowano zaproszenie do linku",
+      "enabled": "Zaproszenie do połączenia włączone",
+      "disabled": "Zaproszenie do połączenia wyłączone"
+    },
+    "view_as_student": {
+      "failed": "Nie można otworzyć widoku ucznia. Spróbuj ponownie."
+    },
+    "lesson_video": {
+      "generate_1080_completed": "Dodano wersję 1080p",
+      "generate_1080_failed": "Nie można wygenerować wersji 1080p"
     }
   },
   "explore": {
@@ -905,7 +919,9 @@
             "short_video": "Krótki film",
             "replace_cover": "Zamień zdjęcie na okładce",
             "replace": "Wymień",
-            "helper": "Wprowadź link do filmu na YouTube"
+            "helper": "Wprowadź link do filmu na YouTube",
+            "remove": "Usuń",
+            "no_cover": "Nie ustawiono obrazu na okładce"
           },
           "title": {
             "header": "Nagłówek",
@@ -1030,7 +1046,17 @@
           "members": "Członkowie",
           "invite_sent": "Zaproszenie wysłane",
           "you": "Ty",
-          "remove": "Usuń"
+          "remove": "Usuń",
+          "link_invite": {
+            "heading": "Zaproszenie do linku",
+            "description": "Każda osoba mająca ten link może dołączyć do Twojej organizacji.",
+            "generate": "Wygeneruj łącze",
+            "copy": "Kopiuj",
+            "copied": "Skopiowano!",
+            "toggle_label": "Zaproszenie do linku aktywne",
+            "disabled_notice": "To łącze jest wyłączone. Włącz tę opcję, aby umożliwić nowym członkom dołączanie za pośrednictwem łącza.",
+            "select_role": "Wybierz rolę"
+          }
         },
         "roles": {
           "admin": "Administrator",
@@ -1879,7 +1905,11 @@
                 "language": "Language: {language}",
                 "empty": "No transcript yet. You can generate one from this card’s menu after the video is uploaded.",
                 "loading": "Loading transcript…",
-                "open_side_panel": "Otwórz panel transkrypcji"
+                "open_side_panel": "Otwórz panel transkrypcji",
+                "edit": "Edytuj transkrypcję",
+                "save": "Zapisz",
+                "cancel": "Anuluj",
+                "segment_label": "Segment o {timestamp}"
               },
               "simple_card": {
                 "kind_youtube": "YouTube",
@@ -1889,7 +1919,13 @@
                 "course_fallback": "Kurs",
                 "menu_aria": "Opcje wideo"
               },
-              "view_transcript": "Zobacz transkrypcję"
+              "view_transcript": "Zobacz transkrypcję",
+              "playback_error": "Ładowanie tego filmu nie powiodło się.",
+              "playback_reload": "Załaduj ponownie wideo",
+              "generate_1080": "Wygeneruj 1080p",
+              "generate_1080_in_progress": "Generowanie 1080p…",
+              "generate_1080_ready": "Dostępna rozdzielczość 1080p",
+              "generate_1080_unavailable": "Rozdzielczość 1080p jest niedostępna dla tego wideo źródłowego"
             },
             "slide": {
               "title": "Przesuń",
@@ -2085,7 +2121,8 @@
     },
     "header": {
       "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing."
+      "preview_missing_slug": "Generate and save a course slug before previewing.",
+      "view_as_student": "Wyświetl jako student"
     },
     "sidebar": {
       "back_to_course": "Powrót na kurs",
@@ -2105,12 +2142,12 @@
       "nav_attendance": "Obecność",
       "nav_submissions": "Zgłoszenia",
       "nav_marks": "Znaki",
+      "nav_compliance": "Zgodność",
       "nav_people": "Ludzie",
       "nav_analytics": "Analityka",
       "nav_certificates": "Certyfikaty",
       "nav_landing_page": "Strona docelowa",
       "nav_settings": "Ustawienia",
-      "nav_compliance": "Zgodność",
       "nav_ai_assistant": "Asystent",
       "nav_ai_tutor": "Nauczyciel AI"
     },
@@ -2202,6 +2239,12 @@
           "form_title": "Opowiedz nam o swoim produkcie"
         }
       }
+    },
+    "view_as_student": {
+      "title": "Spowoduje to przekierowanie do Student LMS.",
+      "description": "Zaraz zobaczysz, co zobaczy student, który zapisze się na ten kurs",
+      "copy_link": "Skopiuj link",
+      "go_to_lms": "Przejdź do LMS-a"
     }
   },
   "courses": {
@@ -3069,6 +3112,11 @@
         "field_nav_count_other": "{count} linków",
         "hero_empty": "—",
         "customize": "Dostosuj stronę docelową"
+      },
+      "preview_tabs": {
+        "label": "Strona podglądu",
+        "home": "Dom",
+        "course": "Kurs"
       }
     },
     "organization": {
@@ -3322,7 +3370,10 @@
     "tic_tac": "Palec kleszczowy",
     "see_more": "Zobacz więcej",
     "whats_new": "Co nowego",
-    "launch_week": "Tydzień uruchomienia"
+    "launch_week": "Tydzień uruchomienia",
+    "feedback": "Informacje zwrotne",
+    "documentation": "Dokumentacja",
+    "need_help": "Potrzebujesz pomocy?"
   },
   "login": {
     "welcome": "Witamy z powrotem",
@@ -3567,6 +3618,18 @@
         "joined": "Dołączył do organizacji",
         "join_failed": "Nie udało się dołączyć do organizacji"
       }
+    },
+    "link": {
+      "page_title": "Dołącz do organizacji {orgName} w ClassroomIO",
+      "invitation_student": "Zaproszono Cię do dołączenia do organizacji {orgName} jako student.",
+      "invitation_teacher": "Zaproszono Cię do dołączenia do organizacji {orgName} jako nauczyciel.",
+      "invitation_admin": "Zostałeś zaproszony do dołączenia do organizacji {orgName} jako administrator.",
+      "invitation_fallback": "Zostałeś zaproszony do dołączenia do organizacji {orgName} jako {role}.",
+      "accept_button": "Dołącz do organizacji",
+      "go_to_dashboard": "Przejdź do Panelu",
+      "disabled": "Ten link z zaproszeniem został wyłączony przez organizację.",
+      "join_failed": "Nie udało się dołączyć do organizacji",
+      "joined": "Dołączył do organizacji"
     }
   },
   "automation": {
@@ -4053,7 +4116,11 @@
         "title": "Pracownik nie odpowiada",
         "body": "Ten przebieg czekał ponad 30 sekund bez odbioru pracownika. Proces roboczy działający w tle może być wyłączony lub uruchamiany ponownie."
       }
-    }
+    },
+    "ask_ai": "Zapytaj AI",
+    "content_input_placeholder": "Zapytaj o tę treść…",
+    "ask_ai_expand_aria": "Otwórz wejście Zapytaj AI",
+    "ask_ai_input_aria": "Zapytaj AI o tę treść"
   },
   "widgets": {
     "heading": "Widżety",

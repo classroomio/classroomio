@@ -1,4 +1,11 @@
-const { TRUSTED_ORIGINS: TRUSTED_ORIGINS_STRING, PUBLIC_SERVER_URL } = process.env;
+const {
+  DASHBOARD_ORIGIN,
+  PUBLIC_IS_SELFHOSTED,
+  PUBLIC_SERVER_URL,
+  TRUSTED_ORIGINS: TRUSTED_ORIGINS_STRING
+} = process.env;
+
+const dashboardOrigin = DASHBOARD_ORIGIN?.trim().replace(/\/$/, '');
 
 const DEFAULT_TRUSTED_ORIGINS = [
   'http://localhost:5173',
@@ -16,13 +23,15 @@ const DEFAULT_TRUSTED_ORIGINS = [
   'https://login.okta.com'
 ];
 
-export const TRUSTED_ORIGINS = TRUSTED_ORIGINS_STRING
-  ? [
-      ...DEFAULT_TRUSTED_ORIGINS,
-      ...TRUSTED_ORIGINS_STRING.split(',')
-        .map((s) => s.trim())
+export const TRUSTED_ORIGINS = [
+  ...DEFAULT_TRUSTED_ORIGINS,
+  ...(TRUSTED_ORIGINS_STRING
+    ? TRUSTED_ORIGINS_STRING.split(',')
+        .map((origin) => origin.trim())
         .filter(Boolean)
-    ]
-  : DEFAULT_TRUSTED_ORIGINS;
+    : []),
+  ...(dashboardOrigin ? [dashboardOrigin] : [])
+];
 
-export const BASE_URL = PUBLIC_SERVER_URL || 'http://localhost:3002';
+export const BASE_URL =
+  PUBLIC_IS_SELFHOSTED === 'true' && dashboardOrigin ? dashboardOrigin : PUBLIC_SERVER_URL || 'http://localhost:3002';

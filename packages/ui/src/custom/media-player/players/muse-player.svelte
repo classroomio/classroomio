@@ -16,10 +16,10 @@
 </script>
 
 {#if embedUrl}
-  <div style="position:relative;padding-bottom:51.416579%">
+  <div class="ui:relative ui:overflow-hidden ui:rounded-md" style="padding-bottom:51.416579%">
     <iframe
       src={embedUrl}
-      style="width:100%;height:100%;position:absolute;left:0;top:0"
+      class="ui:absolute ui:left-0 ui:top-0 ui:h-full ui:w-full"
       frameborder="0"
       allowfullscreen
       title="Muse AI Video"

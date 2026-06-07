@@ -11,7 +11,7 @@ import {
 import { ROLE } from '@cio/utils/constants';
 import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
-import { getDashboardBaseUrl } from '@api/config/dashboard-url';
+import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { getCourseWithOrgData } from '@cio/db/queries/course';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName } from '@cio/email';
@@ -68,7 +68,11 @@ export async function addMember(
         if (courseOrgData) {
           const courseName = courseOrgData.courseTitle || '';
           const orgName = courseOrgData.orgName || 'ClassroomIO';
-          const loginUrl = getDashboardBaseUrl(courseOrgData.orgSiteName ?? undefined);
+          const loginUrl = getDashboardBaseUrl({
+            siteName: courseOrgData.orgSiteName,
+            customDomain: courseOrgData.orgCustomDomain,
+            isCustomDomainVerified: courseOrgData.orgIsCustomDomainVerified
+          });
 
           // Get student profile data
           let studentEmail: string | null = null;
@@ -190,7 +194,11 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
     }
 
     // Send welcome emails for teachers (TUTOR role = 2, ADMIN role = 1)
-    const baseUrl = getDashboardBaseUrl(orgSiteName);
+    const baseUrl = getDashboardBaseUrl({
+      siteName: orgSiteName,
+      customDomain: courseOrgData.orgCustomDomain,
+      isCustomDomainVerified: courseOrgData.orgIsCustomDomainVerified
+    });
     const inviteLink = `${baseUrl}/org/${orgSiteName}/courses`;
 
     const teacherEmailPromises: Promise<unknown>[] = [];

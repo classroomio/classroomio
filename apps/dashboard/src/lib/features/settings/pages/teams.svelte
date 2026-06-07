@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as Select from '@cio/ui/base/select';
   import { Spinner } from '@cio/ui/base/spinner';
+  import { Switch } from '@cio/ui/base/switch';
 
   import { profile } from '$lib/utils/store/user';
   import { isFreePlan, currentOrg } from '$lib/utils/store/org';
@@ -22,6 +23,33 @@
   let errorMessage = $state('');
   let role = $state(ROLE.TUTOR.toString());
   let isRemoving: number | null = $state(null);
+  let linkRole = $state(ROLE.TUTOR.toString());
+  let copiedLink = $state(false);
+
+  function buildLinkInviteUrl(token: string): string {
+    return `${window.location.origin}/invite/link/${encodeURIComponent(token)}`;
+  }
+
+  async function onGenerateLink() {
+    if ($isFreePlan) {
+      snackbar.error('upgrade.required');
+      return;
+    }
+
+    await orgApi.generateLinkInvite(parseInt(linkRole));
+  }
+
+  async function onCopyLink() {
+    if (!orgApi.linkInvite?.token) return;
+
+    await navigator.clipboard.writeText(buildLinkInviteUrl(orgApi.linkInvite.token));
+    copiedLink = true;
+    setTimeout(() => (copiedLink = false), 2000);
+  }
+
+  async function onToggleLinkInvite(active: boolean) {
+    await orgApi.toggleLinkInvite(!active);
+  }
 
   async function onSendInvite() {
     // Prevent free plan users from bypassing UI restrictions
@@ -80,6 +108,7 @@
     if (!$currentOrg) return;
 
     orgApi.getOrgTeam();
+    orgApi.getLinkInvite();
   });
 </script>
 
@@ -126,6 +155,69 @@
         {$t('course.navItem.people.teams.send_invite')}
       </Button>
     </Field.Group>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.people.teams.link_invite.heading')}</Field.Legend>
+    <Field.Description class="mb-4">{$t('course.navItem.people.teams.link_invite.description')}</Field.Description>
+
+    {#if !orgApi.linkInvite}
+      <Field.Group>
+        <Field.Field>
+          <Field.Label>{$t('course.navItem.people.teams.role')}</Field.Label>
+          <Select.Root type="single" bind:value={linkRole} disabled={$isFreePlan}>
+            <Select.Trigger class="w-40">
+              <p>{linkRole ? $t(ROLE_LABEL[linkRole]) : $t('course.navItem.people.teams.link_invite.select_role')}</p>
+            </Select.Trigger>
+            <Select.Content>
+              <Select.Item value={ROLE.ADMIN.toString()}>{$t(ROLE_LABEL[ROLE.ADMIN])}</Select.Item>
+              <Select.Item value={ROLE.TUTOR.toString()}>{$t(ROLE_LABEL[ROLE.TUTOR])}</Select.Item>
+            </Select.Content>
+          </Select.Root>
+        </Field.Field>
+
+        <Button
+          variant="default"
+          onclick={onGenerateLink}
+          loading={orgApi.isLoading}
+          disabled={orgApi.isLoading || $isFreePlan}
+        >
+          {$t('course.navItem.people.teams.link_invite.generate')}
+        </Button>
+      </Field.Group>
+    {:else}
+      <Field.Group>
+        <Field.Field>
+          <div class="flex items-center gap-2">
+            <Input
+              value={buildLinkInviteUrl(orgApi.linkInvite.token)}
+              readonly
+              class="w-full font-mono text-xs {orgApi.linkInvite.isRevoked ? 'opacity-50' : ''}"
+            />
+            <Button variant="outline" size="sm" onclick={onCopyLink} disabled={orgApi.linkInvite.isRevoked}>
+              {copiedLink
+                ? $t('course.navItem.people.teams.link_invite.copied')
+                : $t('course.navItem.people.teams.link_invite.copy')}
+            </Button>
+          </div>
+        </Field.Field>
+
+        {#if orgApi.linkInvite.isRevoked}
+          <p class="text-sm text-amber-600">{$t('course.navItem.people.teams.link_invite.disabled_notice')}</p>
+        {/if}
+
+        <Field.Field orientation="horizontal" class="mt-2">
+          <Switch
+            checked={!orgApi.linkInvite.isRevoked}
+            onCheckedChange={onToggleLinkInvite}
+            disabled={orgApi.isLoading || $isFreePlan}
+          />
+          <Field.Label>{$t('course.navItem.people.teams.link_invite.toggle_label')}</Field.Label>
+        </Field.Field>
+      </Field.Group>
+    {/if}
   </Field.Set>
 
   <Field.Separator />

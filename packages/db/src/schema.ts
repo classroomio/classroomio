@@ -68,6 +68,7 @@ export const organizationInviteEventType = pgEnum('ORGANIZATION_INVITE_EVENT_TYP
   'EMAIL_FAILED',
   'ABUSE_BLOCKED'
 ]);
+export const organizationInviteType = pgEnum('ORGANIZATION_INVITE_TYPE', ['EMAIL', 'LINK']);
 
 export const user = pgTable('user', {
   id: uuid()
@@ -677,6 +678,8 @@ export const course = pgTable(
         created_at: number;
         description: string;
       }[];
+      skills?: string[];
+      tools?: string[];
       lessonTabsOrder?: {
         id: 1 | 2 | 3 | 4;
         name: string;
@@ -1034,6 +1037,8 @@ export const asset = pgTable(
     provider: varchar().default('upload').notNull(),
     storageProvider: varchar('storage_provider').default('s3').notNull(),
     storageKey: text('storage_key'),
+    hlsManifestKey: text('hls_manifest_key'),
+    hlsAudioKey: text('hls_audio_key'),
     sourceUrl: text('source_url'),
     mimeType: text('mime_type'),
     byteSize: bigint('byte_size', { mode: 'number' }),
@@ -1386,7 +1391,8 @@ export const organizationInvite = pgTable(
     organizationId: uuid('organization_id').notNull(),
     // Role assigned when invite is accepted (e.g ADMIN, TUTOR)
     roleId: bigint('role_id', { mode: 'number' }).notNull(),
-    email: text().notNull(),
+    type: organizationInviteType('type').default('EMAIL').notNull(),
+    email: text(),
     tokenHash: text('token_hash').notNull(),
     createdByProfileId: uuid('created_by_profile_id').notNull(),
     acceptedByProfileId: uuid('accepted_by_profile_id'),

@@ -7,7 +7,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { ssoApi } from '$features/org/api/sso.svelte';
-  import { getRequestBaseUrl } from '$lib/utils/services/api';
+  import { page } from '$app/state';
 
   import { Badge } from '@cio/ui/base/badge';
   import { Input } from '@cio/ui/base/input';
@@ -121,7 +121,7 @@
   }
 
   function getCallbackUrl(providerId: string) {
-    return `${getRequestBaseUrl()}/api/auth/sso/callback/${providerId}`;
+    return new URL(`/api/auth/sso/callback/${providerId}`, page.url.origin).href;
   }
 </script>
 

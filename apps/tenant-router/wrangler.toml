@@ -1,6 +1,8 @@
 name = "cio-tenant-router"
 main = "src/index.ts"
 compatibility_date = "2026-05-01"
+# Required for the `pg` (node-postgres) driver used to query Hyperdrive.
+compatibility_flags = ["nodejs_compat"]
 
 # Production routes — bind the Worker to every browser-facing host.
 # Tenant subdomains and the apex live on the `myclassroomio.com` zone.
@@ -20,6 +22,28 @@ routes = [
 DASHBOARD_UPSTREAM_HOST = "cio-api.onrender.com"
 API_UPSTREAM_HOST = "cio-api-vymh.onrender.com"
 APEX_REDIRECT_TARGET = "https://classroomio.com"
+
+# R2 bucket binding so /hls/* can stream segments directly from Cloudflare,
+# bypassing Render. The bucket name matches the storage config in
+# packages/agent-runtime/src/config/storage.ts (BUCKET_DEFAULTS.VIDEOS).
+[[r2_buckets]]
+binding = "VIDEOS_BUCKET"
+bucket_name = "videos"
+
+# HLS_SIGNING_SECRET is set via `wrangler secret put HLS_SIGNING_SECRET` —
+# never commit it. The same value must be set as HLS_SIGNING_SECRET on the
+# API (Render env) so the cookie minted by the API verifies on the Worker.
+
+# Org lookup cache. Create with:
+#   wrangler kv namespace create ORG_CACHE
+# then paste the returned id below.
+[[kv_namespaces]]
+binding = "ORG_CACHE"
+id = "d07dc73ade284d41af53b387623df29b"
+
+[[hyperdrive]]
+binding = "HYPERDRIVE"
+id = "9ecbfa45699e452889e72acc64af455b"
 
 [observability]
 enabled = true
