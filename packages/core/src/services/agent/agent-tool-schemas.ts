@@ -7,7 +7,7 @@ import {
 } from '@cio/ai-assistant/tools';
 import { QUESTION_TYPE_REGISTRY } from '@cio/question-types';
 import { ZExerciseSectionAfterBehavior } from '@cio/utils/validation/exercise';
-import { ZCourseLandingPageUpdate, ZCourseLandingPageMetadataUpdate } from '@cio/utils/validation/course';
+import { ZCourseLandingPageUpdate, ZCourseLandingPageMetadataUpdateFields } from '@cio/utils/validation/course';
 
 // courseId is NOT a parameter — it's injected from the authenticated request context.
 // This prevents prompt injection from tricking the LLM into targeting another course.
@@ -251,7 +251,7 @@ export const agentLessonTabsOrder = z.array(
     name: z.string()
   })
 );
-export const agentLandingPageMetadataUpdate = ZCourseLandingPageMetadataUpdate.extend({
+export const agentLandingPageMetadataUpdate = ZCourseLandingPageMetadataUpdateFields.extend({
   lessonTabsOrder: agentLessonTabsOrder.optional(),
   requirements: z.string().optional().describe(LANDING_PAGE_SECTION_HTML_AGENT_HINT),
   description: z.string().optional().describe(LANDING_PAGE_METADATA_DESCRIPTION_SECTION_HINT),

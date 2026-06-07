@@ -357,14 +357,16 @@ const ZCourseMetadataFields = z.object({
 export const ZCourseMetadata = z.preprocess(preprocessCourseMetadata, ZCourseMetadataFields);
 export type TCourseMetadata = z.infer<typeof ZCourseMetadata>;
 
+export const ZCourseLandingPageMetadataUpdateFields = ZCourseMetadataFields.omit({ allowNewStudent: true }).extend({
+  allowNewStudent: z.boolean().optional(),
+  reward: ZCourseReward.partial().optional(),
+  instructor: ZCourseInstructor.partial().optional(),
+  certificate: ZCourseCertificate.partial().optional()
+});
+
 export const ZCourseLandingPageMetadataUpdate = z.preprocess(
   preprocessCourseMetadata,
-  ZCourseMetadataFields.omit({ allowNewStudent: true }).extend({
-    allowNewStudent: z.boolean().optional(),
-    reward: ZCourseReward.partial().optional(),
-    instructor: ZCourseInstructor.partial().optional(),
-    certificate: ZCourseCertificate.partial().optional()
-  })
+  ZCourseLandingPageMetadataUpdateFields
 );
 export type TCourseLandingPageMetadataUpdate = z.infer<typeof ZCourseLandingPageMetadataUpdate>;
 
