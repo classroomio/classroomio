@@ -7,10 +7,12 @@ import { Step, Steps } from 'fumadocs-ui/components/steps';
 
 Course invitations in ClassroomIO let you add students to a course by sending them a secure enrollment link by email. Each invite is unique and can have its own expiry and usage limits.
 
+For a full overview of enrollment paths (public enroll, invites, admin assignment, and paid access), see [How Course Enrollment Works](/docs/how-to-guides/course-enrollment).
+
 ## How course invitations work
 
 - **Email-based invites:** You enter one or more email addresses (or paste a list). ClassroomIO creates a unique invite per recipient and can send the enrollment link by email.
-- **Enrollment link:** Each invite link points to an **enrollment page** for that course (e.g. `https://yoursite.classroomio.com/course/your-course-slug/enroll?invite_token=...`). When a student opens the link, they see the course details and a **Join course** button.
+- **Enrollment link:** Each invite link points to an **enrollment page** on your org site (not `app.classroomio.com`). The path is `/course/your-course-slug/enroll?invite_token=...` on either `https://<siteName>.myclassroomio.com` (e.g. `https://ciodevs.myclassroomio.com/...`) or your verified custom domain (e.g. `https://learn.yourcompany.com/...`). When a student opens the link, they see the course details and a **Join course** button.
 - **One link per invite:** Invite links are tied to the course and (for paid or restricted courses) to the invite’s rules (expiry, max uses, allowed emails). Students sign in or sign up when they click **Join course**, then they’re enrolled and redirected to the learning dashboard.
 
 ## Free vs paid courses

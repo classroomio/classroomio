@@ -946,18 +946,12 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       };
     }
 
-    const courseMetadata = course.metadata as { allowNewStudent?: boolean } | null;
-
     if (invite.roleId !== ROLE.STUDENT) {
       throw new AppError('This invite is not valid for student enrollment', ErrorCodes.UNAUTHORIZED, 403);
     }
 
     if (course.status !== 'ACTIVE' || !course.isPublished) {
       throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
-    }
-
-    if (courseMetadata?.allowNewStudent === false) {
-      throw new AppError('This course is not accepting new students', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
     const status = getInviteStatus(invite);

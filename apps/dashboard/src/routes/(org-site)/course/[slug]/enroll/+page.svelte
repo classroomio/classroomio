@@ -17,11 +17,11 @@
   let loading = $state(false);
 
   const inviteStatus = $derived(data.invite?.status ?? 'INVALID');
+  const hasActiveInvite = $derived(Boolean(data.invite) && inviteStatus === 'ACTIVE');
   const canJoinCourse = $derived(
     data.requiresPaymentOrInvite
       ? false
-      : (inviteStatus === 'ACTIVE' || !data.invite) &&
-          data.course?.allowNewStudent !== false &&
+      : (hasActiveInvite || (!data.invite && data.course?.allowNewStudent !== false)) &&
           data.course?.status === 'ACTIVE' &&
           Boolean(data.course?.isPublished)
   );
@@ -30,7 +30,7 @@
     if (data.requiresPaymentOrInvite) {
       return t.get('course.navItem.landing_page.enroll_page.requires_payment_or_invite');
     }
-    if (data.course?.allowNewStudent === false) {
+    if (data.course?.allowNewStudent === false && !hasActiveInvite) {
       return t.get('course.navItem.landing_page.pricing_section.not_accepting');
     }
     if (data.course?.status !== 'ACTIVE' || !data.course?.isPublished) {
