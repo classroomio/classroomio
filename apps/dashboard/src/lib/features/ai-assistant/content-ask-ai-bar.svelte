@@ -143,7 +143,7 @@
       <div class={`flex justify-center ${contentClass}`}>
         <Button
           variant="outline"
-          class="ui:bg-background ui:shadow-sm pointer-events-auto"
+          class="ui:bg-background ui:dark:bg-background ui:shadow-sm pointer-events-auto"
           aria-label={$t('ai_assistant.ask_ai_expand_aria')}
           onclick={() => expand()}
           onmouseenter={() => expand()}
