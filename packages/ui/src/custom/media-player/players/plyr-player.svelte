@@ -42,6 +42,8 @@
   let hlsPlyrGeneration = 0;
   let plyrConstructInFlight = false;
   let hasFiredFirstPlay = false;
+  let isMounted = false;
+  let youtubeInitGeneration = 0;
 
   interface HlsQualityConfig {
     default: number;
@@ -193,7 +195,7 @@
     try {
       // Recheck after the dynamic import resolves — the component may have
       // unmounted (or the videoElement bind nulled out) while we awaited.
-      if (!videoElement || playerInstance) return;
+      if (!isMounted || !videoElement || playerInstance) return;
 
       mediaErrorCleanup = attachMediaErrorHandler(videoElement);
 
@@ -257,23 +259,43 @@
     });
   }
 
+  async function constructPlyrForYouTubeEmbed(): Promise<void> {
+    if (!isMounted || !containerElement || !youtubeVideoId || playerInstance || plyrConstructInFlight) return;
+
+    const initGeneration = youtubeInitGeneration;
+    plyrConstructInFlight = true;
+
+    const PlyrModule = await import('plyr');
+    const PlyrConstructor = PlyrModule.default;
+    const controls = showControls ? PLYR_DEFAULT_CONTROLS : [];
+
+    try {
+      if (!isMounted || initGeneration !== youtubeInitGeneration || !containerElement || playerInstance) {
+        return;
+      }
+
+      playerInstance = new PlyrConstructor(containerElement, {
+        controls,
+        autoplay,
+        ratio: '16:9',
+        iconUrl: '/plyr.svg',
+        iconPrefix: 'plyr'
+      });
+      timeupdateCleanup = attachTimeUpdates(playerInstance);
+      firstPlayCleanup = attachFirstPlay(playerInstance);
+      plyrErrorCleanup = attachPlyrErrorHandler(playerInstance);
+      options.onPlayerReady?.(playerInstance);
+    } finally {
+      plyrConstructInFlight = false;
+    }
+  }
+
   onMount(() => {
+    isMounted = true;
+
     void (async () => {
       if (isYouTube && youtubeVideoId && containerElement) {
-        const PlyrModule = await import('plyr');
-        const PlyrConstructor = PlyrModule.default;
-        const controls = showControls ? PLYR_DEFAULT_CONTROLS : [];
-        playerInstance = new PlyrConstructor(containerElement, {
-          controls,
-          autoplay,
-          ratio: '16:9',
-          iconUrl: '/plyr.svg',
-          iconPrefix: 'plyr'
-        });
-        timeupdateCleanup = attachTimeUpdates(playerInstance);
-        firstPlayCleanup = attachFirstPlay(playerInstance);
-        plyrErrorCleanup = attachPlyrErrorHandler(playerInstance);
-        options.onPlayerReady?.(playerInstance);
+        await constructPlyrForYouTubeEmbed();
         return;
       }
 
@@ -448,6 +470,8 @@
   });
 
   onDestroy(() => {
+    isMounted = false;
+    youtubeInitGeneration += 1;
     hlsLoadGeneration += 1;
     hlsPlyrGeneration = 0;
     destroyHlsInstance();
@@ -463,6 +487,10 @@
     }
 
     teardownPlyrInstance();
+
+    if (isYouTube && containerElement) {
+      containerElement.replaceChildren();
+    }
   });
 </script>
 
