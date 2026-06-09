@@ -102,12 +102,26 @@
   font-weight: bold;
 }
 
-/* List Styling */
+/* List Styling — mirror dashboard `.prose` list rules so editor matches saved output */
 
 .tiptap ul,
 .tiptap ol {
-  padding: 0 1rem;
-  margin: 0.5rem 1rem 0.5rem 0.4rem;
+  margin-block: 1.5rem;
+  margin-inline-start: 1.5rem;
+  padding: 0;
+}
+
+.tiptap ul:not([data-type='taskList']) {
+  list-style-type: disc;
+}
+
+.tiptap ol {
+  list-style-type: decimal;
+}
+
+.tiptap ul li,
+.tiptap ol li {
+  margin-top: 0.5rem;
 }
 
 .tiptap ul li p,

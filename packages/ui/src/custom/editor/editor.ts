@@ -31,16 +31,6 @@ export default (
     content,
     extensions: [
       StarterKit.configure({
-        orderedList: {
-          HTMLAttributes: {
-            class: 'list-decimal'
-          }
-        },
-        bulletList: {
-          HTMLAttributes: {
-            class: 'list-disc'
-          }
-        },
         heading: {
           levels: [1, 2, 3, 4]
         },
