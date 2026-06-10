@@ -16,6 +16,7 @@
   let allowPublicSignups = $state(!$currentOrg?.settings?.signup?.inviteOnly);
   let disableEmailPassword = $state($currentOrg?.disableEmailPassword ?? false);
   let disableGoogleAuth = $state($currentOrg?.disableGoogleAuth ?? false);
+  let internalEnrollmentOnly = $state($currentOrg?.settings?.internalEnrollmentOnly ?? false);
   let isSaving = $state(false);
 
   // Sync with store when it changes
@@ -26,6 +27,7 @@
       allowPublicSignups = !$currentOrg.settings?.signup?.inviteOnly;
       disableEmailPassword = $currentOrg.disableEmailPassword ?? false;
       disableGoogleAuth = $currentOrg.disableGoogleAuth ?? false;
+      internalEnrollmentOnly = $currentOrg.settings?.internalEnrollmentOnly ?? false;
     }
   });
 
@@ -47,7 +49,8 @@
           signup: {
             ...existingSignup,
             inviteOnly: !allowPublicSignups
-          }
+          },
+          internalEnrollmentOnly
         },
         disableEmailPassword,
         disableGoogleAuth
@@ -67,7 +70,8 @@
       disableSignupMessage !== ($currentOrg?.disableSignupMessage ?? '') ||
       allowPublicSignups !== currentAllowPublicSignups ||
       disableEmailPassword !== ($currentOrg?.disableEmailPassword ?? false) ||
-      disableGoogleAuth !== ($currentOrg?.disableGoogleAuth ?? false)
+      disableGoogleAuth !== ($currentOrg?.disableGoogleAuth ?? false) ||
+      internalEnrollmentOnly !== ($currentOrg?.settings?.internalEnrollmentOnly ?? false)
   );
 </script>
 
@@ -100,6 +104,17 @@
           <Field.Label>{$t('settings.auth.general.allow_public_signups.label')}</Field.Label>
           <Field.Description>
             {$t('settings.auth.general.allow_public_signups.description')}
+          </Field.Description>
+        </div>
+      </Field.Field>
+
+      <!-- Internal Enrollment Only -->
+      <Field.Field orientation="horizontal">
+        <Switch bind:checked={internalEnrollmentOnly} disabled={!$isEnterprisePlan || isSaving} />
+        <div class="space-y-0.5">
+          <Field.Label>{$t('settings.auth.general.internal_enrollment_only.label')}</Field.Label>
+          <Field.Description>
+            {$t('settings.auth.general.internal_enrollment_only.description')}
           </Field.Description>
         </div>
       </Field.Field>

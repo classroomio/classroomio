@@ -1960,6 +1960,7 @@ export const organization = pgTable(
       signup?: {
         inviteOnly?: boolean;
       };
+      internalEnrollmentOnly?: boolean;
     }>(),
     landingpage: jsonb().default({}).$type<{
       header?: {

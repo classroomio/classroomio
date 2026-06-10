@@ -21,17 +21,17 @@
     },
     "section": {
       "availability": "Availability",
-      "availability_description": "Turn the AI tutor on or off for learners in this workspace.",
+      "availability_description": "Turn the AI tutor on or off for students in this workspace.",
       "personality": "Personality",
       "personality_description": "How the tutor introduces itself and how long its replies are.",
       "guidance": "Things to say · things not to say",
       "guidance_description": "Free-text guidance the tutor will follow in every reply, plus an optional list of off-limits topics.",
       "assessment": "Exercises & assessments",
-      "assessment_description": "How the tutor behaves when a learner asks for help with an exercise.",
+      "assessment_description": "How the tutor behaves when a student asks for help with an exercise.",
       "grounding": "Grounding & citations",
       "grounding_description": "Limit what the tutor can talk about and whether it cites course material.",
       "escalation": "Escalation",
-      "escalation_description": "Where to point learners when they need a real human.",
+      "escalation_description": "Where to point students when they need a real human.",
       "inheritance": "Course inheritance",
       "inheritance_description": "Inherit workspace defaults or set per-course overrides."
     },
@@ -44,11 +44,11 @@
       "welcomeMessage": "Welcome message",
       "welcomeMessage_description": "Shown above the first tutor reply in every new conversation.",
       "disclaimerFooter": "Disclaimer footer",
-      "disclaimerFooter_description": "Appended to every tutor reply so learners remember the tutor isn't a person.",
+      "disclaimerFooter_description": "Appended to every tutor reply so students remember the tutor isn't a person.",
       "thingsToSay": "Things to say",
-      "thingsToSay_description": "Examples: \"Always remind learners to read the syllabus before week 3.\" \"Encourage learners to summarize lessons in their own words.\"",
+      "thingsToSay_description": "Examples: \"Always remind students to read the syllabus before week 3.\" \"Encourage students to summarize lessons in their own words.\"",
       "thingsNotToSay": "Things not to say",
-      "thingsNotToSay_description": "Examples: \"Don't reveal answers to the final exam.\" \"Never tell learners which review you wrote.\"",
+      "thingsNotToSay_description": "Examples: \"Don't reveal answers to the final exam.\" \"Never tell students which review you wrote.\"",
       "forbiddenTopics": "Forbidden topics",
       "forbiddenTopics_description": "Comma-separated list. The tutor will decline to discuss these.",
       "forbiddenTopics_placeholder": "politics, religion, personal medical advice",
@@ -79,7 +79,7 @@
     "assessmentMode": {
       "hint_only": "Hints only (no direct answers)",
       "direct_answer": "Allow direct answers",
-      "block_during_exercise": "Block help while the learner is in an exercise"
+      "block_during_exercise": "Block help while the student is in an exercise"
     },
     "codePolicy": {
       "hints_only": "Hints only",
@@ -101,9 +101,9 @@
       "tutorSummaryTitle": "AI tutor fair-use",
       "atCap": "At cap",
       "approaching": "Approaching cap",
-      "totalActive": "Active learners this month",
-      "learnersHeading": "Learners",
-      "headerLearner": "Learner",
+      "totalActive": "Active students this month",
+      "learnersHeading": "Students",
+      "headerLearner": "Student",
       "headerMessages": "Messages",
       "headerTokens": "Tokens",
       "headerStatus": "Status",
@@ -130,12 +130,12 @@
       "delete_confirm_title": "Delete this workspace?",
       "delete_confirm_body": "This permanently removes the workspace, its members, and its courses. This cannot be undone.",
       "name_label": "Workspace name",
-      "site_name_label": "Site name",
+      "site_name_label": "Academy subdomain",
       "create_modal_title": "Create a new workspace",
       "create_modal_submit": "Create workspace",
       "cancel": "Cancel",
       "read_only_badge": "Read-only",
-      "usage_banner": "{learners} learners and {tokens} AI tokens used across {workspaces} workspaces this month",
+      "usage_banner": "{students} students and {tokens} AI tokens used across {workspaces} workspaces this month",
       "secondary_billing_notice": "Billing is managed by your primary workspace ({primaryName}).",
       "go_to_primary": "Go to primary workspace"
     }
@@ -244,7 +244,7 @@
     "friends": "Friends and family",
     "fullname": "Full Name",
     "name": "Name of Organization",
-    "organisation_sitename": "Organisation Site name",
+    "organisation_sitename": "Academy subdomain",
     "what_brings": "What brings you to",
     "how": "How did you hear about us?",
     "back": "Back",
@@ -296,12 +296,12 @@
     "title": "Compliance",
     "subtitle": "Track certification status across every compliance course in your organization.",
     "summary": {
-      "heading": "Learner status",
-      "description": "Counts across learners in all compliance courses."
+      "heading": "Student status",
+      "description": "Counts across students in all compliance courses."
     },
     "tabs": {
       "courses": "By course",
-      "learners": "Learners"
+      "learners": "Students"
     },
     "status": {
       "compliant": "Compliant",
@@ -326,17 +326,17 @@
     },
     "courses": {
       "heading": "Courses",
-      "description": "Compliance courses with learner status counts",
+      "description": "Compliance courses with student status counts",
       "empty": "No compliance courses yet",
       "course": "Course",
-      "learners": "Learners",
+      "learners": "Students",
       "completion": "Completion"
     },
     "learners": {
-      "heading": "Learners",
+      "heading": "Students",
       "subtitle": "{count, number} matching",
-      "empty": "No learners match this filter",
-      "learner": "Learner",
+      "empty": "No students match this filter",
+      "learner": "Student",
       "course": "Course",
       "status": "Status",
       "due_date": "Due",
@@ -393,7 +393,7 @@
   "settings": {
     "heading": "Settings",
     "subheadings": {
-      "view_site": "View site"
+      "view_site": "Open Academy"
     },
     "tabs": {
       "profile_tab": "Profile",
@@ -435,7 +435,7 @@
       "logout": "Log out"
     },
     "organization": {
-      "page_subtitle": "Set the name, logo, and theme learners see for this organization.",
+      "page_subtitle": "Set the name, logo, and theme students see for this organization.",
       "organization_profile": {
         "heading": "Organization",
         "organization_name": "Organization Name",
@@ -535,7 +535,11 @@
         },
         "save_button": "Save Changes",
         "note_title": "Note",
-        "note_description": "These settings only affect this organization. Admins can always sign in using their credentials for break-glass access."
+        "note_description": "These settings only affect this organization. Admins can always sign in using their credentials for break-glass access.",
+        "internal_enrollment_only": {
+          "label": "Internal Enrollment Only",
+          "description": "When enabled, any published course is open for self-enrollment to all students in your organization. Use with Disable Signup to create a closed, invite-only academy where students can join any published course without per-course setup."
+        }
       },
       "sso": {
         "connection": {
@@ -713,7 +717,7 @@
             "remove": "Remove stat",
             "label_field": "Label",
             "value_field": "Value",
-            "label_placeholder": "Active learners",
+            "label_placeholder": "Active students",
             "value_placeholder": "1,200"
           }
         },
@@ -1504,9 +1508,9 @@
   "add_org": {
     "create_org": "Create Organization",
     "name": "Name of Organization",
-    "org_sitename": "Organisation Site name",
+    "org_sitename": "Academy subdomain",
     "create": "Create",
-    "sitename": "Sitename already exists",
+    "sitename": "Academy subdomain already exists",
     "error_organization": "Something went wrong while creating this organization. Please reload and try again"
   },
   "navigation": {
@@ -1563,7 +1567,7 @@
     },
     "settings": {
       "domains": {
-        "page_subtitle": "Run your public learning site on a web address you own.",
+        "page_subtitle": "Run your academy on a web address you own.",
         "title": "Custom domain",
         "add": "Add",
         "url": "URL",
@@ -1605,7 +1609,7 @@
         "custom_code": "Custom code"
       },
       "customize_lms": {
-        "page_subtitle": "Choose which tabs, banners, course tools, and extras learners see.",
+        "page_subtitle": "Choose which tabs, banners, course tools, and extras students see.",
         "title": "Customize LMS",
         "disabled": "Disabled",
         "enabled": "Enabled",
@@ -1651,12 +1655,12 @@
     "afternoon_heading": "Good Afternoon",
     "evening_heading": "Good Evening",
     "create_course": "Create Course",
-    "view_site": "View Site",
-    "visit_site": "Visit Website",
+    "view_site": "Open Academy",
+    "visit_site": "Open Academy",
     "open_academy": "Open Academy",
     "current_lesson": "Currently Learning",
     "currently_learning": "Currently Learning",
-    "learner": "Learner",
+    "learner": "Student",
     "your_progress": "Your Progress",
     "progress": "Progress",
     "continue": "Continue",
@@ -1688,6 +1692,8 @@
     "no_certifications_yet": "No certificates earned yet",
     "no_certifications_yet_description": "When students complete a course and earn a certificate, they will appear here",
     "view_courses": "View courses",
+    "explore_more_courses": "Explore more courses",
+    "view_more": "View more",
     "no_of_courses": "Number of courses",
     "no_courses_description": "Courses created within this organization",
     "total_students": "Total students",
@@ -1861,7 +1867,7 @@
       "created": "Goal created",
       "updated": "Goal updated",
       "deleted": "Goal deleted",
-      "delete_confirm": "Delete this goal? Per-learner status history will be removed.",
+      "delete_confirm": "Delete this goal? Per-student status history will be removed.",
       "modal": {
         "create_title": "New goal",
         "edit_title": "Edit goal",
@@ -1872,11 +1878,11 @@
         "type_label": "Type",
         "courses_label": "Courses",
         "required_count_label": "Number of courses required",
-        "score_threshold_label": "Per-learner pass score (%)",
+        "score_threshold_label": "Per-student pass score (%)",
         "team_pass_rate_label": "Team pass rate (%)",
         "deadline_label": "Deadline",
         "deadline_date_label": "Deadline date",
-        "relative_days_label": "Days from when the learner joins",
+        "relative_days_label": "Days from when the student joins",
         "recurring_months_label": "Repeat every (months)",
         "reminders_label": "Reminders (days before due)",
         "reminders_helper": "Comma-separated. Example: 7, 3, 1",
@@ -1892,7 +1898,7 @@
       },
       "deadline_kind": {
         "absolute": "Absolute date",
-        "relative_to_join": "Relative to learner joining",
+        "relative_to_join": "Relative to student joining",
         "recurring": "Recurring",
         "none": "No deadline"
       },
@@ -2045,7 +2051,7 @@
         },
         "expert_on_x": {
           "title": "Become an Expert on X",
-          "description": "A depth course turning learners into experts on a specific topic or niche.",
+          "description": "A depth course turning students into experts on a specific topic or niche.",
           "form_title": "Tell us about the topic"
         },
         "submit": "Continue",
@@ -2056,7 +2062,7 @@
           "product_name": "Product name",
           "product_summary": "What does the product do?",
           "audience": "Who is the audience?",
-          "outcome": "What should learners be able to do after the course?",
+          "outcome": "What should students be able to do after the course?",
           "depth": "How deep should the course go?",
           "topic": "Topic or niche",
           "expertise_level": "Target expertise level",
@@ -2701,7 +2707,7 @@
               "numeric": {
                 "edit": {
                   "correct_value_label": "Correct value",
-                  "correct_value_info": "The expected numeric answer learners must submit to be marked correct.",
+                  "correct_value_info": "The expected numeric answer students must submit to be marked correct.",
                   "tolerance_label": "Tolerance",
                   "tolerance_info": "Allowed difference from the correct value (for example, 0.5 accepts +/-0.5).",
                   "correct_value_placeholder": "Correct value",
@@ -2723,9 +2729,9 @@
               "star": {
                 "edit": {
                   "correct_value_label": "Correct star value",
-                  "correct_value_info": "The star count learners must select to earn full points.",
+                  "correct_value_info": "The star count students must select to earn full points.",
                   "max_stars_label": "Maximum stars",
-                  "max_stars_info": "How many stars learners see (1–10). Default is 5.",
+                  "max_stars_info": "How many stars students see (1–10). Default is 5.",
                   "correct_value_placeholder": "e.g. 3",
                   "max_stars_placeholder": "e.g. 5"
                 },
@@ -2755,7 +2761,7 @@
                 "edit": {
                   "template_label": "Sentence template",
                   "template_placeholder": "Measurements to describe our data are called ___. The ___ is a function...",
-                  "template_helper": "Use three underscores (___) for each blank. Learners will see a word bank with correct answers and distractors.",
+                  "template_helper": "Use three underscores (___) for each blank. Students will see a word bank with correct answers and distractors.",
                   "no_blanks_warning": "Add at least one ___ blank marker in your template.",
                   "correct_answers_heading": "Correct answer for each blank",
                   "blank_label": "Blank",
@@ -2828,7 +2834,7 @@
                 },
                 "preview": {
                   "max_duration_label": "Max duration",
-                  "manual_grading": "Learners record a short video response. Manual grading required."
+                  "manual_grading": "Students record a short video response. Manual grading required."
                 },
                 "submission": {
                   "no_video": "No video submitted.",
@@ -2842,8 +2848,8 @@
               },
               "link": {
                 "edit": {
-                  "instructions_placeholder": "Optional instructions for learners",
-                  "helper": "Learners can submit one or more valid URLs (http/https)."
+                  "instructions_placeholder": "Optional instructions for students",
+                  "helper": "Students can submit one or more valid URLs (http/https)."
                 },
                 "take": {
                   "helper": "Add one or more links. Only valid http/https URLs are accepted.",
@@ -2908,7 +2914,7 @@
                   "range_error": "Answer must be between {min} and {max} characters."
                 },
                 "edit": {
-                  "placeholder": "Learners will answer with long-form text",
+                  "placeholder": "Students will answer with long-form text",
                   "min_characters_label": "Minimum characters",
                   "min_characters_placeholder": "Minimum characters",
                   "max_characters_label": "Maximum characters",
@@ -3027,46 +3033,46 @@
         "not_compliance_title": "Compliance is not enabled",
         "not_compliance_description": "This course is not configured as a compliance course.",
         "loading": "Loading compliance records...",
-        "learners": "Learners",
-        "learners_description": "This table shows the latest cycle for each learner.",
+        "learners": "Students",
+        "learners_description": "This table shows the latest cycle for each student.",
         "current_cycle": "Current cycle",
         "current_cycle_description": "Your active compliance cycle and renewal dates.",
         "history": "Past cycles",
         "history_description": "Each row is one recorded compliance cycle for this course.",
         "no_active_cycle": "No active compliance cycle",
         "empty_history": "No compliance history has been recorded yet.",
-        "empty_overview": "No learner compliance records are available yet.",
+        "empty_overview": "No student compliance records are available yet.",
         "empty_overview_description": "Keep your employees compliant and track who is behind.",
         "not_available": "Not available",
         "tabs": {
           "overview": "Overview",
-          "learners": "Learners"
+          "learners": "Students"
         },
         "bulk_actions": {
           "title": "Bulk actions",
-          "description": "Select learners and apply a compliance action to their current cycle.",
-          "select_all": "Select all visible learners",
+          "description": "Select students and apply a compliance action to their current cycle.",
+          "select_all": "Select all visible students",
           "selected_count": "{count} selected",
           "clear_selection": "Clear selection",
           "due_date_label": "Due date",
           "due_date_helper": "Used for reset and extend actions.",
           "reset_action": "Reset cycle",
           "extend_action": "Extend due date",
-          "waive_title": "Waive selected learners",
-          "waive_description": "Apply a waiver to the selected learners. You can leave the expiration empty for an open-ended waiver.",
+          "waive_title": "Waive selected students",
+          "waive_description": "Apply a waiver to the selected students. You can leave the expiration empty for an open-ended waiver.",
           "waiver_reason_label": "Waiver reason",
           "waiver_reason_helper": "Optional context for audits and future reviews.",
           "waiver_expires_at_label": "Waiver expires at",
           "waiver_expires_at_helper": "Leave empty if the waiver should not expire automatically.",
           "waive_action": "Apply waiver",
           "modal": {
-            "description": "You are updating {count} selected learners.",
+            "description": "You are updating {count} selected students.",
             "cancel": "Cancel",
             "apply": "Apply action"
           }
         },
         "fields": {
-          "learner": "Learner",
+          "learner": "Student",
           "email": "Email",
           "status": "Status",
           "cycle": "Cycle",
@@ -3077,7 +3083,7 @@
           "attempts": "Attempts"
         },
         "summary": {
-          "total_learners": "Total learners",
+          "total_learners": "Total students",
           "no_record": "No record",
           "not_started": "Not started",
           "in_progress": "In progress",
@@ -3089,7 +3095,7 @@
         },
         "overview_metrics": {
           "heading": "Course snapshot",
-          "description": "Learner counts by status for this course."
+          "description": "Student counts by status for this course."
         },
         "status": {
           "no_record": "No record",
@@ -3152,7 +3158,7 @@
           "send_invite_emails": "Send invite emails immediately",
           "create_email_invites": "Create Email Invites",
           "existing_students_title": "Add existing org students",
-          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_description": "Choose students already in this organization and grant them direct access to this course.",
           "existing_students_search": "Search organization students",
           "loading_existing_students": "Loading organization students...",
           "no_existing_students": "No organization students are available to add.",
@@ -3501,7 +3507,7 @@
         "fix_blocking_questions": "Fix blocking questions",
         "callout": {
           "legend": "Public course callout",
-          "description": "Shown at the bottom of each lesson and in place of locked items. Use it to drive learners to your site or a paid course.",
+          "description": "Shown at the bottom of each lesson and in place of locked items. Use it to drive students to your site or a paid course.",
           "title_label": "Title",
           "title_placeholder": "Want to go deeper on this?",
           "description_label": "Description",
@@ -3526,7 +3532,7 @@
         },
         "tags": {
           "title": "Tags",
-          "description": "Assign tags so learners can discover this course with filters.",
+          "description": "Assign tags so students can discover this course with filters.",
           "empty": "No tags selected",
           "add": "Add tag",
           "popover_title": "Select tags",
@@ -3601,7 +3607,7 @@
     "selected_count": "{count} selected",
     "assign_courses": "Assign to Courses",
     "user_analytics": {
-      "title": "Learner profile",
+      "title": "Student profile",
       "page_subtitle": "Progress, grades, and activity across their courses."
     },
     "import": {
@@ -3706,15 +3712,15 @@
     "loading_chart": "Loading chart...",
     "no_data_default": "No data available",
     "no_data_default_description": "There is no data to display at this time.",
-    "subtitle": "Understand how visitors discover your courses and convert into learners.",
+    "subtitle": "Understand how visitors discover your courses and convert into students.",
     "course_metrics": {
-      "page_subtitle": "Enrollment, lesson completion, grades, and per-learner progress for this course.",
-      "progress_distribution_card_description": "How many learners fall into each completion band.",
-      "grade_distribution_card_description": "How many learners fall into each grade band.",
-      "students_table_description": "Sortable overview with links to learner profiles.",
+      "page_subtitle": "Enrollment, lesson completion, grades, and per-student progress for this course.",
+      "progress_distribution_card_description": "How many students fall into each completion band.",
+      "grade_distribution_card_description": "How many students fall into each grade band.",
+      "students_table_description": "Sortable overview with links to student profiles.",
       "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
       "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} mapped to lessons",
-      "kpi_progress_grade": "{grade}% average exercise grade across enrolled learners"
+      "kpi_progress_grade": "{grade}% average exercise grade across enrolled students"
     },
     "tabs": {
       "overview": "Overview",
@@ -3902,7 +3908,8 @@
     "not_in_progress": "No Course In progress",
     "any_progress": "Any course that you start will be displayed here",
     "not_completed": "No Course Completed",
-    "any_course": "Any course that you complete will be displayed here"
+    "any_course": "Any course that you complete will be displayed here",
+    "find_courses": "Find courses"
   },
   "exercises": {
     "heading": "Exercises",
@@ -4261,8 +4268,8 @@
       "hyphen_rule": "Organization name cannot start or end with a hyphen"
     },
     "site_name": {
-      "min_char": "Site name must contain 5 or more characters",
-      "hyphen_rule": "Site name cannot start or end with a hyphen"
+      "min_char": "Academy subdomain must contain 5 or more characters",
+      "hyphen_rule": "Academy subdomain cannot start or end with a hyphen"
     },
     "news_feed": {
       "min_char": "Field must contain 5 or more characters"

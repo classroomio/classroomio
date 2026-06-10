@@ -104,8 +104,8 @@
       "min_char": "Feltet skal indeholde 5 eller flere tegn"
     },
     "site_name": {
-      "min_char": "Webstedets navn skal indeholde 5 eller flere tegn",
-      "hyphen_rule": "Webstedets navn kan ikke starte eller slutte med en bindestreg"
+      "min_char": "Academy-underdomænet skal indeholde 5 eller flere tegn",
+      "hyphen_rule": "Academy-underdomænet kan ikke starte eller slutte med en bindestreg"
     },
     "organization_name": {
       "min_char": "Organisationen skal indeholde 5 eller flere tegn",
@@ -457,7 +457,8 @@
     "not_in_progress": "Intet kursus i gang",
     "any_progress": "Ethvert kursus, du starter, vil blive vist her",
     "not_completed": "Intet kursus gennemført",
-    "any_course": "Ethvert kursus, du gennemfører, vil blive vist her"
+    "any_course": "Ethvert kursus, du gennemfører, vil blive vist her",
+    "find_courses": "Find kurser"
   },
   "lms_navigation": {
     "home": "Hjem",
@@ -538,7 +539,7 @@
     "loading_chart": "Indlæser diagram...",
     "no_data_default": "Ingen tilgængelige data",
     "no_data_default_description": "Der er ingen data at vise på nuværende tidspunkt.",
-    "subtitle": "Forstå, hvordan besøgende opdager dine kurser og konverterer til elever.",
+    "subtitle": "Forstå, hvordan besøgende opdager dine kurser og konverterer til studerende.",
     "refresh": "Opdater",
     "popularTypes": {
       "heading": "Populære kursustyper",
@@ -599,13 +600,13 @@
       "course_types": "Kursustyper"
     },
     "course_metrics": {
-      "page_subtitle": "Tilmelding, lektionsafslutning, karakterer og fremskridt pr. elev for dette kursus.",
+      "page_subtitle": "Tilmelding, afslutning af lektioner, karakterer og fremskridt pr. elev for dette kursus.",
       "progress_distribution_card_description": "Hvor mange elever falder der ind i hvert afslutningsbånd.",
       "grade_distribution_card_description": "Hvor mange elever falder der ind i hvert klassetrin.",
       "students_table_description": "Sorterbar oversigt med links til elevprofiler.",
       "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
       "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} knyttet til lektioner",
-      "kpi_progress_grade": "{grade} % gennemsnitlig træningskarakter på tværs af tilmeldte elever"
+      "kpi_progress_grade": "{grade} % gennemsnitlig øvelseskarakter på tværs af tilmeldte elever"
     }
   },
   "audience": {
@@ -672,7 +673,7 @@
     },
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "user_analytics": {
-      "title": "Learner profile",
+      "title": "Elevprofil",
       "page_subtitle": "Progress, grades, and activity across their courses."
     }
   },
@@ -780,7 +781,7 @@
         },
         "callout": {
           "legend": "Offentlig kursusopkald",
-          "description": "Vist i bunden af hver lektion og i stedet for låste genstande. Brug det til at lede elever til dit websted eller et betalt kursus.",
+          "description": "Vist i bunden af ​​hver lektion og i stedet for låste genstande. Brug det til at lede studerende til dit websted eller et betalt kursus.",
           "title_label": "Titel",
           "title_placeholder": "Vil du gå dybere ind i dette?",
           "description_label": "Beskrivelse",
@@ -1102,7 +1103,7 @@
           "send_invite_emails": "Send invitationsmails med det samme",
           "create_email_invites": "Opret e-mail-invitationer",
           "existing_students_title": "Add existing org students",
-          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_description": "Vælg studerende, der allerede er i denne organisation, og giv dem direkte adgang til dette kursus.",
           "existing_students_search": "Search organization students",
           "loading_existing_students": "Loading organization students...",
           "no_existing_students": "No organization students are available to add.",
@@ -1505,8 +1506,8 @@
                   "add_button": "Tilføj link"
                 },
                 "edit": {
-                  "instructions_placeholder": "Valgfri instruktioner til elever",
-                  "helper": "Elever kan indsende en eller flere gyldige URL'er (http/https)."
+                  "instructions_placeholder": "Valgfri vejledning til elever",
+                  "helper": "Studerende kan indsende en eller flere gyldige URL'er (http/https)."
                 }
               },
               "file_upload": {
@@ -1551,7 +1552,7 @@
                 },
                 "edit": {
                   "correct_value_label": "Korrekt værdi",
-                  "correct_value_info": "De forventede numeriske svar elever skal aflevere for at blive markeret korrekt.",
+                  "correct_value_info": "Det forventede numeriske svar skal eleverne aflevere for at blive markeret korrekt.",
                   "tolerance_label": "Tolerance",
                   "tolerance_info": "Tilladt forskel fra den korrekte værdi (f.eks. accepterer 0,5 +/-0,5).",
                   "correct_value_placeholder": "Korrekt værdi",
@@ -1679,9 +1680,9 @@
                 },
                 "edit": {
                   "correct_value_label": "Korrekt stjerneværdi",
-                  "correct_value_info": "Eleverne med stjernetæller skal vælge at optjene hele point.",
+                  "correct_value_info": "Stjernetæller-eleverne skal vælge for at optjene fulde point.",
                   "max_stars_label": "Maksimalt antal stjerner",
-                  "max_stars_info": "Hvor mange stjerner eleverne ser (1-10). Standard er 5.",
+                  "max_stars_info": "Hvor mange stjerner ser eleverne (1-10). Standard er 5.",
                   "correct_value_placeholder": "f.eks. 3",
                   "max_stars_placeholder": "f.eks. 5"
                 }
@@ -2039,7 +2040,7 @@
         "not_compliance_title": "Overholdelse er ikke aktiveret",
         "not_compliance_description": "Dette kursus er ikke konfigureret som et compliance-kursus.",
         "loading": "Indlæser overholdelsesposter...",
-        "learners": "Elever",
+        "learners": "studerende",
         "learners_description": "Denne tabel viser den seneste cyklus for hver elev.",
         "current_cycle": "Nuværende cyklus",
         "current_cycle_description": "Din aktive overholdelsescyklus og fornyelsesdatoer.",
@@ -2047,7 +2048,7 @@
         "history_description": "Hver række er en registreret overholdelsescyklus for dette kursus.",
         "no_active_cycle": "Ingen aktiv compliance-cyklus",
         "empty_history": "Der er ikke registreret nogen overholdelseshistorik endnu.",
-        "empty_overview": "Der er endnu ingen registrering af elevoverholdelse.",
+        "empty_overview": "Der er endnu ingen tilgængelige optegnelser om overholdelse af elever.",
         "not_available": "Ikke tilgængelig",
         "status": {
           "no_record": "Ingen rekord",
@@ -2060,7 +2061,7 @@
           "waived": "Frafaldet"
         },
         "summary": {
-          "total_learners": "Samlede elever",
+          "total_learners": "Samlet studerende",
           "no_record": "Ingen rekord",
           "not_started": "Ikke startet",
           "in_progress": "I gang",
@@ -2071,7 +2072,7 @@
           "waived": "Frafaldet"
         },
         "fields": {
-          "learner": "Lærer",
+          "learner": "Student",
           "email": "E-mail",
           "status": "Status",
           "cycle": "Cyklus",
@@ -2091,8 +2092,8 @@
           "due_date_helper": "Bruges til nulstilling og forlængelse.",
           "reset_action": "Nulstil cyklus",
           "extend_action": "Forlæng forfaldsdatoen",
-          "waive_title": "Giv afkald på udvalgte elever",
-          "waive_description": "Anvend dispensation til de valgte elever. Du kan lade udløbsdatoen stå tom for en tidsubegrænset dispensation.",
+          "waive_title": "Fraskriv udvalgte elever",
+          "waive_description": "Anvend dispensation til de udvalgte elever. Du kan lade udløbsdatoen stå tom for en tidsubegrænset dispensation.",
           "waiver_reason_label": "Årsag til afkald",
           "waiver_reason_helper": "Valgfri kontekst for revisioner og fremtidige anmeldelser.",
           "waiver_expires_at_label": "Afkaldet udløber kl",
@@ -2106,7 +2107,7 @@
         },
         "tabs": {
           "overview": "Oversigt",
-          "learners": "Elever"
+          "learners": "studerende"
         },
         "overview_metrics": {
           "heading": "Kursus øjebliksbillede",
@@ -2348,8 +2349,8 @@
     "afternoon_heading": "God eftermiddag",
     "evening_heading": "God aften",
     "create_course": "Opret kursus",
-    "view_site": "Se websted",
-    "visit_site": "Besøg hjemmesiden",
+    "view_site": "Åbent Akademi",
+    "visit_site": "Åbent Akademi",
     "current_lesson": "Lærer i øjeblikket",
     "your_progress": "Dine fremskridt",
     "continue": "Fortsæt",
@@ -2382,7 +2383,7 @@
     "publish_course": "Udgiv kursus",
     "items_completed": "Varer afsluttet",
     "currently_learning": "Lærer i øjeblikket",
-    "learner": "Lærer",
+    "learner": "Student",
     "progress": "Fremskridt",
     "pick_up_where_you_left_off": "Fortsæt hvor du slap",
     "course_awaits_you": "{title} venter på dig",
@@ -2402,7 +2403,9 @@
     "login_activity_description": "Ugens mest aktive dage (sidste 90 dage)",
     "login_activity_no_data": "Ingen login-aktivitet endnu",
     "login_activity_logins": "logins",
-    "open_academy": "Åbent Akademi"
+    "open_academy": "Åbent Akademi",
+    "explore_more_courses": "Udforsk flere kurser",
+    "view_more": "Se mere"
   },
   "schedule": {
     "title": "Dit skema",
@@ -2444,7 +2447,7 @@
           "paid_plan_note": "Opgrader din plan for at tilpasse login-baggrunden.",
           "preview_alt": "Forhåndsvisning af login-baggrund"
         },
-        "page_subtitle": "Choose which tabs, banners, course tools, and extras learners see."
+        "page_subtitle": "Vælg, hvilke faner, bannere, kursusværktøjer og ekstramateriale eleverne ser."
       },
       "domains": {
         "title": "Brugerdefineret domæne",
@@ -2479,7 +2482,7 @@
         "pending_verification_description": "DNS-poster blev fundet. SSL-udstedelse eller -validering er stadig i gang.",
         "reconnect_description": "Dette domæne skal forbindes igen gennem det nye Cloudflare-opsætningsflow.",
         "error_description": "Dette tilpassede domæne eksisterer, men bekræftelsen er ikke fuldført endnu.",
-        "page_subtitle": "Run your public learning site on a web address you own.",
+        "page_subtitle": "Kør dit akademi på en webadresse, du ejer.",
         "dns_record": "DNS-record",
         "record_active": "Opdaget",
         "record_pending": "Afventer",
@@ -2544,9 +2547,9 @@
   "add_org": {
     "create_org": "Opret organisation",
     "name": "Organisationens navn",
-    "org_sitename": "Organisationens webstedsnavn",
+    "org_sitename": "Akademiets underdomæne",
     "create": "Opret",
-    "sitename": "Sitenavn findes allerede",
+    "sitename": "Academy-underdomænet findes allerede",
     "error_organization": "Noget gik galt under oprettelsen af denne organisation. Genindlæs og prøv igen"
   },
   "setup": {
@@ -3150,7 +3153,7 @@
           "add_theme": "Tilføj tema"
         }
       },
-      "page_subtitle": "Set the name, logo, and theme learners see for this organization."
+      "page_subtitle": "Indstil navn, logo og tema, som eleverne ser for denne organisation."
     },
     "profile": {
       "heading": "Profil",
@@ -3192,7 +3195,7 @@
       "ai_tutor_tab": "AI underviser"
     },
     "subheadings": {
-      "view_site": "Se webstedet"
+      "view_site": "Åbent Akademi"
     },
     "auth": {
       "title": "Autentificering",
@@ -3278,6 +3281,10 @@
         "allow_public_signups": {
           "label": "Tillad offentlige tilmeldinger",
           "description": "Når den er deaktiveret, kan kun brugere med et invitationslink tilmelde sig. Aktiver for at tillade alle at oprette en konto."
+        },
+        "internal_enrollment_only": {
+          "label": "Kun intern tilmelding",
+          "description": "Når det er aktiveret, er ethvert offentliggjort kursus åbent for selvtilmelding for alle studerende i din organisation. Brug med Disable Signup til at oprette et lukket, kun for inviterede akademi, hvor elever kan deltage i ethvert offentliggjort kursus uden opsætning pr. kursus."
         }
       },
       "login": {
@@ -3459,7 +3466,7 @@
     "friends": "Venner og familie",
     "fullname": "Fuldt navn",
     "name": "Organisationens navn",
-    "organisation_sitename": "Organisationens webstedsnavn",
+    "organisation_sitename": "Akademiets underdomæne",
     "what_brings": "Hvad bringer dig til",
     "how": "Hvordan hørte du om os?",
     "back": "Tilbage",
@@ -3874,7 +3881,7 @@
       "created": "Mål skabt",
       "updated": "Mål opdateret",
       "deleted": "Mål slettet",
-      "delete_confirm": "Vil du slette dette mål? Statushistorik for hver elev vil blive fjernet.",
+      "delete_confirm": "Vil du slette dette mål? Per-elev statushistorik vil blive fjernet.",
       "lms": {
         "heading": "Dine mål",
         "empty_title": "Ingen mål tildelt",
@@ -3926,7 +3933,7 @@
         "team_pass_rate_label": "Holdbeståelsesprocent (%)",
         "deadline_label": "Deadline",
         "deadline_date_label": "Deadline dato",
-        "relative_days_label": "Dage fra eleven er med",
+        "relative_days_label": "Dage fra eleven tiltræder",
         "recurring_months_label": "Gentag hver (måned)",
         "reminders_label": "Påmindelser (dage før termin)",
         "reminders_helper": "Kommasepareret. Eksempel: 7, 3, 1",
@@ -4348,10 +4355,10 @@
     "title": "Overholdelse",
     "subtitle": "Spor certificeringsstatus på tværs af alle overholdelseskurser i din organisation.",
     "learners": {
-      "heading": "Elever",
+      "heading": "studerende",
       "subtitle": "{count, number} matcher",
       "empty": "Ingen elever matcher dette filter",
-      "learner": "Lærer",
+      "learner": "Student",
       "course": "Kursus",
       "status": "Status",
       "due_date": "Forfalder",
@@ -4362,7 +4369,7 @@
       "description": "Overholdelseskurser med elevstatus tæller",
       "empty": "Ingen compliance-kurser endnu",
       "course": "Kursus",
-      "learners": "Elever",
+      "learners": "studerende",
       "completion": "Fuldførelse"
     },
     "filter": {
@@ -4388,11 +4395,11 @@
     },
     "tabs": {
       "courses": "Af kurs",
-      "learners": "Elever"
+      "learners": "studerende"
     },
     "summary": {
-      "heading": "Elevstatus",
-      "description": "Tæller på tværs af elever i alle overholdelseskurser."
+      "heading": "Student status",
+      "description": "Tæller på tværs af elever i alle compliance-kurser."
     }
   },
   "public_course": {
@@ -4432,12 +4439,12 @@
       "delete_confirm_title": "Vil du slette dette arbejdsområde?",
       "delete_confirm_body": "Dette fjerner permanent arbejdsområdet, dets medlemmer og dets kurser. Dette kan ikke fortrydes.",
       "name_label": "Arbejdsområdets navn",
-      "site_name_label": "Webstedets navn",
+      "site_name_label": "Akademiets underdomæne",
       "create_modal_title": "Opret et nyt arbejdsområde",
       "create_modal_submit": "Skab arbejdsrum",
       "cancel": "Annuller",
       "read_only_badge": "Skrivebeskyttet",
-      "usage_banner": "{learners} elever og {tokens} AI-tokens brugt på tværs af {workspaces} arbejdsområder denne måned",
+      "usage_banner": "{students} studerende og {tokens} AI-tokens brugt på tværs af {workspaces}-arbejdsområder denne måned",
       "secondary_billing_notice": "Fakturering administreres af dit primære arbejdsområde ({primaryName}).",
       "go_to_primary": "Gå til det primære arbejdsområde"
     },
@@ -4452,8 +4459,8 @@
       "atCap": "Ved cap",
       "approaching": "Nærmer sig hætten",
       "totalActive": "Aktive elever denne måned",
-      "learnersHeading": "Elever",
-      "headerLearner": "Lærer",
+      "learnersHeading": "studerende",
+      "headerLearner": "Student",
       "headerMessages": "Beskeder",
       "headerTokens": "Poletter",
       "headerStatus": "Status",

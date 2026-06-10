@@ -104,8 +104,8 @@
       "min_char": "Pole musi zawierać 5 lub więcej znaków"
     },
     "site_name": {
-      "min_char": "Nazwa witryny musi zawierać co najmniej 5 znaków",
-      "hyphen_rule": "Nazwa witryny nie może zaczynać się ani kończyć łącznikiem"
+      "min_char": "Subdomena Academy musi zawierać 5 lub więcej znaków",
+      "hyphen_rule": "Subdomena Academy nie może zaczynać się ani kończyć łącznikiem"
     },
     "organization_name": {
       "min_char": "Organizacja musi zawierać co najmniej 5 znaków",
@@ -457,7 +457,8 @@
     "not_in_progress": "Brak kursu w toku",
     "any_progress": "Tutaj wyświetli się każdy rozpoczęty kurs",
     "not_completed": "Żaden kurs nie został ukończony",
-    "any_course": "Tutaj wyświetli się każdy ukończony kurs"
+    "any_course": "Tutaj wyświetli się każdy ukończony kurs",
+    "find_courses": "Znajdź kursy"
   },
   "lms_navigation": {
     "home": "Dom",
@@ -538,7 +539,7 @@
     "loading_chart": "Ładowanie wykresu...",
     "no_data_default": "Brak dostępnych danych",
     "no_data_default_description": "W tej chwili nie ma żadnych danych do wyświetlenia.",
-    "subtitle": "Dowiedz się, w jaki sposób odwiedzający odkrywają Twoje kursy i przekształcają się w uczniów.",
+    "subtitle": "Dowiedz się, w jaki sposób odwiedzający odkrywają Twoje kursy i przekształcają się w studentów.",
     "refresh": "Odśwież",
     "popularTypes": {
       "heading": "Popularne typy kursów",
@@ -602,7 +603,7 @@
       "page_subtitle": "Zapisy, ukończenie lekcji, oceny i postępy poszczególnych uczniów w tym kursie.",
       "progress_distribution_card_description": "Ilu uczniów mieści się w każdym przedziale ukończenia.",
       "grade_distribution_card_description": "Ilu uczniów należy do każdego przedziału ocen.",
-      "students_table_description": "Sortowalny przegląd z linkami do profili uczniów.",
+      "students_table_description": "Sortowalny przegląd z linkami do profili studentów.",
       "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
       "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} przypisane do lekcji",
       "kpi_progress_grade": "{grade}% średniej oceny z ćwiczeń wśród zapisanych uczniów"
@@ -672,7 +673,7 @@
     },
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "user_analytics": {
-      "title": "Learner profile",
+      "title": "Profil studenta",
       "page_subtitle": "Progress, grades, and activity across their courses."
     }
   },
@@ -780,7 +781,7 @@
         },
         "callout": {
           "legend": "Objaśnienie dotyczące kursu publicznego",
-          "description": "Wyświetlane na dole każdej lekcji oraz w miejscu zablokowanych elementów. Użyj go, aby przyciągnąć uczniów do swojej witryny lub płatnego kursu.",
+          "description": "Wyświetlane na dole każdej lekcji oraz w miejscu zablokowanych elementów. Użyj go, aby przyciągnąć uczniów do Twojej witryny lub płatnego kursu.",
           "title_label": "Tytuł",
           "title_placeholder": "Chcesz zgłębić ten temat?",
           "description_label": "Opis",
@@ -1102,7 +1103,7 @@
           "send_invite_emails": "Natychmiast wysyłaj e-maile z zaproszeniami",
           "create_email_invites": "Utwórz zaproszenia e-mailowe",
           "existing_students_title": "Add existing org students",
-          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_description": "Wybierz uczniów już należących do tej organizacji i przyznaj im bezpośredni dostęp do tego kursu.",
           "existing_students_search": "Search organization students",
           "loading_existing_students": "Loading organization students...",
           "no_existing_students": "No organization students are available to add.",
@@ -1551,7 +1552,7 @@
                 },
                 "edit": {
                   "correct_value_label": "Prawidłowa wartość",
-                  "correct_value_info": "Oczekiwana odpowiedź liczbowa, którą uczniowie muszą przesłać, aby została oznaczona jako prawidłowa.",
+                  "correct_value_info": "Oczekiwana odpowiedź numeryczna, którą uczniowie muszą przesłać, aby została oznaczona jako prawidłowa.",
                   "tolerance_label": "Tolerancja",
                   "tolerance_info": "Dopuszczalna różnica od prawidłowej wartości (na przykład 0,5 akceptuje +/-0,5).",
                   "correct_value_placeholder": "Prawidłowa wartość",
@@ -1681,7 +1682,7 @@
                   "correct_value_label": "Prawidłowa wartość gwiazdki",
                   "correct_value_info": "Aby zdobyć pełną liczbę punktów, uczniowie muszą wybrać liczbę gwiazdek.",
                   "max_stars_label": "Maksymalna ilość gwiazdek",
-                  "max_stars_info": "Ile gwiazdek widzą uczniowie (1–10). Wartość domyślna to 5.",
+                  "max_stars_info": "Ile gwiazd widzą uczniowie (1–10). Wartość domyślna to 5.",
                   "correct_value_placeholder": "np. 3",
                   "max_stars_placeholder": "np. 5"
                 }
@@ -2039,7 +2040,7 @@
         "not_compliance_title": "Zgodność nie jest włączona",
         "not_compliance_description": "Ten kurs nie jest skonfigurowany jako kurs dotyczący zgodności.",
         "loading": "Ładowanie rekordów zgodności...",
-        "learners": "Uczniowie",
+        "learners": "Studenci",
         "learners_description": "Ta tabela pokazuje najnowszy cykl dla każdego ucznia.",
         "current_cycle": "Aktualny cykl",
         "current_cycle_description": "Twój aktywny cykl zgodności i daty odnowienia.",
@@ -2047,7 +2048,7 @@
         "history_description": "Każdy wiersz to jeden zarejestrowany cykl zgodności dla tego kursu.",
         "no_active_cycle": "Brak aktywnego cyklu zgodności",
         "empty_history": "Nie zarejestrowano jeszcze żadnej historii zgodności.",
-        "empty_overview": "Nie są jeszcze dostępne żadne zapisy dotyczące przestrzegania zasad przez ucznia.",
+        "empty_overview": "Nie są jeszcze dostępne żadne zapisy dotyczące przestrzegania zasad przez uczniów.",
         "not_available": "Niedostępne",
         "status": {
           "no_record": "Brak rekordu",
@@ -2060,7 +2061,7 @@
           "waived": "Zrzeczenie się"
         },
         "summary": {
-          "total_learners": "Wszystkich uczniów",
+          "total_learners": "Razem studenci",
           "no_record": "Brak rekordu",
           "not_started": "Nie rozpoczęte",
           "in_progress": "W toku",
@@ -2071,7 +2072,7 @@
           "waived": "Zrzeczenie się"
         },
         "fields": {
-          "learner": "Uczeń",
+          "learner": "Studenta",
           "email": "E-mail",
           "status": "Stan",
           "cycle": "Cykl",
@@ -2092,7 +2093,7 @@
           "reset_action": "Zresetuj cykl",
           "extend_action": "Przedłuż termin",
           "waive_title": "Zrezygnuj z wybranych uczniów",
-          "waive_description": "Zastosuj zwolnienie do wybranych uczniów. W przypadku zrzeczenia się na czas nieokreślony możesz pozostawić pole wygaśnięcia puste.",
+          "waive_description": "Zastosuj zwolnienie dla wybranych studentów. W przypadku zrzeczenia się na czas nieokreślony możesz pozostawić pole wygaśnięcia puste.",
           "waiver_reason_label": "Powód odstąpienia",
           "waiver_reason_helper": "Opcjonalny kontekst audytów i przyszłych przeglądów.",
           "waiver_expires_at_label": "Zrzeczenie się wygasa o godz",
@@ -2106,11 +2107,11 @@
         },
         "tabs": {
           "overview": "Przegląd",
-          "learners": "Uczniowie"
+          "learners": "Studenci"
         },
         "overview_metrics": {
           "heading": "Migawka kursu",
-          "description": "Uczestnicy są zliczani według statusu tego kursu."
+          "description": "Studenci liczą się według statusu tego kursu."
         },
         "empty_overview_description": "Dbaj o przestrzeganie zasad przez swoich pracowników i śledź, kto ma zaległości."
       }
@@ -2214,7 +2215,7 @@
           "product_name": "Nazwa produktu",
           "product_summary": "Co robi produkt?",
           "audience": "Kim jest publiczność?",
-          "outcome": "Co uczniowie powinni potrafić po ukończeniu kursu?",
+          "outcome": "Co studenci powinni umieć po ukończeniu kursu?",
           "depth": "Jak głęboko powinien sięgać kurs?",
           "topic": "Temat lub nisza",
           "expertise_level": "Docelowy poziom wiedzy",
@@ -2225,7 +2226,7 @@
         },
         "expert_on_x": {
           "title": "Zostań ekspertem w dziedzinie X",
-          "description": "Głęboki kurs zmieniający uczniów w ekspertów w określonej dziedzinie lub niszy.",
+          "description": "Głęboki kurs zmieniający studentów w ekspertów w określonej dziedzinie lub niszy.",
           "form_title": "Opowiedz nam o temacie"
         },
         "product_onboarding": {
@@ -2348,8 +2349,8 @@
     "afternoon_heading": "Dzień dobry",
     "evening_heading": "Dobry wieczór",
     "create_course": "Utwórz kurs",
-    "view_site": "Zobacz witrynę",
-    "visit_site": "Odwiedź stronę internetową",
+    "view_site": "Otwarta Akademia",
+    "visit_site": "Otwarta Akademia",
     "current_lesson": "Aktualnie się uczę",
     "your_progress": "Twój postęp",
     "continue": "Kontynuuj",
@@ -2382,7 +2383,7 @@
     "publish_course": "Publikuj kurs",
     "items_completed": "Elementy ukończone",
     "currently_learning": "Aktualnie się uczę",
-    "learner": "Uczeń",
+    "learner": "Studenta",
     "progress": "Postęp",
     "pick_up_where_you_left_off": "Rozpocznij od miejsca, w którym skończyłeś",
     "course_awaits_you": "{title} czeka na Ciebie",
@@ -2402,7 +2403,9 @@
     "login_activity_description": "Najbardziej aktywne dni tygodnia (ostatnie 90 dni)",
     "login_activity_no_data": "Brak aktywności związanej z logowaniem",
     "login_activity_logins": "logowania",
-    "open_academy": "Otwarta Akademia"
+    "open_academy": "Otwarta Akademia",
+    "explore_more_courses": "Przeglądaj więcej kursów",
+    "view_more": "Zobacz więcej"
   },
   "schedule": {
     "title": "Twój harmonogram",
@@ -2444,7 +2447,7 @@
           "paid_plan_note": "Ulepsz plan, aby dostosować tło ekranu logowania.",
           "preview_alt": "Podgląd tła logowania"
         },
-        "page_subtitle": "Choose which tabs, banners, course tools, and extras learners see."
+        "page_subtitle": "Wybierz, które karty, banery, narzędzia kursu i dodatki będą widoczne dla uczniów."
       },
       "domains": {
         "title": "Domena niestandardowa",
@@ -2479,7 +2482,7 @@
         "pending_verification_description": "Znaleziono rekordy DNS. Wydanie lub weryfikacja protokołu SSL jest nadal w toku.",
         "reconnect_description": "Ta domena musi zostać ponownie połączona poprzez nowy proces konfiguracji Cloudflare.",
         "error_description": "Ta domena niestandardowa istnieje, ale weryfikacja nie została jeszcze ukończona.",
-        "page_subtitle": "Run your public learning site on a web address you own.",
+        "page_subtitle": "Prowadź swoją akademię na posiadanym adresie internetowym.",
         "dns_record": "Rekord DNS",
         "record_active": "Wykryto",
         "record_pending": "Oczekujące",
@@ -2544,9 +2547,9 @@
   "add_org": {
     "create_org": "Utwórz organizację",
     "name": "Nazwa organizacji",
-    "org_sitename": "Nazwa witryny organizacji",
+    "org_sitename": "Subdomena Akademii",
     "create": "Utwórz",
-    "sitename": "Nazwa witryny już istnieje",
+    "sitename": "Subdomena Academy już istnieje",
     "error_organization": "Coś poszło nie tak podczas tworzenia tej organizacji. Załaduj ponownie i spróbuj ponownie"
   },
   "setup": {
@@ -2985,7 +2988,7 @@
             "remove": "Usuń statystyki",
             "label_field": "Etykieta",
             "value_field": "Wartość",
-            "label_placeholder": "Aktywni uczniowie",
+            "label_placeholder": "Aktywni studenci",
             "value_placeholder": "1200"
           }
         },
@@ -3150,7 +3153,7 @@
           "add_theme": "Dodaj motyw"
         }
       },
-      "page_subtitle": "Set the name, logo, and theme learners see for this organization."
+      "page_subtitle": "Ustaw nazwę, logo i motyw tej organizacji, które będą widzieć uczniowie."
     },
     "profile": {
       "heading": "Profil",
@@ -3192,7 +3195,7 @@
       "ai_tutor_tab": "Nauczyciel AI"
     },
     "subheadings": {
-      "view_site": "Zobacz witrynę"
+      "view_site": "Otwarta Akademia"
     },
     "auth": {
       "title": "Uwierzytelnianie",
@@ -3278,6 +3281,10 @@
         "allow_public_signups": {
           "label": "Zezwalaj na publiczne rejestracje",
           "description": "Gdy opcja jest wyłączona, rejestrować się mogą tylko użytkownicy posiadający link z zaproszeniem. Włącz, aby pozwolić każdemu na utworzenie konta."
+        },
+        "internal_enrollment_only": {
+          "label": "Tylko rejestracja wewnętrzna",
+          "description": "Jeśli ta opcja jest włączona, każdy opublikowany kurs jest dostępny do samodzielnej rejestracji dla wszystkich uczniów w Twojej organizacji. Użyj opcji Wyłącz rejestrację, aby utworzyć zamkniętą akademię dostępną tylko dla zaproszonych, w której uczniowie mogą dołączać do dowolnego opublikowanego kursu bez konieczności konfigurowania poszczególnych kursów."
         }
       },
       "login": {
@@ -3459,7 +3466,7 @@
     "friends": "Przyjaciele i rodzina",
     "fullname": "Pełne imię i nazwisko",
     "name": "Nazwa organizacji",
-    "organisation_sitename": "Nazwa witryny organizacji",
+    "organisation_sitename": "Subdomena Akademii",
     "what_brings": "Do czego cię sprowadza",
     "how": "Jak się o nas dowiedziałeś?",
     "back": "Powrót",
@@ -3874,7 +3881,7 @@
       "created": "Cel stworzony",
       "updated": "Cel zaktualizowany",
       "deleted": "Cel usunięty",
-      "delete_confirm": "Usunąć ten cel? Historia statusu każdego ucznia zostanie usunięta.",
+      "delete_confirm": "Usunąć ten cel? Historia statusu poszczególnych uczniów zostanie usunięta.",
       "lms": {
         "heading": "Twoje cele",
         "empty_title": "Brak przypisanych celów",
@@ -3901,7 +3908,7 @@
       },
       "deadline_kind": {
         "absolute": "Absolutna data",
-        "relative_to_join": "Dotyczy dołączenia ucznia",
+        "relative_to_join": "Dotyczy dołączania uczniów",
         "recurring": "Powtarzające się",
         "none": "Brak terminu"
       },
@@ -3926,7 +3933,7 @@
         "team_pass_rate_label": "Wskaźnik zdawalności zespołu (%)",
         "deadline_label": "Termin",
         "deadline_date_label": "Termin ostateczny",
-        "relative_days_label": "Dni od dołączenia ucznia",
+        "relative_days_label": "Dni od momentu dołączenia ucznia",
         "recurring_months_label": "Powtarzaj co (miesiące)",
         "reminders_label": "Przypomnienia (dni przed terminem)",
         "reminders_helper": "Oddzielone przecinkami. Przykład: 7, 3, 1",
@@ -4348,10 +4355,10 @@
     "title": "Zgodność",
     "subtitle": "Śledź status certyfikacji na każdym kursie dotyczącym zgodności w Twojej organizacji.",
     "learners": {
-      "heading": "Uczniowie",
+      "heading": "Studenci",
       "subtitle": "dopasowanie {count, number}",
       "empty": "Żaden uczeń nie pasuje do tego filtra",
-      "learner": "Uczeń",
+      "learner": "Studenta",
       "course": "Kurs",
       "status": "Stan",
       "due_date": "Termin",
@@ -4359,10 +4366,10 @@
     },
     "courses": {
       "heading": "Kursy",
-      "description": "Liczą się kursy zgodności ze statusem ucznia",
+      "description": "Liczą się kursy zgodności ze statusem studenta",
       "empty": "Nie ma jeszcze żadnych kursów dotyczących zgodności",
       "course": "Kurs",
-      "learners": "Uczniowie",
+      "learners": "Studenci",
       "completion": "Zakończenie"
     },
     "filter": {
@@ -4388,11 +4395,11 @@
     },
     "tabs": {
       "courses": "Oczywiście",
-      "learners": "Uczniowie"
+      "learners": "Studenci"
     },
     "summary": {
-      "heading": "Stan ucznia",
-      "description": "Dotyczy wszystkich uczestników wszystkich kursów dotyczących zgodności."
+      "heading": "Status studenta",
+      "description": "Dotyczy wszystkich uczniów na wszystkich kursach dotyczących zgodności."
     }
   },
   "public_course": {
@@ -4432,12 +4439,12 @@
       "delete_confirm_title": "Usunąć ten obszar roboczy?",
       "delete_confirm_body": "Spowoduje to trwałe usunięcie obszaru roboczego, jego członków i kursów. Tego nie można cofnąć.",
       "name_label": "Nazwa obszaru roboczego",
-      "site_name_label": "Nazwa witryny",
+      "site_name_label": "Subdomena Akademii",
       "create_modal_title": "Utwórz nowy obszar roboczy",
       "create_modal_submit": "Utwórz obszar roboczy",
       "cancel": "Anuluj",
       "read_only_badge": "Tylko do odczytu",
-      "usage_banner": "{learners} uczniów i {tokens} tokenów AI używanych w obszarach roboczych {workspaces} w tym miesiącu",
+      "usage_banner": "{students} studentów i {tokens} tokenów AI używanych w obszarach roboczych {workspaces} w tym miesiącu",
       "secondary_billing_notice": "Rozliczeniami zarządza Twój główny obszar roboczy ({primaryName}).",
       "go_to_primary": "Przejdź do głównego obszaru roboczego"
     },
@@ -4451,9 +4458,9 @@
       "tutorSummaryTitle": "Dozwolony użytek nauczyciela AI",
       "atCap": "Na czapce",
       "approaching": "Zbliżamy się do czapki",
-      "totalActive": "Aktywni uczniowie w tym miesiącu",
-      "learnersHeading": "Uczniowie",
-      "headerLearner": "Uczeń",
+      "totalActive": "Aktywni studenci w tym miesiącu",
+      "learnersHeading": "Studenci",
+      "headerLearner": "Studenta",
       "headerMessages": "Wiadomości",
       "headerTokens": "Żetony",
       "headerStatus": "Stan",
@@ -4480,7 +4487,7 @@
     "assessmentMode": {
       "hint_only": "Tylko wskazówki (bez bezpośrednich odpowiedzi)",
       "direct_answer": "Pozwól na bezpośrednie odpowiedzi",
-      "block_during_exercise": "Blokuj pomoc, gdy uczeń jest w trakcie ćwiczenia"
+      "block_during_exercise": "Blokuj pomoc, gdy uczeń wykonuje ćwiczenie"
     },
     "responseLength": {
       "short": "Krótkie (1–3 zdania)",
@@ -4505,7 +4512,7 @@
       "disclaimerFooter": "Stopka z zastrzeżeniami",
       "disclaimerFooter_description": "Dołączane do każdej odpowiedzi nauczyciela, aby uczniowie pamiętali, że nauczyciel nie jest osobą.",
       "thingsToSay": "Rzeczy do powiedzenia",
-      "thingsToSay_description": "Przykłady: „Zawsze przypominaj uczniom, aby przeczytali program nauczania przed 3. tygodniem”. „Zachęcaj uczniów do podsumowywania lekcji własnymi słowami.”",
+      "thingsToSay_description": "Przykłady: „Zawsze przypominaj uczniom, aby przeczytali program nauczania przed 3. tygodniem”. „Zachęcaj uczniów do podsumowywania lekcji własnymi słowami”.",
       "thingsNotToSay": "Rzeczy, których nie należy mówić",
       "thingsNotToSay_description": "Przykłady: „Nie ujawniaj odpowiedzi na egzaminie końcowym”. „Nigdy nie mów uczniom, jaką recenzję napisałeś”.",
       "forbiddenTopics": "Zakazane tematy",
@@ -4531,7 +4538,7 @@
       "guidance": "Rzeczy do powiedzenia · Rzeczy, których nie należy mówić",
       "guidance_description": "Wskazówki w postaci dowolnego tekstu, których nauczyciel będzie przestrzegać w każdej odpowiedzi, oraz opcjonalna lista tematów niedostępnych.",
       "assessment": "Ćwiczenia i oceny",
-      "assessment_description": "Jak zachowuje się nauczyciel, gdy uczeń prosi o pomoc w ćwiczeniu.",
+      "assessment_description": "Jak zachowuje się prowadzący, gdy uczeń prosi o pomoc w ćwiczeniu.",
       "grounding": "Uziemienie i cytaty",
       "grounding_description": "Ogranicz to, o czym nauczyciel może mówić i czy cytuje materiały kursu.",
       "escalation": "Eskalacja",

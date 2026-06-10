@@ -1,10 +1,67 @@
 ---
 title: Programs
-description: Learn when to use Programs in ClassroomIO, the kinds of training they support, and how they work for both admins and learners.
+description: Learn what Programs are in ClassroomIO, how goals work, and what students see in the Programs view.
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-<Callout type="warn" title="Coming Soon">
-  Full customer documentation for Programs is still being prepared. For now, this page is a placeholder and the draft content has been moved into the product PRD.
+**Programs** group multiple courses into a structured learning path. Use them when students need to complete a set of courses toward a shared outcome (onboarding, certification prep, role-based training). Individual courses still live in the LMS; programs add goals and a dedicated **Programs** view for students.
+
+## Programs vs courses
+
+| Concept | Scope | Student view |
+| --- | --- | --- |
+| **Course** | Single content container with lessons | **Home**, **My Learning**, **Explore** |
+| **Program** | Multiple courses with shared goals | **Programs** in the LMS |
+
+A student can be enrolled in courses without belonging to a program, and in a program that references several courses. See [Student Dashboard](/docs/student-dashboard) for how those views fit together.
+
+## Admin workflow
+
+From the admin dashboard:
+
+1. Create a program and add courses to it.
+2. Configure program **Settings** (metadata, visibility, assignments).
+3. Add **Goals** that define what success looks like.
+4. Assign students to the program (existing students or by email invite).
+
+Students assigned to a program see it under **Programs** in the LMS.
+
+## Program goal types
+
+When you add a goal in **Programs → Settings → Goals**, you pick a **type**. Each type measures progress differently.
+
+| Type | Label in the app | What it measures |
+| --- | --- | --- |
+| `complete_all` | Complete all selected courses | Every selected course must be finished |
+| `n_of_m` | Complete N of M selected courses | Student must finish a required count from the courses you select |
+| `score` | Score above threshold on every course | Minimum score on each selected course |
+| `pass_rate` | Team pass-rate threshold | Aggregate pass rate across the group |
+| `readiness` | Readiness (no deadline) | Readiness tracking without a fixed deadline |
+
+### Complete N of M selected courses (`n_of_m`)
+
+This type asks: "finish at least **N** courses from the list I picked." You select the courses, then set **required count** (N). N cannot be larger than the number of courses selected.
+
+If you see wording like "N of M" in the dropdown, **M** is the number of courses you selected, not a separate field called "cells."
+
+<Callout type="info" title="Deadlines on goals">
+  Goals can also have deadline settings (absolute date, relative to join, recurring, or none). Configure these in the same goal form when creating or editing a goal.
 </Callout>
+
+## What students see
+
+Students who belong to a program open **Programs** in the LMS to see their tracks and goal progress. Individual course lessons still open from enrolled courses in **Home** or **My Learning**.
+
+| Need | Where to look |
+| --- | --- |
+| Progress on a program track | **Programs** |
+| Lessons inside one course | **Home** or **My Learning** |
+| Optional courses not yet joined | **Explore** |
+
+## Related guides
+
+- [Student Dashboard](/docs/student-dashboard) — Programs vs My Learning vs Explore
+- [How Course Enrollment Works](/docs/how-to-guides/course-enrollment) — how students join courses inside a program
+- [Course](/docs/course) — single-course overview
+- [Roles and Permissions](/docs/how-to-guides/roles-and-permissions) — who can manage programs and courses

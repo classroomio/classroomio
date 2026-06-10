@@ -104,8 +104,8 @@
       "min_char": "Le champ doit contenir 5 caractères ou plus"
     },
     "site_name": {
-      "min_char": "Le nom du site doit contenir 5 caractères ou plus",
-      "hyphen_rule": "Le nom du site ne peut pas commencer ou se terminer par un trait d'union"
+      "min_char": "Le sous-domaine Academy doit contenir 5 caractères ou plus",
+      "hyphen_rule": "Le sous-domaine Academy ne peut pas commencer ou se terminer par un trait d'union"
     },
     "organization_name": {
       "min_char": "L'organisation doit contenir 5 caractères ou plus",
@@ -457,7 +457,8 @@
     "not_in_progress": "Aucun cours en cours",
     "any_progress": "Tout cours que vous commencez sera affiché ici",
     "not_completed": "Aucun cours terminé",
-    "any_course": "Tout cours que vous terminez sera affiché ici"
+    "any_course": "Tout cours que vous terminez sera affiché ici",
+    "find_courses": "Trouver des cours"
   },
   "lms_navigation": {
     "home": "Accueil",
@@ -538,7 +539,7 @@
     "loading_chart": "Chargement du graphique...",
     "no_data_default": "Aucune donnée disponible",
     "no_data_default_description": "Il n'y a aucune donnée à afficher pour le moment.",
-    "subtitle": "Comprenez comment les visiteurs découvrent vos cours et se transforment en apprenants.",
+    "subtitle": "Comprenez comment les visiteurs découvrent vos cours et se transforment en étudiants.",
     "refresh": "Actualiser",
     "popularTypes": {
       "heading": "Types de cours populaires",
@@ -599,13 +600,13 @@
       "course_types": "Types de cours"
     },
     "course_metrics": {
-      "page_subtitle": "Inscription, achèvement des cours, notes et progrès par apprenant pour ce cours.",
-      "progress_distribution_card_description": "Combien d’apprenants entrent dans chaque tranche d’achèvement.",
-      "grade_distribution_card_description": "Combien d’apprenants appartiennent à chaque tranche scolaire.",
-      "students_table_description": "Aperçu triable avec des liens vers les profils d'apprenants.",
+      "page_subtitle": "Inscription, achèvement des cours, notes et progrès par élève pour ce cours.",
+      "progress_distribution_card_description": "Combien d’élèves entrent dans chaque tranche d’achèvement.",
+      "grade_distribution_card_description": "Combien d’élèves appartiennent à chaque tranche scolaire.",
+      "students_table_description": "Aperçu triable avec des liens vers les profils des étudiants.",
       "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
       "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} mappés aux leçons",
-      "kpi_progress_grade": "{grade} % de note moyenne d'exercice parmi les apprenants inscrits"
+      "kpi_progress_grade": "{grade} % de note d'exercice moyenne parmi les étudiants inscrits"
     }
   },
   "audience": {
@@ -672,7 +673,7 @@
     },
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "user_analytics": {
-      "title": "Learner profile",
+      "title": "Profil étudiant",
       "page_subtitle": "Progress, grades, and activity across their courses."
     }
   },
@@ -762,7 +763,7 @@
         "save": "Enregistrer les modifications",
         "tags": {
           "title": "Balises",
-          "description": "Attribuez des balises pour que les apprenants puissent découvrir ce cours avec des filtres.",
+          "description": "Attribuez des balises pour que les étudiants puissent découvrir ce cours avec des filtres.",
           "empty": "Aucune balise sélectionnée",
           "add": "Ajouter une balise",
           "popover_title": "Sélectionnez les balises",
@@ -780,7 +781,7 @@
         },
         "callout": {
           "legend": "Appel du cours public",
-          "description": "Affiché au bas de chaque leçon et à la place des éléments verrouillés. Utilisez-le pour diriger les apprenants vers votre site ou vers un cours payant.",
+          "description": "Affiché au bas de chaque leçon et à la place des éléments verrouillés. Utilisez-le pour diriger les étudiants vers votre site ou vers un cours payant.",
           "title_label": "Titre",
           "title_placeholder": "Vous voulez approfondir ce sujet ?",
           "description_label": "Descriptif",
@@ -1102,7 +1103,7 @@
           "send_invite_emails": "Envoyer immédiatement des e-mails d'invitation",
           "create_email_invites": "Créer des invitations par e-mail",
           "existing_students_title": "Add existing org students",
-          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_description": "Choisissez les étudiants déjà dans cette organisation et accordez-leur un accès direct à ce cours.",
           "existing_students_search": "Search organization students",
           "loading_existing_students": "Loading organization students...",
           "no_existing_students": "No organization students are available to add.",
@@ -1442,7 +1443,7 @@
                   "range_error": "Answer must be between {min} and {max} characters."
                 },
                 "edit": {
-                  "placeholder": "Les apprenants répondront avec un texte long",
+                  "placeholder": "Les étudiants répondront avec un texte long",
                   "min_characters_label": "Minimum characters",
                   "min_characters_placeholder": "Minimum characters",
                   "max_characters_label": "Maximum characters",
@@ -1505,8 +1506,8 @@
                   "add_button": "Ajouter un lien"
                 },
                 "edit": {
-                  "instructions_placeholder": "Instructions facultatives pour les apprenants",
-                  "helper": "Les apprenants peuvent soumettre une ou plusieurs URL valides (http/https)."
+                  "instructions_placeholder": "Instructions facultatives pour les étudiants",
+                  "helper": "Les étudiants peuvent soumettre une ou plusieurs URL valides (http/https)."
                 }
               },
               "file_upload": {
@@ -1551,7 +1552,7 @@
                 },
                 "edit": {
                   "correct_value_label": "Valeur correcte",
-                  "correct_value_info": "La réponse numérique attendue que les apprenants doivent soumettre pour être marquée comme correcte.",
+                  "correct_value_info": "La réponse numérique attendue que les étudiants doivent soumettre pour être notée comme correcte.",
                   "tolerance_label": "Tolérance",
                   "tolerance_info": "Différence autorisée par rapport à la valeur correcte (par exemple, 0,5 accepte +/-0,5).",
                   "correct_value_placeholder": "Valeur correcte",
@@ -1659,7 +1660,7 @@
                 "edit": {
                   "template_label": "Modèle de phrase",
                   "template_placeholder": "Les mesures pour décrire nos données sont appelées ___. Le ___ est une fonction...",
-                  "template_helper": "Utilisez trois traits de soulignement (___) pour chaque espace. Les apprenants verront une banque de mots avec des réponses correctes et des éléments de distraction.",
+                  "template_helper": "Utilisez trois traits de soulignement (___) pour chaque espace. Les élèves verront une banque de mots avec des réponses correctes et des éléments de distraction.",
                   "no_blanks_warning": "Ajoutez au moins un ___ marqueur vierge dans votre modèle.",
                   "correct_answers_heading": "Bonne réponse pour chaque blanc",
                   "blank_label": "Vide",
@@ -1679,9 +1680,9 @@
                 },
                 "edit": {
                   "correct_value_label": "Valeur d'étoile correcte",
-                  "correct_value_info": "Les apprenants qui comptent les étoiles doivent sélectionner pour gagner la totalité des points.",
+                  "correct_value_info": "Les étudiants qui comptent les étoiles doivent sélectionner pour gagner tous les points.",
                   "max_stars_label": "Nombre maximum d'étoiles",
-                  "max_stars_info": "Combien d’étoiles les apprenants voient (1 à 10). La valeur par défaut est 5.",
+                  "max_stars_info": "Combien d’étoiles les élèves voient (1 à 10). La valeur par défaut est 5.",
                   "correct_value_placeholder": "par ex. 3",
                   "max_stars_placeholder": "par ex. 5"
                 }
@@ -1698,7 +1699,7 @@
                 },
                 "preview": {
                   "max_duration_label": "Durée maximale",
-                  "manual_grading": "Les apprenants enregistrent une courte réponse vidéo. Classement manuel requis."
+                  "manual_grading": "Les élèves enregistrent une courte réponse vidéo. Classement manuel requis."
                 },
                 "take": {
                   "unsupported": "L'enregistrement vidéo n'est pas pris en charge dans ce navigateur.",
@@ -2039,15 +2040,15 @@
         "not_compliance_title": "La conformité n'est pas activée",
         "not_compliance_description": "Ce cours n'est pas configuré comme cours de conformité.",
         "loading": "Chargement des enregistrements de conformité...",
-        "learners": "Apprenants",
-        "learners_description": "Ce tableau montre le dernier cycle pour chaque apprenant.",
+        "learners": "Étudiants",
+        "learners_description": "Ce tableau présente le dernier cycle de chaque élève.",
         "current_cycle": "Cycle actuel",
         "current_cycle_description": "Votre cycle de conformité actif et vos dates de renouvellement.",
         "history": "Cycles passés",
         "history_description": "Chaque ligne correspond à un cycle de conformité enregistré pour ce cours.",
         "no_active_cycle": "Aucun cycle de conformité actif",
         "empty_history": "Aucun historique de conformité n’a encore été enregistré.",
-        "empty_overview": "Aucun dossier de conformité des apprenants n’est encore disponible.",
+        "empty_overview": "Aucun dossier de conformité des étudiants n’est encore disponible.",
         "not_available": "Non disponible",
         "status": {
           "no_record": "Aucun enregistrement",
@@ -2060,7 +2061,7 @@
           "waived": "Renoncé"
         },
         "summary": {
-          "total_learners": "Nombre total d'apprenants",
+          "total_learners": "Nombre total d'étudiants",
           "no_record": "Aucun enregistrement",
           "not_started": "Pas démarré",
           "in_progress": "En cours",
@@ -2071,7 +2072,7 @@
           "waived": "Renoncé"
         },
         "fields": {
-          "learner": "Apprenant",
+          "learner": "Étudiant",
           "email": "Courriel",
           "status": "Statut",
           "cycle": "Cycle",
@@ -2083,34 +2084,34 @@
         },
         "bulk_actions": {
           "title": "Actions groupées",
-          "description": "Sélectionnez les apprenants et appliquez une action de conformité à leur cycle actuel.",
-          "select_all": "Sélectionnez tous les apprenants visibles",
+          "description": "Sélectionnez les étudiants et appliquez une action de conformité à leur cycle en cours.",
+          "select_all": "Sélectionnez tous les étudiants visibles",
           "selected_count": "{count} sélectionnés",
           "clear_selection": "Effacer la sélection",
           "due_date_label": "Date d'échéance",
           "due_date_helper": "Utilisé pour les actions de réinitialisation et d’extension.",
           "reset_action": "Cycle de réinitialisation",
           "extend_action": "Prolonger la date d'échéance",
-          "waive_title": "Renoncer aux apprenants sélectionnés",
-          "waive_description": "Appliquer une dérogation aux apprenants sélectionnés. Vous pouvez laisser l’expiration vide pour une renonciation illimitée.",
+          "waive_title": "Renoncer aux étudiants sélectionnés",
+          "waive_description": "Appliquer une dérogation aux étudiants sélectionnés. Vous pouvez laisser l’expiration vide pour une renonciation illimitée.",
           "waiver_reason_label": "Raison de la renonciation",
           "waiver_reason_helper": "Contexte facultatif pour les audits et les examens futurs.",
           "waiver_expires_at_label": "La renonciation expire à",
           "waiver_expires_at_helper": "Laissez vide si la renonciation ne doit pas expirer automatiquement.",
           "waive_action": "Demander une renonciation",
           "modal": {
-            "description": "Vous mettez à jour {count} apprenants sélectionnés.",
+            "description": "Vous mettez à jour {count} étudiants sélectionnés.",
             "cancel": "Annuler",
             "apply": "Appliquer l'action"
           }
         },
         "tabs": {
           "overview": "Aperçu",
-          "learners": "Apprenants"
+          "learners": "Étudiants"
         },
         "overview_metrics": {
           "heading": "Aperçu du cours",
-          "description": "L'apprenant compte par statut pour ce cours."
+          "description": "L'étudiant compte par statut pour ce cours."
         },
         "empty_overview_description": "Gardez vos employés conformes et suivez qui est derrière."
       }
@@ -2214,7 +2215,7 @@
           "product_name": "Nom du produit",
           "product_summary": "Que fait le produit ?",
           "audience": "Quel est le public ?",
-          "outcome": "Que devraient être capables les apprenants de faire après le cours ?",
+          "outcome": "Que doivent être capables les étudiants de faire après le cours ?",
           "depth": "Jusqu’où doit aller le cours ?",
           "topic": "Sujet ou niche",
           "expertise_level": "Niveau d’expertise cible",
@@ -2225,7 +2226,7 @@
         },
         "expert_on_x": {
           "title": "Devenez un expert sur X",
-          "description": "Un cours approfondi transformant les apprenants en experts sur un sujet ou une niche spécifique.",
+          "description": "Un cours approfondi transformant les étudiants en experts sur un sujet ou une niche spécifique.",
           "form_title": "Parlez-nous du sujet"
         },
         "product_onboarding": {
@@ -2348,8 +2349,8 @@
     "afternoon_heading": "Bon après-midi",
     "evening_heading": "Bonsoir",
     "create_course": "Créer un cours",
-    "view_site": "Voir le site",
-    "visit_site": "Visitez le site Web",
+    "view_site": "Académie ouverte",
+    "visit_site": "Académie ouverte",
     "current_lesson": "En cours d'apprentissage",
     "your_progress": "Votre progression",
     "continue": "Continuer",
@@ -2382,7 +2383,7 @@
     "publish_course": "Publier le cours",
     "items_completed": "Éléments terminés",
     "currently_learning": "En cours d'apprentissage",
-    "learner": "Apprenant",
+    "learner": "Étudiant",
     "progress": "Progrès",
     "pick_up_where_you_left_off": "Reprenez là où vous vous étiez arrêté",
     "course_awaits_you": "{title} vous attend",
@@ -2402,7 +2403,9 @@
     "login_activity_description": "Jours les plus actifs de la semaine (90 derniers jours)",
     "login_activity_no_data": "Aucune activité de connexion pour le moment",
     "login_activity_logins": "connexions",
-    "open_academy": "Académie ouverte"
+    "open_academy": "Académie ouverte",
+    "explore_more_courses": "Explorez plus de cours",
+    "view_more": "Voir plus"
   },
   "schedule": {
     "title": "Votre emploi du temps",
@@ -2444,7 +2447,7 @@
           "paid_plan_note": "Passez à une offre supérieure pour personnaliser l’arrière-plan de connexion.",
           "preview_alt": "Aperçu de l’arrière-plan de connexion"
         },
-        "page_subtitle": "Choose which tabs, banners, course tools, and extras learners see."
+        "page_subtitle": "Choisissez les onglets, bannières, outils de cours et extras que les étudiants voient."
       },
       "domains": {
         "title": "Domaine personnalisé",
@@ -2479,7 +2482,7 @@
         "pending_verification_description": "Des enregistrements DNS ont été trouvés. L'émission ou la validation SSL est toujours en cours.",
         "reconnect_description": "Ce domaine doit être à nouveau connecté via le nouveau flux de configuration Cloudflare.",
         "error_description": "Ce domaine personnalisé existe, mais la vérification n'est pas encore terminée.",
-        "page_subtitle": "Run your public learning site on a web address you own.",
+        "page_subtitle": "Gérez votre académie sur une adresse Web que vous possédez.",
         "dns_record": "Enregistrement DNS",
         "record_active": "Détecté",
         "record_pending": "En attente",
@@ -2544,9 +2547,9 @@
   "add_org": {
     "create_org": "Créer une organisation",
     "name": "Nom de l'organisation",
-    "org_sitename": "Nom du site de l'organisation",
+    "org_sitename": "Sous-domaine Académie",
     "create": "Créer",
-    "sitename": "Le nom du site existe déjà",
+    "sitename": "Le sous-domaine Academy existe déjà",
     "error_organization": "Quelque chose s'est mal passé lors de la création de cette organisation. Veuillez recharger et réessayer"
   },
   "setup": {
@@ -2985,7 +2988,7 @@
             "remove": "Supprimer la statistique",
             "label_field": "Étiquette",
             "value_field": "Valeur",
-            "label_placeholder": "Apprenants actifs",
+            "label_placeholder": "Étudiants actifs",
             "value_placeholder": "1 200"
           }
         },
@@ -3150,7 +3153,7 @@
           "add_theme": "Ajouter un thème"
         }
       },
-      "page_subtitle": "Set the name, logo, and theme learners see for this organization."
+      "page_subtitle": "Définissez le nom, le logo et le thème que les étudiants voient pour cette organisation."
     },
     "profile": {
       "heading": "Profil",
@@ -3192,7 +3195,7 @@
       "ai_tutor_tab": "Tuteur IA"
     },
     "subheadings": {
-      "view_site": "Voir le site"
+      "view_site": "Académie ouverte"
     },
     "auth": {
       "title": "Authentification",
@@ -3278,6 +3281,10 @@
         "allow_public_signups": {
           "label": "Autoriser les inscriptions publiques",
           "description": "Lorsqu'il est désactivé, seuls les utilisateurs disposant d'un lien d'invitation peuvent s'inscrire. Activez pour permettre à quiconque de créer un compte."
+        },
+        "internal_enrollment_only": {
+          "label": "Inscription interne uniquement",
+          "description": "Lorsqu'il est activé, tout cours publié est ouvert à l'auto-inscription à tous les étudiants de votre organisation. Utilisez avec Désactiver l'inscription pour créer une académie fermée sur invitation uniquement où les étudiants peuvent rejoindre n'importe quel cours publié sans configuration par cours."
         }
       },
       "login": {
@@ -3459,7 +3466,7 @@
     "friends": "Amis et famille",
     "fullname": "Nom complet",
     "name": "Nom de l'organisation",
-    "organisation_sitename": "Nom du site de l'organisation",
+    "organisation_sitename": "Sous-domaine Académie",
     "what_brings": "Qu'est-ce qui t'amène à",
     "how": "Comment avez-vous entendu parler de nous ?",
     "back": "Retour",
@@ -3874,7 +3881,7 @@
       "created": "Objectif créé",
       "updated": "Objectif mis à jour",
       "deleted": "Objectif supprimé",
-      "delete_confirm": "Supprimer cet objectif ? L’historique du statut de chaque apprenant sera supprimé.",
+      "delete_confirm": "Supprimer cet objectif ? L’historique du statut de chaque étudiant sera supprimé.",
       "lms": {
         "heading": "Vos objectifs",
         "empty_title": "Aucun objectif assigné",
@@ -3901,7 +3908,7 @@
       },
       "deadline_kind": {
         "absolute": "Date absolue",
-        "relative_to_join": "Par rapport à l'adhésion de l'apprenant",
+        "relative_to_join": "Par rapport à l'adhésion des étudiants",
         "recurring": "Récurrent",
         "none": "Pas de date limite"
       },
@@ -3922,11 +3929,11 @@
         "type_label": "Tapez",
         "courses_label": "Cours",
         "required_count_label": "Nombre de cours requis",
-        "score_threshold_label": "Note de réussite par apprenant (%)",
+        "score_threshold_label": "Note de réussite par élève (%)",
         "team_pass_rate_label": "Taux de réussite des équipes (%)",
         "deadline_label": "Date limite",
         "deadline_date_label": "Date limite",
-        "relative_days_label": "Jours à compter de l'arrivée de l'apprenant",
+        "relative_days_label": "Jours à compter de l'arrivée de l'étudiant",
         "recurring_months_label": "Répéter tous les (mois)",
         "reminders_label": "Rappels (jours avant l'échéance)",
         "reminders_helper": "Séparés par des virgules. Exemple : 7, 3, 1",
@@ -4348,10 +4355,10 @@
     "title": "Conformité",
     "subtitle": "Suivez le statut de la certification pour chaque cours de conformité de votre organisation.",
     "learners": {
-      "heading": "Apprenants",
+      "heading": "Étudiants",
       "subtitle": "{count, number} correspondant",
-      "empty": "Aucun apprenant ne correspond à ce filtre",
-      "learner": "Apprenant",
+      "empty": "Aucun étudiant ne correspond à ce filtre",
+      "learner": "Étudiant",
       "course": "Cours",
       "status": "Statut",
       "due_date": "Due",
@@ -4359,10 +4366,10 @@
     },
     "courses": {
       "heading": "Cours",
-      "description": "Cours de conformité avec décompte du statut d'apprenant",
+      "description": "Cours de conformité avec le statut d'étudiant compte",
       "empty": "Pas encore de cours de conformité",
       "course": "Cours",
-      "learners": "Apprenants",
+      "learners": "Étudiants",
       "completion": "Achèvement"
     },
     "filter": {
@@ -4388,11 +4395,11 @@
     },
     "tabs": {
       "courses": "Par cours",
-      "learners": "Apprenants"
+      "learners": "Étudiants"
     },
     "summary": {
-      "heading": "Statut d'apprenant",
-      "description": "Compte parmi les apprenants dans tous les cours de conformité."
+      "heading": "Statut d'étudiant",
+      "description": "Compte parmi les étudiants dans tous les cours de conformité."
     }
   },
   "public_course": {
@@ -4432,12 +4439,12 @@
       "delete_confirm_title": "Supprimer cet espace de travail ?",
       "delete_confirm_body": "Cela supprime définitivement l'espace de travail, ses membres et ses cours. Cela ne peut pas être annulé.",
       "name_label": "Nom de l'espace de travail",
-      "site_name_label": "Nom du site",
+      "site_name_label": "Sous-domaine Académie",
       "create_modal_title": "Créer un nouvel espace de travail",
       "create_modal_submit": "Créer un espace de travail",
       "cancel": "Annuler",
       "read_only_badge": "Lecture seule",
-      "usage_banner": "{learners} apprenants et {tokens} jetons IA utilisés dans {workspaces} espaces de travail ce mois-ci",
+      "usage_banner": "{students} étudiants et {tokens} jetons d'IA utilisés dans {workspaces} espaces de travail ce mois-ci",
       "secondary_billing_notice": "La facturation est gérée par votre espace de travail principal ({primaryName}).",
       "go_to_primary": "Accéder à l'espace de travail principal"
     },
@@ -4451,9 +4458,9 @@
       "tutorSummaryTitle": "Utilisation équitable du tuteur IA",
       "atCap": "Au plafond",
       "approaching": "Cap en approche",
-      "totalActive": "Apprenants actifs ce mois-ci",
-      "learnersHeading": "Apprenants",
-      "headerLearner": "Apprenant",
+      "totalActive": "Étudiants actifs ce mois-ci",
+      "learnersHeading": "Étudiants",
+      "headerLearner": "Étudiant",
       "headerMessages": "Messages",
       "headerTokens": "Jetons",
       "headerStatus": "Statut",
@@ -4480,7 +4487,7 @@
     "assessmentMode": {
       "hint_only": "Conseils uniquement (pas de réponses directes)",
       "direct_answer": "Autoriser les réponses directes",
-      "block_during_exercise": "Bloquer l'aide pendant que l'apprenant est dans un exercice"
+      "block_during_exercise": "Bloquer l'aide pendant que l'élève est dans un exercice"
     },
     "responseLength": {
       "short": "Court (1 à 3 phrases)",
@@ -4503,11 +4510,11 @@
       "welcomeMessage": "Message de bienvenue",
       "welcomeMessage_description": "Affiché au-dessus de la première réponse du tuteur dans chaque nouvelle conversation.",
       "disclaimerFooter": "Pied de page",
-      "disclaimerFooter_description": "Ajouté à chaque réponse du tuteur pour que les apprenants se souviennent que le tuteur n'est pas une personne.",
+      "disclaimerFooter_description": "Ajouté à chaque réponse du tuteur pour que les étudiants se souviennent que le tuteur n'est pas une personne.",
       "thingsToSay": "Choses à dire",
-      "thingsToSay_description": "Exemples : « Rappelez toujours aux apprenants de lire le programme avant la semaine 3. » \"Encouragez les apprenants à résumer les leçons dans leurs propres mots.\"",
+      "thingsToSay_description": "Exemples : « Rappelez toujours aux étudiants de lire le programme avant la semaine 3. » \"Encouragez les élèves à résumer les leçons dans leurs propres mots.\"",
       "thingsNotToSay": "Choses à ne pas dire",
-      "thingsNotToSay_description": "Exemples : « Ne révélez pas les réponses à l'examen final. » \"Ne dites jamais aux apprenants quelle critique vous avez rédigée.\"",
+      "thingsNotToSay_description": "Exemples : « Ne révélez pas les réponses à l'examen final. » \"Ne dites jamais aux étudiants quelle critique vous avez rédigée.\"",
       "forbiddenTopics": "Sujets interdits",
       "forbiddenTopics_description": "Liste séparée par des virgules. Le tuteur refusera d’en discuter.",
       "forbiddenTopics_placeholder": "politique, religion, conseils médicaux personnels",
@@ -4525,17 +4532,17 @@
     },
     "section": {
       "availability": "Disponibilité",
-      "availability_description": "Activez ou désactivez le tuteur IA pour les apprenants de cet espace de travail.",
+      "availability_description": "Activez ou désactivez le tuteur IA pour les étudiants de cet espace de travail.",
       "personality": "Personnalité",
       "personality_description": "Comment le tuteur se présente et combien de temps durent ses réponses.",
       "guidance": "Choses à dire · choses à ne pas dire",
       "guidance_description": "Des conseils en texte libre que le tuteur suivra dans chaque réponse, ainsi qu'une liste facultative de sujets interdits.",
       "assessment": "Exercices et évaluations",
-      "assessment_description": "Comment se comporte le tuteur lorsqu'un apprenant demande de l'aide pour un exercice.",
+      "assessment_description": "Comment se comporte le tuteur lorsqu'un élève demande de l'aide pour un exercice.",
       "grounding": "Fondement et citations",
       "grounding_description": "Limitez ce dont le tuteur peut parler et s'il cite du matériel de cours.",
       "escalation": "Escalade",
-      "escalation_description": "Où diriger les apprenants lorsqu’ils ont besoin d’un véritable humain.",
+      "escalation_description": "Où diriger les étudiants lorsqu'ils ont besoin d'un véritable humain.",
       "inheritance": "Héritage de cours",
       "inheritance_description": "Héritez des valeurs par défaut de l'espace de travail ou définissez des remplacements par cours."
     },

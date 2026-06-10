@@ -370,7 +370,8 @@ export async function getCourseWithRelations(
               siteName: schema.organization.siteName,
               customDomain: schema.organization.customDomain,
               isCustomDomainVerified: schema.organization.isCustomDomainVerified,
-              theme: schema.organization.theme
+              theme: schema.organization.theme,
+              settings: schema.organization.settings
             }
           })
           .from(schema.group)
@@ -992,7 +993,6 @@ export const getEnrolledCourses = async ({
         and(
           eq(schema.group.organizationId, orgId),
           eq(schema.course.status, 'ACTIVE'),
-          eq(schema.course.isPublished, true),
           or(isNotNull(schema.groupmember.id), isNotNull(schema.programMember.id))
         )
       )
@@ -1019,6 +1019,7 @@ export const getEnrolledCourses = async ({
 interface GetExploreCoursesOptions {
   orgId: string;
   profileId: string;
+  limit?: number;
 }
 
 /**
@@ -1026,11 +1027,16 @@ interface GetExploreCoursesOptions {
  *
  * @param options.orgId Organization ID
  * @param options.profileId Profile ID to exclude enrolled courses
+ * @param options.limit Optional max number of courses to return
  * @returns Array of courses with explore-level data
  */
-export const getExploreCourses = async ({ orgId, profileId }: GetExploreCoursesOptions): Promise<TBaseCourse[]> => {
+export const getExploreCourses = async ({
+  orgId,
+  profileId,
+  limit
+}: GetExploreCoursesOptions): Promise<TBaseCourse[]> => {
   try {
-    const result = await db
+    const baseQuery = db
       .select({
         course: schema.course,
         lessonCount: sql<number>`COUNT(DISTINCT ${schema.lesson.id})`.as('total_lessons'),
@@ -1058,6 +1064,8 @@ export const getExploreCourses = async ({ orgId, profileId }: GetExploreCoursesO
       )
       .groupBy(schema.course.id, schema.group.id)
       .orderBy(desc(schema.course.createdAt));
+
+    const result = limit ? await baseQuery.limit(limit) : await baseQuery;
 
     return result.map((row) => ({
       ...row.course,
