@@ -5,9 +5,9 @@ in GitHub Issues.** This folder is the *execution layer* on top of
 [`FEATURE_AUDIT.md`](../FEATURE_AUDIT.md) (the feature map).
 
 - [`FEATURE_AUDIT.md`](../FEATURE_AUDIT.md) — the **map**: every feature, its user flow, and edge cases, with `file:line` citations.
-- [`flows/`](flows/) — the **test plan**: per-flow happy-path checklists you walk through.
-- [`TRACKER.md`](TRACKER.md) — the **dashboard**: every flow/feature × tested? × linked GitHub issues × status.
-- **GitHub Issues** — the **bug system of record** (filed via the `qa-bug` template, with video).
+- [`flows/`](flows/) — the **test plan and execution record**: per-flow happy-path checklists you walk through; the checkboxes *are* the progress record.
+- **GitHub Issues** — the **bug system of record** (filed via the `qa-bug` template, with video). Live list: [all open QA bugs](https://github.com/classroomio/classroomio/issues?q=is%3Aissue+is%3Aopen+label%3Aqa).
+- [Feature coverage map](#feature-coverage-map) (below) — proves every audited feature has a test plan.
 
 ---
 
@@ -18,8 +18,7 @@ Pick a flow (flows/NN-*.md)
   → walk every checklist step in the running app (staging once available, else local)
   → step behaves as "Expected"?  ✔ check it off
   → step misbehaves?             ✘ file a GitHub issue (qa-bug template) + screen recording
-                                   then link the issue # in the flow step and in TRACKER.md
-  → when all steps walked, mark the flow's row in TRACKER.md
+                                   then link the issue # in the flow step, and check it off
 ```
 
 **Bug strategy (current phase): log everything, fix in a later pass.** During a walkthrough
@@ -27,9 +26,8 @@ you are *discovering and filing*, not fixing — file the bug, link it, keep mov
 happens later, highest-severity first.
 
 ### Definition of done for a flow
-- Every checklist step has been executed (checked, or has a linked issue explaining why not).
+- Every checklist step has been executed (checked off, or has a linked issue explaining why not).
 - Tested in every deployment mode the flow header lists (cloud and/or self-host).
-- TRACKER.md row updated with status + issue links.
 
 ---
 
@@ -114,3 +112,60 @@ onboarding/org creation, billing, analytics, licensing/SSO.
 | Week 2 | Walk every flow on staging; file every bug on GitHub with video; label severity + difficulty. |
 | Week 3/4 | Fix bugs highest-severity first. |
 | Ongoing | Sentry triage; customer-support bugs; Vitest unit tests for core logic; Cypress E2E mirroring flows 01–04. |
+
+---
+
+## Feature coverage map
+
+Every feature in [`FEATURE_AUDIT.md`](../FEATURE_AUDIT.md) §2 maps to at least one flow, so
+nothing is demoed as "shipped" without a test plan. This map is static — execution status
+lives in each flow file's checkboxes, not here.
+
+| # | Feature (audit §2) | Covered by flow |
+|---|--------------------|-----------------|
+| 1 | Authentication & sessions | 01 |
+| 2 | Signup gating | 01 |
+| 3 | Onboarding & org creation | 01 |
+| 4 | Organizations (workspaces) | 01 (create), 10 (settings) |
+| 5 | Team / people management | 03 |
+| 6 | Courses | 02 |
+| 7 | Lessons & lesson editor | 02 |
+| 8 | Exercises & questions | 02 (author), 04 (submit) |
+| 9 | Course people / enrollment | 03 |
+| 10 | Course invites | 03 |
+| 11 | Org invites | 03 |
+| 12 | Compliance training | 04 |
+| 13 | Certificates | 04 |
+| 14 | Programs (cohorts) | 06 |
+| 15 | Community Q&A | 07 |
+| 16 | Course newsfeed | 07 |
+| 17 | Attendance | 06 |
+| 18 | AI Course Assistant | 05 |
+| 19 | AI Lesson Tutor | 05 |
+| 20 | AI credits / token billing | 13 |
+| 21 | Course import | 09 |
+| 22 | Media manager | 09 |
+| 23 | Tags | 10 |
+| 24 | Org public site (org-site) | 08 |
+| 25 | Custom domains | 10 |
+| 26 | Course widget embed | 10 |
+| 27 | Public REST API (v1) | 11 |
+| 28 | Automation / API keys | 11 |
+| 29 | MCP server | 11 |
+| 30 | Enterprise SSO | 12 |
+| 31 | Token auth | 12 |
+| 32 | Licensing | 12 |
+| 33 | Billing (Polar) | 13 |
+| 34 | Analytics | 10 |
+| 35 | Email / notifications | 01, 03, 04 (observed in-flow) |
+| 36 | Background jobs | 09 (media), admin/queues |
+| 37 | Unsplash image search | 02 (content image picker) |
+| 38 | Marketing website | 08 |
+| 39 | Documentation site | 08 |
+| 40 | Outbound webhooks | ⚠️ verify NOT shipped (audit §7.1) |
+| 41 | SCORM support | ⚠️ verify NOT shipped (audit §7.2) |
+| 42 | In-app notification system | ⚠️ verify NOT shipped (audit §7.3) |
+
+> Items 40–42 are PRD-only stubs per the audit. For these, "testing" means **confirming the
+> feature is not exposed** in the UI/API so it isn't demoed as shipped — record the result in
+> the relevant flow file.

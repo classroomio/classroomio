@@ -129,4 +129,4 @@ body:
         - label: I searched existing issues and this is not a duplicate.
         - label: I attached a screen recording.
         - label: I will apply the matching `severity:*` and `difficulty:*` labels.
-        - label: I linked this issue back in qa/TRACKER.md.
+        - label: I linked this issue # in the relevant qa/flows step.
