@@ -305,6 +305,7 @@ export type CourseWithRelations = TCourse & {
     customDomain: string | null;
     isCustomDomainVerified: boolean | null;
     theme: string | null;
+    settings: (typeof schema.organization.$inferSelect)['settings'];
   } | null;
 };
 
@@ -349,6 +350,7 @@ export async function getCourseWithRelations(
         customDomain: string | null;
         isCustomDomainVerified: boolean | null;
         theme: string | null;
+        settings: (typeof schema.organization.$inferSelect)['settings'];
       } | null;
     };
     // Fetch group data (and org via join) if groupId exists
@@ -413,7 +415,8 @@ export async function getCourseWithRelations(
             siteName: groupData[0].organization.siteName ?? null,
             customDomain: groupData[0].organization.customDomain ?? null,
             isCustomDomainVerified: groupData[0].organization.isCustomDomainVerified ?? null,
-            theme: groupData[0].organization.theme ?? null
+            theme: groupData[0].organization.theme ?? null,
+            settings: groupData[0].organization.settings ?? null
           }
         : null;
 

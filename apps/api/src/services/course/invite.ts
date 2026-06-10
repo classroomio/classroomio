@@ -631,8 +631,7 @@ export async function enrollInCourse(
   }
 
   const courseMetadata = (courseWithRelations.metadata as { allowNewStudent?: boolean } | null) ?? null;
-  const isInternalEnrollmentOnly =
-    (org.settings as { internalEnrollmentOnly?: boolean } | null)?.internalEnrollmentOnly ?? false;
+  const isInternalEnrollmentOnly = org.settings?.internalEnrollmentOnly ?? false;
 
   const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(org.id, user.id);
 
