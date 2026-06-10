@@ -13,6 +13,7 @@
     "postinstall": "node scripts/postinstall.mjs",
     "release": "standard-version",
     "db:reset": "pnpm --filter @cio/db db:reset",
+    "db:studio": "pnpm --filter @cio/db db:studio",
     "dashboard:dev": "pnpm concurrently -n dashboard,ui -c blue,yellow \"pnpm --filter=@cio/dashboard run dev\" \"pnpm --filter=@cio/ui run dev\"",
     "api:dev": "pnpm concurrently -n api,jobs -c blue,yellow \"pnpm --filter=@cio/api run dev\" \"pnpm --filter=@cio/jobs-worker run dev\"",
     "jobs:dev": "pnpm --filter=@cio/jobs-worker run dev",
@@ -24,7 +25,8 @@
     "storybook:dev": "pnpm --filter=@cio/storybook --filter=@cio/ui --filter=@cio/question-types run dev",
     "mcp:build": "pnpm --filter=@classroomio/mcp run build",
     "db:push": "pnpm --filter @cio/db db push",
-    "docker:start": "docker compose -f docker/docker-compose.yaml up -d postgres redis"
+    "docker:start": "docker compose -f docker/docker-compose.yaml up -d postgres redis",
+    "docker:build": "docker compose -f docker/docker-compose.yaml up --build -d postgres redis"
   },
   "license": "MIT",
   "dependencies": {
