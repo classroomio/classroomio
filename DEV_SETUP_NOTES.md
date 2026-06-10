@@ -12,13 +12,13 @@ fresh machine or to onboard a new contributor.
 
 ## 1. Prerequisites
 
-| Tool | Version | Notes |
-|------|---------|-------|
-| Node.js | 20.x (`.nvmrc` = v20.19.3) | `nvm install && nvm use` |
-| pnpm | 10.x | `corepack enable` then `corepack prepare pnpm@latest --activate`, or `npm i -g pnpm` |
-| Docker Desktop | latest | runs Postgres + Redis (and optionally MinIO) |
-| Git | latest | Windows: includes Git Bash |
-| ffmpeg / ffprobe | optional | only for media/thumbnail background jobs |
+| Tool | Version | Required? | Notes |
+|------|---------|-----------|-------|
+| Node.js | 20.x (`.nvmrc` = v20.19.3) | **Required** | `nvm install && nvm use` |
+| pnpm | 10.x | **Required** | The package scripts call `pnpm` directly (e.g. `build:clean` runs `pnpm run build`) — npm/yarn are not supported substitutes. `corepack enable` then `corepack prepare pnpm@latest --activate`, or `npm i -g pnpm` |
+| Docker (Desktop) | latest | **Required** | Runs Postgres + Redis (and optionally MinIO). No local install of those needed. |
+| Git | latest | **Required** | Windows: includes Git Bash |
+| ffmpeg / ffprobe | latest | Optional | Only for media/thumbnail background jobs |
 
 ---
 
@@ -99,6 +99,23 @@ pnpm dashboard:dev    # dashboard UI (port 5173)
 
 ### Step 7 — Log in
 Open http://localhost:5173/login → `admin@test.com` / `123456`.
+
+### Email (optional)
+Email is **off by default** and the app runs fine without it. You only need it to
+test auth emails (verify/reset) and notifications.
+
+To enable, set the SMTP vars in **`apps/api/.env`** (auth-flow emails) and
+**`apps/jobs/.env`** (all other emails) — both can point at the same server:
+```bash
+SMTP_HOST=  SMTP_PORT=  SMTP_USER=  SMTP_SENDER=  SMTP_PASSWORD=
+```
+Any SMTP provider works (Zoho ZeptoMail, Resend, Gmail SMTP, or Mailtrap for
+throwaway testing). See the inline notes in [`apps/api/.env.example`](apps/api/.env.example)
+for which emails each process sends.
+
+**Cost:** most providers have a free tier for low volume; sustained/high volume is
+paid. For local dev a free sandbox (e.g. Mailtrap) or a provider's free tier is
+enough — developing costs nothing.
 
 ---
 

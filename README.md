@@ -75,9 +75,9 @@ To get a local copy up and running, please follow these simple steps.
 
 Here is what you need to be able to run ClassroomIO.com
 
-- [Node.js](https://nodejs.org/) (Version: >=20.19.3)
-- [pnpm](https://pnpm.io/installation)
-- [Docker](https://docs.docker.com/engine/install/)
+- **[Node.js](https://nodejs.org/)** (Version: >=20.19.3) — _required_
+- **[pnpm](https://pnpm.io/installation)** (v10) — _required_; the package scripts call `pnpm` directly, so npm/yarn are not substitutes
+- **[Docker](https://docs.docker.com/engine/install/)** — _required_; runs Postgres + Redis (no local install of those needed)
 
 ### Project Structure
 
@@ -93,6 +93,11 @@ The repository also contains shared packages under `packages/` (for example `pac
 ## Development
 
 ### Local Setup
+
+> **Before you start:** make sure **pnpm** and **Docker** are installed (see
+> [Prerequisites](#prerequisites)). New to the project? Read
+> [`DEV_SETUP_NOTES.md`](DEV_SETUP_NOTES.md) first — it's a full step-by-step
+> walkthrough with a troubleshooting reference for the errors you're likely to hit.
 
 1. Fork the repo, then clone it:
 
@@ -157,9 +162,6 @@ The repository also contains shared packages under `packages/` (for example `pac
 
    - Running the background workers? Also create `apps/jobs/.env` (e.g. `cp apps/api/.env apps/jobs/.env`); it needs `REDIS_URL`. The `packages/db/.env` used by the DB scripts is set up in step 6.
    - Optional for self-hosted Enterprise-only features (SSO, token-auth, no-tracking): set `LICENSE_KEY` in `apps/api/.env`.
-
-   > New to the project? See [`DEV_SETUP_NOTES.md`](DEV_SETUP_NOTES.md) for a full
-   > step-by-step setup walkthrough and a troubleshooting reference.
 
 6. Start local infrastructure for API (Postgres + Redis) and seed the DB:
 
