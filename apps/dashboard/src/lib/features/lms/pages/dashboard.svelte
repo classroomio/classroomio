@@ -17,7 +17,10 @@
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { coursesApi } from '$features/course/api';
+  import { CourseCard } from '$features/course/components';
   import CoursePublicBadge from '$features/course/components/course-public-badge.svelte';
+  import CoursePreviewModal from '$features/lms/components/course-preview-modal.svelte';
+  import type { RecommendedCourses } from '$features/course/types';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
   import CopyIcon from '@lucide/svelte/icons/copy';
@@ -34,6 +37,8 @@
 
   let loginStreak = $state<number | null>(null);
   let hasLoadedLoginStreak = $state(false);
+  let selectedCourse = $state<RecommendedCourses[number] | null>(null);
+  let previewOpen = $state(false);
 
   let totalCompleted = $derived(
     coursesApi.enrolledCourses.reduce((acc, course) => acc + getCourseCompletedItems(course), 0)
@@ -58,6 +63,7 @@
     if (!$profile.id || !$currentOrg.id) return;
 
     coursesApi.getEnrolledCourses();
+    coursesApi.getRecommendedCourses({ limit: 6 });
   });
 
   $effect(() => {
@@ -395,4 +401,41 @@
       {/if}
     </section>
   </div>
+
+  {#if coursesApi.isLoading || coursesApi.recommendedCourses.length > 0}
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="ui:text-muted-foreground text-sm font-semibold tracking-[0.14em] uppercase">
+          {$t('dashboard.explore_more_courses')}
+        </h2>
+        <Button variant="outline" size="sm" onclick={() => goto('/lms/explore')}>
+          {$t('dashboard.view_more')}
+        </Button>
+      </div>
+
+      {#if coursesApi.isLoading}
+        <div class="ui:text-muted-foreground flex items-center justify-center py-8">
+          <Spinner class="size-6" />
+        </div>
+      {:else}
+        <div class="grid w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {#each coursesApi.recommendedCourses as course (course.id)}
+            <CourseCard
+              {course}
+              isExplore={true}
+              isLMS={true}
+              onExploreClick={() => {
+                selectedCourse = course;
+                previewOpen = true;
+              }}
+            />
+          {/each}
+        </div>
+      {/if}
+    </section>
+  {/if}
+
+  {#if selectedCourse}
+    <CoursePreviewModal course={selectedCourse} bind:open={previewOpen} />
+  {/if}
 </div>

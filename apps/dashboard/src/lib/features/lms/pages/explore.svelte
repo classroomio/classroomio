@@ -9,9 +9,12 @@
   import { coursesApi } from '$features/course/api';
   import type { RecommendedCourses } from '$features/course/types';
   import { CourseSortBy, DEFAULT_COURSE_SORT, parseCourseSortValue } from '$features/course/utils/constants';
+  import CoursePreviewModal from '$features/lms/components/course-preview-modal.svelte';
 
   let searchValue = $state('');
   let sortKey = $state<CourseSortBy>(DEFAULT_COURSE_SORT);
+  let selectedCourse = $state<RecommendedCourses[number] | null>(null);
+  let previewOpen = $state(false);
 
   $effect(() => {
     if (!browser) return;
@@ -67,4 +70,12 @@
   isLoading={coursesApi.isLoading}
   bind:searchValue
   bind:sortKey
+  onCardClick={(course) => {
+    selectedCourse = course as RecommendedCourses[number];
+    previewOpen = true;
+  }}
 />
+
+{#if selectedCourse}
+  <CoursePreviewModal course={selectedCourse} bind:open={previewOpen} />
+{/if}

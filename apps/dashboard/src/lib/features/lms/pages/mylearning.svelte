@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
+  import { Button } from '@cio/ui/base/button';
   import { CoursesPage } from '$features/course/pages';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
@@ -51,7 +52,11 @@
       emptyTitle={$t('my_learning.not_in_progress')}
       isLMS={true}
       isLoading={coursesApi.isLoading}
-    />
+    >
+      {#snippet emptyAction()}
+        <Button href="/lms/explore">{$t('my_learning.find_courses')}</Button>
+      {/snippet}
+    </CoursesPage>
   </UnderlineTabs.Content>
   <UnderlineTabs.Content value={tabs[1].value}>
     <CoursesPage

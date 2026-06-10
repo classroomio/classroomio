@@ -3,6 +3,11 @@ import * as z from 'zod';
 import { ALLOWED_CONTENT_TYPES, ALLOWED_DOCUMENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
 
+export const ZGetRecommendedCourses = z.object({
+  limit: z.string().transform(Number).pipe(z.number().min(1).max(50)).optional()
+});
+export type TGetRecommendedCourses = z.infer<typeof ZGetRecommendedCourses>;
+
 export const ZCourseClone = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
@@ -392,6 +397,7 @@ export const ZCourseUpdateBase = z.object({
   logo: z.string().optional(),
   slug: z.string().optional(),
   isPublished: z.boolean().optional(),
+  orgOnly: z.boolean().optional(),
   overview: z.string().optional(),
   metadata: ZCourseMetadata.optional(),
   cost: z.number().int().min(0).optional(),

@@ -135,9 +135,12 @@ export class CoursesApi extends BaseApiWithErrors {
    * Fetches recommended courses (published courses user isn't enrolled in) for the current organization
    * Org ID is automatically added from currentOrg store
    */
-  async getRecommendedCourses() {
+  async getRecommendedCourses(options?: { limit?: number }) {
     await this.execute<GetRecommendedCoursesRequest>({
-      requestFn: () => classroomio.organization.courses.recommended.$get({}),
+      requestFn: () =>
+        classroomio.organization.courses.recommended.$get({
+          query: options?.limit ? { limit: String(options.limit) } : {}
+        }),
       logContext: 'fetching recommended courses',
       onSuccess: (response) => {
         if (response.data) {

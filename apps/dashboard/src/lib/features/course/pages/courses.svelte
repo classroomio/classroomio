@@ -38,6 +38,8 @@
     isLoading?: boolean;
     showSortSelect?: boolean;
     filterControls?: Snippet;
+    onCardClick?: (course: (OrgCourses | UserEnrolledCourses)[number]) => void;
+    emptyAction?: Snippet;
   }
 
   let {
@@ -50,7 +52,9 @@
     sortKey = $bindable(DEFAULT_COURSE_SORT),
     isLoading = false,
     showSortSelect = true,
-    filterControls
+    filterControls,
+    onCardClick,
+    emptyAction
   }: Props = $props();
 
   const filterOptions = $derived(
@@ -123,10 +127,12 @@
     <Empty title={emptyTitle} description={emptyDescription} icon={LibraryBigIcon} variant="page">
       {#if !isLMS}
         <CreateCourseButton isResponsive />
+      {:else if emptyAction}
+        {@render emptyAction()}
       {/if}
     </Empty>
   {:else if isLMS || $courseMetaDeta.view === 'grid'}
-    <CourseCardList {courses} {isExplore} {isLMS} />
+    <CourseCardList {courses} {isExplore} {isLMS} {onCardClick} />
   {:else}
     <ResourceListRow.Group>
       {#each courses as courseData (courseData.id)}
