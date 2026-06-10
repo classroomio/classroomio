@@ -1,10 +1,53 @@
 ---
 title: Audience
-description: Information about ClassroomIO's target audience.
+description: Manage all students in your organization — view status, assign to courses, and handle invites from one place.
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-<Callout type="warn" title="Work in Progress">
-  This page is a work in progress. Help us expand it by contributing!
+**Audience** is your org-wide student directory. It shows every person who belongs to your organization — whether they signed up themselves, accepted a course invite, or were added directly. From here you can search, sort, bulk-assign to courses, and manage pending invites.
+
+## What Audience shows
+
+Audience is separate from course-level **People**. Course People shows who is enrolled in a specific course. Audience shows everyone in your organization regardless of which courses they have joined.
+
+| Column | What it means |
+| --- | --- |
+| **Name** | Student's display name |
+| **Email** | Account email address |
+| **Status** | Current membership state (see below) |
+| **Date Joined** | When the student joined the organization |
+
+### Status values
+
+| Status | Meaning |
+| --- | --- |
+| **Active** | Student has a verified account and is a member of your org |
+| **Pending** | Invite was sent but the student has not yet accepted it |
+| **Expired** | The invite link passed its expiry before the student accepted |
+| **Revoked** | The invite was manually revoked by an admin |
+
+## Assign students to courses
+
+Select one or more students using the checkboxes, then click **Assign to Courses**. You can pick multiple courses at once. This enrolls the selected students immediately — no action needed from them.
+
+## Manage pending invites
+
+For students with **Pending** status, you can:
+
+- **Resend invite** — sends a fresh invite email to that address
+- **Revoke invite** — cancels the invite so the link no longer works
+
+## Import and export
+
+Use **Import Users** to bulk-add students from a CSV file. Use **Export** to download the current audience list.
+
+<Callout type="info" title="Plan limits">
+  Your plan sets a maximum audience size. When you reach the limit, a banner appears and you cannot invite more students until you upgrade or remove existing members.
 </Callout>
+
+## Related guides
+
+- [How Course Enrollment Works](/docs/how-to-guides/course-enrollment) — how students join courses
+- [How to Invite Students](/docs/how-to-guides/invite-students) — send course-specific invites
+- [Roles and Permissions](/docs/how-to-guides/roles-and-permissions) — difference between students and team members
