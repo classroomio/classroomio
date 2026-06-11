@@ -9,3 +9,9 @@ pre-commit:
       fail_text: |
         ❌ Prettier formatting check failed!
         Please run 'pnpm format:changed' or 'pnpm format' to fix formatting issues and try again.
+    ui-prefix:
+      glob: 'packages/ui/src/**/*.{svelte,ts,tsx,js,jsx}'
+      run: pnpm --filter @cio/ui prefix:check:staged
+      fail_text: |
+        ❌ packages/ui Tailwind classes must use the ui: prefix.
+        Run 'pnpm --filter @cio/ui prefix' to fix staged UI files, then commit again.

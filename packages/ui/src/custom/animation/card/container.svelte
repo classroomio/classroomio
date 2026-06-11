@@ -13,15 +13,19 @@
 
 <div
   class={cn(
-    'relative mx-auto w-full border border-dashed border-zinc-300 px-8 shadow-sm sm:px-6 md:px-8 dark:border-zinc-800 dark:bg-[#09090B]',
+    'ui:relative ui:mx-auto ui:w-full ui:border ui:border-dashed ui:border-zinc-300 ui:px-8 ui:shadow-sm ui:sm:px-6 ui:md:px-8 ui:dark:border-zinc-800 ui:dark:bg-[#09090B]',
     className
   )}
 >
-  <div class="absolute top-4 left-0 z-0 h-px w-full bg-zinc-400 sm:top-6 md:top-8 dark:bg-zinc-700"></div>
-  <div class="absolute bottom-4 left-0 z-0 h-px w-full bg-zinc-400 sm:bottom-6 md:bottom-8 dark:bg-zinc-700"></div>
-  <div class="relative w-full border-x border-zinc-400 dark:border-zinc-700">
+  <div
+    class="ui:absolute ui:top-4 ui:left-0 ui:z-0 ui:h-px ui:w-full ui:bg-zinc-400 ui:sm:top-6 ui:md:top-8 ui:dark:bg-zinc-700"
+  ></div>
+  <div
+    class="ui:absolute ui:bottom-4 ui:left-0 ui:z-0 ui:h-px ui:w-full ui:bg-zinc-400 ui:sm:bottom-6 ui:md:bottom-8 ui:dark:bg-zinc-700"
+  ></div>
+  <div class="ui:relative ui:w-full ui:border-x ui:border-zinc-400 ui:dark:border-zinc-700">
     <Ellipses />
-    <div class="relative z-20 mx-auto py-8">
+    <div class="ui:relative ui:z-20 ui:mx-auto ui:py-8">
       {@render children?.()}
     </div>
   </div>

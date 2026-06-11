@@ -32,7 +32,7 @@
 
 <svg
   aria-hidden="true"
-  class={cn('pointer-events-none absolute inset-0 h-full w-full', className)}
+  class={cn('ui:pointer-events-none ui:absolute ui:inset-0 ui:h-full ui:w-full', className)}
   {...restProps}
   fill={fillColor}
 >

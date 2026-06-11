@@ -76,7 +76,7 @@
 
 <Field.Field class={className}>
   {#if label}
-    <div class="flex items-center justify-between">
+    <div class="ui:flex ui:items-center ui:justify-between">
       <Field.Label for={name || 'input-field'} class={labelClassName}>
         {label}
         {#if isRequired}

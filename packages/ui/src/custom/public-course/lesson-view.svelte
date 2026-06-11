@@ -126,7 +126,7 @@
       {lesson.title}
     </h1>
 
-    <div class="prose sm:prose-sm ui:mt-8 ui:max-w-none ui:dark:text-white">
+    <div class="prose ui:sm:prose-sm ui:mt-8 ui:max-w-none ui:dark:text-white">
       {#if lesson.body}
         <SafeHtmlContent content={lesson.body} />
       {:else}

@@ -102,7 +102,7 @@
         <div
           class={cn(
             'ui:[&>svg]:text-muted-foreground ui:flex ui:w-full ui:flex-wrap ui:items-stretch ui:gap-2 ui:[&>svg]:size-2.5',
-            indicator === 'dot' && 'items-center'
+            indicator === 'dot' && 'ui:items-center'
           )}
         >
           {#if formatter && item.value !== undefined && item.name}

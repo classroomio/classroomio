@@ -50,16 +50,16 @@
   onmousemove={handleMouseMove}
   onmouseleave={handleMouseLeave}
   class={cn(
-    'group relative flex size-full justify-center overflow-hidden rounded-xl border bg-neutral-100 py-4 text-black dark:bg-neutral-900 dark:text-white',
+    'group ui:relative ui:flex ui:size-full ui:justify-center ui:overflow-hidden ui:rounded-xl ui:border ui:bg-neutral-100 ui:py-4 ui:text-black ui:dark:bg-neutral-900 ui:dark:text-white',
     className
   )}
 >
-  <div class="relative z-10">
+  <div class="ui:relative ui:z-10">
     {#if children}
       {@render children()}
     {:else}
-      <div class="flex h-full items-center justify-center text-center">
-        <p class="text-2xl">Magic Card</p>
+      <div class="ui:flex ui:h-full ui:items-center ui:justify-center ui:text-center">
+        <p class="ui:text-2xl">Magic Card</p>
       </div>
     {/if}
   </div>
@@ -72,7 +72,7 @@
   >
     <div
       use:motion
-      class="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      class="ui:pointer-events-none ui:absolute ui:-inset-px ui:rounded-xl ui:opacity-0 ui:transition-opacity ui:duration-300 ui:group-hover:opacity-100"
     ></div>
   </Motion>
 </div>

@@ -16,7 +16,7 @@
   }
 
   let {
-    class: className = 'drop-shadow-sm',
+    class: className = 'ui:drop-shadow-sm',
     containerClass = '',
     words = 'Gradual Spacing',
     duration = 0.5,
@@ -30,7 +30,7 @@
   const wordsspilit = $derived(words.split(''));
 </script>
 
-<div class={cn('flex justify-center space-x-1', containerClass)}>
+<div class={cn('ui:flex ui:justify-center ui:space-x-1', containerClass)}>
   <AnimatePresence let:_item list={[{ key: wordsspilit }]}>
     {#each wordsspilit as char, i}
       <Motion

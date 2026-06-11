@@ -63,7 +63,7 @@
               href={fileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              class="ui:border-input ui:bg-background ui:text-foreground hover:ui:bg-accent hover:ui:text-accent-foreground ui:shrink ui:inline-flex ui:items-center ui:gap-1.5 ui:rounded-md ui:border ui:px-3 ui:py-1.5 ui:text-sm ui:font-medium"
+              class="ui:border-input ui:bg-background ui:text-foreground ui:hover:bg-accent ui:hover:text-accent-foreground ui:shrink ui:inline-flex ui:items-center ui:gap-1.5 ui:rounded-md ui:border ui:px-3 ui:py-1.5 ui:text-sm ui:font-medium"
             >
               {viewLabel}
             </a>
@@ -72,7 +72,7 @@
               target="_blank"
               rel="noopener noreferrer"
               download={title}
-              class="ui:border-input ui:bg-background ui:text-foreground hover:ui:bg-accent hover:ui:text-accent-foreground ui:shrink ui:inline-flex ui:items-center ui:gap-1.5 ui:rounded-md ui:border ui:px-3 ui:py-1.5 ui:text-sm ui:font-medium"
+              class="ui:border-input ui:bg-background ui:text-foreground ui:hover:bg-accent ui:hover:text-accent-foreground ui:shrink ui:inline-flex ui:items-center ui:gap-1.5 ui:rounded-md ui:border ui:px-3 ui:py-1.5 ui:text-sm ui:font-medium"
             >
               <DownloadIcon class="ui:size-4" />
               {downloadLabel}

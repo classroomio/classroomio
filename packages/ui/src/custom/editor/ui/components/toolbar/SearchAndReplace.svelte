@@ -97,7 +97,7 @@
     <Button
       variant="ghost"
       size="icon"
-      class={cn('ui:transition-transform', showMore && 'bg-muted rotate-90')}
+      class={cn('ui:transition-transform', showMore && 'ui:bg-muted ui:rotate-90')}
       onclick={() => (showMore = !showMore)}
       title="Show More"
     >
@@ -111,7 +111,7 @@
           <Button
             variant="ghost"
             size="icon"
-            class={cn(caseSensitive && 'bg-muted')}
+            class={cn(caseSensitive && 'ui:bg-muted')}
             onclick={() => {
               caseSensitive = !caseSensitive;
               updateSearchTerm();

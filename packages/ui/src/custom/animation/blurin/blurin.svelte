@@ -16,7 +16,8 @@
   let {
     variant,
     duration = 1,
-    class: className = 'text-4xl font-bold tracking-[-0.02em] drop-shadow-sm md:text-7xl md:leading-20',
+    class:
+      className = 'ui:text-4xl ui:font-bold ui:tracking-[-0.02em] ui:drop-shadow-sm ui:md:text-7xl ui:md:leading-20',
     children
   }: Props = $props();
 

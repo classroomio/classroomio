@@ -23,7 +23,7 @@
     {#if onPick && !disabled}
       <button
         type="button"
-        class="ui:rounded-md ui:p-1 ui:text-amber-600 ui:transition-colors ui:hover:bg-amber-500/10 focus-visible:ui:ring-ring ui:outline-none focus-visible:ui:ring-2 ui:dark:text-amber-400"
+        class="ui:rounded-md ui:p-1 ui:text-amber-600 ui:transition-colors ui:hover:bg-amber-500/10 ui:focus-visible:ring-ring ui:outline-none ui:focus-visible:ring-2 ui:dark:text-amber-400"
         aria-label={starLabel(starIndex)}
         aria-pressed={value >= starIndex}
         {disabled}

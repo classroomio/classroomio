@@ -8,7 +8,7 @@
     iconClass?: string;
   }
 
-  let { src, alt = 'User', class: className = 'size-6', iconClass = '' }: Props = $props();
+  let { src, alt = 'User', class: className = 'ui:size-6', iconClass = '' }: Props = $props();
 </script>
 
 <Avatar.Root class={className}>
@@ -16,6 +16,6 @@
     <Avatar.Image {src} {alt} />
   {/if}
   <Avatar.Fallback>
-    <img src="/images/avatar.svg" alt="User avatar" class="size-10 rounded-md {iconClass}" />
+    <img src="/images/avatar.svg" alt="User avatar" class="ui:size-10 ui:rounded-md {iconClass}" />
   </Avatar.Fallback>
 </Avatar.Root>

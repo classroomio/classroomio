@@ -31,7 +31,7 @@
 <div
   class={cn(
     'group ui:inline-flex ui:w-full ui:items-center',
-    disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+    disabled ? 'ui:cursor-not-allowed' : 'ui:cursor-pointer',
     className
   )}
 >

@@ -36,7 +36,7 @@
   width={size}
   height={size}
   viewBox={`0 0 ${size} ${size}`}
-  class={cn('shrink-0 -rotate-90', className)}
+  class={cn('ui:-rotate-90 ui:shrink-0', className)}
   aria-valuenow={clampedValue}
   aria-valuemin={0}
   aria-valuemax={100}
@@ -48,7 +48,7 @@
     r={radius}
     fill="none"
     stroke-width={strokeWidth}
-    class={cn('transition-all', trackClass)}
+    class={cn('ui:transition-all', trackClass)}
   />
   <circle
     cx={center}
@@ -59,6 +59,6 @@
     stroke-dasharray={circumference}
     stroke-dashoffset={offset}
     stroke-linecap="round"
-    class={cn('transition-all duration-300', progressClass)}
+    class={cn('ui:transition-all ui:duration-300', progressClass)}
   />
 </svg>

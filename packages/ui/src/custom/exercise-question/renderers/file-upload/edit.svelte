@@ -85,7 +85,7 @@
           <div class="ui:flex ui:max-h-64 ui:flex-col ui:gap-0 ui:overflow-y-auto">
             {#each FILE_UPLOAD_SUPPORTED_TYPES as fileType (fileType.value)}
               <label
-                class="ui:flex ui:cursor-pointer ui:select-none ui:items-center ui:gap-2 ui:rounded-sm ui:px-2 ui:py-2 ui:text-sm hover:ui:bg-accent hover:ui:text-accent-foreground {disabled
+                class="ui:flex ui:cursor-pointer ui:select-none ui:items-center ui:gap-2 ui:rounded-sm ui:px-2 ui:py-2 ui:text-sm ui:hover:bg-accent ui:hover:text-accent-foreground {disabled
                   ? 'ui:pointer-events-none ui:opacity-50'
                   : ''}"
               >

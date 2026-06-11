@@ -1,0 +1,50 @@
+name: UI Tailwind prefix check
+
+on:
+  pull_request:
+    paths:
+      - 'packages/ui/**'
+      - '.github/workflows/ui-prefix-check.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/ui/**'
+      - '.github/workflows/ui-prefix-check.yml'
+
+jobs:
+  ui-prefix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Resolve git base ref
+        id: base
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "ref=${{ github.event.pull_request.base.sha }}" >> "$GITHUB_OUTPUT"
+          elif [ -n "${{ github.event.before }}" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            echo "ref=${{ github.event.before }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=origin/main" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check ui: prefix on changed UI files
+        env:
+          UI_PREFIX_GIT_BASE: ${{ steps.base.outputs.ref }}
+        run: pnpm --filter @cio/ui prefix:check:changed

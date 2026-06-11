@@ -13,13 +13,13 @@
   const clampedValue = $derived(Math.max(0, Math.min(100, value)));
   const labelPercentage = $derived(Math.round(clampedValue));
   const strokeDashoffset = $derived(RING_CIRCUMFERENCE * (1 - clampedValue / 100));
-  const sizeClass = $derived(size === 'small' ? 'size-10' : 'size-14');
-  const labelClass = $derived(size === 'small' ? 'text-[10px]' : 'text-sm');
+  const sizeClass = $derived(size === 'small' ? 'ui:size-10' : 'ui:size-14');
+  const labelClass = $derived(size === 'small' ? 'ui:text-[10px]' : 'ui:text-sm');
 </script>
 
-<div class="relative shrink-0">
+<div class="ui:relative ui:shrink-0">
   <svg
-    class="{sizeClass} -rotate-90"
+    class="{sizeClass} ui:-rotate-90"
     style="transform-box: fill-box; transform-origin: center;"
     viewBox="0 0 100 100"
     aria-hidden="true"
@@ -31,7 +31,7 @@
       fill="none"
       stroke="currentColor"
       stroke-width="8"
-      class="text-gray-200 dark:text-gray-700"
+      class="ui:text-gray-200 ui:dark:text-gray-700"
     />
     <circle
       cx="50"
@@ -41,12 +41,12 @@
       stroke="currentColor"
       stroke-width="8"
       stroke-linecap="round"
-      class="text-green-600 transition-[stroke-dashoffset] duration-700 ease-out"
+      class="ui:text-green-600 ui:transition-[stroke-dashoffset] ui:duration-700 ui:ease-out"
       stroke-dasharray={RING_CIRCUMFERENCE}
       stroke-dashoffset={strokeDashoffset}
     />
   </svg>
-  <div class="absolute inset-0 flex flex-col items-center justify-center">
+  <div class="ui:absolute ui:inset-0 ui:flex ui:flex-col ui:items-center ui:justify-center">
     <p class={labelClass}>{labelPercentage}%</p>
   </div>
 </div>

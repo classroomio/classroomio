@@ -55,7 +55,7 @@
     />
   </Field.Field>
   {#if footer}
-    <div class="-mt-1 min-w-0 px-4 pb-3">
+    <div class="ui:-mt-1 ui:min-w-0 ui:px-4 ui:pb-3">
       {@render footer()}
     </div>
   {/if}

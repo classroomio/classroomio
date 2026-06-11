@@ -102,14 +102,10 @@
             <EditableLandingSection sectionKey={block.id}>
               <article
                 id={block.id}
-                class={`ui:border ui:border-[var(--landing-border)] ${
-                  variant === 'terminal' ? 'ui:bg-[var(--landing-card)]' : ''
-                }`}
+                class={`ui:border ui:border-[var(--landing-border)] ${variant === 'terminal' ? 'ui:bg-[var(--landing-card)]' : ''}`}
               >
                 <div
-                  class={`ui:flex ui:items-center ui:justify-between ui:px-4 ui:py-2 ui:border-b ui:border-[var(--landing-border)] ${
-                    variant === 'terminal' ? 'ui:bg-[var(--landing-bg-section)]' : ''
-                  }`}
+                  class={`ui:flex ui:items-center ui:justify-between ui:px-4 ui:py-2 ui:border-b ui:border-[var(--landing-border)] ${variant === 'terminal' ? 'ui:bg-[var(--landing-bg-section)]' : ''}`}
                 >
                   <span class="ui:text-xs ui:font-mono ui:text-[var(--landing-fg-muted)]">
                     // {block.monoLabel}

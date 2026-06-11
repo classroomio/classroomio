@@ -16,7 +16,7 @@
     {...rest}
     showCloseButton={false}
     class={cn(
-      'ui:min-h-96 ui:max-w-[60%] ui:rounded-none ui:border-x-0 ui:sm:ui:max-w-lg ui:sm:ui:rounded-lg ui:sm:ui:border-x',
+      'ui:min-h-96 ui:max-w-[60%] ui:rounded-none ui:border-x-0 ui:sm:max-w-lg ui:sm:rounded-lg ui:sm:border-x',
       className
     )}
   >

@@ -304,6 +304,7 @@ Use `.server.ts` files for server-side code to isolate API keys.
 ### UI Components
 
 - Add new UI components under `packages/ui/src` following existing folder patterns.
+- **All Tailwind utility classes in `packages/ui/src/**` must use the `ui:` prefix** (see `packages/ui/README.md`). Pre-commit and CI run `pnpm --filter @cio/ui prefix:check` on touched UI files; fix with `pnpm --filter @cio/ui prefix`.
 - Document component usage and props in `packages/ui/README.md`.
 - Add example usages and variants in Storybook stories under `packages/storybook/src`.
 - See `packages/ui/README.md` and `packages/storybook/README.md` for full guidance.

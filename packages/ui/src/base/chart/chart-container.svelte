@@ -46,12 +46,7 @@
     // of the other series, this overrides that
     'ui:[&_.lc-area-path]:opacity-100 ui:[&_.lc-highlight-line]:opacity-100 ui:[&_.lc-highlight-point]:opacity-100 ui:[&_.lc-spline-path]:opacity-100 ui:[&_.lc-text]:text-xs ui:[&_.lc-text-svg]:overflow-visible',
 
-    // We don't want the little tick lines between the axis labels and the chart, so we remove
-    // the stroke. The alternative is to manually disable `tickMarks` on the x/y axis of every
-    // chart.
-    'ui:[&_.lc-axis-tick]:stroke-0',
-
-    // We don't want to display the rule on the x/y axis, as there is already going to be
+    // We don't want the little tick lines between the axis labels and the chart, so we remove // the stroke. The alternative is to manually disable `tickMarks` on the x/y axis of every // chart.'ui:[&_.lc-axis-tick]:stroke-0', // We don't want to display the rule on the x/y axis, as there is already going to be
     // a grid line there and rule ends up overlapping the marks because it is rendered after
     // the marks
     'ui:[&_.lc-rule-x-line:not(.lc-grid-x-rule)]:stroke-0 ui:[&_.lc-rule-y-line:not(.lc-grid-y-rule)]:stroke-0',

@@ -14,9 +14,9 @@
 <p
   style:--shimmer-width="{shimmerWidth}px"
   class={cn(
-    'mx-auto max-w-md text-neutral-600/50 dark:text-neutral-400/50',
-    'animate-shimmer bg-size-[var(--shimmer-width)_100%] bg-clip-text bg-position-[0_0] bg-no-repeat [transition:background-position_1s_cubic-bezier(.6,.6,0,1)_infinite]',
-    'bg-linear-to-r from-transparent via-black/80 via-50% to-transparent dark:via-white/80',
+    'ui:mx-auto ui:max-w-md ui:text-neutral-600/50 ui:dark:text-neutral-400/50',
+    'ui:animate-shimmer ui:bg-size-[var(--shimmer-width)_100%] ui:bg-clip-text ui:bg-position-[0_0] ui:bg-no-repeat [transition:background-position_1s_cubic-bezier(.6,.6,0,1)_infinite]',
+    'ui:bg-linear-to-r ui:from-transparent ui:via-black/80 ui:via-50% ui:to-transparent ui:dark:via-white/80',
     className
   )}
 >

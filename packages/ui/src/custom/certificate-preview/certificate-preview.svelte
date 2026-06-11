@@ -109,7 +109,7 @@
     >
       <button
         type="button"
-        class="ui:flex ui:size-7 ui:items-center ui:justify-center ui:rounded-full ui:transition-colors hover:ui:bg-muted"
+        class="ui:flex ui:size-7 ui:items-center ui:justify-center ui:rounded-full ui:transition-colors ui:hover:bg-muted"
         aria-label="Zoom out"
         onclick={handleZoomOut}
       >
@@ -120,7 +120,7 @@
       </span>
       <button
         type="button"
-        class="ui:flex ui:size-7 ui:items-center ui:justify-center ui:rounded-full ui:transition-colors hover:ui:bg-muted"
+        class="ui:flex ui:size-7 ui:items-center ui:justify-center ui:rounded-full ui:transition-colors ui:hover:bg-muted"
         aria-label="Zoom in"
         onclick={handleZoomIn}
       >
@@ -128,7 +128,7 @@
       </button>
       <button
         type="button"
-        class="ui:flex ui:size-7 ui:items-center ui:justify-center ui:rounded-full ui:transition-colors hover:ui:bg-muted"
+        class="ui:flex ui:size-7 ui:items-center ui:justify-center ui:rounded-full ui:transition-colors ui:hover:bg-muted"
         aria-label="Fit to viewport"
         onclick={handleFit}
       >

@@ -20,7 +20,7 @@
   <ToggleGroup.Root type="single" value={studentValue} disabled={true} variant="outline">
     <ToggleGroup.Item
       value="true"
-      class={correctIsTrue ? 'ui:border-emerald-500 ui:bg-emerald-50/40 dark:ui:bg-emerald-950/30' : ''}
+      class={correctIsTrue ? 'ui:border-emerald-500 ui:bg-emerald-50/40 ui:dark:bg-emerald-950/30' : ''}
     >
       {label('true_false.true_label')}
       <OptionCorrectnessBadges
@@ -31,7 +31,7 @@
     </ToggleGroup.Item>
     <ToggleGroup.Item
       value="false"
-      class={!correctIsTrue ? 'ui:border-emerald-500 ui:bg-emerald-50/40 dark:ui:bg-emerald-950/30' : ''}
+      class={!correctIsTrue ? 'ui:border-emerald-500 ui:bg-emerald-50/40 ui:dark:bg-emerald-950/30' : ''}
     >
       {label('true_false.false_label')}
       <OptionCorrectnessBadges

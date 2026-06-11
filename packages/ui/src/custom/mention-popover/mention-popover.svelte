@@ -75,7 +75,7 @@
         aria-selected={index === selectedIndex}
         class={cn(
           'ui:flex ui:w-full ui:items-center ui:gap-2 ui:rounded-sm ui:px-2 ui:py-1.5 ui:text-left ui:text-sm ui:transition-colors',
-          index === selectedIndex ? 'ui:bg-accent ui:text-accent-foreground' : 'hover:ui:bg-accent/50'
+          index === selectedIndex ? 'ui:bg-accent ui:text-accent-foreground' : 'ui:hover:bg-accent/50'
         )}
         onmousedown={(e) => {
           e.preventDefault();

@@ -121,7 +121,7 @@
           isActive
             ? 'ui:border-l-foreground ui:bg-secondary ui:text-secondary-foreground'
             : 'ui:border-l-transparent ui:bg-transparent ui:text-foreground',
-          !isActive && 'hover:ui:bg-muted/40'
+          !isActive && 'ui:hover:bg-muted/40'
         )}
         aria-current={isActive ? 'true' : undefined}
         onclick={() => selectItem(item.key)}

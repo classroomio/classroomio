@@ -53,8 +53,8 @@
           variant="ghost"
           class={cn(
             `size-6 border-0 p-0 font-normal`,
-            editor.isActive('textStyle', { color: color.value }) && 'border-2 font-extrabold',
-            color.value === '' && 'border'
+            editor.isActive('ui:textStyle', { color: color.value }) && 'ui:border-2 ui:font-extrabold',
+            color.value === '' && 'ui:border'
           )}
           style={`color: ${color.value}; background-color: ${color.value}50; border-color: ${color.value};`}
           title={color.label}
@@ -79,8 +79,8 @@
           variant="ghost"
           class={cn(
             `size-6 border-0 p-0 font-normal`,
-            editor.isActive('highlight', { color: color.value }) && 'border-2',
-            color.value === '' && 'border'
+            editor.isActive('highlight', { color: color.value }) && 'ui:border-2',
+            color.value === '' && 'ui:border'
           )}
           style={`background-color: ${color.value}50; border-color: ${color.value};`}
           title={color.label}

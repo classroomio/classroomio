@@ -70,7 +70,7 @@
     </p>
     <span class={`ui:mt-8 ui:h-1 ui:w-14 ui:rounded-full ${ACCENT_CLASSES[colorTheme]}`}></span>
 
-    <h2 class="ui:mt-10 ui:font-serif ui:text-5xl ui:font-bold ui:tracking-tight ui:text-foreground md:ui:text-6xl">
+    <h2 class="ui:mt-10 ui:font-serif ui:text-5xl ui:font-bold ui:tracking-tight ui:text-foreground ui:md:text-6xl">
       {sectionTitle}
     </h2>
 
