@@ -51,12 +51,9 @@
   let isDeleteFeedModal = $state(false);
 
   const openEditFeed = () => {
-    newsfeedApi.openNewFeedModal();
+    editFeed = feed;
     edit = true;
-
-    if (edit === true) {
-      editFeed = feed;
-    }
+    newsfeedApi.openNewFeedModal();
   };
 
   const handleReact = (reactionType: string) => addNewReaction(reactionType, feed.id, author.id);

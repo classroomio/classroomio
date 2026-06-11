@@ -21,7 +21,18 @@
     newPost: ''
   });
 
-  let newPost = $state(edit === true ? editFeed?.content : '');
+  let newPost = $state('');
+
+  $effect(() => {
+    if (!newsfeedApi.isNewFeedModalOpen) {
+      newPost = '';
+      return;
+    }
+
+    if (edit && editFeed) {
+      newPost = editFeed.content || '';
+    }
+  });
 
   const onPost = async () => {
     isLoading = true;
@@ -31,9 +42,7 @@
         await newsfeedApi.update(courseId, editFeed.id, { content: newPost ?? '' });
 
         if (newsfeedApi.success) {
-          edit = false;
-          newPost = '';
-          newsfeedApi.closeNewFeedModal();
+          resetEditor();
         }
       } else {
         await newsfeedApi.create(courseId, {
@@ -59,6 +68,7 @@
   const resetEditor = () => {
     newPost = '';
     edit = false;
+    editFeed = null;
     newsfeedApi.closeNewFeedModal();
   };
 </script>
@@ -81,14 +91,16 @@
       </Dialog.Title>
     </Dialog.Header>
     <section class="max-w-lg">
-      <TextEditor
-        content={newPost || editFeed?.content || ''}
-        onChange={(text) => {
-          newPost = text;
-        }}
-        editorClass="max-h-[400px]"
-        placeholder={$t('course.navItem.news_feed.heading_button.placeholder')}
-      />
+      {#key edit ? editFeed?.id : 'new'}
+        <TextEditor
+          content={newPost}
+          onChange={(text) => {
+            newPost = text;
+          }}
+          editorClass="max-h-[400px]"
+          placeholder={$t('course.navItem.news_feed.heading_button.placeholder')}
+        />
+      {/key}
       {#if errors.newPost}
         <p class="text-sm text-red-500">{errors.newPost}</p>
       {/if}

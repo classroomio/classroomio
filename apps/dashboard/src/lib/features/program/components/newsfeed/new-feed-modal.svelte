@@ -20,13 +20,13 @@
   let newPost = $state('');
 
   $effect(() => {
-    if (edit && editFeed) {
-      newPost = editFeed.content || '';
+    if (!programNewsfeedApi.isNewFeedModalOpen) {
+      newPost = '';
       return;
     }
 
-    if (!programNewsfeedApi.isNewFeedModalOpen) {
-      newPost = '';
+    if (edit && editFeed) {
+      newPost = editFeed.content || '';
     }
   });
 
@@ -84,14 +84,16 @@
       </Dialog.Title>
     </Dialog.Header>
     <section class="max-w-lg">
-      <TextEditor
-        content={newPost || editFeed?.content || ''}
-        onChange={(text) => {
-          newPost = text;
-        }}
-        editorClass="max-h-[400px]"
-        placeholder={$t('programs.newsfeed.editor_placeholder')}
-      />
+      {#key edit ? editFeed?.id : 'new'}
+        <TextEditor
+          content={newPost}
+          onChange={(text) => {
+            newPost = text;
+          }}
+          editorClass="max-h-[400px]"
+          placeholder={$t('programs.newsfeed.editor_placeholder')}
+        />
+      {/key}
     </section>
     <Dialog.Footer>
       <Button variant="outline" onclick={resetEditor}>

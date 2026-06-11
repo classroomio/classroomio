@@ -8,4 +8,4 @@ pre-commit:
       run: pnpm format:check
       fail_text: |
         ❌ Prettier formatting check failed!
-        Please run 'pnpm format' to fix formatting issues and try again.
+        Please run 'pnpm format:changed' or 'pnpm format' to fix formatting issues and try again.
