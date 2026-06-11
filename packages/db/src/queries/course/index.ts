@@ -1,6 +1,7 @@
 export * from './course';
 export * from './compliance';
 export * from './content';
+export * from './progression';
 export * from './content-batch';
 export * from './people';
 export * from './invite';

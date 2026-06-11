@@ -352,7 +352,8 @@
       "thumbnail_regen_started": "Miniaturansichten werden neu generiert…",
       "thumbnail_regen_failed": "Die Miniaturansichten konnten nicht neu generiert werden",
       "transcript_saved": "Transkript aktualisiert",
-      "transcript_save_failed": "Das Transkript konnte nicht gespeichert werden"
+      "transcript_save_failed": "Das Transkript konnte nicht gespeichert werden",
+      "transcription_already_running": "Für dieses Video wird bereits ein Transkriptionsauftrag ausgeführt"
     },
     "tags": {
       "group_created": "Tag-Gruppe erstellt",
@@ -743,6 +744,10 @@
         "drag": "Ziehen Sie die Beschriftungen per Drag-and-Drop, um Ihre Materialregisterkarten neu anzuordnen",
         "content_grouping_title": "Inhaltsgruppierung",
         "content_grouping_description": "Gruppieren Sie Lektionen und Übungen nach Abschnitten in der Inhaltsliste.",
+        "progression_mode_title": "Schülerfortschritt",
+        "progression_mode_description": "Steuern Sie, ob Schüler auf alle freigeschalteten Inhalte zugreifen können oder Elemente der Reihe nach abschließen müssen.",
+        "progression_mode_free": "Frei — freigeschaltete Inhalte sind zugänglich",
+        "progression_mode_sequential": "Sequenziell — vorherige Elemente abschließen, um das nächste freizuschalten",
         "lesson_download": "Lektionen herunterladen",
         "available": "Stellen Sie die Lektion für registrierte Studierende zum Download im PDF-Format zur Verfügung",
         "course_download": "Kurs-Download",
@@ -1022,7 +1027,14 @@
           "field_template": "Vorlage",
           "field_accent": "Akzent",
           "field_signatories": "Unterzeichner",
-          "customize_design": "Design anpassen"
+          "customize_design": "Design anpassen",
+          "signatory_one_toggle": "Unterzeichner 1 anzeigen",
+          "signatory_two_toggle": "Unterzeichner 2 anzeigen",
+          "signature_upload": "Signaturbild",
+          "signature_upload_hint": "Laden Sie ein Signaturbild hoch (optional)",
+          "signature_dont_crop": "Nicht beschneiden",
+          "signature_upload_in_progress": "Warten Sie, bis der Signatur-Upload abgeschlossen ist, bevor Sie speichern.",
+          "save_failed": "Das Zertifikatdesign konnte nicht gespeichert werden. Überprüfen Sie das Formular und versuchen Sie es erneut."
         }
       },
       "people": {
@@ -1758,7 +1770,11 @@
               "collapse_section": "Abschnitt einklappen",
               "expand_section": "Abschnitt ausklappen"
             },
-            "more": "Aktionen"
+            "more": "Aktionen",
+            "settings_completion_policy": "Abschlussregel",
+            "settings_completion_submitted": "Eingereicht – jede Einreichung zählt",
+            "settings_completion_passed": "Bestanden – Mindestpunktzahl erforderlich",
+            "settings_pass_threshold": "Bestehensschwelle (%)"
           },
           "new_exercise_modal": {
             "heading": "Neue Übung",
@@ -1803,6 +1819,9 @@
           "button": "Taste",
           "button_done": "Fertig",
           "tabs": {
+            "settings": {
+              "title": "Einstellungen"
+            },
             "document": {
               "title": "Dokumente",
               "add_document": "Dokument hinzufügen",
@@ -1918,7 +1937,8 @@
                 "kind_google_drive": "Google Drive",
                 "kind_generic": "Eingebettet",
                 "course_fallback": "Kurs",
-                "menu_aria": "Videooptionen"
+                "menu_aria": "Videooptionen",
+                "transcription_in_progress": "(Transkripterstellung läuft)"
               },
               "view_transcript": "Transkription ansehen",
               "playback_error": "Das Laden dieses Videos ist fehlgeschlagen.",
@@ -1926,7 +1946,8 @@
               "generate_1080": "Generieren Sie 1080p",
               "generate_1080_in_progress": "Generiert 1080p…",
               "generate_1080_ready": "1080p verfügbar",
-              "generate_1080_unavailable": "1080p ist für dieses Quellvideo nicht verfügbar"
+              "generate_1080_unavailable": "1080p ist für dieses Quellvideo nicht verfügbar",
+              "loading": "Video wird geladen…"
             },
             "slide": {
               "title": "Rutsche",
@@ -1985,6 +2006,38 @@
         },
         "content_locked_title": "Dieser Inhalt ist gesperrt",
         "content_locked_description": "Ihr Kursleiter hat diesen Inhalt noch nicht freigeschaltet. Vervollständigen Sie den vorherigen Inhalt oder schauen Sie später noch einmal vorbei.",
+        "content_progression_locked_title": "Schließen Sie zuerst den vorherigen Inhalt ab",
+        "content_progression_locked_description": "Dieser Inhalt wird freigeschaltet, nachdem Sie den vorherigen erforderlichen Kurseintrag abgeschlossen haben.",
+        "content_progression_locked_description_lesson": "Diese Lektion wird freigeschaltet, nachdem Sie den vorherigen erforderlichen Kurseintrag abgeschlossen haben.",
+        "content_progression_locked_description_exercise": "Diese Übung wird freigeschaltet, nachdem Sie den vorherigen erforderlichen Kurseintrag abgeschlossen haben.",
+        "completion_policy": {
+          "label": "Abschlussregel",
+          "manual_label": "Manuell",
+          "manual_description": "Schüler markieren die Lektion selbst als abgeschlossen.",
+          "video_watch_label": "Video ansehen",
+          "video_watch_description": "Die Lektion wird automatisch abgeschlossen, nachdem Schüler die ausgewählten Videos angesehen haben.",
+          "none_label": "Keine",
+          "none_description": "Diese Lektion blockiert den Kursfortschritt nicht.",
+          "watch_threshold": "Wiedergabeschwelle (%)"
+        },
+        "settings": {
+          "progression": {
+            "heading": "Fortschritt",
+            "intro": "Wählen Sie, wie Schüler diese Lektion abschließen und durch den Kurs gehen.",
+            "option_guide_heading": "Was jede Option bedeutet",
+            "watch_videos_heading": "Zu überwachende Videos",
+            "watch_videos_helper": "Nur hochgeladene Videos können erzwungen werden. YouTube und externe Einbettungen können nicht verfolgt werden.",
+            "watch_videos_empty": "Fügen Sie im Video-Tab ein hochgeladenes Video hinzu, um die Wiedergabeüberwachung zu nutzen.",
+            "watch_videos_required": "Wählen Sie mindestens ein Video für die Video-Wiedergabeüberwachung.",
+            "students_only_note": "Diese Regeln gelten nur für Schüler. Als Lehrkraft können Sie frei in der Vorschau navigieren."
+          }
+        },
+        "watch_progress": {
+          "status": "{percent}% des Videoinhalts angesehen",
+          "videos_complete": "{percent}% des erforderlichen Videoinhalts angesehen ({complete} von {required} Videos)",
+          "seek_blocked": "Sie können in diesem Video nicht vorspulen",
+          "complete_via_watch": "Diese Lektion wird abgeschlossen, wenn Sie genug vom Video gesehen haben"
+        },
         "saving": "Sparen…",
         "saved": "Gespeichert",
         "draft_recovery": "Für diese Lektion wurde ein nicht gespeicherter Entwurf gefunden. Möchten Sie es wiederherstellen?",

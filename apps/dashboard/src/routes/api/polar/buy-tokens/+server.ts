@@ -2,22 +2,24 @@ import { Polar } from '@polar-sh/sdk';
 import { TOKEN_PACK } from '@cio/utils/plans';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
+import type { RequestEvent } from './$types';
 
-export const GET = async ({ url }: { url: URL }) => {
+export const GET = async ({ url, locals }: RequestEvent) => {
+  const { user, profile, organizations } = locals;
+
+  if (!user || !profile) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  const orgId = url.searchParams.get('orgId');
+  const org = organizations?.find((candidate) => candidate.id === orgId);
+
+  if (!org?.siteName) {
+    return new Response('You are not a member of this organization', { status: 403 });
+  }
+
   const quantityRaw = Number(url.searchParams.get('quantity') ?? '1');
   const quantity = Math.min(100, Math.max(1, Number.isFinite(quantityRaw) ? Math.trunc(quantityRaw) : 1));
-
-  let metadata: { orgId?: string; orgSlug?: string; triggeredBy?: string };
-
-  try {
-    metadata = JSON.parse(url.searchParams.get('metadata') ?? '{}');
-  } catch {
-    return new Response('Invalid metadata JSON', { status: 400 });
-  }
-
-  if (!metadata.orgId || !metadata.orgSlug) {
-    return new Response('Missing orgId / orgSlug in metadata', { status: 400 });
-  }
 
   const productId = env.POLAR_TOKEN_PACK_PRODUCT_ID;
 
@@ -35,6 +37,7 @@ export const GET = async ({ url }: { url: URL }) => {
   });
 
   const totalPriceCents = TOKEN_PACK.PRICE_USD_CENTS * quantity;
+  const customerEmail = (profile.email ?? user.email)?.replace('@test.com', '+test@digdippa.com');
 
   const checkout = await polar.checkouts.create({
     products: [productId],
@@ -47,14 +50,14 @@ export const GET = async ({ url }: { url: URL }) => {
         }
       ]
     },
-    customerEmail: url.searchParams.get('customerEmail') ?? undefined,
-    customerName: url.searchParams.get('customerName') ?? undefined,
-    successUrl: `${url.origin}/org/${metadata.orgSlug}/settings/ai-credits?tokens=success`,
+    customerEmail,
+    customerName: profile.fullname || undefined,
+    successUrl: `${url.origin}/org/${org.siteName}/settings/ai-credits?tokens=success`,
     metadata: {
       kind: 'token_pack',
-      orgId: metadata.orgId,
-      orgSlug: metadata.orgSlug,
-      triggeredBy: metadata.triggeredBy ?? '',
+      orgId: org.id,
+      orgSlug: org.siteName,
+      triggeredBy: profile.id,
       tokensPerUnit: String(TOKEN_PACK.TOKENS_PER_UNIT),
       quantity: String(quantity)
     }

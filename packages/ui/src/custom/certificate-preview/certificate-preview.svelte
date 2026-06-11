@@ -33,10 +33,20 @@
   const MAX_SCALE = 1.5;
 
   let stageElement = $state<HTMLDivElement | null>(null);
+  let iframeElement = $state<HTMLIFrameElement | null>(null);
   let manualScale = $state<number | null>(typeof zoom === 'number' ? clamp(zoom) : null);
   let fitScale = $state(0.4);
 
-  const srcdoc = $derived(renderCertificateDocument(design, data));
+  const renderedHtml = $derived(renderCertificateDocument(design, data));
+
+  $effect(() => {
+    const html = renderedHtml;
+    const doc = iframeElement?.contentDocument;
+    if (!doc) return;
+    doc.open();
+    doc.write(html);
+    doc.close();
+  });
 
   const isFit = $derived(zoom === 'fit' && manualScale == null);
   const scale = $derived(isFit ? fitScale : (manualScale ?? clamp(typeof zoom === 'number' ? zoom : 0.4)));
@@ -84,12 +94,12 @@
 >
   <div class="ui:origin-center" style:width="{width}px" style:height="{height}px" style:transform="scale({scale})">
     <iframe
+      bind:this={iframeElement}
       title="Certificate preview"
       sandbox="allow-same-origin"
       class="ui:h-full ui:w-full ui:rounded-sm ui:border-0 ui:shadow-[0_18px_40px_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.12)]"
       style:width="{width}px"
       style:height="{height}px"
-      {srcdoc}
     ></iframe>
   </div>
 

@@ -44,6 +44,8 @@ export interface MediaPlayerOptions {
   onPlayerReady?: (player: Plyr) => void;
   /** Shown when the media element fails to load or decode. */
   playbackErrorLabel?: string;
+  /** Accessible label for the loading/buffering spinner overlay. */
+  loadingLabel?: string;
   /** Label for the manual reload control shown after a playback failure. */
   playbackReloadLabel?: string;
   /** Fetch a fresh playback URL (or otherwise prepare a retry). Return true to retry loading. */
@@ -66,4 +68,12 @@ export interface MediaPlayerOptions {
    * best-effort call that fails benignly.
    */
   onBeforeHlsLoad?: () => Promise<void>;
+  seekPolicy?: {
+    mode: 'locked_until_complete';
+    watchThresholdPercent: number;
+    initialFurthestSeconds?: number;
+    pauseOnHidden?: boolean;
+    onProgress?: (payload: { positionSeconds: number; playedDeltaSeconds: number; durationSeconds: number }) => void;
+    onSeekBlocked?: () => void;
+  };
 }

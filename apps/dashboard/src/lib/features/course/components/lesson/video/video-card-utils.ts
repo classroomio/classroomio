@@ -168,3 +168,33 @@ export function formatVideoCreatedAt(isoString: string | null | undefined): stri
   if (Number.isNaN(d.getTime())) return null;
   return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(d);
 }
+
+export function isEnforceableLessonVideo(video: LessonVideo): boolean {
+  return video.type === 'upload' && Boolean((video as LessonVideo & { assetId?: string }).assetId);
+}
+
+export function resolveWatchEnforcedAssetIds(
+  videos: LessonVideo[] | null | undefined,
+  completionPolicy: string | null | undefined
+): string[] {
+  const lessonVideos = videos ?? [];
+  const flaggedAssetIds = lessonVideos
+    .filter((video) => video.watchEnforced && isEnforceableLessonVideo(video))
+    .map((video) => (video as LessonVideo & { assetId: string }).assetId);
+
+  if (flaggedAssetIds.length > 0) {
+    return Array.from(new Set(flaggedAssetIds));
+  }
+
+  if (completionPolicy !== 'video_watch') {
+    return [];
+  }
+
+  return Array.from(
+    new Set(
+      lessonVideos
+        .filter((video) => isEnforceableLessonVideo(video))
+        .map((video) => (video as LessonVideo & { assetId: string }).assetId)
+    )
+  );
+}

@@ -352,7 +352,8 @@
       "thumbnail_regen_started": "Regeneruję miniatury…",
       "thumbnail_regen_failed": "Nie udało się ponownie wygenerować miniatur",
       "transcript_saved": "Transkrypcja zaktualizowana",
-      "transcript_save_failed": "Nie udało się zapisać transkrypcji"
+      "transcript_save_failed": "Nie udało się zapisać transkrypcji",
+      "transcription_already_running": "Zadanie transkrypcji tego filmu wideo jest już w toku"
     },
     "tags": {
       "group_created": "Utworzono grupę tagów",
@@ -743,6 +744,10 @@
         "drag": "Przeciągnij i upuść etykiety, aby zmienić kolejność zakładek materiałów",
         "content_grouping_title": "Grupowanie treści",
         "content_grouping_description": "Grupuj lekcje i ćwiczenia według sekcji na liście treści.",
+        "progression_mode_title": "Postęp ucznia",
+        "progression_mode_description": "Kontroluj, czy uczniowie mogą uzyskać dostęp do całej odblokowanej treści, czy muszą kończyć elementy po kolei.",
+        "progression_mode_free": "Wolny — odblokowana treść jest dostępna",
+        "progression_mode_sequential": "Sekwencyjny — ukończ poprzednie elementy, aby odblokować następny",
         "lesson_download": "Lekcje do pobrania",
         "available": "Udostępnij lekcję do pobrania w formacie PDF zarejestrowanym studentom",
         "course_download": "Pobieranie kursu",
@@ -1022,7 +1027,14 @@
           "field_template": "Szablon",
           "field_accent": "Akcent",
           "field_signatories": "Sygnatariusze",
-          "customize_design": "Dostosuj projekt"
+          "customize_design": "Dostosuj projekt",
+          "signatory_one_toggle": "Pokaż sygnatariusza 1",
+          "signatory_two_toggle": "Pokaż sygnatariusza 2",
+          "signature_upload": "Podpisowy obraz",
+          "signature_upload_hint": "Prześlij obraz podpisu (opcjonalnie)",
+          "signature_dont_crop": "Nie przycinaj",
+          "signature_upload_in_progress": "Przed zapisaniem poczekaj na zakończenie przesyłania podpisu.",
+          "save_failed": "Nie można zapisać projektu certyfikatu. Sprawdź formularz i spróbuj ponownie."
         }
       },
       "people": {
@@ -1758,7 +1770,11 @@
               "collapse_section": "Zwiń sekcję",
               "expand_section": "Rozwiń sekcję"
             },
-            "more": "Działania"
+            "more": "Działania",
+            "settings_completion_policy": "Zasada uzupełnienia",
+            "settings_completion_submitted": "Przesłane — liczy się każde przesłanie",
+            "settings_completion_passed": "Zaliczony — wymagany minimalny wynik",
+            "settings_pass_threshold": "Próg zaliczenia (%)"
           },
           "new_exercise_modal": {
             "heading": "Nowe ćwiczenie",
@@ -1803,6 +1819,9 @@
           "button": "przycisk",
           "button_done": "Gotowe",
           "tabs": {
+            "settings": {
+              "title": "Ustawienia"
+            },
             "document": {
               "title": "Dokumenty",
               "add_document": "Dodaj dokument",
@@ -1918,7 +1937,8 @@
                 "kind_google_drive": "Dysk Google",
                 "kind_generic": "Wbudowany",
                 "course_fallback": "Kurs",
-                "menu_aria": "Opcje wideo"
+                "menu_aria": "Opcje wideo",
+                "transcription_in_progress": "(Trwa generowanie transkrypcji)"
               },
               "view_transcript": "Zobacz transkrypcję",
               "playback_error": "Ładowanie tego filmu nie powiodło się.",
@@ -1926,7 +1946,8 @@
               "generate_1080": "Wygeneruj 1080p",
               "generate_1080_in_progress": "Generowanie 1080p…",
               "generate_1080_ready": "Dostępna rozdzielczość 1080p",
-              "generate_1080_unavailable": "Rozdzielczość 1080p jest niedostępna dla tego wideo źródłowego"
+              "generate_1080_unavailable": "Rozdzielczość 1080p jest niedostępna dla tego wideo źródłowego",
+              "loading": "Ładowanie wideo…"
             },
             "slide": {
               "title": "Przesuń",
@@ -1985,6 +2006,38 @@
         },
         "content_locked_title": "Ta zawartość jest zablokowana",
         "content_locked_description": "Twój instruktor nie odblokował jeszcze tej zawartości. Uzupełnij poprzednią zawartość lub sprawdź później.",
+        "content_progression_locked_title": "Najpierw ukończ poprzednią treść",
+        "content_progression_locked_description": "Ta treść odblokowuje się po ukończeniu poprzedniego wymaganego elementu kursu.",
+        "content_progression_locked_description_lesson": "Ta lekcja odblokowuje się po ukończeniu poprzedniego wymaganego elementu kursu.",
+        "content_progression_locked_description_exercise": "To ćwiczenie odblokowuje się po ukończeniu poprzedniego wymaganego elementu kursu.",
+        "completion_policy": {
+          "label": "Zasada ukończenia",
+          "manual_label": "Ręcznie",
+          "manual_description": "Uczniowie sami oznaczają lekcję jako ukończoną.",
+          "video_watch_label": "Obejrzenie wideo",
+          "video_watch_description": "Lekcja kończy się automatycznie po obejrzeniu wybranych filmów.",
+          "none_label": "Brak",
+          "none_description": "Ta lekcja nie blokuje postępu w kursie.",
+          "watch_threshold": "Próg obejrzenia (%)"
+        },
+        "settings": {
+          "progression": {
+            "heading": "Postęp",
+            "intro": "Wybierz, jak uczniowie kończą tę lekcję i przechodzą przez kurs.",
+            "option_guide_heading": "Co oznacza każda opcja",
+            "watch_videos_heading": "Filmy do egzekwowania",
+            "watch_videos_helper": "Tylko przesłane filmy mogą być egzekwowane. YouTube i zewnętrzne osadzenia nie mogą być śledzone.",
+            "watch_videos_empty": "Dodaj przesłany film w zakładce Wideo, aby użyć egzekwowania obejrzenia.",
+            "watch_videos_required": "Wybierz co najmniej jeden film przy egzekwowaniu obejrzenia.",
+            "students_only_note": "Te zasady dotyczą tylko uczniów. Jako nauczyciel możesz swobodnie przeglądać i nawigować."
+          }
+        },
+        "watch_progress": {
+          "status": "Obejrzano {percent}% treści wideo",
+          "videos_complete": "Obejrzano {percent}% wymaganej treści wideo ({complete} z {required} filmów)",
+          "seek_blocked": "Nie możesz przewinąć do przodu w tym filmie",
+          "complete_via_watch": "Ta lekcja kończy się, gdy obejrzysz wystarczającą część filmu"
+        },
         "saving": "Zapisuję…",
         "saved": "Zapisano",
         "draft_recovery": "Znaleziono niezapisaną wersję roboczą tej lekcji. Czy chcesz go przywrócić?",

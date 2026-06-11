@@ -7,6 +7,7 @@ export const load = async ({ params, cookies }) => {
   const exerciseId = params.exerciseId || '';
 
   if (!courseId || !exerciseId) {
+    console.log('courseId', courseId, 'exerciseId', exerciseId);
     return { courseId, exerciseId, exercise: null, submissions: [], mySubmissions: [] };
   }
 
@@ -31,6 +32,7 @@ export const load = async ({ params, cookies }) => {
   const mySubmissions = mySubmissionData;
 
   const submissions = Array.isArray(overview.allSubmissions) ? overview.allSubmissions : [];
+  console.log('submissions', submissions.length, 'mySubmissions', mySubmissions.length);
 
   return {
     courseId,

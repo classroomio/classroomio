@@ -14,7 +14,7 @@
   import { sidePanel } from '$features/side-panel';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
-  import { onDestroy } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import {
     canGenerateHls1080,
     getHls1080Status,
@@ -32,11 +32,19 @@
     onRemove: () => void;
     onThumbnailSaved?: (thumbnailUrl: string) => void;
     onHlsMetadataUpdated?: (metadata: Record<string, unknown>) => void;
+    onTranscribingChange?: (value: boolean) => void;
     /** `inline` aligns with the title row (YouTube-style). `corner` is top-right overlay on the nearest `relative` ancestor. */
     menuPlacement?: 'inline' | 'corner';
   }
 
-  let { video, onRemove, onThumbnailSaved, onHlsMetadataUpdated, menuPlacement = 'inline' }: Props = $props();
+  let {
+    video,
+    onRemove,
+    onThumbnailSaved,
+    onHlsMetadataUpdated,
+    onTranscribingChange,
+    menuPlacement = 'inline'
+  }: Props = $props();
 
   let manageThumbsOpen = $state(false);
   let manageThumbsAsset = $state<OrganizationAsset | null>(null);
@@ -47,6 +55,11 @@
   let hasTranscript = $state(false);
   let hasCheckedTranscript = $state(false);
   let activePoller: JobPoller<MediaJobEnvelope> | null = null;
+
+  function setIsTranscribing(value: boolean) {
+    isTranscribing = value;
+    onTranscribingChange?.(value);
+  }
   let isGenerating1080 = $state(false);
   let sourceFileInput: HTMLInputElement | undefined = $state();
 
@@ -61,6 +74,12 @@
     isHlsUploadVideo(video) && !hasHls1080Rendition(video) && !isGenerating1080 && hls1080Status === 'unavailable'
   );
 
+  onMount(() => {
+    if (canGenerateTranscript) {
+      void ensureTranscriptChecked();
+    }
+  });
+
   onDestroy(() => {
     activePoller?.stop();
   });
@@ -69,8 +88,19 @@
     if (hasCheckedTranscript || !assetId) return;
 
     hasCheckedTranscript = true;
-    const data = await mediaApi.getAssetTranscript(assetId);
-    hasTranscript = !!data?.segments?.length;
+
+    const [transcriptData, runs] = await Promise.all([
+      mediaApi.getAssetTranscript(assetId),
+      jobsApi.getMediaJobsForAsset(assetId)
+    ]);
+
+    hasTranscript = !!transcriptData?.segments?.length;
+
+    const latest = runs?.[0];
+    if (latest && (latest.job.status === 'pending' || latest.job.status === 'running')) {
+      setIsTranscribing(true);
+      void startTranscriptionPoll(assetId);
+    }
   }
 
   async function ensureHlsMetadataChecked() {
@@ -99,13 +129,13 @@
     const latest = runs?.[0];
 
     if (!latest) {
-      isTranscribing = false;
+      setIsTranscribing(false);
 
       return;
     }
 
     if (latest.job.status === 'completed') {
-      isTranscribing = false;
+      setIsTranscribing(false);
       hasTranscript = true;
       snackbar.success('snackbar.media_manager.transcription_completed');
 
@@ -113,7 +143,7 @@
     }
 
     if (latest.job.status === 'failed' || latest.job.status === 'canceled') {
-      isTranscribing = false;
+      setIsTranscribing(false);
 
       return;
     }
@@ -124,7 +154,7 @@
         if (envelope.job.status === 'completed') {
           activePoller?.stop();
           activePoller = null;
-          isTranscribing = false;
+          setIsTranscribing(false);
           hasTranscript = true;
           snackbar.success('snackbar.media_manager.transcription_completed');
         }
@@ -132,7 +162,7 @@
         if (envelope.job.status === 'failed' || envelope.job.status === 'canceled') {
           activePoller?.stop();
           activePoller = null;
-          isTranscribing = false;
+          setIsTranscribing(false);
         }
       }
     });
@@ -143,10 +173,15 @@
     if (!assetId) return;
 
     const ok = await mediaApi.generateTranscript(assetId);
-    if (!ok) return;
 
-    isTranscribing = true;
-    await startTranscriptionPoll(assetId);
+    if (ok) {
+      setIsTranscribing(true);
+      await startTranscriptionPoll(assetId);
+      return;
+    }
+
+    hasCheckedTranscript = false;
+    await ensureTranscriptChecked();
   }
 
   async function handleViewTranscript() {
@@ -231,11 +266,7 @@
     }
   }
 
-  const generateLabel = $derived(
-    isTranscribing
-      ? t.get('course.navItem.lessons.materials.tabs.video.generate_transcript_in_progress')
-      : t.get('course.navItem.lessons.materials.tabs.video.generate_transcript')
-  );
+  const generateLabel = t.get('course.navItem.lessons.materials.tabs.video.generate_transcript');
 
   const generate1080Label = $derived(
     isGenerating1080

@@ -4,6 +4,8 @@ export type CertificateTemplateId = (typeof CERTIFICATE_TEMPLATE_IDS)[number];
 export interface CertificateSignatory {
   name: string;
   role: string;
+  enabled: boolean;
+  signatureUrl?: string;
 }
 
 export interface CertificateDesign {

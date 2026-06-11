@@ -352,7 +352,8 @@
       "thumbnail_regen_started": "Regenerando miniaturas…",
       "thumbnail_regen_failed": "No se pudieron regenerar las miniaturas",
       "transcript_saved": "Transcripción actualizada",
-      "transcript_save_failed": "No se pudo guardar la transcripción"
+      "transcript_save_failed": "No se pudo guardar la transcripción",
+      "transcription_already_running": "Ya se está realizando un trabajo de transcripción para este vídeo."
     },
     "tags": {
       "group_created": "Grupo de etiquetas creado",
@@ -743,6 +744,10 @@
         "drag": "Arrastre y suelte las etiquetas para reordenar las pestañas de materiales",
         "content_grouping_title": "Agrupación de contenidos",
         "content_grouping_description": "Agrupe lecciones y ejercicios por sección en la lista de contenidos.",
+        "progression_mode_title": "Progresión del estudiante",
+        "progression_mode_description": "Controla si los estudiantes pueden acceder a todo el contenido desbloqueado o deben completar los elementos en orden.",
+        "progression_mode_free": "Libre — el contenido desbloqueado es accesible",
+        "progression_mode_sequential": "Secuencial — completar elementos previos para desbloquear el siguiente",
         "lesson_download": "Lecciones DescargarCargar",
         "available": "Haga que la lección esté disponible para descargar en pdf para estudiantes registrados",
         "course_download": "Descarga del curso",
@@ -1022,7 +1027,14 @@
           "field_template": "Plantilla",
           "field_accent": "acento",
           "field_signatories": "Firmantes",
-          "customize_design": "Personalizar diseño"
+          "customize_design": "Personalizar diseño",
+          "signatory_one_toggle": "Mostrar firmante 1",
+          "signatory_two_toggle": "Mostrar firmante 2",
+          "signature_upload": "Imagen de firma",
+          "signature_upload_hint": "Sube una imagen de firma (opcional)",
+          "signature_dont_crop": "No recortar",
+          "signature_upload_in_progress": "Espere a que finalice la carga de la firma antes de guardar.",
+          "save_failed": "No se pudo guardar el diseño del certificado. Revisa el formulario y vuelve a intentarlo."
         }
       },
       "people": {
@@ -1758,7 +1770,11 @@
               "collapse_section": "Contraer sección",
               "expand_section": "Expandir sección"
             },
-            "more": "Acciones"
+            "more": "Acciones",
+            "settings_completion_policy": "Regla de finalización",
+            "settings_completion_submitted": "Enviado: cualquier envío cuenta",
+            "settings_completion_passed": "Aprobado: puntuación mínima requerida",
+            "settings_pass_threshold": "Umbral de aprobación (%)"
           },
           "new_exercise_modal": {
             "heading": "Nuevo ejercicio",
@@ -1803,6 +1819,9 @@
           "button": "botón",
           "button_done": "hecho",
           "tabs": {
+            "settings": {
+              "title": "Configuración"
+            },
             "document": {
               "title": "Documentos",
               "add_document": "Agregar documento",
@@ -1918,7 +1937,8 @@
                 "kind_google_drive": "Google Drive",
                 "kind_generic": "Incrustado",
                 "course_fallback": "Curso",
-                "menu_aria": "Opciones de vídeo"
+                "menu_aria": "Opciones de vídeo",
+                "transcription_in_progress": "(Generación de transcripción en progreso)"
               },
               "view_transcript": "Ver transcripción",
               "playback_error": "Error al cargar este vídeo.",
@@ -1926,7 +1946,8 @@
               "generate_1080": "Generar 1080p",
               "generate_1080_in_progress": "Generando 1080p…",
               "generate_1080_ready": "1080p disponible",
-              "generate_1080_unavailable": "1080p no disponible para este vídeo fuente"
+              "generate_1080_unavailable": "1080p no disponible para este vídeo fuente",
+              "loading": "Cargando vídeo…"
             },
             "slide": {
               "title": "diapositiva",
@@ -1985,6 +2006,38 @@
         },
         "content_locked_title": "Este contenido está bloqueado.",
         "content_locked_description": "Su instructor aún no ha desbloqueado este contenido. Complete el contenido anterior o vuelva a consultarlo más tarde.",
+        "content_progression_locked_title": "Completa primero el contenido anterior",
+        "content_progression_locked_description": "Este contenido se desbloquea después de terminar el elemento requerido anterior del curso.",
+        "content_progression_locked_description_lesson": "Esta lección se desbloquea después de terminar el elemento requerido anterior del curso.",
+        "content_progression_locked_description_exercise": "Este ejercicio se desbloquea después de terminar el elemento requerido anterior del curso.",
+        "completion_policy": {
+          "label": "Regla de finalización",
+          "manual_label": "Manual",
+          "manual_description": "Los estudiantes marcan la lección como completada.",
+          "video_watch_label": "Ver video",
+          "video_watch_description": "La lección se completa automáticamente después de que los estudiantes vean los videos seleccionados.",
+          "none_label": "Ninguna",
+          "none_description": "Esta lección no bloquea la progresión del curso.",
+          "watch_threshold": "Umbral de visualización (%)"
+        },
+        "settings": {
+          "progression": {
+            "heading": "Progresión",
+            "intro": "Elige cómo los estudiantes completan esta lección y avanzan en el curso.",
+            "option_guide_heading": "Qué significa cada opción",
+            "watch_videos_heading": "Videos a aplicar",
+            "watch_videos_helper": "Solo los videos subidos pueden aplicarse. YouTube y las incrustaciones externas no se pueden rastrear.",
+            "watch_videos_empty": "Añade un video subido en la pestaña Video para usar el seguimiento de visualización.",
+            "watch_videos_required": "Selecciona al menos un video para el seguimiento de visualización.",
+            "students_only_note": "Estas reglas aplican solo a estudiantes. Puedes previsualizar y navegar libremente al enseñar."
+          }
+        },
+        "watch_progress": {
+          "status": "Visto el {percent}% del contenido del video",
+          "videos_complete": "Visto el {percent}% del contenido de video requerido ({complete} de {required} videos)",
+          "seek_blocked": "No puedes adelantar en este video",
+          "complete_via_watch": "Esta lección se completa cuando ves suficiente del video"
+        },
         "saving": "Guardando…",
         "saved": "Guardado",
         "draft_recovery": "Se encontró un borrador no guardado para esta lección. ¿Quieres restaurarlo?",

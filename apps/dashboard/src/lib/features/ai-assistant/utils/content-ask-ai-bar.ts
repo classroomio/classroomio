@@ -13,22 +13,40 @@ function findContentItem(
   return items.find((item) => item.id === contentId && item.type === contentType);
 }
 
-export function isCourseContentLockedForStudent(
+export type StudentContentLockReason = 'teacher_locked' | 'progression_locked';
+
+export function getStudentContentLockReason(
   course: Course | null,
   contentId: string | undefined,
   contentType: typeof ContentType.Lesson | typeof ContentType.Exercise | null
-): boolean {
+): StudentContentLockReason | null {
   if (!contentId || !contentType) {
-    return false;
+    return null;
   }
 
   const item = findContentItem(course, contentId, contentType);
 
   if (!item) {
-    return false;
+    return null;
   }
 
-  return (item.isUnlocked ?? true) === false;
+  if ((item.isUnlocked ?? true) === false) {
+    return 'teacher_locked';
+  }
+
+  if (item.accessible === false) {
+    return 'progression_locked';
+  }
+
+  return null;
+}
+
+export function isCourseContentLockedForStudent(
+  course: Course | null,
+  contentId: string | undefined,
+  contentType: typeof ContentType.Lesson | typeof ContentType.Exercise | null
+): boolean {
+  return getStudentContentLockReason(course, contentId, contentType) !== null;
 }
 
 export function getContentAskAiBarWidthClass(options: {

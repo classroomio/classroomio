@@ -689,6 +689,8 @@ export const course = pgTable(
       allowNewStudent: boolean;
       sectionDisplay?: Record<string, boolean>;
       isContentGroupingEnabled?: boolean;
+      /** `free` = all unlocked content is accessible; `sequential` = prior items must be complete. */
+      progressionMode?: 'free' | 'sequential';
       /** Per-course AI tutor override; missing fields inherit from org defaults. */
       aiTutor?: {
         inheritFromOrg?: boolean;
@@ -726,7 +728,10 @@ export const course = pgTable(
         accentColor: string;
         subtitle?: string;
         descriptionOverride?: string;
-        signatories: [{ name: string; role: string }, { name: string; role: string }];
+        signatories: [
+          { name: string; role: string; enabled?: boolean; signatureUrl?: string },
+          { name: string; role: string; enabled?: boolean; signatureUrl?: string }
+        ];
         idFormat?: string;
       };
       deadline?: string | null;
@@ -975,12 +980,15 @@ export const lesson = pgTable(
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     order: bigint({ mode: 'number' }),
     isUnlocked: boolean('is_unlocked').default(false),
+    completionPolicy: varchar('completion_policy').default('manual').notNull(),
+    videoWatchThreshold: integer('video_watch_threshold').default(95),
     videos: jsonb().default([]).$type<
       {
         type: 'youtube' | 'generic' | 'upload' | 'google_drive';
         link: string;
         key?: string;
         assetId?: string;
+        watchEnforced?: boolean;
         /** Display name; stored on add/upload. Fallback: derive from key or type. */
         fileName?: string;
         metadata?: {
@@ -1192,6 +1200,8 @@ export const exercise = pgTable(
     dueBy: timestamp('due_by', { mode: 'string' }),
     allowMultipleAttempts: boolean('allow_multiple_attempts').default(false).notNull(),
     sectionDisplayMode: varchar('section_display_mode').default('one_question'),
+    completionPolicy: varchar('completion_policy').default('submitted').notNull(),
+    passThreshold: integer('pass_threshold'),
     slug: varchar()
   },
   (table) => [
@@ -1484,6 +1494,40 @@ export const organizationInviteAudit = pgTable(
     index('idx_organization_invite_audit_org_id').on(table.organizationId),
     index('idx_organization_invite_audit_event_type').on(table.eventType),
     index('idx_organization_invite_audit_created_at').on(table.createdAt)
+  ]
+);
+
+export const lessonVideoProgress = pgTable(
+  'lesson_video_progress',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    lessonId: uuid('lesson_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    assetId: text('asset_id').notNull(),
+    durationSeconds: integer('duration_seconds'),
+    watchedSeconds: integer('watched_seconds').default(0).notNull(),
+    furthestSeconds: integer('furthest_seconds').default(0).notNull(),
+    lastPositionSeconds: integer('last_position_seconds').default(0).notNull(),
+    isComplete: boolean('is_complete').default(false).notNull(),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.lessonId],
+      foreignColumns: [lesson.id],
+      name: 'lesson_video_progress_lesson_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'lesson_video_progress_profile_id_fkey'
+    }),
+    unique('lesson_video_progress_lesson_profile_asset_unique').on(table.lessonId, table.profileId, table.assetId)
   ]
 );
 

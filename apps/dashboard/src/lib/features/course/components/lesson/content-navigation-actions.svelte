@@ -6,6 +6,7 @@
   import { CircleCheckIcon } from '$features/ui/icons';
   import { Button } from '@cio/ui/base/button';
   import * as Tooltip from '@cio/ui/base/tooltip';
+  import { PercentRingProgress } from '@cio/ui/custom/percent-ring-progress';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi, lessonApi } from '$features/course/api';
@@ -14,6 +15,7 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import type { CourseContentItem } from '$features/course/utils/types';
   import { openCourseCompletionModal } from '$features/course/store/course-completion-modal';
+  import { updateLessonCompletionInCourseContent } from '$features/course/utils/content-completion';
 
   interface Props {
     lessonId?: string;
@@ -63,8 +65,54 @@
   const showMarkComplete = $derived(!!lessonId && !exerciseId);
 
   const currentLessonItem = $derived(lessonId ? lessonItems.find((l) => l.id === lessonId) : null);
-  const isLessonLocked = $derived($isOrgStudent && currentLessonItem && !(currentLessonItem.isUnlocked ?? false));
-  const isMarkCompleteDisabled = $derived(isMarkingComplete || isLessonLocked || isLessonComplete);
+  const isTeacherLocked = $derived($isOrgStudent && currentLessonItem && !(currentLessonItem.isUnlocked ?? false));
+  const isProgressionLocked = $derived($isOrgStudent && currentLessonItem?.accessible === false && !isTeacherLocked);
+  const isVideoWatchLesson = $derived.by(() => {
+    if (!lessonId) return false;
+
+    return (
+      lessonApi.lesson?.completionPolicy === 'video_watch' || currentLessonItem?.completionPolicy === 'video_watch'
+    );
+  });
+  const watchedPercent = $derived.by(() => {
+    const progress = lessonApi.lesson?.watchProgress;
+    if (progress?.isComplete) return 100;
+
+    if (typeof progress?.watchedPercent === 'number') {
+      return progress.watchedPercent;
+    }
+
+    const durationSeconds = progress?.durationSeconds;
+    if (durationSeconds && durationSeconds > 0) {
+      return Math.min(100, ((progress?.watchedSeconds ?? 0) / durationSeconds) * 100);
+    }
+
+    return 0;
+  });
+
+  const watchedPercentDisplay = $derived(Math.round(watchedPercent));
+
+  const watchVideosRequired = $derived(lessonApi.lesson?.watchProgress?.videosRequired ?? 0);
+  const watchVideosComplete = $derived(lessonApi.lesson?.watchProgress?.videosComplete ?? 0);
+  const isLessonLocked = $derived(isTeacherLocked || isProgressionLocked);
+  const isVideoWatchComplete = $derived(isVideoWatchLesson && (lessonApi.lesson?.watchProgress?.isComplete ?? false));
+  const showVideoWatchCompleteState = $derived(isVideoWatchComplete || (isVideoWatchLesson && isLessonComplete));
+  const isMarkCompleteDisabled = $derived(
+    isMarkingComplete || isLessonLocked || isLessonComplete || isVideoWatchLesson
+  );
+  const showWatchProgress = $derived(
+    !!lessonId && $isOrgStudent && isVideoWatchLesson && !showVideoWatchCompleteState && !isLessonLocked
+  );
+
+  const watchProgressTooltip = $derived(
+    watchVideosRequired > 1
+      ? t.get('course.navItem.lessons.watch_progress.videos_complete', {
+          complete: watchVideosComplete,
+          required: watchVideosRequired,
+          percent: watchedPercentDisplay
+        })
+      : t.get('course.navItem.lessons.watch_progress.status', { percent: watchedPercentDisplay })
+  );
 
   async function markLessonComplete(currentLessonId: string) {
     isMarkingComplete = true;
@@ -99,31 +147,7 @@
   function updateCourseContentCompletion(currentLessonId: string, isComplete: boolean) {
     if (!courseApi.course?.content) return;
 
-    if (courseApi.course.content.grouped) {
-      courseApi.course = {
-        ...courseApi.course,
-        content: {
-          ...courseApi.course.content,
-          sections: courseApi.course.content.sections.map((section) => ({
-            ...section,
-            items: section.items.map((item) =>
-              item.type === ContentType.Lesson && item.id === currentLessonId ? { ...item, isComplete } : item
-            )
-          }))
-        }
-      };
-      return;
-    }
-
-    courseApi.course = {
-      ...courseApi.course,
-      content: {
-        ...courseApi.course.content,
-        items: courseApi.course.content.items.map((item) =>
-          item.type === ContentType.Lesson && item.id === currentLessonId ? { ...item, isComplete } : item
-        )
-      }
-    };
+    courseApi.course = updateLessonCompletionInCourseContent(courseApi.course, currentLessonId, isComplete);
   }
 
   const INTERACTIVE_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT']);
@@ -145,20 +169,31 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <div class="flex items-center gap-2">
-  {#if showMarkComplete && lessonId}
-    <Button
-      size="sm"
-      variant="secondary"
-      onclick={() => markLessonComplete(lessonId)}
-      loading={isMarkingComplete}
-      disabled={isMarkCompleteDisabled}
-    >
-      <CircleCheckIcon size={14} filled={isLessonComplete} />
-      <span class="text-xs">{$t('course.navItem.lessons.mark_as')} {$t('course.navItem.lessons.complete')}</span>
-    </Button>
-  {/if}
-
   <Tooltip.Provider>
+    {#if showWatchProgress}
+      <Tooltip.Root>
+        <Tooltip.Trigger>
+          <span class="inline-flex shrink-0" aria-label={watchProgressTooltip}>
+            <PercentRingProgress value={watchedPercent} size="small" />
+          </span>
+        </Tooltip.Trigger>
+        <Tooltip.Content side="bottom" sideOffset={4}>
+          {watchProgressTooltip}
+        </Tooltip.Content>
+      </Tooltip.Root>
+    {:else if showMarkComplete && lessonId && !isLessonLocked && (showVideoWatchCompleteState || !isVideoWatchLesson)}
+      <Button
+        size="sm"
+        variant="secondary"
+        onclick={() => markLessonComplete(lessonId)}
+        loading={isMarkingComplete}
+        disabled={isMarkCompleteDisabled || showVideoWatchCompleteState}
+      >
+        <CircleCheckIcon size={14} filled={isLessonComplete || showVideoWatchCompleteState} />
+        <span class="text-xs">{$t('course.navItem.lessons.mark_as')} {$t('course.navItem.lessons.complete')}</span>
+      </Button>
+    {/if}
+
     <div class="flex items-center gap-1">
       <Tooltip.Root>
         <Tooltip.Trigger>

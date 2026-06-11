@@ -366,7 +366,10 @@
   }
 
   function isLockedForStudent(item: ContentDndItem) {
-    return isStudentView && (item.isUnlocked ?? true) === false;
+    if (!isStudentView) return false;
+    if ((item.isUnlocked ?? true) === false) return true;
+
+    return item.accessible === false;
   }
 
   function getItemLockKey(item: ContentDndItem) {

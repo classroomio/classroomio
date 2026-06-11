@@ -352,7 +352,8 @@
       "thumbnail_regen_started": "Regenererer thumbnails...",
       "thumbnail_regen_failed": "Kunne ikke genskabe miniaturebilleder",
       "transcript_saved": "Udskrift opdateret",
-      "transcript_save_failed": "Kunne ikke gemme transskription"
+      "transcript_save_failed": "Kunne ikke gemme transskription",
+      "transcription_already_running": "Et transskriptionsjob er allerede i gang for denne video"
     },
     "tags": {
       "group_created": "Taggruppe oprettet",
@@ -743,6 +744,10 @@
         "drag": "Træk og slip etiketterne for at omarrangere dine materialefaner",
         "content_grouping_title": "Indholdsgruppering",
         "content_grouping_description": "Gruppelektioner og øvelser efter afsnit i indholdslisten.",
+        "progression_mode_title": "Elevprogression",
+        "progression_mode_description": "Styr om elever kan få adgang til alt ulåst indhold eller skal fuldføre elementer i rækkefølge.",
+        "progression_mode_free": "Fri — ulåst indhold er tilgængeligt",
+        "progression_mode_sequential": "Sekventiel — fuldfør tidligere elementer for at låse næste op",
         "lesson_download": "Hent lektioner",
         "available": "Gør lektionen tilgængelig til download i pdf for tilmeldte studerende",
         "course_download": "Kursus download",
@@ -1022,7 +1027,14 @@
           "field_template": "Skabelon",
           "field_accent": "Accent",
           "field_signatories": "Underskrivere",
-          "customize_design": "Tilpas design"
+          "customize_design": "Tilpas design",
+          "signatory_one_toggle": "Vis underskriver 1",
+          "signatory_two_toggle": "Vis underskriver 2",
+          "signature_upload": "Signaturbillede",
+          "signature_upload_hint": "Upload et signaturbillede (valgfrit)",
+          "signature_dont_crop": "Beskær ikke",
+          "signature_upload_in_progress": "Vent på, at signaturoverførslen er færdig, før du gemmer.",
+          "save_failed": "Kunne ikke gemme certifikatdesignet. Tjek formularen og prøv igen."
         }
       },
       "people": {
@@ -1758,7 +1770,11 @@
               "collapse_section": "Skjul afsnit",
               "expand_section": "Udvid afsnit"
             },
-            "more": "Handlinger"
+            "more": "Handlinger",
+            "settings_completion_policy": "Fuldførelsesregel",
+            "settings_completion_submitted": "Indsendt - enhver indsendelse tæller",
+            "settings_completion_passed": "Bestået - minimumsscore kræves",
+            "settings_pass_threshold": "Beståelsesgrænse (%)"
           },
           "new_exercise_modal": {
             "heading": "Ny øvelse",
@@ -1803,6 +1819,9 @@
           "button": "knappen",
           "button_done": "Færdig",
           "tabs": {
+            "settings": {
+              "title": "Indstillinger"
+            },
             "document": {
               "title": "Dokumenter",
               "add_document": "Tilføj dokument",
@@ -1918,7 +1937,8 @@
                 "kind_google_drive": "Google Drev",
                 "kind_generic": "Indlejret",
                 "course_fallback": "Kursus",
-                "menu_aria": "Video muligheder"
+                "menu_aria": "Video muligheder",
+                "transcription_in_progress": "(Transskriptionsgenerering i gang)"
               },
               "view_transcript": "Se transskription",
               "playback_error": "Indlæsningen af denne video mislykkedes.",
@@ -1926,7 +1946,8 @@
               "generate_1080": "Generer 1080p",
               "generate_1080_in_progress": "Genererer 1080p...",
               "generate_1080_ready": "1080p tilgængelig",
-              "generate_1080_unavailable": "1080p ikke tilgængelig for denne kildevideo"
+              "generate_1080_unavailable": "1080p ikke tilgængelig for denne kildevideo",
+              "loading": "Indlæser video..."
             },
             "slide": {
               "title": "Slide",
@@ -1985,6 +2006,38 @@
         },
         "content_locked_title": "Dette indhold er låst",
         "content_locked_description": "Din instruktør har ikke låst dette indhold op endnu. Fuldfør tidligere indhold, eller tjek tilbage senere.",
+        "content_progression_locked_title": "Fuldfør tidligere indhold først",
+        "content_progression_locked_description": "Dette indhold låses op, når du har fuldført det forrige påkrævede element i kurset.",
+        "content_progression_locked_description_lesson": "Denne lektion låses op, når du har fuldført det forrige påkrævede element i kurset.",
+        "content_progression_locked_description_exercise": "Denne øvelse låses op, når du har fuldført det forrige påkrævede element i kurset.",
+        "completion_policy": {
+          "label": "Fuldførelsesregel",
+          "manual_label": "Manuel",
+          "manual_description": "Elever markerer selv lektionen som fuldført.",
+          "video_watch_label": "Videoafspilning",
+          "video_watch_description": "Lektionen fuldføres automatisk, når elever har set de valgte videoer.",
+          "none_label": "Ingen",
+          "none_description": "Denne lektion blokerer ikke kursusprogression.",
+          "watch_threshold": "Segrænse (%)"
+        },
+        "settings": {
+          "progression": {
+            "heading": "Progression",
+            "intro": "Vælg hvordan elever fuldfører denne lektion og bevæger sig gennem kurset.",
+            "option_guide_heading": "Hvad hver mulighed betyder",
+            "watch_videos_heading": "Videoer der håndhæves",
+            "watch_videos_helper": "Kun uploadede videoer kan håndhæves. YouTube og eksterne indlejringer kan ikke spores.",
+            "watch_videos_empty": "Tilføj en uploadet video i fanen Video for at bruge visningskontrol.",
+            "watch_videos_required": "Vælg mindst én video ved videoafspilning.",
+            "students_only_note": "Disse regler gælder kun for elever. Du kan forhåndsvise og navigere frit som underviser."
+          }
+        },
+        "watch_progress": {
+          "status": "Set {percent}% af videoindholdet",
+          "videos_complete": "Set {percent}% af det krævede videoindhold ({complete} af {required} videoer)",
+          "seek_blocked": "Du kan ikke springe frem i denne video",
+          "complete_via_watch": "Denne lektion fuldføres, når du har set nok af videoen"
+        },
         "saving": "Gemmer...",
         "saved": "Gemt",
         "draft_recovery": "Der blev fundet et ikke-gemt udkast til denne lektion. Vil du gendanne den?",

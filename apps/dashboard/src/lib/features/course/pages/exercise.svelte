@@ -52,8 +52,7 @@
     hydrateExercisePageData
     // , refreshExercisePageData
   } from '$features/course/utils/exercise-page-utils';
-  import { Empty } from '@cio/ui/custom/empty';
-  import VideoIcon from '@lucide/svelte/icons/video';
+  import StudentContentLockedNotice from '$features/course/components/student-content-locked-notice.svelte';
   import {
     getQuestionTypeId,
     getQuestionTypeKeyFromId
@@ -324,7 +323,23 @@
       (item) => item.type === ContentType.Exercise && item.id === exerciseId
     )
   );
-  const isExerciseUnlocked = $derived(exerciseContentItem?.isUnlocked ?? false);
+  const isCourseContentReady = $derived(courseApi.course?.id != null);
+  const isExerciseTeacherLocked = $derived((exerciseContentItem?.isUnlocked ?? true) === false);
+  const isExerciseProgressionLocked = $derived(
+    $isOrgStudent && exerciseContentItem?.accessible === false && !isExerciseTeacherLocked
+  );
+  const isExerciseAccessible = $derived.by(() => {
+    if ($isOrgStudent && (!isCourseContentReady || !exerciseContentItem)) {
+      return false;
+    }
+
+    return !isExerciseTeacherLocked && !isExerciseProgressionLocked;
+  });
+  const exerciseDisplayTitle = $derived(
+    exerciseContentItem?.title ||
+      $questionnaire.title ||
+      t.get('course.navItem.lessons.exercises.all_exercises.heading')
+  );
 
   const isSelfPacedCourse = $derived(isSelfPacedLikeCourse(courseApi.course?.type));
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
@@ -355,6 +370,11 @@
     });
   }
 
+  $inspect('$isStudentExperience', $isStudentExperience);
+  $inspect('isExerciseAccessible', isExerciseAccessible);
+  $inspect('isExerciseAccessible', isExerciseAccessible);
+  $inspect('mySubmissions', mySubmissions);
+
   function getFirstActiveSectionId() {
     const [firstActiveSection] = [...($questionnaire.sections ?? [])]
       .filter((section) => !section.deletedAt)
@@ -384,7 +404,7 @@
 <Page.Header isSticky={true} class="top-12! z-100! min-h-[36px]">
   <Page.HeaderContent>
     <Page.Title class="flex flex-col gap-2">
-      <span>{$questionnaire.title || 'Exercise'}</span>
+      <span>{exerciseDisplayTitle}</span>
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         {#if teacherAutoGradeBadge === 'auto'}
           <Badge variant="outline" class="font-normal">
@@ -502,15 +522,12 @@
   {#snippet child()}
     <div class="overflow-x-hidden pb-20">
       {#if $isStudentExperience}
-        {#if isExerciseUnlocked}
+        {#if isExerciseAccessible}
           <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmissions} />
         {:else}
-          <Empty
-            title={$t('course.navItem.lessons.content_locked_title')}
-            description={$t('course.navItem.lessons.content_locked_description')}
-            icon={VideoIcon}
-            variant="page"
-            class="text-center"
+          <StudentContentLockedNotice
+            reason={isExerciseProgressionLocked ? 'progression_locked' : 'teacher_locked'}
+            contentType={ContentType.Exercise}
           />
         {/if}
       {:else}

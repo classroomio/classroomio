@@ -32,6 +32,7 @@ import { exerciseBelongsToCourse } from '@cio/db/queries/course/certification-ex
 import { updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { getProfileById } from '@cio/db/queries/auth';
 import { insertOrganizationMembersOnConflictDoNothing } from '@cio/db/queries/organization';
+import { annotateCourseContentWithProgression } from './progression';
 import { buildCourseContent, calcPercentageWithRounding, formatLastSeen, type CourseContent } from './utils';
 import { guardCourseTypeTransition } from './public-course-guard';
 
@@ -136,13 +137,31 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
     }
 
     const isContentGroupingEnabled = course.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING;
-    const content = buildCourseContent(course.contentItems, isContentGroupingEnabled);
+    const progressionMode = course.metadata?.progressionMode ?? 'free';
+    const roleId = profileId
+      ? (course.group?.members?.find((member) => member.profileId === profileId)?.roleId ?? null)
+      : null;
+
+    const content = profileId
+      ? await annotateCourseContentWithProgression({
+          courseId: course.id,
+          profileId,
+          roleId,
+          progressionMode,
+          contentRows: course.contentItems,
+          isContentGroupingEnabled
+        })
+      : buildCourseContent(course.contentItems, isContentGroupingEnabled);
 
     const { contentItems, org: courseOrg, ...rest } = course;
 
     const base = {
       ...rest,
-      content
+      content,
+      metadata: {
+        ...course.metadata,
+        progressionMode
+      }
     };
 
     if (courseOrg) {

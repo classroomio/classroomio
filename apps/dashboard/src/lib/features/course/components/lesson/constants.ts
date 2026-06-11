@@ -39,6 +39,8 @@ export const tabs: MaterialTab[] = [
   }
 ];
 
+export const SETTINGS_TAB_VALUE = 'settings';
+
 export function orderedTabs(tabs: MaterialTab[], settingTabs?: Tabs[]) {
   if (!Array.isArray(settingTabs)) return tabs;
 

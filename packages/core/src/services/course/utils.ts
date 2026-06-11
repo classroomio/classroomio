@@ -18,6 +18,11 @@ export type CourseContentItem = {
   documentsCount: number | null;
   questionCount: number | null;
   dueBy: string | null;
+  accessible?: boolean;
+  lockReason?: 'teacher_locked' | 'progression_blocked' | null;
+  completionPolicy?: string | null;
+  videoWatchThreshold?: number | null;
+  passThreshold?: number | null;
 };
 
 export type CourseContentSection = {

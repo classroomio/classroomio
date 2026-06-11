@@ -9,6 +9,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { slugifyTitle } from '@cio/utils/validation';
+  import * as Select from '@cio/ui/base/select';
 
   type Props = {
     exerciseId: string;
@@ -31,6 +32,8 @@
 
     await exerciseApi.update(courseApi.course.id, exerciseId, {
       allowMultipleAttempts: !!$questionnaire.allowMultipleAttempts,
+      completionPolicy: $questionnaire.completionPolicy ?? 'submitted',
+      passThreshold: $questionnaire.passThreshold ?? 100,
       slug: isPublicCourse && slug ? slug : undefined
     });
     saving = false;
@@ -58,6 +61,51 @@
         questionnaire.update((q) => ({ ...q, allowMultipleAttempts: checked }));
       }}
     />
+  </div>
+
+  <div class="rounded-lg border border-neutral-200 p-4 dark:border-neutral-700">
+    <Label class="mb-2 block text-sm font-medium dark:text-gray-100">
+      {$t('course.navItem.lessons.exercises.all_exercises.settings_completion_policy')}
+    </Label>
+    <Select.Root
+      type="single"
+      value={$questionnaire.completionPolicy ?? 'submitted'}
+      onValueChange={(value) => {
+        if (value === 'submitted' || value === 'passed') {
+          questionnaire.update((state) => ({ ...state, completionPolicy: value }));
+        }
+      }}
+    >
+      <Select.Trigger class="w-full">
+        {($questionnaire.completionPolicy ?? 'submitted') === 'passed'
+          ? $t('course.navItem.lessons.exercises.all_exercises.settings_completion_passed')
+          : $t('course.navItem.lessons.exercises.all_exercises.settings_completion_submitted')}
+      </Select.Trigger>
+      <Select.Content>
+        <Select.Item value="submitted">
+          {$t('course.navItem.lessons.exercises.all_exercises.settings_completion_submitted')}
+        </Select.Item>
+        <Select.Item value="passed">
+          {$t('course.navItem.lessons.exercises.all_exercises.settings_completion_passed')}
+        </Select.Item>
+      </Select.Content>
+    </Select.Root>
+
+    {#if ($questionnaire.completionPolicy ?? 'submitted') === 'passed'}
+      <div class="mt-4">
+        <InputField
+          type="number"
+          label={$t('course.navItem.lessons.exercises.all_exercises.settings_pass_threshold')}
+          value={String($questionnaire.passThreshold ?? 100)}
+          onInputChange={(event) => {
+            const parsed = Number(event.currentTarget.value);
+            if (!Number.isNaN(parsed)) {
+              questionnaire.update((state) => ({ ...state, passThreshold: parsed }));
+            }
+          }}
+        />
+      </div>
+    {/if}
   </div>
 
   {#if isPublicCourse}

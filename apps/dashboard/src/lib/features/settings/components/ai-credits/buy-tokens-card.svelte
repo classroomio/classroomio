@@ -27,7 +27,7 @@
   }
 
   function buy() {
-    if (!$profile.id || !$profile.email || !$currentOrg.id || !$currentOrg.siteName) {
+    if (!$profile.id || !$currentOrg.id) {
       snackbar.error('snackbar.ai_credits.checkout_failed');
 
       return;
@@ -37,20 +37,7 @@
 
     const checkoutURL = new URL('/api/polar/buy-tokens', page.url);
     checkoutURL.searchParams.set('quantity', String(quantity));
-    checkoutURL.searchParams.set('customerEmail', $profile.email?.replace('@test.com', '+test@digdippa.com') ?? '');
-
-    if ($profile.fullname) {
-      checkoutURL.searchParams.set('customerName', $profile.fullname);
-    }
-
-    checkoutURL.searchParams.set(
-      'metadata',
-      JSON.stringify({
-        orgId: $currentOrg.id,
-        orgSlug: $currentOrg.siteName,
-        triggeredBy: $profile.id
-      })
-    );
+    checkoutURL.searchParams.set('orgId', $currentOrg.id);
 
     onBeforeRedirect?.();
     window.location.href = checkoutURL.toString();

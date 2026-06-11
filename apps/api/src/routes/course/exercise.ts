@@ -36,6 +36,8 @@ import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-member-or-automation-key';
 import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { createSubmissionService, listExerciseSubmissionsOverview } from '@api/services/submission';
+import { assertEnrolledStudentContentAccess } from '@api/services/course/access';
+import { ContentType } from '@cio/utils/constants';
 import { zValidator } from '@hono/zod-validator';
 
 export const exerciseRouter = new Hono()
@@ -93,6 +95,15 @@ export const exerciseRouter = new Hono()
 
         if (automationKey?.type === 'mcp') {
           await assertMcpAutomationUsageAllowed(automationKey, 'get_course_exercise');
+        }
+
+        if (user?.id && !automationKey) {
+          await assertEnrolledStudentContentAccess({
+            courseId: c.req.param('courseId')!,
+            profileId: user.id,
+            contentId: exerciseId,
+            type: ContentType.Exercise
+          });
         }
 
         const exercise = await getExercise(exerciseId, undefined, user?.id);
@@ -259,6 +270,13 @@ export const exerciseRouter = new Hono()
         if (!groupMemberId) {
           return c.json({ success: false, error: 'User is not a member of this course' }, 403);
         }
+
+        await assertEnrolledStudentContentAccess({
+          courseId,
+          profileId: user.id,
+          contentId: exerciseId,
+          type: ContentType.Exercise
+        });
 
         const submission = await createSubmissionService(courseId, exerciseId, groupMemberId, answers);
 

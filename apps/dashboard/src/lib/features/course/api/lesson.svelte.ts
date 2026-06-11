@@ -1,4 +1,7 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { courseApi } from './course.svelte';
+import { toggleConfetti } from '$features/ui/confetti/store';
+import { updateLessonCompletionInCourseContent } from '../utils/content-completion';
 import type {
   CourseSectionWithLessons,
   CreateCourseSectionRequest,
@@ -20,8 +23,13 @@ import type {
   UpdateCourseSectionRequest,
   UpdateLessonCommentRequest,
   UpdateLessonCompletionRequest,
-  UpdateLessonRequest
+  UpdateLessonRequest,
+  UpdateLessonWatchProgressRequest,
+  GetLessonWatchProgressRequest,
+  type LessonWatchProgress,
+  type LessonWatchProgressUpdate
 } from '../utils/types';
+import type { TUpdateLessonWatchProgress } from '@cio/utils/validation/lesson';
 import type {
   TCourseSectionCreate,
   TCourseSectionPromoteUngrouped,
@@ -616,6 +624,68 @@ export class LessonApi extends BaseApiWithErrors {
   /**
    * Updates lesson completion
    */
+  async getWatchProgress(courseId: string, lessonId: string): Promise<LessonWatchProgress | null> {
+    const response = await this.execute<GetLessonWatchProgressRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].lesson[':lessonId']['watch-progress'].$get({
+          param: { courseId, lessonId }
+        }),
+      logContext: 'fetching lesson watch progress'
+    });
+
+    if (!response || !('data' in response)) return null;
+
+    return response.data;
+  }
+
+  async reportWatchProgress(courseId: string, lessonId: string, beat: TUpdateLessonWatchProgress) {
+    const payload: TUpdateLessonWatchProgress = {
+      ...beat,
+      durationSeconds: Math.round(beat.durationSeconds),
+      playedDeltaSeconds: Math.round(beat.playedDeltaSeconds),
+      positionSeconds: Math.floor(beat.positionSeconds)
+    };
+
+    return this.execute<UpdateLessonWatchProgressRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].lesson[':lessonId']['watch-progress'].$put({
+          param: { courseId, lessonId },
+          json: payload
+        }),
+      logContext: 'reporting lesson watch progress',
+      onSuccess: (response) => {
+        const data = response.data as LessonWatchProgressUpdate | null;
+        if (!data || !this.lesson || this.lesson.id !== lessonId) return;
+
+        if (data.didJustComplete) {
+          toggleConfetti();
+          setTimeout(() => toggleConfetti(), 3000);
+        }
+
+        if (courseApi.course?.content && data.didJustComplete) {
+          courseApi.course = updateLessonCompletionInCourseContent(courseApi.course, lessonId, true);
+        }
+
+        this.lesson = {
+          ...this.lesson,
+          watchProgress: {
+            lastPositionSeconds: data.lastPositionSeconds,
+            watchedSeconds: data.watchedSeconds,
+            furthestSeconds: data.furthestSeconds,
+            durationSeconds: data.durationSeconds,
+            isComplete: data.isComplete,
+            didJustComplete: data.didJustComplete,
+            watchedPercent: data.watchedPercent,
+            videosComplete: data.videosComplete,
+            videosRequired: data.videosRequired,
+            assets: data.assets
+          },
+          isComplete: data.isComplete ? true : this.lesson.isComplete
+        };
+      }
+    });
+  }
+
   async updateCompletion(courseId: string, lessonId: string, isComplete: boolean) {
     return this.execute<UpdateLessonCompletionRequest>({
       requestFn: () =>

@@ -352,7 +352,8 @@
       "thumbnail_regen_started": "थंबनेल पुनर्जीवित हो रहे हैं…",
       "thumbnail_regen_failed": "थंबनेल पुन: उत्पन्न करने में विफल",
       "transcript_saved": "प्रतिलेख अद्यतन किया गया",
-      "transcript_save_failed": "प्रतिलेख सहेजा नहीं जा सका"
+      "transcript_save_failed": "प्रतिलेख सहेजा नहीं जा सका",
+      "transcription_already_running": "इस वीडियो के लिए प्रतिलेखन कार्य पहले से ही प्रगति पर है"
     },
     "tags": {
       "group_created": "टैग समूह बनाया गया",
@@ -743,6 +744,10 @@
         "drag": "अपने सामग्री टैब को पुनः क्रमित करने के लिए लेबल खींचें और छोड़ें",
         "content_grouping_title": "सामग्री समूहन",
         "content_grouping_description": "सामग्री सूची में अनुभाग के अनुसार समूह पाठ और अभ्यास।",
+        "progression_mode_title": "छात्र प्रगति",
+        "progression_mode_description": "नियंत्रित करें कि छात्र सभी अनलॉक सामग्री तक पहुँच सकें या क्रम में आइटम पूरे करें।",
+        "progression_mode_free": "मुक्त — अनलॉक सामग्री सुलभ है",
+        "progression_mode_sequential": "क्रमिक — अगला अनलॉक करने के लिए पिछले आइटम पूरे करें",
         "lesson_download": "पाठ डाउनलोड करें",
         "available": "पंजीकृत छात्रों के लिए पाठ को पीडीएफ में डाउनलोड के लिए उपलब्ध कराएं",
         "course_download": "कोर्स डाउनलोड करें",
@@ -1022,7 +1027,14 @@
           "field_template": "टेम्पलेट",
           "field_accent": "उच्चारण",
           "field_signatories": "हस्ताक्षरकर्ता",
-          "customize_design": "डिज़ाइन अनुकूलित करें"
+          "customize_design": "डिज़ाइन अनुकूलित करें",
+          "signatory_one_toggle": "हस्ताक्षरकर्ता दिखाएँ 1",
+          "signatory_two_toggle": "हस्ताक्षरकर्ता दिखाएँ 2",
+          "signature_upload": "हस्ताक्षर छवि",
+          "signature_upload_hint": "एक हस्ताक्षर छवि अपलोड करें (वैकल्पिक)",
+          "signature_dont_crop": "फसल मत करो",
+          "signature_upload_in_progress": "सहेजने से पहले हस्ताक्षर अपलोड समाप्त होने तक प्रतीक्षा करें।",
+          "save_failed": "प्रमाणपत्र डिज़ाइन सहेजा नहीं जा सका. फ़ॉर्म की जाँच करें और पुनः प्रयास करें."
         }
       },
       "people": {
@@ -1758,7 +1770,11 @@
               "collapse_section": "अनुभाग संकुचित करें",
               "expand_section": "अनुभाग विस्तारित करें"
             },
-            "more": "क्रियाएँ"
+            "more": "क्रियाएँ",
+            "settings_completion_policy": "समापन नियम",
+            "settings_completion_submitted": "सबमिट किया गया - कोई भी सबमिशन मायने रखता है",
+            "settings_completion_passed": "उत्तीर्ण - न्यूनतम अंक आवश्यक",
+            "settings_pass_threshold": "पास सीमा (%)"
           },
           "new_exercise_modal": {
             "heading": "नया व्यायाम",
@@ -1803,6 +1819,9 @@
           "button": "बटन",
           "button_done": "हो गया",
           "tabs": {
+            "settings": {
+              "title": "सेटिंग्स"
+            },
             "document": {
               "title": "दस्तावेज़",
               "add_document": "दस्तावेज़ जोड़ें",
@@ -1918,7 +1937,8 @@
                 "kind_google_drive": "गूगल ड्राइव",
                 "kind_generic": "एंबेडेड",
                 "course_fallback": "पाठ्यक्रम",
-                "menu_aria": "वीडियो विकल्प"
+                "menu_aria": "वीडियो विकल्प",
+                "transcription_in_progress": "(प्रतिलेख निर्माण प्रगति पर है)"
               },
               "view_transcript": "प्रतिलेखन देखें",
               "playback_error": "इस वीडियो को लोड करना विफल रहा.",
@@ -1926,7 +1946,8 @@
               "generate_1080": "1080p जनरेट करें",
               "generate_1080_in_progress": "1080p जेनरेट हो रहा है...",
               "generate_1080_ready": "1080p उपलब्ध",
-              "generate_1080_unavailable": "इस स्रोत वीडियो के लिए 1080p अनुपलब्ध है"
+              "generate_1080_unavailable": "इस स्रोत वीडियो के लिए 1080p अनुपलब्ध है",
+              "loading": "वीडियो लोड हो रहा है..."
             },
             "slide": {
               "title": "फिसल पट्टी",
@@ -1985,6 +2006,38 @@
         },
         "content_locked_title": "यह सामग्री लॉक है",
         "content_locked_description": "आपके प्रशिक्षक ने अभी तक इस सामग्री को अनलॉक नहीं किया है। पिछली सामग्री पूरी करें या बाद में दोबारा जाँचें।",
+        "content_progression_locked_title": "पहले पिछली सामग्री पूरी करें",
+        "content_progression_locked_description": "पिछले आवश्यक कोर्स आइटम को पूरा करने के बाद यह सामग्री अनलॉक होती है।",
+        "content_progression_locked_description_lesson": "पिछले आवश्यक कोर्स आइटम को पूरा करने के बाद यह पाठ अनलॉक होता है।",
+        "content_progression_locked_description_exercise": "पिछले आवश्यक कोर्स आइटम को पूरा करने के बाद यह अभ्यास अनलॉक होता है।",
+        "completion_policy": {
+          "label": "पूर्णता नियम",
+          "manual_label": "मैन्युअल",
+          "manual_description": "छात्र स्वयं पाठ को पूर्ण चिह्नित करते हैं।",
+          "video_watch_label": "वीडियो देखें",
+          "video_watch_description": "चयनित वीडियो देखने के बाद पाठ स्वतः पूर्ण हो जाता है।",
+          "none_label": "कोई नहीं",
+          "none_description": "यह पाठ कोर्स प्रगति को रोकता नहीं है।",
+          "watch_threshold": "देखने की सीमा (%)"
+        },
+        "settings": {
+          "progression": {
+            "heading": "प्रगति",
+            "intro": "चुनें कि छात्र इस पाठ को कैसे पूरा करें और कोर्स में आगे बढ़ें।",
+            "option_guide_heading": "प्रत्येक विकल्प का अर्थ",
+            "watch_videos_heading": "लागू करने के लिए वीडियो",
+            "watch_videos_helper": "केवल अपलोड किए गए वीडियो लागू किए जा सकते हैं। YouTube और बाहरी एम्बेड ट्रैक नहीं हो सकते।",
+            "watch_videos_empty": "देखने की निगरानी के लिए वीडियो टैब में अपलोड किया वीडियो जोड़ें।",
+            "watch_videos_required": "वीडियो देखने के नियम के लिए कम से कम एक वीडियो चुनें।",
+            "students_only_note": "ये नियम केवल छात्रों पर लागू होते हैं। शिक्षक स्वतंत्र रूप से पूर्वावलोकन और नेविगेट कर सकते हैं।"
+          }
+        },
+        "watch_progress": {
+          "status": "वीडियो सामग्री का {percent}% देखा",
+          "videos_complete": "आवश्यक वीडियो सामग्री का {percent}% देखा ({required} में से {complete} वीडियो)",
+          "seek_blocked": "आप इस वीडियो में आगे नहीं जा सकते",
+          "complete_via_watch": "पर्याप्त वीडियो देखने पर यह पाठ पूर्ण होता है"
+        },
         "saving": "सहेजा जा रहा है...",
         "saved": "सहेजा गया",
         "draft_recovery": "इस पाठ के लिए एक सहेजा न गया ड्राफ्ट मिला। क्या आप इसे पुनर्स्थापित करना चाहेंगे?",

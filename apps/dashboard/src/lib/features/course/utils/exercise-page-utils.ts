@@ -86,6 +86,8 @@ export function hydrateExercisePageData(exercise: Exercise, exerciseId: string) 
     sectionDisplayMode: exercise.sectionDisplayMode ?? 'one_question',
     totalSubmissions: 0,
     allowMultipleAttempts: !!exercise.allowMultipleAttempts,
+    completionPolicy: (exercise.completionPolicy as 'submitted' | 'passed' | undefined) ?? 'submitted',
+    passThreshold: exercise.passThreshold ?? 100,
     slug: exercise.slug ?? ''
   });
 

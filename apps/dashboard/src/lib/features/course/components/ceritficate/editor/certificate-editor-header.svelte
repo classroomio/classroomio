@@ -11,12 +11,23 @@
     templateLabel: string;
     isDirty: boolean;
     isSaving: boolean;
+    isSignatureUploading?: boolean;
     isFreePlan: boolean;
     onSave: () => void;
     onDiscard: () => void;
   }
 
-  let { courseId, courseTitle, templateLabel, isDirty, isSaving, isFreePlan, onSave, onDiscard }: Props = $props();
+  let {
+    courseId,
+    courseTitle,
+    templateLabel,
+    isDirty,
+    isSaving,
+    isSignatureUploading = false,
+    isFreePlan,
+    onSave,
+    onDiscard
+  }: Props = $props();
 </script>
 
 <header
@@ -66,7 +77,7 @@
       variant="outline"
       size="sm"
       type="button"
-      disabled={!isDirty || isSaving}
+      disabled={!isDirty || isSaving || isSignatureUploading}
       loading={isSaving}
       onclick={onSave}
     >

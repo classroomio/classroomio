@@ -1,4 +1,4 @@
-import { escapeHtml, type TemplateRenderer } from './shared';
+import { escapeHtml, renderSignatoryBlock, SIGNATURE_IMAGE_STYLES, type TemplateRenderer } from './shared';
 
 export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
   const accent = design.accentColor;
@@ -38,14 +38,8 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
       </div>
       <div class="stamp">Verified</div>
       <div class="footer">
-        <div>
-          <div class="lbl">${escapeHtml(signatoryOne.role)}</div>
-          <div class="name">${escapeHtml(signatoryOne.name)}</div>
-        </div>
-        <div>
-          <div class="lbl">${escapeHtml(signatoryTwo.role)}</div>
-          <div class="name">${escapeHtml(signatoryTwo.name)}</div>
-        </div>
+        ${renderSignatoryBlock(signatoryOne, { nameClass: 'name', roleClass: 'lbl', roleFirst: true })}
+        ${renderSignatoryBlock(signatoryTwo, { nameClass: 'name', roleClass: 'lbl', roleFirst: true })}
       </div>
     </div>
   `;
@@ -200,6 +194,7 @@ export const renderBrutalist: TemplateRenderer = ({ design, data }) => {
       z-index: 3;
       background: rgba(255, 255, 255, 0.6);
     }
+    ${SIGNATURE_IMAGE_STYLES}
   `;
 
   return { body, styles };

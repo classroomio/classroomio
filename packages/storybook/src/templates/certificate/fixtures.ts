@@ -48,8 +48,8 @@ export function buildDesign(
     subtitle: overrides.subtitle ?? DEFAULT_CERTIFICATE_DESIGN.subtitle,
     descriptionOverride: overrides.descriptionOverride,
     signatories: overrides.signatories ?? [
-      { name: 'Margaret W. Holloway', role: 'Director of Studies' },
-      { name: 'James K. Reeves', role: 'Dean of Faculty' }
+      { name: 'Margaret W. Holloway', role: 'Director of Studies', enabled: true },
+      { name: 'James K. Reeves', role: 'Dean of Faculty', enabled: true }
     ],
     idFormat: overrides.idFormat ?? DEFAULT_CERTIFICATE_DESIGN.idFormat
   };

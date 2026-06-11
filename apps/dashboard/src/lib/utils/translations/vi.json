@@ -352,7 +352,8 @@
       "thumbnail_regen_started": "Đang tạo lại hình thu nhỏ…",
       "thumbnail_regen_failed": "Không thể tạo lại hình thu nhỏ",
       "transcript_saved": "Đã cập nhật bản ghi",
-      "transcript_save_failed": "Không thể lưu bản ghi"
+      "transcript_save_failed": "Không thể lưu bản ghi",
+      "transcription_already_running": "Công việc chép lời đang được thực hiện cho video này"
     },
     "tags": {
       "group_created": "Đã tạo nhóm thẻ",
@@ -743,6 +744,10 @@
         "drag": "Kéo và thả nhãn để sắp xếp lại các tab tài liệu của bạn",
         "content_grouping_title": "Nhóm nội dung",
         "content_grouping_description": "Nhóm các bài học, bài tập theo từng phần trong danh sách nội dung.",
+        "progression_mode_title": "Tiến trình học viên",
+        "progression_mode_description": "Kiểm soát học viên có thể truy cập mọi nội dung đã mở khóa hay phải hoàn thành theo thứ tự.",
+        "progression_mode_free": "Tự do — nội dung đã mở khóa có thể truy cập",
+        "progression_mode_sequential": "Tuần tự — hoàn thành mục trước để mở mục tiếp theo",
         "lesson_download": "Bài học Tải về",
         "available": "Cung cấp Bài học để tải xuống dưới dạng pdf cho học viên đã đăng ký",
         "course_download": "Tải xuống khóa học",
@@ -1022,7 +1027,14 @@
           "field_template": "mẫu",
           "field_accent": "Giọng",
           "field_signatories": "Người ký",
-          "customize_design": "Tùy chỉnh thiết kế"
+          "customize_design": "Tùy chỉnh thiết kế",
+          "signatory_one_toggle": "Hiển thị người ký 1",
+          "signatory_two_toggle": "Hiển thị người ký 2",
+          "signature_upload": "Hình ảnh chữ ký",
+          "signature_upload_hint": "Tải lên hình ảnh chữ ký (tùy chọn)",
+          "signature_dont_crop": "Đừng cắt xén",
+          "signature_upload_in_progress": "Đợi quá trình tải lên chữ ký hoàn tất trước khi lưu.",
+          "save_failed": "Không thể lưu thiết kế chứng chỉ. Hãy kiểm tra biểu mẫu và thử lại."
         }
       },
       "people": {
@@ -1758,7 +1770,11 @@
               "collapse_section": "Thu gọn phần",
               "expand_section": "Mở rộng phần"
             },
-            "more": "hành động"
+            "more": "hành động",
+            "settings_completion_policy": "Quy tắc hoàn thành",
+            "settings_completion_submitted": "Đã gửi - mọi lần gửi đều được tính",
+            "settings_completion_passed": "Đạt - yêu cầu điểm tối thiểu",
+            "settings_pass_threshold": "Ngưỡng vượt qua (%)"
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",
@@ -1803,6 +1819,9 @@
           "button": "nút",
           "button_done": "Xong",
           "tabs": {
+            "settings": {
+              "title": "Cài đặt"
+            },
             "document": {
               "title": "Tài liệu",
               "add_document": "Thêm tài liệu",
@@ -1918,7 +1937,8 @@
                 "kind_google_drive": "Google Drive",
                 "kind_generic": "Đã nhúng",
                 "course_fallback": "Khóa học",
-                "menu_aria": "Tùy chọn video"
+                "menu_aria": "Tùy chọn video",
+                "transcription_in_progress": "(Đang tạo bản ghi)"
               },
               "view_transcript": "Xem bản chép lời",
               "playback_error": "Tải video này không thành công.",
@@ -1926,7 +1946,8 @@
               "generate_1080": "Tạo 1080p",
               "generate_1080_in_progress": "Đang tạo 1080p…",
               "generate_1080_ready": "1080p có sẵn",
-              "generate_1080_unavailable": "1080p không có sẵn cho video nguồn này"
+              "generate_1080_unavailable": "1080p không có sẵn cho video nguồn này",
+              "loading": "Đang tải video…"
             },
             "slide": {
               "title": "Trượt",
@@ -1985,6 +2006,38 @@
         },
         "content_locked_title": "Nội dung này đã bị khóa",
         "content_locked_description": "Người hướng dẫn của bạn chưa mở khóa nội dung này. Hoàn thành nội dung trước đó hoặc kiểm tra lại sau.",
+        "content_progression_locked_title": "Hoàn thành nội dung trước đó trước",
+        "content_progression_locked_description": "Nội dung này mở khóa sau khi bạn hoàn thành mục bắt buộc trước đó trong khóa học.",
+        "content_progression_locked_description_lesson": "Bài học này mở khóa sau khi bạn hoàn thành mục bắt buộc trước đó trong khóa học.",
+        "content_progression_locked_description_exercise": "Bài tập này mở khóa sau khi bạn hoàn thành mục bắt buộc trước đó trong khóa học.",
+        "completion_policy": {
+          "label": "Quy tắc hoàn thành",
+          "manual_label": "Thủ công",
+          "manual_description": "Học viên tự đánh dấu bài học là hoàn thành.",
+          "video_watch_label": "Xem video",
+          "video_watch_description": "Bài học tự hoàn thành sau khi học viên xem các video đã chọn.",
+          "none_label": "Không",
+          "none_description": "Bài học này không chặn tiến trình khóa học.",
+          "watch_threshold": "Ngưỡng xem (%)"
+        },
+        "settings": {
+          "progression": {
+            "heading": "Tiến trình",
+            "intro": "Chọn cách học viên hoàn thành bài học này và đi qua khóa học.",
+            "option_guide_heading": "Ý nghĩa từng tùy chọn",
+            "watch_videos_heading": "Video cần áp dụng",
+            "watch_videos_helper": "Chỉ video đã tải lên mới có thể áp dụng. YouTube và nhúng bên ngoài không thể theo dõi.",
+            "watch_videos_empty": "Thêm video đã tải lên trong tab Video để dùng theo dõi xem.",
+            "watch_videos_required": "Chọn ít nhất một video khi dùng theo dõi xem.",
+            "students_only_note": "Các quy tắc này chỉ áp dụng cho học viên. Giảng viên có thể xem trước và điều hướng tự do."
+          }
+        },
+        "watch_progress": {
+          "status": "Đã xem {percent}% nội dung video",
+          "videos_complete": "Đã xem {percent}% nội dung video bắt buộc ({complete}/{required} video)",
+          "seek_blocked": "Bạn không thể tua vượt trong video này",
+          "complete_via_watch": "Bài học hoàn thành khi bạn xem đủ video"
+        },
         "saving": "Đang lưu…",
         "saved": "Đã lưu",
         "draft_recovery": "Đã tìm thấy một bản nháp chưa được lưu cho bài học này. Bạn có muốn khôi phục nó không?",

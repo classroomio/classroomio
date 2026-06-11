@@ -1,4 +1,10 @@
-import { escapeHtml, type TemplateRenderer } from './shared';
+import {
+  escapeHtml,
+  renderFooterMetaBlock,
+  renderSignatoryBlock,
+  SIGNATURE_IMAGE_STYLES,
+  type TemplateRenderer
+} from './shared';
 
 export const renderMinimal: TemplateRenderer = ({ design, data }) => {
   const accent = design.accentColor;
@@ -8,7 +14,6 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
 
   const body = `
     <div class="cert t-minimal">
-      <span class="accent-bar" aria-hidden="true"></span>
       <div class="top">
         <span>${escapeHtml(data.orgName)}</span>
         <span>${escapeHtml(data.certificateId)} &middot; ${escapeHtml(data.date)}</span>
@@ -23,22 +28,10 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
         <div class="description">${escapeHtml(description)}</div>
       </div>
       <div class="footer">
-        <div>
-          <div class="k">${escapeHtml(signatoryOne.role)}</div>
-          <div class="v">${escapeHtml(signatoryOne.name)}</div>
-        </div>
-        <div>
-          <div class="k">${escapeHtml(signatoryTwo.role)}</div>
-          <div class="v">${escapeHtml(signatoryTwo.name)}</div>
-        </div>
-        <div>
-          <div class="k">Issued</div>
-          <div class="v">${escapeHtml(data.date)}</div>
-        </div>
-        <div class="ref">
-          <div class="k">Reference</div>
-          <div class="v">${escapeHtml(data.certificateId)}</div>
-        </div>
+        ${renderSignatoryBlock(signatoryOne, { nameClass: 'v', roleClass: 'k', roleFirst: true })}
+        ${renderSignatoryBlock(signatoryTwo, { nameClass: 'v', roleClass: 'k', roleFirst: true })}
+        ${renderFooterMetaBlock('Issued', data.date, { labelClass: 'k', valueClass: 'v' })}
+        ${renderFooterMetaBlock('Reference', data.certificateId, { wrapperClass: 'ref', labelClass: 'k', valueClass: 'v' })}
       </div>
     </div>
   `;
@@ -52,14 +45,7 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
       display: flex;
       flex-direction: column;
       position: relative;
-    }
-    .t-minimal .accent-bar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 12px;
-      height: 100%;
-      background: ${accent};
+      border-left: 12px solid ${accent};
     }
     .t-minimal .top {
       display: flex;
@@ -145,10 +131,19 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
     .t-minimal .footer {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
+      align-items: end;
       gap: 30px;
       padding-top: 20px;
       border-top: 1px solid #0a0a0a;
       font-family: 'JetBrains Mono', monospace;
+    }
+    .t-minimal .footer .sig-content,
+    .t-minimal .footer .sig-text {
+      align-items: flex-start;
+      text-align: left;
+    }
+    .t-minimal .footer .sig-img-slot {
+      justify-content: flex-start;
     }
     .t-minimal .footer .k {
       font-size: 9px;
@@ -165,6 +160,7 @@ export const renderMinimal: TemplateRenderer = ({ design, data }) => {
     }
     .t-minimal .footer .ref .k { color: ${accent}; }
     .t-minimal .footer .ref .v { color: ${accent}; }
+    ${SIGNATURE_IMAGE_STYLES}
   `;
 
   return { body, styles };

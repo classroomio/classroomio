@@ -7,8 +7,11 @@
   import { t } from '$lib/utils/functions/translations';
   import { sidePanel } from '$features/side-panel';
   import { classroomio } from '$lib/utils/services/api';
+  import { lessonApi } from '$features/course/api';
+  import { snackbar } from '$features/ui/snackbar/store';
   import type { AssetTranscriptPayload } from '$features/media/utils/types';
-  import type { LessonVideo } from './video-card-utils';
+  import { isOrgStudent } from '$lib/utils/store/app';
+  import { resolveWatchEnforcedAssetIds, type LessonVideo } from './video-card-utils';
   import { lessonVideoBus } from './lesson-video-bus.svelte';
   import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
 
@@ -83,9 +86,11 @@
 
   interface Props {
     video: LessonVideo;
+    courseId: string;
+    lessonId: string;
   }
 
-  let { video }: Props = $props();
+  let { video, courseId, lessonId }: Props = $props();
 
   let localTranscript = $state<AssetTranscriptPayload | null>(null);
   let localTranscriptLoading = $state(false);
@@ -310,10 +315,75 @@
     jobPoller.start();
   }
 
+  const isEnforceableUpload = $derived(video.type === 'upload' || isHls);
+
+  const isWatchEnforcedForVideo = $derived.by(() => {
+    const lesson = lessonApi.lesson;
+    if (!lesson || !uploadAssetId || !isEnforceableUpload) return false;
+
+    const enforcedAssetIds = resolveWatchEnforcedAssetIds(lesson.videos, lesson.completionPolicy);
+
+    return enforcedAssetIds.includes(uploadAssetId);
+  });
+
+  const assetWatchProgress = $derived.by(() => {
+    const lesson = lessonApi.lesson;
+    if (!lesson?.watchProgress?.assets || !uploadAssetId) return null;
+
+    return lesson.watchProgress.assets.find((asset) => asset.assetId === uploadAssetId) ?? null;
+  });
+
+  const seekPolicy = $derived.by(() => {
+    const lesson = lessonApi.lesson;
+    if (!$isOrgStudent || !lesson || lesson.completionPolicy !== 'video_watch' || !isWatchEnforcedForVideo) {
+      return undefined;
+    }
+
+    if (assetWatchProgress?.isComplete) {
+      return undefined;
+    }
+
+    return {
+      mode: 'locked_until_complete' as const,
+      watchThresholdPercent: lesson.videoWatchThreshold ?? 95,
+      initialFurthestSeconds: assetWatchProgress?.furthestSeconds ?? 0,
+      pauseOnHidden: true,
+      onProgress: (payload: { positionSeconds: number; playedDeltaSeconds: number; durationSeconds: number }) => {
+        if (!uploadAssetId) return;
+
+        void lessonApi.reportWatchProgress(courseId, lessonId, {
+          ...payload,
+          assetId: uploadAssetId
+        });
+      },
+      onSeekBlocked: () => {
+        snackbar.error('course.navItem.lessons.watch_progress.seek_blocked');
+      }
+    };
+  });
+
+  async function restoreWatchProgress(): Promise<void> {
+    if (!$isOrgStudent || !uploadAssetId) return;
+
+    const cachedAsset = assetWatchProgress;
+    if (cachedAsset?.lastPositionSeconds && cachedAsset.lastPositionSeconds > 0) {
+      pendingResumeSeconds = cachedAsset.lastPositionSeconds;
+      return;
+    }
+
+    const progress = await lessonApi.getWatchProgress(courseId, lessonId);
+    const assetProgress = progress?.assets?.find((asset) => asset.assetId === uploadAssetId);
+    if (assetProgress?.lastPositionSeconds && assetProgress.lastPositionSeconds > 0) {
+      pendingResumeSeconds = assetProgress.lastPositionSeconds;
+    }
+  }
+
   onMount(() => {
     if (lessonVideoBus.assetId === null || lessonVideoBus.assetId === uploadAssetId) {
       syncVideoBus();
     }
+
+    void restoreWatchProgress();
 
     void (async () => {
       await loadTranscript();
@@ -399,9 +469,11 @@
       onSourceLoaded: handleSourceLoaded,
       onBeforeHlsLoad: isHls && uploadAssetId ? () => mintHlsCookie(uploadAssetId) : undefined,
       transcriptPanelControl,
+      loadingLabel: $t('course.navItem.lessons.materials.tabs.video.loading'),
       playbackErrorLabel: $t('course.navItem.lessons.materials.tabs.video.playback_error'),
       playbackReloadLabel: $t('course.navItem.lessons.materials.tabs.video.playback_reload'),
-      onPlaybackReload: handlePlaybackReload
+      onPlaybackReload: handlePlaybackReload,
+      seekPolicy
     }}
   />
 </div>
