@@ -1,0 +1,132 @@
+name: 'QA Bug'
+description: Internal QA bug found while walking a flow checklist. Include a screen recording.
+title: '[area] '
+labels: ['qa', 'bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For bugs found during QA walkthroughs (see `qa/`). A **screen recording is required**.
+        Set the **Severity** and **Difficulty** labels after creating the issue (see `qa/README.md`).
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How bad is it? (drives fix order — S0 first)
+      options:
+        - S0 — Blocker (flow impossible / data loss / security / crash / payments broken)
+        - S1 — Major (core feature broken, no reasonable workaround)
+        - S2 — Minor (works but wrong/confusing; workaround exists)
+        - S3 — Polish (cosmetic / copy / layout / edge-only)
+    validations:
+      required: true
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Difficulty
+      description: Rough fix effort (drives planning / batching)
+      options:
+        - Easy (<1h, localized)
+        - Medium (hours, single area)
+        - Hard (cross-cutting / unknown root cause)
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - auth
+        - signup / onboarding
+        - organizations / settings
+        - people / invites / roles
+        - courses
+        - lessons
+        - exercises / grading
+        - compliance / certificates
+        - programs / attendance
+        - community / newsfeed
+        - media / import
+        - org public site / website
+        - tags / domains / widgets
+        - public API / MCP / automation
+        - SSO / token auth / licensing
+        - billing / AI credits
+        - AI assistant / tutor
+        - email / jobs / analytics
+        - other
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Local (pnpm dev)
+        - Staging (Coolify)
+        - Production (cloud)
+        - Self-hosted
+    validations:
+      required: true
+  - type: input
+    id: flow-ref
+    attributes:
+      label: Flow reference
+      description: Which checklist + step uncovered this?
+      placeholder: 'qa/flows/02-course-authoring.md — step 7'
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered, from a known starting state.
+      placeholder: |
+        1. Log in as admin (admin@test.com)
+        2. Courses → New course
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include console/network errors if any.
+    validations:
+      required: true
+  - type: textarea
+    id: video
+    attributes:
+      label: Screen recording (required)
+      description: Drag-and-drop a short video reproducing the bug.
+    validations:
+      required: true
+  - type: input
+    id: sentry
+    attributes:
+      label: Sentry link (if applicable)
+      description: Paste the Sentry issue URL if this maps to a captured error.
+  - type: dropdown
+    id: mode-specific
+    attributes:
+      label: Mode-specific?
+      description: Does this only happen in one deployment mode? (PUBLIC_IS_SELFHOSTED divergence)
+      options:
+        - 'No — happens in both / not mode-related'
+        - 'Cloud only'
+        - 'Self-hosted only'
+        - 'Not yet verified in the other mode'
+  - type: checkboxes
+    attributes:
+      label: Before filing
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+        - label: I attached a screen recording.
+        - label: I will apply the matching `severity:*` and `difficulty:*` labels.
+        - label: I linked this issue # in the relevant qa/flows step.

@@ -6,13 +6,14 @@
     "start": "turbo run start",
     "dev": "turbo prepare --concurrency 13 && turbo run dev",
     "lint": "turbo run lint",
-    "clean": "turbo clean && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "clean": "turbo clean && rimraf --glob \"**/node_modules\"",
     "clean:pnpm": "pnpm clean && pnpm store prune",
     "format": "turbo run format",
-    "format:check": "git diff --name-only -z --diff-filter=d HEAD~1 | xargs -0 -I{} sh -c '[ ! -L \"{}\" ] && printf \"%s\\0\" \"{}\"' | xargs -0 prettier --check --ignore-unknown",
-    "postinstall": "test -d .git && lefthook install || true",
+    "format:check": "node scripts/format-check.mjs",
+    "postinstall": "node scripts/postinstall.mjs",
     "release": "standard-version",
     "db:reset": "pnpm --filter @cio/db db:reset",
+    "db:studio": "pnpm --filter @cio/db db:studio",
     "dashboard:dev": "pnpm concurrently -n dashboard,ui -c blue,yellow \"pnpm --filter=@cio/dashboard run dev\" \"pnpm --filter=@cio/ui run dev\"",
     "api:dev": "pnpm concurrently -n api,jobs -c blue,yellow \"pnpm --filter=@cio/api run dev\" \"pnpm --filter=@cio/jobs-worker run dev\"",
     "jobs:dev": "pnpm --filter=@cio/jobs-worker run dev",
@@ -23,7 +24,9 @@
     "embeds:dev": "pnpm --filter=@cio/embeds --filter=@cio/ui run dev",
     "storybook:dev": "pnpm --filter=@cio/storybook --filter=@cio/ui --filter=@cio/question-types run dev",
     "mcp:build": "pnpm --filter=@classroomio/mcp run build",
-    "db:push": "pnpm --filter @cio/db db push"
+    "db:push": "pnpm --filter @cio/db db push",
+    "docker:start": "docker compose -f docker/docker-compose.yaml up -d postgres redis",
+    "docker:build": "docker compose -f docker/docker-compose.yaml up --build -d postgres redis"
   },
   "license": "MIT",
   "dependencies": {
@@ -39,6 +42,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-svelte": "^3.4.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "rimraf": "^6.0.1",
     "standard-version": "^9.5.0",
     "typescript": "^5.1.6"
   },

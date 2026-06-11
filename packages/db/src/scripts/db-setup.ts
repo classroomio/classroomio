@@ -22,7 +22,10 @@ async function runPnpmCommand(commandLabel: string, args: string[]) {
     const child = spawn(pnpmBinary, args, {
       cwd: packageRoot,
       env: process.env,
-      stdio: 'inherit'
+      stdio: 'inherit',
+      // On Windows, spawning the pnpm.cmd shim requires a shell since Node's
+      // CVE-2024-27980 fix (spawning .cmd/.bat without shell throws EINVAL).
+      shell: process.platform === 'win32'
     });
 
     child.on('error', (error) => {
