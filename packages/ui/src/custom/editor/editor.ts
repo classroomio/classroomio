@@ -37,7 +37,11 @@ export default (
         link: {
           openOnClick: false,
           autolink: true,
-          linkOnPaste: true
+          linkOnPaste: true,
+          HTMLAttributes: {
+            target: '_blank',
+            rel: 'noopener noreferrer nofollow'
+          }
         },
         codeBlock: false
       }),

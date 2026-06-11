@@ -16,6 +16,7 @@
   import PinIcon from '@lucide/svelte/icons/pin';
   import { BookIcon } from '@lucide/svelte';
   import { buildNextNewsfeedReaction, type NewsfeedReactionType } from '@cio/ui/custom/newsfeed-reactions';
+  import { preloadTextEditor } from '$features/ui';
 
   interface Props {
     data: {
@@ -106,6 +107,7 @@
   };
 
   onMount(async () => {
+    void preloadTextEditor();
     await loadNewsfeed();
   });
 </script>
@@ -117,7 +119,7 @@
     </Page.HeaderContent>
     <Page.Action>
       {#if canCreateNewsfeed}
-        <Button onclick={() => programNewsfeedApi.openNewFeedModal()}>
+        <Button onmouseenter={() => preloadTextEditor()} onclick={() => programNewsfeedApi.openNewFeedModal()}>
           {$t('programs.newsfeed.post')}
         </Button>
       {/if}
@@ -143,7 +145,7 @@
           variant="page"
         >
           {#if canCreateNewsfeed}
-            <Button onclick={() => programNewsfeedApi.openNewFeedModal()}>
+            <Button onmouseenter={() => preloadTextEditor()} onclick={() => programNewsfeedApi.openNewFeedModal()}>
               {$t('programs.newsfeed.post')}
             </Button>
           {/if}

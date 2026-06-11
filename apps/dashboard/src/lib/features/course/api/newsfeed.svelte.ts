@@ -23,7 +23,7 @@ import {
 } from '@cio/utils/validation/newsfeed';
 
 import { get } from 'svelte/store';
-import { getTextFromHTML } from '$lib/utils/functions/toHtml';
+import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { profile } from '$lib/utils/store/user';
 import { snackbar } from '$features/ui/snackbar/store';
@@ -109,7 +109,15 @@ export class NewsfeedApi extends BaseApiWithErrors {
    * Creates a new newsfeed item
    */
   async create(courseId: string, fields: TNewsfeedCreate) {
-    const result = ZNewsfeedCreate.safeParse({ ...fields, content: getTextFromHTML(fields.content), courseId });
+    if (isHtmlValueEmpty(fields.content)) {
+      this.errors = mapZodErrorsToTranslations(
+        ZNewsfeedCreate.safeParse({ ...fields, content: '', courseId }).error!,
+        'newsfeed'
+      );
+      return;
+    }
+
+    const result = ZNewsfeedCreate.safeParse({ ...fields, courseId });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'newsfeed');
       return;
@@ -160,10 +168,15 @@ export class NewsfeedApi extends BaseApiWithErrors {
    * Updates a newsfeed item (content and isPinned only)
    */
   async update(courseId: string, feedId: string, fields: TNewsfeedUpdate) {
-    const result = ZNewsfeedUpdate.safeParse({
-      ...fields,
-      content: getTextFromHTML(fields.content ?? '')
-    });
+    if (fields.content !== undefined && isHtmlValueEmpty(fields.content)) {
+      this.errors = mapZodErrorsToTranslations(
+        ZNewsfeedUpdate.safeParse({ ...fields, content: '' }).error!,
+        'newsfeed'
+      );
+      return;
+    }
+
+    const result = ZNewsfeedUpdate.safeParse(fields);
 
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'newsfeed');

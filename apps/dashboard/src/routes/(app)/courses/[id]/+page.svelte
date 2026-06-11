@@ -1,10 +1,11 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { NewsFeedPage } from '$features/course/pages';
   import { Button } from '@cio/ui/base/button';
   import * as Page from '@cio/ui/base/page';
-  import { RefreshPageData, RoleBasedSecurity } from '$features/ui';
+  import { RefreshPageData, RoleBasedSecurity, preloadTextEditor } from '$features/ui';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import type { AccountOrg } from '$features/app/types';
@@ -21,6 +22,10 @@
 
     return roles;
   }
+
+  onMount(() => {
+    void preloadTextEditor();
+  });
 </script>
 
 <RoleBasedSecurity
@@ -38,7 +43,7 @@
       </Page.HeaderContent>
       <Page.Action>
         <div class="flex items-center gap-2">
-          <Button onclick={() => newsfeedApi.openNewFeedModal()}>
+          <Button onmouseenter={() => preloadTextEditor()} onclick={() => newsfeedApi.openNewFeedModal()}>
             {$t('course.navItem.news_feed.heading_button.title')}
           </Button>
           <RefreshPageData onRefresh={() => newsfeedApi.list(data.courseId)} />
