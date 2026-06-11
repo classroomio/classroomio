@@ -58,6 +58,12 @@ export const baseNavConfig: NavItemConfig[] = [
     matchPattern: '^/lms/mylearning(/.*)?$'
   },
   {
+    titleKey: 'lms_navigation.explore',
+    path: '/explore',
+    icon: ExploreIcon,
+    matchPattern: '^/lms/explore(/.*)?$'
+  },
+  {
     titleKey: 'lms_navigation.programs',
     path: '/programs',
     icon: GoalIcon,
@@ -76,19 +82,13 @@ export const baseNavConfig: NavItemConfig[] = [
     icon: CommunityIcon,
     matchPattern: '^/lms/community(/.*)?$',
     show: (currentOrg) => currentOrg?.customization?.dashboard?.community === true,
-    supportsDynamicSegment: true, // Supports /community/[slug]
+    supportsDynamicSegment: true,
     nestedRoutes: [
       {
         path: 'ask',
-        titleKey: 'Ask Question' // Could be translated
+        titleKey: 'Ask Question'
       }
     ]
-  },
-  {
-    titleKey: 'lms_navigation.explore',
-    path: '/explore',
-    icon: ExploreIcon,
-    matchPattern: '^/lms/explore(/.*)?$'
   },
   {
     titleKey: 'lms_navigation.settings',

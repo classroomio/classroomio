@@ -649,7 +649,7 @@ export async function enrollInCourse(
     return {
       success: true,
       alreadyJoined: true,
-      redirectTo: '/lms'
+      redirectTo: `/courses/${courseId}/lessons?next=true`
     };
   }
 
@@ -692,7 +692,7 @@ export async function enrollInCourse(
   return {
     success: true,
     alreadyJoined: false,
-    redirectTo: '/lms'
+    redirectTo: `/courses/${courseId}/lessons?next=true`
   };
 }
 
@@ -1056,6 +1056,6 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
   return {
     success: true,
     alreadyJoined: result.alreadyJoined,
-    redirectTo: '/lms'
+    redirectTo: `/courses/${result.courseId}/lessons?next=true`
   };
 }

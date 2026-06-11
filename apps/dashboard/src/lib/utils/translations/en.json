@@ -2201,6 +2201,38 @@
         "no_lesson": "No lessons yet",
         "content_locked_title": "This content is locked",
         "content_locked_description": "Your instructor has not unlocked this content yet. Complete previous content or check back later.",
+        "content_progression_locked_title": "Complete previous content first",
+        "content_progression_locked_description": "This content unlocks after you finish the previous required item in the course.",
+        "content_progression_locked_description_lesson": "This lesson unlocks after you finish the previous required item in the course.",
+        "content_progression_locked_description_exercise": "This exercise unlocks after you finish the previous required item in the course.",
+        "completion_policy": {
+          "label": "Completion rule",
+          "manual_label": "Manual",
+          "manual_description": "Students mark the lesson complete themselves.",
+          "video_watch_label": "Video watch",
+          "video_watch_description": "The lesson completes automatically after students watch the selected videos.",
+          "none_label": "None",
+          "none_description": "This lesson does not block course progression.",
+          "watch_threshold": "Watch threshold (%)"
+        },
+        "settings": {
+          "progression": {
+            "heading": "Progression",
+            "intro": "Choose how students complete this lesson and move through the course.",
+            "option_guide_heading": "What each option means",
+            "watch_videos_heading": "Videos to enforce",
+            "watch_videos_helper": "Only uploaded videos can be enforced. YouTube and external embeds cannot be tracked.",
+            "watch_videos_empty": "Add an uploaded video in the Video tab to use watch enforcement.",
+            "watch_videos_required": "Select at least one video when using video watch.",
+            "students_only_note": "These rules apply to students only. You can preview and navigate freely while teaching."
+          }
+        },
+        "watch_progress": {
+          "status": "Watched {percent}% of the video content",
+          "videos_complete": "Watched {percent}% of the required video content ({complete} of {required} videos)",
+          "seek_blocked": "You cannot skip ahead on this video",
+          "complete_via_watch": "This lesson completes when you watch enough of the video"
+        },
         "share_your_knowledge": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
         "section_prompt": {
           "cta": "Enable Sections",
@@ -2297,6 +2329,9 @@
               "slide_link": "Slide Link",
               "helper_message": "You can embed Google Slides or Canva Presentation"
             },
+            "settings": {
+              "title": "Settings"
+            },
             "video": {
               "title": "Video",
               "embed_link": "Embed Link",
@@ -2362,13 +2397,15 @@
               "generate_1080_unavailable": "1080p unavailable for this source video",
               "playback_error": "Loading this video failed.",
               "playback_reload": "Reload video",
+              "loading": "Loading video…",
               "simple_card": {
                 "kind_youtube": "YouTube",
                 "kind_upload": "Upload",
                 "kind_google_drive": "Google Drive",
                 "kind_generic": "Embedded",
                 "course_fallback": "Course",
-                "menu_aria": "Video options"
+                "menu_aria": "Video options",
+                "transcription_in_progress": "(Transcript generation in progress)"
               },
               "transcript": {
                 "title": "Transcript",
@@ -2471,6 +2508,10 @@
             "settings": "Settings",
             "settings_allow_multiple": "Allow multiple attempts",
             "settings_allow_multiple_helper": "Students can submit more than once and review past attempts on the results screen.",
+            "settings_completion_policy": "Completion rule",
+            "settings_completion_submitted": "Submitted — any submission counts",
+            "settings_completion_passed": "Passed — minimum score required",
+            "settings_pass_threshold": "Pass threshold (%)",
             "settings_save": "Save settings",
             "submissions": "Submissions",
             "save": "Save",
@@ -3297,6 +3338,13 @@
           "signatory_one_role": "Signatory 1 role",
           "signatory_two_name": "Signatory 2 name",
           "signatory_two_role": "Signatory 2 role",
+          "signatory_one_toggle": "Show signatory 1",
+          "signatory_two_toggle": "Show signatory 2",
+          "signature_upload": "Signature image",
+          "signature_upload_hint": "Upload a signature image (optional)",
+          "signature_dont_crop": "Don't Crop",
+          "signature_upload_in_progress": "Wait for the signature upload to finish before saving.",
+          "save_failed": "Could not save the certificate design. Check the form and try again.",
           "id_format": "Certificate ID format",
           "id_format_hint": "Use '{'seq'}' for the last four digits, '{'year'}' for the issue year, '{'month'}' for the month.",
           "accent_hint": "Accent color appears on the recipient rule, stamps, and the template's headline highlight.",
@@ -3486,6 +3534,10 @@
         "drag": "Drag and drop the labels to re-order your material tabs",
         "content_grouping_title": "Content grouping",
         "content_grouping_description": "Group lessons and exercises by section in the content list.",
+        "progression_mode_title": "Student progression",
+        "progression_mode_description": "Control whether students can access all unlocked content or must complete items in order.",
+        "progression_mode_free": "Free — unlocked content is accessible",
+        "progression_mode_sequential": "Sequential — complete prior items to unlock next",
         "lesson_download": "Lessons DownLoad",
         "available": "Make the Lesson available for Download in pdf for registered students",
         "course_download": "Course Downlaod",
@@ -3985,6 +4037,7 @@
       "thumbnail_regen_failed": "Failed to regenerate thumbnails",
       "transcription_started": "Transcription started",
       "transcription_start_failed": "Could not start transcription",
+      "transcription_already_running": "A transcription job is already in progress for this video",
       "transcription_completed": "Transcription finished",
       "transcript_fetch_failed": "Could not load transcript",
       "transcript_saved": "Transcript updated",

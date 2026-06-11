@@ -158,7 +158,8 @@
         grading: $settings.grading,
         lessonDownload: $settings.lessonDownload,
         allowNewStudent: $settings.allowNewStudents ?? false,
-        isContentGroupingEnabled: $settings.isContentGroupingEnabled
+        isContentGroupingEnabled: $settings.isContentGroupingEnabled,
+        progressionMode: $settings.progressionMode
       } as NonNullable<Course['metadata']>;
 
       const updatedCourse = {
@@ -222,6 +223,7 @@
         isPublished: !!course.isPublished,
         allowNewStudents: !!course.metadata?.allowNewStudent,
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
+        progressionMode: course.metadata?.progressionMode ?? 'free',
         callout: normalizeCallout(course.callout)
       });
     });
@@ -523,6 +525,35 @@
   <Field.Separator />
 
   <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.progression_mode_title')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.progression_mode_description')}</Field.Description>
+    <Field.Field>
+      <RadioGroup.Root
+        value={$settings.progressionMode}
+        onValueChange={(value) => {
+          if (value === 'free' || value === 'sequential') {
+            $settings.progressionMode = value;
+            hasUnsavedChanges = true;
+          }
+        }}
+      >
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center gap-2">
+            <RadioGroup.Item value="free" id="progression-free" />
+            <Label for="progression-free">{$t('course.navItem.settings.progression_mode_free')}</Label>
+          </div>
+          <div class="flex items-center gap-2">
+            <RadioGroup.Item value="sequential" id="progression-sequential" />
+            <Label for="progression-sequential">{$t('course.navItem.settings.progression_mode_sequential')}</Label>
+          </div>
+        </div>
+      </RadioGroup.Root>
+    </Field.Field>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
     <Field.Legend>{$t('course.navItem.settings.lesson_download')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.available')}</Field.Description>
     <Field.Field>
@@ -737,6 +768,7 @@
         checked={$settings.isPublished}
         onCheckedChange={(checked) => {
           $settings.isPublished = checked;
+          if (checked) $settings.allowNewStudents = true;
           hasUnsavedChanges = true;
         }}
       />

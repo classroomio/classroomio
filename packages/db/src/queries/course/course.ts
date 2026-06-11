@@ -1023,6 +1023,12 @@ interface GetExploreCoursesOptions {
   orgId: string;
   profileId: string;
   limit?: number;
+  page?: number;
+}
+
+export interface GetExploreCoursesResult {
+  data: TBaseCourse[];
+  total: number;
 }
 
 /**
@@ -1031,25 +1037,40 @@ interface GetExploreCoursesOptions {
  * @param options.orgId Organization ID
  * @param options.profileId Profile ID to exclude enrolled courses
  * @param options.limit Optional max number of courses to return
- * @returns Array of courses with explore-level data
+ * @param options.page Optional page number (1-based, used with limit)
+ * @returns Courses with explore-level data and total count
  */
 export const getExploreCourses = async ({
   orgId,
   profileId,
-  limit
-}: GetExploreCoursesOptions): Promise<TBaseCourse[]> => {
+  limit,
+  page = 1
+}: GetExploreCoursesOptions): Promise<GetExploreCoursesResult> => {
   try {
-    const baseQuery = db
-      .select({
-        course: schema.course,
-        lessonCount: sql<number>`COUNT(DISTINCT ${schema.lesson.id})`.as('total_lessons'),
-        exerciseCount: sql<number>`(
-          SELECT COUNT(*)::bigint
-          FROM ${schema.exercise} as ex
-          LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
-          WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
-        )`.as('exercise_count')
-      })
+    const whereCondition = and(
+      eq(schema.group.organizationId, orgId),
+      eq(schema.course.status, 'ACTIVE'),
+      eq(schema.course.isPublished, true),
+      isNull(schema.groupmember.id),
+      or(
+        sql`${schema.course.metadata}->>'allowNewStudent' IS NULL`,
+        sql`${schema.course.metadata}->>'allowNewStudent' != 'false'`
+      )
+    );
+
+    const courseSelect = {
+      course: schema.course,
+      lessonCount: sql<number>`COUNT(DISTINCT ${schema.lesson.id})`.as('total_lessons'),
+      exerciseCount: sql<number>`(
+        SELECT COUNT(*)::bigint
+        FROM ${schema.exercise} as ex
+        LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
+        WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
+      )`.as('exercise_count')
+    };
+
+    const baseSelect = db
+      .select(courseSelect)
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
       .leftJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId))
@@ -1057,24 +1078,33 @@ export const getExploreCourses = async ({
         schema.groupmember,
         and(eq(schema.groupmember.groupId, schema.course.groupId), eq(schema.groupmember.profileId, profileId))
       )
-      .where(
-        and(
-          eq(schema.group.organizationId, orgId),
-          eq(schema.course.status, 'ACTIVE'),
-          eq(schema.course.isPublished, true),
-          isNull(schema.groupmember.id)
-        )
-      )
+      .where(whereCondition)
       .groupBy(schema.course.id, schema.group.id)
       .orderBy(desc(schema.course.createdAt));
 
-    const result = limit ? await baseQuery.limit(limit) : await baseQuery;
+    const countSelect = db
+      .select({ total: count(schema.course.id) })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .leftJoin(
+        schema.groupmember,
+        and(eq(schema.groupmember.groupId, schema.course.groupId), eq(schema.groupmember.profileId, profileId))
+      )
+      .where(whereCondition);
 
-    return result.map((row) => ({
-      ...row.course,
-      lessonCount: Number(row.lessonCount),
-      exerciseCount: Number(row.exerciseCount)
-    }));
+    const [countRows, rows] = await Promise.all([
+      countSelect,
+      limit ? baseSelect.limit(limit).offset((page - 1) * limit) : baseSelect
+    ]);
+
+    return {
+      data: rows.map((row) => ({
+        ...row.course,
+        lessonCount: Number(row.lessonCount),
+        exerciseCount: Number(row.exerciseCount)
+      })),
+      total: Number(countRows[0]?.total ?? 0)
+    };
   } catch (error) {
     console.error('getExploreCourses error:', error);
     throw new Error(`Failed to get explore courses: ${error instanceof Error ? error.message : 'Unknown error'}`);

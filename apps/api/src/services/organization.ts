@@ -469,9 +469,9 @@ export async function getUserEnrolledCourses(orgId: string, userId: string) {
  * @param userId - User ID to exclude enrolled courses
  * @returns Array of recommended courses
  */
-export async function getRecommendedCourses(orgId: string, userId: string, limit?: number) {
+export async function getRecommendedCourses(orgId: string, userId: string, limit?: number, page?: number) {
   try {
-    return getExploreCourses({ orgId, profileId: userId, limit });
+    return getExploreCourses({ orgId, profileId: userId, limit, page });
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(

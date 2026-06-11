@@ -21,6 +21,9 @@ export class CoursesApi extends BaseApiWithErrors {
   orgCoursesPagination = $state<OrgCoursesPagination | null>(null);
   enrolledCourses = $state<UserEnrolledCourses>([]);
   recommendedCourses = $state<RecommendedCourses>([]);
+  recommendedCoursesPagination = $state<{ page: number; limit: number; total: number; totalPages: number } | null>(
+    null
+  );
   private activeOrgCoursesRequestController: AbortController | null = null;
 
   cancelOrgCoursesRequest() {
@@ -135,16 +138,23 @@ export class CoursesApi extends BaseApiWithErrors {
    * Fetches recommended courses (published courses user isn't enrolled in) for the current organization
    * Org ID is automatically added from currentOrg store
    */
-  async getRecommendedCourses(options?: { limit?: number }) {
+  async getRecommendedCourses(options?: { limit?: number; page?: number }) {
+    const query: Record<string, string> = {};
+    if (options?.limit) query.limit = String(options.limit);
+    if (options?.page) query.page = String(options.page);
+
     await this.execute<GetRecommendedCoursesRequest>({
       requestFn: () =>
         classroomio.organization.courses.recommended.$get({
-          query: options?.limit ? { limit: String(options.limit) } : {}
+          query
         }),
       logContext: 'fetching recommended courses',
       onSuccess: (response) => {
         if (response.data) {
           this.recommendedCourses = response.data;
+        }
+        if ('pagination' in response && response.pagination) {
+          this.recommendedCoursesPagination = response.pagination as typeof this.recommendedCoursesPagination;
         }
         this.errors = {};
       },

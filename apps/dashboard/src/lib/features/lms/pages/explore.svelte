@@ -10,11 +10,15 @@
   import type { RecommendedCourses } from '$features/course/types';
   import { CourseSortBy, DEFAULT_COURSE_SORT, parseCourseSortValue } from '$features/course/utils/constants';
   import CoursePreviewModal from '$features/lms/components/course-preview-modal.svelte';
+  import * as Pagination from '@cio/ui/base/pagination';
+
+  const EXPLORE_LIMIT = 12;
 
   let searchValue = $state('');
   let sortKey = $state<CourseSortBy>(DEFAULT_COURSE_SORT);
   let selectedCourse = $state<RecommendedCourses[number] | null>(null);
   let previewOpen = $state(false);
+  let currentPage = $state(1);
 
   $effect(() => {
     if (!browser) return;
@@ -44,6 +48,19 @@
     return coursesFiltered;
   });
 
+  const pagination = $derived(coursesApi.recommendedCoursesPagination);
+
+  function fetchPage(page: number) {
+    currentPage = page;
+    coursesApi.getRecommendedCourses({ limit: EXPLORE_LIMIT, page });
+  }
+
+  $effect(() => {
+    if (searchValue) {
+      currentPage = 1;
+    }
+  });
+
   onMount(() => {
     const courseView = localStorage.getItem('courseView') as 'grid' | 'list' | null;
 
@@ -57,7 +74,7 @@
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
 
-    coursesApi.getRecommendedCourses();
+    coursesApi.getRecommendedCourses({ limit: EXPLORE_LIMIT, page: currentPage });
   });
 </script>
 
@@ -75,6 +92,40 @@
     previewOpen = true;
   }}
 />
+
+{#if pagination && pagination.totalPages > 1}
+  <Pagination.Root
+    count={pagination.total}
+    perPage={pagination.limit}
+    page={currentPage}
+    onPageChange={fetchPage}
+    class="mt-6"
+  >
+    {#snippet children({ pages, currentPage: activePage })}
+      <Pagination.Content>
+        <Pagination.Item>
+          <Pagination.PrevButton />
+        </Pagination.Item>
+        {#each pages as pageItem (pageItem.key)}
+          {#if pageItem.type === 'ellipsis'}
+            <Pagination.Item>
+              <Pagination.Ellipsis />
+            </Pagination.Item>
+          {:else}
+            <Pagination.Item>
+              <Pagination.Link page={pageItem} isActive={activePage === pageItem.value}>
+                {pageItem.value}
+              </Pagination.Link>
+            </Pagination.Item>
+          {/if}
+        {/each}
+        <Pagination.Item>
+          <Pagination.NextButton />
+        </Pagination.Item>
+      </Pagination.Content>
+    {/snippet}
+  </Pagination.Root>
+{/if}
 
 {#if selectedCourse}
   <CoursePreviewModal course={selectedCourse} bind:open={previewOpen} />

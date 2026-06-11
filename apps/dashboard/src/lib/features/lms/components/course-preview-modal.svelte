@@ -3,7 +3,10 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { DEFAULT_COURSE_BANNER_IMAGE } from '@cio/ui';
+  import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
+  import HTMLRender from '$features/ui/html-render.svelte';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
+  import XIcon from '@lucide/svelte/icons/x';
   import { t } from '$lib/utils/functions/translations';
   import { calcCourseDiscount, isCourseFree } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
@@ -44,12 +47,22 @@
 </script>
 
 <Dialog.Root bind:open>
-  <Dialog.Content class="overflow-hidden p-0 sm:max-w-2xl">
-    <div class="aspect-video w-full overflow-hidden">
-      <img src={course.logo || DEFAULT_COURSE_BANNER_IMAGE} alt={course.title} class="h-full w-full object-cover" />
+  <Dialog.Content class="ui:p-0 overflow-hidden sm:max-w-2xl" showCloseButton={false}>
+    <div class="relative overflow-hidden rounded-md">
+      <img
+        src={course.logo || DEFAULT_COURSE_BANNER_IMAGE}
+        alt={course.title}
+        class="aspect-video w-full object-cover"
+      />
+      <Dialog.Close
+        class="ui:absolute ui:top-3 ui:right-3 ui:inline-flex ui:size-8 ui:items-center ui:justify-center ui:rounded-md ui:bg-secondary ui:text-secondary-foreground ui:hover:bg-secondary/80 ui:transition-colors ui:cursor-pointer"
+      >
+        <XIcon class="ui:size-4" />
+        <span class="ui:sr-only">Close</span>
+      </Dialog.Close>
     </div>
 
-    <div class="max-h-80 overflow-y-auto px-6 py-4">
+    <div class="max-h-72 overflow-y-auto px-6 py-4">
       <h2 class="text-xl font-semibold tracking-tight">{course.title}</h2>
 
       {#if course.description}
@@ -70,12 +83,14 @@
       {#if requirements}
         <div class="mt-4">
           <h3 class="text-sm font-semibold">{$t('course.navItem.landing_page.requirement')}</h3>
-          <p class="ui:text-muted-foreground mt-1 text-sm leading-relaxed">{requirements}</p>
+          <HTMLRender className="text-sm mt-1" disableMaxWidth={true}>
+            <SafeHtmlContent content={requirements} />
+          </HTMLRender>
         </div>
       {/if}
     </div>
 
-    <div class="ui:border-t ui:bg-card sticky bottom-0 flex items-center justify-between px-6 py-4">
+    <div class="ui:border-t ui:bg-card sticky bottom-0 flex items-center justify-between px-6 py-4" data-sticky="true">
       <div>
         {#if allowNewStudent}
           <p class="text-lg font-bold">

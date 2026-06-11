@@ -26,6 +26,18 @@
     color?: string | null;
   }
 
+  type ColumnKey = 'published' | 'tags' | 'students' | 'actions';
+
+  const COLUMN_TRACKS: [string, string][] = [
+    ['banner', '7rem'],
+    ['title', 'minmax(0, 2fr)'],
+    ['published', '5.5rem'],
+    ['tags', 'minmax(0, 2fr)'],
+    ['content', '4.5rem'],
+    ['students', '6rem'],
+    ['actions', '7rem']
+  ];
+
   interface Props {
     id: string;
     slug?: string;
@@ -41,6 +53,8 @@
     tags?: Tag[];
     isExplore?: boolean;
     isLMS?: boolean;
+    hiddenColumns?: ColumnKey[];
+    onExploreClick?: () => void;
   }
 
   let {
@@ -57,7 +71,9 @@
     updatedAt,
     tags = [],
     isExplore = false,
-    isLMS = false
+    isLMS = false,
+    hiddenColumns = [],
+    onExploreClick
   }: Props = $props();
 
   const titleInitial = $derived(title.trim().charAt(0).toUpperCase() || 'C');
@@ -66,12 +82,20 @@
 
   const showPublicCourseLinks = $derived(isPublished && type === 'PUBLIC' && slug.trim().length > 0);
 
-  const showActionsColumn = $derived(!isLMS || (isLMS && showPublicCourseLinks));
+  const hidden = $derived(new Set<string>(hiddenColumns));
+
+  const showActionsColumn = $derived(
+    !hidden.has('actions') && (!isLMS || (isLMS && showPublicCourseLinks) || (isLMS && isExplore))
+  );
 
   const gridTemplateColumns = $derived(
-    showActionsColumn
-      ? '7rem minmax(0, 2fr) 5.5rem minmax(0, 2fr) 4.5rem 6rem 2.5rem'
-      : '7rem minmax(0, 2fr) 5.5rem minmax(0, 2fr) 4.5rem 6rem'
+    COLUMN_TRACKS.filter(([key]) => {
+      if (hidden.has(key)) return false;
+      if (key === 'actions') return showActionsColumn;
+      return true;
+    })
+      .map(([, track]) => track)
+      .join(' ')
   );
 
   const studentPlaceholderAvatarUrls = $derived.by(() => [
@@ -91,6 +115,10 @@
   });
 
   function handleRowClick() {
+    if (isExplore && onExploreClick) {
+      onExploreClick();
+      return;
+    }
     if (isExplore) {
       goto(resolve(`/course/${slug}`, {}));
       return;
@@ -161,35 +189,39 @@
     </div>
 
     <!-- Published badge -->
-    <div>
-      {#if isPublished}
-        <Badge variant="success" class="whitespace-nowrap">
-          {$t('courses.course_card.published')}
-        </Badge>
-      {:else}
-        <Badge variant="secondary" class="whitespace-nowrap">
-          {$t('courses.course_card.unpublished')}
-        </Badge>
-      {/if}
-    </div>
+    {#if !hidden.has('published')}
+      <div>
+        {#if isPublished}
+          <Badge variant="success" class="whitespace-nowrap">
+            {$t('courses.course_card.published')}
+          </Badge>
+        {:else}
+          <Badge variant="secondary" class="whitespace-nowrap">
+            {$t('courses.course_card.unpublished')}
+          </Badge>
+        {/if}
+      </div>
+    {/if}
 
     <!-- Tags -->
-    <div class="flex min-w-0 flex-wrap items-center gap-1">
-      {#if tags.length === 0}
-        <span class="ui:text-muted-foreground text-xs">—</span>
-      {:else}
-        {#each tags as tag (tag.id)}
-          <Badge variant="outline" class="max-w-[140px] truncate">
-            <span
-              class="ui:bg-primary/60 inline-block h-1.5 w-1.5 shrink-0 rounded-full"
-              style={tag.color ? `background-color: ${tag.color}` : undefined}
-              aria-hidden="true"
-            ></span>
-            {tag.name}
-          </Badge>
-        {/each}
-      {/if}
-    </div>
+    {#if !hidden.has('tags')}
+      <div class="flex min-w-0 flex-wrap items-center gap-1">
+        {#if tags.length === 0}
+          <span class="ui:text-muted-foreground text-xs">—</span>
+        {:else}
+          {#each tags as tag (tag.id)}
+            <Badge variant="outline" class="max-w-[140px] truncate">
+              <span
+                class="ui:bg-primary/60 inline-block h-1.5 w-1.5 shrink-0 rounded-full"
+                style={tag.color ? `background-color: ${tag.color}` : undefined}
+                aria-hidden="true"
+              ></span>
+              {tag.name}
+            </Badge>
+          {/each}
+        {/if}
+      </div>
+    {/if}
 
     <!-- Lessons / exercises -->
     <div class="flex flex-col gap-1 tabular-nums">
@@ -204,97 +236,112 @@
     </div>
 
     <!-- Students -->
-    <div class="flex items-center gap-1">
-      {#if totalStudents > 0}
-        {#if totalStudents < 3}
-          <div class="flex items-center gap-1">
-            <Avatar.Root class="ui:border-background size-6 border-2">
-              <Avatar.Image src={studentPlaceholderAvatarUrls[0]} alt="" loading="lazy" decoding="async" />
-              <Avatar.Fallback aria-hidden="true">
-                {titleInitial}
-              </Avatar.Fallback>
-            </Avatar.Root>
-            <p class="text-xs tabular-nums">{totalStudents}</p>
-          </div>
-        {:else}
-          <div class="flex -space-x-2">
-            {#each studentPlaceholderAvatarUrls as avatarUrl, slotIndex (slotIndex)}
+    {#if !hidden.has('students')}
+      <div class="flex items-center gap-1">
+        {#if totalStudents > 0}
+          {#if totalStudents < 3}
+            <div class="flex items-center gap-1">
               <Avatar.Root class="ui:border-background size-6 border-2">
-                <Avatar.Image src={avatarUrl} alt="" loading="lazy" decoding="async" />
+                <Avatar.Image src={studentPlaceholderAvatarUrls[0]} alt="" loading="lazy" decoding="async" />
                 <Avatar.Fallback aria-hidden="true">
                   {titleInitial}
                 </Avatar.Fallback>
               </Avatar.Root>
-            {/each}
-            <Avatar.Root class="ui:border-background size-6 border-2">
-              <Avatar.Fallback class="text-[10px]">+{totalStudents - 2}</Avatar.Fallback>
-            </Avatar.Root>
-          </div>
+              <p class="text-xs tabular-nums">{totalStudents}</p>
+            </div>
+          {:else}
+            <div class="flex -space-x-2">
+              {#each studentPlaceholderAvatarUrls as avatarUrl, slotIndex (slotIndex)}
+                <Avatar.Root class="ui:border-background size-6 border-2">
+                  <Avatar.Image src={avatarUrl} alt="" loading="lazy" decoding="async" />
+                  <Avatar.Fallback aria-hidden="true">
+                    {titleInitial}
+                  </Avatar.Fallback>
+                </Avatar.Root>
+              {/each}
+              <Avatar.Root class="ui:border-background size-6 border-2">
+                <Avatar.Fallback class="text-[10px]">+{totalStudents - 2}</Avatar.Fallback>
+              </Avatar.Root>
+            </div>
+          {/if}
+        {:else}
+          <Avatar.Root class="size-6">
+            <Avatar.Image src={emptyStateAvatarUrl} alt="" loading="lazy" decoding="async" />
+            <Avatar.Fallback aria-hidden="true">
+              {titleInitial}
+            </Avatar.Fallback>
+          </Avatar.Root>
+          <p class="text-xs">0</p>
         {/if}
-      {:else}
-        <Avatar.Root class="size-6">
-          <Avatar.Image src={emptyStateAvatarUrl} alt="" loading="lazy" decoding="async" />
-          <Avatar.Fallback aria-hidden="true">
-            {titleInitial}
-          </Avatar.Fallback>
-        </Avatar.Root>
-        <p class="text-xs">0</p>
-      {/if}
-    </div>
+      </div>
+    {/if}
 
     <!-- Actions -->
     {#if showActionsColumn}
       <div class="flex justify-end">
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger>
-            {#snippet child({ props })}
-              <Button
-                {...props}
-                variant="ghost"
-                size="icon"
-                class="size-8"
-                aria-label={$t('courses.course_card.actions_menu_aria')}
-                onclick={(e) => e.stopPropagation()}
-              >
-                <EllipsisVerticalIcon class="size-4" />
-              </Button>
-            {/snippet}
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content align="end">
-            {#if showPublicCourseLinks}
-              <DropdownMenu.Item
-                onclick={() =>
-                  openCoursePreview({
-                    courseId: id,
-                    courseSlug: slug,
-                    currentOrgDomain: $currentOrgDomain
-                  })}
-              >
-                <ExternalLinkIcon class="mr-2 size-4" />
-                {$t('courses.course_card.context_menu.open_public_course')}
-              </DropdownMenu.Item>
-              <DropdownMenu.Item onclick={() => void handleCopyCourseUrl()}>
-                <CopyIcon class="mr-2 size-4" />
-                {$t('courses.course_card.context_menu.copy_course_url')}
-              </DropdownMenu.Item>
-            {/if}
-            {#if !isLMS}
+        {#if isLMS && isExplore}
+          <Button
+            variant="outline"
+            size="sm"
+            onclick={(e) => {
+              e.stopPropagation();
+              onExploreClick?.();
+            }}
+          >
+            {$t('courses.course_card.learn_more')}
+          </Button>
+        {:else}
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              {#snippet child({ props })}
+                <Button
+                  {...props}
+                  variant="ghost"
+                  size="icon"
+                  class="size-8"
+                  aria-label={$t('courses.course_card.actions_menu_aria')}
+                  onclick={(e) => e.stopPropagation()}
+                >
+                  <EllipsisVerticalIcon class="size-4" />
+                </Button>
+              {/snippet}
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end">
               {#if showPublicCourseLinks}
-                <DropdownMenu.Separator />
+                <DropdownMenu.Item
+                  onclick={() =>
+                    openCoursePreview({
+                      courseId: id,
+                      courseSlug: slug,
+                      currentOrgDomain: $currentOrgDomain
+                    })}
+                >
+                  <ExternalLinkIcon class="mr-2 size-4" />
+                  {$t('courses.course_card.context_menu.open_public_course')}
+                </DropdownMenu.Item>
+                <DropdownMenu.Item onclick={() => void handleCopyCourseUrl()}>
+                  <CopyIcon class="mr-2 size-4" />
+                  {$t('courses.course_card.context_menu.copy_course_url')}
+                </DropdownMenu.Item>
               {/if}
-              <DropdownMenu.Item onclick={handleOpen}>
-                {$t('courses.course_card.context_menu.open')}
-              </DropdownMenu.Item>
-              <DropdownMenu.Item onclick={handleClone}>
-                {$t('courses.course_card.context_menu.clone')}
-              </DropdownMenu.Item>
-              <DropdownMenu.Separator />
-              <DropdownMenu.Item variant="destructive" onclick={handleDelete}>
-                {$t('courses.course_card.context_menu.delete')}
-              </DropdownMenu.Item>
-            {/if}
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
+              {#if !isLMS}
+                {#if showPublicCourseLinks}
+                  <DropdownMenu.Separator />
+                {/if}
+                <DropdownMenu.Item onclick={handleOpen}>
+                  {$t('courses.course_card.context_menu.open')}
+                </DropdownMenu.Item>
+                <DropdownMenu.Item onclick={handleClone}>
+                  {$t('courses.course_card.context_menu.clone')}
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item variant="destructive" onclick={handleDelete}>
+                  {$t('courses.course_card.context_menu.delete')}
+                </DropdownMenu.Item>
+              {/if}
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        {/if}
       </div>
     {/if}
   </div>

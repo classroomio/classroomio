@@ -442,15 +442,19 @@ export const organizationRouter = new Hono()
     async (c) => {
       try {
         const user = c.get('user')!;
-        const { limit } = c.req.valid('query');
+        const { limit, page = 1 } = c.req.valid('query');
 
         const orgId = c.req.header('cio-org-id')!;
-        const result = await getRecommendedCourses(orgId, user.id, limit);
+        const { data, total } = await getRecommendedCourses(orgId, user.id, limit, page);
+
+        const resolvedLimit = limit ?? total;
+        const totalPages = resolvedLimit > 0 ? Math.ceil(total / resolvedLimit) : 1;
 
         return c.json(
           {
             success: true,
-            data: result
+            data,
+            pagination: { page, limit: resolvedLimit, total, totalPages }
           },
           200
         );

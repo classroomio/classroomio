@@ -17,7 +17,8 @@
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { coursesApi } from '$features/course/api';
-  import { CourseCard } from '$features/course/components';
+  import * as ResourceListRow from '@cio/ui/custom/resource-list-row';
+  import { CourseListRow } from '$features/course/components';
   import CoursePublicBadge from '$features/course/components/course-public-badge.svelte';
   import CoursePreviewModal from '$features/lms/components/course-preview-modal.svelte';
   import type { RecommendedCourses } from '$features/course/types';
@@ -63,7 +64,7 @@
     if (!$profile.id || !$currentOrg.id) return;
 
     coursesApi.getEnrolledCourses();
-    coursesApi.getRecommendedCourses({ limit: 6 });
+    coursesApi.getRecommendedCourses({ limit: 3 });
   });
 
   $effect(() => {
@@ -103,7 +104,7 @@
 
         return getStudentCourseProgressPercent(rightCourse) - getStudentCourseProgressPercent(leftCourse);
       })
-      .slice(0, 3);
+      .slice(0, 2);
   }
 
   async function loadLoginStreak() {
@@ -261,9 +262,14 @@
 
   <div class="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)]">
     <section class="flex h-full flex-col space-y-4">
-      <h2 class="ui:text-muted-foreground text-sm font-semibold tracking-[0.14em] uppercase">
-        {$t('dashboard.currently_learning')}
-      </h2>
+      <div class="flex items-center justify-between">
+        <h2 class="ui:text-muted-foreground text-sm font-semibold tracking-[0.14em] uppercase">
+          {$t('dashboard.currently_learning')}
+        </h2>
+        <Button variant="outline" size="sm" onclick={() => goto('/lms/mylearning')}>
+          {$t('dashboard.view_more')}
+        </Button>
+      </div>
 
       <div class="flex flex-1 flex-col space-y-3">
         {#if coursesApi.isLoading}
@@ -418,19 +424,28 @@
           <Spinner class="size-6" />
         </div>
       {:else}
-        <div class="grid w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <ResourceListRow.Group>
           {#each coursesApi.recommendedCourses as course (course.id)}
-            <CourseCard
-              {course}
+            <CourseListRow
+              id={course.id}
+              slug={course.slug ?? ''}
+              title={course.title}
+              logo={course.logo}
+              type={course.type}
+              description={course.description ?? ''}
+              isPublished={course.isPublished ?? false}
+              lessonCount={course.lessonCount}
+              exerciseCount={course.exerciseCount}
               isExplore={true}
               isLMS={true}
+              hiddenColumns={['published', 'tags', 'students']}
               onExploreClick={() => {
                 selectedCourse = course;
                 previewOpen = true;
               }}
             />
           {/each}
-        </div>
+        </ResourceListRow.Group>
       {/if}
     </section>
   {/if}
