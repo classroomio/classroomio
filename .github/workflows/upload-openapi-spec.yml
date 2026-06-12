@@ -40,11 +40,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      - name: Setup turbo cache
+        # Shared key with ci.yml so the @cio/api build here is a cache hit rather
+        # than a second cold rebuild.
+        uses: actions/cache@v3
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build @cio/api workspace dependencies
-        run: pnpm turbo run build --filter=@cio/api^...
+        run: pnpm turbo run build --filter=@cio/api^... --cache-dir=.turbo
 
       - name: Upload to Cloudflare R2
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'

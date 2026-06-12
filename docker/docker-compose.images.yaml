@@ -1,3 +1,18 @@
+# ClassroomIO — pull-based stack (pre-built images, no local build).
+#
+# This is the same topology as docker-compose.yaml but the app services pull
+# published images from Docker Hub instead of building from source. You only need
+# THIS file + a .env — no repository checkout, no 8 GB dashboard build.
+#
+#   CIO_VERSION=1.4.2 docker compose -f docker/docker-compose.images.yaml --env-file .env pull
+#   CIO_VERSION=1.4.2 docker compose -f docker/docker-compose.images.yaml --env-file .env up -d
+#
+# CIO_VERSION pins the release. Use a specific version (e.g. 1.4.2) in production;
+# "latest" = newest stable release, "edge" = bleeding edge (last main build).
+#
+# KEEP IN SYNC with docker-compose.yaml: the api/dashboard/jobs `environment`,
+# healthchecks, depends_on, and volumes must match the build-based file. The only
+# intended difference is build: -> image:.
 services:
   postgres:
     image: postgres:16-alpine
@@ -73,9 +88,7 @@ services:
       - minio
 
   api:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile.api
+    image: classroomio/api:${CIO_VERSION:-latest}
     container_name: cio-api
     ports:
       - "3081:3081"
@@ -134,11 +147,7 @@ services:
     restart: unless-stopped
 
   dashboard:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile.dashboard
-      args:
-        PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
+    image: classroomio/dashboard:${CIO_VERSION:-latest}
     container_name: cio-dashboard
     ports:
       - "3082:3082"
@@ -167,9 +176,7 @@ services:
   # Background worker (BullMQ). REQUIRED: without it, video processing, transcription,
   # AI course generation, and most emails are enqueued in Redis but never processed.
   jobs:
-    build:
-      context: ..
-      dockerfile: apps/jobs/Dockerfile
+    image: classroomio/jobs:${CIO_VERSION:-latest}
     container_name: cio-jobs
     depends_on:
       postgres:

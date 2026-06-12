@@ -3,14 +3,24 @@ FROM node:20.19.3-slim
 WORKDIR /app
 
 ENV CI=true
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
 ARG PUBLIC_IS_SELFHOSTED=true
 
 RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 
+# Fetch dependencies from the lockfile ONLY first (cached unless pnpm-lock.yaml
+# changes), then bring in source. Store lives in a BuildKit cache mount.
+COPY pnpm-lock.yaml ./
+RUN --mount=type=cache,target=/pnpm/store \
+    pnpm fetch --store-dir /pnpm/store
+
 COPY . .
 
-RUN pnpm install --frozen-lockfile --ignore-scripts --filter @cio/dashboard...
+RUN --mount=type=cache,target=/pnpm/store \
+    pnpm install --offline --frozen-lockfile --ignore-scripts \
+    --store-dir /pnpm/store --filter @cio/dashboard...
 RUN find . -name 'tsconfig.tsbuildinfo' -delete
 RUN NODE_OPTIONS="--max-old-space-size=8072" \
     PUBLIC_IS_SELFHOSTED="${PUBLIC_IS_SELFHOSTED}" \

@@ -135,9 +135,10 @@ docker push classroomio/api:v1
 
 ## Image Sizes and Build Times
 
-- **API Image**: ~400-600 MB (Node.js Alpine + dependencies)
-- **Dashboard Image**: ~600-800 MB (Node.js Alpine + SvelteKit build)
-- **Build Time**: 5-10 minutes per image (depending on your machine)
+- **API Image**: ~400-600 MB (Node.js Debian slim + dependencies)
+- **Dashboard Image**: ~600-800 MB (Node.js Debian slim + SvelteKit build)
+- **Jobs Image**: ~500-700 MB (Node.js Debian slim + ffmpeg + dependencies)
+- **Build Time**: 5-10 minutes per image (depending on your machine). Multi-arch (amd64 + arm64) builds take longer.
 
 ## Multi-Architecture Support
 

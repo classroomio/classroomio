@@ -4,6 +4,16 @@ on:
   push:
     branches:
       - main
+    # Only rebuild images when something that affects them changes (not docs-only
+    # commits). Tag pushes and manual dispatch always run.
+    paths:
+      - "apps/api/**"
+      - "apps/dashboard/**"
+      - "apps/jobs/**"
+      - "packages/**"
+      - "docker/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/docker-publish.yml"
     tags:
       - "v*"
   workflow_dispatch:
@@ -12,6 +22,10 @@ on:
         description: "Version tag (e.g., v1.0.0)"
         required: false
         default: "latest"
+
+concurrency:
+  group: docker-publish-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || 'classroomio' }}
@@ -28,10 +42,17 @@ jobs:
           - name: dashboard
             dockerfile: ./docker/Dockerfile.dashboard
             image: dashboard
+          - name: jobs
+            dockerfile: ./apps/jobs/Dockerfile
+            image: jobs
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        # Required to build linux/arm64 on an amd64 runner.
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -47,9 +68,15 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.DOCKERHUB_USERNAME }}/${{ matrix.image }}
+          # Tag policy (stable-releases + edge):
+          #   git tag v1.4.2  -> 1.4.2, 1.4, 1, latest   (a real, stable release)
+          #   push to main     -> edge only               (latest is NEVER moved by a merge)
           tags: |
             type=semver,pattern={{version}}
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/') }}
+            type=raw,value=edge,enable={{is_default_branch}}
 
       - name: Build and push ${{ matrix.name }}
         uses: docker/build-push-action@v5
@@ -61,7 +88,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/${{ matrix.image }}:buildcache
           cache-to: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/${{ matrix.image }}:buildcache,mode=max
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
