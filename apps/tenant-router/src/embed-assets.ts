@@ -1,4 +1,4 @@
-import { EMBED_WIDGET_ROUTES } from '../../../packages/utils/src/constants/embeds';
+import { EMBED_WIDGET_ROUTES } from '@cio/utils/constants/embeds';
 
 const EMBED_CONTENT_TYPES: Record<string, string> = {
   html: 'text/html',

@@ -12,7 +12,7 @@ The Worker forwards each request to one of two Render services based on path:
 
 | Host / path   | Upstream                                                     |
 | ------------- | ------------------------------------------------------------ |
-| `embed.*`     | R2 `assets` bucket — `/{widget}` maps to internal keys (see `@cio/utils/constants/embeds`) |
+| `embed.*`     | R2 `assets` bucket — `/{widget}` maps to internal keys (`@cio/utils/constants/embeds`) |
 | `/proxy/*`    | API service (`/proxy` prefix stripped, rest forwarded as-is) |
 | anything else | Dashboard service                                            |
 

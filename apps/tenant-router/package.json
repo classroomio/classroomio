@@ -10,6 +10,9 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write ."
   },
+  "dependencies": {
+    "@cio/utils": "workspace:*"
+  },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250109.0",
     "typescript": "^5.5.2",
