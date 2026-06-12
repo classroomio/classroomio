@@ -782,10 +782,6 @@ importers:
         version: 4.2.1
 
   apps/tenant-router:
-    dependencies:
-      '@cio/utils':
-        specifier: workspace:*
-        version: link:../../packages/utils
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20250109.0

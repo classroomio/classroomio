@@ -12,7 +12,7 @@ The Worker forwards each request to one of two Render services based on path:
 
 | Host / path   | Upstream                                                     |
 | ------------- | ------------------------------------------------------------ |
-| `embed.*`     | R2 `assets` bucket — `/{widget}` maps to internal keys (`@cio/utils/constants/embeds`) |
+| `embed.*`     | R2 `assets` bucket — `/{widget}` maps to internal keys (`src/embed-assets.ts`) |
 | `/proxy/*`    | API service (`/proxy` prefix stripped, rest forwarded as-is) |
 | anything else | Dashboard service                                            |
 
@@ -28,8 +28,6 @@ It preserves the original host as `X-Forwarded-Host` so:
 - Better Auth on the API emits session cookies without a `Domain` attribute (see `packages/db/src/auth.ts` — `crossSubDomainCookies: { enabled: false }`), so the browser scopes each session to the exact host it called. Tenants on `acme.myclassroomio.com`, the admin app on `app.classroomio.com`, and BYOD `learn.acme.com` each get host-only sessions.
 
 ## Deploy
-
-`deploy` runs `predeploy`, which builds `@cio/utils` first (Wrangler resolves `@cio/utils/constants/*` from `dist/`).
 
 ```bash
 pnpm --filter @cio/tenant-router deploy

@@ -5,16 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "predev": "pnpm --filter @cio/utils build",
     "deploy": "wrangler deploy",
-    "predeploy": "pnpm --filter @cio/utils build",
     "tail": "wrangler tail",
     "typecheck": "tsc --noEmit",
-    "pretypecheck": "pnpm --filter @cio/utils build",
     "format": "prettier --write ."
-  },
-  "dependencies": {
-    "@cio/utils": "workspace:*"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250109.0",

@@ -1,4 +1,20 @@
-import { EMBED_WIDGET_ROUTES } from '@cio/utils/constants/embeds';
+type EmbedWidgetRoute = {
+  scriptKey: string;
+  pageKey?: string;
+  pageQueryParam?: string;
+};
+
+/** Public path segment → R2 object keys under the `assets` bucket. */
+const EMBED_WIDGET_ROUTES: Record<string, EmbedWidgetRoute> = {
+  'course-widget': {
+    scriptKey: 'embeds/course-widget/course-widget.js',
+    pageKey: 'embeds/course-widget/embed.html',
+    pageQueryParam: 'key'
+  },
+  'question-type-picker': {
+    scriptKey: 'embeds/question-type-picker/question-type-picker.js'
+  }
+};
 
 const EMBED_CONTENT_TYPES: Record<string, string> = {
   html: 'text/html',
@@ -43,7 +59,7 @@ function cacheControlForObjectKey(objectKey: string): string {
 }
 
 function resolvePublicWidgetKey(pathname: string, searchParams: URLSearchParams): string | null {
-  const route = EMBED_WIDGET_ROUTES[pathname as keyof typeof EMBED_WIDGET_ROUTES];
+  const route = EMBED_WIDGET_ROUTES[pathname];
   if (!route) {
     return null;
   }
