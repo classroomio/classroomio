@@ -13,6 +13,8 @@ RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 # pnpm-lock.yaml, so it stays cached across source changes (no re-download on
 # every commit). The store lives in a BuildKit cache mount for cross-build reuse.
 COPY pnpm-lock.yaml ./
+# Patches referenced by package.json#pnpm.patchedDependencies must be present for `pnpm fetch`.
+COPY patches ./patches
 RUN --mount=type=cache,target=/pnpm/store \
     pnpm fetch --store-dir /pnpm/store
 

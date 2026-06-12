@@ -13,6 +13,8 @@ RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 # Fetch dependencies from the lockfile ONLY first (cached unless pnpm-lock.yaml
 # changes), then bring in source. Store lives in a BuildKit cache mount.
 COPY pnpm-lock.yaml ./
+# Patches referenced by package.json#pnpm.patchedDependencies must be present for `pnpm fetch`.
+COPY patches ./patches
 RUN --mount=type=cache,target=/pnpm/store \
     pnpm fetch --store-dir /pnpm/store
 
