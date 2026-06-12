@@ -77,4 +77,4 @@ export class CourseCloneApi extends BaseApiWithErrors {
   }
 }
 
-export const courseCloneApi = new CourseCloneApi();
+export const courseCloneApi = /* @__PURE__ */ new CourseCloneApi();

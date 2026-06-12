@@ -215,4 +215,4 @@ export class ComplianceApi extends BaseApiWithErrors {
   }
 }
 
-export const complianceApi = new ComplianceApi();
+export const complianceApi = /* @__PURE__ */ new ComplianceApi();

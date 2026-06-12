@@ -945,4 +945,4 @@ export class LessonApi extends BaseApiWithErrors {
   }
 }
 
-export const lessonApi = new LessonApi();
+export const lessonApi = /* @__PURE__ */ new LessonApi();

@@ -507,4 +507,4 @@ export class NewsfeedApi extends BaseApiWithErrors {
   }
 }
 
-export const newsfeedApi = new NewsfeedApi();
+export const newsfeedApi = /* @__PURE__ */ new NewsfeedApi();

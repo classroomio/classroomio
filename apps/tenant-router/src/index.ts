@@ -265,17 +265,23 @@ export default {
       upstreamHeaders.set('x-forwarded-for', clientIp);
     }
 
+    // SvelteKit's immutable chunk filenames include a content hash, so they are
+    // safe to cache at the edge forever. `cf.cacheEverything` is what actually
+    // populates Cloudflare's edge cache for this subrequest — setting a
+    // `Cache-Control` header on the response alone does NOT, so without this a
+    // cold browser cache (new device, or post-deploy hash change) stampedes the
+    // origin for every chunk.
+    const isImmutableAsset = url.pathname.startsWith('/_app/immutable/');
+
     const upstreamResponse = await fetch(upstreamUrl.toString(), {
       method: request.method,
       headers: upstreamHeaders,
       body: request.body,
-      redirect: 'manual'
+      redirect: 'manual',
+      cf: isImmutableAsset ? { cacheEverything: true, cacheTtl: 31536000 } : undefined
     });
 
-    // SvelteKit's immutable chunk filenames include a content hash, so they
-    // are safe to cache forever. Set a long TTL here at the edge so browsers
-    // and Cloudflare cache them aggressively rather than revalidating.
-    if (url.pathname.startsWith('/_app/immutable/')) {
+    if (isImmutableAsset) {
       const response = new Response(upstreamResponse.body, upstreamResponse);
       response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
       return response;

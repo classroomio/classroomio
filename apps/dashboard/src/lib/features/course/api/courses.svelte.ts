@@ -171,4 +171,4 @@ export class CoursesApi extends BaseApiWithErrors {
   }
 }
 
-export const coursesApi = new CoursesApi();
+export const coursesApi = /* @__PURE__ */ new CoursesApi();

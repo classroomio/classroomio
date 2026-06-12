@@ -70,4 +70,4 @@ class ExerciseTemplateApi extends BaseApi {
   }
 }
 
-export const exerciseTemplateApi = new ExerciseTemplateApi();
+export const exerciseTemplateApi = /* @__PURE__ */ new ExerciseTemplateApi();

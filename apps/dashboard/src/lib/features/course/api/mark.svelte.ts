@@ -35,4 +35,4 @@ export class MarkApi extends BaseApiWithErrors {
   }
 }
 
-export const markApi = new MarkApi();
+export const markApi = /* @__PURE__ */ new MarkApi();
