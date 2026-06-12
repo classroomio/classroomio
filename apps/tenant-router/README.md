@@ -29,6 +29,8 @@ It preserves the original host as `X-Forwarded-Host` so:
 
 ## Deploy
 
+`deploy` runs `predeploy`, which builds `@cio/utils` first (Wrangler resolves `@cio/utils/constants/*` from `dist/`).
+
 ```bash
 pnpm --filter @cio/tenant-router deploy
 ```
