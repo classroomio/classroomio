@@ -17,21 +17,19 @@
   let { courseId = '', edit = $bindable(false), editFeed = $bindable() }: Props = $props();
 
   let isLoading = $state(false);
-  let errors: Record<string, string> = $state({
-    newPost: ''
-  });
-
   let newPost = $state('');
 
   $effect(() => {
     if (!newsfeedApi.isNewFeedModalOpen) {
-      newPost = '';
       return;
     }
 
     if (edit && editFeed) {
       newPost = editFeed.content || '';
+      return;
     }
+
+    newPost = '';
   });
 
   const onPost = async () => {
@@ -43,6 +41,10 @@
 
         if (newsfeedApi.success) {
           resetEditor();
+        } else if (newsfeedApi.errors.content) {
+          snackbar.error(newsfeedApi.errors.content);
+        } else {
+          snackbar.error('snackbar.newsfeed.error.editing');
         }
       } else {
         await newsfeedApi.create(courseId, {
@@ -101,8 +103,8 @@
           placeholder={$t('course.navItem.news_feed.heading_button.placeholder')}
         />
       {/key}
-      {#if errors.newPost}
-        <p class="text-sm text-red-500">{errors.newPost}</p>
+      {#if newsfeedApi.errors.content}
+        <p class="ui:text-destructive text-sm">{newsfeedApi.errors.content}</p>
       {/if}
     </section>
     <Dialog.Footer>

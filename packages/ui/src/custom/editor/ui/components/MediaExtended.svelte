@@ -143,9 +143,9 @@
     class={cn(
       'ui:relative ui:my-2 ui:flex ui:flex-col ui:rounded-md ui:border-2 ui:border-transparent',
       selected ? 'ui:border-muted-foreground' : '',
-      node.attrs.align === 'ui:left' && 'ui:left-0 ui:-translate-x-0',
+      node.attrs.align === 'left' && 'ui:left-0 ui:-translate-x-0',
       node.attrs.align === 'center' && 'ui:left-1/2 ui:-translate-x-1/2',
-      node.attrs.align === 'ui:right' && 'ui:left-full ui:-translate-x-full'
+      node.attrs.align === 'right' && 'ui:left-full ui:-translate-x-full'
     )}
     style={`width: ${node.attrs.width}`}
   >
@@ -197,7 +197,7 @@
         >
           <Button
             variant="ghost"
-            class={cn('ui:size-6 ui:p-0', node.attrs.align === 'ui:left' && 'ui:bg-muted')}
+            class={cn('ui:size-6 ui:p-0', node.attrs.align === 'left' && 'ui:bg-muted')}
             onclick={() => updateAttributes({ align: 'left' })}
             title="Align Left"
           >
@@ -213,7 +213,7 @@
           </Button>
           <Button
             variant="ghost"
-            class={cn('ui:size-6 ui:p-0', node.attrs.align === 'ui:right' && 'ui:bg-muted')}
+            class={cn('ui:size-6 ui:p-0', node.attrs.align === 'right' && 'ui:bg-muted')}
             onclick={() => updateAttributes({ align: 'right' })}
             title="Align Right"
           >

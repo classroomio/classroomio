@@ -173,6 +173,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
         ZNewsfeedUpdate.safeParse({ ...fields, content: '' }).error!,
         'newsfeed'
       );
+      snackbar.error(this.errors.content ?? 'Failed to update post');
       return;
     }
 

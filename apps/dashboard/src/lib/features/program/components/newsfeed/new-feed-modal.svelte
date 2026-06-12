@@ -21,13 +21,15 @@
 
   $effect(() => {
     if (!programNewsfeedApi.isNewFeedModalOpen) {
-      newPost = '';
       return;
     }
 
     if (edit && editFeed) {
       newPost = editFeed.content || '';
+      return;
     }
+
+    newPost = '';
   });
 
   const resetEditor = () => {

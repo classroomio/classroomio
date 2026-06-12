@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
 
   import type { Feed } from '$features/course/utils/types';
   import { newsfeedApi } from '$features/course/api';
@@ -50,9 +50,10 @@
 
   let isDeleteFeedModal = $state(false);
 
-  const openEditFeed = () => {
+  const openEditFeed = async () => {
     editFeed = feed;
     edit = true;
+    await tick();
     newsfeedApi.openNewFeedModal();
   };
 

@@ -29,7 +29,7 @@
   data-active={isActive}
   class={cn(
     buttonVariants({
-      variant: isActive ? 'ui:outline' : 'ghost',
+      variant: isActive ? 'outline' : 'ghost',
       size
     }),
     className
