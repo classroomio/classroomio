@@ -136,14 +136,15 @@ The course widget uses three different URL concerns:
 1. **Embed script host**
 
 - this is where the browser downloads `course-widget.js`
-- production example: `https://assets.cdn.clsrio.com/embeds/course-widget/course-widget.js`
+- production script URL: `https://embed.classroomio.com/course-widget`
+- production hosted iframe: `https://embed.classroomio.com/course-widget?key=<public-key>`
 - configured on the API side with `PUBLIC_EMBED_BASE_URL`
 
 2. **Payload API host**
 
 - this is where the widget fetches `GET /widgets/:publicKey/payload`
-- it reuses the existing API public URL via `PUBLIC_SERVER_URL`
-- the generated embed snippet includes that host as `data-api-base-url`
+- production: tenant-router injects `window.CIO.apiBaseUrl` from its `API_URL` env when serving embed assets
+- local dev: `@cio/embeds` Vite injects the same global from `API_URL` (defaults to `http://localhost:3002`)
 
 3. **Course destination host**
 
@@ -158,22 +159,14 @@ Local development should not depend on deployed CDN assets.
 
 ### Expected local hosts
 
-- embed script host: `PUBLIC_EMBED_BASE_URL`
-- payload API host: existing `PUBLIC_SERVER_URL`
+- embed script host: `PUBLIC_EMBED_BASE_URL` on the API (falls back to `http://localhost:5180` in dev)
+- payload API host: `API_URL` when running embeds dev or tenant-router (not included in customer copy-paste code)
 
-When `PUBLIC_EMBED_BASE_URL` is unset and the API runs in development, widget embed code falls back to:
-
-```text
-http://localhost:5180
-```
-
-That matches the `@cio/embeds` Vite dev server.
-
-When `PUBLIC_SERVER_URL` is set to your local API URL, the generated snippet will look like:
+Generated snippet:
 
 ```html
-<div data-cio-widget="course-widget" data-widget-key="wgt_xxx" data-api-base-url="http://localhost:3002"></div>
-<script async type="module" src="http://localhost:5180/embeds/course-widget/course-widget.js"></script>
+<div data-cio-widget="course-widget" data-widget-key="wgt_xxx"></div>
+<script async type="module" src="https://embed.classroomio.com/course-widget"></script>
 ```
 
 ### Dev server path shape

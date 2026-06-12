@@ -3,20 +3,42 @@
   import type { TWidgetPayload } from '@cio/utils/validation/widget';
   import { CourseWidget } from '@cio/ui/custom/widget-layouts';
 
-  const DEFAULT_API_BASE_URL = 'https://api.classroomio.com';
+  declare global {
+    interface Window {
+      CIO?: {
+        apiBaseUrl?: string;
+      };
+    }
+  }
 
-  let { publicKey, apiBaseUrl = DEFAULT_API_BASE_URL }: { publicKey: string; apiBaseUrl?: string } = $props();
+  let { publicKey, apiBaseUrl }: { publicKey: string; apiBaseUrl?: string } = $props();
 
   let payload = $state<TWidgetPayload | null>(null);
   let errorMessage = $state('');
+
+  function resolveApiBaseUrl(): string {
+    if (apiBaseUrl) {
+      return apiBaseUrl.replace(/\/$/, '');
+    }
+
+    const fromWindow = typeof window !== 'undefined' ? window.CIO?.apiBaseUrl : undefined;
+    if (fromWindow) {
+      return fromWindow.replace(/\/$/, '');
+    }
+
+    return '';
+  }
 
   async function loadPayload() {
     try {
       errorMessage = '';
 
-      const response = await fetch(
-        `${(apiBaseUrl || DEFAULT_API_BASE_URL).replace(/\/$/, '')}/widgets/${publicKey}/payload`
-      );
+      const apiOrigin = resolveApiBaseUrl();
+      if (!apiOrigin) {
+        throw new Error('Widget API URL is not configured');
+      }
+
+      const response = await fetch(`${apiOrigin}/widgets/${publicKey}/payload`);
       const result = (await response.json()) as { success?: boolean; data?: TWidgetPayload; error?: string };
 
       if (!response.ok || !result.success || !result.data) {

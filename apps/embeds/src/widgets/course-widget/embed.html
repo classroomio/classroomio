@@ -19,7 +19,6 @@
     <script type="module">
       const params = new URLSearchParams(location.search);
       const key = params.get('key');
-      const apiBaseUrl = params.get('api');
 
       if (!key) {
         const note = document.createElement('p');
@@ -31,15 +30,12 @@
         const widgetDiv = document.createElement('div');
         widgetDiv.setAttribute('data-cio-widget', 'course-widget');
         widgetDiv.setAttribute('data-widget-key', key);
-        if (apiBaseUrl) {
-          widgetDiv.setAttribute('data-api-base-url', apiBaseUrl);
-        }
         mount.appendChild(widgetDiv);
 
         const script = document.createElement('script');
         script.async = true;
         script.type = 'module';
-        script.src = './course-widget.js';
+        script.src = window.location.pathname;
         document.body.appendChild(script);
       }
     </script>

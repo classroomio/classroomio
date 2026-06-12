@@ -44,7 +44,7 @@ jobs:
             echo "ref=origin/main" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check ui: prefix on changed UI files
+      - name: 'Check ui: prefix on changed UI files'
         env:
           UI_PREFIX_GIT_BASE: ${{ steps.base.outputs.ref }}
         run: pnpm --filter @cio/ui prefix:check:changed
