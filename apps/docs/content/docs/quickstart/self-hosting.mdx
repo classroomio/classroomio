@@ -52,6 +52,28 @@ curl -I  http://localhost:3082/    # Dashboard — returns 200
 - API: http://localhost:3081
 - MinIO Console: http://localhost:9001 (default login: `minioadmin` / `minioadmin`)
 
+### Run from Pre-built Images (no build)
+
+Building from source needs the full repo and ~8 GB RAM for the dashboard build. To skip that, pull
+the published `classroomio/{api,dashboard,jobs}` images instead — you only need the images compose
+file and a `.env`:
+
+```zsh title="Terminal"
+curl -O https://raw.githubusercontent.com/classroomio/classroomio/main/docker/docker-compose.images.yaml
+curl -o .env https://raw.githubusercontent.com/classroomio/classroomio/main/.env.example
+# Edit .env: set CIO_VERSION (pin a release), DASHBOARD_ORIGIN, secrets, SMTP
+CIO_VERSION=1.4.2 docker compose -f docker-compose.images.yaml --env-file .env pull
+CIO_VERSION=1.4.2 docker compose -f docker-compose.images.yaml --env-file .env up -d
+```
+
+<Callout title="Pin a version in production">
+  `CIO_VERSION` chooses the image tag. Pin an exact release (e.g. `1.4.2`) so a new release never
+  breaks you unattended; `latest` = newest release, `edge` = bleeding edge. Rollback = set
+  `CIO_VERSION` back and re-pull. From a full clone, `./run-docker-full-stack.sh --images` does the
+  same. Note: secrets are NOT auto-generated on this path — set `BETTER_AUTH_SECRET`,
+  `AUTH_BEARER_TOKEN`, and `PRIVATE_SERVER_KEY` (last two identical) yourself.
+</Callout>
+
 ### One `.env`, One Command
 
 Docker self-hosting uses a single root `.env` file. Every `docker compose` command reads it via `--env-file .env` — you never need separate env files per service. See [`.env.example`](https://github.com/classroomio/classroomio/blob/main/.env.example) for the full template.

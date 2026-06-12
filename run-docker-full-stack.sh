@@ -4,18 +4,23 @@ set -euo pipefail
 
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 COMPOSE_FILE="${ROOT_DIR}/docker/docker-compose.yaml"
+IMAGES_COMPOSE_FILE="${ROOT_DIR}/docker/docker-compose.images.yaml"
 PROJECT_NAME="classroomio"
 ENV_FILE="${ROOT_DIR}/.env"
 BUILD_IMAGES=true
+USE_IMAGES=false
 COMPOSE_PROFILES="--profile minio"
 
 print_usage() {
   cat <<'USAGE'
-Usage: ./run-docker-full-stack.sh [--no-build] [--no-minio]
+Usage: ./run-docker-full-stack.sh [--no-build] [--no-minio] [--images]
 
 Options:
   --no-build  Start containers without rebuilding images.
   --no-minio  Exclude MinIO (object storage). By default MinIO is included.
+  --images    Use pre-built images from Docker Hub (docker-compose.images.yaml)
+              instead of building from source. Pulls classroomio/* at the tag in
+              CIO_VERSION (.env). No local build, no full repo needed.
   -h, --help  Show this help message.
 USAGE
 }
@@ -28,6 +33,12 @@ while [[ $# -gt 0 ]]; do
       ;;
     --no-minio)
       COMPOSE_PROFILES=""
+      shift
+      ;;
+    --images)
+      USE_IMAGES=true
+      BUILD_IMAGES=false
+      COMPOSE_FILE="${IMAGES_COMPOSE_FILE}"
       shift
       ;;
     -h|--help)
@@ -269,7 +280,11 @@ echo "Starting ClassroomIO Docker full stack..."
 if [[ "${COMPOSE_PROFILES}" != "" ]]; then
   echo "Including MinIO (object storage, default)..."
 fi
-if [[ "${BUILD_IMAGES}" == "true" ]]; then
+if [[ "${USE_IMAGES}" == "true" ]]; then
+  echo "Using pre-built images from Docker Hub (CIO_VERSION=$(get_env_value CIO_VERSION))..."
+  docker compose --env-file "${ENV_FILE}" -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" ${COMPOSE_PROFILES} pull
+  docker compose --env-file "${ENV_FILE}" -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" ${COMPOSE_PROFILES} up -d
+elif [[ "${BUILD_IMAGES}" == "true" ]]; then
   docker compose --env-file "${ENV_FILE}" -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" ${COMPOSE_PROFILES} up --build -d
 else
   docker compose --env-file "${ENV_FILE}" -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" ${COMPOSE_PROFILES} up -d

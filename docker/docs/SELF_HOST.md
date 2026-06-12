@@ -21,6 +21,53 @@ It auto-generates secure values for `AUTH_BEARER_TOKEN`, `PRIVATE_SERVER_KEY`, a
 
 > **The jobs worker is required, not optional.** Without it, video processing, captions/transcription, AI course generation, and most emails are enqueued in Redis but never run — uploads stay stuck "processing" with no error. See [Background Jobs Worker](#background-jobs-worker) below.
 
+## Run from Pre-built Images (no build)
+
+The Quick Start builds images from source — that needs the full repo and ~8 GB RAM for the
+dashboard build. Most self-hosters should instead **pull** the published `classroomio/{api,dashboard,jobs}`
+images. You only need [`docker-compose.images.yaml`](../docker-compose.images.yaml) and a `.env`:
+
+```bash
+# 1. Get just the compose file + env template (no full clone required)
+curl -O https://raw.githubusercontent.com/classroomio/classroomio/main/docker/docker-compose.images.yaml
+curl -o .env https://raw.githubusercontent.com/classroomio/classroomio/main/.env.example
+# 2. Edit .env — set CIO_VERSION (pin a release!), DASHBOARD_ORIGIN, secrets, SMTP
+# 3. Pull and start
+CIO_VERSION=1.4.2 docker compose -f docker-compose.images.yaml --env-file .env pull
+CIO_VERSION=1.4.2 docker compose -f docker-compose.images.yaml --env-file .env up -d
+```
+
+From a full clone you can also use the helper: `./run-docker-full-stack.sh --images`.
+
+> Secrets aren't auto-generated in this path (the helper script does that). Set `BETTER_AUTH_SECRET`,
+> `AUTH_BEARER_TOKEN`, and `PRIVATE_SERVER_KEY` (the last two identical) to strong random values yourself.
+
+## Versioning & Upgrades
+
+Published images use a **stable-releases + edge** tag policy:
+
+| Tag | Meaning | Use it for |
+|-----|---------|-----------|
+| `1.4.2` (exact) | An immutable, smoke-tested release | **Production — always pin this** |
+| `1.4`, `1` | Latest patch/minor of that line | Tracking a line |
+| `latest` | The newest *released* version | Trying it out |
+| `edge` | The last `main` build (may be unstable) | Testing upcoming changes |
+
+`latest` only moves when a real release is tagged — a routine merge to `main` publishes `edge`, never
+`latest`. **Pin `CIO_VERSION` to an exact version in production** so a new release can't break you
+unattended.
+
+```bash
+# Upgrade: bump the version, pull, recreate
+CIO_VERSION=1.5.0 docker compose -f docker-compose.images.yaml --env-file .env pull
+CIO_VERSION=1.5.0 docker compose -f docker-compose.images.yaml --env-file .env up -d
+
+# Rollback: set CIO_VERSION back to the previous release and repeat
+```
+
+(Maintainers: every published image is boot-smoke-tested in CI before it ships — see
+[`PUBLISHING_IMAGES.md`](PUBLISHING_IMAGES.md).)
+
 ## Environment Variables
 
 All Docker services read from a single root `.env` file. See [`.env.example`](../../.env.example) for the full annotated template with required/optional grouping.

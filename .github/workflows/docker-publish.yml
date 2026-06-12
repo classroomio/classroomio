@@ -31,7 +31,63 @@ env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || 'classroomio' }}
 
 jobs:
+  # Boot each freshly built image against ephemeral postgres + redis and confirm it
+  # actually starts BEFORE we publish anything. A broken image never reaches users.
+  smoke:
+    name: Smoke test (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: api
+            dockerfile: ./docker/Dockerfile.api
+            image: api
+          - name: dashboard
+            dockerfile: ./docker/Dockerfile.dashboard
+            image: dashboard
+          - name: jobs
+            dockerfile: ./apps/jobs/Dockerfile
+            image: jobs
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: classroomio
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 15
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build amd64 image (load locally)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          load: true
+          tags: cio-smoke-${{ matrix.image }}:test
+          platforms: linux/amd64
+          cache-from: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/${{ matrix.image }}:buildcache
+
+      - name: Boot smoke test
+        run: bash docker/smoke-test.sh ${{ matrix.name }} cio-smoke-${{ matrix.image }}:test
+
   build-and-push:
+    needs: smoke
     runs-on: ubuntu-latest
     strategy:
       matrix:
