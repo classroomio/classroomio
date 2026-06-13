@@ -74,7 +74,7 @@ services:
 
   api:
     build:
-      context: ..
+      context: .
       dockerfile: docker/Dockerfile.api
     container_name: cio-api
     ports:
@@ -84,6 +84,19 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      # node:slim has no curl/wget; use Node's global fetch (Node 20+).
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3081/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
     environment:
       NODE_ENV: production
       PORT: 3081
@@ -122,7 +135,7 @@ services:
 
   dashboard:
     build:
-      context: ..
+      context: .
       dockerfile: docker/Dockerfile.dashboard
       args:
         PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
@@ -131,7 +144,7 @@ services:
       - "3082:3082"
     depends_on:
       api:
-        condition: service_started
+        condition: service_healthy
     environment:
       NODE_ENV: production
       PORT: 3082
@@ -149,6 +162,55 @@ services:
       CSP_FRAME_SRC_DOMAINS: ${CSP_FRAME_SRC_DOMAINS:-}
       CSP_FONT_SRC_DOMAINS: ${CSP_FONT_SRC_DOMAINS:-}
       CSP_MEDIA_SRC_DOMAINS: ${CSP_MEDIA_SRC_DOMAINS:-}
+    restart: unless-stopped
+
+  # Background worker (BullMQ). REQUIRED: without it, video processing, transcription,
+  # AI course generation, and most emails are enqueued in Redis but never processed.
+  jobs:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.jobs
+    container_name: cio-jobs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
+      # Object storage (workers stream object bytes). Mirrors the api service.
+      OBJECT_STORAGE_ENDPOINT: ${OBJECT_STORAGE_ENDPOINT:-}
+      OBJECT_STORAGE_PUBLIC_ENDPOINT: ${OBJECT_STORAGE_PUBLIC_ENDPOINT:-}
+      OBJECT_STORAGE_REGION: ${OBJECT_STORAGE_REGION:-}
+      OBJECT_STORAGE_ACCESS_KEY_ID: ${OBJECT_STORAGE_ACCESS_KEY_ID:-}
+      OBJECT_STORAGE_SECRET_ACCESS_KEY: ${OBJECT_STORAGE_SECRET_ACCESS_KEY:-}
+      OBJECT_STORAGE_FORCE_PATH_STYLE: ${OBJECT_STORAGE_FORCE_PATH_STYLE:-true}
+      OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL: ${OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL:-}
+      # Bucket names match those created by minio-init above.
+      OBJECT_STORAGE_BUCKET_VIDEOS: ${OBJECT_STORAGE_BUCKET_VIDEOS:-videos}
+      OBJECT_STORAGE_BUCKET_DOCUMENTS: ${OBJECT_STORAGE_BUCKET_DOCUMENTS:-documents}
+      OBJECT_STORAGE_BUCKET_MEDIA: ${OBJECT_STORAGE_BUCKET_MEDIA:-media}
+      # Cloudflare R2 fallback (optional).
+      CLOUDFLARE_ACCOUNT_ID: ${CLOUDFLARE_ACCOUNT_ID:-}
+      CLOUDFLARE_ACCESS_KEY: ${CLOUDFLARE_ACCESS_KEY:-}
+      CLOUDFLARE_SECRET_ACCESS_KEY: ${CLOUDFLARE_SECRET_ACCESS_KEY:-}
+      CLOUDFLARE_IMAGE_BUCKET_DOMAIN: ${CLOUDFLARE_IMAGE_BUCKET_DOMAIN:-}
+      # Email (worker sends invites, notifications, etc.).
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_SENDER: ${SMTP_SENDER:-}
+      ZOHO_TOKEN: ${ZOHO_TOKEN:-}
+      # Transcription + OpenAI-backed agent runs.
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      # Optional per-queue concurrency tuning.
+      MEDIA_WORKER_CONCURRENCY: ${MEDIA_WORKER_CONCURRENCY:-}
+      TRANSCRIBE_WORKER_CONCURRENCY: ${TRANSCRIBE_WORKER_CONCURRENCY:-}
+      EMAIL_WORKER_CONCURRENCY: ${EMAIL_WORKER_CONCURRENCY:-}
+      AGENT_COURSE_GENERATION_WORKER_CONCURRENCY: ${AGENT_COURSE_GENERATION_WORKER_CONCURRENCY:-}
     restart: unless-stopped
 
 volumes:
