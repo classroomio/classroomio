@@ -3,6 +3,7 @@ import { PLANS } from '@cio/utils/plans';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
 import type { RequestEvent } from './$types';
+import { classroomio, getApiHeaders } from '$lib/utils/services/api';
 
 const SUBSCRIPTION_PRODUCT_IDS = new Set(
   Object.values(PLANS)
@@ -13,17 +14,34 @@ const SUBSCRIPTION_PRODUCT_IDS = new Set(
     .filter((id): id is string => Boolean(id))
 );
 
-export const GET = async ({ url, locals }: RequestEvent) => {
-  const { user, profile, organizations } = locals;
+export const GET = async ({ url, locals, cookies }: RequestEvent) => {
+  const { user } = locals;
 
-  if (!user || !profile) {
+  if (!user) {
     return new Response('Unauthorized', { status: 401 });
   }
 
   const orgId = url.searchParams.get('orgId');
-  const org = organizations?.find((candidate) => candidate.id === orgId);
 
-  if (!org?.siteName || !org.member) {
+  if (!orgId) {
+    return new Response('Missing orgId', { status: 400 });
+  }
+
+  const accountResponse = await classroomio.account.$get(undefined, getApiHeaders(cookies));
+
+  if (!accountResponse.ok) {
+    return new Response('Failed to fetch account data', { status: 500 });
+  }
+
+  const accountData = await accountResponse.json();
+
+  if (!accountData.success) {
+    return new Response('Failed to fetch account data', { status: 500 });
+  }
+
+  const org = accountData.organizations?.find((candidate) => candidate.id === orgId);
+
+  if (!org?.siteName || !org.memberId) {
     return new Response('You are not a member of this organization', { status: 403 });
   }
 
@@ -44,13 +62,13 @@ export const GET = async ({ url, locals }: RequestEvent) => {
 
   const checkout = await polar.checkouts.create({
     products: [productId],
-    customerEmail: profile.email ?? user.email,
-    customerName: profile.fullname || undefined,
+    customerEmail: accountData.profile?.email ?? user.email,
+    customerName: accountData.profile?.fullname || undefined,
     successUrl: `${url.origin}/org/${org.siteName}?upgrade=true&confirmation=true`,
     metadata: {
       orgId: org.id,
       orgSlug: org.siteName,
-      triggeredBy: String(org.member.id)
+      triggeredBy: String(org.memberId)
     }
   });
 
