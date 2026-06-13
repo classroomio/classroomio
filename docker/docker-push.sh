@@ -12,6 +12,11 @@ VERSION="${VERSION:-latest}"  # Can be overridden with VERSION env var
 PUBLIC_IS_SELFHOSTED="${PUBLIC_IS_SELFHOSTED:-true}"
 PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
 
+# Only a real semver release should also move the `latest` tag — building edge/main/dev
+# must NOT clobber the stable `latest` pointer (mirrors docker-publish.yml's tag policy).
+is_release_version() { [[ "${VERSION}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; }
+latest_arg() { is_release_version && printf -- '-t %s:latest' "$1"; }
+
 # Colors for output
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -39,7 +44,7 @@ docker buildx build \
     --platform "${PLATFORMS}" \
     -f docker/Dockerfile.api \
     -t ${DOCKERHUB_USERNAME}/api:${VERSION} \
-    -t ${DOCKERHUB_USERNAME}/api:latest \
+    $(latest_arg ${DOCKERHUB_USERNAME}/api) \
     --push \
     .
 echo -e "${GREEN}✓ API image published successfully!${NC}"
@@ -53,7 +58,7 @@ docker buildx build \
     -f docker/Dockerfile.dashboard \
     --build-arg PUBLIC_IS_SELFHOSTED=${PUBLIC_IS_SELFHOSTED} \
     -t ${DOCKERHUB_USERNAME}/dashboard:${VERSION} \
-    -t ${DOCKERHUB_USERNAME}/dashboard:latest \
+    $(latest_arg ${DOCKERHUB_USERNAME}/dashboard) \
     --push \
     .
 echo -e "${GREEN}✓ Dashboard image published successfully!${NC}"
@@ -65,7 +70,7 @@ docker buildx build \
     --platform "${PLATFORMS}" \
     -f apps/jobs/Dockerfile \
     -t ${DOCKERHUB_USERNAME}/jobs:${VERSION} \
-    -t ${DOCKERHUB_USERNAME}/jobs:latest \
+    $(latest_arg ${DOCKERHUB_USERNAME}/jobs) \
     --push \
     .
 echo -e "${GREEN}✓ Jobs image published successfully!${NC}"

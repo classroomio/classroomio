@@ -34,7 +34,7 @@ jobs:
         run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Setup turbo cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .turbo
           key: ${{ runner.os }}-turbo-${{ github.sha }}
@@ -56,4 +56,11 @@ jobs:
       # pre-existing formatting debt across several packages that predates this gate. Add
       # `lint` back once a repo-wide `pnpm format` has been merged.
       - name: Build
+        env:
+          # The dashboard imports PUBLIC_IS_SELFHOSTED from SvelteKit's strict
+          # $env/static/public, so it must be DEFINED at build time or the build errors
+          # (the Dockerfile sets it via a build arg). Build success doesn't depend on the
+          # value, only its presence — so we use "false" here to exercise the default/cloud
+          # variant; the self-hosted ("true") build is covered by docker-publish's smoke job.
+          PUBLIC_IS_SELFHOSTED: "false"
         run: pnpm turbo run build --cache-dir=.turbo

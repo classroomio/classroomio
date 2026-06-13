@@ -207,15 +207,17 @@ derive_public_storage_urls() {
 
   if ! is_local_origin "${dashboard_origin}"; then
     local origin="${dashboard_origin%/}"
-    if is_local_origin "${public_endpoint}"; then
-      upsert_env_value OBJECT_STORAGE_PUBLIC_ENDPOINT "${origin}"
-    fi
+    # Public media is served from the public-download `media` bucket, so deriving its base
+    # URL from the domain is what fixes broken media links in served pages. We deliberately
+    # do NOT touch OBJECT_STORAGE_PUBLIC_ENDPOINT (the S3 API endpoint) — pointing it at the
+    # dashboard origin would break presigned URLs for the non-public videos/documents buckets.
     if is_local_origin "${media_base}"; then
       upsert_env_value OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL "${origin}/media"
     fi
-    echo "Derived public storage URLs from DASHBOARD_ORIGIN (${origin})."
-    echo "  -> Ensure your reverse proxy routes ${origin}/media to MinIO (port 9000),"
-    echo "     or set OBJECT_STORAGE_PUBLIC_ENDPOINT / OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL explicitly."
+    echo "Derived OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL from DASHBOARD_ORIGIN (${origin}/media)."
+    echo "  -> Ensure your reverse proxy routes ${origin}/media to MinIO (port 9000)."
+    echo "  -> For presigned access to the videos/documents buckets behind a domain, expose"
+    echo "     MinIO's S3 API on its own route and set OBJECT_STORAGE_PUBLIC_ENDPOINT explicitly."
   else
     # Local demo: ensure localhost defaults are present.
     if [[ -z "${public_endpoint}" ]]; then

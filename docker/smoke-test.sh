@@ -72,8 +72,13 @@ case "${SERVICE}" in
     for _ in $(seq 1 30); do
       container_alive || dump_and_fail "dashboard container exited during startup"
       code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 http://localhost:3082/ 2>/dev/null || true)"
-      if [ -n "${code}" ] && [ "${code}" != "000" ]; then
+      # Accept any listening response (2xx/3xx, or the expected 404 when the API is absent),
+      # but FAIL on 5xx — a server-error on every route means a broken build, not a healthy boot.
+      if [ -n "${code}" ] && [ "${code}" != "000" ] && [[ "${code}" != 5* ]]; then
         echo "SMOKE OK (dashboard): server listening (HTTP ${code})"; exit 0
+      fi
+      if [[ "${code}" == 5* ]]; then
+        dump_and_fail "dashboard returned server error HTTP ${code}"
       fi
       sleep 3
     done
