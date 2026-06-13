@@ -14,8 +14,10 @@ PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
 
 # Only a real semver release should also move the `latest` tag — building edge/main/dev
 # must NOT clobber the stable `latest` pointer (mirrors docker-publish.yml's tag policy).
+# Use `if` (not `&&`) so the function always returns 0 even when it emits no tag — a helper
+# returning non-zero inside a $(...) argument is fragile under `set -e` / inherit_errexit.
 is_release_version() { [[ "${VERSION}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; }
-latest_arg() { is_release_version && printf -- '-t %s:latest' "$1"; }
+latest_arg() { if is_release_version; then printf -- '-t %s:latest' "$1"; fi; }
 
 # Colors for output
 GREEN='\033[0;32m'
