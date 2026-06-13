@@ -21,6 +21,9 @@ COPY packages/tsconfig/package.json packages/tsconfig/
 COPY packages/email/package.json packages/email/
 COPY packages/question-types/package.json packages/question-types/
 
+# Patches referenced by package.json#pnpm.patchedDependencies must be present for install.
+COPY patches ./patches
+
 RUN pnpm install --frozen-lockfile --filter @cio/jobs-worker...
 
 COPY . .
