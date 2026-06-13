@@ -91,7 +91,7 @@
                   <TypeBadge courseType={course.courseType} />
                 </div>
               {/if}
-              <div class="cio-cr-meta">{formatLessonsLine(course)}</div>
+              <div class="cio-cr-meta">{formatLessonsLine(course, payload.design.content.showLessonsCount)}</div>
             </div>
           </a>
         {/each}

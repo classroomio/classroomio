@@ -22,15 +22,23 @@
     if (!payload || !rootEl) return;
     ensureWidgetGoogleFontsLoaded(rootEl, payload.design);
   });
+
+  $effect(() => {
+    if (!rootEl) return;
+    const existing = rootEl.querySelector<HTMLStyleElement>('[data-cio-widget-custom-css]');
+    if (existing) existing.remove();
+    if (!customCss) return;
+    const styleEl = document.createElement('style');
+    styleEl.setAttribute('data-cio-widget-custom-css', '');
+    styleEl.textContent = customCss;
+    rootEl.appendChild(styleEl);
+  });
 </script>
 
 {#if !payload}
   <div class="cio-widget cio-widget--empty">No widget payload provided.</div>
 {:else}
   <div bind:this={rootEl} class="cio-widget" style={cssVars} data-cio-layout={payload.layoutType}>
-    {#if customCss}
-      <svelte:element this={'style'} data-cio-widget-custom-css="">{customCss}</svelte:element>
-    {/if}
     {#if payload.layoutType === 'card_grid'}
       <CardGrid {payload} />
     {:else if payload.layoutType === 'tag_filter'}

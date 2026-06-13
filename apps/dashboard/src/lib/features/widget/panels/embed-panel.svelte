@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
+  import { CopyButton } from '@cio/ui/base/copy-button';
   import * as Tabs from '@cio/ui/base/tabs';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { t } from '$lib/utils/functions/translations';
@@ -26,9 +27,9 @@
     <Tabs.Content value="html" class="mt-4 space-y-3">
       <TextareaField label={$t('widgets.form.embed_code')} value={detail.widget.embedCode} rows={6} readonly />
       <div class="flex flex-wrap gap-2">
-        <Button variant="outline" onclick={() => navigator.clipboard.writeText(detail.widget.embedCode)}>
+        <CopyButton text={detail.widget.embedCode} variant="outline">
           {$t('widgets.actions.copy_embed')}
-        </Button>
+        </CopyButton>
       </div>
     </Tabs.Content>
 
@@ -36,9 +37,9 @@
       <TextareaField label={$t('widgets.embed.url_label')} value={detail.widget.hostedEmbedUrl} rows={2} readonly />
       <p class="ui:text-muted-foreground text-xs">{$t('widgets.embed.url_helper')}</p>
       <div class="flex flex-wrap gap-2">
-        <Button variant="outline" onclick={() => navigator.clipboard.writeText(detail.widget.hostedEmbedUrl)}>
+        <CopyButton text={detail.widget.hostedEmbedUrl} variant="outline">
           {$t('widgets.actions.copy_url')}
-        </Button>
+        </CopyButton>
       </div>
     </Tabs.Content>
   </Tabs.Root>
@@ -50,7 +51,15 @@
         <div class="ui:border-border ui:bg-card/50 flex items-center justify-between rounded-2xl border p-3">
           <div>
             <div class="font-medium">v{version.version}</div>
-            <div class="ui:text-muted-foreground text-xs">{version.publishedAt}</div>
+            <div class="ui:text-muted-foreground text-xs">
+              {new Date(version.publishedAt).toLocaleString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+              })}
+            </div>
           </div>
           <Button variant="outline" size="sm" onclick={() => onRollback(version.id)}>
             {$t('widgets.actions.restore')}

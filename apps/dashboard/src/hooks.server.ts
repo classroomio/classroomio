@@ -43,6 +43,7 @@ export const handle: Handle = async (args) => {
 
   const cookieString = event.cookies.getAll().map((c) => `${c.name}=${c.value}`);
   console.log('event.cookies', cookieString);
+  console.log('page path', event.url.pathname);
   const sessionData = await getSessionData(event.cookies);
 
   if (sessionData) {

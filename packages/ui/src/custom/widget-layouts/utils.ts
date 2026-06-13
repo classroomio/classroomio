@@ -56,7 +56,8 @@ export function getCourseExcerpt(course: TWidgetPayloadCourse, maxLength = 160):
   return `${flat.slice(0, maxLength - 1).trim()}…`;
 }
 
-export function formatLessonsLine(course: TWidgetPayloadCourse): string {
+export function formatLessonsLine(course: TWidgetPayloadCourse, showLessonsCount?: boolean): string {
+  if (showLessonsCount === false) return '';
   const parts: string[] = [];
   if (course.lessonCount) parts.push(`${course.lessonCount} lessons`);
   if (course.exerciseCount) parts.push(`${course.exerciseCount} exercises`);
