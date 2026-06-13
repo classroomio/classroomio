@@ -28,10 +28,10 @@ RUN pnpm install --frozen-lockfile --filter @cio/jobs-worker...
 
 COPY . .
 
-RUN pnpm --filter @cio/utils build \
-    && pnpm --filter @cio/db build \
-    && pnpm --filter @cio/jobs build \
-    && pnpm --filter @cio/jobs-worker build
+# Build the worker and all its workspace deps in topological order. A hand-written
+# list silently misses transitive deps (e.g. @cio/question-types, consumed by @cio/utils);
+# `-r --filter ...` builds the whole closure in the right order (mirrors api/dashboard).
+RUN pnpm -r --filter @cio/jobs-worker... build
 
 # Run all worker entrypoints by default. Override CMD to scale media / transcribe
 # / maintenance independently.
