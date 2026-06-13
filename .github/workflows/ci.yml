@@ -52,10 +52,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # NOTE: `lint` (prettier --check) is intentionally NOT run here yet — the repo has
-      # pre-existing formatting debt across several packages that predates this gate. Add
-      # `lint` back once a repo-wide `pnpm format` has been merged.
-      - name: Build
+      # Scope: build only the @cio/api and @cio/dashboard closures — the two Docker images
+      # this gate exists to protect. The other apps (website, docs, embeds, tenant-router) are
+      # already built on PRs by their own Cloudflare Workers builds, and storybook only deploys
+      # from its own branch — building everything here just surfaced unrelated, pre-existing rot.
+      # `lint` (prettier --check) is also deferred until a repo-wide `pnpm format` is merged.
+      - name: Build (api + dashboard)
         env:
           # The dashboard imports PUBLIC_IS_SELFHOSTED from SvelteKit's strict
           # $env/static/public, so it must be DEFINED at build time or the build errors
@@ -63,4 +65,4 @@ jobs:
           # value, only its presence — so we use "false" here to exercise the default/cloud
           # variant; the self-hosted ("true") build is covered by docker-publish's smoke job.
           PUBLIC_IS_SELFHOSTED: "false"
-        run: pnpm turbo run build --cache-dir=.turbo
+        run: pnpm turbo run build --filter=@cio/api... --filter=@cio/dashboard... --cache-dir=.turbo
