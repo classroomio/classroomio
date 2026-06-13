@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-COMPOSE_FILE="${ROOT_DIR}/docker/docker-compose.yaml"
+COMPOSE_FILE="${ROOT_DIR}/docker-compose.yaml"
 IMAGES_COMPOSE_FILE="${ROOT_DIR}/docker/docker-compose.images.yaml"
 PROJECT_NAME="classroomio"
 ENV_FILE="${ROOT_DIR}/.env"

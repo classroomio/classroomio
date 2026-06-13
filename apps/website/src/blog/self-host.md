@@ -27,4 +27,4 @@ Below is a demo showing you step by step how to self host the project
 
 We want to support self-hosting using a Coolify template or just using a Dockerfile. We currently have Dockerfiles for our api, dashboard, and jobs worker projects however contributions from the open source community would help us in properly testing and improving them.
 
-If you prefer deployment with Docker, do checkout our [docker-compose.yaml](https://github.com/classroomio/classroomio/blob/main/docker/docker-compose.yaml) file to get started and we can kick off a conversation on Github.
+If you prefer deployment with Docker, do checkout our [docker-compose.yaml](https://github.com/classroomio/classroomio/blob/main/docker-compose.yaml) file to get started and we can kick off a conversation on Github.

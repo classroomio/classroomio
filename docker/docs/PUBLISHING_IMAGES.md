@@ -105,7 +105,7 @@ docker pull classroomio/dashboard:latest
 
 ### Deploy with Compose
 
-For self-hosting with Docker Compose, see [SELF_HOST.md](SELF_HOST.md). The setup uses a single root `.env` file and `docker/docker-compose.yaml`.
+For self-hosting with Docker Compose, see [SELF_HOST.md](SELF_HOST.md). The setup uses a single root `.env` file and `docker-compose.yaml`.
 
 ## Versioning Strategy (stable-releases + edge)
 

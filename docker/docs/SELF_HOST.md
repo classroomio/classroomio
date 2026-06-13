@@ -89,7 +89,7 @@ Key points:
 ## Verify
 
 ```bash
-docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml ps
+docker compose --env-file .env -p classroomio -f docker-compose.yaml ps
 curl -sS http://localhost:3081/    # API — returns JSON
 curl -I  http://localhost:3082/    # Dashboard — returns 200
 ```
@@ -108,7 +108,7 @@ docker exec cio-api pnpm --filter @cio/db db:setup:seed
 All commands use this prefix — abbreviated as `dc` below:
 
 ```
-dc = docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml
+dc = docker compose --env-file .env -p classroomio -f docker-compose.yaml
 ```
 
 | Task | Command |
@@ -150,7 +150,7 @@ MinIO is included by default. The startup script auto-configures env vars, start
 To start MinIO manually (e.g. after `--no-minio`):
 
 ```bash
-docker compose -f docker/docker-compose.yaml --profile minio up -d
+docker compose -f docker-compose.yaml --profile minio up -d
 ```
 
 - **Web UI:** `http://localhost:9001` (credentials are the randomized `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` written to your `.env`).
@@ -163,7 +163,7 @@ If port 9001 does not respond, recreate the container:
 
 ```bash
 docker rm -f cio-minio
-docker compose -f docker/docker-compose.yaml --profile minio up -d
+docker compose -f docker-compose.yaml --profile minio up -d
 ```
 
 Data is preserved in the `minio-data` volume.
@@ -183,7 +183,7 @@ It shares Redis and the database with the API. It is started automatically by th
 script. If it is not running, jobs accumulate in Redis and silently never complete.
 
 ```bash
-docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml logs -f jobs
+docker compose --env-file .env -p classroomio -f docker-compose.yaml logs -f jobs
 ```
 
 > Note: the in-course **AI tutor chat** runs synchronously inside the API and does not need the
@@ -218,7 +218,7 @@ The bundled MinIO is fine for a single host. Two things matter for a real deploy
 ## Backups & Persistence
 
 All state lives in named Docker volumes: `postgres-data`, `redis-data`, `minio-data`
-(see `docker/docker-compose.yaml`). **`docker compose ... down -v` deletes them — and all your
+(see `docker-compose.yaml`). **`docker compose ... down -v` deletes them — and all your
 data.** Back up regularly:
 
 ```bash
@@ -250,10 +250,10 @@ This setup builds images from source (no live hot reload). Code changes require 
 
 ```bash
 # One service
-docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up -d --build api
+docker compose --env-file .env -p classroomio -f docker-compose.yaml up -d --build api
 
 # Both (e.g. shared packages/* changed)
-docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up -d --build api dashboard
+docker compose --env-file .env -p classroomio -f docker-compose.yaml up -d --build api dashboard
 
 # Full stack
 ./run-docker-full-stack.sh
@@ -284,7 +284,7 @@ Postgres has not finished starting. Wait 30-60 seconds and retry. The compose he
 Same root cause as disk full. Free space using the steps above and restart MinIO:
 
 ```bash
-docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml restart minio
+docker compose --env-file .env -p classroomio -f docker-compose.yaml restart minio
 ```
 
 ### SMTP Errors in Logs

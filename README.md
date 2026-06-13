@@ -138,7 +138,7 @@ The repository also contains shared packages under `packages/` (for example `pac
 6. Start local infrastructure for API (Postgres + Redis) and seed the DB:
 
    ```bash
-   docker compose -f docker/docker-compose.yaml up -d postgres redis db-init
+   docker compose -f docker-compose.yaml up -d postgres redis db-init
    ```
 
    - Connect with `DATABASE_URL=postgresql://postgres:postgres@localhost:5432/classroomio`
@@ -148,7 +148,7 @@ The repository also contains shared packages under `packages/` (for example `pac
 7. (Optional) Start MinIO locally for object storage (media/documents):
 
    ```bash
-   docker compose -f docker/docker-compose.yaml --profile minio up -d minio minio-init
+   docker compose -f docker-compose.yaml --profile minio up -d minio minio-init
    ```
 
    - Console: http://localhost:9001 (user/pass default `minioadmin` / `minioadmin`)

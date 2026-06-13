@@ -174,25 +174,25 @@ Use `./run-docker-full-stack.sh --no-minio` to exclude MinIO if you do not need 
 ./run-docker-full-stack.sh --no-minio
 
 # Service status
-docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml ps
+docker compose --env-file .env -p classroomio -f docker-compose.yaml ps
 
 # Stream logs
-docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml logs -f api dashboard
+docker compose --env-file .env -p classroomio -f docker-compose.yaml logs -f api dashboard
 
 # Rebuild one service
-docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up -d --build api
+docker compose --env-file .env -p classroomio -f docker-compose.yaml up -d --build api
 
 # Restart after env change (no rebuild needed)
-docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml restart api dashboard
+docker compose --env-file .env -p classroomio -f docker-compose.yaml restart api dashboard
 
 # Run DB seed (schema setup already runs on api startup; this adds demo data)
 docker exec cio-api pnpm --filter @cio/db db:setup:seed
 
 # Stop
-docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down
+docker compose --env-file .env -p classroomio -f docker-compose.yaml down
 
 # Stop and delete all data (database, redis, minio volumes)
-docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down -v
+docker compose --env-file .env -p classroomio -f docker-compose.yaml down -v
 ```
 
 See [docker/docs/SELF_HOST.md](https://github.com/classroomio/classroomio/blob/main/docker/docs/SELF_HOST.md) for the full Docker reference including troubleshooting.

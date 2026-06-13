@@ -74,7 +74,7 @@ services:
 
   api:
     build:
-      context: ..
+      context: .
       dockerfile: docker/Dockerfile.api
     container_name: cio-api
     ports:
@@ -135,7 +135,7 @@ services:
 
   dashboard:
     build:
-      context: ..
+      context: .
       dockerfile: docker/Dockerfile.dashboard
       args:
         PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
@@ -168,7 +168,7 @@ services:
   # AI course generation, and most emails are enqueued in Redis but never processed.
   jobs:
     build:
-      context: ..
+      context: .
       dockerfile: docker/Dockerfile.jobs
     container_name: cio-jobs
     depends_on:
