@@ -47,7 +47,7 @@ jobs:
             dockerfile: ./docker/Dockerfile.dashboard
             image: dashboard
           - name: jobs
-            dockerfile: ./apps/jobs/Dockerfile
+            dockerfile: ./docker/Dockerfile.jobs
             image: jobs
     services:
       postgres:
@@ -99,7 +99,7 @@ jobs:
             dockerfile: ./docker/Dockerfile.dashboard
             image: dashboard
           - name: jobs
-            dockerfile: ./apps/jobs/Dockerfile
+            dockerfile: ./docker/Dockerfile.jobs
             image: jobs
 
     steps:

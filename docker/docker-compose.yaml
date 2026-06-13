@@ -169,7 +169,7 @@ services:
   jobs:
     build:
       context: ..
-      dockerfile: apps/jobs/Dockerfile
+      dockerfile: docker/Dockerfile.jobs
     container_name: cio-jobs
     depends_on:
       postgres:

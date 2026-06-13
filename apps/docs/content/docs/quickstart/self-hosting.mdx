@@ -281,7 +281,7 @@ Optional: add `PUBLIC_APP_TITLE`, `PUBLIC_APP_DESCRIPTION`, `PUBLIC_OG_IMAGE_URL
 
 ### cio-jobs (background worker)
 
-Build this service from `apps/jobs/Dockerfile` (use `railway.jobs.json`). It has **no public domain**
+Build this service from `docker/Dockerfile.jobs` (use `railway.jobs.json`). It has **no public domain**
 — it's a worker that drains the Redis queue. It shares the same Postgres, Redis, storage, email, and
 OpenAI settings as the API:
 

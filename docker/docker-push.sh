@@ -70,7 +70,7 @@ echo ""
 echo -e "${GREEN}Building + pushing Jobs worker image...${NC}"
 docker buildx build \
     --platform "${PLATFORMS}" \
-    -f apps/jobs/Dockerfile \
+    -f docker/Dockerfile.jobs \
     -t ${DOCKERHUB_USERNAME}/jobs:${VERSION} \
     $(latest_arg ${DOCKERHUB_USERNAME}/jobs) \
     --push \
