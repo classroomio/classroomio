@@ -1,4 +1,4 @@
-import { getDefaultTemplate } from '@cio/email';
+import { getDefaultTemplate } from '@cio/email/templates';
 
 // ─── Sample content for each use case ────────────────────────────────────────
 
