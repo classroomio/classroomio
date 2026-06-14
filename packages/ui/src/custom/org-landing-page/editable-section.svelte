@@ -54,7 +54,7 @@
         class="ui:absolute ui:top-0 ui:left-0 ui:z-30 ui:-translate-y-full ui:flex ui:items-center ui:gap-1.5 ui:rounded-t-md ui:bg-primary ui:px-2 ui:py-1 ui:text-xs ui:font-medium ui:text-primary-foreground ui:shadow-sm ui:pointer-events-none"
       >
         {#if Icon}
-          <Icon class="ui:size-3.5" />
+          <Icon size={14} class="ui:size-3.5" />
         {/if}
         <span>{ctx.labelFor(sectionKey)}</span>
       </div>
