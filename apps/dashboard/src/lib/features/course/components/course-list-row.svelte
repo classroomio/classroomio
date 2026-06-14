@@ -84,6 +84,10 @@
 
   const hidden = $derived(new Set<string>(hiddenColumns));
 
+  const MAX_VISIBLE_TAGS = 3;
+  const visibleTags = $derived(tags.slice(0, MAX_VISIBLE_TAGS));
+  const remainingTagCount = $derived(Math.max(0, tags.length - MAX_VISIBLE_TAGS));
+
   const showActionsColumn = $derived(
     !hidden.has('actions') && (!isLMS || (isLMS && showPublicCourseLinks) || (isLMS && isExplore))
   );
@@ -163,7 +167,10 @@
   onclick={handleRowClick}
   role="row"
 >
-  <div class="grid w-full items-start gap-3" style="grid-template-columns: {gridTemplateColumns}">
+  <div
+    class="grid w-full grid-cols-1 items-start gap-x-3 gap-y-2 @3xl:grid-cols-[var(--row-cols)]"
+    style="--row-cols: {gridTemplateColumns}"
+  >
     <!-- Banner -->
     <div
       class="ui:border-border bg-muted relative size-28 shrink-0 overflow-hidden rounded-md border"
@@ -209,7 +216,7 @@
         {#if tags.length === 0}
           <span class="ui:text-muted-foreground text-xs">—</span>
         {:else}
-          {#each tags as tag (tag.id)}
+          {#each visibleTags as tag (tag.id)}
             <Badge variant="outline" class="max-w-[140px] truncate">
               <span
                 class="ui:bg-primary/60 inline-block h-1.5 w-1.5 shrink-0 rounded-full"
@@ -219,6 +226,9 @@
               {tag.name}
             </Badge>
           {/each}
+          {#if remainingTagCount > 0}
+            <Badge variant="secondary" class="shrink-0 tabular-nums">+{remainingTagCount}</Badge>
+          {/if}
         {/if}
       </div>
     {/if}
