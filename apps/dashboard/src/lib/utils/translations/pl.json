@@ -435,7 +435,8 @@
     "lesson_video": {
       "generate_1080_completed": "Dodano wersję 1080p",
       "generate_1080_failed": "Nie można wygenerować wersji 1080p"
-    }
+    },
+    "social_auth_not_enabled": "Ten dostawca uwierzytelniania nie jest włączony."
   },
   "explore": {
     "heading": "Poznaj nasze kursy",

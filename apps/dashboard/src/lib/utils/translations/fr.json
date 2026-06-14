@@ -435,7 +435,8 @@
     "lesson_video": {
       "generate_1080_completed": "Rendu 1080p ajouté",
       "generate_1080_failed": "Impossible de générer un rendu 1080p"
-    }
+    },
+    "social_auth_not_enabled": "Ce fournisseur d'authentification n'est pas activé."
   },
   "explore": {
     "heading": "Découvrez nos cours",

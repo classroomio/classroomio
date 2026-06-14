@@ -435,7 +435,8 @@
     "lesson_video": {
       "generate_1080_completed": "Đã thêm phiên bản 1080p",
       "generate_1080_failed": "Không thể tạo phiên bản 1080p"
-    }
+    },
+    "social_auth_not_enabled": "Nhà cung cấp xác thực này chưa được kích hoạt."
   },
   "explore": {
     "heading": "Khám phá các khóa học của chúng tôi",
