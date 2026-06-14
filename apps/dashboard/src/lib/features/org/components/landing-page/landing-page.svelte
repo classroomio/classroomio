@@ -4,6 +4,7 @@
   import type { Component } from 'svelte';
 
   import { orgApi } from '$features/org/api/org.svelte';
+  import { appInitApi } from '$features/app/init.svelte';
   import PageLoader from './page-loader.svelte';
   import type { AccountOrg } from '$features/app/types';
   import {
@@ -26,17 +27,21 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let ThemeComponent = $state<Component<any> | null>(null);
 
-  const authAction = $derived(
-    $user.isLoggedIn
-      ? {
-          label: t.get($basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'),
-          href: resolve($basePath !== '#' ? $basePath : '/lms', {})
-        }
-      : {
-          label: t.get('navigation.login'),
-          href: '/login'
-        }
-  );
+  const authAction = $derived.by(() => {
+    if (!$user.isLoggedIn) {
+      return { label: t.get('navigation.login'), href: '/login' };
+    }
+
+    if (!appInitApi.isInitializedAndReady) {
+      return { label: '', href: '#', loading: true };
+    }
+
+    const goToLms = $basePath === '/lms' || $basePath === '#';
+    return {
+      label: t.get(goToLms ? 'navigation.goto_lms' : 'navigation.goto_dashboard'),
+      href: resolve($basePath !== '#' ? $basePath : '/lms', {})
+    };
+  });
 
   const landingPageProps = $derived(
     buildOrgLandingPageProps(

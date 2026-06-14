@@ -10,6 +10,8 @@
     authAction?: {
       label: string;
       href: string;
+      loading?: boolean;
+      disabled?: boolean;
     };
   }
 
@@ -49,7 +51,13 @@
 
         <div class="ui:justify-self-end ui:flex ui:items-center ui:gap-1">
           {#if authAction}
-            <Button href={authAction.href} size="sm" class="ui:rounded-md ui:px-3.5">
+            <Button
+              href={authAction.href}
+              loading={authAction.loading}
+              disabled={authAction.disabled}
+              size="sm"
+              class="ui:rounded-md ui:px-3.5"
+            >
               {authAction.label}
             </Button>
           {/if}
