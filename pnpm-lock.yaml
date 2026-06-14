@@ -1332,6 +1332,9 @@ importers:
       '@cio/certificates':
         specifier: workspace:*
         version: link:../certificates
+      '@cio/email':
+        specifier: workspace:*
+        version: link:../email
       '@cio/ui':
         specifier: workspace:*
         version: link:../ui
