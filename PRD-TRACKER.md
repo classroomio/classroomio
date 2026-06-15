@@ -22,6 +22,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | - | `prd/walkthrough-widget` | draft |
 | - | - | `prd/copy-page-as-markdown` | todo |
 | - | 15 | `prd/webhooks` | todo |
+| - | - | `prd/zapier` | draft |
 
 ## DONE (Completed PRDs)
 
