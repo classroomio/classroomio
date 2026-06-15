@@ -11,7 +11,7 @@
     "format": "turbo run format",
     "format:changed": "node scripts/format-changed.mjs --write",
     "format:check": "node scripts/format-changed.mjs --staged --check",
-    "postinstall": "test -d .git && lefthook install || true",
+    "postinstall": "node scripts/postinstall.mjs",
     "release": "standard-version",
     "db:reset": "pnpm --filter @cio/db db:reset",
     "db:studio": "pnpm --filter @cio/db db:studio",
