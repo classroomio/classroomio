@@ -31,8 +31,10 @@ pnpm i
 
 ### Step 2 — Create the `.env` files
 Each app/package reads its **own** `.env`. Copy each `.env.example` to `.env` and fill
-the values below. These are safe local-dev values (the same defaults the Docker stack
-uses, with host ports). The two `PRIVATE_SERVER_KEY` values **must match**.
+the values below (host ports). The secret values are placeholders — **generate each one**
+with `openssl rand -hex 32` rather than copying the example text. The two
+`PRIVATE_SERVER_KEY` values **must match**, so generate it once and paste the same value
+into both files.
 
 **`apps/api/.env`**
 ```bash
@@ -40,16 +42,16 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5432/classroomio"
 REDIS_URL="redis://localhost:6379"
 PUBLIC_SERVER_URL="http://localhost:3002"
 TRUSTED_ORIGINS="http://localhost:5173"        # the dashboard dev origin
-BETTER_AUTH_SECRET="local-dev-only-secret-change-this"
-AUTH_BEARER_TOKEN="local-dev-api-key"
-PRIVATE_SERVER_KEY="local-dev-api-key"          # must match the dashboard
+BETTER_AUTH_SECRET="<generate-with-openssl-rand-hex-32>"
+AUTH_BEARER_TOKEN="<generate-with-openssl-rand-hex-32>"
+PRIVATE_SERVER_KEY="<generate-with-openssl-rand-hex-32>"   # generate once; use the SAME value in the dashboard
 ```
 
 **`apps/dashboard/.env`**
 ```bash
 PUBLIC_SERVER_URL="http://localhost:3002"
 PRIVATE_SERVER_URL="http://localhost:3002"      # used by the SSR auth proxy — required for login
-PRIVATE_SERVER_KEY="local-dev-api-key"          # must match the API
+PRIVATE_SERVER_KEY="<generate-with-openssl-rand-hex-32>"   # must match the API (paste the value generated above)
 PUBLIC_IS_SELFHOSTED=true
 ```
 

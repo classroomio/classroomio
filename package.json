@@ -24,9 +24,7 @@
     "embeds:dev": "pnpm --filter=@cio/embeds --filter=@cio/ui run dev",
     "storybook:dev": "pnpm --filter=@cio/storybook --filter=@cio/ui --filter=@cio/question-types run dev",
     "mcp:build": "pnpm --filter=@classroomio/mcp run build",
-    "db:push": "pnpm --filter @cio/db db push",
-    "docker:start": "docker compose -f docker/docker-compose.yaml up -d postgres redis",
-    "docker:build": "docker compose -f docker/docker-compose.yaml up --build -d postgres redis"
+    "db:push": "pnpm --filter @cio/db db push"
   },
   "license": "MIT",
   "dependencies": {

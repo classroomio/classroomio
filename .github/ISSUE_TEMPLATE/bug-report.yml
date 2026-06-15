@@ -1,48 +1,111 @@
 name: 'Bug Report'
+description: Report something that is broken or behaving unexpectedly.
+title: '[area] '
 labels: ['bug']
-description: Create a bug report to help us improve
 body:
   - type: markdown
     attributes:
-      value: Thank you for reporting an issue.
-        Please fill in as much of the form below as you're able to.
-  - type: textarea
+      value: |
+        Thanks for taking the time to report a bug — anyone is welcome to file one.
+        Please fill in as much as you can; a short **screen recording** is the single
+        most helpful thing you can add.
+  - type: dropdown
+    id: severity
     attributes:
-      label: Issue Description
-      description: Please provide a clear and concise description of the problem.
-  - type: textarea
+      label: Severity
+      description: How bad is it? (drives fix order — S0 first)
+      options:
+        - S0 — Blocker (flow impossible / data loss / security / crash / payments broken)
+        - S1 — Major (core feature broken, no reasonable workaround)
+        - S2 — Minor (works but wrong/confusing; workaround exists)
+        - S3 — Polish (cosmetic / copy / layout / edge-only)
+    validations:
+      required: true
+  - type: dropdown
+    id: area
     attributes:
-      label: Steps to Reproduce
-      description: Please provide step-by-step instructions to reproduce the issue. Include code snippets, error messages, and any other relevant information.
-  - type: textarea
+      label: Area
+      options:
+        - backend / API (Api not behaving as expected, e.g. wrong response, error when it should succeed, etc.)
+        - auth
+        - signup / onboarding
+        - organizations / settings
+        - people / invites / roles
+        - courses
+        - lessons
+        - exercises / grading
+        - compliance / certificates
+        - programs / attendance
+        - community / newsfeed
+        - media / import
+        - org public site / website
+        - tags / domains / widgets
+        - public API / MCP / automation
+        - SSO / token auth / licensing
+        - billing / AI credits
+        - AI assistant / tutor
+        - email / jobs / analytics
+        - other
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
     attributes:
-      label: Expected Behavior
-      description: Describe what you expected to happen.
+      label: Environment
+      options:
+        - Local (pnpm dev)
+        - Staging (Coolify)
+        - Production (cloud)
+        - Self-hosted
+    validations:
+      required: true
   - type: textarea
+    id: steps
     attributes:
-      label: Current Behavior
-      description: Describe what is currently happening.
+      label: Steps to reproduce
+      description: Numbered, from a known starting state.
+      placeholder: |
+        1. Log in as admin (admin@test.com)
+        2. Courses → New course
+        3. ...
+    validations:
+      required: true
   - type: textarea
+    id: expected
     attributes:
-      label: Screenshots (optional)
-      description: If applicable, add screenshots to help explain the issue.
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include console/network errors if any.
+    validations:
+      required: true
+  - type: textarea
+    id: video
+    attributes:
+      label: Screen recording (recommended)
+      description: If you can, drag-and-drop a short video reproducing the bug — it speeds up triage a lot.
   - type: input
+    id: sentry
     attributes:
-      label: Operating System [e.g., Windows 10]
-  - type: input
+      label: Sentry link (if applicable)
+      description: Paste the Sentry issue URL if this maps to a captured error.
+  - type: dropdown
+    id: mode-specific
     attributes:
-      label: Browser [e.g., Chrome, Firefox]
-  - type: input
-    attributes:
-      label: Environment (locally, production, selfhosted)
-      description: If applicable, describe the environment in which the issue occurs.
+      label: Mode-specific?
+      description: Does this only happen in one deployment mode? (PUBLIC_IS_SELFHOSTED divergence)
+      options:
+        - 'No — happens in both / not mode-related'
+        - 'Cloud only'
+        - 'Self-hosted only'
+        - 'Not yet verified in the other mode'
   - type: checkboxes
     attributes:
-      label: Please check the boxes that apply to this issue report.
+      label: Before filing
       options:
-        - label: I have searched the existing issues to make sure this is not a duplicate.
-        - label: I have provided steps to reproduce the issue.
-        - label: I have included relevant environment information.
-        - label: I have included any relevant screenshots.
-        - label: I understand that this is a voluntary contribution and that there is no guarantee of resolution.
-        - label: I want to work on creating a PR for this issue if approved
+        - label: I searched existing issues and this is not a duplicate.
+        - label: I attached a screen recording (if I was able to).

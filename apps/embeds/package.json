@@ -7,7 +7,7 @@
     "dev": "vite dev --port 5180",
     "prebuild": "pnpm --filter @cio/ui run build",
     "build:question-type-picker": "vite build --mode question-type-picker",
-    "build:course-widget": "vite build --mode course-widget && node -e \"require('fs').copyFileSync('src/widgets/course-widget/embed.html','dist/course-widget/embed.html')\"",
+    "build:course-widget": "vite build --mode course-widget && node --input-type=commonjs -e \"require('fs').copyFileSync('src/widgets/course-widget/embed.html','dist/course-widget/embed.html')\"",
     "build": "rimraf dist && pnpm build:question-type-picker && pnpm build:course-widget",
     "format": "prettier --write .",
     "preview": "vite preview --port 4180",
