@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import type { ProgramNewsfeedItem } from '$features/program/utils/types';
   import { programNewsfeedApi, type ProgramNewsfeedCommentsByFeedId } from '$features/program/api';
   import {
@@ -59,10 +59,11 @@
   const reactionCounts = $derived(getNewsfeedReactionCounts(feed.reaction));
   const selectedReactionType = $derived(getSelectedNewsfeedReactionType(feed.reaction, reactionAuthorId));
 
-  const openEditFeed = () => {
-    programNewsfeedApi.openNewFeedModal();
-    edit = true;
+  const openEditFeed = async () => {
     editFeed = feed;
+    edit = true;
+    await tick();
+    programNewsfeedApi.openNewFeedModal();
   };
 
   const handleReact = (reactionType: string) => addNewReaction(reactionType, feed.id, reactionAuthorId);

@@ -105,7 +105,7 @@
 </script>
 
 <div class="drag-handle">
-  <Button variant="ghost" class="!ui:size-6 ui:rounded-sm ui:p-0" onclick={() => (open = true)}>
+  <Button variant="ghost" class="ui:!size-6 ui:rounded-sm ui:p-0" onclick={() => (open = true)}>
     <GripVertical />
   </Button>
   <DropdownMenu.Root bind:open>

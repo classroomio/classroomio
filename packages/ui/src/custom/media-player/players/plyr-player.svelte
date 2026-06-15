@@ -2,6 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
   import 'plyr/dist/plyr.css';
   import CaptionsIcon from '@lucide/svelte/icons/captions';
+  import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
   import type { MediaPlayerOptions, VideoTextTrack } from '../types';
   import { getYoutubeVideoId, isYoutubeUrl } from '../utils';
   import { PLYR_DEFAULT_CONTROLS } from './constants';
@@ -31,6 +32,7 @@
   let playerInstance = $state<Plyr | null>(null);
   let transcriptButtonElement = $state<HTMLButtonElement | null>(null);
   let playbackFailed = $state(false);
+  let isPlayerReady = $state(false);
   let reloadInFlight = $state(false);
   let timeupdateCleanup: (() => void) | undefined;
   let firstPlayCleanup: (() => void) | undefined;
@@ -42,6 +44,8 @@
   let hlsPlyrGeneration = 0;
   let plyrConstructInFlight = false;
   let hasFiredFirstPlay = false;
+  let isMounted = false;
+  let youtubeInitGeneration = 0;
 
   interface HlsQualityConfig {
     default: number;
@@ -58,12 +62,145 @@
   const isYouTube = $derived(isYoutubeUrl(src));
   const youtubeVideoId = $derived(isYouTube ? getYoutubeVideoId(src) : null);
 
-  function attachTimeUpdates(player: Plyr): () => void {
+  function attachTimeUpdates(player: Plyr, element: HTMLVideoElement): () => void {
+    const policy = options.seekPolicy;
+    if (policy?.mode === 'locked_until_complete') {
+      return attachSeekEnforcement(player, element, policy);
+    }
+
     const handler = () => options.onTimeUpdate?.(player.currentTime);
     player.on('timeupdate', handler);
     return () => {
       player.off('timeupdate', handler);
     };
+  }
+
+  function attachSeekEnforcement(
+    player: Plyr,
+    element: HTMLVideoElement,
+    policy: NonNullable<MediaPlayerOptions['seekPolicy']>
+  ): () => void {
+    let furthestSeconds = policy.initialFurthestSeconds ?? 0;
+    let playedSeconds = 0;
+    let lastValidTime = element.currentTime;
+    let isSeeking = false;
+    let hasBlockedThisSeek = false;
+    let lastHeartbeatAt = 0;
+    const seekTolerance = 0.5;
+    const heartbeatIntervalMs = 15_000;
+
+    const flushProgress = (force = false) => {
+      const durationSeconds = element.duration;
+      if (!durationSeconds || !Number.isFinite(durationSeconds)) return;
+
+      const now = Date.now();
+      if (!force && now - lastHeartbeatAt < heartbeatIntervalMs) return;
+
+      lastHeartbeatAt = now;
+      policy.onProgress?.({
+        positionSeconds: Math.floor(player.currentTime),
+        playedDeltaSeconds: Math.round(playedSeconds),
+        durationSeconds: Math.round(durationSeconds)
+      });
+      playedSeconds = 0;
+    };
+
+    const onSeeking = () => {
+      isSeeking = true;
+      if (!hasBlockedThisSeek && player.currentTime > furthestSeconds + seekTolerance) {
+        hasBlockedThisSeek = true;
+        player.currentTime = furthestSeconds;
+        policy.onSeekBlocked?.();
+      }
+    };
+
+    const onSeeked = () => {
+      isSeeking = false;
+      hasBlockedThisSeek = false;
+      lastValidTime = player.currentTime;
+    };
+
+    const onTimeUpdate = () => {
+      if (isSeeking) return;
+
+      const current = player.currentTime;
+      const delta = current - lastValidTime;
+
+      if (delta > 0 && delta < 2) {
+        playedSeconds += delta;
+        furthestSeconds = Math.max(furthestSeconds, current);
+      }
+
+      lastValidTime = current;
+      options.onTimeUpdate?.(current);
+      flushProgress(false);
+    };
+
+    const onRateChange = () => {
+      if (player.speed !== 1) {
+        player.speed = 1;
+      }
+    };
+
+    const onPause = () => flushProgress(true);
+
+    const onEnded = () => {
+      const durationSeconds = element.duration;
+      if (durationSeconds && Number.isFinite(durationSeconds)) {
+        const tailSeconds = durationSeconds - lastValidTime;
+        if (tailSeconds > 0) {
+          playedSeconds += tailSeconds;
+        }
+        furthestSeconds = Math.max(furthestSeconds, durationSeconds);
+        lastValidTime = durationSeconds;
+      }
+
+      flushProgress(true);
+    };
+
+    player.on('seeking', onSeeking);
+    player.on('seeked', onSeeked);
+    player.on('timeupdate', onTimeUpdate);
+    player.on('ratechange', onRateChange);
+    player.on('pause', onPause);
+    player.on('ended', onEnded);
+
+    return () => {
+      flushProgress(true);
+      player.off('seeking', onSeeking);
+      player.off('seeked', onSeeked);
+      player.off('timeupdate', onTimeUpdate);
+      player.off('ratechange', onRateChange);
+      player.off('pause', onPause);
+      player.off('ended', onEnded);
+    };
+  }
+
+  function getPlyrControls(): string[] {
+    if (!showControls) return [];
+
+    return PLYR_DEFAULT_CONTROLS;
+  }
+
+  function handleVisibilityChange(): void {
+    if (!options.seekPolicy?.pauseOnHidden) return;
+    if (!document.hidden) return;
+
+    try {
+      playerInstance?.pause();
+    } catch {
+      // Player may be mid-teardown.
+    }
+  }
+
+  function handleWindowBlur(): void {
+    if (!options.seekPolicy?.pauseOnHidden) return;
+
+    try {
+      playerInstance?.pause();
+    } catch {
+      // Player may be mid-teardown.
+    }
   }
 
   function attachFirstPlay(player: Plyr): () => void {
@@ -170,6 +307,7 @@
     transcriptPanelCleanup = undefined;
     plyrErrorCleanup = undefined;
     mediaErrorCleanup = undefined;
+    isPlayerReady = false;
     if (!playerInstance) return;
 
     try {
@@ -188,12 +326,12 @@
 
     const PlyrModule = await import('plyr');
     const PlyrConstructor = PlyrModule.default;
-    const controls = showControls ? PLYR_DEFAULT_CONTROLS : [];
+    const controls = getPlyrControls();
 
     try {
       // Recheck after the dynamic import resolves — the component may have
       // unmounted (or the videoElement bind nulled out) while we awaited.
-      if (!videoElement || playerInstance) return;
+      if (!isMounted || !videoElement || playerInstance) return;
 
       mediaErrorCleanup = attachMediaErrorHandler(videoElement);
 
@@ -213,9 +351,12 @@
             }
           : {})
       });
-      timeupdateCleanup = attachTimeUpdates(playerInstance);
+      timeupdateCleanup = attachTimeUpdates(playerInstance, videoElement);
       firstPlayCleanup = attachFirstPlay(playerInstance);
       plyrErrorCleanup = attachPlyrErrorHandler(playerInstance);
+      playerInstance.on('ready', () => {
+        isPlayerReady = true;
+      });
       options.onPlayerReady?.(playerInstance);
     } finally {
       plyrConstructInFlight = false;
@@ -257,23 +398,46 @@
     });
   }
 
+  async function constructPlyrForYouTubeEmbed(): Promise<void> {
+    if (!isMounted || !containerElement || !youtubeVideoId || playerInstance || plyrConstructInFlight) return;
+
+    const initGeneration = youtubeInitGeneration;
+    plyrConstructInFlight = true;
+
+    const PlyrModule = await import('plyr');
+    const PlyrConstructor = PlyrModule.default;
+    const controls = getPlyrControls();
+
+    try {
+      if (!isMounted || initGeneration !== youtubeInitGeneration || !containerElement || playerInstance) {
+        return;
+      }
+
+      playerInstance = new PlyrConstructor(containerElement, {
+        controls,
+        autoplay,
+        ratio: '16:9',
+        iconUrl: '/plyr.svg',
+        iconPrefix: 'plyr'
+      });
+      timeupdateCleanup = attachTimeUpdates(playerInstance);
+      firstPlayCleanup = attachFirstPlay(playerInstance);
+      plyrErrorCleanup = attachPlyrErrorHandler(playerInstance);
+      playerInstance.on('ready', () => {
+        isPlayerReady = true;
+      });
+      options.onPlayerReady?.(playerInstance);
+    } finally {
+      plyrConstructInFlight = false;
+    }
+  }
+
   onMount(() => {
+    isMounted = true;
+
     void (async () => {
       if (isYouTube && youtubeVideoId && containerElement) {
-        const PlyrModule = await import('plyr');
-        const PlyrConstructor = PlyrModule.default;
-        const controls = showControls ? PLYR_DEFAULT_CONTROLS : [];
-        playerInstance = new PlyrConstructor(containerElement, {
-          controls,
-          autoplay,
-          ratio: '16:9',
-          iconUrl: '/plyr.svg',
-          iconPrefix: 'plyr'
-        });
-        timeupdateCleanup = attachTimeUpdates(playerInstance);
-        firstPlayCleanup = attachFirstPlay(playerInstance);
-        plyrErrorCleanup = attachPlyrErrorHandler(playerInstance);
-        options.onPlayerReady?.(playerInstance);
+        await constructPlyrForYouTubeEmbed();
         return;
       }
 
@@ -448,6 +612,8 @@
   });
 
   onDestroy(() => {
+    isMounted = false;
+    youtubeInitGeneration += 1;
     hlsLoadGeneration += 1;
     hlsPlyrGeneration = 0;
     destroyHlsInstance();
@@ -463,8 +629,15 @@
     }
 
     teardownPlyrInstance();
+
+    if (isYouTube && containerElement) {
+      containerElement.replaceChildren();
+    }
   });
 </script>
+
+<svelte:document onvisibilitychange={handleVisibilityChange} />
+<svelte:window onblur={handleWindowBlur} />
 
 <div
   class="ui:relative ui:aspect-video ui:w-full ui:overflow-hidden ui:rounded-md"
@@ -500,6 +673,20 @@
         />
       {/each}
     </video>
+  {/if}
+
+  {#if !isPlayerReady && !playbackFailed}
+    <div
+      class="ui:absolute ui:inset-0 ui:z-10 ui:flex ui:items-center ui:justify-center ui:bg-black/40"
+      role="status"
+      aria-live="polite"
+      aria-label={options.loadingLabel}
+    >
+      <LoaderCircleIcon class="ui:size-10 ui:animate-spin ui:text-white" aria-hidden="true" />
+      {#if options.loadingLabel}
+        <span class="ui:sr-only">{options.loadingLabel}</span>
+      {/if}
+    </div>
   {/if}
 
   {#if playbackFailed && options.playbackErrorLabel}

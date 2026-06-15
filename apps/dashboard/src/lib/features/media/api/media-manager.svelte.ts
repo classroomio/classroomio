@@ -517,8 +517,13 @@ export class MediaApi extends BaseApiWithErrors {
         ok = true;
         snackbar.success('snackbar.media_manager.transcription_started');
       },
-      onError: () => {
-        snackbar.error('snackbar.media_manager.transcription_start_failed');
+      onError: (error) => {
+        const isConflict = typeof error === 'object' && error !== null && 'code' in error && error.code === 'CONFLICT';
+        snackbar.error(
+          isConflict
+            ? 'snackbar.media_manager.transcription_already_running'
+            : 'snackbar.media_manager.transcription_start_failed'
+        );
       }
     });
 

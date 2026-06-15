@@ -1,4 +1,4 @@
-import { escapeHtml, getYear, type TemplateRenderer } from './shared';
+import { escapeHtml, getYear, renderSignatoryBlock, SIGNATURE_IMAGE_STYLES, type TemplateRenderer } from './shared';
 
 export const renderClassique: TemplateRenderer = ({ design, data }) => {
   const accent = design.accentColor;
@@ -20,19 +20,13 @@ export const renderClassique: TemplateRenderer = ({ design, data }) => {
       <div class="recipient">${escapeHtml(data.recipientName)}</div>
       <div class="description">${escapeHtml(description)}</div>
       <div class="footer">
-        <div class="sig">
-          <div class="name">${escapeHtml(signatoryOne.name)}</div>
-          <div class="label">${escapeHtml(signatoryOne.role)}</div>
-        </div>
+        ${renderSignatoryBlock(signatoryOne, { wrapperClass: 'sig', nameClass: 'name', roleClass: 'label' })}
         <div class="seal">
           <div class="star">&#9733;</div>
           <div class="yr">${getYear(data.date)}</div>
           <div class="lbl">${escapeHtml(data.certificateId)}</div>
         </div>
-        <div class="sig">
-          <div class="name">${escapeHtml(signatoryTwo.name)}</div>
-          <div class="label">${escapeHtml(signatoryTwo.role)}</div>
-        </div>
+        ${renderSignatoryBlock(signatoryTwo, { wrapperClass: 'sig', nameClass: 'name', roleClass: 'label' })}
       </div>
     </div>
   `;
@@ -140,6 +134,7 @@ export const renderClassique: TemplateRenderer = ({ design, data }) => {
       gap: 40px;
     }
     .t-classique .sig {
+      width: 100%;
       text-align: center;
       border-top: 1px solid ${accent};
       padding-top: 6px;
@@ -190,6 +185,7 @@ export const renderClassique: TemplateRenderer = ({ design, data }) => {
       letter-spacing: 0.2em;
       margin-top: 2px;
     }
+    ${SIGNATURE_IMAGE_STYLES}
   `;
 
   return { body, styles };

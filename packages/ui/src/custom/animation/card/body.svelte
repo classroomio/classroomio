@@ -10,6 +10,6 @@
   let { children, className }: Props = $props();
 </script>
 
-<div class={cn('p-4 text-left', className)}>
+<div class={cn('ui:p-4 ui:text-left', className)}>
   {@render children()}
 </div>

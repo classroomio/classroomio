@@ -75,6 +75,8 @@
       return;
     }
 
+    let navigatingAway = false;
+
     try {
       const body = data.token ? { inviteToken: data.token } : {};
       const result = await courseApi.enroll(data.course!.id, body);
@@ -90,10 +92,11 @@
         already_joined: result.data.alreadyJoined
       });
 
+      navigatingAway = true;
       // need to force page reload to avoid cache issues
       window.location.href = result.data.redirectTo || '/lms';
     } finally {
-      loading = false;
+      if (!navigatingAway) loading = false;
     }
   }
 

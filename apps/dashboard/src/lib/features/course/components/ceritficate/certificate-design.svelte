@@ -36,11 +36,15 @@
       signatories: [
         {
           name: stored?.signatories?.[0]?.name ?? DEFAULT_CERTIFICATE_DESIGN.signatories[0].name,
-          role: stored?.signatories?.[0]?.role ?? DEFAULT_CERTIFICATE_DESIGN.signatories[0].role
+          role: stored?.signatories?.[0]?.role ?? DEFAULT_CERTIFICATE_DESIGN.signatories[0].role,
+          enabled: stored?.signatories?.[0]?.enabled ?? DEFAULT_CERTIFICATE_DESIGN.signatories[0].enabled,
+          signatureUrl: stored?.signatories?.[0]?.signatureUrl
         },
         {
           name: stored?.signatories?.[1]?.name ?? DEFAULT_CERTIFICATE_DESIGN.signatories[1].name,
-          role: stored?.signatories?.[1]?.role ?? DEFAULT_CERTIFICATE_DESIGN.signatories[1].role
+          role: stored?.signatories?.[1]?.role ?? DEFAULT_CERTIFICATE_DESIGN.signatories[1].role,
+          enabled: stored?.signatories?.[1]?.enabled ?? DEFAULT_CERTIFICATE_DESIGN.signatories[1].enabled,
+          signatureUrl: stored?.signatories?.[1]?.signatureUrl
         }
       ],
       idFormat: stored?.idFormat ?? DEFAULT_CERTIFICATE_DESIGN.idFormat
@@ -97,10 +101,14 @@
             {$t('course.navItem.certificates.editor.field_signatories')}
           </span>
           <div class="text-right text-xs">
-            <div class="font-medium">{design.signatories[0].name}</div>
-            <div class="ui:text-muted-foreground">{design.signatories[0].role}</div>
-            <div class="mt-1 font-medium">{design.signatories[1].name}</div>
-            <div class="ui:text-muted-foreground">{design.signatories[1].role}</div>
+            {#if design.signatories[0].enabled}
+              <div class="font-medium">{design.signatories[0].name}</div>
+              <div class="ui:text-muted-foreground">{design.signatories[0].role}</div>
+            {/if}
+            {#if design.signatories[1].enabled}
+              <div class:mt-1={design.signatories[0].enabled} class="font-medium">{design.signatories[1].name}</div>
+              <div class="ui:text-muted-foreground">{design.signatories[1].role}</div>
+            {/if}
           </div>
         </div>
       </Card.Content>

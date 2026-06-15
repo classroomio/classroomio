@@ -2,6 +2,7 @@
   import type { MediaPlayerOptions, VideoSource } from './types';
   import PlyrPlayer from './players/plyr-player.svelte';
   import MusePlayer from './players/muse-player.svelte';
+  import { formatYoutubeEmbedUrl } from './utils';
 
   interface Props {
     source: VideoSource;
@@ -26,11 +27,13 @@
   const tracks = $derived(source.tracks ?? []);
   const isMuse = $derived.by(() => source.type === 'muse' && source.metadata?.svid);
   const isGoogleDrive = $derived(source.type === 'google_drive');
+  const isYouTube = $derived(source.type === 'youtube');
   const poster = $derived(source.type === 'upload' ? source.metadata?.thumbnailUrl : undefined);
 
   const iframeTitle = $derived(source.metadata?.title?.trim() || 'Video');
   const iframeMaxHeight = $derived(options.maxHeight ?? '400px');
   const iframeWidth = $derived(options.width ?? '100%');
+  const youtubeEmbedUrl = $derived(isYouTube ? formatYoutubeEmbedUrl(source.url) : '');
 </script>
 
 <div class={className}>
@@ -48,6 +51,23 @@
         class="ui:block ui:h-full ui:min-h-[240px] ui:w-full ui:border-0"
         style:aspect-ratio="16 / 9"
         allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+  {:else if isYouTube}
+    <!-- Native embed avoids Plyr's async noembed/setAspectRatio race on teardown. -->
+    <div
+      class="ui:relative ui:aspect-video ui:w-full ui:overflow-hidden ui:rounded-md"
+      style:max-height={iframeMaxHeight}
+      style:width={iframeWidth}
+      style:min-height={options.minHeight}
+      style:height={options.height}
+    >
+      <iframe
+        src={youtubeEmbedUrl}
+        title={iframeTitle}
+        class="ui:block ui:h-full ui:w-full ui:border-0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowfullscreen
       ></iframe>
     </div>

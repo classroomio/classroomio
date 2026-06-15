@@ -10,6 +10,8 @@
     authAction?: {
       label: string;
       href: string;
+      loading?: boolean;
+      disabled?: boolean;
     };
   }
 
@@ -41,7 +43,13 @@
           {/each}
         </nav>
         {#if authAction}
-          <Button href={authAction.href} variant="outline" class="ui:rounded-xl ui:font-bold">
+          <Button
+            href={authAction.href}
+            loading={authAction.loading}
+            disabled={authAction.disabled}
+            variant="outline"
+            class="ui:rounded-xl ui:font-bold"
+          >
             {authAction.label}
           </Button>
         {/if}

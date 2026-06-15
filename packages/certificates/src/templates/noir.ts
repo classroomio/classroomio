@@ -1,4 +1,11 @@
-import { escapeHtml, getYear, shadeColor, type TemplateRenderer } from './shared';
+import {
+  escapeHtml,
+  getYear,
+  renderSignatoryBlock,
+  shadeColor,
+  SIGNATURE_IMAGE_STYLES,
+  type TemplateRenderer
+} from './shared';
 
 export const renderNoir: TemplateRenderer = ({ design, data }) => {
   const accent = design.accentColor;
@@ -27,18 +34,12 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
       <div class="recipient">${escapeHtml(data.recipientName)}</div>
       <div class="description">${escapeHtml(description)}</div>
       <div class="footer">
-        <div class="sig">
-          <div class="name">${escapeHtml(signatoryOne.name)}</div>
-          <div class="label">${escapeHtml(signatoryOne.role)}</div>
-        </div>
+        ${renderSignatoryBlock(signatoryOne, { wrapperClass: 'sig', nameClass: 'name', roleClass: 'label' })}
         <div class="medal">
           <div class="yr">${getYear(data.date)}</div>
           <div class="lbl">&#9733; AWARD &#9733;</div>
         </div>
-        <div class="sig">
-          <div class="name">${escapeHtml(signatoryTwo.name)}</div>
-          <div class="label">${escapeHtml(signatoryTwo.role)}</div>
-        </div>
+        ${renderSignatoryBlock(signatoryTwo, { wrapperClass: 'sig', nameClass: 'name', roleClass: 'label' })}
       </div>
     </div>
   `;
@@ -158,6 +159,7 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
       gap: 40px;
     }
     .t-noir .sig {
+      width: 100%;
       text-align: center;
       border-top: 1px solid ${accent};
       padding-top: 6px;
@@ -206,6 +208,7 @@ export const renderNoir: TemplateRenderer = ({ design, data }) => {
       font-size: 8px;
       letter-spacing: 0.2em;
     }
+    ${SIGNATURE_IMAGE_STYLES}
   `;
 
   return { body, styles };

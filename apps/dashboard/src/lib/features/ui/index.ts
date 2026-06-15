@@ -23,6 +23,7 @@ export { default as Search } from './search.svelte';
 export { default as SenjaEmbed } from './senja-embed.svelte';
 export { default as Snackbar } from './snackbar/snackbar.svelte';
 export { default as TextEditor } from './text-editor.svelte';
+export { preloadTextEditor } from './text-editor.svelte';
 export { default as UnsavedChanges } from './unsaved-changes.svelte';
 export { default as UploadImage } from './upload-image.svelte';
 export { default as UpgradeBanner } from './upgrade-banner.svelte';

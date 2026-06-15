@@ -21,6 +21,8 @@ class WidgetEditorStore {
   selectedCourseIds = $state<string[]>([]);
 
   // ── UI state ───────────────────────────────────────────────────────────────
+  saving = $state(false);
+  publishing = $state(false);
   activePanel = $state<PanelId>('select-courses');
   editingName = $state(false);
   courseSearch = $state('');
@@ -180,43 +182,53 @@ class WidgetEditorStore {
   async saveWidget(silent = false): Promise<boolean> {
     if (!this.detail) return false;
 
+    this.saving = true;
     widgetApi.resetErrors();
 
-    const updatedWidget = await widgetApi.updateWidget(
-      this.detail.widget.id,
-      {
-        name: this.draftName,
-        layoutType: this.draftLayoutType,
-        selectionMode: this.draftSelectionMode,
-        config: this.draftConfig,
-        selectedCourseIds: this.selectedCourseIds
-      },
-      silent
-    );
+    try {
+      const updatedWidget = await widgetApi.updateWidget(
+        this.detail.widget.id,
+        {
+          name: this.draftName,
+          layoutType: this.draftLayoutType,
+          selectionMode: this.draftSelectionMode,
+          config: this.draftConfig,
+          selectedCourseIds: this.selectedCourseIds
+        },
+        silent
+      );
 
-    if (!updatedWidget) return false;
+      if (!updatedWidget) return false;
 
-    await widgetApi.getWidget(this.detail.widget.id);
-    if (widgetApi.widgetDetail) {
-      this.applyDetail(widgetApi.widgetDetail);
+      await widgetApi.getWidget(this.detail.widget.id);
+      if (widgetApi.widgetDetail) {
+        this.applyDetail(widgetApi.widgetDetail);
+      }
+
+      return true;
+    } finally {
+      this.saving = false;
     }
-
-    return true;
   }
 
   async publishWidget() {
-    const saved = await this.saveWidget(true);
-    if (!saved || !this.detail) return;
+    this.publishing = true;
+    try {
+      const saved = await this.saveWidget(true);
+      if (!saved || !this.detail) return;
 
-    const published = await widgetApi.publishWidget(this.detail.widget.id);
-    if (!published) return;
+      const published = await widgetApi.publishWidget(this.detail.widget.id);
+      if (!published) return;
 
-    await widgetApi.getWidget(this.detail.widget.id);
-    if (widgetApi.widgetDetail) {
-      this.applyDetail(widgetApi.widgetDetail);
+      await widgetApi.getWidget(this.detail.widget.id);
+      if (widgetApi.widgetDetail) {
+        this.applyDetail(widgetApi.widgetDetail);
+      }
+
+      this.activePanel = 'embed';
+    } finally {
+      this.publishing = false;
     }
-
-    this.activePanel = 'embed';
   }
 
   async rollback(versionId: string) {

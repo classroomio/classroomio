@@ -52,8 +52,8 @@ export const DEFAULT_CERTIFICATE_DESIGN: CertificateDesign = {
   accentColor: DEFAULT_ACCENT_COLOR,
   subtitle: 'Awarded with Highest Distinction',
   signatories: [
-    { name: 'Course Facilitator', role: 'Facilitator' },
-    { name: 'Organization Lead', role: 'Director' }
+    { name: 'Course Facilitator', role: 'Facilitator', enabled: true },
+    { name: 'Organization Lead', role: 'Director', enabled: true }
   ],
   idFormat: 'N° {seq}'
 };

@@ -19,7 +19,7 @@
   {...props}
   data-code-overflow
   data-collapsed={collapsed}
-  class={cn('ui:relative ui:overflow-y-hidden ui:data-[collapsed=true]:ui:max-h-[300px]', className)}
+  class={cn('ui:relative ui:overflow-y-hidden ui:data-[collapsed=true]:max-h-[300px]', className)}
 >
   {@render children?.()}
   {#if collapsed}

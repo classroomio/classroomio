@@ -1,12 +1,15 @@
 /** Marker teachers use in the template for each blank (three underscores). */
 export const WORD_BANK_BLANK_MARKER = '___';
 
+/** Any run of 3+ underscores counts as a single blank, so `___` and `______` behave the same. */
+export const WORD_BANK_BLANK_PATTERN = /_{3,}/g;
+
 export type WordBankSegment = { type: 'text'; value: string } | { type: 'blank'; index: number };
 
 export function countWordBankBlanks(template: string): number {
   if (!template) return 0;
-  const parts = template.split(WORD_BANK_BLANK_MARKER);
-  return Math.max(0, parts.length - 1);
+  const matches = template.match(WORD_BANK_BLANK_PATTERN);
+  return matches ? matches.length : 0;
 }
 
 /** Splits template into alternating text runs and blank slots (indices0..n-1). */
@@ -14,7 +17,7 @@ export function parseWordBankTemplate(template: string): WordBankSegment[] {
   const segments: WordBankSegment[] = [];
   if (!template) return segments;
 
-  const parts = template.split(WORD_BANK_BLANK_MARKER);
+  const parts = template.split(WORD_BANK_BLANK_PATTERN);
   let blankIndex = 0;
 
   for (let i = 0; i < parts.length; i++) {

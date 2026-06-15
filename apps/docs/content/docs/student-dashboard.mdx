@@ -1,10 +1,88 @@
 ---
 title: Student Dashboard
-description: Learn about the student dashboard.
+description: Learn how students navigate the LMS, including Home, My Learning, Programs, and Explore.
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-<Callout type="warn" title="Work in Progress">
-  This page is a work in progress. Help us expand it by contributing!
+The student dashboard (LMS) is where students open courses, track progress, and discover new content. If you are an admin, this page helps you explain what students see after they join your organization.
+
+Students reach the LMS after they sign in on your academy. The left sidebar lists the main areas below. **Exercise** and **Community** only appear when your organization has those features enabled.
+
+## LMS navigation at a glance
+
+| Area | Path | What it shows |
+| --- | --- | --- |
+| **Home** | `/lms` | Enrolled courses with progress |
+| **My Learning** | `/lms/mylearning` | Enrolled courses only, grouped by status |
+| **Programs** | `/lms/programs` | Programs the student belongs to |
+| **Explore** | `/lms/explore` | Published courses they are not enrolled in yet |
+| **Exercise** | `/lms/exercises` | Exercises (if enabled for your org) |
+| **Community** | `/lms/community` | Community (if enabled for your org) |
+| **Settings** | `/lms/settings` | Profile and integrations |
+
+## Home
+
+**Home** is the default landing page after a student signs in. It shows courses they are already enrolled in, along with progress indicators so they can pick up where they left off.
+
+Use Home when you want a quick overview of everything the student is actively taking.
+
+## My Learning
+
+**My Learning** focuses only on enrolled courses. Students can switch between tabs such as **In progress** and **Complete** to filter their list.
+
+| View | Best for |
+| --- | --- |
+| **Home** | Progress at a glance across enrolled courses |
+| **My Learning** | Browsing and filtering enrolled courses by completion status |
+
+Both show enrolled courses. My Learning adds clearer filtering for students managing a longer list.
+
+## Explore
+
+**Explore** lists **published, active courses** in your organization that the student has **not** enrolled in yet. Each card links to the course landing page so they can read details and enroll (if enrollment is open).
+
+<Callout type="info" title="Explore is a catalog, not an enrollment gate">
+  A course can appear in Explore even when public self-enrollment is turned off. **Allow New Students** controls whether someone can join from the landing page, not whether the course is visible in Explore. To restrict who can join, see [How Course Enrollment Works](/docs/how-to-guides/course-enrollment).
 </Callout>
+
+Explore is useful when you want students to discover optional or elective courses without assigning them manually.
+
+## Programs
+
+**Programs** are separate from individual courses. A program groups courses under shared goals (for example, complete all courses in an onboarding track). Students who belong to a program see it under **Programs** in the LMS.
+
+| Concept | Where students see it |
+| --- | --- |
+| Individual enrolled courses | Home, My Learning |
+| Courses not yet joined | Explore |
+| Multi-course tracks with goals | Programs |
+
+For how admins create programs and set goals, see [Programs](/docs/programs).
+
+## What students see right after enrolling
+
+When a student enrolls in a course (from a landing page, invite link, or admin assignment):
+
+1. They are added to the course **group** immediately.
+2. The course appears on **Home** and **My Learning**.
+3. It no longer appears in **Explore** (because they are enrolled).
+4. They can open lessons, exercises, and materials from the course sidebar.
+
+If you added them from **People** but they have not signed in yet, they may show as **Pending** in the admin People list until they accept the invite or create an account.
+
+## Courses vs programs: quick comparison
+
+| Question | Answer |
+| --- | --- |
+| Where do I see courses I am taking? | **Home** or **My Learning** |
+| Where do I find courses I have not joined? | **Explore** |
+| Where do I see structured learning paths? | **Programs** |
+| Can one student use all three views? | Yes. They work together. |
+
+## Related guides
+
+- [How Course Enrollment Works](/docs/how-to-guides/course-enrollment) — how students join courses and what settings control access
+- [How to Invite Students](/docs/how-to-guides/invite-students) — send enrollment links by email
+- [Programs](/docs/programs) — multi-course tracks and goals for admins
+- [Create a Course Landing Page](/docs/how-to-guides/course-landingpage) — what prospects see before enrolling

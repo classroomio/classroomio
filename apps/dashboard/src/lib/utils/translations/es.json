@@ -104,8 +104,8 @@
       "min_char": "El campo debe contener 5 o más caracteres."
     },
     "site_name": {
-      "min_char": "El nombre del sitio debe contener 5 o más caracteres.",
-      "hyphen_rule": "El nombre del sitio no puede empezar ni terminar con un guión."
+      "min_char": "El subdominio de la Academia debe contener 5 o más caracteres.",
+      "hyphen_rule": "El subdominio Academy no puede comenzar ni terminar con un guión"
     },
     "organization_name": {
       "min_char": "La organización debe contener 5 o más caracteres.",
@@ -352,7 +352,8 @@
       "thumbnail_regen_started": "Regenerando miniaturas…",
       "thumbnail_regen_failed": "No se pudieron regenerar las miniaturas",
       "transcript_saved": "Transcripción actualizada",
-      "transcript_save_failed": "No se pudo guardar la transcripción"
+      "transcript_save_failed": "No se pudo guardar la transcripción",
+      "transcription_already_running": "Ya se está realizando un trabajo de transcripción para este vídeo."
     },
     "tags": {
       "group_created": "Grupo de etiquetas creado",
@@ -434,7 +435,8 @@
     "lesson_video": {
       "generate_1080_completed": "Se agregó una reproducción de 1080p",
       "generate_1080_failed": "No se pudo generar una reproducción de 1080p"
-    }
+    },
+    "social_auth_not_enabled": "Este proveedor de autenticación no está habilitado."
   },
   "explore": {
     "heading": "Explora nuestros cursos",
@@ -457,7 +459,8 @@
     "not_in_progress": "Ningún curso en curso",
     "any_progress": "Cualquier curso que inicies se mostrará aquí.",
     "not_completed": "Ningún curso completado",
-    "any_course": "Cualquier curso que completes se mostrará aquí."
+    "any_course": "Cualquier curso que completes se mostrará aquí.",
+    "find_courses": "encontrar cursos"
   },
   "lms_navigation": {
     "home": "Inicio",
@@ -599,13 +602,13 @@
       "course_types": "Tipos de cursos"
     },
     "course_metrics": {
-      "page_subtitle": "Inscripción, finalización de lecciones, calificaciones y progreso por alumno para este curso.",
-      "progress_distribution_card_description": "¿Cuántos alumnos se encuentran en cada banda de finalización?",
-      "grade_distribution_card_description": "Cuántos alumnos se encuentran en cada grupo de grado.",
-      "students_table_description": "Descripción general ordenable con enlaces a perfiles de alumnos.",
+      "page_subtitle": "Inscripción, finalización de lecciones, calificaciones y progreso por estudiante para este curso.",
+      "progress_distribution_card_description": "¿Cuántos estudiantes caen en cada banda de finalización?",
+      "grade_distribution_card_description": "¿Cuántos estudiantes caen en cada grupo de grado?",
+      "students_table_description": "Descripción general ordenable con enlaces a perfiles de estudiantes.",
       "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
       "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} asignados a lecciones",
-      "kpi_progress_grade": "{grade}% de calificación promedio de ejercicio entre los estudiantes inscritos"
+      "kpi_progress_grade": "{grade}% de calificación promedio de ejercicio entre los estudiantes matriculados"
     }
   },
   "audience": {
@@ -672,7 +675,7 @@
     },
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "user_analytics": {
-      "title": "Learner profile",
+      "title": "Perfil de estudiante",
       "page_subtitle": "Progress, grades, and activity across their courses."
     }
   },
@@ -742,6 +745,10 @@
         "drag": "Arrastre y suelte las etiquetas para reordenar las pestañas de materiales",
         "content_grouping_title": "Agrupación de contenidos",
         "content_grouping_description": "Agrupe lecciones y ejercicios por sección en la lista de contenidos.",
+        "progression_mode_title": "Progresión del estudiante",
+        "progression_mode_description": "Controla si los estudiantes pueden acceder a todo el contenido desbloqueado o deben completar los elementos en orden.",
+        "progression_mode_free": "Libre — el contenido desbloqueado es accesible",
+        "progression_mode_sequential": "Secuencial — completar elementos previos para desbloquear el siguiente",
         "lesson_download": "Lecciones DescargarCargar",
         "available": "Haga que la lección esté disponible para descargar en pdf para estudiantes registrados",
         "course_download": "Descarga del curso",
@@ -762,7 +769,7 @@
         "save": "Guardar cambios",
         "tags": {
           "title": "Etiquetas",
-          "description": "Asigne etiquetas para que los alumnos puedan descubrir este curso con filtros.",
+          "description": "Asigne etiquetas para que los estudiantes puedan descubrir este curso con filtros.",
           "empty": "No hay etiquetas seleccionadas",
           "add": "Agregar etiqueta",
           "popover_title": "Seleccionar etiquetas",
@@ -1021,7 +1028,14 @@
           "field_template": "Plantilla",
           "field_accent": "acento",
           "field_signatories": "Firmantes",
-          "customize_design": "Personalizar diseño"
+          "customize_design": "Personalizar diseño",
+          "signatory_one_toggle": "Mostrar firmante 1",
+          "signatory_two_toggle": "Mostrar firmante 2",
+          "signature_upload": "Imagen de firma",
+          "signature_upload_hint": "Sube una imagen de firma (opcional)",
+          "signature_dont_crop": "No recortar",
+          "signature_upload_in_progress": "Espere a que finalice la carga de la firma antes de guardar.",
+          "save_failed": "No se pudo guardar el diseño del certificado. Revisa el formulario y vuelve a intentarlo."
         }
       },
       "people": {
@@ -1102,7 +1116,7 @@
           "send_invite_emails": "Enviar correos electrónicos de invitación inmediatamente",
           "create_email_invites": "Crear invitaciones por correo electrónico",
           "existing_students_title": "Add existing org students",
-          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_description": "Elija estudiantes que ya estén en esta organización y concédales acceso directo a este curso.",
           "existing_students_search": "Search organization students",
           "loading_existing_students": "Loading organization students...",
           "no_existing_students": "No organization students are available to add.",
@@ -1442,7 +1456,7 @@
                   "range_error": "Answer must be between {min} and {max} characters."
                 },
                 "edit": {
-                  "placeholder": "Los alumnos responderán con un texto extenso.",
+                  "placeholder": "Los estudiantes responderán con un texto extenso.",
                   "min_characters_label": "Minimum characters",
                   "min_characters_placeholder": "Minimum characters",
                   "max_characters_label": "Maximum characters",
@@ -1505,7 +1519,7 @@
                   "add_button": "Agregar enlace"
                 },
                 "edit": {
-                  "instructions_placeholder": "Instrucciones opcionales para los estudiantes.",
+                  "instructions_placeholder": "Instrucciones opcionales para estudiantes.",
                   "helper": "Los estudiantes pueden enviar una o más URL válidas (http/https)."
                 }
               },
@@ -1551,7 +1565,7 @@
                 },
                 "edit": {
                   "correct_value_label": "Valor correcto",
-                  "correct_value_info": "La respuesta numérica esperada que los alumnos deben enviar para que se marque como correcta.",
+                  "correct_value_info": "La respuesta numérica esperada que los estudiantes deben enviar para que se califique como correcta.",
                   "tolerance_label": "Tolerancia",
                   "tolerance_info": "Diferencia permitida con respecto al valor correcto (por ejemplo, 0,5 acepta +/-0,5).",
                   "correct_value_placeholder": "Valor correcto",
@@ -1659,7 +1673,7 @@
                 "edit": {
                   "template_label": "Plantilla de oración",
                   "template_placeholder": "Las medidas para describir nuestros datos se llaman ___. El ___ es una función...",
-                  "template_helper": "Utilice tres guiones bajos (___) para cada espacio en blanco. Los alumnos verán un banco de palabras con respuestas correctas y distractores.",
+                  "template_helper": "Utilice tres guiones bajos (___) para cada espacio en blanco. Los estudiantes verán un banco de palabras con respuestas correctas y distractores.",
                   "no_blanks_warning": "Agrega al menos un ___ marcador en blanco en tu plantilla.",
                   "correct_answers_heading": "Respuesta correcta para cada espacio en blanco.",
                   "blank_label": "En blanco",
@@ -1681,7 +1695,7 @@
                   "correct_value_label": "Valor de estrella correcto",
                   "correct_value_info": "El conteo de estrellas que los estudiantes deben seleccionar para ganar puntos completos.",
                   "max_stars_label": "Estrellas máximas",
-                  "max_stars_info": "Cuántas estrellas ven los alumnos (1–10). El valor predeterminado es 5.",
+                  "max_stars_info": "Cuántas estrellas ven los estudiantes (1–10). El valor predeterminado es 5.",
                   "correct_value_placeholder": "por ej. 3",
                   "max_stars_placeholder": "por ej. 5"
                 }
@@ -1698,7 +1712,7 @@
                 },
                 "preview": {
                   "max_duration_label": "Duración máxima",
-                  "manual_grading": "Los alumnos graban una breve respuesta en vídeo. Se requiere calificación manual."
+                  "manual_grading": "Los estudiantes graban una breve respuesta en video. Se requiere calificación manual."
                 },
                 "take": {
                   "unsupported": "La grabación de vídeo no es compatible con este navegador.",
@@ -1757,7 +1771,11 @@
               "collapse_section": "Contraer sección",
               "expand_section": "Expandir sección"
             },
-            "more": "Acciones"
+            "more": "Acciones",
+            "settings_completion_policy": "Regla de finalización",
+            "settings_completion_submitted": "Enviado: cualquier envío cuenta",
+            "settings_completion_passed": "Aprobado: puntuación mínima requerida",
+            "settings_pass_threshold": "Umbral de aprobación (%)"
           },
           "new_exercise_modal": {
             "heading": "Nuevo ejercicio",
@@ -1802,6 +1820,9 @@
           "button": "botón",
           "button_done": "hecho",
           "tabs": {
+            "settings": {
+              "title": "Configuración"
+            },
             "document": {
               "title": "Documentos",
               "add_document": "Agregar documento",
@@ -1917,7 +1938,8 @@
                 "kind_google_drive": "Google Drive",
                 "kind_generic": "Incrustado",
                 "course_fallback": "Curso",
-                "menu_aria": "Opciones de vídeo"
+                "menu_aria": "Opciones de vídeo",
+                "transcription_in_progress": "(Generación de transcripción en progreso)"
               },
               "view_transcript": "Ver transcripción",
               "playback_error": "Error al cargar este vídeo.",
@@ -1925,7 +1947,8 @@
               "generate_1080": "Generar 1080p",
               "generate_1080_in_progress": "Generando 1080p…",
               "generate_1080_ready": "1080p disponible",
-              "generate_1080_unavailable": "1080p no disponible para este vídeo fuente"
+              "generate_1080_unavailable": "1080p no disponible para este vídeo fuente",
+              "loading": "Cargando vídeo…"
             },
             "slide": {
               "title": "diapositiva",
@@ -1984,6 +2007,38 @@
         },
         "content_locked_title": "Este contenido está bloqueado.",
         "content_locked_description": "Su instructor aún no ha desbloqueado este contenido. Complete el contenido anterior o vuelva a consultarlo más tarde.",
+        "content_progression_locked_title": "Completa primero el contenido anterior",
+        "content_progression_locked_description": "Este contenido se desbloquea después de terminar el elemento requerido anterior del curso.",
+        "content_progression_locked_description_lesson": "Esta lección se desbloquea después de terminar el elemento requerido anterior del curso.",
+        "content_progression_locked_description_exercise": "Este ejercicio se desbloquea después de terminar el elemento requerido anterior del curso.",
+        "completion_policy": {
+          "label": "Regla de finalización",
+          "manual_label": "Manual",
+          "manual_description": "Los estudiantes marcan la lección como completada.",
+          "video_watch_label": "Ver video",
+          "video_watch_description": "La lección se completa automáticamente después de que los estudiantes vean los videos seleccionados.",
+          "none_label": "Ninguna",
+          "none_description": "Esta lección no bloquea la progresión del curso.",
+          "watch_threshold": "Umbral de visualización (%)"
+        },
+        "settings": {
+          "progression": {
+            "heading": "Progresión",
+            "intro": "Elige cómo los estudiantes completan esta lección y avanzan en el curso.",
+            "option_guide_heading": "Qué significa cada opción",
+            "watch_videos_heading": "Videos a aplicar",
+            "watch_videos_helper": "Solo los videos subidos pueden aplicarse. YouTube y las incrustaciones externas no se pueden rastrear.",
+            "watch_videos_empty": "Añade un video subido en la pestaña Video para usar el seguimiento de visualización.",
+            "watch_videos_required": "Selecciona al menos un video para el seguimiento de visualización.",
+            "students_only_note": "Estas reglas aplican solo a estudiantes. Puedes previsualizar y navegar libremente al enseñar."
+          }
+        },
+        "watch_progress": {
+          "status": "Visto el {percent}% del contenido del video",
+          "videos_complete": "Visto el {percent}% del contenido de video requerido ({complete} de {required} videos)",
+          "seek_blocked": "No puedes adelantar en este video",
+          "complete_via_watch": "Esta lección se completa cuando ves suficiente del video"
+        },
         "saving": "Guardando…",
         "saved": "Guardado",
         "draft_recovery": "Se encontró un borrador no guardado para esta lección. ¿Quieres restaurarlo?",
@@ -2039,15 +2094,15 @@
         "not_compliance_title": "El cumplimiento no está habilitado",
         "not_compliance_description": "Este curso no está configurado como un curso de cumplimiento.",
         "loading": "Cargando registros de cumplimiento...",
-        "learners": "Estudiantes",
-        "learners_description": "Esta tabla muestra el último ciclo de cada alumno.",
+        "learners": "estudiantes",
+        "learners_description": "Esta tabla muestra el último ciclo de cada estudiante.",
         "current_cycle": "Ciclo actual",
         "current_cycle_description": "Su ciclo de cumplimiento activo y fechas de renovación.",
         "history": "Ciclos pasados",
         "history_description": "Cada fila es un ciclo de cumplimiento registrado para este curso.",
         "no_active_cycle": "Sin ciclo de cumplimiento activo",
         "empty_history": "Aún no se ha registrado ningún historial de cumplimiento.",
-        "empty_overview": "Aún no hay registros de cumplimiento de los alumnos disponibles.",
+        "empty_overview": "Aún no hay registros de cumplimiento de los estudiantes disponibles.",
         "not_available": "No disponible",
         "status": {
           "no_record": "Sin registro",
@@ -2060,7 +2115,7 @@
           "waived": "Renunciado"
         },
         "summary": {
-          "total_learners": "Alumnos totales",
+          "total_learners": "Estudiantes totales",
           "no_record": "Sin registro",
           "not_started": "No iniciado",
           "in_progress": "En progreso",
@@ -2071,7 +2126,7 @@
           "waived": "Renunciado"
         },
         "fields": {
-          "learner": "aprendiz",
+          "learner": "estudiante",
           "email": "Correo electrónico",
           "status": "Estado",
           "cycle": "ciclo",
@@ -2084,33 +2139,33 @@
         "bulk_actions": {
           "title": "Acciones masivas",
           "description": "Seleccione estudiantes y aplique una acción de cumplimiento a su ciclo actual.",
-          "select_all": "Seleccionar todos los alumnos visibles",
+          "select_all": "Seleccionar todos los estudiantes visibles",
           "selected_count": "{count} seleccionado",
           "clear_selection": "Borrar selección",
           "due_date_label": "fecha de vencimiento",
           "due_date_helper": "Se utiliza para restablecer y ampliar acciones.",
           "reset_action": "Reiniciar ciclo",
           "extend_action": "Extender la fecha de vencimiento",
-          "waive_title": "Renunciar a los alumnos seleccionados",
-          "waive_description": "Aplicar una exención a los alumnos seleccionados. Puede dejar el vencimiento vacío para una exención abierta.",
+          "waive_title": "Renunciar a estudiantes seleccionados",
+          "waive_description": "Aplicar una exención a los estudiantes seleccionados. Puede dejar el vencimiento vacío para una exención abierta.",
           "waiver_reason_label": "Motivo de la renuncia",
           "waiver_reason_helper": "Contexto opcional para auditorías y revisiones futuras.",
           "waiver_expires_at_label": "La exención vence en",
           "waiver_expires_at_helper": "Déjelo en blanco si la exención no debe caducar automáticamente.",
           "waive_action": "Aplicar exención",
           "modal": {
-            "description": "Estás actualizando a {count} alumnos seleccionados.",
+            "description": "Estás actualizando {count} estudiantes seleccionados.",
             "cancel": "Cancelar",
             "apply": "Aplicar acción"
           }
         },
         "tabs": {
           "overview": "Descripción general",
-          "learners": "Estudiantes"
+          "learners": "estudiantes"
         },
         "overview_metrics": {
           "heading": "Resumen del curso",
-          "description": "El alumno cuenta por estado para este curso."
+          "description": "El estudiante cuenta por estado para este curso."
         },
         "empty_overview_description": "Haga que sus empleados cumplan y realice un seguimiento de quién está detrás."
       }
@@ -2214,7 +2269,7 @@
           "product_name": "Nombre del producto",
           "product_summary": "¿Qué hace el producto?",
           "audience": "¿Quién es la audiencia?",
-          "outcome": "¿Qué deberían poder hacer los alumnos después del curso?",
+          "outcome": "¿Qué deberían poder hacer los estudiantes después del curso?",
           "depth": "¿Qué profundidad debe tener el curso?",
           "topic": "Tema o nicho",
           "expertise_level": "Nivel de experiencia objetivo",
@@ -2348,8 +2403,8 @@
     "afternoon_heading": "Buenas tardes",
     "evening_heading": "Buenas noches",
     "create_course": "Crear curso",
-    "view_site": "Ver sitio",
-    "visit_site": "Visitar sitio web",
+    "view_site": "Academia Abierta",
+    "visit_site": "Academia Abierta",
     "current_lesson": "Actualmente aprendiendo",
     "your_progress": "Tu progreso",
     "continue": "Continuar",
@@ -2382,7 +2437,7 @@
     "publish_course": "Publicar curso",
     "items_completed": "Artículos completados",
     "currently_learning": "Actualmente aprendiendo",
-    "learner": "aprendiz",
+    "learner": "estudiante",
     "progress": "Progreso",
     "pick_up_where_you_left_off": "Continua donde lo dejaste",
     "course_awaits_you": "{title} te espera",
@@ -2402,7 +2457,9 @@
     "login_activity_description": "Días más activos de la semana (últimos 90 días)",
     "login_activity_no_data": "Aún no hay actividad de inicio de sesión",
     "login_activity_logins": "inicios de sesión",
-    "open_academy": "Academia Abierta"
+    "open_academy": "Academia Abierta",
+    "explore_more_courses": "Explora más cursos",
+    "view_more": "Ver más"
   },
   "schedule": {
     "title": "Tu horario",
@@ -2444,7 +2501,7 @@
           "paid_plan_note": "Mejora tu plan para personalizar el fondo de acceso.",
           "preview_alt": "Vista previa del fondo de acceso"
         },
-        "page_subtitle": "Choose which tabs, banners, course tools, and extras learners see."
+        "page_subtitle": "Elija qué pestañas, pancartas, herramientas del curso y extras verán los estudiantes."
       },
       "domains": {
         "title": "Dominio personalizado",
@@ -2479,7 +2536,7 @@
         "pending_verification_description": "Se encontraron registros DNS. La emisión o validación de SSL aún está en curso.",
         "reconnect_description": "Este dominio debe conectarse nuevamente a través del nuevo flujo de configuración de Cloudflare.",
         "error_description": "Este dominio personalizado existe, pero la verificación aún no se ha completado.",
-        "page_subtitle": "Run your public learning site on a web address you own.",
+        "page_subtitle": "Dirige tu academia en una dirección web de tu propiedad.",
         "dns_record": "registro DNS",
         "record_active": "Detectado",
         "record_pending": "Pendiente",
@@ -2544,9 +2601,9 @@
   "add_org": {
     "create_org": "Crear organización",
     "name": "Nombre de la organización",
-    "org_sitename": "Nombre del sitio de la organización",
+    "org_sitename": "subdominio de la academia",
     "create": "crear",
-    "sitename": "El nombre del sitio ya existe",
+    "sitename": "El subdominio de la Academia ya existe",
     "error_organization": "Algo salió mal al crear esta organización. Por favor recarga e intenta nuevamente"
   },
   "setup": {
@@ -3150,7 +3207,7 @@
           "add_theme": "Agregar tema"
         }
       },
-      "page_subtitle": "Set the name, logo, and theme learners see for this organization."
+      "page_subtitle": "Establezca el nombre, el logotipo y el tema que ven los estudiantes para esta organización."
     },
     "profile": {
       "heading": "Perfil",
@@ -3192,7 +3249,7 @@
       "ai_tutor_tab": "Tutor de IA"
     },
     "subheadings": {
-      "view_site": "Ver sitio"
+      "view_site": "Academia Abierta"
     },
     "auth": {
       "title": "Autenticación",
@@ -3278,6 +3335,10 @@
         "allow_public_signups": {
           "label": "Permitir registros públicos",
           "description": "Cuando está deshabilitado, solo los usuarios con un enlace de invitación pueden registrarse. Habilite esta opción para permitir que cualquiera pueda crear una cuenta."
+        },
+        "internal_enrollment_only": {
+          "label": "Inscripción interna únicamente",
+          "description": "Cuando está habilitado, cualquier curso publicado está abierto para la autoinscripción de todos los estudiantes de su organización. Úselo con Desactivar registro para crear una academia cerrada solo por invitación donde los estudiantes pueden unirse a cualquier curso publicado sin configuración por curso."
         }
       },
       "login": {
@@ -3459,7 +3520,7 @@
     "friends": "Amigos y familiares",
     "fullname": "Nombre completo",
     "name": "Nombre de la organización",
-    "organisation_sitename": "Nombre del sitio de la organización",
+    "organisation_sitename": "subdominio de la academia",
     "what_brings": "¿Qué te trae a",
     "how": "¿Cómo supiste de nosotros?",
     "back": "Atrás",
@@ -3874,7 +3935,7 @@
       "created": "Objetivo creado",
       "updated": "Objetivo actualizado",
       "deleted": "Objetivo eliminado",
-      "delete_confirm": "¿Eliminar este objetivo? Se eliminará el historial de estado por alumno.",
+      "delete_confirm": "¿Eliminar este objetivo? Se eliminará el historial de estado por estudiante.",
       "lms": {
         "heading": "Tus objetivos",
         "empty_title": "No hay objetivos asignados",
@@ -3901,7 +3962,7 @@
       },
       "deadline_kind": {
         "absolute": "fecha absoluta",
-        "relative_to_join": "En relación con la incorporación del alumno",
+        "relative_to_join": "En relación con la incorporación de estudiantes",
         "recurring": "recurrente",
         "none": "Sin fecha límite"
       },
@@ -3922,11 +3983,11 @@
         "type_label": "Tipo",
         "courses_label": "Cursos",
         "required_count_label": "Número de cursos requeridos",
-        "score_threshold_label": "Puntuación aprobada por alumno (%)",
+        "score_threshold_label": "Puntaje aprobado por estudiante (%)",
         "team_pass_rate_label": "Tasa de aprobación del equipo (%)",
         "deadline_label": "Fecha límite",
         "deadline_date_label": "Fecha límite",
-        "relative_days_label": "Días desde que el alumno se une",
+        "relative_days_label": "Días desde que se incorpora el estudiante",
         "recurring_months_label": "Repetir cada (meses)",
         "reminders_label": "Recordatorios (días antes del vencimiento)",
         "reminders_helper": "Separados por comas. Ejemplo: 7, 3, 1",
@@ -4348,10 +4409,10 @@
     "title": "Cumplimiento",
     "subtitle": "Realice un seguimiento del estado de la certificación en todos los cursos de cumplimiento de su organización.",
     "learners": {
-      "heading": "Estudiantes",
+      "heading": "estudiantes",
       "subtitle": "{count, number} coincidente",
-      "empty": "Ningún alumno coincide con este filtro",
-      "learner": "aprendiz",
+      "empty": "Ningún estudiante coincide con este filtro",
+      "learner": "estudiante",
       "course": "Curso",
       "status": "Estado",
       "due_date": "debido",
@@ -4359,10 +4420,10 @@
     },
     "courses": {
       "heading": "Cursos",
-      "description": "Cursos de cumplimiento con recuentos del estado del alumno",
+      "description": "Cumplimiento de cursos con estatus de estudiante.",
       "empty": "Aún no hay cursos de cumplimiento",
       "course": "Curso",
-      "learners": "Estudiantes",
+      "learners": "estudiantes",
       "completion": "Finalización"
     },
     "filter": {
@@ -4388,11 +4449,11 @@
     },
     "tabs": {
       "courses": "Por curso",
-      "learners": "Estudiantes"
+      "learners": "estudiantes"
     },
     "summary": {
-      "heading": "Estado de alumno",
-      "description": "Cuenta entre los alumnos de todos los cursos de cumplimiento."
+      "heading": "Estado de estudiante",
+      "description": "Cuenta entre los estudiantes en todos los cursos de cumplimiento."
     }
   },
   "public_course": {
@@ -4432,12 +4493,12 @@
       "delete_confirm_title": "¿Eliminar este espacio de trabajo?",
       "delete_confirm_body": "Esto elimina permanentemente el espacio de trabajo, sus miembros y sus cursos. Esto no se puede deshacer.",
       "name_label": "Nombre del espacio de trabajo",
-      "site_name_label": "Nombre del sitio",
+      "site_name_label": "subdominio de la academia",
       "create_modal_title": "Crear un nuevo espacio de trabajo",
       "create_modal_submit": "Crear espacio de trabajo",
       "cancel": "Cancelar",
       "read_only_badge": "Sólo lectura",
-      "usage_banner": "{learners} alumnos y {tokens} tokens de IA utilizados en {workspaces} espacios de trabajo este mes",
+      "usage_banner": "{students} estudiantes y {tokens} tokens de IA utilizados en {workspaces} espacios de trabajo este mes",
       "secondary_billing_notice": "La facturación la administra su espacio de trabajo principal ({primaryName}).",
       "go_to_primary": "Ir al espacio de trabajo principal"
     },
@@ -4452,8 +4513,8 @@
       "atCap": "en la gorra",
       "approaching": "Gorra acercándose",
       "totalActive": "Estudiantes activos este mes",
-      "learnersHeading": "Estudiantes",
-      "headerLearner": "aprendiz",
+      "learnersHeading": "estudiantes",
+      "headerLearner": "estudiante",
       "headerMessages": "Mensajes",
       "headerTokens": "Fichas",
       "headerStatus": "Estado",
@@ -4480,7 +4541,7 @@
     "assessmentMode": {
       "hint_only": "Solo sugerencias (sin respuestas directas)",
       "direct_answer": "Permitir respuestas directas",
-      "block_during_exercise": "Bloquear la ayuda mientras el alumno realiza un ejercicio."
+      "block_during_exercise": "Ayuda en bloque mientras el alumno realiza un ejercicio."
     },
     "responseLength": {
       "short": "Corto (1 a 3 oraciones)",
@@ -4503,9 +4564,9 @@
       "welcomeMessage": "Mensaje de bienvenida",
       "welcomeMessage_description": "Se muestra arriba la primera respuesta del tutor en cada nueva conversación.",
       "disclaimerFooter": "Pie de página de descargo de responsabilidad",
-      "disclaimerFooter_description": "Se adjunta a cada respuesta del tutor para que los alumnos recuerden que el tutor no es una persona.",
+      "disclaimerFooter_description": "Se adjunta a cada respuesta del tutor para que los estudiantes recuerden que el tutor no es una persona.",
       "thingsToSay": "Cosas que decir",
-      "thingsToSay_description": "Ejemplos: \"Recuerde siempre a los alumnos que lean el programa de estudios antes de la semana 3\". \"Anima a los alumnos a resumir las lecciones con sus propias palabras\".",
+      "thingsToSay_description": "Ejemplos: \"Recuerde siempre a los estudiantes que lean el programa de estudios antes de la semana 3\". \"Anima a los estudiantes a resumir las lecciones con sus propias palabras\".",
       "thingsNotToSay": "Cosas que no decir",
       "thingsNotToSay_description": "Ejemplos: \"No reveles las respuestas del examen final\". \"Nunca les digas a los estudiantes qué reseña escribiste\".",
       "forbiddenTopics": "Temas prohibidos",
@@ -4525,7 +4586,7 @@
     },
     "section": {
       "availability": "Disponibilidad",
-      "availability_description": "Active o desactive el tutor de IA para los alumnos en este espacio de trabajo.",
+      "availability_description": "Active o desactive el tutor de IA para los estudiantes en este espacio de trabajo.",
       "personality": "Personalidad",
       "personality_description": "Cómo se presenta el tutor y cuánto duran sus respuestas.",
       "guidance": "Cosas que decir · cosas que no decir",
@@ -4535,7 +4596,7 @@
       "grounding": "Puesta a tierra y citaciones",
       "grounding_description": "Limite de qué puede hablar el tutor y si cita material del curso.",
       "escalation": "Escalada",
-      "escalation_description": "Dónde señalar a los alumnos cuando necesitan un ser humano real.",
+      "escalation_description": "Dónde señalar a los estudiantes cuando necesitan un ser humano real.",
       "inheritance": "Herencia del curso",
       "inheritance_description": "Herede los valores predeterminados del espacio de trabajo o establezca anulaciones por curso."
     },

@@ -142,10 +142,10 @@
     id="resizable-container-media"
     class={cn(
       'ui:relative ui:my-2 ui:flex ui:flex-col ui:rounded-md ui:border-2 ui:border-transparent',
-      selected ? 'border-muted-foreground' : '',
-      node.attrs.align === 'left' && 'left-0 -translate-x-0',
-      node.attrs.align === 'center' && 'left-1/2 -translate-x-1/2',
-      node.attrs.align === 'right' && 'left-full -translate-x-full'
+      selected ? 'ui:border-muted-foreground' : '',
+      node.attrs.align === 'left' && 'ui:left-0 ui:-translate-x-0',
+      node.attrs.align === 'center' && 'ui:left-1/2 ui:-translate-x-1/2',
+      node.attrs.align === 'right' && 'ui:left-full ui:-translate-x-full'
     )}
     style={`width: ${node.attrs.width}`}
   >
@@ -191,13 +191,13 @@
         <div
           class={cn(
             'ui:bg-background/50 ui:absolute ui:-top-2 ui:left-[calc(50%-3rem)] ui:flex ui:items-center ui:gap-1 ui:rounded ui:border ui:p-1 ui:opacity-0 ui:backdrop-blur-sm ui:transition-opacity',
-            !resizing && 'group-hover:opacity-100',
-            openedMore && 'opacity-100'
+            !resizing && 'ui:group-hover:opacity-100',
+            openedMore && 'ui:opacity-100'
           )}
         >
           <Button
             variant="ghost"
-            class={cn('ui:size-6 ui:p-0', node.attrs.align === 'left' && 'bg-muted')}
+            class={cn('ui:size-6 ui:p-0', node.attrs.align === 'left' && 'ui:bg-muted')}
             onclick={() => updateAttributes({ align: 'left' })}
             title="Align Left"
           >
@@ -205,7 +205,7 @@
           </Button>
           <Button
             variant="ghost"
-            class={cn('ui:size-6 ui:p-0', node.attrs.align === 'center' && 'bg-muted')}
+            class={cn('ui:size-6 ui:p-0', node.attrs.align === 'center' && 'ui:bg-muted')}
             onclick={() => updateAttributes({ align: 'center' })}
             title="Align Center"
           >
@@ -213,7 +213,7 @@
           </Button>
           <Button
             variant="ghost"
-            class={cn('ui:size-6 ui:p-0', node.attrs.align === 'right' && 'bg-muted')}
+            class={cn('ui:size-6 ui:p-0', node.attrs.align === 'right' && 'ui:bg-muted')}
             onclick={() => updateAttributes({ align: 'right' })}
             title="Align Right"
           >

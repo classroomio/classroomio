@@ -12,7 +12,31 @@
 
   const { editor }: Props = $props();
 
-  let link = $derived.by(() => editor.getAttributes('link').href);
+  let href = $state('');
+
+  $effect(() => {
+    const syncHref = () => {
+      href = editor.getAttributes('link').href ?? '';
+    };
+
+    syncHref();
+    editor.on('selectionUpdate', syncHref);
+    editor.on('transaction', syncHref);
+
+    return () => {
+      editor.off('selectionUpdate', syncHref);
+      editor.off('transaction', syncHref);
+    };
+  });
+
+  function copyLink(event: MouseEvent) {
+    event.preventDefault();
+
+    const url = editor.getAttributes('link').href;
+    if (!url) return;
+
+    void navigator.clipboard.writeText(url);
+  }
 </script>
 
 <BubbleMenu
@@ -27,20 +51,12 @@
   }}
   class="ui:bg-popover ui:flex ui:h-fit ui:w-fit ui:items-center ui:gap-1 ui:rounded ui:border ui:p-1 ui:shadow-lg"
 >
-  <Button variant="link" href={link} class="ui:max-w-80 ui:p-1" target="_blank">
+  <Button variant="link" {href} class="ui:max-w-80 ui:p-1" target="_blank">
     <span class="ui:w-full ui:overflow-hidden ui:text-ellipsis">
-      {link}
+      {href}
     </span>
   </Button>
-  <Button
-    variant="ghost"
-    title="Copy Link"
-    size="icon"
-    class="ui:z-50"
-    onclick={() => {
-      navigator.clipboard.writeText(link);
-    }}
-  >
+  <Button variant="ghost" title="Copy Link" size="icon" class="ui:z-50" onmousedown={copyLink}>
     <Copy />
   </Button>
   <Button

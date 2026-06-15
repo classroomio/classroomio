@@ -104,8 +104,8 @@
       "min_char": "O campo deve conter 5 ou mais caracteres"
     },
     "site_name": {
-      "min_char": "O nome do site deve conter cinco ou mais caracteres",
-      "hyphen_rule": "O nome do site não pode começar ou terminar com um hífen"
+      "min_char": "O subdomínio da Academia deve conter 5 ou mais caracteres",
+      "hyphen_rule": "O subdomínio da Academia não pode começar ou terminar com um hífen"
     },
     "organization_name": {
       "min_char": "A organização deve conter 5 ou mais caracteres",
@@ -352,7 +352,8 @@
       "thumbnail_regen_started": "Regenerando miniaturas…",
       "thumbnail_regen_failed": "Falha ao regenerar miniaturas",
       "transcript_saved": "Transcrição atualizada",
-      "transcript_save_failed": "Não foi possível salvar a transcrição"
+      "transcript_save_failed": "Não foi possível salvar a transcrição",
+      "transcription_already_running": "Um trabalho de transcrição já está em andamento para este vídeo"
     },
     "tags": {
       "group_created": "Grupo de tags criado",
@@ -434,7 +435,8 @@
     "lesson_video": {
       "generate_1080_completed": "Versão 1080p adicionada",
       "generate_1080_failed": "Não foi possível gerar a renderização em 1080p"
-    }
+    },
+    "social_auth_not_enabled": "Este provedor de autenticação não está habilitado."
   },
   "explore": {
     "heading": "Explore nossos cursos",
@@ -457,7 +459,8 @@
     "not_in_progress": "Nenhum curso em andamento",
     "any_progress": "Qualquer curso que você iniciar será exibido aqui",
     "not_completed": "Nenhum curso concluído",
-    "any_course": "Qualquer curso que você concluir será exibido aqui"
+    "any_course": "Qualquer curso que você concluir será exibido aqui",
+    "find_courses": "Encontre cursos"
   },
   "lms_navigation": {
     "home": "Página inicial",
@@ -672,7 +675,7 @@
     },
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "user_analytics": {
-      "title": "Learner profile",
+      "title": "Perfil do aluno",
       "page_subtitle": "Progress, grades, and activity across their courses."
     }
   },
@@ -742,6 +745,10 @@
         "drag": "Arraste e solte os rótulos para reordenar suas guias de materiais",
         "content_grouping_title": "Agrupamento de conteúdo",
         "content_grouping_description": "Aulas e exercícios em grupo por seção na lista de conteúdo.",
+        "progression_mode_title": "Progressão do aluno",
+        "progression_mode_description": "Controle se os alunos podem acessar todo o conteúdo desbloqueado ou devem concluir os itens em ordem.",
+        "progression_mode_free": "Livre — conteúdo desbloqueado é acessível",
+        "progression_mode_sequential": "Sequencial — concluir itens anteriores para desbloquear o próximo",
         "lesson_download": "Lições baixadas",
         "available": "Disponibilizar a Lição para Download em PDF para alunos matriculados",
         "course_download": "Download do curso",
@@ -1021,7 +1028,14 @@
           "field_template": "Modelo",
           "field_accent": "Sotaque",
           "field_signatories": "Signatários",
-          "customize_design": "Personalizar design"
+          "customize_design": "Personalizar design",
+          "signatory_one_toggle": "Mostrar signatário 1",
+          "signatory_two_toggle": "Mostrar signatário 2",
+          "signature_upload": "Imagem de assinatura",
+          "signature_upload_hint": "Faça upload de uma imagem de assinatura (opcional)",
+          "signature_dont_crop": "Não corte",
+          "signature_upload_in_progress": "Aguarde o término do upload da assinatura antes de salvar.",
+          "save_failed": "Não foi possível salvar o design do certificado. Verifique o formulário e tente novamente."
         }
       },
       "people": {
@@ -1102,7 +1116,7 @@
           "send_invite_emails": "Envie e-mails de convite imediatamente",
           "create_email_invites": "Crie convites por e-mail",
           "existing_students_title": "Add existing org students",
-          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_description": "Escolha alunos que já fazem parte desta organização e conceda-lhes acesso direto a este curso.",
           "existing_students_search": "Search organization students",
           "loading_existing_students": "Loading organization students...",
           "no_existing_students": "No organization students are available to add.",
@@ -1679,7 +1693,7 @@
                 },
                 "edit": {
                   "correct_value_label": "Valor correto da estrela",
-                  "correct_value_info": "Os alunos da contagem de estrelas devem selecionar para ganhar pontos completos.",
+                  "correct_value_info": "A contagem de estrelas que os alunos devem selecionar para ganhar pontos completos.",
                   "max_stars_label": "Máximo de estrelas",
                   "max_stars_info": "Quantas estrelas os alunos veem (1–10). O padrão é 5.",
                   "correct_value_placeholder": "por exemplo 3",
@@ -1757,7 +1771,11 @@
               "collapse_section": "Recolher seção",
               "expand_section": "Expandir seção"
             },
-            "more": "Ações"
+            "more": "Ações",
+            "settings_completion_policy": "Regra de conclusão",
+            "settings_completion_submitted": "Enviado – qualquer envio conta",
+            "settings_completion_passed": "Aprovado – pontuação mínima exigida",
+            "settings_pass_threshold": "Limite de aprovação (%)"
           },
           "new_exercise_modal": {
             "heading": "Novo exercício",
@@ -1802,6 +1820,9 @@
           "button": "botão",
           "button_done": "Concluído",
           "tabs": {
+            "settings": {
+              "title": "Configurações"
+            },
             "document": {
               "title": "Documentos",
               "add_document": "Adicionar documento",
@@ -1917,7 +1938,8 @@
                 "kind_google_drive": "Google Drive",
                 "kind_generic": "Incorporado",
                 "course_fallback": "Curso",
-                "menu_aria": "Opções de vídeo"
+                "menu_aria": "Opções de vídeo",
+                "transcription_in_progress": "(Geração de transcrição em andamento)"
               },
               "view_transcript": "Ver transcrição",
               "playback_error": "Falha ao carregar este vídeo.",
@@ -1925,7 +1947,8 @@
               "generate_1080": "Gerar 1080p",
               "generate_1080_in_progress": "Gerando 1080p…",
               "generate_1080_ready": "1080p disponível",
-              "generate_1080_unavailable": "1080p indisponível para este vídeo de origem"
+              "generate_1080_unavailable": "1080p indisponível para este vídeo de origem",
+              "loading": "Carregando vídeo…"
             },
             "slide": {
               "title": "Deslizar",
@@ -1984,6 +2007,38 @@
         },
         "content_locked_title": "Este conteúdo está bloqueado",
         "content_locked_description": "Seu instrutor ainda não desbloqueou este conteúdo. Conclua o conteúdo anterior ou volte mais tarde.",
+        "content_progression_locked_title": "Conclua o conteúdo anterior primeiro",
+        "content_progression_locked_description": "Este conteúdo é desbloqueado depois de concluir o item obrigatório anterior do curso.",
+        "content_progression_locked_description_lesson": "Esta lição é desbloqueada depois de concluir o item obrigatório anterior do curso.",
+        "content_progression_locked_description_exercise": "Este exercício é desbloqueado depois de concluir o item obrigatório anterior do curso.",
+        "completion_policy": {
+          "label": "Regra de conclusão",
+          "manual_label": "Manual",
+          "manual_description": "Os alunos marcam a lição como concluída.",
+          "video_watch_label": "Assistir vídeo",
+          "video_watch_description": "A lição conclui automaticamente depois que os alunos assistem aos vídeos selecionados.",
+          "none_label": "Nenhuma",
+          "none_description": "Esta lição não bloqueia a progressão do curso.",
+          "watch_threshold": "Limite de visualização (%)"
+        },
+        "settings": {
+          "progression": {
+            "heading": "Progressão",
+            "intro": "Escolha como os alunos concluem esta lição e avançam no curso.",
+            "option_guide_heading": "O que cada opção significa",
+            "watch_videos_heading": "Vídeos a aplicar",
+            "watch_videos_helper": "Apenas vídeos enviados podem ser aplicados. YouTube e incorporações externas não podem ser rastreados.",
+            "watch_videos_empty": "Adicione um vídeo enviado na aba Vídeo para usar o rastreamento de visualização.",
+            "watch_videos_required": "Selecione pelo menos um vídeo para rastreamento de visualização.",
+            "students_only_note": "Estas regras aplicam-se apenas aos alunos. Você pode pré-visualizar e navegar livremente ao ensinar."
+          }
+        },
+        "watch_progress": {
+          "status": "Assistiu {percent}% do conteúdo do vídeo",
+          "videos_complete": "Assistiu {percent}% do conteúdo de vídeo obrigatório ({complete} de {required} vídeos)",
+          "seek_blocked": "Você não pode avançar neste vídeo",
+          "complete_via_watch": "Esta lição conclui quando você assiste o suficiente do vídeo"
+        },
         "saving": "Salvando…",
         "saved": "Salvo",
         "draft_recovery": "Um rascunho não salvo foi encontrado para esta lição. Você gostaria de restaurá-lo?",
@@ -2040,14 +2095,14 @@
         "not_compliance_description": "Este curso não está configurado como um curso de compliance.",
         "loading": "Carregando registros de conformidade...",
         "learners": "Alunos",
-        "learners_description": "Esta tabela mostra o ciclo mais recente de cada aluno.",
+        "learners_description": "Esta tabela mostra o último ciclo de cada aluno.",
         "current_cycle": "Ciclo atual",
         "current_cycle_description": "Seu ciclo de conformidade ativo e datas de renovação.",
         "history": "Ciclos anteriores",
         "history_description": "Cada linha é um ciclo de conformidade registrado para este curso.",
         "no_active_cycle": "Nenhum ciclo de conformidade ativo",
         "empty_history": "Nenhum histórico de conformidade foi registrado ainda.",
-        "empty_overview": "Nenhum registro de conformidade do aluno está disponível ainda.",
+        "empty_overview": "Nenhum registro de conformidade dos alunos está disponível ainda.",
         "not_available": "Não disponível",
         "status": {
           "no_record": "Sem registro",
@@ -2071,7 +2126,7 @@
           "waived": "Dispensado"
         },
         "fields": {
-          "learner": "Aluno",
+          "learner": "Estudante",
           "email": "E-mail",
           "status": "Estado",
           "cycle": "Ciclo",
@@ -2083,7 +2138,7 @@
         },
         "bulk_actions": {
           "title": "Ações em massa",
-          "description": "Selecione os alunos e aplique uma ação de conformidade ao seu ciclo atual.",
+          "description": "Selecione os alunos e aplique uma ação de compliance ao seu ciclo atual.",
           "select_all": "Selecione todos os alunos visíveis",
           "selected_count": "{count} selecionados",
           "clear_selection": "Limpar seleção",
@@ -2225,7 +2280,7 @@
         },
         "expert_on_x": {
           "title": "Torne-se um especialista em X",
-          "description": "Um curso aprofundado que transforma alunos em especialistas em um tópico ou nicho específico.",
+          "description": "Um curso aprofundado que transforma alunos em especialistas em um tema ou nicho específico.",
           "form_title": "Conte-nos sobre o tema"
         },
         "product_onboarding": {
@@ -2348,8 +2403,8 @@
     "afternoon_heading": "Boa tarde",
     "evening_heading": "Boa noite",
     "create_course": "Criar curso",
-    "view_site": "Ver site",
-    "visit_site": "Visite o site",
+    "view_site": "Academia Aberta",
+    "visit_site": "Academia Aberta",
     "current_lesson": "Atualmente aprendendo",
     "your_progress": "Seu progresso",
     "continue": "Continuar",
@@ -2382,7 +2437,7 @@
     "publish_course": "Publicar curso",
     "items_completed": "Itens concluídos",
     "currently_learning": "Atualmente aprendendo",
-    "learner": "Aluno",
+    "learner": "Estudante",
     "progress": "Progresso",
     "pick_up_where_you_left_off": "Continue de onde parou",
     "course_awaits_you": "{title} espera por você",
@@ -2402,7 +2457,9 @@
     "login_activity_description": "Dias mais ativos da semana (últimos 90 dias)",
     "login_activity_no_data": "Nenhuma atividade de login ainda",
     "login_activity_logins": "logins",
-    "open_academy": "Academia Aberta"
+    "open_academy": "Academia Aberta",
+    "explore_more_courses": "Explorar mais cursos",
+    "view_more": "Ver mais"
   },
   "schedule": {
     "title": "Sua programação",
@@ -2444,7 +2501,7 @@
           "paid_plan_note": "Atualize seu plano para personalizar o fundo da tela de login.",
           "preview_alt": "Prévia do fundo da tela de login"
         },
-        "page_subtitle": "Choose which tabs, banners, course tools, and extras learners see."
+        "page_subtitle": "Escolha quais guias, banners, ferramentas do curso e extras os alunos verão."
       },
       "domains": {
         "title": "Domínio personalizado",
@@ -2479,7 +2536,7 @@
         "pending_verification_description": "Registros DNS foram encontrados. A emissão ou validação de SSL ainda está em andamento.",
         "reconnect_description": "Este domínio precisa ser conectado novamente por meio do novo fluxo de configuração da Cloudflare.",
         "error_description": "Este domínio personalizado existe, mas a verificação ainda não foi concluída.",
-        "page_subtitle": "Run your public learning site on a web address you own.",
+        "page_subtitle": "Administre sua academia em um endereço da web de sua propriedade.",
         "dns_record": "Registro DNS",
         "record_active": "Detectado",
         "record_pending": "Pendente",
@@ -2544,9 +2601,9 @@
   "add_org": {
     "create_org": "Criar organização",
     "name": "Nome da Organização",
-    "org_sitename": "Nome do site da organização",
+    "org_sitename": "Subdomínio da Academia",
     "create": "Criar",
-    "sitename": "O nome do site já existe",
+    "sitename": "O subdomínio da Academia já existe",
     "error_organization": "Algo deu errado durante a criação desta organização. Atualize e tente novamente"
   },
   "setup": {
@@ -3150,7 +3207,7 @@
           "add_theme": "Adicionar tema"
         }
       },
-      "page_subtitle": "Set the name, logo, and theme learners see for this organization."
+      "page_subtitle": "Defina o nome, o logotipo e o tema que os alunos verão para esta organização."
     },
     "profile": {
       "heading": "Perfil",
@@ -3192,7 +3249,7 @@
       "ai_tutor_tab": "Tutor de IA"
     },
     "subheadings": {
-      "view_site": "Ver site"
+      "view_site": "Academia Aberta"
     },
     "auth": {
       "title": "Autenticação",
@@ -3278,6 +3335,10 @@
         "allow_public_signups": {
           "label": "Permitir inscrições públicas",
           "description": "Quando desativado, apenas usuários com link de convite poderão se inscrever. Ative para permitir que qualquer pessoa crie uma conta."
+        },
+        "internal_enrollment_only": {
+          "label": "Somente inscrição interna",
+          "description": "Quando ativado, qualquer curso publicado fica aberto para autoinscrição para todos os alunos da sua organização. Use com Desativar inscrição para criar uma academia fechada somente para convidados, onde os alunos podem ingressar em qualquer curso publicado sem configuração por curso."
         }
       },
       "login": {
@@ -3459,7 +3520,7 @@
     "friends": "Amigos e família",
     "fullname": "Nome Completo",
     "name": "Nome da Organização",
-    "organisation_sitename": "Nome do site da organização",
+    "organisation_sitename": "Subdomínio da Academia",
     "what_brings": "O que leva você a",
     "how": "Como você ouviu falar de nós?",
     "back": "Voltar",
@@ -4351,7 +4412,7 @@
       "heading": "Alunos",
       "subtitle": "{count, number} correspondente",
       "empty": "Nenhum aluno corresponde a este filtro",
-      "learner": "Aluno",
+      "learner": "Estudante",
       "course": "Curso",
       "status": "Estado",
       "due_date": "Devido",
@@ -4359,7 +4420,7 @@
     },
     "courses": {
       "heading": "Cursos",
-      "description": "Cursos de conformidade com contagens de status do aluno",
+      "description": "Cursos de conformidade com contagens de status de estudante",
       "empty": "Ainda não há cursos de compliance",
       "course": "Curso",
       "learners": "Alunos",
@@ -4391,8 +4452,8 @@
       "learners": "Alunos"
     },
     "summary": {
-      "heading": "Status do aluno",
-      "description": "Conta entre os alunos em todos os cursos de conformidade."
+      "heading": "Status de estudante",
+      "description": "Conta entre alunos em todos os cursos de conformidade."
     }
   },
   "public_course": {
@@ -4432,12 +4493,12 @@
       "delete_confirm_title": "Excluir este espaço de trabalho?",
       "delete_confirm_body": "Isso remove permanentemente o espaço de trabalho, seus membros e seus cursos. Isto não pode ser desfeito.",
       "name_label": "Nome do espaço de trabalho",
-      "site_name_label": "Nome do site",
+      "site_name_label": "Subdomínio da Academia",
       "create_modal_title": "Crie um novo espaço de trabalho",
       "create_modal_submit": "Criar espaço de trabalho",
       "cancel": "Cancelar",
       "read_only_badge": "Somente leitura",
-      "usage_banner": "{learners} alunos e {tokens} tokens de IA usados em {workspaces} espaços de trabalho este mês",
+      "usage_banner": "{students} alunos e {tokens} tokens de IA usados em {workspaces} espaços de trabalho este mês",
       "secondary_billing_notice": "A cobrança é gerenciada pelo seu workspace principal ({primaryName}).",
       "go_to_primary": "Ir para o espaço de trabalho principal"
     },
@@ -4453,7 +4514,7 @@
       "approaching": "Aproximando-se do limite",
       "totalActive": "Alunos ativos este mês",
       "learnersHeading": "Alunos",
-      "headerLearner": "Aluno",
+      "headerLearner": "Estudante",
       "headerMessages": "Mensagens",
       "headerTokens": "Fichas",
       "headerStatus": "Estado",
@@ -4503,11 +4564,11 @@
       "welcomeMessage": "Mensagem de boas-vindas",
       "welcomeMessage_description": "Mostrado acima a primeira resposta do tutor em cada nova conversa.",
       "disclaimerFooter": "Rodapé de isenção de responsabilidade",
-      "disclaimerFooter_description": "Anexado a cada resposta do tutor para que os alunos se lembrem de que o tutor não é uma pessoa.",
+      "disclaimerFooter_description": "Anexado a cada resposta do tutor para que os alunos lembrem que o tutor não é uma pessoa.",
       "thingsToSay": "Coisas a dizer",
-      "thingsToSay_description": "Exemplos: \"Sempre lembre os alunos de lerem o plano de estudos antes da semana 3.\" \"Incentive os alunos a resumir as lições com suas próprias palavras.\"",
+      "thingsToSay_description": "Exemplos: \"Sempre lembre os alunos de lerem o programa antes da semana 3.\" \"Incentive os alunos a resumir as lições com suas próprias palavras.\"",
       "thingsNotToSay": "Coisas para não dizer",
-      "thingsNotToSay_description": "Exemplos: “Não revele as respostas do exame final”. \"Nunca diga aos alunos qual avaliação você escreveu.\"",
+      "thingsNotToSay_description": "Exemplos: “Não revele as respostas do exame final”. \"Nunca diga aos alunos qual resenha você escreveu.\"",
       "forbiddenTopics": "Tópicos proibidos",
       "forbiddenTopics_description": "Lista separada por vírgulas. O tutor se recusará a discutir isso.",
       "forbiddenTopics_placeholder": "política, religião, aconselhamento médico pessoal",

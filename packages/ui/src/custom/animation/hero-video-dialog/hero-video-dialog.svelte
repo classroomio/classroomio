@@ -89,34 +89,34 @@
   const selectedAnimation = $derived(animationVariants[animationStyle]);
 </script>
 
-<div class="relative">
+<div class="ui:relative">
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <div class="relative cursor-pointer" onclick={openVideo} role="presentation">
+  <div class="ui:relative ui:cursor-pointer" onclick={openVideo} role="presentation">
     <img
       src={thumbnailSrc}
       alt={thumbnailAlt}
       width={1920}
       height={1080}
-      class="w-full rounded-2xl transition-all duration-200"
+      class="ui:w-full ui:rounded-2xl ui:transition-all ui:duration-200"
     />
-    <div class="absolute inset-0 flex items-center justify-center">
+    <div class="ui:absolute ui:inset-0 ui:flex ui:items-center ui:justify-center">
       <!-- svelte-ignore a11y_no_static_element_interactions -->
       <div
-        class="flex size-24 items-center justify-center rounded-full border border-neutral-400 bg-black backdrop-blur-md transition-transform duration-300 ease-out"
+        class="ui:flex ui:size-24 ui:items-center ui:justify-center ui:rounded-full ui:border ui:border-neutral-400 ui:bg-black ui:backdrop-blur-md ui:transition-transform ui:duration-300 ui:ease-out"
         onmouseenter={() => (isPlayHovered = true)}
         onmouseleave={() => (isPlayHovered = false)}
         role="presentation"
       >
         <div
-          class="relative flex size-20 items-center justify-center rounded-full border border-neutral-400 bg-black backdrop-blur-2xl transition-all duration-300 ease-out"
+          class="ui:relative ui:flex ui:size-20 ui:items-center ui:justify-center ui:rounded-full ui:border ui:border-neutral-400 ui:bg-black ui:backdrop-blur-2xl ui:transition-all ui:duration-300 ui:ease-out"
         >
           <span
-            class="inline-flex size-8 items-center justify-center transition-transform duration-300 ease-out"
+            class="ui:inline-flex ui:size-8 ui:items-center ui:justify-center ui:transition-transform ui:duration-300 ui:ease-out"
             style:transform={`scale(${isPlayHovered ? 1.1 : 1})`}
             style:color={iconColor}
           >
-            <Play strokeWidth={1.7} class="size-full" />
+            <Play strokeWidth={1.7} class="ui:size-full" />
           </span>
         </div>
       </div>
@@ -126,7 +126,10 @@
   <AnimatePresence let:item list={[{ key: isVideoOpen }]}>
     {#if item.key}
       <Motion initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} let:motion>
-        <div use:motion class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-md">
+        <div
+          use:motion
+          class="ui:fixed ui:inset-0 ui:z-50 ui:flex ui:items-center ui:justify-center ui:bg-black/50 ui:backdrop-blur-md"
+        >
           <Motion
             initial={selectedAnimation.initial}
             animate={selectedAnimation.animate}
@@ -134,28 +137,28 @@
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
             let:motion
           >
-            <div use:motion class="relative mx-4 aspect-video w-full max-w-4xl md:mx-0">
+            <div use:motion class="ui:relative ui:mx-4 ui:w-full ui:max-w-4xl ui:md:mx-0 aspect-video">
               <Motion let:motion whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                 <button
                   type="button"
                   use:motion
-                  class="absolute -top-16 right-0 rounded-full bg-neutral-900/50 p-2 text-xl text-white ring-1 backdrop-blur-md"
+                  class="ui:absolute ui:-top-16 ui:right-0 ui:rounded-full ui:bg-neutral-900/50 ui:p-2 ui:text-xl ui:text-white ui:ring-1 ui:backdrop-blur-md"
                   onclick={closeVideo}
                   onmouseenter={() => (isCloseHovered = true)}
                   onmouseleave={() => (isCloseHovered = false)}
                 >
-                  <X class="size-5 text-white" />
+                  <X class="ui:size-5 ui:text-white" />
                 </button>
               </Motion>
               <Motion animate={{ scale: isCloseHovered ? 0.98 : 1 }} transition={{ duration: 0.2 }} let:motion>
                 <div
                   use:motion
-                  class="relative isolate z-1 size-full overflow-hidden rounded-2xl border-2 border-white"
+                  class="ui:relative ui:z-1 ui:size-full ui:overflow-hidden ui:rounded-2xl ui:border-2 ui:border-white isolate"
                 >
                   <!-- svelte-ignore a11y_missing_attribute -->
                   <iframe
                     src={videoSrc}
-                    class="size-full rounded-2xl"
+                    class="ui:size-full ui:rounded-2xl"
                     allowfullscreen
                     title="Video"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

@@ -110,7 +110,8 @@ export const ZUpdateOrganization = z.object({
         .object({
           inviteOnly: z.boolean().optional()
         })
-        .optional()
+        .optional(),
+      internalEnrollmentOnly: z.boolean().optional()
     })
     .optional()
 });

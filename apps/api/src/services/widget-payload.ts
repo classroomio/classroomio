@@ -3,7 +3,7 @@ import { getActiveOrganizationPlan, getOrganizationById } from '@cio/db/queries/
 import { getCourseTagsByCourseIdsForOrganization, getTagGroupsWithTags } from '@cio/db/queries/tag';
 import { listWidgetCourses } from '@cio/db/queries/widget';
 import { PLAN } from '@cio/utils/plans';
-import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
+import { EMBED_PUBLIC_BASE_URL, getEmbedBaseUrl, getEmbedPublicUrl, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import {
   buildWidgetPayload as buildWidgetPayloadShared,
   normalizeWidgetConfig,
@@ -16,9 +16,8 @@ import * as csstree from 'css-tree';
 import { env } from '@cio/core/config/env';
 
 const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-const DEFAULT_EMBED_CDN_BASE_URL = 'https://assets.cdn.clsrio.com';
+const DEFAULT_EMBED_CDN_BASE_URL = EMBED_PUBLIC_BASE_URL;
 const DEFAULT_LOCAL_EMBED_BASE_URL = 'http://localhost:5180';
-const DEFAULT_WIDGET_API_BASE_URL = 'https://api.classroomio.com';
 const DEFAULT_WIDGET_APP_BASE_URL = 'https://classroomio.com';
 
 const ALLOWED_CUSTOM_CSS_PROPERTIES = new Set([
@@ -152,34 +151,25 @@ export function getCourseBaseUrl(siteName: string, customDomain?: string | null)
   return siteName ? `https://${siteName}.${TENANT_ROOT_DOMAIN}` : DEFAULT_WIDGET_APP_BASE_URL;
 }
 
-export function getCourseWidgetScriptUrl(): string {
-  const embedBaseUrl = (
+function resolveEmbedBaseUrl(): string {
+  return getEmbedBaseUrl(
     env.PUBLIC_EMBED_BASE_URL ||
-    (env.NODE_ENV === 'development' ? DEFAULT_LOCAL_EMBED_BASE_URL : DEFAULT_EMBED_CDN_BASE_URL)
-  ).replace(/\/$/, '');
-
-  return `${embedBaseUrl}/embeds/course-widget/course-widget.js`;
+      (env.NODE_ENV === 'development' ? DEFAULT_LOCAL_EMBED_BASE_URL : DEFAULT_EMBED_CDN_BASE_URL)
+  );
 }
 
-export function getWidgetApiBaseUrl(): string {
-  return (env.PUBLIC_SERVER_URL || DEFAULT_WIDGET_API_BASE_URL).replace(/\/$/, '');
+export function getCourseWidgetScriptUrl(): string {
+  return getEmbedPublicUrl('course-widget', undefined, resolveEmbedBaseUrl());
 }
 
 export function getWidgetEmbedCode(publicKey: string): string {
   const scriptUrl = getCourseWidgetScriptUrl();
-  const apiBaseUrl = getWidgetApiBaseUrl();
 
-  return `<div data-cio-widget="course-widget" data-widget-key="${publicKey}" data-api-base-url="${apiBaseUrl}"></div>\n<script async type="module" src="${scriptUrl}"></script>`;
+  return `<div data-cio-widget="course-widget" data-widget-key="${publicKey}"></div>\n<script async type="module" src="${scriptUrl}"></script>`;
 }
 
 export function getWidgetHostedEmbedUrl(publicKey: string): string {
-  const embedBaseUrl = (
-    env.PUBLIC_EMBED_BASE_URL ||
-    (env.NODE_ENV === 'development' ? DEFAULT_LOCAL_EMBED_BASE_URL : DEFAULT_EMBED_CDN_BASE_URL)
-  ).replace(/\/$/, '');
-  const apiBaseUrl = getWidgetApiBaseUrl();
-
-  return `${embedBaseUrl}/embeds/course-widget/embed.html?key=${encodeURIComponent(publicKey)}&api=${encodeURIComponent(apiBaseUrl)}`;
+  return getEmbedPublicUrl('course-widget', { key: publicKey }, resolveEmbedBaseUrl());
 }
 
 type OrgCourse = Awaited<ReturnType<typeof getOrgCourses>>['items'][number];

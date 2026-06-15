@@ -16,8 +16,5 @@
 </section>
 
 <svelte:head>
-  <script
-    type="module"
-    src="https://assets.cdn.clsrio.com/embeds/question-type-picker/question-type-picker.js"
-  ></script>
+  <script type="module" src="https://embed.classroomio.com/question-type-picker"></script>
 </svelte:head>

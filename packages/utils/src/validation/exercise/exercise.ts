@@ -90,7 +90,7 @@ const QUESTION_VALIDATION_RULES: Record<number, Array<(question: QuestionRuleInp
     (question) => {
       const settings = question.settings;
       const template = String(settings?.template ?? '');
-      const blankCount = Math.max(0, template.split('___').length - 1);
+      const blankCount = (template.match(/_{3,}/g) ?? []).length;
       if (blankCount < 1) {
         return 'Word bank questions need at least one ___ blank in the template';
       }
@@ -224,7 +224,9 @@ export const ZExerciseUpdate = z.object({
   slug: ZSlug.optional(),
   questions: z.array(ZExerciseUpdateQuestion).optional(),
   sections: z.array(ZExerciseSection).optional(),
-  sectionDisplayMode: z.enum(['one_question', 'all_questions']).optional()
+  sectionDisplayMode: z.enum(['one_question', 'all_questions']).optional(),
+  completionPolicy: z.enum(['submitted', 'passed']).optional(),
+  passThreshold: z.number().int().min(0).max(100).optional()
 });
 export type TExerciseUpdate = z.infer<typeof ZExerciseUpdate>;
 

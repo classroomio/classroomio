@@ -1,26 +1,95 @@
 ---
 title: Create a Course Landing Page
-description: Learn how to create a course landing page.
+description: Build and edit a course landing page, including pricing, hero buttons, preview, and publish settings.
 ---
 
-ClassroomIO empowers you to design a course landing page, enabling you to showcase your courses to prospective students. On this page, students can explore course details, enrollment statistics, fees (if applicable), and course availability, enabling them to make informed choices. To access this, from your admin dashboard, navigate to **Settings** > **Landing Page.**
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
 
-## Steps
+A **course landing page** is the public page for one course. Prospects read the description, see pricing, and click **Enroll** if enrollment is open. This is separate from your [academy landing page](/docs/how-to-guides/org-landing-page), which is the academy homepage.
 
-### 1. Go to the Courses page
+## Open the editor
 
-Once you are logged in, click on **Courses** on the left sidebar, you will be taken to your course list page where you can access the courses you have created. For this tutorial, we will focus on the **Intro to Javascript** course displayed in the image below. Click on the desired course to proceed to its respective dashboard.
+<Steps>
+<Step>
+### Select a course
 
-![ClassroomIO Landing Page](/course-landing-page.webp)
+From the admin dashboard, open **Courses** and click the course you want.
+</Step>
 
-### 2. Open the Landing page editor
+<Step>
+### Open Landing page
 
-Select the "**Landing page**" option from the sidebar, which will lead you to the settings for your landing page. Here, you can customize various aspects of your course, including the course title, fees (if applicable), requirements, description, and more.
+In the course sidebar, click **Landing page** to open the editor.
+</Step>
 
-![ClassroomIO Course Page](/course-page.png)
+<Step>
+### Edit sections
 
-### 3. Edit and Save your changes
+Update sections such as hero, description, requirements, pricing, instructors, and footer. Click **Save** when finished.
+</Step>
 
-After making the desired adjustments, ensure to save your changes by clicking on the "**Save**" button located at the top-left corner of the screen. Then, to preview the updated landing page, click on the arrow button situated to the right of the "**Save**" button.
+<Step>
+### Preview
 
-![ClassroomIO Course Page Settings](/landing-page.png)
+Use the preview control next to **Save** to see the page. Confirm behavior on the live academy for links and enroll buttons.
+</Step>
+</Steps>
+
+## Editor sections
+
+| Section | What you configure |
+| --- | --- |
+| **Hero** | Title, subtitle, primary CTA (e.g. Enroll, Get Started) |
+| **Description** | Course overview for prospects |
+| **Requirements** | Prerequisites or audience notes |
+| **Pricing** | Price and currency |
+| **Instructors** | Instructor cards |
+| **Footer** | Supporting links and copy |
+
+Hero and pricing interact with [course enrollment](/docs/how-to-guides/course-enrollment): a free course with **Allow New Students** on shows an open **Enroll** button; paid or closed courses route visitors through payment or invites.
+
+## Pricing and currency
+
+Set the course price in the **Pricing** section. ClassroomIO supports these currencies today:
+
+| Currency | Code |
+| --- | --- |
+| US Dollar | USD |
+| Nigerian Naira | NGN |
+
+<Callout type="info" title="Other currencies">
+  If you need a currency outside USD and NGN, that requires product support today. Pick the closest supported currency or keep the course free and handle payment outside ClassroomIO.
+</Callout>
+
+## Publish and Allow New Students
+
+Landing page content can be ready before you open enrollment:
+
+| Course **Settings** | Effect on landing page |
+| --- | --- |
+| **Published** | Page is live on your academy |
+| **Allow New Students** | Public **Enroll** works (for free courses) |
+| **Price > 0** | Enrollment requires payment or a valid invite |
+
+See [How Course Enrollment Works](/docs/how-to-guides/course-enrollment) for closed cohorts and invite-only access.
+
+## Preview vs live site
+
+The in-app preview shows layout and copy. Test **Enroll**, external links, and payment on your live academy URL (subdomain or [custom domain](/docs/how-to-guides/custom-domain)) before sharing publicly.
+
+<Callout type="warn" title="Org landing page preview">
+  The org homepage preview in **Settings → Landing Page** disables link clicks. Course landing previews should still be checked on the live site for enrollment flows.
+</Callout>
+
+## What students see after enrolling
+
+After a successful enroll, students land in the [Student Dashboard](/docs/student-dashboard) (**Home** / **My Learning**). The course may disappear from **Explore** once they are a member.
+
+## Related guides
+
+- [How Course Enrollment Works](/docs/how-to-guides/course-enrollment) — who can join and how Explore relates to publish settings
+- [How to Invite Students](/docs/how-to-guides/invite-students) — invite links when public enroll is off
+- [Course Types](/docs/how-to-guides/course-types) — how type affects public vs LMS access
+- [Set Up a Custom Domain](/docs/how-to-guides/custom-domain) — host for your landing page URL
+- [Creating Your First Course](/docs/how-to-guides/create-first-course)

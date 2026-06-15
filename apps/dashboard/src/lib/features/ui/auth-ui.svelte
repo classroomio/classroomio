@@ -6,6 +6,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { GoogleIconColored } from '$features/ui/icons';
   import { authClient } from '$lib/utils/services/auth/client';
+  import { snackbar } from '$features/ui/snackbar/store';
   import * as Card from '@cio/ui/base/card';
   import { Button } from '@cio/ui/base/button';
   import { Separator } from '@cio/ui/base/separator';
@@ -51,17 +52,16 @@
     const redirectTo = `${window.location.origin + pathname}`;
     const errorCallbackURL = `${window.location.origin + ROUTE.AUTH_FAILED}`;
 
-    console.log({ redirectTo });
-
     try {
-      console.log('signInWithGoogle');
-      const data = await authClient.signIn.social({
+      const result = await authClient.signIn.social({
         provider: 'google',
         callbackURL: redirectTo,
         errorCallbackURL: errorCallbackURL
       });
 
-      console.log('data', data);
+      if (result?.error) {
+        snackbar.error('snackbar.social_auth_not_enabled');
+      }
     } catch (error) {
       console.log('catch error', error);
     }

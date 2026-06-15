@@ -24,7 +24,7 @@ import {
   ZUpdateProgramReaction
 } from '@cio/utils/validation/program';
 import { get } from 'svelte/store';
-import { getTextFromHTML } from '$lib/utils/functions/toHtml';
+import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { profile } from '$lib/utils/store/user';
 import { snackbar } from '$features/ui/snackbar/store';
@@ -77,10 +77,15 @@ export class ProgramNewsfeedApi extends BaseApiWithErrors {
   async create(programId: string, fields: TCreateProgramNewsfeed) {
     this.success = false;
 
-    const validationResult = ZCreateProgramNewsfeed.safeParse({
-      ...fields,
-      content: getTextFromHTML(fields.content)
-    });
+    if (isHtmlValueEmpty(fields.content)) {
+      this.errors = mapZodErrorsToTranslations(
+        ZCreateProgramNewsfeed.safeParse({ ...fields, content: '' }).error!,
+        'newsfeed'
+      );
+      return;
+    }
+
+    const validationResult = ZCreateProgramNewsfeed.safeParse(fields);
 
     if (!validationResult.success) {
       this.errors = mapZodErrorsToTranslations(validationResult.error, 'newsfeed');
@@ -115,10 +120,15 @@ export class ProgramNewsfeedApi extends BaseApiWithErrors {
   async update(programId: string, feedId: string, fields: TUpdateProgramNewsfeed) {
     this.success = false;
 
-    const validationResult = ZUpdateProgramNewsfeed.safeParse({
-      ...fields,
-      ...(fields.content ? { content: getTextFromHTML(fields.content) } : {})
-    });
+    if (fields.content !== undefined && isHtmlValueEmpty(fields.content)) {
+      this.errors = mapZodErrorsToTranslations(
+        ZUpdateProgramNewsfeed.safeParse({ ...fields, content: '' }).error!,
+        'newsfeed'
+      );
+      return;
+    }
+
+    const validationResult = ZUpdateProgramNewsfeed.safeParse(fields);
 
     if (!validationResult.success) {
       this.errors = mapZodErrorsToTranslations(validationResult.error, 'newsfeed');

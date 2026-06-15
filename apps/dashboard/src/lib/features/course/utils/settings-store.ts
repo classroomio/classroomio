@@ -13,6 +13,7 @@ type CourseSettings = {
   lessonDownload: boolean;
   isPublished: boolean;
   isContentGroupingEnabled: boolean;
+  progressionMode: 'free' | 'sequential';
   callout: TCourseCallout | null;
 };
 
@@ -32,5 +33,6 @@ export const settings = writable<CourseSettings>({
   lessonDownload: false,
   isPublished: false,
   isContentGroupingEnabled: true,
+  progressionMode: 'free',
   callout: null
 });

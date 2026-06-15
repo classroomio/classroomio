@@ -8,11 +8,17 @@
     pending ??= import('@cio/ui/custom/editor');
     return pending;
   }
+
+  /** Warm the editor chunk without mounting an instance (e.g. on newsfeed page load). */
+  export function preloadTextEditor() {
+    return loadEditor();
+  }
 </script>
 
 <script lang="ts">
   // Type-only imports are erased at build time — no static TipTap dependency.
   import type { HTMLContent, TiptapEditor } from '@cio/ui/custom/editor';
+  import { cn } from '@cio/ui/tools';
 
   interface Props {
     placeholder?: string | ((node: any) => string);
@@ -46,7 +52,21 @@
 </script>
 
 {#await loadEditor()}
-  <div class="ui:animate-pulse ui:rounded-md ui:bg-muted ui:h-32 ui:w-full" />
+  <div
+    class={cn(
+      'ui:relative ui:bg-background ui:flex ui:w-full ui:flex-col ui:rounded-md ui:border ui:border-dashed',
+      className
+    )}
+    aria-busy="true"
+    aria-hidden="true"
+  >
+    {#if showToolBar}
+      <div class="ui:h-9 ui:shrink-0 ui:border-b ui:border-dashed ui:bg-muted/50" />
+    {/if}
+    <div
+      class={cn('ui:relative ui:h-128 ui:w-full ui:overflow-auto ui:p-4 ui:animate-pulse ui:bg-muted/50', editorClass)}
+    />
+  </div>
 {:then { Editor }}
   <Editor
     {content}

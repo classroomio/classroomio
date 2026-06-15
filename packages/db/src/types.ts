@@ -112,6 +112,9 @@ export type TNewOrganizationInviteAudit = typeof schema.organizationInviteAudit.
 export type TLessonCompletion = typeof schema.lessonCompletion.$inferSelect;
 export type TNewLessonCompletion = typeof schema.lessonCompletion.$inferInsert;
 
+export type TLessonVideoProgress = typeof schema.lessonVideoProgress.$inferSelect;
+export type TNewLessonVideoProgress = typeof schema.lessonVideoProgress.$inferInsert;
+
 export type TCommunityAnswer = typeof schema.communityAnswer.$inferSelect;
 export type TNewCommunityAnswer = typeof schema.communityAnswer.$inferInsert;
 

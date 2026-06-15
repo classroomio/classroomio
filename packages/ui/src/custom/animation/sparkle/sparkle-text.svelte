@@ -63,7 +63,7 @@
 </script>
 
 <div style:--sparkles-first-color="{colors.first};" style:--sparkles-second-color="{colors.second};" class={className}>
-  <span class="relative inline-block">
+  <span class="ui:relative ui:inline-block">
     {#each sparkles as item}
       <SparkleParticle {...item} />
     {/each}

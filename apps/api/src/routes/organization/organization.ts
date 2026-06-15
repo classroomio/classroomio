@@ -74,6 +74,7 @@ import { searchRouter } from '@api/routes/organization/search';
 import { tagsRouter } from '@api/routes/organization/tags';
 import { widgetsRouter } from '@api/routes/organization/widgets';
 import { zValidator } from '@hono/zod-validator';
+import { ZGetRecommendedCourses } from '@cio/utils/validation/course';
 
 export const organizationRouter = new Hono()
   /**
@@ -433,24 +434,35 @@ export const organizationRouter = new Hono()
    * Gets recommended courses (published courses user isn't enrolled in) for a user in an organization (used in lms)
    * Requires authentication and organization membership
    */
-  .get('/courses/recommended', authMiddleware, orgMemberMiddleware, async (c) => {
-    try {
-      const user = c.get('user')!;
+  .get(
+    '/courses/recommended',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('query', ZGetRecommendedCourses),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { limit, page = 1 } = c.req.valid('query');
 
-      const orgId = c.req.header('cio-org-id')!;
-      const result = await getRecommendedCourses(orgId, user.id);
+        const orgId = c.req.header('cio-org-id')!;
+        const { data, total } = await getRecommendedCourses(orgId, user.id, limit, page);
 
-      return c.json(
-        {
-          success: true,
-          data: result
-        },
-        200
-      );
-    } catch (error) {
-      return handleError(c, error, 'Failed to fetch recommended courses');
+        const resolvedLimit = limit ?? total;
+        const totalPages = resolvedLimit > 0 ? Math.ceil(total / resolvedLimit) : 1;
+
+        return c.json(
+          {
+            success: true,
+            data,
+            pagination: { page, limit: resolvedLimit, total, totalPages }
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch recommended courses');
+      }
     }
-  })
+  )
   /**
    * GET /organization/courses
    * Gets courses for an organization with role-based filtering (used in dashboard)

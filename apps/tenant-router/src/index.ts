@@ -5,6 +5,7 @@
  *   - *.myclassroomio.com/*         — free-tier tenant sites (acme.myclassroomio.com)
  *   - myclassroomio.com/*           — apex (301 → classroomio.com)
  *   - app.classroomio.com/*         — admin dashboard
+ *   - embed.classroomio.com/*       — public embed widgets (`/{name}` → R2 `assets`)
  *   - <BYOD>/*                      — customer-owned domains via Cloudflare for SaaS
  *
  * Per request, the Worker decides upstream by path:
@@ -35,14 +36,22 @@
  * Domain attribute upstream, so they scope host-only on every domain.
  */
 
+import { embedResponseHeaders, injectApiUrl, needsApiUrlInjection, resolveEmbedObjectKey } from './embed-assets';
+
 interface Env {
   DASHBOARD_UPSTREAM_HOST: string;
   API_UPSTREAM_HOST: string;
   APEX_REDIRECT_TARGET: string;
+  /** Hostname that serves embed widget assets from R2 (e.g. embed.classroomio.com). */
+  EMBED_HOST: string;
+  /** Public API origin injected into embed scripts (e.g. https://api.classroomio.com). */
+  API_URL: string;
   /** HMAC-SHA256 secret shared with the API to sign cio_hls tokens. */
   HLS_SIGNING_SECRET: string;
   /** R2 bucket binding for the videos bucket (HLS manifests + segments + audio). */
   VIDEOS_BUCKET: R2Bucket;
+  /** R2 bucket binding for static assets (embed scripts under `embeds/`). */
+  ASSETS_BUCKET: R2Bucket;
 }
 
 // PostHog first-party proxy: requests to /ingest/* are forwarded to PostHog EU.
@@ -156,6 +165,66 @@ async function verifyHlsToken(token: string, secret: string): Promise<VerifiedHl
   return { assetId: decoded.aid, expSeconds: decoded.exp };
 }
 
+async function handleEmbedAssetRequest(request: Request, env: Env): Promise<Response> {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+        'Access-Control-Max-Age': '86400'
+      }
+    });
+  }
+
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    return new Response('Method Not Allowed', { status: 405 });
+  }
+
+  const url = new URL(request.url);
+  const objectKey = await resolveEmbedObjectKey(url, env.ASSETS_BUCKET);
+  if (!objectKey) {
+    return new Response('Not Found', { status: 404 });
+  }
+
+  const object =
+    request.method === 'HEAD' ? await env.ASSETS_BUCKET.head(objectKey) : await env.ASSETS_BUCKET.get(objectKey);
+
+  if (!object) {
+    return new Response('Not Found', { status: 404 });
+  }
+
+  const headers = embedResponseHeaders(objectKey);
+
+  if ('writeHttpMetadata' in object) {
+    object.writeHttpMetadata(headers);
+  }
+
+  const injectApi = needsApiUrlInjection(objectKey) && env.API_URL;
+
+  if (request.method === 'HEAD') {
+    if (!injectApi && object.size != null) {
+      headers.set('Content-Length', String(object.size));
+    }
+
+    return new Response(null, { status: 200, headers });
+  }
+
+  if (injectApi) {
+    const rawBody = await (object as R2ObjectBody).text();
+    const body = injectApiUrl(rawBody, objectKey, env.API_URL);
+    headers.delete('Content-Length');
+
+    return new Response(body, { status: 200, headers });
+  }
+
+  if (object.size != null) {
+    headers.set('Content-Length', String(object.size));
+  }
+
+  return new Response((object as R2ObjectBody).body, { status: 200, headers });
+}
+
 async function handleHlsRequest(request: Request, env: Env): Promise<Response> {
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     return new Response('Method Not Allowed', { status: 405 });
@@ -218,6 +287,11 @@ export default {
       return Response.redirect(target.toString(), 301);
     }
 
+    // Public embed scripts — served from the R2 `assets` bucket (no Render hop).
+    if (originalHost === env.EMBED_HOST) {
+      return handleEmbedAssetRequest(request, env);
+    }
+
     // HLS playback served directly from R2 — Render is never in the bytestream.
     // Accept both `/hls/{assetId}/...` and `/proxy/hls/{assetId}/...` so the
     // dashboard can construct URLs from the same `/proxy`-prefixed API base
@@ -265,17 +339,23 @@ export default {
       upstreamHeaders.set('x-forwarded-for', clientIp);
     }
 
+    // SvelteKit's immutable chunk filenames include a content hash, so they are
+    // safe to cache at the edge forever. `cf.cacheEverything` is what actually
+    // populates Cloudflare's edge cache for this subrequest — setting a
+    // `Cache-Control` header on the response alone does NOT, so without this a
+    // cold browser cache (new device, or post-deploy hash change) stampedes the
+    // origin for every chunk.
+    const isImmutableAsset = url.pathname.startsWith('/_app/immutable/');
+
     const upstreamResponse = await fetch(upstreamUrl.toString(), {
       method: request.method,
       headers: upstreamHeaders,
       body: request.body,
-      redirect: 'manual'
+      redirect: 'manual',
+      cf: isImmutableAsset ? { cacheEverything: true, cacheTtl: 31536000 } : undefined
     });
 
-    // SvelteKit's immutable chunk filenames include a content hash, so they
-    // are safe to cache forever. Set a long TTL here at the edge so browsers
-    // and Cloudflare cache them aggressively rather than revalidating.
-    if (url.pathname.startsWith('/_app/immutable/')) {
+    if (isImmutableAsset) {
       const response = new Response(upstreamResponse.body, upstreamResponse);
       response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
       return response;

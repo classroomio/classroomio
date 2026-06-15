@@ -73,37 +73,37 @@
   <Popover.Root bind:open>
     <Popover.Trigger
       {disabled}
-      class="ui:text-muted-foreground hover:ui:bg-muted ui:hover:text-foreground flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors disabled:pointer-events-none disabled:opacity-40"
+      class="ui:text-muted-foreground ui:hover:bg-muted ui:hover:text-foreground ui:flex ui:shrink-0 ui:items-center ui:gap-1 ui:rounded-md ui:px-2 ui:py-1 ui:text-xs ui:transition-colors ui:disabled:pointer-events-none ui:disabled:opacity-40"
     >
       <span class="truncate">{AGENT_MODELS[value].label}</span>
       {#if AGENT_MODELS[value].costTier === 'high'}
-        <span class="ui:text-red-500 font-medium">$$$</span>
+        <span class="ui:text-red-500 ui:font-medium">$$$</span>
       {:else}
-        <span class="ui:text-green-500 font-medium">$</span>
+        <span class="ui:text-green-500 ui:font-medium">$</span>
       {/if}
       <ChevronDownIcon size={12} />
     </Popover.Trigger>
 
-    <Popover.Content class="ui:p-0! ui:z-[110] w-48" align="end" side="top">
-      <div class="py-1">
+    <Popover.Content class="ui:p-0! ui:z-[110] ui:w-48" align="end" side="top">
+      <div class="ui:py-1">
         {#each UI_PICKER_MODEL_IDS as id (id)}
           {@const isSelected = id === value}
           <button
             type="button"
             onclick={() => handleSelect(id)}
-            class="hover:ui:bg-muted flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-xs transition-colors"
+            class="ui:hover:bg-muted ui:flex ui:w-full ui:items-center ui:justify-between ui:gap-2 ui:px-3 ui:py-2 ui:text-left ui:text-xs ui:transition-colors"
           >
-            <span class="flex min-w-0 items-center gap-2">
-              <span class="min-w-0 truncate">{AGENT_MODELS[id].label}</span>
+            <span class="ui:flex ui:min-w-0 ui:items-center ui:gap-2">
+              <span class="ui:min-w-0 truncate">{AGENT_MODELS[id].label}</span>
               {#if isLocked(id)}
                 <RocketIcon size={16} class="ui:text-primary! ui:shrink-0" />
               {/if}
             </span>
-            <span class="flex shrink-0 items-center gap-1">
+            <span class="ui:flex ui:shrink-0 ui:items-center ui:gap-1">
               {#if AGENT_MODELS[id].costTier === 'high'}
-                <span class="ui:text-red-500 font-medium">$$$</span>
+                <span class="ui:text-red-500 ui:font-medium">$$$</span>
               {:else}
-                <span class="ui:text-green-500 font-medium">$</span>
+                <span class="ui:text-green-500 ui:font-medium">$</span>
               {/if}
               {#if isSelected}
                 <CheckIcon size={14} class="ui:text-primary" />

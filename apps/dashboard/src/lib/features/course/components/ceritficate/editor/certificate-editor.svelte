@@ -66,6 +66,7 @@
       templateLabel={activeTemplateMeta.label}
       isDirty={store.isDirty}
       isSaving={store.isSaving}
+      isSignatureUploading={store.isSignatureUploading}
       isFreePlan={$isFreePlan}
       onSave={() => store.save()}
       onDiscard={() => store.reset()}

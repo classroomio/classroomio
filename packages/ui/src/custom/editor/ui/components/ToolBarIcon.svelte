@@ -17,7 +17,7 @@
   <Button
     variant="ghost"
     size="icon"
-    class={cn(command.isActive?.(editor) && 'bg-muted')}
+    class={cn(command.isActive?.(editor) && 'ui:bg-muted')}
     onclick={() => command.onClick?.(editor)}
     disabled={command.clickable ? !command.clickable(editor) : false}
   >

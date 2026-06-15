@@ -93,7 +93,7 @@
       <p class="ui:text-muted-foreground ui:text-xs">{label('word_bank.edit.correct_answers_heading')}</p>
       <div class="ui:flex ui:flex-col ui:gap-2">
         {#each Array.from({ length: blankCount }, (_, i) => i) as blankIndex (blankIndex)}
-          <div class="ui:flex ui:flex-col ui:gap-1 sm:ui:flex-row sm:ui:items-center sm:ui:gap-3">
+          <div class="ui:flex ui:flex-col ui:gap-1 ui:sm:flex-row ui:sm:items-center ui:sm:gap-3">
             <span class="ui:text-muted-foreground ui:min-w-18 ui:text-sm"
               >{label('word_bank.edit.blank_label')} {blankIndex + 1}</span
             >

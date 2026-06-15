@@ -19,7 +19,7 @@
     try {
       if ($currentOrgPlan?.provider === 'polar') {
         const url = new URL('/api/polar/portal', window.location.origin);
-        url.searchParams.set('customerId', $currentOrgPlan?.customerId || '');
+        url.searchParams.set('orgId', $currentOrg.id);
 
         window.open(url.toString(), '_blank');
       }

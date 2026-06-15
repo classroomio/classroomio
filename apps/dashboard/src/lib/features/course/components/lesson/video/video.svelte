@@ -13,9 +13,11 @@
 
   interface Props {
     mode?: (typeof MODES)[keyof typeof MODES];
+    courseId: string;
+    lessonId: string;
   }
 
-  let { mode = MODES.view }: Props = $props();
+  let { mode = MODES.view, courseId, lessonId }: Props = $props();
 
   const videos = $derived(lessonApi.lesson?.videos || []);
 
@@ -42,7 +44,7 @@
 
 {#snippet content(video)}
   {#key video.type === 'upload' ? ((video as typeof video & { assetId?: string }).assetId ?? video.link) : video.link}
-    <LessonVideoPlayer {video} />
+    <LessonVideoPlayer {video} {courseId} {lessonId} />
   {/key}
 {/snippet}
 

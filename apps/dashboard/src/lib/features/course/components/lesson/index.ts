@@ -9,3 +9,4 @@ export { default as Video } from './video/video.svelte';
 export { default as Document } from './document/document.svelte';
 export { default as AddVideoModal } from './video/add-video-modal.svelte';
 export { default as AddDocumentModal } from './document/add-document-modal.svelte';
+export { default as LessonSettingsTab } from './lesson-settings-tab.svelte';

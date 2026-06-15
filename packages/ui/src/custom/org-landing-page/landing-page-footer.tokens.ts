@@ -36,7 +36,7 @@ export function getFooterTokens(variant: OrgLandingPageTheme): FooterRegionToken
       columnLink:
         'ui:block ui:text-sm ui:text-[var(--landing-fg-muted)] ui:hover:text-[var(--landing-fg)] ui:transition-colors ui:break-words ui:py-1.5 ui:md:py-0',
       columnCta:
-        'ui:text-sm ui:font-semibold ui:text-[var(--landing-fg)] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-4 ui:no-underline hover:ui:underline',
+        'ui:text-sm ui:font-semibold ui:text-[var(--landing-fg)] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-4 ui:no-underline ui:hover:underline',
       socialWrap: 'ui:flex ui:flex-wrap ui:gap-2 ui:mt-3 ui:list-none ui:m-0 ui:p-0',
       socialIcon:
         'ui:inline-flex ui:items-center ui:justify-center ui:p-1.5 ui:rounded-md ui:text-[var(--landing-fg-muted)] ui:hover:text-[var(--landing-fg)] ui:transition-colors ui:no-underline',
@@ -64,7 +64,7 @@ export function getFooterTokens(variant: OrgLandingPageTheme): FooterRegionToken
       columnLink:
         'ui:block ui:text-sm ui:text-[var(--landing-bg)]/75 ui:hover:text-[var(--landing-bg)] ui:transition-colors ui:break-words ui:py-1.5 ui:md:py-0',
       columnCta:
-        'ui:text-sm ui:font-semibold ui:text-[var(--landing-bg)] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-3 ui:no-underline hover:ui:underline',
+        'ui:text-sm ui:font-semibold ui:text-[var(--landing-bg)] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-3 ui:no-underline ui:hover:underline',
       socialWrap: 'ui:flex ui:flex-wrap ui:gap-2 ui:mt-4 ui:list-none ui:m-0 ui:p-0',
       socialIcon:
         'ui:inline-flex ui:items-center ui:justify-center ui:size-8 ui:border ui:border-[var(--landing-bg)]/15 ui:bg-[var(--landing-bg)]/5 ui:text-[var(--landing-bg)]/75 ui:hover:text-[var(--landing-bg)] ui:hover:bg-[var(--landing-bg)]/10 ui:transition-colors ui:no-underline',
@@ -92,7 +92,7 @@ export function getFooterTokens(variant: OrgLandingPageTheme): FooterRegionToken
       columnLink:
         'ui:block ui:text-[13px] ui:text-[var(--landing-fg)] ui:hover:text-[var(--landing-fg-muted)] ui:transition-colors ui:break-words ui:py-1.5 ui:md:py-0',
       columnCta:
-        'ui:text-sm ui:font-medium ui:text-[var(--landing-accent)] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-3 ui:no-underline hover:ui:underline',
+        'ui:text-sm ui:font-medium ui:text-[var(--landing-accent)] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-3 ui:no-underline ui:hover:underline',
       socialWrap: 'ui:flex ui:flex-wrap ui:gap-2 ui:mt-3 ui:list-none ui:m-0 ui:p-0',
       socialIcon:
         'ui:inline-flex ui:items-center ui:justify-center ui:size-7 ui:rounded-md ui:text-[var(--landing-fg-muted)] ui:hover:text-[var(--landing-fg)] ui:hover:bg-[var(--landing-card-soft)] ui:transition-colors ui:no-underline',
@@ -119,7 +119,7 @@ export function getFooterTokens(variant: OrgLandingPageTheme): FooterRegionToken
       columnLink:
         'ui:block ui:text-[13.5px] ui:text-[#9da1ab] ui:hover:text-[#e9eaed] ui:transition-colors ui:break-words ui:py-1 ui:md:py-0 ui:no-underline',
       columnCta:
-        'ui:text-sm ui:font-medium ui:text-[#e9eaed] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-3 ui:no-underline hover:ui:underline',
+        'ui:text-sm ui:font-medium ui:text-[#e9eaed] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-3 ui:no-underline ui:hover:underline',
       socialWrap: 'ui:flex ui:flex-wrap ui:gap-3 ui:mt-4 ui:list-none ui:m-0 ui:p-0',
       socialIcon:
         'ui:inline-flex ui:items-center ui:justify-center ui:text-[#9da1ab] ui:hover:text-[#e9eaed] ui:transition-colors ui:no-underline',
@@ -174,7 +174,7 @@ export function getFooterTokens(variant: OrgLandingPageTheme): FooterRegionToken
       columnLink:
         'ui:block ui:text-sm ui:text-[var(--landing-fg-muted)] ui:hover:text-[var(--landing-fg)] ui:transition-colors ui:break-words ui:py-1.5 ui:md:py-0',
       columnCta:
-        'ui:text-sm ui:font-semibold ui:text-[var(--landing-accent)] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-3 ui:no-underline hover:ui:underline',
+        'ui:text-sm ui:font-semibold ui:text-[var(--landing-accent)] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-3 ui:no-underline ui:hover:underline',
       socialWrap: 'ui:flex ui:flex-wrap ui:gap-2 ui:mt-4 ui:list-none ui:m-0 ui:p-0',
       socialIcon:
         'ui:inline-flex ui:items-center ui:justify-center ui:size-8 ui:rounded-full ui:border ui:border-[var(--landing-border)] ui:bg-[var(--landing-card-soft)]/40 ui:text-[var(--landing-fg-muted)] ui:hover:text-[var(--landing-fg)] ui:hover:bg-[var(--landing-card-soft)] ui:transition-colors ui:no-underline',
@@ -203,7 +203,7 @@ export function getFooterTokens(variant: OrgLandingPageTheme): FooterRegionToken
       columnLink:
         'ui:block ui:text-lg ui:font-medium ui:text-[var(--landing-fg)] ui:hover:text-[var(--landing-accent)] ui:transition-colors ui:break-words ui:py-1.5 ui:md:py-1 ui:no-underline',
       columnCta:
-        'ui:text-sm ui:font-medium ui:text-[var(--landing-accent)] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-3 ui:no-underline hover:ui:underline',
+        'ui:text-sm ui:font-medium ui:text-[var(--landing-accent)] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-3 ui:no-underline ui:hover:underline',
       socialWrap: 'ui:flex ui:flex-wrap ui:gap-3 ui:mt-4 ui:list-none ui:m-0 ui:p-0',
       socialIcon:
         'ui:inline-flex ui:items-center ui:justify-center ui:size-9 ui:rounded-md ui:border ui:border-[var(--landing-border)] ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:hover:text-[var(--landing-accent)] ui:transition-colors ui:no-underline',
@@ -230,7 +230,7 @@ export function getFooterTokens(variant: OrgLandingPageTheme): FooterRegionToken
       columnLink:
         'ui:block ui:text-sm ui:text-[#2c2b29] ui:hover:text-[#1a1a1a] ui:transition-colors ui:break-words ui:py-1 ui:md:py-0 ui:no-underline',
       columnCta:
-        'ui:text-sm ui:font-medium ui:text-[#c25237] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-3 ui:no-underline hover:ui:underline',
+        'ui:text-sm ui:font-medium ui:text-[#c25237] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-3 ui:no-underline ui:hover:underline',
       socialWrap: 'ui:flex ui:flex-wrap ui:gap-3 ui:mt-4 ui:list-none ui:m-0 ui:p-0',
       socialIcon:
         'ui:inline-flex ui:items-center ui:justify-center ui:text-[#76746c] ui:hover:text-[#1a1a1a] ui:transition-colors ui:no-underline',
@@ -257,7 +257,7 @@ export function getFooterTokens(variant: OrgLandingPageTheme): FooterRegionToken
       columnLink:
         'ui:block ui:text-sm ui:font-medium ui:text-[var(--landing-bg)]/70 ui:hover:text-[var(--landing-bg)] ui:transition-colors ui:break-words ui:py-1.5 ui:md:py-0',
       columnCta:
-        'ui:text-sm ui:font-bold ui:text-[var(--landing-bg)] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-4 ui:no-underline hover:ui:underline',
+        'ui:text-sm ui:font-bold ui:text-[var(--landing-bg)] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-4 ui:no-underline ui:hover:underline',
       socialWrap: 'ui:flex ui:flex-wrap ui:gap-2 ui:mt-3 ui:list-none ui:m-0 ui:p-0',
       socialIcon:
         'ui:inline-flex ui:items-center ui:justify-center ui:p-1.5 ui:rounded-md ui:text-[var(--landing-bg)]/70 ui:hover:text-[var(--landing-bg)] ui:transition-colors ui:no-underline',
@@ -284,7 +284,7 @@ export function getFooterTokens(variant: OrgLandingPageTheme): FooterRegionToken
     columnLink:
       'ui:block ui:text-sm ui:font-medium ui:text-[var(--landing-bg)]/70 ui:hover:text-[var(--landing-bg)] ui:transition-colors ui:break-words ui:py-1.5 ui:md:py-0',
     columnCta:
-      'ui:text-sm ui:font-semibold ui:text-[var(--landing-bg)] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-4 ui:no-underline hover:ui:underline',
+      'ui:text-sm ui:font-semibold ui:text-[var(--landing-bg)] ui:inline-flex ui:items-center ui:gap-1.5 ui:mt-4 ui:no-underline ui:hover:underline',
     socialWrap: 'ui:flex ui:flex-wrap ui:gap-2 ui:mt-3 ui:list-none ui:m-0 ui:p-0',
     socialIcon:
       'ui:inline-flex ui:items-center ui:justify-center ui:p-1.5 ui:rounded-md ui:text-[var(--landing-bg)]/70 ui:hover:text-[var(--landing-bg)] ui:transition-colors ui:no-underline',

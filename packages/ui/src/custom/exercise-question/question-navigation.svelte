@@ -26,7 +26,7 @@
   }: Props = $props();
 </script>
 
-<div class="flex justify-end gap-3">
+<div class="ui:flex ui:justify-end ui:gap-3">
   <Button type="button" variant="outline" size="sm" onclick={() => onPrevious()} disabled={!canGoBack || isSubmitting}>
     {previousLabel}
   </Button>

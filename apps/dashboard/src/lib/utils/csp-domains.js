@@ -5,6 +5,7 @@
 const saasDefaults = {
   scriptSrc: [
     'https://assets.cdn.clsrio.com',
+    'https://embed.classroomio.com',
     'https://cdnjs.cloudflare.com',
     'https://*.posthog.com',
     'https://*.senja.io',

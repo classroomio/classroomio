@@ -12,9 +12,9 @@
           'ui:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px ui:has-[>[data-slot=field-content]]:items-start'
         ],
         responsive: [
-          '@md/field-group:ui:flex-row @md/field-group:ui:items-center @md/field-group:ui:[&>*]:w-auto ui:flex-col ui:*:w-full ui:*.sr-only:w-auto',
-          '@md/field-group:ui:[&>[data-slot=field-label]]:flex-auto',
-          '@md/field-group:ui:has-[>[data-slot=field-content]]:items-start @md/field-group:ui:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px'
+          'ui:@md/field-group:flex-row ui:@md/field-group:items-center ui:@md/field-group:[&>*]:w-auto ui:flex-col ui:*:w-full ui:*.sr-only:w-auto',
+          'ui:@md/field-group:[&>[data-slot=field-label]]:flex-auto',
+          'ui:@md/field-group:has-[>[data-slot=field-content]]:items-start ui:@md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px'
         ]
       }
     },

@@ -159,4 +159,4 @@ export class SubmissionApi extends BaseApiWithErrors {
   }
 }
 
-export const submissionApi = new SubmissionApi();
+export const submissionApi = /* @__PURE__ */ new SubmissionApi();

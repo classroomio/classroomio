@@ -79,7 +79,7 @@
 
   {#if mode === MODES.edit && !$isOrgStudent}
     <RoleBasedSecurity allowedRoles={[1, 2]}>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center justify-end gap-2">
         <IconButton onclick={onToggleLock} aria-label={lockLabel} title={lockLabel}>
           {#if isUnlocked}
             <UnlockIcon size={18} />

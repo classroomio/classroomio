@@ -1,4 +1,11 @@
-import { escapeHtml, getYear, type TemplateRenderer } from './shared';
+import {
+  escapeHtml,
+  getYear,
+  renderFooterMetaBlock,
+  renderSignatoryBlock,
+  SIGNATURE_IMAGE_STYLES,
+  type TemplateRenderer
+} from './shared';
 
 export const renderPoster: TemplateRenderer = ({ design, data }) => {
   const accent = design.accentColor;
@@ -26,18 +33,9 @@ export const renderPoster: TemplateRenderer = ({ design, data }) => {
         </div>
         <div class="description">${escapeHtml(description)}</div>
         <div class="bottom">
-          <div>
-            <div class="k">${escapeHtml(signatoryOne.role)}</div>
-            <div class="v">${escapeHtml(signatoryOne.name)}</div>
-          </div>
-          <div>
-            <div class="k">${escapeHtml(signatoryTwo.role)}</div>
-            <div class="v">${escapeHtml(signatoryTwo.name)}</div>
-          </div>
-          <div>
-            <div class="k">Issued</div>
-            <div class="v">${escapeHtml(data.date)}</div>
-          </div>
+          ${renderSignatoryBlock(signatoryOne, { nameClass: 'v', roleClass: 'k', roleFirst: true })}
+          ${renderSignatoryBlock(signatoryTwo, { nameClass: 'v', roleClass: 'k', roleFirst: true })}
+          ${renderFooterMetaBlock('Issued', data.date, { labelClass: 'k', valueClass: 'v' })}
         </div>
       </div>
       <div class="corner-num">${getYear(data.date)}</div>
@@ -162,10 +160,19 @@ export const renderPoster: TemplateRenderer = ({ design, data }) => {
       margin-top: auto;
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
+      align-items: end;
       gap: 24px;
       border-top: 2px solid #1a1a1a;
       padding-top: 18px;
       font-family: 'JetBrains Mono', monospace;
+    }
+    .t-poster .bottom .sig-content,
+    .t-poster .bottom .sig-text {
+      align-items: flex-start;
+      text-align: left;
+    }
+    .t-poster .bottom .sig-img-slot {
+      justify-content: flex-start;
     }
     .t-poster .bottom .k {
       font-size: 9px;
@@ -192,6 +199,7 @@ export const renderPoster: TemplateRenderer = ({ design, data }) => {
       z-index: 3;
       line-height: 0.8;
     }
+    ${SIGNATURE_IMAGE_STYLES}
   `;
 
   return { body, styles };

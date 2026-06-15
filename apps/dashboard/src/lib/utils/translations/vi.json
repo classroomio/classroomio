@@ -104,8 +104,8 @@
       "min_char": "Trường phải chứa 5 ký tự trở lên"
     },
     "site_name": {
-      "min_char": "Tên trang web phải chứa 5 ký tự trở lên",
-      "hyphen_rule": "Tên trang web không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
+      "min_char": "Tên miền phụ của Học viện phải chứa 5 ký tự trở lên",
+      "hyphen_rule": "Tên miền phụ của Học viện không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
     },
     "organization_name": {
       "min_char": "Tổ chức phải chứa 5 ký tự trở lên",
@@ -352,7 +352,8 @@
       "thumbnail_regen_started": "Đang tạo lại hình thu nhỏ…",
       "thumbnail_regen_failed": "Không thể tạo lại hình thu nhỏ",
       "transcript_saved": "Đã cập nhật bản ghi",
-      "transcript_save_failed": "Không thể lưu bản ghi"
+      "transcript_save_failed": "Không thể lưu bản ghi",
+      "transcription_already_running": "Công việc chép lời đang được thực hiện cho video này"
     },
     "tags": {
       "group_created": "Đã tạo nhóm thẻ",
@@ -434,7 +435,8 @@
     "lesson_video": {
       "generate_1080_completed": "Đã thêm phiên bản 1080p",
       "generate_1080_failed": "Không thể tạo phiên bản 1080p"
-    }
+    },
+    "social_auth_not_enabled": "Nhà cung cấp xác thực này chưa được kích hoạt."
   },
   "explore": {
     "heading": "Khám phá các khóa học của chúng tôi",
@@ -457,7 +459,8 @@
     "not_in_progress": "Không có khóa học nào đang diễn ra",
     "any_progress": "Bất kỳ khóa học nào bạn bắt đầu sẽ được hiển thị ở đây",
     "not_completed": "Không có khóa học nào hoàn thành",
-    "any_course": "Bất kỳ khóa học nào bạn hoàn thành sẽ được hiển thị ở đây"
+    "any_course": "Bất kỳ khóa học nào bạn hoàn thành sẽ được hiển thị ở đây",
+    "find_courses": "Tìm khóa học"
   },
   "lms_navigation": {
     "home": "Trang chủ",
@@ -538,7 +541,7 @@
     "loading_chart": "Đang tải biểu đồ...",
     "no_data_default": "Không có sẵn dữ liệu",
     "no_data_default_description": "Không có dữ liệu để hiển thị tại thời điểm này.",
-    "subtitle": "Hiểu cách khách truy cập khám phá các khóa học của bạn và chuyển đổi thành người học.",
+    "subtitle": "Hiểu cách khách truy cập khám phá các khóa học của bạn và chuyển đổi thành sinh viên.",
     "refresh": "Làm mới",
     "popularTypes": {
       "heading": "Các loại khóa học phổ biến",
@@ -599,13 +602,13 @@
       "course_types": "Các loại khóa học"
     },
     "course_metrics": {
-      "page_subtitle": "Việc đăng ký, hoàn thành bài học, điểm số và tiến độ của mỗi người học đối với khóa học này.",
-      "progress_distribution_card_description": "Có bao nhiêu người học rơi vào từng mức độ hoàn thành.",
+      "page_subtitle": "Việc ghi danh, hoàn thành bài học, điểm số và sự tiến bộ của mỗi học sinh đối với khóa học này.",
+      "progress_distribution_card_description": "Có bao nhiêu học sinh rơi vào mỗi mức độ hoàn thành.",
       "grade_distribution_card_description": "Có bao nhiêu học sinh rơi vào từng nhóm lớp.",
-      "students_table_description": "Tổng quan có thể sắp xếp với các liên kết đến hồ sơ người học.",
+      "students_table_description": "Tổng quan có thể sắp xếp với các liên kết đến hồ sơ sinh viên.",
       "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
       "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} được ánh xạ tới bài học",
-      "kpi_progress_grade": "{grade}% điểm bài tập trung bình của những người học đã đăng ký"
+      "kpi_progress_grade": "{grade}% điểm bài tập trung bình của các học sinh đã đăng ký"
     }
   },
   "audience": {
@@ -672,7 +675,7 @@
     },
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "user_analytics": {
-      "title": "Learner profile",
+      "title": "Hồ sơ sinh viên",
       "page_subtitle": "Progress, grades, and activity across their courses."
     }
   },
@@ -742,6 +745,10 @@
         "drag": "Kéo và thả nhãn để sắp xếp lại các tab tài liệu của bạn",
         "content_grouping_title": "Nhóm nội dung",
         "content_grouping_description": "Nhóm các bài học, bài tập theo từng phần trong danh sách nội dung.",
+        "progression_mode_title": "Tiến trình học viên",
+        "progression_mode_description": "Kiểm soát học viên có thể truy cập mọi nội dung đã mở khóa hay phải hoàn thành theo thứ tự.",
+        "progression_mode_free": "Tự do — nội dung đã mở khóa có thể truy cập",
+        "progression_mode_sequential": "Tuần tự — hoàn thành mục trước để mở mục tiếp theo",
         "lesson_download": "Bài học Tải về",
         "available": "Cung cấp Bài học để tải xuống dưới dạng pdf cho học viên đã đăng ký",
         "course_download": "Tải xuống khóa học",
@@ -762,7 +769,7 @@
         "save": "Lưu thay đổi",
         "tags": {
           "title": "Thẻ",
-          "description": "Gán thẻ để người học có thể khám phá khóa học này bằng các bộ lọc.",
+          "description": "Gán thẻ để sinh viên có thể khám phá khóa học này bằng các bộ lọc.",
           "empty": "Không có thẻ nào được chọn",
           "add": "Thêm thẻ",
           "popover_title": "Chọn thẻ",
@@ -780,7 +787,7 @@
         },
         "callout": {
           "legend": "Chú thích khóa học công khai",
-          "description": "Hiển thị ở cuối mỗi bài học và thay cho các đồ vật bị khóa. Sử dụng nó để thu hút người học đến trang web của bạn hoặc một khóa học trả phí.",
+          "description": "Hiển thị ở cuối mỗi bài học và thay cho các đồ vật bị khóa. Sử dụng nó để thu hút sinh viên đến trang web của bạn hoặc một khóa học trả phí.",
           "title_label": "Tiêu đề",
           "title_placeholder": "Bạn muốn đi sâu hơn về điều này?",
           "description_label": "Mô tả",
@@ -1021,7 +1028,14 @@
           "field_template": "mẫu",
           "field_accent": "Giọng",
           "field_signatories": "Người ký",
-          "customize_design": "Tùy chỉnh thiết kế"
+          "customize_design": "Tùy chỉnh thiết kế",
+          "signatory_one_toggle": "Hiển thị người ký 1",
+          "signatory_two_toggle": "Hiển thị người ký 2",
+          "signature_upload": "Hình ảnh chữ ký",
+          "signature_upload_hint": "Tải lên hình ảnh chữ ký (tùy chọn)",
+          "signature_dont_crop": "Đừng cắt xén",
+          "signature_upload_in_progress": "Đợi quá trình tải lên chữ ký hoàn tất trước khi lưu.",
+          "save_failed": "Không thể lưu thiết kế chứng chỉ. Hãy kiểm tra biểu mẫu và thử lại."
         }
       },
       "people": {
@@ -1102,7 +1116,7 @@
           "send_invite_emails": "Gửi email mời ngay lập tức",
           "create_email_invites": "Tạo lời mời qua email",
           "existing_students_title": "Add existing org students",
-          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_description": "Chọn những sinh viên đã tham gia tổ chức này và cấp cho họ quyền truy cập trực tiếp vào khóa học này.",
           "existing_students_search": "Search organization students",
           "loading_existing_students": "Loading organization students...",
           "no_existing_students": "No organization students are available to add.",
@@ -1442,7 +1456,7 @@
                   "range_error": "Answer must be between {min} and {max} characters."
                 },
                 "edit": {
-                  "placeholder": "Người học sẽ trả lời bằng văn bản dài",
+                  "placeholder": "Học sinh sẽ trả lời bằng văn bản dài",
                   "min_characters_label": "Minimum characters",
                   "min_characters_placeholder": "Minimum characters",
                   "max_characters_label": "Maximum characters",
@@ -1505,8 +1519,8 @@
                   "add_button": "Thêm liên kết"
                 },
                 "edit": {
-                  "instructions_placeholder": "Hướng dẫn tùy chọn cho người học",
-                  "helper": "Người học có thể gửi một hoặc nhiều URL hợp lệ (http/https)."
+                  "instructions_placeholder": "Hướng dẫn tùy chọn cho học sinh",
+                  "helper": "Học sinh có thể gửi một hoặc nhiều URL hợp lệ (http/https)."
                 }
               },
               "file_upload": {
@@ -1551,7 +1565,7 @@
                 },
                 "edit": {
                   "correct_value_label": "Giá trị đúng",
-                  "correct_value_info": "Câu trả lời bằng số dự kiến người học phải nộp để được đánh dấu là đúng.",
+                  "correct_value_info": "Câu trả lời bằng số dự kiến ​​mà học sinh phải nộp để được đánh dấu là đúng.",
                   "tolerance_label": "Dung sai",
                   "tolerance_info": "Chênh lệch được phép so với giá trị chính xác (ví dụ: 0,5 chấp nhận +/- 0,5).",
                   "correct_value_placeholder": "Giá trị đúng",
@@ -1659,7 +1673,7 @@
                 "edit": {
                   "template_label": "Mẫu câu",
                   "template_placeholder": "Các phép đo để mô tả dữ liệu của chúng tôi được gọi là ___. ___ là một hàm...",
-                  "template_helper": "Sử dụng ba dấu gạch dưới (___) cho mỗi chỗ trống. Người học sẽ thấy một ngân hàng từ có câu trả lời đúng và các từ gây phân tâm.",
+                  "template_helper": "Sử dụng ba dấu gạch dưới (___) cho mỗi chỗ trống. Học sinh sẽ thấy một ngân hàng từ có câu trả lời đúng và các từ gây phân tâm.",
                   "no_blanks_warning": "Thêm ít nhất một điểm đánh dấu trống ___ vào mẫu của bạn.",
                   "correct_answers_heading": "Câu trả lời đúng cho mỗi chỗ trống",
                   "blank_label": "trống",
@@ -1679,9 +1693,9 @@
                 },
                 "edit": {
                   "correct_value_label": "Giá trị sao chính xác",
-                  "correct_value_info": "Người học đếm sao phải chọn để đạt được điểm tối đa.",
+                  "correct_value_info": "Số sao mà học sinh phải chọn để đạt được điểm tối đa.",
                   "max_stars_label": "Số sao tối đa",
-                  "max_stars_info": "Người học nhìn thấy bao nhiêu ngôi sao (1–10). Mặc định là 5.",
+                  "max_stars_info": "Học sinh nhìn thấy bao nhiêu ngôi sao (1–10). Mặc định là 5.",
                   "correct_value_placeholder": "ví dụ: 3",
                   "max_stars_placeholder": "ví dụ: 5"
                 }
@@ -1698,7 +1712,7 @@
                 },
                 "preview": {
                   "max_duration_label": "Thời lượng tối đa",
-                  "manual_grading": "Người học ghi lại một đoạn video ngắn phản hồi. Yêu cầu phân loại thủ công."
+                  "manual_grading": "Học sinh ghi lại một đoạn video ngắn phản hồi. Yêu cầu phân loại thủ công."
                 },
                 "take": {
                   "unsupported": "Quay video không được hỗ trợ trong trình duyệt này.",
@@ -1757,7 +1771,11 @@
               "collapse_section": "Thu gọn phần",
               "expand_section": "Mở rộng phần"
             },
-            "more": "hành động"
+            "more": "hành động",
+            "settings_completion_policy": "Quy tắc hoàn thành",
+            "settings_completion_submitted": "Đã gửi - mọi lần gửi đều được tính",
+            "settings_completion_passed": "Đạt - yêu cầu điểm tối thiểu",
+            "settings_pass_threshold": "Ngưỡng vượt qua (%)"
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",
@@ -1802,6 +1820,9 @@
           "button": "nút",
           "button_done": "Xong",
           "tabs": {
+            "settings": {
+              "title": "Cài đặt"
+            },
             "document": {
               "title": "Tài liệu",
               "add_document": "Thêm tài liệu",
@@ -1917,7 +1938,8 @@
                 "kind_google_drive": "Google Drive",
                 "kind_generic": "Đã nhúng",
                 "course_fallback": "Khóa học",
-                "menu_aria": "Tùy chọn video"
+                "menu_aria": "Tùy chọn video",
+                "transcription_in_progress": "(Đang tạo bản ghi)"
               },
               "view_transcript": "Xem bản chép lời",
               "playback_error": "Tải video này không thành công.",
@@ -1925,7 +1947,8 @@
               "generate_1080": "Tạo 1080p",
               "generate_1080_in_progress": "Đang tạo 1080p…",
               "generate_1080_ready": "1080p có sẵn",
-              "generate_1080_unavailable": "1080p không có sẵn cho video nguồn này"
+              "generate_1080_unavailable": "1080p không có sẵn cho video nguồn này",
+              "loading": "Đang tải video…"
             },
             "slide": {
               "title": "Trượt",
@@ -1984,6 +2007,38 @@
         },
         "content_locked_title": "Nội dung này đã bị khóa",
         "content_locked_description": "Người hướng dẫn của bạn chưa mở khóa nội dung này. Hoàn thành nội dung trước đó hoặc kiểm tra lại sau.",
+        "content_progression_locked_title": "Hoàn thành nội dung trước đó trước",
+        "content_progression_locked_description": "Nội dung này mở khóa sau khi bạn hoàn thành mục bắt buộc trước đó trong khóa học.",
+        "content_progression_locked_description_lesson": "Bài học này mở khóa sau khi bạn hoàn thành mục bắt buộc trước đó trong khóa học.",
+        "content_progression_locked_description_exercise": "Bài tập này mở khóa sau khi bạn hoàn thành mục bắt buộc trước đó trong khóa học.",
+        "completion_policy": {
+          "label": "Quy tắc hoàn thành",
+          "manual_label": "Thủ công",
+          "manual_description": "Học viên tự đánh dấu bài học là hoàn thành.",
+          "video_watch_label": "Xem video",
+          "video_watch_description": "Bài học tự hoàn thành sau khi học viên xem các video đã chọn.",
+          "none_label": "Không",
+          "none_description": "Bài học này không chặn tiến trình khóa học.",
+          "watch_threshold": "Ngưỡng xem (%)"
+        },
+        "settings": {
+          "progression": {
+            "heading": "Tiến trình",
+            "intro": "Chọn cách học viên hoàn thành bài học này và đi qua khóa học.",
+            "option_guide_heading": "Ý nghĩa từng tùy chọn",
+            "watch_videos_heading": "Video cần áp dụng",
+            "watch_videos_helper": "Chỉ video đã tải lên mới có thể áp dụng. YouTube và nhúng bên ngoài không thể theo dõi.",
+            "watch_videos_empty": "Thêm video đã tải lên trong tab Video để dùng theo dõi xem.",
+            "watch_videos_required": "Chọn ít nhất một video khi dùng theo dõi xem.",
+            "students_only_note": "Các quy tắc này chỉ áp dụng cho học viên. Giảng viên có thể xem trước và điều hướng tự do."
+          }
+        },
+        "watch_progress": {
+          "status": "Đã xem {percent}% nội dung video",
+          "videos_complete": "Đã xem {percent}% nội dung video bắt buộc ({complete}/{required} video)",
+          "seek_blocked": "Bạn không thể tua vượt trong video này",
+          "complete_via_watch": "Bài học hoàn thành khi bạn xem đủ video"
+        },
         "saving": "Đang lưu…",
         "saved": "Đã lưu",
         "draft_recovery": "Đã tìm thấy một bản nháp chưa được lưu cho bài học này. Bạn có muốn khôi phục nó không?",
@@ -2039,15 +2094,15 @@
         "not_compliance_title": "Tuân thủ chưa được kích hoạt",
         "not_compliance_description": "Khóa học này không được cấu hình như một khóa học tuân thủ.",
         "loading": "Đang tải hồ sơ tuân thủ...",
-        "learners": "Người học",
-        "learners_description": "Bảng này hiển thị chu kỳ mới nhất cho mỗi người học.",
+        "learners": "Sinh viên",
+        "learners_description": "Bảng này hiển thị chu kỳ mới nhất cho mỗi học sinh.",
         "current_cycle": "Chu kỳ hiện tại",
         "current_cycle_description": "Chu kỳ tuân thủ hiện hoạt và ngày gia hạn của bạn.",
         "history": "Chu kỳ trước",
         "history_description": "Mỗi hàng là một chu kỳ tuân thủ được ghi lại cho khóa học này.",
         "no_active_cycle": "Không có chu kỳ tuân thủ tích cực",
         "empty_history": "Chưa có lịch sử tuân thủ nào được ghi lại.",
-        "empty_overview": "Chưa có hồ sơ tuân thủ của người học.",
+        "empty_overview": "Chưa có hồ sơ tuân thủ của học sinh.",
         "not_available": "Không có sẵn",
         "status": {
           "no_record": "Không có hồ sơ",
@@ -2060,7 +2115,7 @@
           "waived": "Miễn trừ"
         },
         "summary": {
-          "total_learners": "Tổng số người học",
+          "total_learners": "Tổng số học sinh",
           "no_record": "Không có hồ sơ",
           "not_started": "Chưa bắt đầu",
           "in_progress": "Đang tiến hành",
@@ -2071,7 +2126,7 @@
           "waived": "Miễn trừ"
         },
         "fields": {
-          "learner": "Người học",
+          "learner": "sinh viên",
           "email": "Email",
           "status": "Trạng thái",
           "cycle": "chu kỳ",
@@ -2083,34 +2138,34 @@
         },
         "bulk_actions": {
           "title": "Hành động hàng loạt",
-          "description": "Chọn người học và áp dụng hành động tuân thủ cho chu kỳ hiện tại của họ.",
-          "select_all": "Chọn tất cả những người học có thể nhìn thấy",
+          "description": "Chọn sinh viên và áp dụng hành động tuân thủ cho chu kỳ hiện tại của họ.",
+          "select_all": "Chọn tất cả học sinh có thể nhìn thấy",
           "selected_count": "đã chọn {count}",
           "clear_selection": "Xóa lựa chọn",
           "due_date_label": "Ngày đến hạn",
           "due_date_helper": "Được sử dụng để thiết lập lại và mở rộng hành động.",
           "reset_action": "Đặt lại chu kỳ",
           "extend_action": "Gia hạn ngày đáo hạn",
-          "waive_title": "Từ bỏ những người học đã chọn",
-          "waive_description": "Áp dụng sự miễn trừ cho những người học đã chọn. Bạn có thể để trống thời hạn hết hạn đối với quyền miễn trừ có thời hạn.",
+          "waive_title": "Từ bỏ những học sinh được chọn",
+          "waive_description": "Áp dụng sự miễn trừ cho các sinh viên được chọn. Bạn có thể để trống thời hạn hết hạn đối với quyền miễn trừ có thời hạn.",
           "waiver_reason_label": "Lý do miễn trừ",
           "waiver_reason_helper": "Bối cảnh tùy chọn cho việc kiểm tra và xem xét trong tương lai.",
           "waiver_expires_at_label": "Miễn trừ hết hạn vào",
           "waiver_expires_at_helper": "Để trống nếu quyền miễn trừ không tự động hết hạn.",
           "waive_action": "Áp dụng miễn trừ",
           "modal": {
-            "description": "Bạn đang cập nhật {count} học viên đã chọn.",
+            "description": "Bạn đang cập nhật {count} học sinh đã chọn.",
             "cancel": "Hủy bỏ",
             "apply": "Áp dụng hành động"
           }
         },
         "tabs": {
           "overview": "Tổng quan",
-          "learners": "Người học"
+          "learners": "Sinh viên"
         },
         "overview_metrics": {
           "heading": "Ảnh chụp nhanh khóa học",
-          "description": "Người học đếm theo trạng thái cho khóa học này."
+          "description": "Số lượng sinh viên theo trạng thái cho khóa học này."
         },
         "empty_overview_description": "Giúp nhân viên của bạn luôn tuân thủ và theo dõi xem ai đứng sau."
       }
@@ -2214,7 +2269,7 @@
           "product_name": "Tên sản phẩm",
           "product_summary": "Sản phẩm có tác dụng gì?",
           "audience": "Khán giả là ai?",
-          "outcome": "Người học có thể làm được gì sau khóa học?",
+          "outcome": "Học viên có thể làm được gì sau khóa học?",
           "depth": "Khóa học nên đi sâu đến mức nào?",
           "topic": "Chủ đề hoặc niche",
           "expertise_level": "Mục tiêu trình độ chuyên môn",
@@ -2225,7 +2280,7 @@
         },
         "expert_on_x": {
           "title": "Trở thành chuyên gia về X",
-          "description": "Một khóa học chuyên sâu biến người học thành chuyên gia về một chủ đề hoặc lĩnh vực cụ thể.",
+          "description": "Một khóa học chuyên sâu biến sinh viên thành chuyên gia về một chủ đề hoặc lĩnh vực cụ thể.",
           "form_title": "Hãy cho chúng tôi biết về chủ đề"
         },
         "product_onboarding": {
@@ -2348,8 +2403,8 @@
     "afternoon_heading": "Chào buổi chiều",
     "evening_heading": "Chào buổi tối",
     "create_course": "Tạo khóa học",
-    "view_site": "Xem trang web",
-    "visit_site": "Truy cập trang web",
+    "view_site": "Học viện mở",
+    "visit_site": "Học viện mở",
     "current_lesson": "Hiện đang học",
     "your_progress": "Sự tiến bộ của bạn",
     "continue": "Tiếp tục",
@@ -2382,7 +2437,7 @@
     "publish_course": "Xuất bản khóa học",
     "items_completed": "Các hạng mục đã hoàn thành",
     "currently_learning": "Hiện đang học",
-    "learner": "Người học",
+    "learner": "sinh viên",
     "progress": "Tiến độ",
     "pick_up_where_you_left_off": "Tiếp tục nơi bạn đã dừng lại",
     "course_awaits_you": "{title} đang chờ bạn",
@@ -2402,7 +2457,9 @@
     "login_activity_description": "Những ngày hoạt động tích cực nhất trong tuần (90 ngày qua)",
     "login_activity_no_data": "Chưa có hoạt động đăng nhập",
     "login_activity_logins": "thông tin đăng nhập",
-    "open_academy": "Học viện mở"
+    "open_academy": "Học viện mở",
+    "explore_more_courses": "Khám phá thêm các khóa học",
+    "view_more": "Xem thêm"
   },
   "schedule": {
     "title": "Lịch trình của bạn",
@@ -2444,7 +2501,7 @@
           "paid_plan_note": "Nâng cấp gói để tùy chỉnh nền màn hình đăng nhập.",
           "preview_alt": "Xem trước nền màn hình đăng nhập"
         },
-        "page_subtitle": "Choose which tabs, banners, course tools, and extras learners see."
+        "page_subtitle": "Chọn các tab, biểu ngữ, công cụ khóa học và các tính năng bổ sung mà học viên sẽ thấy."
       },
       "domains": {
         "title": "Miền tùy chỉnh",
@@ -2479,7 +2536,7 @@
         "pending_verification_description": "Bản ghi DNS đã được tìm thấy. Việc cấp hoặc xác thực SSL vẫn đang được tiến hành.",
         "reconnect_description": "Miền này cần được kết nối lại thông qua quy trình thiết lập Cloudflare mới.",
         "error_description": "Miền tùy chỉnh này tồn tại nhưng quá trình xác minh chưa hoàn tất.",
-        "page_subtitle": "Run your public learning site on a web address you own.",
+        "page_subtitle": "Điều hành học viện của bạn trên địa chỉ web mà bạn sở hữu.",
         "dns_record": "bản ghi DNS",
         "record_active": "Đã phát hiện",
         "record_pending": "Đang chờ xử lý",
@@ -2544,9 +2601,9 @@
   "add_org": {
     "create_org": "Tạo tổ chức",
     "name": "Tên tổ chức",
-    "org_sitename": "Tên trang web của tổ chức",
+    "org_sitename": "Tên miền phụ của học viện",
     "create": "Tạo",
-    "sitename": "Tên trang web đã tồn tại",
+    "sitename": "Tên miền phụ của học viện đã tồn tại",
     "error_organization": "Đã xảy ra lỗi khi tạo tổ chức này. Vui lòng tải lại và thử lại"
   },
   "setup": {
@@ -2985,7 +3042,7 @@
             "remove": "Xóa chỉ số",
             "label_field": "Nhãn",
             "value_field": "Giá trị",
-            "label_placeholder": "Người học tích cực",
+            "label_placeholder": "Sinh viên năng động",
             "value_placeholder": "1.200"
           }
         },
@@ -3150,7 +3207,7 @@
           "add_theme": "Thêm chủ đề"
         }
       },
-      "page_subtitle": "Set the name, logo, and theme learners see for this organization."
+      "page_subtitle": "Đặt tên, logo và chủ đề mà học sinh thấy cho tổ chức này."
     },
     "profile": {
       "heading": "Hồ sơ",
@@ -3192,7 +3249,7 @@
       "ai_tutor_tab": "Gia sư AI"
     },
     "subheadings": {
-      "view_site": "Xem trang web"
+      "view_site": "Học viện mở"
     },
     "auth": {
       "title": "Xác thực",
@@ -3278,6 +3335,10 @@
         "allow_public_signups": {
           "label": "Cho phép đăng ký công khai",
           "description": "Khi bị tắt, chỉ những người dùng có liên kết mời mới có thể đăng ký. Enable để cho phép mọi người tạo tài khoản."
+        },
+        "internal_enrollment_only": {
+          "label": "Chỉ đăng ký nội bộ",
+          "description": "Khi được bật, mọi khóa học đã xuất bản đều có thể tự đăng ký cho tất cả sinh viên trong tổ chức của bạn. Sử dụng tính năng Tắt đăng ký để tạo học viện khép kín, chỉ dành cho người được mời, nơi sinh viên có thể tham gia bất kỳ khóa học đã xuất bản nào mà không cần thiết lập mỗi khóa học."
         }
       },
       "login": {
@@ -3459,7 +3520,7 @@
     "friends": "Bạn bè và gia đình",
     "fullname": "Tên đầy đủ",
     "name": "Tên tổ chức",
-    "organisation_sitename": "Tên trang web của tổ chức",
+    "organisation_sitename": "Tên miền phụ của học viện",
     "what_brings": "Điều gì đưa bạn đến",
     "how": "Bạn biết đến chúng tôi bằng cách nào?",
     "back": "Quay lại",
@@ -3874,7 +3935,7 @@
       "created": "Đã tạo mục tiêu",
       "updated": "Đã cập nhật mục tiêu",
       "deleted": "Đã xóa mục tiêu",
-      "delete_confirm": "Xóa mục tiêu này? Lịch sử trạng thái của mỗi người học sẽ bị xóa.",
+      "delete_confirm": "Xóa mục tiêu này? Lịch sử trạng thái của mỗi học sinh sẽ bị xóa.",
       "lms": {
         "heading": "Mục tiêu của bạn",
         "empty_title": "Không có mục tiêu nào được giao",
@@ -3901,7 +3962,7 @@
       },
       "deadline_kind": {
         "absolute": "Ngày tuyệt đối",
-        "relative_to_join": "Liên quan đến việc người học tham gia",
+        "relative_to_join": "Liên quan đến việc sinh viên tham gia",
         "recurring": "Định kỳ",
         "none": "Không có thời hạn"
       },
@@ -3922,11 +3983,11 @@
         "type_label": "loại",
         "courses_label": "Khóa học",
         "required_count_label": "Số lượng khóa học yêu cầu",
-        "score_threshold_label": "Điểm đậu của mỗi học viên (%)",
+        "score_threshold_label": "Điểm đậu của mỗi học sinh (%)",
         "team_pass_rate_label": "Tỷ lệ vượt qua của đội (%)",
         "deadline_label": "thời hạn",
         "deadline_date_label": "Ngày hết hạn",
-        "relative_days_label": "Ngày kể từ khi người học tham gia",
+        "relative_days_label": "Ngày kể từ khi học viên tham gia",
         "recurring_months_label": "Lặp lại mỗi (tháng)",
         "reminders_label": "Lời nhắc (ngày trước hạn)",
         "reminders_helper": "Được phân tách bằng dấu phẩy. Ví dụ: 7, 3, 1",
@@ -4348,10 +4409,10 @@
     "title": "Tuân thủ",
     "subtitle": "Theo dõi trạng thái chứng nhận trên mọi khóa học tuân thủ trong tổ chức của bạn.",
     "learners": {
-      "heading": "Người học",
+      "heading": "Sinh viên",
       "subtitle": "{count, number} khớp",
-      "empty": "Không có người học nào phù hợp với bộ lọc này",
-      "learner": "Người học",
+      "empty": "Không có học sinh nào phù hợp với bộ lọc này",
+      "learner": "sinh viên",
       "course": "Khóa học",
       "status": "Trạng thái",
       "due_date": "Đến hạn",
@@ -4359,10 +4420,10 @@
     },
     "courses": {
       "heading": "Khóa học",
-      "description": "Các khóa học tuân thủ với số lượng trạng thái người học",
+      "description": "Các khóa học tuân thủ về số lượng tình trạng sinh viên",
       "empty": "Chưa có khóa học tuân thủ nào",
       "course": "Khóa học",
-      "learners": "Người học",
+      "learners": "Sinh viên",
       "completion": "Hoàn thành"
     },
     "filter": {
@@ -4388,11 +4449,11 @@
     },
     "tabs": {
       "courses": "Theo khóa học",
-      "learners": "Người học"
+      "learners": "Sinh viên"
     },
     "summary": {
-      "heading": "Tình trạng người học",
-      "description": "Tính trên số người học trong tất cả các khóa học tuân thủ."
+      "heading": "Tình trạng sinh viên",
+      "description": "Đếm số học sinh trong tất cả các khóa học tuân thủ."
     }
   },
   "public_course": {
@@ -4432,12 +4493,12 @@
       "delete_confirm_title": "Xóa không gian làm việc này?",
       "delete_confirm_body": "Thao tác này sẽ xóa vĩnh viễn không gian làm việc, các thành viên và khóa học của không gian làm việc đó. Điều này không thể hoàn tác được.",
       "name_label": "Tên không gian làm việc",
-      "site_name_label": "Tên trang web",
+      "site_name_label": "Tên miền phụ của học viện",
       "create_modal_title": "Tạo không gian làm việc mới",
       "create_modal_submit": "Tạo không gian làm việc",
       "cancel": "Hủy bỏ",
       "read_only_badge": "Chỉ đọc",
-      "usage_banner": "{learners} người học và {tokens} Mã thông báo AI được sử dụng trên các không gian làm việc của {workspaces} trong tháng này",
+      "usage_banner": "{students} sinh viên và {tokens} Mã thông báo AI được sử dụng trên các không gian làm việc của {workspaces} trong tháng này",
       "secondary_billing_notice": "Việc thanh toán được quản lý bởi không gian làm việc chính của bạn ({primaryName}).",
       "go_to_primary": "Chuyển đến không gian làm việc chính"
     },
@@ -4451,9 +4512,9 @@
       "tutorSummaryTitle": "Gia sư AI sử dụng hợp lý",
       "atCap": "Ở mức tối đa",
       "approaching": "Đang đến gần nắp",
-      "totalActive": "Người học tích cực trong tháng này",
-      "learnersHeading": "Người học",
-      "headerLearner": "Người học",
+      "totalActive": "Sinh viên năng động trong tháng này",
+      "learnersHeading": "Sinh viên",
+      "headerLearner": "sinh viên",
       "headerMessages": "Tin nhắn",
       "headerTokens": "Mã thông báo",
       "headerStatus": "Trạng thái",
@@ -4480,7 +4541,7 @@
     "assessmentMode": {
       "hint_only": "Chỉ gợi ý (không có câu trả lời trực tiếp)",
       "direct_answer": "Cho phép trả lời trực tiếp",
-      "block_during_exercise": "Chặn trợ giúp khi người học đang làm bài tập"
+      "block_during_exercise": "Chặn trợ giúp khi học sinh đang làm bài tập"
     },
     "responseLength": {
       "short": "Ngắn (1–3 câu)",
@@ -4503,11 +4564,11 @@
       "welcomeMessage": "Tin nhắn chào mừng",
       "welcomeMessage_description": "Hiển thị ở trên câu trả lời của gia sư đầu tiên trong mỗi cuộc trò chuyện mới.",
       "disclaimerFooter": "Chân trang từ chối trách nhiệm",
-      "disclaimerFooter_description": "Được thêm vào mỗi câu trả lời của gia sư để người học nhớ rằng gia sư không phải là một con người.",
+      "disclaimerFooter_description": "Được thêm vào mỗi câu trả lời của gia sư để học sinh nhớ rằng gia sư không phải là một con người.",
       "thingsToSay": "Những điều cần nói",
-      "thingsToSay_description": "Ví dụ: “Luôn nhắc nhở người học đọc giáo trình trước tuần thứ 3”. \"Khuyến khích người học tóm tắt bài học bằng lời lẽ của mình.\"",
+      "thingsToSay_description": "Ví dụ: “Luôn nhắc học sinh đọc giáo trình trước tuần thứ 3”. “Khuyến khích học sinh tóm tắt bài học bằng lời lẽ của mình.”",
       "thingsNotToSay": "Những điều không nên nói",
-      "thingsNotToSay_description": "Ví dụ: \"Đừng tiết lộ câu trả lời cho bài kiểm tra cuối kỳ.\" \"Đừng bao giờ nói cho người học biết bạn đã viết bài đánh giá nào.\"",
+      "thingsNotToSay_description": "Ví dụ: \"Đừng tiết lộ câu trả lời cho bài kiểm tra cuối kỳ.\" \"Đừng bao giờ nói với học sinh bạn đã viết bài đánh giá nào.\"",
       "forbiddenTopics": "Chủ đề bị cấm",
       "forbiddenTopics_description": "Danh sách được phân tách bằng dấu phẩy. Gia sư sẽ từ chối thảo luận về những điều này.",
       "forbiddenTopics_placeholder": "chính trị, tôn giáo, tư vấn y tế cá nhân",
@@ -4525,17 +4586,17 @@
     },
     "section": {
       "availability": "sẵn có",
-      "availability_description": "Bật hoặc tắt gia sư AI cho người học trong không gian làm việc này.",
+      "availability_description": "Bật hoặc tắt gia sư AI cho học sinh trong không gian làm việc này.",
       "personality": "Tính cách",
       "personality_description": "Gia sư giới thiệu bản thân như thế nào và trả lời trong bao lâu.",
       "guidance": "Điều nên nói · điều không nên nói",
       "guidance_description": "Hướng dẫn bằng văn bản tự do mà gia sư sẽ tuân theo trong mỗi câu trả lời, cùng với danh sách tùy chọn các chủ đề không được phép.",
       "assessment": "Bài tập và đánh giá",
-      "assessment_description": "Cách gia sư cư xử khi học viên yêu cầu giúp đỡ làm một bài tập.",
+      "assessment_description": "Cách gia sư cư xử khi học sinh yêu cầu giúp đỡ làm bài tập.",
       "grounding": "Căn cứ & trích dẫn",
       "grounding_description": "Giới hạn những gì gia sư có thể nói và liệu nó có trích dẫn tài liệu khóa học hay không.",
       "escalation": "Leo thang",
-      "escalation_description": "Nơi chỉ điểm cho người học khi họ cần một con người thực sự.",
+      "escalation_description": "Nơi chỉ điểm cho học sinh khi họ cần một con người thực sự.",
       "inheritance": "Kế thừa khóa học",
       "inheritance_description": "Kế thừa các giá trị mặc định của không gian làm việc hoặc đặt phần ghi đè cho mỗi khóa học."
     },

@@ -275,14 +275,14 @@
 <div
   bind:this={root}
   class={cn(
-    'relative h-full w-full',
+    'ui:relative ui:h-full ui:w-full',
     glowColor == null && 'ui:[--dot-field-glow:#fff] ui:dark:[--dot-field-glow:#0a0a0a]',
     className
   )}
   style={glowColor != null ? `--dot-field-glow: ${glowColor}` : undefined}
 >
-  <canvas bind:this={canvas} class="absolute inset-0 h-full w-full"></canvas>
-  <svg class="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true">
+  <canvas bind:this={canvas} class="ui:absolute ui:inset-0 ui:h-full ui:w-full"></canvas>
+  <svg class="ui:pointer-events-none ui:absolute ui:inset-0 ui:h-full ui:w-full" aria-hidden="true">
     <defs>
       <radialGradient id={glowId}>
         <stop offset="0%" stop-color="var(--dot-field-glow, #fff)" />

@@ -50,7 +50,7 @@
             {:else}
               <span></span>
             {/if}
-            <span class="cio-cg-meta">{formatLessonsLine(course)}</span>
+            <span class="cio-cg-meta">{formatLessonsLine(course, payload.design.content.showLessonsCount)}</span>
           </div>
         </div>
       </a>

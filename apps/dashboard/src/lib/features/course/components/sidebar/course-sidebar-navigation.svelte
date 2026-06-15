@@ -90,6 +90,19 @@
         icon: getNavIcon(NAV_IDS.LESSONS)
       },
       {
+        id: NAV_IDS.CERTIFICATES,
+        title: $t('course.navItems.nav_certificates'),
+        url: getNavItemRoute(id, 'certificates'),
+        isActive: (path || page.url.pathname) === getNavItemRoute(id, 'certificates'),
+        show() {
+          if (isStudent && $isFreePlan) {
+            return false;
+          }
+          return true;
+        },
+        icon: getNavIcon(NAV_IDS.CERTIFICATES)
+      },
+      {
         id: NAV_IDS.ANALYTICS,
         title: $t('course.navItems.nav_analytics'),
         url: getNavItemRoute(id, 'analytics'),
@@ -143,19 +156,6 @@
           return courseApi.course?.type === 'COMPLIANCE';
         },
         icon: getNavIcon(NAV_IDS.COMPLIANCE)
-      },
-      {
-        id: NAV_IDS.CERTIFICATES,
-        title: $t('course.navItems.nav_certificates'),
-        url: getNavItemRoute(id, 'certificates'),
-        isActive: (path || page.url.pathname) === getNavItemRoute(id, 'certificates'),
-        show() {
-          if (isStudent && $isFreePlan) {
-            return false;
-          }
-          return true;
-        },
-        icon: getNavIcon(NAV_IDS.CERTIFICATES)
       },
       {
         id: NAV_IDS.LANDING_PAGE,

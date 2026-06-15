@@ -147,8 +147,10 @@
         </button>
 
         <div
-          style={`border-color: ${isCustomTheme ? $currentOrg.theme : 'dark:border-neutral-700'};`}
-          class="group relative h-auto w-fit cursor-pointer rounded-full border-2"
+          style={isCustomTheme ? `border-color: ${$currentOrg.theme};` : ''}
+          class="group relative h-auto w-fit cursor-pointer rounded-full border-2 {!isCustomTheme
+            ? 'custom-theme-picker--empty'
+            : ''}"
         >
           <!-- plus icon positioned over the color picker -->
           <div
@@ -231,5 +233,13 @@
 
   :global(.color::before) {
     display: none;
+  }
+
+  :global(.custom-theme-picker--empty .color) {
+    background-color: #e5e7eb !important;
+  }
+
+  :global(.dark .custom-theme-picker--empty .color) {
+    background-color: #374151 !important;
   }
 </style>

@@ -7,3 +7,5 @@ export const TENANT_ROOT_DOMAIN = 'myclassroomio.com';
 
 /** The marketing / admin / api zone. */
 export const BRAND_ROOT_DOMAIN = 'classroomio.com';
+
+export { EMBED_PUBLIC_BASE_URL, EMBED_PUBLIC_HOST } from './embeds';

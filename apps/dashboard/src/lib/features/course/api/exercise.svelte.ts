@@ -328,4 +328,4 @@ export class ExerciseApi extends BaseApiWithErrors {
    */
 }
 
-export const exerciseApi = new ExerciseApi();
+export const exerciseApi = /* @__PURE__ */ new ExerciseApi();

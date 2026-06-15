@@ -76,4 +76,4 @@ export class PresignApi extends BaseApiWithErrors {
   }
 }
 
-export const presignApi = new PresignApi();
+export const presignApi = /* @__PURE__ */ new PresignApi();

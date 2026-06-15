@@ -38,9 +38,10 @@
     isExplore?: boolean;
     href?: string;
     actions?: Snippet;
+    onExploreClick?: () => void;
   }
 
-  let { course, isOnLandingPage, isLMS, isExplore, href, actions }: Props = $props();
+  let { course, isOnLandingPage, isLMS, isExplore, href, actions, onExploreClick }: Props = $props();
 
   let {
     bannerImage,
@@ -141,6 +142,10 @@
   let cost = $derived(calcCourseDiscount(pricingData.discount, pricingData.cost ?? 0, !!pricingData.showDiscount));
 
   let courseUrl = $derived.by(() => {
+    if (onExploreClick && isLMS && isExplore) {
+      return undefined;
+    }
+
     if (href) {
       return href;
     }
@@ -299,7 +304,7 @@
       </div>
 
       {#if isLMS}
-        <Button variant="outline">
+        <Button variant="outline" onclick={isExplore && onExploreClick ? onExploreClick : undefined}>
           {isExplore ? $t('courses.course_card.learn_more') : $t('courses.course_card.continue_course')}
 
           <ArrowRightIcon class="custom" />

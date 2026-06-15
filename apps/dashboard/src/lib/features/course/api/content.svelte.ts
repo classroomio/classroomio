@@ -59,4 +59,4 @@ export class ContentApi extends BaseApiWithErrors {
   }
 }
 
-export const contentApi = new ContentApi();
+export const contentApi = /* @__PURE__ */ new ContentApi();

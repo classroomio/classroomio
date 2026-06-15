@@ -11,6 +11,7 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { classroomio } from '$lib/utils/services/api';
   import type { CertificationEvaluationData } from '$features/course/utils/types';
+  import { normalizeCertificateIssuedAt } from '$features/course/utils/certificate-utils';
   import { openCourseCompletionModal } from '$features/course/store/course-completion-modal';
 
   let isLoading = $state(false);
@@ -59,7 +60,7 @@
     return {
       studentName: $profile.fullname || 'Recipient',
       studentId: $profile.id || undefined,
-      issuedAt: new Date().toISOString()
+      issuedAt: normalizeCertificateIssuedAt(evaluation?.certificateEarnedAt)
     } as const;
   }
 
@@ -90,7 +91,7 @@
       );
     } catch (error) {
       console.error('Error downloading', error);
-      snackbar.error($t('course.navItem.certificates.unexpected_error'));
+      snackbar.error('course.navItem.certificates.unexpected_error');
     }
 
     isLoading = false;
@@ -112,7 +113,7 @@
       );
     } catch (error) {
       console.error('Error downloading image', error);
-      snackbar.error($t('course.navItem.certificates.unexpected_error'));
+      snackbar.error('course.navItem.certificates.unexpected_error');
     }
 
     isPngLoading = false;

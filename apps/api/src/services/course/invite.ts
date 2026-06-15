@@ -631,7 +631,11 @@ export async function enrollInCourse(
   }
 
   const courseMetadata = (courseWithRelations.metadata as { allowNewStudent?: boolean } | null) ?? null;
-  if (courseMetadata?.allowNewStudent === false) {
+  const isInternalEnrollmentOnly = org.settings?.internalEnrollmentOnly ?? false;
+
+  const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(org.id, user.id);
+
+  if (courseMetadata?.allowNewStudent === false && !(isInternalEnrollmentOnly && orgMemberId)) {
     throw new AppError('This course is not accepting new students', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
@@ -645,11 +649,9 @@ export async function enrollInCourse(
     return {
       success: true,
       alreadyJoined: true,
-      redirectTo: '/lms'
+      redirectTo: `/courses/${courseId}/lessons?next=true`
     };
   }
-
-  const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(org.id, user.id);
 
   if (!orgMemberId) {
     await createOrganizationMember({
@@ -690,7 +692,7 @@ export async function enrollInCourse(
   return {
     success: true,
     alreadyJoined: false,
-    redirectTo: '/lms'
+    redirectTo: `/courses/${courseId}/lessons?next=true`
   };
 }
 
@@ -950,7 +952,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       throw new AppError('This invite is not valid for student enrollment', ErrorCodes.UNAUTHORIZED, 403);
     }
 
-    if (course.status !== 'ACTIVE' || !course.isPublished) {
+    if (course.status !== 'ACTIVE') {
       throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
@@ -1054,6 +1056,6 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
   return {
     success: true,
     alreadyJoined: result.alreadyJoined,
-    redirectTo: '/lms'
+    redirectTo: `/courses/${result.courseId}/lessons?next=true`
   };
 }

@@ -126,6 +126,22 @@ export type UpdateLessonCompletionResponse = InferResponseType<UpdateLessonCompl
 export type UpdateLessonCompletionSuccess = Extract<UpdateLessonCompletionResponse, { success: true }>;
 export type UpdateLessonCompletionData = UpdateLessonCompletionSuccess['data'];
 
+export type GetLessonWatchProgressRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['watch-progress']['$get'];
+export type GetLessonWatchProgressSuccess = Extract<
+  InferResponseType<GetLessonWatchProgressRequest>,
+  { success: true }
+>;
+export type LessonWatchProgress = GetLessonWatchProgressSuccess['data'];
+
+export type UpdateLessonWatchProgressRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['watch-progress']['$put'];
+export type UpdateLessonWatchProgressSuccess = Extract<
+  InferResponseType<UpdateLessonWatchProgressRequest>,
+  { success: true }
+>;
+export type LessonWatchProgressUpdate = UpdateLessonWatchProgressSuccess['data'];
+
 // Get lesson history types
 export type GetLessonHistoryRequest =
   (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['history']['$get'];

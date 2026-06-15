@@ -13,7 +13,7 @@
       }
     },
     defaultVariants: {
-      side: 'ui:right'
+      side: 'right'
     }
   });
 

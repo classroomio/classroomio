@@ -75,6 +75,16 @@ class ImageCropperRootState {
     this.pixelCrop = undefined;
   }
 
+  onUseOriginal() {
+    if (!this.tempUrl) return;
+
+    this.opts.src.current = this.tempUrl;
+    this.open = false;
+    this.opts.onCropped.current(this.tempUrl);
+    this.tempUrl = undefined;
+    this.pixelCrop = undefined;
+  }
+
   async onCrop() {
     if (!this.pixelCrop || !this.tempUrl) return;
 
@@ -146,6 +156,16 @@ class ImageCropperCancelState {
   }
 }
 
+class ImageCropperUseOriginalState {
+  constructor(readonly rootState: ImageCropperRootState) {
+    this.onclick = this.onclick.bind(this);
+  }
+
+  onclick() {
+    this.rootState.onUseOriginal();
+  }
+}
+
 const ImageCropperRootContext = new Context<ImageCropperRootState>('ImageCropper.Root');
 
 export const useImageCropperRoot = (props: ImageCropperRootProps) => {
@@ -186,4 +206,10 @@ export const useImageCropperCancel = () => {
   const rootState = ImageCropperRootContext.get();
 
   return new ImageCropperCancelState(rootState);
+};
+
+export const useImageCropperUseOriginal = () => {
+  const rootState = ImageCropperRootContext.get();
+
+  return new ImageCropperUseOriginalState(rootState);
 };

@@ -1,6 +1,7 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 import { env } from '@cio/core/config/env';
+import { parse } from 'tldts';
 
 export type DomainSetupStatus =
   | 'reconnect_required'
@@ -40,7 +41,7 @@ interface ApproximatedVhost {
   ssl_active_until?: string | null;
 }
 
-const SUPPORTED_CUSTOM_DOMAIN_PATTERN = /^(?=.{4,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.){2,}[a-z]{2,63}$/i;
+const SUPPORTED_CUSTOM_DOMAIN_PATTERN = /^(?=.{4,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
 
 const APPROXIMATED_BASE_URL = 'https://cloud.approximated.app/api';
 
@@ -110,6 +111,7 @@ async function approximatedRequest<T>(path: string, init: RequestInit = {}): Pro
 function buildDnsRecords(hostname: string, vhost?: ApproximatedVhost | null): DomainDnsRecord[] {
   const targetIp = env.APPROXIMATED_DNS_TARGET_IP;
   const targetCname = env.APPROXIMATED_DNS_TARGET_CNAME;
+  const isApex = !parse(hostname).subdomain;
 
   const records: DomainDnsRecord[] = [];
   const isResolvingToTarget = Boolean(
@@ -120,7 +122,9 @@ function buildDnsRecords(hostname: string, vhost?: ApproximatedVhost | null): Do
   if (targetIp) {
     records.push({ type: 'A', name: hostname, value: targetIp, status });
   }
-  if (targetCname) {
+
+  // A CNAME is invalid at the zone apex, so only offer it for subdomains.
+  if (targetCname && !isApex) {
     records.push({ type: 'CNAME', name: hostname, value: targetCname, status });
   }
 
@@ -190,7 +194,7 @@ export function normalizeCustomDomain(domain: string) {
 export function assertSupportedCustomDomain(domain: string) {
   if (!SUPPORTED_CUSTOM_DOMAIN_PATTERN.test(domain)) {
     throw new AppError(
-      'Only custom subdomains are supported. Use a subdomain like courses.yourwebsite.com.',
+      'Enter a valid domain like yourwebsite.com or courses.yourwebsite.com.',
       ErrorCodes.VALIDATION_ERROR,
       400,
       'domain'

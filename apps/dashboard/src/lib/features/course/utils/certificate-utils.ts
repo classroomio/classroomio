@@ -11,3 +11,13 @@ export function parseCertificateThemeId(raw: string | null | undefined): Certifi
 
   return resolveTemplateId(raw);
 }
+
+/** Normalizes DB/API timestamps to an ISO-8601 UTC string accepted by Zod `.datetime()`. */
+export function normalizeCertificateIssuedAt(value: string | null | undefined): string {
+  if (!value) return new Date().toISOString();
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return new Date().toISOString();
+
+  return parsed.toISOString();
+}

@@ -63,4 +63,4 @@ export class AttendanceApi extends BaseApiWithErrors {
   }
 }
 
-export const attendanceApi = new AttendanceApi();
+export const attendanceApi = /* @__PURE__ */ new AttendanceApi();

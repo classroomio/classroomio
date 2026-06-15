@@ -47,25 +47,17 @@
       const checkoutURL = new URL('/api/polar/subscribe', page.url);
 
       checkoutURL.searchParams.set('products', isYearlyPlan ? plan.CTA.PRODUCT_ID_YEARLY : plan.CTA.PRODUCT_ID);
-      checkoutURL.searchParams.set('customerEmail', $profile.email);
-      checkoutURL.searchParams.set('customerName', $profile.fullname);
-      checkoutURL.searchParams.set(
-        'metadata',
-        JSON.stringify({
-          triggeredBy: $currentOrg.memberId,
-          orgId: $currentOrg.id,
-          orgSlug: $currentOrg.siteName
-        })
-      );
+      checkoutURL.searchParams.set('orgId', $currentOrg.id);
 
-      window.location.href = checkoutURL.toString();
+      requestAnimationFrame(() => {
+        window.location.href = checkoutURL.toString();
+      });
     } catch (error) {
+      isLoadingPlan = null;
       console.error('Error subscribing', error);
 
       snackbar.error('snackbar.upgrade.failed');
     }
-
-    isLoadingPlan = null;
   }
 
   function onUpgrade() {

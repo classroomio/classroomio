@@ -44,9 +44,35 @@ import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@cio/core/utils/s3';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
+import { evaluateCourseCertification } from '@api/services/course/completion';
+import { isExercisePassedForMember } from '@cio/db/queries/course/progression';
 
 type SubmissionGradingState = 'queued' | 'processing' | 'awaiting_manual' | 'completed' | 'failed';
 type SubmissionOverallStatus = 'auto_graded' | 'manual_required' | 'hybrid';
+
+async function triggerCertificationIfExerciseComplete(
+  courseId: string,
+  exerciseId: string,
+  groupMemberId: string
+): Promise<void> {
+  const exercise = await getExerciseById(exerciseId);
+  if (!exercise) return;
+
+  const profile = await getProfileByGroupMemberId(groupMemberId);
+  if (!profile?.id) return;
+
+  const policy = exercise.completionPolicy ?? 'submitted';
+
+  if (policy === 'passed') {
+    const threshold = exercise.passThreshold ?? 100;
+    const passed = await isExercisePassedForMember(exerciseId, groupMemberId, threshold);
+    if (!passed) return;
+  }
+
+  void evaluateCourseCertification(courseId, profile.id).catch((certError) => {
+    console.error('Failed to evaluate course certification after exercise submission:', certError);
+  });
+}
 
 const LEGACY_BOARD_STATUS_LABELS: Record<number, string> = {
   1: 'Submitted',
@@ -638,10 +664,7 @@ export async function createSubmissionService(
       });
     }
 
-    const shouldAutoGrade =
-      (course?.type === 'SELF_PACED' || course?.type === 'COMPLIANCE') &&
-      overallStatus === 'auto_graded' &&
-      exerciseWithRelations.questions.length > 0;
+    const shouldAutoGrade = overallStatus === 'auto_graded' && exerciseWithRelations.questions.length > 0;
 
     if (shouldAutoGrade) {
       const answeredIds = new Set(answerByQuestionId.keys());
@@ -701,6 +724,7 @@ export async function createSubmissionService(
         });
 
         await syncComplianceProgressFromSubmission(courseId, submittedBy);
+        await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
 
         const enrichedAnswers =
           answersWithPoints.length > 0 ? await enrichFileUploadAnswersArray(answersWithPoints) : answersWithPoints;
@@ -713,6 +737,7 @@ export async function createSubmissionService(
     });
 
     await syncComplianceProgressFromSubmission(courseId, submittedBy);
+    await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
 
     return submission;
   } catch (error) {

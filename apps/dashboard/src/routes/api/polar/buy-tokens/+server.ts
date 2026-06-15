@@ -2,22 +2,42 @@ import { Polar } from '@polar-sh/sdk';
 import { TOKEN_PACK } from '@cio/utils/plans';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
+import type { RequestEvent } from './$types';
+import { classroomio, getApiHeaders } from '$lib/utils/services/api';
 
-export const GET = async ({ url }: { url: URL }) => {
+export const GET = async ({ url, locals, cookies }: RequestEvent) => {
+  const { user } = locals;
+
+  if (!user) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  const orgId = url.searchParams.get('orgId');
+
+  if (!orgId) {
+    return new Response('Missing orgId', { status: 400 });
+  }
+
+  const accountResponse = await classroomio.account.$get(undefined, getApiHeaders(cookies));
+
+  if (!accountResponse.ok) {
+    return new Response('Failed to fetch account data', { status: 500 });
+  }
+
+  const accountData = await accountResponse.json();
+
+  if (!accountData.success) {
+    return new Response('Failed to fetch account data', { status: 500 });
+  }
+
+  const org = accountData.organizations?.find((candidate) => candidate.id === orgId);
+
+  if (!org?.siteName) {
+    return new Response('You are not a member of this organization', { status: 403 });
+  }
+
   const quantityRaw = Number(url.searchParams.get('quantity') ?? '1');
   const quantity = Math.min(100, Math.max(1, Number.isFinite(quantityRaw) ? Math.trunc(quantityRaw) : 1));
-
-  let metadata: { orgId?: string; orgSlug?: string; triggeredBy?: string };
-
-  try {
-    metadata = JSON.parse(url.searchParams.get('metadata') ?? '{}');
-  } catch {
-    return new Response('Invalid metadata JSON', { status: 400 });
-  }
-
-  if (!metadata.orgId || !metadata.orgSlug) {
-    return new Response('Missing orgId / orgSlug in metadata', { status: 400 });
-  }
 
   const productId = env.POLAR_TOKEN_PACK_PRODUCT_ID;
 
@@ -35,6 +55,7 @@ export const GET = async ({ url }: { url: URL }) => {
   });
 
   const totalPriceCents = TOKEN_PACK.PRICE_USD_CENTS * quantity;
+  const customerEmail = (accountData.profile?.email ?? user.email)?.replace('@test.com', '+test@digdippa.com');
 
   const checkout = await polar.checkouts.create({
     products: [productId],
@@ -47,14 +68,14 @@ export const GET = async ({ url }: { url: URL }) => {
         }
       ]
     },
-    customerEmail: url.searchParams.get('customerEmail') ?? undefined,
-    customerName: url.searchParams.get('customerName') ?? undefined,
-    successUrl: `${url.origin}/org/${metadata.orgSlug}/settings/ai-credits?tokens=success`,
+    customerEmail,
+    customerName: accountData.profile?.fullname || undefined,
+    successUrl: `${url.origin}/org/${org.siteName}/settings/ai-credits?tokens=success`,
     metadata: {
       kind: 'token_pack',
-      orgId: metadata.orgId,
-      orgSlug: metadata.orgSlug,
-      triggeredBy: metadata.triggeredBy ?? '',
+      orgId: org.id,
+      orgSlug: org.siteName,
+      triggeredBy: accountData.profile?.id ?? user.id,
       tokensPerUnit: String(TOKEN_PACK.TOKENS_PER_UNIT),
       quantity: String(quantity)
     }

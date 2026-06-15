@@ -292,4 +292,4 @@ export class PeopleApi extends BaseApiWithErrors {
   }
 }
 
-export const peopleApi = new PeopleApi();
+export const peopleApi = /* @__PURE__ */ new PeopleApi();

@@ -18,7 +18,7 @@
   stroke-width="1"
   stroke-linecap="round"
   stroke="currentColor"
-  class={cn('absolute text-black dark:text-white', className)}
+  class={cn('ui:absolute ui:text-black ui:dark:text-white', className)}
   {...rest}
 >
   <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />

@@ -31,23 +31,17 @@ export default (
     content,
     extensions: [
       StarterKit.configure({
-        orderedList: {
-          HTMLAttributes: {
-            class: 'list-decimal'
-          }
-        },
-        bulletList: {
-          HTMLAttributes: {
-            class: 'list-disc'
-          }
-        },
         heading: {
           levels: [1, 2, 3, 4]
         },
         link: {
           openOnClick: false,
           autolink: true,
-          linkOnPaste: true
+          linkOnPaste: true,
+          HTMLAttributes: {
+            target: '_blank',
+            rel: 'noopener noreferrer nofollow'
+          }
         },
         codeBlock: false
       }),

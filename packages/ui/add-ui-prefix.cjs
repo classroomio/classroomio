@@ -2,25 +2,101 @@
 
 /**
  * Script to add 'ui:' prefix to Tailwind classes in packages/ui
- * Usage: node add-ui-prefix.cjs [--dry-run]
+ * Usage:
+ *   node add-ui-prefix.cjs              # fix all files
+ *   node add-ui-prefix.cjs --dry-run    # list fixes without writing (exit 0)
+ *   node add-ui-prefix.cjs --check      # fail if fixes are needed (exit 1)
+ *   node add-ui-prefix.cjs --check --staged   # check staged packages/ui files only
+ *   node add-ui-prefix.cjs --check --changed  # check changed packages/ui files vs base ref
+ *   node add-ui-prefix.cjs --audit            # fail on known prefix corruption patterns
  *
- * This script will:
- * - Find all .svelte, .ts, .tsx, .js, .jsx files in packages/ui/src
- * - Add 'ui:' prefix to Tailwind utility classes
- * - Skip classes that already have the prefix
- * - Preserve existing code structure
+ * Env:
+ *   UI_PREFIX_GIT_BASE - optional git ref for --changed (default: origin/main)
  */
 
 const fs = require('fs');
 const path = require('path');
+const { spawnSync } = require('child_process');
 
-const DRY_RUN = process.argv.includes('--dry-run');
+const CHECK_MODE = process.argv.includes('--check');
+const AUDIT_MODE = process.argv.includes('--audit');
+const DRY_RUN = process.argv.includes('--dry-run') || CHECK_MODE;
+const STAGED_ONLY = process.argv.includes('--staged');
+const CHANGED_ONLY = process.argv.includes('--changed');
 const UI_PREFIX = 'ui:';
+const REPO_ROOT = path.join(__dirname, '../..');
+const UI_SRC_DIR = path.join(__dirname, 'src');
+const UI_SOURCE_EXTENSIONS = new Set(['.svelte', '.ts', '.tsx', '.js', '.jsx']);
+
+// Variant/prop literals — never Tailwind class strings (e.g. side === 'left', variant: 'outline')
+const SEMANTIC_LITERALS = new Set([
+  'left',
+  'right',
+  'top',
+  'bottom',
+  'center',
+  'start',
+  'end',
+  'outline',
+  'ghost',
+  'default',
+  'destructive',
+  'secondary',
+  'link',
+  'sm',
+  'md',
+  'lg',
+  'xl',
+  '2xl',
+  'icon',
+  'dot',
+  'line',
+  'page',
+  'none'
+]);
+
+// Collapse duplicate ui: markers (e.g. ui:hover:ui:bg-accent → ui:hover:bg-accent)
+function normalizeUiClass(className) {
+  if (!className.includes(UI_PREFIX)) {
+    return className;
+  }
+
+  const stripped = className.split(UI_PREFIX).filter(Boolean).join('');
+  return `${UI_PREFIX}${stripped}`;
+}
+
+function shouldProcessAsClassString(value) {
+  if (!value || value.trim() === '') {
+    return false;
+  }
+
+  if (SEMANTIC_LITERALS.has(value)) {
+    return false;
+  }
+
+  const tokens = value.split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) {
+    return false;
+  }
+
+  if (tokens.some((token) => token.startsWith(UI_PREFIX))) {
+    return true;
+  }
+
+  const tailwindTokenCount = tokens.filter((token) => isTailwindClass(token)).length;
+
+  // Avoid treating prose in // comments (e.g. dialog's … sticky footer) as class strings.
+  return tailwindTokenCount >= Math.max(1, Math.ceil(tokens.length * 0.5));
+}
 
 // Check if a class looks like a Tailwind utility class
 function isTailwindClass(className) {
-  // Skip if already has ui: prefix
-  if (className.startsWith(UI_PREFIX)) {
+  if (SEMANTIC_LITERALS.has(className)) {
+    return false;
+  }
+
+  // Skip if already prefixed (including malformed mid-chain ui: after a variant)
+  if (className.startsWith(UI_PREFIX) || className.includes(':ui:')) {
     return false;
   }
 
@@ -66,30 +142,167 @@ function isTailwindClass(className) {
     // Arbitrary variants (like [&_svg]:pointer-events-none, after:absolute, etc.)
     /^\[.*\]:|^(after|before|first|last|only|nth|marker|placeholder|selection|backdrop):/,
     // Common utilities
-    /^(rounded|border|outline|shadow|ring|overflow|z-|order-|col-|row-|justify-|items-|content-|self-|place-|object-|cursor-|select-|resize-|appearance-|pointer-events-|visibility-|whitespace-|break-|overflow-|overscroll-|scroll-|will-change-|transform|transition|top|right|bottom|left)/
+    /^(rounded|border|outline|shadow|ring|overflow|z-|order-|col-|row-|justify-|items-|content-|self-|place-|object-|cursor-|select-|resize-|appearance-|pointer-events-|visibility-|whitespace-|break-|overflow-|overscroll-|scroll-|will-change-|transform|transition|top-|right-|bottom-|left-)/
   ];
 
   return patterns.some((pattern) => pattern.test(className));
 }
 
-// Process a single class string
-function processClassString(classString) {
-  // Split by whitespace and process each class
-  const classes = classString.split(/\s+/).filter((c) => c.trim());
-  const processed = classes.map((cls) => {
-    if (isTailwindClass(cls)) {
-      return `${UI_PREFIX}${cls}`;
+function extractScopedClassNames(content) {
+  const scoped = new Set();
+  const styleBlocks = content.match(/<style[^>]*>[\s\S]*?<\/style>/gi);
+
+  if (!styleBlocks) {
+    return scoped;
+  }
+
+  for (const block of styleBlocks) {
+    const css = block.replace(/<\/?style[^>]*>/gi, '');
+
+    for (const match of css.matchAll(/\.([a-zA-Z_][\w-]*)/g)) {
+      scoped.add(match[1]);
     }
-    return cls;
+  }
+
+  return scoped;
+}
+
+function isQuotedJsLiteral(token) {
+  return (
+    (token.startsWith("'") && token.endsWith("'") && token.length > 1) ||
+    (token.startsWith('"') && token.endsWith('"') && token.length > 1)
+  );
+}
+
+function resolveClassToken(cls, scopedClasses = new Set()) {
+  if (isQuotedJsLiteral(cls)) {
+    const quote = cls[0];
+    const inner = cls.slice(1, -1);
+    const processed = processClassTokens(inner, scopedClasses);
+
+    return `${quote}${processed}${quote}`;
+  }
+
+  const bareName = cls.startsWith(UI_PREFIX) ? cls.slice(UI_PREFIX.length) : cls;
+
+  // Component-scoped hook classes (defined in <style>) are never Tailwind utilities.
+  if (scopedClasses.has(bareName)) {
+    return bareName;
+  }
+
+  if (cls.includes(UI_PREFIX)) {
+    return normalizeUiClass(cls);
+  }
+
+  if (isTailwindClass(cls)) {
+    return `${UI_PREFIX}${cls}`;
+  }
+
+  return cls;
+}
+
+function processClassTokens(classString, scopedClasses = new Set()) {
+  const classes = classString.split(/\s+/).filter((c) => c.trim());
+  return classes.map((cls) => resolveClassToken(cls, scopedClasses)).join(' ');
+}
+
+// Process a single class string
+function processClassString(classString, scopedClasses = new Set()) {
+  return processClassTokens(classString, scopedClasses);
+}
+
+function repairCommentSwallowedClassStrings(content) {
+  // cn(..., // comment.'ui:classes', ...) — class string got glued into a line comment
+  return content.replace(
+    /^(\s*\/\/[^\n]*?)\.(['"]ui:[^'"]+['"],?\s*)$/gm,
+    (_, commentLine, classLiteral) => `${commentLine}.\n${classLiteral}`
+  );
+}
+
+function repairCorruptedQuotedPrefixes(content) {
+  let repaired = content.replace(/ui:'([^']*)'/g, "'ui:$1'").replace(/ui:"([^"]*)"/g, '"ui:$1"');
+
+  for (const literal of SEMANTIC_LITERALS) {
+    const escaped = literal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    repaired = repaired.replace(new RegExp(`===\\s*['"]${UI_PREFIX}${escaped}['"]`, 'g'), `=== '${literal}'`);
+    repaired = repaired.replace(new RegExp(`!==\\s*['"]${UI_PREFIX}${escaped}['"]`, 'g'), `!== '${literal}'`);
+    repaired = repaired.replace(
+      new RegExp(`(variant|side|align|size|indicator|density)\\s*:\\s*['"]${UI_PREFIX}${escaped}['"]`, 'g'),
+      `$1: '${literal}'`
+    );
+  }
+
+  return repaired;
+}
+
+function processInterpolatedSegments(value, scopedClasses, expressionPattern) {
+  const parts = value.split(expressionPattern);
+
+  return parts.reduce((result, part, index) => {
+    const isExpression = index % 2 === 1;
+    const processed = isExpression
+      ? processQuotedClassStrings(part, scopedClasses)
+      : processClassString(part, scopedClasses);
+
+    if (result.length === 0) {
+      return processed;
+    }
+
+    const needsSpace = processed.length > 0 && result.length > 0 && !result.endsWith(' ') && !processed.startsWith(' ');
+
+    return `${result}${needsSpace ? ' ' : ''}${processed}`;
+  }, '');
+}
+
+function processClassAttributeValue(value, scopedClasses = new Set()) {
+  return processInterpolatedSegments(value, scopedClasses, /(\{[^}]*\})/g);
+}
+
+function processTemplateClassAttributeValue(value, scopedClasses = new Set()) {
+  return processInterpolatedSegments(value, scopedClasses, /(\$\{[^}]*\})/g);
+}
+
+function processQuotedClassStrings(content, scopedClasses = new Set()) {
+  let processed = content;
+
+  processed = processed.replace(/'([^']*)'/g, (match, quoted) => {
+    if (!shouldProcessAsClassString(quoted)) {
+      return match;
+    }
+
+    const result = processClassString(quoted, scopedClasses);
+    return result !== quoted ? `'${result}'` : match;
   });
 
-  return processed.join(' ');
+  processed = processed.replace(/"([^"]*)"/g, (match, quoted) => {
+    if (!shouldProcessAsClassString(quoted)) {
+      return match;
+    }
+
+    const result = processClassString(quoted, scopedClasses);
+    return result !== quoted ? `"${result}"` : match;
+  });
+
+  return processed;
+}
+
+function processMultilineCnArgs(args, scopedClasses = new Set()) {
+  return args
+    .split('\n')
+    .map((line) => {
+      if (line.trimStart().startsWith('//')) {
+        return line;
+      }
+
+      return processQuotedClassStrings(line, scopedClasses);
+    })
+    .join('\n');
 }
 
 // Process file content
-function processFileContent(content) {
-  let modified = content;
-  let changes = 0;
+function processFileContent(content, scopedClasses = new Set()) {
+  let modified = repairCommentSwallowedClassStrings(repairCorruptedQuotedPrefixes(content));
+  let changes = modified !== content ? 1 : 0;
 
   // Helper to process and count changes
   function processAndReplace(pattern, replacer) {
@@ -104,25 +317,25 @@ function processFileContent(content) {
 
   // Pattern 1: class="..." or className="..."
   processAndReplace(/(class|className)="([^"]*)"/g, (match, attr, classes) => {
-    const processed = processClassString(classes);
+    const processed = processClassAttributeValue(classes, scopedClasses);
     return processed !== classes ? `${attr}="${processed}"` : match;
   });
 
   // Pattern 1b: class='...' or className='...'
   processAndReplace(/(class|className)='([^']*)'/g, (match, attr, classes) => {
-    const processed = processClassString(classes);
+    const processed = processClassAttributeValue(classes, scopedClasses);
     return processed !== classes ? `${attr}='${processed}'` : match;
   });
 
   // Pattern 2: class={`...`} or className={`...`}
   processAndReplace(/(class|className)=\{`([^`]+)`\}/g, (match, attr, classes) => {
-    const processed = processClassString(classes);
+    const processed = processTemplateClassAttributeValue(classes, scopedClasses);
     return processed !== classes ? `${attr}={\`${processed}\`}` : match;
   });
 
   // Pattern 3: class={'...'} or className={'...'}
   processAndReplace(/(class|className)=\{['"]([^'"]+)['"]\}/g, (match, attr, classes) => {
-    const processed = processClassString(classes);
+    const processed = processClassString(classes, scopedClasses);
     return processed !== classes ? `${attr}={\`${processed}\`}` : match;
   });
 
@@ -176,14 +389,14 @@ function processFileContent(content) {
   processAndReplace(
     new RegExp(`(${tailwindFunctionNames.join('|')})\\s*\\(\\s*['"]([^'"]+)['"]\\s*([,)])`, 'g'),
     (match, fn, classes, separator) => {
-      const processed = processClassString(classes);
+      const processed = processClassString(classes, scopedClasses);
       return processed !== classes ? `${fn}("${processed}"${separator}` : match;
     }
   );
 
   // Pattern 7: Template literals in function calls: cn(`...`)
   processAndReplace(/(cn|tv)\s*\(`([^`]+)`/g, (match, fn, classes) => {
-    const processed = processClassString(classes);
+    const processed = processClassString(classes, scopedClasses);
     return processed !== classes ? `${fn}(\`${processed}\`` : match;
   });
 
@@ -195,19 +408,31 @@ function processFileContent(content) {
 
     // Process double-quoted strings
     processedObj = processedObj.replace(/"([^"]*)"/g, (match, value) => {
-      const processed = processClassString(value);
+      if (!shouldProcessAsClassString(value)) {
+        return match;
+      }
+
+      const processed = processClassString(value, scopedClasses);
       return processed !== value ? `"${processed}"` : match;
     });
 
     // Process single-quoted strings
     processedObj = processedObj.replace(/'([^']*)'/g, (match, value) => {
-      const processed = processClassString(value);
+      if (!shouldProcessAsClassString(value)) {
+        return match;
+      }
+
+      const processed = processClassString(value, scopedClasses);
       return processed !== value ? `'${processed}'` : match;
     });
 
     // Process template literals
     processedObj = processedObj.replace(/`([^`]*)`/g, (match, value) => {
-      const processed = processClassString(value);
+      if (!shouldProcessAsClassString(value)) {
+        return match;
+      }
+
+      const processed = processClassString(value, scopedClasses);
       return processed !== value ? `\`${processed}\`` : match;
     });
 
@@ -217,22 +442,14 @@ function processFileContent(content) {
   // Pattern 8: class: cn(...) patterns (like in derived props)
   // Matches: class: cn('string1', 'string2', ...)
   processAndReplace(/class:\s*cn\s*\(([^)]+)\)/g, (match, args) => {
-    // Use a more sophisticated approach to handle multi-line strings and comments
-    let processedArgs = args;
+    const processedArgs = processMultilineCnArgs(args, scopedClasses);
+    return processedArgs !== args ? `class: cn(${processedArgs})` : match;
+  });
 
-    // Process single-quoted strings: 'content'
-    processedArgs = processedArgs.replace(/'([^']*)'/g, (match, content) => {
-      const processed = processClassString(content);
-      return processed !== content ? `'${processed}'` : match;
-    });
-
-    // Process double-quoted strings: "content"
-    processedArgs = processedArgs.replace(/"([^"]*)"/g, (match, content) => {
-      const processed = processClassString(content);
-      return processed !== content ? `"${processed}"` : match;
-    });
-
-    return `class: cn(${processedArgs})`;
+  // Pattern 8b: class={cn(...)} in Svelte markup (supports embedded quotes in class strings)
+  processAndReplace(/class=\{cn\s*\(([\s\S]*?)\)\}/g, (match, args) => {
+    const processedArgs = processMultilineCnArgs(args, scopedClasses);
+    return processedArgs !== args ? `class={cn(${processedArgs})}` : match;
   });
 
   return { content: modified, changes };
@@ -242,7 +459,8 @@ function processFileContent(content) {
 function processFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { content: modified, changes } = processFileContent(content);
+    const scopedClasses = path.extname(filePath) === '.svelte' ? extractScopedClassNames(content) : new Set();
+    const { content: modified, changes } = processFileContent(content, scopedClasses);
 
     if (changes > 0) {
       if (DRY_RUN) {
@@ -298,22 +516,174 @@ function findFiles(dir, extensions = ['.svelte', '.ts', '.tsx', '.js', '.jsx']) 
   return files;
 }
 
-// Main execution
-function main() {
-  const uiDir = path.join(__dirname);
-  const srcDir = path.join(uiDir, 'src');
+function runGitPaths(args) {
+  const result = spawnSync('git', args, {
+    cwd: REPO_ROOT,
+    encoding: 'utf8'
+  });
 
-  if (!fs.existsSync(srcDir)) {
-    console.error(`Error: ${srcDir} does not exist`);
+  if (result.status !== 0) {
+    const errorOutput = result.stderr || result.stdout || `git ${args.join(' ')} failed`;
+    throw new Error(errorOutput.trim());
+  }
+
+  return result.stdout.split('\0').filter(Boolean);
+}
+
+function isUiSourceFile(relativePath) {
+  if (!relativePath.startsWith('packages/ui/src/')) {
+    return false;
+  }
+
+  return UI_SOURCE_EXTENSIONS.has(path.extname(relativePath));
+}
+
+function getScopedGitFiles(mode) {
+  let paths = [];
+
+  if (mode === 'staged') {
+    paths = runGitPaths(['diff', '--name-only', '-z', '--cached', '--diff-filter=ACMR']);
+  } else if (mode === 'changed') {
+    const baseRef = process.env.UI_PREFIX_GIT_BASE || 'origin/main';
+    paths = runGitPaths(['diff', '--name-only', '-z', '--diff-filter=ACMR', `${baseRef}...HEAD`]);
+  }
+
+  return paths.filter(isUiSourceFile).map((relativePath) => path.join(REPO_ROOT, relativePath));
+}
+
+function resolveFilesToProcess(srcDir) {
+  if (STAGED_ONLY) {
+    return getScopedGitFiles('staged');
+  }
+
+  if (CHANGED_ONLY) {
+    return getScopedGitFiles('changed');
+  }
+
+  return findFiles(srcDir);
+}
+
+const AUDIT_PATTERNS = [
+  {
+    id: 'corrupted-quoted-prefix',
+    label: 'ui:\'...\' / ui:"..." (prefix script broke Svelte/JS string literals)',
+    regex: /ui:['"]/
+  },
+  {
+    id: 'double-variant-prefix',
+    label: 'ui:variant:ui:utility (duplicate ui: inside variant chains)',
+    regex: /ui:[a-z0-9_-]+:ui:/
+  },
+  {
+    id: 'inverted-variant-prefix',
+    label: 'variant:ui:utility (ui: after variant instead of at start)',
+    regex: /(?:^|[\s"'`{])(?:hover|focus|active|disabled|dark|sm|md|lg|xl|2xl|group-hover|peer-focus):ui:/
+  },
+  {
+    id: 'semantic-literal-prefix',
+    label: "Semantic prop/compare literals prefixed (e.g. === 'ui:left', side: 'ui:right')",
+    regex:
+      /===\s*['"]ui:(?:left|right|top|bottom|outline|ghost|default|center|start|end)['"]|(variant|side|align|size|indicator|density)\s*:\s*['"]ui:(?:left|right|top|bottom|outline|ghost|default)['"]/
+  },
+  {
+    id: 'comment-swallowed-class',
+    label: 'Class string glued into a // comment (dialog/chart cn() corruption)',
+    regex: /\/\/[^\n]*\.'ui:[^'\n]+'/
+  }
+];
+
+function auditScopedHookMismatches(filePath, content) {
+  const findings = [];
+
+  if (!filePath.endsWith('.svelte')) {
+    return findings;
+  }
+
+  const scoped = extractScopedClassNames(content);
+
+  for (const cls of scoped) {
+    const prefixed = `${UI_PREFIX}${cls}`;
+    const pattern = new RegExp(`class=["'\`][^"'\`]*${prefixed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`);
+    if (pattern.test(content)) {
+      findings.push({
+        id: 'scoped-hook-prefixed',
+        label: `<style> hook .${cls} prefixed as ${prefixed} in markup`,
+        sample: prefixed
+      });
+    }
+  }
+
+  return findings;
+}
+
+function auditFile(filePath) {
+  const content = fs.readFileSync(filePath, 'utf8');
+  const findings = [];
+
+  for (const pattern of AUDIT_PATTERNS) {
+    if (pattern.regex.test(content)) {
+      findings.push({ id: pattern.id, label: pattern.label, sample: content.match(pattern.regex)?.[0] });
+    }
+  }
+
+  return findings.concat(auditScopedHookMismatches(filePath, content));
+}
+
+function runAudit() {
+  const files = resolveFilesToProcess(UI_SRC_DIR);
+  let issueCount = 0;
+
+  console.log(`Auditing ${files.length} file(s) in packages/ui/src for prefix corruption...\n`);
+
+  for (const file of files) {
+    const findings = auditFile(file);
+
+    if (findings.length === 0) {
+      continue;
+    }
+
+    issueCount += findings.length;
+    console.log(file);
+
+    for (const finding of findings) {
+      console.log(`  - ${finding.label}${finding.sample ? ` (e.g. ${finding.sample})` : ''}`);
+    }
+
+    console.log('');
+  }
+
+  if (issueCount > 0) {
+    console.error(`❌ Found ${issueCount} prefix corruption issue(s).`);
     process.exit(1);
   }
 
-  console.log(`Searching for files in ${srcDir}...`);
-  const files = findFiles(srcDir);
-  console.log(`Found ${files.length} files to process\n`);
+  console.log('✓ No known prefix corruption patterns found.');
+}
+
+// Main execution
+function main() {
+  if (AUDIT_MODE) {
+    runAudit();
+    return;
+  }
+
+  if (!fs.existsSync(UI_SRC_DIR)) {
+    console.error(`Error: ${UI_SRC_DIR} does not exist`);
+    process.exit(1);
+  }
+
+  const scopeLabel = STAGED_ONLY ? 'staged' : CHANGED_ONLY ? 'changed' : 'all';
+  const files = resolveFilesToProcess(UI_SRC_DIR);
+
+  if (files.length === 0) {
+    console.log(`No ${scopeLabel} packages/ui source files to check.`);
+    process.exit(0);
+  }
+
+  console.log(`Checking ${files.length} ${scopeLabel} file(s) in packages/ui/src...\n`);
 
   if (DRY_RUN) {
-    console.log('DRY RUN MODE - No files will be modified\n');
+    console.log(`${CHECK_MODE ? 'CHECK MODE' : 'DRY RUN MODE'} - No files will be modified\n`);
   }
 
   let totalChanges = 0;
@@ -328,6 +698,12 @@ function main() {
   }
 
   console.log(`\n${DRY_RUN ? 'Would process' : 'Processed'} ${filesChanged} files with ${totalChanges} total changes`);
+
+  if (CHECK_MODE && filesChanged > 0) {
+    console.error('\n❌ packages/ui Tailwind classes must use the ui: prefix.');
+    console.error("Run 'pnpm --filter @cio/ui prefix' to fix, then commit again.");
+    process.exit(1);
+  }
 }
 
 main();

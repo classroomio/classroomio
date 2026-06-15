@@ -18,6 +18,7 @@ import type {
 import type { TCourseType } from '@cio/db/types';
 import { ZCourseCreate, ZCourseUpdate, type TCourseUpdate } from '@cio/utils/validation/course/course';
 import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
+import { syncProgressionAccessToCourse } from '../utils/progression-utils';
 import { capturePosthogEvent } from '$lib/utils/services/posthog';
 import { currentOrg } from '$lib/utils/store/org';
 import { get } from 'svelte/store';
@@ -104,13 +105,13 @@ export class CourseApi extends BaseApiWithErrors {
 
       if (!hasUpdatedItem) return false;
 
-      this.course = {
+      this.course = syncProgressionAccessToCourse({
         ...this.course,
         content: {
           ...content,
           sections
         }
-      };
+      });
 
       return true;
     }
@@ -127,13 +128,13 @@ export class CourseApi extends BaseApiWithErrors {
 
     if (!hasUpdatedItem) return false;
 
-    this.course = {
+    this.course = syncProgressionAccessToCourse({
       ...this.course,
       content: {
         ...content,
         items
       }
-    };
+    });
 
     return true;
   }
@@ -654,7 +655,8 @@ export class CourseApi extends BaseApiWithErrors {
           imgUrl: ''
         },
         allowNewStudent: false,
-        isContentGroupingEnabled: true
+        isContentGroupingEnabled: true,
+        progressionMode: 'free'
       };
     }
 
@@ -752,4 +754,4 @@ export class CourseApi extends BaseApiWithErrors {
   }
 }
 
-export const courseApi = new CourseApi();
+export const courseApi = /* @__PURE__ */ new CourseApi();

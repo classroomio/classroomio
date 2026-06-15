@@ -34,6 +34,8 @@
       isDirty={store.isDirty}
       layoutValidationError={store.layoutValidationError}
       editingName={store.editingName}
+      saving={store.saving}
+      publishing={store.publishing}
       onSave={() => store.saveWidget()}
       onPublish={() => store.publishWidget()}
       onDiscard={() => store.resetDraft()}

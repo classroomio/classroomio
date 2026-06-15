@@ -2,7 +2,7 @@
   import { tv, type VariantProps } from 'tailwind-variants';
 
   export const resourceListRowVariants = tv({
-    base: 'ui:flex-nowrap! ui:rounded-none ui:border-0 ui:border-b ui:border-border last:ui:border-b-0 ui:hover:bg-muted/50',
+    base: 'ui:flex-nowrap! ui:rounded-none ui:border-0 ui:border-b ui:border-border ui:last:border-b-0 ui:hover:bg-muted/50',
     variants: {
       align: {
         center: 'ui:items-center',

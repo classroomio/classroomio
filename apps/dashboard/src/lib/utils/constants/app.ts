@@ -13,6 +13,8 @@ export const blockedSubdomain = [
   'courses',
   'demo',
   'dev',
+  'embed',
+  'embeds',
   'forum',
   'group',
   'groups',

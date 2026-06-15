@@ -158,7 +158,8 @@
         grading: $settings.grading,
         lessonDownload: $settings.lessonDownload,
         allowNewStudent: $settings.allowNewStudents ?? false,
-        isContentGroupingEnabled: $settings.isContentGroupingEnabled
+        isContentGroupingEnabled: $settings.isContentGroupingEnabled,
+        progressionMode: $settings.progressionMode
       } as NonNullable<Course['metadata']>;
 
       const updatedCourse = {
@@ -222,6 +223,7 @@
         isPublished: !!course.isPublished,
         allowNewStudents: !!course.metadata?.allowNewStudent,
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
+        progressionMode: course.metadata?.progressionMode ?? 'free',
         callout: normalizeCallout(course.callout)
       });
     });
@@ -367,10 +369,10 @@
       <Field.Field>
         <div class="relative w-fit">
           <img
-            style="min-width:320px; min-height:200px"
+            style="min-width:280px; min-height:200px"
             alt="Course cover"
             src={$settings.logo ? $settings.logo : '/images/classroomio-course-img-template.jpg'}
-            class="relative mt-2 h-[200px] w-[320px] rounded-md md:mt-0"
+            class="relative mt-2 h-[200px] w-[280px] rounded-md md:mt-0"
           />
         </div>
       </Field.Field>
@@ -517,6 +519,35 @@
           ? $t('course.navItem.settings.enabled')
           : $t('course.navItem.settings.disabled')}
       </Label>
+    </Field.Field>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.progression_mode_title')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.progression_mode_description')}</Field.Description>
+    <Field.Field>
+      <RadioGroup.Root
+        value={$settings.progressionMode}
+        onValueChange={(value) => {
+          if (value === 'free' || value === 'sequential') {
+            $settings.progressionMode = value;
+            hasUnsavedChanges = true;
+          }
+        }}
+      >
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center gap-2">
+            <RadioGroup.Item value="free" id="progression-free" />
+            <Label for="progression-free">{$t('course.navItem.settings.progression_mode_free')}</Label>
+          </div>
+          <div class="flex items-center gap-2">
+            <RadioGroup.Item value="sequential" id="progression-sequential" />
+            <Label for="progression-sequential">{$t('course.navItem.settings.progression_mode_sequential')}</Label>
+          </div>
+        </div>
+      </RadioGroup.Root>
     </Field.Field>
   </Field.Set>
 
@@ -737,6 +768,7 @@
         checked={$settings.isPublished}
         onCheckedChange={(checked) => {
           $settings.isPublished = checked;
+          if (checked) $settings.allowNewStudents = true;
           hasUnsavedChanges = true;
         }}
       />

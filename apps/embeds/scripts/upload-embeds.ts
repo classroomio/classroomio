@@ -30,7 +30,7 @@ const EMBED_WIDGET_TARGETS = [
 /** Cloudflare allows a limited number of URLs per purge request. */
 const PURGE_URL_BATCH = 30;
 
-const DEFAULT_CDN_BASE = 'https://assets.cdn.clsrio.com';
+const DEFAULT_CDN_BASE = 'https://embed.classroomio.com';
 
 function normalizePublicBaseUrl(raw: string | undefined): string {
   const value = raw != null && raw.trim() !== '' ? raw.trim() : DEFAULT_CDN_BASE;
@@ -235,6 +235,8 @@ class EmbedsUploader {
       purgeUrls.push(
         ...files.map((relativePath) => `${publicBase}/${target.prefix}/${relativePath.split('\\').join('/')}`)
       );
+
+      purgeUrls.push(`${publicBase}/${target.buildDirName}`);
     }
 
     console.log('Embeds upload completed.');

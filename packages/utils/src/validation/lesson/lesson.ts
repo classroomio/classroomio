@@ -29,6 +29,8 @@ export const ZLessonUpdate = z.object({
   public: z.boolean().optional(),
   slug: ZSlug.optional(),
   isComplete: z.boolean().optional(),
+  completionPolicy: z.enum(['manual', 'video_watch', 'none']).optional(),
+  videoWatchThreshold: z.number().int().min(1).max(100).optional(),
   videoUrl: z.url().optional(),
   slideUrl: z.url().optional(),
   videos: z
@@ -38,6 +40,7 @@ export const ZLessonUpdate = z.object({
         link: z.string(),
         key: z.string().optional(),
         assetId: z.string().uuid().optional(),
+        watchEnforced: z.boolean().optional(),
         fileName: z.string().optional(),
         metadata: z.record(z.string(), z.unknown()).optional()
       })
@@ -128,3 +131,17 @@ export const ZLessonCompletionUpdate = z.object({
   isComplete: z.boolean()
 });
 export type TLessonCompletionUpdate = z.infer<typeof ZLessonCompletionUpdate>;
+
+export const ZUpdateLessonWatchProgress = z.object({
+  positionSeconds: z.number().min(0),
+  playedDeltaSeconds: z
+    .number()
+    .transform((value) => Math.round(value))
+    .pipe(z.number().min(0).max(120)),
+  durationSeconds: z
+    .number()
+    .transform((value) => Math.round(value))
+    .pipe(z.int().min(1)),
+  assetId: z.string().optional()
+});
+export type TUpdateLessonWatchProgress = z.infer<typeof ZUpdateLessonWatchProgress>;

@@ -8,6 +8,10 @@
     "dev": "pnpm generate-css --watch",
     "format": "prettier --write .",
     "prefix:list": "node add-ui-prefix.cjs --dry-run",
+    "prefix:check": "node add-ui-prefix.cjs --check",
+    "prefix:check:staged": "node add-ui-prefix.cjs --check --staged",
+    "prefix:check:changed": "node add-ui-prefix.cjs --check --changed",
+    "prefix:audit": "node add-ui-prefix.cjs --audit",
     "prefix": "node add-ui-prefix.cjs && pnpm format"
   },
   "devDependencies": {

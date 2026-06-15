@@ -23,7 +23,7 @@ import {
   type TUpdateWidget
 } from '@cio/utils/validation/widget';
 
-import { getOrganizationById } from '@cio/db/queries/organization';
+import { getActiveOrganizationPlan, getOrganizationById } from '@cio/db/queries/organization';
 import {
   buildWidgetPayload,
   generateWidgetPublicKey,
@@ -48,13 +48,14 @@ export async function listOrganizationWidgets(orgId: string) {
 
 export async function createOrganizationWidget(orgId: string, userId: string, data: TCreateWidget) {
   try {
+    const activePlan = await getActiveOrganizationPlan(orgId);
     const widget = await createWidget({
       organizationId: orgId,
       name: data.name,
       layoutType: data.layoutType,
       selectionMode: data.selectionMode,
       publicKey: generateWidgetPublicKey(),
-      config: normalizeWidgetConfig(data.config ?? getDefaultWidgetConfig()),
+      config: normalizeWidgetConfig(data.config ?? getDefaultWidgetConfig(), activePlan?.planName ?? null),
       createdByUserId: userId,
       updatedByUserId: userId
     });
@@ -132,7 +133,10 @@ export async function getOrganizationWidgetDetail(orgId: string, widgetId: strin
 
 export async function updateOrganizationWidget(orgId: string, widgetId: string, userId: string, data: TUpdateWidget) {
   try {
-    const existingWidget = await getWidgetById(orgId, widgetId);
+    const [existingWidget, activePlan] = await Promise.all([
+      getWidgetById(orgId, widgetId),
+      getActiveOrganizationPlan(orgId)
+    ]);
     if (!existingWidget) {
       throw new AppError('Widget not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
     }
@@ -141,7 +145,10 @@ export async function updateOrganizationWidget(orgId: string, widgetId: string, 
       name: data.name ?? existingWidget.name,
       layoutType: data.layoutType ?? existingWidget.layoutType,
       selectionMode: data.selectionMode ?? existingWidget.selectionMode,
-      config: normalizeWidgetConfig((data.config ?? existingWidget.config) as Record<string, unknown>),
+      config: normalizeWidgetConfig(
+        (data.config ?? existingWidget.config) as Record<string, unknown>,
+        activePlan?.planName ?? null
+      ),
       hasUnpublishedChanges: true,
       updatedByUserId: userId
     });

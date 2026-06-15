@@ -166,7 +166,7 @@
           {@const text = chipId ? (chipById.get(chipId)?.label ?? '') : ''}
           <button
             type="button"
-            class="ui:inline-flex ui:align-middle ui:mx-0.5 ui:min-h-8 ui:min-w-[5rem] ui:max-w-[16rem] ui:items-center ui:justify-center ui:rounded ui:border-2 ui:px-2 ui:py-0.5 ui:text-left ui:text-sm ui:transition-all ui:duration-200 ui:border-primary disabled:ui:cursor-not-allowed"
+            class="ui:inline-flex ui:align-middle ui:mx-0.5 ui:min-h-8 ui:min-w-[5rem] ui:max-w-[16rem] ui:items-center ui:justify-center ui:rounded ui:border-2 ui:px-2 ui:py-0.5 ui:text-left ui:text-sm ui:transition-all ui:duration-200 ui:border-primary ui:disabled:cursor-not-allowed"
             class:ui:border-dashed={!text}
             class:ui:bg-background={!text}
             class:ui:border-solid={!!text}
@@ -195,7 +195,7 @@
         <button
           type="button"
           draggable={!disabled && !placed}
-          class="ui:rounded ui:border-2 ui:border-primary ui:bg-primary ui:px-3 ui:py-1.5 ui:text-sm ui:text-primary-foreground ui:transition-opacity disabled:ui:cursor-not-allowed"
+          class="ui:rounded ui:border-2 ui:border-primary ui:bg-primary ui:px-3 ui:py-1.5 ui:text-sm ui:text-primary-foreground ui:transition-opacity ui:disabled:cursor-not-allowed"
           class:ui:opacity-40={placed}
           class:ui:pointer-events-none={placed}
           {disabled}

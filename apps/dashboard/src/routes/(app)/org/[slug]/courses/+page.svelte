@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { CoursesPage } from '$features/course/pages';
-  import { CreateCourseButton, CourseFilterPopover } from '$features/course/components';
+  import CoursesPage from '$features/course/pages/courses.svelte';
+  import CreateCourseButton from '$features/course/components/create-course-button.svelte';
+  import CourseFilterPopover from '$features/course/components/course-filter-popover.svelte';
   import { courseMetaDeta } from '$features/course/utils/store';
   import {
     CourseSortBy,
@@ -15,7 +16,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { onMount } from 'svelte';
   import * as Page from '@cio/ui/base/page';
-  import { coursesApi } from '$features/course/api';
+  import { coursesApi } from '$features/course/api/courses.svelte';
 
   let { data } = $props();
   const getInitialSelectedTags = () => data.activeTags ?? [];

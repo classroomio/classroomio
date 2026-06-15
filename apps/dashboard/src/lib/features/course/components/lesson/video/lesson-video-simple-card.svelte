@@ -25,6 +25,8 @@
 
   let { video, index, isEditMode, onRemove }: Props = $props();
 
+  let isTranscribingForVideo = $state(false);
+
   const thumbnailUrl = $derived(getVideoThumbnailUrl(video));
   const title = $derived(getVideoTitle(video, index));
   const durationSeconds = $derived(getVideoDurationSeconds(video));
@@ -143,6 +145,7 @@
             {onRemove}
             onThumbnailSaved={(url) => lessonApi.updateLessonVideoThumbnail(index, url)}
             onHlsMetadataUpdated={(metadata) => lessonApi.updateLessonVideoMetadata(index, metadata)}
+            onTranscribingChange={(v) => (isTranscribingForVideo = v)}
             menuPlacement="inline"
           />
         {/if}
@@ -150,6 +153,11 @@
       <p class="ui:text-muted-foreground mt-0.5 line-clamp-1 text-sm leading-snug">
         {channelLine}
       </p>
+      {#if isEditMode && isTranscribingForVideo}
+        <p class="mt-0.5 text-sm leading-snug text-orange-500">
+          {$t('course.navItem.lessons.materials.tabs.video.simple_card.transcription_in_progress')}
+        </p>
+      {/if}
       <p class="ui:text-muted-foreground mt-0.5 line-clamp-1 text-sm leading-snug">{metaLine}</p>
     </div>
   </div>

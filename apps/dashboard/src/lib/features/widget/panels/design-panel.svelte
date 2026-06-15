@@ -45,33 +45,65 @@
           </Select.Content>
         </Select.Root>
       </Field.Field>
-      <InputField
-        label={$t('widgets.form.primary_color')}
-        bind:value={draftConfig.colors.primaryColor}
-        maxLength={64}
-        errorMessage={errFor('config.colors.primaryColor')}
-      />
-      <InputField
-        label={$t('widgets.form.background_color')}
-        bind:value={draftConfig.colors.backgroundColor}
-        isDisabled={!canUseCustomColors}
-        maxLength={64}
-        errorMessage={errFor('config.colors.backgroundColor')}
-      />
-      <InputField
-        label={$t('widgets.form.text_color')}
-        bind:value={draftConfig.colors.textColor}
-        isDisabled={!canUseCustomColors}
-        maxLength={64}
-        errorMessage={errFor('config.colors.textColor')}
-      />
-      <InputField
-        label={$t('widgets.form.border_color')}
-        bind:value={draftConfig.colors.borderColor}
-        isDisabled={!canUseCustomColors}
-        maxLength={64}
-        errorMessage={errFor('config.colors.borderColor')}
-      />
+      <Field.Field>
+        <Field.Label>{$t('widgets.form.primary_color')}</Field.Label>
+        <div class="ui:flex ui:items-center ui:gap-2">
+          <input
+            type="color"
+            bind:value={draftConfig.colors.primaryColor}
+            class="ui:h-9 ui:w-9 ui:cursor-pointer ui:rounded ui:border ui:bg-transparent ui:p-0.5"
+          />
+          <span class="ui:text-muted-foreground ui:font-mono ui:text-sm">{draftConfig.colors.primaryColor}</span>
+        </div>
+        {#if errFor('config.colors.primaryColor')}
+          <Field.Error>{errFor('config.colors.primaryColor')}</Field.Error>
+        {/if}
+      </Field.Field>
+      <Field.Field>
+        <Field.Label>{$t('widgets.form.background_color')}</Field.Label>
+        <div class="ui:flex ui:items-center ui:gap-2">
+          <input
+            type="color"
+            bind:value={draftConfig.colors.backgroundColor}
+            disabled={!canUseCustomColors}
+            class="ui:h-9 ui:w-9 ui:cursor-pointer ui:rounded ui:border ui:bg-transparent ui:p-0.5 disabled:ui:cursor-not-allowed disabled:ui:opacity-50"
+          />
+          <span class="ui:text-muted-foreground ui:font-mono ui:text-sm">{draftConfig.colors.backgroundColor}</span>
+        </div>
+        {#if errFor('config.colors.backgroundColor')}
+          <Field.Error>{errFor('config.colors.backgroundColor')}</Field.Error>
+        {/if}
+      </Field.Field>
+      <Field.Field>
+        <Field.Label>{$t('widgets.form.text_color')}</Field.Label>
+        <div class="ui:flex ui:items-center ui:gap-2">
+          <input
+            type="color"
+            bind:value={draftConfig.colors.textColor}
+            disabled={!canUseCustomColors}
+            class="ui:h-9 ui:w-9 ui:cursor-pointer ui:rounded ui:border ui:bg-transparent ui:p-0.5 disabled:ui:cursor-not-allowed disabled:ui:opacity-50"
+          />
+          <span class="ui:text-muted-foreground ui:font-mono ui:text-sm">{draftConfig.colors.textColor}</span>
+        </div>
+        {#if errFor('config.colors.textColor')}
+          <Field.Error>{errFor('config.colors.textColor')}</Field.Error>
+        {/if}
+      </Field.Field>
+      <Field.Field>
+        <Field.Label>{$t('widgets.form.border_color')}</Field.Label>
+        <div class="ui:flex ui:items-center ui:gap-2">
+          <input
+            type="color"
+            bind:value={draftConfig.colors.borderColor}
+            disabled={!canUseCustomColors}
+            class="ui:h-9 ui:w-9 ui:cursor-pointer ui:rounded ui:border ui:bg-transparent ui:p-0.5 disabled:ui:cursor-not-allowed disabled:ui:opacity-50"
+          />
+          <span class="ui:text-muted-foreground ui:font-mono ui:text-sm">{draftConfig.colors.borderColor}</span>
+        </div>
+        {#if errFor('config.colors.borderColor')}
+          <Field.Error>{errFor('config.colors.borderColor')}</Field.Error>
+        {/if}
+      </Field.Field>
       <InputField
         type="number"
         label={$t('widgets.form.border_radius')}

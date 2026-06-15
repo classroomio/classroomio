@@ -147,6 +147,9 @@ importers:
       nanoid:
         specifier: ^5.1.5
         version: 5.1.6
+      tldts:
+        specifier: ^6.1.86
+        version: 6.1.86
       zod:
         specifier: 4.2.1
         version: 4.2.1
@@ -713,6 +716,9 @@ importers:
       svelte:
         specifier: ^5.39.11
         version: 5.46.0
+      tailwindcss:
+        specifier: ^4.1.18
+        version: 4.2.2
       tsx:
         specifier: ^4.7.1
         version: 4.21.0
@@ -1329,6 +1335,9 @@ importers:
       '@cio/certificates':
         specifier: workspace:*
         version: link:../certificates
+      '@cio/email':
+        specifier: workspace:*
+        version: link:../email
       '@cio/ui':
         specifier: workspace:*
         version: link:../ui

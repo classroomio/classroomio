@@ -18,6 +18,7 @@
     maxFileSizeInMb?: number; // Default max file size 2MB
     flexDirection?: string;
     isUploading?: boolean;
+    previewVariant?: 'avatar' | 'signature';
     change?: () => void;
   }
 
@@ -31,27 +32,33 @@
     maxFileSizeInMb = 2,
     flexDirection = 'flex-col',
     isUploading = $bindable(false),
+    previewVariant = 'avatar',
     change
   }: Props = $props();
 
   const defaultImg = 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png';
+  const isSignaturePreview = $derived(previewVariant === 'signature');
 
-  // Local image source for the cropper (never null)
-  let cropperSrc = $derived(src || '');
+  let cropperSrc = $state('');
+
+  $effect(() => {
+    cropperSrc = src || '';
+  });
 
   const onCropped = async (croppedUrl: string) => {
     // Convert the cropped data URL to a File object
     const response = await fetch(croppedUrl);
     const blob = await response.blob();
     // getCroppedImg outputs PNG format, so use blob.type (which will be 'image/png') and matching filename
-    const file = new File([blob], 'cropped-image.png', { type: blob.type });
+    const fileName = isSignaturePreview ? 'signature.png' : 'cropped-image.png';
+    const file = new File([blob], fileName, { type: blob.type });
 
     const validation = validateImageUpload(file);
     if (!validation.isValid) {
       snackbar.error(validation.error || 'Invalid file type');
       errorMessage = $t('snackbar.landing_page_settings.error.try_again');
 
-      cropperSrc = '';
+      src = '';
 
       return;
     }
@@ -61,7 +68,6 @@
 
     // Update the src preview
     src = croppedUrl;
-    cropperSrc = croppedUrl;
 
     // trigger onchange to parent
     change?.();
@@ -82,6 +88,16 @@
     // Otherwise, it's an unsupported file type
     errorMessage = `${$t('settings.profile.profile_picture.validation_error')} Unsupported file type: ${file.type}`;
   };
+
+  const previewContainerClass = $derived(
+    isSignaturePreview
+      ? `signature-preview-bg border-2 border-dashed border-gray-300 ${shape}`
+      : `border-2 border-gray-200 ${shape}`
+  );
+
+  const previewImageClass = $derived(
+    isSignaturePreview ? `h-full w-full object-contain ${shape}` : `h-full w-full ${shape}`
+  );
 </script>
 
 <section class="flex w-fit p-3 {flexDirection} items-center justify-between gap-2">
@@ -94,11 +110,13 @@
     disabled={isDisabled || isUploading}
   >
     <ImageCropper.UploadTrigger aria-disabled={isDisabled || isUploading}>
-      <div class="avatar-container {widthHeight || 'h-[128px] w-[128px]'} pointer border-2 border-gray-200 {shape}">
+      <div class="avatar-container {widthHeight || 'h-[128px] w-[128px]'} pointer {previewContainerClass}">
         <ImageCropper.Preview>
           {#snippet child({ src: imageSrc })}
             <div class="group relative h-full w-full">
-              <img class="h-full w-full {shape}" src={imageSrc || defaultImg} alt="" />
+              {#if imageSrc || !isSignaturePreview}
+                <img class={previewImageClass} src={imageSrc || defaultImg} alt="" />
+              {/if}
               <div
                 class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100 {shape}"
               >
@@ -132,9 +150,30 @@
     <ImageCropper.Dialog>
       <ImageCropper.Cropper cropShape={shape === 'rounded-full' ? 'round' : 'rect'} />
       <ImageCropper.Controls>
-        <ImageCropper.Cancel />
+        {#if isSignaturePreview}
+          <ImageCropper.UseOriginal>
+            {$t('course.navItem.certificates.editor.signature_dont_crop')}
+          </ImageCropper.UseOriginal>
+        {:else}
+          <ImageCropper.Cancel />
+        {/if}
         <ImageCropper.Crop />
       </ImageCropper.Controls>
     </ImageCropper.Dialog>
   </ImageCropper.Root>
 </section>
+
+<style>
+  .signature-preview-bg {
+    background-color: #fff;
+    background-image:
+      linear-gradient(45deg, #e5e5e5 25%, transparent 25%), linear-gradient(-45deg, #e5e5e5 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #e5e5e5 75%), linear-gradient(-45deg, transparent 75%, #e5e5e5 75%);
+    background-size: 12px 12px;
+    background-position:
+      0 0,
+      0 6px,
+      6px -6px,
+      -6px 0;
+  }
+</style>

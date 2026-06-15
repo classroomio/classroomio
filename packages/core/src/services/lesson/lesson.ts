@@ -12,14 +12,19 @@ import {
   getLessonCommentsByLessonIdPaginated,
   getLessonCompletion,
   getLessonVersionHistory,
+  getLessonVideoProgress,
+  getLessonVideoProgressForLesson,
   getLessonsByCourseId,
   updateLesson,
   updateLessonComment,
   upsertLessonCompletion,
+  upsertLessonVideoProgress,
   type LessonById
 } from '@cio/db/queries/lesson';
+import type { TUpdateLessonWatchProgress } from '@cio/utils/validation/lesson';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { enrichLessonWithPresignedUrls } from '../../utils/lesson-media';
+import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforcement';
 import { resolveItemSlug } from '../course/slug';
 
 /**
@@ -372,6 +377,19 @@ export async function getLessonCompletionService(lessonId: string, profileId: st
  */
 export async function upsertLessonCompletionService(lessonId: string, profileId: string, isComplete: boolean) {
   try {
+    const lesson = await getLessonById(lessonId);
+    if (!lesson) {
+      throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+    }
+
+    if (lesson.completionPolicy === 'video_watch' && isComplete) {
+      throw new AppError(
+        'This lesson completes automatically when the video watch requirement is met',
+        ErrorCodes.VALIDATION_ERROR,
+        400
+      );
+    }
+
     const completionData: TNewLessonCompletion = {
       lessonId,
       profileId,
@@ -380,8 +398,238 @@ export async function upsertLessonCompletionService(lessonId: string, profileId:
 
     return await upsertLessonCompletion(completionData);
   } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to update lesson completion',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+const WATCH_PROGRESS_WALL_CLOCK_TOLERANCE = 1.5;
+
+export type LessonWatchProgressAssetResult = {
+  assetId: string;
+  lastPositionSeconds: number;
+  watchedSeconds: number;
+  furthestSeconds: number;
+  durationSeconds: number | null;
+  watchedPercent: number;
+  isComplete: boolean;
+};
+
+export type LessonWatchProgressResult = {
+  lastPositionSeconds: number;
+  watchedSeconds: number;
+  furthestSeconds: number;
+  durationSeconds: number | null;
+  isComplete: boolean;
+  didJustComplete: boolean;
+  watchedPercent: number;
+  videosComplete: number;
+  videosRequired: number;
+  assets: LessonWatchProgressAssetResult[];
+};
+
+function getWatchedPercent(watchedSeconds: number, durationSeconds: number | null | undefined): number {
+  if (!durationSeconds || durationSeconds <= 0) return 0;
+
+  return Math.min(100, Math.round((watchedSeconds / durationSeconds) * 100));
+}
+
+function buildAggregateWatchProgress(
+  rows: Awaited<ReturnType<typeof getLessonVideoProgressForLesson>>,
+  requiredAssetIds: string[]
+): LessonWatchProgressResult | null {
+  if (requiredAssetIds.length === 0) return null;
+
+  const rowByAssetId = new Map(rows.map((row) => [row.assetId, row]));
+  const assets: LessonWatchProgressAssetResult[] = requiredAssetIds.map((assetId) => {
+    const row = rowByAssetId.get(assetId);
+
+    const isAssetComplete = row?.isComplete ?? false;
+
+    return {
+      assetId,
+      lastPositionSeconds: row?.lastPositionSeconds ?? 0,
+      watchedSeconds: row?.watchedSeconds ?? 0,
+      furthestSeconds: row?.furthestSeconds ?? 0,
+      durationSeconds: row?.durationSeconds ?? null,
+      watchedPercent: isAssetComplete ? 100 : getWatchedPercent(row?.watchedSeconds ?? 0, row?.durationSeconds),
+      isComplete: isAssetComplete
+    };
+  });
+
+  const videosComplete = assets.filter((asset) => asset.isComplete).length;
+  const videosRequired = requiredAssetIds.length;
+  const isComplete = videosRequired > 0 && videosComplete === videosRequired;
+  const watchedPercent = isComplete
+    ? 100
+    : assets.length > 0
+      ? Math.min(...assets.map((asset) => asset.watchedPercent))
+      : 0;
+  const primaryAsset = assets[0];
+
+  return {
+    lastPositionSeconds: primaryAsset?.lastPositionSeconds ?? 0,
+    watchedSeconds: primaryAsset?.watchedSeconds ?? 0,
+    furthestSeconds: primaryAsset?.furthestSeconds ?? 0,
+    durationSeconds: primaryAsset?.durationSeconds ?? null,
+    isComplete,
+    didJustComplete: false,
+    watchedPercent,
+    videosComplete,
+    videosRequired,
+    assets
+  };
+}
+
+export async function getLessonWatchProgressService(
+  lessonId: string,
+  profileId: string
+): Promise<LessonWatchProgressResult | null> {
+  try {
+    const lesson = await getLessonById(lessonId);
+    if (!lesson || lesson.completionPolicy !== 'video_watch') return null;
+
+    const requiredAssetIds = resolveWatchEnforcedAssetIds(lesson.videos, lesson.completionPolicy);
+    if (requiredAssetIds.length === 0) return null;
+
+    const progressRows = await getLessonVideoProgressForLesson(lessonId, profileId);
+    const filteredRows = progressRows.filter((row) => requiredAssetIds.includes(row.assetId));
+
+    return buildAggregateWatchProgress(filteredRows, requiredAssetIds);
+  } catch (error) {
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to get lesson watch progress',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+export async function updateLessonWatchProgressService(
+  lessonId: string,
+  profileId: string,
+  beat: TUpdateLessonWatchProgress
+): Promise<LessonWatchProgressResult> {
+  try {
+    const lesson = await getLessonById(lessonId);
+    if (!lesson) {
+      throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+    }
+
+    if (lesson.completionPolicy !== 'video_watch') {
+      throw new AppError('This lesson does not require video watch tracking', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    if (!beat.assetId) {
+      throw new AppError('Video asset is required for watch progress', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    const requiredAssetIds = resolveWatchEnforcedAssetIds(lesson.videos, lesson.completionPolicy);
+    if (!requiredAssetIds.includes(beat.assetId)) {
+      throw new AppError('This video is not configured for watch enforcement', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    const existing = await getLessonVideoProgress(lessonId, profileId, beat.assetId);
+    const threshold = lesson.videoWatchThreshold ?? 95;
+    const now = Date.now();
+
+    if (existing?.isComplete) {
+      const aggregate = buildAggregateWatchProgress(
+        await getLessonVideoProgressForLesson(lessonId, profileId),
+        requiredAssetIds
+      );
+
+      return {
+        ...(aggregate ?? {
+          lastPositionSeconds: existing.lastPositionSeconds ?? beat.positionSeconds,
+          watchedSeconds: existing.watchedSeconds ?? 0,
+          furthestSeconds: existing.furthestSeconds ?? 0,
+          durationSeconds: existing.durationSeconds ?? beat.durationSeconds,
+          isComplete: true,
+          didJustComplete: false,
+          watchedPercent: 100,
+          videosComplete: requiredAssetIds.length,
+          videosRequired: requiredAssetIds.length,
+          assets: []
+        }),
+        didJustComplete: false
+      };
+    }
+
+    const positionSeconds = Math.floor(beat.positionSeconds);
+
+    if (existing?.updatedAt) {
+      const elapsedSeconds = (now - new Date(existing.updatedAt).getTime()) / 1000;
+      const maxAllowedDelta = Math.max(5, elapsedSeconds * WATCH_PROGRESS_WALL_CLOCK_TOLERANCE);
+
+      if (beat.playedDeltaSeconds > maxAllowedDelta) {
+        throw new AppError('Invalid watch progress update', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+    }
+
+    const previousFurthest = existing?.furthestSeconds ?? 0;
+    const playedDeltaSeconds = Math.max(0, Math.round(beat.playedDeltaSeconds));
+    const reachedEnd = positionSeconds >= beat.durationSeconds - 1;
+    let watchedSeconds = Math.min(beat.durationSeconds, (existing?.watchedSeconds ?? 0) + playedDeltaSeconds);
+
+    if (reachedEnd) {
+      watchedSeconds = beat.durationSeconds;
+    }
+
+    const furthestSeconds = Math.max(previousFurthest, positionSeconds, reachedEnd ? beat.durationSeconds : 0);
+    const watchPercent = (watchedSeconds / beat.durationSeconds) * 100;
+    const assetComplete = watchPercent >= threshold;
+
+    const rowsBeforeUpdate = await getLessonVideoProgressForLesson(lessonId, profileId);
+    const priorAggregate = buildAggregateWatchProgress(rowsBeforeUpdate, requiredAssetIds);
+    const wasLessonComplete = priorAggregate?.isComplete ?? false;
+
+    await upsertLessonVideoProgress({
+      lessonId,
+      profileId,
+      assetId: beat.assetId,
+      durationSeconds: beat.durationSeconds,
+      watchedSeconds,
+      furthestSeconds,
+      lastPositionSeconds: reachedEnd ? beat.durationSeconds : positionSeconds,
+      isComplete: assetComplete,
+      completedAt: assetComplete ? new Date().toISOString() : null
+    });
+
+    const allRows = await getLessonVideoProgressForLesson(lessonId, profileId);
+    const aggregate = buildAggregateWatchProgress(allRows, requiredAssetIds);
+    const didJustComplete = (aggregate?.isComplete ?? false) && !wasLessonComplete;
+
+    if (didJustComplete) {
+      await upsertLessonCompletion({
+        lessonId,
+        profileId,
+        isComplete: true
+      });
+    }
+
+    if (!aggregate) {
+      throw new AppError('Failed to aggregate lesson watch progress', ErrorCodes.INTERNAL_ERROR, 500);
+    }
+
+    return {
+      ...aggregate,
+      didJustComplete
+    };
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to update lesson watch progress',
       ErrorCodes.INTERNAL_ERROR,
       500
     );

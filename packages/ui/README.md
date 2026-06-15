@@ -249,7 +249,10 @@ When adding a new component to this package, follow these steps:
 - `pnpm build` - Build the package
 - `pnpm dev` - Watch mode for CSS generation
 - `pnpm format` - Format code with Prettier
-- `pnpm prefix:list` - List files that need the `ui:` prefix (dry-run)
+- `pnpm prefix:list` - List files that need the `ui:` prefix (dry-run, exit 0)
+- `pnpm prefix:check` - Fail if any file under `src/` needs the `ui:` prefix
+- `pnpm prefix:check:staged` - Fail if **staged** `packages/ui` files need the prefix (pre-commit)
+- `pnpm prefix:check:changed` - Fail if **changed** `packages/ui` files need the prefix (CI; set `UI_PREFIX_GIT_BASE`)
 - `pnpm prefix` - Add `ui:` prefix to all Tailwind classes and format
 
 ### Configuration

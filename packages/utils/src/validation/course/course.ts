@@ -3,6 +3,12 @@ import * as z from 'zod';
 import { ALLOWED_CONTENT_TYPES, ALLOWED_DOCUMENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
 
+export const ZGetRecommendedCourses = z.object({
+  limit: z.string().transform(Number).pipe(z.number().min(1).max(50)).optional(),
+  page: z.string().transform(Number).pipe(z.number().min(1)).optional()
+});
+export type TGetRecommendedCourses = z.infer<typeof ZGetRecommendedCourses>;
+
 export const ZCourseClone = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
@@ -52,7 +58,9 @@ export type TCourseDownloadParam = z.infer<typeof ZCourseDownloadParam>;
  */
 export const ZCertificateSignatory = z.object({
   name: z.string().max(80).default(''),
-  role: z.string().max(80).default('')
+  role: z.string().max(80).default(''),
+  enabled: z.boolean().default(true),
+  signatureUrl: z.url().optional()
 });
 export type TCertificateSignatory = z.infer<typeof ZCertificateSignatory>;
 
@@ -77,7 +85,14 @@ export type TCertificateDesign = z.infer<typeof ZCertificateDesign>;
 export const ZCertificateDownloadRequest = z.object({
   studentName: z.string().min(1).max(120),
   studentId: z.string().min(1).max(64).optional(),
-  issuedAt: z.string().datetime().optional(),
+  issuedAt: z.preprocess((value) => {
+    if (typeof value !== 'string' || value.trim() === '') return undefined;
+
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return undefined;
+
+    return parsed.toISOString();
+  }, z.string().datetime().optional()),
   /** When true, skips the eligibility check (course owner previewing their own design). */
   previewMode: z.boolean().optional()
 });
@@ -350,7 +365,8 @@ const ZCourseMetadataFields = z.object({
   lessonDownload: z.boolean().optional(),
   allowNewStudent: z.boolean(),
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),
-  isContentGroupingEnabled: z.boolean().optional()
+  isContentGroupingEnabled: z.boolean().optional(),
+  progressionMode: z.enum(['free', 'sequential']).optional()
 });
 
 // Course metadata schema matching the database structure
@@ -392,6 +408,7 @@ export const ZCourseUpdateBase = z.object({
   logo: z.string().optional(),
   slug: z.string().optional(),
   isPublished: z.boolean().optional(),
+  orgOnly: z.boolean().optional(),
   overview: z.string().optional(),
   metadata: ZCourseMetadata.optional(),
   cost: z.number().int().min(0).optional(),

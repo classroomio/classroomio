@@ -17,11 +17,20 @@
   let { courseId = '', edit = $bindable(false), editFeed = $bindable() }: Props = $props();
 
   let isLoading = $state(false);
-  let errors: Record<string, string> = $state({
-    newPost: ''
-  });
+  let newPost = $state('');
 
-  let newPost = $state(edit === true ? editFeed?.content : '');
+  $effect(() => {
+    if (!newsfeedApi.isNewFeedModalOpen) {
+      return;
+    }
+
+    if (edit && editFeed) {
+      newPost = editFeed.content || '';
+      return;
+    }
+
+    newPost = '';
+  });
 
   const onPost = async () => {
     isLoading = true;
@@ -31,9 +40,11 @@
         await newsfeedApi.update(courseId, editFeed.id, { content: newPost ?? '' });
 
         if (newsfeedApi.success) {
-          edit = false;
-          newPost = '';
-          newsfeedApi.closeNewFeedModal();
+          resetEditor();
+        } else if (newsfeedApi.errors.content) {
+          snackbar.error(newsfeedApi.errors.content);
+        } else {
+          snackbar.error('snackbar.newsfeed.error.editing');
         }
       } else {
         await newsfeedApi.create(courseId, {
@@ -59,6 +70,7 @@
   const resetEditor = () => {
     newPost = '';
     edit = false;
+    editFeed = null;
     newsfeedApi.closeNewFeedModal();
   };
 </script>
@@ -81,16 +93,18 @@
       </Dialog.Title>
     </Dialog.Header>
     <section class="max-w-lg">
-      <TextEditor
-        content={newPost || editFeed?.content || ''}
-        onChange={(text) => {
-          newPost = text;
-        }}
-        editorClass="max-h-[400px]"
-        placeholder={$t('course.navItem.news_feed.heading_button.placeholder')}
-      />
-      {#if errors.newPost}
-        <p class="text-sm text-red-500">{errors.newPost}</p>
+      {#key edit ? editFeed?.id : 'new'}
+        <TextEditor
+          content={newPost}
+          onChange={(text) => {
+            newPost = text;
+          }}
+          editorClass="max-h-[400px]"
+          placeholder={$t('course.navItem.news_feed.heading_button.placeholder')}
+        />
+      {/key}
+      {#if newsfeedApi.errors.content}
+        <p class="ui:text-destructive text-sm">{newsfeedApi.errors.content}</p>
       {/if}
     </section>
     <Dialog.Footer>

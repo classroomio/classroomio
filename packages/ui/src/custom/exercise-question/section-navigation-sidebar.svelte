@@ -30,13 +30,7 @@
         <div class="ui:flex ui:flex-wrap ui:gap-1.5">
           {#each section.questions as question (question.key)}
             <span
-              class={`ui:inline-flex ui:h-7 ui:min-w-7 ui:items-center ui:justify-center ui:rounded ui:border ui:px-1.5 ui:text-xs ui:font-medium ${
-                question.isCurrent
-                  ? 'ui:border-primary ui:bg-primary ui:text-primary-foreground'
-                  : question.isAnswered
-                    ? 'ui:border-primary/40 ui:bg-primary/10 ui:text-primary'
-                    : 'ui:border-border ui:text-muted-foreground'
-              }`}
+              class={`ui:inline-flex ui:h-7 ui:min-w-7 ui:items-center ui:justify-center ui:rounded ui:border ui:px-1.5 ui:text-xs ui:font-medium ${question.isCurrent ? 'ui:border-primary ui:bg-primary ui:text-primary-foreground' : question.isAnswered ? 'ui:border-primary/40 ui:bg-primary/10 ui:text-primary' : 'ui:border-border ui:text-muted-foreground'}`}
             >
               {question.label}
             </span>

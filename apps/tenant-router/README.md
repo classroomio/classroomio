@@ -5,14 +5,16 @@ Cloudflare Worker that fronts every browser-facing ClassroomIO host:
 - `*.myclassroomio.com/*` — free-tier tenant sites
 - `myclassroomio.com/*` — apex (301 → `classroomio.com`)
 - `app.classroomio.com/*` — admin dashboard
+- `embed.classroomio.com/*` — public embed widget scripts (R2 `assets` bucket, path-for-path)
 - BYOD customer domains via Approximated (their proxy forwards to `cio-api.onrender.com` directly, not through this Worker)
 
 The Worker forwards each request to one of two Render services based on path:
 
-| Path          | Upstream                                                     |
-| ------------- | ------------------------------------------------------------ |
-| `/proxy/*`    | API service (`/proxy` prefix stripped, rest forwarded as-is) |
-| anything else | Dashboard service                                            |
+| Host / path   | Upstream                                                                       |
+| ------------- | ------------------------------------------------------------------------------ |
+| `embed.*`     | R2 `assets` bucket — `/{widget}` maps to internal keys (`src/embed-assets.ts`) |
+| `/proxy/*`    | API service (`/proxy` prefix stripped, rest forwarded as-is)                   |
+| anything else | Dashboard service                                                              |
 
 The `/proxy` prefix is the same-origin escape hatch the dashboard's
 browser code uses so its auth cookies stay host-only while still reaching
@@ -44,6 +46,8 @@ pnpm --filter @cio/tenant-router tail
 | `DASHBOARD_UPSTREAM_HOST` | `.onrender.com` host of the dashboard service (no scheme)                       |
 | `API_UPSTREAM_HOST`       | `.onrender.com` host of the API service                                         |
 | `APEX_REDIRECT_TARGET`    | URL to redirect `myclassroomio.com` apex to (default `https://classroomio.com`) |
+| `EMBED_HOST`              | Hostname for public embed widgets (default `embed.classroomio.com`)             |
+| `API_URL`                 | API origin injected into embed scripts as `window.CIO.apiBaseUrl`               |
 
 Update the values in `wrangler.toml` after looking them up in the Render dashboard.
 
@@ -57,6 +61,7 @@ Update the values in `wrangler.toml` after looking them up in the Render dashboa
 `classroomio.com` zone:
 
 - `app` CNAME → **Proxied** so the route binds
+- `embed` CNAME → **Proxied** (serves `embeds/*` from R2 via Worker)
 - `api` CNAME → **DNS only** (server-to-server callers and webhooks bypass the Worker)
 
 ## BYOD custom domains

@@ -107,7 +107,7 @@
         <Button
           id={`${groupIndex}-${commandIndex}`}
           variant="ghost"
-          class={cn('ui:h-8 ui:w-full ui:justify-start ui:gap-2 ui:rounded-sm', isActive && 'bg-muted')}
+          class={cn('ui:h-8 ui:w-full ui:justify-start ui:gap-2 ui:rounded-sm', isActive && 'ui:bg-muted')}
           onclick={() => selectItem(groupIndex, commandIndex)}
         >
           <Icon />

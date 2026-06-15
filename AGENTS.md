@@ -6,6 +6,20 @@ This document collects implementation rules and workflow conventions for code ch
 
 When a task requires factual information (API specifications, context window sizes, library versions, pricing, rate limits, etc.), **look it up** using web search. Do not rely on educated guesses or assumptions from training data. If you're unsure whether something is a guess, look it up anyway.
 
+## Translation, Formatting, and Git Workflow
+
+- If `apps/dashboard/src/lib/utils/translations/en.json` changes, update the other dashboard locale files before staging or committing.
+- To translate dashboard locale changes, run `cd apps/dashboard && pnpm translate`.
+- After running translation, review the generated locale changes and make sure placeholders wrapped in `{}` were preserved exactly. Fix any translated variable names before continuing.
+- Format changed files with the repo's changed-file formatter before staging. Prefer `pnpm format:changed` from the repository root. Use broader format commands only if the changed-file formatter is not sufficient for the task.
+- If you changed files under `packages/ui/src/**`, make sure the required `ui:` Tailwind prefix rules still pass. Run `pnpm --filter @cio/ui prefix` if needed before the final formatting pass.
+- Stage files only after translation and formatting are complete. Prefer explicit staging such as `git add path/to/file` or `git add <changed-files>` over broad staging commands.
+- Before creating a commit, manually run the current `lefthook` checks that would run on `pre-commit`:
+  - `pnpm format:check`
+  - `pnpm --filter @cio/ui prefix:check:staged` if staged changes include `packages/ui/src/**/*.{svelte,ts,tsx,js,jsx}`
+- Commit messages must follow the Conventional Commits 1.0.0 spec: https://www.conventionalcommits.org/en/v1.0.0/
+- Never include agent-provider attribution in commits or commit trailers. Do not add `Co-authored-by` lines for Cursor, Claude, Codex, or any other tool.
+
 ## Naming Convention
 
 - Use kebab-case for files (e.g. `user-profile.svelte`, `org.svelte.ts`).
@@ -304,6 +318,7 @@ Use `.server.ts` files for server-side code to isolate API keys.
 ### UI Components
 
 - Add new UI components under `packages/ui/src` following existing folder patterns.
+- **All Tailwind utility classes in `packages/ui/src/**` must use the `ui:` prefix** (see `packages/ui/README.md`). Pre-commit and CI run `pnpm --filter @cio/ui prefix:check` on touched UI files; fix with `pnpm --filter @cio/ui prefix`.
 - Document component usage and props in `packages/ui/README.md`.
 - Add example usages and variants in Storybook stories under `packages/storybook/src`.
 - See `packages/ui/README.md` and `packages/storybook/README.md` for full guidance.

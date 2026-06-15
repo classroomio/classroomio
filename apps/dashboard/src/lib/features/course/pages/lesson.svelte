@@ -12,6 +12,7 @@
   import Pencil from '@lucide/svelte/icons/pencil';
   // import HistoryIcon from '@lucide/svelte/icons/history';
   import VideoIcon from '@lucide/svelte/icons/video';
+  import SettingsIcon from '@lucide/svelte/icons/settings';
 
   import MODES from '$lib/utils/constants/mode';
   import { profile } from '$lib/utils/store/user';
@@ -44,13 +45,16 @@
     Video,
     Document,
     AddVideoModal,
-    AddDocumentModal
+    AddDocumentModal,
+    LessonSettingsTab
   } from '$features/course/components/lesson';
 
   import type { TLocale } from '@cio/db/types';
-  import { orderedTabs, tabs as materialTabs } from '$features/course/components/lesson/constants';
+  import { orderedTabs, SETTINGS_TAB_VALUE, tabs as materialTabs } from '$features/course/components/lesson/constants';
   import { getViewModeComponents } from '$features/course/components/lesson/utils';
   import { loadDraft, clearDraft } from '$features/course/utils/lesson-draft';
+  import { getOrderedNavigableContent } from '$features/course/utils/content';
+  import StudentContentLockedNotice from '$features/course/components/student-content-locked-notice.svelte';
 
   interface Props {
     courseId: string;
@@ -71,8 +75,23 @@
     hasUnsavedChanges = lessonApi.isDirty && mode === MODES.edit;
   });
 
-  const lessonTitle = $derived(lessonApi.lesson?.title || 'Lesson');
-  const isLessonUnlocked = $derived(lessonApi.lesson?.isUnlocked ?? false);
+  const currentLessonContentItem = $derived(
+    getOrderedNavigableContent(courseApi.course).find(
+      (item) => item.type === ContentType.Lesson && item.id === lessonId
+    )
+  );
+  const lessonTitle = $derived(currentLessonContentItem?.title || lessonApi.lesson?.title || 'Lesson');
+  const isTeacherLocked = $derived.by(() => {
+    if ($isOrgStudent && currentLessonContentItem) {
+      return (currentLessonContentItem.isUnlocked ?? false) === false;
+    }
+
+    return (lessonApi.lesson?.isUnlocked ?? false) === false;
+  });
+  const isProgressionLocked = $derived(
+    $isOrgStudent && currentLessonContentItem?.accessible === false && !isTeacherLocked
+  );
+  const isLessonUnlocked = $derived(!isTeacherLocked && !isProgressionLocked);
   const lessonSlug = $derived(lessonApi.lesson?.slug ?? '');
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
 
@@ -145,7 +164,13 @@
   let currentTabValue = $state('');
   $effect(() => {
     if (!tabs.length || currentTabValue) return;
+
     const urlTab = $page.url.searchParams.get('tab');
+    if (urlTab === SETTINGS_TAB_VALUE) {
+      currentTabValue = SETTINGS_TAB_VALUE;
+      return;
+    }
+
     currentTabValue = urlTab ?? String(tabs[0].value);
   });
 
@@ -202,6 +227,8 @@
       lessonApi.update(courseApi.course?.id || '', lessonId, {
         title: lessonApi.lesson.title || undefined,
         isUnlocked: lessonApi.lesson.isUnlocked ?? undefined,
+        completionPolicy: lessonApi.lesson.completionPolicy ?? undefined,
+        videoWatchThreshold: lessonApi.lesson.videoWatchThreshold ?? undefined,
         slideUrl: lessonApi.lesson.slideUrl || undefined,
         videos: lessonApi.lesson.videos || [],
         documents: lessonApi.lesson.documents || [],
@@ -363,7 +390,7 @@
     <LessonPageEditHeader
       {mode}
       title={lessonTitle}
-      isUnlocked={isLessonUnlocked}
+      isUnlocked={lessonApi.lesson?.isUnlocked ?? false}
       {isDeletingLesson}
       onTitleChange={handleLessonTitleChange}
       onToggleLock={handleToggleLessonLock}
@@ -421,13 +448,10 @@
     <div
       class={`overflow-x-hidden py-6 pb-20 ${mode === MODES.edit ? 'lg:w-full xl:w-11/12' : 'mx-auto w-full max-w-3xl'}`}
     >
-      {#if $isOrgStudent && lessonApi.lesson && !isLessonUnlocked}
-        <Empty
-          title={$t('course.navItem.lessons.content_locked_title')}
-          description={$t('course.navItem.lessons.content_locked_description')}
-          icon={VideoIcon}
-          variant="page"
-          class="text-center"
+      {#if $isOrgStudent && !isLessonUnlocked}
+        <StudentContentLockedNotice
+          reason={isProgressionLocked ? 'progression_locked' : 'teacher_locked'}
+          contentType={ContentType.Lesson}
         />
       {:else if mode === MODES.edit}
         <UnderlineTabs.Root
@@ -449,6 +473,10 @@
                 {/if}
               </UnderlineTabs.Trigger>
             {/each}
+            <UnderlineTabs.Trigger value={SETTINGS_TAB_VALUE}>
+              <SettingsIcon size={16} />
+              {$t('course.navItem.lessons.materials.tabs.settings.title')}
+            </UnderlineTabs.Trigger>
           </UnderlineTabs.List>
           <!-- End Tabs List -->
 
@@ -466,7 +494,7 @@
 
           <!-- Video Tab -->
           <UnderlineTabs.Content value={String(getValue('course.navItem.lessons.materials.tabs.video.title') || '')}>
-            <Video {mode} />
+            <Video {mode} {courseId} {lessonId} />
           </UnderlineTabs.Content>
           <!-- End Video Tab -->
 
@@ -475,12 +503,18 @@
             <Document {mode} />
           </UnderlineTabs.Content>
           <!-- End Document Tab -->
+
+          <!-- Settings Tab (fixed, not part of lessonTabsOrder) -->
+          <UnderlineTabs.Content value={SETTINGS_TAB_VALUE}>
+            <LessonSettingsTab />
+          </UnderlineTabs.Content>
+          <!-- End Settings Tab -->
         </UnderlineTabs.Root>
       {:else if lessonApi.lesson && !isMaterialsEmpty}
         {#key lessonId}
           <div class="mb-20 flex w-full flex-col gap-2" in:fade={{ delay: 500 }} out:fade>
             {#each viewModeComponents as Component, index (index)}
-              <Component {mode} {lessonId} />
+              <Component {mode} {lessonId} {courseId} />
             {/each}
 
             {#if $currentOrg.customization?.apps?.comments}
