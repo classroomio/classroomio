@@ -15,7 +15,7 @@ cp .env.example .env
 ./run-docker-full-stack.sh
 ```
 
-The script builds and starts: **postgres**, **redis**, **minio** (object storage), **db-init** (schema setup), **api** (`localhost:3081`), and **dashboard** (`localhost:3082`).
+The script builds and starts: **postgres**, **redis**, **minio** (object storage), **api** (`localhost:3081`), and **dashboard** (`localhost:3082`). The **api** container runs database schema setup on startup (skip with `SKIP_DB_SETUP=true`).
 
 It auto-generates secure values for `AUTH_BEARER_TOKEN` and `PRIVATE_SERVER_KEY` when they are missing.
 
@@ -48,7 +48,7 @@ curl -I  http://localhost:3082/    # Dashboard — returns 200
 
 ```bash
 docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml \
-  run --rm db-init sh -c "pnpm --filter @cio/db db:setup -- --seed"
+  run --rm --entrypoint sh api -c "pnpm --filter @cio/db db:setup -- --seed"
 ```
 
 ## Command Reference
@@ -64,7 +64,7 @@ dc = docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml
 | Full stack (with MinIO) | `./run-docker-full-stack.sh` |
 | Skip image rebuild | `./run-docker-full-stack.sh --no-build` |
 | Exclude MinIO | `./run-docker-full-stack.sh --no-minio` |
-| API-only smoke test | `dc up --build -d postgres redis db-init api` |
+| API-only smoke test | `dc up --build -d postgres redis api` |
 | Service status | `dc ps` |
 | Stream logs | `dc logs -f api dashboard` |
 | Rebuild one service | `dc up -d --build api` |
