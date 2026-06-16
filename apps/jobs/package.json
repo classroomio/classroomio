@@ -8,7 +8,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf dist tsconfig.tsbuildinfo && tsc && tsc-alias",
+    "build": "rimraf dist tsconfig.tsbuildinfo && tsc && tsc-alias",
     "dev": "pnpm --filter @cio/jobs-worker --parallel \"/^dev:.*/\"",
     "dev:tsc": "tsc -p tsconfig.json --watch --preserveWatchOutput",
     "dev:media": "tsx watch src/workers/media.ts",

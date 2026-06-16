@@ -24,11 +24,15 @@
 </script>
 
 <InputGroup.Root class={cn('ui:w-full', className)} data-slot="domain-input">
-  <InputGroup.Addon>
-    <InputGroup.Text>{prefix}</InputGroup.Text>
-  </InputGroup.Addon>
+  {#if prefix}
+    <InputGroup.Addon>
+      <InputGroup.Text>{prefix}</InputGroup.Text>
+    </InputGroup.Addon>
+  {/if}
   <InputGroup.Input {...restProps} {placeholder} bind:value {disabled} class="!ps-0.5" />
-  <InputGroup.Addon align="inline-end">
-    <InputGroup.Text>{suffix}</InputGroup.Text>
-  </InputGroup.Addon>
+  {#if suffix}
+    <InputGroup.Addon align="inline-end">
+      <InputGroup.Text>{suffix}</InputGroup.Text>
+    </InputGroup.Addon>
+  {/if}
 </InputGroup.Root>

@@ -3,6 +3,7 @@
   import Stars from './atoms/stars.svelte';
   import TypeBadge from './atoms/type-badge.svelte';
   import Thumb from './atoms/thumb.svelte';
+  import { formatLessonsLine } from './utils';
 
   let { payload }: { payload: TWidgetPayload } = $props();
 
@@ -25,7 +26,7 @@
           <div class="cio-cl-top">
             <span class="cio-cl-title">{course.title}</span>
             {#if payload.design.content.showLessonsCount}
-              <span class="cio-cl-lessons">{course.lessonCount} lessons</span>
+              <span class="cio-cl-lessons">{formatLessonsLine(course, payload.design.content.showLessonsCount)}</span>
             {/if}
           </div>
           <div class="cio-cl-mid">

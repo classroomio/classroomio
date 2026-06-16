@@ -10,11 +10,11 @@ Cloudflare Worker that fronts every browser-facing ClassroomIO host:
 
 The Worker forwards each request to one of two Render services based on path:
 
-| Host / path   | Upstream                                                     |
-| ------------- | ------------------------------------------------------------ |
+| Host / path   | Upstream                                                                       |
+| ------------- | ------------------------------------------------------------------------------ |
 | `embed.*`     | R2 `assets` bucket — `/{widget}` maps to internal keys (`src/embed-assets.ts`) |
-| `/proxy/*`    | API service (`/proxy` prefix stripped, rest forwarded as-is) |
-| anything else | Dashboard service                                            |
+| `/proxy/*`    | API service (`/proxy` prefix stripped, rest forwarded as-is)                   |
+| anything else | Dashboard service                                                              |
 
 The `/proxy` prefix is the same-origin escape hatch the dashboard's
 browser code uses so its auth cookies stay host-only while still reaching

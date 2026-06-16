@@ -15,7 +15,7 @@ cp .env.example .env
 ./run-docker-full-stack.sh
 ```
 
-The script builds and starts: **postgres**, **redis**, **minio** (object storage), **api** (`localhost:3081`), **dashboard** (`localhost:3082`), and the **jobs** worker (background processing). Database schema setup runs automatically inside the `api` container on startup (see [`docker/entrypoint-api.sh`](../entrypoint-api.sh)).
+The script builds and starts: **postgres**, **redis**, **minio** (object storage), **api** (`localhost:3081`), **dashboard** (`localhost:3082`), and the **jobs** worker (background processing). Database schema setup runs automatically inside the `api` container on startup (see [`docker/entrypoint-api.sh`](../entrypoint-api.sh); skip with `SKIP_DB_SETUP=true`).
 
 It auto-generates secure values for `AUTH_BEARER_TOKEN`, `PRIVATE_SERVER_KEY`, and `BETTER_AUTH_SECRET` when they are missing or left at placeholders, and randomizes MinIO credentials on first provision.
 

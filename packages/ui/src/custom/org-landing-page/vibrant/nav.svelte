@@ -10,6 +10,8 @@
     authAction?: {
       label: string;
       href: string;
+      loading?: boolean;
+      disabled?: boolean;
     };
   }
 
@@ -58,6 +60,8 @@
           <div class="ui:flex ui:items-center ui:gap-4">
             <Button
               href={authAction.href}
+              loading={authAction.loading}
+              disabled={authAction.disabled}
               size="sm"
               class="ui:rounded-md ui:px-4 ui:font-medium ui:bg-[var(--landing-accent)] ui:text-[var(--landing-accent-fg)] ui:hover:opacity-90"
             >

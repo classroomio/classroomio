@@ -31,7 +31,7 @@
           {/if}
           <span class="cio-ph-sep">·</span>
         {/if}
-        <span class="cio-ph-meta">{formatLessonsLine(featured)}</span>
+        <span class="cio-ph-meta">{formatLessonsLine(featured, payload.design.content.showLessonsCount)}</span>
       </div>
       {#if payload.design.content.showCourseTypeBadge || featured.tags.length > 0}
         <div class="cio-ph-badges">

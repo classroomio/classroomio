@@ -435,7 +435,8 @@
     "lesson_video": {
       "generate_1080_completed": "1080p-Wiedergabe hinzugefügt",
       "generate_1080_failed": "Die 1080p-Wiedergabe konnte nicht generiert werden"
-    }
+    },
+    "social_auth_not_enabled": "Dieser Authentifizierungsanbieter ist nicht aktiviert."
   },
   "explore": {
     "heading": "Entdecken Sie unsere Kurse",

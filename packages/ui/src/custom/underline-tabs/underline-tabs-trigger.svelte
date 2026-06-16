@@ -31,9 +31,7 @@
     data-slot="underline-tabs-trigger"
     class={cn(
       "ui:dark:data-[state=active]:text-foreground ui:data-[state=active]:text-foreground ui:text-foreground ui:z-10 ui:relative ui:inline-flex ui:h-[calc(100%-3px)] ui:flex-1 ui:items-center ui:justify-center ui:gap-1.5 ui:whitespace-nowrap ui:px-3 ui:py-1 ui:text-sm ui:transition-colors ui:focus:outline-none ui:disabled:pointer-events-none ui:disabled:opacity-50 ui:cursor-pointer ui:[&_svg]:pointer-events-none ui:[&_svg]:shrink-0 ui:[&_svg:not([class*='size-'])]:size-4",
-      state.rootState.isHovered &&
-        state.rootState.hoveredTab === value &&
-        'ui:data-[state=inactive]:text-primary-foreground ui:text-primary',
+      state.rootState.isHovered && state.rootState.hoveredTab === value && 'ui:text-primary',
       className
     )}
     {...state.props}

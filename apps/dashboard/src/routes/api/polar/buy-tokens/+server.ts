@@ -3,16 +3,34 @@ import { TOKEN_PACK } from '@cio/utils/plans';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
 import type { RequestEvent } from './$types';
+import { classroomio, getApiHeaders } from '$lib/utils/services/api';
 
-export const GET = async ({ url, locals }: RequestEvent) => {
-  const { user, profile, organizations } = locals;
+export const GET = async ({ url, locals, cookies }: RequestEvent) => {
+  const { user } = locals;
 
-  if (!user || !profile) {
+  if (!user) {
     return new Response('Unauthorized', { status: 401 });
   }
 
   const orgId = url.searchParams.get('orgId');
-  const org = organizations?.find((candidate) => candidate.id === orgId);
+
+  if (!orgId) {
+    return new Response('Missing orgId', { status: 400 });
+  }
+
+  const accountResponse = await classroomio.account.$get(undefined, getApiHeaders(cookies));
+
+  if (!accountResponse.ok) {
+    return new Response('Failed to fetch account data', { status: 500 });
+  }
+
+  const accountData = await accountResponse.json();
+
+  if (!accountData.success) {
+    return new Response('Failed to fetch account data', { status: 500 });
+  }
+
+  const org = accountData.organizations?.find((candidate) => candidate.id === orgId);
 
   if (!org?.siteName) {
     return new Response('You are not a member of this organization', { status: 403 });
@@ -37,7 +55,7 @@ export const GET = async ({ url, locals }: RequestEvent) => {
   });
 
   const totalPriceCents = TOKEN_PACK.PRICE_USD_CENTS * quantity;
-  const customerEmail = (profile.email ?? user.email)?.replace('@test.com', '+test@digdippa.com');
+  const customerEmail = (accountData.profile?.email ?? user.email)?.replace('@test.com', '+test@digdippa.com');
 
   const checkout = await polar.checkouts.create({
     products: [productId],
@@ -51,13 +69,13 @@ export const GET = async ({ url, locals }: RequestEvent) => {
       ]
     },
     customerEmail,
-    customerName: profile.fullname || undefined,
+    customerName: accountData.profile?.fullname || undefined,
     successUrl: `${url.origin}/org/${org.siteName}/settings/ai-credits?tokens=success`,
     metadata: {
       kind: 'token_pack',
       orgId: org.id,
       orgSlug: org.siteName,
-      triggeredBy: profile.id,
+      triggeredBy: accountData.profile?.id ?? user.id,
       tokensPerUnit: String(TOKEN_PACK.TOKENS_PER_UNIT),
       quantity: String(quantity)
     }

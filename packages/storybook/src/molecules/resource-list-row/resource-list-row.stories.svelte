@@ -26,7 +26,7 @@
       title: 'Introduction to Python',
       type: 'Self-paced',
       lastUpdated: 'Last updated Mar 28, 2026',
-      tags: ['Beginner', 'Programming'],
+      tags: ['Beginner', 'Programming', 'Python', 'API', 'Testing'],
       lessons: 24,
       exercises: 12,
       students: 128,
@@ -103,19 +103,19 @@
   });
 </script>
 
-<Story name="Default">
+<Story name="Default" parameters={{ layout: 'padded' }}>
   {#snippet template()}
     {@const studentAvatarSrc = [
       'https://github.com/shadcn.png',
       'https://github.com/maxleiter.png',
       'https://github.com/evilrabbit.png'
     ]}
-    <ResourceListRow.Group class="w-3xl">
+    <ResourceListRow.Group class="@container w-full">
       {#each sampleCourses as course (course.title)}
         <ResourceListRow.Root variant="default" align="start" class="ui:cursor-pointer ui:py-3">
           <div
-            class="ui:grid ui:w-full ui:items-start ui:gap-3"
-            style="grid-template-columns: 2fr 5.5rem 2fr 4.5rem 6rem 2.5rem"
+            class="ui:grid ui:w-full ui:items-start grid-cols-1 gap-x-3 gap-y-2 @3xl:grid-cols-[var(--row-cols)]"
+            style="--row-cols: 2fr 5.5rem 2fr 4.5rem 6rem 2.5rem"
           >
             <!-- Title -->
             <div class="ui:flex ui:min-w-0 ui:flex-col ui:gap-0.5">
@@ -138,9 +138,12 @@
               {#if course.tags.length === 0}
                 <span class="ui:text-muted-foreground ui:text-xs">—</span>
               {:else}
-                {#each course.tags as tag (tag)}
+                {#each course.tags.slice(0, 3) as tag (tag)}
                   <Badge variant="outline" class="ui:max-w-[140px] ui:truncate">{tag}</Badge>
                 {/each}
+                {#if course.tags.length > 3}
+                  <Badge variant="secondary" class="shrink-0 tabular-nums">+{course.tags.length - 3}</Badge>
+                {/if}
               {/if}
             </div>
 

@@ -16,9 +16,9 @@ After deploying the template, fill in the environment variables for each service
 ```zsh title="env"
 DATABASE_URL="${{db.DATABASE_URL}}"
 REDIS_URL="${{Redis.REDIS_URL}}"
-BETTER_AUTH_SECRET="random-secure-key"
-AUTH_BEARER_TOKEN="some-key"
-PRIVATE_SERVER_KEY="same-key-for-api-and-dashboard"
+BETTER_AUTH_SECRET="<generate-with-openssl-rand-hex-32>"
+AUTH_BEARER_TOKEN="<generate-with-openssl-rand-hex-32>"
+PRIVATE_SERVER_KEY="<generate-with-openssl-rand-hex-32>"   # must be identical in cio-api and cio-dashboard
 PUBLIC_IS_SELFHOSTED="true"
 
 # Dashboard URL for invite/email links (e.g. https://app.yourdomain.com)

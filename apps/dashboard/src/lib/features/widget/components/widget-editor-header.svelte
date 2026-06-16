@@ -15,6 +15,8 @@
     isDirty: boolean;
     layoutValidationError: string | null;
     editingName: boolean;
+    saving: boolean;
+    publishing: boolean;
     onSave: () => void;
     onPublish: () => void;
     onDiscard: () => void;
@@ -29,6 +31,8 @@
     isDirty,
     layoutValidationError,
     editingName,
+    saving,
+    publishing,
     onSave,
     onPublish,
     onDiscard,
@@ -103,11 +107,12 @@
       size="sm"
       type="button"
       disabled={!isDirty || Boolean(layoutValidationError)}
+      loading={saving}
       onclick={onSave}
     >
       {$t('widgets.editor.save_changes')}
     </Button>
-    <Button size="sm" type="button" disabled={Boolean(layoutValidationError)} onclick={onPublish}>
+    <Button size="sm" type="button" disabled={Boolean(layoutValidationError)} loading={publishing} onclick={onPublish}>
       {$t('widgets.actions.publish')}
     </Button>
   </div>

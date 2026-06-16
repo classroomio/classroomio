@@ -297,6 +297,8 @@ export interface CourseLandingPageProps {
   authAction?: {
     label: string;
     href: string;
+    loading?: boolean;
+    disabled?: boolean;
   };
   hero: {
     heading: string;
@@ -327,6 +329,8 @@ export interface OrgLandingPageProps {
   authAction?: {
     label: string;
     href: string;
+    loading?: boolean;
+    disabled?: boolean;
   };
   hero: {
     heading: string;

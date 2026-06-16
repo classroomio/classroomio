@@ -60,7 +60,7 @@
     if (!domainApex) return recordName;
 
     const suffix = '.' + domainApex;
-    if (recordName === domainApex) return recordName;
+    if (recordName === domainApex) return '@';
     if (recordName.endsWith(suffix)) return recordName.slice(0, -suffix.length);
 
     return recordName;
@@ -190,13 +190,6 @@
     }
 
     const sanitizedDomain = sanitizeDomain(customDomain);
-    const { parse } = await import('tldts/dist/es6/index.js');
-    const details = parse(sanitizedDomain);
-
-    if (!details.subdomain) {
-      errors.customDomain = $t('components.settings.domains.custom_domain_error');
-      return;
-    }
 
     if (sanitizedDomain.includes(BRAND_ROOT_DOMAIN) || sanitizedDomain.includes(TENANT_ROOT_DOMAIN)) {
       errors.customDomain = $t('components.settings.domains.custom_domain_not_classroomio');
@@ -549,7 +542,7 @@
       {:else}
         <Field.Field>
           <Field.Label class="font-bold">{$t('components.settings.domains.your_domain')}</Field.Label>
-          <DomainInput bind:value={customDomain} placeholder="courses.yourwebsite" disabled={$isFreePlan} />
+          <DomainInput bind:value={customDomain} placeholder="yourwebsite.com" suffix="" disabled={$isFreePlan} />
           {#if errors.customDomain}
             <Field.Error>{errors.customDomain}</Field.Error>
           {/if}

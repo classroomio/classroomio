@@ -10,6 +10,8 @@
     authAction?: {
       label: string;
       href: string;
+      loading?: boolean;
+      disabled?: boolean;
     };
   }
 
@@ -41,6 +43,8 @@
         {#if authAction}
           <Button
             href={authAction.href}
+            loading={authAction.loading}
+            disabled={authAction.disabled}
             variant="outline"
             class="ui:bg-transparent ui:text-[var(--landing-bg)] ui:border-[var(--landing-bg)]/40 ui:hover:bg-[var(--landing-bg)]/10 ui:hover:text-[var(--landing-bg)] ui:hover:border-[var(--landing-bg)]/60"
           >

@@ -30,7 +30,7 @@
 
 <a href="/blog/{post.slug}" class="group space-y-2">
   <img loading="lazy" src={post.imageUrl} alt={post.title} class="h-48 w-70 rounded-md object-cover" />
-  <p class="text-md font-medium {isRecommended && 'h-[60px]'} line-clamp-2 group-hover:underline">
+  <p class="text-md font-medium {isRecommended && 'h-[40px]'} line-clamp-2 group-hover:underline">
     {@html post.title}
   </p>
 

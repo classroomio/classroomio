@@ -424,7 +424,7 @@
           <Spinner class="size-6" />
         </div>
       {:else}
-        <ResourceListRow.Group>
+        <ResourceListRow.Group class="@container">
           {#each coursesApi.recommendedCourses as course (course.id)}
             <CourseListRow
               id={course.id}

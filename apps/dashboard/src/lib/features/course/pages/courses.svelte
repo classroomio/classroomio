@@ -134,7 +134,7 @@
   {:else if isLMS || $courseMetaDeta.view === 'grid'}
     <CourseCardList {courses} {isExplore} {isLMS} {onCardClick} />
   {:else}
-    <ResourceListRow.Group>
+    <ResourceListRow.Group class="@container">
       {#each courses as courseData (courseData.id)}
         <CourseListRow
           id={courseData.id}

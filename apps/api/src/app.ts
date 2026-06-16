@@ -7,6 +7,7 @@ import { randomBytes } from 'crypto';
 
 import { API_SERVER_URL } from '@api/constants';
 import { Hono } from '@api/utils/hono';
+import { ErrorCodes } from '@api/utils/errors';
 import { accountRouter } from '@api/routes/account';
 import { agentRouter } from '@api/routes/agent';
 import { auth } from '@cio/db/auth';
@@ -138,6 +139,21 @@ export const app = new Hono()
             request = new Request(inUrl, request);
           }
         }
+      }
+    }
+
+    // Check if the social auth provider is configured before forwarding
+    // to Better Auth, which returns a confusing generic 500 otherwise.
+    if (c.req.method === 'POST' && c.req.path === '/api/auth/sign-in/social') {
+      if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+        return c.json(
+          {
+            success: false,
+            error: "This auth provider isn't enabled.",
+            code: ErrorCodes.SOCIAL_AUTH_NOT_ENABLED
+          },
+          400
+        );
       }
     }
 

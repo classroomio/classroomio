@@ -3981,6 +3981,7 @@
     "success_update": "Updated successfully",
     "success_delete": "Deleted successfully",
     "error_update": "Failed to update",
+    "social_auth_not_enabled": "This auth provider isn't enabled.",
     "automation": {
       "created": "Automation key created. Save it now because the full secret is only shown once.",
       "rotated": "Automation key rotated. Save the new secret now because it will not be shown again.",

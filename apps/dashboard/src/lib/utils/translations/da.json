@@ -435,7 +435,8 @@
     "lesson_video": {
       "generate_1080_completed": "1080p gengivelse tilføjet",
       "generate_1080_failed": "Kunne ikke generere 1080p gengivelse"
-    }
+    },
+    "social_auth_not_enabled": "Denne godkendelsesudbyder er ikke aktiveret."
   },
   "explore": {
     "heading": "Udforsk vores kurser",
