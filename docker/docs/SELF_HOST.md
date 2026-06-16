@@ -300,5 +300,5 @@ lsof -nP -iTCP:3082 -sTCP:LISTEN
 
 ## Related
 
-- [Self-hosting docs](https://classroomio.com/docs/quickstart/self-hosting) — published guide with Railway + Docker instructions
+- [Self-hosting docs](https://classroomio.com/docs/self-hosted/docker) — published guide with Docker, Railway, and Coolify instructions
 - [`docker/docs/PUBLISHING_IMAGES.md`](PUBLISHING_IMAGES.md) — publishing Docker images to Docker Hub

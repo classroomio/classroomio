@@ -116,7 +116,6 @@ services:
       PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-http://localhost:3081}
       TRUSTED_ORIGINS: ${TRUSTED_ORIGINS:-}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
-      PRIVATE_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
       REDIS_URL: redis://redis:6379
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-docker-local-client-id}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-docker-local-client-secret}
@@ -125,24 +124,22 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       SMTP_PORT: ${SMTP_PORT:-}
       SMTP_SENDER: ${SMTP_SENDER:-}
-      CLOUDFLARE_BUCKET_DOMAIN: ${CLOUDFLARE_BUCKET_DOMAIN:-}
-      CLOUDFLARE_ACCESS_KEY: ${CLOUDFLARE_ACCESS_KEY:-}
-      CLOUDFLARE_SECRET_ACCESS_KEY: ${CLOUDFLARE_SECRET_ACCESS_KEY:-}
-      CLOUDFLARE_ACCOUNT_ID: ${CLOUDFLARE_ACCOUNT_ID:-}
-      CLOUDFLARE_IMAGE_BUCKET_DOMAIN: ${CLOUDFLARE_IMAGE_BUCKET_DOMAIN:-}
-      CLOUDFLARE_RENDERING_API_KEY: ${CLOUDFLARE_RENDERING_API_KEY:-}
+      # Object storage (S3-compatible). Works with the bundled MinIO, AWS S3, or Cloudflare R2
+      # — for R2, point OBJECT_STORAGE_ENDPOINT at your R2 endpoint.
       OBJECT_STORAGE_ENDPOINT: ${OBJECT_STORAGE_ENDPOINT:-}
       OBJECT_STORAGE_PUBLIC_ENDPOINT: ${OBJECT_STORAGE_PUBLIC_ENDPOINT:-}
       OBJECT_STORAGE_ACCESS_KEY_ID: ${OBJECT_STORAGE_ACCESS_KEY_ID:-}
       OBJECT_STORAGE_SECRET_ACCESS_KEY: ${OBJECT_STORAGE_SECRET_ACCESS_KEY:-}
       OBJECT_STORAGE_FORCE_PATH_STYLE: ${OBJECT_STORAGE_FORCE_PATH_STYLE:-true}
       OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL: ${OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL:-}
-      AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN:-local-dev-api-key}
-      PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:-local-dev-api-key}
+      # Auth secrets — required. Set strong values in .env (the pull path has no script to
+      # generate them); the stack refuses to start otherwise.
+      AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN:?set a strong AUTH_BEARER_TOKEN in .env}
+      PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:?set a strong PRIVATE_SERVER_KEY in .env}
       DASHBOARD_ORIGIN: ${DASHBOARD_ORIGIN:-}
       LICENSE_KEY: ${LICENSE_KEY:-}
       UNSPLASH_API_KEY: ${UNSPLASH_API_KEY:-}
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-local-dev-only-secret-change-this}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set a strong BETTER_AUTH_SECRET in .env}
       SKIP_DB_SETUP: ${SKIP_DB_SETUP:-}
     restart: unless-stopped
 
@@ -160,7 +157,7 @@ services:
       ORIGIN: ${DASHBOARD_ORIGIN:-http://localhost:3082}
       PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
       PRIVATE_SERVER_URL: ${PRIVATE_SERVER_URL:-http://api:3081}
-      PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:-local-dev-api-key}
+      PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:?set a strong PRIVATE_SERVER_KEY in .env}
       PRIVATE_APP_HOST: ${PRIVATE_APP_HOST:-localhost}
       PRIVATE_APP_SUBDOMAINS: ${PRIVATE_APP_SUBDOMAINS:-app}
       AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN:-}
@@ -173,8 +170,8 @@ services:
       CSP_MEDIA_SRC_DOMAINS: ${CSP_MEDIA_SRC_DOMAINS:-}
     restart: unless-stopped
 
-  # Background worker (BullMQ). REQUIRED: without it, video processing, transcription,
-  # AI course generation, and most emails are enqueued in Redis but never processed.
+  # Background worker (BullMQ). Drains the Redis queue: video processing, transcription,
+  # AI course generation, and emails.
   jobs:
     image: classroomio/jobs:${CIO_VERSION:-latest}
     container_name: cio-jobs
@@ -199,25 +196,14 @@ services:
       OBJECT_STORAGE_BUCKET_VIDEOS: ${OBJECT_STORAGE_BUCKET_VIDEOS:-videos}
       OBJECT_STORAGE_BUCKET_DOCUMENTS: ${OBJECT_STORAGE_BUCKET_DOCUMENTS:-documents}
       OBJECT_STORAGE_BUCKET_MEDIA: ${OBJECT_STORAGE_BUCKET_MEDIA:-media}
-      # Cloudflare R2 fallback (optional).
-      CLOUDFLARE_ACCOUNT_ID: ${CLOUDFLARE_ACCOUNT_ID:-}
-      CLOUDFLARE_ACCESS_KEY: ${CLOUDFLARE_ACCESS_KEY:-}
-      CLOUDFLARE_SECRET_ACCESS_KEY: ${CLOUDFLARE_SECRET_ACCESS_KEY:-}
-      CLOUDFLARE_IMAGE_BUCKET_DOMAIN: ${CLOUDFLARE_IMAGE_BUCKET_DOMAIN:-}
       # Email (worker sends invites, notifications, etc.).
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-}
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       SMTP_SENDER: ${SMTP_SENDER:-}
-      ZOHO_TOKEN: ${ZOHO_TOKEN:-}
       # Transcription + OpenAI-backed agent runs.
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      # Optional per-queue concurrency tuning.
-      MEDIA_WORKER_CONCURRENCY: ${MEDIA_WORKER_CONCURRENCY:-}
-      TRANSCRIBE_WORKER_CONCURRENCY: ${TRANSCRIBE_WORKER_CONCURRENCY:-}
-      EMAIL_WORKER_CONCURRENCY: ${EMAIL_WORKER_CONCURRENCY:-}
-      AGENT_COURSE_GENERATION_WORKER_CONCURRENCY: ${AGENT_COURSE_GENERATION_WORKER_CONCURRENCY:-}
     restart: unless-stopped
 
 volumes:

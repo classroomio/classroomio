@@ -1,0 +1,99 @@
+---
+title: Railway
+description: Deploy ClassroomIO on Railway with the one-click template.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The quickest hosted deployment is the [Railway Template](https://railway.com/deploy/classroomio-selfhost?referralCode=8OyIj5). It provisions the API, dashboard, and jobs worker services plus the Postgres and Redis plugins for you.
+
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/classroomio-selfhost?referralCode=8OyIj5)
+
+After deploying the template, fill in the environment variables for each service below.
+
+## cio-api
+
+```zsh title="env"
+DATABASE_URL="${{db.DATABASE_URL}}"
+REDIS_URL="${{Redis.REDIS_URL}}"
+BETTER_AUTH_SECRET="random-secure-key"
+AUTH_BEARER_TOKEN="some-key"
+PRIVATE_SERVER_KEY="same-key-for-api-and-dashboard"
+PUBLIC_IS_SELFHOSTED="true"
+
+# Dashboard URL for invite/email links (e.g. https://app.yourdomain.com)
+DASHBOARD_ORIGIN="https://app.yourdomain.com"
+
+# Optional direct public API URL. Normal dashboard auth/API calls use the
+# dashboard proxy and do not require API/dashboard cookie-domain matching.
+PUBLIC_SERVER_URL="https://api.yourdomain.com"
+TRUSTED_ORIGINS=
+
+# Email (configure SMTP)
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_SENDER=
+
+# Object storage (S3-compatible — AWS S3 or Cloudflare R2)
+OBJECT_STORAGE_ENDPOINT=
+OBJECT_STORAGE_PUBLIC_ENDPOINT=
+OBJECT_STORAGE_ACCESS_KEY_ID=
+OBJECT_STORAGE_SECRET_ACCESS_KEY=
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=
+```
+
+Optional: add `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` for OAuth, `UNSPLASH_API_KEY` for image search, or `LICENSE_KEY` for enterprise features.
+
+## cio-dashboard
+
+```zsh title="env"
+ALLOWED_EXTERNAL_DOMAINS="https://*.yourdomain.com,https://fonts.googleapis.com"
+PRIVATE_APP_HOST="https://app.yourdomain.com"
+PRIVATE_SERVER_KEY="same-key-for-api-and-dashboard"
+PUBLIC_IS_SELFHOSTED="true"
+PRIVATE_SERVER_URL="http://${{api.RAILWAY_PRIVATE_DOMAIN}}:8080"
+ORIGIN="https://app.yourdomain.com"
+```
+
+Optional: add `PUBLIC_APP_TITLE`, `PUBLIC_APP_DESCRIPTION`, `PUBLIC_OG_IMAGE_URL` for custom branding. You can also use per-directive CSP vars (`CSP_SCRIPT_SRC_DOMAINS`, `CSP_MEDIA_SRC_DOMAINS`, etc.) instead of `ALLOWED_EXTERNAL_DOMAINS` for finer control.
+
+## cio-jobs (background worker)
+
+The jobs worker has **no public domain** — it drains the Redis queue (video processing, transcription, AI course generation, and emails). It shares the same Postgres, Redis, storage, email, and OpenAI settings as the API:
+
+```zsh title="env"
+DATABASE_URL="${{db.DATABASE_URL}}"
+REDIS_URL="${{Redis.REDIS_URL}}"
+
+# Object storage — same bucket as the API
+OBJECT_STORAGE_ENDPOINT=
+OBJECT_STORAGE_ACCESS_KEY_ID=
+OBJECT_STORAGE_SECRET_ACCESS_KEY=
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=
+
+# Email (worker sends invites, notifications, etc.)
+SMTP_HOST=  SMTP_PORT=  SMTP_USER=  SMTP_PASSWORD=  SMTP_SENDER=
+
+# Transcription + OpenAI-backed AI course generation
+OPENAI_API_KEY=
+```
+
+<Callout title="PRIVATE_SERVER_KEY">
+  `PRIVATE_SERVER_KEY` must be the same value in both API and dashboard. It authenticates server-side dashboard requests to the API.
+</Callout>
+
+## SMTP Setup
+
+You need SMTP for email sending. See [Nodemailer SMTP docs](https://nodemailer.com/smtp/) for provider setup.
+
+## Object Storage
+
+Railway has no built-in object store, so use an external S3-compatible service such as Cloudflare R2 or AWS S3 via the `OBJECT_STORAGE_*` variables. See the [Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for R2.
+
+## SSO (Enterprise)
+
+SSO requires a license key. Set `LICENSE_KEY` in your API environment. [Book a call](http://cal.com/classroomio/enterprise) to get a license.

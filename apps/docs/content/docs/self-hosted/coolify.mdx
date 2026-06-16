@@ -1,0 +1,50 @@
+---
+title: Coolify
+description: Deploy ClassroomIO on Coolify using the pull-based Docker Compose stack.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+[Coolify](https://coolify.io) is a self-hosted PaaS (an open-source Heroku/Netlify alternative) you run on your own VPS. It deploys ClassroomIO as a **Docker Compose resource** using the pull-based [`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker/docker-compose.images.yaml) — so your Coolify host **pulls** the published `classroomio/*` images and never builds anything.
+
+## Prerequisites
+
+- A running Coolify instance with a connected server.
+- A domain pointed at that server (Coolify's built-in proxy terminates HTTPS for you).
+
+## Steps
+
+1. **New Resource → Docker Compose.** Point Coolify at this repo and the compose path `docker/docker-compose.images.yaml`, or paste the file's contents.
+
+2. **Set environment variables** (Coolify's UI — these become the compose `.env`). Coolify does **not** run our `run-docker-full-stack.sh`, so generate secrets yourself:
+
+   ```zsh title="Required"
+   CIO_VERSION=1.4.2                 # pin a release (not "latest") so upgrades are deliberate
+   DASHBOARD_ORIGIN=https://app.yourdomain.com
+   BETTER_AUTH_SECRET=<openssl rand -hex 32>
+   AUTH_BEARER_TOKEN=<openssl rand -hex 32>
+   PRIVATE_SERVER_KEY=<same value as AUTH_BEARER_TOKEN>
+   POSTGRES_PASSWORD=<strong password>
+   # Email (required for signup/reset/invites)
+   SMTP_HOST=  SMTP_PORT=  SMTP_USER=  SMTP_PASSWORD=  SMTP_SENDER=
+   ```
+
+   <Callout type="error" title="The stack won't start without strong secrets">
+     `BETTER_AUTH_SECRET`, `AUTH_BEARER_TOKEN`, and `PRIVATE_SERVER_KEY` are required. The compose
+     file fails fast if any is empty, so it never boots with a predictable session-signing secret.
+   </Callout>
+
+3. **Assign a domain.** Map your domain to the **dashboard** service (internal port `3082`); Coolify's reverse proxy issues the certificate. The dashboard proxies API calls server-side, so you normally only need the dashboard exposed publicly — the `api` service stays internal.
+
+4. **Object storage.** Recommended: external **S3 / Cloudflare R2** — set the `OBJECT_STORAGE_*` variables and you're done (no stateful storage container to manage on Coolify). To use the bundled MinIO instead, enable its profile (`COMPOSE_PROFILES=minio`); note it needs a persistent volume and you must route its public URL.
+
+5. **Deploy.** Coolify pulls `classroomio/{api,dashboard,jobs}:${CIO_VERSION}`, starts Postgres + Redis, the API container runs database setup on first boot, then the dashboard and the **jobs worker** come up.
+
+## Upgrades & rollback
+
+Bump `CIO_VERSION` to a newer release and redeploy; roll back by setting it to the previous version and redeploying. Because you pin a version, a new release never restarts you onto broken images unattended.
+
+<Callout type="warn" title="Back up before upgrading">
+  Schema migrations run automatically on API startup. Back up your Postgres (and object storage)
+  before a major upgrade.
+</Callout>

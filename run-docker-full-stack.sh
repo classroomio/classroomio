@@ -234,13 +234,16 @@ ensure_minio_env() {
     touch "${ENV_FILE}"
   fi
 
-  local endpoint
-  endpoint="$(get_env_value OBJECT_STORAGE_ENDPOINT)"
+  local minio_password
+  minio_password="$(get_env_value MINIO_ROOT_PASSWORD)"
 
-  if [[ -z "${endpoint}" || "${endpoint}" =~ ^[[:space:]]*$ ]]; then
-    # First provision: randomize credentials instead of shipping minioadmin/minioadmin.
-    # MinIO uses its root credentials as the S3 access key / secret.
-    local minio_user minio_password
+  # First provision: randomize credentials whenever the MinIO password is still empty or the
+  # well-known `minioadmin` placeholder shipped in .env.example. (Previously this gated on
+  # OBJECT_STORAGE_ENDPOINT being empty, but .env.example ships it non-empty — so on a normal
+  # copy-the-example first run the randomization was always skipped and minioadmin/minioadmin
+  # survived.) MinIO uses its root credentials as the S3 access key / secret.
+  if [[ -z "${minio_password}" || "${minio_password}" =~ ^[[:space:]]*$ || "${minio_password}" == "minioadmin" ]]; then
+    local minio_user
     minio_user="cio-$(generate_secure_token | cut -c1-16)"
     minio_password="$(generate_secure_token)"
 
@@ -268,10 +271,13 @@ if [[ "${COMPOSE_PROFILES}" == *"minio"* ]]; then
   ensure_minio_env
 else
   # MinIO excluded: the user must supply external object storage, or uploads/media
-  # silently break. Fail fast instead.
-  if [[ -z "$(get_env_value OBJECT_STORAGE_ENDPOINT)" ]]; then
-    echo "Error: --no-minio was passed but OBJECT_STORAGE_ENDPOINT is not set in .env."
-    echo "Configure an external S3-compatible store (OBJECT_STORAGE_* / CLOUDFLARE_*),"
+  # silently break. Fail fast instead. The endpoint must be set AND not still point at the
+  # bundled MinIO host (which won't be running with --no-minio).
+  external_endpoint="$(get_env_value OBJECT_STORAGE_ENDPOINT)"
+  if [[ -z "${external_endpoint}" || "${external_endpoint}" == *"minio:9000"* ]]; then
+    echo "Error: --no-minio was passed but no external object storage is configured."
+    echo "OBJECT_STORAGE_ENDPOINT is unset or still points at the bundled MinIO (minio:9000)."
+    echo "Configure an external S3-compatible store via OBJECT_STORAGE_* in .env,"
     echo "or drop --no-minio to use the bundled MinIO."
     exit 1
   fi
@@ -296,15 +302,32 @@ echo
 echo "Current service status:"
 docker compose --env-file "${ENV_FILE}" -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" ps
 
+# `docker compose up -d` returns once containers are *started*, not *healthy*. On a fresh
+# deployment the API runs DB migrations before it listens, so the endpoints aren't reachable
+# immediately. Poll with a retry instead of a single curl — and never let a not-yet-ready
+# check abort the script (set -euo pipefail is active), so first runs end cleanly.
+check_endpoint() {
+  local name="$1" url="$2" curl_flags="$3" attempts="$4"
+  local i=0
+  while ((i < attempts)); do
+    if curl ${curl_flags} --max-time 5 "${url}" >/dev/null 2>&1; then
+      echo "${name} is reachable on ${url}"
+      return 0
+    fi
+    i=$((i + 1))
+    sleep 5
+  done
+  echo "Note: ${name} is not reachable yet at ${url} (waited $((attempts * 5))s)."
+  echo "  It may still be starting — the first run migrates the database. Follow logs with:"
+  echo "  docker compose --env-file \"${ENV_FILE}\" -p \"${PROJECT_NAME}\" -f \"${COMPOSE_FILE}\" logs -f"
+  return 0
+}
+
 if command -v curl >/dev/null 2>&1; then
   echo
-  echo "Checking API endpoint..."
-  curl -fsS --max-time 10 http://localhost:3081/ >/dev/null
-  echo "API is reachable on http://localhost:3081/"
-
-  echo "Checking dashboard endpoint..."
-  curl -fsSI --max-time 10 http://localhost:3082/ >/dev/null
-  echo "Dashboard is reachable on http://localhost:3082/"
+  echo "Waiting for services to come up (first run can take a minute while the API migrates)..."
+  check_endpoint "API" "http://localhost:3081/" "-fsS" 24
+  check_endpoint "Dashboard" "http://localhost:3082/" "-fsSI" 12
 else
   echo
   echo "curl not found, skipped endpoint checks."
