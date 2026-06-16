@@ -60,7 +60,11 @@ It performs three steps in order:
 
 **Optional:** Add `--seed` (or `-s`) to run the full seed, including demo users, organizations, courses, and other example data.
 
-Requires `DATABASE_URL` or `PRIVATE_DATABASE_URL` in the environment.
+Requires `DATABASE_URL` or `PRIVATE_DATABASE_URL` in the environment. The scripts load `.env` from this package directory, so bootstrap it once from the template:
+
+```bash
+cp .env.example .env   # then set DATABASE_URL for your DB
+```
 
 ## Seeding
 
@@ -105,13 +109,13 @@ pnpm seed --organizations --organization-members --organization-plan
 
 ### Demo accounts
 
-| Email                            | Password   | Role    | Plan          |
-| -------------------------------- | ---------- | ------- | ------------- |
-| `test@test.com`                  | `password` | Admin   | Basic (free)  |
-| `student@test.com`               | `password` | Student | Basic (free)  |
-| `enterprise@test.com`            | `password` | Admin   | Enterprise    |
-| `enterprise-student@test.com`    | `password` | Student | Enterprise    |
-| `early-adopter@test.com`         | `password` | Admin   | Early Adopter |
-| `early-adopter-student@test.com` | `password` | Student | Early Adopter |
+| Email                            | Password | Role    | Plan          |
+| -------------------------------- | -------- | ------- | ------------- |
+| `admin@test.com`                 | `123456` | Admin   | Basic (free)  |
+| `student@test.com`               | `123456` | Student | Basic (free)  |
+| `enterprise@test.com`            | `123456` | Admin   | Enterprise    |
+| `enterprise-student@test.com`    | `123456` | Student | Enterprise    |
+| `early-adopter@test.com`         | `123456` | Admin   | Early Adopter |
+| `early-adopter-student@test.com` | `123456` | Student | Early Adopter |
 
-Mock user credentials are defined in `users.json`. The encrypted password above corresponds to the literal string `password`.
+Mock user credentials are defined in `users.json`. The demo accounts above use the password `123456`.
