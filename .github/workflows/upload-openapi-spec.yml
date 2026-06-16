@@ -41,8 +41,8 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Setup turbo cache
-        # Shared key with ci.yml so the @cio/api build here is a cache hit rather
-        # than a second cold rebuild.
+        # Turbo cache keyed by commit SHA, with a prefix restore-key so a previous run of
+        # this workflow warms the @cio/api build instead of a cold rebuild.
         uses: actions/cache@v4
         with:
           path: .turbo
