@@ -39,7 +39,7 @@
     <section class="ui:py-10 ui:px-6 ui:lg:px-8 ui:max-w-7xl ui:mx-auto">
       <div class="ui:text-center ui:mb-8">
         <h2 class="ui:text-3xl ui:font-bold ui:text-[var(--landing-fg)]">
-          {labels?.catalogHeading ?? 'Featured Programs'}
+          {labels?.catalogHeading ?? 'Featured Courses'}
         </h2>
         <div class="ui:mt-6 ui:h-px ui:w-24 ui:bg-[var(--landing-border)] ui:mx-auto"></div>
       </div>
