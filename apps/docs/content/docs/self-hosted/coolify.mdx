@@ -5,7 +5,7 @@ description: Deploy ClassroomIO on Coolify using the pull-based Docker Compose s
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-[Coolify](https://coolify.io) is a self-hosted PaaS (an open-source Heroku/Netlify alternative) you run on your own VPS. It deploys ClassroomIO as a **Docker Compose resource** using the pull-based [`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker/docker-compose.images.yaml) — so your Coolify host **pulls** the published `classroomio/*` images and never builds anything.
+[Coolify](https://coolify.io) is a self-hosted PaaS (an open-source Heroku/Netlify alternative) you run on your own VPS. It deploys ClassroomIO as a **Docker Compose resource** using the pull-based [`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker-compose.images.yaml) — so your Coolify host **pulls** the published `classroomio/*` images and never builds anything.
 
 ## Prerequisites
 
@@ -14,7 +14,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 ## Steps
 
-1. **New Resource → Docker Compose.** Point Coolify at this repo and the compose path `docker/docker-compose.images.yaml`, or paste the file's contents.
+1. **New Resource → Docker Compose.** Point Coolify at this repo and the compose path `docker-compose.images.yaml`, or paste the file's contents.
 
 2. **Set environment variables** (Coolify's UI — these become the compose `.env`). Coolify does **not** run our `run-docker-full-stack.sh`, so generate secrets yourself:
 

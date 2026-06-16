@@ -25,11 +25,11 @@ It auto-generates secure values for `AUTH_BEARER_TOKEN`, `PRIVATE_SERVER_KEY`, a
 
 The Quick Start builds images from source — that needs the full repo and ~8 GB RAM for the
 dashboard build. Most self-hosters should instead **pull** the published `classroomio/{api,dashboard,jobs}`
-images. You only need [`docker-compose.images.yaml`](../docker-compose.images.yaml) and a `.env`:
+images. You only need [`docker-compose.images.yaml`](../../docker-compose.images.yaml) and a `.env`:
 
 ```bash
 # 1. Get just the compose file + env template (no full clone required)
-curl -O https://raw.githubusercontent.com/classroomio/classroomio/main/docker/docker-compose.images.yaml
+curl -O https://raw.githubusercontent.com/classroomio/classroomio/main/docker-compose.images.yaml
 curl -o .env https://raw.githubusercontent.com/classroomio/classroomio/main/.env.example
 # 2. Edit .env — set CIO_VERSION (pin a release!), DASHBOARD_ORIGIN, secrets, SMTP
 # 3. Pull and start

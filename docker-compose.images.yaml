@@ -4,8 +4,8 @@
 # published images from Docker Hub instead of building from source. You only need
 # THIS file + a .env — no repository checkout, no 8 GB dashboard build.
 #
-#   CIO_VERSION=1.4.2 docker compose -f docker/docker-compose.images.yaml --env-file .env pull
-#   CIO_VERSION=1.4.2 docker compose -f docker/docker-compose.images.yaml --env-file .env up -d
+#   CIO_VERSION=1.4.2 docker compose -f docker-compose.images.yaml --env-file .env pull
+#   CIO_VERSION=1.4.2 docker compose -f docker-compose.images.yaml --env-file .env up -d
 #
 # CIO_VERSION pins the release. Use a specific version (e.g. 1.4.2) in production;
 # "latest" = newest stable release, "edge" = bleeding edge (last main build).
