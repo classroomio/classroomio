@@ -93,7 +93,7 @@ function sanitizeCourseMetadata(metadata: TCourse['metadata'] | undefined) {
     reward: metadata.reward
       ? {
           ...metadata.reward,
-          description: sanitizeHtml(metadata.reward.description)
+          description: sanitizeOptionalHtml(metadata.reward.description)
         }
       : metadata.reward,
     instructor: metadata.instructor
