@@ -40,11 +40,19 @@ function readJournal(): { tag: string; when: number; hash: string }[] {
  * those migrations as already applied so only *future* migrations run.
  *
  * No-ops when:
- *  - the journal already has rows (DB is already migrate-tracked), or
+ *  - the journal already records the consolidated baseline migration, or
  *  - the `public` schema has no tables (fresh DB — let `migrate` create everything).
+ *
+ * Special case — migration squash: a DB tracked under an older journal (its `__drizzle_migrations`
+ * holds the pre-squash hashes) would otherwise let `migrate` re-run the consolidated baseline,
+ * whose `when` is newer than every old `created_at`, and crash on `CREATE TYPE/TABLE "..." already
+ * exists`. We adopt the new baseline (insert its hash) so only *future* migrations run.
  */
 export async function baselineMigrationsIfNeeded(sql: Sql): Promise<void> {
-  // 1. Already migrate-tracked? Leave it alone.
+  const entries = readJournal();
+  const baseline = entries[0]; // idx 0 = the consolidated baseline migration
+
+  // 1. Already migrate-tracked?
   const journalTable = await sql<{ count: number }[]>`
     SELECT count(*)::int AS count
     FROM information_schema.tables
@@ -52,7 +60,21 @@ export async function baselineMigrationsIfNeeded(sql: Sql): Promise<void> {
   `;
   if (journalTable[0].count > 0) {
     const rows = await sql<{ count: number }[]>`SELECT count(*)::int AS count FROM drizzle.__drizzle_migrations`;
-    if (rows[0].count > 0) return;
+    if (rows[0].count > 0) {
+      // Has history. If the consolidated baseline hash is missing, this DB was tracked under the
+      // pre-squash journal — adopt the new baseline so `migrate` won't re-run it. Only the baseline
+      // entry is reconciled here; genuinely pending future migrations must still run.
+      const hasBaseline = await sql<{ count: number }[]>`
+        SELECT count(*)::int AS count FROM drizzle.__drizzle_migrations WHERE hash = ${baseline.hash}
+      `;
+      if (hasBaseline[0].count === 0) {
+        await sql`INSERT INTO drizzle.__drizzle_migrations ("hash", "created_at") VALUES (${baseline.hash}, ${baseline.when})`;
+        console.log(
+          'Pre-squash migration history detected — baselined consolidated migration as already applied.'
+        );
+      }
+      return;
+    }
   }
 
   // 2. Fresh database? Let `migrate` create the schema normally.
@@ -64,7 +86,6 @@ export async function baselineMigrationsIfNeeded(sql: Sql): Promise<void> {
   if (publicTables[0].count === 0) return;
 
   // 3. Existing schema, no journal → baseline current migrations as already applied.
-  const entries = readJournal();
   await sql`CREATE SCHEMA IF NOT EXISTS drizzle`;
   await sql`
     CREATE TABLE IF NOT EXISTS drizzle.__drizzle_migrations (

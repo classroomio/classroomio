@@ -65,6 +65,11 @@ CIO_VERSION=1.5.0 docker compose -f docker-compose.images.yaml --env-file .env u
 # Rollback: set CIO_VERSION back to the previous release and repeat
 ```
 
+Schema migrations run automatically on `api` startup (`db:setup`), so upgrades need no manual DB
+step. If a release consolidates ("squashes") older migrations, the startup baseline detects an
+existing instance and adopts the new baseline as already-applied — your database is upgraded in
+place without re-running schema that already exists.
+
 (Maintainers: every published image is boot-smoke-tested in CI before it ships — see
 [`PUBLISHING_IMAGES.md`](PUBLISHING_IMAGES.md).)
 
