@@ -3,6 +3,7 @@
   import { courseLandingTokens } from './course-landing-page.tokens';
   import EditableLandingSection from './editable-section.svelte';
   import AwardIcon from '@lucide/svelte/icons/award';
+  import SafeHtmlContent from '../safe-html-content/safe-html-content.svelte';
 
   interface Props {
     variant: OrgLandingPageTheme;
@@ -79,7 +80,7 @@
               <article id={block.id} class={t.infoBlock}>
                 <span class={t.infoBlockEyebrow}>{block.eyebrow}</span>
                 <h2 class={t.infoBlockHeading}>{block.heading}</h2>
-                <div class={t.infoBlockBody}>{@html block.html}</div>
+                <div class={t.infoBlockBody}><SafeHtmlContent content={block.html} /></div>
               </article>
             </EditableLandingSection>
           {/each}
@@ -91,7 +92,7 @@
               <article id={block.id} class={t.infoBlock}>
                 <span class={t.infoBlockEyebrow}>{block.eyebrow}</span>
                 <h2 class={t.infoBlockHeading}>{block.heading}</h2>
-                <div class={t.infoBlockBody}>{@html block.html}</div>
+                <div class={t.infoBlockBody}><SafeHtmlContent content={block.html} /></div>
               </article>
             </EditableLandingSection>
           {/each}
@@ -114,7 +115,7 @@
                 </div>
                 <div class="ui:p-6">
                   <h2 class={`${t.infoBlockHeading} ui:mb-3`}>{block.heading}</h2>
-                  <div class={t.infoBlockBody}>{@html block.html}</div>
+                  <div class={t.infoBlockBody}><SafeHtmlContent content={block.html} /></div>
                 </div>
               </article>
             </EditableLandingSection>
@@ -138,7 +139,7 @@
                 </div>
                 <div>
                   <h2 class={`${t.infoBlockHeading} ui:mb-4`}>{block.heading}</h2>
-                  <div class={t.infoBlockBody}>{@html block.html}</div>
+                  <div class={t.infoBlockBody}><SafeHtmlContent content={block.html} /></div>
                 </div>
               </article>
             </EditableLandingSection>
@@ -153,7 +154,7 @@
                   <span class={t.infoBlockEyebrow}>{block.eyebrow}</span>
                   <h2 class={`${t.infoBlockHeading} ui:mt-2`}>{block.heading}</h2>
                 </div>
-                <div class={t.infoBlockBody}>{@html block.html}</div>
+                <div class={t.infoBlockBody}><SafeHtmlContent content={block.html} /></div>
               </article>
             </EditableLandingSection>
           {/each}
