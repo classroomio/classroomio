@@ -5,6 +5,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import postgres from 'postgres';
 
+import { baselineMigrationsIfNeeded } from './baseline';
+
 const connectionString = process.env.DATABASE_URL ?? process.env.PRIVATE_DATABASE_URL ?? '';
 const shouldSeed = process.argv.includes('--seed') || process.argv.includes('-s');
 const shouldSyncSchema = !process.argv.includes('--skip-schema-sync');
@@ -43,9 +45,9 @@ async function runPnpmCommand(commandLabel: string, args: string[]) {
   });
 }
 
-async function runSchemaSync() {
-  console.log('Syncing schema with drizzle-kit push...');
-  await runPnpmCommand('Schema sync', ['db', 'push']);
+async function runMigrations() {
+  console.log('Applying database migrations with drizzle-kit migrate...');
+  await runPnpmCommand('Migrate', ['db:migrate']);
 }
 
 async function runSeedEssential() {
@@ -88,7 +90,10 @@ async function dbSetup() {
     // Note: 'public' role exists by default in PostgreSQL
 
     if (shouldSyncSchema) {
-      await runSchemaSync();
+      // Adopt a pre-existing schema (push/supabase) into drizzle's history so migrate won't
+      // try to recreate existing objects. No-ops on fresh or already-tracked databases.
+      await baselineMigrationsIfNeeded(sql);
+      await runMigrations();
     }
 
     await runSeedEssential();
