@@ -134,7 +134,6 @@ services:
       OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL: ${OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL:-}
       # Auth secrets — required. Set strong values in .env (the pull path has no script to
       # generate them); the stack refuses to start otherwise.
-      AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN:?set a strong AUTH_BEARER_TOKEN in .env}
       PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:?set a strong PRIVATE_SERVER_KEY in .env}
       DASHBOARD_ORIGIN: ${DASHBOARD_ORIGIN:-}
       LICENSE_KEY: ${LICENSE_KEY:-}
@@ -160,7 +159,6 @@ services:
       PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:?set a strong PRIVATE_SERVER_KEY in .env}
       PRIVATE_APP_HOST: ${PRIVATE_APP_HOST:-localhost}
       PRIVATE_APP_SUBDOMAINS: ${PRIVATE_APP_SUBDOMAINS:-app}
-      AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN:-}
       ALLOWED_EXTERNAL_DOMAINS: ${ALLOWED_EXTERNAL_DOMAINS:-}
       CSP_SCRIPT_SRC_DOMAINS: ${CSP_SCRIPT_SRC_DOMAINS:-}
       CSP_STYLE_SRC_DOMAINS: ${CSP_STYLE_SRC_DOMAINS:-}

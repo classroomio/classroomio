@@ -22,21 +22,29 @@ import { Callout } from 'fumadocs-ui/components/callout';
    CIO_VERSION=1.4.2                 # pin a release (not "latest") so upgrades are deliberate
    DASHBOARD_ORIGIN=https://app.yourdomain.com
    BETTER_AUTH_SECRET=<openssl rand -hex 32>
-   AUTH_BEARER_TOKEN=<openssl rand -hex 32>
-   PRIVATE_SERVER_KEY=<same value as AUTH_BEARER_TOKEN>
+   PRIVATE_SERVER_KEY=<openssl rand -hex 32>   # must be identical in the api and dashboard services
    POSTGRES_PASSWORD=<strong password>
    # Email (required for signup/reset/invites)
-   SMTP_HOST=  SMTP_PORT=  SMTP_USER=  SMTP_PASSWORD=  SMTP_SENDER=
+   SMTP_HOST=
+   SMTP_PORT=
+   SMTP_USER=
+   SMTP_PASSWORD=
+   SMTP_SENDER=
    ```
 
    <Callout type="error" title="The stack won't start without strong secrets">
-     `BETTER_AUTH_SECRET`, `AUTH_BEARER_TOKEN`, and `PRIVATE_SERVER_KEY` are required. The compose
-     file fails fast if any is empty, so it never boots with a predictable session-signing secret.
+     `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` are required. The compose file fails fast if
+     either is empty, so it never boots with a predictable session-signing secret.
    </Callout>
 
 3. **Assign a domain.** Map your domain to the **dashboard** service (internal port `3082`); Coolify's reverse proxy issues the certificate. The dashboard proxies API calls server-side, so you normally only need the dashboard exposed publicly — the `api` service stays internal.
 
-4. **Object storage.** Recommended: external **S3 / Cloudflare R2** — set the `OBJECT_STORAGE_*` variables and you're done (no stateful storage container to manage on Coolify). To use the bundled MinIO instead, enable its profile (`COMPOSE_PROFILES=minio`); note it needs a persistent volume and you must route its public URL.
+4. **Object storage.** Recommended: the **bundled MinIO** — enable its profile with
+   `COMPOSE_PROFILES=minio` and Coolify runs MinIO alongside the stack. Give the MinIO volume
+   persistent storage in Coolify and route its public URL (`OBJECT_STORAGE_PUBLIC_ENDPOINT` /
+   `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL`) so browsers can load media. Prefer fully-managed
+   storage instead? Point the same `OBJECT_STORAGE_*` variables at external **S3 / Cloudflare R2**
+   and leave the `minio` profile off — see the [Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for R2.
 
 5. **Deploy.** Coolify pulls `classroomio/{api,dashboard,jobs}:${CIO_VERSION}`, starts Postgres + Redis, the API container runs database setup on first boot, then the dashboard and the **jobs worker** come up.
 

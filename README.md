@@ -148,7 +148,6 @@ The repository also contains shared packages under `packages/` (for example `pac
      PUBLIC_SERVER_URL="http://localhost:3002"
      TRUSTED_ORIGINS="http://localhost:5173"        # the dashboard dev origin
      BETTER_AUTH_SECRET="<generate-with-openssl-rand-hex-32>"
-     AUTH_BEARER_TOKEN="<generate-with-openssl-rand-hex-32>"
      PRIVATE_SERVER_KEY="<generate-with-openssl-rand-hex-32>"   # generate once; use the SAME value in the dashboard
      DASHBOARD_ORIGIN="http://localhost:5173"        # optional; used for invite/email links back to the dashboard
      ```
@@ -248,7 +247,7 @@ cp .env.example .env   # copy env template, edit for your domain
 ./run-docker-full-stack.sh
 ```
 
-The script reads root `.env` via `docker compose --env-file .env` and auto-generates secure values for `AUTH_BEARER_TOKEN` and `PRIVATE_SERVER_KEY` when missing.
+The script reads root `.env` via `docker compose --env-file .env` and auto-generates a secure `PRIVATE_SERVER_KEY` (and `BETTER_AUTH_SECRET`) when missing.
 
 See [`.env.example`](.env.example) for the full list of environment variables with required/optional grouping, and [`docker/docs/SELF_HOST.md`](docker/docs/SELF_HOST.md) for the complete Docker self-hosting guide.
 

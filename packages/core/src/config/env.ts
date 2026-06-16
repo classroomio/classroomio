@@ -43,7 +43,6 @@ const envSchema = z.object({
   PRIVATE_SERVER_KEY: z.string().optional(),
   PROJECT_ID_VERCEL: z.string().optional(),
   TEAM_ID_VERCEL: z.string().optional(),
-  AUTH_BEARER_TOKEN: z.string().optional(),
   UNSPLASH_API_KEY: z.string().optional(),
   /** When 'true', instance runs in self-hosted mode: single org, auto-enroll as student, no org switching */
   PUBLIC_IS_SELFHOSTED: z.string().optional(),

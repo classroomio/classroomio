@@ -43,7 +43,6 @@ REDIS_URL="redis://localhost:6379"
 PUBLIC_SERVER_URL="http://localhost:3002"
 TRUSTED_ORIGINS="http://localhost:5173"        # the dashboard dev origin
 BETTER_AUTH_SECRET="<generate-with-openssl-rand-hex-32>"
-AUTH_BEARER_TOKEN="<generate-with-openssl-rand-hex-32>"
 PRIVATE_SERVER_KEY="<generate-with-openssl-rand-hex-32>"   # generate once; use the SAME value in the dashboard
 ```
 

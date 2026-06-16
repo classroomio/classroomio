@@ -35,7 +35,7 @@ case "${SERVICE}" in
       -e NODE_ENV=production -e PORT=3081 \
       -e DATABASE_URL="${DB_URL}" -e PRIVATE_DATABASE_URL="${DB_URL}" -e REDIS_URL="${REDIS_URL}" \
       -e BETTER_AUTH_SECRET=smoke-test-secret-not-for-production \
-      -e AUTH_BEARER_TOKEN=smoke -e PRIVATE_SERVER_KEY=smoke \
+      -e PRIVATE_SERVER_KEY=smoke \
       "${IMAGE}"
     # entrypoint runs db:setup against the ephemeral DB (also exercises migrations), then serves.
     for _ in $(seq 1 40); do

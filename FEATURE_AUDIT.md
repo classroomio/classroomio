@@ -467,7 +467,7 @@ both the API/db layer (`process.env.PUBLIC_IS_SELFHOSTED`) and the dashboard
 
 ### 5.1 Self‑Hosted mode (`PUBLIC_IS_SELFHOSTED=true`)
 - **Setup:** Docker Compose full stack — `cp .env.example .env` then
-  `./run-docker-full-stack.sh` (auto‑generates `AUTH_BEARER_TOKEN`, `PRIVATE_SERVER_KEY`);
+  `./run-docker-full-stack.sh` (auto‑generates `PRIVATE_SERVER_KEY`, `BETTER_AUTH_SECRET`);
   `README.md:240–249`, `docker-compose.yaml`, `docker/Dockerfile.{api,dashboard}`,
   `docker/docs/SELF_HOST.md`. Bundled Postgres, Redis, MinIO.
 - **Single organization:** org creation **blocks a second org**

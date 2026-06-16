@@ -3,30 +3,40 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-COMPOSE_FILE="${ROOT_DIR}/docker-compose.yaml"
+BUILD_COMPOSE_FILE="${ROOT_DIR}/docker-compose.yaml"
 IMAGES_COMPOSE_FILE="${ROOT_DIR}/docker-compose.images.yaml"
 PROJECT_NAME="classroomio"
 ENV_FILE="${ROOT_DIR}/.env"
-BUILD_IMAGES=true
-USE_IMAGES=false
+# Default to PULLING pre-built images (fast). Pass --build to build from source instead.
+USE_IMAGES=true
+BUILD_IMAGES=false
+COMPOSE_FILE="${IMAGES_COMPOSE_FILE}"
 COMPOSE_PROFILES="--profile minio"
 
 print_usage() {
   cat <<'USAGE'
-Usage: ./run-docker-full-stack.sh [--no-build] [--no-minio] [--images]
+Usage: ./run-docker-full-stack.sh [--build] [--no-build] [--no-minio]
+
+By default this PULLS the pre-built classroomio/* images from Docker Hub at the tag in
+CIO_VERSION (.env) — no local build, no full repo needed.
 
 Options:
-  --no-build  Start containers without rebuilding images.
+  --build     Build the images from source (docker-compose.yaml) instead of pulling.
+  --no-build  With --build, start containers without rebuilding.
   --no-minio  Exclude MinIO (object storage). By default MinIO is included.
-  --images    Use pre-built images from Docker Hub (docker-compose.images.yaml)
-              instead of building from source. Pulls classroomio/* at the tag in
-              CIO_VERSION (.env). No local build, no full repo needed.
+  --images    Deprecated alias — pulling images is now the default.
   -h, --help  Show this help message.
 USAGE
 }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --build)
+      USE_IMAGES=false
+      BUILD_IMAGES=true
+      COMPOSE_FILE="${BUILD_COMPOSE_FILE}"
+      shift
+      ;;
     --no-build)
       BUILD_IMAGES=false
       shift
@@ -36,6 +46,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --images)
+      # Pulling is the default now; kept for backward compatibility.
       USE_IMAGES=true
       BUILD_IMAGES=false
       COMPOSE_FILE="${IMAGES_COMPOSE_FILE}"
@@ -99,7 +110,7 @@ is_insecure_token_value() {
   fi
 
   case "${normalized}" in
-    "" | "replace-with-a-long-random-token" | "replace-with-the-same-value-as-AUTH_BEARER_TOKEN" | "local-dev-api-key" | "changeme" | "replace-me")
+    "" | "replace-with-a-long-random-token" | "local-dev-api-key" | "changeme" | "replace-me")
       return 0
       ;;
     replace-with-* | *local-dev* | *change-this* | *your-*)
@@ -135,36 +146,14 @@ ensure_secure_auth_tokens() {
     touch "${ENV_FILE}"
   fi
 
-  local auth_bearer_token
   local private_server_key
-  local generated_token
-
-  auth_bearer_token="$(get_env_value AUTH_BEARER_TOKEN)"
   private_server_key="$(get_env_value PRIVATE_SERVER_KEY)"
 
-  if is_insecure_token_value "${auth_bearer_token}" && is_insecure_token_value "${private_server_key}"; then
-    generated_token="$(generate_secure_token)"
-    upsert_env_value AUTH_BEARER_TOKEN "${generated_token}"
-    upsert_env_value PRIVATE_SERVER_KEY "${generated_token}"
-    echo "Generated secure AUTH_BEARER_TOKEN and PRIVATE_SERVER_KEY in .env"
-    return
-  fi
-
-  if is_insecure_token_value "${auth_bearer_token}" && ! is_insecure_token_value "${private_server_key}"; then
-    upsert_env_value AUTH_BEARER_TOKEN "${private_server_key}"
-    echo "Set AUTH_BEARER_TOKEN to match existing PRIVATE_SERVER_KEY in .env"
-    return
-  fi
-
-  if ! is_insecure_token_value "${auth_bearer_token}" && is_insecure_token_value "${private_server_key}"; then
-    upsert_env_value PRIVATE_SERVER_KEY "${auth_bearer_token}"
-    echo "Set PRIVATE_SERVER_KEY to match existing AUTH_BEARER_TOKEN in .env"
-    return
-  fi
-
-  if [[ "${auth_bearer_token}" != "${private_server_key}" ]]; then
-    upsert_env_value PRIVATE_SERVER_KEY "${auth_bearer_token}"
-    echo "Normalized PRIVATE_SERVER_KEY to match AUTH_BEARER_TOKEN in .env"
+  # PRIVATE_SERVER_KEY authenticates the dashboard's server-side calls to the API and must be
+  # identical in both services. Generate a strong value when it's empty or a known placeholder.
+  if is_insecure_token_value "${private_server_key}"; then
+    upsert_env_value PRIVATE_SERVER_KEY "$(generate_secure_token)"
+    echo "Generated secure PRIVATE_SERVER_KEY in .env"
   fi
 }
 
