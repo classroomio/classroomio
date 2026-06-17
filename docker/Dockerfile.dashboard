@@ -15,12 +15,12 @@ RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 COPY pnpm-lock.yaml ./
 # Patches referenced by package.json#pnpm.patchedDependencies must be present for `pnpm fetch`.
 COPY patches ./patches
-RUN --mount=type=cache,target=/pnpm/store \
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     pnpm fetch --store-dir /pnpm/store
 
 COPY . .
 
-RUN --mount=type=cache,target=/pnpm/store \
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     pnpm install --offline --frozen-lockfile --ignore-scripts \
     --store-dir /pnpm/store --filter @cio/dashboard...
 RUN find . -name 'tsconfig.tsbuildinfo' -delete
