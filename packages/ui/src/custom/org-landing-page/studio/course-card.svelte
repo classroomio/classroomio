@@ -36,7 +36,7 @@
     class="ui:relative ui:h-[200px] ui:bg-[var(--landing-card-soft)]/50 ui:border-b ui:border-[var(--landing-border)] ui:p-5 ui:overflow-hidden"
   >
     {#if course.logo}
-      <img src={course.logo} alt="" class="ui:absolute ui:inset-0 ui:w-full ui:h-full ui:object-cover ui:opacity-60" />
+      <img src={course.logo} alt="" class="ui:absolute ui:inset-0 ui:w-full ui:h-full ui:object-cover" />
     {/if}
     <div
       class="ui:relative ui:flex ui:items-start ui:justify-between"

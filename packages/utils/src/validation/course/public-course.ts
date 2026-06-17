@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { ZSlug } from '../shared/slug';
+import { ZCourseSlug, ZSlug } from '../shared/slug';
 
 /**
  * Route params + query schemas for the anonymous, SEO-indexable public course
@@ -8,12 +8,12 @@ import { ZSlug } from '../shared/slug';
  */
 
 export const ZPublicCourseBySlugParam = z.object({
-  courseSlug: ZSlug
+  courseSlug: ZCourseSlug
 });
 export type TPublicCourseBySlugParam = z.infer<typeof ZPublicCourseBySlugParam>;
 
 export const ZPublicCourseItemParam = z.object({
-  courseSlug: ZSlug,
+  courseSlug: ZCourseSlug,
   itemSlug: ZSlug
 });
 export type TPublicCourseItemParam = z.infer<typeof ZPublicCourseItemParam>;

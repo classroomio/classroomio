@@ -5,6 +5,7 @@
   import LandingButton from './landing-button.svelte';
   import CheckIcon from '@lucide/svelte/icons/check';
   import GiftIcon from '@lucide/svelte/icons/gift';
+  import SafeHtmlContent from '../safe-html-content/safe-html-content.svelte';
 
   interface Props {
     variant: OrgLandingPageTheme;
@@ -80,7 +81,7 @@
               <GiftIcon class="ui:size-4 ui:text-[var(--landing-accent)]" />
               <span class={t.pricingRewardLabel}>{labels?.pricingRewardLabel ?? 'Bonus'}</span>
             </div>
-            <p>{pricing.reward.description}</p>
+            <div><SafeHtmlContent content={pricing.reward.description} /></div>
           </div>
         {/if}
       </div>

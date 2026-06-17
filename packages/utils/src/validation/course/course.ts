@@ -285,7 +285,7 @@ export type TCourseCreate = z.infer<typeof ZCourseCreate>;
 
 export const ZCourseReward = z.object({
   show: z.boolean(),
-  description: z.string()
+  description: z.string().optional()
 });
 
 const METADATA_NULLABLE_STRING_KEYS = ['requirements', 'description', 'goals', 'videoUrl', 'paymentLink'] as const;
@@ -320,7 +320,7 @@ function preprocessCourseMetadata(value: unknown): unknown {
 export const ZCourseInstructor = z.object({
   name: z.string(),
   role: z.string(),
-  coursesNo: z.coerce.number(),
+  coursesNo: z.coerce.number().optional(),
   description: z.string(),
   imgUrl: z.string()
 });

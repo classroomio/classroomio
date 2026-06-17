@@ -148,7 +148,7 @@ export type LandingPageLinks = {
 export interface OrgLandingPageLabels {
   /** Eyebrow above the catalog section. Default per template (often "Catalog"). */
   catalogEyebrow?: string;
-  /** Section heading for the catalog. Default per template (e.g. "Our Courses", "Programs starting this season."). */
+  /** Section heading for the catalog. Default per template (e.g. "Our Courses", "Courses starting this season."). */
   catalogHeading?: string;
   /** Optional description under the catalog heading. Default per template, only used where the template renders one. */
   catalogDescription?: string;

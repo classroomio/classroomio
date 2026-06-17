@@ -10,10 +10,10 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { uploadImage } from '$lib/utils/services/upload';
-  import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
-  import type { FileRejectedReason } from '@cio/ui/custom/file-drop-zone';
+  import * as ImageCropper from '@cio/ui/custom/image-cropper';
   import { InputField } from '@cio/ui/custom/input-field';
   import { Button } from '@cio/ui/base/button';
+  import UploadCloudIcon from '@lucide/svelte/icons/upload-cloud';
 
   interface Props {
     imageURL?: string;
@@ -27,10 +27,15 @@
     { label: 'Unsplash', value: 'unsplash' }
   ];
 
+  // Course cover preview is rendered in a 280×200 frame, so crop uploads to
+  // that ratio instead of storing the raw image and letting CSS squeeze it.
+  const COVER_ASPECT = 280 / 200;
+
   let isUploading = $state(false);
   let isSearching = $state(false);
   let currentTab = $state(tabs[0].value);
   let searchQuery = $state('');
+  let cropperSrc = $state('');
   let unsplashImages: {
     id: string | number;
     user: {
@@ -43,7 +48,7 @@
     alt_description: string;
   }[] = $state([]);
 
-  const MAX_IMAGE_SIZE = 500 * FileDropZone.KILOBYTE;
+  const MAX_IMAGE_SIZE = 500 * 1000;
 
   async function handleImageClick(img: string) {
     onchange?.(img);
@@ -52,18 +57,22 @@
     $handleOpenWidget.open = false;
   }
 
-  async function handleFilesUpload(files: File[]) {
-    const file = files[0];
-    if (file) await handleUploadImage(file);
+  function handleUnsupportedFile(file: File) {
+    if (file.size > MAX_IMAGE_SIZE) {
+      snackbar.error('snackbar.landing_page_settings.error.file_size');
+      return;
+    }
+
+    snackbar.error('snackbar.landing_page_settings.error.file_size');
   }
 
-  function handleFileRejected({ reason }: { reason: FileRejectedReason }) {
-    if (reason === 'Maximum file size exceeded') {
-      snackbar.error('snackbar.landing_page_settings.error.file_size');
-    } else {
-      snackbar.error('snackbar.landing_page_settings.error.file_size');
-    }
-  }
+  const handleCropped = async (croppedUrl: string) => {
+    const response = await fetch(croppedUrl);
+    const blob = await response.blob();
+    const file = new File([blob], 'course-cover.png', { type: blob.type });
+
+    await handleUploadImage(file);
+  };
 
   const handleUploadImage = async (image: File) => {
     isUploading = true;
@@ -117,19 +126,34 @@
         </UnderlineTabs.List>
         <UnderlineTabs.Content value="upload">
           <div class="w-full {isUploading ? 'ui:opacity-50 ui:pointer-events-none' : ''}">
-            <FileDropZone.Root
-              accept={FileDropZone.ACCEPT_IMAGE}
-              maxFiles={1}
-              fileCount={0}
+            <ImageCropper.Root
+              bind:src={cropperSrc}
+              onCropped={handleCropped}
+              onUnsupportedFile={handleUnsupportedFile}
               maxFileSize={MAX_IMAGE_SIZE}
-              onUpload={handleFilesUpload}
-              onFileRejected={handleFileRejected}
+              accept=".jpg, .jpeg, .png, .webp"
+              disabled={isUploading}
             >
-              <FileDropZone.Trigger
-                label={$t('course.navItem.landing_page.upload_widget.drag_drop')}
-                formatMaxSize={(_size) => $t('course.navItem.landing_page.upload_widget.size')}
-              />
-            </FileDropZone.Root>
+              <ImageCropper.UploadTrigger
+                class="ui:flex ui:w-full ui:flex-col ui:items-center ui:justify-center ui:gap-2 ui:rounded-lg ui:border-2 ui:border-dashed ui:border-input ui:bg-muted/30 ui:px-6 ui:py-10 ui:text-center ui:transition-colors ui:hover:bg-muted/60"
+              >
+                <UploadCloudIcon class="ui:text-muted-foreground" size={28} />
+                <p class="ui:m-0 ui:text-sm ui:font-medium">
+                  {$t('course.navItem.landing_page.upload_widget.drag_drop')}
+                </p>
+                <p class="ui:m-0 ui:text-xs ui:text-muted-foreground">
+                  {$t('course.navItem.landing_page.upload_widget.size')}
+                </p>
+              </ImageCropper.UploadTrigger>
+
+              <ImageCropper.Dialog class="ui:z-[400]!">
+                <ImageCropper.Cropper cropShape="rect" aspect={COVER_ASPECT} />
+                <ImageCropper.Controls>
+                  <ImageCropper.Cancel />
+                  <ImageCropper.Crop />
+                </ImageCropper.Controls>
+              </ImageCropper.Dialog>
+            </ImageCropper.Root>
           </div>
         </UnderlineTabs.Content>
         <UnderlineTabs.Content value="unsplash">
