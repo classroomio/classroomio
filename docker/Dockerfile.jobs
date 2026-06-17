@@ -14,21 +14,18 @@ ENV PATH="$PNPM_HOME:$PATH"
 
 RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 
-# Fetch dependencies from the lockfile ONLY first (cached unless pnpm-lock.yaml
-# changes), then bring in source. The store lives in a BuildKit cache mount.
-# `pnpm fetch` populates the store for the WHOLE lockfile, so we never have to
-# hand-maintain a list of workspace package.json files (which silently goes stale
-# when @cio/jobs-worker gains a transitive dep). Mirrors the api/dashboard images.
+# Fetch deps from the lockfile first (cached unless pnpm-lock.yaml changes); the
+# store is baked into this layer and reused by the offline install below. `pnpm
+# fetch` populates the store for the whole lockfile, so no hand-maintained package
+# list. Mirrors the api/dashboard images.
 COPY pnpm-lock.yaml ./
 # Patches referenced by package.json#pnpm.patchedDependencies must be present for `pnpm fetch`.
 COPY patches ./patches
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
-    pnpm fetch --store-dir /pnpm/store
+RUN pnpm fetch --store-dir /pnpm/store
 
 COPY . .
 
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
-    pnpm install --offline --frozen-lockfile --ignore-scripts \
+RUN pnpm install --offline --frozen-lockfile --ignore-scripts \
     --store-dir /pnpm/store --filter @cio/jobs-worker...
 RUN find . -name 'tsconfig.tsbuildinfo' -delete
 # Build the worker and all its workspace deps in topological order.

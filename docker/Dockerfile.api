@@ -9,19 +9,16 @@ ENV PATH="$PNPM_HOME:$PATH"
 
 RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 
-# Fetch dependencies from the lockfile ONLY first. This layer is keyed on
-# pnpm-lock.yaml, so it stays cached across source changes (no re-download on
-# every commit). The store lives in a BuildKit cache mount for cross-build reuse.
+# Fetch deps from the lockfile first (cached unless pnpm-lock.yaml changes); the
+# store is baked into this layer and reused by the offline install below.
 COPY pnpm-lock.yaml ./
 # Patches referenced by package.json#pnpm.patchedDependencies must be present for `pnpm fetch`.
 COPY patches ./patches
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
-    pnpm fetch --store-dir /pnpm/store
+RUN pnpm fetch --store-dir /pnpm/store
 
 COPY . .
 
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
-    pnpm install --offline --frozen-lockfile --ignore-scripts --shamefully-hoist \
+RUN pnpm install --offline --frozen-lockfile --ignore-scripts --shamefully-hoist \
     --store-dir /pnpm/store --filter @cio/api...
 RUN find . -name 'tsconfig.tsbuildinfo' -delete
 RUN pnpm -r --filter @cio/api... build
