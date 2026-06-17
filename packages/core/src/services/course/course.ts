@@ -23,11 +23,15 @@ import {
   getProfileCourseProgress,
   getUserExercisesStats
 } from '@cio/db/queries/analytics/analytics';
+import { getStudentCourseProgressImpactCounts } from '@cio/db/queries/course/reset-progress';
+import { getCourseGroupId } from '@cio/db/queries/course/people';
 
 import { ContentType, ROLE } from '@cio/utils/constants';
 import type { TCourse } from '@cio/db/types';
 import type { TCourseCreate } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
+import * as schema from '@cio/db/schema';
+import { and, eq } from 'drizzle-orm';
 import { exerciseBelongsToCourse } from '@cio/db/queries/course/certification-exercise';
 import { updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { getProfileById } from '@cio/db/queries/auth';
@@ -574,6 +578,25 @@ export async function getUserCourseAnalytics(courseId: string, userId: string) {
     const completedExercises = userExercisesStats.filter((exercise) => exercise.isCompleted).length;
     const totalExercises = courseProgress.exercises_count || 0;
 
+    const groupId = await getCourseGroupId(courseId);
+    let progressImpact = null;
+
+    if (groupId) {
+      const [groupMember] = await db
+        .select({ id: schema.groupmember.id })
+        .from(schema.groupmember)
+        .where(and(eq(schema.groupmember.groupId, groupId), eq(schema.groupmember.profileId, userId)))
+        .limit(1);
+
+      if (groupMember) {
+        progressImpact = await getStudentCourseProgressImpactCounts({
+          courseId,
+          groupMemberId: groupMember.id,
+          profileId: userId
+        });
+      }
+    }
+
     return {
       user: {
         id: userId,
@@ -586,7 +609,8 @@ export async function getUserCourseAnalytics(courseId: string, userId: string) {
       userExercisesStats,
       totalExercises,
       completedExercises,
-      progressPercentage
+      progressPercentage,
+      progressImpact
     };
   } catch (error) {
     if (error instanceof AppError) {

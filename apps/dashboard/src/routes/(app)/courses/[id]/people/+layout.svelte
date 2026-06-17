@@ -10,6 +10,8 @@
   import * as Page from '@cio/ui/base/page';
   import { courseApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
+  import ResetProgressButton from '$features/course/components/people/reset-progress-button.svelte';
+  import type { UserCourseAnalytics } from '$features/course/utils/types';
 
   let { data = $bindable(), children } = $props();
 
@@ -31,6 +33,10 @@
   async function refreshPeoplePage() {
     await Promise.all([courseApi.refreshCourse(data.courseId, $profile.id), invalidateAll()]);
   }
+
+  async function handleProgressReset() {
+    await invalidateAll();
+  }
 </script>
 
 <Page.Root class="mx-auto w-[90%] md:max-w-3xl">
@@ -49,6 +55,16 @@
     </Page.HeaderContent>
     <Page.Action>
       <div class="flex items-center gap-2">
+        {#if data.personId && data.userCourseAnalytics}
+          <RoleBasedSecurity allowedRoles={[1, 2]}>
+            <ResetProgressButton
+              courseId={data.courseId}
+              personId={data.personId}
+              userCourseAnalytics={data.userCourseAnalytics as UserCourseAnalytics}
+              onSuccess={handleProgressReset}
+            />
+          </RoleBasedSecurity>
+        {/if}
         {#if !data.personId}
           <RoleBasedSecurity allowedRoles={[1, 2]}>
             <Button onclick={handleClick}>

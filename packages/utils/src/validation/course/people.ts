@@ -26,3 +26,9 @@ export const ZUpdateCourseMember = z.object({
   email: z.email().optional()
 });
 export type TUpdateCourseMember = z.infer<typeof ZUpdateCourseMember>;
+
+export const ZResetCourseMemberProgressParam = z.object({
+  courseId: z.string().uuid(),
+  memberId: z.string().uuid()
+});
+export type TResetCourseMemberProgressParam = z.infer<typeof ZResetCourseMemberProgressParam>;

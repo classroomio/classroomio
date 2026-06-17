@@ -404,6 +404,12 @@ export type GetUserCourseAnalyticsResponse = InferResponseType<GetUserCourseAnal
 export type GetUserCourseAnalyticsSuccess = Extract<GetUserCourseAnalyticsResponse, { success: true }>;
 export type UserCourseAnalytics = GetUserCourseAnalyticsSuccess['data'];
 
+export type ResetMemberCourseProgressRequest =
+  (typeof classroomio.course)[':courseId']['members'][':memberId']['reset-progress']['$post'];
+export type ResetMemberCourseProgressResponse = InferResponseType<ResetMemberCourseProgressRequest>;
+export type ResetMemberCourseProgressSuccess = Extract<ResetMemberCourseProgressResponse, { success: true }>;
+export type ResetMemberCourseProgressSummary = ResetMemberCourseProgressSuccess['data'];
+
 export type GetCourseAnalyticsRequest = (typeof classroomio.course)[':courseId']['analytics']['$get'];
 export type GetCourseAnalyticsResponse = InferResponseType<GetCourseAnalyticsRequest>;
 export type GetCourseAnalyticsSuccess = Extract<GetCourseAnalyticsResponse, { success: true }>;

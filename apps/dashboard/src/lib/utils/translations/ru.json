@@ -242,6 +242,10 @@
         "unpinned": "Откреплено",
         "successfully": "Успешно",
         "feed_delete_success": "Фид успешно удален"
+      },
+      "people": {
+        "progress_reset": "Progress reset",
+        "progress_reset_failed": "Failed to reset progress"
       }
     },
     "landing_page_settings": {
@@ -1083,6 +1087,26 @@
           "sure": "Вы уверены, что хотите удалить",
           "no": "Нет",
           "yes": "Да"
+        },
+        "reset_progress": {
+          "button": "Reset progress",
+          "dialog": {
+            "title": "Reset progress for {studentName}?",
+            "intro": "This permanently deletes this student's progress in this course. They will stay enrolled and can restart from lesson 1.",
+            "bullets": {
+              "lessons": "Lessons completed — {completed} of {total}",
+              "exercises": "Exercises submitted — {count} submissions",
+              "comments": "Lesson comments by this student — {count}",
+              "community": "Newsfeed and community posts/replies by this student — {count}",
+              "video_progress": "Video watch progress — {count} lessons tracked",
+              "attendance": "Attendance entries — {count}",
+              "certificate_yes": "Certification / compliance records — yes",
+              "certificate_no": "Certification / compliance records — no"
+            },
+            "warning": "This cannot be undone.",
+            "cancel": "Cancel",
+            "confirm": "Delete"
+          }
         },
         "invite_modal": {
           "title": "Пригласить людей",

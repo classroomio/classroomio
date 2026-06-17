@@ -7,6 +7,7 @@ import {
   getCourseTeachers,
   updateCourseMember
 } from '@cio/db/queries/course/people';
+import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progress';
 
 import { ROLE } from '@cio/utils/constants';
 import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
@@ -295,6 +296,42 @@ export async function deleteMember(courseId: string, memberId: string) {
     }
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to delete course member',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+/**
+ * Resets all learner progress for a course member while keeping them enrolled.
+ */
+export async function resetMemberCourseProgress(courseId: string, memberId: string, actorProfileId: string) {
+  try {
+    const member = await getCourseMember(courseId, memberId);
+    if (!member || !member.profileId) {
+      throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
+    }
+
+    const summary = await resetStudentCourseProgress({
+      courseId,
+      groupMemberId: memberId,
+      profileId: member.profileId
+    });
+
+    console.info('resetMemberCourseProgress', {
+      actorProfileId,
+      courseId,
+      memberId,
+      summary
+    });
+
+    return summary;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to reset course member progress',
       ErrorCodes.INTERNAL_ERROR,
       500
     );

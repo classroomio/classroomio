@@ -2,9 +2,16 @@ import {
   ZAddCourseMembers,
   ZCourseMembersMemberParam,
   ZCourseMembersParam,
+  ZResetCourseMemberProgressParam,
   ZUpdateCourseMember
 } from '@cio/utils/validation/course/people';
-import { addMembers, deleteMember, listCourseMembers, updateMember } from '@api/services/course/people';
+import {
+  addMembers,
+  deleteMember,
+  listCourseMembers,
+  resetMemberCourseProgress,
+  updateMember
+} from '@api/services/course/people';
 
 import { Hono } from '@api/utils/hono';
 import { ZCourseUserAnalyticsParam } from '@cio/utils/validation/course';
@@ -115,6 +122,33 @@ export const membersRouter = new Hono()
       return handleError(c, error, 'Failed to delete course member');
     }
   })
+  /**
+   * POST /course/:courseId/members/:memberId/reset-progress
+   * Clears all learner progress for a course member while keeping them enrolled.
+   * Requires authentication and course team membership (admin/tutor role)
+   */
+  .post(
+    '/:memberId/reset-progress',
+    courseTeamMemberMiddleware,
+    zValidator('param', ZResetCourseMemberProgressParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { courseId, memberId } = c.req.valid('param');
+        const summary = await resetMemberCourseProgress(courseId, memberId, user.id);
+
+        return c.json(
+          {
+            success: true,
+            data: summary
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to reset course member progress');
+      }
+    }
+  )
   /**
    * GET /course/:courseId/members/:userId/analytics
    * Gets user course analytics for a specific course
