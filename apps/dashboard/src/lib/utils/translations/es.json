@@ -244,8 +244,8 @@
         "feed_delete_success": "Feed eliminado correctamente"
       },
       "people": {
-        "progress_reset": "Progress reset",
-        "progress_reset_failed": "Failed to reset progress"
+        "progress_reset": "Progreso restablecido",
+        "progress_reset_failed": "No se pudo restablecer el progreso"
       }
     },
     "landing_page_settings": {
@@ -1089,23 +1089,23 @@
           "yes": "si"
         },
         "reset_progress": {
-          "button": "Reset progress",
+          "button": "Restablecer progreso",
           "dialog": {
-            "title": "Reset progress for {studentName}?",
-            "intro": "This permanently deletes this student's progress in this course. They will stay enrolled and can restart from lesson 1.",
+            "title": "¿Restablecer el progreso de {studentName}?",
+            "intro": "Esto elimina permanentemente el progreso de este estudiante en este curso. Seguirá inscrito y podrá empezar de nuevo desde la lección 1.",
             "bullets": {
-              "lessons": "Lessons completed — {completed} of {total}",
-              "exercises": "Exercises submitted — {count} submissions",
-              "comments": "Lesson comments by this student — {count}",
-              "community": "Newsfeed and community posts/replies by this student — {count}",
-              "video_progress": "Video watch progress — {count} lessons tracked",
-              "attendance": "Attendance entries — {count}",
-              "certificate_yes": "Certification / compliance records — yes",
-              "certificate_no": "Certification / compliance records — no"
+              "lessons": "Lecciones completadas — {completed} de {total}",
+              "exercises": "Ejercicios enviados — {count} entregas",
+              "comments": "Comentarios de lección de este estudiante — {count}",
+              "community": "Publicaciones y respuestas en el feed y la comunidad de este estudiante — {count}",
+              "video_progress": "Progreso de visualización de video — {count} lecciones registradas",
+              "attendance": "Registros de asistencia — {count}",
+              "certificate_yes": "Registros de certificación/cumplimiento — sí",
+              "certificate_no": "Registros de certificación/cumplimiento — no"
             },
-            "warning": "This cannot be undone.",
-            "cancel": "Cancel",
-            "confirm": "Delete"
+            "warning": "Esto no se puede deshacer.",
+            "cancel": "Cancelar",
+            "confirm": "Eliminar"
           }
         },
         "invite_modal": {

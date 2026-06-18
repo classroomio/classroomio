@@ -244,8 +244,8 @@
         "feed_delete_success": "Đã xóa nguồn cấp dữ liệu thành công"
       },
       "people": {
-        "progress_reset": "Progress reset",
-        "progress_reset_failed": "Failed to reset progress"
+        "progress_reset": "Đã đặt lại tiến độ",
+        "progress_reset_failed": "Không thể đặt lại tiến độ"
       }
     },
     "landing_page_settings": {
@@ -1089,23 +1089,23 @@
           "yes": "Có"
         },
         "reset_progress": {
-          "button": "Reset progress",
+          "button": "Đặt lại tiến độ",
           "dialog": {
-            "title": "Reset progress for {studentName}?",
-            "intro": "This permanently deletes this student's progress in this course. They will stay enrolled and can restart from lesson 1.",
+            "title": "Đặt lại tiến độ cho {studentName}?",
+            "intro": "Thao tác này xóa vĩnh viễn tiến độ của học viên này trong khóa học. Họ vẫn được ghi danh và có thể bắt đầu lại từ bài 1.",
             "bullets": {
-              "lessons": "Lessons completed — {completed} of {total}",
-              "exercises": "Exercises submitted — {count} submissions",
-              "comments": "Lesson comments by this student — {count}",
-              "community": "Newsfeed and community posts/replies by this student — {count}",
-              "video_progress": "Video watch progress — {count} lessons tracked",
-              "attendance": "Attendance entries — {count}",
-              "certificate_yes": "Certification / compliance records — yes",
-              "certificate_no": "Certification / compliance records — no"
+              "lessons": "Bài học đã hoàn thành — {completed}/{total}",
+              "exercises": "Bài tập đã nộp — {count} bài nộp",
+              "comments": "Bình luận bài học của học viên này — {count}",
+              "community": "Bài đăng và phản hồi trên bảng tin/cộng đồng của học viên này — {count}",
+              "video_progress": "Tiến độ xem video — {count} bài học được theo dõi",
+              "attendance": "Mục điểm danh — {count}",
+              "certificate_yes": "Hồ sơ chứng nhận/tuân thủ — có",
+              "certificate_no": "Hồ sơ chứng nhận/tuân thủ — không"
             },
-            "warning": "This cannot be undone.",
-            "cancel": "Cancel",
-            "confirm": "Delete"
+            "warning": "Không thể hoàn tác.",
+            "cancel": "Hủy",
+            "confirm": "Xóa"
           }
         },
         "invite_modal": {

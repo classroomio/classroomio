@@ -244,8 +244,8 @@
         "feed_delete_success": "Фид успешно удален"
       },
       "people": {
-        "progress_reset": "Progress reset",
-        "progress_reset_failed": "Failed to reset progress"
+        "progress_reset": "Прогресс сброшен",
+        "progress_reset_failed": "Не удалось сбросить прогресс"
       }
     },
     "landing_page_settings": {
@@ -1089,23 +1089,23 @@
           "yes": "Да"
         },
         "reset_progress": {
-          "button": "Reset progress",
+          "button": "Сбросить прогресс",
           "dialog": {
-            "title": "Reset progress for {studentName}?",
-            "intro": "This permanently deletes this student's progress in this course. They will stay enrolled and can restart from lesson 1.",
+            "title": "Сбросить прогресс для {studentName}?",
+            "intro": "Это навсегда удалит прогресс этого студента в данном курсе. Он останется зачисленным и сможет начать заново с урока 1.",
             "bullets": {
-              "lessons": "Lessons completed — {completed} of {total}",
-              "exercises": "Exercises submitted — {count} submissions",
-              "comments": "Lesson comments by this student — {count}",
-              "community": "Newsfeed and community posts/replies by this student — {count}",
-              "video_progress": "Video watch progress — {count} lessons tracked",
-              "attendance": "Attendance entries — {count}",
-              "certificate_yes": "Certification / compliance records — yes",
-              "certificate_no": "Certification / compliance records — no"
+              "lessons": "Завершённые уроки — {completed} из {total}",
+              "exercises": "Отправленные упражнения — {count} отправок",
+              "comments": "Комментарии к урокам этого студента — {count}",
+              "community": "Посты и ответы в ленте и сообществе от этого студента — {count}",
+              "video_progress": "Прогресс просмотра видео — {count} отслеживаемых уроков",
+              "attendance": "Записи посещаемости — {count}",
+              "certificate_yes": "Записи сертификации/соответствия — да",
+              "certificate_no": "Записи сертификации/соответствия — нет"
             },
-            "warning": "This cannot be undone.",
-            "cancel": "Cancel",
-            "confirm": "Delete"
+            "warning": "Это действие нельзя отменить.",
+            "cancel": "Отмена",
+            "confirm": "Удалить"
           }
         },
         "invite_modal": {

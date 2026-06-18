@@ -244,8 +244,8 @@
         "feed_delete_success": "फ़ीड सफलतापूर्वक हटा दी गई"
       },
       "people": {
-        "progress_reset": "Progress reset",
-        "progress_reset_failed": "Failed to reset progress"
+        "progress_reset": "प्रगति रीसेट की गई",
+        "progress_reset_failed": "प्रगति रीसेट नहीं हो सकी"
       }
     },
     "landing_page_settings": {
@@ -1089,23 +1089,23 @@
           "yes": "हाँ"
         },
         "reset_progress": {
-          "button": "Reset progress",
+          "button": "प्रगति रीसेट करें",
           "dialog": {
-            "title": "Reset progress for {studentName}?",
-            "intro": "This permanently deletes this student's progress in this course. They will stay enrolled and can restart from lesson 1.",
+            "title": "{studentName} की प्रगति रीसेट करें?",
+            "intro": "यह इस कोर्स में इस छात्र की प्रगति को स्थायी रूप से हटा देगा। वे नामांकित रहेंगे और पाठ 1 से फिर से शुरू कर सकेंगे।",
             "bullets": {
-              "lessons": "Lessons completed — {completed} of {total}",
-              "exercises": "Exercises submitted — {count} submissions",
-              "comments": "Lesson comments by this student — {count}",
-              "community": "Newsfeed and community posts/replies by this student — {count}",
-              "video_progress": "Video watch progress — {count} lessons tracked",
-              "attendance": "Attendance entries — {count}",
-              "certificate_yes": "Certification / compliance records — yes",
-              "certificate_no": "Certification / compliance records — no"
+              "lessons": "पूर्ण पाठ — {completed} में से {total}",
+              "exercises": "जमा किए गए अभ्यास — {count} सबमिशन",
+              "comments": "इस छात्र के पाठ टिप्पणियाँ — {count}",
+              "community": "इस छात्र की न्यूज़फ़ीड और समुदाय पोस्ट/जवाब — {count}",
+              "video_progress": "वीडियो देखने की प्रगति — {count} ट्रैक किए गए पाठ",
+              "attendance": "उपस्थिति प्रविष्टियाँ — {count}",
+              "certificate_yes": "प्रमाणन/अनुपालन रिकॉर्ड — हाँ",
+              "certificate_no": "प्रमाणन/अनुपालन रिकॉर्ड — नहीं"
             },
-            "warning": "This cannot be undone.",
-            "cancel": "Cancel",
-            "confirm": "Delete"
+            "warning": "इसे पूर्ववत नहीं किया जा सकता।",
+            "cancel": "रद्द करें",
+            "confirm": "हटाएँ"
           }
         },
         "invite_modal": {

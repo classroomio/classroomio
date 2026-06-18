@@ -244,8 +244,8 @@
         "feed_delete_success": "Kanał został pomyślnie usunięty"
       },
       "people": {
-        "progress_reset": "Progress reset",
-        "progress_reset_failed": "Failed to reset progress"
+        "progress_reset": "Postęp został zresetowany",
+        "progress_reset_failed": "Nie udało się zresetować postępu"
       }
     },
     "landing_page_settings": {
@@ -1089,23 +1089,23 @@
           "yes": "Tak"
         },
         "reset_progress": {
-          "button": "Reset progress",
+          "button": "Zresetuj postęp",
           "dialog": {
-            "title": "Reset progress for {studentName}?",
-            "intro": "This permanently deletes this student's progress in this course. They will stay enrolled and can restart from lesson 1.",
+            "title": "Zresetować postęp użytkownika {studentName}?",
+            "intro": "Spowoduje to trwałe usunięcie postępu tego uczestnika w tym kursie. Pozostanie zapisany i będzie mógł zacząć od lekcji 1.",
             "bullets": {
-              "lessons": "Lessons completed — {completed} of {total}",
-              "exercises": "Exercises submitted — {count} submissions",
-              "comments": "Lesson comments by this student — {count}",
-              "community": "Newsfeed and community posts/replies by this student — {count}",
-              "video_progress": "Video watch progress — {count} lessons tracked",
-              "attendance": "Attendance entries — {count}",
-              "certificate_yes": "Certification / compliance records — yes",
-              "certificate_no": "Certification / compliance records — no"
+              "lessons": "Ukończone lekcje — {completed} z {total}",
+              "exercises": "Przesłane ćwiczenia — {count} zgłoszeń",
+              "comments": "Komentarze do lekcji tego uczestnika — {count}",
+              "community": "Wpisy i odpowiedzi na kanale i w społeczności tego uczestnika — {count}",
+              "video_progress": "Postęp oglądania wideo — {count} śledzonych lekcji",
+              "attendance": "Wpisy obecności — {count}",
+              "certificate_yes": "Rekordy certyfikacji/zgodności — tak",
+              "certificate_no": "Rekordy certyfikacji/zgodności — nie"
             },
-            "warning": "This cannot be undone.",
-            "cancel": "Cancel",
-            "confirm": "Delete"
+            "warning": "Tej operacji nie można cofnąć.",
+            "cancel": "Anuluj",
+            "confirm": "Usuń"
           }
         },
         "invite_modal": {

@@ -244,8 +244,8 @@
         "feed_delete_success": "Feed erfolgreich gelöscht"
       },
       "people": {
-        "progress_reset": "Progress reset",
-        "progress_reset_failed": "Failed to reset progress"
+        "progress_reset": "Fortschritt zurückgesetzt",
+        "progress_reset_failed": "Fortschritt konnte nicht zurückgesetzt werden"
       }
     },
     "landing_page_settings": {
@@ -1089,23 +1089,23 @@
           "yes": "Ja"
         },
         "reset_progress": {
-          "button": "Reset progress",
+          "button": "Fortschritt zurücksetzen",
           "dialog": {
-            "title": "Reset progress for {studentName}?",
-            "intro": "This permanently deletes this student's progress in this course. They will stay enrolled and can restart from lesson 1.",
+            "title": "Fortschritt von {studentName} zurücksetzen?",
+            "intro": "Dadurch wird der Fortschritt dieses Teilnehmers in diesem Kurs dauerhaft gelöscht. Die Person bleibt eingeschrieben und kann bei Lektion 1 neu beginnen.",
             "bullets": {
-              "lessons": "Lessons completed — {completed} of {total}",
-              "exercises": "Exercises submitted — {count} submissions",
-              "comments": "Lesson comments by this student — {count}",
-              "community": "Newsfeed and community posts/replies by this student — {count}",
-              "video_progress": "Video watch progress — {count} lessons tracked",
-              "attendance": "Attendance entries — {count}",
-              "certificate_yes": "Certification / compliance records — yes",
-              "certificate_no": "Certification / compliance records — no"
+              "lessons": "Abgeschlossene Lektionen — {completed} von {total}",
+              "exercises": "Eingereichte Übungen — {count} Abgaben",
+              "comments": "Lektionskommentare dieses Teilnehmers — {count}",
+              "community": "Newsfeed- und Community-Beiträge/Antworten dieses Teilnehmers — {count}",
+              "video_progress": "Videofortschritt — {count} verfolgte Lektionen",
+              "attendance": "Anwesenheitseinträge — {count}",
+              "certificate_yes": "Zertifizierungs-/Compliance-Daten — ja",
+              "certificate_no": "Zertifizierungs-/Compliance-Daten — nein"
             },
-            "warning": "This cannot be undone.",
-            "cancel": "Cancel",
-            "confirm": "Delete"
+            "warning": "Dies kann nicht rückgängig gemacht werden.",
+            "cancel": "Abbrechen",
+            "confirm": "Löschen"
           }
         },
         "invite_modal": {

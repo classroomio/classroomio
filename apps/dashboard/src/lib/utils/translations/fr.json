@@ -244,8 +244,8 @@
         "feed_delete_success": "Flux supprimé avec succès"
       },
       "people": {
-        "progress_reset": "Progress reset",
-        "progress_reset_failed": "Failed to reset progress"
+        "progress_reset": "Progression réinitialisée",
+        "progress_reset_failed": "Échec de la réinitialisation de la progression"
       }
     },
     "landing_page_settings": {
@@ -1089,23 +1089,23 @@
           "yes": "Oui"
         },
         "reset_progress": {
-          "button": "Reset progress",
+          "button": "Réinitialiser la progression",
           "dialog": {
-            "title": "Reset progress for {studentName}?",
-            "intro": "This permanently deletes this student's progress in this course. They will stay enrolled and can restart from lesson 1.",
+            "title": "Réinitialiser la progression de {studentName} ?",
+            "intro": "Cela supprime définitivement la progression de cet apprenant dans ce cours. Il restera inscrit et pourra recommencer à la leçon 1.",
             "bullets": {
-              "lessons": "Lessons completed — {completed} of {total}",
-              "exercises": "Exercises submitted — {count} submissions",
-              "comments": "Lesson comments by this student — {count}",
-              "community": "Newsfeed and community posts/replies by this student — {count}",
-              "video_progress": "Video watch progress — {count} lessons tracked",
-              "attendance": "Attendance entries — {count}",
-              "certificate_yes": "Certification / compliance records — yes",
-              "certificate_no": "Certification / compliance records — no"
+              "lessons": "Leçons terminées — {completed} sur {total}",
+              "exercises": "Exercices soumis — {count} soumissions",
+              "comments": "Commentaires de leçon de cet apprenant — {count}",
+              "community": "Publications et réponses du fil d’actualité et de la communauté de cet apprenant — {count}",
+              "video_progress": "Progression de visionnage vidéo — {count} leçons suivies",
+              "attendance": "Entrées de présence — {count}",
+              "certificate_yes": "Dossiers de certification/conformité — oui",
+              "certificate_no": "Dossiers de certification/conformité — non"
             },
-            "warning": "This cannot be undone.",
-            "cancel": "Cancel",
-            "confirm": "Delete"
+            "warning": "Cette action est irréversible.",
+            "cancel": "Annuler",
+            "confirm": "Supprimer"
           }
         },
         "invite_modal": {
