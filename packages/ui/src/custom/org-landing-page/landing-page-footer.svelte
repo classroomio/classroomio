@@ -117,13 +117,7 @@
           </div>
         {/snippet}
 
-        {#if variant === 'minimal' || variant === 'bold' || variant === 'saas' || variant === 'tech' || variant === 'studio' || variant === 'corporate' || variant === 'terminal'}
-          {#snippet children()}
-            {@render gridInner()}
-          {/snippet}
-        {:else}
-          {@render gridInner()}
-        {/if}
+        {@render gridInner()}
 
         {#if showBottomRowInGrid}
           {#if variant === 'classic' && tokens.bottomHairline}

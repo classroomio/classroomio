@@ -11,7 +11,7 @@
   console.error('Error page:', page.url);
 
   function goHome() {
-    window.location.href = '/';
+    window.location.href = 'https://classroomio.com';
   }
 </script>
 

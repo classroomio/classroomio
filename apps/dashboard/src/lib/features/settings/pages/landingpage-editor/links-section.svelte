@@ -209,7 +209,7 @@
                     {iconLabel(card.icon)}
                   </span>
                 </Select.Trigger>
-                <Select.Content>
+                <Select.Content style="z-index: 260">
                   {#each LINK_ICONS as iconOption (iconOption)}
                     {@const OptionIcon = landingPageLinkIconMap[iconOption]}
                     <Select.Item value={iconOption}>

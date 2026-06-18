@@ -1,9 +1,12 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { currentOrg } from '$lib/utils/store/org';
+  import { isStudentExperience } from '$lib/utils/store/app';
+  import { appInitApi } from '$features/app/init.svelte';
   import { AppHeader } from '$features/ui';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
@@ -23,6 +26,14 @@
 
   $effect(() => {
     data.orgName === '*' && redirect($currentOrg.siteName);
+  });
+
+  $effect(() => {
+    // Decide only once the account/role has loaded — until then the student flag
+    // defaults to false and a student is indistinguishable from an admin.
+    if (appInitApi.isInitializedAndReady && $isStudentExperience) {
+      goto(resolve('/lms', {}));
+    }
   });
 </script>
 

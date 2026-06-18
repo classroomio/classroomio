@@ -53,7 +53,7 @@
                 {labels?.catalogEyebrow ?? 'Catalog'}
               </p>
               <h2 class="ui:text-3xl ui:md:text-4xl ui:font-bold ui:tracking-tight">
-                {labels?.catalogHeading ?? 'Featured programs.'}
+                {labels?.catalogHeading ?? 'Featured courses.'}
               </h2>
             </div>
             {#if hasMoreCourses}

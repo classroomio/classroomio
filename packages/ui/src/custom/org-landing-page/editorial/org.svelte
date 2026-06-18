@@ -108,11 +108,11 @@
                 class="ui:text-3xl ui:md:text-[40px] ui:font-medium ui:tracking-tight ui:m-0 ui:leading-[1.1] ui:text-[var(--landing-fg)]"
                 style="letter-spacing: -0.025em;"
               >
-                {labels?.catalogHeading ?? 'Programs starting this season.'}
+                {labels?.catalogHeading ?? 'Courses starting this season.'}
               </h2>
               <p class="ui:text-base ui:mt-3 ui:max-w-xl ui:m-0 ui:text-[var(--landing-fg-muted)]">
                 {labels?.catalogDescription ??
-                  'Cohort-based and self-paced — every program ends with a reviewed project and a certificate of completion.'}
+                  'Cohort-based and self-paced — every course ends with a reviewed project and a certificate of completion.'}
               </p>
             </div>
             {#if hasMoreCourses}

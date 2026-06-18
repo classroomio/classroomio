@@ -14,7 +14,7 @@
 
   let { orgName = '', hero, courses = [], navigation, showActions = true }: Props = $props();
 
-  const programsCount = $derived(courses.length);
+  const coursesCount = $derived(courses.length);
   const learnersCount = $derived(courses.reduce((sum, course) => sum + (course.totalStudents ?? 0), 0));
   const tracksCount = $derived(new Set(courses.map((course) => course.type).filter(Boolean)).size);
 
@@ -118,7 +118,7 @@
         {hero.subheading}
       </p>
 
-      {#if programsCount > 0}
+      {#if coursesCount > 0}
         <span
           class="ui:inline-flex ui:items-center ui:gap-3 ui:px-4 ui:py-2 ui:rounded-full ui:font-mono ui:text-[13px] ui:text-[var(--landing-fg-muted)]"
           style="
@@ -129,8 +129,8 @@
         >
           <span style="color: var(--landing-accent);">&gt;</span>
           <span
-            ><span class="ui:font-medium ui:text-[var(--landing-fg)]">{programsCount}</span>
-            {programsCount === 1 ? 'program' : 'programs'} running</span
+            ><span class="ui:font-medium ui:text-[var(--landing-fg)]">{coursesCount}</span>
+            {coursesCount === 1 ? 'course' : 'courses'} running</span
           >
           {#if learnersCount > 0}
             <span class="ui:inline-block ui:w-px ui:h-3 ui:bg-[var(--landing-border)]"></span>
@@ -195,8 +195,8 @@
               {orgSlug}/main · catalog
             </span>
             <span class="ui:font-mono ui:text-[11px] ui:text-[var(--landing-fg-faint)]">
-              {programsCount}
-              {programsCount === 1 ? 'program' : 'programs'}
+              {coursesCount}
+              {coursesCount === 1 ? 'course' : 'courses'}
             </span>
           </div>
 
@@ -206,12 +206,12 @@
               style="background: rgba(255,255,255,0.02); border: 1px solid var(--landing-border-soft);"
             >
               <span style="color: var(--landing-accent);">&gt;</span>
-              <span>list programs --org {orgSlug}</span>
+              <span>list courses --org {orgSlug}</span>
             </div>
 
             <div class="ui:py-1 ui:text-[12px] ui:text-[var(--landing-fg-faint)]">
-              ● Loaded {programsCount}
-              {programsCount === 1 ? 'program' : 'programs'}
+              ● Loaded {coursesCount}
+              {coursesCount === 1 ? 'course' : 'courses'}
             </div>
 
             <div class="ui:mt-2 ui:flex ui:flex-col">

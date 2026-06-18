@@ -2,6 +2,10 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: cio-postgres
+    # Bound to localhost only so host tools (pnpm api:dev, db:setup) can reach it
+    # without exposing the database to the LAN.
+    ports:
+      - "127.0.0.1:5432:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-classroomio}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -24,6 +28,9 @@ services:
   redis:
     image: redis:7-alpine
     container_name: cio-redis
+    # Bound to localhost only (see postgres note above).
+    ports:
+      - "127.0.0.1:6379:6379"
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis-data:/data

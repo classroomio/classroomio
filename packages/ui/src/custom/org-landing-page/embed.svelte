@@ -2,6 +2,7 @@
   import type { OrgLandingPageLabels, OrgLandingPageTheme, LandingPageEmbed } from './types';
   import SecondaryActionButton from './secondary-action-button.svelte';
   import EditableLandingSection from './editable-section.svelte';
+  import SafeHtmlContent from '../safe-html-content/safe-html-content.svelte';
 
   let {
     embed,
@@ -51,7 +52,7 @@
               style="border: 1px solid #262a35; background: #0f1218; box-shadow: 0 30px 90px -30px rgba(0,0,0,0.7);"
             >
               <div class="ui:p-5 ui:overflow-x-auto" style="color: #e9eaed;">
-                {@html embed.code}
+                <SafeHtmlContent content={embed.code} />
               </div>
             </div>
           {/if}
@@ -76,7 +77,7 @@
           {/if}
           {#if embed.code}
             <div class="ui:flex ui:w-full ui:justify-center">
-              {@html embed.code}
+              <SafeHtmlContent content={embed.code} />
             </div>
           {/if}
         </div>
@@ -95,7 +96,7 @@
           {/if}
           {#if embed.code}
             <div class="ui:flex ui:w-full ui:justify-center">
-              {@html embed.code}
+              <SafeHtmlContent content={embed.code} />
             </div>
           {/if}
         </div>

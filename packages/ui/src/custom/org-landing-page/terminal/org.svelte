@@ -101,7 +101,7 @@
           <h2
             class="ui:text-4xl ui:lg:text-[40px] ui:font-semibold ui:tracking-tight ui:leading-[1.08] ui:m-0 ui:mb-3 ui:max-w-[700px] ui:text-[var(--landing-fg)]"
           >
-            {labels?.catalogHeading ?? 'Programs your team can actually finish.'}
+            {labels?.catalogHeading ?? 'Courses your team can actually finish.'}
           </h2>
 
           <p class="ui:text-[15px] ui:max-w-xl ui:m-0 ui:mb-8 ui:text-[var(--landing-fg-muted)]">
@@ -147,7 +147,7 @@
                 disabled={disableCourseLinks}
                 class="ui:rounded-full ui:px-5 ui:bg-transparent ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-white/5"
               >
-                {labels?.browseCoursesLabel ?? 'View all programs →'}
+                {labels?.browseCoursesLabel ?? 'View all courses →'}
               </Button>
             </div>
           {/if}

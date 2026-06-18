@@ -20,6 +20,10 @@
     "./send": {
       "types": "./dist/send.d.ts",
       "default": "./dist/send.js"
+    },
+    "./templates": {
+      "types": "./dist/templates/index.d.ts",
+      "default": "./dist/templates/index.js"
     }
   },
   "peerDependencies": {

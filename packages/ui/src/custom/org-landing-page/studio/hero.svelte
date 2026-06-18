@@ -14,11 +14,11 @@
 
   let { hero, courses = [], navigation, showActions = true }: Props = $props();
 
-  const programsCount = $derived(courses.length);
+  const coursesCount = $derived(courses.length);
 
   const statusLabel = $derived(
-    programsCount > 0
-      ? `Now in session · ${programsCount} ${programsCount === 1 ? 'program' : 'programs'} running`
+    coursesCount > 0
+      ? `Now in session · ${coursesCount} ${coursesCount === 1 ? 'course' : 'courses'} running`
       : 'Studio opening soon'
   );
 

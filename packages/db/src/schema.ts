@@ -657,12 +657,12 @@ export const course = pgTable(
       paymentLink?: string;
       reward?: {
         show: boolean;
-        description: string;
+        description?: string;
       };
       instructor?: {
         name: string;
         role: string;
-        coursesNo: number;
+        coursesNo?: number;
         description: string;
         imgUrl: string;
       };

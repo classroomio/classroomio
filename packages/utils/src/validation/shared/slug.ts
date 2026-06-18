@@ -16,6 +16,16 @@ export const ZSlug = z
 export type TSlug = z.infer<typeof ZSlug>;
 
 /**
+ * Course slugs are `slugify(title)` (capped at 80) plus a `-<timestamp>` uniqueness
+ * suffix, so they routinely exceed the 80-char `ZSlug` cap. The `course.slug` column is
+ * unbounded `varchar` and there's no technical reason to cap the URL, so don't.
+ */
+export const ZCourseSlug = z.string().min(1, { message: 'Slug is required' }).regex(SLUG_REGEX, {
+  message: 'Slug must be lowercase letters, numbers, and single dashes'
+});
+export type TCourseSlug = z.infer<typeof ZCourseSlug>;
+
+/**
  * Generate a kebab-case slug from a free-form title. Does not enforce uniqueness;
  * callers must resolve collisions against the target namespace (e.g. per-course).
  */
