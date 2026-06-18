@@ -90,10 +90,18 @@ async function dbSetup() {
     // Note: 'public' role exists by default in PostgreSQL
 
     if (shouldSyncSchema) {
-      // Adopt a pre-existing schema (push/supabase) into drizzle's history so migrate won't
-      // try to recreate existing objects. No-ops on fresh or already-tracked databases.
-      await baselineMigrationsIfNeeded(sql);
-      await runMigrations();
+      // Advisory lock so concurrent startups can't both pass the baseline check and double-insert.
+      // Session-scoped, so held on a dedicated connection across baseline+migrate.
+      const DB_SETUP_LOCK_KEY = 4242424242;
+      const lock = postgres(connectionString, { max: 1 });
+      await lock`SELECT pg_advisory_lock(${DB_SETUP_LOCK_KEY}::bigint)`;
+      try {
+        await baselineMigrationsIfNeeded(sql);
+        await runMigrations();
+      } finally {
+        await lock`SELECT pg_advisory_unlock(${DB_SETUP_LOCK_KEY}::bigint)`;
+        await lock.end();
+      }
     }
 
     await runSeedEssential();
