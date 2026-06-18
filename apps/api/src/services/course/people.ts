@@ -1,3 +1,4 @@
+import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   addCourseMember,
@@ -9,7 +10,6 @@ import {
 } from '@cio/db/queries/course/people';
 import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progress';
 
-import { ROLE } from '@cio/utils/constants';
 import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
@@ -310,6 +310,10 @@ export async function resetMemberCourseProgress(courseId: string, memberId: stri
     const member = await getCourseMember(courseId, memberId);
     if (!member || !member.profileId) {
       throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
+    }
+
+    if (member.roleId !== ROLE.STUDENT) {
+      throw new AppError('Only student progress can be reset', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
     const summary = await resetStudentCourseProgress({

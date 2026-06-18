@@ -15,6 +15,8 @@
 
   let { data = $bindable(), children } = $props();
 
+  let userCourseAnalytics = $derived(page.data.userCourseAnalytics as UserCourseAnalytics | null | undefined);
+
   // Get back URL from query parameters
   let backUrl = $derived(page.url.searchParams.get('back'));
 
@@ -55,12 +57,12 @@
     </Page.HeaderContent>
     <Page.Action>
       <div class="flex items-center gap-2">
-        {#if data.personId && data.userCourseAnalytics}
+        {#if data.personId && userCourseAnalytics}
           <RoleBasedSecurity allowedRoles={[1, 2]}>
             <ResetProgressButton
               courseId={data.courseId}
               personId={data.personId}
-              userCourseAnalytics={data.userCourseAnalytics as UserCourseAnalytics}
+              {userCourseAnalytics}
               onSuccess={handleProgressReset}
             />
           </RoleBasedSecurity>

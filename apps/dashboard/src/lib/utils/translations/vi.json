@@ -1097,7 +1097,7 @@
               "lessons": "Bài học đã hoàn thành — {completed}/{total}",
               "exercises": "Bài tập đã nộp — {count} bài nộp",
               "comments": "Bình luận bài học của học viên này — {count}",
-              "community": "Bài đăng và phản hồi trên bảng tin/cộng đồng của học viên này — {count}",
+              "newsfeed": "Bài đăng và phản hồi bảng tin khóa học của học viên này — {count}",
               "video_progress": "Tiến độ xem video — {count} bài học được theo dõi",
               "attendance": "Mục điểm danh — {count}",
               "certificate_yes": "Hồ sơ chứng nhận/tuân thủ — có",

@@ -1097,7 +1097,7 @@
               "lessons": "Ukończone lekcje — {completed} z {total}",
               "exercises": "Przesłane ćwiczenia — {count} zgłoszeń",
               "comments": "Komentarze do lekcji tego uczestnika — {count}",
-              "community": "Wpisy i odpowiedzi na kanale i w społeczności tego uczestnika — {count}",
+              "newsfeed": "Wpisy i odpowiedzi na kanale kursu tego uczestnika — {count}",
               "video_progress": "Postęp oglądania wideo — {count} śledzonych lekcji",
               "attendance": "Wpisy obecności — {count}",
               "certificate_yes": "Rekordy certyfikacji/zgodności — tak",

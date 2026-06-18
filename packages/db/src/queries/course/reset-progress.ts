@@ -9,7 +9,7 @@ export type StudentCourseProgressImpactCounts = {
   totalLessons: number;
   exerciseSubmissions: number;
   lessonComments: number;
-  newsfeedAndCommunityPosts: number;
+  courseNewsfeedActivity: number;
   videoProgressLessons: number;
   attendanceEntries: number;
   hasCertificationRecords: boolean;
@@ -23,8 +23,6 @@ export type ResetStudentCourseProgressSummary = {
   lessonComments: number;
   courseNewsfeed: number;
   courseNewsfeedComments: number;
-  communityQuestions: number;
-  communityAnswers: number;
   courseCertificateIssues: number;
   courseCompletionRecords: number;
   aiChatConversations: number;
@@ -48,13 +46,17 @@ async function getCourseNewsfeedIds(tx: DbOrTxClient, courseId: string): Promise
   return newsfeeds.map((newsfeed) => newsfeed.id);
 }
 
-async function getCourseCommunityQuestionIds(tx: DbOrTxClient, courseId: string): Promise<number[]> {
-  const questions = await tx
-    .select({ id: schema.communityQuestion.id })
-    .from(schema.communityQuestion)
-    .where(eq(schema.communityQuestion.courseId, courseId));
+async function getStudentCourseNewsfeedPostIds(
+  tx: DbOrTxClient,
+  courseId: string,
+  groupMemberId: string
+): Promise<string[]> {
+  const posts = await tx
+    .select({ id: schema.courseNewsfeed.id })
+    .from(schema.courseNewsfeed)
+    .where(and(eq(schema.courseNewsfeed.courseId, courseId), eq(schema.courseNewsfeed.authorId, groupMemberId)));
 
-  return questions.map((question) => question.id);
+  return posts.map((post) => post.id);
 }
 
 /**
@@ -70,7 +72,7 @@ export async function getStudentCourseProgressImpactCounts(input: {
   try {
     const lessonIds = await getCourseLessonIds(db, courseId);
     const newsfeedIds = await getCourseNewsfeedIds(db, courseId);
-    const questionIds = await getCourseCommunityQuestionIds(db, courseId);
+    const studentNewsfeedPostIds = await getStudentCourseNewsfeedPostIds(db, courseId, groupMemberId);
 
     const lessonScope =
       lessonIds.length > 0
@@ -119,63 +121,48 @@ export async function getStudentCourseProgressImpactCounts(input: {
           : Promise.resolve([{ total: 0 }])
       ]);
 
-    const [
-      communityQuestionsResult,
-      communityAnswersResult,
-      videoProgressResult,
-      attendanceResult,
-      certificationResult
-    ] = await Promise.all([
-      db
-        .select({ total: count() })
-        .from(schema.communityQuestion)
-        .where(
-          and(eq(schema.communityQuestion.courseId, courseId), eq(schema.communityQuestion.authorProfileId, profileId))
-        ),
-      questionIds.length > 0
-        ? db
-            .select({ total: count() })
-            .from(schema.communityAnswer)
-            .where(
-              and(
-                eq(schema.communityAnswer.authorProfileId, profileId),
-                inArray(schema.communityAnswer.questionId, questionIds)
+    const [commentsOnStudentPostsResult, videoProgressResult, attendanceResult, certificationResult] =
+      await Promise.all([
+        studentNewsfeedPostIds.length > 0
+          ? db
+              .select({ total: count() })
+              .from(schema.courseNewsfeedComment)
+              .where(inArray(schema.courseNewsfeedComment.courseNewsfeedId, studentNewsfeedPostIds))
+          : Promise.resolve([{ total: 0 }]),
+        lessonIds.length > 0
+          ? db
+              .select({
+                total: sql<number>`COUNT(DISTINCT ${schema.lessonVideoProgress.lessonId})::int`.as('total')
+              })
+              .from(schema.lessonVideoProgress)
+              .where(
+                and(
+                  eq(schema.lessonVideoProgress.profileId, profileId),
+                  inArray(schema.lessonVideoProgress.lessonId, lessonIds)
+                )
               )
+          : Promise.resolve([{ total: 0 }]),
+        db
+          .select({ total: count() })
+          .from(schema.groupAttendance)
+          .where(
+            and(eq(schema.groupAttendance.courseId, courseId), eq(schema.groupAttendance.studentId, groupMemberId))
+          ),
+        db
+          .select({ total: count() })
+          .from(schema.courseCompletionRecord)
+          .where(
+            and(
+              eq(schema.courseCompletionRecord.courseId, courseId),
+              eq(schema.courseCompletionRecord.profileId, profileId)
             )
-        : Promise.resolve([{ total: 0 }]),
-      lessonIds.length > 0
-        ? db
-            .select({
-              total: sql<number>`COUNT(DISTINCT ${schema.lessonVideoProgress.lessonId})::int`.as('total')
-            })
-            .from(schema.lessonVideoProgress)
-            .where(
-              and(
-                eq(schema.lessonVideoProgress.profileId, profileId),
-                inArray(schema.lessonVideoProgress.lessonId, lessonIds)
-              )
-            )
-        : Promise.resolve([{ total: 0 }]),
-      db
-        .select({ total: count() })
-        .from(schema.groupAttendance)
-        .where(and(eq(schema.groupAttendance.courseId, courseId), eq(schema.groupAttendance.studentId, groupMemberId))),
-      db
-        .select({ total: count() })
-        .from(schema.courseCompletionRecord)
-        .where(
-          and(
-            eq(schema.courseCompletionRecord.courseId, courseId),
-            eq(schema.courseCompletionRecord.profileId, profileId)
           )
-        )
-    ]);
+      ]);
 
-    const newsfeedAndCommunityPosts =
+    const courseNewsfeedActivity =
       (newsfeedPostsResult[0]?.total ?? 0) +
       (newsfeedCommentsResult[0]?.total ?? 0) +
-      (communityQuestionsResult[0]?.total ?? 0) +
-      (communityAnswersResult[0]?.total ?? 0);
+      (commentsOnStudentPostsResult[0]?.total ?? 0);
 
     const certificateIssuesResult = await db
       .select({ total: count() })
@@ -194,7 +181,7 @@ export async function getStudentCourseProgressImpactCounts(input: {
       totalLessons: totalLessonsResult[0]?.total ?? 0,
       exerciseSubmissions: exerciseSubmissionsResult[0]?.total ?? 0,
       lessonComments: lessonCommentsResult[0]?.total ?? 0,
-      newsfeedAndCommunityPosts,
+      courseNewsfeedActivity,
       videoProgressLessons: videoProgressResult[0]?.total ?? 0,
       attendanceEntries: attendanceResult[0]?.total ?? 0,
       hasCertificationRecords: certificationCount > 0
@@ -221,9 +208,17 @@ export async function resetStudentCourseProgress(input: {
     return await db.transaction(async (tx) => {
       const lessonIds = await getCourseLessonIds(tx, courseId);
       const newsfeedIds = await getCourseNewsfeedIds(tx, courseId);
-      const questionIds = await getCourseCommunityQuestionIds(tx, courseId);
+      const studentNewsfeedPostIds = await getStudentCourseNewsfeedPostIds(tx, courseId, groupMemberId);
 
-      const deletedNewsfeedComments =
+      const deletedCommentsOnStudentPosts =
+        studentNewsfeedPostIds.length > 0
+          ? await tx
+              .delete(schema.courseNewsfeedComment)
+              .where(inArray(schema.courseNewsfeedComment.courseNewsfeedId, studentNewsfeedPostIds))
+              .returning({ id: schema.courseNewsfeedComment.id })
+          : [];
+
+      const deletedStudentNewsfeedComments =
         newsfeedIds.length > 0
           ? await tx
               .delete(schema.courseNewsfeedComment)
@@ -240,26 +235,6 @@ export async function resetStudentCourseProgress(input: {
         .delete(schema.courseNewsfeed)
         .where(and(eq(schema.courseNewsfeed.courseId, courseId), eq(schema.courseNewsfeed.authorId, groupMemberId)))
         .returning({ id: schema.courseNewsfeed.id });
-
-      const deletedCommunityAnswers =
-        questionIds.length > 0
-          ? await tx
-              .delete(schema.communityAnswer)
-              .where(
-                and(
-                  eq(schema.communityAnswer.authorProfileId, profileId),
-                  inArray(schema.communityAnswer.questionId, questionIds)
-                )
-              )
-              .returning({ id: schema.communityAnswer.id })
-          : [];
-
-      const deletedCommunityQuestions = await tx
-        .delete(schema.communityQuestion)
-        .where(
-          and(eq(schema.communityQuestion.courseId, courseId), eq(schema.communityQuestion.authorProfileId, profileId))
-        )
-        .returning({ id: schema.communityQuestion.id });
 
       const deletedSubmissions = await tx
         .delete(schema.submission)
@@ -350,9 +325,7 @@ export async function resetStudentCourseProgress(input: {
         groupAttendance: deletedAttendance.length,
         lessonComments: deletedLessonComments.length,
         courseNewsfeed: deletedNewsfeedPosts.length,
-        courseNewsfeedComments: deletedNewsfeedComments.length,
-        communityQuestions: deletedCommunityQuestions.length,
-        communityAnswers: deletedCommunityAnswers.length,
+        courseNewsfeedComments: deletedCommentsOnStudentPosts.length + deletedStudentNewsfeedComments.length,
         courseCertificateIssues: deletedCertificateIssues.length,
         courseCompletionRecords: deletedCompletionRecords.length,
         aiChatConversations: deletedAiChatConversations.length

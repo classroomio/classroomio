@@ -18,6 +18,7 @@ vi.mock('@cio/db/queries/course/reset-progress', () => ({
 }));
 
 import { AppError } from '@api/utils/errors';
+import { ROLE } from '@cio/utils/constants';
 import { getCourseMember } from '@cio/db/queries/course/people';
 import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progress';
 import { resetMemberCourseProgress } from '@api/services/course/people';
@@ -38,10 +39,24 @@ describe('resetMemberCourseProgress', () => {
   it('returns 404 when the member has no profileId', async () => {
     vi.mocked(getCourseMember).mockResolvedValue({
       id: 'member-1',
-      profileId: null
+      profileId: null,
+      roleId: ROLE.STUDENT
     } as Awaited<ReturnType<typeof getCourseMember>>);
 
     await expect(resetMemberCourseProgress('course-1', 'member-1', 'actor-1')).rejects.toBeInstanceOf(AppError);
+  });
+
+  it('returns 400 when the member is not a student', async () => {
+    vi.mocked(getCourseMember).mockResolvedValue({
+      id: 'member-1',
+      profileId: 'profile-1',
+      roleId: ROLE.TUTOR
+    } as Awaited<ReturnType<typeof getCourseMember>>);
+
+    await expect(resetMemberCourseProgress('course-1', 'member-1', 'actor-1')).rejects.toMatchObject({
+      statusCode: 400
+    });
+    expect(resetStudentCourseProgress).not.toHaveBeenCalled();
   });
 
   it('resets progress and returns the summary', async () => {
@@ -53,8 +68,6 @@ describe('resetMemberCourseProgress', () => {
       lessonComments: 1,
       courseNewsfeed: 0,
       courseNewsfeedComments: 0,
-      communityQuestions: 0,
-      communityAnswers: 0,
       courseCertificateIssues: 0,
       courseCompletionRecords: 0,
       aiChatConversations: 0
@@ -62,7 +75,8 @@ describe('resetMemberCourseProgress', () => {
 
     vi.mocked(getCourseMember).mockResolvedValue({
       id: 'member-1',
-      profileId: 'profile-1'
+      profileId: 'profile-1',
+      roleId: ROLE.STUDENT
     } as Awaited<ReturnType<typeof getCourseMember>>);
     vi.mocked(resetStudentCourseProgress).mockResolvedValue(summary);
 

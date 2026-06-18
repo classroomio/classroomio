@@ -49,9 +49,9 @@
         })
       },
       {
-        key: 'community',
-        text: t.get('course.navItem.people.reset_progress.dialog.bullets.community', {
-          count: progressImpact.newsfeedAndCommunityPosts
+        key: 'newsfeed',
+        text: t.get('course.navItem.people.reset_progress.dialog.bullets.newsfeed', {
+          count: progressImpact.courseNewsfeedActivity
         })
       },
       {

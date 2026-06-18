@@ -1097,7 +1097,7 @@
               "lessons": "Leçons terminées — {completed} sur {total}",
               "exercises": "Exercices soumis — {count} soumissions",
               "comments": "Commentaires de leçon de cet apprenant — {count}",
-              "community": "Publications et réponses du fil d’actualité et de la communauté de cet apprenant — {count}",
+              "newsfeed": "Publications et réponses du fil d’actualité du cours de cet apprenant — {count}",
               "video_progress": "Progression de visionnage vidéo — {count} leçons suivies",
               "attendance": "Entrées de présence — {count}",
               "certificate_yes": "Dossiers de certification/conformité — oui",

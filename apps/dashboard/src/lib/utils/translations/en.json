@@ -3259,7 +3259,7 @@
               "lessons": "Lessons completed — {completed} of {total}",
               "exercises": "Exercises submitted — {count} submissions",
               "comments": "Lesson comments by this student — {count}",
-              "community": "Newsfeed and community posts/replies by this student — {count}",
+              "newsfeed": "Course newsfeed posts and replies by this student — {count}",
               "video_progress": "Video watch progress — {count} lessons tracked",
               "attendance": "Attendance entries — {count}",
               "certificate_yes": "Certification / compliance records — yes",

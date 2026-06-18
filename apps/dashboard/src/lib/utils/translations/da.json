@@ -1097,7 +1097,7 @@
               "lessons": "Gennemførte lektioner — {completed} af {total}",
               "exercises": "Afleverede øvelser — {count} afleveringer",
               "comments": "Lektionskommentarer fra denne elev — {count}",
-              "community": "Nyhedsfeed- og community-opslag/svar fra denne elev — {count}",
+              "newsfeed": "Kursusnyhedsfeed-opslag og svar fra denne elev — {count}",
               "video_progress": "Videofremskridt — {count} lektioner sporet",
               "attendance": "Fremmødeposter — {count}",
               "certificate_yes": "Certificerings-/compliance-data — ja",

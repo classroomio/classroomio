@@ -1097,7 +1097,7 @@
               "lessons": "Lições concluídas — {completed} de {total}",
               "exercises": "Exercícios enviados — {count} envios",
               "comments": "Comentários de lição deste aluno — {count}",
-              "community": "Publicações e respostas no feed e na comunidade deste aluno — {count}",
+              "newsfeed": "Publicações e respostas no feed do curso deste aluno — {count}",
               "video_progress": "Progresso de visualização de vídeo — {count} lições acompanhadas",
               "attendance": "Registros de presença — {count}",
               "certificate_yes": "Registros de certificação/conformidade — sim",
