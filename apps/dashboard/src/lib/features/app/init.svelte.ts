@@ -1,4 +1,5 @@
 import { BaseApi, classroomio } from '$lib/utils/services/api';
+import { getOrgSiteUrl } from '$lib/utils/functions/org';
 import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
 import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils/store/user';
 
@@ -201,12 +202,26 @@ class AppInitApi extends BaseApi {
 
     if (!shouldRedirectOnAuth(page.url.pathname)) return;
 
+    // Students with existing org memberships who open /onboarding may intend to create their own academy.
+    if (path.includes('/onboarding') && isStudent && userHasOrganizations) {
+      return;
+    }
+
     const shouldGoToLMS = isCloud ? isOrgSite || !!isStudent : !!isStudent;
     console.log('redirecting to', shouldGoToLMS ? 'lms' : 'org');
-    return shouldGoToLMS ? this.goToLMS() : this.goToOrg();
+    return shouldGoToLMS ? this.goToLMS(isOrgSite) : this.goToOrg();
   }
 
-  goToLMS() {
+  goToLMS(isOrgSite: boolean) {
+    const isCloud = PUBLIC_IS_SELFHOSTED !== 'true';
+    const isStudent = get(isOrgStudent);
+    const selectedOrg = get(currentOrg);
+
+    if (isCloud && !isOrgSite && isStudent && selectedOrg.siteName) {
+      window.location.href = getOrgSiteUrl(selectedOrg, '/lms');
+      return;
+    }
+
     goto(resolve('/lms', {}));
   }
 
