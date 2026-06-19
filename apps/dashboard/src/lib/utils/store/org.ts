@@ -77,19 +77,34 @@ export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
   $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : '#'
 );
 
-export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
-  if (PUBLIC_IS_SELFHOSTED === 'true') return window.location.origin;
+type OrgPublicOrigin = Pick<AccountOrg, 'customDomain' | 'isCustomDomainVerified' | 'siteName'>;
 
-  const browserOrigin = dev && browser && window.location.origin;
+/**
+ * Public origin for an org's tenant site (student LMS, public course pages, login-link handoff).
+ * Verified custom domains win over the current browser host so admin URLs like
+ * `app.example.com` still hand off to `example.com`.
+ */
+export function getOrgPublicOrigin(org: OrgPublicOrigin): string {
+  if (org.customDomain && org.isCustomDomainVerified) {
+    return `https://${org.customDomain}`;
+  }
 
-  return browserOrigin
-    ? browserOrigin
-    : $currentOrg.customDomain && $currentOrg.isCustomDomainVerified
-      ? `https://${$currentOrg.customDomain}`
-      : $currentOrg.siteName
-        ? `https://${$currentOrg.siteName}.${TENANT_ROOT_DOMAIN}`
-        : '';
-});
+  if (PUBLIC_IS_SELFHOSTED === 'true') {
+    return browser ? window.location.origin : '';
+  }
+
+  if (dev && browser) {
+    return window.location.origin;
+  }
+
+  if (org.siteName) {
+    return `https://${org.siteName}.${TENANT_ROOT_DOMAIN}`;
+  }
+
+  return browser ? window.location.origin : '';
+}
+
+export const currentOrgDomain = derived(currentOrg, ($currentOrg) => getOrgPublicOrigin($currentOrg));
 
 export const isFreePlan = derived(currentOrg, ($currentOrg) => {
   if (!$currentOrg.id || PUBLIC_IS_SELFHOSTED === 'true') return false;
