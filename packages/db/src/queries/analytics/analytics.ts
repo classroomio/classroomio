@@ -4,26 +4,119 @@ import { and, desc, eq, inArray, or, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
 
+function toIsoTimestamp(value: string | Date | null | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date.toISOString();
+}
+
+function pickLatestTimestamp(...values: Array<string | Date | null | undefined>): string | null {
+  let latest: string | null = null;
+  let latestTime = -Infinity;
+
+  for (const value of values) {
+    const iso = toIsoTimestamp(value);
+    if (!iso) {
+      continue;
+    }
+
+    const time = new Date(iso).getTime();
+    if (time > latestTime) {
+      latestTime = time;
+      latest = iso;
+    }
+  }
+
+  return latest;
+}
+
 /**
- * Gets the last login time for a user
+ * Gets the last seen time for a user from login events and active sessions.
  * @param userId User ID
- * @returns Last login timestamp or undefined
+ * @returns Last seen timestamp or null
  */
 export async function getLastLogin(userId: string): Promise<string | null> {
   try {
-    const [loginEvent] = await db
-      .select({
-        loggedInAt: schema.analyticsLoginEvents.loggedInAt
-      })
-      .from(schema.analyticsLoginEvents)
-      .where(eq(schema.analyticsLoginEvents.userId, userId))
-      .orderBy(desc(schema.analyticsLoginEvents.loggedInAt))
-      .limit(1);
+    const [loginEvent, sessionEvent] = await Promise.all([
+      db
+        .select({
+          loggedInAt: schema.analyticsLoginEvents.loggedInAt
+        })
+        .from(schema.analyticsLoginEvents)
+        .where(eq(schema.analyticsLoginEvents.userId, userId))
+        .orderBy(desc(schema.analyticsLoginEvents.loggedInAt))
+        .limit(1),
+      db
+        .select({
+          updatedAt: schema.session.updatedAt
+        })
+        .from(schema.session)
+        .where(eq(schema.session.userId, userId))
+        .orderBy(desc(schema.session.updatedAt))
+        .limit(1)
+    ]);
 
-    return loginEvent?.loggedInAt;
+    return pickLatestTimestamp(loginEvent?.loggedInAt, sessionEvent?.updatedAt);
   } catch (error) {
-    console.error('getLastLoginAt error:', error);
+    console.error('getLastLogin error:', error);
     return null;
+  }
+}
+
+/**
+ * Batch lookup of last seen timestamps for multiple users.
+ * @param userIds User IDs
+ * @returns Map of user ID to last seen ISO timestamp
+ */
+export async function getLastSeenForUserIds(userIds: string[]): Promise<Map<string, string | null>> {
+  const uniqueUserIds = [...new Set(userIds)];
+  const lastSeenByUserId = new Map<string, string | null>(uniqueUserIds.map((userId) => [userId, null]));
+
+  if (uniqueUserIds.length === 0) {
+    return lastSeenByUserId;
+  }
+
+  try {
+    const [loginRows, sessionRows] = await Promise.all([
+      db
+        .select({
+          userId: schema.analyticsLoginEvents.userId,
+          lastSeen: sql<string>`MAX(${schema.analyticsLoginEvents.loggedInAt})`.as('last_seen')
+        })
+        .from(schema.analyticsLoginEvents)
+        .where(inArray(schema.analyticsLoginEvents.userId, uniqueUserIds))
+        .groupBy(schema.analyticsLoginEvents.userId),
+      db
+        .select({
+          userId: schema.session.userId,
+          lastSeen: sql<string>`MAX(${schema.session.updatedAt})`.as('last_seen')
+        })
+        .from(schema.session)
+        .where(inArray(schema.session.userId, uniqueUserIds))
+        .groupBy(schema.session.userId)
+    ]);
+
+    for (const row of loginRows) {
+      const current = lastSeenByUserId.get(row.userId) ?? null;
+      lastSeenByUserId.set(row.userId, pickLatestTimestamp(current, row.lastSeen));
+    }
+
+    for (const row of sessionRows) {
+      const current = lastSeenByUserId.get(row.userId) ?? null;
+      lastSeenByUserId.set(row.userId, pickLatestTimestamp(current, row.lastSeen));
+    }
+
+    return lastSeenByUserId;
+  } catch (error) {
+    console.error('getLastSeenForUserIds error:', error);
+    return lastSeenByUserId;
   }
 }
 
