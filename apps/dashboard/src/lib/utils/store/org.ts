@@ -81,16 +81,16 @@ type OrgPublicOrigin = Pick<AccountOrg, 'customDomain' | 'isCustomDomainVerified
 
 /**
  * Public origin for an org's tenant site (student LMS, public course pages, login-link handoff).
- * Verified custom domains win over the current browser host so admin URLs like
- * `app.example.com` still hand off to `example.com`.
+ * Self-hosted uses the current deployment URL. On cloud, verified custom domains win over the
+ * admin host so `app.classroomio.com` still hands off to the org's `example.com` tenant site.
  */
 export function getOrgPublicOrigin(org: OrgPublicOrigin): string {
-  if (org.customDomain && org.isCustomDomainVerified) {
-    return `https://${org.customDomain}`;
-  }
-
   if (PUBLIC_IS_SELFHOSTED === 'true') {
     return browser ? window.location.origin : '';
+  }
+
+  if (org.customDomain && org.isCustomDomainVerified) {
+    return `https://${org.customDomain}`;
   }
 
   if (dev && browser) {
