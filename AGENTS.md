@@ -453,7 +453,9 @@ Do not use `pnpm dev` (it trips turbo's concurrency cap). Build shared package `
 ### Deployment mode: self-hosted vs cloud (affects which features you can test)
 A single flag, `PUBLIC_IS_SELFHOSTED`, switches the whole product between **self-hosted** and **cloud** behavior. It is read in two places: the dashboard via `$env/static/public` (e.g. `apps/dashboard/src/lib/features/app/layout-setup.ts`) and the API/db layer via `@cio/core/config/env` (e.g. `apps/api/src/services/license.ts`, `apps/api/src/middlewares/license.ts`, `apps/api/src/services/onboarding.ts`). `FEATURE_AUDIT.md` §5 is the source-of-truth feature-by-feature map.
 
-- **Self-hosted (`PUBLIC_IS_SELFHOSTED=true`)** — what the local dev setup currently uses (this is the README contributor default; the seeded login `admin@test.com` belongs to the single org `udemy-test`):
+**This VM's local env is configured for CLOUD mode** (`PUBLIC_IS_SELFHOSTED=false` in both `apps/dashboard/.env` and `apps/api/.env`) so multi-tenant and all license-gated features are testable. The README contributor default is self-hosted; to switch this VM back, set `PUBLIC_IS_SELFHOSTED=true` in both files (or remove it from `apps/api/.env`) and restart both dev servers.
+
+- **Self-hosted (`PUBLIC_IS_SELFHOSTED=true`)** — the README contributor default:
   - Single organization, single domain: creating a 2nd org is blocked (`onboarding.ts`), the "add org" UI is hidden, and the org is auto-assigned a `selfhosted` `ENTERPRISE` plan.
   - Enterprise features `sso`, `token-auth`, `no-tracking` are gated behind `LICENSE_KEY`, verified against the external `https://enterprise-api.classroomio.dev`. Without a key, `requireLicense` returns 403.
   - Polar billing and PostHog/Umami analytics are off.
@@ -462,4 +464,15 @@ A single flag, `PUBLIC_IS_SELFHOSTED`, switches the whole product between **self
   - The license gate is a **no-op**, so all enterprise features are unlocked **without** a `LICENSE_KEY` — i.e. cloud mode is the easiest way to exercise SSO/token-auth/multi-org in dev.
   - Polar billing and analytics activate but are themselves gated by their own keys (absent keys just no-op), so they don't block startup.
 
-Non-obvious gotcha: the README local-dev setup only sets `PUBLIC_IS_SELFHOSTED=true` in `apps/dashboard/.env`; `apps/api/.env` leaves it unset, so the **API already behaves as cloud** (license no-op, 2nd org allowed) while the **dashboard UI is self-hosted**. To exercise a coherent mode, set the flag the same way in both `apps/dashboard/.env` and `apps/api/.env`. The flag is read at process start, so restart `pnpm dashboard:dev` (and `pnpm api:dev` if you changed the API) after editing it.
+Non-obvious gotcha: the README local-dev setup only sets `PUBLIC_IS_SELFHOSTED=true` in `apps/dashboard/.env`; `apps/api/.env` leaves it unset, so the **API behaves as cloud** (license no-op, 2nd org allowed) while the **dashboard UI is self-hosted**. To exercise a coherent mode, set the flag the same way in both files. The flag is read at process start, so restart the dev servers after editing it.
+
+### Seeded tenants (good for multi-tenant testing)
+The seed (`packages/db/src/utils/seed/organizationmember.ts`) creates **three independent organizations**, each with its own admin + student. All accounts use password `123456`:
+
+| Org (siteName) | Admin | Student | Example courses |
+|---|---|---|---|
+| Udemy Test (`udemy-test`) | `admin@test.com` | `student@test.com` | Modern Web Development with React; Getting started with MVC; Data Science with Python and Pandas |
+| Coursera Test (`coursera-test`) | `enterprise@test.com` | `enterprise-student@test.com` | SOC 2 Security Basics; HIPAA Awareness 2026 |
+| Skillshare Test (`skillshare-test`) | `early-adopter@test.com` | `early-adopter-student@test.com` | Product Management Fundamentals |
+
+In cloud mode you can demonstrate tenant isolation on the single local instance by visiting each org's public catalog via the `?org=<siteName>` param, e.g. `http://localhost:5173/?org=coursera-test` vs `?org=udemy-test` vs `?org=skillshare-test` — each renders its own branded catalog and courses. (Note: a user enrolled in courses across orgs becomes a member of multiple tenants, so after login the dashboard may open whichever org that user most recently used.)
