@@ -449,3 +449,17 @@ Do not use `pnpm dev` (it trips turbo's concurrency cap). Build shared package `
 - **MinIO is optional and not started by default.** Without it, image/media thumbnails show "Failed to load"; that is expected. Start it with `docker compose -f docker/docker-compose.yaml --profile minio up -d minio minio-init` and add the `OBJECT_STORAGE_*` vars from `README.md` to `apps/api/.env`.
 - **Pre-existing lint/test issues (not environment problems):** `pnpm --filter @cio/api lint` fails (missing ESLint v9 `eslint.config.*`); `pnpm --filter @cio/dashboard lint` runs but reports pre-existing errors; api `vitest run` passes 61 tests but 5 files fail to load `@cio/core/services/*/*` subpaths (Vite nested-wildcard exports quirk; Node resolves them fine); `pnpm --filter @cio/dashboard test` (jest) fails to parse `jest.config.ts`. The pre-commit gate `pnpm format:check` passes.
 - The optional `@cio/storybook` build fails on an unresolved `@lucide/svelte/icons/bot` import; it does not affect api/dashboard.
+
+### Deployment mode: self-hosted vs cloud (affects which features you can test)
+A single flag, `PUBLIC_IS_SELFHOSTED`, switches the whole product between **self-hosted** and **cloud** behavior. It is read in two places: the dashboard via `$env/static/public` (e.g. `apps/dashboard/src/lib/features/app/layout-setup.ts`) and the API/db layer via `@cio/core/config/env` (e.g. `apps/api/src/services/license.ts`, `apps/api/src/middlewares/license.ts`, `apps/api/src/services/onboarding.ts`). `FEATURE_AUDIT.md` §5 is the source-of-truth feature-by-feature map.
+
+- **Self-hosted (`PUBLIC_IS_SELFHOSTED=true`)** — what the local dev setup currently uses (this is the README contributor default; the seeded login `admin@test.com` belongs to the single org `udemy-test`):
+  - Single organization, single domain: creating a 2nd org is blocked (`onboarding.ts`), the "add org" UI is hidden, and the org is auto-assigned a `selfhosted` `ENTERPRISE` plan.
+  - Enterprise features `sso`, `token-auth`, `no-tracking` are gated behind `LICENSE_KEY`, verified against the external `https://enterprise-api.classroomio.dev`. Without a key, `requireLicense` returns 403.
+  - Polar billing and PostHog/Umami analytics are off.
+- **Cloud (`PUBLIC_IS_SELFHOSTED` unset or `false`)**:
+  - Multi-tenant: multiple orgs per user, "add org" shown; org is resolved from the **subdomain** (`acme.<PRIVATE_APP_HOST>`) or a custom domain. Locally there are no subdomains, so an org public site is simulated with the `?org=<siteName>` query param (sets the `_orgSiteName` cookie — see `layout-setup.ts`).
+  - The license gate is a **no-op**, so all enterprise features are unlocked **without** a `LICENSE_KEY` — i.e. cloud mode is the easiest way to exercise SSO/token-auth/multi-org in dev.
+  - Polar billing and analytics activate but are themselves gated by their own keys (absent keys just no-op), so they don't block startup.
+
+Non-obvious gotcha: the README local-dev setup only sets `PUBLIC_IS_SELFHOSTED=true` in `apps/dashboard/.env`; `apps/api/.env` leaves it unset, so the **API already behaves as cloud** (license no-op, 2nd org allowed) while the **dashboard UI is self-hosted**. To exercise a coherent mode, set the flag the same way in both `apps/dashboard/.env` and `apps/api/.env`. The flag is read at process start, so restart `pnpm dashboard:dev` (and `pnpm api:dev` if you changed the API) after editing it.
