@@ -1,6 +1,5 @@
 import { BaseApi, classroomio } from '$lib/utils/services/api';
-import { getOrgSiteUrl } from '$lib/utils/functions/org';
-import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
+import { currentOrg, getOrgPublicUrl, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
 import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils/store/user';
 
 import type { AccountResponse } from './types';
@@ -218,7 +217,7 @@ class AppInitApi extends BaseApi {
     const selectedOrg = get(currentOrg);
 
     if (isCloud && !isOrgSite && isStudent && selectedOrg.siteName) {
-      window.location.href = getOrgSiteUrl(selectedOrg, '/lms');
+      window.location.href = getOrgPublicUrl(selectedOrg, '/lms');
       return;
     }
 
