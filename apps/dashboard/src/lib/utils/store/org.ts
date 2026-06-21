@@ -104,6 +104,26 @@ export function getOrgPublicOrigin(org: OrgPublicOrigin): string {
   return browser ? window.location.origin : '';
 }
 
+/** Absolute URL on an org's public tenant site (e.g. `/lms`, `/course/{slug}`). Client-only. */
+export function getOrgPublicUrl(org: OrgPublicOrigin, pathname = '/'): string {
+  if (!browser) {
+    return pathname;
+  }
+
+  const origin = getOrgPublicOrigin(org);
+  if (!origin) {
+    return pathname;
+  }
+
+  const url = new URL(pathname, origin);
+
+  if (window.location.host.includes('localhost') && org.siteName) {
+    url.searchParams.set('org', org.siteName);
+  }
+
+  return url.toString();
+}
+
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => getOrgPublicOrigin($currentOrg));
 
 export const isFreePlan = derived(currentOrg, ($currentOrg) => {
