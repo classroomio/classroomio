@@ -2,6 +2,7 @@ import * as z from 'zod';
 
 import { defineEmail } from '../send';
 import { getDefaultTemplate } from '../templates';
+import { ZEmailBranding } from '../core/branding';
 
 export const studentCourseInviteEmail = defineEmail({
   id: 'studentCourseInvite',
@@ -10,7 +11,8 @@ export const studentCourseInviteEmail = defineEmail({
     orgName: z.string().min(1),
     courseName: z.string().min(1),
     inviteLink: z.string().url(),
-    expiresAt: z.string().min(1)
+    expiresAt: z.string().min(1),
+    branding: ZEmailBranding
   }),
   render: (fields) => {
     const content = `
@@ -22,6 +24,6 @@ export const studentCourseInviteEmail = defineEmail({
       </div>
     `;
 
-    return getDefaultTemplate(content);
+    return getDefaultTemplate(content, fields.branding);
   }
 });

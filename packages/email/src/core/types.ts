@@ -29,6 +29,8 @@ export interface SendConfig<TSchema extends z.ZodType = z.ZodType> {
   fields: z.infer<TSchema>;
   from?: string;
   replyTo?: string;
+  /** Optional iCalendar (.ics) body delivered as a text/calendar part. */
+  ics?: string;
 }
 
 /**

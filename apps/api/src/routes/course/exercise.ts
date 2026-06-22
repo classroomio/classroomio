@@ -29,8 +29,14 @@ import {
   initVideoRecordingUpload
 } from '@api/services/exercise/video-recording';
 
+import {
+  getNotifyCourseExerciseStatusService,
+  notifyCourseExerciseService
+} from '@api/services/course/notify-exercise';
+
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
+import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-member-or-automation-key';
@@ -80,6 +86,28 @@ export const exerciseRouter = new Hono()
       return c.json({ success: true, data }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to fetch exercise submissions overview');
+    }
+  })
+  .post('/:exerciseId/notify', authMiddleware, courseTeamMemberMiddleware, async (c) => {
+    try {
+      const courseId = c.req.param('courseId')!;
+      const exerciseId = c.req.param('exerciseId')!;
+
+      const result = await notifyCourseExerciseService(courseId, exerciseId);
+      return c.json({ success: true, data: result }, 202);
+    } catch (error) {
+      return handleError(c, error, 'Failed to notify students');
+    }
+  })
+  .get('/:exerciseId/notify/:jobId', authMiddleware, courseTeamMemberMiddleware, async (c) => {
+    try {
+      const jobId = c.req.param('jobId')!;
+      const pollCount = Number.parseInt(c.req.query('pollCount') ?? '0', 10) || 0;
+
+      const envelope = await getNotifyCourseExerciseStatusService(jobId, pollCount);
+      return c.json({ success: true, data: envelope }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch notification status');
     }
   })
   .get(

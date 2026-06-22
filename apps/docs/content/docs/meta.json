@@ -18,8 +18,37 @@
     "student-dashboard",
     "enterprise-sso",
 
-    "---Guides---",
-    "how-to-guides",
+    "---Get started---",
+    "create-first-course",
+
+    "---Build a course---",
+    "course-types",
+    "create-exercise",
+    "grade-exercise",
+    "course-progression",
+    "use-math-in-editor",
+    "certificates",
+
+    "---Live classes---",
+    "live-class",
+    "take-attendance",
+
+    "---Enrollment & students---",
+    "course-enrollment",
+    "welcome-email",
+    "invite-students",
+
+    "---Publish your academy---",
+    "course-landingpage",
+    "org-landing-page",
+    "custom-domain",
+
+    "---Organization & team---",
+    "customize-organization",
+    "invite-team-member",
+    "roles-and-permissions",
+
+    "---Contributor guides---",
     "contributor-guides"
   ]
 }

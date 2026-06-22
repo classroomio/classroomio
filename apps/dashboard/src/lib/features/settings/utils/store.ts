@@ -14,3 +14,17 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable(create
  * no section is selected — the editor shows the section list.
  */
 export const landingPageEditorSelection: Writable<LandingSectionKey | null> = writable(null);
+
+type SettingsHeaderAction = {
+  label: string;
+  disabled: boolean;
+  loading: boolean;
+  onClick: null | (() => void | Promise<void>);
+};
+
+export const settingsHeaderAction: Writable<SettingsHeaderAction> = writable({
+  label: 'Save',
+  disabled: true,
+  loading: false,
+  onClick: null
+});

@@ -3,6 +3,7 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import EyeIcon from '@lucide/svelte/icons/eye';
   import { Button } from '@cio/ui/base/button';
+  import { Waves } from '@cio/ui/custom/animation';
   import { page } from '$app/state';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { isStudentExperience } from '$lib/utils/store/app';
@@ -58,9 +59,22 @@
 
     <span class="grow"></span>
 
-    <Button variant="outline" size="sm" onclick={toggleAiAssistant}>
-      <SparklesIcon size={14} />
-      {$t('course.navItems.nav_ai_assistant')}
+    <Button
+      size="sm"
+      onclick={toggleAiAssistant}
+      class="ui:bg-primary ui:text-primary-foreground relative overflow-hidden border-0"
+    >
+      <Waves
+        lineColor="rgba(255,255,255,0.55)"
+        xGap={8}
+        yGap={12}
+        waveAmpX={18}
+        waveAmpY={9}
+        waveSpeedX={0.04}
+        waveSpeedY={0.02}
+      />
+      <SparklesIcon size={14} class="relative z-10" />
+      <span class="relative z-10">{$t('course.navItems.nav_ai_assistant')}</span>
     </Button>
 
     {#if !$isStudentExperience}

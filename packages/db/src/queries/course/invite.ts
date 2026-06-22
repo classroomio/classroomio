@@ -350,6 +350,8 @@ export type TCourseInviteAcceptBundle = {
     siteName: string;
     customDomain: string | null;
     isCustomDomainVerified: boolean | null;
+    avatarUrl: string | null;
+    theme: string | null;
   };
 };
 
@@ -374,7 +376,9 @@ export async function selectCourseInviteAcceptBundleByTokenHash(
           name: schema.organization.name,
           siteName: schema.organization.siteName,
           customDomain: schema.organization.customDomain,
-          isCustomDomainVerified: schema.organization.isCustomDomainVerified
+          isCustomDomainVerified: schema.organization.isCustomDomainVerified,
+          avatarUrl: schema.organization.avatarUrl,
+          theme: schema.organization.theme
         }
       })
       .from(schema.courseInvite)

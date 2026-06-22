@@ -2,6 +2,7 @@ import * as z from 'zod';
 
 import { defineEmail } from '../send';
 import { getDefaultTemplate } from '../templates';
+import { ZEmailBranding } from '../core/branding';
 
 export const teacherStudentBuyRequestEmail = defineEmail({
   id: 'teacherStudentBuyRequest',
@@ -9,7 +10,8 @@ export const teacherStudentBuyRequestEmail = defineEmail({
   schema: z.object({
     courseName: z.string().min(1),
     studentEmail: z.string().email(),
-    studentFullname: z.string().min(1)
+    studentFullname: z.string().min(1),
+    branding: ZEmailBranding
   }),
   render: (fields) => {
     const content = `
@@ -22,6 +24,6 @@ export const teacherStudentBuyRequestEmail = defineEmail({
       </p>
     `;
 
-    return getDefaultTemplate(content);
+    return getDefaultTemplate(content, fields.branding);
   }
 });

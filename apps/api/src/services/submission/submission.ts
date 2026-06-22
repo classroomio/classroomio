@@ -12,8 +12,8 @@ import type {
   TSubmissionGradesUpdate,
   TSubmissionUpdate
 } from '@cio/utils/validation/submission';
-import { buildEmailFromName } from '@cio/email';
-import { enqueueRawEmail } from '@api/services/jobs';
+import { buildEmailBranding, buildEmailFromName } from '@cio/email';
+import { enqueueTransactionalEmail } from '@api/services/jobs';
 import {
   createSubmission,
   deleteSubmission,
@@ -34,7 +34,7 @@ import {
   getQuestionTypeByTypename,
   requiresManualGrading
 } from '@cio/question-types';
-import { getCourseById, getOrganizationByCourseId } from '@cio/db/queries/course';
+import { getCourseById, getCourseWithOrgData } from '@cio/db/queries/course';
 import { getCourseTeachers, getProfileByGroupMemberId } from '@cio/db/queries/course/people';
 import { getExerciseById, getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
 import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
@@ -578,7 +578,8 @@ export async function createSubmissionService(
         .map((question) => question.questionType?.typename ?? '')
         .filter((typename) => typename.length > 0)
     );
-    const gradingState: SubmissionGradingState = 'queued';
+    const gradingState: SubmissionGradingState =
+      overallStatus === 'manual_required' || overallStatus === 'hybrid' ? 'awaiting_manual' : 'queued';
 
     const submissionData: TNewSubmission = {
       courseId,
@@ -869,7 +870,6 @@ export async function updateSubmissionGradesBatch(
     const currentGradingState = resolveSubmissionGradingState(submission);
     const targetGradingState: SubmissionGradingState = 'completed';
     const targetStatusId = projectLegacyStatusId(targetGradingState);
-
     if (!isAllowedGradingTransition(currentGradingState, targetGradingState)) {
       throw new AppError('Invalid submission workflow transition', ErrorCodes.VALIDATION_ERROR, 400);
     }
@@ -965,13 +965,17 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
     return;
   }
 
-  // Get organization name
-  const orgResult = await getOrganizationByCourseId(fullSubmission.courseId || '');
+  // Get organization name and URL info
+  const orgResult = await getCourseWithOrgData(fullSubmission.courseId || '');
 
   const orgName = orgResult?.orgName || 'ClassroomIO';
 
   const statusText = LEGACY_BOARD_STATUS_LABELS[newStatusId] || 'Updated';
-  const baseUrl = getDashboardBaseUrl();
+  const baseUrl = getDashboardBaseUrl({
+    siteName: orgResult?.orgSiteName,
+    customDomain: orgResult?.orgCustomDomain,
+    isCustomDomainVerified: orgResult?.orgIsCustomDomainVerified
+  });
   const exerciseLink = `${baseUrl}/courses/${fullSubmission.courseId}/exercises/${fullSubmission.exercise.id}`;
 
   // Calculate total and max points
@@ -979,37 +983,33 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
   const totalMark = answers.reduce((sum: number, a: any) => sum + (a.point || 0), 0);
   const maxMark = (fullSubmission.exercise.questions || []).reduce((sum: number, q: any) => sum + (q.points || 0), 0);
 
-  let content = `
-    <p>Hello ${fullSubmission.groupmember.profile.fullname || 'Student'},</p>
-    <p>The status of your submitted exercise on <strong>${fullSubmission.exercise.title}</strong> has been updated to ${statusText}</p>
-  `;
+  const isGraded = newStatusId === 3;
+  const score = isGraded ? `${totalMark}/${maxMark}` : undefined;
 
-  if (newStatusId === 3) {
-    content += `
-      <p>Your score was ${totalMark}/${maxMark}</p>
-      <a class="button" href="${exerciseLink}">View your Result</a>
-    `;
-  } else {
-    content += `<a class="button" href="${exerciseLink}">Open Exercise</a>`;
+  try {
+    await enqueueTransactionalEmail('submissionGraded', {
+      to: fullSubmission.groupmember.profile.email,
+      fields: {
+        orgName,
+        studentName: fullSubmission.groupmember.profile.fullname || 'Student',
+        exerciseTitle: fullSubmission.exercise.title,
+        courseName: course.title,
+        statusText,
+        exerciseLink,
+        score,
+        lessonTitle: fullSubmission.lesson?.title,
+        branding: buildEmailBranding({
+          name: orgResult?.orgName,
+          avatarUrl: orgResult?.orgAvatarUrl,
+          theme: orgResult?.orgTheme
+        })
+      },
+      from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
+      idempotencyKey: `submission-update:${submissionId}:${newStatusId}`
+    });
+  } catch (error) {
+    console.error('Failed to enqueue submission graded email:', error);
   }
-
-  if (fullSubmission.lesson?.title) {
-    content += `
-      <p>This exercise is for <strong>${fullSubmission.lesson.title}</strong> in a course you are taking titled <strong>${course.title}</strong></p>
-    `;
-  } else {
-    content += `
-      <p>This exercise is in a course you are taking titled <strong>${course.title}</strong></p>
-    `;
-  }
-
-  await enqueueRawEmail({
-    from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-    to: fullSubmission.groupmember.profile.email,
-    subject: 'Submission Update',
-    content,
-    idempotencyKey: `submission-update:${submissionId}:${newStatusId}`
-  });
 }
 
 /**
@@ -1042,32 +1042,43 @@ async function sendExerciseSubmissionUpdateEmail(courseId: string, exerciseId: s
     return;
   }
 
-  // Get organization name
-  const orgResult = await getOrganizationByCourseId(courseId);
+  // Get organization name and URL info
+  const orgResult = await getCourseWithOrgData(courseId);
 
   const orgName = orgResult?.orgName || 'ClassroomIO';
 
-  const baseUrl = getDashboardBaseUrl();
+  const baseUrl = getDashboardBaseUrl({
+    siteName: orgResult?.orgSiteName,
+    customDomain: orgResult?.orgCustomDomain,
+    isCustomDomainVerified: orgResult?.orgIsCustomDomainVerified
+  });
   const exerciseLink = `${baseUrl}/courses/${courseId}/exercises/${exerciseId}`;
   const submissionLink = `${baseUrl}/courses/${courseId}/submissions`;
 
-  const content = `
-    <p>Hello,</p>
-    <p>A student ${student.fullname || student.username} just submitted an exercise <a href="${exerciseLink}">${exercise.title}</a></p>
-    <p>You can get started grading by clicking "Open Submissions"</p>
-    <div>
-      <a class="button" href="${submissionLink}">Open Submissions</a>
-    </div>
-  `;
+  const studentName = student.fullname || student.username || 'A student';
 
   const tutorEmails = tutorsResult.map((tutor) => tutor.email).filter((email): email is string => Boolean(email));
   if (tutorEmails.length === 0) return;
 
-  await enqueueRawEmail({
-    from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-    to: tutorEmails,
-    subject: `[Submitted]: ${exercise.title}`,
-    content,
-    idempotencyKey: `exercise-submitted:${courseId}:${exerciseId}:${submittedBy}`
-  });
+  try {
+    await enqueueTransactionalEmail('submissionReceived', {
+      to: tutorEmails,
+      fields: {
+        orgName,
+        studentName,
+        exerciseTitle: exercise.title,
+        exerciseLink,
+        submissionLink,
+        branding: buildEmailBranding({
+          name: orgResult?.orgName,
+          avatarUrl: orgResult?.orgAvatarUrl,
+          theme: orgResult?.orgTheme
+        })
+      },
+      from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
+      idempotencyKey: `exercise-submitted:${courseId}:${exerciseId}:${submittedBy}`
+    });
+  } catch (error) {
+    console.error('Failed to enqueue submission received email:', error);
+  }
 }
