@@ -1011,7 +1011,7 @@ export const getEnrolledCourses = async ({
           or(isNotNull(schema.groupmember.id), isNotNull(schema.programMember.id))
         )
       )
-      .groupBy(schema.course.id, schema.courseCompletionRecord.id)
+      .groupBy(schema.course.id, schema.groupmember.id, schema.courseCompletionRecord.id)
       .orderBy(desc(schema.course.createdAt));
 
     const liveCourseIds = result.filter((row) => row.course.type === 'LIVE_CLASS').map((row) => row.course.id);
