@@ -21,6 +21,7 @@ import { setSentryUser } from '$lib/utils/services/sentry';
 import { setTheme } from '$lib/utils/functions/theme';
 import { setupAnalyticsBasedOnLicense } from '$lib/utils/functions/appSetup';
 import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
+import { ROLE } from '@cio/utils/constants';
 
 type AppSetupParams = {
   isOrgSite: boolean;
@@ -215,9 +216,20 @@ class AppInitApi extends BaseApi {
     const isCloud = PUBLIC_IS_SELFHOSTED !== 'true';
     const isStudent = get(isOrgStudent);
     const selectedOrg = get(currentOrg);
+    const userHasOneOrg = this.data.organizations === 1;
+    const userIsStudentInAllOrgs = this.data.organizations.every((org) => org.roleId === ROLE.STUDENT);
+    const userIsAdminInAtleastOneOrg = this.data.organizations.some((org) => org.roleId === ROLE.ADMIN);
 
-    if (isCloud && !isOrgSite && isStudent && selectedOrg.siteName) {
+    if (userHasOneOrg && isCloud && !isOrgSite && isStudent && selectedOrg.siteName && userIsStudentInAllOrgs) {
       window.location.href = getOrgPublicUrl(selectedOrg, '/lms');
+      return;
+    }
+
+    // User is an admin in at least one org, so they should be redirected to the org dashboard.
+    if (userIsAdminInAtleastOneOrg && isCloud && !isOrgSite) {
+      const orgWithAdminRole = this.data.organizations.find((org) => org.roleId === ROLE.ADMIN);
+
+      goto(resolve(`/org/${orgWithAdminRole.siteName}`, {}));
       return;
     }
 
