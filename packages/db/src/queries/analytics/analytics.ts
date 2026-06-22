@@ -44,7 +44,7 @@ function pickLatestTimestamp(...values: Array<string | Date | null | undefined>)
  */
 export async function getLastLogin(userId: string): Promise<string | null> {
   try {
-    const [loginEvent, sessionEvent] = await Promise.all([
+    const [[loginEvent], [sessionEvent]] = await Promise.all([
       db
         .select({
           loggedInAt: schema.analyticsLoginEvents.loggedInAt
