@@ -20,6 +20,8 @@ export interface EnqueueTemplateEmailInput<TId extends EmailId> extends CommonOp
   fields: z.infer<EmailSchemaFor<TId>>;
   from?: string;
   replyTo?: string;
+  /** Optional iCalendar (.ics) body attached as a text/calendar part. */
+  ics?: string;
 }
 
 export interface EnqueueRawEmailInput extends CommonOptions {
@@ -81,7 +83,8 @@ export async function enqueueTransactionalEmail<TId extends EmailId>(
         to: recipient,
         fields: validatedFields,
         from: input.from,
-        replyTo: input.replyTo
+        replyTo: input.replyTo,
+        ics: input.ics
       },
       { idempotencyKey: recipientKey(input.idempotencyKey, recipient, recipients.length) }
     );

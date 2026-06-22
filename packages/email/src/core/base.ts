@@ -19,7 +19,8 @@ export async function sendTemplateEmail<TSchema extends z.ZodType>(
       subject: config.template.subject,
       content,
       from: config.from ?? config.template.from,
-      replyTo: config.replyTo ?? config.template.replyTo
+      replyTo: config.replyTo ?? config.template.replyTo,
+      ics: config.ics
     }
   ]);
 }

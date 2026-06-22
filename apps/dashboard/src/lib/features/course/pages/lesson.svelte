@@ -55,6 +55,7 @@
   import { loadDraft, clearDraft } from '$features/course/utils/lesson-draft';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import StudentContentLockedNotice from '$features/course/components/student-content-locked-notice.svelte';
+  import LiveSessionCard from '$features/course/components/lesson/live-session-card.svelte';
 
   interface Props {
     courseId: string;
@@ -94,6 +95,7 @@
   const isLessonUnlocked = $derived(!isTeacherLocked && !isProgressionLocked);
   const lessonSlug = $derived(lessonApi.lesson?.slug ?? '');
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
+  const isLiveSessionLesson = $derived(Boolean(lessonApi.lesson?.callUrl && lessonApi.lesson?.lessonAt));
 
   function setModeQueryParam(value: (typeof MODES)[keyof typeof MODES]) {
     const params = new SvelteURLSearchParams($page.url.searchParams);
@@ -445,9 +447,18 @@
 
 <Page.Body>
   {#snippet child()}
-    <div
-      class={`overflow-x-hidden py-6 pb-20 ${mode === MODES.edit ? 'lg:w-full xl:w-11/12' : 'mx-auto w-full max-w-3xl'}`}
-    >
+    <div class={`overflow-x-hidden pb-6 ${mode === MODES.edit ? 'lg:w-full xl:w-11/12' : 'mx-auto w-full max-w-3xl'}`}>
+      {#if isLiveSessionLesson && mode === MODES.view && !($isOrgStudent && !isLessonUnlocked)}
+        <div class="mb-4">
+          <LiveSessionCard
+            title={lessonTitle}
+            callUrl={lessonApi.lesson?.callUrl ?? ''}
+            lessonAt={lessonApi.lesson?.lessonAt ?? ''}
+            timezone={courseApi.course?.metadata?.sessionTimezone}
+          />
+        </div>
+      {/if}
+
       {#if $isOrgStudent && !isLessonUnlocked}
         <StudentContentLockedNotice
           reason={isProgressionLocked ? 'progression_locked' : 'teacher_locked'}

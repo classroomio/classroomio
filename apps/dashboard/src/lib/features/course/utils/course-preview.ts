@@ -1,7 +1,9 @@
+import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
 import { accountApi } from '$features/account/api/account.svelte';
+import { currentOrg, getOrgPublicOrigin } from '$lib/utils/store/org';
 
 interface OpenCoursePreviewOptions {
   courseId: string;
@@ -21,7 +23,7 @@ export function getPublicCoursePageUrl(courseSlug: string, currentOrgDomain = ''
   }
 
   const trimmedDomain = currentOrgDomain?.trim();
-  const origin = trimmedDomain || window.location.origin;
+  const origin = trimmedDomain || getOrgPublicOrigin(get(currentOrg));
 
   return new URL(resolve(`/course/${courseSlug}`, {}), origin).toString();
 }
@@ -73,7 +75,7 @@ export async function viewAsStudent({ courseId, currentOrgDomain = '' }: ViewAsS
     return false;
   }
 
-  const origin = currentOrgDomain?.trim() || window.location.origin;
+  const origin = currentOrgDomain?.trim() || getOrgPublicOrigin(get(currentOrg));
   const loginLinkUrl = new URL('/api/auth/login-link', origin);
   loginLinkUrl.searchParams.set('token', token);
   loginLinkUrl.searchParams.set('redirect', `/courses/${courseId}/lessons?next=true`);

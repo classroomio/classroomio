@@ -40,7 +40,11 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import { isOrgStudent } from '$lib/utils/store/app';
-  import { openCourseCompletionModal } from '$features/course/store/course-completion-modal';
+  import {
+    openCourseCompletionModal,
+    updateCourseCompletionModal,
+    closeCourseCompletionModal
+  } from '$features/course/store/course-completion-modal';
   import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
   import { toExerciseQuestionModel } from './question-type-utils';
   import { getExerciseQuestionLabels } from './question-labels';
@@ -152,7 +156,19 @@
         $isOrgStudent && allContentItems.length > 0 && allContentItems.every((item) => item.isComplete);
 
       if (allComplete && courseApi.course?.id) {
+        const requiredExerciseId = courseApi.course?.certificate?.requiredExerciseId ?? undefined;
         openCourseCompletionModal(courseApi.course.id);
+
+        const certRes = await courseApi.getCertificationEvaluation(courseApi.course.id);
+        if (certRes?.data) {
+          if (certRes.data.isNewCompletion) {
+            updateCourseCompletionModal(courseApi.course.id, 'eligible', certRes.data, requiredExerciseId);
+          } else {
+            updateCourseCompletionModal(courseApi.course.id, 'not-eligible', certRes.data, requiredExerciseId);
+          }
+        } else {
+          closeCourseCompletionModal();
+        }
       }
     }
 

@@ -38,7 +38,7 @@ const setupTransporter = async () => {
 };
 
 export async function sendWithNodemailer(emailData: TEmailData): Promise<EmailResponse> {
-  const { from, to, subject, content, replyTo } = emailData;
+  const { from, to, subject, content, replyTo, ics } = emailData;
 
   if (!transporter) {
     transporter = await setupTransporter();
@@ -57,7 +57,8 @@ export async function sendWithNodemailer(emailData: TEmailData): Promise<EmailRe
       to,
       subject,
       replyTo,
-      html: content
+      html: content,
+      ...(ics ? { icalEvent: { filename: 'session.ics', method: 'PUBLISH', content: ics } } : {})
     });
 
     return {

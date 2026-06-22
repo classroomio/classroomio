@@ -5,7 +5,7 @@ import type {
   TImportAudienceMembers
 } from '@cio/utils/validation/organization';
 import { addGroupMembers, enrollUsersInCourseGroups, getExistingGroupMembers } from '@cio/db/queries/group';
-import { buildEmailFromName } from '@cio/email';
+import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { addProgramMember, getExistingProgramMembers, getProgramsByOrg } from '@cio/db/queries/program';
 import {
@@ -30,6 +30,7 @@ import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { getProfilesByEmails } from '@cio/db/queries/auth';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
+import { getWelcomeSessionIcs } from '../course/session-invite';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ORG_INVITE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
@@ -62,8 +63,11 @@ function generateToken(): string {
   return crypto.randomBytes(32).toString('base64url');
 }
 
-function buildInviteLink(token: string): string {
-  return `${getDashboardBaseUrl()}/invite/${encodeURIComponent(token)}`;
+function buildInviteLink(
+  token: string,
+  org?: { siteName?: string | null; customDomain?: string | null; isCustomDomainVerified?: boolean | null }
+): string {
+  return `${getDashboardBaseUrl(org)}/invite/${encodeURIComponent(token)}`;
 }
 
 function getExpiryLabel(expiresAtIso: string): string {
@@ -170,6 +174,7 @@ async function enrollAudienceStudentProfilesInCourses(
 
   const validGroupIds = courseGroups.map((cg) => cg.groupId).filter(Boolean) as string[];
   const courseTitleByGroupId = new Map(courseGroups.map((cg) => [cg.groupId, cg.courseTitle]));
+  const welcomeMessageByGroupId = new Map(courseGroups.map((cg) => [cg.groupId, cg.welcomeEmailMessage]));
   const validProfiles = uniqueProfileIds.filter((id) => validProfileIds.has(id));
 
   const pairs = validProfiles.flatMap((profileId) => validGroupIds.map((groupId) => ({ groupId, profileId })));
@@ -198,6 +203,10 @@ async function enrollAudienceStudentProfilesInCourses(
   const loginUrl = getDashboardBaseUrl(organization);
 
   if (shouldSendEmail && toInsert.length > 0) {
+    const icsByGroupId = new Map(
+      await Promise.all(courseGroups.map(async (cg) => [cg.groupId, await getWelcomeSessionIcs(cg.courseId)] as const))
+    );
+
     const emailPromises = toInsert
       .filter((p) => profileEmailMap.get(p.profileId))
       .map(async (p) => {
@@ -208,10 +217,13 @@ async function enrollAudienceStudentProfilesInCourses(
             fields: {
               orgName: organization.name,
               courseName: courseTitleByGroupId.get(p.groupId) || 'Course',
-              loginUrl
+              loginUrl,
+              customMessage: welcomeMessageByGroupId.get(p.groupId) ?? undefined,
+              branding: buildEmailBranding(organization)
             },
             from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
-            idempotencyKey: `audience-course-welcome:${p.groupId}:${p.profileId}`
+            idempotencyKey: `audience-course-welcome:${p.groupId}:${p.profileId}`,
+            ics: icsByGroupId.get(p.groupId)
           });
           emailsSent++;
         } catch (emailError) {
@@ -290,7 +302,8 @@ async function enrollAudienceStudentProfilesInPrograms(
               fields: {
                 orgName: organization.name,
                 programName: programNameById.get(pair.programId) || 'Program',
-                loginUrl
+                loginUrl,
+                branding: buildEmailBranding(organization)
               },
               from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
               idempotencyKey: `audience-program-welcome:${pair.programId}:${pair.profileId}`
@@ -387,7 +400,7 @@ async function createStudentOrgInvitesAndSendEmails(input: {
       const invite = inviteByEmail.get(email)!;
       const token = tokenByEmail.get(email)!;
       try {
-        const inviteLink = buildInviteLink(token);
+        const inviteLink = buildInviteLink(token, organization);
         await enqueueTransactionalEmail('studentOrgInvite', {
           to: email,
           fields: {
@@ -395,7 +408,8 @@ async function createStudentOrgInvitesAndSendEmails(input: {
             orgName: organization.name,
             inviteLink,
             expiresAt: getExpiryLabel(expiresAt),
-            courseNames: accessNamesLabel
+            courseNames: accessNamesLabel,
+            branding: buildEmailBranding(organization)
           },
           from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
           idempotencyKey: `student-org-invite:${invite.id}`
@@ -677,7 +691,7 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
 
   let emailSent = false;
   try {
-    const inviteLink = buildInviteLink(token);
+    const inviteLink = buildInviteLink(token, organization);
     await enqueueTransactionalEmail('studentOrgInvite', {
       to: emailToUse,
       fields: {
@@ -685,7 +699,8 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
         orgName: organization.name,
         inviteLink,
         expiresAt: getExpiryLabel(expiresAt),
-        courseNames: accessNamesLabel
+        courseNames: accessNamesLabel,
+        branding: buildEmailBranding(organization)
       },
       from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
       idempotencyKey: `student-org-invite:${invite.id}`

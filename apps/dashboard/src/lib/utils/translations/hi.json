@@ -677,6 +677,15 @@
     "user_analytics": {
       "title": "छात्र प्रोफ़ाइल",
       "page_subtitle": "Progress, grades, and activity across their courses."
+    },
+    "delete": {
+      "action": "हटाएँ",
+      "title": "सदस्य हटाएँ",
+      "description": "यह सदस्य को आपके संगठन से हटा देता है और सभी निर्दिष्ट पाठ्यक्रमों और कार्यक्रमों तक उनकी पहुंच रद्द कर देता है।",
+      "confirmation": "क्या आप वाकई {name} ({email}) को हटाना चाहते हैं? इस एक्शन को वापस नहीं किया जा सकता।",
+      "cancel": "रद्द करें",
+      "confirm": "हटाएँ",
+      "snackbar_success": "सदस्य हटा दिया गया"
     }
   },
   "community": {
@@ -803,6 +812,12 @@
           "animation_waves": "लहरें",
           "animation_dotted": "बिंदीदार",
           "animation_none": "कोई नहीं"
+        },
+        "course_type_learn_more": "और जानें",
+        "welcome_email": {
+          "title": "आपका स्वागत है ईमेल",
+          "description": "नामांकन के बाद छात्रों को प्राप्त होने वाले ईमेल को अनुकूलित करें। एक व्यक्तिगत नोट, निर्देश, या एक लाइव सत्र लिंक जोड़ें।",
+          "placeholder": "नामांकन के समय विद्यार्थियों को मिलने वाला स्वागत संदेश लिखें..."
         }
       },
       "analytics": {
@@ -1054,7 +1069,7 @@
           "add": "जोड़ें",
           "add_team": "अपने टीम के साथियों या सहयोगियों को अपने संगठन में जोड़ें। एक साथ काम करना शुरू करें",
           "invite": "आमंत्रित करें",
-          "placeholder": "ईमेल अल्पविराम से अलग किया गया",
+          "placeholder": "user1@domain.com, user2@domain.com",
           "role": "भूमिका",
           "send_invite": "आमंत्रण भेजें",
           "members": "सदस्य",
@@ -1066,6 +1081,7 @@
             "description": "इस लिंक वाला कोई भी व्यक्ति आपके संगठन में शामिल हो सकता है।",
             "generate": "लिंक जनरेट करें",
             "copy": "प्रतिलिपि",
+            "copy_invite_link": "आमंत्रण लिंक कॉपी करें",
             "copied": "नकल की गई!",
             "toggle_label": "लिंक आमंत्रण सक्रिय",
             "disabled_notice": "यह लिंक अक्षम है. नए सदस्यों को लिंक के माध्यम से जुड़ने की अनुमति देने के लिए इसे सक्षम करें।",
@@ -1775,7 +1791,13 @@
             "settings_completion_policy": "समापन नियम",
             "settings_completion_submitted": "सबमिट किया गया - कोई भी सबमिशन मायने रखता है",
             "settings_completion_passed": "उत्तीर्ण - न्यूनतम अंक आवश्यक",
-            "settings_pass_threshold": "पास सीमा (%)"
+            "settings_pass_threshold": "पास सीमा (%)",
+            "notify": {
+              "action": "छात्रों को सूचित करें",
+              "sending": "छात्रों को सूचित किया जा रहा है...",
+              "sent": "{count} छात्रों को सूचित किया गया",
+              "failed": "छात्रों को सूचित नहीं किया जा सका"
+            }
           },
           "new_exercise_modal": {
             "heading": "नया व्यायाम",
@@ -2046,6 +2068,41 @@
           "sections": "अनुभाग",
           "lessons": "सबक",
           "exercises": "व्यायाम"
+        },
+        "session": {
+          "join": "सत्र में शामिल हों",
+          "heading": "लाइव सत्र",
+          "intro": "इस लाइव क्लास के लिए जॉइन लिंक और निर्धारित समय निर्धारित करें। छात्रों को 24 घंटे और 1 घंटे पहले रिमाइंडर मिलते हैं।",
+          "link_label": "लिंक से जुड़ें (ज़ूम, मीट, आदि)",
+          "datetime_label": "दिनांक और समय",
+          "timezone_label": "समयक्षेत्र",
+          "timezone_helper": "अनुस्मारक और कैलेंडर आमंत्रण प्रदर्शन के लिए इस समयक्षेत्र का उपयोग करते हैं।",
+          "save": "सत्र सहेजें",
+          "saved": "सत्र सहेजा गया",
+          "notified": "छात्रों को अद्यतन सत्र की सूचना दी गई",
+          "notify_failed": "छात्रों को परिवर्तन के बारे में सूचित नहीं किया जा सका",
+          "confirm_title": "परिवर्तन के बारे में छात्रों को सूचित करें?",
+          "confirm_body": "सेविंग सभी नामांकित छात्रों को अद्यतन सत्र के बारे में एक नए कैलेंडर आमंत्रण के साथ ईमेल करेगी जो उनके कैलेंडर पर ईवेंट को अपडेट करता है।",
+          "confirm_cancel": "रद्द करें",
+          "confirm_save": "सहेजें और सूचित करें",
+          "live_indicator": "यह पाठ एक लाइव सत्र है",
+          "live_session": "लाइव सत्र",
+          "live_now": "अभी लाइव",
+          "live_event": "लाइव सत्र",
+          "started": "शुरू हुआ",
+          "min_ago": "मिनट पहले",
+          "join_now": "अभी शामिल हों",
+          "copy_link": "लिंक कॉपी करें",
+          "copy": "प्रतिलिपि",
+          "add_to_calendar": "कैलेंडर में जोड़ें",
+          "add_google": "गूगल कैलेंडर",
+          "add_outlook": "आउटलुक.कॉम",
+          "add_office365": "कार्यालय 365",
+          "add_yahoo": "याहू कैलेंडर",
+          "add_apple": "एप्पल कैलेंडर (.ics)",
+          "starts_in": "में शुरू होता है",
+          "session_ended": "सत्र ख़त्म हुआ",
+          "link_copied": "लिंक कॉपी किया गया"
         }
       },
       "news_feed": {
@@ -2211,7 +2268,10 @@
         "title": "पाठ्यक्रम की आवश्यकताएँ पूर्ण!",
         "subtitle": "बधाई हो - आप अपना प्रमाणपत्र कभी भी देख और डाउनलोड कर सकते हैं।",
         "view_certificate": "प्रमाणपत्र देखें",
-        "later": "बंद करें"
+        "later": "बंद करें",
+        "checking": "पात्रता की जाँच की जा रही है...",
+        "not_eligible_title": "लगभग वहाँ",
+        "retake_exercise": "पुनः व्यायाम करें"
       }
     },
     "certificates": {
@@ -2236,7 +2296,8 @@
       "blocker_final_score": "\"{exerciseTitle}\" पर आपका सर्वोत्तम स्कोर {bestPercent}% है; {requiredPercent}% आवश्यक है.",
       "blocker_final_misconfigured": "प्रमाणन अभ्यास \"{exerciseTitle}\" में कोई बिंदु कॉन्फ़िगर नहीं किया गया है; अपने प्रशिक्षक से इसे ठीक करने के लिए कहें।",
       "email_message_label": "ईमेल संदेश",
-      "email_message_placeholder": "जैसे हमें आपकी प्रगति पर गर्व है - सीखते रहें!"
+      "email_message_placeholder": "जैसे हमें आपकी प्रगति पर गर्व है - सीखते रहें!",
+      "final_exercise_multiple_attempts_note": "छात्रों को चयनित अभ्यास पर असीमित प्रयासों की अनुमति दी जाएगी।"
     },
     "creator": {
       "heading": "आप कौन सा कोर्स बनाना चाहते हैं?",
@@ -2440,8 +2501,10 @@
     "learner": "छात्र",
     "progress": "प्रगति",
     "pick_up_where_you_left_off": "वहीं से शुरू करें जहां आपने छोड़ा था",
+    "get_your_certificate": "अपना प्रमाणपत्र प्राप्त करें",
     "course_awaits_you": "{title} आपकी प्रतीक्षा कर रहा है",
     "learning_awaits_you": "आपका अगला कोर्स आपका इंतजार कर रहा है",
+    "my_certificate": "मेरा प्रमाणपत्र",
     "lms_today_progress": "आप अपने सीखने के माध्यम से {progress}% कर रहे हैं - हर कदम मायने रखता है।",
     "lms_today_empty": "जब आप हों तो आपका सीखने का मार्ग तैयार है।",
     "compliance_score": "अनुपालन स्कोर",
@@ -2459,7 +2522,8 @@
     "login_activity_logins": "लॉगिन",
     "open_academy": "अकादमी खोलें",
     "explore_more_courses": "अधिक पाठ्यक्रम खोजें",
-    "view_more": "और देखें"
+    "view_more": "और देखें",
+    "upcoming_sessions_heading": "लाइव सत्र"
   },
   "schedule": {
     "title": "आपका शेड्यूल",

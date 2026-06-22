@@ -15,6 +15,7 @@ type CourseSettings = {
   isContentGroupingEnabled: boolean;
   progressionMode: 'free' | 'sequential';
   callout: TCourseCallout | null;
+  welcomeEmailMessage: string;
 };
 
 export const settings = writable<CourseSettings>({
@@ -34,5 +35,6 @@ export const settings = writable<CourseSettings>({
   isPublished: false,
   isContentGroupingEnabled: true,
   progressionMode: 'free',
-  callout: null
+  callout: null,
+  welcomeEmailMessage: ''
 });

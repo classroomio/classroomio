@@ -1004,30 +1004,12 @@ export function buildAgentTools(
 }
 
 /**
- * Tools that can only run inside a durable `agent_run` (BullMQ worker), never
- * inline on `/agent/chat`. These are bulk-creation tools — the kind triggered
- * by a teacher-approved course plan. Each one writes a significant amount of
- * content per call and the plan-then-run path gives them retry, cancel, a
- * progress card, and resumability.
- *
- * Note that `update_lesson_content` is intentionally NOT in this set: a teacher
- * asking the chat assistant to revise one existing lesson ("make this more
- * detailed", "shorten this", "rewrite the intro") is a single targeted edit,
- * not bulk content creation. Routing it through `generate_course_plan` forced
- * the model into a planning shape that doesn't match the request and tripped
- * the final-exam schema. Single-lesson revisions run inline in chat.
+ * All tools are available in chat. The plan → approve → durable-run path is
+ * only triggered when the teacher explicitly approves a `generate_course_plan`
+ * result; it is not required for one-off creation requests.
  */
-export const RUN_ONLY_TOOL_NAMES = new Set(['add_questions', 'create_lesson', 'create_exercise'] as const);
+export const RUN_ONLY_TOOL_NAMES = new Set<string>();
 
-/**
- * Drop run-only tools from the chat-mode tool set so the model never sees their
- * schemas in `/agent/chat` and routes heavy work through the plan-then-run path.
- */
-export function filterToolsForChatMode<T extends Record<string, unknown>>(tools: T): Partial<T> {
-  const filtered: Record<string, unknown> = {};
-  for (const [name, value] of Object.entries(tools)) {
-    if (RUN_ONLY_TOOL_NAMES.has(name as never)) continue;
-    filtered[name] = value;
-  }
-  return filtered as Partial<T>;
+export function filterToolsForChatMode<T extends Record<string, unknown>>(tools: T): T {
+  return tools;
 }

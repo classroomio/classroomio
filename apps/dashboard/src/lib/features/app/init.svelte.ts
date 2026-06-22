@@ -202,9 +202,14 @@ class AppInitApi extends BaseApi {
 
     if (!shouldRedirectOnAuth(page.url.pathname)) return;
 
+    // Students with existing org memberships who open /onboarding may intend to create their own academy.
+    if (path.includes('/onboarding') && isStudent && userHasOrganizations) {
+      return;
+    }
+
     const shouldGoToLMS = isCloud ? isOrgSite || !!isStudent : !!isStudent;
     console.log('redirecting to', shouldGoToLMS ? 'lms' : 'org');
-    return shouldGoToLMS ? this.goToLMS() : this.goToOrg();
+    return shouldGoToLMS ? this.goToLMS(isOrgSite) : this.goToOrg();
   }
 
   goToLMS(isOrgSite: boolean) {
