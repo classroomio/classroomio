@@ -53,7 +53,7 @@
     shouldDeleteExercise?: boolean;
     exerciseId: string;
     goBack?: () => void;
-    /** Self-paced + all auto-gradable question types: enforce points &gt; 0 */
+    /** All auto-gradable question types (any course): enforce points &gt; 0 for scoring */
     requiresPositivePointsForAutoGrade?: boolean;
     selfPacedCourse?: boolean;
     /** Public course restricts picker to auto-gradable question types only. */

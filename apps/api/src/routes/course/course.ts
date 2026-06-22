@@ -35,6 +35,7 @@ import { courseAiTutorRouter } from '@api/routes/course/ai-tutor';
 import { authMiddleware } from '@api/middlewares/auth';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { cloneCourse } from '@api/services/course/clone';
+import { sanitizeHtml } from '@cio/core/utils/sanitize-html';
 import { complianceRouter } from '@api/routes/course/compliance';
 import { contentRouter } from '@api/routes/course/content';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
@@ -328,6 +329,13 @@ export const courseRouter = new Hono()
         const { courseId } = c.req.valid('param');
         const validatedData = c.req.valid('json');
         const { tagIds, ...courseData } = validatedData;
+
+        if (courseData.metadata?.welcomeEmailMessage) {
+          courseData.metadata = {
+            ...courseData.metadata,
+            welcomeEmailMessage: sanitizeHtml(courseData.metadata.welcomeEmailMessage)
+          };
+        }
 
         const result = await updateCourse(courseId, courseData);
 

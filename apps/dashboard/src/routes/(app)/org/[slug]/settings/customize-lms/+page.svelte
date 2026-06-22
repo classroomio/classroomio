@@ -1,8 +1,7 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
   import { CustomizeLmsPage } from '$features/settings/pages';
-  import { t } from '$lib/utils/functions/translations';
-  import { Button } from '@cio/ui/base/button';
-  import * as Page from '@cio/ui/base/page';
+  import { settingsHeaderAction } from '$features/settings/utils/store';
 
   let customizeLmsComponent: CustomizeLmsPage | null = $state(null);
   let isSaving = $state(false);
@@ -15,27 +14,28 @@
       isSaving = false;
     }
   }
+
+  $effect(() => {
+    settingsHeaderAction.set({
+      label: 'Save',
+      disabled: isSaving,
+      loading: isSaving,
+      onClick: handleSave
+    });
+  });
+
+  onDestroy(() => {
+    settingsHeaderAction.set({
+      label: 'Save',
+      disabled: true,
+      loading: false,
+      onClick: null
+    });
+  });
 </script>
 
 <svelte:head>
   <title>Customize LMS - ClassroomIO</title>
 </svelte:head>
 
-<Page.Root class="w-full md:max-w-4xl lg:mx-auto">
-  <Page.Header>
-    <Page.HeaderContent>
-      <Page.Title>{$t('components.settings.customize_lms.title')}</Page.Title>
-      <Page.Subtitle>{$t('components.settings.customize_lms.page_subtitle')}</Page.Subtitle>
-    </Page.HeaderContent>
-    <Page.Action>
-      <Button variant="default" loading={isSaving} disabled={isSaving} onclick={handleSave}>
-        {$t('components.settings.customize_lms.save')}
-      </Button>
-    </Page.Action>
-  </Page.Header>
-  <Page.Body>
-    {#snippet child()}
-      <CustomizeLmsPage bind:this={customizeLmsComponent} />
-    {/snippet}
-  </Page.Body>
-</Page.Root>
+<CustomizeLmsPage bind:this={customizeLmsComponent} />

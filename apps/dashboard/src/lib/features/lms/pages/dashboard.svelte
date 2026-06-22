@@ -19,12 +19,14 @@
   import { coursesApi } from '$features/course/api';
   import * as ResourceListRow from '@cio/ui/custom/resource-list-row';
   import { CourseListRow } from '$features/course/components';
+  import UpcomingSessionsCard from '$features/lms/components/upcoming-sessions-card.svelte';
   import CoursePublicBadge from '$features/course/components/course-public-badge.svelte';
   import CoursePreviewModal from '$features/lms/components/course-preview-modal.svelte';
   import type { RecommendedCourses } from '$features/course/types';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
   import CopyIcon from '@lucide/svelte/icons/copy';
+  import VideoIcon from '@lucide/svelte/icons/video';
   import { copyPublicCoursePageUrl, openCoursePreview } from '$features/course/utils/course-preview';
   import {
     getStudentCourseComplianceDate,
@@ -59,6 +61,27 @@
   let inProgressCourses = $derived(coursesApi.enrolledCourses.filter((course) => !isStudentCourseComplete(course)));
   let highlightedCourses = $derived.by(() => getHighlightedCourses(inProgressCourses));
   let currentCourse = $derived(highlightedCourses[0] ?? coursesApi.enrolledCourses[0] ?? null);
+  let shouldShowCertificateHero = $derived.by(() => {
+    if (!currentCourse || coursesApi.enrolledCourses.length !== 1) {
+      return false;
+    }
+
+    return isStudentCourseComplete(currentCourse) && currentCourse.certificateEarnedAt != null;
+  });
+
+  let upcomingSessions = $derived(
+    coursesApi.enrolledCourses
+      .filter((course) => course.type === 'LIVE_CLASS' && course.upcomingSession)
+      .map((course) => ({
+        lessonId: course.upcomingSession!.lessonId,
+        courseTitle: course.title,
+        lessonTitle: course.upcomingSession!.lessonTitle,
+        callUrl: course.upcomingSession!.callUrl,
+        lessonAt: course.upcomingSession!.lessonAt,
+        timezone: course.upcomingSession!.sessionTimezone
+      }))
+      .sort((a, b) => new Date(a.lessonAt).getTime() - new Date(b.lessonAt).getTime())
+  );
 
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
@@ -127,6 +150,12 @@
     goto(`/courses/${id}/lessons?next=true`);
   }
 
+  function gotoCourseCertificates(id: string | undefined) {
+    if (!id) return;
+
+    goto(`/courses/${id}/certificates`);
+  }
+
   function showPublishedPublicCourseLinks(course: EnrolledCourse | null) {
     if (!course || course.type !== 'PUBLIC') {
       return false;
@@ -167,16 +196,28 @@
 </script>
 
 <div class="space-y-6 pb-8">
+  {#if upcomingSessions.length}
+    <UpcomingSessionsCard sessions={upcomingSessions} />
+  {/if}
+
   <BlurFade delay={0.05} once>
     <section class="ui:border-primary/20 ui:bg-primary/10 rounded border p-4 md:p-6">
       <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div class="max-w-xl space-y-2">
           <p class="ui:text-primary text-xs font-semibold tracking-[0.18em] uppercase">
-            {$t('dashboard.pick_up_where_you_left_off')}
+            {#if shouldShowCertificateHero}
+              {$t('dashboard.get_your_certificate')}
+            {:else}
+              {$t('dashboard.pick_up_where_you_left_off')}
+            {/if}
           </p>
           <h2 class="text-xl font-semibold tracking-tight">
             {#if currentCourse}
-              {$t('dashboard.course_awaits_you', { title: currentCourse.title })}
+              {#if shouldShowCertificateHero}
+                {currentCourse.title}
+              {:else}
+                {$t('dashboard.course_awaits_you', { title: currentCourse.title })}
+              {/if}
             {:else}
               {$t('dashboard.learning_awaits_you')}
             {/if}
@@ -205,10 +246,19 @@
           <Button
             variant="outline"
             class="shrink-0"
-            onclick={() => (currentCourse ? gotoCourse(currentCourse.id) : goto('/lms/explore'))}
+            onclick={() =>
+              currentCourse
+                ? shouldShowCertificateHero
+                  ? gotoCourseCertificates(currentCourse.id)
+                  : gotoCourse(currentCourse.id)
+                : goto('/lms/explore')}
           >
             {#if currentCourse}
-              {$t('dashboard.continue_learning')}
+              {#if shouldShowCertificateHero}
+                {$t('dashboard.my_certificate')}
+              {:else}
+                {$t('dashboard.continue_learning')}
+              {/if}
             {:else}
               {$t('dashboard.view_courses')}
             {/if}
@@ -336,6 +386,11 @@
                     >
                       <CopyIcon class="size-4" />
                     </IconButton>
+                  {/if}
+                  {#if course.type === 'LIVE_CLASS' && course.upcomingSession?.callUrl}
+                    <a href={course.upcomingSession.callUrl} target="_blank" rel="noreferrer" class="shrink-0">
+                      <Button><VideoIcon class="size-4" />{$t('course.navItem.lessons.session.join')}</Button>
+                    </a>
                   {/if}
                   <Button variant="outline" class="shrink-0" onclick={() => gotoCourse(course.id)}>
                     {$t('dashboard.continue')}

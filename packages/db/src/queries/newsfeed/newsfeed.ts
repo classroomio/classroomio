@@ -2,6 +2,7 @@ import * as schema from '@db/schema';
 
 import type { TCourseNewsfeed, TCourseNewsfeedComment, TNewCourseNewsfeed, TNewCourseNewsfeedComment } from '@db/types';
 import { and, db, desc, eq, lt, ne, sql } from '@db/drizzle';
+import { ROLE } from '@cio/utils/constants';
 
 /**
  * Gets newsfeed items by course ID
@@ -400,6 +401,8 @@ export async function getNewsfeedForEmail(
   organization: {
     name: string | null;
     siteName: string | null;
+    avatarUrl: string | null;
+    theme: string | null;
   } | null;
   courseMembers: Array<{
     email: string | null;
@@ -431,7 +434,7 @@ export async function getNewsfeedForEmail(
     const row = result[0];
 
     // Get all course members (excluding author if specified)
-    const memberConditions = [eq(schema.course.id, row.course.id)];
+    const memberConditions = [eq(schema.course.id, row.course.id), eq(schema.groupmember.roleId, ROLE.STUDENT)];
     if (excludeAuthorId) {
       memberConditions.push(ne(schema.groupmember.id, excludeAuthorId));
     }
@@ -460,7 +463,9 @@ export async function getNewsfeedForEmail(
         : null,
       organization: {
         name: row.organization.name,
-        siteName: row.organization.siteName
+        siteName: row.organization.siteName,
+        avatarUrl: row.organization.avatarUrl,
+        theme: row.organization.theme
       },
       courseMembers: membersResult
         .filter((m) => m.profile?.email) // Only include members with email

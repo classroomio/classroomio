@@ -10,7 +10,7 @@ export const zohoClient = new SendMailClient({
 });
 
 export async function sendWithZoho(emailData: TEmailData): Promise<EmailResponse> {
-  const { from, to, subject, content, replyTo } = emailData;
+  const { from, to, subject, content, replyTo, ics } = emailData;
 
   const fromData = extractNameAndEmail(from || '');
 
@@ -36,7 +36,18 @@ export async function sendWithZoho(emailData: TEmailData): Promise<EmailResponse
       ],
       subject,
       htmlbody: content,
-      reply_to: getReplyTo(replyTo)
+      reply_to: getReplyTo(replyTo),
+      ...(ics
+        ? {
+            attachments: [
+              {
+                content: Buffer.from(ics).toString('base64'),
+                mime_type: 'text/calendar',
+                name: 'session.ics'
+              }
+            ]
+          }
+        : {})
     });
 
     return {

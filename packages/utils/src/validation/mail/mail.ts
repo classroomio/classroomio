@@ -5,7 +5,9 @@ export const ZEmailData = z.object({
   to: z.email(),
   subject: z.string().min(1),
   content: z.string().min(1),
-  replyTo: z.string().optional()
+  replyTo: z.string().optional(),
+  /** Optional iCalendar (.ics) body attached as a text/calendar part. */
+  ics: z.string().optional()
 });
 export type TEmailData = z.infer<typeof ZEmailData>;
 

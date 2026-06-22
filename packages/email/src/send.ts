@@ -94,7 +94,8 @@ export async function sendEmail<TEmailId extends EmailId>(
       template,
       fields: validatedFields,
       from: config.from ?? template.from,
-      replyTo: config.replyTo ?? template.replyTo
+      replyTo: config.replyTo ?? template.replyTo,
+      ics: config.ics
     });
   } catch (error) {
     if (error instanceof ZodError) {
