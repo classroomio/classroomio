@@ -116,6 +116,12 @@
 
     const onSeeked = () => {
       isSeeking = false;
+      // Re-enforce once the seek settles: setting currentTime during `seeking`
+      // doesn't always stick (HLS re-buffering can win the in-flight seek), so
+      // snap back here if the player still ended up ahead.
+      if (player.currentTime > furthestSeconds + seekTolerance) {
+        player.currentTime = furthestSeconds;
+      }
       hasBlockedThisSeek = false;
       lastValidTime = player.currentTime;
     };
@@ -125,6 +131,14 @@
 
       const current = player.currentTime;
       const delta = current - lastValidTime;
+
+      // Backstop: a forward jump beyond normal playback that slipped past the
+      // `seeking`/`seeked` handlers. Clamp back so playback can't continue ahead.
+      if (delta >= 2 && current > furthestSeconds + seekTolerance) {
+        player.currentTime = furthestSeconds;
+        lastValidTime = furthestSeconds;
+        return;
+      }
 
       if (delta > 0 && delta < 2) {
         playedSeconds += delta;
