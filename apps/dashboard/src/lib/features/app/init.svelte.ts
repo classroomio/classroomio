@@ -1,5 +1,5 @@
 import { BaseApi, classroomio } from '$lib/utils/services/api';
-import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
+import { currentOrg, getOrgPublicUrl, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
 import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils/store/user';
 
 import type { AccountResponse } from './types';
