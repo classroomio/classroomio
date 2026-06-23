@@ -47,6 +47,38 @@
   let isMounted = false;
   let youtubeInitGeneration = 0;
 
+  const SEEK_TOLERANCE_SECONDS = 0.5;
+  /**
+   * Furthest watched position for the must-watch lock. Shared between the
+   * progress-bar `seek` listener (set at Plyr construction) and the playback
+   * tracker in `attachSeekEnforcement`, which advances it as the user watches.
+   */
+  let seekLockFurthestSeconds = options.seekPolicy?.initialFurthestSeconds ?? 0;
+
+  /**
+   * Plyr progress-bar seek handler. Returning `false` skips Plyr's default
+   * seek, so the media never moves — the reliable way to block forward
+   * skips (clamping `currentTime` after the fact is ignored on progressive
+   * MP4). Rewinding and re-seeking up to the watched point stay allowed.
+   */
+  function handleSeekAttempt(event: Event): boolean | void {
+    const policy = options.seekPolicy;
+    if (policy?.mode !== 'locked_until_complete') return;
+
+    const input = event.currentTarget as HTMLInputElement | null;
+    const duration = playerInstance?.duration;
+    if (!input || !duration || !Number.isFinite(duration)) return;
+
+    const max = Number(input.max) || 100;
+    const raw = input.getAttribute('seek-value') ?? input.value;
+    const targetSeconds = (Number(raw) / max) * duration;
+
+    if (targetSeconds > seekLockFurthestSeconds + SEEK_TOLERANCE_SECONDS) {
+      policy.onSeekBlocked?.();
+      return false;
+    }
+  }
+
   interface HlsQualityConfig {
     default: number;
     options: number[];
@@ -80,14 +112,13 @@
     element: HTMLVideoElement,
     policy: NonNullable<MediaPlayerOptions['seekPolicy']>
   ): () => void {
-    let furthestSeconds = policy.initialFurthestSeconds ?? 0;
+    seekLockFurthestSeconds = policy.initialFurthestSeconds ?? 0;
     let playedSeconds = 0;
     let lastValidTime = element.currentTime;
     let isSeeking = false;
     let isReclamping = false;
     let seekBlockNotified = false;
     let lastHeartbeatAt = 0;
-    const seekTolerance = 0.5;
     const heartbeatIntervalMs = 15_000;
 
     const flushProgress = (force = false) => {
@@ -106,7 +137,7 @@
       playedSeconds = 0;
     };
 
-    const isAheadOfLimit = () => player.currentTime > furthestSeconds + seekTolerance;
+    const isAheadOfLimit = () => player.currentTime > seekLockFurthestSeconds + SEEK_TOLERANCE_SECONDS;
 
     const notifySeekBlocked = () => {
       if (seekBlockNotified) return;
@@ -115,21 +146,20 @@
       policy.onSeekBlocked?.();
     };
 
-    // Immediate clamp. For HLS this short-circuits the forward fragment fetch
-    // so the player never buffers ahead. For progressive MP4 the write is
-    // often ignored mid-seek, so `onSeeked` re-asserts it once settled.
+    // Backstop for seeks that bypass the progress-bar listener (keyboard
+    // shortcuts, programmatic). The progress bar itself is blocked up-front
+    // by the `seek` listener wired at construction.
     const onSeeking = () => {
       isSeeking = true;
       if (isReclamping) return;
 
       if (isAheadOfLimit()) {
         notifySeekBlocked();
-        player.currentTime = furthestSeconds;
+        player.currentTime = seekLockFurthestSeconds;
       }
     };
 
     const onSeeked = () => {
-      // Consume the `seeked` produced by our own clamp write, then settle.
       if (isReclamping) {
         isReclamping = false;
         isSeeking = false;
@@ -138,13 +168,10 @@
         return;
       }
 
-      // Authoritative enforcement: if the seek landed past the limit (the
-      // mid-seek clamp didn't hold, e.g. progressive MP4), snap back now —
-      // a backward seek into buffered content, which holds reliably.
       if (isAheadOfLimit()) {
         isReclamping = true;
         notifySeekBlocked();
-        player.currentTime = furthestSeconds;
+        player.currentTime = seekLockFurthestSeconds;
         return;
       }
 
@@ -161,7 +188,7 @@
 
       if (delta > 0 && delta < 2) {
         playedSeconds += delta;
-        furthestSeconds = Math.max(furthestSeconds, current);
+        seekLockFurthestSeconds = Math.max(seekLockFurthestSeconds, current);
       }
 
       lastValidTime = current;
@@ -184,7 +211,7 @@
         if (tailSeconds > 0) {
           playedSeconds += tailSeconds;
         }
-        furthestSeconds = Math.max(furthestSeconds, durationSeconds);
+        seekLockFurthestSeconds = Math.max(seekLockFurthestSeconds, durationSeconds);
         lastValidTime = durationSeconds;
       }
 
@@ -377,6 +404,7 @@
         ratio: '16:9',
         iconUrl: '/plyr.svg',
         iconPrefix: 'plyr',
+        ...(options.seekPolicy?.mode === 'locked_until_complete' ? { listeners: { seek: handleSeekAttempt } } : {}),
         ...(qualityConfig
           ? {
               quality: qualityConfig,
