@@ -1,21 +1,29 @@
 <script>
+  import { onDestroy } from 'svelte';
   import { DomainsPage } from '$features/settings/pages';
-  import { t } from '$lib/utils/functions/translations';
-  import * as Page from '@cio/ui/base/page';
+  import { settingsHeaderAction } from '$features/settings/utils/store';
+
+  $effect(() => {
+    settingsHeaderAction.set({
+      label: 'Save',
+      disabled: true,
+      loading: false,
+      onClick: null
+    });
+  });
+
+  onDestroy(() => {
+    settingsHeaderAction.set({
+      label: 'Save',
+      disabled: true,
+      loading: false,
+      onClick: null
+    });
+  });
 </script>
 
 <svelte:head>
   <title>Custom domain - ClassroomIO</title>
 </svelte:head>
 
-<Page.Header>
-  <Page.HeaderContent>
-    <Page.Title>{$t('components.settings.domains.title')}</Page.Title>
-    <Page.Subtitle>{$t('components.settings.domains.page_subtitle')}</Page.Subtitle>
-  </Page.HeaderContent>
-</Page.Header>
-<Page.Body>
-  {#snippet child()}
-    <DomainsPage />
-  {/snippet}
-</Page.Body>
+<DomainsPage />

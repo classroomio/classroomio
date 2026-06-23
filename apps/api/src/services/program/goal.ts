@@ -1,6 +1,7 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { buildEmailBranding } from '@cio/email';
 import {
   countAssignmentsByStatus,
   createProgramGoal,
@@ -425,7 +426,12 @@ export async function runProgramGoalReminderScan(): Promise<{
           daysUntilDue,
           completedCount: row.assignment.completedCount ?? 0,
           requiredCount: row.assignment.requiredCount ?? 0,
-          loginUrl: `${loginUrl}/lms/programs/${row.programId}`
+          loginUrl: `${loginUrl}/lms/programs/${row.programId}`,
+          branding: buildEmailBranding({
+            name: row.organizationName,
+            avatarUrl: row.organizationAvatarUrl,
+            theme: row.organizationTheme
+          })
         },
         idempotencyKey: `program-goal-reminder:${row.assignment.id}:${daysUntilDue}:${dayKey}`
       });

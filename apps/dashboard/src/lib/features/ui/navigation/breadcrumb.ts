@@ -81,15 +81,25 @@ export function generateBreadcrumbs(
     const normalizedPathname = pathname.replace(/\/$/, '');
 
     if (normalizedPathname !== parentBase) {
-      const activeSub = matchedNavItem.items.find((sub) => {
-        const subBase = sub.url.replace(/\/$/, '');
-        return normalizedPathname === subBase || normalizedPathname.startsWith(`${subBase}/`);
-      });
+      const activeSub = matchedNavItem.items.find((sub) => isActive(pathname, sub.url, sub.matchPattern, true));
       if (activeSub) {
         breadcrumbs.push({
           label: t(activeSub.title),
           href: activeSub.url
         });
+
+        const activeSubBase = activeSub.url.replace(/\/$/, '');
+        if (normalizedPathname !== activeSubBase && activeSub.nestedRoutes && pathSegments.length > 1) {
+          const activeNestedRoute = activeSub.nestedRoutes.find((route) => route.path === pathSegments[1]);
+
+          if (activeNestedRoute) {
+            breadcrumbs.push({
+              label: t(activeNestedRoute.titleKey),
+              href: `${currentOrgPath}${matchedNavItem.path}/${activeNestedRoute.path}`
+            });
+          }
+        }
+
         return breadcrumbs;
       }
     }

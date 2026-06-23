@@ -14,7 +14,11 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { CourseContentItem } from '$features/course/utils/types';
-  import { openCourseCompletionModal } from '$features/course/store/course-completion-modal';
+  import {
+    openCourseCompletionModal,
+    updateCourseCompletionModal,
+    closeCourseCompletionModal
+  } from '$features/course/store/course-completion-modal';
   import { updateLessonCompletionInCourseContent } from '$features/course/utils/content-completion';
 
   interface Props {
@@ -135,7 +139,19 @@
         navigableContentItems.every((item) => item.isComplete);
 
       if (allComplete) {
+        const requiredExerciseId = courseApi.course?.certificate?.requiredExerciseId ?? undefined;
         openCourseCompletionModal(courseId);
+
+        const certRes = await courseApi.getCertificationEvaluation(courseId);
+        if (certRes?.data) {
+          if (certRes.data.isNewCompletion) {
+            updateCourseCompletionModal(courseId, 'eligible', certRes.data, requiredExerciseId);
+          } else {
+            updateCourseCompletionModal(courseId, 'not-eligible', certRes.data, requiredExerciseId);
+          }
+        } else {
+          closeCourseCompletionModal();
+        }
       }
     } else {
       snackbar.error('snackbar.lessons.error.try_later');

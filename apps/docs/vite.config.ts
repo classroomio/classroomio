@@ -11,6 +11,11 @@ export default defineConfig({
     port: 3000
   },
   base: '/docs/',
+  ssr: {
+    optimizeDeps: {
+      include: ['fumadocs-ui/components/callout', 'fumadocs-ui/components/steps']
+    }
+  },
   plugins: [
     cloudflare({ viteEnvironment: { name: 'ssr' } }),
     mdx(await import('./source.config')),

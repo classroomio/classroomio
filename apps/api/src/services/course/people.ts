@@ -14,9 +14,10 @@ import type { TGroupmember } from '@cio/db/types';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { getCourseWithOrgData } from '@cio/db/queries/course';
 import { getProfileById } from '@cio/db/queries/auth';
-import { buildEmailFromName } from '@cio/email';
+import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
+import { getWelcomeSessionIcs } from './session-invite';
 
 /**
  * Gets all course members (people) for a course
@@ -68,6 +69,11 @@ export async function addMember(
         if (courseOrgData) {
           const courseName = courseOrgData.courseTitle || '';
           const orgName = courseOrgData.orgName || 'ClassroomIO';
+          const branding = buildEmailBranding({
+            name: courseOrgData.orgName,
+            avatarUrl: courseOrgData.orgAvatarUrl,
+            theme: courseOrgData.orgTheme
+          });
           const loginUrl = getDashboardBaseUrl({
             siteName: courseOrgData.orgSiteName,
             customDomain: courseOrgData.orgCustomDomain,
@@ -97,10 +103,13 @@ export async function addMember(
                 fields: {
                   orgName,
                   courseName,
-                  loginUrl
+                  loginUrl,
+                  customMessage: courseOrgData.welcomeEmailMessage ?? undefined,
+                  branding
                 },
                 from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-                idempotencyKey: `course-people-student-welcome:${courseId}:${studentEmail}`
+                idempotencyKey: `course-people-student-welcome:${courseId}:${studentEmail}`,
+                ics: await getWelcomeSessionIcs(courseId)
               });
             } catch (emailError) {
               console.error('Failed to enqueue student welcome email:', emailError);
@@ -119,7 +128,8 @@ export async function addMember(
                   fields: {
                     courseName,
                     studentName,
-                    studentEmail
+                    studentEmail,
+                    branding
                   },
                   from: buildEmailFromName('ClassroomIO'),
                   idempotencyKey: `course-people-teacher-joined:${courseId}:${studentEmail}`
@@ -182,6 +192,11 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
     const courseName = courseOrgData.courseTitle || '';
     const orgName = courseOrgData.orgName || 'ClassroomIO';
     const orgSiteName = courseOrgData.orgSiteName || '';
+    const branding = buildEmailBranding({
+      name: courseOrgData.orgName,
+      avatarUrl: courseOrgData.orgAvatarUrl,
+      theme: courseOrgData.orgTheme
+    });
 
     // Add all members
     const addedMembers = await Promise.all(members.map((member) => addCourseMember(courseId, member)));
@@ -217,7 +232,8 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
               name,
               orgName,
               courseName,
-              inviteLink
+              inviteLink,
+              branding
             },
             from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
             idempotencyKey: `teacher-course-welcome:${courseId}:${email}`

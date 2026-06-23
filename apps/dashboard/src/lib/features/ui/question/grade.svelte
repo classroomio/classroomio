@@ -16,6 +16,10 @@
       snackbar.error('grade cant be more than max value');
       grade = gradeMax;
     }
+    if (grade && grade < 0) {
+      snackbar.error('grade cant be less than 0');
+      grade = 0;
+    }
   });
 </script>
 
@@ -24,6 +28,7 @@
     placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
     bind:value={grade}
     max={gradeMax}
+    min={0}
     type="number"
     inputClassName="!w-16"
     isDisabled={disableGrading}

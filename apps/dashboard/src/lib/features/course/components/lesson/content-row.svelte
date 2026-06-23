@@ -2,10 +2,13 @@
   import { resolve } from '$app/paths';
   import LockIcon from '@lucide/svelte/icons/lock';
   import { InputField } from '@cio/ui/custom/input-field';
+  import { RadioIcon } from '@cio/ui/custom/moving-icons';
   import { CircleCheckIcon } from '$features/ui/icons';
   import type { Snippet } from 'svelte';
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
   import type { CourseContentItem } from '$features/course/utils/types';
+  import { ContentType } from '@cio/utils/constants/content';
+  import { t } from '$lib/utils/functions/translations';
   import { cn } from '@cio/ui/tools';
 
   interface Props {
@@ -60,6 +63,16 @@
     <div class={cn('flex items-center gap-2', rowClass)}>
       {#if showIcon}
         <CourseContentIcon type={item.type} size={iconSize} />
+      {/if}
+
+      {#if item.type === ContentType.Lesson && item.callUrl}
+        <span
+          class="shrink-0"
+          title={$t('course.navItem.lessons.session.live_indicator')}
+          aria-label={$t('course.navItem.lessons.session.live_indicator')}
+        >
+          <RadioIcon size={iconSize} color="#ef4444" />
+        </span>
       {/if}
 
       <a

@@ -140,6 +140,7 @@
           {/each}
         </select>
         <Field.Description>{$t('course.certification.final_exercise_helper')}</Field.Description>
+        <Field.Description>{$t('course.certification.final_exercise_multiple_attempts_note')}</Field.Description>
       </Field.Field>
 
       {#if courseApi.course?.certificate?.requiredExerciseId}

@@ -30,7 +30,7 @@ import type { TCourse } from '@cio/db/types';
 import type { TCourseCreate } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
 import { exerciseBelongsToCourse } from '@cio/db/queries/course/certification-exercise';
-import { updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
+import { updateExercise, updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { getProfileById } from '@cio/db/queries/auth';
 import { insertOrganizationMembersOnConflictDoNothing } from '@cio/db/queries/organization';
 import { annotateCourseContentWithProgression } from './progression';
@@ -312,6 +312,8 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
       if (!ok) {
         throw new AppError('Certification exercise must belong to this course', ErrorCodes.VALIDATION_ERROR, 400);
       }
+
+      await updateExercise(data.certificate.requiredExerciseId, { allowMultipleAttempts: true });
     }
 
     const updated = await updateCourseQuery(courseId, sanitizeUnknownStrings(sanitizedData));

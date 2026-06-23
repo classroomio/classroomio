@@ -84,7 +84,8 @@
     let playedSeconds = 0;
     let lastValidTime = element.currentTime;
     let isSeeking = false;
-    let hasBlockedThisSeek = false;
+    let isReclamping = false;
+    let seekBlockNotified = false;
     let lastHeartbeatAt = 0;
     const seekTolerance = 0.5;
     const heartbeatIntervalMs = 15_000;
@@ -105,18 +106,50 @@
       playedSeconds = 0;
     };
 
+    const isAheadOfLimit = () => player.currentTime > furthestSeconds + seekTolerance;
+
+    const notifySeekBlocked = () => {
+      if (seekBlockNotified) return;
+
+      seekBlockNotified = true;
+      policy.onSeekBlocked?.();
+    };
+
+    // Immediate clamp. For HLS this short-circuits the forward fragment fetch
+    // so the player never buffers ahead. For progressive MP4 the write is
+    // often ignored mid-seek, so `onSeeked` re-asserts it once settled.
     const onSeeking = () => {
       isSeeking = true;
-      if (!hasBlockedThisSeek && player.currentTime > furthestSeconds + seekTolerance) {
-        hasBlockedThisSeek = true;
+      if (isReclamping) return;
+
+      if (isAheadOfLimit()) {
+        notifySeekBlocked();
         player.currentTime = furthestSeconds;
-        policy.onSeekBlocked?.();
       }
     };
 
     const onSeeked = () => {
+      // Consume the `seeked` produced by our own clamp write, then settle.
+      if (isReclamping) {
+        isReclamping = false;
+        isSeeking = false;
+        seekBlockNotified = false;
+        lastValidTime = player.currentTime;
+        return;
+      }
+
+      // Authoritative enforcement: if the seek landed past the limit (the
+      // mid-seek clamp didn't hold, e.g. progressive MP4), snap back now —
+      // a backward seek into buffered content, which holds reliably.
+      if (isAheadOfLimit()) {
+        isReclamping = true;
+        notifySeekBlocked();
+        player.currentTime = furthestSeconds;
+        return;
+      }
+
       isSeeking = false;
-      hasBlockedThisSeek = false;
+      seekBlockNotified = false;
       lastValidTime = player.currentTime;
     };
 

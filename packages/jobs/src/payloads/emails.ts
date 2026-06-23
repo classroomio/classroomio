@@ -11,7 +11,9 @@ export const ZSendTemplateEmailPayload = z.object({
   to: z.string().email(),
   fields: z.record(z.string(), z.unknown()).default({}),
   from: z.string().optional(),
-  replyTo: z.string().optional()
+  replyTo: z.string().optional(),
+  /** Optional iCalendar (.ics) body attached as a text/calendar part. */
+  ics: z.string().optional()
 });
 export type TSendTemplateEmailPayload = z.infer<typeof ZSendTemplateEmailPayload>;
 

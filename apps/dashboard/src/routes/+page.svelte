@@ -20,7 +20,7 @@
   const pageTitle = $derived(
     data.isOrgSite && data.org
       ? data.org.name
-      : 'ClassroomIO - The Most Customizable Platform for Customer, Partner, and Employee Education'
+      : 'ClassroomIO - One Platform for Customer, Partner, and Employee Training'
   );
 
   const authAction = $derived(
