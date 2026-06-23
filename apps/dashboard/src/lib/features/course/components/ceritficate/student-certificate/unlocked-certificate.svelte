@@ -11,7 +11,7 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { classroomio } from '$lib/utils/services/api';
   import type { CertificationEvaluationData } from '$features/course/utils/types';
-  import { normalizeCertificateIssuedAt } from '$features/course/utils/certificate-utils';
+  import { normalizeCertificateIssuedAt, formatBlockerMessage } from '$features/course/utils/certificate-utils';
   import { openCourseCompletionModal } from '$features/course/store/course-completion-modal';
 
   let isLoading = $state(false);
@@ -20,41 +20,6 @@
   let evaluation = $state<CertificationEvaluationData | null>(null);
 
   let courseId = $derived(courseApi.course?.id ?? '');
-
-  function formatBlockerMessage(blocker: CertificationEvaluationData['blockers'][number]): string {
-    const p = blocker.params ?? {};
-    switch (blocker.code) {
-      case 'CERT_PROGRESS':
-        return t.get('course.certification.blocker_progress', {
-          current: Number(p.current ?? 0),
-          required: Number(p.required ?? 0)
-        });
-      case 'CERT_DEADLINE_PASSED':
-        return t.get('course.certification.blocker_deadline');
-      case 'CERT_NO_CONTENT':
-        return t.get('course.certification.blocker_no_content');
-      case 'CERT_FINAL_EXERCISE_NOT_SUBMITTED':
-        return t.get('course.certification.blocker_final_not_submitted', {
-          exerciseTitle: String(p.exerciseTitle ?? '')
-        });
-      case 'CERT_FINAL_EXERCISE_PENDING_GRADE':
-        return t.get('course.certification.blocker_final_pending', {
-          exerciseTitle: String(p.exerciseTitle ?? '')
-        });
-      case 'CERT_FINAL_EXERCISE_SCORE':
-        return t.get('course.certification.blocker_final_score', {
-          exerciseTitle: String(p.exerciseTitle ?? ''),
-          bestPercent: Number(p.bestPercent ?? 0),
-          requiredPercent: Number(p.requiredPercent ?? 0)
-        });
-      case 'CERT_FINAL_EXERCISE_MISCONFIGURED':
-        return t.get('course.certification.blocker_final_misconfigured', {
-          exerciseTitle: String(p.exerciseTitle ?? '')
-        });
-      default:
-        return blocker.code;
-    }
-  }
 
   function buildBody() {
     return {

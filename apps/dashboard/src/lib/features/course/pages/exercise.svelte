@@ -350,13 +350,14 @@
     return typeIds.length > 0 && typeIds.every((id) => isAutoGradableQuestionType(getQuestionTypeKeyFromId(id)));
   }
 
-  /** When true, every question must have points &gt; 0 before save */
-  const requiresPositivePointsForAutoGrade = $derived(
-    isSelfPacedCourse && isExerciseFullyAutoGradable(activeQuestionTypeIds)
-  );
+  const isFullyAutoGradable = $derived(isExerciseFullyAutoGradable(activeQuestionTypeIds));
+
+  /** When true, every question must have points &gt; 0 before save (for meaningful auto-grading) */
+  const requiresPositivePointsForAutoGrade = $derived(isFullyAutoGradable);
+
   const teacherAutoGradeBadge = $derived.by(() => {
-    if ($isOrgStudent || !isSelfPacedCourse || activeQuestionTypeIds.length === 0) return null;
-    return isExerciseFullyAutoGradable(activeQuestionTypeIds) ? ('auto' as const) : ('manual' as const);
+    if ($isOrgStudent || isPublicCourse || activeQuestionTypeIds.length === 0) return null;
+    return isFullyAutoGradable ? ('auto' as const) : ('manual' as const);
   });
 
   async function scrollToExerciseElement(elementId: string) {
@@ -498,6 +499,16 @@
                         {$t('course.navItem.lessons.exercises.all_exercises.reorder')}
                       </DropdownMenu.Item>
                     {/if}
+                    <DropdownMenu.Item
+                      disabled={!courseApi.course?.id || !exerciseId}
+                      onclick={() => {
+                        if (courseApi.course?.id && exerciseId) {
+                          exerciseApi.notifyStudents(courseApi.course.id, exerciseId);
+                        }
+                      }}
+                    >
+                      {$t('course.navItem.lessons.exercises.all_exercises.notify.action')}
+                    </DropdownMenu.Item>
                     <DropdownMenu.Separator />
                     <DropdownMenu.Item
                       class="text-red-600 focus:text-red-600 dark:text-red-400"

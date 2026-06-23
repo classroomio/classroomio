@@ -16,6 +16,7 @@ import { and, count, desc, eq, ilike, inArray, isNotNull, isNull, or, sql } from
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { getCourseContentItems, type CourseContentItemRow } from './content';
+import { getUpcomingSessionsForCourseIds, type CourseUpcomingSession } from './session';
 
 /**
  * Base course type - extends TCourse with lessonCount
@@ -42,10 +43,12 @@ export interface TAdminCourse extends TBaseCourse {
 export interface TStudentCourse extends TBaseCourse {
   progressRate: number;
   exercisesCompleted: number;
+  certificateEarnedAt: string | null;
   complianceStatus: string | null;
   complianceCycleNumber: number | null;
   complianceDueDate: string | null;
   complianceValidUntil: string | null;
+  upcomingSession: CourseUpcomingSession | null;
 }
 
 /**
@@ -305,6 +308,7 @@ export type CourseWithRelations = TCourse & {
     customDomain: string | null;
     isCustomDomainVerified: boolean | null;
     theme: string | null;
+    avatarUrl: string | null;
     settings: (typeof schema.organization.$inferSelect)['settings'];
   } | null;
 };
@@ -350,6 +354,7 @@ export async function getCourseWithRelations(
         customDomain: string | null;
         isCustomDomainVerified: boolean | null;
         theme: string | null;
+        avatarUrl: string | null;
         settings: (typeof schema.organization.$inferSelect)['settings'];
       } | null;
     };
@@ -373,6 +378,7 @@ export async function getCourseWithRelations(
               customDomain: schema.organization.customDomain,
               isCustomDomainVerified: schema.organization.isCustomDomainVerified,
               theme: schema.organization.theme,
+              avatarUrl: schema.organization.avatarUrl,
               settings: schema.organization.settings
             }
           })
@@ -416,6 +422,7 @@ export async function getCourseWithRelations(
             customDomain: groupData[0].organization.customDomain ?? null,
             isCustomDomainVerified: groupData[0].organization.isCustomDomainVerified ?? null,
             theme: groupData[0].organization.theme ?? null,
+            avatarUrl: groupData[0].organization.avatarUrl ?? null,
             settings: groupData[0].organization.settings ?? null
           }
         : null;
@@ -633,6 +640,8 @@ export type TCourseCertificationRow = {
   orgCustomDomain: string | null;
   orgIsCustomDomainVerified: boolean | null;
   orgName: string;
+  orgAvatarUrl: string | null;
+  orgTheme: string | null;
 };
 
 export async function getCourseCertificationRow(courseId: string): Promise<TCourseCertificationRow | null> {
@@ -646,7 +655,9 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
         orgSiteName: schema.organization.siteName,
         orgCustomDomain: schema.organization.customDomain,
         orgIsCustomDomainVerified: schema.organization.isCustomDomainVerified,
-        orgName: schema.organization.name
+        orgName: schema.organization.name,
+        orgAvatarUrl: schema.organization.avatarUrl,
+        orgTheme: schema.organization.theme
       })
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -955,6 +966,7 @@ export const getEnrolledCourses = async ({
             sql`gm.profile_id = ${sql.raw(`'${profileId}'::uuid`)}`
           )}
         )`.as('exercises_completed'),
+        certificateEarnedAt: schema.groupmember.certificateEarnedAt,
         complianceStatus: schema.courseCompletionRecord.status,
         complianceCycleNumber: schema.courseCompletionRecord.cycleNumber,
         complianceDueDate: schema.courseCompletionRecord.dueDate,
@@ -999,8 +1011,11 @@ export const getEnrolledCourses = async ({
           or(isNotNull(schema.groupmember.id), isNotNull(schema.programMember.id))
         )
       )
-      .groupBy(schema.course.id, schema.courseCompletionRecord.id)
+      .groupBy(schema.course.id, schema.groupmember.id, schema.courseCompletionRecord.id)
       .orderBy(desc(schema.course.createdAt));
+
+    const liveCourseIds = result.filter((row) => row.course.type === 'LIVE_CLASS').map((row) => row.course.id);
+    const upcomingByCourse = await getUpcomingSessionsForCourseIds(liveCourseIds);
 
     return result.map((row) => ({
       ...row.course,
@@ -1008,10 +1023,12 @@ export const getEnrolledCourses = async ({
       progressRate: Number(row.progressRate),
       exerciseCount: Number(row.exerciseCount),
       exercisesCompleted: Number(row.exercisesCompleted),
+      certificateEarnedAt: row.certificateEarnedAt ?? null,
       complianceStatus: row.complianceStatus ?? null,
       complianceCycleNumber: row.complianceCycleNumber ?? null,
       complianceDueDate: row.complianceDueDate ?? null,
-      complianceValidUntil: row.complianceValidUntil ?? null
+      complianceValidUntil: row.complianceValidUntil ?? null,
+      upcomingSession: upcomingByCourse.get(row.course.id) ?? null
     }));
   } catch (error) {
     console.error('getEnrolledCourses error:', error);
@@ -1122,7 +1139,10 @@ export async function getCourseWithOrgData(courseId: string): Promise<{
   orgSiteName: string | null;
   orgCustomDomain: string | null;
   orgIsCustomDomainVerified: boolean | null;
+  orgAvatarUrl: string | null;
+  orgTheme: string | null;
   groupId: string | null;
+  welcomeEmailMessage: string | null;
 } | null> {
   try {
     const result = await db
@@ -1132,7 +1152,10 @@ export async function getCourseWithOrgData(courseId: string): Promise<{
         orgSiteName: schema.organization.siteName,
         orgCustomDomain: schema.organization.customDomain,
         orgIsCustomDomainVerified: schema.organization.isCustomDomainVerified,
-        groupId: schema.course.groupId
+        orgAvatarUrl: schema.organization.avatarUrl,
+        orgTheme: schema.organization.theme,
+        groupId: schema.course.groupId,
+        metadata: schema.course.metadata
       })
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -1144,7 +1167,9 @@ export async function getCourseWithOrgData(courseId: string): Promise<{
       return null;
     }
 
-    return result[0];
+    const { metadata, ...rest } = result[0];
+
+    return { ...rest, welcomeEmailMessage: metadata?.welcomeEmailMessage ?? null };
   } catch (error) {
     console.error('getCourseWithOrgData error:', error);
     throw new Error(
@@ -1332,15 +1357,21 @@ export async function getOrgCourseGroups(orgId: string, courseIds: string[]) {
   try {
     if (courseIds.length === 0) return [];
 
-    return db
+    const rows = await db
       .select({
         courseId: schema.course.id,
         courseTitle: schema.course.title,
-        groupId: schema.course.groupId
+        groupId: schema.course.groupId,
+        metadata: schema.course.metadata
       })
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
       .where(and(eq(schema.group.organizationId, orgId), inArray(schema.course.id, courseIds)));
+
+    return rows.map(({ metadata, ...rest }) => ({
+      ...rest,
+      welcomeEmailMessage: metadata?.welcomeEmailMessage ?? null
+    }));
   } catch (error) {
     console.error('getOrgCourseGroups error:', error);
     throw new Error(`Failed to get org course groups: ${error instanceof Error ? error.message : 'Unknown error'}`);

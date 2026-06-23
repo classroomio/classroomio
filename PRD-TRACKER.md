@@ -6,6 +6,8 @@ Use this file to keep a single prioritized view of all PRDs.
 
 | Rank | List # | PRD | Status |
 | --- | --- | --- | --- |
+| - | - | `prd/super-admin` | draft |
+| - | - | `prd/embed-link-platforms` | draft |
 | 1 | - | `prd/notification-system` | todo |
 | 2 | 14 | `prd/course-templates` | todo |
 | 3 | 5 | `prd/course-import` | todo |
@@ -23,6 +25,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | - | `prd/copy-page-as-markdown` | todo |
 | - | - | `prd/reset-student-course-progress` | todo |
 | - | 15 | `prd/webhooks` | todo |
+| - | - | `prd/zapier` | draft |
 
 ## DONE (Completed PRDs)
 

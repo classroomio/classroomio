@@ -290,7 +290,8 @@
   "common": {
     "unsaved_changes": {
       "message": "You have unsaved changes. Are you sure you want to leave?"
-    }
+    },
+    "refresh": "Refresh"
   },
   "compliance": {
     "title": "Compliance",
@@ -1665,9 +1666,12 @@
     "progress": "Progress",
     "continue": "Continue",
     "continue_learning": "Continue Learning",
+    "upcoming_sessions_heading": "Live Sessions",
     "pick_up_where_you_left_off": "Pick up where you left off",
+    "get_your_certificate": "Get your certificate",
     "course_awaits_you": "{title} awaits you",
     "learning_awaits_you": "Your next course awaits you",
+    "my_certificate": "My Certificate",
     "lms_today_progress": "You're {progress}% through your learning - every step counts.",
     "lms_today_empty": "Your learning path is ready when you are.",
     "compliance_score": "Compliance Score",
@@ -2116,6 +2120,7 @@
       "final_exercise_label": "Final exercise (optional)",
       "final_exercise_none": "none",
       "final_exercise_helper": "When set, students must reach at least the minimum score on this exercise (best attempt counts) in addition to the completion percentage above.",
+      "final_exercise_multiple_attempts_note": "Students will be allowed unlimited attempts on the selected exercise.",
       "min_exercise_score_label": "Minimum score on final exercise (%)",
       "min_exercise_score_helper": "Score is a percentage of the total points possible on that exercise (0–100).",
       "blocker_progress": "Your course progress is {current}%; {required}% is required.",
@@ -2133,7 +2138,10 @@
         "title": "Course requirements complete!",
         "subtitle": "Congratulations — you can view and download your certificate anytime.",
         "view_certificate": "View certificate",
-        "later": "Close"
+        "later": "Close",
+        "checking": "Checking eligibility…",
+        "not_eligible_title": "Almost there",
+        "retake_exercise": "Retake exercise"
       }
     },
     "header": {
@@ -2232,6 +2240,41 @@
           "videos_complete": "Watched {percent}% of the required video content ({complete} of {required} videos)",
           "seek_blocked": "You cannot skip ahead on this video",
           "complete_via_watch": "This lesson completes when you watch enough of the video"
+        },
+        "session": {
+          "join": "Join session",
+          "live_indicator": "This lesson is a live session",
+          "heading": "Live session",
+          "intro": "Set the join link and scheduled time for this live class. Students get reminders 24 hours and 1 hour before.",
+          "link_label": "Join link (Zoom, Meet, etc.)",
+          "datetime_label": "Date and time",
+          "timezone_label": "Timezone",
+          "timezone_helper": "Reminders and the calendar invite use this timezone for display.",
+          "save": "Save session",
+          "saved": "Session saved",
+          "notified": "Students notified of the updated session",
+          "notify_failed": "Couldn't notify students of the change",
+          "confirm_title": "Notify students of the change?",
+          "confirm_body": "Saving will email all enrolled students about the updated session, with a new calendar invite that updates the event on their calendar.",
+          "confirm_cancel": "Cancel",
+          "confirm_save": "Save and notify",
+          "live_session": "Live session",
+          "live_now": "Live now",
+          "live_event": "Live Session",
+          "started": "Started",
+          "min_ago": "min ago",
+          "join_now": "Join now",
+          "copy_link": "Copy link",
+          "copy": "Copy",
+          "add_to_calendar": "Add to calendar",
+          "add_google": "Google Calendar",
+          "add_outlook": "Outlook.com",
+          "add_office365": "Office 365",
+          "add_yahoo": "Yahoo Calendar",
+          "add_apple": "Apple Calendar (.ics)",
+          "starts_in": "Starts in",
+          "session_ended": "Session ended",
+          "link_copied": "Link copied"
         },
         "share_your_knowledge": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
         "section_prompt": {
@@ -2504,6 +2547,12 @@
           },
           "all_exercises": {
             "heading": "All Exercise",
+            "notify": {
+              "action": "Notify students",
+              "sending": "Notifying students…",
+              "sent": "Notified {count} students",
+              "failed": "Couldn't notify students"
+            },
             "questions": "Questions",
             "settings": "Settings",
             "settings_allow_multiple": "Allow multiple attempts",
@@ -3260,7 +3309,7 @@
           "add": "Add",
           "add_team": "Add your team mates or collaborators to your organization. Start working together",
           "invite": "Invite",
-          "placeholder": "email comma separated",
+          "placeholder": "user1@domain.com, user2@domain.com",
           "role": "Role",
           "send_invite": "Send Invite",
           "members": "Members",
@@ -3272,6 +3321,7 @@
             "description": "Anyone with this link can join your organization.",
             "generate": "Generate Link",
             "copy": "Copy",
+            "copy_invite_link": "Copy invite link",
             "copied": "Copied!",
             "toggle_label": "Link invite active",
             "disabled_notice": "This link is disabled. Enable it to allow new members to join via link.",
@@ -3532,6 +3582,11 @@
         "enabled": "Enabled",
         "order": "Order Lessons Tab",
         "drag": "Drag and drop the labels to re-order your material tabs",
+        "welcome_email": {
+          "title": "Welcome email",
+          "description": "Customize the email students receive after they enroll. Add a personal note, instructions, or a live session link.",
+          "placeholder": "Write the welcome message students get when they enroll…"
+        },
         "content_grouping_title": "Content grouping",
         "content_grouping_description": "Group lessons and exercises by section in the content list.",
         "progression_mode_title": "Student progression",
@@ -3550,7 +3605,8 @@
         "published": "Published",
         "unpublished": "Unpublished",
         "type": "Course type",
-        "course_type_desc": "Update the course type for a more personalized experience",
+        "course_type_desc": "Update the course type for a more personalized experience.",
+        "course_type_learn_more": "Learn more",
         "live_class": "Live class",
         "self_paced": "Self paced",
         "compliance": "Compliance",
@@ -3658,6 +3714,15 @@
     "select_all": "Select all",
     "selected_count": "{count} selected",
     "assign_courses": "Assign to Courses",
+    "delete": {
+      "action": "Delete",
+      "title": "Delete member",
+      "description": "This removes the member from your organization and revokes their access to all assigned courses and programs.",
+      "confirmation": "Are you sure you want to delete {name} ({email})? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "snackbar_success": "Member deleted"
+    },
     "user_analytics": {
       "title": "Student profile",
       "page_subtitle": "Progress, grades, and activity across their courses."

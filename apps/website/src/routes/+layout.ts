@@ -15,10 +15,10 @@ export async function load({ url }) {
 const starsCache = new Map<string, { stars: number; lastUpdated: number }>();
 const CACHE_TIME = 1000 * 60 * 60 * 48; // 48 hours
 const CACHE_KEY = 'github-stars';
-const DEFAULT_META_TITLE = 'ClassroomIO | The Most Customizable Platform for Customer, Partner, and Employee Education';
+const DEFAULT_META_TITLE = 'ClassroomIO | One Platform for Customer, Partner, and Employee Training';
 const DEFAULT_META_DESCRIPTION =
   'One platform for customer academies, partner certification, and employee training. Build courses with AI, publish under your domain, and track completions.';
-const DEFAULT_OG_IMAGE_URL = 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.png';
+const DEFAULT_OG_IMAGE_URL = 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.jpg';
 const DEFAULT_OG_IMAGE_ALT = 'ClassroomIO platform for customer, partner, and employee education';
 
 async function getStars() {
@@ -63,12 +63,20 @@ function getBaseMetaTags(url: URL) {
       siteName: 'ClassroomIO',
       images: [
         {
-          url: DEFAULT_OG_IMAGE_URL,
+          url: 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.jpg',
           alt: DEFAULT_OG_IMAGE_ALT,
           width: 1920,
           height: 1080,
-          secureUrl: DEFAULT_OG_IMAGE_URL,
-          type: 'image/png'
+          secureUrl: 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.jpg',
+          type: 'image/jpeg'
+        },
+        {
+          url: 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.webp',
+          alt: DEFAULT_OG_IMAGE_ALT,
+          width: 1920,
+          height: 1080,
+          secureUrl: 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.webp',
+          type: 'image/webp'
         }
       ]
     },
@@ -78,7 +86,7 @@ function getBaseMetaTags(url: URL) {
       cardType: 'summary_large_image' as const,
       title: DEFAULT_META_TITLE,
       description: DEFAULT_META_DESCRIPTION,
-      image: DEFAULT_OG_IMAGE_URL,
+      image: 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.jpg',
       imageAlt: DEFAULT_OG_IMAGE_ALT
     }
   }) satisfies MetaTagsProps;

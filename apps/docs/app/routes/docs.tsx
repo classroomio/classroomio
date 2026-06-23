@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import type * as PageTree from 'fumadocs-core/page-tree';
 import browserCollections from 'fumadocs-mdx:collections/browser';
-import { isRouteErrorResponse, useLoaderData, useRouteError } from 'react-router';
+import { isRouteErrorResponse, redirect, useLoaderData, useRouteError } from 'react-router';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/layouts/docs/page';
 import { HomeLayout } from 'fumadocs-ui/layouts/home';
@@ -26,6 +26,13 @@ const clientLoader = browserCollections.docs.createClientLoader({
 
 export async function loader({ params }: { params: Record<string, string | undefined> }) {
   const slug = params['*'];
+
+  // How-to guides were flattened to the docs root; permanently redirect the old
+  // `.../how-to-guides/<page>` URLs to `.../<page>`.
+  if (slug && slug.includes('how-to-guides/')) {
+    throw redirect('/' + slug.replace('how-to-guides/', ''), 301);
+  }
+
   const slugs = slug ? slug.split('/') : ['home'];
   const { getDocsRouteData } = await import('@/lib/source.server');
   const routeData = await getDocsRouteData(slugs);
