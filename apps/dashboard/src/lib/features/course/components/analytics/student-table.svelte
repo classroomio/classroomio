@@ -8,6 +8,7 @@
   import * as Table from '@cio/ui/base/table';
 
   import { courseApi } from '$features/course/api';
+  import { calDateDiff } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
 
   import EmptyState from './empty-state.svelte';
@@ -125,7 +126,7 @@
             </Table.Cell>
             <Table.Cell class="min-w-[120px] px-4 py-3">
               <span class="ui:text-muted-foreground text-sm">
-                {student.lastSeen}
+                {student.lastSeen ? calDateDiff(student.lastSeen) : $t('analytics.a_while_ago')}
               </span>
             </Table.Cell>
             <Table.Cell class="min-w-[120px] px-4 py-3">
