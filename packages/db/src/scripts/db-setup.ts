@@ -5,6 +5,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import postgres from 'postgres';
 
+import { baselineMigrationsIfNeeded } from './baseline';
+
 const connectionString = process.env.DATABASE_URL ?? process.env.PRIVATE_DATABASE_URL ?? '';
 const shouldSeed = process.argv.includes('--seed') || process.argv.includes('-s');
 const shouldSyncSchema = !process.argv.includes('--skip-schema-sync');
@@ -43,9 +45,9 @@ async function runPnpmCommand(commandLabel: string, args: string[]) {
   });
 }
 
-async function runSchemaSync() {
-  console.log('Syncing schema with drizzle-kit push...');
-  await runPnpmCommand('Schema sync', ['db', 'push']);
+async function runMigrations() {
+  console.log('Applying database migrations with drizzle-kit migrate...');
+  await runPnpmCommand('Migrate', ['db:migrate']);
 }
 
 async function runSeedEssential() {
@@ -88,7 +90,18 @@ async function dbSetup() {
     // Note: 'public' role exists by default in PostgreSQL
 
     if (shouldSyncSchema) {
-      await runSchemaSync();
+      // Advisory lock so concurrent startups can't both pass the baseline check and double-insert.
+      // Session-scoped, so held on a dedicated connection across baseline+migrate.
+      const DB_SETUP_LOCK_KEY = 4242424242;
+      const lock = postgres(connectionString, { max: 1 });
+      await lock`SELECT pg_advisory_lock(${DB_SETUP_LOCK_KEY}::bigint)`;
+      try {
+        await baselineMigrationsIfNeeded(sql);
+        await runMigrations();
+      } finally {
+        await lock`SELECT pg_advisory_unlock(${DB_SETUP_LOCK_KEY}::bigint)`;
+        await lock.end();
+      }
     }
 
     await runSeedEssential();
