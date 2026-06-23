@@ -21,7 +21,7 @@ export interface StudentOverview {
   exercisesSubmitted: number;
   totalExercises: number;
   averageGrade: number;
-  lastSeen: string;
+  lastSeen: string | undefined;
   progressPercentage: number;
 }
 
