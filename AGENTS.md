@@ -411,3 +411,68 @@ When moving from `apps/dashboard/src/lib/components/` to `apps/dashboard/src/lib
 3. **Update exports** in `features/ui/index.ts`
 4. **Update imports**: `import { Component } from '$features/ui';`
 5. **Delete old files** and verify no remaining references
+
+## Cursor Cloud specific instructions
+
+The full setup/run flow lives in `README.md` and `DEV_SETUP_NOTES.md`. The notes below cover only the non-obvious, cloud-VM-specific caveats. The update script already runs `pnpm install` on startup.
+
+### Node version (important)
+The sandbox injects `/exec-daemon/node` (Node 22) at the front of `PATH`, so a bare `node`/`pnpm` runs under Node 22 even though the repo requires Node `^20.19.3` (`.nvmrc`). Node 20.19.3 is installed via nvm and set as the nvm default. Before running any `pnpm`/dev command, prepend the repo Node to `PATH`:
+
+```bash
+export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
+```
+
+`pnpm install` itself succeeds under either version (there is no `engine-strict`), but run the dev servers and DB scripts on Node 20.
+
+### Services & how to run them
+Docker is installed and provides Postgres 16 + Redis 7 (the app does not run them natively). After a fresh VM boot the Docker daemon is usually not running — start it (it needs the snapshot's `/etc/docker/daemon.json`, which already sets `fuse-overlayfs` + disables the containerd snapshotter, plus `iptables-legacy`):
+
+```bash
+sudo dockerd > /tmp/dockerd.log 2>&1 &
+sudo chmod 666 /var/run/docker.sock   # or prefix docker commands with sudo
+docker compose -f docker/docker-compose.yaml up -d postgres redis
+```
+
+The per-app `.env` files (`apps/api/.env`, `apps/dashboard/.env`, `apps/jobs/.env`, `packages/db/.env`) are gitignored but persist in the VM snapshot with a matching `PRIVATE_SERVER_KEY`. If any are missing, recreate them per `README.md` (generate secrets with `openssl rand -hex 32`; the two `PRIVATE_SERVER_KEY` values must match).
+
+The Postgres docker volume persists in the snapshot already seeded with demo data (login `admin@test.com` / `123456`). Re-seed only if needed: `pnpm --filter @cio/db db:setup:seed`.
+
+Run the app (two long-lived processes; use tmux):
+- `pnpm api:dev` → API on `http://localhost:3002` + 5 BullMQ workers.
+- `pnpm dashboard:dev` → dashboard on `http://localhost:5173` + the `@cio/ui` Tailwind CSS watcher.
+
+Do not use `pnpm dev` (it trips turbo's concurrency cap). Build shared package `dist/` once with `pnpm build` if you see `Failed to resolve entry for package "@cio/*"`.
+
+### Known caveats
+- **Vite SSR circular dependency (layerchart):** authenticated/chart pages occasionally render "Something unexpected occurred" on a cold load. Reload the page (or restart `dashboard:dev`) and it renders — it is intermittent, not a setup failure.
+- **MinIO is optional and not started by default.** Without it, image/media thumbnails show "Failed to load"; that is expected. Start it with `docker compose -f docker-compose.yaml --profile minio up -d minio minio-init` and add the `OBJECT_STORAGE_*` vars from `README.md` to `apps/api/.env`.
+- **Pre-existing lint/test issues (not environment problems):** `pnpm --filter @cio/api lint` fails (missing ESLint v9 `eslint.config.*`); `pnpm --filter @cio/dashboard lint` runs but reports pre-existing errors; api `vitest run` passes 61 tests but 5 files fail to load `@cio/core/services/*/*` subpaths (Vite nested-wildcard exports quirk; Node resolves them fine); `pnpm --filter @cio/dashboard test` (jest) fails to parse `jest.config.ts`. The pre-commit gate `pnpm format:check` passes.
+- The optional `@cio/storybook` build fails on an unresolved `@lucide/svelte/icons/bot` import; it does not affect api/dashboard.
+
+### Deployment mode: self-hosted vs cloud (affects which features you can test)
+A single flag, `PUBLIC_IS_SELFHOSTED`, switches the whole product between **self-hosted** and **cloud** behavior. It is read in two places: the dashboard via `$env/static/public` (e.g. `apps/dashboard/src/lib/features/app/layout-setup.ts`) and the API/db layer via `@cio/core/config/env` (e.g. `apps/api/src/services/license.ts`, `apps/api/src/middlewares/license.ts`, `apps/api/src/services/onboarding.ts`). `FEATURE_AUDIT.md` §5 is the source-of-truth feature-by-feature map.
+
+**This VM's local env is configured for CLOUD mode** (`PUBLIC_IS_SELFHOSTED=false` in both `apps/dashboard/.env` and `apps/api/.env`) so multi-tenant and all license-gated features are testable. The README contributor default is self-hosted; to switch this VM back, set `PUBLIC_IS_SELFHOSTED=true` in both files (or remove it from `apps/api/.env`) and restart both dev servers.
+
+- **Self-hosted (`PUBLIC_IS_SELFHOSTED=true`)** — the README contributor default:
+  - Single organization, single domain: creating a 2nd org is blocked (`onboarding.ts`), the "add org" UI is hidden, and the org is auto-assigned a `selfhosted` `ENTERPRISE` plan.
+  - Enterprise features `sso`, `token-auth`, `no-tracking` are gated behind `LICENSE_KEY`, verified against the external `https://enterprise-api.classroomio.dev`. Without a key, `requireLicense` returns 403.
+  - Polar billing and PostHog/Umami analytics are off.
+- **Cloud (`PUBLIC_IS_SELFHOSTED` unset or `false`)**:
+  - Multi-tenant: multiple orgs per user, "add org" shown; org is resolved from the **subdomain** (`acme.<PRIVATE_APP_HOST>`) or a custom domain. Locally there are no subdomains, so an org public site is simulated with the `?org=<siteName>` query param (sets the `_orgSiteName` cookie — see `layout-setup.ts`).
+  - The license gate is a **no-op**, so all enterprise features are unlocked **without** a `LICENSE_KEY` — i.e. cloud mode is the easiest way to exercise SSO/token-auth/multi-org in dev.
+  - Polar billing and analytics activate but are themselves gated by their own keys (absent keys just no-op), so they don't block startup.
+
+Non-obvious gotcha: the README local-dev setup only sets `PUBLIC_IS_SELFHOSTED=true` in `apps/dashboard/.env`; `apps/api/.env` leaves it unset, so the **API behaves as cloud** (license no-op, 2nd org allowed) while the **dashboard UI is self-hosted**. To exercise a coherent mode, set the flag the same way in both files. The flag is read at process start, so restart the dev servers after editing it.
+
+### Seeded tenants (good for multi-tenant testing)
+The seed (`packages/db/src/utils/seed/organizationmember.ts`) creates **three independent organizations**, each with its own admin + student. All accounts use password `123456`:
+
+| Org (siteName) | Admin | Student | Example courses |
+|---|---|---|---|
+| Udemy Test (`udemy-test`) | `admin@test.com` | `student@test.com` | Modern Web Development with React; Getting started with MVC; Data Science with Python and Pandas |
+| Coursera Test (`coursera-test`) | `enterprise@test.com` | `enterprise-student@test.com` | SOC 2 Security Basics; HIPAA Awareness 2026 |
+| Skillshare Test (`skillshare-test`) | `early-adopter@test.com` | `early-adopter-student@test.com` | Product Management Fundamentals |
+
+In cloud mode you can demonstrate tenant isolation on the single local instance by visiting each org's public catalog via the `?org=<siteName>` param, e.g. `http://localhost:5173/?org=coursera-test` vs `?org=udemy-test` vs `?org=skillshare-test` — each renders its own branded catalog and courses. (Note: a user enrolled in courses across orgs becomes a member of multiple tenants, so after login the dashboard may open whichever org that user most recently used.)
