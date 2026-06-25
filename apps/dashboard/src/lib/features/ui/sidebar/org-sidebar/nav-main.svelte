@@ -32,11 +32,7 @@
                         <HoverableItem>
                           {#snippet children(isHovered)}
                             {#if item.disabled}
-                              <span
-                                {...props}
-                                aria-disabled="true"
-                                class="flex cursor-not-allowed items-center gap-2 opacity-50"
-                              >
+                              <span {...props} aria-disabled="true">
                                 {#if item.icon}
                                   {@const Icon = item.icon}
                                   <Icon {isHovered} size={16} class="custom" />
@@ -71,11 +67,7 @@
                     <HoverableItem>
                       {#snippet children(isHovered)}
                         {#if item.disabled}
-                          <span
-                            {...props}
-                            aria-disabled="true"
-                            class="flex cursor-not-allowed items-center gap-2 opacity-50"
-                          >
+                          <span {...props} aria-disabled="true">
                             {#if item.icon}
                               {@const Icon = item.icon}
                               <Icon {isHovered} size={16} class="custom" />
