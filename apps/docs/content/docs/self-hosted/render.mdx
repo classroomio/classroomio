@@ -1,0 +1,138 @@
+---
+title: Render
+description: Deploy ClassroomIO on Render with the one-click Blueprint.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+[Render](https://render.com) deploys ClassroomIO from an in-repo [Blueprint](https://render.com/docs/infrastructure-as-code) ([`render.yaml`](https://github.com/classroomio/classroomio/blob/main/render.yaml)). One click provisions the API, dashboard, and jobs worker, plus Postgres, Redis (Key Value), and a self-hosted MinIO — all by **pulling** the published `classroomio/*` images, so Render never builds anything.
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/classroomio/classroomio)
+
+<Callout type="warn" title="Render self-hosting is a paid setup">
+  Render's free tier does **not** cover background **workers**, **private services**, or
+  **persistent disks** — and ClassroomIO needs all three (the jobs worker and the MinIO disk).
+  The Blueprint defaults every service to a paid `starter` plan. Render's free Postgres/Key Value
+  also expire, so use a paid database tier for anything beyond a quick trial.
+</Callout>
+
+## What the Blueprint provisions
+
+| Service | Type | Image | Networking |
+|---------|------|-------|------------|
+| `cio-postgres` | Managed Postgres 16 | — | private |
+| `cio-redis` | Key Value (Redis) | — | private |
+| `cio-api` | Private service | `classroomio/api` | private (runs DB setup on boot) |
+| `cio-dashboard` | Web service | `classroomio/dashboard` | **public** |
+| `cio-jobs` | Background worker | `classroomio/jobs` | none |
+| `cio-minio` | Web service + disk | `minio/minio` | **public** (S3 API on `9000`) + private |
+
+The API self-migrates: it runs database setup on first boot (skip with `SKIP_DB_SETUP=true`).
+
+To pin a release instead of tracking `latest`, change the image tags in `render.yaml` (e.g. `classroomio/api:1.4.2`) before deploying.
+
+## Finish the setup (one-time)
+
+Render's Blueprint auto-wires everything it can: the database and Redis URLs, the auth secrets
+(`BETTER_AUTH_SECRET`, `PRIVATE_SERVER_KEY`), and the MinIO credentials. A few variables are
+**cross-service full URLs** that Render can't assemble for you (it can reference another service's
+host, but not prepend `https://` or a port). The Blueprint leaves these blank — fill them in once
+from the service URLs shown in your Render dashboard, then redeploy.
+
+<Callout type="error" title="Set DASHBOARD_ORIGIN before cio-api goes live">
+  `DASHBOARD_ORIGIN` is better-auth's base URL. If it's blank or scheme-less when the API boots,
+  the API crashes with `Invalid base URL`. Grab the dashboard's URL first, set it, then redeploy
+  the API.
+</Callout>
+
+After the first deploy, copy each service's URL/host from the Render dashboard and set:
+
+**`cio-api`** (Environment tab):
+
+```zsh title="env"
+DASHBOARD_ORIGIN=https://cio-dashboard-xxxx.onrender.com
+OBJECT_STORAGE_ENDPOINT=http://<cio-minio internal host>:9000   # internal address, port 9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=https://cio-minio-xxxx.onrender.com
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://cio-minio-xxxx.onrender.com/media
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_SENDER=
+```
+
+**`cio-dashboard`**:
+
+```zsh title="env"
+ORIGIN=https://cio-dashboard-xxxx.onrender.com
+PRIVATE_APP_HOST=cio-dashboard-xxxx.onrender.com          # same host, no scheme
+PRIVATE_SERVER_URL=http://<cio-api internal host>:3081     # internal address, port 3081
+CSP_MEDIA_SRC_DOMAINS=https://cio-minio-xxxx.onrender.com  # so MinIO media isn't blocked by CSP
+```
+
+**`cio-jobs`** — same object-storage and SMTP values as `cio-api`:
+
+```zsh title="env"
+OBJECT_STORAGE_ENDPOINT=http://<cio-minio internal host>:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=https://cio-minio-xxxx.onrender.com
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://cio-minio-xxxx.onrender.com/media
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_SENDER=
+OPENAI_API_KEY=     # optional — transcription + AI course generation
+```
+
+<Callout title="Where to find the internal host">
+  On each service's **Connect** / networking panel, Render lists its internal address (used by
+  private traffic). `OBJECT_STORAGE_ENDPOINT` and `PRIVATE_SERVER_URL` use those internal hosts
+  with their ports (`9000` for MinIO, `3081` for the API). The public `…onrender.com` URLs are for
+  browser-facing traffic.
+</Callout>
+
+Redeploy `cio-api`, `cio-dashboard`, and `cio-jobs` after setting the variables.
+
+<Callout title="PRIVATE_SERVER_KEY">
+  `PRIVATE_SERVER_KEY` must be identical in `cio-api` and `cio-dashboard`. The Blueprint generates
+  it on the API and the dashboard references it automatically, so you don't set it by hand.
+</Callout>
+
+## Seed the MinIO buckets (one-time)
+
+The Blueprint has no `minio-init`, so create the buckets once with [`mc`](https://min.io/docs/minio/linux/reference/minio-mc.html)
+(run locally against the MinIO public URL). Get `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` from the
+`cio-minio` service's Environment tab:
+
+```zsh title="Terminal"
+mc alias set cio https://cio-minio-xxxx.onrender.com "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
+mc mb cio/videos cio/documents cio/media --ignore-existing
+mc anonymous set download cio/media     # media bucket = public read (images)
+```
+
+<Callout type="warn" title="MinIO is your durability boundary">
+  Single-node MinIO has no redundancy — the Render disk is the only thing protecting your uploads.
+  Back it up. If you'd rather not operate storage, point the same `OBJECT_STORAGE_*` vars at
+  external **Cloudflare R2 / AWS S3** (R2 has no egress fees) and remove the `cio-minio` service.
+  See the [Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for R2.
+</Callout>
+
+## Upgrades & rollback
+
+Edit the image tags in `render.yaml` (e.g. `classroomio/api:1.4.2` → `1.5.0`) and sync the
+Blueprint, or bump them per-service in the Render dashboard. Roll back by setting the tags to the
+previous release. Pinning a version keeps a new release from restarting you onto changed images
+unattended.
+
+<Callout type="warn" title="Back up before upgrading">
+  Schema migrations run automatically on API startup. Back up your Postgres and the MinIO disk
+  before a major upgrade.
+</Callout>
+
+## SMTP Setup
+
+You need SMTP for email (signup verification, password reset, invites). See [Nodemailer SMTP docs](https://nodemailer.com/smtp/) for provider setup.
+
+## SSO (Enterprise)
+
+SSO requires a license key. Set `LICENSE_KEY` in your `cio-api` environment. [Book a call](http://cal.com/classroomio/enterprise) to get a license.
