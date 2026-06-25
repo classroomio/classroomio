@@ -1,8 +1,7 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
   import { OrgPage } from '$features/settings/pages';
-  import { t } from '$lib/utils/functions/translations';
-  import { Button } from '@cio/ui/base/button';
-  import * as Page from '@cio/ui/base/page';
+  import { settingsHeaderAction } from '$features/settings/utils/store';
 
   let orgComponent: OrgPage | null = $state(null);
   let loading = $state(false);
@@ -15,25 +14,28 @@
       loading = false;
     }
   }
+
+  $effect(() => {
+    settingsHeaderAction.set({
+      label: 'Save',
+      disabled: loading,
+      loading,
+      onClick: handleUpdate
+    });
+  });
+
+  onDestroy(() => {
+    settingsHeaderAction.set({
+      label: 'Save',
+      disabled: true,
+      loading: false,
+      onClick: null
+    });
+  });
 </script>
 
 <svelte:head>
   <title>Organization Settings - ClassroomIO</title>
 </svelte:head>
 
-<Page.Header isSticky>
-  <Page.HeaderContent>
-    <Page.Title>{$t('settings.organization.organization_profile.heading')}</Page.Title>
-    <Page.Subtitle>{$t('settings.organization.page_subtitle')}</Page.Subtitle>
-  </Page.HeaderContent>
-  <Page.Action>
-    <Button variant="default" {loading} disabled={loading} onclick={handleUpdate}>
-      {$t('settings.organization.organization_profile.update_organization')}
-    </Button>
-  </Page.Action>
-</Page.Header>
-<Page.Body>
-  {#snippet child()}
-    <OrgPage bind:this={orgComponent} />
-  {/snippet}
-</Page.Body>
+<OrgPage bind:this={orgComponent} />

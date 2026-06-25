@@ -677,6 +677,15 @@
     "user_analytics": {
       "title": "Studentenprofil",
       "page_subtitle": "Progress, grades, and activity across their courses."
+    },
+    "delete": {
+      "action": "Löschen",
+      "title": "Mitglied löschen",
+      "description": "Dadurch wird das Mitglied aus Ihrer Organisation entfernt und ihm der Zugriff auf alle zugewiesenen Kurse und Programme entzogen.",
+      "confirmation": "Sind Sie sicher, dass Sie {name} ({email}) löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "cancel": "Abbrechen",
+      "confirm": "Löschen",
+      "snackbar_success": "Mitglied gelöscht"
     }
   },
   "community": {
@@ -803,6 +812,12 @@
           "animation_waves": "Wellen",
           "animation_dotted": "Gepunktet",
           "animation_none": "Keine"
+        },
+        "course_type_learn_more": "Erfahren Sie mehr",
+        "welcome_email": {
+          "title": "Willkommens-E-Mail",
+          "description": "Passen Sie die E-Mail an, die Studierende nach der Anmeldung erhalten. Fügen Sie eine persönliche Notiz, Anweisungen oder einen Link zur Live-Sitzung hinzu.",
+          "placeholder": "Schreiben Sie die Willkommensnachricht, die Studierende bei der Einschreibung erhalten …"
         }
       },
       "analytics": {
@@ -1054,7 +1069,7 @@
           "add": "Hinzufügen",
           "add_team": "Fügen Sie Ihre Teamkollegen oder Mitarbeiter zu Ihrer Organisation hinzu. Beginnen Sie mit der Zusammenarbeit",
           "invite": "Einladen",
-          "placeholder": "E-Mail durch Komma getrennt",
+          "placeholder": "user1@domain.com, user2@domain.com",
           "role": "Rolle",
           "send_invite": "Einladung senden",
           "members": "Mitglieder",
@@ -1066,6 +1081,7 @@
             "description": "Jeder mit diesem Link kann Ihrer Organisation beitreten.",
             "generate": "Link generieren",
             "copy": "Kopieren",
+            "copy_invite_link": "Einladungslink kopieren",
             "copied": "Kopiert!",
             "toggle_label": "Linkeinladung aktiv",
             "disabled_notice": "Dieser Link ist deaktiviert. Aktivieren Sie es, um neuen Mitgliedern den Beitritt über einen Link zu ermöglichen.",
@@ -1775,7 +1791,13 @@
             "settings_completion_policy": "Abschlussregel",
             "settings_completion_submitted": "Eingereicht – jede Einreichung zählt",
             "settings_completion_passed": "Bestanden – Mindestpunktzahl erforderlich",
-            "settings_pass_threshold": "Bestehensschwelle (%)"
+            "settings_pass_threshold": "Bestehensschwelle (%)",
+            "notify": {
+              "action": "Benachrichtigen Sie die Schüler",
+              "sending": "Studierende benachrichtigen…",
+              "sent": "{count} Studenten benachrichtigt",
+              "failed": "Die Schüler konnten nicht benachrichtigt werden"
+            }
           },
           "new_exercise_modal": {
             "heading": "Neue Übung",
@@ -2046,6 +2068,41 @@
           "sections": "Abschnitte",
           "lessons": "Lektionen",
           "exercises": "Übungen"
+        },
+        "session": {
+          "join": "Nehmen Sie an der Sitzung teil",
+          "heading": "Live-Sitzung",
+          "intro": "Legen Sie den Beitrittslink und die geplante Zeit für diesen Live-Kurs fest. Schüler erhalten 24 Stunden und 1 Stunde vorher Erinnerungen.",
+          "link_label": "Beitrittslink (Zoom, Meet usw.)",
+          "datetime_label": "Datum und Uhrzeit",
+          "timezone_label": "Zeitzone",
+          "timezone_helper": "Erinnerungen und die Kalendereinladung verwenden diese Zeitzone zur Anzeige.",
+          "save": "Sitzung speichern",
+          "saved": "Sitzung gespeichert",
+          "notified": "Studierende werden über die aktualisierte Sitzung informiert",
+          "notify_failed": "Die Schüler konnten nicht über die Änderung informiert werden",
+          "confirm_title": "Studierende über die Änderung informieren?",
+          "confirm_body": "Durch das Speichern werden alle eingeschriebenen Schüler per E-Mail über die aktualisierte Sitzung informiert, zusammen mit einer neuen Kalendereinladung, die das Ereignis in ihrem Kalender aktualisiert.",
+          "confirm_cancel": "Abbrechen",
+          "confirm_save": "Speichern und benachrichtigen",
+          "live_indicator": "Diese Lektion ist eine Live-Sitzung",
+          "live_session": "Live-Sitzung",
+          "live_now": "Jetzt live",
+          "live_event": "Live-Sitzung",
+          "started": "Begonnen",
+          "min_ago": "vor einer Minute",
+          "join_now": "Jetzt teilnehmen",
+          "copy_link": "Link kopieren",
+          "copy": "Kopieren",
+          "add_to_calendar": "Zum Kalender hinzufügen",
+          "add_google": "Google Kalender",
+          "add_outlook": "Outlook.com",
+          "add_office365": "Büro 365",
+          "add_yahoo": "Yahoo-Kalender",
+          "add_apple": "Apple Kalender (.ics)",
+          "starts_in": "Beginnt in",
+          "session_ended": "Sitzung beendet",
+          "link_copied": "Link kopiert"
         }
       },
       "news_feed": {
@@ -2177,7 +2234,14 @@
     "header": {
       "preview": "Preview course",
       "preview_missing_slug": "Generate and save a course slug before previewing.",
-      "view_as_student": "Als Student anzeigen"
+      "view_as_student": "Als Student anzeigen",
+      "view_course_site": "Kursseite anzeigen"
+    },
+    "view_course_site": {
+      "unpublished_title": "Kurs veröffentlichen",
+      "unpublished_description": "Sie sollten diesen Kurs veröffentlichen, bevor Sie die Seite ansehen können",
+      "cancel": "Abbrechen",
+      "publish_course": "Kurs veröffentlichen"
     },
     "sidebar": {
       "back_to_course": "Zurück zum Kurs",
@@ -2211,7 +2275,10 @@
         "title": "Kursvoraussetzungen erfüllt!",
         "subtitle": "Herzlichen Glückwunsch – Sie können Ihr Zertifikat jederzeit einsehen und herunterladen.",
         "view_certificate": "Zertifikat ansehen",
-        "later": "Schließen"
+        "later": "Schließen",
+        "checking": "Berechtigung prüfen…",
+        "not_eligible_title": "Fast da",
+        "retake_exercise": "Wiederholen Sie die Übung"
       }
     },
     "certificates": {
@@ -2236,7 +2303,8 @@
       "blocker_final_score": "Ihre beste Punktzahl bei „{exerciseTitle}“ beträgt {bestPercent} %; {requiredPercent}% ist erforderlich.",
       "blocker_final_misconfigured": "Für die Zertifizierungsübung „{exerciseTitle}“ sind keine Punkte konfiguriert; Bitten Sie Ihren Lehrer, das Problem zu beheben.",
       "email_message_label": "E-Mail-Nachricht",
-      "email_message_placeholder": "z.B. Wir sind stolz auf Ihre Fortschritte – lernen Sie weiter!"
+      "email_message_placeholder": "z.B. Wir sind stolz auf Ihre Fortschritte – lernen Sie weiter!",
+      "final_exercise_multiple_attempts_note": "Den Schülern sind unbegrenzte Versuche für die ausgewählte Übung gestattet."
     },
     "creator": {
       "heading": "Welchen Kurs möchten Sie erstellen?",
@@ -2359,6 +2427,8 @@
         "delete": "Löschen",
         "open": "Offen",
         "open_public_course": "Öffentlichen Kurs öffnen",
+        "view_course_site": "Kursseite anzeigen",
+        "publish_course": "Kurs veröffentlichen",
         "copy_course_url": "Kurs-URL kopieren"
       },
       "due_date": "Fällig",
@@ -2440,8 +2510,10 @@
     "learner": "Student",
     "progress": "Fortschritt",
     "pick_up_where_you_left_off": "Machen Sie dort weiter, wo Sie aufgehört haben",
+    "get_your_certificate": "Hole dir dein Zertifikat",
     "course_awaits_you": "{title} erwartet Sie",
     "learning_awaits_you": "Ihr nächster Kurs erwartet Sie",
+    "my_certificate": "Mein Zertifikat",
     "lms_today_progress": "Ihr Lernfortschritt beträgt {progress} % – jeder Schritt zählt.",
     "lms_today_empty": "Ihr Lernpfad ist fertig, wenn Sie es sind.",
     "compliance_score": "Compliance-Score",
@@ -2459,7 +2531,8 @@
     "login_activity_logins": "Anmeldungen",
     "open_academy": "Offene Akademie",
     "explore_more_courses": "Entdecken Sie weitere Kurse",
-    "view_more": "Mehr anzeigen"
+    "view_more": "Mehr anzeigen",
+    "upcoming_sessions_heading": "Live-Sitzungen"
   },
   "schedule": {
     "title": "Ihr Zeitplan",

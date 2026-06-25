@@ -33,18 +33,28 @@ jobs:
           ls -la && echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      - name: Setup turbo cache
+        # Turbo cache keyed by commit SHA, with a prefix restore-key so a previous run of
+        # this workflow warms the @cio/api build instead of a cold rebuild.
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build @cio/api workspace dependencies
-        run: pnpm turbo run build --filter=@cio/api^...
+        run: pnpm turbo run build --filter=@cio/api^... --cache-dir=.turbo
 
       - name: Upload to Cloudflare R2
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'

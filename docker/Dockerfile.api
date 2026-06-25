@@ -4,12 +4,22 @@ WORKDIR /app
 
 # Keep install non-interactive and deterministic in CI/container contexts.
 ENV CI=true
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
 RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 
+# Fetch deps from the lockfile first (cached unless pnpm-lock.yaml changes); the
+# store is baked into this layer and reused by the offline install below.
+COPY pnpm-lock.yaml ./
+# Patches referenced by package.json#pnpm.patchedDependencies must be present for `pnpm fetch`.
+COPY patches ./patches
+RUN pnpm fetch --store-dir /pnpm/store
+
 COPY . .
 
-RUN pnpm install --frozen-lockfile --ignore-scripts --shamefully-hoist --filter @cio/api...
+RUN pnpm install --offline --frozen-lockfile --ignore-scripts --shamefully-hoist \
+    --store-dir /pnpm/store --filter @cio/api...
 RUN find . -name 'tsconfig.tsbuildinfo' -delete
 RUN pnpm -r --filter @cio/api... build
 

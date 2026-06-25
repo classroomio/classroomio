@@ -677,6 +677,15 @@
     "user_analytics": {
       "title": "Elevprofil",
       "page_subtitle": "Progress, grades, and activity across their courses."
+    },
+    "delete": {
+      "action": "Slet",
+      "title": "Slet medlem",
+      "description": "Dette fjerner medlemmet fra din organisation og tilbagekalder deres adgang til alle tildelte kurser og programmer.",
+      "confirmation": "Er du sikker på, at du vil slette {name} ({email})? Denne handling kan ikke fortrydes.",
+      "cancel": "Annuller",
+      "confirm": "Slet",
+      "snackbar_success": "Medlem slettet"
     }
   },
   "community": {
@@ -803,6 +812,12 @@
           "animation_waves": "Bølger",
           "animation_dotted": "Stiplet",
           "animation_none": "Ingen"
+        },
+        "course_type_learn_more": "Få flere oplysninger",
+        "welcome_email": {
+          "title": "Velkomstmail",
+          "description": "Tilpas den e-mail, som eleverne modtager efter tilmelding. Tilføj en personlig note, instruktioner eller et link til en livesession.",
+          "placeholder": "Skriv den velkomstbesked, eleverne får, når de tilmelder sig..."
         }
       },
       "analytics": {
@@ -1054,7 +1069,7 @@
           "add": "Tilføj",
           "add_team": "Tilføj dine holdkammerater eller samarbejdspartnere til din organisation. Begynd at arbejde sammen",
           "invite": "Inviter",
-          "placeholder": "e-mail kommasepareret",
+          "placeholder": "user1@domain.com, user2@domain.com",
           "role": "Rolle",
           "send_invite": "Send invitation",
           "members": "Medlemmer",
@@ -1066,6 +1081,7 @@
             "description": "Alle med dette link kan tilslutte sig din organisation.",
             "generate": "Generer link",
             "copy": "Kopiér",
+            "copy_invite_link": "Kopiér invitationslink",
             "copied": "Kopieret!",
             "toggle_label": "Linkinvitation aktiv",
             "disabled_notice": "Dette link er deaktiveret. Aktiver det for at tillade nye medlemmer at deltage via link.",
@@ -1775,7 +1791,13 @@
             "settings_completion_policy": "Fuldførelsesregel",
             "settings_completion_submitted": "Indsendt - enhver indsendelse tæller",
             "settings_completion_passed": "Bestået - minimumsscore kræves",
-            "settings_pass_threshold": "Beståelsesgrænse (%)"
+            "settings_pass_threshold": "Beståelsesgrænse (%)",
+            "notify": {
+              "action": "Giv eleverne besked",
+              "sending": "Underretter elever...",
+              "sent": "Meddelte {count} elever",
+              "failed": "Eleverne kunne ikke underrettes"
+            }
           },
           "new_exercise_modal": {
             "heading": "Ny øvelse",
@@ -2046,6 +2068,41 @@
           "sections": "Afsnit",
           "lessons": "Lektioner",
           "exercises": "Øvelser"
+        },
+        "session": {
+          "join": "Deltag i session",
+          "heading": "Live session",
+          "intro": "Indstil deltagelseslinket og det planlagte tidspunkt for dette livehold. Eleverne får rykker 24 timer og 1 time før.",
+          "link_label": "Tilmeld dig link (Zoom, Mød osv.)",
+          "datetime_label": "Dato og tid",
+          "timezone_label": "Tidszone",
+          "timezone_helper": "Påmindelser og kalenderinvitationer bruger denne tidszone til visning.",
+          "save": "Gem session",
+          "saved": "Session gemt",
+          "notified": "Eleverne får besked om den opdaterede session",
+          "notify_failed": "Kunne ikke give eleverne besked om ændringen",
+          "confirm_title": "Underrette eleverne om ændringen?",
+          "confirm_body": "Når du gemmer, sendes en e-mail til alle tilmeldte elever om den opdaterede session med en ny kalenderinvitation, der opdaterer begivenheden i deres kalender.",
+          "confirm_cancel": "Annuller",
+          "confirm_save": "Gem og underret",
+          "live_indicator": "Denne lektion er en live session",
+          "live_session": "Live session",
+          "live_now": "Live nu",
+          "live_event": "Live session",
+          "started": "Startede",
+          "min_ago": "min siden",
+          "join_now": "Deltag nu",
+          "copy_link": "Kopiér link",
+          "copy": "Kopiér",
+          "add_to_calendar": "Tilføj til kalender",
+          "add_google": "Google Kalender",
+          "add_outlook": "Outlook.com",
+          "add_office365": "Office 365",
+          "add_yahoo": "Yahoo kalender",
+          "add_apple": "Apple-kalender (.ics)",
+          "starts_in": "Starter i",
+          "session_ended": "Session afsluttet",
+          "link_copied": "Linket er kopieret"
         }
       },
       "news_feed": {
@@ -2177,7 +2234,14 @@
     "header": {
       "preview": "Preview course",
       "preview_missing_slug": "Generate and save a course slug before previewing.",
-      "view_as_student": "Se som studerende"
+      "view_as_student": "Se som studerende",
+      "view_course_site": "Se kursusside"
+    },
+    "view_course_site": {
+      "unpublished_title": "Udgiv dit kursus",
+      "unpublished_description": "Du bør udgive dette kursus, før du kan se sitet",
+      "cancel": "Annuller",
+      "publish_course": "Udgiv kursus"
     },
     "sidebar": {
       "back_to_course": "Tilbage til kurset",
@@ -2211,7 +2275,10 @@
         "title": "Kursuskravene er fuldført!",
         "subtitle": "Tillykke – du kan se og downloade dit certifikat når som helst.",
         "view_certificate": "Se certifikat",
-        "later": "Luk"
+        "later": "Luk",
+        "checking": "Tjekker berettigelse...",
+        "not_eligible_title": "Næsten der",
+        "retake_exercise": "Gentag øvelsen"
       }
     },
     "certificates": {
@@ -2236,7 +2303,8 @@
       "blocker_final_score": "Din bedste score på \"{exerciseTitle}\" er {bestPercent}%; {requiredPercent} % er påkrævet.",
       "blocker_final_misconfigured": "Certificeringsøvelsen \"{exerciseTitle}\" har ingen point konfigureret; bed din instruktør om at ordne det.",
       "email_message_label": "E-mail besked",
-      "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!"
+      "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!",
+      "final_exercise_multiple_attempts_note": "Elever får lov til ubegrænsede forsøg på den valgte øvelse."
     },
     "creator": {
       "heading": "Hvilket kursus vil du lave?",
@@ -2359,6 +2427,8 @@
         "delete": "Slet",
         "open": "Åbn",
         "open_public_course": "Åbn offentligt kursus",
+        "view_course_site": "Se kursusside",
+        "publish_course": "Udgiv kursus",
         "copy_course_url": "Kopiér kursus-URL"
       },
       "due_date": "Forfalder",
@@ -2440,8 +2510,10 @@
     "learner": "Student",
     "progress": "Fremskridt",
     "pick_up_where_you_left_off": "Fortsæt hvor du slap",
+    "get_your_certificate": "Hent dit certifikat",
     "course_awaits_you": "{title} venter på dig",
     "learning_awaits_you": "Dit næste kursus venter på dig",
+    "my_certificate": "Mit certifikat",
     "lms_today_progress": "Du er {progress} % gennem din læring - hvert skridt tæller.",
     "lms_today_empty": "Din læringsvej er klar, når du er.",
     "compliance_score": "Overholdelsesscore",
@@ -2459,7 +2531,8 @@
     "login_activity_logins": "logins",
     "open_academy": "Åbent Akademi",
     "explore_more_courses": "Udforsk flere kurser",
-    "view_more": "Se mere"
+    "view_more": "Se mere",
+    "upcoming_sessions_heading": "Live sessioner"
   },
   "schedule": {
     "title": "Dit skema",

@@ -19,8 +19,10 @@ function buildResourceOwnershipError(params: {
   const { resourceType, resourceId, resource } = params;
 
   if (!resource) {
+    const createTool = resourceType === 'Lesson' ? 'create_lesson' : 'create_exercise';
+
     return new AppError(
-      `${resourceType} ${resourceId} does not exist in this course. The ID may have been hallucinated — call get_course_structure to fetch real IDs and retry.`,
+      `${resourceType} ${resourceId} does not exist in this course. Do NOT take IDs from the plan card — it contains no IDs. If you have not yet created this ${resourceType.toLowerCase()} in this run, call ${createTool} first and use the id it returns. Otherwise call get_course_structure to fetch the real id, then retry. Never invent or guess IDs.`,
       'RESOURCE_NOT_IN_COURSE',
       403
     );

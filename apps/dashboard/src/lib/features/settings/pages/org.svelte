@@ -1,17 +1,14 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import ZapIcon from '@lucide/svelte/icons/zap';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import debounce from 'lodash/debounce';
   import ColorPicker from 'svelte-awesome-color-picker';
 
   import { t } from '$lib/utils/functions/translations';
-  import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
   import { orgApi } from '$features/org/api/org.svelte';
 
   import { Input } from '@cio/ui/base/input';
-  import { Button } from '@cio/ui/base/button';
   import { UploadImage, UnsavedChanges } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
@@ -63,9 +60,6 @@
     }
   }
 
-  function gotoSettings(pathname: string) {
-    goto(`${$currentOrgPath}/settings${pathname}`);
-  }
   let isCustomTheme = $derived($currentOrg?.theme?.includes('#'));
   let hex = $derived($currentOrg.theme?.includes('#') ? $currentOrg.theme : undefined);
 </script>
@@ -169,51 +163,6 @@
           />
         </div>
       </div>
-    </Field.Field>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('settings.organization.organization_profile.customize_lms.heading')}</Field.Legend>
-    <Field.Description>{$t('settings.organization.organization_profile.customize_lms.sub_heading')}</Field.Description>
-    <Field.Description>{$t('settings.organization.organization_profile.customize_lms.body')}</Field.Description>
-    <Field.Field orientation="horizontal">
-      <Button variant="outline" onclick={() => gotoSettings('/customize-lms')}>
-        {$t('settings.organization.organization_profile.customize_lms.button')}
-      </Button>
-    </Field.Field>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('settings.organization.organization_profile.custom_domain.heading')}</Field.Legend>
-    <Field.Description>{$t('settings.organization.organization_profile.custom_domain.sub_heading')}</Field.Description>
-    <Field.Description>{$t('settings.organization.organization_profile.custom_domain.body')}</Field.Description>
-    <Field.Field orientation="horizontal">
-      <Button variant="outline" onclick={() => gotoSettings('/domains')}>
-        {#if $isFreePlan}
-          <ZapIcon size={16} class="filled" />
-        {/if}
-        {$t('settings.organization.organization_profile.custom_domain.button')}
-      </Button>
-    </Field.Field>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('settings.organization.organization_profile.team.heading')}</Field.Legend>
-    <Field.Description>{$t('settings.organization.organization_profile.team.sub_heading')}</Field.Description>
-    <Field.Description>{$t('settings.organization.organization_profile.team.body')}</Field.Description>
-    <Field.Field orientation="horizontal">
-      <Button variant="outline" onclick={() => gotoSettings('/teams')}>
-        {#if $isFreePlan}
-          <ZapIcon size={16} class="filled" />
-        {/if}
-        {$t('settings.organization.organization_profile.team.button')}
-      </Button>
     </Field.Field>
   </Field.Set>
 </Field.Group>

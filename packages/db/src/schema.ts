@@ -687,6 +687,10 @@ export const course = pgTable(
       grading?: boolean;
       lessonDownload?: boolean;
       allowNewStudent: boolean;
+      /** Teacher-authored HTML sent in the welcome email after a student enrolls. */
+      welcomeEmailMessage?: string | null;
+      /** IANA timezone for this course's live sessions (display + scheduling). */
+      sessionTimezone?: string | null;
       sectionDisplay?: Record<string, boolean>;
       isContentGroupingEnabled?: boolean;
       /** `free` = all unlocked content is accessible; `sequential` = prior items must be complete. */

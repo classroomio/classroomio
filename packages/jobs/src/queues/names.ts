@@ -33,6 +33,11 @@ export const JOB_NAMES = {
   emails: {
     send: 'send'
   },
+  notifications: {
+    notifyCourseExercise: 'notify-course-exercise',
+    sessionReminderScan: 'session-reminder-scan',
+    notifyCourseSessionUpdate: 'notify-course-session-update'
+  },
   webhooks: {
     deliver: 'deliver'
   },

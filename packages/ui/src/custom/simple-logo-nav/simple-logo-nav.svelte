@@ -11,7 +11,5 @@
     <span class="ui:text-foreground ui:text-md">ClassroomIO</span>
   </a>
 
-  <p class="ui:text-muted-foreground ui:text-sm">
-    The Most Customizable Platform for Customer, Partner, and Employee Education
-  </p>
+  <p class="ui:text-muted-foreground ui:text-sm">One Platform for Customer, Partner, and Employee Training</p>
 </div>

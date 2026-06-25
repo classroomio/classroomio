@@ -22,7 +22,8 @@ export async function processSendEmail(rawPayload: unknown): Promise<SendResult>
       // generic record was already validated in the API helper before enqueue.
       fields: payload.fields as never,
       from: payload.from,
-      replyTo: payload.replyTo
+      replyTo: payload.replyTo,
+      ics: payload.ics
     });
     const result = extractProviderId(responses);
     log.info('email-sent', {

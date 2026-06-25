@@ -32,6 +32,9 @@ export type { EmailId, EmailSchemaFor } from './utils/types';
 export { deliverEmail } from './send';
 export { buildEmailFromName } from './utils/functions/email-helpers';
 export { getDefaultTemplate } from './templates/default';
+export { buildEmailBranding, resolveThemeColor, ZEmailBranding } from './core/branding';
+export { buildSessionIcs, type SessionIcsInput } from './ics';
+export type { EmailBranding } from './core/branding';
 
 // Export email registry for introspection (optional)
 export { EmailRegistry } from './core/registry';

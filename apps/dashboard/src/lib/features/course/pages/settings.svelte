@@ -5,6 +5,7 @@
   import { Label } from '@cio/ui/base/label';
   import { Switch } from '@cio/ui/base/switch';
   import * as RadioGroup from '@cio/ui/base/radio-group';
+  import * as Select from '@cio/ui/base/select';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
   import XIcon from '@lucide/svelte/icons/x';
@@ -15,7 +16,7 @@
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
   import * as Field from '@cio/ui/base/field';
-  import { UpgradeBanner, UnsavedChanges, UploadWidget } from '$features/ui';
+  import { UpgradeBanner, UnsavedChanges, UploadWidget, TextEditor } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
 
   import { settings } from '$features/course/utils/settings-store';
@@ -159,7 +160,8 @@
         lessonDownload: $settings.lessonDownload,
         allowNewStudent: $settings.allowNewStudents ?? false,
         isContentGroupingEnabled: $settings.isContentGroupingEnabled,
-        progressionMode: $settings.progressionMode
+        progressionMode: $settings.progressionMode,
+        welcomeEmailMessage: $settings.welcomeEmailMessage?.trim() ? $settings.welcomeEmailMessage : null
       } as NonNullable<Course['metadata']>;
 
       const updatedCourse = {
@@ -224,7 +226,8 @@
         allowNewStudents: !!course.metadata?.allowNewStudent,
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
         progressionMode: course.metadata?.progressionMode ?? 'free',
-        callout: normalizeCallout(course.callout)
+        callout: normalizeCallout(course.callout),
+        welcomeEmailMessage: course.metadata?.welcomeEmailMessage ?? ''
       });
     });
   }
@@ -350,7 +353,7 @@
     <Field.Group>
       <Field.Field>
         <div class="flex items-center gap-2">
-          <Button onclick={widgetControl}>
+          <Button variant="secondary" onclick={widgetControl}>
             {$t('course.navItem.settings.replace')}
           </Button>
           <Button variant="outline" onclick={deleteBannerImage}>
@@ -439,6 +442,83 @@
         </div>
       </Field.Field>
     </Field.Group>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.type')}</Field.Legend>
+    <Field.Description>
+      {$t('course.navItem.settings.course_type_desc')}
+      <a
+        href="https://classroomio.com/docs/course-types"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="ui:text-primary underline"
+      >
+        {$t('course.navItem.settings.course_type_learn_more')}
+      </a>
+    </Field.Description>
+    <Field.Field>
+      <Select.Root
+        type="single"
+        value={$settings.type}
+        onValueChange={(value) => {
+          if (!value) return;
+          $settings.type = value as TCourseType;
+          hasUnsavedChanges = true;
+        }}
+      >
+        <Select.Trigger class="w-full">
+          {$t(`course.navItem.settings.${$settings.type.toLowerCase()}`)}
+        </Select.Trigger>
+        <Select.Content>
+          <Select.Group>
+            <Select.Item value="SELF_PACED" label={$t('course.navItem.settings.self_paced')}>
+              {$t('course.navItem.settings.self_paced')}
+            </Select.Item>
+            <Select.Item value="LIVE_CLASS" label={$t('course.navItem.settings.live_class')}>
+              {$t('course.navItem.settings.live_class')}
+            </Select.Item>
+            <Select.Item value="COMPLIANCE" label={$t('course.navItem.settings.compliance')}>
+              {$t('course.navItem.settings.compliance')}
+            </Select.Item>
+            <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')}>
+              {$t('course.navItem.settings.public')}
+            </Select.Item>
+          </Select.Group>
+        </Select.Content>
+      </Select.Root>
+    </Field.Field>
+
+    {#if courseApi.errors.type}
+      <div
+        class="ui:mt-2 ui:rounded-md ui:border ui:border-destructive/30 ui:bg-destructive/5 ui:p-3 ui:text-sm ui:text-destructive"
+        role="alert"
+      >
+        <div class="ui:font-medium">{$t('course.navItem.settings.convert_to_public_blocked')}</div>
+        <p class="ui:mt-1 ui:text-destructive/90">{courseApi.errors.type}</p>
+      </div>
+    {/if}
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.welcome_email.title')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.welcome_email.description')}</Field.Description>
+    <div class="w-full max-w-md">
+      <TextEditor
+        content={$settings.welcomeEmailMessage}
+        placeholder={$t('course.navItem.settings.welcome_email.placeholder')}
+        class="w-full"
+        editorClass="h-auto! max-h-[200px] min-h-[120px]"
+        onChange={(text) => {
+          $settings.welcomeEmailMessage = text;
+          hasUnsavedChanges = true;
+        }}
+      />
+    </div>
   </Field.Set>
 
   <Field.Separator />
@@ -592,50 +672,6 @@
     </Field.Field>
   </Field.Set>
 
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('course.navItem.settings.type')}</Field.Legend>
-    <Field.Description>{$t('course.navItem.settings.course_type_desc')}</Field.Description>
-    <Field.Field>
-      <RadioGroup.Root
-        value={$settings.type}
-        onValueChange={(value) => {
-          $settings.type = value as TCourseType;
-          if (hasUnsavedChanges) return;
-          hasUnsavedChanges = true;
-        }}
-      >
-        <div class="mb-3 flex items-center space-x-2">
-          <RadioGroup.Item value={'SELF_PACED' as TCourseType} id="self-paced" />
-          <Label for="self-paced">{$t('course.navItem.settings.self_paced')}</Label>
-        </div>
-        <div class="mb-3 flex items-center space-x-2">
-          <RadioGroup.Item value={'LIVE_CLASS' as TCourseType} id="live-class" />
-          <Label for="live-class">{$t('course.navItem.settings.live_class')}</Label>
-        </div>
-        <div class="mb-3 flex items-center space-x-2">
-          <RadioGroup.Item value={'COMPLIANCE' as TCourseType} id="compliance-course" />
-          <Label for="compliance-course">{$t('course.navItem.settings.compliance')}</Label>
-        </div>
-        <div class="flex items-center space-x-2">
-          <RadioGroup.Item value={'PUBLIC' as TCourseType} id="public-course" />
-          <Label for="public-course">{$t('course.navItem.settings.public')}</Label>
-        </div>
-      </RadioGroup.Root>
-    </Field.Field>
-
-    {#if courseApi.errors.type}
-      <div
-        class="ui:mt-2 ui:rounded-md ui:border ui:border-destructive/30 ui:bg-destructive/5 ui:p-3 ui:text-sm ui:text-destructive"
-        role="alert"
-      >
-        <div class="ui:font-medium">{$t('course.navItem.settings.convert_to_public_blocked')}</div>
-        <p class="ui:mt-1 ui:text-destructive/90">{courseApi.errors.type}</p>
-      </div>
-    {/if}
-  </Field.Set>
-
   {#if $settings.type === 'PUBLIC' && $settings.callout}
     <Field.Separator />
 
@@ -758,7 +794,7 @@
 
   <Field.Separator />
 
-  <Field.Set>
+  <Field.Set id="publish">
     <Field.Legend>{$t('course.navItem.settings.publish')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.determines')}</Field.Description>
     <Field.Field orientation="horizontal">

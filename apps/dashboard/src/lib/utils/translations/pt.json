@@ -677,6 +677,15 @@
     "user_analytics": {
       "title": "Perfil do aluno",
       "page_subtitle": "Progress, grades, and activity across their courses."
+    },
+    "delete": {
+      "action": "Excluir",
+      "title": "Excluir membro",
+      "description": "Isso remove o membro da sua organização e revoga seu acesso a todos os cursos e programas atribuídos.",
+      "confirmation": "Tem certeza de que deseja excluir {name} ({email})? Esta ação não pode ser desfeita.",
+      "cancel": "Cancelar",
+      "confirm": "Excluir",
+      "snackbar_success": "Membro excluído"
     }
   },
   "community": {
@@ -803,6 +812,12 @@
           "animation_waves": "Ondas",
           "animation_dotted": "Pontilhado",
           "animation_none": "Nenhum"
+        },
+        "course_type_learn_more": "Saiba mais",
+        "welcome_email": {
+          "title": "E-mail de boas-vindas",
+          "description": "Personalize o e-mail que os alunos recebem após a inscrição. Adicione uma nota pessoal, instruções ou um link de sessão ao vivo.",
+          "placeholder": "Escreva a mensagem de boas-vindas que os alunos recebem quando se matriculam…"
         }
       },
       "analytics": {
@@ -1054,7 +1069,7 @@
           "add": "Adicionar",
           "add_team": "Adicione seus companheiros de equipe ou colaboradores à sua organização. Comece a trabalhar juntos",
           "invite": "Convidar",
-          "placeholder": "e-mail separado por vírgula",
+          "placeholder": "user1@domain.com, user2@domain.com",
           "role": "Função",
           "send_invite": "Enviar convite",
           "members": "Membros",
@@ -1066,6 +1081,7 @@
             "description": "Qualquer pessoa com este link pode ingressar na sua organização.",
             "generate": "Gerar link",
             "copy": "Copiar",
+            "copy_invite_link": "Copiar link de convite",
             "copied": "Copiado!",
             "toggle_label": "Link de convite ativo",
             "disabled_notice": "Este link está desativado. Habilite-o para permitir que novos membros participem via link.",
@@ -1775,7 +1791,13 @@
             "settings_completion_policy": "Regra de conclusão",
             "settings_completion_submitted": "Enviado – qualquer envio conta",
             "settings_completion_passed": "Aprovado – pontuação mínima exigida",
-            "settings_pass_threshold": "Limite de aprovação (%)"
+            "settings_pass_threshold": "Limite de aprovação (%)",
+            "notify": {
+              "action": "Notificar os alunos",
+              "sending": "Notificando os alunos…",
+              "sent": "{count} alunos notificados",
+              "failed": "Não foi possível notificar os alunos"
+            }
           },
           "new_exercise_modal": {
             "heading": "Novo exercício",
@@ -2046,6 +2068,41 @@
           "sections": "Seções",
           "lessons": "Lições",
           "exercises": "Exercícios"
+        },
+        "session": {
+          "join": "Entrar na sessão",
+          "heading": "Sessão ao vivo",
+          "intro": "Defina o link de participação e o horário agendado para esta aula ao vivo. Os alunos recebem lembretes 24 horas e 1 hora antes.",
+          "link_label": "Link de adesão (Zoom, Meet, etc.)",
+          "datetime_label": "Data e hora",
+          "timezone_label": "Fuso horário",
+          "timezone_helper": "Os lembretes e o convite do calendário usam esse fuso horário para exibição.",
+          "save": "Salvar sessão",
+          "saved": "Sessão salva",
+          "notified": "Alunos notificados sobre a sessão atualizada",
+          "notify_failed": "Não foi possível notificar os alunos sobre a mudança",
+          "confirm_title": "Notificar os alunos sobre a mudança?",
+          "confirm_body": "Salvar enviará um e-mail a todos os alunos inscritos sobre a sessão atualizada, com um novo convite de calendário que atualiza o evento em seus calendários.",
+          "confirm_cancel": "Cancelar",
+          "confirm_save": "Salvar e notificar",
+          "live_indicator": "Esta lição é uma sessão ao vivo",
+          "live_session": "Sessão ao vivo",
+          "live_now": "Ao vivo agora",
+          "live_event": "Sessão ao vivo",
+          "started": "Iniciado",
+          "min_ago": "minutos atrás",
+          "join_now": "Entrar agora",
+          "copy_link": "Copiar link",
+          "copy": "Copiar",
+          "add_to_calendar": "Adicionar ao calendário",
+          "add_google": "Google Agenda",
+          "add_outlook": "Outlook.com",
+          "add_office365": "Escritório 365",
+          "add_yahoo": "Calendário do Yahoo",
+          "add_apple": "Calendário Apple (.ics)",
+          "starts_in": "Começa em",
+          "session_ended": "Sessão encerrada",
+          "link_copied": "Link copiado"
         }
       },
       "news_feed": {
@@ -2177,7 +2234,14 @@
     "header": {
       "preview": "Preview course",
       "preview_missing_slug": "Generate and save a course slug before previewing.",
-      "view_as_student": "Ver como aluno"
+      "view_as_student": "Ver como aluno",
+      "view_course_site": "Ver site do curso"
+    },
+    "view_course_site": {
+      "unpublished_title": "Publique seu curso",
+      "unpublished_description": "Você deve publicar este curso antes de poder ver o site",
+      "cancel": "Cancelar",
+      "publish_course": "Publicar curso"
     },
     "sidebar": {
       "back_to_course": "De volta ao curso",
@@ -2211,7 +2275,10 @@
         "title": "Requisitos do curso concluídos!",
         "subtitle": "Parabéns – você pode visualizar e baixar seu certificado a qualquer momento.",
         "view_certificate": "Ver certificado",
-        "later": "Fechar"
+        "later": "Fechar",
+        "checking": "Verificando elegibilidade…",
+        "not_eligible_title": "Quase lá",
+        "retake_exercise": "Refazer o exercício"
       }
     },
     "certificates": {
@@ -2236,7 +2303,8 @@
       "blocker_final_score": "Sua melhor pontuação em \"{exerciseTitle}\" é {bestPercent}%; {requiredPercent}% é obrigatório.",
       "blocker_final_misconfigured": "O exercício de certificação \"{exerciseTitle}\" não possui pontos configurados; peça ao seu instrutor para consertar.",
       "email_message_label": "Mensagem de e-mail",
-      "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!"
+      "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!",
+      "final_exercise_multiple_attempts_note": "Os alunos terão permissão para tentativas ilimitadas no exercício selecionado."
     },
     "creator": {
       "heading": "Qual curso você deseja criar?",
@@ -2359,6 +2427,8 @@
         "delete": "Excluir",
         "open": "Abrir",
         "open_public_course": "Abrir curso público",
+        "view_course_site": "Ver site do curso",
+        "publish_course": "Publicar curso",
         "copy_course_url": "Copiar URL do curso"
       },
       "due_date": "Devido",
@@ -2440,8 +2510,10 @@
     "learner": "Estudante",
     "progress": "Progresso",
     "pick_up_where_you_left_off": "Continue de onde parou",
+    "get_your_certificate": "Obtenha seu certificado",
     "course_awaits_you": "{title} espera por você",
     "learning_awaits_you": "Seu próximo curso espera por você",
+    "my_certificate": "Meu certificado",
     "lms_today_progress": "Você está {progress}% em seu aprendizado - cada etapa conta.",
     "lms_today_empty": "Seu caminho de aprendizagem estará pronto quando você estiver.",
     "compliance_score": "Pontuação de Conformidade",
@@ -2459,7 +2531,8 @@
     "login_activity_logins": "logins",
     "open_academy": "Academia Aberta",
     "explore_more_courses": "Explorar mais cursos",
-    "view_more": "Ver mais"
+    "view_more": "Ver mais",
+    "upcoming_sessions_heading": "Sessões ao vivo"
   },
   "schedule": {
     "title": "Sua programação",

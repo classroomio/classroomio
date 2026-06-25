@@ -28,6 +28,8 @@ import {
 
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { snackbar } from '$features/ui/snackbar/store';
+import { toast } from '@cio/ui/base/sonner';
+import { t } from '$lib/utils/functions/translations';
 
 /**
  * API class for exercise operations
@@ -58,6 +60,74 @@ export class ExerciseApi extends BaseApiWithErrors {
         }
       }
     });
+  }
+
+  /**
+   * Notifies all course members that a quiz has been assigned. Runs as a
+   * background job; shows a sonner spinner that polls until the job is done.
+   */
+  async notifyStudents(courseId: string, exerciseId: string) {
+    const toastId = toast.loading(t.get('course.navItem.lessons.exercises.all_exercises.notify.sending'), {
+      position: 'bottom-right'
+    });
+
+    try {
+      const res = await classroomio.course[':courseId'].exercise[':exerciseId'].notify.$post({
+        param: { courseId, exerciseId }
+      });
+      const body = await res.json();
+
+      if (!body.success) {
+        throw new Error('Failed to start notification');
+      }
+
+      const jobId = body.data.jobId;
+      const maxPolls = 60;
+
+      for (let pollCount = 0; pollCount < maxPolls; pollCount++) {
+        const statusRes = await classroomio.course[':courseId'].exercise[':exerciseId'].notify[':jobId'].$get({
+          param: { courseId, exerciseId, jobId },
+          query: { pollCount: String(pollCount) }
+        });
+        const statusBody = await statusRes.json();
+
+        if (!statusBody.success) {
+          throw new Error('Failed to read notification status');
+        }
+
+        const { job, nextPollMs } = statusBody.data;
+
+        if (job.status === 'completed') {
+          const notified = (job.result as { notified?: number } | null)?.notified ?? 0;
+          toast.success(t.get('course.navItem.lessons.exercises.all_exercises.notify.sent', { count: notified }), {
+            id: toastId,
+            position: 'bottom-right'
+          });
+          return;
+        }
+
+        if (job.status === 'failed' || job.status === 'canceled') {
+          toast.error(t.get('course.navItem.lessons.exercises.all_exercises.notify.failed'), {
+            id: toastId,
+            position: 'bottom-right'
+          });
+          return;
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, nextPollMs || 2000));
+      }
+
+      toast.error(t.get('course.navItem.lessons.exercises.all_exercises.notify.failed'), {
+        id: toastId,
+        position: 'bottom-right'
+      });
+    } catch (error) {
+      console.error('notifyStudents error:', error);
+      toast.error(t.get('course.navItem.lessons.exercises.all_exercises.notify.failed'), {
+        id: toastId,
+        position: 'bottom-right'
+      });
+    }
   }
 
   /**

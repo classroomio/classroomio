@@ -5,10 +5,10 @@ import { env } from '$env/dynamic/public';
 
 const isSelfHosted = PUBLIC_IS_SELFHOSTED === 'true';
 
-const DEFAULT_TITLE = 'ClassroomIO | The Most Customizable Platform for Customer, Partner, and Employee Education';
+const DEFAULT_TITLE = 'ClassroomIO | One Platform for Customer, Partner, and Employee Training';
 const DEFAULT_DESCRIPTION =
   'One platform for customer academies, partner certification, and employee training. Build courses with AI, publish under your domain, and track completions.';
-const CLOUD_OG_IMAGE = 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.png';
+const CLOUD_OG_IMAGE = 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.jpg';
 
 function resolveOgImageUrl(url: URL, orgSiteInfo: OrgSiteInfo): string {
   const envUrl = env.PUBLIC_OG_IMAGE_URL?.trim();
@@ -68,7 +68,15 @@ export function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): MetaTagsPro
           width: 1920,
           height: 1080,
           secureUrl: ogImageUrl,
-          type: 'image/png'
+          type: 'image/jpeg'
+        },
+        {
+          url: 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.webp',
+          alt: `${siteName} platform for customer, partner, and employee education`,
+          width: 1920,
+          height: 1080,
+          secureUrl: 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.webp',
+          type: 'image/webp'
         }
       ]
     },

@@ -12,6 +12,7 @@
   import { CircleCheckIcon } from '$features/ui/icons';
   import { t } from '$lib/utils/functions/translations';
   import { IconButton } from '@cio/ui/custom/icon-button';
+  import { RadioIcon } from '@cio/ui/custom/moving-icons';
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
 
   interface Props {
@@ -28,6 +29,16 @@
   const contentData = $derived(getCourseContent(courseApi.course));
   const canOpenContentModal = $derived(Boolean(onOpenContentModal) && !isStudent);
 </script>
+
+{#snippet liveSessionDot()}
+  <span
+    class="shrink-0"
+    title={$t('course.navItem.lessons.session.live_indicator')}
+    aria-label={$t('course.navItem.lessons.session.live_indicator')}
+  >
+    <RadioIcon size={14} color="#ef4444" />
+  </span>
+{/snippet}
 
 <Sidebar.MenuSub class={className}>
   {#if contentData.grouped}
@@ -74,7 +85,7 @@
                     <Sidebar.MenuSubButton isActive={(path || page.url.pathname).includes(contentItem.id)}>
                       {#snippet child({ props })}
                         {@const isContentLocked = (contentItem.isUnlocked ?? true) === false}
-                        {@const isLockedForStudent = isStudent && isContentLocked}
+                        {@const isLockedForStudent = isStudent && (isContentLocked || contentItem.accessible === false)}
                         <a
                           href={resolve(getContentRoute(id, contentItem), {})}
                           aria-disabled={isLockedForStudent}
@@ -97,7 +108,9 @@
                                 <CircleCheckIcon size={16} filled />
                               </span>
                             {/if}
-                            {#if isContentLocked}
+                            {#if contentItem.type === ContentType.Lesson && contentItem.callUrl}
+                              {@render liveSessionDot()}
+                            {:else if isContentLocked || isLockedForStudent}
                               <span
                                 class="shrink-0"
                                 title={$t('course.navItem.lessons.add_lesson.lock')}
@@ -124,7 +137,7 @@
         <Sidebar.MenuSubButton isActive={(path || page.url.pathname).includes(contentItem.id)}>
           {#snippet child({ props })}
             {@const isContentLocked = (contentItem.isUnlocked ?? true) === false}
-            {@const isLockedForStudent = isStudent && isContentLocked}
+            {@const isLockedForStudent = isStudent && (isContentLocked || contentItem.accessible === false)}
             <a
               href={resolve(getContentRoute(id, contentItem), {})}
               aria-disabled={isLockedForStudent}
@@ -145,7 +158,9 @@
                     <CircleCheckIcon size={16} filled />
                   </span>
                 {/if}
-                {#if isContentLocked}
+                {#if contentItem.type === ContentType.Lesson && contentItem.callUrl}
+                  {@render liveSessionDot()}
+                {:else if isContentLocked || isLockedForStudent}
                   <span
                     class="shrink-0"
                     title={$t('course.navItem.lessons.add_lesson.lock')}

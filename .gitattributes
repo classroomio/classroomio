@@ -1,0 +1,4 @@
+# Files executed inside Linux containers must use LF; CRLF breaks script
+# shebangs at container start (e.g. /app/entrypoint.sh) regardless of core.autocrlf.
+*.sh text eol=lf
+Dockerfile* text eol=lf

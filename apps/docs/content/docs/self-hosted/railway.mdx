@@ -1,0 +1,139 @@
+---
+title: Railway
+description: Deploy ClassroomIO on Railway with the one-click template.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The quickest hosted deployment is the [Railway Template](https://railway.com/deploy/classroomio-1?referralCode=8OyIj5). It provisions the API, dashboard, and jobs worker services plus the Postgres and Redis plugins for you.
+
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/classroomio-1?referralCode=8OyIj5)
+
+After deploying the template, fill in the environment variables for each service below.
+
+## cio-api
+
+```zsh title="env"
+DATABASE_URL="${{db.DATABASE_URL}}"
+REDIS_URL="${{Redis.REDIS_URL}}"
+BETTER_AUTH_SECRET="<generate-with-openssl-rand-hex-32>"
+PRIVATE_SERVER_KEY="<generate-with-openssl-rand-hex-32>"   # must be identical in cio-api and cio-dashboard
+PUBLIC_IS_SELFHOSTED="true"
+
+# Dashboard URL for invite/email links. Reference the dashboard service's Railway domain
+# so it stays correct automatically. (For a custom domain, hardcode it: https://app.yourdomain.com)
+DASHBOARD_ORIGIN="https://${{cio-dashboard.RAILWAY_PUBLIC_DOMAIN}}"
+
+# Optional direct public API URL. Normal dashboard auth/API calls use the
+# dashboard proxy and do not require API/dashboard cookie-domain matching.
+PUBLIC_SERVER_URL="https://api.yourdomain.com"
+TRUSTED_ORIGINS=
+
+# Email (configure SMTP)
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_SENDER=
+
+# Object storage → the self-hosted cio-minio service (see below)
+OBJECT_STORAGE_ENDPOINT=http://${{cio-minio.RAILWAY_PRIVATE_DOMAIN}}:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=https://storage.yourdomain.com
+OBJECT_STORAGE_ACCESS_KEY_ID=${{cio-minio.MINIO_ROOT_USER}}
+OBJECT_STORAGE_SECRET_ACCESS_KEY=${{cio-minio.MINIO_ROOT_PASSWORD}}
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://storage.yourdomain.com/media
+```
+
+Optional: add `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` for OAuth, `UNSPLASH_API_KEY` for image search, or `LICENSE_KEY` for enterprise features.
+
+## cio-dashboard
+
+```zsh title="env"
+# RAILWAY_PUBLIC_DOMAIN here = this dashboard service's own public domain.
+# For a custom domain, hardcode app.yourdomain.com in ORIGIN / PRIVATE_APP_HOST instead.
+ORIGIN="https://${{RAILWAY_PUBLIC_DOMAIN}}"
+PRIVATE_APP_HOST="${{RAILWAY_PUBLIC_DOMAIN}}"
+PUBLIC_IS_SELFHOSTED="true"
+PRIVATE_SERVER_URL="http://${{cio-api.RAILWAY_PRIVATE_DOMAIN}}:${{cio-api.PORT}}"
+PRIVATE_SERVER_KEY="${{cio-api.PRIVATE_SERVER_KEY}}"   # same value as cio-api
+ALLOWED_EXTERNAL_DOMAINS="https://fonts.googleapis.com"
+```
+
+Optional: add `PUBLIC_APP_TITLE`, `PUBLIC_APP_DESCRIPTION`, `PUBLIC_OG_IMAGE_URL` for custom branding. You can also use per-directive CSP vars (`CSP_SCRIPT_SRC_DOMAINS`, `CSP_MEDIA_SRC_DOMAINS`, etc.) instead of `ALLOWED_EXTERNAL_DOMAINS` for finer control.
+
+## cio-jobs (background worker)
+
+The jobs worker has **no public domain** — it drains the Redis queue (video processing, transcription, AI course generation, and emails). It shares the same Postgres, Redis, storage, email, and OpenAI settings as the API:
+
+```zsh title="env"
+DATABASE_URL="${{db.DATABASE_URL}}"
+REDIS_URL="${{Redis.REDIS_URL}}"
+
+# Object storage — same cio-minio service as the API
+OBJECT_STORAGE_ENDPOINT=http://${{cio-minio.RAILWAY_PRIVATE_DOMAIN}}:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=https://storage.yourdomain.com
+OBJECT_STORAGE_ACCESS_KEY_ID=${{cio-minio.MINIO_ROOT_USER}}
+OBJECT_STORAGE_SECRET_ACCESS_KEY=${{cio-minio.MINIO_ROOT_PASSWORD}}
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://storage.yourdomain.com/media
+
+# Email (worker sends invites, notifications, etc.)
+SMTP_HOST=  SMTP_PORT=  SMTP_USER=  SMTP_PASSWORD=  SMTP_SENDER=
+
+# Transcription + OpenAI-backed AI course generation
+OPENAI_API_KEY=
+```
+
+<Callout title="PRIVATE_SERVER_KEY">
+  `PRIVATE_SERVER_KEY` must be the same value in both API and dashboard. It authenticates server-side dashboard requests to the API. Referencing `${{cio-api.PRIVATE_SERVER_KEY}}` in the dashboard keeps them in sync.
+</Callout>
+
+## cio-minio (object storage)
+
+We recommend a self-hosted **MinIO** service for object storage. Add it as a new service from
+the Docker image `minio/minio:latest`:
+
+- **Start command:** `server /data --console-address ":9001"`
+- **Volume:** attach a Railway Volume mounted at **`/data`** — **required**, or every upload is
+  wiped on each redeploy.
+- **Public domain:** e.g. `storage.yourdomain.com` with **target port `9000`** (the S3 API).
+  Railway also gives it a private domain (`cio-minio.railway.internal:9000`) for the api/jobs.
+
+```zsh title="env"
+MINIO_ROOT_USER=<strong user>
+MINIO_ROOT_PASSWORD=<strong password>
+# Optional (silences console redirect warnings behind the proxy):
+MINIO_SERVER_URL=https://storage.yourdomain.com
+```
+
+The api and jobs services reach MinIO over **two** endpoints: the private `OBJECT_STORAGE_ENDPOINT`
+(server uploads/reads) and the public `OBJECT_STORAGE_PUBLIC_ENDPOINT` + `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL`
+(browser-facing presigned downloads and public images) — already wired in the env blocks above.
+`OBJECT_STORAGE_FORCE_PATH_STYLE=true` is required for MinIO.
+
+### Seed the buckets (one-time)
+
+Railway has no `minio-init`, so create the buckets once with [`mc`](https://min.io/docs/minio/linux/reference/minio-mc.html)
+(run locally against the public domain):
+
+```zsh title="Terminal"
+mc alias set cio https://storage.yourdomain.com "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
+mc mb cio/videos cio/documents cio/media --ignore-existing
+mc anonymous set download cio/media     # media bucket = public read (images)
+```
+
+<Callout type="warn" title="MinIO is your durability boundary">
+  Single-node MinIO has no redundancy — the Railway Volume is the only thing protecting your
+  uploads. Back it up. If you'd rather not operate storage, use external **Cloudflare R2 / AWS S3**
+  instead (R2 has no egress fees): point the same `OBJECT_STORAGE_*` vars at the provider and skip
+  the cio-minio service. See the [Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for R2.
+</Callout>
+
+## SMTP Setup
+
+You need SMTP for email sending. See [Nodemailer SMTP docs](https://nodemailer.com/smtp/) for provider setup.
+
+## SSO (Enterprise)
+
+SSO requires a license key. Set `LICENSE_KEY` in your API environment. [Book a call](http://cal.com/classroomio/enterprise) to get a license.

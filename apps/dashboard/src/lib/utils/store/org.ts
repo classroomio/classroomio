@@ -77,19 +77,54 @@ export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
   $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : '#'
 );
 
-export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
-  if (PUBLIC_IS_SELFHOSTED === 'true') return window.location.origin;
+type OrgPublicOrigin = Pick<AccountOrg, 'customDomain' | 'isCustomDomainVerified' | 'siteName'>;
 
-  const browserOrigin = dev && browser && window.location.origin;
+/**
+ * Public origin for an org's tenant site (student LMS, public course pages, login-link handoff).
+ * Self-hosted uses the current deployment URL. On cloud, verified custom domains win over the
+ * admin host so `app.classroomio.com` still hands off to the org's `example.com` tenant site.
+ */
+export function getOrgPublicOrigin(org: OrgPublicOrigin): string {
+  if (PUBLIC_IS_SELFHOSTED === 'true') {
+    return browser ? window.location.origin : '';
+  }
 
-  return browserOrigin
-    ? browserOrigin
-    : $currentOrg.customDomain && $currentOrg.isCustomDomainVerified
-      ? `https://${$currentOrg.customDomain}`
-      : $currentOrg.siteName
-        ? `https://${$currentOrg.siteName}.${TENANT_ROOT_DOMAIN}`
-        : '';
-});
+  if (org.customDomain && org.isCustomDomainVerified) {
+    return `https://${org.customDomain}`;
+  }
+
+  if (dev && browser) {
+    return window.location.origin;
+  }
+
+  if (org.siteName) {
+    return `https://${org.siteName}.${TENANT_ROOT_DOMAIN}`;
+  }
+
+  return browser ? window.location.origin : '';
+}
+
+/** Absolute URL on an org's public tenant site (e.g. `/lms`, `/course/{slug}`). Client-only. */
+export function getOrgPublicUrl(org: OrgPublicOrigin, pathname = '/'): string {
+  if (!browser) {
+    return pathname;
+  }
+
+  const origin = getOrgPublicOrigin(org);
+  if (!origin) {
+    return pathname;
+  }
+
+  const url = new URL(pathname, origin);
+
+  if (window.location.host.includes('localhost') && org.siteName) {
+    url.searchParams.set('org', org.siteName);
+  }
+
+  return url.toString();
+}
+
+export const currentOrgDomain = derived(currentOrg, ($currentOrg) => getOrgPublicOrigin($currentOrg));
 
 export const isFreePlan = derived(currentOrg, ($currentOrg) => {
   if (!$currentOrg.id || PUBLIC_IS_SELFHOSTED === 'true') return false;

@@ -61,3 +61,10 @@ company/
 # Claude Code local artifacts
 .claude/skills
 .claude/scheduled_tasks.lock
+
+# Local db-agent playground (not committed)
+apps/db-agent
+
+# Generated htpasswd files (hashes are safe to store in secrets/CI, plaintext never committed)
+.htpasswd
+*.htpasswd
