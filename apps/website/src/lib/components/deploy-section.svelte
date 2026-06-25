@@ -9,6 +9,12 @@
       href: 'https://railway.app'
     },
     {
+      icon: '🎨',
+      title: 'Render',
+      description: 'One-click Blueprint deploy on Render. Pulls our pre-built images.',
+      href: 'https://render.com/deploy?repo=https://github.com/classroomio/classroomio'
+    },
+    {
       icon: '🐳',
       title: 'Docker Compose',
       description: 'Standard Docker setup for any Linux server or VPS. Full control.',
