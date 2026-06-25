@@ -1,8 +1,6 @@
 <script lang="ts">
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
-  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
-  import CopyIcon from '@lucide/svelte/icons/copy';
-  import EyeIcon from '@lucide/svelte/icons/eye';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { copyCourseModal, deleteCourseModal } from '$features/course/utils/store';
@@ -43,12 +41,22 @@
   }: Props = $props();
 
   const showPublicCourseLinks = $derived(isPublished && courseType === 'PUBLIC' && slug.trim().length > 0);
+  const courseSettingsPath = $derived(resolve(`/courses/${id}/settings`, {}));
 
   function redirect(url: string) {
     goto(resolve(url, {}));
   }
 
+  function scrollToSettingsSection(sectionId: string) {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   function handleShareCourse() {
+    if (page.url.pathname === courseSettingsPath) {
+      scrollToSettingsSection('share');
+      return;
+    }
+
     redirect(`/courses/${id}/settings#share`);
   }
 
@@ -57,13 +65,29 @@
   }
 
   function handlePublishCourse() {
+    if (page.url.pathname === courseSettingsPath) {
+      scrollToSettingsSection('publish');
+      return;
+    }
+
     redirect(`/courses/${id}/settings#publish`);
   }
 
   function handleDeleteCourse() {
-    $deleteCourseModal.open = true;
-    $deleteCourseModal.id = id;
-    $deleteCourseModal.title = title;
+    if (page.url.pathname === courseSettingsPath) {
+      scrollToSettingsSection('delete');
+      return;
+    }
+
+    const isOnOrgCoursesList = /\/org\/[^/]+\/courses\/?$/.test(page.url.pathname);
+    if (isOnOrgCoursesList) {
+      $deleteCourseModal.open = true;
+      $deleteCourseModal.id = id;
+      $deleteCourseModal.title = title;
+      return;
+    }
+
+    redirect(`/courses/${id}/settings#delete`);
   }
 
   function handleCloneCourse() {
@@ -92,17 +116,14 @@
 
 {#if lmsPublicQuickOnly}
   <DropdownMenu.Item onclick={handleViewCourseSite}>
-    <ExternalLinkIcon size={16} class="mr-2" />
     {$t('courses.course_card.context_menu.view_course_site')}
   </DropdownMenu.Item>
   <DropdownMenu.Item onclick={() => void handleCopyCourseUrl()}>
-    <CopyIcon size={16} class="mr-2" />
     {$t('courses.course_card.context_menu.copy_course_url')}
   </DropdownMenu.Item>
 {:else}
   {#if includeViewAsStudent}
     <DropdownMenu.Item onclick={() => onViewAsStudent?.()}>
-      <EyeIcon size={16} class="mr-2" />
       {$t('course.header.view_as_student')}
     </DropdownMenu.Item>
     <DropdownMenu.Separator />
@@ -110,12 +131,10 @@
 
   {#if isPublished}
     <DropdownMenu.Item onclick={handleViewCourseSite}>
-      <ExternalLinkIcon size={16} class="mr-2" />
       {$t('courses.course_card.context_menu.view_course_site')}
     </DropdownMenu.Item>
     {#if showPublicCourseLinks}
       <DropdownMenu.Item onclick={() => void handleCopyCourseUrl()}>
-        <CopyIcon size={16} class="mr-2" />
         {$t('courses.course_card.context_menu.copy_course_url')}
       </DropdownMenu.Item>
     {/if}

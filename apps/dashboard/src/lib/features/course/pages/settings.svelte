@@ -307,6 +307,17 @@
     loadCourseTags(courseId);
   });
 
+  $effect(() => {
+    const sectionId = $page.url.hash.replace('#', '').trim();
+    if (!sectionId) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
   const selectedTagChips = $derived.by(() => {
     const allTags = tagApi.tagGroups.flatMap((group) =>
       group.tags.map((tag) => ({
