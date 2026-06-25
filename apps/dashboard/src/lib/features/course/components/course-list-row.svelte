@@ -10,14 +10,10 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { Image } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
-  import { copyCourseModal, deleteCourseModal } from '$features/course/utils/store';
-  import { copyPublicCoursePageUrl, openCoursePreview } from '$features/course/utils/course-preview';
-  import { currentOrgDomain } from '$lib/utils/store/org';
   import { buildCoursePlaceholderAvatarUrl } from '$features/course/utils/course-list-row-utils';
   import CourseContentIcon from './course-content-icon.svelte';
   import CoursePublicBadge from './course-public-badge.svelte';
-  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
-  import CopyIcon from '@lucide/svelte/icons/copy';
+  import CourseContextMenuContent from './course-context-menu-content.svelte';
 
   interface Tag {
     id: string;
@@ -132,30 +128,6 @@
       return;
     }
     goto(resolve(`/courses/${id}`, {}));
-  }
-
-  function handleOpen(e: MouseEvent) {
-    e.stopPropagation();
-    goto(resolve(`/courses/${id}`, {}));
-  }
-
-  function handleClone(e: MouseEvent) {
-    e.stopPropagation();
-    $copyCourseModal.open = true;
-    $copyCourseModal.id = id;
-    $copyCourseModal.title = title;
-    $copyCourseModal.description = description;
-  }
-
-  function handleDelete(e: MouseEvent) {
-    e.stopPropagation();
-    $deleteCourseModal.open = true;
-    $deleteCourseModal.id = id;
-    $deleteCourseModal.title = title;
-  }
-
-  async function handleCopyCourseUrl() {
-    await copyPublicCoursePageUrl(slug, $currentOrgDomain);
   }
 </script>
 
@@ -317,37 +289,27 @@
               {/snippet}
             </DropdownMenu.Trigger>
             <DropdownMenu.Content align="end">
-              {#if showPublicCourseLinks}
-                <DropdownMenu.Item
-                  onclick={() =>
-                    openCoursePreview({
-                      courseId: id,
-                      courseSlug: slug,
-                      currentOrgDomain: $currentOrgDomain
-                    })}
-                >
-                  <ExternalLinkIcon class="mr-2 size-4" />
-                  {$t('courses.course_card.context_menu.open_public_course')}
-                </DropdownMenu.Item>
-                <DropdownMenu.Item onclick={() => void handleCopyCourseUrl()}>
-                  <CopyIcon class="mr-2 size-4" />
-                  {$t('courses.course_card.context_menu.copy_course_url')}
-                </DropdownMenu.Item>
-              {/if}
-              {#if !isLMS}
-                {#if showPublicCourseLinks}
-                  <DropdownMenu.Separator />
-                {/if}
-                <DropdownMenu.Item onclick={handleOpen}>
-                  {$t('courses.course_card.context_menu.open')}
-                </DropdownMenu.Item>
-                <DropdownMenu.Item onclick={handleClone}>
-                  {$t('courses.course_card.context_menu.clone')}
-                </DropdownMenu.Item>
-                <DropdownMenu.Separator />
-                <DropdownMenu.Item variant="destructive" onclick={handleDelete}>
-                  {$t('courses.course_card.context_menu.delete')}
-                </DropdownMenu.Item>
+              {#if isLMS}
+                <CourseContextMenuContent
+                  {id}
+                  {title}
+                  {description}
+                  {isPublished}
+                  courseType={type}
+                  {slug}
+                  lmsPublicQuickOnly={true}
+                />
+              {:else}
+                <CourseContextMenuContent
+                  {id}
+                  {title}
+                  {description}
+                  {isPublished}
+                  courseType={type}
+                  {slug}
+                  includeOpen={true}
+                  hideOrgActions={false}
+                />
               {/if}
             </DropdownMenu.Content>
           </DropdownMenu.Root>

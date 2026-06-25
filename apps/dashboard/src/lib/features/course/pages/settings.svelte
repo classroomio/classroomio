@@ -794,7 +794,7 @@
 
   <Field.Separator />
 
-  <Field.Set>
+  <Field.Set id="publish">
     <Field.Legend>{$t('course.navItem.settings.publish')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.determines')}</Field.Description>
     <Field.Field orientation="horizontal">

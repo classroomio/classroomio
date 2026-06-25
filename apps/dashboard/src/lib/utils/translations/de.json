@@ -2234,7 +2234,14 @@
     "header": {
       "preview": "Preview course",
       "preview_missing_slug": "Generate and save a course slug before previewing.",
-      "view_as_student": "Als Student anzeigen"
+      "view_as_student": "Als Student anzeigen",
+      "view_course_site": "Kursseite anzeigen"
+    },
+    "view_course_site": {
+      "unpublished_title": "Kurs veröffentlichen",
+      "unpublished_description": "Sie sollten diesen Kurs veröffentlichen, bevor Sie die Seite ansehen können",
+      "cancel": "Abbrechen",
+      "publish_course": "Kurs veröffentlichen"
     },
     "sidebar": {
       "back_to_course": "Zurück zum Kurs",
@@ -2420,6 +2427,8 @@
         "delete": "Löschen",
         "open": "Offen",
         "open_public_course": "Öffentlichen Kurs öffnen",
+        "view_course_site": "Kursseite anzeigen",
+        "publish_course": "Kurs veröffentlichen",
         "copy_course_url": "Kurs-URL kopieren"
       },
       "due_date": "Fällig",

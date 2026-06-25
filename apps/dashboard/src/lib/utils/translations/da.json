@@ -2234,7 +2234,14 @@
     "header": {
       "preview": "Preview course",
       "preview_missing_slug": "Generate and save a course slug before previewing.",
-      "view_as_student": "Se som studerende"
+      "view_as_student": "Se som studerende",
+      "view_course_site": "Se kursusside"
+    },
+    "view_course_site": {
+      "unpublished_title": "Udgiv dit kursus",
+      "unpublished_description": "Du bør udgive dette kursus, før du kan se sitet",
+      "cancel": "Annuller",
+      "publish_course": "Udgiv kursus"
     },
     "sidebar": {
       "back_to_course": "Tilbage til kurset",
@@ -2420,6 +2427,8 @@
         "delete": "Slet",
         "open": "Åbn",
         "open_public_course": "Åbn offentligt kursus",
+        "view_course_site": "Se kursusside",
+        "publish_course": "Udgiv kursus",
         "copy_course_url": "Kopiér kursus-URL"
       },
       "due_date": "Forfalder",
