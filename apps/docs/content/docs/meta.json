@@ -49,6 +49,9 @@
     "roles-and-permissions",
 
     "---Contributor guides---",
-    "contributor-guides"
+    "contributor-guides",
+
+    "---Self Hosting---",
+    "self-hosted"
   ]
 }

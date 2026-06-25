@@ -1970,6 +1970,8 @@
         "invite": "Invite",
         "delete": "Delete",
         "open_public_course": "Open public course",
+        "view_course_site": "View course site",
+        "publish_course": "Publish course",
         "copy_course_url": "Copy course URL"
       },
       "error_message": "An error occurred.",
@@ -2147,7 +2149,14 @@
     "header": {
       "preview": "Preview course",
       "preview_missing_slug": "Generate and save a course slug before previewing.",
-      "view_as_student": "View as student"
+      "view_as_student": "View as student",
+      "view_course_site": "View Course Site"
+    },
+    "view_course_site": {
+      "unpublished_title": "Publish your course",
+      "unpublished_description": "You should publish this course before you can see the site",
+      "cancel": "Cancel",
+      "publish_course": "Publish Course"
     },
     "view_as_student": {
       "title": "This will redirect you to the Student LMS.",

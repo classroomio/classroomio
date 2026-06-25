@@ -4,7 +4,7 @@
   "pipeline": {
     "@cio/dashboard#build": {
       "dependsOn": ["@cio/api#build", "@cio/ui#build", "@cio/db#build", "@cio/analytics#build"],
-      "cache": false
+      "outputs": [".svelte-kit/**", "build/**"]
     },
     "build": {
       "dependsOn": ["^build"],
