@@ -2234,7 +2234,14 @@
     "header": {
       "preview": "Preview course",
       "preview_missing_slug": "Generate and save a course slug before previewing.",
-      "view_as_student": "Посмотреть как студент"
+      "view_as_student": "Посмотреть как студент",
+      "view_course_site": "Посмотреть сайт курса"
+    },
+    "view_course_site": {
+      "unpublished_title": "Опубликуйте курс",
+      "unpublished_description": "Перед просмотром сайта необходимо опубликовать этот курс",
+      "cancel": "Отмена",
+      "publish_course": "Опубликовать курс"
     },
     "sidebar": {
       "back_to_course": "Вернуться к курсу",
@@ -2420,6 +2427,8 @@
         "delete": "Удалить",
         "open": "Открыть",
         "open_public_course": "Открыть публичный курс",
+        "view_course_site": "Посмотреть сайт курса",
+        "publish_course": "Опубликовать курс",
         "copy_course_url": "Копировать URL курса"
       },
       "due_date": "Срок погашения",

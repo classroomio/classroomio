@@ -2234,7 +2234,14 @@
     "header": {
       "preview": "Preview course",
       "preview_missing_slug": "Generate and save a course slug before previewing.",
-      "view_as_student": "Xem với tư cách sinh viên"
+      "view_as_student": "Xem với tư cách sinh viên",
+      "view_course_site": "Xem trang khóa học"
+    },
+    "view_course_site": {
+      "unpublished_title": "Xuất bản khóa học của bạn",
+      "unpublished_description": "Bạn nên xuất bản khóa học này trước khi có thể xem trang web",
+      "cancel": "Hủy",
+      "publish_course": "Xuất bản khóa học"
     },
     "sidebar": {
       "back_to_course": "Quay lại khóa học",
@@ -2420,6 +2427,8 @@
         "delete": "Xóa",
         "open": "Mở",
         "open_public_course": "Mở khóa học công khai",
+        "view_course_site": "Xem trang khóa học",
+        "publish_course": "Xuất bản khóa học",
         "copy_course_url": "Sao chép URL khóa học"
       },
       "due_date": "Đến hạn",
