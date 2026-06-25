@@ -9,7 +9,7 @@ import { currentOrg } from '$lib/utils/store/org';
 import type { Cookies } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 import { getCioCookieString } from '$lib/utils/functions/cookies';
-import { AGENT_CONTENT_TYPE } from '@cio/utils/constants';
+import { CIO_ENVELOPE_CONTENT_TYPE } from '@cio/utils/constants';
 
 export const getRequestBaseUrl = () => {
   if (typeof window === 'undefined') {
@@ -32,11 +32,11 @@ export const getRequestBaseUrl = () => {
   return `${window.location.origin}/proxy`;
 };
 
-function isAgentRequest(input: RequestInfo | URL): boolean {
+function requiresB64Envelope(input: RequestInfo | URL): boolean {
   try {
     const raw = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
     const pathname = new URL(raw, 'http://placeholder').pathname;
-    return pathname.includes('/agent/');
+    return pathname.includes('/agent/') || /\/lesson\/[^/]+\/language/.test(pathname);
   } catch {
     return false;
   }
@@ -146,14 +146,14 @@ class ApiClient {
       headers.delete('Content-Type');
     }
 
-    if (requestBody && !isFormData && isAgentRequest(input)) {
+    if (requestBody && !isFormData && requiresB64Envelope(input)) {
       // Wrap the inner JSON in a base64 envelope so Render's Cloudflare WAF
       // can't body-inspect the content (AI-generated HTML, code blocks, curl
-      // examples, etc. trip OWASP rules). The API's `agentContentTypeRewrite`
+      // examples, etc. trip OWASP rules). The API's `b64EnvelopeRewrite`
       // middleware decodes the envelope before any route handler sees it.
       const inner = typeof requestBody === 'string' ? requestBody : JSON.stringify(requestBody);
       requestBody = JSON.stringify({ b64: toBase64Utf8(inner) });
-      headers.set('Content-Type', AGENT_CONTENT_TYPE);
+      headers.set('Content-Type', CIO_ENVELOPE_CONTENT_TYPE);
     }
 
     // Create abort controller for timeout

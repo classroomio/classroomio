@@ -4,4 +4,4 @@ export * from './content';
 export * from './domains';
 export * from './embeds';
 export * from './error-codes';
-export * from './agent';
+export * from './b64-envelope';
