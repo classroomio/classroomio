@@ -13,12 +13,14 @@ import {
 
 import { Hono } from '@api/utils/hono';
 import type { TLocale } from '@db/types';
+import { b64EnvelopeRewrite } from '@api/middlewares/b64-envelope';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
 export const lessonLanguageRouter = new Hono()
+  .use('*', b64EnvelopeRewrite)
   /**
    * GET /course/:courseId/lesson/:lessonId/language
    * Gets all language translations for a lesson

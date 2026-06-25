@@ -118,7 +118,7 @@ html .dark {
 }
 
 .prose p {
-  @apply mb-4;
+  @apply mb-1;
 }
 
 .prose a {
