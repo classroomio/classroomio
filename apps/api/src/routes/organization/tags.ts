@@ -23,6 +23,7 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { handleError } from '@api/utils/errors';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
+import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { orgAdminOrAutomationKeyMiddleware } from '@api/middlewares/org-admin-or-automation-key';
 import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { zValidator } from '@hono/zod-validator';
@@ -44,7 +45,7 @@ export const tagsRouter = new Hono()
       return handleError(c, error, 'Failed to fetch public tags');
     }
   })
-  .get('/', authMiddleware, orgAdminMiddleware, async (c) => {
+  .get('/', authMiddleware, orgMemberMiddleware, async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;
       const groups = await getOrganizationTagGroups(orgId);

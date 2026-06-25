@@ -34,8 +34,7 @@
   import { uploadImage } from '$lib/utils/services/upload';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
-  import { currentOrgDomain, currentOrgPath, isFreePlan, isOrgAdmin } from '$lib/utils/store/org';
-  import { get } from 'svelte/store';
+  import { currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { page } from '$app/stores';
 
   interface Props {
@@ -60,8 +59,6 @@
   let loadedCourseTagsForId = $state<string | null>(null);
   let isTagPopoverOpen = $state(false);
 
-  const canManageCourseTags = $derived($isOrgAdmin === true);
-
   function normalizeTagIds(tagIds: string[]) {
     return Array.from(new Set(tagIds));
   }
@@ -80,13 +77,7 @@
   async function loadCourseTags(courseId: string) {
     loadedCourseTagsForId = courseId;
 
-    const requests: Promise<unknown>[] = [tagApi.getCourseTags(courseId)];
-
-    if (get(isOrgAdmin) === true) {
-      requests.unshift(tagApi.getTagGroups());
-    }
-
-    await Promise.all(requests);
+    await Promise.all([tagApi.getTagGroups(), tagApi.getCourseTags(courseId)]);
 
     const assignedTagIds = normalizeTagIds(tagApi.courseTags.map((tag) => tag.id));
     selectedTagIds = assignedTagIds;
@@ -187,7 +178,7 @@
       };
 
       const normalizedSelectedTagIds = normalizeTagIds(selectedTagIds);
-      const hasTagChanges = get(isOrgAdmin) === true && !areSameTagIds(normalizedSelectedTagIds, initialTagIds);
+      const hasTagChanges = !areSameTagIds(normalizedSelectedTagIds, initialTagIds);
 
       const updatePayload = {
         ...updatedCourse,
@@ -560,29 +551,25 @@
                   aria-hidden="true"
                 ></span>
                 <span>{tag.name}</span>
-                {#if canManageCourseTags}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-xs"
-                    class="h-5 w-5"
-                    onclick={() => removeSelectedTag(tag.id)}
-                  >
-                    <XIcon />
-                  </Button>
-                {/if}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  class="h-5 w-5"
+                  onclick={() => removeSelectedTag(tag.id)}
+                >
+                  <XIcon />
+                </Button>
               </Badge>
             {/each}
           {/if}
 
-          {#if canManageCourseTags}
-            <CourseTagPicker
-              tagGroups={tagApi.tagGroups}
-              {selectedTagIds}
-              bind:open={isTagPopoverOpen}
-              onTagToggle={toggleTagSelection}
-            />
-          {/if}
+          <CourseTagPicker
+            tagGroups={tagApi.tagGroups}
+            {selectedTagIds}
+            bind:open={isTagPopoverOpen}
+            onTagToggle={toggleTagSelection}
+          />
         </div>
       </div>
     </Field.Field>
