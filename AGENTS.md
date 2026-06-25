@@ -446,7 +446,7 @@ Do not use `pnpm dev` (it trips turbo's concurrency cap). Build shared package `
 
 ### Known caveats
 - **Vite SSR circular dependency (layerchart):** authenticated/chart pages occasionally render "Something unexpected occurred" on a cold load. Reload the page (or restart `dashboard:dev`) and it renders — it is intermittent, not a setup failure.
-- **MinIO is optional and not started by default.** Without it, image/media thumbnails show "Failed to load"; that is expected. Start it with `docker compose -f docker/docker-compose.yaml --profile minio up -d minio minio-init` and add the `OBJECT_STORAGE_*` vars from `README.md` to `apps/api/.env`.
+- **MinIO is optional and not started by default.** Without it, image/media thumbnails show "Failed to load"; that is expected. Start it with `docker compose -f docker-compose.yaml --profile minio up -d minio minio-init` and add the `OBJECT_STORAGE_*` vars from `README.md` to `apps/api/.env`.
 - **Pre-existing lint/test issues (not environment problems):** `pnpm --filter @cio/api lint` fails (missing ESLint v9 `eslint.config.*`); `pnpm --filter @cio/dashboard lint` runs but reports pre-existing errors; api `vitest run` passes 61 tests but 5 files fail to load `@cio/core/services/*/*` subpaths (Vite nested-wildcard exports quirk; Node resolves them fine); `pnpm --filter @cio/dashboard test` (jest) fails to parse `jest.config.ts`. The pre-commit gate `pnpm format:check` passes.
 - The optional `@cio/storybook` build fails on an unresolved `@lucide/svelte/icons/bot` import; it does not affect api/dashboard.
 
