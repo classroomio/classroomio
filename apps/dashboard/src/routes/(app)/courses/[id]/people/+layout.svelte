@@ -59,11 +59,7 @@
       <div class="flex items-center gap-2">
         {#if data.personId && userCourseAnalytics}
           <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <ResetProgressButton
-              courseId={data.courseId}
-              {userCourseAnalytics}
-              onSuccess={handleProgressReset}
-            />
+            <ResetProgressButton courseId={data.courseId} {userCourseAnalytics} onSuccess={handleProgressReset} />
           </RoleBasedSecurity>
         {/if}
         {#if !data.personId}
