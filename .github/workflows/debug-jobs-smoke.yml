@@ -77,8 +77,18 @@ jobs:
       ####################################################################
 
       - name: Run db:setup
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/classroomio
+          PRIVATE_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/classroomio
         run: |
           pnpm --filter @cio/db db:setup
+      
+      - name: Verify analytics table
+        run: |
+          docker run --rm --network host \
+            postgres:16-alpine \
+            psql postgresql://postgres:postgres@localhost:5432/classroomio \
+            -c "SELECT COUNT(*) FROM analytics_page_event;"
 
       ####################################################################
       # EXPERIMENT 3
