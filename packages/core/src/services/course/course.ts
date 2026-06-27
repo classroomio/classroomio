@@ -545,7 +545,11 @@ export async function getCourseAnalytics(courseId: string) {
  * @param userId User ID (profile ID)
  * @returns User course analytics data
  */
-export async function getUserCourseAnalytics(courseId: string, userId: string) {
+export async function getUserCourseAnalytics(
+  courseId: string,
+  userId: string,
+  options: { includeProgressImpact?: boolean } = {}
+) {
   try {
     // Get user profile
     const profile = await getProfileById(userId);
@@ -578,22 +582,25 @@ export async function getUserCourseAnalytics(courseId: string, userId: string) {
     const completedExercises = userExercisesStats.filter((exercise) => exercise.isCompleted).length;
     const totalExercises = courseProgress.exercises_count || 0;
 
-    const groupId = await getCourseGroupId(courseId);
     let progressImpact = null;
 
-    if (groupId) {
-      const [groupMember] = await db
-        .select({ id: schema.groupmember.id })
-        .from(schema.groupmember)
-        .where(and(eq(schema.groupmember.groupId, groupId), eq(schema.groupmember.profileId, userId)))
-        .limit(1);
+    if (options.includeProgressImpact) {
+      const groupId = await getCourseGroupId(courseId);
 
-      if (groupMember) {
-        progressImpact = await getStudentCourseProgressImpactCounts({
-          courseId,
-          groupMemberId: groupMember.id,
-          profileId: userId
-        });
+      if (groupId) {
+        const [groupMember] = await db
+          .select({ id: schema.groupmember.id })
+          .from(schema.groupmember)
+          .where(and(eq(schema.groupmember.groupId, groupId), eq(schema.groupmember.profileId, userId)))
+          .limit(1);
+
+        if (groupMember) {
+          progressImpact = await getStudentCourseProgressImpactCounts({
+            courseId,
+            groupMemberId: groupMember.id,
+            profileId: userId
+          });
+        }
       }
     }
 

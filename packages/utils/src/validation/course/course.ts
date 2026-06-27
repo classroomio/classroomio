@@ -466,3 +466,12 @@ export const ZCourseUserAnalyticsParam = z.object({
   userId: z.string().uuid()
 });
 export type TCourseUserAnalyticsParam = z.infer<typeof ZCourseUserAnalyticsParam>;
+
+export const ZCourseUserAnalyticsQuery = z.object({
+  includeProgressImpact: z
+    .enum(['true', 'false'])
+    .optional()
+    .default('false')
+    .transform((value) => value === 'true')
+});
+export type TCourseUserAnalyticsQuery = z.infer<typeof ZCourseUserAnalyticsQuery>;

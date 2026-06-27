@@ -14,7 +14,7 @@ import {
 } from '@api/services/course/people';
 
 import { Hono } from '@api/utils/hono';
-import { ZCourseUserAnalyticsParam } from '@cio/utils/validation/course';
+import { ZCourseUserAnalyticsParam, ZCourseUserAnalyticsQuery } from '@cio/utils/validation/course';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { getUserCourseAnalytics } from '@cio/core/services/course/course';
 import { handleError } from '@api/utils/errors';
@@ -154,19 +154,26 @@ export const membersRouter = new Hono()
    * Gets user course analytics for a specific course
    * Requires authentication and course membership
    */
-  .get('/:userId/analytics', courseTeamMemberMiddleware, zValidator('param', ZCourseUserAnalyticsParam), async (c) => {
-    try {
-      const { courseId, userId } = c.req.valid('param');
-      const analytics = await getUserCourseAnalytics(courseId, userId);
+  .get(
+    '/:userId/analytics',
+    courseTeamMemberMiddleware,
+    zValidator('param', ZCourseUserAnalyticsParam),
+    zValidator('query', ZCourseUserAnalyticsQuery),
+    async (c) => {
+      try {
+        const { courseId, userId } = c.req.valid('param');
+        const { includeProgressImpact } = c.req.valid('query');
+        const analytics = await getUserCourseAnalytics(courseId, userId, { includeProgressImpact });
 
-      return c.json(
-        {
-          success: true,
-          data: analytics
-        },
-        200
-      );
-    } catch (error) {
-      return handleError(c, error, 'Failed to fetch user course analytics');
+        return c.json(
+          {
+            success: true,
+            data: analytics
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch user course analytics');
+      }
     }
-  });
+  );

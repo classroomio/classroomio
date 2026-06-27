@@ -17,7 +17,8 @@ export const load = async ({ params, cookies }) => {
     const result = await safeServerApi<GetUserCourseAnalyticsSuccess>(() =>
       classroomio.course[':courseId']['members'][':userId']['analytics'].$get(
         {
-          param: { courseId, userId: personId }
+          param: { courseId, userId: personId },
+          query: { includeProgressImpact: 'true' }
         },
         getApiHeaders(cookies, '')
       )

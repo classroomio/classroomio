@@ -72,7 +72,6 @@ export async function getStudentCourseProgressImpactCounts(input: {
   try {
     const lessonIds = await getCourseLessonIds(db, courseId);
     const newsfeedIds = await getCourseNewsfeedIds(db, courseId);
-    const studentNewsfeedPostIds = await getStudentCourseNewsfeedPostIds(db, courseId, groupMemberId);
 
     const lessonScope =
       lessonIds.length > 0
@@ -121,48 +120,36 @@ export async function getStudentCourseProgressImpactCounts(input: {
           : Promise.resolve([{ total: 0 }])
       ]);
 
-    const [commentsOnStudentPostsResult, videoProgressResult, attendanceResult, certificationResult] =
-      await Promise.all([
-        studentNewsfeedPostIds.length > 0
-          ? db
-              .select({ total: count() })
-              .from(schema.courseNewsfeedComment)
-              .where(inArray(schema.courseNewsfeedComment.courseNewsfeedId, studentNewsfeedPostIds))
-          : Promise.resolve([{ total: 0 }]),
-        lessonIds.length > 0
-          ? db
-              .select({
-                total: sql<number>`COUNT(DISTINCT ${schema.lessonVideoProgress.lessonId})::int`.as('total')
-              })
-              .from(schema.lessonVideoProgress)
-              .where(
-                and(
-                  eq(schema.lessonVideoProgress.profileId, profileId),
-                  inArray(schema.lessonVideoProgress.lessonId, lessonIds)
-                )
+    const [videoProgressResult, attendanceResult, certificationResult] = await Promise.all([
+      lessonIds.length > 0
+        ? db
+            .select({
+              total: sql<number>`COUNT(DISTINCT ${schema.lessonVideoProgress.lessonId})::int`.as('total')
+            })
+            .from(schema.lessonVideoProgress)
+            .where(
+              and(
+                eq(schema.lessonVideoProgress.profileId, profileId),
+                inArray(schema.lessonVideoProgress.lessonId, lessonIds)
               )
-          : Promise.resolve([{ total: 0 }]),
-        db
-          .select({ total: count() })
-          .from(schema.groupAttendance)
-          .where(
-            and(eq(schema.groupAttendance.courseId, courseId), eq(schema.groupAttendance.studentId, groupMemberId))
-          ),
-        db
-          .select({ total: count() })
-          .from(schema.courseCompletionRecord)
-          .where(
-            and(
-              eq(schema.courseCompletionRecord.courseId, courseId),
-              eq(schema.courseCompletionRecord.profileId, profileId)
             )
+        : Promise.resolve([{ total: 0 }]),
+      db
+        .select({ total: count() })
+        .from(schema.groupAttendance)
+        .where(and(eq(schema.groupAttendance.courseId, courseId), eq(schema.groupAttendance.studentId, groupMemberId))),
+      db
+        .select({ total: count() })
+        .from(schema.courseCompletionRecord)
+        .where(
+          and(
+            eq(schema.courseCompletionRecord.courseId, courseId),
+            eq(schema.courseCompletionRecord.profileId, profileId)
           )
-      ]);
+        )
+    ]);
 
-    const courseNewsfeedActivity =
-      (newsfeedPostsResult[0]?.total ?? 0) +
-      (newsfeedCommentsResult[0]?.total ?? 0) +
-      (commentsOnStudentPostsResult[0]?.total ?? 0);
+    const courseNewsfeedActivity = (newsfeedPostsResult[0]?.total ?? 0) + (newsfeedCommentsResult[0]?.total ?? 0);
 
     const certificateIssuesResult = await db
       .select({ total: count() })
