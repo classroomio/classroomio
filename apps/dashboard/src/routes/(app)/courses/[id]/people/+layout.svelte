@@ -61,7 +61,6 @@
           <RoleBasedSecurity allowedRoles={[1, 2]}>
             <ResetProgressButton
               courseId={data.courseId}
-              personId={data.personId}
               {userCourseAnalytics}
               onSuccess={handleProgressReset}
             />

@@ -590,6 +590,7 @@ export async function getUserCourseAnalytics(
     const totalExercises = courseProgress.exercises_count || 0;
 
     let progressImpact = null;
+    let groupMemberId: string | null = null;
 
     if (options.includeProgressImpact) {
       const groupId = await getCourseGroupId(courseId);
@@ -602,6 +603,7 @@ export async function getUserCourseAnalytics(
           .limit(1);
 
         if (groupMember) {
+          groupMemberId = groupMember.id;
           progressImpact = await getStudentCourseProgressImpactCounts({
             courseId,
             groupMemberId: groupMember.id,
@@ -624,6 +626,7 @@ export async function getUserCourseAnalytics(
       totalExercises,
       completedExercises,
       progressPercentage,
+      groupMemberId,
       progressImpact
     };
   } catch (error) {
