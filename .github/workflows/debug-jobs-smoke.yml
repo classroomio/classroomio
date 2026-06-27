@@ -1,6 +1,9 @@
 name: Debug Jobs Smoke
 
 on:
+  push:
+    branches:
+      - debug/jobs-smoke-investigation
   workflow_dispatch:
 
 jobs:
