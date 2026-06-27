@@ -94,13 +94,6 @@ jobs:
       # EXPERIMENT 3
       ####################################################################
 
-      - name: Show migrations
-        run: |
-          docker run --rm --network host \
-            postgres:16-alpine \
-            psql postgresql://postgres:postgres@localhost:5432/classroomio \
-            -c "select * from __drizzle_migrations;"
-
       - name: Show database tables AFTER setup
         run: |
           docker run --rm --network host \
