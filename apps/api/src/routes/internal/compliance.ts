@@ -3,9 +3,19 @@ import { runProgramGoalEvaluationSweep, runProgramGoalReminderScan } from '@api/
 
 import { Hono } from '@api/utils/hono';
 import { apiKeyMiddleware } from '@api/middlewares/api-key';
+import { enqueueSessionReminderScan } from '@cio/jobs';
 import { handleError } from '@api/utils/errors';
 
 export const internalComplianceRouter = new Hono()
+  .post('/send-session-reminders', apiKeyMiddleware, async (c) => {
+    try {
+      const jobId = await enqueueSessionReminderScan();
+
+      return c.json({ success: true, data: { jobId: jobId ?? null } }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to enqueue session reminder scan');
+    }
+  })
   .post('/check-expiry', apiKeyMiddleware, async (c) => {
     try {
       const data = await runComplianceExpiryCheck();

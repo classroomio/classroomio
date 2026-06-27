@@ -19,7 +19,7 @@ import {
 } from '@cio/db/queries/newsfeed';
 
 import { env } from '@cio/core/config/env';
-import { buildEmailFromName } from '@cio/email';
+import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 
 /**
@@ -359,6 +359,11 @@ async function sendNewsfeedPostEmail(feedId: string, authorId: string) {
 
     const orgName = feedData.organization?.name || 'ClassroomIO';
     const orgSiteName = feedData.organization?.siteName || 'app';
+    const branding = buildEmailBranding({
+      name: feedData.organization?.name,
+      avatarUrl: feedData.organization?.avatarUrl,
+      theme: feedData.organization?.theme
+    });
     const postLink = `https://${orgSiteName}.${TENANT_ROOT_DOMAIN}/courses/${feedData.courseId}?feedId=${feedData.feedId}`;
 
     const recipients = feedData.courseMembers
@@ -374,7 +379,8 @@ async function sendNewsfeedPostEmail(feedId: string, authorId: string) {
         teacherName: feedData.author?.fullname || 'A teacher',
         content: feedData.content || '',
         postLink,
-        orgName
+        orgName,
+        branding
       },
       from: buildEmailFromName(`${orgName} - ClassroomIO`),
       replyTo: feedData.author?.email || 'noreply@classroomio.com',
@@ -403,6 +409,11 @@ async function sendNewsfeedCommentEmail(feedId: string, commentContent: string) 
 
     const orgName = feedData.organization?.name || 'ClassroomIO';
     const orgSiteName = feedData.organization?.siteName || 'app';
+    const branding = buildEmailBranding({
+      name: feedData.organization?.name,
+      avatarUrl: feedData.organization?.avatarUrl,
+      theme: feedData.organization?.theme
+    });
     const postLink = `https://${orgSiteName}.${TENANT_ROOT_DOMAIN}/courses/${feedData.courseId}?feedId=${feedData.feedId}`;
 
     await enqueueTransactionalEmail('newsfeedComment', {
@@ -411,7 +422,8 @@ async function sendNewsfeedCommentEmail(feedId: string, commentContent: string) 
         courseTitle: feedData.courseTitle,
         comment: commentContent,
         postLink,
-        orgName
+        orgName,
+        branding
       },
       from: buildEmailFromName(`${orgName} - ClassroomIO`),
       replyTo: 'noreply@classroomio.com'

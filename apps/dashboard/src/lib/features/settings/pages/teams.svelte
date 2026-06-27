@@ -1,7 +1,7 @@
 <script lang="ts">
   import * as Select from '@cio/ui/base/select';
   import { Spinner } from '@cio/ui/base/spinner';
-  import { Switch } from '@cio/ui/base/switch';
+  import CopyIcon from '@lucide/svelte/icons/copy';
 
   import { profile } from '$lib/utils/store/user';
   import { isFreePlan, currentOrg } from '$lib/utils/store/org';
@@ -23,32 +23,23 @@
   let errorMessage = $state('');
   let role = $state(ROLE.TUTOR.toString());
   let isRemoving: number | null = $state(null);
-  let linkRole = $state(ROLE.TUTOR.toString());
-  let copiedLink = $state(false);
 
   function buildLinkInviteUrl(token: string): string {
     return `${window.location.origin}/invite/link/${encodeURIComponent(token)}`;
   }
 
-  async function onGenerateLink() {
+  async function onCopyInviteLink() {
     if ($isFreePlan) {
       snackbar.error('upgrade.required');
       return;
     }
 
-    await orgApi.generateLinkInvite(parseInt(linkRole));
-  }
+    await orgApi.generateLinkInvite(parseInt(role));
+    const linkInviteToken = orgApi.linkInvite?.token;
 
-  async function onCopyLink() {
-    if (!orgApi.linkInvite?.token) return;
+    if (!linkInviteToken) return;
 
-    await navigator.clipboard.writeText(buildLinkInviteUrl(orgApi.linkInvite.token));
-    copiedLink = true;
-    setTimeout(() => (copiedLink = false), 2000);
-  }
-
-  async function onToggleLinkInvite(active: boolean) {
-    await orgApi.toggleLinkInvite(!active);
+    await navigator.clipboard.writeText(buildLinkInviteUrl(linkInviteToken));
   }
 
   async function onSendInvite() {
@@ -108,20 +99,18 @@
     if (!$currentOrg) return;
 
     orgApi.getOrgTeam();
-    orgApi.getLinkInvite();
   });
 </script>
 
 <UpgradeBanner>{$t('upgrade.team')}</UpgradeBanner>
 
-<Field.Group class="w-full max-w-md! px-2">
+<Field.Group class="w-full max-w-3xl! px-2">
   <Field.Set>
     <Field.Legend>{$t('course.navItem.people.teams.add')}</Field.Legend>
     <Field.Description class="mb-5">{$t('course.navItem.people.teams.add_team')}</Field.Description>
 
-    <Field.Group>
-      <Field.Field>
-        <Field.Label>{$t('course.navItem.people.teams.invite')}</Field.Label>
+    <div class="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_16rem_auto] lg:items-start">
+      <Field.Field class="min-w-0">
         <Input
           placeholder={$t('course.navItem.people.teams.placeholder')}
           bind:value={emailsStr}
@@ -133,10 +122,9 @@
         {/if}
       </Field.Field>
 
-      <Field.Field>
-        <Field.Label>{$t('course.navItem.people.teams.role')}</Field.Label>
+      <div class="w-full lg:w-64">
         <Select.Root type="single" bind:value={role} disabled={$isFreePlan}>
-          <Select.Trigger id="invite-role" class="w-40">
+          <Select.Trigger id="invite-role" class="ui:w-full ui:max-w-none">
             <p>{role ? $t(ROLE_LABEL[role]) : $t('course.navItem.people.teams.select_role')}</p>
           </Select.Trigger>
           <Select.Content>
@@ -144,80 +132,31 @@
             <Select.Item value={ROLE.TUTOR.toString()}>{$t(ROLE_LABEL[ROLE.TUTOR])}</Select.Item>
           </Select.Content>
         </Select.Root>
-      </Field.Field>
-
-      <Button
-        variant="default"
-        onclick={onSendInvite}
-        loading={orgApi.isLoading}
-        disabled={orgApi.isLoading || $isFreePlan}
-      >
-        {$t('course.navItem.people.teams.send_invite')}
-      </Button>
-    </Field.Group>
-  </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Set>
-    <Field.Legend>{$t('course.navItem.people.teams.link_invite.heading')}</Field.Legend>
-    <Field.Description class="mb-4">{$t('course.navItem.people.teams.link_invite.description')}</Field.Description>
-
-    {#if !orgApi.linkInvite}
-      <Field.Group>
-        <Field.Field>
-          <Field.Label>{$t('course.navItem.people.teams.role')}</Field.Label>
-          <Select.Root type="single" bind:value={linkRole} disabled={$isFreePlan}>
-            <Select.Trigger class="w-40">
-              <p>{linkRole ? $t(ROLE_LABEL[linkRole]) : $t('course.navItem.people.teams.link_invite.select_role')}</p>
-            </Select.Trigger>
-            <Select.Content>
-              <Select.Item value={ROLE.ADMIN.toString()}>{$t(ROLE_LABEL[ROLE.ADMIN])}</Select.Item>
-              <Select.Item value={ROLE.TUTOR.toString()}>{$t(ROLE_LABEL[ROLE.TUTOR])}</Select.Item>
-            </Select.Content>
-          </Select.Root>
-        </Field.Field>
 
         <Button
-          variant="default"
-          onclick={onGenerateLink}
+          variant="link"
+          size="sm"
+          class="h-auto justify-start"
+          onclick={onCopyInviteLink}
           loading={orgApi.isLoading}
           disabled={orgApi.isLoading || $isFreePlan}
         >
-          {$t('course.navItem.people.teams.link_invite.generate')}
+          <CopyIcon size={14} />
+          {$t('course.navItem.people.teams.link_invite.copy_invite_link')}
         </Button>
-      </Field.Group>
-    {:else}
-      <Field.Group>
-        <Field.Field>
-          <div class="flex items-center gap-2">
-            <Input
-              value={buildLinkInviteUrl(orgApi.linkInvite.token)}
-              readonly
-              class="w-full font-mono text-xs {orgApi.linkInvite.isRevoked ? 'opacity-50' : ''}"
-            />
-            <Button variant="outline" size="sm" onclick={onCopyLink} disabled={orgApi.linkInvite.isRevoked}>
-              {copiedLink
-                ? $t('course.navItem.people.teams.link_invite.copied')
-                : $t('course.navItem.people.teams.link_invite.copy')}
-            </Button>
-          </div>
-        </Field.Field>
+      </div>
 
-        {#if orgApi.linkInvite.isRevoked}
-          <p class="text-sm text-amber-600">{$t('course.navItem.people.teams.link_invite.disabled_notice')}</p>
-        {/if}
-
-        <Field.Field orientation="horizontal" class="mt-2">
-          <Switch
-            checked={!orgApi.linkInvite.isRevoked}
-            onCheckedChange={onToggleLinkInvite}
-            disabled={orgApi.isLoading || $isFreePlan}
-          />
-          <Field.Label>{$t('course.navItem.people.teams.link_invite.toggle_label')}</Field.Label>
-        </Field.Field>
-      </Field.Group>
-    {/if}
+      <div class="lg:self-start">
+        <Button
+          variant="default"
+          onclick={onSendInvite}
+          loading={orgApi.isLoading}
+          disabled={orgApi.isLoading || $isFreePlan}
+        >
+          {$t('course.navItem.people.teams.send_invite')}
+        </Button>
+      </div>
+    </div>
   </Field.Set>
 
   <Field.Separator />

@@ -1,5 +1,37 @@
-export const getDefaultTemplate = (content: string): string =>
-  `<!DOCTYPE html>
+import type { EmailBranding } from '../core/branding';
+
+const DEFAULT_BUTTON_COLOR = '#1D4EE2';
+const CLASSROOMIO_LOGO = 'https://brand.cdn.clsrio.com/cio-bg-transparent.png';
+
+function escapeHtmlAttr(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function buildMasthead(branding: EmailBranding): string {
+  const logoUrl = branding?.logoUrl;
+  const orgName = branding?.orgName ? escapeHtmlAttr(branding.orgName) : '';
+
+  if (logoUrl) {
+    const nameHtml = orgName
+      ? `<span style="margin-left:10px;font-size:16px;font-weight:600;color:#111827;vertical-align:middle;">${orgName}</span>`
+      : '';
+    return `<img src="${logoUrl}" alt="${orgName || 'Logo'}" style="max-height:40px;width:auto;display:inline-block;vertical-align:middle;" />${nameHtml}`;
+  }
+
+  if (orgName) {
+    return `<span style="font-size:18px;font-weight:600;color:#111827;">${orgName}</span>`;
+  }
+
+  return `<a href="https://classroomio.com" target="_blank">
+        <img src="${CLASSROOMIO_LOGO}" alt="ClassroomIO" width="130" style="width:130px;height:auto;display:block;" />
+      </a>`;
+}
+
+export const getDefaultTemplate = (content: string, branding?: EmailBranding): string => {
+  const buttonColor = branding?.themeColor || DEFAULT_BUTTON_COLOR;
+  const masthead = buildMasthead(branding);
+
+  return `<!DOCTYPE html>
 <html>
 
 <head>
@@ -57,7 +89,7 @@ export const getDefaultTemplate = (content: string): string =>
 
     .button {
       margin-top: 12px;
-      background: #1D4EE2;
+      background: ${buttonColor};
       border-radius: 6px;
       text-decoration: none !important;
       color: #fff !important;
@@ -105,9 +137,7 @@ export const getDefaultTemplate = (content: string): string =>
     ">
   <div style="background-color:#fff;max-width:525px;margin:0 auto;border-radius:4px;">
     <div style="padding:10px;border-bottom:1px solid #f0f0f0;">
-      <a href="https://classroomio.com" target="_blank">
-        <img src="https://brand.cdn.clsrio.com/cio-bg-transparent.png" alt="ClassroomIO" width="130" style="width:130px;height:auto;display:block;" />
-      </a>
+      ${masthead}
     </div>
     <div style="padding:10px 15px;">
       ${content}
@@ -131,3 +161,4 @@ export const getDefaultTemplate = (content: string): string =>
 
 </html>
 `;
+};

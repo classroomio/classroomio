@@ -364,6 +364,8 @@ const ZCourseMetadataFields = z.object({
   grading: z.boolean().optional(),
   lessonDownload: z.boolean().optional(),
   allowNewStudent: z.boolean(),
+  welcomeEmailMessage: z.string().max(20000).nullish(),
+  sessionTimezone: z.string().max(64).nullish(),
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),
   isContentGroupingEnabled: z.boolean().optional(),
   progressionMode: z.enum(['free', 'sequential']).optional()

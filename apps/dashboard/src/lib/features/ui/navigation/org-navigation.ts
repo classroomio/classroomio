@@ -201,11 +201,27 @@ export const baseNavConfig: NavItemConfig[] = [
     items: [
       {
         titleKey: 'settings.tabs.profile_tab',
-        path: '/settings'
+        path: '/settings',
+        matchPattern: '^/org/[^/]+/settings/?$'
       },
       {
         titleKey: 'settings.tabs.organization_tab',
-        path: '/settings/org'
+        path: '/settings/org',
+        matchPattern: '^/org/[^/]+/settings/(org|customize-lms|domains|teams)(/.*)?$',
+        nestedRoutes: [
+          {
+            path: 'domains',
+            titleKey: 'settings.organization.organization_profile.custom_domain.heading'
+          },
+          {
+            path: 'teams',
+            titleKey: 'settings.organization.organization_profile.team.heading'
+          },
+          {
+            path: 'customize-lms',
+            titleKey: 'settings.tabs.customize_lms_tab'
+          }
+        ]
       },
       {
         titleKey: 'settings.tabs.landing_page_tab',
@@ -331,7 +347,9 @@ export function getOrgNavigationItems(
           isActive: isActive(pagePathname, subUrl, subMatchPattern, true),
           url: subUrl,
           path: subConfig.path,
-          isPaid: subConfig.isPaid
+          matchPattern: subMatchPattern,
+          isPaid: subConfig.isPaid,
+          nestedRoutes: subConfig.nestedRoutes
         };
       });
     }
@@ -410,7 +428,9 @@ export function getOrgNavigationGroups(
           isActive: isActive(pathnameOnly, subUrl, subMatchPattern, true),
           url: subUrl,
           path: subConfig.path,
-          isPaid: subConfig.isPaid
+          matchPattern: subMatchPattern,
+          isPaid: subConfig.isPaid,
+          nestedRoutes: subConfig.nestedRoutes
         };
       });
     }

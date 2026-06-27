@@ -2,6 +2,7 @@ import * as z from 'zod';
 
 import { defineEmail } from '../send';
 import { getDefaultTemplate } from '../templates';
+import { ZEmailBranding } from '../core/branding';
 
 export const newsfeedPostEmail = defineEmail({
   id: 'newsfeedPost',
@@ -11,7 +12,8 @@ export const newsfeedPostEmail = defineEmail({
     teacherName: z.string().min(1),
     content: z.string().min(1),
     postLink: z.url(),
-    orgName: z.string().min(1)
+    orgName: z.string().min(1),
+    branding: ZEmailBranding
   }),
   render: (fields) => {
     const content = `
@@ -22,7 +24,7 @@ export const newsfeedPostEmail = defineEmail({
       </div>
     `;
 
-    return getDefaultTemplate(content);
+    return getDefaultTemplate(content, fields.branding);
   }
 });
 
@@ -33,7 +35,8 @@ export const newsfeedCommentEmail = defineEmail({
     courseTitle: z.string().min(1),
     comment: z.string().min(1),
     postLink: z.url(),
-    orgName: z.string().min(1)
+    orgName: z.string().min(1),
+    branding: ZEmailBranding
   }),
   render: (fields) => {
     const content = `
@@ -44,6 +47,6 @@ export const newsfeedCommentEmail = defineEmail({
       </div>
     `;
 
-    return getDefaultTemplate(content);
+    return getDefaultTemplate(content, fields.branding);
   }
 });

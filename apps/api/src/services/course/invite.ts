@@ -29,11 +29,12 @@ import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
-import { buildEmailFromName } from '@cio/email';
+import { buildEmailFromName, buildEmailBranding, type EmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { getProfileByEmail, markUserAndProfileEmailVerified } from '@cio/db/queries/auth';
 import { generateSlug } from '@cio/utils/functions';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
+import { getWelcomeSessionIcs } from './session-invite';
 import { db } from '@cio/db/drizzle';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 
@@ -358,20 +359,26 @@ async function sendStudentJoinEmails(input: {
   courseName: string;
   orgName: string;
   org: OrgUrlInfo;
+  branding: EmailBranding;
   studentId: string;
   studentEmail: string;
+  welcomeEmailMessage?: string | null;
 }) {
   try {
     const loginUrl = getDashboardBaseUrl(input.org);
+    const ics = await getWelcomeSessionIcs(input.courseId);
     await enqueueTransactionalEmail('studentCourseWelcome', {
       to: input.studentEmail,
       fields: {
         orgName: input.orgName,
         courseName: input.courseName,
-        loginUrl
+        loginUrl,
+        customMessage: input.welcomeEmailMessage ?? undefined,
+        branding: input.branding
       },
       from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`),
-      idempotencyKey: `course-welcome:${input.courseId}:${input.studentId}`
+      idempotencyKey: `course-welcome:${input.courseId}:${input.studentId}`,
+      ics
     });
   } catch (error) {
     console.error('Failed to enqueue student welcome email:', error);
@@ -395,7 +402,8 @@ async function sendStudentJoinEmails(input: {
       fields: {
         courseName: input.courseName,
         studentName,
-        studentEmail: input.studentEmail
+        studentEmail: input.studentEmail,
+        branding: input.branding
       },
       from: buildEmailFromName('ClassroomIO'),
       idempotencyKey: `teacher-student-joined:${input.courseId}:${input.studentId}`
@@ -414,6 +422,7 @@ async function createEmailInviteAndSend(input: {
   courseName: string;
   courseSlug: string;
   org: OrgUrlInfo;
+  branding: EmailBranding;
   metadata?: Record<string, unknown>;
   shouldSend: boolean;
 }) {
@@ -450,7 +459,8 @@ async function createEmailInviteAndSend(input: {
         orgName: input.orgName,
         courseName: input.courseName,
         inviteLink: createdInvite.inviteLink,
-        expiresAt: getExpiryLabel(createdInvite.expiresAt)
+        expiresAt: getExpiryLabel(createdInvite.expiresAt),
+        branding: input.branding
       },
       from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`),
       idempotencyKey: `course-invite-email:${createdInvite.id}`
@@ -549,6 +559,11 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
 
   const orgName = courseOrgData.orgName || 'ClassroomIO';
   const courseName = courseOrgData.courseTitle || course[0].title || 'Course';
+  const orgBranding = buildEmailBranding({
+    name: courseOrgData.orgName,
+    avatarUrl: courseOrgData.orgAvatarUrl,
+    theme: courseOrgData.orgTheme
+  });
 
   const inviteResults = await Promise.all(
     recipients.valid.map((recipientEmail) =>
@@ -561,6 +576,7 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
         courseName,
         courseSlug,
         org: orgUrlInfo,
+        branding: orgBranding,
         metadata: data.metadata,
         shouldSend: data.sendEmail
       })
@@ -630,7 +646,8 @@ export async function enrollInCourse(
     throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
-  const courseMetadata = (courseWithRelations.metadata as { allowNewStudent?: boolean } | null) ?? null;
+  const courseMetadata =
+    (courseWithRelations.metadata as { allowNewStudent?: boolean; welcomeEmailMessage?: string | null } | null) ?? null;
   const isInternalEnrollmentOnly = org.settings?.internalEnrollmentOnly ?? false;
 
   const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(org.id, user.id);
@@ -677,8 +694,10 @@ export async function enrollInCourse(
     courseName: title,
     orgName: org.name,
     org: { siteName: org.siteName, customDomain: org.customDomain, isCustomDomainVerified: org.isCustomDomainVerified },
+    branding: buildEmailBranding({ name: org.name, avatarUrl: org.avatarUrl, theme: org.theme }),
     studentId: user.id,
-    studentEmail: normalizedEmail
+    studentEmail: normalizedEmail,
+    welcomeEmailMessage: courseMetadata?.welcomeEmailMessage
   });
 
   trackServerEvent({
@@ -944,7 +963,9 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
         orgName: organization.name,
         orgSiteName: organization.siteName,
         orgCustomDomain: organization.customDomain,
-        orgIsCustomDomainVerified: organization.isCustomDomainVerified
+        orgIsCustomDomainVerified: organization.isCustomDomainVerified,
+        orgAvatarUrl: organization.avatarUrl,
+        orgTheme: organization.theme
       };
     }
 
@@ -1025,7 +1046,11 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       orgName: organization.name,
       orgSiteName: organization.siteName,
       orgCustomDomain: organization.customDomain,
-      orgIsCustomDomainVerified: organization.isCustomDomainVerified
+      orgIsCustomDomainVerified: organization.isCustomDomainVerified,
+      orgAvatarUrl: organization.avatarUrl,
+      orgTheme: organization.theme,
+      welcomeEmailMessage:
+        (course.metadata as { welcomeEmailMessage?: string | null } | null)?.welcomeEmailMessage ?? null
     };
   });
 
@@ -1041,8 +1066,14 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
         customDomain: result.orgCustomDomain,
         isCustomDomainVerified: result.orgIsCustomDomainVerified
       },
+      branding: buildEmailBranding({
+        name: result.orgName,
+        avatarUrl: result.orgAvatarUrl,
+        theme: result.orgTheme
+      }),
       studentId: user.id,
-      studentEmail: normalizedEmail
+      studentEmail: normalizedEmail,
+      welcomeEmailMessage: result.welcomeEmailMessage
     });
 
     trackServerEvent({

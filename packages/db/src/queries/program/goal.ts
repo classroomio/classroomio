@@ -106,6 +106,8 @@ export async function listAssignmentsForReminderScan(): Promise<
     organizationSiteName: string | null;
     organizationCustomDomain: string | null;
     organizationIsCustomDomainVerified: boolean | null;
+    organizationAvatarUrl: string | null;
+    organizationTheme: string | null;
   }>
 > {
   try {
@@ -120,7 +122,9 @@ export async function listAssignmentsForReminderScan(): Promise<
         organizationName: schema.organization.name,
         organizationSiteName: schema.organization.siteName,
         organizationCustomDomain: schema.organization.customDomain,
-        organizationIsCustomDomainVerified: schema.organization.isCustomDomainVerified
+        organizationIsCustomDomainVerified: schema.organization.isCustomDomainVerified,
+        organizationAvatarUrl: schema.organization.avatarUrl,
+        organizationTheme: schema.organization.theme
       })
       .from(schema.programGoalAssignment)
       .innerJoin(schema.programMember, eq(schema.programGoalAssignment.programMemberId, schema.programMember.id))
@@ -146,7 +150,9 @@ export async function listAssignmentsForReminderScan(): Promise<
         organizationName: row.organizationName,
         organizationSiteName: row.organizationSiteName,
         organizationCustomDomain: row.organizationCustomDomain,
-        organizationIsCustomDomainVerified: row.organizationIsCustomDomainVerified
+        organizationIsCustomDomainVerified: row.organizationIsCustomDomainVerified,
+        organizationAvatarUrl: row.organizationAvatarUrl,
+        organizationTheme: row.organizationTheme
       }));
   } catch (error) {
     console.error('listAssignmentsForReminderScan error:', error);

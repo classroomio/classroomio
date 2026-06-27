@@ -1,0 +1,81 @@
+---
+title: Customize Your Academy Landing Page
+description: Edit your academy landing page, including nav, hero buttons, footer, preview mode, and what the summary labels mean.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+Your **academy landing page** is the public homepage for your academy (for example `https://ciodevs.myclassroomio.com` or your custom domain). Students and prospects see it before they sign in. This guide covers the editor in **Settings → Landing Page**.
+
+For org profile and subdomain setup, see [Customize Your Organization](/docs/customize-organization) and [Set Up a Custom Domain](/docs/custom-domain).
+
+<Callout type="warn" title="Paid plan required">
+  Some landing themes require a paid plan. If the customize option is locked, upgrade or pick a theme included in your plan.
+</Callout>
+
+## Open the landing page settings
+
+<Steps>
+<Step>
+### Go to Settings
+
+From the admin dashboard, open **Settings**, then select **Landing Page**.
+</Step>
+
+<Step>
+### Review the summary card
+
+The right-hand card shows your current theme, hero heading, and nav link count. Click **Customize** to open the full editor.
+</Step>
+</Steps>
+
+## What "2 links" next to Nav means
+
+On the summary card, **Nav** may show a label like **2 links**. That is a **count of navigation items** you configured in the landing page editor. It is not a separate setting named "2 links."
+
+| Label | Meaning |
+| --- | --- |
+| **1 link** | One item in the top navigation |
+| **2 links** | Two items in the top navigation |
+
+Edit the actual links in the customize flow (labels and URLs for each nav item).
+
+## Hero buttons
+
+The hero section supports a primary and optional secondary action.
+
+| Button | Typical default | What to configure |
+| --- | --- | --- |
+| **Primary** (e.g. Get Started, Start Learning) | Often points to `/login` | Label and destination URL |
+| **Secondary** (e.g. View Programs) | Optional second CTA | Label and destination URL |
+
+Use your academy paths (for example `/login` or `/courses`) so visitors stay on your academy domain. After you verify a [custom domain](/docs/custom-domain), test buttons on the live site, not only in preview.
+
+<Callout type="warn" title="Preview disables link clicks">
+  The thumbnail preview on the Landing Page settings screen renders with links disabled. Use **Open Academy** or open your live academy URL to test buttons like **Get Started** and **View Programs**.
+</Callout>
+
+## Footer
+
+The footer editor lets you set brand text, link columns, social links, and bottom bar copy. Save changes in the editor, then check the live site. If footer text looks wrong in preview, confirm on the published page.
+
+## Themes
+
+ClassroomIO ships multiple landing themes. Pick the one that fits your brand from the editor.
+
+## Preview vs live site
+
+| Mode | Behavior |
+| --- | --- |
+| **Settings preview** | Scaled thumbnail; course and nav links do not navigate |
+| **Live academy** | Full behavior; use this to validate CTAs and footer |
+
+Always validate hero and footer links on the live site before sharing the URL externally.
+
+## Related guides
+
+- [Customize Your Organization](/docs/customize-organization) — org name, logo, brand color
+- [Set Up a Custom Domain](/docs/custom-domain) — use your own domain on the landing page
+- [Create a Course Landing Page](/docs/course-landingpage) — per-course public pages (separate from the org homepage)
+- [Student Dashboard](/docs/student-dashboard) — where students go after signing in

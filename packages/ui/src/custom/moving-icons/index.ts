@@ -27,6 +27,7 @@ export { default as PeopleIcon } from './people.svelte';
 export { default as PersonIcon } from './person.svelte';
 export { default as PremiumIcon } from './premium.svelte';
 export { default as PreviewIcon } from './preview.svelte';
+export { default as RadioIcon } from './radio.svelte';
 export { default as ReviewIcon } from './review.svelte';
 export { default as SettingsIcon } from './settings.svelte';
 export { default as SetupIcon } from './setup.svelte';

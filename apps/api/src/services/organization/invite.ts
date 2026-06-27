@@ -32,6 +32,7 @@ import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { parseCourseIdsFromInviteMetadata, parseProgramIdsFromInviteMetadata } from '@api/utils/org';
 import { markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
+import { buildEmailBranding } from '@cio/email';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 
 type OrganizationInviteStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'ACCEPTED';
@@ -60,8 +61,11 @@ function normalizeEmails(emails: string[]): string[] {
   return [...new Set(emails.map((email) => email.toLowerCase().trim()).filter(Boolean))];
 }
 
-function buildInviteLink(token: string): string {
-  return `${getDashboardBaseUrl()}/invite/${encodeURIComponent(token)}`;
+function buildInviteLink(
+  token: string,
+  org?: { siteName?: string | null; customDomain?: string | null; isCustomDomainVerified?: boolean | null }
+): string {
+  return `${getDashboardBaseUrl(org)}/invite/${encodeURIComponent(token)}`;
 }
 
 function getRoleLabel(roleId: number): string {
@@ -245,7 +249,7 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
         }
       });
 
-      const inviteLink = buildInviteLink(token);
+      const inviteLink = buildInviteLink(token, organization);
 
       try {
         await enqueueTransactionalEmail('inviteTeacher', {
@@ -256,7 +260,8 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
             orgSiteName: organization.siteName,
             roleName,
             expiresAt: getExpiryLabel(expiresAt),
-            inviteLink
+            inviteLink,
+            branding: buildEmailBranding(organization)
           },
           idempotencyKey: `org-invite-teacher:${invite.id}`
         });

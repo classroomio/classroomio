@@ -43,7 +43,6 @@ REDIS_URL="redis://localhost:6379"
 PUBLIC_SERVER_URL="http://localhost:3002"
 TRUSTED_ORIGINS="http://localhost:5173"        # the dashboard dev origin
 BETTER_AUTH_SECRET="<generate-with-openssl-rand-hex-32>"
-AUTH_BEARER_TOKEN="<generate-with-openssl-rand-hex-32>"
 PRIVATE_SERVER_KEY="<generate-with-openssl-rand-hex-32>"   # generate once; use the SAME value in the dashboard
 ```
 
@@ -70,10 +69,10 @@ cp apps/api/.env apps/jobs/.env
 
 ### Step 3 — Start infrastructure (Postgres + Redis)
 ```bash
-docker compose -f docker/docker-compose.yaml up -d postgres redis
+docker compose -f docker-compose.yaml up -d postgres redis
 ```
 (Optional — object storage for uploads:
-`docker compose -f docker/docker-compose.yaml --profile minio up -d minio minio-init`.)
+`docker compose -f docker-compose.yaml --profile minio up -d minio minio-init`.)
 
 ### Step 4 — Set up + seed the database
 ```bash
@@ -150,7 +149,7 @@ Seeded accounts use password **`123456`** (verified against the seed's bcrypt ha
 |---------|-------|-----|
 | `no such service: db-init` | `db-init` was removed; the `api` container now runs DB setup | Don't reference `db-init`. For host dev use `db:setup:seed` (Step 4). |
 | `DATABASE_URL or PRIVATE_DATABASE_URL ... required` | `packages/db/.env` missing (db scripts read their own dir) | `cp packages/db/.env.example packages/db/.env` |
-| `password authentication failed for user "postgres"` | `localhost:5432` is another project's Postgres, not classroomio's | Stop the other container / free port 5432, then recreate: `docker compose -f docker/docker-compose.yaml up -d postgres` |
+| `password authentication failed for user "postgres"` | `localhost:5432` is another project's Postgres, not classroomio's | Stop the other container / free port 5432, then recreate: `docker compose -f docker-compose.yaml up -d postgres` |
 | `Failed to resolve entry for package "@cio/*"` | shared packages not built (`dist/` missing) | `pnpm build`, then re-run the dev commands |
 | `'rm'/'cp' is not recognized` or `spawn EINVAL` (Windows) | Unix command / `.cmd` spawn in a script | Already fixed in-repo (rimraf, Node copy, `shell:true`). Run `pnpm i` to get latest. |
 | `invalid task configuration … N persistent tasks … concurrency` | `pnpm dev` starts the whole monorepo past turbo's cap | Use scoped `pnpm api:dev` + `pnpm dashboard:dev` instead |

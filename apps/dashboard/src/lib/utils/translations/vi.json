@@ -681,6 +681,15 @@
     "user_analytics": {
       "title": "Hồ sơ sinh viên",
       "page_subtitle": "Progress, grades, and activity across their courses."
+    },
+    "delete": {
+      "action": "Xóa",
+      "title": "Xóa thành viên",
+      "description": "Thao tác này sẽ xóa thành viên khỏi tổ chức của bạn và thu hồi quyền truy cập của họ vào tất cả các khóa học và chương trình được chỉ định.",
+      "confirmation": "Bạn có chắc chắn muốn xóa {name} ({email}) không? Không thể hoàn tác hành động này.",
+      "cancel": "Hủy bỏ",
+      "confirm": "Xóa",
+      "snackbar_success": "Thành viên đã bị xóa"
     }
   },
   "community": {
@@ -807,6 +816,12 @@
           "animation_waves": "Sóng",
           "animation_dotted": "Chấm",
           "animation_none": "không có"
+        },
+        "course_type_learn_more": "Tìm hiểu thêm",
+        "welcome_email": {
+          "title": "Email chào mừng",
+          "description": "Tùy chỉnh email sinh viên nhận được sau khi đăng ký. Thêm ghi chú cá nhân, hướng dẫn hoặc liên kết phiên trực tiếp.",
+          "placeholder": "Viết lời chào mừng mà học viên nhận được khi đăng ký…"
         }
       },
       "analytics": {
@@ -1058,7 +1073,7 @@
           "add": "Thêm",
           "add_team": "Thêm đồng đội hoặc cộng tác viên vào tổ chức của bạn. Bắt đầu làm việc cùng nhau",
           "invite": "Mời",
-          "placeholder": "email được phân tách bằng dấu phẩy",
+          "placeholder": "user1@domain.com, user2@domain.com",
           "role": "Vai trò",
           "send_invite": "Gửi lời mời",
           "members": "Thành viên",
@@ -1070,6 +1085,7 @@
             "description": "Bất kỳ ai có liên kết này đều có thể tham gia tổ chức của bạn.",
             "generate": "Tạo liên kết",
             "copy": "Sao chép",
+            "copy_invite_link": "Sao chép liên kết mời",
             "copied": "Đã sao chép!",
             "toggle_label": "Liên kết lời mời đang hoạt động",
             "disabled_notice": "Liên kết này bị vô hiệu hóa. Kích hoạt nó để cho phép thành viên mới tham gia thông qua liên kết.",
@@ -1799,7 +1815,13 @@
             "settings_completion_policy": "Quy tắc hoàn thành",
             "settings_completion_submitted": "Đã gửi - mọi lần gửi đều được tính",
             "settings_completion_passed": "Đạt - yêu cầu điểm tối thiểu",
-            "settings_pass_threshold": "Ngưỡng vượt qua (%)"
+            "settings_pass_threshold": "Ngưỡng vượt qua (%)",
+            "notify": {
+              "action": "Thông báo cho sinh viên",
+              "sending": "Thông báo cho học sinh…",
+              "sent": "Đã thông báo cho {count} sinh viên",
+              "failed": "Không thể thông báo cho sinh viên"
+            }
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",
@@ -2070,6 +2092,41 @@
           "sections": "Phần",
           "lessons": "Bài học",
           "exercises": "Bài tập"
+        },
+        "session": {
+          "join": "Tham gia phiên",
+          "heading": "Phiên trực tiếp",
+          "intro": "Đặt liên kết tham gia và thời gian dự kiến cho lớp học trực tiếp này. Học sinh nhận được lời nhắc 24 giờ và 1 giờ trước.",
+          "link_label": "Liên kết tham gia (Zoom, Meet, v.v.)",
+          "datetime_label": "Ngày và giờ",
+          "timezone_label": "Múi giờ",
+          "timezone_helper": "Lời nhắc và lời mời lịch sử dụng múi giờ này để hiển thị.",
+          "save": "Lưu phiên",
+          "saved": "Đã lưu phiên",
+          "notified": "Sinh viên được thông báo về phiên cập nhật",
+          "notify_failed": "Không thể thông báo cho sinh viên về sự thay đổi",
+          "confirm_title": "Thông báo cho sinh viên về sự thay đổi?",
+          "confirm_body": "Việc lưu sẽ gửi email cho tất cả sinh viên đã đăng ký về phiên cập nhật, kèm theo lời mời lịch mới cập nhật sự kiện trên lịch của họ.",
+          "confirm_cancel": "Hủy bỏ",
+          "confirm_save": "Lưu và thông báo",
+          "live_indicator": "Bài học này là một buổi học trực tiếp",
+          "live_session": "Phiên trực tiếp",
+          "live_now": "Đang trực tiếp",
+          "live_event": "Phiên trực tiếp",
+          "started": "Đã bắt đầu",
+          "min_ago": "phút trước",
+          "join_now": "Tham gia ngay bây giờ",
+          "copy_link": "Sao chép liên kết",
+          "copy": "Sao chép",
+          "add_to_calendar": "Thêm vào lịch",
+          "add_google": "Lịch Google",
+          "add_outlook": "Outlook.com",
+          "add_office365": "Văn phòng 365",
+          "add_yahoo": "Lịch Yahoo",
+          "add_apple": "Lịch Apple (.ics)",
+          "starts_in": "Bắt đầu vào",
+          "session_ended": "Phiên kết thúc",
+          "link_copied": "Đã sao chép liên kết"
         }
       },
       "news_feed": {
@@ -2201,7 +2258,14 @@
     "header": {
       "preview": "Preview course",
       "preview_missing_slug": "Generate and save a course slug before previewing.",
-      "view_as_student": "Xem với tư cách sinh viên"
+      "view_as_student": "Xem với tư cách sinh viên",
+      "view_course_site": "Xem trang khóa học"
+    },
+    "view_course_site": {
+      "unpublished_title": "Xuất bản khóa học của bạn",
+      "unpublished_description": "Bạn nên xuất bản khóa học này trước khi có thể xem trang web",
+      "cancel": "Hủy",
+      "publish_course": "Xuất bản khóa học"
     },
     "sidebar": {
       "back_to_course": "Quay lại khóa học",
@@ -2235,7 +2299,10 @@
         "title": "Yêu cầu khóa học đã hoàn tất!",
         "subtitle": "Xin chúc mừng — bạn có thể xem và tải xuống chứng chỉ của mình bất kỳ lúc nào.",
         "view_certificate": "Xem chứng chỉ",
-        "later": "Đóng"
+        "later": "Đóng",
+        "checking": "Đang kiểm tra tính đủ điều kiện…",
+        "not_eligible_title": "Gần như ở đó",
+        "retake_exercise": "Làm lại bài tập"
       }
     },
     "certificates": {
@@ -2260,7 +2327,8 @@
       "blocker_final_score": "Điểm cao nhất của bạn trong \"{exerciseTitle}\" là {bestPercent}%; {requiredPercent}% là bắt buộc.",
       "blocker_final_misconfigured": "Bài tập chứng nhận \"{exerciseTitle}\" không có cấu hình điểm nào; nhờ người hướng dẫn khắc phục.",
       "email_message_label": "Tin nhắn email",
-      "email_message_placeholder": "ví dụ: Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!"
+      "email_message_placeholder": "ví dụ: Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!",
+      "final_exercise_multiple_attempts_note": "Học sinh sẽ được phép thử không giới hạn bài tập đã chọn."
     },
     "creator": {
       "heading": "Bạn muốn tạo khóa học nào?",
@@ -2383,6 +2451,8 @@
         "delete": "Xóa",
         "open": "Mở",
         "open_public_course": "Mở khóa học công khai",
+        "view_course_site": "Xem trang khóa học",
+        "publish_course": "Xuất bản khóa học",
         "copy_course_url": "Sao chép URL khóa học"
       },
       "due_date": "Đến hạn",
@@ -2464,8 +2534,10 @@
     "learner": "sinh viên",
     "progress": "Tiến độ",
     "pick_up_where_you_left_off": "Tiếp tục nơi bạn đã dừng lại",
+    "get_your_certificate": "Nhận chứng chỉ của bạn",
     "course_awaits_you": "{title} đang chờ bạn",
     "learning_awaits_you": "Khóa học tiếp theo đang chờ bạn",
+    "my_certificate": "Chứng chỉ của tôi",
     "lms_today_progress": "Bạn đã đạt được {progress}% trong quá trình học tập - mỗi bước đều có giá trị.",
     "lms_today_empty": "Con đường học tập của bạn đã sẵn sàng khi bạn sẵn sàng.",
     "compliance_score": "Điểm tuân thủ",
@@ -2483,7 +2555,8 @@
     "login_activity_logins": "thông tin đăng nhập",
     "open_academy": "Học viện mở",
     "explore_more_courses": "Khám phá thêm các khóa học",
-    "view_more": "Xem thêm"
+    "view_more": "Xem thêm",
+    "upcoming_sessions_heading": "Phiên trực tiếp"
   },
   "schedule": {
     "title": "Lịch trình của bạn",

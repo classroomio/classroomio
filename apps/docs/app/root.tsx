@@ -19,7 +19,7 @@ const DEFAULT_META_TITLE =
   'ClassroomIO Docs | Customer, Partner, and Employee Education';
 const DEFAULT_META_DESCRIPTION =
   'Learn how to create customer academies, partner certification programs, and employee training workflows in ClassroomIO.';
-const DEFAULT_OG_IMAGE_URL = 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.png';
+const DEFAULT_OG_IMAGE_URL = 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.jpg';
 const DEFAULT_OG_IMAGE_ALT = 'ClassroomIO documentation for customer, partner, and employee education';
 
 export const links: LinksFunction = () => [
@@ -60,7 +60,7 @@ export const meta: MetaFunction = () => [
   },
   {
     property: 'og:image:type',
-    content: 'image/png'
+    content: 'image/jpeg'
   },
   {
     property: 'og:image:width',
@@ -73,6 +73,31 @@ export const meta: MetaFunction = () => [
   {
     property: 'og:image:secure_url',
     content: DEFAULT_OG_IMAGE_URL
+  },
+  // WebP fallback for better compression on supported platforms
+  {
+    property: 'og:image',
+    content: 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.webp'
+  },
+  {
+    property: 'og:image:alt',
+    content: DEFAULT_OG_IMAGE_ALT
+  },
+  {
+    property: 'og:image:type',
+    content: 'image/webp'
+  },
+  {
+    property: 'og:image:width',
+    content: '1920'
+  },
+  {
+    property: 'og:image:height',
+    content: '1080'
+  },
+  {
+    property: 'og:image:secure_url',
+    content: 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.webp'
   },
   {
     name: 'twitter:card',

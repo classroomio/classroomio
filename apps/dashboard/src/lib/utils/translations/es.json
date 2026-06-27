@@ -681,6 +681,15 @@
     "user_analytics": {
       "title": "Perfil de estudiante",
       "page_subtitle": "Progress, grades, and activity across their courses."
+    },
+    "delete": {
+      "action": "Eliminar",
+      "title": "Eliminar miembro",
+      "description": "Esto elimina al miembro de su organización y revoca su acceso a todos los cursos y programas asignados.",
+      "confirmation": "¿Está seguro de que desea eliminar {name} ({email})? Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar",
+      "snackbar_success": "Miembro eliminado"
     }
   },
   "community": {
@@ -807,7 +816,13 @@
           "animation_waves": "Olas",
           "animation_dotted": "punteado",
           "animation_none": "Ninguno"
-        }
+        },
+        "welcome_email": {
+          "title": "Correo electrónico de bienvenida",
+          "description": "Personalice el correo electrónico que reciben los estudiantes después de inscribirse. Agregue una nota personal, instrucciones o un enlace de sesión en vivo.",
+          "placeholder": "Escribe el mensaje de bienvenida que reciben los estudiantes cuando se matriculan..."
+        },
+        "course_type_learn_more": "Más información"
       },
       "analytics": {
         "title": "Analítica"
@@ -1058,7 +1073,7 @@
           "add": "Añadir",
           "add_team": "Agregue a sus compañeros de equipo o colaboradores a su organización. Empezar a trabajar juntos",
           "invite": "invitar",
-          "placeholder": "correo electrónico separado por comas",
+          "placeholder": "user1@domain.com, user2@domain.com",
           "role": "Rol",
           "send_invite": "Enviar invitación",
           "members": "Miembros",
@@ -1070,6 +1085,7 @@
             "description": "Cualquiera que tenga este enlace puede unirse a su organización.",
             "generate": "Generar enlace",
             "copy": "Copiar",
+            "copy_invite_link": "Copiar enlace de invitación",
             "copied": "¡Copiado!",
             "toggle_label": "Invitación de enlace activa",
             "disabled_notice": "Este enlace está deshabilitado. Habilítelo para permitir que nuevos miembros se unan a través de un enlace.",
@@ -1799,7 +1815,13 @@
             "settings_completion_policy": "Regla de finalización",
             "settings_completion_submitted": "Enviado: cualquier envío cuenta",
             "settings_completion_passed": "Aprobado: puntuación mínima requerida",
-            "settings_pass_threshold": "Umbral de aprobación (%)"
+            "settings_pass_threshold": "Umbral de aprobación (%)",
+            "notify": {
+              "action": "Notificar a los estudiantes",
+              "sending": "Notificar a los estudiantes...",
+              "sent": "{count} estudiantes notificados",
+              "failed": "No se pudo notificar a los estudiantes"
+            }
           },
           "new_exercise_modal": {
             "heading": "Nuevo ejercicio",
@@ -2070,6 +2092,41 @@
           "sections": "Secciones",
           "lessons": "Lecciones",
           "exercises": "Ejercicios"
+        },
+        "session": {
+          "join": "Unirse a la sesión",
+          "heading": "Sesión en vivo",
+          "intro": "Configure el enlace para unirse y la hora programada para esta clase en vivo. Los estudiantes reciben recordatorios 24 horas y 1 hora antes.",
+          "link_label": "Enlace para unirse (Zoom, Meet, etc.)",
+          "datetime_label": "Fecha y hora",
+          "timezone_label": "Zona horaria",
+          "timezone_helper": "Los recordatorios y la invitación del calendario utilizan esta zona horaria para mostrarse.",
+          "save": "Guardar sesión",
+          "saved": "Sesión guardada",
+          "notified": "Estudiantes notificados de la sesión actualizada.",
+          "notify_failed": "No se pudo notificar a los estudiantes sobre el cambio.",
+          "confirm_title": "¿Notificar a los estudiantes sobre el cambio?",
+          "confirm_body": "Al guardar, se enviará un correo electrónico a todos los estudiantes inscritos sobre la sesión actualizada, con una nueva invitación de calendario que actualiza el evento en su calendario.",
+          "confirm_cancel": "Cancelar",
+          "confirm_save": "Guardar y notificar",
+          "live_indicator": "Esta lección es una sesión en vivo.",
+          "live_session": "Sesión en vivo",
+          "live_now": "En vivo ahora",
+          "live_event": "Sesión en vivo",
+          "started": "iniciado",
+          "min_ago": "Hace minutos",
+          "join_now": "Únete ahora",
+          "copy_link": "Copiar enlace",
+          "copy": "Copiar",
+          "add_to_calendar": "Añadir al calendario",
+          "add_google": "Calendario de Google",
+          "add_outlook": "Outlook.com",
+          "add_office365": "Oficina 365",
+          "add_yahoo": "Calendario de Yahoo",
+          "add_apple": "Calendario de Apple (.ics)",
+          "starts_in": "Comienza en",
+          "session_ended": "Sesión finalizada",
+          "link_copied": "Enlace copiado"
         }
       },
       "news_feed": {
@@ -2201,7 +2258,14 @@
     "header": {
       "preview": "Preview course",
       "preview_missing_slug": "Generate and save a course slug before previewing.",
-      "view_as_student": "Ver como estudiante"
+      "view_as_student": "Ver como estudiante",
+      "view_course_site": "Ver sitio del curso"
+    },
+    "view_course_site": {
+      "unpublished_title": "Publica tu curso",
+      "unpublished_description": "Debes publicar este curso antes de poder ver el sitio",
+      "cancel": "Cancelar",
+      "publish_course": "Publicar curso"
     },
     "sidebar": {
       "back_to_course": "volver al curso",
@@ -2235,7 +2299,10 @@
         "title": "¡Requisitos del curso completos!",
         "subtitle": "Felicitaciones, puede ver y descargar su certificado en cualquier momento.",
         "view_certificate": "Ver certificado",
-        "later": "Cerrar"
+        "later": "Cerrar",
+        "checking": "Comprobando la elegibilidad...",
+        "not_eligible_title": "Casi allí",
+        "retake_exercise": "Rehacer ejercicio"
       }
     },
     "certificates": {
@@ -2260,7 +2327,8 @@
       "blocker_final_score": "Su mejor puntuación en \"{exerciseTitle}\" es {bestPercent}%; {requiredPercent}% es obligatorio.",
       "blocker_final_misconfigured": "El ejercicio de certificación \"{exerciseTitle}\" no tiene puntos configurados; Pídele a tu instructor que lo arregle.",
       "email_message_label": "Mensaje de correo electrónico",
-      "email_message_placeholder": "por ej. Estamos orgullosos de tu progreso: ¡sigue aprendiendo!"
+      "email_message_placeholder": "por ej. Estamos orgullosos de tu progreso: ¡sigue aprendiendo!",
+      "final_exercise_multiple_attempts_note": "A los estudiantes se les permitirán intentos ilimitados en el ejercicio seleccionado."
     },
     "creator": {
       "heading": "¿Qué curso quieres crear?",
@@ -2383,6 +2451,8 @@
         "delete": "Eliminar",
         "open": "Abierto",
         "open_public_course": "Abrir curso público",
+        "view_course_site": "Ver sitio del curso",
+        "publish_course": "Publicar curso",
         "copy_course_url": "Copiar URL del curso"
       },
       "due_date": "debido",
@@ -2464,8 +2534,10 @@
     "learner": "estudiante",
     "progress": "Progreso",
     "pick_up_where_you_left_off": "Continua donde lo dejaste",
+    "get_your_certificate": "Obtén tu certificado",
     "course_awaits_you": "{title} te espera",
     "learning_awaits_you": "Tu próximo curso te espera",
+    "my_certificate": "Mi certificado",
     "lms_today_progress": "Estás {progress}% en tu aprendizaje: cada paso cuenta.",
     "lms_today_empty": "Tu camino de aprendizaje estará listo cuando tú lo estés.",
     "compliance_score": "Puntuación de cumplimiento",
@@ -2483,7 +2555,8 @@
     "login_activity_logins": "inicios de sesión",
     "open_academy": "Academia Abierta",
     "explore_more_courses": "Explora más cursos",
-    "view_more": "Ver más"
+    "view_more": "Ver más",
+    "upcoming_sessions_heading": "Sesiones en vivo"
   },
   "schedule": {
     "title": "Tu horario",

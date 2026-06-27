@@ -2,6 +2,7 @@ import * as z from 'zod';
 
 import { defineEmail } from '../send';
 import { getDefaultTemplate } from '../templates';
+import { ZEmailBranding } from '../core/branding';
 
 export const programGoalReminderEmail = defineEmail({
   id: 'programGoalReminder',
@@ -13,7 +14,8 @@ export const programGoalReminderEmail = defineEmail({
     daysUntilDue: z.number().int(),
     completedCount: z.number().int(),
     requiredCount: z.number().int(),
-    loginUrl: z.string().min(1)
+    loginUrl: z.string().min(1),
+    branding: ZEmailBranding
   }),
   render: (fields) => {
     const dueLine =
@@ -30,11 +32,11 @@ export const programGoalReminderEmail = defineEmail({
       <p>This is a reminder that the goal <strong>${fields.goalTitle}</strong> in your program <strong>${fields.programName}</strong> at ${fields.orgName} needs your attention.</p>
       ${dueLine}
       <p>Your progress so far: <strong>${progress}</strong>.</p>
-      <p><a href="${fields.loginUrl}">Open ClassroomIO</a> to keep going.</p>
+      <p><a href="${fields.loginUrl}">Open the LMS</a> to keep going.</p>
       <p>Cheers,</p>
       <p>${fields.orgName}</p>
     `;
 
-    return getDefaultTemplate(content);
+    return getDefaultTemplate(content, fields.branding);
   }
 });

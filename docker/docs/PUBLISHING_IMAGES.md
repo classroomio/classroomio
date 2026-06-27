@@ -57,9 +57,12 @@ Check your Docker Hub repository at:
 
 The workflow will automatically publish images when:
 
-1. **Push to main/master branch**: Creates a `latest` tag
-2. **Create a version tag**: Creates versioned tags
-3. **Manual trigger**: Use the Actions tab in GitHub
+1. **Push to `main`**: Publishes the **`edge`** tag only (does NOT move `latest`).
+2. **Push a version tag `vX.Y.Z`**: Publishes `X.Y.Z`, `X.Y`, `X`, and `latest`.
+3. **Manual trigger**: Use the Actions tab in GitHub.
+
+Every build is **boot smoke-tested** (started against ephemeral postgres + redis, healthcheck
+verified) by the `smoke` job *before* anything is pushed — a broken image never reaches users.
 
 #### Create a version tag and push:
 
@@ -102,42 +105,45 @@ docker pull classroomio/dashboard:latest
 
 ### Deploy with Compose
 
-For self-hosting with Docker Compose, see [SELF_HOST.md](SELF_HOST.md). The setup uses a single root `.env` file and `docker/docker-compose.yaml`.
+For self-hosting with Docker Compose, see [SELF_HOST.md](SELF_HOST.md). The setup uses a single root `.env` file and `docker-compose.yaml`.
 
-## Versioning Strategy
+## Versioning Strategy (stable-releases + edge)
 
-### Recommended Tags:
+The published tags and what they mean:
 
-- `latest`: Most recent stable build
-- `v0.1.0`: Specific semantic version
-- `v1.0`: Minor version
-- `v1`: Major version
-- `main`: Latest main branch build
-- `dev`: Development builds
+| Tag | Published by | Meaning |
+|-----|--------------|---------|
+| `1.4.2` (exact) | a `v1.4.2` git tag | Immutable, smoke-tested release — **what production should pin** |
+| `1.4`, `1` | a `v1.4.2` git tag | Latest patch/minor of that line |
+| `latest` | a `v*` git tag only | The newest *released* version |
+| `edge` | every push to `main` | Bleeding edge; may be unstable |
 
-### Example: Publishing a new version
+The key rule: **`latest` is never moved by a routine merge to `main`** — only a deliberate release
+tag moves it. Self-hosters pin `CIO_VERSION` (see [SELF_HOST.md](SELF_HOST.md)) and upgrade on their
+own schedule.
+
+### Cutting a release
+
+Versioning is driven by git tags; the CI workflow does the rest (build multi-arch → smoke-test →
+push `X.Y.Z`/`X.Y`/`X`/`latest`).
 
 ```bash
-# Build with multiple tags
-docker build -f docker/Dockerfile.api \
-  -t classroomio/api:latest \
-  -t classroomio/api:v1.2.0 \
-  -t classroomio/api:v1.2 \
-  -t classroomio/api:v1 \
-  .
+# Bump version + create the vX.Y.Z tag from the repo's changelog tooling
+pnpm release            # standard-version: bumps package.json, writes CHANGELOG, creates the git tag
 
-# Push all tags
-docker push classroomio/api:latest
-docker push classroomio/api:v1.2.0
-docker push classroomio/api:v1.2
-docker push classroomio/api:v1
+# Push the tag — this triggers the smoke-tested publish
+git push --follow-tags origin main
 ```
+
+To publish manually from a laptop instead, `./docker/docker-push.sh` builds + pushes all three
+images multi-arch (set `VERSION=1.4.2`).
 
 ## Image Sizes and Build Times
 
-- **API Image**: ~400-600 MB (Node.js Alpine + dependencies)
-- **Dashboard Image**: ~600-800 MB (Node.js Alpine + SvelteKit build)
-- **Build Time**: 5-10 minutes per image (depending on your machine)
+- **API Image**: ~400-600 MB (Node.js Debian slim + dependencies)
+- **Dashboard Image**: ~600-800 MB (Node.js Debian slim + SvelteKit build)
+- **Jobs Image**: ~500-700 MB (Node.js Debian slim + ffmpeg + dependencies)
+- **Build Time**: 5-10 minutes per image (depending on your machine). Multi-arch (amd64 + arm64) builds take longer.
 
 ## Multi-Architecture Support
 

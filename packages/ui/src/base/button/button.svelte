@@ -24,6 +24,7 @@
       size: {
         default: 'ui:h-9 ui:px-4 ui:py-2 ui:has-[>svg]:px-3',
         sm: 'ui:h-8 ui:gap-1.5 ui:rounded-md ui:px-3 ui:has-[>svg]:px-2.5',
+        xs: 'ui:h-7 ui:gap-1 ui:rounded-md ui:px-2.5 ui:text-xs ui:has-[>svg]:px-2',
         lg: 'ui:h-10 ui:rounded-md ui:px-6 ui:has-[>svg]:px-4',
         icon: 'ui:size-9',
         'icon-2xs': 'ui:size-4',

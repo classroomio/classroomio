@@ -38,6 +38,8 @@ import { Hono } from '@api/utils/hono';
 import { ZLessonDownloadContent } from '@cio/utils/validation/course';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
+import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
+import { notifyCourseSessionUpdateService } from '@api/services/course/notify-session';
 import { generateLessonPdf } from '@api/utils/lesson';
 import { getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
 import { handleError } from '@api/utils/errors';
@@ -118,6 +120,23 @@ export const lessonRouter = new Hono()
         return c.json({ success: true, data: lesson }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update lesson');
+      }
+    }
+  )
+  .post(
+    '/:lessonId/notify-session-update',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    zValidator('param', ZLessonGetParam),
+    async (c) => {
+      try {
+        const courseId = c.req.param('courseId')!;
+        const { lessonId } = c.req.valid('param');
+
+        const result = await notifyCourseSessionUpdateService(courseId, lessonId);
+        return c.json({ success: true, data: result }, 202);
+      } catch (error) {
+        return handleError(c, error, 'Failed to notify session update');
       }
     }
   )

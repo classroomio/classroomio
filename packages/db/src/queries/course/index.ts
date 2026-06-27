@@ -7,3 +7,4 @@ export * from './people';
 export * from './reset-progress';
 export * from './invite';
 export * from './public-course';
+export * from './session';

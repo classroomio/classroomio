@@ -19,6 +19,7 @@ import {
 } from '@cio/db/queries/group';
 import {
   getLastLogin,
+  getLastSeenForUserIds,
   getLessonsWithCompletion,
   getProfileCourseProgress,
   getUserExercisesStats
@@ -33,11 +34,11 @@ import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { exerciseBelongsToCourse } from '@cio/db/queries/course/certification-exercise';
-import { updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
+import { updateExercise, updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { getProfileById } from '@cio/db/queries/auth';
 import { insertOrganizationMembersOnConflictDoNothing } from '@cio/db/queries/organization';
 import { annotateCourseContentWithProgression } from './progression';
-import { buildCourseContent, calcPercentageWithRounding, formatLastSeen, type CourseContent } from './utils';
+import { buildCourseContent, calcPercentageWithRounding, type CourseContent } from './utils';
 import { guardCourseTypeTransition } from './public-course-guard';
 
 const DEFAULT_CONTENT_GROUPING = true;
@@ -315,6 +316,8 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
       if (!ok) {
         throw new AppError('Certification exercise must belong to this course', ErrorCodes.VALIDATION_ERROR, 400);
       }
+
+      await updateExercise(data.certificate.requiredExerciseId, { allowMultipleAttempts: true });
     }
 
     const updated = await updateCourseQuery(courseId, sanitizeUnknownStrings(sanitizedData));
@@ -441,15 +444,19 @@ export async function getCourseAnalytics(courseId: string) {
     const exercises = course.contentItems.filter((item) => item.type === ContentType.Exercise);
 
     // Get student analytics
+    const studentProfileIds = students
+      .map((student) => student.profileId)
+      .filter((profileId): profileId is string => profileId !== null);
+    const lastSeenByProfileId = await getLastSeenForUserIds(studentProfileIds);
+
     const studentAnalytics = await Promise.all(
       students
         .filter((student) => student.profileId !== null)
         .map(async (student) => {
           try {
-            const [courseProgress, userExercisesStats, lastLoginDate] = await Promise.all([
+            const [courseProgress, userExercisesStats] = await Promise.all([
               getCourseProgressQuery(courseId, student.profileId!),
-              getUserExercisesStats(courseId, student.profileId!),
-              getLastLogin(student.profileId!)
+              getUserExercisesStats(courseId, student.profileId!)
             ]);
 
             if (!courseProgress) {
@@ -466,6 +473,7 @@ export async function getCourseAnalytics(courseId: string) {
             const lessonsCompleted = courseProgress.lessonsCompleted || 0;
             const totalLessons = courseProgress.lessonsCount || 0;
             const progressPercentage = calcPercentageWithRounding(lessonsCompleted, totalLessons);
+            const lastSeen = lastSeenByProfileId.get(student.profileId!) ?? undefined;
 
             return {
               id: student.profileId,
@@ -479,7 +487,7 @@ export async function getCourseAnalytics(courseId: string) {
               exercisesSubmitted: completedExercises,
               totalExercises,
               averageGrade,
-              lastSeen: formatLastSeen(lastLoginDate),
+              lastSeen,
               progressPercentage
             };
           } catch (error) {
@@ -557,8 +565,7 @@ export async function getUserCourseAnalytics(
       throw new AppError('User profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
     }
 
-    // Get last login
-    const lastLoginDate = await getLastLogin(userId);
+    const lastSeen = await getLastLogin(userId);
 
     // Fetch user exercises stats, lessons with completion, and course progress
     const [userExercisesStats, lessons, courseProgress] = await Promise.all([
@@ -610,7 +617,7 @@ export async function getUserCourseAnalytics(
         fullName: profile.fullname || '',
         email: profile.email || '',
         avatarUrl: profile.avatarUrl || '',
-        lastSeen: formatLastSeen(lastLoginDate)
+        lastSeen: lastSeen || undefined
       },
       averageGrade,
       userExercisesStats,
