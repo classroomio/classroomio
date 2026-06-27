@@ -24,8 +24,33 @@ trap cleanup EXIT
 container_alive() { [ -n "$(docker ps -q -f name="^${NAME}$")" ]; }
 dump_and_fail() {
   echo "SMOKE FAIL (${SERVICE}): $1"
-  echo "----- container logs (tail) -----"
-  docker logs "${NAME}" 2>&1 | tail -60 || true
+
+  echo
+  echo "==============================="
+  echo "Container Logs"
+  echo "==============================="
+  docker logs "${NAME}" || true
+
+  echo
+  echo "==============================="
+  echo "Current Database Tables"
+  echo "==============================="
+
+  docker run --rm --network host \
+    postgres:16-alpine \
+    psql postgresql://postgres:postgres@localhost:5432/classroomio \
+    -c "\dt"
+
+  echo
+  echo "==============================="
+  echo "Applied Drizzle Migrations"
+  echo "==============================="
+
+  docker run --rm --network host \
+    postgres:16-alpine \
+    psql postgresql://postgres:postgres@localhost:5432/classroomio \
+    -c "select * from __drizzle_migrations;"
+
   exit 1
 }
 
