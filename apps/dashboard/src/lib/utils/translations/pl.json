@@ -242,6 +242,10 @@
         "unpinned": "Odpięty",
         "successfully": "Pomyślnie",
         "feed_delete_success": "Kanał został pomyślnie usunięty"
+      },
+      "people": {
+        "progress_reset": "Postęp został zresetowany",
+        "progress_reset_failed": "Nie udało się zresetować postępu"
       }
     },
     "landing_page_settings": {
@@ -1099,6 +1103,26 @@
           "sure": "Czy na pewno chcesz usunąć",
           "no": "Nie",
           "yes": "Tak"
+        },
+        "reset_progress": {
+          "button": "Zresetuj postęp",
+          "dialog": {
+            "title": "Zresetować postęp użytkownika {studentName}?",
+            "intro": "Spowoduje to trwałe usunięcie postępu tego uczestnika w tym kursie. Pozostanie zapisany i będzie mógł zacząć od lekcji 1.",
+            "bullets": {
+              "lessons": "Ukończone lekcje — {completed} z {total}",
+              "exercises": "Przesłane ćwiczenia — {count} zgłoszeń",
+              "comments": "Komentarze do lekcji tego uczestnika — {count}",
+              "newsfeed": "Wpisy i odpowiedzi na kanale kursu tego uczestnika — {count}",
+              "video_progress": "Postęp oglądania wideo — {count} śledzonych lekcji",
+              "attendance": "Wpisy obecności — {count}",
+              "certificate_yes": "Rekordy certyfikacji/zgodności — tak",
+              "certificate_no": "Rekordy certyfikacji/zgodności — nie"
+            },
+            "warning": "Tej operacji nie można cofnąć.",
+            "cancel": "Anuluj",
+            "confirm": "Usuń"
+          }
         },
         "invite_modal": {
           "title": "Zaproś ludzi",

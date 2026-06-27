@@ -242,6 +242,10 @@
         "unpinned": "Désépinglé",
         "successfully": "Avec succès",
         "feed_delete_success": "Flux supprimé avec succès"
+      },
+      "people": {
+        "progress_reset": "Progression réinitialisée",
+        "progress_reset_failed": "Échec de la réinitialisation de la progression"
       }
     },
     "landing_page_settings": {
@@ -1099,6 +1103,26 @@
           "sure": "Etes-vous sûr de vouloir supprimer",
           "no": "Non",
           "yes": "Oui"
+        },
+        "reset_progress": {
+          "button": "Réinitialiser la progression",
+          "dialog": {
+            "title": "Réinitialiser la progression de {studentName} ?",
+            "intro": "Cela supprime définitivement la progression de cet apprenant dans ce cours. Il restera inscrit et pourra recommencer à la leçon 1.",
+            "bullets": {
+              "lessons": "Leçons terminées — {completed} sur {total}",
+              "exercises": "Exercices soumis — {count} soumissions",
+              "comments": "Commentaires de leçon de cet apprenant — {count}",
+              "newsfeed": "Publications et réponses du fil d’actualité du cours de cet apprenant — {count}",
+              "video_progress": "Progression de visionnage vidéo — {count} leçons suivies",
+              "attendance": "Entrées de présence — {count}",
+              "certificate_yes": "Dossiers de certification/conformité — oui",
+              "certificate_no": "Dossiers de certification/conformité — non"
+            },
+            "warning": "Cette action est irréversible.",
+            "cancel": "Annuler",
+            "confirm": "Supprimer"
+          }
         },
         "invite_modal": {
           "title": "Inviter des personnes",

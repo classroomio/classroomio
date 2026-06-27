@@ -6,6 +6,7 @@ import type {
   GetUserCourseAnalyticsRequest,
   ListStudentInvitesRequest,
   ListPeopleRequest,
+  ResetMemberCourseProgressRequest,
   RevokeStudentInviteRequest,
   UpdatePeopleRequest
 } from '../utils/types';
@@ -286,6 +287,29 @@ export class PeopleApi extends BaseApiWithErrors {
       onError: (result) => {
         if (typeof result === 'string') {
           snackbar.error('Failed to fetch user course analytics');
+        }
+      }
+    });
+  }
+
+  /**
+   * Resets all learner progress for a course member while keeping them enrolled.
+   */
+  async resetCourseProgress(courseId: string, memberId: string) {
+    await this.execute<ResetMemberCourseProgressRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId']['members'][':memberId']['reset-progress'].$post({
+          param: { courseId, memberId }
+        }),
+      logContext: 'resetting course member progress',
+      onSuccess: () => {
+        snackbar.success('snackbar.course.people.progress_reset');
+        this.success = true;
+        this.errors = {};
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error('snackbar.course.people.progress_reset_failed');
         }
       }
     });

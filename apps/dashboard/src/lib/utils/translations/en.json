@@ -3308,6 +3308,26 @@
           "no": "No",
           "yes": "Yes"
         },
+        "reset_progress": {
+          "button": "Reset progress",
+          "dialog": {
+            "title": "Reset progress for {studentName}?",
+            "intro": "This permanently deletes this student's progress in this course. They will stay enrolled and can restart from lesson 1.",
+            "bullets": {
+              "lessons": "Lessons completed — {completed} of {total}",
+              "exercises": "Exercises submitted — {count} submissions",
+              "comments": "Lesson comments by this student — {count}",
+              "newsfeed": "Course newsfeed posts and replies by this student — {count}",
+              "video_progress": "Video watch progress — {count} lessons tracked",
+              "attendance": "Attendance entries — {count}",
+              "certificate_yes": "Certification / compliance records — yes",
+              "certificate_no": "Certification / compliance records — no"
+            },
+            "warning": "This cannot be undone.",
+            "cancel": "Cancel",
+            "confirm": "Delete"
+          }
+        },
         "roles": {
           "admin": "Admin",
           "tutor": "Tutor",
@@ -4196,6 +4216,10 @@
         "toggle_error": "Failed to toggle pinned feed",
         "news_feed_fail": "Failed to fetch news feeds",
         "feed_fetch_error": "An error occured while fetching feed"
+      },
+      "people": {
+        "progress_reset": "Progress reset",
+        "progress_reset_failed": "Failed to reset progress"
       }
     },
     "lms": {

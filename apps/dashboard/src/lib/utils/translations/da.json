@@ -242,6 +242,10 @@
         "unpinned": "Frigjort",
         "successfully": "Med succes",
         "feed_delete_success": "Feedet blev slettet"
+      },
+      "people": {
+        "progress_reset": "Fremskridt nulstillet",
+        "progress_reset_failed": "Kunne ikke nulstille fremskridt"
       }
     },
     "landing_page_settings": {
@@ -1099,6 +1103,26 @@
           "sure": "Er du sikker på, at du vil slette",
           "no": "Nej",
           "yes": "Ja"
+        },
+        "reset_progress": {
+          "button": "Nulstil fremskridt",
+          "dialog": {
+            "title": "Nulstil fremskridt for {studentName}?",
+            "intro": "Dette sletter permanent denne elevs fremskridt i dette kursus. Eleven forbliver tilmeldt og kan starte forfra fra lektion 1.",
+            "bullets": {
+              "lessons": "Gennemførte lektioner — {completed} af {total}",
+              "exercises": "Afleverede øvelser — {count} afleveringer",
+              "comments": "Lektionskommentarer fra denne elev — {count}",
+              "newsfeed": "Kursusnyhedsfeed-opslag og svar fra denne elev — {count}",
+              "video_progress": "Videofremskridt — {count} lektioner sporet",
+              "attendance": "Fremmødeposter — {count}",
+              "certificate_yes": "Certificerings-/compliance-data — ja",
+              "certificate_no": "Certificerings-/compliance-data — nej"
+            },
+            "warning": "Dette kan ikke fortrydes.",
+            "cancel": "Annuller",
+            "confirm": "Slet"
+          }
         },
         "invite_modal": {
           "title": "Inviter folk",

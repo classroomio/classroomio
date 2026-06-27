@@ -2,12 +2,19 @@ import {
   ZAddCourseMembers,
   ZCourseMembersMemberParam,
   ZCourseMembersParam,
+  ZResetCourseMemberProgressParam,
   ZUpdateCourseMember
 } from '@cio/utils/validation/course/people';
-import { addMembers, deleteMember, listCourseMembers, updateMember } from '@api/services/course/people';
+import {
+  addMembers,
+  deleteMember,
+  listCourseMembers,
+  resetMemberCourseProgress,
+  updateMember
+} from '@api/services/course/people';
 
 import { Hono } from '@api/utils/hono';
-import { ZCourseUserAnalyticsParam } from '@cio/utils/validation/course';
+import { ZCourseUserAnalyticsParam, ZCourseUserAnalyticsQuery } from '@cio/utils/validation/course';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { getUserCourseAnalytics } from '@cio/core/services/course/course';
 import { handleError } from '@api/utils/errors';
@@ -116,23 +123,57 @@ export const membersRouter = new Hono()
     }
   })
   /**
+   * POST /course/:courseId/members/:memberId/reset-progress
+   * Clears all learner progress for a course member while keeping them enrolled.
+   * Requires authentication and course team membership (admin/tutor role)
+   */
+  .post(
+    '/:memberId/reset-progress',
+    courseTeamMemberMiddleware,
+    zValidator('param', ZResetCourseMemberProgressParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { courseId, memberId } = c.req.valid('param');
+        const summary = await resetMemberCourseProgress(courseId, memberId, user.id);
+
+        return c.json(
+          {
+            success: true,
+            data: summary
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to reset course member progress');
+      }
+    }
+  )
+  /**
    * GET /course/:courseId/members/:userId/analytics
    * Gets user course analytics for a specific course
    * Requires authentication and course membership
    */
-  .get('/:userId/analytics', courseTeamMemberMiddleware, zValidator('param', ZCourseUserAnalyticsParam), async (c) => {
-    try {
-      const { courseId, userId } = c.req.valid('param');
-      const analytics = await getUserCourseAnalytics(courseId, userId);
+  .get(
+    '/:userId/analytics',
+    courseTeamMemberMiddleware,
+    zValidator('param', ZCourseUserAnalyticsParam),
+    zValidator('query', ZCourseUserAnalyticsQuery),
+    async (c) => {
+      try {
+        const { courseId, userId } = c.req.valid('param');
+        const { includeProgressImpact } = c.req.valid('query');
+        const analytics = await getUserCourseAnalytics(courseId, userId, { includeProgressImpact });
 
-      return c.json(
-        {
-          success: true,
-          data: analytics
-        },
-        200
-      );
-    } catch (error) {
-      return handleError(c, error, 'Failed to fetch user course analytics');
+        return c.json(
+          {
+            success: true,
+            data: analytics
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch user course analytics');
+      }
     }
-  });
+  );
