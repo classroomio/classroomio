@@ -6,7 +6,7 @@ import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { mkdirSync, writeFileSync } from 'fs';
 
 import { app } from '../src/app';
-import { env } from '../src/config/env';
+import { env } from '@cio/core/config/env';
 import { generateSpecs } from 'hono-openapi';
 import { join } from 'path';
 

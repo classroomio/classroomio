@@ -145,7 +145,7 @@ require('dotenv/config');
 var client_s3_1 = require('@aws-sdk/client-s3');
 var fs_1 = require('fs');
 var app_1 = require('../src/app');
-var env_1 = require('../src/config/env');
+var env_1 = require('@cio/core/config/env');
 var hono_openapi_1 = require('hono-openapi');
 var path_1 = require('path');
 function filterPublicApiSpec(spec) {
