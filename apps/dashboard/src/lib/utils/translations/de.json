@@ -242,6 +242,10 @@
         "unpinned": "Nicht angepinnt",
         "successfully": "Erfolgreich",
         "feed_delete_success": "Feed erfolgreich gelöscht"
+      },
+      "people": {
+        "progress_reset": "Fortschritt zurückgesetzt",
+        "progress_reset_failed": "Fortschritt konnte nicht zurückgesetzt werden"
       }
     },
     "landing_page_settings": {
@@ -1099,6 +1103,26 @@
           "sure": "Sind Sie sicher, dass Sie löschen möchten?",
           "no": "Nein",
           "yes": "Ja"
+        },
+        "reset_progress": {
+          "button": "Fortschritt zurücksetzen",
+          "dialog": {
+            "title": "Fortschritt von {studentName} zurücksetzen?",
+            "intro": "Dadurch wird der Fortschritt dieses Teilnehmers in diesem Kurs dauerhaft gelöscht. Die Person bleibt eingeschrieben und kann bei Lektion 1 neu beginnen.",
+            "bullets": {
+              "lessons": "Abgeschlossene Lektionen — {completed} von {total}",
+              "exercises": "Eingereichte Übungen — {count} Abgaben",
+              "comments": "Lektionskommentare dieses Teilnehmers — {count}",
+              "newsfeed": "Kurs-Newsfeed-Beiträge und Antworten dieses Teilnehmers — {count}",
+              "video_progress": "Videofortschritt — {count} verfolgte Lektionen",
+              "attendance": "Anwesenheitseinträge — {count}",
+              "certificate_yes": "Zertifizierungs-/Compliance-Daten — ja",
+              "certificate_no": "Zertifizierungs-/Compliance-Daten — nein"
+            },
+            "warning": "Dies kann nicht rückgängig gemacht werden.",
+            "cancel": "Abbrechen",
+            "confirm": "Löschen"
+          }
         },
         "invite_modal": {
           "title": "Leute einladen",

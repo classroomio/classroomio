@@ -242,6 +242,10 @@
         "unpinned": "Desanclar",
         "successfully": "Con éxito",
         "feed_delete_success": "Feed eliminado correctamente"
+      },
+      "people": {
+        "progress_reset": "Progreso restablecido",
+        "progress_reset_failed": "No se pudo restablecer el progreso"
       }
     },
     "landing_page_settings": {
@@ -1099,6 +1103,26 @@
           "sure": "¿Estás seguro de que quieres eliminar?",
           "no": "No",
           "yes": "si"
+        },
+        "reset_progress": {
+          "button": "Restablecer progreso",
+          "dialog": {
+            "title": "¿Restablecer el progreso de {studentName}?",
+            "intro": "Esto elimina permanentemente el progreso de este estudiante en este curso. Seguirá inscrito y podrá empezar de nuevo desde la lección 1.",
+            "bullets": {
+              "lessons": "Lecciones completadas — {completed} de {total}",
+              "exercises": "Ejercicios enviados — {count} entregas",
+              "comments": "Comentarios de lección de este estudiante — {count}",
+              "newsfeed": "Publicaciones y respuestas del feed del curso de este estudiante — {count}",
+              "video_progress": "Progreso de visualización de video — {count} lecciones registradas",
+              "attendance": "Registros de asistencia — {count}",
+              "certificate_yes": "Registros de certificación/cumplimiento — sí",
+              "certificate_no": "Registros de certificación/cumplimiento — no"
+            },
+            "warning": "Esto no se puede deshacer.",
+            "cancel": "Cancelar",
+            "confirm": "Eliminar"
+          }
         },
         "invite_modal": {
           "title": "invitar gente",
