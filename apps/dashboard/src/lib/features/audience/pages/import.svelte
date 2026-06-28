@@ -16,23 +16,23 @@
     title: string;
   }
 
-  interface Program {
+  interface Cohort {
     id: string;
     name: string;
   }
 
   interface Props {
     courses: Course[];
-    programs: Program[];
+    cohorts: Cohort[];
   }
 
-  let { courses, programs }: Props = $props();
+  let { courses, cohorts }: Props = $props();
 
   let recipientCsv = $state('');
   let courseAccessMode = $state('none');
-  let programAccessMode = $state('none');
+  let cohortAccessMode = $state('none');
   let selectedCourseIds = new SvelteSet<string>();
-  let selectedProgramIds = new SvelteSet<string>();
+  let selectedCohortIds = new SvelteSet<string>();
   let sendEmail = $state(true);
   let isSubmitting = $state(false);
 
@@ -44,11 +44,11 @@
     }
   }
 
-  function toggleProgram(programId: string) {
-    if (selectedProgramIds.has(programId)) {
-      selectedProgramIds.delete(programId);
+  function toggleCohort(cohortId: string) {
+    if (selectedCohortIds.has(cohortId)) {
+      selectedCohortIds.delete(cohortId);
     } else {
-      selectedProgramIds.add(programId);
+      selectedCohortIds.add(cohortId);
     }
   }
 
@@ -68,9 +68,9 @@
       const result = await orgApi.importAudienceMembers({
         recipientCsv,
         allCourses: courseAccessMode === 'all',
-        allPrograms: programAccessMode === 'all',
+        allCohorts: cohortAccessMode === 'all',
         courseIds: courseAccessMode === 'select' ? [...selectedCourseIds] : undefined,
-        programIds: programAccessMode === 'select' ? [...selectedProgramIds] : undefined,
+        cohortIds: cohortAccessMode === 'select' ? [...selectedCohortIds] : undefined,
         sendEmail
       });
 
@@ -128,32 +128,32 @@
   </div>
 
   <div class="space-y-3">
-    <Label class="text-sm font-medium">{$t('audience.import.program_access')}</Label>
-    <RadioGroup.Root bind:value={programAccessMode} class="space-y-2">
+    <Label class="text-sm font-medium">{$t('audience.import.cohort_access')}</Label>
+    <RadioGroup.Root bind:value={cohortAccessMode} class="space-y-2">
       <div class="flex items-center gap-2">
-        <RadioGroup.Item value="none" id="program-none" />
-        <Label for="program-none" class="font-normal">{$t('audience.import.no_programs')}</Label>
+        <RadioGroup.Item value="none" id="cohort-none" />
+        <Label for="cohort-none" class="font-normal">{$t('audience.import.no_cohorts')}</Label>
       </div>
       <div class="flex items-center gap-2">
-        <RadioGroup.Item value="all" id="program-all" />
-        <Label for="program-all" class="font-normal">{$t('audience.import.all_programs')}</Label>
+        <RadioGroup.Item value="all" id="cohort-all" />
+        <Label for="cohort-all" class="font-normal">{$t('audience.import.all_cohorts')}</Label>
       </div>
       <div class="flex items-center gap-2">
-        <RadioGroup.Item value="select" id="program-select" />
-        <Label for="program-select" class="font-normal">{$t('audience.import.select_programs')}</Label>
+        <RadioGroup.Item value="select" id="cohort-select" />
+        <Label for="cohort-select" class="font-normal">{$t('audience.import.select_cohorts')}</Label>
       </div>
     </RadioGroup.Root>
 
-    {#if programAccessMode === 'select'}
+    {#if cohortAccessMode === 'select'}
       <MultiSelectList
         class="ml-6"
         listClass="max-h-40"
-        heading={$t('audience.import.select_programs')}
-        emptyMessage={$t('audience.import.select_programs_placeholder')}
-        items={programs.map((p) => ({ id: p.id, label: p.name || p.id }))}
-        isSelected={(id) => selectedProgramIds.has(id)}
-        onToggle={toggleProgram}
-        namePrefix="import-program"
+        heading={$t('audience.import.select_cohorts')}
+        emptyMessage={$t('audience.import.select_cohorts_placeholder')}
+        items={cohorts.map((p) => ({ id: p.id, label: p.name || p.id }))}
+        isSelected={(id) => selectedCohortIds.has(id)}
+        onToggle={toggleCohort}
+        namePrefix="import-cohort"
       />
     {/if}
   </div>

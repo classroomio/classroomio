@@ -61,7 +61,7 @@
     "db:setup": "tsx src/scripts/db-setup.ts",
     "db:setup:seed": "tsx src/scripts/db-setup.ts --seed",
     "db:exercise-backfill": "tsx src/scripts/backfill-exercise-course.ts",
-    "migrate:answer-data": "tsx src/scripts/migrate-answer-data.ts",
+    "migrate:programs-to-cohorts": "tsx src/scripts/migrate-programs-to-cohorts.ts",
     "db:assets-backfill": "tsx src/scripts/backfill-lesson-assets.ts",
     "db:rewrite-media-host": "tsx src/scripts/rewrite-media-host.ts",
     "db:login-link": "tsx src/scripts/generate-login-link.ts",

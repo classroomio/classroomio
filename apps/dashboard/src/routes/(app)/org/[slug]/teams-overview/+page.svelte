@@ -7,29 +7,29 @@
   import { Empty } from '@cio/ui/custom/empty';
   import { GoalIcon } from '@cio/ui/custom/moving-icons';
   import { t } from '$lib/utils/functions/translations';
-  import { programGoalApi } from '$features/program/api';
-  import type { GoalsOverviewRow } from '$features/program/utils/types';
+  import { cohortGoalApi } from '$features/cohort/api';
+  import type { GoalsOverviewRow } from '$features/cohort/utils/types';
 
   onMount(() => {
-    programGoalApi.listOverview();
+    cohortGoalApi.listOverview();
   });
 
-  const overviewRows = $derived(programGoalApi.overviewRows);
+  const overviewRows = $derived(cohortGoalApi.overviewRows);
 
-  const programs = $derived.by(() => {
-    const map = new Map<string, { programId: string; programName: string; goals: GoalsOverviewRow[] }>();
+  const cohorts = $derived.by(() => {
+    const map = new Map<string, { cohortId: string; cohortName: string; goals: GoalsOverviewRow[] }>();
 
     for (const row of overviewRows) {
-      const bucket = map.get(row.programId) ?? {
-        programId: row.programId,
-        programName: row.programName,
+      const bucket = map.get(row.cohortId) ?? {
+        cohortId: row.cohortId,
+        cohortName: row.cohortName,
         goals: []
       };
       bucket.goals.push(row);
-      map.set(row.programId, bucket);
+      map.set(row.cohortId, bucket);
     }
 
-    return [...map.values()].sort((a, b) => a.programName.localeCompare(b.programName));
+    return [...map.values()].sort((a, b) => a.cohortName.localeCompare(b.cohortName));
   });
 
   function aggregateOnTrackPct(rows: GoalsOverviewRow[]): number {
@@ -46,45 +46,45 @@
 </script>
 
 <svelte:head>
-  <title>{$t('programs.goals.heading')} · ClassroomIO</title>
+  <title>{$t('cohorts.goals.heading')} · ClassroomIO</title>
 </svelte:head>
 
 <Page.Root class="w-full">
   <Page.Header>
     <Page.HeaderContent>
-      <Page.Title>{$t('programs.goals.heading')}</Page.Title>
-      <Page.Subtitle>{$t('programs.goals.description')}</Page.Subtitle>
+      <Page.Title>{$t('cohorts.goals.heading')}</Page.Title>
+      <Page.Subtitle>{$t('cohorts.goals.description')}</Page.Subtitle>
     </Page.HeaderContent>
   </Page.Header>
 
   <Page.Body>
     {#snippet child()}
-      {#if !programGoalApi.isLoading && overviewRows.length === 0}
+      {#if !cohortGoalApi.isLoading && overviewRows.length === 0}
         <Empty
-          title={$t('programs.goals.empty_title')}
-          description={$t('programs.goals.empty_description')}
+          title={$t('cohorts.goals.empty_title')}
+          description={$t('cohorts.goals.empty_description')}
           icon={GoalIcon}
           variant="page"
         />
       {:else}
         <div class="flex w-full flex-col gap-6 p-4">
-          {#each programs as program (program.programId)}
-            {@const onTrackPct = aggregateOnTrackPct(program.goals)}
-            {@const totalLearners = aggregateCount(program.goals, 'totalLearners')}
-            {@const overdueLearners = aggregateCount(program.goals, 'overdueCount')}
-            {@const atRiskLearners = aggregateCount(program.goals, 'atRiskCount')}
+          {#each cohorts as cohort (cohort.cohortId)}
+            {@const onTrackPct = aggregateOnTrackPct(cohort.goals)}
+            {@const totalLearners = aggregateCount(cohort.goals, 'totalLearners')}
+            {@const overdueLearners = aggregateCount(cohort.goals, 'overdueCount')}
+            {@const atRiskLearners = aggregateCount(cohort.goals, 'atRiskCount')}
             <section class="flex flex-col gap-3 rounded-md border p-4">
               <header class="flex flex-wrap items-baseline justify-between gap-3">
                 <a
-                  href={resolve(`/programs/${program.programId}/settings`, {})}
+                  href={resolve(`/cohorts/${cohort.cohortId}/settings`, {})}
                   class="text-base font-semibold hover:underline"
                 >
-                  {program.programName}
+                  {cohort.cohortName}
                 </a>
                 <div class="flex flex-wrap items-center gap-3 text-xs">
                   <span class="ui:text-muted-foreground">
                     <span class="text-base font-semibold text-emerald-600">{onTrackPct}%</span>
-                    {$t('programs.goals.tile.on_track')}
+                    {$t('cohorts.goals.tile.on_track')}
                   </span>
                   <span class="ui:text-muted-foreground">
                     <span class="font-medium">{totalLearners}</span> learners
@@ -92,13 +92,13 @@
                   {#if atRiskLearners > 0}
                     <span class="text-amber-700">
                       <span class="font-medium">{atRiskLearners}</span>
-                      {$t('programs.goals.tile.at_risk_short')}
+                      {$t('cohorts.goals.tile.at_risk_short')}
                     </span>
                   {/if}
                   {#if overdueLearners > 0}
                     <span class="text-red-600">
                       <span class="font-medium">{overdueLearners}</span>
-                      {$t('programs.goals.tile.overdue_short')}
+                      {$t('cohorts.goals.tile.overdue_short')}
                     </span>
                   {/if}
                 </div>
@@ -110,19 +110,19 @@
                     <Table.Row>
                       <Table.Head>Goal</Table.Head>
                       <Table.Head>Type</Table.Head>
-                      <Table.Head>{$t('programs.goals.status.completed')}</Table.Head>
-                      <Table.Head>{$t('programs.goals.status.in_progress')}</Table.Head>
-                      <Table.Head>{$t('programs.goals.status.at_risk')}</Table.Head>
-                      <Table.Head>{$t('programs.goals.status.overdue')}</Table.Head>
-                      <Table.Head>{$t('programs.goals.tile.on_track')}</Table.Head>
+                      <Table.Head>{$t('cohorts.goals.status.completed')}</Table.Head>
+                      <Table.Head>{$t('cohorts.goals.status.in_progress')}</Table.Head>
+                      <Table.Head>{$t('cohorts.goals.status.at_risk')}</Table.Head>
+                      <Table.Head>{$t('cohorts.goals.status.overdue')}</Table.Head>
+                      <Table.Head>{$t('cohorts.goals.tile.on_track')}</Table.Head>
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
-                    {#each program.goals as goal (goal.goalId)}
+                    {#each cohort.goals as goal (goal.goalId)}
                       <Table.Row>
                         <Table.Cell class="font-medium">{goal.title}</Table.Cell>
                         <Table.Cell>
-                          <Badge variant="outline">{$t(`programs.goals.type.${goal.type}`)}</Badge>
+                          <Badge variant="outline">{$t(`cohorts.goals.type.${goal.type}`)}</Badge>
                         </Table.Cell>
                         <Table.Cell>{goal.completedCount}/{goal.totalLearners}</Table.Cell>
                         <Table.Cell>{goal.inProgressCount}</Table.Cell>
