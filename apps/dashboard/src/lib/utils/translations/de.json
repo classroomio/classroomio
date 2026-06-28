@@ -361,7 +361,8 @@
       "video_added_to_lesson": "Video zur Lektion hinzugefügt",
       "delete_success": "Video gelöscht",
       "delete_in_use": "Dieses Video ist noch einer Lektion beigefügt. Entfernen Sie es zuerst dort.",
-      "delete_failed": "Video konnte nicht gelöscht werden"
+      "delete_failed": "Video konnte nicht gelöscht werden",
+      "added_to_lesson": "Video zur Lektion hinzugefügt"
     },
     "tags": {
       "group_created": "Tag-Gruppe erstellt",

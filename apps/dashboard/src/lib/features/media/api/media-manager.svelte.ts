@@ -38,7 +38,7 @@ import {
   ZAssetUpdate,
   ZYouTubeMetadataQuery
 } from '@cio/utils/validation/assets';
-import { mapAssetToLessonVideo } from '../utils/media-manager-utils';
+import { getAssetHlsManifestLink, isHlsAsset, mapAssetToLessonVideo } from '../utils/media-manager-utils';
 
 import type { AttachAssetRequest } from '../utils/types';
 import type { DetachAssetRequest } from '../utils/types';
@@ -407,7 +407,9 @@ export class MediaApi extends BaseApiWithErrors {
     asset: OrganizationAsset,
     params: { lessonId?: string; position?: number; slotType?: string } = {}
   ) {
-    const url = await this.getVideoPlaybackUrl(asset);
+    // HLS assets have no presignable storageKey — the manifest is served via the
+    // /hls proxy + signed cookie, so the link is the relative manifest path.
+    const url = isHlsAsset(asset) ? getAssetHlsManifestLink(asset) : await this.getVideoPlaybackUrl(asset);
     if (!url) {
       snackbar.error('snackbar.media_manager.resolve_video_failed');
       return null;

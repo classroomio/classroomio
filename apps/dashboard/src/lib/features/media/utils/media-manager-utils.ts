@@ -62,6 +62,20 @@ export function mapAssetProviderToLessonVideoType(provider: string): LessonVideo
   return 'upload';
 }
 
+/**
+ * An HLS asset has no playable `storageKey` — its renditions live behind the
+ * `/hls/{assetId}/...` proxy and are streamed via a signed cookie, not a
+ * presigned URL. The lesson video stores the relative manifest path + `hls`
+ * flag so the player resolves and mints the cookie itself.
+ */
+export function isHlsAsset(asset: OrganizationAsset): boolean {
+  return Boolean(asset.hlsManifestKey);
+}
+
+export function getAssetHlsManifestLink(asset: OrganizationAsset): string {
+  return `/hls/${asset.id}/master.m3u8`;
+}
+
 export function mapAssetToLessonVideo(
   asset: OrganizationAsset,
   options: { url: string; key?: string | null }
@@ -78,6 +92,7 @@ export function mapAssetToLessonVideo(
     duration?: number;
     aspectRatio?: string;
     createdAt?: string;
+    hls?: boolean;
   };
 } {
   return {
@@ -92,7 +107,8 @@ export function mapAssetToLessonVideo(
       thumbnailUrl: asset.thumbnailUrl ?? undefined,
       duration: asset.durationSeconds ?? undefined,
       aspectRatio: asset.aspectRatio ?? undefined,
-      createdAt: asset.createdAt ?? undefined
+      createdAt: asset.createdAt ?? undefined,
+      ...(isHlsAsset(asset) ? { hls: true } : {})
     }
   };
 }

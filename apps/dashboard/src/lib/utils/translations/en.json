@@ -4144,6 +4144,7 @@
       "delete_success": "Video deleted",
       "delete_in_use": "This video is still attached to a lesson. Remove it there first.",
       "delete_failed": "Failed to delete video",
+      "added_to_lesson": "Video added to lesson",
       "download_failed": "Failed to get asset download URL",
       "thumbnail_uploaded": "Thumbnail uploaded",
       "thumbnail_upload_failed": "Failed to upload thumbnail",

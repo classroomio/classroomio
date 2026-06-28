@@ -361,7 +361,8 @@
       "video_added_to_lesson": "Video tilføjet til lektion",
       "delete_success": "Video slettet",
       "delete_in_use": "Denne video er stadig knyttet til en lektion. Fjern det der først.",
-      "delete_failed": "Videoen kunne ikke slettes"
+      "delete_failed": "Videoen kunne ikke slettes",
+      "added_to_lesson": "Video tilføjet til lektion"
     },
     "tags": {
       "group_created": "Taggruppe oprettet",

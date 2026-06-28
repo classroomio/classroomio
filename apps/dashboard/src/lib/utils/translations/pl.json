@@ -361,7 +361,8 @@
       "video_added_to_lesson": "Film dodany do lekcji",
       "delete_success": "Film usunięty",
       "delete_in_use": "Ten film jest nadal dołączony do lekcji. Najpierw usuń go tam.",
-      "delete_failed": "Nie udało się usunąć filmu"
+      "delete_failed": "Nie udało się usunąć filmu",
+      "added_to_lesson": "Film dodany do lekcji"
     },
     "tags": {
       "group_created": "Utworzono grupę tagów",

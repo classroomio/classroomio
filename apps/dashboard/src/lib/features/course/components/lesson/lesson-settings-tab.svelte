@@ -12,7 +12,7 @@
   import { classroomio } from '$lib/utils/services/api';
   import { t } from '$lib/utils/functions/translations';
   import { getBrowserTimezone, instantToZonedWallClock, zonedWallClockToInstant } from '$lib/utils/functions/date';
-  import { getVideoTitle, isHlsUploadVideo, type LessonVideo } from './video/video-card-utils';
+  import { getVideoTitle, type LessonVideo } from './video/video-card-utils';
 
   type LessonCompletionPolicy = 'manual' | 'video_watch' | 'none';
 
@@ -328,9 +328,6 @@
                     />
                     <Field.Label for={`watch-enforced-${video.assetId}`} class="font-normal">
                       {getVideoTitle(video, index)}
-                      {#if isHlsUploadVideo(video)}
-                        <span class="ui:text-muted-foreground ml-1 text-xs">(HLS)</span>
-                      {/if}
                     </Field.Label>
                   </Field.Field>
                 {/each}

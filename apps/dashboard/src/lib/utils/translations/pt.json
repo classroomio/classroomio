@@ -361,7 +361,8 @@
       "video_added_to_lesson": "Vídeo adicionado à aula",
       "delete_success": "Vídeo excluído",
       "delete_in_use": "Este vídeo ainda está anexado a uma aula. Remova-o primeiro.",
-      "delete_failed": "Falha ao excluir vídeo"
+      "delete_failed": "Falha ao excluir vídeo",
+      "added_to_lesson": "Vídeo adicionado à aula"
     },
     "tags": {
       "group_created": "Grupo de tags criado",

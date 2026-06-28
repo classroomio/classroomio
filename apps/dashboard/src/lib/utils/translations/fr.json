@@ -361,7 +361,8 @@
       "video_added_to_lesson": "Vidéo ajoutée à la leçon",
       "delete_success": "Vidéo supprimée",
       "delete_in_use": "Cette vidéo est toujours jointe à une leçon. Retirez-le d'abord.",
-      "delete_failed": "Échec de la suppression de la vidéo"
+      "delete_failed": "Échec de la suppression de la vidéo",
+      "added_to_lesson": "Vidéo ajoutée à la leçon"
     },
     "tags": {
       "group_created": "Groupe de balises créé",
