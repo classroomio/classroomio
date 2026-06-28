@@ -10,7 +10,7 @@ import type {
   TNewLessonCompletion,
   TNewLessonLanguage
 } from '@db/types';
-import { and, db, desc, eq, inArray, lt, sql } from '@db/drizzle';
+import { and, db, desc, eq, inArray, lt, ne, sql } from '@db/drizzle';
 
 import type { DbOrTxClient } from '@db/drizzle';
 
@@ -50,6 +50,39 @@ export async function getLessonById(lessonId: string): Promise<LessonById | null
     throw new Error(
       `Failed to get lesson by ID "${lessonId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+export interface LessonNavInfo {
+  id: string;
+  courseId: string;
+  lessonTitle: string;
+  courseTitle: string;
+}
+
+/**
+ * Resolve navigation context (`/courses/{courseId}/lessons/{id}` + titles) for
+ * a set of lesson ids in one query. Used to turn raw lesson ids into clickable
+ * "go to lesson" links. Lessons in soft-deleted courses (`status = 'DELETED'`)
+ * are excluded so callers don't link into a course that no longer exists.
+ */
+export async function getLessonNavInfoByIds(lessonIds: string[]): Promise<LessonNavInfo[]> {
+  if (lessonIds.length === 0) return [];
+
+  try {
+    return await db
+      .select({
+        id: schema.lesson.id,
+        courseId: schema.lesson.courseId,
+        lessonTitle: schema.lesson.title,
+        courseTitle: schema.course.title
+      })
+      .from(schema.lesson)
+      .innerJoin(schema.course, eq(schema.course.id, schema.lesson.courseId))
+      .where(and(inArray(schema.lesson.id, lessonIds), ne(schema.course.status, 'DELETED')));
+  } catch (error) {
+    console.error('getLessonNavInfoByIds error:', error);
+    throw new Error(`Failed to get lesson nav info: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

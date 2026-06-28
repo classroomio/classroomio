@@ -6,6 +6,7 @@ import type {
   AssetUsage,
   AssetUsageGraph,
   CreateAssetRequest,
+  DeleteAssetRequest,
   GetAssetTranscriptRequest,
   GetAssetUsageRequest,
   GetYouTubeMetadataRequest,
@@ -271,6 +272,30 @@ export class MediaApi extends BaseApiWithErrors {
     });
 
     return success;
+  }
+
+  /**
+   * Permanently delete an asset and its stored files. The API blocks deletion
+   * while the asset is still attached anywhere (409 ASSET_IN_USE). Returns true
+   * only when the asset was actually removed.
+   */
+  async deleteAsset(assetId: string): Promise<boolean> {
+    let deleted = false;
+    await this.execute<DeleteAssetRequest>({
+      requestFn: () => classroomio.organization.assets[':assetId'].$delete({ param: { assetId } }),
+      logContext: 'deleting media asset',
+      onSuccess: () => {
+        deleted = true;
+        this.assets = this.assets.filter((asset) => asset.id !== assetId);
+        snackbar.success('snackbar.media_manager.delete_success');
+      },
+      onError: (error) => {
+        const inUse = typeof error === 'object' && error !== null && 'code' in error && error.code === 'ASSET_IN_USE';
+        snackbar.error(inUse ? 'snackbar.media_manager.delete_in_use' : 'snackbar.media_manager.delete_failed');
+      }
+    });
+
+    return deleted;
   }
 
   async getVideoPlaybackUrl(asset: OrganizationAsset): Promise<string | null> {

@@ -357,7 +357,11 @@
       "thumbnail_regen_failed": "Die Miniaturansichten konnten nicht neu generiert werden",
       "transcript_saved": "Transkript aktualisiert",
       "transcript_save_failed": "Das Transkript konnte nicht gespeichert werden",
-      "transcription_already_running": "Für dieses Video wird bereits ein Transkriptionsauftrag ausgeführt"
+      "transcription_already_running": "Für dieses Video wird bereits ein Transkriptionsauftrag ausgeführt",
+      "video_added_to_lesson": "Video zur Lektion hinzugefügt",
+      "delete_success": "Video gelöscht",
+      "delete_in_use": "Dieses Video ist noch einer Lektion beigefügt. Entfernen Sie es zuerst dort.",
+      "delete_failed": "Video konnte nicht gelöscht werden"
     },
     "tags": {
       "group_created": "Tag-Gruppe erstellt",
@@ -2808,7 +2812,14 @@
         "exercise": "Übung",
         "question": "Frage",
         "unknown": "Unbekannt"
-      }
+      },
+      "go_to_lesson": "Gehe zur Lektion",
+      "slot_type": {
+        "lesson_video": "Unterrichtsvideo",
+        "lesson_document": "Unterrichtsdokument",
+        "unknown": "Anhang"
+      },
+      "refresh": "Nutzung aktualisieren"
     },
     "form": {
       "file_name": "Dateiname",
@@ -2838,7 +2849,8 @@
       "edit": "Bearbeiten",
       "where_used": "Wo verwendet",
       "download": "Herunterladen",
-      "manage_thumbnails": "Miniaturansichten verwalten"
+      "manage_thumbnails": "Miniaturansichten verwalten",
+      "delete": "Löschen"
     },
     "table": {
       "title": "Titel",
@@ -2910,6 +2922,16 @@
       "custom_preview_alt": "Benutzerdefinierte Miniaturvorschau",
       "regenerate": "Regenerieren",
       "save_selection": "Miniaturansicht speichern"
+    },
+    "delete": {
+      "title": "Video löschen",
+      "irreversible_title": "Dies kann nicht rückgängig gemacht werden",
+      "irreversible_description": "Dieses Video und alle seine Dateien – Wiedergaben, Miniaturansichten und Untertitel – werden dauerhaft gelöscht und können nicht wiederhergestellt werden.",
+      "in_use_title": "Immer noch im Einsatz",
+      "in_use_description": "Dieses Video ist den Lektionen unten beigefügt. Öffnen Sie jede Lektion, entfernen Sie das Video dort und kehren Sie dann zurück, um es zu löschen.",
+      "confirm": "Dauerhaft löschen",
+      "cancel": "Abbrechen",
+      "close": "Schließen"
     }
   },
   "settings": {

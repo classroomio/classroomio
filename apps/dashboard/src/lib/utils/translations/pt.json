@@ -357,7 +357,11 @@
       "thumbnail_regen_failed": "Falha ao regenerar miniaturas",
       "transcript_saved": "Transcrição atualizada",
       "transcript_save_failed": "Não foi possível salvar a transcrição",
-      "transcription_already_running": "Um trabalho de transcrição já está em andamento para este vídeo"
+      "transcription_already_running": "Um trabalho de transcrição já está em andamento para este vídeo",
+      "video_added_to_lesson": "Vídeo adicionado à aula",
+      "delete_success": "Vídeo excluído",
+      "delete_in_use": "Este vídeo ainda está anexado a uma aula. Remova-o primeiro.",
+      "delete_failed": "Falha ao excluir vídeo"
     },
     "tags": {
       "group_created": "Grupo de tags criado",
@@ -2808,7 +2812,14 @@
         "exercise": "Exercício",
         "question": "Pergunta",
         "unknown": "Desconhecido"
-      }
+      },
+      "go_to_lesson": "Vá para a aula",
+      "slot_type": {
+        "lesson_video": "Vídeo da aula",
+        "lesson_document": "Documento da lição",
+        "unknown": "Anexo"
+      },
+      "refresh": "Atualizar uso"
     },
     "form": {
       "file_name": "Nome do arquivo",
@@ -2838,7 +2849,8 @@
       "edit": "Editar",
       "where_used": "Onde usado",
       "download": "Baixar",
-      "manage_thumbnails": "Gerenciar miniaturas"
+      "manage_thumbnails": "Gerenciar miniaturas",
+      "delete": "Excluir"
     },
     "table": {
       "title": "Título",
@@ -2910,6 +2922,16 @@
       "custom_preview_alt": "Pré-visualização de miniaturas personalizadas",
       "regenerate": "Regenerar",
       "save_selection": "Salvar miniatura"
+    },
+    "delete": {
+      "title": "Excluir vídeo",
+      "irreversible_title": "Isso não pode ser desfeito",
+      "irreversible_description": "Este vídeo e todos os seus arquivos – representações, miniaturas e legendas – serão excluídos permanentemente e não poderão ser recuperados.",
+      "in_use_title": "Ainda em uso",
+      "in_use_description": "Este vídeo está anexado às aulas abaixo. Abra cada lição, remova o vídeo e volte para excluí-lo.",
+      "confirm": "Excluir permanentemente",
+      "cancel": "Cancelar",
+      "close": "Fechar"
     }
   },
   "settings": {

@@ -1,15 +1,20 @@
 <script lang="ts">
   import { Badge } from '@cio/ui/base/badge';
+  import { Button } from '@cio/ui/base/button';
   import * as Dialog from '@cio/ui/base/dialog';
   import * as Item from '@cio/ui/base/item';
+  import { Spinner } from '@cio/ui/base/spinner';
+  import * as Tooltip from '@cio/ui/base/tooltip';
+  import { Empty } from '@cio/ui/custom/empty';
+  import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
 
+  import AssetUsageList from './asset-usage-list.svelte';
   import { t } from '$lib/utils/functions/translations';
   import {
     formatBytes,
     formatUsageDate,
     getAssetDisplayName,
     getKindIcon,
-    getTargetTypeLabel,
     type AssetUsageGraph,
     type OrganizationAsset
   } from '$features/media/utils';
@@ -19,6 +24,7 @@
     selectedAsset?: OrganizationAsset | null;
     usageData?: AssetUsageGraph | null;
     isLoading?: boolean;
+    onRefresh?: () => void;
     onOpenChange?: (open: boolean) => void;
   }
 
@@ -27,6 +33,7 @@
     selectedAsset = null,
     usageData = null,
     isLoading = false,
+    onRefresh = () => {},
     onOpenChange = () => {}
   }: Props = $props();
 
@@ -96,42 +103,37 @@
     {/if}
 
     {#if isLoading}
-      <p class="ui:text-muted-foreground text-sm">{$t('media_manager.usage.loading')}</p>
+      <Empty description={$t('media_manager.usage.loading')} icon={Spinner} class="ui:max-h-40 py-6" />
     {:else if isUsageEmpty}
       <p class="ui:text-muted-foreground text-sm">{$t('media_manager.usage.empty')}</p>
     {:else if usageData}
-      <p class="ui:text-muted-foreground mb-3 text-sm">
-        {$t('media_manager.usage.total')}
-        {usageData.usageCount}
-      </p>
-      <div class="max-h-[420px] overflow-auto rounded-lg border">
-        <div class="divide-y">
-          {#each usageData.usages as usage (usage.id)}
-            <div class="grid grid-cols-1 gap-2 p-3 text-sm md:grid-cols-5 md:items-center md:gap-4">
-              <div>
-                <p class="ui:text-muted-foreground text-xs">{$t('media_manager.usage.table.target_type')}</p>
-                <p>{getTargetTypeLabel(usage.targetType)}</p>
-              </div>
-              <div>
-                <p class="ui:text-muted-foreground text-xs">{$t('media_manager.usage.table.target_id')}</p>
-                <p class="font-mono text-xs">{usage.targetId}</p>
-              </div>
-              <div>
-                <p class="ui:text-muted-foreground text-xs">{$t('media_manager.usage.table.slot')}</p>
-                <p>{usage.slotType}{usage.slotKey ? ` (${usage.slotKey})` : ''}</p>
-              </div>
-              <div>
-                <p class="ui:text-muted-foreground text-xs">{$t('media_manager.usage.table.position')}</p>
-                <p>{usage.position ?? t.get('media_manager.common.not_available')}</p>
-              </div>
-              <div>
-                <p class="ui:text-muted-foreground text-xs">{$t('media_manager.usage.table.added')}</p>
-                <p>{formatUsageDate(usage.createdAt)}</p>
-              </div>
-            </div>
-          {/each}
-        </div>
+      <div class="mb-3 flex items-center justify-between gap-2">
+        <p class="ui:text-muted-foreground text-sm">
+          {$t('media_manager.usage.total')}
+          {usageData.usageCount}
+        </p>
+        <Tooltip.Provider>
+          <Tooltip.Root>
+            <Tooltip.Trigger>
+              {#snippet child({ props })}
+                <Button
+                  {...props}
+                  variant="secondary"
+                  size="icon"
+                  onclick={() => onRefresh()}
+                  aria-label={$t('media_manager.usage.refresh')}
+                >
+                  <RefreshCwIcon size={16} />
+                </Button>
+              {/snippet}
+            </Tooltip.Trigger>
+            <Tooltip.Content side="top" sideOffset={4}>
+              {$t('media_manager.usage.refresh')}
+            </Tooltip.Content>
+          </Tooltip.Root>
+        </Tooltip.Provider>
       </div>
+      <AssetUsageList usages={usageData.usages} onNavigate={() => handleOpenChange(false)} />
     {/if}
   </Dialog.Content>
 </Dialog.Root>

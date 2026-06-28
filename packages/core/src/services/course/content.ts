@@ -7,6 +7,7 @@ import { deleteCourseSection, getCourseSectionById, getCourseSectionsByCourseId 
 import { OperationalQueryError } from '@cio/db/queries/query-errors';
 import { getCourseContentItems, type CourseContentItemRow } from '@cio/db/queries/course/content';
 import { deleteLesson } from '@cio/db/queries/lesson';
+import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
 import { deleteExercise } from '@cio/db/queries/exercise/exercise';
 import type { TCourseContentDelete, TCourseContentReorder, TCourseContentUpdate } from '@cio/utils/validation/course';
 
@@ -198,6 +199,8 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
             if (!deleted) {
               throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
             }
+
+            await deleteAssetUsagesByTarget('lesson', item.id, tx);
             continue;
           }
 
@@ -232,6 +235,8 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
           if (!deleted) {
             throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
           }
+
+          await deleteAssetUsagesByTarget('lesson', item.id, tx);
           continue;
         }
 

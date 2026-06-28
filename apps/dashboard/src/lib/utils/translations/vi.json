@@ -357,7 +357,11 @@
       "thumbnail_regen_failed": "Không thể tạo lại hình thu nhỏ",
       "transcript_saved": "Đã cập nhật bản ghi",
       "transcript_save_failed": "Không thể lưu bản ghi",
-      "transcription_already_running": "Công việc chép lời đang được thực hiện cho video này"
+      "transcription_already_running": "Công việc chép lời đang được thực hiện cho video này",
+      "video_added_to_lesson": "Video đã được thêm vào bài học",
+      "delete_success": "Đã xóa video",
+      "delete_in_use": "Video này vẫn được đính kèm với một bài học. Loại bỏ nó ở đó đầu tiên.",
+      "delete_failed": "Không thể xóa video"
     },
     "tags": {
       "group_created": "Đã tạo nhóm thẻ",
@@ -2808,7 +2812,14 @@
         "exercise": "tập thể dục",
         "question": "Câu hỏi",
         "unknown": "Không xác định"
-      }
+      },
+      "go_to_lesson": "Đi học",
+      "slot_type": {
+        "lesson_video": "Video bài học",
+        "lesson_document": "Tài liệu bài học",
+        "unknown": "Tệp đính kèm"
+      },
+      "refresh": "Làm mới mức sử dụng"
     },
     "form": {
       "file_name": "Tên tệp",
@@ -2838,7 +2849,8 @@
       "edit": "Chỉnh sửa",
       "where_used": "Nơi sử dụng",
       "download": "Tải xuống",
-      "manage_thumbnails": "Quản lý hình thu nhỏ"
+      "manage_thumbnails": "Quản lý hình thu nhỏ",
+      "delete": "Xóa"
     },
     "table": {
       "title": "Tiêu đề",
@@ -2910,6 +2922,16 @@
       "custom_preview_alt": "Xem trước hình thu nhỏ tùy chỉnh",
       "regenerate": "tái sinh",
       "save_selection": "Lưu hình thu nhỏ"
+    },
+    "delete": {
+      "title": "Xóa video",
+      "irreversible_title": "Việc này không thể hoàn tác được",
+      "irreversible_description": "Video này và tất cả các tệp của nó — bản trình diễn, hình thu nhỏ và chú thích — sẽ bị xóa vĩnh viễn và không thể khôi phục được.",
+      "in_use_title": "Vẫn đang được sử dụng",
+      "in_use_description": "Video này được đính kèm với các bài học dưới đây. Mở từng bài học ra, xóa video ở đó rồi quay lại xóa.",
+      "confirm": "Xóa vĩnh viễn",
+      "cancel": "Hủy bỏ",
+      "close": "Đóng"
     }
   },
   "settings": {

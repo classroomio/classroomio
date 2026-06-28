@@ -17,7 +17,6 @@ import type {
 } from '@cio/utils/validation/assets';
 import type { TTranscriptResponse, TUpdateTranscript } from '@cio/utils/validation/media';
 import {
-  countAssetUsagesByAsset,
   createAssetUsage,
   createHlsAssetPlaceholder,
   createOrGetAssetByStorageKey,
@@ -32,14 +31,17 @@ import {
   listAssetUsagesByAsset,
   updateAsset
 } from '@cio/db/queries/assets';
-import { getMediaTranscriptByAsset, updateMediaTranscriptContent } from '@cio/db/queries';
+import { getLessonNavInfoByIds, getMediaTranscriptByAsset, updateMediaTranscriptContent } from '@cio/db/queries';
 
 import {
+  deleteFromS3,
   generateTranscriptVttPresignedUrl,
   generateUploadPresignedUrl,
   TRANSCRIPT_VTT_PRESIGN_SECONDS
 } from '../../utils/s3';
 import { getS3Client, getStorageConfig } from '../../config/storage';
+import { enqueueAssetStorageCleanup, isRedisConfigured, type TAssetStorageCleanupPayload } from '@cio/jobs';
+import type { TAsset } from '@cio/db/types';
 
 const YOUTUBE_VIDEO_ID_REGEX = /^[a-zA-Z0-9_-]{11}$/;
 
@@ -363,17 +365,106 @@ export async function selectAssetThumbnailService(orgId: string, assetId: string
   }
 }
 
+/**
+ * Collect every object-storage location backing an asset so a background job
+ * can purge them after the DB row (and its cascaded rows) is deleted. Derived
+ * media live under predictable per-asset prefixes; the raw upload is the only
+ * standalone key (and HLS uploads leave `storageKey` null).
+ */
+function buildAssetStorageCleanupPayload(asset: TAsset): TAssetStorageCleanupPayload {
+  const config = getStorageConfig();
+
+  const prefixes: TAssetStorageCleanupPayload['prefixes'] = [
+    { bucket: config.bucketVideos, prefix: `${asset.id}/` },
+    { bucket: config.bucketMedia, prefix: `thumbnails/${asset.id}/` },
+    { bucket: config.bucketMedia, prefix: `audio/${asset.id}/` },
+    { bucket: config.bucketMedia, prefix: `transcripts/${asset.id}/` }
+  ];
+
+  const keys: TAssetStorageCleanupPayload['keys'] = [];
+  if (asset.provider === 'upload' && asset.storageKey) {
+    const bucket = asset.kind === 'document' ? config.bucketDocuments : config.bucketVideos;
+    keys.push({ bucket, key: asset.storageKey });
+  }
+
+  return { assetId: asset.id, organizationId: asset.organizationId, prefixes, keys };
+}
+
+/**
+ * Purge an asset's object-storage files. Idempotent — missing objects are
+ * fine. Runs in the maintenance worker after the asset row is already gone.
+ */
+export async function purgeAssetStorage(payload: TAssetStorageCleanupPayload): Promise<void> {
+  for (const { bucket, prefix } of payload.prefixes) {
+    await deleteHlsAssetObjects(bucket, prefix);
+  }
+
+  for (const { bucket, key } of payload.keys) {
+    const result = await deleteFromS3({ Bucket: bucket, Key: key });
+    if (!result.success) {
+      throw new Error(`Failed to delete ${bucket}/${key}: ${result.error ?? 'unknown error'}`);
+    }
+  }
+}
+
+/**
+ * Resolve an asset's usages to only the *live* ones. `asset_usages.target_id`
+ * has no FK to its target table, so a hard-deleted lesson can leave an orphaned
+ * usage row behind. Those rows are not real attachments — they must not block
+ * deletion or appear in the usage list — so lesson usages whose lesson no longer
+ * exists are dropped. Surviving lesson usages are enriched with course context
+ * for the "go to lesson" link; non-lesson targets carry null enrichment fields.
+ */
+async function resolveLiveAssetUsages(orgId: string, assetId: string) {
+  const usages = await listAssetUsagesByAsset(assetId, orgId);
+  const lessonIds = usages.filter((usage) => usage.targetType === 'lesson').map((usage) => usage.targetId);
+  const navById = new Map((await getLessonNavInfoByIds(lessonIds)).map((nav) => [nav.id, nav]));
+
+  return usages
+    .filter((usage) => usage.targetType !== 'lesson' || navById.has(usage.targetId))
+    .map((usage) => {
+      const nav = usage.targetType === 'lesson' ? navById.get(usage.targetId) : undefined;
+
+      return {
+        ...usage,
+        courseId: nav?.courseId ?? null,
+        targetTitle: nav?.lessonTitle ?? null,
+        courseTitle: nav?.courseTitle ?? null
+      };
+    });
+}
+
 export async function deleteAssetService(orgId: string, assetId: string) {
   try {
-    await getAssetService(orgId, assetId);
+    const asset = await getAssetService(orgId, assetId);
 
-    const usageCount = await countAssetUsagesByAsset(assetId, orgId);
-    if (usageCount > 0) {
+    const liveUsages = await resolveLiveAssetUsages(orgId, assetId);
+    if (liveUsages.length > 0) {
       throw new AppError('Asset is still in use', ErrorCodes.ASSET_IN_USE, 409);
     }
 
+    const cleanupPayload = buildAssetStorageCleanupPayload(asset);
+
     const deleted = await deleteAsset(assetId, orgId);
-    return assertAssetExists(deleted);
+    assertAssetExists(deleted);
+
+    // Storage cleanup is a best-effort background sweep: a failed enqueue must
+    // not fail the delete the user just confirmed. Orphaned objects can be
+    // reconciled later, and the keys are logged here for traceability.
+    if (isRedisConfigured()) {
+      try {
+        await enqueueAssetStorageCleanup(cleanupPayload);
+      } catch (error) {
+        console.error('deleteAssetService: failed to enqueue storage cleanup', { assetId, error });
+      }
+    } else {
+      console.warn('deleteAssetService: Redis not configured, skipping storage cleanup enqueue', {
+        assetId,
+        cleanupPayload
+      });
+    }
+
+    return deleted;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -390,13 +481,10 @@ export async function deleteAssetService(orgId: string, assetId: string) {
 export async function getAssetUsageGraphService(orgId: string, assetId: string) {
   try {
     await getAssetService(orgId, assetId);
-    const [usages, usageCount] = await Promise.all([
-      listAssetUsagesByAsset(assetId, orgId),
-      countAssetUsagesByAsset(assetId, orgId)
-    ]);
+    const usages = await resolveLiveAssetUsages(orgId, assetId);
 
     return {
-      usageCount,
+      usageCount: usages.length,
       usages
     };
   } catch (error) {

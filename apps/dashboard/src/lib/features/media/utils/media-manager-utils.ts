@@ -110,6 +110,14 @@ export function getTargetTypeLabel(targetType: string): string {
   return t.get(keyMap[targetType] ?? 'media_manager.usage.target.unknown');
 }
 
+export function getSlotTypeLabel(slotType: string): string {
+  const keyMap: Record<string, string> = {
+    lesson_video: 'media_manager.usage.slot_type.lesson_video',
+    lesson_document: 'media_manager.usage.slot_type.lesson_document'
+  };
+  return t.get(keyMap[slotType] ?? 'media_manager.usage.slot_type.unknown');
+}
+
 export function formatUsageDate(value: string | null | undefined): string {
   if (!value) {
     return t.get('media_manager.common.not_available');

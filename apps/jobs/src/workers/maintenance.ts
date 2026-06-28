@@ -3,11 +3,13 @@ import './../bootstrap';
 import { Queue, Worker } from 'bullmq';
 
 import { runAnalyticsRollupDaily } from '@cio/analytics';
+import { purgeAssetStorage } from '@cio/core/services/assets/assets';
 import { pruneDeadLetterJobsOlderThan, reapStuckMediaJobs } from '@cio/db/queries';
 import {
   JOB_NAMES,
   QUEUE_NAMES,
   ZAnalyticsDailyRollupPayload,
+  ZAssetStorageCleanupPayload,
   ZDeadLetterCleanupPayload,
   ZMediaJobReapPayload,
   ZRetentionCompactPayload,
@@ -53,6 +55,17 @@ const worker = new Worker(
       }
 
       return { reaped: reaped.length };
+    }
+
+    if (job.name === JOB_NAMES.maintenance.assetStorageCleanup) {
+      const data = ZAssetStorageCleanupPayload.parse(job.data ?? {});
+      await purgeAssetStorage(data);
+      log.info('asset-storage-cleanup-done', {
+        assetId: data.assetId,
+        prefixes: data.prefixes.length,
+        keys: data.keys.length
+      });
+      return { assetId: data.assetId };
     }
 
     if (job.name === JOB_NAMES.maintenance.analyticsDailyRollup) {

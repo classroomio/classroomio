@@ -357,7 +357,11 @@
       "thumbnail_regen_failed": "Kunne ikke genskabe miniaturebilleder",
       "transcript_saved": "Udskrift opdateret",
       "transcript_save_failed": "Kunne ikke gemme transskription",
-      "transcription_already_running": "Et transskriptionsjob er allerede i gang for denne video"
+      "transcription_already_running": "Et transskriptionsjob er allerede i gang for denne video",
+      "video_added_to_lesson": "Video tilføjet til lektion",
+      "delete_success": "Video slettet",
+      "delete_in_use": "Denne video er stadig knyttet til en lektion. Fjern det der først.",
+      "delete_failed": "Videoen kunne ikke slettes"
     },
     "tags": {
       "group_created": "Taggruppe oprettet",
@@ -2808,7 +2812,14 @@
         "exercise": "Motion",
         "question": "Spørgsmål",
         "unknown": "Ukendt"
-      }
+      },
+      "go_to_lesson": "Gå til lektion",
+      "slot_type": {
+        "lesson_video": "Lektion video",
+        "lesson_document": "Lektionsdokument",
+        "unknown": "Vedhæftet fil"
+      },
+      "refresh": "Opdater brugen"
     },
     "form": {
       "file_name": "Filnavn",
@@ -2838,7 +2849,8 @@
       "edit": "Rediger",
       "where_used": "Hvor brugt",
       "download": "Download",
-      "manage_thumbnails": "Administrer thumbnails"
+      "manage_thumbnails": "Administrer thumbnails",
+      "delete": "Slet"
     },
     "table": {
       "title": "Titel",
@@ -2910,6 +2922,16 @@
       "custom_preview_alt": "Forhåndsvisning af tilpasset miniaturebillede",
       "regenerate": "Regenerer",
       "save_selection": "Gem thumbnail"
+    },
+    "delete": {
+      "title": "Slet video",
+      "irreversible_title": "Dette kan ikke fortrydes",
+      "irreversible_description": "Denne video og alle dens filer – gengivelser, miniaturebilleder og billedtekster – slettes permanent og kan ikke gendannes.",
+      "in_use_title": "Stadig i brug",
+      "in_use_description": "Denne video er vedhæftet nedenstående lektioner. Åbn hver lektion, fjern videoen der, og kom så tilbage for at slette den.",
+      "confirm": "Slet permanent",
+      "cancel": "Annuller",
+      "close": "Luk"
     }
   },
   "settings": {

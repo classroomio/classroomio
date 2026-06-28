@@ -23,6 +23,8 @@ import {
 } from '@cio/db/queries/lesson';
 import type { TUpdateLessonWatchProgress } from '@cio/utils/validation/lesson';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
+import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
+import { db } from '@cio/db/drizzle';
 import { enrichLessonWithPresignedUrls } from '../../utils/lesson-media';
 import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforcement';
 import { resolveItemSlug } from '../course/slug';
@@ -151,7 +153,20 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
  */
 export async function deleteLessonService(lessonId: string): Promise<TLesson> {
   try {
-    const deleted = await deleteLesson(lessonId);
+    const deleted = await db.transaction(async (tx) => {
+      const lesson = await deleteLesson(lessonId, tx);
+      if (!lesson) {
+        return null;
+      }
+
+      // asset_usages.target_id has no FK to lesson, so the lesson delete does
+      // not cascade here. Prune its usage rows in the same transaction to avoid
+      // orphaned attachments that would otherwise block deleting those assets.
+      await deleteAssetUsagesByTarget('lesson', lessonId, tx);
+
+      return lesson;
+    });
+
     if (!deleted) {
       throw new AppError('Failed to delete lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }

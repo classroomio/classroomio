@@ -472,6 +472,33 @@ export async function deleteAssetUsage(
   }
 }
 
+/**
+ * Remove every usage row pointing at a given polymorphic target (e.g. all
+ * usages of a lesson that is being deleted). `asset_usages.target_id` has no
+ * foreign key to the target table, so deleting the target does not cascade
+ * here — callers must prune explicitly to avoid orphaned usage rows. Returns
+ * the number of rows removed.
+ */
+export async function deleteAssetUsagesByTarget(
+  targetType: string,
+  targetId: string,
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    const deleted = await dbClient
+      .delete(schema.assetUsage)
+      .where(and(eq(schema.assetUsage.targetType, targetType), eq(schema.assetUsage.targetId, targetId)))
+      .returning({ id: schema.assetUsage.id });
+
+    return deleted.length;
+  } catch (error) {
+    console.error('deleteAssetUsagesByTarget error:', error);
+    throw new Error(
+      `Failed to delete asset usages by target: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function listAssetUsagesByAsset(assetId: string, orgId: string): Promise<TAssetUsage[]> {
   try {
     return await db

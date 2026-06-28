@@ -1081,7 +1081,18 @@
       "edit": "Edit",
       "where_used": "Where used",
       "download": "Download",
-      "manage_thumbnails": "Manage thumbnails"
+      "manage_thumbnails": "Manage thumbnails",
+      "delete": "Delete"
+    },
+    "delete": {
+      "title": "Delete video",
+      "irreversible_title": "This cannot be undone",
+      "irreversible_description": "This video and all of its files — renditions, thumbnails, and captions — will be permanently deleted and cannot be recovered.",
+      "in_use_title": "Still in use",
+      "in_use_description": "This video is attached to the lessons below. Open each lesson, remove the video there, then come back to delete it.",
+      "confirm": "Delete permanently",
+      "cancel": "Cancel",
+      "close": "Close"
     },
     "pagination": {
       "previous": "Previous",
@@ -1128,11 +1139,18 @@
       "loading": "Loading usage details...",
       "empty": "This asset is not attached anywhere yet.",
       "total": "Total usages:",
+      "go_to_lesson": "Go to lesson",
+      "refresh": "Refresh usage",
       "target": {
         "lesson": "Lesson",
         "exercise": "Exercise",
         "question": "Question",
         "unknown": "Unknown"
+      },
+      "slot_type": {
+        "lesson_video": "Lesson video",
+        "lesson_document": "Lesson document",
+        "unknown": "Attachment"
       },
       "table": {
         "target_type": "Target Type",
@@ -4121,6 +4139,9 @@
       "update_failed": "Failed to update media asset",
       "update_success": "Media asset updated",
       "usage_failed": "Failed to load asset usage",
+      "delete_success": "Video deleted",
+      "delete_in_use": "This video is still attached to a lesson. Remove it there first.",
+      "delete_failed": "Failed to delete video",
       "download_failed": "Failed to get asset download URL",
       "thumbnail_uploaded": "Thumbnail uploaded",
       "thumbnail_upload_failed": "Failed to upload thumbnail",

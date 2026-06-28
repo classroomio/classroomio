@@ -357,7 +357,11 @@
       "thumbnail_regen_failed": "Nie udało się ponownie wygenerować miniatur",
       "transcript_saved": "Transkrypcja zaktualizowana",
       "transcript_save_failed": "Nie udało się zapisać transkrypcji",
-      "transcription_already_running": "Zadanie transkrypcji tego filmu wideo jest już w toku"
+      "transcription_already_running": "Zadanie transkrypcji tego filmu wideo jest już w toku",
+      "video_added_to_lesson": "Film dodany do lekcji",
+      "delete_success": "Film usunięty",
+      "delete_in_use": "Ten film jest nadal dołączony do lekcji. Najpierw usuń go tam.",
+      "delete_failed": "Nie udało się usunąć filmu"
     },
     "tags": {
       "group_created": "Utworzono grupę tagów",
@@ -2808,7 +2812,14 @@
         "exercise": "Ćwicz",
         "question": "Pytanie",
         "unknown": "Nieznany"
-      }
+      },
+      "go_to_lesson": "Idź na lekcję",
+      "slot_type": {
+        "lesson_video": "Film z lekcją",
+        "lesson_document": "Dokument lekcji",
+        "unknown": "Załącznik"
+      },
+      "refresh": "Odśwież użycie"
     },
     "form": {
       "file_name": "Nazwa pliku",
@@ -2838,7 +2849,8 @@
       "edit": "Edytuj",
       "where_used": "Gdzie używany",
       "download": "Pobierz",
-      "manage_thumbnails": "Zarządzaj miniaturami"
+      "manage_thumbnails": "Zarządzaj miniaturami",
+      "delete": "Usuń"
     },
     "table": {
       "title": "Tytuł",
@@ -2910,6 +2922,16 @@
       "custom_preview_alt": "Niestandardowy podgląd miniatur",
       "regenerate": "Zregeneruj się",
       "save_selection": "Zapisz miniaturę"
+    },
+    "delete": {
+      "title": "Usuń wideo",
+      "irreversible_title": "Tego nie można cofnąć",
+      "irreversible_description": "Ten film wideo i wszystkie jego pliki — wersje, miniatury i podpisy — zostaną trwale usunięte i nie będzie można ich odzyskać.",
+      "in_use_title": "Nadal w użyciu",
+      "in_use_description": "Ten film jest dołączony do poniższych lekcji. Otwórz każdą lekcję, usuń stamtąd wideo, a następnie wróć, aby je usunąć.",
+      "confirm": "Usuń trwale",
+      "cancel": "Anuluj",
+      "close": "Zamknij"
     }
   },
   "settings": {

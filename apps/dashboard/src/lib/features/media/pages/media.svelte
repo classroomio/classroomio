@@ -10,6 +10,7 @@
   import {
     AssetCard,
     AssetUsageDialog,
+    DeleteAssetDialog,
     EditAssetDialog,
     ManageThumbnailsDialog,
     MediaFilters,
@@ -36,8 +37,10 @@
   let editOpen = $state(false);
   let usageOpen = $state(false);
   let manageThumbsOpen = $state(false);
+  let deleteOpen = $state(false);
   let isSavingAsset = $state(false);
   let isUsageLoading = $state(false);
+  let isDeleting = $state(false);
   let downloadingAssetId = $state<string | null>(null);
   let selectedAsset = $state<OrganizationAsset | null>(null);
   let usageData = $state<AssetUsageGraph | null>(null);
@@ -96,11 +99,8 @@
     }
   }
 
-  async function openUsage(asset: OrganizationAsset) {
-    selectedAsset = asset;
-    usageOpen = true;
+  async function loadUsage(asset: OrganizationAsset) {
     isUsageLoading = true;
-    usageData = null;
     try {
       usageData = await mediaApi.getAssetUsage(asset.id);
     } finally {
@@ -108,10 +108,51 @@
     }
   }
 
+  async function openUsage(asset: OrganizationAsset) {
+    selectedAsset = asset;
+    usageOpen = true;
+    usageData = null;
+    await loadUsage(asset);
+  }
+
+  async function refreshUsage() {
+    if (!selectedAsset) return;
+
+    await loadUsage(selectedAsset);
+  }
+
   function resetUsageModalState() {
     selectedAsset = null;
     usageData = null;
     isUsageLoading = false;
+  }
+
+  async function openDelete(asset: OrganizationAsset) {
+    selectedAsset = asset;
+    deleteOpen = true;
+    usageData = null;
+    await loadUsage(asset);
+  }
+
+  async function confirmDelete() {
+    if (!selectedAsset) return;
+
+    isDeleting = true;
+    try {
+      const deleted = await mediaApi.deleteAsset(selectedAsset.id);
+      if (!deleted) return;
+
+      deleteOpen = false;
+      await refreshStorageSummary();
+    } finally {
+      isDeleting = false;
+    }
+  }
+
+  function handleDeleteOpenChange(isOpen: boolean) {
+    if (!isOpen) {
+      resetUsageModalState();
+    }
   }
 
   async function downloadAsset(asset: OrganizationAsset) {
@@ -168,6 +209,7 @@
         onUsage={openUsage}
         onDownload={downloadAsset}
         onManageThumbnails={openManageThumbnails}
+        onDelete={openDelete}
       />
     {/each}
   </Item.Group>
@@ -208,5 +250,17 @@
   {selectedAsset}
   {usageData}
   isLoading={isUsageLoading}
+  onRefresh={refreshUsage}
   onOpenChange={handleUsageOpenChange}
+/>
+
+<DeleteAssetDialog
+  bind:open={deleteOpen}
+  asset={selectedAsset}
+  {usageData}
+  isLoadingUsage={isUsageLoading}
+  {isDeleting}
+  onConfirm={confirmDelete}
+  onRefresh={refreshUsage}
+  onOpenChange={handleDeleteOpenChange}
 />

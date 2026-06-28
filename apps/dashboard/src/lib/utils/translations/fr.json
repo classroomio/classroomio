@@ -357,7 +357,11 @@
       "thumbnail_regen_failed": "Échec de la régénération des miniatures",
       "transcript_saved": "Transcription mise à jour",
       "transcript_save_failed": "Impossible d'enregistrer la transcription",
-      "transcription_already_running": "Un travail de transcription est déjà en cours pour cette vidéo"
+      "transcription_already_running": "Un travail de transcription est déjà en cours pour cette vidéo",
+      "video_added_to_lesson": "Vidéo ajoutée à la leçon",
+      "delete_success": "Vidéo supprimée",
+      "delete_in_use": "Cette vidéo est toujours jointe à une leçon. Retirez-le d'abord.",
+      "delete_failed": "Échec de la suppression de la vidéo"
     },
     "tags": {
       "group_created": "Groupe de balises créé",
@@ -2808,7 +2812,14 @@
         "exercise": "Exercice",
         "question": "Question",
         "unknown": "Inconnu"
-      }
+      },
+      "go_to_lesson": "Aller à la leçon",
+      "slot_type": {
+        "lesson_video": "Vidéo de cours",
+        "lesson_document": "Document de cours",
+        "unknown": "Pièce jointe"
+      },
+      "refresh": "Actualiser l'utilisation"
     },
     "form": {
       "file_name": "Nom du fichier",
@@ -2838,7 +2849,8 @@
       "edit": "Modifier",
       "where_used": "Où utilisé",
       "download": "Télécharger",
-      "manage_thumbnails": "Gérer les vignettes"
+      "manage_thumbnails": "Gérer les vignettes",
+      "delete": "Supprimer"
     },
     "table": {
       "title": "Titre",
@@ -2910,6 +2922,16 @@
       "custom_preview_alt": "Aperçu miniature personnalisé",
       "regenerate": "Régénérer",
       "save_selection": "Enregistrer la vignette"
+    },
+    "delete": {
+      "title": "Supprimer la vidéo",
+      "irreversible_title": "Cela ne peut pas être annulé",
+      "irreversible_description": "Cette vidéo et tous ses fichiers (rendus, miniatures et sous-titres) seront définitivement supprimés et ne pourront pas être récupérés.",
+      "in_use_title": "Toujours utilisé",
+      "in_use_description": "Cette vidéo est jointe aux leçons ci-dessous. Ouvrez chaque leçon, supprimez-y la vidéo, puis revenez la supprimer.",
+      "confirm": "Supprimer définitivement",
+      "cancel": "Annuler",
+      "close": "Fermer"
     }
   },
   "settings": {

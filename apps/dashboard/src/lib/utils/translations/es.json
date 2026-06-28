@@ -357,7 +357,11 @@
       "thumbnail_regen_failed": "No se pudieron regenerar las miniaturas",
       "transcript_saved": "Transcripción actualizada",
       "transcript_save_failed": "No se pudo guardar la transcripción",
-      "transcription_already_running": "Ya se está realizando un trabajo de transcripción para este vídeo."
+      "transcription_already_running": "Ya se está realizando un trabajo de transcripción para este vídeo.",
+      "video_added_to_lesson": "Vídeo añadido a la lección.",
+      "delete_success": "Vídeo eliminado",
+      "delete_in_use": "Este vídeo todavía está adjunto a una lección. Quítelo allí primero.",
+      "delete_failed": "No se pudo eliminar el video"
     },
     "tags": {
       "group_created": "Grupo de etiquetas creado",
@@ -2808,7 +2812,14 @@
         "exercise": "Ejercicio",
         "question": "Pregunta",
         "unknown": "Desconocido"
-      }
+      },
+      "go_to_lesson": "ir a la lección",
+      "slot_type": {
+        "lesson_video": "Vídeo de la lección",
+        "lesson_document": "documento de lección",
+        "unknown": "Adjunto"
+      },
+      "refresh": "Actualizar uso"
     },
     "form": {
       "file_name": "Nombre de archivo",
@@ -2838,7 +2849,8 @@
       "edit": "Editar",
       "where_used": "donde se usa",
       "download": "Descargar",
-      "manage_thumbnails": "Administrar miniaturas"
+      "manage_thumbnails": "Administrar miniaturas",
+      "delete": "Eliminar"
     },
     "table": {
       "title": "Título",
@@ -2910,6 +2922,16 @@
       "custom_preview_alt": "Vista previa en miniatura personalizada",
       "regenerate": "regenerar",
       "save_selection": "Guardar miniatura"
+    },
+    "delete": {
+      "title": "Eliminar vídeo",
+      "irreversible_title": "Esto no se puede deshacer",
+      "irreversible_description": "Este video y todos sus archivos (representaciones, miniaturas y subtítulos) se eliminarán permanentemente y no se podrán recuperar.",
+      "in_use_title": "Todavía en uso",
+      "in_use_description": "Este vídeo se adjunta a las lecciones siguientes. Abra cada lección, elimine el video allí y luego regrese para eliminarlo.",
+      "confirm": "Eliminar permanentemente",
+      "cancel": "Cancelar",
+      "close": "Cerrar"
     }
   },
   "settings": {

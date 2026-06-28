@@ -10,6 +10,7 @@
   import ImageIcon from '@lucide/svelte/icons/image';
   import LinkIcon from '@lucide/svelte/icons/link';
   import PencilIcon from '@lucide/svelte/icons/pencil';
+  import Trash2Icon from '@lucide/svelte/icons/trash-2';
 
   import { t } from '$lib/utils/functions/translations';
   import {
@@ -27,6 +28,7 @@
     onUsage?: (asset: OrganizationAsset) => void;
     onDownload?: (asset: OrganizationAsset) => void;
     onManageThumbnails?: (asset: OrganizationAsset) => void;
+    onDelete?: (asset: OrganizationAsset) => void;
   }
 
   let {
@@ -35,7 +37,8 @@
     onEdit = () => {},
     onUsage = () => {},
     onDownload = () => {},
-    onManageThumbnails = () => {}
+    onManageThumbnails = () => {},
+    onDelete = () => {}
   }: Props = $props();
 </script>
 
@@ -85,6 +88,13 @@
           <span class="flex items-center gap-2">
             <DownloadIcon size={14} />
             {$t('media_manager.actions.download')}
+          </span>
+        </DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item variant="destructive" onclick={() => onDelete(asset)}>
+          <span class="flex items-center gap-2">
+            <Trash2Icon size={14} />
+            {$t('media_manager.actions.delete')}
           </span>
         </DropdownMenu.Item>
       </DropdownMenu.Content>
