@@ -11,6 +11,7 @@
     answer = null,
     disabled = false,
     labels,
+    platformMaxFileSizeMb,
     onAnswerChange = () => {},
     onFileUpload
   }: ExerciseQuestionRendererProps = $props();
@@ -86,7 +87,7 @@
 
     if (!selectedFile) return;
     if (!isFileTypeAllowed(selectedFile, acceptedTypes)) return;
-    if (!isFileSizeAllowed(selectedFile, maxSizeMb)) return;
+    if (!isFileSizeAllowed(selectedFile, maxSizeMb, platformMaxFileSizeMb)) return;
 
     if (!onFileUpload) return;
 

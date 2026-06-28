@@ -18,6 +18,8 @@ export interface ExerciseQuestionRenderContract {
   maxSubmissionItems?: number;
   disabled?: boolean;
   labels?: ExerciseQuestionLabels;
+  /** Platform-wide cap for exercise file uploads (megabytes). */
+  platformMaxFileSizeMb?: number;
   onImageUpload?: ExerciseQuestionImageUploader;
   onFileUpload?: ExerciseQuestionFileUploader;
   onVideoRecordingUpload?: ExerciseQuestionVideoRecordingUploader;
@@ -31,6 +33,8 @@ export interface ExerciseQuestionListRenderContract {
   maxSubmissionItems?: number;
   disabled?: boolean;
   labels?: ExerciseQuestionLabels;
+  /** Platform-wide cap for exercise file uploads (megabytes). */
+  platformMaxFileSizeMb?: number;
   onImageUpload?: ExerciseQuestionImageUploader;
   onFileUpload?: ExerciseQuestionFileUploader;
   onVideoRecordingUpload?: ExerciseQuestionVideoRecordingUploader;

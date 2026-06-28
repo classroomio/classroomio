@@ -14,6 +14,7 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import { Button } from '@cio/ui/base/button';
   import UploadCloudIcon from '@lucide/svelte/icons/upload-cloud';
+  import { getUploadLimitsContext } from '$lib/utils/config/upload-limits-context';
 
   interface Props {
     imageURL?: string;
@@ -48,7 +49,8 @@
     alt_description: string;
   }[] = $state([]);
 
-  const MAX_IMAGE_SIZE = 500 * 1000;
+  const uploadLimits = getUploadLimitsContext()!;
+  const maxLandingImageSize = uploadLimits.landingImageBytes;
 
   async function handleImageClick(img: string) {
     onchange?.(img);
@@ -58,7 +60,7 @@
   }
 
   function handleUnsupportedFile(file: File) {
-    if (file.size > MAX_IMAGE_SIZE) {
+    if (file.size > maxLandingImageSize) {
       snackbar.error('snackbar.landing_page_settings.error.file_size');
       return;
     }
@@ -130,7 +132,7 @@
               bind:src={cropperSrc}
               onCropped={handleCropped}
               onUnsupportedFile={handleUnsupportedFile}
-              maxFileSize={MAX_IMAGE_SIZE}
+              maxFileSize={maxLandingImageSize}
               accept=".jpg, .jpeg, .png, .webp"
               disabled={isUploading}
             >

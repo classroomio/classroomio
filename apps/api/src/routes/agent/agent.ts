@@ -6,6 +6,7 @@ import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 import { b64EnvelopeRewrite } from '@api/middlewares/b64-envelope';
 import { handleError, AppError } from '@api/utils/errors';
+import { MAX_AGENT_DOCUMENT_SIZE } from '@api/constants/upload';
 import { zValidator } from '@hono/zod-validator';
 import { streamText, stepCountIs, convertToModelMessages } from 'ai';
 import {
@@ -171,7 +172,7 @@ const agentCoreRouter = new Hono()
     } catch (error) {
       if (error instanceof AppError) {
         if (error.statusCode === 413) {
-          return c.json({ success: false, error: 'file_too_large', maxSize: 5242880 }, 413);
+          return c.json({ success: false, error: 'file_too_large', maxSize: MAX_AGENT_DOCUMENT_SIZE }, 413);
         }
 
         if (error.statusCode === 415) {

@@ -14,6 +14,8 @@ import {
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { generateFileKey } from '@cio/core/utils/upload';
+import { AppError } from '@api/utils/errors';
+import { MAX_DOCUMENT_SIZE, MAX_FILE_SIZE } from '@api/constants/upload';
 
 // Response schemas for OpenAPI documentation
 const PresignUploadResponse = {
@@ -68,7 +70,12 @@ export const presignRouter = new Hono()
     async (c) => {
       const body = c.req.valid('json');
 
-      const { fileName, fileType } = body;
+      const { fileName, fileType, fileSize } = body;
+
+      if (fileSize != null && fileSize > MAX_FILE_SIZE) {
+        throw new AppError(`File size exceeds maximum of ${MAX_FILE_SIZE / 1024 / 1024}MB`, 'FILE_TOO_LARGE', 413);
+      }
+
       const fileKey = generateFileKey(fileName);
 
       const presignedUrl = await generateVideoUploadPresignedUrl(fileKey, fileType);
@@ -108,7 +115,12 @@ export const presignRouter = new Hono()
     async (c) => {
       const body = c.req.valid('json');
 
-      const { fileName, fileType } = body;
+      const { fileName, fileType, fileSize } = body;
+
+      if (fileSize != null && fileSize > MAX_DOCUMENT_SIZE) {
+        throw new AppError(`File size exceeds maximum of ${MAX_DOCUMENT_SIZE / 1024 / 1024}MB`, 'FILE_TOO_LARGE', 413);
+      }
+
       const fileKey = generateFileKey(fileName);
 
       const presignedUrl = await generateDocumentUploadPresignedUrl(fileKey, fileType);
