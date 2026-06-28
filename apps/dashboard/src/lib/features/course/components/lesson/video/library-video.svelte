@@ -19,12 +19,17 @@
 
   let { lessonId = '' }: Props = $props();
 
+  const PAGE_SIZE = 20;
+
   let search = $state('');
   let isLoading = $state(false);
   let addingAssetId = $state<string | null>(null);
   // Local copy so the fetch (which also backs the media manager page via the
   // shared mediaApi.assets store) doesn't leak removals between surfaces.
   let assets = $state<OrganizationAsset[]>([]);
+  let page = $state(1);
+  let totalPages = $state(1);
+  let totalCount = $state(0);
 
   // Asset ids already attached to this lesson, so the library hides them.
   const addedAssetIds = $derived(
@@ -37,14 +42,18 @@
 
   const visibleAssets = $derived(assets.filter((asset) => !addedAssetIds.has(asset.id)));
 
-  async function loadLibrary() {
+  async function loadLibrary(targetPage = 1) {
     isLoading = true;
+    page = targetPage;
     await mediaApi.listAssets({
       kind: 'video',
-      limit: 100,
+      limit: PAGE_SIZE,
+      page: targetPage,
       search: search.trim() || undefined
     });
     assets = mediaApi.assets.filter((asset) => asset.kind === 'video' && (asset.status ?? 'active') !== 'archived');
+    totalPages = mediaApi.pagination?.totalPages ?? 1;
+    totalCount = mediaApi.pagination?.total ?? assets.length;
     isLoading = false;
   }
 
@@ -79,12 +88,12 @@
 <div class="min-w-0 space-y-3">
   <div class="flex items-end gap-3">
     <InputField
-      label={$t('course.navItem.lessons.materials.tabs.video.add_video.search_library')}
+      label={`${$t('course.navItem.lessons.materials.tabs.video.add_video.search_library')} (${totalCount})`}
       bind:value={search}
       className="flex-1"
       placeholder={$t('course.navItem.lessons.materials.tabs.video.add_video.search_library')}
     />
-    <Button onclick={loadLibrary} loading={isLoading} disabled={isLoading}>
+    <Button onclick={() => loadLibrary(1)} loading={isLoading} disabled={isLoading}>
       {$t('course.navItem.lessons.materials.tabs.video.add_video.search_library_action')}
     </Button>
   </div>
@@ -133,6 +142,27 @@
           </Button>
         </div>
       {/each}
+    </div>
+  {/if}
+
+  {#if totalPages > 1}
+    <div class="flex items-center justify-end gap-2">
+      <Button variant="outline" size="sm" disabled={isLoading || page <= 1} onclick={() => loadLibrary(page - 1)}>
+        {$t('media_manager.pagination.previous')}
+      </Button>
+      <p class="ui:text-muted-foreground text-sm">
+        {$t('media_manager.pagination.page')}
+        {page}
+        / {totalPages}
+      </p>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={isLoading || page >= totalPages}
+        onclick={() => loadLibrary(page + 1)}
+      >
+        {$t('media_manager.pagination.next')}
+      </Button>
     </div>
   {/if}
 </div>
