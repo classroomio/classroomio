@@ -1998,7 +1998,9 @@
               "generate_1080_in_progress": "Gerando 1080p…",
               "generate_1080_ready": "1080p disponível",
               "generate_1080_unavailable": "1080p indisponível para este vídeo de origem",
-              "loading": "Carregando vídeo…"
+              "loading": "Carregando vídeo…",
+              "playback_auth_error": "Sua sessão expirou. Faça login novamente para assistir a este vídeo.",
+              "playback_auth_action": "Entrar"
             },
             "slide": {
               "title": "Deslizar",

@@ -1998,7 +1998,9 @@
               "generate_1080_in_progress": "Genererer 1080p...",
               "generate_1080_ready": "1080p tilgængelig",
               "generate_1080_unavailable": "1080p ikke tilgængelig for denne kildevideo",
-              "loading": "Indlæser video..."
+              "loading": "Indlæser video...",
+              "playback_auth_error": "Din session udløb. Log venligst ind igen for at se denne video.",
+              "playback_auth_action": "Log ind"
             },
             "slide": {
               "title": "Slide",

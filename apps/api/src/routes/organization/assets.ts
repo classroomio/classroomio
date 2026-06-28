@@ -261,7 +261,12 @@ export const assetsRouter = new Hono()
         path: '/',
         httpOnly: true,
         secure: true,
-        sameSite: 'Lax',
+        // `None` (not `Lax`) so the cookie is sent on cross-site segment
+        // fetches issued by hls.js — Lax is withheld on cross-site
+        // subresource requests, which would 403 every segment when the
+        // player and api/stream live on different hosts (BYOD custom
+        // domains, local cross-origin dev).
+        sameSite: 'None',
         maxAge: maxAgeSeconds
       });
 

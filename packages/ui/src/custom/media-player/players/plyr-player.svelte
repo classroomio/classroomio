@@ -32,6 +32,7 @@
   let playerInstance = $state<Plyr | null>(null);
   let transcriptButtonElement = $state<HTMLButtonElement | null>(null);
   let playbackFailed = $state(false);
+  let playbackAuthExpired = $state(false);
   let isPlayerReady = $state(false);
   let reloadInFlight = $state(false);
   let timeupdateCleanup: (() => void) | undefined;
@@ -533,6 +534,7 @@
 
     loadedSrc = nextSrc;
     playbackFailed = false;
+    playbackAuthExpired = false;
 
     const onLoadedMetadata = () => {
       element.removeEventListener('loadedmetadata', onLoadedMetadata);
@@ -566,10 +568,17 @@
     destroyHlsInstance();
     teardownPlyrInstance();
     playbackFailed = false;
+    playbackAuthExpired = false;
 
     if (options.onBeforeHlsLoad) {
       try {
-        await options.onBeforeHlsLoad();
+        const result = await options.onBeforeHlsLoad();
+        if (result?.authExpired) {
+          playbackAuthExpired = true;
+          handlePlaybackFailure();
+
+          return;
+        }
       } catch (error) {
         // The cookie endpoint may 503 in environments where HLS_SIGNING_SECRET
         // isn't configured (local dev / self-hosted). Playback can still
@@ -750,13 +759,19 @@
     </div>
   {/if}
 
-  {#if playbackFailed && options.playbackErrorLabel}
+  {#if playbackFailed && (playbackAuthExpired ? options.playbackAuthErrorLabel : options.playbackErrorLabel)}
     <div
       class="ui:absolute ui:inset-0 ui:z-20 ui:flex ui:flex-col ui:items-center ui:justify-center ui:gap-4 ui:bg-muted/95 ui:px-6 ui:text-center"
       role="alert"
     >
-      <p class="ui:text-sm ui:text-muted-foreground">{options.playbackErrorLabel}</p>
-      {#if options.onPlaybackReload && options.playbackReloadLabel}
+      <p class="ui:text-sm ui:text-muted-foreground">
+        {playbackAuthExpired ? options.playbackAuthErrorLabel : options.playbackErrorLabel}
+      </p>
+      {#if playbackAuthExpired && options.onPlaybackAuthRequired && options.playbackAuthActionLabel}
+        <Button variant="outline" onclick={() => options.onPlaybackAuthRequired?.()}>
+          {options.playbackAuthActionLabel}
+        </Button>
+      {:else if !playbackAuthExpired && options.onPlaybackReload && options.playbackReloadLabel}
         <Button variant="outline" disabled={reloadInFlight} onclick={() => void handlePlaybackReloadClick()}>
           {options.playbackReloadLabel}
         </Button>

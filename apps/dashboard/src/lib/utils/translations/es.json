@@ -1998,7 +1998,9 @@
               "generate_1080_in_progress": "Generando 1080p…",
               "generate_1080_ready": "1080p disponible",
               "generate_1080_unavailable": "1080p no disponible para este vídeo fuente",
-              "loading": "Cargando vídeo…"
+              "loading": "Cargando vídeo…",
+              "playback_auth_error": "Tu sesión expiró. Inicie sesión nuevamente para ver este video.",
+              "playback_auth_action": "Iniciar sesión"
             },
             "slide": {
               "title": "diapositiva",

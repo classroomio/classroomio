@@ -1998,7 +1998,9 @@
               "generate_1080_in_progress": "Đang tạo 1080p…",
               "generate_1080_ready": "1080p có sẵn",
               "generate_1080_unavailable": "1080p không có sẵn cho video nguồn này",
-              "loading": "Đang tải video…"
+              "loading": "Đang tải video…",
+              "playback_auth_error": "Phiên của bạn đã hết hạn. Vui lòng đăng nhập lại để xem video này.",
+              "playback_auth_action": "Đăng nhập"
             },
             "slide": {
               "title": "Trượt",

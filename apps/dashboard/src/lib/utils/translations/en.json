@@ -2467,6 +2467,8 @@
               "generate_1080_unavailable": "1080p unavailable for this source video",
               "playback_error": "Loading this video failed.",
               "playback_reload": "Reload video",
+              "playback_auth_error": "Your session expired. Please sign in again to watch this video.",
+              "playback_auth_action": "Sign in",
               "loading": "Loading video…",
               "simple_card": {
                 "kind_youtube": "YouTube",

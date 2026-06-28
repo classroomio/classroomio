@@ -1998,7 +1998,9 @@
               "generate_1080_in_progress": "Generowanie 1080p…",
               "generate_1080_ready": "Dostępna rozdzielczość 1080p",
               "generate_1080_unavailable": "Rozdzielczość 1080p jest niedostępna dla tego wideo źródłowego",
-              "loading": "Ładowanie wideo…"
+              "loading": "Ładowanie wideo…",
+              "playback_auth_error": "Twoja sesja wygasła. Aby obejrzeć ten film, zaloguj się ponownie.",
+              "playback_auth_action": "Zalogować się"
             },
             "slide": {
               "title": "Przesuń",

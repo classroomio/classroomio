@@ -50,6 +50,9 @@ export interface MediaPlayerOptions {
   playbackReloadLabel?: string;
   /** Fetch a fresh playback URL (or otherwise prepare a retry). Return true to retry loading. */
   onPlaybackReload?: () => boolean | Promise<boolean>;
+  playbackAuthErrorLabel?: string;
+  playbackAuthActionLabel?: string;
+  onPlaybackAuthRequired?: () => void;
   /** Fires after a new `src` finishes loading metadata (used to restore seek position). */
   onSourceLoaded?: (video: HTMLVideoElement) => void;
   /**
@@ -67,7 +70,7 @@ export interface MediaPlayerOptions {
    * production. Locally / self-hosted this is typically a no-op or a
    * best-effort call that fails benignly.
    */
-  onBeforeHlsLoad?: () => Promise<void>;
+  onBeforeHlsLoad?: () => Promise<{ authExpired?: boolean } | void>;
   seekPolicy?: {
     mode: 'locked_until_complete';
     watchThresholdPercent: number;

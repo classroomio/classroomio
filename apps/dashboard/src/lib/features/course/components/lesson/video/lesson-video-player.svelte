@@ -6,7 +6,9 @@
   import { jobsApi, JobPoller, type MediaJobEnvelope } from '$features/jobs';
   import { t } from '$lib/utils/functions/translations';
   import { sidePanel } from '$features/side-panel';
-  import { classroomio } from '$lib/utils/services/api';
+  import { classroomio, isAuthError } from '$lib/utils/services/api';
+  import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { lessonApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { AssetTranscriptPayload } from '$features/media/utils/types';
@@ -43,10 +45,18 @@
     return built.toString().replace(/\/\*$/, '') + '/' + rest;
   }
 
-  async function mintHlsCookie(assetId: string): Promise<void> {
-    await classroomio.organization.assets[':assetId'].hls.cookie.$post({
-      param: { assetId }
-    });
+  async function mintHlsCookie(assetId: string): Promise<{ authExpired?: boolean } | void> {
+    try {
+      await classroomio.organization.assets[':assetId'].hls.cookie.$post({
+        param: { assetId }
+      });
+    } catch (error) {
+      // A 401 here means the viewer's session expired — the player should
+      // prompt a re-login rather than retry. Other failures (e.g. 503 when
+      // HLS_SIGNING_SECRET is unset locally) fall through so playback can
+      // still attempt the session-auth streaming route.
+      if (isAuthError(error)) return { authExpired: true };
+    }
   }
 
   /**
@@ -473,6 +483,9 @@
       playbackErrorLabel: $t('course.navItem.lessons.materials.tabs.video.playback_error'),
       playbackReloadLabel: $t('course.navItem.lessons.materials.tabs.video.playback_reload'),
       onPlaybackReload: handlePlaybackReload,
+      playbackAuthErrorLabel: $t('course.navItem.lessons.materials.tabs.video.playback_auth_error'),
+      playbackAuthActionLabel: $t('course.navItem.lessons.materials.tabs.video.playback_auth_action'),
+      onPlaybackAuthRequired: () => goto(resolve('/login', {})),
       seekPolicy
     }}
   />
