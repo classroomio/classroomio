@@ -385,32 +385,6 @@
       "rotated": "Chave de automação girada. Salve o novo segredo agora porque ele não será mostrado novamente.",
       "revoked": "Chave de automação revogada."
     },
-    "program": {
-      "error": {
-        "reaction_error": "Ocorreu um erro ao reagir à postagem",
-        "news_feed_fail": "Falha ao buscar feed de notícias do programa",
-        "post_create_failed": "Falha ao criar postagem",
-        "post_update_failed": "Falha ao atualizar a postagem",
-        "code": {
-          "program_forbidden": "Você deve ser membro deste programa para executar esta ação.",
-          "program_member_check_failed": "Não foi possível verificar sua associação ao programa. Tente novamente.",
-          "program_not_found": "Este programa não foi encontrado.",
-          "program_create_failed": "Não foi possível criar o programa.",
-          "program_update_failed": "Não foi possível atualizar o programa.",
-          "program_delete_failed": "Não foi possível excluir o programa.",
-          "program_member_not_found": "Esse membro do programa não foi encontrado.",
-          "program_newsfeed_not_found": "Essa postagem não foi encontrada.",
-          "program_newsfeed_comment_not_found": "Esse comentário não foi encontrado."
-        }
-      },
-      "success": {
-        "comment_deleted": "Comentário excluído",
-        "comment_added": "Comentário adicionado",
-        "feed_delete_success": "Postagem excluída com sucesso",
-        "post_created": "Postagem criada com sucesso",
-        "post_updated": "Postagem atualizada com sucesso"
-      }
-    },
     "ai_credits": {
       "purchase_success": "Pacote de AI credits adicionado ao seu saldo.",
       "checkout_failed": "Não foi possível iniciar o checkout. Tente novamente."
@@ -444,7 +418,33 @@
       "generate_1080_completed": "Versão 1080p adicionada",
       "generate_1080_failed": "Não foi possível gerar a renderização em 1080p"
     },
-    "social_auth_not_enabled": "Este provedor de autenticação não está habilitado."
+    "social_auth_not_enabled": "Este provedor de autenticação não está habilitado.",
+    "cohort": {
+      "error": {
+        "reaction_error": "Ocorreu um erro ao reagir à postagem",
+        "news_feed_fail": "Falha ao buscar feed de notícias do programa",
+        "post_create_failed": "Falha ao criar postagem",
+        "post_update_failed": "Falha ao atualizar a postagem",
+        "code": {
+          "cohort_forbidden": "Você deve ser membro deste programa para executar esta ação.",
+          "cohort_member_check_failed": "Não foi possível verificar sua associação ao programa. Tente novamente.",
+          "cohort_not_found": "Este programa não foi encontrado.",
+          "cohort_create_failed": "Não foi possível criar o programa.",
+          "cohort_update_failed": "Não foi possível atualizar o programa.",
+          "cohort_delete_failed": "Não foi possível excluir o programa.",
+          "cohort_member_not_found": "Esse membro do programa não foi encontrado.",
+          "cohort_newsfeed_not_found": "Essa postagem não foi encontrada.",
+          "cohort_newsfeed_comment_not_found": "Esse comentário não foi encontrado."
+        }
+      },
+      "success": {
+        "comment_deleted": "Comentário excluído",
+        "comment_added": "Comentário adicionado",
+        "feed_delete_success": "Postagem excluída com sucesso",
+        "post_created": "Postagem criada com sucesso",
+        "post_updated": "Postagem atualizada com sucesso"
+      }
+    }
   },
   "explore": {
     "heading": "Explore nossos cursos",
@@ -478,7 +478,7 @@
     "explore": "Explorar",
     "help": "Ajuda",
     "settings": "Configurações",
-    "programs": "Programas"
+    "cohorts": "Programas"
   },
   "upgrade": {
     "certificate": "Atualize seu plano para gerar certificados",
@@ -668,18 +668,18 @@
       "all_courses": "Todos os cursos",
       "select_courses": "Selecione cursos específicos",
       "select_courses_placeholder": "Escolha cursos...",
-      "program_access": "Acesso ao programa",
-      "no_programs": "Sem atribuição de programa",
-      "all_programs": "Todos os programas",
-      "select_programs": "Selecione programas específicos",
-      "select_programs_placeholder": "Escolha programas...",
       "send_email": "Enviar e-mail de convite para usuários importados",
       "submit": "Importar usuários",
       "back": "Voltar ao público",
       "snackbar_success": "{imported} novos convites, {assigned} estudantes existentes com acesso ao curso, {pendingInvitesRenewed} convites pendentes renovados ({emailsSent} e-mails enviados)",
       "snackbar_no_emails": "Insira pelo menos um endereço de e-mail",
       "snackbar_failed": "Falha ao importar usuários",
-      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like."
+      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like.",
+      "cohort_access": "Acesso ao programa",
+      "no_cohorts": "Sem atribuição de programa",
+      "all_cohorts": "Todos os programas",
+      "select_cohorts": "Selecione programas específicos",
+      "select_cohorts_placeholder": "Escolha programas..."
     },
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "user_analytics": {
@@ -2786,11 +2786,11 @@
     "upgrade": "Atualize agora",
     "tags": "Etiquetas",
     "automation": "Automação",
-    "programs": "Programas",
     "widgets": "Widgets",
     "stats": "Estatísticas",
     "analytics": "Análise",
-    "compliance": "Conformidade"
+    "compliance": "Conformidade",
+    "cohorts": "Programas"
   },
   "media_manager": {
     "page_title": "Gerenciador de mídia - ClassroomIO",
@@ -3911,212 +3911,6 @@
       "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
     }
   },
-  "programs": {
-    "heading": "Programas",
-    "page_title": "Programas",
-    "create": "Novo programa",
-    "create_success": "Programa criado",
-    "update_success": "Programa atualizado",
-    "delete_success": "Programa excluído",
-    "members_added": "Membros adicionados",
-    "member_removed": "Membro removido",
-    "course_added": "Curso adicionado",
-    "course_removed": "Curso removido",
-    "empty_title": "Ainda não há programas",
-    "empty_description": "Crie seu primeiro programa de certificação ou conformidade.",
-    "settings": {
-      "general": "Geral",
-      "name_label": "Nome",
-      "description_label": "Descrição",
-      "status_label": "Estado",
-      "save": "Salvar alterações",
-      "danger_zone": "Zona de perigo",
-      "delete": "Excluir programa",
-      "delete_description": "Uma vez excluído, este programa e todos os seus dados não poderão ser recuperados.",
-      "confirm_delete": "Tem certeza de que deseja excluir este programa? Isto não pode ser desfeito."
-    },
-    "lms": {
-      "empty_title": "Ainda não há programas",
-      "empty_description": "Você não está inscrito em nenhum programa."
-    },
-    "people": {
-      "invite": "Convidar",
-      "invite_modal_title": "Convidar membros",
-      "invite_modal_description": "Adicione pessoas a este programa por e-mail.",
-      "email_label": "E-mail",
-      "role_label": "Função",
-      "add_another": "Adicionar outro",
-      "invite_submit": "Enviar convites",
-      "empty_title": "Ainda não há membros",
-      "empty_description": "Convide pessoas para participar deste programa."
-    },
-    "courses": {
-      "add": "Adicionar curso",
-      "add_modal_title": "Adicionar curso ao programa",
-      "select_course": "Selecione um curso",
-      "select_placeholder": "Escolha um curso…",
-      "empty_title": "Ainda não há cursos",
-      "empty_description": "Adicione cursos a este programa.",
-      "select_courses": "Selecione os cursos",
-      "search_placeholder": "Pesquisar cursos",
-      "no_available_courses": "Não há cursos disponíveis para adicionar.",
-      "no_matching_courses": "Nenhum curso corresponde à sua pesquisa.",
-      "no_matching_program_courses": "Nenhum curso do programa corresponde à sua pesquisa.",
-      "pagination_status": "Página {page} de {totalPages}",
-      "published_access_callout_title": "Acesso de estudante",
-      "published_access_callout_description": "Os alunos só têm acesso aos cursos publicados. Os cursos podem estar neste programa para sua equipe enquanto ainda não foram publicados, enquanto permanecem ocultos aos alunos até que você os publique."
-    },
-    "newsfeed": {
-      "post": "Nova postagem",
-      "post_placeholder": "O que você está pensando?",
-      "post_submit": "Postar",
-      "empty_title": "Nenhuma postagem ainda",
-      "empty_description": "Seja o primeiro a postar algo.",
-      "heading": "Feed de notícias",
-      "make_a_post": "Faça uma postagem",
-      "edit_post": "Editar postagem",
-      "editor_placeholder": "Compartilhe uma atualização com seu programa",
-      "cancel": "Cancelar",
-      "pinned": "Fixado",
-      "delete_feed_title": "Excluir postagem",
-      "delete_feed_description": "Tem certeza de que deseja excluir esta postagem?",
-      "confirm_delete": "Excluir",
-      "user_avatar_alt": "Avatar do usuário",
-      "comments": {
-        "comment": "comentar",
-        "showing_of": "Exibindo {shown} de {total}",
-        "hide": "Ocultar comentários",
-        "placeholder": "Adicionar comentário do programa",
-        "submit_aria": "Enviar comentário",
-        "delete": "Excluir"
-      },
-      "card": {
-        "pin": "Fixar",
-        "unpin": "Liberar",
-        "edit": "Editar",
-        "delete": "Excluir"
-      }
-    },
-    "create_modal": {
-      "title": "Criar programa",
-      "description": "Adicione um novo programa de certificação ou conformidade.",
-      "name_label": "Nome",
-      "name_placeholder": "por exemplo Certificação de Segurança OSHA",
-      "description_label": "Descrição",
-      "description_placeholder": "Sobre o que é este programa?",
-      "submit": "Criar"
-    },
-    "sidebar": {
-      "newsfeed": "Feed de notícias",
-      "courses": "Cursos",
-      "people": "Pessoas",
-      "settings": "Configurações"
-    },
-    "status": {
-      "active": "Ativo",
-      "inactive": "Inativo",
-      "archived": "Arquivado"
-    },
-    "description": "Conceda a um grupo de pessoas acesso a vários cursos, como uma aula",
-    "search_placeholder": "Programas de pesquisa",
-    "multiple_added": "Cursos adicionados",
-    "no_matching_programs": "Nenhum programa corresponde aos seus filtros.",
-    "card": {
-      "courses": "Cursos",
-      "students": "Alunos"
-    },
-    "table": {
-      "name": "Nome",
-      "courses": "Cursos",
-      "students": "Alunos",
-      "status": "Estado",
-      "description": "Descrição"
-    },
-    "filters": {
-      "filter": "Filtro",
-      "clear_all": "Limpar tudo",
-      "popover_title": "Filtros",
-      "sort": "Classificar",
-      "order": "Pedido",
-      "status": "Estado",
-      "ascending": "Asc",
-      "descending": "Descrição",
-      "sort_name": "Nome",
-      "sort_courses": "Cursos",
-      "sort_students": "Alunos",
-      "sort_status": "Estado"
-    },
-    "invite_sent": "Convites enviados",
-    "goals": {
-      "heading": "Metas de aprendizagem",
-      "description": "Defina metas mensuráveis que abrangem vários cursos para todos neste programa.",
-      "add": "Nova meta",
-      "empty_title": "Ainda não há metas",
-      "empty_description": "Crie uma meta para acompanhar o progresso da equipe em vários cursos.",
-      "created": "Meta criada",
-      "updated": "Meta atualizada",
-      "deleted": "Meta excluída",
-      "delete_confirm": "Excluir esta meta? O histórico de status por aluno será removido.",
-      "lms": {
-        "heading": "Seus objetivos",
-        "empty_title": "Nenhuma meta atribuída",
-        "empty_description": "Quando seus instrutores definirem metas, elas aparecerão aqui.",
-        "due_in_days": "Vencimento em {days} dias",
-        "due_tomorrow": "Vencimento amanhã",
-        "due_today": "Vencimento hoje",
-        "overdue": "Atrasado",
-        "no_deadline": "Sem prazo"
-      },
-      "tile": {
-        "on_track": "no caminho certo",
-        "completed_short": "concluído",
-        "overdue_short": "atrasado",
-        "at_risk_short": "em risco"
-      },
-      "status": {
-        "completed": "Concluído",
-        "in_progress": "Em andamento",
-        "at_risk": "Em risco",
-        "overdue": "Atrasado",
-        "not_started": "Não iniciado",
-        "waived": "Dispensado"
-      },
-      "deadline_kind": {
-        "absolute": "Data absoluta",
-        "relative_to_join": "Em relação à adesão do aluno",
-        "recurring": "Recorrente",
-        "none": "Sem prazo"
-      },
-      "type": {
-        "complete_all": "Conclua todos os cursos selecionados",
-        "n_of_m": "Conclua N de M cursos selecionados",
-        "score": "Pontuação acima do limite em todos os cursos",
-        "pass_rate": "Limite de taxa de aprovação da equipe",
-        "readiness": "Prontidão (sem prazo)"
-      },
-      "modal": {
-        "create_title": "Novo objetivo",
-        "edit_title": "Editar meta",
-        "title_label": "Título",
-        "title_placeholder": "por exemplo Rampa de integração",
-        "description_label": "Descrição",
-        "description_placeholder": "Contexto opcional para a equipe",
-        "type_label": "Tipo",
-        "courses_label": "Cursos",
-        "required_count_label": "Número de cursos necessários",
-        "score_threshold_label": "Pontuação de aprovação por aluno (%)",
-        "team_pass_rate_label": "Taxa de aprovação da equipe (%)",
-        "deadline_label": "Prazo",
-        "deadline_date_label": "Data limite",
-        "relative_days_label": "Dias a partir da entrada do aluno",
-        "recurring_months_label": "Repita a cada (meses)",
-        "reminders_label": "Lembretes (dias antes do vencimento)",
-        "reminders_helper": "Separados por vírgula. Exemplo: 7, 3, 1",
-        "save": "Salvar",
-        "cancel": "Cancelar"
-      }
-    }
-  },
   "ai_assistant": {
     "empty_state": "Peça-me para ajudar com o conteúdo do seu curso – redigir lições, gerar perguntas ou planejar um curso a partir de um documento.",
     "input_placeholder": "Pergunte ao assistente de IA...",
@@ -4761,6 +4555,212 @@
       "finalizing": "Salvando…",
       "done": "Pronto",
       "failed": "Falha no upload"
+    }
+  },
+  "cohorts": {
+    "heading": "Programas",
+    "page_title": "Programas",
+    "create": "Novo programa",
+    "create_success": "Programa criado",
+    "update_success": "Programa atualizado",
+    "delete_success": "Programa excluído",
+    "members_added": "Membros adicionados",
+    "member_removed": "Membro removido",
+    "course_added": "Curso adicionado",
+    "course_removed": "Curso removido",
+    "empty_title": "Ainda não há programas",
+    "empty_description": "Crie seu primeiro programa de certificação ou conformidade.",
+    "settings": {
+      "general": "Geral",
+      "name_label": "Nome",
+      "description_label": "Descrição",
+      "status_label": "Estado",
+      "save": "Salvar alterações",
+      "danger_zone": "Zona de perigo",
+      "delete": "Excluir programa",
+      "delete_description": "Uma vez excluído, este programa e todos os seus dados não poderão ser recuperados.",
+      "confirm_delete": "Tem certeza de que deseja excluir este programa? Isto não pode ser desfeito."
+    },
+    "lms": {
+      "empty_title": "Ainda não há programas",
+      "empty_description": "Você não está inscrito em nenhum programa."
+    },
+    "people": {
+      "invite": "Convidar",
+      "invite_modal_title": "Convidar membros",
+      "invite_modal_description": "Adicione pessoas a este programa por e-mail.",
+      "email_label": "E-mail",
+      "role_label": "Função",
+      "add_another": "Adicionar outro",
+      "invite_submit": "Enviar convites",
+      "empty_title": "Ainda não há membros",
+      "empty_description": "Convide pessoas para participar deste programa."
+    },
+    "courses": {
+      "add": "Adicionar curso",
+      "add_modal_title": "Adicionar curso ao programa",
+      "select_course": "Selecione um curso",
+      "select_placeholder": "Escolha um curso…",
+      "empty_title": "Ainda não há cursos",
+      "empty_description": "Adicione cursos a este programa.",
+      "select_courses": "Selecione os cursos",
+      "search_placeholder": "Pesquisar cursos",
+      "no_available_courses": "Não há cursos disponíveis para adicionar.",
+      "no_matching_courses": "Nenhum curso corresponde à sua pesquisa.",
+      "no_matching_cohort_courses": "Nenhum curso do programa corresponde à sua pesquisa.",
+      "pagination_status": "Página {page} de {totalPages}",
+      "published_access_callout_title": "Acesso de estudante",
+      "published_access_callout_description": "Os alunos só têm acesso aos cursos publicados. Os cursos podem estar neste programa para sua equipe enquanto ainda não foram publicados, enquanto permanecem ocultos aos alunos até que você os publique."
+    },
+    "newsfeed": {
+      "post": "Nova postagem",
+      "post_placeholder": "O que você está pensando?",
+      "post_submit": "Postar",
+      "empty_title": "Nenhuma postagem ainda",
+      "empty_description": "Seja o primeiro a postar algo.",
+      "heading": "Feed de notícias",
+      "make_a_post": "Faça uma postagem",
+      "edit_post": "Editar postagem",
+      "editor_placeholder": "Compartilhe uma atualização com seu programa",
+      "cancel": "Cancelar",
+      "pinned": "Fixado",
+      "delete_feed_title": "Excluir postagem",
+      "delete_feed_description": "Tem certeza de que deseja excluir esta postagem?",
+      "confirm_delete": "Excluir",
+      "user_avatar_alt": "Avatar do usuário",
+      "comments": {
+        "comment": "comentar",
+        "showing_of": "Exibindo {shown} de {total}",
+        "hide": "Ocultar comentários",
+        "placeholder": "Adicionar comentário do programa",
+        "submit_aria": "Enviar comentário",
+        "delete": "Excluir"
+      },
+      "card": {
+        "pin": "Fixar",
+        "unpin": "Liberar",
+        "edit": "Editar",
+        "delete": "Excluir"
+      }
+    },
+    "create_modal": {
+      "title": "Criar programa",
+      "description": "Adicione um novo programa de certificação ou conformidade.",
+      "name_label": "Nome",
+      "name_placeholder": "por exemplo Certificação de Segurança OSHA",
+      "description_label": "Descrição",
+      "description_placeholder": "Sobre o que é este programa?",
+      "submit": "Criar"
+    },
+    "sidebar": {
+      "newsfeed": "Feed de notícias",
+      "courses": "Cursos",
+      "people": "Pessoas",
+      "settings": "Configurações"
+    },
+    "status": {
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "archived": "Arquivado"
+    },
+    "description": "Conceda a um grupo de pessoas acesso a vários cursos, como uma aula",
+    "search_placeholder": "Programas de pesquisa",
+    "multiple_added": "Cursos adicionados",
+    "no_matching_cohorts": "Nenhum programa corresponde aos seus filtros.",
+    "card": {
+      "courses": "Cursos",
+      "students": "Alunos"
+    },
+    "table": {
+      "name": "Nome",
+      "courses": "Cursos",
+      "students": "Alunos",
+      "status": "Estado",
+      "description": "Descrição"
+    },
+    "filters": {
+      "filter": "Filtro",
+      "clear_all": "Limpar tudo",
+      "popover_title": "Filtros",
+      "sort": "Classificar",
+      "order": "Pedido",
+      "status": "Estado",
+      "ascending": "Asc",
+      "descending": "Descrição",
+      "sort_name": "Nome",
+      "sort_courses": "Cursos",
+      "sort_students": "Alunos",
+      "sort_status": "Estado"
+    },
+    "invite_sent": "Convites enviados",
+    "goals": {
+      "heading": "Metas de aprendizagem",
+      "description": "Defina metas mensuráveis que abrangem vários cursos para todos neste programa.",
+      "add": "Nova meta",
+      "empty_title": "Ainda não há metas",
+      "empty_description": "Crie uma meta para acompanhar o progresso da equipe em vários cursos.",
+      "created": "Meta criada",
+      "updated": "Meta atualizada",
+      "deleted": "Meta excluída",
+      "delete_confirm": "Excluir esta meta? O histórico de status por aluno será removido.",
+      "lms": {
+        "heading": "Seus objetivos",
+        "empty_title": "Nenhuma meta atribuída",
+        "empty_description": "Quando seus instrutores definirem metas, elas aparecerão aqui.",
+        "due_in_days": "Vencimento em {days} dias",
+        "due_tomorrow": "Vencimento amanhã",
+        "due_today": "Vencimento hoje",
+        "overdue": "Atrasado",
+        "no_deadline": "Sem prazo"
+      },
+      "tile": {
+        "on_track": "no caminho certo",
+        "completed_short": "concluído",
+        "overdue_short": "atrasado",
+        "at_risk_short": "em risco"
+      },
+      "status": {
+        "completed": "Concluído",
+        "in_progress": "Em andamento",
+        "at_risk": "Em risco",
+        "overdue": "Atrasado",
+        "not_started": "Não iniciado",
+        "waived": "Dispensado"
+      },
+      "deadline_kind": {
+        "absolute": "Data absoluta",
+        "relative_to_join": "Em relação à adesão do aluno",
+        "recurring": "Recorrente",
+        "none": "Sem prazo"
+      },
+      "type": {
+        "complete_all": "Conclua todos os cursos selecionados",
+        "n_of_m": "Conclua N de M cursos selecionados",
+        "score": "Pontuação acima do limite em todos os cursos",
+        "pass_rate": "Limite de taxa de aprovação da equipe",
+        "readiness": "Prontidão (sem prazo)"
+      },
+      "modal": {
+        "create_title": "Novo objetivo",
+        "edit_title": "Editar meta",
+        "title_label": "Título",
+        "title_placeholder": "por exemplo Rampa de integração",
+        "description_label": "Descrição",
+        "description_placeholder": "Contexto opcional para a equipe",
+        "type_label": "Tipo",
+        "courses_label": "Cursos",
+        "required_count_label": "Número de cursos necessários",
+        "score_threshold_label": "Pontuação de aprovação por aluno (%)",
+        "team_pass_rate_label": "Taxa de aprovação da equipe (%)",
+        "deadline_label": "Prazo",
+        "deadline_date_label": "Data limite",
+        "relative_days_label": "Dias a partir da entrada do aluno",
+        "recurring_months_label": "Repita a cada (meses)",
+        "reminders_label": "Lembretes (dias antes do vencimento)",
+        "reminders_helper": "Separados por vírgula. Exemplo: 7, 3, 1",
+        "save": "Salvar",
+        "cancel": "Cancelar"
+      }
     }
   }
 }

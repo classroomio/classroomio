@@ -1,0 +1,166 @@
+/**
+ * One-time data migration: copy all rows from legacy `program*` tables into the new
+ * `cohort*` tables while preserving primary keys and relationships.
+ *
+ * Prerequisites:
+ * 1. Run Drizzle migration `0001_*` so cohort tables exist.
+ * 2. Back up the database before running in production.
+ *
+ * The legacy `program*` tables are left untouched for rollback safety.
+ * Re-running is safe: rows already present in cohort tables are skipped.
+ */
+
+import { sql } from 'drizzle-orm';
+
+import { db } from '../drizzle';
+
+type TableCopy = {
+  label: string;
+  source: string;
+  target: string;
+  columnMap?: Record<string, string>;
+};
+
+const TABLE_COPIES: TableCopy[] = [
+  { label: 'cohort', source: 'program', target: 'cohort' },
+  {
+    label: 'cohort_course',
+    source: 'program_course',
+    target: 'cohort_course',
+    columnMap: { program_id: 'cohort_id' }
+  },
+  {
+    label: 'cohort_member',
+    source: 'program_member',
+    target: 'cohort_member',
+    columnMap: { program_id: 'cohort_id' }
+  },
+  {
+    label: 'cohort_newsfeed',
+    source: 'program_newsfeed',
+    target: 'cohort_newsfeed',
+    columnMap: { program_id: 'cohort_id' }
+  },
+  {
+    label: 'cohort_newsfeed_comment',
+    source: 'program_newsfeed_comment',
+    target: 'cohort_newsfeed_comment',
+    columnMap: { program_newsfeed_id: 'cohort_newsfeed_id' }
+  },
+  {
+    label: 'cohort_goal',
+    source: 'program_goal',
+    target: 'cohort_goal',
+    columnMap: { program_id: 'cohort_id' }
+  },
+  {
+    label: 'cohort_goal_assignment',
+    source: 'program_goal_assignment',
+    target: 'cohort_goal_assignment',
+    columnMap: { program_member_id: 'cohort_member_id' }
+  }
+];
+
+async function getTableColumns(tableName: string): Promise<string[]> {
+  const result = await db.execute<{ column_name: string }>(sql`
+    SELECT column_name
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = ${tableName}
+    ORDER BY ordinal_position
+  `);
+
+  const rows = Array.isArray(result) ? result : ((result as { rows?: { column_name: string }[] }).rows ?? []);
+
+  return rows.map((row) => row.column_name);
+}
+
+async function copyTable({ label, source, target, columnMap = {} }: TableCopy): Promise<number> {
+  const sourceColumns = await getTableColumns(source);
+  const targetColumns = await getTableColumns(target);
+
+  if (sourceColumns.length === 0) {
+    throw new Error(`Source table "${source}" not found or has no columns`);
+  }
+
+  if (targetColumns.length === 0) {
+    throw new Error(`Target table "${target}" not found or has no columns`);
+  }
+
+  const insertColumns = sourceColumns.map((column) => columnMap[column] ?? column);
+  const missingTargetColumns = insertColumns.filter((column) => !targetColumns.includes(column));
+
+  if (missingTargetColumns.length > 0) {
+    throw new Error(`Target table "${target}" is missing columns: ${missingTargetColumns.join(', ')}`);
+  }
+
+  const selectList = sourceColumns
+    .map((column) => `"${column}"${columnMap[column] ? ` AS "${columnMap[column]}"` : ''}`)
+    .join(', ');
+
+  const insertList = insertColumns.map((column) => `"${column}"`).join(', ');
+
+  const result = await db.execute(
+    sql.raw(`
+    INSERT INTO "${target}" (${insertList})
+    SELECT ${selectList}
+    FROM "${source}"
+    ON CONFLICT DO NOTHING
+  `)
+  );
+
+  const inserted =
+    typeof result === 'object' && result !== null && 'rowCount' in result
+      ? Number((result as { rowCount?: number }).rowCount ?? 0)
+      : 0;
+
+  console.log(`  ${label}: copied ${inserted} row(s)`);
+  return inserted;
+}
+
+async function migrateInviteMetadata(): Promise<number> {
+  const result = await db.execute(sql`
+    UPDATE organization_invite
+    SET metadata = (
+      metadata
+      - 'programIds'
+      - 'program_ids'
+    ) || jsonb_build_object(
+      'cohortIds',
+      COALESCE(metadata->'cohortIds', metadata->'programIds', metadata->'program_ids', '[]'::jsonb)
+    )
+    WHERE metadata ? 'programIds'
+       OR metadata ? 'program_ids'
+  `);
+
+  const updated =
+    typeof result === 'object' && result !== null && 'rowCount' in result
+      ? Number((result as { rowCount?: number }).rowCount ?? 0)
+      : 0;
+
+  console.log(`  organization_invite metadata: updated ${updated} row(s)`);
+  return updated;
+}
+
+async function migrate() {
+  console.log('Starting program → cohort data migration...\n');
+
+  let totalCopied = 0;
+
+  for (const tableCopy of TABLE_COPIES) {
+    totalCopied += await copyTable(tableCopy);
+  }
+
+  console.log('');
+  await migrateInviteMetadata();
+
+  console.log(`\nDone. Copied ${totalCopied} total row(s) into cohort tables.`);
+  console.log('Legacy program tables were not modified or dropped.');
+}
+
+migrate()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error('migrate-programs-to-cohorts failed:', error);
+    process.exit(1);
+  });

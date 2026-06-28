@@ -19,7 +19,7 @@
 **What it is.** ClassroomIO is an open‑source **Learning Management System (LMS) for
 companies** — compliance/employee training, customer education, and partner
 certification. It supports multi‑organization workspaces, courses/lessons/exercises,
-programs (cohorts), certificates, an AI course builder + in‑lesson tutor, a public
+cohorts (cohorts), certificates, an AI course builder + in‑lesson tutor, a public
 REST API, an MCP server, and embeddable course widgets. It can be **self‑hosted** or
 run as the **cloud** product. (`README.md` → lines 11–50 — feature summary;
 `README.md` → 84–91 — monorepo apps.)
@@ -83,9 +83,9 @@ gated/limited or doc claims exceed code; **Stub/Planned** = PRD only, little/no 
 | 11 | Org invites | Invite org members (EMAIL/LINK) | `apps/api/src/routes/invite/invite.ts`, `schema.ts:1384` | Complete |
 | 12 | Compliance training | Deadlines, renewals, grace, records | `apps/api/src/routes/course/compliance.ts`, `apps/api/src/routes/internal`, `schema.ts:768` (`courseCompletionRecord`) | Complete |
 | 13 | Certificates | Issue branded certificates | `packages/certificates/src/render.ts`, `schema.ts:850` (`courseCertificateIssue`) | Complete |
-| 14 | Programs (cohorts) | Group courses, goals, members, newsfeed | `apps/api/src/routes/program/program.ts`, `schema.ts:2646` | Complete |
+| 14 | Cohorts | Group courses, goals, members, newsfeed | `apps/api/src/routes/cohort/cohort.ts`, `schema.ts` cohort tables | Complete |
 | 15 | Community Q&A | Per‑course questions/answers | `apps/api/src/routes/community/community.ts`, `schema.ts:1558` | Complete |
-| 16 | Course newsfeed | Course/program announcements + comments | `apps/api/src/routes/course/newsfeed.ts`, `schema.ts:1605` | Complete |
+| 16 | Course newsfeed | Course/cohort announcements + comments | `apps/api/src/routes/course/newsfeed.ts`, `schema.ts:1605` | Complete |
 | 17 | Attendance | Track group/live‑class attendance | `apps/api/src/routes/course/attendance.ts`, `schema.ts:321` (`groupAttendance`) | Complete |
 | 18 | AI Course Assistant | In‑course AI authoring/plan/edit chat | `apps/api/src/routes/agent/*`, `packages/ai-assistant`, `schema.ts:3163` (`aiAgentRun`) | Complete (key‑gated) |
 | 19 | AI Lesson Tutor | In‑lesson learner AI helper + fair‑use caps | `apps/api/src/routes/course/ai-tutor.ts`, `apps/api/src/routes/organization/ai-tutor.ts`, `schema.ts:3013` (`aiTutorMessageCount`) | Complete (key‑gated) |
@@ -237,16 +237,16 @@ gated/limited or doc claims exceed code; **Stub/Planned** = PRD only, little/no 
 - **User flow:** Learner completes course → certificate issued → downloadable/branded.
 - **Edge cases:** custom certificate IDs (README 21); template selection.
 
-### 3.11 Programs (Cohorts) & Goals
+### 3.11 Cohorts & Goals
 - **Purpose:** group courses into cohorts with goals, members, and progress tracking.
-- **How it works:** `apps/api/src/routes/program/program.ts`; tables `program`
+- **How it works:** `apps/api/src/routes/cohort/cohort.ts`; tables `cohort`
   (`schema.ts:2646`), `programCourse` (`2677`), `programMember` (`2704`), `programNewsfeed`
   +`Comment` (`2739`,`2767`), `programGoal`/`…Assignment` (`2829`,`2878`) with goal‑type/
   deadline/status enums (`2803–2828`), status enum `ACTIVE|INACTIVE|ARCHIVED` (`2644`).
-  Middlewares `program-member.ts`, `program-team-member.ts`. PRD `programs [DONE]`.
-- **User flow:** Create program → add courses + members → set goals/deadlines → track
-  progress → cohort newsfeed. `apps/dashboard/src/routes/(app)/programs/[id]`.
-- **Edge cases:** goal deadline kinds; assignment status; archived programs.
+  Middlewares `cohort-member.ts`, `cohort-team-member.ts`. PRD `cohorts [DONE]`.
+- **User flow:** Create cohort → add courses + members → set goals/deadlines → track
+  progress → cohort newsfeed. `apps/dashboard/src/routes/(app)/cohorts/[id]`.
+- **Edge cases:** goal deadline kinds; assignment status; archived cohorts.
 
 ### 3.12 Community Q&A & Newsfeed
 - **Purpose:** per‑course discussion (questions/answers) and announcements.
@@ -254,9 +254,9 @@ gated/limited or doc claims exceed code; **Stub/Planned** = PRD only, little/no 
   `middlewares/question-author-or-team` (`ARCHITECHTURE.md:241–252`); tables
   `communityQuestion`/`communityAnswer` (`schema.ts:1558`,`1522`), `courseNewsfeed`/
   `…Comment` (`1605`,`1632`). Comment‑author middlewares `newsfeed-comment-author-or-team.ts`,
-  `program-newsfeed-comment-author-or-team.ts`.
+  `cohort-newsfeed-comment-author-or-team.ts`.
 - **User flow:** Course → Community → ask/answer; team can moderate. Newsfeed posts +
-  comments at course and program level.
+  comments at course and cohort level.
 - **Edge cases:** author‑or‑team authorization (only author or course team can edit/delete).
 
 ### 3.13 AI Course Assistant (authoring chat)
@@ -439,7 +439,7 @@ per‑request DB lookup** (`apps/api/src/middlewares/org-team-member.ts:5–53`)
 - `orgMemberMiddleware` — must be org member; `orgTeamMemberMiddleware` — ADMIN|TUTOR;
   `orgAdminMiddleware` — ADMIN only (`ARCHITECHTURE.md:233–237`).
 - `courseMemberMiddleware` / `courseTeamMemberMiddleware` — course‑level membership/team.
-- `programMemberMiddleware` / `programTeamMemberMiddleware` — program‑level.
+- `cohortMemberMiddleware` / `cohortTeamMemberMiddleware` — cohort-level.
 - `apiKeyMiddleware` / `automationKeyMiddleware` (+ `automationKeyScopesMiddleware`) —
   machine auth for webhooks/public API; `authOrApiKeyMiddleware`,
   `authOrAutomationKeyMiddleware`, and `*-or-automation-key`/`*-or-api-key` variants allow
@@ -449,7 +449,7 @@ per‑request DB lookup** (`apps/api/src/middlewares/org-team-member.ts:5–53`)
   (`workspace-not-readonly.ts`).
 - `signupGuard` — signup rules (§3.2). `rateLimiter` — global rate limit (`app.ts:98`).
 - Route‑specific author/team guards: `question-author-or-team`,
-  `newsfeed-comment-author-or-team`, `program-newsfeed-comment-author-or-team`.
+  `newsfeed-comment-author-or-team`, `cohort-newsfeed-comment-author-or-team`.
 
 **Public API scopes:** automation keys carry scopes like `public_api:*`, enforced per route
 (`apps/api/src/routes/v1/courses.ts:47`); usage categorized `read|write|publish`
@@ -586,7 +586,7 @@ Upgrade or Buy tokens (api/polar/subscribe | buy-tokens)
 5. **Course templates / cohorts / import variants** — `prd/course-templates`,
    `prd/course-cohorts`, `prd/course-import` are **todo** (`PRD-TRACKER.md:10,12,13`),
    yet related schema exists (`exerciseTemplate` `schema.ts:2401`; `courseImportDraft`
-   `schema.ts:2603`; programs are DONE). Scope of what's actually wired end‑to‑end vs.
+   `schema.ts:2603`; cohorts are DONE). Scope of what's actually wired end‑to‑end vs.
    schema‑only should be verified per feature before writing test cases. ⚠️
 6. **Anthropic in AI picker** — code supports Anthropic, but it is "not currently in the
    picker UI" (`README.md:231`, `.env.example:112`). The picker exposes Gemini + GPT‑4o;
