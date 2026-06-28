@@ -35,11 +35,12 @@
     <BlurFade once>
       <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">AI authoring</div>
       <h2 class="max-w-[680px] text-[clamp(1.75rem,3vw,2.6rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
-        Build entire courses with AI.
+        Your AI Sidekick In Every Course.
       </h2>
       <p class="mt-3 max-w-[560px] text-sm leading-relaxed text-gray-500">
-        Generate the structure, lessons, and quizzes from your docs — then review and approve every step before it
-        ships. Three ways in. Pick whichever fits your team.
+        Generate the structure, lessons, and quizzes from your docs, then review and approve every step before it ships.
+        You can even upload a video onto a lesson and you ask the AI agent to generate a quiz out of it for your
+        students.
       </p>
     </BlurFade>
 
