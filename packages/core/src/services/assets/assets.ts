@@ -17,6 +17,7 @@ import type {
 } from '@cio/utils/validation/assets';
 import type { TTranscriptResponse, TUpdateTranscript } from '@cio/utils/validation/media';
 import {
+  assetUsageExistsForTarget,
   createAssetUsage,
   createHlsAssetPlaceholder,
   createOrGetAssetByStorageKey,
@@ -503,6 +504,12 @@ export async function getAssetUsageGraphService(orgId: string, assetId: string) 
 export async function attachAssetService(orgId: string, assetId: string, profileId: string, input: TAssetAttach) {
   try {
     await getAssetService(orgId, assetId);
+
+    const alreadyAttached = await assetUsageExistsForTarget(assetId, orgId, input.targetType, input.targetId);
+    if (alreadyAttached) {
+      throw new AppError('Asset is already attached to this target', ErrorCodes.ASSET_ALREADY_ATTACHED, 409);
+    }
+
     return await createAssetUsage({
       organizationId: orgId,
       assetId,
@@ -707,7 +714,7 @@ export async function mintHlsToken(assetId: string): Promise<{
   return {
     token: `${payload}.${signature}`,
     expiresAt: new Date(exp * 1000).toISOString(),
-    cookieName: HLS_COOKIE_NAME,
+    cookieName: `${HLS_COOKIE_NAME}_${assetId}`,
     maxAgeSeconds: HLS_COOKIE_TTL_SECONDS
   };
 }

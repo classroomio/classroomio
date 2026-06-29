@@ -75,28 +75,10 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     manualGradingRequired: true
   },
   {
-    key: QUESTION_TYPE_KEY.MATCHING,
-    typename: 'MATCHING',
-    label: 'Matching',
-    id: 9,
-    autoGradable: true,
-    supportsPartialCredit: true,
-    manualGradingRequired: false
-  },
-  {
     key: QUESTION_TYPE_KEY.ORDERING,
     typename: 'ORDERING',
     label: 'Ordering',
-    id: 10,
-    autoGradable: true,
-    supportsPartialCredit: true,
-    manualGradingRequired: false
-  },
-  {
-    key: QUESTION_TYPE_KEY.HOTSPOT,
-    typename: 'HOTSPOT',
-    label: 'Hotspot',
-    id: 11,
+    id: 9,
     autoGradable: true,
     supportsPartialCredit: true,
     manualGradingRequired: false
@@ -105,7 +87,7 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     key: QUESTION_TYPE_KEY.LINK,
     typename: 'LINK',
     label: 'Links',
-    id: 12,
+    id: 10,
     autoGradable: false,
     supportsPartialCredit: false,
     manualGradingRequired: true
@@ -114,7 +96,7 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     key: QUESTION_TYPE_KEY.WORD_BANK,
     typename: 'WORD_BANK',
     label: 'Word bank',
-    id: 13,
+    id: 11,
     autoGradable: true,
     supportsPartialCredit: true,
     manualGradingRequired: false
@@ -123,7 +105,7 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     key: QUESTION_TYPE_KEY.STAR,
     typename: 'STAR',
     label: 'Star rating',
-    id: 14,
+    id: 12,
     autoGradable: true,
     supportsPartialCredit: false,
     manualGradingRequired: false
@@ -132,12 +114,39 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     key: QUESTION_TYPE_KEY.VIDEO_RECORDING,
     typename: 'VIDEO_RECORDING',
     label: 'Video recording',
-    id: 15,
+    id: 13,
     autoGradable: false,
     supportsPartialCredit: false,
     manualGradingRequired: true
+  },
+  // Built but not offered in the product. Kept at the END of the id sequence
+  // (append-only) so they never shift the ids of types that exist in the DB.
+  // They have no `question_type` row, so `disabled` keeps them out of pickers,
+  // the AI tool enum, and validation.
+  {
+    key: QUESTION_TYPE_KEY.MATCHING,
+    typename: 'MATCHING',
+    label: 'Matching',
+    id: 14,
+    autoGradable: true,
+    supportsPartialCredit: true,
+    manualGradingRequired: false,
+    disabled: true
+  },
+  {
+    key: QUESTION_TYPE_KEY.HOTSPOT,
+    typename: 'HOTSPOT',
+    label: 'Hotspot',
+    id: 15,
+    autoGradable: true,
+    supportsPartialCredit: true,
+    manualGradingRequired: false,
+    disabled: true
   }
 ] as const;
+
+/** Types actually offered in the product (excludes `disabled` ones with no DB row). */
+export const ENABLED_QUESTION_TYPE_REGISTRY = QUESTION_TYPE_REGISTRY.filter((type) => !type.disabled);
 
 export const QUESTION_TYPE_BY_KEY = Object.freeze(
   QUESTION_TYPE_REGISTRY.reduce(

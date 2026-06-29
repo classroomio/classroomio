@@ -387,8 +387,7 @@ export async function createAssetUsage(values: TNewAssetUsage, dbClient: DbOrTxC
           schema.assetUsage.targetType,
           schema.assetUsage.targetId,
           schema.assetUsage.slotType,
-          schema.assetUsage.slotKey,
-          schema.assetUsage.position
+          schema.assetUsage.slotKey
         ]
       })
       .returning();
@@ -408,10 +407,7 @@ export async function createAssetUsage(values: TNewAssetUsage, dbClient: DbOrTxC
           eq(schema.assetUsage.slotType, slotType),
           values.slotKey == null
             ? sql`${schema.assetUsage.slotKey} is null`
-            : eq(schema.assetUsage.slotKey, values.slotKey),
-          values.position == null
-            ? sql`${schema.assetUsage.position} is null`
-            : eq(schema.assetUsage.position, values.position)
+            : eq(schema.assetUsage.slotKey, values.slotKey)
         )
       )
       .limit(1);
@@ -509,6 +505,35 @@ export async function listAssetUsagesByAsset(assetId: string, orgId: string): Pr
   } catch (error) {
     console.error('listAssetUsagesByAsset error:', error);
     throw new Error(`Failed to list asset usages: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function assetUsageExistsForTarget(
+  assetId: string,
+  orgId: string,
+  targetType: string,
+  targetId: string
+): Promise<boolean> {
+  try {
+    const [existing] = await db
+      .select({ id: schema.assetUsage.id })
+      .from(schema.assetUsage)
+      .where(
+        and(
+          eq(schema.assetUsage.assetId, assetId),
+          eq(schema.assetUsage.organizationId, orgId),
+          eq(schema.assetUsage.targetType, targetType),
+          eq(schema.assetUsage.targetId, targetId)
+        )
+      )
+      .limit(1);
+
+    return Boolean(existing);
+  } catch (error) {
+    console.error('assetUsageExistsForTarget error:', error);
+    throw new Error(
+      `Failed to check asset usage for target: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 

@@ -83,25 +83,9 @@ const EXPECTED_REGISTRY = [
     manualGradingRequired: true
   },
   {
-    key: QUESTION_TYPE_KEY.MATCHING,
-    typename: 'MATCHING',
-    id: 9,
-    autoGradable: true,
-    supportsPartialCredit: true,
-    manualGradingRequired: false
-  },
-  {
     key: QUESTION_TYPE_KEY.ORDERING,
     typename: 'ORDERING',
-    id: 10,
-    autoGradable: true,
-    supportsPartialCredit: true,
-    manualGradingRequired: false
-  },
-  {
-    key: QUESTION_TYPE_KEY.HOTSPOT,
-    typename: 'HOTSPOT',
-    id: 11,
+    id: 9,
     autoGradable: true,
     supportsPartialCredit: true,
     manualGradingRequired: false
@@ -109,7 +93,7 @@ const EXPECTED_REGISTRY = [
   {
     key: QUESTION_TYPE_KEY.LINK,
     typename: 'LINK',
-    id: 12,
+    id: 10,
     autoGradable: false,
     supportsPartialCredit: false,
     manualGradingRequired: true
@@ -117,7 +101,7 @@ const EXPECTED_REGISTRY = [
   {
     key: QUESTION_TYPE_KEY.WORD_BANK,
     typename: 'WORD_BANK',
-    id: 13,
+    id: 11,
     autoGradable: true,
     supportsPartialCredit: true,
     manualGradingRequired: false
@@ -125,7 +109,7 @@ const EXPECTED_REGISTRY = [
   {
     key: QUESTION_TYPE_KEY.STAR,
     typename: 'STAR',
-    id: 14,
+    id: 12,
     autoGradable: true,
     supportsPartialCredit: false,
     manualGradingRequired: false
@@ -133,12 +117,50 @@ const EXPECTED_REGISTRY = [
   {
     key: QUESTION_TYPE_KEY.VIDEO_RECORDING,
     typename: 'VIDEO_RECORDING',
-    id: 15,
+    id: 13,
     autoGradable: false,
     supportsPartialCredit: false,
     manualGradingRequired: true
+  },
+  {
+    key: QUESTION_TYPE_KEY.MATCHING,
+    typename: 'MATCHING',
+    id: 14,
+    autoGradable: true,
+    supportsPartialCredit: true,
+    manualGradingRequired: false,
+    disabled: true
+  },
+  {
+    key: QUESTION_TYPE_KEY.HOTSPOT,
+    typename: 'HOTSPOT',
+    id: 15,
+    autoGradable: true,
+    supportsPartialCredit: true,
+    manualGradingRequired: false,
+    disabled: true
   }
 ] as const;
+
+// Canonical `question_type` rows in the database (the source of truth ids are
+// resolved against). Ids 1-13 are the live rows in insertion order; MATCHING and
+// HOTSPOT are intentionally absent (built-but-disabled). This list guards against
+// the registry id ever drifting from the DB again.
+const CANONICAL_DB_QUESTION_TYPES: ReadonlyArray<{ id: number; typename: string }> = [
+  { id: 1, typename: 'RADIO' },
+  { id: 2, typename: 'CHECKBOX' },
+  { id: 3, typename: 'TEXTAREA' },
+  { id: 4, typename: 'TRUE_FALSE' },
+  { id: 5, typename: 'SHORT_ANSWER' },
+  { id: 6, typename: 'NUMERIC' },
+  { id: 7, typename: 'FILL_BLANK' },
+  { id: 8, typename: 'FILE_UPLOAD' },
+  { id: 9, typename: 'ORDERING' },
+  { id: 10, typename: 'LINK' },
+  { id: 11, typename: 'WORD_BANK' },
+  { id: 12, typename: 'STAR' },
+  { id: 13, typename: 'VIDEO_RECORDING' }
+];
 
 describe('question type registry', () => {
   it('contains exactly the supported question type keys', () => {
@@ -173,6 +195,29 @@ describe('question type registry', () => {
       expect(isAutoGradableQuestionType(expected.key)).toBe(expected.autoGradable);
       expect(supportsPartialCredit(expected.key)).toBe(expected.supportsPartialCredit);
       expect(requiresManualGrading(expected.key)).toBe(expected.manualGradingRequired);
+    }
+  });
+
+  it('registry ids match the canonical question_type DB rows (no drift)', () => {
+    for (const row of CANONICAL_DB_QUESTION_TYPES) {
+      const key = QUESTION_TYPE_TYPENAME_TO_KEY[row.typename];
+      expect(key, `typename ${row.typename} missing from registry`).toBeDefined();
+      expect(QUESTION_TYPE_IDS[key], `id mismatch for ${row.typename}`).toBe(row.id);
+    }
+  });
+
+  it('keeps disabled types appended after every DB-backed type', () => {
+    const dbIds = new Set(CANONICAL_DB_QUESTION_TYPES.map((row) => row.id));
+    const maxDbId = Math.max(...CANONICAL_DB_QUESTION_TYPES.map((row) => row.id));
+
+    for (const entry of QUESTION_TYPE_REGISTRY) {
+      if (entry.disabled) {
+        // Disabled types have no DB row and must sit past the live id range.
+        expect(dbIds.has(entry.id), `disabled ${entry.typename} must not reuse a DB id`).toBe(false);
+        expect(entry.id).toBeGreaterThan(maxDbId);
+      } else {
+        expect(dbIds.has(entry.id), `enabled ${entry.typename} must map to a DB row`).toBe(true);
+      }
     }
   });
 

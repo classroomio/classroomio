@@ -649,6 +649,7 @@
 
   $effect(() => {
     if (!exerciseId || isFetchingExercise || skipHydrateFromSubmissions) return;
+    if (!isExerciseLoaded) return;
     if (!submissionList.length || $questionnaireMetaData.isFinished) return;
     let idx = selectedTryIndex;
     if (idx < 0 || idx >= submissionList.length) {
@@ -700,7 +701,7 @@
       ...m,
       answers,
       totalPossibleGrade,
-      currentQuestionIndex: $questionnaire.questions.length,
+      currentQuestionIndex: $questionnaire.questions.length + 1,
       currentSectionIndex: activeSections.length > 0 ? activeSections.length - 1 : 0,
       sectionPhase: 'questions',
       isFinished: true,

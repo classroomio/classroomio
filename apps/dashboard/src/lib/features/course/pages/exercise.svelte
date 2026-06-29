@@ -269,6 +269,7 @@
 
   onDestroy(() => {
     reset();
+    questionnaire.update((q) => ({ ...q, questions: [] }));
   });
 
   onMount(() => {
@@ -309,6 +310,8 @@
   });
 
   $effect(() => {
+    if ($isOrgStudent) return;
+
     const addNewQ = $questionnaire?.questions?.length < 1;
 
     if (addNewQ) {
