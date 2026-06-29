@@ -70,7 +70,7 @@ export const transcriptsRouter = new Hono()
     if (!asset) return withCors(null, 404);
 
     let authorized = false;
-    const token = getCookie(c, HLS_COOKIE_NAME);
+    const token = getCookie(c, `${HLS_COOKIE_NAME}_${assetId}`);
     if (token) {
       const verified = await verifyHlsToken(token);
       if (verified?.assetId === assetId) authorized = true;

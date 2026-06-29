@@ -111,7 +111,7 @@ export const hlsRouter = new Hono()
     let authorized = false;
     let denyReason: 'no_token_or_session' | 'token_invalid' | 'session_no_role' | 'asset_missing' =
       'no_token_or_session';
-    const token = getCookie(c, HLS_COOKIE_NAME);
+    const token = getCookie(c, `${HLS_COOKIE_NAME}_${assetId}`);
     if (token) {
       const verified = await verifyHlsToken(token);
       if (verified?.assetId === assetId) {

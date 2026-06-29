@@ -714,7 +714,7 @@ export async function mintHlsToken(assetId: string): Promise<{
   return {
     token: `${payload}.${signature}`,
     expiresAt: new Date(exp * 1000).toISOString(),
-    cookieName: HLS_COOKIE_NAME,
+    cookieName: `${HLS_COOKIE_NAME}_${assetId}`,
     maxAgeSeconds: HLS_COOKIE_TTL_SECONDS
   };
 }
