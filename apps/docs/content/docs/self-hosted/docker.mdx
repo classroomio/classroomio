@@ -212,7 +212,7 @@ The bundled **MinIO** is included by default and the startup script auto-configu
 
 ### Optional — Upload file size limits
 
-Set these in the root `.env` to raise or lower upload caps (values are in **megabytes**). Compose passes them through to the `api` and `dashboard` containers. Unset = built-in defaults.
+Set these in the root `.env` to raise or lower upload caps (values are in **megabytes**). Compose passes them through to the `api` and `dashboard` containers. Unset = built-in defaults. On [Railway](/docs/self-hosted/railway) or [Coolify](/docs/self-hosted/coolify), set the same variables on both the API and dashboard services.
 
 | Variable | Default | Applies to |
 |----------|---------|------------|
