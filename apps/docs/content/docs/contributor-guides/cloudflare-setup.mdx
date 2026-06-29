@@ -27,8 +27,6 @@ Configure the following for the API (e.g. in `.env` or your deployment):
 - **Media bucket (images and thumbnails):**  
   `CLOUDFLARE_IMAGE_BUCKET_DOMAIN` — public URL for the **media** bucket (e.g. custom domain or R2 public bucket URL). Required for image uploads and video thumbnail display.
 
-**Upload size limits** (self-hosted / on-prem): optional `UPLOAD_MAX_*_MB` env vars cap documents, videos, assignment files, and other uploads. Set the same values on the API and dashboard. See [Docker self-hosting → Upload file size limits](/docs/self-hosted/docker#optional--upload-file-size-limits). If you raise these, also increase any reverse-proxy body-size limit in front of your API or dashboard.
-
 ## R2 CORS configuration
 
 When the dashboard loads videos or images from R2, the browser may send requests to a different origin. CORS must be configured on each bucket so the browser allows those requests. Allow **GET** and **HEAD** (and **PUT** where the client uploads) so that fetches and preflight/cache checks succeed.
