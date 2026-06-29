@@ -175,7 +175,7 @@
 <input
   bind:this={fileInputEl}
   type="file"
-  accept=".pdf,.docx,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+  accept=".pdf,.docx,.pptx,.odt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.oasis.opendocument.text"
   class="hidden"
   onchange={handleFileChange}
 />
@@ -255,9 +255,9 @@
           bind:ref={chatTextareaRef}
           bind:value={inputValue}
           {mentionItems}
-          onSubmit={onSend}
+          onSubmit={isUploading ? undefined : onSend}
           placeholder={$t('ai_assistant.input_placeholder')}
-          disabled={isStreaming || isUploading}
+          disabled={isStreaming}
           typeLabel={getTypeLabel}
           emptyMessage={t.get('ai_assistant.mention_no_results')}
           rows={2}

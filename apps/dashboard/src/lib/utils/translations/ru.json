@@ -4316,7 +4316,10 @@
     "ask_ai": "Спросите ИИ",
     "content_input_placeholder": "Спросите об этом контенте…",
     "ask_ai_expand_aria": "Открыть вход Ask AI",
-    "ask_ai_input_aria": "Спросите ИИ об этом контенте"
+    "ask_ai_input_aria": "Спросите ИИ об этом контенте",
+    "upload_error_file_too_large": "Файл слишком большой. Максимальный размер — 5 МБ.",
+    "upload_error_unsupported_type": "Тип файла не поддерживается. Загрузите файл PDF, DOCX, PPTX или ODT.",
+    "upload_error_generic": "Не удалось загрузить документ. Пожалуйста, попробуйте еще раз."
   },
   "widgets": {
     "heading": "Виджеты",

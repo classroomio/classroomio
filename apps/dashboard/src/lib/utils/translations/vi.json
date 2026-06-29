@@ -4316,7 +4316,10 @@
     "ask_ai": "Hỏi AI",
     "content_input_placeholder": "Hỏi về nội dung này…",
     "ask_ai_expand_aria": "Mở đầu vào Hỏi AI",
-    "ask_ai_input_aria": "Hỏi AI về nội dung này"
+    "ask_ai_input_aria": "Hỏi AI về nội dung này",
+    "upload_error_file_too_large": "Tệp quá lớn. Kích thước tối đa là 5 MB.",
+    "upload_error_unsupported_type": "Loại tệp không được hỗ trợ. Vui lòng tải lên tệp PDF, DOCX, PPTX hoặc ODT.",
+    "upload_error_generic": "Không thể tải tài liệu lên. Vui lòng thử lại."
   },
   "widgets": {
     "heading": "Widget",

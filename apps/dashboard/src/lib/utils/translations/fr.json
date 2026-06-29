@@ -4316,7 +4316,10 @@
     "ask_ai": "Demandez à l'IA",
     "content_input_placeholder": "Renseignez-vous sur ce contenu…",
     "ask_ai_expand_aria": "Ouvrir la saisie de Ask AI",
-    "ask_ai_input_aria": "Interrogez AI à propos de ce contenu"
+    "ask_ai_input_aria": "Interrogez AI à propos de ce contenu",
+    "upload_error_file_too_large": "Le fichier est trop volumineux. La taille maximale est de 5 Mo.",
+    "upload_error_unsupported_type": "Type de fichier non pris en charge. Veuillez télécharger un fichier PDF, DOCX, PPTX ou ODT.",
+    "upload_error_generic": "Échec du téléchargement du document. Veuillez réessayer."
   },
   "widgets": {
     "heading": "Widgets",

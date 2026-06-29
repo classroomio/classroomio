@@ -69,6 +69,7 @@ import {
   collectDocumentIds,
   getActiveCourseTemplateId,
   getLatestImplementationPlan,
+  loadDocumentsMeta,
   loadDocumentsText,
   verifyExerciseBelongsToCourse,
   verifyLessonBelongsToCourse
@@ -410,6 +411,7 @@ const agentCoreRouter = new Hono()
         .select({
           title: schema.course.title,
           description: schema.course.description,
+          metadata: schema.course.metadata,
           organizationId: schema.group.organizationId
         })
         .from(schema.course)
@@ -449,7 +451,10 @@ const agentCoreRouter = new Hono()
       }
 
       const documentIds = collectDocumentIds(messages, context?.documentId);
-      const documentText = documentIds.length > 0 ? await loadDocumentsText(documentIds, user.id) : undefined;
+      const [documentText, documentAssets] = await Promise.all([
+        documentIds.length > 0 ? loadDocumentsText(documentIds, user.id) : Promise.resolve(undefined),
+        documentIds.length > 0 ? loadDocumentsMeta(documentIds) : Promise.resolve([])
+      ]);
 
       const existingSections = await listCourseSections(courseId);
 
@@ -496,7 +501,9 @@ const agentCoreRouter = new Hono()
         exerciseTitle,
         documentId: context?.documentId,
         documentText,
-        existingSectionCount: existingSections.length
+        documentAssets,
+        existingSectionCount: existingSections.length,
+        isContentGroupingEnabled: courseRow.metadata?.isContentGroupingEnabled ?? true
       };
 
       trackAgentEvent(AgentEvent.CHAT_STARTED, {
@@ -531,7 +538,9 @@ const agentCoreRouter = new Hono()
       const agentTools =
         role === AgentRole.STUDENT
           ? buildStudentAgentTools(orgId, user.id, courseId, studentPolicy!.settings)
-          : filterToolsForChatMode(buildAgentTools(orgId, user.id, courseId, messages, { isOrgOnPaidPlan: isOrgPaid }));
+          : filterToolsForChatMode(
+              buildAgentTools(orgId, user.id, courseId, messages, { isOrgOnPaidPlan: isOrgPaid, documentAssets })
+            );
 
       const contextManaged = await buildModelContextMessages({
         conversationId,

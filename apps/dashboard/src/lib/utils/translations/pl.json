@@ -4316,7 +4316,10 @@
     "ask_ai": "Zapytaj AI",
     "content_input_placeholder": "Zapytaj o tę treść…",
     "ask_ai_expand_aria": "Otwórz wejście Zapytaj AI",
-    "ask_ai_input_aria": "Zapytaj AI o tę treść"
+    "ask_ai_input_aria": "Zapytaj AI o tę treść",
+    "upload_error_file_too_large": "Plik jest za duży. Maksymalny rozmiar to 5 MB.",
+    "upload_error_unsupported_type": "Typ pliku nie jest obsługiwany. Prześlij plik PDF, DOCX, PPTX lub ODT.",
+    "upload_error_generic": "Nie udało się przesłać dokumentu. Spróbuj ponownie."
   },
   "widgets": {
     "heading": "Widżety",

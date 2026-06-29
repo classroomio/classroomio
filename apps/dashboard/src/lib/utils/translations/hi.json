@@ -4316,7 +4316,10 @@
     "ask_ai": "एआई से पूछें",
     "content_input_placeholder": "इस सामग्री के बारे में पूछें...",
     "ask_ai_expand_aria": "एआई इनपुट पूछें खोलें",
-    "ask_ai_input_aria": "इस सामग्री के बारे में AI से पूछें"
+    "ask_ai_input_aria": "इस सामग्री के बारे में AI से पूछें",
+    "upload_error_file_too_large": "फ़ाइल बहुत बड़ी है। अधिकतम आकार 5 एमबी है.",
+    "upload_error_unsupported_type": "फ़ाइल प्रकार समर्थित नहीं है. कृपया एक PDF, DOCX, PPTX, या ODT फ़ाइल अपलोड करें।",
+    "upload_error_generic": "दस्तावेज़ अपलोड करने में विफल. कृपया पुन: प्रयास करें।"
   },
   "widgets": {
     "heading": "विजेट्स",

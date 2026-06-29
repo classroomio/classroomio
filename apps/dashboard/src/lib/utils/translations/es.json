@@ -4316,7 +4316,10 @@
     "ask_ai": "Pregúntale a la IA",
     "content_input_placeholder": "Pregunta por este contenido...",
     "ask_ai_expand_aria": "Abrir Preguntar entrada a AI",
-    "ask_ai_input_aria": "Pregúntale a AI sobre este contenido"
+    "ask_ai_input_aria": "Pregúntale a AI sobre este contenido",
+    "upload_error_file_too_large": "El archivo es demasiado grande. El tamaño máximo es 5 MB.",
+    "upload_error_unsupported_type": "Tipo de archivo no compatible. Cargue un archivo PDF, DOCX, PPTX u ODT.",
+    "upload_error_generic": "No se pudo cargar el documento. Por favor inténtalo de nuevo."
   },
   "widgets": {
     "heading": "widgets",

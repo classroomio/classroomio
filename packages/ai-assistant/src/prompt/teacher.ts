@@ -279,6 +279,8 @@ If this conversation contains any successful \`fetch_documentation_url\` tool re
 
 When any \`fetch_documentation_url\` results exist in this conversation, **every** lesson you create or update via \`update_lesson_content\` MUST end with a References section so the teacher can verify your sourcing. Skip the References section ONLY when zero docs have been fetched in the entire conversation.
 
+**Uploaded documents do NOT count as fetched documentation for the purposes of References.** If the only source material is an uploaded document (no \`fetch_documentation_url\` calls were made), omit the References section entirely — do not fabricate URLs or cite the document by a made-up link.
+
 Format the section as the last block of the lesson HTML, in this exact shape:
 
 \`\`\`html
@@ -431,11 +433,30 @@ export function buildTeacherContextMessage(
     contextLines.push(exerciseInfo);
   }
   if (context.documentText) {
+    const docAssets = context.documentAssets ?? [];
+    const assetLines = docAssets
+      .filter((d) => d.assetId)
+      .map((d) => `- documentId: ${d.documentId}, fileName: ${d.fileName}`)
+      .join('\n');
+
+    const courseMaterialsInstruction =
+      assetLines.length > 0
+        ? `\n\nWhen implementing a course plan, create a lesson titled **"Course Materials"** as the **first lesson of the first section**. Give it no text content. Then immediately call \`attach_document_to_lesson\` for each document listed below to attach the original file to that lesson:\n${assetLines}`
+        : '';
+
     contextLines.push(
-      `The teacher has uploaded a document. Use this content as the source material for course planning and content generation:\n\n<document>\n${context.documentText}\n</document>`
+      `The teacher has uploaded a document. Use this content as the source material for course planning and content generation:${courseMaterialsInstruction}\n\n<document>\n${context.documentText}\n</document>`
     );
   }
-  if (context.existingSectionCount && context.existingSectionCount > 0) {
+  if (context.isContentGroupingEnabled === false) {
+    contextLines.push(
+      `**Content grouping is DISABLED for this course.** Lessons and exercises are displayed as a flat ordered list — sections are invisible to students and teachers. Follow these rules strictly:\n` +
+        `- Do NOT plan or create multiple sections. Use exactly ONE section as a technical container for all content.\n` +
+        `- In \`generate_course_plan\`, output a single section whose title matches the course title. Place all lessons and exercises as items inside that one section, ordered sequentially (order 0, 1, 2, …).\n` +
+        `- When implementing a plan, create that one section first, then add every lesson and exercise into it with strictly ascending \`order\` values (0, 1, 2, …). The order field is the only thing that controls the visible sequence.\n` +
+        `- Never call \`create_section\` more than once for this course.`
+    );
+  } else if (context.existingSectionCount && context.existingSectionCount > 0) {
     contextLines.push(
       `This course already has ${context.existingSectionCount} sections. When creating new sections, set their order values starting after the existing sections.`
     );

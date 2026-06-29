@@ -42,6 +42,10 @@ export const createLessonParam = z.object({
   title: z.string().min(1),
   order: z.number().int().min(0)
 });
+export const attachDocumentToLessonParam = z.object({
+  lessonId: z.string().describe('ID of the lesson to attach the document to'),
+  documentId: z.string().describe('documentId of the uploaded document (from the conversation context)')
+});
 export const updateLessonParam = z
   .object({
     lessonId: z.string(),

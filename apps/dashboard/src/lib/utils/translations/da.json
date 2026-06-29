@@ -4316,7 +4316,10 @@
     "ask_ai": "Spørg AI",
     "content_input_placeholder": "Spørg om dette indhold...",
     "ask_ai_expand_aria": "Åbn Spørg AI-input",
-    "ask_ai_input_aria": "Spørg AI om dette indhold"
+    "ask_ai_input_aria": "Spørg AI om dette indhold",
+    "upload_error_file_too_large": "Filen er for stor. Maksimal størrelse er 5 MB.",
+    "upload_error_unsupported_type": "Filtype understøttes ikke. Upload venligst en PDF-, DOCX-, PPTX- eller ODT-fil.",
+    "upload_error_generic": "Kunne ikke uploade dokument. Prøv venligst igen."
   },
   "widgets": {
     "heading": "Widgets",

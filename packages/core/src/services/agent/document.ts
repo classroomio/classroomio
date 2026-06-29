@@ -18,7 +18,7 @@ import { createAssetFromUploadService } from '../assets/assets';
 
 /**
  * Parse an uploaded document, store extracted text in Redis (hot cache) and Postgres
- * (durable, scoped to a conversation). Supports PDF, DOCX, and PPTX files.
+ * (durable, scoped to a conversation). Supports PDF, DOCX, PPTX, and ODT files.
  */
 export async function parseAndStoreDocument(
   file: File,
@@ -55,6 +55,9 @@ export async function parseAndStoreDocument(
       break;
     case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
       ({ text: extractedText, pageCount } = await extractPptxText(buffer));
+      break;
+    case 'application/vnd.oasis.opendocument.text':
+      extractedText = await extractOdtText(buffer);
       break;
     default:
       throw new AppError('Unsupported file type', 'UNSUPPORTED_FILE_TYPE', 415);
@@ -195,6 +198,32 @@ async function extractDocxText(buffer: Buffer): Promise<string> {
   const result = await mammoth.extractRawText({ buffer });
 
   return result.value;
+}
+
+async function extractOdtText(buffer: Buffer): Promise<string> {
+  try {
+    const JSZip = (await import('jszip')).default;
+    const zip = await JSZip.loadAsync(buffer);
+
+    const contentFile = zip.files['content.xml'];
+
+    if (!contentFile) {
+      throw new Error('content.xml not found in ODT archive');
+    }
+
+    const xml = await contentFile.async('text');
+    const text = xml
+      .replace(/<text:line-break[^>]*\/?>/g, '\n')
+      .replace(/<\/text:p>/g, '\n')
+      .replace(/<\/text:h>/g, '\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+
+    return text;
+  } catch {
+    throw new AppError('Failed to parse ODT file', 'ODT_PARSE_ERROR', 422);
+  }
 }
 
 async function extractPptxText(buffer: Buffer): Promise<{ text: string; pageCount: number }> {

@@ -331,6 +331,10 @@ export async function resumeAgentRunState(runId: string, userId: string, orgId: 
 export async function retryAgentRunState(runId: string, userId: string, orgId: string): Promise<AgentRunDetail> {
   const run = await getOwnedAgentRun(runId, userId, orgId);
 
+  if (ACTIVE_RUN_STATUSES.has(run.status)) {
+    return buildAgentRunDetail(run);
+  }
+
   if (run.status !== 'failed') {
     throw new AppError('Only failed agent runs can be retried', 'AGENT_RUN_NOT_RETRYABLE', 409);
   }
