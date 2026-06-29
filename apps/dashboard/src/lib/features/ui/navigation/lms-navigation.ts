@@ -11,19 +11,8 @@ import {
 
 import type { AccountOrg } from '$features/app/types';
 import type { Component } from 'svelte';
-import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { isActive } from '$lib/utils/functions/app';
-import { PLAN } from '@cio/utils/plans';
-
-function isOrgOnFreePlan(currentOrg: AccountOrg | null) {
-  if (!currentOrg?.id || PUBLIC_IS_SELFHOSTED === 'true') {
-    return false;
-  }
-
-  const plan = currentOrg.plans.find((item) => item.isActive);
-
-  return !plan || plan.planName === PLAN.BASIC;
-}
+import { isOrgOnFreePlan } from '$lib/utils/store/org';
 
 export interface NavItem {
   title: string;
