@@ -471,9 +471,22 @@
     "any_course": "Tout cours que vous terminez sera affiché ici",
     "find_courses": "Trouver des cours"
   },
+  "certificates": {
+    "heading": "Certificats",
+    "description": "Consultez et téléchargez les certificats que vous avez obtenus en terminant des cours.",
+    "search": "Rechercher des certificats",
+    "earned_on": "Obtenu le",
+    "view_certificate": "Voir le certificat",
+    "empty_title": "Aucun certificat pour le moment",
+    "empty_description": "Terminez un cours pour obtenir votre premier certificat. Vos certificats obtenus apparaîtront ici.",
+    "no_results_title": "Aucun certificat trouvé",
+    "no_results_description": "Essayez un autre terme de recherche.",
+    "go_to_my_learning": "Aller à Mon apprentissage"
+  },
   "lms_navigation": {
     "home": "Accueil",
     "my_learning": "Mon apprentissage",
+    "certificates": "Certificats",
     "exercise": "Exercice",
     "community": "Communauté",
     "explore": "Explorer",

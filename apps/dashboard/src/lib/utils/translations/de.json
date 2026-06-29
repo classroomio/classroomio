@@ -471,9 +471,22 @@
     "any_course": "Alle von Ihnen abgeschlossenen Kurse werden hier angezeigt",
     "find_courses": "Kurse finden"
   },
+  "certificates": {
+    "heading": "Zertifikate",
+    "description": "Sieh dir Zertifikate an und lade sie herunter, die du durch den Abschluss von Kursen erworben hast.",
+    "search": "Zertifikate suchen",
+    "earned_on": "Erworben am",
+    "view_certificate": "Zertifikat anzeigen",
+    "empty_title": "Noch keine Zertifikate",
+    "empty_description": "Schließe einen Kurs ab, um dein erstes Zertifikat zu verdienen. Deine erworbenen Zertifikate werden hier angezeigt.",
+    "no_results_title": "Keine Zertifikate gefunden",
+    "no_results_description": "Versuche einen anderen Suchbegriff.",
+    "go_to_my_learning": "Zu Mein Lernen"
+  },
   "lms_navigation": {
     "home": "Zuhause",
     "my_learning": "Mein Lernen",
+    "certificates": "Zertifikate",
     "exercise": "Übung",
     "community": "Gemeinschaft",
     "explore": "Entdecken",

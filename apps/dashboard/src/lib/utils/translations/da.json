@@ -471,9 +471,22 @@
     "any_course": "Ethvert kursus, du gennemfører, vil blive vist her",
     "find_courses": "Find kurser"
   },
+  "certificates": {
+    "heading": "Certifikater",
+    "description": "Se og download certifikater, du har opnået ved at gennemføre kurser.",
+    "search": "Søg certifikater",
+    "earned_on": "Opnået den",
+    "view_certificate": "Se certifikat",
+    "empty_title": "Ingen certifikater endnu",
+    "empty_description": "Gennemfør et kursus for at opnå dit første certifikat. Dine opnåede certifikater vises her.",
+    "no_results_title": "Ingen certifikater fundet",
+    "no_results_description": "Prøv et andet søgeord.",
+    "go_to_my_learning": "Gå til Min Læring"
+  },
   "lms_navigation": {
     "home": "Hjem",
     "my_learning": "Min Læring",
+    "certificates": "Certifikater",
     "exercise": "Motion",
     "community": "Fællesskab",
     "explore": "Udforsk",
