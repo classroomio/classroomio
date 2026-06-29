@@ -23,18 +23,13 @@ const QUESTION_TYPE_LABEL_KEYS: Partial<Record<QuestionTypeKey, string>> = {
     'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.video_recording'
 };
 
-// Temp hidden: MATCHING, HOTSPOT
-const HIDDEN_QUESTION_TYPE_KEYS = new Set<QuestionTypeKey>([QUESTION_TYPE_KEY.MATCHING, QUESTION_TYPE_KEY.HOTSPOT]);
-
-export const QUESTION_TYPES = QUESTION_TYPE_REGISTRY.filter((qt) => !HIDDEN_QUESTION_TYPE_KEYS.has(qt.key)).map(
-  (questionType) => ({
-    id: questionType.id,
-    key: questionType.key,
-    label: questionType.label,
-    labelKey: QUESTION_TYPE_LABEL_KEYS[questionType.key],
-    autoGradable: questionType.autoGradable
-  })
-);
+export const QUESTION_TYPES = QUESTION_TYPE_REGISTRY.filter((qt) => !qt.disabled).map((questionType) => ({
+  id: questionType.id,
+  key: questionType.key,
+  label: questionType.label,
+  labelKey: QUESTION_TYPE_LABEL_KEYS[questionType.key],
+  autoGradable: questionType.autoGradable
+}));
 
 export const DEFAULT_QUESTION_TYPE = QUESTION_TYPES.find(
   (questionType) => questionType.key === QUESTION_TYPE_KEY.RADIO

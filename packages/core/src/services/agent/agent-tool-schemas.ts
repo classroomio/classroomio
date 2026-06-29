@@ -5,11 +5,22 @@ import {
   LANDING_PAGE_METADATA_DESCRIPTION_SECTION_HINT,
   LANDING_PAGE_SECTION_HTML_AGENT_HINT
 } from '@cio/ai-assistant/tools';
-import { QUESTION_TYPE_REGISTRY } from '@cio/question-types';
+import { ENABLED_QUESTION_TYPE_REGISTRY } from '@cio/question-types';
 import { ZExerciseSectionAfterBehavior } from '@cio/utils/validation/exercise';
 import { ZCourseLandingPageUpdate, ZCourseLandingPageMetadataUpdateFields } from '@cio/utils/validation/course';
 
 // courseId is NOT a parameter — it's injected from the authenticated request context.
+
+// Only question types backed by a `question_type` DB row may be generated.
+// Disabled types (e.g. MATCHING/HOTSPOT) have no row and would fail the FK, so
+// the model is constrained to the enabled ids rather than the whole registry.
+const ENABLED_QUESTION_TYPE_IDS = ENABLED_QUESTION_TYPE_REGISTRY.map((type) => type.id);
+const zEnabledQuestionTypeId = z
+  .number()
+  .int()
+  .refine((id) => ENABLED_QUESTION_TYPE_IDS.includes(id), {
+    message: `questionTypeId must be one of: ${ENABLED_QUESTION_TYPE_IDS.join(', ')}`
+  });
 // This prevents prompt injection from tricking the LLM into targeting another course.
 
 export const emptyParam = z.object({});
@@ -63,14 +74,9 @@ export const updateContentParam = z.object({
 
 export const questionSchema = z.object({
   question: z.string().min(1),
-  questionTypeId: z
-    .number()
-    .int()
-    .min(1)
-    .max(QUESTION_TYPE_REGISTRY.length)
-    .describe(
-      'Required. Use the numeric question type IDs from the teacher system prompt (Question Types). Omitting this field is invalid — set an explicit type on every question and vary types within each exercise.'
-    ),
+  questionTypeId: zEnabledQuestionTypeId.describe(
+    'Required. Use the numeric question type IDs from the teacher system prompt (Question Types). Omitting this field is invalid — set an explicit type on every question and vary types within each exercise.'
+  ),
   points: z.number().min(0).default(1),
   order: z.number().int().min(0),
   options: z.array(z.object({ label: z.string().min(1), isCorrect: z.boolean() }))
@@ -193,7 +199,7 @@ export const updateQuestionPatchSchema = z
   .object({
     id: z.number().int(),
     question: z.string().min(1).optional(),
-    questionTypeId: z.number().int().min(1).max(QUESTION_TYPE_REGISTRY.length).optional(),
+    questionTypeId: zEnabledQuestionTypeId.optional(),
     points: z.number().min(0).optional(),
     order: z.number().int().min(0).optional(),
     exerciseSectionId: z

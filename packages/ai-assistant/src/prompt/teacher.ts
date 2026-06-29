@@ -13,14 +13,18 @@ export type BuildTeacherSystemPromptOptions = {
 };
 
 function buildQuestionTypeListBlock(isOrgOnPaidPlan: boolean): string {
-  const allowed = QUESTION_TYPE_REGISTRY.filter((t) => isOrgOnPaidPlan || !PREMIUM_QUESTION_TYPE_KEYS.has(t.key));
+  // `disabled` types are built but have no `question_type` DB row, so they must
+  // never be advertised to the model (the tool schema rejects their ids).
+  const offered = QUESTION_TYPE_REGISTRY.filter((t) => !t.disabled);
+  const allowed = offered.filter((t) => isOrgOnPaidPlan || !PREMIUM_QUESTION_TYPE_KEYS.has(t.key));
   const listing = allowed.map((t) => `- ${t.id} = ${t.typename} — ${t.label}`).join('\n');
 
   if (isOrgOnPaidPlan) {
     return listing;
   }
 
-  const blocked = QUESTION_TYPE_REGISTRY.filter((t) => PREMIUM_QUESTION_TYPE_KEYS.has(t.key))
+  const blocked = offered
+    .filter((t) => PREMIUM_QUESTION_TYPE_KEYS.has(t.key))
     .map((t) => t.typename)
     .join(', ');
 
@@ -59,15 +63,13 @@ Every question you pass to \`create_exercise\` or \`add_questions\` MUST include
 - **SHORT_ANSWER** — recalling a specific term, command, value, or short phrase. Use when there's a small set of right answers you can list.
 - **NUMERIC** — anything quantitative: math, calculations, counts, sizes, rates. Default for any "how many / what value / calculate X" question.
 - **FILL_BLANK** — testing syntax, sequence completion, or code/sentence patterns where position matters ("\`SELECT \_\_ FROM users\`").
-- **MATCHING** — pairing related concepts (term ↔ definition, problem ↔ solution, tool ↔ purpose). Use whenever you'd otherwise write multiple RADIO questions all asking "what is the definition of X?".
 - **ORDERING** — sequencing steps, ranking by criterion, timeline reconstruction. Use for any "what's the right order" question instead of RADIO with shuffled options.
 - **WORD_BANK** — vocab application, classification, filling multiple blanks from a shared pool. Stronger than RADIO when the same concept set applies to many slots.
 - **TEXTAREA** — open-ended explanation, reflection, written analysis. Use sparingly (manual grading).
-- **HOTSPOT** — identifying a region of an image (UI element, anatomy, map). Use when there's a visual the lesson already shows.
 - **CHECKBOX (multi-select)** — when the question genuinely has multiple correct answers a learner should identify together. Don't use CHECKBOX as a "harder RADIO" — only when "select all that apply" is the natural verb.
 - **RADIO (single answer)** — concept-level discrimination between mutually exclusive options. Useful but the most overused — when in doubt, ask if one of the types above fits better.
 
-**Anti-pattern to avoid:** an exercise of 8 questions that's 7 RADIO + 1 TRUE_FALSE. That's a "different types" technicality, not real variety. The mix must reflect the *content*: numeric questions get NUMERIC, ordering questions get ORDERING, definition-matching gets MATCHING, etc.
+**Anti-pattern to avoid:** an exercise of 8 questions that's 7 RADIO + 1 TRUE_FALSE. That's a "different types" technicality, not real variety. The mix must reflect the *content*: numeric questions get NUMERIC, ordering questions get ORDERING, fill-in patterns get FILL_BLANK, etc.
 
 ## Plan Mode vs Agent Mode
 
@@ -339,7 +341,7 @@ When you create an exercise (especially during plan implementation), it must act
 - For NUMERIC / STAR / WORD_BANK: still ensure the answer is unambiguously derivable from the lesson.
 
 ### Per-exercise structure
-- Vary question types in the same exercise — minimum 2 distinct \`questionTypeId\` values for any 3–5 question exercise, minimum 4 for 6+ questions, with no single type exceeding half the exercise. Pick the type that matches the cognitive skill (see "Question Types" above): numeric questions get NUMERIC, ordering questions get ORDERING, definition-matching gets MATCHING — do not paper over a missing fit by defaulting to RADIO.
+- Vary question types in the same exercise — minimum 2 distinct \`questionTypeId\` values for any 3–5 question exercise, minimum 4 for 6+ questions, with no single type exceeding half the exercise. Pick the type that matches the cognitive skill (see "Question Types" above): numeric questions get NUMERIC, ordering questions get ORDERING, fill-in patterns get FILL_BLANK — do not paper over a missing fit by defaulting to RADIO.
 - Set non-zero \`points\` per question (default 1; harder questions can be 2).
 
 ### Comprehensive final examination (when implementing a full course plan)
