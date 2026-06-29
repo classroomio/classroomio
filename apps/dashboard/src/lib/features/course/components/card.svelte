@@ -36,12 +36,13 @@
     isOnLandingPage?: boolean;
     isLMS?: boolean;
     isExplore?: boolean;
+    isCertificateView?: boolean;
     href?: string;
     actions?: Snippet;
     onExploreClick?: () => void;
   }
 
-  let { course, isOnLandingPage, isLMS, isExplore, href, actions, onExploreClick }: Props = $props();
+  let { course, isOnLandingPage, isLMS, isExplore, isCertificateView, href, actions, onExploreClick }: Props = $props();
 
   let {
     bannerImage,
@@ -150,6 +151,10 @@
       return href;
     }
 
+    if (isCertificateView) {
+      return `/courses/${id}/certificates`;
+    }
+
     if (isOnLandingPage || isExplore) {
       if (!slug) {
         return undefined;
@@ -197,6 +202,9 @@
     isLMS && type === 'COMPLIANCE' && !isExplore
       ? getStudentCourseComplianceDate(course as UserEnrolledCourses[number])
       : null
+  );
+  const certificateEarnedAt = $derived(
+    isCertificateView && 'certificateEarnedAt' in course ? course.certificateEarnedAt : null
   );
 
   function formatDate(value: string | null | undefined) {
@@ -275,7 +283,13 @@
               {/if}
             </span>
           {:else if isLMS}
-            {#if !isExplore}
+            {#if isCertificateView}
+              {#if certificateEarnedAt}
+                <p class="ui:text-muted-foreground text-xs">
+                  {$t('certificates.earned_on')}: {formatDate(certificateEarnedAt)}
+                </p>
+              {/if}
+            {:else if !isExplore}
               <div class="flex w-3/4 items-center gap-2">
                 <Progress value={progressRate} />
                 <p class="ui:text-muted-foreground text-xs">{progressRate}%</p>
@@ -305,7 +319,11 @@
 
       {#if isLMS}
         <Button variant="outline" onclick={isExplore && onExploreClick ? onExploreClick : undefined}>
-          {isExplore ? $t('courses.course_card.learn_more') : $t('courses.course_card.continue_course')}
+          {isCertificateView
+            ? $t('certificates.view_certificate')
+            : isExplore
+              ? $t('courses.course_card.learn_more')
+              : $t('courses.course_card.continue_course')}
 
           <ArrowRightIcon class="custom" />
         </Button>
