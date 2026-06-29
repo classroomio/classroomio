@@ -1,4 +1,5 @@
 import {
+  CertificateIcon,
   CommunityIcon,
   CourseIcon,
   ExerciseIcon,
@@ -11,6 +12,7 @@ import {
 import type { AccountOrg } from '$features/app/types';
 import type { Component } from 'svelte';
 import { isActive } from '$lib/utils/functions/app';
+import { isOrgOnFreePlan } from '$lib/utils/store/org';
 
 export interface NavItem {
   title: string;
@@ -56,6 +58,13 @@ export const baseNavConfig: NavItemConfig[] = [
     path: '/mylearning',
     icon: CourseIcon,
     matchPattern: '^/lms/mylearning(/.*)?$'
+  },
+  {
+    titleKey: 'lms_navigation.certificates',
+    path: '/certificates',
+    icon: CertificateIcon,
+    matchPattern: '^/lms/certificates(/.*)?$',
+    show: (currentOrg) => !isOrgOnFreePlan(currentOrg)
   },
   {
     titleKey: 'lms_navigation.explore',

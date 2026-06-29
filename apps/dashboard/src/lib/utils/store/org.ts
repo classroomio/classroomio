@@ -71,6 +71,16 @@ const getActivePlan = (org: AccountOrg) => {
   return org.plans.find((p) => p.isActive);
 };
 
+export function isOrgOnFreePlan(org: AccountOrg | null | undefined) {
+  if (!org?.id || PUBLIC_IS_SELFHOSTED === 'true') {
+    return false;
+  }
+
+  const plan = getActivePlan(org);
+
+  return !plan || plan.planName === PLAN.BASIC;
+}
+
 export const currentOrgPlan = derived(currentOrg, ($currentOrg) => getActivePlan($currentOrg));
 
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
@@ -126,13 +136,7 @@ export function getOrgPublicUrl(org: OrgPublicOrigin, pathname = '/'): string {
 
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => getOrgPublicOrigin($currentOrg));
 
-export const isFreePlan = derived(currentOrg, ($currentOrg) => {
-  if (!$currentOrg.id || PUBLIC_IS_SELFHOSTED === 'true') return false;
-
-  const plan = getActivePlan($currentOrg);
-
-  return !plan || plan.planName === PLAN.BASIC;
-});
+export const isFreePlan = derived(currentOrg, ($currentOrg) => isOrgOnFreePlan($currentOrg));
 
 export const isEnterprisePlan = derived(currentOrg, ($currentOrg) => {
   if (PUBLIC_IS_SELFHOSTED === 'true') return true;

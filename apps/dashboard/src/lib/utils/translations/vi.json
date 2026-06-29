@@ -471,9 +471,22 @@
     "any_course": "Bất kỳ khóa học nào bạn hoàn thành sẽ được hiển thị ở đây",
     "find_courses": "Tìm khóa học"
   },
+  "certificates": {
+    "heading": "Chứng chỉ",
+    "description": "Xem và tải xuống các chứng chỉ bạn đã đạt được khi hoàn thành khóa học.",
+    "search": "Tìm kiếm chứng chỉ",
+    "earned_on": "Đạt được vào",
+    "view_certificate": "Xem chứng chỉ",
+    "empty_title": "Chưa có chứng chỉ nào",
+    "empty_description": "Hoàn thành một khóa học để nhận chứng chỉ đầu tiên của bạn. Các chứng chỉ đã đạt được sẽ hiển thị tại đây.",
+    "no_results_title": "Không tìm thấy chứng chỉ",
+    "no_results_description": "Hãy thử một từ khóa tìm kiếm khác.",
+    "go_to_my_learning": "Đi tới Học tập của tôi"
+  },
   "lms_navigation": {
     "home": "Trang chủ",
     "my_learning": "Học tập của tôi",
+    "certificates": "Chứng chỉ",
     "exercise": "tập thể dục",
     "community": "cộng đồng",
     "explore": "Khám phá",

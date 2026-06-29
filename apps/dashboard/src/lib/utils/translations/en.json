@@ -4059,6 +4059,7 @@
   "lms_navigation": {
     "home": "Home",
     "my_learning": "My Learning",
+    "certificates": "Certificates",
     "programs": "Programs",
     "exercise": "Exercise",
     "community": "Community",
@@ -4076,6 +4077,18 @@
     "not_completed": "No Course Completed",
     "any_course": "Any course that you complete will be displayed here",
     "find_courses": "Find courses"
+  },
+  "certificates": {
+    "heading": "Certificates",
+    "description": "View and download certificates you've earned by completing courses.",
+    "search": "Search certificates",
+    "earned_on": "Earned on",
+    "view_certificate": "View Certificate",
+    "empty_title": "No certificates yet",
+    "empty_description": "Complete a course to earn your first certificate. Your earned certificates will appear here.",
+    "no_results_title": "No certificates found",
+    "no_results_description": "Try a different search term.",
+    "go_to_my_learning": "Go to My Learning"
   },
   "exercises": {
     "heading": "Exercises",
