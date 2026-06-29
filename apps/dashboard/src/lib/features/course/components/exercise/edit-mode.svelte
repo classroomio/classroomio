@@ -44,10 +44,10 @@
   import SectionEditor from './section-editor.svelte';
   import type { Question } from '$features/course/types';
   import type { ExerciseEditorErrors } from './store';
-  import { getUploadLimitsContext } from '$lib/utils/config/upload-limits-context';
+  import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
 
   const flipDurationMs = 200;
-  const uploadLimits = getUploadLimitsContext()!;
+  const uploadLimits = getResolvedUploadLimits();
   const platformMaxFileSizeMb = uploadLimits.exerciseFileMb;
   const initialQuestionsLength = $questionnaire.questions.length;
   type QuestionDndEvent = CustomEvent<{ items: Question[] }>;

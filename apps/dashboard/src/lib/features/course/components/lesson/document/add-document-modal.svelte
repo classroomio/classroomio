@@ -14,7 +14,7 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
   import type { FileRejectedReason } from '@cio/ui/custom/file-drop-zone';
-  import { getUploadLimitsContext } from '$lib/utils/config/upload-limits-context';
+  import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
 
   interface Props {
     lessonId?: string;
@@ -35,7 +35,7 @@
     'application/msword'
   ];
 
-  const uploadLimits = getUploadLimitsContext()!;
+  const uploadLimits = getResolvedUploadLimits();
   const maxDocumentSize = uploadLimits.documentBytes;
 
   const documentUploader = new DocumentUploader();

@@ -12,7 +12,7 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { uploadImage } from '$lib/utils/services/upload';
-  import { getUploadLimitsContext } from '$lib/utils/config/upload-limits-context';
+  import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
 
   interface Props {
     open?: boolean;
@@ -23,7 +23,7 @@
 
   type AssetStatusValue = 'active' | 'archived';
 
-  const uploadLimits = getUploadLimitsContext()!;
+  const uploadLimits = getResolvedUploadLimits();
   const thumbnailMaxSize = uploadLimits.thumbnailBytes;
 
   let { open = $bindable(false), asset = null, isSaving = false, onSave = async () => {} }: Props = $props();

@@ -48,7 +48,7 @@ export function resolveUploadLimits(env: UploadLimitEnv): UploadLimits {
   const exerciseFileMb = parseUploadLimitMb(env.UPLOAD_MAX_EXERCISE_FILE_MB, 2);
   const agentDocumentMb = parseUploadLimitMb(env.UPLOAD_MAX_AGENT_DOCUMENT_MB, 5);
   const landingImageMb = parseUploadLimitMb(env.UPLOAD_MAX_LANDING_IMAGE_MB, 0.5);
-  const thumbnailMb = parseUploadLimitMb(env.UPLOAD_MAX_THUMBNAIL_MB, 1);
+  const thumbnailMb = parseUploadLimitMb(env.UPLOAD_MAX_THUMBNAIL_MB, 5);
 
   return {
     documentMb,

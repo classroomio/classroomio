@@ -14,7 +14,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { uploadImage } from '$lib/utils/services/upload';
   import { classroomio } from '$lib/utils/services/api';
-  import { getUploadLimitsContext } from '$lib/utils/config/upload-limits-context';
+  import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
 
   function buildHlsUrl(asset: OrganizationAsset): string | null {
     if (!asset.hlsManifestKey) return null;
@@ -33,7 +33,7 @@
     onThumbnailSaved?: (asset: OrganizationAsset) => void;
   }
 
-  const uploadLimits = getUploadLimitsContext()!;
+  const uploadLimits = getResolvedUploadLimits();
   const thumbnailMaxSize = uploadLimits.thumbnailBytes;
   const REGEN_POLL_INTERVAL_MS = 2000;
   const REGEN_POLL_TIMEOUT_MS = 60_000;

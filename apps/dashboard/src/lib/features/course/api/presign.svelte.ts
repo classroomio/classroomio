@@ -19,7 +19,7 @@ export class PresignApi extends BaseApiWithErrors {
     const result = await this.execute<DocumentUploadPresignRequest>({
       requestFn: () =>
         classroomio.course.presign.document.upload.$post({
-          json: { fileName, fileType, ...(fileSize != null ? { fileSize } : {}) }
+          json: { fileName, fileType, ...(fileSize != null && fileSize > 0 ? { fileSize } : {}) }
         }),
       logContext: 'getting document upload URL'
     });
@@ -51,7 +51,7 @@ export class PresignApi extends BaseApiWithErrors {
     const result = await this.execute<VideoUploadPresignRequest>({
       requestFn: () =>
         classroomio.course.presign.video.upload.$post({
-          json: { fileName, fileType, ...(fileSize != null ? { fileSize } : {}) }
+          json: { fileName, fileType, ...(fileSize != null && fileSize > 0 ? { fileSize } : {}) }
         }),
       logContext: 'getting video upload URL'
     });

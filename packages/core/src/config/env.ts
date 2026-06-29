@@ -101,7 +101,7 @@ const envSchema = z.object({
   UPLOAD_MAX_AGENT_DOCUMENT_MB: z.string().optional(),
   /** Max org landing page image upload size in megabytes (default 0.5). */
   UPLOAD_MAX_LANDING_IMAGE_MB: z.string().optional(),
-  /** Max media thumbnail upload size in megabytes (default 1). */
+  /** Max media thumbnail upload size in megabytes (default 5). */
   UPLOAD_MAX_THUMBNAIL_MB: z.string().optional()
 });
 

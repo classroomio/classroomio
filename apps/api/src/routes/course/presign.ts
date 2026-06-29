@@ -17,6 +17,17 @@ import { generateFileKey } from '@cio/core/utils/upload';
 import { AppError } from '@api/utils/errors';
 import { MAX_DOCUMENT_SIZE, MAX_FILE_SIZE } from '@api/constants/upload';
 
+/**
+ * Advisory check on client-reported `fileSize`. Upload bytes go directly to object storage
+ * via the presigned PUT URL, so omitting `fileSize` (or understating it) bypasses this guard.
+ * Real enforcement requires storage-side policies (bucket max object size, etc.).
+ */
+function assertPresignFileSizeWithinLimit(fileSize: number | undefined, maxBytes: number): void {
+  if (fileSize != null && fileSize > maxBytes) {
+    throw new AppError(`File size exceeds maximum of ${maxBytes / 1024 / 1024}MB`, 'FILE_TOO_LARGE', 413);
+  }
+}
+
 // Response schemas for OpenAPI documentation
 const PresignUploadResponse = {
   type: 'object' as const,
@@ -72,9 +83,7 @@ export const presignRouter = new Hono()
 
       const { fileName, fileType, fileSize } = body;
 
-      if (fileSize != null && fileSize > MAX_FILE_SIZE) {
-        throw new AppError(`File size exceeds maximum of ${MAX_FILE_SIZE / 1024 / 1024}MB`, 'FILE_TOO_LARGE', 413);
-      }
+      assertPresignFileSizeWithinLimit(fileSize, MAX_FILE_SIZE);
 
       const fileKey = generateFileKey(fileName);
 
@@ -117,9 +126,7 @@ export const presignRouter = new Hono()
 
       const { fileName, fileType, fileSize } = body;
 
-      if (fileSize != null && fileSize > MAX_DOCUMENT_SIZE) {
-        throw new AppError(`File size exceeds maximum of ${MAX_DOCUMENT_SIZE / 1024 / 1024}MB`, 'FILE_TOO_LARGE', 413);
-      }
+      assertPresignFileSizeWithinLimit(fileSize, MAX_DOCUMENT_SIZE);
 
       const fileKey = generateFileKey(fileName);
 

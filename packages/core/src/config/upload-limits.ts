@@ -1,8 +1,15 @@
 import { env } from './env';
-import { resolveUploadLimits } from '@cio/utils/config/upload-limits';
+import { resolveUploadLimits, type UploadLimits } from '@cio/utils/config/upload-limits';
 
 export type { UploadLimits } from '@cio/utils/config/upload-limits';
 
-export function getUploadLimits() {
-  return resolveUploadLimits(env);
+let cachedLimits: UploadLimits | null = null;
+
+export function getUploadLimits(): UploadLimits {
+  if (cachedLimits) {
+    return cachedLimits;
+  }
+
+  cachedLimits = resolveUploadLimits(env);
+  return cachedLimits;
 }

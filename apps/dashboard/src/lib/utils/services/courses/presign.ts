@@ -52,8 +52,12 @@ export class GenericUploader {
   async getPresignedUrl(file: File) {
     const result =
       this.uploadType === 'document'
-        ? await presignApi.getDocumentUploadUrl(file?.name ?? '', file?.type ?? '', file.size)
-        : await presignApi.getVideoUploadUrl(file?.name ?? '', file?.type ?? '', file.size);
+        ? await presignApi.getDocumentUploadUrl(
+            file?.name ?? '',
+            file?.type ?? '',
+            file.size > 0 ? file.size : undefined
+          )
+        : await presignApi.getVideoUploadUrl(file?.name ?? '', file?.type ?? '', file.size > 0 ? file.size : undefined);
 
     if (!result) {
       throw new Error('Failed to get presigned upload URL');

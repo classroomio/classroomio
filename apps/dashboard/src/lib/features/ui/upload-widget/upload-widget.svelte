@@ -14,7 +14,7 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import { Button } from '@cio/ui/base/button';
   import UploadCloudIcon from '@lucide/svelte/icons/upload-cloud';
-  import { getUploadLimitsContext } from '$lib/utils/config/upload-limits-context';
+  import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
 
   interface Props {
     imageURL?: string;
@@ -49,7 +49,7 @@
     alt_description: string;
   }[] = $state([]);
 
-  const uploadLimits = getUploadLimitsContext()!;
+  const uploadLimits = getResolvedUploadLimits();
   const maxLandingImageSize = uploadLimits.landingImageBytes;
 
   async function handleImageClick(img: string) {

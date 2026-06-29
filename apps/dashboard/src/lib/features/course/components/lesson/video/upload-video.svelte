@@ -14,7 +14,7 @@
   import { mediaApi } from '$features/media/api';
   import { JobPoller, jobsApi, type MediaJobEnvelope } from '$features/jobs';
   import { onDestroy } from 'svelte';
-  import { getUploadLimitsContext } from '$lib/utils/config/upload-limits-context';
+  import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
 
   const ADD_VIDEO = 'course.navItem.lessons.materials.tabs.video.add_video';
   const PROCESSING_BASE = `${ADD_VIDEO}.processing`;
@@ -51,7 +51,7 @@
 
   const isDisabled = $derived($lessonVideoUpload.isUploading || $isFreePlan);
 
-  const uploadLimits = getUploadLimitsContext()!;
+  const uploadLimits = getResolvedUploadLimits();
   const maxVideoSize = uploadLimits.videoBytes;
 
   const videoUploader = new VideoUploader();

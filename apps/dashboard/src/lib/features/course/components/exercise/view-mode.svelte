@@ -54,7 +54,7 @@
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import type { Question } from '$features/course/types';
-  import { getUploadLimitsContext } from '$lib/utils/config/upload-limits-context';
+  import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
 
   interface Props {
     preview?: boolean;
@@ -66,7 +66,7 @@
 
   let { preview = false, exerciseId = '', isFetchingExercise = false, mySubmissions = [] }: Props = $props();
 
-  const uploadLimits = getUploadLimitsContext()!;
+  const uploadLimits = getResolvedUploadLimits();
   const platformMaxFileSizeMb = uploadLimits.exerciseFileMb;
 
   let isSubmitting = $state(false);
@@ -310,7 +310,7 @@
         | 'application/pdf'
         | 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         | 'application/msword',
-      file.size
+      file.size > 0 ? file.size : undefined
     );
     if (!uploadResult) {
       throw new Error('Failed to get upload URL');
