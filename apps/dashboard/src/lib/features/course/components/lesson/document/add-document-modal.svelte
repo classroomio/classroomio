@@ -14,6 +14,7 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
   import type { FileRejectedReason } from '@cio/ui/custom/file-drop-zone';
+  import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
 
   interface Props {
     lessonId?: string;
@@ -34,7 +35,8 @@
     'application/msword'
   ];
 
-  const MAX_DOCUMENT_SIZE = 5 * 1024 * 1024; // 5MB
+  const uploadLimits = getResolvedUploadLimits();
+  const maxDocumentSize = uploadLimits.documentBytes;
 
   const documentUploader = new DocumentUploader();
 
@@ -58,9 +60,9 @@
       return $t('course.navItem.lessons.materials.tabs.document.file_type_error');
     }
 
-    if (file.size > MAX_DOCUMENT_SIZE) {
+    if (file.size > maxDocumentSize) {
       return $t('course.navItem.lessons.materials.tabs.document.file_size_error', {
-        size: formatFileSize(MAX_DOCUMENT_SIZE)
+        size: formatFileSize(maxDocumentSize)
       });
     }
 
@@ -87,7 +89,7 @@
     if (opts.reason === 'Maximum file size exceeded') {
       snackbar.error(
         $t('course.navItem.lessons.materials.tabs.document.file_size_error', {
-          size: formatFileSize(MAX_DOCUMENT_SIZE)
+          size: formatFileSize(maxDocumentSize)
         })
       );
     } else if (opts.reason === 'File type not allowed') {
@@ -259,7 +261,7 @@
             accept=".pdf,.docx,.doc,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword"
             maxFiles={1}
             fileCount={0}
-            maxFileSize={MAX_DOCUMENT_SIZE}
+            maxFileSize={maxDocumentSize}
             onUpload={handleFilesUpload}
             onFileRejected={handleFileRejected}
           >

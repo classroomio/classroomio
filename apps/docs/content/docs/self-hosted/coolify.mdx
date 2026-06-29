@@ -46,6 +46,9 @@ import { Callout } from 'fumadocs-ui/components/callout';
    storage instead? Point the same `OBJECT_STORAGE_*` variables at external **S3 / Cloudflare R2**
    and leave the `minio` profile off — see the [Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for R2.
 
+   **Upload size limits** (optional): set `UPLOAD_MAX_*_MB` in Coolify's env for both the `api` and
+   `dashboard` services (same values in each). See [Docker self-hosting → Upload file size limits](/docs/self-hosted/docker#optional--upload-file-size-limits).
+
 5. **Deploy.** Coolify pulls `classroomio/{api,dashboard,jobs}:${CIO_VERSION}`, starts Postgres + Redis, the API container runs database setup on first boot, then the dashboard and the **jobs worker** come up.
 
 ## Upgrades & rollback

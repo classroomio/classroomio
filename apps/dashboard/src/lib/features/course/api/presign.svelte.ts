@@ -15,11 +15,11 @@ export class PresignApi extends BaseApiWithErrors {
    * Gets a presigned upload URL for a document.
    * @returns { url, fileKey } on success
    */
-  async getDocumentUploadUrl(fileName: string, fileType: string) {
+  async getDocumentUploadUrl(fileName: string, fileType: string, fileSize?: number) {
     const result = await this.execute<DocumentUploadPresignRequest>({
       requestFn: () =>
         classroomio.course.presign.document.upload.$post({
-          json: { fileName, fileType }
+          json: { fileName, fileType, ...(fileSize != null && fileSize > 0 ? { fileSize } : {}) }
         }),
       logContext: 'getting document upload URL'
     });
@@ -47,11 +47,11 @@ export class PresignApi extends BaseApiWithErrors {
    * Gets a presigned upload URL for a video.
    * @returns { url, fileKey } on success
    */
-  async getVideoUploadUrl(fileName: string, fileType: string) {
+  async getVideoUploadUrl(fileName: string, fileType: string, fileSize?: number) {
     const result = await this.execute<VideoUploadPresignRequest>({
       requestFn: () =>
         classroomio.course.presign.video.upload.$post({
-          json: { fileName, fileType }
+          json: { fileName, fileType, ...(fileSize != null && fileSize > 0 ? { fileSize } : {}) }
         }),
       logContext: 'getting video upload URL'
     });

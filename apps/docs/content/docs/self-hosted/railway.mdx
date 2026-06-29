@@ -62,6 +62,8 @@ ALLOWED_EXTERNAL_DOMAINS="https://fonts.googleapis.com"
 
 Optional: add `PUBLIC_APP_TITLE`, `PUBLIC_APP_DESCRIPTION`, `PUBLIC_OG_IMAGE_URL` for custom branding. You can also use per-directive CSP vars (`CSP_SCRIPT_SRC_DOMAINS`, `CSP_MEDIA_SRC_DOMAINS`, etc.) instead of `ALLOWED_EXTERNAL_DOMAINS` for finer control.
 
+**Upload size limits** (optional): add the same `UPLOAD_MAX_*_MB` values to **cio-api** and **cio-dashboard** (e.g. `UPLOAD_MAX_DOCUMENT_MB=50`). See [Docker self-hosting → Upload file size limits](/docs/self-hosted/docker#optional--upload-file-size-limits).
+
 ## cio-jobs (background worker)
 
 The jobs worker has **no public domain** — it drains the Redis queue (video processing, transcription, AI course generation, and emails). It shares the same Postgres, Redis, storage, email, and OpenAI settings as the API:

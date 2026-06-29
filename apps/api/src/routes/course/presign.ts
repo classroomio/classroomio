@@ -14,6 +14,19 @@ import {
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { generateFileKey } from '@cio/core/utils/upload';
+import { AppError } from '@api/utils/errors';
+import { MAX_DOCUMENT_SIZE, MAX_FILE_SIZE } from '@api/constants/upload';
+
+/**
+ * Advisory check on client-reported `fileSize`. Upload bytes go directly to object storage
+ * via the presigned PUT URL, so omitting `fileSize` (or understating it) bypasses this guard.
+ * Real enforcement requires storage-side policies (bucket max object size, etc.).
+ */
+function assertPresignFileSizeWithinLimit(fileSize: number | undefined, maxBytes: number): void {
+  if (fileSize != null && fileSize > maxBytes) {
+    throw new AppError(`File size exceeds maximum of ${maxBytes / 1024 / 1024}MB`, 'FILE_TOO_LARGE', 413);
+  }
+}
 
 // Response schemas for OpenAPI documentation
 const PresignUploadResponse = {
@@ -68,7 +81,10 @@ export const presignRouter = new Hono()
     async (c) => {
       const body = c.req.valid('json');
 
-      const { fileName, fileType } = body;
+      const { fileName, fileType, fileSize } = body;
+
+      assertPresignFileSizeWithinLimit(fileSize, MAX_FILE_SIZE);
+
       const fileKey = generateFileKey(fileName);
 
       const presignedUrl = await generateVideoUploadPresignedUrl(fileKey, fileType);
@@ -108,7 +124,10 @@ export const presignRouter = new Hono()
     async (c) => {
       const body = c.req.valid('json');
 
-      const { fileName, fileType } = body;
+      const { fileName, fileType, fileSize } = body;
+
+      assertPresignFileSizeWithinLimit(fileSize, MAX_DOCUMENT_SIZE);
+
       const fileKey = generateFileKey(fileName);
 
       const presignedUrl = await generateDocumentUploadPresignedUrl(fileKey, fileType);

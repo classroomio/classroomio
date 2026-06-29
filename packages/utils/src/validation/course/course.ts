@@ -127,13 +127,15 @@ export type TLessonDownloadContent = z.infer<typeof ZLessonDownloadContent>;
 
 export const ZCoursePresignUrlUpload = z.object({
   fileName: z.string().min(1),
-  fileType: z.enum(ALLOWED_CONTENT_TYPES)
+  fileType: z.enum(ALLOWED_CONTENT_TYPES),
+  fileSize: z.number().int().min(0).optional()
 });
 export type TCoursePresignUrlUpload = z.infer<typeof ZCoursePresignUrlUpload>;
 
 export const ZCourseDocumentPresignUrlUpload = z.object({
   fileName: z.string().min(1),
-  fileType: z.enum(ALLOWED_DOCUMENT_TYPES)
+  fileType: z.enum(ALLOWED_DOCUMENT_TYPES),
+  fileSize: z.number().int().min(0).optional()
 });
 export type TCourseDocumentPresignUrlUpload = z.infer<typeof ZCourseDocumentPresignUrlUpload>;
 

@@ -54,6 +54,7 @@
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import type { Question } from '$features/course/types';
+  import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
 
   interface Props {
     preview?: boolean;
@@ -64,6 +65,9 @@
   }
 
   let { preview = false, exerciseId = '', isFetchingExercise = false, mySubmissions = [] }: Props = $props();
+
+  const uploadLimits = getResolvedUploadLimits();
+  const platformMaxFileSizeMb = uploadLimits.exerciseFileMb;
 
   let isSubmitting = $state(false);
   /** When true, do not re-apply a past submission over a fresh take (Try again). */
@@ -305,7 +309,8 @@
       file.type as
         | 'application/pdf'
         | 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        | 'application/msword'
+        | 'application/msword',
+      file.size > 0 ? file.size : undefined
     );
     if (!uploadResult) {
       throw new Error('Failed to get upload URL');
@@ -946,6 +951,7 @@
             answer: $questionnaireMetaData.answers[sectionQuestionKey],
             labels: questionLabels,
             disabled: isSubmitting,
+            platformMaxFileSizeMb,
             onFileUpload: handleFileUpload,
             onVideoRecordingUpload: handleVideoRecordingUpload
           }}
@@ -1002,6 +1008,7 @@
                   answer: sharedCurrentAnswer,
                   labels: questionLabels,
                   disabled: isSubmitting,
+                  platformMaxFileSizeMb,
                   onFileUpload: handleFileUpload,
                   onVideoRecordingUpload: handleVideoRecordingUpload
                 }}

@@ -257,6 +257,8 @@ export interface ExerciseQuestionRendererProps {
   maxSubmissionItems?: number;
   disabled?: boolean;
   labels?: ExerciseQuestionLabels;
+  /** Platform-wide cap for exercise file uploads (megabytes). */
+  platformMaxFileSizeMb?: number;
   onAnswerChange?: (answer: AnswerData | null) => void;
   onQuestionChange?: (question: ExerciseQuestionModel) => void;
   onImageUpload?: ExerciseQuestionImageUploader;

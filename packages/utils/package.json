@@ -52,6 +52,10 @@
     "./errors": {
       "types": "./dist/errors/index.d.ts",
       "default": "./dist/errors/index.js"
+    },
+    "./config/upload-limits": {
+      "types": "./dist/config/upload-limits.d.ts",
+      "default": "./dist/config/upload-limits.js"
     }
   },
   "scripts": {

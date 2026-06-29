@@ -475,6 +475,7 @@
     maxSubmissionItems={contract.maxSubmissionItems}
     disabled={contract.disabled}
     labels={contract.labels}
+    platformMaxFileSizeMb={contract.platformMaxFileSizeMb}
     onImageUpload={contract.onImageUpload}
     onFileUpload={contract.onFileUpload}
     onVideoRecordingUpload={contract.onVideoRecordingUpload}

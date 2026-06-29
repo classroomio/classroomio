@@ -1,12 +1,8 @@
 import { nanoid } from 'nanoid';
 import { AppError } from '@cio/utils/errors';
-import {
-  MAX_DOCUMENT_TEXT_LENGTH,
-  MAX_AGENT_DOCUMENT_SIZE,
-  DOCUMENT_REDIS_TTL,
-  SUPPORTED_DOCUMENT_TYPES
-} from '@cio/ai-assistant';
+import { MAX_DOCUMENT_TEXT_LENGTH, DOCUMENT_REDIS_TTL, SUPPORTED_DOCUMENT_TYPES } from '@cio/ai-assistant';
 import type { DocumentUploadResult } from '@cio/ai-assistant';
+import { getUploadLimits } from '../../config/upload-limits';
 import { agentDocumentKey } from '../../utils/redis-keys';
 import { trackAgentEvent, AgentEvent } from '../../utils/tinybird';
 import type { RedisClient } from '../../utils/redis/redis';
@@ -34,9 +30,11 @@ export async function parseAndStoreDocument(
     throw new AppError('Unsupported file type. Allowed: PDF, DOCX, PPTX', 'UNSUPPORTED_FILE_TYPE', 415);
   }
 
-  if (file.size > MAX_AGENT_DOCUMENT_SIZE) {
+  const maxAgentDocumentSize = getUploadLimits().agentDocumentBytes;
+
+  if (file.size > maxAgentDocumentSize) {
     throw new AppError(
-      `File too large. Maximum size is ${MAX_AGENT_DOCUMENT_SIZE / (1024 * 1024)}MB`,
+      `File too large. Maximum size is ${maxAgentDocumentSize / (1024 * 1024)}MB`,
       'FILE_TOO_LARGE',
       413
     );

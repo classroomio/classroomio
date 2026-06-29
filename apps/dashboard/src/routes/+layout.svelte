@@ -16,7 +16,11 @@
 
   import '../app.css';
 
+  import { setUploadLimitsContext } from '$lib/utils/config/upload-limits-context';
+
   let { data, children } = $props();
+
+  setUploadLimitsContext(data.uploadLimits);
 
   const metaTags = $derived(merge(data.baseMetaTags, page.data.pageMetaTags));
 
