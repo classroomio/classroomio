@@ -134,6 +134,34 @@ export function splitHtmlAndSvg(html: string): ContentSegment[] {
 }
 
 /**
+ * Sanitizes an embed code snippet (e.g. a pasted <iframe>). Allows only
+ * <iframe> tags with https: sources; everything else is stripped. Use this
+ * for org landing-page embed sections — not for general rich-text content.
+ */
+export function sanitizeEmbedHtml(html: string): string {
+  if (typeof html !== 'string') return '';
+  if (!browser) return '';
+
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['iframe'],
+    ALLOWED_ATTR: [
+      'src',
+      'width',
+      'height',
+      'frameborder',
+      'marginheight',
+      'marginwidth',
+      'title',
+      'loading',
+      'allow',
+      'allowfullscreen',
+      'sandbox'
+    ],
+    ALLOWED_URI_REGEXP: /^https:/i
+  });
+}
+
+/**
  * Strips all HTML tags and returns plain text
  * Use this when you only need the text content
  */
