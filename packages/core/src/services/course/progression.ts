@@ -105,7 +105,7 @@ function annotateNavigableAccess(params: {
   for (const item of params.navigableItems) {
     const lessonPolicy = params.lessonPolicyById.get(item.id);
     const exercisePolicy = params.exercisePolicyById.get(item.id);
-    const teacherLocked = !(item.isUnlocked ?? false);
+    const teacherLocked = !(item.isUnlocked ?? true);
     const progressionLocked = params.progressionMode === 'sequential' && !priorBlockingComplete;
 
     let accessible = !teacherLocked && !progressionLocked;
