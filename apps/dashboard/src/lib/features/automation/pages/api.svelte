@@ -1,9 +1,10 @@
 <script lang="ts">
   import { automationApi } from '$features/automation/api/automation.svelte';
   import { getMaskedAutomationSecret } from '$features/automation/utils/automation-utils';
-  import { isOrgAdmin, isEnterprisePlan } from '$lib/utils/store/org';
+  import { hasPublicApiAccess, isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
   import * as Alert from '@cio/ui/base/alert';
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
@@ -25,6 +26,9 @@
   let keyLabel = $state('');
 
   const canCreateKey = $derived(keyLabel.trim().length > 0 && !automationApi.isLoading);
+  const upgradeMessageKey = $derived(
+    PUBLIC_IS_SELFHOSTED === 'true' ? 'upgrade.enterprise_required' : 'upgrade.public_api_required'
+  );
 
   function resetCreateKeyModal() {
     keyLabel = '';
@@ -32,7 +36,7 @@
   }
 
   function openCreateKeyModal() {
-    if (!$isEnterprisePlan) {
+    if (!$hasPublicApiAccess) {
       snackbar.error('upgrade.required');
       return;
     }
@@ -41,7 +45,7 @@
   }
 
   async function onGenerateKey() {
-    if (!$isEnterprisePlan) return;
+    if (!$hasPublicApiAccess) return;
     const result = await automationApi.createKey('api', keyLabel);
     if (!result) return;
 
@@ -52,13 +56,13 @@
   }
 
   async function onRevokeKey(keyId: string) {
-    if (!$isEnterprisePlan) return;
+    if (!$hasPublicApiAccess) return;
     if (!confirm(t.get('automation.keys.revoke_confirm'))) return;
     await automationApi.revokeKey(keyId);
   }
 
   async function onRotateKey(keyId: string) {
-    if (!$isEnterprisePlan) return;
+    if (!$hasPublicApiAccess) return;
     if (!confirm(t.get('automation.keys.rotate_confirm'))) return;
     await automationApi.rotateKey(keyId);
     generatedSecret = automationApi.generatedSecret;
@@ -69,7 +73,7 @@
 </script>
 
 <Field.Group class="mx-auto w-full space-y-2">
-  <UpgradeBanner>{$t('upgrade.enterprise_required')}</UpgradeBanner>
+  <UpgradeBanner visible={!$hasPublicApiAccess}>{$t(upgradeMessageKey)}</UpgradeBanner>
 
   {#if !$isOrgAdmin}
     <Alert.Callout
@@ -89,7 +93,7 @@
       {#if $isOrgAdmin}
         <IconButton
           onclick={openCreateKeyModal}
-          disabled={automationApi.isLoading || !$isEnterprisePlan}
+          disabled={automationApi.isLoading || !$hasPublicApiAccess}
           tooltip={$t('automation.api.keys.generate')}
         >
           <PlusIcon size={16} />
@@ -174,7 +178,7 @@
           variant="page"
         >
           {#if $isOrgAdmin}
-            <Button onclick={openCreateKeyModal} disabled={automationApi.isLoading || !$isEnterprisePlan}>
+            <Button onclick={openCreateKeyModal} disabled={automationApi.isLoading || !$hasPublicApiAccess}>
               <PlusIcon size={16} />
               {$t('automation.api.keys.generate')}
             </Button>

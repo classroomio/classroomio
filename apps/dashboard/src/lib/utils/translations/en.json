@@ -3963,7 +3963,8 @@
     "download_lessons": "Upgrade to download lessons",
     "download_course": "Upgrade to download course",
     "required": "Upgrade Required",
-    "enterprise_required": "This feature requires an Enterprise plan."
+    "enterprise_required": "This feature requires an Enterprise plan.",
+    "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API."
   },
   "automation": {
     "title": "Automation",

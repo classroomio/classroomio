@@ -4,7 +4,7 @@ import merge from 'lodash/merge';
 
 import type { AccountOrg } from '$features/app/types';
 import type { OrgTeamMember } from '../types/org';
-import { PLAN } from '@cio/utils/plans';
+import { canUsePublicApi, PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import { STEPS } from '../constants/quiz';
@@ -144,6 +144,12 @@ export const isEnterprisePlan = derived(currentOrg, ($currentOrg) => {
   const plan = getActivePlan($currentOrg);
 
   return plan?.planName === PLAN.ENTERPRISE;
+});
+
+export const hasPublicApiAccess = derived(currentOrg, ($currentOrg) => {
+  const plan = getActivePlan($currentOrg);
+
+  return canUsePublicApi(plan?.planName, PUBLIC_IS_SELFHOSTED === 'true');
 });
 
 export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) =>

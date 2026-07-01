@@ -503,7 +503,8 @@
     "download_lessons": "Nâng cấp để tải bài học",
     "download_course": "Nâng cấp để tải xuống khóa học",
     "required": "Yêu cầu nâng cấp",
-    "enterprise_required": "Tính năng này yêu cầu gói Enterprise."
+    "enterprise_required": "Tính năng này yêu cầu gói Enterprise.",
+    "public_api_required": "Nâng cấp lên Early Adopter hoặc Enterprise để truy cập API công khai."
   },
   "analytics": {
     "title": "Phân tích",

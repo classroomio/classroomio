@@ -503,7 +503,8 @@
     "download_lessons": "Mettre à niveau pour télécharger les leçons",
     "download_course": "Mettre à niveau pour télécharger le cours",
     "required": "Mise à niveau requise",
-    "enterprise_required": "Cette fonctionnalité nécessite un forfait Entreprise."
+    "enterprise_required": "Cette fonctionnalité nécessite un forfait Entreprise.",
+    "public_api_required": "Passez à Early Adopter ou Enterprise pour accéder à l'API publique."
   },
   "analytics": {
     "title": "Analyse",

@@ -503,7 +503,8 @@
     "download_lessons": "Uaktualnij, aby pobrać lekcje",
     "download_course": "Uaktualnij, aby pobrać kurs",
     "required": "Wymagana aktualizacja",
-    "enterprise_required": "Ta funkcja wymaga planu Enterprise."
+    "enterprise_required": "Ta funkcja wymaga planu Enterprise.",
+    "public_api_required": "Uaktualnij do Early Adopter lub Enterprise, aby uzyskać dostęp do publicznego API."
   },
   "analytics": {
     "title": "Analityka",
