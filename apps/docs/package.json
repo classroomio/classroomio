@@ -12,6 +12,7 @@
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
+    "@cio/utils": "workspace:*",
     "@scalar/core": "^0.3.28",
     "@react-router/dev": "^7.9.4",
     "fumadocs-core": "16.2.1",
