@@ -8,11 +8,13 @@ export type UpdateNoteRequest = (typeof classroomio.notes)[':noteId']['$put'];
 export type DeleteNoteRequest = (typeof classroomio.notes)[':noteId']['$delete'];
 export type GetNoteTagsRequest = (typeof classroomio.notes)[':noteId']['tags']['$get'];
 export type UpdateNoteTagsRequest = (typeof classroomio.notes)[':noteId']['tags']['$put'];
+export type UpdateNoteVisibilityRequest = (typeof classroomio.notes)[':noteId']['visibility']['$put'];
 export type GetNoteVersionHistoryRequest = (typeof classroomio.notes)[':noteId']['versions']['$get'];
 export type RestoreNoteVersionRequest =
   (typeof classroomio.notes)[':noteId']['versions'][':versionId']['restore']['$post'];
 
-export type NoteOrigin = 'workspace' | 'lesson_capture';
+export type NoteShareVisibility = 'private' | 'team';
+export type NoteListScope = 'mine' | 'team' | 'all';
 
 export type NoteVersionHistoryItem = Extract<
   InferResponseType<GetNoteVersionHistoryRequest>,

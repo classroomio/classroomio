@@ -7,7 +7,7 @@ import {
   getNoteVersionById,
   getNoteVersionHistory,
   insertNoteVersion,
-  listNotesByOwner,
+  listAccessibleNotes,
   softDeleteNote,
   updateNote,
   type NoteListRow
@@ -19,10 +19,11 @@ import type {
   TCreateNote,
   TListNotesQuery,
   TNoteOrigin,
-  TNoteTagAssignment,
-  TUpdateNote
+  TUpdateNote,
+  TUpdateNoteVisibility
 } from '@cio/utils/validation/notes';
 import type { TPlan } from '@db/types';
+import { assertNoteReadAccess, assertNoteWriteAccess, isOrgTeamRole } from './access';
 
 function htmlToPlainText(html: string): string {
   return html
@@ -60,10 +61,16 @@ export async function assertWorkspaceNoteCreationAllowed(organizationId: string,
   }
 }
 
-function assertNoteOwnership(note: NoteListRow, organizationId: string, ownerId: string) {
-  if (note.organizationId !== organizationId || note.ownerId !== ownerId) {
+async function getReadableNote(organizationId: string, userId: string, roleId: number, noteId: string) {
+  const note = await getNoteById(noteId);
+
+  if (!note) {
     throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
   }
+
+  const access = assertNoteReadAccess({ note, organizationId, userId, roleId });
+
+  return { note, canWrite: access.canWrite };
 }
 
 async function validateLessonCaptureContext(params: { organizationId: string; courseId?: string; lessonId?: string }) {
@@ -74,10 +81,12 @@ async function validateLessonCaptureContext(params: { organizationId: string; co
   await verifyLessonBelongsToCourse(params.lessonId, params.courseId);
 }
 
-export async function listNotesService(organizationId: string, ownerId: string, query: TListNotesQuery) {
-  const notes = await listNotesByOwner({
+export async function listNotesService(organizationId: string, userId: string, roleId: number, query: TListNotesQuery) {
+  const notes = await listAccessibleNotes({
     organizationId,
-    ownerId,
+    userId,
+    isTeamMember: isOrgTeamRole(roleId),
+    scope: query.scope,
     origin: query.origin,
     courseId: query.courseId,
     lessonId: query.lessonId,
@@ -90,16 +99,10 @@ export async function listNotesService(organizationId: string, ownerId: string, 
   return attachTagsToNotes(organizationId, notes);
 }
 
-export async function getNoteService(organizationId: string, ownerId: string, noteId: string) {
-  const note = await getNoteById(noteId);
+export async function getNoteService(organizationId: string, userId: string, roleId: number, noteId: string) {
+  const { note, canWrite } = await getReadableNote(organizationId, userId, roleId, noteId);
 
-  if (!note) {
-    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
-  }
-
-  assertNoteOwnership(note, organizationId, ownerId);
-
-  return note;
+  return { ...note, canWrite };
 }
 
 export async function createNoteService(ownerId: string, data: TCreateNote) {
@@ -134,6 +137,7 @@ export async function createNoteService(ownerId: string, data: TCreateNote) {
     content: data.content ?? '',
     plainText,
     origin: data.origin,
+    visibility: 'private',
     courseId: data.courseId ?? null,
     lessonId: data.lessonId ?? null,
     videoAnchors: data.videoAnchors ?? []
@@ -149,11 +153,18 @@ export async function createNoteService(ownerId: string, data: TCreateNote) {
     });
   }
 
-  return getNoteById(note.id);
+  return { ...(await getNoteById(note.id))!, canWrite: true };
 }
 
-export async function updateNoteService(organizationId: string, ownerId: string, noteId: string, data: TUpdateNote) {
-  const existing = await getNoteService(organizationId, ownerId, noteId);
+export async function updateNoteService(
+  organizationId: string,
+  userId: string,
+  roleId: number,
+  noteId: string,
+  data: TUpdateNote
+) {
+  const { note: existing } = await getReadableNote(organizationId, userId, roleId, noteId);
+  assertNoteWriteAccess({ note: existing, organizationId, userId });
 
   const nextContent = data.content ?? existing.content;
   const nextTitle = data.title ?? existing.title;
@@ -177,37 +188,84 @@ export async function updateNoteService(organizationId: string, ownerId: string,
       noteId,
       oldContent: existing.content,
       newContent: nextContent,
-      changedBy: ownerId,
+      changedBy: userId,
       changeSource: 'manual'
     });
   }
 
-  return getNoteById(noteId);
+  const note = await getNoteById(noteId);
+
+  if (!note) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  return { ...note, canWrite: true };
 }
 
-export async function deleteNoteService(organizationId: string, ownerId: string, noteId: string) {
-  await getNoteService(organizationId, ownerId, noteId);
+export async function updateNoteVisibilityService(
+  organizationId: string,
+  userId: string,
+  roleId: number,
+  noteId: string,
+  data: TUpdateNoteVisibility
+) {
+  const { note: existing } = await getReadableNote(organizationId, userId, roleId, noteId);
+  assertNoteWriteAccess({ note: existing, organizationId, userId });
+
+  if (existing.origin !== 'workspace') {
+    throw new AppError('Only workspace notes can be shared', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  if (!isOrgTeamRole(roleId)) {
+    throw new AppError('Only team members can share notes', ErrorCodes.UNAUTHORIZED, 403);
+  }
+
+  const updated = await updateNote(noteId, {
+    visibility: data.visibility,
+    updatedAt: new Date().toISOString()
+  });
+
+  if (!updated) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  const note = await getNoteById(noteId);
+
+  if (!note) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  return { ...note, canWrite: true };
+}
+
+export async function deleteNoteService(organizationId: string, userId: string, roleId: number, noteId: string) {
+  const { note } = await getReadableNote(organizationId, userId, roleId, noteId);
+  assertNoteWriteAccess({ note, organizationId, userId });
   await softDeleteNote(noteId);
   return { id: noteId };
 }
 
 export async function getNoteVersionHistoryService(
   organizationId: string,
-  ownerId: string,
+  userId: string,
+  roleId: number,
   noteId: string,
   endRange: number
 ) {
-  await getNoteService(organizationId, ownerId, noteId);
+  await getReadableNote(organizationId, userId, roleId, noteId);
   return getNoteVersionHistory(noteId, endRange);
 }
 
 export async function restoreNoteVersionService(
   organizationId: string,
-  ownerId: string,
+  userId: string,
+  roleId: number,
   noteId: string,
   versionId: number
 ) {
-  const note = await getNoteService(organizationId, ownerId, noteId);
+  const { note } = await getReadableNote(organizationId, userId, roleId, noteId);
+  assertNoteWriteAccess({ note, organizationId, userId });
+
   const version = await getNoteVersionById(noteId, versionId);
 
   if (!version?.newContent) {
@@ -226,11 +284,17 @@ export async function restoreNoteVersionService(
     noteId,
     oldContent: note.content,
     newContent: restoredContent,
-    changedBy: ownerId,
+    changedBy: userId,
     changeSource: 'restore'
   });
 
-  return getNoteById(noteId);
+  const updatedNote = await getNoteById(noteId);
+
+  if (!updatedNote) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  return { ...updatedNote, canWrite: true };
 }
 
 export async function getWorkspaceNoteUsageService(organizationId: string, ownerId: string) {
@@ -246,4 +310,4 @@ export async function getWorkspaceNoteUsageService(organizationId: string, owner
   };
 }
 
-export type { TNoteOrigin };
+export type { TNoteOrigin, NoteListRow };

@@ -13,12 +13,29 @@
     showWorkspaceUsage?: boolean;
     noteHref?: (noteId: string) => string;
     tagId?: string;
+    showTeamTab?: boolean;
   }
 
-  let { showWorkspaceUsage = false, noteHref, tagId }: Props = $props();
+  let { showWorkspaceUsage = false, noteHref, tagId, showTeamTab = false }: Props = $props();
 
   let searchValue = $state('');
-  let currentTab = $state<'all' | 'lessons'>('all');
+  let currentTab = $state<'all' | 'lessons' | 'team'>('all');
+
+  const listScope = $derived.by((): 'mine' | 'team' | 'all' => {
+    if (!showTeamTab) {
+      return 'mine';
+    }
+
+    if (currentTab === 'team') {
+      return 'team';
+    }
+
+    if (currentTab === 'lessons') {
+      return 'mine';
+    }
+
+    return 'all';
+  });
 
   const filteredNotes = $derived.by(() => {
     const originFilter = currentTab === 'lessons' ? 'lesson_capture' : undefined;
@@ -53,7 +70,10 @@
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
 
-    notesApi.listNotes({ tagId });
+    listScope;
+    tagId;
+
+    notesApi.listNotes({ tagId, scope: listScope });
 
     if (showWorkspaceUsage) {
       notesApi.fetchUsage();
@@ -76,6 +96,9 @@
   <UnderlineTabs.Root bind:value={currentTab}>
     <UnderlineTabs.List>
       <UnderlineTabs.Trigger value="all">{$t('notes.list.tabs.all')}</UnderlineTabs.Trigger>
+      {#if showTeamTab}
+        <UnderlineTabs.Trigger value="team">{$t('notes.list.tabs.team')}</UnderlineTabs.Trigger>
+      {/if}
       <UnderlineTabs.Trigger value="lessons">{$t('notes.list.tabs.from_lessons')}</UnderlineTabs.Trigger>
     </UnderlineTabs.List>
   </UnderlineTabs.Root>
@@ -94,7 +117,17 @@
             <a href={noteHref(note.id)} class="hover:bg-muted/40 flex flex-col gap-2 px-4 py-3 transition-colors">
               <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
-                  <p class="truncate font-medium">{note.title}</p>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <p class="truncate font-medium">{note.title}</p>
+                    {#if note.visibility === 'team' && note.ownerId !== $profile.id}
+                      <Badge variant="secondary">{$t('notes.list.shared_with_team')}</Badge>
+                    {/if}
+                  </div>
+                  {#if note.ownerId !== $profile.id && note.ownerFullname}
+                    <p class="ui:text-muted-foreground text-xs">
+                      {$t('notes.list.by_author', { name: note.ownerFullname })}
+                    </p>
+                  {/if}
                   <p class="ui:text-muted-foreground line-clamp-2 text-sm">
                     {note.plainText || $t('notes.list.no_content')}
                   </p>
@@ -132,7 +165,17 @@
             <div class="flex flex-col gap-2 px-4 py-3">
               <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
-                  <p class="truncate font-medium">{note.title}</p>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <p class="truncate font-medium">{note.title}</p>
+                    {#if note.visibility === 'team' && note.ownerId !== $profile.id}
+                      <Badge variant="secondary">{$t('notes.list.shared_with_team')}</Badge>
+                    {/if}
+                  </div>
+                  {#if note.ownerId !== $profile.id && note.ownerFullname}
+                    <p class="ui:text-muted-foreground text-xs">
+                      {$t('notes.list.by_author', { name: note.ownerFullname })}
+                    </p>
+                  {/if}
                   <p class="ui:text-muted-foreground line-clamp-2 text-sm">
                     {note.plainText || $t('notes.list.no_content')}
                   </p>

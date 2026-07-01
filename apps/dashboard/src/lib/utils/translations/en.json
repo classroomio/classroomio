@@ -4104,8 +4104,11 @@
       "search": "Search notes",
       "tabs": {
         "all": "All notes",
+        "team": "Shared with team",
         "from_lessons": "From lessons"
       },
+      "shared_with_team": "Team",
+      "by_author": "By {name}",
       "empty_title": "No notes yet",
       "empty_description": "Take notes while watching a lesson and they will show up here.",
       "no_content": "No content yet"
@@ -4125,6 +4128,21 @@
       "empty_groups": "Create tags in organization settings to organize notes.",
       "save_error": "Could not save tags.",
       "filter_all": "All tags"
+    },
+    "share": {
+      "open": "Share",
+      "title": "Share note",
+      "description": "Choose who on your team can access this note.",
+      "private_label": "Only you",
+      "private_description": "Only you can view and edit this note.",
+      "team_label": "Your team",
+      "team_description": "All admins and tutors in {orgName} can view this note.",
+      "read_only_banner": "You can view this note. Only the author can edit it.",
+      "by_author": "By {name}",
+      "save": "Save",
+      "cancel": "Cancel",
+      "save_success": "Sharing updated",
+      "save_error": "Could not update sharing."
     },
     "editor": {
       "page_title": "Edit note",

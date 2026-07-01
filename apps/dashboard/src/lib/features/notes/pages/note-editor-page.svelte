@@ -3,6 +3,7 @@
   import { resolve } from '$app/paths';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import HistoryIcon from '@lucide/svelte/icons/history';
+  import ShareIcon from '@lucide/svelte/icons/share-2';
   import LoaderIcon from '@lucide/svelte/icons/loader';
   import { Button } from '@cio/ui/base/button';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -13,11 +14,14 @@
   import { TextEditor } from '$features/ui';
   import { tagApi } from '$features/tag/api';
   import { currentOrgPath } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { notesApi } from '../api';
+  import NoteShareDialog from '../components/note-share-dialog.svelte';
   import NoteTagPicker from '../components/note-tag-picker.svelte';
   import NoteVersionHistory from '../components/note-version-history.svelte';
+  import type { NoteShareVisibility } from '../utils/types';
 
   interface Props {
     noteId: string;
@@ -28,8 +32,12 @@
   let title = $state('');
   let content = $state('');
   let noteOrigin = $state<'workspace' | 'lesson_capture' | null>(null);
+  let noteVisibility = $state<NoteShareVisibility>('private');
+  let ownerFullname = $state<string | null>(null);
+  let canWrite = $state(true);
   let selectedTagIds = $state<string[]>([]);
   let isTagPopoverOpen = $state(false);
+  let showShareDialog = $state(false);
   let isLoading = $state(true);
   let isSaving = $state(false);
   let isSavingTags = $state(false);
@@ -53,8 +61,11 @@
     title = note.title;
     content = note.content;
     noteOrigin = note.origin;
+    noteVisibility = note.visibility === 'team' ? 'team' : 'private';
+    ownerFullname = note.ownerFullname;
+    canWrite = note.canWrite ?? note.ownerId === $profile.id;
 
-    if (note.origin === 'workspace') {
+    if (note.origin === 'workspace' && canWrite) {
       await tagApi.getTagGroups();
       selectedTagIds = (await notesApi.getNoteTags(noteId)).map((tag) => tag.id);
     }
@@ -115,6 +126,8 @@
   }
 
   function scheduleContentSave(nextContent: Content) {
+    if (!canWrite) return;
+
     const html = `${nextContent}`;
     content = html;
 
@@ -128,6 +141,8 @@
   }
 
   function scheduleTitleSave(event: Event) {
+    if (!canWrite) return;
+
     const input = event.currentTarget;
     if (!(input instanceof HTMLInputElement)) return;
 
@@ -178,24 +193,44 @@
 
     <Input
       value={title}
+      readonly={!canWrite}
       class="max-w-xl border-none text-lg font-semibold shadow-none focus-visible:ring-0"
       placeholder={$t('notes.editor.title_placeholder')}
       oninput={scheduleTitleSave}
     />
+
+    {#if !canWrite && ownerFullname}
+      <Badge variant="secondary">{$t('notes.share.by_author', { name: ownerFullname })}</Badge>
+    {/if}
 
     <div class="ml-auto flex items-center gap-2">
       {#if isSaving}
         <LoaderIcon size={16} class="ui:text-muted-foreground animate-spin" />
       {/if}
 
-      <Button variant="secondary" size="sm" onclick={() => (showVersionHistory = true)}>
-        <HistoryIcon size={16} />
-        {$t('notes.editor.version_history.open')}
-      </Button>
+      {#if canWrite && noteOrigin === 'workspace'}
+        <Button variant="secondary" size="sm" onclick={() => (showShareDialog = true)}>
+          <ShareIcon size={16} />
+          {$t('notes.share.open')}
+        </Button>
+      {/if}
+
+      {#if canWrite}
+        <Button variant="secondary" size="sm" onclick={() => (showVersionHistory = true)}>
+          <HistoryIcon size={16} />
+          {$t('notes.editor.version_history.open')}
+        </Button>
+      {/if}
     </div>
   </header>
 
-  {#if !isLoading && !loadError && noteOrigin === 'workspace'}
+  {#if !isLoading && !loadError && !canWrite}
+    <p class="ui:text-muted-foreground border-border border-b py-2 text-sm">
+      {$t('notes.share.read_only_banner')}
+    </p>
+  {/if}
+
+  {#if !isLoading && !loadError && noteOrigin === 'workspace' && canWrite}
     <div class="border-border flex flex-wrap items-center gap-2 border-b py-3">
       <span class="ui:text-muted-foreground text-sm font-medium">{$t('notes.tags.heading')}</span>
 
@@ -244,7 +279,8 @@
       <div class="min-h-[60vh]">
         <TextEditor
           {content}
-          showToolBar={true}
+          showToolBar={canWrite}
+          editable={canWrite}
           onChange={scheduleContentSave}
           placeholder={$t('notes.editor.placeholder')}
         />
@@ -252,6 +288,15 @@
     {/if}
   </div>
 </div>
+
+<NoteShareDialog
+  {noteId}
+  visibility={noteVisibility}
+  bind:open={showShareDialog}
+  onVisibilityChange={(visibility) => {
+    noteVisibility = visibility;
+  }}
+/>
 
 <NoteVersionHistory
   {noteId}

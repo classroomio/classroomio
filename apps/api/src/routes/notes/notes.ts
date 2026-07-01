@@ -5,7 +5,8 @@ import {
   ZNoteTagAssignment,
   ZNoteVersionHistoryQuery,
   ZNoteVersionIdParam,
-  ZUpdateNote
+  ZUpdateNote,
+  ZUpdateNoteVisibility
 } from '@cio/utils/validation/notes';
 import { importNoteService } from '@api/services/notes/import';
 import {
@@ -16,7 +17,8 @@ import {
   getWorkspaceNoteUsageService,
   listNotesService,
   restoreNoteVersionService,
-  updateNoteService
+  updateNoteService,
+  updateNoteVisibilityService
 } from '@api/services/notes/notes';
 import { getNoteTagsService, replaceNoteTagsService } from '@api/services/notes/tags';
 import { AppError, ErrorCodes } from '@api/utils/errors';
@@ -48,7 +50,7 @@ export const notesRouter = new Hono()
         return c.json({ success: false, error: 'Organization mismatch', code: 'FORBIDDEN' }, 403);
       }
 
-      const data = await listNotesService(organizationId, user.id, query);
+      const data = await listNotesService(organizationId, user.id, c.get('userRole')!, query);
 
       return c.json({ success: true, data }, 200);
     } catch (error) {
@@ -99,7 +101,7 @@ export const notesRouter = new Hono()
       const user = c.get('user')!;
       const organizationId = c.get('orgId')!;
       const { noteId } = c.req.valid('param');
-      const data = await getNoteService(organizationId, user.id, noteId);
+      const data = await getNoteService(organizationId, user.id, c.get('userRole')!, noteId);
 
       return c.json({ success: true, data }, 200);
     } catch (error) {
@@ -111,7 +113,7 @@ export const notesRouter = new Hono()
       const user = c.get('user')!;
       const organizationId = c.get('orgId')!;
       const { noteId } = c.req.valid('param');
-      const data = await getNoteTagsService(organizationId, user.id, noteId);
+      const data = await getNoteTagsService(organizationId, user.id, c.get('userRole')!, noteId);
 
       return c.json({ success: true, data }, 200);
     } catch (error) {
@@ -130,11 +132,31 @@ export const notesRouter = new Hono()
         const organizationId = c.get('orgId')!;
         const { noteId } = c.req.valid('param');
         const body = c.req.valid('json');
-        const data = await replaceNoteTagsService(organizationId, user.id, noteId, body);
+        const data = await replaceNoteTagsService(organizationId, user.id, c.get('userRole')!, noteId, body);
 
         return c.json({ success: true, data }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to assign note tags');
+      }
+    }
+  )
+  .put(
+    '/:noteId/visibility',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNoteIdParam),
+    zValidator('json', ZUpdateNoteVisibility),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const { noteId } = c.req.valid('param');
+        const body = c.req.valid('json');
+        const data = await updateNoteVisibilityService(organizationId, user.id, c.get('userRole')!, noteId, body);
+
+        return c.json({ success: true, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update note visibility');
       }
     }
   )
@@ -150,7 +172,7 @@ export const notesRouter = new Hono()
         const organizationId = c.get('orgId')!;
         const { noteId } = c.req.valid('param');
         const body = c.req.valid('json');
-        const data = await updateNoteService(organizationId, user.id, noteId, body);
+        const data = await updateNoteService(organizationId, user.id, c.get('userRole')!, noteId, body);
 
         return c.json({ success: true, data }, 200);
       } catch (error) {
@@ -163,7 +185,7 @@ export const notesRouter = new Hono()
       const user = c.get('user')!;
       const organizationId = c.get('orgId')!;
       const { noteId } = c.req.valid('param');
-      const data = await deleteNoteService(organizationId, user.id, noteId);
+      const data = await deleteNoteService(organizationId, user.id, c.get('userRole')!, noteId);
 
       return c.json({ success: true, data }, 200);
     } catch (error) {
@@ -182,7 +204,7 @@ export const notesRouter = new Hono()
         const organizationId = c.get('orgId')!;
         const { noteId } = c.req.valid('param');
         const { endRange } = c.req.valid('query');
-        const data = await getNoteVersionHistoryService(organizationId, user.id, noteId, endRange);
+        const data = await getNoteVersionHistoryService(organizationId, user.id, c.get('userRole')!, noteId, endRange);
 
         return c.json({ success: true, data }, 200);
       } catch (error) {
@@ -200,7 +222,7 @@ export const notesRouter = new Hono()
         const user = c.get('user')!;
         const organizationId = c.get('orgId')!;
         const { noteId, versionId } = c.req.valid('param');
-        const data = await restoreNoteVersionService(organizationId, user.id, noteId, versionId);
+        const data = await restoreNoteVersionService(organizationId, user.id, c.get('userRole')!, noteId, versionId);
 
         return c.json({ success: true, data }, 200);
       } catch (error) {

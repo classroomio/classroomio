@@ -17,7 +17,8 @@ import type {
   NoteUsageRequest,
   RestoreNoteVersionRequest,
   UpdateNoteRequest,
-  UpdateNoteTagsRequest
+  UpdateNoteTagsRequest,
+  UpdateNoteVisibilityRequest
 } from '../utils/types';
 
 export type NoteListItem = Extract<InferResponseType<ListNotesRequest>, { success: true }>['data'][number];
@@ -41,6 +42,7 @@ class NotesApi extends BaseApiWithErrors {
     lessonId?: string;
     search?: string;
     tagId?: string;
+    scope?: 'mine' | 'team' | 'all';
   }) {
     const org = get(currentOrg);
     if (!org.id) return;
@@ -56,7 +58,8 @@ class NotesApi extends BaseApiWithErrors {
             courseId: params?.courseId,
             lessonId: params?.lessonId,
             search: params?.search,
-            tagId: params?.tagId
+            tagId: params?.tagId,
+            scope: params?.scope
           }
         }),
       onSuccess: (result) => {
@@ -251,6 +254,24 @@ class NotesApi extends BaseApiWithErrors {
     });
 
     return tags;
+  }
+
+  async updateNoteVisibility(noteId: string, visibility: 'private' | 'team') {
+    let updated: NoteDetail | null = null;
+
+    await this.execute<UpdateNoteVisibilityRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId'].visibility.$put({
+          param: { noteId },
+          json: { visibility }
+        }),
+      onSuccess: (result) => {
+        updated = result.data ?? null;
+      },
+      logContext: 'updateNoteVisibility'
+    });
+
+    return updated;
   }
 
   async deleteNote(noteId: string) {

@@ -1,5 +1,4 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { getNoteService } from './notes';
 import { getTagsByIds } from '@cio/db/queries/tag';
 import {
   getNoteTagsByNoteIdsForOrganization,
@@ -7,6 +6,8 @@ import {
   replaceNoteTagAssignments
 } from '@cio/db/queries/notes';
 import type { TNoteTagAssignment } from '@cio/utils/validation/notes';
+import { assertNoteReadAccess, assertNoteWriteAccess } from './access';
+import { getNoteById } from '@cio/db/queries/notes';
 
 function assertWorkspaceNoteTagsAllowed(note: { origin: string }) {
   if (note.origin !== 'workspace') {
@@ -14,8 +15,14 @@ function assertWorkspaceNoteTagsAllowed(note: { origin: string }) {
   }
 }
 
-export async function getNoteTagsService(organizationId: string, ownerId: string, noteId: string) {
-  const note = await getNoteService(organizationId, ownerId, noteId);
+export async function getNoteTagsService(organizationId: string, userId: string, roleId: number, noteId: string) {
+  const note = await getNoteById(noteId);
+
+  if (!note) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  assertNoteReadAccess({ note, organizationId, userId, roleId });
   assertWorkspaceNoteTagsAllowed(note);
 
   return getNoteTagsForOrganization(organizationId, noteId);
@@ -23,11 +30,18 @@ export async function getNoteTagsService(organizationId: string, ownerId: string
 
 export async function replaceNoteTagsService(
   organizationId: string,
-  ownerId: string,
+  userId: string,
+  roleId: number,
   noteId: string,
   data: TNoteTagAssignment
 ) {
-  const note = await getNoteService(organizationId, ownerId, noteId);
+  const note = await getNoteById(noteId);
+
+  if (!note) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  assertNoteWriteAccess({ note, organizationId, userId });
   assertWorkspaceNoteTagsAllowed(note);
 
   const uniqueTagIds = Array.from(new Set(data.tagIds));

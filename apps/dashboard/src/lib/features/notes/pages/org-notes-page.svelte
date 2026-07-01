@@ -137,5 +137,5 @@
     </Select.Root>
   </div>
 
-  <MyNotesPage showWorkspaceUsage={true} noteHref={noteEditorHref} tagId={activeTagId} />
+  <MyNotesPage showWorkspaceUsage={true} noteHref={noteEditorHref} tagId={activeTagId} showTeamTab={true} />
 </div>

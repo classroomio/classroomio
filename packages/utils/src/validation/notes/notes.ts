@@ -1,6 +1,8 @@
 import * as z from 'zod';
 
 export const NOTE_ORIGINS = ['workspace', 'lesson_capture'] as const;
+export const NOTE_VISIBILITIES = ['private', 'team', 'public'] as const;
+export const NOTE_SHARE_VISIBILITIES = ['private', 'team'] as const;
 
 export const ZNoteVideoAnchor = z.object({
   assetId: z.string().uuid(),
@@ -10,6 +12,9 @@ export const ZNoteVideoAnchor = z.object({
 });
 
 export const ZNoteOrigin = z.enum(NOTE_ORIGINS);
+export const ZNoteVisibility = z.enum(NOTE_VISIBILITIES);
+export const ZNoteShareVisibility = z.enum(NOTE_SHARE_VISIBILITIES);
+export const ZNoteListScope = z.enum(['mine', 'team', 'all']);
 
 export const ZListNotesQuery = z.object({
   organizationId: z.string().uuid(),
@@ -17,7 +22,8 @@ export const ZListNotesQuery = z.object({
   courseId: z.string().uuid().optional(),
   lessonId: z.string().uuid().optional(),
   search: z.string().max(200).optional(),
-  tagId: z.string().uuid().optional()
+  tagId: z.string().uuid().optional(),
+  scope: ZNoteListScope.default('mine')
 });
 
 export const ZNoteIdParam = z.object({
@@ -53,9 +59,16 @@ export const ZNoteTagAssignment = z.object({
   tagIds: z.array(z.uuid()).max(100).default([])
 });
 
+export const ZUpdateNoteVisibility = z.object({
+  visibility: ZNoteShareVisibility
+});
+
 export type TListNotesQuery = z.infer<typeof ZListNotesQuery>;
 export type TCreateNote = z.infer<typeof ZCreateNote>;
 export type TUpdateNote = z.infer<typeof ZUpdateNote>;
 export type TNoteTagAssignment = z.infer<typeof ZNoteTagAssignment>;
+export type TUpdateNoteVisibility = z.infer<typeof ZUpdateNoteVisibility>;
+export type TNoteListScope = z.infer<typeof ZNoteListScope>;
+export type TNoteShareVisibility = z.infer<typeof ZNoteShareVisibility>;
 export type TNoteVideoAnchor = z.infer<typeof ZNoteVideoAnchor>;
 export type TNoteOrigin = z.infer<typeof ZNoteOrigin>;

@@ -3501,6 +3501,8 @@ export type NoteVideoAnchor = {
 
 export const noteOrigin = pgEnum('note_origin', ['workspace', 'lesson_capture']);
 
+export const noteVisibility = pgEnum('note_visibility', ['private', 'team', 'public']);
+
 export const orgNote = pgTable(
   'org_note',
   {
@@ -3514,6 +3516,7 @@ export const orgNote = pgTable(
     content: text().notNull().default(''),
     plainText: text('plain_text').notNull().default(''),
     origin: noteOrigin().notNull().default('workspace'),
+    visibility: noteVisibility().notNull().default('private'),
     courseId: uuid('course_id'),
     lessonId: uuid('lesson_id'),
     videoAnchors: jsonb('video_anchors').$type<NoteVideoAnchor[]>().default([]).notNull(),
@@ -3555,6 +3558,7 @@ export const orgNote = pgTable(
     index('idx_org_note_organization_owner_updated').on(table.organizationId, table.ownerId, table.updatedAt),
     index('idx_org_note_lesson_id').on(table.lessonId),
     index('idx_org_note_origin').on(table.origin),
+    index('idx_org_note_visibility').on(table.organizationId, table.visibility),
     uniqueIndex('org_note_owner_lesson_capture_key')
       .on(table.ownerId, table.lessonId)
       .where(sql`${table.origin} = 'lesson_capture' AND ${table.deletedAt} IS NULL`)

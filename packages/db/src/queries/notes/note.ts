@@ -1,12 +1,35 @@
-import { and, desc, eq, ilike, isNull, or, sql } from 'drizzle-orm';
+import { and, desc, eq, ilike, isNull, ne, or, sql } from 'drizzle-orm';
 import { db } from '../../drizzle';
 import * as schema from '../../schema';
 import type { NoteVideoAnchor } from '../../schema';
 import type { TNewOrgNote, TNewOrgNoteVersion, TOrgNote } from '../../types';
+import type { TNoteListScope } from '@cio/utils/validation/notes';
 
 export type NoteListRow = TOrgNote & {
   courseTitle: string | null;
   lessonTitle: string | null;
+  ownerFullname: string | null;
+};
+
+const noteListSelect = {
+  id: schema.orgNote.id,
+  organizationId: schema.orgNote.organizationId,
+  ownerId: schema.orgNote.ownerId,
+  title: schema.orgNote.title,
+  content: schema.orgNote.content,
+  plainText: schema.orgNote.plainText,
+  origin: schema.orgNote.origin,
+  visibility: schema.orgNote.visibility,
+  courseId: schema.orgNote.courseId,
+  lessonId: schema.orgNote.lessonId,
+  videoAnchors: schema.orgNote.videoAnchors,
+  convertedCourseId: schema.orgNote.convertedCourseId,
+  createdAt: schema.orgNote.createdAt,
+  updatedAt: schema.orgNote.updatedAt,
+  deletedAt: schema.orgNote.deletedAt,
+  courseTitle: schema.course.title,
+  lessonTitle: schema.lesson.title,
+  ownerFullname: schema.profile.fullname
 };
 
 export async function countWorkspaceNotesByOwner(organizationId: string, ownerId: string): Promise<number> {
@@ -39,12 +62,48 @@ export async function listNotesByOwner(params: {
   search?: string;
   tagId?: string;
 }): Promise<NoteListRow[]> {
+  return listAccessibleNotes({
+    organizationId: params.organizationId,
+    userId: params.ownerId,
+    isTeamMember: false,
+    scope: 'mine',
+    origin: params.origin,
+    courseId: params.courseId,
+    lessonId: params.lessonId,
+    search: params.search,
+    tagId: params.tagId
+  });
+}
+
+export async function listAccessibleNotes(params: {
+  organizationId: string;
+  userId: string;
+  isTeamMember: boolean;
+  scope?: TNoteListScope;
+  origin?: 'workspace' | 'lesson_capture';
+  courseId?: string;
+  lessonId?: string;
+  search?: string;
+  tagId?: string;
+}): Promise<NoteListRow[]> {
   try {
-    const conditions = [
-      eq(schema.orgNote.organizationId, params.organizationId),
-      eq(schema.orgNote.ownerId, params.ownerId),
-      isNull(schema.orgNote.deletedAt)
-    ];
+    const scope = params.isTeamMember ? (params.scope ?? 'mine') : 'mine';
+    const conditions = [eq(schema.orgNote.organizationId, params.organizationId), isNull(schema.orgNote.deletedAt)];
+
+    if (scope === 'mine') {
+      conditions.push(eq(schema.orgNote.ownerId, params.userId));
+    } else if (scope === 'team') {
+      conditions.push(eq(schema.orgNote.visibility, 'team'));
+      conditions.push(eq(schema.orgNote.origin, 'workspace'));
+      conditions.push(ne(schema.orgNote.ownerId, params.userId));
+    } else {
+      conditions.push(
+        or(
+          eq(schema.orgNote.ownerId, params.userId),
+          and(eq(schema.orgNote.visibility, 'team'), eq(schema.orgNote.origin, 'workspace'))
+        )!
+      );
+    }
 
     if (params.origin) {
       conditions.push(eq(schema.orgNote.origin, params.origin));
@@ -68,25 +127,9 @@ export async function listNotesByOwner(params: {
     }
 
     const query = db
-      .select({
-        id: schema.orgNote.id,
-        organizationId: schema.orgNote.organizationId,
-        ownerId: schema.orgNote.ownerId,
-        title: schema.orgNote.title,
-        content: schema.orgNote.content,
-        plainText: schema.orgNote.plainText,
-        origin: schema.orgNote.origin,
-        courseId: schema.orgNote.courseId,
-        lessonId: schema.orgNote.lessonId,
-        videoAnchors: schema.orgNote.videoAnchors,
-        convertedCourseId: schema.orgNote.convertedCourseId,
-        createdAt: schema.orgNote.createdAt,
-        updatedAt: schema.orgNote.updatedAt,
-        deletedAt: schema.orgNote.deletedAt,
-        courseTitle: schema.course.title,
-        lessonTitle: schema.lesson.title
-      })
+      .select(noteListSelect)
       .from(schema.orgNote)
+      .innerJoin(schema.profile, eq(schema.orgNote.ownerId, schema.profile.id))
       .leftJoin(schema.course, eq(schema.orgNote.courseId, schema.course.id))
       .leftJoin(schema.lesson, eq(schema.orgNote.lessonId, schema.lesson.id));
 
@@ -99,7 +142,7 @@ export async function listNotesByOwner(params: {
 
     return query.where(and(...conditions)).orderBy(desc(schema.orgNote.updatedAt));
   } catch (error) {
-    console.error('listNotesByOwner error:', error);
+    console.error('listAccessibleNotes error:', error);
     throw new Error('Failed to list notes');
   }
 }
@@ -107,25 +150,9 @@ export async function listNotesByOwner(params: {
 export async function getNoteById(noteId: string): Promise<NoteListRow | null> {
   try {
     const [row] = await db
-      .select({
-        id: schema.orgNote.id,
-        organizationId: schema.orgNote.organizationId,
-        ownerId: schema.orgNote.ownerId,
-        title: schema.orgNote.title,
-        content: schema.orgNote.content,
-        plainText: schema.orgNote.plainText,
-        origin: schema.orgNote.origin,
-        courseId: schema.orgNote.courseId,
-        lessonId: schema.orgNote.lessonId,
-        videoAnchors: schema.orgNote.videoAnchors,
-        convertedCourseId: schema.orgNote.convertedCourseId,
-        createdAt: schema.orgNote.createdAt,
-        updatedAt: schema.orgNote.updatedAt,
-        deletedAt: schema.orgNote.deletedAt,
-        courseTitle: schema.course.title,
-        lessonTitle: schema.lesson.title
-      })
+      .select(noteListSelect)
       .from(schema.orgNote)
+      .innerJoin(schema.profile, eq(schema.orgNote.ownerId, schema.profile.id))
       .leftJoin(schema.course, eq(schema.orgNote.courseId, schema.course.id))
       .leftJoin(schema.lesson, eq(schema.orgNote.lessonId, schema.lesson.id))
       .where(and(eq(schema.orgNote.id, noteId), isNull(schema.orgNote.deletedAt)))
@@ -182,7 +209,7 @@ export async function createNote(values: TNewOrgNote): Promise<TOrgNote> {
 
 export async function updateNote(
   noteId: string,
-  values: Partial<Pick<TOrgNote, 'title' | 'content' | 'plainText' | 'videoAnchors' | 'updatedAt'>>
+  values: Partial<Pick<TOrgNote, 'title' | 'content' | 'plainText' | 'videoAnchors' | 'visibility' | 'updatedAt'>>
 ): Promise<TOrgNote | null> {
   try {
     const [row] = await db.update(schema.orgNote).set(values).where(eq(schema.orgNote.id, noteId)).returning();
