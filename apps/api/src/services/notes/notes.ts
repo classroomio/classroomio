@@ -15,7 +15,13 @@ import {
 import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 import { verifyLessonBelongsToCourse } from '@cio/core/services/agent/chat-context';
 import { BASIC_WORKSPACE_NOTE_LIMIT, PLAN } from '@cio/utils/plans/constants';
-import type { TCreateNote, TListNotesQuery, TNoteOrigin, TUpdateNote } from '@cio/utils/validation/notes';
+import type {
+  TCreateNote,
+  TListNotesQuery,
+  TNoteOrigin,
+  TNoteTagAssignment,
+  TUpdateNote
+} from '@cio/utils/validation/notes';
 import type { TPlan } from '@db/types';
 
 function htmlToPlainText(html: string): string {
@@ -69,14 +75,19 @@ async function validateLessonCaptureContext(params: { organizationId: string; co
 }
 
 export async function listNotesService(organizationId: string, ownerId: string, query: TListNotesQuery) {
-  return listNotesByOwner({
+  const notes = await listNotesByOwner({
     organizationId,
     ownerId,
     origin: query.origin,
     courseId: query.courseId,
     lessonId: query.lessonId,
-    search: query.search
+    search: query.search,
+    tagId: query.tagId
   });
+
+  const { attachTagsToNotes } = await import('./tags');
+
+  return attachTagsToNotes(organizationId, notes);
 }
 
 export async function getNoteService(organizationId: string, ownerId: string, noteId: string) {

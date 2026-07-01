@@ -4118,6 +4118,14 @@
       "import_error": "Could not import note. Use .md, .txt, or .docx files up to 5MB.",
       "import_success": "Note imported"
     },
+    "tags": {
+      "heading": "Tags",
+      "add": "Add tag",
+      "popover_title": "Add tags to this note",
+      "empty_groups": "Create tags in organization settings to organize notes.",
+      "save_error": "Could not save tags.",
+      "filter_all": "All tags"
+    },
     "editor": {
       "page_title": "Edit note",
       "loading": "Loading note…",

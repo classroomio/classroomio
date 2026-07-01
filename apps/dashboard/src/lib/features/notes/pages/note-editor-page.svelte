@@ -8,11 +8,15 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import type { Content, TiptapEditor } from '@cio/ui/custom/editor';
   import { Input } from '@cio/ui/base/input';
+  import { Badge } from '@cio/ui/base/badge';
+  import XIcon from '@lucide/svelte/icons/x';
   import { TextEditor } from '$features/ui';
+  import { tagApi } from '$features/tag/api';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { notesApi } from '../api';
+  import NoteTagPicker from '../components/note-tag-picker.svelte';
   import NoteVersionHistory from '../components/note-version-history.svelte';
 
   interface Props {
@@ -23,8 +27,12 @@
 
   let title = $state('');
   let content = $state('');
+  let noteOrigin = $state<'workspace' | 'lesson_capture' | null>(null);
+  let selectedTagIds = $state<string[]>([]);
+  let isTagPopoverOpen = $state(false);
   let isLoading = $state(true);
   let isSaving = $state(false);
+  let isSavingTags = $state(false);
   let loadError = $state<string | null>(null);
   let showVersionHistory = $state(false);
   let saveTimer: ReturnType<typeof setTimeout> | null = null;
@@ -44,8 +52,55 @@
 
     title = note.title;
     content = note.content;
+    noteOrigin = note.origin;
+
+    if (note.origin === 'workspace') {
+      await tagApi.getTagGroups();
+      selectedTagIds = (await notesApi.getNoteTags(noteId)).map((tag) => tag.id);
+    }
+
     isLoading = false;
   }
+
+  async function persistTags(nextTagIds: string[]) {
+    isSavingTags = true;
+    const tags = await notesApi.updateNoteTags(noteId, nextTagIds);
+    isSavingTags = false;
+
+    if (!tags) {
+      snackbar.error('notes.tags.save_error');
+      return;
+    }
+
+    selectedTagIds = tags.map((tag) => tag.id);
+  }
+
+  function toggleTagSelection(tagId: string) {
+    const selected = new Set(selectedTagIds);
+
+    if (selected.has(tagId)) {
+      selected.delete(tagId);
+    } else {
+      selected.add(tagId);
+    }
+
+    selectedTagIds = Array.from(selected);
+    void persistTags(selectedTagIds);
+  }
+
+  function removeSelectedTag(tagId: string) {
+    selectedTagIds = selectedTagIds.filter((id) => id !== tagId);
+    void persistTags(selectedTagIds);
+  }
+
+  const selectedTagChips = $derived.by(() => {
+    const allTags = tagApi.tagGroups.flatMap((group) => group.tags);
+    const tagById = new Map(allTags.map((tag) => [tag.id, tag]));
+
+    return selectedTagIds
+      .map((tagId) => tagById.get(tagId))
+      .filter((tag): tag is NonNullable<typeof tag> => Boolean(tag));
+  });
 
   async function persistContent(nextContent: string) {
     isSaving = true;
@@ -139,6 +194,43 @@
       </Button>
     </div>
   </header>
+
+  {#if !isLoading && !loadError && noteOrigin === 'workspace'}
+    <div class="border-border flex flex-wrap items-center gap-2 border-b py-3">
+      <span class="ui:text-muted-foreground text-sm font-medium">{$t('notes.tags.heading')}</span>
+
+      {#each selectedTagChips as tag (tag.id)}
+        <Badge variant="secondary" class="gap-1">
+          <span
+            class="inline-block h-2 w-2 rounded-full border"
+            style={`background-color: ${tag.color}`}
+            aria-hidden="true"
+          ></span>
+          <span>{tag.name}</span>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-xs"
+            class="h-5 w-5"
+            onclick={() => removeSelectedTag(tag.id)}
+          >
+            <XIcon />
+          </Button>
+        </Badge>
+      {/each}
+
+      <NoteTagPicker
+        tagGroups={tagApi.tagGroups}
+        {selectedTagIds}
+        bind:open={isTagPopoverOpen}
+        onTagToggle={toggleTagSelection}
+      />
+
+      {#if isSavingTags}
+        <LoaderIcon size={14} class="ui:text-muted-foreground animate-spin" />
+      {/if}
+    </div>
+  {/if}
 
   <div class="min-h-0 flex-1 py-4">
     {#if isLoading}

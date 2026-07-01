@@ -2,6 +2,7 @@ import {
   ZCreateNote,
   ZListNotesQuery,
   ZNoteIdParam,
+  ZNoteTagAssignment,
   ZNoteVersionHistoryQuery,
   ZNoteVersionIdParam,
   ZUpdateNote
@@ -17,6 +18,7 @@ import {
   restoreNoteVersionService,
   updateNoteService
 } from '@api/services/notes/notes';
+import { getNoteTagsService, replaceNoteTagsService } from '@api/services/notes/tags';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
@@ -104,6 +106,38 @@ export const notesRouter = new Hono()
       return handleError(c, error, 'Failed to get note');
     }
   })
+  .get('/:noteId/tags', authMiddleware, orgMemberMiddleware, zValidator('param', ZNoteIdParam), async (c) => {
+    try {
+      const user = c.get('user')!;
+      const organizationId = c.get('orgId')!;
+      const { noteId } = c.req.valid('param');
+      const data = await getNoteTagsService(organizationId, user.id, noteId);
+
+      return c.json({ success: true, data }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch note tags');
+    }
+  })
+  .put(
+    '/:noteId/tags',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNoteIdParam),
+    zValidator('json', ZNoteTagAssignment),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const { noteId } = c.req.valid('param');
+        const body = c.req.valid('json');
+        const data = await replaceNoteTagsService(organizationId, user.id, noteId, body);
+
+        return c.json({ success: true, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to assign note tags');
+      }
+    }
+  )
   .put(
     '/:noteId',
     authMiddleware,

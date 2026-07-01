@@ -12,9 +12,10 @@
   interface Props {
     showWorkspaceUsage?: boolean;
     noteHref?: (noteId: string) => string;
+    tagId?: string;
   }
 
-  let { showWorkspaceUsage = false, noteHref }: Props = $props();
+  let { showWorkspaceUsage = false, noteHref, tagId }: Props = $props();
 
   let searchValue = $state('');
   let currentTab = $state<'all' | 'lessons'>('all');
@@ -52,7 +53,7 @@
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
 
-    notesApi.listNotes();
+    notesApi.listNotes({ tagId });
 
     if (showWorkspaceUsage) {
       notesApi.fetchUsage();
@@ -111,6 +112,21 @@
                   {/if}
                 </div>
               {/if}
+
+              {#if note.tags?.length}
+                <div class="flex flex-wrap gap-2">
+                  {#each note.tags as tag (tag.id)}
+                    <Badge variant="outline">
+                      <span
+                        class="mr-1 inline-block h-2 w-2 rounded-full border"
+                        style={`background-color: ${tag.color}`}
+                        aria-hidden="true"
+                      ></span>
+                      {tag.name}
+                    </Badge>
+                  {/each}
+                </div>
+              {/if}
             </a>
           {:else}
             <div class="flex flex-col gap-2 px-4 py-3">
@@ -132,6 +148,21 @@
                   {#if note.lessonTitle}
                     <Badge variant="outline">{note.lessonTitle}</Badge>
                   {/if}
+                </div>
+              {/if}
+
+              {#if note.tags?.length}
+                <div class="flex flex-wrap gap-2">
+                  {#each note.tags as tag (tag.id)}
+                    <Badge variant="outline">
+                      <span
+                        class="mr-1 inline-block h-2 w-2 rounded-full border"
+                        style={`background-color: ${tag.color}`}
+                        aria-hidden="true"
+                      ></span>
+                      {tag.name}
+                    </Badge>
+                  {/each}
                 </div>
               {/if}
             </div>

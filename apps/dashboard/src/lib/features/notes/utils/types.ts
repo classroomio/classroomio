@@ -6,6 +6,8 @@ export type GetNoteRequest = (typeof classroomio.notes)[':noteId']['$get'];
 export type CreateNoteRequest = typeof classroomio.notes.$post;
 export type UpdateNoteRequest = (typeof classroomio.notes)[':noteId']['$put'];
 export type DeleteNoteRequest = (typeof classroomio.notes)[':noteId']['$delete'];
+export type GetNoteTagsRequest = (typeof classroomio.notes)[':noteId']['tags']['$get'];
+export type UpdateNoteTagsRequest = (typeof classroomio.notes)[':noteId']['tags']['$put'];
 export type GetNoteVersionHistoryRequest = (typeof classroomio.notes)[':noteId']['versions']['$get'];
 export type RestoreNoteVersionRequest =
   (typeof classroomio.notes)[':noteId']['versions'][':versionId']['restore']['$post'];

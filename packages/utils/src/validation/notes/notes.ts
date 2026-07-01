@@ -16,7 +16,8 @@ export const ZListNotesQuery = z.object({
   origin: ZNoteOrigin.optional(),
   courseId: z.string().uuid().optional(),
   lessonId: z.string().uuid().optional(),
-  search: z.string().max(200).optional()
+  search: z.string().max(200).optional(),
+  tagId: z.string().uuid().optional()
 });
 
 export const ZNoteIdParam = z.object({
@@ -48,8 +49,13 @@ export const ZUpdateNote = z.object({
   videoAnchors: z.array(ZNoteVideoAnchor).optional()
 });
 
+export const ZNoteTagAssignment = z.object({
+  tagIds: z.array(z.uuid()).max(100).default([])
+});
+
 export type TListNotesQuery = z.infer<typeof ZListNotesQuery>;
 export type TCreateNote = z.infer<typeof ZCreateNote>;
 export type TUpdateNote = z.infer<typeof ZUpdateNote>;
+export type TNoteTagAssignment = z.infer<typeof ZNoteTagAssignment>;
 export type TNoteVideoAnchor = z.infer<typeof ZNoteVideoAnchor>;
 export type TNoteOrigin = z.infer<typeof ZNoteOrigin>;

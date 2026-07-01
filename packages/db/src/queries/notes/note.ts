@@ -37,6 +37,7 @@ export async function listNotesByOwner(params: {
   courseId?: string;
   lessonId?: string;
   search?: string;
+  tagId?: string;
 }): Promise<NoteListRow[]> {
   try {
     const conditions = [
@@ -62,7 +63,11 @@ export async function listNotesByOwner(params: {
       conditions.push(or(ilike(schema.orgNote.title, term), ilike(schema.orgNote.plainText, term))!);
     }
 
-    return db
+    if (params.tagId) {
+      conditions.push(eq(schema.noteTagAssignment.tagId, params.tagId));
+    }
+
+    const query = db
       .select({
         id: schema.orgNote.id,
         organizationId: schema.orgNote.organizationId,
@@ -83,9 +88,16 @@ export async function listNotesByOwner(params: {
       })
       .from(schema.orgNote)
       .leftJoin(schema.course, eq(schema.orgNote.courseId, schema.course.id))
-      .leftJoin(schema.lesson, eq(schema.orgNote.lessonId, schema.lesson.id))
-      .where(and(...conditions))
-      .orderBy(desc(schema.orgNote.updatedAt));
+      .leftJoin(schema.lesson, eq(schema.orgNote.lessonId, schema.lesson.id));
+
+    if (params.tagId) {
+      return query
+        .innerJoin(schema.noteTagAssignment, eq(schema.noteTagAssignment.noteId, schema.orgNote.id))
+        .where(and(...conditions))
+        .orderBy(desc(schema.orgNote.updatedAt));
+    }
+
+    return query.where(and(...conditions)).orderBy(desc(schema.orgNote.updatedAt));
   } catch (error) {
     console.error('listNotesByOwner error:', error);
     throw new Error('Failed to list notes');

@@ -3589,6 +3589,36 @@ export const orgNoteVersion = pgTable(
   ]
 );
 
+export const noteTagAssignment = pgTable(
+  'note_tag_assignment',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    tagId: uuid('tag_id').notNull(),
+    noteId: uuid('note_id').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.tagId],
+      foreignColumns: [tag.id],
+      name: 'note_tag_assignment_tag_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.noteId],
+      foreignColumns: [orgNote.id],
+      name: 'note_tag_assignment_note_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_note_tag_assignment_tag_id').on(table.tagId),
+    index('idx_note_tag_assignment_note_id').on(table.noteId),
+    unique('note_tag_assignment_tag_note_key').on(table.tagId, table.noteId)
+  ]
+);
+
 export const deadLetterJob = pgTable(
   'dead_letter_job',
   {

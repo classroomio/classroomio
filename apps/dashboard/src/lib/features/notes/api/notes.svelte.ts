@@ -12,10 +12,12 @@ import type {
   DeleteNoteRequest,
   GetNoteRequest,
   GetNoteVersionHistoryRequest,
+  GetNoteTagsRequest,
   ListNotesRequest,
   NoteUsageRequest,
   RestoreNoteVersionRequest,
-  UpdateNoteRequest
+  UpdateNoteRequest,
+  UpdateNoteTagsRequest
 } from '../utils/types';
 
 export type NoteListItem = Extract<InferResponseType<ListNotesRequest>, { success: true }>['data'][number];
@@ -23,6 +25,8 @@ export type NoteListItem = Extract<InferResponseType<ListNotesRequest>, { succes
 export type NoteDetail = Extract<InferResponseType<GetNoteRequest>, { success: true }>['data'];
 
 export type NoteUsage = Extract<InferResponseType<NoteUsageRequest>, { success: true }>['data'];
+
+export type NoteTags = Extract<InferResponseType<GetNoteTagsRequest>, { success: true }>['data'];
 
 export type NoteVersionHistory = Extract<InferResponseType<GetNoteVersionHistoryRequest>, { success: true }>['data'];
 
@@ -36,6 +40,7 @@ class NotesApi extends BaseApiWithErrors {
     courseId?: string;
     lessonId?: string;
     search?: string;
+    tagId?: string;
   }) {
     const org = get(currentOrg);
     if (!org.id) return;
@@ -50,7 +55,8 @@ class NotesApi extends BaseApiWithErrors {
             origin: params?.origin,
             courseId: params?.courseId,
             lessonId: params?.lessonId,
-            search: params?.search
+            search: params?.search,
+            tagId: params?.tagId
           }
         }),
       onSuccess: (result) => {
@@ -210,6 +216,41 @@ class NotesApi extends BaseApiWithErrors {
     });
 
     return updated;
+  }
+
+  async getNoteTags(noteId: string) {
+    let tags: NoteTags = [];
+
+    await this.execute<GetNoteTagsRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId'].tags.$get({
+          param: { noteId }
+        }),
+      onSuccess: (result) => {
+        tags = result.data;
+      },
+      logContext: 'getNoteTags'
+    });
+
+    return tags;
+  }
+
+  async updateNoteTags(noteId: string, tagIds: string[]) {
+    let tags: NoteTags | null = null;
+
+    await this.execute<UpdateNoteTagsRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId'].tags.$put({
+          param: { noteId },
+          json: { tagIds }
+        }),
+      onSuccess: (result) => {
+        tags = result.data;
+      },
+      logContext: 'updateNoteTags'
+    });
+
+    return tags;
   }
 
   async deleteNote(noteId: string) {

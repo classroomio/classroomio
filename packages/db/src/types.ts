@@ -168,6 +168,9 @@ export type TNewTag = typeof schema.tag.$inferInsert;
 
 export type TTagAssignment = typeof schema.tagAssignment.$inferSelect;
 export type TNewTagAssignment = typeof schema.tagAssignment.$inferInsert;
+
+export type TNoteTagAssignment = typeof schema.noteTagAssignment.$inferSelect;
+export type TNewNoteTagAssignment = typeof schema.noteTagAssignment.$inferInsert;
 export type TWidget = typeof schema.widget.$inferSelect;
 export type TNewWidget = typeof schema.widget.$inferInsert;
 export type TWidgetCourse = typeof schema.widgetCourse.$inferSelect;
