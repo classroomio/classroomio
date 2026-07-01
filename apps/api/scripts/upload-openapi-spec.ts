@@ -9,6 +9,7 @@ import { app } from '../src/app';
 import { env } from '@cio/core/config/env';
 import { generateSpecs } from 'hono-openapi';
 import { join } from 'path';
+import { enrichPublicApiOpenApiSpec } from '@cio/utils/openapi/public-api';
 
 interface UploadOptions {
   key: string;
@@ -32,17 +33,12 @@ function filterPublicApiSpec(spec: Record<string, unknown>) {
       })
     : undefined;
 
-  return {
+  return enrichPublicApiOpenApiSpec({
     ...spec,
     openapi: spec.openapi ?? '3.1.0',
-    info: {
-      title: 'ClassroomIO Public API',
-      version: '1.0.0',
-      description: 'Public API for managing organizations, audience members, and courses in ClassroomIO.'
-    },
     paths: publicApiPaths,
     tags
-  };
+  });
 }
 
 class OpenAPISpecGenerator {
