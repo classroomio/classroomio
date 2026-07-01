@@ -1237,6 +1237,7 @@
     "analytics": "Analytics",
     "compliance": "Compliance",
     "courses": "Courses",
+    "notes": "Notes",
     "programs": "Programs",
     "tags": "Tags",
     "community": "Community",
@@ -4083,6 +4084,22 @@
     "page_title": "My Notes",
     "heading": "My Notes",
     "description": "Notes you take while learning appear here.",
+    "org_description": "Workspace notes for planning courses and capturing ideas.",
+    "take_note": {
+      "open": "Take Note",
+      "close": "Close Note"
+    },
+    "usage": {
+      "workspace": "{used}/{limit} workspace notes used"
+    },
+    "lesson_panel": {
+      "loading": "Loading note…",
+      "load_error": "Could not load this note.",
+      "view_lesson": "View lesson",
+      "insert_timestamp": "Insert timestamp",
+      "timestamp_hint": "Play the lesson video to add timestamps.",
+      "placeholder": "Write notes about this lesson…"
+    },
     "list": {
       "search": "Search notes",
       "tabs": {
@@ -4783,7 +4800,8 @@
     "resize_panel_aria_label": "Resize panel",
     "titles": {
       "ai_assistant": "AI Assistant",
-      "transcript": "Transcript"
+      "transcript": "Transcript",
+      "lesson_note": "Lesson Note"
     }
   }
 }

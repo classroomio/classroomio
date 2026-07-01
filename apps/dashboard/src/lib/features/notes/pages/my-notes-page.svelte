@@ -9,6 +9,12 @@
   import { t } from '$lib/utils/functions/translations';
   import { notesApi } from '../api';
 
+  interface Props {
+    showWorkspaceUsage?: boolean;
+  }
+
+  let { showWorkspaceUsage = false }: Props = $props();
+
   let searchValue = $state('');
   let currentTab = $state<'all' | 'lessons'>('all');
 
@@ -46,10 +52,23 @@
     if (!$profile.id || !$currentOrg.id) return;
 
     notesApi.listNotes();
+
+    if (showWorkspaceUsage) {
+      notesApi.fetchUsage();
+    }
   });
 </script>
 
 <div class="flex flex-col gap-4">
+  {#if showWorkspaceUsage && notesApi.usage?.limit !== null && notesApi.usage}
+    <p class="ui:text-muted-foreground text-sm">
+      {$t('notes.usage.workspace', {
+        used: notesApi.usage.used,
+        limit: notesApi.usage.limit
+      })}
+    </p>
+  {/if}
+
   <Search placeholder={$t('notes.list.search')} bind:value={searchValue} />
 
   <UnderlineTabs.Root bind:value={currentTab}>

@@ -3,6 +3,7 @@ import {
   ChartColumnIcon,
   AttachmentIcon,
   CommunityIcon,
+  ContentIcon,
   CourseIcon,
   DashboardIcon,
   GoalIcon,
@@ -114,6 +115,13 @@ export const baseNavConfig: NavItemConfig[] = [
     path: '/courses',
     icon: CourseIcon,
     matchPattern: '^/org/[^/]+/courses(/.*)?$' // Matches nested routes
+  },
+  {
+    group: 'content',
+    titleKey: 'org_navigation.notes',
+    path: '/notes',
+    icon: ContentIcon,
+    matchPattern: '^/org/[^/]+/notes(/.*)?$'
   },
   {
     group: 'content',
