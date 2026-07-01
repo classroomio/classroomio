@@ -1243,6 +1243,7 @@
     "analytics": "Analytics",
     "compliance": "Compliance",
     "courses": "Courses",
+    "notes": "Notes",
     "programs": "Programs",
     "tags": "Tags",
     "community": "Community",
@@ -4065,6 +4066,7 @@
   "lms_navigation": {
     "home": "Home",
     "my_learning": "My Learning",
+    "my_notes": "My Notes",
     "certificates": "Certificates",
     "programs": "Programs",
     "exercise": "Exercise",
@@ -4083,6 +4085,91 @@
     "not_completed": "No Course Completed",
     "any_course": "Any course that you complete will be displayed here",
     "find_courses": "Find courses"
+  },
+  "notes": {
+    "page_title": "My Notes",
+    "heading": "My Notes",
+    "description": "Notes you take while learning appear here.",
+    "org_description": "Workspace notes for planning courses and capturing ideas.",
+    "take_note": {
+      "open": "Take Note",
+      "close": "Close Note"
+    },
+    "usage": {
+      "workspace": "{used}/{limit} workspace notes used"
+    },
+    "lesson_panel": {
+      "loading": "Loading note…",
+      "load_error": "Could not load this note.",
+      "view_lesson": "View lesson",
+      "insert_timestamp": "Insert timestamp",
+      "timestamp_hint": "Play the lesson video to add timestamps.",
+      "placeholder": "Write notes about this lesson…"
+    },
+    "list": {
+      "search": "Search notes",
+      "tabs": {
+        "all": "All notes",
+        "team": "Shared with team",
+        "from_lessons": "From lessons"
+      },
+      "shared_with_team": "Team",
+      "by_author": "By {name}",
+      "empty_title": "No notes yet",
+      "empty_description": "Take notes while watching a lesson and they will show up here.",
+      "no_content": "No content yet"
+    },
+    "org": {
+      "new_note": "New note",
+      "new_note_title": "Untitled",
+      "import": "Import",
+      "create_error": "Could not create note.",
+      "import_error": "Could not import note. Use .md, .txt, or .docx files up to 5MB.",
+      "import_success": "Note imported"
+    },
+    "tags": {
+      "heading": "Tags",
+      "add": "Add tag",
+      "popover_title": "Add tags to this note",
+      "empty_groups": "Create tags in organization settings to organize notes.",
+      "save_error": "Could not save tags.",
+      "filter_all": "All tags"
+    },
+    "share": {
+      "open": "Share",
+      "title": "Share note",
+      "description": "Choose who on your team can access this note.",
+      "private_label": "Only you",
+      "private_description": "Only you can view and edit this note.",
+      "team_label": "Your team",
+      "team_description": "All admins and tutors in {orgName} can view this note.",
+      "read_only_banner": "You can view this note. Only the author can edit it.",
+      "by_author": "By {name}",
+      "save": "Save",
+      "cancel": "Cancel",
+      "save_success": "Sharing updated",
+      "save_error": "Could not update sharing."
+    },
+    "editor": {
+      "page_title": "Edit note",
+      "loading": "Loading note…",
+      "load_error": "Could not load this note.",
+      "title_placeholder": "Note title",
+      "placeholder": "Start writing…",
+      "version_history": {
+        "open": "Version history",
+        "title": "Version history",
+        "loading": "Loading versions…",
+        "empty": "No versions yet.",
+        "versions": "Versions",
+        "current": "Current version",
+        "preview": "Preview",
+        "restore": "Restore version",
+        "restore_success": "Version restored",
+        "restore_error": "Could not restore version.",
+        "load_more": "Load more"
+      }
+    }
   },
   "certificates": {
     "heading": "Certificates",
@@ -4773,7 +4860,8 @@
     "resize_panel_aria_label": "Resize panel",
     "titles": {
       "ai_assistant": "AI Assistant",
-      "transcript": "Transcript"
+      "transcript": "Transcript",
+      "lesson_note": "Lesson Note"
     }
   }
 }

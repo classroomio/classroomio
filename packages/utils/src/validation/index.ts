@@ -21,3 +21,4 @@ export * from './tag';
 export * from './program';
 export * from './widget';
 export * from './jobs';
+export * from './notes';

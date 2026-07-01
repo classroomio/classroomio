@@ -492,7 +492,8 @@
     "explore": "Explorar",
     "help": "Ajuda",
     "settings": "Configurações",
-    "programs": "Programas"
+    "programs": "Programas",
+    "my_notes": "My Notes"
   },
   "upgrade": {
     "certificate": "Atualize seu plano para gerar certificados",
@@ -4784,6 +4785,21 @@
       "finalizing": "Salvando…",
       "done": "Pronto",
       "failed": "Falha no upload"
+    }
+  },
+  "notes": {
+    "page_title": "My Notes",
+    "heading": "My Notes",
+    "description": "Notes you take while learning appear here.",
+    "list": {
+      "search": "Search notes",
+      "tabs": {
+        "all": "All notes",
+        "from_lessons": "From lessons"
+      },
+      "empty_title": "No notes yet",
+      "empty_description": "Take notes while watching a lesson and they will show up here.",
+      "no_content": "No content yet"
     }
   }
 }

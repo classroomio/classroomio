@@ -7,6 +7,7 @@
   import { orgs } from '$lib/utils/store/org';
   import { isStudentExperience } from '$lib/utils/store/app';
   import CourseSidebarLogo from './course-sidebar-logo.svelte';
+  import TakeNoteButton from '$features/notes/components/take-note-button.svelte';
   import Navigation from './course-sidebar-navigation.svelte';
   import SidebarSkeleton from '$features/ui/sidebar/sidebar-skeleton.svelte';
   import PoweredBy from '$features/ui/powered-by.svelte';
@@ -115,6 +116,7 @@
   <Sidebar.Root collapsible="icon" class="ui:z-150!">
     <Sidebar.Header>
       <CourseSidebarLogo />
+      <TakeNoteButton />
     </Sidebar.Header>
 
     <Sidebar.Content>

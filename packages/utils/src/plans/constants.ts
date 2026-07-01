@@ -54,6 +54,9 @@ export const WORKSPACES_INCLUDED: Record<string, number> = {
   [PLAN.ENTERPRISE]: 4
 };
 
+/** Maximum workspace-origin notes per user per org on the BASIC plan. Lesson captures are excluded. */
+export const BASIC_WORKSPACE_NOTE_LIMIT = 2;
+
 export function getWorkspaceAllowance(planName: string | null | undefined): number {
   if (!planName) return WORKSPACES_INCLUDED[PLAN.BASIC];
   return WORKSPACES_INCLUDED[planName] ?? WORKSPACES_INCLUDED[PLAN.BASIC];

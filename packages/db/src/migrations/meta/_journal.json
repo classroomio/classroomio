@@ -15,6 +15,27 @@
       "when": 1782684436805,
       "tag": "0001_slow_lila_cheney",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782892981199,
+      "tag": "0002_chief_wolfsbane",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782899772498,
+      "tag": "0003_funny_joseph",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1782945202054,
+      "tag": "0004_nebulous_sue_storm",
+      "breakpoints": true
     }
   ]
 }

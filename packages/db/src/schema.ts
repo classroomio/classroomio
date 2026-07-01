@@ -3492,6 +3492,137 @@ export const mediaTranscript = pgTable(
  * or a domain explicitly dead-letters a run. Drives the admin retry/replay UI
  * and Tinybird/Slack alerting.
  */
+export type NoteVideoAnchor = {
+  assetId: string;
+  startSeconds: number;
+  endSeconds?: number;
+  label?: string;
+};
+
+export const noteOrigin = pgEnum('note_origin', ['workspace', 'lesson_capture']);
+
+export const noteVisibility = pgEnum('note_visibility', ['private', 'team', 'public']);
+
+export const orgNote = pgTable(
+  'org_note',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    ownerId: uuid('owner_id').notNull(),
+    title: varchar().notNull(),
+    content: text().notNull().default(''),
+    plainText: text('plain_text').notNull().default(''),
+    origin: noteOrigin().notNull().default('workspace'),
+    visibility: noteVisibility().notNull().default('private'),
+    courseId: uuid('course_id'),
+    lessonId: uuid('lesson_id'),
+    videoAnchors: jsonb('video_anchors').$type<NoteVideoAnchor[]>().default([]).notNull(),
+    convertedCourseId: uuid('converted_course_id'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'org_note_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.ownerId],
+      foreignColumns: [profile.id],
+      name: 'org_note_owner_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'org_note_course_id_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.lessonId],
+      foreignColumns: [lesson.id],
+      name: 'org_note_lesson_id_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.convertedCourseId],
+      foreignColumns: [course.id],
+      name: 'org_note_converted_course_id_fkey'
+    }).onDelete('set null'),
+    index('idx_org_note_organization_owner_updated').on(table.organizationId, table.ownerId, table.updatedAt),
+    index('idx_org_note_lesson_id').on(table.lessonId),
+    index('idx_org_note_origin').on(table.origin),
+    index('idx_org_note_visibility').on(table.organizationId, table.visibility),
+    uniqueIndex('org_note_owner_lesson_capture_key')
+      .on(table.ownerId, table.lessonId)
+      .where(sql`${table.origin} = 'lesson_capture' AND ${table.deletedAt} IS NULL`)
+  ]
+);
+
+export const orgNoteVersion = pgTable(
+  'org_note_version',
+  {
+    id: serial().primaryKey().notNull(),
+    noteId: uuid('note_id').notNull(),
+    oldContent: text('old_content'),
+    newContent: text('new_content').notNull(),
+    changedBy: uuid('changed_by').notNull(),
+    changeSource: varchar('change_source').notNull().default('manual'),
+    timestamp: timestamp({ withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.noteId],
+      foreignColumns: [orgNote.id],
+      name: 'org_note_version_note_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.changedBy],
+      foreignColumns: [profile.id],
+      name: 'org_note_version_changed_by_fkey'
+    }).onDelete('cascade'),
+    index('idx_org_note_version_note_id_timestamp').on(table.noteId, table.timestamp)
+  ]
+);
+
+export const noteTagAssignment = pgTable(
+  'note_tag_assignment',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    tagId: uuid('tag_id').notNull(),
+    noteId: uuid('note_id').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.tagId],
+      foreignColumns: [tag.id],
+      name: 'note_tag_assignment_tag_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.noteId],
+      foreignColumns: [orgNote.id],
+      name: 'note_tag_assignment_note_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_note_tag_assignment_tag_id').on(table.tagId),
+    index('idx_note_tag_assignment_note_id').on(table.noteId),
+    unique('note_tag_assignment_tag_note_key').on(table.tagId, table.noteId)
+  ]
+);
+
 export const deadLetterJob = pgTable(
   'dead_letter_job',
   {
