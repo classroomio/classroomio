@@ -503,7 +503,8 @@
     "download_lessons": "Actualice para descargar lecciones",
     "download_course": "Actualizar para descargar el curso",
     "required": "Actualización requerida",
-    "enterprise_required": "Esta característica requiere un plan Enterprise."
+    "enterprise_required": "Esta característica requiere un plan Enterprise.",
+    "public_api_required": "Actualiza a Early Adopter o Enterprise para acceder a la API pública."
   },
   "analytics": {
     "title": "Analítica",

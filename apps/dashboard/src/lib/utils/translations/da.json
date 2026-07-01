@@ -503,7 +503,8 @@
     "download_lessons": "Opgrader for at downloade lektioner",
     "download_course": "Opgrader for at downloade kursus",
     "required": "Opgradering påkrævet",
-    "enterprise_required": "Denne funktion kræver en Enterprise-plan."
+    "enterprise_required": "Denne funktion kræver en Enterprise-plan.",
+    "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API."
   },
   "analytics": {
     "title": "Analytics",

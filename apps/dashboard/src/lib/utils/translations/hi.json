@@ -503,7 +503,8 @@
     "download_lessons": "पाठ डाउनलोड करने के लिए अपग्रेड करें",
     "download_course": "पाठ्यक्रम डाउनलोड करने के लिए अपग्रेड करें",
     "required": "अपग्रेड आवश्यक",
-    "enterprise_required": "इस सुविधा के लिए एंटरप्राइज़ योजना की आवश्यकता है."
+    "enterprise_required": "इस सुविधा के लिए एंटरप्राइज़ योजना की आवश्यकता है.",
+    "public_api_required": "सार्वजनिक API तक पहुँचने के लिए Early Adopter या Enterprise में अपग्रेड करें।"
   },
   "analytics": {
     "title": "विश्लेषिकी",
