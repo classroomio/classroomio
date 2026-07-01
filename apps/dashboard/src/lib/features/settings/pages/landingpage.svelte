@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { resolve } from '$app/paths';
   import { goto } from '$app/navigation';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
@@ -134,7 +135,17 @@
       : { label: t.get('navigation.login'), href: '/login' }
   );
 
-  const previewProps = $derived(buildOrgLandingPageProps($currentOrg, normalized, [], false, authAction));
+  const previewProps = $derived(
+    buildOrgLandingPageProps($currentOrg, normalized, orgApi.publicCourses, orgApi.hasMorePublicCourses, authAction)
+  );
+
+  onMount(() => {
+    if ($currentOrg.siteName) {
+      orgApi.publicCourses = [];
+      orgApi.hasMorePublicCourses = false;
+      void orgApi.getPublicCoursesBySiteName($currentOrg.siteName);
+    }
+  });
 
   const ThemeComponent = $derived(landingPageThemeComponents[currentTheme] ?? landingPageThemeComponents.minimal);
 
