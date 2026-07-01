@@ -4,14 +4,148 @@ description: Deploy ClassroomIO on Railway with the one-click template.
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
 
 The quickest hosted deployment is the [Railway Template](https://railway.com/deploy/classroomio-1?referralCode=8OyIj5). It provisions the API, dashboard, and jobs worker services plus the Postgres and Redis plugins for you.
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/classroomio-1?referralCode=8OyIj5)
 
-After deploying the template, fill in the environment variables for each service below.
+## Watch the walkthrough
 
-## cio-api
+Prefer to follow along? This video walks through the whole deployment end to end. The written steps below mirror it, and the [Environment variable reference](#environment-variable-reference) has every value to copy.
+
+<div style={{ display: 'flex', justifyContent: 'center', marginY: '16px' }}>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/JQZ1ZikLM20?si=AAdI2Muyb2GcetiS" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>
+
+## Prerequisites
+
+- A **Railway account** (a paid plan is recommended — the stack runs several always-on services).
+- An **SMTP provider** (or Zoho/ZeptoMail) for signup verification, password reset, and invite emails. See [SMTP Setup](#smtp-setup).
+- *Optional:* a **custom domain** for the dashboard and storage, an **OpenAI API key** (transcription + AI course generation), and Google OAuth / Unsplash keys.
+
+<Callout title="Two secrets to generate first">
+  You'll reuse `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` across services. Generate them once and keep them handy:
+
+  ```zsh title="Terminal"
+  openssl rand -hex 32   # BETTER_AUTH_SECRET
+  openssl rand -hex 32   # PRIVATE_SERVER_KEY  (must be identical in cio-api and cio-dashboard)
+  ```
+</Callout>
+
+## Step-by-step walkthrough
+
+The one-click template provisions **all of the services** for you — Postgres, Redis, `cio-api`, `cio-dashboard`, `cio-jobs`, and `cio-minio` (object storage). The flow is: **configure a few values → deploy → connect the dashboard domain → sign up**.
+
+
+<Steps>
+
+<Step>
+### Click "Deploy on Railway"
+
+Click the **Deploy on Railway** button above. Railway opens the template page where all of the ClassroomIO services are listed and ready to configure.
+
+![Railway template page for ClassroomIO after clicking Deploy](/railway-01-deploy-template.png)
+</Step>
+
+<Step>
+### Review the preconfigured services
+
+The template comes with every service preconfigured — most need nothing from you:
+
+- **Redis** and **Postgres** — no configuration required.
+- **cio-dashboard** — no required configuration (optionally set branding such as the public OG image; not required).
+
+The next three steps cover the services that **do** need input: `cio-jobs`, `cio-minio`, and `cio-api`.
+
+![The Railway template listing all preconfigured ClassroomIO services](/railway-02-services-overview.png)
+</Step>
+
+<Step>
+### Configure cio-jobs (SMTP)
+
+`cio-jobs` sends invites, notifications, verification, and password-reset emails, so it needs SMTP credentials. Fill these in:
+
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_SENDER`
+- `SMTP_PASSWORD`
+
+![Entering the SMTP variables on the cio-jobs service in the template](/railway-03-jobs-smtp.png)
+</Step>
+
+<Step>
+### Configure cio-minio (object storage)
+
+Set the storage credentials on `cio-minio`:
+
+- `MINIO_SERVER_URL`
+- `MINIO_ROOT_USER`
+- `MINIO_ROOT_PASSWORD`
+
+![Configuring MINIO_SERVER_URL and credentials on the cio-minio service](/railway-04-minio-credentials.png)
+</Step>
+
+<Step>
+### Configure cio-api
+
+On `cio-api`, set the SMTP host and any additional values you want. See the [Environment variable reference](#environment-variable-reference) below for the full list (object storage, auth secrets, dashboard origin, and more).
+
+![Configuring the cio-api service variables in the template](/railway-05-api-config.png)
+![Additional cio-api configuration options](/railway-06-api-config-additional.png)
+</Step>
+
+<Step>
+### Deploy
+
+Click **Deploy**. Railway begins building and bringing the services online — Redis, Postgres, and the rest come up first.
+
+![Railway deploying the ClassroomIO services after clicking Deploy](/railway-07-deploying.png)
+</Step>
+
+<Step>
+### First boot may crash — this is expected
+
+<Callout type="warn" title="Only if you use the Railway-generated subdomain">
+  On the first deploy, `cio-api` can crash. This is expected **only when you rely on the Railway-generated subdomain**: the API needs the dashboard's public domain (Better Auth's base URL), which doesn't exist yet. If you're using your **own custom subdomain**, this crash doesn't happen — skip ahead to signing up.
+</Callout>
+
+![cio-api crashing on first boot before the dashboard domain exists](/railway-08-first-boot-crash.png)
+</Step>
+
+<Step>
+### Generate the dashboard domain
+
+Open **cio-dashboard → Settings → Networking** and click **Generate Domain**. Railway assigns the public domain the API needs.
+
+![cio-dashboard Settings and Networking with the Generate Domain button](/railway-09-generate-domain.png)
+</Step>
+
+<Step>
+### Redeploy cio-dashboard and cio-api
+
+Redeploy **cio-dashboard**, then **cio-api**, so both pick up the newly generated domain. They should now boot cleanly.
+
+![Redeploying the cio-dashboard](/railway-10-redeploy-dashboard.png)
+![Redeploying the cio-api](/railway-11-redeploy-api.png)
+</Step>
+
+<Step>
+### Open the app and sign up
+
+Open the generated dashboard URL in a **new browser tab** and **sign up** to create your first account.
+
+![The running ClassroomIO dashboard sign-up page on the Railway domain](/railway-12-signup.png)
+</Step>
+
+</Steps>
+
+## Environment variable reference
+
+You set these values **while configuring each service on the template page** (the configure steps above) — you don't enter them again after deploying. Use this section as the reference for what each service's variables should be.
+
+### cio-api
 
 ```zsh title="env"
 DATABASE_URL="${{db.DATABASE_URL}}"
@@ -47,7 +181,7 @@ OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://storage.yourdomain.com/media
 
 Optional: add `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` for OAuth, `UNSPLASH_API_KEY` for image search, or `LICENSE_KEY` for enterprise features.
 
-## cio-dashboard
+### cio-dashboard
 
 ```zsh title="env"
 # RAILWAY_PUBLIC_DOMAIN here = this dashboard service's own public domain.
@@ -64,7 +198,7 @@ Optional: add `PUBLIC_APP_TITLE`, `PUBLIC_APP_DESCRIPTION`, `PUBLIC_OG_IMAGE_URL
 
 **Upload size limits** (optional): add the same `UPLOAD_MAX_*_MB` values to **cio-api** and **cio-dashboard** (e.g. `UPLOAD_MAX_DOCUMENT_MB=50`). See [Docker self-hosting → Upload file size limits](/docs/self-hosted/docker#optional--upload-file-size-limits).
 
-## cio-jobs (background worker)
+### cio-jobs (background worker)
 
 The jobs worker has **no public domain** — it drains the Redis queue (video processing, transcription, AI course generation, and emails). It shares the same Postgres, Redis, storage, email, and OpenAI settings as the API:
 
@@ -91,16 +225,11 @@ OPENAI_API_KEY=
   `PRIVATE_SERVER_KEY` must be the same value in both API and dashboard. It authenticates server-side dashboard requests to the API. Referencing `${{cio-api.PRIVATE_SERVER_KEY}}` in the dashboard keeps them in sync.
 </Callout>
 
-## cio-minio (object storage)
+### cio-minio (object storage)
 
-We recommend a self-hosted **MinIO** service for object storage. Add it as a new service from
-the Docker image `minio/minio:latest`:
-
-- **Start command:** `server /data --console-address ":9001"`
-- **Volume:** attach a Railway Volume mounted at **`/data`** — **required**, or every upload is
-  wiped on each redeploy.
-- **Public domain:** e.g. `storage.yourdomain.com` with **target port `9000`** (the S3 API).
-  Railway also gives it a private domain (`cio-minio.railway.internal:9000`) for the api/jobs.
+`cio-minio` ships **in the template** — its `/data` volume is already attached and the `videos`,
+`documents`, and `media` buckets are already seeded. You only set its credentials during
+configuration:
 
 ```zsh title="env"
 MINIO_ROOT_USER=<strong user>
@@ -114,28 +243,17 @@ The api and jobs services reach MinIO over **two** endpoints: the private `OBJEC
 (browser-facing presigned downloads and public images) — already wired in the env blocks above.
 `OBJECT_STORAGE_FORCE_PATH_STYLE=true` is required for MinIO.
 
-### Seed the buckets (one-time)
-
-Railway has no `minio-init`, so create the buckets once with [`mc`](https://min.io/docs/minio/linux/reference/minio-mc.html)
-(run locally against the public domain):
-
-```zsh title="Terminal"
-mc alias set cio https://storage.yourdomain.com "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
-mc mb cio/videos cio/documents cio/media --ignore-existing
-mc anonymous set download cio/media     # media bucket = public read (images)
-```
-
 <Callout type="warn" title="MinIO is your durability boundary">
   Single-node MinIO has no redundancy — the Railway Volume is the only thing protecting your
   uploads. Back it up. If you'd rather not operate storage, use external **Cloudflare R2 / AWS S3**
-  instead (R2 has no egress fees): point the same `OBJECT_STORAGE_*` vars at the provider and skip
-  the cio-minio service. See the [Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for R2.
+  instead (R2 has no egress fees): point the same `OBJECT_STORAGE_*` vars at the provider. See the
+  [Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for R2.
 </Callout>
 
-## SMTP Setup
+### SMTP Setup
 
 You need SMTP for email sending. See [Nodemailer SMTP docs](https://nodemailer.com/smtp/) for provider setup.
 
-## SSO (Enterprise)
+### SSO (Enterprise)
 
 SSO requires a license key. Set `LICENSE_KEY` in your API environment. [Book a call](http://cal.com/classroomio/enterprise) to get a license.
