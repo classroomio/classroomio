@@ -3741,7 +3741,13 @@
     "filters": {
       "title": "Filtrer efter tags",
       "help": "Vælg et eller flere tags for at filtrere kurser",
-      "empty": "Ingen tags tilgængelige endnu"
+      "empty": "Ingen tags tilgængelige endnu",
+      "tags_title": "Tags",
+      "types_title": "Typer",
+      "search_placeholder": "Søg efter kurser...",
+      "pricing_title": "Prissætning",
+      "pricing_free": "Gratis",
+      "pricing_paid": "Betalt"
     }
   },
   "tags_admin": {

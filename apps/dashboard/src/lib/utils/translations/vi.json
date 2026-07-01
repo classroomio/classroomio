@@ -3741,7 +3741,13 @@
     "filters": {
       "title": "Lọc theo thẻ",
       "help": "Chọn một hoặc nhiều thẻ để lọc các khóa học",
-      "empty": "Chưa có thẻ nào"
+      "empty": "Chưa có thẻ nào",
+      "tags_title": "Thẻ",
+      "types_title": "Các loại",
+      "search_placeholder": "Tìm kiếm khóa học...",
+      "pricing_title": "Định giá",
+      "pricing_free": "miễn phí",
+      "pricing_paid": "Đã trả tiền"
     }
   },
   "tags_admin": {

@@ -3741,7 +3741,13 @@
     "filters": {
       "title": "Nach Tags filtern",
       "help": "Wählen Sie einen oder mehrere Tags aus, um Kurse zu filtern",
-      "empty": "Noch keine Tags verfügbar"
+      "empty": "Noch keine Tags verfügbar",
+      "tags_title": "Schlagworte",
+      "types_title": "Typen",
+      "search_placeholder": "Kurse suchen...",
+      "pricing_title": "Preise",
+      "pricing_free": "Kostenlos",
+      "pricing_paid": "Bezahlt"
     }
   },
   "tags_admin": {

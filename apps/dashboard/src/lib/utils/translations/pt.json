@@ -3741,7 +3741,13 @@
     "filters": {
       "title": "Filtrar por tags",
       "help": "Selecione uma ou mais tags para filtrar cursos",
-      "empty": "Nenhuma tag disponível ainda"
+      "empty": "Nenhuma tag disponível ainda",
+      "tags_title": "Etiquetas",
+      "types_title": "Tipos",
+      "search_placeholder": "Pesquisar cursos...",
+      "pricing_title": "Preços",
+      "pricing_free": "Grátis",
+      "pricing_paid": "Pago"
     }
   },
   "tags_admin": {

@@ -3741,7 +3741,13 @@
     "filters": {
       "title": "Filtruj według tagów",
       "help": "Wybierz jeden lub więcej tagów, aby filtrować kursy",
-      "empty": "Brak dostępnych tagów"
+      "empty": "Brak dostępnych tagów",
+      "tags_title": "Tagi",
+      "types_title": "Typy",
+      "search_placeholder": "Wyszukaj kursy...",
+      "pricing_title": "Ceny",
+      "pricing_free": "Bezpłatny",
+      "pricing_paid": "Płatny"
     }
   },
   "tags_admin": {

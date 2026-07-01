@@ -1218,9 +1218,15 @@
     "subtitle": "Browse all published courses",
     "clear_filters": "Clear Filters",
     "filters": {
-      "title": "Filter by Tags",
-      "help": "Select one or more tags to filter courses",
-      "empty": "No tags available yet"
+      "title": "Filter",
+      "help": "Filter courses by type, tags, or search by name",
+      "tags_title": "Tags",
+      "types_title": "Types",
+      "pricing_title": "Pricing",
+      "pricing_free": "Free",
+      "pricing_paid": "Paid",
+      "empty": "No tags available yet",
+      "search_placeholder": "Search courses..."
     },
     "empty": {
       "title": "No courses found",

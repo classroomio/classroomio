@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { OrgLandingPageProps } from '../types';
+  import type { Snippet } from 'svelte';
   import SecondaryActionButton from '../secondary-action-button.svelte';
   import { Button } from '../../../base/button';
   import { BlurIn } from '../../animation/blurin';
@@ -9,14 +10,18 @@
   interface Props {
     hero: OrgLandingPageProps['hero'];
     showActions?: boolean;
+    compact?: boolean;
+    children?: Snippet;
   }
 
-  let { hero, showActions = true }: Props = $props();
+  let { hero, showActions = true, compact = false, children }: Props = $props();
 </script>
 
 <EditableLandingSection sectionKey="hero">
   <section
-    class="ui:relative ui:bg-[var(--landing-fg)] ui:text-[var(--landing-bg)] ui:overflow-hidden ui:py-24 ui:sm:py-32 ui:px-6 ui:lg:px-8"
+    class="ui:relative ui:bg-[var(--landing-fg)] ui:text-[var(--landing-bg)] ui:overflow-hidden {compact
+      ? 'ui:py-12 ui:sm:py-16'
+      : 'ui:py-24 ui:sm:py-32'} ui:px-6 ui:lg:px-8"
   >
     {#if hero.image}
       <div class="ui:absolute ui:inset-0 ui:opacity-10">
@@ -31,6 +36,9 @@
         {hero.heading}
       </BlurIn>
       <p class="ui:text-lg ui:sm:text-xl ui:text-[var(--landing-bg)]/80 ui:mb-10">{hero.subheading}</p>
+      {#if children}
+        <div class="ui:flex ui:justify-center ui:w-full ui:mb-8">{@render children()}</div>
+      {/if}
       {#if showActions}
         <div class="ui:flex ui:flex-col ui:sm:flex-row ui:justify-center ui:gap-4">
           <Button

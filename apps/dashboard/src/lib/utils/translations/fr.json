@@ -3741,7 +3741,13 @@
     "filters": {
       "title": "Filtrer par balises",
       "help": "Sélectionnez une ou plusieurs balises pour filtrer les cours",
-      "empty": "Aucun tag disponible pour l'instant"
+      "empty": "Aucun tag disponible pour l'instant",
+      "tags_title": "Balises",
+      "types_title": "Espèces",
+      "search_placeholder": "Rechercher des cours...",
+      "pricing_title": "Tarifs",
+      "pricing_free": "Gratuit",
+      "pricing_paid": "Payé"
     }
   },
   "tags_admin": {

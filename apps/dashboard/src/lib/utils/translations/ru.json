@@ -3741,7 +3741,13 @@
     "filters": {
       "title": "Фильтровать по тегам",
       "help": "Выберите один или несколько тегов, чтобы отфильтровать курсы.",
-      "empty": "Тегов пока нет"
+      "empty": "Тегов пока нет",
+      "tags_title": "Теги",
+      "types_title": "Типы",
+      "search_placeholder": "Искать курсы...",
+      "pricing_title": "Цены",
+      "pricing_free": "Бесплатно",
+      "pricing_paid": "Платный"
     }
   },
   "tags_admin": {
