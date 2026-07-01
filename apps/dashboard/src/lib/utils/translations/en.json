@@ -4059,6 +4059,7 @@
   "lms_navigation": {
     "home": "Home",
     "my_learning": "My Learning",
+    "my_notes": "My Notes",
     "certificates": "Certificates",
     "programs": "Programs",
     "exercise": "Exercise",
@@ -4077,6 +4078,21 @@
     "not_completed": "No Course Completed",
     "any_course": "Any course that you complete will be displayed here",
     "find_courses": "Find courses"
+  },
+  "notes": {
+    "page_title": "My Notes",
+    "heading": "My Notes",
+    "description": "Notes you take while learning appear here.",
+    "list": {
+      "search": "Search notes",
+      "tabs": {
+        "all": "All notes",
+        "from_lessons": "From lessons"
+      },
+      "empty_title": "No notes yet",
+      "empty_description": "Take notes while watching a lesson and they will show up here.",
+      "no_content": "No content yet"
+    }
   },
   "certificates": {
     "heading": "Certificates",

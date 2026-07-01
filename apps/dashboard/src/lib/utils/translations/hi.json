@@ -492,7 +492,8 @@
     "explore": "अन्वेषण करें",
     "help": "मदद",
     "settings": "सेटिंग्स",
-    "programs": "कार्यक्रम"
+    "programs": "कार्यक्रम",
+    "my_notes": "My Notes"
   },
   "upgrade": {
     "certificate": "प्रमाणपत्र बनाने की अपनी योजना को अपग्रेड करें",
@@ -4778,6 +4779,21 @@
       "finalizing": "सहेजा जा रहा है...",
       "done": "तैयार",
       "failed": "अपलोड विफल रहा"
+    }
+  },
+  "notes": {
+    "page_title": "My Notes",
+    "heading": "My Notes",
+    "description": "Notes you take while learning appear here.",
+    "list": {
+      "search": "Search notes",
+      "tabs": {
+        "all": "All notes",
+        "from_lessons": "From lessons"
+      },
+      "empty_title": "No notes yet",
+      "empty_description": "Take notes while watching a lesson and they will show up here.",
+      "no_content": "No content yet"
     }
   }
 }

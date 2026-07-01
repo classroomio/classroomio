@@ -244,3 +244,9 @@ export type TNewJobStep = typeof schema.jobStep.$inferInsert;
 
 export type TDeadLetterJob = typeof schema.deadLetterJob.$inferSelect;
 export type TNewDeadLetterJob = typeof schema.deadLetterJob.$inferInsert;
+
+export type TOrgNote = typeof schema.orgNote.$inferSelect;
+export type TNewOrgNote = typeof schema.orgNote.$inferInsert;
+export type TOrgNoteVersion = typeof schema.orgNoteVersion.$inferSelect;
+export type TNewOrgNoteVersion = typeof schema.orgNoteVersion.$inferInsert;
+export type TNoteOrigin = (typeof schema.noteOrigin.enumValues)[number];
