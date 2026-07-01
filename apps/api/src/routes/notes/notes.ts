@@ -6,6 +6,7 @@ import {
   ZNoteVersionIdParam,
   ZUpdateNote
 } from '@cio/utils/validation/notes';
+import { importNoteService } from '@api/services/notes/import';
 import {
   createNoteService,
   deleteNoteService,
@@ -16,6 +17,7 @@ import {
   restoreNoteVersionService,
   updateNoteService
 } from '@api/services/notes/notes';
+import { AppError, ErrorCodes } from '@api/utils/errors';
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
@@ -66,6 +68,28 @@ export const notesRouter = new Hono()
       return c.json({ success: true, data }, 201);
     } catch (error) {
       return handleError(c, error, 'Failed to create note');
+    }
+  })
+  .post('/import', authMiddleware, orgMemberMiddleware, async (c) => {
+    try {
+      const user = c.get('user')!;
+      const organizationId = c.get('orgId')!;
+      const body = await c.req.parseBody();
+      const file = body.file;
+
+      if (!(file instanceof File)) {
+        throw new AppError('File is required', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+
+      const data = await importNoteService({
+        ownerId: user.id,
+        organizationId,
+        file
+      });
+
+      return c.json({ success: true, data }, 201);
+    } catch (error) {
+      return handleError(c, error, 'Failed to import note');
     }
   })
   .get('/:noteId', authMiddleware, orgMemberMiddleware, zValidator('param', ZNoteIdParam), async (c) => {

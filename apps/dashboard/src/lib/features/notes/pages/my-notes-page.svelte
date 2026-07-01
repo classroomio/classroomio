@@ -11,9 +11,10 @@
 
   interface Props {
     showWorkspaceUsage?: boolean;
+    noteHref?: (noteId: string) => string;
   }
 
-  let { showWorkspaceUsage = false }: Props = $props();
+  let { showWorkspaceUsage = false, noteHref }: Props = $props();
 
   let searchValue = $state('');
   let currentTab = $state<'all' | 'lessons'>('all');
@@ -87,24 +88,51 @@
   {:else}
     <ul class="divide-border divide-y rounded-lg border">
       {#each filteredNotes as note (note.id)}
-        <li class="flex flex-col gap-2 px-4 py-3">
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0">
-              <p class="truncate font-medium">{note.title}</p>
-              <p class="ui:text-muted-foreground line-clamp-2 text-sm">
-                {note.plainText || $t('notes.list.no_content')}
-              </p>
-            </div>
-            <span class="ui:text-muted-foreground shrink-0 text-xs">{formatUpdatedAt(note.updatedAt)}</span>
-          </div>
+        <li>
+          {#if noteHref}
+            <a href={noteHref(note.id)} class="hover:bg-muted/40 flex flex-col gap-2 px-4 py-3 transition-colors">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="truncate font-medium">{note.title}</p>
+                  <p class="ui:text-muted-foreground line-clamp-2 text-sm">
+                    {note.plainText || $t('notes.list.no_content')}
+                  </p>
+                </div>
+                <span class="ui:text-muted-foreground shrink-0 text-xs">{formatUpdatedAt(note.updatedAt)}</span>
+              </div>
 
-          {#if note.origin === 'lesson_capture' && (note.courseTitle || note.lessonTitle)}
-            <div class="flex flex-wrap gap-2">
-              {#if note.courseTitle}
-                <Badge variant="secondary">{note.courseTitle}</Badge>
+              {#if note.origin === 'lesson_capture' && (note.courseTitle || note.lessonTitle)}
+                <div class="flex flex-wrap gap-2">
+                  {#if note.courseTitle}
+                    <Badge variant="secondary">{note.courseTitle}</Badge>
+                  {/if}
+                  {#if note.lessonTitle}
+                    <Badge variant="outline">{note.lessonTitle}</Badge>
+                  {/if}
+                </div>
               {/if}
-              {#if note.lessonTitle}
-                <Badge variant="outline">{note.lessonTitle}</Badge>
+            </a>
+          {:else}
+            <div class="flex flex-col gap-2 px-4 py-3">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="truncate font-medium">{note.title}</p>
+                  <p class="ui:text-muted-foreground line-clamp-2 text-sm">
+                    {note.plainText || $t('notes.list.no_content')}
+                  </p>
+                </div>
+                <span class="ui:text-muted-foreground shrink-0 text-xs">{formatUpdatedAt(note.updatedAt)}</span>
+              </div>
+
+              {#if note.origin === 'lesson_capture' && (note.courseTitle || note.lessonTitle)}
+                <div class="flex flex-wrap gap-2">
+                  {#if note.courseTitle}
+                    <Badge variant="secondary">{note.courseTitle}</Badge>
+                  {/if}
+                  {#if note.lessonTitle}
+                    <Badge variant="outline">{note.lessonTitle}</Badge>
+                  {/if}
+                </div>
               {/if}
             </div>
           {/if}

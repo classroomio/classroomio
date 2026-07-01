@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { MyNotesPage } from '$features/notes/pages';
+  import { OrgNotesPage } from '$features/notes/pages';
   import { t } from '$lib/utils/functions/translations';
   import * as Page from '@cio/ui/base/page';
 </script>
@@ -8,7 +8,7 @@
   <title>{$t('notes.page_title')} - ClassroomIO</title>
 </svelte:head>
 
-<Page.Root class="w-full">
+<Page.Root class="w-full max-w-none">
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>{$t('notes.heading')}</Page.Title>
@@ -17,7 +17,7 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <MyNotesPage showWorkspaceUsage={true} />
+      <OrgNotesPage />
     {/snippet}
   </Page.Body>
 </Page.Root>

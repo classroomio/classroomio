@@ -4109,6 +4109,34 @@
       "empty_title": "No notes yet",
       "empty_description": "Take notes while watching a lesson and they will show up here.",
       "no_content": "No content yet"
+    },
+    "org": {
+      "new_note": "New note",
+      "new_note_title": "Untitled",
+      "import": "Import",
+      "create_error": "Could not create note.",
+      "import_error": "Could not import note. Use .md, .txt, or .docx files up to 5MB.",
+      "import_success": "Note imported"
+    },
+    "editor": {
+      "page_title": "Edit note",
+      "loading": "Loading note…",
+      "load_error": "Could not load this note.",
+      "title_placeholder": "Note title",
+      "placeholder": "Start writing…",
+      "version_history": {
+        "open": "Version history",
+        "title": "Version history",
+        "loading": "Loading versions…",
+        "empty": "No versions yet.",
+        "versions": "Versions",
+        "current": "Current version",
+        "preview": "Preview",
+        "restore": "Restore version",
+        "restore_success": "Version restored",
+        "restore_error": "Could not restore version.",
+        "load_more": "Load more"
+      }
     }
   },
   "certificates": {

@@ -1,11 +1,20 @@
-import { classroomio, BaseApiWithErrors, type InferResponseType } from '$lib/utils/services/api';
+import {
+  classroomio,
+  BaseApiWithErrors,
+  apiClient,
+  getRequestBaseUrl,
+  type InferResponseType
+} from '$lib/utils/services/api';
 import { currentOrg } from '$lib/utils/store/org';
 import { get } from 'svelte/store';
 import type {
   CreateNoteRequest,
+  DeleteNoteRequest,
   GetNoteRequest,
+  GetNoteVersionHistoryRequest,
   ListNotesRequest,
   NoteUsageRequest,
+  RestoreNoteVersionRequest,
   UpdateNoteRequest
 } from '../utils/types';
 
@@ -14,6 +23,8 @@ export type NoteListItem = Extract<InferResponseType<ListNotesRequest>, { succes
 export type NoteDetail = Extract<InferResponseType<GetNoteRequest>, { success: true }>['data'];
 
 export type NoteUsage = Extract<InferResponseType<NoteUsageRequest>, { success: true }>['data'];
+
+export type NoteVersionHistory = Extract<InferResponseType<GetNoteVersionHistoryRequest>, { success: true }>['data'];
 
 class NotesApi extends BaseApiWithErrors {
   notes = $state<NoteListItem[]>([]);
@@ -65,6 +76,73 @@ class NotesApi extends BaseApiWithErrors {
       },
       logContext: 'fetchNoteUsage'
     });
+  }
+
+  async getNote(noteId: string) {
+    let note: NoteDetail | null = null;
+
+    await this.execute<GetNoteRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId'].$get({
+          param: { noteId }
+        }),
+      onSuccess: (result) => {
+        note = result.data ?? null;
+      },
+      logContext: 'getNote'
+    });
+
+    return note;
+  }
+
+  async createWorkspaceNote(title: string) {
+    const org = get(currentOrg);
+    if (!org.id) return null;
+
+    let created: NoteDetail | null = null;
+
+    await this.execute<CreateNoteRequest>({
+      requestFn: () =>
+        classroomio.notes.$post({
+          json: {
+            organizationId: org.id,
+            title,
+            content: '',
+            origin: 'workspace'
+          }
+        }),
+      onSuccess: (result) => {
+        created = result.data ?? null;
+      },
+      logContext: 'createWorkspaceNote'
+    });
+
+    return created;
+  }
+
+  async importNote(file: File) {
+    const org = get(currentOrg);
+    if (!org.id) return null;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await apiClient.request(`${getRequestBaseUrl()}/notes/import`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+      });
+      const result = (await response.json()) as { success: boolean; data?: NoteDetail };
+
+      if (result.success && result.data) {
+        return result.data;
+      }
+    } catch (error) {
+      console.error('Error importing note:', error);
+    }
+
+    return null;
   }
 
   async ensureLessonCaptureNote(params: { courseId: string; lessonId: string; title: string }) {
@@ -132,6 +210,58 @@ class NotesApi extends BaseApiWithErrors {
     });
 
     return updated;
+  }
+
+  async deleteNote(noteId: string) {
+    let deleted = false;
+
+    await this.execute<DeleteNoteRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId'].$delete({
+          param: { noteId }
+        }),
+      onSuccess: () => {
+        deleted = true;
+      },
+      logContext: 'deleteNote'
+    });
+
+    return deleted;
+  }
+
+  async getVersionHistory(noteId: string, endRange = 9) {
+    let versions: NoteVersionHistory = [];
+
+    await this.execute<GetNoteVersionHistoryRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId'].versions.$get({
+          param: { noteId },
+          query: { endRange: String(endRange) }
+        }),
+      onSuccess: (result) => {
+        versions = result.data;
+      },
+      logContext: 'getNoteVersionHistory'
+    });
+
+    return versions;
+  }
+
+  async restoreVersion(noteId: string, versionId: number) {
+    let restored: NoteDetail | null = null;
+
+    await this.execute<RestoreNoteVersionRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId'].versions[':versionId'].restore.$post({
+          param: { noteId, versionId: String(versionId) }
+        }),
+      onSuccess: (result) => {
+        restored = result.data ?? null;
+      },
+      logContext: 'restoreNoteVersion'
+    });
+
+    return restored;
   }
 }
 
