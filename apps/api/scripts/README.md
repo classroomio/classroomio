@@ -33,7 +33,7 @@ CLOUDFLARE_SECRET_ACCESS_KEY=your_secret_key
 CLOUDFLARE_ACCOUNT_ID=your_account_id
 ```
 
-Optional — purge Cloudflare CDN cache for `api.cdn.clsrio.com` (before and after R2 upload):
+Optional — purge Cloudflare CDN cache for `api.cdn.clsrio.com` (after R2 upload):
 
 ```bash
 CLOUDFLARE_API_TOKEN=your_api_token   # Zone → Cache Purge → Purge
@@ -51,7 +51,7 @@ The script will:
 4. **Upload to R2** (if credentials provided):
    - `openapi/public-api/openapi-YYYY-MM-DD.json` (dated version)
    - `openapi/public-api/openapi-latest.json` (latest version)
-5. **Purge Cloudflare CDN** (if `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ZONE_ID` are set) for both public URLs, before and after upload
+5. **Purge Cloudflare CDN** (if `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ZONE_ID` are set) for both public URLs, after upload
 
 ## GitHub Action Integration
 
@@ -81,7 +81,7 @@ The GitHub Action runs on:
 - ✅ Automatic OpenAPI spec generation from Hono routes
 - ✅ Local file generation for development
 - ✅ Cloudflare R2 upload with versioning
-- ✅ Optional Cloudflare CDN cache purge (before and after upload)
+- ✅ Optional Cloudflare CDN cache purge (after upload)
 - ✅ GitHub Action integration
 - ✅ Environment-specific deployments
 - ✅ PR previews and artifacts

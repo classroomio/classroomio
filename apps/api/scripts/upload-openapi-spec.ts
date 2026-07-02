@@ -31,7 +31,7 @@ async function purgeCloudflareCdnForUrls(urls: string[]): Promise<void> {
 
   if (!token || !zoneId) {
     console.log(
-      'Skipping Cloudflare CDN cache purge. Set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ZONE_ID to purge before and after upload.'
+      'Skipping Cloudflare CDN cache purge. Set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ZONE_ID to purge after upload.'
     );
     return;
   }
@@ -218,8 +218,6 @@ class OpenAPISpecGenerator {
         const uploadKey = `openapi/public-api/openapi-${new Date().toISOString().split('T')[0]}.json`;
         const cdnUrls = getOpenApiCdnUrls(uploadKey);
 
-        await purgeCloudflareCdnForUrls(cdnUrls);
-
         await this.uploadToR2({
           key: uploadKey,
           content: spec,
@@ -259,7 +257,7 @@ Environment Variables Required for R2 Upload:
   CLOUDFLARE_SECRET_ACCESS_KEY
   CLOUDFLARE_ACCOUNT_ID
 
-Optional — purge Cloudflare CDN cache for api.cdn.clsrio.com (before and after upload):
+Optional — purge Cloudflare CDN cache for api.cdn.clsrio.com (after upload):
   CLOUDFLARE_API_TOKEN   (Zone → Cache Purge → Purge)
   CLOUDFLARE_ZONE_ID
   OPENAPI_SKIP_CDN_PURGE=1 to skip purge
