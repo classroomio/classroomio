@@ -14,20 +14,19 @@ https://api.classroomio.com/public-api/v1
 
 Every request must include an organization-scoped API key as a Bearer token.
 
-## Interactive Reference
+## Get an API key
 
-- [Open the interactive API reference](/docs/api/reference)
-
-The reference page includes an **Authorize** button. Paste your API key there to try endpoints without writing curl commands.
-
-## Authentication
+Generate keys in the ClassroomIO dashboard as an **organization admin**.
 
 <Steps>
   <Step>
-    Sign in to ClassroomIO as an **organization admin**.
+    Sign in to [ClassroomIO](https://app.classroomio.com).
   </Step>
   <Step>
-    Open **Automation → API** in your org (`/org/<siteName>/api`).
+    In the org sidebar, open the **Automation** section, then **API**.
+  </Step>
+  <Step>
+    Or go directly to [`/org/*/api`](https://app.classroomio.com/org/*/api). The `*` picks your current organization automatically.
   </Step>
   <Step>
     Click **Generate API key**, name the key, and copy the secret immediately. Keys are shown only once and look like `cio_api_...`.
@@ -37,12 +36,15 @@ The reference page includes an **Authorize** button. Paste your API key there to
   </Step>
 </Steps>
 
-### curl example
+<Callout type="warn" title="Paid Access">
+  On ClassroomIO Cloud, API key creation is available on **Early Adopter** and **Enterprise** plans. Self-hosted deployments require **Enterprise**.
+</Callout>
 
-```bash
-curl https://api.classroomio.com/public-api/v1/audience \
-  -H "Authorization: Bearer cio_api_your_key_here"
-```
+## Interactive Reference
+
+- [Open the interactive API reference](/docs/api/reference)
+
+The reference page includes an **Authorize** button. Paste your API key there to try endpoints without writing curl commands.
 
 ### Try requests in the reference UI
 
@@ -51,11 +53,12 @@ curl https://api.classroomio.com/public-api/v1/audience \
 3. Select **bearerAuth** and paste your full `cio_api_...` key.
 4. Use **Try it** on any endpoint.
 
-## Plan Requirement
+### curl example
 
-<Callout type="warn" title="Paid Access">
-  On ClassroomIO Cloud, API key creation is available on **Early Adopter** and **Enterprise** plans. Self-hosted deployments require **Enterprise**.
-</Callout>
+```bash
+curl https://api.classroomio.com/public-api/v1/audience \
+  -H "Authorization: Bearer cio_api_your_key_here"
+```
 
 ## Current Surface
 
