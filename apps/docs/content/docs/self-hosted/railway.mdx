@@ -80,7 +80,7 @@ The next three steps cover the services that **do** need input: `cio-jobs`, `cio
 
 Set the storage credentials on `cio-minio`:
 
-- `MINIO_SERVER_URL` — the template presets this to the generated `cio-minio` domain, so you normally just confirm it (change it only for a custom domain)
+- `MINIO_SERVER_URL` — optional but recommended (fixes MinIO console redirects behind the proxy); the template presets it to the generated `cio-minio` domain, so you normally just confirm it
 - `MINIO_ROOT_USER`
 - `MINIO_ROOT_PASSWORD`
 
@@ -234,9 +234,8 @@ configuration:
 ```zsh title="env"
 MINIO_ROOT_USER=<strong user>
 MINIO_ROOT_PASSWORD=<strong password>
-# Required — MinIO's public URL (console redirects + correct links behind the proxy).
-# The template presets this to the generated cio-minio domain; change it only if you
-# attach a custom domain.
+# Recommended (not required — ClassroomIO reaches storage via OBJECT_STORAGE_* below;
+# this only fixes MinIO's own console redirects behind the proxy). Template presets it.
 MINIO_SERVER_URL=https://${{cio-minio.RAILWAY_PUBLIC_DOMAIN}}
 ```
 
