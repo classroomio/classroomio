@@ -128,6 +128,24 @@ body {
   background: radial-gradient(circle at 50% 100%, rgba(2, 51, 189, 1) 1%, rgb(4, 2, 56) 100%);
 }
 
+.cio-page-hero-radial-bg {
+  background: radial-gradient(
+    circle at 50% 100%,
+    rgba(2, 51, 189, 0.2) 0%,
+    rgba(2, 51, 189, 0.06) 38%,
+    rgba(255, 255, 255, 0) 72%
+  );
+}
+
+.cio-cta-radial-bg {
+  background: radial-gradient(
+    circle at 50% 100%,
+    rgba(2, 51, 189, 0.92) 0%,
+    rgba(4, 15, 45, 0.98) 58%,
+    rgb(3, 7, 18) 100%
+  );
+}
+
 .embed {
   width: 100%;
   height: 315px;
