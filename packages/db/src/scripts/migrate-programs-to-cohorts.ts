@@ -107,6 +107,13 @@ async function getTableColumns(tableName: string): Promise<string[]> {
   return rows.map((row) => row.column_name);
 }
 
+async function getTableRowCount(tableName: string): Promise<number> {
+  const result = await db.execute<{ count: number }>(sql.raw(`SELECT COUNT(*)::int AS count FROM "${tableName}"`));
+  const rows = Array.isArray(result) ? result : ((result as { rows?: { count: number }[] }).rows ?? []);
+
+  return Number(rows[0]?.count ?? 0);
+}
+
 async function copyTable({ label, source, target, columnMap = {}, enumCasts = {} }: TableCopy): Promise<number> {
   const sourceColumns = await getTableColumns(source);
   const targetColumns = await getTableColumns(target);
@@ -137,7 +144,9 @@ async function copyTable({ label, source, target, columnMap = {}, enumCasts = {}
 
   const insertList = insertColumns.map((column) => `"${column}"`).join(', ');
 
-  const result = await db.execute(
+  const sourceCount = await getTableRowCount(source);
+
+  await db.execute(
     sql.raw(`
     INSERT INTO "${target}" (${insertList})
     SELECT ${selectList}
@@ -145,17 +154,36 @@ async function copyTable({ label, source, target, columnMap = {}, enumCasts = {}
   `)
   );
 
-  const inserted =
-    typeof result === 'object' && result !== null && 'rowCount' in result
-      ? Number((result as { rowCount?: number }).rowCount ?? 0)
-      : 0;
+  const copiedCount = await getTableRowCount(target);
 
-  console.log(`  ${label}: copied ${inserted} row(s)`);
-  return inserted;
+  if (sourceCount !== copiedCount) {
+    throw new Error(
+      `Row count mismatch for ${label}: expected ${sourceCount} from "${source}", found ${copiedCount} in "${target}"`
+    );
+  }
+
+  console.log(`  ${label}: copied ${copiedCount} row(s)`);
+  return copiedCount;
 }
 
 async function migrateInviteMetadata(): Promise<number> {
-  const result = await db.execute(sql`
+  const countResult = await db.execute<{ count: number }>(sql`
+    SELECT COUNT(*)::int AS count
+    FROM organization_invite
+    WHERE metadata ? 'programIds'
+       OR metadata ? 'program_ids'
+  `);
+  const countRows = Array.isArray(countResult)
+    ? countResult
+    : ((countResult as { rows?: { count: number }[] }).rows ?? []);
+  const invitesToUpdate = Number(countRows[0]?.count ?? 0);
+
+  if (invitesToUpdate === 0) {
+    console.log('  organization_invite metadata: updated 0 row(s)');
+    return 0;
+  }
+
+  await db.execute(sql`
     UPDATE organization_invite
     SET metadata = (
       metadata
@@ -169,13 +197,8 @@ async function migrateInviteMetadata(): Promise<number> {
        OR metadata ? 'program_ids'
   `);
 
-  const updated =
-    typeof result === 'object' && result !== null && 'rowCount' in result
-      ? Number((result as { rowCount?: number }).rowCount ?? 0)
-      : 0;
-
-  console.log(`  organization_invite metadata: updated ${updated} row(s)`);
-  return updated;
+  console.log(`  organization_invite metadata: updated ${invitesToUpdate} row(s)`);
+  return invitesToUpdate;
 }
 
 async function migrate() {
