@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'apps/api/**'
+      - 'packages/utils/src/openapi/**'
   workflow_dispatch:
 
 env:
