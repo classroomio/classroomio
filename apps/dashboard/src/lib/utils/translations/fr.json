@@ -3893,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Démarrage rapide",
+        "description": "Utilisez votre clé API comme jeton Bearer sur chaque requête. Remplacez l'espace réservé par une clé ci-dessus, ou collez le secret immédiatement après l'avoir généré."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3917,7 +3921,10 @@
       "claude_code": "Claude Code",
       "codex": "Codex",
       "cursor": "Curseur",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python"
     },
     "tabs": {
       "mcp": "PCM",

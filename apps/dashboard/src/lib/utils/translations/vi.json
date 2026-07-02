@@ -3893,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Bắt đầu nhanh",
+        "description": "Dùng khóa API làm Bearer token cho mọi yêu cầu. Thay chỗ giữ chỗ bằng khóa ở trên, hoặc dán secret ngay sau khi tạo khóa."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3917,7 +3921,10 @@
       "claude_code": "Mã Claude",
       "codex": "Codex",
       "cursor": "Con trỏ",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python"
     },
     "tabs": {
       "mcp": "MCP",

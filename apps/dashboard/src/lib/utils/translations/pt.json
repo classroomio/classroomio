@@ -3893,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Início rápido",
+        "description": "Use sua chave de API como token Bearer em cada solicitação. Substitua o marcador por uma chave acima ou cole o segredo imediatamente após gerar uma."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3917,7 +3921,10 @@
       "claude_code": "Código Claude",
       "codex": "Códice",
       "cursor": "Cursor",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python"
     },
     "tabs": {
       "mcp": "PCM",

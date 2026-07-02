@@ -3893,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "त्वरित शुरुआत",
+        "description": "हर अनुरोध पर अपनी API कुंजी को Bearer टोकन के रूप में उपयोग करें। प्लेसहोल्डर को ऊपर की कुंजी से बदलें, या कुंजी बनाने के तुरंत बाद सीक्रेट पेस्ट करें।"
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3917,7 +3921,10 @@
       "claude_code": "क्लाउड कोड",
       "codex": "कोडेक्स",
       "cursor": "कर्सर",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python"
     },
     "tabs": {
       "mcp": "एम.सी.पी",

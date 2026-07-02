@@ -3893,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Быстрый старт",
+        "description": "Используйте ключ API как Bearer-токен в каждом запросе. Замените заполнитель ключом из списка выше или вставьте секрет сразу после генерации."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3917,7 +3921,10 @@
       "claude_code": "Клод Код",
       "codex": "Кодекс",
       "cursor": "Курсор",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python"
     },
     "tabs": {
       "mcp": "МКП",
