@@ -16,9 +16,7 @@
 <div
   class="relative mx-auto my-5 flex h-[61vh] w-full max-w-4xl flex-col items-center justify-center overflow-hidden bg-gray-950 px-6 py-12 text-center shadow-2xl lg:h-[50vh] lg:w-[70%] lg:rounded-3xl"
 >
-  <div
-    class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(2,51,189,0.92)_0%,rgba(4,15,45,0.98)_58%,rgb(3,7,18)_100%)]"
-  ></div>
+  <div class="cio-cta-radial-bg pointer-events-none absolute inset-0 z-0 h-full w-full" aria-hidden="true"></div>
   <Waves
     lineColor="rgba(255,255,255,0.18)"
     class="ui:pointer-events-none ui:absolute ui:inset-0 ui:h-full ui:w-full"
