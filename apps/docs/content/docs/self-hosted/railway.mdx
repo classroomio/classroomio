@@ -14,8 +14,8 @@ The quickest hosted deployment is the [Railway Template](https://railway.com/dep
 
 Prefer to follow along? This video walks through the whole deployment end to end. The written steps below mirror it, and the [Environment variable reference](#environment-variable-reference) has every value to copy.
 
-<div style={{ display: 'flex', justifyContent: 'center', marginY: '16px' }}>
-  <iframe width="560" height="315" src="https://www.youtube.com/embed/JQZ1ZikLM20?si=AAdI2Muyb2GcetiS" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px', marginBottom: '16px' }}>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/JQZ1ZikLM20?si=AAdI2Muyb2GcetiS" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
 </div>
 
 ## Prerequisites
@@ -80,7 +80,7 @@ The next three steps cover the services that **do** need input: `cio-jobs`, `cio
 
 Set the storage credentials on `cio-minio`:
 
-- `MINIO_SERVER_URL`
+- `MINIO_SERVER_URL` — the template presets this to the generated `cio-minio` domain, so you normally just confirm it (change it only for a custom domain)
 - `MINIO_ROOT_USER`
 - `MINIO_ROOT_PASSWORD`
 
@@ -234,8 +234,10 @@ configuration:
 ```zsh title="env"
 MINIO_ROOT_USER=<strong user>
 MINIO_ROOT_PASSWORD=<strong password>
-# Optional (silences console redirect warnings behind the proxy):
-MINIO_SERVER_URL=https://storage.yourdomain.com
+# Required — MinIO's public URL (console redirects + correct links behind the proxy).
+# The template presets this to the generated cio-minio domain; change it only if you
+# attach a custom domain.
+MINIO_SERVER_URL=https://${{cio-minio.RAILWAY_PUBLIC_DOMAIN}}
 ```
 
 The api and jobs services reach MinIO over **two** endpoints: the private `OBJECT_STORAGE_ENDPOINT`
