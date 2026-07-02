@@ -54,14 +54,8 @@ async function purgeCloudflareCdnForUrls(urls: string[]): Promise<void> {
     });
 
     const payload: unknown = await response.json().catch(() => ({}));
-    const success =
-      response.ok &&
-      typeof payload === 'object' &&
-      payload !== null &&
-      'success' in payload &&
-      (payload as { success?: boolean }).success === true;
 
-    if (!success) {
+    if (!response.ok) {
       throw new Error(`Cloudflare CDN purge failed: ${response.status} ${JSON.stringify(payload)}`);
     }
 
