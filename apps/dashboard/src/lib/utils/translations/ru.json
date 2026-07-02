@@ -386,32 +386,6 @@
       "rotated": "Ключ автоматики повернут. Сохраните новый секрет сейчас, потому что он больше не будет отображаться.",
       "revoked": "Ключ автоматизации отозван."
     },
-    "program": {
-      "error": {
-        "reaction_error": "Произошла ошибка при реакции на сообщение",
-        "news_feed_fail": "Не удалось получить ленту новостей программы.",
-        "post_create_failed": "Не удалось создать публикацию",
-        "post_update_failed": "Не удалось обновить публикацию",
-        "code": {
-          "program_forbidden": "Для выполнения этого действия вы должны быть участником этой программы.",
-          "program_member_check_failed": "Нам не удалось подтвердить ваше участие в программе. Попробуйте еще раз.",
-          "program_not_found": "Эту программу не удалось найти.",
-          "program_create_failed": "Не удалось создать программу.",
-          "program_update_failed": "Не удалось обновить программу.",
-          "program_delete_failed": "Не удалось удалить программу.",
-          "program_member_not_found": "Этот участник программы не найден.",
-          "program_newsfeed_not_found": "Этот пост не найден.",
-          "program_newsfeed_comment_not_found": "Этот комментарий не найден."
-        }
-      },
-      "success": {
-        "comment_deleted": "Комментарий удален",
-        "comment_added": "Комментарий добавлен",
-        "feed_delete_success": "Сообщение успешно удалено",
-        "post_created": "Сообщение успешно создано",
-        "post_updated": "Сообщение успешно обновлено"
-      }
-    },
     "ai_credits": {
       "purchase_success": "Пакет AI credits добавлен на баланс.",
       "checkout_failed": "Не удалось начать оплату. Попробуйте снова."
@@ -445,7 +419,33 @@
       "generate_1080_completed": "добавлено воспроизведение 1080p",
       "generate_1080_failed": "Не удалось создать воспроизведение 1080p."
     },
-    "social_auth_not_enabled": "Этот поставщик аутентификации не включен."
+    "social_auth_not_enabled": "Этот поставщик аутентификации не включен.",
+    "cohort": {
+      "error": {
+        "reaction_error": "Произошла ошибка при реакции на сообщение",
+        "news_feed_fail": "Не удалось получить ленту новостей программы.",
+        "post_create_failed": "Не удалось создать публикацию",
+        "post_update_failed": "Не удалось обновить публикацию",
+        "code": {
+          "cohort_forbidden": "Для выполнения этого действия вы должны быть участником этой программы.",
+          "cohort_member_check_failed": "Нам не удалось подтвердить ваше участие в программе. Попробуйте еще раз.",
+          "cohort_not_found": "Эту программу не удалось найти.",
+          "cohort_create_failed": "Не удалось создать программу.",
+          "cohort_update_failed": "Не удалось обновить программу.",
+          "cohort_delete_failed": "Не удалось удалить программу.",
+          "cohort_member_not_found": "Этот участник программы не найден.",
+          "cohort_newsfeed_not_found": "Этот пост не найден.",
+          "cohort_newsfeed_comment_not_found": "Этот комментарий не найден."
+        }
+      },
+      "success": {
+        "comment_deleted": "Комментарий удален",
+        "comment_added": "Комментарий добавлен",
+        "feed_delete_success": "Сообщение успешно удалено",
+        "post_created": "Сообщение успешно создано",
+        "post_updated": "Сообщение успешно обновлено"
+      }
+    }
   },
   "explore": {
     "heading": "Ознакомьтесь с нашими курсами",
@@ -492,7 +492,7 @@
     "explore": "Исследуйте",
     "help": "Помощь",
     "settings": "Настройки",
-    "programs": "Программы"
+    "cohorts": "Программы"
   },
   "upgrade": {
     "certificate": "Обновите свой план для создания сертификатов",
@@ -503,7 +503,8 @@
     "download_lessons": "Обновите, чтобы скачивать уроки",
     "download_course": "Обновите, чтобы загрузить курс",
     "required": "Требуется обновление",
-    "enterprise_required": "Для этой функции требуется план Enterprise."
+    "enterprise_required": "Для этой функции требуется план Enterprise.",
+    "public_api_required": "Перейдите на Early Adopter или Enterprise, чтобы получить доступ к публичному API."
   },
   "analytics": {
     "title": "Аналитика",
@@ -682,18 +683,18 @@
       "all_courses": "Все курсы",
       "select_courses": "Выберите конкретные курсы",
       "select_courses_placeholder": "Выбирайте курсы...",
-      "program_access": "Доступ к программам",
-      "no_programs": "Без назначения программы",
-      "all_programs": "Все программы",
-      "select_programs": "Выберите конкретные программы",
-      "select_programs_placeholder": "Выберите программы...",
       "send_email": "Отправить электронное письмо с приглашением импортированным пользователям",
       "submit": "Импортировать пользователей",
       "back": "Вернуться к аудитории",
       "snackbar_success": "{imported} новых приглашений, {assigned} существующих студентов с доступом к курсу, {pendingInvitesRenewed} обновлённых ожидающих приглашений (отправлено писем: {emailsSent})",
       "snackbar_no_emails": "Пожалуйста, введите хотя бы один адрес электронной почты",
       "snackbar_failed": "Не удалось импортировать пользователей.",
-      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like."
+      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like.",
+      "cohort_access": "Доступ к программам",
+      "no_cohorts": "Без назначения программы",
+      "all_cohorts": "Все программы",
+      "select_cohorts": "Выберите конкретные программы",
+      "select_cohorts_placeholder": "Выберите программы..."
     },
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "user_analytics": {
@@ -2800,11 +2801,11 @@
     "upgrade": "Обновите сейчас",
     "tags": "Теги",
     "automation": "Автоматизация",
-    "programs": "Программы",
     "widgets": "Виджеты",
     "stats": "Статистика",
     "analytics": "Аналитика",
-    "compliance": "Соответствие"
+    "compliance": "Соответствие",
+    "cohorts": "Программы"
   },
   "media_manager": {
     "page_title": "Медиа-менеджер — ClassroomIO",
@@ -3892,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Быстрый старт",
+        "description": "Используйте ключ API как Bearer-токен в каждом запросе. Замените заполнитель ключом из списка выше или вставьте секрет сразу после генерации."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3916,7 +3921,11 @@
       "claude_code": "Клод Код",
       "codex": "Кодекс",
       "cursor": "Курсор",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "tabs": {
       "mcp": "МКП",
@@ -3929,212 +3938,6 @@
     },
     "zapier": {
       "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
-    }
-  },
-  "programs": {
-    "heading": "Программы",
-    "page_title": "Программы",
-    "create": "Новая программа",
-    "create_success": "Программа создана",
-    "update_success": "Программа обновлена",
-    "delete_success": "Программа удалена",
-    "members_added": "Добавлены участники",
-    "member_removed": "Участник удален",
-    "course_added": "Курс добавлен",
-    "course_removed": "Курс удален.",
-    "empty_title": "Пока нет программ",
-    "empty_description": "Создайте свою первую программу сертификации или соответствия требованиям.",
-    "settings": {
-      "general": "Общий",
-      "name_label": "Имя",
-      "description_label": "Описание",
-      "status_label": "Статус",
-      "save": "Сохранить изменения",
-      "danger_zone": "Опасная зона",
-      "delete": "Удалить программу",
-      "delete_description": "После удаления эту программу и все ее данные невозможно восстановить.",
-      "confirm_delete": "Вы уверены, что хотите удалить эту программу? Это невозможно отменить."
-    },
-    "lms": {
-      "empty_title": "Пока нет программ",
-      "empty_description": "Вы не были зарегистрированы ни в одной программе."
-    },
-    "people": {
-      "invite": "Пригласить",
-      "invite_modal_title": "Пригласить участников",
-      "invite_modal_description": "Добавляйте людей в эту программу по электронной почте.",
-      "email_label": "электронная почта",
-      "role_label": "Роль",
-      "add_another": "Добавить еще",
-      "invite_submit": "Отправить приглашения",
-      "empty_title": "Пока нет участников",
-      "empty_description": "Пригласите людей присоединиться к этой программе."
-    },
-    "courses": {
-      "add": "Добавить курс",
-      "add_modal_title": "Добавить курс в программу",
-      "select_course": "Выберите курс",
-      "select_placeholder": "Выбрать курс…",
-      "empty_title": "Курсов пока нет",
-      "empty_description": "Добавьте курсы в эту программу.",
-      "select_courses": "Выберите курсы",
-      "search_placeholder": "Поиск курсов",
-      "no_available_courses": "Нет доступных курсов для добавления.",
-      "no_matching_courses": "Нет курсов, соответствующих вашему запросу.",
-      "no_matching_program_courses": "Никакие курсы программы не соответствуют вашему запросу.",
-      "pagination_status": "Страница {page} из {totalPages}",
-      "published_access_callout_title": "Доступ для студентов",
-      "published_access_callout_description": "Студенты имеют доступ только к опубликованным курсам. Курсы могут быть включены в эту программу для вашей команды, будучи еще неопубликованными, и оставаться скрытыми от учащихся, пока вы их не опубликуете."
-    },
-    "newsfeed": {
-      "post": "Новое сообщение",
-      "post_placeholder": "Что у тебя на уме?",
-      "post_submit": "Сообщение",
-      "empty_title": "Пока нет сообщений",
-      "empty_description": "Будьте первым, кто опубликует что-либо.",
-      "heading": "Лента новостей",
-      "make_a_post": "Сделать публикацию",
-      "edit_post": "Редактировать сообщение",
-      "editor_placeholder": "Поделитесь обновлением своей программы",
-      "cancel": "Отмена",
-      "pinned": "Закреплено",
-      "delete_feed_title": "Удалить сообщение",
-      "delete_feed_description": "Вы уверены, что хотите удалить этот пост?",
-      "confirm_delete": "Удалить",
-      "user_avatar_alt": "Аватар пользователя",
-      "comments": {
-        "comment": "комментарий",
-        "showing_of": "Показаны {shown} из {total}",
-        "hide": "Скрыть комментарии",
-        "placeholder": "Добавить комментарий к программе",
-        "submit_aria": "Отправить комментарий",
-        "delete": "Удалить"
-      },
-      "card": {
-        "pin": "Пин-код",
-        "unpin": "Открепить",
-        "edit": "Редактировать",
-        "delete": "Удалить"
-      }
-    },
-    "create_modal": {
-      "title": "Создать программу",
-      "description": "Добавьте новую программу сертификации или соответствия.",
-      "name_label": "Имя",
-      "name_placeholder": "например Сертификация безопасности OSHA",
-      "description_label": "Описание",
-      "description_placeholder": "О чем эта программа?",
-      "submit": "Создать"
-    },
-    "sidebar": {
-      "newsfeed": "Лента новостей",
-      "courses": "Курсы",
-      "people": "Люди",
-      "settings": "Настройки"
-    },
-    "status": {
-      "active": "Активный",
-      "inactive": "Неактивный",
-      "archived": "В архиве"
-    },
-    "description": "Предоставьте группе людей доступ к нескольким курсам, например к классу.",
-    "search_placeholder": "Поиск программ",
-    "multiple_added": "Курсы добавлены",
-    "no_matching_programs": "Ни одна программа не соответствует вашим фильтрам.",
-    "card": {
-      "courses": "Курсы",
-      "students": "Студенты"
-    },
-    "table": {
-      "name": "Имя",
-      "courses": "Курсы",
-      "students": "Студенты",
-      "status": "Статус",
-      "description": "Описание"
-    },
-    "filters": {
-      "filter": "Фильтр",
-      "clear_all": "Очистить все",
-      "popover_title": "Фильтры",
-      "sort": "Сортировать",
-      "order": "Заказать",
-      "status": "Статус",
-      "ascending": "по возрастанию",
-      "descending": "Описание",
-      "sort_name": "Имя",
-      "sort_courses": "Курсы",
-      "sort_students": "Студенты",
-      "sort_status": "Статус"
-    },
-    "invite_sent": "Приглашения отправлены",
-    "goals": {
-      "heading": "Цели обучения",
-      "description": "Установите измеримые цели, охватывающие несколько курсов для всех участников этой программы.",
-      "add": "Новая цель",
-      "empty_title": "Целей пока нет",
-      "empty_description": "Создайте цель для отслеживания прогресса команды на нескольких курсах.",
-      "created": "Цель создана",
-      "updated": "Цель обновлена",
-      "deleted": "Цель удалена",
-      "delete_confirm": "Удалить эту цель? История статуса каждого учащегося будет удалена.",
-      "lms": {
-        "heading": "Ваши цели",
-        "empty_title": "Цели не назначены",
-        "empty_description": "Когда ваши преподаватели поставят цели, они появятся здесь.",
-        "due_in_days": "Срок оплаты: {days} дн.",
-        "due_tomorrow": "Срок завтра",
-        "due_today": "Срок оплаты сегодня",
-        "overdue": "Просрочено",
-        "no_deadline": "Нет срока"
-      },
-      "tile": {
-        "on_track": "на ходу",
-        "completed_short": "завершено",
-        "overdue_short": "просроченный",
-        "at_risk_short": "в опасности"
-      },
-      "status": {
-        "completed": "Завершено",
-        "in_progress": "В процессе",
-        "at_risk": "В зоне риска",
-        "overdue": "Просрочено",
-        "not_started": "Не запущено",
-        "waived": "Отказано"
-      },
-      "deadline_kind": {
-        "absolute": "Абсолютная дата",
-        "relative_to_join": "Относительно присоединения студента",
-        "recurring": "повторяющийся",
-        "none": "Нет срока"
-      },
-      "type": {
-        "complete_all": "Завершить все выбранные курсы",
-        "n_of_m": "Завершить выбранные курсы N из M",
-        "score": "Оценка выше порога на каждом курсе",
-        "pass_rate": "Порог проходимости команды",
-        "readiness": "Готовность (без сроков)"
-      },
-      "modal": {
-        "create_title": "Новая цель",
-        "edit_title": "Изменить цель",
-        "title_label": "Название",
-        "title_placeholder": "например Посадочная рампа",
-        "description_label": "Описание",
-        "description_placeholder": "Дополнительный контекст для команды",
-        "type_label": "Тип",
-        "courses_label": "Курсы",
-        "required_count_label": "Необходимое количество курсов",
-        "score_threshold_label": "Проходной балл на одного учащегося (%)",
-        "team_pass_rate_label": "Процент проходов команды (%)",
-        "deadline_label": "Крайний срок",
-        "deadline_date_label": "Крайний срок",
-        "relative_days_label": "Дни с момента присоединения студента",
-        "recurring_months_label": "Повторять каждые (месяцев)",
-        "reminders_label": "Напоминания (за несколько дней до наступления срока)",
-        "reminders_helper": "Через запятую. Пример: 7, 3, 1",
-        "save": "Сохранить",
-        "cancel": "Отмена"
-      }
     }
   },
   "ai_assistant": {
@@ -4784,6 +4587,212 @@
       "finalizing": "Сохранение…",
       "done": "Готово",
       "failed": "Загрузка не удалась"
+    }
+  },
+  "cohorts": {
+    "heading": "Программы",
+    "page_title": "Программы",
+    "create": "Новая программа",
+    "create_success": "Программа создана",
+    "update_success": "Программа обновлена",
+    "delete_success": "Программа удалена",
+    "members_added": "Добавлены участники",
+    "member_removed": "Участник удален",
+    "course_added": "Курс добавлен",
+    "course_removed": "Курс удален.",
+    "empty_title": "Пока нет программ",
+    "empty_description": "Создайте свою первую программу сертификации или соответствия требованиям.",
+    "settings": {
+      "general": "Общий",
+      "name_label": "Имя",
+      "description_label": "Описание",
+      "status_label": "Статус",
+      "save": "Сохранить изменения",
+      "danger_zone": "Опасная зона",
+      "delete": "Удалить программу",
+      "delete_description": "После удаления эту программу и все ее данные невозможно восстановить.",
+      "confirm_delete": "Вы уверены, что хотите удалить эту программу? Это невозможно отменить."
+    },
+    "lms": {
+      "empty_title": "Пока нет программ",
+      "empty_description": "Вы не были зарегистрированы ни в одной программе."
+    },
+    "people": {
+      "invite": "Пригласить",
+      "invite_modal_title": "Пригласить участников",
+      "invite_modal_description": "Добавляйте людей в эту программу по электронной почте.",
+      "email_label": "электронная почта",
+      "role_label": "Роль",
+      "add_another": "Добавить еще",
+      "invite_submit": "Отправить приглашения",
+      "empty_title": "Пока нет участников",
+      "empty_description": "Пригласите людей присоединиться к этой программе."
+    },
+    "courses": {
+      "add": "Добавить курс",
+      "add_modal_title": "Добавить курс в программу",
+      "select_course": "Выберите курс",
+      "select_placeholder": "Выбрать курс…",
+      "empty_title": "Курсов пока нет",
+      "empty_description": "Добавьте курсы в эту программу.",
+      "select_courses": "Выберите курсы",
+      "search_placeholder": "Поиск курсов",
+      "no_available_courses": "Нет доступных курсов для добавления.",
+      "no_matching_courses": "Нет курсов, соответствующих вашему запросу.",
+      "no_matching_cohort_courses": "Никакие курсы программы не соответствуют вашему запросу.",
+      "pagination_status": "Страница {page} из {totalPages}",
+      "published_access_callout_title": "Доступ для студентов",
+      "published_access_callout_description": "Студенты имеют доступ только к опубликованным курсам. Курсы могут быть включены в эту программу для вашей команды, будучи еще неопубликованными, и оставаться скрытыми от учащихся, пока вы их не опубликуете."
+    },
+    "newsfeed": {
+      "post": "Новое сообщение",
+      "post_placeholder": "Что у тебя на уме?",
+      "post_submit": "Сообщение",
+      "empty_title": "Пока нет сообщений",
+      "empty_description": "Будьте первым, кто опубликует что-либо.",
+      "heading": "Лента новостей",
+      "make_a_post": "Сделать публикацию",
+      "edit_post": "Редактировать сообщение",
+      "editor_placeholder": "Поделитесь обновлением своей программы",
+      "cancel": "Отмена",
+      "pinned": "Закреплено",
+      "delete_feed_title": "Удалить сообщение",
+      "delete_feed_description": "Вы уверены, что хотите удалить этот пост?",
+      "confirm_delete": "Удалить",
+      "user_avatar_alt": "Аватар пользователя",
+      "comments": {
+        "comment": "комментарий",
+        "showing_of": "Показаны {shown} из {total}",
+        "hide": "Скрыть комментарии",
+        "placeholder": "Добавить комментарий к программе",
+        "submit_aria": "Отправить комментарий",
+        "delete": "Удалить"
+      },
+      "card": {
+        "pin": "Пин-код",
+        "unpin": "Открепить",
+        "edit": "Редактировать",
+        "delete": "Удалить"
+      }
+    },
+    "create_modal": {
+      "title": "Создать программу",
+      "description": "Добавьте новую программу сертификации или соответствия.",
+      "name_label": "Имя",
+      "name_placeholder": "например Сертификация безопасности OSHA",
+      "description_label": "Описание",
+      "description_placeholder": "О чем эта программа?",
+      "submit": "Создать"
+    },
+    "sidebar": {
+      "newsfeed": "Лента новостей",
+      "courses": "Курсы",
+      "people": "Люди",
+      "settings": "Настройки"
+    },
+    "status": {
+      "active": "Активный",
+      "inactive": "Неактивный",
+      "archived": "В архиве"
+    },
+    "description": "Предоставьте группе людей доступ к нескольким курсам, например к классу.",
+    "search_placeholder": "Поиск программ",
+    "multiple_added": "Курсы добавлены",
+    "no_matching_cohorts": "Ни одна программа не соответствует вашим фильтрам.",
+    "card": {
+      "courses": "Курсы",
+      "students": "Студенты"
+    },
+    "table": {
+      "name": "Имя",
+      "courses": "Курсы",
+      "students": "Студенты",
+      "status": "Статус",
+      "description": "Описание"
+    },
+    "filters": {
+      "filter": "Фильтр",
+      "clear_all": "Очистить все",
+      "popover_title": "Фильтры",
+      "sort": "Сортировать",
+      "order": "Заказать",
+      "status": "Статус",
+      "ascending": "по возрастанию",
+      "descending": "Описание",
+      "sort_name": "Имя",
+      "sort_courses": "Курсы",
+      "sort_students": "Студенты",
+      "sort_status": "Статус"
+    },
+    "invite_sent": "Приглашения отправлены",
+    "goals": {
+      "heading": "Цели обучения",
+      "description": "Установите измеримые цели, охватывающие несколько курсов для всех участников этой программы.",
+      "add": "Новая цель",
+      "empty_title": "Целей пока нет",
+      "empty_description": "Создайте цель для отслеживания прогресса команды на нескольких курсах.",
+      "created": "Цель создана",
+      "updated": "Цель обновлена",
+      "deleted": "Цель удалена",
+      "delete_confirm": "Удалить эту цель? История статуса каждого учащегося будет удалена.",
+      "lms": {
+        "heading": "Ваши цели",
+        "empty_title": "Цели не назначены",
+        "empty_description": "Когда ваши преподаватели поставят цели, они появятся здесь.",
+        "due_in_days": "Срок оплаты: {days} дн.",
+        "due_tomorrow": "Срок завтра",
+        "due_today": "Срок оплаты сегодня",
+        "overdue": "Просрочено",
+        "no_deadline": "Нет срока"
+      },
+      "tile": {
+        "on_track": "на ходу",
+        "completed_short": "завершено",
+        "overdue_short": "просроченный",
+        "at_risk_short": "в опасности"
+      },
+      "status": {
+        "completed": "Завершено",
+        "in_progress": "В процессе",
+        "at_risk": "В зоне риска",
+        "overdue": "Просрочено",
+        "not_started": "Не запущено",
+        "waived": "Отказано"
+      },
+      "deadline_kind": {
+        "absolute": "Абсолютная дата",
+        "relative_to_join": "Относительно присоединения студента",
+        "recurring": "повторяющийся",
+        "none": "Нет срока"
+      },
+      "type": {
+        "complete_all": "Завершить все выбранные курсы",
+        "n_of_m": "Завершить выбранные курсы N из M",
+        "score": "Оценка выше порога на каждом курсе",
+        "pass_rate": "Порог проходимости команды",
+        "readiness": "Готовность (без сроков)"
+      },
+      "modal": {
+        "create_title": "Новая цель",
+        "edit_title": "Изменить цель",
+        "title_label": "Название",
+        "title_placeholder": "например Посадочная рампа",
+        "description_label": "Описание",
+        "description_placeholder": "Дополнительный контекст для команды",
+        "type_label": "Тип",
+        "courses_label": "Курсы",
+        "required_count_label": "Необходимое количество курсов",
+        "score_threshold_label": "Проходной балл на одного учащегося (%)",
+        "team_pass_rate_label": "Процент проходов команды (%)",
+        "deadline_label": "Крайний срок",
+        "deadline_date_label": "Крайний срок",
+        "relative_days_label": "Дни с момента присоединения студента",
+        "recurring_months_label": "Повторять каждые (месяцев)",
+        "reminders_label": "Напоминания (за несколько дней до наступления срока)",
+        "reminders_helper": "Через запятую. Пример: 7, 3, 1",
+        "save": "Сохранить",
+        "cancel": "Отмена"
+      }
     }
   }
 }
