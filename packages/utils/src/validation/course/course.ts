@@ -317,6 +317,10 @@ function preprocessCourseMetadata(value: unknown): unknown {
     metadata.instructor = instructor;
   }
 
+  if (metadata.allowNewStudent == null) {
+    metadata.allowNewStudent = true;
+  }
+
   return metadata;
 }
 
@@ -366,7 +370,7 @@ const ZCourseMetadataFields = z.object({
   lessonTabsOrder: ZCourseLessonTabsOrder.optional(),
   grading: z.boolean().optional(),
   lessonDownload: z.boolean().optional(),
-  allowNewStudent: z.boolean(),
+  allowNewStudent: z.boolean().default(true),
   welcomeEmailMessage: z.string().max(20000).nullish(),
   sessionTimezone: z.string().max(64).nullish(),
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),
