@@ -58,7 +58,7 @@ export function generateBreadcrumbs(
     const href = matchedNavItem.useHashUrl ? `${currentOrgPath}${parentCrumbPath}` : matchedNavItem.url;
 
     breadcrumbs.push({
-      label: t(matchedNavItem.title),
+      label: matchedNavItem.title,
       href: href
     });
   }
@@ -68,7 +68,7 @@ export function generateBreadcrumbs(
     const subItem = matchedNavItem.items.find((sub) => isActive(pathWithQuery, sub.url, undefined, true));
     if (subItem) {
       breadcrumbs.push({
-        label: t(subItem.title),
+        label: subItem.title,
         href: subItem.url
       });
       return breadcrumbs;
@@ -84,7 +84,7 @@ export function generateBreadcrumbs(
       const activeSub = matchedNavItem.items.find((sub) => isActive(pathname, sub.url, sub.matchPattern, true));
       if (activeSub) {
         breadcrumbs.push({
-          label: t(activeSub.title),
+          label: activeSub.title,
           href: activeSub.url
         });
 

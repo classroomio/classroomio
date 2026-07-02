@@ -116,7 +116,7 @@
       <div class="rounded-lg border border-amber-200 bg-amber-50 p-4">
         <p class="ui:text-amber-800 text-sm font-medium">{$t('automation.api.keys.secret_once')}</p>
         <div class="mt-3">
-          <Code.Root code={generatedSecret} lang="bash" hideLines={true} class="ui:break-all ui:text-xs">
+          <Code.Root code={generatedSecret} hideLines={true} class="ui:break-all ui:text-xs">
             <Code.CopyButton />
           </Code.Root>
         </div>
@@ -216,7 +216,7 @@
 
         <Tabs.Content value="curl" class="mt-4">
           <Code.Overflow>
-            <Code.Root code={getPublicApiCurlSnippet(generatedSecret)} lang="bash">
+            <Code.Root code={getPublicApiCurlSnippet(generatedSecret)}>
               <Code.CopyButton />
             </Code.Root>
           </Code.Overflow>
@@ -224,7 +224,7 @@
 
         <Tabs.Content value="javascript" class="mt-4">
           <Code.Overflow>
-            <Code.Root code={getPublicApiJavaScriptSnippet(generatedSecret)} lang="javascript">
+            <Code.Root code={getPublicApiJavaScriptSnippet(generatedSecret)}>
               <Code.CopyButton />
             </Code.Root>
           </Code.Overflow>
@@ -232,7 +232,7 @@
 
         <Tabs.Content value="python" class="mt-4">
           <Code.Overflow>
-            <Code.Root code={getPublicApiPythonSnippet(generatedSecret)} lang="python">
+            <Code.Root code={getPublicApiPythonSnippet(generatedSecret)}>
               <Code.CopyButton />
             </Code.Root>
           </Code.Overflow>
@@ -240,7 +240,7 @@
 
         <Tabs.Content value="go" class="mt-4">
           <Code.Overflow>
-            <Code.Root code={getPublicApiGoSnippet(generatedSecret)} lang="go">
+            <Code.Root code={getPublicApiGoSnippet(generatedSecret)}>
               <Code.CopyButton />
             </Code.Root>
           </Code.Overflow>
