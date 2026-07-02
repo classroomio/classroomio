@@ -3,7 +3,7 @@
  * `cohort*` tables while preserving primary keys and relationships.
  *
  * Prerequisites:
- * 1. Run Drizzle migration `0001_*` so cohort tables exist.
+ * 1. Run Drizzle migrations through `0002_majestic_masked_marvel` so cohort tables exist.
  * 2. Back up the database before running in production.
  *
  * The legacy `program*` tables are left untouched for rollback safety.
@@ -19,10 +19,17 @@ type TableCopy = {
   source: string;
   target: string;
   columnMap?: Record<string, string>;
+  /** Cast legacy PROGRAM_* enum columns to matching COHORT_* enum types. */
+  enumCasts?: Record<string, string>;
 };
 
 const TABLE_COPIES: TableCopy[] = [
-  { label: 'cohort', source: 'program', target: 'cohort' },
+  {
+    label: 'cohort',
+    source: 'program',
+    target: 'cohort',
+    enumCasts: { status: 'COHORT_STATUS' }
+  },
   {
     label: 'cohort_course',
     source: 'program_course',
@@ -51,13 +58,19 @@ const TABLE_COPIES: TableCopy[] = [
     label: 'cohort_goal',
     source: 'program_goal',
     target: 'cohort_goal',
-    columnMap: { program_id: 'cohort_id' }
+    columnMap: { program_id: 'cohort_id' },
+    enumCasts: {
+      type: 'COHORT_GOAL_TYPE',
+      deadline_kind: 'COHORT_GOAL_DEADLINE_KIND',
+      status: 'COHORT_GOAL_STATUS'
+    }
   },
   {
     label: 'cohort_goal_assignment',
     source: 'program_goal_assignment',
     target: 'cohort_goal_assignment',
-    columnMap: { program_member_id: 'cohort_member_id' }
+    columnMap: { program_member_id: 'cohort_member_id' },
+    enumCasts: { status: 'COHORT_GOAL_ASSIGNMENT_STATUS' }
   }
 ];
 
@@ -75,7 +88,7 @@ async function getTableColumns(tableName: string): Promise<string[]> {
   return rows.map((row) => row.column_name);
 }
 
-async function copyTable({ label, source, target, columnMap = {} }: TableCopy): Promise<number> {
+async function copyTable({ label, source, target, columnMap = {}, enumCasts = {} }: TableCopy): Promise<number> {
   const sourceColumns = await getTableColumns(source);
   const targetColumns = await getTableColumns(target);
 
@@ -95,7 +108,12 @@ async function copyTable({ label, source, target, columnMap = {} }: TableCopy): 
   }
 
   const selectList = sourceColumns
-    .map((column) => `"${column}"${columnMap[column] ? ` AS "${columnMap[column]}"` : ''}`)
+    .map((column) => {
+      const outputColumn = columnMap[column] ?? column;
+      const sourceExpr = enumCasts[column] ? `"${column}"::text::"${enumCasts[column]}"` : `"${column}"`;
+
+      return outputColumn === column ? sourceExpr : `${sourceExpr} AS "${outputColumn}"`;
+    })
     .join(', ');
 
   const insertList = insertColumns.map((column) => `"${column}"`).join(', ');
