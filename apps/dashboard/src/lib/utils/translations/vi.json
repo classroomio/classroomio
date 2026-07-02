@@ -386,32 +386,6 @@
       "rotated": "Phím tự động đã được xoay. Hãy lưu lại bí mật mới ngay bây giờ vì nó sẽ không được hiển thị lại.",
       "revoked": "Khóa tự động hóa đã bị thu hồi."
     },
-    "program": {
-      "error": {
-        "reaction_error": "Đã xảy ra lỗi khi phản hồi bài viết",
-        "news_feed_fail": "Không thể tìm nạp nguồn cấp tin tức của chương trình",
-        "post_create_failed": "Không tạo được bài đăng",
-        "post_update_failed": "Không thể cập nhật bài đăng",
-        "code": {
-          "program_forbidden": "Bạn phải là thành viên của chương trình này để thực hiện hành động này.",
-          "program_member_check_failed": "Chúng tôi không thể xác minh tư cách thành viên chương trình của bạn. Hãy thử lại.",
-          "program_not_found": "Chương trình này không thể được tìm thấy.",
-          "program_create_failed": "Không thể tạo chương trình.",
-          "program_update_failed": "Không thể cập nhật chương trình.",
-          "program_delete_failed": "Không thể xóa chương trình.",
-          "program_member_not_found": "Không thể tìm thấy thành viên chương trình đó.",
-          "program_newsfeed_not_found": "Không thể tìm thấy bài đăng đó.",
-          "program_newsfeed_comment_not_found": "Bình luận đó không thể được tìm thấy."
-        }
-      },
-      "success": {
-        "comment_deleted": "Đã xóa bình luận",
-        "comment_added": "Đã thêm nhận xét",
-        "feed_delete_success": "Đã xóa bài đăng thành công",
-        "post_created": "Bài viết được tạo thành công",
-        "post_updated": "Đã cập nhật bài đăng thành công"
-      }
-    },
     "ai_credits": {
       "purchase_success": "Gói AI credits đã được thêm vào số dư của bạn.",
       "checkout_failed": "Không thể bắt đầu thanh toán. Vui lòng thử lại."
@@ -445,7 +419,33 @@
       "generate_1080_completed": "Đã thêm phiên bản 1080p",
       "generate_1080_failed": "Không thể tạo phiên bản 1080p"
     },
-    "social_auth_not_enabled": "Nhà cung cấp xác thực này chưa được kích hoạt."
+    "social_auth_not_enabled": "Nhà cung cấp xác thực này chưa được kích hoạt.",
+    "cohort": {
+      "error": {
+        "reaction_error": "Đã xảy ra lỗi khi phản hồi bài viết",
+        "news_feed_fail": "Không thể tìm nạp nguồn cấp tin tức của chương trình",
+        "post_create_failed": "Không tạo được bài đăng",
+        "post_update_failed": "Không thể cập nhật bài đăng",
+        "code": {
+          "cohort_forbidden": "Bạn phải là thành viên của chương trình này để thực hiện hành động này.",
+          "cohort_member_check_failed": "Chúng tôi không thể xác minh tư cách thành viên chương trình của bạn. Hãy thử lại.",
+          "cohort_not_found": "Chương trình này không thể được tìm thấy.",
+          "cohort_create_failed": "Không thể tạo chương trình.",
+          "cohort_update_failed": "Không thể cập nhật chương trình.",
+          "cohort_delete_failed": "Không thể xóa chương trình.",
+          "cohort_member_not_found": "Không thể tìm thấy thành viên chương trình đó.",
+          "cohort_newsfeed_not_found": "Không thể tìm thấy bài đăng đó.",
+          "cohort_newsfeed_comment_not_found": "Bình luận đó không thể được tìm thấy."
+        }
+      },
+      "success": {
+        "comment_deleted": "Đã xóa bình luận",
+        "comment_added": "Đã thêm nhận xét",
+        "feed_delete_success": "Đã xóa bài đăng thành công",
+        "post_created": "Bài viết được tạo thành công",
+        "post_updated": "Đã cập nhật bài đăng thành công"
+      }
+    }
   },
   "explore": {
     "heading": "Khám phá các khóa học của chúng tôi",
@@ -492,7 +492,7 @@
     "explore": "Khám phá",
     "help": "Trợ giúp",
     "settings": "Cài đặt",
-    "programs": "Chương trình"
+    "cohorts": "Chương trình"
   },
   "upgrade": {
     "certificate": "Nâng cấp gói của bạn để tạo chứng chỉ",
@@ -683,18 +683,18 @@
       "all_courses": "Tất cả các khóa học",
       "select_courses": "Chọn các khóa học cụ thể",
       "select_courses_placeholder": "Chọn khóa học...",
-      "program_access": "Quyền truy cập chương trình",
-      "no_programs": "Không gán chương trình",
-      "all_programs": "Tất cả chương trình",
-      "select_programs": "Chọn các chương trình cụ thể",
-      "select_programs_placeholder": "Chọn chương trình...",
       "send_email": "Gửi email lời mời tới người dùng đã nhập",
       "submit": "Nhập người dùng",
       "back": "Quay lại Đối tượng",
       "snackbar_success": "{imported} lời mời mới, {assigned} học viên hiện có được quyền truy cập khóa học, {pendingInvitesRenewed} lời mời đang chờ được gia hạn ({emailsSent} email đã gửi)",
       "snackbar_no_emails": "Vui lòng nhập ít nhất một địa chỉ email",
       "snackbar_failed": "Không thể nhập người dùng",
-      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like."
+      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like.",
+      "cohort_access": "Quyền truy cập chương trình",
+      "no_cohorts": "Không gán chương trình",
+      "all_cohorts": "Tất cả chương trình",
+      "select_cohorts": "Chọn các chương trình cụ thể",
+      "select_cohorts_placeholder": "Chọn chương trình..."
     },
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "user_analytics": {
@@ -2801,11 +2801,11 @@
     "upgrade": "Nâng cấp ngay",
     "tags": "Thẻ",
     "automation": "Tự động hóa",
-    "programs": "Chương trình",
     "widgets": "Widget",
     "stats": "Thống kê",
     "analytics": "Phân tích",
-    "compliance": "Tuân thủ"
+    "compliance": "Tuân thủ",
+    "cohorts": "Chương trình"
   },
   "media_manager": {
     "page_title": "Quản lý truyền thông - ClassroomIO",
@@ -3940,212 +3940,6 @@
       "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
     }
   },
-  "programs": {
-    "heading": "Chương trình",
-    "page_title": "Chương trình",
-    "create": "Chương trình mới",
-    "create_success": "Đã tạo chương trình",
-    "update_success": "Đã cập nhật chương trình",
-    "delete_success": "Chương trình đã bị xóa",
-    "members_added": "Đã thêm thành viên",
-    "member_removed": "Thành viên đã bị xóa",
-    "course_added": "Đã thêm khóa học",
-    "course_removed": "Đã xóa khóa học",
-    "empty_title": "Chưa có chương trình nào",
-    "empty_description": "Tạo chương trình chứng nhận hoặc tuân thủ đầu tiên của bạn.",
-    "settings": {
-      "general": "chung",
-      "name_label": "Tên",
-      "description_label": "Mô tả",
-      "status_label": "Trạng thái",
-      "save": "Lưu thay đổi",
-      "danger_zone": "Vùng nguy hiểm",
-      "delete": "Xóa chương trình",
-      "delete_description": "Sau khi xóa, chương trình này và tất cả dữ liệu của nó sẽ không thể phục hồi được.",
-      "confirm_delete": "Bạn có chắc chắn muốn xóa chương trình này? Điều này không thể hoàn tác được."
-    },
-    "lms": {
-      "empty_title": "Chưa có chương trình nào",
-      "empty_description": "Bạn chưa được ghi danh vào bất kỳ chương trình nào."
-    },
-    "people": {
-      "invite": "Mời",
-      "invite_modal_title": "Mời thành viên",
-      "invite_modal_description": "Thêm người vào chương trình này qua email.",
-      "email_label": "Email",
-      "role_label": "Vai trò",
-      "add_another": "Thêm cái khác",
-      "invite_submit": "Gửi lời mời",
-      "empty_title": "Chưa có thành viên nào",
-      "empty_description": "Mời mọi người tham gia chương trình này."
-    },
-    "courses": {
-      "add": "Thêm khóa học",
-      "add_modal_title": "Thêm khóa học vào chương trình",
-      "select_course": "Chọn một khóa học",
-      "select_placeholder": "Chọn một khóa học…",
-      "empty_title": "Chưa có khóa học nào",
-      "empty_description": "Thêm các khóa học vào chương trình này.",
-      "select_courses": "Chọn khóa học",
-      "search_placeholder": "Tìm kiếm khóa học",
-      "no_available_courses": "Không có khóa học có sẵn để thêm.",
-      "no_matching_courses": "Không có khóa học phù hợp với tìm kiếm của bạn.",
-      "no_matching_program_courses": "Không có chương trình khóa học phù hợp với tìm kiếm của bạn.",
-      "pagination_status": "Trang {page} trong tổng số {totalPages}",
-      "published_access_callout_title": "Quyền truy cập của sinh viên",
-      "published_access_callout_description": "Sinh viên chỉ có quyền truy cập vào các khóa học được xuất bản. Các khóa học có thể có trong chương trình này cho nhóm của bạn trong khi vẫn chưa được xuất bản và các khóa học đó sẽ bị ẩn với sinh viên cho đến khi bạn xuất bản chúng."
-    },
-    "newsfeed": {
-      "post": "Bài đăng mới",
-      "post_placeholder": "Bạn đang nghĩ gì thế?",
-      "post_submit": "bài đăng",
-      "empty_title": "Chưa có bài viết nào",
-      "empty_description": "Hãy là người đầu tiên đăng một cái gì đó.",
-      "heading": "Nguồn cấp tin tức",
-      "make_a_post": "Tạo một bài đăng",
-      "edit_post": "Chỉnh sửa bài đăng",
-      "editor_placeholder": "Chia sẻ bản cập nhật với chương trình của bạn",
-      "cancel": "Hủy bỏ",
-      "pinned": "Đã ghim",
-      "delete_feed_title": "Xóa bài đăng",
-      "delete_feed_description": "Bạn có chắc chắn muốn xóa bài đăng này?",
-      "confirm_delete": "Xóa",
-      "user_avatar_alt": "Hình đại diện của người dùng",
-      "comments": {
-        "comment": "bình luận",
-        "showing_of": "Đang hiển thị {shown} trong tổng số {total}",
-        "hide": "Ẩn bình luận",
-        "placeholder": "Thêm bình luận chương trình",
-        "submit_aria": "Gửi bình luận",
-        "delete": "Xóa"
-      },
-      "card": {
-        "pin": "Ghim",
-        "unpin": "Bỏ ghim",
-        "edit": "Chỉnh sửa",
-        "delete": "Xóa"
-      }
-    },
-    "create_modal": {
-      "title": "Tạo chương trình",
-      "description": "Thêm một chương trình chứng nhận hoặc tuân thủ mới.",
-      "name_label": "Tên",
-      "name_placeholder": "ví dụ: Chứng nhận an toàn OSHA",
-      "description_label": "Mô tả",
-      "description_placeholder": "Chương trình này nói về cái gì?",
-      "submit": "Tạo"
-    },
-    "sidebar": {
-      "newsfeed": "Nguồn cấp tin tức",
-      "courses": "Khóa học",
-      "people": "mọi người",
-      "settings": "Cài đặt"
-    },
-    "status": {
-      "active": "Đang hoạt động",
-      "inactive": "Không hoạt động",
-      "archived": "Đã lưu trữ"
-    },
-    "description": "Cấp cho một nhóm người quyền truy cập vào nhiều khóa học, chẳng hạn như một lớp học",
-    "search_placeholder": "Tìm kiếm chương trình",
-    "multiple_added": "Đã thêm khóa học",
-    "no_matching_programs": "Không có chương trình nào phù hợp với bộ lọc của bạn.",
-    "card": {
-      "courses": "Khóa học",
-      "students": "Sinh viên"
-    },
-    "table": {
-      "name": "Tên",
-      "courses": "Khóa học",
-      "students": "Sinh viên",
-      "status": "Trạng thái",
-      "description": "Mô tả"
-    },
-    "filters": {
-      "filter": "Lọc",
-      "clear_all": "Xóa tất cả",
-      "popover_title": "Bộ lọc",
-      "sort": "Sắp xếp",
-      "order": "Đặt hàng",
-      "status": "Trạng thái",
-      "ascending": "tăng dần",
-      "descending": "mô tả",
-      "sort_name": "Tên",
-      "sort_courses": "Khóa học",
-      "sort_students": "Sinh viên",
-      "sort_status": "Trạng thái"
-    },
-    "invite_sent": "Đã gửi lời mời",
-    "goals": {
-      "heading": "Mục tiêu học tập",
-      "description": "Đặt các mục tiêu có thể đo lường được trải rộng trên nhiều khóa học cho mọi người trong chương trình này.",
-      "add": "Mục tiêu mới",
-      "empty_title": "Chưa có mục tiêu nào",
-      "empty_description": "Tạo mục tiêu để theo dõi tiến độ của nhóm qua nhiều khóa học.",
-      "created": "Đã tạo mục tiêu",
-      "updated": "Đã cập nhật mục tiêu",
-      "deleted": "Đã xóa mục tiêu",
-      "delete_confirm": "Xóa mục tiêu này? Lịch sử trạng thái của mỗi học sinh sẽ bị xóa.",
-      "lms": {
-        "heading": "Mục tiêu của bạn",
-        "empty_title": "Không có mục tiêu nào được giao",
-        "empty_description": "Khi người hướng dẫn của bạn đặt mục tiêu, họ sẽ hiển thị ở đây.",
-        "due_in_days": "Đến hạn sau {days} ngày nữa",
-        "due_tomorrow": "Hạn chót vào ngày mai",
-        "due_today": "Hạn chót hôm nay",
-        "overdue": "Quá hạn",
-        "no_deadline": "Không có thời hạn"
-      },
-      "tile": {
-        "on_track": "đi đúng hướng",
-        "completed_short": "hoàn thành",
-        "overdue_short": "quá hạn",
-        "at_risk_short": "có nguy cơ"
-      },
-      "status": {
-        "completed": "Đã hoàn thành",
-        "in_progress": "Đang tiến hành",
-        "at_risk": "Có nguy cơ",
-        "overdue": "Quá hạn",
-        "not_started": "Chưa bắt đầu",
-        "waived": "Miễn trừ"
-      },
-      "deadline_kind": {
-        "absolute": "Ngày tuyệt đối",
-        "relative_to_join": "Liên quan đến việc sinh viên tham gia",
-        "recurring": "Định kỳ",
-        "none": "Không có thời hạn"
-      },
-      "type": {
-        "complete_all": "Hoàn thành tất cả các khóa học đã chọn",
-        "n_of_m": "Hoàn thành N trong số M khóa học đã chọn",
-        "score": "Đạt điểm trên ngưỡng trong mỗi khóa học",
-        "pass_rate": "Ngưỡng tỷ lệ đậu của đội",
-        "readiness": "Sẵn sàng (không có thời hạn)"
-      },
-      "modal": {
-        "create_title": "Mục tiêu mới",
-        "edit_title": "Chỉnh sửa mục tiêu",
-        "title_label": "Tiêu đề",
-        "title_placeholder": "ví dụ: Đoạn đường nối",
-        "description_label": "Mô tả",
-        "description_placeholder": "Bối cảnh tùy chọn cho nhóm",
-        "type_label": "loại",
-        "courses_label": "Khóa học",
-        "required_count_label": "Số lượng khóa học yêu cầu",
-        "score_threshold_label": "Điểm đậu của mỗi học sinh (%)",
-        "team_pass_rate_label": "Tỷ lệ vượt qua của đội (%)",
-        "deadline_label": "thời hạn",
-        "deadline_date_label": "Ngày hết hạn",
-        "relative_days_label": "Ngày kể từ khi học viên tham gia",
-        "recurring_months_label": "Lặp lại mỗi (tháng)",
-        "reminders_label": "Lời nhắc (ngày trước hạn)",
-        "reminders_helper": "Được phân tách bằng dấu phẩy. Ví dụ: 7, 3, 1",
-        "save": "Lưu",
-        "cancel": "Hủy bỏ"
-      }
-    }
-  },
   "ai_assistant": {
     "empty_state": "Hãy yêu cầu tôi trợ giúp về nội dung khóa học của bạn — soạn thảo bài học, tạo câu hỏi hoặc lên kế hoạch cho khóa học từ một tài liệu.",
     "input_placeholder": "Hãy hỏi trợ lý AI...",
@@ -4793,6 +4587,212 @@
       "finalizing": "Đang lưu…",
       "done": "Sẵn sàng",
       "failed": "Tải lên không thành công"
+    }
+  },
+  "cohorts": {
+    "heading": "Chương trình",
+    "page_title": "Chương trình",
+    "create": "Chương trình mới",
+    "create_success": "Đã tạo chương trình",
+    "update_success": "Đã cập nhật chương trình",
+    "delete_success": "Chương trình đã bị xóa",
+    "members_added": "Đã thêm thành viên",
+    "member_removed": "Thành viên đã bị xóa",
+    "course_added": "Đã thêm khóa học",
+    "course_removed": "Đã xóa khóa học",
+    "empty_title": "Chưa có chương trình nào",
+    "empty_description": "Tạo chương trình chứng nhận hoặc tuân thủ đầu tiên của bạn.",
+    "settings": {
+      "general": "chung",
+      "name_label": "Tên",
+      "description_label": "Mô tả",
+      "status_label": "Trạng thái",
+      "save": "Lưu thay đổi",
+      "danger_zone": "Vùng nguy hiểm",
+      "delete": "Xóa chương trình",
+      "delete_description": "Sau khi xóa, chương trình này và tất cả dữ liệu của nó sẽ không thể phục hồi được.",
+      "confirm_delete": "Bạn có chắc chắn muốn xóa chương trình này? Điều này không thể hoàn tác được."
+    },
+    "lms": {
+      "empty_title": "Chưa có chương trình nào",
+      "empty_description": "Bạn chưa được ghi danh vào bất kỳ chương trình nào."
+    },
+    "people": {
+      "invite": "Mời",
+      "invite_modal_title": "Mời thành viên",
+      "invite_modal_description": "Thêm người vào chương trình này qua email.",
+      "email_label": "Email",
+      "role_label": "Vai trò",
+      "add_another": "Thêm cái khác",
+      "invite_submit": "Gửi lời mời",
+      "empty_title": "Chưa có thành viên nào",
+      "empty_description": "Mời mọi người tham gia chương trình này."
+    },
+    "courses": {
+      "add": "Thêm khóa học",
+      "add_modal_title": "Thêm khóa học vào chương trình",
+      "select_course": "Chọn một khóa học",
+      "select_placeholder": "Chọn một khóa học…",
+      "empty_title": "Chưa có khóa học nào",
+      "empty_description": "Thêm các khóa học vào chương trình này.",
+      "select_courses": "Chọn khóa học",
+      "search_placeholder": "Tìm kiếm khóa học",
+      "no_available_courses": "Không có khóa học có sẵn để thêm.",
+      "no_matching_courses": "Không có khóa học phù hợp với tìm kiếm của bạn.",
+      "no_matching_cohort_courses": "Không có chương trình khóa học phù hợp với tìm kiếm của bạn.",
+      "pagination_status": "Trang {page} trong tổng số {totalPages}",
+      "published_access_callout_title": "Quyền truy cập của sinh viên",
+      "published_access_callout_description": "Sinh viên chỉ có quyền truy cập vào các khóa học được xuất bản. Các khóa học có thể có trong chương trình này cho nhóm của bạn trong khi vẫn chưa được xuất bản và các khóa học đó sẽ bị ẩn với sinh viên cho đến khi bạn xuất bản chúng."
+    },
+    "newsfeed": {
+      "post": "Bài đăng mới",
+      "post_placeholder": "Bạn đang nghĩ gì thế?",
+      "post_submit": "bài đăng",
+      "empty_title": "Chưa có bài viết nào",
+      "empty_description": "Hãy là người đầu tiên đăng một cái gì đó.",
+      "heading": "Nguồn cấp tin tức",
+      "make_a_post": "Tạo một bài đăng",
+      "edit_post": "Chỉnh sửa bài đăng",
+      "editor_placeholder": "Chia sẻ bản cập nhật với chương trình của bạn",
+      "cancel": "Hủy bỏ",
+      "pinned": "Đã ghim",
+      "delete_feed_title": "Xóa bài đăng",
+      "delete_feed_description": "Bạn có chắc chắn muốn xóa bài đăng này?",
+      "confirm_delete": "Xóa",
+      "user_avatar_alt": "Hình đại diện của người dùng",
+      "comments": {
+        "comment": "bình luận",
+        "showing_of": "Đang hiển thị {shown} trong tổng số {total}",
+        "hide": "Ẩn bình luận",
+        "placeholder": "Thêm bình luận chương trình",
+        "submit_aria": "Gửi bình luận",
+        "delete": "Xóa"
+      },
+      "card": {
+        "pin": "Ghim",
+        "unpin": "Bỏ ghim",
+        "edit": "Chỉnh sửa",
+        "delete": "Xóa"
+      }
+    },
+    "create_modal": {
+      "title": "Tạo chương trình",
+      "description": "Thêm một chương trình chứng nhận hoặc tuân thủ mới.",
+      "name_label": "Tên",
+      "name_placeholder": "ví dụ: Chứng nhận an toàn OSHA",
+      "description_label": "Mô tả",
+      "description_placeholder": "Chương trình này nói về cái gì?",
+      "submit": "Tạo"
+    },
+    "sidebar": {
+      "newsfeed": "Nguồn cấp tin tức",
+      "courses": "Khóa học",
+      "people": "mọi người",
+      "settings": "Cài đặt"
+    },
+    "status": {
+      "active": "Đang hoạt động",
+      "inactive": "Không hoạt động",
+      "archived": "Đã lưu trữ"
+    },
+    "description": "Cấp cho một nhóm người quyền truy cập vào nhiều khóa học, chẳng hạn như một lớp học",
+    "search_placeholder": "Tìm kiếm chương trình",
+    "multiple_added": "Đã thêm khóa học",
+    "no_matching_cohorts": "Không có chương trình nào phù hợp với bộ lọc của bạn.",
+    "card": {
+      "courses": "Khóa học",
+      "students": "Sinh viên"
+    },
+    "table": {
+      "name": "Tên",
+      "courses": "Khóa học",
+      "students": "Sinh viên",
+      "status": "Trạng thái",
+      "description": "Mô tả"
+    },
+    "filters": {
+      "filter": "Lọc",
+      "clear_all": "Xóa tất cả",
+      "popover_title": "Bộ lọc",
+      "sort": "Sắp xếp",
+      "order": "Đặt hàng",
+      "status": "Trạng thái",
+      "ascending": "tăng dần",
+      "descending": "mô tả",
+      "sort_name": "Tên",
+      "sort_courses": "Khóa học",
+      "sort_students": "Sinh viên",
+      "sort_status": "Trạng thái"
+    },
+    "invite_sent": "Đã gửi lời mời",
+    "goals": {
+      "heading": "Mục tiêu học tập",
+      "description": "Đặt các mục tiêu có thể đo lường được trải rộng trên nhiều khóa học cho mọi người trong chương trình này.",
+      "add": "Mục tiêu mới",
+      "empty_title": "Chưa có mục tiêu nào",
+      "empty_description": "Tạo mục tiêu để theo dõi tiến độ của nhóm qua nhiều khóa học.",
+      "created": "Đã tạo mục tiêu",
+      "updated": "Đã cập nhật mục tiêu",
+      "deleted": "Đã xóa mục tiêu",
+      "delete_confirm": "Xóa mục tiêu này? Lịch sử trạng thái của mỗi học sinh sẽ bị xóa.",
+      "lms": {
+        "heading": "Mục tiêu của bạn",
+        "empty_title": "Không có mục tiêu nào được giao",
+        "empty_description": "Khi người hướng dẫn của bạn đặt mục tiêu, họ sẽ hiển thị ở đây.",
+        "due_in_days": "Đến hạn sau {days} ngày nữa",
+        "due_tomorrow": "Hạn chót vào ngày mai",
+        "due_today": "Hạn chót hôm nay",
+        "overdue": "Quá hạn",
+        "no_deadline": "Không có thời hạn"
+      },
+      "tile": {
+        "on_track": "đi đúng hướng",
+        "completed_short": "hoàn thành",
+        "overdue_short": "quá hạn",
+        "at_risk_short": "có nguy cơ"
+      },
+      "status": {
+        "completed": "Đã hoàn thành",
+        "in_progress": "Đang tiến hành",
+        "at_risk": "Có nguy cơ",
+        "overdue": "Quá hạn",
+        "not_started": "Chưa bắt đầu",
+        "waived": "Miễn trừ"
+      },
+      "deadline_kind": {
+        "absolute": "Ngày tuyệt đối",
+        "relative_to_join": "Liên quan đến việc sinh viên tham gia",
+        "recurring": "Định kỳ",
+        "none": "Không có thời hạn"
+      },
+      "type": {
+        "complete_all": "Hoàn thành tất cả các khóa học đã chọn",
+        "n_of_m": "Hoàn thành N trong số M khóa học đã chọn",
+        "score": "Đạt điểm trên ngưỡng trong mỗi khóa học",
+        "pass_rate": "Ngưỡng tỷ lệ đậu của đội",
+        "readiness": "Sẵn sàng (không có thời hạn)"
+      },
+      "modal": {
+        "create_title": "Mục tiêu mới",
+        "edit_title": "Chỉnh sửa mục tiêu",
+        "title_label": "Tiêu đề",
+        "title_placeholder": "ví dụ: Đoạn đường nối",
+        "description_label": "Mô tả",
+        "description_placeholder": "Bối cảnh tùy chọn cho nhóm",
+        "type_label": "loại",
+        "courses_label": "Khóa học",
+        "required_count_label": "Số lượng khóa học yêu cầu",
+        "score_threshold_label": "Điểm đậu của mỗi học sinh (%)",
+        "team_pass_rate_label": "Tỷ lệ vượt qua của đội (%)",
+        "deadline_label": "thời hạn",
+        "deadline_date_label": "Ngày hết hạn",
+        "relative_days_label": "Ngày kể từ khi học viên tham gia",
+        "recurring_months_label": "Lặp lại mỗi (tháng)",
+        "reminders_label": "Lời nhắc (ngày trước hạn)",
+        "reminders_helper": "Được phân tách bằng dấu phẩy. Ví dụ: 7, 3, 1",
+        "save": "Lưu",
+        "cancel": "Hủy bỏ"
+      }
     }
   }
 }

@@ -37,7 +37,7 @@
   const hasQuery = $derived(query.trim().length > 0);
   const hasServerResults = $derived(
     searchApi.results.course.length > 0 ||
-      searchApi.results.program.length > 0 ||
+      searchApi.results.cohort.length > 0 ||
       searchApi.results.widget.length > 0 ||
       searchApi.results.tag.length > 0 ||
       searchApi.results.audience.length > 0
@@ -133,8 +133,8 @@
         onSelect={handleSelect}
       />
       <SearchResultGroup
-        heading={$t('app.search.command_palette.groups.programs')}
-        items={groupItems('program')}
+        heading={$t('app.search.command_palette.groups.cohorts')}
+        items={groupItems('cohort')}
         fallbackIcon={Goal}
         onSelect={handleSelect}
       />
