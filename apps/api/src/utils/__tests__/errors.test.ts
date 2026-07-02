@@ -2,13 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { z, ZodError } from 'zod';
 import { Hono } from 'hono';
 
+import { ZCourseType } from '@cio/utils/validation/course';
 import { AppError, ErrorCodes, formatZodErrorMessage, handlePublicApiError } from '@api/utils/errors';
 
 describe('formatZodErrorMessage', () => {
   it('formats issue paths and messages', () => {
     const schema = z.object({
       course: z.object({
-        type: z.enum(['LIVE_CLASS', 'SELF_PACED', 'COMPLIANCE'])
+        type: ZCourseType
       })
     });
 

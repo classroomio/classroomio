@@ -2,6 +2,7 @@ import * as z from 'zod';
 
 import { ALLOWED_CONTENT_TYPES, ALLOWED_DOCUMENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
+import { ZCourseType } from './course-type';
 
 export const ZGetRecommendedCourses = z.object({
   limit: z.string().transform(Number).pipe(z.number().min(1).max(50)).optional(),
@@ -271,7 +272,7 @@ export type TComplianceSettings = z.infer<typeof ZComplianceSettings>;
 export const ZCourseCreateBase = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
-  type: z.enum(['LIVE_CLASS', 'SELF_PACED', 'COMPLIANCE', 'PUBLIC']),
+  type: ZCourseType,
   organizationId: z.string().min(1),
   compliance: ZComplianceSettings.optional()
 });
@@ -408,7 +409,7 @@ export type TCertificationSettings = z.infer<typeof ZCertificationSettings>;
 export const ZCourseUpdateBase = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
-  type: z.enum(['LIVE_CLASS', 'SELF_PACED', 'COMPLIANCE', 'PUBLIC']).optional(),
+  type: ZCourseType.optional(),
   logo: z.string().optional(),
   slug: z.string().optional(),
   isPublished: z.boolean().optional(),
