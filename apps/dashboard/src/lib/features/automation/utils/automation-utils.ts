@@ -46,6 +46,52 @@ data = response.json()["data"]
 print(data)`;
 }
 
+export function getPublicApiGoSnippet(secret: string | null) {
+  const apiKey = getPublicApiSetupSecret(secret);
+
+  return `package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	req, err := http.NewRequest(http.MethodGet, "${PUBLIC_API_BASE_URL}/audience", nil)
+	if err != nil {
+		panic(err)
+	}
+
+	req.Header.Set("Authorization", "Bearer ${apiKey}")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	if res.StatusCode >= 400 {
+		panic(fmt.Sprintf("request failed: %s", body))
+	}
+
+	var payload struct {
+		Data json.RawMessage \`json:"data"\`
+	}
+	if err := json.Unmarshal(body, &payload); err != nil {
+		panic(err)
+	}
+
+	fmt.Println(string(payload.Data))
+}`;
+}
+
 export function getAutomationSetupSecret(secret: string | null) {
   return secret ?? '<paste-your-mcp-key>';
 }

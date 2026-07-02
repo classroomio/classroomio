@@ -3,6 +3,7 @@
   import {
     getMaskedAutomationSecret,
     getPublicApiCurlSnippet,
+    getPublicApiGoSnippet,
     getPublicApiJavaScriptSnippet,
     getPublicApiPythonSnippet
   } from '$features/automation/utils/automation-utils';
@@ -210,6 +211,7 @@
           <Tabs.Trigger value="curl">{$t('automation.clients.curl')}</Tabs.Trigger>
           <Tabs.Trigger value="javascript">{$t('automation.clients.javascript')}</Tabs.Trigger>
           <Tabs.Trigger value="python">{$t('automation.clients.python')}</Tabs.Trigger>
+          <Tabs.Trigger value="go">{$t('automation.clients.go')}</Tabs.Trigger>
         </Tabs.List>
 
         <Tabs.Content value="curl" class="mt-4">
@@ -231,6 +233,14 @@
         <Tabs.Content value="python" class="mt-4">
           <Code.Overflow>
             <Code.Root code={getPublicApiPythonSnippet(generatedSecret)} lang="python">
+              <Code.CopyButton />
+            </Code.Root>
+          </Code.Overflow>
+        </Tabs.Content>
+
+        <Tabs.Content value="go" class="mt-4">
+          <Code.Overflow>
+            <Code.Root code={getPublicApiGoSnippet(generatedSecret)} lang="go">
               <Code.CopyButton />
             </Code.Root>
           </Code.Overflow>

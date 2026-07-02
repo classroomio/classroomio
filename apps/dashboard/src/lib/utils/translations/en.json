@@ -3986,7 +3986,8 @@
       "opencode": "OpenCode",
       "curl": "cURL",
       "javascript": "JavaScript",
-      "python": "Python"
+      "python": "Python",
+      "go": "Go"
     },
     "keys": {
       "active": "Active",
