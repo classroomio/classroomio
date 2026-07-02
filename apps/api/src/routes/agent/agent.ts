@@ -6,6 +6,7 @@ import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 import { b64EnvelopeRewrite } from '@api/middlewares/b64-envelope';
 import { handleError, AppError } from '@api/utils/errors';
+import { MAX_AGENT_DOCUMENT_SIZE } from '@api/constants/upload';
 import { zValidator } from '@hono/zod-validator';
 import { streamText, stepCountIs, convertToModelMessages } from 'ai';
 import {
@@ -69,6 +70,7 @@ import {
   collectDocumentIds,
   getActiveCourseTemplateId,
   getLatestImplementationPlan,
+  loadDocumentsMeta,
   loadDocumentsText,
   verifyExerciseBelongsToCourse,
   verifyLessonBelongsToCourse
@@ -170,7 +172,7 @@ const agentCoreRouter = new Hono()
     } catch (error) {
       if (error instanceof AppError) {
         if (error.statusCode === 413) {
-          return c.json({ success: false, error: 'file_too_large', maxSize: 5242880 }, 413);
+          return c.json({ success: false, error: 'file_too_large', maxSize: MAX_AGENT_DOCUMENT_SIZE }, 413);
         }
 
         if (error.statusCode === 415) {
@@ -410,6 +412,7 @@ const agentCoreRouter = new Hono()
         .select({
           title: schema.course.title,
           description: schema.course.description,
+          metadata: schema.course.metadata,
           organizationId: schema.group.organizationId
         })
         .from(schema.course)
@@ -449,7 +452,10 @@ const agentCoreRouter = new Hono()
       }
 
       const documentIds = collectDocumentIds(messages, context?.documentId);
-      const documentText = documentIds.length > 0 ? await loadDocumentsText(documentIds, user.id) : undefined;
+      const [documentText, documentAssets] = await Promise.all([
+        documentIds.length > 0 ? loadDocumentsText(documentIds, user.id) : Promise.resolve(undefined),
+        documentIds.length > 0 ? loadDocumentsMeta(documentIds) : Promise.resolve([])
+      ]);
 
       const existingSections = await listCourseSections(courseId);
 
@@ -496,7 +502,9 @@ const agentCoreRouter = new Hono()
         exerciseTitle,
         documentId: context?.documentId,
         documentText,
-        existingSectionCount: existingSections.length
+        documentAssets,
+        existingSectionCount: existingSections.length,
+        isContentGroupingEnabled: courseRow.metadata?.isContentGroupingEnabled ?? true
       };
 
       trackAgentEvent(AgentEvent.CHAT_STARTED, {
@@ -531,7 +539,9 @@ const agentCoreRouter = new Hono()
       const agentTools =
         role === AgentRole.STUDENT
           ? buildStudentAgentTools(orgId, user.id, courseId, studentPolicy!.settings)
-          : filterToolsForChatMode(buildAgentTools(orgId, user.id, courseId, messages, { isOrgOnPaidPlan: isOrgPaid }));
+          : filterToolsForChatMode(
+              buildAgentTools(orgId, user.id, courseId, messages, { isOrgOnPaidPlan: isOrgPaid, documentAssets })
+            );
 
       const contextManaged = await buildModelContextMessages({
         conversationId,

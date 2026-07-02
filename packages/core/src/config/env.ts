@@ -88,7 +88,21 @@ const envSchema = z.object({
       const parsed = Number(v);
 
       return Number.isFinite(parsed) && parsed >= 1 ? Math.trunc(parsed) : 500;
-    })
+    }),
+  /** Max course lesson document upload size in megabytes (default 5). */
+  UPLOAD_MAX_DOCUMENT_MB: z.string().optional(),
+  /** Max image upload size in megabytes — avatars, media, editor images (default 5). */
+  UPLOAD_MAX_IMAGE_MB: z.string().optional(),
+  /** Max lesson video upload size in megabytes (default 800). */
+  UPLOAD_MAX_VIDEO_MB: z.string().optional(),
+  /** Max exercise assignment file upload size in megabytes (default 2). */
+  UPLOAD_MAX_EXERCISE_FILE_MB: z.string().optional(),
+  /** Max AI assistant document upload size in megabytes (default 5). */
+  UPLOAD_MAX_AGENT_DOCUMENT_MB: z.string().optional(),
+  /** Max org landing page image upload size in megabytes (default 0.5). */
+  UPLOAD_MAX_LANDING_IMAGE_MB: z.string().optional(),
+  /** Max media thumbnail upload size in megabytes (default 5). */
+  UPLOAD_MAX_THUMBNAIL_MB: z.string().optional()
 });
 
 export const env = envSchema.parse(process.env);

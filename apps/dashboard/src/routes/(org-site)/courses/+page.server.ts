@@ -32,6 +32,14 @@ export const load = async ({ parent, url }) => {
   const normalizedTags = normalizeTagsParam(url.searchParams.get('tags'));
   const normalizedTagsQuery = normalizedTags.length > 0 ? normalizedTags.join(',') : undefined;
 
+  const normalizedTypes = normalizeTagsParam(url.searchParams.get('types'));
+  const normalizedTypesQuery = normalizedTypes.length > 0 ? normalizedTypes.join(',') : undefined;
+
+  const activeSearch = url.searchParams.get('search')?.trim() ?? '';
+
+  const rawPricing = url.searchParams.get('pricing');
+  const activePricing = rawPricing === 'free' || rawPricing === 'paid' ? rawPricing : undefined;
+
   const requestedPage = Number(url.searchParams.get('page'));
   const currentPage = Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
 
@@ -41,7 +49,10 @@ export const load = async ({ parent, url }) => {
         query: {
           siteName,
           page: String(currentPage),
-          ...(normalizedTagsQuery ? { tags: normalizedTagsQuery } : {})
+          ...(normalizedTagsQuery ? { tags: normalizedTagsQuery } : {}),
+          ...(normalizedTypesQuery ? { types: normalizedTypesQuery } : {}),
+          ...(activeSearch ? { search: activeSearch } : {}),
+          ...(activePricing ? { pricing: activePricing } : {})
         }
       })
     ),
@@ -89,6 +100,9 @@ export const load = async ({ parent, url }) => {
     courses: courseData.courses,
     tagGroups: tagsResult.ok ? tagsResult.body.data : [],
     activeTags: normalizedTags,
+    activeTypes: normalizedTypes,
+    activeSearch,
+    activePricing,
     pagination: {
       page: courseData.page,
       perPage: courseData.limit,

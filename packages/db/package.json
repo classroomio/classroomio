@@ -76,7 +76,8 @@
     "db:push-dump-to-new-db": "tsx src/scripts/push-dump-to-new-db.ts",
     "db:restore-lesson-section-from-dump": "tsx src/scripts/restore-lesson-section-from-dump.ts",
     "db:restore-organizationmember-from-dump": "tsx src/scripts/restore-organizationmember-from-dump.ts",
-    "db:disable-v1-content-grouping-from-dump": "tsx src/scripts/disable-v1-content-grouping-from-dump.ts"
+    "db:disable-v1-content-grouping-from-dump": "tsx src/scripts/disable-v1-content-grouping-from-dump.ts",
+    "db:fix-landing-courses": "tsx src/scripts/fix-landing-page-courses-links.ts"
   },
   "dependencies": {
     "@better-auth/sso": "^1.4.18",

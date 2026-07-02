@@ -10,9 +10,11 @@
     courses: OrgLandingPageProps['courses'];
     navigation: Snippet;
     showActions?: boolean;
+    compact?: boolean;
+    children?: Snippet;
   }
 
-  let { orgName = '', hero, courses = [], navigation, showActions = true }: Props = $props();
+  let { orgName = '', hero, courses = [], navigation, showActions = true, compact = false, children }: Props = $props();
 
   const coursesCount = $derived(courses.length);
   const learnersCount = $derived(courses.reduce((sum, course) => sum + (course.totalStudents ?? 0), 0));
@@ -63,7 +65,9 @@
 
 <EditableLandingSection sectionKey="hero">
   <section
-    class="ui:relative ui:overflow-hidden ui:px-6 ui:pt-16 ui:pb-16 ui:md:pt-20 ui:md:pb-20 ui:bg-[var(--landing-bg)]"
+    class="ui:relative ui:overflow-hidden ui:px-6 {compact
+      ? 'ui:pt-8 ui:pb-8 ui:md:pt-10 ui:md:pb-10'
+      : 'ui:pt-16 ui:pb-16 ui:md:pt-20 ui:md:pb-20'} ui:bg-[var(--landing-bg)]"
   >
     <div
       class="ui:pointer-events-none ui:absolute ui:inset-x-0 ui:-top-32 ui:h-[680px] ui:opacity-90"
@@ -118,6 +122,9 @@
         {hero.subheading}
       </p>
 
+      {#if children}
+        <div class="ui:flex ui:justify-center ui:w-full ui:mb-8">{@render children()}</div>
+      {/if}
       {#if coursesCount > 0}
         <span
           class="ui:inline-flex ui:items-center ui:gap-3 ui:px-4 ui:py-2 ui:rounded-full ui:font-mono ui:text-[13px] ui:text-[var(--landing-fg-muted)]"

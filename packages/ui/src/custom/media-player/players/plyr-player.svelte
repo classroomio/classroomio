@@ -49,6 +49,9 @@
   let youtubeInitGeneration = 0;
 
   const SEEK_TOLERANCE_SECONDS = 0.5;
+  const SEEK_BLOCK_COOLDOWN_MS = 300;
+  let seekBlockLastNotifiedAt = 0;
+
   /**
    * Furthest watched position for the must-watch lock. Shared between the
    * progress-bar `seek` listener (set at Plyr construction) and the playback
@@ -75,7 +78,11 @@
     const targetSeconds = (Number(raw) / max) * duration;
 
     if (targetSeconds > seekLockFurthestSeconds + SEEK_TOLERANCE_SECONDS) {
-      policy.onSeekBlocked?.();
+      const now = Date.now();
+      if (now - seekBlockLastNotifiedAt >= SEEK_BLOCK_COOLDOWN_MS) {
+        seekBlockLastNotifiedAt = now;
+        policy.onSeekBlocked?.();
+      }
       return false;
     }
   }
@@ -118,7 +125,6 @@
     let lastValidTime = element.currentTime;
     let isSeeking = false;
     let isReclamping = false;
-    let seekBlockNotified = false;
     let lastHeartbeatAt = 0;
     const heartbeatIntervalMs = 15_000;
 
@@ -141,9 +147,10 @@
     const isAheadOfLimit = () => player.currentTime > seekLockFurthestSeconds + SEEK_TOLERANCE_SECONDS;
 
     const notifySeekBlocked = () => {
-      if (seekBlockNotified) return;
+      const now = Date.now();
+      if (now - seekBlockLastNotifiedAt < SEEK_BLOCK_COOLDOWN_MS) return;
 
-      seekBlockNotified = true;
+      seekBlockLastNotifiedAt = now;
       policy.onSeekBlocked?.();
     };
 
@@ -164,7 +171,6 @@
       if (isReclamping) {
         isReclamping = false;
         isSeeking = false;
-        seekBlockNotified = false;
         lastValidTime = player.currentTime;
         return;
       }
@@ -177,7 +183,6 @@
       }
 
       isSeeking = false;
-      seekBlockNotified = false;
       lastValidTime = player.currentTime;
     };
 

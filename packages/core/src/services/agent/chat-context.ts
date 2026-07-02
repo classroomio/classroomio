@@ -1,7 +1,12 @@
 import { AppError } from '@cio/utils/errors';
 import { getDocumentText } from './document';
 import { redis } from '../../utils/redis/redis';
-import { getCourseSectionBinding, getExerciseCourseBinding, getLessonCourseBinding } from '@cio/db/queries/agent';
+import {
+  getCourseSectionBinding,
+  getExerciseCourseBinding,
+  getLessonCourseBinding,
+  getChatDocumentsByIds
+} from '@cio/db/queries/agent';
 import { z } from 'zod';
 import { CoursePlanFieldsSchema, type CourseTemplateId } from '@cio/ai-assistant';
 
@@ -111,6 +116,16 @@ export function collectDocumentIds(messages: unknown[], currentDocumentId?: stri
   if (currentDocumentId) ids.add(currentDocumentId);
 
   return Array.from(ids);
+}
+
+export async function loadDocumentsMeta(
+  documentIds: string[]
+): Promise<{ documentId: string; assetId: string | null; fileName: string }[]> {
+  if (documentIds.length === 0) return [];
+
+  const records = await getChatDocumentsByIds(documentIds);
+
+  return records.map((r) => ({ documentId: r.id, assetId: r.assetId, fileName: r.fileName }));
 }
 
 export async function loadDocumentsText(documentIds: string[], userId: string): Promise<string | undefined> {

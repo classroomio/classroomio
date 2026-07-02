@@ -8,4 +8,6 @@ export interface QuestionTypeMetadata {
   autoGradable: boolean;
   supportsPartialCredit: boolean;
   manualGradingRequired: boolean;
+  /** Built in code but not offered in the product (no `question_type` row). */
+  disabled?: boolean;
 }

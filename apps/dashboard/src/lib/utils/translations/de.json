@@ -361,7 +361,8 @@
       "video_added_to_lesson": "Video zur Lektion hinzugefügt",
       "delete_success": "Video gelöscht",
       "delete_in_use": "Dieses Video ist noch einer Lektion beigefügt. Entfernen Sie es zuerst dort.",
-      "delete_failed": "Video konnte nicht gelöscht werden"
+      "delete_failed": "Video konnte nicht gelöscht werden",
+      "added_to_lesson": "Video zur Lektion hinzugefügt"
     },
     "tags": {
       "group_created": "Tag-Gruppe erstellt",
@@ -470,9 +471,22 @@
     "any_course": "Alle von Ihnen abgeschlossenen Kurse werden hier angezeigt",
     "find_courses": "Kurse finden"
   },
+  "certificates": {
+    "heading": "Zertifikate",
+    "description": "Sieh dir Zertifikate an und lade sie herunter, die du durch den Abschluss von Kursen erworben hast.",
+    "search": "Zertifikate suchen",
+    "earned_on": "Erworben am",
+    "view_certificate": "Zertifikat anzeigen",
+    "empty_title": "Noch keine Zertifikate",
+    "empty_description": "Schließe einen Kurs ab, um dein erstes Zertifikat zu verdienen. Deine erworbenen Zertifikate werden hier angezeigt.",
+    "no_results_title": "Keine Zertifikate gefunden",
+    "no_results_description": "Versuche einen anderen Suchbegriff.",
+    "go_to_my_learning": "Zu Mein Lernen"
+  },
   "lms_navigation": {
     "home": "Zuhause",
     "my_learning": "Mein Lernen",
+    "certificates": "Zertifikate",
     "exercise": "Übung",
     "community": "Gemeinschaft",
     "explore": "Entdecken",
@@ -489,7 +503,8 @@
     "download_lessons": "Führen Sie ein Upgrade durch, um Lektionen herunterzuladen",
     "download_course": "Upgrade zum Download-Kurs",
     "required": "Upgrade erforderlich",
-    "enterprise_required": "Für diese Funktion ist ein Enterprise-Plan erforderlich."
+    "enterprise_required": "Für diese Funktion ist ein Enterprise-Plan erforderlich.",
+    "public_api_required": "Upgrade auf Early Adopter oder Enterprise, um auf die öffentliche API zuzugreifen."
   },
   "analytics": {
     "title": "Analytik",
@@ -3727,7 +3742,13 @@
     "filters": {
       "title": "Nach Tags filtern",
       "help": "Wählen Sie einen oder mehrere Tags aus, um Kurse zu filtern",
-      "empty": "Noch keine Tags verfügbar"
+      "empty": "Noch keine Tags verfügbar",
+      "tags_title": "Schlagworte",
+      "types_title": "Typen",
+      "search_placeholder": "Kurse suchen...",
+      "pricing_title": "Preise",
+      "pricing_free": "Kostenlos",
+      "pricing_paid": "Bezahlt"
     }
   },
   "tags_admin": {
@@ -3872,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Schnellstart",
+        "description": "Verwenden Sie Ihren API-Schlüssel als Bearer-Token bei jeder Anfrage. Ersetzen Sie den Platzhalter durch einen Schlüssel von oben oder fügen Sie das Geheimnis direkt nach der Erstellung ein."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3896,7 +3921,11 @@
       "claude_code": "Claude Code",
       "codex": "Kodex",
       "cursor": "Cursor",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "tabs": {
       "mcp": "MCP",
@@ -4096,7 +4125,10 @@
     "ask_ai": "Fragen Sie die KI",
     "content_input_placeholder": "Fragen Sie nach diesem Inhalt…",
     "ask_ai_expand_aria": "Öffnen Sie „Ask AI Input“.",
-    "ask_ai_input_aria": "Fragen Sie AI nach diesem Inhalt"
+    "ask_ai_input_aria": "Fragen Sie AI nach diesem Inhalt",
+    "upload_error_file_too_large": "Die Datei ist zu groß. Die maximale Größe beträgt 5 MB.",
+    "upload_error_unsupported_type": "Dateityp wird nicht unterstützt. Bitte laden Sie eine PDF-, DOCX-, PPTX- oder ODT-Datei hoch.",
+    "upload_error_generic": "Das Hochladen des Dokuments ist fehlgeschlagen. Bitte versuchen Sie es erneut."
   },
   "widgets": {
     "heading": "Widgets",

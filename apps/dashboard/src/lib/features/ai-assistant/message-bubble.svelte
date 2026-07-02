@@ -151,7 +151,7 @@
             ? 'bg-white/15 text-white/90'
             : 'ui:bg-background/70 ui:text-muted-foreground'}"
         >
-          <FileTextIcon size={12} class="shrink-0" />
+          <FileTextIcon size={12} class="custom shrink-0" />
           <span class="min-w-0 truncate">{messageAttachment.name}</span>
         </div>
       {/if}

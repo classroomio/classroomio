@@ -45,7 +45,7 @@
       <Dialog.Title>{$t('course.navItem.lessons.materials.tabs.video.add_video.title')}</Dialog.Title>
     </Dialog.Header>
 
-    <UnderlineTabs.Root bind:value={currentTab} class="">
+    <UnderlineTabs.Root bind:value={currentTab} class="min-w-0">
       <UnderlineTabs.List>
         {#each tabs as item (item.value)}
           <UnderlineTabs.Trigger

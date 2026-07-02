@@ -20,6 +20,7 @@ import {
   collectDocumentIds,
   getActiveCourseTemplateId,
   getLatestImplementationPlan,
+  loadDocumentsMeta,
   loadDocumentsText
 } from './chat-context';
 import { buildAgentTools } from './chat-tools';
@@ -145,7 +146,10 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
       : null;
     const visibleMessages = (conversation?.messages ?? []) as Array<Record<string, unknown>>;
     const documentIds = collectDocumentIds(visibleMessages);
-    const documentText = documentIds.length > 0 ? await loadDocumentsText(documentIds, initialRun.userId) : undefined;
+    const [documentText, documentAssets] = await Promise.all([
+      documentIds.length > 0 ? loadDocumentsText(documentIds, initialRun.userId) : Promise.resolve(undefined),
+      documentIds.length > 0 ? loadDocumentsMeta(documentIds) : Promise.resolve([])
+    ]);
     const existingSections = await listCourseSections(initialRun.courseId);
     const executionCursor = initialRun.executionCursor ?? {};
     const modelId = getRunModelId(executionCursor);
@@ -166,6 +170,7 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
       role: AgentRole.TEACHER,
       locale: 'en',
       documentText,
+      documentAssets,
       existingSectionCount: existingSections.length
     };
     const approvedPlan = initialRun.approvedPlan ?? getLatestImplementationPlan(visibleMessages);
@@ -208,7 +213,8 @@ export async function runAgentCourseGenerationJob(input: RunAgentCourseGeneratio
     const isOrgPaid = await isOrgOnPaidPlan(initialRun.orgId);
     const agentTools = buildAgentTools(initialRun.orgId, initialRun.userId, initialRun.courseId, visibleMessages, {
       runId: initialRun.id,
-      isOrgOnPaidPlan: isOrgPaid
+      isOrgOnPaidPlan: isOrgPaid,
+      documentAssets
     });
 
     for (let roundIndex = 0; roundIndex < MAX_WORKER_ROUNDS; roundIndex += 1) {

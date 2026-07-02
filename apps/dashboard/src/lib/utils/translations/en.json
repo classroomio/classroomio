@@ -1218,9 +1218,15 @@
     "subtitle": "Browse all published courses",
     "clear_filters": "Clear Filters",
     "filters": {
-      "title": "Filter by Tags",
-      "help": "Select one or more tags to filter courses",
-      "empty": "No tags available yet"
+      "title": "Filter",
+      "help": "Filter courses by type, tags, or search by name",
+      "tags_title": "Tags",
+      "types_title": "Types",
+      "pricing_title": "Pricing",
+      "pricing_free": "Free",
+      "pricing_paid": "Paid",
+      "empty": "No tags available yet",
+      "search_placeholder": "Search courses..."
     },
     "empty": {
       "title": "No courses found",
@@ -3751,7 +3757,8 @@
     "download_lessons": "Upgrade to download lessons",
     "download_course": "Upgrade to download course",
     "required": "Upgrade Required",
-    "enterprise_required": "This feature requires an Enterprise plan."
+    "enterprise_required": "This feature requires an Enterprise plan.",
+    "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API."
   },
   "automation": {
     "title": "Automation",
@@ -3770,7 +3777,11 @@
       "claude_code": "Claude Code",
       "codex": "Codex",
       "cursor": "Cursor",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "keys": {
       "active": "Active",
@@ -3844,6 +3855,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Quick start",
+        "description": "Use your API key as a Bearer token on every request. Replace the placeholder with a key from above, or paste the secret immediately after you generate one."
+      },
       "view_docs": "View Docs"
     },
     "zapier": {
@@ -3853,6 +3868,7 @@
   "lms_navigation": {
     "home": "Home",
     "my_learning": "My Learning",
+    "certificates": "Certificates",
     "exercise": "Exercise",
     "community": "Community",
     "explore": "Explore",
@@ -3870,6 +3886,18 @@
     "not_completed": "No Course Completed",
     "any_course": "Any course that you complete will be displayed here",
     "find_courses": "Find courses"
+  },
+  "certificates": {
+    "heading": "Certificates",
+    "description": "View and download certificates you've earned by completing courses.",
+    "search": "Search certificates",
+    "earned_on": "Earned on",
+    "view_certificate": "View Certificate",
+    "empty_title": "No certificates yet",
+    "empty_description": "Complete a course to earn your first certificate. Your earned certificates will appear here.",
+    "no_results_title": "No certificates found",
+    "no_results_description": "Try a different search term.",
+    "go_to_my_learning": "Go to My Learning"
   },
   "exercises": {
     "heading": "Exercises",
@@ -3938,6 +3966,7 @@
       "delete_success": "Video deleted",
       "delete_in_use": "This video is still attached to a lesson. Remove it there first.",
       "delete_failed": "Failed to delete video",
+      "added_to_lesson": "Video added to lesson",
       "download_failed": "Failed to get asset download URL",
       "thumbnail_uploaded": "Thumbnail uploaded",
       "thumbnail_upload_failed": "Failed to upload thumbnail",
@@ -4393,7 +4422,10 @@
     "ask_ai_expand_aria": "Open Ask AI input",
     "ask_ai_input_aria": "Ask AI about this content",
     "quote_lesson_note": "Quote in assistant",
-    "attach_document": "Attach a document (PDF, DOCX, PPTX)",
+    "attach_document": "Attach a document (PDF, DOCX, PPTX, ODT)",
+    "upload_error_file_too_large": "File is too large. Maximum size is 5 MB.",
+    "upload_error_unsupported_type": "File type not supported. Please upload a PDF, DOCX, PPTX, or ODT file.",
+    "upload_error_generic": "Failed to upload document. Please try again.",
     "upgrade_to_upload": "Upgrade to upload documents",
     "tokens_exhausted": "Monthly AI token limit reached.",
     "tokens_exhausted_buy_more": "Buy more",

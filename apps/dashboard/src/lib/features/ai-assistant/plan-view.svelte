@@ -5,6 +5,7 @@
   import FileQuestionIcon from '@lucide/svelte/icons/file-question';
   import PencilIcon from '@lucide/svelte/icons/pencil';
   import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';
+  import LoaderIcon from '@lucide/svelte/icons/loader';
   import { Button } from '@cio/ui/base/button';
   import { Textarea } from '@cio/ui/base/textarea';
   import { SvelteSet } from 'svelte/reactivity';
@@ -51,6 +52,12 @@
   $effect(() => {
     if (userToggled) return;
     isExpanded = !defaultCollapsed;
+  });
+
+  let isImplementing = $state(false);
+
+  $effect(() => {
+    if (isBusy) isImplementing = false;
   });
 
   let changeRequest = $state('');
@@ -301,7 +308,18 @@
       {/if}
 
       <div class="flex flex-col gap-2">
-        <Button size="sm" onclick={() => onImplement(editablePlan)} class="w-full">
+        <Button
+          size="sm"
+          disabled={isImplementing || isBusy}
+          onclick={() => {
+            isImplementing = true;
+            onImplement(editablePlan);
+          }}
+          class="w-full"
+        >
+          {#if isImplementing || isBusy}
+            <LoaderIcon size={14} class="animate-spin" />
+          {/if}
           {$t('ai_assistant.plan_implement')}
         </Button>
         <div class="flex items-end gap-2">

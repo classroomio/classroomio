@@ -12,6 +12,7 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { uploadImage } from '$lib/utils/services/upload';
+  import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
 
   interface Props {
     open?: boolean;
@@ -22,7 +23,8 @@
 
   type AssetStatusValue = 'active' | 'archived';
 
-  const THUMBNAIL_MAX_SIZE = 5 * FileDropZone.MEGABYTE;
+  const uploadLimits = getResolvedUploadLimits();
+  const thumbnailMaxSize = uploadLimits.thumbnailBytes;
 
   let { open = $bindable(false), asset = null, isSaving = false, onSave = async () => {} }: Props = $props();
 
@@ -126,7 +128,7 @@
               accept={FileDropZone.ACCEPT_IMAGE}
               maxFiles={1}
               fileCount={0}
-              maxFileSize={THUMBNAIL_MAX_SIZE}
+              maxFileSize={thumbnailMaxSize}
               onUpload={handleThumbnailFilesUpload}
               onFileRejected={handleThumbnailRejected}
             >

@@ -361,7 +361,8 @@
       "video_added_to_lesson": "Video tilføjet til lektion",
       "delete_success": "Video slettet",
       "delete_in_use": "Denne video er stadig knyttet til en lektion. Fjern det der først.",
-      "delete_failed": "Videoen kunne ikke slettes"
+      "delete_failed": "Videoen kunne ikke slettes",
+      "added_to_lesson": "Video tilføjet til lektion"
     },
     "tags": {
       "group_created": "Taggruppe oprettet",
@@ -470,9 +471,22 @@
     "any_course": "Ethvert kursus, du gennemfører, vil blive vist her",
     "find_courses": "Find kurser"
   },
+  "certificates": {
+    "heading": "Certifikater",
+    "description": "Se og download certifikater, du har opnået ved at gennemføre kurser.",
+    "search": "Søg certifikater",
+    "earned_on": "Opnået den",
+    "view_certificate": "Se certifikat",
+    "empty_title": "Ingen certifikater endnu",
+    "empty_description": "Gennemfør et kursus for at opnå dit første certifikat. Dine opnåede certifikater vises her.",
+    "no_results_title": "Ingen certifikater fundet",
+    "no_results_description": "Prøv et andet søgeord.",
+    "go_to_my_learning": "Gå til Min Læring"
+  },
   "lms_navigation": {
     "home": "Hjem",
     "my_learning": "Min Læring",
+    "certificates": "Certifikater",
     "exercise": "Motion",
     "community": "Fællesskab",
     "explore": "Udforsk",
@@ -489,7 +503,8 @@
     "download_lessons": "Opgrader for at downloade lektioner",
     "download_course": "Opgrader for at downloade kursus",
     "required": "Opgradering påkrævet",
-    "enterprise_required": "Denne funktion kræver en Enterprise-plan."
+    "enterprise_required": "Denne funktion kræver en Enterprise-plan.",
+    "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API."
   },
   "analytics": {
     "title": "Analytics",
@@ -3727,7 +3742,13 @@
     "filters": {
       "title": "Filtrer efter tags",
       "help": "Vælg et eller flere tags for at filtrere kurser",
-      "empty": "Ingen tags tilgængelige endnu"
+      "empty": "Ingen tags tilgængelige endnu",
+      "tags_title": "Tags",
+      "types_title": "Typer",
+      "search_placeholder": "Søg efter kurser...",
+      "pricing_title": "Prissætning",
+      "pricing_free": "Gratis",
+      "pricing_paid": "Betalt"
     }
   },
   "tags_admin": {
@@ -3872,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Hurtig start",
+        "description": "Brug din API-nøgle som Bearer-token på hver anmodning. Erstat pladsholderen med en nøgle ovenfor, eller indsæt hemmeligheden lige efter du genererer en."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3896,7 +3921,11 @@
       "claude_code": "Claude kode",
       "codex": "Codex",
       "cursor": "Markør",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "tabs": {
       "mcp": "MCP",
@@ -4096,7 +4125,10 @@
     "ask_ai": "Spørg AI",
     "content_input_placeholder": "Spørg om dette indhold...",
     "ask_ai_expand_aria": "Åbn Spørg AI-input",
-    "ask_ai_input_aria": "Spørg AI om dette indhold"
+    "ask_ai_input_aria": "Spørg AI om dette indhold",
+    "upload_error_file_too_large": "Filen er for stor. Maksimal størrelse er 5 MB.",
+    "upload_error_unsupported_type": "Filtype understøttes ikke. Upload venligst en PDF-, DOCX-, PPTX- eller ODT-fil.",
+    "upload_error_generic": "Kunne ikke uploade dokument. Prøv venligst igen."
   },
   "widgets": {
     "heading": "Widgets",

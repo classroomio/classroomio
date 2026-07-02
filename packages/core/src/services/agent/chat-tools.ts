@@ -44,6 +44,7 @@ import {
   coursePlanParam,
   createExerciseParam,
   createExerciseSectionParam,
+  attachDocumentToLessonParam,
   createLessonParam,
   createSectionParam,
   emptyParam,
@@ -61,6 +62,7 @@ import {
   updateQuestionsParam,
   updateSectionParam
 } from './agent-tool-schemas';
+import { attachAssetService } from '../assets/assets';
 import { fetchDocumentationUrl } from './fetch-url';
 
 const DURABLE_AGENT_TOOL_NAMES = new Set([
@@ -69,6 +71,7 @@ const DURABLE_AGENT_TOOL_NAMES = new Set([
   'create_lesson',
   'update_lesson',
   'update_lesson_content',
+  'attach_document_to_lesson',
   'create_exercise',
   'update_exercise',
   'update_exercise_section',
@@ -89,6 +92,8 @@ export interface BuildAgentToolsOptions {
    * premium-only question types.
    */
   isOrgOnPaidPlan?: boolean;
+  /** Documents uploaded in this conversation — used by attach_document_to_lesson. */
+  documentAssets?: { documentId: string; assetId: string | null; fileName: string }[];
 }
 
 function summarizeAgentDebugValue(value: unknown, depth = 0): unknown {
@@ -451,6 +456,7 @@ export function buildAgentTools(
   options: BuildAgentToolsOptions = {}
 ) {
   const isOrgOnPaidPlan = options.isOrgOnPaidPlan ?? true;
+  const documentAssets = options.documentAssets ?? [];
 
   const executeAgentTool = <TArgs, TResult>(
     toolName: string,
@@ -607,6 +613,44 @@ export function buildAgentTools(
             contentLength: normalizedContent.length,
             updated: true
           };
+        });
+      }
+    }),
+
+    attach_document_to_lesson: tool({
+      description:
+        'Attach an uploaded document from this conversation to a lesson as a downloadable material. Use this to create the Course Materials lesson — create the lesson first (with no content), then call this tool.',
+      inputSchema: attachDocumentToLessonParam,
+      execute: async (args) => {
+        return executeAgentTool('attach_document_to_lesson', { orgId, userId, courseId, args }, async () => {
+          await verifyLessonBelongsToCourse(args.lessonId, courseId);
+
+          const docAsset = documentAssets.find((d) => d.documentId === args.documentId);
+
+          if (!docAsset) {
+            throw new AppError(
+              `Document "${args.documentId}" not found in this conversation`,
+              'DOCUMENT_NOT_FOUND',
+              404
+            );
+          }
+
+          if (!docAsset.assetId) {
+            throw new AppError(
+              `Document "${args.documentId}" has no associated asset and cannot be attached`,
+              'DOCUMENT_NO_ASSET',
+              422
+            );
+          }
+
+          await attachAssetService(orgId, docAsset.assetId, userId, {
+            targetType: 'lesson',
+            targetId: args.lessonId,
+            slotType: 'lesson_document',
+            position: 0
+          });
+
+          return { lessonId: args.lessonId, fileName: docAsset.fileName, attached: true };
         });
       }
     }),

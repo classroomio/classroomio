@@ -1,4 +1,6 @@
 import { BaseApiWithErrors, classroomio, apiClient, getRequestBaseUrl } from '$lib/utils/services/api';
+import { snackbar } from '$features/ui/snackbar/store';
+import { t } from '$lib/utils/functions/translations';
 import type {
   AgentConversation,
   AgentConversationCreateData,
@@ -158,7 +160,25 @@ class AiAssistantApi extends BaseApiWithErrors {
       }
     } catch (error) {
       console.error('Error uploading document:', error);
-      this.error = 'Failed to upload document';
+
+      let errorCode: string | null = null;
+
+      if (error instanceof Error) {
+        try {
+          const body = JSON.parse(error.message) as { error?: string };
+          errorCode = body.error ?? null;
+        } catch {
+          // message was not JSON
+        }
+      }
+
+      if (errorCode === 'file_too_large') {
+        snackbar.error(t.get('ai_assistant.upload_error_file_too_large'));
+      } else if (errorCode === 'unsupported_file_type') {
+        snackbar.error(t.get('ai_assistant.upload_error_unsupported_type'));
+      } else {
+        snackbar.error(t.get('ai_assistant.upload_error_generic'));
+      }
     }
 
     return null;

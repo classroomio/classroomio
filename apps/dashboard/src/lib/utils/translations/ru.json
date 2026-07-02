@@ -361,7 +361,8 @@
       "video_added_to_lesson": "Видео добавлено в урок",
       "delete_success": "Видео удалено",
       "delete_in_use": "Это видео все еще прикреплено к уроку. Сначала уберите его оттуда.",
-      "delete_failed": "Не удалось удалить видео."
+      "delete_failed": "Не удалось удалить видео.",
+      "added_to_lesson": "Видео добавлено в урок"
     },
     "tags": {
       "group_created": "Группа тегов создана.",
@@ -470,9 +471,22 @@
     "any_course": "Здесь будут отображаться все пройденные вами курсы.",
     "find_courses": "Найти курсы"
   },
+  "certificates": {
+    "heading": "Сертификаты",
+    "description": "Просматривайте и скачивайте сертификаты, полученные за завершение курсов.",
+    "search": "Поиск сертификатов",
+    "earned_on": "Получен",
+    "view_certificate": "Посмотреть сертификат",
+    "empty_title": "Пока нет сертификатов",
+    "empty_description": "Завершите курс, чтобы получить свой первый сертификат. Полученные сертификаты появятся здесь.",
+    "no_results_title": "Сертификаты не найдены",
+    "no_results_description": "Попробуйте другой поисковый запрос.",
+    "go_to_my_learning": "Перейти к Моему обучению"
+  },
   "lms_navigation": {
     "home": "Главная",
     "my_learning": "Мое обучение",
+    "certificates": "Сертификаты",
     "exercise": "Упражнение",
     "community": "Сообщество",
     "explore": "Исследуйте",
@@ -489,7 +503,8 @@
     "download_lessons": "Обновите, чтобы скачивать уроки",
     "download_course": "Обновите, чтобы загрузить курс",
     "required": "Требуется обновление",
-    "enterprise_required": "Для этой функции требуется план Enterprise."
+    "enterprise_required": "Для этой функции требуется план Enterprise.",
+    "public_api_required": "Перейдите на Early Adopter или Enterprise, чтобы получить доступ к публичному API."
   },
   "analytics": {
     "title": "Аналитика",
@@ -3727,7 +3742,13 @@
     "filters": {
       "title": "Фильтровать по тегам",
       "help": "Выберите один или несколько тегов, чтобы отфильтровать курсы.",
-      "empty": "Тегов пока нет"
+      "empty": "Тегов пока нет",
+      "tags_title": "Теги",
+      "types_title": "Типы",
+      "search_placeholder": "Искать курсы...",
+      "pricing_title": "Цены",
+      "pricing_free": "Бесплатно",
+      "pricing_paid": "Платный"
     }
   },
   "tags_admin": {
@@ -3872,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Быстрый старт",
+        "description": "Используйте ключ API как Bearer-токен в каждом запросе. Замените заполнитель ключом из списка выше или вставьте секрет сразу после генерации."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3896,7 +3921,11 @@
       "claude_code": "Клод Код",
       "codex": "Кодекс",
       "cursor": "Курсор",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "tabs": {
       "mcp": "МКП",
@@ -4096,7 +4125,10 @@
     "ask_ai": "Спросите ИИ",
     "content_input_placeholder": "Спросите об этом контенте…",
     "ask_ai_expand_aria": "Открыть вход Ask AI",
-    "ask_ai_input_aria": "Спросите ИИ об этом контенте"
+    "ask_ai_input_aria": "Спросите ИИ об этом контенте",
+    "upload_error_file_too_large": "Файл слишком большой. Максимальный размер — 5 МБ.",
+    "upload_error_unsupported_type": "Тип файла не поддерживается. Загрузите файл PDF, DOCX, PPTX или ODT.",
+    "upload_error_generic": "Не удалось загрузить документ. Пожалуйста, попробуйте еще раз."
   },
   "widgets": {
     "heading": "Виджеты",

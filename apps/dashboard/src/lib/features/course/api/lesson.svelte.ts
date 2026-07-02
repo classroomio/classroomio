@@ -204,6 +204,10 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'deleting lesson',
       onSuccess: (response) => {
         if (response.data) {
+          this.sections = this.sections.map((section) => ({
+            ...section,
+            lessons: section.lessons.filter((l) => l.id !== lessonId)
+          }));
           snackbar.success('snackbar.lessons.lesson_deleted');
           this.success = true;
           this.errors = {};

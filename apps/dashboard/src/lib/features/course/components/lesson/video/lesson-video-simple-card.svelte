@@ -1,5 +1,4 @@
 <script lang="ts">
-  import * as Avatar from '@cio/ui/base/avatar';
   import { Image } from '$features/ui';
   import VideoIcon from '@lucide/svelte/icons/video';
   import { ExternalLinkIcon, HoverableItem } from '@cio/ui/custom/moving-icons';
@@ -35,16 +34,6 @@
   const createdAtFormatted = $derived(formatVideoCreatedAt(createdAtIso ?? undefined));
 
   const isYoutubeWithLink = $derived(video.type === 'youtube' && !!video.link);
-
-  const courseLogoSrc = $derived.by(() => {
-    const raw = courseApi.course?.logo;
-
-    if (typeof raw === 'string' && raw.trim().length > 0) {
-      return raw.trim();
-    }
-
-    return null;
-  });
 
   const channelLine = $derived.by(() => {
     const courseTitle = courseApi.course?.title?.trim();
@@ -104,15 +93,6 @@
   </div>
 
   <div class="mt-3 flex min-w-0 gap-3 px-3 py-3">
-    <Avatar.Root class="mt-0.5 size-9 shrink-0">
-      {#if courseLogoSrc}
-        <Avatar.Image src={courseLogoSrc} alt={channelLine} />
-      {/if}
-      <Avatar.Fallback>
-        <VideoIcon class="ui:text-muted-foreground size-4" />
-      </Avatar.Fallback>
-    </Avatar.Root>
-
     <div class="min-w-0 flex-1">
       <div class="flex items-start gap-1">
         <div class="ui:text-foreground min-w-0 flex-1 text-base leading-snug font-semibold" {title}>

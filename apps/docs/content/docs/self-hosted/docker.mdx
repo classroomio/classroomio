@@ -210,6 +210,25 @@ The bundled **MinIO** is included by default and the startup script auto-configu
 | `LICENSE_KEY` | Enterprise features (SSO, token-auth, no-tracking) |
 | `PUBLIC_APP_TITLE`, `PUBLIC_APP_DESCRIPTION`, `PUBLIC_OG_IMAGE_URL` | Custom branding |
 
+### Optional — Upload file size limits
+
+Set these in the root `.env` to raise or lower upload caps (values are in **megabytes**). Compose passes them through to the `api` and `dashboard` containers. Unset = built-in defaults. On [Railway](/docs/self-hosted/railway) or [Coolify](/docs/self-hosted/coolify), set the same variables on both the API and dashboard services.
+
+| Variable | Default | Applies to |
+|----------|---------|------------|
+| `UPLOAD_MAX_DOCUMENT_MB` | 5 | Course lesson documents |
+| `UPLOAD_MAX_IMAGE_MB` | 5 | Avatars, media library, editor images |
+| `UPLOAD_MAX_VIDEO_MB` | 800 | Lesson video uploads |
+| `UPLOAD_MAX_EXERCISE_FILE_MB` | 2 | Student assignment file-upload questions |
+| `UPLOAD_MAX_AGENT_DOCUMENT_MB` | 5 | AI assistant document uploads |
+| `UPLOAD_MAX_LANDING_IMAGE_MB` | 0.5 | Org landing page cover images |
+| `UPLOAD_MAX_THUMBNAIL_MB` | 5 | Media thumbnail uploads |
+
+<Callout type="warn" title="Reverse proxy limits">
+  If you raise these values, also increase your reverse proxy body-size limit (e.g. nginx
+  `client_max_body_size`) so large uploads are not rejected before they reach ClassroomIO.
+</Callout>
+
 ## Common Commands
 
 ```zsh title="Terminal"

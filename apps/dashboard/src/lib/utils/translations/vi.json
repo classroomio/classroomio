@@ -361,7 +361,8 @@
       "video_added_to_lesson": "Video đã được thêm vào bài học",
       "delete_success": "Đã xóa video",
       "delete_in_use": "Video này vẫn được đính kèm với một bài học. Loại bỏ nó ở đó đầu tiên.",
-      "delete_failed": "Không thể xóa video"
+      "delete_failed": "Không thể xóa video",
+      "added_to_lesson": "Video đã được thêm vào bài học"
     },
     "tags": {
       "group_created": "Đã tạo nhóm thẻ",
@@ -470,9 +471,22 @@
     "any_course": "Bất kỳ khóa học nào bạn hoàn thành sẽ được hiển thị ở đây",
     "find_courses": "Tìm khóa học"
   },
+  "certificates": {
+    "heading": "Chứng chỉ",
+    "description": "Xem và tải xuống các chứng chỉ bạn đã đạt được khi hoàn thành khóa học.",
+    "search": "Tìm kiếm chứng chỉ",
+    "earned_on": "Đạt được vào",
+    "view_certificate": "Xem chứng chỉ",
+    "empty_title": "Chưa có chứng chỉ nào",
+    "empty_description": "Hoàn thành một khóa học để nhận chứng chỉ đầu tiên của bạn. Các chứng chỉ đã đạt được sẽ hiển thị tại đây.",
+    "no_results_title": "Không tìm thấy chứng chỉ",
+    "no_results_description": "Hãy thử một từ khóa tìm kiếm khác.",
+    "go_to_my_learning": "Đi tới Học tập của tôi"
+  },
   "lms_navigation": {
     "home": "Trang chủ",
     "my_learning": "Học tập của tôi",
+    "certificates": "Chứng chỉ",
     "exercise": "tập thể dục",
     "community": "cộng đồng",
     "explore": "Khám phá",
@@ -489,7 +503,8 @@
     "download_lessons": "Nâng cấp để tải bài học",
     "download_course": "Nâng cấp để tải xuống khóa học",
     "required": "Yêu cầu nâng cấp",
-    "enterprise_required": "Tính năng này yêu cầu gói Enterprise."
+    "enterprise_required": "Tính năng này yêu cầu gói Enterprise.",
+    "public_api_required": "Nâng cấp lên Early Adopter hoặc Enterprise để truy cập API công khai."
   },
   "analytics": {
     "title": "Phân tích",
@@ -3727,7 +3742,13 @@
     "filters": {
       "title": "Lọc theo thẻ",
       "help": "Chọn một hoặc nhiều thẻ để lọc các khóa học",
-      "empty": "Chưa có thẻ nào"
+      "empty": "Chưa có thẻ nào",
+      "tags_title": "Thẻ",
+      "types_title": "Các loại",
+      "search_placeholder": "Tìm kiếm khóa học...",
+      "pricing_title": "Định giá",
+      "pricing_free": "miễn phí",
+      "pricing_paid": "Đã trả tiền"
     }
   },
   "tags_admin": {
@@ -3872,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Bắt đầu nhanh",
+        "description": "Dùng khóa API làm Bearer token cho mọi yêu cầu. Thay chỗ giữ chỗ bằng khóa ở trên, hoặc dán secret ngay sau khi tạo khóa."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3896,7 +3921,11 @@
       "claude_code": "Mã Claude",
       "codex": "Codex",
       "cursor": "Con trỏ",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "tabs": {
       "mcp": "MCP",
@@ -4096,7 +4125,10 @@
     "ask_ai": "Hỏi AI",
     "content_input_placeholder": "Hỏi về nội dung này…",
     "ask_ai_expand_aria": "Mở đầu vào Hỏi AI",
-    "ask_ai_input_aria": "Hỏi AI về nội dung này"
+    "ask_ai_input_aria": "Hỏi AI về nội dung này",
+    "upload_error_file_too_large": "Tệp quá lớn. Kích thước tối đa là 5 MB.",
+    "upload_error_unsupported_type": "Loại tệp không được hỗ trợ. Vui lòng tải lên tệp PDF, DOCX, PPTX hoặc ODT.",
+    "upload_error_generic": "Không thể tải tài liệu lên. Vui lòng thử lại."
   },
   "widgets": {
     "heading": "Widget",

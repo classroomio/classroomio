@@ -241,7 +241,7 @@ async function handleHlsRequest(request: Request, env: Env): Promise<Response> {
   if (!assetId || !relativePath) return new Response('Not Found', { status: 404 });
   if (relativePath.includes('..')) return new Response('Bad Request', { status: 400 });
 
-  const token = readCookie(request.headers.get('cookie'), HLS_COOKIE_NAME);
+  const token = readCookie(request.headers.get('cookie'), `${HLS_COOKIE_NAME}_${assetId}`);
   if (!token) return new Response('Unauthorized', { status: 401 });
 
   const verified = await verifyHlsToken(token, env.HLS_SIGNING_SECRET);

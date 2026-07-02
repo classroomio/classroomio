@@ -1,4 +1,6 @@
-export const FILE_UPLOAD_MAX_SIZE_MB = 2;
+export const FILE_UPLOAD_DEFAULT_MAX_SIZE_MB = 2;
+/** @deprecated Use FILE_UPLOAD_DEFAULT_MAX_SIZE_MB */
+export const FILE_UPLOAD_MAX_SIZE_MB = FILE_UPLOAD_DEFAULT_MAX_SIZE_MB;
 
 export const FILE_UPLOAD_SUPPORTED_TYPES = [
   { value: 'application/pdf', label: 'PDF (.pdf)', aliases: ['pdf', '.pdf'] },
@@ -106,10 +108,25 @@ export function isFileTypeAllowed(file: File, acceptedTypes: string[]): boolean 
 
 const BYTES_PER_MB = 1024 * 1024;
 
-export function isFileSizeAllowed(file: File, maxSizeMb: number | undefined | null): boolean {
-  const effectiveMaxMb = Math.min(
-    typeof maxSizeMb === 'number' && maxSizeMb > 0 ? maxSizeMb : FILE_UPLOAD_MAX_SIZE_MB,
-    FILE_UPLOAD_MAX_SIZE_MB
-  );
+export function resolveExerciseFileUploadMaxSizeMb(
+  questionMaxSizeMb: number | undefined | null,
+  platformMaxSizeMb: number = FILE_UPLOAD_DEFAULT_MAX_SIZE_MB
+): number {
+  const effectivePlatformMax =
+    typeof platformMaxSizeMb === 'number' && platformMaxSizeMb > 0
+      ? platformMaxSizeMb
+      : FILE_UPLOAD_DEFAULT_MAX_SIZE_MB;
+  const requestedMax =
+    typeof questionMaxSizeMb === 'number' && questionMaxSizeMb > 0 ? questionMaxSizeMb : effectivePlatformMax;
+
+  return Math.min(requestedMax, effectivePlatformMax);
+}
+
+export function isFileSizeAllowed(
+  file: File,
+  maxSizeMb: number | undefined | null,
+  platformMaxSizeMb: number = FILE_UPLOAD_DEFAULT_MAX_SIZE_MB
+): boolean {
+  const effectiveMaxMb = resolveExerciseFileUploadMaxSizeMb(maxSizeMb, platformMaxSizeMb);
   return file.size <= effectiveMaxMb * BYTES_PER_MB;
 }

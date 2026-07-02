@@ -361,7 +361,8 @@
       "video_added_to_lesson": "Vídeo adicionado à aula",
       "delete_success": "Vídeo excluído",
       "delete_in_use": "Este vídeo ainda está anexado a uma aula. Remova-o primeiro.",
-      "delete_failed": "Falha ao excluir vídeo"
+      "delete_failed": "Falha ao excluir vídeo",
+      "added_to_lesson": "Vídeo adicionado à aula"
     },
     "tags": {
       "group_created": "Grupo de tags criado",
@@ -470,9 +471,22 @@
     "any_course": "Qualquer curso que você concluir será exibido aqui",
     "find_courses": "Encontre cursos"
   },
+  "certificates": {
+    "heading": "Certificados",
+    "description": "Veja e baixe os certificados que você obteve ao concluir cursos.",
+    "search": "Pesquisar certificados",
+    "earned_on": "Obtido em",
+    "view_certificate": "Ver certificado",
+    "empty_title": "Nenhum certificado ainda",
+    "empty_description": "Conclua um curso para obter seu primeiro certificado. Seus certificados obtidos aparecerão aqui.",
+    "no_results_title": "Nenhum certificado encontrado",
+    "no_results_description": "Tente outro termo de pesquisa.",
+    "go_to_my_learning": "Ir para Meu aprendizado"
+  },
   "lms_navigation": {
     "home": "Página inicial",
     "my_learning": "Meu aprendizado",
+    "certificates": "Certificados",
     "exercise": "Exercício",
     "community": "Comunidade",
     "explore": "Explorar",
@@ -489,7 +503,8 @@
     "download_lessons": "Atualize para baixar lições",
     "download_course": "Atualize para baixar o curso",
     "required": "Atualização necessária",
-    "enterprise_required": "Este recurso requer um plano Enterprise."
+    "enterprise_required": "Este recurso requer um plano Enterprise.",
+    "public_api_required": "Faça upgrade para Early Adopter ou Enterprise para acessar a API pública."
   },
   "analytics": {
     "title": "Análise",
@@ -3727,7 +3742,13 @@
     "filters": {
       "title": "Filtrar por tags",
       "help": "Selecione uma ou mais tags para filtrar cursos",
-      "empty": "Nenhuma tag disponível ainda"
+      "empty": "Nenhuma tag disponível ainda",
+      "tags_title": "Etiquetas",
+      "types_title": "Tipos",
+      "search_placeholder": "Pesquisar cursos...",
+      "pricing_title": "Preços",
+      "pricing_free": "Grátis",
+      "pricing_paid": "Pago"
     }
   },
   "tags_admin": {
@@ -3872,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Início rápido",
+        "description": "Use sua chave de API como token Bearer em cada solicitação. Substitua o marcador por uma chave acima ou cole o segredo imediatamente após gerar uma."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3896,7 +3921,11 @@
       "claude_code": "Código Claude",
       "codex": "Códice",
       "cursor": "Cursor",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "tabs": {
       "mcp": "PCM",
@@ -4096,7 +4125,10 @@
     "ask_ai": "Pergunte à IA",
     "content_input_placeholder": "Pergunte sobre este conteúdo…",
     "ask_ai_expand_aria": "Abra a entrada Ask AI",
-    "ask_ai_input_aria": "Pergunte à IA sobre este conteúdo"
+    "ask_ai_input_aria": "Pergunte à IA sobre este conteúdo",
+    "upload_error_file_too_large": "O arquivo é muito grande. O tamanho máximo é 5 MB.",
+    "upload_error_unsupported_type": "Tipo de arquivo não suportado. Faça upload de um arquivo PDF, DOCX, PPTX ou ODT.",
+    "upload_error_generic": "Falha ao carregar o documento. Por favor, tente novamente."
   },
   "widgets": {
     "heading": "Widgets",

@@ -12,8 +12,15 @@
     {
       "idx": 1,
       "version": "7",
+      "when": 1782684436805,
+      "tag": "0001_slow_lila_cheney",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
       "when": 1782660458258,
-      "tag": "0001_majestic_masked_marvel",
+      "tag": "0002_majestic_masked_marvel",
       "breakpoints": true
     }
   ]

@@ -361,7 +361,8 @@
       "video_added_to_lesson": "Vídeo añadido a la lección.",
       "delete_success": "Vídeo eliminado",
       "delete_in_use": "Este vídeo todavía está adjunto a una lección. Quítelo allí primero.",
-      "delete_failed": "No se pudo eliminar el video"
+      "delete_failed": "No se pudo eliminar el video",
+      "added_to_lesson": "Vídeo añadido a la lección."
     },
     "tags": {
       "group_created": "Grupo de etiquetas creado",
@@ -470,9 +471,22 @@
     "any_course": "Cualquier curso que completes se mostrará aquí.",
     "find_courses": "encontrar cursos"
   },
+  "certificates": {
+    "heading": "Certificados",
+    "description": "Ve y descarga los certificados que has obtenido al completar cursos.",
+    "search": "Buscar certificados",
+    "earned_on": "Obtenido el",
+    "view_certificate": "Ver certificado",
+    "empty_title": "Aún no hay certificados",
+    "empty_description": "Completa un curso para obtener tu primer certificado. Tus certificados obtenidos aparecerán aquí.",
+    "no_results_title": "No se encontraron certificados",
+    "no_results_description": "Prueba con otro término de búsqueda.",
+    "go_to_my_learning": "Ir a Mi aprendizaje"
+  },
   "lms_navigation": {
     "home": "Inicio",
     "my_learning": "Mi aprendizaje",
+    "certificates": "Certificados",
     "exercise": "Ejercicio",
     "community": "Comunidad",
     "explore": "Explorar",
@@ -489,7 +503,8 @@
     "download_lessons": "Actualice para descargar lecciones",
     "download_course": "Actualizar para descargar el curso",
     "required": "Actualización requerida",
-    "enterprise_required": "Esta característica requiere un plan Enterprise."
+    "enterprise_required": "Esta característica requiere un plan Enterprise.",
+    "public_api_required": "Actualiza a Early Adopter o Enterprise para acceder a la API pública."
   },
   "analytics": {
     "title": "Analítica",
@@ -3727,7 +3742,13 @@
     "filters": {
       "title": "Filtrar por etiquetas",
       "help": "Seleccione una o más etiquetas para filtrar cursos",
-      "empty": "Aún no hay etiquetas disponibles"
+      "empty": "Aún no hay etiquetas disponibles",
+      "tags_title": "Etiquetas",
+      "types_title": "Tipos",
+      "search_placeholder": "Buscar cursos...",
+      "pricing_title": "Precios",
+      "pricing_free": "Gratis",
+      "pricing_paid": "Pagado"
     }
   },
   "tags_admin": {
@@ -3872,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Inicio rápido",
+        "description": "Usa tu clave API como token Bearer en cada solicitud. Reemplaza el marcador de posición con una clave de arriba, o pega el secreto inmediatamente después de generar una."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3896,7 +3921,11 @@
       "claude_code": "Código Claude",
       "codex": "Códice",
       "cursor": "Cursor",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "tabs": {
       "mcp": "MCP",
@@ -4096,7 +4125,10 @@
     "ask_ai": "Pregúntale a la IA",
     "content_input_placeholder": "Pregunta por este contenido...",
     "ask_ai_expand_aria": "Abrir Preguntar entrada a AI",
-    "ask_ai_input_aria": "Pregúntale a AI sobre este contenido"
+    "ask_ai_input_aria": "Pregúntale a AI sobre este contenido",
+    "upload_error_file_too_large": "El archivo es demasiado grande. El tamaño máximo es 5 MB.",
+    "upload_error_unsupported_type": "Tipo de archivo no compatible. Cargue un archivo PDF, DOCX, PPTX u ODT.",
+    "upload_error_generic": "No se pudo cargar el documento. Por favor inténtalo de nuevo."
   },
   "widgets": {
     "heading": "widgets",

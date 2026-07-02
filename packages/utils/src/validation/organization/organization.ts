@@ -19,6 +19,9 @@ export type TGetOrganizations = z.infer<typeof ZGetOrganizations>;
 export const ZGetCoursesBySiteName = z.object({
   siteName: z.string().min(1),
   tags: z.string().optional(),
+  types: z.string().optional(),
+  search: z.string().trim().optional(),
+  pricing: z.enum(['free', 'paid']).optional(),
   page: z.coerce.number().int().min(1).optional(),
   limit: z.coerce.number().int().min(1).max(100).optional()
 });

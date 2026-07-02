@@ -1,0 +1,2 @@
+ALTER TABLE "asset_usages" DROP CONSTRAINT "asset_usages_asset_target_slot_unique";--> statement-breakpoint
+ALTER TABLE "asset_usages" ADD CONSTRAINT "asset_usages_asset_target_slot_unique" UNIQUE("asset_id","target_type","target_id","slot_type","slot_key");

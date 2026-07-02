@@ -1142,8 +1142,7 @@ export const assetUsage = pgTable(
       table.targetType,
       table.targetId,
       table.slotType,
-      table.slotKey,
-      table.position
+      table.slotKey
     )
   ]
 );

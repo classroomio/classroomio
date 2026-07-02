@@ -12,10 +12,17 @@
   import {
     FILE_UPLOAD_SUPPORTED_TYPES,
     formatAcceptedFileTypes,
-    normalizeAcceptedFileTypes
+    normalizeAcceptedFileTypes,
+    resolveExerciseFileUploadMaxSizeMb
   } from '../file-upload-types';
 
-  let { question, disabled = false, labels, onQuestionChange = () => {} }: ExerciseQuestionRendererProps = $props();
+  let {
+    question,
+    disabled = false,
+    labels,
+    platformMaxFileSizeMb,
+    onQuestionChange = () => {}
+  }: ExerciseQuestionRendererProps = $props();
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(labels, key, fallback);
   const acceptedTypes = $derived(normalizeAcceptedFileTypes(question.settings?.acceptedTypes));
@@ -41,17 +48,19 @@
     patchSettings({ acceptedTypes: nextAcceptedTypes });
   }
 
+  const platformMaxMb = $derived(resolveExerciseFileUploadMaxSizeMb(undefined, platformMaxFileSizeMb));
+
   const rawMaxSize = $derived(question.settings?.maxSizeMb as number | undefined);
   const maxSizeMb = $derived(
     typeof rawMaxSize === 'number' && !Number.isNaN(rawMaxSize) && rawMaxSize >= 0
-      ? String(Math.min(rawMaxSize, 2))
+      ? String(Math.min(rawMaxSize, platformMaxMb))
       : ''
   );
 
   $effect(() => {
     const raw = question.settings?.maxSizeMb as number | undefined;
-    if (typeof raw === 'number' && raw > 2) {
-      patchSettings({ maxSizeMb: 2 });
+    if (typeof raw === 'number' && raw > platformMaxMb) {
+      patchSettings({ maxSizeMb: platformMaxMb });
     }
   });
 
@@ -61,7 +70,7 @@
       patchSettings({ maxSizeMb: undefined });
       return;
     }
-    patchSettings({ maxSizeMb: Math.min(2, Math.max(0, num)) });
+    patchSettings({ maxSizeMb: Math.min(platformMaxMb, Math.max(0, num)) });
   }
 </script>
 
@@ -107,7 +116,7 @@
       <Input
         type="number"
         min="0"
-        max="2"
+        max={platformMaxMb}
         step="0.1"
         placeholder={label('file_upload.edit.max_size_placeholder')}
         value={maxSizeMb}

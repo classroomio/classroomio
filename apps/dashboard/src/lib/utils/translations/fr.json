@@ -361,7 +361,8 @@
       "video_added_to_lesson": "Vidéo ajoutée à la leçon",
       "delete_success": "Vidéo supprimée",
       "delete_in_use": "Cette vidéo est toujours jointe à une leçon. Retirez-le d'abord.",
-      "delete_failed": "Échec de la suppression de la vidéo"
+      "delete_failed": "Échec de la suppression de la vidéo",
+      "added_to_lesson": "Vidéo ajoutée à la leçon"
     },
     "tags": {
       "group_created": "Groupe de balises créé",
@@ -470,9 +471,22 @@
     "any_course": "Tout cours que vous terminez sera affiché ici",
     "find_courses": "Trouver des cours"
   },
+  "certificates": {
+    "heading": "Certificats",
+    "description": "Consultez et téléchargez les certificats que vous avez obtenus en terminant des cours.",
+    "search": "Rechercher des certificats",
+    "earned_on": "Obtenu le",
+    "view_certificate": "Voir le certificat",
+    "empty_title": "Aucun certificat pour le moment",
+    "empty_description": "Terminez un cours pour obtenir votre premier certificat. Vos certificats obtenus apparaîtront ici.",
+    "no_results_title": "Aucun certificat trouvé",
+    "no_results_description": "Essayez un autre terme de recherche.",
+    "go_to_my_learning": "Aller à Mon apprentissage"
+  },
   "lms_navigation": {
     "home": "Accueil",
     "my_learning": "Mon apprentissage",
+    "certificates": "Certificats",
     "exercise": "Exercice",
     "community": "Communauté",
     "explore": "Explorer",
@@ -489,7 +503,8 @@
     "download_lessons": "Mettre à niveau pour télécharger les leçons",
     "download_course": "Mettre à niveau pour télécharger le cours",
     "required": "Mise à niveau requise",
-    "enterprise_required": "Cette fonctionnalité nécessite un forfait Entreprise."
+    "enterprise_required": "Cette fonctionnalité nécessite un forfait Entreprise.",
+    "public_api_required": "Passez à Early Adopter ou Enterprise pour accéder à l'API publique."
   },
   "analytics": {
     "title": "Analyse",
@@ -3727,7 +3742,13 @@
     "filters": {
       "title": "Filtrer par balises",
       "help": "Sélectionnez une ou plusieurs balises pour filtrer les cours",
-      "empty": "Aucun tag disponible pour l'instant"
+      "empty": "Aucun tag disponible pour l'instant",
+      "tags_title": "Balises",
+      "types_title": "Espèces",
+      "search_placeholder": "Rechercher des cours...",
+      "pricing_title": "Tarifs",
+      "pricing_free": "Gratuit",
+      "pricing_paid": "Payé"
     }
   },
   "tags_admin": {
@@ -3872,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Démarrage rapide",
+        "description": "Utilisez votre clé API comme jeton Bearer sur chaque requête. Remplacez l'espace réservé par une clé ci-dessus, ou collez le secret immédiatement après l'avoir généré."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3896,7 +3921,11 @@
       "claude_code": "Claude Code",
       "codex": "Codex",
       "cursor": "Curseur",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "tabs": {
       "mcp": "PCM",
@@ -4096,7 +4125,10 @@
     "ask_ai": "Demandez à l'IA",
     "content_input_placeholder": "Renseignez-vous sur ce contenu…",
     "ask_ai_expand_aria": "Ouvrir la saisie de Ask AI",
-    "ask_ai_input_aria": "Interrogez AI à propos de ce contenu"
+    "ask_ai_input_aria": "Interrogez AI à propos de ce contenu",
+    "upload_error_file_too_large": "Le fichier est trop volumineux. La taille maximale est de 5 Mo.",
+    "upload_error_unsupported_type": "Type de fichier non pris en charge. Veuillez télécharger un fichier PDF, DOCX, PPTX ou ODT.",
+    "upload_error_generic": "Échec du téléchargement du document. Veuillez réessayer."
   },
   "widgets": {
     "heading": "Widgets",

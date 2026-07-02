@@ -11,9 +11,11 @@
     hero: OrgLandingPageProps['hero'];
     navigation: Snippet;
     showActions?: boolean;
+    compact?: boolean;
+    children?: Snippet;
   }
 
-  let { hero, navigation, showActions = true }: Props = $props();
+  let { hero, navigation, showActions = true, compact = false, children }: Props = $props();
 
   const heroGradientBackground = `
     radial-gradient(
@@ -32,7 +34,7 @@
 
 <EditableLandingSection sectionKey="hero">
   <section
-    class="ui:relative ui:overflow-hidden ui:px-4 ui:pt-4 ui:pb-16 ui:md:pb-24"
+    class="ui:relative ui:overflow-hidden ui:px-4 ui:pt-4 {compact ? 'ui:pb-8 ui:md:pb-12' : 'ui:pb-16 ui:md:pb-24'}"
     style={`background: ${heroGradientBackground};`}
   >
     <DotPattern class="ui:opacity-[0.08]" />
@@ -40,7 +42,7 @@
       {@render navigation()}
     </div>
 
-    <div class="ui:relative ui:py-20 ui:text-center ui:max-w-4xl ui:mx-auto">
+    <div class="ui:relative {compact ? 'ui:py-10' : 'ui:py-20'} ui:text-center ui:max-w-4xl ui:mx-auto">
       <h1 class="ui:text-5xl ui:md:text-6xl ui:font-semibold ui:tracking-tight ui:mb-6">{hero.heading}</h1>
       <ShinnyText
         shimmerWidth={120}
@@ -48,6 +50,9 @@
       >
         {hero.subheading}
       </ShinnyText>
+      {#if children}
+        <div class="ui:flex ui:justify-center ui:w-full ui:mb-8">{@render children()}</div>
+      {/if}
       {#if showActions}
         <div class="ui:flex ui:items-center ui:justify-center ui:gap-4">
           <Button
