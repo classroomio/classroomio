@@ -46,7 +46,7 @@
 
   function openCreateKeyModal() {
     if (!$hasPublicApiAccess) {
-      snackbar.error('upgrade.required');
+      snackbar.error(upgradeMessageKey);
       return;
     }
     resetCreateKeyModal();
