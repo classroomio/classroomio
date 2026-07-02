@@ -7,7 +7,7 @@
  * 2. Back up the database before running in production.
  *
  * The legacy `program*` tables are left untouched for rollback safety.
- * Re-running is safe: rows already present in cohort tables are skipped.
+ * Re-running clears all cohort tables first, then copies a fresh snapshot from program tables.
  */
 
 import { sql } from 'drizzle-orm';
@@ -74,6 +74,25 @@ const TABLE_COPIES: TableCopy[] = [
   }
 ];
 
+/** Child tables first; TRUNCATE … CASCADE clears the full cohort graph. */
+const COHORT_TABLES = [
+  'cohort_goal_assignment',
+  'cohort_newsfeed_comment',
+  'cohort_newsfeed',
+  'cohort_goal',
+  'cohort_course',
+  'cohort_member',
+  'cohort'
+] as const;
+
+async function clearCohortTables(): Promise<void> {
+  const tableList = COHORT_TABLES.map((table) => `"${table}"`).join(', ');
+
+  await db.execute(sql.raw(`TRUNCATE TABLE ${tableList} RESTART IDENTITY CASCADE`));
+
+  console.log(`  Cleared cohort tables: ${COHORT_TABLES.join(', ')}`);
+}
+
 async function getTableColumns(tableName: string): Promise<string[]> {
   const result = await db.execute<{ column_name: string }>(sql`
     SELECT column_name
@@ -123,7 +142,6 @@ async function copyTable({ label, source, target, columnMap = {}, enumCasts = {}
     INSERT INTO "${target}" (${insertList})
     SELECT ${selectList}
     FROM "${source}"
-    ON CONFLICT DO NOTHING
   `)
   );
 
@@ -162,6 +180,10 @@ async function migrateInviteMetadata(): Promise<number> {
 
 async function migrate() {
   console.log('Starting program → cohort data migration...\n');
+
+  console.log('Clearing existing cohort data...');
+  await clearCohortTables();
+  console.log('');
 
   let totalCopied = 0;
 
