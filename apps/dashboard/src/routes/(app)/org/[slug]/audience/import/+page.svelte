@@ -31,7 +31,7 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <ImportAudiencePage courses={data.courses} programs={data.programs} />
+      <ImportAudiencePage courses={data.courses} cohorts={data.cohorts} />
     {/snippet}
   </Page.Body>
 </Page.Root>
