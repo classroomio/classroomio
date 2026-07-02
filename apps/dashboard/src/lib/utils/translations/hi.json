@@ -503,7 +503,8 @@
     "download_lessons": "पाठ डाउनलोड करने के लिए अपग्रेड करें",
     "download_course": "पाठ्यक्रम डाउनलोड करने के लिए अपग्रेड करें",
     "required": "अपग्रेड आवश्यक",
-    "enterprise_required": "इस सुविधा के लिए एंटरप्राइज़ योजना की आवश्यकता है."
+    "enterprise_required": "इस सुविधा के लिए एंटरप्राइज़ योजना की आवश्यकता है.",
+    "public_api_required": "सार्वजनिक API तक पहुँचने के लिए Early Adopter या Enterprise में अपग्रेड करें।"
   },
   "analytics": {
     "title": "विश्लेषिकी",
@@ -3892,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "त्वरित शुरुआत",
+        "description": "हर अनुरोध पर अपनी API कुंजी को Bearer टोकन के रूप में उपयोग करें। प्लेसहोल्डर को ऊपर की कुंजी से बदलें, या कुंजी बनाने के तुरंत बाद सीक्रेट पेस्ट करें।"
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3916,7 +3921,11 @@
       "claude_code": "क्लाउड कोड",
       "codex": "कोडेक्स",
       "cursor": "कर्सर",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "tabs": {
       "mcp": "एम.सी.पी",

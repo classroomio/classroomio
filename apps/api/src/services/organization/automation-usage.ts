@@ -1,3 +1,4 @@
+import { env } from '@cio/core/config/env';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   countActiveOrganizationApiKeys,
@@ -12,11 +13,11 @@ import type { TOrganizationApiKey, TOrganizationApiKeyType, TPlan } from '@db/ty
 import {
   AUTOMATION_TYPE,
   getMcpAutomationCategory,
+  canUsePublicApi,
   getMcpAutomationLimits,
   MCP_TOOL_CREDIT_COST,
   type TMcpToolName
 } from '@cio/utils/plans';
-import { PLAN } from '@cio/utils/plans/constants';
 
 export type OrganizationAutomationUsageSummary = {
   type: TOrganizationApiKeyType;
@@ -59,8 +60,18 @@ export async function assertOrganizationAutomationKeyCreationAllowed(
 ): Promise<void> {
   const planName = await getOrganizationPlanName(organizationId);
 
-  if (type === AUTOMATION_TYPE.API && planName === PLAN.BASIC) {
-    throw new AppError('Public API keys require an Early Adopter or Enterprise plan', ErrorCodes.UPGRADE_REQUIRED, 403);
+  if (type === AUTOMATION_TYPE.API) {
+    const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
+
+    if (!canUsePublicApi(planName, isSelfHosted)) {
+      throw new AppError(
+        isSelfHosted
+          ? 'Public API keys require an Enterprise plan'
+          : 'Public API keys require an Early Adopter or Enterprise plan',
+        ErrorCodes.UPGRADE_REQUIRED,
+        403
+      );
+    }
   }
 
   if (type !== AUTOMATION_TYPE.MCP) {

@@ -3963,7 +3963,8 @@
     "download_lessons": "Upgrade to download lessons",
     "download_course": "Upgrade to download course",
     "required": "Upgrade Required",
-    "enterprise_required": "This feature requires an Enterprise plan."
+    "enterprise_required": "This feature requires an Enterprise plan.",
+    "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API."
   },
   "automation": {
     "title": "Automation",
@@ -3982,7 +3983,11 @@
       "claude_code": "Claude Code",
       "codex": "Codex",
       "cursor": "Cursor",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "keys": {
       "active": "Active",
@@ -4055,6 +4060,10 @@
           "cancel": "Cancel",
           "save": "Create key"
         }
+      },
+      "setup": {
+        "title": "Quick start",
+        "description": "Use your API key as a Bearer token on every request. Replace the placeholder with a key from above, or paste the secret immediately after you generate one."
       },
       "view_docs": "View Docs"
     },

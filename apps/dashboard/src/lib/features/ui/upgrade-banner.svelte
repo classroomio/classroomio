@@ -8,13 +8,16 @@
   interface Props {
     className?: string;
     onClick?: any;
+    visible?: boolean;
     children?: import('svelte').Snippet;
   }
 
-  let { className = '', onClick = () => {}, ...restProps }: Props = $props();
+  let { className = '', onClick = () => {}, visible, ...restProps }: Props = $props();
+
+  const shouldShow = $derived(visible ?? $isFreePlan);
 </script>
 
-{#if $isFreePlan}
+{#if shouldShow}
   <HoverableItem>
     {#snippet children(isHovered)}
       <Item.Root variant="outline" size="sm" class="h-fit w-full border-blue-700! py-2! {className}">

@@ -503,7 +503,8 @@
     "download_lessons": "Opgrader for at downloade lektioner",
     "download_course": "Opgrader for at downloade kursus",
     "required": "Opgradering påkrævet",
-    "enterprise_required": "Denne funktion kræver en Enterprise-plan."
+    "enterprise_required": "Denne funktion kræver en Enterprise-plan.",
+    "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API."
   },
   "analytics": {
     "title": "Analytics",
@@ -3892,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Hurtig start",
+        "description": "Brug din API-nøgle som Bearer-token på hver anmodning. Erstat pladsholderen med en nøgle ovenfor, eller indsæt hemmeligheden lige efter du genererer en."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3916,7 +3921,11 @@
       "claude_code": "Claude kode",
       "codex": "Codex",
       "cursor": "Markør",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "tabs": {
       "mcp": "MCP",

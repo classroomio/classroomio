@@ -503,7 +503,8 @@
     "download_lessons": "Actualice para descargar lecciones",
     "download_course": "Actualizar para descargar el curso",
     "required": "Actualización requerida",
-    "enterprise_required": "Esta característica requiere un plan Enterprise."
+    "enterprise_required": "Esta característica requiere un plan Enterprise.",
+    "public_api_required": "Actualiza a Early Adopter o Enterprise para acceder a la API pública."
   },
   "analytics": {
     "title": "Analítica",
@@ -3892,6 +3893,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Inicio rápido",
+        "description": "Usa tu clave API como token Bearer en cada solicitud. Reemplaza el marcador de posición con una clave de arriba, o pega el secreto inmediatamente después de generar una."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3916,7 +3921,11 @@
       "claude_code": "Código Claude",
       "codex": "Códice",
       "cursor": "Cursor",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "tabs": {
       "mcp": "MCP",
