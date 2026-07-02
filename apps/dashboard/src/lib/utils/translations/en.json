@@ -3982,7 +3982,10 @@
       "claude_code": "Claude Code",
       "codex": "Codex",
       "cursor": "Cursor",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python"
     },
     "keys": {
       "active": "Active",
@@ -4055,6 +4058,10 @@
           "cancel": "Cancel",
           "save": "Create key"
         }
+      },
+      "setup": {
+        "title": "Quick start",
+        "description": "Use your API key as a Bearer token on every request. Replace the placeholder with a key from above, or paste the secret immediately after you generate one."
       },
       "view_docs": "View Docs"
     },

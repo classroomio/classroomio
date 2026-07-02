@@ -3892,6 +3892,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Hurtig start",
+        "description": "Brug din API-nøgle som Bearer-token på hver anmodning. Erstat pladsholderen med en nøgle ovenfor, eller indsæt hemmeligheden lige efter du genererer en."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3916,7 +3920,10 @@
       "claude_code": "Claude kode",
       "codex": "Codex",
       "cursor": "Markør",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python"
     },
     "tabs": {
       "mcp": "MCP",

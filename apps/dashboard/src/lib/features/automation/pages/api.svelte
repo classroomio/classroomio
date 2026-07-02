@@ -1,6 +1,11 @@
 <script lang="ts">
   import { automationApi } from '$features/automation/api/automation.svelte';
-  import { getMaskedAutomationSecret } from '$features/automation/utils/automation-utils';
+  import {
+    getMaskedAutomationSecret,
+    getPublicApiCurlSnippet,
+    getPublicApiJavaScriptSnippet,
+    getPublicApiPythonSnippet
+  } from '$features/automation/utils/automation-utils';
   import { isOrgAdmin, isEnterprisePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -13,13 +18,16 @@
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import * as Field from '@cio/ui/base/field';
   import * as Table from '@cio/ui/base/table';
+  import * as Tabs from '@cio/ui/base/tabs';
   import { InputField } from '@cio/ui/custom/input-field';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { UpgradeBanner } from '$features/ui';
+  import CodeIcon from '@lucide/svelte/icons/code';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import KeyIcon from '@lucide/svelte/icons/key';
   import PlusIcon from '@lucide/svelte/icons/plus';
 
+  let activeSetupTab = $state('curl');
   let generatedSecret = $state<string | null>(null);
   let isCreateKeyModalOpen = $state(false);
   let keyLabel = $state('');
@@ -66,6 +74,7 @@
   }
 
   const apiKeys = $derived(automationApi.keys.filter((key) => key.type === 'api'));
+  const hasActiveApiKey = $derived(apiKeys.some((key) => !key.revokedAt));
 </script>
 
 <Field.Group class="mx-auto w-full space-y-2">
@@ -183,6 +192,48 @@
       {/if}
     {/if}
   </div>
+
+  {#if hasActiveApiKey}
+    <Field.Set class="gap-3!">
+      <Field.Legend class="flex items-center gap-2">
+        <CodeIcon class="size-5" />
+        {$t('automation.api.setup.title')}
+      </Field.Legend>
+      <Field.Description>{$t('automation.api.setup.description')}</Field.Description>
+
+      <Tabs.Root bind:value={activeSetupTab} class="w-full">
+        <Tabs.List class="inline-flex w-auto">
+          <Tabs.Trigger value="curl">{$t('automation.clients.curl')}</Tabs.Trigger>
+          <Tabs.Trigger value="javascript">{$t('automation.clients.javascript')}</Tabs.Trigger>
+          <Tabs.Trigger value="python">{$t('automation.clients.python')}</Tabs.Trigger>
+        </Tabs.List>
+
+        <Tabs.Content value="curl" class="mt-4">
+          <Code.Overflow>
+            <Code.Root code={getPublicApiCurlSnippet(generatedSecret)} lang="bash">
+              <Code.CopyButton />
+            </Code.Root>
+          </Code.Overflow>
+        </Tabs.Content>
+
+        <Tabs.Content value="javascript" class="mt-4">
+          <Code.Overflow>
+            <Code.Root code={getPublicApiJavaScriptSnippet(generatedSecret)} lang="javascript">
+              <Code.CopyButton />
+            </Code.Root>
+          </Code.Overflow>
+        </Tabs.Content>
+
+        <Tabs.Content value="python" class="mt-4">
+          <Code.Overflow>
+            <Code.Root code={getPublicApiPythonSnippet(generatedSecret)} lang="python">
+              <Code.CopyButton />
+            </Code.Root>
+          </Code.Overflow>
+        </Tabs.Content>
+      </Tabs.Root>
+    </Field.Set>
+  {/if}
 </Field.Group>
 
 <Dialog.Root

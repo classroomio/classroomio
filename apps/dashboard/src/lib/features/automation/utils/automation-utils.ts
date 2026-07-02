@@ -1,7 +1,49 @@
 import type { AutomationKeyType } from './types';
+import { PUBLIC_API_BASE_URL } from '@cio/utils/openapi/public-api';
+
+const PUBLIC_API_SETUP_SECRET_PLACEHOLDER = '<paste-your-api-key>';
 
 function getServerPath() {
   return 'npx -y @classroomio/mcp';
+}
+
+export function getPublicApiSetupSecret(secret: string | null) {
+  return secret ?? PUBLIC_API_SETUP_SECRET_PLACEHOLDER;
+}
+
+export function getPublicApiCurlSnippet(secret: string | null) {
+  const apiKey = getPublicApiSetupSecret(secret);
+
+  return `curl ${PUBLIC_API_BASE_URL}/audience \\
+  -H "Authorization: Bearer ${apiKey}"`;
+}
+
+export function getPublicApiJavaScriptSnippet(secret: string | null) {
+  const apiKey = getPublicApiSetupSecret(secret);
+
+  return `const response = await fetch('${PUBLIC_API_BASE_URL}/audience', {
+  headers: {
+    Authorization: 'Bearer ${apiKey}'
+  }
+});
+
+const { data } = await response.json();
+console.log(data);`;
+}
+
+export function getPublicApiPythonSnippet(secret: string | null) {
+  const apiKey = getPublicApiSetupSecret(secret);
+
+  return `import requests
+
+response = requests.get(
+    "${PUBLIC_API_BASE_URL}/audience",
+    headers={"Authorization": f"Bearer ${apiKey}"},
+)
+response.raise_for_status()
+
+data = response.json()["data"]
+print(data)`;
 }
 
 export function getAutomationSetupSecret(secret: string | null) {
