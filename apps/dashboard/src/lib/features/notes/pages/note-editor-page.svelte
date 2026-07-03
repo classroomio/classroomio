@@ -4,6 +4,7 @@
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import HistoryIcon from '@lucide/svelte/icons/history';
   import ShareIcon from '@lucide/svelte/icons/share-2';
+  import TrashIcon from '@lucide/svelte/icons/trash-2';
   import LoaderIcon from '@lucide/svelte/icons/loader';
   import { Button } from '@cio/ui/base/button';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -11,6 +12,7 @@
   import { Input } from '@cio/ui/base/input';
   import { Badge } from '@cio/ui/base/badge';
   import XIcon from '@lucide/svelte/icons/x';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { TextEditor } from '$features/ui';
   import { tagApi } from '$features/tag/api';
   import { currentOrgPath } from '$lib/utils/store/org';
@@ -43,6 +45,8 @@
   let isSavingTags = $state(false);
   let loadError = $state<string | null>(null);
   let showVersionHistory = $state(false);
+  let showDeleteDialog = $state(false);
+  let isDeleting = $state(false);
   let saveTimer: ReturnType<typeof setTimeout> | null = null;
   let titleSaveTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -162,6 +166,21 @@
     void goto(resolve(`${$currentOrgPath}/notes`, {}));
   }
 
+  async function handleDeleteNote() {
+    isDeleting = true;
+    const deleted = await notesApi.deleteNote(noteId);
+    isDeleting = false;
+
+    if (!deleted) {
+      snackbar.error('notes.editor.delete_error');
+      return;
+    }
+
+    snackbar.success('notes.editor.delete_success');
+    showDeleteDialog = false;
+    void goto(resolve(`${$currentOrgPath}/notes`, {}));
+  }
+
   function handleVersionRestore(restoredContent: string) {
     content = restoredContent;
     showVersionHistory = false;
@@ -220,6 +239,13 @@
           <HistoryIcon size={16} />
           {$t('notes.editor.version_history.open')}
         </Button>
+
+        {#if noteOrigin === 'workspace'}
+          <Button variant="destructive" size="sm" onclick={() => (showDeleteDialog = true)}>
+            <TrashIcon size={16} />
+            {$t('notes.editor.delete')}
+          </Button>
+        {/if}
       {/if}
     </div>
   </header>
@@ -304,3 +330,18 @@
   onClose={() => (showVersionHistory = false)}
   onRestore={handleVersionRestore}
 />
+
+<Dialog.Root bind:open={showDeleteDialog}>
+  <Dialog.Content class="max-w-md">
+    <Dialog.Header>
+      <Dialog.Title>{$t('notes.editor.delete_title')}</Dialog.Title>
+      <Dialog.Description>{$t('notes.editor.delete_description')}</Dialog.Description>
+    </Dialog.Header>
+    <Dialog.Footer>
+      <Button variant="secondary" onclick={() => (showDeleteDialog = false)}>{$t('notes.share.cancel')}</Button>
+      <Button variant="destructive" loading={isDeleting} onclick={handleDeleteNote}>
+        {$t('notes.editor.delete_confirm')}
+      </Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>

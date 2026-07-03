@@ -4162,7 +4162,13 @@
         "restore_success": "Version restored",
         "restore_error": "Could not restore version.",
         "load_more": "Load more"
-      }
+      },
+      "delete": "Delete",
+      "delete_title": "Delete note?",
+      "delete_description": "This note will be permanently removed. This action cannot be undone.",
+      "delete_confirm": "Delete note",
+      "delete_success": "Note deleted",
+      "delete_error": "Could not delete note."
     }
   },
   "certificates": {
