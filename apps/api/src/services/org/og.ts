@@ -4,7 +4,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getCloudflarePngBuffer } from '@api/utils/cloudflare';
 import { resolveThemeColor } from '@cio/email';
 import { getActiveOrganizationPlan, getOrganizationBySiteName } from '@cio/db/queries/organization';
-import { extractOrgTagline, renderOrgSiteOg } from '@cio/og-images';
+import { extractOrgTagline, renderOrgSiteOg } from '@api/utils/org-site-og';
 import { isOrgOnFreePlan } from '@cio/utils/plans';
 import { env } from '@cio/core/config/env';
 

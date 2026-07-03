@@ -87,9 +87,6 @@ importers:
       '@cio/jobs':
         specifier: workspace:*
         version: link:../../packages/jobs
-      '@cio/og-images':
-        specifier: workspace:*
-        version: link:../../packages/og-images
       '@cio/question-types':
         specifier: workspace:*
         version: link:../../packages/question-types
@@ -1319,19 +1316,6 @@ importers:
       zod:
         specifier: 4.2.1
         version: 4.2.1
-
-  packages/og-images:
-    dependencies:
-      '@cio/tsconfig':
-        specifier: workspace:*
-        version: link:../tsconfig
-    devDependencies:
-      tsc-alias:
-        specifier: ^1.8.16
-        version: 1.8.16
-      typescript:
-        specifier: ^5.5.2
-        version: 5.9.3
 
   packages/question-types:
     dependencies:
