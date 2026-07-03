@@ -23,7 +23,7 @@ export function getOrgSiteOgImageUrl(siteName: string): string | null {
     return null;
   }
 
-  return `${apiBase.replace(/\/$/, '')}/org/og/${encodeURIComponent(siteName)}.png`;
+  return `${apiBase.replace(/\/$/, '')}/org-site/og/${encodeURIComponent(siteName)}.png`;
 }
 
 function resolveOgImageUrl(url: URL, orgSiteInfo: OrgSiteInfo): string {

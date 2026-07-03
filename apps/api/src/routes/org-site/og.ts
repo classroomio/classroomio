@@ -2,7 +2,7 @@ import { generateOrgSiteOgImage, getOrgSiteOgFallbackImageUrl, normalizeOrgOgSit
 import { Hono } from '@api/utils/hono';
 import { AppError } from '@api/utils/errors';
 
-export const orgOgRouter = new Hono().get('/og/:siteName', async (c) => {
+export const orgSiteOgRouter = new Hono().get('/:siteName', async (c) => {
   try {
     const siteName = normalizeOrgOgSiteName(c.req.param('siteName'));
     const { buffer, etag } = await generateOrgSiteOgImage(siteName);
