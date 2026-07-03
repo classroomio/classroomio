@@ -20,6 +20,7 @@
     hero,
     courses,
     hasMoreCourses = false,
+    coursesLoaded = true,
     disableCourseLinks = false,
     embed,
     callout,
@@ -57,7 +58,7 @@
       {/snippet}
     </VibrantHero>
 
-    {#if courses.length === 0}
+    {#if coursesLoaded && courses.length === 0}
       <section id="courses" class="ui:px-6 ui:md:px-8 ui:py-24 ui:md:py-28 ui:bg-[var(--landing-bg)]">
         <div class="ui:max-w-[1320px] ui:mx-auto">
           <OrgLandingPageCoursesEmpty {labels} />

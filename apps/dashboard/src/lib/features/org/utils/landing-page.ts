@@ -702,7 +702,8 @@ export function buildOrgLandingPageProps(
   landingpage: unknown,
   courses: OrgPublicCourses,
   hasMoreCourses = false,
-  authAction?: OrgLandingPageProps['authAction']
+  authAction?: OrgLandingPageProps['authAction'],
+  options?: { coursesLoaded?: boolean }
 ): OrgLandingPageProps {
   const normalizedLandingPage = normalizeLandingPageSettings(landingpage);
 
@@ -713,6 +714,7 @@ export function buildOrgLandingPageProps(
     ...normalizedLandingPage,
     courses: mapPublicCoursesToLandingPageCourses(courses),
     hasMoreCourses,
+    coursesLoaded: options?.coursesLoaded ?? true,
     labels: buildOrgLandingPageLabels()
   };
 }

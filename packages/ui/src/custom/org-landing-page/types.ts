@@ -346,6 +346,8 @@ export interface OrgLandingPageProps {
   };
   courses: CourseItem[];
   hasMoreCourses?: boolean;
+  /** When false, templates suppress the empty catalog state while courses are still loading. */
+  coursesLoaded?: boolean;
   disableCourseLinks?: boolean;
   embed?: LandingPageEmbed;
   callout?: LandingPageCallout;

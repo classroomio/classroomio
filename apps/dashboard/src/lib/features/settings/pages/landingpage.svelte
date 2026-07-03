@@ -135,13 +135,17 @@
       : { label: t.get('navigation.login'), href: '/login' }
   );
 
+  const coursesLoaded = $derived(!$currentOrg.siteName || orgApi.publicCoursesLoadedSiteName === $currentOrg.siteName);
+
   const previewProps = $derived(
-    buildOrgLandingPageProps($currentOrg, normalized, orgApi.publicCourses, orgApi.hasMorePublicCourses, authAction)
+    buildOrgLandingPageProps($currentOrg, normalized, orgApi.publicCourses, orgApi.hasMorePublicCourses, authAction, {
+      coursesLoaded
+    })
   );
 
   onMount(() => {
     if ($currentOrg.siteName) {
-      void orgApi.loadPublicCoursesIfNeeded($currentOrg.siteName);
+      void orgApi.refreshPublicCourses($currentOrg.siteName);
     }
   });
 

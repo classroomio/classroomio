@@ -19,6 +19,7 @@
     hero,
     courses,
     hasMoreCourses = false,
+    coursesLoaded = true,
     disableCourseLinks = false,
     embed,
     callout,
@@ -65,7 +66,7 @@
           {/if}
         </div>
 
-        {#if courses.length === 0}
+        {#if coursesLoaded && courses.length === 0}
           <OrgLandingPageCoursesEmpty {labels} />
         {:else}
           <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-3">

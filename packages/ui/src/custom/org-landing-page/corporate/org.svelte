@@ -19,6 +19,7 @@
     hero,
     courses,
     hasMoreCourses = false,
+    coursesLoaded = true,
     disableCourseLinks = false,
     embed,
     callout,
@@ -62,7 +63,7 @@
           {/if}
         </div>
 
-        {#if courses.length === 0}
+        {#if coursesLoaded && courses.length === 0}
           <OrgLandingPageCoursesEmpty {labels} />
         {:else}
           <div

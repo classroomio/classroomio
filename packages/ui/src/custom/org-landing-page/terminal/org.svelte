@@ -20,6 +20,7 @@
     hero,
     courses,
     hasMoreCourses = false,
+    coursesLoaded = true,
     disableCourseLinks = false,
     embed,
     callout,
@@ -109,7 +110,7 @@
             'Tracks built around real-world artifacts — pull requests, postmortems, and runbooks. No filler.'}
         </p>
 
-        {#if courses.length === 0}
+        {#if coursesLoaded && courses.length === 0}
           <OrgLandingPageCoursesEmpty {labels} />
         {:else}
           {#if tabs.length > 1}

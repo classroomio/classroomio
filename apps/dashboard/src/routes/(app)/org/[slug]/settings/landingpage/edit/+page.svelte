@@ -90,13 +90,16 @@
         }
   );
 
+  const coursesLoaded = $derived(!$currentOrg.siteName || orgApi.publicCoursesLoadedSiteName === $currentOrg.siteName);
+
   const previewProps = $derived(
     buildOrgLandingPageProps(
       $currentOrg,
       previewLandingPageSettings,
       orgApi.publicCourses,
       orgApi.hasMorePublicCourses,
-      authAction
+      authAction,
+      { coursesLoaded }
     )
   );
 
