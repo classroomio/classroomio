@@ -223,18 +223,6 @@
       <ArrowLeftIcon size={16} />
     </IconButton>
 
-    <Input
-      value={title}
-      readonly={!canWrite}
-      class="min-w-[12rem] flex-1 border-none text-2xl font-semibold shadow-none focus-visible:ring-0"
-      placeholder={$t('notes.editor.title_placeholder')}
-      oninput={scheduleTitleSave}
-    />
-
-    {#if !canWrite && ownerFullname}
-      <Badge variant="secondary">{$t('notes.share.by_author', { name: ownerFullname })}</Badge>
-    {/if}
-
     <div class="ml-auto flex items-center gap-2">
       {#if isSaving}
         <LoaderIcon size={16} class="ui:text-muted-foreground animate-spin" />
@@ -294,6 +282,20 @@
       {/if}
     </div>
   </header>
+
+  <div class="flex flex-col gap-2">
+    <Input
+      value={title}
+      readonly={!canWrite}
+      class="ui:h-auto ui:w-full ui:rounded-none ui:border-0 ui:bg-transparent ui:px-0 ui:py-0 ui:text-3xl ui:font-semibold ui:shadow-none ui:focus-visible:border-0 ui:focus-visible:ring-0"
+      placeholder={$t('notes.editor.title_placeholder')}
+      oninput={scheduleTitleSave}
+    />
+
+    {#if !canWrite && ownerFullname}
+      <Badge variant="secondary" class="w-fit">{$t('notes.share.by_author', { name: ownerFullname })}</Badge>
+    {/if}
+  </div>
 
   {#if !isLoading && !loadError}
     <NoteCommentsBar {canWrite} />
