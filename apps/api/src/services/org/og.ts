@@ -38,10 +38,10 @@ export async function generateOrgSiteOgImage(siteName: string): Promise<{ buffer
   }
 
   const activePlan = await getActiveOrganizationPlan(organization.id);
-  const isFreePlan = isOrgOnFreePlan(
-    activePlan ? [{ planName: activePlan.planName, isActive: activePlan.isActive }] : [],
+  const isFreePlan = isOrgOnFreePlan({
+    plans: activePlan ? [{ planName: activePlan.planName, isActive: activePlan.isActive }] : [],
     isSelfHosted
-  );
+  });
 
   const tagline = isFreePlan ? undefined : extractOrgTagline(organization.landingpage);
   const themeColor = resolveThemeColor(organization.theme) ?? '#1d4ed8';

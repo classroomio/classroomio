@@ -4,7 +4,7 @@ import merge from 'lodash/merge';
 
 import type { AccountOrg } from '$features/app/types';
 import type { OrgTeamMember } from '../types/org';
-import { canUsePublicApi, isOrgOnFreePlan as isOrgOnFreePlanByPlans, PLAN } from '@cio/utils/plans';
+import { canUsePublicApi, isOrgOnFreePlan, PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import { STEPS } from '../constants/quiz';
@@ -71,14 +71,6 @@ const getActivePlan = (org: AccountOrg) => {
   return org.plans.find((p) => p.isActive);
 };
 
-export function isOrgOnFreePlan(org: AccountOrg | null | undefined) {
-  if (!org?.id) {
-    return false;
-  }
-
-  return isOrgOnFreePlanByPlans(org.plans, PUBLIC_IS_SELFHOSTED === 'true');
-}
-
 export const currentOrgPlan = derived(currentOrg, ($currentOrg) => getActivePlan($currentOrg));
 
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
@@ -134,7 +126,13 @@ export function getOrgPublicUrl(org: OrgPublicOrigin, pathname = '/'): string {
 
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => getOrgPublicOrigin($currentOrg));
 
-export const isFreePlan = derived(currentOrg, ($currentOrg) => isOrgOnFreePlan($currentOrg));
+export const isFreePlan = derived(currentOrg, ($currentOrg) =>
+  isOrgOnFreePlan({
+    plans: $currentOrg.plans,
+    isSelfHosted: PUBLIC_IS_SELFHOSTED === 'true',
+    orgId: $currentOrg.id
+  })
+);
 
 export const isEnterprisePlan = derived(currentOrg, ($currentOrg) => {
   if (PUBLIC_IS_SELFHOSTED === 'true') return true;

@@ -12,7 +12,8 @@ import {
 import type { AccountOrg } from '$features/app/types';
 import type { Component } from 'svelte';
 import { isActive } from '$lib/utils/functions/app';
-import { isOrgOnFreePlan } from '$lib/utils/store/org';
+import { isOrgOnFreePlan } from '@cio/utils/plans';
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
 export interface NavItem {
   title: string;
@@ -64,7 +65,12 @@ export const baseNavConfig: NavItemConfig[] = [
     path: '/certificates',
     icon: CertificateIcon,
     matchPattern: '^/lms/certificates(/.*)?$',
-    show: (currentOrg) => !isOrgOnFreePlan(currentOrg)
+    show: (currentOrg) =>
+      !isOrgOnFreePlan({
+        plans: currentOrg?.plans,
+        isSelfHosted: PUBLIC_IS_SELFHOSTED === 'true',
+        orgId: currentOrg?.id
+      })
   },
   {
     titleKey: 'lms_navigation.explore',

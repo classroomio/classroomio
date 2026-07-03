@@ -5,7 +5,17 @@ export type OrgPlanLike = {
   isActive: boolean | null;
 };
 
-export function isOrgOnFreePlan(plans: OrgPlanLike[] | undefined | null, isSelfHosted: boolean): boolean {
+export type IsOrgOnFreePlanOptions = {
+  plans?: OrgPlanLike[] | null;
+  isSelfHosted: boolean;
+  orgId?: string | null;
+};
+
+export function isOrgOnFreePlan({ plans, isSelfHosted, orgId }: IsOrgOnFreePlanOptions): boolean {
+  if (orgId !== undefined && !orgId) {
+    return false;
+  }
+
   if (isSelfHosted) {
     return false;
   }
