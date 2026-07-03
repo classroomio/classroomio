@@ -4,7 +4,7 @@ import merge from 'lodash/merge';
 
 import type { AccountOrg } from '$features/app/types';
 import type { OrgTeamMember } from '../types/org';
-import { canUsePublicApi, PLAN } from '@cio/utils/plans';
+import { canUsePublicApi, isOrgOnFreePlan as isOrgOnFreePlanByPlans, PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import { STEPS } from '../constants/quiz';
@@ -72,13 +72,11 @@ const getActivePlan = (org: AccountOrg) => {
 };
 
 export function isOrgOnFreePlan(org: AccountOrg | null | undefined) {
-  if (!org?.id || PUBLIC_IS_SELFHOSTED === 'true') {
+  if (!org?.id) {
     return false;
   }
 
-  const plan = getActivePlan(org);
-
-  return !plan || plan.planName === PLAN.BASIC;
+  return isOrgOnFreePlanByPlans(org.plans, PUBLIC_IS_SELFHOSTED === 'true');
 }
 
 export const currentOrgPlan = derived(currentOrg, ($currentOrg) => getActivePlan($currentOrg));
