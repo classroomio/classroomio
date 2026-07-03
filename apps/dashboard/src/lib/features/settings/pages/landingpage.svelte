@@ -141,9 +141,7 @@
 
   onMount(() => {
     if ($currentOrg.siteName) {
-      orgApi.publicCourses = [];
-      orgApi.hasMorePublicCourses = false;
-      void orgApi.getPublicCoursesBySiteName($currentOrg.siteName);
+      void orgApi.loadPublicCoursesIfNeeded($currentOrg.siteName);
     }
   });
 

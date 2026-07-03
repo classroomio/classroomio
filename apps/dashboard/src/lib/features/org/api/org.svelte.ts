@@ -70,6 +70,7 @@ class OrgApi extends BaseApiWithErrors {
   audiencePagination = $state<OrganizationAudiencePagination | null>(null);
   publicCourses: OrgPublicCourses = $state([]);
   hasMorePublicCourses = $state(false);
+  publicCoursesLoadedSiteName: string | null = $state(null);
 
   isFetchingOrgPublicCourses = $state(false);
   private activeAudienceRequestController: AbortController | null = null;
@@ -156,6 +157,18 @@ class OrgApi extends BaseApiWithErrors {
   }
 
   /**
+   * Loads public courses for a site when they have not been fetched yet.
+   * Skips the request when courses are already in memory for the same site.
+   */
+  async loadPublicCoursesIfNeeded(siteName: string) {
+    if (!siteName || this.publicCoursesLoadedSiteName === siteName) {
+      return;
+    }
+
+    await this.getPublicCoursesBySiteName(siteName);
+  }
+
+  /**
    * Gets public courses by organization siteName (for landing pages)
    * @param siteName Organization site name
    * @returns Published courses array
@@ -172,6 +185,7 @@ class OrgApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         this.publicCourses = response.data.courses;
         this.hasMorePublicCourses = response.data.hasMoreCourses;
+        this.publicCoursesLoadedSiteName = siteName;
       }
     });
 

@@ -64,10 +64,13 @@
       return;
     }
 
-    orgApi.publicCourses = [];
-    orgApi.hasMorePublicCourses = false;
+    if (orgApi.publicCoursesLoadedSiteName === siteName) {
+      hasLoadedCourses = true;
+      return;
+    }
+
     hasLoadedCourses = false;
-    void orgApi.getPublicCoursesBySiteName(siteName).finally(() => {
+    void orgApi.loadPublicCoursesIfNeeded(siteName).finally(() => {
       hasLoadedCourses = true;
     });
   });
