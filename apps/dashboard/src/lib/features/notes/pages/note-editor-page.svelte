@@ -1,28 +1,35 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { resolve } from '$app/paths';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import HistoryIcon from '@lucide/svelte/icons/history';
   import ShareIcon from '@lucide/svelte/icons/share-2';
   import TrashIcon from '@lucide/svelte/icons/trash-2';
+  import SparklesIcon from '@lucide/svelte/icons/sparkles';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import LoaderIcon from '@lucide/svelte/icons/loader';
+  import XIcon from '@lucide/svelte/icons/x';
+  import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { Button } from '@cio/ui/base/button';
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import type { Content, TiptapEditor } from '@cio/ui/custom/editor';
+  import type { Content } from '@cio/ui/custom/editor';
   import { Input } from '@cio/ui/base/input';
   import { Badge } from '@cio/ui/base/badge';
-  import XIcon from '@lucide/svelte/icons/x';
   import * as Dialog from '@cio/ui/base/dialog';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import { Waves } from '@cio/ui/custom/animation';
   import { TextEditor } from '$features/ui';
   import { tagApi } from '$features/tag/api';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { sidePanel } from '$features/side-panel';
   import { notesApi } from '../api';
+  import { NOTE_AI_PANEL_ID } from '../panel';
   import NoteShareDialog from '../components/note-share-dialog.svelte';
   import NoteTagPicker from '../components/note-tag-picker.svelte';
   import NoteVersionHistory from '../components/note-version-history.svelte';
+  import NoteCommentsBar from '../components/note-comments-bar.svelte';
   import type { NoteShareVisibility } from '../utils/types';
 
   interface Props {
@@ -163,7 +170,12 @@
   }
 
   function handleBack() {
+    sidePanel.closeIfScope('notes');
     void goto(resolve(`${$currentOrgPath}/notes`, {}));
+  }
+
+  function toggleNoteAiPanel() {
+    sidePanel.toggle(NOTE_AI_PANEL_ID, { noteId, noteTitle: title });
   }
 
   async function handleDeleteNote() {
@@ -178,6 +190,7 @@
 
     snackbar.success('notes.editor.delete_success');
     showDeleteDialog = false;
+    sidePanel.closeIfScope('notes');
     void goto(resolve(`${$currentOrgPath}/notes`, {}));
   }
 
@@ -204,8 +217,8 @@
   });
 </script>
 
-<div class="flex min-h-[calc(100vh-8rem)] flex-col">
-  <header class="border-border flex items-center gap-3 border-b pb-4">
+<div class="mx-auto flex min-h-[calc(100vh-10rem)] w-full max-w-4xl flex-col gap-4 px-1 pt-2 pb-8">
+  <header class="flex flex-wrap items-center gap-3">
     <IconButton variant="secondary" size="icon" onclick={handleBack}>
       <ArrowLeftIcon size={16} />
     </IconButton>
@@ -213,7 +226,7 @@
     <Input
       value={title}
       readonly={!canWrite}
-      class="max-w-xl border-none text-lg font-semibold shadow-none focus-visible:ring-0"
+      class="min-w-[12rem] flex-1 border-none text-2xl font-semibold shadow-none focus-visible:ring-0"
       placeholder={$t('notes.editor.title_placeholder')}
       oninput={scheduleTitleSave}
     />
@@ -228,36 +241,72 @@
       {/if}
 
       {#if canWrite && noteOrigin === 'workspace'}
-        <Button variant="secondary" size="sm" onclick={() => (showShareDialog = true)}>
+        <Button size="sm" onclick={() => (showShareDialog = true)}>
           <ShareIcon size={16} />
           {$t('notes.share.open')}
         </Button>
       {/if}
 
       {#if canWrite}
-        <Button variant="secondary" size="sm" onclick={() => (showVersionHistory = true)}>
-          <HistoryIcon size={16} />
-          {$t('notes.editor.version_history.open')}
+        <Button
+          size="sm"
+          variant="secondary"
+          onclick={toggleNoteAiPanel}
+          class="ui:bg-primary ui:text-primary-foreground relative overflow-hidden border-0"
+        >
+          <Waves
+            lineColor="rgba(255,255,255,0.55)"
+            xGap={8}
+            yGap={12}
+            waveAmpX={18}
+            waveAmpY={9}
+            waveSpeedX={0.04}
+            waveSpeedY={0.02}
+          />
+          <SparklesIcon size={16} />
+          {$t('notes.ai_panel.open')}
         </Button>
+      {/if}
 
-        {#if noteOrigin === 'workspace'}
-          <Button variant="destructive" size="sm" onclick={() => (showDeleteDialog = true)}>
-            <TrashIcon size={16} />
-            {$t('notes.editor.delete')}
-          </Button>
-        {/if}
+      {#if canWrite}
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            {#snippet child({ props })}
+              <IconButton {...props} variant="secondary" size="icon" aria-label={$t('notes.editor.more_actions')}>
+                <EllipsisVerticalIcon size={16} />
+              </IconButton>
+            {/snippet}
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content align="end">
+            <DropdownMenu.Item onclick={() => (showVersionHistory = true)}>
+              <HistoryIcon size={16} />
+              {$t('notes.editor.version_history.open')}
+            </DropdownMenu.Item>
+            {#if noteOrigin === 'workspace'}
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item class="text-red-600" onclick={() => (showDeleteDialog = true)}>
+                <TrashIcon size={16} />
+                {$t('notes.editor.delete')}
+              </DropdownMenu.Item>
+            {/if}
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
       {/if}
     </div>
   </header>
 
+  {#if !isLoading && !loadError}
+    <NoteCommentsBar {canWrite} />
+  {/if}
+
   {#if !isLoading && !loadError && !canWrite}
-    <p class="ui:text-muted-foreground border-border border-b py-2 text-sm">
+    <p class="ui:text-muted-foreground text-sm">
       {$t('notes.share.read_only_banner')}
     </p>
   {/if}
 
   {#if !isLoading && !loadError && noteOrigin === 'workspace' && canWrite}
-    <div class="border-border flex flex-wrap items-center gap-2 border-b py-3">
+    <div class="flex flex-wrap items-center gap-2">
       <span class="ui:text-muted-foreground text-sm font-medium">{$t('notes.tags.heading')}</span>
 
       {#each selectedTagChips as tag (tag.id)}
@@ -293,7 +342,7 @@
     </div>
   {/if}
 
-  <div class="min-h-0 flex-1 py-4">
+  <div class="min-h-0 flex-1">
     {#if isLoading}
       <div class="ui:text-muted-foreground flex h-40 items-center justify-center text-sm">
         <LoaderIcon size={18} class="mr-2 animate-spin" />
@@ -302,15 +351,16 @@
     {:else if loadError}
       <p class="ui:text-destructive text-sm">{loadError}</p>
     {:else}
-      <div class="min-h-[60vh]">
-        <TextEditor
-          {content}
-          showToolBar={canWrite}
-          editable={canWrite}
-          onChange={scheduleContentSave}
-          placeholder={$t('notes.editor.placeholder')}
-        />
-      </div>
+      <TextEditor
+        {content}
+        showToolBar={false}
+        editable={canWrite}
+        class="border-none shadow-none"
+        editorClass="min-h-[60vh] px-0"
+        onChange={scheduleContentSave}
+        placeholder={$t('notes.editor.placeholder')}
+      />
+      <p class="ui:text-muted-foreground mt-2 text-xs">{$t('notes.editor.slash_hint')}</p>
     {/if}
   </div>
 </div>

@@ -2,6 +2,7 @@
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import HistoryIcon from '@lucide/svelte/icons/history';
   import LoaderIcon from '@lucide/svelte/icons/loader';
+  import XIcon from '@lucide/svelte/icons/x';
   import { diffLines } from 'diff';
   import { Button } from '@cio/ui/base/button';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -102,85 +103,94 @@
   });
 
   $effect(() => {
-    if (!selectedVersion || !diffContainer) return;
+    if (!open || !selectedVersion || !diffContainer) return;
 
     renderDiff(selectedVersion);
   });
 </script>
 
 {#if open}
-  <aside class="border-border bg-background fixed inset-0 z-50 flex">
-    <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
-      <header class="border-border flex items-center gap-2 border-b px-4 py-3">
-        <IconButton variant="secondary" size="icon" onclick={() => onClose?.()}>
-          <ArrowLeftIcon size={16} />
-        </IconButton>
+  <div class="fixed inset-0 z-[120]">
+    <button
+      type="button"
+      class="absolute inset-0 bg-black/40"
+      aria-label={$t('notes.share.cancel')}
+      onclick={() => onClose?.()}
+    ></button>
 
-        <h2 class="text-sm font-semibold">{$t('notes.editor.version_history.title')}</h2>
+    <aside class="bg-background absolute inset-y-0 right-0 flex w-full max-w-5xl border-l shadow-xl">
+      <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <header class="border-border flex items-center gap-2 border-b px-4 py-3">
+          <IconButton variant="secondary" size="icon" onclick={() => onClose?.()}>
+            <XIcon size={16} />
+          </IconButton>
 
-        {#if selectedVersionIndex !== 0}
-          <Button class="ml-auto" size="sm" loading={isRestoring} onclick={restoreSelectedVersion}>
-            {$t('notes.editor.version_history.restore')}
-          </Button>
-        {/if}
-      </header>
+          <h2 class="text-sm font-semibold">{$t('notes.editor.version_history.title')}</h2>
 
-      <div class="min-h-0 flex-1 overflow-y-auto p-6">
+          {#if selectedVersionIndex !== 0}
+            <Button class="ml-auto" size="sm" loading={isRestoring} onclick={restoreSelectedVersion}>
+              {$t('notes.editor.version_history.restore')}
+            </Button>
+          {/if}
+        </header>
+
+        <div class="min-h-0 flex-1 overflow-y-auto p-6">
+          {#if isLoading}
+            <div class="ui:text-muted-foreground flex h-40 items-center justify-center text-sm">
+              <LoaderIcon size={18} class="mr-2 animate-spin" />
+              {$t('notes.editor.version_history.loading')}
+            </div>
+          {:else if !selectedVersion}
+            <p class="ui:text-muted-foreground text-sm">{$t('notes.editor.version_history.empty')}</p>
+          {:else}
+            <div bind:this={diffContainer} class="prose dark:prose-invert max-w-none whitespace-pre-wrap"></div>
+            <div class="mt-6 rounded-lg border p-4">
+              <p class="ui:text-muted-foreground mb-2 text-xs font-medium uppercase">
+                {$t('notes.editor.version_history.preview')}
+              </p>
+              <SafeHtmlContent content={selectedVersion.newContent ?? ''} />
+            </div>
+          {/if}
+        </div>
+      </div>
+
+      <div class="border-border bg-muted/20 w-80 shrink-0 overflow-y-auto border-l">
+        <p class="flex items-center gap-2 px-4 py-4 text-sm font-medium">
+          <HistoryIcon size={16} />
+          {$t('notes.editor.version_history.versions')}
+        </p>
+
         {#if isLoading}
-          <div class="ui:text-muted-foreground flex h-40 items-center justify-center text-sm">
-            <LoaderIcon size={18} class="mr-2 animate-spin" />
-            {$t('notes.editor.version_history.loading')}
+          <div class="px-4 py-2">
+            <LoaderIcon size={16} class="animate-spin" />
           </div>
-        {:else if !selectedVersion}
-          <p class="ui:text-muted-foreground text-sm">{$t('notes.editor.version_history.empty')}</p>
         {:else}
-          <div bind:this={diffContainer} class="prose dark:prose-invert max-w-none whitespace-pre-wrap"></div>
-          <div class="mt-6 rounded-lg border p-4">
-            <p class="ui:text-muted-foreground mb-2 text-xs font-medium uppercase">
-              {$t('notes.editor.version_history.preview')}
-            </p>
-            <SafeHtmlContent content={selectedVersion.newContent ?? ''} />
+          {#each versions as version, index (version.id)}
+            <button
+              type="button"
+              onclick={() => {
+                selectedVersionIndex = index;
+              }}
+              class="hover:bg-muted flex w-full flex-col items-start px-4 py-3 text-left {index === selectedVersionIndex
+                ? 'bg-muted'
+                : ''}"
+            >
+              <span class="text-sm font-medium">{formatTimestamp(version.timestamp)}</span>
+              {#if index === 0}
+                <span class="ui:text-muted-foreground text-xs italic">
+                  {$t('notes.editor.version_history.current')}
+                </span>
+              {/if}
+            </button>
+          {/each}
+
+          <div class="px-4 py-3">
+            <Button variant="secondary" size="sm" onclick={loadMoreVersions}>
+              {$t('notes.editor.version_history.load_more')}
+            </Button>
           </div>
         {/if}
       </div>
-    </div>
-
-    <div class="border-border w-80 shrink-0 overflow-y-auto border-l">
-      <p class="flex items-center gap-2 px-4 py-4 text-sm font-medium">
-        <HistoryIcon size={16} />
-        {$t('notes.editor.version_history.versions')}
-      </p>
-
-      {#if isLoading}
-        <div class="px-4 py-2">
-          <LoaderIcon size={16} class="animate-spin" />
-        </div>
-      {:else}
-        {#each versions as version, index (version.id)}
-          <button
-            type="button"
-            onclick={() => {
-              selectedVersionIndex = index;
-            }}
-            class="hover:bg-muted flex w-full flex-col items-start px-4 py-3 text-left {index === selectedVersionIndex
-              ? 'bg-muted'
-              : ''}"
-          >
-            <span class="text-sm font-medium">{formatTimestamp(version.timestamp)}</span>
-            {#if index === 0}
-              <span class="ui:text-muted-foreground text-xs italic">
-                {$t('notes.editor.version_history.current')}
-              </span>
-            {/if}
-          </button>
-        {/each}
-
-        <div class="px-4 py-3">
-          <Button variant="secondary" size="sm" onclick={loadMoreVersions}>
-            {$t('notes.editor.version_history.load_more')}
-          </Button>
-        </div>
-      {/if}
-    </div>
-  </aside>
+    </aside>
+  </div>
 {/if}

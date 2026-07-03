@@ -1,6 +1,6 @@
 import type { Component } from 'svelte';
 
-export type SidePanelScope = 'course' | 'lesson';
+export type SidePanelScope = 'course' | 'lesson' | 'notes';
 
 export interface SidePanelDefinition {
   id: string;

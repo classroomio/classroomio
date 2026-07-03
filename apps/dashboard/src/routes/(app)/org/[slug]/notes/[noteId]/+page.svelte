@@ -12,7 +12,7 @@
 </svelte:head>
 
 <Page.Root class="w-full max-w-none">
-  <Page.Body>
+  <Page.Body class="pt-0">
     {#snippet child()}
       <NoteEditorPage {noteId} />
     {/snippet}

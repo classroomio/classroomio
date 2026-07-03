@@ -4168,7 +4168,22 @@
       "delete_description": "This note will be permanently removed. This action cannot be undone.",
       "delete_confirm": "Delete note",
       "delete_success": "Note deleted",
-      "delete_error": "Could not delete note."
+      "delete_error": "Could not delete note.",
+      "more_actions": "More actions",
+      "slash_hint": "Type / for formatting commands."
+    },
+    "comments": {
+      "heading": "Comments",
+      "count": "{count} comments",
+      "add": "Add comment",
+      "empty": "No comments yet. Start a thread at the top of this note."
+    },
+    "ai_panel": {
+      "open": "Ask AI",
+      "title": "Note assistant",
+      "empty_title": "Ask about this note",
+      "empty_description": "Get help summarizing, expanding, or turning this note into course content.",
+      "note_context": "Responses will use this note as context."
     }
   },
   "certificates": {
@@ -4861,7 +4876,8 @@
     "titles": {
       "ai_assistant": "AI Assistant",
       "transcript": "Transcript",
-      "lesson_note": "Lesson Note"
+      "lesson_note": "Lesson Note",
+      "note_ai": "Note assistant"
     }
   }
 }

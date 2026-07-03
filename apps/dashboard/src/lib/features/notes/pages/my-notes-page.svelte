@@ -4,6 +4,7 @@
   import { Search } from '@cio/ui/custom/search';
   import { Empty } from '@cio/ui/custom/empty';
   import { Spinner } from '@cio/ui/base/spinner';
+  import * as Page from '@cio/ui/base/page';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
@@ -14,11 +15,18 @@
     noteHref?: (noteId: string) => string;
     tagId?: string;
     showTeamTab?: boolean;
+    searchValue?: string;
+    showSearch?: boolean;
   }
 
-  let { showWorkspaceUsage = false, noteHref, tagId, showTeamTab = false }: Props = $props();
-
-  let searchValue = $state('');
+  let {
+    showWorkspaceUsage = false,
+    noteHref,
+    tagId,
+    showTeamTab = false,
+    searchValue = $bindable(''),
+    showSearch = true
+  }: Props = $props();
   let currentTab = $state<'all' | 'lessons' | 'team'>('all');
 
   const listScope = $derived.by((): 'mine' | 'team' | 'all' => {
@@ -91,7 +99,11 @@
     </p>
   {/if}
 
-  <Search placeholder={$t('notes.list.search')} bind:value={searchValue} />
+  {#if showSearch}
+    <Page.BodyHeader align="right" class="p-0!">
+      <Search placeholder={$t('notes.list.search')} bind:value={searchValue} />
+    </Page.BodyHeader>
+  {/if}
 
   <UnderlineTabs.Root bind:value={currentTab}>
     <UnderlineTabs.List>
