@@ -34,7 +34,6 @@ export type NoteVersionHistory = Extract<InferResponseType<GetNoteVersionHistory
 class NotesApi extends BaseApiWithErrors {
   notes = $state<NoteListItem[]>([]);
   usage = $state<NoteUsage | null>(null);
-  isLoading = $state(false);
 
   async listNotes(params?: {
     origin?: 'workspace' | 'lesson_capture';
@@ -46,8 +45,6 @@ class NotesApi extends BaseApiWithErrors {
   }) {
     const org = get(currentOrg);
     if (!org.id) return;
-
-    this.isLoading = true;
 
     await this.execute<ListNotesRequest>({
       requestFn: () =>
@@ -70,8 +67,6 @@ class NotesApi extends BaseApiWithErrors {
         this.notes = [];
       }
     });
-
-    this.isLoading = false;
   }
 
   async fetchUsage() {

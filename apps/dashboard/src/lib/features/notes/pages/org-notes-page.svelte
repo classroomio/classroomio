@@ -20,7 +20,10 @@
   let selectedTagFilter = $state('all');
 
   const workspaceLimitReached = $derived(
-    notesApi.usage?.limit !== null && notesApi.usage?.remaining !== null && notesApi.usage.remaining <= 0
+    notesApi.usage !== null &&
+      notesApi.usage.limit !== null &&
+      notesApi.usage.remaining !== null &&
+      notesApi.usage.remaining <= 0
   );
 
   const tagFilterOptions = $derived.by(() => {
