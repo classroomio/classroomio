@@ -17,12 +17,14 @@
   import '../app.css';
 
   import { setUploadLimitsContext } from '$lib/utils/config/upload-limits-context';
+  import { getOrgFaviconHref } from '$lib/utils/functions/org-branding';
 
   let { data, children } = $props();
 
   setUploadLimitsContext(data.uploadLimits);
 
   const metaTags = $derived(merge(data.baseMetaTags, page.data.pageMetaTags));
+  const orgFaviconHref = $derived(data.isOrgSite && data.org ? getOrgFaviconHref(data.org) : null);
 
   onMount(() => {
     console.log('Layout', data);
@@ -61,6 +63,12 @@
     }
   });
 </script>
+
+<svelte:head>
+  {#if orgFaviconHref}
+    <link rel="icon" href={orgFaviconHref} />
+  {/if}
+</svelte:head>
 
 <div>
   <ModeWatcher />
