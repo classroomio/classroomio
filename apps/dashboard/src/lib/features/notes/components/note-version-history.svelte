@@ -1,5 +1,4 @@
 <script lang="ts">
-  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import HistoryIcon from '@lucide/svelte/icons/history';
   import LoaderIcon from '@lucide/svelte/icons/loader';
   import XIcon from '@lucide/svelte/icons/x';
@@ -99,6 +98,8 @@
   $effect(() => {
     if (!open || !noteId) return;
 
+    endRange;
+
     void loadVersionHistory();
   });
 
@@ -118,9 +119,11 @@
       onclick={() => onClose?.()}
     ></button>
 
-    <aside class="bg-background absolute inset-y-0 right-0 flex w-full max-w-5xl border-l shadow-xl">
-      <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <header class="border-border flex items-center gap-2 border-b px-4 py-3">
+    <aside
+      class="ui:bg-background ui:border-border absolute inset-y-0 right-0 flex w-full max-w-5xl border-l shadow-xl"
+    >
+      <div class="ui:bg-background flex min-w-0 flex-1 flex-col overflow-hidden">
+        <header class="ui:border-border flex items-center gap-2 border-b px-4 py-3">
           <IconButton variant="secondary" size="icon" onclick={() => onClose?.()}>
             <XIcon size={16} />
           </IconButton>
@@ -143,8 +146,11 @@
           {:else if !selectedVersion}
             <p class="ui:text-muted-foreground text-sm">{$t('notes.editor.version_history.empty')}</p>
           {:else}
-            <div bind:this={diffContainer} class="prose dark:prose-invert max-w-none whitespace-pre-wrap"></div>
-            <div class="mt-6 rounded-lg border p-4">
+            <div
+              bind:this={diffContainer}
+              class="ui:bg-muted/30 prose dark:prose-invert max-w-none rounded-lg p-4 whitespace-pre-wrap"
+            ></div>
+            <div class="ui:bg-card ui:border-border mt-6 rounded-lg border p-4">
               <p class="ui:text-muted-foreground mb-2 text-xs font-medium uppercase">
                 {$t('notes.editor.version_history.preview')}
               </p>
@@ -154,7 +160,7 @@
         </div>
       </div>
 
-      <div class="border-border bg-muted/20 w-80 shrink-0 overflow-y-auto border-l">
+      <div class="ui:border-border ui:bg-muted/30 w-80 shrink-0 overflow-y-auto border-l">
         <p class="flex items-center gap-2 px-4 py-4 text-sm font-medium">
           <HistoryIcon size={16} />
           {$t('notes.editor.version_history.versions')}
@@ -171,8 +177,9 @@
               onclick={() => {
                 selectedVersionIndex = index;
               }}
-              class="hover:bg-muted flex w-full flex-col items-start px-4 py-3 text-left {index === selectedVersionIndex
-                ? 'bg-muted'
+              class="hover:ui:bg-muted flex w-full flex-col items-start px-4 py-3 text-left {index ===
+              selectedVersionIndex
+                ? 'ui:bg-muted'
                 : ''}"
             >
               <span class="text-sm font-medium">{formatTimestamp(version.timestamp)}</span>

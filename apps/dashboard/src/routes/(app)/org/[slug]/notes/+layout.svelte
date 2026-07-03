@@ -1,26 +1,12 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { useSidebar } from '@cio/ui/base/sidebar';
+  import { aiAssistantPanelDefinition } from '$features/ai-assistant';
   import { sidePanel, SidePanelRail } from '$features/side-panel';
-  import { noteAiPanelDefinition } from '$features/notes/panel';
 
   let { children } = $props();
 
-  sidePanel.register(noteAiPanelDefinition);
+  sidePanel.register(aiAssistantPanelDefinition);
 
-  const sidebar = useSidebar();
-  let previousSidebarOpen = $state(true);
   let sidePanelWidth = $state(0);
-
-  onMount(() => {
-    previousSidebarOpen = sidebar.open;
-    sidebar.setOpen(false);
-
-    return () => {
-      sidebar.setOpen(previousSidebarOpen);
-      sidePanel.closeIfScope('notes');
-    };
-  });
 </script>
 
 <div

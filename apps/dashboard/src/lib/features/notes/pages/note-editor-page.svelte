@@ -22,10 +22,9 @@
   import { currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
+  import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { sidePanel } from '$features/side-panel';
   import { notesApi } from '../api';
-  import { NOTE_AI_PANEL_ID } from '../panel';
   import NoteShareDialog from '../components/note-share-dialog.svelte';
   import NoteTagPicker from '../components/note-tag-picker.svelte';
   import NoteVersionHistory from '../components/note-version-history.svelte';
@@ -98,16 +97,12 @@
   }
 
   function toggleTagSelection(tagId: string) {
-    const selected = new Set(selectedTagIds);
+    const nextTagIds = selectedTagIds.includes(tagId)
+      ? selectedTagIds.filter((id) => id !== tagId)
+      : [...selectedTagIds, tagId];
 
-    if (selected.has(tagId)) {
-      selected.delete(tagId);
-    } else {
-      selected.add(tagId);
-    }
-
-    selectedTagIds = Array.from(selected);
-    void persistTags(selectedTagIds);
+    selectedTagIds = nextTagIds;
+    void persistTags(nextTagIds);
   }
 
   function removeSelectedTag(tagId: string) {
@@ -170,12 +165,7 @@
   }
 
   function handleBack() {
-    sidePanel.closeIfScope('notes');
     void goto(resolve(`${$currentOrgPath}/notes`, {}));
-  }
-
-  function toggleNoteAiPanel() {
-    sidePanel.toggle(NOTE_AI_PANEL_ID, { noteId, noteTitle: title });
   }
 
   async function handleDeleteNote() {
@@ -190,7 +180,6 @@
 
     snackbar.success('notes.editor.delete_success');
     showDeleteDialog = false;
-    sidePanel.closeIfScope('notes');
     void goto(resolve(`${$currentOrgPath}/notes`, {}));
   }
 
@@ -229,7 +218,7 @@
       {/if}
 
       {#if canWrite && noteOrigin === 'workspace'}
-        <Button size="sm" onclick={() => (showShareDialog = true)}>
+        <Button variant="secondary" size="sm" onclick={() => (showShareDialog = true)}>
           <ShareIcon size={16} />
           {$t('notes.share.open')}
         </Button>
@@ -238,8 +227,7 @@
       {#if canWrite}
         <Button
           size="sm"
-          variant="secondary"
-          onclick={toggleNoteAiPanel}
+          onclick={toggleAiAssistant}
           class="ui:bg-primary ui:text-primary-foreground relative overflow-hidden border-0"
         >
           <Waves
@@ -251,8 +239,8 @@
             waveSpeedX={0.04}
             waveSpeedY={0.02}
           />
-          <SparklesIcon size={16} />
-          {$t('notes.ai_panel.open')}
+          <SparklesIcon size={14} class="relative z-10" />
+          <span class="relative z-10">{$t('course.navItems.nav_ai_assistant')}</span>
         </Button>
       {/if}
 

@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
+  import * as Card from '@cio/ui/base/card';
   import { Badge } from '@cio/ui/base/badge';
   import { Search } from '@cio/ui/custom/search';
   import { Empty } from '@cio/ui/custom/empty';
@@ -9,6 +10,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { notesApi } from '../api';
+  import type { NoteListItem } from '../api/notes.svelte';
 
   interface Props {
     showWorkspaceUsage?: boolean;
@@ -89,6 +91,54 @@
   });
 </script>
 
+{#snippet noteCard(note: NoteListItem)}
+  <Card.Root class="ui:hover:bg-muted/40 h-full transition-colors">
+    <Card.Header class="gap-2 pb-0">
+      <div class="flex items-start justify-between gap-3">
+        <Card.Title class="line-clamp-2 text-base leading-snug">{note.title}</Card.Title>
+        <span class="ui:text-muted-foreground shrink-0 text-xs">{formatUpdatedAt(note.updatedAt)}</span>
+      </div>
+
+      {#if note.ownerId !== $profile.id && note.ownerFullname}
+        <Card.Description class="text-xs">
+          {$t('notes.list.by_author', { name: note.ownerFullname })}
+        </Card.Description>
+      {/if}
+    </Card.Header>
+
+    <Card.Content class="pt-0">
+      <p class="ui:text-muted-foreground line-clamp-4 text-sm leading-relaxed">
+        {note.plainText || $t('notes.list.no_content')}
+      </p>
+    </Card.Content>
+
+    <Card.Footer class="mt-auto flex flex-wrap gap-2 border-t-0 pt-0">
+      {#if note.visibility === 'team' && note.ownerId !== $profile.id}
+        <Badge variant="secondary">{$t('notes.list.shared_with_team')}</Badge>
+      {/if}
+
+      {#if note.origin === 'lesson_capture' && note.courseTitle}
+        <Badge variant="secondary">{note.courseTitle}</Badge>
+      {/if}
+
+      {#if note.origin === 'lesson_capture' && note.lessonTitle}
+        <Badge variant="outline">{note.lessonTitle}</Badge>
+      {/if}
+
+      {#each note.tags ?? [] as tag (tag.id)}
+        <Badge variant="outline">
+          <span
+            class="mr-1 inline-block h-2 w-2 rounded-full border"
+            style={`background-color: ${tag.color}`}
+            aria-hidden="true"
+          ></span>
+          {tag.name}
+        </Badge>
+      {/each}
+    </Card.Footer>
+  </Card.Root>
+{/snippet}
+
 <div class="flex flex-col gap-4">
   {#if showWorkspaceUsage && notesApi.usage?.limit !== null && notesApi.usage}
     <p class="ui:text-muted-foreground text-sm">
@@ -122,105 +172,15 @@
   {:else if filteredNotes.length === 0}
     <Empty title={$t('notes.list.empty_title')} description={$t('notes.list.empty_description')} />
   {:else}
-    <ul class="divide-border divide-y rounded-lg border">
+    <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
       {#each filteredNotes as note (note.id)}
-        <li>
+        <li class="min-h-[180px]">
           {#if noteHref}
-            <a href={noteHref(note.id)} class="hover:bg-muted/40 flex flex-col gap-2 px-4 py-3 transition-colors">
-              <div class="flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                  <div class="flex flex-wrap items-center gap-2">
-                    <p class="truncate font-medium">{note.title}</p>
-                    {#if note.visibility === 'team' && note.ownerId !== $profile.id}
-                      <Badge variant="secondary">{$t('notes.list.shared_with_team')}</Badge>
-                    {/if}
-                  </div>
-                  {#if note.ownerId !== $profile.id && note.ownerFullname}
-                    <p class="ui:text-muted-foreground text-xs">
-                      {$t('notes.list.by_author', { name: note.ownerFullname })}
-                    </p>
-                  {/if}
-                  <p class="ui:text-muted-foreground line-clamp-2 text-sm">
-                    {note.plainText || $t('notes.list.no_content')}
-                  </p>
-                </div>
-                <span class="ui:text-muted-foreground shrink-0 text-xs">{formatUpdatedAt(note.updatedAt)}</span>
-              </div>
-
-              {#if note.origin === 'lesson_capture' && (note.courseTitle || note.lessonTitle)}
-                <div class="flex flex-wrap gap-2">
-                  {#if note.courseTitle}
-                    <Badge variant="secondary">{note.courseTitle}</Badge>
-                  {/if}
-                  {#if note.lessonTitle}
-                    <Badge variant="outline">{note.lessonTitle}</Badge>
-                  {/if}
-                </div>
-              {/if}
-
-              {#if note.tags?.length}
-                <div class="flex flex-wrap gap-2">
-                  {#each note.tags as tag (tag.id)}
-                    <Badge variant="outline">
-                      <span
-                        class="mr-1 inline-block h-2 w-2 rounded-full border"
-                        style={`background-color: ${tag.color}`}
-                        aria-hidden="true"
-                      ></span>
-                      {tag.name}
-                    </Badge>
-                  {/each}
-                </div>
-              {/if}
+            <a href={noteHref(note.id)} class="block h-full">
+              {@render noteCard(note)}
             </a>
           {:else}
-            <div class="flex flex-col gap-2 px-4 py-3">
-              <div class="flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                  <div class="flex flex-wrap items-center gap-2">
-                    <p class="truncate font-medium">{note.title}</p>
-                    {#if note.visibility === 'team' && note.ownerId !== $profile.id}
-                      <Badge variant="secondary">{$t('notes.list.shared_with_team')}</Badge>
-                    {/if}
-                  </div>
-                  {#if note.ownerId !== $profile.id && note.ownerFullname}
-                    <p class="ui:text-muted-foreground text-xs">
-                      {$t('notes.list.by_author', { name: note.ownerFullname })}
-                    </p>
-                  {/if}
-                  <p class="ui:text-muted-foreground line-clamp-2 text-sm">
-                    {note.plainText || $t('notes.list.no_content')}
-                  </p>
-                </div>
-                <span class="ui:text-muted-foreground shrink-0 text-xs">{formatUpdatedAt(note.updatedAt)}</span>
-              </div>
-
-              {#if note.origin === 'lesson_capture' && (note.courseTitle || note.lessonTitle)}
-                <div class="flex flex-wrap gap-2">
-                  {#if note.courseTitle}
-                    <Badge variant="secondary">{note.courseTitle}</Badge>
-                  {/if}
-                  {#if note.lessonTitle}
-                    <Badge variant="outline">{note.lessonTitle}</Badge>
-                  {/if}
-                </div>
-              {/if}
-
-              {#if note.tags?.length}
-                <div class="flex flex-wrap gap-2">
-                  {#each note.tags as tag (tag.id)}
-                    <Badge variant="outline">
-                      <span
-                        class="mr-1 inline-block h-2 w-2 rounded-full border"
-                        style={`background-color: ${tag.color}`}
-                        aria-hidden="true"
-                      ></span>
-                      {tag.name}
-                    </Badge>
-                  {/each}
-                </div>
-              {/if}
-            </div>
+            {@render noteCard(note)}
           {/if}
         </li>
       {/each}
