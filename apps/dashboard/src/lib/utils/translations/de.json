@@ -3738,6 +3738,10 @@
       "title": "Keine Kurse gefunden",
       "description": "Versuchen Sie, Ihre Filter zu löschen, oder schauen Sie später noch einmal vorbei."
     },
+    "catalog_empty": {
+      "title": "Noch keine Kurse veröffentlicht",
+      "description": "Schauen Sie bald wieder vorbei für neue Programme."
+    },
     "filters": {
       "title": "Nach Tags filtern",
       "help": "Wählen Sie einen oder mehrere Tags aus, um Kurse zu filtern",

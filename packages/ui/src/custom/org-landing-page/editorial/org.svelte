@@ -7,6 +7,7 @@
   import EditorialNav from './nav.svelte';
   import EditorialHero from './hero.svelte';
   import EditorialCourseCard from './course-card.svelte';
+  import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
   import { themeStyle } from '../theme-style';
   import { Button } from '../../../base/button';
   import { getCourseTypeLandingMeta } from '../landing-page-utils';
@@ -96,37 +97,39 @@
       {/snippet}
     </EditorialHero>
 
-    {#if courses.length > 0}
-      <section id="courses" class="ui:py-10 ui:px-6 ui:md:px-8 ui:bg-[var(--landing-bg)]">
-        <div class="ui:max-w-[1240px] ui:mx-auto">
-          <div class="ui:flex ui:flex-col ui:md:flex-row ui:md:items-end ui:justify-between ui:gap-6 ui:mb-8">
-            <div>
-              <p class="ui:text-[13px] ui:m-0 ui:mb-2 ui:text-[var(--landing-fg-muted)]">
-                {labels?.catalogEyebrow ?? 'Catalog'}
-              </p>
-              <h2
-                class="ui:text-3xl ui:md:text-[40px] ui:font-medium ui:tracking-tight ui:m-0 ui:leading-[1.1] ui:text-[var(--landing-fg)]"
-                style="letter-spacing: -0.025em;"
-              >
-                {labels?.catalogHeading ?? 'Courses starting this season.'}
-              </h2>
-              <p class="ui:text-base ui:mt-3 ui:max-w-xl ui:m-0 ui:text-[var(--landing-fg-muted)]">
-                {labels?.catalogDescription ??
-                  'Cohort-based and self-paced — every course ends with a reviewed project and a certificate of completion.'}
-              </p>
-            </div>
-            {#if hasMoreCourses}
-              <Button
-                href={disableCourseLinks ? undefined : '/courses'}
-                variant="outline"
-                class="ui:rounded-full ui:px-5 ui:font-medium ui:bg-transparent ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-[var(--landing-bg-section)]"
-                disabled={disableCourseLinks}
-              >
-                {labels?.browseCoursesLabel ?? 'Browse all courses →'}
-              </Button>
-            {/if}
+    <section id="courses" class="ui:py-10 ui:px-6 ui:md:px-8 ui:bg-[var(--landing-bg)]">
+      <div class="ui:max-w-[1240px] ui:mx-auto">
+        <div class="ui:flex ui:flex-col ui:md:flex-row ui:md:items-end ui:justify-between ui:gap-6 ui:mb-8">
+          <div>
+            <p class="ui:text-[13px] ui:m-0 ui:mb-2 ui:text-[var(--landing-fg-muted)]">
+              {labels?.catalogEyebrow ?? 'Catalog'}
+            </p>
+            <h2
+              class="ui:text-3xl ui:md:text-[40px] ui:font-medium ui:tracking-tight ui:m-0 ui:leading-[1.1] ui:text-[var(--landing-fg)]"
+              style="letter-spacing: -0.025em;"
+            >
+              {labels?.catalogHeading ?? 'Courses starting this season.'}
+            </h2>
+            <p class="ui:text-base ui:mt-3 ui:max-w-xl ui:m-0 ui:text-[var(--landing-fg-muted)]">
+              {labels?.catalogDescription ??
+                'Cohort-based and self-paced — every course ends with a reviewed project and a certificate of completion.'}
+            </p>
           </div>
+          {#if hasMoreCourses && courses.length > 0}
+            <Button
+              href={disableCourseLinks ? undefined : '/courses'}
+              variant="outline"
+              class="ui:rounded-full ui:px-5 ui:font-medium ui:bg-transparent ui:border-[var(--landing-border)] ui:text-[var(--landing-fg)] ui:hover:bg-[var(--landing-bg-section)]"
+              disabled={disableCourseLinks}
+            >
+              {labels?.browseCoursesLabel ?? 'Browse all courses →'}
+            </Button>
+          {/if}
+        </div>
 
+        {#if courses.length === 0}
+          <OrgLandingPageCoursesEmpty {labels} />
+        {:else}
           {#if visibleFilterDefs.length > 1}
             <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-1.5 ui:mb-8">
               {#each visibleFilterDefs as def (def.key)}
@@ -169,9 +172,9 @@
               </Button>
             </div>
           {/if}
-        </div>
-      </section>
-    {/if}
+        {/if}
+      </div>
+    </section>
   </main>
 
   <OrgLandingPageLinks {links} {labels} variant="editorial" />

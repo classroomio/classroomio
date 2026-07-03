@@ -1225,6 +1225,10 @@
     "empty": {
       "title": "No courses found",
       "description": "Try clearing your filters or check back later."
+    },
+    "catalog_empty": {
+      "title": "No courses published yet",
+      "description": "Check back soon for new programs."
     }
   },
   "org_navigation": {

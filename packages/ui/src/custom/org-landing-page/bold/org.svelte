@@ -7,6 +7,7 @@
   import BoldNav from './nav.svelte';
   import BoldHero from './hero.svelte';
   import BoldCourseCard from './course-card.svelte';
+  import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
   import { Button } from '../../../base/button';
   import { DotPattern } from '../../animation/dot-pattern';
   import { themeStyle } from '../theme-style';
@@ -43,23 +44,27 @@
         <div class="ui:flex ui:items-end ui:justify-between ui:mb-12">
           <h2 class="ui:text-4xl ui:font-black ui:tracking-tight">{labels?.catalogHeading ?? 'Latest Courses'}</h2>
         </div>
-        <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:gap-8">
-          {#each courses as course, index (course.id)}
-            <BoldCourseCard {course} {disableCourseLinks} {labels} />
-          {/each}
-        </div>
-
-        {#if hasMoreCourses}
-          <div class="ui:mt-12 ui:flex ui:justify-center">
-            <Button
-              href={disableCourseLinks ? undefined : '/courses'}
-              size="lg"
-              class="ui:rounded-xl ui:px-8"
-              disabled={disableCourseLinks}
-            >
-              {labels?.browseCoursesLabel ?? 'View more courses'}
-            </Button>
+        {#if courses.length === 0}
+          <OrgLandingPageCoursesEmpty {labels} />
+        {:else}
+          <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:gap-8">
+            {#each courses as course, index (course.id)}
+              <BoldCourseCard {course} {disableCourseLinks} {labels} />
+            {/each}
           </div>
+
+          {#if hasMoreCourses}
+            <div class="ui:mt-12 ui:flex ui:justify-center">
+              <Button
+                href={disableCourseLinks ? undefined : '/courses'}
+                size="lg"
+                class="ui:rounded-xl ui:px-8"
+                disabled={disableCourseLinks}
+              >
+                {labels?.browseCoursesLabel ?? 'View more courses'}
+              </Button>
+            </div>
+          {/if}
         {/if}
       </div>
     </section>

@@ -3738,6 +3738,10 @@
       "title": "No se encontraron cursos",
       "description": "Intente borrar sus filtros o vuelva a consultar más tarde."
     },
+    "catalog_empty": {
+      "title": "Aún no hay cursos publicados",
+      "description": "Vuelva pronto para ver nuevos programas."
+    },
     "filters": {
       "title": "Filtrar por etiquetas",
       "help": "Seleccione una o más etiquetas para filtrar cursos",

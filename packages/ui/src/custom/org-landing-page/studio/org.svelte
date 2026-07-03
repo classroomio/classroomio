@@ -7,6 +7,7 @@
   import StudioNav from './nav.svelte';
   import StudioHero from './hero.svelte';
   import StudioCourseCard from './course-card.svelte';
+  import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
   import { Button } from '../../../base/button';
   import { themeStyle } from '../theme-style';
 
@@ -38,41 +39,43 @@
       {/snippet}
     </StudioHero>
 
-    {#if courses.length > 0}
-      <section class="ui:py-24 ui:px-6 ui:border-t ui:border-[var(--landing-border)]">
-        <div class="ui:max-w-[1080px] ui:mx-auto">
-          <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:gap-12 ui:items-end ui:mb-12">
-            <div>
-              <p class="ui:text-sm ui:text-[var(--landing-fg-muted)] ui:mb-1.5 ui:inline-flex ui:items-center ui:gap-2">
-                <span class="ui:size-1.5 ui:rounded-full ui:bg-[var(--landing-accent)]"></span>
-                {labels?.catalogEyebrow ?? 'Catalog'}
-              </p>
-              <h2 class="ui:text-3xl ui:lg:text-4xl ui:font-semibold ui:tracking-tight ui:m-0">
-                {labels?.catalogHeading ?? 'Courses your team can actually finish.'}
-              </h2>
-            </div>
-            {#if hasMoreCourses}
-              <div class="ui:flex ui:justify-start ui:md:justify-end">
-                <Button
-                  href={disableCourseLinks ? undefined : '/courses'}
-                  variant="outline"
-                  class="ui:rounded-md"
-                  disabled={disableCourseLinks}
-                >
-                  {labels?.browseCoursesLabel ?? 'Browse all →'}
-                </Button>
-              </div>
-            {/if}
+    <section class="ui:py-24 ui:px-6 ui:border-t ui:border-[var(--landing-border)]">
+      <div class="ui:max-w-[1080px] ui:mx-auto">
+        <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:gap-12 ui:items-end ui:mb-12">
+          <div>
+            <p class="ui:text-sm ui:text-[var(--landing-fg-muted)] ui:mb-1.5 ui:inline-flex ui:items-center ui:gap-2">
+              <span class="ui:size-1.5 ui:rounded-full ui:bg-[var(--landing-accent)]"></span>
+              {labels?.catalogEyebrow ?? 'Catalog'}
+            </p>
+            <h2 class="ui:text-3xl ui:lg:text-4xl ui:font-semibold ui:tracking-tight ui:m-0">
+              {labels?.catalogHeading ?? 'Courses your team can actually finish.'}
+            </h2>
           </div>
+          {#if hasMoreCourses && courses.length > 0}
+            <div class="ui:flex ui:justify-start ui:md:justify-end">
+              <Button
+                href={disableCourseLinks ? undefined : '/courses'}
+                variant="outline"
+                class="ui:rounded-md"
+                disabled={disableCourseLinks}
+              >
+                {labels?.browseCoursesLabel ?? 'Browse all →'}
+              </Button>
+            </div>
+          {/if}
+        </div>
 
+        {#if courses.length === 0}
+          <OrgLandingPageCoursesEmpty {labels} />
+        {:else}
           <div class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:gap-3">
             {#each courses as course, index (course.id)}
               <StudioCourseCard {course} {disableCourseLinks} {labels} />
             {/each}
           </div>
-        </div>
-      </section>
-    {/if}
+        {/if}
+      </div>
+    </section>
   </main>
 
   <OrgLandingPageLinks {links} {labels} variant="studio" />

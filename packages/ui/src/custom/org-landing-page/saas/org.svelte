@@ -7,6 +7,7 @@
   import SaasNav from './nav.svelte';
   import SaasHero from './hero.svelte';
   import SaasCourseCard from './course-card.svelte';
+  import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
   import { Button } from '../../../base/button';
   import { themeStyle } from '../theme-style';
 
@@ -38,44 +39,46 @@
       {/snippet}
     </SaasHero>
 
-    {#if courses.length > 0}
-      <div class="plus-row"></div>
+    <div class="plus-row"></div>
 
-      <section class="ui:py-12 ui:md:py-20 ui:px-4 ui:md:px-6">
-        <div class="ui:max-w-[1180px] ui:mx-auto">
-          <div
-            class="ui:flex ui:flex-col ui:md:flex-row ui:md:items-end ui:md:justify-between ui:gap-4 ui:mb-8 ui:md:mb-12"
-          >
-            <div>
-              <p
-                class="ui:text-xs ui:font-semibold ui:tracking-widest ui:uppercase ui:text-[var(--landing-accent)] ui:mb-3"
-              >
-                {labels?.catalogEyebrow ?? 'Catalog'}
-              </p>
-              <h2 class="ui:text-3xl ui:md:text-4xl ui:font-bold ui:tracking-tight">
-                {labels?.catalogHeading ?? 'Featured courses.'}
-              </h2>
-            </div>
-            {#if hasMoreCourses}
-              <Button
-                href={disableCourseLinks ? undefined : '/courses'}
-                variant="outline"
-                class="ui:rounded-full ui:self-start ui:md:self-auto"
-                disabled={disableCourseLinks}
-              >
-                {labels?.browseCoursesLabel ?? 'Browse catalog'}
-              </Button>
-            {/if}
+    <section class="ui:py-12 ui:md:py-20 ui:px-4 ui:md:px-6">
+      <div class="ui:max-w-[1180px] ui:mx-auto">
+        <div
+          class="ui:flex ui:flex-col ui:md:flex-row ui:md:items-end ui:md:justify-between ui:gap-4 ui:mb-8 ui:md:mb-12"
+        >
+          <div>
+            <p
+              class="ui:text-xs ui:font-semibold ui:tracking-widest ui:uppercase ui:text-[var(--landing-accent)] ui:mb-3"
+            >
+              {labels?.catalogEyebrow ?? 'Catalog'}
+            </p>
+            <h2 class="ui:text-3xl ui:md:text-4xl ui:font-bold ui:tracking-tight">
+              {labels?.catalogHeading ?? 'Featured courses.'}
+            </h2>
           </div>
+          {#if hasMoreCourses && courses.length > 0}
+            <Button
+              href={disableCourseLinks ? undefined : '/courses'}
+              variant="outline"
+              class="ui:rounded-full ui:self-start ui:md:self-auto"
+              disabled={disableCourseLinks}
+            >
+              {labels?.browseCoursesLabel ?? 'Browse catalog'}
+            </Button>
+          {/if}
+        </div>
 
+        {#if courses.length === 0}
+          <OrgLandingPageCoursesEmpty {labels} />
+        {:else}
           <div class="course-grid ui:relative">
             {#each courses as course, index (course.id)}
               <SaasCourseCard {course} {disableCourseLinks} {labels} />
             {/each}
           </div>
-        </div>
-      </section>
-    {/if}
+        {/if}
+      </div>
+    </section>
 
     {#if links && links.cards.length > 0}
       <div class="plus-row"></div>

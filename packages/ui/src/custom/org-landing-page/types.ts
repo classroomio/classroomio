@@ -178,6 +178,10 @@ export interface OrgLandingPageLabels {
   calloutEyebrow?: string;
   /** Card footer CTA on the resources/links section. Default per template ("Learn more", "Visit"). Separate from the existing per-template `boldVisitLabel` / `classicLearnMoreLabel` on `LandingPageLinks`, which still apply to those specific templates. */
   learnMoreLabel?: string;
+  /** Empty catalog title when no courses are published. Default: "No courses published yet". */
+  catalogEmptyTitle?: string;
+  /** Empty catalog description when no courses are published. Default: "Check back soon for new programs." */
+  catalogEmptyDescription?: string;
 }
 
 export type CourseCurriculumLesson = {
