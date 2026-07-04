@@ -4193,6 +4193,7 @@
       "delete": "Delete",
       "mention_team_member": "Team member",
       "mention_no_results": "No team members found",
+      "autosave_hint": "Saves automatically as you type.",
       "empty_open": "No open comment threads.",
       "empty_resolved": "No resolved comment threads."
     },

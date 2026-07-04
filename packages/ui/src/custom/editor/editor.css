@@ -511,20 +511,22 @@ input[type='checkbox'] {
 }
 
 .tiptap .note-comment-mark {
-  background-color: rgb(250 204 21 / 0.35);
-  border-bottom: 2px solid rgb(234 179 8);
+  background-color: #fef9c3;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .tiptap .note-comment-mark.note-comment-mark-active {
-  background-color: rgb(250 204 21 / 0.55);
-  outline: 2px solid rgb(234 179 8);
+  background-color: #fde68a;
+  outline: 2px solid #facc15;
   outline-offset: 1px;
 }
 
 .tiptap .note-comment-mark-resolved {
   background-color: transparent;
-  border-bottom: none;
+  outline: none;
 }
 
 .tiptap .note-comment-anchor-pulse {

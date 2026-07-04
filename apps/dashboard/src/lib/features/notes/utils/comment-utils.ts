@@ -47,13 +47,32 @@ export function stripCommentMarkFromHtml(html: string, threadId: string): string
   return template.innerHTML;
 }
 
-export function scrollToCommentAnchor(root: HTMLElement, anchor: TNoteCommentAnchor) {
+export function syncActiveCommentMark(root: HTMLElement | undefined, activeThreadId: string | null) {
+  if (!root) {
+    return;
+  }
+
+  root.querySelectorAll('.note-comment-mark').forEach((element) => {
+    element.classList.remove('note-comment-mark-active');
+  });
+
+  if (!activeThreadId) {
+    return;
+  }
+
+  const mark = root.querySelector(`span[data-note-comment="${activeThreadId}"]`);
+
+  if (mark) {
+    mark.classList.add('note-comment-mark-active');
+  }
+}
+
+export function scrollToCommentAnchor(root: HTMLElement, anchor: TNoteCommentAnchor, activeThreadId?: string | null) {
   const mark = root.querySelector(`span[data-note-comment="${anchor.threadId}"]`);
 
   if (mark instanceof HTMLElement) {
     mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    mark.classList.add('note-comment-mark-active');
-    window.setTimeout(() => mark.classList.remove('note-comment-mark-active'), 1600);
+    syncActiveCommentMark(root, activeThreadId ?? anchor.threadId);
 
     return;
   }

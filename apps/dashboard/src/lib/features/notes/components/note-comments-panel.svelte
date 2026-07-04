@@ -14,6 +14,20 @@
   import type { NoteComment, NoteCommentThread } from '../utils/types';
   import type { TNoteCommentAnchor } from '@cio/utils/validation/notes';
 
+  const COMMENT_AUTOSAVE_MS = 800;
+
+  function createDebouncedCallback(delayMs: number) {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    return (callback: () => void) => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+
+      timer = setTimeout(callback, delayMs);
+    };
+  }
+
   interface PendingComposer {
     threadId: string;
     anchor: TNoteCommentAnchor;
@@ -29,7 +43,7 @@
     pendingComposer?: PendingComposer | null;
     onSelectThread?: (threadId: string) => void;
     onRequestScroll?: (thread: NoteCommentThread) => void;
-    onSubmitPending?: () => void;
+    onSubmitPending?: () => void | Promise<void>;
     onCancelPending?: () => void;
     onResolveThread?: (thread: NoteCommentThread) => void;
     onReopenThread?: (thread: NoteCommentThread) => void;
@@ -54,6 +68,29 @@
   let editDrafts = $state<Record<string, string>>({});
   let editingCommentId = $state<string | null>(null);
   let activeTab = $state<'open' | 'resolved'>('open');
+  let pendingDraft = $state('');
+  let pendingSubmitting = $state(false);
+  let replySubmitting = $state<Record<string, boolean>>({});
+  let editSubmitting = $state<Record<string, boolean>>({});
+
+  const debouncedPendingSubmit = createDebouncedCallback(COMMENT_AUTOSAVE_MS);
+  const replyDebouncers = new Map<string, ReturnType<typeof createDebouncedCallback>>();
+  const debouncedEditSave = createDebouncedCallback(COMMENT_AUTOSAVE_MS);
+
+  function getReplyDebouncer(threadId: string) {
+    let debouncer = replyDebouncers.get(threadId);
+
+    if (!debouncer) {
+      debouncer = createDebouncedCallback(COMMENT_AUTOSAVE_MS);
+      replyDebouncers.set(threadId, debouncer);
+    }
+
+    return debouncer;
+  }
+
+  const openThreads = $derived(noteCommentsApi.threads.filter((thread) => thread.status === 'open'));
+  const resolvedThreads = $derived(noteCommentsApi.threads.filter((thread) => thread.status === 'resolved'));
+  const visibleThreads = $derived(activeTab === 'open' ? openThreads : resolvedThreads);
 
   $effect(() => {
     if (!activeThreadId) {
@@ -67,57 +104,19 @@
     } else if (thread?.status === 'open') {
       activeTab = 'open';
     }
+
+    const threadElement = document.getElementById(`comment-thread-${activeThreadId}`);
+
+    threadElement?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 
-  const openThreads = $derived(noteCommentsApi.threads.filter((thread) => thread.status === 'open'));
-  const resolvedThreads = $derived(noteCommentsApi.threads.filter((thread) => thread.status === 'resolved'));
-  const visibleThreads = $derived(activeTab === 'open' ? openThreads : resolvedThreads);
-
-  async function submitReply(threadId: string) {
-    const body = replyDrafts[threadId]?.trim();
-
-    if (!body) {
-      return;
+  $effect.pre(() => {
+    for (const thread of noteCommentsApi.threads) {
+      if (replyDrafts[thread.id] === undefined) {
+        replyDrafts[thread.id] = '';
+      }
     }
-
-    replyDrafts[threadId] = '';
-    await noteCommentsApi.addReply(noteId, threadId, body);
-  }
-
-  function startEditing(comment: NoteComment) {
-    editingCommentId = comment.id;
-    editDrafts[comment.id] = comment.body;
-  }
-
-  function cancelEditing(commentId: string) {
-    if (editingCommentId === commentId) {
-      editingCommentId = null;
-    }
-
-    delete editDrafts[commentId];
-  }
-
-  async function saveEdit(commentId: string) {
-    const body = editDrafts[commentId]?.trim();
-
-    if (!body) {
-      return;
-    }
-
-    await noteCommentsApi.updateComment(noteId, commentId, body);
-    editingCommentId = null;
-    delete editDrafts[commentId];
-  }
-
-  async function deleteComment(commentId: string) {
-    await noteCommentsApi.deleteComment(noteId, commentId);
-  }
-
-  function mentionTypeLabel(item: MentionItem) {
-    return t.get('notes.comments.mention_team_member');
-  }
-
-  let pendingDraft = $state('');
+  });
 
   $effect(() => {
     pendingDraft = pendingComposer?.draft ?? '';
@@ -128,6 +127,123 @@
       pendingComposer.draft = pendingDraft;
     }
   });
+
+  $effect(() => {
+    if (!pendingComposer || pendingSubmitting) {
+      return;
+    }
+
+    const draft = pendingDraft.trim();
+
+    if (!draft) {
+      return;
+    }
+
+    debouncedPendingSubmit(() => {
+      void submitPendingComment();
+    });
+  });
+
+  $effect(() => {
+    for (const thread of openThreads) {
+      const draft = replyDrafts[thread.id]?.trim();
+
+      if (!draft || replySubmitting[thread.id]) {
+        continue;
+      }
+
+      const threadId = thread.id;
+
+      getReplyDebouncer(threadId)(() => {
+        void submitReply(threadId);
+      });
+    }
+  });
+
+  $effect(() => {
+    if (!editingCommentId) {
+      return;
+    }
+
+    const draft = editDrafts[editingCommentId]?.trim();
+    const comment = findCommentById(editingCommentId);
+
+    if (!draft || !comment || editSubmitting[editingCommentId] || draft === comment.body) {
+      return;
+    }
+
+    const commentId = editingCommentId;
+
+    debouncedEditSave(() => {
+      void saveEdit(commentId);
+    });
+  });
+
+  function findCommentById(commentId: string): NoteComment | undefined {
+    for (const thread of noteCommentsApi.threads) {
+      const comment = thread.comments.find((item) => item.id === commentId);
+
+      if (comment) {
+        return comment;
+      }
+    }
+
+    return undefined;
+  }
+
+  function mentionTypeLabel(_item: MentionItem) {
+    return t.get('notes.comments.mention_team_member');
+  }
+
+  async function submitPendingComment() {
+    if (!pendingComposer || pendingSubmitting || !pendingDraft.trim()) {
+      return;
+    }
+
+    pendingSubmitting = true;
+    await onSubmitPending?.();
+    pendingSubmitting = false;
+  }
+
+  async function submitReply(threadId: string) {
+    const body = replyDrafts[threadId]?.trim();
+
+    if (!body || replySubmitting[threadId]) {
+      return;
+    }
+
+    replySubmitting[threadId] = true;
+    await noteCommentsApi.addReply(noteId, threadId, body);
+    replyDrafts[threadId] = '';
+    replySubmitting[threadId] = false;
+  }
+
+  function startEditing(comment: NoteComment) {
+    editingCommentId = comment.id;
+    editDrafts[comment.id] = comment.body;
+  }
+
+  async function saveEdit(commentId: string) {
+    const body = editDrafts[commentId]?.trim();
+    const comment = findCommentById(commentId);
+
+    if (!body || !comment || editSubmitting[commentId] || body === comment.body) {
+      return;
+    }
+
+    editSubmitting[commentId] = true;
+    await noteCommentsApi.updateComment(noteId, commentId, body);
+    editSubmitting[commentId] = false;
+  }
+
+  async function deleteComment(commentId: string) {
+    await noteCommentsApi.deleteComment(noteId, commentId);
+  }
+
+  function handleSelectThread(thread: NoteCommentThread) {
+    onSelectThread?.(thread.id);
+    onRequestScroll?.(thread);
+  }
 </script>
 
 <aside class="ui:border-border flex h-full min-h-0 w-full flex-col border-l lg:w-80 lg:shrink-0">
@@ -167,10 +283,8 @@
           emptyMessage={$t('notes.comments.mention_no_results')}
           rows={2}
         />
+        <p class="ui:text-muted-foreground mt-2 text-xs">{$t('notes.comments.autosave_hint')}</p>
         <div class="mt-2 flex gap-2">
-          <Button size="sm" onclick={() => onSubmitPending?.()} disabled={!pendingDraft.trim()}>
-            {$t('notes.comments.post')}
-          </Button>
           <Button size="sm" variant="secondary" onclick={() => onCancelPending?.()}>
             {$t('notes.share.cancel')}
           </Button>
@@ -188,16 +302,10 @@
 
     {#each visibleThreads as thread (thread.id)}
       <article
+        id={`comment-thread-${thread.id}`}
         class={`ui:bg-card ui:border-border rounded-lg border p-3 ${activeThreadId === thread.id ? 'ring-primary ring-2' : ''} ${thread.status === 'resolved' ? 'ui:bg-muted/20 opacity-80' : ''}`}
       >
-        <button
-          type="button"
-          class="mb-2 w-full text-left"
-          onclick={() => {
-            onSelectThread?.(thread.id);
-            onRequestScroll?.(thread);
-          }}
-        >
+        <button type="button" class="mb-2 w-full text-left" onclick={() => handleSelectThread(thread)}>
           <p class="ui:text-muted-foreground line-clamp-2 text-xs italic">"{thread.anchor.quotedText}"</p>
         </button>
 
@@ -230,19 +338,13 @@
                       emptyMessage={$t('notes.comments.mention_no_results')}
                       rows={2}
                     />
-                    <div class="flex gap-2">
-                      <Button size="sm" onclick={() => saveEdit(comment.id)} disabled={!editDrafts[comment.id]?.trim()}>
-                        {$t('notes.comments.save')}
-                      </Button>
-                      <Button size="sm" variant="secondary" onclick={() => cancelEditing(comment.id)}>
-                        {$t('notes.share.cancel')}
-                      </Button>
-                    </div>
                   </div>
                 {:else}
-                  <p class="note-comment-body mt-1 text-sm whitespace-pre-wrap">
-                    {@html renderNoteCommentMentions(comment.body)}
-                  </p>
+                  <button type="button" class="w-full text-left" onclick={() => handleSelectThread(thread)}>
+                    <p class="note-comment-body mt-1 text-sm whitespace-pre-wrap">
+                      {@html renderNoteCommentMentions(comment.body)}
+                    </p>
+                  </button>
                 {/if}
               </div>
             </div>
@@ -263,9 +365,6 @@
               rows={2}
             />
             <div class="flex flex-wrap gap-2">
-              <Button size="sm" onclick={() => submitReply(thread.id)} disabled={!replyDrafts[thread.id]?.trim()}>
-                {$t('notes.comments.reply')}
-              </Button>
               <Button size="sm" variant="secondary" onclick={() => onResolveThread?.(thread)}>
                 <CheckIcon size={14} />
                 {$t('notes.comments.resolve')}

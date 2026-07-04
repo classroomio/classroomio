@@ -40,7 +40,8 @@
     createThreadId,
     reapplyCommentMarkInEditor,
     scrollToCommentAnchor,
-    stripCommentMarkFromHtml
+    stripCommentMarkFromHtml,
+    syncActiveCommentMark
   } from '../utils/comment-utils';
   import { connectNoteCommentStream } from '../utils/comment-stream';
   import type { TNoteCommentAnchor } from '@cio/utils/validation/notes';
@@ -361,9 +362,47 @@
     activeThreadId = thread.id;
 
     if (editorRoot) {
-      scrollToCommentAnchor(editorRoot, thread.anchor);
+      scrollToCommentAnchor(editorRoot, thread.anchor, thread.id);
     }
   }
+
+  $effect(() => {
+    syncActiveCommentMark(editorRoot, activeThreadId);
+  });
+
+  $effect(() => {
+    if (!editorRoot) {
+      return;
+    }
+
+    const handleEditorClick = (event: MouseEvent) => {
+      const target = event.target;
+
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const mark = target.closest('[data-note-comment]');
+
+      if (!(mark instanceof HTMLElement) || !editorRoot.contains(mark)) {
+        return;
+      }
+
+      const threadId = mark.getAttribute('data-note-comment');
+
+      if (!threadId) {
+        return;
+      }
+
+      activeThreadId = threadId;
+    };
+
+    editorRoot.addEventListener('click', handleEditorClick);
+
+    return () => {
+      editorRoot.removeEventListener('click', handleEditorClick);
+    };
+  });
 
   $effect(() => {
     noteId;
