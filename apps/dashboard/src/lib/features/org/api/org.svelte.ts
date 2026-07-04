@@ -219,6 +219,12 @@ class OrgApi extends BaseApiWithErrors {
       .finally(() => {
         this.isFetchingOrgPublicCourses = false;
 
+        if (this.publicCoursesLoadedSiteName !== siteName) {
+          this.publicCourses = [];
+          this.hasMorePublicCourses = false;
+          this.publicCoursesLoadedSiteName = siteName;
+        }
+
         if (this.activePublicCoursesFetchSiteName === siteName) {
           this.activePublicCoursesFetch = null;
           this.activePublicCoursesFetchSiteName = null;

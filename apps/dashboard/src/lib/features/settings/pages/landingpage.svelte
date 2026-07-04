@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { resolve } from '$app/paths';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
@@ -135,18 +135,20 @@
       : { label: t.get('navigation.login'), href: '/login' }
   );
 
-  const coursesLoaded = $derived(!$currentOrg.siteName || orgApi.publicCoursesLoadedSiteName === $currentOrg.siteName);
+  const previewSiteName = $derived($currentOrg.siteName || page.params.slug || '');
 
-  const previewProps = $derived(
+  const coursesLoaded = $derived(!previewSiteName || orgApi.publicCoursesLoadedSiteName === previewSiteName);
+
+  const previewProps = $derived.by(() =>
     buildOrgLandingPageProps($currentOrg, normalized, orgApi.publicCourses, orgApi.hasMorePublicCourses, authAction, {
       coursesLoaded
     })
   );
 
-  onMount(() => {
-    if ($currentOrg.siteName) {
-      void orgApi.refreshPublicCourses($currentOrg.siteName);
-    }
+  $effect(() => {
+    if (!previewSiteName) return;
+
+    void orgApi.refreshPublicCourses(previewSiteName);
   });
 
   const ThemeComponent = $derived(landingPageThemeComponents[currentTheme] ?? landingPageThemeComponents.minimal);
