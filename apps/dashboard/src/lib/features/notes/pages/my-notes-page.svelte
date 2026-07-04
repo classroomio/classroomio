@@ -10,6 +10,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { notesApi } from '../api';
+  import NoteTemplatesRow from '../components/note-templates-row.svelte';
   import type { NoteListItem } from '../api/notes.svelte';
 
   interface Props {
@@ -63,6 +64,8 @@
       return note.title.toLowerCase().includes(term) || note.plainText.toLowerCase().includes(term);
     });
   });
+
+  const showTemplatesSection = $derived(showTeamTab || showWorkspaceUsage);
 
   function formatUpdatedAt(value: string) {
     const date = new Date(value);
@@ -164,6 +167,10 @@
       <UnderlineTabs.Trigger value="lessons">{$t('notes.list.tabs.from_lessons')}</UnderlineTabs.Trigger>
     </UnderlineTabs.List>
   </UnderlineTabs.Root>
+
+  {#if showTemplatesSection}
+    <NoteTemplatesRow {noteHref} />
+  {/if}
 
   {#if notesApi.isLoading}
     <div class="flex justify-center py-12">

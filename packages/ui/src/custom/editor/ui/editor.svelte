@@ -29,6 +29,8 @@
   import Link from './menus/Link.svelte';
   import slashcommand from '../extensions/slash-command/slashcommand';
   import SlashCommandList from './components/SlashCommandList.svelte';
+  import { createTableOfContentsExtensions } from '../extensions/table-of-contents';
+  import TableOfContentsBlockComp from './components/TableOfContentsBlock.svelte';
 
   import '../editor.css';
   import './style.css';
@@ -73,6 +75,7 @@
         IFramePlaceholder(IFramePlaceHolderComp),
         IFrameExtended(IFrameExtendedComp),
         slashcommand(SlashCommandList),
+        ...createTableOfContentsExtensions(TableOfContentsBlockComp),
         ...extraExtensions
       ],
       {

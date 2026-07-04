@@ -5,6 +5,7 @@
   import TrashIcon from '@lucide/svelte/icons/trash-2';
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
   import LoaderIcon from '@lucide/svelte/icons/loader';
   import XIcon from '@lucide/svelte/icons/x';
   import { onDestroy } from 'svelte';
@@ -14,7 +15,7 @@
   import { Button } from '@cio/ui/base/button';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import type { Content, TiptapEditor } from '@cio/ui/custom/editor';
-  import { NoteCommentMark } from '@cio/ui/custom/editor';
+  import { NoteCommentMark, TABLE_OF_CONTENTS_INITIAL_CONTENT } from '@cio/ui/custom/editor';
   import { Input } from '@cio/ui/base/input';
   import { Badge } from '@cio/ui/base/badge';
   import * as Dialog from '@cio/ui/base/dialog';
@@ -35,6 +36,7 @@
   import NoteVersionHistory from '../components/note-version-history.svelte';
   import NoteCommentsPanel from '../components/note-comments-panel.svelte';
   import NoteCommentSelection from '../components/note-comment-selection.svelte';
+  import NoteEmptyPagePicker, { type NoteEmptyPageOption } from '../components/note-empty-page-picker.svelte';
   import {
     buildCommentAnchor,
     createThreadId,
@@ -44,6 +46,7 @@
     syncActiveCommentMark
   } from '../utils/comment-utils';
   import { connectNoteCommentStream } from '../utils/comment-stream';
+  import { isNoteContentEmpty } from '../utils/note-content-utils';
   import type { TNoteCommentAnchor } from '@cio/utils/validation/notes';
   import type { NoteCommentThread, NoteShareVisibility } from '../utils/types';
 
@@ -80,6 +83,18 @@
     draft: string;
   } | null>(null);
   let disconnectCommentStream: (() => void) | null = null;
+  let emptyPagePickerDismissed = $state(false);
+  let importInputRef = $state<HTMLInputElement | null>(null);
+  let isImporting = $state(false);
+
+  const showEmptyPagePicker = $derived(
+    canWrite &&
+      noteOrigin === 'workspace' &&
+      !isLoading &&
+      !loadError &&
+      isNoteContentEmpty(content) &&
+      !emptyPagePickerDismissed
+  );
 
   const mentionItems = $derived.by((): MentionItem[] =>
     orgApi.teamMembers
@@ -274,6 +289,74 @@
     editorRoot = nextEditor.view.dom as HTMLElement;
   }
 
+  function dismissEmptyPagePicker() {
+    emptyPagePickerDismissed = true;
+    editor?.commands.focus('end');
+  }
+
+  async function handleEmptyPageOption(option: NoteEmptyPageOption) {
+    if (option === 'empty') {
+      dismissEmptyPagePicker();
+      return;
+    }
+
+    if (option === 'table_of_contents') {
+      content = TABLE_OF_CONTENTS_INITIAL_CONTENT;
+      emptyPagePickerDismissed = true;
+      await persistContent(TABLE_OF_CONTENTS_INITIAL_CONTENT);
+      editor?.commands.setContent(TABLE_OF_CONTENTS_INITIAL_CONTENT, false);
+      editor?.commands.focus('end');
+      return;
+    }
+
+    if (option === 'templates') {
+      snackbar.info('notes.templates.coming_soon');
+      return;
+    }
+
+    importInputRef?.click();
+  }
+
+  async function handleImportFile(file: File) {
+    isImporting = true;
+    const importedNote = await notesApi.importNote(file);
+    isImporting = false;
+
+    if (!importedNote) {
+      snackbar.error('notes.org.import_error');
+      return;
+    }
+
+    if (isNoteContentEmpty(content)) {
+      await notesApi.deleteNote(noteId);
+    }
+
+    snackbar.success('notes.org.import_success');
+    emptyPagePickerDismissed = true;
+    await goto(resolve(`${$currentOrgPath}/notes/${importedNote.id}`, {}));
+  }
+
+  function handleImportInputChange(event: Event) {
+    const input = event.currentTarget;
+    if (!(input instanceof HTMLInputElement)) return;
+
+    const file = input.files?.[0];
+    input.value = '';
+
+    if (!file) return;
+
+    void handleImportFile(file);
+  }
+
+  function handleTitleKeydown(event: KeyboardEvent) {
+    if (event.key !== 'Enter' || !showEmptyPagePicker) {
+      return;
+    }
+
+    event.preventDefault();
+    dismissEmptyPagePicker();
+  }
+
   function handleStartComment() {
     if (!editor || !canComment || pendingComposer) {
       return;
@@ -405,7 +488,14 @@
   });
 
   $effect(() => {
+    if (!isNoteContentEmpty(content)) {
+      emptyPagePickerDismissed = true;
+    }
+  });
+
+  $effect(() => {
     noteId;
+    emptyPagePickerDismissed = false;
     void loadNote();
   });
 
@@ -481,6 +571,12 @@
               {$t('notes.editor.version_history.open')}
             </DropdownMenu.Item>
             {#if noteOrigin === 'workspace'}
+              <DropdownMenu.Item onclick={() => snackbar.info('notes.editor.convert_to_template_coming_soon')}>
+                <LayoutTemplateIcon size={16} />
+                {$t('notes.editor.convert_to_template')}
+              </DropdownMenu.Item>
+            {/if}
+            {#if noteOrigin === 'workspace'}
               <DropdownMenu.Separator />
               <DropdownMenu.Item class="text-red-600" onclick={() => (showDeleteDialog = true)}>
                 <TrashIcon size={16} />
@@ -500,6 +596,7 @@
       class="ui:h-auto ui:w-full ui:rounded-none ui:border-0 ui:bg-transparent ui:px-0 ui:py-0 ui:text-3xl ui:font-semibold ui:shadow-none ui:focus-visible:border-0 ui:focus-visible:ring-0"
       placeholder={$t('notes.editor.title_placeholder')}
       oninput={scheduleTitleSave}
+      onkeydown={handleTitleKeydown}
     />
 
     {#if !canWrite && ownerFullname}
@@ -552,6 +649,14 @@
 
   <div class="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
     <div class="relative min-h-0 min-w-0 flex-1">
+      <input
+        bind:this={importInputRef}
+        type="file"
+        accept=".md,.txt,.docx,text/markdown,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        class="hidden"
+        onchange={handleImportInputChange}
+      />
+
       {#if isLoading}
         <div class="ui:text-muted-foreground flex h-40 items-center justify-center text-sm">
           <LoaderIcon size={18} class="mr-2 animate-spin" />
@@ -560,19 +665,35 @@
       {:else if loadError}
         <p class="ui:text-destructive text-sm">{loadError}</p>
       {:else}
-        <TextEditor
-          {content}
-          showToolBar={false}
-          editable={canWrite}
-          extraExtensions={commentExtensions}
-          class="border-none shadow-none"
-          editorClass="min-h-[60vh] px-0"
-          onChange={scheduleContentSave}
-          onReady={handleEditorReady}
-          placeholder={$t('notes.editor.placeholder')}
-        />
-        <NoteCommentSelection root={editorRoot} enabled={canComment} onComment={handleStartComment} />
-        <p class="ui:text-muted-foreground mt-2 text-xs">{$t('notes.editor.slash_hint')}</p>
+        {#if showEmptyPagePicker}
+          <NoteEmptyPagePicker onSelect={handleEmptyPageOption} class="min-h-[40vh]" />
+        {/if}
+
+        <div class={showEmptyPagePicker ? 'sr-only' : ''}>
+          <TextEditor
+            {content}
+            showToolBar={false}
+            editable={canWrite}
+            extraExtensions={commentExtensions}
+            class="border-none shadow-none"
+            editorClass="min-h-[60vh] px-0"
+            onChange={scheduleContentSave}
+            onReady={handleEditorReady}
+            placeholder={$t('notes.editor.placeholder')}
+          />
+        </div>
+
+        {#if !showEmptyPagePicker}
+          <NoteCommentSelection root={editorRoot} enabled={canComment} onComment={handleStartComment} />
+          <p class="ui:text-muted-foreground mt-2 text-xs">{$t('notes.editor.slash_hint')}</p>
+        {/if}
+
+        {#if isImporting}
+          <div class="ui:text-muted-foreground mt-2 flex items-center gap-2 text-sm">
+            <LoaderIcon size={16} class="animate-spin" />
+            {$t('notes.org.import')}
+          </div>
+        {/if}
       {/if}
     </div>
 

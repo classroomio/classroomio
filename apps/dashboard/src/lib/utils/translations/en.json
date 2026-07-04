@@ -4170,7 +4170,22 @@
       "delete_success": "Note deleted",
       "delete_error": "Could not delete note.",
       "more_actions": "More actions",
-      "slash_hint": "Type / for formatting commands."
+      "slash_hint": "Type / for formatting commands.",
+      "convert_to_template": "Convert to template",
+      "convert_to_template_coming_soon": "Note templates are coming soon."
+    },
+    "empty_page": {
+      "hint": "Press Enter to continue with an empty page, or pick an option (↑↓ to select).",
+      "aria_label": "New note options",
+      "empty": "Empty",
+      "with_table_of_contents": "With table of contents",
+      "templates": "Templates",
+      "import": "Import"
+    },
+    "templates": {
+      "heading": "Templates",
+      "empty": "Save a note as a template to reuse it here.",
+      "coming_soon": "Note templates are coming soon."
     },
     "comments": {
       "heading": "Comments",
