@@ -4084,7 +4084,7 @@
     "page_title": "My Notes",
     "heading": "My Notes",
     "description": "Notes you take while learning appear here.",
-    "org_description": "Workspace notes for planning courses and capturing ideas.",
+    "org_description": "Brainstorm and collaborate on course content before migrating it into a course.",
     "take_note": {
       "open": "Take Note",
       "close": "Close Note"
