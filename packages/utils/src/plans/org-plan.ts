@@ -12,7 +12,7 @@ export type IsOrgOnFreePlanOptions = {
 };
 
 export function isOrgOnFreePlan({ plans, isSelfHosted, orgId }: IsOrgOnFreePlanOptions): boolean {
-  if (orgId !== undefined && !orgId) {
+  if (!orgId) {
     return false;
   }
 

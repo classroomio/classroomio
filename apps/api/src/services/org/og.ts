@@ -40,7 +40,8 @@ export async function generateOrgSiteOgImage(siteName: string): Promise<{ buffer
   const activePlan = await getActiveOrganizationPlan(organization.id);
   const isFreePlan = isOrgOnFreePlan({
     plans: activePlan ? [{ planName: activePlan.planName, isActive: activePlan.isActive }] : [],
-    isSelfHosted
+    isSelfHosted,
+    orgId: organization.id
   });
 
   const tagline = isFreePlan ? undefined : extractOrgTagline(organization.landingpage);
