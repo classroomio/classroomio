@@ -108,6 +108,21 @@
 
   const canComment = $derived(!isLoading && !loadError && (canWrite || noteVisibility === 'team'));
   const commentExtensions = [NoteCommentMark];
+  const defaultNoteTitle = $derived(t.get('notes.org.new_note_title'));
+
+  function resolvePersistedTitle(displayTitle: string) {
+    const trimmedTitle = displayTitle.trim();
+
+    return trimmedTitle || defaultNoteTitle;
+  }
+
+  function normalizeTitleForDisplay(storedTitle: string) {
+    if (storedTitle.trim() === defaultNoteTitle) {
+      return '';
+    }
+
+    return storedTitle;
+  }
 
   async function loadNote() {
     isLoading = true;
@@ -121,7 +136,7 @@
       return;
     }
 
-    title = note.title;
+    title = normalizeTitleForDisplay(note.title);
     content = note.content;
     noteOrigin = note.origin;
     noteVisibility = note.visibility === 'team' ? 'team' : 'private';
@@ -248,15 +263,16 @@
     const input = event.currentTarget;
     if (!(input instanceof HTMLInputElement)) return;
 
-    const nextTitle = input.value.trim() || t.get('notes.org.new_note_title');
+    const nextTitle = input.value;
     title = nextTitle;
+    const persistedTitle = resolvePersistedTitle(nextTitle);
 
     if (titleSaveTimer) {
       clearTimeout(titleSaveTimer);
     }
 
     titleSaveTimer = setTimeout(() => {
-      void persistTitle(nextTitle);
+      void persistTitle(persistedTitle);
     }, 500);
   }
 
@@ -593,8 +609,8 @@
     <Input
       value={title}
       readonly={!canWrite}
-      class="ui:h-auto ui:w-full ui:rounded-none ui:border-0 ui:bg-transparent ui:px-0 ui:py-0 ui:text-3xl ui:font-semibold ui:shadow-none ui:focus-visible:border-0 ui:focus-visible:ring-0"
-      placeholder={$t('notes.editor.title_placeholder')}
+      class="ui:h-auto ui:w-full ui:rounded-none ui:border-0 ui:bg-transparent ui:px-0 ui:py-1 ui:text-[2.5rem] ui:leading-[1.2] ui:font-bold ui:shadow-none ui:placeholder:text-muted-foreground/45 ui:focus-visible:border-0 ui:focus-visible:ring-0"
+      placeholder={$t('notes.org.new_note_title')}
       oninput={scheduleTitleSave}
       onkeydown={handleTitleKeydown}
     />

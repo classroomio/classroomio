@@ -4148,7 +4148,7 @@
       "page_title": "Edit note",
       "loading": "Loading note…",
       "load_error": "Could not load this note.",
-      "title_placeholder": "Note title",
+      "title_placeholder": "Untitled",
       "placeholder": "Start writing…",
       "version_history": {
         "open": "Version history",
