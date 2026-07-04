@@ -30,6 +30,15 @@ export const ZUpdateNoteCommentThread = z.discriminatedUnion('status', [
   })
 ]);
 
+export const ZUpdateNoteComment = z.object({
+  body: z.string().min(1).max(5000)
+});
+
+export const ZNoteCommentIdParam = z.object({
+  noteId: z.string().uuid(),
+  commentId: z.string().uuid()
+});
+
 export const ZNoteCommentThreadIdParam = z.object({
   noteId: z.string().uuid(),
   threadId: z.string().uuid()
@@ -39,3 +48,4 @@ export type TNoteCommentAnchor = z.infer<typeof ZNoteCommentAnchor>;
 export type TCreateNoteCommentThread = z.infer<typeof ZCreateNoteCommentThread>;
 export type TCreateNoteCommentReply = z.infer<typeof ZCreateNoteCommentReply>;
 export type TUpdateNoteCommentThread = z.infer<typeof ZUpdateNoteCommentThread>;
+export type TUpdateNoteComment = z.infer<typeof ZUpdateNoteComment>;

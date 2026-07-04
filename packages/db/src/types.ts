@@ -256,4 +256,6 @@ export type TOrgNoteCommentThread = typeof schema.orgNoteCommentThread.$inferSel
 export type TNewOrgNoteCommentThread = typeof schema.orgNoteCommentThread.$inferInsert;
 export type TOrgNoteComment = typeof schema.orgNoteComment.$inferSelect;
 export type TNewOrgNoteComment = typeof schema.orgNoteComment.$inferInsert;
+export type TOrgNoteCommentMention = typeof schema.orgNoteCommentMention.$inferSelect;
+export type TNewOrgNoteCommentMention = typeof schema.orgNoteCommentMention.$inferInsert;
 export type TNoteOrigin = (typeof schema.noteOrigin.enumValues)[number];

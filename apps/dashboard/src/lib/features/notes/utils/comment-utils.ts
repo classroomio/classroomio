@@ -112,3 +112,55 @@ export function scrollToCommentAnchor(root: HTMLElement, anchor: TNoteCommentAnc
     parent.normalize();
   }, 1600);
 }
+
+export function reapplyCommentMarkInEditor(editor: Editor, threadId: string, anchor: TNoteCommentAnchor): boolean {
+  if (editor.getHTML().includes(`data-note-comment="${threadId}"`)) {
+    return false;
+  }
+
+  const doc = editor.state.doc;
+  const plainText = doc.textContent;
+  const needle = [anchor.prefix, anchor.quotedText, anchor.suffix].filter(Boolean).join('') || anchor.quotedText;
+  let matchIndex = plainText.indexOf(needle);
+  let quotedStart = matchIndex + (anchor.prefix?.length ?? 0);
+
+  if (matchIndex < 0) {
+    matchIndex = plainText.indexOf(anchor.quotedText);
+    quotedStart = matchIndex;
+  }
+
+  if (matchIndex < 0) {
+    return false;
+  }
+
+  const quotedEnd = quotedStart + anchor.quotedText.length;
+  let textOffset = 0;
+  let from = -1;
+  let to = -1;
+
+  doc.descendants((node, pos) => {
+    if (!node.isText || from >= 0) {
+      return;
+    }
+
+    const nodeText = node.text ?? '';
+    const nodeStart = textOffset;
+    const nodeEnd = textOffset + nodeText.length;
+
+    if (from < 0 && quotedStart >= nodeStart && quotedStart < nodeEnd) {
+      from = pos + (quotedStart - nodeStart);
+    }
+
+    if (to < 0 && quotedEnd > nodeStart && quotedEnd <= nodeEnd) {
+      to = pos + (quotedEnd - nodeStart);
+    }
+
+    textOffset = nodeEnd;
+  });
+
+  if (from < 0 || to < 0 || to <= from) {
+    return false;
+  }
+
+  return editor.chain().focus().setTextSelection({ from, to }).setNoteComment({ threadId }).run();
+}

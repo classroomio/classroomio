@@ -27,6 +27,8 @@ export type CreateNoteCommentReplyRequest =
   (typeof classroomio.notes)[':noteId']['comment-threads'][':threadId']['replies']['$post'];
 export type UpdateNoteCommentThreadRequest =
   (typeof classroomio.notes)[':noteId']['comment-threads'][':threadId']['$patch'];
+export type UpdateNoteCommentRequest = (typeof classroomio.notes)[':noteId']['comments'][':commentId']['$patch'];
+export type DeleteNoteCommentRequest = (typeof classroomio.notes)[':noteId']['comments'][':commentId']['$delete'];
 
 export type NoteCommentThreads = Extract<InferResponseType<ListNoteCommentThreadsRequest>, { success: true }>['data'];
 export type NoteCommentThread = NoteCommentThreads[number];

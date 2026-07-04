@@ -1,10 +1,16 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
-import type { TCreateNoteCommentThread, TUpdateNoteCommentThread } from '@cio/utils/validation/notes';
+import type {
+  TCreateNoteCommentThread,
+  TUpdateNoteComment,
+  TUpdateNoteCommentThread
+} from '@cio/utils/validation/notes';
 import type {
   CreateNoteCommentReplyRequest,
   CreateNoteCommentThreadRequest,
+  DeleteNoteCommentRequest,
   ListNoteCommentThreadsRequest,
   NoteCommentThread,
+  UpdateNoteCommentRequest,
   UpdateNoteCommentThreadRequest
 } from '../utils/types';
 
@@ -81,6 +87,41 @@ class NoteCommentsApi extends BaseApiWithErrors {
     });
 
     return updated;
+  }
+
+  async updateComment(noteId: string, commentId: string, body: string) {
+    await this.execute<UpdateNoteCommentRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId']['comments'][':commentId'].$patch({
+          param: { noteId, commentId },
+          json: { body }
+        }),
+      onSuccess: (result) => {
+        if (result.data.thread) {
+          this.threads = this.threads.map((thread) =>
+            thread.id === result.data.thread!.id ? result.data.thread! : thread
+          );
+        }
+      },
+      logContext: 'updateNoteComment'
+    });
+  }
+
+  async deleteComment(noteId: string, commentId: string) {
+    await this.execute<DeleteNoteCommentRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId']['comments'][':commentId'].$delete({
+          param: { noteId, commentId }
+        }),
+      onSuccess: (result) => {
+        if (result.data.thread) {
+          this.threads = this.threads.map((thread) =>
+            thread.id === result.data.thread!.id ? result.data.thread! : thread
+          );
+        }
+      },
+      logContext: 'deleteNoteComment'
+    });
   }
 
   reset() {

@@ -1,13 +1,17 @@
 <script lang="ts">
   import CheckIcon from '@lucide/svelte/icons/check';
+  import PencilIcon from '@lucide/svelte/icons/pencil';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
+  import TrashIcon from '@lucide/svelte/icons/trash-2';
   import { Button } from '@cio/ui/base/button';
-  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { ChatTextarea } from '@cio/ui/custom/chat-textarea';
+  import type { MentionItem } from '@cio/ui/custom/mention-popover';
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
   import { noteCommentsApi } from '../api';
-  import type { NoteCommentThread } from '../utils/types';
+  import { renderNoteCommentMentions } from '../utils/mention-utils';
+  import type { NoteComment, NoteCommentThread } from '../utils/types';
   import type { TNoteCommentAnchor } from '@cio/utils/validation/notes';
 
   interface PendingComposer {
@@ -19,6 +23,8 @@
   interface Props {
     noteId: string;
     canComment?: boolean;
+    currentUserId?: string | null;
+    mentionItems?: MentionItem[];
     activeThreadId?: string | null;
     pendingComposer?: PendingComposer | null;
     onSelectThread?: (threadId: string) => void;
@@ -32,6 +38,8 @@
   let {
     noteId,
     canComment = true,
+    currentUserId = null,
+    mentionItems = [],
     activeThreadId = null,
     pendingComposer = $bindable(null),
     onSelectThread,
@@ -43,9 +51,27 @@
   }: Props = $props();
 
   let replyDrafts = $state<Record<string, string>>({});
+  let editDrafts = $state<Record<string, string>>({});
+  let editingCommentId = $state<string | null>(null);
+  let activeTab = $state<'open' | 'resolved'>('open');
+
+  $effect(() => {
+    if (!activeThreadId) {
+      return;
+    }
+
+    const thread = noteCommentsApi.threads.find((item) => item.id === activeThreadId);
+
+    if (thread?.status === 'resolved') {
+      activeTab = 'resolved';
+    } else if (thread?.status === 'open') {
+      activeTab = 'open';
+    }
+  });
 
   const openThreads = $derived(noteCommentsApi.threads.filter((thread) => thread.status === 'open'));
   const resolvedThreads = $derived(noteCommentsApi.threads.filter((thread) => thread.status === 'resolved'));
+  const visibleThreads = $derived(activeTab === 'open' ? openThreads : resolvedThreads);
 
   async function submitReply(threadId: string) {
     const body = replyDrafts[threadId]?.trim();
@@ -57,6 +83,51 @@
     replyDrafts[threadId] = '';
     await noteCommentsApi.addReply(noteId, threadId, body);
   }
+
+  function startEditing(comment: NoteComment) {
+    editingCommentId = comment.id;
+    editDrafts[comment.id] = comment.body;
+  }
+
+  function cancelEditing(commentId: string) {
+    if (editingCommentId === commentId) {
+      editingCommentId = null;
+    }
+
+    delete editDrafts[commentId];
+  }
+
+  async function saveEdit(commentId: string) {
+    const body = editDrafts[commentId]?.trim();
+
+    if (!body) {
+      return;
+    }
+
+    await noteCommentsApi.updateComment(noteId, commentId, body);
+    editingCommentId = null;
+    delete editDrafts[commentId];
+  }
+
+  async function deleteComment(commentId: string) {
+    await noteCommentsApi.deleteComment(noteId, commentId);
+  }
+
+  function mentionTypeLabel(item: MentionItem) {
+    return t.get('notes.comments.mention_team_member');
+  }
+
+  let pendingDraft = $state('');
+
+  $effect(() => {
+    pendingDraft = pendingComposer?.draft ?? '';
+  });
+
+  $effect(() => {
+    if (pendingComposer) {
+      pendingComposer.draft = pendingDraft;
+    }
+  });
 </script>
 
 <aside class="ui:border-border flex h-full min-h-0 w-full flex-col border-l lg:w-80 lg:shrink-0">
@@ -65,21 +136,39 @@
     <p class="ui:text-muted-foreground text-xs">
       {$t('notes.comments.count', { count: noteCommentsApi.threads.length })}
     </p>
+    <div class="mt-3 flex gap-1">
+      <Button size="sm" variant={activeTab === 'open' ? 'default' : 'secondary'} onclick={() => (activeTab = 'open')}>
+        {$t('notes.comments.open_heading')} ({openThreads.length})
+      </Button>
+      <Button
+        size="sm"
+        variant={activeTab === 'resolved' ? 'default' : 'secondary'}
+        onclick={() => (activeTab = 'resolved')}
+      >
+        {$t('notes.comments.resolved_heading')} ({resolvedThreads.length})
+      </Button>
+    </div>
   </header>
 
   <div class="min-h-0 flex-1 space-y-4 overflow-y-auto p-3">
-    {#if pendingComposer}
+    {#if pendingComposer && activeTab === 'open'}
       <article class="ui:bg-card ui:border-border rounded-lg border p-3 ring-2 ring-amber-400">
         <p class="ui:text-muted-foreground mb-2 line-clamp-2 text-xs italic">
           "{pendingComposer.anchor.quotedText}"
         </p>
-        <TextareaField
-          label={$t('notes.comments.new_thread_label')}
-          bind:value={pendingComposer.draft}
+        <label class="mb-1 block text-xs font-medium" for="pending-comment"
+          >{$t('notes.comments.new_thread_label')}</label
+        >
+        <ChatTextarea
+          bind:value={pendingDraft}
+          {mentionItems}
+          typeLabel={mentionTypeLabel}
           placeholder={$t('notes.comments.reply_placeholder')}
+          emptyMessage={$t('notes.comments.mention_no_results')}
+          rows={2}
         />
         <div class="mt-2 flex gap-2">
-          <Button size="sm" onclick={() => onSubmitPending?.()} disabled={!pendingComposer.draft.trim()}>
+          <Button size="sm" onclick={() => onSubmitPending?.()} disabled={!pendingDraft.trim()}>
             {$t('notes.comments.post')}
           </Button>
           <Button size="sm" variant="secondary" onclick={() => onCancelPending?.()}>
@@ -89,17 +178,17 @@
       </article>
     {/if}
 
-    {#if !pendingComposer && openThreads.length === 0 && resolvedThreads.length === 0}
+    {#if !pendingComposer && noteCommentsApi.threads.length === 0}
       <p class="ui:text-muted-foreground px-1 text-sm">{$t('notes.comments.empty')}</p>
+    {:else if visibleThreads.length === 0}
+      <p class="ui:text-muted-foreground px-1 text-sm">
+        {activeTab === 'open' ? $t('notes.comments.empty_open') : $t('notes.comments.empty_resolved')}
+      </p>
     {/if}
 
-    {#if openThreads.length > 0}
-      <p class="ui:text-muted-foreground px-1 text-xs font-medium uppercase">{$t('notes.comments.open_heading')}</p>
-    {/if}
-
-    {#each openThreads as thread (thread.id)}
+    {#each visibleThreads as thread (thread.id)}
       <article
-        class={`ui:bg-card ui:border-border rounded-lg border p-3 ${activeThreadId === thread.id ? 'ring-primary ring-2' : ''}`}
+        class={`ui:bg-card ui:border-border rounded-lg border p-3 ${activeThreadId === thread.id ? 'ring-primary ring-2' : ''} ${thread.status === 'resolved' ? 'ui:bg-muted/20 opacity-80' : ''}`}
       >
         <button
           type="button"
@@ -120,19 +209,58 @@
                 <div class="flex items-center gap-2">
                   <p class="truncate text-xs font-medium">{comment.authorFullname ?? $t('notes.comments.anonymous')}</p>
                   <span class="ui:text-muted-foreground text-[11px]">{calDateDiff(new Date(comment.createdAt))}</span>
+                  {#if currentUserId && comment.authorId === currentUserId && canComment}
+                    <div class="ml-auto flex gap-1">
+                      <Button size="icon-xs" variant="secondary" onclick={() => startEditing(comment)}>
+                        <PencilIcon size={12} />
+                      </Button>
+                      <Button size="icon-xs" variant="secondary" onclick={() => deleteComment(comment.id)}>
+                        <TrashIcon size={12} />
+                      </Button>
+                    </div>
+                  {/if}
                 </div>
-                <p class="mt-1 text-sm whitespace-pre-wrap">{comment.body}</p>
+
+                {#if editingCommentId === comment.id}
+                  <div class="mt-2 space-y-2">
+                    <ChatTextarea
+                      bind:value={editDrafts[comment.id]}
+                      {mentionItems}
+                      typeLabel={mentionTypeLabel}
+                      emptyMessage={$t('notes.comments.mention_no_results')}
+                      rows={2}
+                    />
+                    <div class="flex gap-2">
+                      <Button size="sm" onclick={() => saveEdit(comment.id)} disabled={!editDrafts[comment.id]?.trim()}>
+                        {$t('notes.comments.save')}
+                      </Button>
+                      <Button size="sm" variant="secondary" onclick={() => cancelEditing(comment.id)}>
+                        {$t('notes.share.cancel')}
+                      </Button>
+                    </div>
+                  </div>
+                {:else}
+                  <p class="note-comment-body mt-1 text-sm whitespace-pre-wrap">
+                    {@html renderNoteCommentMentions(comment.body)}
+                  </p>
+                {/if}
               </div>
             </div>
           {/each}
         </div>
 
-        {#if canComment}
+        {#if canComment && thread.status === 'open'}
           <div class="mt-3 space-y-2">
-            <TextareaField
-              label={$t('notes.comments.reply_label')}
+            <label class="block text-xs font-medium" for={`reply-${thread.id}`}
+              >{$t('notes.comments.reply_label')}</label
+            >
+            <ChatTextarea
               bind:value={replyDrafts[thread.id]}
+              {mentionItems}
+              typeLabel={mentionTypeLabel}
               placeholder={$t('notes.comments.reply_placeholder')}
+              emptyMessage={$t('notes.comments.mention_no_results')}
+              rows={2}
             />
             <div class="flex flex-wrap gap-2">
               <Button size="sm" onclick={() => submitReply(thread.id)} disabled={!replyDrafts[thread.id]?.trim()}>
@@ -144,29 +272,7 @@
               </Button>
             </div>
           </div>
-        {/if}
-      </article>
-    {/each}
-
-    {#if resolvedThreads.length > 0}
-      <p class="ui:text-muted-foreground px-1 pt-2 text-xs font-medium uppercase">
-        {$t('notes.comments.resolved_heading')}
-      </p>
-    {/if}
-
-    {#each resolvedThreads as thread (thread.id)}
-      <article class="ui:bg-muted/20 ui:border-border rounded-lg border p-3 opacity-80">
-        <button type="button" class="mb-2 w-full text-left" onclick={() => onRequestScroll?.(thread)}>
-          <p class="ui:text-muted-foreground line-clamp-2 text-xs italic">"{thread.anchor.quotedText}"</p>
-        </button>
-
-        <div class="space-y-2">
-          {#each thread.comments as comment (comment.id)}
-            <p class="text-sm whitespace-pre-wrap">{comment.body}</p>
-          {/each}
-        </div>
-
-        {#if canComment}
+        {:else if canComment && thread.status === 'resolved'}
           <Button size="sm" variant="secondary" class="mt-3" onclick={() => onReopenThread?.(thread)}>
             <RotateCcwIcon size={14} />
             {$t('notes.comments.reopen')}
@@ -176,3 +282,10 @@
     {/each}
   </div>
 </aside>
+
+<style>
+  :global(.note-comment-body .note-comment-mention) {
+    font-weight: 600;
+    color: var(--primary);
+  }
+</style>

@@ -3,20 +3,25 @@ import {
   ZCreateNoteCommentReply,
   ZCreateNoteCommentThread,
   ZListNotesQuery,
+  ZNoteCommentIdParam,
   ZNoteCommentThreadIdParam,
   ZNoteIdParam,
   ZNoteTagAssignment,
   ZNoteVersionHistoryQuery,
   ZNoteVersionIdParam,
   ZUpdateNote,
+  ZUpdateNoteComment,
   ZUpdateNoteCommentThread,
   ZUpdateNoteVisibility
 } from '@cio/utils/validation/notes';
 import { importNoteService } from '@api/services/notes/import';
 import {
+  assertNoteCommentStreamAccess,
   createNoteCommentReplyService,
   createNoteCommentThreadService,
+  deleteNoteCommentService,
   listNoteCommentThreadsService,
+  updateNoteCommentService,
   updateNoteCommentThreadService
 } from '@api/services/notes/comments';
 import {
@@ -37,6 +42,8 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
+import { streamSSE } from 'hono/streaming';
+import { subscribeNoteCommentEvents } from '@cio/core/utils/redis/note-comments-pubsub';
 
 export const notesRouter = new Hono()
   .get('/usage', authMiddleware, orgMemberMiddleware, async (c) => {
@@ -291,6 +298,90 @@ export const notesRouter = new Hono()
         return c.json({ success: true, data }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update note comment thread');
+      }
+    }
+  )
+  .patch(
+    '/:noteId/comments/:commentId',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNoteCommentIdParam),
+    zValidator('json', ZUpdateNoteComment),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const { noteId, commentId } = c.req.valid('param');
+        const body = c.req.valid('json');
+        const data = await updateNoteCommentService(
+          organizationId,
+          user.id,
+          c.get('userRole')!,
+          noteId,
+          commentId,
+          body
+        );
+
+        return c.json({ success: true, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update note comment');
+      }
+    }
+  )
+  .delete(
+    '/:noteId/comments/:commentId',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNoteCommentIdParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const { noteId, commentId } = c.req.valid('param');
+        const data = await deleteNoteCommentService(organizationId, user.id, c.get('userRole')!, noteId, commentId);
+
+        return c.json({ success: true, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to delete note comment');
+      }
+    }
+  )
+  .get(
+    '/:noteId/comment-threads/stream',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNoteIdParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const { noteId } = c.req.valid('param');
+
+        await assertNoteCommentStreamAccess(organizationId, user.id, c.get('userRole')!, noteId);
+
+        return streamSSE(c, async (stream) => {
+          let unsubscribe: (() => Promise<void>) | null = null;
+
+          stream.onAbort(async () => {
+            if (unsubscribe) {
+              await unsubscribe();
+            }
+          });
+
+          unsubscribe = await subscribeNoteCommentEvents(noteId, async (event) => {
+            await stream.writeSSE({
+              event: event.type,
+              data: JSON.stringify(event)
+            });
+          });
+
+          while (true) {
+            await stream.writeSSE({ event: 'ping', data: '{}' });
+            await stream.sleep(30000);
+          }
+        });
+      } catch (error) {
+        return handleError(c, error, 'Failed to stream note comment updates');
       }
     }
   )

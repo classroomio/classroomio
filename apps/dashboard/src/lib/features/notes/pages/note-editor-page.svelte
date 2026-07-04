@@ -9,6 +9,7 @@
   import XIcon from '@lucide/svelte/icons/x';
   import { onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import { resolve } from '$app/paths';
   import { Button } from '@cio/ui/base/button';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -27,6 +28,8 @@
   import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
   import { snackbar } from '$features/ui/snackbar/store';
   import { notesApi, noteCommentsApi } from '../api';
+  import { orgApi } from '$features/org/api/org.svelte';
+  import type { MentionItem } from '@cio/ui/custom/mention-popover';
   import NoteShareDialog from '../components/note-share-dialog.svelte';
   import NoteTagPicker from '../components/note-tag-picker.svelte';
   import NoteVersionHistory from '../components/note-version-history.svelte';
@@ -35,9 +38,11 @@
   import {
     buildCommentAnchor,
     createThreadId,
+    reapplyCommentMarkInEditor,
     scrollToCommentAnchor,
     stripCommentMarkFromHtml
   } from '../utils/comment-utils';
+  import { connectNoteCommentStream } from '../utils/comment-stream';
   import type { TNoteCommentAnchor } from '@cio/utils/validation/notes';
   import type { NoteCommentThread, NoteShareVisibility } from '../utils/types';
 
@@ -73,6 +78,17 @@
     anchor: TNoteCommentAnchor;
     draft: string;
   } | null>(null);
+  let disconnectCommentStream: (() => void) | null = null;
+
+  const mentionItems = $derived.by((): MentionItem[] =>
+    orgApi.teamMembers
+      .filter((member) => member.profileId)
+      .map((member) => ({
+        id: member.profileId!,
+        label: member.fullname || member.email,
+        type: 'user'
+      }))
+  );
 
   const canComment = $derived(!isLoading && !loadError && (canWrite || noteVisibility === 'team'));
   const commentExtensions = [NoteCommentMark];
@@ -102,7 +118,29 @@
     }
 
     isLoading = false;
-    void noteCommentsApi.listThreads(noteId);
+    void orgApi.getOrgTeam();
+    await noteCommentsApi.listThreads(noteId);
+    focusThreadFromQuery();
+  }
+
+  function focusThreadFromQuery() {
+    const threadId = $page.url.searchParams.get('thread');
+
+    if (!threadId) {
+      return;
+    }
+
+    const thread = noteCommentsApi.threads.find((item) => item.id === threadId);
+
+    if (!thread) {
+      return;
+    }
+
+    activeThreadId = thread.id;
+
+    if (thread.status === 'resolved') {
+      handleScrollToThread(thread);
+    }
   }
 
   function handleDocumentVisibilityChange() {
@@ -113,6 +151,8 @@
 
   onDestroy(() => {
     noteCommentsApi.reset();
+    disconnectCommentStream?.();
+    disconnectCommentStream = null;
 
     if (saveTimer) {
       clearTimeout(saveTimer);
@@ -300,8 +340,20 @@
   }
 
   async function handleReopenThread(thread: NoteCommentThread) {
+    let reappliedContent: string | undefined;
+
+    if (editor) {
+      const reapplied = reapplyCommentMarkInEditor(editor, thread.id, thread.anchor);
+
+      if (reapplied) {
+        reappliedContent = editor.getHTML();
+        content = reappliedContent;
+      }
+    }
+
     await noteCommentsApi.updateThreadStatus(noteId, thread.id, {
-      status: 'open'
+      status: 'open',
+      ...(reappliedContent ? { content: reappliedContent } : {})
     });
   }
 
@@ -316,6 +368,22 @@
   $effect(() => {
     noteId;
     void loadNote();
+  });
+
+  $effect(() => {
+    if (isLoading || loadError || !noteId) {
+      return;
+    }
+
+    disconnectCommentStream?.();
+    disconnectCommentStream = connectNoteCommentStream(noteId, () => {
+      void noteCommentsApi.listThreads(noteId);
+    });
+
+    return () => {
+      disconnectCommentStream?.();
+      disconnectCommentStream = null;
+    };
   });
 </script>
 
@@ -473,6 +541,8 @@
       <NoteCommentsPanel
         {noteId}
         {canComment}
+        currentUserId={$profile.id}
+        {mentionItems}
         bind:pendingComposer
         {activeThreadId}
         onSelectThread={(threadId) => (activeThreadId = threadId)}

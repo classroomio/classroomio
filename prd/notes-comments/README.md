@@ -3,7 +3,7 @@
 ## Status
 
 - **Phase 1:** Done
-- **Phase 2:** Not started
+- **Phase 2:** Done
 - **Phase 3:** Not started
 
 ## Progress
@@ -11,7 +11,7 @@
 | Phase | Scope | Status |
 | --- | --- | --- |
 | **Phase 1** | Google Docs core — anchored threads, sidebar, resolve/reopen, scroll-to-anchor, focus refetch | ☑ |
-| **Phase 2** | @mentions, email notifications, SSE live sync, edit/delete polish | ☐ |
+| **Phase 2** | @mentions, email notifications, SSE live sync, edit/delete polish | ☑ |
 | **Phase 3** | AI segment comments via assistant | ☐ |
 
 ## Purpose
@@ -209,12 +209,12 @@ Client searches `plainText` for `prefix + quotedText + suffix` (fallback: `quote
 
 ### Phase 2
 
-- [ ] `org_note_comment_mention` migration
-- [ ] Mention autocomplete + parsing
-- [ ] Email jobs
-- [ ] SSE stream endpoint
-- [ ] Edit / delete comment
-- [ ] Open / Resolved tabs in sidebar
+- [x] `org_note_comment_mention` migration
+- [x] Mention autocomplete + parsing
+- [x] Email jobs
+- [x] SSE stream endpoint
+- [x] Edit / delete comment
+- [x] Open / Resolved tabs in sidebar
 
 ### Phase 3
 

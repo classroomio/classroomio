@@ -3681,6 +3681,35 @@ export const orgNoteComment = pgTable(
   ]
 );
 
+export const orgNoteCommentMention = pgTable(
+  'org_note_comment_mention',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    commentId: uuid('comment_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.commentId],
+      foreignColumns: [orgNoteComment.id],
+      name: 'org_note_comment_mention_comment_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'org_note_comment_mention_profile_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_org_note_comment_mention_comment_id').on(table.commentId),
+    uniqueIndex('idx_org_note_comment_mention_unique').on(table.commentId, table.profileId)
+  ]
+);
+
 export const noteTagAssignment = pgTable(
   'note_tag_assignment',
   {

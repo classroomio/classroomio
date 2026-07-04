@@ -4187,7 +4187,14 @@
       "post": "Post",
       "resolve": "Resolve",
       "reopen": "Reopen",
-      "anonymous": "Unknown user"
+      "anonymous": "Unknown user",
+      "save": "Save",
+      "edit": "Edit",
+      "delete": "Delete",
+      "mention_team_member": "Team member",
+      "mention_no_results": "No team members found",
+      "empty_open": "No open comment threads.",
+      "empty_resolved": "No resolved comment threads."
     },
     "ai_panel": {
       "open": "Ask AI",

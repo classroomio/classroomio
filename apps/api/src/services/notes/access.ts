@@ -62,3 +62,9 @@ export function assertNoteThreadResolveAccess(params: {
 
   throw new AppError('Forbidden', ErrorCodes.FORBIDDEN, 403);
 }
+
+export function assertNoteCommentAuthorAccess(params: { userId: string; authorId: string | null }): void {
+  if (params.authorId !== params.userId) {
+    throw new AppError('Forbidden', ErrorCodes.FORBIDDEN, 403);
+  }
+}
