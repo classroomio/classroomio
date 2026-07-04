@@ -1,4 +1,4 @@
-import type { Content, Editor } from '@tiptap/core';
+import type { Content, Editor, Extensions } from '@tiptap/core';
 import type { EditorState, Transaction } from '@tiptap/pm/state';
 
 import type { EditorView } from '@tiptap/pm/view';
@@ -12,6 +12,7 @@ export interface EdraEditorProps {
   autofocus?: boolean;
   onUpdate?: (args: { editor: Editor; transaction: Transaction }) => void;
   class?: string;
+  extraExtensions?: Extensions;
 }
 
 export interface EditorProps {
@@ -35,6 +36,7 @@ export interface EditorProps {
   onContentChange?: (content: Content) => void;
   onEditorReady?: (editor: Editor) => void;
   onEditorDestroy?: () => void;
+  extraExtensions?: Extensions;
 }
 
 export interface EdraToolbarProps {

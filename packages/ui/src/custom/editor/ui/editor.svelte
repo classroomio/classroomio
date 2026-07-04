@@ -48,7 +48,8 @@
     onUpdate,
     autofocus = false,
     class: className,
-    placeholder = ''
+    placeholder = '',
+    extraExtensions = []
   }: EdraEditorProps = $props();
 
   onMount(() => {
@@ -71,7 +72,8 @@
         AudioExtended(AudioExtendedComp),
         IFramePlaceholder(IFramePlaceHolderComp),
         IFrameExtended(IFrameExtendedComp),
-        slashcommand(SlashCommandList)
+        slashcommand(SlashCommandList),
+        ...extraExtensions
       ],
       {
         onUpdate,

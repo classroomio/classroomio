@@ -41,7 +41,8 @@
     editorClass = '',
     placeholder,
     onContentChange,
-    onEditorReady
+    onEditorReady,
+    extraExtensions = []
   }: Props = $props();
 
   let editor = $state<Editor>();
@@ -151,6 +152,7 @@
       {content}
       {onUpdate}
       {placeholder}
+      {extraExtensions}
     />
   </div>
 {/if}

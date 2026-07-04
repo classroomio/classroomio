@@ -1,14 +1,24 @@
 import {
   ZCreateNote,
+  ZCreateNoteCommentReply,
+  ZCreateNoteCommentThread,
   ZListNotesQuery,
+  ZNoteCommentThreadIdParam,
   ZNoteIdParam,
   ZNoteTagAssignment,
   ZNoteVersionHistoryQuery,
   ZNoteVersionIdParam,
   ZUpdateNote,
+  ZUpdateNoteCommentThread,
   ZUpdateNoteVisibility
 } from '@cio/utils/validation/notes';
 import { importNoteService } from '@api/services/notes/import';
+import {
+  createNoteCommentReplyService,
+  createNoteCommentThreadService,
+  listNoteCommentThreadsService,
+  updateNoteCommentThreadService
+} from '@api/services/notes/comments';
 import {
   createNoteService,
   deleteNoteService,
@@ -192,6 +202,98 @@ export const notesRouter = new Hono()
       return handleError(c, error, 'Failed to delete note');
     }
   })
+  .get(
+    '/:noteId/comment-threads',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNoteIdParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const { noteId } = c.req.valid('param');
+        const data = await listNoteCommentThreadsService(organizationId, user.id, c.get('userRole')!, noteId);
+
+        return c.json({ success: true, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to list note comment threads');
+      }
+    }
+  )
+  .post(
+    '/:noteId/comment-threads',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNoteIdParam),
+    zValidator('json', ZCreateNoteCommentThread),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const { noteId } = c.req.valid('param');
+        const body = c.req.valid('json');
+        const data = await createNoteCommentThreadService(organizationId, user.id, c.get('userRole')!, noteId, body);
+
+        return c.json({ success: true, data }, 201);
+      } catch (error) {
+        return handleError(c, error, 'Failed to create note comment thread');
+      }
+    }
+  )
+  .post(
+    '/:noteId/comment-threads/:threadId/replies',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNoteCommentThreadIdParam),
+    zValidator('json', ZCreateNoteCommentReply),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const { noteId, threadId } = c.req.valid('param');
+        const body = c.req.valid('json');
+        const data = await createNoteCommentReplyService(
+          organizationId,
+          user.id,
+          c.get('userRole')!,
+          noteId,
+          threadId,
+          body
+        );
+
+        return c.json({ success: true, data }, 201);
+      } catch (error) {
+        return handleError(c, error, 'Failed to create note comment reply');
+      }
+    }
+  )
+  .patch(
+    '/:noteId/comment-threads/:threadId',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNoteCommentThreadIdParam),
+    zValidator('json', ZUpdateNoteCommentThread),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const { noteId, threadId } = c.req.valid('param');
+        const body = c.req.valid('json');
+        const data = await updateNoteCommentThreadService(
+          organizationId,
+          user.id,
+          c.get('userRole')!,
+          noteId,
+          threadId,
+          body
+        );
+
+        return c.json({ success: true, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update note comment thread');
+      }
+    }
+  )
   .get(
     '/:noteId/versions',
     authMiddleware,

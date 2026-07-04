@@ -36,3 +36,29 @@ export function assertNoteWriteAccess(params: { note: NoteListRow; organizationI
     throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
   }
 }
+
+/** Anyone who can read the note may comment (org team on shared notes; owner on private). Students excluded by route scope. */
+export function assertNoteCommentAccess(params: {
+  note: NoteListRow;
+  organizationId: string;
+  userId: string;
+  roleId: number;
+}): void {
+  assertNoteReadAccess(params);
+}
+
+export function assertNoteThreadResolveAccess(params: {
+  note: NoteListRow;
+  userId: string;
+  threadCreatedBy: string | null;
+}): void {
+  if (params.note.ownerId === params.userId) {
+    return;
+  }
+
+  if (params.threadCreatedBy === params.userId) {
+    return;
+  }
+
+  throw new AppError('Forbidden', ErrorCodes.FORBIDDEN, 403);
+}

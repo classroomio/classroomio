@@ -3499,6 +3499,18 @@ export type NoteVideoAnchor = {
   label?: string;
 };
 
+export type NoteCommentAnchor = {
+  version: 1;
+  threadId: string;
+  quotedText: string;
+  prefix?: string;
+  suffix?: string;
+};
+
+export const noteCommentThreadStatus = pgEnum('note_comment_thread_status', ['open', 'resolved']);
+
+export const noteCommentAuthorType = pgEnum('note_comment_author_type', ['user', 'ai']);
+
 export const noteOrigin = pgEnum('note_origin', ['workspace', 'lesson_capture']);
 
 export const noteVisibility = pgEnum('note_visibility', ['private', 'team', 'public']);
@@ -3590,6 +3602,82 @@ export const orgNoteVersion = pgTable(
       name: 'org_note_version_changed_by_fkey'
     }).onDelete('cascade'),
     index('idx_org_note_version_note_id_timestamp').on(table.noteId, table.timestamp)
+  ]
+);
+
+export const orgNoteCommentThread = pgTable(
+  'org_note_comment_thread',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    noteId: uuid('note_id').notNull(),
+    status: noteCommentThreadStatus().notNull().default('open'),
+    anchor: jsonb('anchor').$type<NoteCommentAnchor>().notNull(),
+    createdBy: uuid('created_by'),
+    authorType: noteCommentAuthorType('author_type').notNull().default('user'),
+    resolvedAt: timestamp('resolved_at', { withTimezone: true, mode: 'string' }),
+    resolvedBy: uuid('resolved_by'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.noteId],
+      foreignColumns: [orgNote.id],
+      name: 'org_note_comment_thread_note_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdBy],
+      foreignColumns: [profile.id],
+      name: 'org_note_comment_thread_created_by_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.resolvedBy],
+      foreignColumns: [profile.id],
+      name: 'org_note_comment_thread_resolved_by_fkey'
+    }).onDelete('set null'),
+    index('idx_org_note_comment_thread_note_id_status').on(table.noteId, table.status),
+    index('idx_org_note_comment_thread_note_id_created').on(table.noteId, table.createdAt)
+  ]
+);
+
+export const orgNoteComment = pgTable(
+  'org_note_comment',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    threadId: uuid('thread_id').notNull(),
+    authorId: uuid('author_id'),
+    authorType: noteCommentAuthorType('author_type').notNull().default('user'),
+    body: text().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.threadId],
+      foreignColumns: [orgNoteCommentThread.id],
+      name: 'org_note_comment_thread_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.authorId],
+      foreignColumns: [profile.id],
+      name: 'org_note_comment_author_id_fkey'
+    }).onDelete('set null'),
+    index('idx_org_note_comment_thread_id_created').on(table.threadId, table.createdAt)
   ]
 );
 

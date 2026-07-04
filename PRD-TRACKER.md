@@ -22,6 +22,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | 12 | `prd/public-courses` | todo |
 | - | - | `prd/customer-course-documentation` | todo |
 | - | - | `prd/walkthrough-widget` | draft |
+| - | - | `prd/notes-comments` | in-progress |
 | - | - | `prd/copy-page-as-markdown` | todo |
 | - | - | `prd/reset-student-course-progress` | todo |
 | - | 15 | `prd/webhooks` | todo |

@@ -7,11 +7,13 @@
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import LoaderIcon from '@lucide/svelte/icons/loader';
   import XIcon from '@lucide/svelte/icons/x';
+  import { onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { Button } from '@cio/ui/base/button';
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import type { Content } from '@cio/ui/custom/editor';
+  import type { Content, TiptapEditor } from '@cio/ui/custom/editor';
+  import { NoteCommentMark } from '@cio/ui/custom/editor';
   import { Input } from '@cio/ui/base/input';
   import { Badge } from '@cio/ui/base/badge';
   import * as Dialog from '@cio/ui/base/dialog';
@@ -24,12 +26,20 @@
   import { t } from '$lib/utils/functions/translations';
   import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { notesApi } from '../api';
+  import { notesApi, noteCommentsApi } from '../api';
   import NoteShareDialog from '../components/note-share-dialog.svelte';
   import NoteTagPicker from '../components/note-tag-picker.svelte';
   import NoteVersionHistory from '../components/note-version-history.svelte';
-  import NoteCommentsBar from '../components/note-comments-bar.svelte';
-  import type { NoteShareVisibility } from '../utils/types';
+  import NoteCommentsPanel from '../components/note-comments-panel.svelte';
+  import NoteCommentSelection from '../components/note-comment-selection.svelte';
+  import {
+    buildCommentAnchor,
+    createThreadId,
+    scrollToCommentAnchor,
+    stripCommentMarkFromHtml
+  } from '../utils/comment-utils';
+  import type { TNoteCommentAnchor } from '@cio/utils/validation/notes';
+  import type { NoteCommentThread, NoteShareVisibility } from '../utils/types';
 
   interface Props {
     noteId: string;
@@ -55,6 +65,17 @@
   let isDeleting = $state(false);
   let saveTimer: ReturnType<typeof setTimeout> | null = null;
   let titleSaveTimer: ReturnType<typeof setTimeout> | null = null;
+  let editor = $state<TiptapEditor | undefined>();
+  let editorRoot = $state<HTMLElement | undefined>();
+  let activeThreadId = $state<string | null>(null);
+  let pendingComposer = $state<{
+    threadId: string;
+    anchor: TNoteCommentAnchor;
+    draft: string;
+  } | null>(null);
+
+  const canComment = $derived(!isLoading && !loadError && (canWrite || noteVisibility === 'team'));
+  const commentExtensions = [NoteCommentMark];
 
   async function loadNote() {
     isLoading = true;
@@ -81,7 +102,26 @@
     }
 
     isLoading = false;
+    void noteCommentsApi.listThreads(noteId);
   }
+
+  function handleDocumentVisibilityChange() {
+    if (document.visibilityState === 'visible' && noteId) {
+      void noteCommentsApi.listThreads(noteId);
+    }
+  }
+
+  onDestroy(() => {
+    noteCommentsApi.reset();
+
+    if (saveTimer) {
+      clearTimeout(saveTimer);
+    }
+
+    if (titleSaveTimer) {
+      clearTimeout(titleSaveTimer);
+    }
+  });
 
   async function persistTags(nextTagIds: string[]) {
     isSavingTags = true;
@@ -188,25 +228,100 @@
     showVersionHistory = false;
   }
 
+  function handleEditorReady(nextEditor: TiptapEditor) {
+    editor = nextEditor;
+    editorRoot = nextEditor.view.dom as HTMLElement;
+  }
+
+  function handleStartComment() {
+    if (!editor || !canComment || pendingComposer) {
+      return;
+    }
+
+    const threadId = createThreadId();
+    const applied = editor.chain().focus().setNoteComment({ threadId }).run();
+
+    if (!applied) {
+      return;
+    }
+
+    const anchor = buildCommentAnchor(editor, threadId);
+    content = editor.getHTML();
+    pendingComposer = { threadId, anchor, draft: '' };
+    activeThreadId = threadId;
+  }
+
+  async function handleSubmitPendingComment() {
+    if (!pendingComposer || !editor) {
+      return;
+    }
+
+    const payload = pendingComposer;
+    const nextContent = editor.getHTML();
+
+    const created = await noteCommentsApi.createThread(noteId, {
+      threadId: payload.threadId,
+      body: payload.draft.trim(),
+      anchor: payload.anchor,
+      content: nextContent
+    });
+
+    if (!created) {
+      return;
+    }
+
+    content = nextContent;
+    pendingComposer = null;
+    activeThreadId = created.id;
+  }
+
+  function handleCancelPendingComment() {
+    if (!editor || !pendingComposer) {
+      pendingComposer = null;
+
+      return;
+    }
+
+    editor.commands.unsetNoteComment({ threadId: pendingComposer.threadId });
+    content = editor.getHTML();
+    pendingComposer = null;
+    activeThreadId = null;
+  }
+
+  async function handleResolveThread(thread: NoteCommentThread) {
+    const nextContent = stripCommentMarkFromHtml(content, thread.id);
+    content = nextContent;
+    editor?.commands.setContent(nextContent, false);
+
+    await noteCommentsApi.updateThreadStatus(noteId, thread.id, {
+      status: 'resolved',
+      content: nextContent
+    });
+  }
+
+  async function handleReopenThread(thread: NoteCommentThread) {
+    await noteCommentsApi.updateThreadStatus(noteId, thread.id, {
+      status: 'open'
+    });
+  }
+
+  function handleScrollToThread(thread: NoteCommentThread) {
+    activeThreadId = thread.id;
+
+    if (editorRoot) {
+      scrollToCommentAnchor(editorRoot, thread.anchor);
+    }
+  }
+
   $effect(() => {
     noteId;
     void loadNote();
   });
-
-  $effect(() => {
-    return () => {
-      if (saveTimer) {
-        clearTimeout(saveTimer);
-      }
-
-      if (titleSaveTimer) {
-        clearTimeout(titleSaveTimer);
-      }
-    };
-  });
 </script>
 
-<div class="mx-auto flex min-h-[calc(100vh-10rem)] w-full max-w-4xl flex-col gap-4 px-1 pt-2 pb-8">
+<svelte:document onvisibilitychange={handleDocumentVisibilityChange} />
+
+<div class="mx-auto flex min-h-[calc(100vh-10rem)] w-full max-w-6xl flex-col gap-4 px-1 pt-2 pb-8">
   <header class="flex flex-wrap items-center gap-3">
     <IconButton variant="secondary" size="icon" onclick={handleBack}>
       <ArrowLeftIcon size={16} />
@@ -285,10 +400,6 @@
     {/if}
   </div>
 
-  {#if !isLoading && !loadError}
-    <NoteCommentsBar {canWrite} />
-  {/if}
-
   {#if !isLoading && !loadError && !canWrite}
     <p class="ui:text-muted-foreground text-sm">
       {$t('notes.share.read_only_banner')}
@@ -332,25 +443,45 @@
     </div>
   {/if}
 
-  <div class="min-h-0 flex-1">
-    {#if isLoading}
-      <div class="ui:text-muted-foreground flex h-40 items-center justify-center text-sm">
-        <LoaderIcon size={18} class="mr-2 animate-spin" />
-        {$t('notes.editor.loading')}
-      </div>
-    {:else if loadError}
-      <p class="ui:text-destructive text-sm">{loadError}</p>
-    {:else}
-      <TextEditor
-        {content}
-        showToolBar={false}
-        editable={canWrite}
-        class="border-none shadow-none"
-        editorClass="min-h-[60vh] px-0"
-        onChange={scheduleContentSave}
-        placeholder={$t('notes.editor.placeholder')}
+  <div class="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
+    <div class="relative min-h-0 min-w-0 flex-1">
+      {#if isLoading}
+        <div class="ui:text-muted-foreground flex h-40 items-center justify-center text-sm">
+          <LoaderIcon size={18} class="mr-2 animate-spin" />
+          {$t('notes.editor.loading')}
+        </div>
+      {:else if loadError}
+        <p class="ui:text-destructive text-sm">{loadError}</p>
+      {:else}
+        <TextEditor
+          {content}
+          showToolBar={false}
+          editable={canWrite}
+          extraExtensions={commentExtensions}
+          class="border-none shadow-none"
+          editorClass="min-h-[60vh] px-0"
+          onChange={scheduleContentSave}
+          onReady={handleEditorReady}
+          placeholder={$t('notes.editor.placeholder')}
+        />
+        <NoteCommentSelection root={editorRoot} enabled={canComment} onComment={handleStartComment} />
+        <p class="ui:text-muted-foreground mt-2 text-xs">{$t('notes.editor.slash_hint')}</p>
+      {/if}
+    </div>
+
+    {#if !isLoading && !loadError}
+      <NoteCommentsPanel
+        {noteId}
+        {canComment}
+        bind:pendingComposer
+        {activeThreadId}
+        onSelectThread={(threadId) => (activeThreadId = threadId)}
+        onRequestScroll={handleScrollToThread}
+        onSubmitPending={handleSubmitPendingComment}
+        onCancelPending={handleCancelPendingComment}
+        onResolveThread={handleResolveThread}
+        onReopenThread={handleReopenThread}
       />
-      <p class="ui:text-muted-foreground mt-2 text-xs">{$t('notes.editor.slash_hint')}</p>
     {/if}
   </div>
 </div>

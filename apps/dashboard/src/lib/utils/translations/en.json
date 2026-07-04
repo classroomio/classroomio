@@ -4176,7 +4176,18 @@
       "heading": "Comments",
       "count": "{count} comments",
       "add": "Add comment",
-      "empty": "No comments yet. Start a thread at the top of this note."
+      "add_inline": "Comment",
+      "empty": "Select text in the note to start a comment thread.",
+      "open_heading": "Open",
+      "resolved_heading": "Resolved",
+      "new_thread_label": "New comment",
+      "reply_label": "Reply",
+      "reply_placeholder": "Write a comment…",
+      "reply": "Reply",
+      "post": "Post",
+      "resolve": "Resolve",
+      "reopen": "Reopen",
+      "anonymous": "Unknown user"
     },
     "ai_panel": {
       "open": "Ask AI",
