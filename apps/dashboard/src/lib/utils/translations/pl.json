@@ -3739,6 +3739,10 @@
       "title": "Nie znaleziono kursów",
       "description": "Spróbuj wyczyścić filtry lub sprawdź później."
     },
+    "catalog_empty": {
+      "title": "Brak opublikowanych kursów",
+      "description": "Wróć wkrótce po nowe programy."
+    },
     "filters": {
       "title": "Filtruj według tagów",
       "help": "Wybierz jeden lub więcej tagów, aby filtrować kursy",

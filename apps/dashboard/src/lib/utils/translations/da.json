@@ -3739,6 +3739,10 @@
       "title": "Ingen kurser fundet",
       "description": "Prøv at rydde dine filtre, eller tjek igen senere."
     },
+    "catalog_empty": {
+      "title": "Ingen kurser udgivet endnu",
+      "description": "Kom snart tilbage for nye programmer."
+    },
     "filters": {
       "title": "Filtrer efter tags",
       "help": "Vælg et eller flere tags for at filtrere kurser",

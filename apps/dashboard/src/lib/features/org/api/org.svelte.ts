@@ -70,8 +70,11 @@ class OrgApi extends BaseApiWithErrors {
   audiencePagination = $state<OrganizationAudiencePagination | null>(null);
   publicCourses: OrgPublicCourses = $state([]);
   hasMorePublicCourses = $state(false);
+  publicCoursesLoadedSiteName: string | null = $state(null);
 
   isFetchingOrgPublicCourses = $state(false);
+  private activePublicCoursesFetch: Promise<void> | null = null;
+  private activePublicCoursesFetchSiteName: string | null = null;
   private activeAudienceRequestController: AbortController | null = null;
 
   cancelAudienceRequest() {
@@ -155,15 +158,52 @@ class OrgApi extends BaseApiWithErrors {
     return response;
   }
 
+  invalidatePublicCourses() {
+    this.publicCoursesLoadedSiteName = null;
+  }
+
+  /**
+   * Refetches public courses for a site, clearing any cached settings preview data.
+   */
+  async refreshPublicCourses(siteName: string) {
+    if (!siteName) {
+      return;
+    }
+
+    this.invalidatePublicCourses();
+    await this.fetchPublicCoursesBySiteName(siteName);
+  }
+
+  /**
+   * Loads public courses for a site when they have not been fetched yet.
+   * Skips the request when courses are already in memory for the same site.
+   */
+  async loadPublicCoursesIfNeeded(siteName: string) {
+    if (!siteName || this.publicCoursesLoadedSiteName === siteName) {
+      return;
+    }
+
+    await this.fetchPublicCoursesBySiteName(siteName);
+  }
+
   /**
    * Gets public courses by organization siteName (for landing pages)
    * @param siteName Organization site name
    * @returns Published courses array
    */
   async getPublicCoursesBySiteName(siteName: string) {
+    this.invalidatePublicCourses();
+    await this.fetchPublicCoursesBySiteName(siteName);
+  }
+
+  private fetchPublicCoursesBySiteName(siteName: string): Promise<void> {
+    if (this.activePublicCoursesFetch && this.activePublicCoursesFetchSiteName === siteName) {
+      return this.activePublicCoursesFetch;
+    }
+
     this.isFetchingOrgPublicCourses = true;
 
-    await this.execute<GetOrgPublicCoursesRequest>({
+    const fetchPromise = this.execute<GetOrgPublicCoursesRequest>({
       requestFn: () =>
         classroomio.organization.courses.public.$get({
           query: { siteName }
@@ -172,10 +212,29 @@ class OrgApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         this.publicCourses = response.data.courses;
         this.hasMorePublicCourses = response.data.hasMoreCourses;
+        this.publicCoursesLoadedSiteName = siteName;
       }
-    });
+    })
+      .then(() => undefined)
+      .finally(() => {
+        this.isFetchingOrgPublicCourses = false;
 
-    this.isFetchingOrgPublicCourses = false;
+        if (this.publicCoursesLoadedSiteName !== siteName) {
+          this.publicCourses = [];
+          this.hasMorePublicCourses = false;
+          this.publicCoursesLoadedSiteName = siteName;
+        }
+
+        if (this.activePublicCoursesFetchSiteName === siteName) {
+          this.activePublicCoursesFetch = null;
+          this.activePublicCoursesFetchSiteName = null;
+        }
+      });
+
+    this.activePublicCoursesFetch = fetchPromise;
+    this.activePublicCoursesFetchSiteName = siteName;
+
+    return fetchPromise;
   }
 
   /**

@@ -3739,6 +3739,10 @@
       "title": "Nenhum curso encontrado",
       "description": "Tente limpar os filtros ou volte mais tarde."
     },
+    "catalog_empty": {
+      "title": "Nenhum curso publicado ainda",
+      "description": "Volte em breve para novos programas."
+    },
     "filters": {
       "title": "Filtrar por tags",
       "help": "Selecione uma ou mais tags para filtrar cursos",

@@ -3739,6 +3739,10 @@
       "title": "Không tìm thấy khóa học nào",
       "description": "Hãy thử xóa bộ lọc của bạn hoặc kiểm tra lại sau."
     },
+    "catalog_empty": {
+      "title": "Chưa có khóa học nào được xuất bản",
+      "description": "Hãy quay lại sớm để xem các chương trình mới."
+    },
     "filters": {
       "title": "Lọc theo thẻ",
       "help": "Chọn một hoặc nhiều thẻ để lọc các khóa học",
