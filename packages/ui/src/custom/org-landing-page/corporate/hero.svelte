@@ -10,9 +10,11 @@
     hero: OrgLandingPageProps['hero'];
     navigation: Snippet;
     showActions?: boolean;
+    compact?: boolean;
+    children?: Snippet;
   }
 
-  let { orgName, hero, navigation, showActions = true }: Props = $props();
+  let { orgName, hero, navigation, showActions = true, compact = false, children }: Props = $props();
 
   const stats = $derived(hero.stats ?? []);
 </script>
@@ -20,7 +22,9 @@
 {@render navigation()}
 
 <EditableLandingSection sectionKey="hero">
-  <section class="ui:px-6 ui:pt-12 ui:pb-24 ui:md:pt-16 ui:md:pb-28">
+  <section
+    class="ui:px-6 {compact ? 'ui:pt-6 ui:pb-12 ui:md:pt-8 ui:md:pb-14' : 'ui:pt-12 ui:pb-24 ui:md:pt-16 ui:md:pb-28'}"
+  >
     <div class="ui:max-w-[1120px] ui:mx-auto">
       <div class="ui:flex ui:items-center ui:gap-4 ui:pb-5 ui:mb-10 ui:border-b ui:border-[var(--landing-border)]">
         <span class="ui:text-[11px] ui:font-semibold ui:tracking-[0.2em] ui:uppercase ui:text-[var(--landing-fg)]">
@@ -48,6 +52,9 @@
             {hero.subheading}
           </p>
 
+          {#if children}
+            <div class="ui:mt-6">{@render children()}</div>
+          {/if}
           {#if showActions}
             <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-3">
               <Button

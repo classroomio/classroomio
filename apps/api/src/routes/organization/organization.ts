@@ -383,15 +383,21 @@ export const organizationRouter = new Hono()
    */
   .get('/courses/public', zValidator('query', ZGetCoursesBySiteName), async (c) => {
     try {
-      const { siteName, tags, page, limit } = c.req.valid('query');
-      const tagSlugs = tags
-        ?.split(',')
-        .map((value) => value.trim())
-        .filter(Boolean);
+      const { siteName, tags, types, search, pricing, page, limit } = c.req.valid('query');
+      const splitParam = (param: string | undefined) =>
+        param
+          ?.split(',')
+          .map((v) => v.trim())
+          .filter(Boolean);
+      const tagSlugs = splitParam(tags);
+      const courseTypes = splitParam(types);
       const pagination = page !== undefined || limit !== undefined ? { page, limit } : undefined;
       const courses = await getPublicCourses(
         siteName,
-        tagSlugs && tagSlugs.length > 0 ? tagSlugs : undefined,
+        tagSlugs?.length ? tagSlugs : undefined,
+        courseTypes?.length ? courseTypes : undefined,
+        search || undefined,
+        pricing || undefined,
         pagination
       );
 

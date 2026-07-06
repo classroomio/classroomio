@@ -264,9 +264,9 @@
       "command_palette": {
         "title": "Command palette",
         "description": "Search and navigate across your organization",
-        "placeholder": "Search courses, programs, widgets, students, tags, settings...",
-        "org_placeholder": "Search courses, programs, widgets, students, tags, settings...",
-        "lms_placeholder": "Search your courses, programs, and learning pages...",
+        "placeholder": "Search courses, cohorts, widgets, students, tags, settings...",
+        "org_placeholder": "Search courses, cohorts, widgets, students, tags, settings...",
+        "lms_placeholder": "Search your courses, cohorts, and learning pages...",
         "lms_description": "Search and navigate your learning workspace",
         "empty": "No results found",
         "loading": "Searching...",
@@ -275,7 +275,7 @@
           "recent": "Recent",
           "suggested": "Suggested",
           "courses": "Courses",
-          "programs": "Programs",
+          "cohorts": "Cohorts",
           "widgets": "Widgets",
           "tags": "Tags",
           "students": "Students",
@@ -1218,9 +1218,15 @@
     "subtitle": "Browse all published courses",
     "clear_filters": "Clear Filters",
     "filters": {
-      "title": "Filter by Tags",
-      "help": "Select one or more tags to filter courses",
-      "empty": "No tags available yet"
+      "title": "Filter",
+      "help": "Filter courses by type, tags, or search by name",
+      "tags_title": "Tags",
+      "types_title": "Types",
+      "pricing_title": "Pricing",
+      "pricing_free": "Free",
+      "pricing_paid": "Paid",
+      "empty": "No tags available yet",
+      "search_placeholder": "Search courses..."
     },
     "empty": {
       "title": "No courses found",
@@ -1241,7 +1247,6 @@
     "analytics": "Analytics",
     "compliance": "Compliance",
     "courses": "Courses",
-    "programs": "Programs",
     "tags": "Tags",
     "community": "Community",
     "audience": "Audience",
@@ -1253,7 +1258,8 @@
     "settings": "Settings",
     "early_adopter": "Become an Early Adopter",
     "unlock": "Unlock unlimited features and invest in our future",
-    "upgrade": "Upgrade Now"
+    "upgrade": "Upgrade Now",
+    "cohorts": "Cohorts"
   },
   "pricing": {
     "plan_names": {
@@ -1747,212 +1753,6 @@
     "rephrase": "Rephrase",
     "insert": "Insert",
     "can_you": "Can you please rephrase this"
-  },
-  "programs": {
-    "heading": "Programs",
-    "description": "Give a group of people access to multiple courses, like a class",
-    "page_title": "Programs",
-    "search_placeholder": "Search programs",
-    "create": "New Program",
-    "create_success": "Program created",
-    "update_success": "Program updated",
-    "delete_success": "Program deleted",
-    "members_added": "Members added",
-    "member_removed": "Member removed",
-    "invite_sent": "Invites sent",
-    "course_added": "Course added",
-    "multiple_added": "Courses added",
-    "course_removed": "Course removed",
-    "empty_title": "No programs yet",
-    "empty_description": "Create your first certification or compliance program.",
-    "no_matching_programs": "No programs match your filters.",
-    "status": {
-      "active": "Active",
-      "inactive": "Inactive",
-      "archived": "Archived"
-    },
-    "filters": {
-      "filter": "Filter",
-      "clear_all": "Clear all",
-      "popover_title": "Filters",
-      "sort": "Sort",
-      "order": "Order",
-      "status": "Status",
-      "ascending": "Asc",
-      "descending": "Desc",
-      "sort_name": "Name",
-      "sort_courses": "Courses",
-      "sort_students": "Students",
-      "sort_status": "Status"
-    },
-    "table": {
-      "name": "Name",
-      "courses": "Courses",
-      "students": "Students",
-      "status": "Status",
-      "description": "Description"
-    },
-    "sidebar": {
-      "newsfeed": "Newsfeed",
-      "courses": "Courses",
-      "people": "People",
-      "settings": "Settings"
-    },
-    "create_modal": {
-      "title": "Create Program",
-      "description": "Add a new certification or compliance program.",
-      "name_label": "Name",
-      "name_placeholder": "e.g. OSHA Safety Certification",
-      "description_label": "Description",
-      "description_placeholder": "What is this program about?",
-      "submit": "Create"
-    },
-    "card": {
-      "courses": "Courses",
-      "students": "Students"
-    },
-    "newsfeed": {
-      "heading": "Newsfeed",
-      "post": "New Post",
-      "post_placeholder": "What's on your mind?",
-      "make_a_post": "Make a Post",
-      "edit_post": "Edit Post",
-      "editor_placeholder": "Share an update with your program",
-      "cancel": "Cancel",
-      "post_submit": "Post",
-      "pinned": "Pinned",
-      "delete_feed_title": "Delete post",
-      "delete_feed_description": "Are you sure you want to delete this post?",
-      "confirm_delete": "Delete",
-      "user_avatar_alt": "User avatar",
-      "card": {
-        "pin": "Pin",
-        "unpin": "Unpin",
-        "edit": "Edit",
-        "delete": "Delete"
-      },
-      "comments": {
-        "comment": "comment",
-        "showing_of": "Showing {shown} of {total}",
-        "hide": "Hide comments",
-        "placeholder": "Add program comment",
-        "submit_aria": "Submit comment",
-        "delete": "Delete"
-      },
-      "empty_title": "No posts yet",
-      "empty_description": "Be the first to post something."
-    },
-    "courses": {
-      "add": "Add Course",
-      "add_modal_title": "Add Course to Program",
-      "select_course": "Select a course",
-      "select_courses": "Select courses",
-      "select_placeholder": "Choose a course…",
-      "search_placeholder": "Search courses",
-      "no_available_courses": "No available courses to add.",
-      "no_matching_courses": "No courses match your search.",
-      "no_matching_program_courses": "No program courses match your search.",
-      "pagination_status": "Page {page} of {totalPages}",
-      "empty_title": "No courses yet",
-      "empty_description": "Add courses to this program.",
-      "published_access_callout_title": "Student access",
-      "published_access_callout_description": "Students only have access to published courses. Courses can be in this program for your team while still unpublished while those stay hidden from students until you publish them."
-    },
-    "people": {
-      "invite": "Invite",
-      "invite_modal_title": "Invite Members",
-      "invite_modal_description": "Add people to this program by email.",
-      "email_label": "Email",
-      "role_label": "Role",
-      "add_another": "Add another",
-      "invite_submit": "Send Invites",
-      "empty_title": "No members yet",
-      "empty_description": "Invite people to join this program."
-    },
-    "lms": {
-      "empty_title": "No programs yet",
-      "empty_description": "You haven't been enrolled in any programs."
-    },
-    "settings": {
-      "general": "General",
-      "name_label": "Name",
-      "description_label": "Description",
-      "status_label": "Status",
-      "save": "Save Changes",
-      "danger_zone": "Danger Zone",
-      "delete": "Delete Program",
-      "delete_description": "Once deleted, this program and all its data cannot be recovered.",
-      "confirm_delete": "Are you sure you want to delete this program? This cannot be undone."
-    },
-    "goals": {
-      "heading": "Learning Goals",
-      "description": "Set measurable targets that span multiple courses for everyone in this program.",
-      "add": "New Goal",
-      "empty_title": "No goals yet",
-      "empty_description": "Create a goal to track team progress across multiple courses.",
-      "created": "Goal created",
-      "updated": "Goal updated",
-      "deleted": "Goal deleted",
-      "delete_confirm": "Delete this goal? Per-student status history will be removed.",
-      "modal": {
-        "create_title": "New goal",
-        "edit_title": "Edit goal",
-        "title_label": "Title",
-        "title_placeholder": "e.g. Onboarding ramp",
-        "description_label": "Description",
-        "description_placeholder": "Optional context for the team",
-        "type_label": "Type",
-        "courses_label": "Courses",
-        "required_count_label": "Number of courses required",
-        "score_threshold_label": "Per-student pass score (%)",
-        "team_pass_rate_label": "Team pass rate (%)",
-        "deadline_label": "Deadline",
-        "deadline_date_label": "Deadline date",
-        "relative_days_label": "Days from when the student joins",
-        "recurring_months_label": "Repeat every (months)",
-        "reminders_label": "Reminders (days before due)",
-        "reminders_helper": "Comma-separated. Example: 7, 3, 1",
-        "save": "Save",
-        "cancel": "Cancel"
-      },
-      "type": {
-        "complete_all": "Complete all selected courses",
-        "n_of_m": "Complete N of M selected courses",
-        "score": "Score above threshold on every course",
-        "pass_rate": "Team pass-rate threshold",
-        "readiness": "Readiness (no deadline)"
-      },
-      "deadline_kind": {
-        "absolute": "Absolute date",
-        "relative_to_join": "Relative to student joining",
-        "recurring": "Recurring",
-        "none": "No deadline"
-      },
-      "status": {
-        "completed": "Completed",
-        "in_progress": "In progress",
-        "at_risk": "At risk",
-        "overdue": "Overdue",
-        "not_started": "Not started",
-        "waived": "Waived"
-      },
-      "tile": {
-        "on_track": "on track",
-        "completed_short": "completed",
-        "overdue_short": "overdue",
-        "at_risk_short": "at risk"
-      },
-      "lms": {
-        "heading": "Your Goals",
-        "empty_title": "No goals assigned",
-        "empty_description": "When your instructors set goals, they'll show up here.",
-        "due_in_days": "Due in {days} days",
-        "due_tomorrow": "Due tomorrow",
-        "due_today": "Due today",
-        "overdue": "Overdue",
-        "no_deadline": "No deadline"
-      }
-    }
   },
   "courses": {
     "heading": "Courses",
@@ -3578,7 +3378,7 @@
         "description": "Course Description",
         "learn": "What you'll learn",
         "certificate": "Certificate",
-        "certificate_text": "When you complete all of the courses in the program, you'll earn a Certificate to share with your professional network.",
+        "certificate_text": "When you complete all of the courses in the cohort, you'll earn a Certificate to share with your professional network.",
         "content": "Course Content",
         "slide": "1 slide",
         "note": "note",
@@ -3770,7 +3570,7 @@
     "delete": {
       "action": "Delete",
       "title": "Delete member",
-      "description": "This removes the member from your organization and revokes their access to all assigned courses and programs.",
+      "description": "This removes the member from your organization and revokes their access to all assigned courses and cohorts.",
       "confirmation": "Are you sure you want to delete {name} ({email})? This action cannot be undone.",
       "cancel": "Cancel",
       "confirm": "Delete",
@@ -3781,9 +3581,9 @@
       "page_subtitle": "Progress, grades, and activity across their courses."
     },
     "import": {
-      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like.",
+      "page_subtitle": "Add many people at once by email, then assign courses or cohorts if you like.",
       "title": "Import Users",
-      "description": "Add students to your organization by entering their email addresses. Optionally assign them to courses or programs and send invitation emails.",
+      "description": "Add students to your organization by entering their email addresses. Optionally assign them to courses or cohorts and send invitation emails.",
       "emails_label": "Email Addresses",
       "emails_placeholder": "Enter emails separated by commas, newlines, or semicolons\ne.g. alice@example.com, bob@example.com",
       "course_access": "Course Access",
@@ -3791,17 +3591,17 @@
       "all_courses": "All courses",
       "select_courses": "Select specific courses",
       "select_courses_placeholder": "Choose courses...",
-      "program_access": "Program Access",
-      "no_programs": "No program assignment",
-      "all_programs": "All programs",
-      "select_programs": "Select specific programs",
-      "select_programs_placeholder": "Choose programs...",
+      "select_cohorts_placeholder": "Choose cohorts...",
       "send_email": "Send invitation email to imported users",
       "submit": "Import Users",
       "back": "Back to Audience",
       "snackbar_success": "{imported} new invites, {assigned} existing students given access, {pendingInvitesRenewed} pending invites renewed ({emailsSent} emails sent)",
       "snackbar_no_emails": "Please enter at least one email address",
-      "snackbar_failed": "Failed to import users"
+      "snackbar_failed": "Failed to import users",
+      "cohort_access": "Cohort Access",
+      "no_cohorts": "No cohort assignment",
+      "all_cohorts": "All cohorts",
+      "select_cohorts": "Select specific cohorts"
     },
     "assign": {
       "title": "Assign to Courses",
@@ -3961,7 +3761,8 @@
     "download_lessons": "Upgrade to download lessons",
     "download_course": "Upgrade to download course",
     "required": "Upgrade Required",
-    "enterprise_required": "This feature requires an Enterprise plan."
+    "enterprise_required": "This feature requires an Enterprise plan.",
+    "public_api_required": "Upgrade to Early Adopter or Enterprise to access the public API."
   },
   "automation": {
     "title": "Automation",
@@ -3980,7 +3781,11 @@
       "claude_code": "Claude Code",
       "codex": "Codex",
       "cursor": "Cursor",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "keys": {
       "active": "Active",
@@ -4054,6 +3859,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Quick start",
+        "description": "Use your API key as a Bearer token on every request. Replace the placeholder with a key from above, or paste the secret immediately after you generate one."
+      },
       "view_docs": "View Docs"
     },
     "zapier": {
@@ -4064,12 +3873,12 @@
     "home": "Home",
     "my_learning": "My Learning",
     "certificates": "Certificates",
-    "programs": "Programs",
     "exercise": "Exercise",
     "community": "Community",
     "explore": "Explore",
     "help": "Help",
-    "settings": "Settings"
+    "settings": "Settings",
+    "cohorts": "Cohorts"
   },
   "my_learning": {
     "heading": "My Learning",
@@ -4302,32 +4111,6 @@
         "complete": "Complete :)"
       }
     },
-    "program": {
-      "success": {
-        "comment_deleted": "Comment deleted",
-        "comment_added": "Comment added",
-        "feed_delete_success": "Post deleted successfully",
-        "post_created": "Post created successfully",
-        "post_updated": "Post updated successfully"
-      },
-      "error": {
-        "reaction_error": "An error occurred while reacting to the post",
-        "news_feed_fail": "Failed to fetch program newsfeed",
-        "post_create_failed": "Failed to create post",
-        "post_update_failed": "Failed to update post",
-        "code": {
-          "program_forbidden": "You must be a member of this program to perform this action.",
-          "program_member_check_failed": "We could not verify your program membership. Try again.",
-          "program_not_found": "This program could not be found.",
-          "program_create_failed": "Could not create the program.",
-          "program_update_failed": "Could not update the program.",
-          "program_delete_failed": "Could not delete the program.",
-          "program_member_not_found": "That program member could not be found.",
-          "program_newsfeed_not_found": "That post could not be found.",
-          "program_newsfeed_comment_not_found": "That comment could not be found."
-        }
-      }
-    },
     "attendance": {
       "error": {
         "reload": "Something isn't right.  Please reload and take attendance again"
@@ -4403,6 +4186,32 @@
     "generic": {
       "success_delete": "Deleted successfully",
       "try_again": "Error - Please try again later"
+    },
+    "cohort": {
+      "success": {
+        "comment_deleted": "Comment deleted",
+        "comment_added": "Comment added",
+        "feed_delete_success": "Post deleted successfully",
+        "post_created": "Post created successfully",
+        "post_updated": "Post updated successfully"
+      },
+      "error": {
+        "reaction_error": "An error occurred while reacting to the post",
+        "news_feed_fail": "Failed to fetch cohort newsfeed",
+        "post_create_failed": "Failed to create post",
+        "post_update_failed": "Failed to update post",
+        "code": {
+          "cohort_forbidden": "You must be a member of this cohort to perform this action.",
+          "cohort_member_check_failed": "We could not verify your cohort membership. Try again.",
+          "cohort_not_found": "This cohort could not be found.",
+          "cohort_create_failed": "Could not create the cohort.",
+          "cohort_update_failed": "Could not update the cohort.",
+          "cohort_delete_failed": "Could not delete the cohort.",
+          "cohort_member_not_found": "That cohort member could not be found.",
+          "cohort_newsfeed_not_found": "That post could not be found.",
+          "cohort_newsfeed_comment_not_found": "That comment could not be found."
+        }
+      }
     }
   },
   "specialization": {
@@ -4772,6 +4581,212 @@
     "titles": {
       "ai_assistant": "AI Assistant",
       "transcript": "Transcript"
+    }
+  },
+  "cohorts": {
+    "heading": "Cohorts",
+    "description": "Give a group of people access to multiple courses, like a class",
+    "page_title": "Cohorts",
+    "search_placeholder": "Search cohorts",
+    "create": "New Cohort",
+    "create_success": "Cohort created",
+    "update_success": "Cohort updated",
+    "delete_success": "Cohort deleted",
+    "members_added": "Members added",
+    "member_removed": "Member removed",
+    "invite_sent": "Invites sent",
+    "course_added": "Course added",
+    "multiple_added": "Courses added",
+    "course_removed": "Course removed",
+    "empty_title": "No cohorts yet",
+    "empty_description": "Create your first certification or compliance cohort.",
+    "no_matching_cohorts": "No cohorts match your filters.",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "archived": "Archived"
+    },
+    "filters": {
+      "filter": "Filter",
+      "clear_all": "Clear all",
+      "popover_title": "Filters",
+      "sort": "Sort",
+      "order": "Order",
+      "status": "Status",
+      "ascending": "Asc",
+      "descending": "Desc",
+      "sort_name": "Name",
+      "sort_courses": "Courses",
+      "sort_students": "Students",
+      "sort_status": "Status"
+    },
+    "table": {
+      "name": "Name",
+      "courses": "Courses",
+      "students": "Students",
+      "status": "Status",
+      "description": "Description"
+    },
+    "sidebar": {
+      "newsfeed": "Newsfeed",
+      "courses": "Courses",
+      "people": "People",
+      "settings": "Settings"
+    },
+    "create_modal": {
+      "title": "Create Cohort",
+      "description": "Add a new certification or compliance cohort.",
+      "name_label": "Name",
+      "name_placeholder": "e.g. OSHA Safety Certification",
+      "description_label": "Description",
+      "description_placeholder": "What is this cohort about?",
+      "submit": "Create"
+    },
+    "card": {
+      "courses": "Courses",
+      "students": "Students"
+    },
+    "newsfeed": {
+      "heading": "Newsfeed",
+      "post": "New Post",
+      "post_placeholder": "What's on your mind?",
+      "make_a_post": "Make a Post",
+      "edit_post": "Edit Post",
+      "editor_placeholder": "Share an update with your cohort",
+      "cancel": "Cancel",
+      "post_submit": "Post",
+      "pinned": "Pinned",
+      "delete_feed_title": "Delete post",
+      "delete_feed_description": "Are you sure you want to delete this post?",
+      "confirm_delete": "Delete",
+      "user_avatar_alt": "User avatar",
+      "card": {
+        "pin": "Pin",
+        "unpin": "Unpin",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "comments": {
+        "comment": "comment",
+        "showing_of": "Showing {shown} of {total}",
+        "hide": "Hide comments",
+        "placeholder": "Add cohort comment",
+        "submit_aria": "Submit comment",
+        "delete": "Delete"
+      },
+      "empty_title": "No posts yet",
+      "empty_description": "Be the first to post something."
+    },
+    "courses": {
+      "add": "Add Course",
+      "add_modal_title": "Add Course to Cohort",
+      "select_course": "Select a course",
+      "select_courses": "Select courses",
+      "select_placeholder": "Choose a course…",
+      "search_placeholder": "Search courses",
+      "no_available_courses": "No available courses to add.",
+      "no_matching_courses": "No courses match your search.",
+      "no_matching_cohort_courses": "No cohort courses match your search.",
+      "pagination_status": "Page {page} of {totalPages}",
+      "empty_title": "No courses yet",
+      "empty_description": "Add courses to this cohort.",
+      "published_access_callout_title": "Student access",
+      "published_access_callout_description": "Students only have access to published courses. Courses can be in this cohort for your team while still unpublished while those stay hidden from students until you publish them."
+    },
+    "people": {
+      "invite": "Invite",
+      "invite_modal_title": "Invite Members",
+      "invite_modal_description": "Add people to this cohort by email.",
+      "email_label": "Email",
+      "role_label": "Role",
+      "add_another": "Add another",
+      "invite_submit": "Send Invites",
+      "empty_title": "No members yet",
+      "empty_description": "Invite people to join this cohort."
+    },
+    "lms": {
+      "empty_title": "No cohorts yet",
+      "empty_description": "You haven't been enrolled in any cohorts."
+    },
+    "settings": {
+      "general": "General",
+      "name_label": "Name",
+      "description_label": "Description",
+      "status_label": "Status",
+      "save": "Save Changes",
+      "danger_zone": "Danger Zone",
+      "delete": "Delete Cohort",
+      "delete_description": "Once deleted, this cohort and all its data cannot be recovered.",
+      "confirm_delete": "Are you sure you want to delete this cohort? This cannot be undone."
+    },
+    "goals": {
+      "heading": "Learning Goals",
+      "description": "Set measurable targets that span multiple courses for everyone in this cohort.",
+      "add": "New Goal",
+      "empty_title": "No goals yet",
+      "empty_description": "Create a goal to track team progress across multiple courses.",
+      "created": "Goal created",
+      "updated": "Goal updated",
+      "deleted": "Goal deleted",
+      "delete_confirm": "Delete this goal? Per-student status history will be removed.",
+      "modal": {
+        "create_title": "New goal",
+        "edit_title": "Edit goal",
+        "title_label": "Title",
+        "title_placeholder": "e.g. Onboarding ramp",
+        "description_label": "Description",
+        "description_placeholder": "Optional context for the team",
+        "type_label": "Type",
+        "courses_label": "Courses",
+        "required_count_label": "Number of courses required",
+        "score_threshold_label": "Per-student pass score (%)",
+        "team_pass_rate_label": "Team pass rate (%)",
+        "deadline_label": "Deadline",
+        "deadline_date_label": "Deadline date",
+        "relative_days_label": "Days from when the student joins",
+        "recurring_months_label": "Repeat every (months)",
+        "reminders_label": "Reminders (days before due)",
+        "reminders_helper": "Comma-separated. Example: 7, 3, 1",
+        "save": "Save",
+        "cancel": "Cancel"
+      },
+      "type": {
+        "complete_all": "Complete all selected courses",
+        "n_of_m": "Complete N of M selected courses",
+        "score": "Score above threshold on every course",
+        "pass_rate": "Team pass-rate threshold",
+        "readiness": "Readiness (no deadline)"
+      },
+      "deadline_kind": {
+        "absolute": "Absolute date",
+        "relative_to_join": "Relative to student joining",
+        "recurring": "Recurring",
+        "none": "No deadline"
+      },
+      "status": {
+        "completed": "Completed",
+        "in_progress": "In progress",
+        "at_risk": "At risk",
+        "overdue": "Overdue",
+        "not_started": "Not started",
+        "waived": "Waived"
+      },
+      "tile": {
+        "on_track": "on track",
+        "completed_short": "completed",
+        "overdue_short": "overdue",
+        "at_risk_short": "at risk"
+      },
+      "lms": {
+        "heading": "Your Goals",
+        "empty_title": "No goals assigned",
+        "empty_description": "When your instructors set goals, they'll show up here.",
+        "due_in_days": "Due in {days} days",
+        "due_tomorrow": "Due tomorrow",
+        "due_today": "Due today",
+        "overdue": "Overdue",
+        "no_deadline": "No deadline"
+      }
     }
   }
 }

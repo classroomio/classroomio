@@ -73,10 +73,10 @@ export const baseNavConfig: NavItemConfig[] = [
     matchPattern: '^/lms/explore(/.*)?$'
   },
   {
-    titleKey: 'lms_navigation.programs',
-    path: '/programs',
+    titleKey: 'lms_navigation.cohorts',
+    path: '/cohorts',
     icon: GoalIcon,
-    matchPattern: '^/lms/programs(/.*)?$'
+    matchPattern: '^/lms/cohorts(/.*)?$'
   },
   {
     titleKey: 'lms_navigation.exercise',

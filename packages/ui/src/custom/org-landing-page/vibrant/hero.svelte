@@ -10,16 +10,20 @@
     labels?: OrgLandingPageProps['labels'];
     navigation: Snippet;
     showActions?: boolean;
+    compact?: boolean;
+    children?: Snippet;
   }
 
-  let { hero, labels, navigation, showActions = true }: Props = $props();
+  let { hero, labels, navigation, showActions = true, compact = false, children }: Props = $props();
 </script>
 
 {@render navigation()}
 
 <EditableLandingSection sectionKey="hero">
   <section
-    class="ui:relative ui:px-6 ui:md:px-8 ui:pt-20 ui:md:pt-24 ui:pb-20 ui:md:pb-24 ui:bg-[var(--landing-bg)] ui:text-center"
+    class="ui:relative ui:px-6 ui:md:px-8 {compact
+      ? 'ui:pt-10 ui:md:pt-12 ui:pb-10 ui:md:pb-12'
+      : 'ui:pt-20 ui:md:pt-24 ui:pb-20 ui:md:pb-24'} ui:bg-[var(--landing-bg)] ui:text-center"
   >
     <div class="ui:max-w-[1320px] ui:mx-auto">
       <h1
@@ -36,6 +40,9 @@
         {hero.subheading}
       </p>
 
+      {#if children}
+        <div class="ui:flex ui:justify-center ui:w-full ui:mb-8">{@render children()}</div>
+      {/if}
       {#if showActions}
         <div class="ui:inline-flex ui:flex-wrap ui:justify-center ui:items-center ui:gap-3">
           <Button

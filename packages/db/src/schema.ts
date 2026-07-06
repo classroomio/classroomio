@@ -21,9 +21,10 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import type { AnswerData } from '@cio/question-types';
+import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
 import { sql } from 'drizzle-orm';
 
-export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS', 'COMPLIANCE', 'PUBLIC']);
+export const courseType = pgEnum('COURSE_TYPE', [...COURSE_TYPE_VALUES]);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
@@ -686,7 +687,7 @@ export const course = pgTable(
       }[];
       grading?: boolean;
       lessonDownload?: boolean;
-      allowNewStudent: boolean;
+      allowNewStudent?: boolean;
       /** Teacher-authored HTML sent in the welcome email after a student enrolls. */
       welcomeEmailMessage?: string | null;
       /** IANA timezone for this course's live sessions (display + scheduling). */
@@ -2959,6 +2960,257 @@ export const programGoalAssignment = pgTable(
     index('idx_program_goal_assignment_goal_id').on(table.goalId),
     index('idx_program_goal_assignment_program_member_id').on(table.programMemberId),
     index('idx_program_goal_assignment_due_date').on(table.dueDate)
+  ]
+);
+
+// ─── Cohorts (successor to Programs; program tables retained for migration) ──
+
+export const cohortStatus = pgEnum('COHORT_STATUS', ['ACTIVE', 'INACTIVE', 'ARCHIVED']);
+
+export const cohort = pgTable(
+  'cohort',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    organizationId: uuid('organization_id').notNull(),
+    name: varchar().notNull(),
+    description: text(),
+    coverImage: text('cover_image'),
+    status: cohortStatus().default('ACTIVE').notNull(),
+    createdByProfileId: uuid('created_by_profile_id')
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'cohort_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'cohort_created_by_profile_id_fkey'
+    }),
+    index('idx_cohort_organization_id').on(table.organizationId)
+  ]
+);
+
+export const cohortCourse = pgTable(
+  'cohort_course',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    cohortId: uuid('cohort_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    addedAt: timestamp('added_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.cohortId],
+      foreignColumns: [cohort.id],
+      name: 'cohort_course_cohort_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'cohort_course_course_id_fkey'
+    }).onDelete('cascade'),
+    unique('cohort_course_cohort_id_course_id_unique').on(table.cohortId, table.courseId),
+    index('idx_cohort_course_cohort_id').on(table.cohortId)
+  ]
+);
+
+export const cohortMember = pgTable(
+  'cohort_member',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    cohortId: uuid('cohort_id').notNull(),
+    profileId: uuid('profile_id'),
+    roleId: integer('role_id').notNull(),
+    email: text(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.cohortId],
+      foreignColumns: [cohort.id],
+      name: 'cohort_member_cohort_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'cohort_member_profile_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.roleId],
+      foreignColumns: [role.id],
+      name: 'cohort_member_role_id_fkey'
+    }),
+    unique('cohort_member_cohort_id_profile_id_unique').on(table.cohortId, table.profileId),
+    index('idx_cohort_member_cohort_id').on(table.cohortId),
+    index('idx_cohort_member_profile_id').on(table.profileId)
+  ]
+);
+
+export const cohortNewsfeed = pgTable(
+  'cohort_newsfeed',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    authorId: uuid('author_id'),
+    cohortId: uuid('cohort_id'),
+    content: text(),
+    reaction: jsonb()
+      .default({ clap: [], smile: [], thumbsup: [], thumbsdown: [] })
+      .$type<{ clap: string[]; smile: string[]; thumbsup: string[]; thumbsdown: string[] }>(),
+    isPinned: boolean('is_pinned').default(false).notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.authorId],
+      foreignColumns: [cohortMember.id],
+      name: 'cohort_newsfeed_author_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.cohortId],
+      foreignColumns: [cohort.id],
+      name: 'cohort_newsfeed_cohort_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_cohort_newsfeed_cohort_id').on(table.cohortId)
+  ]
+);
+
+export const cohortNewsfeedComment = pgTable(
+  'cohort_newsfeed_comment',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'cohort_newsfeed_comment_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    authorId: uuid('author_id'),
+    content: text(),
+    cohortNewsfeedId: uuid('cohort_newsfeed_id')
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.authorId],
+      foreignColumns: [cohortMember.id],
+      name: 'cohort_newsfeed_comment_author_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.cohortNewsfeedId],
+      foreignColumns: [cohortNewsfeed.id],
+      name: 'cohort_newsfeed_comment_cohort_newsfeed_id_fkey'
+    }).onDelete('cascade')
+  ]
+);
+
+export const cohortGoalType = pgEnum('COHORT_GOAL_TYPE', ['complete_all', 'n_of_m', 'score', 'pass_rate', 'readiness']);
+
+export const cohortGoalDeadlineKind = pgEnum('COHORT_GOAL_DEADLINE_KIND', [
+  'absolute',
+  'relative_to_join',
+  'recurring',
+  'none'
+]);
+
+export const cohortGoalStatus = pgEnum('COHORT_GOAL_STATUS', ['active', 'archived']);
+
+export const cohortGoalAssignmentStatus = pgEnum('COHORT_GOAL_ASSIGNMENT_STATUS', [
+  'not_started',
+  'in_progress',
+  'completed',
+  'at_risk',
+  'overdue',
+  'waived'
+]);
+
+export const cohortGoal = pgTable(
+  'cohort_goal',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    cohortId: uuid('cohort_id').notNull(),
+    title: varchar({ length: 255 }).notNull(),
+    description: text(),
+    type: cohortGoalType().notNull(),
+    courseIds: jsonb('course_ids').$type<string[]>().default([]).notNull(),
+    requiredCount: integer('required_count'),
+    scoreThreshold: integer('score_threshold'),
+    teamPassRateThreshold: integer('team_pass_rate_threshold'),
+    deadlineKind: cohortGoalDeadlineKind('deadline_kind').default('none').notNull(),
+    deadlineDate: timestamp('deadline_date', { withTimezone: true, mode: 'string' }),
+    relativeDays: integer('relative_days'),
+    recurringMonths: integer('recurring_months'),
+    reminderDaysBefore: jsonb('reminder_days_before').$type<number[]>().default([7, 1]).notNull(),
+    status: cohortGoalStatus().default('active').notNull(),
+    createdByProfileId: uuid('created_by_profile_id'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.cohortId],
+      foreignColumns: [cohort.id],
+      name: 'cohort_goal_cohort_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'cohort_goal_created_by_profile_id_fkey'
+    }).onDelete('set null'),
+    index('idx_cohort_goal_cohort_id').on(table.cohortId),
+    index('idx_cohort_goal_status').on(table.status)
+  ]
+);
+
+export const cohortGoalAssignment = pgTable(
+  'cohort_goal_assignment',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    goalId: uuid('goal_id').notNull(),
+    cohortMemberId: uuid('cohort_member_id').notNull(),
+    dueDate: timestamp('due_date', { withTimezone: true, mode: 'string' }),
+    status: cohortGoalAssignmentStatus().default('not_started').notNull(),
+    completedCount: integer('completed_count').default(0).notNull(),
+    requiredCount: integer('required_count').default(0).notNull(),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    lastEvaluatedAt: timestamp('last_evaluated_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.goalId],
+      foreignColumns: [cohortGoal.id],
+      name: 'cohort_goal_assignment_goal_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.cohortMemberId],
+      foreignColumns: [cohortMember.id],
+      name: 'cohort_goal_assignment_cohort_member_id_fkey'
+    }).onDelete('cascade'),
+    unique('cohort_goal_assignment_goal_id_cohort_member_id_unique').on(table.goalId, table.cohortMemberId),
+    index('idx_cohort_goal_assignment_goal_id').on(table.goalId),
+    index('idx_cohort_goal_assignment_cohort_member_id').on(table.cohortMemberId),
+    index('idx_cohort_goal_assignment_due_date').on(table.dueDate)
   ]
 );
 

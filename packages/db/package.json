@@ -62,6 +62,7 @@
     "db:setup:seed": "tsx src/scripts/db-setup.ts --seed",
     "db:exercise-backfill": "tsx src/scripts/backfill-exercise-course.ts",
     "migrate:answer-data": "tsx src/scripts/migrate-answer-data.ts",
+    "migrate:programs-to-cohorts": "tsx src/scripts/migrate-programs-to-cohorts.ts",
     "db:assets-backfill": "tsx src/scripts/backfill-lesson-assets.ts",
     "db:rewrite-media-host": "tsx src/scripts/rewrite-media-host.ts",
     "db:login-link": "tsx src/scripts/generate-login-link.ts",
@@ -76,7 +77,8 @@
     "db:push-dump-to-new-db": "tsx src/scripts/push-dump-to-new-db.ts",
     "db:restore-lesson-section-from-dump": "tsx src/scripts/restore-lesson-section-from-dump.ts",
     "db:restore-organizationmember-from-dump": "tsx src/scripts/restore-organizationmember-from-dump.ts",
-    "db:disable-v1-content-grouping-from-dump": "tsx src/scripts/disable-v1-content-grouping-from-dump.ts"
+    "db:disable-v1-content-grouping-from-dump": "tsx src/scripts/disable-v1-content-grouping-from-dump.ts",
+    "db:fix-landing-courses": "tsx src/scripts/fix-landing-page-courses-links.ts"
   },
   "dependencies": {
     "@better-auth/sso": "^1.4.18",

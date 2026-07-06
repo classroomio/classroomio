@@ -17,7 +17,7 @@ import {
 import { Hono } from '@api/utils/hono';
 import { automationKeyMiddleware } from '@api/middlewares/automation-key';
 import { automationKeyScopesMiddleware } from '@api/middlewares/automation-key-scopes';
-import { handleError } from '@api/utils/errors';
+import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 
 const AudienceListResponse = {
@@ -87,7 +87,7 @@ export const v1AudienceRouter = new Hono()
           200
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to list audience members');
+        return handlePublicApiError(c, error, 'Failed to list audience members');
       }
     }
   )
@@ -128,7 +128,7 @@ export const v1AudienceRouter = new Hono()
           201
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to create audience member');
+        return handlePublicApiError(c, error, 'Failed to create audience member');
       }
     }
   )
@@ -168,7 +168,7 @@ export const v1AudienceRouter = new Hono()
           200
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to assign audience to courses');
+        return handlePublicApiError(c, error, 'Failed to assign audience to courses');
       }
     }
   )
@@ -208,7 +208,7 @@ export const v1AudienceRouter = new Hono()
           200
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to fetch audience member');
+        return handlePublicApiError(c, error, 'Failed to fetch audience member');
       }
     }
   )
@@ -249,7 +249,7 @@ export const v1AudienceRouter = new Hono()
           200
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to remove audience member');
+        return handlePublicApiError(c, error, 'Failed to remove audience member');
       }
     }
   )
@@ -293,7 +293,7 @@ export const v1AudienceRouter = new Hono()
           200
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to update audience member');
+        return handlePublicApiError(c, error, 'Failed to update audience member');
       }
     }
   );

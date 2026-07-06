@@ -11,7 +11,7 @@ import {
   TNewCourseSection,
   TProfile
 } from '@db/types';
-import { and, count, desc, eq, ilike, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gt, ilike, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -59,6 +59,9 @@ export interface TStudentCourse extends TBaseCourse {
 export const getPublishedCoursesBySiteName = async (
   siteName: string,
   courseIds?: string[],
+  courseTypes?: string[],
+  search?: string,
+  pricing?: 'free' | 'paid',
   limit?: number,
   offset?: number
 ): Promise<TBaseCourse[]> => {
@@ -75,6 +78,21 @@ export const getPublishedCoursesBySiteName = async (
 
     if (courseIds && courseIds.length > 0) {
       conditions.push(inArray(schema.course.id, courseIds));
+    }
+
+    if (courseTypes && courseTypes.length > 0) {
+      conditions.push(inArray(schema.course.type, courseTypes as (typeof schema.courseType.enumValues)[number][]));
+    }
+
+    if (search) {
+      const pattern = `%${search}%`;
+      conditions.push(or(ilike(schema.course.title, pattern), ilike(schema.course.description, pattern))!);
+    }
+
+    if (pricing === 'free') {
+      conditions.push(eq(schema.course.cost, 0));
+    } else if (pricing === 'paid') {
+      conditions.push(gt(schema.course.cost, 0));
     }
 
     const exerciseCountSql = sql<number>`(
@@ -127,7 +145,13 @@ export const getPublishedCoursesBySiteName = async (
   }
 };
 
-export const countPublishedCoursesBySiteName = async (siteName: string, courseIds?: string[]): Promise<number> => {
+export const countPublishedCoursesBySiteName = async (
+  siteName: string,
+  courseIds?: string[],
+  courseTypes?: string[],
+  search?: string,
+  pricing?: 'free' | 'paid'
+): Promise<number> => {
   try {
     if (courseIds && courseIds.length === 0) {
       return 0;
@@ -141,6 +165,21 @@ export const countPublishedCoursesBySiteName = async (siteName: string, courseId
 
     if (courseIds && courseIds.length > 0) {
       conditions.push(inArray(schema.course.id, courseIds));
+    }
+
+    if (courseTypes && courseTypes.length > 0) {
+      conditions.push(inArray(schema.course.type, courseTypes as (typeof schema.courseType.enumValues)[number][]));
+    }
+
+    if (search) {
+      const pattern = `%${search}%`;
+      conditions.push(or(ilike(schema.course.title, pattern), ilike(schema.course.description, pattern))!);
+    }
+
+    if (pricing === 'free') {
+      conditions.push(eq(schema.course.cost, 0));
+    } else if (pricing === 'paid') {
+      conditions.push(gt(schema.course.cost, 0));
     }
 
     const [result] = await db

@@ -386,32 +386,6 @@
       "rotated": "स्वचालन कुंजी घुमाई गई. नया रहस्य अभी सहेजें क्योंकि यह दोबारा नहीं दिखाया जाएगा।",
       "revoked": "स्वचालन कुंजी निरस्त कर दी गई."
     },
-    "program": {
-      "error": {
-        "reaction_error": "पोस्ट पर प्रतिक्रिया करते समय एक त्रुटि उत्पन्न हुई",
-        "news_feed_fail": "प्रोग्राम न्यूज़फ़ीड लाने में विफल",
-        "post_create_failed": "पोस्ट बनाने में विफल",
-        "post_update_failed": "पोस्ट अपडेट करने में विफल",
-        "code": {
-          "program_forbidden": "इस क्रिया को करने के लिए आपको इस कार्यक्रम का सदस्य होना चाहिए।",
-          "program_member_check_failed": "हम आपके कार्यक्रम की सदस्यता सत्यापित नहीं कर सके. पुनः प्रयास करें।",
-          "program_not_found": "यह प्रोग्राम नहीं मिल सका.",
-          "program_create_failed": "प्रोग्राम नहीं बनाया जा सका.",
-          "program_update_failed": "प्रोग्राम अद्यतन नहीं किया जा सका.",
-          "program_delete_failed": "प्रोग्राम को हटाया नहीं जा सका.",
-          "program_member_not_found": "वह प्रोग्राम सदस्य नहीं मिल सका.",
-          "program_newsfeed_not_found": "वह पोस्ट नहीं मिल सकी.",
-          "program_newsfeed_comment_not_found": "वह टिप्पणी नहीं मिल सकी."
-        }
-      },
-      "success": {
-        "comment_deleted": "टिप्पणी हटा दी गई",
-        "comment_added": "टिप्पणी जोड़ी गई",
-        "feed_delete_success": "पोस्ट सफलतापूर्वक हटा दी गई",
-        "post_created": "पोस्ट सफलतापूर्वक बनाई गई",
-        "post_updated": "पोस्ट सफलतापूर्वक अपडेट की गई"
-      }
-    },
     "ai_credits": {
       "purchase_success": "AI credit pack आपके balance में जोड़ा गया।",
       "checkout_failed": "Checkout शुरू नहीं हो सका। कृपया पुनः प्रयास करें।"
@@ -445,7 +419,33 @@
       "generate_1080_completed": "1080p प्रस्तुतिकरण जोड़ा गया",
       "generate_1080_failed": "1080p प्रस्तुतिकरण उत्पन्न नहीं हो सका"
     },
-    "social_auth_not_enabled": "यह प्रमाणीकरण प्रदाता सक्षम नहीं है."
+    "social_auth_not_enabled": "यह प्रमाणीकरण प्रदाता सक्षम नहीं है.",
+    "cohort": {
+      "error": {
+        "reaction_error": "पोस्ट पर प्रतिक्रिया करते समय एक त्रुटि उत्पन्न हुई",
+        "news_feed_fail": "प्रोग्राम न्यूज़फ़ीड लाने में विफल",
+        "post_create_failed": "पोस्ट बनाने में विफल",
+        "post_update_failed": "पोस्ट अपडेट करने में विफल",
+        "code": {
+          "cohort_forbidden": "इस क्रिया को करने के लिए आपको इस कार्यक्रम का सदस्य होना चाहिए।",
+          "cohort_member_check_failed": "हम आपके कार्यक्रम की सदस्यता सत्यापित नहीं कर सके. पुनः प्रयास करें।",
+          "cohort_not_found": "यह प्रोग्राम नहीं मिल सका.",
+          "cohort_create_failed": "प्रोग्राम नहीं बनाया जा सका.",
+          "cohort_update_failed": "प्रोग्राम अद्यतन नहीं किया जा सका.",
+          "cohort_delete_failed": "प्रोग्राम को हटाया नहीं जा सका.",
+          "cohort_member_not_found": "वह प्रोग्राम सदस्य नहीं मिल सका.",
+          "cohort_newsfeed_not_found": "वह पोस्ट नहीं मिल सकी.",
+          "cohort_newsfeed_comment_not_found": "वह टिप्पणी नहीं मिल सकी."
+        }
+      },
+      "success": {
+        "comment_deleted": "टिप्पणी हटा दी गई",
+        "comment_added": "टिप्पणी जोड़ी गई",
+        "feed_delete_success": "पोस्ट सफलतापूर्वक हटा दी गई",
+        "post_created": "पोस्ट सफलतापूर्वक बनाई गई",
+        "post_updated": "पोस्ट सफलतापूर्वक अपडेट की गई"
+      }
+    }
   },
   "explore": {
     "heading": "हमारे पाठ्यक्रमों का अन्वेषण करें",
@@ -492,7 +492,7 @@
     "explore": "अन्वेषण करें",
     "help": "मदद",
     "settings": "सेटिंग्स",
-    "programs": "कार्यक्रम"
+    "cohorts": "कार्यक्रम"
   },
   "upgrade": {
     "certificate": "प्रमाणपत्र बनाने की अपनी योजना को अपग्रेड करें",
@@ -503,7 +503,8 @@
     "download_lessons": "पाठ डाउनलोड करने के लिए अपग्रेड करें",
     "download_course": "पाठ्यक्रम डाउनलोड करने के लिए अपग्रेड करें",
     "required": "अपग्रेड आवश्यक",
-    "enterprise_required": "इस सुविधा के लिए एंटरप्राइज़ योजना की आवश्यकता है."
+    "enterprise_required": "इस सुविधा के लिए एंटरप्राइज़ योजना की आवश्यकता है.",
+    "public_api_required": "सार्वजनिक API तक पहुँचने के लिए Early Adopter या Enterprise में अपग्रेड करें।"
   },
   "analytics": {
     "title": "विश्लेषिकी",
@@ -682,18 +683,18 @@
       "all_courses": "सभी पाठ्यक्रम",
       "select_courses": "विशिष्ट पाठ्यक्रम चुनें",
       "select_courses_placeholder": "पाठ्यक्रम चुनें...",
-      "program_access": "प्रोग्राम एक्सेस",
-      "no_programs": "कोई प्रोग्राम असाइनमेंट नहीं",
-      "all_programs": "सभी प्रोग्राम",
-      "select_programs": "विशिष्ट प्रोग्राम चुनें",
-      "select_programs_placeholder": "प्रोग्राम चुनें...",
       "send_email": "आयातित उपयोगकर्ताओं को आमंत्रण ईमेल भेजें",
       "submit": "उपयोगकर्ता आयात करें",
       "back": "दर्शकों के पास वापस जाएँ",
       "snackbar_success": "{imported} नए निमंत्रण, {assigned} मौजूदा छात्रों को पाठ्यक्रम पहुंच, {pendingInvitesRenewed} लंबित निमंत्रण नवीकृत ({emailsSent} ईमेल भेजे गए)",
       "snackbar_no_emails": "कृपया कम से कम एक ईमेल पता दर्ज करें",
       "snackbar_failed": "उपयोगकर्ताओं को आयात करने में विफल",
-      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like."
+      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like.",
+      "cohort_access": "प्रोग्राम एक्सेस",
+      "no_cohorts": "कोई प्रोग्राम असाइनमेंट नहीं",
+      "all_cohorts": "सभी प्रोग्राम",
+      "select_cohorts": "विशिष्ट प्रोग्राम चुनें",
+      "select_cohorts_placeholder": "प्रोग्राम चुनें..."
     },
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "user_analytics": {
@@ -2800,11 +2801,11 @@
     "upgrade": "अभी अपग्रेड करें",
     "tags": "टैग",
     "automation": "स्वचालन",
-    "programs": "कार्यक्रम",
     "widgets": "विजेट्स",
     "stats": "आँकड़े",
     "analytics": "विश्लेषिकी",
-    "compliance": "अनुपालन"
+    "compliance": "अनुपालन",
+    "cohorts": "कार्यक्रम"
   },
   "media_manager": {
     "page_title": "मीडिया मैनेजर - क्लासरूमआईओ",
@@ -3745,7 +3746,13 @@
     "filters": {
       "title": "टैग द्वारा फ़िल्टर करें",
       "help": "पाठ्यक्रमों को फ़िल्टर करने के लिए एक या अधिक टैग चुनें",
-      "empty": "अभी तक कोई टैग उपलब्ध नहीं है"
+      "empty": "अभी तक कोई टैग उपलब्ध नहीं है",
+      "tags_title": "टैग",
+      "types_title": "प्रकार",
+      "search_placeholder": "पाठ्यक्रम खोजें...",
+      "pricing_title": "मूल्य निर्धारण",
+      "pricing_free": "निःशुल्क",
+      "pricing_paid": "भुगतान किया गया"
     }
   },
   "tags_admin": {
@@ -3890,6 +3897,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "त्वरित शुरुआत",
+        "description": "हर अनुरोध पर अपनी API कुंजी को Bearer टोकन के रूप में उपयोग करें। प्लेसहोल्डर को ऊपर की कुंजी से बदलें, या कुंजी बनाने के तुरंत बाद सीक्रेट पेस्ट करें।"
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3914,7 +3925,11 @@
       "claude_code": "क्लाउड कोड",
       "codex": "कोडेक्स",
       "cursor": "कर्सर",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "tabs": {
       "mcp": "एम.सी.पी",
@@ -3927,212 +3942,6 @@
     },
     "zapier": {
       "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
-    }
-  },
-  "programs": {
-    "heading": "कार्यक्रम",
-    "page_title": "कार्यक्रम",
-    "create": "नया कार्यक्रम",
-    "create_success": "प्रोग्राम बनाया गया",
-    "update_success": "कार्यक्रम अद्यतन किया गया",
-    "delete_success": "प्रोग्राम हटा दिया गया",
-    "members_added": "सदस्य जोड़े गए",
-    "member_removed": "सदस्य हटा दिया गया",
-    "course_added": "पाठ्यक्रम जोड़ा गया",
-    "course_removed": "पाठ्यक्रम हटा दिया गया",
-    "empty_title": "अभी तक कोई कार्यक्रम नहीं",
-    "empty_description": "अपना पहला प्रमाणन या अनुपालन कार्यक्रम बनाएं।",
-    "settings": {
-      "general": "सामान्य",
-      "name_label": "नाम",
-      "description_label": "विवरण",
-      "status_label": "स्थिति",
-      "save": "परिवर्तन सहेजें",
-      "danger_zone": "ख़तरे का क्षेत्र",
-      "delete": "प्रोग्राम हटाएँ",
-      "delete_description": "एक बार डिलीट होने के बाद, यह प्रोग्राम और इसका सारा डेटा पुनर्प्राप्त नहीं किया जा सकता है।",
-      "confirm_delete": "क्या आप वाकई इस प्रोग्राम को हटाना चाहते हैं? इसे असंपादित नहीं किया जा सकता है।"
-    },
-    "lms": {
-      "empty_title": "अभी तक कोई कार्यक्रम नहीं",
-      "empty_description": "आपको किसी भी कार्यक्रम में नामांकित नहीं किया गया है."
-    },
-    "people": {
-      "invite": "आमंत्रित करें",
-      "invite_modal_title": "सदस्यों को आमंत्रित करें",
-      "invite_modal_description": "लोगों को ईमेल द्वारा इस कार्यक्रम में जोड़ें.",
-      "email_label": "ईमेल",
-      "role_label": "भूमिका",
-      "add_another": "दूसरा जोड़ें",
-      "invite_submit": "निमंत्रण भेजें",
-      "empty_title": "अभी तक कोई सदस्य नहीं",
-      "empty_description": "लोगों को इस कार्यक्रम में शामिल होने के लिए आमंत्रित करें."
-    },
-    "courses": {
-      "add": "पाठ्यक्रम जोड़ें",
-      "add_modal_title": "कार्यक्रम में पाठ्यक्रम जोड़ें",
-      "select_course": "एक पाठ्यक्रम चुनें",
-      "select_placeholder": "एक कोर्स चुनें...",
-      "empty_title": "अभी तक कोई पाठ्यक्रम नहीं",
-      "empty_description": "इस कार्यक्रम में पाठ्यक्रम जोड़ें.",
-      "select_courses": "पाठ्यक्रम चुनें",
-      "search_placeholder": "पाठ्यक्रम खोजें",
-      "no_available_courses": "जोड़ने के लिए कोई पाठ्यक्रम उपलब्ध नहीं है.",
-      "no_matching_courses": "कोई भी पाठ्यक्रम आपकी खोज से मेल नहीं खाता.",
-      "no_matching_program_courses": "कोई भी प्रोग्राम पाठ्यक्रम आपकी खोज से मेल नहीं खाता।",
-      "pagination_status": "{page} का पेज {totalPages}",
-      "published_access_callout_title": "छात्र प्रवेश",
-      "published_access_callout_description": "छात्रों को केवल प्रकाशित पाठ्यक्रमों तक ही पहुंच है। पाठ्यक्रम अप्रकाशित रहते हुए भी आपकी टीम के लिए इस कार्यक्रम में हो सकते हैं, जबकि जब तक आप उन्हें प्रकाशित नहीं करते तब तक वे छात्रों से छिपे रहते हैं।"
-    },
-    "newsfeed": {
-      "post": "नई पोस्ट",
-      "post_placeholder": "आपके मन में क्या है?",
-      "post_submit": "पोस्ट",
-      "empty_title": "अभी तक कोई पोस्ट नहीं",
-      "empty_description": "कुछ पोस्ट करने वाले पहले व्यक्ति बनें.",
-      "heading": "न्यूज़फीड",
-      "make_a_post": "एक पोस्ट बनाएं",
-      "edit_post": "पोस्ट संपादित करें",
-      "editor_placeholder": "अपने प्रोग्राम के साथ एक अपडेट साझा करें",
-      "cancel": "रद्द करें",
-      "pinned": "पिन किया गया",
-      "delete_feed_title": "पोस्ट हटाएं",
-      "delete_feed_description": "क्या आप वाकई इस पोस्ट को हटाना चाहते हैं?",
-      "confirm_delete": "हटाएँ",
-      "user_avatar_alt": "उपयोगकर्ता अवतार",
-      "comments": {
-        "comment": "टिप्पणी",
-        "showing_of": "{shown} में से {total}",
-        "hide": "टिप्पणियाँ छिपाएँ",
-        "placeholder": "प्रोग्राम टिप्पणी जोड़ें",
-        "submit_aria": "टिप्पणी सबमिट करें",
-        "delete": "हटाएँ"
-      },
-      "card": {
-        "pin": "पिन",
-        "unpin": "अनपिन करें",
-        "edit": "संपादित करें",
-        "delete": "हटाएँ"
-      }
-    },
-    "create_modal": {
-      "title": "प्रोग्राम बनाएं",
-      "description": "एक नया प्रमाणन या अनुपालन कार्यक्रम जोड़ें.",
-      "name_label": "नाम",
-      "name_placeholder": "जैसे OSHA सुरक्षा प्रमाणन",
-      "description_label": "विवरण",
-      "description_placeholder": "यह कार्यक्रम किस बारे में है?",
-      "submit": "बनाएँ"
-    },
-    "sidebar": {
-      "newsfeed": "न्यूज़फीड",
-      "courses": "पाठ्यक्रम",
-      "people": "लोग",
-      "settings": "सेटिंग्स"
-    },
-    "status": {
-      "active": "सक्रिय",
-      "inactive": "निष्क्रिय",
-      "archived": "संग्रहीत"
-    },
-    "description": "लोगों के एक समूह को एक कक्षा जैसे कई पाठ्यक्रमों तक पहुंच प्रदान करें",
-    "search_placeholder": "प्रोग्राम खोजें",
-    "multiple_added": "पाठ्यक्रम जोड़े गए",
-    "no_matching_programs": "कोई भी प्रोग्राम आपके फ़िल्टर से मेल नहीं खाता.",
-    "card": {
-      "courses": "पाठ्यक्रम",
-      "students": "छात्र"
-    },
-    "table": {
-      "name": "नाम",
-      "courses": "पाठ्यक्रम",
-      "students": "छात्र",
-      "status": "स्थिति",
-      "description": "विवरण"
-    },
-    "filters": {
-      "filter": "फ़िल्टर करें",
-      "clear_all": "सब साफ़ करें",
-      "popover_title": "फिल्टर",
-      "sort": "क्रमबद्ध करें",
-      "order": "आदेश",
-      "status": "स्थिति",
-      "ascending": "ए.एस.सी",
-      "descending": "वर्णन",
-      "sort_name": "नाम",
-      "sort_courses": "पाठ्यक्रम",
-      "sort_students": "छात्र",
-      "sort_status": "स्थिति"
-    },
-    "invite_sent": "निमंत्रण भेजा गया",
-    "goals": {
-      "heading": "सीखने के लक्ष्य",
-      "description": "मापने योग्य लक्ष्य निर्धारित करें जो इस कार्यक्रम में सभी के लिए कई पाठ्यक्रमों तक फैले हों।",
-      "add": "नया लक्ष्य",
-      "empty_title": "अभी तक कोई लक्ष्य नहीं",
-      "empty_description": "अनेक पाठ्यक्रमों में टीम की प्रगति को ट्रैक करने के लिए एक लक्ष्य बनाएं।",
-      "created": "लक्ष्य बनाया गया",
-      "updated": "लक्ष्य अद्यतन किया गया",
-      "deleted": "लक्ष्य हटा दिया गया",
-      "delete_confirm": "यह लक्ष्य हटाएं? प्रति-छात्र स्थिति इतिहास हटा दिया जाएगा.",
-      "lms": {
-        "heading": "आपके लक्ष्य",
-        "empty_title": "कोई लक्ष्य नहीं सौंपा गया",
-        "empty_description": "जब आपके प्रशिक्षक लक्ष्य निर्धारित करेंगे, तो वे यहां दिखाई देंगे।",
-        "due_in_days": "{days} दिनों में देय",
-        "due_tomorrow": "कल देय",
-        "due_today": "आज देय",
-        "overdue": "अतिदेय",
-        "no_deadline": "कोई समयसीमा नहीं"
-      },
-      "tile": {
-        "on_track": "ट्रैक पर",
-        "completed_short": "पूरा हुआ",
-        "overdue_short": "अतिदेय",
-        "at_risk_short": "ख़तरे में"
-      },
-      "status": {
-        "completed": "पूरा हुआ",
-        "in_progress": "प्रगति पर है",
-        "at_risk": "ख़तरे में",
-        "overdue": "अतिदेय",
-        "not_started": "शुरू नहीं हुआ",
-        "waived": "माफ़ कर दिया गया"
-      },
-      "deadline_kind": {
-        "absolute": "पूर्ण तिथि",
-        "relative_to_join": "विद्यार्थियों के शामिल होने के संबंध में",
-        "recurring": "आवर्ती",
-        "none": "कोई समयसीमा नहीं"
-      },
-      "type": {
-        "complete_all": "सभी चयनित पाठ्यक्रम पूर्ण करें",
-        "n_of_m": "एम चयनित पाठ्यक्रमों का एन पूरा करें",
-        "score": "प्रत्येक पाठ्यक्रम पर सीमा से अधिक अंक प्राप्त करें",
-        "pass_rate": "टीम पास-रेट सीमा",
-        "readiness": "तैयारी (कोई समय सीमा नहीं)"
-      },
-      "modal": {
-        "create_title": "नया लक्ष्य",
-        "edit_title": "लक्ष्य संपादित करें",
-        "title_label": "शीर्षक",
-        "title_placeholder": "जैसे ऑनबोर्डिंग रैंप",
-        "description_label": "विवरण",
-        "description_placeholder": "टीम के लिए वैकल्पिक संदर्भ",
-        "type_label": "प्रकार",
-        "courses_label": "पाठ्यक्रम",
-        "required_count_label": "आवश्यक पाठ्यक्रमों की संख्या",
-        "score_threshold_label": "प्रति छात्र उत्तीर्णांक (%)",
-        "team_pass_rate_label": "टीम पास दर (%)",
-        "deadline_label": "समयसीमा",
-        "deadline_date_label": "अंतिम तिथि",
-        "relative_days_label": "छात्र के शामिल होने के दिन से दिन",
-        "recurring_months_label": "प्रत्येक (महीने) दोहराएँ",
-        "reminders_label": "अनुस्मारक (नियत तिथि से कुछ दिन पहले)",
-        "reminders_helper": "अल्पविराम से अलग किया गया. उदाहरण: 7, 3, 1",
-        "save": "सहेजें",
-        "cancel": "रद्द करें"
-      }
     }
   },
   "ai_assistant": {
@@ -4782,6 +4591,212 @@
       "finalizing": "सहेजा जा रहा है...",
       "done": "तैयार",
       "failed": "अपलोड विफल रहा"
+    }
+  },
+  "cohorts": {
+    "heading": "कार्यक्रम",
+    "page_title": "कार्यक्रम",
+    "create": "नया कार्यक्रम",
+    "create_success": "प्रोग्राम बनाया गया",
+    "update_success": "कार्यक्रम अद्यतन किया गया",
+    "delete_success": "प्रोग्राम हटा दिया गया",
+    "members_added": "सदस्य जोड़े गए",
+    "member_removed": "सदस्य हटा दिया गया",
+    "course_added": "पाठ्यक्रम जोड़ा गया",
+    "course_removed": "पाठ्यक्रम हटा दिया गया",
+    "empty_title": "अभी तक कोई कार्यक्रम नहीं",
+    "empty_description": "अपना पहला प्रमाणन या अनुपालन कार्यक्रम बनाएं।",
+    "settings": {
+      "general": "सामान्य",
+      "name_label": "नाम",
+      "description_label": "विवरण",
+      "status_label": "स्थिति",
+      "save": "परिवर्तन सहेजें",
+      "danger_zone": "ख़तरे का क्षेत्र",
+      "delete": "प्रोग्राम हटाएँ",
+      "delete_description": "एक बार डिलीट होने के बाद, यह प्रोग्राम और इसका सारा डेटा पुनर्प्राप्त नहीं किया जा सकता है।",
+      "confirm_delete": "क्या आप वाकई इस प्रोग्राम को हटाना चाहते हैं? इसे असंपादित नहीं किया जा सकता है।"
+    },
+    "lms": {
+      "empty_title": "अभी तक कोई कार्यक्रम नहीं",
+      "empty_description": "आपको किसी भी कार्यक्रम में नामांकित नहीं किया गया है."
+    },
+    "people": {
+      "invite": "आमंत्रित करें",
+      "invite_modal_title": "सदस्यों को आमंत्रित करें",
+      "invite_modal_description": "लोगों को ईमेल द्वारा इस कार्यक्रम में जोड़ें.",
+      "email_label": "ईमेल",
+      "role_label": "भूमिका",
+      "add_another": "दूसरा जोड़ें",
+      "invite_submit": "निमंत्रण भेजें",
+      "empty_title": "अभी तक कोई सदस्य नहीं",
+      "empty_description": "लोगों को इस कार्यक्रम में शामिल होने के लिए आमंत्रित करें."
+    },
+    "courses": {
+      "add": "पाठ्यक्रम जोड़ें",
+      "add_modal_title": "कार्यक्रम में पाठ्यक्रम जोड़ें",
+      "select_course": "एक पाठ्यक्रम चुनें",
+      "select_placeholder": "एक कोर्स चुनें...",
+      "empty_title": "अभी तक कोई पाठ्यक्रम नहीं",
+      "empty_description": "इस कार्यक्रम में पाठ्यक्रम जोड़ें.",
+      "select_courses": "पाठ्यक्रम चुनें",
+      "search_placeholder": "पाठ्यक्रम खोजें",
+      "no_available_courses": "जोड़ने के लिए कोई पाठ्यक्रम उपलब्ध नहीं है.",
+      "no_matching_courses": "कोई भी पाठ्यक्रम आपकी खोज से मेल नहीं खाता.",
+      "no_matching_cohort_courses": "कोई भी प्रोग्राम पाठ्यक्रम आपकी खोज से मेल नहीं खाता।",
+      "pagination_status": "{page} का पेज {totalPages}",
+      "published_access_callout_title": "छात्र प्रवेश",
+      "published_access_callout_description": "छात्रों को केवल प्रकाशित पाठ्यक्रमों तक ही पहुंच है। पाठ्यक्रम अप्रकाशित रहते हुए भी आपकी टीम के लिए इस कार्यक्रम में हो सकते हैं, जबकि जब तक आप उन्हें प्रकाशित नहीं करते तब तक वे छात्रों से छिपे रहते हैं।"
+    },
+    "newsfeed": {
+      "post": "नई पोस्ट",
+      "post_placeholder": "आपके मन में क्या है?",
+      "post_submit": "पोस्ट",
+      "empty_title": "अभी तक कोई पोस्ट नहीं",
+      "empty_description": "कुछ पोस्ट करने वाले पहले व्यक्ति बनें.",
+      "heading": "न्यूज़फीड",
+      "make_a_post": "एक पोस्ट बनाएं",
+      "edit_post": "पोस्ट संपादित करें",
+      "editor_placeholder": "अपने प्रोग्राम के साथ एक अपडेट साझा करें",
+      "cancel": "रद्द करें",
+      "pinned": "पिन किया गया",
+      "delete_feed_title": "पोस्ट हटाएं",
+      "delete_feed_description": "क्या आप वाकई इस पोस्ट को हटाना चाहते हैं?",
+      "confirm_delete": "हटाएँ",
+      "user_avatar_alt": "उपयोगकर्ता अवतार",
+      "comments": {
+        "comment": "टिप्पणी",
+        "showing_of": "{shown} में से {total}",
+        "hide": "टिप्पणियाँ छिपाएँ",
+        "placeholder": "प्रोग्राम टिप्पणी जोड़ें",
+        "submit_aria": "टिप्पणी सबमिट करें",
+        "delete": "हटाएँ"
+      },
+      "card": {
+        "pin": "पिन",
+        "unpin": "अनपिन करें",
+        "edit": "संपादित करें",
+        "delete": "हटाएँ"
+      }
+    },
+    "create_modal": {
+      "title": "प्रोग्राम बनाएं",
+      "description": "एक नया प्रमाणन या अनुपालन कार्यक्रम जोड़ें.",
+      "name_label": "नाम",
+      "name_placeholder": "जैसे OSHA सुरक्षा प्रमाणन",
+      "description_label": "विवरण",
+      "description_placeholder": "यह कार्यक्रम किस बारे में है?",
+      "submit": "बनाएँ"
+    },
+    "sidebar": {
+      "newsfeed": "न्यूज़फीड",
+      "courses": "पाठ्यक्रम",
+      "people": "लोग",
+      "settings": "सेटिंग्स"
+    },
+    "status": {
+      "active": "सक्रिय",
+      "inactive": "निष्क्रिय",
+      "archived": "संग्रहीत"
+    },
+    "description": "लोगों के एक समूह को एक कक्षा जैसे कई पाठ्यक्रमों तक पहुंच प्रदान करें",
+    "search_placeholder": "प्रोग्राम खोजें",
+    "multiple_added": "पाठ्यक्रम जोड़े गए",
+    "no_matching_cohorts": "कोई भी प्रोग्राम आपके फ़िल्टर से मेल नहीं खाता.",
+    "card": {
+      "courses": "पाठ्यक्रम",
+      "students": "छात्र"
+    },
+    "table": {
+      "name": "नाम",
+      "courses": "पाठ्यक्रम",
+      "students": "छात्र",
+      "status": "स्थिति",
+      "description": "विवरण"
+    },
+    "filters": {
+      "filter": "फ़िल्टर करें",
+      "clear_all": "सब साफ़ करें",
+      "popover_title": "फिल्टर",
+      "sort": "क्रमबद्ध करें",
+      "order": "आदेश",
+      "status": "स्थिति",
+      "ascending": "ए.एस.सी",
+      "descending": "वर्णन",
+      "sort_name": "नाम",
+      "sort_courses": "पाठ्यक्रम",
+      "sort_students": "छात्र",
+      "sort_status": "स्थिति"
+    },
+    "invite_sent": "निमंत्रण भेजा गया",
+    "goals": {
+      "heading": "सीखने के लक्ष्य",
+      "description": "मापने योग्य लक्ष्य निर्धारित करें जो इस कार्यक्रम में सभी के लिए कई पाठ्यक्रमों तक फैले हों।",
+      "add": "नया लक्ष्य",
+      "empty_title": "अभी तक कोई लक्ष्य नहीं",
+      "empty_description": "अनेक पाठ्यक्रमों में टीम की प्रगति को ट्रैक करने के लिए एक लक्ष्य बनाएं।",
+      "created": "लक्ष्य बनाया गया",
+      "updated": "लक्ष्य अद्यतन किया गया",
+      "deleted": "लक्ष्य हटा दिया गया",
+      "delete_confirm": "यह लक्ष्य हटाएं? प्रति-छात्र स्थिति इतिहास हटा दिया जाएगा.",
+      "lms": {
+        "heading": "आपके लक्ष्य",
+        "empty_title": "कोई लक्ष्य नहीं सौंपा गया",
+        "empty_description": "जब आपके प्रशिक्षक लक्ष्य निर्धारित करेंगे, तो वे यहां दिखाई देंगे।",
+        "due_in_days": "{days} दिनों में देय",
+        "due_tomorrow": "कल देय",
+        "due_today": "आज देय",
+        "overdue": "अतिदेय",
+        "no_deadline": "कोई समयसीमा नहीं"
+      },
+      "tile": {
+        "on_track": "ट्रैक पर",
+        "completed_short": "पूरा हुआ",
+        "overdue_short": "अतिदेय",
+        "at_risk_short": "ख़तरे में"
+      },
+      "status": {
+        "completed": "पूरा हुआ",
+        "in_progress": "प्रगति पर है",
+        "at_risk": "ख़तरे में",
+        "overdue": "अतिदेय",
+        "not_started": "शुरू नहीं हुआ",
+        "waived": "माफ़ कर दिया गया"
+      },
+      "deadline_kind": {
+        "absolute": "पूर्ण तिथि",
+        "relative_to_join": "विद्यार्थियों के शामिल होने के संबंध में",
+        "recurring": "आवर्ती",
+        "none": "कोई समयसीमा नहीं"
+      },
+      "type": {
+        "complete_all": "सभी चयनित पाठ्यक्रम पूर्ण करें",
+        "n_of_m": "एम चयनित पाठ्यक्रमों का एन पूरा करें",
+        "score": "प्रत्येक पाठ्यक्रम पर सीमा से अधिक अंक प्राप्त करें",
+        "pass_rate": "टीम पास-रेट सीमा",
+        "readiness": "तैयारी (कोई समय सीमा नहीं)"
+      },
+      "modal": {
+        "create_title": "नया लक्ष्य",
+        "edit_title": "लक्ष्य संपादित करें",
+        "title_label": "शीर्षक",
+        "title_placeholder": "जैसे ऑनबोर्डिंग रैंप",
+        "description_label": "विवरण",
+        "description_placeholder": "टीम के लिए वैकल्पिक संदर्भ",
+        "type_label": "प्रकार",
+        "courses_label": "पाठ्यक्रम",
+        "required_count_label": "आवश्यक पाठ्यक्रमों की संख्या",
+        "score_threshold_label": "प्रति छात्र उत्तीर्णांक (%)",
+        "team_pass_rate_label": "टीम पास दर (%)",
+        "deadline_label": "समयसीमा",
+        "deadline_date_label": "अंतिम तिथि",
+        "relative_days_label": "छात्र के शामिल होने के दिन से दिन",
+        "recurring_months_label": "प्रत्येक (महीने) दोहराएँ",
+        "reminders_label": "अनुस्मारक (नियत तिथि से कुछ दिन पहले)",
+        "reminders_helper": "अल्पविराम से अलग किया गया. उदाहरण: 7, 3, 1",
+        "save": "सहेजें",
+        "cancel": "रद्द करें"
+      }
     }
   }
 }

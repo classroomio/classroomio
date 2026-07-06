@@ -386,32 +386,6 @@
       "rotated": "Automatiseringsnøglen drejet. Gem den nye hemmelighed nu, fordi den ikke vil blive vist igen.",
       "revoked": "Automatiseringsnøgle tilbagekaldt."
     },
-    "program": {
-      "error": {
-        "reaction_error": "Der opstod en fejl under reaktion på indlægget",
-        "news_feed_fail": "Kunne ikke hente programmets nyhedsfeed",
-        "post_create_failed": "Kunne ikke oprette indlæg",
-        "post_update_failed": "Kunne ikke opdatere indlægget",
-        "code": {
-          "program_forbidden": "Du skal være medlem af dette program for at udføre denne handling.",
-          "program_member_check_failed": "Vi kunne ikke bekræfte dit programmedlemskab. Prøv igen.",
-          "program_not_found": "Dette program kunne ikke findes.",
-          "program_create_failed": "Kunne ikke oprette programmet.",
-          "program_update_failed": "Kunne ikke opdatere programmet.",
-          "program_delete_failed": "Kunne ikke slette programmet.",
-          "program_member_not_found": "Dette programmedlem kunne ikke findes.",
-          "program_newsfeed_not_found": "Det indlæg kunne ikke findes.",
-          "program_newsfeed_comment_not_found": "Den kommentar kunne ikke findes."
-        }
-      },
-      "success": {
-        "comment_deleted": "Kommentar slettet",
-        "comment_added": "Kommentar tilføjet",
-        "feed_delete_success": "Indlægget blev slettet",
-        "post_created": "Indlægget er oprettet",
-        "post_updated": "Opslaget blev opdateret"
-      }
-    },
     "ai_credits": {
       "purchase_success": "AI credit pack tilføjet til din saldo.",
       "checkout_failed": "Kunne ikke starte betaling. Prøv igen."
@@ -445,7 +419,33 @@
       "generate_1080_completed": "1080p gengivelse tilføjet",
       "generate_1080_failed": "Kunne ikke generere 1080p gengivelse"
     },
-    "social_auth_not_enabled": "Denne godkendelsesudbyder er ikke aktiveret."
+    "social_auth_not_enabled": "Denne godkendelsesudbyder er ikke aktiveret.",
+    "cohort": {
+      "error": {
+        "reaction_error": "Der opstod en fejl under reaktion på indlægget",
+        "news_feed_fail": "Kunne ikke hente programmets nyhedsfeed",
+        "post_create_failed": "Kunne ikke oprette indlæg",
+        "post_update_failed": "Kunne ikke opdatere indlægget",
+        "code": {
+          "cohort_forbidden": "Du skal være medlem af dette cohort for at udføre denne handling.",
+          "cohort_member_check_failed": "Vi kunne ikke bekræfte dit programmedlemskab. Prøv igen.",
+          "cohort_not_found": "Dette cohort kunne ikke findes.",
+          "cohort_create_failed": "Kunne ikke oprette programmet.",
+          "cohort_update_failed": "Kunne ikke opdatere programmet.",
+          "cohort_delete_failed": "Kunne ikke slette programmet.",
+          "cohort_member_not_found": "Dette programmedlem kunne ikke findes.",
+          "cohort_newsfeed_not_found": "Det indlæg kunne ikke findes.",
+          "cohort_newsfeed_comment_not_found": "Den kommentar kunne ikke findes."
+        }
+      },
+      "success": {
+        "comment_deleted": "Kommentar slettet",
+        "comment_added": "Kommentar tilføjet",
+        "feed_delete_success": "Indlægget blev slettet",
+        "post_created": "Indlægget er oprettet",
+        "post_updated": "Opslaget blev opdateret"
+      }
+    }
   },
   "explore": {
     "heading": "Udforsk vores kurser",
@@ -492,7 +492,7 @@
     "explore": "Udforsk",
     "help": "Hjælp",
     "settings": "Indstillinger",
-    "programs": "Programmer"
+    "cohorts": "Programmer"
   },
   "upgrade": {
     "certificate": "Opgrader din plan for at generere certifikater",
@@ -503,7 +503,8 @@
     "download_lessons": "Opgrader for at downloade lektioner",
     "download_course": "Opgrader for at downloade kursus",
     "required": "Opgradering påkrævet",
-    "enterprise_required": "Denne funktion kræver en Enterprise-plan."
+    "enterprise_required": "Denne funktion kræver en Enterprise-plan.",
+    "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API."
   },
   "analytics": {
     "title": "Analytics",
@@ -682,18 +683,18 @@
       "all_courses": "Alle kurser",
       "select_courses": "Vælg specifikke kurser",
       "select_courses_placeholder": "Vælg kurser...",
-      "program_access": "Programadgang",
-      "no_programs": "Ingen programtildeling",
-      "all_programs": "Alle programmer",
-      "select_programs": "Vælg specifikke programmer",
-      "select_programs_placeholder": "Vælg programmer...",
       "send_email": "Send invitationsmail til importerede brugere",
       "submit": "Importer brugere",
       "back": "Tilbage til Publikum",
       "snackbar_success": "{imported} nye invitationer, {assigned} eksisterende studerende med kursusadgang, {pendingInvitesRenewed} afventende invitationer fornyet ({emailsSent} e-mails sendt)",
       "snackbar_no_emails": "Indtast venligst mindst én e-mailadresse",
       "snackbar_failed": "Kunne ikke importere brugere",
-      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like."
+      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like.",
+      "cohort_access": "Programadgang",
+      "no_cohorts": "Ingen programtildeling",
+      "all_cohorts": "Alle programmer",
+      "select_cohorts": "Vælg specifikke programmer",
+      "select_cohorts_placeholder": "Vælg programmer..."
     },
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "user_analytics": {
@@ -2800,11 +2801,11 @@
     "upgrade": "Opgrader nu",
     "tags": "Tags",
     "automation": "Automatisering",
-    "programs": "Programmer",
     "widgets": "Widgets",
     "stats": "Statistik",
     "analytics": "Analytics",
-    "compliance": "Overholdelse"
+    "compliance": "Overholdelse",
+    "cohorts": "Programmer"
   },
   "media_manager": {
     "page_title": "Media Manager - ClassroomIO",
@@ -3745,7 +3746,13 @@
     "filters": {
       "title": "Filtrer efter tags",
       "help": "Vælg et eller flere tags for at filtrere kurser",
-      "empty": "Ingen tags tilgængelige endnu"
+      "empty": "Ingen tags tilgængelige endnu",
+      "tags_title": "Tags",
+      "types_title": "Typer",
+      "search_placeholder": "Søg efter kurser...",
+      "pricing_title": "Prissætning",
+      "pricing_free": "Gratis",
+      "pricing_paid": "Betalt"
     }
   },
   "tags_admin": {
@@ -3890,6 +3897,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Hurtig start",
+        "description": "Brug din API-nøgle som Bearer-token på hver anmodning. Erstat pladsholderen med en nøgle ovenfor, eller indsæt hemmeligheden lige efter du genererer en."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3914,7 +3925,11 @@
       "claude_code": "Claude kode",
       "codex": "Codex",
       "cursor": "Markør",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "tabs": {
       "mcp": "MCP",
@@ -3927,212 +3942,6 @@
     },
     "zapier": {
       "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
-    }
-  },
-  "programs": {
-    "heading": "Programmer",
-    "page_title": "Programmer",
-    "create": "Nyt program",
-    "create_success": "Program oprettet",
-    "update_success": "Program opdateret",
-    "delete_success": "Program slettet",
-    "members_added": "Medlemmer tilføjet",
-    "member_removed": "Medlem fjernet",
-    "course_added": "Kursus tilføjet",
-    "course_removed": "Kursus fjernet",
-    "empty_title": "Ingen programmer endnu",
-    "empty_description": "Opret dit første certificerings- eller overholdelsesprogram.",
-    "settings": {
-      "general": "Generelt",
-      "name_label": "Navn",
-      "description_label": "Beskrivelse",
-      "status_label": "Status",
-      "save": "Gem ændringer",
-      "danger_zone": "Farezone",
-      "delete": "Slet program",
-      "delete_description": "Når det er slettet, kan dette program og alle dets data ikke gendannes.",
-      "confirm_delete": "Er du sikker på, at du vil slette dette program? Dette kan ikke fortrydes."
-    },
-    "lms": {
-      "empty_title": "Ingen programmer endnu",
-      "empty_description": "Du er ikke blevet tilmeldt nogen programmer."
-    },
-    "people": {
-      "invite": "Inviter",
-      "invite_modal_title": "Inviter medlemmer",
-      "invite_modal_description": "Tilføj personer til dette program via e-mail.",
-      "email_label": "E-mail",
-      "role_label": "Rolle",
-      "add_another": "Tilføj en anden",
-      "invite_submit": "Send invitationer",
-      "empty_title": "Ingen medlemmer endnu",
-      "empty_description": "Inviter folk til at deltage i dette program."
-    },
-    "courses": {
-      "add": "Tilføj kursus",
-      "add_modal_title": "Føj kursus til programmet",
-      "select_course": "Vælg et kursus",
-      "select_placeholder": "Vælg et kursus...",
-      "empty_title": "Ingen kurser endnu",
-      "empty_description": "Tilføj kurser til dette program.",
-      "select_courses": "Vælg kurser",
-      "search_placeholder": "Søg efter kurser",
-      "no_available_courses": "Ingen tilgængelige kurser at tilføje.",
-      "no_matching_courses": "Ingen kurser matcher din søgning.",
-      "no_matching_program_courses": "Ingen programkurser matcher din søgning.",
-      "pagination_status": "Side {page} af {totalPages}",
-      "published_access_callout_title": "Studerendes adgang",
-      "published_access_callout_description": "Studerende har kun adgang til offentliggjorte kurser. Kurser kan være i dette program for dit team, mens de stadig er upublicerede, mens de forbliver skjulte for eleverne, indtil du udgiver dem."
-    },
-    "newsfeed": {
-      "post": "Nyt indlæg",
-      "post_placeholder": "Hvad tænker du på?",
-      "post_submit": "Indlæg",
-      "empty_title": "Ingen indlæg endnu",
-      "empty_description": "Vær den første til at poste noget.",
-      "heading": "Nyhedsfeed",
-      "make_a_post": "Lav et indlæg",
-      "edit_post": "Rediger indlæg",
-      "editor_placeholder": "Del en opdatering med dit program",
-      "cancel": "Annuller",
-      "pinned": "Fastgjort",
-      "delete_feed_title": "Slet indlæg",
-      "delete_feed_description": "Er du sikker på, at du vil slette dette indlæg?",
-      "confirm_delete": "Slet",
-      "user_avatar_alt": "Bruger avatar",
-      "comments": {
-        "comment": "kommentar",
-        "showing_of": "Viser {shown} af {total}",
-        "hide": "Skjul kommentarer",
-        "placeholder": "Tilføj programkommentar",
-        "submit_aria": "Send kommentar",
-        "delete": "Slet"
-      },
-      "card": {
-        "pin": "Pin",
-        "unpin": "Frigør",
-        "edit": "Rediger",
-        "delete": "Slet"
-      }
-    },
-    "create_modal": {
-      "title": "Opret program",
-      "description": "Tilføj et nyt certificerings- eller overholdelsesprogram.",
-      "name_label": "Navn",
-      "name_placeholder": "f.eks. OSHA sikkerhedscertificering",
-      "description_label": "Beskrivelse",
-      "description_placeholder": "Hvad handler dette program om?",
-      "submit": "Opret"
-    },
-    "sidebar": {
-      "newsfeed": "Nyhedsfeed",
-      "courses": "Kurser",
-      "people": "Mennesker",
-      "settings": "Indstillinger"
-    },
-    "status": {
-      "active": "Aktiv",
-      "inactive": "Inaktiv",
-      "archived": "Arkiveret"
-    },
-    "description": "Giv en gruppe mennesker adgang til flere kurser, f.eks. en klasse",
-    "search_placeholder": "Søg programmer",
-    "multiple_added": "Kurser tilføjet",
-    "no_matching_programs": "Ingen programmer matcher dine filtre.",
-    "card": {
-      "courses": "Kurser",
-      "students": "studerende"
-    },
-    "table": {
-      "name": "Navn",
-      "courses": "Kurser",
-      "students": "studerende",
-      "status": "Status",
-      "description": "Beskrivelse"
-    },
-    "filters": {
-      "filter": "Filter",
-      "clear_all": "Ryd alle",
-      "popover_title": "Filtre",
-      "sort": "Sorter",
-      "order": "Bestil",
-      "status": "Status",
-      "ascending": "Asc",
-      "descending": "Desc",
-      "sort_name": "Navn",
-      "sort_courses": "Kurser",
-      "sort_students": "studerende",
-      "sort_status": "Status"
-    },
-    "invite_sent": "Invitationer sendt",
-    "goals": {
-      "heading": "Læringsmål",
-      "description": "Sæt målbare mål, der spænder over flere kurser for alle i dette program.",
-      "add": "Nyt mål",
-      "empty_title": "Ingen mål endnu",
-      "empty_description": "Opret et mål for at spore teamfremskridt på tværs af flere kurser.",
-      "created": "Mål skabt",
-      "updated": "Mål opdateret",
-      "deleted": "Mål slettet",
-      "delete_confirm": "Vil du slette dette mål? Per-elev statushistorik vil blive fjernet.",
-      "lms": {
-        "heading": "Dine mål",
-        "empty_title": "Ingen mål tildelt",
-        "empty_description": "Når dine instruktører sætter sig mål, dukker de op her.",
-        "due_in_days": "Forfalder om {days} dage",
-        "due_tomorrow": "Afleveres i morgen",
-        "due_today": "Forfalder i dag",
-        "overdue": "Forfalden",
-        "no_deadline": "Ingen deadline"
-      },
-      "tile": {
-        "on_track": "på sporet",
-        "completed_short": "afsluttet",
-        "overdue_short": "forfalden",
-        "at_risk_short": "i fare"
-      },
-      "status": {
-        "completed": "Afsluttet",
-        "in_progress": "I gang",
-        "at_risk": "I fare",
-        "overdue": "Forfalden",
-        "not_started": "Ikke startet",
-        "waived": "Frafaldet"
-      },
-      "deadline_kind": {
-        "absolute": "Absolut dato",
-        "relative_to_join": "I forhold til elevtilslutning",
-        "recurring": "Tilbagevendende",
-        "none": "Ingen deadline"
-      },
-      "type": {
-        "complete_all": "Gennemfør alle udvalgte kurser",
-        "n_of_m": "Gennemfør N af M udvalgte kurser",
-        "score": "Score over tærsklen på hvert kursus",
-        "pass_rate": "Teamets beståelsesgrænse",
-        "readiness": "Beredskab (ingen deadline)"
-      },
-      "modal": {
-        "create_title": "Nyt mål",
-        "edit_title": "Rediger mål",
-        "title_label": "Titel",
-        "title_placeholder": "f.eks. Onboarding rampe",
-        "description_label": "Beskrivelse",
-        "description_placeholder": "Valgfri kontekst for holdet",
-        "type_label": "Type",
-        "courses_label": "Kurser",
-        "required_count_label": "Antal nødvendige kurser",
-        "score_threshold_label": "Beståelsesscore pr. elev (%)",
-        "team_pass_rate_label": "Holdbeståelsesprocent (%)",
-        "deadline_label": "Deadline",
-        "deadline_date_label": "Deadline dato",
-        "relative_days_label": "Dage fra eleven tiltræder",
-        "recurring_months_label": "Gentag hver (måned)",
-        "reminders_label": "Påmindelser (dage før termin)",
-        "reminders_helper": "Kommasepareret. Eksempel: 7, 3, 1",
-        "save": "Gem",
-        "cancel": "Annuller"
-      }
     }
   },
   "ai_assistant": {
@@ -4782,6 +4591,212 @@
       "finalizing": "Gemmer...",
       "done": "Klar",
       "failed": "Upload mislykkedes"
+    }
+  },
+  "cohorts": {
+    "heading": "Programmer",
+    "page_title": "Programmer",
+    "create": "Nyt cohort",
+    "create_success": "Cohort oprettet",
+    "update_success": "Cohort opdateret",
+    "delete_success": "Cohort slettet",
+    "members_added": "Medlemmer tilføjet",
+    "member_removed": "Medlem fjernet",
+    "course_added": "Kursus tilføjet",
+    "course_removed": "Kursus fjernet",
+    "empty_title": "Ingen programmer endnu",
+    "empty_description": "Opret dit første certificerings- eller overholdelsesprogram.",
+    "settings": {
+      "general": "Generelt",
+      "name_label": "Navn",
+      "description_label": "Beskrivelse",
+      "status_label": "Status",
+      "save": "Gem ændringer",
+      "danger_zone": "Farezone",
+      "delete": "Slet cohort",
+      "delete_description": "Når det er slettet, kan dette cohort og alle dets data ikke gendannes.",
+      "confirm_delete": "Er du sikker på, at du vil slette dette cohort? Dette kan ikke fortrydes."
+    },
+    "lms": {
+      "empty_title": "Ingen programmer endnu",
+      "empty_description": "Du er ikke blevet tilmeldt nogen programmer."
+    },
+    "people": {
+      "invite": "Inviter",
+      "invite_modal_title": "Inviter medlemmer",
+      "invite_modal_description": "Tilføj personer til dette cohort via e-mail.",
+      "email_label": "E-mail",
+      "role_label": "Rolle",
+      "add_another": "Tilføj en anden",
+      "invite_submit": "Send invitationer",
+      "empty_title": "Ingen medlemmer endnu",
+      "empty_description": "Inviter folk til at deltage i dette cohort."
+    },
+    "courses": {
+      "add": "Tilføj kursus",
+      "add_modal_title": "Føj kursus til programmet",
+      "select_course": "Vælg et kursus",
+      "select_placeholder": "Vælg et kursus...",
+      "empty_title": "Ingen kurser endnu",
+      "empty_description": "Tilføj kurser til dette cohort.",
+      "select_courses": "Vælg kurser",
+      "search_placeholder": "Søg efter kurser",
+      "no_available_courses": "Ingen tilgængelige kurser at tilføje.",
+      "no_matching_courses": "Ingen kurser matcher din søgning.",
+      "no_matching_cohort_courses": "Ingen programkurser matcher din søgning.",
+      "pagination_status": "Side {page} af {totalPages}",
+      "published_access_callout_title": "Studerendes adgang",
+      "published_access_callout_description": "Studerende har kun adgang til offentliggjorte kurser. Kurser kan være i dette cohort for dit team, mens de stadig er upublicerede, mens de forbliver skjulte for eleverne, indtil du udgiver dem."
+    },
+    "newsfeed": {
+      "post": "Nyt indlæg",
+      "post_placeholder": "Hvad tænker du på?",
+      "post_submit": "Indlæg",
+      "empty_title": "Ingen indlæg endnu",
+      "empty_description": "Vær den første til at poste noget.",
+      "heading": "Nyhedsfeed",
+      "make_a_post": "Lav et indlæg",
+      "edit_post": "Rediger indlæg",
+      "editor_placeholder": "Del en opdatering med dit cohort",
+      "cancel": "Annuller",
+      "pinned": "Fastgjort",
+      "delete_feed_title": "Slet indlæg",
+      "delete_feed_description": "Er du sikker på, at du vil slette dette indlæg?",
+      "confirm_delete": "Slet",
+      "user_avatar_alt": "Bruger avatar",
+      "comments": {
+        "comment": "kommentar",
+        "showing_of": "Viser {shown} af {total}",
+        "hide": "Skjul kommentarer",
+        "placeholder": "Tilføj programkommentar",
+        "submit_aria": "Send kommentar",
+        "delete": "Slet"
+      },
+      "card": {
+        "pin": "Pin",
+        "unpin": "Frigør",
+        "edit": "Rediger",
+        "delete": "Slet"
+      }
+    },
+    "create_modal": {
+      "title": "Opret cohort",
+      "description": "Tilføj et nyt certificerings- eller overholdelsesprogram.",
+      "name_label": "Navn",
+      "name_placeholder": "f.eks. OSHA sikkerhedscertificering",
+      "description_label": "Beskrivelse",
+      "description_placeholder": "Hvad handler dette cohort om?",
+      "submit": "Opret"
+    },
+    "sidebar": {
+      "newsfeed": "Nyhedsfeed",
+      "courses": "Kurser",
+      "people": "Mennesker",
+      "settings": "Indstillinger"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "archived": "Arkiveret"
+    },
+    "description": "Giv en gruppe mennesker adgang til flere kurser, f.eks. en klasse",
+    "search_placeholder": "Søg programmer",
+    "multiple_added": "Kurser tilføjet",
+    "no_matching_cohorts": "Ingen programmer matcher dine filtre.",
+    "card": {
+      "courses": "Kurser",
+      "students": "studerende"
+    },
+    "table": {
+      "name": "Navn",
+      "courses": "Kurser",
+      "students": "studerende",
+      "status": "Status",
+      "description": "Beskrivelse"
+    },
+    "filters": {
+      "filter": "Filter",
+      "clear_all": "Ryd alle",
+      "popover_title": "Filtre",
+      "sort": "Sorter",
+      "order": "Bestil",
+      "status": "Status",
+      "ascending": "Asc",
+      "descending": "Desc",
+      "sort_name": "Navn",
+      "sort_courses": "Kurser",
+      "sort_students": "studerende",
+      "sort_status": "Status"
+    },
+    "invite_sent": "Invitationer sendt",
+    "goals": {
+      "heading": "Læringsmål",
+      "description": "Sæt målbare mål, der spænder over flere kurser for alle i dette cohort.",
+      "add": "Nyt mål",
+      "empty_title": "Ingen mål endnu",
+      "empty_description": "Opret et mål for at spore teamfremskridt på tværs af flere kurser.",
+      "created": "Mål skabt",
+      "updated": "Mål opdateret",
+      "deleted": "Mål slettet",
+      "delete_confirm": "Vil du slette dette mål? Per-elev statushistorik vil blive fjernet.",
+      "lms": {
+        "heading": "Dine mål",
+        "empty_title": "Ingen mål tildelt",
+        "empty_description": "Når dine instruktører sætter sig mål, dukker de op her.",
+        "due_in_days": "Forfalder om {days} dage",
+        "due_tomorrow": "Afleveres i morgen",
+        "due_today": "Forfalder i dag",
+        "overdue": "Forfalden",
+        "no_deadline": "Ingen deadline"
+      },
+      "tile": {
+        "on_track": "på sporet",
+        "completed_short": "afsluttet",
+        "overdue_short": "forfalden",
+        "at_risk_short": "i fare"
+      },
+      "status": {
+        "completed": "Afsluttet",
+        "in_progress": "I gang",
+        "at_risk": "I fare",
+        "overdue": "Forfalden",
+        "not_started": "Ikke startet",
+        "waived": "Frafaldet"
+      },
+      "deadline_kind": {
+        "absolute": "Absolut dato",
+        "relative_to_join": "I forhold til elevtilslutning",
+        "recurring": "Tilbagevendende",
+        "none": "Ingen deadline"
+      },
+      "type": {
+        "complete_all": "Gennemfør alle udvalgte kurser",
+        "n_of_m": "Gennemfør N af M udvalgte kurser",
+        "score": "Score over tærsklen på hvert kursus",
+        "pass_rate": "Teamets beståelsesgrænse",
+        "readiness": "Beredskab (ingen deadline)"
+      },
+      "modal": {
+        "create_title": "Nyt mål",
+        "edit_title": "Rediger mål",
+        "title_label": "Titel",
+        "title_placeholder": "f.eks. Onboarding rampe",
+        "description_label": "Beskrivelse",
+        "description_placeholder": "Valgfri kontekst for holdet",
+        "type_label": "Type",
+        "courses_label": "Kurser",
+        "required_count_label": "Antal nødvendige kurser",
+        "score_threshold_label": "Beståelsesscore pr. elev (%)",
+        "team_pass_rate_label": "Holdbeståelsesprocent (%)",
+        "deadline_label": "Deadline",
+        "deadline_date_label": "Deadline dato",
+        "relative_days_label": "Dage fra eleven tiltræder",
+        "recurring_months_label": "Gentag hver (måned)",
+        "reminders_label": "Påmindelser (dage før termin)",
+        "reminders_helper": "Kommasepareret. Eksempel: 7, 3, 1",
+        "save": "Gem",
+        "cancel": "Annuller"
+      }
     }
   }
 }

@@ -1,6 +1,7 @@
 import * as z from 'zod';
 
 import { ZComplianceSettings, ZCourseMetadata } from '../course/course';
+import { ZCourseType } from '../course/course-type';
 import { ZExerciseQuestionTypeId } from '../exercise/exercise';
 
 const ZSupportedLocale = z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
@@ -26,7 +27,7 @@ export const ZCourseImportDraftCourse = z
   .object({
     title: z.string().min(1),
     description: z.string().min(1),
-    type: z.enum(['LIVE_CLASS', 'SELF_PACED', 'COMPLIANCE']),
+    type: ZCourseType,
     locale: ZSupportedLocale.default('en'),
     metadata: ZCourseMetadata.optional(),
     compliance: ZComplianceSettings.optional()
@@ -225,7 +226,7 @@ export type TCourseImportDraftUpdate = z.infer<typeof ZCourseImportDraftUpdate>;
 export const ZCourseImportDraftPublishBase = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
-  type: z.enum(['LIVE_CLASS', 'SELF_PACED', 'COMPLIANCE']).optional(),
+  type: ZCourseType.optional(),
   metadata: ZCourseMetadata.optional(),
   compliance: ZComplianceSettings.optional(),
   bannerImageUrl: z.string().url().optional(),

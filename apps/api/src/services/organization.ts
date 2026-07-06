@@ -256,6 +256,9 @@ export async function removeAudienceMember(orgId: string, memberId: number, remo
 export async function getPublicCourses(
   siteName: string,
   tagSlugs?: string[],
+  courseTypes?: string[],
+  search?: string,
+  pricing?: 'free' | 'paid',
   pagination?: { page?: number; limit?: number }
 ) {
   try {
@@ -286,8 +289,22 @@ export async function getPublicCourses(
       }
     }
 
-    const totalCourses = await countPublishedCoursesBySiteName(siteName, filteredCourseIds);
-    const courses = await getPublishedCoursesBySiteName(siteName, filteredCourseIds, limit, offset);
+    const totalCourses = await countPublishedCoursesBySiteName(
+      siteName,
+      filteredCourseIds,
+      courseTypes,
+      search,
+      pricing
+    );
+    const courses = await getPublishedCoursesBySiteName(
+      siteName,
+      filteredCourseIds,
+      courseTypes,
+      search,
+      pricing,
+      limit,
+      offset
+    );
     const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
       org.id,
       courses.map((course) => course.id)

@@ -12,9 +12,11 @@
     labels?: OrgLandingPageProps['labels'];
     navigation: Snippet;
     showActions?: boolean;
+    compact?: boolean;
+    children?: Snippet;
   }
 
-  let { hero, courses = [], labels, navigation, showActions = true }: Props = $props();
+  let { hero, courses = [], labels, navigation, showActions = true, compact = false, children }: Props = $props();
 
   const featured = $derived(courses[0]);
   const featuredTypeMeta = $derived(featured ? getCourseTypeLandingMeta(featured) : undefined);
@@ -38,7 +40,11 @@
 {@render navigation()}
 
 <EditableLandingSection sectionKey="hero">
-  <section class="ui:px-6 ui:md:px-8 ui:pt-16 ui:md:pt-20 ui:pb-12 ui:bg-[var(--landing-bg)]">
+  <section
+    class="ui:px-6 ui:md:px-8 {compact
+      ? 'ui:pt-8 ui:md:pt-10 ui:pb-6'
+      : 'ui:pt-16 ui:md:pt-20 ui:pb-12'} ui:bg-[var(--landing-bg)]"
+  >
     <div class="ui:max-w-[1240px] ui:mx-auto">
       <div
         class="ui:grid ui:grid-cols-1 ui:gap-12 ui:lg:gap-14 ui:items-start {featured
@@ -72,6 +78,9 @@
             {hero.subheading}
           </p>
 
+          {#if children}
+            <div class="ui:mt-6 {featured ? '' : 'ui:flex ui:justify-center'}">{@render children()}</div>
+          {/if}
           {#if showActions}
             <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-2.5 {featured ? '' : 'ui:justify-center'}">
               <Button
