@@ -57,8 +57,8 @@ Check your Docker Hub repository at:
 
 The workflow will automatically publish images when:
 
-1. **Push to `main`**: Publishes the **`edge`** tag only (does NOT move `latest`).
-2. **Push a version tag `vX.Y.Z`**: Publishes `X.Y.Z`, `X.Y`, `X`, and `latest`.
+1. **Push to `main`**: Publishes the **`latest`** tag (the freshest `main` build).
+2. **Push a version tag `vX.Y.Z`**: Publishes `X.Y.Z`, `X.Y`, `X` (immutable, pinned releases).
 3. **Manual trigger**: Use the Actions tab in GitHub.
 
 Every build is **boot smoke-tested** (started against ephemeral postgres + redis, healthcheck
@@ -107,7 +107,7 @@ docker pull classroomio/dashboard:latest
 
 For self-hosting with Docker Compose, see [SELF_HOST.md](SELF_HOST.md). The setup uses a single root `.env` file and `docker-compose.yaml`.
 
-## Versioning Strategy (stable-releases + edge)
+## Versioning Strategy (rolling `latest` + pinned releases)
 
 The published tags and what they mean:
 
@@ -115,17 +115,15 @@ The published tags and what they mean:
 |-----|--------------|---------|
 | `1.4.2` (exact) | a `v1.4.2` git tag | Immutable, smoke-tested release — **what production should pin** |
 | `1.4`, `1` | a `v1.4.2` git tag | Latest patch/minor of that line |
-| `latest` | a `v*` git tag only | The newest *released* version |
-| `edge` | every push to `main` | Bleeding edge; may be unstable |
+| `latest` | every push to `main` | The freshest `main` build (rolling; may include unreleased code) |
 
-The key rule: **`latest` is never moved by a routine merge to `main`** — only a deliberate release
-tag moves it. Self-hosters pin `CIO_VERSION` (see [SELF_HOST.md](SELF_HOST.md)) and upgrade on their
-own schedule.
+The key rule: **`latest` moves on every merge to `main`**, so it can change under you. Self-hosters
+pin `CIO_VERSION` (see [SELF_HOST.md](SELF_HOST.md)) and upgrade on their own schedule.
 
 ### Cutting a release
 
 Versioning is driven by git tags; the CI workflow does the rest (build multi-arch → smoke-test →
-push `X.Y.Z`/`X.Y`/`X`/`latest`).
+push `X.Y.Z`/`X.Y`/`X`). `latest` is published separately, on every merge to `main`.
 
 ```bash
 # Bump version + create the vX.Y.Z tag from the repo's changelog tooling
