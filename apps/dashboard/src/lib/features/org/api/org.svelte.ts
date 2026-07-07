@@ -331,7 +331,12 @@ class OrgApi extends BaseApiWithErrors {
     fields: TOrgUpdateForm,
     options: { onSuccess?: (data: TUpdateOrganization) => void } = {}
   ) {
-    const result = ZUpdateOrganization.safeParse(fields);
+    const { avatar, favicon, ...rest } = fields;
+    const validationPayload = {
+      ...rest,
+      ...(typeof favicon === 'string' || favicon === null ? { favicon } : {})
+    };
+    const result = ZUpdateOrganization.safeParse(validationPayload);
 
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'organization');
@@ -342,19 +347,19 @@ class OrgApi extends BaseApiWithErrors {
 
     // Handle avatar upload if provided
     let avatarUrl: string | undefined;
-    if (fields.avatar instanceof File) {
-      avatarUrl = await uploadImage(fields.avatar);
-    } else if (typeof fields.avatar === 'string') {
-      avatarUrl = fields.avatar;
+    if (avatar instanceof File) {
+      avatarUrl = await uploadImage(avatar);
+    } else if (typeof avatar === 'string') {
+      avatarUrl = avatar;
     }
 
-    let favicon: string | null | undefined;
-    if (fields.favicon instanceof File) {
-      favicon = await uploadImage(fields.favicon);
-    } else if (typeof fields.favicon === 'string') {
-      favicon = fields.favicon;
-    } else if (fields.favicon === null) {
-      favicon = null;
+    let resolvedFavicon: string | null | undefined;
+    if (favicon instanceof File) {
+      resolvedFavicon = await uploadImage(favicon);
+    } else if (typeof favicon === 'string') {
+      resolvedFavicon = favicon;
+    } else if (favicon === null) {
+      resolvedFavicon = null;
     }
 
     // Build update payload
@@ -366,8 +371,8 @@ class OrgApi extends BaseApiWithErrors {
       avatarUrl
     };
 
-    if (favicon !== undefined) {
-      updates.favicon = favicon;
+    if (resolvedFavicon !== undefined) {
+      updates.favicon = resolvedFavicon;
     }
 
     await this.execute<UpdateOrganizationRequest>({

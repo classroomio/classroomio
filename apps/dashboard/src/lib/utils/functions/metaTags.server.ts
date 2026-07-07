@@ -2,7 +2,7 @@ import type { MetaTagsProps } from 'svelte-meta-tags';
 import type { OrgSiteInfo } from '$features/app/layout-setup';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { env as publicEnv } from '$env/dynamic/public';
-import { env as privateEnv } from '$env/dynamic/private';
+import { buildOrgSiteTitle, extractOrgSiteMetaCopy } from '$lib/utils/functions/org-site-meta';
 
 const isSelfHosted = PUBLIC_IS_SELFHOSTED === 'true';
 
@@ -13,17 +13,32 @@ const CLOUD_OG_IMAGE = 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.jp
 const ORG_OG_WIDTH = 1200;
 const ORG_OG_HEIGHT = 630;
 
-function getApiServerUrl(): string {
-  return privateEnv.PRIVATE_SERVER_URL?.trim() || publicEnv.PUBLIC_SERVER_URL?.trim() || '';
+function isPublicHttpOrigin(value: string): boolean {
+  try {
+    const parsed = new URL(value);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+      return false;
+    }
+
+    const host = parsed.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') {
+      return true;
+    }
+
+    return host.includes('.');
+  } catch {
+    return false;
+  }
 }
 
-export function getOrgSiteOgImageUrl(siteName: string): string | null {
-  const apiBase = getApiServerUrl();
-  if (!apiBase || !siteName) {
+function getOrgSiteOgImageUrl(siteName: string, pageUrl: URL): string | null {
+  if (!siteName) {
     return null;
   }
 
-  return `${apiBase.replace(/\/$/, '')}/org-site/og/${encodeURIComponent(siteName)}.png`;
+  const ogPath = `/org-site/og/${encodeURIComponent(siteName)}.png`;
+
+  return `${pageUrl.origin}/proxy${ogPath}`;
 }
 
 function resolveOgImageUrl(url: URL, orgSiteInfo: OrgSiteInfo): string {
@@ -33,10 +48,15 @@ function resolveOgImageUrl(url: URL, orgSiteInfo: OrgSiteInfo): string {
   }
 
   if (orgSiteInfo.isOrgSite && orgSiteInfo.org?.siteName) {
-    const dynamicOgUrl = getOrgSiteOgImageUrl(orgSiteInfo.org.siteName);
+    const dynamicOgUrl = getOrgSiteOgImageUrl(orgSiteInfo.org.siteName, url);
     if (dynamicOgUrl) {
       return dynamicOgUrl;
     }
+  }
+
+  const publicServerUrl = publicEnv.PUBLIC_SERVER_URL?.trim();
+  if (publicServerUrl && isPublicHttpOrigin(publicServerUrl) && orgSiteInfo.org?.siteName) {
+    return `${publicServerUrl.replace(/\/$/, '')}/org-site/og/${encodeURIComponent(orgSiteInfo.org.siteName)}.png`;
   }
 
   if (isSelfHosted) {
@@ -61,27 +81,54 @@ function resolveOgImageUrl(url: URL, orgSiteInfo: OrgSiteInfo): string {
   return CLOUD_OG_IMAGE;
 }
 
-function buildOrgOpenGraphImages(ogImageUrl: string, siteName: string) {
+function buildOrgOpenGraphImages(ogImageUrl: string, orgName: string) {
   return [
     {
       url: ogImageUrl,
-      alt: `${siteName} learning platform`,
+      alt: `${orgName} learning platform`,
       width: ORG_OG_WIDTH,
       height: ORG_OG_HEIGHT,
-      secureUrl: ogImageUrl,
+      secureUrl: ogImageUrl.startsWith('https://') ? ogImageUrl : undefined,
       type: 'image/png'
     }
   ];
 }
 
+function resolveOrgSiteMeta(orgSiteInfo: OrgSiteInfo): {
+  title: string;
+  description: string;
+  siteName: string;
+} | null {
+  const org = orgSiteInfo.org;
+  if (!orgSiteInfo.isOrgSite || !org?.name?.trim()) {
+    return null;
+  }
+
+  const orgName = org.name.trim();
+  const metaCopy = extractOrgSiteMetaCopy(org.landingpage);
+
+  return {
+    title: publicEnv.PUBLIC_APP_TITLE?.trim() || buildOrgSiteTitle(orgName, metaCopy.heading),
+    description:
+      publicEnv.PUBLIC_APP_DESCRIPTION?.trim() ||
+      metaCopy.description ||
+      `Explore courses and training programs from ${orgName}.`,
+    siteName: orgName
+  };
+}
+
 export function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): MetaTagsProps {
+  const orgMeta = resolveOrgSiteMeta(orgSiteInfo);
+
   const title =
+    orgMeta?.title ||
     publicEnv.PUBLIC_APP_TITLE?.trim() ||
     (isSelfHosted && orgSiteInfo.org?.name ? `${orgSiteInfo.org.name} | Learning Platform` : DEFAULT_TITLE);
 
-  const description = publicEnv.PUBLIC_APP_DESCRIPTION?.trim() || DEFAULT_DESCRIPTION;
+  const description = orgMeta?.description || publicEnv.PUBLIC_APP_DESCRIPTION?.trim() || DEFAULT_DESCRIPTION;
 
   const siteName =
+    orgMeta?.siteName ||
     publicEnv.PUBLIC_APP_TITLE?.trim() ||
     (isSelfHosted && orgSiteInfo.org?.name ? orgSiteInfo.org.name : null) ||
     'ClassroomIO';
@@ -98,7 +145,7 @@ export function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): MetaTagsPro
           alt: `${siteName} platform for customer, partner, and employee education`,
           width: 1920,
           height: 1080,
-          secureUrl: ogImageUrl,
+          secureUrl: ogImageUrl.startsWith('https://') ? ogImageUrl : undefined,
           type: 'image/jpeg'
         },
         {
@@ -110,6 +157,10 @@ export function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): MetaTagsPro
           type: 'image/webp'
         }
       ];
+
+  const imageAlt = usesDynamicOrgOg
+    ? `${siteName} learning platform`
+    : `${siteName} platform for customer, partner, and employee education`;
 
   return Object.freeze({
     title,
@@ -131,7 +182,7 @@ export function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): MetaTagsPro
       title,
       description,
       image: ogImageUrl,
-      imageAlt: `${siteName} platform for customer, partner, and employee education`
+      imageAlt
     }
   });
 }
