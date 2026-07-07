@@ -12,12 +12,9 @@ VERSION="${VERSION:-latest}"  # Can be overridden with VERSION env var
 PUBLIC_IS_SELFHOSTED="${PUBLIC_IS_SELFHOSTED:-true}"
 PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
 
-# CI publishes `latest` from `main`. This manual/local helper only moves `latest` for a real
-# semver release, so an ad-hoc local build can't clobber the shared CI-managed `latest` pointer.
-# Use `if` (not `&&`) so the function always returns 0 even when it emits no tag — a helper
-# returning non-zero inside a $(...) argument is fragile under `set -e` / inherit_errexit.
-is_release_version() { [[ "${VERSION}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; }
-latest_arg() { if is_release_version; then printf -- '-t %s:latest' "$1"; fi; }
+# This manual/local helper pushes ONLY the explicit ${VERSION} tag. `latest` is published
+# exclusively by CI from `main` (see .github/workflows/docker-publish.yml) — to move `latest`,
+# merge to main or re-run that workflow, never this script.
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -46,7 +43,6 @@ docker buildx build \
     --platform "${PLATFORMS}" \
     -f docker/Dockerfile.api \
     -t ${DOCKERHUB_USERNAME}/api:${VERSION} \
-    $(latest_arg ${DOCKERHUB_USERNAME}/api) \
     --push \
     .
 echo -e "${GREEN}✓ API image published successfully!${NC}"
@@ -60,7 +56,6 @@ docker buildx build \
     -f docker/Dockerfile.dashboard \
     --build-arg PUBLIC_IS_SELFHOSTED=${PUBLIC_IS_SELFHOSTED} \
     -t ${DOCKERHUB_USERNAME}/dashboard:${VERSION} \
-    $(latest_arg ${DOCKERHUB_USERNAME}/dashboard) \
     --push \
     .
 echo -e "${GREEN}✓ Dashboard image published successfully!${NC}"
@@ -72,7 +67,6 @@ docker buildx build \
     --platform "${PLATFORMS}" \
     -f docker/Dockerfile.jobs \
     -t ${DOCKERHUB_USERNAME}/jobs:${VERSION} \
-    $(latest_arg ${DOCKERHUB_USERNAME}/jobs) \
     --push \
     .
 echo -e "${GREEN}✓ Jobs image published successfully!${NC}"
