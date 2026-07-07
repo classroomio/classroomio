@@ -79,19 +79,7 @@ export const load = async ({ parent, url }) => {
       type: 'website',
       url: canonicalUrl,
       title: orgTitle,
-      description: orgDescription,
-      ...(org.avatarUrl
-        ? {
-            images: [
-              {
-                url: org.avatarUrl,
-                alt: `${org.name} logo`,
-                secureUrl: org.avatarUrl,
-                type: 'image/jpeg'
-              }
-            ]
-          }
-        : {})
+      description: orgDescription
     }
   } satisfies MetaTagsProps);
 

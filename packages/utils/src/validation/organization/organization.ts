@@ -96,6 +96,7 @@ export const ZUpdateOrganization = z.object({
     })
     .optional(),
   avatarUrl: z.url().optional(),
+  favicon: z.union([z.url(), z.null()]).optional(),
   theme: z.string().optional(),
   landingpage: z.record(z.string(), z.unknown()).optional(),
   siteName: z.string().min(1).optional(),

@@ -30,11 +30,14 @@
   import { DomainInput } from '@cio/ui/custom/domain-input';
   import { ComingSoon, UpgradeBanner, UploadImage, VisitOrgSiteButton } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
+  import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
 
   let siteName = $derived($currentOrg.siteName);
   let customDomain = $state('');
   let customCode = $state('');
-  let favicon = $state('');
+  let favicon = $state<string | File | undefined>();
+  let hasFaviconChanges = $state(false);
+  let isFaviconLoading = $state(false);
   let isLoading = $state(false);
   let isCustomDomainLoading = $state(false);
   let isRefreshing = $state(false);
@@ -75,6 +78,46 @@
     siteName: '',
     customDomain: ''
   });
+
+  const uploadLimits = getResolvedUploadLimits();
+  const faviconMaxFileSizeMb = uploadLimits.landingImageMb;
+
+  async function handleSaveFavicon() {
+    if (!hasFaviconChanges) {
+      return;
+    }
+
+    isFaviconLoading = true;
+
+    await orgApi.update($currentOrg.id, {
+      favicon: favicon ?? null
+    });
+
+    if (orgApi.success) {
+      favicon = undefined;
+      hasFaviconChanges = false;
+      snackbar.success('components.settings.domains.custom_favicon_saved');
+    }
+
+    isFaviconLoading = false;
+  }
+
+  async function handleRemoveFavicon() {
+    isFaviconLoading = true;
+
+    await orgApi.update($currentOrg.id, {
+      favicon: null
+    });
+
+    if (orgApi.success) {
+      $currentOrg.favicon = '';
+      favicon = undefined;
+      hasFaviconChanges = false;
+      snackbar.success('components.settings.domains.custom_favicon_saved');
+    }
+
+    isFaviconLoading = false;
+  }
 
   async function handleSaveSiteName() {
     errors = updateOrgSiteNameValidation(siteName) as Error;
@@ -565,16 +608,29 @@
 
   <Field.Set>
     <Field.Legend>{$t('components.settings.domains.custom_favicon')}</Field.Legend>
-    <ComingSoon />
+    <Field.Description>{$t('components.settings.domains.custom_favicon_description')}</Field.Description>
     <Field.Field>
       <UploadImage
         shape="rounded-md"
         bind:avatar={favicon}
-        src={$currentOrg.favicon ?? '/logo-512.png'}
+        src={$currentOrg.favicon || $currentOrg.avatarUrl || '/logo-512.png'}
         widthHeight="w-16 h-16 lg:w-24 lg:h-24"
         flexDirection="flex-row"
-        isDisabled={true}
+        maxFileSizeInMb={faviconMaxFileSizeMb}
+        change={() => {
+          hasFaviconChanges = true;
+        }}
       />
+    </Field.Field>
+    <Field.Field orientation="horizontal">
+      <Button onclick={handleSaveFavicon} loading={isFaviconLoading} disabled={!hasFaviconChanges}>
+        {$t('components.settings.domains.custom_favicon_save')}
+      </Button>
+      {#if $currentOrg.favicon}
+        <Button variant="secondary" onclick={handleRemoveFavicon} loading={isFaviconLoading}>
+          {$t('components.settings.domains.custom_favicon_remove')}
+        </Button>
+      {/if}
     </Field.Field>
   </Field.Set>
 

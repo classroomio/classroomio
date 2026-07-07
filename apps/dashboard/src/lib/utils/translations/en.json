@@ -1635,6 +1635,10 @@
         "reconnect_description": "This domain needs to be connected again to generate new setup records.",
         "error_description": "This custom domain exists, but verification is not complete yet.",
         "custom_favicon": "Custom favicon",
+        "custom_favicon_description": "Shown in browser tabs when visitors open your public school site. Falls back to your organization logo when unset.",
+        "custom_favicon_save": "Save favicon",
+        "custom_favicon_remove": "Remove favicon",
+        "custom_favicon_saved": "Favicon updated",
         "custom_code": "Custom code"
       },
       "customize_lms": {

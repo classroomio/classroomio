@@ -9,6 +9,7 @@
   import { Empty } from '@cio/ui/custom/empty';
   import { SimpleLogoNav } from '@cio/ui/custom/simple-logo-nav';
   import { buildOrgLandingPageProps, normalizeLandingPageSettings } from '$features/org/utils/landing-page';
+  import OrgSiteFavicon from '$features/app/org-site-favicon.svelte';
   import { basePath } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { user } from '$lib/utils/store/user';
@@ -64,6 +65,7 @@
 </svelte:head>
 
 {#if data.isOrgSite && data.org}
+  <OrgSiteFavicon org={data.org} />
   {#if data.ThemeComponent && landingPageProps}
     <svelte:component this={data.ThemeComponent} {...landingPageProps} />
   {/if}

@@ -48,6 +48,7 @@ import { DEFAULT_ORG_AUDIENCE_QUERY, toAudienceRequestQuery } from '../utils/aud
 export interface TOrgUpdateForm {
   name?: string;
   avatar?: string | File | undefined;
+  favicon?: string | File | null | undefined;
   theme?: string;
   landingpage?: AccountOrg['landingpage'];
   siteName?: string;
@@ -347,13 +348,27 @@ class OrgApi extends BaseApiWithErrors {
       avatarUrl = fields.avatar;
     }
 
+    let favicon: string | null | undefined;
+    if (fields.favicon instanceof File) {
+      favicon = await uploadImage(fields.favicon);
+    } else if (typeof fields.favicon === 'string') {
+      favicon = fields.favicon;
+    } else if (fields.favicon === null) {
+      favicon = null;
+    }
+
     // Build update payload
     fields.avatar = undefined;
+    fields.favicon = undefined;
     const updates: TUpdateOrganization = {
       ...fields,
       landingpage: fields.landingpage ?? undefined,
       avatarUrl
     };
+
+    if (favicon !== undefined) {
+      updates.favicon = favicon;
+    }
 
     await this.execute<UpdateOrganizationRequest>({
       requestFn: () =>
@@ -370,6 +385,7 @@ class OrgApi extends BaseApiWithErrors {
           return options.onSuccess({
             name: response.data.name,
             avatarUrl: response.data.avatarUrl ?? undefined,
+            favicon: response.data.favicon ?? undefined,
             theme: response.data.theme ?? undefined,
             landingpage: response.data.landingpage ?? undefined,
             siteName: response.data.siteName ?? undefined,
