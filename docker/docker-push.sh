@@ -8,7 +8,7 @@ set -e  # Exit on error
 
 # Configuration
 DOCKERHUB_USERNAME="${DOCKERHUB_USERNAME:-classroomio}"  # Change this to your Docker Hub username
-VERSION="${VERSION:-latest}"  # Can be overridden with VERSION env var
+VERSION="${VERSION:?set VERSION to the tag to publish, e.g. VERSION=1.4.2 — this script never pushes :latest (CI owns latest from main)}"
 PUBLIC_IS_SELFHOSTED="${PUBLIC_IS_SELFHOSTED:-true}"
 PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
 
