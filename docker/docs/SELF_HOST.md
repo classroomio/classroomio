@@ -44,18 +44,16 @@ From a full clone you can also use the helper: `./run-docker-full-stack.sh --ima
 
 ## Versioning & Upgrades
 
-Published images use a **stable-releases + edge** tag policy:
+Published images use a **rolling `latest` + pinned releases** tag policy:
 
 | Tag | Meaning | Use it for |
 |-----|---------|-----------|
 | `1.4.2` (exact) | An immutable, smoke-tested release | **Production — always pin this** |
 | `1.4`, `1` | Latest patch/minor of that line | Tracking a line |
-| `latest` | The newest *released* version | Trying it out |
-| `edge` | The last `main` build (may be unstable) | Testing upcoming changes |
+| `latest` | The freshest `main` build (rolling; may include unreleased code) | Trying the newest code |
 
-`latest` only moves when a real release is tagged — a routine merge to `main` publishes `edge`, never
-`latest`. **Pin `CIO_VERSION` to an exact version in production** so a new release can't break you
-unattended.
+`latest` moves on **every merge to `main`**, so it can change under you. **Pin `CIO_VERSION` to an
+exact version in production** so a merge can't break you unattended.
 
 ```bash
 # Upgrade: bump the version, pull, recreate

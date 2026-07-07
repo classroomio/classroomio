@@ -12,8 +12,8 @@ VERSION="${VERSION:-latest}"  # Can be overridden with VERSION env var
 PUBLIC_IS_SELFHOSTED="${PUBLIC_IS_SELFHOSTED:-true}"
 PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
 
-# Only a real semver release should also move the `latest` tag — building edge/main/dev
-# must NOT clobber the stable `latest` pointer (mirrors docker-publish.yml's tag policy).
+# CI publishes `latest` from `main`. This manual/local helper only moves `latest` for a real
+# semver release, so an ad-hoc local build can't clobber the shared CI-managed `latest` pointer.
 # Use `if` (not `&&`) so the function always returns 0 even when it emits no tag — a helper
 # returning non-zero inside a $(...) argument is fragile under `set -e` / inherit_errexit.
 is_release_version() { [[ "${VERSION}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; }

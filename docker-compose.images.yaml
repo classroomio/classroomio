@@ -8,7 +8,7 @@
 #   CIO_VERSION=1.4.2 docker compose -f docker-compose.images.yaml --env-file .env up -d
 #
 # CIO_VERSION pins the release. Use a specific version (e.g. 1.4.2) in production;
-# "latest" = newest stable release, "edge" = bleeding edge (last main build).
+# "latest" = freshest main build (moves on every merge — rolling, may include unreleased code).
 #
 # KEEP IN SYNC with docker-compose.yaml: the api/dashboard/jobs `environment`,
 # healthchecks, depends_on, and volumes must match the build-based file. The only
