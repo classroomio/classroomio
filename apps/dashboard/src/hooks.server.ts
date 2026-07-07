@@ -62,6 +62,13 @@ export const handle: Handle = async (args) => {
     response = await handlePagesRoutes(args);
   }
 
+  // Prevent Cloudflare/CDN from caching HTML pages — stale HTML references old
+  // hashed JS/CSS bundles after a deploy, causing the app to hang on deep links.
+  const contentType = response.headers.get('content-type') ?? '';
+  if (contentType.includes('text/html')) {
+    response.headers.set('Cache-Control', 'private, no-cache, must-revalidate');
+  }
+
   return applyCspExtensions(response);
 };
 

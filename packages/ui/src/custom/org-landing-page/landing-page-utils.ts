@@ -84,3 +84,42 @@ export function defaultExercisesLabel(count: number): string {
 export function defaultEnrolledLabel(count: number): string {
   return `${count.toLocaleString()} enrolled`;
 }
+
+export type EmbedIframeDimensions = {
+  width?: string;
+  height?: string;
+};
+
+function toCssSize(value: string | undefined): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+
+  if (/^\d+(\.\d+)?$/.test(trimmed)) {
+    return `${trimmed}px`;
+  }
+
+  return trimmed;
+}
+
+/** Reads width/height from the first iframe in a pasted embed snippet. */
+export function parseEmbedIframeDimensions(html: string): EmbedIframeDimensions {
+  const iframeMatch = html.match(/<iframe\b[^>]*>/i);
+  if (!iframeMatch) {
+    return {};
+  }
+
+  const tag = iframeMatch[0];
+  const widthRaw = tag.match(/\bwidth\s*=\s*["']?([^"'\s>]+)["']?/i)?.[1];
+  const heightRaw = tag.match(/\bheight\s*=\s*["']?([^"'\s>]+)["']?/i)?.[1];
+
+  return {
+    width: toCssSize(widthRaw),
+    height: toCssSize(heightRaw)
+  };
+}

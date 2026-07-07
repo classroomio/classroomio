@@ -2,7 +2,7 @@
   import type { OrgLandingPageLabels, OrgLandingPageTheme, LandingPageEmbed } from './types';
   import SecondaryActionButton from './secondary-action-button.svelte';
   import EditableLandingSection from './editable-section.svelte';
-  import { sanitizeEmbedHtml } from '../../tools/sanitize';
+  import EmbedFrame from './embed-frame.svelte';
 
   let {
     embed,
@@ -52,7 +52,7 @@
               style="border: 1px solid #262a35; background: #0f1218; box-shadow: 0 30px 90px -30px rgba(0,0,0,0.7);"
             >
               <div class="ui:p-5 ui:overflow-x-auto" style="color: #e9eaed;">
-                {@html sanitizeEmbedHtml(embed.code)}
+                <EmbedFrame code={embed.code} />
               </div>
             </div>
           {/if}
@@ -76,9 +76,7 @@
             <SecondaryActionButton href={embed.secondaryAction.href} label={embed.secondaryAction.label} {variant} />
           {/if}
           {#if embed.code}
-            <div class="ui:flex ui:w-full ui:justify-center">
-              {@html sanitizeEmbedHtml(embed.code)}
-            </div>
+            <EmbedFrame code={embed.code} />
           {/if}
         </div>
       </section>
@@ -95,9 +93,7 @@
             <SecondaryActionButton href={embed.secondaryAction.href} label={embed.secondaryAction.label} {variant} />
           {/if}
           {#if embed.code}
-            <div class="ui:flex ui:w-full ui:justify-center">
-              {@html sanitizeEmbedHtml(embed.code)}
-            </div>
+            <EmbedFrame code={embed.code} />
           {/if}
         </div>
       </section>

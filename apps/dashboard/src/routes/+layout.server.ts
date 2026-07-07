@@ -2,7 +2,7 @@ import type { AccountOrg } from '$features/app/types';
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import type { UploadLimits } from '$lib/utils/config/upload-limits';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-import { getBaseMetaTags } from '$lib/utils/functions/metaTags';
+import { getBaseMetaTags } from '$lib/utils/functions/metaTags.server';
 import { getOrgSiteInfo } from '$features/app/layout-setup';
 import { getUploadLimits } from '$lib/utils/config/upload-limits';
 

@@ -12,21 +12,21 @@
 
 <img alt="ClassroomIO Courses page" src="https://assets.cdn.clsrio.com/www/home/ai-course-builder.jpeg" />
 
-ClassroomIO is an open source LMS for companies. Run compliance/employee training, customer education, and partner certification programs — all from one platform. Self-host it on your own infrastructure or use the cloud version.
+ClassroomIO is an open source LMS for companies. Run compliance/employee training, customer education, and partner certification cohorts — all from one platform. Self-host it on your own infrastructure or use the cloud version.
 
 ### Who It's For
 
 | Use Case | What You Get |
 |---|---|
 | **Compliance Training** | Deadline tracking, renewals & retake intervals, grace periods, waivers, certificates with custom IDs |
-| **Customer Education** | Branded academy portal, programs (cohorts with goals), AI lesson tutor, multilingual content |
+| **Customer Education** | Branded academy portal, cohorts (cohorts with goals), AI lesson tutor, multilingual content |
 | **Partner Training** | Partner workspaces, branded certificates, custom domains, embeddable widgets, multilingual support |
 
 ### Key Features
 
 **Course & Content**
 - **Course management** — unlimited courses, lessons, exercises, grading, and certificates
-- **Programs** — group courses into cohorts with goals, team management, and progress tracking
+- **Cohorts** — group courses into cohorts with goals, team management, and progress tracking
 - **AI Course Builder** — generate outlines, lesson content, and assignments (Gemini, GPT-4o, Claude)
 - **AI Lesson Tutor** — in-lesson AI assistant that helps learners as they study
 

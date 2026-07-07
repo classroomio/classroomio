@@ -19,7 +19,7 @@ import {
 import { Hono } from '@api/utils/hono';
 import { automationKeyMiddleware } from '@api/middlewares/automation-key';
 import { automationKeyScopesMiddleware } from '@api/middlewares/automation-key-scopes';
-import { handleError } from '@api/utils/errors';
+import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 
 const CoursesListResponse = {
@@ -76,7 +76,7 @@ export const v1CoursesRouter = new Hono()
           200
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to list courses');
+        return handlePublicApiError(c, error, 'Failed to list courses');
       }
     }
   )
@@ -117,7 +117,7 @@ export const v1CoursesRouter = new Hono()
           201
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to create course');
+        return handlePublicApiError(c, error, 'Failed to create course');
       }
     }
   )
@@ -157,7 +157,7 @@ export const v1CoursesRouter = new Hono()
           200
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to list course students');
+        return handlePublicApiError(c, error, 'Failed to list course students');
       }
     }
   )
@@ -197,7 +197,7 @@ export const v1CoursesRouter = new Hono()
           200
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to export course');
+        return handlePublicApiError(c, error, 'Failed to export course');
       }
     }
   )
@@ -237,7 +237,7 @@ export const v1CoursesRouter = new Hono()
           200
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to fetch course structure');
+        return handlePublicApiError(c, error, 'Failed to fetch course structure');
       }
     }
   )
@@ -281,7 +281,7 @@ export const v1CoursesRouter = new Hono()
           200
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to update course structure');
+        return handlePublicApiError(c, error, 'Failed to update course structure');
       }
     }
   )
@@ -321,7 +321,7 @@ export const v1CoursesRouter = new Hono()
           200
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to fetch course');
+        return handlePublicApiError(c, error, 'Failed to fetch course');
       }
     }
   )
@@ -364,7 +364,7 @@ export const v1CoursesRouter = new Hono()
           200
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to update course');
+        return handlePublicApiError(c, error, 'Failed to update course');
       }
     }
   )
@@ -404,7 +404,7 @@ export const v1CoursesRouter = new Hono()
           200
         );
       } catch (error) {
-        return handleError(c, error, 'Failed to delete course');
+        return handlePublicApiError(c, error, 'Failed to delete course');
       }
     }
   );

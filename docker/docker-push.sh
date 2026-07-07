@@ -8,16 +8,13 @@ set -e  # Exit on error
 
 # Configuration
 DOCKERHUB_USERNAME="${DOCKERHUB_USERNAME:-classroomio}"  # Change this to your Docker Hub username
-VERSION="${VERSION:-latest}"  # Can be overridden with VERSION env var
+VERSION="${VERSION:?set VERSION to the tag to publish, e.g. VERSION=1.4.2 — this script never pushes :latest (CI owns latest from main)}"
 PUBLIC_IS_SELFHOSTED="${PUBLIC_IS_SELFHOSTED:-true}"
 PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
 
-# Only a real semver release should also move the `latest` tag — building edge/main/dev
-# must NOT clobber the stable `latest` pointer (mirrors docker-publish.yml's tag policy).
-# Use `if` (not `&&`) so the function always returns 0 even when it emits no tag — a helper
-# returning non-zero inside a $(...) argument is fragile under `set -e` / inherit_errexit.
-is_release_version() { [[ "${VERSION}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; }
-latest_arg() { if is_release_version; then printf -- '-t %s:latest' "$1"; fi; }
+# This manual/local helper pushes ONLY the explicit ${VERSION} tag. `latest` is published
+# exclusively by CI from `main` (see .github/workflows/docker-publish.yml) — to move `latest`,
+# merge to main or re-run that workflow, never this script.
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -46,7 +43,6 @@ docker buildx build \
     --platform "${PLATFORMS}" \
     -f docker/Dockerfile.api \
     -t ${DOCKERHUB_USERNAME}/api:${VERSION} \
-    $(latest_arg ${DOCKERHUB_USERNAME}/api) \
     --push \
     .
 echo -e "${GREEN}✓ API image published successfully!${NC}"
@@ -60,7 +56,6 @@ docker buildx build \
     -f docker/Dockerfile.dashboard \
     --build-arg PUBLIC_IS_SELFHOSTED=${PUBLIC_IS_SELFHOSTED} \
     -t ${DOCKERHUB_USERNAME}/dashboard:${VERSION} \
-    $(latest_arg ${DOCKERHUB_USERNAME}/dashboard) \
     --push \
     .
 echo -e "${GREEN}✓ Dashboard image published successfully!${NC}"
@@ -72,7 +67,6 @@ docker buildx build \
     --platform "${PLATFORMS}" \
     -f docker/Dockerfile.jobs \
     -t ${DOCKERHUB_USERNAME}/jobs:${VERSION} \
-    $(latest_arg ${DOCKERHUB_USERNAME}/jobs) \
     --push \
     .
 echo -e "${GREEN}✓ Jobs image published successfully!${NC}"

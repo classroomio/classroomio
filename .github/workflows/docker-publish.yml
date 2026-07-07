@@ -124,15 +124,14 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.DOCKERHUB_USERNAME }}/${{ matrix.image }}
-          # Tag policy (stable-releases + edge):
-          #   git tag v1.4.2  -> 1.4.2, 1.4, 1, latest   (a real, stable release)
-          #   push to main     -> edge only               (latest is NEVER moved by a merge)
+          # Tag policy:
+          #   push to main    -> latest              (freshest main build; moves on every merge)
+          #   git tag v1.4.2  -> 1.4.2, 1.4, 1       (immutable, pinned release)
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/') }}
-            type=raw,value=edge,enable={{is_default_branch}}
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push ${{ matrix.name }}
         uses: docker/build-push-action@v5

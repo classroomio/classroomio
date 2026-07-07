@@ -112,8 +112,8 @@ The script builds and starts Postgres, Redis, MinIO (object storage), the API, t
 
 ClassroomIO publishes versioned images. `CIO_VERSION` controls which tag you run:
 
-- Pin an exact release (e.g. `1.4.2`) in production so a new release never restarts you onto changed images unattended.
-- `latest` = newest stable release. `edge` = bleeding edge (last `main` build).
+- Pin an exact release (e.g. `1.4.2`) in production so a merge to `main` never restarts you onto changed images unattended.
+- `latest` = the freshest `main` build — it moves on every merge (rolling; may include unreleased code). Version tags (`1.4.2`, `1.4`, `1`) are the immutable, pinned releases.
 
 **Pre-built images path** — bump `CIO_VERSION` in `.env`, then re-pull and recreate:
 

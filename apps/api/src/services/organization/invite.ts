@@ -22,14 +22,14 @@ import {
 } from '@cio/db/queries/organization';
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
-import { addProgramMember, getExistingProgramMembers } from '@cio/db/queries/program';
+import { addCohortMember, getExistingCohortMembers } from '@cio/db/queries/cohort';
 
 import { ROLE } from '@cio/utils/constants';
 import type { TNewOrganizationInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
-import { parseCourseIdsFromInviteMetadata, parseProgramIdsFromInviteMetadata } from '@api/utils/org';
+import { parseCourseIdsFromInviteMetadata, parseCohortIdsFromInviteMetadata } from '@api/utils/org';
 import { markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { buildEmailBranding } from '@cio/email';
@@ -404,7 +404,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
   if (invite) {
     const metadata = invite.invite.metadata;
     const courseIds = parseCourseIdsFromInviteMetadata(metadata);
-    const programIds = parseProgramIdsFromInviteMetadata(metadata);
+    const cohortIds = parseCohortIdsFromInviteMetadata(metadata);
 
     if (courseIds.length > 0) {
       try {
@@ -422,19 +422,19 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
       }
     }
 
-    if (programIds.length > 0) {
+    if (cohortIds.length > 0) {
       try {
-        const existingProgramMemberships = await getExistingProgramMembers(
-          programIds.map((programId) => ({ programId, profileId: user.id }))
+        const existingCohortMemberships = await getExistingCohortMembers(
+          cohortIds.map((cohortId) => ({ cohortId, profileId: user.id }))
         );
-        const programIdsToInsert = programIds.filter(
-          (programId) => !existingProgramMemberships.has(`${programId}:${user.id}`)
+        const cohortIdsToInsert = cohortIds.filter(
+          (cohortId) => !existingCohortMemberships.has(`${cohortId}:${user.id}`)
         );
 
         await Promise.all(
-          programIdsToInsert.map((programId) =>
-            addProgramMember({
-              programId,
+          cohortIdsToInsert.map((cohortId) =>
+            addCohortMember({
+              cohortId,
               roleId: invite.invite.roleId,
               profileId: user.id,
               email: normalizedEmail
@@ -442,7 +442,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
           )
         );
       } catch (error) {
-        console.error('acceptOrganizationInvite program enrollment error:', error);
+        console.error('acceptOrganizationInvite cohort enrollment error:', error);
       }
     }
   }
@@ -697,7 +697,7 @@ export async function acceptOrganizationInviteById(
 
   const metadata = result.invite.metadata;
   const courseIds = parseCourseIdsFromInviteMetadata(metadata);
-  const programIds = parseProgramIdsFromInviteMetadata(metadata);
+  const cohortIds = parseCohortIdsFromInviteMetadata(metadata);
 
   if (courseIds.length > 0) {
     try {
@@ -714,22 +714,22 @@ export async function acceptOrganizationInviteById(
     }
   }
 
-  if (programIds.length > 0) {
+  if (cohortIds.length > 0) {
     try {
-      const existingProgramMemberships = await getExistingProgramMembers(
-        programIds.map((programId) => ({ programId, profileId: user.id }))
+      const existingCohortMemberships = await getExistingCohortMembers(
+        cohortIds.map((cohortId) => ({ cohortId, profileId: user.id }))
       );
-      const programIdsToInsert = programIds.filter(
-        (programId) => !existingProgramMemberships.has(`${programId}:${user.id}`)
+      const cohortIdsToInsert = cohortIds.filter(
+        (cohortId) => !existingCohortMemberships.has(`${cohortId}:${user.id}`)
       );
 
       await Promise.all(
-        programIdsToInsert.map((programId) =>
-          addProgramMember({ programId, roleId: result.invite.roleId, profileId: user.id, email: normalizedEmail })
+        cohortIdsToInsert.map((cohortId) =>
+          addCohortMember({ cohortId, roleId: result.invite.roleId, profileId: user.id, email: normalizedEmail })
         )
       );
     } catch (error) {
-      console.error('acceptOrganizationInviteById program enrollment error:', error);
+      console.error('acceptOrganizationInviteById cohort enrollment error:', error);
     }
   }
 

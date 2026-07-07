@@ -69,6 +69,7 @@ export {
   courseCard as VibrantLandingCourseCard
 } from './vibrant';
 
+export { default as OrgLandingPageCoursesEmpty } from './courses-empty.svelte';
 export { default as LandingButton } from './landing-button.svelte';
 export { default as OrgLandingPageEmbed } from './embed.svelte';
 export { default as OrgLandingPageCallout } from './callout.svelte';
