@@ -197,11 +197,11 @@ SMTP_SENDER=ClassroomIO <you@yourdomain.com>
 
 `CIO_VERSION` chooses the tag pulled for `classroomio/{api,dashboard,jobs}`. **Confirm the tag you use actually exists** at [hub.docker.com/r/classroomio](https://hub.docker.com/r/classroomio/) before deploying.
 
-<Callout title="Use edge for now">
-  At the time of writing, Docker Hub does **not** publish a `latest` tag for every image, so
-  `CIO_VERSION=edge` is the recommended, known-good tag. Once a specific release is published for
-  all three images, pin `CIO_VERSION` to that version instead — pinning makes upgrades deliberate
-  and deploys reproducible.
+<Callout title="Pin a released version">
+  Set `CIO_VERSION=1.0.0` to pin an exact release. `latest` is the freshest `main` build — it moves
+  on every merge (rolling; may include unreleased code), while the version tags (`1.0.0`, `1.0`, `1`)
+  are immutable, pinned releases. Pinning an exact release makes upgrades deliberate and deploys
+  reproducible.
 </Callout>
 
 ![Confirming the classroomio image tags on Docker Hub](/coolify-04-image-tag.png)
@@ -289,7 +289,7 @@ SMTP_PASSWORD=<smtp password>
 SMTP_SENDER=ClassroomIO <you@yourdomain.com>
 
 # ── Optional — leave blank unless you need them ──
-CIO_VERSION=                # blank = latest; set to a pinned release or "edge" (see next step)
+CIO_VERSION=1.0.0           # pinned release; blank = latest (rolling main build)
 GOOGLE_CLIENT_ID=           # Google OAuth sign-in
 GOOGLE_CLIENT_SECRET=
 OPENAI_API_KEY=             # transcription + AI course generation
@@ -341,7 +341,7 @@ SKIP_DB_SETUP=              # blank = run DB setup on first boot (leave blank)
 
 | Variable | Enables |
 |----------|---------|
-| `CIO_VERSION` | Image tag to pull. Blank = `latest`; pin a release or use `edge` (see the next step). |
+| `CIO_VERSION` | Image tag to pull. Blank = `latest` (rolling main); pin an exact release such as `1.0.0` (see the tag step). |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth sign-in. |
 | `OPENAI_API_KEY` | Transcription + AI course generation (jobs worker). |
 | `UNSPLASH_API_KEY` | Unsplash image search. |
