@@ -7,6 +7,7 @@
   import CorporateNav from './nav.svelte';
   import CorporateHero from './hero.svelte';
   import CorporateCourseCard from './course-card.svelte';
+  import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
   import { Button } from '../../../base/button';
   import { themeStyle } from '../theme-style';
 
@@ -18,6 +19,7 @@
     hero,
     courses,
     hasMoreCourses = false,
+    coursesLoaded = true,
     disableCourseLinks = false,
     embed,
     callout,
@@ -38,32 +40,32 @@
       {/snippet}
     </CorporateHero>
 
-    {#if courses.length > 0}
-      <section class="ui:py-24 ui:px-6 ui:border-t ui:border-[var(--landing-border)]">
-        <div class="ui:max-w-[1120px] ui:mx-auto">
-          <div class="ui:flex ui:items-end ui:justify-between ui:flex-wrap ui:gap-4 ui:mb-10">
-            <div>
-              <p
-                class="ui:text-xs ui:font-semibold ui:tracking-widest ui:uppercase ui:text-[var(--landing-fg)] ui:mb-3"
-              >
-                {labels?.catalogEyebrow ?? 'Catalog'}
-              </p>
-              <h2 class="ui:text-3xl ui:lg:text-4xl ui:font-semibold ui:tracking-tight ui:m-0 ui:max-w-xl">
-                {labels?.catalogHeading ?? 'Courses your teams are taking'}
-              </h2>
-            </div>
-            {#if hasMoreCourses}
-              <Button
-                href={disableCourseLinks ? undefined : '/courses'}
-                variant="outline"
-                class="ui:rounded-none ui:font-medium"
-                disabled={disableCourseLinks}
-              >
-                {labels?.browseCoursesLabel ?? 'Browse catalog →'}
-              </Button>
-            {/if}
+    <section class="ui:py-24 ui:px-6 ui:border-t ui:border-[var(--landing-border)]">
+      <div class="ui:max-w-[1120px] ui:mx-auto">
+        <div class="ui:flex ui:items-end ui:justify-between ui:flex-wrap ui:gap-4 ui:mb-10">
+          <div>
+            <p class="ui:text-xs ui:font-semibold ui:tracking-widest ui:uppercase ui:text-[var(--landing-fg)] ui:mb-3">
+              {labels?.catalogEyebrow ?? 'Catalog'}
+            </p>
+            <h2 class="ui:text-3xl ui:lg:text-4xl ui:font-semibold ui:tracking-tight ui:m-0 ui:max-w-xl">
+              {labels?.catalogHeading ?? 'Courses your teams are taking'}
+            </h2>
           </div>
+          {#if hasMoreCourses && courses.length > 0}
+            <Button
+              href={disableCourseLinks ? undefined : '/courses'}
+              variant="outline"
+              class="ui:rounded-none ui:font-medium"
+              disabled={disableCourseLinks}
+            >
+              {labels?.browseCoursesLabel ?? 'Browse catalog →'}
+            </Button>
+          {/if}
+        </div>
 
+        {#if coursesLoaded && courses.length === 0}
+          <OrgLandingPageCoursesEmpty {labels} />
+        {:else}
           <div
             class="ui:grid ui:grid-cols-1 ui:md:grid-cols-2 ui:lg:grid-cols-3 ui:border-t ui:border-l ui:border-[var(--landing-border)]"
           >
@@ -71,9 +73,9 @@
               <CorporateCourseCard {course} {disableCourseLinks} {labels} />
             {/each}
           </div>
-        </div>
-      </section>
-    {/if}
+        {/if}
+      </div>
+    </section>
   </main>
 
   <OrgLandingPageLinks {links} {labels} variant="corporate" />

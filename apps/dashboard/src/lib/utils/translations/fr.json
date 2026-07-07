@@ -3743,6 +3743,10 @@
       "title": "Aucun cours trouvé",
       "description": "Essayez de supprimer vos filtres ou revenez plus tard."
     },
+    "catalog_empty": {
+      "title": "Aucun cours publié pour le moment",
+      "description": "Revenez bientôt pour découvrir de nouveaux programmes."
+    },
     "filters": {
       "title": "Filtrer par balises",
       "help": "Sélectionnez une ou plusieurs balises pour filtrer les cours",

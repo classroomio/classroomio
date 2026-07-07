@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
-  import { onMount, type Component } from 'svelte';
+  import type { Component } from 'svelte';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
@@ -90,24 +90,27 @@
         }
   );
 
-  const previewProps = $derived(
+  const previewSiteName = $derived($currentOrg.siteName || page.params.slug || '');
+
+  const coursesLoaded = $derived(!previewSiteName || orgApi.publicCoursesLoadedSiteName === previewSiteName);
+
+  const previewProps = $derived.by(() =>
     buildOrgLandingPageProps(
       $currentOrg,
       previewLandingPageSettings,
       orgApi.publicCourses,
       orgApi.hasMorePublicCourses,
-      authAction
+      authAction,
+      { coursesLoaded }
     )
   );
 
   const ThemeComponent = $derived(landingPageThemeComponents[previewTheme] ?? landingPageThemeComponents.minimal);
 
-  onMount(() => {
-    if ($currentOrg.siteName) {
-      orgApi.publicCourses = [];
-      orgApi.hasMorePublicCourses = false;
-      void orgApi.getPublicCoursesBySiteName($currentOrg.siteName);
-    }
+  $effect(() => {
+    if (!previewSiteName) return;
+
+    void orgApi.loadPublicCoursesIfNeeded(previewSiteName);
   });
 
   $effect(() => {
