@@ -2,7 +2,6 @@ import type { MetaTagsProps } from 'svelte-meta-tags';
 import type { OrgSiteInfo } from '$features/app/layout-setup';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { env as publicEnv } from '$env/dynamic/public';
-import { env as privateEnv } from '$env/dynamic/private';
 
 const isSelfHosted = PUBLIC_IS_SELFHOSTED === 'true';
 
@@ -13,17 +12,19 @@ const CLOUD_OG_IMAGE = 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.jp
 const ORG_OG_WIDTH = 1200;
 const ORG_OG_HEIGHT = 630;
 
-function getApiServerUrl(): string {
-  return privateEnv.PRIVATE_SERVER_URL?.trim() || publicEnv.PUBLIC_SERVER_URL?.trim() || '';
-}
-
-export function getOrgSiteOgImageUrl(siteName: string): string | null {
-  const apiBase = getApiServerUrl();
-  if (!apiBase || !siteName) {
+function getOrgSiteOgImageUrl(siteName: string, pageUrl: URL): string | null {
+  if (!siteName) {
     return null;
   }
 
-  return `${apiBase.replace(/\/$/, '')}/org-site/og/${encodeURIComponent(siteName)}.png`;
+  const ogPath = `/org-site/og/${encodeURIComponent(siteName)}.png`;
+  const publicServerUrl = publicEnv.PUBLIC_SERVER_URL?.trim();
+
+  if (publicServerUrl) {
+    return `${publicServerUrl.replace(/\/$/, '')}${ogPath}`;
+  }
+
+  return `${pageUrl.origin}/proxy${ogPath}`;
 }
 
 function resolveOgImageUrl(url: URL, orgSiteInfo: OrgSiteInfo): string {
@@ -33,7 +34,7 @@ function resolveOgImageUrl(url: URL, orgSiteInfo: OrgSiteInfo): string {
   }
 
   if (orgSiteInfo.isOrgSite && orgSiteInfo.org?.siteName) {
-    const dynamicOgUrl = getOrgSiteOgImageUrl(orgSiteInfo.org.siteName);
+    const dynamicOgUrl = getOrgSiteOgImageUrl(orgSiteInfo.org.siteName, url);
     if (dynamicOgUrl) {
       return dynamicOgUrl;
     }
