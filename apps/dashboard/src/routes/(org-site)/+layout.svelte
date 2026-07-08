@@ -1,6 +1,5 @@
 <script lang="ts">
   import { PageRestricted } from '$features/ui';
-  import OrgSiteFavicon from '$features/app/org-site-favicon.svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import { onMount } from 'svelte';
   import { afterNavigate } from '$app/navigation';
@@ -40,8 +39,6 @@
     });
   });
 </script>
-
-<OrgSiteFavicon org={data.org} />
 
 {#if data.org?.isRestricted || $currentOrg.isRestricted}
   <PageRestricted />

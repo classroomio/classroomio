@@ -13,6 +13,7 @@
   import merge from 'lodash/merge';
   import { MetaTags } from 'svelte-meta-tags';
   import { ModeWatcher } from '@cio/ui/base/dark-mode';
+  import OrgSiteFavicon from '$features/app/org-site-favicon.svelte';
 
   import '../app.css';
 
@@ -61,6 +62,17 @@
     }
   });
 </script>
+
+{#if data.isOrgSite}
+  <OrgSiteFavicon org={data.org} />
+{/if}
+
+<svelte:head>
+  {#if !data.isOrgSite}
+    <link rel="icon" type="image/png" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo-32.png" />
+  {/if}
+</svelte:head>
 
 <div>
   <ModeWatcher />

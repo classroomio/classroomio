@@ -146,7 +146,10 @@ function renderOrgSiteOgTemplate(input: OrgSiteOgInput): { body: string; styles:
   const labelColor = rgba(themeColor, 0.72);
   const initials = orgInitials(orgName);
 
-  const logoMarkup = input.logoUrl
+  const hasLogo = Boolean(input.logoUrl);
+  const logoWrapClass = hasLogo ? 'logo-wrap logo-wrap--image' : 'logo-wrap logo-wrap--initials';
+
+  const logoMarkup = hasLogo
     ? `<img class="logo-image" src="${escapeHtml(input.logoUrl)}" alt="" />`
     : `<span class="logo-initials" aria-hidden="true">${escapeHtml(initials)}</span>`;
 
@@ -159,7 +162,7 @@ function renderOrgSiteOgTemplate(input: OrgSiteOgInput): { body: string; styles:
   const body = `
 <div class="canvas">
   <div class="decor-circle"></div>
-  <div class="logo-wrap">${logoMarkup}</div>
+  <div class="${logoWrapClass}">${logoMarkup}</div>
   <div class="content">
     <p class="academy-label">Academy</p>
     <div class="accent-bar"></div>
@@ -214,17 +217,26 @@ body {
   width: 88px;
   height: 88px;
   border-radius: 20px;
-  background: ${themeColor};
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.logo-wrap--initials {
+  background: ${themeColor};
   box-shadow: 0 16px 40px ${rgba(themeColor, 0.28)};
 }
 
+.logo-wrap--image {
+  background: transparent;
+  box-shadow: none;
+  overflow: hidden;
+}
+
 .logo-image {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
+  width: 88px;
+  height: 88px;
+  border-radius: 20px;
   object-fit: cover;
 }
 
