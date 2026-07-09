@@ -1,0 +1,100 @@
+---
+title: Sharing Your Academy (Open Graph & Favicon)
+description: How favicons, link previews, and social embeds work when you share your academy URL on Discord, Slack, iMessage, and other platforms.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+When you share your academy URL — for example `https://ciodevs.myclassroomio.com` or your [custom domain](/docs/custom-domain) — chat apps and social networks build a **link preview** from two things:
+
+1. **Meta tags** in the page HTML (title, description)
+2. An **Open Graph image** (`og:image`) — the large preview thumbnail
+
+ClassroomIO generates both automatically for cloud academies. This guide explains what you control in the dashboard and what to expect when you change branding.
+
+For the public homepage editor, see [Customize Your Academy Landing Page](/docs/org-landing-page). For org name, logo, and theme, see [Customize Your Organization](/docs/customize-organization).
+
+## Favicon (browser tab icon)
+
+The favicon is the small icon shown in the browser tab when someone opens your public academy site.
+
+### Set a custom favicon
+
+<Steps>
+<Step>
+### Open Domains settings
+
+From the admin dashboard, go to **Settings → Domains**.
+</Step>
+
+<Step>
+### Upload under Custom favicon
+
+Use the image picker in the **Custom favicon** section and click **Save favicon**.
+</Step>
+</Steps>
+
+### Fallback when no favicon is set
+
+If you have **not** uploaded a custom favicon, ClassroomIO uses your **organization logo** (the same image as in **Settings → Organization**). You do not need to upload the same file twice unless you want a different crop or format for the tab icon.
+
+<Callout type="info" title="Where the favicon appears">
+  The academy favicon is shown on **public org-site pages** (landing page, course catalog, public course pages). It is not applied to the admin dashboard, LMS, or login screens on `app.classroomio.com`.
+</Callout>
+
+## Link previews (Open Graph)
+
+When your academy homepage is shared, ClassroomIO provides:
+
+| Meta field | Source |
+| --- | --- |
+| **Title** | Organization name + hero heading (from your landing page), e.g. `Chiberry Artistry \| Become a Certified AI Engineer` |
+| **Description** | Hero subheading, or footer tagline if no subheading |
+| **Preview image** | A generated **Academy** card with your logo, org name, theme colors, and (on paid plans) your tagline |
+
+Free-plan academies include a small **Powered by ClassroomIO** watermark on the generated image. Paid plans show your tagline and no watermark.
+
+### What the preview image looks like
+
+The generated card includes:
+
+- Your logo (top-left), or initials on a theme-colored background if you have no logo
+- An **Academy** label and org name
+- Theme-tinted background and accent colors from **Settings → Organization → brand color**
+- Tagline text on paid plans (from landing page footer tagline or hero subheading)
+
+## When you change name, theme, or tagline
+
+| Change | Page title & description | Preview image |
+| --- | --- | --- |
+| **Organization name** | Updates on next page load | Regenerated when the image is next requested |
+| **Brand / theme color** | Unchanged | Regenerated — colors on the card update |
+| **Hero subheading or footer tagline** | Description updates on next page load | Regenerated on paid plans (free plans do not show tagline on the image) |
+| **Organization logo** | Unchanged | Regenerated |
+
+<Callout type="warn" title="Previews can lag behind saves">
+  Text meta tags (title and description) update as soon as someone loads your site. The **thumbnail image** is cached for performance. After a branding change, visit your public academy URL once, then share the link again as a **new message** in Discord or Slack if the old preview still appears.
+</Callout>
+
+### Refreshing Discord or Slack embeds
+
+Chat apps cache link previews aggressively:
+
+1. Save your changes in the dashboard.
+2. Open your public academy URL in a browser (this helps regenerate the preview image).
+3. Post the URL as a **new message** — editing an old message usually keeps the cached preview.
+
+Discord in particular may cache failed previews for several minutes if the image was slow to generate on an earlier attempt.
+
+## Course and lesson links
+
+Public **course** pages use the course logo or banner for `og:image` when available. If a course has no banner, the preview may fall back to the course logo only. Org homepage links always use the dynamic Academy card described above.
+
+## Related guides
+
+- [Customize Your Organization](/docs/customize-organization) — name, logo, brand color
+- [Customize Your Academy Landing Page](/docs/org-landing-page) — hero heading and subheading (used in title and description)
+- [Set Up a Custom Domain](/docs/custom-domain) — share links on your own hostname
+
+For implementation details (API routes, CDN caching, contributor setup), see [Org-Site Open Graph & Favicon](/docs/contributor-guides/org-site-opengraph-and-favicon).
