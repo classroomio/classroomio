@@ -2,6 +2,7 @@ import {
   ZCreateNote,
   ZCreateNoteCommentReply,
   ZCreateNoteCommentThread,
+  ZCreateNoteFromTemplate,
   ZListNotesQuery,
   ZNoteCommentIdParam,
   ZNoteCommentThreadIdParam,
@@ -26,10 +27,13 @@ import {
 } from '@api/services/notes/comments';
 import {
   createNoteService,
+  convertNoteToTemplateService,
+  createNoteFromTemplateService,
   deleteNoteService,
   getNoteService,
   getNoteVersionHistoryService,
   getWorkspaceNoteUsageService,
+  listNoteTemplatesService,
   listNotesService,
   restoreNoteVersionService,
   updateNoteService,
@@ -113,6 +117,39 @@ export const notesRouter = new Hono()
       return handleError(c, error, 'Failed to import note');
     }
   })
+  .get('/templates', authMiddleware, orgMemberMiddleware, async (c) => {
+    try {
+      const organizationId = c.get('orgId')!;
+      const data = await listNoteTemplatesService(organizationId, c.get('userRole')!);
+
+      return c.json({ success: true, data }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to list note templates');
+    }
+  })
+  .post(
+    '/from-template',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('json', ZCreateNoteFromTemplate),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const body = c.req.valid('json');
+
+        if (body.organizationId !== organizationId) {
+          return c.json({ success: false, error: 'Organization mismatch', code: 'FORBIDDEN' }, 403);
+        }
+
+        const data = await createNoteFromTemplateService(user.id, organizationId, c.get('userRole')!, body);
+
+        return c.json({ success: true, data }, 201);
+      } catch (error) {
+        return handleError(c, error, 'Failed to create note from template');
+      }
+    }
+  )
   .get('/:noteId', authMiddleware, orgMemberMiddleware, zValidator('param', ZNoteIdParam), async (c) => {
     try {
       const user = c.get('user')!;
@@ -194,6 +231,24 @@ export const notesRouter = new Hono()
         return c.json({ success: true, data }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update note');
+      }
+    }
+  )
+  .post(
+    '/:noteId/convert-to-template',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNoteIdParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const { noteId } = c.req.valid('param');
+        const data = await convertNoteToTemplateService(organizationId, user.id, c.get('userRole')!, noteId);
+
+        return c.json({ success: true, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to convert note to template');
       }
     }
   )

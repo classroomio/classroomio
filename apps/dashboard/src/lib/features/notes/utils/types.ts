@@ -13,6 +13,12 @@ export type GetNoteVersionHistoryRequest = (typeof classroomio.notes)[':noteId']
 export type RestoreNoteVersionRequest =
   (typeof classroomio.notes)[':noteId']['versions'][':versionId']['restore']['$post'];
 
+export type ListNoteTemplatesRequest = (typeof classroomio.notes)['templates']['$get'];
+export type CreateNoteFromTemplateRequest = (typeof classroomio.notes)['from-template']['$post'];
+export type ConvertNoteToTemplateRequest = (typeof classroomio.notes)[':noteId']['convert-to-template']['$post'];
+
+export type NoteTemplates = Extract<InferResponseType<ListNoteTemplatesRequest>, { success: true }>['data'];
+
 export type NoteShareVisibility = 'private' | 'team';
 export type NoteListScope = 'mine' | 'team' | 'all';
 

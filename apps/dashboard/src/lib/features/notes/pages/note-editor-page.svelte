@@ -1,6 +1,7 @@
 <script lang="ts">
-  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+  import BookOpenIcon from '@lucide/svelte/icons/book-open';
   import HistoryIcon from '@lucide/svelte/icons/history';
+  import MessageSquareIcon from '@lucide/svelte/icons/message-square';
   import ShareIcon from '@lucide/svelte/icons/share-2';
   import TrashIcon from '@lucide/svelte/icons/trash-2';
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
@@ -34,9 +35,12 @@
   import NoteShareDialog from '../components/note-share-dialog.svelte';
   import NoteTagPicker from '../components/note-tag-picker.svelte';
   import NoteVersionHistory from '../components/note-version-history.svelte';
-  import NoteCommentsPanel from '../components/note-comments-panel.svelte';
   import NoteCommentSelection from '../components/note-comment-selection.svelte';
   import NoteEmptyPagePicker, { type NoteEmptyPageOption } from '../components/note-empty-page-picker.svelte';
+  import NoteConvertCourseDialog from '../components/note-convert-course-dialog.svelte';
+  import NoteTemplatePickerDialog from '../components/note-template-picker-dialog.svelte';
+  import { toggleNoteCommentsPanel } from '../panel';
+  import { noteCommentsBridge } from '../utils/note-comments-bridge.svelte';
   import {
     buildCommentAnchor,
     createThreadId,
@@ -71,6 +75,8 @@
   let loadError = $state<string | null>(null);
   let showVersionHistory = $state(false);
   let showDeleteDialog = $state(false);
+  let showConvertCourseDialog = $state(false);
+  let showTemplatePicker = $state(false);
   let isDeleting = $state(false);
   let saveTimer: ReturnType<typeof setTimeout> | null = null;
   let titleSaveTimer: ReturnType<typeof setTimeout> | null = null;
@@ -109,6 +115,7 @@
   const canComment = $derived(!isLoading && !loadError && (canWrite || noteVisibility === 'team'));
   const commentExtensions = [NoteCommentMark];
   const defaultNoteTitle = $derived(t.get('notes.org.new_note_title'));
+  const noteTitle = $derived(resolvePersistedTitle(title));
 
   function resolvePersistedTitle(displayTitle: string) {
     const trimmedTitle = displayTitle.trim();
@@ -180,7 +187,49 @@
     }
   }
 
+  function openCommentsPanel() {
+    toggleNoteCommentsPanel();
+  }
+
+  function syncCommentsBridge() {
+    noteCommentsBridge.bindEditorContext({
+      noteId,
+      canComment,
+      currentUserId: $profile.id,
+      mentionItems,
+      handlers: {
+        onSelectThread: (threadId) => {
+          activeThreadId = threadId;
+        },
+        onRequestScroll: handleScrollToThread,
+        onSubmitPending: handleSubmitPendingComment,
+        onCancelPending: handleCancelPendingComment,
+        onResolveThread: handleResolveThread,
+        onReopenThread: handleReopenThread
+      }
+    });
+    noteCommentsBridge.activeThreadId = activeThreadId;
+    noteCommentsBridge.pendingComposer = pendingComposer;
+  }
+
+  $effect(() => {
+    activeThreadId;
+    pendingComposer;
+    canComment;
+    mentionItems;
+    syncCommentsBridge();
+  });
+
+  $effect(() => {
+    const bridgePending = noteCommentsBridge.pendingComposer;
+
+    if (bridgePending && pendingComposer?.threadId === bridgePending.threadId && bridgePending !== pendingComposer) {
+      pendingComposer = bridgePending;
+    }
+  });
+
   onDestroy(() => {
+    noteCommentsBridge.reset();
     noteCommentsApi.reset();
     disconnectCommentStream?.();
     disconnectCommentStream = null;
@@ -276,10 +325,6 @@
     }, 500);
   }
 
-  function handleBack() {
-    void goto(resolve(`${$currentOrgPath}/notes`, {}));
-  }
-
   async function handleDeleteNote() {
     isDeleting = true;
     const deleted = await notesApi.deleteNote(noteId);
@@ -326,7 +371,7 @@
     }
 
     if (option === 'templates') {
-      snackbar.info('notes.templates.coming_soon');
+      showTemplatePicker = true;
       return;
     }
 
@@ -364,6 +409,20 @@
     void handleImportFile(file);
   }
 
+  async function handleConvertToTemplate() {
+    const converted = await notesApi.convertToTemplate(noteId);
+
+    if (!converted) {
+      snackbar.error('notes.templates.convert_error');
+      return;
+    }
+
+    snackbar.success('notes.templates.convert_success');
+    await notesApi.listNotes({ scope: 'all', origin: 'workspace' });
+    await notesApi.listTemplates();
+    void goto(resolve(`${$currentOrgPath}/notes`, {}));
+  }
+
   function handleTitleKeydown(event: KeyboardEvent) {
     if (event.key !== 'Enter' || !showEmptyPagePicker) {
       return;
@@ -389,6 +448,7 @@
     content = editor.getHTML();
     pendingComposer = { threadId, anchor, draft: '' };
     activeThreadId = threadId;
+    openCommentsPanel();
   }
 
   async function handleSubmitPendingComment() {
@@ -534,13 +594,18 @@
 
 <svelte:document onvisibilitychange={handleDocumentVisibilityChange} />
 
-<div class="mx-auto flex min-h-[calc(100vh-10rem)] w-full max-w-6xl flex-col gap-4 px-1 pt-2 pb-8">
+<div class="flex min-h-0 w-full flex-1 flex-col gap-4 px-4 py-2">
   <header class="flex flex-wrap items-center gap-3">
-    <IconButton variant="secondary" size="icon" onclick={handleBack}>
-      <ArrowLeftIcon size={16} />
-    </IconButton>
+    <Input
+      value={title}
+      readonly={!canWrite}
+      class="ui:h-auto ui:min-w-0 ui:flex-1 ui:rounded-none ui:border-0 ui:bg-transparent ui:px-0 ui:py-0 ui:text-[2.5rem] ui:leading-[1.1] ui:font-bold ui:shadow-none ui:placeholder:text-muted-foreground/45 ui:focus-visible:border-0 ui:focus-visible:ring-0"
+      placeholder={$t('notes.org.new_note_title')}
+      oninput={scheduleTitleSave}
+      onkeydown={handleTitleKeydown}
+    />
 
-    <div class="ml-auto flex items-center gap-2">
+    <div class="flex shrink-0 items-center gap-2">
       {#if isSaving}
         <LoaderIcon size={16} class="ui:text-muted-foreground animate-spin" />
       {/if}
@@ -549,6 +614,13 @@
         <Button variant="secondary" size="sm" onclick={() => (showShareDialog = true)}>
           <ShareIcon size={16} />
           {$t('notes.share.open')}
+        </Button>
+      {/if}
+
+      {#if canWrite && noteOrigin === 'workspace'}
+        <Button variant="secondary" size="sm" onclick={() => (showConvertCourseDialog = true)}>
+          <BookOpenIcon size={16} />
+          {$t('notes.convert_course.button')}
         </Button>
       {/if}
 
@@ -582,12 +654,16 @@
             {/snippet}
           </DropdownMenu.Trigger>
           <DropdownMenu.Content align="end">
+            <DropdownMenu.Item onclick={openCommentsPanel}>
+              <MessageSquareIcon size={16} />
+              {$t('notes.comments.heading')}
+            </DropdownMenu.Item>
             <DropdownMenu.Item onclick={() => (showVersionHistory = true)}>
               <HistoryIcon size={16} />
               {$t('notes.editor.version_history.open')}
             </DropdownMenu.Item>
             {#if noteOrigin === 'workspace'}
-              <DropdownMenu.Item onclick={() => snackbar.info('notes.editor.convert_to_template_coming_soon')}>
+              <DropdownMenu.Item onclick={handleConvertToTemplate}>
                 <LayoutTemplateIcon size={16} />
                 {$t('notes.editor.convert_to_template')}
               </DropdownMenu.Item>
@@ -606,15 +682,6 @@
   </header>
 
   <div class="flex flex-col gap-2">
-    <Input
-      value={title}
-      readonly={!canWrite}
-      class="ui:h-auto ui:w-full ui:rounded-none ui:border-0 ui:bg-transparent ui:px-0 ui:py-1 ui:text-[2.5rem] ui:leading-[1.2] ui:font-bold ui:shadow-none ui:placeholder:text-muted-foreground/45 ui:focus-visible:border-0 ui:focus-visible:ring-0"
-      placeholder={$t('notes.org.new_note_title')}
-      oninput={scheduleTitleSave}
-      onkeydown={handleTitleKeydown}
-    />
-
     {#if !canWrite && ownerFullname}
       <Badge variant="secondary" class="w-fit">{$t('notes.share.by_author', { name: ownerFullname })}</Badge>
     {/if}
@@ -663,7 +730,7 @@
     </div>
   {/if}
 
-  <div class="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
+  <div class="flex min-h-0 flex-1 flex-col">
     <div class="relative min-h-0 min-w-0 flex-1">
       <input
         bind:this={importInputRef}
@@ -691,8 +758,8 @@
             showToolBar={false}
             editable={canWrite}
             extraExtensions={commentExtensions}
-            class="border-none shadow-none"
-            editorClass="min-h-[60vh] px-0"
+            class="border-0 shadow-none"
+            editorClass="min-h-[60vh] border-0 px-0 shadow-none"
             onChange={scheduleContentSave}
             onReady={handleEditorReady}
             placeholder={$t('notes.editor.placeholder')}
@@ -712,25 +779,12 @@
         {/if}
       {/if}
     </div>
-
-    {#if !isLoading && !loadError}
-      <NoteCommentsPanel
-        {noteId}
-        {canComment}
-        currentUserId={$profile.id}
-        {mentionItems}
-        bind:pendingComposer
-        {activeThreadId}
-        onSelectThread={(threadId) => (activeThreadId = threadId)}
-        onRequestScroll={handleScrollToThread}
-        onSubmitPending={handleSubmitPendingComment}
-        onCancelPending={handleCancelPendingComment}
-        onResolveThread={handleResolveThread}
-        onReopenThread={handleReopenThread}
-      />
-    {/if}
   </div>
 </div>
+
+<NoteConvertCourseDialog bind:open={showConvertCourseDialog} {noteTitle} noteContent={content} />
+
+<NoteTemplatePickerDialog bind:open={showTemplatePicker} />
 
 <NoteShareDialog
   {noteId}

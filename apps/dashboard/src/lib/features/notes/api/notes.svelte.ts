@@ -8,12 +8,16 @@ import {
 import { currentOrg } from '$lib/utils/store/org';
 import { get } from 'svelte/store';
 import type {
+  ConvertNoteToTemplateRequest,
+  CreateNoteFromTemplateRequest,
   CreateNoteRequest,
   DeleteNoteRequest,
   GetNoteRequest,
   GetNoteVersionHistoryRequest,
   GetNoteTagsRequest,
+  ListNoteTemplatesRequest,
   ListNotesRequest,
+  NoteTemplates,
   NoteUsageRequest,
   RestoreNoteVersionRequest,
   UpdateNoteRequest,
@@ -33,6 +37,7 @@ export type NoteVersionHistory = Extract<InferResponseType<GetNoteVersionHistory
 
 class NotesApi extends BaseApiWithErrors {
   notes = $state<NoteListItem[]>([]);
+  templates = $state<NoteTemplates>([]);
   usage = $state<NoteUsage | null>(null);
 
   async listNotes(params?: {
@@ -302,6 +307,62 @@ class NotesApi extends BaseApiWithErrors {
     });
 
     return versions;
+  }
+
+  async listTemplates() {
+    const org = get(currentOrg);
+    if (!org.id) return;
+
+    await this.execute<ListNoteTemplatesRequest>({
+      requestFn: () => classroomio.notes.templates.$get(),
+      onSuccess: (result) => {
+        this.templates = result.data;
+      },
+      logContext: 'listNoteTemplates',
+      onError: () => {
+        this.templates = [];
+      }
+    });
+  }
+
+  async convertToTemplate(noteId: string) {
+    let converted: NoteDetail | null = null;
+
+    await this.execute<ConvertNoteToTemplateRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId']['convert-to-template'].$post({
+          param: { noteId }
+        }),
+      onSuccess: (result) => {
+        converted = result.data ?? null;
+      },
+      logContext: 'convertNoteToTemplate'
+    });
+
+    return converted;
+  }
+
+  async createNoteFromTemplate(templateNoteId: string) {
+    const org = get(currentOrg);
+    if (!org.id) return null;
+
+    let created: NoteDetail | null = null;
+
+    await this.execute<CreateNoteFromTemplateRequest>({
+      requestFn: () =>
+        classroomio.notes['from-template'].$post({
+          json: {
+            organizationId: org.id,
+            templateNoteId
+          }
+        }),
+      onSuccess: (result) => {
+        created = result.data ?? null;
+      },
+      logContext: 'createNoteFromTemplate'
+    });
+
+    return created;
   }
 
   async restoreVersion(noteId: string, versionId: number) {

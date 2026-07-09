@@ -23,7 +23,16 @@ export const ZListNotesQuery = z.object({
   lessonId: z.string().uuid().optional(),
   search: z.string().max(200).optional(),
   tagId: z.string().uuid().optional(),
-  scope: ZNoteListScope.default('mine')
+  scope: ZNoteListScope.default('mine'),
+  isTemplate: z
+    .enum(['true', 'false'])
+    .optional()
+    .transform((value) => (value === undefined ? undefined : value === 'true'))
+});
+
+export const ZCreateNoteFromTemplate = z.object({
+  organizationId: z.string().uuid(),
+  templateNoteId: z.string().uuid()
 });
 
 export const ZNoteIdParam = z.object({
@@ -64,6 +73,7 @@ export const ZUpdateNoteVisibility = z.object({
 });
 
 export type TListNotesQuery = z.infer<typeof ZListNotesQuery>;
+export type TCreateNoteFromTemplate = z.infer<typeof ZCreateNoteFromTemplate>;
 export type TCreateNote = z.infer<typeof ZCreateNote>;
 export type TUpdateNote = z.infer<typeof ZUpdateNote>;
 export type TNoteTagAssignment = z.infer<typeof ZNoteTagAssignment>;

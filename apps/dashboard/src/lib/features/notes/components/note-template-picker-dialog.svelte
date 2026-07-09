@@ -1,21 +1,22 @@
 <script lang="ts">
   import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
   import * as Card from '@cio/ui/base/card';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { cn } from '@cio/ui/tools';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
+  import { currentOrgPath } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { notesApi } from '../api';
 
   interface Props {
-    class?: string;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
   }
 
-  let { class: className = '' }: Props = $props();
+  let { open = $bindable(false), onOpenChange }: Props = $props();
   let creatingTemplateId = $state<string | null>(null);
 
   function noteHref(noteId: string) {
@@ -33,11 +34,13 @@
     }
 
     snackbar.success('notes.templates.create_success');
+    open = false;
+    onOpenChange?.(false);
     await goto(noteHref(note.id));
   }
 
   $effect(() => {
-    if (!$profile.id || !$currentOrg.id) {
+    if (!open) {
       return;
     }
 
@@ -45,32 +48,30 @@
   });
 </script>
 
-<section class={cn('flex flex-col gap-3', className)}>
-  <div class="flex items-center justify-between gap-3">
-    <h2 class="ui:text-muted-foreground text-xs font-semibold tracking-[0.14em] uppercase">
-      {$t('notes.templates.heading')}
-    </h2>
-  </div>
+<Dialog.Root bind:open {onOpenChange}>
+  <Dialog.Content class="max-h-[80vh] max-w-lg overflow-y-auto">
+    <Dialog.Header>
+      <Dialog.Title>{$t('notes.templates.heading')}</Dialog.Title>
+      <Dialog.Description>{$t('notes.templates.empty')}</Dialog.Description>
+    </Dialog.Header>
 
-  {#if notesApi.templates.length === 0}
-    <div
-      class="ui:border-border ui:text-muted-foreground flex items-center gap-3 rounded-lg border border-dashed px-4 py-5 text-sm"
-    >
-      <LayoutTemplateIcon size={18} class="shrink-0" />
-      <p>{$t('notes.templates.empty')}</p>
-    </div>
-  {:else}
-    <div class="-mx-1 overflow-x-auto px-1 pb-1">
-      <ul class="flex min-w-min gap-3">
+    {#if notesApi.templates.length === 0}
+      <div
+        class="ui:border-border ui:text-muted-foreground flex items-center gap-3 rounded-lg border border-dashed px-4 py-5 text-sm"
+      >
+        <LayoutTemplateIcon size={18} class="shrink-0" />
+        <p>{$t('notes.templates.empty')}</p>
+      </div>
+    {:else}
+      <ul class="grid gap-3 py-2">
         {#each notesApi.templates as template (template.id)}
-          <li class="w-52 shrink-0">
-            <Card.Root class="ui:hover:bg-muted/40 h-full transition-colors">
-              <Card.Header class="gap-3 pb-0">
+          <li>
+            <Card.Root class="ui:hover:bg-muted/40 transition-colors">
+              <Card.Header class="gap-3">
                 <Card.Title class="line-clamp-2 text-sm leading-snug">{template.title}</Card.Title>
                 <Button
                   size="sm"
                   variant="secondary"
-                  class="w-full"
                   loading={creatingTemplateId === template.id}
                   onclick={() => handleUseTemplate(template.id)}
                 >
@@ -81,6 +82,6 @@
           </li>
         {/each}
       </ul>
-    </div>
-  {/if}
-</section>
+    {/if}
+  </Dialog.Content>
+</Dialog.Root>

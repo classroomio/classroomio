@@ -9,6 +9,7 @@
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
+  import { cn } from '@cio/ui/tools';
   import { noteCommentsApi } from '../api';
   import { renderNoteCommentMentions } from '../utils/mention-utils';
   import type { NoteComment, NoteCommentThread } from '../utils/types';
@@ -47,6 +48,7 @@
     onCancelPending?: () => void;
     onResolveThread?: (thread: NoteCommentThread) => void;
     onReopenThread?: (thread: NoteCommentThread) => void;
+    embedded?: boolean;
   }
 
   let {
@@ -61,7 +63,8 @@
     onSubmitPending,
     onCancelPending,
     onResolveThread,
-    onReopenThread
+    onReopenThread,
+    embedded = false
   }: Props = $props();
 
   let replyDrafts = $state<Record<string, string>>({});
@@ -246,13 +249,20 @@
   }
 </script>
 
-<aside class="ui:border-border flex h-full min-h-0 w-full flex-col border-l lg:w-80 lg:shrink-0">
-  <header class="ui:border-border border-b px-4 py-3">
-    <p class="text-sm font-semibold">{$t('notes.comments.heading')}</p>
-    <p class="ui:text-muted-foreground text-xs">
-      {$t('notes.comments.count', { count: noteCommentsApi.threads.length })}
-    </p>
-    <div class="mt-3 flex gap-1">
+<aside
+  class={cn(
+    'flex h-full min-h-0 w-full flex-col',
+    embedded ? 'border-0' : 'ui:border-border border-l lg:w-80 lg:shrink-0'
+  )}
+>
+  <header class={cn('px-4 py-3', embedded ? '' : 'ui:border-border border-b')}>
+    {#if !embedded}
+      <p class="text-sm font-semibold">{$t('notes.comments.heading')}</p>
+      <p class="ui:text-muted-foreground text-xs">
+        {$t('notes.comments.count', { count: noteCommentsApi.threads.length })}
+      </p>
+    {/if}
+    <div class={cn('flex gap-1', embedded ? '' : 'mt-3')}>
       <Button size="sm" variant={activeTab === 'open' ? 'default' : 'secondary'} onclick={() => (activeTab = 'open')}>
         {$t('notes.comments.open_heading')} ({openThreads.length})
       </Button>

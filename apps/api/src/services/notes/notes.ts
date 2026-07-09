@@ -8,6 +8,7 @@ import {
   getNoteVersionHistory,
   insertNoteVersion,
   listAccessibleNotes,
+  listNoteTemplates,
   softDeleteNote,
   updateNote,
   type NoteListRow
@@ -17,6 +18,7 @@ import { verifyLessonBelongsToCourse } from '@cio/core/services/agent/chat-conte
 import { BASIC_WORKSPACE_NOTE_LIMIT, PLAN } from '@cio/utils/plans/constants';
 import type {
   TCreateNote,
+  TCreateNoteFromTemplate,
   TListNotesQuery,
   TNoteOrigin,
   TUpdateNote,
@@ -91,7 +93,8 @@ export async function listNotesService(organizationId: string, userId: string, r
     courseId: query.courseId,
     lessonId: query.lessonId,
     search: query.search,
-    tagId: query.tagId
+    tagId: query.tagId,
+    isTemplate: query.isTemplate
   });
 
   const { attachTagsToNotes } = await import('./tags');
@@ -138,9 +141,103 @@ export async function createNoteService(ownerId: string, data: TCreateNote) {
     plainText,
     origin: data.origin,
     visibility: 'private',
+    isTemplate: false,
     courseId: data.courseId ?? null,
     lessonId: data.lessonId ?? null,
     videoAnchors: data.videoAnchors ?? []
+  });
+
+  if (note.content) {
+    await insertNoteVersion({
+      noteId: note.id,
+      oldContent: null,
+      newContent: note.content,
+      changedBy: ownerId,
+      changeSource: 'manual'
+    });
+  }
+
+  return { ...(await getNoteById(note.id))!, canWrite: true };
+}
+
+export async function listNoteTemplatesService(organizationId: string, roleId: number) {
+  if (!isOrgTeamRole(roleId)) {
+    throw new AppError('Forbidden', ErrorCodes.FORBIDDEN, 403);
+  }
+
+  return listNoteTemplates(organizationId);
+}
+
+export async function convertNoteToTemplateService(
+  organizationId: string,
+  userId: string,
+  roleId: number,
+  noteId: string
+) {
+  const { note } = await getReadableNote(organizationId, userId, roleId, noteId);
+  assertNoteWriteAccess({ note, organizationId, userId });
+
+  if (note.origin !== 'workspace') {
+    throw new AppError('Only workspace notes can become templates', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  if (note.isTemplate) {
+    return { ...note, canWrite: true };
+  }
+
+  const updated = await updateNote(noteId, {
+    isTemplate: true,
+    updatedAt: new Date().toISOString()
+  });
+
+  if (!updated) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  const refreshed = await getNoteById(noteId);
+
+  if (!refreshed) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  return { ...refreshed, canWrite: true };
+}
+
+export async function createNoteFromTemplateService(
+  ownerId: string,
+  organizationId: string,
+  roleId: number,
+  data: TCreateNoteFromTemplate
+) {
+  if (!isOrgTeamRole(roleId)) {
+    throw new AppError('Forbidden', ErrorCodes.FORBIDDEN, 403);
+  }
+
+  const template = await getNoteById(data.templateNoteId);
+
+  if (
+    !template ||
+    template.organizationId !== organizationId ||
+    !template.isTemplate ||
+    template.origin !== 'workspace'
+  ) {
+    throw new AppError('Template not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  await assertWorkspaceNoteCreationAllowed(organizationId, ownerId);
+
+  const note = await createNote({
+    organizationId,
+    ownerId,
+    title: template.title,
+    content: template.content,
+    plainText: template.plainText,
+    origin: 'workspace',
+    visibility: 'private',
+    isTemplate: false,
+    courseId: null,
+    lessonId: null,
+    videoAnchors: []
   });
 
   if (note.content) {

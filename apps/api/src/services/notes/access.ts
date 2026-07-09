@@ -18,6 +18,10 @@ export function assertNoteReadAccess(params: {
     throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
   }
 
+  if (note.isTemplate && note.origin === 'workspace' && isOrgTeamRole(roleId)) {
+    return { canWrite: note.ownerId === userId };
+  }
+
   if (note.ownerId === userId) {
     return { canWrite: true };
   }

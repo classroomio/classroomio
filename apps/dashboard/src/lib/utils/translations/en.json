@@ -4151,7 +4151,32 @@
     "templates": {
       "heading": "Templates",
       "empty": "Save a note as a template to reuse it here.",
-      "coming_soon": "Note templates are coming soon."
+      "coming_soon": "Note templates are coming soon.",
+      "convert_success": "Note saved as template",
+      "convert_error": "Could not save note as template.",
+      "create_success": "Note created from template",
+      "create_error": "Could not create note from template.",
+      "use_template": "Use template"
+    },
+    "workspace": {
+      "empty_title": "No note selected",
+      "empty_description": "Create a new note or pick one from the list.",
+      "create_note": "Create note",
+      "no_notes": "No notes"
+    },
+    "convert_course": {
+      "button": "Convert to course",
+      "title": "Convert note to course",
+      "description": "Review the course structure before creating. No AI is used for this conversion.",
+      "course_title": "Course title",
+      "use_sections": "Use sections",
+      "use_sections_hint": "Group lessons under H1 headings from your note.",
+      "use_toc": "Use table of contents for lesson titles",
+      "use_toc_hint": "When a table of contents block is present, use its entries as lesson titles.",
+      "summary": "{sections} sections, {lessons} lessons",
+      "create": "Create course",
+      "success": "Course created from note",
+      "error": "Could not create course from note."
     },
     "comments": {
       "heading": "Comments",
@@ -4883,7 +4908,8 @@
       "ai_assistant": "AI Assistant",
       "transcript": "Transcript",
       "lesson_note": "Lesson Note",
-      "note_ai": "Note assistant"
+      "note_ai": "Note assistant",
+      "note_comments": "Comments"
     }
   },
   "cohorts": {

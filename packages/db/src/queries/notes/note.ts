@@ -20,6 +20,7 @@ const noteListSelect = {
   plainText: schema.orgNote.plainText,
   origin: schema.orgNote.origin,
   visibility: schema.orgNote.visibility,
+  isTemplate: schema.orgNote.isTemplate,
   courseId: schema.orgNote.courseId,
   lessonId: schema.orgNote.lessonId,
   videoAnchors: schema.orgNote.videoAnchors,
@@ -42,6 +43,7 @@ export async function countWorkspaceNotesByOwner(organizationId: string, ownerId
           eq(schema.orgNote.organizationId, organizationId),
           eq(schema.orgNote.ownerId, ownerId),
           eq(schema.orgNote.origin, 'workspace'),
+          eq(schema.orgNote.isTemplate, false),
           isNull(schema.orgNote.deletedAt)
         )
       );
@@ -85,6 +87,7 @@ export async function listAccessibleNotes(params: {
   lessonId?: string;
   search?: string;
   tagId?: string;
+  isTemplate?: boolean;
 }): Promise<NoteListRow[]> {
   try {
     const scope = params.isTeamMember ? (params.scope ?? 'mine') : 'mine';
@@ -103,6 +106,15 @@ export async function listAccessibleNotes(params: {
           and(eq(schema.orgNote.visibility, 'team'), eq(schema.orgNote.origin, 'workspace'))
         )!
       );
+    }
+
+    if (params.isTemplate === true) {
+      conditions.push(eq(schema.orgNote.isTemplate, true));
+      conditions.push(eq(schema.orgNote.origin, 'workspace'));
+    } else if (params.isTemplate === false) {
+      conditions.push(eq(schema.orgNote.isTemplate, false));
+    } else if (scope !== 'team') {
+      conditions.push(eq(schema.orgNote.isTemplate, false));
     }
 
     if (params.origin) {
@@ -207,9 +219,34 @@ export async function createNote(values: TNewOrgNote): Promise<TOrgNote> {
   }
 }
 
+export async function listNoteTemplates(organizationId: string): Promise<NoteListRow[]> {
+  try {
+    return db
+      .select(noteListSelect)
+      .from(schema.orgNote)
+      .innerJoin(schema.profile, eq(schema.orgNote.ownerId, schema.profile.id))
+      .leftJoin(schema.course, eq(schema.orgNote.courseId, schema.course.id))
+      .leftJoin(schema.lesson, eq(schema.orgNote.lessonId, schema.lesson.id))
+      .where(
+        and(
+          eq(schema.orgNote.organizationId, organizationId),
+          eq(schema.orgNote.origin, 'workspace'),
+          eq(schema.orgNote.isTemplate, true),
+          isNull(schema.orgNote.deletedAt)
+        )
+      )
+      .orderBy(desc(schema.orgNote.updatedAt));
+  } catch (error) {
+    console.error('listNoteTemplates error:', error);
+    throw new Error('Failed to list note templates');
+  }
+}
+
 export async function updateNote(
   noteId: string,
-  values: Partial<Pick<TOrgNote, 'title' | 'content' | 'plainText' | 'videoAnchors' | 'visibility' | 'updatedAt'>>
+  values: Partial<
+    Pick<TOrgNote, 'title' | 'content' | 'plainText' | 'videoAnchors' | 'visibility' | 'isTemplate' | 'updatedAt'>
+  >
 ): Promise<TOrgNote | null> {
   try {
     const [row] = await db.update(schema.orgNote).set(values).where(eq(schema.orgNote.id, noteId)).returning();

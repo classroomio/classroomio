@@ -1,16 +1,31 @@
 <script lang="ts">
   import { aiAssistantPanelDefinition } from '$features/ai-assistant';
   import { sidePanel, SidePanelRail } from '$features/side-panel';
+  import { useSidebar } from '@cio/ui/base/sidebar';
+  import { noteCommentsPanelDefinition } from '$features/notes/panel';
 
   let { children } = $props();
 
+  const sidebar = useSidebar();
+
   sidePanel.register(aiAssistantPanelDefinition);
+  sidePanel.register(noteCommentsPanelDefinition);
 
   let sidePanelWidth = $state(0);
+  let previousSidebarOpen = $state(true);
+
+  $effect(() => {
+    previousSidebarOpen = sidebar.open;
+    sidebar.setOpen(false);
+
+    return () => {
+      sidebar.setOpen(previousSidebarOpen);
+    };
+  });
 </script>
 
 <div
-  class="notes-workspace flex min-h-0 w-full max-w-none flex-1 flex-col pt-2"
+  class="notes-workspace -mx-4 flex min-h-[calc(100dvh-4rem)] w-[calc(100%+2rem)] max-w-none flex-1 flex-col"
   style={`--side-panel-width: ${sidePanelWidth}px;`}
 >
   {@render children?.()}
