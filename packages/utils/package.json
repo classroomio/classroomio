@@ -60,6 +60,10 @@
     "./openapi/public-api": {
       "types": "./dist/openapi/public-api.d.ts",
       "default": "./dist/openapi/public-api.js"
+    },
+    "./org-site/og-public-url": {
+      "types": "./dist/org-site/og-public-url.d.ts",
+      "default": "./dist/org-site/og-public-url.js"
     }
   },
   "scripts": {

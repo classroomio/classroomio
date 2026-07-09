@@ -7,6 +7,7 @@ import { getActiveOrganizationPlan, getOrganizationBySiteName } from '@cio/db/qu
 import { extractOrgTagline, renderOrgSiteOg } from '@api/utils/org-site-og';
 import { isOrgOnFreePlan } from '@cio/utils/plans';
 import { env } from '@cio/core/config/env';
+import { getCachedOrgSiteOgBuffer, getOrgSiteOgPublicUrl, persistOrgSiteOgImage } from '@api/services/org/og-cache';
 
 const DEFAULT_OG_IMAGE = 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.jpg';
 const OG_VIEWPORT = { width: 1200, height: 630, deviceScaleFactor: 2 } as const;
@@ -19,6 +20,8 @@ export function normalizeOrgOgSiteName(rawSiteName: string): string {
 export function getOrgSiteOgFallbackImageUrl(): string {
   return DEFAULT_OG_IMAGE;
 }
+
+export { getOrgSiteOgPublicUrl };
 
 function buildOrgSiteOgEtag(payload: {
   siteName: string;
@@ -59,8 +62,15 @@ export async function generateOrgSiteOgImage(siteName: string): Promise<{ buffer
     ...renderInput
   });
 
+  const cachedBuffer = await getCachedOrgSiteOgBuffer(siteName, etag);
+  if (cachedBuffer) {
+    return { buffer: cachedBuffer, etag };
+  }
+
   const { html, styles } = renderOrgSiteOg(renderInput);
   const buffer = await getCloudflarePngBuffer(html, styles, OG_VIEWPORT);
+
+  await persistOrgSiteOgImage(siteName, buffer, etag);
 
   return { buffer, etag };
 }

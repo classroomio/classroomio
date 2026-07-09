@@ -323,6 +323,7 @@ export default {
 
     const upstreamHost = isApiCall ? env.API_UPSTREAM_HOST : env.DASHBOARD_UPSTREAM_HOST;
     const upstreamPath = isProxiedApiCall ? url.pathname.slice(PROXY_PREFIX.length) || '/' : url.pathname;
+    const isOrgSiteOgImage = isProxiedApiCall && upstreamPath.startsWith('/org-site/og/');
 
     const upstreamUrl = new URL(request.url);
     upstreamUrl.protocol = 'https:';
@@ -346,18 +347,25 @@ export default {
     // cold browser cache (new device, or post-deploy hash change) stampedes the
     // origin for every chunk.
     const isImmutableAsset = url.pathname.startsWith('/_app/immutable/');
+    const edgeCacheTtl = isImmutableAsset ? 31536000 : isOrgSiteOgImage ? 3600 : undefined;
 
     const upstreamResponse = await fetch(upstreamUrl.toString(), {
       method: request.method,
       headers: upstreamHeaders,
       body: request.body,
       redirect: 'manual',
-      cf: isImmutableAsset ? { cacheEverything: true, cacheTtl: 31536000 } : undefined
+      cf: edgeCacheTtl ? { cacheEverything: true, cacheTtl: edgeCacheTtl } : undefined
     });
 
     if (isImmutableAsset) {
       const response = new Response(upstreamResponse.body, upstreamResponse);
       response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+      return response;
+    }
+
+    if (isOrgSiteOgImage && upstreamResponse.ok) {
+      const response = new Response(upstreamResponse.body, upstreamResponse);
+      response.headers.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
       return response;
     }
 

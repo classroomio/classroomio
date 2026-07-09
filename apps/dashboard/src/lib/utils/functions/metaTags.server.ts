@@ -3,6 +3,7 @@ import type { OrgSiteInfo } from '$features/app/layout-setup';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { env as publicEnv } from '$env/dynamic/public';
 import { buildOrgSiteTitle, extractOrgSiteMetaCopy } from '$lib/utils/functions/org-site-meta';
+import { resolveOrgSiteOgImageUrl } from '$lib/utils/functions/org-site-og-url';
 
 const isSelfHosted = PUBLIC_IS_SELFHOSTED === 'true';
 
@@ -13,50 +14,23 @@ const CLOUD_OG_IMAGE = 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.jp
 const ORG_OG_WIDTH = 1200;
 const ORG_OG_HEIGHT = 630;
 
-function isPublicHttpOrigin(value: string): boolean {
-  try {
-    const parsed = new URL(value);
-    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
-      return false;
-    }
-
-    const host = parsed.hostname;
-    if (host === 'localhost' || host === '127.0.0.1') {
-      return true;
-    }
-
-    return host.includes('.');
-  } catch {
-    return false;
-  }
-}
-
-function getOrgSiteOgImageUrl(siteName: string, pageUrl: URL): string | null {
-  if (!siteName) {
-    return null;
-  }
-
-  const ogPath = `/org-site/og/${encodeURIComponent(siteName)}.png`;
-
-  return `${pageUrl.origin}/proxy${ogPath}`;
-}
-
-function resolveOgImageUrl(url: URL, orgSiteInfo: OrgSiteInfo): string {
+async function resolveOgImageUrl(url: URL, orgSiteInfo: OrgSiteInfo): Promise<string> {
   const envUrl = publicEnv.PUBLIC_OG_IMAGE_URL?.trim();
   if (envUrl) {
     return envUrl;
   }
 
   if (orgSiteInfo.isOrgSite && orgSiteInfo.org?.siteName) {
-    const dynamicOgUrl = getOrgSiteOgImageUrl(orgSiteInfo.org.siteName, url);
+    const dynamicOgUrl = await resolveOrgSiteOgImageUrl({
+      siteName: orgSiteInfo.org.siteName,
+      pageOrigin: url.origin,
+      isSelfHosted,
+      mediaCdnUrl: publicEnv.PUBLIC_MEDIA_CDN_URL,
+      publicServerUrl: publicEnv.PUBLIC_SERVER_URL
+    });
     if (dynamicOgUrl) {
       return dynamicOgUrl;
     }
-  }
-
-  const publicServerUrl = publicEnv.PUBLIC_SERVER_URL?.trim();
-  if (publicServerUrl && isPublicHttpOrigin(publicServerUrl) && orgSiteInfo.org?.siteName) {
-    return `${publicServerUrl.replace(/\/$/, '')}/org-site/og/${encodeURIComponent(orgSiteInfo.org.siteName)}.png`;
   }
 
   if (isSelfHosted) {
@@ -117,7 +91,7 @@ function resolveOrgSiteMeta(orgSiteInfo: OrgSiteInfo): {
   };
 }
 
-export function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): MetaTagsProps {
+export async function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): Promise<MetaTagsProps> {
   const orgMeta = resolveOrgSiteMeta(orgSiteInfo);
 
   const title =
@@ -133,7 +107,7 @@ export function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): MetaTagsPro
     (isSelfHosted && orgSiteInfo.org?.name ? orgSiteInfo.org.name : null) ||
     'ClassroomIO';
 
-  const ogImageUrl = resolveOgImageUrl(url, orgSiteInfo);
+  const ogImageUrl = await resolveOgImageUrl(url, orgSiteInfo);
   const usesDynamicOrgOg =
     orgSiteInfo.isOrgSite && Boolean(orgSiteInfo.org?.siteName) && !publicEnv.PUBLIC_OG_IMAGE_URL?.trim();
 
