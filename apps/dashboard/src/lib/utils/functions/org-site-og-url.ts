@@ -2,22 +2,26 @@ import { buildOrgSiteOgApiUrl, buildOrgSiteOgCdnUrl } from '@cio/utils/org-site/
 
 const DEFAULT_CLOUD_MEDIA_CDN_URL = 'https://img.cdn.clsrio.com';
 
-function isPublicHttpOrigin(value: string): boolean {
+function isValidHttpUrl(value: string): boolean {
   try {
     const parsed = new URL(value);
-    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
-      return false;
-    }
-
-    const host = parsed.hostname;
-    if (host === 'localhost' || host === '127.0.0.1') {
-      return true;
-    }
-
-    return host.includes('.');
+    return parsed.protocol === 'https:' || parsed.protocol === 'http:';
   } catch {
     return false;
   }
+}
+
+function isPublicHttpOrigin(value: string): boolean {
+  if (!isValidHttpUrl(value)) {
+    return false;
+  }
+
+  const host = new URL(value).hostname;
+  if (host === 'localhost' || host === '127.0.0.1') {
+    return true;
+  }
+
+  return host.includes('.');
 }
 
 const CDN_HEAD_TIMEOUT_MS = 2000;
@@ -75,7 +79,7 @@ export function resolveOrgSiteOgWarmUrl(options: {
   }
 
   const privateServerUrl = options.privateServerUrl?.trim();
-  if (privateServerUrl && isPublicHttpOrigin(privateServerUrl)) {
+  if (privateServerUrl && isValidHttpUrl(privateServerUrl)) {
     return buildOrgSiteOgApiUrl(siteName, privateServerUrl);
   }
 
