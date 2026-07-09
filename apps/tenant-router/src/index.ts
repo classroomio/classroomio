@@ -347,7 +347,7 @@ export default {
     // cold browser cache (new device, or post-deploy hash change) stampedes the
     // origin for every chunk.
     const isImmutableAsset = url.pathname.startsWith('/_app/immutable/');
-    const edgeCacheTtl = isImmutableAsset ? 31536000 : isOrgSiteOgImage ? 86400 : undefined;
+    const edgeCacheTtl = isImmutableAsset ? 31536000 : isOrgSiteOgImage ? 3600 : undefined;
 
     const upstreamResponse = await fetch(upstreamUrl.toString(), {
       method: request.method,
@@ -365,7 +365,7 @@ export default {
 
     if (isOrgSiteOgImage && upstreamResponse.ok) {
       const response = new Response(upstreamResponse.body, upstreamResponse);
-      response.headers.set('Cache-Control', 'public, max-age=86400, stale-while-revalidate=86400');
+      response.headers.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
       return response;
     }
 

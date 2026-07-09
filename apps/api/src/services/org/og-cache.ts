@@ -1,7 +1,7 @@
 import { GetObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 
-import { getStorageConfig } from '@cio/core/config/storage';
-import { getS3Client, uploadToS3 } from '@cio/core/utils/s3';
+import { getStorageConfig, getS3Client } from '@cio/core/config/storage';
+import { uploadToS3 } from '@cio/core/utils/s3';
 import { getOrgSiteOgObjectKey } from '@cio/utils/org-site/og-public-url';
 
 const OG_ETAG_METADATA_KEY = 'og-etag';

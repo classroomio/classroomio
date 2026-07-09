@@ -40,7 +40,9 @@ export const load = async ({ url, cookies, request, locals }): Promise<LoadOutpu
     });
 
     if (warmUrl) {
-      void fetch(warmUrl).catch(() => {});
+      void fetch(warmUrl)
+        .then((response) => response.body?.cancel())
+        .catch(() => {});
     }
   }
 
@@ -49,7 +51,7 @@ export const load = async ({ url, cookies, request, locals }): Promise<LoadOutpu
     isOrgSite: orgSiteInfo.isOrgSite,
     skipAuth: orgSiteInfo.subdomain === 'play' || debugPlay === 'true',
     org: orgSiteInfo.org,
-    baseMetaTags: getBaseMetaTags(url, orgSiteInfo),
+    baseMetaTags: await getBaseMetaTags(url, orgSiteInfo),
     serverLang: request.headers?.get('accept-language') || '',
     localeCookie: cookies.get('classroomio_locale') || '',
     locals,

@@ -127,8 +127,8 @@ This is best-effort (not awaited). It does **not** run at org-save time.
 
 For `*.myclassroomio.com`, requests to `/proxy/org-site/og/*` are proxied to the API. The worker applies:
 
-- `cf.cacheEverything: true`, `cacheTtl: 86400`
-- Response `Cache-Control: public, max-age=86400, stale-while-revalidate=86400`
+- `cf.cacheEverything: true`, `cacheTtl: 3600`
+- Response `Cache-Control: public, max-age=3600, stale-while-revalidate=86400`
 
 Meta tags in cloud production prefer the **CDN URL**, not `/proxy/…`, so crawlers usually skip this hop. The edge cache remains a fallback for legacy or self-hosted proxy paths.
 
@@ -143,8 +143,8 @@ Discord, Slack, iMessage, etc. cache **embed metadata** and **images** independe
 **OG image URL priority** (`resolveOrgSiteOgImageUrl`):
 
 1. `PUBLIC_OG_IMAGE_URL` — global override (self-hosted branding)
-2. **Cloud CDN** — `PUBLIC_MEDIA_CDN_URL` or default `https://img.cdn.clsrio.com` → `/og/{siteName}.png`
-3. `PUBLIC_SERVER_URL` — direct API URL `/org-site/og/{siteName}.png`
+2. **Cloud CDN** — `PUBLIC_MEDIA_CDN_URL` or default `https://img.cdn.clsrio.com` → `/og/{siteName}.png`, only when a `HEAD` request confirms the object exists
+3. `PUBLIC_SERVER_URL` — direct API URL `/org-site/og/{siteName}.png` (used until the CDN object is available)
 4. Tenant origin — `{origin}/proxy/org-site/og/{siteName}.png`
 
 Title and description come from `org-site-meta.ts` (hero heading/subheading, org name). These update on every SSR response and do not depend on the PNG cache.
@@ -157,7 +157,7 @@ Rendered from root `+layout.svelte` via `OrgSiteFavicon` when `data.isOrgSite` i
 
 ### Resolution (`getOrgFaviconHref`)
 
-1. Custom `org.favicon` if set (uploaded in **Settings → Domains**)
+1. Custom `org.favicon` if set (uploaded under **Settings → Organization → Custom Domain**)
 2. Else `org.avatarUrl`
 3. Relative URLs resolved against `page.url.origin`
 

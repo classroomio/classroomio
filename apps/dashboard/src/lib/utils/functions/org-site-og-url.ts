@@ -20,13 +20,28 @@ function isPublicHttpOrigin(value: string): boolean {
   }
 }
 
-export function resolveOrgSiteOgImageUrl(options: {
+const CDN_HEAD_TIMEOUT_MS = 2000;
+
+async function isOrgSiteOgCdnObjectAvailable(cdnUrl: string): Promise<boolean> {
+  try {
+    const response = await fetch(cdnUrl, {
+      method: 'HEAD',
+      signal: AbortSignal.timeout(CDN_HEAD_TIMEOUT_MS)
+    });
+
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function resolveOrgSiteOgImageUrl(options: {
   siteName: string;
   pageOrigin: string;
   isSelfHosted: boolean;
   mediaCdnUrl?: string | null;
   publicServerUrl?: string | null;
-}): string | null {
+}): Promise<string | null> {
   const siteName = options.siteName.trim();
   if (!siteName) {
     return null;
@@ -34,7 +49,10 @@ export function resolveOrgSiteOgImageUrl(options: {
 
   const mediaCdnUrl = options.mediaCdnUrl?.trim() || (!options.isSelfHosted ? DEFAULT_CLOUD_MEDIA_CDN_URL : '');
   if (mediaCdnUrl && isPublicHttpOrigin(mediaCdnUrl)) {
-    return buildOrgSiteOgCdnUrl(siteName, mediaCdnUrl);
+    const cdnUrl = buildOrgSiteOgCdnUrl(siteName, mediaCdnUrl);
+    if (await isOrgSiteOgCdnObjectAvailable(cdnUrl)) {
+      return cdnUrl;
+    }
   }
 
   const publicServerUrl = options.publicServerUrl?.trim();

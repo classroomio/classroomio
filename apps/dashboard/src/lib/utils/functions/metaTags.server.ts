@@ -14,14 +14,14 @@ const CLOUD_OG_IMAGE = 'https://brand.cdn.clsrio.com/og/classroomio-opengraph.jp
 const ORG_OG_WIDTH = 1200;
 const ORG_OG_HEIGHT = 630;
 
-function resolveOgImageUrl(url: URL, orgSiteInfo: OrgSiteInfo): string {
+async function resolveOgImageUrl(url: URL, orgSiteInfo: OrgSiteInfo): Promise<string> {
   const envUrl = publicEnv.PUBLIC_OG_IMAGE_URL?.trim();
   if (envUrl) {
     return envUrl;
   }
 
   if (orgSiteInfo.isOrgSite && orgSiteInfo.org?.siteName) {
-    const dynamicOgUrl = resolveOrgSiteOgImageUrl({
+    const dynamicOgUrl = await resolveOrgSiteOgImageUrl({
       siteName: orgSiteInfo.org.siteName,
       pageOrigin: url.origin,
       isSelfHosted,
@@ -91,7 +91,7 @@ function resolveOrgSiteMeta(orgSiteInfo: OrgSiteInfo): {
   };
 }
 
-export function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): MetaTagsProps {
+export async function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): Promise<MetaTagsProps> {
   const orgMeta = resolveOrgSiteMeta(orgSiteInfo);
 
   const title =
@@ -107,7 +107,7 @@ export function getBaseMetaTags(url: URL, orgSiteInfo: OrgSiteInfo): MetaTagsPro
     (isSelfHosted && orgSiteInfo.org?.name ? orgSiteInfo.org.name : null) ||
     'ClassroomIO';
 
-  const ogImageUrl = resolveOgImageUrl(url, orgSiteInfo);
+  const ogImageUrl = await resolveOgImageUrl(url, orgSiteInfo);
   const usesDynamicOrgOg =
     orgSiteInfo.isOrgSite && Boolean(orgSiteInfo.org?.siteName) && !publicEnv.PUBLIC_OG_IMAGE_URL?.trim();
 
