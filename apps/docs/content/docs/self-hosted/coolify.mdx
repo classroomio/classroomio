@@ -1,55 +1,277 @@
 ---
 title: Coolify
-description: Deploy ClassroomIO on Coolify using the pull-based Docker Compose stack.
+description: Deploy ClassroomIO on Coolify using the pull-based Docker Compose stack, with a video walkthrough.
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
 
-[Coolify](https://coolify.io) is a self-hosted PaaS (an open-source Heroku/Netlify alternative) you run on your own VPS. It deploys ClassroomIO as a **Docker Compose resource** using the pull-based [`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker-compose.images.yaml) — so your Coolify host **pulls** the published `classroomio/*` images and never builds anything.
+[Coolify](https://coolify.io) is a self-hosted PaaS (an open-source Heroku/Netlify alternative) you run on your own VPS. It runs ClassroomIO from the published `classroomio/*` images — your Coolify host **pulls** them and never builds anything.
+
+## Watch the walkthrough
+
+Prefer to follow along? This video walks through the whole Coolify deployment end to end. The written steps below mirror it, and the [Environment variable reference](#environment-variable-reference) has every value to copy.
+
+{/* TODO: replace REPLACE_WITH_VIDEO_ID with the Coolify walkthrough video id once recorded */}
+<div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px', marginBottom: '16px' }}>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/5pwzUn8JBws?si=HcetU4pDYmRbwn4M" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>
 
 ## Prerequisites
 
-- A running Coolify instance with a connected server.
-- A domain pointed at that server (Coolify's built-in proxy terminates HTTPS for you).
+- A running **Coolify instance** with a connected server.
+- A **domain** with a DNS **A record pointing at your Coolify server's IP**. Coolify's built-in proxy terminates HTTPS and issues the certificate for you.
+- An **SMTP provider** (or Zoho/ZeptoMail) for signup verification, password reset, and invite emails. See [Nodemailer SMTP docs](https://nodemailer.com/smtp/).
+- *Optional:* an **OpenAI API key** (transcription + AI course generation) and Google OAuth / Unsplash keys.
 
-## Steps
+<Callout title="Two secrets to generate first">
+  You'll reuse `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` across services. Coolify does **not**
+  run our secret-generation script, so generate them once yourself and keep them handy:
 
-1. **New Resource → Docker Compose.** Point Coolify at this repo and the compose path `docker-compose.images.yaml`, or paste the file's contents.
+  ```zsh title="Terminal"
+  openssl rand -hex 32   # BETTER_AUTH_SECRET
+  openssl rand -hex 32   # PRIVATE_SERVER_KEY  (must be identical in the api and dashboard services)
+  ```
+</Callout>
 
-2. **Set environment variables** (Coolify's UI — these become the compose `.env`). Coolify does **not** run our `run-docker-full-stack.sh`, so generate secrets yourself:
+## Step-by-step walkthrough
 
-   ```zsh title="Required"
-   CIO_VERSION=1.4.2                 # pin a release (not "latest") so upgrades are deliberate
-   DASHBOARD_ORIGIN=https://app.yourdomain.com
-   BETTER_AUTH_SECRET=<openssl rand -hex 32>
-   PRIVATE_SERVER_KEY=<openssl rand -hex 32>   # must be identical in the api and dashboard services
-   POSTGRES_PASSWORD=<strong password>
-   # Email (required for signup/reset/invites)
-   SMTP_HOST=
-   SMTP_PORT=
-   SMTP_USER=
-   SMTP_PASSWORD=
-   SMTP_SENDER=
-   ```
+This uses a **Docker Compose resource**: you paste the compose file and set every environment value yourself. The flow is: **create a project → add the compose file → set environment variables → point the dashboard domain → deploy → sign up**.
 
-   <Callout type="error" title="The stack won't start without strong secrets">
-     `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` are required. The compose file fails fast if
-     either is empty, so it never boots with a predictable session-signing secret.
-   </Callout>
+<Steps>
 
-3. **Assign a domain.** Map your domain to the **dashboard** service (internal port `3082`); Coolify's reverse proxy issues the certificate. The dashboard proxies API calls server-side, so you normally only need the dashboard exposed publicly — the `api` service stays internal.
+<Step>
+### Create a project and add a Docker Compose resource
 
-4. **Object storage.** Recommended: the **bundled MinIO** — enable its profile with
-   `COMPOSE_PROFILES=minio` and Coolify runs MinIO alongside the stack. Give the MinIO volume
-   persistent storage in Coolify and route its public URL (`OBJECT_STORAGE_PUBLIC_ENDPOINT` /
-   `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL`) so browsers can load media. Prefer fully-managed
-   storage instead? Point the same `OBJECT_STORAGE_*` variables at external **S3 / Cloudflare R2**
-   and leave the `minio` profile off — see the [Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for R2.
+Log in to Coolify and **create a project**. When you add a resource, Coolify asks what type it is — GitHub, a Docker image, a service, or a **Docker Compose** file. Choose **Docker Compose**, then **paste the contents of [`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker-compose.images.yaml)** into the editor.
 
-   **Upload size limits** (optional): set `UPLOAD_MAX_*_MB` in Coolify's env for both the `api` and
-   `dashboard` services (same values in each). See [Docker self-hosting → Upload file size limits](/docs/self-hosted/docker#optional--upload-file-size-limits).
+![Showing list of options to choose from](/coolify-02-services.png)
 
-5. **Deploy.** Coolify pulls `classroomio/{api,dashboard,jobs}:${CIO_VERSION}`, starts Postgres + Redis, the API container runs database setup on first boot, then the dashboard and the **jobs worker** come up.
+</Step>
+
+<Step>
+### Confirm the services parsed
+
+After saving, Coolify parses the compose file and lists the services: `postgres`, `redis`, `api`, `dashboard`, `jobs` (and `minio` once you enable its profile in the next step). Confirm they all appear before moving on.
+![Select composer file type](/coolify-01-add-resource.png)
+![Coolify showing the parsed ClassroomIO services](/coolify-02-services.png)
+</Step>
+
+<Step>
+### Set the environment variables
+
+Open the resource's **Environment Variables** page. This is where most Coolify deployments go wrong, so treat the [Environment variable reference](#environment-variable-reference) below as the source of truth: **set every variable it lists as required, and leave the optional ones blank.** The block here covers the essentials to get you started; the full copy-paste reference is a few sections down.
+
+```zsh title="Essentials — set all of these"
+COMPOSE_PROFILES=minio                      # runs the bundled MinIO object storage
+DASHBOARD_ORIGIN=https://dash.yourdomain.com
+BETTER_AUTH_SECRET=<openssl rand -hex 32>
+PRIVATE_SERVER_KEY=<openssl rand -hex 32>   # must be identical in the api and dashboard services
+POSTGRES_PASSWORD=<strong password>
+# Email (signup verification, password reset, invites)
+SMTP_HOST=smtp.yourprovider.com
+SMTP_PORT=587
+SMTP_USER=<smtp username>
+SMTP_PASSWORD=<smtp password>
+SMTP_SENDER=ClassroomIO <you@yourdomain.com>
+# Object storage + domains: see the full reference below
+```
+
+👉 The essentials above get you started, but the complete list of what to set — object storage, domains, and every optional variable — is in the [**Environment variable reference**](#environment-variable-reference) below. Copy that full block before you deploy.
+
+<Callout title="How to read the reference: value = required, blank = optional">
+  There's no way to guess which variables Coolify needs, so the [Environment variable
+  reference](#environment-variable-reference) spells it out. The rule is simple: **every variable
+  shown with a value must be set** for a smooth deployment (secrets, database, domains, object
+  storage, and SMTP are all needed). **Every variable left blank after `=` is optional** — fill it in
+  only if you use that integration. Leaving an optional one blank never causes a build or boot error.
+</Callout>
+
+![Setting the environment variables in Coolify](/coolify-03-env-vars.png)
+</Step>
+
+<Step>
+### Confirm the image tag
+
+`CIO_VERSION` chooses the tag pulled for `classroomio/{api,dashboard,jobs}`. **Confirm the tag you use actually exists** at [hub.docker.com/r/classroomio](https://hub.docker.com/r/classroomio/) before deploying.
+
+<Callout title="Pin a released version">
+  Set `CIO_VERSION=1.0.0` to pin an exact release. `latest` is the freshest `main` build — it moves
+  on every merge (rolling; may include unreleased code), while the version tags (`1.0.0`, `1.0`, `1`)
+  are immutable, pinned releases. Pinning an exact release makes upgrades deliberate and deploys
+  reproducible.
+</Callout>
+
+![Confirming the classroomio image tags on Docker Hub](/coolify-04-image-tag.png)
+</Step>
+
+<Step>
+### Set the dashboard domain
+
+Open the **dashboard** service → **Settings** and set its domain, including the internal port, e.g. `https://dash.yourdomain.com:3082`. Coolify maps that FQDN to the container's port `3082` and issues the certificate through its proxy.
+
+The dashboard proxies API calls server-side, so you normally only expose the dashboard publicly — the `api` service stays internal.
+
+![Setting the dashboard service domain in Coolify](/coolify-05-dashboard-domain.png)
+</Step>
+
+<Step>
+### Deploy
+
+Click **Deploy**. Coolify pulls `classroomio/{api,dashboard,jobs}:${CIO_VERSION}`, starts Postgres + Redis, the API container runs database setup on first boot, then the dashboard and the **jobs worker** come up. Watch the **logs** — they tell you when every service is up.
+
+![Coolify deploy logs showing the stack coming up](/coolify-06-deploy-logs.png)
+</Step>
+
+<Step>
+### Open the app and sign up
+
+Once the logs show the stack is healthy, open your dashboard URL (`https://dash.yourdomain.com`) in a new browser tab and **sign up**. The **first** account becomes the organization **admin**. Every signup or sign-in after that joins as a student — unless you invite them with a specific role.
+
+![The running ClassroomIO dashboard sign-up page](/railway-12-signup.png)
+</Step>
+
+</Steps>
+
+## Environment variable reference
+
+You set these on the resource's Environment Variables page (Step 3). This is the complete picture — copy the block below, then replace the placeholder values with your own.
+
+<Callout title="Value = required, blank = optional">
+  **Every variable shown with a value below is required** for a working deployment. **Every variable
+  left blank after `=` is optional** — fill it in only if you use that feature. A blank optional
+  variable never causes a build or boot error, so don't put junk into fields you aren't using.
+</Callout>
+
+```zsh title=".env — a complete working Coolify deployment"
+# ── Secrets (generate with: openssl rand -hex 32) ──
+BETTER_AUTH_SECRET=<openssl rand -hex 32>
+PRIVATE_SERVER_KEY=<openssl rand -hex 32>   # identical in the api and dashboard services
+
+# ── Object storage profile ──
+COMPOSE_PROFILES=minio                      # runs the bundled MinIO alongside the stack
+
+# ── Database ──
+POSTGRES_DB=classroomio
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=<strong password>
+
+# ── Domains & routing ──
+PUBLIC_IS_SELFHOSTED=true
+DASHBOARD_ORIGIN=https://dash.yourdomain.com
+PUBLIC_SERVER_URL=https://dash.yourdomain.com
+PRIVATE_SERVER_URL=http://api:3081
+PRIVATE_APP_HOST=dash.yourdomain.com
+PRIVATE_APP_SUBDOMAINS=app
+
+# ── Object storage (MinIO) ──
+MINIO_ROOT_USER=<storage access key>
+MINIO_ROOT_PASSWORD=<storage secret>
+MINIO_SERVER_URL=https://storage.yourdomain.com
+OBJECT_STORAGE_ENDPOINT=http://minio:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=https://storage.yourdomain.com
+OBJECT_STORAGE_ACCESS_KEY_ID=<same as MINIO_ROOT_USER>
+OBJECT_STORAGE_SECRET_ACCESS_KEY=<same as MINIO_ROOT_PASSWORD>
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://storage.yourdomain.com/media
+OBJECT_STORAGE_BUCKET_VIDEOS=videos
+OBJECT_STORAGE_BUCKET_DOCUMENTS=documents
+OBJECT_STORAGE_BUCKET_MEDIA=media
+CSP_MEDIA_SRC_DOMAINS=https://storage.yourdomain.com   # so browsers can load media
+
+# ── Email (SMTP — signup verification, password reset, invites) ──
+SMTP_HOST=smtp.yourprovider.com
+SMTP_PORT=587
+SMTP_USER=<smtp username>
+SMTP_PASSWORD=<smtp password>
+SMTP_SENDER=ClassroomIO <you@yourdomain.com>
+
+# ── Optional — leave blank unless you need them ──
+CIO_VERSION=1.0.0           # pinned release; blank = latest (rolling main build)
+GOOGLE_CLIENT_ID=           # Google OAuth sign-in
+GOOGLE_CLIENT_SECRET=
+OPENAI_API_KEY=             # transcription + AI course generation
+UNSPLASH_API_KEY=           # Unsplash image search
+LICENSE_KEY=                # enterprise features (SSO)
+ALLOWED_EXTERNAL_DOMAINS=   # overrides all CSP_*_DOMAINS below
+CSP_SCRIPT_SRC_DOMAINS=
+CSP_STYLE_SRC_DOMAINS=
+CSP_CONNECT_SRC_DOMAINS=
+CSP_FRAME_SRC_DOMAINS=
+CSP_FONT_SRC_DOMAINS=
+TRUSTED_ORIGINS=            # only for direct browser-to-API calls (proxy is same-origin)
+OBJECT_STORAGE_REGION=      # only for some external S3 providers
+SKIP_DB_SETUP=              # blank = run DB setup on first boot (leave blank)
+```
+
+### Required — set all of these
+
+| Variable | What it's for |
+|----------|---------------|
+| `BETTER_AUTH_SECRET` | Session-signing secret. Generate with `openssl rand -hex 32`. |
+| `PRIVATE_SERVER_KEY` | Dashboard-to-API auth key. Must be **identical** in the api and dashboard services. |
+| `COMPOSE_PROFILES` | Set to `minio` to run the bundled object storage with the stack. |
+| `POSTGRES_DB` / `POSTGRES_USER` / `POSTGRES_PASSWORD` | Database name, user, and a **strong** password. |
+| `PUBLIC_IS_SELFHOSTED` | `true` for self-hosted mode. |
+| `DASHBOARD_ORIGIN` | Public dashboard URL — used as the auth base URL and in invite/email links. |
+| `PUBLIC_SERVER_URL` | Public origin the browser uses (your dashboard domain). |
+| `PRIVATE_SERVER_URL` | Internal API URL over the Docker network (`http://api:3081`). |
+| `PRIVATE_APP_HOST` / `PRIVATE_APP_SUBDOMAINS` | Dashboard host and subdomain routing. |
+| `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` | MinIO credentials — also used as the object-storage access key / secret. |
+| `MINIO_SERVER_URL` | Public storage URL (fixes MinIO console redirects behind the proxy). |
+| `OBJECT_STORAGE_ENDPOINT` | Internal endpoint the app uploads to (`http://minio:9000`). |
+| `OBJECT_STORAGE_PUBLIC_ENDPOINT` | Public storage endpoint browsers download from. |
+| `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY` | Storage credentials (match the MinIO root user/password). |
+| `OBJECT_STORAGE_FORCE_PATH_STYLE` | `true` — required for MinIO. |
+| `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` | Public base URL for media (`…/media`). |
+| `OBJECT_STORAGE_BUCKET_VIDEOS/DOCUMENTS/MEDIA` | Bucket names (`videos`, `documents`, `media`). |
+| `CSP_MEDIA_SRC_DOMAINS` | Your storage domain — otherwise the browser's CSP blocks uploaded media. |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_SENDER` | SMTP server for signup verification, password reset, and invites. |
+
+<Callout type="warn" title="If the stack won't start at all">
+  Of the above, `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` are the two the compose file
+  **fails fast** on: leave either empty and the containers refuse to boot (so ClassroomIO never runs
+  with a predictable session-signing secret). The rest won't abort the boot, but the deployment
+  won't work correctly without them — set them all.
+</Callout>
+
+### Optional — leave blank unless you need them
+
+| Variable | Enables |
+|----------|---------|
+| `CIO_VERSION` | Image tag to pull. Blank = `latest` (rolling main); pin an exact release such as `1.0.0` (see the tag step). |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth sign-in. |
+| `OPENAI_API_KEY` | Transcription + AI course generation (jobs worker). |
+| `UNSPLASH_API_KEY` | Unsplash image search. |
+| `LICENSE_KEY` | Enterprise features — SSO requires a license ([book a call](http://cal.com/classroomio/enterprise)). |
+| `ALLOWED_EXTERNAL_DOMAINS` | Overrides all `CSP_*_DOMAINS` vars with one comma-separated allowlist. |
+| `CSP_SCRIPT_SRC_DOMAINS`, `CSP_STYLE_SRC_DOMAINS`, `CSP_CONNECT_SRC_DOMAINS`, `CSP_FRAME_SRC_DOMAINS`, `CSP_FONT_SRC_DOMAINS` | Per-directive CSP allowlists for extra CDN/font/frame domains. |
+| `TRUSTED_ORIGINS` | Extra origins allowed to call the API directly (normal dashboard traffic is same-origin via the proxy). |
+| `OBJECT_STORAGE_REGION` | Region for some external S3 providers (not needed for MinIO). |
+| `SKIP_DB_SETUP` | Skips first-boot database setup — leave blank so it runs. |
+| `PUBLIC_APP_TITLE`, `PUBLIC_APP_DESCRIPTION`, `PUBLIC_OG_IMAGE_URL` | Custom branding / meta tags. |
+
+### Object storage
+
+Recommended: the **bundled MinIO** — enable its profile with `COMPOSE_PROFILES=minio` and Coolify
+runs MinIO alongside the stack. Give the MinIO volume persistent storage in Coolify and route its
+public URL (`OBJECT_STORAGE_PUBLIC_ENDPOINT` / `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL`) so browsers
+can load media. Prefer fully-managed storage instead? Point the same `OBJECT_STORAGE_*` variables
+at external **S3 / Cloudflare R2** and leave the `minio` profile off — see the
+[Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for R2.
+
+<Callout type="warn" title="MinIO is your durability boundary">
+  Single-node MinIO has no redundancy — its volume is the only thing protecting your uploads. Give
+  it persistent storage in Coolify and back it up. If you'd rather not operate storage, use external
+  **Cloudflare R2 / AWS S3** instead (R2 has no egress fees): point the same `OBJECT_STORAGE_*`
+  vars at the provider.
+</Callout>
+
+### Upload size limits (optional)
+
+Set `UPLOAD_MAX_*_MB` in Coolify's env for both the `api` and `dashboard` services (same values in
+each), e.g. `UPLOAD_MAX_DOCUMENT_MB=50`. See
+[Docker self-hosting → Upload file size limits](/docs/self-hosted/docker#optional--upload-file-size-limits).
 
 ## Upgrades & rollback
 
