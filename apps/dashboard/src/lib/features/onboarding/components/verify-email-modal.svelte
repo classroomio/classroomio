@@ -3,7 +3,6 @@
   import { Button } from '@cio/ui/base/button';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
-  import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { authClient } from '$lib/utils/services/auth/client';
   import { globalStore } from '$lib/utils/store/app';
@@ -22,7 +21,7 @@
   let interval;
   let countDown = $state(WAIT_SEC);
 
-  const open = $derived(Boolean(!$profile.isEmailVerified && !!$profile.id && !!$currentOrg.id));
+  const open = $derived(Boolean(!$profile.isEmailVerified && !!$profile.id));
 
   let domProtectionCleanup: ReturnType<typeof setupDOMProtection> | undefined;
 
