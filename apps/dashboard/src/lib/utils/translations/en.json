@@ -4150,13 +4150,42 @@
     },
     "templates": {
       "heading": "Templates",
+      "browse": "Browse templates",
+      "browser_title": "Note templates",
+      "browser_description": "Start from a ClassroomIO template or reuse one you saved.",
+      "builtin_heading": "ClassroomIO templates",
+      "builtin_description": "Ready-made structures to get started quickly.",
+      "user_heading": "Your templates",
+      "user_description": "Notes you saved as templates for this organization.",
       "empty": "Save a note as a template to reuse it here.",
       "coming_soon": "Note templates are coming soon.",
       "convert_success": "Note saved as template",
       "convert_error": "Could not save note as template.",
       "create_success": "Note created from template",
       "create_error": "Could not create note from template.",
-      "use_template": "Use template"
+      "use_template": "Use template",
+      "builtin": {
+        "blank": {
+          "title": "Blank note",
+          "description": "Start from scratch with an empty page."
+        },
+        "table_of_contents": {
+          "title": "Table of contents",
+          "description": "A structured page with a linked table of contents."
+        },
+        "course_outline": {
+          "title": "Course outline",
+          "description": "Sections and lessons for planning a new course."
+        },
+        "meeting_notes": {
+          "title": "Meeting notes",
+          "description": "Agenda, discussion, and action items."
+        },
+        "lesson_plan": {
+          "title": "Lesson plan",
+          "description": "Objectives, activities, and assessment for one lesson."
+        }
+      }
     },
     "workspace": {
       "empty_title": "No note selected",

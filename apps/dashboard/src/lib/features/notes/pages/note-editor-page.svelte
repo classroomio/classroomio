@@ -38,7 +38,8 @@
   import NoteCommentSelection from '../components/note-comment-selection.svelte';
   import NoteEmptyPagePicker, { type NoteEmptyPageOption } from '../components/note-empty-page-picker.svelte';
   import NoteConvertCourseDialog from '../components/note-convert-course-dialog.svelte';
-  import NoteTemplatePickerDialog from '../components/note-template-picker-dialog.svelte';
+  import NoteTemplatesBrowser from '../components/note-templates-browser.svelte';
+  import NoteCommentsStickyRail from '../components/note-comments-sticky-rail.svelte';
   import { toggleNoteCommentsPanel } from '../panel';
   import { noteCommentsBridge } from '../utils/note-comments-bridge.svelte';
   import {
@@ -188,6 +189,10 @@
   }
 
   function openCommentsPanel() {
+    if (typeof window !== 'undefined' && window.matchMedia('(min-width: 1280px)').matches) {
+      return;
+    }
+
     toggleNoteCommentsPanel();
   }
 
@@ -596,197 +601,212 @@
 
 <svelte:document onvisibilitychange={handleDocumentVisibilityChange} />
 
-<div class="flex min-h-0 w-full flex-1 flex-col gap-4 px-4 py-2">
-  <header class="flex flex-wrap items-center gap-3">
-    <Input
-      value={title}
-      readonly={!canWrite}
-      class="ui:h-auto ui:min-w-0 ui:flex-1 ui:rounded-none ui:border-0 ui:bg-transparent ui:px-0 ui:py-0 ui:text-[2.5rem] ui:leading-[1.1] ui:font-bold ui:shadow-none ui:placeholder:text-muted-foreground/45 ui:focus-visible:border-0 ui:focus-visible:ring-0"
-      placeholder={$t('notes.org.new_note_title')}
-      oninput={scheduleTitleSave}
-      onkeydown={handleTitleKeydown}
-    />
+<div class="flex min-h-0 w-full flex-1 overflow-hidden">
+  <div class="flex min-h-0 min-w-0 flex-1 justify-center overflow-y-auto">
+    <div class="flex w-full max-w-3xl flex-col gap-4 px-4 py-2">
+      <header class="flex flex-wrap items-center gap-3">
+        <Input
+          value={title}
+          readonly={!canWrite}
+          class="ui:h-auto ui:min-w-0 ui:flex-1 ui:rounded-none ui:border-0 ui:bg-transparent ui:px-0 ui:py-0 ui:text-[2.5rem] ui:leading-[1.1] ui:font-bold ui:shadow-none ui:placeholder:text-muted-foreground/45 ui:focus-visible:border-0 ui:focus-visible:ring-0"
+          placeholder={$t('notes.org.new_note_title')}
+          oninput={scheduleTitleSave}
+          onkeydown={handleTitleKeydown}
+        />
 
-    <div class="flex shrink-0 items-center gap-2">
-      {#if isSaving}
-        <LoaderIcon size={16} class="ui:text-muted-foreground animate-spin" />
+        <div class="flex shrink-0 items-center gap-2">
+          {#if isSaving}
+            <LoaderIcon size={16} class="ui:text-muted-foreground animate-spin" />
+          {/if}
+
+          {#if canWrite && noteOrigin === 'workspace'}
+            <Button variant="secondary" size="sm" onclick={() => (showShareDialog = true)}>
+              <ShareIcon size={16} />
+              {$t('notes.share.open')}
+            </Button>
+          {/if}
+
+          {#if canWrite && noteOrigin === 'workspace'}
+            <Button variant="secondary" size="sm" onclick={() => (showConvertCourseDialog = true)}>
+              <BookOpenIcon size={16} />
+              {$t('notes.convert_course.button')}
+            </Button>
+          {/if}
+
+          {#if canWrite}
+            <Button
+              size="sm"
+              onclick={toggleAiAssistant}
+              class="ui:bg-primary ui:text-primary-foreground relative overflow-hidden border-0"
+            >
+              <Waves
+                lineColor="rgba(255,255,255,0.55)"
+                xGap={8}
+                yGap={12}
+                waveAmpX={18}
+                waveAmpY={9}
+                waveSpeedX={0.04}
+                waveSpeedY={0.02}
+              />
+              <SparklesIcon size={14} class="relative z-10" />
+              <span class="relative z-10">{$t('course.navItems.nav_ai_assistant')}</span>
+            </Button>
+          {/if}
+
+          {#if canWrite}
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger>
+                {#snippet child({ props })}
+                  <IconButton {...props} variant="secondary" size="icon" aria-label={$t('notes.editor.more_actions')}>
+                    <EllipsisVerticalIcon size={16} />
+                  </IconButton>
+                {/snippet}
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end">
+                <DropdownMenu.Item onclick={openCommentsPanel}>
+                  <MessageSquareIcon size={16} />
+                  {$t('notes.comments.heading')}
+                </DropdownMenu.Item>
+                <DropdownMenu.Item onclick={() => (showVersionHistory = true)}>
+                  <HistoryIcon size={16} />
+                  {$t('notes.editor.version_history.open')}
+                </DropdownMenu.Item>
+                {#if noteOrigin === 'workspace'}
+                  <DropdownMenu.Item onclick={handleConvertToTemplate}>
+                    <LayoutTemplateIcon size={16} />
+                    {$t('notes.editor.convert_to_template')}
+                  </DropdownMenu.Item>
+                {/if}
+                {#if noteOrigin === 'workspace'}
+                  <DropdownMenu.Separator />
+                  <DropdownMenu.Item class="text-red-600" onclick={() => (showDeleteDialog = true)}>
+                    <TrashIcon size={16} />
+                    {$t('notes.editor.delete')}
+                  </DropdownMenu.Item>
+                {/if}
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          {/if}
+        </div>
+      </header>
+
+      <div class="flex flex-col gap-2">
+        {#if !canWrite && ownerFullname}
+          <Badge variant="secondary" class="w-fit">{$t('notes.share.by_author', { name: ownerFullname })}</Badge>
+        {/if}
+      </div>
+
+      {#if !isLoading && !loadError && !canWrite}
+        <p class="ui:text-muted-foreground text-sm">
+          {$t('notes.share.read_only_banner')}
+        </p>
       {/if}
 
-      {#if canWrite && noteOrigin === 'workspace'}
-        <Button variant="secondary" size="sm" onclick={() => (showShareDialog = true)}>
-          <ShareIcon size={16} />
-          {$t('notes.share.open')}
-        </Button>
-      {/if}
+      {#if !isLoading && !loadError && noteOrigin === 'workspace' && canWrite}
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="ui:text-muted-foreground text-sm font-medium">{$t('notes.tags.heading')}</span>
 
-      {#if canWrite && noteOrigin === 'workspace'}
-        <Button variant="secondary" size="sm" onclick={() => (showConvertCourseDialog = true)}>
-          <BookOpenIcon size={16} />
-          {$t('notes.convert_course.button')}
-        </Button>
-      {/if}
+          {#each selectedTagChips as tag (tag.id)}
+            <Badge variant="secondary" class="gap-1">
+              <span
+                class="inline-block h-2 w-2 rounded-full border"
+                style={`background-color: ${tag.color}`}
+                aria-hidden="true"
+              ></span>
+              <span>{tag.name}</span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                class="h-5 w-5"
+                onclick={() => removeSelectedTag(tag.id)}
+              >
+                <XIcon />
+              </Button>
+            </Badge>
+          {/each}
 
-      {#if canWrite}
-        <Button
-          size="sm"
-          onclick={toggleAiAssistant}
-          class="ui:bg-primary ui:text-primary-foreground relative overflow-hidden border-0"
-        >
-          <Waves
-            lineColor="rgba(255,255,255,0.55)"
-            xGap={8}
-            yGap={12}
-            waveAmpX={18}
-            waveAmpY={9}
-            waveSpeedX={0.04}
-            waveSpeedY={0.02}
+          <NoteTagPicker
+            tagGroups={tagApi.tagGroups}
+            {selectedTagIds}
+            bind:open={isTagPopoverOpen}
+            onTagToggle={toggleTagSelection}
           />
-          <SparklesIcon size={14} class="relative z-10" />
-          <span class="relative z-10">{$t('course.navItems.nav_ai_assistant')}</span>
-        </Button>
+
+          {#if isSavingTags}
+            <LoaderIcon size={14} class="ui:text-muted-foreground animate-spin" />
+          {/if}
+        </div>
       {/if}
 
-      {#if canWrite}
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger>
-            {#snippet child({ props })}
-              <IconButton {...props} variant="secondary" size="icon" aria-label={$t('notes.editor.more_actions')}>
-                <EllipsisVerticalIcon size={16} />
-              </IconButton>
-            {/snippet}
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content align="end">
-            <DropdownMenu.Item onclick={openCommentsPanel}>
-              <MessageSquareIcon size={16} />
-              {$t('notes.comments.heading')}
-            </DropdownMenu.Item>
-            <DropdownMenu.Item onclick={() => (showVersionHistory = true)}>
-              <HistoryIcon size={16} />
-              {$t('notes.editor.version_history.open')}
-            </DropdownMenu.Item>
-            {#if noteOrigin === 'workspace'}
-              <DropdownMenu.Item onclick={handleConvertToTemplate}>
-                <LayoutTemplateIcon size={16} />
-                {$t('notes.editor.convert_to_template')}
-              </DropdownMenu.Item>
+      <div class="flex min-h-0 flex-1 flex-col">
+        <div class="relative min-h-0 min-w-0 flex-1">
+          <input
+            bind:this={importInputRef}
+            type="file"
+            accept=".md,.txt,.docx,text/markdown,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            class="hidden"
+            onchange={handleImportInputChange}
+          />
+
+          {#if isLoading}
+            <div class="ui:text-muted-foreground flex h-40 items-center justify-center text-sm">
+              <LoaderIcon size={18} class="mr-2 animate-spin" />
+              {$t('notes.editor.loading')}
+            </div>
+          {:else if loadError}
+            <p class="ui:text-destructive text-sm">{loadError}</p>
+          {:else}
+            {#if showEmptyPagePicker}
+              <NoteEmptyPagePicker onSelect={handleEmptyPageOption} class="min-h-[40vh]" />
             {/if}
-            {#if noteOrigin === 'workspace'}
-              <DropdownMenu.Separator />
-              <DropdownMenu.Item class="text-red-600" onclick={() => (showDeleteDialog = true)}>
-                <TrashIcon size={16} />
-                {$t('notes.editor.delete')}
-              </DropdownMenu.Item>
+
+            <div class={showEmptyPagePicker ? 'sr-only' : ''}>
+              <TextEditor
+                {content}
+                showToolBar={false}
+                editable={canWrite}
+                extraExtensions={commentExtensions}
+                class="border-0 shadow-none"
+                editorClass="min-h-[60vh] border-0 px-0 shadow-none"
+                onChange={scheduleContentSave}
+                onReady={handleEditorReady}
+                placeholder={$t('notes.editor.placeholder')}
+              />
+            </div>
+
+            {#if !showEmptyPagePicker}
+              <NoteCommentSelection root={editorRoot} enabled={canComment} onComment={handleStartComment} />
+              <p class="ui:text-muted-foreground mt-2 text-xs">{$t('notes.editor.slash_hint')}</p>
             {/if}
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
-      {/if}
+
+            {#if isImporting}
+              <div class="ui:text-muted-foreground mt-2 flex items-center gap-2 text-sm">
+                <LoaderIcon size={16} class="animate-spin" />
+                {$t('notes.org.import')}
+              </div>
+            {/if}
+          {/if}
+        </div>
+      </div>
     </div>
-  </header>
-
-  <div class="flex flex-col gap-2">
-    {#if !canWrite && ownerFullname}
-      <Badge variant="secondary" class="w-fit">{$t('notes.share.by_author', { name: ownerFullname })}</Badge>
-    {/if}
   </div>
 
-  {#if !isLoading && !loadError && !canWrite}
-    <p class="ui:text-muted-foreground text-sm">
-      {$t('notes.share.read_only_banner')}
-    </p>
-  {/if}
-
-  {#if !isLoading && !loadError && noteOrigin === 'workspace' && canWrite}
-    <div class="flex flex-wrap items-center gap-2">
-      <span class="ui:text-muted-foreground text-sm font-medium">{$t('notes.tags.heading')}</span>
-
-      {#each selectedTagChips as tag (tag.id)}
-        <Badge variant="secondary" class="gap-1">
-          <span
-            class="inline-block h-2 w-2 rounded-full border"
-            style={`background-color: ${tag.color}`}
-            aria-hidden="true"
-          ></span>
-          <span>{tag.name}</span>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-xs"
-            class="h-5 w-5"
-            onclick={() => removeSelectedTag(tag.id)}
-          >
-            <XIcon />
-          </Button>
-        </Badge>
-      {/each}
-
-      <NoteTagPicker
-        tagGroups={tagApi.tagGroups}
-        {selectedTagIds}
-        bind:open={isTagPopoverOpen}
-        onTagToggle={toggleTagSelection}
-      />
-
-      {#if isSavingTags}
-        <LoaderIcon size={14} class="ui:text-muted-foreground animate-spin" />
-      {/if}
-    </div>
-  {/if}
-
-  <div class="flex min-h-0 flex-1 flex-col">
-    <div class="relative min-h-0 min-w-0 flex-1">
-      <input
-        bind:this={importInputRef}
-        type="file"
-        accept=".md,.txt,.docx,text/markdown,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        class="hidden"
-        onchange={handleImportInputChange}
-      />
-
-      {#if isLoading}
-        <div class="ui:text-muted-foreground flex h-40 items-center justify-center text-sm">
-          <LoaderIcon size={18} class="mr-2 animate-spin" />
-          {$t('notes.editor.loading')}
-        </div>
-      {:else if loadError}
-        <p class="ui:text-destructive text-sm">{loadError}</p>
-      {:else}
-        {#if showEmptyPagePicker}
-          <NoteEmptyPagePicker onSelect={handleEmptyPageOption} class="min-h-[40vh]" />
-        {/if}
-
-        <div class={showEmptyPagePicker ? 'sr-only' : ''}>
-          <TextEditor
-            {content}
-            showToolBar={false}
-            editable={canWrite}
-            extraExtensions={commentExtensions}
-            class="border-0 shadow-none"
-            editorClass="min-h-[60vh] border-0 px-0 shadow-none"
-            onChange={scheduleContentSave}
-            onReady={handleEditorReady}
-            placeholder={$t('notes.editor.placeholder')}
-          />
-        </div>
-
-        {#if !showEmptyPagePicker}
-          <NoteCommentSelection root={editorRoot} enabled={canComment} onComment={handleStartComment} />
-          <p class="ui:text-muted-foreground mt-2 text-xs">{$t('notes.editor.slash_hint')}</p>
-        {/if}
-
-        {#if isImporting}
-          <div class="ui:text-muted-foreground mt-2 flex items-center gap-2 text-sm">
-            <LoaderIcon size={16} class="animate-spin" />
-            {$t('notes.org.import')}
-          </div>
-        {/if}
-      {/if}
-    </div>
+  <div class="hidden xl:flex">
+    <NoteCommentsStickyRail />
   </div>
 </div>
 
 <NoteConvertCourseDialog bind:open={showConvertCourseDialog} {noteTitle} noteContent={content} />
 
-<NoteTemplatePickerDialog bind:open={showTemplatePicker} />
+<NoteTemplatesBrowser
+  bind:open={showTemplatePicker}
+  applyToNoteId={noteId}
+  onApplied={() => {
+    emptyPagePickerDismissed = true;
+    void loadNote();
+  }}
+/>
 
 <NoteShareDialog
   {noteId}

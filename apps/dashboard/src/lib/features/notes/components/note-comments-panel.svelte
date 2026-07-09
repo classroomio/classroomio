@@ -302,7 +302,11 @@
     {#each visibleThreads as thread (thread.id)}
       <article
         id={`comment-thread-${thread.id}`}
-        class={`ui:bg-card ui:border-border rounded-lg border p-3 ${activeThreadId === thread.id ? 'ring-primary ring-2' : ''} ${thread.status === 'resolved' ? 'ui:bg-muted/20 opacity-80' : ''}`}
+        class={cn(
+          'ui:bg-card ui:border-border rounded-lg border p-3 shadow-sm transition-shadow',
+          activeThreadId === thread.id && 'ring-primary shadow-md ring-2',
+          thread.status === 'resolved' && 'ui:bg-muted/20 opacity-80'
+        )}
       >
         <button type="button" class="mb-2 w-full text-left" onclick={() => handleSelectThread(thread)}>
           <p class="ui:text-muted-foreground line-clamp-2 text-xs italic">"{thread.anchor.quotedText}"</p>

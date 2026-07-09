@@ -1,22 +1,22 @@
 <script lang="ts">
   import PlusIcon from '@lucide/svelte/icons/plus';
+  import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
   import { Button } from '@cio/ui/base/button';
   import { Spinner } from '@cio/ui/base/spinner';
   import { cn } from '@cio/ui/tools';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
+  import { currentOrgPath } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { notesApi } from '../api';
-  import NoteTemplatesRow from './note-templates-row.svelte';
 
   interface Props {
     selectedNoteId?: string | null;
+    onBrowseTemplates?: () => void;
     class?: string;
   }
 
-  let { selectedNoteId = null, class: className = '' }: Props = $props();
+  let { selectedNoteId = null, onBrowseTemplates, class: className = '' }: Props = $props();
   let isCreating = $state(false);
 
   const workspaceNotes = $derived(
@@ -48,18 +48,14 @@
 
     await goto(noteHref(note.id));
   }
-
-  $effect(() => {
-    if (!$profile.id || !$currentOrg.id) {
-      return;
-    }
-
-    notesApi.listNotes({ scope: 'all', origin: 'workspace' });
-    notesApi.fetchUsage();
-  });
 </script>
 
-<aside class={cn('border-border flex w-64 shrink-0 flex-col border-r bg-transparent', className)}>
+<aside
+  class={cn(
+    'border-border ui:bg-background sticky top-0 flex h-[calc(100dvh-4rem)] w-64 shrink-0 flex-col border-r',
+    className
+  )}
+>
   <div class="flex items-center justify-between gap-2 border-b px-3 py-3">
     <p class="text-sm font-semibold">{$t('notes.heading')}</p>
     <Button size="icon-sm" variant="secondary" loading={isCreating} onclick={handleCreateNote}>
@@ -68,14 +64,19 @@
   </div>
 
   <div class="min-h-0 flex-1 overflow-y-auto px-3 py-3">
-    <NoteTemplatesRow {noteHref} class="mb-4" />
+    <Button variant="secondary" size="sm" class="mb-4 w-full justify-start gap-2" onclick={() => onBrowseTemplates?.()}>
+      <LayoutTemplateIcon size={16} />
+      {$t('notes.templates.browse')}
+    </Button>
 
     {#if notesApi.isLoading}
       <div class="flex justify-center py-8">
         <Spinner />
       </div>
     {:else if workspaceNotes.length === 0}
-      <p class="ui:text-muted-foreground px-1 py-8 text-center text-sm">{$t('notes.workspace.no_notes')}</p>
+      <p class="ui:text-muted-foreground flex h-full min-h-48 items-center justify-center px-1 text-center text-sm">
+        {$t('notes.workspace.no_notes')}
+      </p>
     {:else}
       <ul class="flex flex-col gap-1">
         {#each workspaceNotes as note (note.id)}

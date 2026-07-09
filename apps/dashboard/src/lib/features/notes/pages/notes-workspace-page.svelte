@@ -12,6 +12,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { notesApi } from '../api';
   import NoteListSidebar from '../components/note-list-sidebar.svelte';
+  import NoteTemplatesBrowser from '../components/note-templates-browser.svelte';
   import NoteEditorPage from './note-editor-page.svelte';
 
   interface Props {
@@ -21,6 +22,7 @@
   let { noteId = null }: Props = $props();
   let isCreating = $state(false);
   let hasCheckedRedirect = $state(false);
+  let showTemplatesBrowser = $state(false);
 
   const workspaceNotes = $derived(
     [...notesApi.notes]
@@ -74,10 +76,10 @@
   });
 </script>
 
-<div class="flex min-h-[calc(100dvh-4rem)] w-full min-w-0">
-  <NoteListSidebar selectedNoteId={noteId} />
+<div class="flex h-[calc(100dvh-4rem)] w-full min-w-0 overflow-hidden">
+  <NoteListSidebar selectedNoteId={noteId} onBrowseTemplates={() => (showTemplatesBrowser = true)} />
 
-  <section class="flex min-h-0 min-w-0 flex-1 flex-col">
+  <section class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
     {#if noteId}
       <NoteEditorPage {noteId} />
     {:else if notesApi.isLoading}
@@ -100,3 +102,5 @@
     {/if}
   </section>
 </div>
+
+<NoteTemplatesBrowser bind:open={showTemplatesBrowser} />
