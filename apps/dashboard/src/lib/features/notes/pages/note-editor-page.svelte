@@ -24,7 +24,7 @@
   import { Waves } from '@cio/ui/custom/animation';
   import { TextEditor } from '$features/ui';
   import { tagApi } from '$features/tag/api';
-  import { currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrgPath, currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
@@ -209,7 +209,10 @@
       }
     });
     noteCommentsBridge.activeThreadId = activeThreadId;
-    noteCommentsBridge.pendingComposer = pendingComposer;
+
+    if (noteCommentsBridge.pendingComposer !== pendingComposer) {
+      noteCommentsBridge.pendingComposer = pendingComposer;
+    }
   }
 
   $effect(() => {
@@ -218,14 +221,6 @@
     canComment;
     mentionItems;
     syncCommentsBridge();
-  });
-
-  $effect(() => {
-    const bridgePending = noteCommentsBridge.pendingComposer;
-
-    if (bridgePending && pendingComposer?.threadId === bridgePending.threadId && bridgePending !== pendingComposer) {
-      pendingComposer = bridgePending;
-    }
   });
 
   onDestroy(() => {
@@ -452,11 +447,11 @@
   }
 
   async function handleSubmitPendingComment() {
-    if (!pendingComposer || !editor) {
+    const payload = noteCommentsBridge.pendingComposer ?? pendingComposer;
+
+    if (!payload || !editor) {
       return;
     }
-
-    const payload = pendingComposer;
     const nextContent = editor.getHTML();
 
     const created = await noteCommentsApi.createThread(noteId, {
@@ -476,15 +471,19 @@
   }
 
   function handleCancelPendingComment() {
-    if (!editor || !pendingComposer) {
+    const payload = noteCommentsBridge.pendingComposer ?? pendingComposer;
+
+    if (!editor || !payload) {
       pendingComposer = null;
+      noteCommentsBridge.pendingComposer = null;
 
       return;
     }
 
-    editor.commands.unsetNoteComment({ threadId: pendingComposer.threadId });
+    editor.commands.unsetNoteComment({ threadId: payload.threadId });
     content = editor.getHTML();
     pendingComposer = null;
+    noteCommentsBridge.pendingComposer = null;
     activeThreadId = null;
   }
 
@@ -570,7 +569,10 @@
   });
 
   $effect(() => {
-    noteId;
+    if (!noteId || !$currentOrg.id) {
+      return;
+    }
+
     emptyPagePickerDismissed = false;
     void loadNote();
   });

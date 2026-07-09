@@ -71,7 +71,6 @@
   let editDrafts = $state<Record<string, string>>({});
   let editingCommentId = $state<string | null>(null);
   let activeTab = $state<'open' | 'resolved'>('open');
-  let pendingDraft = $state('');
   let pendingSubmitting = $state(false);
   let replySubmitting = $state<Record<string, boolean>>({});
   let editSubmitting = $state<Record<string, boolean>>({});
@@ -122,21 +121,11 @@
   });
 
   $effect(() => {
-    pendingDraft = pendingComposer?.draft ?? '';
-  });
-
-  $effect(() => {
-    if (pendingComposer) {
-      pendingComposer.draft = pendingDraft;
-    }
-  });
-
-  $effect(() => {
     if (!pendingComposer || pendingSubmitting) {
       return;
     }
 
-    const draft = pendingDraft.trim();
+    const draft = pendingComposer.draft.trim();
 
     if (!draft) {
       return;
@@ -199,7 +188,7 @@
   }
 
   async function submitPendingComment() {
-    if (!pendingComposer || pendingSubmitting || !pendingDraft.trim()) {
+    if (!pendingComposer || pendingSubmitting || !pendingComposer.draft.trim()) {
       return;
     }
 
@@ -286,7 +275,7 @@
           >{$t('notes.comments.new_thread_label')}</label
         >
         <ChatTextarea
-          bind:value={pendingDraft}
+          bind:value={pendingComposer.draft}
           {mentionItems}
           typeLabel={mentionTypeLabel}
           placeholder={$t('notes.comments.reply_placeholder')}

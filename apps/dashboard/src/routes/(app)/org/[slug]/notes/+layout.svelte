@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { aiAssistantPanelDefinition } from '$features/ai-assistant';
   import { sidePanel, SidePanelRail } from '$features/side-panel';
   import { useSidebar } from '@cio/ui/base/sidebar';
@@ -12,14 +13,13 @@
   sidePanel.register(noteCommentsPanelDefinition);
 
   let sidePanelWidth = $state(0);
-  let previousSidebarOpen = $state(true);
 
-  $effect(() => {
-    previousSidebarOpen = sidebar.open;
+  onMount(() => {
+    const wasSidebarOpen = sidebar.open;
     sidebar.setOpen(false);
 
     return () => {
-      sidebar.setOpen(previousSidebarOpen);
+      sidebar.setOpen(wasSidebarOpen);
     };
   });
 </script>
