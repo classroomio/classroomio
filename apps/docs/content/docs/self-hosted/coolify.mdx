@@ -8,115 +8,13 @@ import { Step, Steps } from 'fumadocs-ui/components/steps';
 
 [Coolify](https://coolify.io) is a self-hosted PaaS (an open-source Heroku/Netlify alternative) you run on your own VPS. It runs ClassroomIO from the published `classroomio/*` images — your Coolify host **pulls** them and never builds anything.
 
-<Callout title="Two ways to deploy on Coolify">
-  **One-click Service (recommended, simplest):** ClassroomIO ships as a Coolify **service template**
-  that auto-generates every secret and credential for you — you only pick your domains. See
-  [One-click via the Coolify catalog](#one-click-via-the-coolify-catalog) just below.
-
-  **Manual Docker Compose resource:** paste [`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker-compose.images.yaml)
-  and set every environment variable yourself (including generating the two secrets). That's the
-  [step-by-step walkthrough](#step-by-step-walkthrough) further down.
-</Callout>
-
-## One-click via the Coolify catalog
-
-ClassroomIO is packaged as a Coolify **service template** ([`docker/coolify/classroomio.yaml`](https://github.com/classroomio/classroomio/blob/main/docker/coolify/classroomio.yaml)). Unlike the manual method, you don't generate secrets or type URLs — Coolify's *magic variables* fill them in at deploy time. You only choose the domain for the two web-facing services (the dashboard and object storage).
-
-### How Coolify fills in the values
-
-- `SERVICE_FQDN_DASHBOARD_3082` (a bare key, no value) **declares** that the dashboard is exposed and routes web traffic to container port `3082`. You assign this service a domain in Coolify.
-- `$SERVICE_URL_DASHBOARD` **references** that service's public URL — **without the port suffix** — e.g. `https://app.yourdomain.com`. The port goes *only* on the declaration; drop it when you reference the value.
-- `$SERVICE_HEX_64_*`, `$SERVICE_USER_*`, and `$SERVICE_PASSWORD_*` auto-generate the auth secrets, database, and object-storage credentials. The same name reused in two places resolves to the same value, so `PRIVATE_SERVER_KEY` matches across the api and dashboard automatically.
-
-<Callout type="warn" title="Use a real domain — the dashboard needs HTTPS">
-  The dashboard forces its CSS/JS over **HTTPS**, so the page only styles correctly when served over
-  `https://`. A real domain is the clean path: Coolify issues a trusted certificate automatically and
-  everything just works. The auto-generated `*.sslip.io` domain **can't** get a trusted certificate
-  (Let's Encrypt rate-limits it) — you can still use it for a quick test, but you must keep it on
-  `https://` and click through the browser's "not secure" warning (see Path B); on plain `http://`
-  the assets fail and the page renders unstyled.
-</Callout>
-
-### Path A — with your own domain (recommended)
-
-<Steps>
-
-<Step>
-### Add the service
-In Coolify, **+ New Resource → Service → Docker Compose Empty**, paste [`classroomio.yaml`](https://github.com/classroomio/classroomio/blob/main/docker/coolify/classroomio.yaml), and **Save**. Coolify parses the services and generates all secrets.
-</Step>
-
-<Step>
-### Point DNS at your server
-Add two DNS **A records**, both pointing at your Coolify server's IP:
-
-- `app.yourdomain.com` — the dashboard
-- `storage.yourdomain.com` — object storage (MinIO)
-
-Wait until they resolve.
-</Step>
-
-<Step>
-### Assign the domains
-Set each web-facing service's domain (leave **Force HTTPS on**):
-
-- **dashboard** service → **Domains** → `https://app.yourdomain.com`
-- **minio** service → **Domains** → `https://storage.yourdomain.com`
-</Step>
-
-<Step>
-### Add SMTP (optional but recommended)
-Fill in `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, and `SMTP_SENDER` so signup verification, password reset, and invite emails work.
-</Step>
-
-<Step>
-### Deploy and sign up
-Click **Deploy**. Coolify issues the TLS certificates and brings up the stack — `$SERVICE_URL_*` resolve to your clean `https://` URLs with no port or scheme edits. Open `https://app.yourdomain.com` and **sign up**; the first account becomes the organization **admin**.
-</Step>
-
-</Steps>
-
-### Path B — no domain (sslip.io, smoke-test only)
-
-sslip.io can't get a certificate, so this path must run on plain **HTTP** — good for confirming the stack boots, but not for real use.
-
-<Steps>
-
-<Step>
-### Add the service
-Same as Path A — Coolify auto-generates a `*.sslip.io` domain for the dashboard and MinIO.
-</Step>
-
-<Step>
-### Set each domain to HTTPS with the container port
-Edit the generated domains — keep them on **`https://`** and include the container port:
-
-- **dashboard** → `https://dashboard-<id>.<your-ip>.sslip.io:3082`
-- **minio** → `https://storage-<id>.<your-ip>.sslip.io:9000`
-
-Both parts matter. The `:3082` / `:9000` **container port** is what lets Coolify's proxy route to the container (without it you get a `502 Bad Gateway`). And it must be **`https://`, not `http://`** — the dashboard forces its CSS/JS over HTTPS, so on plain `http://` the assets fail and the page renders with no styling.
-</Step>
-
-<Step>
-### Deploy, then accept the certificate warning
-Deploy and open the `https://…sslip.io` dashboard URL. Coolify can't get a trusted certificate for `sslip.io`, so your **browser will warn that the connection isn't secure** — click through it (Advanced → proceed). Once you accept the untrusted certificate, the page and its assets load correctly and you can sign up.
-</Step>
-
-</Steps>
-
-<Callout type="warn" title="Don't use Path B for real data">
-  You have to click past a browser certificate warning every time, and the connection isn't trusted.
-  Use this only to verify the deployment works, then switch to Path A with a real domain for anything
-  you actually keep.
-</Callout>
-
 ## Watch the walkthrough
 
 Prefer to follow along? This video walks through the whole Coolify deployment end to end. The written steps below mirror it, and the [Environment variable reference](#environment-variable-reference) has every value to copy.
 
 {/* TODO: replace REPLACE_WITH_VIDEO_ID with the Coolify walkthrough video id once recorded */}
 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px', marginBottom: '16px' }}>
-  <iframe width="560" height="315" src="https://www.youtube.com/embed/REPLACE_WITH_VIDEO_ID" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/5pwzUn8JBws?si=HcetU4pDYmRbwn4M" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
 
 ## Prerequisites
@@ -138,7 +36,7 @@ Prefer to follow along? This video walks through the whole Coolify deployment en
 
 ## Step-by-step walkthrough
 
-This is the **manual Docker Compose resource** method — an alternative to the [one-click Service](#one-click-via-the-coolify-catalog) above. Use it if you want to paste the compose file and set every value yourself. The flow is: **create a project → add the compose file → set environment variables → point the dashboard domain → deploy → sign up**.
+This uses a **Docker Compose resource**: you paste the compose file and set every environment value yourself. The flow is: **create a project → add the compose file → set environment variables → point the dashboard domain → deploy → sign up**.
 
 <Steps>
 
