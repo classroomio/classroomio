@@ -140,7 +140,7 @@ export const organizationRouter = new Hono()
         return c.json({ success: false, error: 'Organization ID is required', code: 'ORG_ID_REQUIRED' }, 400);
       }
 
-      const result = await autoEnrollStudent(user.id, orgId, { emailVerified: user.emailVerified });
+      const result = await autoEnrollStudent(user.id, orgId);
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to auto-enroll student');

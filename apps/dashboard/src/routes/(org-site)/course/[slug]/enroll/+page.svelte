@@ -132,7 +132,7 @@
       return;
     }
 
-    const attemptKey = `${sessionUser?.id ?? ''}:${String($profile.isEmailVerified ?? sessionUser?.emailVerified ?? false)}:${data.course?.id ?? ''}`;
+    const attemptKey = `${sessionUser?.id ?? ''}:${data.course?.id ?? ''}`;
     if (enrollmentAttemptKey === attemptKey) {
       return;
     }

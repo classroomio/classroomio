@@ -13,7 +13,6 @@
   import merge from 'lodash/merge';
   import { MetaTags } from 'svelte-meta-tags';
   import { ModeWatcher } from '@cio/ui/base/dark-mode';
-  import { VerifyEmailModal } from '$features/onboarding/components';
   import OrgSiteFavicon from '$features/app/org-site-favicon.svelte';
   import { isPublicOrgSitePage } from '$lib/utils/functions/color-scheme';
 
@@ -89,8 +88,6 @@
   <MetaTags {...metaTags} />
 
   <Snackbar />
-
-  <VerifyEmailModal />
 
   {@render children?.()}
 </div>
