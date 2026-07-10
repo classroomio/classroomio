@@ -6,6 +6,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { authClient } from '$lib/utils/services/auth/client';
+  import { classroomio } from '$lib/utils/services/api';
   import { globalStore } from '$lib/utils/store/app';
   import { page } from '$app/state';
   import { onMount, onDestroy } from 'svelte';
@@ -22,9 +23,33 @@
   let interval;
   let countDown = $state(WAIT_SEC);
 
-  const open = $derived(Boolean(!$profile.isEmailVerified && !!$profile.id && !!$currentOrg.id));
+  const session = authClient.useSession();
+  const sessionUser = $derived($session.data?.user ?? null);
+  const isEmailVerified = $derived(Boolean($profile.isEmailVerified || sessionUser?.emailVerified));
+  const open = $derived(Boolean(!isEmailVerified && !!$profile.id && !!$currentOrg.id));
 
   let domProtectionCleanup: ReturnType<typeof setupDOMProtection> | undefined;
+
+  async function syncProfileFromAccount() {
+    const response = await classroomio.account.$get();
+    if (!response.ok) {
+      return;
+    }
+
+    const data = await response.json();
+    if (data.success && data.profile) {
+      profile.set(data.profile);
+    }
+  }
+
+  function isAlreadyVerifiedError(error: unknown): boolean {
+    if (!error || typeof error !== 'object') {
+      return false;
+    }
+
+    const maybeError = error as { code?: string; message?: string };
+    return maybeError.code === 'EMAIL_IS_ALREADY_VERIFIED' || maybeError.message === 'Email is already verified';
+  }
 
   const sendVerificationCode = async () => {
     if (!$profile.email) {
@@ -45,16 +70,30 @@
         callbackURL.searchParams.set('welcomePopup', 'true');
       }
 
-      await authClient.sendVerificationEmail({
+      const result = await authClient.sendVerificationEmail({
         email: $profile.email,
         callbackURL: callbackURL.toString()
       });
 
+      if (result?.error && isAlreadyVerifiedError(result.error)) {
+        await syncProfileFromAccount();
+        return;
+      }
+
       isSent = true;
     } catch (error) {
+      if (isAlreadyVerifiedError(error)) {
+        await syncProfileFromAccount();
+        return;
+      }
+
       snackbar.error('verify_email_modal.snackbar.error');
     } finally {
       loading = false;
+    }
+
+    if (!isSent) {
+      return;
     }
 
     interval = setInterval(() => {
@@ -70,7 +109,7 @@
 
   onMount(() => {
     if (browser && $profile.id) {
-      domProtectionCleanup = setupDOMProtection(() => $profile.isEmailVerified ?? false);
+      domProtectionCleanup = setupDOMProtection(() => isEmailVerified);
     }
   });
 
@@ -82,9 +121,9 @@
   });
 
   $effect(() => {
-    if (browser) updateBodyClass($profile.isEmailVerified ?? false);
+    if (browser) updateBodyClass(isEmailVerified);
 
-    if (browser && !$profile.isEmailVerified && $profile.id) {
+    if (browser && !isEmailVerified && $profile.id) {
       console.warn(
         '%c🔒 SECURITY WARNING: Email verification required',
         'color: red; font-weight: bold; font-size: 16px;',
@@ -92,6 +131,14 @@
         '\nAttempting to bypass this protection is monitored and logged.'
       );
     }
+  });
+
+  $effect(() => {
+    if (!browser || !$profile.id || $profile.isEmailVerified || !sessionUser?.emailVerified) {
+      return;
+    }
+
+    void syncProfileFromAccount();
   });
 
   $effect(() => {

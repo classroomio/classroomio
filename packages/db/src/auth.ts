@@ -18,6 +18,7 @@ import { sso } from '@better-auth/sso';
 import { syncUserWithProfile } from './auth/hooks/sync-user';
 import { tokenExchange } from './auth/plugins/token-exchange';
 import { trackLoginHook } from './auth/hooks/track-login';
+import { syncProfileEmailVerificationFromAuthUser } from './queries/auth/profile';
 
 export { mintLoginLinkToken } from './auth/login-link';
 
@@ -112,11 +113,13 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
       create: {
         after: async (session) => {
           await trackLoginHook(session);
+          await syncProfileEmailVerificationFromAuthUser(session.userId);
         }
       },
       update: {
         after: async (session) => {
           await trackLoginHook(session);
+          await syncProfileEmailVerificationFromAuthUser(session.userId);
         }
       }
     }
