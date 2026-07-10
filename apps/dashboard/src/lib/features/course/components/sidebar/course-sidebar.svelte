@@ -112,7 +112,7 @@
 {#if !isOrgLoaded}
   <SidebarSkeleton />
 {:else}
-  <Sidebar.Root collapsible="icon" class="ui:z-150!">
+  <Sidebar.Root collapsible="icon" class="ui:z-150!" mobileOverlayClass="ui:z-150!">
     <Sidebar.Header>
       <CourseSidebarLogo />
     </Sidebar.Header>
