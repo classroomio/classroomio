@@ -93,6 +93,7 @@
       enrollmentInFlight = false;
       if (!navigatingAway) {
         loading = false;
+        enrollmentAttemptKey = '';
       }
     }
   }

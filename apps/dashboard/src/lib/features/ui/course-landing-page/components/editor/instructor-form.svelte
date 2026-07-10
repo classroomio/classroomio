@@ -7,15 +7,14 @@
   import { uploadImage } from '$lib/utils/services/upload';
   import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
 
   interface Props {
     course: Course;
-    orgName?: string;
-    orgAvatarUrl?: string;
     setter: (value: unknown, key: string) => void;
   }
 
-  let { course = $bindable(), orgName = '', orgAvatarUrl = '', setter }: Props = $props();
+  let { course = $bindable(), setter }: Props = $props();
 
   function readInstructorField(path: string, fallback = '') {
     const value = get(course, path);
@@ -26,9 +25,9 @@
     return fallback;
   }
 
-  let name = $state(readInstructorField('metadata.instructor.name', orgName));
+  let name = $state(readInstructorField('metadata.instructor.name', $currentOrg.name ?? ''));
   let role = $state(readInstructorField('metadata.instructor.role'));
-  let imgUrl = $state(readInstructorField('metadata.instructor.imgUrl', orgAvatarUrl));
+  let imgUrl = $state(readInstructorField('metadata.instructor.imgUrl', $currentOrg.avatarUrl ?? ''));
   let description = $state(readInstructorField('metadata.instructor.description'));
   let courseNo = $state(
     get(course, 'metadata.instructor.coursesNo') ?? get(course, 'metadata.instructor.courseNo') ?? ''

@@ -5,7 +5,7 @@
   import set from 'lodash/set';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import { currentOrgDomain } from '$lib/utils/store/org';
   import {
     HeaderIcon,
     GoalIcon,
@@ -280,7 +280,7 @@
       {:else if selectedSection.key === 'reviews'}
         <ReviewsForm bind:course {setter} />
       {:else if selectedSection.key === 'instructor'}
-        <InstructorForm bind:course orgName={$currentOrg.name} orgAvatarUrl={$currentOrg.avatarUrl} {setter} />
+        <InstructorForm bind:course {setter} />
       {:else if selectedSection.key === 'pricing'}
         <PricingForm bind:course {setter} />
       {/if}
