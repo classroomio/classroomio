@@ -83,7 +83,7 @@
     <div
       data-slot="sidebar-container"
       class={cn(
-        'ui:w-(--sidebar-width) ui:fixed ui:inset-y-0 ui:z-100 ui:hidden ui:max-h-svh ui:transition-[left,right,width] ui:duration-200 ui:ease-linear ui:md:flex',
+        'ui:w-(--sidebar-width) ui:fixed ui:inset-y-0 ui:z-app-bar ui:hidden ui:max-h-svh ui:transition-[left,right,width] ui:duration-200 ui:ease-linear ui:md:flex',
         side === 'left'
           ? 'ui:left-0 ui:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
           : 'ui:right-0 ui:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
