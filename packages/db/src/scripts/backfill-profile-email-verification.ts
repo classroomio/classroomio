@@ -3,8 +3,8 @@
  * (user.email_verified or a linked OAuth/SSO account) but stale on profile.
  *
  * Usage:
- *   pnpm --filter @cio/db db:backfill-profile-email-verification           # dry run (default)
- *   pnpm --filter @cio/db db:backfill-profile-email-verification --execute # apply updates
+ *   pnpm db:backfill-profile-email-verification           # dry run (default)
+ *   pnpm db:backfill-profile-email-verification -- --execute # apply updates
  */
 import 'dotenv/config';
 
@@ -54,7 +54,9 @@ async function main() {
       console.log('Dry run only. Re-run with --execute to apply updates.');
       console.log('Sample (up to 10):');
       for (const row of affected.slice(0, 10)) {
-        console.log(`  ${row.id}  ${row.email}  user=${row.user_email_verified}  profile=${row.profile_is_email_verified}`);
+        console.log(
+          `  ${row.id}  ${row.email}  user=${row.user_email_verified}  profile=${row.profile_is_email_verified}`
+        );
       }
       return;
     }
