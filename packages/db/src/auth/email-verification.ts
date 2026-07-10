@@ -1,7 +1,5 @@
 import { type BetterAuthOptions } from 'better-auth';
-import { buildEmailBranding, buildEmailFromName, sendEmail } from '@cio/email';
-
-import { resolveVerificationOrg } from './resolve-verification-org';
+import { sendEmail } from '@cio/email';
 
 type EmailVerificationOptions = Parameters<
   NonNullable<NonNullable<BetterAuthOptions['emailVerification']>['sendVerificationEmail']>
@@ -23,45 +21,6 @@ type ChangeEmailConfirmationOptions = Parameters<
  * 7. we mark email@new.com as verified. [better-auth].
  */
 
-function stripTriggerParam(url: string): string {
-  return url.replace('trigger=app', '').replace('trigger%3Dapp', '');
-}
-
-/**
- * Brands verification mail with the org from `resolveVerificationOrg` (callback URL
- * host/?org=, self-hosted first org, then the user's first membership). When no
- * org applies — e.g. dashboard signup before onboarding creates an org — copy
- * and masthead fall back to ClassroomIO defaults.
- */
-async function sendOrgAwareVerifyEmail(options: {
-  to: string;
-  verificationUrl: string;
-  userId: string;
-  userName?: string | null;
-  newEmail?: string;
-}) {
-  const org = await resolveVerificationOrg({
-    verificationUrl: options.verificationUrl,
-    userId: options.userId
-  });
-
-  const orgName = org?.name?.trim() || 'ClassroomIO';
-  const branding = buildEmailBranding(org ? { name: org.name, avatarUrl: org.avatarUrl, theme: org.theme } : undefined);
-
-  await sendEmail('verifyEmail', {
-    to: options.to,
-    from: org?.name ? buildEmailFromName(`${org.name} (via ClassroomIO.com)`) : undefined,
-    subject: org?.name ? `Confirm your email for ${org.name}` : undefined,
-    fields: {
-      link: stripTriggerParam(options.verificationUrl),
-      newEmail: options.newEmail,
-      userName: options.userName || undefined,
-      orgName,
-      branding
-    }
-  });
-}
-
 /**
  * Sends a verification email to the user when they sign up or change their email address.
  * @param options - The options for sending the verification email.
@@ -76,11 +35,15 @@ export const sendVerificationEmail = async (options: EmailVerificationOptions) =
     return;
   }
 
-  await sendOrgAwareVerifyEmail({
+  // Remove trigger=app or trigger%3Dapp from the URL
+  const link = url.replace('trigger=app', '').replace('trigger%3Dapp', '');
+
+  await sendEmail('verifyEmail', {
     to: user.email,
-    verificationUrl: url,
-    userId: user.id,
-    userName: user.name
+    fields: {
+      link,
+      userName: user.name || undefined
+    }
   });
 };
 
@@ -93,11 +56,12 @@ export const sendChangeEmailConfirmation = async (options: ChangeEmailConfirmati
   const { user, newEmail, url } = options;
   console.log('\nsendChangeEmailConfirmation', options);
 
-  await sendOrgAwareVerifyEmail({
+  await sendEmail('verifyEmail', {
     to: user.email,
-    verificationUrl: url,
-    userId: user.id,
-    userName: user.name,
-    newEmail
+    fields: {
+      link: url,
+      newEmail,
+      userName: user.name || undefined
+    }
   });
 };

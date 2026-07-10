@@ -4,7 +4,7 @@ import { getDefaultTemplate } from '@cio/email/templates';
 
 const VERIFY_EMAIL_CONTENT = `
   <p><strong>Hey there 👋</strong></p>
-  <p>Welcome to Acme Coding School! In order to get your account ready for usage, we need to verify your email.</p>
+  <p>Welcome to ClassroomIO! In order to get your account ready for usage, we need to verify your email.</p>
   <p>We do this to make sure we don't get fake user emails in our signup. To get the best out of our product, we'll need you to verify your email by clicking the <strong>Verify</strong> button below.</p>
   <div><a class="button" href="#">Verify</a></div>
 `;
@@ -59,11 +59,7 @@ const STUDENT_JOINED_CONTENT = `
 
 // ─── Exported email HTML strings ──────────────────────────────────────────
 
-export const verifyEmailHtml = getDefaultTemplate(VERIFY_EMAIL_CONTENT, {
-  orgName: 'Acme Coding School',
-  logoUrl: 'https://placehold.co/120x40/png?text=Acme',
-  themeColor: '#1d4ed8'
-});
+export const verifyEmailHtml = getDefaultTemplate(VERIFY_EMAIL_CONTENT);
 export const forgotPasswordHtml = getDefaultTemplate(FORGOT_PASSWORD_CONTENT);
 export const welcomeHtml = getDefaultTemplate(WELCOME_CONTENT);
 export const courseWelcomeHtml = getDefaultTemplate(COURSE_WELCOME_CONTENT);

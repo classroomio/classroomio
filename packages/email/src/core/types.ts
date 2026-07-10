@@ -29,8 +29,6 @@ export interface SendConfig<TSchema extends z.ZodType = z.ZodType> {
   fields: z.infer<TSchema>;
   from?: string;
   replyTo?: string;
-  /** Override the template's default subject (e.g. org-scoped transactional mail). */
-  subject?: string;
   /** Optional iCalendar (.ics) body delivered as a text/calendar part. */
   ics?: string;
 }

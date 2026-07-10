@@ -54,7 +54,7 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
   if (isURLCustomDomain(url)) {
     console.log('it is custom domain');
     const apiKeyHeaders = getApiKeyHeaders();
-    const orgs = await getOrgsByCustomDomain(url.hostname, true, apiKeyHeaders);
+    const orgs = await getOrgsByCustomDomain(url.host, true, apiKeyHeaders);
 
     if (!orgs || orgs.length === 0) {
       return response;

@@ -16,7 +16,7 @@ export async function sendTemplateEmail<TSchema extends z.ZodType>(
   return deliverEmail([
     {
       to: config.to,
-      subject: config.subject ?? config.template.subject,
+      subject: config.template.subject,
       content,
       from: config.from ?? config.template.from,
       replyTo: config.replyTo ?? config.template.replyTo,

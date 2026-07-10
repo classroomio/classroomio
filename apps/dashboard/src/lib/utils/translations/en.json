@@ -3371,9 +3371,7 @@
         "enroll_page": {
           "requires_payment_or_invite": "You need to pay for this course or be invited to get access.",
           "back_to_course": "Back to course",
-          "join_course": "Join Course",
-          "enrolled_success": "You're enrolled in this course.",
-          "enrolled_verify_email": "You're enrolled! Verify your email to access this course."
+          "join_course": "Join Course"
         },
         "course_content": "Course content",
         "modules": "modules",
