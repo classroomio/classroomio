@@ -387,7 +387,7 @@
   }}
 />
 
-<Page.Header>
+<Page.Header isSticky={true} class="top-12! min-h-[36px]">
   <Page.HeaderContent>
     <LessonPageEditHeader
       {mode}

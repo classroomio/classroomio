@@ -405,7 +405,7 @@
   }
 </script>
 
-<Page.Header isSticky={true} class="top-12! z-100! min-h-[36px]">
+<Page.Header isSticky={true} class="top-12! min-h-[36px]">
   <Page.HeaderContent>
     <Page.Title class="flex flex-col gap-2">
       <span>{exerciseDisplayTitle}</span>
