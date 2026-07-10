@@ -7,6 +7,7 @@ import {
 
 import { ROLE } from '@cio/utils/constants';
 import { getProfileById } from '@cio/db/queries/auth';
+import { assertEmailVerified } from '@api/utils/auth/email-verification';
 
 interface OrgSignupSettings {
   signup?: {
@@ -31,11 +32,17 @@ export interface AutoEnrollResult {
  * signups: `disableSignup` and `settings.signup.inviteOnly` both block the
  * insert.
  */
-export async function autoEnrollStudent(userId: string, orgId: string): Promise<AutoEnrollResult> {
+export async function autoEnrollStudent(
+  userId: string,
+  orgId: string,
+  options: { emailVerified?: boolean | null } = {}
+): Promise<AutoEnrollResult> {
   const existingMemberId = await getOrganizationMemberIdByOrgAndProfile(orgId, userId);
   if (existingMemberId) {
     return { alreadyMember: true };
   }
+
+  assertEmailVerified({ emailVerified: options.emailVerified });
 
   const organization = await getOrganizationById(orgId);
   if (!organization) {

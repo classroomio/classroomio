@@ -5,7 +5,7 @@
   import set from 'lodash/set';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import { currentOrgDomain } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import {
     HeaderIcon,
     GoalIcon,
@@ -202,6 +202,18 @@
 
     course = _course;
   }
+
+  function setInstructor(instructor: {
+    name: string;
+    role: string;
+    imgUrl: string;
+    description: string;
+    coursesNo: number | string | undefined;
+  }) {
+    const _course = untrack(() => cloneDeep(course));
+    set(_course, 'metadata.instructor', instructor);
+    course = _course;
+  }
 </script>
 
 <Sidebar.Header
@@ -280,7 +292,7 @@
       {:else if selectedSection.key === 'reviews'}
         <ReviewsForm bind:course {setter} />
       {:else if selectedSection.key === 'instructor'}
-        <InstructorForm bind:course {setter} />
+        <InstructorForm bind:course orgName={$currentOrg.name} orgAvatarUrl={$currentOrg.avatarUrl} {setInstructor} />
       {:else if selectedSection.key === 'pricing'}
         <PricingForm bind:course {setter} />
       {/if}

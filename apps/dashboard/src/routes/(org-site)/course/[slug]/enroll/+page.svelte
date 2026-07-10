@@ -11,10 +11,16 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { resolve } from '$app/paths';
+  import {
+    clearPendingCourseEnroll,
+    consumePendingCourseEnroll,
+    setPendingCourseEnroll
+  } from '$features/course/utils/pending-course-enroll';
 
   let { data } = $props();
 
   let loading = $state(false);
+  let autoJoinStarted = $state(false);
 
   const inviteStatus = $derived(data.invite?.status ?? 'INVALID');
   const hasActiveInvite = $derived(Boolean(data.invite) && inviteStatus === 'ACTIVE');
@@ -25,6 +31,7 @@
           data.course?.status === 'ACTIVE' &&
           Boolean(data.course?.isPublished)
   );
+  const profileReady = $derived(Boolean($profile.id && $profile.email));
 
   function getBlockedMessage(): string {
     if (data.requiresPaymentOrInvite) {
@@ -51,12 +58,44 @@
     return '';
   }
 
+  async function completeEnrollment() {
+    if (!data.course?.id) {
+      return;
+    }
+
+    let navigatingAway = false;
+
+    try {
+      const body = data.token ? { inviteToken: data.token } : {};
+      const result = await courseApi.enroll(data.course.id, body);
+
+      if (!result?.data) {
+        return;
+      }
+
+      clearPendingCourseEnroll();
+
+      capturePosthogEvent('student_joined_course', {
+        course_name: data.course?.title,
+        student_id: $profile.id,
+        student_email: $profile.email,
+        already_joined: result.data.alreadyJoined
+      });
+
+      navigatingAway = true;
+      window.location.href = result.data.redirectTo || '/lms';
+    } finally {
+      if (!navigatingAway) {
+        loading = false;
+      }
+    }
+  }
+
   async function handleSubmit() {
     if (!canJoinCourse) {
       snackbar.error(getBlockedMessage());
       return;
     }
-    console.log('profile', $profile);
 
     loading = true;
 
@@ -64,7 +103,11 @@
     const redirectSearch = data.token ? `?invite_token=${encodeURIComponent(data.token)}` : '';
     const redirectUrl = `${redirectPath}${redirectSearch}`;
 
-    if (!$profile.id || !$profile.email) {
+    if (!profileReady) {
+      if (data.course?.id) {
+        setPendingCourseEnroll(data.course.id);
+      }
+
       const inviteEmail = data.inviteEmail ?? '';
       const target = data.inviteEmailExists ? '/login' : '/signup';
       const params = new URLSearchParams({ redirect: redirectUrl });
@@ -75,30 +118,22 @@
       return;
     }
 
-    let navigatingAway = false;
-
-    try {
-      const body = data.token ? { inviteToken: data.token } : {};
-      const result = await courseApi.enroll(data.course!.id, body);
-
-      if (!result?.data) {
-        return;
-      }
-
-      capturePosthogEvent('student_joined_course', {
-        course_name: data.course?.title,
-        student_id: $profile.id,
-        student_email: $profile.email,
-        already_joined: result.data.alreadyJoined
-      });
-
-      navigatingAway = true;
-      // need to force page reload to avoid cache issues
-      window.location.href = result.data.redirectTo || '/lms';
-    } finally {
-      if (!navigatingAway) loading = false;
-    }
+    await completeEnrollment();
   }
+
+  $effect(() => {
+    if (autoJoinStarted || loading || !profileReady || !canJoinCourse || !data.course?.id) {
+      return;
+    }
+
+    if (!consumePendingCourseEnroll(data.course.id)) {
+      return;
+    }
+
+    autoJoinStarted = true;
+    loading = true;
+    void completeEnrollment();
+  });
 
   $effect(() => {
     if (!data.currentOrg) return;
@@ -122,7 +157,7 @@
   <meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<AuthUI isLogin={false} {handleSubmit} isLoading={loading || !$profile.id} showOnlyContent={true} showLogo={true}>
+<AuthUI isLogin={false} {handleSubmit} isLoading={loading || !profileReady} showOnlyContent={true} showLogo={true}>
   <div class="mt-0 w-full">
     <h3 class="mt-0 mb-4 text-center text-lg font-medium dark:text-white">{data.course?.title}</h3>
     <p class="text-center text-sm font-light dark:text-white">{data.course?.description}</p>
@@ -142,7 +177,7 @@
   </div>
 
   <div class="my-4 flex w-full items-center justify-center">
-    <Button type="submit" disabled={!canJoinCourse || loading} {loading}>
+    <Button type="submit" disabled={!canJoinCourse || loading || !profileReady} {loading}>
       {$t('course.navItem.landing_page.enroll_page.join_course')}
     </Button>
   </div>

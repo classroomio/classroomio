@@ -37,6 +37,7 @@ import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
 import { getWelcomeSessionIcs } from './session-invite';
 import { db } from '@cio/db/drizzle';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
+import { assertEmailVerified } from '@api/utils/auth/email-verification';
 
 /**
  * Minimal org-url bundle threaded through invite/email paths so every URL
@@ -619,6 +620,7 @@ export async function enrollInCourse(
   }
 
   if (body.inviteToken) {
+    assertEmailVerified(user);
     return acceptStudentInvite(body.inviteToken, user, context);
   }
 
@@ -669,6 +671,8 @@ export async function enrollInCourse(
       redirectTo: `/courses/${courseId}/lessons?next=true`
     };
   }
+
+  assertEmailVerified(user);
 
   if (!orgMemberId) {
     await createOrganizationMember({
