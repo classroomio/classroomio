@@ -8,6 +8,28 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/**
+ * Shared z-index scale, mirrored from `packages/ui/src/index.css`.
+ *
+ * Dashboard code has its own (unprefixed) Tailwind pipeline, separate from `@cio/ui`'s
+ * `ui:`-prefixed one — a `ui:`-prefixed utility only compiles if that exact class string is
+ * also used somewhere under `packages/ui/src`. So dashboard-only usages (page headers, the
+ * course sidebar, dropdowns/selects that need to escape a sticky header or a modal) must use
+ * these unprefixed names instead. Keep the two scales numerically in sync; see
+ * `packages/ui/README.md` for the full write-up of each layer.
+ */
+@utility z-app-bar {
+  z-index: 100;
+}
+
+@utility z-app-bar-elevated {
+  z-index: 150;
+}
+
+@utility z-menu-elevated {
+  z-index: 250;
+}
+
 /* Geist variable font — self-hosted */
 @font-face {
   font-family: 'Geist';

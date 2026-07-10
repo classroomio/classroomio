@@ -148,7 +148,7 @@
     <div class="hidden shrink-0 md:block md:w-(--side-panel-width)"></div>
 
     <aside
-      class="ui:bg-background fixed inset-y-0 right-0 z-100 flex h-screen w-full flex-col border-l md:w-(--side-panel-width)"
+      class="ui:bg-background z-app-bar fixed inset-y-0 right-0 flex h-screen w-full flex-col border-l md:w-(--side-panel-width)"
       aria-label={t.get(def.titleKey)}
     >
       <button
