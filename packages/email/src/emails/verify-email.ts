@@ -17,7 +17,10 @@ export const verifyEmailEmail = defineEmail({
   render: (fields) => {
     const isEmailChange = !!fields.newEmail;
     const userName = fields.userName || 'there';
-    const orgName = fields.orgName;
+    const hasOrgBranding = Boolean(fields.branding?.orgName);
+    const welcomeLine = hasOrgBranding
+      ? `Welcome to ${fields.orgName}! In order to get your account ready for usage, we need to verify your email.`
+      : 'Welcome! In order to get your account ready for usage, we need to verify your email.';
 
     const content = isEmailChange
       ? `
@@ -31,7 +34,7 @@ export const verifyEmailEmail = defineEmail({
   `
       : `
     <p><strong>Hey ${userName} 👋</strong></p>
-    <p>Welcome to ${orgName}! In order to get your account ready for usage, we need to verify your email.</p>
+    <p>${welcomeLine}</p>
     <p>We do this to make sure we don't get fake user emails in our signup. To get the best out of our product, we'll need you to verify your email by clicking the <strong>Verify</strong> button below.</p>
     <div>
       <a class="button" href="${fields.link}">Verify</a>

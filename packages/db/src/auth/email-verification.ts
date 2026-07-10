@@ -11,10 +11,28 @@ type ChangeEmailConfirmationOptions = Parameters<
   NonNullable<NonNullable<NonNullable<BetterAuthOptions['user']>['changeEmail']>['sendChangeEmailConfirmation']>
 >[0];
 
+/**
+ * Email verification flow.
+ *
+ * 1. user says I want to change my email from email@old.com to email@new.com
+ * 2. we send an email to email@old.com asking user to verify if they really want to change their email to email@new.com `sendChangeEmailConfirmation()`. [better-auth].
+ * 3. user clicks the link in the email
+ * 4. we update the email in the database. [better-auth].
+ * 5. we send a confirmation email to email@new.com `sendVerificationEmail()`. [dashboard].
+ * 6. user clicks the link in the email
+ * 7. we mark email@new.com as verified. [better-auth].
+ */
+
 function stripTriggerParam(url: string): string {
   return url.replace('trigger=app', '').replace('trigger%3Dapp', '');
 }
 
+/**
+ * Brands verification mail with the org from `resolveVerificationOrg` (callback URL
+ * host/?org=, self-hosted first org, then the user's first membership). When no
+ * org applies — e.g. dashboard signup before onboarding creates an org — copy
+ * and masthead fall back to ClassroomIO defaults.
+ */
 async function sendOrgAwareVerifyEmail(options: {
   to: string;
   verificationUrl: string;

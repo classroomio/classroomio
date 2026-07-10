@@ -28,8 +28,6 @@
   const isEmailVerified = $derived(Boolean($profile.isEmailVerified || sessionUser?.emailVerified));
 
   function resolvePostEnrollRedirect(): string {
-    // Org-site enrollments are always students — the API's `/courses/:id/lessons`
-    // target is the admin course editor and 404s or blocks students on custom domains.
     return '/lms';
   }
 
