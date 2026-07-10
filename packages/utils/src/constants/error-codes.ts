@@ -95,6 +95,7 @@ export const ErrorCodes = {
 
   // Auth errors
   FORBIDDEN: 'FORBIDDEN',
+  EMAIL_NOT_VERIFIED: 'EMAIL_NOT_VERIFIED',
 
   // Course errors
   COURSE_NOT_FOUND: 'COURSE_NOT_FOUND',

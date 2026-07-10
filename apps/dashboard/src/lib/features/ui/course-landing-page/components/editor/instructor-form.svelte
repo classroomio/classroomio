@@ -7,19 +7,31 @@
   import { uploadImage } from '$lib/utils/services/upload';
   import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
 
   interface Props {
     course: Course;
-    setter: (value: any, key: string) => void;
+    setter: (value: unknown, key: string) => void;
   }
 
   let { course = $bindable(), setter }: Props = $props();
 
-  let name = $state(get(course, 'metadata.instructor.name'));
-  let role = $state(get(course, 'metadata.instructor.role'));
-  let imgUrl = $state(get(course, 'metadata.instructor.imgUrl'));
-  let description = $state(get(course, 'metadata.instructor.description'));
-  let courseNo = $state(get(course, 'metadata.instructor.coursesNo') ?? get(course, 'metadata.instructor.courseNo'));
+  function readInstructorField(path: string, fallback = '') {
+    const value = get(course, path);
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+
+    return fallback;
+  }
+
+  let name = $state(readInstructorField('metadata.instructor.name', $currentOrg.name ?? ''));
+  let role = $state(readInstructorField('metadata.instructor.role'));
+  let imgUrl = $state(readInstructorField('metadata.instructor.imgUrl', $currentOrg.avatarUrl ?? ''));
+  let description = $state(readInstructorField('metadata.instructor.description'));
+  let courseNo = $state(
+    get(course, 'metadata.instructor.coursesNo') ?? get(course, 'metadata.instructor.courseNo') ?? ''
+  );
   let avatar: File | undefined = $state();
   let isUploading = $state(false);
 
@@ -29,26 +41,26 @@
     isUploading = true;
     const logo = await uploadImage(_avatar);
 
-    if (!logo) return;
+    if (!logo) {
+      isUploading = false;
+      return;
+    }
 
     imgUrl = logo;
     isUploading = false;
   }
 
   $effect(() => {
-    setter(name, 'metadata.instructor.name');
-  });
-  $effect(() => {
-    setter(role, 'metadata.instructor.role');
-  });
-  $effect(() => {
-    setter(imgUrl, 'metadata.instructor.imgUrl');
-  });
-  $effect(() => {
-    setter(description, 'metadata.instructor.description');
-  });
-  $effect(() => {
-    setter(courseNo, 'metadata.instructor.coursesNo');
+    setter(
+      {
+        name,
+        role,
+        imgUrl,
+        description,
+        coursesNo: courseNo
+      },
+      'metadata.instructor'
+    );
   });
 
   $effect(() => {
