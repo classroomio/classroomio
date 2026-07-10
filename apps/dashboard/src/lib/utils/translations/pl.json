@@ -893,8 +893,8 @@
           "requires_payment_or_invite": "Aby uzyskać dostęp, musisz zapłacić za ten kurs lub otrzymać zaproszenie.",
           "back_to_course": "Powrót na kurs",
           "join_course": "Dołącz do kursu",
-          "enrolled_success": "You're enrolled in this course.",
-          "enrolled_verify_email": "You're enrolled! Verify your email to access this course in your learning area."
+          "enrolled_success": "Zapisano Cię na ten kurs.",
+          "enrolled_verify_email": "Jesteś zapisany! Zweryfikuj swój e-mail, aby uzyskać dostęp do tego kursu."
         },
         "pricing_section": {
           "free": "Bezpłatny",

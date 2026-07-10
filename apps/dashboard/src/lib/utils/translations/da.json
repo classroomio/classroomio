@@ -893,8 +893,8 @@
           "requires_payment_or_invite": "Du skal betale for dette kursus eller blive inviteret for at få adgang.",
           "back_to_course": "Tilbage til kurset",
           "join_course": "Deltag i kursus",
-          "enrolled_success": "You're enrolled in this course.",
-          "enrolled_verify_email": "You're enrolled! Verify your email to access this course in your learning area."
+          "enrolled_success": "Du er tilmeldt dette kursus.",
+          "enrolled_verify_email": "Du er tilmeldt! Bekræft din e-mail for at få adgang til dette kursus."
         },
         "pricing_section": {
           "free": "Gratis",
