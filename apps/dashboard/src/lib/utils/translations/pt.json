@@ -892,7 +892,9 @@
         "enroll_page": {
           "requires_payment_or_invite": "Você precisa pagar por este curso ou ser convidado para obter acesso.",
           "back_to_course": "De volta ao curso",
-          "join_course": "Participe do curso"
+          "join_course": "Participe do curso",
+          "enrolled_success": "You're enrolled in this course.",
+          "enrolled_verify_email": "You're enrolled! Verify your email to access this course in your learning area."
         },
         "pricing_section": {
           "free": "Grátis",

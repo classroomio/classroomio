@@ -892,7 +892,11 @@
         "enroll_page": {
           "requires_payment_or_invite": "Вам нужно заплатить за этот курс или получить приглашение для получения доступа.",
           "back_to_course": "Вернуться к курсу",
-          "join_course": "Присоединиться к курсу"
+          "join_course": "Присоединиться к курсу",
+          "enrolled_success": "You're enrolled in this course.",
+          "enrolled_verify_email": "You're enrolled! Verify your email to access this course in your learning area.",
+          "enrolled_success": "You're enrolled in this course.",
+          "enrolled_verify_email": "You're enrolled! Verify your email to access this course in your learning area."
         },
         "pricing_section": {
           "free": "Бесплатно",

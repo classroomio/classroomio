@@ -56,9 +56,12 @@ export const load = async ({ params, url }) => {
   }
 
   const courseResult = await safeServerApi<GetCourseBySlugSuccess>(() =>
-    classroomio.course.slug[':slug'].$get({
-      param: { slug }
-    })
+    classroomio.course.slug[':slug'].$get(
+      {
+        param: { slug }
+      },
+      getApiKeyHeaders()
+    )
   );
 
   if (!courseResult.ok || !courseResult.body.data) {

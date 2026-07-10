@@ -892,7 +892,9 @@
         "enroll_page": {
           "requires_payment_or_invite": "आपको इस पाठ्यक्रम के लिए भुगतान करना होगा या प्रवेश पाने के लिए आमंत्रित किया जाना होगा।",
           "back_to_course": "पाठ्यक्रम पर वापस जाएँ",
-          "join_course": "पाठ्यक्रम में शामिल हों"
+          "join_course": "पाठ्यक्रम में शामिल हों",
+          "enrolled_success": "You're enrolled in this course.",
+          "enrolled_verify_email": "You're enrolled! Verify your email to access this course in your learning area."
         },
         "pricing_section": {
           "free": "निःशुल्क",
