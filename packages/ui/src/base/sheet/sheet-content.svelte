@@ -32,17 +32,19 @@
     class: className,
     side = 'right',
     portalProps,
+    overlayClass,
     children,
     ...restProps
   }: WithoutChildrenOrChild<SheetPrimitive.ContentProps> & {
     portalProps?: SheetPrimitive.PortalProps;
     side?: Side;
+    overlayClass?: string;
     children: Snippet;
   } = $props();
 </script>
 
 <SheetPrimitive.Portal {...portalProps}>
-  <SheetOverlay />
+  <SheetOverlay class={overlayClass} />
   <SheetPrimitive.Content
     bind:ref
     data-slot="sheet-content"
