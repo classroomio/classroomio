@@ -39,7 +39,11 @@
       data-sidebar="sidebar"
       data-slot="sidebar"
       data-mobile="true"
-      class="ui:bg-sidebar ui:text-sidebar-foreground ui:w-(--sidebar-width) ui:p-0 ui:[&>button]:hidden"
+      overlayClass="ui:z-150!"
+      class={cn(
+        'ui:bg-sidebar ui:text-sidebar-foreground ui:w-(--sidebar-width) ui:z-150! ui:p-0 ui:[&>button]:hidden',
+        className
+      )}
       style="--sidebar-width: {SIDEBAR_WIDTH_MOBILE};"
       {side}
     >
