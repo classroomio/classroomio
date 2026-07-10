@@ -202,18 +202,6 @@
 
     course = _course;
   }
-
-  function setInstructor(instructor: {
-    name: string;
-    role: string;
-    imgUrl: string;
-    description: string;
-    coursesNo: number | string | undefined;
-  }) {
-    const _course = untrack(() => cloneDeep(course));
-    set(_course, 'metadata.instructor', instructor);
-    course = _course;
-  }
 </script>
 
 <Sidebar.Header
@@ -292,7 +280,7 @@
       {:else if selectedSection.key === 'reviews'}
         <ReviewsForm bind:course {setter} />
       {:else if selectedSection.key === 'instructor'}
-        <InstructorForm bind:course orgName={$currentOrg.name} orgAvatarUrl={$currentOrg.avatarUrl} {setInstructor} />
+        <InstructorForm bind:course orgName={$currentOrg.name} orgAvatarUrl={$currentOrg.avatarUrl} {setter} />
       {:else if selectedSection.key === 'pricing'}
         <PricingForm bind:course {setter} />
       {/if}

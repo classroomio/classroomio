@@ -12,16 +12,10 @@
     course: Course;
     orgName?: string;
     orgAvatarUrl?: string;
-    setInstructor: (instructor: {
-      name: string;
-      role: string;
-      imgUrl: string;
-      description: string;
-      coursesNo: number | string | undefined;
-    }) => void;
+    setter: (value: unknown, key: string) => void;
   }
 
-  let { course = $bindable(), orgName = '', orgAvatarUrl = '', setInstructor }: Props = $props();
+  let { course = $bindable(), orgName = '', orgAvatarUrl = '', setter }: Props = $props();
 
   function readInstructorField(path: string, fallback = '') {
     const value = get(course, path);
@@ -58,13 +52,16 @@
   }
 
   $effect(() => {
-    setInstructor({
-      name,
-      role,
-      imgUrl,
-      description,
-      coursesNo: courseNo
-    });
+    setter(
+      {
+        name,
+        role,
+        imgUrl,
+        description,
+        coursesNo: courseNo
+      },
+      'metadata.instructor'
+    );
   });
 
   $effect(() => {

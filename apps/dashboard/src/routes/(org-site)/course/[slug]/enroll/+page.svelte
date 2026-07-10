@@ -11,16 +11,18 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { resolve } from '$app/paths';
-  import {
-    clearPendingCourseEnroll,
-    consumePendingCourseEnroll,
-    setPendingCourseEnroll
-  } from '$features/course/utils/pending-course-enroll';
+  import { authClient } from '$lib/utils/services/auth/client';
 
   let { data } = $props();
 
   let loading = $state(false);
-  let autoJoinStarted = $state(false);
+  let enrollmentInFlight = $state(false);
+  let enrollmentAttemptKey = $state('');
+
+  const session = authClient.useSession();
+  const sessionReady = $derived(!$session.isPending && !$session.isRefetching);
+  const sessionUser = $derived($session.data?.user ?? null);
+  const isLoggedIn = $derived(sessionReady && Boolean(sessionUser));
 
   const inviteStatus = $derived(data.invite?.status ?? 'INVALID');
   const hasActiveInvite = $derived(Boolean(data.invite) && inviteStatus === 'ACTIVE');
@@ -31,7 +33,6 @@
           data.course?.status === 'ACTIVE' &&
           Boolean(data.course?.isPublished)
   );
-  const profileReady = $derived(Boolean($profile.id && $profile.email));
 
   function getBlockedMessage(): string {
     if (data.requiresPaymentOrInvite) {
@@ -59,9 +60,12 @@
   }
 
   async function completeEnrollment() {
-    if (!data.course?.id) {
+    if (!data.course?.id || enrollmentInFlight) {
       return;
     }
+
+    enrollmentInFlight = true;
+    loading = true;
 
     let navigatingAway = false;
 
@@ -73,18 +77,20 @@
         return;
       }
 
-      clearPendingCourseEnroll();
+      const studentId = $profile.id || sessionUser?.id || '';
+      const studentEmail = $profile.email || sessionUser?.email || '';
 
       capturePosthogEvent('student_joined_course', {
         course_name: data.course?.title,
-        student_id: $profile.id,
-        student_email: $profile.email,
+        student_id: studentId,
+        student_email: studentEmail,
         already_joined: result.data.alreadyJoined
       });
 
       navigatingAway = true;
       window.location.href = result.data.redirectTo || '/lms';
     } finally {
+      enrollmentInFlight = false;
       if (!navigatingAway) {
         loading = false;
       }
@@ -97,41 +103,41 @@
       return;
     }
 
+    if (!sessionReady) {
+      return;
+    }
+
+    if (isLoggedIn) {
+      await completeEnrollment();
+      return;
+    }
+
     loading = true;
 
     const redirectPath = page.url?.pathname ?? `/course/${data.course?.slug ?? ''}/enroll`;
     const redirectSearch = data.token ? `?invite_token=${encodeURIComponent(data.token)}` : '';
     const redirectUrl = `${redirectPath}${redirectSearch}`;
 
-    if (!profileReady) {
-      if (data.course?.id) {
-        setPendingCourseEnroll(data.course.id);
-      }
+    const inviteEmail = data.inviteEmail ?? '';
+    const target = data.inviteEmailExists ? '/login' : '/signup';
+    const params = new URLSearchParams({ redirect: redirectUrl });
+    if (inviteEmail) params.set('email', inviteEmail);
 
-      const inviteEmail = data.inviteEmail ?? '';
-      const target = data.inviteEmailExists ? '/login' : '/signup';
-      const params = new URLSearchParams({ redirect: redirectUrl });
-      if (inviteEmail) params.set('email', inviteEmail);
-
-      goto(resolve(`${target}?${params.toString()}`, {}));
-      loading = false;
-      return;
-    }
-
-    await completeEnrollment();
+    goto(resolve(`${target}?${params.toString()}`, {}));
+    loading = false;
   }
 
   $effect(() => {
-    if (autoJoinStarted || loading || !profileReady || !canJoinCourse || !data.course?.id) {
+    if (!sessionReady || !isLoggedIn || !canJoinCourse || enrollmentInFlight || loading) {
       return;
     }
 
-    if (!consumePendingCourseEnroll(data.course.id)) {
+    const attemptKey = `${sessionUser?.id ?? ''}:${String($profile.isEmailVerified ?? sessionUser?.emailVerified ?? false)}:${data.course?.id ?? ''}`;
+    if (enrollmentAttemptKey === attemptKey) {
       return;
     }
 
-    autoJoinStarted = true;
-    loading = true;
+    enrollmentAttemptKey = attemptKey;
     void completeEnrollment();
   });
 
@@ -142,12 +148,12 @@
     const themeString = typeof rawTheme === 'string' ? rawTheme : '';
 
     setTheme(themeString);
-    currentOrg.update((o) => ({
-      ...o,
-      id: data.currentOrg?.id ?? o.id,
-      name: data.currentOrg?.name ?? o.name,
-      siteName: data.currentOrg?.siteName ?? o.siteName,
-      theme: themeString || o.theme
+    currentOrg.update((organization) => ({
+      ...organization,
+      id: data.currentOrg?.id ?? organization.id,
+      name: data.currentOrg?.name ?? organization.name,
+      siteName: data.currentOrg?.siteName ?? organization.siteName,
+      theme: themeString || organization.theme
     }));
   });
 </script>
@@ -157,7 +163,13 @@
   <meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<AuthUI isLogin={false} {handleSubmit} isLoading={loading || !profileReady} showOnlyContent={true} showLogo={true}>
+<AuthUI
+  isLogin={false}
+  {handleSubmit}
+  isLoading={loading || !sessionReady || (isLoggedIn && canJoinCourse)}
+  showOnlyContent={true}
+  showLogo={true}
+>
   <div class="mt-0 w-full">
     <h3 class="mt-0 mb-4 text-center text-lg font-medium dark:text-white">{data.course?.title}</h3>
     <p class="text-center text-sm font-light dark:text-white">{data.course?.description}</p>
@@ -176,9 +188,11 @@
     {/if}
   </div>
 
-  <div class="my-4 flex w-full items-center justify-center">
-    <Button type="submit" disabled={!canJoinCourse || loading || !profileReady} {loading}>
-      {$t('course.navItem.landing_page.enroll_page.join_course')}
-    </Button>
-  </div>
+  {#if !isLoggedIn}
+    <div class="my-4 flex w-full items-center justify-center">
+      <Button type="submit" disabled={!canJoinCourse || loading || !sessionReady} {loading}>
+        {$t('course.navItem.landing_page.enroll_page.join_course')}
+      </Button>
+    </div>
+  {/if}
 </AuthUI>
