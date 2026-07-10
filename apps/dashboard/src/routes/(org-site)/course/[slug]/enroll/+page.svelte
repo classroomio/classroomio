@@ -18,7 +18,8 @@
 
   let loading = $state(false);
   let enrollmentInFlight = $state(false);
-  let enrollmentAttemptKey = $state('');
+  let enrollmentSucceeded = $state(false);
+  let verificationEmailSent = $state(false);
   let enrolledPendingVerification = $state(false);
 
   const session = authClient.useSession();
@@ -87,7 +88,7 @@
   }
 
   async function completeEnrollment() {
-    if (!data.course?.id || enrollmentInFlight) {
+    if (!data.course?.id || enrollmentInFlight || enrollmentSucceeded) {
       return;
     }
 
@@ -105,6 +106,8 @@
         return;
       }
 
+      enrollmentSucceeded = true;
+
       const studentId = $profile.id || sessionUser?.id || '';
       const studentEmail = $profile.email || sessionUser?.email || '';
 
@@ -117,7 +120,12 @@
 
       if (!isEmailVerified) {
         enrolledPendingVerification = true;
-        void sendVerificationEmail();
+
+        if (!verificationEmailSent) {
+          verificationEmailSent = true;
+          void sendVerificationEmail();
+        }
+
         return;
       }
 
@@ -127,7 +135,6 @@
       enrollmentInFlight = false;
       if (!navigatingAway) {
         loading = false;
-        enrollmentAttemptKey = '';
       }
     }
   }
@@ -163,7 +170,7 @@
   }
 
   $effect(() => {
-    if (!sessionReady || !isLoggedIn || !canJoinCourse || enrollmentInFlight || loading) {
+    if (!sessionReady || !isLoggedIn || !canJoinCourse || enrollmentInFlight || loading || enrollmentSucceeded) {
       return;
     }
 
@@ -171,12 +178,6 @@
       return;
     }
 
-    const attemptKey = `${sessionUser?.id ?? ''}:${data.course?.id ?? ''}`;
-    if (enrollmentAttemptKey === attemptKey) {
-      return;
-    }
-
-    enrollmentAttemptKey = attemptKey;
     void completeEnrollment();
   });
 
