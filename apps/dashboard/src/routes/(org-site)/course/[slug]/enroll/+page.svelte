@@ -12,17 +12,44 @@
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { resolve } from '$app/paths';
   import { authClient } from '$lib/utils/services/auth/client';
+  import { appInitApi } from '$features/app/init.svelte';
 
   let { data } = $props();
 
   let loading = $state(false);
   let enrollmentInFlight = $state(false);
   let enrollmentAttemptKey = $state('');
+  let enrolledPendingVerification = $state(false);
 
   const session = authClient.useSession();
   const sessionReady = $derived(!$session.isPending && !$session.isRefetching);
   const sessionUser = $derived($session.data?.user ?? null);
   const isLoggedIn = $derived(sessionReady && Boolean(sessionUser));
+  const isEmailVerified = $derived(Boolean($profile.isEmailVerified || sessionUser?.emailVerified));
+
+  function resolvePostEnrollRedirect(): string {
+    return '/lms';
+  }
+
+  async function sendVerificationEmail() {
+    const email = $profile.email || sessionUser?.email;
+    if (!email) {
+      snackbar.error('verify_email_modal.snackbar.error');
+      return;
+    }
+
+    try {
+      const callbackURL = new URL(page.url.href);
+      callbackURL.searchParams.set('trigger', 'app');
+
+      await authClient.sendVerificationEmail({
+        email,
+        callbackURL: callbackURL.toString()
+      });
+    } catch {
+      snackbar.error('verify_email_modal.snackbar.error');
+    }
+  }
 
   const inviteStatus = $derived(data.invite?.status ?? 'INVALID');
   const hasActiveInvite = $derived(Boolean(data.invite) && inviteStatus === 'ACTIVE');
@@ -74,6 +101,7 @@
       const result = await courseApi.enroll(data.course.id, body);
 
       if (!result?.data) {
+        snackbar.error('snackbar.invite.failed_join');
         return;
       }
 
@@ -87,8 +115,14 @@
         already_joined: result.data.alreadyJoined
       });
 
+      if (!isEmailVerified) {
+        enrolledPendingVerification = true;
+        void sendVerificationEmail();
+        return;
+      }
+
       navigatingAway = true;
-      window.location.href = result.data.redirectTo || '/lms';
+      window.location.href = resolvePostEnrollRedirect();
     } finally {
       enrollmentInFlight = false;
       if (!navigatingAway) {
@@ -133,6 +167,10 @@
       return;
     }
 
+    if (!appInitApi.isInitializedAndReady) {
+      return;
+    }
+
     const attemptKey = `${sessionUser?.id ?? ''}:${data.course?.id ?? ''}`;
     if (enrollmentAttemptKey === attemptKey) {
       return;
@@ -167,14 +205,26 @@
 <AuthUI
   isLogin={false}
   {handleSubmit}
-  isLoading={loading || !sessionReady || (isLoggedIn && canJoinCourse)}
+  isLoading={loading || !sessionReady || (isLoggedIn && canJoinCourse && enrollmentInFlight)}
   showOnlyContent={true}
   showLogo={true}
 >
   <div class="mt-0 w-full">
     <h3 class="mt-0 mb-4 text-center text-lg font-medium dark:text-white">{data.course?.title}</h3>
     <p class="text-center text-sm font-light dark:text-white">{data.course?.description}</p>
-    {#if data.requiresPaymentOrInvite}
+    {#if enrolledPendingVerification}
+      <p class="ui:text-primary mt-3 text-center text-sm font-medium">
+        {$t('course.navItem.landing_page.enroll_page.enrolled_success')}
+      </p>
+      <p class="ui:text-muted-foreground mt-2 text-center text-sm">
+        {$t('course.navItem.landing_page.enroll_page.enrolled_verify_email')}
+      </p>
+      <div class="mt-4 flex justify-center">
+        <Button type="button" variant="outline" onclick={sendVerificationEmail}>
+          {$t('verify_email_modal.resend')}
+        </Button>
+      </div>
+    {:else if data.requiresPaymentOrInvite}
       <p class="ui:text-muted-foreground mt-3 text-center text-sm">
         {$t('course.navItem.landing_page.enroll_page.requires_payment_or_invite')}
       </p>
@@ -189,9 +239,9 @@
     {/if}
   </div>
 
-  {#if !isLoggedIn}
+  {#if !enrolledPendingVerification && (!isLoggedIn || (isLoggedIn && canJoinCourse && !enrollmentInFlight))}
     <div class="my-4 flex w-full items-center justify-center">
-      <Button type="submit" disabled={!canJoinCourse || loading || !sessionReady} {loading}>
+      <Button type="submit" disabled={!canJoinCourse || loading || !sessionReady || enrollmentInFlight} {loading}>
         {$t('course.navItem.landing_page.enroll_page.join_course')}
       </Button>
     </div>

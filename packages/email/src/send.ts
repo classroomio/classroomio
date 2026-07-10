@@ -95,6 +95,7 @@ export async function sendEmail<TEmailId extends EmailId>(
       fields: validatedFields,
       from: config.from ?? template.from,
       replyTo: config.replyTo ?? template.replyTo,
+      subject: config.subject,
       ics: config.ics
     });
   } catch (error) {

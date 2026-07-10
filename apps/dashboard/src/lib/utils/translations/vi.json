@@ -892,7 +892,9 @@
         "enroll_page": {
           "requires_payment_or_invite": "Bạn cần phải trả tiền cho khóa học này hoặc được mời để có quyền truy cập.",
           "back_to_course": "Quay lại khóa học",
-          "join_course": "Tham gia khóa học"
+          "join_course": "Tham gia khóa học",
+          "enrolled_success": "Bạn đã ghi danh khóa học này.",
+          "enrolled_verify_email": "Bạn đã ghi danh! Xác minh email để truy cập khóa học này."
         },
         "pricing_section": {
           "free": "miễn phí",
