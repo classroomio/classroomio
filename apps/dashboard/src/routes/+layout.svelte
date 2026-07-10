@@ -7,6 +7,7 @@
   import { setupCloudAnalytics } from '$lib/utils/functions/appSetup';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg, mergeAccountOrgFromServer } from '$lib/utils/store/org';
+  import { get } from 'svelte/store';
   import { user } from '$lib/utils/store/user';
   import { setTheme } from '$lib/utils/functions/theme';
   import { authClient } from '$lib/utils/services/auth/client';
@@ -46,7 +47,15 @@
     if (data.isOrgSite && data.org) {
       $globalStore.orgSiteName = data.orgSiteName || '';
       $globalStore.isOrgSite = true;
-      currentOrg.set(mergeAccountOrgFromServer(data.org));
+
+      const existingOrg = get(currentOrg);
+      const shouldSetPublicOrg =
+        !existingOrg.id || (existingOrg.siteName === data.org.siteName && existingOrg.roleId === 0);
+
+      if (shouldSetPublicOrg) {
+        currentOrg.set(mergeAccountOrgFromServer(data.org));
+      }
+
       setTheme(data.org.theme || 'blue');
     }
   });

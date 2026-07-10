@@ -4,7 +4,8 @@
   import { resolve } from '$app/paths';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Skeleton } from '@cio/ui/base/skeleton';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
+  import { get } from 'svelte/store';
   import { isStudentExperience } from '$lib/utils/store/app';
   import { appInitApi } from '$features/app/init.svelte';
   import { AppHeader } from '$features/ui';
@@ -24,6 +25,18 @@
 
   $effect(() => {
     data.orgName === '*' && redirect($currentOrg.siteName);
+  });
+
+  $effect(() => {
+    if (!appInitApi.isInitializedAndReady || !data.orgName || data.orgName === '*') {
+      return;
+    }
+
+    const matchedOrg = get(orgs).find((org) => org.siteName === data.orgName);
+    if (matchedOrg && get(currentOrg).id !== matchedOrg.id) {
+      currentOrg.set(mergeAccountOrgFromServer(matchedOrg));
+      localStorage.setItem('classroomio_org_sitename', matchedOrg.siteName!);
+    }
   });
 
   $effect(() => {

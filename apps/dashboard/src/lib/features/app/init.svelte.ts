@@ -133,30 +133,57 @@ class AppInitApi extends BaseApi {
       return;
     }
 
-    if (!this.data.organizations.length) {
-      return;
-    }
-
     orgs.set(this.data.organizations.map((org) => mergeAccountOrgFromServer(org)));
 
-    // On a tenant site, pin currentOrg to that tenant — never fall back to
-    // localStorage / the user's first org, which is what was making a user
-    // logged in on dblocked.* see the Dblocked dashboard on ciodevs.*.
-    let nextOrg: (typeof this.data.organizations)[number] | undefined;
-    if (params?.isOrgSite && params.orgSiteName) {
-      nextOrg = this.data.organizations.find((org) => org.siteName === params.orgSiteName);
-    }
-
+    const nextOrg = this.pickCurrentOrg(params);
     if (!nextOrg) {
-      const lastOrgSiteName = localStorage.getItem('classroomio_org_sitename');
-      nextOrg = this.data.organizations.find((org) => org.siteName === lastOrgSiteName) ?? this.data.organizations[0];
+      return;
     }
 
     currentOrg.set(mergeAccountOrgFromServer(nextOrg));
 
+    if (nextOrg.siteName) {
+      localStorage.setItem('classroomio_org_sitename', nextOrg.siteName);
+    }
+
     const theme = get(currentOrg)?.theme;
 
     setTheme(theme || 'blue');
+  }
+
+  /**
+   * Prefer the tenant from the current URL on org sites. Only fall back to
+   * localStorage / the first account org on the admin host (`app.*`).
+   */
+  private pickCurrentOrg(params?: AppSetupParams) {
+    const organizations = this.data?.success ? this.data.organizations : [];
+    const urlResolvedOrg = get(currentOrg);
+
+    if (params?.isOrgSite && params.orgSiteName) {
+      const tenantMembership = organizations.find((org) => org.siteName === params.orgSiteName);
+      if (tenantMembership) {
+        return tenantMembership;
+      }
+
+      // Keep the server-resolved tenant org (set from URL in +layout.svelte) instead
+      // of switching to another membership from /account.
+      if (urlResolvedOrg.siteName === params.orgSiteName && urlResolvedOrg.id) {
+        return urlResolvedOrg;
+      }
+
+      if (params.orgId && urlResolvedOrg.id === params.orgId) {
+        return urlResolvedOrg;
+      }
+
+      return undefined;
+    }
+
+    if (!organizations.length) {
+      return undefined;
+    }
+
+    const lastOrgSiteName = localStorage.getItem('classroomio_org_sitename');
+    return organizations.find((org) => org.siteName === lastOrgSiteName) ?? organizations[0];
   }
 
   routeUserToNextPage({ isOrgSite }: AppSetupParams) {
@@ -216,7 +243,7 @@ class AppInitApi extends BaseApi {
     const isCloud = PUBLIC_IS_SELFHOSTED !== 'true';
     const isStudent = get(isOrgStudent);
     const selectedOrg = get(currentOrg);
-    const userHasOneOrg = this.data.organizations === 1;
+    const userHasOneOrg = this.data.organizations.length === 1;
     const userIsStudentInAllOrgs = this.data.organizations.every((org) => org.roleId === ROLE.STUDENT);
     const userIsAdminInAtleastOneOrg = this.data.organizations.some((org) => org.roleId === ROLE.ADMIN);
 
