@@ -36,8 +36,8 @@ const COURSE_WELCOME_CONTENT = `
 `;
 
 const INVITE_TEACHER_CONTENT = `
-  <p>Hey there,</p>
-  <p>You have been invited to join <strong>Acme Coding School</strong> on ClassroomIO as <strong>Admin</strong> 🎉🎉🎉.</p>
+  <p>Hi there,</p>
+  <p><strong>Sarah Johnson</strong> invited you to join <strong>Acme Coding School</strong> on ClassroomIO as <strong>Admin</strong>.</p>
   <p>This invite expires on <strong>Jul 15, 2026</strong> (UTC).</p>
   <div><a class="button" href="#">Accept Invitation</a></div>
 `;
