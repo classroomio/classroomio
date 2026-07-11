@@ -40,6 +40,18 @@ describe('rewriteAuthRequestUrl', () => {
 
     expect(new URL(rewritten.url).href).toBe('https://my.fastlearner.io/api/auth/sign-in/social');
   });
+
+  it('strips a backend port from x-forwarded-host before rewriting the request URL', () => {
+    process.env.PRIVATE_SERVER_URL = 'http://cio-api-vymh:10000';
+
+    const request = new Request('http://cio-api-vymh:10000/api/auth/sign-in/social', { method: 'POST' });
+    const rewritten = rewriteAuthRequestUrl(request, {
+      forwardedHost: 'my.fastlearner.io:10000',
+      forwardedProto: 'https'
+    });
+
+    expect(new URL(rewritten.url).href).toBe('https://my.fastlearner.io/api/auth/sign-in/social');
+  });
 });
 
 describe('resolveOAuthBrowserOrigin', () => {

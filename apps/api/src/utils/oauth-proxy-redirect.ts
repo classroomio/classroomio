@@ -11,18 +11,19 @@
 
 function readBackendPorts(): Set<number> {
   const ports = new Set<number>();
+  const privateServerUrl = process.env.PRIVATE_SERVER_URL?.trim();
 
-  for (const value of [process.env.PRIVATE_SERVER_URL, process.env.PUBLIC_SERVER_URL]) {
-    if (!value?.trim()) continue;
+  if (!privateServerUrl) {
+    return ports;
+  }
 
-    try {
-      const parsed = new URL(value.trim());
-      if (parsed.port) {
-        ports.add(Number(parsed.port));
-      }
-    } catch {
-      // Ignore malformed env values.
+  try {
+    const parsed = new URL(privateServerUrl);
+    if (parsed.port) {
+      ports.add(Number(parsed.port));
     }
+  } catch {
+    // Ignore malformed env values.
   }
 
   return ports;
