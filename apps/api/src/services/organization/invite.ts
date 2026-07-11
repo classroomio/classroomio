@@ -32,7 +32,7 @@ import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { parseCourseIdsFromInviteMetadata, parseCohortIdsFromInviteMetadata } from '@api/utils/org';
 import { getProfileById, markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
-import { buildEmailBranding, buildEmailFromName } from '@cio/email';
+import { buildEmailBranding, buildEmailFromName, sanitizeEmailSubject } from '@cio/email';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 
 type OrganizationInviteStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'ACCEPTED';
@@ -267,7 +267,7 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
             branding: buildEmailBranding(organization)
           },
           from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
-          subject: `You have been invited to join ${organization.name} on ClassroomIO`,
+          subject: sanitizeEmailSubject(`You have been invited to join ${organization.name} on ClassroomIO`),
           idempotencyKey: `org-invite-teacher:${invite.id}`
         });
 

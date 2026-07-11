@@ -3,6 +3,7 @@ import * as z from 'zod';
 import { defineEmail } from '../send';
 import { getDefaultTemplate } from '../templates';
 import { ZEmailBranding } from '../core/branding';
+import { escapeHtml } from '../utils/functions/email-helpers';
 
 export const inviteTeacherEmail = defineEmail({
   id: 'inviteTeacher',
@@ -18,16 +19,22 @@ export const inviteTeacherEmail = defineEmail({
     branding: ZEmailBranding
   }),
   render: (fields) => {
-    const invitationLine = fields.inviterName
-      ? `<p><strong>${fields.inviterName}</strong> invited you to join <strong>${fields.orgName}</strong> on ClassroomIO as ${fields.roleName}.</p>`
-      : `<p>You have been invited to join <strong>${fields.orgName}</strong> on ClassroomIO as ${fields.roleName}.</p>`;
+    const orgName = escapeHtml(fields.orgName);
+    const roleName = escapeHtml(fields.roleName);
+    const inviterName = fields.inviterName ? escapeHtml(fields.inviterName) : undefined;
+    const inviteLink = escapeHtml(fields.inviteLink);
+    const expiresAt = escapeHtml(fields.expiresAt);
+
+    const invitationLine = inviterName
+      ? `<p><strong>${inviterName}</strong> invited you to join <strong>${orgName}</strong> on ClassroomIO as ${roleName}.</p>`
+      : `<p>You have been invited to join <strong>${orgName}</strong> on ClassroomIO as ${roleName}.</p>`;
 
     const content = `
       <p>Hi there,</p>
       ${invitationLine}
-      <p>This invite expires on ${fields.expiresAt} (UTC).</p>
+      <p>This invite expires on ${expiresAt} (UTC).</p>
       <div>
-        <a class="button" href="${fields.inviteLink}">Accept Invitation</a>
+        <a class="button" href="${inviteLink}">Accept Invitation</a>
       </div>
     `;
 
