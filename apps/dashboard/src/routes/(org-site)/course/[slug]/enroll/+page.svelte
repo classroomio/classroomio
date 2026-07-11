@@ -54,8 +54,9 @@
 
   const inviteStatus = $derived(data.invite?.status ?? 'INVALID');
   const hasActiveInvite = $derived(Boolean(data.invite) && inviteStatus === 'ACTIVE');
+  const studentLimitReached = $derived(Boolean(data.studentLimitReached));
   const canJoinCourse = $derived(
-    data.requiresPaymentOrInvite
+    data.requiresPaymentOrInvite || studentLimitReached
       ? false
       : (hasActiveInvite || (!data.invite && data.course?.allowNewStudent !== false)) &&
           data.course?.status === 'ACTIVE' &&
@@ -63,6 +64,9 @@
   );
 
   function getBlockedMessage(): string {
+    if (studentLimitReached) {
+      return t.get('course.navItem.landing_page.enroll_page.student_limit_reached');
+    }
     if (data.requiresPaymentOrInvite) {
       return t.get('course.navItem.landing_page.enroll_page.requires_payment_or_invite');
     }

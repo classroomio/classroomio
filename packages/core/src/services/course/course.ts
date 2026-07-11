@@ -36,10 +36,32 @@ import { and, eq } from 'drizzle-orm';
 import { exerciseBelongsToCourse } from '@cio/db/queries/course/certification-exercise';
 import { updateExercise, updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { getProfileById } from '@cio/db/queries/auth';
-import { insertOrganizationMembersOnConflictDoNothing } from '@cio/db/queries/organization';
+import {
+  countActiveStudents,
+  getActiveOrganizationPlan,
+  insertOrganizationMembersOnConflictDoNothing
+} from '@cio/db/queries/organization';
+import { getStudentLimit } from '@cio/utils/plans';
+import { env } from '../../config/env';
 import { annotateCourseContentWithProgression } from './progression';
 import { buildCourseContent, calcPercentageWithRounding, type CourseContent } from './utils';
 import { guardCourseTypeTransition } from './public-course-guard';
+
+/**
+ * Whether a *new* student would be turned away from this org right now
+ * (mirrors the check in `apps/api/src/services/organization/student-limit.ts`,
+ * duplicated here since packages/core can't depend on the api app).
+ */
+async function isStudentLimitReached(orgId: string): Promise<boolean> {
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') return false;
+
+  const activePlan = await getActiveOrganizationPlan(orgId);
+  const limit = getStudentLimit(activePlan?.planName);
+  if (!Number.isFinite(limit)) return false;
+
+  const currentCount = await countActiveStudents(orgId);
+  return currentCount + 1 > limit;
+}
 
 const DEFAULT_CONTENT_GROUPING = true;
 const DEFAULT_SECTION_TITLE = 'First Section [edit me]';
@@ -160,9 +182,12 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
 
     const { contentItems, org: courseOrg, ...rest } = course;
 
+    const studentLimitReached = courseOrg ? await isStudentLimitReached(courseOrg.id) : false;
+
     const base = {
       ...rest,
       content,
+      studentLimitReached,
       metadata: {
         ...course.metadata,
         progressionMode

@@ -709,7 +709,8 @@
       "cancel": "Annuller",
       "confirm": "Slet",
       "snackbar_success": "Medlem slettet"
-    }
+    },
+    "import_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at importere flere elever."
   },
   "community": {
     "title": "Fællesskab",
@@ -894,7 +895,8 @@
           "back_to_course": "Tilbage til kurset",
           "join_course": "Deltag i kursus",
           "enrolled_success": "Du er tilmeldt dette kursus.",
-          "enrolled_verify_email": "Du er tilmeldt! Bekræft din e-mail for at få adgang til dette kursus."
+          "enrolled_verify_email": "Du er tilmeldt! Bekræft din e-mail for at få adgang til dette kursus.",
+          "student_limit_reached": "Dette kursus har nået sin elevkapacitet. Kontakt venligst din organisations administrator."
         },
         "pricing_section": {
           "free": "Gratis",
@@ -1226,7 +1228,8 @@
             "multi_use_7d": "Multi-brug (7 dage)",
             "multi_use_30d": "Multi-brug (30 dage)",
             "custom": "Brugerdefineret"
-          }
+          },
+          "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever."
         }
       },
       "marks": {
@@ -3636,7 +3639,8 @@
           "widgets": "Widgets",
           "tags": "Tags",
           "students": "studerende",
-          "settings": "Indstillinger"
+          "settings": "Indstillinger",
+          "cohorts": "Kohorter"
         }
       }
     },

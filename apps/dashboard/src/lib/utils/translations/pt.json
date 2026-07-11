@@ -709,7 +709,8 @@
       "cancel": "Cancelar",
       "confirm": "Excluir",
       "snackbar_success": "Membro excluído"
-    }
+    },
+    "import_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para importar mais alunos."
   },
   "community": {
     "title": "Comunidade",
@@ -894,7 +895,8 @@
           "back_to_course": "De volta ao curso",
           "join_course": "Participe do curso",
           "enrolled_success": "Você está inscrito neste curso.",
-          "enrolled_verify_email": "Você está inscrito! Verifique seu e-mail para acessar este curso."
+          "enrolled_verify_email": "Você está inscrito! Verifique seu e-mail para acessar este curso.",
+          "student_limit_reached": "Este curso atingiu sua capacidade de alunos. Entre em contato com o administrador da sua organização."
         },
         "pricing_section": {
           "free": "Grátis",
@@ -1226,7 +1228,8 @@
             "multi_use_7d": "Multiuso (7 dias)",
             "multi_use_30d": "Multiuso (30 dias)",
             "custom": "Personalizado"
-          }
+          },
+          "student_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para convidar mais alunos."
         }
       },
       "marks": {
@@ -3636,7 +3639,8 @@
           "widgets": "Widgets",
           "tags": "Etiquetas",
           "students": "Alunos",
-          "settings": "Configurações"
+          "settings": "Configurações",
+          "cohorts": "Coortes"
         }
       }
     },

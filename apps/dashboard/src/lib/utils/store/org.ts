@@ -4,7 +4,7 @@ import merge from 'lodash/merge';
 
 import type { AccountOrg } from '$features/app/types';
 import type { OrgTeamMember } from '../types/org';
-import { canUsePublicApi, isOrgOnFreePlan, PLAN } from '@cio/utils/plans';
+import { canUsePublicApi, getStudentLimit, isOrgOnFreePlan, PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import { STEPS } from '../constants/quiz';
@@ -148,15 +148,10 @@ export const hasPublicApiAccess = derived(currentOrg, ($currentOrg) => {
   return canUsePublicApi(plan?.planName, PUBLIC_IS_SELFHOSTED === 'true');
 });
 
-export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) =>
-  !$plan
-    ? 20
-    : $plan.planName === PLAN.EARLY_ADOPTER
-      ? 10000
-      : $plan.planName === PLAN.ENTERPRISE
-        ? Number.MAX_SAFE_INTEGER
-        : 20
-);
+export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) => {
+  const limit = getStudentLimit($plan?.planName);
+  return Number.isFinite(limit) ? limit : Number.MAX_SAFE_INTEGER;
+});
 
 // Quiz
 export const createQuizModal = writable({
