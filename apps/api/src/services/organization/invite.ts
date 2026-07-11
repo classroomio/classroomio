@@ -30,9 +30,9 @@ import crypto from 'node:crypto';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { parseCourseIdsFromInviteMetadata, parseCohortIdsFromInviteMetadata } from '@api/utils/org';
-import { markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
+import { getProfileById, markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
-import { buildEmailBranding } from '@cio/email';
+import { buildEmailBranding, buildEmailFromName } from '@cio/email';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 
 type OrganizationInviteStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'ACCEPTED';
@@ -220,6 +220,8 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
 
   const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
   const roleName = getRoleLabel(roleId);
+  const inviterProfile = invitedByProfileId ? await getProfileById(invitedByProfileId) : null;
+  const inviterName = inviterProfile?.fullname?.trim() || undefined;
 
   for (const email of emailsToInvite) {
     try {
@@ -259,10 +261,13 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
             orgName: organization.name,
             orgSiteName: organization.siteName,
             roleName,
+            inviterName,
             expiresAt: getExpiryLabel(expiresAt),
             inviteLink,
             branding: buildEmailBranding(organization)
           },
+          from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
+          subject: `You have been invited to join ${organization.name} on ClassroomIO`,
           idempotencyKey: `org-invite-teacher:${invite.id}`
         });
 
