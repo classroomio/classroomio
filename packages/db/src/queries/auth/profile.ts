@@ -32,6 +32,7 @@ async function resolveAuthUserEmailVerified(
 /**
  * Keeps profile.is_email_verified in sync with auth user + linked OAuth/SSO accounts.
  * Repairs legacy rows where user.email_verified is true but profile.is_email_verified is false.
+ * Never demotes profile.is_email_verified — some flows verify the profile before user.email_verified is set.
  */
 export async function syncProfileEmailVerificationFromAuthUser(userId: string, dbClient: DbOrTxClient = db) {
   try {
@@ -45,7 +46,10 @@ export async function syncProfileEmailVerificationFromAuthUser(userId: string, d
       return null;
     }
 
-    const isEmailVerified = await resolveAuthUserEmailVerified(userId, user.emailVerified, dbClient);
+    const authSaysVerified = await resolveAuthUserEmailVerified(userId, user.emailVerified, dbClient);
+    // Only promote verification — never demote. Profile can be verified via
+    // self-hosted first signup, invites, or other flows before user.email_verified catches up.
+    const isEmailVerified = profile.isEmailVerified || authSaysVerified;
     const emailChanged = profile.email !== user.email;
     const verificationChanged = profile.isEmailVerified !== isEmailVerified;
 
