@@ -1,9 +1,5 @@
-import * as schema from '@db/schema';
-
 import { User } from 'better-auth';
-import { db } from '@db/drizzle';
-import { eq } from 'drizzle-orm';
-import { hasVerifiedEmailProvider } from './create-profile';
+import { syncProfileEmailVerificationFromAuthUser } from '@db/queries/auth/profile';
 
 export const syncUserWithProfile = async (user: User) => {
   console.log('[auth] syncUserWithProfile: running', { userId: user?.id });
@@ -13,15 +9,8 @@ export const syncUserWithProfile = async (user: User) => {
   }
 
   try {
-    const isEmailVerified = user.emailVerified || (await hasVerifiedEmailProvider(user.id));
-    await db
-      .update(schema.profile)
-      .set({
-        email: user.email,
-        isEmailVerified
-      })
-      .where(eq(schema.profile.id, user.id));
+    await syncProfileEmailVerificationFromAuthUser(user.id);
   } catch (error) {
-    console.error('Error marking profile as verified:', error);
+    console.error('Error syncing profile email verification:', error);
   }
 };
