@@ -7,6 +7,7 @@ import {
 
 import { ROLE } from '@cio/utils/constants';
 import { getProfileById } from '@cio/db/queries/auth';
+import { assertStudentCapacityOrThrow } from './student-limit';
 
 interface OrgSignupSettings {
   signup?: {
@@ -55,6 +56,8 @@ export async function autoEnrollStudent(userId: string, orgId: string): Promise<
   if (!profile?.email) {
     throw new AppError('Profile email not found', ErrorCodes.NOT_FOUND, 404);
   }
+
+  await assertStudentCapacityOrThrow(orgId, 1);
 
   await createOrganizationMember({
     organizationId: orgId,

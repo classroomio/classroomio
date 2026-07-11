@@ -42,9 +42,14 @@ import {
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
 import { getProfileByEmail } from '@cio/db/queries/auth';
-import { insertOrganizationMembersOnConflictDoNothing } from '@cio/db/queries/organization';
+import {
+  getOrgMembersByProfileIds,
+  getOrganizationMemberIdByOrgAndProfile,
+  insertOrganizationMembersOnConflictDoNothing
+} from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@cio/db/drizzle';
+import { assertStudentCapacityOrThrow } from '../organization/student-limit';
 
 type CohortMemberEnrollment = {
   profileId: string;
@@ -63,6 +68,15 @@ async function enrollCohortStudentsInGroups(
   if (studentMembers.length === 0 || uniqueGroupIds.length === 0) {
     return 0;
   }
+
+  const studentProfileIds = studentMembers
+    .map((member) => member.profileId)
+    .filter((profileId): profileId is string => Boolean(profileId));
+  const existingMembers = await getOrgMembersByProfileIds(organizationId, studentProfileIds);
+  const existingMemberProfileIds = new Set(existingMembers.map((member) => member.profileId));
+  const newStudentCount = studentProfileIds.filter((profileId) => !existingMemberProfileIds.has(profileId)).length;
+
+  await assertStudentCapacityOrThrow(organizationId, newStudentCount);
 
   const organizationMemberRows = studentMembers.map((member) => ({
     organizationId,
@@ -240,6 +254,15 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
 
           if (member && member.roleId === ROLE.STUDENT && member.profileId && courseGroupIds.length > 0) {
             const validCourseGroupIds = courseGroupIds.filter((groupId): groupId is string => Boolean(groupId));
+
+            const existingOrgMemberId = await getOrganizationMemberIdByOrgAndProfile(
+              cohort.organizationId,
+              member.profileId,
+              tx
+            );
+            if (!existingOrgMemberId) {
+              await assertStudentCapacityOrThrow(cohort.organizationId, 1);
+            }
 
             await insertOrganizationMembersOnConflictDoNothing(
               [

@@ -39,6 +39,7 @@ import { getProfileById } from '@cio/db/queries/auth';
 import {
   countActiveStudents,
   getActiveOrganizationPlan,
+  getOrganizationMemberIdByOrgAndProfile,
   insertOrganizationMembersOnConflictDoNothing
 } from '@cio/db/queries/organization';
 import { getStudentLimit } from '@cio/utils/plans';
@@ -78,6 +79,17 @@ export async function ensureProgramCourseAccess(courseId: string, profileId: str
   }
 
   const normalizedEmail = access.profileEmail?.trim() || undefined;
+
+  if (access.roleId === ROLE.STUDENT) {
+    const existingMemberId = await getOrganizationMemberIdByOrgAndProfile(organizationId, profileId);
+    if (!existingMemberId && (await isStudentLimitReached(organizationId))) {
+      throw new AppError(
+        'This organization has reached its student limit on the Free plan',
+        ErrorCodes.UPGRADE_REQUIRED,
+        403
+      );
+    }
+  }
 
   await db.transaction(async (tx) => {
     await insertOrganizationMembersOnConflictDoNothing(
