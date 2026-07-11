@@ -49,6 +49,7 @@ export const createProfileHook = async (user: User, _request?: Request) => {
 
   if (existingProfile.length) {
     if (!existingProfile[0].isEmailVerified && isEmailVerified) {
+      await db.update(schema.user).set({ emailVerified: true }).where(eq(schema.user.id, user.id));
       await db
         .update(schema.profile)
         .set({ isEmailVerified: true, verifiedAt: new Date().toISOString() })

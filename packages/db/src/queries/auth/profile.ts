@@ -31,8 +31,9 @@ async function resolveAuthUserEmailVerified(
 
 /**
  * Keeps profile.is_email_verified in sync with auth user + linked OAuth/SSO accounts.
- * Repairs legacy rows where user.email_verified is true but profile.is_email_verified is false.
- * Never demotes profile.is_email_verified — some flows verify the profile before user.email_verified is set.
+ * Repairs legacy rows where user.email_verified is true but profile.is_email_verified is false,
+ * and promotes user.email_verified when profile is already verified (e.g. self-hosted bootstrap).
+ * Never demotes profile.is_email_verified.
  */
 export async function syncProfileEmailVerificationFromAuthUser(userId: string, dbClient: DbOrTxClient = db) {
   try {
@@ -51,10 +52,15 @@ export async function syncProfileEmailVerificationFromAuthUser(userId: string, d
     // self-hosted first signup, invites, or other flows before user.email_verified catches up.
     const isEmailVerified = profile.isEmailVerified || authSaysVerified;
     const emailChanged = profile.email !== user.email;
-    const verificationChanged = profile.isEmailVerified !== isEmailVerified;
+    const profileNeedsVerification = isEmailVerified && !profile.isEmailVerified;
+    const userNeedsVerification = isEmailVerified && !user.emailVerified;
 
-    if (!emailChanged && !verificationChanged) {
+    if (!emailChanged && !profileNeedsVerification && !userNeedsVerification) {
       return profile;
+    }
+
+    if (userNeedsVerification) {
+      await dbClient.update(schema.user).set({ emailVerified: true }).where(eq(schema.user.id, userId));
     }
 
     const patch: Partial<TProfile> = {
@@ -62,8 +68,12 @@ export async function syncProfileEmailVerificationFromAuthUser(userId: string, d
       isEmailVerified
     };
 
-    if (isEmailVerified && !profile.isEmailVerified) {
+    if (profileNeedsVerification) {
       patch.verifiedAt = new Date().toISOString();
+    }
+
+    if (!emailChanged && !profileNeedsVerification) {
+      return { ...profile, isEmailVerified: true };
     }
 
     const [updatedProfile] = await dbClient
@@ -72,7 +82,7 @@ export async function syncProfileEmailVerificationFromAuthUser(userId: string, d
       .where(eq(schema.profile.id, userId))
       .returning();
 
-    return updatedProfile ?? profile;
+    return updatedProfile ?? { ...profile, isEmailVerified: true };
   } catch (error) {
     console.error('syncProfileEmailVerificationFromAuthUser error:', error);
     throw new Error('Failed to sync profile email verification');
