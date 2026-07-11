@@ -4,9 +4,11 @@
 
   import { Snackbar } from '$features/ui';
   import { appInitApi } from '$features/app/init.svelte';
+  import { resolveAppOrgParams } from '$features/app/resolve-app-org-params';
   import { setupCloudAnalytics } from '$lib/utils/functions/appSetup';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg, mergeAccountOrgFromServer } from '$lib/utils/store/org';
+  import { get } from 'svelte/store';
   import { user } from '$lib/utils/store/user';
   import { setTheme } from '$lib/utils/functions/theme';
   import { authClient } from '$lib/utils/services/auth/client';
@@ -42,26 +44,52 @@
         currentSession: data.locals.user
       });
     }
+  });
 
-    if (data.isOrgSite && data.org) {
-      $globalStore.orgSiteName = data.orgSiteName || '';
-      $globalStore.isOrgSite = true;
-      currentOrg.set(mergeAccountOrgFromServer(data.org));
-      setTheme(data.org.theme || 'blue');
+  $effect(() => {
+    if (!data.isOrgSite || !data.org) {
+      $globalStore.isOrgSite = false;
+      $globalStore.orgSiteName = '';
+      return;
     }
+
+    $globalStore.orgSiteName = data.orgSiteName || '';
+    $globalStore.isOrgSite = true;
+
+    const existingOrg = get(currentOrg);
+    const shouldSetPublicOrg =
+      !existingOrg.id || existingOrg.siteName !== data.org.siteName || existingOrg.roleId === 0;
+
+    if (shouldSetPublicOrg) {
+      currentOrg.set(mergeAccountOrgFromServer(data.org));
+    }
+
+    setTheme(data.org.theme || 'blue');
   });
 
   const session = authClient.useSession();
   const isSessionReady = $derived(!$session.isPending && !$session.isRefetching && $session.data);
+  const appOrgParams = $derived(resolveAppOrgParams(data, page.url.pathname, page.params.slug));
 
+  /*
+    Auth + org context for the whole dashboard.
+
+    setupApp runs once per session to load /account. After that, org context can
+    still change when a logged-in user navigates to a different tenant subdomain
+    or opens another /org/[slug] on the app host — without another setupApp run.
+    syncOrgContext re-pins currentOrg from the URL + cached account data.
+  */
   $effect(() => {
-    if (isSessionReady && !appInitApi.isInitializedAndReady && !appInitApi.loading) {
-      appInitApi.setupApp($session.data as App.Locals, {
-        isOrgSite: data.isOrgSite,
-        orgSiteName: data.orgSiteName,
-        orgId: data.org?.id ?? null
-      });
+    if (!isSessionReady || appInitApi.loading) {
+      return;
     }
+
+    if (!appInitApi.isInitializedAndReady) {
+      appInitApi.setupApp($session.data as App.Locals, appOrgParams);
+      return;
+    }
+
+    void appInitApi.syncOrgContext(appOrgParams);
   });
 </script>
 
