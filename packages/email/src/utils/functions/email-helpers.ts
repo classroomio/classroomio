@@ -1,22 +1,25 @@
 import { FromData } from '../types';
 import { EMAIL_FROM } from '../constants';
 
+const EMAIL_HEADER_CONTROL_CHARS = /[\x00-\x1F\x7F]/g;
+
+function stripEmailHeaderControlChars(value: string): string {
+  return value.replace(EMAIL_HEADER_CONTROL_CHARS, ' ').replace(/\s+/g, ' ').trim();
+}
+
 /** Strip control chars and backslash-escape quotes for RFC 5322 quoted display names. */
 export function sanitizeEmailDisplayName(name: string): string {
-  return name
-    .replace(/[\r\n\u0000]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .replace(/\\/g, '\\\\')
-    .replace(/"/g, '\\"')
-    .trim();
+  const normalized = stripEmailHeaderControlChars(name);
+  if (!normalized) {
+    return '';
+  }
+
+  return normalized.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
 
 /** Strip control chars that could break or inject email headers. */
 export function sanitizeEmailSubject(subject: string): string {
-  return subject
-    .replace(/[\r\n\u0000]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return stripEmailHeaderControlChars(subject);
 }
 
 export function escapeHtml(value: string): string {

@@ -19,6 +19,7 @@ describe('escapeHtml', () => {
 describe('sanitizeEmailDisplayName', () => {
   it('strips control characters and trims whitespace', () => {
     expect(sanitizeEmailDisplayName('  Acme\r\nAcademy\u0000  ')).toBe('Acme Academy');
+    expect(sanitizeEmailDisplayName('Acme\x01Academy\x7F')).toBe('Acme Academy');
   });
 
   it('backslash-escapes embedded quotes per RFC 5322 quoted-strings', () => {
@@ -33,6 +34,7 @@ describe('sanitizeEmailDisplayName', () => {
 describe('sanitizeEmailSubject', () => {
   it('strips control characters and trims whitespace', () => {
     expect(sanitizeEmailSubject('  Invite to Acme\r\n\rAcademy\u0000  ')).toBe('Invite to Acme Academy');
+    expect(sanitizeEmailSubject('Invite\x01to\x7FAcme')).toBe('Invite to Acme');
   });
 
   it('preserves quotes in subject text', () => {
