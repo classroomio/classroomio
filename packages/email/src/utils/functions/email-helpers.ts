@@ -1,11 +1,12 @@
 import { FromData } from '../types';
 import { EMAIL_FROM } from '../constants';
 
-/** Strip control chars and escape quotes for RFC 5322 quoted display names. */
+/** Strip control chars and backslash-escape quotes for RFC 5322 quoted display names. */
 export function sanitizeEmailDisplayName(name: string): string {
   return name
     .replace(/[\r\n\u0000]/g, ' ')
-    .replace(/"/g, '""')
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
     .trim();
 }
 
