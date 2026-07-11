@@ -30,12 +30,21 @@ type AppSetupParams = {
   orgId?: string | null;
 };
 
+function tenantSyncKey(params: AppSetupParams): string | null {
+  if (!params.isOrgSite || !params.orgSiteName) {
+    return null;
+  }
+
+  return `${params.orgSiteName}:${params.orgId ?? ''}`;
+}
+
 /*
   Manages everything related to loading the logged in user and setting up the organization.
 */
 class AppInitApi extends BaseApi {
   data = $state<AccountResponse>(null);
   session = $state<App.Locals | null>(null);
+  private syncedTenantKey: string | null = null;
 
   get loading() {
     return this.isLoading;
@@ -81,7 +90,7 @@ class AppInitApi extends BaseApi {
     });
   }
 
-  private async autoEnrollOnTenantSite(orgId: string): Promise<void> {
+  private async autoEnrollOnTenantSite(orgId: string): Promise<boolean> {
     try {
       const response = await classroomio.organization['auto-enroll-student'].$post(
         {},
@@ -93,16 +102,48 @@ class AppInitApi extends BaseApi {
         // visited a tenant site but isn't allowed to enroll. Other failures
         // shouldn't block the rest of setupApp.
         console.warn('auto-enroll-student failed', response.status, await response.text().catch(() => ''));
-        return;
+        return false;
       }
 
       // The user is a new member, so the session cookie cache (orgRoles)
       // is stale. Force Better Auth to refetch from DB and rewrite the
       // session_data cookie — Better Auth manages the cookie name itself.
       await authClient.getSession({ query: { disableCookieCache: true } });
+      return true;
     } catch (error) {
       console.warn('auto-enroll-student threw', error);
+      return false;
     }
+  }
+
+  /**
+   * Re-pin org context when the URL tenant changes after account data is loaded.
+   * Attempts auto-enroll when the user visits a tenant they are not yet a member of.
+   */
+  async syncTenantOrgFromUrl(params: AppSetupParams): Promise<void> {
+    if (!this.data?.success) {
+      return;
+    }
+
+    const nextTenantKey = tenantSyncKey(params);
+    if (nextTenantKey && nextTenantKey === this.syncedTenantKey) {
+      return;
+    }
+
+    const isMember = this.data.organizations.some((org) => org.siteName === params.orgSiteName);
+    if (params.isOrgSite && params.orgId && !isMember) {
+      const enrolled = await this.autoEnrollOnTenantSite(params.orgId);
+      if (enrolled) {
+        const response = await classroomio.account.$get();
+        const accountData = (await response.json()) as AccountResponse;
+        if (accountData?.success) {
+          this.data = accountData;
+        }
+      }
+    }
+
+    this.setOrgStore(params);
+    licenseApi.syncFromAccount(this.data.licenseFeatures, get(currentOrg));
   }
 
   /*
@@ -149,6 +190,7 @@ class AppInitApi extends BaseApi {
     const theme = get(currentOrg)?.theme;
 
     setTheme(theme || 'blue');
+    this.syncedTenantKey = tenantSyncKey(params ?? { isOrgSite: false, orgSiteName: '' });
   }
 
   /**
@@ -297,6 +339,7 @@ class AppInitApi extends BaseApi {
   reset() {
     super.reset();
     this.data = null;
+    this.syncedTenantKey = null;
     licenseApi.reset();
 
     user.set(defaultUserState);

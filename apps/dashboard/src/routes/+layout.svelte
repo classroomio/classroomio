@@ -50,6 +50,8 @@
 
   $effect(() => {
     if (!data.isOrgSite || !data.org) {
+      $globalStore.isOrgSite = false;
+      $globalStore.orgSiteName = '';
       return;
     }
 
@@ -65,14 +67,18 @@
     }
 
     setTheme(data.org.theme || 'blue');
+  });
 
-    if (appInitApi.isInitializedAndReady) {
-      appInitApi.setOrgStore({
-        isOrgSite: data.isOrgSite,
-        orgSiteName: data.orgSiteName,
-        orgId: data.org?.id ?? null
-      });
+  $effect(() => {
+    if (!data.isOrgSite || !data.orgSiteName || !appInitApi.isInitializedAndReady) {
+      return;
     }
+
+    void appInitApi.syncTenantOrgFromUrl({
+      isOrgSite: data.isOrgSite,
+      orgSiteName: data.orgSiteName,
+      orgId: data.org?.id ?? null
+    });
   });
 
   $effect(() => {
