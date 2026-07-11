@@ -66,6 +66,26 @@ Requires `DATABASE_URL` or `PRIVATE_DATABASE_URL` in the environment. The script
 cp .env.example .env   # then set DATABASE_URL for your DB
 ```
 
+#### db:backfill-profile-email-verification
+
+Repairs stale `profile.is_email_verified` rows where the auth user is already verified (`user.email_verified = true`) or has a linked OAuth/SSO account, but the profile flag was never synced. Use after the auth/profile verification mismatch fix, or when users are blocked by the verify-email modal while `send-verification-email` returns `EMAIL_IS_ALREADY_VERIFIED`.
+
+Dry run (lists affected count and a sample; makes no changes):
+
+```bash
+pnpm db:backfill-profile-email-verification
+# or from repo root:
+pnpm --filter @cio/db db:backfill-profile-email-verification
+```
+
+Apply updates:
+
+```bash
+pnpm db:backfill-profile-email-verification -- --execute
+```
+
+The script prints how many profiles were updated and verifies zero mismatches remain.
+
 ## Seeding
 
 The seed script populates the database with demo data for local development. It is idempotent — running it multiple times is safe; existing records are skipped.
