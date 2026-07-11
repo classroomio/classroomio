@@ -5,7 +5,12 @@ import {
   getOrganizationByProfileId,
   hasOrgMemberByProfileIdOrEmail
 } from '@cio/db/queries/organization';
-import { getProfileByEmail, getProfileById, updateProfile } from '@cio/db/queries/auth';
+import {
+  getProfileByEmail,
+  getProfileById,
+  syncProfileEmailVerificationFromAuthUser,
+  updateProfile
+} from '@cio/db/queries/auth';
 
 import type { OrganizationWithMemberAndPlans } from '@cio/db/queries/organization/types';
 import { ROLE } from '@cio/utils/constants';
@@ -37,6 +42,8 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
   if (!profile) {
     throw new AppError(`Account not found for user ID: ${userId}`, ErrorCodes.ACCOUNT_NOT_FOUND, 404);
   }
+
+  profile = (await syncProfileEmailVerificationFromAuthUser(userId)) ?? profile;
 
   // Self-hosted: auto-add user as student to the single org if they are not a member.
   // Skip if they already have membership (by profileId) or a pending invite (by email).
