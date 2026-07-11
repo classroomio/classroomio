@@ -4,6 +4,7 @@
 
   import { Snackbar } from '$features/ui';
   import { appInitApi } from '$features/app/init.svelte';
+  import { resolveAppOrgParams } from '$features/app/resolve-app-org-params';
   import { setupCloudAnalytics } from '$lib/utils/functions/appSetup';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg, mergeAccountOrgFromServer } from '$lib/utils/store/org';
@@ -45,9 +46,6 @@
     }
   });
 
-  const session = authClient.useSession();
-  const isSessionReady = $derived(!$session.isPending && !$session.isRefetching && $session.data);
-
   $effect(() => {
     if (!data.isOrgSite || !data.org) {
       $globalStore.isOrgSite = false;
@@ -69,26 +67,29 @@
     setTheme(data.org.theme || 'blue');
   });
 
+  const session = authClient.useSession();
+  const isSessionReady = $derived(!$session.isPending && !$session.isRefetching && $session.data);
+  const appOrgParams = $derived(resolveAppOrgParams(data, page.url.pathname, page.params.slug));
+
+  /*
+    Auth + org context for the whole dashboard.
+
+    setupApp runs once per session to load /account. After that, org context can
+    still change when a logged-in user navigates to a different tenant subdomain
+    or opens another /org/[slug] on the app host — without another setupApp run.
+    syncOrgContext re-pins currentOrg from the URL + cached account data.
+  */
   $effect(() => {
-    if (!data.isOrgSite || !data.orgSiteName || !appInitApi.isInitializedAndReady) {
+    if (!isSessionReady || appInitApi.loading) {
       return;
     }
 
-    void appInitApi.syncTenantOrgFromUrl({
-      isOrgSite: data.isOrgSite,
-      orgSiteName: data.orgSiteName,
-      orgId: data.org?.id ?? null
-    });
-  });
-
-  $effect(() => {
-    if (isSessionReady && !appInitApi.isInitializedAndReady && !appInitApi.loading) {
-      appInitApi.setupApp($session.data as App.Locals, {
-        isOrgSite: data.isOrgSite,
-        orgSiteName: data.orgSiteName,
-        orgId: data.org?.id ?? null
-      });
+    if (!appInitApi.isInitializedAndReady) {
+      appInitApi.setupApp($session.data as App.Locals, appOrgParams);
+      return;
     }
+
+    void appInitApi.syncOrgContext(appOrgParams);
   });
 </script>
 

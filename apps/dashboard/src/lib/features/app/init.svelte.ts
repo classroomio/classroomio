@@ -3,6 +3,7 @@ import { currentOrg, getOrgPublicUrl, mergeAccountOrgFromServer, orgs } from '$l
 import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils/store/user';
 
 import type { AccountResponse } from './types';
+import { resolveAppOrgParams, type AppOrgParams } from './resolve-app-org-params';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import type { TUser } from '@cio/db/types';
 import { authClient } from '$lib/utils/services/auth/client';
@@ -23,19 +24,18 @@ import { setupAnalyticsBasedOnLicense } from '$lib/utils/functions/appSetup';
 import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
 import { ROLE } from '@cio/utils/constants';
 
-type AppSetupParams = {
-  isOrgSite: boolean;
-  orgSiteName: string;
-  /** Tenant org id from `getOrgSiteInfo`; used to auto-enroll the user if they aren't a member yet. */
-  orgId?: string | null;
-};
+type AppSetupParams = AppOrgParams;
 
 function tenantSyncKey(params: AppSetupParams): string | null {
-  if (!params.isOrgSite || !params.orgSiteName) {
+  if (!params.orgSiteName) {
     return null;
   }
 
-  return `${params.orgSiteName}:${params.orgId ?? ''}`;
+  if (params.isOrgSite) {
+    return `tenant:${params.orgSiteName}:${params.orgId ?? ''}`;
+  }
+
+  return `admin:${params.orgSiteName}`;
 }
 
 /*
@@ -117,11 +117,14 @@ class AppInitApi extends BaseApi {
   }
 
   /**
-   * Re-pin org context when the URL tenant changes after account data is loaded.
-   * Attempts auto-enroll when the user visits a tenant they are not yet a member of.
+   * Re-pin org context after setupApp when the URL org changes.
+   *
+   * setupApp only runs once per session; tenant subdomains and `/org/[slug]`
+   * routes can change without another /account fetch. This keeps `currentOrg`
+   * aligned with the URL and attempts auto-enroll on org sites when needed.
    */
-  async syncTenantOrgFromUrl(params: AppSetupParams): Promise<void> {
-    if (!this.data?.success) {
+  async syncOrgContext(params: AppSetupParams): Promise<void> {
+    if (!this.data?.success || !params.orgSiteName) {
       return;
     }
 
@@ -201,23 +204,25 @@ class AppInitApi extends BaseApi {
     const organizations = this.data?.success ? this.data.organizations : [];
     const urlResolvedOrg = get(currentOrg);
 
-    if (params?.isOrgSite && params.orgSiteName) {
-      const tenantMembership = organizations.find((org) => org.siteName === params.orgSiteName);
-      if (tenantMembership) {
-        return tenantMembership;
+    if (params?.orgSiteName) {
+      const membership = organizations.find((org) => org.siteName === params.orgSiteName);
+      if (membership) {
+        return membership;
       }
 
-      // Keep the server-resolved tenant org (set from URL in +layout.svelte) instead
-      // of switching to another membership from /account.
-      if (urlResolvedOrg.siteName === params.orgSiteName && urlResolvedOrg.id) {
-        return urlResolvedOrg;
-      }
+      if (params.isOrgSite) {
+        // Keep the server-resolved tenant org (set from URL in +layout.svelte) instead
+        // of switching to another membership from /account.
+        if (urlResolvedOrg.siteName === params.orgSiteName && urlResolvedOrg.id) {
+          return urlResolvedOrg;
+        }
 
-      if (params.orgId && urlResolvedOrg.id === params.orgId) {
-        return urlResolvedOrg;
-      }
+        if (params.orgId && urlResolvedOrg.id === params.orgId) {
+          return urlResolvedOrg;
+        }
 
-      return undefined;
+        return undefined;
+      }
     }
 
     if (!organizations.length) {
