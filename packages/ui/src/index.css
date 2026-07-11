@@ -42,6 +42,18 @@
   z-index: 250;
 }
 
+/*
+ * `@utility` only emits a class when Tailwind's scanner sees that exact candidate
+ * somewhere under `packages/ui/src` — it does not ship every documented layer just because
+ * it's declared above. Safelist all four here so the compiled `@cio/ui` CSS always exposes
+ * the full scale, regardless of which layers happen to be referenced inside this package
+ * today; otherwise a consumer using e.g. `ui:z-menu-elevated` could silently get no rule.
+ */
+@source inline('ui:z-app-bar{,!}');
+@source inline('ui:z-app-bar-elevated{,!}');
+@source inline('ui:z-modal{,!}');
+@source inline('ui:z-menu-elevated{,!}');
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
