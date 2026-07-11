@@ -5,6 +5,7 @@ import { EMAIL_FROM } from '../constants';
 export function sanitizeEmailDisplayName(name: string): string {
   return name
     .replace(/[\r\n\u0000]/g, ' ')
+    .replace(/\s+/g, ' ')
     .replace(/\\/g, '\\\\')
     .replace(/"/g, '\\"')
     .trim();
@@ -12,7 +13,10 @@ export function sanitizeEmailDisplayName(name: string): string {
 
 /** Strip control chars that could break or inject email headers. */
 export function sanitizeEmailSubject(subject: string): string {
-  return subject.replace(/[\r\n\u0000]/g, ' ').trim();
+  return subject
+    .replace(/[\r\n\u0000]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 export function escapeHtml(value: string): string {

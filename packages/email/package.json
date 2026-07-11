@@ -10,7 +10,9 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "dev": "tsc --watch",
-    "format": "prettier --write \"src/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "exports": {
     ".": {
@@ -42,6 +44,7 @@
     "prettier": "^3.2.5",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.7.1",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.2",
+    "vitest": "^1.2.2"
   }
 }
