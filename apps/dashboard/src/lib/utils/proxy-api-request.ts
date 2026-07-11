@@ -34,8 +34,27 @@ function resolveApiUpstreamBase(): string | null {
   return base.replace(/\/$/, '');
 }
 
-function resolveOriginalHost(request: Request, url: URL): string {
-  return request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? url.host;
+function resolveBrowserForwardedHost(request: Request, url: URL): string {
+  const raw = request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? url.hostname;
+  const [hostname, port = ''] = raw.includes(':') ? raw.split(':', 2) : [raw, ''];
+
+  if (!port) {
+    return hostname;
+  }
+
+  const privateServerUrl = process.env.PRIVATE_SERVER_URL;
+  if (privateServerUrl) {
+    try {
+      const backendPort = new URL(privateServerUrl).port;
+      if (backendPort && port === backendPort) {
+        return hostname;
+      }
+    } catch {
+      // Ignore malformed PRIVATE_SERVER_URL.
+    }
+  }
+
+  return raw;
 }
 
 export async function proxyRequestToApi(request: Request): Promise<Response> {
@@ -49,7 +68,7 @@ export async function proxyRequestToApi(request: Request): Promise<Response> {
 
   const upstreamPath = resolveApiUpstreamPath(url.pathname);
   const upstreamUrl = new URL(`${upstreamPath}${url.search}`, apiBase);
-  const originalHost = resolveOriginalHost(request, url);
+  const originalHost = resolveBrowserForwardedHost(request, url);
 
   const upstreamHeaders = new Headers(request.headers);
   upstreamHeaders.set('host', upstreamUrl.host);

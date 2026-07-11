@@ -6,6 +6,12 @@ import { isPublicCorsPath, sessionCors } from '@api/middlewares/cors';
 import { randomBytes } from 'crypto';
 
 import { API_SERVER_URL } from '@api/constants';
+import {
+  resolveOAuthBrowserOrigin,
+  rewriteAuthRequestUrl,
+  rewriteOAuthProxyCallbackLocation,
+  shouldRewriteOAuthProxyCallbackLocation
+} from '@api/utils/oauth-proxy-redirect';
 import { Hono } from '@api/utils/hono';
 import { ErrorCodes } from '@api/utils/errors';
 import { accountRouter } from '@api/routes/account';
@@ -114,13 +120,16 @@ export const app = new Hono()
     let request = c.req.raw;
     const fwdHost = c.req.header('x-forwarded-host');
     const fwdProto = c.req.header('x-forwarded-proto');
+    const browserOrigin = resolveOAuthBrowserOrigin({
+      forwardedHost: fwdHost,
+      forwardedProto: fwdProto
+    });
+
     if (fwdHost) {
-      const url = new URL(request.url);
-      url.host = fwdHost;
-      if (fwdProto === 'https' || fwdProto === 'http') {
-        url.protocol = `${fwdProto}:`;
-      }
-      request = new Request(url, request);
+      request = rewriteAuthRequestUrl(request, {
+        forwardedHost: fwdHost,
+        forwardedProto: fwdProto
+      });
     }
 
     // Inbound: if the browser is hitting `/oauth-proxy-callback?token=…`
@@ -168,8 +177,9 @@ export const app = new Hono()
     // pushes the Location header past Render's response size ceiling and
     // the redirect silently never reaches the browser.
     if (response.status >= 300 && response.status < 400) {
-      const location = response.headers.get('location');
-      if (location && location.includes('/oauth-proxy-callback') && location.includes('cookies=')) {
+      let location = response.headers.get('location');
+
+      if (location?.includes('/oauth-proxy-callback') && location.includes('cookies=')) {
         try {
           const outUrl = new URL(location);
           const cookies = outUrl.searchParams.get('cookies');
@@ -178,13 +188,21 @@ export const app = new Hono()
             await storeHandoffPayload(token, cookies);
             outUrl.searchParams.delete('cookies');
             outUrl.searchParams.set('token', token);
-            const headers = new Headers(response.headers);
-            headers.set('location', outUrl.toString());
-            return new Response(response.body, { status: response.status, headers });
+            location = outUrl.toString();
           }
         } catch (error) {
           console.error('[auth-handler] failed to swap cookies → token, falling back to inline cookies:', error);
         }
+      }
+
+      if (location && browserOrigin && shouldRewriteOAuthProxyCallbackLocation(location, browserOrigin)) {
+        location = rewriteOAuthProxyCallbackLocation(location, browserOrigin);
+      }
+
+      if (location && location !== response.headers.get('location')) {
+        const headers = new Headers(response.headers);
+        headers.set('location', location);
+        return new Response(response.body, { status: response.status, headers });
       }
     }
 
