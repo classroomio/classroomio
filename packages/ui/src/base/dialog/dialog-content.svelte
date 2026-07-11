@@ -29,7 +29,7 @@
       // dialog's own bottom padding when a sticky footer is rendered —
       // the footer's own `py-4` provides the bottom spacing instead, and
       // it pins flush with the dialog's bottom edge.
-      'ui:bg-background ui:border ui:data-[state=open]:animate-in ui:data-[state=closed]:animate-out ui:data-[state=closed]:fade-out-0 ui:data-[state=open]:fade-in-0 ui:data-[state=closed]:zoom-out-95 ui:data-[state=open]:zoom-in-95 ui:fixed ui:left-[50%] ui:top-[50%] ui:z-200 ui:grid ui:w-full ui:max-w-[calc(100%-2rem)] ui:translate-x-[-50%] ui:translate-y-[-50%] ui:gap-4 ui:rounded-lg ui:p-6 ui:[&:has([data-slot=dialog-footer][data-sticky=true])]:pb-0 ui:shadow-lg ui:duration-200 ui:sm:max-w-lg',
+      'ui:bg-background ui:border ui:data-[state=open]:animate-in ui:data-[state=closed]:animate-out ui:data-[state=closed]:fade-out-0 ui:data-[state=open]:fade-in-0 ui:data-[state=closed]:zoom-out-95 ui:data-[state=open]:zoom-in-95 ui:fixed ui:left-[50%] ui:top-[50%] ui:z-modal ui:grid ui:w-full ui:max-w-[calc(100%-2rem)] ui:translate-x-[-50%] ui:translate-y-[-50%] ui:gap-4 ui:rounded-lg ui:p-6 ui:[&:has([data-slot=dialog-footer][data-sticky=true])]:pb-0 ui:shadow-lg ui:duration-200 ui:sm:max-w-lg',
       className
     )}
     {...restProps}
