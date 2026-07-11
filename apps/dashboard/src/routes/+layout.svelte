@@ -43,25 +43,37 @@
         currentSession: data.locals.user
       });
     }
-
-    if (data.isOrgSite && data.org) {
-      $globalStore.orgSiteName = data.orgSiteName || '';
-      $globalStore.isOrgSite = true;
-
-      const existingOrg = get(currentOrg);
-      const shouldSetPublicOrg =
-        !existingOrg.id || (existingOrg.siteName === data.org.siteName && existingOrg.roleId === 0);
-
-      if (shouldSetPublicOrg) {
-        currentOrg.set(mergeAccountOrgFromServer(data.org));
-      }
-
-      setTheme(data.org.theme || 'blue');
-    }
   });
 
   const session = authClient.useSession();
   const isSessionReady = $derived(!$session.isPending && !$session.isRefetching && $session.data);
+
+  $effect(() => {
+    if (!data.isOrgSite || !data.org) {
+      return;
+    }
+
+    $globalStore.orgSiteName = data.orgSiteName || '';
+    $globalStore.isOrgSite = true;
+
+    const existingOrg = get(currentOrg);
+    const shouldSetPublicOrg =
+      !existingOrg.id || existingOrg.siteName !== data.org.siteName || existingOrg.roleId === 0;
+
+    if (shouldSetPublicOrg) {
+      currentOrg.set(mergeAccountOrgFromServer(data.org));
+    }
+
+    setTheme(data.org.theme || 'blue');
+
+    if (appInitApi.isInitializedAndReady) {
+      appInitApi.setOrgStore({
+        isOrgSite: data.isOrgSite,
+        orgSiteName: data.orgSiteName,
+        orgId: data.org?.id ?? null
+      });
+    }
+  });
 
   $effect(() => {
     if (isSessionReady && !appInitApi.isInitializedAndReady && !appInitApi.loading) {
