@@ -1,12 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { resolveAppliedColorMode } from './color-mode-document';
 import {
   MODE_EXPLICIT_STORAGE_KEY,
   MODE_STORAGE_KEY,
   hasExplicitColorModePreference,
   markColorModeExplicit,
-  readStoredColorMode,
   resolveStoredColorMode
 } from './color-mode';
 
@@ -35,19 +33,6 @@ function createMemoryStorage(initial: Record<string, string> = {}): Storage {
   };
 }
 
-describe('resolveAppliedColorMode', () => {
-  it('defaults to light for missing or stale system preferences', () => {
-    expect(resolveAppliedColorMode('light', false)).toBe('light');
-    expect(resolveAppliedColorMode('light', true)).toBe('light');
-    expect(resolveAppliedColorMode('system', true)).toBe('light');
-  });
-
-  it('follows the OS only for explicit system preferences', () => {
-    expect(resolveAppliedColorMode('system', false)).toBe('dark');
-    expect(resolveAppliedColorMode('dark', true)).toBe('dark');
-  });
-});
-
 describe('resolveStoredColorMode', () => {
   it('defaults to light when nothing is stored', () => {
     expect(resolveStoredColorMode(createMemoryStorage())).toBe('light');
@@ -74,12 +59,6 @@ describe('resolveStoredColorMode', () => {
     });
 
     expect(resolveStoredColorMode(explicitSystemStorage)).toBe('system');
-  });
-});
-
-describe('readStoredColorMode', () => {
-  it('delegates to resolveStoredColorMode', () => {
-    expect(readStoredColorMode(createMemoryStorage())).toBe('light');
   });
 });
 

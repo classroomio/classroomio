@@ -1,21 +1,21 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
   import { MonitorIcon, SunIcon, MoonIcon } from '@lucide/svelte';
+  import { setMode, userPrefersMode } from '@cio/ui/base/dark-mode';
 
-  import { getColorModePreference, setColorModePreference } from '$lib/utils/functions/color-mode.svelte.ts';
+  import { markColorModeExplicit, type ColorModePreference } from '$lib/utils/functions/color-mode';
 
-  type ThemeMode = 'light' | 'dark' | 'system';
-
-  const themes: { mode: ThemeMode; icon: typeof MonitorIcon }[] = [
+  const themes: { mode: ColorModePreference; icon: typeof MonitorIcon }[] = [
     { mode: 'light', icon: SunIcon },
     { mode: 'dark', icon: MoonIcon },
     { mode: 'system', icon: MonitorIcon }
   ];
 
-  const activeMode = $derived(getColorModePreference());
+  const activeMode = $derived(userPrefersMode.current ?? 'light');
 
-  const handleThemeChange = (newMode: ThemeMode) => {
-    setColorModePreference(newMode);
+  const handleThemeChange = (newMode: ColorModePreference) => {
+    markColorModeExplicit();
+    setMode(newMode);
   };
 </script>
 

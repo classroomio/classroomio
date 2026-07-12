@@ -1,4 +1,3 @@
-import './lib/utils/functions/init-color-mode.client';
 import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/public';

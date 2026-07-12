@@ -1,9 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-
-  import { initColorModeState } from '$lib/utils/functions/color-mode.svelte.ts';
-
-  onMount(() => {
-    initColorModeState();
-  });
+  import { ModeWatcher } from '@cio/ui/base/dark-mode';
 </script>
+
+<ModeWatcher defaultMode="light" />
