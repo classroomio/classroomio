@@ -256,7 +256,8 @@
         "file_size": "Rozmiar pliku nie może przekraczać 500 KB",
         "try_again": "Spróbuj ponownie",
         "label": "Prześlij obraz",
-        "fetch_error": "Błąd podczas pobierania obrazów z Unsplash"
+        "fetch_error": "Błąd podczas pobierania obrazów z Unsplash",
+        "upload_failed": "Nie udało się przesłać obrazu. Spróbuj ponownie."
       }
     },
     "team_members": {

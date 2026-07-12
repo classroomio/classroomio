@@ -256,7 +256,8 @@
         "file_size": "Die Dateigröße darf 500 KB nicht überschreiten",
         "try_again": "Versuchen Sie es erneut",
         "label": "Bild hochladen",
-        "fetch_error": "Fehler beim Abrufen von Bildern von Unsplash"
+        "fetch_error": "Fehler beim Abrufen von Bildern von Unsplash",
+        "upload_failed": "Bild konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut."
       }
     },
     "team_members": {

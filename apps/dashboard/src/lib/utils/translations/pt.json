@@ -256,7 +256,8 @@
         "file_size": "O tamanho do arquivo não deve ser superior a 500kb",
         "try_again": "Tente novamente",
         "label": "Carregar imagem",
-        "fetch_error": "Erro ao buscar imagens do Unsplash"
+        "fetch_error": "Erro ao buscar imagens do Unsplash",
+        "upload_failed": "Falha ao carregar a imagem. Por favor, tente novamente."
       }
     },
     "team_members": {
