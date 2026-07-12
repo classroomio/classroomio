@@ -429,7 +429,8 @@ export async function runCohortGoalReminderScan(): Promise<{
             theme: row.organizationTheme
           })
         },
-        idempotencyKey: `cohort-goal-reminder:${row.assignment.id}:${daysUntilDue}:${dayKey}`
+        idempotencyKey: `cohort-goal-reminder:${row.assignment.id}:${daysUntilDue}:${dayKey}`,
+        preference: { organizationId: row.organizationId, recipientProfileId: row.profileId }
       });
       remindersEnqueued += 1;
     } catch (error) {

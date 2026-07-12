@@ -1,5 +1,6 @@
 import { enqueueEmailSend, isRedisConfigured } from '@cio/jobs';
 import { EmailRegistry, type EmailId, type EmailSchemaFor } from '@cio/email';
+import { shouldSendEmail } from '@cio/db/queries/notifications';
 import * as z from 'zod';
 
 import { logRedisUnavailableOnce } from '@cio/core/utils/redis/redis';
@@ -24,6 +25,10 @@ export interface EnqueueTemplateEmailInput<TId extends EmailId> extends CommonOp
   subject?: string;
   /** Optional iCalendar (.ics) body attached as a text/calendar part. */
   ics?: string;
+  preference?: {
+    organizationId?: string;
+    recipientProfileId?: string;
+  };
 }
 
 export interface EnqueueRawEmailInput extends CommonOptions {
@@ -78,6 +83,19 @@ export async function enqueueTransactionalEmail<TId extends EmailId>(
   const jobIds: string[] = [];
 
   for (const recipient of recipients) {
+    if (input.preference) {
+      const allowed = await shouldSendEmail({
+        emailId: template,
+        organizationId: input.preference.organizationId,
+        recipientEmail: recipient,
+        recipientProfileId: input.preference.recipientProfileId
+      });
+
+      if (!allowed) {
+        continue;
+      }
+    }
+
     const jobId = await enqueueEmailSend(
       {
         kind: 'template',

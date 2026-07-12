@@ -1,4 +1,5 @@
 import { listUpcomingSessionsForReminderScan } from '@cio/db/queries/course';
+import { shouldSendEmail } from '@cio/db/queries/notifications';
 import { buildEmailBranding, buildEmailFromName, buildSessionIcs } from '@cio/email';
 import { enqueueEmailSend } from '@cio/jobs';
 
@@ -70,6 +71,17 @@ export async function processSessionReminderScan(): Promise<ScanResult> {
           : undefined;
 
       try {
+        const allowed = await shouldSendEmail({
+          emailId: 'sessionReminder',
+          organizationId: row.organizationId,
+          recipientEmail: row.email,
+          recipientProfileId: row.profileId
+        });
+
+        if (!allowed) {
+          continue;
+        }
+
         await enqueueEmailSend(
           {
             kind: 'template',

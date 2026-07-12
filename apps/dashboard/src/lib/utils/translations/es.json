@@ -3395,7 +3395,8 @@
       "domains_tab": "Dominios",
       "teams_tab": "equipos",
       "ai_credits_tab": "AI Credits",
-      "ai_tutor_tab": "Tutor de IA"
+      "ai_tutor_tab": "Tutor de IA",
+      "notifications_tab": "Notifications"
     },
     "subheadings": {
       "view_site": "Academia Abierta"
@@ -3568,6 +3569,61 @@
         "quantity_hint": "paquetes",
         "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
         "buy_button": "Comprar por ${dollars}"
+      }
+    },
+    "notifications": {
+      "heading": "Notifications",
+      "page_title": "Notifications",
+      "page_subtitle": "Choose which email notifications you receive and, as an admin, which emails your organization sends.",
+      "toggles": {
+        "courseCompletion": {
+          "label": "Course completion and certificates",
+          "description": "Email students when they complete a course and earn a certificate."
+        },
+        "enrollmentWelcome": {
+          "label": "Enrollment welcome emails",
+          "description": "Send welcome emails when staff enroll students in courses or cohorts."
+        },
+        "session": {
+          "label": "Live session reminders and updates",
+          "description": "Email students before live sessions and when session details change."
+        },
+        "cohortReminder": {
+          "label": "Cohort goal reminders",
+          "description": "Email students about upcoming or overdue cohort learning goals."
+        },
+        "quizAssigned": {
+          "label": "Quiz or exercise assigned",
+          "description": "Email students when a quiz or exercise is assigned or nudged."
+        },
+        "newsfeed": {
+          "label": "Course announcements and comments",
+          "description": "Email course members about new posts and comments on the newsfeed."
+        },
+        "gradingResult": {
+          "label": "Grading results",
+          "description": "Email students when their submission is graded or updated."
+        },
+        "newSubmission": {
+          "label": "New submissions to grade",
+          "description": "Email tutors when a student submits work that needs grading."
+        },
+        "newStudent": {
+          "label": "New student joins",
+          "description": "Email tutors when a student enrolls in a course."
+        }
+      },
+      "org": {
+        "heading": "Organization defaults",
+        "description": "When disabled here, nobody in your organization receives that email. Members can still opt out of emails you leave enabled.",
+        "save": "Save organization defaults",
+        "save_success": "Organization notification defaults saved"
+      },
+      "personal": {
+        "heading": "Your email preferences",
+        "description": "These apply to emails sent to you across every organization you belong to. Your organization may still disable certain emails for everyone.",
+        "save": "Save personal preferences",
+        "save_success": "Personal notification preferences saved"
       }
     }
   },

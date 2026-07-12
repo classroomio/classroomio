@@ -1,5 +1,9 @@
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 
+export type UpdateProfileRequest = typeof classroomio.account.profile.$put;
+export type UpdateProfileSuccess = Extract<InferResponseType<UpdateProfileRequest>, { success: true }>;
+export type UpdateProfileResponseProfile = UpdateProfileSuccess['profile'];
+
 export type GetUsageRequest = typeof classroomio.agent.usage.$get;
 export type GetPurchasedRequest = (typeof classroomio.agent.usage)['purchased']['$get'];
 export type GetLeaderboardRequest = (typeof classroomio.agent.usage)['leaderboard']['$get'];

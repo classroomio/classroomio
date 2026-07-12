@@ -89,7 +89,8 @@ export function scheduleCertificationCompletionWork(params: {
           })
         },
         from: buildEmailFromName(`${courseRow.orgName} (via ClassroomIO.com)`),
-        idempotencyKey: `course-completion:${groupMemberId}`
+        idempotencyKey: `course-completion:${groupMemberId}`,
+        preference: { organizationId: courseRow.orgId, recipientProfileId: profileId }
       });
 
       await setMemberCertificationEmailSent(groupMemberId, new Date().toISOString());

@@ -27,6 +27,7 @@ export const ZNotifyCourseExercisePayload = z.object({
   exerciseTitle: z.string().min(1),
   courseName: z.string().min(1),
   orgName: z.string().min(1),
+  organizationId: z.string().min(1),
   fromName: z.string().min(1),
   quizUrl: z.string().min(1),
   branding: ZNotifyBranding

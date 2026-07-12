@@ -110,7 +110,8 @@ export async function addMember(
                 },
                 from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
                 idempotencyKey: `course-people-student-welcome:${courseId}:${studentEmail}`,
-                ics: await getWelcomeSessionIcs(courseId)
+                ics: await getWelcomeSessionIcs(courseId),
+                preference: { organizationId: courseOrgData.orgId, recipientProfileId: data.profileId }
               });
             } catch (emailError) {
               console.error('Failed to enqueue student welcome email:', emailError);
@@ -133,7 +134,8 @@ export async function addMember(
                     branding
                   },
                   from: buildEmailFromName('ClassroomIO'),
-                  idempotencyKey: `course-people-teacher-joined:${courseId}:${studentEmail}`
+                  idempotencyKey: `course-people-teacher-joined:${courseId}:${studentEmail}`,
+                  preference: { organizationId: courseOrgData.orgId }
                 });
               } catch (emailError) {
                 console.error('Failed to enqueue teacher notification email:', emailError);
@@ -237,7 +239,8 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
               branding
             },
             from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-            idempotencyKey: `teacher-course-welcome:${courseId}:${email}`
+            idempotencyKey: `teacher-course-welcome:${courseId}:${email}`,
+            preference: { organizationId: courseOrgData.orgId }
           }).catch((emailError) => {
             console.error(`Failed to enqueue welcome email to ${email}:`, emailError);
             return [];

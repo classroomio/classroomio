@@ -108,7 +108,43 @@ export async function getProfilesByEmails(emails: string[]) {
 }
 
 export const updateProfile = async (id: string, data: Partial<Omit<TProfile, 'id' | 'createdAt' | 'updatedAt'>>) => {
-  const [updatedProfile] = await db.update(schema.profile).set(data).where(eq(schema.profile.id, id)).returning();
+  let setData = { ...data };
+
+  if (data.settings !== undefined) {
+    const [existing] = await db
+      .select({ settings: schema.profile.settings })
+      .from(schema.profile)
+      .where(eq(schema.profile.id, id))
+      .limit(1);
+
+    const existingSettings = (existing?.settings as Record<string, unknown>) ?? {};
+    const newSettings = data.settings as Record<string, unknown>;
+    const mergedSettings: Record<string, unknown> = { ...existingSettings };
+
+    for (const key of Object.keys(newSettings ?? {})) {
+      const existingVal = existingSettings[key];
+      const newVal = newSettings[key];
+
+      if (newVal !== undefined) {
+        if (
+          existingVal &&
+          typeof existingVal === 'object' &&
+          !Array.isArray(existingVal) &&
+          newVal &&
+          typeof newVal === 'object' &&
+          !Array.isArray(newVal)
+        ) {
+          mergedSettings[key] = { ...(existingVal as Record<string, unknown>), ...(newVal as Record<string, unknown>) };
+        } else {
+          mergedSettings[key] = newVal;
+        }
+      }
+    }
+
+    setData = { ...setData, settings: mergedSettings as TProfile['settings'] };
+  }
+
+  const [updatedProfile] = await db.update(schema.profile).set(setData).where(eq(schema.profile.id, id)).returning();
 
   return updatedProfile;
 };

@@ -64,6 +64,10 @@
     "./org-site/og-public-url": {
       "types": "./dist/org-site/og-public-url.d.ts",
       "default": "./dist/org-site/og-public-url.js"
+    },
+    "./notifications": {
+      "types": "./dist/notifications/index.d.ts",
+      "default": "./dist/notifications/index.js"
     }
   },
   "scripts": {

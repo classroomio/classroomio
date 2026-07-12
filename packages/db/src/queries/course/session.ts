@@ -15,6 +15,7 @@ export type UpcomingSessionReminderRow = {
   callUrl: string;
   profileId: string;
   email: string | null;
+  organizationId: string;
   organizationName: string;
   organizationSiteName: string | null;
   organizationCustomDomain: string | null;
@@ -44,6 +45,7 @@ export async function listUpcomingSessionsForReminderScan(): Promise<UpcomingSes
         callUrl: schema.lesson.callUrl,
         profileId: schema.groupmember.profileId,
         email: schema.profile.email,
+        organizationId: schema.organization.id,
         organizationName: schema.organization.name,
         organizationSiteName: schema.organization.siteName,
         organizationCustomDomain: schema.organization.customDomain,
@@ -82,6 +84,7 @@ export async function listUpcomingSessionsForReminderScan(): Promise<UpcomingSes
         callUrl: row.callUrl!,
         profileId: row.profileId!,
         email: row.email,
+        organizationId: row.organizationId,
         organizationName: row.organizationName,
         organizationSiteName: row.organizationSiteName,
         organizationCustomDomain: row.organizationCustomDomain,
