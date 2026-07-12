@@ -4,7 +4,7 @@ import merge from 'lodash/merge';
 
 import type { AccountOrg } from '$features/app/types';
 import type { OrgTeamMember } from '../types/org';
-import { canUsePublicApi, getStudentLimit, isOrgOnFreePlan, PLAN } from '@cio/utils/plans';
+import { canUsePublicApi, getStudentLimit, isOrgOnFreePlan, isResourceLimitReached, PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import { STEPS } from '../constants/quiz';
@@ -152,6 +152,19 @@ export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) => {
   const limit = getStudentLimit($plan?.planName);
   return Number.isFinite(limit) ? limit : Number.MAX_SAFE_INTEGER;
 });
+
+/**
+ * Per-resource org usage + limits delivered by `/account` (admin/tutor only).
+ * `studentUsage`/`isStudentLimitReached` are convenience selectors; generic
+ * consumers can read `$currentOrgLimits.<resource>` with `isResourceLimitReached`.
+ */
+export const currentOrgLimits = derived(currentOrg, ($currentOrg) => $currentOrg.limits ?? {});
+
+export const studentUsage = derived(currentOrg, ($currentOrg) => $currentOrg.limits?.students);
+
+export const isStudentLimitReached = derived(currentOrg, ($currentOrg) =>
+  isResourceLimitReached($currentOrg.limits?.students)
+);
 
 // Quiz
 export const createQuizModal = writable({

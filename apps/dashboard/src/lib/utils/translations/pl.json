@@ -2814,7 +2814,10 @@
     "stats": "Statystyki",
     "analytics": "Analityka",
     "compliance": "Zgodność",
-    "cohorts": "Programy"
+    "cohorts": "Programy",
+    "upgrade_now": "Uaktualnij teraz",
+    "upgrade_students": "{studentCount} z {studentLimit} uczniów",
+    "upgrade_left": "Pozostało {count}"
   },
   "media_manager": {
     "page_title": "Menedżer multimediów - ClassroomIO",

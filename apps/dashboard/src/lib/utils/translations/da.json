@@ -2814,7 +2814,10 @@
     "stats": "Statistik",
     "analytics": "Analytics",
     "compliance": "Overholdelse",
-    "cohorts": "Programmer"
+    "cohorts": "Programmer",
+    "upgrade_now": "Opgrader nu",
+    "upgrade_students": "{studentCount} af {studentLimit} elever",
+    "upgrade_left": "{count} tilbage"
   },
   "media_manager": {
     "page_title": "Media Manager - ClassroomIO",

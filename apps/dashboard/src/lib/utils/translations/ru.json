@@ -2814,7 +2814,10 @@
     "stats": "Статистика",
     "analytics": "Аналитика",
     "compliance": "Соответствие",
-    "cohorts": "Программы"
+    "cohorts": "Программы",
+    "upgrade_now": "Обновите сейчас",
+    "upgrade_students": "{studentCount} из {studentLimit} студентов",
+    "upgrade_left": "{count} осталось"
   },
   "media_manager": {
     "page_title": "Медиа-менеджер — ClassroomIO",

@@ -9,7 +9,7 @@
   import { ROLE } from '@cio/utils/constants';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi } from '$features/course/api';
-  import { currentOrg, currentOrgMaxAudience, isFreePlan } from '$lib/utils/store/org';
+  import { currentOrg, isStudentLimitReached } from '$lib/utils/store/org';
   import { peopleApi } from '$features/course/api';
   import { orgApi } from '$features/org/api/org.svelte';
   import { DEFAULT_ORG_AUDIENCE_QUERY } from '$features/org/utils/audience-query-utils';
@@ -27,8 +27,6 @@
 
   const selectedTutors = $derived(tutors.filter((t) => selectedIds.includes(t.id.toString())));
   const INVITE_MODAL = 'course.navItem.people.invite_modal';
-
-  const atStudentLimit = $derived($isFreePlan && (orgApi.audiencePagination?.total ?? 0) >= $currentOrgMaxAudience);
 
   let isLoadingStudents = $state(false);
   let activeTab = $state<'tutors' | 'students'>('students');
@@ -219,11 +217,11 @@
             onAssign={assignExistingStudents}
           />
 
-          {#if atStudentLimit}
-            <UpgradeBanner>{$t(`${INVITE_MODAL}.student_limit_reached`)}</UpgradeBanner>
+          {#if $isStudentLimitReached}
+            <UpgradeBanner removeParams={['add']}>{$t(`${INVITE_MODAL}.student_limit_reached`)}</UpgradeBanner>
           {/if}
 
-          <BulkEmailSection onInvite={inviteNewStudents} disabled={atStudentLimit} />
+          <BulkEmailSection onInvite={inviteNewStudents} disabled={$isStudentLimitReached} />
         </div>
       </UnderlineTabs.Content>
     </UnderlineTabs.Root>

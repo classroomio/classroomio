@@ -2814,7 +2814,10 @@
     "stats": "आँकड़े",
     "analytics": "विश्लेषिकी",
     "compliance": "अनुपालन",
-    "cohorts": "कार्यक्रम"
+    "cohorts": "कार्यक्रम",
+    "upgrade_now": "अभी अपग्रेड करें",
+    "upgrade_students": "{studentLimit} छात्रों की {studentCount}",
+    "upgrade_left": "{गिनती} बाएँ"
   },
   "media_manager": {
     "page_title": "मीडिया मैनेजर - क्लासरूमआईओ",

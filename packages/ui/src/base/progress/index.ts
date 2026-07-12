@@ -1,7 +1,9 @@
-import Root from './progress.svelte';
+import Root, { type ProgressVariant, progressVariants } from './progress.svelte';
 
 export {
   Root,
   //
-  Root as Progress
+  Root as Progress,
+  progressVariants,
+  type ProgressVariant
 };

@@ -2814,7 +2814,10 @@
     "stats": "Estadísticas",
     "analytics": "Analítica",
     "compliance": "Cumplimiento",
-    "cohorts": "Programas"
+    "cohorts": "Programas",
+    "upgrade_now": "Actualiza ahora",
+    "upgrade_students": "{studentCount} de {studentLimit} estudiantes",
+    "upgrade_left": "{count} restante"
   },
   "media_manager": {
     "page_title": "Administrador de medios - ClassroomIO",

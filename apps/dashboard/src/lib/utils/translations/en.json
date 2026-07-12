@@ -1259,6 +1259,9 @@
     "early_adopter": "Become an Early Adopter",
     "unlock": "Unlock unlimited features and invest in our future",
     "upgrade": "Upgrade Now",
+    "upgrade_now": "Upgrade now",
+    "upgrade_students": "{studentCount} of {studentLimit} students",
+    "upgrade_left": "{count} left",
     "cohorts": "Cohorts"
   },
   "pricing": {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { currentOrgPath, currentOrg, isOrgAdmin, isFreePlan } from '$lib/utils/store/org';
+  import { currentOrgPath, currentOrg, isOrgAdmin, isFreePlan, isStudentLimitReached } from '$lib/utils/store/org';
   import * as Collapsible from '@cio/ui/base/collapsible';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { t } from '$lib/utils/functions/translations';
@@ -7,7 +7,7 @@
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import RocketIcon from '@lucide/svelte/icons/rocket';
   import { getOrgNavigationGroups } from '$features/ui/navigation/org-navigation';
-  import { HoverableItem } from '@cio/ui/custom/moving-icons';
+  import { HoverableItem, PremiumIcon } from '@cio/ui/custom/moving-icons';
 
   const groups = $derived(
     getOrgNavigationGroups($currentOrgPath, $currentOrg, $isOrgAdmin, $t, page.url.pathname + page.url.search)
@@ -84,6 +84,9 @@
                               <span>{item.title}</span>
                             {:else}
                               <span>{item.title}</span>
+                            {/if}
+                            {#if item.path === '/audience' && $isStudentLimitReached}
+                              <PremiumIcon {isHovered} size={16} class="ui:text-primary ml-auto" />
                             {/if}
                           </a>
                         {/if}

@@ -9,9 +9,10 @@
 
   import { Chip } from '@cio/ui/custom/chip';
   import * as Avatar from '@cio/ui/base/avatar';
-  import { ComingSoon, RoleBasedSecurity } from '$features/ui';
+  import { ComingSoon, RoleBasedSecurity, UpgradeBanner } from '$features/ui';
   import InvitationModal from '$features/course/components/people/invitation-modal.svelte';
   import DeleteConfirmation from '$features/course/components/people/delete-confirmation.svelte';
+  import { isStudentLimitReached } from '$lib/utils/store/org';
 
   import { profile } from '$lib/utils/store/user';
   import type { CourseMembers, CourseMember } from '$features/course/utils/types';
@@ -100,6 +101,10 @@
 </script>
 
 <InvitationModal />
+
+{#if $isStudentLimitReached}
+  <UpgradeBanner className="mb-2">{$t('course.navItem.people.invite_modal.student_limit_reached')}</UpgradeBanner>
+{/if}
 
 <DeleteConfirmation email={member.email || (member.profile && member.profile.email)} {deletePerson} />
 

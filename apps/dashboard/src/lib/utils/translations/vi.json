@@ -2814,7 +2814,10 @@
     "stats": "Thống kê",
     "analytics": "Phân tích",
     "compliance": "Tuân thủ",
-    "cohorts": "Chương trình"
+    "cohorts": "Chương trình",
+    "upgrade_now": "Nâng cấp ngay bây giờ",
+    "upgrade_students": "{studentCount} trong số {studentLimit} sinh viên",
+    "upgrade_left": "còn {count}"
   },
   "media_manager": {
     "page_title": "Quản lý truyền thông - ClassroomIO",

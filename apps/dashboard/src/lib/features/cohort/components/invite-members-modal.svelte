@@ -8,10 +8,11 @@
   import { Button } from '@cio/ui/base/button';
   import { ROLE } from '@cio/utils/constants';
   import { t } from '$lib/utils/functions/translations';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, isStudentLimitReached } from '$lib/utils/store/org';
   import { orgApi } from '$features/org/api/org.svelte';
   import { DEFAULT_ORG_AUDIENCE_QUERY } from '$features/org/utils/audience-query-utils';
   import { BulkEmailSection, ExistingStudentsSection, TutorSelectSection } from '$features/people/components';
+  import { UpgradeBanner } from '$features/ui';
   import type { OrgStudent, Tutor } from '$features/people/utils/types';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import { cohortApi } from '../api';
@@ -220,7 +221,10 @@
             onSearchValueChange={handleStudentSearch}
             onAssign={assignExistingStudents}
           />
-          <BulkEmailSection onInvite={inviteNewStudents} />
+          {#if $isStudentLimitReached}
+            <UpgradeBanner removeParams={['add']}>{$t(`${INVITE_MODAL}.student_limit_reached`)}</UpgradeBanner>
+          {/if}
+          <BulkEmailSection onInvite={inviteNewStudents} disabled={$isStudentLimitReached} />
         </div>
       </UnderlineTabs.Content>
     </UnderlineTabs.Root>

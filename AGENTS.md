@@ -25,6 +25,15 @@ When a task requires factual information (API specifications, context window siz
 - Use kebab-case for files (e.g. `user-profile.svelte`, `org.svelte.ts`).
 - **Variables must read clearly at the call site.** Avoid opaque single-letter or ultra-short names (`d`, `x`, `tmp`) unless they match a universal convention (e.g. `i` in a trivial index loop). Prefer names that state intent (`deadlineDate`, `parsedUrl`, `nextSection`).
 - **After an early `return` (or other guard exit), leave a blank line** before the next statement so the “happy path” block is visually separated from guards.
+- **Never put an `await` or a complex/multi-call expression inside an object literal** (construction or update). Assign each value to a well-named local first, then reference it in the object. This keeps the call site readable and debuggable.
+  ```ts
+  // ❌ don't
+  org.limits = { students: toResourceUsage(await countActiveStudents(org.id), getPlanLimit('students', plan)) };
+  // ✅ do
+  const studentsUsed = await countActiveStudents(org.id);
+  const studentsLimit = getPlanLimit('students', plan);
+  org.limits = { students: toResourceUsage(studentsUsed, studentsLimit) };
+  ```
 
 ## Creating a New Route
 
