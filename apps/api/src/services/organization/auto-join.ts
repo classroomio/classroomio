@@ -21,11 +21,11 @@ interface OrgSignupSettings {
   };
 }
 
-export interface AutoEnrollResult {
+export interface AutoJoinResult {
   alreadyMember: boolean;
   /** True when an email-only roster row was linked to the signing-in profile (session refresh needed). */
   linkedExistingMember: boolean;
-  /** True when the user has an active org invite — caller should surface accept UI instead of enrolling. */
+  /** True when the user has an active org invite — caller should surface accept UI instead of joining. */
   pendingInvite?: boolean;
 }
 
@@ -38,7 +38,7 @@ async function linkExistingMemberByEmail(
   userId: string,
   orgId: string,
   normalizedEmail: string
-): Promise<AutoEnrollResult | null> {
+): Promise<AutoJoinResult | null> {
   const existingMemberByEmail = await selectOrganizationMemberByOrgAndNormalizedEmail(db, orgId, normalizedEmail);
 
   if (!existingMemberByEmail) {
@@ -63,11 +63,11 @@ async function linkExistingMemberByEmail(
 }
 
 /**
- * Auto-enroll the authenticated user as a STUDENT in the given org. Used by
- * the dashboard when a newly-signed-in user lands on a tenant site they
- * aren't yet a member of (free-tier `<org>.myclassroomio.com` or a verified
- * BYOD domain).
+ * Auto-join the authenticated user to the given org. Used by the dashboard when
+ * a newly-signed-in user lands on a tenant site they aren't yet a member of
+ * (free-tier `<org>.myclassroomio.com` or a verified BYOD domain).
  *
+ * New members are created as STUDENT when no roster row or invite applies.
  * Idempotent: existing members get an `alreadyMember: true` no-op so invited
  * admins/tutors don't get downgraded.
  *
@@ -75,7 +75,7 @@ async function linkExistingMemberByEmail(
  * `profile_id` null) are linked before signup policy checks — invite-only and
  * disableSignup only apply to net-new student signups.
  */
-export async function autoEnrollStudent(userId: string, orgId: string): Promise<AutoEnrollResult> {
+export async function autoJoinOrg(userId: string, orgId: string): Promise<AutoJoinResult> {
   const existingMemberId = await getOrganizationMemberIdByOrgAndProfile(orgId, userId);
   if (existingMemberId) {
     return { alreadyMember: true, linkedExistingMember: false };

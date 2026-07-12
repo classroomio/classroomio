@@ -99,8 +99,8 @@ class AppInitApi extends BaseApi {
           return;
         }
 
-        const enrolled = await this.autoEnrollOnTenantSite(orgId);
-        if (enrolled) {
+        const joined = await this.autoJoinOnTenantSite(orgId);
+        if (joined) {
           const refreshedAccount = await this.fetchAccountData();
           if (refreshedAccount) {
             this.applyAccountData(refreshedAccount, params);
@@ -175,7 +175,7 @@ class AppInitApi extends BaseApi {
   }
 
   /**
-   * On tenant sites, link an existing roster row or auto-enroll as STUDENT —
+   * On tenant sites, link an existing roster row or auto-join the org as STUDENT —
    * unless the user has a pending org invite, in which case we surface accept UI.
    * Returns true when a new membership was created or an email-only row was linked.
    */
@@ -193,7 +193,7 @@ class AppInitApi extends BaseApi {
       return false;
     }
 
-    return this.autoEnrollOnTenantSite(orgId);
+    return this.autoJoinOnTenantSite(orgId);
   }
 
   private async fetchPendingOrgInvite(orgId: string): Promise<PendingOrgInvite | null> {
@@ -211,18 +211,18 @@ class AppInitApi extends BaseApi {
     return null;
   }
 
-  private async autoEnrollOnTenantSite(orgId: string): Promise<boolean> {
+  private async autoJoinOnTenantSite(orgId: string): Promise<boolean> {
     try {
-      const response = await classroomio.organization['auto-enroll-student'].$post(
+      const response = await classroomio.organization['auto-join'].$post(
         {},
         { headers: { 'cio-org-id': orgId } }
       );
 
       if (!response.ok) {
         // 403 is expected for invite-only / disabled-signup orgs — the user
-        // visited a tenant site but isn't allowed to enroll. Other failures
+        // visited a tenant site but isn't allowed to join. Other failures
         // shouldn't block the rest of setupApp.
-        console.warn('auto-enroll-student failed', response.status, await response.text().catch(() => ''));
+        console.warn('auto-join failed', response.status, await response.text().catch(() => ''));
         return false;
       }
 
@@ -242,7 +242,7 @@ class AppInitApi extends BaseApi {
       await authClient.getSession({ query: { disableCookieCache: true } });
       return true;
     } catch (error) {
-      console.warn('auto-enroll-student threw', error);
+      console.warn('auto-join threw', error);
       return false;
     }
   }
@@ -252,7 +252,7 @@ class AppInitApi extends BaseApi {
    *
    * setupApp only runs once per session; tenant subdomains and `/org/[slug]`
    * routes can change without another /account fetch. This keeps `currentOrg`
-   * aligned with the URL and attempts auto-enroll on org sites when needed.
+   * aligned with the URL and attempts auto-join on org sites when needed.
    */
   async syncOrgContext(params: AppSetupParams): Promise<void> {
     if (!this.data?.success || !params.orgSiteName) {
