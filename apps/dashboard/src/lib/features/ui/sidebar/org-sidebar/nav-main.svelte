@@ -5,7 +5,6 @@
   import { t } from '$lib/utils/functions/translations';
   import { page } from '$app/state';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import RocketIcon from '@lucide/svelte/icons/rocket';
   import { getOrgNavigationGroups } from '$features/ui/navigation/org-navigation';
   import { HoverableItem, PremiumIcon } from '@cio/ui/custom/moving-icons';
 
@@ -107,7 +106,7 @@
                             <a href={subItem.url} {...props}>
                               <span>{subItem.title}</span>
                               {#if subItem.isPaid && $isFreePlan}
-                                <RocketIcon class="text-primary size-4" />
+                                <PremiumIcon size={16} class="ui:text-primary ml-auto" />
                               {/if}
                             </a>
                           {/snippet}
