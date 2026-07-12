@@ -6,7 +6,7 @@ import type { AccountOrg } from '$features/app/types';
 import type { OrgTeamMember } from '../types/org';
 import { canUsePublicApi, getStudentLimit, isOrgOnFreePlan, isResourceLimitReached, PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-import { ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
+import { BRAND_ROOT_DOMAIN, ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
 
@@ -78,6 +78,18 @@ export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
 );
 
 type OrgPublicOrigin = Pick<AccountOrg, 'customDomain' | 'isCustomDomainVerified' | 'siteName'>;
+
+/**
+ * Admin dashboard origin (`app.classroomio.com` in cloud). Use for team invite links
+ * and other admin-only URLs — not student-facing tenant pages.
+ */
+export function getAppOrigin(): string {
+  if (PUBLIC_IS_SELFHOSTED === 'true' || dev) {
+    return browser ? window.location.origin : '';
+  }
+
+  return `https://app.${BRAND_ROOT_DOMAIN}`;
+}
 
 /**
  * Public origin for an org's tenant site (student LMS, public course pages, login-link handoff).

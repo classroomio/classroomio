@@ -46,3 +46,11 @@ export function getDashboardBaseUrl(org?: DashboardOrg): string {
 
   return `https://app.${BRAND_ROOT_DOMAIN}`;
 }
+
+/**
+ * Returns the admin dashboard origin (`app.classroomio.com` in cloud).
+ * Use for team-member invite links (admin/tutor) — not student-facing URLs.
+ */
+export function getAppBaseUrl(): string {
+  return getDashboardBaseUrl();
+}
