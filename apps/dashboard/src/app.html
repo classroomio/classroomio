@@ -11,10 +11,17 @@
       (function () {
         try {
           var storageKey = 'mode-watcher-mode';
-          var defaultMode = 'light';
+          var explicitKey = 'mode-watcher-explicit';
           var stored = localStorage.getItem(storageKey);
-          var mode =
-            stored === 'light' || stored === 'dark' || stored === 'system' ? stored : defaultMode;
+          var isExplicit = localStorage.getItem(explicitKey) === 'true';
+          var mode = 'light';
+
+          if (stored === 'light' || stored === 'dark') {
+            mode = stored;
+          } else if (stored === 'system' && isExplicit) {
+            mode = 'system';
+          }
+
           var root = document.documentElement;
           var isLight =
             mode === 'light' ||

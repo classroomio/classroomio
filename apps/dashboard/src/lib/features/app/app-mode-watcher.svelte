@@ -1,31 +1,28 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
+  import { onMount } from 'svelte';
   import { ModeWatcher, setMode, systemPrefersMode, userPrefersMode } from '@cio/ui/base/dark-mode';
 
-  import { readStoredColorMode } from '$lib/utils/functions/color-mode';
+  import { resolveStoredColorMode } from '$lib/utils/functions/color-mode';
 
-  function syncColorModeTracking() {
-    const shouldTrackSystem = userPrefersMode.current === 'system';
-    systemPrefersMode.tracking(shouldTrackSystem);
+  onMount(() => {
+    const preference = resolveStoredColorMode();
 
-    if (shouldTrackSystem) {
+    if (preference === 'system') {
+      systemPrefersMode.tracking(true);
       systemPrefersMode.query();
-    }
-  }
 
-  $effect(() => {
-    if (!browser) {
+      if (userPrefersMode.current !== 'system') {
+        setMode('system');
+      }
+
       return;
     }
 
-    const storedPreference = readStoredColorMode();
-    userPrefersMode.current;
+    systemPrefersMode.tracking(false);
 
-    if (storedPreference !== 'system' && userPrefersMode.current !== storedPreference) {
-      setMode(storedPreference);
+    if (userPrefersMode.current !== preference) {
+      setMode(preference);
     }
-
-    syncColorModeTracking();
   });
 </script>
 

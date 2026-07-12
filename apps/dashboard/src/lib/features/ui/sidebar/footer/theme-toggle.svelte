@@ -3,6 +3,8 @@
   import { MonitorIcon, SunIcon, MoonIcon } from '@lucide/svelte';
   import { setMode, systemPrefersMode, userPrefersMode } from '@cio/ui/base/dark-mode';
 
+  import { markColorModeExplicit } from '$lib/utils/functions/color-mode';
+
   type ThemeMode = 'light' | 'dark' | 'system';
 
   const themes: { mode: ThemeMode; icon: typeof MonitorIcon }[] = [
@@ -11,9 +13,11 @@
     { mode: 'system', icon: MonitorIcon }
   ];
 
-  const activeMode = $derived(userPrefersMode.current ?? 'system');
+  const activeMode = $derived(userPrefersMode.current ?? 'light');
 
   const handleThemeChange = (newMode: ThemeMode) => {
+    markColorModeExplicit();
+
     const shouldTrackSystem = newMode === 'system';
     systemPrefersMode.tracking(shouldTrackSystem);
 

@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { MODE_STORAGE_KEY, readStoredColorMode } from './color-mode';
+import {
+  MODE_EXPLICIT_STORAGE_KEY,
+  MODE_STORAGE_KEY,
+  hasExplicitColorModePreference,
+  markColorModeExplicit,
+  readStoredColorMode,
+  resolveStoredColorMode
+} from './color-mode';
 
 function createMemoryStorage(initial: Record<string, string> = {}): Storage {
   const store = new Map(Object.entries(initial));
@@ -27,14 +34,49 @@ function createMemoryStorage(initial: Record<string, string> = {}): Storage {
   };
 }
 
-describe('readStoredColorMode', () => {
+describe('resolveStoredColorMode', () => {
   it('defaults to light when nothing is stored', () => {
-    expect(readStoredColorMode(createMemoryStorage())).toBe('light');
+    expect(resolveStoredColorMode(createMemoryStorage())).toBe('light');
   });
 
-  it('returns the stored sidebar preference', () => {
-    const storage = createMemoryStorage({ [MODE_STORAGE_KEY]: 'dark' });
+  it('returns stored light or dark preferences', () => {
+    const lightStorage = createMemoryStorage({ [MODE_STORAGE_KEY]: 'light' });
+    const darkStorage = createMemoryStorage({ [MODE_STORAGE_KEY]: 'dark' });
 
-    expect(readStoredColorMode(storage)).toBe('dark');
+    expect(resolveStoredColorMode(lightStorage)).toBe('light');
+    expect(resolveStoredColorMode(darkStorage)).toBe('dark');
+  });
+
+  it('treats stale system values as light until the user explicitly chooses system', () => {
+    const staleSystemStorage = createMemoryStorage({ [MODE_STORAGE_KEY]: 'system' });
+
+    expect(resolveStoredColorMode(staleSystemStorage)).toBe('light');
+  });
+
+  it('honors system when the user explicitly chose it', () => {
+    const explicitSystemStorage = createMemoryStorage({
+      [MODE_STORAGE_KEY]: 'system',
+      [MODE_EXPLICIT_STORAGE_KEY]: 'true'
+    });
+
+    expect(resolveStoredColorMode(explicitSystemStorage)).toBe('system');
+  });
+});
+
+describe('readStoredColorMode', () => {
+  it('delegates to resolveStoredColorMode', () => {
+    expect(readStoredColorMode(createMemoryStorage())).toBe('light');
+  });
+});
+
+describe('markColorModeExplicit', () => {
+  it('marks the preference as user-selected', () => {
+    const storage = createMemoryStorage();
+
+    expect(hasExplicitColorModePreference(storage)).toBe(false);
+
+    markColorModeExplicit(storage);
+
+    expect(hasExplicitColorModePreference(storage)).toBe(true);
   });
 });
