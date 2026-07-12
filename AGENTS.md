@@ -320,6 +320,69 @@ In Svelte 5, the built-in `Set` and `Map` classes are **not** reactive. Use `Sve
 </script>
 ```
 
+### Avoiding Svelte 5 rerender and `$effect` loops
+
+`$effect` re-runs when any reactive value it **reads** changes. Writing state inside an effect can retrigger it and cause infinite loops, redundant work, or flicker. Prefer explicit event handlers and bindings over effect-driven syncing.
+
+**Do not reset UI state in an effect tied to a steady condition** (e.g. “whenever `open` is false”). While the condition stays true, the effect keeps running and rewriting state:
+
+```svelte
+// ❌ don't — resets on every run while closed; can loop with bound children
+$effect(() => {
+  if (open) return;
+
+  step = STEPS.STEP_1;
+  fields = { fullname: '', email: '' };
+  errors = { fullname: '', email: '' };
+});
+```
+
+**Reset on transitions** — when a dialog closes, a route changes, or the user submits — not on every render where a flag is false:
+
+```svelte
+// ✅ do — reset only when the dialog actually closes
+function resetForm() {
+  step = STEPS.STEP_1;
+  fields.fullname = '';
+  fields.email = '';
+  errors.fullname = '';
+  errors.email = '';
+}
+
+function handleOpenChange(isOpen: boolean) {
+  open = isOpen;
+
+  if (!isOpen) {
+    resetForm();
+  }
+}
+```
+
+```svelte
+<Dialog.Root {open} onOpenChange={handleOpenChange}>
+```
+
+**Prefer `bind:` over `$effect` for keeping two sources in sync.** If a control can bind directly to a store or `$state` field, use that instead of reading one value in an effect and writing another (see **Svelte store binding** above).
+
+**When resetting bound form state, mutate properties in place** instead of replacing the whole object. Reassigning `fields = { ... }` breaks `bind:value={fields.fullname}` and can trigger extra updates downstream:
+
+```svelte
+// ❌ don't
+fields = { fullname: '', email: '' };
+
+// ✅ do
+fields.fullname = '';
+fields.email = '';
+```
+
+**Other common pitfalls:**
+
+- **Effect writes what it reads** — e.g. `$effect(() => { count = count + 1 })` loops forever.
+- **Effect mirrors props into local state** — use `$bindable`, `bind:`, or derive a value; only copy props when you need a draft the user can cancel.
+- **Effect fetches or navigates on every dependency tick** — gate with a guard, run on submit/route enter, or track “already loaded” so work runs once per intent.
+
+When cleanup or reset must follow a specific lifecycle moment, use the matching hook: `onOpenChange` for dialogs, submit/success handlers for forms, `onMount` / load functions for one-time setup.
+
 ### Server-Side API Calls
 
 Use `.server.ts` files for server-side code to isolate API keys.
@@ -351,6 +414,8 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Use non-null assertion (`!`) for `user` when `authMiddleware` is present
 - Put all user-facing copy in translations and reference by key
 - Use `SvelteSet`/`SvelteMap` from `svelte/reactivity` for reactive collections (not `new Set`/`new Map`)
+- Reset modal/form state in close/submit handlers or `onOpenChange`, not in `$effect` tied to a steady “closed” condition
+- Mutate bound `$state` object fields in place when clearing forms (don't reassign the whole object)
 
 ### ❌ DON'T
 - Put business logic in routes or queries
@@ -365,6 +430,8 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Write plain English strings in components
 - Use `new Set()`/`new Map()` for mutable reactive state — use `SvelteSet`/`SvelteMap` instead
 - Wrap `SvelteSet`/`SvelteMap` in `$state()` — they are already reactive
+- **Use `$effect` to reset form/modal state whenever a boolean is false** — use `onOpenChange` or explicit handlers on close instead
+- **Reassign whole bound state objects to clear forms** (e.g. `fields = {}`) — mutate properties in place
 - **Use inline type imports** (e.g. `import('Package').Type` in type positions) — use top-level `import type` instead
 
 ## Checklist for New Routes
