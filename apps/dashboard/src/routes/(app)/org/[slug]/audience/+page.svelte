@@ -42,15 +42,14 @@
       <Button variant="outline" onclick={exportAudience} disabled={isLoading} loading={isLoading}>
         {$t('audience.export')}
       </Button>
-      {#if atStudentLimit}
-        <Button variant="secondary" disabled title={$t('audience.import_limit_reached')}>
-          {$t('audience.import_users')}
-        </Button>
-      {:else}
-        <Button variant="secondary" href={resolve(`${page.url.pathname}/import`, {})}>
-          {$t('audience.import_users')}
-        </Button>
-      {/if}
+      <Button
+        variant="secondary"
+        disabled={atStudentLimit}
+        href={atStudentLimit ? '#' : resolve(`${page.url.pathname}/import`, {})}
+        title={atStudentLimit ? $t('audience.import_limit_reached') : undefined}
+      >
+        {$t('audience.import_users')}
+      </Button>
     </Page.Action>
   </Page.Header>
   <Page.Body>

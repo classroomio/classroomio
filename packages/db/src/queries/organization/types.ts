@@ -9,7 +9,6 @@ export type OrganizationWithMemberAndPlans = TOrganization & {
   memberId?: number;
   roleId?: number;
   plans: OrganizationPlan[];
-  /** Per-resource usage + plan limit. Only populated for admin/tutor members. */
   limits?: OrgUsageLimits;
 };
 

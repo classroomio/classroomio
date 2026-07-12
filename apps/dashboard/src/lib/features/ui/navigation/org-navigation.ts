@@ -19,6 +19,7 @@ import type { AccountOrg } from '$features/app/types';
 import BotIcon from '@lucide/svelte/icons/bot';
 import type { Component } from 'svelte';
 import { isActive } from '$lib/utils/functions/app';
+import type { PlanLimitResource } from '@cio/utils/plans';
 
 export interface NavItem {
   title: string;
@@ -31,6 +32,8 @@ export interface NavItem {
   matchPattern?: string;
   items?: NavItem[]; // for nested items like settings
   isPaid?: boolean; // Show upgrade indicator for free plan users
+  /** True when this item's plan-limited resource has hit its cap (drives the upgrade indicator). */
+  upgrade?: boolean;
   disabled?: boolean;
   // Metadata for breadcrumb generation
   useHashUrl?: boolean; // Use '#' as URL (for collapsible items like settings)
@@ -50,6 +53,8 @@ export interface NavItemConfig {
   supportsDynamicSegment?: boolean; // Supports dynamic segments (like [slug])
   matchPattern?: string | ((orgSlug: string) => string); // Regex pattern for route matching
   isPaid?: boolean; // Show upgrade indicator for free plan users
+  /** Plan-limited resource this item represents; when that resource is at its cap, `upgrade` is set. */
+  upgradeResource?: PlanLimitResource;
   group?: string | null; // Group label key for sidebar grouping
 }
 
@@ -163,6 +168,7 @@ export const baseNavConfig: NavItemConfig[] = [
     titleKey: 'org_navigation.audience',
     path: '/audience',
     icon: PeopleIcon,
+    upgradeResource: 'students',
     matchPattern: '^/org/[^/]+/audience(/.*)?$' // Matches nested routes
   },
   {
@@ -376,7 +382,8 @@ export function getOrgNavigationGroups(
   currentOrg: AccountOrg,
   isOrgAdmin: boolean | null,
   t: (key: string) => string,
-  pagePathname: string
+  pagePathname: string,
+  limitsReached: Partial<Record<PlanLimitResource, boolean>> = {}
 ): NavGroup[] {
   const pathnameOnly = pagePathname.split('?')[0];
   const groupedMap = new Map<string | null, NavItem[]>();
@@ -413,7 +420,8 @@ export function getOrgNavigationGroups(
       useHashUrl: config.useHashUrl,
       nestedRoutes: config.nestedRoutes,
       supportsDynamicSegment: config.supportsDynamicSegment,
-      isPaid: config.isPaid
+      isPaid: config.isPaid,
+      upgrade: config.upgradeResource ? Boolean(limitsReached[config.upgradeResource]) : undefined
     };
 
     if (visibleSubConfigs.length > 0) {

@@ -74,9 +74,11 @@ async function enrollCohortStudentsInGroups(
     .filter((profileId): profileId is string => Boolean(profileId));
   const existingMembers = await getOrgMembersByProfileIds(organizationId, studentProfileIds);
   const existingMemberProfileIds = new Set(existingMembers.map((member) => member.profileId));
-  const newStudentCount = studentProfileIds.filter((profileId) => !existingMemberProfileIds.has(profileId)).length;
+  const newStudentProfileIds = new Set(
+    studentProfileIds.filter((profileId) => !existingMemberProfileIds.has(profileId))
+  );
 
-  await assertStudentCapacityOrThrow(organizationId, newStudentCount);
+  await assertStudentCapacityOrThrow(organizationId, newStudentProfileIds.size);
 
   const organizationMemberRows = studentMembers.map((member) => ({
     organizationId,

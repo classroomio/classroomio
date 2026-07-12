@@ -10,7 +10,9 @@
   import { HoverableItem, PremiumIcon } from '@cio/ui/custom/moving-icons';
 
   const groups = $derived(
-    getOrgNavigationGroups($currentOrgPath, $currentOrg, $isOrgAdmin, $t, page.url.pathname + page.url.search)
+    getOrgNavigationGroups($currentOrgPath, $currentOrg, $isOrgAdmin, $t, page.url.pathname + page.url.search, {
+      students: $isStudentLimitReached
+    })
   );
 </script>
 
@@ -85,7 +87,7 @@
                             {:else}
                               <span>{item.title}</span>
                             {/if}
-                            {#if item.path === '/audience' && $isStudentLimitReached}
+                            {#if item.upgrade}
                               <PremiumIcon {isHovered} size={16} class="ui:text-primary ml-auto" />
                             {/if}
                           </a>

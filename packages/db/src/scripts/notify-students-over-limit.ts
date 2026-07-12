@@ -12,30 +12,11 @@ import 'dotenv/config';
 import { buildEmailBranding, sendEmail } from '@cio/email';
 import { PLAN, getStudentLimit, isOrgOnFreePlan } from '@cio/utils/plans';
 
-import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants/domains';
 import {
   countActiveStudents,
   getOrganizationAdminEmails,
   getOrganizations
 } from '../queries/organization/organization';
-
-/**
- * Best-effort dashboard origin for an org's upgrade link. Mirrors the relevant
- * parts of `getDashboardBaseUrl` without depending on the api/core layer.
- */
-function getUpgradeUrl(org: {
-  siteName: string | null;
-  customDomain: string | null;
-  isCustomDomainVerified: boolean | null;
-}): string {
-  const origin =
-    org.customDomain && org.isCustomDomainVerified
-      ? `https://${org.customDomain}`
-      : process.env.DASHBOARD_ORIGIN?.replace(/\/$/, '') ||
-        (org.siteName ? `https://${org.siteName}.${TENANT_ROOT_DOMAIN}` : 'https://app.classroomio.com');
-
-  return `${origin}/org/${org.siteName ?? ''}?upgrade=true`;
-}
 
 async function main() {
   const execute = process.argv.includes('--execute');
@@ -63,7 +44,7 @@ async function main() {
 
     if (execute) {
       const branding = buildEmailBranding({ name: org.name, avatarUrl: org.avatarUrl, theme: org.theme });
-      const upgradeUrl = getUpgradeUrl(org);
+      const upgradeUrl = `https://app.classroomio.com/org/${org.siteName ?? ''}?upgrade=true`;
 
       await Promise.all(
         admins.map((admin) =>
