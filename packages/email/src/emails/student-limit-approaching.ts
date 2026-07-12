@@ -10,7 +10,7 @@ export const studentLimitApproachingEmail = defineEmail({
     orgName: z.string().min(1),
     studentCount: z.number(),
     studentLimit: z.number(),
-    upgradeUrl: z.string().url()
+    upgradeUrl: z.url()
   }),
   render: (fields) => {
     const content = `
@@ -19,7 +19,6 @@ export const studentLimitApproachingEmail = defineEmail({
       <div>
         <a class="button" href="${fields.upgradeUrl}">Upgrade your plan</a>
       </div>
-      <p style="color:#94a3b8;font-size:13px;">Just a heads-up — we'll only email you at this milestone once.</p>
     `;
 
     return getDefaultTemplate(content);
