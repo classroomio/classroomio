@@ -1,21 +1,7 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
-  import { ModeWatcher, setMode, systemPrefersMode, userPrefersMode } from '@cio/ui/base/dark-mode';
-
-  import { readStoredColorMode } from '$lib/utils/functions/color-mode';
-
-  $effect(() => {
-    if (!browser) {
-      return;
-    }
-
-    const storedPreference = readStoredColorMode();
-    systemPrefersMode.tracking(storedPreference === 'system');
-
-    if (storedPreference !== 'system' && userPrefersMode.current !== storedPreference) {
-      setMode(storedPreference);
-    }
-  });
+  import { ModeWatcher } from '@cio/ui/base/dark-mode';
 </script>
 
-<ModeWatcher defaultMode="light" track={false} />
+<!-- theme-init.js (loaded from app.html) handles the pre-paint seed + FOUC. Skip
+     mode-watcher's own head-script injection: it is inline and blocked by our CSP. -->
+<ModeWatcher defaultMode="light" disableHeadScriptInjection={true} />

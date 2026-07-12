@@ -1,30 +1,21 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
   import { MonitorIcon, SunIcon, MoonIcon } from '@lucide/svelte';
-  import { userPrefersMode, setMode } from '@cio/ui/base/dark-mode';
+  import { setMode, userPrefersMode } from '@cio/ui/base/dark-mode';
 
-  type ThemeMode = 'light' | 'dark' | 'system';
+  import { markColorModeExplicit, type ColorModePreference } from '$lib/utils/functions/color-mode';
 
-  const themes: { mode: ThemeMode; icon: typeof MonitorIcon }[] = [
+  const themes: { mode: ColorModePreference; icon: typeof MonitorIcon }[] = [
     { mode: 'light', icon: SunIcon },
     { mode: 'dark', icon: MoonIcon },
     { mode: 'system', icon: MonitorIcon }
   ];
 
-  const activeMode = $derived(userPrefersMode.current ?? 'system');
+  const activeMode = $derived(userPrefersMode.current ?? 'light');
 
-  const handleThemeChange = (newMode: ThemeMode) => {
-    if (newMode === 'light') {
-      setMode('light');
-      return;
-    }
-
-    if (newMode === 'dark') {
-      setMode('dark');
-      return;
-    }
-
-    setMode('system');
+  const handleThemeChange = (newMode: ColorModePreference) => {
+    markColorModeExplicit();
+    setMode(newMode);
   };
 </script>
 

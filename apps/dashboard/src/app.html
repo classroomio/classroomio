@@ -7,6 +7,10 @@
 
     <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
 
+    <!-- External (not inline) so it passes the app's nonce-based CSP; runs before
+         the app bundle to set the color mode and avoid a flash of the wrong theme. -->
+    <script src="/theme-init.js"></script>
+
     %sveltekit.head%
   </head>
 

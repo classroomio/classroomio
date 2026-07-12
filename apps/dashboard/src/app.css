@@ -67,6 +67,9 @@ html {
   --scrollbarBG: #fff;
   --thumbBG: #ccc;
   scroll-behavior: smooth;
+  /* Paint the root with the theme background so the pre-hydration shell
+     matches the mode set by app.html and never flashes white in dark mode. */
+  background-color: var(--background);
 }
 
 #calendar .grid {
