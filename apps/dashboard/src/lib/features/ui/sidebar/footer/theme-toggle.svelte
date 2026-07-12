@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
   import { MonitorIcon, SunIcon, MoonIcon } from '@lucide/svelte';
-  import { userPrefersMode, resetMode, setMode } from '@cio/ui/base/dark-mode';
+  import { userPrefersMode, setMode } from '@cio/ui/base/dark-mode';
 
   type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -24,7 +24,7 @@
       return;
     }
 
-    resetMode();
+    setMode('system');
   };
 </script>
 

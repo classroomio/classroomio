@@ -14,7 +14,7 @@
   import { authClient } from '$lib/utils/services/auth/client';
   import merge from 'lodash/merge';
   import { MetaTags } from 'svelte-meta-tags';
-  import { ModeWatcher } from '@cio/ui/base/dark-mode';
+  import AppModeWatcher from '$features/app/app-mode-watcher.svelte';
   import OrgSiteFavicon from '$features/app/org-site-favicon.svelte';
 
   import '../app.css';
@@ -103,7 +103,7 @@
 </svelte:head>
 
 <div>
-  <ModeWatcher />
+  <AppModeWatcher />
 
   <MetaTags {...metaTags} />
 
