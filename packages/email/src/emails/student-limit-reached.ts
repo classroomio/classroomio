@@ -15,11 +15,11 @@ export const studentLimitReachedEmail = defineEmail({
   render: (fields) => {
     const content = `
       <p>Hi there,</p>
-      <p>We're letting you know because new students are being turned away from <strong>${fields.orgName}</strong>: you've reached your Free plan's ${fields.studentLimit}-student limit (you currently have ${fields.studentCount} students). Anyone who tries to enrol, accept an invite, or join right now can't get in until you upgrade.</p>
+      <p><strong>${fields.orgName}</strong> has reached its Free plan limit of ${fields.studentLimit} students. From now on, new students can't enrol, accept invites, or be added until you upgrade.</p>
       <div>
         <a class="button" href="${fields.upgradeUrl}">Upgrade your plan</a>
       </div>
-      <p style="color:#94a3b8;font-size:13px;">We only send this once a day, so you won't hear from us every time it happens.</p>
+      <p style="color:#94a3b8;font-size:13px;">We only send this once, when you first reach the limit — not every time a student is turned away.</p>
     `;
 
     return getDefaultTemplate(content);

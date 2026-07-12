@@ -2009,6 +2009,10 @@ export const organization = pgTable(
         inviteOnly?: boolean;
       };
       internalEnrollmentOnly?: boolean;
+      studentLimitNotified?: {
+        half?: boolean;
+        reached?: boolean;
+      };
     }>(),
     landingpage: jsonb().default({}).$type<{
       header?: {

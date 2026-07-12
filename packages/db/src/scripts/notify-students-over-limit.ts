@@ -14,7 +14,8 @@ import { PLAN, getStudentLimit } from '@cio/utils/plans';
 
 import {
   getFreePlanOrganizationsOverStudentLimit,
-  getOrganizationAdminEmails
+  getOrganizationAdminEmails,
+  updateOrganization
 } from '../queries/organization/organization';
 
 async function main() {
@@ -25,8 +26,15 @@ async function main() {
   let orgsToNotify = 0;
   let adminsToNotify = 0;
   let orgsOverWithoutAdmins = 0;
+  let alreadyNotified = 0;
 
   for (const org of orgs) {
+    // Skip orgs already emailed the "reached" milestone (runtime or a prior run).
+    if (org.settings?.studentLimitNotified?.reached) {
+      alreadyNotified++;
+      continue;
+    }
+
     const admins = await getOrganizationAdminEmails(org.id);
     if (!admins.length) {
       orgsOverWithoutAdmins++;
@@ -52,12 +60,17 @@ async function main() {
           })
         )
       );
+
+      await updateOrganization(org.id, {
+        settings: { ...org.settings, studentLimitNotified: { half: true, reached: true } }
+      });
     }
   }
 
   console.log(
     `\nFound ${orgs.length} free-plan org(s) over the ${limit}-student limit: ` +
-      `${orgsToNotify} with admins (${adminsToNotify} admin email(s) total)` +
+      `${orgsToNotify} to notify (${adminsToNotify} admin email(s) total)` +
+      (alreadyNotified ? `, ${alreadyNotified} already notified` : '') +
       (orgsOverWithoutAdmins ? `, ${orgsOverWithoutAdmins} skipped for having no admins` : '') +
       '.'
   );
