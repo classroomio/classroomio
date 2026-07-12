@@ -28,7 +28,16 @@
   const isLoggedIn = $derived(sessionReady && Boolean(sessionUser));
   const isEmailVerified = $derived(Boolean($profile.isEmailVerified || sessionUser?.emailVerified));
 
-  function resolvePostEnrollRedirect(): string {
+  function resolvePostEnrollRedirect(enrollResult: { redirectTo?: string } | undefined): string {
+    if (enrollResult?.redirectTo) {
+      return enrollResult.redirectTo;
+    }
+
+    const slug = data.course?.slug;
+    if (slug) {
+      return `/course/${slug}`;
+    }
+
     return '/lms';
   }
 
@@ -141,7 +150,7 @@
       }
 
       navigatingAway = true;
-      window.location.href = resolvePostEnrollRedirect();
+      window.location.href = resolvePostEnrollRedirect(result.data);
     } finally {
       enrollmentInFlight = false;
       if (!navigatingAway) {
