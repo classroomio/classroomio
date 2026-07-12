@@ -101,22 +101,27 @@
 {/if}
 
 <Dialog.Root bind:open onOpenChange={handleOpenChange}>
-  <Dialog.Content class="max-w-5xl! {upgraded || isConfirming ? 'max-w-[600px]!' : ''}">
+  <Dialog.Content
+    class="top-[4dvh]! max-h-[92dvh] w-[96vw] translate-y-0! overflow-y-auto p-4 sm:top-[50%]! sm:max-h-none sm:translate-y-[-50%]! sm:p-6 {upgraded ||
+    isConfirming
+      ? 'max-w-[min(600px,96vw)]!'
+      : 'max-w-5xl!'}"
+  >
     <Dialog.Header>
       <Dialog.Title>{$t('pricing.modal.heading')}</Dialog.Title>
     </Dialog.Header>
     {#if upgraded}
-      <div class="animate-icon flex w-full flex-col items-center justify-center gap-4">
+      <div class="animate-icon flex w-full flex-col items-center justify-center gap-4 px-1">
         <RocketIcon class="rocket-launch my-3 size-6" color="var(--primary)" />
-        <p class="text-lg">{$t('pricing.modal.thanks')}</p>
+        <p class="text-center text-lg">{$t('pricing.modal.thanks')}</p>
         <p class="ui:mb-4 ui:text-center">
           {$t('pricing.modal.plan')}
         </p>
-        <div class="flex items-center gap-4">
-          <Button variant="outline" onclick={onClose}>
+        <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+          <Button class="w-full sm:w-auto" variant="outline" onclick={onClose}>
             {$t('pricing.modal.close')}
           </Button>
-          <Button variant="default" onclick={onLearnMore}>
+          <Button class="w-full sm:w-auto" variant="default" onclick={onLearnMore}>
             {$t('pricing.modal.learn')}
           </Button>
         </div>
@@ -128,8 +133,8 @@
         </div>
       </div>
     {:else}
-      <div class="flex h-full flex-col items-center justify-center">
-        <div class="ui:mb-6">
+      <div class="flex flex-col items-center">
+        <div class="ui:mb-4 ui:w-full ui:max-w-sm ui:px-2 ui:sm:mb-6 ui:sm:max-w-none ui:sm:px-4">
           <PricingToggle
             bind:isYearly={isYearlyPlan}
             monthlyLabel={$t('pricing.modal.monthly')}
@@ -137,7 +142,7 @@
             saveLabel={$t('pricing.modal.save')}
           />
         </div>
-        <div class="mt-6 grid w-full grid-cols-1 gap-6 overflow-y-auto p-2 md:grid-cols-3 md:overflow-y-visible">
+        <div class="grid w-full grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
           {#each planNames as planName}
             {@const plan = PLANS[planName]}
             {@const isPopular = planName === 'EARLY_ADOPTER'}
@@ -148,6 +153,7 @@
               {isYearlyPlan}
               {isLoadingPlan}
               {handleClick}
+              className="w-full max-w-none!"
               popularLabel={$t('pricing.modal.popular')}
               perOrgLabel={$t('pricing.modal.per_org')}
             />
