@@ -70,7 +70,9 @@
 
   function getBlockedMessage(): string {
     if (blocksNewSignup) {
-      return t.get('course.navItem.landing_page.enroll_page.student_limit_reached');
+      return t.get('course.navItem.landing_page.enroll_page.student_limit_reached', {
+        orgName: data.currentOrg?.name ?? ''
+      });
     }
     if (data.requiresPaymentOrInvite) {
       return t.get('course.navItem.landing_page.enroll_page.requires_payment_or_invite');

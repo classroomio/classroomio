@@ -896,7 +896,7 @@
           "join_course": "Participe do curso",
           "enrolled_success": "Você está inscrito neste curso.",
           "enrolled_verify_email": "Você está inscrito! Verifique seu e-mail para acessar este curso.",
-          "student_limit_reached": "Este curso atingiu sua capacidade de alunos. Entre em contato com o administrador da sua organização."
+          "student_limit_reached": "{orgName} atingiu sua capacidade de alunos. Entre em contato com o administrador da sua organização."
         },
         "pricing_section": {
           "free": "Grátis",

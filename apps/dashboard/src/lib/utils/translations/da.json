@@ -896,7 +896,7 @@
           "join_course": "Deltag i kursus",
           "enrolled_success": "Du er tilmeldt dette kursus.",
           "enrolled_verify_email": "Du er tilmeldt! Bekræft din e-mail for at få adgang til dette kursus.",
-          "student_limit_reached": "Dette kursus har nået sin elevkapacitet. Kontakt venligst din organisations administrator."
+          "student_limit_reached": "{orgName} har nået sin elevkapacitet. Kontakt venligst din organisations administrator."
         },
         "pricing_section": {
           "free": "Gratis",

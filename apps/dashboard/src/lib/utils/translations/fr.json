@@ -896,7 +896,7 @@
           "join_course": "Rejoindre le cours",
           "enrolled_success": "Vous êtes inscrit à ce cours.",
           "enrolled_verify_email": "Vous êtes inscrit ! Vérifiez votre e-mail pour accéder à ce cours.",
-          "student_limit_reached": "Ce cours a atteint sa capacité d'accueil. Veuillez contacter l'administrateur de votre organisation."
+          "student_limit_reached": "{orgName} a atteint sa capacité d'accueil. Veuillez contacter l'administrateur de votre organisation."
         },
         "pricing_section": {
           "free": "Gratuit",
