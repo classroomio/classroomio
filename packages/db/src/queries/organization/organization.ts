@@ -8,8 +8,9 @@ import type {
   TOrganization,
   TOrganizationPlan
 } from '@db/types';
-import { and, asc, count, desc, eq, ilike, inArray, isNotNull, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, notInArray, or, sql } from 'drizzle-orm';
 
+import { PLAN } from '@cio/utils/plans';
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TAudienceSortBy, TAudienceSortOrder } from '@cio/utils/validation/organization';
@@ -848,6 +849,43 @@ export const getOrganizations = async (filters?: {
     ...(organization as TOrganization),
     plans
   }));
+};
+
+/**
+ * Gets free (BASIC) plan organizations whose active student count exceeds
+ * `limit`, in a single query. Free = no active paid plan. Used by maintenance
+ * jobs so they don't load every org (or every org's count) and filter in memory.
+ */
+export const getFreePlanOrganizationsOverStudentLimit = async (
+  limit: number
+): Promise<Array<TOrganization & { studentCount: number }>> => {
+  try {
+    const paidPlans = [PLAN.EARLY_ADOPTER, PLAN.ENTERPRISE] as ('EARLY_ADOPTER' | 'ENTERPRISE')[];
+    const paidOrgIds = db
+      .select({ orgId: schema.organizationPlan.orgId })
+      .from(schema.organizationPlan)
+      .where(and(eq(schema.organizationPlan.isActive, true), inArray(schema.organizationPlan.planName, paidPlans)));
+
+    const studentCount = count(schema.organizationmember.id);
+    const rows = await db
+      .select({ organization: schema.organization, studentCount })
+      .from(schema.organization)
+      .innerJoin(
+        schema.organizationmember,
+        and(
+          eq(schema.organizationmember.organizationId, schema.organization.id),
+          eq(schema.organizationmember.roleId, ROLE.STUDENT)
+        )
+      )
+      .where(notInArray(schema.organization.id, paidOrgIds))
+      .groupBy(schema.organization.id)
+      .having(gt(studentCount, limit));
+
+    return rows.map((row) => ({ ...(row.organization as TOrganization), studentCount: Number(row.studentCount) }));
+  } catch (error) {
+    console.error('getFreePlanOrganizationsOverStudentLimit error:', error);
+    throw new Error('Failed to load free-plan organizations over the student limit');
+  }
 };
 
 /**

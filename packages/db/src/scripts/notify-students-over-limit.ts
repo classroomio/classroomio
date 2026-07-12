@@ -9,57 +9,76 @@
  */
 import 'dotenv/config';
 
-import { buildEmailBranding, sendEmail } from '@cio/email';
-import { PLAN, getStudentLimit, isOrgOnFreePlan } from '@cio/utils/plans';
+import { sendEmail } from '@cio/email';
+import { PLAN, getStudentLimit } from '@cio/utils/plans';
 
 import {
-  countActiveStudents,
+  getFreePlanOrganizationsOverStudentLimit,
   getOrganizationAdminEmails,
-  getOrganizations
+  updateOrganization
 } from '../queries/organization/organization';
 
 async function main() {
   const execute = process.argv.includes('--execute');
-  const orgs = await getOrganizations();
   const limit = getStudentLimit(PLAN.BASIC);
+  const orgs = await getFreePlanOrganizationsOverStudentLimit(limit);
 
-  let notified = 0;
+  let orgsToNotify = 0;
+  let adminsToNotify = 0;
+  let orgsOverWithoutAdmins = 0;
+  let alreadyNotified = 0;
 
   for (const org of orgs) {
-    const isFree = isOrgOnFreePlan({ plans: org.plans, isSelfHosted: false, orgId: org.id });
-    if (!isFree) continue;
-
-    const studentCount = await countActiveStudents(org.id);
-    if (studentCount <= limit) continue;
-
-    const admins = await getOrganizationAdminEmails(org.id);
-    if (!admins.length) {
-      console.log(`Skipping ${org.name} (${org.id}): ${studentCount}/${limit} but no admin emails`);
+    // Skip orgs already emailed the "reached" milestone (runtime or a prior run).
+    if (org.settings?.studentLimitNotified?.reached) {
+      alreadyNotified++;
       continue;
     }
 
+    const admins = await getOrganizationAdminEmails(org.id);
+    if (!admins.length) {
+      orgsOverWithoutAdmins++;
+      console.log(`Skipping ${org.name} (${org.id}): ${org.studentCount}/${limit} but no admin emails`);
+      continue;
+    }
+
+    orgsToNotify++;
+    adminsToNotify += admins.length;
+
     console.log(
-      `${execute ? 'Notifying' : '[dry-run] Would notify'} ${org.name} (${org.id}): ${studentCount}/${limit} students → ${admins.length} admin(s)`
+      `${execute ? 'Notifying' : '[dry-run] Would notify'} ${org.name} (${org.id}): ${org.studentCount}/${limit} students → ${admins.length} admin(s)`
     );
 
     if (execute) {
-      const branding = buildEmailBranding({ name: org.name, avatarUrl: org.avatarUrl, theme: org.theme });
       const upgradeUrl = `https://app.classroomio.com/org/${org.siteName ?? ''}?upgrade=true`;
 
       await Promise.all(
         admins.map((admin) =>
           sendEmail('studentLimitReached', {
             to: admin.email,
-            fields: { orgName: org.name, studentCount, studentLimit: limit, upgradeUrl, branding }
+            fields: { orgName: org.name, studentCount: org.studentCount, studentLimit: limit, upgradeUrl }
           })
         )
       );
 
-      notified++;
+      await updateOrganization(org.id, {
+        settings: { ...org.settings, studentLimitNotified: { half: true, reached: true } }
+      });
     }
   }
 
-  console.log(execute ? `Done. Notified ${notified} org(s).` : 'Dry run complete — re-run with --execute to send.');
+  console.log(
+    `\nFound ${orgs.length} free-plan org(s) over the ${limit}-student limit: ` +
+      `${orgsToNotify} to notify (${adminsToNotify} admin email(s) total)` +
+      (alreadyNotified ? `, ${alreadyNotified} already notified` : '') +
+      (orgsOverWithoutAdmins ? `, ${orgsOverWithoutAdmins} skipped for having no admins` : '') +
+      '.'
+  );
+  console.log(
+    execute
+      ? `Done. Sent ${adminsToNotify} email(s) across ${orgsToNotify} org(s).`
+      : 'Dry run — no emails sent. Re-run with --execute to send.'
+  );
 }
 
 main()

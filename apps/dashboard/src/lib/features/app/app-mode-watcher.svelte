@@ -18,4 +18,4 @@
   });
 </script>
 
-<ModeWatcher defaultMode="light" />
+<ModeWatcher defaultMode="light" track={false} />
