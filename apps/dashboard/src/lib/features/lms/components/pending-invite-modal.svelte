@@ -10,7 +10,7 @@
   interface Props {
     open?: boolean;
     invite: PendingOrgInvite;
-    onAccepted?: () => void;
+    onAccepted?: (redirectTo?: string) => void;
   }
 
   let { open = $bindable(false), invite, onAccepted }: Props = $props();
@@ -52,7 +52,7 @@
 
       snackbar.success('invite.organization.messages.joined');
       open = false;
-      onAccepted?.();
+      onAccepted?.(result.data.redirectTo);
     } catch (error) {
       console.error('Failed to accept organization invite by id', error);
       snackbar.error('invite.organization.messages.join_failed');

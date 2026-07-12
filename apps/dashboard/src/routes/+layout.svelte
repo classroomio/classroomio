@@ -4,6 +4,7 @@
 
   import { Snackbar } from '$features/ui';
   import { appInitApi } from '$features/app/init.svelte';
+  import PendingInviteModal from '$features/lms/components/pending-invite-modal.svelte';
   import { resolveAppOrgParams } from '$features/app/resolve-app-org-params';
   import { setupCloudAnalytics } from '$lib/utils/functions/appSetup';
   import { globalStore } from '$lib/utils/store/app';
@@ -14,8 +15,9 @@
   import { authClient } from '$lib/utils/services/auth/client';
   import merge from 'lodash/merge';
   import { MetaTags } from 'svelte-meta-tags';
-  import AppModeWatcher from '$features/app/app-mode-watcher.svelte';
+  import { ModeWatcher } from '@cio/ui/base/dark-mode';
   import OrgSiteFavicon from '$features/app/org-site-favicon.svelte';
+  import { isPublicOrgSitePage } from '$lib/utils/functions/color-scheme';
 
   import '../app.css';
 
@@ -26,6 +28,7 @@
   setUploadLimitsContext(data.uploadLimits);
 
   const metaTags = $derived(merge(data.baseMetaTags, page.data.pageMetaTags));
+  const forceLightMode = $derived(isPublicOrgSitePage(data.isOrgSite, page.url.pathname));
 
   onMount(() => {
     console.log('Layout', data);
@@ -103,11 +106,25 @@
 </svelte:head>
 
 <div>
-  <AppModeWatcher />
+  {#key forceLightMode}
+    {#if forceLightMode}
+      <ModeWatcher defaultMode="light" track={false} />
+    {:else}
+      <ModeWatcher />
+    {/if}
+  {/key}
 
   <MetaTags {...metaTags} />
 
   <Snackbar />
+
+  {#if appInitApi.pendingOrgInvite}
+    <PendingInviteModal
+      bind:open={appInitApi.showPendingInviteModal}
+      invite={appInitApi.pendingOrgInvite}
+      onAccepted={(redirectTo) => appInitApi.handlePendingInviteAccepted(redirectTo)}
+    />
+  {/if}
 
   {@render children?.()}
 </div>

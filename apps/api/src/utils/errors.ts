@@ -2,7 +2,7 @@ import type { Context } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import { ZodError } from 'zod';
 
-import { AppError, ErrorCodes, type ErrorCode } from '@cio/utils/errors';
+import { AppError, ErrorCodes, type ErrorCode, isUniqueConstraintViolation } from '@cio/utils/errors';
 
 // AppError moved to `@cio/utils/errors` so it can be thrown from
 // non-api workspace packages (notably `@cio/core`). Re-exported
@@ -78,6 +78,17 @@ export const handleError = (
         field: isServerError ? undefined : error.field
       },
       error.statusCode as ContentfulStatusCode
+    );
+  }
+
+  if (isUniqueConstraintViolation(error)) {
+    return c.json<ErrorResponse>(
+      {
+        success: false,
+        error: 'Resource already exists',
+        code: ErrorCodes.CONFLICT
+      },
+      409
     );
   }
 

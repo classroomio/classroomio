@@ -3,7 +3,7 @@ import { z, ZodError } from 'zod';
 import { Hono } from 'hono';
 
 import { ZCourseType } from '@cio/utils/validation/course';
-import { AppError, ErrorCodes, formatZodErrorMessage, handlePublicApiError } from '@api/utils/errors';
+import { AppError, ErrorCodes, formatZodErrorMessage, handleError, handlePublicApiError } from '@api/utils/errors';
 
 describe('formatZodErrorMessage', () => {
   it('formats issue paths and messages', () => {
@@ -62,6 +62,35 @@ describe('handlePublicApiError', () => {
       success: false,
       error: 'Course not found',
       code: ErrorCodes.COURSE_NOT_FOUND
+    });
+  });
+});
+
+describe('handleError', () => {
+  it('maps postgres unique violations to 409 CONFLICT', async () => {
+    const app = new Hono().get('/test', async (c) => {
+      try {
+        throw {
+          name: 'DrizzleQueryError',
+          message: 'Failed query',
+          cause: {
+            code: '23505',
+            constraint_name: 'organizationmember_org_email_unique'
+          }
+        };
+      } catch (error) {
+        return handleError(c, error, 'Failed to create member');
+      }
+    });
+
+    const response = await app.request('/test');
+    const body = await response.json();
+
+    expect(response.status).toBe(409);
+    expect(body).toEqual({
+      success: false,
+      error: 'Resource already exists',
+      code: ErrorCodes.CONFLICT
     });
   });
 });

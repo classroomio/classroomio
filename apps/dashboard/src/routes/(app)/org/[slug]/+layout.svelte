@@ -5,7 +5,7 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { currentOrg } from '$lib/utils/store/org';
-  import { isStudentExperience } from '$lib/utils/store/app';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { appInitApi } from '$features/app/init.svelte';
   import { AppHeader } from '$features/ui';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
@@ -27,9 +27,9 @@
   });
 
   $effect(() => {
-    // Decide only once the account/role has loaded — until then the student flag
-    // defaults to false and a student is indistinguishable from an admin.
-    if (appInitApi.isInitializedAndReady && $isStudentExperience) {
+    // Students must not use the admin org dashboard on app.* — send them to LMS.
+    // isStudentExperience is false on the app host in cloud mode even for students.
+    if (appInitApi.isInitializedAndReady && $isOrgStudent) {
       goto(resolve('/lms', {}));
     }
   });

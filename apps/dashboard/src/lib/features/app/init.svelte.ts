@@ -1,9 +1,17 @@
 import { BaseApi, classroomio } from '$lib/utils/services/api';
-import { currentOrg, getOrgPublicUrl, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
+import {
+  currentOrg,
+  getAppOrigin,
+  getOrgPublicUrl,
+  isOrgManagerRole,
+  mergeAccountOrgFromServer,
+  orgs
+} from '$lib/utils/store/org';
 import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils/store/user';
 
 import type { AccountResponse } from './types';
-import { resolveAppOrgParams, type AppOrgParams } from './resolve-app-org-params';
+import { type AppOrgParams } from './resolve-app-org-params';
+import type { PendingOrgInvite } from '$features/lms/utils/types';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import type { TUser } from '@cio/db/types';
 import { authClient } from '$lib/utils/services/auth/client';
@@ -12,7 +20,7 @@ import { goto } from '$app/navigation';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
 import { identifyPosthogUser } from '$lib/utils/services/posthog';
 import { identifyUserJotUser } from '$lib/utils/services/userjot';
-import { isOrgStudent } from '$lib/utils/store/app';
+import { isOrgStudent, globalStore } from '$lib/utils/store/app';
 import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
 import { licenseApi } from '$features/license/api/license.svelte';
 import { logout } from '$lib/utils/functions/logout';
@@ -44,6 +52,8 @@ function tenantSyncKey(params: AppSetupParams): string | null {
 class AppInitApi extends BaseApi {
   data = $state<AccountResponse>(null);
   session = $state<App.Locals | null>(null);
+  pendingOrgInvite = $state<PendingOrgInvite | null>(null);
+  showPendingInviteModal = $state(false);
   private syncedTenantKey: string | null = null;
 
   get loading() {
@@ -51,43 +61,103 @@ class AppInitApi extends BaseApi {
   }
 
   async setupApp(locals: App.Locals, params: AppSetupParams): Promise<boolean | undefined> {
-    if (!locals.user) {
-      if (!params.isOrgSite) {
-        goto(resolve('/login', {}));
-        return false;
-      }
-
-      console.log('No user found in locals');
+    if (this.isLoading || this.isInitializedAndReady) {
       return;
     }
 
-    this.session = locals;
+    this.isLoading = true;
 
-    // Auto-enroll on tenant sites for first-time signups. Idempotent on the
-    // API side (no-ops for existing members so invited admins/tutors keep
-    // their roles). Runs BEFORE the account fetch so the returned org list
-    // already reflects the new membership.
-    if (params.isOrgSite && params.orgId) {
-      await this.autoEnrollOnTenantSite(params.orgId);
+    try {
+      if (!locals.user) {
+        if (!params.isOrgSite) {
+          goto(resolve('/login', {}));
+          return false;
+        }
+
+        console.log('No user found in locals');
+        return;
+      }
+
+      this.session = locals;
+
+      // Auto-enroll fallback for tenant sites. The primary path enrolls the
+      // user server-side at signup (the dashboard sends `cio-org-id`, so the
+      // create-profile hook creates the membership) — for those, the session's
+      // `orgRoles` already includes this org and we skip the extra request.
+      // This fallback only fires when membership isn't reflected yet: OAuth
+      // signups (redirect flow can't carry the header) and existing users
+      // logging into a tenant they aren't a member of. Idempotent on the API
+      // side and runs BEFORE the account fetch so the org list is up to date.
+      if (params.isOrgSite && params.orgId && !this.isMemberOfOrg(locals, params.orgId)) {
+        await this.ensureTenantMembership(params.orgId);
+      }
+
+      await this.execute<typeof classroomio.account.$get>({
+        requestFn: () => classroomio.account.$get(),
+        logContext: 'fetching account',
+        onSuccess: (data) => {
+          this.data = data;
+          this.setupStores(params);
+          licenseApi.syncFromAccount(data.licenseFeatures, get(currentOrg));
+          setupAnalyticsBasedOnLicense(
+            data.profile?.id
+              ? { id: data.profile.id, email: data.profile.email, name: data.profile.fullname }
+              : undefined
+          );
+          this.setUserAnalytics();
+          this.routeUserToNextPage(params);
+        },
+        onError: () => {
+          logout();
+        }
+      });
+    } finally {
+      if (!this.isInitializedAndReady) {
+        this.isLoading = false;
+      }
+    }
+  }
+
+  /**
+   * Whether the current session already reflects membership in `orgId`.
+   * Better Auth's `customSession` attaches an `orgRoles` map ({ orgId: roleId })
+   * that RBAC middlewares also use, so a present key means the user is a member.
+   */
+  private isMemberOfOrg(locals: App.Locals, orgId: string): boolean {
+    const orgRoles = (locals as { orgRoles?: Record<string, number> }).orgRoles;
+
+    return !!orgRoles && orgId in orgRoles;
+  }
+
+  /**
+   * On tenant sites, link an existing roster row or auto-enroll as STUDENT —
+   * unless the user has a pending org invite, in which case we surface accept UI.
+   * Returns true when a new membership was created or an email-only row was linked.
+   */
+  private async ensureTenantMembership(orgId: string): Promise<boolean> {
+    const pendingInvite = await this.fetchPendingOrgInvite(orgId);
+    if (pendingInvite) {
+      this.pendingOrgInvite = pendingInvite;
+      this.showPendingInviteModal = true;
+      return false;
     }
 
-    await this.execute<typeof classroomio.account.$get>({
-      requestFn: () => classroomio.account.$get(),
-      logContext: 'fetching account',
-      onSuccess: (data) => {
-        this.data = data;
-        this.setupStores(params);
-        licenseApi.syncFromAccount(data.licenseFeatures, get(currentOrg));
-        setupAnalyticsBasedOnLicense(
-          data.profile?.id ? { id: data.profile.id, email: data.profile.email, name: data.profile.fullname } : undefined
-        );
-        this.setUserAnalytics();
-        this.routeUserToNextPage(params);
-      },
-      onError: () => {
-        logout();
+    return this.autoEnrollOnTenantSite(orgId);
+  }
+
+  private async fetchPendingOrgInvite(orgId: string): Promise<PendingOrgInvite | null> {
+    try {
+      const response = await classroomio.invite.organization.pending.$get({}, { headers: { 'cio-org-id': orgId } });
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        return result.data;
       }
-    });
+    } catch (error) {
+      console.warn('pending org invite check failed', error);
+    }
+
+    return null;
   }
 
   private async autoEnrollOnTenantSite(orgId: string): Promise<boolean> {
@@ -102,6 +172,17 @@ class AppInitApi extends BaseApi {
         // visited a tenant site but isn't allowed to enroll. Other failures
         // shouldn't block the rest of setupApp.
         console.warn('auto-enroll-student failed', response.status, await response.text().catch(() => ''));
+        return false;
+      }
+
+      const result = await response.json();
+      if (result.success && result.data?.pendingInvite) {
+        const pendingInvite = await this.fetchPendingOrgInvite(orgId);
+        if (pendingInvite) {
+          this.pendingOrgInvite = pendingInvite;
+          this.showPendingInviteModal = true;
+        }
+
         return false;
       }
 
@@ -135,7 +216,7 @@ class AppInitApi extends BaseApi {
 
     const isMember = this.data.organizations.some((org) => org.siteName === params.orgSiteName);
     if (params.isOrgSite && params.orgId && !isMember) {
-      const enrolled = await this.autoEnrollOnTenantSite(params.orgId);
+      const enrolled = await this.ensureTenantMembership(params.orgId);
       if (enrolled) {
         const response = await classroomio.account.$get();
         const accountData = (await response.json()) as AccountResponse;
@@ -229,8 +310,14 @@ class AppInitApi extends BaseApi {
       return undefined;
     }
 
+    const managedOrganizations = organizations.filter((org) => isOrgManagerRole(org.roleId));
     const lastOrgSiteName = localStorage.getItem('classroomio_org_sitename');
-    return organizations.find((org) => org.siteName === lastOrgSiteName) ?? organizations[0];
+
+    return (
+      managedOrganizations.find((org) => org.siteName === lastOrgSiteName) ??
+      managedOrganizations[0] ??
+      organizations[0]
+    );
   }
 
   routeUserToNextPage({ isOrgSite }: AppSetupParams) {
@@ -341,10 +428,39 @@ class AppInitApi extends BaseApi {
     });
   }
 
+  async handlePendingInviteAccepted(redirectTo?: string): Promise<void> {
+    this.showPendingInviteModal = false;
+    this.pendingOrgInvite = null;
+
+    await authClient.getSession({ query: { disableCookieCache: true } });
+
+    const response = await classroomio.account.$get();
+    const accountData = (await response.json()) as AccountResponse;
+    if (accountData?.success) {
+      this.data = accountData;
+      this.setupStores();
+    }
+
+    const isOnOrgSite = get(globalStore).isOrgSite;
+    if (redirectTo?.startsWith('/org/') && isOnOrgSite) {
+      window.location.href = `${getAppOrigin()}${redirectTo}`;
+      return;
+    }
+
+    if (redirectTo) {
+      window.location.href = redirectTo;
+      return;
+    }
+
+    window.location.reload();
+  }
+
   reset() {
     super.reset();
     this.data = null;
     this.syncedTenantKey = null;
+    this.pendingOrgInvite = null;
+    this.showPendingInviteModal = false;
     licenseApi.reset();
 
     user.set(defaultUserState);

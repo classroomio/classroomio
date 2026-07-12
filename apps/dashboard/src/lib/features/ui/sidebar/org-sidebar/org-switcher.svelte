@@ -12,7 +12,7 @@
   import type { AccountOrg } from '$features/app/types';
 
   import { setTheme } from '$lib/utils/functions/theme';
-  import { currentOrg, currentOrgPath, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgPath, managedOrgs, mergeAccountOrgFromServer } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
   import ComingSoon from '$features/ui/coming-soon.svelte';
@@ -33,8 +33,9 @@
 
   const accountRootId = $derived(rootIdFor($currentOrg));
 
-  const accountWorkspaces = $derived($orgs.filter((org) => rootIdFor(org) === accountRootId));
-  const otherOrgs = $derived($orgs.filter((org) => rootIdFor(org) !== accountRootId));
+  const switchableOrgs = $derived($managedOrgs);
+  const accountWorkspaces = $derived(switchableOrgs.filter((org) => rootIdFor(org) === accountRootId));
+  const otherOrgs = $derived(switchableOrgs.filter((org) => rootIdFor(org) !== accountRootId));
 
   function onClick(org: AccountOrg) {
     if (org.id === $currentOrg.id) return;
