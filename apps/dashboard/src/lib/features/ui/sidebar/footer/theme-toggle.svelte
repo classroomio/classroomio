@@ -1,9 +1,8 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
   import { MonitorIcon, SunIcon, MoonIcon } from '@lucide/svelte';
-  import { setMode, systemPrefersMode, userPrefersMode } from '@cio/ui/base/dark-mode';
 
-  import { markColorModeExplicit } from '$lib/utils/functions/color-mode';
+  import { getColorModePreference, setColorModePreference } from '$lib/utils/functions/color-mode.svelte.ts';
 
   type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -13,21 +12,10 @@
     { mode: 'system', icon: MonitorIcon }
   ];
 
-  const activeMode = $derived(userPrefersMode.current ?? 'light');
+  const activeMode = $derived(getColorModePreference());
 
   const handleThemeChange = (newMode: ThemeMode) => {
-    markColorModeExplicit();
-
-    const shouldTrackSystem = newMode === 'system';
-    systemPrefersMode.tracking(shouldTrackSystem);
-
-    if (shouldTrackSystem) {
-      systemPrefersMode.query();
-      setMode('system');
-      return;
-    }
-
-    setMode(newMode);
+    setColorModePreference(newMode);
   };
 </script>
 

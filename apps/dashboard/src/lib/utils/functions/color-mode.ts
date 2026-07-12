@@ -15,6 +15,13 @@ export function markColorModeExplicit(storage: Pick<Storage, 'setItem'> = localS
   storage.setItem(MODE_EXPLICIT_STORAGE_KEY, 'true');
 }
 
+export function writeStoredColorMode(
+  preference: ColorModePreference,
+  storage: Pick<Storage, 'setItem'> = localStorage
+): void {
+  storage.setItem(MODE_STORAGE_KEY, preference);
+}
+
 /**
  * Resolve the color mode to apply on load.
  *
