@@ -7,40 +7,9 @@
 
     <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
 
-    <script>
-      (function () {
-        try {
-          var storageKey = 'mode-watcher-mode';
-          var explicitKey = 'mode-watcher-explicit';
-          var stored = localStorage.getItem(storageKey);
-          var isExplicit = localStorage.getItem(explicitKey) === 'true';
-          var mode = 'light';
-
-          if (stored === 'light' || stored === 'dark') {
-            mode = stored;
-          } else if (stored === 'system' && isExplicit) {
-            mode = 'system';
-          }
-
-          var root = document.documentElement;
-          var isLight =
-            mode === 'light' ||
-            (mode === 'system' && window.matchMedia('(prefers-color-scheme: light)').matches);
-
-          if (isLight) {
-            root.classList.remove('dark');
-            root.style.colorScheme = 'light';
-          } else {
-            root.classList.add('dark');
-            root.style.colorScheme = 'dark';
-          }
-
-          localStorage.setItem(storageKey, mode);
-        } catch (error) {
-          // Ignore storage or media-query errors in restricted environments.
-        }
-      })();
-    </script>
+    <!-- External (not inline) so it passes the app's nonce-based CSP; runs before
+         the app bundle to set the color mode and avoid a flash of the wrong theme. -->
+    <script src="/theme-init.js"></script>
 
     %sveltekit.head%
   </head>
