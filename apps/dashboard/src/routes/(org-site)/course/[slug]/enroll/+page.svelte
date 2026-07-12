@@ -54,8 +54,14 @@
 
   const inviteStatus = $derived(data.invite?.status ?? 'INVALID');
   const hasActiveInvite = $derived(Boolean(data.invite) && inviteStatus === 'ACTIVE');
+  // The org-wide cap only applies to *new* students joining the org. We can't
+  // know the viewer's membership here (public, unauthenticated load), so only
+  // pre-block anonymous visitors (would-be new joiners). Logged-in users are
+  // governed by the membership-aware backend, which allows existing members
+  // and returns UPGRADE_REQUIRED (surfaced via the enroll onError) for new ones.
+  const blocksNewSignup = $derived(Boolean(data.studentLimitReached) && !isLoggedIn);
   const canJoinCourse = $derived(
-    data.requiresPaymentOrInvite
+    data.requiresPaymentOrInvite || blocksNewSignup
       ? false
       : (hasActiveInvite || (!data.invite && data.course?.allowNewStudent !== false)) &&
           data.course?.status === 'ACTIVE' &&
@@ -63,6 +69,11 @@
   );
 
   function getBlockedMessage(): string {
+    if (blocksNewSignup) {
+      return t.get('course.navItem.landing_page.enroll_page.student_limit_reached', {
+        orgName: data.currentOrg?.name ?? ''
+      });
+    }
     if (data.requiresPaymentOrInvite) {
       return t.get('course.navItem.landing_page.enroll_page.requires_payment_or_invite');
     }

@@ -3,9 +3,16 @@
   import { resolve } from '$app/paths';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { BackButton } from '@cio/ui';
-  import { HoverableItem, NewsFeedIcon, CourseIcon, PeopleIcon, SettingsIcon } from '@cio/ui/custom/moving-icons';
+  import {
+    HoverableItem,
+    NewsFeedIcon,
+    CourseIcon,
+    PeopleIcon,
+    PremiumIcon,
+    SettingsIcon
+  } from '@cio/ui/custom/moving-icons';
   import { t } from '$lib/utils/functions/translations';
-  import { currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrgPath, isOrgAdmin, isStudentLimitReached } from '$lib/utils/store/org';
   import { isStudentExperience } from '$lib/utils/store/app';
   import { profile } from '$lib/utils/store/user';
   import { cohortApi } from '$features/cohort/api';
@@ -88,6 +95,9 @@
                 <a href={resolve(item.url, {})} {...props}>
                   <Icon {isHovered} size={16} />
                   <span>{item.title}</span>
+                  {#if item.id === 'people' && $isStudentLimitReached}
+                    <PremiumIcon {isHovered} size={16} class="ui:text-primary ml-auto" />
+                  {/if}
                 </a>
               {/snippet}
             </HoverableItem>

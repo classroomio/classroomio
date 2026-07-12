@@ -709,7 +709,8 @@
       "cancel": "Hủy bỏ",
       "confirm": "Xóa",
       "snackbar_success": "Thành viên đã bị xóa"
-    }
+    },
+    "import_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để nhập thêm sinh viên."
   },
   "community": {
     "title": "cộng đồng",
@@ -894,7 +895,8 @@
           "back_to_course": "Quay lại khóa học",
           "join_course": "Tham gia khóa học",
           "enrolled_success": "Bạn đã ghi danh khóa học này.",
-          "enrolled_verify_email": "Bạn đã ghi danh! Xác minh email để truy cập khóa học này."
+          "enrolled_verify_email": "Bạn đã ghi danh! Xác minh email để truy cập khóa học này.",
+          "student_limit_reached": "{orgName} đã đạt đủ số lượng sinh viên. Vui lòng liên hệ với quản trị viên tổ chức của bạn."
         },
         "pricing_section": {
           "free": "miễn phí",
@@ -1226,7 +1228,8 @@
             "multi_use_7d": "Sử dụng nhiều lần (7 ngày)",
             "multi_use_30d": "Sử dụng nhiều lần (30 ngày)",
             "custom": "tùy chỉnh"
-          }
+          },
+          "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên."
         }
       },
       "marks": {
@@ -2811,7 +2814,10 @@
     "stats": "Thống kê",
     "analytics": "Phân tích",
     "compliance": "Tuân thủ",
-    "cohorts": "Chương trình"
+    "cohorts": "Chương trình",
+    "upgrade_now": "Nâng cấp ngay bây giờ",
+    "upgrade_students": "{studentCount} trong số {studentLimit} sinh viên",
+    "upgrade_left": "còn {count}"
   },
   "media_manager": {
     "page_title": "Quản lý truyền thông - ClassroomIO",
@@ -3636,7 +3642,8 @@
           "widgets": "Widget",
           "tags": "Thẻ",
           "students": "Sinh viên",
-          "settings": "Cài đặt"
+          "settings": "Cài đặt",
+          "cohorts": "Nhóm thuần tập"
         }
       }
     },

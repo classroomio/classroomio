@@ -709,7 +709,8 @@
       "cancel": "Anuluj",
       "confirm": "Usuń",
       "snackbar_success": "Członek usunięty"
-    }
+    },
+    "import_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaimportować więcej uczniów."
   },
   "community": {
     "title": "Społeczność",
@@ -894,7 +895,8 @@
           "back_to_course": "Powrót na kurs",
           "join_course": "Dołącz do kursu",
           "enrolled_success": "Zapisano Cię na ten kurs.",
-          "enrolled_verify_email": "Jesteś zapisany! Zweryfikuj swój e-mail, aby uzyskać dostęp do tego kursu."
+          "enrolled_verify_email": "Jesteś zapisany! Zweryfikuj swój e-mail, aby uzyskać dostęp do tego kursu.",
+          "student_limit_reached": "Organizacja {orgName} osiągnęła już limit uczniów. Skontaktuj się z administratorem organizacji."
         },
         "pricing_section": {
           "free": "Bezpłatny",
@@ -1226,7 +1228,8 @@
             "multi_use_7d": "Wielokrotnego użytku (7 dni)",
             "multi_use_30d": "Wielokrotnego użytku (30 dni)",
             "custom": "Niestandardowe"
-          }
+          },
+          "student_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaprosić więcej uczniów."
         }
       },
       "marks": {
@@ -2811,7 +2814,10 @@
     "stats": "Statystyki",
     "analytics": "Analityka",
     "compliance": "Zgodność",
-    "cohorts": "Programy"
+    "cohorts": "Programy",
+    "upgrade_now": "Uaktualnij teraz",
+    "upgrade_students": "{studentCount} z {studentLimit} uczniów",
+    "upgrade_left": "Pozostało {count}"
   },
   "media_manager": {
     "page_title": "Menedżer multimediów - ClassroomIO",
@@ -3636,7 +3642,8 @@
           "widgets": "Widżety",
           "tags": "Tagi",
           "students": "Studenci",
-          "settings": "Ustawienia"
+          "settings": "Ustawienia",
+          "cohorts": "Kohorty"
         }
       }
     },

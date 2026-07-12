@@ -51,6 +51,7 @@ export const load = async ({ params, url }) => {
       inviteEmail: data.inviteContext?.recipientEmail ?? null,
       inviteEmailExists: data.inviteContext?.recipientExists ?? false,
       requiresPaymentOrInvite: false,
+      studentLimitReached: false,
       token: inviteToken
     };
   }
@@ -97,6 +98,7 @@ export const load = async ({ params, url }) => {
     currentOrg,
     invite: null,
     requiresPaymentOrInvite: !isFree,
+    studentLimitReached: courseData.studentLimitReached ?? false,
     token: null as string | null
   };
 };

@@ -27,6 +27,7 @@ import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { profile } from '$lib/utils/store/user';
 import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
+import { t } from '$lib/utils/functions/translations';
 import { coursesApi } from './courses.svelte';
 import { ROLE } from '@cio/utils/constants';
 import { ContentType } from '@cio/utils/constants/content';
@@ -310,6 +311,17 @@ export class CourseApi extends BaseApiWithErrors {
       onError: (result) => {
         if (typeof result === 'string') {
           snackbar.error('snackbar.invite.failed_join');
+        } else if (
+          typeof result === 'object' &&
+          result !== null &&
+          'code' in result &&
+          result.code === 'UPGRADE_REQUIRED'
+        ) {
+          snackbar.error(
+            t.get('course.navItem.landing_page.enroll_page.student_limit_reached', {
+              orgName: get(currentOrg)?.name ?? ''
+            })
+          );
         } else if (typeof result === 'object' && result !== null && 'error' in result) {
           snackbar.error((result as { error: string }).error);
         }

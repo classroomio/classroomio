@@ -1259,6 +1259,9 @@
     "early_adopter": "Become an Early Adopter",
     "unlock": "Unlock unlimited features and invest in our future",
     "upgrade": "Upgrade Now",
+    "upgrade_now": "Upgrade now",
+    "upgrade_students": "{studentCount} of {studentLimit} students",
+    "upgrade_left": "{count} left",
     "cohorts": "Cohorts"
   },
   "pricing": {
@@ -3054,6 +3057,7 @@
           "to_add": "To add tutor to your organization,",
           "go_to": "go to organization settings",
           "invite_students": "Add Students",
+          "student_limit_reached": "You've reached your plan's student limit. Upgrade to invite more students.",
           "via_link": "You can invite students via an invite link",
           "via_qr": "You can invite students via QR",
           "download_qr": "Download QR code",
@@ -3373,7 +3377,8 @@
           "back_to_course": "Back to course",
           "join_course": "Join Course",
           "enrolled_success": "You're enrolled in this course.",
-          "enrolled_verify_email": "You're enrolled! Verify your email to access this course."
+          "enrolled_verify_email": "You're enrolled! Verify your email to access this course.",
+          "student_limit_reached": "{orgName} has reached its student capacity. Please contact your organization administrator."
         },
         "course_content": "Course content",
         "modules": "modules",
@@ -3558,6 +3563,7 @@
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "export": "Export",
     "import_users": "Import Users",
+    "import_limit_reached": "You've reached your plan's student limit. Upgrade to import more students.",
     "no_audience": "No audience to manage",
     "manage": "Manage all your students here and stay connected with them",
     "name": "Name",

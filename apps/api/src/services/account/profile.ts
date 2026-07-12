@@ -1,10 +1,12 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
+  countActiveStudents,
   createOrganizationMember,
   getFirstOrganization,
   getOrganizationByProfileId,
   hasOrgMemberByProfileIdOrEmail
 } from '@cio/db/queries/organization';
+import { getPlanLimit, toResourceUsage } from '@cio/utils/plans';
 import {
   getProfileByEmail,
   getProfileById,
@@ -63,6 +65,23 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
 
       organizations = await getOrganizationByProfileId(userId);
     }
+  }
+
+  // Attach per-resource usage + plan limits for admin/tutor members only.
+  // Plain COUNTs (no rows) so the payload stays light and students never
+  // receive org limit data. Skip self-hosted (unlimited, matching the guard).
+  if (!isSelfHosted) {
+    await Promise.all(
+      organizations.map(async (org) => {
+        if (org.roleId !== ROLE.ADMIN && org.roleId !== ROLE.TUTOR) return;
+
+        const activePlan = org.plans.find((plan) => plan.isActive);
+        const studentsUsed = await countActiveStudents(org.id);
+        const studentsLimit = getPlanLimit('students', activePlan?.planName);
+
+        org.limits = { students: toResourceUsage(studentsUsed, studentsLimit) };
+      })
+    );
   }
 
   return {
