@@ -2,7 +2,6 @@ import * as z from 'zod';
 
 import { defineEmail } from '../send';
 import { getDefaultTemplate } from '../templates';
-import { ZEmailBranding } from '../core/branding';
 
 export const studentLimitReachedEmail = defineEmail({
   id: 'studentLimitReached',
@@ -11,18 +10,18 @@ export const studentLimitReachedEmail = defineEmail({
     orgName: z.string().min(1),
     studentCount: z.number(),
     studentLimit: z.number(),
-    upgradeUrl: z.string().url(),
-    branding: ZEmailBranding
+    upgradeUrl: z.string().url()
   }),
   render: (fields) => {
     const content = `
       <p>Hi there,</p>
-      <p><strong>${fields.orgName}</strong> has reached the ${fields.studentLimit}-student limit on the Free plan (currently ${fields.studentCount} students). New students can't enrol or be invited until you upgrade.</p>
+      <p>We're letting you know because new students are being turned away from <strong>${fields.orgName}</strong>: you've reached your Free plan's ${fields.studentLimit}-student limit (you currently have ${fields.studentCount} students). Anyone who tries to enrol, accept an invite, or join right now can't get in until you upgrade.</p>
       <div>
         <a class="button" href="${fields.upgradeUrl}">Upgrade your plan</a>
       </div>
+      <p style="color:#94a3b8;font-size:13px;">We only send this once a day, so you won't hear from us every time it happens.</p>
     `;
 
-    return getDefaultTemplate(content, fields.branding);
+    return getDefaultTemplate(content);
   }
 });

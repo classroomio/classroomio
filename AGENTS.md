@@ -337,6 +337,23 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - **Icon-only buttons** (a `Button` whose content is just an icon, e.g. `size="icon"`) must use `variant="secondary"`.
 - **Theme color classes:** Classes that use colors from `packages/ui/src/index.css` (e.g. `text-muted-foreground`, `text-primary`) must be prefixed with `ui:` in dashboard code so they resolve against the UI theme (e.g. `ui:text-muted-foreground`, `ui:text-primary`). Only color-related utilities need the prefix; layout/sizing classes like `rounded`, `border`, `p-4` stay unprefixed (Tailwind defaults).
 
+## Emails: system vs org-branded
+
+Every transactional email in `packages/email/src/emails` is one of two kinds — decide deliberately, because it changes the branding, the schema, and the `from` address.
+
+- **System emails** — ClassroomIO (the platform) addressing a user/account owner/admin about their *ClassroomIO account*: auth (verify/reset password), billing, **plan limits & usage**, license, workspace. These are **ClassroomIO-branded**:
+  - No `branding` field in the schema.
+  - Render with `getDefaultTemplate(content)` (no branding arg) — falls back to the ClassroomIO logo + default button color.
+  - Send from the default `EMAIL_FROM`; do **not** override `from` with the org name.
+  - Examples: `welcome`, `forgot-password`, `on-password-reset`, `studentLimitReached`.
+- **Org-branded emails** — an *organization* addressing its own members (students/tutors): course invites, welcome/completion, newsfeed, cohort, session reminders. These carry the org's identity:
+  - Add a `branding: ZEmailBranding` field.
+  - Render with `getDefaultTemplate(content, fields.branding)`.
+  - Callers build branding via `buildEmailBranding({ name, avatarUrl, theme })` and send with `from: buildEmailFromName('<Org> (via ClassroomIO.com)')`.
+  - Examples: `teacherStudentJoined`, `studentCourseWelcome`, `studentCourseInvite`, `verifyEmail` (org-scoped signup).
+
+Rule of thumb: if the recipient is being addressed **as a ClassroomIO customer** (account/billing/limits), it's a system email → ClassroomIO branding. If they're addressed **as a member of a specific org**, it's org-branded.
+
 ## Best Practices Summary
 
 ### ✅ DO

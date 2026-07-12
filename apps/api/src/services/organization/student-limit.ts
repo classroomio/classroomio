@@ -1,6 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
-import { buildEmailBranding } from '@cio/email';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { getStudentLimit } from '@cio/utils/plans';
 import { env } from '@cio/core/config/env';
@@ -33,8 +32,7 @@ async function notifyAdminsStudentLimitReached(
       orgName: org.name,
       studentCount,
       studentLimit,
-      upgradeUrl,
-      branding: buildEmailBranding({ name: org.name, avatarUrl: org.avatarUrl, theme: org.theme })
+      upgradeUrl
     },
     idempotencyKey: `student-limit-reached:${orgId}:${todayKey}`
   });
