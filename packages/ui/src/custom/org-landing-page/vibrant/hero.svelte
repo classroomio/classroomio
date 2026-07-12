@@ -2,7 +2,7 @@
   import type { OrgLandingPageProps } from '../types';
   import type { Snippet } from 'svelte';
   import SecondaryActionButton from '../secondary-action-button.svelte';
-  import { Button } from '../../../base/button';
+  import CoursePrimaryAction from '../course-primary-action.svelte';
   import EditableLandingSection from '../editable-section.svelte';
 
   interface Props {
@@ -45,13 +45,10 @@
       {/if}
       {#if showActions}
         <div class="ui:inline-flex ui:flex-wrap ui:justify-center ui:items-center ui:gap-3">
-          <Button
-            href={hero.primaryAction.href}
-            disabled={hero.primaryAction.disabled ?? false}
+          <CoursePrimaryAction
+            action={hero.primaryAction}
             class="ui:rounded-md ui:px-7 ui:py-3.5 ui:text-base ui:font-medium ui:bg-[var(--landing-accent)] ui:text-[var(--landing-accent-fg)] ui:hover:opacity-90"
-          >
-            {hero.primaryAction.label}
-          </Button>
+          />
           {#if hero.secondaryAction}
             <SecondaryActionButton
               href={hero.secondaryAction.href}

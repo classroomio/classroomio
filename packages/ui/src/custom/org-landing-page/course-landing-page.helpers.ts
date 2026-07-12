@@ -8,7 +8,8 @@ export function alignHeroCtaWithPricing(
     ...hero,
     primaryAction: {
       label: pricing.ctaLabel,
-      href: pricing.ctaHref ?? '#pricing',
+      href: pricing.ctaOnclick ? undefined : (pricing.ctaHref ?? '#pricing'),
+      onclick: pricing.ctaOnclick,
       disabled: hero.primaryAction.disabled
     }
   };

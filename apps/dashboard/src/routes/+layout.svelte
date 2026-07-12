@@ -14,9 +14,8 @@
   import { authClient } from '$lib/utils/services/auth/client';
   import merge from 'lodash/merge';
   import { MetaTags } from 'svelte-meta-tags';
-  import { ModeWatcher } from '@cio/ui/base/dark-mode';
+  import AppModeWatcher from '$features/app/app-mode-watcher.svelte';
   import OrgSiteFavicon from '$features/app/org-site-favicon.svelte';
-  import { isPublicOrgSitePage } from '$lib/utils/functions/color-scheme';
 
   import '../app.css';
 
@@ -27,7 +26,6 @@
   setUploadLimitsContext(data.uploadLimits);
 
   const metaTags = $derived(merge(data.baseMetaTags, page.data.pageMetaTags));
-  const forceLightMode = $derived(isPublicOrgSitePage(data.isOrgSite, page.url.pathname));
 
   onMount(() => {
     console.log('Layout', data);
@@ -105,13 +103,7 @@
 </svelte:head>
 
 <div>
-  {#key forceLightMode}
-    {#if forceLightMode}
-      <ModeWatcher defaultMode="light" track={false} />
-    {:else}
-      <ModeWatcher />
-    {/if}
-  {/key}
+  <AppModeWatcher />
 
   <MetaTags {...metaTags} />
 
