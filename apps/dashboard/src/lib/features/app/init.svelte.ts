@@ -9,7 +9,7 @@ import {
 } from '$lib/utils/store/org';
 import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils/store/user';
 
-import type { AccountResponse } from './types';
+import type { AccountResponse, AccountSuccess } from './types';
 import { type AppOrgParams } from './resolve-app-org-params';
 import type { PendingOrgInvite } from '$features/lms/utils/types';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
@@ -80,37 +80,42 @@ class AppInitApi extends BaseApi {
 
       this.session = locals;
 
-      // Auto-enroll fallback for tenant sites. The primary path enrolls the
-      // user server-side at signup (the dashboard sends `cio-org-id`, so the
-      // create-profile hook creates the membership) — for those, the session's
-      // `orgRoles` already includes this org and we skip the extra request.
-      // This fallback only fires when membership isn't reflected yet: OAuth
-      // signups (redirect flow can't carry the header) and existing users
-      // logging into a tenant they aren't a member of. Idempotent on the API
-      // side and runs BEFORE the account fetch so the org list is up to date.
-      if (params.isOrgSite && params.orgId && !this.isMemberOfOrg(locals, params.orgId)) {
-        await this.ensureTenantMembership(params.orgId);
+      const needsTenantMembership = params.isOrgSite && params.orgId && !this.isMemberOfOrg(locals, params.orgId);
+
+      if (needsTenantMembership && params.orgId) {
+        const orgId = params.orgId;
+        const [pendingInvite, accountData] = await Promise.all([
+          this.fetchPendingOrgInvite(orgId),
+          this.fetchAccountData()
+        ]);
+
+        if (!accountData) {
+          return false;
+        }
+
+        if (pendingInvite) {
+          this.showPendingOrgInvite(pendingInvite);
+          this.applyAccountData(accountData, params);
+          return;
+        }
+
+        const enrolled = await this.autoEnrollOnTenantSite(orgId);
+        if (enrolled) {
+          const refreshedAccount = await this.fetchAccountData();
+          if (refreshedAccount) {
+            this.applyAccountData(refreshedAccount, params);
+            return;
+          }
+        }
+
+        this.applyAccountData(accountData, params);
+        return;
       }
 
-      await this.execute<typeof classroomio.account.$get>({
-        requestFn: () => classroomio.account.$get(),
-        logContext: 'fetching account',
-        onSuccess: (data) => {
-          this.data = data;
-          this.setupStores(params);
-          licenseApi.syncFromAccount(data.licenseFeatures, get(currentOrg));
-          setupAnalyticsBasedOnLicense(
-            data.profile?.id
-              ? { id: data.profile.id, email: data.profile.email, name: data.profile.fullname }
-              : undefined
-          );
-          this.setUserAnalytics();
-          this.routeUserToNextPage(params);
-        },
-        onError: () => {
-          logout();
-        }
-      });
+      const accountData = await this.fetchAccountData();
+      if (accountData) {
+        this.applyAccountData(accountData, params);
+      }
     } finally {
       if (!this.isInitializedAndReady) {
         this.isLoading = false;
@@ -129,16 +134,62 @@ class AppInitApi extends BaseApi {
     return !!orgRoles && orgId in orgRoles;
   }
 
+  private applyAccountData(accountData: AccountSuccess, params: AppSetupParams) {
+    this.resetErrors();
+    this.success = true;
+    this.data = accountData;
+    this.setupStores(params);
+    licenseApi.syncFromAccount(accountData.licenseFeatures, get(currentOrg));
+    setupAnalyticsBasedOnLicense(
+      accountData.profile?.id
+        ? { id: accountData.profile.id, email: accountData.profile.email, name: accountData.profile.fullname }
+        : undefined
+    );
+    this.setUserAnalytics();
+    this.routeUserToNextPage(params);
+  }
+
+  private async fetchAccountData(): Promise<AccountSuccess | undefined> {
+    try {
+      const response = await classroomio.account.$get();
+      const result = (await response.json()) as AccountResponse;
+
+      if (!result?.success) {
+        this.error = JSON.stringify(result);
+        logout();
+        return undefined;
+      }
+
+      return result;
+    } catch (error) {
+      console.error('Error fetching account:', error);
+      this.error = error instanceof Error ? error.message : 'Error fetching account';
+      logout();
+      return undefined;
+    }
+  }
+
+  private showPendingOrgInvite(pendingInvite: PendingOrgInvite) {
+    this.pendingOrgInvite = pendingInvite;
+    this.showPendingInviteModal = true;
+  }
+
   /**
    * On tenant sites, link an existing roster row or auto-enroll as STUDENT —
    * unless the user has a pending org invite, in which case we surface accept UI.
    * Returns true when a new membership was created or an email-only row was linked.
    */
-  private async ensureTenantMembership(orgId: string): Promise<boolean> {
-    const pendingInvite = await this.fetchPendingOrgInvite(orgId);
+  private async ensureTenantMembership(
+    orgId: string,
+    options?: { knownPendingInvite?: PendingOrgInvite | null }
+  ): Promise<boolean> {
+    const pendingInvite =
+      options && 'knownPendingInvite' in options
+        ? (options.knownPendingInvite ?? null)
+        : await this.fetchPendingOrgInvite(orgId);
+
     if (pendingInvite) {
-      this.pendingOrgInvite = pendingInvite;
-      this.showPendingInviteModal = true;
+      this.showPendingOrgInvite(pendingInvite);
       return false;
     }
 
@@ -179,8 +230,7 @@ class AppInitApi extends BaseApi {
       if (result.success && result.data?.pendingInvite) {
         const pendingInvite = await this.fetchPendingOrgInvite(orgId);
         if (pendingInvite) {
-          this.pendingOrgInvite = pendingInvite;
-          this.showPendingInviteModal = true;
+          this.showPendingOrgInvite(pendingInvite);
         }
 
         return false;
@@ -216,11 +266,11 @@ class AppInitApi extends BaseApi {
 
     const isMember = this.data.organizations.some((org) => org.siteName === params.orgSiteName);
     if (params.isOrgSite && params.orgId && !isMember) {
-      const enrolled = await this.ensureTenantMembership(params.orgId);
+      const pendingInvite = await this.fetchPendingOrgInvite(params.orgId);
+      const enrolled = await this.ensureTenantMembership(params.orgId, { knownPendingInvite: pendingInvite });
       if (enrolled) {
-        const response = await classroomio.account.$get();
-        const accountData = (await response.json()) as AccountResponse;
-        if (accountData?.success) {
+        const accountData = await this.fetchAccountData();
+        if (accountData) {
           this.data = accountData;
         }
       }
