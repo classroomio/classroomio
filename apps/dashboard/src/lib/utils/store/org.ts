@@ -67,6 +67,21 @@ export const isOrgAdmin = derived(currentOrg, ($currentOrg) => {
 
   return $currentOrg.roleId === ROLE.ADMIN;
 });
+
+/** True when the user can manage an org (admin dashboard), not a student-only member. */
+export function isOrgManagerRole(roleId: number): boolean {
+  return roleId === ROLE.ADMIN || roleId === ROLE.TUTOR;
+}
+
+/** Orgs where the user is ADMIN or TUTOR — eligible for the admin org switcher. */
+export const managedOrgs = derived(orgs, ($orgs) => $orgs.filter((org) => isOrgManagerRole(org.roleId)));
+
+export const isOrgTeamMember = derived(currentOrg, ($currentOrg) => {
+  if ($currentOrg.roleId === 0) return null;
+
+  return isOrgManagerRole($currentOrg.roleId);
+});
+
 const getActivePlan = (org: AccountOrg) => {
   return org.plans.find((p) => p.isActive);
 };

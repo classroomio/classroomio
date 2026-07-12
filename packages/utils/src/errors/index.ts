@@ -1,6 +1,7 @@
 import { ErrorCodes, type ErrorCode } from '../constants';
 
 export { ErrorCodes, type ErrorCode };
+export { getPostgresError, isUniqueConstraintViolation, type PostgresErrorDetails } from './postgres-error';
 
 /**
  * Standard HTTP status code value. Kept as a structural `number` so this

@@ -1,7 +1,7 @@
 export type AppOrgParams = {
   isOrgSite: boolean;
   orgSiteName: string;
-  /** Tenant org id from `getOrgSiteInfo`; used to auto-enroll on org sites. */
+  /** Tenant org id from `getOrgSiteInfo`; used to auto-join on org sites. */
   orgId?: string | null;
 };
 
