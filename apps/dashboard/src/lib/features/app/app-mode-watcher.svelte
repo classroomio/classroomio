@@ -1,19 +1,8 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import {
-    ModeWatcher,
-    createInitialModeExpression,
-    setMode,
-    systemPrefersMode,
-    userPrefersMode
-  } from '@cio/ui/base/dark-mode';
+  import { ModeWatcher, setMode, systemPrefersMode, userPrefersMode } from '@cio/ui/base/dark-mode';
 
-  import { MODE_STORAGE_KEY, readStoredColorMode } from '$lib/utils/functions/color-mode';
-
-  const initialModeScript = createInitialModeExpression({
-    defaultMode: 'light',
-    modeStorageKey: MODE_STORAGE_KEY
-  });
+  import { readStoredColorMode } from '$lib/utils/functions/color-mode';
 
   $effect(() => {
     if (!browser) {
@@ -29,9 +18,4 @@
   });
 </script>
 
-<svelte:head>
-  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-  {@html initialModeScript}
-</svelte:head>
-
-<ModeWatcher defaultMode="light" disableHeadScriptInjection />
+<ModeWatcher defaultMode="light" />
