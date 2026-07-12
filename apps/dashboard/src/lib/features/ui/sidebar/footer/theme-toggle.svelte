@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
   import { MonitorIcon, SunIcon, MoonIcon } from '@lucide/svelte';
-  import { userPrefersMode, setMode } from '@cio/ui/base/dark-mode';
+  import { setMode, systemPrefersMode, userPrefersMode } from '@cio/ui/base/dark-mode';
 
   type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -14,17 +14,16 @@
   const activeMode = $derived(userPrefersMode.current ?? 'system');
 
   const handleThemeChange = (newMode: ThemeMode) => {
-    if (newMode === 'light') {
-      setMode('light');
+    const shouldTrackSystem = newMode === 'system';
+    systemPrefersMode.tracking(shouldTrackSystem);
+
+    if (shouldTrackSystem) {
+      systemPrefersMode.query();
+      setMode('system');
       return;
     }
 
-    if (newMode === 'dark') {
-      setMode('dark');
-      return;
-    }
-
-    setMode('system');
+    setMode(newMode);
   };
 </script>
 

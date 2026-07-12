@@ -7,6 +7,34 @@
 
     <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
 
+    <script>
+      (function () {
+        try {
+          var storageKey = 'mode-watcher-mode';
+          var defaultMode = 'light';
+          var stored = localStorage.getItem(storageKey);
+          var mode =
+            stored === 'light' || stored === 'dark' || stored === 'system' ? stored : defaultMode;
+          var root = document.documentElement;
+          var isLight =
+            mode === 'light' ||
+            (mode === 'system' && window.matchMedia('(prefers-color-scheme: light)').matches);
+
+          if (isLight) {
+            root.classList.remove('dark');
+            root.style.colorScheme = 'light';
+          } else {
+            root.classList.add('dark');
+            root.style.colorScheme = 'dark';
+          }
+
+          localStorage.setItem(storageKey, mode);
+        } catch (error) {
+          // Ignore storage or media-query errors in restricted environments.
+        }
+      })();
+    </script>
+
     %sveltekit.head%
   </head>
 

@@ -4,18 +4,29 @@
 
   import { readStoredColorMode } from '$lib/utils/functions/color-mode';
 
+  function syncColorModeTracking() {
+    const shouldTrackSystem = userPrefersMode.current === 'system';
+    systemPrefersMode.tracking(shouldTrackSystem);
+
+    if (shouldTrackSystem) {
+      systemPrefersMode.query();
+    }
+  }
+
   $effect(() => {
     if (!browser) {
       return;
     }
 
     const storedPreference = readStoredColorMode();
-    systemPrefersMode.tracking(storedPreference === 'system');
+    userPrefersMode.current;
 
     if (storedPreference !== 'system' && userPrefersMode.current !== storedPreference) {
       setMode(storedPreference);
     }
+
+    syncColorModeTracking();
   });
 </script>
 
-<ModeWatcher defaultMode="light" track={false} />
+<ModeWatcher defaultMode="light" disableHeadScriptInjection track={false} />
