@@ -37,7 +37,7 @@
 {/snippet}
 
 <div
-  class="ui:relative ui:z-10 ui:flex ui:items-center ui:rounded-full ui:border ui:p-1 ui:bg-white ui:dark:bg-slate-950 ui:dark:border-slate-800"
+  class="ui:relative ui:z-10 ui:mx-auto ui:flex ui:w-fit ui:max-w-full ui:items-center ui:rounded-full ui:border ui:p-1 ui:bg-white ui:dark:bg-slate-950 ui:dark:border-slate-800"
 >
   {@render period_button(!isYearly, true)}
 
@@ -48,7 +48,7 @@
       {#snippet children(isHovered)}
         <Badge
           variant="default"
-          class="ui:absolute ui:-top-3 ui:-right-4 ui:rotate-5 ui:shadow-2xl ui:bg-linear-to-r ui:from-pink-500 ui:to-orange-500 ui:px-2 ui:py-0.5"
+          class="ui:absolute ui:-top-3 ui:right-0 ui:rotate-5 ui:shadow-2xl ui:bg-linear-to-r ui:from-pink-500 ui:to-orange-500 ui:px-2 ui:py-0.5 ui:sm:-right-4"
         >
           <PremiumIcon size={8} {isHovered} class="ui:text-white! ui:mr-1" />
           <span class="ui:text-[10px] ui:font-bold ui:text-white">{saveLabel}</span>
