@@ -568,6 +568,58 @@ export const getOrganizationTeam = async (orgId: string) => {
 };
 
 /**
+ * Counts active organization members with the student role. Used to enforce per-plan student caps.
+ */
+export async function countActiveStudents(orgId: string): Promise<number> {
+  try {
+    const [row] = await db
+      .select({ count: count(schema.organizationmember.id) })
+      .from(schema.organizationmember)
+      .where(
+        and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.roleId, ROLE.STUDENT))
+      );
+
+    return Number(row?.count ?? 0);
+  } catch (error) {
+    console.error('countActiveStudents error:', error);
+    throw new Error('Failed to count active students');
+  }
+}
+
+/**
+ * Gets verified admin emails for an organization. Used to notify admins about plan-limit events.
+ */
+export async function getOrganizationAdminEmails(orgId: string): Promise<Array<{ email: string; fullname: string }>> {
+  try {
+    const result = await db
+      .select({
+        email: schema.organizationmember.email,
+        profileEmail: schema.profile.email,
+        fullname: schema.profile.fullname
+      })
+      .from(schema.organizationmember)
+      .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.roleId, ROLE.ADMIN),
+          eq(schema.organizationmember.verified, true)
+        )
+      );
+
+    return result
+      .map((member) => ({
+        email: member.profileEmail || member.email || '',
+        fullname: member.fullname || ''
+      }))
+      .filter((member) => member.email);
+  } catch (error) {
+    console.error('getOrganizationAdminEmails error:', error);
+    throw new Error('Failed to get organization admin emails');
+  }
+}
+
+/**
  * Gets organization audience (all organization members with student role).
  * Includes invited members without a profile (LEFT JOIN profile).
  * Row id is organizationmember.id; use profileId for profile-backed actions when present.

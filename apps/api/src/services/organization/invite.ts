@@ -28,6 +28,7 @@ import { ROLE } from '@cio/utils/constants';
 import type { TNewOrganizationInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
+import { assertStudentCapacityOrThrow } from './student-limit';
 import { getAppBaseUrl } from '@cio/core/config/dashboard-url';
 import { parseCourseIdsFromInviteMetadata, parseCohortIdsFromInviteMetadata } from '@api/utils/org';
 import { getProfileById, markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
@@ -135,6 +136,10 @@ async function syncOrgMemberForOrgInvite(
     });
 
     return;
+  }
+
+  if (params.roleId === ROLE.STUDENT) {
+    await assertStudentCapacityOrThrow(params.organizationId, 1);
   }
 
   await createOrganizationMember(

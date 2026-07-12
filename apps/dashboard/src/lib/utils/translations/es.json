@@ -709,7 +709,8 @@
       "cancel": "Cancelar",
       "confirm": "Eliminar",
       "snackbar_success": "Miembro eliminado"
-    }
+    },
+    "import_limit_reached": "Has alcanzado el límite de estudiantes de tu plan. Actualice para importar más estudiantes."
   },
   "community": {
     "title": "Comunidad",
@@ -894,7 +895,8 @@
           "back_to_course": "volver al curso",
           "join_course": "Unirse al curso",
           "enrolled_success": "Estás inscrito en este curso.",
-          "enrolled_verify_email": "¡Estás inscrito! Verifica tu correo electrónico para acceder a este curso."
+          "enrolled_verify_email": "¡Estás inscrito! Verifica tu correo electrónico para acceder a este curso.",
+          "student_limit_reached": "{orgName} ha alcanzado su capacidad de estudiantes. Comuníquese con el administrador de su organización."
         },
         "pricing_section": {
           "free": "Gratis",
@@ -1226,7 +1228,8 @@
             "multi_use_7d": "Multiuso (7 días)",
             "multi_use_30d": "Multiuso (30 días)",
             "custom": "personalizado"
-          }
+          },
+          "student_limit_reached": "Has alcanzado el límite de estudiantes de tu plan. Actualice para invitar a más estudiantes."
         }
       },
       "marks": {
@@ -2811,7 +2814,10 @@
     "stats": "Estadísticas",
     "analytics": "Analítica",
     "compliance": "Cumplimiento",
-    "cohorts": "Programas"
+    "cohorts": "Programas",
+    "upgrade_now": "Actualiza ahora",
+    "upgrade_students": "{studentCount} de {studentLimit} estudiantes",
+    "upgrade_left": "{count} restante"
   },
   "media_manager": {
     "page_title": "Administrador de medios - ClassroomIO",
@@ -3636,7 +3642,8 @@
           "widgets": "widgets",
           "tags": "Etiquetas",
           "students": "estudiantes",
-          "settings": "Configuración"
+          "settings": "Configuración",
+          "cohorts": "Cohortes"
         }
       }
     },

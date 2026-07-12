@@ -21,8 +21,9 @@
   import { shortenName } from '$lib/utils/functions/string';
   import { ROLE } from '@cio/utils/constants';
   import { ROLE_LABEL } from '$lib/utils/constants/roles';
-  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { isOrgAdmin, isStudentLimitReached } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
+  import { UpgradeBanner } from '$features/ui';
   import InviteMembersModal from '$features/cohort/components/invite-members-modal.svelte';
   import GoalsOverviewTiles from '$features/cohort/components/goals/goals-overview-tiles.svelte';
   import { cohortApi } from '$features/cohort/api';
@@ -148,6 +149,10 @@
 
   <Page.Body>
     {#snippet child()}
+      {#if $isStudentLimitReached}
+        <UpgradeBanner className="mb-2">{$t('course.navItem.people.invite_modal.student_limit_reached')}</UpgradeBanner>
+      {/if}
+
       <GoalsOverviewTiles cohortId={data.cohortId} />
 
       <section class="space-y-2">

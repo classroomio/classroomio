@@ -709,7 +709,8 @@
       "cancel": "Abbrechen",
       "confirm": "Löschen",
       "snackbar_success": "Mitglied gelöscht"
-    }
+    },
+    "import_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um mehr Schüler zu importieren."
   },
   "community": {
     "title": "Gemeinschaft",
@@ -894,7 +895,8 @@
           "back_to_course": "Zurück zum Kurs",
           "join_course": "Nehmen Sie am Kurs teil",
           "enrolled_success": "Sie sind für diesen Kurs eingeschrieben.",
-          "enrolled_verify_email": "Sie sind eingeschrieben! Bestätigen Sie Ihre E-Mail, um auf diesen Kurs zuzugreifen."
+          "enrolled_verify_email": "Sie sind eingeschrieben! Bestätigen Sie Ihre E-Mail, um auf diesen Kurs zuzugreifen.",
+          "student_limit_reached": "{orgName} hat seine Studentenkapazität erreicht. Bitte wenden Sie sich an den Administrator Ihrer Organisation."
         },
         "pricing_section": {
           "free": "Kostenlos",
@@ -1226,7 +1228,8 @@
             "multi_use_7d": "Mehrfachnutzung (7 Tage)",
             "multi_use_30d": "Mehrfachnutzung (30 Tage)",
             "custom": "Benutzerdefiniert"
-          }
+          },
+          "student_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um weitere Schüler einzuladen."
         }
       },
       "marks": {
@@ -2811,7 +2814,10 @@
     "stats": "Statistiken",
     "analytics": "Analytik",
     "compliance": "Compliance",
-    "cohorts": "Programme"
+    "cohorts": "Programme",
+    "upgrade_now": "Jetzt upgraden",
+    "upgrade_students": "{studentCount} von {studentLimit} Studenten",
+    "upgrade_left": "{count} übrig"
   },
   "media_manager": {
     "page_title": "Medienmanager - ClassroomIO",
@@ -3636,7 +3642,8 @@
           "widgets": "Widgets",
           "tags": "Schlagworte",
           "students": "Studenten",
-          "settings": "Einstellungen"
+          "settings": "Einstellungen",
+          "cohorts": "Kohorten"
         }
       }
     },

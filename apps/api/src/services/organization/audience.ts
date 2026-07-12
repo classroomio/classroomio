@@ -28,6 +28,7 @@ import { updateOrganizationAudienceMember } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { assertStudentCapacityOrThrow } from './student-limit';
 import { getProfilesByEmails } from '@cio/db/queries/auth';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 import { getWelcomeSessionIcs } from '../course/session-invite';
@@ -528,6 +529,8 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
   let importEmailsFailed = 0;
 
   if (newEmails.length > 0) {
+    await assertStudentCapacityOrThrow(orgId, newEmails.length);
+
     await createOrganizationMembers(
       newEmails.map((email) => ({
         organizationId: orgId,
