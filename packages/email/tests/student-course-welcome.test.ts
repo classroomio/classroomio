@@ -8,7 +8,7 @@ describe('studentCourseWelcomeEmail', () => {
 
     expect(typeof resolveSubject).toBe('function');
     expect((resolveSubject as (fields: { courseName: string }) => string)({ courseName: 'React Basics' })).toBe(
-      'You have access to React Basics — sign in to get started'
+      'You have access to React Basics course'
     );
   });
 });

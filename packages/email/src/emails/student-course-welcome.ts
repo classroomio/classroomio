@@ -6,7 +6,7 @@ import { ZEmailBranding } from '../core/branding';
 
 export const studentCourseWelcomeEmail = defineEmail({
   id: 'studentCourseWelcome',
-  subject: (fields) => `You have access to ${fields.courseName} — sign in to get started`,
+  subject: (fields) => `You have access to ${fields.courseName} course`,
   schema: z.object({
     orgName: z.string().min(1),
     courseName: z.string().min(1),
