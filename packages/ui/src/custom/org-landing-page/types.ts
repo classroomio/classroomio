@@ -214,6 +214,13 @@ export type CourseInstructor = {
   coursesNo?: number;
 };
 
+export type LandingPrimaryAction = {
+  label: string;
+  href?: string;
+  disabled?: boolean;
+  onclick?: (event: MouseEvent) => void;
+};
+
 export type CoursePricing = {
   cost: number;
   currency: string;
@@ -221,6 +228,7 @@ export type CoursePricing = {
   showDiscount?: boolean;
   ctaLabel: string;
   ctaHref?: string;
+  ctaOnclick?: (event: MouseEvent) => void;
   features?: string[];
   reward?: {
     show: boolean;
@@ -307,7 +315,7 @@ export interface CourseLandingPageProps {
   hero: {
     heading: string;
     subheading: string;
-    primaryAction: { label: string; href: string; disabled?: boolean };
+    primaryAction: LandingPrimaryAction;
     secondaryAction?: { label: string; href: string };
     image?: string;
     stats?: Array<{ label: string; value: string }>;
@@ -339,7 +347,7 @@ export interface OrgLandingPageProps {
   hero: {
     heading: string;
     subheading: string;
-    primaryAction: { label: string; href: string; disabled?: boolean };
+    primaryAction: LandingPrimaryAction;
     secondaryAction?: { label: string; href: string };
     image?: string;
     stats?: Array<{ label: string; value: string }>;

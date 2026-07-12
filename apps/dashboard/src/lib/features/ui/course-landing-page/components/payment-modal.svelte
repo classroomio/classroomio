@@ -32,9 +32,18 @@
 
   let step = $state(STEPS.STEP_1);
 
+  $effect(() => {
+    if (open) {
+      return;
+    }
+
+    step = STEPS.STEP_1;
+    fields = { fullname: '', email: '' };
+    errors = { fullname: '', email: '' };
+  });
+
   async function onSubmit() {
     errors = coursePaymentValidation(fields);
-    console.log('coursePayment errors', errors);
 
     if (Object.keys(errors).length) {
       return;
