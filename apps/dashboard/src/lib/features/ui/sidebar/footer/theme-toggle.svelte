@@ -3,27 +3,29 @@
   import { MonitorIcon, SunIcon, MoonIcon } from '@lucide/svelte';
   import { userPrefersMode, resetMode, setMode } from '@cio/ui/base/dark-mode';
 
-  type UserPrefersMode = typeof userPrefersMode.current;
+  type ThemeMode = 'light' | 'dark' | 'system';
 
-  const themes: { mode: UserPrefersMode; icon: typeof MonitorIcon }[] = [
+  const themes: { mode: ThemeMode; icon: typeof MonitorIcon }[] = [
     { mode: 'light', icon: SunIcon },
     { mode: 'dark', icon: MoonIcon },
     { mode: 'system', icon: MonitorIcon }
   ];
 
-  const handleThemeChange = (newMode: UserPrefersMode) => {
+  const activeMode = $derived(userPrefersMode.current ?? 'system');
+
+  const handleThemeChange = (newMode: ThemeMode) => {
     if (newMode === 'light') {
       setMode('light');
-    } else if (newMode === 'dark') {
-      setMode('dark');
-    } else {
-      resetMode();
+      return;
     }
-  };
 
-  $effect(() => {
-    console.log('mode.current', userPrefersMode.current);
-  });
+    if (newMode === 'dark') {
+      setMode('dark');
+      return;
+    }
+
+    resetMode();
+  };
 </script>
 
 <div class="flex items-center justify-between gap-8">
@@ -31,11 +33,13 @@
 
   <div class="flex items-center gap-1 rounded-md backdrop-blur-sm">
     {#each themes as theme (theme.mode)}
-      {@const isActive = userPrefersMode.current === theme.mode || userPrefersMode.current === undefined}
       <Button
         size="icon-sm"
-        variant={isActive ? 'outline' : 'ghost'}
-        class={['size-4 rounded-md p-1 transition-all duration-200', isActive && 'shadow-primary/20 shadow-lg']}
+        variant={activeMode === theme.mode ? 'outline' : 'ghost'}
+        class={[
+          'size-4 rounded-md p-1 transition-all duration-200',
+          activeMode === theme.mode && 'shadow-primary/20 shadow-lg'
+        ]}
         title={theme.mode}
         onclick={() => handleThemeChange(theme.mode)}
       >
