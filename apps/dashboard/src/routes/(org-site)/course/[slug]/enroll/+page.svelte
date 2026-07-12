@@ -13,6 +13,7 @@
   import { resolve } from '$app/paths';
   import { authClient } from '$lib/utils/services/auth/client';
   import { appInitApi } from '$features/app/init.svelte';
+  import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
 
   let { data } = $props();
 
@@ -27,19 +28,6 @@
   const sessionUser = $derived($session.data?.user ?? null);
   const isLoggedIn = $derived(sessionReady && Boolean(sessionUser));
   const isEmailVerified = $derived(Boolean($profile.isEmailVerified || sessionUser?.emailVerified));
-
-  function resolvePostEnrollRedirect(enrollResult: { redirectTo?: string } | undefined): string {
-    if (enrollResult?.redirectTo) {
-      return enrollResult.redirectTo;
-    }
-
-    const slug = data.course?.slug;
-    if (slug) {
-      return `/course/${slug}`;
-    }
-
-    return '/lms';
-  }
 
   async function sendVerificationEmail() {
     const email = $profile.email || sessionUser?.email;
@@ -150,7 +138,7 @@
       }
 
       navigatingAway = true;
-      window.location.href = resolvePostEnrollRedirect(result.data);
+      await goto(resolve(getStudentCourseContinuePath(data.course.id), {}));
     } finally {
       enrollmentInFlight = false;
       if (!navigatingAway) {
