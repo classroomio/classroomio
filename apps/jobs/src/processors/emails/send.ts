@@ -23,6 +23,7 @@ export async function processSendEmail(rawPayload: unknown): Promise<SendResult>
       fields: payload.fields as never,
       from: payload.from,
       replyTo: payload.replyTo,
+      subject: payload.subject,
       ics: payload.ics
     });
     const result = extractProviderId(responses);

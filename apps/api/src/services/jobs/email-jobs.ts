@@ -20,6 +20,8 @@ export interface EnqueueTemplateEmailInput<TId extends EmailId> extends CommonOp
   fields: z.infer<EmailSchemaFor<TId>>;
   from?: string;
   replyTo?: string;
+  /** Override the template's default subject (e.g. org-scoped transactional mail). */
+  subject?: string;
   /** Optional iCalendar (.ics) body attached as a text/calendar part. */
   ics?: string;
 }
@@ -84,6 +86,7 @@ export async function enqueueTransactionalEmail<TId extends EmailId>(
         fields: validatedFields,
         from: input.from,
         replyTo: input.replyTo,
+        subject: input.subject,
         ics: input.ics
       },
       { idempotencyKey: recipientKey(input.idempotencyKey, recipient, recipients.length) }
