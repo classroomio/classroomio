@@ -33,7 +33,13 @@
 </script>
 
 <div class="flex w-full flex-col items-center">
-  <UploadImage bind:avatar src={review.avatar_url} widthHeight="w-20 h-20" errorMessage={errors.avatar_url} />
+  <UploadImage
+    bind:avatar
+    src={review.avatar_url}
+    widthHeight="w-20 h-20"
+    errorMessage={errors.avatar_url}
+    elevatedDialog
+  />
 
   <InputField
     className="mt-2 w-full"

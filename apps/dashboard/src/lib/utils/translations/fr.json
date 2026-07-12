@@ -256,7 +256,8 @@
         "file_size": "La taille du fichier ne doit pas dépasser 500 Ko",
         "try_again": "Réessayez",
         "label": "Télécharger une image",
-        "fetch_error": "Erreur lors de la récupération des images depuis Unsplash"
+        "fetch_error": "Erreur lors de la récupération des images depuis Unsplash",
+        "upload_failed": "Échec du téléchargement de l'image. Veuillez réessayer."
       }
     },
     "team_members": {

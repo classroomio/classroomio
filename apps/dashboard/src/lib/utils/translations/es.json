@@ -256,7 +256,8 @@
         "file_size": "El tamaño del archivo no debe ser superior a 500 kb.",
         "try_again": "Inténtalo de nuevo",
         "label": "Subir imagen",
-        "fetch_error": "Error al recuperar imágenes de Unsplash"
+        "fetch_error": "Error al recuperar imágenes de Unsplash",
+        "upload_failed": "No se pudo cargar la imagen. Por favor inténtalo de nuevo."
       }
     },
     "team_members": {

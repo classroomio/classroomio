@@ -256,7 +256,8 @@
         "file_size": "Filstørrelsen må ikke være større end 500 kb",
         "try_again": "Prøv igen",
         "label": "Upload billede",
-        "fetch_error": "Fejl ved hentning af billeder fra Unsplash"
+        "fetch_error": "Fejl ved hentning af billeder fra Unsplash",
+        "upload_failed": "Kunne ikke uploade billede. Prøv venligst igen."
       }
     },
     "team_members": {

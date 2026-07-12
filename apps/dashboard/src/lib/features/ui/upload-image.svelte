@@ -19,6 +19,8 @@
     flexDirection?: string;
     isUploading?: boolean;
     previewVariant?: 'avatar' | 'signature';
+    /** Raise the crop dialog above full-screen takeover surfaces (e.g. the z-250 landing-page editor). */
+    elevatedDialog?: boolean;
     change?: () => void;
   }
 
@@ -33,6 +35,7 @@
     flexDirection = 'flex-col',
     isUploading = $bindable(false),
     previewVariant = 'avatar',
+    elevatedDialog = false,
     change
   }: Props = $props();
 
@@ -147,7 +150,7 @@
       {/if}
     </div>
 
-    <ImageCropper.Dialog>
+    <ImageCropper.Dialog class={elevatedDialog ? 'z-[300]!' : undefined}>
       <ImageCropper.Cropper cropShape={shape === 'rounded-full' ? 'round' : 'rect'} />
       <ImageCropper.Controls>
         {#if isSignaturePreview}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import get from 'lodash/get';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
@@ -8,6 +9,7 @@
   import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   interface Props {
     course: Course;
@@ -36,18 +38,19 @@
   let isUploading = $state(false);
 
   async function onAvatarChange(_avatar: File | undefined) {
-    if (!_avatar || !course.id) return;
+    const courseId = untrack(() => course.id);
+    if (!_avatar || !courseId) return;
 
     isUploading = true;
-    const logo = await uploadImage(_avatar);
 
-    if (!logo) {
+    try {
+      imgUrl = await uploadImage(_avatar);
+    } catch (error) {
+      console.error('Failed to upload instructor avatar:', error);
+      snackbar.error('snackbar.landing_page_settings.error.upload_failed');
+    } finally {
       isUploading = false;
-      return;
     }
-
-    imgUrl = logo;
-    isUploading = false;
   }
 
   $effect(() => {
@@ -73,7 +76,7 @@
     {$t('course.navItem.landing_page.editor.instructor_form.upload')}
   </label>
   <div class="flex w-full justify-center">
-    <UploadImage bind:avatar src={imgUrl} bind:isUploading />
+    <UploadImage bind:avatar src={imgUrl} bind:isUploading elevatedDialog />
   </div>
 </div>
 

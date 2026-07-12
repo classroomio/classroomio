@@ -53,7 +53,7 @@
     <p class="text-center font-bold">
       {$t('course.navItem.landing_page.editor.certificate_form.upload_template')}
     </p>
-    <UploadImage bind:avatar src={templateUrl} shape="rounded-none" bind:isUploading />
+    <UploadImage bind:avatar src={templateUrl} shape="rounded-none" bind:isUploading elevatedDialog />
   </div>
 
   <div class="mt-5 flex flex-col gap-2">

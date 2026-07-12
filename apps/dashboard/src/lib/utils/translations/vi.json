@@ -256,7 +256,8 @@
         "file_size": "Kích thước tệp không được lớn hơn 500kb",
         "try_again": "Thử lại",
         "label": "Tải hình ảnh lên",
-        "fetch_error": "Lỗi tìm nạp hình ảnh từ Unsplash"
+        "fetch_error": "Lỗi tìm nạp hình ảnh từ Unsplash",
+        "upload_failed": "Không thể tải lên hình ảnh. Vui lòng thử lại."
       }
     },
     "team_members": {
