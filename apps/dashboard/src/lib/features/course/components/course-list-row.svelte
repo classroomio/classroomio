@@ -5,6 +5,7 @@
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import { cn } from '@cio/ui/tools';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { ContentType } from '@cio/utils/constants/content';
@@ -114,31 +115,55 @@
     return `Updated ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
   });
 
+  const courseUrl = $derived.by(() => {
+    if (isExplore && onExploreClick) {
+      return undefined;
+    }
+
+    if (isExplore) {
+      if (!slug.trim()) {
+        return undefined;
+      }
+
+      return resolve(`/course/${slug}`, {});
+    }
+
+    if (isLMS) {
+      return resolve(`/courses/${id}/lessons?next=true`, {});
+    }
+
+    return resolve(`/courses/${id}`, {});
+  });
+
   function handleRowClick() {
     if (isExplore && onExploreClick) {
       onExploreClick();
       return;
     }
-    if (isExplore) {
-      goto(resolve(`/course/${slug}`, {}));
+
+    if (!courseUrl) {
       return;
     }
-    if (isLMS) {
-      goto(resolve(`/courses/${id}/lessons?next=true`, {}));
+
+    goto(courseUrl);
+  }
+
+  function handleRowKeydown(event: KeyboardEvent) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
       return;
     }
-    goto(resolve(`/courses/${id}`, {}));
+
+    event.preventDefault();
+    handleRowClick();
+  }
+
+  function stopRowNavigation(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
   }
 </script>
 
-<ResourceListRow.Root
-  variant="default"
-  size="sm"
-  align="start"
-  class="cursor-pointer py-4!"
-  onclick={handleRowClick}
-  role="row"
->
+{#snippet rowContent()}
   <div
     class="grid w-full grid-cols-1 items-start gap-x-3 gap-y-2 @3xl:grid-cols-[var(--row-cols)]"
     style="--row-cols: {gridTemplateColumns}"
@@ -265,8 +290,8 @@
           <Button
             variant="outline"
             size="sm"
-            onclick={(e) => {
-              e.stopPropagation();
+            onclick={(event) => {
+              stopRowNavigation(event);
               onExploreClick?.();
             }}
           >
@@ -282,7 +307,7 @@
                   size="icon"
                   class="size-8"
                   aria-label={$t('courses.course_card.actions_menu_aria')}
-                  onclick={(e) => e.stopPropagation()}
+                  onclick={stopRowNavigation}
                 >
                   <EllipsisVerticalIcon class="size-4" />
                 </Button>
@@ -317,4 +342,25 @@
       </div>
     {/if}
   </div>
+{/snippet}
+
+<ResourceListRow.Root variant="default" size="sm" align="start" class="cursor-pointer py-4!">
+  {#snippet child({ props })}
+    {#if courseUrl}
+      <a href={courseUrl} {...props} class={cn('block', props.class as string)}>
+        {@render rowContent()}
+      </a>
+    {:else}
+      <div
+        {...props}
+        class={cn('block', props.class as string)}
+        role="button"
+        tabindex="0"
+        onclick={handleRowClick}
+        onkeydown={handleRowKeydown}
+      >
+        {@render rowContent()}
+      </div>
+    {/if}
+  {/snippet}
 </ResourceListRow.Root>
