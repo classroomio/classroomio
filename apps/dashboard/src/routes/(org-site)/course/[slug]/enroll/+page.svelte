@@ -64,6 +64,14 @@
           data.course?.status === 'ACTIVE' &&
           Boolean(data.course?.isPublished)
   );
+  const isPreparingEnrollment = $derived(
+    isLoggedIn &&
+      canJoinCourse &&
+      !enrollmentSucceeded &&
+      !enrolledPendingVerification &&
+      !appInitApi.isInitializedAndReady
+  );
+  const joinButtonLoading = $derived(!sessionReady || loading || enrollmentInFlight || isPreparingEnrollment);
 
   function getBlockedMessage(): string {
     if (blocksNewSignup) {
@@ -211,13 +219,7 @@
   <meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<AuthUI
-  isLogin={false}
-  {handleSubmit}
-  isLoading={loading || !sessionReady || (isLoggedIn && canJoinCourse && enrollmentInFlight)}
-  showOnlyContent={true}
-  showLogo={true}
->
+<AuthUI isLogin={false} {handleSubmit} isLoading={joinButtonLoading} showOnlyContent={true} showLogo={true}>
   <div class="mt-0 w-full">
     <h3 class="mt-0 mb-4 text-center text-lg font-medium dark:text-white">{data.course?.title}</h3>
     <p class="text-center text-sm font-light dark:text-white">{data.course?.description}</p>
@@ -248,9 +250,9 @@
     {/if}
   </div>
 
-  {#if !enrolledPendingVerification && (!isLoggedIn || (isLoggedIn && canJoinCourse && !enrollmentInFlight))}
+  {#if !enrolledPendingVerification}
     <div class="my-4 flex w-full items-center justify-center">
-      <Button type="submit" disabled={!canJoinCourse || loading || !sessionReady || enrollmentInFlight} {loading}>
+      <Button type="submit" disabled={!canJoinCourse || joinButtonLoading} loading={joinButtonLoading}>
         {$t('course.navItem.landing_page.enroll_page.join_course')}
       </Button>
     </div>
