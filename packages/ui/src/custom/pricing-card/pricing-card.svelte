@@ -39,7 +39,7 @@
 
 <div
   class={cn(
-    'ui:relative ui:flex ui:max-w-sm ui:flex-col ui:rounded-lg ui:border ui:border-border ui:bg-card ui:p-8',
+    'ui:relative ui:flex ui:max-w-sm ui:flex-col ui:rounded-lg ui:border ui:border-border ui:bg-card ui:p-4 ui:sm:p-8',
     className
   )}
 >
@@ -71,7 +71,7 @@
       {#snippet children(isHovered: boolean)}
         <Button
           variant={isPopular ? 'default' : 'outline'}
-          class="ui:w-full ui:py-4 ui:text-base ui:transition-all"
+          class="ui:w-full ui:py-3 ui:text-base ui:transition-all ui:sm:py-4"
           disabled={isDisabled || isLoading}
           loading={isLoading}
           onclick={() => {
