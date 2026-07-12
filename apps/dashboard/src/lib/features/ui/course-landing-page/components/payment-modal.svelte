@@ -32,15 +32,21 @@
 
   let step = $state(STEPS.STEP_1);
 
-  $effect(() => {
-    if (open) {
-      return;
-    }
-
+  function resetForm() {
     step = STEPS.STEP_1;
-    fields = { fullname: '', email: '' };
-    errors = { fullname: '', email: '' };
-  });
+    fields.fullname = '';
+    fields.email = '';
+    errors.fullname = '';
+    errors.email = '';
+  }
+
+  function handleOpenChange(isOpen: boolean) {
+    open = isOpen;
+
+    if (!isOpen) {
+      resetForm();
+    }
+  }
 
   async function onSubmit() {
     errors = coursePaymentValidation(fields);
@@ -60,13 +66,11 @@
   }
 
   function onClickPaymentLink() {
-    fields.fullname = '';
-    fields.email = '';
     open = false;
   }
 </script>
 
-<Dialog.Root bind:open>
+<Dialog.Root {open} onOpenChange={handleOpenChange}>
   <Dialog.Content class="w-96">
     <Dialog.Header>
       <Dialog.Title>Process course payment</Dialog.Title>
