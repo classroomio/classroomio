@@ -243,7 +243,7 @@ export function buildCourseLandingPageProps(
       averageRating
     },
     pricing: {
-      cost: calculatedCost,
+      cost: course.cost ?? 0,
       currency: course.currency ?? 'USD',
       discount: metadata?.discount,
       showDiscount: metadata?.showDiscount,
