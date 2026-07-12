@@ -20,13 +20,6 @@ export const ROUTE = {
   VERIFY_EMAIL_ERROR: '/verify-email-error'
 };
 
-export const PUBLIC_ORG_SITE_LIGHT_MODE_ROUTES = [
-  `^${ROUTE.HOME}$`,
-  `^${ROUTE.COURSES}/?$`,
-  `^${ROUTE.COURSE}/[^/]+/?$`,
-  `^${ROUTE.COURSE}/[^/]+/enroll/?$`
-] as const;
-
 export const PUBLIC_ROUTES = [
   `^${ROUTE.HOME}$`,
   ROUTE.LOGIN,
