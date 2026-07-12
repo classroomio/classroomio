@@ -6,7 +6,7 @@ import type { EmailId } from '../utils/types';
  * Base email template interface
  */
 export interface EmailTemplate<TSchema extends z.ZodType = z.ZodType> {
-  subject: string;
+  subject: string | ((fields: z.infer<TSchema>) => string);
   schema: TSchema;
   render: (fields: z.infer<TSchema>) => string;
   from?: string;
@@ -47,7 +47,7 @@ export interface SendTemplateConfig<TSchema extends z.ZodType = z.ZodType> exten
  */
 export interface DefineEmailConfig<TSchema extends z.ZodType = z.ZodType> {
   id: EmailId;
-  subject: string;
+  subject: string | ((fields: z.infer<TSchema>) => string);
   schema: TSchema;
   render: (fields: z.infer<TSchema>) => string;
   from?: string;

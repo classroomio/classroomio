@@ -2,6 +2,7 @@
   import type { OrgLandingPageProps, CourseItem } from '../types';
   import type { Snippet } from 'svelte';
   import { Button } from '../../../base/button';
+  import CoursePrimaryAction from '../course-primary-action.svelte';
   import EditableLandingSection from '../editable-section.svelte';
 
   interface Props {
@@ -107,14 +108,11 @@
               {hero.secondaryAction.label}
             </Button>
           {/if}
-          <Button
-            href={hero.primaryAction.href}
-            disabled={hero.primaryAction.disabled ?? false}
+          <CoursePrimaryAction
+            action={hero.primaryAction}
             size="sm"
             class="ui:rounded-full ui:px-4 ui:font-medium ui:bg-[#f4f5f7] ui:text-[#0a0b0e] ui:hover:bg-white"
-          >
-            {hero.primaryAction.label}
-          </Button>
+          />
         </div>
       {/if}
 

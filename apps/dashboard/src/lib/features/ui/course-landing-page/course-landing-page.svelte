@@ -11,8 +11,11 @@
   import type { Course } from '$features/course/utils/types';
   import type { AccountOrg } from '$features/app/types';
   import UploadWidget from '$features/ui/upload-widget/upload-widget.svelte';
+  import PaymentModal from './components/payment-modal.svelte';
   import { buildCourseLandingPageProps } from './utils';
   import { handleOpenWidget } from './store';
+  import { calcCourseDiscount, isCourseFree } from '$lib/utils/functions/course';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog';
 
   interface Props {
     editMode?: boolean;
@@ -23,6 +26,8 @@
   }
 
   let { editMode = false, courseData = $bindable(), org = null, themeComponent = null }: Props = $props();
+
+  let openPaymentModal = $state(false);
 
   const activeOrg = $derived(org ?? $currentOrg);
   const landingSettings = $derived(normalizeLandingPageSettings(activeOrg.landingpage));
@@ -47,11 +52,34 @@
   const enrollmentsOpen = $derived(get(courseData, 'metadata.allowNewStudent') === true);
   const enrollDisabled = $derived(editMode || !enrollmentsOpen);
 
+  const discount = $derived(get(courseData, 'metadata.discount', 0));
+  const showDiscount = $derived(get(courseData, 'metadata.showDiscount', false));
+  const calculatedCost = $derived(calcCourseDiscount(discount, courseData.cost || 0, !!showDiscount));
+  const isFree = $derived(isCourseFree(calculatedCost));
+
+  function handlePaidEnrollClick(event: MouseEvent) {
+    event.preventDefault();
+
+    if (editMode || !$currentOrg.siteName) {
+      return;
+    }
+
+    capturePosthogEvent('join_course', {
+      course_id: courseData.id,
+      course_title: courseData.title,
+      course_cost: courseData.cost,
+      course_free: isFree
+    });
+
+    openPaymentModal = true;
+  }
+
   const landingProps = $derived(
     buildCourseLandingPageProps(courseData, activeOrg, {
       enrollHref,
       enrollDisabled,
-      authAction
+      authAction,
+      onPaidEnrollClick: handlePaidEnrollClick
     })
   );
 
@@ -76,6 +104,12 @@
     };
   });
 </script>
+
+<PaymentModal
+  bind:open={openPaymentModal}
+  paymentLink={get(courseData, 'metadata.paymentLink', '')}
+  courseId={courseData.id}
+/>
 
 {#if ThemeComponent}
   {#if editMode && $handleOpenWidget.open}
