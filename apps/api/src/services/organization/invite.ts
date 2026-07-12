@@ -28,7 +28,7 @@ import { ROLE } from '@cio/utils/constants';
 import type { TNewOrganizationInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
-import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { getAppBaseUrl } from '@cio/core/config/dashboard-url';
 import { parseCourseIdsFromInviteMetadata, parseCohortIdsFromInviteMetadata } from '@api/utils/org';
 import { getProfileById, markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
@@ -61,11 +61,8 @@ function normalizeEmails(emails: string[]): string[] {
   return [...new Set(emails.map((email) => email.toLowerCase().trim()).filter(Boolean))];
 }
 
-function buildInviteLink(
-  token: string,
-  org?: { siteName?: string | null; customDomain?: string | null; isCustomDomainVerified?: boolean | null }
-): string {
-  return `${getDashboardBaseUrl(org)}/invite/${encodeURIComponent(token)}`;
+function buildTeamInviteLink(token: string): string {
+  return `${getAppBaseUrl()}/invite/${encodeURIComponent(token)}`;
 }
 
 function getRoleLabel(roleId: number): string {
@@ -251,7 +248,7 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
         }
       });
 
-      const inviteLink = buildInviteLink(token, organization);
+      const inviteLink = buildTeamInviteLink(token);
 
       try {
         await enqueueTransactionalEmail('inviteTeacher', {
