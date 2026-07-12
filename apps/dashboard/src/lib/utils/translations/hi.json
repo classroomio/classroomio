@@ -1889,6 +1889,8 @@
           "no_content": "कोई सामग्री नहीं",
           "no_translation": "चयनित भाषा के लिए कोई अनुवाद नहीं",
           "button": "बटन",
+          "show_transcript": "प्रतिलेख दिखाएं",
+          "summarize_lesson": "पाठ का सारांश",
           "button_done": "हो गया",
           "tabs": {
             "settings": {

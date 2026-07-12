@@ -1889,6 +1889,8 @@
           "no_content": "Aucun contenu",
           "no_translation": "Aucune traduction pour la langue sélectionnée",
           "button": "bouton",
+          "show_transcript": "Afficher la transcription",
+          "summarize_lesson": "Résumer la leçon",
           "button_done": "Terminé",
           "tabs": {
             "settings": {

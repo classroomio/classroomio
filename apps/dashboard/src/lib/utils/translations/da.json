@@ -1889,6 +1889,8 @@
           "no_content": "Intet indhold",
           "no_translation": "Ingen oversættelse for det valgte sprog",
           "button": "knappen",
+          "show_transcript": "Vis transskript",
+          "summarize_lesson": "Opsummer lektion",
           "button_done": "Færdig",
           "tabs": {
             "settings": {

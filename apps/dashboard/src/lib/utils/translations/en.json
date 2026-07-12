@@ -2195,6 +2195,8 @@
           "no_content": "No Content",
           "no_translation": "No translation for the selected language",
           "button": "button",
+          "show_transcript": "Show transcript",
+          "summarize_lesson": "Summarize lesson",
           "tabs": {
             "note": {
               "title": "Note",

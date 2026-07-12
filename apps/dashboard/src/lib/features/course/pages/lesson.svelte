@@ -46,7 +46,8 @@
     Document,
     AddVideoModal,
     AddDocumentModal,
-    LessonSettingsTab
+    LessonSettingsTab,
+    LessonSummarizeButton
   } from '$features/course/components/lesson';
 
   import type { TLocale } from '@cio/db/types';
@@ -179,6 +180,7 @@
   const viewModeComponents = $derived(getViewModeComponents(tabs));
 
   const isMaterialsEmpty = $derived(tabs.every((tab) => tab.badgeValue === 0));
+  const hasLessonVideos = $derived((lessonApi.lesson?.videos?.length ?? 0) > 0);
 
   let timeoutId: NodeJS.Timeout | undefined;
 
@@ -524,6 +526,12 @@
       {:else if lessonApi.lesson && !isMaterialsEmpty}
         {#key lessonId}
           <div class="mb-20 flex w-full flex-col gap-2" in:fade={{ delay: 500 }} out:fade>
+            {#if !hasLessonVideos}
+              <div class="mb-2 flex flex-wrap gap-2">
+                <LessonSummarizeButton {lessonId} />
+              </div>
+            {/if}
+
             {#each viewModeComponents as Component, index (index)}
               <Component {mode} {lessonId} {courseId} />
             {/each}

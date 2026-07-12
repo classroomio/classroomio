@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
+  import { Button } from '@cio/ui/base/button';
   import { MediaPlayer } from '@cio/ui/custom/media-player';
   import { presignApi } from '$features/course/api/presign.svelte';
   import { mediaApi } from '$features/media/api';
@@ -16,6 +17,7 @@
   import { resolveWatchEnforcedAssetIds, type LessonVideo } from './video-card-utils';
   import { lessonVideoBus } from './lesson-video-bus.svelte';
   import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
+  import LessonSummarizeButton from '../lesson-summarize-button.svelte';
 
   /**
    * HLS playback flag — set by the upload flow when the asset was encoded
@@ -98,9 +100,10 @@
     video: LessonVideo;
     courseId: string;
     lessonId: string;
+    showSummarizeButton?: boolean;
   }
 
-  let { video, courseId, lessonId }: Props = $props();
+  let { video, courseId, lessonId, showSummarizeButton = false }: Props = $props();
 
   let localTranscript = $state<AssetTranscriptPayload | null>(null);
   let localTranscriptLoading = $state(false);
@@ -435,14 +438,16 @@
     lessonVideoBus.hasPlayed = true;
   }
 
+  function openTranscriptPanel() {
+    syncVideoBus();
+    sidePanel.open(TRANSCRIPT_PANEL_ID);
+  }
+
   const transcriptPanelControl = $derived(
     localTranscript
       ? {
           label: t.get('course.navItem.lessons.materials.tabs.video.transcript.open_side_panel'),
-          onClick: () => {
-            syncVideoBus();
-            sidePanel.open(TRANSCRIPT_PANEL_ID);
-          }
+          onClick: openTranscriptPanel
         }
       : undefined
   );
@@ -489,4 +494,18 @@
       seekPolicy
     }}
   />
+
+  {#if localTranscript || showSummarizeButton}
+    <div class="mt-3 flex flex-wrap gap-2">
+      {#if localTranscript}
+        <Button variant="outline" size="sm" onclick={openTranscriptPanel}>
+          {$t('course.navItem.lessons.materials.show_transcript')}
+        </Button>
+      {/if}
+
+      {#if showSummarizeButton}
+        <LessonSummarizeButton {lessonId} />
+      {/if}
+    </div>
+  {/if}
 </div>

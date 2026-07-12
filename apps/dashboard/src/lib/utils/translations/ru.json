@@ -1889,6 +1889,8 @@
           "no_content": "Нет контента",
           "no_translation": "Нет перевода на выбранный язык",
           "button": "кнопка",
+          "show_transcript": "Показать транскрипт",
+          "summarize_lesson": "Суммировать урок",
           "button_done": "Готово",
           "tabs": {
             "settings": {
