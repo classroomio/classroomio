@@ -35,7 +35,9 @@
     <BlurFade once>
       <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">AI authoring</div>
       <h2 class="max-w-[760px] text-[clamp(1.75rem,3vw,2.6rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
-        AI that turns <em class="text-blue-700 not-italic">company knowledge</em> into trainings that drive business outcome
+        AI that turns company knowledge into trainings that drive <em class="text-blue-700 not-italic"
+          >business outcome</em
+        >
       </h2>
       <p class="mt-3 max-w-[560px] text-sm leading-relaxed text-gray-500">
         Feed it your docs, policies, videos, and internal knowledge. AI drafts the structure, lessons, and quizzes. You
