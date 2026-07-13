@@ -29,6 +29,7 @@
   let orgToggles = $state(buildToggleState(EMAIL_NOTIFICATION_TOGGLE_KEYS));
   let isSavingPersonal = $state(false);
   let isSavingOrg = $state(false);
+  let hasHydratedFromStores = $state(false);
 
   const tutorOnlyToggleKeys = new Set<string>(TUTOR_ONLY_PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS);
 
@@ -62,9 +63,35 @@
     }
   }
 
-  onMount(() => {
+  function tryHydrateFromStores() {
+    if (hasHydratedFromStores) return;
+
+    const profileState = get(profile);
+    if (!profileState.id) return;
+
     syncPersonalTogglesFromProfile();
-    syncOrgTogglesFromCurrentOrg();
+
+    if (get(isOrgAdmin)) {
+      if (!get(currentOrg)?.id) return;
+      syncOrgTogglesFromCurrentOrg();
+    }
+
+    hasHydratedFromStores = true;
+  }
+
+  onMount(() => {
+    tryHydrateFromStores();
+  });
+
+  $effect(() => {
+    if (hasHydratedFromStores) return;
+
+    const profileId = $profile.id;
+    const orgId = $isOrgAdmin ? $currentOrg?.id : 'ready';
+
+    if (!profileId || ($isOrgAdmin && !orgId)) return;
+
+    tryHydrateFromStores();
   });
 
   const personalHasChanges = $derived(
