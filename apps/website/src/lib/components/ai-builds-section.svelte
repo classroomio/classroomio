@@ -13,7 +13,7 @@
     {
       Icon: MessagesSquare,
       title: 'Chat with the builder',
-      description: 'Claude lives in the editor. It plans, drafts, and writes quizzes — you approve each step.'
+      description: 'Claude lives in the editor. It plans, drafts, and writes quizzes. You approve each step.'
     },
     {
       Icon: Terminal,
