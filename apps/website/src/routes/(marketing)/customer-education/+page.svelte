@@ -67,7 +67,7 @@
     },
     {
       Icon: BookMarked,
-      title: 'Programs & learning paths',
+      title: 'Cohorts & learning paths',
       description:
         'Bundle courses into onboarding journeys with required completion order, prerequisites, and certificates.'
     },
@@ -80,7 +80,7 @@
     {
       Icon: MessagesSquare,
       title: 'Community & Q&A',
-      description: 'Per-course discussion forums and program newsfeeds with reactions, threads, and mentions.'
+      description: 'Per-course discussion forums and cohort newsfeeds with reactions, threads, and mentions.'
     },
     {
       Icon: GraduationCap,
@@ -276,7 +276,7 @@
   <FeatureGrid
     eyebrow="Every piece, included"
     title="Everything you need to teach customers your product."
-    description={'Not a "content site" bolted onto your help docs. A real LMS with programs, assessments, certificates, AI tutoring, community, and analytics, wrapped in your brand.'}
+    description={'Not a "content site" bolted onto your help docs. A real LMS with cohorts, assessments, certificates, AI tutoring, community, and analytics, wrapped in your brand.'}
     ctaLabel="Get started"
     ctaHref="/signup"
     {features}
@@ -328,7 +328,7 @@
     bgClass="bg-gray-50"
   />
 
-  <!-- Programs / certificates split -->
+  <!-- Cohorts / certificates split -->
   <section class="px-6 py-12 lg:px-12 lg:py-16">
     <div class="mx-auto grid max-w-[1100px] grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
       <div>
@@ -337,7 +337,7 @@
           Turn power-users into a public community.
         </h2>
         <p class="mt-5 text-base leading-relaxed text-gray-500">
-          Bundle courses into Programs, gate them with a required exercise, and issue shareable certificates. Customer
+          Bundle courses into cohorts, gate them with a required exercise, and issue shareable certificates. Customer
           champions love showing off — and your product gets a quiet army of advocates.
         </p>
         <ul class="mt-6 space-y-3 text-sm text-gray-700">
@@ -345,10 +345,10 @@
             <GraduationCap size={16} class="mt-0.5 text-blue-700" /> Branded PDF/PNG certificates with verifiable IDs
           </li>
           <li class="flex items-start gap-2">
-            <BookMarked size={16} class="mt-0.5 text-blue-700" /> Programs with required completion order
+            <BookMarked size={16} class="mt-0.5 text-blue-700" /> Cohorts with required completion order
           </li>
           <li class="flex items-start gap-2">
-            <MessagesSquare size={16} class="mt-0.5 text-blue-700" /> Per-course Q&A and program-wide newsfeed
+            <MessagesSquare size={16} class="mt-0.5 text-blue-700" /> Per-course Q&A and cohort-wide newsfeed
           </li>
         </ul>
       </div>

@@ -82,29 +82,29 @@ export const cohortRouter = new Hono()
 
   /**
    * GET /cohort/enrolled
-   * Get programs the current user is enrolled in
+   * Get cohorts the current user is enrolled in
    */
   .get('/enrolled', authMiddleware, async (c) => {
     try {
       const user = c.get('user')!;
-      const programs = await getEnrolledCohorts(user.id);
-      return c.json({ success: true, data: programs }, 200);
+      const cohorts = await getEnrolledCohorts(user.id);
+      return c.json({ success: true, data: cohorts }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to get enrolled cohorts');
     }
   })
 
-  // ── Programs ──────────────────────────────────────────────────────────────
+  // ── Cohorts ───────────────────────────────────────────────────────────────
 
   /**
    * GET /cohort?organizationId=...
-   * List all programs for an org
+   * List all cohorts for an org
    */
   .get('/', authMiddleware, zValidator('query', ZOrgQuery), async (c) => {
     try {
       const { organizationId } = c.req.valid('query');
-      const programs = await listOrgCohorts(organizationId);
-      return c.json({ success: true, data: programs }, 200);
+      const cohorts = await listOrgCohorts(organizationId);
+      return c.json({ success: true, data: cohorts }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to list cohorts');
     }
@@ -112,7 +112,7 @@ export const cohortRouter = new Hono()
 
   /**
    * POST /cohort
-   * Create a new program
+   * Create a new cohort
    */
   .post(
     '/',
@@ -255,7 +255,7 @@ export const cohortRouter = new Hono()
         const member = await removeCohortMemberService(cohortId, memberId);
         return c.json({ success: true, data: member }, 200);
       } catch (error) {
-        return handleError(c, error, 'Failed to remove program member');
+        return handleError(c, error, 'Failed to remove cohort member');
       }
     }
   )
@@ -267,7 +267,7 @@ export const cohortRouter = new Hono()
    * Invite new students to a cohort by CSV emails. Issues org invites
    * pre-tagged with this cohort so accept auto-enrolls them.
    * Gated by cohort-team-member middleware — Cohort ADMINs/TUTORs can
-   * invite into their own program without org-admin rights.
+   * invite into their own cohort without org-admin rights.
    */
   .post(
     '/:cohortId/invite',
@@ -283,7 +283,7 @@ export const cohortRouter = new Hono()
         const result = await inviteStudentsToCohort(cohortId, data, user.id);
         return c.json({ success: true, data: result }, 201);
       } catch (error) {
-        return handleError(c, error, 'Failed to invite students to program');
+        return handleError(c, error, 'Failed to invite students to cohort');
       }
     }
   )
@@ -305,7 +305,7 @@ export const cohortRouter = new Hono()
         const result = await assignExistingStudentsToCohort(cohortId, data);
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
-        return handleError(c, error, 'Failed to assign students to program');
+        return handleError(c, error, 'Failed to assign students to cohort');
       }
     }
   )
@@ -344,7 +344,7 @@ export const cohortRouter = new Hono()
         const result = await addCourseToCohortService(cohortId, data);
         return c.json({ success: true, data: result }, 201);
       } catch (error) {
-        return handleError(c, error, 'Failed to add course to program');
+        return handleError(c, error, 'Failed to add course to cohort');
       }
     }
   )
@@ -364,7 +364,7 @@ export const cohortRouter = new Hono()
         const result = await removeCourseFromCohortService(cohortId, courseId);
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
-        return handleError(c, error, 'Failed to remove course from program');
+        return handleError(c, error, 'Failed to remove course from cohort');
       }
     }
   )
@@ -547,7 +547,7 @@ export const cohortRouter = new Hono()
 
   /**
    * GET /cohort/my/goals
-   * Goal assignments for the current authenticated user across all their programs.
+   * Goal assignments for the current authenticated user across all their cohorts.
    * Used by the LMS "Your Goals" widget.
    */
   .get('/my/goals', authMiddleware, async (c) => {

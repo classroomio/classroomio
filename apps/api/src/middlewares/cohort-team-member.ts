@@ -6,7 +6,7 @@ import { ROLE } from '@cio/utils/constants';
 
 /**
  * Middleware to check if the authenticated user is a cohort teacher or org admin.
- * Mirrors the course-team-member pattern for program routes.
+ * Mirrors the course-team-member pattern for cohort routes.
  */
 export const cohortTeamMemberMiddleware = async (c: Context, next: Next) => {
   try {
@@ -27,7 +27,7 @@ export const cohortTeamMemberMiddleware = async (c: Context, next: Next) => {
       return c.json(
         {
           success: false,
-          error: 'Program ID is required',
+          error: 'Cohort ID is required',
           code: 'COHORT_ID_REQUIRED'
         },
         400
@@ -56,7 +56,7 @@ export const cohortTeamMemberMiddleware = async (c: Context, next: Next) => {
     return c.json(
       {
         success: false,
-        error: 'Failed to verify program team membership',
+        error: 'Failed to verify cohort team membership',
         code: 'COHORT_TEAM_MEMBER_CHECK_FAILED'
       },
       500

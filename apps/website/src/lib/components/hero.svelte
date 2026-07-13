@@ -110,7 +110,7 @@
     <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
       <img
         src="https://assets.cdn.clsrio.com/www/home/hero-academy.jpeg"
-        alt="Branded customer academy on a custom domain — catalog, programs, AI tutor"
+        alt="Branded customer academy on a custom domain — catalog, cohorts, AI tutor"
         width="2560"
         height="1440"
         class="block h-auto w-full"

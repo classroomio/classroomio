@@ -26,7 +26,7 @@ export const cohortMemberMiddleware = async (c: Context, next: Next) => {
       return c.json(
         {
           success: false,
-          error: 'Program ID is required',
+          error: 'Cohort ID is required',
           code: 'COHORT_ID_REQUIRED'
         },
         400
