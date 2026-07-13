@@ -7,6 +7,6 @@
   <rect x="96" y="182" width="760" height="52" rx="16" fill="#E2E8F0"/>
   <rect x="884" y="182" width="180" height="52" rx="16" fill="#E2E8F0"/>
   <rect x="96" y="286" width="1360" height="430" rx="24" fill="#FFFFFF" stroke="#94A3B8" stroke-dasharray="14 10" stroke-width="4"/>
-  <text x="776" y="500" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0F172A">Program People Placeholder</text>
+  <text x="776" y="500" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0F172A">Cohort People Placeholder</text>
   <text x="776" y="558" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#475569">Replace with the People page and membership table.</text>
 </svg>

@@ -48,50 +48,44 @@ This Policy applies when you interact with us by doing any of the following:
 
 ### What Personal Data We Collect
 
-When you make a purchase, or attempt to make a purchase, we collect the following types of Personal Data:
+When you create an account, use ClassroomIO, or contact us, we collect the Personal Data needed to provide the service. This may include:
 
-This includes:
-
-- Account Information such as your name, email address, and password
-- Payment Information such as your billing address, phone number, credit card, debit card or other payment method
-
-When you use our products and/or features, we collect the following types of Personal Data:
-
-- Account Information such as your name, email address, and password
-- Payment Information such as your billing address, phone number, credit card, debit card or other payment method
+- Account information such as your name, email address, password or authentication method, organization membership, and role
+- Course and workspace content that you or your organization create, upload, submit, or manage in ClassroomIO
+- AI feature inputs and outputs, such as prompts, chat messages, generated content, selected course context, documents you choose to reference, video audio sent for transcription, transcripts, and AI usage records
+- Communications, support requests, feedback, and preferences that you choose to share with us
+- Billing, subscription, and transaction records where you or your organization purchase paid services. Payment card details are processed by our payment providers and are not stored by ClassroomIO.
 
 ### How We Collect Your Personal Data
 
 We collect Personal Data from the following sources:
 
-**From you.** You may give us your Account Information, Payment Information, Financial Information, Demographic Data, Purchase Information, Content, Feedback, Product Information, by filling in forms, using our products or services, entering information online or by corresponding with us by post, phone, email or otherwise. This includes Personal Data you provide, for example, when you:
+**From you.** You may give us account information, content, feedback, billing details, preferences, and support information by filling in forms, using our products or services, entering information online, or corresponding with us by email or otherwise. This includes Personal Data you provide, for example, when you:
 
-- Create an account or purchase products on our website;
+- Create an account or purchase ClassroomIO services;
 - Use our products or services;
 - Create content through our products or services;
 - Express interest in our products or services;
-- Download software and/or our mobile application;
 - Subscribe to our newsletter;
-- Complete a voluntary market research survey;
-- Contact us with an inquiry or to report a problem (by phone, email, social media, or messaging service);
-- When you log in to our website via social media;
+- Complete a voluntary survey or provide feedback;
+- Contact us with an inquiry or to report a problem;
+- Log in with a supported third-party authentication provider.
 
-**Automated technologies or interactions:** As you interact with our website, we may automatically collect the following types of data (all as described above): Device Data about your equipment, Usage Data about your browsing actions and patterns, and Contact Data where tasks carried out via our website remain uncompleted, such as incomplete orders or abandoned baskets. We collect this data by using cookies, server logs and other similar technologies. Please see our Cookie section (below) for further details.
+**Automated technologies or interactions:** As you interact with our website and application, we may automatically collect device, log, and usage data such as browser type, IP address, pages visited, actions taken in the product, timestamps, authentication records, and diagnostic information. We collect this data using cookies, server logs, analytics events, and similar technologies. Please see our Cookie section (below) for further details.
 
 **Third parties:** We may receive Personal Data about you from various third parties, including:
 
-- Account Information and Payment Information from another individual when they purchase a gift for you on our website;
-- Device and Usage Data from third parties, including analytics providers;
-- Account Information and Payment Data from social media platforms when you log in to our website using such social media platforms;
-- Content from communication services, including email providers and social networks, when you give us permission to access your data on such third-party services or networks;
-- Account Information and Payment Data from third parties, including organizations (such as law enforcement agencies), associations and groups, who share data for the purposes of fraud prevention and detection and credit risk reduction; and
-- Account Information, Payment Data, and Financial Data from providers of technical, payment and delivery services.
+- Account information from your organization when it invites you to ClassroomIO or manages your membership;
+- Account information from supported third-party authentication providers when you choose to sign in with them;
+- Billing and subscription status from our payment providers;
+- Device, log, and usage data from analytics and infrastructure providers; and
+- Information from service providers that help us deliver support, email, hosting, storage, security, and other operational services.
 
 If you provide us, or our service providers, with any Personal Data relating to other individuals, you represent that you have the authority to do so and acknowledge that it will be used in accordance with this Policy. If you believe that your Personal Data has been provided to us improperly, or to otherwise exercise your rights relating to your Personal Data, please contact us by using the information set out in the "Contact us" section below.
 
 ### Device and Usage Data
 
-When you visit a ClassroomIO website, we automatically collect and store information about your visit using browser cookies (files which are sent by us to your computer), or similar technology. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. The Help Feature on most browsers will provide information on how to accept cookies, disable cookies or to notify you when receiving a new cookie. If you do not accept cookies, you may not be able to use some features of our Service and we recommend that you leave them turned on.
+When you visit a ClassroomIO website or use the ClassroomIO application, we automatically collect and store some information about your visit using browser cookies or similar technology. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. The Help Feature on most browsers will provide information on how to accept cookies, disable cookies or to notify you when receiving a new cookie. If you do not accept cookies, you may not be able to use some features of our Service.
 
 We also process information when you use our services and products. This information may include:
 
@@ -100,8 +94,10 @@ We also process information when you use our services and products. This informa
 - IP Address
 - Time stamps
 - Authentication records
-- Location information
+- Country or region derived from request metadata, where available, for aggregate analytics
 - Time zone
+
+We do not collect precise location data from your browser or device, and we do not use location data to personalize offers or provide location-specific promotions.
 
 ### Data we collect from third parties
 
@@ -111,31 +107,44 @@ Our websites and services may contain links to other websites, applications and 
 
 ### Purpose and Legal Basis for the Processing of Personal Data
 
-We collect and use your Personal Data with your consent to provide, maintain, and develop our products and services and understand how to improve them.
+We collect and use your Personal Data to provide, maintain, secure, and improve our products and services, and where required, with your consent.
 
 These purposes include:
 
-- To deliver your product or service
-- To fulfill orders including electronic and non-electronic shipment
-- Building a Safe and Secure Environment
-- To verify or authenticate your identity; and
-- Investigate and prevent security incidents such as breaches, attacks and hacks
-- Providing, Developing, and Improving our Products and Services
-- Deliver, maintain, debug and improve our products and services.
-- Enable you to access ClassroomIO services and set up accounts.
-- Provide you with technical and customer support
+- Deliver, maintain, debug, and improve ClassroomIO services
+- Enable you to access ClassroomIO and manage accounts, organizations, courses, and content
+- Verify and authenticate your identity
+- Provide AI-assisted features, including course generation, content drafting, tutoring, summarization, and media transcription
+- Process subscriptions, billing, and payments through our payment providers
+- Provide technical and customer support
+- Send product, transactional, security, and service communications
+- Investigate and prevent security incidents, abuse, and unauthorized access
 
-Where we process your Personal Data to provide a product or service, we do so because it is necessary to perform contractual obligations. All of the above processing is necessary in our legitimate interests to provide products and services and to maintain our relationship with you and to protect our business for example against fraud. Consent will be required to initiate services with you. New consent will be required if any changes are made to the type of data collected. Within our contract, if you fail to provide consent, some services may not be available to you.
+Where we process your Personal Data to provide a product or service, we do so because it is necessary to perform contractual obligations. We may also process Personal Data based on our legitimate interests in operating, securing, improving, and supporting ClassroomIO. Where applicable law requires consent for a particular processing activity, we will ask for that consent.
 
 ### Third Party Tools
 
-We use these third party tools and subprocessors to operate our services and store or process information where applicable:
+We use third-party tools and subprocessors to operate our services and store or process information where applicable. These may include:
 
-- **Supabase** (database and authentication infrastructure for our application)
-- **PostHog** (product analytics on our server and, where implemented, in our applications)
+- Hosting, database, cache, and object-storage providers
+- **Cloudflare** (hosting, CDN, security, and object storage for uploaded files, videos, and related media)
+- **Railway** and **Render** (application hosting and infrastructure)
+- Email delivery providers
+- Payment and subscription providers
+- Authentication and security providers
+- AI model, transcription, and content-processing providers
+- **PostHog** (product analytics where implemented in our applications)
 - **Umami** (privacy-focused website analytics on our marketing site)
 
 This list may change as we update our vendors; material changes will be reflected in this Policy when practical.
+
+### AI Features
+
+ClassroomIO includes AI-assisted features that can help create and edit course content, generate titles and text, summarize conversations, provide tutoring support, and transcribe uploaded videos. When you use these features, we process the information needed to provide the requested output. This may include your prompts, chat messages, selected model, course, lesson, exercise, document or media context, uploaded audio or video-derived audio for transcription, AI outputs, transcripts, token usage, and related diagnostic information.
+
+We may send the minimum information needed for an AI request to third-party AI model or transcription providers, including providers such as OpenAI, Anthropic, Google, and Moonshot where those providers are configured for the service. Those providers process the information to return the requested AI output and operate their services under their own applicable terms, policies, and data-processing commitments.
+
+ClassroomIO does not use your organization's course content, prompts, uploaded files, or AI outputs to train a general-purpose AI model unless we tell you and obtain any consent required by applicable law. AI outputs may be inaccurate or incomplete, so you should review generated content before relying on it or publishing it to learners.
 
 ### International Data Transfer and Storage
 
@@ -161,10 +170,13 @@ A cookie is a small file with information that your browser stores on your devic
 
 ### How we use cookies
 
-To give you the best experience possible, we use the following types of cookies:
+We use cookies and similar technologies for the following purposes:
 
-- **Preference.** We use preference cookies to help us remember the way you like to use our service.
-- Some cookies are used to personalize content and present you with a tailored experience. For example, location could be used to give you services and offers in your area.
+- **Essential cookies.** These keep you signed in, protect sessions, support authentication flows, and enable security-sensitive parts of the service.
+- **Preference cookies.** These remember settings such as locale, theme, sidebar state, organization context, and other product preferences.
+- **Analytics cookies.** These help us understand aggregate usage and product performance where analytics are enabled.
+
+We do not use cookies to collect precise location data, and we do not use location data to show location-specific offers.
 
 ## 4. Retention & Deletion
 
@@ -246,4 +258,4 @@ Write to us at:
 Data Privacy Officer of ClassroomIO  
 128 City Road, London, United Kingdom, EC1V 2NX
 
-**Last updated:** April 12, 2026
+**Last updated:** July 12, 2026

@@ -41,7 +41,7 @@
       note: 'A shareable cert turns power-users into a public community. Help docs don’t.'
     },
     {
-      capability: 'Programs / multi-course paths',
+      capability: 'Cohorts / multi-course paths',
       docs: false,
       academy: true,
       note: 'Onboarding week, admin track, power-user path — three audiences, three sequenced journeys, one academy.'

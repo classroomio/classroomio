@@ -424,17 +424,17 @@
     "cohort": {
       "error": {
         "reaction_error": "Đã xảy ra lỗi khi phản hồi bài viết",
-        "news_feed_fail": "Không thể tìm nạp nguồn cấp tin tức của chương trình",
+        "news_feed_fail": "Không thể tìm nạp nguồn cấp tin tức của nhóm học tập",
         "post_create_failed": "Không tạo được bài đăng",
         "post_update_failed": "Không thể cập nhật bài đăng",
         "code": {
-          "cohort_forbidden": "Bạn phải là thành viên của chương trình này để thực hiện hành động này.",
-          "cohort_member_check_failed": "Chúng tôi không thể xác minh tư cách thành viên chương trình của bạn. Hãy thử lại.",
-          "cohort_not_found": "Chương trình này không thể được tìm thấy.",
-          "cohort_create_failed": "Không thể tạo chương trình.",
-          "cohort_update_failed": "Không thể cập nhật chương trình.",
-          "cohort_delete_failed": "Không thể xóa chương trình.",
-          "cohort_member_not_found": "Không thể tìm thấy thành viên chương trình đó.",
+          "cohort_forbidden": "Bạn phải là thành viên của nhóm học tập này để thực hiện hành động này.",
+          "cohort_member_check_failed": "Chúng tôi không thể xác minh tư cách thành viên nhóm học tập của bạn. Hãy thử lại.",
+          "cohort_not_found": "Nhóm học tập này không thể được tìm thấy.",
+          "cohort_create_failed": "Không thể tạo nhóm học tập.",
+          "cohort_update_failed": "Không thể cập nhật nhóm học tập.",
+          "cohort_delete_failed": "Không thể xóa nhóm học tập.",
+          "cohort_member_not_found": "Không thể tìm thấy thành viên nhóm học tập đó.",
           "cohort_newsfeed_not_found": "Không thể tìm thấy bài đăng đó.",
           "cohort_newsfeed_comment_not_found": "Bình luận đó không thể được tìm thấy."
         }
@@ -493,7 +493,7 @@
     "explore": "Khám phá",
     "help": "Trợ giúp",
     "settings": "Cài đặt",
-    "cohorts": "Chương trình"
+    "cohorts": "Nhóm học tập"
   },
   "upgrade": {
     "certificate": "Nâng cấp gói của bạn để tạo chứng chỉ",
@@ -690,12 +690,12 @@
       "snackbar_success": "{imported} lời mời mới, {assigned} học viên hiện có được quyền truy cập khóa học, {pendingInvitesRenewed} lời mời đang chờ được gia hạn ({emailsSent} email đã gửi)",
       "snackbar_no_emails": "Vui lòng nhập ít nhất một địa chỉ email",
       "snackbar_failed": "Không thể nhập người dùng",
-      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like.",
-      "cohort_access": "Quyền truy cập chương trình",
-      "no_cohorts": "Không gán chương trình",
-      "all_cohorts": "Tất cả chương trình",
-      "select_cohorts": "Chọn các chương trình cụ thể",
-      "select_cohorts_placeholder": "Chọn chương trình..."
+      "page_subtitle": "Thêm nhiều người cùng lúc bằng email, rồi gán khóa học hoặc nhóm học tập nếu bạn muốn.",
+      "cohort_access": "Quyền truy cập nhóm học tập",
+      "no_cohorts": "Không gán nhóm học tập",
+      "all_cohorts": "Tất cả nhóm học tập",
+      "select_cohorts": "Chọn nhóm học tập cụ thể",
+      "select_cohorts_placeholder": "Chọn nhóm học tập..."
     },
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "user_analytics": {
@@ -705,7 +705,7 @@
     "delete": {
       "action": "Xóa",
       "title": "Xóa thành viên",
-      "description": "Thao tác này sẽ xóa thành viên khỏi tổ chức của bạn và thu hồi quyền truy cập của họ vào tất cả các khóa học và chương trình được chỉ định.",
+      "description": "Thao tác này sẽ xóa thành viên khỏi tổ chức của bạn và thu hồi quyền truy cập của họ vào tất cả các khóa học và nhóm học tập được chỉ định.",
       "confirmation": "Bạn có chắc chắn muốn xóa {name} ({email}) không? Không thể hoàn tác hành động này.",
       "cancel": "Hủy bỏ",
       "confirm": "Xóa",
@@ -858,7 +858,7 @@
         "description": "Mô tả khóa học",
         "learn": "Bạn sẽ học được gì",
         "certificate": "Giấy chứng nhận",
-        "certificate_text": "Khi hoàn thành tất cả các khóa học trong chương trình, bạn sẽ nhận được Chứng chỉ để chia sẻ với mạng lưới chuyên nghiệp của mình.",
+        "certificate_text": "Khi hoàn thành tất cả các khóa học trong nhóm học tập, bạn sẽ nhận được Chứng chỉ để chia sẻ với mạng lưới chuyên nghiệp của mình.",
         "content": "Nội dung khóa học",
         "slide": "1 slide",
         "note": "ghi chú",
@@ -2815,7 +2815,7 @@
     "stats": "Thống kê",
     "analytics": "Phân tích",
     "compliance": "Tuân thủ",
-    "cohorts": "Chương trình",
+    "cohorts": "Nhóm học tập",
     "upgrade_now": "Nâng cấp ngay bây giờ",
     "upgrade_students": "{studentCount} trong số {studentLimit} sinh viên",
     "upgrade_left": "còn {count}"
@@ -3695,9 +3695,9 @@
       "command_palette": {
         "title": "Bảng lệnh",
         "description": "Tìm kiếm và điều hướng trong tổ chức của bạn",
-        "placeholder": "Tìm kiếm các khóa học, chương trình, widget, sinh viên, thẻ, cài đặt...",
-        "org_placeholder": "Tìm kiếm các khóa học, chương trình, widget, sinh viên, thẻ, cài đặt...",
-        "lms_placeholder": "Tìm kiếm các khóa học, chương trình và trang học tập của bạn...",
+        "placeholder": "Tìm kiếm khóa học, nhóm học tập, widget, sinh viên, thẻ, cài đặt...",
+        "org_placeholder": "Tìm kiếm khóa học, nhóm học tập, widget, sinh viên, thẻ, cài đặt...",
+        "lms_placeholder": "Tìm kiếm các khóa học, nhóm học tập và trang học tập của bạn...",
         "lms_description": "Tìm kiếm và điều hướng không gian học tập của bạn",
         "empty": "Không tìm thấy kết quả nào",
         "loading": "Đang tìm kiếm...",
@@ -3709,12 +3709,11 @@
           "recent": "Gần đây",
           "suggested": "được đề xuất",
           "courses": "Khóa học",
-          "programs": "Chương trình",
           "widgets": "Widget",
           "tags": "Thẻ",
           "students": "Sinh viên",
           "settings": "Cài đặt",
-          "cohorts": "Nhóm thuần tập"
+          "cohorts": "Nhóm học tập"
         }
       }
     },
@@ -3825,7 +3824,7 @@
     },
     "catalog_empty": {
       "title": "Chưa có khóa học nào được xuất bản",
-      "description": "Hãy quay lại sớm để xem các chương trình mới."
+      "description": "Hãy quay lại sớm để xem các khóa học mới."
     },
     "filters": {
       "title": "Lọc theo thẻ",
@@ -4678,18 +4677,18 @@
     }
   },
   "cohorts": {
-    "heading": "Chương trình",
-    "page_title": "Chương trình",
-    "create": "Chương trình mới",
-    "create_success": "Đã tạo chương trình",
-    "update_success": "Đã cập nhật chương trình",
-    "delete_success": "Chương trình đã bị xóa",
+    "heading": "Nhóm học tập",
+    "page_title": "Nhóm học tập",
+    "create": "Nhóm học tập mới",
+    "create_success": "Đã tạo nhóm học tập",
+    "update_success": "Đã cập nhật nhóm học tập",
+    "delete_success": "Nhóm học tập đã bị xóa",
     "members_added": "Đã thêm thành viên",
     "member_removed": "Thành viên đã bị xóa",
     "course_added": "Đã thêm khóa học",
     "course_removed": "Đã xóa khóa học",
-    "empty_title": "Chưa có chương trình nào",
-    "empty_description": "Tạo chương trình chứng nhận hoặc tuân thủ đầu tiên của bạn.",
+    "empty_title": "Chưa có nhóm học tập nào",
+    "empty_description": "Tạo nhóm học tập chứng nhận hoặc tuân thủ đầu tiên của bạn.",
     "settings": {
       "general": "chung",
       "name_label": "Tên",
@@ -4697,40 +4696,40 @@
       "status_label": "Trạng thái",
       "save": "Lưu thay đổi",
       "danger_zone": "Vùng nguy hiểm",
-      "delete": "Xóa chương trình",
-      "delete_description": "Sau khi xóa, chương trình này và tất cả dữ liệu của nó sẽ không thể phục hồi được.",
-      "confirm_delete": "Bạn có chắc chắn muốn xóa chương trình này? Điều này không thể hoàn tác được."
+      "delete": "Xóa nhóm học tập",
+      "delete_description": "Sau khi xóa, nhóm học tập này và tất cả dữ liệu của nó sẽ không thể phục hồi được.",
+      "confirm_delete": "Bạn có chắc chắn muốn xóa nhóm học tập này? Điều này không thể hoàn tác được."
     },
     "lms": {
-      "empty_title": "Chưa có chương trình nào",
-      "empty_description": "Bạn chưa được ghi danh vào bất kỳ chương trình nào."
+      "empty_title": "Chưa có nhóm học tập nào",
+      "empty_description": "Bạn chưa được ghi danh vào bất kỳ nhóm học tập nào."
     },
     "people": {
       "invite": "Mời",
       "invite_modal_title": "Mời thành viên",
-      "invite_modal_description": "Thêm người vào chương trình này qua email.",
+      "invite_modal_description": "Thêm người vào nhóm học tập này qua email.",
       "email_label": "Email",
       "role_label": "Vai trò",
       "add_another": "Thêm cái khác",
       "invite_submit": "Gửi lời mời",
       "empty_title": "Chưa có thành viên nào",
-      "empty_description": "Mời mọi người tham gia chương trình này."
+      "empty_description": "Mời mọi người tham gia nhóm học tập này."
     },
     "courses": {
       "add": "Thêm khóa học",
-      "add_modal_title": "Thêm khóa học vào chương trình",
+      "add_modal_title": "Thêm khóa học vào nhóm học tập",
       "select_course": "Chọn một khóa học",
       "select_placeholder": "Chọn một khóa học…",
       "empty_title": "Chưa có khóa học nào",
-      "empty_description": "Thêm các khóa học vào chương trình này.",
+      "empty_description": "Thêm các khóa học vào nhóm học tập này.",
       "select_courses": "Chọn khóa học",
       "search_placeholder": "Tìm kiếm khóa học",
       "no_available_courses": "Không có khóa học có sẵn để thêm.",
       "no_matching_courses": "Không có khóa học phù hợp với tìm kiếm của bạn.",
-      "no_matching_cohort_courses": "Không có chương trình khóa học phù hợp với tìm kiếm của bạn.",
+      "no_matching_cohort_courses": "Không có nhóm học tập khóa học phù hợp với tìm kiếm của bạn.",
       "pagination_status": "Trang {page} trong tổng số {totalPages}",
       "published_access_callout_title": "Quyền truy cập của sinh viên",
-      "published_access_callout_description": "Sinh viên chỉ có quyền truy cập vào các khóa học được xuất bản. Các khóa học có thể có trong chương trình này cho nhóm của bạn trong khi vẫn chưa được xuất bản và các khóa học đó sẽ bị ẩn với sinh viên cho đến khi bạn xuất bản chúng."
+      "published_access_callout_description": "Sinh viên chỉ có quyền truy cập vào các khóa học được xuất bản. Các khóa học có thể có trong nhóm học tập này cho nhóm của bạn trong khi vẫn chưa được xuất bản và các khóa học đó sẽ bị ẩn với sinh viên cho đến khi bạn xuất bản chúng."
     },
     "newsfeed": {
       "post": "Bài đăng mới",
@@ -4741,7 +4740,7 @@
       "heading": "Nguồn cấp tin tức",
       "make_a_post": "Tạo một bài đăng",
       "edit_post": "Chỉnh sửa bài đăng",
-      "editor_placeholder": "Chia sẻ bản cập nhật với chương trình của bạn",
+      "editor_placeholder": "Chia sẻ bản cập nhật với nhóm học tập của bạn",
       "cancel": "Hủy bỏ",
       "pinned": "Đã ghim",
       "delete_feed_title": "Xóa bài đăng",
@@ -4752,7 +4751,7 @@
         "comment": "bình luận",
         "showing_of": "Đang hiển thị {shown} trong tổng số {total}",
         "hide": "Ẩn bình luận",
-        "placeholder": "Thêm bình luận chương trình",
+        "placeholder": "Thêm bình luận nhóm học tập",
         "submit_aria": "Gửi bình luận",
         "delete": "Xóa"
       },
@@ -4764,12 +4763,12 @@
       }
     },
     "create_modal": {
-      "title": "Tạo chương trình",
-      "description": "Thêm một chương trình chứng nhận hoặc tuân thủ mới.",
+      "title": "Tạo nhóm học tập",
+      "description": "Thêm một nhóm học tập chứng nhận hoặc tuân thủ mới.",
       "name_label": "Tên",
       "name_placeholder": "ví dụ: Chứng nhận an toàn OSHA",
       "description_label": "Mô tả",
-      "description_placeholder": "Chương trình này nói về cái gì?",
+      "description_placeholder": "Nhóm học tập này nói về cái gì?",
       "submit": "Tạo"
     },
     "sidebar": {
@@ -4784,9 +4783,9 @@
       "archived": "Đã lưu trữ"
     },
     "description": "Cấp cho một nhóm người quyền truy cập vào nhiều khóa học, chẳng hạn như một lớp học",
-    "search_placeholder": "Tìm kiếm chương trình",
+    "search_placeholder": "Tìm kiếm nhóm học tập",
     "multiple_added": "Đã thêm khóa học",
-    "no_matching_cohorts": "Không có chương trình nào phù hợp với bộ lọc của bạn.",
+    "no_matching_cohorts": "Không có nhóm học tập nào phù hợp với bộ lọc của bạn.",
     "card": {
       "courses": "Khóa học",
       "students": "Sinh viên"
@@ -4815,7 +4814,7 @@
     "invite_sent": "Đã gửi lời mời",
     "goals": {
       "heading": "Mục tiêu học tập",
-      "description": "Đặt các mục tiêu có thể đo lường được trải rộng trên nhiều khóa học cho mọi người trong chương trình này.",
+      "description": "Đặt các mục tiêu có thể đo lường được trải rộng trên nhiều khóa học cho mọi người trong nhóm học tập này.",
       "add": "Mục tiêu mới",
       "empty_title": "Chưa có mục tiêu nào",
       "empty_description": "Tạo mục tiêu để theo dõi tiến độ của nhóm qua nhiều khóa học.",

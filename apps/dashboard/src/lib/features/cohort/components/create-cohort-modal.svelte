@@ -42,7 +42,7 @@
 
     <div class="flex flex-col gap-4 py-2">
       <div class="flex flex-col gap-1.5">
-        <Label for="program-name">{$t('cohorts.create_modal.name_label') || 'Name'} *</Label>
+        <Label for="cohort-name">{$t('cohorts.create_modal.name_label') || 'Name'} *</Label>
         <Input
           id="cohort-name"
           bind:value={name}
@@ -52,7 +52,7 @@
       </div>
 
       <div class="flex flex-col gap-1.5">
-        <Label for="program-description">{$t('cohorts.create_modal.description_label') || 'Description'}</Label>
+        <Label for="cohort-description">{$t('cohorts.create_modal.description_label') || 'Description'}</Label>
         <Textarea
           id="cohort-description"
           bind:value={description}

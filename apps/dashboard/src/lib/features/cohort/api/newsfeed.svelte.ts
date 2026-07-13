@@ -5,9 +5,9 @@ import type {
   DeleteCohortNewsfeedCommentRequest,
   DeleteCohortNewsfeedRequest,
   GetCohortNewsfeedCommentsRequest,
+  CohortNewsfeedComment,
   ListCohortNewsfeed,
   ListCohortNewsfeedRequest,
-  ProgramNewsfeedComment,
   ReactToCohortNewsfeedRequest,
   UpdateCohortNewsfeedRequest
 } from '../utils/types';
@@ -30,7 +30,7 @@ import { profile } from '$lib/utils/store/user';
 import { snackbar } from '$features/ui/snackbar/store';
 
 export type CohortNewsfeedCommentsByFeedId = {
-  items: ProgramNewsfeedComment[];
+  items: CohortNewsfeedComment[];
   totalCount: number;
   hasMore: boolean;
   isLoading: boolean;
