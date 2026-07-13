@@ -440,6 +440,7 @@
       "heading": "Notifications",
       "page_title": "Notifications",
       "page_subtitle": "Choose which email notifications you receive and, as an admin, which emails your organization sends.",
+      "personal_page_subtitle": "Choose which email notifications you receive from ClassroomIO.",
       "personal": {
         "heading": "Your email preferences",
         "description": "These apply to emails sent to you across every organization you belong to. Your organization may still disable certain emails for everyone.",

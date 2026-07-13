@@ -3638,7 +3638,8 @@
           "heading": "Course",
           "description": "Enrollments, submissions, lessons, announcements, and completions in your courses."
         }
-      }
+      },
+      "personal_page_subtitle": "Choose which email notifications you receive from ClassroomIO."
     }
   },
   "profileMenu": {
