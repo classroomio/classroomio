@@ -128,7 +128,7 @@
         <Empty
           title={$t('cohorts.courses.empty_title') || 'No courses yet'}
           description={searchValue.trim()
-            ? $t('cohorts.courses.no_matching_program_courses') || 'No cohort courses match your search.'
+            ? $t('cohorts.courses.no_matching_cohort_courses') || 'No cohort courses match your search.'
             : $t('cohorts.courses.empty_description') || 'Add courses to this cohort.'}
           icon={BookOpenIcon}
           variant="page"

@@ -4,11 +4,11 @@ import type { TInviteStudentsToCohort, TAssignExistingStudentsToCohort } from '@
 import { assignAudienceToCourses, importAudienceMembers } from '@api/services/organization/audience';
 
 /**
- * Invite students to a single program by email CSV.
+ * Invite students to a single cohort by email CSV.
  *
  * Thin wrapper that hardcodes `cohortIds = [cohortId]` and delegates to
  * `importAudienceMembers`. Lets a Cohort ADMIN/TUTOR (or org admin) issue org
- * invites scoped to *their own* program, without granting org-wide invite rights.
+ * invites scoped to *their own* cohort, without granting org-wide invite rights.
  */
 export async function inviteStudentsToCohort(
   cohortId: string,
@@ -35,8 +35,8 @@ export async function inviteStudentsToCohort(
 
 /**
  * Assign existing student profiles (already members of the org audience) to a
- * single program. Same scoping logic as `inviteStudentsToCohort` — restricted
- * to one program at a time so the caller's program-admin permission is enough.
+ * single cohort. Same scoping logic as `inviteStudentsToCohort` — restricted
+ * to one cohort at a time so the caller's cohort-admin permission is enough.
  */
 export async function assignExistingStudentsToCohort(cohortId: string, data: TAssignExistingStudentsToCohort) {
   const cohort = await getCohortById(cohortId);

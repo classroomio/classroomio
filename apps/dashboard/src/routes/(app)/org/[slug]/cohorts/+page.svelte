@@ -108,7 +108,7 @@
     <Page.Action>
       <Button onclick={() => (showCreateModal = true)}>
         <Plus size={16} />
-        {$t('cohorts.create') || 'New Program'}
+        {$t('cohorts.create') || 'New Cohort'}
       </Button>
     </Page.Action>
   </Page.Header>
@@ -123,7 +123,7 @@
         >
           <Button onclick={() => (showCreateModal = true)}>
             <Plus size={16} />
-            {$t('cohorts.create') || 'New Program'}
+            {$t('cohorts.create') || 'New Cohort'}
           </Button>
         </Empty>
       {:else}

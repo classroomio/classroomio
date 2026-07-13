@@ -8,7 +8,7 @@
    *
    * @typedef {Object} Props
    * @property {string} recipient           Person's name
-   * @property {string} achievement         Course or program name
+   * @property {string} achievement         Course or cohort name
    * @property {string} issued              Issue date (e.g. "11 May 2026")
    * @property {string} verifyValue         Certificate ID rendered in the seal
    * @property {string} [orgName]           Org name shown on the top tag (default "ClassroomIO")

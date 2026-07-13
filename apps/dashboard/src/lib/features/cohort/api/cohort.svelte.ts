@@ -297,7 +297,7 @@ class CohortApi extends BaseApiWithErrors {
     });
   }
 
-  // Invitations (program-scoped)
+  // Invitations (cohort-scoped)
 
   /**
    * Invite new students to a cohort by CSV. Goes through the cohort-scoped
@@ -322,7 +322,7 @@ class CohortApi extends BaseApiWithErrors {
 
   /**
    * Assign existing org audience student profiles to this cohort.
-   * Same scoping as `inviteStudentsToCohort` — caller only needs program-team
+   * Same scoping as `inviteStudentsToCohort` — caller only needs cohort-team
    * membership for this cohort.
    */
   async assignExistingStudentsToCohort(cohortId: string, data: TAssignExistingStudentsToCohort): Promise<boolean> {

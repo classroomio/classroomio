@@ -5,6 +5,6 @@
   <rect x="1220" y="88" width="236" height="52" rx="16" fill="#0F172A"/>
   <text x="1338" y="122" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">Save Changes</text>
   <rect x="248" y="198" width="1104" height="470" rx="24" fill="#FFFFFF" stroke="#94A3B8" stroke-dasharray="14 10" stroke-width="4"/>
-  <text x="800" y="432" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0F172A">Program Settings Placeholder</text>
+  <text x="800" y="432" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0F172A">Cohort Settings Placeholder</text>
   <text x="800" y="490" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#475569">Replace with the Settings page showing status and general fields.</text>
 </svg>

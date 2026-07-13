@@ -105,11 +105,11 @@ async function enrollCohortStudentsInGroups(
   return groupMemberRows.length;
 }
 
-// ─── Program CRUD ────────────────────────────────────────────────────────────
+// ─── Cohort CRUD ─────────────────────────────────────────────────────────────
 
 export async function createCohort(organizationId: string, profileId: string, data: TCreateCohort) {
   try {
-    const description = data.description?.trim() || `A program for ${data.name}`;
+    const description = data.description?.trim() || `A cohort for ${data.name}`;
 
     return createCohortWithCreatorMembership(
       {
@@ -195,7 +195,7 @@ export async function deleteCohort(cohortId: string) {
   }
 }
 
-// ─── Program Members ─────────────────────────────────────────────────────────
+// ─── Cohort Members ──────────────────────────────────────────────────────────
 
 export async function listCohortMembers(cohortId: string) {
   try {
@@ -323,7 +323,7 @@ export async function removeCohortMemberService(_cohortId: string, memberId: str
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
-      error instanceof Error ? error.message : 'Failed to remove program member',
+      error instanceof Error ? error.message : 'Failed to remove cohort member',
       ErrorCodes.INTERNAL_ERROR,
       500
     );
@@ -360,7 +360,7 @@ export async function getEnrolledCohorts(profileId: string) {
   }
 }
 
-// ─── Program Courses ─────────────────────────────────────────────────────────
+// ─── Cohort Courses ──────────────────────────────────────────────────────────
 
 export async function listCohortCourses(cohortId: string, profileId: string) {
   try {
@@ -411,7 +411,7 @@ export async function addCourseToCohortService(cohortId: string, data: TAddCours
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
-      error instanceof Error ? error.message : 'Failed to add course to program',
+      error instanceof Error ? error.message : 'Failed to add course to cohort',
       ErrorCodes.INTERNAL_ERROR,
       500
     );
@@ -422,20 +422,20 @@ export async function removeCourseFromCohortService(cohortId: string, courseId: 
   try {
     const deleted = await removeCourseFromCohort(cohortId, courseId);
     if (!deleted) {
-      throw new AppError('Course not found in program', ErrorCodes.NOT_FOUND, 404);
+      throw new AppError('Course not found in cohort', ErrorCodes.NOT_FOUND, 404);
     }
     return deleted;
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
-      error instanceof Error ? error.message : 'Failed to remove course from program',
+      error instanceof Error ? error.message : 'Failed to remove course from cohort',
       ErrorCodes.INTERNAL_ERROR,
       500
     );
   }
 }
 
-// ─── Program Newsfeed ────────────────────────────────────────────────────────
+// ─── Cohort Newsfeed ─────────────────────────────────────────────────────────
 
 export async function listCohortNewsfeed(cohortId: string, options: { cursor?: string; limit: number }) {
   try {
@@ -524,7 +524,7 @@ export async function deleteCohortNewsfeedService(feedId: string) {
   }
 }
 
-// ─── Program Newsfeed Comments ────────────────────────────────────────────────
+// ─── Cohort Newsfeed Comments ────────────────────────────────────────────────
 
 export async function listCohortNewsfeedComments(feedId: string) {
   try {

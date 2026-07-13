@@ -31,7 +31,7 @@ routes/
 │   ├── courses/              # Course management
 │   ├── org/                  # Org settings
 │   ├── lms/                  # Student LMS
-│   ├── programs/             # Programs
+│   ├── cohorts/              # Cohorts
 │   └── home/                 # Dashboard home
 │
 ├── (auth)/                   # Auth pages (login, signup, etc.)
