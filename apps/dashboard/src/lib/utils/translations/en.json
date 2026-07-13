@@ -452,6 +452,20 @@
         "save": "Save organization defaults",
         "save_success": "Organization notification defaults saved"
       },
+      "sections": {
+        "course": {
+          "heading": "Course",
+          "description": "Enrollments, submissions, lessons, announcements, and completions in your courses."
+        },
+        "cohort": {
+          "heading": "Cohort",
+          "description": "Reminders about cohort learning goals and deadlines."
+        },
+        "enrollment": {
+          "heading": "Enrollment",
+          "description": "Welcome emails sent when staff add members to courses or cohorts."
+        }
+      },
       "toggles": {
         "newStudent": {
           "label": "New student joins",

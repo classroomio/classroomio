@@ -3624,6 +3624,20 @@
         "description": "These apply to emails sent to you across every organization you belong to. Your organization may still disable certain emails for everyone.",
         "save": "Save personal preferences",
         "save_success": "Personal notification preferences saved"
+      },
+      "sections": {
+        "enrollment": {
+          "heading": "Enrollment",
+          "description": "Welcome emails sent when staff add members to courses or cohorts."
+        },
+        "cohort": {
+          "heading": "Cohort",
+          "description": "Reminders about cohort learning goals and deadlines."
+        },
+        "course": {
+          "heading": "Course",
+          "description": "Enrollments, submissions, lessons, announcements, and completions in your courses."
+        }
       }
     }
   },

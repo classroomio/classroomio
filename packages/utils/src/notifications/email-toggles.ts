@@ -18,6 +18,39 @@ export const PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS = EMAIL_NOTIFICATION_TOGGLE
   (key): key is PersonalEmailNotificationToggleKey => key !== 'enrollmentWelcome'
 );
 
+export type EmailNotificationSectionId = 'course' | 'cohort' | 'enrollment';
+
+export type EmailNotificationSection<TKey extends string = EmailNotificationToggleKey> = {
+  id: EmailNotificationSectionId;
+  keys: readonly TKey[];
+};
+
+export const PERSONAL_EMAIL_NOTIFICATION_SECTIONS: EmailNotificationSection<PersonalEmailNotificationToggleKey>[] = [
+  {
+    id: 'course',
+    keys: ['newStudent', 'newSubmission', 'gradingResult', 'newsfeed', 'quizAssigned', 'session', 'courseCompletion']
+  },
+  {
+    id: 'cohort',
+    keys: ['cohortReminder']
+  }
+];
+
+export const ORG_EMAIL_NOTIFICATION_SECTIONS: EmailNotificationSection[] = [
+  {
+    id: 'course',
+    keys: ['newStudent', 'newSubmission', 'gradingResult', 'newsfeed', 'quizAssigned', 'session', 'courseCompletion']
+  },
+  {
+    id: 'cohort',
+    keys: ['cohortReminder']
+  },
+  {
+    id: 'enrollment',
+    keys: ['enrollmentWelcome']
+  }
+];
+
 export type EmailNotificationSettings = Partial<Record<EmailNotificationToggleKey, boolean>>;
 
 export type PersonalEmailNotificationSettings = Partial<Record<PersonalEmailNotificationToggleKey, boolean>>;

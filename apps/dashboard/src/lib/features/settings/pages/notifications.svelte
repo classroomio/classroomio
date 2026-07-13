@@ -1,9 +1,9 @@
 <script lang="ts">
   import {
     EMAIL_NOTIFICATION_TOGGLE_KEYS,
-    PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS,
-    type EmailNotificationToggleKey,
-    type PersonalEmailNotificationToggleKey
+    ORG_EMAIL_NOTIFICATION_SECTIONS,
+    PERSONAL_EMAIL_NOTIFICATION_SECTIONS,
+    PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS
   } from '@cio/utils/notifications';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
@@ -107,20 +107,32 @@
       {$t('settings.notifications.personal.description')}
     </Field.Description>
 
-    <div class="mt-4 space-y-4">
-      {#each PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS as key (key)}
-        <Field.Field orientation="horizontal">
-          <Switch
-            bind:checked={personalToggles[key as PersonalEmailNotificationToggleKey]}
-            disabled={isSavingPersonal}
-          />
-          <div class="space-y-0.5">
-            <Field.Label>{$t(`settings.notifications.toggles.${key}.label`)}</Field.Label>
-            <Field.Description>
-              {$t(`settings.notifications.toggles.${key}.description`)}
-            </Field.Description>
+    <div class="mt-4 space-y-6">
+      {#each PERSONAL_EMAIL_NOTIFICATION_SECTIONS as section, sectionIndex (section.id)}
+        {#if sectionIndex > 0}
+          <Field.Separator />
+        {/if}
+
+        <Field.Set>
+          <Field.Legend>{$t(`settings.notifications.sections.${section.id}.heading`)}</Field.Legend>
+          <Field.Description>
+            {$t(`settings.notifications.sections.${section.id}.description`)}
+          </Field.Description>
+
+          <div class="mt-4 space-y-4">
+            {#each section.keys as key (key)}
+              <Field.Field orientation="horizontal">
+                <Switch bind:checked={personalToggles[key]} disabled={isSavingPersonal} />
+                <div class="space-y-0.5">
+                  <Field.Label>{$t(`settings.notifications.toggles.${key}.label`)}</Field.Label>
+                  <Field.Description>
+                    {$t(`settings.notifications.toggles.${key}.description`)}
+                  </Field.Description>
+                </div>
+              </Field.Field>
+            {/each}
           </div>
-        </Field.Field>
+        </Field.Set>
       {/each}
     </div>
 
@@ -148,17 +160,32 @@
         {$t('settings.notifications.org.description')}
       </Field.Description>
 
-      <div class="mt-4 space-y-4">
-        {#each EMAIL_NOTIFICATION_TOGGLE_KEYS as key (key)}
-          <Field.Field orientation="horizontal">
-            <Switch bind:checked={orgToggles[key as EmailNotificationToggleKey]} disabled={isSavingOrg} />
-            <div class="space-y-0.5">
-              <Field.Label>{$t(`settings.notifications.toggles.${key}.label`)}</Field.Label>
-              <Field.Description>
-                {$t(`settings.notifications.toggles.${key}.description`)}
-              </Field.Description>
+      <div class="mt-4 space-y-6">
+        {#each ORG_EMAIL_NOTIFICATION_SECTIONS as section, sectionIndex (section.id)}
+          {#if sectionIndex > 0}
+            <Field.Separator />
+          {/if}
+
+          <Field.Set>
+            <Field.Legend>{$t(`settings.notifications.sections.${section.id}.heading`)}</Field.Legend>
+            <Field.Description>
+              {$t(`settings.notifications.sections.${section.id}.description`)}
+            </Field.Description>
+
+            <div class="mt-4 space-y-4">
+              {#each section.keys as key (key)}
+                <Field.Field orientation="horizontal">
+                  <Switch bind:checked={orgToggles[key]} disabled={isSavingOrg} />
+                  <div class="space-y-0.5">
+                    <Field.Label>{$t(`settings.notifications.toggles.${key}.label`)}</Field.Label>
+                    <Field.Description>
+                      {$t(`settings.notifications.toggles.${key}.description`)}
+                    </Field.Description>
+                  </div>
+                </Field.Field>
+              {/each}
             </div>
-          </Field.Field>
+          </Field.Set>
         {/each}
       </div>
 
