@@ -38,7 +38,7 @@
         The <em class="text-blue-700 not-italic">ONLY</em> LMS that turns company knowledge into courses
       </h2>
       <p class="mt-3 max-w-[560px] text-sm leading-relaxed text-gray-500">
-        Feed it your docs, policies, videos, and internal knowledge. AI drafts the structure, lessons, and quizzes — you
+        Feed it your docs, policies, videos, and internal knowledge. AI drafts the structure, lessons, and quizzes. You
         review and approve every step before learners see it.
       </p>
     </BlurFade>
