@@ -16,7 +16,10 @@
     "community",
     "organization",
     "student-dashboard",
+
+    "---Enterprise---",
     "enterprise-sso",
+    "token-auth",
 
     "---Get started---",
     "create-first-course",
