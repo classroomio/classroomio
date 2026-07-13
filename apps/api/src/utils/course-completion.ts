@@ -74,7 +74,7 @@ export function scheduleCertificationCompletionWork(params: {
       });
       const certificateUrl = `${base}/courses/${courseId}/certificates`;
 
-      await enqueueTransactionalEmail('studentCourseCompletion', {
+      const enqueueResult = await enqueueTransactionalEmail('studentCourseCompletion', {
         to: studentEmail,
         fields: {
           orgName: courseRow.orgName,
@@ -92,6 +92,10 @@ export function scheduleCertificationCompletionWork(params: {
         idempotencyKey: `course-completion:${groupMemberId}`,
         preference: { organizationId: courseRow.orgId, recipientProfileId: profileId }
       });
+
+      if (enqueueResult.jobIds.length === 0) {
+        return;
+      }
 
       await setMemberCertificationEmailSent(groupMemberId, new Date().toISOString());
     } catch (error) {
