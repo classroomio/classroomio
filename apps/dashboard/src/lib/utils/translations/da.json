@@ -1889,6 +1889,13 @@
           "no_content": "Intet indhold",
           "no_translation": "Ingen oversættelse for det valgte sprog",
           "button": "knappen",
+          "show_transcript": "Vis transskript",
+          "summarize_lesson": "Opsummer lektion",
+          "summarize_lesson_prompt": {
+            "lesson_only": "Opsummer, hvad der er blevet undervist i denne lektion.",
+            "transcript_only": "Se transskriptet af den uploadede video, og opsummer, hvad der nævnes i transskriptet.",
+            "transcript_and_notes": "Se transskriptet af den uploadede video, og opsummer, hvad der nævnes i transskriptet. Opsummer også, hvad der dækkes i lektionsnoterne."
+          },
           "button_done": "Færdig",
           "tabs": {
             "settings": {

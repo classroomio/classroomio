@@ -1889,6 +1889,13 @@
           "no_content": "Không có nội dung",
           "no_translation": "Không có bản dịch cho ngôn ngữ đã chọn",
           "button": "nút",
+          "show_transcript": "Hiển thị bản ghi",
+          "summarize_lesson": "Tóm tắt bài học",
+          "summarize_lesson_prompt": {
+            "lesson_only": "Tóm tắt những gì đã được dạy trong bài học này.",
+            "transcript_only": "Xem bản ghi của video đã tải lên và tóm tắt những gì được đề cập trong bản ghi.",
+            "transcript_and_notes": "Xem bản ghi của video đã tải lên và tóm tắt những gì được đề cập trong bản ghi. Đồng thời tóm tắt nội dung trong ghi chú bài học."
+          },
           "button_done": "Xong",
           "tabs": {
             "settings": {

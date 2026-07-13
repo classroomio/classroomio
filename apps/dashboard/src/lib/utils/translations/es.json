@@ -1889,6 +1889,13 @@
           "no_content": "Sin contenido",
           "no_translation": "No hay traducción para el idioma seleccionado.",
           "button": "botón",
+          "show_transcript": "Mostrar transcripción",
+          "summarize_lesson": "Resumir lección",
+          "summarize_lesson_prompt": {
+            "lesson_only": "Resume lo que se ha enseñado en esta lección.",
+            "transcript_only": "Consulta la transcripción del video subido y resume lo que se menciona en la transcripción.",
+            "transcript_and_notes": "Consulta la transcripción del video subido y resume lo que se menciona en la transcripción. También resume lo que se cubre en las notas de la lección."
+          },
           "button_done": "hecho",
           "tabs": {
             "settings": {

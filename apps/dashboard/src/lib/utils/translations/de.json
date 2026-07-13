@@ -1889,6 +1889,13 @@
           "no_content": "Kein Inhalt",
           "no_translation": "Keine Übersetzung für die ausgewählte Sprache",
           "button": "Taste",
+          "show_transcript": "Transkript anzeigen",
+          "summarize_lesson": "Lektion zusammenfassen",
+          "summarize_lesson_prompt": {
+            "lesson_only": "Fassen Sie zusammen, was in dieser Lektion vermittelt wurde.",
+            "transcript_only": "Sehen Sie sich das Transkript des hochgeladenen Videos an und fassen Sie zusammen, was im Transkript erwähnt wird.",
+            "transcript_and_notes": "Sehen Sie sich das Transkript des hochgeladenen Videos an und fassen Sie zusammen, was im Transkript erwähnt wird. Fassen Sie auch zusammen, was in den Lektionsnotizen behandelt wird."
+          },
           "button_done": "Fertig",
           "tabs": {
             "settings": {
