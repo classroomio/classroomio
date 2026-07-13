@@ -102,6 +102,7 @@ export async function listAssignmentsForReminderScan(): Promise<
     email: string | null;
     cohortId: string;
     cohortName: string;
+    organizationId: string;
     organizationName: string;
     organizationSiteName: string | null;
     organizationCustomDomain: string | null;
@@ -119,6 +120,7 @@ export async function listAssignmentsForReminderScan(): Promise<
         email: schema.cohortMember.email,
         cohortId: schema.cohort.id,
         cohortName: schema.cohort.name,
+        organizationId: schema.organization.id,
         organizationName: schema.organization.name,
         organizationSiteName: schema.organization.siteName,
         organizationCustomDomain: schema.organization.customDomain,
@@ -147,6 +149,7 @@ export async function listAssignmentsForReminderScan(): Promise<
         email: row.email,
         cohortId: row.cohortId,
         cohortName: row.cohortName,
+        organizationId: row.organizationId,
         organizationName: row.organizationName,
         organizationSiteName: row.organizationSiteName,
         organizationCustomDomain: row.organizationCustomDomain,

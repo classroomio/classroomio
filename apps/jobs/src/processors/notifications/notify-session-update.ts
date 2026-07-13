@@ -1,6 +1,7 @@
 import { getCourseById, getCourseWithOrgData } from '@cio/db/queries/course';
 import { getCourseMembers } from '@cio/db/queries/course/people';
 import { getLessonById } from '@cio/db/queries/lesson';
+import { EmailPreferenceLookupCache } from '@cio/db/queries/notifications';
 import { ROLE } from '@cio/utils/constants';
 import { buildEmailBranding, buildEmailFromName, buildSessionIcs } from '@cio/email';
 import { ZNotifyCourseSessionUpdatePayload, enqueueEmailSend } from '@cio/jobs';
@@ -68,17 +69,33 @@ export async function processNotifyCourseSessionUpdate(rawPayload: unknown): Pro
   const members = await getCourseMembers(courseId);
   const recipients = members
     .filter((member) => member.roleId === ROLE.STUDENT)
-    .map((member) => member.profile?.email)
-    .filter((email): email is string => !!email);
+    .map((member) => ({
+      email: member.profile?.email,
+      profileId: member.profile?.id
+    }))
+    .filter((recipient): recipient is { email: string; profileId: string | undefined } => !!recipient.email);
 
   let notified = 0;
-  for (const email of recipients) {
+  const preferenceCache = new EmailPreferenceLookupCache();
+
+  for (const recipient of recipients) {
     try {
+      const allowed = await preferenceCache.shouldSend({
+        emailId: 'sessionUpdated',
+        organizationId: orgData.orgId,
+        recipientEmail: recipient.email,
+        recipientProfileId: recipient.profileId
+      });
+
+      if (!allowed) {
+        continue;
+      }
+
       await enqueueEmailSend(
         {
           kind: 'template',
           template: 'sessionUpdated',
-          to: email,
+          to: recipient.email,
           fields: {
             orgName,
             courseName: course.title,
@@ -90,11 +107,11 @@ export async function processNotifyCourseSessionUpdate(rawPayload: unknown): Pro
           from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
           ics
         },
-        { idempotencyKey: `session-updated:${lesson.id}:${email}:${sequence}` }
+        { idempotencyKey: `session-updated:${lesson.id}:${recipient.email}:${sequence}` }
       );
       notified += 1;
     } catch (error) {
-      log.error('notify-session-update-enqueue-failed', { lessonId, recipient: email });
+      log.error('notify-session-update-enqueue-failed', { lessonId, recipient: recipient.email });
     }
   }
 

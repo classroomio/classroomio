@@ -59,6 +59,7 @@ export async function notifyCourseExerciseService(courseId: string, exerciseId: 
     exerciseTitle: exercise.title,
     courseName: course.title,
     orgName,
+    organizationId: orgData.orgId,
     fromName: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
     quizUrl,
     branding: buildEmailBranding({

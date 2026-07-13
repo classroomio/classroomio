@@ -211,6 +211,11 @@ export const baseNavConfig: NavItemConfig[] = [
         matchPattern: '^/org/[^/]+/settings/?$'
       },
       {
+        titleKey: 'settings.tabs.notifications_tab',
+        path: '/settings/notifications',
+        matchPattern: '^/org/[^/]+/settings/notifications/?$'
+      },
+      {
         titleKey: 'settings.tabs.organization_tab',
         path: '/settings/org',
         matchPattern: '^/org/[^/]+/settings/(org|customize-lms|domains|teams)(/.*)?$',
@@ -253,6 +258,10 @@ export const baseNavConfig: NavItemConfig[] = [
       }
     ],
     nestedRoutes: [
+      {
+        path: 'notifications',
+        titleKey: 'settings.tabs.notifications_tab'
+      },
       {
         path: 'billing',
         titleKey: 'settings.tabs.billing_tab'

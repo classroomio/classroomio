@@ -1,0 +1,1 @@
+ALTER TABLE "profile" ADD COLUMN "settings" jsonb DEFAULT '{}'::jsonb;

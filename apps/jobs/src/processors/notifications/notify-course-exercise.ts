@@ -1,4 +1,5 @@
 import { getCourseMembers } from '@cio/db/queries/course/people';
+import { EmailPreferenceLookupCache } from '@cio/db/queries/notifications';
 import { ZNotifyCourseExercisePayload, enqueueEmailSend } from '@cio/jobs';
 import { ROLE } from '@cio/utils/constants';
 
@@ -20,17 +21,33 @@ export async function processNotifyCourseExercise(rawPayload: unknown, jobId: st
   const members = await getCourseMembers(payload.courseId);
   const recipients = members
     .filter((member) => member.roleId === ROLE.STUDENT)
-    .map((member) => member.profile?.email)
-    .filter((email): email is string => !!email);
+    .map((member) => ({
+      email: member.profile?.email,
+      profileId: member.profile?.id
+    }))
+    .filter((recipient): recipient is { email: string; profileId: string | undefined } => !!recipient.email);
 
   let notified = 0;
-  for (const email of recipients) {
+  const preferenceCache = new EmailPreferenceLookupCache();
+
+  for (const recipient of recipients) {
     try {
+      const allowed = await preferenceCache.shouldSend({
+        emailId: 'quizAssigned',
+        organizationId: payload.organizationId,
+        recipientEmail: recipient.email,
+        recipientProfileId: recipient.profileId
+      });
+
+      if (!allowed) {
+        continue;
+      }
+
       await enqueueEmailSend(
         {
           kind: 'template',
           template: 'quizAssigned',
-          to: email,
+          to: recipient.email,
           fields: {
             orgName: payload.orgName,
             courseName: payload.courseName,
@@ -41,11 +58,11 @@ export async function processNotifyCourseExercise(rawPayload: unknown, jobId: st
           from: payload.fromName
         },
         // Vary by the notify job id so re-running the nudge re-sends.
-        { idempotencyKey: `quiz-assigned:${jobId}:${email}` }
+        { idempotencyKey: `quiz-assigned:${jobId}:${recipient.email}` }
       );
       notified += 1;
     } catch (error) {
-      log.error('notify-course-exercise-enqueue-failed', { jobId, recipient: email });
+      log.error('notify-course-exercise-enqueue-failed', { jobId, recipient: recipient.email });
       throw error;
     }
   }

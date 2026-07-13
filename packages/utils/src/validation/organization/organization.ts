@@ -115,7 +115,20 @@ export const ZUpdateOrganization = z.object({
           inviteOnly: z.boolean().optional()
         })
         .optional(),
-      internalEnrollmentOnly: z.boolean().optional()
+      internalEnrollmentOnly: z.boolean().optional(),
+      emailNotifications: z
+        .object({
+          newStudent: z.boolean().optional(),
+          newSubmission: z.boolean().optional(),
+          gradingResult: z.boolean().optional(),
+          newsfeed: z.boolean().optional(),
+          quizAssigned: z.boolean().optional(),
+          cohortReminder: z.boolean().optional(),
+          session: z.boolean().optional(),
+          enrollmentWelcome: z.boolean().optional(),
+          courseCompletion: z.boolean().optional()
+        })
+        .optional()
     })
     .optional()
 });
