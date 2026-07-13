@@ -224,7 +224,8 @@ async function enrollAudienceStudentProfilesInCourses(
             },
             from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
             idempotencyKey: `audience-course-welcome:${p.groupId}:${p.profileId}`,
-            ics: icsByGroupId.get(p.groupId)
+            ics: icsByGroupId.get(p.groupId),
+            preference: { organizationId: orgId, recipientProfileId: p.profileId }
           });
           emailsSent++;
         } catch (emailError) {
@@ -307,7 +308,8 @@ async function enrollAudienceStudentProfilesInCohorts(
                 branding: buildEmailBranding(organization)
               },
               from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
-              idempotencyKey: `audience-cohort-welcome:${pair.cohortId}:${pair.profileId}`
+              idempotencyKey: `audience-cohort-welcome:${pair.cohortId}:${pair.profileId}`,
+              preference: { organizationId: orgId, recipientProfileId: pair.profileId }
             });
             emailsSent++;
           } catch (emailError) {

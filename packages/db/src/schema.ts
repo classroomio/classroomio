@@ -409,7 +409,19 @@ export const profile = pgTable(
     isEmailVerified: boolean('is_email_verified').default(false),
     verifiedAt: timestamp('verified_at', { withTimezone: true, mode: 'string' }),
     locale: locale().default('en'),
-    isRestricted: boolean('is_restricted').default(false).notNull()
+    isRestricted: boolean('is_restricted').default(false).notNull(),
+    settings: jsonb().default({}).$type<{
+      emailNotifications?: {
+        newStudent?: boolean;
+        newSubmission?: boolean;
+        gradingResult?: boolean;
+        newsfeed?: boolean;
+        quizAssigned?: boolean;
+        cohortReminder?: boolean;
+        session?: boolean;
+        courseCompletion?: boolean;
+      };
+    }>()
   },
   (table) => [
     foreignKey({
@@ -2012,6 +2024,17 @@ export const organization = pgTable(
       studentLimitNotified?: {
         half?: boolean;
         reached?: boolean;
+      };
+      emailNotifications?: {
+        newStudent?: boolean;
+        newSubmission?: boolean;
+        gradingResult?: boolean;
+        newsfeed?: boolean;
+        quizAssigned?: boolean;
+        cohortReminder?: boolean;
+        session?: boolean;
+        enrollmentWelcome?: boolean;
+        courseCompletion?: boolean;
       };
     }>(),
     landingpage: jsonb().default({}).$type<{

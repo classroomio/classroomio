@@ -675,6 +675,7 @@ export type TCourseCertificationRow = {
     emailMessage?: string | null;
   } | null;
   title: string;
+  orgId: string;
   orgSiteName: string | null;
   orgCustomDomain: string | null;
   orgIsCustomDomainVerified: boolean | null;
@@ -691,6 +692,7 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
         compliance: schema.course.compliance,
         certificate: schema.course.certificate,
         title: schema.course.title,
+        orgId: schema.organization.id,
         orgSiteName: schema.organization.siteName,
         orgCustomDomain: schema.organization.customDomain,
         orgIsCustomDomainVerified: schema.organization.isCustomDomainVerified,
@@ -1174,6 +1176,7 @@ export const getExploreCourses = async ({
  */
 export async function getCourseWithOrgData(courseId: string): Promise<{
   courseTitle: string | null;
+  orgId: string;
   orgName: string | null;
   orgSiteName: string | null;
   orgCustomDomain: string | null;
@@ -1187,6 +1190,7 @@ export async function getCourseWithOrgData(courseId: string): Promise<{
     const result = await db
       .select({
         courseTitle: schema.course.title,
+        orgId: schema.organization.id,
         orgName: schema.organization.name,
         orgSiteName: schema.organization.siteName,
         orgCustomDomain: schema.organization.customDomain,

@@ -17,6 +17,7 @@ import {
 import type { OrganizationWithMemberAndPlans } from '@cio/db/queries/organization/types';
 import { ROLE } from '@cio/utils/constants';
 import type { TProfile } from '@cio/db/types';
+import type { TUpdateProfile } from '@cio/utils/validation/account';
 import { env } from '@cio/core/config/env';
 import { getLicenseStatus } from '@api/services/license';
 
@@ -97,12 +98,18 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
  * @param data - Partial profile data to update (excluding email, id, createdAt, updatedAt)
  * @returns Updated profile data
  */
-export async function updateUser(
-  userId: string,
-  data: Partial<Omit<TProfile, 'id' | 'email' | 'createdAt' | 'updatedAt'>>
-) {
+export async function updateUser(userId: string, data: TUpdateProfile) {
   try {
-    const updatedProfile = await updateProfile(userId, data);
+    const { emailNotifications, ...profileFields } = data;
+    const updatePayload: Partial<Omit<TProfile, 'id' | 'email' | 'createdAt' | 'updatedAt'>> = {
+      ...profileFields
+    };
+
+    if (emailNotifications !== undefined) {
+      updatePayload.settings = { emailNotifications };
+    }
+
+    const updatedProfile = await updateProfile(userId, updatePayload);
 
     if (!updatedProfile) {
       throw new AppError(`Profile not found for user ID: ${userId}`, ErrorCodes.PROFILE_NOT_FOUND, 404);
