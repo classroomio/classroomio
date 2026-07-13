@@ -1,5 +1,6 @@
 import { lessonApi } from '$features/course/api';
 import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
+import { t } from '$lib/utils/functions/translations';
 import { isEnforceableLessonVideo, type LessonVideo } from '../video/video-card-utils';
 
 export function hasUploadedLessonVideo(videos: LessonVideo[] | null | undefined): boolean {
@@ -25,12 +26,12 @@ export function buildLessonSummarizePrompt(lessonId: string): string {
   const hasLessonNotes = hasLessonNoteContentForLesson(lessonId);
 
   if (!hasUploadedVideo) {
-    return 'Summarize what has been taught in this lesson.';
+    return t.get('course.navItem.lessons.materials.summarize_lesson_prompt.lesson_only');
   }
 
   if (hasLessonNotes) {
-    return 'Look at the transcript of the uploaded video and summarize what is mentioned in the transcript. Also summarize what is covered in the lesson notes.';
+    return t.get('course.navItem.lessons.materials.summarize_lesson_prompt.transcript_and_notes');
   }
 
-  return 'Look at the transcript of the uploaded video and summarize what is mentioned in the transcript.';
+  return t.get('course.navItem.lessons.materials.summarize_lesson_prompt.transcript_only');
 }

@@ -2197,6 +2197,11 @@
           "button": "button",
           "show_transcript": "Show transcript",
           "summarize_lesson": "Summarize lesson",
+          "summarize_lesson_prompt": {
+            "lesson_only": "Summarize what has been taught in this lesson.",
+            "transcript_only": "Look at the transcript of the uploaded video and summarize what is mentioned in the transcript.",
+            "transcript_and_notes": "Look at the transcript of the uploaded video and summarize what is mentioned in the transcript. Also summarize what is covered in the lesson notes."
+          },
           "tabs": {
             "note": {
               "title": "Note",

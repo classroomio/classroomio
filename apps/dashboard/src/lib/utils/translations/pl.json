@@ -1891,6 +1891,11 @@
           "button": "przycisk",
           "show_transcript": "Pokaż transkrypt",
           "summarize_lesson": "Podsumuj lekcję",
+          "summarize_lesson_prompt": {
+            "lesson_only": "Podsumuj, czego nauczono się w tej lekcji.",
+            "transcript_only": "Przejrzyj transkrypcję przesłanego wideo i podsumuj, co zostało w niej wspomniane.",
+            "transcript_and_notes": "Przejrzyj transkrypcję przesłanego wideo i podsumuj, co zostało w niej wspomniane. Podsumuj także to, co zostało omówione w notatkach do lekcji."
+          },
           "button_done": "Gotowe",
           "tabs": {
             "settings": {
