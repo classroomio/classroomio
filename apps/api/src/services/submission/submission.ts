@@ -1005,7 +1005,11 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
         })
       },
       from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-      idempotencyKey: `submission-update:${submissionId}:${newStatusId}`
+      idempotencyKey: `submission-update:${submissionId}:${newStatusId}`,
+      preference: {
+        organizationId: orgResult?.orgId,
+        recipientProfileId: fullSubmission.groupmember.profile.id
+      }
     });
   } catch (error) {
     console.error('Failed to enqueue submission graded email:', error);
@@ -1076,7 +1080,8 @@ async function sendExerciseSubmissionUpdateEmail(courseId: string, exerciseId: s
         })
       },
       from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-      idempotencyKey: `exercise-submitted:${courseId}:${exerciseId}:${submittedBy}`
+      idempotencyKey: `exercise-submitted:${courseId}:${exerciseId}:${submittedBy}`,
+      preference: { organizationId: orgResult?.orgId }
     });
   } catch (error) {
     console.error('Failed to enqueue submission received email:', error);

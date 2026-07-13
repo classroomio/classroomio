@@ -137,7 +137,7 @@
   {:else}
     <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
     <div
-      class="max-w-[90%] rounded-lg px-3 py-2 text-sm {message.role === 'user'
+      class="max-w-[90%] min-w-0 rounded-lg px-3 py-2 text-sm {message.role === 'user'
         ? 'ui:bg-primary ui:text-primary-foreground'
         : 'ui:bg-muted'}"
       onclick={handleBubbleClick}
@@ -159,8 +159,8 @@
       {#each inlineParts as part, partIndex (partIndex)}
         {#if part.type === 'text'}
           <div
-            class="ai-chat-prose prose prose-sm dark:prose-invert max-w-none break-all {message.role === 'user' &&
-              'ui:text-primary-foreground!'}"
+            class="ai-chat-prose prose prose-sm dark:prose-invert max-w-none min-w-0 break-words {message.role ===
+              'user' && 'ui:text-primary-foreground!'}"
           >
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->
             {@html renderMentions(renderMarkdown(part.text as string), courseId)}
@@ -260,6 +260,17 @@
   /* Reset global `apps/dashboard/src/app.css` `.prose p { mb-4 }` for chat bubbles */
   :global(.ai-chat-prose.prose p) {
     margin-bottom: 0;
+  }
+
+  /* Normal prose wraps at word boundaries; only unbreakable runs (URLs, keys) split mid-token. */
+  :global(.ai-chat-prose.prose pre) {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  :global(.ai-chat-prose.prose :not(pre) > code),
+  :global(.ai-chat-prose.prose a) {
+    overflow-wrap: anywhere;
   }
 
   :global(.mention-link) {

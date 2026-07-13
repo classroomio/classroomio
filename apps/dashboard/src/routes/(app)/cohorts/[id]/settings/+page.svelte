@@ -44,15 +44,15 @@
   ];
 
   const hasUnsavedChanges = $derived.by(() => {
-    const currentProgram = cohortApi.program;
-    if (!currentProgram) {
+    const currentCohort = cohortApi.cohort;
+    if (!currentCohort) {
       return false;
     }
 
     return (
-      name.trim() !== currentProgram.name ||
-      description.trim() !== (currentProgram.description ?? '') ||
-      status !== ((currentProgram.status as 'ACTIVE' | 'INACTIVE' | 'ARCHIVED') ?? 'ACTIVE')
+      name.trim() !== currentCohort.name ||
+      description.trim() !== (currentCohort.description ?? '') ||
+      status !== ((currentCohort.status as 'ACTIVE' | 'INACTIVE' | 'ARCHIVED') ?? 'ACTIVE')
     );
   });
 
@@ -102,13 +102,13 @@
             <h2 class="mb-4 text-sm font-semibold">{$t('cohorts.settings.general') || 'General'}</h2>
             <div class="flex flex-col gap-4">
               <div class="flex flex-col gap-1.5">
-                <Label for="prog-name">{$t('cohorts.settings.name_label') || 'Name'} *</Label>
-                <Input id="prog-name" bind:value={name} maxlength={255} />
+                <Label for="cohort-name">{$t('cohorts.settings.name_label') || 'Name'} *</Label>
+                <Input id="cohort-name" bind:value={name} maxlength={255} />
               </div>
 
               <div class="flex flex-col gap-1.5">
-                <Label for="prog-desc">{$t('cohorts.settings.description_label') || 'Description'}</Label>
-                <Textarea id="prog-desc" bind:value={description} rows={4} maxlength={2000} />
+                <Label for="cohort-desc">{$t('cohorts.settings.description_label') || 'Description'}</Label>
+                <Textarea id="cohort-desc" bind:value={description} rows={4} maxlength={2000} />
               </div>
 
               <div class="flex flex-col gap-1.5">
@@ -142,7 +142,7 @@
                 'Once deleted, this cohort and all its data cannot be recovered.'}
             </p>
             <Button variant="destructive" onclick={handleDelete} disabled={cohortApi.isLoading}>
-              {$t('cohorts.settings.delete') || 'Delete Program'}
+              {$t('cohorts.settings.delete') || 'Delete Cohort'}
             </Button>
           </section>
         </div>

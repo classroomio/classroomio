@@ -35,7 +35,7 @@
     'exercise.submitted',
     'exercise.graded',
     'certificate.issued',
-    'program.completed',
+    'cohort.completed',
     'course.published',
     'course.unpublished'
   ];

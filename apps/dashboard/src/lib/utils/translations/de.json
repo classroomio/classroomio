@@ -424,17 +424,17 @@
     "cohort": {
       "error": {
         "reaction_error": "Beim Reagieren auf den Beitrag ist ein Fehler aufgetreten",
-        "news_feed_fail": "Der Programm-Newsfeed konnte nicht abgerufen werden",
+        "news_feed_fail": "Der Kohorte-Newsfeed konnte nicht abgerufen werden",
         "post_create_failed": "Beitrag konnte nicht erstellt werden",
         "post_update_failed": "Beitrag konnte nicht aktualisiert werden",
         "code": {
-          "cohort_forbidden": "Sie müssen Mitglied dieses Programms sein, um diese Aktion ausführen zu können.",
-          "cohort_member_check_failed": "Wir konnten Ihre Programmmitgliedschaft nicht bestätigen. Versuchen Sie es erneut.",
-          "cohort_not_found": "Dieses Programm konnte nicht gefunden werden.",
-          "cohort_create_failed": "Das Programm konnte nicht erstellt werden.",
-          "cohort_update_failed": "Das Programm konnte nicht aktualisiert werden.",
-          "cohort_delete_failed": "Das Programm konnte nicht gelöscht werden.",
-          "cohort_member_not_found": "Dieses Programmmitglied konnte nicht gefunden werden.",
+          "cohort_forbidden": "Sie müssen Mitglied dieses Kohorte sein, um diese Aktion ausführen zu können.",
+          "cohort_member_check_failed": "Wir konnten Ihre Kohortenmitgliedschaft nicht bestätigen. Versuchen Sie es erneut.",
+          "cohort_not_found": "Dieses Kohorte konnte nicht gefunden werden.",
+          "cohort_create_failed": "Das Kohorte konnte nicht erstellt werden.",
+          "cohort_update_failed": "Das Kohorte konnte nicht aktualisiert werden.",
+          "cohort_delete_failed": "Das Kohorte konnte nicht gelöscht werden.",
+          "cohort_member_not_found": "Dieses Kohortenmitglied konnte nicht gefunden werden.",
           "cohort_newsfeed_not_found": "Dieser Beitrag konnte nicht gefunden werden.",
           "cohort_newsfeed_comment_not_found": "Dieser Kommentar konnte nicht gefunden werden."
         }
@@ -493,7 +493,7 @@
     "explore": "Entdecken",
     "help": "Hilfe",
     "settings": "Einstellungen",
-    "cohorts": "Programme"
+    "cohorts": "Kohorten"
   },
   "upgrade": {
     "certificate": "Aktualisieren Sie Ihren Plan, um Zertifikate zu generieren",
@@ -690,12 +690,12 @@
       "snackbar_success": "{imported} neue Einladungen, {assigned} bestehende Studierende mit Kurszugang, {pendingInvitesRenewed} ausstehende Einladungen erneuert ({emailsSent} E-Mails gesendet)",
       "snackbar_no_emails": "Bitte geben Sie mindestens eine E-Mail-Adresse ein",
       "snackbar_failed": "Benutzer konnten nicht importiert werden",
-      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like.",
-      "cohort_access": "Programmzugriff",
-      "no_cohorts": "Keine Programmzuweisung",
-      "all_cohorts": "Alle Programme",
-      "select_cohorts": "Bestimmte Programme auswählen",
-      "select_cohorts_placeholder": "Programme auswählen..."
+      "page_subtitle": "Fügen Sie viele Personen auf einmal per E-Mail hinzu und weisen Sie ihnen bei Bedarf Kurse oder Kohorten zu.",
+      "cohort_access": "Kohortenzugriff",
+      "no_cohorts": "Keine Kohortenzuweisung",
+      "all_cohorts": "Alle Kohorten",
+      "select_cohorts": "Bestimmte Kohorten auswählen",
+      "select_cohorts_placeholder": "Kohorten auswählen..."
     },
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "user_analytics": {
@@ -705,7 +705,7 @@
     "delete": {
       "action": "Löschen",
       "title": "Mitglied löschen",
-      "description": "Dadurch wird das Mitglied aus Ihrer Organisation entfernt und ihm der Zugriff auf alle zugewiesenen Kurse und Programme entzogen.",
+      "description": "Dadurch wird das Mitglied aus Ihrer Organisation entfernt und ihm der Zugriff auf alle zugewiesenen Kurse und Kohorten entzogen.",
       "confirmation": "Sind Sie sicher, dass Sie {name} ({email}) löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
       "cancel": "Abbrechen",
       "confirm": "Löschen",
@@ -858,7 +858,7 @@
         "description": "Kursbeschreibung",
         "learn": "Was Sie lernen werden",
         "certificate": "Zertifikat",
-        "certificate_text": "Wenn Sie alle Kurse des Programms abschließen, erhalten Sie ein Zertifikat, das Sie mit Ihrem beruflichen Netzwerk teilen können.",
+        "certificate_text": "Wenn Sie alle Kurse der Kohorte abschließen, erhalten Sie ein Zertifikat, das Sie mit Ihrem beruflichen Netzwerk teilen können.",
         "content": "Kursinhalt",
         "slide": "1 Folie",
         "note": "Hinweis",
@@ -2822,7 +2822,7 @@
     "stats": "Statistiken",
     "analytics": "Analytik",
     "compliance": "Compliance",
-    "cohorts": "Programme",
+    "cohorts": "Kohorten",
     "upgrade_now": "Jetzt upgraden",
     "upgrade_students": "{studentCount} von {studentLimit} Studenten",
     "upgrade_left": "{count} übrig"
@@ -3402,7 +3402,8 @@
       "domains_tab": "Domänen",
       "teams_tab": "Mannschaften",
       "ai_credits_tab": "AI Credits",
-      "ai_tutor_tab": "KI-Tutor"
+      "ai_tutor_tab": "KI-Tutor",
+      "notifications_tab": "Notifications"
     },
     "subheadings": {
       "view_site": "Offene Akademie"
@@ -3576,6 +3577,75 @@
         "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
         "buy_button": "Für ${dollars} kaufen"
       }
+    },
+    "notifications": {
+      "heading": "Notifications",
+      "page_title": "Notifications",
+      "page_subtitle": "Choose which email notifications you receive and, as an admin, which emails your organization sends.",
+      "toggles": {
+        "courseCompletion": {
+          "label": "Course completion and certificates",
+          "description": "Email students when they complete a course and earn a certificate."
+        },
+        "enrollmentWelcome": {
+          "label": "Enrollment welcome emails",
+          "description": "Send welcome emails when staff enroll students in courses or cohorts."
+        },
+        "session": {
+          "label": "Live session reminders and updates",
+          "description": "Email students before live sessions and when session details change."
+        },
+        "cohortReminder": {
+          "label": "Cohort goal reminders",
+          "description": "Email students about upcoming or overdue cohort learning goals."
+        },
+        "quizAssigned": {
+          "label": "Exercise assigned",
+          "description": "Email students when an exercise is assigned or nudged."
+        },
+        "newsfeed": {
+          "label": "Course announcements and comments",
+          "description": "Email course members about new posts and comments on the newsfeed."
+        },
+        "gradingResult": {
+          "label": "Grading results",
+          "description": "Email students when their submission is graded or updated."
+        },
+        "newSubmission": {
+          "label": "New submissions to grade",
+          "description": "Email tutors when a student submits work that needs grading."
+        },
+        "newStudent": {
+          "label": "New student joins",
+          "description": "Email tutors when a student enrolls in a course."
+        }
+      },
+      "org": {
+        "heading": "Organization defaults",
+        "description": "When disabled here, nobody in your organization receives that email. Members can still opt out of emails you leave enabled.",
+        "save": "Save organization defaults",
+        "save_success": "Organization notification defaults saved"
+      },
+      "personal": {
+        "heading": "Your email preferences",
+        "description": "These apply to emails sent to you across every organization you belong to. Your organization may still disable certain emails for everyone.",
+        "save": "Save personal preferences",
+        "save_success": "Personal notification preferences saved"
+      },
+      "sections": {
+        "enrollment": {
+          "heading": "Enrollment",
+          "description": "Welcome emails sent when staff add members to courses or cohorts."
+        },
+        "cohort": {
+          "heading": "Cohort",
+          "description": "Reminders about cohort learning goals and deadlines."
+        },
+        "course": {
+          "heading": "Course",
+          "description": "Enrollments, submissions, lessons, announcements, and completions in your courses."
+        }
+      }
     }
   },
   "profileMenu": {
@@ -3632,9 +3702,9 @@
       "command_palette": {
         "title": "Befehlspalette",
         "description": "Suchen und navigieren Sie in Ihrer Organisation",
-        "placeholder": "Durchsuchen Sie Kurse, Programme, Widgets, Studenten, Tags, Einstellungen ...",
-        "org_placeholder": "Durchsuchen Sie Kurse, Programme, Widgets, Studenten, Tags, Einstellungen ...",
-        "lms_placeholder": "Durchsuchen Sie Ihre Kurse, Programme und Lernseiten ...",
+        "placeholder": "Durchsuchen Sie Kurse, Kohorten, Widgets, Studenten, Tags, Einstellungen ...",
+        "org_placeholder": "Durchsuchen Sie Kurse, Kohorten, Widgets, Studenten, Tags, Einstellungen ...",
+        "lms_placeholder": "Durchsuchen Sie Ihre Kurse, Kohorten und Lernseiten ...",
         "lms_description": "Durchsuchen und navigieren Sie in Ihrem Lernarbeitsbereich",
         "empty": "Keine Ergebnisse gefunden",
         "loading": "Suche...",
@@ -3646,7 +3716,6 @@
           "recent": "Neu",
           "suggested": "Vorgeschlagen",
           "courses": "Kurse",
-          "programs": "Programme",
           "widgets": "Widgets",
           "tags": "Schlagworte",
           "students": "Studenten",
@@ -3762,7 +3831,7 @@
     },
     "catalog_empty": {
       "title": "Noch keine Kurse veröffentlicht",
-      "description": "Schauen Sie bald wieder vorbei für neue Programme."
+      "description": "Schauen Sie bald wieder vorbei für neue Kurse."
     },
     "filters": {
       "title": "Nach Tags filtern",
@@ -4615,18 +4684,18 @@
     }
   },
   "cohorts": {
-    "heading": "Programme",
-    "page_title": "Programme",
-    "create": "Neues Programm",
-    "create_success": "Programm erstellt",
-    "update_success": "Programm aktualisiert",
-    "delete_success": "Programm gelöscht",
+    "heading": "Kohorten",
+    "page_title": "Kohorten",
+    "create": "Neue Kohorte",
+    "create_success": "Kohorte erstellt",
+    "update_success": "Kohorte aktualisiert",
+    "delete_success": "Kohorte gelöscht",
     "members_added": "Mitglieder hinzugefügt",
     "member_removed": "Mitglied entfernt",
     "course_added": "Kurs hinzugefügt",
     "course_removed": "Kurs entfernt",
-    "empty_title": "Noch keine Programme",
-    "empty_description": "Erstellen Sie Ihr erstes Zertifizierungs- oder Compliance-Programm.",
+    "empty_title": "Noch keine Kohorten",
+    "empty_description": "Erstellen Sie Ihre erste Zertifizierungs- oder Compliance-Kohorte.",
     "settings": {
       "general": "Allgemein",
       "name_label": "Name",
@@ -4634,40 +4703,40 @@
       "status_label": "Status",
       "save": "Änderungen speichern",
       "danger_zone": "Gefahrenzone",
-      "delete": "Programm löschen",
-      "delete_description": "Nach dem Löschen können dieses Programm und alle seine Daten nicht wiederhergestellt werden.",
-      "confirm_delete": "Sind Sie sicher, dass Sie dieses Programm löschen möchten? Dies kann nicht rückgängig gemacht werden."
+      "delete": "Kohorte löschen",
+      "delete_description": "Nach dem Löschen können diese Kohorte und alle ihre Daten nicht wiederhergestellt werden.",
+      "confirm_delete": "Sind Sie sicher, dass Sie diese Kohorte löschen möchten? Dies kann nicht rückgängig gemacht werden."
     },
     "lms": {
-      "empty_title": "Noch keine Programme",
-      "empty_description": "Sie sind in keinem Programm eingeschrieben."
+      "empty_title": "Noch keine Kohorten",
+      "empty_description": "Sie sind in keinem Kohorte eingeschrieben."
     },
     "people": {
       "invite": "Einladen",
       "invite_modal_title": "Mitglieder einladen",
-      "invite_modal_description": "Fügen Sie Personen per E-Mail zu diesem Programm hinzu.",
+      "invite_modal_description": "Fügen Sie Personen per E-Mail zu dieser Kohorte hinzu.",
       "email_label": "E-Mail",
       "role_label": "Rolle",
       "add_another": "Fügen Sie einen weiteren hinzu",
       "invite_submit": "Senden Sie Einladungen",
       "empty_title": "Noch keine Mitglieder",
-      "empty_description": "Laden Sie Menschen ein, an diesem Programm teilzunehmen."
+      "empty_description": "Laden Sie Menschen ein, dieser Kohorte beizutreten."
     },
     "courses": {
       "add": "Kurs hinzufügen",
-      "add_modal_title": "Kurs zum Programm hinzufügen",
+      "add_modal_title": "Kurs zur Kohorte hinzufügen",
       "select_course": "Wählen Sie einen Kurs aus",
       "select_placeholder": "Wählen Sie einen Kurs…",
       "empty_title": "Noch keine Kurse",
-      "empty_description": "Fügen Sie Kurse zu diesem Programm hinzu.",
+      "empty_description": "Fügen Sie Kurse zu dieser Kohorte hinzu.",
       "select_courses": "Kurse auswählen",
       "search_placeholder": "Kurse suchen",
       "no_available_courses": "Keine Kurse zum Hinzufügen verfügbar.",
       "no_matching_courses": "Zu Ihrer Suche passen keine Kurse.",
-      "no_matching_cohort_courses": "Zu Ihrer Suche passen keine Studiengänge.",
+      "no_matching_cohort_courses": "Zu Ihrer Suche passen keine Kohortenkurse.",
       "pagination_status": "Seite {page} von {totalPages}",
       "published_access_callout_title": "Zugang für Studierende",
-      "published_access_callout_description": "Studierende haben nur Zugriff auf veröffentlichte Kurse. Kurse können für Ihr Team in diesem Programm enthalten sein, solange sie noch unveröffentlicht sind, während sie den Studierenden verborgen bleiben, bis Sie sie veröffentlichen."
+      "published_access_callout_description": "Studierende haben nur Zugriff auf veröffentlichte Kurse. Kurse können für Ihr Team in dieser Kohorte enthalten sein, solange sie noch unveröffentlicht sind, und bleiben den Studierenden verborgen, bis Sie sie veröffentlichen."
     },
     "newsfeed": {
       "post": "Neuer Beitrag",
@@ -4678,7 +4747,7 @@
       "heading": "Newsfeed",
       "make_a_post": "Machen Sie einen Beitrag",
       "edit_post": "Beitrag bearbeiten",
-      "editor_placeholder": "Teilen Sie ein Update mit Ihrem Programm",
+      "editor_placeholder": "Teilen Sie ein Update mit Ihrer Kohorte",
       "cancel": "Abbrechen",
       "pinned": "Angepinnt",
       "delete_feed_title": "Beitrag löschen",
@@ -4689,7 +4758,7 @@
         "comment": "Kommentar",
         "showing_of": "Es werden {shown} von {total} angezeigt",
         "hide": "Kommentare ausblenden",
-        "placeholder": "Programmkommentar hinzufügen",
+        "placeholder": "Kohortenkommentar hinzufügen",
         "submit_aria": "Kommentar abgeben",
         "delete": "Löschen"
       },
@@ -4701,12 +4770,12 @@
       }
     },
     "create_modal": {
-      "title": "Programm erstellen",
-      "description": "Fügen Sie ein neues Zertifizierungs- oder Compliance-Programm hinzu.",
+      "title": "Kohorte erstellen",
+      "description": "Fügen Sie eine neue Zertifizierungs- oder Compliance-Kohorte hinzu.",
       "name_label": "Name",
       "name_placeholder": "z.B. OSHA-Sicherheitszertifizierung",
       "description_label": "Beschreibung",
-      "description_placeholder": "Worum geht es in diesem Programm?",
+      "description_placeholder": "Worum geht es in dieser Kohorte?",
       "submit": "Erstellen"
     },
     "sidebar": {
@@ -4721,9 +4790,9 @@
       "archived": "Archiviert"
     },
     "description": "Gewähren Sie einer Gruppe von Personen Zugriff auf mehrere Kurse, z. B. einen Kurs",
-    "search_placeholder": "Suchprogramme",
+    "search_placeholder": "Suchkohorten",
     "multiple_added": "Kurse hinzugefügt",
-    "no_matching_cohorts": "Keine Programme entsprechen Ihren Filtern.",
+    "no_matching_cohorts": "Keine Kohorten entsprechen Ihren Filtern.",
     "card": {
       "courses": "Kurse",
       "students": "Studenten"
@@ -4752,7 +4821,7 @@
     "invite_sent": "Einladungen gesendet",
     "goals": {
       "heading": "Lernziele",
-      "description": "Legen Sie messbare Ziele fest, die sich über mehrere Kurse für alle Teilnehmer dieses Programms erstrecken.",
+      "description": "Legen Sie messbare Ziele fest, die sich über mehrere Kurse für alle Teilnehmer dieser Kohorte erstrecken.",
       "add": "Neues Ziel",
       "empty_title": "Noch keine Ziele",
       "empty_description": "Erstellen Sie ein Ziel, um den Teamfortschritt über mehrere Kurse hinweg zu verfolgen.",

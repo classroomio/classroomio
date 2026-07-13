@@ -137,6 +137,30 @@ export class ProfileApi extends BaseApiWithErrors {
     }
   }
 
+  async updateEmailNotifications(emailNotifications: Record<string, boolean>) {
+    try {
+      this.isLoading = true;
+      this.errors = {};
+      this.success = false;
+
+      await this.execute<typeof classroomio.account.profile.$put>({
+        requestFn: () => classroomio.account.profile.$put({ json: { emailNotifications } }),
+        logContext: 'updating email notification preferences',
+        onSuccess: (response) => {
+          profileStore.update((_profile) => ({
+            ..._profile,
+            ...response.profile
+          }));
+          this.success = true;
+        }
+      });
+    } catch (error) {
+      this.handleError(error);
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
   async changeEmail(fields: TChangeEmailForm) {
     // Validate email format
     const result = ZChangeEmail.safeParse({ newEmail: fields.newEmail });

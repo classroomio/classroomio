@@ -9,6 +9,6 @@
   <rect x="136" y="452" width="200" height="56" rx="16" fill="#FFFFFF"/>
   <rect x="424" y="96" width="1032" height="92" rx="24" fill="#E2E8F0"/>
   <rect x="424" y="224" width="1032" height="532" rx="24" fill="#FFFFFF" stroke="#94A3B8" stroke-dasharray="14 10" stroke-width="4"/>
-  <text x="940" y="470" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0F172A">Program Shell Placeholder</text>
+  <text x="940" y="470" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0F172A">Cohort Shell Placeholder</text>
   <text x="940" y="528" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#475569">Replace with a screenshot showing the sidebar and header layout.</text>
 </svg>

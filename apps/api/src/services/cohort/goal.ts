@@ -221,7 +221,7 @@ function decideStatus(args: {
  *
  * Pulls all student cohort-members, computes a per-learner status, and upserts
  * `program_goal_assignment`. Designed to be safe to run repeatedly (idempotent)
- * and cheap enough for daily cron over hundreds of programs.
+ * and cheap enough for daily cron over hundreds of cohorts.
  */
 export async function evaluateGoal(goalId: string): Promise<{ evaluated: number }> {
   const goal = await getCohortGoalById(goalId);
@@ -316,7 +316,7 @@ export async function evaluateGoal(goalId: string): Promise<{ evaluated: number 
 }
 
 /**
- * Re-evaluate every active goal in a cohort. Used after material program
+ * Re-evaluate every active goal in a cohort. Used after material cohort
  * changes (member added, course added) or by cron sweeps.
  */
 export async function evaluateCohortGoals(cohortId: string): Promise<{ evaluated: number }> {
@@ -429,7 +429,8 @@ export async function runCohortGoalReminderScan(): Promise<{
             theme: row.organizationTheme
           })
         },
-        idempotencyKey: `cohort-goal-reminder:${row.assignment.id}:${daysUntilDue}:${dayKey}`
+        idempotencyKey: `cohort-goal-reminder:${row.assignment.id}:${daysUntilDue}:${dayKey}`,
+        preference: { organizationId: row.organizationId, recipientProfileId: row.profileId }
       });
       remindersEnqueued += 1;
     } catch (error) {
@@ -450,7 +451,7 @@ export async function getMyGoals(profileId: string) {
 
 /**
  * Cross-cohort goal roll-up for the org owner. Lists every active goal in the
- * org with its per-status counts so the dashboard can group by program.
+ * org with its per-status counts so the dashboard can group by cohort.
  */
 export async function getOrgGoalsOverview(organizationId: string) {
   const goals = await getCohortGoalsByOrg(organizationId);

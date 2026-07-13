@@ -359,6 +359,7 @@ async function sendStudentJoinEmails(input: {
   courseId: string;
   courseName: string;
   orgName: string;
+  organizationId: string;
   org: OrgUrlInfo;
   branding: EmailBranding;
   studentId: string;
@@ -379,7 +380,8 @@ async function sendStudentJoinEmails(input: {
       },
       from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`),
       idempotencyKey: `course-welcome:${input.courseId}:${input.studentId}`,
-      ics
+      ics,
+      preference: { organizationId: input.organizationId, recipientProfileId: input.studentId }
     });
   } catch (error) {
     console.error('Failed to enqueue student welcome email:', error);
@@ -407,7 +409,8 @@ async function sendStudentJoinEmails(input: {
         branding: input.branding
       },
       from: buildEmailFromName('ClassroomIO'),
-      idempotencyKey: `teacher-student-joined:${input.courseId}:${input.studentId}`
+      idempotencyKey: `teacher-student-joined:${input.courseId}:${input.studentId}`,
+      preference: { organizationId: input.organizationId }
     });
   } catch (error) {
     console.error('Failed to enqueue teacher join notification emails:', error);
@@ -696,6 +699,7 @@ export async function enrollInCourse(
     courseId,
     courseName: title,
     orgName: org.name,
+    organizationId: org.id,
     org: { siteName: org.siteName, customDomain: org.customDomain, isCustomDomainVerified: org.isCustomDomainVerified },
     branding: buildEmailBranding({ name: org.name, avatarUrl: org.avatarUrl, theme: org.theme }),
     studentId: user.id,
@@ -964,6 +968,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
         courseId: course.id,
         courseName: course.title,
         orgName: organization.name,
+        organizationId: organization.id,
         orgSiteName: organization.siteName,
         orgCustomDomain: organization.customDomain,
         orgIsCustomDomainVerified: organization.isCustomDomainVerified,
@@ -1049,6 +1054,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       courseId: course.id,
       courseName: course.title,
       orgName: organization.name,
+      organizationId: organization.id,
       orgSiteName: organization.siteName,
       orgCustomDomain: organization.customDomain,
       orgIsCustomDomainVerified: organization.isCustomDomainVerified,
@@ -1066,6 +1072,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       courseId: result.courseId,
       courseName: result.courseName,
       orgName: result.orgName,
+      organizationId: result.organizationId,
       org: {
         siteName: result.orgSiteName,
         customDomain: result.orgCustomDomain,

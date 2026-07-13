@@ -82,7 +82,7 @@ export const cohortNewsfeedCommentAuthorOrTeamMiddleware = async (c: Context, ne
     return c.json(
       {
         success: false,
-        error: 'Only the author or program team members can perform this action',
+        error: 'Only the author or cohort team members can perform this action',
         code: ErrorCodes.ORG_TEAM_NOT_AUTHORIZED
       },
       403

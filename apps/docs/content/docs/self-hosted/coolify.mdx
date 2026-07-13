@@ -45,7 +45,7 @@ This uses a **Docker Compose resource**: you paste the compose file and set ever
 
 Log in to Coolify and **create a project**. When you add a resource, Coolify asks what type it is — GitHub, a Docker image, a service, or a **Docker Compose** file. Choose **Docker Compose**, then **paste the contents of [`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker-compose.images.yaml)** into the editor.
 
-![Showing list of options to choose from](/coolify-02-services.png)
+![Showing list of options to choose from](/coolify-02-services.webp)
 
 </Step>
 
@@ -53,8 +53,8 @@ Log in to Coolify and **create a project**. When you add a resource, Coolify ask
 ### Confirm the services parsed
 
 After saving, Coolify parses the compose file and lists the services: `postgres`, `redis`, `api`, `dashboard`, `jobs` (and `minio` once you enable its profile in the next step). Confirm they all appear before moving on.
-![Select composer file type](/coolify-01-add-resource.png)
-![Coolify showing the parsed ClassroomIO services](/coolify-02-services.png)
+![Select composer file type](/coolify-01-add-resource.webp)
+![Coolify showing the parsed ClassroomIO services](/coolify-02-services.webp)
 </Step>
 
 <Step>
@@ -87,7 +87,7 @@ SMTP_SENDER=ClassroomIO <you@yourdomain.com>
   only if you use that integration. Leaving an optional one blank never causes a build or boot error.
 </Callout>
 
-![Setting the environment variables in Coolify](/coolify-03-env-vars.png)
+![Setting the environment variables in Coolify](/coolify-03-env-vars.webp)
 </Step>
 
 <Step>
@@ -102,7 +102,7 @@ SMTP_SENDER=ClassroomIO <you@yourdomain.com>
   reproducible.
 </Callout>
 
-![Confirming the classroomio image tags on Docker Hub](/coolify-04-image-tag.png)
+![Confirming the classroomio image tags on Docker Hub](/coolify-04-image-tag.webp)
 </Step>
 
 <Step>
@@ -112,7 +112,7 @@ Open the **dashboard** service → **Settings** and set its domain, including th
 
 The dashboard proxies API calls server-side, so you normally only expose the dashboard publicly — the `api` service stays internal.
 
-![Setting the dashboard service domain in Coolify](/coolify-05-dashboard-domain.png)
+![Setting the dashboard service domain in Coolify](/coolify-05-dashboard-domain.webp)
 </Step>
 
 <Step>
@@ -120,7 +120,7 @@ The dashboard proxies API calls server-side, so you normally only expose the das
 
 Click **Deploy**. Coolify pulls `classroomio/{api,dashboard,jobs}:${CIO_VERSION}`, starts Postgres + Redis, the API container runs database setup on first boot, then the dashboard and the **jobs worker** come up. Watch the **logs** — they tell you when every service is up.
 
-![Coolify deploy logs showing the stack coming up](/coolify-06-deploy-logs.png)
+![Coolify deploy logs showing the stack coming up](/coolify-06-deploy-logs.webp)
 </Step>
 
 <Step>
@@ -128,7 +128,7 @@ Click **Deploy**. Coolify pulls `classroomio/{api,dashboard,jobs}:${CIO_VERSION}
 
 Once the logs show the stack is healthy, open your dashboard URL (`https://dash.yourdomain.com`) in a new browser tab and **sign up**. The **first** account becomes the organization **admin**. Every signup or sign-in after that joins as a student — unless you invite them with a specific role.
 
-![The running ClassroomIO dashboard sign-up page](/railway-12-signup.png)
+![The running ClassroomIO dashboard sign-up page](/railway-12-signup.webp)
 </Step>
 
 </Steps>
