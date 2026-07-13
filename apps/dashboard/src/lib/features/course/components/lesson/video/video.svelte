@@ -42,9 +42,9 @@
   }
 </script>
 
-{#snippet content(video)}
+{#snippet content(video, index)}
   {#key video.type === 'upload' ? ((video as typeof video & { assetId?: string }).assetId ?? video.link) : video.link}
-    <LessonVideoPlayer {video} {courseId} {lessonId} />
+    <LessonVideoPlayer {video} {courseId} {lessonId} showSummarizeButton={index === videos.length - 1} />
   {/key}
 {/snippet}
 
@@ -81,9 +81,9 @@
   <!-- View Mode -->
   {#if videos.length}
     <div class="w-full">
-      {#each videos as video}
+      {#each videos as video, index}
         <div class="mb-5 w-full overflow-hidden">
-          {@render content(video)}
+          {@render content(video, index)}
         </div>
       {/each}
     </div>
