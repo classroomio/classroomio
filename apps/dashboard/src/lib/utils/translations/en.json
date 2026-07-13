@@ -484,8 +484,8 @@
           "description": "Email course members about new posts and comments on the newsfeed."
         },
         "quizAssigned": {
-          "label": "Quiz or exercise assigned",
-          "description": "Email students when a quiz or exercise is assigned or nudged."
+          "label": "Exercise assigned",
+          "description": "Email students when an exercise is assigned or nudged."
         },
         "cohortReminder": {
           "label": "Cohort goal reminders",

@@ -3593,8 +3593,8 @@
           "description": "Email students about upcoming or overdue cohort learning goals."
         },
         "quizAssigned": {
-          "label": "Quiz or exercise assigned",
-          "description": "Email students when a quiz or exercise is assigned or nudged."
+          "label": "Exercise assigned",
+          "description": "Email students when an exercise is assigned or nudged."
         },
         "newsfeed": {
           "label": "Course announcements and comments",
