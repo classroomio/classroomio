@@ -45,8 +45,8 @@ The one-click template provisions **all of the services** for you — Postgres, 
 
 Click the **Deploy on Railway** button above. Railway opens the template page where all of the ClassroomIO services are listed and ready to configure.
 
-![Railway template page for ClassroomIO after clicking Deploy](/railway-01-deploy-template.png)
-</Step>
+![Railway template page for ClassroomIO after clicking Deploy](/railway-01-deploy-template.webp)
+
 
 <Step>
 ### Review the preconfigured services
@@ -58,7 +58,7 @@ The template comes with every service preconfigured — most need nothing from y
 
 The next three steps cover the services that **do** need input: `cio-jobs`, `cio-minio`, and `cio-api`.
 
-![The Railway template listing all preconfigured ClassroomIO services](/railway-02-services-overview.png)
+![The Railway template listing all preconfigured ClassroomIO services](/railway-02-services-overview.webp)
 </Step>
 
 <Step>
@@ -72,7 +72,7 @@ The next three steps cover the services that **do** need input: `cio-jobs`, `cio
 - `SMTP_SENDER`
 - `SMTP_PASSWORD`
 
-![Entering the SMTP variables on the cio-jobs service in the template](/railway-03-jobs-smtp.png)
+![Entering the SMTP variables on the cio-jobs service in the template](/railway-03-jobs-smtp.webp)
 </Step>
 
 <Step>
@@ -84,7 +84,7 @@ Set the storage credentials on `cio-minio`:
 - `MINIO_ROOT_USER`
 - `MINIO_ROOT_PASSWORD`
 
-![Configuring MINIO_SERVER_URL and credentials on the cio-minio service](/railway-04-minio-credentials.png)
+![Configuring MINIO_SERVER_URL and credentials on the cio-minio service](/railway-04-minio-credentials.webp)
 </Step>
 
 <Step>
@@ -92,8 +92,8 @@ Set the storage credentials on `cio-minio`:
 
 On `cio-api`, set the SMTP host and any additional values you want. See the [Environment variable reference](#environment-variable-reference) below for the full list (object storage, auth secrets, dashboard origin, and more).
 
-![Configuring the cio-api service variables in the template](/railway-05-api-config.png)
-![Additional cio-api configuration options](/railway-06-api-config-additional.png)
+![Configuring the cio-api service variables in the template](/railway-05-api-config.webp)
+![Additional cio-api configuration options](/railway-06-api-config-additional.webp)
 </Step>
 
 <Step>
@@ -101,7 +101,7 @@ On `cio-api`, set the SMTP host and any additional values you want. See the [Env
 
 Click **Deploy**. Railway begins building and bringing the services online — Redis, Postgres, and the rest come up first.
 
-![Railway deploying the ClassroomIO services after clicking Deploy](/railway-07-deploying.png)
+![Railway deploying the ClassroomIO services after clicking Deploy](/railway-07-deploying.webp)
 </Step>
 
 <Step>
@@ -111,7 +111,7 @@ Click **Deploy**. Railway begins building and bringing the services online — R
   On the first deploy, `cio-api` can crash. This is expected **only when you rely on the Railway-generated subdomain**: the API needs the dashboard's public domain (Better Auth's base URL), which doesn't exist yet. If you're using your **own custom subdomain**, this crash doesn't happen — skip ahead to signing up.
 </Callout>
 
-![cio-api crashing on first boot before the dashboard domain exists](/railway-08-first-boot-crash.png)
+![cio-api crashing on first boot before the dashboard domain exists](/railway-08-first-boot-crash.webp)
 </Step>
 
 <Step>
@@ -119,7 +119,7 @@ Click **Deploy**. Railway begins building and bringing the services online — R
 
 Open **cio-dashboard → Settings → Networking** and click **Generate Domain**. Railway assigns the public domain the API needs.
 
-![cio-dashboard Settings and Networking with the Generate Domain button](/railway-09-generate-domain.png)
+![cio-dashboard Settings and Networking with the Generate Domain button](/railway-09-generate-domain.webp)
 </Step>
 
 <Step>
@@ -127,8 +127,8 @@ Open **cio-dashboard → Settings → Networking** and click **Generate Domain**
 
 Redeploy **cio-dashboard**, then **cio-api**, so both pick up the newly generated domain. They should now boot cleanly.
 
-![Redeploying the cio-dashboard](/railway-10-redeploy-dashboard.png)
-![Redeploying the cio-api](/railway-11-redeploy-api.png)
+![Redeploying the cio-dashboard](/railway-10-redeploy-dashboard.webp)
+![Redeploying the cio-api](/railway-11-redeploy-api.webp)
 </Step>
 
 <Step>
@@ -136,7 +136,7 @@ Redeploy **cio-dashboard**, then **cio-api**, so both pick up the newly generate
 
 Open the generated dashboard URL in a **new browser tab** and **sign up** to create your first account.
 
-![The running ClassroomIO dashboard sign-up page on the Railway domain](/railway-12-signup.png)
+![The running ClassroomIO dashboard sign-up page on the Railway domain](/railway-12-signup.webp)
 </Step>
 
 </Steps>
