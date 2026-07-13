@@ -3628,9 +3628,10 @@
       },
       "personal": {
         "heading": "Your email preferences",
-        "description": "These apply to emails sent to you across every organization you belong to. Your organization may still disable certain emails for everyone.",
+        "description": "These apply to emails sent to you in this organization. Your organization may still disable certain emails for everyone.",
         "save": "Save personal preferences",
-        "save_success": "Personal notification preferences saved"
+        "save_success": "Personal notification preferences saved",
+        "description_with_org": "These apply to emails sent to you in {orgName}. Your organization may still disable certain emails for everyone."
       },
       "sections": {
         "enrollment": {

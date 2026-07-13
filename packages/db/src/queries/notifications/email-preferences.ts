@@ -4,54 +4,10 @@ import {
   type PersonalEmailNotificationSettings
 } from '@cio/utils/notifications';
 
-import { getProfileByEmail, getProfileById } from '../auth/profile';
-import { db } from '@db/drizzle';
-import * as schema from '@db/schema';
-import { eq } from 'drizzle-orm';
+import { getOrganizationEmailNotificationSettings } from './email-preferences-org';
+import { getPersonalEmailNotificationSettingsForOrg } from './organizationmember-email-notifications';
+import { getProfileByEmail } from '../auth/profile';
 import type { EmailId } from '@cio/email';
-
-export async function getOrganizationEmailNotificationSettings(
-  orgId: string
-): Promise<EmailNotificationSettings | undefined> {
-  try {
-    const [organization] = await db
-      .select({ settings: schema.organization.settings })
-      .from(schema.organization)
-      .where(eq(schema.organization.id, orgId))
-      .limit(1);
-
-    return organization?.settings?.emailNotifications;
-  } catch (error) {
-    console.error('getOrganizationEmailNotificationSettings error:', error);
-    throw new Error('Failed to get organization email notification settings');
-  }
-}
-
-export async function getProfileEmailNotificationSettingsById(
-  profileId: string
-): Promise<PersonalEmailNotificationSettings | undefined> {
-  try {
-    const profile = await getProfileById(profileId);
-
-    return profile?.settings?.emailNotifications;
-  } catch (error) {
-    console.error('getProfileEmailNotificationSettingsById error:', error);
-    throw new Error('Failed to get profile email notification settings');
-  }
-}
-
-export async function getProfileEmailNotificationSettingsByEmail(
-  email: string
-): Promise<PersonalEmailNotificationSettings | undefined> {
-  try {
-    const profile = await getProfileByEmail(email);
-
-    return profile?.settings?.emailNotifications;
-  } catch (error) {
-    console.error('getProfileEmailNotificationSettingsByEmail error:', error);
-    throw new Error('Failed to get profile email notification settings');
-  }
-}
 
 export async function shouldSendEmail(input: {
   emailId: EmailId;
@@ -67,7 +23,7 @@ export async function shouldSendEmail(input: {
  */
 export class EmailPreferenceLookupCache {
   private orgSettingsById = new Map<string, EmailNotificationSettings | undefined>();
-  private profileSettingsById = new Map<string, PersonalEmailNotificationSettings | undefined>();
+  private personalSettingsByOrgMember = new Map<string, PersonalEmailNotificationSettings | undefined>();
   private profileIdByEmail = new Map<string, string | undefined>();
 
   async shouldSend(input: {
@@ -84,7 +40,8 @@ export class EmailPreferenceLookupCache {
       profileId = await this.getProfileIdByEmail(input.recipientEmail);
     }
 
-    const personalSettings = profileId ? await this.getProfileSettings(profileId) : undefined;
+    const personalSettings =
+      profileId && input.organizationId ? await this.getPersonalSettings(profileId, input.organizationId) : undefined;
 
     return resolveEmailDelivery(input.emailId, orgSettings, personalSettings);
   }
@@ -107,12 +64,17 @@ export class EmailPreferenceLookupCache {
     return this.profileIdByEmail.get(email);
   }
 
-  private async getProfileSettings(profileId: string): Promise<PersonalEmailNotificationSettings | undefined> {
-    if (!this.profileSettingsById.has(profileId)) {
-      const settings = await getProfileEmailNotificationSettingsById(profileId);
-      this.profileSettingsById.set(profileId, settings);
+  private async getPersonalSettings(
+    profileId: string,
+    organizationId: string
+  ): Promise<PersonalEmailNotificationSettings | undefined> {
+    const cacheKey = `${profileId}:${organizationId}`;
+
+    if (!this.personalSettingsByOrgMember.has(cacheKey)) {
+      const settings = await getPersonalEmailNotificationSettingsForOrg(profileId, organizationId);
+      this.personalSettingsByOrgMember.set(cacheKey, settings);
     }
 
-    return this.profileSettingsById.get(profileId);
+    return this.personalSettingsByOrgMember.get(cacheKey);
   }
 }
