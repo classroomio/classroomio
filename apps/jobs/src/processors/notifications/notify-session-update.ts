@@ -1,7 +1,7 @@
 import { getCourseById, getCourseWithOrgData } from '@cio/db/queries/course';
 import { getCourseMembers } from '@cio/db/queries/course/people';
 import { getLessonById } from '@cio/db/queries/lesson';
-import { shouldSendEmail } from '@cio/db/queries/notifications';
+import { EmailPreferenceLookupCache } from '@cio/db/queries/notifications';
 import { ROLE } from '@cio/utils/constants';
 import { buildEmailBranding, buildEmailFromName, buildSessionIcs } from '@cio/email';
 import { ZNotifyCourseSessionUpdatePayload, enqueueEmailSend } from '@cio/jobs';
@@ -76,9 +76,11 @@ export async function processNotifyCourseSessionUpdate(rawPayload: unknown): Pro
     .filter((recipient): recipient is { email: string; profileId: string | undefined } => !!recipient.email);
 
   let notified = 0;
+  const preferenceCache = new EmailPreferenceLookupCache();
+
   for (const recipient of recipients) {
     try {
-      const allowed = await shouldSendEmail({
+      const allowed = await preferenceCache.shouldSend({
         emailId: 'sessionUpdated',
         organizationId: orgData.orgId,
         recipientEmail: recipient.email,

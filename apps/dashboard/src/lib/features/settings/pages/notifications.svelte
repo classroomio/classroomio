@@ -3,10 +3,12 @@
     EMAIL_NOTIFICATION_TOGGLE_KEYS,
     ORG_EMAIL_NOTIFICATION_SECTIONS,
     PERSONAL_EMAIL_NOTIFICATION_SECTIONS,
-    PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS
+    PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS,
+    TUTOR_ONLY_PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS
   } from '@cio/utils/notifications';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { profileApi } from '$features/auth/api/profile.svelte';
@@ -16,6 +18,8 @@
   import { Button } from '@cio/ui/base/button';
   import BellIcon from '@lucide/svelte/icons/bell';
   import Building2Icon from '@lucide/svelte/icons/building-2';
+  import { onMount } from 'svelte';
+  import { get } from 'svelte/store';
 
   function buildToggleState<T extends string>(keys: readonly T[], source?: Partial<Record<T, boolean>> | null) {
     return Object.fromEntries(keys.map((key) => [key, source?.[key] !== false])) as Record<T, boolean>;
@@ -26,14 +30,41 @@
   let isSavingPersonal = $state(false);
   let isSavingOrg = $state(false);
 
-  $effect(() => {
-    personalToggles = buildToggleState(PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS, $profile.settings?.emailNotifications);
-  });
+  const tutorOnlyToggleKeys = new Set<string>(TUTOR_ONLY_PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS);
 
-  $effect(() => {
-    if ($currentOrg) {
-      orgToggles = buildToggleState(EMAIL_NOTIFICATION_TOGGLE_KEYS, $currentOrg.settings?.emailNotifications);
+  const personalNotificationSections = $derived(
+    $isOrgStudent
+      ? PERSONAL_EMAIL_NOTIFICATION_SECTIONS.map((section) => ({
+          ...section,
+          keys: section.keys.filter((key) => !tutorOnlyToggleKeys.has(key))
+        })).filter((section) => section.keys.length > 0)
+      : PERSONAL_EMAIL_NOTIFICATION_SECTIONS
+  );
+
+  function syncPersonalTogglesFromProfile() {
+    const profileState = get(profile);
+    const next = buildToggleState(PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS, profileState.settings?.emailNotifications);
+
+    for (const key of PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS) {
+      personalToggles[key] = next[key];
     }
+  }
+
+  function syncOrgTogglesFromCurrentOrg() {
+    const org = get(currentOrg);
+
+    if (!org) return;
+
+    const next = buildToggleState(EMAIL_NOTIFICATION_TOGGLE_KEYS, org.settings?.emailNotifications);
+
+    for (const key of EMAIL_NOTIFICATION_TOGGLE_KEYS) {
+      orgToggles[key] = next[key];
+    }
+  }
+
+  onMount(() => {
+    syncPersonalTogglesFromProfile();
+    syncOrgTogglesFromCurrentOrg();
   });
 
   const personalHasChanges = $derived(
@@ -66,6 +97,7 @@
     );
 
     if (profileApi.success) {
+      syncPersonalTogglesFromProfile();
       snackbar.success(t.get('settings.notifications.personal.save_success'));
     }
 
@@ -88,6 +120,7 @@
       },
       {
         onSuccess: () => {
+          syncOrgTogglesFromCurrentOrg();
           snackbar.success(t.get('settings.notifications.org.save_success'));
         }
       }
@@ -108,7 +141,7 @@
     </Field.Description>
 
     <div class="mt-4 space-y-6">
-      {#each PERSONAL_EMAIL_NOTIFICATION_SECTIONS as section, sectionIndex (section.id)}
+      {#each personalNotificationSections as section, sectionIndex (section.id)}
         {#if sectionIndex > 0}
           <Field.Separator />
         {/if}

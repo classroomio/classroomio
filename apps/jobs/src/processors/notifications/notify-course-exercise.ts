@@ -1,5 +1,5 @@
 import { getCourseMembers } from '@cio/db/queries/course/people';
-import { shouldSendEmail } from '@cio/db/queries/notifications';
+import { EmailPreferenceLookupCache } from '@cio/db/queries/notifications';
 import { ZNotifyCourseExercisePayload, enqueueEmailSend } from '@cio/jobs';
 import { ROLE } from '@cio/utils/constants';
 
@@ -28,9 +28,11 @@ export async function processNotifyCourseExercise(rawPayload: unknown, jobId: st
     .filter((recipient): recipient is { email: string; profileId: string | undefined } => !!recipient.email);
 
   let notified = 0;
+  const preferenceCache = new EmailPreferenceLookupCache();
+
   for (const recipient of recipients) {
     try {
-      const allowed = await shouldSendEmail({
+      const allowed = await preferenceCache.shouldSend({
         emailId: 'quizAssigned',
         organizationId: payload.organizationId,
         recipientEmail: recipient.email,

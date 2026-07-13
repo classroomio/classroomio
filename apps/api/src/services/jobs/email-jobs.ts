@@ -1,6 +1,6 @@
 import { enqueueEmailSend, isRedisConfigured } from '@cio/jobs';
 import { EmailRegistry, type EmailId, type EmailSchemaFor } from '@cio/email';
-import { shouldSendEmail } from '@cio/db/queries/notifications';
+import { EmailPreferenceLookupCache } from '@cio/db/queries/notifications';
 import * as z from 'zod';
 
 import { logRedisUnavailableOnce } from '@cio/core/utils/redis/redis';
@@ -81,10 +81,11 @@ export async function enqueueTransactionalEmail<TId extends EmailId>(
 
   const recipients = toRecipientArray(input.to);
   const jobIds: string[] = [];
+  const preferenceCache = input.preference ? new EmailPreferenceLookupCache() : null;
 
   for (const recipient of recipients) {
-    if (input.preference) {
-      const allowed = await shouldSendEmail({
+    if (preferenceCache && input.preference) {
+      const allowed = await preferenceCache.shouldSend({
         emailId: template,
         organizationId: input.preference.organizationId,
         recipientEmail: recipient,

@@ -59,23 +59,60 @@ export async function shouldSendEmail(input: {
   recipientEmail?: string;
   recipientProfileId?: string;
 }): Promise<boolean> {
-  let orgSettings: EmailNotificationSettings | undefined;
+  return new EmailPreferenceLookupCache().shouldSend(input);
+}
 
-  if (input.organizationId) {
-    orgSettings = await getOrganizationEmailNotificationSettings(input.organizationId);
+/**
+ * Reuses org/profile settings lookups across many recipients in batch processors.
+ */
+export class EmailPreferenceLookupCache {
+  private orgSettingsById = new Map<string, EmailNotificationSettings | undefined>();
+  private profileSettingsById = new Map<string, PersonalEmailNotificationSettings | undefined>();
+  private profileIdByEmail = new Map<string, string | undefined>();
+
+  async shouldSend(input: {
+    emailId: EmailId;
+    organizationId?: string;
+    recipientEmail?: string;
+    recipientProfileId?: string;
+  }): Promise<boolean> {
+    const orgSettings = input.organizationId ? await this.getOrganizationSettings(input.organizationId) : undefined;
+
+    let profileId = input.recipientProfileId;
+
+    if (!profileId && input.recipientEmail) {
+      profileId = await this.getProfileIdByEmail(input.recipientEmail);
+    }
+
+    const personalSettings = profileId ? await this.getProfileSettings(profileId) : undefined;
+
+    return resolveEmailDelivery(input.emailId, orgSettings, personalSettings);
   }
 
-  let personalSettings: PersonalEmailNotificationSettings | undefined;
-  let profileId = input.recipientProfileId;
+  private async getOrganizationSettings(orgId: string): Promise<EmailNotificationSettings | undefined> {
+    if (!this.orgSettingsById.has(orgId)) {
+      const settings = await getOrganizationEmailNotificationSettings(orgId);
+      this.orgSettingsById.set(orgId, settings);
+    }
 
-  if (!profileId && input.recipientEmail) {
-    const profile = await getProfileByEmail(input.recipientEmail);
-    profileId = profile?.id;
+    return this.orgSettingsById.get(orgId);
   }
 
-  if (profileId) {
-    personalSettings = await getProfileEmailNotificationSettingsById(profileId);
+  private async getProfileIdByEmail(email: string): Promise<string | undefined> {
+    if (!this.profileIdByEmail.has(email)) {
+      const profile = await getProfileByEmail(email);
+      this.profileIdByEmail.set(email, profile?.id);
+    }
+
+    return this.profileIdByEmail.get(email);
   }
 
-  return resolveEmailDelivery(input.emailId, orgSettings, personalSettings);
+  private async getProfileSettings(profileId: string): Promise<PersonalEmailNotificationSettings | undefined> {
+    if (!this.profileSettingsById.has(profileId)) {
+      const settings = await getProfileEmailNotificationSettingsById(profileId);
+      this.profileSettingsById.set(profileId, settings);
+    }
+
+    return this.profileSettingsById.get(profileId);
+  }
 }

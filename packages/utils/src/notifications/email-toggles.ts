@@ -18,6 +18,12 @@ export const PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS = EMAIL_NOTIFICATION_TOGGLE
   (key): key is PersonalEmailNotificationToggleKey => key !== 'enrollmentWelcome'
 );
 
+/** Personal toggles that only apply to tutors/admins — hidden from pure students in the UI. */
+export const TUTOR_ONLY_PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS = ['newStudent', 'newSubmission'] as const;
+
+export type TutorOnlyPersonalEmailNotificationToggleKey =
+  (typeof TUTOR_ONLY_PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS)[number];
+
 export type EmailNotificationSectionId = 'course' | 'cohort' | 'enrollment';
 
 export type EmailNotificationSection<TKey extends string = EmailNotificationToggleKey> = {
