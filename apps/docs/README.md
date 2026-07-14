@@ -17,8 +17,13 @@ nvm use
 ```bash
 pnpm dev      # fetches the OpenAPI spec, then starts the dev server
 pnpm build    # builds to dist/, then packages to build/ for the worker
+pnpm preview  # builds, then serves through the worker on :4173
 pnpm validate # checks internal links and heading anchors
 ```
+
+Use `pnpm preview` before deploying anything that touches routing. `pnpm dev` serves pages straight
+from Blume and never sees Cloudflare's asset server, so it cannot show you the `_redirects` rules, the
+404 page, or the trailing-slash handling — only `preview` runs the site the way production does.
 
 ## How it's served
 

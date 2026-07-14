@@ -5,8 +5,7 @@
     "prebuild": "node scripts/fetch-openapi.mjs",
     "dev": "node scripts/fetch-openapi.mjs && blume dev",
     "build": "blume build && node scripts/package-assets.mjs",
-    "preview": "wrangler dev --port 4173",
-    "start": "wrangler dev --port 3000",
+    "preview": "pnpm run build && wrangler dev --port 4173",
     "deploy": "pnpm run build && wrangler deploy",
     "validate": "blume validate"
   },
