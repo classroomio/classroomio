@@ -50,6 +50,7 @@
     "dist"
   ],
   "scripts": {
+    "prebuild": "pnpm --filter @cio/question-types run build && pnpm --filter @cio/utils run build && pnpm --filter @cio/email run build",
     "build": "rimraf dist tsconfig.tsbuildinfo && tsc && tsc-alias",
     "dev": "tsc --watch",
     "db": "drizzle-kit",
