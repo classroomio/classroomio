@@ -3,27 +3,25 @@ title: Enterprise SSO
 description: Configure Single Sign-On (SSO) with OIDC for your organization.
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-
 # Enterprise SSO
 
 ClassroomIO supports Single Sign-On (SSO) via OpenID Connect (OIDC), allowing your organization members to sign in using your existing identity provider (IdP).
 
-<Callout type="info" title="Enterprise Feature">
-  SSO requires an **Enterprise** plan.
-  
-  **Cloud:** [Contact us](mailto:support@classroomio.com) to upgrade.
-  
-  **Self-hosted:** Requires an Enterprise license key. If you are not using Enterprise-only features, you do not need a key.
-  [Book a call](http://cal.com/classroomio/enterprise) to get your license.
-</Callout>
+:::info[Enterprise Feature]
+SSO requires an **Enterprise** plan.
 
-<Callout title="Where to set `LICENSE_KEY` (self-hosted)">
-  Set `LICENSE_KEY` in the API service environment.
-  Local development: `apps/api/.env`.
-  Docker Compose: repository root `.env`.
-  If you do not use Enterprise-only features, leave `LICENSE_KEY` unset.
-</Callout>
+**Cloud:** [Contact us](mailto:support@classroomio.com) to upgrade.
+
+**Self-hosted:** Requires an Enterprise license key. If you are not using Enterprise-only features, you do not need a key.
+[Book a call](http://cal.com/classroomio/enterprise) to get your license.
+:::
+
+:::note[Where to set `LICENSE_KEY` (self-hosted)]
+Set `LICENSE_KEY` in the API service environment.
+Local development: `apps/api/.env`.
+Docker Compose: repository root `.env`.
+If you do not use Enterprise-only features, leave `LICENSE_KEY` unset.
+:::
 
 ## Supported Providers
 
@@ -198,4 +196,4 @@ SAML 2.0 support is planned for a future release. Currently, only OIDC is suppor
 - `POST /organization/sso` - Create SSO connection (Admin)
 - `PUT /organization/sso/policy` - Update SSO policy (Admin)
 
-See the [API documentation](/docs/api) for full details.
+See the [API documentation](/api) for full details.

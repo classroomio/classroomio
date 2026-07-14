@@ -3,9 +3,6 @@ title: Set Up a Custom Domain
 description: Connect and verify a custom domain for your ClassroomIO academy and learn which links use your org URL.
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-import { Step, Steps } from 'fumadocs-ui/components/steps';
-
 Every organization gets a default site at `https://<siteName>.myclassroomio.com`. You can connect your own domain (for example `https://learn.yourcompany.com`) so students see your brand in the browser bar and in links.
 
 ## How ClassroomIO picks a base URL
@@ -48,9 +45,9 @@ Open your custom domain in a browser. Sign in, open a course landing page, and c
 </Step>
 </Steps>
 
-<Callout type="warn" title="Verification required">
-  An unverified custom domain is not used for generated links. Until verification succeeds, ClassroomIO keeps using `<siteName>.myclassroomio.com`.
-</Callout>
+:::warning[Verification required]
+An unverified custom domain is not used for generated links. Until verification succeeds, ClassroomIO keeps using `<siteName>.myclassroomio.com`.
+:::
 
 ## Which links use your org URL
 
@@ -61,7 +58,7 @@ Open your custom domain in a browser. Sign in, open a course landing page, and c
 | Org site landing page and course catalog | Yes |
 | Organization team invite (some flows) | May still use platform URL until fully aligned |
 
-Course invites are documented in [How to Invite Students](/docs/invite-students). Those links should point at your academy, not `app.classroomio.com`, when your domain is verified.
+Course invites are documented in [How to Invite Students](/invite-students). Those links should point at your academy, not `app.classroomio.com`, when your domain is verified.
 
 ## Email sender address
 
@@ -73,8 +70,8 @@ Students should sign in on your academy so sessions and redirects stay on your a
 
 ## Related guides
 
-- [Customize Your Organization](/docs/customize-organization) — org profile and default subdomain
-- [Customize Your Academy Landing Page](/docs/org-landing-page) — public homepage on your domain
-- [How to Invite Students](/docs/invite-students) — enrollment links on your academy
-- [How Course Enrollment Works](/docs/course-enrollment) — enrollment paths and org signup
-- [Organization](/docs/organization) — org settings overview
+- [Customize Your Organization](/customize-organization) — org profile and default subdomain
+- [Customize Your Academy Landing Page](/org-landing-page) — public homepage on your domain
+- [How to Invite Students](/invite-students) — enrollment links on your academy
+- [How Course Enrollment Works](/course-enrollment) — enrollment paths and org signup
+- [Organization](/organization) — org settings overview

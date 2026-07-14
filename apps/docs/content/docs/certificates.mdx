@@ -3,20 +3,17 @@ title: How to Create Certificates
 description: Configure certificate rules for a course, set completion requirements, and let students download their certificates.
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-import { Step, Steps } from 'fumadocs-ui/components/steps';
-
 Certificates recognize students for completing a course. You configure the rules on a per-course basis — how much of the course must be completed, whether a final exercise must be passed, and when certificates expire. Students can then download their certificate from the **Certificates** tab in the LMS.
 
-<Callout type="warn" title="Paid plan required">
-  Certificate features require a paid plan. The controls are visible on free plans but disabled.
-</Callout>
+:::warning[Paid plan required]
+Certificate features require a paid plan. The controls are visible on free plans but disabled.
+:::
 
 ## Configure certificate rules
 
 Open your course in the admin dashboard and go to the **Certificates** tab.
 
-![Certificate rules panel with the download toggle and completion threshold](/certificates-rules.webp)
+![Certificate rules panel with the download toggle and completion threshold](/docs/certificates-rules.webp)
 
 <Steps>
 <Step>
@@ -55,7 +52,7 @@ Enter text in the email message field. This message is included in the notificat
 Set up how the certificate looks before the course goes live, so the first student to qualify gets the finished
 version. On the **Certificates** tab, click **Customize design** to open the certificate editor.
 
-![Certificate design editor showing the template picker and live preview](/certificates-design-editor.webp)
+![Certificate design editor showing the template picker and live preview](/docs/certificates-design-editor.webp)
 
 <Steps>
 <Step>
@@ -70,7 +67,7 @@ Choose a **Template** and an accent color to match your brand. A live preview sh
 Under **Signatories**, turn on **Show signatory 1** and fill in **Signatory 1 name** and **Signatory 1 role**, then
 use **Signature image** to upload a signature graphic. You can enable a second signatory the same way.
 
-![Signatories section with name, role, and signature image upload](/certificates-signatories.webp)
+![Signatories section with name, role, and signature image upload](/docs/certificates-signatories.webp)
 </Step>
 
 <Step>
@@ -80,21 +77,21 @@ Set a **Certificate ID format** so every issued certificate carries a unique, ve
 </Step>
 </Steps>
 
-<Callout type="info">
+:::info
 Finalize the design and signatures before you publish the course. Certificates are generated from the current design
 when a student qualifies, so getting it right up front means no one receives an unfinished certificate.
-</Callout>
+:::
 
 ## What students see
 
 Once a student meets all the configured requirements, their certificate appears in the **Certificates** tab when they open the course in the LMS. They can view and download it from there.
 
-![Student certificate view with download buttons](/certificates-student-download.webp)
+![Student certificate view with download buttons](/docs/certificates-student-download.webp)
 
 ## Related guides
 
-- [Creating Your First Course](/docs/create-first-course) — course setup overview
-- [How to Create an Exercise](/docs/create-exercise) — create the exercise you reference as a final exercise
-- [How to Grade an Exercise](/docs/grade-exercise) — grade submissions before certificates are issued
-- [Control Course Progression](/docs/course-progression): require completion before the certificate unlocks
-- [Student Dashboard](/docs/student-dashboard) — where students access their certificates
+- [Creating Your First Course](/create-first-course) — course setup overview
+- [How to Create an Exercise](/create-exercise) — create the exercise you reference as a final exercise
+- [How to Grade an Exercise](/grade-exercise) — grade submissions before certificates are issued
+- [Control Course Progression](/course-progression): require completion before the certificate unlocks
+- [Student Dashboard](/student-dashboard) — where students access their certificates

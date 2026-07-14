@@ -3,8 +3,6 @@ title: Roles and Permissions
 description: Understand org roles in ClassroomIO, who can create courses, and how admin access differs from the student LMS.
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-
 ClassroomIO uses organization roles to control what each person can do. This guide covers the three built-in roles, who can create courses, and how that relates to course enrollment (which is controlled separately per course).
 
 ## Organization roles
@@ -15,11 +13,11 @@ ClassroomIO uses organization roles to control what each person can do. This gui
 | **Tutor** | Instructors, content authors | Yes | No | Yes (courses they teach) |
 | **Student** | Learners | No (LMS only) | No | No |
 
-Admins have full control over organization settings, billing, domains, and all courses. Tutors can manage content for courses they are assigned to but cannot create new courses or change org-wide settings. Students use the [Student Dashboard](/docs/student-dashboard) to learn.
+Admins have full control over organization settings, billing, domains, and all courses. Tutors can manage content for courses they are assigned to but cannot create new courses or change org-wide settings. Students use the [Student Dashboard](/student-dashboard) to learn.
 
-<Callout type="info" title="Per-person enroll or create toggles">
-  ClassroomIO does not support per-person flags like "this user can create courses but that user cannot." Access is set by role. To limit who joins a **course**, use course settings, invites, and **People** instead. See [How Course Enrollment Works](/docs/course-enrollment).
-</Callout>
+:::info[Per-person enroll or create toggles]
+ClassroomIO does not support per-person flags like "this user can create courses but that user cannot." Access is set by role. To limit who joins a **course**, use course settings, invites, and **People** instead. See [How Course Enrollment Works](/course-enrollment).
+:::
 
 ## Who can create courses
 
@@ -38,7 +36,7 @@ Students sign in on your academy and land in the LMS. Admins and tutors can swit
 
 ## Inviting team members
 
-To add Admins or Tutors, use [Inviting a Team Member](/docs/invite-team-member). Team invites are separate from [student course invites](/docs/invite-students).
+To add Admins or Tutors, use [Inviting a Team Member](/invite-team-member). Team invites are separate from [student course invites](/invite-students).
 
 ## Organization signup vs course enrollment
 
@@ -55,8 +53,8 @@ Configure org signup under **Settings → Organization**. Configure per-course a
 
 ## Related guides
 
-- [How Course Enrollment Works](/docs/course-enrollment) — restrict who can join each course
-- [How to Invite Students](/docs/invite-students) — course enrollment links
-- [Inviting a Team Member](/docs/invite-team-member) — add admins and tutors
-- [Student Dashboard](/docs/student-dashboard) — what students see in the LMS
-- [Organization](/docs/organization) — org settings overview
+- [How Course Enrollment Works](/course-enrollment) — restrict who can join each course
+- [How to Invite Students](/invite-students) — course enrollment links
+- [Inviting a Team Member](/invite-team-member) — add admins and tutors
+- [Student Dashboard](/student-dashboard) — what students see in the LMS
+- [Organization](/organization) — org settings overview

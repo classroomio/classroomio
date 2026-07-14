@@ -3,7 +3,7 @@ title: Cloudflare Setup
 description: Guide to setting up Cloudflare for ClassroomIO.
 ---
 
-In this guide, you will learn how to get your Cloudflare environment variables and configure R2 buckets. ClassroomIO supports Cloudflare R2 for video uploads, document uploads, and media (images and video thumbnails). For on-premise or data-residency deployments, you can use [MinIO](/docs/self-hosted/docker#optional--object-storage) instead.
+In this guide, you will learn how to get your Cloudflare environment variables and configure R2 buckets. ClassroomIO supports Cloudflare R2 for video uploads, document uploads, and media (images and video thumbnails). For on-premise or data-residency deployments, you can use [MinIO](/self-hosted/docker#optional--object-storage) instead.
 
 ## R2 buckets overview
 
@@ -75,7 +75,7 @@ If the dashboard uploads or downloads documents directly to/from R2 via presigne
 
 Used for: serving images and video thumbnails (the dashboard loads these via the public URL from `CLOUDFLARE_IMAGE_BUCKET_DOMAIN`). If that URL is on a different origin than the dashboard, the bucket needs CORS for **GET** and **HEAD**.
 
-Org-site **Open Graph preview images** are also stored in this bucket under `og/{siteName}.png` and served at `{CLOUDFLARE_IMAGE_BUCKET_DOMAIN}/og/{siteName}.png`. See [Org-Site Open Graph & Favicon](/docs/contributor-guides/org-site-opengraph-and-favicon).
+Org-site **Open Graph preview images** are also stored in this bucket under `og/{siteName}.png` and served at `{CLOUDFLARE_IMAGE_BUCKET_DOMAIN}/og/{siteName}.png`. See [Org-Site Open Graph & Favicon](/contributor-guides/org-site-opengraph-and-favicon).
 
 1. In **R2** → select the **media** bucket.
 2. Open **Settings** → **CORS policy**.

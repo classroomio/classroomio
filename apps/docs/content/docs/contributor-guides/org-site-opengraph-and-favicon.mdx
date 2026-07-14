@@ -3,11 +3,9 @@ title: Org-Site Open Graph & Favicon
 description: Contributor reference for dynamic OG image generation, favicon fallback, CDN caching, and social embed behavior on public org-site routes.
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-
 This document describes how ClassroomIO generates **Open Graph preview images** and **favicons** for public org-site routes (`*.myclassroomio.com`, BYOD custom domains, and self-hosted single-org mode). It covers caching layers, invalidation, and why crawlers such as Discord need a fast, stable image URL.
 
-For admin-facing behavior, see [Sharing Your Academy (Open Graph & Favicon)](/docs/academy-sharing-and-branding).
+For admin-facing behavior, see [Sharing Your Academy (Open Graph & Favicon)](/academy-sharing-and-branding).
 
 ## Overview
 
@@ -174,9 +172,9 @@ Rendered from root `+layout.svelte` via `OrgSiteFavicon` when `data.isOrgSite` i
 
 Regeneration runs on the next OG API request or warm fetch after the etag mismatch.
 
-<Callout type="info" title="No save-hook regen">
-  There is no background job on organization `PUT`. Regen depends on a page visit (warm) or an external fetch of the OG endpoint.
-</Callout>
+:::info[No save-hook regen]
+There is no background job on organization `PUT`. Regen depends on a page visit (warm) or an external fetch of the OG endpoint.
+:::
 
 ## Self-hosted notes
 
@@ -194,6 +192,6 @@ Regeneration runs on the next OG API request or warm fetch after the etag mismat
 
 ## Related docs
 
-- [Sharing Your Academy (Open Graph & Favicon)](/docs/academy-sharing-and-branding) — admin-facing guide
-- [Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) — R2 media bucket and `CLOUDFLARE_IMAGE_BUCKET_DOMAIN`
-- [Customize Your Organization](/docs/customize-organization) — logo, name, theme (user docs)
+- [Sharing Your Academy (Open Graph & Favicon)](/academy-sharing-and-branding) — admin-facing guide
+- [Cloudflare Setup](/contributor-guides/cloudflare-setup) — R2 media bucket and `CLOUDFLARE_IMAGE_BUCKET_DOMAIN`
+- [Customize Your Organization](/customize-organization) — logo, name, theme (user docs)

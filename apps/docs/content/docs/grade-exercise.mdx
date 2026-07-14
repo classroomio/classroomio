@@ -3,9 +3,6 @@ title: How to Grade an Exercise
 description: Review student submissions, move them through the grading workflow, score answers, and leave feedback.
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-import { Step, Steps } from 'fumadocs-ui/components/steps';
-
 When students submit exercises, their work appears in the **Submissions** tab of the course dashboard. Exercises move through a three-stage workflow: **Submitted → In Progress → Graded**.
 
 ## Grading workflow
@@ -18,9 +15,9 @@ When students submit exercises, their work appears in the **Submissions** tab of
 
 Submissions are displayed as cards on a board. Drag a card between columns or open it to change its status manually.
 
-<Callout type="info" title="Auto-graded exercises">
-  Exercises that use only objective question types (multiple choice, etc.) are auto-graded when submitted. They move directly to **Graded** without manual review. Exercises with open-ended or video questions require manual review and are flagged **Manual grading required**.
-</Callout>
+:::info[Auto-graded exercises]
+Exercises that use only objective question types (multiple choice, etc.) are auto-graded when submitted. They move directly to **Graded** without manual review. Exercises with open-ended or video questions require manual review and are flagged **Manual grading required**.
+:::
 
 ## Grade a submission
 
@@ -60,12 +57,12 @@ Click **Submit Grades**. The card moves to **Graded** and the student's score is
 
 Click **Grade with AI** inside the grading modal to get an AI-suggested score and rationale for open-ended answers. Review the suggestion and click **Accept** to apply it or **Reject** to discard it and grade manually.
 
-<Callout type="warn" title="Review AI grades before submitting">
-  AI grading is a suggestion. Always review the reasoning before accepting, especially for nuanced or context-dependent answers.
-</Callout>
+:::warning[Review AI grades before submitting]
+AI grading is a suggestion. Always review the reasoning before accepting, especially for nuanced or context-dependent answers.
+:::
 
 ## Related guides
 
-- [How to Create an Exercise](/docs/create-exercise) — create and configure exercises
-- [How to Create Certificates](/docs/certificates) — certificates that depend on exercise scores
-- [Course](/docs/course) — course overview including the Submissions tab
+- [How to Create an Exercise](/create-exercise) — create and configure exercises
+- [How to Create Certificates](/certificates) — certificates that depend on exercise scores
+- [Course](/course) — course overview including the Submissions tab

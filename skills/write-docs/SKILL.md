@@ -3,7 +3,7 @@ name: write-docs
 description: Write accurate, product-grounded documentation pages for ClassroomIO. Use when adding content to stub pages, expanding thin docs, or creating new guide pages under apps/docs/content/docs/.
 ---
 
-You are writing documentation for ClassroomIO — an LMS platform that lets organizations create and run training academies. Documentation lives in `apps/docs/content/docs/` and is rendered by Fumadocs.
+You are writing documentation for ClassroomIO — an LMS platform that lets organizations create and run training academies. Documentation lives in `apps/docs/content/docs/` and is rendered by Blume.
 
 ## Research before writing
 
@@ -47,15 +47,41 @@ These are the exact sidebar paths in the admin dashboard:
 
 ## MDX format conventions
 
-All pages use Fumadocs components. Available imports:
+Pages are rendered by Blume. Its components are global — **do not import anything**.
+
+**Callouts** are directives, not components. Types: `note`, `info`, `tip`, `success`, `warning`, `danger`.
 
 ```mdx
-import { Callout } from 'fumadocs-ui/components/callout';
-import { Step, Steps } from 'fumadocs-ui/components/steps';
-import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+:::warning[Paid plan required]
+Certificate features require a paid plan.
+:::
 ```
 
-**Callout types**: `info`, `warn`, `error`
+**Steps** for sequential procedures. Keep an `###` heading inside each `<Step>` — it is what
+generates the linkable anchor:
+
+```mdx
+<Steps>
+<Step>
+### Enable downloadable certificates
+
+Turn on **Allow students download certificate**.
+</Step>
+</Steps>
+```
+
+Also available without imports: `<Tabs>`/`<Tab>`, `<Card>`, `<Accordion>`, `<YouTube id="..." />`,
+`<CodeGroup>`, `<Frame>`. Code fences take a title: ` ```zsh title="Terminal" `. Mermaid fences render
+as diagrams.
+
+**Links and images follow different rules** — this trips people up:
+
+- **Links**: root-relative, no `/docs` prefix — `[Enrollment](/course-enrollment)`. Blume adds the
+  base at build time.
+- **Images**: must include the `/docs` prefix — `![Alt](/docs/certificates-rules.webp)`. Blume does
+  not rebase images, so an unprefixed path 404s. Files live in `apps/docs/public/`.
+
+Run `pnpm --filter @cio/docs validate` to check links and anchors.
 
 **Frontmatter** (required on every page):
 ```mdx
@@ -64,6 +90,9 @@ title: Page Title
 description: One sentence — shown in search results and link previews.
 ---
 ```
+
+New pages must also be added to the sidebar in `apps/docs/blume.config.ts` (`navigation.sidebar`) —
+a page that isn't listed there will not appear in the nav.
 
 ## Writing style
 

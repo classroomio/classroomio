@@ -3,14 +3,12 @@ title: Docker
 description: Self-host ClassroomIO with Docker — pull pre-built images (recommended) or build from source.
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-
 Docker is one way to self-host ClassroomIO. There are two paths:
 
 - **Run from pre-built images (recommended)** — pull the published `classroomio/{api,dashboard,jobs}` images. You only need one compose file and a `.env`; no repository clone and no heavy local build.
 - **Build from source** — clone the repo and build the images yourself (needs ~8 GB RAM for the dashboard build).
 
-![Selfhost ClassroomIO](/selfhost-classroomio.webp)
+![Selfhost ClassroomIO](/docs/selfhost-classroomio.webp)
 
 ## Run from Pre-built Images (recommended)
 
@@ -43,12 +41,12 @@ SMTP_PASSWORD=
 SMTP_SENDER=
 ```
 
-<Callout type="error" title="Set strong secrets — the stack won't start without them">
-  This path does **not** run `run-docker-full-stack.sh`, so secrets are not auto-generated. You must
-  set `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` yourself — e.g. `openssl rand -hex 32`. The
-  compose file fails fast with a clear error if either is empty, so it never boots with a
-  predictable session-signing secret.
-</Callout>
+:::danger[Set strong secrets — the stack won't start without them]
+This path does **not** run `run-docker-full-stack.sh`, so secrets are not auto-generated. You must
+set `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` yourself — e.g. `openssl rand -hex 32`. The
+compose file fails fast with a clear error if either is empty, so it never boots with a
+predictable session-signing secret.
+:::
 
 3. Pull and start the stack (MinIO is included via the `minio` profile):
 
@@ -103,10 +101,10 @@ Open `.env` and set `DASHBOARD_ORIGIN` for your domain. For local development th
 
 The script builds and starts Postgres, Redis, MinIO (object storage), the API, the dashboard, and the background **jobs** worker.
 
-<Callout title="Default is pull, not build">
-  Run without `--build` and the script **pulls** the published `classroomio/*` images at the
-  `CIO_VERSION` in your `.env` instead of building locally — that's the faster default path.
-</Callout>
+:::note[Default is pull, not build]
+Run without `--build` and the script **pulls** the published `classroomio/*` images at the
+`CIO_VERSION` in your `.env` instead of building locally — that's the faster default path.
+:::
 
 ## Upgrading to a New Version
 
@@ -126,11 +124,11 @@ docker compose -f docker-compose.images.yaml --env-file .env --profile minio up 
 
 **Build-from-source path** — `git pull`, then re-run `./run-docker-full-stack.sh --build` to rebuild.
 
-<Callout type="warn" title="Back up before upgrading">
-  Database schema migrations run automatically when the API starts. Back up your Postgres volume
-  (and object storage) before a major upgrade, and avoid `docker compose down -v` / `docker volume
-  prune`, which delete your data volumes.
-</Callout>
+:::warning[Back up before upgrading]
+Database schema migrations run automatically when the API starts. Back up your Postgres volume
+(and object storage) before a major upgrade, and avoid `docker compose down -v` / `docker volume
+prune`, which delete your data volumes.
+:::
 
 ## One `.env`, One Command
 
@@ -165,9 +163,9 @@ CSP domain variables are **runtime** — set them in your `.env`. No image rebui
 | `CSP_FONT_SRC_DOMAINS` | Domains allowed in `font-src` |
 | `CSP_MEDIA_SRC_DOMAINS` | Domains allowed in `img-src` and `media-src` |
 
-<Callout type="warn" title="CSP Domains">
-  When `PUBLIC_IS_SELFHOSTED=true`, the dashboard starts with only `'self'` allowed. Set `ALLOWED_EXTERNAL_DOMAINS` (or the per-directive vars) with your CDN, video, and font domains. The API does not need to be added for normal dashboard traffic because requests are proxied same-origin. Since these are runtime env vars, you can change them by restarting the container — no rebuild required.
-</Callout>
+:::warning[CSP Domains]
+When `PUBLIC_IS_SELFHOSTED=true`, the dashboard starts with only `'self'` allowed. Set `ALLOWED_EXTERNAL_DOMAINS` (or the per-directive vars) with your CDN, video, and font domains. The API does not need to be added for normal dashboard traffic because requests are proxied same-origin. Since these are runtime env vars, you can change them by restarting the container — no rebuild required.
+:::
 
 ### Optional — Email
 
@@ -192,12 +190,12 @@ The bundled **MinIO** is included by default and the startup script auto-configu
 | `OBJECT_STORAGE_FORCE_PATH_STYLE` | `true` |
 | `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` | `http://localhost:9000/media` |
 
-<Callout title="Using AWS S3 or Cloudflare R2 instead of MinIO">
-  The `OBJECT_STORAGE_*` variables speak the S3 API, so they work with any S3-compatible provider.
-  To use Cloudflare R2 or AWS S3, point `OBJECT_STORAGE_ENDPOINT` at the provider's endpoint and set
-  the matching access key / secret, then start without the bundled MinIO via
-  `./run-docker-full-stack.sh --no-minio`. See the [Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for R2.
-</Callout>
+:::note[Using AWS S3 or Cloudflare R2 instead of MinIO]
+The `OBJECT_STORAGE_*` variables speak the S3 API, so they work with any S3-compatible provider.
+To use Cloudflare R2 or AWS S3, point `OBJECT_STORAGE_ENDPOINT` at the provider's endpoint and set
+the matching access key / secret, then start without the bundled MinIO via
+`./run-docker-full-stack.sh --no-minio`. See the [Cloudflare Setup](/contributor-guides/cloudflare-setup) guide for R2.
+:::
 
 ### Optional — Integrations
 
@@ -212,7 +210,7 @@ The bundled **MinIO** is included by default and the startup script auto-configu
 
 ### Optional — Upload file size limits
 
-Set these in the root `.env` to raise or lower upload caps (values are in **megabytes**). Compose passes them through to the `api` and `dashboard` containers. Unset = built-in defaults. On [Railway](/docs/self-hosted/railway) or [Coolify](/docs/self-hosted/coolify), set the same variables on both the API and dashboard services.
+Set these in the root `.env` to raise or lower upload caps (values are in **megabytes**). Compose passes them through to the `api` and `dashboard` containers. Unset = built-in defaults. On [Railway](/self-hosted/railway) or [Coolify](/self-hosted/coolify), set the same variables on both the API and dashboard services.
 
 | Variable | Default | Applies to |
 |----------|---------|------------|
@@ -224,10 +222,10 @@ Set these in the root `.env` to raise or lower upload caps (values are in **mega
 | `UPLOAD_MAX_LANDING_IMAGE_MB` | 0.5 | Org landing page cover images |
 | `UPLOAD_MAX_THUMBNAIL_MB` | 5 | Media thumbnail uploads |
 
-<Callout type="warn" title="Reverse proxy limits">
-  If you raise these values, also increase your reverse proxy body-size limit (e.g. nginx
-  `client_max_body_size`) so large uploads are not rejected before they reach ClassroomIO.
-</Callout>
+:::warning[Reverse proxy limits]
+If you raise these values, also increase your reverse proxy body-size limit (e.g. nginx
+`client_max_body_size`) so large uploads are not rejected before they reach ClassroomIO.
+:::
 
 ## Common Commands
 
@@ -253,8 +251,8 @@ docker image prune -a -f      # free unused images
 docker container prune -f     # free stopped containers
 ```
 
-<Callout type="warn" title="Volume prune deletes data">
-  Avoid `docker volume prune` after `docker compose ... down` — it can remove your database and storage volumes.
-</Callout>
+:::warning[Volume prune deletes data]
+Avoid `docker volume prune` after `docker compose ... down` — it can remove your database and storage volumes.
+:::
 
 Then restart: `./run-docker-full-stack.sh`

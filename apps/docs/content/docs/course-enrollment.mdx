@@ -3,9 +3,6 @@ title: How Course Enrollment Works
 description: Understand the ways students can join a course in ClassroomIO—public enrollment, invites, admin assignment, and paid access—and how to restrict who can enroll.
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-import { Step, Steps } from 'fumadocs-ui/components/steps';
-
 Enrollment is how a student becomes a member of a course group and gets access to lessons, exercises, and the LMS. ClassroomIO supports several enrollment paths. Which ones are available depends on your course price, publish status, and settings.
 
 ## Enrollment paths at a glance
@@ -40,9 +37,9 @@ On a **free** course (`cost` is 0) with **Allow New Students** enabled, anyone w
 
 No invite token is required. This is the default for free, published courses.
 
-<Callout type="info" title="Allow New Students">
-  In the course dashboard, go to **Settings** and find **Allow New Students**. When enabled, anyone can self-enroll from the course landing page. When disabled, the public **Enroll** button is hidden and open self-enrollment is blocked — but **course invite links** and **People → Add people** still work.
-</Callout>
+:::info[Allow New Students]
+In the course dashboard, go to **Settings** and find **Allow New Students**. When enabled, anyone can self-enroll from the course landing page. When disabled, the public **Enroll** button is hidden and open self-enrollment is blocked — but **course invite links** and **People → Add people** still work.
+:::
 
 ## Email invites
 
@@ -54,11 +51,11 @@ From **People → Add people**, you enter one or more email addresses and Classr
 
 When a student opens the link, they sign in (or sign up) and click **Join course**. ClassroomIO validates the token, expiry, and usage limit before enrolling them.
 
-For step-by-step instructions, see [How to Invite Students](/docs/invite-students).
+For step-by-step instructions, see [How to Invite Students](/invite-students).
 
-<Callout type="info" title="Email invites work on closed or unpublished courses">
-  **Allow New Students** can be off and email invites still work. The toggle only blocks unsolicited self-enrollment from the landing page; it does not block people you explicitly invited. Invites also work on **unpublished** courses, so you can pre-enroll students before a course goes live.
-</Callout>
+:::info[Email invites work on closed or unpublished courses]
+**Allow New Students** can be off and email invites still work. The toggle only blocks unsolicited self-enrollment from the landing page; it does not block people you explicitly invited. Invites also work on **unpublished** courses, so you can pre-enroll students before a course goes live.
+:::
 
 ## Direct add (People)
 
@@ -68,9 +65,9 @@ From the course dashboard, open **People → Add people**, select the students y
 
 This does **not** require **Allow New Students** to be on. Use it for closed courses where you control exactly who gets access.
 
-<Callout title="Already enrolled students">
-  Revoking an invite or turning off public enrollment does not remove students who have already joined. It only blocks future enrollments through that path.
-</Callout>
+:::note[Already enrolled students]
+Revoking an invite or turning off public enrollment does not remove students who have already joined. It only blocks future enrollments through that path.
+:::
 
 ## Paid courses
 
@@ -83,7 +80,7 @@ Paid courses are useful when you want to prevent casual sign-ups on a free landi
 | Goal | Suggested setup |
 | --- | --- |
 | Anyone can join | Free course, published, **Allow New Students** on |
-| Only people you email invites to | **Allow New Students** off (optional), send [email invites](/docs/invite-students) |
+| Only people you email invites to | **Allow New Students** off (optional), send [email invites](/invite-students) |
 | Only people you add manually | **Allow New Students** off, use **People → Add people** to directly enroll existing students |
 | Paywall + optional invites | Set a price, send invites to buyers who should skip or supplement checkout |
 | Visible in catalog, enrollment closed | Published course, **Allow New Students** off, use invites or **People** to add members |
@@ -102,9 +99,9 @@ Restricting who can **join** a course is not the same as hiding it from every st
 | **Price** | Whether open self-enrollment requires payment |
 | **Internal Enrollment Only** (org-wide) | When on, any student in your organization can self-enroll in any published course, bypassing per-course **Allow New Students** |
 
-<Callout type="warn" title="Explore shows published courses">
-  **Explore** in the student LMS lists published courses the student has not enrolled in yet. Turning off **Allow New Students** blocks open enrollment from the landing page. It does **not** remove the course from Explore. ClassroomIO does not support hiding a published course from specific people in Explore today.
-</Callout>
+:::warning[Explore shows published courses]
+**Explore** in the student LMS lists published courses the student has not enrolled in yet. Turning off **Allow New Students** blocks open enrollment from the landing page. It does **not** remove the course from Explore. ClassroomIO does not support hiding a published course from specific people in Explore today.
+:::
 
 **Workarounds:**
 
@@ -112,7 +109,7 @@ Restricting who can **join** a course is not the same as hiding it from every st
 - Use **Allow New Students** off plus invites or **People** so only the people you choose can actually join.
 - Accept that enrolled students may see the course in Explore even when they cannot self-enroll.
 
-For where students see enrolled vs available courses, see [Student Dashboard](/docs/student-dashboard).
+For where students see enrolled vs available courses, see [Student Dashboard](/student-dashboard).
 
 ## People and membership
 
@@ -125,9 +122,9 @@ When a student enrolls or you add them from **People**, they become a member of 
 
 The **People** tab in the course dashboard is the source of truth for course membership.
 
-<Callout type="info" title="People vs Compliance status">
-  **Compliance** courses also track completion status (for example **not started**). That is separate from membership. A student can appear in **People** as soon as they are enrolled while still showing **not started** on the Compliance dashboard until they begin the course.
-</Callout>
+:::info[People vs Compliance status]
+**Compliance** courses also track completion status (for example **not started**). That is separate from membership. A student can appear in **People** as soon as they are enrolled while still showing **not started** on the Compliance dashboard until they begin the course.
+:::
 
 ## Organization-level access settings (separate from course enrollment)
 
@@ -181,10 +178,10 @@ Enable **Disable Signup** and **Internal Enrollment Only** in **Settings → Aut
 
 ## Related guides
 
-- [How to Invite Students](/docs/invite-students) — create, send, and revoke course invite links
-- [Customize the Welcome Email](/docs/welcome-email): the message students get when they enroll
-- [Roles and Permissions](/docs/roles-and-permissions) — who can create courses and access the admin dashboard
-- [Student Dashboard](/docs/student-dashboard) — Home, My Learning, Explore, and Cohorts
-- [Set Up a Custom Domain](/docs/custom-domain) — org URLs used in enrollment links
-- [Create a Course Landing Page](/docs/course-landingpage) — pricing, publish state, and what prospects see before enrolling
-- [Creating Your First Course](/docs/create-first-course) — create and publish a course
+- [How to Invite Students](/invite-students) — create, send, and revoke course invite links
+- [Customize the Welcome Email](/welcome-email): the message students get when they enroll
+- [Roles and Permissions](/roles-and-permissions) — who can create courses and access the admin dashboard
+- [Student Dashboard](/student-dashboard) — Home, My Learning, Explore, and Cohorts
+- [Set Up a Custom Domain](/custom-domain) — org URLs used in enrollment links
+- [Create a Course Landing Page](/course-landingpage) — pricing, publish state, and what prospects see before enrolling
+- [Creating Your First Course](/create-first-course) — create and publish a course

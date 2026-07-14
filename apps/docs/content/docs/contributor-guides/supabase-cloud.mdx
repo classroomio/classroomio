@@ -3,9 +3,6 @@ title: Supabase Cloud Setup
 description: Guide to setting up Supabase cloud for ClassroomIO.
 ---
 
-import { Step, Steps } from 'fumadocs-ui/components/steps';
-import { Callout } from 'fumadocs-ui/components/callout';
-
 In this guide, you will learn how to setup a supabase cloud project and link it to your local environment.
 
 ## Who is this guide for?
@@ -19,18 +16,7 @@ If your requirement matches any of the above, then this guide is for you.
 
 ## Video Walkthrough
 
-<div style={{ display: 'flex', justifyContent: 'center', marginY: '16px' }}>
-  <iframe
-    width="560"
-    height="315"
-    src="https://www.youtube.com/embed/dAZAZ0oiky0?si=1h-KtppNqJ3U4BTe"
-    title="YouTube video player"
-    frameBorder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    allowFullScreen
-    style={{ borderRadius: '8px' }}
-  ></iframe>
-</div>
+<YouTube id="dAZAZ0oiky0" />
 
 ## Step by Step Guide
 
@@ -42,12 +28,12 @@ For this step you need to have signed up for supabase and create an account, jus
 
 Once you have an account just click on the _New Project_ on your dashboard. After that you should see a similar screen to the below, fill in the fields.
 
-![New project in supabase](/new-project.webp)
+![New project in supabase](/docs/new-project.webp)
 
-<Callout title="Important">
-  Make sure you save your database password somewhere, else you won't be able to get it back
-  anywhere in the dashboard for security reasons.
-</Callout>
+:::note[Important]
+Make sure you save your database password somewhere, else you won't be able to get it back
+anywhere in the dashboard for security reasons.
+:::
 
 </Step>
 
@@ -76,7 +62,7 @@ Follow the instruction in your terminal to generate your access token. Paste the
 
 - Go to the supabase dashboard, go to your project, click on the settings icon on the left side bar
 
-![DB URL in the supabase dashboard](/db-url.webp)
+![DB URL in the supabase dashboard](/docs/db-url.webp)
 
 - Copy the URL in the image above for your `db url`
 - Paste it somewhere
@@ -87,14 +73,14 @@ Follow the instruction in your terminal to generate your access token. Paste the
 supabase db push --db-url "URL HERE"
 ```
 
-<Callout title="Important">
-  Make sure you preserve the double quotes before and after the url. Only replace `URL HERE` with
-  your `db url` that contains your password
-</Callout>
+:::note[Important]
+Make sure you preserve the double quotes before and after the url. Only replace `URL HERE` with
+your `db url` that contains your password
+:::
 
 #### Result
 
-![Result of supabase db push](/db-push-result.webp)
+![Result of supabase db push](/docs/db-push-result.webp)
 
 </Step>
 
@@ -103,7 +89,7 @@ supabase db push --db-url "URL HERE"
 
 Here we will update our email configurations, to prevent supabase from sending confirmation emails on signup. This is because we don't use Supabase for email verification, we handle that internally due to the quality of the email.
 
-![Authentication configuration](/auth-settings.webp)
+![Authentication configuration](/docs/auth-settings.webp)
 
 </Step>
 
@@ -121,11 +107,11 @@ Make sure to toggle **Enable Custom SMTP** and fill in the following fields:
 - SMTP username
 - SMTP password
 
-![SMTP Settings](/smtp-settings.webp)
+![SMTP Settings](/docs/smtp-settings.webp)
 
-<Callout title="ℹ️ Learn More">
-  Learn more about setting up SMTP [here](https://supabase.com/docs/guides/auth/auth-smtp)
-</Callout>
+:::note[ℹ️ Learn More]
+Learn more about setting up SMTP [here](https://supabase.com/docs/guides/auth/auth-smtp)
+:::
 
 </Step>
 
@@ -142,7 +128,7 @@ PRIVATE_SUPABASE_SERVICE_ROLE=
 
 To get the correct environment variables, follow the instructions in this image:
 
-![Source of supabase environment variables](/match-env.webp)
+![Source of supabase environment variables](/docs/match-env.webp)
 
 </Step>
 
@@ -159,9 +145,9 @@ pnpm dev --filter=dashboard
 - Click on Sign up
 - And that's it...
 
-<Callout title="ℹ️ Learn More">
-  Visit the [Sign up guide](/docs/quickstart/signup) to learn how to signup
-</Callout>
+:::note[ℹ️ Learn More]
+Visit the [Sign up guide](/quickstart/signup) to learn how to signup
+:::
 
 </Step>
 </Steps>

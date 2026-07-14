@@ -1,0 +1,45 @@
+---
+title: Self Hosting
+description: Run ClassroomIO on your own infrastructure — with Docker, Railway, or Coolify.
+---
+
+ClassroomIO is open source, and you can run the whole platform on your own infrastructure. Every
+option below runs the same stack — the API, the dashboard, and the background jobs worker, backed by
+Postgres and Redis.
+
+Pick the path that matches where you want it to run.
+
+<CardGroup cols={3}>
+  <Card title="Docker" href="/self-hosted/docker" icon="container">
+    Run anywhere Docker runs. Pull the pre-built images, or build from source.
+  </Card>
+  <Card title="Railway" href="/self-hosted/railway" icon="train-front">
+    Deploy to Railway from a template. The quickest managed option.
+  </Card>
+  <Card title="Coolify" href="/self-hosted/coolify" icon="server">
+    Self-hosted PaaS on your own VPS, from a Docker Compose resource.
+  </Card>
+</CardGroup>
+
+## Which should I choose?
+
+| Option                                | Best for                                                              |
+| ------------------------------------- | --------------------------------------------------------------------- |
+| [Docker](/self-hosted/docker)         | Full control on your own server, or as the base for another platform. |
+| [Railway](/self-hosted/railway)       | Getting a working instance up with the least infrastructure work.     |
+| [Coolify](/self-hosted/coolify)       | Running a PaaS on your own VPS, managing several apps alongside it.   |
+
+:::note[You need an SMTP provider]
+Signup verification, password resets, and invite emails all send over SMTP. Whichever option you
+pick, have mail credentials ready before you start.
+:::
+
+## What you'll need
+
+- A **Postgres** database and a **Redis** instance (both are included in the Docker and Coolify compose files).
+- An **SMTP provider** for transactional email.
+- Object storage (**MinIO** or S3-compatible) if you want file and video uploads.
+- *Optional:* an **OpenAI API key** for transcription and AI course generation.
+
+For the full environment variable reference, see the
+[Docker guide](/self-hosted/docker), which documents every variable the stack reads.
