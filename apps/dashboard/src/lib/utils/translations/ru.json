@@ -290,6 +290,7 @@
         "successful_deletion": "Интеграция удалена",
         "update_successful": "Обновление успешно выполнено",
         "unlocked_all_content": "Все предметы курса разблокированы",
+        "all_content_already_unlocked": "Весь контент уже разблокирован",
         "content_grouping_enabled": "Группировка контента включена",
         "content_grouping_disabled": "Группировка контента отключена"
       }

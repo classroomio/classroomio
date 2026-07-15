@@ -290,6 +290,7 @@
         "successful_deletion": "Đã xóa tích hợp",
         "update_successful": "Cập nhật thành công",
         "unlocked_all_content": "Tất cả các mục khóa học đã được mở khóa",
+        "all_content_already_unlocked": "Tất cả nội dung đã được mở khóa",
         "content_grouping_enabled": "Đã bật nhóm nội dung",
         "content_grouping_disabled": "Đã tắt nhóm nội dung"
       }

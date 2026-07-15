@@ -290,6 +290,7 @@
         "successful_deletion": "Integration gelöscht",
         "update_successful": "Update erfolgreich",
         "unlocked_all_content": "Alle Kursgegenstände freigeschaltet",
+        "all_content_already_unlocked": "Alle Inhalte sind bereits freigeschaltet",
         "content_grouping_enabled": "Inhaltsgruppierung aktiviert",
         "content_grouping_disabled": "Inhaltsgruppierung deaktiviert"
       }

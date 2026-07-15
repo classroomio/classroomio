@@ -1,5 +1,7 @@
 <script lang="ts">
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import LockOpenIcon from '@lucide/svelte/icons/lock-open';
+  import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { RoleBasedSecurity } from '$features/ui';
@@ -24,7 +26,12 @@
   const menuDisabled = $derived(disabled || isUnlockingAll || isTogglingGrouping);
 
   async function handleUnlockAllContent() {
-    if (!courseId || lockedContentItems.length === 0 || isUnlockingAll) return;
+    if (!courseId || isUnlockingAll) return;
+
+    if (lockedContentItems.length === 0) {
+      snackbar.success('snackbar.course_settings.success.all_content_already_unlocked');
+      return;
+    }
 
     isUnlockingAll = true;
     const itemsToUnlock = [...lockedContentItems];
@@ -86,13 +93,19 @@
       </IconButton>
     </DropdownMenu.Trigger>
     <DropdownMenu.Content align="end">
-      <DropdownMenu.Item onclick={handleUnlockAllContent} disabled={menuDisabled || lockedContentItems.length === 0}>
-        {$t('course.navItem.lessons.content_menu.unlock_all')}
+      <DropdownMenu.Item onclick={handleUnlockAllContent} disabled={menuDisabled}>
+        <span class="flex items-center gap-2">
+          <LockOpenIcon size={14} />
+          {$t('course.navItem.lessons.content_menu.unlock_all')}
+        </span>
       </DropdownMenu.Item>
       <DropdownMenu.Item onclick={handleToggleContentGrouping} disabled={menuDisabled}>
-        {contentGroupingEnabled
-          ? $t('course.navItem.lessons.content_menu.disable_grouping')
-          : $t('course.navItem.lessons.content_menu.enable_grouping')}
+        <span class="flex items-center gap-2">
+          <TableOfContentsIcon size={14} />
+          {contentGroupingEnabled
+            ? $t('course.navItem.lessons.content_menu.disable_grouping')
+            : $t('course.navItem.lessons.content_menu.enable_grouping')}
+        </span>
       </DropdownMenu.Item>
     </DropdownMenu.Content>
   </DropdownMenu.Root>

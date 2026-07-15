@@ -290,6 +290,7 @@
         "successful_deletion": "एकीकरण हटा दिया गया",
         "update_successful": "अद्यतन सफल",
         "unlocked_all_content": "सभी पाठ्यक्रम आइटम अनलॉक हो गए",
+        "all_content_already_unlocked": "सभी सामग्री पहले से अनलॉक है",
         "content_grouping_enabled": "सामग्री समूहीकरण सक्षम",
         "content_grouping_disabled": "सामग्री समूहीकरण अक्षम"
       }

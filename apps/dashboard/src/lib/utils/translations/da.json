@@ -290,6 +290,7 @@
         "successful_deletion": "Integration slettet",
         "update_successful": "Opdateringen lykkedes",
         "unlocked_all_content": "Alle kursusartikler er låst op",
+        "all_content_already_unlocked": "Alt indhold er allerede låst op",
         "content_grouping_enabled": "Indholdsgruppering aktiveret",
         "content_grouping_disabled": "Indholdsgruppering deaktiveret"
       }

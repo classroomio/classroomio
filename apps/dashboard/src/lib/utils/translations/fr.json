@@ -290,6 +290,7 @@
         "successful_deletion": "Intégration supprimée",
         "update_successful": "Mise à jour réussie",
         "unlocked_all_content": "Tous les éléments de cours débloqués",
+        "all_content_already_unlocked": "Tout le contenu est déjà déverrouillé",
         "content_grouping_enabled": "Regroupement de contenu activé",
         "content_grouping_disabled": "Regroupement de contenu désactivé"
       }

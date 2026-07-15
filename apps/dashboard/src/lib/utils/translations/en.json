@@ -4179,6 +4179,7 @@
     "course_settings": {
       "success": {
         "unlocked_all_content": "All course items unlocked",
+        "all_content_already_unlocked": "All content is already unlocked",
         "content_grouping_enabled": "Content grouping enabled",
         "content_grouping_disabled": "Content grouping disabled",
         "download": "Download Complete",
