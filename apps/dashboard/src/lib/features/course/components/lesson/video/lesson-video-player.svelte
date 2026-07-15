@@ -142,8 +142,7 @@
 
     lessonVideoBus.updateTranscriptSource(uploadAssetId, {
       transcript: localTranscript,
-      transcriptLoading: localTranscriptLoading,
-      seek: localSeekFn
+      transcriptLoading: localTranscriptLoading
     });
   });
 

@@ -13,7 +13,7 @@
     showBottomSeparator?: boolean;
     /** Match the note column (`max-w-2xl`) instead of the full video column. */
     alignWithNote?: boolean;
-    lessonId?: string;
+    lessonId: string;
     onTranscript?: () => void;
   }
 
@@ -23,7 +23,7 @@
     showTopSeparator = true,
     showBottomSeparator = true,
     alignWithNote = false,
-    lessonId = '',
+    lessonId,
     onTranscript = () => {}
   }: Props = $props();
 
