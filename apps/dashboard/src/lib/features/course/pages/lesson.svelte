@@ -47,7 +47,7 @@
     AddVideoModal,
     AddDocumentModal,
     LessonSettingsTab,
-    LessonSummarizeButton
+    LessonMaterialActions
   } from '$features/course/components/lesson';
 
   import type { TLocale } from '@cio/db/types';
@@ -527,9 +527,7 @@
         {#key lessonId}
           <div class="mb-20 flex w-full flex-col gap-2" in:fade={{ delay: 500 }} out:fade>
             {#if !hasLessonVideos}
-              <div class="mb-2 flex flex-wrap gap-2">
-                <LessonSummarizeButton {lessonId} />
-              </div>
+              <LessonMaterialActions showSummarize {lessonId} showSeparators={false} />
             {/if}
 
             {#each viewModeComponents as Component, index (index)}
