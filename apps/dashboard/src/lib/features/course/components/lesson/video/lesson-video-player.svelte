@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
-  import { Button } from '@cio/ui/base/button';
   import { MediaPlayer } from '@cio/ui/custom/media-player';
   import { presignApi } from '$features/course/api/presign.svelte';
   import { mediaApi } from '$features/media/api';
@@ -17,7 +16,7 @@
   import { resolveWatchEnforcedAssetIds, type LessonVideo } from './video-card-utils';
   import { lessonVideoBus } from './lesson-video-bus.svelte';
   import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
-  import LessonSummarizeButton from '../lesson-summarize-button.svelte';
+  import LessonMaterialActions from '../lesson-material-actions.svelte';
 
   /**
    * HLS playback flag — set by the upload flow when the asset was encoded
@@ -495,17 +494,10 @@
     }}
   />
 
-  {#if localTranscript || showSummarizeButton}
-    <div class="mt-3 flex flex-wrap gap-2">
-      {#if localTranscript}
-        <Button variant="outline" size="sm" onclick={openTranscriptPanel}>
-          {$t('course.navItem.lessons.materials.show_transcript')}
-        </Button>
-      {/if}
-
-      {#if showSummarizeButton}
-        <LessonSummarizeButton {lessonId} />
-      {/if}
-    </div>
-  {/if}
+  <LessonMaterialActions
+    showTranscript={Boolean(localTranscript)}
+    showSummarize={showSummarizeButton}
+    {lessonId}
+    onTranscript={openTranscriptPanel}
+  />
 </div>
