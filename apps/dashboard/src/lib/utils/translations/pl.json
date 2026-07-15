@@ -289,7 +289,10 @@
         "successful_integration": "Integracja udana",
         "successful_deletion": "Integracja usunięta",
         "update_successful": "Aktualizacja pomyślna",
-        "unlocked_all_content": "Wszystkie elementy kursu odblokowane"
+        "unlocked_all_content": "Wszystkie elementy kursu odblokowane",
+        "all_content_already_unlocked": "Cała treść jest już odblokowana",
+        "content_grouping_enabled": "Grupowanie treści włączone",
+        "content_grouping_disabled": "Grupowanie treści wyłączone"
       }
     },
     "people": {
@@ -1320,6 +1323,12 @@
         "add_content_create_lesson": "Utwórz lekcję",
         "add_content_section_title_placeholder": "np. Moduł 1: Wprowadzenie",
         "add_content_lesson_title_placeholder": "np. Pierwsze kroki ze zmiennymi",
+        "content_menu": {
+          "label": "Opcje treści",
+          "unlock_all": "Odblokuj całą treść",
+          "enable_grouping": "Włącz grupowanie treści",
+          "disable_grouping": "Wyłącz grupowanie treści"
+        },
         "join_lesson": "Dołącz do lekcji",
         "no_link": "Brak linku",
         "no_tutor": "Nie dodano żadnego nauczyciela",

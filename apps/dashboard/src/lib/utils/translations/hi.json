@@ -289,7 +289,10 @@
         "successful_integration": "एकीकरण सफल",
         "successful_deletion": "एकीकरण हटा दिया गया",
         "update_successful": "अद्यतन सफल",
-        "unlocked_all_content": "सभी पाठ्यक्रम आइटम अनलॉक हो गए"
+        "unlocked_all_content": "सभी पाठ्यक्रम आइटम अनलॉक हो गए",
+        "all_content_already_unlocked": "सभी सामग्री पहले से अनलॉक है",
+        "content_grouping_enabled": "सामग्री समूहीकरण सक्षम",
+        "content_grouping_disabled": "सामग्री समूहीकरण अक्षम"
       }
     },
     "people": {
@@ -1320,6 +1323,12 @@
         "add_content_create_lesson": "पाठ बनाएँ",
         "add_content_section_title_placeholder": "उदाहरण के लिए, मॉड्यूल 1: परिचय",
         "add_content_lesson_title_placeholder": "उदाहरण के लिए, वेरिएबल्स के साथ शुरुआत करना",
+        "content_menu": {
+          "label": "सामग्री विकल्प",
+          "unlock_all": "सभी सामग्री अनलॉक करें",
+          "enable_grouping": "सामग्री समूहीकरण सक्षम करें",
+          "disable_grouping": "सामग्री समूहीकरण अक्षम करें"
+        },
         "join_lesson": "पाठ से जुड़ें",
         "no_link": "कोई लिंक नहीं",
         "no_tutor": "कोई शिक्षक नहीं जोड़ा गया",
