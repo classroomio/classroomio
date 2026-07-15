@@ -70,11 +70,11 @@ async function main() {
           `subscription ${subscriptionId} is "${subscription.status}"`
       );
 
-      downgraded++;
-
       if (execute) {
         await cancelOrganizationPlan(subscriptionId, subscription);
       }
+
+      downgraded++;
     } catch (error) {
       errored++;
       console.error(`Skipping ${plan.orgName} (${plan.orgId}): ${error instanceof Error ? error.message : error}`);
