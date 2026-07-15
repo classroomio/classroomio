@@ -58,7 +58,7 @@
     const metadata = isObject(course.metadata) ? course.metadata : {};
 
     isTogglingGrouping = true;
-    await courseApi.update(
+    const result = await courseApi.update(
       course.id,
       {
         metadata: {
@@ -69,7 +69,7 @@
       { showSuccessToast: false }
     );
 
-    if (courseApi.success) {
+    if (result) {
       const snackbarKey = nextEnabled
         ? 'snackbar.course_settings.success.content_grouping_enabled'
         : 'snackbar.course_settings.success.content_grouping_disabled';
