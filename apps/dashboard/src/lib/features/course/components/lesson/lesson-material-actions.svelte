@@ -10,6 +10,8 @@
     showTranscript?: boolean;
     showSummarize?: boolean;
     showSeparators?: boolean;
+    /** Match the note column (`max-w-2xl`) instead of the full video column. */
+    alignWithNote?: boolean;
     lessonId?: string;
     onTranscript?: () => void;
   }
@@ -18,6 +20,7 @@
     showTranscript = false,
     showSummarize = false,
     showSeparators = true,
+    alignWithNote = false,
     lessonId = '',
     onTranscript = () => {}
   }: Props = $props();
@@ -28,39 +31,46 @@
 </script>
 
 {#if showTranscript || showSummarize}
-  {#if showSeparators}
-    <Separator class="my-4" />
-  {/if}
-
-  <div class="flex flex-wrap items-center gap-x-3 gap-y-2 py-1">
-    {#if showTranscript}
-      <HoverableItem>
-        {#snippet children(isHovered)}
-          <Button variant="ghost" size="sm" class="ui:px-2" onclick={onTranscript}>
-            <ContentIcon {isHovered} size={16} />
-            {$t('course.navItem.lessons.materials.show_transcript')}
-          </Button>
-        {/snippet}
-      </HoverableItem>
+  <div class={alignWithNote ? 'mx-auto w-full max-w-2xl' : 'w-full'}>
+    {#if showSeparators}
+      <Separator class="my-3 sm:my-4" />
     {/if}
 
-    {#if showTranscript && showSummarize}
-      <span class="ui:text-muted-foreground text-sm" aria-hidden="true">|</span>
-    {/if}
+    <div class="flex flex-wrap items-center gap-x-2 gap-y-2 py-1 sm:gap-x-3">
+      {#if showTranscript}
+        <HoverableItem>
+          {#snippet children(isHovered)}
+            <Button variant="ghost" size="sm" class="ui:h-auto ui:px-1 ui:py-1 sm:ui:px-2" onclick={onTranscript}>
+              <ContentIcon {isHovered} size={16} />
+              {$t('course.navItem.lessons.materials.show_transcript')}
+            </Button>
+          {/snippet}
+        </HoverableItem>
+      {/if}
 
-    {#if showSummarize}
-      <HoverableItem>
-        {#snippet children(isHovered)}
-          <Button variant="ghost" size="sm" class="ui:px-2" onclick={handleSummarizeLesson}>
-            <PremiumIcon {isHovered} size={16} />
-            {$t('course.navItem.lessons.materials.summarize_lesson')}
-          </Button>
-        {/snippet}
-      </HoverableItem>
+      {#if showTranscript && showSummarize}
+        <span class="ui:text-muted-foreground hidden text-sm sm:inline" aria-hidden="true">|</span>
+      {/if}
+
+      {#if showSummarize}
+        <HoverableItem>
+          {#snippet children(isHovered)}
+            <Button
+              variant="ghost"
+              size="sm"
+              class="ui:h-auto ui:px-1 ui:py-1 sm:ui:px-2"
+              onclick={handleSummarizeLesson}
+            >
+              <PremiumIcon {isHovered} size={16} />
+              {$t('course.navItem.lessons.materials.summarize_lesson')}
+            </Button>
+          {/snippet}
+        </HoverableItem>
+      {/if}
+    </div>
+
+    {#if showSeparators}
+      <Separator class="my-3 sm:my-4" />
     {/if}
   </div>
-
-  {#if showSeparators}
-    <Separator class="my-4" />
-  {/if}
 {/if}
