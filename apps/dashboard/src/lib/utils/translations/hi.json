@@ -2064,7 +2064,10 @@
                 "edit": "प्रतिलेख संपादित करें",
                 "save": "सहेजें",
                 "cancel": "रद्द करें",
-                "segment_label": "{timestamp} पर खंड"
+                "segment_label": "{timestamp} पर खंड",
+                "video_nav_label": "वीडियो {number}",
+                "previous_video": "पिछले वीडियो का प्रतिलेख",
+                "next_video": "अगले वीडियो का प्रतिलेख"
               },
               "simple_card": {
                 "kind_youtube": "यूट्यूब",

@@ -2064,7 +2064,10 @@
                 "edit": "Transkript bearbeiten",
                 "save": "Speichern",
                 "cancel": "Abbrechen",
-                "segment_label": "Segmentieren um {timestamp}"
+                "segment_label": "Segmentieren um {timestamp}",
+                "video_nav_label": "Video {number}",
+                "previous_video": "Vorheriges Video-Transkript",
+                "next_video": "Nächstes Video-Transkript"
               },
               "simple_card": {
                 "kind_youtube": "YouTube",

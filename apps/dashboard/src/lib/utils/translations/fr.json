@@ -2064,7 +2064,10 @@
                 "edit": "Modifier la transcription",
                 "save": "Enregistrer",
                 "cancel": "Annuler",
-                "segment_label": "Segment à {timestamp}"
+                "segment_label": "Segment à {timestamp}",
+                "video_nav_label": "Vidéo {number}",
+                "previous_video": "Transcription de la vidéo précédente",
+                "next_video": "Transcription de la vidéo suivante"
               },
               "simple_card": {
                 "kind_youtube": "YouTube",

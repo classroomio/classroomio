@@ -2384,7 +2384,10 @@
                 "edit": "Edit transcript",
                 "save": "Save",
                 "cancel": "Cancel",
-                "segment_label": "Segment at {timestamp}"
+                "segment_label": "Segment at {timestamp}",
+                "video_nav_label": "Video {number}",
+                "previous_video": "Previous video transcript",
+                "next_video": "Next video transcript"
               }
             },
             "document": {

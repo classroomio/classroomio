@@ -2064,7 +2064,10 @@
                 "edit": "Rediger udskrift",
                 "save": "Gem",
                 "cancel": "Annuller",
-                "segment_label": "Segmenter kl. {timestamp}"
+                "segment_label": "Segmenter kl. {timestamp}",
+                "video_nav_label": "Video {number}",
+                "previous_video": "Forrige videotransskript",
+                "next_video": "Næste videotransskript"
               },
               "simple_card": {
                 "kind_youtube": "YouTube",

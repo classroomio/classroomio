@@ -2064,7 +2064,10 @@
                 "edit": "Chỉnh sửa bản ghi",
                 "save": "Lưu",
                 "cancel": "Hủy bỏ",
-                "segment_label": "Đoạn tại {timestamp}"
+                "segment_label": "Đoạn tại {timestamp}",
+                "video_nav_label": "Video {number}",
+                "previous_video": "Bản ghi video trước",
+                "next_video": "Bản ghi video tiếp theo"
               },
               "simple_card": {
                 "kind_youtube": "YouTube",
