@@ -8,7 +8,21 @@ import type {
   TOrganization,
   TOrganizationPlan
 } from '@db/types';
-import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, notInArray, or, sql } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  gt,
+  ilike,
+  inArray,
+  isNotNull,
+  notInArray,
+  or,
+  sql
+} from 'drizzle-orm';
 
 import { PLAN } from '@cio/utils/plans';
 import { ROLE } from '@cio/utils/constants';
@@ -1004,6 +1018,33 @@ export const getOrganizationPlanBySubscriptionId = async (
   } catch (error) {
     console.error('getOrganizationPlanBySubscriptionId error:', error);
     throw new Error(`Failed to fetch organization plan: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+};
+
+/**
+ * Gets every active organization plan that has a Polar subscription ID attached.
+ * Used by one-off backfills that need to re-verify subscription status against Polar.
+ * @param dbClient Optional DB or transaction client for use within transactions
+ * @returns Active organization plans with org name/siteName for readable logging
+ */
+export const getActiveOrganizationPlansWithSubscription = async (
+  dbClient: DbOrTxClient = db
+): Promise<Array<TOrganizationPlan & { orgName: string; orgSiteName: string | null }>> => {
+  try {
+    return await dbClient
+      .select({
+        ...getTableColumns(schema.organizationPlan),
+        orgName: schema.organization.name,
+        orgSiteName: schema.organization.siteName
+      })
+      .from(schema.organizationPlan)
+      .innerJoin(schema.organization, eq(schema.organization.id, schema.organizationPlan.orgId))
+      .where(and(eq(schema.organizationPlan.isActive, true), isNotNull(schema.organizationPlan.subscriptionId)));
+  } catch (error) {
+    console.error('getActiveOrganizationPlansWithSubscription error:', error);
+    throw new Error(
+      `Failed to fetch active organization plans: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 };
 
