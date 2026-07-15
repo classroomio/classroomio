@@ -2055,7 +2055,10 @@
                 "edit": "Изменить стенограмму",
                 "save": "Сохранить",
                 "cancel": "Отмена",
-                "segment_label": "Сегмент в {timestamp}"
+                "segment_label": "Сегмент в {timestamp}",
+                "video_nav_label": "Видео {number}",
+                "previous_video": "Транскрипт предыдущего видео",
+                "next_video": "Транскрипт следующего видео"
               },
               "simple_card": {
                 "kind_youtube": "Ютуб",

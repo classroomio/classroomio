@@ -5,11 +5,15 @@
   import { Empty } from '@cio/ui/custom/empty';
   import * as Item from '@cio/ui/base/item';
   import { lessonVideoUpload } from '$features/course/components/lesson/store';
+  import LessonMaterialActions from '$features/course/components/lesson/lesson-material-actions.svelte';
+  import { sidePanel } from '$features/side-panel';
   import { t } from '$lib/utils/functions/translations';
   import MODES from '$lib/utils/constants/mode';
   import VideoIcon from '@lucide/svelte/icons/video';
   import LessonVideoSimpleCard from './lesson-video-simple-card.svelte';
   import LessonVideoPlayer from './lesson-video-player.svelte';
+  import { lessonVideoBus } from './lesson-video-bus.svelte';
+  import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
 
   interface Props {
     mode?: (typeof MODES)[keyof typeof MODES];
@@ -20,6 +24,11 @@
   let { mode = MODES.view, courseId, lessonId }: Props = $props();
 
   const videos = $derived(lessonApi.lesson?.videos || []);
+
+  const hasTranscript = $derived.by(() => {
+    lessonVideoBus.transcriptSources;
+    return lessonVideoBus.hasTranscriptAvailable();
+  });
 
   let openDeleteVideoModal = $state(false);
   let videoIndexToDelete = $state<number | null>(null);
@@ -40,11 +49,17 @@
     }
     openDeleteVideoModal = false;
   }
+
+  function openTranscriptPanel() {
+    if (!lessonVideoBus.prepareTranscriptPanelSelection()) return;
+
+    sidePanel.open(TRANSCRIPT_PANEL_ID);
+  }
 </script>
 
 {#snippet content(video, index)}
   {#key video.type === 'upload' ? ((video as typeof video & { assetId?: string }).assetId ?? video.link) : video.link}
-    <LessonVideoPlayer {video} {courseId} {lessonId} showSummarizeButton={index === videos.length - 1} />
+    <LessonVideoPlayer {video} {courseId} {lessonId} videoIndex={index} />
   {/key}
 {/snippet}
 
@@ -86,6 +101,13 @@
           {@render content(video, index)}
         </div>
       {/each}
+
+      <LessonMaterialActions
+        showTranscript={hasTranscript}
+        showSummarize={videos.length > 0}
+        {lessonId}
+        onTranscript={openTranscriptPanel}
+      />
     </div>
   {/if}
 {/if}

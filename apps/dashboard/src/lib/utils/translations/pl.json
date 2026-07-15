@@ -2055,7 +2055,10 @@
                 "edit": "Edytuj transkrypcję",
                 "save": "Zapisz",
                 "cancel": "Anuluj",
-                "segment_label": "Segment o {timestamp}"
+                "segment_label": "Segment o {timestamp}",
+                "video_nav_label": "Wideo {number}",
+                "previous_video": "Transkrypcja poprzedniego wideo",
+                "next_video": "Transkrypcja następnego wideo"
               },
               "simple_card": {
                 "kind_youtube": "YouTube",
