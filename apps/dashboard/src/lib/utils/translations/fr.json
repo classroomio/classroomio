@@ -289,7 +289,9 @@
         "successful_integration": "Intégration réussie",
         "successful_deletion": "Intégration supprimée",
         "update_successful": "Mise à jour réussie",
-        "unlocked_all_content": "Tous les éléments de cours débloqués"
+        "unlocked_all_content": "Tous les éléments de cours débloqués",
+        "content_grouping_enabled": "Regroupement de contenu activé",
+        "content_grouping_disabled": "Regroupement de contenu désactivé"
       }
     },
     "people": {
@@ -1320,6 +1322,12 @@
         "add_content_create_lesson": "Créer une leçon",
         "add_content_section_title_placeholder": "par exemple, Module 1 : Introduction",
         "add_content_lesson_title_placeholder": "par exemple, Premiers pas avec les variables",
+        "content_menu": {
+          "label": "Options de contenu",
+          "unlock_all": "Déverrouiller tout le contenu",
+          "enable_grouping": "Activer le regroupement de contenu",
+          "disable_grouping": "Désactiver le regroupement de contenu"
+        },
         "join_lesson": "Rejoindre la leçon",
         "no_link": "Pas de lien",
         "no_tutor": "Aucun tuteur ajouté",

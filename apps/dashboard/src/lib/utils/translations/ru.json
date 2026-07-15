@@ -289,7 +289,9 @@
         "successful_integration": "Интеграция прошла успешно",
         "successful_deletion": "Интеграция удалена",
         "update_successful": "Обновление успешно выполнено",
-        "unlocked_all_content": "Все предметы курса разблокированы"
+        "unlocked_all_content": "Все предметы курса разблокированы",
+        "content_grouping_enabled": "Группировка контента включена",
+        "content_grouping_disabled": "Группировка контента отключена"
       }
     },
     "people": {
@@ -1320,6 +1322,12 @@
         "add_content_create_lesson": "Создать урок",
         "add_content_section_title_placeholder": "например, Модуль 1: Введение",
         "add_content_lesson_title_placeholder": "например, Начало работы с переменными",
+        "content_menu": {
+          "label": "Параметры контента",
+          "unlock_all": "Разблокировать весь контент",
+          "enable_grouping": "Включить группировку контента",
+          "disable_grouping": "Отключить группировку контента"
+        },
         "join_lesson": "Присоединиться к уроку",
         "no_link": "Нет ссылки",
         "no_tutor": "Репетитор не добавлен",

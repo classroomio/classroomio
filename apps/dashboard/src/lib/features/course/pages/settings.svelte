@@ -25,7 +25,6 @@
   import LockOpenIcon from '@lucide/svelte/icons/lock-open';
   import type { TCourseType } from '@cio/db/types';
   import type { Course } from '../utils/types';
-  import { ContentType } from '@cio/utils/constants/content';
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -33,6 +32,7 @@
   import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
   import { DeleteModal } from '$features/ui';
   import { contentApi, courseApi } from '$features/course/api';
+  import { collectLockedContentItems } from '$features/course/utils/content-lock-utils';
   import { tagApi } from '$features/tag/api';
   import { uploadImage } from '$lib/utils/services/upload';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
@@ -119,22 +119,6 @@
   };
 
   let isUnlockingAll = $state(false);
-
-  type LockedContentItem = { id: string; type: ContentType.Lesson | ContentType.Exercise };
-
-  function collectLockedContentItems(course: Course | null): LockedContentItem[] {
-    const content = course?.content;
-    if (!content) return [];
-
-    const items = content.grouped ? content.sections.flatMap((section) => section.items) : content.items;
-
-    return items
-      .filter((item) => (item.isUnlocked ?? true) === false)
-      .map((item) => ({
-        id: item.id,
-        type: item.type === ContentType.Exercise ? ContentType.Exercise : ContentType.Lesson
-      }));
-  }
 
   const lockedContentItems = $derived(collectLockedContentItems(courseApi.course));
   const isLiveClassCourse = $derived(courseApi.course?.type === 'LIVE_CLASS');

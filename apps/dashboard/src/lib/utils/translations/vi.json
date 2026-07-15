@@ -289,7 +289,9 @@
         "successful_integration": "Tích hợp thành công",
         "successful_deletion": "Đã xóa tích hợp",
         "update_successful": "Cập nhật thành công",
-        "unlocked_all_content": "Tất cả các mục khóa học đã được mở khóa"
+        "unlocked_all_content": "Tất cả các mục khóa học đã được mở khóa",
+        "content_grouping_enabled": "Đã bật nhóm nội dung",
+        "content_grouping_disabled": "Đã tắt nhóm nội dung"
       }
     },
     "people": {
@@ -1320,6 +1322,12 @@
         "add_content_create_lesson": "Tạo bài học",
         "add_content_section_title_placeholder": "ví dụ: Mô-đun 1: Giới thiệu",
         "add_content_lesson_title_placeholder": "ví dụ: Bắt đầu với các biến",
+        "content_menu": {
+          "label": "Tùy chọn nội dung",
+          "unlock_all": "Mở khóa tất cả nội dung",
+          "enable_grouping": "Bật nhóm nội dung",
+          "disable_grouping": "Tắt nhóm nội dung"
+        },
         "join_lesson": "Tham gia bài học",
         "no_link": "Không có liên kết",
         "no_tutor": "Không có gia sư nào được thêm vào",

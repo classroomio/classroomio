@@ -289,7 +289,9 @@
         "successful_integration": "Integration lykkedes",
         "successful_deletion": "Integration slettet",
         "update_successful": "Opdateringen lykkedes",
-        "unlocked_all_content": "Alle kursusartikler er låst op"
+        "unlocked_all_content": "Alle kursusartikler er låst op",
+        "content_grouping_enabled": "Indholdsgruppering aktiveret",
+        "content_grouping_disabled": "Indholdsgruppering deaktiveret"
       }
     },
     "people": {
@@ -1320,6 +1322,12 @@
         "add_content_create_lesson": "Opret lektion",
         "add_content_section_title_placeholder": "f.eks. Modul 1: Introduktion",
         "add_content_lesson_title_placeholder": "f.eks. Kom godt i gang med variabler",
+        "content_menu": {
+          "label": "Indholdsindstillinger",
+          "unlock_all": "Lås alt indhold op",
+          "enable_grouping": "Aktivér indholdsgruppering",
+          "disable_grouping": "Deaktivér indholdsgruppering"
+        },
         "join_lesson": "Deltag i lektionen",
         "no_link": "Intet link",
         "no_tutor": "Ingen underviser tilføjet",

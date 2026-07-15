@@ -2236,6 +2236,12 @@
         },
         "add_content_section_title_placeholder": "e.g., Module 1: Introduction",
         "add_content_lesson_title_placeholder": "e.g., Getting Started with Variables",
+        "content_menu": {
+          "label": "Content options",
+          "unlock_all": "Unlock all content",
+          "enable_grouping": "Enable content grouping",
+          "disable_grouping": "Disable content grouping"
+        },
         "join_lesson": "Join lesson",
         "no_link": "No link",
         "no_tutor": "No tutor added",
@@ -4173,6 +4179,8 @@
     "course_settings": {
       "success": {
         "unlocked_all_content": "All course items unlocked",
+        "content_grouping_enabled": "Content grouping enabled",
+        "content_grouping_disabled": "Content grouping disabled",
         "download": "Download Complete",
         "saved": "Saved successfully",
         "successful_integration": "Integration successful",
