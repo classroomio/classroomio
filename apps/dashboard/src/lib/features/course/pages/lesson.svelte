@@ -525,7 +525,7 @@
         </UnderlineTabs.Root>
       {:else if lessonApi.lesson && !isMaterialsEmpty}
         {#key lessonId}
-          <div class="mb-20 flex w-full flex-col gap-2" in:fade={{ delay: 500 }} out:fade>
+          <div class="mb-20 flex w-full flex-col" in:fade={{ delay: 500 }} out:fade>
             {#if !hasLessonVideos}
               <LessonMaterialActions showSummarize {lessonId} showSeparators={false} alignWithNote />
             {/if}

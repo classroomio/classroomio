@@ -82,7 +82,7 @@
   {#if videos.length}
     <div class="w-full">
       {#each videos as video, index}
-        <div class="mb-5 w-full overflow-hidden">
+        <div class="{index < videos.length - 1 ? 'mb-5' : ''} w-full overflow-hidden">
           {@render content(video, index)}
         </div>
       {/each}
