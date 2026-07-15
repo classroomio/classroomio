@@ -1,0 +1,201 @@
+# ClassroomIO — Render.com Blueprint (one-click self-host)
+#
+# Deploy with the button in the docs, or:
+#   https://render.com/deploy?repo=https://github.com/classroomio/classroomio
+#
+# This Blueprint PULLS the published classroomio/{api,dashboard,jobs} images from Docker Hub
+# (it does not build from source — that avoids Render's build-RAM limits). Pin a release by
+# changing `:latest` to a version tag (e.g. :1.4.2) on each image below.
+#
+# Render's free tier does NOT cover background workers, private services, or disks, so a working
+# ClassroomIO is a PAID setup (the jobs worker + the MinIO disk). The `starter` plans below are
+# the minimum; scale up as needed.
+#
+# IMPORTANT — one-time post-deploy step. render.yaml cannot prepend a scheme/port to a
+# `fromService` host, and better-auth needs a full URL. So the cross-service URL vars are marked
+# `sync: false`: Render leaves them blank, you fill them in once from the service URLs in your
+# Render dashboard, then redeploy. The full walkthrough is in:
+#   apps/docs/content/docs/self-hosted/render.mdx
+
+databases:
+  - name: cio-postgres
+    databaseName: classroomio
+    user: classroomio
+    plan: basic-256mb
+    postgresMajorVersion: '16'
+
+services:
+  # ── Redis / Key Value (BullMQ queue) ───────────────────────────────────────
+  - type: keyvalue
+    name: cio-redis
+    plan: starter
+    ipAllowList: [] # internal-only (no public access)
+    maxmemoryPolicy: noeviction # never evict queued jobs
+
+  # ── Object storage (MinIO) — public S3 API on :9000 + internal ─────────────
+  - type: web
+    name: cio-minio
+    runtime: image
+    plan: starter
+    image:
+      url: docker.io/minio/minio:latest
+    dockerCommand: server /data --console-address ":9001"
+    disk:
+      name: minio-data
+      mountPath: /data
+      sizeGB: 10 # your durability boundary — back it up
+    envVars:
+      - key: MINIO_ROOT_USER
+        generateValue: true
+      - key: MINIO_ROOT_PASSWORD
+        generateValue: true
+      # Optional: silence console redirect warnings. Set to this service's own public URL
+      # (https://cio-minio-xxxx.onrender.com) after first deploy.
+      - key: MINIO_SERVER_URL
+        sync: false
+
+  # ── API (private) — runs DB setup on boot via the image entrypoint ─────────
+  - type: pserv
+    name: cio-api
+    runtime: image
+    plan: starter
+    image:
+      url: docker.io/classroomio/api:latest
+    envVars:
+      - key: PORT
+        value: 3081
+      - key: PUBLIC_IS_SELFHOSTED
+        value: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cio-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: cio-redis
+          property: connectionString
+      - key: BETTER_AUTH_SECRET
+        generateValue: true
+      - key: PRIVATE_SERVER_KEY
+        generateValue: true
+      - key: OBJECT_STORAGE_ACCESS_KEY_ID
+        fromService:
+          type: web
+          name: cio-minio
+          envVarKey: MINIO_ROOT_USER
+      - key: OBJECT_STORAGE_SECRET_ACCESS_KEY
+        fromService:
+          type: web
+          name: cio-minio
+          envVarKey: MINIO_ROOT_PASSWORD
+      - key: OBJECT_STORAGE_FORCE_PATH_STYLE
+        value: true
+      # ── Fill these in after first deploy (see render.mdx) ──
+      # Dashboard URL — better-auth base URL. Must be a full https:// URL.
+      - key: DASHBOARD_ORIGIN
+        sync: false
+      # Internal MinIO endpoint: http://<cio-minio internal host>:9000
+      - key: OBJECT_STORAGE_ENDPOINT
+        sync: false
+      # Public MinIO URL: https://cio-minio-xxxx.onrender.com
+      - key: OBJECT_STORAGE_PUBLIC_ENDPOINT
+        sync: false
+      # Public media base: https://cio-minio-xxxx.onrender.com/media
+      - key: OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL
+        sync: false
+      # Email (required for signup verification, password reset, invites)
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_SENDER
+        sync: false
+      # Optional — transcription + AI course generation
+      - key: OPENAI_API_KEY
+        sync: false
+
+  # ── Dashboard (public web) ─────────────────────────────────────────────────
+  - type: web
+    name: cio-dashboard
+    runtime: image
+    plan: starter
+    image:
+      url: docker.io/classroomio/dashboard:latest
+    envVars:
+      - key: PUBLIC_IS_SELFHOSTED
+        value: true
+      - key: PRIVATE_APP_SUBDOMAINS
+        value: app
+      # Same value as cio-api — authenticates server-side dashboard → API calls.
+      - key: PRIVATE_SERVER_KEY
+        fromService:
+          type: pserv
+          name: cio-api
+          envVarKey: PRIVATE_SERVER_KEY
+      # ── Fill these in after first deploy (see render.mdx) ──
+      # This dashboard's own public URL: https://cio-dashboard-xxxx.onrender.com
+      - key: ORIGIN
+        sync: false
+      # This dashboard's own public host (no scheme): cio-dashboard-xxxx.onrender.com
+      - key: PRIVATE_APP_HOST
+        sync: false
+      # Internal API URL: http://<cio-api internal host>:3081
+      - key: PRIVATE_SERVER_URL
+        sync: false
+      # The MinIO public URL, so uploaded media isn't blocked by CSP.
+      - key: CSP_MEDIA_SRC_DOMAINS
+        sync: false
+
+  # ── Background jobs worker (no public URL) ─────────────────────────────────
+  - type: worker
+    name: cio-jobs
+    runtime: image
+    plan: starter
+    image:
+      url: docker.io/classroomio/jobs:latest
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cio-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: cio-redis
+          property: connectionString
+      - key: OBJECT_STORAGE_ACCESS_KEY_ID
+        fromService:
+          type: web
+          name: cio-minio
+          envVarKey: MINIO_ROOT_USER
+      - key: OBJECT_STORAGE_SECRET_ACCESS_KEY
+        fromService:
+          type: web
+          name: cio-minio
+          envVarKey: MINIO_ROOT_PASSWORD
+      - key: OBJECT_STORAGE_FORCE_PATH_STYLE
+        value: true
+      # ── Fill these in after first deploy (same values as cio-api) ──
+      - key: OBJECT_STORAGE_ENDPOINT
+        sync: false
+      - key: OBJECT_STORAGE_PUBLIC_ENDPOINT
+        sync: false
+      - key: OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_SENDER
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false

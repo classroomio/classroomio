@@ -1,4 +1,4 @@
 {
   "title": "Self Hosting",
-  "pages": ["docker", "railway", "coolify"]
+  "pages": ["docker", "railway", "coolify", "render"]
 }
