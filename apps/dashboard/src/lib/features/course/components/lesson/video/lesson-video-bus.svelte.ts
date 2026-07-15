@@ -64,7 +64,25 @@ class LessonVideoBus {
 
     if (!existing) return;
 
-    this.transcriptSources.set(assetId, { ...existing, ...patch });
+    let next = existing;
+    let changed = false;
+
+    for (const key of Object.keys(patch) as (keyof LessonTranscriptSource)[]) {
+      const value = patch[key];
+
+      if (value !== undefined && existing[key] !== value) {
+        if (!changed) {
+          next = { ...existing };
+          changed = true;
+        }
+
+        next[key] = value as LessonTranscriptSource[typeof key];
+      }
+    }
+
+    if (!changed) return;
+
+    this.transcriptSources.set(assetId, next);
 
     if (this.activeTranscriptAssetId === assetId) {
       this.syncActiveTranscriptToLegacyFields();

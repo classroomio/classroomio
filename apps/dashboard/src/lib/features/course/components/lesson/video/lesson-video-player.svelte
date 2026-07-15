@@ -137,14 +137,14 @@
     lessonVideoBus.setSeekFn(localSeekFn);
   }
 
-  $effect(() => {
+  function syncTranscriptToRegistry(): void {
     if (!uploadAssetId) return;
 
     lessonVideoBus.updateTranscriptSource(uploadAssetId, {
       transcript: localTranscript,
       transcriptLoading: localTranscriptLoading
     });
-  });
+  }
 
   $effect(() => {
     const rawUrl = localTranscript?.vttUrl;
@@ -259,6 +259,7 @@
     if (!uploadAssetId) {
       if (isMounted) {
         localTranscript = null;
+        syncTranscriptToRegistry();
       }
 
       return;
@@ -267,6 +268,7 @@
     if (!isMounted) return;
 
     localTranscriptLoading = true;
+    syncTranscriptToRegistry();
 
     try {
       const data = await mediaApi.getAssetTranscript(uploadAssetId);
@@ -275,9 +277,11 @@
 
       localTranscript = data;
       scheduleVttRefetch(data?.vttUrlExpiresAt);
+      syncTranscriptToRegistry();
     } finally {
       if (isMounted) {
         localTranscriptLoading = false;
+        syncTranscriptToRegistry();
       }
     }
   }
