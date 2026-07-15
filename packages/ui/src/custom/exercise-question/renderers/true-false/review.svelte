@@ -5,7 +5,9 @@
 
   let { question, answer = null, labels }: ExerciseQuestionRendererProps = $props();
 
-  const correctIsTrue = $derived(getTrueFalseCorrectIsTrue(question.settings as Record<string, unknown> | undefined));
+  const correctIsTrue = $derived(
+    getTrueFalseCorrectIsTrue(question.settings as Record<string, unknown> | undefined, question.options)
+  );
 
   const studentValue = $derived.by(() => {
     if (answer?.type !== 'TRUE_FALSE') return '';

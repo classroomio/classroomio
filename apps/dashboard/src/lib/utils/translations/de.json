@@ -288,7 +288,8 @@
         "saved": "Erfolgreich gespeichert",
         "successful_integration": "Integration erfolgreich",
         "successful_deletion": "Integration gelöscht",
-        "update_successful": "Update erfolgreich"
+        "update_successful": "Update erfolgreich",
+        "unlocked_all_content": "Alle Kursgegenstände freigeschaltet"
       }
     },
     "people": {
@@ -320,7 +321,8 @@
       "points_required_auto_grade": "Legen Sie für jede Frage einen positiven Punktwert fest, bevor Sie speichern.",
       "success": "Erfolgreich gespeichert",
       "submission_updated": "Einreichung aktualisiert auf",
-      "error_fetching": "Das Abrufen der Übungen ist fehlgeschlagen. Bitte laden Sie die Seite neu"
+      "error_fetching": "Das Abrufen der Übungen ist fehlgeschlagen. Bitte laden Sie die Seite neu",
+      "passed_requires_points": "Für den Abschluss durch Bestehen muss mindestens ein Punkt verfügbar sein."
     },
     "poll": {
       "info": {
@@ -843,6 +845,12 @@
           "title": "Willkommens-E-Mail",
           "description": "Passen Sie die E-Mail an, die Studierende nach der Anmeldung erhalten. Fügen Sie eine persönliche Notiz, Anweisungen oder einen Link zur Live-Sitzung hinzu.",
           "placeholder": "Schreiben Sie die Willkommensnachricht, die Studierende bei der Einschreibung erhalten …"
+        },
+        "locked_content": {
+          "title": "{count} Kurselemente sind gesperrt",
+          "description": "Eingeschriebene Schüler können erst dann an gesperrten Lektionen oder Übungen teilnehmen, wenn Sie sie entsperren.",
+          "description_live": "Gesperrte Lektionen und Übungen bleiben den Schülern verborgen, bis Sie sie entsperren – nützlich, wenn Sie Inhalte Woche für Woche veröffentlichen.",
+          "unlock_all": "Schalte alle frei"
         }
       },
       "analytics": {
@@ -1410,8 +1418,8 @@
             "finish": "Fertig",
             "next": "Als nächstes",
             "check": "Überprüfen",
-            "auto_graded_badge": "Auto-grade",
-            "manual_grading_required_badge": "Manual grading required",
+            "auto_graded_badge": "Automatische Bewertung",
+            "manual_grading_required_badge": "Manuelle Bewertung erforderlich",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "Einsendungen",
@@ -1419,14 +1427,25 @@
                 "heading": "Individuell",
                 "answers": "Individuelle Antworten",
                 "no": "Es wurde keine Antwort gegeben",
-                "student_avatar": "Student"
+                "student_avatar": "Student",
+                "answers_for": "{name}s Antworten",
+                "attempts_count": "{count} Versuche",
+                "attempt_label": "Versuch {number}",
+                "date_unknown": "Datum unbekannt",
+                "status_awaiting_manual": "Wartet auf manuelle Bewertung",
+                "status_completed": "Bewertet",
+                "status_pending": "Ausstehend",
+                "counts_as_complete": "Zählt als abgeschlossen",
+                "passed": "Bestanden",
+                "not_passed": "Nicht bestanden"
               },
               "summary": {
                 "heading": "Zusammenfassung",
                 "question_chart": "Fragendiagramme",
                 "responses": "Antworten",
                 "no_responses": "Noch keine Antworten",
-                "other": "Andere"
+                "other": "Andere",
+                "attempts": "Versuche"
               },
               "loading_submissions": "Einsendungen werden geladen...",
               "empty_title": "Noch keine Einsendungen",
@@ -1449,6 +1468,10 @@
               "status_pending": "Status: Ausstehende Überprüfung",
               "status_graded": "Status: Überprüfung abgeschlossen",
               "status_submitted": "Status: Eingereicht",
+              "passed_completion_result_title": "Bestanden",
+              "passed_completion_result_description": "Du hast {scorePercent} % erzielt. Für diese Übung waren {requiredPercent} % erforderlich, damit sie als abgeschlossen zählt.",
+              "not_passed_completion_result_title": "Noch nicht bestanden",
+              "not_passed_completion_result_description": "Du hast {scorePercent} % erzielt. Für diese Übung sind {requiredPercent} % erforderlich, damit sie als abgeschlossen zählt.",
               "empty_description": "Klicken Sie zum Hinzufügen auf die Schaltfläche Bearbeiten.",
               "empty_edit_hint_prefix": "Klicken Sie auf ",
               "empty_edit_hint_suffix": " Schaltfläche zum Hinzufügen.",
@@ -1846,6 +1869,30 @@
               "sending": "Studierende benachrichtigen…",
               "sent": "{count} Studenten benachrichtigt",
               "failed": "Die Schüler konnten nicht benachrichtigt werden"
+            },
+            "zero_points_warning": "Legen Sie Punkte über 0 fest, andernfalls erhalten die Schüler für diese Frage keine Bewertung.",
+            "settings_completion_passed_helper": "Studierende müssen die Bestehenspunktzahl erreichen, bevor diese Übung als abgeschlossen zählt.",
+            "settings_manual_grading_warning": "Manuell bewertete Einreichungen müssen bewertet werden, bevor sie als bestanden zählen können.",
+            "settings_single_attempt_warning": "Bei nur einem Versuch benötigen nicht bestandene Studierende eine Aktion der Lehrkraft, bevor sie fortfahren können.",
+            "settings_existing_submissions_warning": "Das Ändern der Bestehenskriterien kann bestehende Abschlüsse und den Fortschritt beeinflussen.",
+            "question_auto_graded_badge": "Automatisch bewertet",
+            "question_manual_grading_badge": "Manuelle Bewertung",
+            "guard": {
+              "title": "Vor dem Speichern überprüfen",
+              "attempts_title": "Was passiert, wenn ein Student durchfällt?",
+              "description": "Diese Übung gilt erst dann als abgeschlossen, wenn ein Schüler bestanden hat.",
+              "retry_option": "Lassen Sie sie es erneut versuchen, bis sie bestehen",
+              "retry_option_description": "Studierende können ihre Unterlagen so oft wie nötig erneut einreichen.",
+              "single_attempt_option": "Nur ein Versuch",
+              "single_attempt_option_description": "Ein Student, der durchfällt, bleibt blockiert, bis Sie seinen Abgabestatus manuell ändern.",
+              "recommended": "Empfohlen",
+              "manual_notice_title": "Einige Fragen erfordern eine manuelle Bewertung",
+              "manual_notice_description": "Der Pass eines Schülers ist erst dann endgültig, wenn Sie die folgenden Fragen benotet haben:",
+              "cancel": "Abbrechen",
+              "save_anyway": "Sparen Sie trotzdem",
+              "save_continue": "Speichern und fortfahren",
+              "question_fallback": "Frage {number}",
+              "zero_points_field": "Für den bestandenen Abschluss ist mindestens ein Punkt erforderlich."
             }
           },
           "new_exercise_modal": {
@@ -2336,7 +2383,8 @@
         "later": "Schließen",
         "checking": "Berechtigung prüfen…",
         "not_eligible_title": "Fast da",
-        "retake_exercise": "Wiederholen Sie die Übung"
+        "retake_exercise": "Wiederholen Sie die Übung",
+        "subtitle_no_certificate": "Herzlichen Glückwunsch – Sie haben diesen Kurs abgeschlossen."
       }
     },
     "certificates": {

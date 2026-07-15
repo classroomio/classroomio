@@ -288,7 +288,8 @@
         "saved": "Gemt",
         "successful_integration": "Integration lykkedes",
         "successful_deletion": "Integration slettet",
-        "update_successful": "Opdateringen lykkedes"
+        "update_successful": "Opdateringen lykkedes",
+        "unlocked_all_content": "Alle kursusartikler er låst op"
       }
     },
     "people": {
@@ -320,7 +321,8 @@
       "points_required_auto_grade": "Angiv en positiv pointværdi for hvert spørgsmål, før du gemmer.",
       "success": "Gemt",
       "submission_updated": "Indsendelse opdateret til",
-      "error_fetching": "Hentning af øvelser mislykkedes. Genindlæs venligst siden"
+      "error_fetching": "Hentning af øvelser mislykkedes. Genindlæs venligst siden",
+      "passed_requires_points": "Gennemførelse ved bestået kræver mindst ét tilgængeligt point."
     },
     "poll": {
       "info": {
@@ -843,6 +845,12 @@
           "title": "Velkomstmail",
           "description": "Tilpas den e-mail, som eleverne modtager efter tilmelding. Tilføj en personlig note, instruktioner eller et link til en livesession.",
           "placeholder": "Skriv den velkomstbesked, eleverne får, når de tilmelder sig..."
+        },
+        "locked_content": {
+          "title": "{count} kursuselement(er) er låst",
+          "description": "Tilmeldte elever vil ikke kunne tage låste lektioner eller øvelser, før du låser dem op.",
+          "description_live": "Låste lektioner og øvelser forbliver skjult for eleverne, indtil du låser dem op - nyttigt, hvis du udgiver indhold uge for uge.",
+          "unlock_all": "Lås alle op"
         }
       },
       "analytics": {
@@ -1410,8 +1418,8 @@
             "finish": "Afslut",
             "next": "Næste",
             "check": "Tjek",
-            "auto_graded_badge": "Auto-grade",
-            "manual_grading_required_badge": "Manual grading required",
+            "auto_graded_badge": "Automatisk bedømmelse",
+            "manual_grading_required_badge": "Manuel bedømmelse påkrævet",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "Indsendelser",
@@ -1419,14 +1427,25 @@
                 "heading": "Individuel",
                 "answers": "Individuelle svar",
                 "no": "Der blev ikke givet noget svar",
-                "student_avatar": "Student"
+                "student_avatar": "Student",
+                "answers_for": "{name}s svar",
+                "attempts_count": "{count} forsøg",
+                "attempt_label": "Forsøg {number}",
+                "date_unknown": "Dato ukendt",
+                "status_awaiting_manual": "Afventer manuel bedømmelse",
+                "status_completed": "Bedømt",
+                "status_pending": "Afventer",
+                "counts_as_complete": "Tæller som gennemført",
+                "passed": "Bestået",
+                "not_passed": "Ikke bestået"
               },
               "summary": {
                 "heading": "Resumé",
                 "question_chart": "Spørgsmålsskemaer",
                 "responses": "Svar",
                 "no_responses": "Ingen svar endnu",
-                "other": "Andet"
+                "other": "Andet",
+                "attempts": "Forsøg"
               },
               "loading_submissions": "Indlæser indsendelser...",
               "empty_title": "Ingen indlæg endnu",
@@ -1449,6 +1468,10 @@
               "status_pending": "Status: Afventer gennemgang",
               "status_graded": "Status: Gennemgang afsluttet",
               "status_submitted": "Status: Indsendt",
+              "passed_completion_result_title": "Bestået",
+              "passed_completion_result_description": "Du scorede {scorePercent} %. Denne øvelse krævede {requiredPercent} % for at tælle som gennemført.",
+              "not_passed_completion_result_title": "Ikke bestået endnu",
+              "not_passed_completion_result_description": "Du scorede {scorePercent} %. Denne øvelse kræver {requiredPercent} % for at tælle som gennemført.",
               "empty_description": "Klik på knappen Rediger for at tilføje.",
               "empty_edit_hint_prefix": "Klik på ",
               "empty_edit_hint_suffix": " knappen for at tilføje.",
@@ -1846,6 +1869,30 @@
               "sending": "Underretter elever...",
               "sent": "Meddelte {count} elever",
               "failed": "Eleverne kunne ikke underrettes"
+            },
+            "zero_points_warning": "Sæt point over 0, ellers vil eleverne ikke blive bedømt for dette spørgsmål.",
+            "settings_completion_passed_helper": "Studerende skal nå beståelsesscoren, før denne øvelse tæller som gennemført.",
+            "settings_manual_grading_warning": "Manuelt bedømte afleveringer skal bedømmes, før de kan tælle som bestået.",
+            "settings_single_attempt_warning": "Med ét forsøg skal studerende, der ikke består, have handling fra underviseren, før de kan fortsætte.",
+            "settings_existing_submissions_warning": "Ændring af beståelseskriterier kan påvirke eksisterende gennemførelse og progression.",
+            "question_auto_graded_badge": "Automatisk bedømt",
+            "question_manual_grading_badge": "Manuel bedømmelse",
+            "guard": {
+              "title": "Gennemgå før du gemmer",
+              "attempts_title": "Hvad sker der, hvis en elev fejler?",
+              "description": "Denne øvelse tæller kun som gennemført, når en elev består.",
+              "retry_option": "Lad dem prøve igen, indtil de passerer",
+              "retry_option_description": "Studerende kan genindsende så mange gange som nødvendigt.",
+              "single_attempt_option": "Kun ét forsøg",
+              "single_attempt_option_description": "En studerende, der ikke består, forbliver blokeret, indtil du manuelt ændrer deres afleveringsstatus.",
+              "recommended": "Anbefales",
+              "manual_notice_title": "Nogle spørgsmål kræver manuel karakter",
+              "manual_notice_description": "En elevs beståelse er ikke endelig, før du bedømmer disse spørgsmål:",
+              "cancel": "Annuller",
+              "save_anyway": "Gem alligevel",
+              "save_continue": "Gem og fortsæt",
+              "question_fallback": "Spørgsmål {number}",
+              "zero_points_field": "Bestået afslutning kræver mindst et tilgængeligt point."
             }
           },
           "new_exercise_modal": {
@@ -2336,7 +2383,8 @@
         "later": "Luk",
         "checking": "Tjekker berettigelse...",
         "not_eligible_title": "Næsten der",
-        "retake_exercise": "Gentag øvelsen"
+        "retake_exercise": "Gentag øvelsen",
+        "subtitle_no_certificate": "Tillykke - du har gennemført dette kursus."
       }
     },
     "certificates": {

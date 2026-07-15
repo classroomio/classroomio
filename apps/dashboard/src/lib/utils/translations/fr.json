@@ -288,7 +288,8 @@
         "saved": "Enregistré avec succès",
         "successful_integration": "Intégration réussie",
         "successful_deletion": "Intégration supprimée",
-        "update_successful": "Mise à jour réussie"
+        "update_successful": "Mise à jour réussie",
+        "unlocked_all_content": "Tous les éléments de cours débloqués"
       }
     },
     "people": {
@@ -320,7 +321,8 @@
       "points_required_auto_grade": "Définissez un nombre de points positif pour chaque question avant d'enregistrer.",
       "success": "Enregistré avec succès",
       "submission_updated": "Soumission mise à jour pour",
-      "error_fetching": "La récupération des exercices a échoué, veuillez recharger la page"
+      "error_fetching": "La récupération des exercices a échoué, veuillez recharger la page",
+      "passed_requires_points": "La validation par réussite nécessite au moins un point disponible."
     },
     "poll": {
       "info": {
@@ -843,6 +845,12 @@
           "title": "E-mail de bienvenue",
           "description": "Personnalisez l'e-mail que les étudiants reçoivent après leur inscription. Ajoutez une note personnelle, des instructions ou un lien de session en direct.",
           "placeholder": "Rédigez le message de bienvenue que les étudiants reçoivent lors de leur inscription…"
+        },
+        "locked_content": {
+          "title": "{count} éléments de cours sont verrouillés",
+          "description": "Les étudiants inscrits ne pourront pas suivre de leçons ou d'exercices verrouillés tant que vous ne les aurez pas déverrouillés.",
+          "description_live": "Les leçons et les exercices verrouillés restent cachés aux étudiants jusqu'à ce que vous les déverrouilliez, ce qui est utile si vous publiez du contenu semaine après semaine.",
+          "unlock_all": "Débloquez tout"
         }
       },
       "analytics": {
@@ -1410,8 +1418,8 @@
             "finish": "Terminer",
             "next": "Suivant",
             "check": "Vérifier",
-            "auto_graded_badge": "Auto-grade",
-            "manual_grading_required_badge": "Manual grading required",
+            "auto_graded_badge": "Notation automatique",
+            "manual_grading_required_badge": "Notation manuelle requise",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "Soumissions",
@@ -1419,14 +1427,25 @@
                 "heading": "Individuel",
                 "answers": "Réponses individuelles",
                 "no": "Aucune réponse n'a été fournie",
-                "student_avatar": "Étudiant"
+                "student_avatar": "Étudiant",
+                "answers_for": "Réponses de {name}",
+                "attempts_count": "{count} tentatives",
+                "attempt_label": "Tentative {number}",
+                "date_unknown": "Date inconnue",
+                "status_awaiting_manual": "En attente de notation manuelle",
+                "status_completed": "Noté",
+                "status_pending": "En attente",
+                "counts_as_complete": "Compte comme terminé",
+                "passed": "Réussi",
+                "not_passed": "Non réussi"
               },
               "summary": {
                 "heading": "Résumé",
                 "question_chart": "Tableaux de questions",
                 "responses": "Réponses",
                 "no_responses": "Pas encore de réponses",
-                "other": "Autre"
+                "other": "Autre",
+                "attempts": "Tentatives"
               },
               "loading_submissions": "Chargement des soumissions...",
               "empty_title": "Aucune soumission pour l'instant",
@@ -1449,6 +1468,10 @@
               "status_pending": "Statut : En attente d'examen",
               "status_graded": "Statut : Examen terminé",
               "status_submitted": "Statut : Soumis",
+              "passed_completion_result_title": "Réussi",
+              "passed_completion_result_description": "Vous avez obtenu {scorePercent} %. Cet exercice exigeait {requiredPercent} % pour être considéré comme terminé.",
+              "not_passed_completion_result_title": "Pas encore réussi",
+              "not_passed_completion_result_description": "Vous avez obtenu {scorePercent} %. Cet exercice exige {requiredPercent} % pour être considéré comme terminé.",
               "empty_description": "Cliquez sur le bouton Modifier pour ajouter.",
               "empty_edit_hint_prefix": "Cliquez sur le ",
               "empty_edit_hint_suffix": " bouton pour ajouter.",
@@ -1846,6 +1869,30 @@
               "sending": "Informer les étudiants…",
               "sent": "{count} étudiants notifiés",
               "failed": "Impossible d'avertir les étudiants"
+            },
+            "zero_points_warning": "Fixez des points au-dessus de 0, sinon les étudiants ne seront pas notés pour cette question.",
+            "settings_completion_passed_helper": "Les étudiants doivent atteindre la note de passage avant que cet exercice soit considéré comme terminé.",
+            "settings_manual_grading_warning": "Les soumissions notées manuellement doivent être corrigées avant de pouvoir compter comme réussies.",
+            "settings_single_attempt_warning": "Avec une seule tentative, les étudiants en échec ont besoin d’une action de l’enseignant avant de pouvoir continuer.",
+            "settings_existing_submissions_warning": "Modifier les critères de réussite peut affecter les validations et la progression existantes.",
+            "question_auto_graded_badge": "Notation automatique",
+            "question_manual_grading_badge": "Notation manuelle",
+            "guard": {
+              "title": "Vérifier avant d'enregistrer",
+              "attempts_title": "Que se passe-t-il si un élève échoue ?",
+              "description": "Cet exercice n’est considéré comme terminé que lorsqu’un élève réussit.",
+              "retry_option": "Laissez-les réessayer jusqu'à ce qu'ils réussissent",
+              "retry_option_description": "Les étudiants peuvent soumettre à nouveau autant de fois que nécessaire.",
+              "single_attempt_option": "Une seule tentative",
+              "single_attempt_option_description": "Un étudiant qui échoue reste bloqué jusqu'à ce que vous modifiiez manuellement son statut de soumission.",
+              "recommended": "Recommandé",
+              "manual_notice_title": "Certaines questions nécessitent une notation manuelle",
+              "manual_notice_description": "La réussite d'un étudiant n'est définitive que lorsque vous avez noté ces questions :",
+              "cancel": "Annuler",
+              "save_anyway": "Enregistrer quand même",
+              "save_continue": "Enregistrer et continuer",
+              "question_fallback": "Question {number}",
+              "zero_points_field": "La réussite nécessite au moins un point disponible."
             }
           },
           "new_exercise_modal": {
@@ -2336,7 +2383,8 @@
         "later": "Fermer",
         "checking": "Vérification de l’éligibilité…",
         "not_eligible_title": "Presque là",
-        "retake_exercise": "Reprendre l'exercice"
+        "retake_exercise": "Reprendre l'exercice",
+        "subtitle_no_certificate": "Félicitations, vous avez terminé ce cours."
       }
     },
     "certificates": {

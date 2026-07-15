@@ -288,7 +288,8 @@
         "saved": "Zapisano pomyślnie",
         "successful_integration": "Integracja udana",
         "successful_deletion": "Integracja usunięta",
-        "update_successful": "Aktualizacja pomyślna"
+        "update_successful": "Aktualizacja pomyślna",
+        "unlocked_all_content": "Wszystkie elementy kursu odblokowane"
       }
     },
     "people": {
@@ -320,7 +321,8 @@
       "points_required_auto_grade": "Ustaw dodatnią liczbę punktów dla każdego pytania przed zapisaniem.",
       "success": "Zapisano pomyślnie",
       "submission_updated": "Zgłoszenie zaktualizowane do",
-      "error_fetching": "Pobieranie ćwiczeń nie powiodło się. Załaduj stronę ponownie"
+      "error_fetching": "Pobieranie ćwiczeń nie powiodło się. Załaduj stronę ponownie",
+      "passed_requires_points": "Ukończenie przez zaliczenie wymaga co najmniej jednego dostępnego punktu."
     },
     "poll": {
       "info": {
@@ -843,6 +845,12 @@
           "title": "Witamy e-mail",
           "description": "Dostosuj wiadomość e-mail otrzymywaną przez uczniów po zarejestrowaniu się. Dodaj osobistą notatkę, instrukcje lub link do sesji na żywo.",
           "placeholder": "Napisz wiadomość powitalną, jaką otrzymają uczniowie po zarejestrowaniu się…"
+        },
+        "locked_content": {
+          "title": "Elementy kursu: {count} są zablokowane",
+          "description": "Zarejestrowani uczniowie nie będą mogli brać udziału w zablokowanych lekcjach ani ćwiczeniach, dopóki ich nie odblokujesz.",
+          "description_live": "Zablokowane lekcje i ćwiczenia pozostają ukryte przed uczniami, dopóki ich nie odblokujesz — przydatne, jeśli publikujesz treści tydzień po tygodniu.",
+          "unlock_all": "Odblokuj wszystko"
         }
       },
       "analytics": {
@@ -1410,8 +1418,8 @@
             "finish": "Zakończ",
             "next": "Następny",
             "check": "Sprawdź",
-            "auto_graded_badge": "Auto-grade",
-            "manual_grading_required_badge": "Manual grading required",
+            "auto_graded_badge": "Ocena automatyczna",
+            "manual_grading_required_badge": "Wymagana ocena ręczna",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "Zgłoszenia",
@@ -1419,14 +1427,25 @@
                 "heading": "Indywidualny",
                 "answers": "Indywidualne odpowiedzi",
                 "no": "Nie udzielono żadnej odpowiedzi",
-                "student_avatar": "Studenta"
+                "student_avatar": "Studenta",
+                "answers_for": "Odpowiedzi: {name}",
+                "attempts_count": "{count} próby",
+                "attempt_label": "Próba {number}",
+                "date_unknown": "Data nieznana",
+                "status_awaiting_manual": "Oczekuje na ocenę ręczną",
+                "status_completed": "Ocenione",
+                "status_pending": "Oczekujące",
+                "counts_as_complete": "Liczy się jako ukończone",
+                "passed": "Zaliczone",
+                "not_passed": "Niezaliczone"
               },
               "summary": {
                 "heading": "Podsumowanie",
                 "question_chart": "Wykresy pytań",
                 "responses": "Odpowiedzi",
                 "no_responses": "Brak odpowiedzi",
-                "other": "Inne"
+                "other": "Inne",
+                "attempts": "Próby"
               },
               "loading_submissions": "Ładowanie zgłoszeń...",
               "empty_title": "Nie ma jeszcze żadnych zgłoszeń",
@@ -1449,6 +1468,10 @@
               "status_pending": "Stan: Oczekuje na sprawdzenie",
               "status_graded": "Stan: Przegląd zakończony",
               "status_submitted": "Stan: przesłany",
+              "passed_completion_result_title": "Zaliczono",
+              "passed_completion_result_description": "Uzyskano {scorePercent}%. Aby to ćwiczenie liczyło się jako ukończone, wymagane było {requiredPercent}%.",
+              "not_passed_completion_result_title": "Jeszcze nie zaliczono",
+              "not_passed_completion_result_description": "Uzyskano {scorePercent}%. Aby to ćwiczenie liczyło się jako ukończone, wymagane jest {requiredPercent}%.",
               "empty_description": "Kliknij przycisk Edytuj, aby dodać.",
               "empty_edit_hint_prefix": "Kliknij ",
               "empty_edit_hint_suffix": " przycisk, aby dodać.",
@@ -1846,6 +1869,30 @@
               "sending": "Powiadamianie uczniów…",
               "sent": "Powiadomiono {count} uczniów",
               "failed": "Nie udało się powiadomić uczniów"
+            },
+            "zero_points_warning": "Ustaw punkty powyżej 0, w przeciwnym razie uczniowie nie będą oceniani za to pytanie.",
+            "settings_completion_passed_helper": "Uczniowie muszą osiągnąć wynik zaliczający, zanim to ćwiczenie zostanie uznane za ukończone.",
+            "settings_manual_grading_warning": "Zgłoszenia oceniane ręcznie muszą zostać ocenione, zanim będą mogły liczyć się jako zaliczone.",
+            "settings_single_attempt_warning": "Przy jednej próbie uczniowie, którzy nie zaliczą, będą potrzebować działania instruktora, zanim będą mogli kontynuować.",
+            "settings_existing_submissions_warning": "Zmiana kryteriów zaliczenia może wpłynąć na istniejące ukończenia i postęp.",
+            "question_auto_graded_badge": "Oceniane automatycznie",
+            "question_manual_grading_badge": "Ocena ręczna",
+            "guard": {
+              "title": "Przejrzyj przed zapisaniem",
+              "attempts_title": "Co się stanie, jeśli uczeń nie zaliczy egzaminu?",
+              "description": "To ćwiczenie uważa się za ukończone dopiero wtedy, gdy uczeń zaliczy.",
+              "retry_option": "Pozwól im próbować ponownie, aż zaliczą",
+              "retry_option_description": "Uczniowie mogą przesyłać ponownie dowolną liczbę razy.",
+              "single_attempt_option": "Tylko jedna próba",
+              "single_attempt_option_description": "Uczeń, który nie zdał egzaminu, pozostaje zablokowany do czasu ręcznej zmiany statusu jego przesłania.",
+              "recommended": "Zalecane",
+              "manual_notice_title": "Niektóre pytania wymagają ręcznej oceny",
+              "manual_notice_description": "Legitymacja studencka nie jest ostateczna, dopóki nie ocenisz tych pytań:",
+              "cancel": "Anuluj",
+              "save_anyway": "Mimo to zapisz",
+              "save_continue": "Zapisz i kontynuuj",
+              "question_fallback": "Pytanie {number}",
+              "zero_points_field": "Zaliczenie pozytywne wymaga posiadania co najmniej jednego punktu."
             }
           },
           "new_exercise_modal": {
@@ -2336,7 +2383,8 @@
         "later": "Zamknij",
         "checking": "Sprawdzam uprawnienia…",
         "not_eligible_title": "Prawie tam",
-        "retake_exercise": "Powtórz ćwiczenie"
+        "retake_exercise": "Powtórz ćwiczenie",
+        "subtitle_no_certificate": "Gratulacje — ukończyłeś ten kurs."
       }
     },
     "certificates": {

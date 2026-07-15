@@ -46,6 +46,10 @@ const QUESTION_VALIDATION_RULES: Record<number, Array<(question: QuestionRuleInp
       return null;
     },
     (question) => {
+      if (typeof question.settings?.correctValue === 'boolean') {
+        return null;
+      }
+
       const options = question.options || [];
       if (options.length > 0 && !options.some((opt) => opt.isCorrect === true)) {
         return 'Please mark an option as the correct answer';
