@@ -35,7 +35,7 @@
 {#if showTranscript || showSummarize}
   <div class={alignWithNote ? 'mx-auto w-full max-w-2xl' : 'w-full'}>
     {#if showTopSeparator}
-      <Separator class="my-3 sm:my-4" />
+      <Separator class="my-2" />
     {/if}
 
     <div class="flex flex-wrap items-center gap-x-2 gap-y-2 py-1 sm:gap-x-3">
@@ -72,7 +72,7 @@
     </div>
 
     {#if showBottomSeparator}
-      <Separator class="my-3 sm:my-4" />
+      <Separator class="my-2" />
     {/if}
   </div>
 {/if}
