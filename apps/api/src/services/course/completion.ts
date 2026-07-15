@@ -15,7 +15,11 @@ import {
   getCourseProgress as getCourseProgressQuery,
   type TCourseCertificationRow
 } from '@cio/db/queries/course/course';
+import { claimMemberCertificateEarned } from '@cio/db/queries/course/people';
+import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
+import { PLAN } from '@cio/utils/plans';
+import { env } from '@cio/core/config/env';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 
 export type CertificationBlocker = {
@@ -230,36 +234,56 @@ export async function evaluateCourseCertification(
   let isNewCompletion = false;
 
   if (evaluation.eligibleForCertificate && !certificateEarnedAt && progress.groupMemberId) {
-    const earnedAt = new Date().toISOString();
-    certificateEarnedAt = earnedAt;
-    isNewCompletion = true;
+    const certificatesEnabled = await orgHasCertificatesEnabled(courseRow.orgId);
 
-    scheduleCertificationCompletionWork({
-      courseId,
-      profileId,
-      groupMemberId: progress.groupMemberId,
-      courseRow,
-      earnedAt
-    });
+    if (certificatesEnabled) {
+      const earnedAt = new Date().toISOString();
+      const didClaimCertificate = await claimMemberCertificateEarned(progress.groupMemberId, earnedAt);
+      certificateEarnedAt = earnedAt;
 
-    trackServerEvent({
-      eventType: SERVER_EVENTS.COURSE_COMPLETED,
-      userId: profileId,
-      courseId,
-      props: { path: 'standard', earnedAt }
-    });
+      if (didClaimCertificate) {
+        isNewCompletion = true;
 
-    if (courseRow.certificate?.isDownloadable) {
-      trackServerEvent({
-        eventType: SERVER_EVENTS.CERTIFICATE_ISSUED,
-        userId: profileId,
-        courseId,
-        props: { path: 'standard', earnedAt }
-      });
+        scheduleCertificationCompletionWork({
+          courseId,
+          profileId,
+          groupMemberId: progress.groupMemberId,
+          courseRow,
+          earnedAt
+        });
+
+        trackServerEvent({
+          eventType: SERVER_EVENTS.COURSE_COMPLETED,
+          userId: profileId,
+          courseId,
+          props: { path: 'standard', earnedAt }
+        });
+
+        if (courseRow.certificate?.isDownloadable) {
+          trackServerEvent({
+            eventType: SERVER_EVENTS.CERTIFICATE_ISSUED,
+            userId: profileId,
+            courseId,
+            props: { path: 'standard', earnedAt }
+          });
+        }
+      }
     }
   }
 
   return { ...evaluation, certificateEarnedAt, isNewCompletion };
+}
+
+/**
+ * Free-plan orgs do not get certificates: no earned record, no completion email.
+ * Self-hosted deployments always have certificates enabled.
+ */
+async function orgHasCertificatesEnabled(orgId: string): Promise<boolean> {
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') return true;
+
+  const activePlan = await getActiveOrganizationPlan(orgId);
+
+  return Boolean(activePlan && activePlan.planName !== PLAN.BASIC);
 }
 
 /**

@@ -12,11 +12,19 @@ import {
   updateQuestions
 } from '@cio/db/queries/exercise';
 
+import {
+  QUESTION_TYPE_IDS,
+  QUESTION_TYPE_KEY,
+  resolveTrueFalseCorrectValue,
+  syncTrueFalseOptions,
+  type TrueFalseAnswerOption
+} from '@cio/question-types';
 import type { DbOrTxClient } from '@cio/db/drizzle';
 import type { TExerciseUpdate } from '@cio/utils/validation/exercise';
 
 type CurrentQuestion = TNewQuestion & { options?: TNewOption[] };
 type CurrentOption = TNewOption;
+type ExerciseUpdateQuestion = NonNullable<TExerciseUpdate['questions']>[number];
 
 type ExerciseAnswer = Pick<
   TQuestionAnswer,
@@ -68,6 +76,26 @@ function areSettingsEqual(left: unknown, right: unknown): boolean {
   return JSON.stringify(leftNormalized) === JSON.stringify(rightNormalized);
 }
 
+const TRUE_FALSE_QUESTION_TYPE_ID = QUESTION_TYPE_IDS[QUESTION_TYPE_KEY.TRUE_FALSE];
+
+function normalizeTrueFalseQuestion(
+  question: ExerciseUpdateQuestion,
+  currentQuestion?: CurrentQuestion
+): ExerciseUpdateQuestion {
+  const questionTypeId = question.questionTypeId ?? currentQuestion?.questionTypeId;
+  if (questionTypeId !== TRUE_FALSE_QUESTION_TYPE_ID) return question;
+
+  const settings = normalizeSettings(question.settings ?? currentQuestion?.settings);
+  const options = question.options ?? currentQuestion?.options ?? [];
+  const correctValue = resolveTrueFalseCorrectValue(settings, options as TrueFalseAnswerOption[]);
+
+  return {
+    ...question,
+    settings: { ...settings, correctValue },
+    options: question.options ? syncTrueFalseOptions(question.options, correctValue) : question.options
+  };
+}
+
 /**
  * Extracts exercise-level fields from the update payload
  */
@@ -97,7 +125,9 @@ export function categorizeQuestions(questions: NonNullable<TExerciseUpdate['ques
   const newQuestions: typeof questions = [];
   const questionUpdates: Array<{ id: number; data: Partial<TNewQuestion> }> = [];
 
-  for (const q of questions) {
+  for (const rawQuestion of questions) {
+    const q = normalizeTrueFalseQuestion(rawQuestion);
+
     if (q.deletedAt && q.id) {
       deletedIds.push(q.id);
     } else if (q.id) {
@@ -232,13 +262,16 @@ export function computeExerciseDiff(
   incomingQuestions: NonNullable<TExerciseUpdate['questions']>
 ) {
   const questionMap = new Map(currentQuestions.map((q) => [q.id, q]));
+  const normalizedIncomingQuestions = incomingQuestions.map((incoming) =>
+    normalizeTrueFalseQuestion(incoming, incoming.id ? questionMap.get(incoming.id) : undefined)
+  );
 
   const deletedQuestionIds: number[] = [];
   const questionUpdates: Array<{ id: number; data: Partial<TNewQuestion> }> = [];
   const newQuestions: NonNullable<TExerciseUpdate['questions']> = [];
 
   // Process incoming questions
-  for (const incoming of incomingQuestions) {
+  for (const incoming of normalizedIncomingQuestions) {
     if (incoming.deletedAt && incoming.id) {
       deletedQuestionIds.push(incoming.id);
     } else if (incoming.id) {
@@ -262,7 +295,7 @@ export function computeExerciseDiff(
   const optionUpdates: Array<{ id: number; data: Partial<TNewOption> }> = [];
   const optionCreates: TNewOption[] = [];
 
-  for (const incoming of incomingQuestions) {
+  for (const incoming of normalizedIncomingQuestions) {
     if (!incoming.id || incoming.deletedAt) continue;
 
     const current = questionMap.get(incoming.id);
@@ -338,8 +371,9 @@ export async function createNewQuestionsWithOptions(
   newQuestions: NonNullable<TExerciseUpdate['questions']>,
   txClient: DbOrTxClient
 ): Promise<void> {
+  const normalizedQuestions = newQuestions.map((question) => normalizeTrueFalseQuestion(question));
   const createdQuestions = await createQuestions(
-    newQuestions.map((q) => ({
+    normalizedQuestions.map((q) => ({
       exerciseId,
       title: q.question,
       questionTypeId: q.questionTypeId || 1,
@@ -353,7 +387,7 @@ export async function createNewQuestionsWithOptions(
 
   const newOptions: TNewOption[] = [];
   createdQuestions.forEach((newQuestion, index) => {
-    const questionData = newQuestions[index];
+    const questionData = normalizedQuestions[index];
     if (newQuestion && questionData?.options && questionData.options.length > 0) {
       // Only include non-deleted options for new questions
       for (const opt of questionData.options) {

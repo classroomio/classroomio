@@ -1,6 +1,6 @@
 import { getQuestionAnswerKey, getQuestionTypeKey, questionTypeSupportsOptions } from './question-type-utils';
 
-import { QUESTION_TYPE_KEY } from '@cio/question-types';
+import { QUESTION_TYPE_KEY, resolveTrueFalseCorrectValue, syncTrueFalseOptions } from '@cio/question-types';
 import type { Question } from '$features/course/types';
 import type { QuestionnaireMetaData } from './store';
 import type { TExerciseUpdate } from '@cio/utils/validation/exercise';
@@ -153,15 +153,37 @@ export function transformQuestionsToApiFormat(
 
   const filteredQuestions = shouldIncludeDeleted ? questions : questions.filter((q) => !q.deletedAt);
 
-  return filteredQuestions.map((q, index) => ({
-    id: normalizeId(q.id),
-    question: q.title,
-    points: q.points || 0,
-    questionTypeId: q.questionTypeId,
-    exerciseSectionId: q.exerciseSectionId ?? null,
-    order: typeof (q as { order?: number }).order === 'number' ? (q as { order: number }).order : index + 1,
-    settings: getQuestionSettings(q),
-    options: questionTypeSupportsOptions(getQuestionTypeKey(q)) ? formatOptions(q.options) : [],
-    ...(shouldIncludeDeleted && q.deletedAt ? { deletedAt: q.deletedAt } : {})
-  }));
+  return filteredQuestions.map((q, index) => {
+    const questionTypeKey = getQuestionTypeKey(q);
+    const settings = getQuestionSettings(q);
+    const formattedOptions = questionTypeSupportsOptions(questionTypeKey) ? formatOptions(q.options) : [];
+
+    if (questionTypeKey === QUESTION_TYPE_KEY.TRUE_FALSE) {
+      const correctValue = resolveTrueFalseCorrectValue(settings, formattedOptions);
+
+      return {
+        id: normalizeId(q.id),
+        question: q.title,
+        points: q.points || 0,
+        questionTypeId: q.questionTypeId,
+        exerciseSectionId: q.exerciseSectionId ?? null,
+        order: typeof (q as { order?: number }).order === 'number' ? (q as { order: number }).order : index + 1,
+        settings: { ...(settings ?? {}), correctValue },
+        options: syncTrueFalseOptions(formattedOptions, correctValue),
+        ...(shouldIncludeDeleted && q.deletedAt ? { deletedAt: q.deletedAt } : {})
+      };
+    }
+
+    return {
+      id: normalizeId(q.id),
+      question: q.title,
+      points: q.points || 0,
+      questionTypeId: q.questionTypeId,
+      exerciseSectionId: q.exerciseSectionId ?? null,
+      order: typeof (q as { order?: number }).order === 'number' ? (q as { order: number }).order : index + 1,
+      settings,
+      options: formattedOptions,
+      ...(shouldIncludeDeleted && q.deletedAt ? { deletedAt: q.deletedAt } : {})
+    };
+  });
 }

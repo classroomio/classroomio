@@ -1,6 +1,8 @@
 <script lang="ts">
   import {
     getExerciseQuestionLabel,
+    resolveTrueFalseCorrectValue,
+    syncTrueFalseOptions,
     type ExerciseQuestionModel,
     type ExerciseQuestionRendererProps
   } from '@cio/question-types';
@@ -18,14 +20,7 @@
     if (value !== 'true' && value !== 'false') return;
 
     const correctValue = value === 'true';
-    const opts = question.options ?? [];
-    const options = opts.map((opt) => {
-      const v = String(opt.value ?? opt.label ?? '').toLowerCase();
-      const isTrue = v === 'true' || v === '1';
-      const isFalse = v === 'false' || v === '0';
-      const isCorrect = (isTrue && correctValue) || (isFalse && !correctValue);
-      return isTrue || isFalse ? { ...opt, isCorrect } : opt;
-    });
+    const options = syncTrueFalseOptions(question.options, correctValue);
 
     patchQuestion({
       settings: { ...(question.settings ?? {}), correctValue },
@@ -40,13 +35,9 @@
   }
 
   const selectedValue = $derived.by(() => {
-    const correctOpt = (question.options ?? []).find((o) => o.isCorrect);
-    if (correctOpt) {
-      const v = String(correctOpt.value ?? correctOpt.label).toLowerCase();
-      return v === 'false' || v === '0' ? 'false' : 'true';
-    }
-    const fromSettings = question.settings?.correctValue as boolean | undefined;
-    return typeof fromSettings === 'boolean' ? String(fromSettings) : 'true';
+    return String(
+      resolveTrueFalseCorrectValue(question.settings as Record<string, unknown> | undefined, question.options)
+    );
   });
 </script>
 

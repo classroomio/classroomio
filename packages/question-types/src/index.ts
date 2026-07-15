@@ -18,3 +18,4 @@ export * from './renderer-registry';
 export * from './textarea-validation';
 export * from './star-rating-settings';
 export * from './video-recording-settings';
+export * from './true-false-answer-key';

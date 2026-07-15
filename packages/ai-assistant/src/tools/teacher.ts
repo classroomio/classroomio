@@ -138,6 +138,12 @@ export const createExerciseSchema = {
             ),
           points: z.number().min(0).default(1).describe('Points for this question'),
           order: z.number().int().min(0).describe('Display order'),
+          settings: z
+            .record(z.string(), z.unknown())
+            .optional()
+            .describe(
+              'Per-type correct-answer storage. TRUE_FALSE: { correctValue: boolean }. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.'
+            ),
           options: z
             .array(
               z.object({
@@ -146,7 +152,7 @@ export const createExerciseSchema = {
               })
             )
             .describe(
-              'Answer options. RADIO and CHECKBOX questions MUST have at least 4 options with plausible distractors (not obvious filler). RADIO needs exactly one correct option; CHECKBOX needs at least 2 correct and at least 1 incorrect. TRUE_FALSE uses exactly 2 options. Leave empty for NUMERIC/STAR/WORD_BANK.'
+              'Answer options. RADIO and CHECKBOX questions MUST have at least 4 options with plausible distractors (not obvious filler). RADIO needs exactly one correct option; CHECKBOX needs at least 2 correct and at least 1 incorrect. TRUE_FALSE uses exactly 2 options labeled True and False; set the correct answer in settings.correctValue. Leave empty for NUMERIC/STAR/WORD_BANK.'
             )
         })
       )
@@ -189,7 +195,7 @@ export const updateExerciseSectionSchema = {
 
 export const updateExerciseSchema = {
   description:
-    "Update an existing exercise's metadata (title, description, linked lesson, section, order, due date, lock state, allow-multiple-attempts). Use this to edit the exercise itself — not its questions. To change questions, use update_questions; to add questions, use add_questions.",
+    'Update an existing exercise\'s metadata (title, description, linked lesson, section, order, due date, lock state, allow-multiple-attempts, completion policy, passing threshold). Use this to edit the exercise itself — not its questions. To require students to pass before progress/completion, set completionPolicy to "passed" and passThreshold to the required percentage. To only require submission, set completionPolicy to "submitted". To change questions, use update_questions; to add questions, use add_questions.',
   parameters: z
     .object({
       courseId: z.string().describe('The course ID'),
@@ -207,7 +213,22 @@ export const updateExerciseSchema = {
         .optional()
         .describe('Due date in ISO 8601 format (e.g. 2026-05-01T23:59:00Z). Omit to keep unchanged.'),
       isUnlocked: z.boolean().optional().describe('Whether the exercise is unlocked for students.'),
-      allowMultipleAttempts: z.boolean().optional().describe('Whether students can re-take the exercise.')
+      allowMultipleAttempts: z.boolean().optional().describe('Whether students can re-take the exercise.'),
+      completionPolicy: z
+        .enum(['submitted', 'passed'])
+        .optional()
+        .describe(
+          '"submitted" means any submitted attempt completes the exercise. "passed" means the student must meet or exceed passThreshold before the exercise is considered complete.'
+        ),
+      passThreshold: z
+        .number()
+        .int()
+        .min(0)
+        .max(100)
+        .optional()
+        .describe(
+          'Passing score percentage from 0 to 100. Use with completionPolicy "passed" when the teacher asks students to pass a threshold before progressing.'
+        )
     })
     .refine(
       (data) =>
@@ -218,7 +239,9 @@ export const updateExerciseSchema = {
         data.order !== undefined ||
         data.dueBy !== undefined ||
         data.isUnlocked !== undefined ||
-        data.allowMultipleAttempts !== undefined,
+        data.allowMultipleAttempts !== undefined ||
+        data.completionPolicy !== undefined ||
+        data.passThreshold !== undefined,
       {
         message: 'Provide at least one field to update'
       }
@@ -251,6 +274,12 @@ export const addQuestionsSchema = {
           ),
         points: z.number().min(0).default(1).describe('Points for this question'),
         order: z.number().int().min(0).describe('Display order'),
+        settings: z
+          .record(z.string(), z.unknown())
+          .optional()
+          .describe(
+            'Per-type correct-answer storage. TRUE_FALSE: { correctValue: boolean }. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.'
+          ),
         options: z.array(
           z.object({
             label: z.string().min(1).describe('Option text'),
@@ -264,7 +293,7 @@ export const addQuestionsSchema = {
 
 export const updateQuestionsSchema = {
   description:
-    'Update existing questions in an exercise. Pass only the fields you want to change; `id` identifies the question. Optional `exerciseSectionId` (from get_exercise_details sections) moves the question to another in-exercise block; use null to clear section assignment. For NUMERIC the correct answer is `settings.correctValue` (a number), not an option — do NOT add options to NUMERIC questions. For STAR use `settings.correctValue` (1..max). For WORD_BANK use `settings.correctAnswers` and `settings.template`. RADIO/CHECKBOX/TRUE_FALSE use `options[].isCorrect`: include an option `id` to edit it, omit `id` to add a new one. `settings` is shallow-merged with the existing settings. Omit `options` entirely to leave existing options unchanged — if you pass an options array, any existing option not listed in it will be removed.',
+    'Update existing questions in an exercise. Pass only the fields you want to change; `id` identifies the question. Optional `exerciseSectionId` (from get_exercise_details sections) moves the question to another in-exercise block; use null to clear section assignment. For TRUE_FALSE use `settings.correctValue` (boolean) and keep exactly two options labeled True and False. For NUMERIC the correct answer is `settings.correctValue` (a number), not an option — do NOT add options to NUMERIC questions. For STAR use `settings.correctValue` (1..max). For WORD_BANK use `settings.correctAnswers` and `settings.template`. RADIO/CHECKBOX use `options[].isCorrect`: include an option `id` to edit it, omit `id` to add a new one. `settings` is shallow-merged with the existing settings. Omit `options` entirely to leave existing options unchanged — if you pass an options array, any existing option not listed in it will be removed.',
   parameters: z.object({
     courseId: z.string().describe('The course ID'),
     exerciseId: z.string().describe('The existing exercise ID'),
@@ -293,7 +322,7 @@ export const updateQuestionsSchema = {
           .record(z.string(), z.unknown())
           .optional()
           .describe(
-            'Per-type correct-answer storage. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }. Shallow-merged with existing settings.'
+            'Per-type correct-answer storage. TRUE_FALSE: { correctValue: boolean }. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }. Shallow-merged with existing settings.'
           ),
         options: z
           .array(
