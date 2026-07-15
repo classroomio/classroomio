@@ -9,7 +9,8 @@
   interface Props {
     showTranscript?: boolean;
     showSummarize?: boolean;
-    showSeparators?: boolean;
+    showTopSeparator?: boolean;
+    showBottomSeparator?: boolean;
     /** Match the note column (`max-w-2xl`) instead of the full video column. */
     alignWithNote?: boolean;
     lessonId?: string;
@@ -19,7 +20,8 @@
   let {
     showTranscript = false,
     showSummarize = false,
-    showSeparators = true,
+    showTopSeparator = true,
+    showBottomSeparator = true,
     alignWithNote = false,
     lessonId = '',
     onTranscript = () => {}
@@ -32,7 +34,7 @@
 
 {#if showTranscript || showSummarize}
   <div class={alignWithNote ? 'mx-auto w-full max-w-2xl' : 'w-full'}>
-    {#if showSeparators}
+    {#if showTopSeparator}
       <Separator class="my-3 sm:my-4" />
     {/if}
 
@@ -69,7 +71,7 @@
       {/if}
     </div>
 
-    {#if showSeparators}
+    {#if showBottomSeparator}
       <Separator class="my-3 sm:my-4" />
     {/if}
   </div>

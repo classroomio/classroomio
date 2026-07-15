@@ -527,7 +527,7 @@
         {#key lessonId}
           <div class="mb-20 flex w-full flex-col" in:fade={{ delay: 500 }} out:fade>
             {#if !hasLessonVideos}
-              <LessonMaterialActions showSummarize {lessonId} showSeparators={false} alignWithNote />
+              <LessonMaterialActions showSummarize {lessonId} showTopSeparator={false} alignWithNote />
             {/if}
 
             {#each viewModeComponents as Component, index (index)}
