@@ -157,6 +157,16 @@ async function onPayload(payload: PolarWebhookPayload) {
     case 'subscription.active':
       break;
     case 'subscription.revoked':
+      try {
+        const result = await OrgPlanApiServer.cancelOrgPlan({
+          subscriptionId,
+          payload: data as unknown as Record<string, unknown>
+        });
+        console.log('Subscription revoked', result);
+      } catch (error) {
+        console.error('Error revoking org plan', error);
+      }
+
       break;
     case 'subscription.canceled':
       break;

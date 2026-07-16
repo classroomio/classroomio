@@ -46,7 +46,8 @@ export async function createLesson(courseId: string, data: TLessonCreate): Promi
     const lessonData = {
       ...data,
       courseId,
-      slug
+      slug,
+      isUnlocked: data.isUnlocked ?? true
     };
 
     const [lesson] = await createLessons([lessonData]);

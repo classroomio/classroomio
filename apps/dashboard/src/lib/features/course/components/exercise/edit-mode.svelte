@@ -1,6 +1,7 @@
 <script lang="ts">
   import TrashIcon from '@lucide/svelte/icons/trash';
   import GripVerticalIcon from '@lucide/svelte/icons/grip-vertical';
+  import InfoIcon from '@lucide/svelte/icons/info';
   import { dndzone } from 'svelte-dnd-action';
   import { flip } from 'svelte/animate';
   import { tick } from 'svelte';
@@ -24,6 +25,8 @@
   } from './store';
   import { QUESTION_TYPES } from '$features/ui/question/constants';
   import { ExerciseQuestion } from '@cio/ui';
+  import { Badge } from '@cio/ui/base/badge';
+  import * as Tooltip from '@cio/ui/base/tooltip';
 
   import OrderModal from './order-modal.svelte';
   import QuestionTypeSelect from './question-type-select.svelte';
@@ -35,11 +38,17 @@
   import { uploadImage } from '$lib/utils/services/upload';
   import {
     getExerciseEditorQuestionTypeLabel,
+    getQuestionTypeKey,
     getQuestionTypeOptionById,
     questionTypeSupportsOptions,
     toExerciseQuestionModel
   } from './question-type-utils';
-  import { QUESTION_TYPE_KEY } from '@cio/question-types';
+  import {
+    QUESTION_TYPE_KEY,
+    isAutoGradableQuestionTypeId,
+    resolveTrueFalseCorrectValue,
+    syncTrueFalseOptions
+  } from '@cio/question-types';
   import { getExerciseQuestionLabels } from './question-labels';
   import SectionEditor from './section-editor.svelte';
   import type { Question } from '$features/course/types';
@@ -207,6 +216,7 @@
 
       if (nextQuestionTypeKey === QUESTION_TYPE_KEY.TRUE_FALSE) {
         const correctValue = (current.settings as { correctValue?: boolean })?.correctValue ?? true;
+        nextSettings = { ...nextSettings, correctValue };
         nextOptions = makeTrueFalseOptions(correctValue);
       } else if (questionTypeSupportsOptions(nextQuestionTypeKey)) {
         const hasActiveOptions = nextOptions.some((option) => !option.deletedAt);
@@ -263,12 +273,21 @@
           })
         : (current.options ?? []);
 
+      let nextSettings = nextQuestion.settings ?? {};
+      let nextOptions = mappedOptions;
+
+      if (getQuestionTypeKey(current) === QUESTION_TYPE_KEY.TRUE_FALSE) {
+        const correctValue = resolveTrueFalseCorrectValue(nextSettings, nextOptions);
+        nextSettings = { ...nextSettings, correctValue };
+        nextOptions = syncTrueFalseOptions(nextOptions, correctValue);
+      }
+
       const next = [...q.questions];
       next[idx] = {
         ...current,
         title: nextQuestion.title,
-        settings: nextQuestion.settings ?? {},
-        options: mappedOptions,
+        settings: nextSettings,
+        options: nextOptions,
         isDirty: true
       };
 
@@ -331,6 +350,13 @@
     return questions.filter((question) => toExerciseQuestionModel(question).required !== false).length;
   }
 
+  function isQuestionAutoGradable(question: Question) {
+    const questionTypeId = Number(question.questionTypeId ?? question.questionType?.id);
+    if (!Number.isFinite(questionTypeId)) return false;
+
+    return isAutoGradableQuestionTypeId(questionTypeId);
+  }
+
   $effect(() => {
     if (reorderQuestions && !previousReorderQuestions) {
       syncReorderQuestionItems();
@@ -357,6 +383,33 @@
 
 <OrderModal />
 
+{#snippet gradingBadge(question)}
+  {@const autoGradable = isQuestionAutoGradable(question)}
+  <Tooltip.Provider>
+    <Tooltip.Root>
+      <Tooltip.Trigger>
+        {#snippet child({ props })}
+          <Badge
+            {...props}
+            variant="outline"
+            class="absolute top-0 right-4 z-10 translate-y-[-50%] gap-1 bg-white font-normal dark:bg-black"
+          >
+            {autoGradable
+              ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_auto_gradable')
+              : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_manual_grading')}
+            <InfoIcon class="h-3 w-3" aria-hidden="true" />
+          </Badge>
+        {/snippet}
+      </Tooltip.Trigger>
+      <Tooltip.Content side="top" sideOffset={6} class="max-w-xs">
+        {autoGradable
+          ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_auto_gradable_description')
+          : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_manual_grading_description')}
+      </Tooltip.Content>
+    </Tooltip.Root>
+  </Tooltip.Provider>
+{/snippet}
+
 {#snippet questionEditor(question, index)}
   <QuestionContainer
     elementId={getQuestionElementId(question.id)}
@@ -366,7 +419,7 @@
     bind:points={question.points}
     hasError={!!errors[question.id]}
     errorMsg={getQuestionErrorMsg(errors, question, 'points')}
-    pointsHint={requiresPositivePointsForAutoGrade && Number(question.points) === 0
+    pointsHint={requiresPositivePointsForAutoGrade
       ? $t('course.navItem.lessons.exercises.all_exercises.points_required_auto_grade')
       : null}
     onPointsChange={() => {
@@ -385,6 +438,8 @@
         </IconButton>
       </div>
     {/if}
+
+    {@render gradingBadge(question)}
 
     <div class="mt-2 flex flex-col">
       <ExerciseQuestion.QuestionRenderer

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { LessonsPage } from '$features/course/pages';
+  import ContentPageMenu from '$features/course/components/lesson/content-page-menu.svelte';
   import { Button } from '@cio/ui/base/button';
   import { RefreshPageData, RoleBasedSecurity } from '$features/ui';
   import * as Page from '@cio/ui/base/page';
@@ -39,6 +40,7 @@
             >{$t('course.navItem.lessons.add_content')}</Button
           >
         </RoleBasedSecurity>
+        <ContentPageMenu courseId={data.courseId} disabled={!!$contentEditingStore} />
         <RefreshPageData onRefresh={() => courseApi.refreshCourse(data.courseId, $profile.id)} />
       </div>
     </Page.Action>

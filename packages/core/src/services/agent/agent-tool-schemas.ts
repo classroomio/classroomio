@@ -83,6 +83,12 @@ export const questionSchema = z.object({
   ),
   points: z.number().min(0).default(1),
   order: z.number().int().min(0),
+  settings: z
+    .record(z.string(), z.unknown())
+    .optional()
+    .describe(
+      'Per-type correct-answer storage. TRUE_FALSE: { correctValue: boolean }. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.'
+    ),
   options: z.array(z.object({ label: z.string().min(1), isCorrect: z.boolean() }))
 });
 
@@ -118,7 +124,22 @@ export const updateExerciseParam = z
       .optional()
       .describe('Due date in ISO 8601 format (e.g. 2026-05-01T23:59:00Z). Omit to keep unchanged.'),
     isUnlocked: z.boolean().optional().describe('Whether the exercise is unlocked for students.'),
-    allowMultipleAttempts: z.boolean().optional().describe('Whether students can re-take the exercise.')
+    allowMultipleAttempts: z.boolean().optional().describe('Whether students can re-take the exercise.'),
+    completionPolicy: z
+      .enum(['submitted', 'passed'])
+      .optional()
+      .describe(
+        '"submitted" means any submitted attempt completes the exercise. "passed" means the student must meet or exceed passThreshold before the exercise is considered complete.'
+      ),
+    passThreshold: z
+      .number()
+      .int()
+      .min(0)
+      .max(100)
+      .optional()
+      .describe(
+        'Passing score percentage from 0 to 100. Use with completionPolicy "passed" when the teacher asks students to pass a threshold before progressing.'
+      )
   })
   .refine(
     (data) =>
@@ -129,7 +150,9 @@ export const updateExerciseParam = z
       data.order !== undefined ||
       data.dueBy !== undefined ||
       data.isUnlocked !== undefined ||
-      data.allowMultipleAttempts !== undefined,
+      data.allowMultipleAttempts !== undefined ||
+      data.completionPolicy !== undefined ||
+      data.passThreshold !== undefined,
     {
       message: 'Provide at least one field to update'
     }
@@ -189,7 +212,7 @@ export const updateQuestionSettingsSchema = z
     message: 'Provide at least one settings field'
   })
   .describe(
-    'Per-type correct-answer storage. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.'
+    'Per-type correct-answer storage. TRUE_FALSE: { correctValue: boolean }. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.'
   );
 
 export const updateOptionSchema = z.object({

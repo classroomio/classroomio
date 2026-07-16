@@ -40,9 +40,9 @@
     (): ExerciseQuestionLabels => ({
       'submission.common.no_answer': $t('course.navItem.lessons.exercises.all_exercises.analytics.individual.no'),
       'submission.common.other': $t('course.navItem.lessons.exercises.all_exercises.analytics.summary.other'),
-      'submission.chart.responses': $t('course.navItem.lessons.exercises.all_exercises.analytics.summary.responses'),
+      'submission.chart.responses': $t('course.navItem.lessons.exercises.all_exercises.analytics.summary.attempts'),
       'submission.chart.no_data': $t('course.navItem.lessons.exercises.all_exercises.analytics.summary.no_responses'),
-      'submission.list.responses': $t('course.navItem.lessons.exercises.all_exercises.analytics.summary.responses'),
+      'submission.list.responses': $t('course.navItem.lessons.exercises.all_exercises.analytics.summary.attempts'),
       'submission.list.no_responses': $t(
         'course.navItem.lessons.exercises.all_exercises.analytics.summary.no_responses'
       )

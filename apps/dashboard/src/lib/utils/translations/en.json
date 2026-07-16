@@ -2040,6 +2040,7 @@
       "modal": {
         "title": "Course requirements complete!",
         "subtitle": "Congratulations — you can view and download your certificate anytime.",
+        "subtitle_no_certificate": "Congratulations — you have completed this course.",
         "view_certificate": "View certificate",
         "later": "Close",
         "checking": "Checking eligibility…",
@@ -2237,6 +2238,12 @@
         },
         "add_content_section_title_placeholder": "e.g., Module 1: Introduction",
         "add_content_lesson_title_placeholder": "e.g., Getting Started with Variables",
+        "content_menu": {
+          "label": "Content options",
+          "unlock_all": "Unlock all content",
+          "enable_grouping": "Enable content grouping",
+          "disable_grouping": "Disable content grouping"
+        },
         "join_lesson": "Join lesson",
         "no_link": "No link",
         "no_tutor": "No tutor added",
@@ -2379,7 +2386,10 @@
                 "edit": "Edit transcript",
                 "save": "Save",
                 "cancel": "Cancel",
-                "segment_label": "Segment at {timestamp}"
+                "segment_label": "Segment at {timestamp}",
+                "video_nav_label": "Video {number}",
+                "previous_video": "Previous video transcript",
+                "next_video": "Next video transcript"
               }
             },
             "document": {
@@ -2480,6 +2490,10 @@
             "settings_completion_submitted": "Submitted — any submission counts",
             "settings_completion_passed": "Passed — minimum score required",
             "settings_pass_threshold": "Pass threshold (%)",
+            "settings_completion_passed_helper": "Students must reach the passing score before this exercise counts as complete.",
+            "settings_manual_grading_warning": "Manually graded submissions must be graded before they can count as passed.",
+            "settings_single_attempt_warning": "With one attempt, failed students need instructor action before they can continue.",
+            "settings_existing_submissions_warning": "Changing pass criteria can affect existing completion and progression.",
             "settings_save": "Save settings",
             "submissions": "Submissions",
             "save": "Save",
@@ -2514,7 +2528,27 @@
             "check": "Check",
             "auto_graded_badge": "Auto-grade",
             "manual_grading_required_badge": "Manual grading required",
+            "question_auto_graded_badge": "Auto graded",
+            "question_manual_grading_badge": "Manual grading",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
+            "zero_points_warning": "Set points above 0, otherwise students won't be graded for this question.",
+            "guard": {
+              "title": "Review before saving",
+              "attempts_title": "What happens if a student fails?",
+              "description": "This exercise only counts as complete when a student passes.",
+              "retry_option": "Let them retry until they pass",
+              "retry_option_description": "Students can resubmit as many times as needed.",
+              "single_attempt_option": "One attempt only",
+              "single_attempt_option_description": "A student who fails stays blocked until you manually change their submission status.",
+              "recommended": "Recommended",
+              "manual_notice_title": "Some questions need manual grading",
+              "manual_notice_description": "A student's pass isn't final until you grade these questions:",
+              "cancel": "Cancel",
+              "save_anyway": "Save anyway",
+              "save_continue": "Save and continue",
+              "question_fallback": "Question {number}",
+              "zero_points_field": "Passed completion needs at least one point available."
+            },
             "description": {
               "title": "Title",
               "heading": "Description",
@@ -2607,6 +2641,10 @@
               "status_pending": "Status: Pending Review",
               "status_graded": "Status: Review Completed",
               "status_submitted": "Status: Submitted",
+              "passed_completion_result_title": "Passed",
+              "passed_completion_result_description": "You scored {scorePercent}%. This exercise required {requiredPercent}% to count as complete.",
+              "not_passed_completion_result_title": "Not passed yet",
+              "not_passed_completion_result_description": "You scored {scorePercent}%. This exercise requires {requiredPercent}% to count as complete.",
               "checking_submission": "Checking your submission...",
               "instructor_feedback": "Instructor feedback",
               "back": "Back",
@@ -2618,14 +2656,25 @@
                 "heading": "Summary",
                 "question_chart": "Question Charts",
                 "responses": "Responses",
+                "attempts": "Attempts",
                 "no_responses": "No responses yet",
                 "other": "Other"
               },
               "individual": {
                 "heading": "Individual",
                 "answers": "Individual Answers",
+                "answers_for": "{name}'s answers",
                 "no": "No answer was provided",
-                "student_avatar": "Student"
+                "student_avatar": "Student",
+                "attempts_count": "{count} attempts",
+                "attempt_label": "Attempt {number}",
+                "date_unknown": "Date unknown",
+                "status_awaiting_manual": "Awaiting manual grading",
+                "status_completed": "Graded",
+                "status_pending": "Pending",
+                "counts_as_complete": "Counts as complete",
+                "passed": "Passed",
+                "not_passed": "Not passed"
               },
               "submissions": "Submissions",
               "loading_submissions": "Loading submissions...",
@@ -3547,6 +3596,12 @@
         "determines": "This determines if your course displays on your landing page",
         "published": "Published",
         "unpublished": "Unpublished",
+        "locked_content": {
+          "title": "{count} course item(s) are locked",
+          "description": "Enrolled students won't be able to take locked lessons or exercises until you unlock them.",
+          "description_live": "Locked lessons and exercises stay hidden from students until you unlock them — useful if you release content week by week.",
+          "unlock_all": "Unlock all"
+        },
         "type": "Course type",
         "course_type_desc": "Update the course type for a more personalized experience.",
         "course_type_learn_more": "Learn more",
@@ -4096,6 +4151,7 @@
     },
     "exercise": {
       "points_required_auto_grade": "Set a positive point value for every question before saving.",
+      "passed_requires_points": "Passed completion needs at least one point available.",
       "success": "Saved Successfully",
       "submission_updated": "Submission updated to",
       "error_fetching": "Fetching exercises failed, please reload the page"
@@ -4127,6 +4183,10 @@
     },
     "course_settings": {
       "success": {
+        "unlocked_all_content": "All course items unlocked",
+        "all_content_already_unlocked": "All content is already unlocked",
+        "content_grouping_enabled": "Content grouping enabled",
+        "content_grouping_disabled": "Content grouping disabled",
         "download": "Download Complete",
         "saved": "Saved successfully",
         "successful_integration": "Integration successful",

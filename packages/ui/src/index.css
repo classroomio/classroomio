@@ -23,8 +23,9 @@
  *   z-menu-elevated     (250) Dropdown/select/popover content that must escape a z-app-bar,
  *                             z-app-bar-elevated, or z-modal ancestor.
  *
- * Anything not listed (tooltips, dropdowns, sheets, drawers) uses Tailwind's default `z-50`,
- * which already sits above normal page content.
+ * Anything not listed (dropdowns, sheets, drawers) uses Tailwind's default `z-50`,
+ * which already sits above normal page content. Tooltips use `z-menu-elevated` so they
+ * remain visible over `z-app-bar` chrome such as the transcript side panel.
  */
 @utility z-app-bar {
   z-index: 100;

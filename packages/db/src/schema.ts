@@ -985,7 +985,7 @@ export const lesson = pgTable(
     callUrl: text('call_url'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     order: bigint({ mode: 'number' }),
-    isUnlocked: boolean('is_unlocked').default(false),
+    isUnlocked: boolean('is_unlocked').default(true),
     completionPolicy: varchar('completion_policy').default('manual').notNull(),
     videoWatchThreshold: integer('video_watch_threshold').default(95),
     videos: jsonb().default([]).$type<

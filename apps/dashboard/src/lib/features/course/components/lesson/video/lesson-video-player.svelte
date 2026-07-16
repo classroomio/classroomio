@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
-  import { Button } from '@cio/ui/base/button';
   import { MediaPlayer } from '@cio/ui/custom/media-player';
   import { presignApi } from '$features/course/api/presign.svelte';
   import { mediaApi } from '$features/media/api';
@@ -17,7 +16,6 @@
   import { resolveWatchEnforcedAssetIds, type LessonVideo } from './video-card-utils';
   import { lessonVideoBus } from './lesson-video-bus.svelte';
   import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
-  import LessonSummarizeButton from '../lesson-summarize-button.svelte';
 
   /**
    * HLS playback flag — set by the upload flow when the asset was encoded
@@ -100,10 +98,10 @@
     video: LessonVideo;
     courseId: string;
     lessonId: string;
-    showSummarizeButton?: boolean;
+    videoIndex: number;
   }
 
-  let { video, courseId, lessonId, showSummarizeButton = false }: Props = $props();
+  let { video, courseId, lessonId, videoIndex }: Props = $props();
 
   let localTranscript = $state<AssetTranscriptPayload | null>(null);
   let localTranscriptLoading = $state(false);
@@ -128,17 +126,24 @@
 
   let localSeekFn: (seconds: number) => void = () => {};
 
-  function ownsVideoBus(): boolean {
+  function ownsPlaybackBus(): boolean {
     return uploadAssetId !== null && lessonVideoBus.assetId === uploadAssetId;
   }
 
-  function syncVideoBus(): void {
+  function syncPlaybackBus(): void {
     if (!uploadAssetId) return;
 
     lessonVideoBus.assetId = uploadAssetId;
-    lessonVideoBus.transcript = localTranscript;
-    lessonVideoBus.transcriptLoading = localTranscriptLoading;
     lessonVideoBus.setSeekFn(localSeekFn);
+  }
+
+  function syncTranscriptToRegistry(): void {
+    if (!uploadAssetId) return;
+
+    lessonVideoBus.updateTranscriptSource(uploadAssetId, {
+      transcript: localTranscript,
+      transcriptLoading: localTranscriptLoading
+    });
   }
 
   $effect(() => {
@@ -254,9 +259,7 @@
     if (!uploadAssetId) {
       if (isMounted) {
         localTranscript = null;
-        if (ownsVideoBus()) {
-          lessonVideoBus.transcript = null;
-        }
+        syncTranscriptToRegistry();
       }
 
       return;
@@ -265,9 +268,7 @@
     if (!isMounted) return;
 
     localTranscriptLoading = true;
-    if (ownsVideoBus()) {
-      lessonVideoBus.transcriptLoading = true;
-    }
+    syncTranscriptToRegistry();
 
     try {
       const data = await mediaApi.getAssetTranscript(uploadAssetId);
@@ -276,15 +277,11 @@
 
       localTranscript = data;
       scheduleVttRefetch(data?.vttUrlExpiresAt);
-      if (ownsVideoBus()) {
-        lessonVideoBus.transcript = data;
-      }
+      syncTranscriptToRegistry();
     } finally {
       if (isMounted) {
         localTranscriptLoading = false;
-        if (ownsVideoBus()) {
-          lessonVideoBus.transcriptLoading = false;
-        }
+        syncTranscriptToRegistry();
       }
     }
   }
@@ -392,8 +389,19 @@
   }
 
   onMount(() => {
+    if (uploadAssetId) {
+      lessonVideoBus.registerTranscriptSource({
+        assetId: uploadAssetId,
+        videoIndex,
+        transcript: null,
+        transcriptLoading: false,
+        currentTimeSeconds: 0,
+        seek: (seconds) => localSeekFn(seconds)
+      });
+    }
+
     if (lessonVideoBus.assetId === null || lessonVideoBus.assetId === uploadAssetId) {
-      syncVideoBus();
+      syncPlaybackBus();
     }
 
     void restoreWatchProgress();
@@ -413,9 +421,22 @@
     stopJobPoller();
     revokeBlobTrackUrl?.();
     revokeBlobTrackUrl = null;
-    if (ownsVideoBus()) {
+
+    if (uploadAssetId) {
+      lessonVideoBus.unregisterTranscriptSource(uploadAssetId);
+    }
+
+    if (lessonVideoBus.transcriptSources.size === 0) {
       lessonVideoBus.reset();
       sidePanel.closeIfScope('lesson');
+      return;
+    }
+
+    if (uploadAssetId && ownsPlaybackBus()) {
+      lessonVideoBus.assetId = null;
+      lessonVideoBus.currentTimeSeconds = 0;
+      lessonVideoBus.hasPlayed = false;
+      lessonVideoBus.setSeekFn(() => {});
     }
   });
 
@@ -434,12 +455,14 @@
   );
 
   function handleFirstPlay() {
-    syncVideoBus();
+    syncPlaybackBus();
     lessonVideoBus.hasPlayed = true;
   }
 
   function openTranscriptPanel() {
-    syncVideoBus();
+    if (!uploadAssetId) return;
+
+    lessonVideoBus.selectTranscriptSource(uploadAssetId);
     sidePanel.open(TRANSCRIPT_PANEL_ID);
   }
 
@@ -468,7 +491,11 @@
       controls: true,
       playsinline: true,
       onTimeUpdate: (seconds) => {
-        if (ownsVideoBus()) {
+        if (uploadAssetId) {
+          lessonVideoBus.updateTranscriptSource(uploadAssetId, { currentTimeSeconds: seconds });
+        }
+
+        if (ownsPlaybackBus()) {
           lessonVideoBus.currentTimeSeconds = seconds;
         }
       },
@@ -476,7 +503,8 @@
         localSeekFn = (seconds) => {
           player.currentTime = seconds;
         };
-        if (ownsVideoBus()) {
+
+        if (ownsPlaybackBus()) {
           lessonVideoBus.setSeekFn(localSeekFn);
         }
       },
@@ -494,18 +522,4 @@
       seekPolicy
     }}
   />
-
-  {#if localTranscript || showSummarizeButton}
-    <div class="mt-3 flex flex-wrap gap-2">
-      {#if localTranscript}
-        <Button variant="outline" size="sm" onclick={openTranscriptPanel}>
-          {$t('course.navItem.lessons.materials.show_transcript')}
-        </Button>
-      {/if}
-
-      {#if showSummarizeButton}
-        <LessonSummarizeButton {lessonId} />
-      {/if}
-    </div>
-  {/if}
 </div>

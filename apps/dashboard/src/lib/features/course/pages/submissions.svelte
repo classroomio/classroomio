@@ -215,7 +215,7 @@
 <div class="flex items-center overflow-x-scroll">
   {#each sections as { id, title, items }, idx (id)}
     <div
-      class="section ui:bg-muted mr-3 h-80 overflow-hidden rounded-md p-3"
+      class="section ui:bg-muted ui:border-border mr-3 h-80 overflow-hidden rounded-md border p-3"
       animate:flip={{ duration: flipDurationMs }}
     >
       <div class="mb-2 flex items-center">
@@ -235,8 +235,8 @@
         {#each items as item (item.id)}
           <div
             class="{item.isEarly
-              ? 'border-none'
-              : 'border border-red-700'} mx-0 my-2 w-full rounded-md bg-white px-3 py-3 dark:bg-neutral-800"
+              ? 'ui:border-border'
+              : 'border-red-700'} ui:bg-card mx-0 my-2 w-full rounded-md border px-3 py-3 shadow-sm"
             animate:flip={{ duration: flipDurationMs }}
           >
             <a

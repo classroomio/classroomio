@@ -7,7 +7,7 @@
     getExerciseQuestionLabel(labels, key, fallback);
 
   const correctValue = $derived(
-    getTrueFalseCorrectIsTrue(question.settings as Record<string, unknown> | undefined)
+    getTrueFalseCorrectIsTrue(question.settings as Record<string, unknown> | undefined, question.options)
       ? label('true_false.true_label')
       : label('true_false.false_label')
   );

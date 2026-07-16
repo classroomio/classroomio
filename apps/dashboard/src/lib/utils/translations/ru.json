@@ -288,7 +288,11 @@
         "saved": "Сохранено успешно.",
         "successful_integration": "Интеграция прошла успешно",
         "successful_deletion": "Интеграция удалена",
-        "update_successful": "Обновление успешно выполнено"
+        "update_successful": "Обновление успешно выполнено",
+        "unlocked_all_content": "Все предметы курса разблокированы",
+        "all_content_already_unlocked": "Весь контент уже разблокирован",
+        "content_grouping_enabled": "Группировка контента включена",
+        "content_grouping_disabled": "Группировка контента отключена"
       }
     },
     "people": {
@@ -320,7 +324,8 @@
       "points_required_auto_grade": "Установите положительное количество баллов для каждого вопроса перед сохранением.",
       "success": "Сохранено успешно",
       "submission_updated": "Представление обновлено до",
-      "error_fetching": "Не удалось загрузить упражнения. Обновите страницу."
+      "error_fetching": "Не удалось загрузить упражнения. Обновите страницу.",
+      "passed_requires_points": "Для завершения по условию прохождения должен быть доступен хотя бы один балл."
     },
     "poll": {
       "info": {
@@ -843,6 +848,12 @@
           "title": "Приветственное письмо",
           "description": "Настройте электронное письмо, которое студенты получат после регистрации. Добавьте личную заметку, инструкции или ссылку на сеанс в реальном времени.",
           "placeholder": "Напишите приветственное сообщение, которое студенты получат при зачислении…"
+        },
+        "locked_content": {
+          "title": "Элементы курса ({count}) заблокированы",
+          "description": "Зачисленные учащиеся не смогут проходить заблокированные уроки или упражнения, пока вы их не разблокируете.",
+          "description_live": "Заблокированные уроки и упражнения остаются скрытыми от учащихся, пока вы их не разблокируете. Это полезно, если вы выпускаете контент еженедельно.",
+          "unlock_all": "Разблокировать все"
         }
       },
       "analytics": {
@@ -1312,6 +1323,12 @@
         "add_content_create_lesson": "Создать урок",
         "add_content_section_title_placeholder": "например, Модуль 1: Введение",
         "add_content_lesson_title_placeholder": "например, Начало работы с переменными",
+        "content_menu": {
+          "label": "Параметры контента",
+          "unlock_all": "Разблокировать весь контент",
+          "enable_grouping": "Включить группировку контента",
+          "disable_grouping": "Отключить группировку контента"
+        },
         "join_lesson": "Присоединиться к уроку",
         "no_link": "Нет ссылки",
         "no_tutor": "Репетитор не добавлен",
@@ -1410,8 +1427,8 @@
             "finish": "Готово",
             "next": "Далее",
             "check": "Проверить",
-            "auto_graded_badge": "Auto-grade",
-            "manual_grading_required_badge": "Manual grading required",
+            "auto_graded_badge": "Автоматическая оценка",
+            "manual_grading_required_badge": "Требуется ручная оценка",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "Материалы",
@@ -1419,14 +1436,25 @@
                 "heading": "Индивидуальный",
                 "answers": "Индивидуальные ответы",
                 "no": "Ответ не был предоставлен",
-                "student_avatar": "Студент"
+                "student_avatar": "Студент",
+                "answers_for": "Ответы {name}",
+                "attempts_count": "{count} попыток",
+                "attempt_label": "Попытка {number}",
+                "date_unknown": "Дата неизвестна",
+                "status_awaiting_manual": "Ожидает ручной оценки",
+                "status_completed": "Оценено",
+                "status_pending": "В ожидании",
+                "counts_as_complete": "Считается завершенным",
+                "passed": "Пройдено",
+                "not_passed": "Не пройдено"
               },
               "summary": {
                 "heading": "Резюме",
                 "question_chart": "Таблицы вопросов",
                 "responses": "Ответы",
                 "no_responses": "Пока нет ответов",
-                "other": "Другое"
+                "other": "Другое",
+                "attempts": "Попытки"
               },
               "loading_submissions": "Загрузка материалов...",
               "empty_title": "Пока нет заявок",
@@ -1449,6 +1477,10 @@
               "status_pending": "Статус: Ожидается рассмотрение",
               "status_graded": "Статус: Проверка завершена",
               "status_submitted": "Статус: Отправлено",
+              "passed_completion_result_title": "Пройдено",
+              "passed_completion_result_description": "Вы набрали {scorePercent}%. Для зачета этого упражнения как выполненного требовалось {requiredPercent}%.",
+              "not_passed_completion_result_title": "Пока не пройдено",
+              "not_passed_completion_result_description": "Вы набрали {scorePercent}%. Чтобы это упражнение считалось выполненным, требуется {requiredPercent}%.",
               "empty_description": "Нажмите кнопку «Изменить», чтобы добавить.",
               "empty_edit_hint_prefix": "Нажмите кнопку ",
               "empty_edit_hint_suffix": " кнопка для добавления.",
@@ -1846,6 +1878,30 @@
               "sending": "Уведомление учащихся…",
               "sent": "Уведомлено учащихся: {count}",
               "failed": "Не удалось уведомить студентов"
+            },
+            "zero_points_warning": "Установите балл выше 0, иначе учащиеся не будут оценены по этому вопросу.",
+            "settings_completion_passed_helper": "Студенты должны набрать проходной балл, прежде чем это упражнение будет считаться завершенным.",
+            "settings_manual_grading_warning": "Отправки с ручной оценкой должны быть оценены, прежде чем они смогут считаться пройденными.",
+            "settings_single_attempt_warning": "При одной попытке студентам, не прошедшим задание, потребуется действие преподавателя, прежде чем они смогут продолжить.",
+            "settings_existing_submissions_warning": "Изменение критериев прохождения может повлиять на существующие завершения и прогресс.",
+            "question_auto_graded_badge": "Оценивается автоматически",
+            "question_manual_grading_badge": "Ручная оценка",
+            "guard": {
+              "title": "Проверьте перед сохранением",
+              "attempts_title": "Что произойдет, если студент не справится?",
+              "description": "Это упражнение считается выполненным только в том случае, если учащийся сдал его.",
+              "retry_option": "Пусть повторяют, пока не пройдут",
+              "retry_option_description": "Студенты могут отправлять повторно столько раз, сколько необходимо.",
+              "single_attempt_option": "Только одна попытка",
+              "single_attempt_option_description": "Учащийся, который не сдал экзамен, остается заблокированным, пока вы вручную не измените статус его отправки.",
+              "recommended": "Рекомендуется",
+              "manual_notice_title": "Некоторые вопросы требуют ручной оценки",
+              "manual_notice_description": "Студенческий пропуск не является окончательным, пока вы не оцените следующие вопросы:",
+              "cancel": "Отмена",
+              "save_anyway": "Все равно сохранить",
+              "save_continue": "Сохранить и продолжить",
+              "question_fallback": "Вопрос {number}",
+              "zero_points_field": "Для успешного завершения требуется хотя бы одна доступная точка."
             }
           },
           "new_exercise_modal": {
@@ -2008,7 +2064,10 @@
                 "edit": "Изменить стенограмму",
                 "save": "Сохранить",
                 "cancel": "Отмена",
-                "segment_label": "Сегмент в {timestamp}"
+                "segment_label": "Сегмент в {timestamp}",
+                "video_nav_label": "Видео {number}",
+                "previous_video": "Транскрипт предыдущего видео",
+                "next_video": "Транскрипт следующего видео"
               },
               "simple_card": {
                 "kind_youtube": "Ютуб",
@@ -2336,7 +2395,8 @@
         "later": "Закрыть",
         "checking": "Проверка пригодности…",
         "not_eligible_title": "Почти там",
-        "retake_exercise": "Пересдать упражнение"
+        "retake_exercise": "Пересдать упражнение",
+        "subtitle_no_certificate": "Поздравляем — вы прошли этот курс."
       }
     },
     "certificates": {

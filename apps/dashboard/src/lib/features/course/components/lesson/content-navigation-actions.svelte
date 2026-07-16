@@ -144,11 +144,13 @@
 
         const certRes = await courseApi.getCertificationEvaluation(courseId);
         if (certRes?.data) {
-          if (certRes.data.isNewCompletion) {
-            updateCourseCompletionModal(courseId, 'eligible', certRes.data, requiredExerciseId);
-          } else {
-            updateCourseCompletionModal(courseId, 'not-eligible', certRes.data, requiredExerciseId);
-          }
+          const hasCompletedCourse = Boolean(certRes.data.eligibleForCertificate || certRes.data.certificateEarnedAt);
+          updateCourseCompletionModal(
+            courseId,
+            hasCompletedCourse ? 'eligible' : 'not-eligible',
+            certRes.data,
+            requiredExerciseId
+          );
         } else {
           closeCourseCompletionModal();
         }

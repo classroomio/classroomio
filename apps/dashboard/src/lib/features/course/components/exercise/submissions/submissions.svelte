@@ -8,6 +8,7 @@
   import { t } from '$lib/utils/functions/translations';
   import type { ExerciseSubmissions } from './types';
   import type { SubmissionListItem } from '$features/course/utils/types';
+  import { groupSubmissionsByStudentAndAttempt } from '$features/course/utils/exercise-progression-utils';
 
   interface Props {
     exerciseId: string;
@@ -18,6 +19,7 @@
 
   type SubmissionTab = 'summary' | 'individual';
   let currentTab = $state<SubmissionTab>('summary');
+  const submissionGroups = $derived(groupSubmissionsByStudentAndAttempt(submissionsData));
 
   function normalizeSubmissions(items: SubmissionListItem[]): ExerciseSubmissions[] {
     return items.map(
@@ -66,7 +68,7 @@
     </Tabs.Content>
 
     <Tabs.Content value="individual" class="pt-2">
-      <Individual isLoading={false} />
+      <Individual isLoading={false} {submissionGroups} />
     </Tabs.Content>
   </Tabs.Root>
 {:else}

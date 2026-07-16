@@ -288,7 +288,11 @@
         "saved": "Đã lưu thành công",
         "successful_integration": "Tích hợp thành công",
         "successful_deletion": "Đã xóa tích hợp",
-        "update_successful": "Cập nhật thành công"
+        "update_successful": "Cập nhật thành công",
+        "unlocked_all_content": "Tất cả các mục khóa học đã được mở khóa",
+        "all_content_already_unlocked": "Tất cả nội dung đã được mở khóa",
+        "content_grouping_enabled": "Đã bật nhóm nội dung",
+        "content_grouping_disabled": "Đã tắt nhóm nội dung"
       }
     },
     "people": {
@@ -320,7 +324,8 @@
       "points_required_auto_grade": "Đặt điểm dương cho mỗi câu hỏi trước khi lưu.",
       "success": "Đã lưu thành công",
       "submission_updated": "Đã cập nhật bài nộp vào",
-      "error_fetching": "Tìm nạp bài tập không thành công, vui lòng tải lại trang"
+      "error_fetching": "Tìm nạp bài tập không thành công, vui lòng tải lại trang",
+      "passed_requires_points": "Hoàn thành theo điều kiện đạt yêu cầu cần có ít nhất một điểm khả dụng."
     },
     "poll": {
       "info": {
@@ -843,6 +848,12 @@
           "title": "Email chào mừng",
           "description": "Tùy chỉnh email sinh viên nhận được sau khi đăng ký. Thêm ghi chú cá nhân, hướng dẫn hoặc liên kết phiên trực tiếp.",
           "placeholder": "Viết lời chào mừng mà học viên nhận được khi đăng ký…"
+        },
+        "locked_content": {
+          "title": "{count} mục khóa học đã bị khóa",
+          "description": "Học viên đã đăng ký sẽ không thể học các bài học hoặc bài tập bị khóa cho đến khi bạn mở khóa chúng.",
+          "description_live": "Các bài học và bài tập bị khóa sẽ được ẩn khỏi học sinh cho đến khi bạn mở khóa chúng — hữu ích nếu bạn phát hành nội dung hàng tuần.",
+          "unlock_all": "Mở khóa tất cả"
         }
       },
       "analytics": {
@@ -1312,6 +1323,12 @@
         "add_content_create_lesson": "Tạo bài học",
         "add_content_section_title_placeholder": "ví dụ: Mô-đun 1: Giới thiệu",
         "add_content_lesson_title_placeholder": "ví dụ: Bắt đầu với các biến",
+        "content_menu": {
+          "label": "Tùy chọn nội dung",
+          "unlock_all": "Mở khóa tất cả nội dung",
+          "enable_grouping": "Bật nhóm nội dung",
+          "disable_grouping": "Tắt nhóm nội dung"
+        },
         "join_lesson": "Tham gia bài học",
         "no_link": "Không có liên kết",
         "no_tutor": "Không có gia sư nào được thêm vào",
@@ -1410,8 +1427,8 @@
             "finish": "Kết thúc",
             "next": "Tiếp theo",
             "check": "Kiểm tra",
-            "auto_graded_badge": "Auto-grade",
-            "manual_grading_required_badge": "Manual grading required",
+            "auto_graded_badge": "Chấm tự động",
+            "manual_grading_required_badge": "Cần chấm thủ công",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "bài nộp",
@@ -1419,14 +1436,25 @@
                 "heading": "Cá nhân",
                 "answers": "Câu trả lời cá nhân",
                 "no": "Không có câu trả lời nào được đưa ra",
-                "student_avatar": "sinh viên"
+                "student_avatar": "sinh viên",
+                "answers_for": "Câu trả lời của {name}",
+                "attempts_count": "{count} lần làm",
+                "attempt_label": "Lần làm {number}",
+                "date_unknown": "Không rõ ngày",
+                "status_awaiting_manual": "Đang chờ chấm thủ công",
+                "status_completed": "Đã chấm",
+                "status_pending": "Đang chờ",
+                "counts_as_complete": "Được tính là hoàn thành",
+                "passed": "Đạt",
+                "not_passed": "Không đạt"
               },
               "summary": {
                 "heading": "Tóm tắt",
                 "question_chart": "Biểu đồ câu hỏi",
                 "responses": "Phản hồi",
                 "no_responses": "Chưa có phản hồi nào",
-                "other": "Khác"
+                "other": "Khác",
+                "attempts": "Lần làm"
               },
               "loading_submissions": "Đang tải nội dung gửi...",
               "empty_title": "Chưa có bài nộp nào",
@@ -1449,6 +1477,10 @@
               "status_pending": "Trạng thái: Đang chờ xem xét",
               "status_graded": "Trạng thái: Đánh giá đã hoàn thành",
               "status_submitted": "Trạng thái: Đã gửi",
+              "passed_completion_result_title": "Đã đạt",
+              "passed_completion_result_description": "Bạn đạt {scorePercent}%. Bài tập này yêu cầu {requiredPercent}% để được tính là hoàn thành.",
+              "not_passed_completion_result_title": "Chưa đạt",
+              "not_passed_completion_result_description": "Bạn đạt {scorePercent}%. Bài tập này yêu cầu {requiredPercent}% để được tính là hoàn thành.",
               "empty_description": "Bấm vào nút Chỉnh sửa để thêm.",
               "empty_edit_hint_prefix": "Bấm vào ",
               "empty_edit_hint_suffix": " nút để thêm.",
@@ -1846,6 +1878,30 @@
               "sending": "Thông báo cho học sinh…",
               "sent": "Đã thông báo cho {count} sinh viên",
               "failed": "Không thể thông báo cho sinh viên"
+            },
+            "zero_points_warning": "Đặt điểm trên 0, nếu không học sinh sẽ không được chấm điểm cho câu hỏi này.",
+            "settings_completion_passed_helper": "Học viên phải đạt điểm qua trước khi bài tập này được tính là hoàn thành.",
+            "settings_manual_grading_warning": "Bài nộp chấm thủ công phải được chấm trước khi có thể tính là đạt.",
+            "settings_single_attempt_warning": "Với một lần làm, học viên không đạt cần giảng viên can thiệp trước khi có thể tiếp tục.",
+            "settings_existing_submissions_warning": "Việc thay đổi tiêu chí đạt có thể ảnh hưởng đến trạng thái hoàn thành và tiến trình hiện có.",
+            "question_auto_graded_badge": "Chấm tự động",
+            "question_manual_grading_badge": "Chấm thủ công",
+            "guard": {
+              "title": "Xem lại trước khi lưu",
+              "attempts_title": "Điều gì xảy ra nếu một học sinh thất bại?",
+              "description": "Bài tập này chỉ được tính là hoàn thành khi một học sinh vượt qua.",
+              "retry_option": "Hãy để họ thử lại cho đến khi họ vượt qua",
+              "retry_option_description": "Học viên có thể nộp lại nhiều lần nếu cần.",
+              "single_attempt_option": "Chỉ một lần thử",
+              "single_attempt_option_description": "Học sinh không đạt sẽ bị chặn cho đến khi bạn thay đổi trạng thái gửi bài của họ theo cách thủ công.",
+              "recommended": "Được đề xuất",
+              "manual_notice_title": "Một số câu hỏi cần chấm điểm thủ công",
+              "manual_notice_description": "Điểm đậu của học sinh không phải là điểm cuối cùng cho đến khi bạn chấm điểm những câu hỏi sau:",
+              "cancel": "Hủy bỏ",
+              "save_anyway": "Vẫn lưu",
+              "save_continue": "Lưu và tiếp tục",
+              "question_fallback": "Câu hỏi {number}",
+              "zero_points_field": "Hoàn thành vượt qua cần có ít nhất một điểm."
             }
           },
           "new_exercise_modal": {
@@ -2008,7 +2064,10 @@
                 "edit": "Chỉnh sửa bản ghi",
                 "save": "Lưu",
                 "cancel": "Hủy bỏ",
-                "segment_label": "Đoạn tại {timestamp}"
+                "segment_label": "Đoạn tại {timestamp}",
+                "video_nav_label": "Video {number}",
+                "previous_video": "Bản ghi video trước",
+                "next_video": "Bản ghi video tiếp theo"
               },
               "simple_card": {
                 "kind_youtube": "YouTube",
@@ -2336,7 +2395,8 @@
         "later": "Đóng",
         "checking": "Đang kiểm tra tính đủ điều kiện…",
         "not_eligible_title": "Gần như ở đó",
-        "retake_exercise": "Làm lại bài tập"
+        "retake_exercise": "Làm lại bài tập",
+        "subtitle_no_certificate": "Xin chúc mừng - bạn đã hoàn thành khóa học này."
       }
     },
     "certificates": {

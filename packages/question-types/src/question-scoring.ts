@@ -5,6 +5,7 @@ import { getQuestionTypeById } from './question-type-lookup';
 import { QUESTION_TYPE_ID_TO_KEY } from './question-type-registry';
 import { supportsPartialCredit } from './question-type-capabilities';
 import { getStarRatingMaxFromSettings, isValidStarRatingValue } from './star-rating-settings';
+import { resolveTrueFalseCorrectValue } from './true-false-answer-key';
 
 export type DbQuestionForScoring = {
   id: number;
@@ -112,20 +113,7 @@ function scoreTrueFalse(
   answer: Extract<AnswerData, { type: 'TRUE_FALSE' }>,
   maxPoints: number
 ): number {
-  const opts = question.options ?? [];
-  const trueOpt = opts.find((o) => normalizeText(o.label) === 'true');
-  const falseOpt = opts.find((o) => normalizeText(o.label) === 'false');
-  const correctFromSettings = question.settings?.correctValue;
-  let correctIsTrue: boolean;
-  if (typeof correctFromSettings === 'boolean') {
-    correctIsTrue = correctFromSettings;
-  } else if (trueOpt?.isCorrect) {
-    correctIsTrue = true;
-  } else if (falseOpt?.isCorrect) {
-    correctIsTrue = false;
-  } else {
-    correctIsTrue = true;
-  }
+  const correctIsTrue = resolveTrueFalseCorrectValue(question.settings, question.options);
 
   return answer.value === correctIsTrue ? maxPoints : 0;
 }
