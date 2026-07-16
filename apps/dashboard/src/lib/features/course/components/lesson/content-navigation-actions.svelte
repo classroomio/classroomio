@@ -166,10 +166,7 @@
       updateCourseContentCompletion(currentLessonId, isComplete);
 
       const allComplete =
-        get(isCourseLearnerView) &&
-        isComplete &&
-        navigableContentItems.length > 0 &&
-        navigableContentItems.every((item) => item.isComplete);
+        isComplete && navigableContentItems.length > 0 && navigableContentItems.every((item) => item.isComplete);
 
       if (allComplete) {
         const requiredExerciseId = courseApi.course?.certificate?.requiredExerciseId ?? undefined;

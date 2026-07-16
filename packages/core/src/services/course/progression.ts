@@ -3,11 +3,10 @@ import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import type { CourseContentItemRow } from '@cio/db/queries/course/content';
 import {
+  getCompletedExerciseIdsForMember,
   getCompletedLessonIdsForProfile,
   getExerciseProgressionPolicies,
   getLessonProgressionPolicies,
-  getPassedExerciseIdsForMember,
-  getSubmittedExerciseIdsForMember,
   type ExerciseProgressionPolicy,
   type LessonProgressionPolicy
 } from '@cio/db/queries/course/progression';
@@ -66,25 +65,17 @@ function exerciseBlocksProgression(): boolean {
 
 function isItemProgressComplete(params: {
   item: CourseContentItem;
-  lessonPolicy?: LessonProgressionPolicy;
-  exercisePolicy?: ExerciseProgressionPolicy;
   completedLessonIds: Set<string>;
-  submittedExerciseIds: Set<string>;
-  passedExerciseIds: Set<string>;
+  completedExerciseIds: Set<string>;
 }): boolean {
-  const { item, lessonPolicy, exercisePolicy, completedLessonIds, submittedExerciseIds, passedExerciseIds } = params;
+  const { item, completedLessonIds, completedExerciseIds } = params;
 
   if (item.type === ContentType.Lesson) {
     return completedLessonIds.has(item.id);
   }
 
   if (item.type === ContentType.Exercise) {
-    const policy = exercisePolicy?.completionPolicy ?? 'submitted';
-    if (policy === 'passed') {
-      return passedExerciseIds.has(item.id);
-    }
-
-    return submittedExerciseIds.has(item.id) || Boolean(item.isComplete);
+    return completedExerciseIds.has(item.id) || Boolean(item.isComplete);
   }
 
   return true;
@@ -93,18 +84,15 @@ function isItemProgressComplete(params: {
 function annotateNavigableAccess(params: {
   navigableItems: CourseContentItem[];
   lessonPolicyById: Map<string, LessonProgressionPolicy>;
-  exercisePolicyById: Map<string, ExerciseProgressionPolicy>;
   progressionMode: 'free' | 'sequential';
   completedLessonIds: Set<string>;
-  submittedExerciseIds: Set<string>;
-  passedExerciseIds: Set<string>;
+  completedExerciseIds: Set<string>;
 }): Map<string, { accessible: boolean; lockReason: ProgressionLockReason | null }> {
   const accessById = new Map<string, { accessible: boolean; lockReason: ProgressionLockReason | null }>();
   let priorBlockingComplete = true;
 
   for (const item of params.navigableItems) {
     const lessonPolicy = params.lessonPolicyById.get(item.id);
-    const exercisePolicy = params.exercisePolicyById.get(item.id);
     const teacherLocked = !(item.isUnlocked ?? true);
     const progressionLocked = params.progressionMode === 'sequential' && !priorBlockingComplete;
 
@@ -123,11 +111,8 @@ function annotateNavigableAccess(params: {
 
     const complete = isItemProgressComplete({
       item,
-      lessonPolicy,
-      exercisePolicy,
       completedLessonIds: params.completedLessonIds,
-      submittedExerciseIds: params.submittedExerciseIds,
-      passedExerciseIds: params.passedExerciseIds
+      completedExerciseIds: params.completedExerciseIds
     });
 
     const blocks =
@@ -212,18 +197,14 @@ export async function annotateCourseContentWithProgression(params: {
   const progressionMode = params.progressionMode ?? 'free';
   const groupMemberId = await getGroupMemberIdByCourseAndProfile(params.courseId, params.profileId);
 
-  const [lessonPolicies, exercisePolicies, completedLessonIds, submittedExerciseIds] = await Promise.all([
+  const [lessonPolicies, exercisePolicies, completedLessonIds, completedExerciseIds] = await Promise.all([
     getLessonProgressionPolicies(params.courseId),
     getExerciseProgressionPolicies(params.courseId),
     getCompletedLessonIdsForProfile(params.courseId, params.profileId),
     groupMemberId
-      ? getSubmittedExerciseIdsForMember(params.courseId, groupMemberId)
+      ? getCompletedExerciseIdsForMember(params.courseId, groupMemberId)
       : Promise.resolve(new Set<string>())
   ]);
-
-  const passedExerciseIds = groupMemberId
-    ? await getPassedExerciseIdsForMember(params.courseId, groupMemberId, exercisePolicies)
-    : new Set<string>();
 
   const lessonPolicyById = new Map(lessonPolicies.map((policy) => [policy.id, policy]));
   const exercisePolicyById = new Map(exercisePolicies.map((policy) => [policy.id, policy]));
@@ -231,11 +212,9 @@ export async function annotateCourseContentWithProgression(params: {
   const accessById = annotateNavigableAccess({
     navigableItems: flattenNavigableItems(content),
     lessonPolicyById,
-    exercisePolicyById,
     progressionMode,
     completedLessonIds,
-    submittedExerciseIds,
-    passedExerciseIds
+    completedExerciseIds
   });
 
   return applyAccessToContent(content, accessById, lessonPolicyById, exercisePolicyById);

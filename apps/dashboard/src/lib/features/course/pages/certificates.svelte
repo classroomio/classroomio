@@ -16,6 +16,6 @@
 <RoleBasedSecurity allowedRoles={[1, 2]}>
   <CertificateEdit {errors} />
 </RoleBasedSecurity>
-<RoleBasedSecurity onlyStudent allowedRoles={[3]}>
+<RoleBasedSecurity onlyStudent allowedRoles={[1, 2, 3]}>
   <StudentCertificate />
 </RoleBasedSecurity>
