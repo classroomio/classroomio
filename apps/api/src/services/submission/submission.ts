@@ -353,14 +353,15 @@ export async function listExerciseSubmissionsOverview(
       isCourseTeamMemberOrOrgAdmin(courseId, profileId)
     ]);
 
-    if (isInstructor) {
-      const allSubmissions = await listSubmissionsByExercise(courseId, exerciseId);
-      return { mySubmission: [], allSubmissions };
-    }
-
     const mySubmission = groupMemberId ? await listSubmissionsByExercise(courseId, exerciseId, groupMemberId) : [];
 
-    return { mySubmission, allSubmissions: [] };
+    if (!isInstructor) {
+      return { mySubmission, allSubmissions: [] };
+    }
+
+    const allSubmissions = await listSubmissionsByExercise(courseId, exerciseId);
+
+    return { mySubmission, allSubmissions };
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list exercise submissions overview',

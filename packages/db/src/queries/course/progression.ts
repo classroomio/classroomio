@@ -6,6 +6,9 @@ import { db } from '@db/drizzle';
 
 export type ExerciseCompletionMember = { profileId: string } | { groupMemberId: string };
 
+/** Allowed aliases for the exercise table in queries embedding the completion predicate. */
+export type ExerciseAlias = 'exercise' | 'ex';
+
 /**
  * Single source of truth for whether an exercise counts as completed for a student.
  *
@@ -18,7 +21,7 @@ export type ExerciseCompletionMember = { profileId: string } | { groupMemberId: 
  * (course progress, enrolled courses, content items, progression locks) must
  * go through this predicate so completion reads the same everywhere.
  */
-export function isExerciseCompletedSql(exerciseAlias: string, member: ExerciseCompletionMember): SQL<boolean> {
+export function isExerciseCompletedSql(exerciseAlias: ExerciseAlias, member: ExerciseCompletionMember): SQL<boolean> {
   const exercise = sql.raw(exerciseAlias);
   const memberFilter =
     'groupMemberId' in member
