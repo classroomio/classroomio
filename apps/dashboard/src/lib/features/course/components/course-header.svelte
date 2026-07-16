@@ -17,6 +17,7 @@
   import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
   import { openCoursePreview } from '$features/course/utils/course-preview';
   import { t } from '$lib/utils/functions/translations';
+  import CourseProgressPopover from './course-progress-popover.svelte';
   import CoursePublishBadge from './course-publish-badge.svelte';
   import CoursePublicBadge from './course-public-badge.svelte';
   import CourseContextMenuContent from './course-context-menu-content.svelte';
@@ -84,6 +85,10 @@
     </div>
 
     <span class="grow"></span>
+
+    {#if $isStudentExperience}
+      <CourseProgressPopover class="md:hidden" />
+    {/if}
 
     <Button
       size="sm"

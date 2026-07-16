@@ -3,7 +3,6 @@
   import { page } from '$app/state';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Skeleton } from '@cio/ui/base/skeleton';
-  import { Progress } from '@cio/ui/base/progress';
   import { profile } from '$lib/utils/store/user';
   import { orgs } from '$lib/utils/store/org';
   import { isStudentExperience } from '$lib/utils/store/app';
@@ -13,8 +12,8 @@
   import PoweredBy from '$features/ui/powered-by.svelte';
   import { courseApi } from '$features/course/api';
   import { getCourseProgress } from '$features/course/utils/content';
-  import { t } from '$lib/utils/functions/translations';
   import { useSidebar } from '@cio/ui/base/sidebar';
+  import CourseProgressCard from '$features/course/components/course-progress-card.svelte';
   import { startResizablePanelDrag } from '$lib/utils/functions/resizable-panel';
   import { COURSE_SIDEBAR_DEFAULT_WIDTH, COURSE_SIDEBAR_MAX_WIDTH, COURSE_SIDEBAR_MIN_WIDTH } from './constants';
 
@@ -151,23 +150,10 @@
 
     <Sidebar.Footer>
       {#if showCourseProgress}
-        <div class="ui:border-sidebar-border ui:bg-sidebar-accent/50 rounded-lg border p-3">
-          <div class="flex items-baseline justify-between gap-2">
-            <span class="text-xs font-medium">{$t('course.sidebar.progress.title')}</span>
-            <span class="ui:text-primary text-xs font-semibold tabular-nums">{courseProgress.percent}%</span>
-          </div>
-          <Progress value={courseProgress.percent} max={100} class="ui:h-1.5 mt-2" />
-          <p class="ui:text-muted-foreground mt-2 truncate text-[11px]">
-            {$t('course.sidebar.progress.lessons', {
-              completed: courseProgress.lessonsComplete,
-              total: courseProgress.lessonsTotal
-            })}{#if courseProgress.exercisesTotal > 0}
-              · {$t('course.sidebar.progress.exercises', {
-                completed: courseProgress.exercisesComplete,
-                total: courseProgress.exercisesTotal
-              })}{/if}
-          </p>
-        </div>
+        <CourseProgressCard
+          progress={courseProgress}
+          class="ui:border-sidebar-border ui:bg-sidebar-accent/50 rounded-lg border p-3"
+        />
       {/if}
       <PoweredBy
         variant="sidebar"
