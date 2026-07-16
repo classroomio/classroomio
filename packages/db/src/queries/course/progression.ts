@@ -1,9 +1,59 @@
 import * as schema from '@db/schema';
 
-import { and, eq, or } from 'drizzle-orm';
+import { and, eq, or, sql, type SQL } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
-import { getExerciseTitleAndMaxPoints, getStudentSubmissionsForExercise } from './certification-exercise';
+
+export type ExerciseCompletionMember = { profileId: string } | { groupMemberId: string };
+
+/** Allowed aliases for the exercise table in queries embedding the completion predicate. */
+export type ExerciseAlias = 'exercise' | 'ex';
+
+/**
+ * Single source of truth for whether an exercise counts as completed for a student.
+ *
+ * Honors the exercise's completion policy:
+ *  - 'submitted' (default): any submission counts
+ *  - 'passed': a graded submission must score >= pass_threshold (default 100)
+ *
+ * Returns a boolean SQL predicate to embed in a query where the exercise table
+ * is in scope under `exerciseAlias`. Every progress/completion computation
+ * (course progress, enrolled courses, content items, progression locks) must
+ * go through this predicate so completion reads the same everywhere.
+ */
+export function isExerciseCompletedSql(exerciseAlias: ExerciseAlias, member: ExerciseCompletionMember): SQL<boolean> {
+  const exercise = sql.raw(exerciseAlias);
+  const memberFilter =
+    'groupMemberId' in member
+      ? sql`cs.submitted_by = ${member.groupMemberId}`
+      : sql`EXISTS (
+          SELECT 1
+          FROM ${schema.groupmember} AS cgm
+          WHERE cgm.id = cs.submitted_by AND cgm.profile_id = ${member.profileId}
+        )`;
+
+  return sql<boolean>`EXISTS (
+    SELECT 1
+    FROM ${schema.submission} AS cs
+    WHERE cs.exercise_id = ${exercise}.id
+      AND ${memberFilter}
+      AND (
+        ${exercise}.completion_policy != 'passed'
+        OR (
+          cs.grading_state = 'completed'
+          AND (
+            SELECT CASE
+              WHEN COALESCE(SUM(question.points), 0) <= 0 THEN false
+              ELSE ROUND((cs.total::numeric / SUM(question.points)::numeric) * 100)
+                >= COALESCE(${exercise}.pass_threshold, 100)
+            END
+            FROM ${schema.question}
+            WHERE question.exercise_id = ${exercise}.id
+          )
+        )
+      )
+  )`;
+}
 
 export type LessonProgressionPolicy = {
   id: string;
@@ -58,59 +108,40 @@ export async function getExerciseProgressionPolicies(courseId: string): Promise<
   }
 }
 
-function percentFromTotal(total: number, maxPoints: number): number {
-  if (maxPoints <= 0) return 0;
-
-  return Math.round((total / maxPoints) * 100);
-}
-
-export async function isExercisePassedForMember(
-  exerciseId: string,
-  groupMemberId: string,
-  passThreshold: number
-): Promise<boolean> {
+export async function isExerciseCompletedForMember(exerciseId: string, groupMemberId: string): Promise<boolean> {
   try {
-    const { maxPoints } = await getExerciseTitleAndMaxPoints(exerciseId);
-    if (maxPoints <= 0) return false;
+    const [row] = await db
+      .select({ id: schema.exercise.id })
+      .from(schema.exercise)
+      .where(and(eq(schema.exercise.id, exerciseId), isExerciseCompletedSql('exercise', { groupMemberId })))
+      .limit(1);
 
-    const submissions = await getStudentSubmissionsForExercise(groupMemberId, exerciseId);
-    const completed = submissions.filter((submission) => submission.gradingState === 'completed');
-    if (completed.length === 0) return false;
-
-    let bestPercent = 0;
-    for (const submission of completed) {
-      const total = Number(submission.total ?? 0);
-      const percent = percentFromTotal(total, maxPoints);
-      if (percent > bestPercent) bestPercent = percent;
-    }
-
-    return bestPercent >= passThreshold;
+    return !!row;
   } catch (error) {
-    console.error('isExercisePassedForMember error:', error);
+    console.error('isExerciseCompletedForMember error:', error);
     throw new Error(
-      `Failed to check exercise pass status: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to check exercise completion status: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
 
-export async function getSubmittedExerciseIdsForMember(courseId: string, groupMemberId: string): Promise<Set<string>> {
+export async function getCompletedExerciseIdsForMember(courseId: string, groupMemberId: string): Promise<Set<string>> {
   try {
     const rows = await db
-      .select({ exerciseId: schema.submission.exerciseId })
-      .from(schema.submission)
-      .innerJoin(schema.exercise, eq(schema.submission.exerciseId, schema.exercise.id))
+      .select({ id: schema.exercise.id })
+      .from(schema.exercise)
       .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
       .where(
         and(
-          eq(schema.submission.submittedBy, groupMemberId),
-          or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId))
+          or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+          isExerciseCompletedSql('exercise', { groupMemberId })
         )
       );
 
-    return new Set(rows.map((row) => row.exerciseId).filter((id): id is string => !!id));
+    return new Set(rows.map((row) => row.id));
   } catch (error) {
-    console.error('getSubmittedExerciseIdsForMember error:', error);
-    throw new Error(`Failed to get submitted exercises: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error('getCompletedExerciseIdsForMember error:', error);
+    throw new Error(`Failed to get completed exercises: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -133,24 +164,4 @@ export async function getCompletedLessonIdsForProfile(courseId: string, profileI
     console.error('getCompletedLessonIdsForProfile error:', error);
     throw new Error(`Failed to get completed lessons: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-}
-
-export async function getPassedExerciseIdsForMember(
-  courseId: string,
-  groupMemberId: string,
-  policies: ExerciseProgressionPolicy[]
-): Promise<Set<string>> {
-  const passedIds = new Set<string>();
-
-  await Promise.all(
-    policies
-      .filter((policy) => policy.completionPolicy === 'passed')
-      .map(async (policy) => {
-        const threshold = policy.passThreshold ?? 100;
-        const passed = await isExercisePassedForMember(policy.id, groupMemberId, threshold);
-        if (passed) passedIds.add(policy.id);
-      })
-  );
-
-  return passedIds;
 }
