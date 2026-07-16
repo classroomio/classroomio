@@ -7,7 +7,7 @@
   import { Button } from '@cio/ui/base/button';
   import * as Tooltip from '@cio/ui/base/tooltip';
   import { PercentRingProgress } from '@cio/ui/custom/percent-ring-progress';
-  import { isOrgStudent } from '$lib/utils/store/app';
+  import { isCourseLearnerView } from '$lib/utils/store/app';
   import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi, lessonApi } from '$features/course/api';
@@ -52,6 +52,16 @@
 
   function goToContent(target: CourseContentItem | null) {
     if (!target) return;
+
+    if ($isCourseLearnerView) {
+      const targetType = target.type === ContentType.Lesson ? ContentType.Lesson : ContentType.Exercise;
+      const lockReason = getStudentContentLockReason(courseApi.course, target.id, targetType);
+
+      if (lockReason) {
+        return;
+      }
+    }
+
     const courseIdResolved = courseApi.course?.id;
     if (!courseIdResolved) return;
     const path = getContentRoute(courseIdResolved, target);
@@ -73,7 +83,7 @@
   const contentLockReason = $derived(
     lessonId ? getStudentContentLockReason(courseApi.course, lessonId, ContentType.Lesson) : null
   );
-  const isLessonLocked = $derived($isOrgStudent === true && contentLockReason !== null);
+  const isLessonLocked = $derived($isCourseLearnerView && contentLockReason !== null);
   const isVideoWatchLesson = $derived.by(() => {
     if (!lessonId) return false;
 
@@ -107,7 +117,7 @@
     isMarkingComplete || isLessonLocked || isLessonComplete || isVideoWatchLesson
   );
   const showWatchProgress = $derived(
-    !!lessonId && $isOrgStudent && isVideoWatchLesson && !showVideoWatchCompleteState && !isLessonLocked
+    !!lessonId && $isCourseLearnerView && isVideoWatchLesson && !showVideoWatchCompleteState && !isLessonLocked
   );
 
   const watchProgressTooltip = $derived(

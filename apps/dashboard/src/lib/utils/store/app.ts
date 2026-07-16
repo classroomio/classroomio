@@ -33,6 +33,19 @@ export const isStudentExperience = derived([globalStore, isOrgStudent], ([$gs, $
 });
 
 /**
+ * True when course lesson/exercise pages should render the learner UI
+ * (locked notices, student empty states, no teacher authoring CTAs).
+ * Cloud org-site visitors always get the learner view; on the app host
+ * only org-role students do.
+ */
+export const isCourseLearnerView = derived(
+  [isStudentExperience, isOrgStudent],
+  ([$isStudentExperience, $isOrgStudent]) => {
+    return $isStudentExperience || $isOrgStudent === true;
+  }
+);
+
+/**
  * The root path for navigation: '/lms' for students, '/org/{siteName}' for admin/teacher
  */
 export const basePath = derived([isStudentExperience, currentOrgPath], ([$isStudent, $orgPath]) =>
