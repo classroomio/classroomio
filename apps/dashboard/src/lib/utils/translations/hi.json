@@ -2370,6 +2370,12 @@
         "title": "अनुपालन",
         "due_date": "देय",
         "valid_until": "तक वैध है"
+      },
+      "progress": {
+        "title": "आपकी प्रगति",
+        "completed": "{total} में से {completed} पूर्ण",
+        "lessons": "{total} में से {completed} पाठ",
+        "exercises": "{total} में से {completed} अभ्यास"
       }
     },
     "navItems": {
@@ -3463,7 +3469,7 @@
       "teams_tab": "टीमें",
       "ai_credits_tab": "AI Credits",
       "ai_tutor_tab": "एआई ट्यूटर",
-      "notifications_tab": "Notifications"
+      "notifications_tab": "सूचनाएँ"
     },
     "subheadings": {
       "view_site": "अकादमी खोलें"
@@ -3639,73 +3645,75 @@
       }
     },
     "notifications": {
-      "heading": "Notifications",
-      "page_title": "Notifications",
-      "page_subtitle": "Choose which email notifications you receive and, as an admin, which emails your organization sends.",
+      "heading": "सूचनाएँ",
+      "page_title": "सूचनाएँ",
+      "page_subtitle": "चुनें कि आप कौन सी ईमेल सूचनाएँ प्राप्त करते हैं और व्यवस्थापक के रूप में आपका संगठन कौन से ईमेल भेजता है।",
       "toggles": {
         "courseCompletion": {
-          "label": "Course completion and certificates",
-          "description": "Email students when they complete a course and earn a certificate."
+          "label": "पाठ्यक्रम पूर्णता और प्रमाणपत्र",
+          "description": "जब छात्र पाठ्यक्रम पूरा करें और प्रमाणपत्र प्राप्त करें तो ईमेल भेजें।"
         },
         "enrollmentWelcome": {
-          "label": "Enrollment welcome emails",
-          "description": "Send welcome emails when staff enroll students in courses or cohorts."
+          "label": "नामांकन स्वागत ईमेल",
+          "description": "जब स्टाफ छात्रों को पाठ्यक्रमों या समूहों में नामांकित करे तो स्वागत ईमेल भेजें।"
         },
         "session": {
-          "label": "Live session reminders and updates",
-          "description": "Email students before live sessions and when session details change."
+          "label": "लाइव सत्र अनुस्मारक और अपडेट",
+          "description": "लाइव सत्रों से पहले और सत्र विवरण बदलने पर छात्रों को ईमेल भेजें।"
         },
         "cohortReminder": {
-          "label": "Cohort goal reminders",
-          "description": "Email students about upcoming or overdue cohort learning goals."
+          "label": "समूह लक्ष्य अनुस्मारक",
+          "description": "आगामी या अतिदेय समूह सीखने के लक्ष्यों के बारे में छात्रों को ईमेल भेजें।"
         },
         "quizAssigned": {
-          "label": "Exercise assigned",
-          "description": "Email students when an exercise is assigned or nudged."
+          "label": "अभ्यास असाइन किया गया",
+          "description": "जब अभ्यास असाइन या याद दिलाया जाए तो छात्रों को ईमेल भेजें।"
         },
         "newsfeed": {
-          "label": "Course announcements and comments",
-          "description": "Email course members about new posts and comments on the newsfeed."
+          "label": "पाठ्यक्रम घोषणाएँ और टिप्पणियाँ",
+          "description": "न्यूज़फ़ीड पर नई पोस्ट और टिप्पणियों के बारे में पाठ्यक्रम सदस्यों को ईमेल भेजें।"
         },
         "gradingResult": {
-          "label": "Grading results",
-          "description": "Email students when their submission is graded or updated."
+          "label": "ग्रेडिंग परिणाम",
+          "description": "जब उनका सबमिशन ग्रेड या अपडेट हो तो छात्रों को ईमेल भेजें।"
         },
         "newSubmission": {
-          "label": "New submissions to grade",
-          "description": "Email tutors when a student submits work that needs grading."
+          "label": "ग्रेडिंग के लिए नए सबमिशन",
+          "description": "जब छात्र ग्रेडिंग की आवश्यकता वाला कार्य जमा करे तो ट्यूटर्स को ईमेल भेजें।"
         },
         "newStudent": {
-          "label": "New student joins",
-          "description": "Email tutors when a student enrolls in a course."
+          "label": "नया छात्र शामिल होता है",
+          "description": "जब कोई छात्र पाठ्यक्रम में नामांकित हो तो ट्यूटर्स को ईमेल भेजें।"
         }
       },
       "org": {
-        "heading": "Organization defaults",
-        "description": "When disabled here, nobody in your organization receives that email. Members can still opt out of emails you leave enabled.",
-        "save": "Save organization defaults",
-        "save_success": "Organization notification defaults saved"
+        "heading": "संगठन डिफ़ॉल्ट",
+        "description": "यहाँ अक्षम करने पर, आपके संगठन में कोई भी वह ईमेल नहीं प्राप्त करेगा। सदस्य अभी भी उन ईमेल से ऑप्ट आउट कर सकते हैं जिन्हें आप सक्षम रखते हैं।",
+        "save": "संगठन डिफ़ॉल्ट सहेजें",
+        "save_success": "संगठन सूचना डिफ़ॉल्ट सहेजे गए"
       },
       "personal": {
-        "heading": "Your email preferences",
-        "description": "These apply to emails sent to you across every organization you belong to. Your organization may still disable certain emails for everyone.",
-        "save": "Save personal preferences",
-        "save_success": "Personal notification preferences saved"
+        "heading": "आपकी ईमेल प्राथमिकताएँ",
+        "save": "व्यक्तिगत प्राथमिकताएँ सहेजें",
+        "save_success": "व्यक्तिगत सूचना प्राथमिकताएँ सहेजी गईं",
+        "description": "ये उन ईमेल पर लागू होते हैं जो इस संगठन में आपको भेजे जाते हैं। आपका संगठन फिर भी कुछ ईमेल सभी के लिए बंद कर सकता है।",
+        "description_with_org": "ये उन ईमेल पर लागू होते हैं जो {orgName} में आपको भेजे जाते हैं। आपका संगठन फिर भी कुछ ईमेल सभी के लिए बंद कर सकता है।"
       },
       "sections": {
         "enrollment": {
-          "heading": "Enrollment",
-          "description": "Welcome emails sent when staff add members to courses or cohorts."
+          "heading": "नामांकन",
+          "description": "स्वागत ईमेल जब स्टाफ सदस्यों को पाठ्यक्रमों या समूहों में जोड़ता है।"
         },
         "cohort": {
-          "heading": "Cohort",
-          "description": "Reminders about cohort learning goals and deadlines."
+          "heading": "समूह",
+          "description": "समूह सीखने के लक्ष्यों और समय सीमा के बारे में अनुस्मारक।"
         },
         "course": {
-          "heading": "Course",
-          "description": "Enrollments, submissions, lessons, announcements, and completions in your courses."
+          "heading": "पाठ्यक्रम",
+          "description": "आपके पाठ्यक्रमों में नामांकन, सबमिशन, पाठ, घोषणाएँ और पूर्णता।"
         }
-      }
+      },
+      "personal_page_subtitle": "चुनें कि आप ClassroomIO से कौन सी ईमेल सूचनाएँ प्राप्त करते हैं।"
     }
   },
   "profileMenu": {

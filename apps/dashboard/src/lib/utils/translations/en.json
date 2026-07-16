@@ -440,9 +440,11 @@
       "heading": "Notifications",
       "page_title": "Notifications",
       "page_subtitle": "Choose which email notifications you receive and, as an admin, which emails your organization sends.",
+      "personal_page_subtitle": "Choose which email notifications you receive from ClassroomIO.",
       "personal": {
         "heading": "Your email preferences",
-        "description": "These apply to emails sent to you across every organization you belong to. Your organization may still disable certain emails for everyone.",
+        "description": "These apply to emails sent to you in this organization. Your organization may still disable certain emails for everyone.",
+        "description_with_org": "These apply to emails sent to you in {orgName}. Your organization may still disable certain emails for everyone.",
         "save": "Save personal preferences",
         "save_success": "Personal notification preferences saved"
       },
@@ -2003,6 +2005,12 @@
       "content_count": {
         "lessons": "{count} lessons",
         "exercises": "{count} exercises"
+      },
+      "progress": {
+        "title": "Your progress",
+        "completed": "{completed} of {total} completed",
+        "lessons": "{completed} of {total} lessons",
+        "exercises": "{completed} of {total} exercises"
       }
     },
     "search": {

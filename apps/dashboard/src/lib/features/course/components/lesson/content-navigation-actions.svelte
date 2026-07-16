@@ -8,6 +8,7 @@
   import * as Tooltip from '@cio/ui/base/tooltip';
   import { PercentRingProgress } from '@cio/ui/custom/percent-ring-progress';
   import { isOrgStudent } from '$lib/utils/store/app';
+  import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi, lessonApi } from '$features/course/api';
   import { getOrderedNavigableContent, getContentRoute } from '$features/course/utils/content';
@@ -69,8 +70,10 @@
   const showMarkComplete = $derived(!!lessonId && !exerciseId);
 
   const currentLessonItem = $derived(lessonId ? lessonItems.find((l) => l.id === lessonId) : null);
-  const isTeacherLocked = $derived($isOrgStudent && currentLessonItem && !(currentLessonItem.isUnlocked ?? false));
-  const isProgressionLocked = $derived($isOrgStudent && currentLessonItem?.accessible === false && !isTeacherLocked);
+  const contentLockReason = $derived(
+    lessonId ? getStudentContentLockReason(courseApi.course, lessonId, ContentType.Lesson) : null
+  );
+  const isLessonLocked = $derived($isOrgStudent === true && contentLockReason !== null);
   const isVideoWatchLesson = $derived.by(() => {
     if (!lessonId) return false;
 
@@ -98,7 +101,6 @@
 
   const watchVideosRequired = $derived(lessonApi.lesson?.watchProgress?.videosRequired ?? 0);
   const watchVideosComplete = $derived(lessonApi.lesson?.watchProgress?.videosComplete ?? 0);
-  const isLessonLocked = $derived(isTeacherLocked || isProgressionLocked);
   const isVideoWatchComplete = $derived(isVideoWatchLesson && (lessonApi.lesson?.watchProgress?.isComplete ?? false));
   const showVideoWatchCompleteState = $derived(isVideoWatchComplete || (isVideoWatchLesson && isLessonComplete));
   const isMarkCompleteDisabled = $derived(

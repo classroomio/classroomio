@@ -1,0 +1,176 @@
+---
+title: Token Auth
+description: Sign users in to ClassroomIO from your own app with a short-lived JWT.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+# Token Auth
+
+Token Auth lets an external app sign a user in to ClassroomIO without asking for a ClassroomIO password. Your backend signs a short-lived JWT with your organization's Token Auth secret, then redirects the user's browser to ClassroomIO's token exchange URL.
+
+Use Token Auth when you already authenticate users in another product and want a trusted handoff into your ClassroomIO academy.
+
+<Callout type="info" title="Enterprise Feature">
+  Token Auth requires an **Enterprise** plan.
+
+  **Cloud:** [Contact us](mailto:support@classroomio.com) to upgrade.
+
+  **Self-hosted:** Requires an Enterprise license key. Set `LICENSE_KEY` in the API service environment.
+</Callout>
+
+## How It Works
+
+1. An organization admin generates a Token Auth signing secret in ClassroomIO.
+2. Your backend authenticates the user in your own app.
+3. Your backend signs a short-lived `HS256` JWT with the ClassroomIO signing secret.
+4. Your app redirects the browser to `/api/auth/token-exchange?token=...&redirect=...`.
+5. ClassroomIO verifies the token, finds or creates the user, adds them to the organization, creates a session, and redirects them to the requested path.
+
+## Set Up Token Auth
+
+<Steps>
+  <Step>
+    Sign in to ClassroomIO as an organization admin.
+  </Step>
+  <Step>
+    Open **Settings** → **Authentication** → **Token Auth**.
+  </Step>
+  <Step>
+    Click **Generate secret** and copy the secret immediately. The full secret is shown only once.
+  </Step>
+  <Step>
+    Store the secret in your backend secret manager or environment variables.
+  </Step>
+  <Step>
+    Enable Token Auth after your integration is ready.
+  </Step>
+</Steps>
+
+## Token Exchange URL
+
+Cloud:
+
+```text
+https://api.classroomio.com/api/auth/token-exchange
+```
+
+Self-hosted:
+
+```text
+{PUBLIC_SERVER_URL}/api/auth/token-exchange
+```
+
+Query parameters:
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| `token` | Yes | The signed JWT. |
+| `redirect` | No | A ClassroomIO path to open after login. Must start with `/`. Invalid external URLs are ignored and users are sent to `/`. |
+
+Example:
+
+```text
+https://api.classroomio.com/api/auth/token-exchange?token=eyJ...&redirect=/courses/my-course
+```
+
+## JWT Requirements
+
+Token Auth accepts `HS256` JWTs signed with your organization's Token Auth secret.
+
+Required claims:
+
+| Claim | Type | Description |
+| --- | --- | --- |
+| `sub` | string | Stable user identifier from your system. |
+| `email` | string | User email address. ClassroomIO lowercases it before lookup. |
+| `iat` | number | Issued-at timestamp. |
+| `exp` | number | Expiration timestamp. |
+
+Optional claims:
+
+| Claim | Type | Description |
+| --- | --- | --- |
+| `name` | string | Display name. If omitted, ClassroomIO uses the email username. |
+| `avatar` | string | Public image URL for the user's avatar. |
+
+Tokens must be fresh. ClassroomIO rejects tokens older than 5 minutes, so use a short expiration such as 2 minutes.
+
+## Node Example
+
+```js
+import { SignJWT } from 'jose';
+
+const tokenAuthSecret = process.env.CLASSROOMIO_TOKEN_AUTH_SECRET;
+const classroomioAuthUrl = 'https://api.classroomio.com/api/auth/token-exchange';
+
+export async function buildClassroomioLoginUrl(user) {
+  const secret = new TextEncoder().encode(tokenAuthSecret);
+
+  const token = await new SignJWT({
+    sub: user.id,
+    email: user.email,
+    name: user.name,
+    avatar: user.avatarUrl
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('2m')
+    .sign(secret);
+
+  const url = new URL(classroomioAuthUrl);
+  url.searchParams.set('token', token);
+  url.searchParams.set('redirect', '/');
+
+  return url.toString();
+}
+```
+
+Redirect the browser to the returned URL after the user clicks "Open ClassroomIO" or any equivalent action in your app.
+
+## User Provisioning
+
+When the token is valid:
+
+- If a ClassroomIO user already exists with the email address, that user is signed in.
+- If no user exists, ClassroomIO creates one with a random password.
+- ClassroomIO adds the user to the organization tied to the signing secret.
+- If the email has a pending invite or pre-created audience row, ClassroomIO links that record first. Otherwise, the user joins with the organization's default role.
+- If `avatar` is present, ClassroomIO updates the user's profile avatar.
+
+## Rotating the Secret
+
+Rotate the secret from **Settings** → **Authentication** → **Token Auth** when a secret may have been exposed or as part of regular credential rotation.
+
+After rotation, update your backend to sign new tokens with the new secret. Old tokens signed with the previous secret stop working.
+
+## Troubleshooting
+
+### "No active token auth configured"
+
+Token Auth is not enabled for the organization. Generate a secret and enable Token Auth in the dashboard.
+
+### "Invalid token"
+
+Check that:
+
+- The token uses `HS256`.
+- The token is signed with the current Token Auth secret.
+- The token has not expired.
+- The token was issued less than 5 minutes ago.
+
+### "Invalid token payload"
+
+Verify that the JWT includes `sub`, `email`, `iat`, and `exp`, and that `email` is a valid email address.
+
+### Redirect sends users to `/`
+
+The `redirect` value must be a relative path that starts with `/`. External URLs are ignored for safety.
+
+## Security Notes
+
+- Sign tokens only on your backend. Never expose the Token Auth secret in browser code.
+- Keep token lifetimes short. Two minutes is usually enough for a browser redirect.
+- Rotate the secret immediately if it is logged, leaked, or committed.
+- Use HTTPS in production.

@@ -2370,6 +2370,12 @@
         "title": "Tuân thủ",
         "due_date": "Đến hạn",
         "valid_until": "Có hiệu lực cho đến khi"
+      },
+      "progress": {
+        "title": "Tiến độ của bạn",
+        "completed": "Đã hoàn thành {completed} trong số {total}",
+        "lessons": "{completed} trong số {total} bài học",
+        "exercises": "{completed} trong số {total} bài tập"
       }
     },
     "navItems": {
@@ -3463,7 +3469,7 @@
       "teams_tab": "Đội",
       "ai_credits_tab": "AI Credits",
       "ai_tutor_tab": "Gia sư AI",
-      "notifications_tab": "Notifications"
+      "notifications_tab": "Thông báo"
     },
     "subheadings": {
       "view_site": "Học viện mở"
@@ -3639,73 +3645,75 @@
       }
     },
     "notifications": {
-      "heading": "Notifications",
-      "page_title": "Notifications",
-      "page_subtitle": "Choose which email notifications you receive and, as an admin, which emails your organization sends.",
+      "heading": "Thông báo",
+      "page_title": "Thông báo",
+      "page_subtitle": "Chọn thông báo email bạn nhận và, với tư cách quản trị viên, email mà tổ chức của bạn gửi.",
       "toggles": {
         "courseCompletion": {
-          "label": "Course completion and certificates",
-          "description": "Email students when they complete a course and earn a certificate."
+          "label": "Hoàn thành khóa học và chứng chỉ",
+          "description": "Gửi email cho học viên khi họ hoàn thành khóa học và nhận chứng chỉ."
         },
         "enrollmentWelcome": {
-          "label": "Enrollment welcome emails",
-          "description": "Send welcome emails when staff enroll students in courses or cohorts."
+          "label": "Email chào mừng ghi danh",
+          "description": "Gửi email chào mừng khi nhân viên ghi danh học viên vào khóa học hoặc nhóm học."
         },
         "session": {
-          "label": "Live session reminders and updates",
-          "description": "Email students before live sessions and when session details change."
+          "label": "Nhắc nhở và cập nhật buổi học trực tiếp",
+          "description": "Gửi email cho học viên trước buổi học trực tiếp và khi chi tiết buổi học thay đổi."
         },
         "cohortReminder": {
-          "label": "Cohort goal reminders",
-          "description": "Email students about upcoming or overdue cohort learning goals."
+          "label": "Nhắc nhở mục tiêu nhóm học",
+          "description": "Gửi email cho học viên về mục tiêu học tập sắp tới hoặc quá hạn."
         },
         "quizAssigned": {
-          "label": "Exercise assigned",
-          "description": "Email students when an exercise is assigned or nudged."
+          "label": "Bài tập được giao",
+          "description": "Gửi email cho học viên khi bài tập được giao hoặc nhắc nhở."
         },
         "newsfeed": {
-          "label": "Course announcements and comments",
-          "description": "Email course members about new posts and comments on the newsfeed."
+          "label": "Thông báo và bình luận khóa học",
+          "description": "Gửi email cho thành viên khóa học về bài đăng và bình luận mới trên bảng tin."
         },
         "gradingResult": {
-          "label": "Grading results",
-          "description": "Email students when their submission is graded or updated."
+          "label": "Kết quả chấm điểm",
+          "description": "Gửi email cho học viên khi bài nộp được chấm hoặc cập nhật."
         },
         "newSubmission": {
-          "label": "New submissions to grade",
-          "description": "Email tutors when a student submits work that needs grading."
+          "label": "Bài nộp mới cần chấm",
+          "description": "Gửi email cho gia sư khi học viên nộp bài cần chấm điểm."
         },
         "newStudent": {
-          "label": "New student joins",
-          "description": "Email tutors when a student enrolls in a course."
+          "label": "Học viên mới tham gia",
+          "description": "Gửi email cho gia sư khi học viên ghi danh vào khóa học."
         }
       },
       "org": {
-        "heading": "Organization defaults",
-        "description": "When disabled here, nobody in your organization receives that email. Members can still opt out of emails you leave enabled.",
-        "save": "Save organization defaults",
-        "save_success": "Organization notification defaults saved"
+        "heading": "Mặc định của tổ chức",
+        "description": "Khi tắt ở đây, không ai trong tổ chức của bạn nhận email đó. Thành viên vẫn có thể từ chối các email bạn để bật.",
+        "save": "Lưu mặc định của tổ chức",
+        "save_success": "Đã lưu mặc định thông báo của tổ chức"
       },
       "personal": {
-        "heading": "Your email preferences",
-        "description": "These apply to emails sent to you across every organization you belong to. Your organization may still disable certain emails for everyone.",
-        "save": "Save personal preferences",
-        "save_success": "Personal notification preferences saved"
+        "heading": "Tùy chọn email của bạn",
+        "save": "Lưu tùy chọn cá nhân",
+        "save_success": "Đã lưu tùy chọn thông báo cá nhân",
+        "description": "Áp dụng cho email gửi đến bạn trong tổ chức này. Tổ chức của bạn vẫn có thể tắt một số email cho mọi người.",
+        "description_with_org": "Áp dụng cho email gửi đến bạn trong {orgName}. Tổ chức của bạn vẫn có thể tắt một số email cho mọi người."
       },
       "sections": {
         "enrollment": {
-          "heading": "Enrollment",
-          "description": "Welcome emails sent when staff add members to courses or cohorts."
+          "heading": "Ghi danh",
+          "description": "Email chào mừng được gửi khi nhân viên thêm thành viên vào khóa học hoặc nhóm học."
         },
         "cohort": {
-          "heading": "Cohort",
-          "description": "Reminders about cohort learning goals and deadlines."
+          "heading": "Nhóm học",
+          "description": "Nhắc nhở về mục tiêu học tập và hạn chót của nhóm học."
         },
         "course": {
-          "heading": "Course",
-          "description": "Enrollments, submissions, lessons, announcements, and completions in your courses."
+          "heading": "Khóa học",
+          "description": "Ghi danh, bài nộp, bài học, thông báo và hoàn thành trong các khóa học của bạn."
         }
-      }
+      },
+      "personal_page_subtitle": "Chọn thông báo email bạn nhận từ ClassroomIO."
     }
   },
   "profileMenu": {
