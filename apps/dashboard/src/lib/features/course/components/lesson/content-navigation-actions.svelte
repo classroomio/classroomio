@@ -7,8 +7,10 @@
   import { Button } from '@cio/ui/base/button';
   import * as Tooltip from '@cio/ui/base/tooltip';
   import { PercentRingProgress } from '@cio/ui/custom/percent-ring-progress';
+  import { get } from 'svelte/store';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
+  import { getStudentContentLockTitleKey } from '$features/course/utils/content-lock-utils';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi, lessonApi } from '$features/course/api';
   import { getOrderedNavigableContent, getContentRoute } from '$features/course/utils/content';
@@ -50,16 +52,21 @@
     };
   });
 
+  function getNavigableLockReason(target: CourseContentItem | null) {
+    if (!target) return null;
+
+    const targetType = target.type === ContentType.Lesson ? ContentType.Lesson : ContentType.Exercise;
+    return getStudentContentLockReason(courseApi.course, target.id, targetType);
+  }
+
   function goToContent(target: CourseContentItem | null) {
     if (!target) return;
 
-    if ($isCourseLearnerView) {
-      const targetType = target.type === ContentType.Lesson ? ContentType.Lesson : ContentType.Exercise;
-      const lockReason = getStudentContentLockReason(courseApi.course, target.id, targetType);
+    const lockReason = getNavigableLockReason(target);
 
-      if (lockReason) {
-        return;
-      }
+    if (get(isCourseLearnerView) && lockReason) {
+      snackbar.error(getStudentContentLockTitleKey(lockReason));
+      return;
     }
 
     const courseIdResolved = courseApi.course?.id;
@@ -71,6 +78,20 @@
 
   const isPrevDisabled = $derived(!prevNextContent.prev);
   const isNextDisabled = $derived(!prevNextContent.next);
+  const prevNavLockReason = $derived($isCourseLearnerView ? getNavigableLockReason(prevNextContent.prev) : null);
+  const nextNavLockReason = $derived($isCourseLearnerView ? getNavigableLockReason(prevNextContent.next) : null);
+  const isPrevNavBlocked = $derived(Boolean(prevNavLockReason));
+  const isNextNavBlocked = $derived(Boolean(nextNavLockReason));
+  const prevNavTooltip = $derived(
+    prevNavLockReason
+      ? $t(getStudentContentLockTitleKey(prevNavLockReason))
+      : $t('course.navItem.lessons.prev_shortcut')
+  );
+  const nextNavTooltip = $derived(
+    nextNavLockReason
+      ? $t(getStudentContentLockTitleKey(nextNavLockReason))
+      : $t('course.navItem.lessons.next_shortcut')
+  );
   const isLessonComplete = $derived.by(() => {
     if (!lessonId) return false;
     const lesson = lessonItems.find((l) => l.id === lessonId);
@@ -145,7 +166,7 @@
       updateCourseContentCompletion(currentLessonId, isComplete);
 
       const allComplete =
-        $isOrgStudent &&
+        get(isCourseLearnerView) &&
         isComplete &&
         navigableContentItems.length > 0 &&
         navigableContentItems.every((item) => item.isComplete);
@@ -231,14 +252,14 @@
             size="icon-sm"
             variant="outline"
             onclick={() => goToContent(prevNextContent.prev)}
-            disabled={isPrevDisabled}
+            disabled={isPrevDisabled || isPrevNavBlocked}
             aria-label={$t('course.navItem.lessons.prev')}
           >
             <ChevronLeftIcon size={14} />
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content side="bottom" sideOffset={4}>
-          {$t('course.navItem.lessons.prev_shortcut')}
+          {prevNavTooltip}
         </Tooltip.Content>
       </Tooltip.Root>
 
@@ -248,14 +269,14 @@
             size="icon-sm"
             variant="outline"
             onclick={() => goToContent(prevNextContent.next)}
-            disabled={isNextDisabled}
+            disabled={isNextDisabled || isNextNavBlocked}
             aria-label={$t('course.navItem.lessons.next')}
           >
             <ChevronRightIcon size={14} />
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content side="bottom" sideOffset={4}>
-          {$t('course.navItem.lessons.next_shortcut')}
+          {nextNavTooltip}
         </Tooltip.Content>
       </Tooltip.Root>
     </div>

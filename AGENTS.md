@@ -20,6 +20,29 @@ When a task requires factual information (API specifications, context window siz
 - Commit messages must follow the Conventional Commits 1.0.0 spec: https://www.conventionalcommits.org/en/v1.0.0/
 - Never include agent-provider attribution in commits or commit trailers. Do not add `Co-authored-by` lines for Cursor, Claude, Codex, or any other tool.
 
+## Verification before commit/PR
+
+Before committing or opening/updating a PR, run the build checks that match the areas you changed. Use Node 20 (the repo's `.nvmrc` version):
+
+```bash
+export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
+```
+
+- **Dashboard changes** (`apps/dashboard/**`, or shared packages consumed by the dashboard):
+
+  ```bash
+  test -f apps/dashboard/.env || cp apps/dashboard/.env.example apps/dashboard/.env
+  pnpm --filter @cio/dashboard^... build && pnpm --filter @cio/dashboard build
+  ```
+
+- **API changes** (`apps/api/**`, or shared packages consumed by the API):
+
+  ```bash
+  pnpm --filter @cio/api^... build && pnpm --filter @cio/api build
+  ```
+
+Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow above). Do not commit if any verification step fails.
+
 ## Naming Convention
 
 - Use kebab-case for files (e.g. `user-profile.svelte`, `org.svelte.ts`).
