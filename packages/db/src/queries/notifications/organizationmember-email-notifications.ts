@@ -32,6 +32,18 @@ function rowFromRecord(
   };
 }
 
+async function getEmailNotificationsByMemberId(
+  organizationMemberId: number
+): Promise<MemberEmailNotificationRow | null> {
+  const [record] = await db
+    .select()
+    .from(schema.organizationmemberEmailNotifications)
+    .where(eq(schema.organizationmemberEmailNotifications.organizationMemberId, organizationMemberId))
+    .limit(1);
+
+  return rowFromRecord(record);
+}
+
 export async function getOrganizationMemberEmailNotifications(
   profileId: string,
   organizationId: string
@@ -43,13 +55,7 @@ export async function getOrganizationMemberEmailNotifications(
       return null;
     }
 
-    const [record] = await db
-      .select()
-      .from(schema.organizationmemberEmailNotifications)
-      .where(eq(schema.organizationmemberEmailNotifications.organizationMemberId, organizationMemberId))
-      .limit(1);
-
-    return rowFromRecord(record);
+    return getEmailNotificationsByMemberId(organizationMemberId);
   } catch (error) {
     console.error('getOrganizationMemberEmailNotifications error:', error);
     throw new Error('Failed to get organization member email notification preferences');
@@ -83,7 +89,7 @@ export async function upsertOrganizationMemberEmailNotifications(
       throw new Error('Organization member not found');
     }
 
-    const existing = await getOrganizationMemberEmailNotifications(profileId, organizationId);
+    const existing = await getEmailNotificationsByMemberId(organizationMemberId);
     const merged = personalSettingsToMemberEmailNotificationRow({
       ...(existing ?? DEFAULT_MEMBER_EMAIL_NOTIFICATION_ROW),
       ...preferences
@@ -114,6 +120,10 @@ export async function upsertOrganizationMemberEmailNotifications(
 
     return row;
   } catch (error) {
+    if (error instanceof Error && error.message === 'Organization member not found') {
+      throw error;
+    }
+
     console.error('upsertOrganizationMemberEmailNotifications error:', error);
     throw new Error('Failed to update organization member email notification preferences');
   }
