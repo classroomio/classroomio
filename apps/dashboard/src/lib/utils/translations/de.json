@@ -3469,7 +3469,7 @@
       "teams_tab": "Mannschaften",
       "ai_credits_tab": "AI Credits",
       "ai_tutor_tab": "KI-Tutor",
-      "notifications_tab": "Notifications"
+      "notifications_tab": "Benachrichtigungen"
     },
     "subheadings": {
       "view_site": "Offene Akademie"
@@ -3645,73 +3645,75 @@
       }
     },
     "notifications": {
-      "heading": "Notifications",
-      "page_title": "Notifications",
-      "page_subtitle": "Choose which email notifications you receive and, as an admin, which emails your organization sends.",
+      "heading": "Benachrichtigungen",
+      "page_title": "Benachrichtigungen",
+      "page_subtitle": "Wählen Sie, welche E-Mail-Benachrichtigungen Sie erhalten, und als Administrator, welche E-Mails Ihre Organisation sendet.",
       "toggles": {
         "courseCompletion": {
-          "label": "Course completion and certificates",
-          "description": "Email students when they complete a course and earn a certificate."
+          "label": "Kursabschluss und Zertifikate",
+          "description": "E-Mail an Studenten senden, wenn sie einen Kurs abschließen und ein Zertifikat erhalten."
         },
         "enrollmentWelcome": {
-          "label": "Enrollment welcome emails",
-          "description": "Send welcome emails when staff enroll students in courses or cohorts."
+          "label": "Willkommens-E-Mails bei Anmeldung",
+          "description": "Willkommens-E-Mails senden, wenn Mitarbeitende Studenten zu Kursen oder Kohorten anmelden."
         },
         "session": {
-          "label": "Live session reminders and updates",
-          "description": "Email students before live sessions and when session details change."
+          "label": "Erinnerungen und Updates zu Live-Sitzungen",
+          "description": "E-Mail an Studenten vor Live-Sitzungen und bei Änderungen der Sitzungsdetails senden."
         },
         "cohortReminder": {
-          "label": "Cohort goal reminders",
-          "description": "Email students about upcoming or overdue cohort learning goals."
+          "label": "Erinnerungen an Kohortenlernziele",
+          "description": "E-Mail an Studenten über bevorstehende oder überfällige Kohortenlernziele senden."
         },
         "quizAssigned": {
-          "label": "Exercise assigned",
-          "description": "Email students when an exercise is assigned or nudged."
+          "label": "Übung zugewiesen",
+          "description": "E-Mail an Studenten senden, wenn eine Übung zugewiesen oder erinnert wird."
         },
         "newsfeed": {
-          "label": "Course announcements and comments",
-          "description": "Email course members about new posts and comments on the newsfeed."
+          "label": "Kursankündigungen und Kommentare",
+          "description": "E-Mail an Kursmitglieder über neue Beiträge und Kommentare im Newsfeed senden."
         },
         "gradingResult": {
-          "label": "Grading results",
-          "description": "Email students when their submission is graded or updated."
+          "label": "Bewertungsergebnisse",
+          "description": "E-Mail an Studenten senden, wenn ihre Abgabe bewertet oder aktualisiert wird."
         },
         "newSubmission": {
-          "label": "New submissions to grade",
-          "description": "Email tutors when a student submits work that needs grading."
+          "label": "Neue Abgaben zum Bewerten",
+          "description": "E-Mail an Tutoren senden, wenn ein Student Arbeit zur Bewertung einreicht."
         },
         "newStudent": {
-          "label": "New student joins",
-          "description": "Email tutors when a student enrolls in a course."
+          "label": "Neuer Student meldet sich an",
+          "description": "E-Mail an Tutoren senden, wenn sich ein Student für einen Kurs anmeldet."
         }
       },
       "org": {
-        "heading": "Organization defaults",
-        "description": "When disabled here, nobody in your organization receives that email. Members can still opt out of emails you leave enabled.",
-        "save": "Save organization defaults",
-        "save_success": "Organization notification defaults saved"
+        "heading": "Organisationsstandards",
+        "description": "Wenn hier deaktiviert, erhält niemand in Ihrer Organisation diese E-Mail. Mitglieder können sich weiterhin von E-Mails abmelden, die Sie aktiviert lassen.",
+        "save": "Organisationsstandards speichern",
+        "save_success": "Organisations-Benachrichtigungsstandards gespeichert"
       },
       "personal": {
-        "heading": "Your email preferences",
-        "description": "These apply to emails sent to you across every organization you belong to. Your organization may still disable certain emails for everyone.",
-        "save": "Save personal preferences",
-        "save_success": "Personal notification preferences saved"
+        "heading": "Ihre E-Mail-Einstellungen",
+        "save": "Persönliche Einstellungen speichern",
+        "save_success": "Persönliche Benachrichtigungseinstellungen gespeichert",
+        "description": "Diese Einstellungen gelten für E-Mails, die Ihnen in dieser Organisation gesendet werden. Ihre Organisation kann bestimmte E-Mails für alle deaktivieren.",
+        "description_with_org": "Diese Einstellungen gelten für E-Mails, die Ihnen in {orgName} gesendet werden. Ihre Organisation kann bestimmte E-Mails für alle deaktivieren."
       },
       "sections": {
         "enrollment": {
-          "heading": "Enrollment",
-          "description": "Welcome emails sent when staff add members to courses or cohorts."
+          "heading": "Anmeldung",
+          "description": "Willkommens-E-Mails, die gesendet werden, wenn Mitarbeitende Mitglieder zu Kursen oder Kohorten hinzufügen."
         },
         "cohort": {
-          "heading": "Cohort",
-          "description": "Reminders about cohort learning goals and deadlines."
+          "heading": "Kohorte",
+          "description": "Erinnerungen an Lernziele und Fristen der Kohorte."
         },
         "course": {
-          "heading": "Course",
-          "description": "Enrollments, submissions, lessons, announcements, and completions in your courses."
+          "heading": "Kurs",
+          "description": "Anmeldungen, Abgaben, Lektionen, Ankündigungen und Abschlüsse in Ihren Kursen."
         }
-      }
+      },
+      "personal_page_subtitle": "Wählen Sie, welche E-Mail-Benachrichtigungen Sie von ClassroomIO erhalten."
     }
   },
   "profileMenu": {

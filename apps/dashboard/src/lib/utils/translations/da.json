@@ -3469,7 +3469,7 @@
       "teams_tab": "Hold",
       "ai_credits_tab": "AI Credits",
       "ai_tutor_tab": "AI underviser",
-      "notifications_tab": "Notifications"
+      "notifications_tab": "Notifikationer"
     },
     "subheadings": {
       "view_site": "Åbent Akademi"
@@ -3645,73 +3645,75 @@
       }
     },
     "notifications": {
-      "heading": "Notifications",
-      "page_title": "Notifications",
-      "page_subtitle": "Choose which email notifications you receive and, as an admin, which emails your organization sends.",
+      "heading": "Notifikationer",
+      "page_title": "Notifikationer",
+      "page_subtitle": "Vælg hvilke e-mailnotifikationer du modtager, og som administrator hvilke e-mails din organisation sender.",
       "toggles": {
         "courseCompletion": {
-          "label": "Course completion and certificates",
-          "description": "Email students when they complete a course and earn a certificate."
+          "label": "Kursusafslutning og certifikater",
+          "description": "Send e-mail til studerende, når de gennemfører et kursus og opnår et certifikat."
         },
         "enrollmentWelcome": {
-          "label": "Enrollment welcome emails",
-          "description": "Send welcome emails when staff enroll students in courses or cohorts."
+          "label": "Velkomst-e-mails ved tilmelding",
+          "description": "Send velkomst-e-mails, når personalet tilmelder studerende til kurser eller kohorter."
         },
         "session": {
-          "label": "Live session reminders and updates",
-          "description": "Email students before live sessions and when session details change."
+          "label": "Påmindelser og opdateringer om livesessioner",
+          "description": "Send e-mail til studerende før livesessioner og når sessionsdetaljer ændres."
         },
         "cohortReminder": {
-          "label": "Cohort goal reminders",
-          "description": "Email students about upcoming or overdue cohort learning goals."
+          "label": "Påmindelser om kohortemål",
+          "description": "Send e-mail til studerende om kommende eller overskredne kohortlæringsmål."
         },
         "quizAssigned": {
-          "label": "Exercise assigned",
-          "description": "Email students when an exercise is assigned or nudged."
+          "label": "Øvelse tildelt",
+          "description": "Send e-mail til studerende, når en øvelse tildeles eller påmindes."
         },
         "newsfeed": {
-          "label": "Course announcements and comments",
-          "description": "Email course members about new posts and comments on the newsfeed."
+          "label": "Kursusmeddelelser og kommentarer",
+          "description": "Send e-mail til kursusmedlemmer om nye opslag og kommentarer på nyhedsfeedet."
         },
         "gradingResult": {
-          "label": "Grading results",
-          "description": "Email students when their submission is graded or updated."
+          "label": "Bedømmelsesresultater",
+          "description": "Send e-mail til studerende, når deres aflevering er bedømt eller opdateret."
         },
         "newSubmission": {
-          "label": "New submissions to grade",
-          "description": "Email tutors when a student submits work that needs grading."
+          "label": "Nye afleveringer til bedømmelse",
+          "description": "Send e-mail til undervisere, når en studerende afleverer arbejde, der skal bedømmes."
         },
         "newStudent": {
-          "label": "New student joins",
-          "description": "Email tutors when a student enrolls in a course."
+          "label": "Ny studerende tilmelder sig",
+          "description": "Send e-mail til undervisere, når en studerende tilmelder sig et kursus."
         }
       },
       "org": {
-        "heading": "Organization defaults",
-        "description": "When disabled here, nobody in your organization receives that email. Members can still opt out of emails you leave enabled.",
-        "save": "Save organization defaults",
-        "save_success": "Organization notification defaults saved"
+        "heading": "Organisationsstandarder",
+        "description": "Når deaktiveret her, modtager ingen i din organisation den e-mail. Medlemmer kan stadig fravælge e-mails, du lader være aktiveret.",
+        "save": "Gem organisationsstandarder",
+        "save_success": "Organisationsnotifikationsstandarder gemt"
       },
       "personal": {
-        "heading": "Your email preferences",
-        "description": "These apply to emails sent to you across every organization you belong to. Your organization may still disable certain emails for everyone.",
-        "save": "Save personal preferences",
-        "save_success": "Personal notification preferences saved"
+        "heading": "Dine e-mailpræferencer",
+        "save": "Gem personlige præferencer",
+        "save_success": "Personlige notifikationspræferencer gemt",
+        "description": "Disse gælder for e-mails sendt til dig i denne organisation. Din organisation kan stadig deaktivere visse e-mails for alle.",
+        "description_with_org": "Disse gælder for e-mails sendt til dig i {orgName}. Din organisation kan stadig deaktivere visse e-mails for alle."
       },
       "sections": {
         "enrollment": {
-          "heading": "Enrollment",
-          "description": "Welcome emails sent when staff add members to courses or cohorts."
+          "heading": "Tilmelding",
+          "description": "Velkomst-e-mails sendt, når personalet tilføjer medlemmer til kurser eller kohorter."
         },
         "cohort": {
-          "heading": "Cohort",
-          "description": "Reminders about cohort learning goals and deadlines."
+          "heading": "Kohorte",
+          "description": "Påmindelser om kohortens læringsmål og deadlines."
         },
         "course": {
-          "heading": "Course",
-          "description": "Enrollments, submissions, lessons, announcements, and completions in your courses."
+          "heading": "Kursus",
+          "description": "Tilmeldinger, afleveringer, lektioner, meddelelser og gennemførelser i dine kurser."
         }
-      }
+      },
+      "personal_page_subtitle": "Vælg hvilke e-mailnotifikationer du modtager fra ClassroomIO."
     }
   },
   "profileMenu": {

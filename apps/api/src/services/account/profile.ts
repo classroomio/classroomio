@@ -100,16 +100,7 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
  */
 export async function updateUser(userId: string, data: TUpdateProfile) {
   try {
-    const { emailNotifications, ...profileFields } = data;
-    const updatePayload: Partial<Omit<TProfile, 'id' | 'email' | 'createdAt' | 'updatedAt'>> = {
-      ...profileFields
-    };
-
-    if (emailNotifications !== undefined) {
-      updatePayload.settings = { emailNotifications };
-    }
-
-    const updatedProfile = await updateProfile(userId, updatePayload);
+    const updatedProfile = await updateProfile(userId, data);
 
     if (!updatedProfile) {
       throw new AppError(`Profile not found for user ID: ${userId}`, ErrorCodes.PROFILE_NOT_FOUND, 404);

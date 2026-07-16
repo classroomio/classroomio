@@ -14,6 +14,7 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { RadioIcon } from '@cio/ui/custom/moving-icons';
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
+  import { isOrgStudent } from '$lib/utils/store/app';
 
   interface Props {
     path: string;
@@ -97,7 +98,8 @@
                     <Sidebar.MenuSubButton isActive={(path || page.url.pathname).includes(contentItem.id)}>
                       {#snippet child({ props })}
                         {@const isContentLocked = (contentItem.isUnlocked ?? true) === false}
-                        {@const isLockedForStudent = isStudent && (isContentLocked || contentItem.accessible === false)}
+                        {@const isLockedForStudent =
+                          $isOrgStudent === true && (isContentLocked || contentItem.accessible === false)}
                         <a
                           href={resolve(getContentRoute(id, contentItem), {})}
                           aria-disabled={isLockedForStudent}
@@ -149,7 +151,8 @@
         <Sidebar.MenuSubButton isActive={(path || page.url.pathname).includes(contentItem.id)}>
           {#snippet child({ props })}
             {@const isContentLocked = (contentItem.isUnlocked ?? true) === false}
-            {@const isLockedForStudent = isStudent && (isContentLocked || contentItem.accessible === false)}
+            {@const isLockedForStudent =
+              $isOrgStudent === true && (isContentLocked || contentItem.accessible === false)}
             <a
               href={resolve(getContentRoute(id, contentItem), {})}
               aria-disabled={isLockedForStudent}

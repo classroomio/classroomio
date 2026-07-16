@@ -410,18 +410,7 @@ export const profile = pgTable(
     verifiedAt: timestamp('verified_at', { withTimezone: true, mode: 'string' }),
     locale: locale().default('en'),
     isRestricted: boolean('is_restricted').default(false).notNull(),
-    settings: jsonb().default({}).$type<{
-      emailNotifications?: {
-        newStudent?: boolean;
-        newSubmission?: boolean;
-        gradingResult?: boolean;
-        newsfeed?: boolean;
-        quizAssigned?: boolean;
-        cohortReminder?: boolean;
-        session?: boolean;
-        courseCompletion?: boolean;
-      };
-    }>()
+    settings: jsonb().default({}).$type<Record<string, unknown>>()
   },
   (table) => [
     foreignKey({
@@ -1857,6 +1846,30 @@ export const organizationmember = pgTable(
     uniqueIndex('organizationmember_org_email_unique')
       .on(table.organizationId, table.email)
       .where(sql`${table.email} IS NOT NULL`)
+  ]
+);
+
+export const organizationmemberEmailNotifications = pgTable(
+  'organizationmember_email_notifications',
+  {
+    organizationMemberId: bigint('organization_member_id', { mode: 'number' }).primaryKey().notNull(),
+    newStudent: boolean('new_student').default(true).notNull(),
+    newSubmission: boolean('new_submission').default(true).notNull(),
+    gradingResult: boolean('grading_result').default(true).notNull(),
+    newsfeed: boolean('newsfeed').default(true).notNull(),
+    quizAssigned: boolean('quiz_assigned').default(true).notNull(),
+    cohortReminder: boolean('cohort_reminder').default(true).notNull(),
+    session: boolean('session').default(true).notNull(),
+    courseCompletion: boolean('course_completion').default(true).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationMemberId],
+      foreignColumns: [organizationmember.id],
+      name: 'organizationmember_email_notifications_organization_member_id_fkey'
+    }).onDelete('cascade')
   ]
 );
 
