@@ -85,18 +85,30 @@
     )
   );
   const lessonTitle = $derived(currentLessonContentItem?.title || lessonApi.lesson?.title || 'Lesson');
-  const isCourseContentReady = $derived(courseApi.course?.id === courseId);
   const contentLockReason = $derived(getStudentContentLockReason(courseApi.course, lessonId, ContentType.Lesson));
-  const isLessonAccessibleForStudent = $derived.by(() => {
+  const isLessonLockedForStudent = $derived($isOrgStudent === true && contentLockReason !== null);
+  const isStudentLessonStateReady = $derived.by(() => {
     if ($isOrgStudent !== true) {
       return true;
     }
 
-    if (!currentLessonContentItem) {
+    if (courseApi.course?.id !== courseId) {
       return false;
     }
 
-    return contentLockReason === null;
+    if (contentLockReason !== null) {
+      return true;
+    }
+
+    if (currentLessonContentItem) {
+      return true;
+    }
+
+    if (lessonApi.lesson?.id === lessonId) {
+      return true;
+    }
+
+    return courseApi.course?.content != null;
   });
   const lessonSlug = $derived(lessonApi.lesson?.slug ?? '');
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
@@ -454,7 +466,7 @@
 <Page.Body>
   {#snippet child()}
     <div class={`overflow-x-hidden pb-6 ${mode === MODES.edit ? 'lg:w-full xl:w-11/12' : 'mx-auto w-full max-w-3xl'}`}>
-      {#if isLiveSessionLesson && mode === MODES.view && !($isOrgStudent === true && !isLessonAccessibleForStudent)}
+      {#if isLiveSessionLesson && mode === MODES.view && !isLessonLockedForStudent}
         <div class="mb-4">
           <LiveSessionCard
             title={lessonTitle}
@@ -465,15 +477,12 @@
         </div>
       {/if}
 
-      {#if $isOrgStudent === true && !isCourseContentReady}
+      {#if $isOrgStudent === true && !isStudentLessonStateReady}
         <div class="flex justify-center py-16">
           <Spinner />
         </div>
-      {:else if $isOrgStudent === true && !isLessonAccessibleForStudent}
-        <StudentContentLockedNotice
-          reason={contentLockReason === 'progression_locked' ? 'progression_locked' : 'teacher_locked'}
-          contentType={ContentType.Lesson}
-        />
+      {:else if isLessonLockedForStudent && contentLockReason}
+        <StudentContentLockedNotice reason={contentLockReason} contentType={ContentType.Lesson} />
       {:else if mode === MODES.edit}
         <UnderlineTabs.Root
           bind:value={currentTabValue}
