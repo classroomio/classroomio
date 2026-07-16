@@ -3688,10 +3688,10 @@
       },
       "personal": {
         "heading": "Your email preferences",
-        "description": "These apply to emails sent to you in this organization. Your organization may still disable certain emails for everyone.",
         "save": "Save personal preferences",
         "save_success": "Personal notification preferences saved",
-        "description_with_org": "These apply to emails sent to you in {orgName}. Your organization may still disable certain emails for everyone."
+        "description": "Disse gælder for e-mails sendt til dig i denne organisation. Din organisation kan stadig deaktivere visse e-mails for alle.",
+        "description_with_org": "Disse gælder for e-mails sendt til dig i {orgName}. Din organisation kan stadig deaktivere visse e-mails for alle."
       },
       "sections": {
         "enrollment": {
