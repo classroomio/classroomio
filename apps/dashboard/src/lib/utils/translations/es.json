@@ -2370,6 +2370,12 @@
         "title": "Cumplimiento",
         "due_date": "debido",
         "valid_until": "Válido hasta"
+      },
+      "progress": {
+        "title": "Tu progreso",
+        "completed": "{completed} de {total} completados",
+        "lessons": "{completed} de {total} lecciones",
+        "exercises": "{completed} de {total} ejercicios"
       }
     },
     "navItems": {

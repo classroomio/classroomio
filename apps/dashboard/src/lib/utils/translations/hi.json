@@ -2370,6 +2370,12 @@
         "title": "अनुपालन",
         "due_date": "देय",
         "valid_until": "तक वैध है"
+      },
+      "progress": {
+        "title": "आपकी प्रगति",
+        "completed": "{total} में से {completed} पूर्ण",
+        "lessons": "{total} में से {completed} पाठ",
+        "exercises": "{total} में से {completed} अभ्यास"
       }
     },
     "navItems": {

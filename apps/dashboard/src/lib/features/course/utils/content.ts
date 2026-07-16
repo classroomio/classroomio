@@ -56,6 +56,42 @@ export function getCourseContent(course: Course | null) {
 
 const NAVIGABLE_CONTENT_TYPES = [CourseContentType.Lesson, CourseContentType.Exercise] as const;
 
+export type ContentProgress = {
+  lessonsTotal: number;
+  lessonsComplete: number;
+  exercisesTotal: number;
+  exercisesComplete: number;
+  total: number;
+  completed: number;
+  percent: number;
+};
+
+export function getContentItemsProgress(items: ContentItem[]): ContentProgress {
+  const lessons = items.filter((item) => item.type === CourseContentType.Lesson);
+  const exercises = items.filter((item) => item.type === CourseContentType.Exercise);
+  const lessonsComplete = lessons.filter((item) => item.isComplete).length;
+  const exercisesComplete = exercises.filter((item) => item.isComplete).length;
+  const total = lessons.length + exercises.length;
+  const completed = lessonsComplete + exercisesComplete;
+  const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+  return {
+    lessonsTotal: lessons.length,
+    lessonsComplete,
+    exercisesTotal: exercises.length,
+    exercisesComplete,
+    total,
+    completed,
+    percent
+  };
+}
+
+export function getCourseProgress(course: Course | null): ContentProgress {
+  const content = getCourseContent(course);
+  const items = content.grouped ? content.sections.flatMap((section) => section.items) : content.items;
+  return getContentItemsProgress(items);
+}
+
 export function getOrderedNavigableContent(course: Course | null): ContentItem[] {
   const content = getCourseContent(course);
   const items = content.grouped ? content.sections.flatMap((s) => s.items) : content.items;

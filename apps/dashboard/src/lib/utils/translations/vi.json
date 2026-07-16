@@ -2370,6 +2370,12 @@
         "title": "Tuân thủ",
         "due_date": "Đến hạn",
         "valid_until": "Có hiệu lực cho đến khi"
+      },
+      "progress": {
+        "title": "Tiến độ của bạn",
+        "completed": "Đã hoàn thành {completed} trong số {total}",
+        "lessons": "{completed} trong số {total} bài học",
+        "exercises": "{completed} trong số {total} bài tập"
       }
     },
     "navItems": {
