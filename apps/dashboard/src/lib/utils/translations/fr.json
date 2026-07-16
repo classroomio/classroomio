@@ -2370,6 +2370,12 @@
         "title": "Conformité",
         "due_date": "Due",
         "valid_until": "Valable jusqu'au"
+      },
+      "progress": {
+        "title": "Votre progression",
+        "lessons_completed": "{completed} sur {total} leçons terminées",
+        "lessons": "{completed} sur {total} leçons",
+        "exercises": "{completed} sur {total} exercices"
       }
     },
     "navItems": {

@@ -2003,6 +2003,12 @@
       "content_count": {
         "lessons": "{count} lessons",
         "exercises": "{count} exercises"
+      },
+      "progress": {
+        "title": "Your progress",
+        "lessons_completed": "{completed} of {total} lessons completed",
+        "lessons": "{completed} of {total} lessons",
+        "exercises": "{completed} of {total} exercises"
       }
     },
     "search": {

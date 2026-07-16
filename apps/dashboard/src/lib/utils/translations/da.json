@@ -2370,6 +2370,12 @@
         "title": "Overholdelse",
         "due_date": "Forfalder",
         "valid_until": "Gælder indtil kl"
+      },
+      "progress": {
+        "title": "Dine fremskridt",
+        "lessons_completed": "{completed} af {total} lektioner fuldført",
+        "lessons": "{completed} af {total} lektioner",
+        "exercises": "{completed} af {total} øvelser"
       }
     },
     "navItems": {

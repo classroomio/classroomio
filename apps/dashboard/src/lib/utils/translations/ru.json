@@ -2370,6 +2370,12 @@
         "title": "Соответствие",
         "due_date": "Срок погашения",
         "valid_until": "Действительно до"
+      },
+      "progress": {
+        "title": "Ваш прогресс",
+        "lessons_completed": "Пройдено {completed} из {total} уроков",
+        "lessons": "{completed} из {total} уроков",
+        "exercises": "{completed} из {total} упражнений"
       }
     },
     "navItems": {

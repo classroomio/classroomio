@@ -2370,6 +2370,12 @@
         "title": "Zgodność",
         "due_date": "Termin",
         "valid_until": "Ważne do"
+      },
+      "progress": {
+        "title": "Twój postęp",
+        "lessons_completed": "Ukończono {completed} z {total} lekcji",
+        "lessons": "{completed} z {total} lekcji",
+        "exercises": "{completed} z {total} ćwiczeń"
       }
     },
     "navItems": {
