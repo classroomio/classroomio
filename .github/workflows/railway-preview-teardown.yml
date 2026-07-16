@@ -29,8 +29,13 @@ jobs:
 
       - name: Delete the preview environment
         # Mirror the name derivation in railway-preview.yml so the env name matches.
+        # HEAD_REF is bound via env (not interpolated into the script) so a malicious
+        # branch name can never be executed as shell — Actions expands ${{ }} as text
+        # BEFORE bash parses it, so a raw `${{ ...head.ref }}` here is a script-injection hole.
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
-          slug=$(echo "${{ github.event.pull_request.head.ref }}" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//')
+          slug=$(echo "$HEAD_REF" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//')
           env_name="pr-${slug}"
           echo "Attempting to delete environment: ${env_name}"
           railway environment delete "${env_name}" --project "$RAILWAY_PROJECT_ID" --yes \

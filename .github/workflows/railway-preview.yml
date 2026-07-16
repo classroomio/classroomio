@@ -65,18 +65,23 @@ jobs:
 
       - name: Derive a safe environment name
         id: env
-        # "feat/foo_bar" -> "pr-feat-foo-bar" (lowercase, only [a-z0-9-]).
+        # BRANCH is bound via env (not interpolated into the script) so an attacker-supplied
+        # value can't be executed as shell. "feat/foo_bar" -> "pr-feat-foo-bar" ([a-z0-9-] only).
+        env:
+          BRANCH: ${{ inputs.branch }}
         run: |
-          slug=$(echo "${{ inputs.branch }}" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//')
+          slug=$(echo "$BRANCH" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//')
           echo "name=pr-${slug}" >> "$GITHUB_OUTPUT"
 
       # ---------------------------------------------------------------- destroy
       - name: Destroy preview environment
         if: ${{ inputs.action == 'destroy' }}
+        env:
+          ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
-          railway environment delete "${{ steps.env.outputs.name }}" \
+          railway environment delete "$ENV_NAME" \
             --project "$RAILWAY_PROJECT_ID" --yes
-          echo "Deleted environment ${{ steps.env.outputs.name }}." >> "$GITHUB_STEP_SUMMARY"
+          echo "Deleted environment $ENV_NAME." >> "$GITHUB_STEP_SUMMARY"
 
       # ---------------------------------------------------------------- deploy
       - name: Create preview environment (duplicate base)
@@ -87,15 +92,19 @@ jobs:
         # `--duplicate`, fall back to the GraphQL `environmentCreate(sourceEnvironmentId)`
         # mutation. Re-running with an existing env name should no-op or update, not fail
         # the run — the `|| true` keeps re-deploys idempotent.
+        env:
+          ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
-          railway environment new "${{ steps.env.outputs.name }}" \
+          railway environment new "$ENV_NAME" \
             --project "$RAILWAY_PROJECT_ID" \
             --duplicate "$BASE_ENV" || echo "Environment may already exist; continuing."
 
       - name: Link project + preview environment
         if: ${{ inputs.action == 'deploy' }}
+        env:
+          ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
-          railway link --project "$RAILWAY_PROJECT_ID" --environment "${{ steps.env.outputs.name }}"
+          railway link --project "$RAILWAY_PROJECT_ID" --environment "$ENV_NAME"
 
       - name: Pin the Dockerfile per service
         if: ${{ inputs.action == 'deploy' }}
@@ -113,10 +122,17 @@ jobs:
         # so create the buckets the app expects. Uses the env's own cio-minio public domain
         # + root creds carried over by duplication. `--ignore-existing` keeps re-deploys safe.
         run: |
-          MINIO_HOST=$(railway variables --service cio-minio --kv | awk -F= '/^RAILWAY_PUBLIC_DOMAIN=/{print $2}')
-          MINIO_USER=$(railway variables --service cio-minio --kv | awk -F= '/^MINIO_ROOT_USER=/{print $2}')
-          MINIO_PASS=$(railway variables --service cio-minio --kv | awk -F= '/^MINIO_ROOT_PASSWORD=/{print $2}')
-          curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc -o mc && chmod +x mc
+          # `cut -d= -f2-` (not `awk -F= '{print $2}'`) so a value containing '=' — common in
+          # base64/auto-generated secrets like MINIO_ROOT_PASSWORD — isn't silently truncated.
+          MINIO_HOST=$(railway variables --service cio-minio --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
+          MINIO_USER=$(railway variables --service cio-minio --kv | grep '^MINIO_ROOT_USER=' | cut -d= -f2-)
+          MINIO_PASS=$(railway variables --service cio-minio --kv | grep '^MINIO_ROOT_PASSWORD=' | cut -d= -f2-)
+          # Verify the mc binary against MinIO's published SHA256 before executing it. The
+          # checksum file names a versioned binary, so compare the hash against our file directly.
+          curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc -o mc
+          curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum -o mc.sha256sum
+          echo "$(cut -d' ' -f1 mc.sha256sum)  mc" | sha256sum -c -
+          chmod +x mc
           ./mc alias set cio "https://${MINIO_HOST}" "$MINIO_USER" "$MINIO_PASS"
           ./mc mb cio/videos cio/documents cio/media --ignore-existing
           ./mc anonymous set download cio/media
@@ -145,15 +161,22 @@ jobs:
 
       - name: Report the preview URL
         if: ${{ inputs.action == 'deploy' }}
+        # BRANCH / ENV_NAME bound via env (never interpolated into the script).
+        env:
+          BRANCH: ${{ inputs.branch }}
+          ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
           # Ensure the dashboard has a public domain and print it.
           railway domain --service cio-dashboard || true
-          URL=$(railway variables --service cio-dashboard --kv | awk -F= '/^RAILWAY_PUBLIC_DOMAIN=/{print $2}')
+          URL=$(railway variables --service cio-dashboard --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
           {
             echo "### Railway preview ready :rocket:"
             echo ""
-            echo "- Environment: \`${{ steps.env.outputs.name }}\` (branch \`${{ inputs.branch }}\`)"
+            echo "- Environment: \`$ENV_NAME\` (branch \`$BRANCH\`)"
             echo "- Dashboard: https://${URL}"
+            echo ""
+            echo "> Builds run on Railway and are deployed detached, so this may take a few minutes to come up."
+            echo "> An early click can return **502/404** while the container is still building — wait a moment and refresh."
             echo ""
             echo "Tear down with this workflow using **action = destroy** and the same branch."
           } >> "$GITHUB_STEP_SUMMARY"
