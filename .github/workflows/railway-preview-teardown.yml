@@ -1,0 +1,37 @@
+name: Railway Preview Teardown
+
+# Auto-delete a preview environment created by railway-preview.yml when its PR closes,
+# so manually-spun previews don't linger and accrue Railway cost. (Native Railway PR
+# environments clean themselves up; this covers the pr-<branch> envs made by the manual
+# workflow.) Deletion is best-effort — if no matching env exists, the run is a no-op.
+#
+# Uses the same RAILWAY_API_TOKEN secret + RAILWAY_PROJECT_ID variable as the deploy
+# workflow. Note: secrets are unavailable to PRs from forks, so this only tears down
+# previews for same-repo branches (which is where manual previews come from anyway).
+
+on:
+  pull_request:
+    types: [closed]
+
+concurrency:
+  group: railway-preview-teardown-${{ github.event.pull_request.head.ref }}
+  cancel-in-progress: false
+
+jobs:
+  teardown:
+    runs-on: ubuntu-latest
+    env:
+      RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+      RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+    steps:
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Delete the preview environment
+        # Mirror the name derivation in railway-preview.yml so the env name matches.
+        run: |
+          slug=$(echo "${{ github.event.pull_request.head.ref }}" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//')
+          env_name="pr-${slug}"
+          echo "Attempting to delete environment: ${env_name}"
+          railway environment delete "${env_name}" --project "$RAILWAY_PROJECT_ID" --yes \
+            || echo "No matching preview environment (or already deleted) — nothing to do."

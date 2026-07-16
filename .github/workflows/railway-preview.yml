@@ -1,0 +1,159 @@
+name: Railway Preview Environment
+
+# Manually spin up (or tear down) a short-lived Railway preview environment for a
+# branch/PR, without waiting for a merge. Railway builds each app service FROM SOURCE
+# (docker/Dockerfile.*) so the preview runs the branch's exact code — this is the
+# controlled counterpart to Railway's native PR environments.
+#
+# Prerequisites (one-time, see docker/docs/RAILWAY_PREVIEW.md):
+#   - A Railway project (e.g. "classroomio-staging") whose `staging` environment is
+#     fully configured (Postgres, Redis, cio-minio, cio-api, cio-dashboard, cio-jobs).
+#   - Repo/Org secret  RAILWAY_API_TOKEN   -> a Railway ACCOUNT or TEAM token (NOT a
+#     project token; env-scoped project tokens can't create environments).
+#   - Repo/Org variable RAILWAY_PROJECT_ID -> the target project's id.
+#   - Repo/Org variable RAILWAY_BASE_ENV   -> the env to duplicate from (default: staging).
+#
+# The DB needs no explicit migration step here: the cio-api image self-migrates on boot
+# (docker/entrypoint-api.sh -> `pnpm --filter @cio/db db:setup`, which runs drizzle
+# migrations + essential seed). The optional `seed` input adds the full demo dataset.
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch (or PR head ref) to deploy into the preview env"
+        required: true
+        type: string
+      action:
+        description: "deploy = create/update the preview; destroy = delete it"
+        required: true
+        type: choice
+        default: deploy
+        options:
+          - deploy
+          - destroy
+      seed:
+        description: "Seed the full demo dataset (admin@test.com etc.) after deploy"
+        required: false
+        type: boolean
+        default: true
+
+# One run per branch at a time; a newer run supersedes an in-flight one.
+concurrency:
+  group: railway-preview-${{ inputs.branch }}
+  cancel-in-progress: true
+
+env:
+  RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+  RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+  BASE_ENV: ${{ vars.RAILWAY_BASE_ENV || 'staging' }}
+  # The three app services that build from source. Postgres/Redis/cio-minio come along
+  # via environment duplication and need no `railway up`.
+  APP_SERVICES: "cio-api cio-dashboard cio-jobs"
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Derive a safe environment name
+        id: env
+        # "feat/foo_bar" -> "pr-feat-foo-bar" (lowercase, only [a-z0-9-]).
+        run: |
+          slug=$(echo "${{ inputs.branch }}" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//')
+          echo "name=pr-${slug}" >> "$GITHUB_OUTPUT"
+
+      # ---------------------------------------------------------------- destroy
+      - name: Destroy preview environment
+        if: ${{ inputs.action == 'destroy' }}
+        run: |
+          railway environment delete "${{ steps.env.outputs.name }}" \
+            --project "$RAILWAY_PROJECT_ID" --yes
+          echo "Deleted environment ${{ steps.env.outputs.name }}." >> "$GITHUB_STEP_SUMMARY"
+
+      # ---------------------------------------------------------------- deploy
+      - name: Create preview environment (duplicate base)
+        if: ${{ inputs.action == 'deploy' }}
+        # SPIKE: verify on a throwaway env that `environment new --duplicate` copies
+        # BOTH service config AND variables (so cio-api/dashboard/jobs inherit their
+        # OBJECT_STORAGE_* / auth secrets from `staging`). If your CLI version lacks
+        # `--duplicate`, fall back to the GraphQL `environmentCreate(sourceEnvironmentId)`
+        # mutation. Re-running with an existing env name should no-op or update, not fail
+        # the run — the `|| true` keeps re-deploys idempotent.
+        run: |
+          railway environment new "${{ steps.env.outputs.name }}" \
+            --project "$RAILWAY_PROJECT_ID" \
+            --duplicate "$BASE_ENV" || echo "Environment may already exist; continuing."
+
+      - name: Link project + preview environment
+        if: ${{ inputs.action == 'deploy' }}
+        run: |
+          railway link --project "$RAILWAY_PROJECT_ID" --environment "${{ steps.env.outputs.name }}"
+
+      - name: Pin the Dockerfile per service
+        if: ${{ inputs.action == 'deploy' }}
+        # `railway up` uploads local source but does NOT carry the dashboard's "Dockerfile
+        # Path" build setting, so without this Railway falls back to Railpack and builds
+        # the whole monorepo as a generic Node app. (Same gotcha documented in the setup guide.)
+        run: |
+          railway variables --service cio-api       --set "RAILWAY_DOCKERFILE_PATH=docker/Dockerfile.api"
+          railway variables --service cio-dashboard  --set "RAILWAY_DOCKERFILE_PATH=docker/Dockerfile.dashboard"
+          railway variables --service cio-jobs       --set "RAILWAY_DOCKERFILE_PATH=docker/Dockerfile.jobs"
+
+      - name: Seed MinIO buckets (fresh volume starts empty)
+        if: ${{ inputs.action == 'deploy' }}
+        # Railway has no minio-init sidecar and a duplicated env's MinIO volume is empty,
+        # so create the buckets the app expects. Uses the env's own cio-minio public domain
+        # + root creds carried over by duplication. `--ignore-existing` keeps re-deploys safe.
+        run: |
+          MINIO_HOST=$(railway variables --service cio-minio --kv | awk -F= '/^RAILWAY_PUBLIC_DOMAIN=/{print $2}')
+          MINIO_USER=$(railway variables --service cio-minio --kv | awk -F= '/^MINIO_ROOT_USER=/{print $2}')
+          MINIO_PASS=$(railway variables --service cio-minio --kv | awk -F= '/^MINIO_ROOT_PASSWORD=/{print $2}')
+          curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc -o mc && chmod +x mc
+          ./mc alias set cio "https://${MINIO_HOST}" "$MINIO_USER" "$MINIO_PASS"
+          ./mc mb cio/videos cio/documents cio/media --ignore-existing
+          ./mc anonymous set download cio/media
+
+      - name: Deploy each app service from this branch
+        if: ${{ inputs.action == 'deploy' }}
+        # Builds the checked-out source on Railway's builders (no local Docker build).
+        run: |
+          for svc in $APP_SERVICES; do
+            echo "::group::railway up $svc"
+            railway up --service "$svc" --ci --detach
+            echo "::endgroup::"
+          done
+
+      - name: Seed the full demo dataset (optional)
+        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        # SPIKE: `railway run` injects the service's env vars and runs the command ON THIS
+        # RUNNER, so it needs a DB URL reachable from GitHub (Railway's public TCP proxy,
+        # DATABASE_PUBLIC_URL) — NOT the private railway.internal one. If cio-api only
+        # exposes a private DATABASE_URL, add DATABASE_PUBLIC_URL to this step, or drop
+        # this step and rely on the api boot-time db:setup (migrations + essential seed).
+        run: |
+          corepack enable
+          railway run --service cio-api -- pnpm --filter @cio/db db:setup:seed || \
+            echo "Demo seed failed (likely DB not reachable from runner) — migrations + essential seed still ran on api boot."
+
+      - name: Report the preview URL
+        if: ${{ inputs.action == 'deploy' }}
+        run: |
+          # Ensure the dashboard has a public domain and print it.
+          railway domain --service cio-dashboard || true
+          URL=$(railway variables --service cio-dashboard --kv | awk -F= '/^RAILWAY_PUBLIC_DOMAIN=/{print $2}')
+          {
+            echo "### Railway preview ready :rocket:"
+            echo ""
+            echo "- Environment: \`${{ steps.env.outputs.name }}\` (branch \`${{ inputs.branch }}\`)"
+            echo "- Dashboard: https://${URL}"
+            echo ""
+            echo "Tear down with this workflow using **action = destroy** and the same branch."
+          } >> "$GITHUB_STEP_SUMMARY"
