@@ -2006,7 +2006,7 @@
       },
       "progress": {
         "title": "Your progress",
-        "lessons_completed": "{completed} of {total} lessons completed",
+        "completed": "{completed} of {total} completed",
         "lessons": "{completed} of {total} lessons",
         "exercises": "{completed} of {total} exercises"
       }

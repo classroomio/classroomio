@@ -2373,7 +2373,7 @@
       },
       "progress": {
         "title": "Tu progreso",
-        "lessons_completed": "{completed} de {total} lecciones completadas",
+        "completed": "{completed} de {total} completados",
         "lessons": "{completed} de {total} lecciones",
         "exercises": "{completed} de {total} ejercicios"
       }

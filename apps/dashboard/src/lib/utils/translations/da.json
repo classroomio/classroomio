@@ -2373,7 +2373,7 @@
       },
       "progress": {
         "title": "Dine fremskridt",
-        "lessons_completed": "{completed} af {total} lektioner fuldført",
+        "completed": "{completed} af {total} fuldført",
         "lessons": "{completed} af {total} lektioner",
         "exercises": "{completed} af {total} øvelser"
       }

@@ -2373,7 +2373,7 @@
       },
       "progress": {
         "title": "Tiến độ của bạn",
-        "lessons_completed": "Đã hoàn thành {completed} trong số {total} bài học",
+        "completed": "Đã hoàn thành {completed} trong số {total}",
         "lessons": "{completed} trong số {total} bài học",
         "exercises": "{completed} trong số {total} bài tập"
       }

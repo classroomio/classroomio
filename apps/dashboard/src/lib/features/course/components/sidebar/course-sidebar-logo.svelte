@@ -3,7 +3,6 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { PercentRingProgress } from '@cio/ui/custom/percent-ring-progress';
-  import { useSidebar } from '@cio/ui/base/sidebar';
   import { resolve } from '$app/paths';
   import { currentOrg } from '$lib/utils/store/org';
   import { shortenName } from '$lib/utils/functions/string';
@@ -18,7 +17,7 @@
 
   let { isStudent = false }: Props = $props();
 
-  const sidebar = useSidebar();
+  const sidebar = Sidebar.useSidebar();
   const courseTitle = $derived(courseApi.course?.title);
   const courseId = $derived(courseApi.course?.id);
   const progress = $derived(getCourseProgress(courseApi.course));
@@ -43,9 +42,9 @@
                 <Skeleton class="h-4 w-24" />
               {/if}
               <span class="ui:text-muted-foreground truncate text-xs">
-                {$t('course.sidebar.progress.lessons_completed', {
-                  completed: progress.lessonsComplete,
-                  total: progress.lessonsTotal
+                {$t('course.sidebar.progress.completed', {
+                  completed: progress.completed,
+                  total: progress.total
                 })}
               </span>
             </div>

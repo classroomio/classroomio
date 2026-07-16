@@ -2373,7 +2373,7 @@
       },
       "progress": {
         "title": "आपकी प्रगति",
-        "lessons_completed": "{total} में से {completed} पाठ पूर्ण",
+        "completed": "{total} में से {completed} पूर्ण",
         "lessons": "{total} में से {completed} पाठ",
         "exercises": "{total} में से {completed} अभ्यास"
       }
