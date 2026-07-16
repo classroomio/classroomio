@@ -20,6 +20,8 @@ const noteListSelect = {
   plainText: schema.orgNote.plainText,
   origin: schema.orgNote.origin,
   visibility: schema.orgNote.visibility,
+  slug: schema.orgNote.slug,
+  isPinned: schema.orgNote.isPinned,
   isTemplate: schema.orgNote.isTemplate,
   courseId: schema.orgNote.courseId,
   lessonId: schema.orgNote.lessonId,
@@ -245,7 +247,19 @@ export async function listNoteTemplates(organizationId: string): Promise<NoteLis
 export async function updateNote(
   noteId: string,
   values: Partial<
-    Pick<TOrgNote, 'title' | 'content' | 'plainText' | 'videoAnchors' | 'visibility' | 'isTemplate' | 'updatedAt'>
+    Pick<
+      TOrgNote,
+      | 'title'
+      | 'content'
+      | 'plainText'
+      | 'videoAnchors'
+      | 'visibility'
+      | 'slug'
+      | 'isPinned'
+      | 'isTemplate'
+      | 'convertedCourseId'
+      | 'updatedAt'
+    >
   >
 ): Promise<TOrgNote | null> {
   try {
@@ -308,6 +322,108 @@ export async function getNoteVersionById(noteId: string, versionId: number) {
   } catch (error) {
     console.error('getNoteVersionById error:', error);
     throw new Error('Failed to get note version');
+  }
+}
+
+export async function listPublicNoteSlugsForOrganization(
+  organizationId: string,
+  excludeNoteId?: string
+): Promise<string[]> {
+  try {
+    const conditions = [
+      eq(schema.orgNote.organizationId, organizationId),
+      isNull(schema.orgNote.deletedAt),
+      sql`${schema.orgNote.slug} IS NOT NULL`
+    ];
+
+    if (excludeNoteId) {
+      conditions.push(ne(schema.orgNote.id, excludeNoteId));
+    }
+
+    const rows = await db
+      .select({ slug: schema.orgNote.slug })
+      .from(schema.orgNote)
+      .where(and(...conditions));
+
+    return rows.map((row) => row.slug).filter((slug): slug is string => Boolean(slug));
+  } catch (error) {
+    console.error('listPublicNoteSlugsForOrganization error:', error);
+    throw new Error('Failed to list public note slugs');
+  }
+}
+
+export interface PublicNoteView {
+  id: string;
+  slug: string;
+  title: string;
+  content: string;
+  plainText: string;
+  updatedAt: string;
+  ownerFullname: string | null;
+  org: {
+    id: string;
+    name: string;
+    siteName: string | null;
+    avatarUrl: string | null;
+  };
+}
+
+export async function getPublicNoteByOrgSiteAndSlug(
+  siteName: string,
+  noteSlug: string
+): Promise<PublicNoteView | null> {
+  try {
+    const [row] = await db
+      .select({
+        id: schema.orgNote.id,
+        slug: schema.orgNote.slug,
+        title: schema.orgNote.title,
+        content: schema.orgNote.content,
+        plainText: schema.orgNote.plainText,
+        updatedAt: schema.orgNote.updatedAt,
+        ownerFullname: schema.profile.fullname,
+        orgId: schema.organization.id,
+        orgName: schema.organization.name,
+        orgSiteName: schema.organization.siteName,
+        orgAvatarUrl: schema.organization.avatarUrl
+      })
+      .from(schema.orgNote)
+      .innerJoin(schema.organization, eq(schema.orgNote.organizationId, schema.organization.id))
+      .innerJoin(schema.profile, eq(schema.orgNote.ownerId, schema.profile.id))
+      .where(
+        and(
+          eq(schema.organization.siteName, siteName),
+          eq(schema.orgNote.slug, noteSlug),
+          eq(schema.orgNote.visibility, 'public'),
+          eq(schema.orgNote.origin, 'workspace'),
+          eq(schema.orgNote.isTemplate, false),
+          isNull(schema.orgNote.deletedAt)
+        )
+      )
+      .limit(1);
+
+    if (!row?.slug) {
+      return null;
+    }
+
+    return {
+      id: row.id,
+      slug: row.slug,
+      title: row.title,
+      content: row.content,
+      plainText: row.plainText,
+      updatedAt: row.updatedAt,
+      ownerFullname: row.ownerFullname,
+      org: {
+        id: row.orgId,
+        name: row.orgName,
+        siteName: row.orgSiteName,
+        avatarUrl: row.orgAvatarUrl
+      }
+    };
+  } catch (error) {
+    console.error('getPublicNoteByOrgSiteAndSlug error:', error);
+    throw new Error('Failed to get public note');
   }
 }
 

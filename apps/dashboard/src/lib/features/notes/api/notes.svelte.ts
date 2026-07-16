@@ -8,6 +8,7 @@ import {
 import { currentOrg } from '$lib/utils/store/org';
 import { get } from 'svelte/store';
 import type {
+  ConvertNoteToCourseRequest,
   ConvertNoteToTemplateRequest,
   CreateNoteFromTemplateRequest,
   CreateNoteRequest,
@@ -20,6 +21,7 @@ import type {
   NoteTemplates,
   NoteUsageRequest,
   RestoreNoteVersionRequest,
+  UnsetNoteTemplateRequest,
   UpdateNoteRequest,
   UpdateNoteTagsRequest,
   UpdateNoteVisibilityRequest
@@ -203,7 +205,7 @@ class NotesApi extends BaseApiWithErrors {
     return created;
   }
 
-  async updateNote(noteId: string, fields: { title?: string; content?: string }) {
+  async updateNote(noteId: string, fields: { title?: string; content?: string; isPinned?: boolean }) {
     let updated: NoteDetail | null = null;
 
     await this.execute<UpdateNoteRequest>({
@@ -256,14 +258,14 @@ class NotesApi extends BaseApiWithErrors {
     return tags;
   }
 
-  async updateNoteVisibility(noteId: string, visibility: 'private' | 'team') {
+  async updateNoteVisibility(noteId: string, visibility: 'private' | 'team' | 'public', slug?: string) {
     let updated: NoteDetail | null = null;
 
     await this.execute<UpdateNoteVisibilityRequest>({
       requestFn: () =>
         classroomio.notes[':noteId'].visibility.$put({
           param: { noteId },
-          json: { visibility }
+          json: { visibility, ...(slug ? { slug } : {}) }
         }),
       onSuccess: (result) => {
         updated = result.data ?? null;
@@ -340,6 +342,49 @@ class NotesApi extends BaseApiWithErrors {
     });
 
     return converted;
+  }
+
+  async unsetTemplate(noteId: string) {
+    let updated: NoteDetail | null = null;
+
+    await this.execute<UnsetNoteTemplateRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId']['unset-template'].$post({
+          param: { noteId }
+        }),
+      onSuccess: (result) => {
+        updated = result.data ?? null;
+      },
+      logContext: 'unsetNoteTemplate'
+    });
+
+    return updated;
+  }
+
+  async convertToCourse(
+    noteId: string,
+    payload: {
+      courseTitle: string;
+      sections: Array<{ title: string; lessons: Array<{ title: string; content: string }> }>;
+      unsectionedLessons: Array<{ title: string; content: string }>;
+    }
+  ) {
+    let result: { courseId: string; courseSlug: string | null; lessonCount: number; sectionCount: number } | null =
+      null;
+
+    await this.execute<ConvertNoteToCourseRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId']['convert-to-course'].$post({
+          param: { noteId },
+          json: payload
+        }),
+      onSuccess: (response) => {
+        result = response.data ?? null;
+      },
+      logContext: 'convertNoteToCourse'
+    });
+
+    return result;
   }
 
   async createNoteFromTemplate(templateNoteId: string) {

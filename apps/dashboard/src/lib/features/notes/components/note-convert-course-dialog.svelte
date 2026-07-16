@@ -1,19 +1,14 @@
 <script lang="ts">
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
-  import LoaderIcon from '@lucide/svelte/icons/loader';
-  import { goto } from '$app/navigation';
-  import { resolve } from '$app/paths';
   import { Button } from '@cio/ui/base/button';
   import { Checkbox } from '@cio/ui/base/checkbox';
   import * as Dialog from '@cio/ui/base/dialog';
   import { Input } from '@cio/ui/base/input';
   import { Label } from '@cio/ui/base/label';
   import { Textarea } from '@cio/ui/base/textarea';
-  import { classroomio } from '$lib/utils/services/api';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { get } from 'svelte/store';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { notesApi } from '../api';
   import {
     buildNoteCourseStructure,
     noteCourseStructureSummary,
@@ -21,13 +16,14 @@
   } from '../utils/note-course-structure';
 
   interface Props {
+    noteId: string;
     noteTitle: string;
     noteContent: string;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
   }
 
-  let { noteTitle, noteContent, open = $bindable(false), onOpenChange }: Props = $props();
+  let { noteId, noteTitle, noteContent, open = $bindable(false), onOpenChange }: Props = $props();
 
   let useSections = $state(true);
   let useTableOfContents = $state(true);
@@ -50,87 +46,33 @@
       return;
     }
 
-    const org = get(currentOrg);
+    isConverting = true;
 
-    if (!org.id) {
+    const result = await notesApi.convertToCourse(noteId, {
+      courseTitle: structure.courseTitle,
+      sections: structure.sections.map((section) => ({
+        title: section.title,
+        lessons: section.lessons.map((lesson) => ({
+          title: lesson.title,
+          content: lesson.content
+        }))
+      })),
+      unsectionedLessons: structure.unsectionedLessons.map((lesson) => ({
+        title: lesson.title,
+        content: lesson.content
+      }))
+    });
+
+    isConverting = false;
+
+    if (!result) {
+      snackbar.error('notes.convert_course.error');
       return;
     }
 
-    isConverting = true;
-
-    try {
-      const courseResponse = await classroomio.course.$post({
-        json: {
-          title: structure.courseTitle,
-          description: '',
-          type: 'SELF_PACED',
-          organizationId: org.id
-        }
-      });
-
-      const coursePayload = await courseResponse.json();
-
-      if (!coursePayload.success || !coursePayload.data?.course?.id) {
-        snackbar.error('notes.convert_course.error');
-        return;
-      }
-
-      const courseId = coursePayload.data.course.id as string;
-      let lessonOrder = 0;
-
-      for (const lesson of structure.unsectionedLessons) {
-        await classroomio.course[':courseId'].lesson.$post({
-          param: { courseId },
-          json: {
-            title: lesson.title,
-            note: lesson.content,
-            courseId,
-            order: lessonOrder
-          }
-        });
-        lessonOrder += 1;
-      }
-
-      for (const section of structure.sections) {
-        const sectionResponse = await classroomio.course[':courseId'].section.$post({
-          param: { courseId },
-          json: {
-            title: section.title,
-            courseId
-          }
-        });
-        const sectionPayload = await sectionResponse.json();
-
-        if (!sectionPayload.success || !sectionPayload.data?.id) {
-          throw new Error('Failed to create section');
-        }
-
-        const sectionId = sectionPayload.data.id as string;
-
-        for (const [index, lesson] of section.lessons.entries()) {
-          await classroomio.course[':courseId'].lesson.$post({
-            param: { courseId },
-            json: {
-              title: lesson.title,
-              note: lesson.content,
-              courseId,
-              sectionId,
-              order: index
-            }
-          });
-        }
-      }
-
-      snackbar.success('notes.convert_course.success');
-      open = false;
-      onOpenChange?.(false);
-      await goto(resolve(`/courses/${courseId}`, {}));
-    } catch (error) {
-      console.error('convertNoteToCourse error:', error);
-      snackbar.error('notes.convert_course.error');
-    } finally {
-      isConverting = false;
-    }
+    snackbar.success('notes.convert_course.copy_success');
+    open = false;
+    onOpenChange?.(false);
   }
 
   $effect(() => {

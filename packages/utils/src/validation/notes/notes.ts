@@ -1,8 +1,9 @@
 import * as z from 'zod';
+import { ZSlug } from '../shared/slug';
 
 export const NOTE_ORIGINS = ['workspace', 'lesson_capture'] as const;
 export const NOTE_VISIBILITIES = ['private', 'team', 'public'] as const;
-export const NOTE_SHARE_VISIBILITIES = ['private', 'team'] as const;
+export const NOTE_SHARE_VISIBILITIES = ['private', 'team', 'public'] as const;
 
 export const ZNoteVideoAnchor = z.object({
   assetId: z.string().uuid(),
@@ -61,7 +62,8 @@ export const ZCreateNote = z.object({
 export const ZUpdateNote = z.object({
   title: z.string().min(1).max(500).optional(),
   content: z.string().optional(),
-  videoAnchors: z.array(ZNoteVideoAnchor).optional()
+  videoAnchors: z.array(ZNoteVideoAnchor).optional(),
+  isPinned: z.boolean().optional()
 });
 
 export const ZNoteTagAssignment = z.object({
@@ -69,7 +71,32 @@ export const ZNoteTagAssignment = z.object({
 });
 
 export const ZUpdateNoteVisibility = z.object({
-  visibility: ZNoteShareVisibility
+  visibility: ZNoteShareVisibility,
+  slug: ZSlug.optional()
+});
+
+export const ZConvertNoteCourseLesson = z.object({
+  title: z.string().min(1).max(500),
+  content: z.string()
+});
+
+export const ZConvertNoteCourseSection = z.object({
+  title: z.string().min(1).max(500),
+  lessons: z.array(ZConvertNoteCourseLesson).max(200)
+});
+
+export const ZConvertNoteToCourse = z.object({
+  courseTitle: z.string().min(1).max(500),
+  sections: z.array(ZConvertNoteCourseSection).max(50),
+  unsectionedLessons: z.array(ZConvertNoteCourseLesson).max(200)
+});
+
+export const ZPublicNoteBySlugParam = z.object({
+  noteSlug: ZSlug
+});
+
+export const ZPublicNoteQuery = z.object({
+  siteName: z.string().min(1).max(200)
 });
 
 export type TListNotesQuery = z.infer<typeof ZListNotesQuery>;
@@ -78,6 +105,9 @@ export type TCreateNote = z.infer<typeof ZCreateNote>;
 export type TUpdateNote = z.infer<typeof ZUpdateNote>;
 export type TNoteTagAssignment = z.infer<typeof ZNoteTagAssignment>;
 export type TUpdateNoteVisibility = z.infer<typeof ZUpdateNoteVisibility>;
+export type TConvertNoteToCourse = z.infer<typeof ZConvertNoteToCourse>;
+export type TPublicNoteBySlugParam = z.infer<typeof ZPublicNoteBySlugParam>;
+export type TPublicNoteQuery = z.infer<typeof ZPublicNoteQuery>;
 export type TNoteListScope = z.infer<typeof ZNoteListScope>;
 export type TNoteShareVisibility = z.infer<typeof ZNoteShareVisibility>;
 export type TNoteVideoAnchor = z.infer<typeof ZNoteVideoAnchor>;

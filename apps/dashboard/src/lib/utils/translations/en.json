@@ -4103,6 +4103,11 @@
       "private_description": "Only you can view and edit this note.",
       "team_label": "Your team",
       "team_description": "All admins and tutors in {orgName} can view this note.",
+      "public_label": "Anyone with the link",
+      "public_description": "Anyone with the link can view this note. It will appear on your public academy site.",
+      "public_slug_label": "Public link slug",
+      "public_slug_hint": "Used in the public URL for this note.",
+      "copy_success": "Link copied",
       "read_only_banner": "You can view this note. Only the author can edit it.",
       "by_author": "By {name}",
       "save": "Save",
@@ -4138,7 +4143,11 @@
       "more_actions": "More actions",
       "slash_hint": "Type / for formatting commands.",
       "convert_to_template": "Convert to template",
-      "convert_to_template_coming_soon": "Note templates are coming soon."
+      "pin": "Pin note",
+      "unpin": "Unpin note",
+      "pin_success": "Note pinned",
+      "unpin_success": "Note unpinned",
+      "pin_error": "Could not update pin"
     },
     "empty_page": {
       "hint": "Press Enter to continue with an empty page, or pick an option (↑↓ to select).",
@@ -4158,12 +4167,16 @@
       "user_heading": "Your templates",
       "user_description": "Notes you saved as templates for this organization.",
       "empty": "Save a note as a template to reuse it here.",
-      "coming_soon": "Note templates are coming soon.",
       "convert_success": "Note saved as template",
+      "convert_copy_success": "Template saved. Your note is unchanged.",
       "convert_error": "Could not save note as template.",
       "create_success": "Note created from template",
       "create_error": "Could not create note from template.",
       "use_template": "Use template",
+      "edit_template": "Edit template",
+      "remove_template": "Remove as template",
+      "remove_success": "Template removed",
+      "remove_error": "Could not remove template",
       "builtin": {
         "blank": {
           "title": "Blank note",
@@ -4191,7 +4204,13 @@
       "empty_title": "No note selected",
       "empty_description": "Create a new note or pick one from the list.",
       "create_note": "Create note",
-      "no_notes": "No notes"
+      "no_notes": "No notes",
+      "note_count": "{count, plural, =1 {1 note} other {# notes}}",
+      "sections": {
+        "pinned": "Pinned",
+        "previous_7_days": "Previous 7 Days",
+        "previous_30_days": "Previous 30 Days"
+      }
     },
     "convert_course": {
       "button": "Convert to course",
@@ -4205,6 +4224,7 @@
       "summary": "{sections} sections, {lessons} lessons",
       "create": "Create course",
       "success": "Course created from note",
+      "copy_success": "Course created. Your note is unchanged.",
       "error": "Could not create course from note."
     },
     "comments": {

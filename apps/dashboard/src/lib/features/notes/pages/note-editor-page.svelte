@@ -7,6 +7,7 @@
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
+  import PinIcon from '@lucide/svelte/icons/pin';
   import LoaderIcon from '@lucide/svelte/icons/loader';
   import XIcon from '@lucide/svelte/icons/x';
   import { onDestroy } from 'svelte';
@@ -65,6 +66,9 @@
   let content = $state('');
   let noteOrigin = $state<'workspace' | 'lesson_capture' | null>(null);
   let noteVisibility = $state<NoteShareVisibility>('private');
+  let noteSlug = $state<string | null>(null);
+  let isPinned = $state(false);
+  let isTemplateNote = $state(false);
   let ownerFullname = $state<string | null>(null);
   let canWrite = $state(true);
   let selectedTagIds = $state<string[]>([]);
@@ -147,7 +151,10 @@
     title = normalizeTitleForDisplay(note.title);
     content = note.content;
     noteOrigin = note.origin;
-    noteVisibility = note.visibility === 'team' ? 'team' : 'private';
+    noteVisibility = note.visibility === 'public' ? 'public' : note.visibility === 'team' ? 'team' : 'private';
+    noteSlug = note.slug ?? null;
+    isPinned = note.isPinned ?? false;
+    isTemplateNote = note.isTemplate ?? false;
     ownerFullname = note.ownerFullname;
     canWrite = note.canWrite ?? note.ownerId === $profile.id;
 
@@ -417,10 +424,37 @@
       return;
     }
 
-    snackbar.success('notes.templates.convert_success');
+    snackbar.success('notes.templates.convert_copy_success');
     await notesApi.listNotes({ scope: 'all', origin: 'workspace' });
     await notesApi.listTemplates();
-    void goto(resolve(`${$currentOrgPath}/notes`, {}));
+  }
+
+  async function handleTogglePin() {
+    const nextPinned = !isPinned;
+    const updated = await notesApi.updateNote(noteId, { isPinned: nextPinned });
+
+    if (!updated) {
+      snackbar.error('notes.editor.pin_error');
+      return;
+    }
+
+    isPinned = updated.isPinned ?? nextPinned;
+    await notesApi.listNotes({ scope: 'all', origin: 'workspace' });
+    snackbar.success(isPinned ? 'notes.editor.pin_success' : 'notes.editor.unpin_success');
+  }
+
+  async function handleUnsetTemplate() {
+    const updated = await notesApi.unsetTemplate(noteId);
+
+    if (!updated) {
+      snackbar.error('notes.templates.remove_error');
+      return;
+    }
+
+    isTemplateNote = false;
+    snackbar.success('notes.templates.remove_success');
+    await notesApi.listNotes({ scope: 'all', origin: 'workspace' });
+    await notesApi.listTemplates();
   }
 
   function handleTitleKeydown(event: KeyboardEvent) {
@@ -671,10 +705,22 @@
                   <HistoryIcon size={16} />
                   {$t('notes.editor.version_history.open')}
                 </DropdownMenu.Item>
-                {#if noteOrigin === 'workspace'}
+                {#if noteOrigin === 'workspace' && !isTemplateNote}
                   <DropdownMenu.Item onclick={handleConvertToTemplate}>
                     <LayoutTemplateIcon size={16} />
                     {$t('notes.editor.convert_to_template')}
+                  </DropdownMenu.Item>
+                {/if}
+                {#if noteOrigin === 'workspace' && isTemplateNote}
+                  <DropdownMenu.Item onclick={handleUnsetTemplate}>
+                    <LayoutTemplateIcon size={16} />
+                    {$t('notes.templates.remove_template')}
+                  </DropdownMenu.Item>
+                {/if}
+                {#if noteOrigin === 'workspace' && canWrite && !isTemplateNote}
+                  <DropdownMenu.Item onclick={handleTogglePin}>
+                    <PinIcon size={16} />
+                    {isPinned ? $t('notes.editor.unpin') : $t('notes.editor.pin')}
                   </DropdownMenu.Item>
                 {/if}
                 {#if noteOrigin === 'workspace'}
@@ -797,7 +843,7 @@
   </div>
 </div>
 
-<NoteConvertCourseDialog bind:open={showConvertCourseDialog} {noteTitle} noteContent={content} />
+<NoteConvertCourseDialog bind:open={showConvertCourseDialog} {noteId} {noteTitle} noteContent={content} />
 
 <NoteTemplatesBrowser
   bind:open={showTemplatePicker}
@@ -810,10 +856,13 @@
 
 <NoteShareDialog
   {noteId}
+  {noteTitle}
   visibility={noteVisibility}
+  {noteSlug}
   bind:open={showShareDialog}
-  onVisibilityChange={(visibility) => {
+  onVisibilityChange={(visibility, slug) => {
     noteVisibility = visibility;
+    noteSlug = slug ?? null;
   }}
 />
 

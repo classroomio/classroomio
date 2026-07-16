@@ -76,7 +76,7 @@
   });
 </script>
 
-<div class="flex h-[calc(100dvh-4rem)] w-full min-w-0 overflow-hidden">
+<div class="flex h-full min-h-0 w-full overflow-hidden">
   <NoteListSidebar selectedNoteId={noteId} onBrowseTemplates={() => (showTemplatesBrowser = true)} />
 
   <section class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">

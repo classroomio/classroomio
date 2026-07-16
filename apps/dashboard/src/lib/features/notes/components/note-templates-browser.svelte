@@ -1,4 +1,6 @@
 <script lang="ts">
+  import PencilIcon from '@lucide/svelte/icons/pencil';
+  import Trash2Icon from '@lucide/svelte/icons/trash-2';
   import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import * as Card from '@cio/ui/base/card';
@@ -73,6 +75,19 @@
     open = false;
     onOpenChange?.(false);
     await goto(noteHref(note.id));
+  }
+
+  async function removeUserTemplate(templateId: string) {
+    const updated = await notesApi.unsetTemplate(templateId);
+
+    if (!updated) {
+      snackbar.error('notes.templates.remove_error');
+      return;
+    }
+
+    snackbar.success('notes.templates.remove_success');
+    await notesApi.listTemplates();
+    await notesApi.listNotes({ scope: 'all', origin: 'workspace' });
   }
 
   async function applyUserTemplate(templateId: string) {
@@ -194,15 +209,41 @@
                     <Card.Description class="line-clamp-3 text-xs">
                       {template.plainText || $t('notes.list.no_content')}
                     </Card.Description>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      class="w-full"
-                      loading={isApplying}
-                      onclick={() => applyUserTemplate(template.id)}
-                    >
-                      {$t('notes.templates.use_template')}
-                    </Button>
+                    <div class="flex flex-col gap-2">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        class="w-full"
+                        loading={isApplying}
+                        onclick={() => applyUserTemplate(template.id)}
+                      >
+                        {$t('notes.templates.use_template')}
+                      </Button>
+                      <div class="grid grid-cols-2 gap-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          class="w-full"
+                          onclick={() => {
+                            open = false;
+                            onOpenChange?.(false);
+                            void goto(noteHref(template.id));
+                          }}
+                        >
+                          <PencilIcon size={14} />
+                          {$t('notes.templates.edit_template')}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          class="w-full"
+                          onclick={() => removeUserTemplate(template.id)}
+                        >
+                          <Trash2Icon size={14} />
+                          {$t('notes.templates.remove_template')}
+                        </Button>
+                      </div>
+                    </div>
                   </Card.Header>
                 </Card.Root>
               </li>

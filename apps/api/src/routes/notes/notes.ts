@@ -3,6 +3,7 @@ import {
   ZCreateNoteCommentReply,
   ZCreateNoteCommentThread,
   ZCreateNoteFromTemplate,
+  ZConvertNoteToCourse,
   ZListNotesQuery,
   ZNoteCommentIdParam,
   ZNoteCommentThreadIdParam,
@@ -36,9 +37,11 @@ import {
   listNoteTemplatesService,
   listNotesService,
   restoreNoteVersionService,
+  unsetNoteTemplateService,
   updateNoteService,
   updateNoteVisibilityService
 } from '@api/services/notes/notes';
+import { convertNoteToCourseService } from '@api/services/notes/convert-course';
 import { getNoteTagsService, replaceNoteTagsService } from '@api/services/notes/tags';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { Hono } from '@api/utils/hono';
@@ -249,6 +252,44 @@ export const notesRouter = new Hono()
         return c.json({ success: true, data }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to convert note to template');
+      }
+    }
+  )
+  .post(
+    '/:noteId/unset-template',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNoteIdParam),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const { noteId } = c.req.valid('param');
+        const data = await unsetNoteTemplateService(organizationId, user.id, c.get('userRole')!, noteId);
+
+        return c.json({ success: true, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to remove note template');
+      }
+    }
+  )
+  .post(
+    '/:noteId/convert-to-course',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNoteIdParam),
+    zValidator('json', ZConvertNoteToCourse),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const { noteId } = c.req.valid('param');
+        const body = c.req.valid('json');
+        const data = await convertNoteToCourseService(organizationId, user.id, c.get('userRole')!, noteId, body);
+
+        return c.json({ success: true, data }, 201);
+      } catch (error) {
+        return handleError(c, error, 'Failed to convert note to course');
       }
     }
   )

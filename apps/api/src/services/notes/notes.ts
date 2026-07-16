@@ -9,10 +9,12 @@ import {
   insertNoteVersion,
   listAccessibleNotes,
   listNoteTemplates,
+  listPublicNoteSlugsForOrganization,
   softDeleteNote,
   updateNote,
   type NoteListRow
 } from '@cio/db/queries/notes';
+import { getNoteTagsForOrganization, replaceNoteTagAssignments } from '@cio/db/queries/notes/tag';
 import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 import { verifyLessonBelongsToCourse } from '@cio/core/services/agent/chat-context';
 import { BASIC_WORKSPACE_NOTE_LIMIT, PLAN } from '@cio/utils/plans/constants';
@@ -24,6 +26,7 @@ import type {
   TUpdateNote,
   TUpdateNoteVisibility
 } from '@cio/utils/validation/notes';
+import { resolveSlugCollision, slugifyTitle } from '@cio/utils/validation/shared/slug';
 import type { TPlan } from '@db/types';
 import { assertNoteReadAccess, assertNoteWriteAccess, isOrgTeamRole } from './access';
 
@@ -185,8 +188,58 @@ export async function convertNoteToTemplateService(
     return { ...note, canWrite: true };
   }
 
-  const updated = await updateNote(noteId, {
+  const templateNote = await createNote({
+    organizationId,
+    ownerId: userId,
+    title: note.title,
+    content: note.content,
+    plainText: note.plainText,
+    origin: 'workspace',
+    visibility: 'private',
     isTemplate: true,
+    courseId: null,
+    lessonId: null,
+    videoAnchors: note.videoAnchors ?? []
+  });
+
+  if (templateNote.content) {
+    await insertNoteVersion({
+      noteId: templateNote.id,
+      oldContent: null,
+      newContent: templateNote.content,
+      changedBy: userId,
+      changeSource: 'manual'
+    });
+  }
+
+  const sourceTags = await getNoteTagsForOrganization(organizationId, noteId);
+
+  if (sourceTags.length > 0) {
+    await replaceNoteTagAssignments(
+      templateNote.id,
+      sourceTags.map((tag) => tag.id)
+    );
+  }
+
+  const refreshed = await getNoteById(templateNote.id);
+
+  if (!refreshed) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  return { ...refreshed, canWrite: true };
+}
+
+export async function unsetNoteTemplateService(organizationId: string, userId: string, roleId: number, noteId: string) {
+  const { note } = await getReadableNote(organizationId, userId, roleId, noteId);
+  assertNoteWriteAccess({ note, organizationId, userId });
+
+  if (!note.isTemplate) {
+    return { ...note, canWrite: true };
+  }
+
+  const updated = await updateNote(noteId, {
+    isTemplate: false,
     updatedAt: new Date().toISOString()
   });
 
@@ -250,6 +303,15 @@ export async function createNoteFromTemplateService(
     });
   }
 
+  const templateTags = await getNoteTagsForOrganization(organizationId, template.id);
+
+  if (templateTags.length > 0) {
+    await replaceNoteTagAssignments(
+      note.id,
+      templateTags.map((tag) => tag.id)
+    );
+  }
+
   return { ...(await getNoteById(note.id))!, canWrite: true };
 }
 
@@ -266,6 +328,7 @@ export async function updateNoteService(
   const nextContent = data.content ?? existing.content;
   const nextTitle = data.title ?? existing.title;
   const nextVideoAnchors = data.videoAnchors ?? existing.videoAnchors;
+  const nextIsPinned = data.isPinned ?? existing.isPinned;
   const contentChanged = data.content !== undefined && data.content !== existing.content;
 
   const updated = await updateNote(noteId, {
@@ -273,6 +336,7 @@ export async function updateNoteService(
     content: nextContent,
     plainText: htmlToPlainText(nextContent),
     videoAnchors: nextVideoAnchors,
+    isPinned: nextIsPinned,
     updatedAt: new Date().toISOString()
   });
 
@@ -317,8 +381,22 @@ export async function updateNoteVisibilityService(
     throw new AppError('Only team members can share notes', ErrorCodes.UNAUTHORIZED, 403);
   }
 
+  if (existing.isTemplate) {
+    throw new AppError('Templates cannot be shared', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  let nextSlug = existing.slug ?? null;
+
+  if (data.visibility === 'public') {
+    const takenSlugs = await listPublicNoteSlugsForOrganization(organizationId, noteId);
+    const requestedSlug = data.slug?.trim();
+    const baseSlug = requestedSlug || slugifyTitle(existing.title);
+    nextSlug = resolveSlugCollision(baseSlug, takenSlugs);
+  }
+
   const updated = await updateNote(noteId, {
     visibility: data.visibility,
+    ...(data.visibility === 'public' ? { slug: nextSlug ?? undefined } : {}),
     updatedAt: new Date().toISOString()
   });
 

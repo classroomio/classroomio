@@ -25,7 +25,7 @@
 </script>
 
 <div
-  class="notes-workspace -mx-4 flex min-h-[calc(100dvh-4rem)] w-[calc(100%+2rem)] max-w-none flex-1 flex-col"
+  class="notes-workspace flex min-h-0 w-full flex-1 flex-col overflow-hidden"
   style={`--side-panel-width: ${sidePanelWidth}px;`}
 >
   {@render children?.()}
