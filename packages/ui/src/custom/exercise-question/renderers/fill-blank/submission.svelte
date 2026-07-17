@@ -1,7 +1,8 @@
 <script lang="ts">
-  import * as Chart from '../../../../base/chart';
+  import type * as Chart from '../../../../base/chart';
   import type { ExerciseQuestionRendererProps } from '@cio/question-types';
 
+  import SubmissionResponseBarChart from '../shared/submission-response-bar-chart.svelte';
   import { getAnswerForQuestion, getSubmissionLabel, normalizeLabel, withChartColors } from '../submission-utils';
 
   let {
@@ -91,19 +92,9 @@
   });
 </script>
 
-{#if chartData.length > 0}
-  <Chart.Container config={chartConfig} class="ui:h-[280px] ui:w-full">
-    <Chart.BarChart
-      data={chartData}
-      xScale={Chart.scaleBand().padding(0.25)}
-      x="label"
-      axis="x"
-      tooltip={false}
-      {series}
-    />
-  </Chart.Container>
-{:else}
-  <p class="ui:text-muted-foreground ui:text-sm">
-    {getSubmissionLabel(labels, 'submission.chart.no_data', 'No responses yet')}
-  </p>
-{/if}
+<SubmissionResponseBarChart
+  {chartData}
+  {chartConfig}
+  {series}
+  emptyLabel={getSubmissionLabel(labels, 'submission.chart.no_data', 'No responses yet')}
+/>

@@ -13,9 +13,11 @@
 
   type Props = {
     exerciseId: string;
+    onBeforeSave?: () => Promise<boolean> | boolean;
+    totalSubmissions?: number;
   };
 
-  let { exerciseId }: Props = $props();
+  let { exerciseId, onBeforeSave = () => true, totalSubmissions = 0 }: Props = $props();
 
   let saving = $state(false);
   let slug = $state($questionnaire.slug ?? '');
@@ -28,13 +30,21 @@
 
   async function saveSettings() {
     if (!courseApi.course?.id) return;
+    const canSave = await onBeforeSave();
+    if (!canSave) return;
+
     saving = true;
 
+    const allowMultipleAttempts = !!$questionnaire.allowMultipleAttempts;
+    const completionPolicy = $questionnaire.completionPolicy ?? 'submitted';
+    const passThreshold = $questionnaire.passThreshold ?? 100;
+    const slugPayload = isPublicCourse && slug ? slug : undefined;
+
     await exerciseApi.update(courseApi.course.id, exerciseId, {
-      allowMultipleAttempts: !!$questionnaire.allowMultipleAttempts,
-      completionPolicy: $questionnaire.completionPolicy ?? 'submitted',
-      passThreshold: $questionnaire.passThreshold ?? 100,
-      slug: isPublicCourse && slug ? slug : undefined
+      allowMultipleAttempts,
+      completionPolicy,
+      passThreshold,
+      slug: slugPayload
     });
     saving = false;
 
@@ -92,7 +102,25 @@
     </Select.Root>
 
     {#if ($questionnaire.completionPolicy ?? 'submitted') === 'passed'}
-      <div class="mt-4">
+      <div class="mt-4 space-y-3">
+        <div class="space-y-2 text-sm">
+          <p class="ui:text-muted-foreground">
+            {$t('course.navItem.lessons.exercises.all_exercises.settings_completion_passed_helper')}
+          </p>
+          <p class="text-amber-700 dark:text-amber-300">
+            {$t('course.navItem.lessons.exercises.all_exercises.settings_manual_grading_warning')}
+          </p>
+          {#if !$questionnaire.allowMultipleAttempts}
+            <p class="text-amber-700 dark:text-amber-300">
+              {$t('course.navItem.lessons.exercises.all_exercises.settings_single_attempt_warning')}
+            </p>
+          {/if}
+          {#if totalSubmissions > 0}
+            <p class="text-amber-700 dark:text-amber-300">
+              {$t('course.navItem.lessons.exercises.all_exercises.settings_existing_submissions_warning')}
+            </p>
+          {/if}
+        </div>
         <InputField
           type="number"
           label={$t('course.navItem.lessons.exercises.all_exercises.settings_pass_threshold')}

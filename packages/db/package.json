@@ -50,6 +50,7 @@
     "dist"
   ],
   "scripts": {
+    "prebuild": "pnpm --filter @cio/question-types run build && pnpm --filter @cio/utils run build && pnpm --filter @cio/email run build",
     "build": "rimraf dist tsconfig.tsbuildinfo && tsc && tsc-alias",
     "dev": "tsc --watch",
     "db": "drizzle-kit",
@@ -68,7 +69,10 @@
     "db:login-link": "tsx src/scripts/generate-login-link.ts",
     "db:sync-orphaned-profiles": "tsx src/scripts/sync-orphaned-profiles.ts",
     "db:backfill-profile-email-verification": "tsx src/scripts/backfill-profile-email-verification.ts",
+    "db:backfill-member-email-notifications": "tsx src/scripts/backfill-member-email-notifications-from-profile.ts",
+    "db:update-user-email": "tsx src/scripts/update-user-email.ts",
     "db:notify-students-over-limit": "tsx src/scripts/notify-students-over-limit.ts",
+    "db:downgrade-expired-subscriptions": "tsx src/scripts/downgrade-expired-subscriptions.ts",
     "move-users": "tsx src/scripts/supabase-to-betterauth.ts",
     "pull": "drizzle-kit pull --config drizzle.config.ts",
     "generate-types": "tsx scripts/generate-types.ts && pnpm format",

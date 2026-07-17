@@ -288,7 +288,11 @@
         "saved": "Salvo com sucesso",
         "successful_integration": "Integração bem-sucedida",
         "successful_deletion": "Integração excluída",
-        "update_successful": "Atualização bem-sucedida"
+        "update_successful": "Atualização bem-sucedida",
+        "unlocked_all_content": "Todos os itens do curso desbloqueados",
+        "all_content_already_unlocked": "Todo o conteúdo já está desbloqueado",
+        "content_grouping_enabled": "Agrupamento de conteúdo ativado",
+        "content_grouping_disabled": "Agrupamento de conteúdo desativado"
       }
     },
     "people": {
@@ -320,7 +324,8 @@
       "points_required_auto_grade": "Defina um valor de pontos positivo para cada pergunta antes de salvar.",
       "success": "Salvo com sucesso",
       "submission_updated": "Envio atualizado para",
-      "error_fetching": "Falha ao buscar exercícios. Atualize a página"
+      "error_fetching": "Falha ao buscar exercícios. Atualize a página",
+      "passed_requires_points": "A conclusão por aprovação precisa de pelo menos um ponto disponível."
     },
     "poll": {
       "info": {
@@ -843,6 +848,12 @@
           "title": "E-mail de boas-vindas",
           "description": "Personalize o e-mail que os alunos recebem após a inscrição. Adicione uma nota pessoal, instruções ou um link de sessão ao vivo.",
           "placeholder": "Escreva a mensagem de boas-vindas que os alunos recebem quando se matriculam…"
+        },
+        "locked_content": {
+          "title": "{count} itens do curso estão bloqueados",
+          "description": "Os alunos inscritos não poderão fazer aulas ou exercícios bloqueados até que você os desbloqueie.",
+          "description_live": "Aulas e exercícios bloqueados permanecem ocultos aos alunos até que você os desbloqueie – o que é útil se você liberar conteúdo semana após semana.",
+          "unlock_all": "Desbloquear tudo"
         }
       },
       "analytics": {
@@ -1312,6 +1323,12 @@
         "add_content_create_lesson": "Criar aula",
         "add_content_section_title_placeholder": "por exemplo, Módulo 1: Introdução",
         "add_content_lesson_title_placeholder": "por exemplo, Introdução às variáveis",
+        "content_menu": {
+          "label": "Opções de conteúdo",
+          "unlock_all": "Desbloquear todo o conteúdo",
+          "enable_grouping": "Ativar agrupamento de conteúdo",
+          "disable_grouping": "Desativar agrupamento de conteúdo"
+        },
         "join_lesson": "Participar da aula",
         "no_link": "Sem link",
         "no_tutor": "Nenhum tutor adicionado",
@@ -1410,8 +1427,8 @@
             "finish": "Concluir",
             "next": "Próximo",
             "check": "Verifique",
-            "auto_graded_badge": "Auto-grade",
-            "manual_grading_required_badge": "Manual grading required",
+            "auto_graded_badge": "Avaliação automática",
+            "manual_grading_required_badge": "Avaliação manual obrigatória",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "Envios",
@@ -1419,14 +1436,25 @@
                 "heading": "Individual",
                 "answers": "Respostas individuais",
                 "no": "Nenhuma resposta foi fornecida",
-                "student_avatar": "Estudante"
+                "student_avatar": "Estudante",
+                "answers_for": "Respostas de {name}",
+                "attempts_count": "{count} tentativas",
+                "attempt_label": "Tentativa {number}",
+                "date_unknown": "Data desconhecida",
+                "status_awaiting_manual": "Aguardando avaliação manual",
+                "status_completed": "Avaliado",
+                "status_pending": "Pendente",
+                "counts_as_complete": "Conta como concluído",
+                "passed": "Aprovado",
+                "not_passed": "Não aprovado"
               },
               "summary": {
                 "heading": "Resumo",
                 "question_chart": "Gráficos de perguntas",
                 "responses": "Respostas",
                 "no_responses": "Ainda não há respostas",
-                "other": "Outro"
+                "other": "Outro",
+                "attempts": "Tentativas"
               },
               "loading_submissions": "Carregando envios...",
               "empty_title": "Ainda não há envios",
@@ -1449,6 +1477,10 @@
               "status_pending": "Status: revisão pendente",
               "status_graded": "Status: revisão concluída",
               "status_submitted": "Status: Enviado",
+              "passed_completion_result_title": "Aprovado",
+              "passed_completion_result_description": "Você obteve {scorePercent}%. Este exercício exigia {requiredPercent}% para contar como concluído.",
+              "not_passed_completion_result_title": "Ainda não aprovado",
+              "not_passed_completion_result_description": "Você obteve {scorePercent}%. Este exercício exige {requiredPercent}% para contar como concluído.",
               "empty_description": "Clique no botão Editar para adicionar.",
               "empty_edit_hint_prefix": "Clique no ",
               "empty_edit_hint_suffix": " botão para adicionar.",
@@ -1846,6 +1878,30 @@
               "sending": "Notificando os alunos…",
               "sent": "{count} alunos notificados",
               "failed": "Não foi possível notificar os alunos"
+            },
+            "zero_points_warning": "Defina pontos acima de 0, caso contrário os alunos não serão avaliados nesta questão.",
+            "settings_completion_passed_helper": "Os estudantes devem atingir a pontuação de aprovação antes que este exercício conte como concluído.",
+            "settings_manual_grading_warning": "Envios avaliados manualmente precisam ser avaliados antes de poderem contar como aprovados.",
+            "settings_single_attempt_warning": "Com uma tentativa, estudantes reprovados precisam de ação do instrutor antes de continuar.",
+            "settings_existing_submissions_warning": "Alterar os critérios de aprovação pode afetar conclusões e progressões existentes.",
+            "question_auto_graded_badge": "Avaliação automática",
+            "question_manual_grading_badge": "Avaliação manual",
+            "guard": {
+              "title": "Revise antes de salvar",
+              "attempts_title": "O que acontece se um aluno for reprovado?",
+              "description": "Este exercício só conta como concluído quando o aluno é aprovado.",
+              "retry_option": "Deixe-os tentar novamente até passarem",
+              "retry_option_description": "Os alunos poderão reenviar quantas vezes forem necessárias.",
+              "single_attempt_option": "Uma tentativa apenas",
+              "single_attempt_option_description": "Um aluno reprovado permanece bloqueado até que você altere manualmente o status do envio.",
+              "recommended": "Recomendado",
+              "manual_notice_title": "Algumas perguntas precisam de avaliação manual",
+              "manual_notice_description": "A aprovação de um aluno não é definitiva até que você avalie estas questões:",
+              "cancel": "Cancelar",
+              "save_anyway": "Salve mesmo assim",
+              "save_continue": "Salvar e continuar",
+              "question_fallback": "Pergunta {number}",
+              "zero_points_field": "A conclusão aprovada precisa de pelo menos um ponto disponível."
             }
           },
           "new_exercise_modal": {
@@ -2008,7 +2064,10 @@
                 "edit": "Editar transcrição",
                 "save": "Salvar",
                 "cancel": "Cancelar",
-                "segment_label": "Segmentar em {timestamp}"
+                "segment_label": "Segmentar em {timestamp}",
+                "video_nav_label": "Vídeo {number}",
+                "previous_video": "Transcrição do vídeo anterior",
+                "next_video": "Transcrição do próximo vídeo"
               },
               "simple_card": {
                 "kind_youtube": "YouTube",
@@ -2311,6 +2370,12 @@
         "title": "Conformidade",
         "due_date": "Devido",
         "valid_until": "Válido até"
+      },
+      "progress": {
+        "title": "Seu progresso",
+        "completed": "{completed} de {total} concluídos",
+        "lessons": "{completed} de {total} aulas",
+        "exercises": "{completed} de {total} exercícios"
       }
     },
     "navItems": {
@@ -2336,7 +2401,8 @@
         "later": "Fechar",
         "checking": "Verificando elegibilidade…",
         "not_eligible_title": "Quase lá",
-        "retake_exercise": "Refazer o exercício"
+        "retake_exercise": "Refazer o exercício",
+        "subtitle_no_certificate": "Parabéns – você concluiu este curso."
       }
     },
     "certificates": {
@@ -3403,7 +3469,7 @@
       "teams_tab": "Equipes",
       "ai_credits_tab": "AI Credits",
       "ai_tutor_tab": "Tutor de IA",
-      "notifications_tab": "Notifications"
+      "notifications_tab": "Notificações"
     },
     "subheadings": {
       "view_site": "Academia Aberta"
@@ -3579,73 +3645,75 @@
       }
     },
     "notifications": {
-      "heading": "Notifications",
-      "page_title": "Notifications",
-      "page_subtitle": "Choose which email notifications you receive and, as an admin, which emails your organization sends.",
+      "heading": "Notificações",
+      "page_title": "Notificações",
+      "page_subtitle": "Escolha quais notificações por e-mail você recebe e, como administrador, quais e-mails sua organização envia.",
       "toggles": {
         "courseCompletion": {
-          "label": "Course completion and certificates",
-          "description": "Email students when they complete a course and earn a certificate."
+          "label": "Conclusão do curso e certificados",
+          "description": "Enviar e-mail aos alunos quando concluírem um curso e receberem um certificado."
         },
         "enrollmentWelcome": {
-          "label": "Enrollment welcome emails",
-          "description": "Send welcome emails when staff enroll students in courses or cohorts."
+          "label": "E-mails de boas-vindas de matrícula",
+          "description": "Enviar e-mails de boas-vindas quando a equipe matricular alunos em cursos ou coortes."
         },
         "session": {
-          "label": "Live session reminders and updates",
-          "description": "Email students before live sessions and when session details change."
+          "label": "Lembretes e atualizações de sessões ao vivo",
+          "description": "Enviar e-mail aos alunos antes de sessões ao vivo e quando os detalhes mudarem."
         },
         "cohortReminder": {
-          "label": "Cohort goal reminders",
-          "description": "Email students about upcoming or overdue cohort learning goals."
+          "label": "Lembretes de metas da coorte",
+          "description": "Enviar e-mail aos alunos sobre metas de aprendizagem próximas ou atrasadas."
         },
         "quizAssigned": {
-          "label": "Exercise assigned",
-          "description": "Email students when an exercise is assigned or nudged."
+          "label": "Exercício atribuído",
+          "description": "Enviar e-mail aos alunos quando um exercício for atribuído ou lembrado."
         },
         "newsfeed": {
-          "label": "Course announcements and comments",
-          "description": "Email course members about new posts and comments on the newsfeed."
+          "label": "Anúncios e comentários do curso",
+          "description": "Enviar e-mail aos membros do curso sobre novas publicações e comentários no feed."
         },
         "gradingResult": {
-          "label": "Grading results",
-          "description": "Email students when their submission is graded or updated."
+          "label": "Resultados de avaliação",
+          "description": "Enviar e-mail aos alunos quando o envio for avaliado ou atualizado."
         },
         "newSubmission": {
-          "label": "New submissions to grade",
-          "description": "Email tutors when a student submits work that needs grading."
+          "label": "Novos envios para avaliar",
+          "description": "Enviar e-mail aos tutores quando um aluno envia trabalho que precisa de avaliação."
         },
         "newStudent": {
-          "label": "New student joins",
-          "description": "Email tutors when a student enrolls in a course."
+          "label": "Novo aluno se inscreve",
+          "description": "Enviar e-mail aos tutores quando um aluno se matricula em um curso."
         }
       },
       "org": {
-        "heading": "Organization defaults",
-        "description": "When disabled here, nobody in your organization receives that email. Members can still opt out of emails you leave enabled.",
-        "save": "Save organization defaults",
-        "save_success": "Organization notification defaults saved"
+        "heading": "Padrões da organização",
+        "description": "Quando desativado aqui, ninguém na sua organização recebe esse e-mail. Os membros ainda podem optar por não receber e-mails que você mantiver ativados.",
+        "save": "Salvar padrões da organização",
+        "save_success": "Padrões de notificação da organização salvos"
       },
       "personal": {
-        "heading": "Your email preferences",
-        "description": "These apply to emails sent to you across every organization you belong to. Your organization may still disable certain emails for everyone.",
-        "save": "Save personal preferences",
-        "save_success": "Personal notification preferences saved"
+        "heading": "Suas preferências de e-mail",
+        "save": "Salvar preferências pessoais",
+        "save_success": "Preferências de notificação pessoais salvas",
+        "description": "Aplicam-se aos e-mails enviados para você nesta organização. Sua organização ainda pode desativar certos e-mails para todos.",
+        "description_with_org": "Aplicam-se aos e-mails enviados para você em {orgName}. Sua organização ainda pode desativar certos e-mails para todos."
       },
       "sections": {
         "enrollment": {
-          "heading": "Enrollment",
-          "description": "Welcome emails sent when staff add members to courses or cohorts."
+          "heading": "Matrícula",
+          "description": "E-mails de boas-vindas enviados quando a equipe adiciona membros a cursos ou coortes."
         },
         "cohort": {
-          "heading": "Cohort",
-          "description": "Reminders about cohort learning goals and deadlines."
+          "heading": "Coorte",
+          "description": "Lembretes sobre metas de aprendizagem e prazos da coorte."
         },
         "course": {
-          "heading": "Course",
-          "description": "Enrollments, submissions, lessons, announcements, and completions in your courses."
+          "heading": "Curso",
+          "description": "Matrículas, envios, aulas, anúncios e conclusões nos seus cursos."
         }
-      }
+      },
+      "personal_page_subtitle": "Escolha quais notificações por e-mail você recebe do ClassroomIO."
     }
   },
   "profileMenu": {

@@ -29,6 +29,13 @@
       "when": 1783909129074,
       "tag": "0003_profile_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1783938329367,
+      "tag": "0004_organizationmember_email_notifications",
+      "breakpoints": true
     }
   ]
 }

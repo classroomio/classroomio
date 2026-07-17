@@ -16,7 +16,8 @@
 
   import MODES from '$lib/utils/constants/mode';
   import { profile } from '$lib/utils/store/user';
-  import { isOrgStudent, isStudentExperience } from '$lib/utils/store/app';
+  import { isCourseLearnerView, isStudentExperience } from '$lib/utils/store/app';
+  import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$features/ui/snackbar/store';
   import { RefreshPageData, UnsavedChanges } from '$features/ui';
@@ -33,6 +34,7 @@
   import * as Page from '@cio/ui/base/page';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { Empty } from '@cio/ui/custom/empty';
+  import { Spinner } from '@cio/ui/base/spinner';
   import { RoleBasedSecurity } from '$features/ui';
 
   import {
@@ -47,7 +49,7 @@
     AddVideoModal,
     AddDocumentModal,
     LessonSettingsTab,
-    LessonSummarizeButton
+    LessonMaterialActions
   } from '$features/course/components/lesson';
 
   import type { TLocale } from '@cio/db/types';
@@ -83,17 +85,30 @@
     )
   );
   const lessonTitle = $derived(currentLessonContentItem?.title || lessonApi.lesson?.title || 'Lesson');
-  const isTeacherLocked = $derived.by(() => {
-    if ($isOrgStudent && currentLessonContentItem) {
-      return (currentLessonContentItem.isUnlocked ?? false) === false;
+  const contentLockReason = $derived(getStudentContentLockReason(courseApi.course, lessonId, ContentType.Lesson));
+  const isStudentLessonStateReady = $derived.by(() => {
+    if (!$isCourseLearnerView) {
+      return true;
     }
 
-    return (lessonApi.lesson?.isUnlocked ?? false) === false;
+    if (courseApi.course?.id !== courseId) {
+      return false;
+    }
+
+    if (contentLockReason !== null) {
+      return true;
+    }
+
+    if (currentLessonContentItem) {
+      return true;
+    }
+
+    if (lessonApi.lesson?.id === lessonId) {
+      return true;
+    }
+
+    return courseApi.course?.content != null;
   });
-  const isProgressionLocked = $derived(
-    $isOrgStudent && currentLessonContentItem?.accessible === false && !isTeacherLocked
-  );
-  const isLessonUnlocked = $derived(!isTeacherLocked && !isProgressionLocked);
   const lessonSlug = $derived(lessonApi.lesson?.slug ?? '');
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const isLiveSessionLesson = $derived(Boolean(lessonApi.lesson?.callUrl && lessonApi.lesson?.lessonAt));
@@ -450,7 +465,7 @@
 <Page.Body>
   {#snippet child()}
     <div class={`overflow-x-hidden pb-6 ${mode === MODES.edit ? 'lg:w-full xl:w-11/12' : 'mx-auto w-full max-w-3xl'}`}>
-      {#if isLiveSessionLesson && mode === MODES.view && !($isOrgStudent && !isLessonUnlocked)}
+      {#if isLiveSessionLesson && mode === MODES.view && !($isCourseLearnerView && contentLockReason)}
         <div class="mb-4">
           <LiveSessionCard
             title={lessonTitle}
@@ -461,11 +476,39 @@
         </div>
       {/if}
 
-      {#if $isOrgStudent && !isLessonUnlocked}
-        <StudentContentLockedNotice
-          reason={isProgressionLocked ? 'progression_locked' : 'teacher_locked'}
-          contentType={ContentType.Lesson}
-        />
+      {#if $isCourseLearnerView}
+        {#if !isStudentLessonStateReady}
+          <div class="flex justify-center py-16">
+            <Spinner />
+          </div>
+        {:else if contentLockReason}
+          <StudentContentLockedNotice reason={contentLockReason} contentType={ContentType.Lesson} />
+        {:else if lessonApi.lesson && !isMaterialsEmpty}
+          {#key lessonId}
+            <div class="mb-20 flex w-full flex-col" in:fade={{ delay: 500 }} out:fade>
+              {#if !hasLessonVideos}
+                <LessonMaterialActions showSummarize {lessonId} alignWithNote />
+              {/if}
+
+              {#each viewModeComponents as Component, index (index)}
+                <Component {mode} {lessonId} {courseId} />
+              {/each}
+
+              {#if $currentOrg.customization?.apps?.comments}
+                <hr class="my-2" />
+
+                <Comments {lessonId} />
+              {/if}
+            </div>
+          {/key}
+        {:else}
+          <Empty
+            title={$t('course.navItem.lessons.materials.no_content')}
+            icon={VideoIcon}
+            variant="page"
+            class="text-center"
+          />
+        {/if}
       {:else if mode === MODES.edit}
         <UnderlineTabs.Root
           bind:value={currentTabValue}
@@ -525,11 +568,9 @@
         </UnderlineTabs.Root>
       {:else if lessonApi.lesson && !isMaterialsEmpty}
         {#key lessonId}
-          <div class="mb-20 flex w-full flex-col gap-2" in:fade={{ delay: 500 }} out:fade>
+          <div class="mb-20 flex w-full flex-col" in:fade={{ delay: 500 }} out:fade>
             {#if !hasLessonVideos}
-              <div class="mb-2 flex flex-wrap gap-2">
-                <LessonSummarizeButton {lessonId} />
-              </div>
+              <LessonMaterialActions showSummarize {lessonId} alignWithNote />
             {/if}
 
             {#each viewModeComponents as Component, index (index)}
@@ -556,11 +597,9 @@
           variant="page"
           class="text-center"
         >
-          {#if !$isOrgStudent}
-            <Button onclick={toggleMode}>
-              {$t('course.navItem.lessons.materials.get_started')}
-            </Button>
-          {/if}
+          <Button onclick={toggleMode}>
+            {$t('course.navItem.lessons.materials.get_started')}
+          </Button>
         </Empty>
       {/if}
     </div>

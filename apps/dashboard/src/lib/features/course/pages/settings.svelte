@@ -21,6 +21,8 @@
 
   import { settings } from '$features/course/utils/settings-store';
   import Copy from '@lucide/svelte/icons/copy';
+  import * as Alert from '@cio/ui/base/alert';
+  import LockOpenIcon from '@lucide/svelte/icons/lock-open';
   import type { TCourseType } from '@cio/db/types';
   import type { Course } from '../utils/types';
   import { t } from '$lib/utils/functions/translations';
@@ -29,7 +31,8 @@
   import { generateSlug } from '@cio/utils/functions';
   import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
   import { DeleteModal } from '$features/ui';
-  import { courseApi } from '$features/course/api';
+  import { contentApi, courseApi } from '$features/course/api';
+  import { collectLockedContentItems } from '$features/course/utils/content-lock-utils';
   import { tagApi } from '$features/tag/api';
   import { uploadImage } from '$lib/utils/services/upload';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
@@ -114,6 +117,33 @@
     $settings.logo = '';
     hasUnsavedChanges = true;
   };
+
+  let isUnlockingAll = $state(false);
+
+  const lockedContentItems = $derived(collectLockedContentItems(courseApi.course));
+  const isLiveClassCourse = $derived(courseApi.course?.type === 'LIVE_CLASS');
+  const showLockedContentNotice = $derived($settings.isPublished && lockedContentItems.length > 0);
+
+  async function handleUnlockAllContent() {
+    const courseId = courseApi.course?.id;
+    if (!courseId || lockedContentItems.length === 0 || isUnlockingAll) return;
+
+    isUnlockingAll = true;
+    const itemsToUnlock = [...lockedContentItems];
+    const didUnlock = await contentApi.updateContent(
+      courseId,
+      itemsToUnlock.map((item) => ({ id: item.id, type: item.type, isUnlocked: true }))
+    );
+
+    if (didUnlock) {
+      for (const item of itemsToUnlock) {
+        courseApi.updateContentItem(item.id, item.type, { isUnlocked: true });
+      }
+      snackbar.success('snackbar.course_settings.success.unlocked_all_content');
+    }
+
+    isUnlockingAll = false;
+  }
 
   async function handleDeleteCourse() {
     if (!courseApi.course) return;
@@ -822,6 +852,30 @@
         {$settings.isPublished ? $t('course.navItem.settings.published') : $t('course.navItem.settings.unpublished')}
       </Label>
     </Field.Field>
+
+    {#if showLockedContentNotice}
+      <Alert.Root variant={isLiveClassCourse ? 'information' : 'warning'}>
+        <LockOpenIcon />
+        <Alert.Title>
+          {$t('course.navItem.settings.locked_content.title', { count: lockedContentItems.length })}
+        </Alert.Title>
+        <Alert.Description>
+          {isLiveClassCourse
+            ? $t('course.navItem.settings.locked_content.description_live')
+            : $t('course.navItem.settings.locked_content.description')}
+          <Button
+            variant="outline"
+            size="sm"
+            class="mt-2 w-fit"
+            loading={isUnlockingAll}
+            disabled={isUnlockingAll}
+            onclick={handleUnlockAllContent}
+          >
+            {$t('course.navItem.settings.locked_content.unlock_all')}
+          </Button>
+        </Alert.Description>
+      </Alert.Root>
+    {/if}
   </Field.Set>
 
   <Field.Separator />

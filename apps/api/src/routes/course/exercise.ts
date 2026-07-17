@@ -16,7 +16,6 @@ import {
   createExercise,
   createExerciseFromTemplate,
   deleteExerciseForCourseService,
-  deleteExerciseService,
   getExercise,
   listExercises,
   updateExerciseService
@@ -83,6 +82,7 @@ export const exerciseRouter = new Hono()
       const user = c.get('user')!;
 
       const data = await listExerciseSubmissionsOverview(courseId, exerciseId, user.id);
+
       return c.json({ success: true, data }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to fetch exercise submissions overview');

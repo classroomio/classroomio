@@ -187,16 +187,27 @@
   async function handleViewTranscript() {
     if (!assetId) return;
 
-    lessonVideoBus.assetId = assetId;
-    lessonVideoBus.transcriptLoading = true;
+    if (!lessonVideoBus.transcriptSources.has(assetId)) {
+      lessonVideoBus.registerTranscriptSource({
+        assetId,
+        videoIndex: 0,
+        transcript: null,
+        transcriptLoading: true,
+        currentTimeSeconds: 0,
+        seek: () => {}
+      });
+    }
+
+    lessonVideoBus.selectTranscriptSource(assetId);
+    lessonVideoBus.updateTranscriptSource(assetId, { transcriptLoading: true });
     sidePanel.open(TRANSCRIPT_PANEL_ID);
 
     try {
       const data = await mediaApi.getAssetTranscript(assetId);
-      lessonVideoBus.transcript = data;
+      lessonVideoBus.updateTranscriptSource(assetId, { transcript: data, transcriptLoading: false });
       hasTranscript = !!data?.segments?.length;
-    } finally {
-      lessonVideoBus.transcriptLoading = false;
+    } catch {
+      lessonVideoBus.updateTranscriptSource(assetId, { transcriptLoading: false });
     }
   }
 
