@@ -54,6 +54,11 @@ variables + service config.
 The run prints the preview dashboard URL in its job **summary**. The env is named
 `pr-<branch-slug>`.
 
+The deploy step runs `railway up --ci` (no `--detach`), which streams build logs and **blocks until
+each service passes its deploy/healthcheck** before the next one starts — so the printed URL is live
+the moment the run finishes, and a failed healthcheck fails the run rather than reporting a broken
+preview.
+
 ## Database behavior
 
 - Each environment has its **own isolated Postgres** — previews start fresh.

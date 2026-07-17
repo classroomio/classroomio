@@ -140,10 +140,16 @@ jobs:
       - name: Deploy each app service from this branch
         if: ${{ inputs.action == 'deploy' }}
         # Builds the checked-out source on Railway's builders (no local Docker build).
+        # NOTE: `--ci` (without `--detach`) streams build logs and blocks until each service's
+        # deploy/healthcheck succeeds, so by the time "Report the preview URL" runs the services
+        # are actually up — no more printing a link that 502/404s while the container builds.
+        # Trade-offs: builds run sequentially (api -> dashboard -> jobs) and a failed healthcheck
+        # fails the run, which for a preview is preferable to silently reporting a broken URL.
+        # (`--detach` would defeat this by returning the instant the build job is queued.)
         run: |
           for svc in $APP_SERVICES; do
             echo "::group::railway up $svc"
-            railway up --service "$svc" --ci --detach
+            railway up --service "$svc" --ci
             echo "::endgroup::"
           done
 
@@ -175,8 +181,7 @@ jobs:
             echo "- Environment: \`$ENV_NAME\` (branch \`$BRANCH\`)"
             echo "- Dashboard: https://${URL}"
             echo ""
-            echo "> Builds run on Railway and are deployed detached, so this may take a few minutes to come up."
-            echo "> An early click can return **502/404** while the container is still building — wait a moment and refresh."
+            echo "> All services passed their Railway deploy/healthcheck before this link was printed, so it should be live now."
             echo ""
             echo "Tear down with this workflow using **action = destroy** and the same branch."
           } >> "$GITHUB_STEP_SUMMARY"
