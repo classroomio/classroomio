@@ -50,11 +50,14 @@ export default defineConfig({
   openapi: {
     enabled: true,
     renderer: 'scalar',
-    // Mounted at the path the dashboard and three MDX pages already link to.
-    route: '/api/reference',
+    // The reference IS the API tab. It mounts at /api, and Blume auto-appends a
+    // header tab labeled by `sources[].label` ("API") pointing here — so there is
+    // no separate hand-written API page or "API Reference" entry anymore. The old
+    // /api/reference path 301s here (scripts/package-assets.mjs).
+    route: '/api',
     // Written by scripts/fetch-openapi.mjs: the R2 spec, enriched with the
     // bearer auth scheme. Not committed.
-    spec: './openapi/public-api.json'
+    sources: [{ label: 'API', spec: './openapi/public-api.json' }]
   },
   navigation: {
     // Blume's header has no external-links slot, so the links that used to sit
@@ -68,14 +71,14 @@ export default defineConfig({
     ],
     // Header tabs. An internal tab scopes the sidebar to the group whose `root`
     // equals its `path`, so each needs a real URL prefix — hence the `root` on
-    // the Self Hosting and API groups below. Platform is an absolute URL, so it
-    // is left alone by the base-path rewrite and renders as a plain link out to
-    // the app.
+    // the Self Hosting group below. The API tab is intentionally absent: Blume
+    // appends one automatically for the OpenAPI reference (see `openapi` above),
+    // pointing at /api. Platform is an absolute URL, so it is left alone by the
+    // base-path rewrite and renders as a plain link out to the app.
     tabs: [
       { label: 'Platform', path: 'https://app.classroomio.com/', icon: 'layout-dashboard' },
       { label: 'Guides', path: '/contributor-guides', icon: 'book-open' },
-      { label: 'Self Hosting', path: '/self-hosted', icon: 'server' },
-      { label: 'API', path: '/api', icon: 'plug' }
+      { label: 'Self Hosting', path: '/self-hosted', icon: 'server' }
     ],
     sidebar: [
       {
@@ -141,9 +144,10 @@ export default defineConfig({
         label: 'Organization & team',
         items: ['/customize-organization', '/invite-team-member', '/roles-and-permissions']
       },
-      // The three groups below back the Guides / Self Hosting / API tabs. Their
-      // `root` must match the tab `path` exactly, or the tab won't scope to them
-      // and its pages stay in the Platform sidebar instead.
+      // The two groups below back the Guides / Self Hosting tabs. Their `root`
+      // must match the tab `path` exactly, or the tab won't scope to them and its
+      // pages stay in the Platform sidebar instead. (The API tab needs no group:
+      // its route is the self-contained Scalar reference, which has its own nav.)
       {
         label: 'Contributor guides',
         root: '/contributor-guides',
@@ -168,16 +172,6 @@ export default defineConfig({
           '/self-hosted/docker',
           '/self-hosted/railway',
           '/self-hosted/coolify'
-        ]
-      },
-      {
-        label: 'API',
-        root: '/api',
-        items: [
-          '/api',
-          // The Scalar reference is its own generated route, not a content page,
-          // so it is linked by href rather than resolved from the page index.
-          { label: 'API Reference', href: '/api/reference' }
         ]
       }
     ]

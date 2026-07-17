@@ -50,8 +50,8 @@ jobs:
 
       # Reports broken internal links and heading anchors. Advisory rather than
       # a gate, because the checker is base-unaware and always reports two known
-      # classes of false positive: the /api/reference links (Scalar's route is
-      # not in the page index) and every image under public/ (it resolves public/
+      # classes of false positive: links into the /api reference (Scalar's route
+      # is not in the page index) and every image under public/ (it resolves public/
       # against the site root, which deployment.base '/docs' moves). Read the log
       # for anything outside those two.
       - name: Validate links and anchors
