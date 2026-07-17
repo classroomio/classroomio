@@ -101,7 +101,8 @@ export default defineConfig({
           '/community',
           '/organization',
           '/student-dashboard',
-          '/enterprise-sso'
+          '/enterprise-sso',
+          '/token-auth'
         ]
       },
       {
