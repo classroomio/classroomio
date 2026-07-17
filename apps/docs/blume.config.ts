@@ -62,9 +62,9 @@ export default defineConfig({
     featured: [
       { label: 'Dashboard', href: 'https://app.classroomio.com/', icon: 'layout-dashboard' },
       { label: 'Demo', href: 'https://dub.sh/ciodemo', icon: 'monitor-play' },
-      { label: 'Discord', href: 'https://dub.sh/ciodiscord', icon: 'message-circle' },
+      { label: 'Discord', href: 'https://classroomio.com/discord', icon: 'message-circle' },
       { label: 'Feedback', href: 'https://feedback.classroomio.com', icon: 'megaphone' },
-      { label: 'Contact', href: 'https://twitter.com/classroomio', icon: 'at-sign' }
+      { label: 'Contact', href: 'https://x.com/classroomio', icon: 'at-sign' }
     ],
     // Header tabs. An internal tab scopes the sidebar to the group whose `root`
     // equals its `path`, so each needs a real URL prefix — hence the `root` on
