@@ -34,6 +34,11 @@ export const ZUpdateNoteComment = z.object({
   body: z.string().min(1).max(5000)
 });
 
+export const ZAiNoteCommentReview = z.object({
+  content: z.string().min(1),
+  focusQuotedText: z.string().min(1).max(5000).optional()
+});
+
 export const ZNoteCommentIdParam = z.object({
   noteId: z.string().uuid(),
   commentId: z.string().uuid()
@@ -49,3 +54,4 @@ export type TCreateNoteCommentThread = z.infer<typeof ZCreateNoteCommentThread>;
 export type TCreateNoteCommentReply = z.infer<typeof ZCreateNoteCommentReply>;
 export type TUpdateNoteCommentThread = z.infer<typeof ZUpdateNoteCommentThread>;
 export type TUpdateNoteComment = z.infer<typeof ZUpdateNoteComment>;
+export type TAiNoteCommentReview = z.infer<typeof ZAiNoteCommentReview>;

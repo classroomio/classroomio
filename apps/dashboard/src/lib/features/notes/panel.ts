@@ -32,7 +32,13 @@ export const noteAiPanelDefinition: SidePanelDefinition = {
   widthStorageKey: 'note-ai-panel-width'
 };
 
-export function openNoteAiPanel(props: { noteId: string; noteTitle?: string }) {
+export function openNoteAiPanel(props: {
+  noteId: string;
+  noteTitle?: string;
+  getNoteContent?: () => string;
+  getSelectedText?: () => string;
+  onReviewComplete?: (content: string) => void;
+}) {
   sidePanel.open(NOTE_AI_PANEL_ID, props);
 }
 

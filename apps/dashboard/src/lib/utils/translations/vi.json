@@ -4812,7 +4812,11 @@
       "create": "Create course",
       "success": "Course created from note",
       "error": "Could not create course from note.",
-      "copy_success": "Course created. Your note is unchanged."
+      "copy_success": "Course created. Your note is unchanged.",
+      "empty_error": "Add at least one lesson before creating a course.",
+      "already_converted_description": "This note is already linked to a course.",
+      "already_converted_body": "Open the existing course, or keep editing this note. Creating another course from the same note is blocked.",
+      "open_course": "Open course"
     },
     "templates": {
       "heading": "Templates",
@@ -4841,6 +4845,23 @@
       "pin_success": "Note pinned",
       "unpin_success": "Note unpinned",
       "pin_error": "Could not update pin"
+    },
+    "comments": {
+      "ai_author": "ClassroomIO Assistant",
+      "ai_badge": "AI"
+    },
+    "ai_panel": {
+      "empty_title": "Get AI feedback on this note",
+      "empty_description": "Review the note to add anchored AI comments you can resolve like teammate feedback.",
+      "review_note": "Review note",
+      "review_selection": "Review selection",
+      "review_hint": "AI comments appear in the comments sidebar with yellow highlights in the note.",
+      "review_success": "AI comments added to your note",
+      "review_empty": "No new AI comments were added",
+      "review_error": "Could not generate AI comments",
+      "empty_note_error": "Add some content before asking AI to review",
+      "selection_required": "Select text in the note first",
+      "last_result": "{count, plural, =0 {No comments added} =1 {1 comment added} other {# comments added}}"
     }
   }
 }

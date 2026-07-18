@@ -28,7 +28,6 @@
   import { currentOrgPath, currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
-  import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
   import { snackbar } from '$features/ui/snackbar/store';
   import { notesApi, noteCommentsApi } from '../api';
   import { orgApi } from '$features/org/api/org.svelte';
@@ -41,7 +40,7 @@
   import NoteConvertCourseDialog from '../components/note-convert-course-dialog.svelte';
   import NoteTemplatesBrowser from '../components/note-templates-browser.svelte';
   import NoteCommentsStickyRail from '../components/note-comments-sticky-rail.svelte';
-  import { toggleNoteCommentsPanel } from '../panel';
+  import { openNoteAiPanel, toggleNoteCommentsPanel } from '../panel';
   import { noteCommentsBridge } from '../utils/note-comments-bridge.svelte';
   import {
     buildCommentAnchor,
@@ -67,6 +66,7 @@
   let noteOrigin = $state<'workspace' | 'lesson_capture' | null>(null);
   let noteVisibility = $state<NoteShareVisibility>('private');
   let noteSlug = $state<string | null>(null);
+  let convertedCourseId = $state<string | null>(null);
   let isPinned = $state(false);
   let isTemplateNote = $state(false);
   let ownerFullname = $state<string | null>(null);
@@ -153,6 +153,7 @@
     noteOrigin = note.origin;
     noteVisibility = note.visibility === 'public' ? 'public' : note.visibility === 'team' ? 'team' : 'private';
     noteSlug = note.slug ?? null;
+    convertedCourseId = note.convertedCourseId ?? null;
     isPinned = note.isPinned ?? false;
     isTemplateNote = note.isTemplate ?? false;
     ownerFullname = note.ownerFullname;
@@ -555,6 +556,28 @@
     });
   }
 
+  function openNoteAssistant() {
+    openNoteAiPanel({
+      noteId,
+      noteTitle: title || t.get('notes.org.new_note_title'),
+      getNoteContent: () => editor?.getHTML() ?? content,
+      getSelectedText: () => {
+        if (!editor) {
+          return '';
+        }
+
+        const { from, to } = editor.state.selection;
+
+        return editor.state.doc.textBetween(from, to, ' ').trim();
+      },
+      onReviewComplete: (nextContent: string) => {
+        content = nextContent;
+        editor?.commands.setContent(nextContent, false);
+        void noteCommentsApi.listThreads(noteId);
+      }
+    });
+  }
+
   function handleScrollToThread(thread: NoteCommentThread) {
     activeThreadId = thread.id;
 
@@ -667,10 +690,10 @@
             </Button>
           {/if}
 
-          {#if canWrite}
+          {#if canWrite && noteOrigin === 'workspace'}
             <Button
               size="sm"
-              onclick={toggleAiAssistant}
+              onclick={openNoteAssistant}
               class="ui:bg-primary ui:text-primary-foreground relative overflow-hidden border-0"
             >
               <Waves
@@ -843,7 +866,16 @@
   </div>
 </div>
 
-<NoteConvertCourseDialog bind:open={showConvertCourseDialog} {noteId} {noteTitle} noteContent={content} />
+<NoteConvertCourseDialog
+  bind:open={showConvertCourseDialog}
+  {noteId}
+  {noteTitle}
+  noteContent={content}
+  {convertedCourseId}
+  onConverted={(courseId) => {
+    convertedCourseId = courseId;
+  }}
+/>
 
 <NoteTemplatesBrowser
   bind:open={showTemplatePicker}

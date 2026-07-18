@@ -2,6 +2,7 @@
   import CheckIcon from '@lucide/svelte/icons/check';
   import PencilIcon from '@lucide/svelte/icons/pencil';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
+  import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import TrashIcon from '@lucide/svelte/icons/trash-2';
   import { Button } from '@cio/ui/base/button';
   import { ChatTextarea } from '@cio/ui/custom/chat-textarea';
@@ -14,6 +15,10 @@
   import { renderNoteCommentMentions } from '../utils/mention-utils';
   import type { NoteComment, NoteCommentThread } from '../utils/types';
   import type { TNoteCommentAnchor } from '@cio/utils/validation/notes';
+
+  function isAiAuthor(comment: NoteComment) {
+    return comment.authorType === 'ai';
+  }
 
   const COMMENT_AUTOSAVE_MS = 800;
 
@@ -315,12 +320,34 @@
         <div class="space-y-3">
           {#each thread.comments as comment (comment.id)}
             <div class="flex items-start gap-2">
-              <UserAvatar src={comment.authorAvatarUrl} alt={comment.authorFullname ?? 'User'} class="mt-0.5 size-6!" />
+              {#if isAiAuthor(comment)}
+                <div
+                  class="ui:bg-primary/10 ui:text-primary mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full"
+                  aria-hidden="true"
+                >
+                  <SparklesIcon size={12} />
+                </div>
+              {:else}
+                <UserAvatar
+                  src={comment.authorAvatarUrl}
+                  alt={comment.authorFullname ?? 'User'}
+                  class="mt-0.5 size-6!"
+                />
+              {/if}
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2">
-                  <p class="truncate text-xs font-medium">{comment.authorFullname ?? $t('notes.comments.anonymous')}</p>
+                  <p class="truncate text-xs font-medium">
+                    {isAiAuthor(comment)
+                      ? $t('notes.comments.ai_author')
+                      : (comment.authorFullname ?? $t('notes.comments.anonymous'))}
+                  </p>
+                  {#if isAiAuthor(comment)}
+                    <span class="ui:bg-muted ui:text-muted-foreground rounded px-1.5 py-0.5 text-[10px] font-medium">
+                      {$t('notes.comments.ai_badge')}
+                    </span>
+                  {/if}
                   <span class="ui:text-muted-foreground text-[11px]">{calDateDiff(new Date(comment.createdAt))}</span>
-                  {#if currentUserId && comment.authorId === currentUserId && canComment}
+                  {#if currentUserId && comment.authorId === currentUserId && canComment && !isAiAuthor(comment)}
                     <div class="ml-auto flex gap-1">
                       <Button size="icon-xs" variant="secondary" onclick={() => startEditing(comment)}>
                         <PencilIcon size={12} />

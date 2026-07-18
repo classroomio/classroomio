@@ -1,4 +1,5 @@
 import {
+  ZAiNoteCommentReview,
   ZCreateNote,
   ZCreateNoteCommentReply,
   ZCreateNoteCommentThread,
@@ -41,6 +42,7 @@ import {
   updateNoteService,
   updateNoteVisibilityService
 } from '@api/services/notes/notes';
+import { createAiNoteCommentReviewService } from '@api/services/notes/ai-comments';
 import { convertNoteToCourseService } from '@api/services/notes/convert-course';
 import { getNoteTagsService, replaceNoteTagsService } from '@api/services/notes/tags';
 import { AppError, ErrorCodes } from '@api/utils/errors';
@@ -340,6 +342,26 @@ export const notesRouter = new Hono()
         return c.json({ success: true, data }, 201);
       } catch (error) {
         return handleError(c, error, 'Failed to create note comment thread');
+      }
+    }
+  )
+  .post(
+    '/:noteId/comment-threads/ai-review',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNoteIdParam),
+    zValidator('json', ZAiNoteCommentReview),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const { noteId } = c.req.valid('param');
+        const body = c.req.valid('json');
+        const data = await createAiNoteCommentReviewService(organizationId, user.id, c.get('userRole')!, noteId, body);
+
+        return c.json({ success: true, data }, 201);
+      } catch (error) {
+        return handleError(c, error, 'Failed to create AI note comment review');
       }
     }
   )

@@ -31,6 +31,7 @@ export type NoteVersionHistoryItem = Extract<
 
 export type ListNoteCommentThreadsRequest = (typeof classroomio.notes)[':noteId']['comment-threads']['$get'];
 export type CreateNoteCommentThreadRequest = (typeof classroomio.notes)[':noteId']['comment-threads']['$post'];
+export type AiNoteCommentReviewRequest = (typeof classroomio.notes)[':noteId']['comment-threads']['ai-review']['$post'];
 export type CreateNoteCommentReplyRequest =
   (typeof classroomio.notes)[':noteId']['comment-threads'][':threadId']['replies']['$post'];
 export type UpdateNoteCommentThreadRequest =
@@ -41,3 +42,7 @@ export type DeleteNoteCommentRequest = (typeof classroomio.notes)[':noteId']['co
 export type NoteCommentThreads = Extract<InferResponseType<ListNoteCommentThreadsRequest>, { success: true }>['data'];
 export type NoteCommentThread = NoteCommentThreads[number];
 export type NoteComment = NoteCommentThread['comments'][number];
+export type AiNoteCommentReviewResult = Extract<
+  InferResponseType<AiNoteCommentReviewRequest>,
+  { success: true }
+>['data'];

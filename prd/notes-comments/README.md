@@ -4,7 +4,7 @@
 
 - **Phase 1:** Done
 - **Phase 2:** Done
-- **Phase 3:** Not started
+- **Phase 3:** Done (AI review endpoint + note assistant panel)
 
 ## Progress
 
@@ -12,7 +12,7 @@
 | --- | --- | --- |
 | **Phase 1** | Google Docs core — anchored threads, sidebar, resolve/reopen, scroll-to-anchor, focus refetch | ☑ |
 | **Phase 2** | @mentions, email notifications, SSE live sync, edit/delete polish | ☑ |
-| **Phase 3** | AI segment comments via assistant | ☐ |
+| **Phase 3** | AI segment comments via assistant | ☑ |
 
 ## Purpose
 
@@ -218,8 +218,8 @@ Client searches `plainText` for `prefix + quotedText + suffix` (fallback: `quote
 
 ### Phase 3
 
-- [ ] AI author type + assistant tool
-- [ ] Batch review flow
+- [x] AI author type + assistant tool
+- [x] Batch review flow
 
 ## Related
 

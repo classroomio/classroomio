@@ -1,10 +1,13 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
+  TAiNoteCommentReview,
   TCreateNoteCommentThread,
   TUpdateNoteComment,
   TUpdateNoteCommentThread
 } from '@cio/utils/validation/notes';
 import type {
+  AiNoteCommentReviewRequest,
+  AiNoteCommentReviewResult,
   CreateNoteCommentReplyRequest,
   CreateNoteCommentThreadRequest,
   DeleteNoteCommentRequest,
@@ -52,6 +55,25 @@ class NoteCommentsApi extends BaseApiWithErrors {
     });
 
     return created;
+  }
+
+  async reviewWithAi(noteId: string, payload: TAiNoteCommentReview) {
+    let result: AiNoteCommentReviewResult | null = null;
+
+    await this.execute<AiNoteCommentReviewRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId']['comment-threads']['ai-review'].$post({
+          param: { noteId },
+          json: payload
+        }),
+      onSuccess: (response) => {
+        result = response.data;
+        this.threads = response.data.threads;
+      },
+      logContext: 'aiNoteCommentReview'
+    });
+
+    return result;
   }
 
   async addReply(noteId: string, threadId: string, body: string) {

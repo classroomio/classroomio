@@ -1,15 +1,14 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { aiAssistantPanelDefinition } from '$features/ai-assistant';
   import { sidePanel, SidePanelRail } from '$features/side-panel';
   import { useSidebar } from '@cio/ui/base/sidebar';
-  import { noteCommentsPanelDefinition } from '$features/notes/panel';
+  import { noteAiPanelDefinition, noteCommentsPanelDefinition } from '$features/notes/panel';
 
   let { children } = $props();
 
   const sidebar = useSidebar();
 
-  sidePanel.register(aiAssistantPanelDefinition);
+  sidePanel.register(noteAiPanelDefinition);
   sidePanel.register(noteCommentsPanelDefinition);
 
   let sidePanelWidth = $state(0);

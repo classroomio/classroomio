@@ -40,6 +40,10 @@ export async function convertNoteToCourseService(
     throw new AppError('Templates cannot be converted to courses', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
+  if (note.convertedCourseId) {
+    throw new AppError('This note was already converted to a course', ErrorCodes.NOTE_ALREADY_CONVERTED, 409);
+  }
+
   const totalLessons =
     data.unsectionedLessons.length + data.sections.reduce((count, section) => count + section.lessons.length, 0);
 
