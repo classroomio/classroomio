@@ -498,7 +498,8 @@
     "explore": "Entdecken",
     "help": "Hilfe",
     "settings": "Einstellungen",
-    "cohorts": "Kohorten"
+    "programs": "Programme",
+    "my_notes": "My Notes"
   },
   "upgrade": {
     "certificate": "Aktualisieren Sie Ihren Plan, um Zertifikate zu generieren",
@@ -4751,210 +4752,19 @@
       "failed": "Der Upload ist fehlgeschlagen"
     }
   },
-  "cohorts": {
-    "heading": "Kohorten",
-    "page_title": "Kohorten",
-    "create": "Neue Kohorte",
-    "create_success": "Kohorte erstellt",
-    "update_success": "Kohorte aktualisiert",
-    "delete_success": "Kohorte gelöscht",
-    "members_added": "Mitglieder hinzugefügt",
-    "member_removed": "Mitglied entfernt",
-    "course_added": "Kurs hinzugefügt",
-    "course_removed": "Kurs entfernt",
-    "empty_title": "Noch keine Kohorten",
-    "empty_description": "Erstellen Sie Ihre erste Zertifizierungs- oder Compliance-Kohorte.",
-    "settings": {
-      "general": "Allgemein",
-      "name_label": "Name",
-      "description_label": "Beschreibung",
-      "status_label": "Status",
-      "save": "Änderungen speichern",
-      "danger_zone": "Gefahrenzone",
-      "delete": "Kohorte löschen",
-      "delete_description": "Nach dem Löschen können diese Kohorte und alle ihre Daten nicht wiederhergestellt werden.",
-      "confirm_delete": "Sind Sie sicher, dass Sie diese Kohorte löschen möchten? Dies kann nicht rückgängig gemacht werden."
-    },
-    "lms": {
-      "empty_title": "Noch keine Kohorten",
-      "empty_description": "Sie sind in keinem Kohorte eingeschrieben."
-    },
-    "people": {
-      "invite": "Einladen",
-      "invite_modal_title": "Mitglieder einladen",
-      "invite_modal_description": "Fügen Sie Personen per E-Mail zu dieser Kohorte hinzu.",
-      "email_label": "E-Mail",
-      "role_label": "Rolle",
-      "add_another": "Fügen Sie einen weiteren hinzu",
-      "invite_submit": "Senden Sie Einladungen",
-      "empty_title": "Noch keine Mitglieder",
-      "empty_description": "Laden Sie Menschen ein, dieser Kohorte beizutreten."
-    },
-    "courses": {
-      "add": "Kurs hinzufügen",
-      "add_modal_title": "Kurs zur Kohorte hinzufügen",
-      "select_course": "Wählen Sie einen Kurs aus",
-      "select_placeholder": "Wählen Sie einen Kurs…",
-      "empty_title": "Noch keine Kurse",
-      "empty_description": "Fügen Sie Kurse zu dieser Kohorte hinzu.",
-      "select_courses": "Kurse auswählen",
-      "search_placeholder": "Kurse suchen",
-      "no_available_courses": "Keine Kurse zum Hinzufügen verfügbar.",
-      "no_matching_courses": "Zu Ihrer Suche passen keine Kurse.",
-      "no_matching_cohort_courses": "Zu Ihrer Suche passen keine Kohortenkurse.",
-      "pagination_status": "Seite {page} von {totalPages}",
-      "published_access_callout_title": "Zugang für Studierende",
-      "published_access_callout_description": "Studierende haben nur Zugriff auf veröffentlichte Kurse. Kurse können für Ihr Team in dieser Kohorte enthalten sein, solange sie noch unveröffentlicht sind, und bleiben den Studierenden verborgen, bis Sie sie veröffentlichen."
-    },
-    "newsfeed": {
-      "post": "Neuer Beitrag",
-      "post_placeholder": "Was geht Ihnen durch den Kopf?",
-      "post_submit": "Beitrag",
-      "empty_title": "Noch keine Beiträge",
-      "empty_description": "Seien Sie der Erste, der etwas postet.",
-      "heading": "Newsfeed",
-      "make_a_post": "Machen Sie einen Beitrag",
-      "edit_post": "Beitrag bearbeiten",
-      "editor_placeholder": "Teilen Sie ein Update mit Ihrer Kohorte",
-      "cancel": "Abbrechen",
-      "pinned": "Angepinnt",
-      "delete_feed_title": "Beitrag löschen",
-      "delete_feed_description": "Sind Sie sicher, dass Sie diesen Beitrag löschen möchten?",
-      "confirm_delete": "Löschen",
-      "user_avatar_alt": "Benutzer-Avatar",
-      "comments": {
-        "comment": "Kommentar",
-        "showing_of": "Es werden {shown} von {total} angezeigt",
-        "hide": "Kommentare ausblenden",
-        "placeholder": "Kohortenkommentar hinzufügen",
-        "submit_aria": "Kommentar abgeben",
-        "delete": "Löschen"
+  "notes": {
+    "page_title": "My Notes",
+    "heading": "My Notes",
+    "description": "Notes you take while learning appear here.",
+    "list": {
+      "search": "Search notes",
+      "tabs": {
+        "all": "All notes",
+        "from_lessons": "From lessons"
       },
-      "card": {
-        "pin": "Pin",
-        "unpin": "Lösen",
-        "edit": "Bearbeiten",
-        "delete": "Löschen"
-      }
-    },
-    "create_modal": {
-      "title": "Kohorte erstellen",
-      "description": "Fügen Sie eine neue Zertifizierungs- oder Compliance-Kohorte hinzu.",
-      "name_label": "Name",
-      "name_placeholder": "z.B. OSHA-Sicherheitszertifizierung",
-      "description_label": "Beschreibung",
-      "description_placeholder": "Worum geht es in dieser Kohorte?",
-      "submit": "Erstellen"
-    },
-    "sidebar": {
-      "newsfeed": "Newsfeed",
-      "courses": "Kurse",
-      "people": "Menschen",
-      "settings": "Einstellungen"
-    },
-    "status": {
-      "active": "Aktiv",
-      "inactive": "Inaktiv",
-      "archived": "Archiviert"
-    },
-    "description": "Gewähren Sie einer Gruppe von Personen Zugriff auf mehrere Kurse, z. B. einen Kurs",
-    "search_placeholder": "Suchkohorten",
-    "multiple_added": "Kurse hinzugefügt",
-    "no_matching_cohorts": "Keine Kohorten entsprechen Ihren Filtern.",
-    "card": {
-      "courses": "Kurse",
-      "students": "Studenten"
-    },
-    "table": {
-      "name": "Name",
-      "courses": "Kurse",
-      "students": "Studenten",
-      "status": "Status",
-      "description": "Beschreibung"
-    },
-    "filters": {
-      "filter": "Filtern",
-      "clear_all": "Alles löschen",
-      "popover_title": "Filter",
-      "sort": "Sortieren",
-      "order": "Bestellen",
-      "status": "Status",
-      "ascending": "Aufstieg",
-      "descending": "Beschr",
-      "sort_name": "Name",
-      "sort_courses": "Kurse",
-      "sort_students": "Studenten",
-      "sort_status": "Status"
-    },
-    "invite_sent": "Einladungen gesendet",
-    "goals": {
-      "heading": "Lernziele",
-      "description": "Legen Sie messbare Ziele fest, die sich über mehrere Kurse für alle Teilnehmer dieser Kohorte erstrecken.",
-      "add": "Neues Ziel",
-      "empty_title": "Noch keine Ziele",
-      "empty_description": "Erstellen Sie ein Ziel, um den Teamfortschritt über mehrere Kurse hinweg zu verfolgen.",
-      "created": "Ziel erstellt",
-      "updated": "Ziel aktualisiert",
-      "deleted": "Ziel gelöscht",
-      "delete_confirm": "Dieses Ziel löschen? Der Statusverlauf pro Schüler wird entfernt.",
-      "lms": {
-        "heading": "Ihre Ziele",
-        "empty_title": "Keine Ziele zugewiesen",
-        "empty_description": "Wenn Ihre Kursleiter Ziele setzen, werden sie hier angezeigt.",
-        "due_in_days": "Fällig in {days} Tagen",
-        "due_tomorrow": "Fällig morgen",
-        "due_today": "Heute fällig",
-        "overdue": "Überfällig",
-        "no_deadline": "Keine Frist"
-      },
-      "tile": {
-        "on_track": "auf Kurs",
-        "completed_short": "abgeschlossen",
-        "overdue_short": "überfällig",
-        "at_risk_short": "gefährdet"
-      },
-      "status": {
-        "completed": "Abgeschlossen",
-        "in_progress": "In Bearbeitung",
-        "at_risk": "In Gefahr",
-        "overdue": "Überfällig",
-        "not_started": "Nicht gestartet",
-        "waived": "Verzichtet"
-      },
-      "deadline_kind": {
-        "absolute": "Absolutes Datum",
-        "relative_to_join": "Bezogen auf den Beitritt von Studierenden",
-        "recurring": "Wiederkehrend",
-        "none": "Keine Frist"
-      },
-      "type": {
-        "complete_all": "Absolvieren Sie alle ausgewählten Kurse",
-        "n_of_m": "Absolvieren Sie N von M ausgewählten Kursen",
-        "score": "Erreichen Sie in jedem Kurs eine Punktzahl über dem Schwellenwert",
-        "pass_rate": "Schwellenwert für die Erfolgsquote des Teams",
-        "readiness": "Bereitschaft (keine Frist)"
-      },
-      "modal": {
-        "create_title": "Neues Ziel",
-        "edit_title": "Ziel bearbeiten",
-        "title_label": "Titel",
-        "title_placeholder": "z.B. Onboarding-Rampe",
-        "description_label": "Beschreibung",
-        "description_placeholder": "Optionaler Kontext für das Team",
-        "type_label": "Typ",
-        "courses_label": "Kurse",
-        "required_count_label": "Anzahl der erforderlichen Kurse",
-        "score_threshold_label": "Bestehenspunktzahl pro Schüler (%)",
-        "team_pass_rate_label": "Erfolgsquote der Mannschaft (%)",
-        "deadline_label": "Frist",
-        "deadline_date_label": "Deadline-Datum",
-        "relative_days_label": "Tage ab dem Beitritt des Schülers",
-        "recurring_months_label": "Wiederholen Sie alle (Monate)",
-        "reminders_label": "Erinnerungen (Tage vor Fälligkeit)",
-        "reminders_helper": "Durch Kommas getrennt. Beispiel: 7, 3, 1",
-        "save": "Speichern",
-        "cancel": "Abbrechen"
-      }
+      "empty_title": "No notes yet",
+      "empty_description": "Take notes while watching a lesson and they will show up here.",
+      "no_content": "No content yet"
     }
   }
 }

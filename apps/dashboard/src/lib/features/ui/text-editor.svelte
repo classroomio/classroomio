@@ -17,7 +17,7 @@
 
 <script lang="ts">
   // Type-only imports are erased at build time — no static TipTap dependency.
-  import type { HTMLContent, TiptapEditor } from '@cio/ui/custom/editor';
+  import type { HTMLContent, TiptapEditor, Extensions } from '@cio/ui/custom/editor';
   import { cn } from '@cio/ui/tools';
 
   interface Props {
@@ -33,6 +33,7 @@
     onChange?: (content: HTMLContent) => void;
     onReady?: (editor: TiptapEditor) => void;
     onEditorDestroy?: () => void;
+    extraExtensions?: Extensions;
   }
 
   let {
@@ -47,7 +48,8 @@
     placeholder = 'Welcome to ClassroomIO',
     onChange,
     onReady,
-    onEditorDestroy
+    onEditorDestroy,
+    extraExtensions
   }: Props = $props();
 </script>
 
@@ -81,5 +83,6 @@
     onContentChange={onChange}
     onEditorReady={onReady}
     {onEditorDestroy}
+    {extraExtensions}
   />
 {/await}

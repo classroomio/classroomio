@@ -100,6 +100,18 @@
     lastLessonId = lessonId;
   });
 
+  let lastNoteId: string | undefined = undefined;
+
+  $effect(() => {
+    const noteId = page.params?.noteId as string | undefined;
+
+    if (lastNoteId !== undefined && noteId !== lastNoteId) {
+      sidePanel.closeIfScope('notes');
+    }
+
+    lastNoteId = noteId;
+  });
+
   function handleResizePointerDown(event: PointerEvent) {
     if (!activeDefinition) return;
 

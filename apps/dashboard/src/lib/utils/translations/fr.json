@@ -498,7 +498,8 @@
     "explore": "Explorer",
     "help": "Aide",
     "settings": "Paramètres",
-    "cohorts": "Cohortes"
+    "programs": "Programmes",
+    "my_notes": "My Notes"
   },
   "upgrade": {
     "certificate": "Mettez à niveau votre plan pour générer des certificats",
@@ -4751,210 +4752,19 @@
       "failed": "Échec du téléchargement"
     }
   },
-  "cohorts": {
-    "heading": "Cohortes",
-    "page_title": "Cohortes",
-    "create": "Nouvelle cohorte",
-    "create_success": "Cohorte créé",
-    "update_success": "Cohorte mis à jour",
-    "delete_success": "Cohorte supprimé",
-    "members_added": "Membres ajoutés",
-    "member_removed": "Membre supprimé",
-    "course_added": "Cours ajouté",
-    "course_removed": "Cours supprimé",
-    "empty_title": "Aucun cohorte pour l'instant",
-    "empty_description": "Créez votre première cohorte de certification ou de conformité.",
-    "settings": {
-      "general": "Général",
-      "name_label": "Nom",
-      "description_label": "Descriptif",
-      "status_label": "Statut",
-      "save": "Enregistrer les modifications",
-      "danger_zone": "Zone dangereuse",
-      "delete": "Supprimer le cohorte",
-      "delete_description": "Une fois supprimée, cette cohorte et toutes ses données ne peuvent pas être récupérées.",
-      "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette cohorte ? Cela ne peut pas être annulé."
-    },
-    "lms": {
-      "empty_title": "Aucun cohorte pour l'instant",
-      "empty_description": "Vous n'êtes inscrit à aucun cohorte."
-    },
-    "people": {
-      "invite": "Inviter",
-      "invite_modal_title": "Inviter des membres",
-      "invite_modal_description": "Ajoutez des personnes à cette cohorte par e-mail.",
-      "email_label": "Courriel",
-      "role_label": "Rôle",
-      "add_another": "Ajoutez-en un autre",
-      "invite_submit": "Envoyer des invitations",
-      "empty_title": "Pas encore de membres",
-      "empty_description": "Invitez des personnes à rejoindre cette cohorte."
-    },
-    "courses": {
-      "add": "Ajouter un cours",
-      "add_modal_title": "Ajouter un cours à la cohorte",
-      "select_course": "Sélectionnez un cours",
-      "select_placeholder": "Choisissez un cours…",
-      "empty_title": "Pas encore de cours",
-      "empty_description": "Ajoutez des cours à cette cohorte.",
-      "select_courses": "Sélectionner des cours",
-      "search_placeholder": "Rechercher des cours",
-      "no_available_courses": "Aucun cours disponible à ajouter.",
-      "no_matching_courses": "Aucun cours ne correspond à votre recherche.",
-      "no_matching_cohort_courses": "Aucun cours de cohorte ne correspond à votre recherche.",
-      "pagination_status": "Page {page} sur {totalPages}",
-      "published_access_callout_title": "Accès étudiant",
-      "published_access_callout_description": "Les étudiants n’ont accès qu’aux cours publiés. Les cours peuvent figurer dans cette cohorte pour votre équipe alors qu’ils ne sont pas encore publiés, tout en restant cachés aux étudiants jusqu’à leur publication."
-    },
-    "newsfeed": {
-      "post": "Nouveau message",
-      "post_placeholder": "Qu'avez-vous en tête ?",
-      "post_submit": "Publier",
-      "empty_title": "Pas encore de messages",
-      "empty_description": "Soyez le premier à publier quelque chose.",
-      "heading": "Fil d'actualité",
-      "make_a_post": "Créer un message",
-      "edit_post": "Modifier le message",
-      "editor_placeholder": "Partager une mise à jour avec votre cohorte",
-      "cancel": "Annuler",
-      "pinned": "Épinglé",
-      "delete_feed_title": "Supprimer le message",
-      "delete_feed_description": "Êtes-vous sûr de vouloir supprimer ce message ?",
-      "confirm_delete": "Supprimer",
-      "user_avatar_alt": "Avatar de l'utilisateur",
-      "comments": {
-        "comment": "commentaire",
-        "showing_of": "Affichage de {shown} sur {total}",
-        "hide": "Masquer les commentaires",
-        "placeholder": "Ajouter un commentaire de cohorte",
-        "submit_aria": "Soumettre un commentaire",
-        "delete": "Supprimer"
+  "notes": {
+    "page_title": "My Notes",
+    "heading": "My Notes",
+    "description": "Notes you take while learning appear here.",
+    "list": {
+      "search": "Search notes",
+      "tabs": {
+        "all": "All notes",
+        "from_lessons": "From lessons"
       },
-      "card": {
-        "pin": "Épingle",
-        "unpin": "Désépingler",
-        "edit": "Modifier",
-        "delete": "Supprimer"
-      }
-    },
-    "create_modal": {
-      "title": "Créer une cohorte",
-      "description": "Ajoutez une nouvelle cohorte de certification ou de conformité.",
-      "name_label": "Nom",
-      "name_placeholder": "par ex. Certification de sécurité OSHA",
-      "description_label": "Descriptif",
-      "description_placeholder": "De quoi parle cette cohorte ?",
-      "submit": "Créer"
-    },
-    "sidebar": {
-      "newsfeed": "Fil d'actualité",
-      "courses": "Cours",
-      "people": "Les gens",
-      "settings": "Paramètres"
-    },
-    "status": {
-      "active": "Actif",
-      "inactive": "Inactif",
-      "archived": "Archivé"
-    },
-    "description": "Donner à un groupe de personnes l'accès à plusieurs cours, comme un cours",
-    "search_placeholder": "Cohortes de recherche",
-    "multiple_added": "Cours ajoutés",
-    "no_matching_cohorts": "Aucun cohorte ne correspond à vos filtres.",
-    "card": {
-      "courses": "Cours",
-      "students": "Étudiants"
-    },
-    "table": {
-      "name": "Nom",
-      "courses": "Cours",
-      "students": "Étudiants",
-      "status": "Statut",
-      "description": "Descriptif"
-    },
-    "filters": {
-      "filter": "Filtrer",
-      "clear_all": "Tout effacer",
-      "popover_title": "Filtres",
-      "sort": "Trier",
-      "order": "Commande",
-      "status": "Statut",
-      "ascending": "Asc.",
-      "descending": "Description",
-      "sort_name": "Nom",
-      "sort_courses": "Cours",
-      "sort_students": "Étudiants",
-      "sort_status": "Statut"
-    },
-    "invite_sent": "Invitations envoyées",
-    "goals": {
-      "heading": "Objectifs d'apprentissage",
-      "description": "Fixez des objectifs mesurables couvrant plusieurs cours pour tous les participants à cette cohorte.",
-      "add": "Nouvel objectif",
-      "empty_title": "Pas encore de but",
-      "empty_description": "Créez un objectif pour suivre les progrès de l’équipe sur plusieurs cours.",
-      "created": "Objectif créé",
-      "updated": "Objectif mis à jour",
-      "deleted": "Objectif supprimé",
-      "delete_confirm": "Supprimer cet objectif ? L’historique du statut de chaque étudiant sera supprimé.",
-      "lms": {
-        "heading": "Vos objectifs",
-        "empty_title": "Aucun objectif assigné",
-        "empty_description": "Lorsque vos instructeurs fixent des objectifs, ils s'affichent ici.",
-        "due_in_days": "À rendre dans {days} jours",
-        "due_tomorrow": "À rendre demain",
-        "due_today": "À rendre aujourd'hui",
-        "overdue": "En retard",
-        "no_deadline": "Pas de date limite"
-      },
-      "tile": {
-        "on_track": "en bonne voie",
-        "completed_short": "terminé",
-        "overdue_short": "en retard",
-        "at_risk_short": "à risque"
-      },
-      "status": {
-        "completed": "Terminé",
-        "in_progress": "En cours",
-        "at_risk": "À risque",
-        "overdue": "En retard",
-        "not_started": "Pas commencé",
-        "waived": "Renoncé"
-      },
-      "deadline_kind": {
-        "absolute": "Date absolue",
-        "relative_to_join": "Par rapport à l'adhésion des étudiants",
-        "recurring": "Récurrent",
-        "none": "Pas de date limite"
-      },
-      "type": {
-        "complete_all": "Terminez tous les cours sélectionnés",
-        "n_of_m": "Terminer les cours sélectionnés par N sur M",
-        "score": "Score supérieur au seuil sur chaque cours",
-        "pass_rate": "Seuil de réussite de l'équipe",
-        "readiness": "Préparation (pas de date limite)"
-      },
-      "modal": {
-        "create_title": "Nouvel objectif",
-        "edit_title": "Modifier l'objectif",
-        "title_label": "Titre",
-        "title_placeholder": "par ex. Rampe d'embarquement",
-        "description_label": "Descriptif",
-        "description_placeholder": "Contexte facultatif pour l'équipe",
-        "type_label": "Tapez",
-        "courses_label": "Cours",
-        "required_count_label": "Nombre de cours requis",
-        "score_threshold_label": "Note de réussite par élève (%)",
-        "team_pass_rate_label": "Taux de réussite des équipes (%)",
-        "deadline_label": "Date limite",
-        "deadline_date_label": "Date limite",
-        "relative_days_label": "Jours à compter de l'arrivée de l'étudiant",
-        "recurring_months_label": "Répéter tous les (mois)",
-        "reminders_label": "Rappels (jours avant l'échéance)",
-        "reminders_helper": "Séparés par des virgules. Exemple : 7, 3, 1",
-        "save": "Enregistrer",
-        "cancel": "Annuler"
-      }
+      "empty_title": "No notes yet",
+      "empty_description": "Take notes while watching a lesson and they will show up here.",
+      "no_content": "No content yet"
     }
   }
 }

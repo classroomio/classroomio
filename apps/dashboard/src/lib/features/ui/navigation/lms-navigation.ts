@@ -1,6 +1,7 @@
 import {
   CertificateIcon,
   CommunityIcon,
+  ContentIcon,
   CourseIcon,
   ExerciseIcon,
   ExploreIcon,
@@ -59,6 +60,12 @@ export const baseNavConfig: NavItemConfig[] = [
     path: '/mylearning',
     icon: CourseIcon,
     matchPattern: '^/lms/mylearning(/.*)?$'
+  },
+  {
+    titleKey: 'lms_navigation.my_notes',
+    path: '/notes',
+    icon: ContentIcon,
+    matchPattern: '^/lms/notes(/.*)?$'
   },
   {
     titleKey: 'lms_navigation.certificates',

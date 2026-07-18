@@ -41,6 +41,8 @@ import {
   tag,
   tagAssignment,
   tagGroup,
+  orgNote,
+  noteTagAssignment,
   user
 } from './schema';
 
@@ -154,7 +156,8 @@ export const tagRelations = relations(tag, ({ one, many }) => ({
     fields: [tag.groupId],
     references: [tagGroup.id]
   }),
-  assignments: many(tagAssignment)
+  assignments: many(tagAssignment),
+  noteAssignments: many(noteTagAssignment)
 }));
 
 export const tagAssignmentRelations = relations(tagAssignment, ({ one }) => ({
@@ -165,6 +168,17 @@ export const tagAssignmentRelations = relations(tagAssignment, ({ one }) => ({
   course: one(course, {
     fields: [tagAssignment.courseId],
     references: [course.id]
+  })
+}));
+
+export const noteTagAssignmentRelations = relations(noteTagAssignment, ({ one }) => ({
+  tag: one(tag, {
+    fields: [noteTagAssignment.tagId],
+    references: [tag.id]
+  }),
+  note: one(orgNote, {
+    fields: [noteTagAssignment.noteId],
+    references: [orgNote.id]
   })
 }));
 

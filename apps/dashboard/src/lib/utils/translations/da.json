@@ -498,7 +498,8 @@
     "explore": "Udforsk",
     "help": "Hjælp",
     "settings": "Indstillinger",
-    "cohorts": "Kohorter"
+    "programs": "Programmer",
+    "my_notes": "My Notes"
   },
   "upgrade": {
     "certificate": "Opgrader din plan for at generere certifikater",
@@ -4751,210 +4752,19 @@
       "failed": "Upload mislykkedes"
     }
   },
-  "cohorts": {
-    "heading": "Kohorter",
-    "page_title": "Kohorter",
-    "create": "Ny kohorte",
-    "create_success": "Cohort oprettet",
-    "update_success": "Cohort opdateret",
-    "delete_success": "Cohort slettet",
-    "members_added": "Medlemmer tilføjet",
-    "member_removed": "Medlem fjernet",
-    "course_added": "Kursus tilføjet",
-    "course_removed": "Kursus fjernet",
-    "empty_title": "Ingen kohorter endnu",
-    "empty_description": "Opret din første certificerings- eller compliance-kohorte.",
-    "settings": {
-      "general": "Generelt",
-      "name_label": "Navn",
-      "description_label": "Beskrivelse",
-      "status_label": "Status",
-      "save": "Gem ændringer",
-      "danger_zone": "Farezone",
-      "delete": "Slet kohorte",
-      "delete_description": "Når det er slettet, kan dette kohorte og alle dets data ikke gendannes.",
-      "confirm_delete": "Er du sikker på, at du vil slette dette kohorte? Dette kan ikke fortrydes."
-    },
-    "lms": {
-      "empty_title": "Ingen kohorter endnu",
-      "empty_description": "Du er ikke blevet tilmeldt nogen kohorter."
-    },
-    "people": {
-      "invite": "Inviter",
-      "invite_modal_title": "Inviter medlemmer",
-      "invite_modal_description": "Tilføj personer til dette kohorte via e-mail.",
-      "email_label": "E-mail",
-      "role_label": "Rolle",
-      "add_another": "Tilføj en anden",
-      "invite_submit": "Send invitationer",
-      "empty_title": "Ingen medlemmer endnu",
-      "empty_description": "Inviter folk til at deltage i dette kohorte."
-    },
-    "courses": {
-      "add": "Tilføj kursus",
-      "add_modal_title": "Føj kursus til kohorte",
-      "select_course": "Vælg et kursus",
-      "select_placeholder": "Vælg et kursus...",
-      "empty_title": "Ingen kurser endnu",
-      "empty_description": "Tilføj kurser til dette kohorte.",
-      "select_courses": "Vælg kurser",
-      "search_placeholder": "Søg efter kurser",
-      "no_available_courses": "Ingen tilgængelige kurser at tilføje.",
-      "no_matching_courses": "Ingen kurser matcher din søgning.",
-      "no_matching_cohort_courses": "Ingen kohortekurser matcher din søgning.",
-      "pagination_status": "Side {page} af {totalPages}",
-      "published_access_callout_title": "Studerendes adgang",
-      "published_access_callout_description": "Studerende har kun adgang til publicerede kurser. Kurser kan være i denne kohorte for dit team, mens de stadig er upublicerede, og de forbliver skjulte for studerende, indtil du publicerer dem."
-    },
-    "newsfeed": {
-      "post": "Nyt indlæg",
-      "post_placeholder": "Hvad tænker du på?",
-      "post_submit": "Indlæg",
-      "empty_title": "Ingen indlæg endnu",
-      "empty_description": "Vær den første til at poste noget.",
-      "heading": "Nyhedsfeed",
-      "make_a_post": "Lav et indlæg",
-      "edit_post": "Rediger indlæg",
-      "editor_placeholder": "Del en opdatering med din kohorte",
-      "cancel": "Annuller",
-      "pinned": "Fastgjort",
-      "delete_feed_title": "Slet indlæg",
-      "delete_feed_description": "Er du sikker på, at du vil slette dette indlæg?",
-      "confirm_delete": "Slet",
-      "user_avatar_alt": "Bruger avatar",
-      "comments": {
-        "comment": "kommentar",
-        "showing_of": "Viser {shown} af {total}",
-        "hide": "Skjul kommentarer",
-        "placeholder": "Tilføj kohortekommentar",
-        "submit_aria": "Send kommentar",
-        "delete": "Slet"
+  "notes": {
+    "page_title": "My Notes",
+    "heading": "My Notes",
+    "description": "Notes you take while learning appear here.",
+    "list": {
+      "search": "Search notes",
+      "tabs": {
+        "all": "All notes",
+        "from_lessons": "From lessons"
       },
-      "card": {
-        "pin": "Pin",
-        "unpin": "Frigør",
-        "edit": "Rediger",
-        "delete": "Slet"
-      }
-    },
-    "create_modal": {
-      "title": "Opret kohorte",
-      "description": "Tilføj en ny certificerings- eller compliance-kohorte.",
-      "name_label": "Navn",
-      "name_placeholder": "f.eks. OSHA sikkerhedscertificering",
-      "description_label": "Beskrivelse",
-      "description_placeholder": "Hvad handler denne kohorte om?",
-      "submit": "Opret"
-    },
-    "sidebar": {
-      "newsfeed": "Nyhedsfeed",
-      "courses": "Kurser",
-      "people": "Mennesker",
-      "settings": "Indstillinger"
-    },
-    "status": {
-      "active": "Aktiv",
-      "inactive": "Inaktiv",
-      "archived": "Arkiveret"
-    },
-    "description": "Giv en gruppe mennesker adgang til flere kurser, f.eks. en klasse",
-    "search_placeholder": "Søg kohorter",
-    "multiple_added": "Kurser tilføjet",
-    "no_matching_cohorts": "Ingen kohorter matcher dine filtre.",
-    "card": {
-      "courses": "Kurser",
-      "students": "studerende"
-    },
-    "table": {
-      "name": "Navn",
-      "courses": "Kurser",
-      "students": "studerende",
-      "status": "Status",
-      "description": "Beskrivelse"
-    },
-    "filters": {
-      "filter": "Filter",
-      "clear_all": "Ryd alle",
-      "popover_title": "Filtre",
-      "sort": "Sorter",
-      "order": "Bestil",
-      "status": "Status",
-      "ascending": "Asc",
-      "descending": "Desc",
-      "sort_name": "Navn",
-      "sort_courses": "Kurser",
-      "sort_students": "studerende",
-      "sort_status": "Status"
-    },
-    "invite_sent": "Invitationer sendt",
-    "goals": {
-      "heading": "Læringsmål",
-      "description": "Sæt målbare mål, der spænder over flere kurser for alle i denne kohorte.",
-      "add": "Nyt mål",
-      "empty_title": "Ingen mål endnu",
-      "empty_description": "Opret et mål for at spore teamfremskridt på tværs af flere kurser.",
-      "created": "Mål skabt",
-      "updated": "Mål opdateret",
-      "deleted": "Mål slettet",
-      "delete_confirm": "Vil du slette dette mål? Per-elev statushistorik vil blive fjernet.",
-      "lms": {
-        "heading": "Dine mål",
-        "empty_title": "Ingen mål tildelt",
-        "empty_description": "Når dine instruktører sætter sig mål, dukker de op her.",
-        "due_in_days": "Forfalder om {days} dage",
-        "due_tomorrow": "Afleveres i morgen",
-        "due_today": "Forfalder i dag",
-        "overdue": "Forfalden",
-        "no_deadline": "Ingen deadline"
-      },
-      "tile": {
-        "on_track": "på sporet",
-        "completed_short": "afsluttet",
-        "overdue_short": "forfalden",
-        "at_risk_short": "i fare"
-      },
-      "status": {
-        "completed": "Afsluttet",
-        "in_progress": "I gang",
-        "at_risk": "I fare",
-        "overdue": "Forfalden",
-        "not_started": "Ikke startet",
-        "waived": "Frafaldet"
-      },
-      "deadline_kind": {
-        "absolute": "Absolut dato",
-        "relative_to_join": "I forhold til elevtilslutning",
-        "recurring": "Tilbagevendende",
-        "none": "Ingen deadline"
-      },
-      "type": {
-        "complete_all": "Gennemfør alle udvalgte kurser",
-        "n_of_m": "Gennemfør N af M udvalgte kurser",
-        "score": "Score over tærsklen på hvert kursus",
-        "pass_rate": "Teamets beståelsesgrænse",
-        "readiness": "Beredskab (ingen deadline)"
-      },
-      "modal": {
-        "create_title": "Nyt mål",
-        "edit_title": "Rediger mål",
-        "title_label": "Titel",
-        "title_placeholder": "f.eks. Onboarding rampe",
-        "description_label": "Beskrivelse",
-        "description_placeholder": "Valgfri kontekst for holdet",
-        "type_label": "Type",
-        "courses_label": "Kurser",
-        "required_count_label": "Antal nødvendige kurser",
-        "score_threshold_label": "Beståelsesscore pr. elev (%)",
-        "team_pass_rate_label": "Holdbeståelsesprocent (%)",
-        "deadline_label": "Deadline",
-        "deadline_date_label": "Deadline dato",
-        "relative_days_label": "Dage fra eleven tiltræder",
-        "recurring_months_label": "Gentag hver (måned)",
-        "reminders_label": "Påmindelser (dage før termin)",
-        "reminders_helper": "Kommasepareret. Eksempel: 7, 3, 1",
-        "save": "Gem",
-        "cancel": "Annuller"
-      }
+      "empty_title": "No notes yet",
+      "empty_description": "Take notes while watching a lesson and they will show up here.",
+      "no_content": "No content yet"
     }
   }
 }

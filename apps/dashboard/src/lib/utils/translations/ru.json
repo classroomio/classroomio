@@ -498,7 +498,8 @@
     "explore": "Исследуйте",
     "help": "Помощь",
     "settings": "Настройки",
-    "cohorts": "Когорты"
+    "programs": "Программы",
+    "my_notes": "My Notes"
   },
   "upgrade": {
     "certificate": "Обновите свой план для создания сертификатов",
@@ -4751,210 +4752,19 @@
       "failed": "Загрузка не удалась"
     }
   },
-  "cohorts": {
-    "heading": "Когорты",
-    "page_title": "Когорты",
-    "create": "Новая когорта",
-    "create_success": "Когорта создана",
-    "update_success": "Когорта обновлена",
-    "delete_success": "Когорта удалена",
-    "members_added": "Добавлены участники",
-    "member_removed": "Участник удален",
-    "course_added": "Курс добавлен",
-    "course_removed": "Курс удален.",
-    "empty_title": "Пока нет когорт",
-    "empty_description": "Создайте свою первую когорту сертификации или соответствия требованиям.",
-    "settings": {
-      "general": "Общий",
-      "name_label": "Имя",
-      "description_label": "Описание",
-      "status_label": "Статус",
-      "save": "Сохранить изменения",
-      "danger_zone": "Опасная зона",
-      "delete": "Удалить когорту",
-      "delete_description": "После удаления эту когорту и все ее данные невозможно восстановить.",
-      "confirm_delete": "Вы уверены, что хотите удалить эту когорту? Это невозможно отменить."
-    },
-    "lms": {
-      "empty_title": "Пока нет когорт",
-      "empty_description": "Вы не были зарегистрированы ни в одной когорте."
-    },
-    "people": {
-      "invite": "Пригласить",
-      "invite_modal_title": "Пригласить участников",
-      "invite_modal_description": "Добавляйте людей в эту когорту по электронной почте.",
-      "email_label": "электронная почта",
-      "role_label": "Роль",
-      "add_another": "Добавить еще",
-      "invite_submit": "Отправить приглашения",
-      "empty_title": "Пока нет участников",
-      "empty_description": "Пригласите людей присоединиться к этой когорте."
-    },
-    "courses": {
-      "add": "Добавить курс",
-      "add_modal_title": "Добавить курс в когорту",
-      "select_course": "Выберите курс",
-      "select_placeholder": "Выбрать курс…",
-      "empty_title": "Курсов пока нет",
-      "empty_description": "Добавьте курсы в эту когорту.",
-      "select_courses": "Выберите курсы",
-      "search_placeholder": "Поиск курсов",
-      "no_available_courses": "Нет доступных курсов для добавления.",
-      "no_matching_courses": "Нет курсов, соответствующих вашему запросу.",
-      "no_matching_cohort_courses": "Никакие курсы когорты не соответствуют вашему запросу.",
-      "pagination_status": "Страница {page} из {totalPages}",
-      "published_access_callout_title": "Доступ для студентов",
-      "published_access_callout_description": "Студенты имеют доступ только к опубликованным курсам. Курсы могут быть включены в эту когорту для вашей команды, пока они еще не опубликованы, и остаются скрытыми от учащихся, пока вы их не опубликуете."
-    },
-    "newsfeed": {
-      "post": "Новое сообщение",
-      "post_placeholder": "Что у тебя на уме?",
-      "post_submit": "Сообщение",
-      "empty_title": "Пока нет сообщений",
-      "empty_description": "Будьте первым, кто опубликует что-либо.",
-      "heading": "Лента новостей",
-      "make_a_post": "Сделать публикацию",
-      "edit_post": "Редактировать сообщение",
-      "editor_placeholder": "Поделитесь обновлением со своей когортой",
-      "cancel": "Отмена",
-      "pinned": "Закреплено",
-      "delete_feed_title": "Удалить сообщение",
-      "delete_feed_description": "Вы уверены, что хотите удалить этот пост?",
-      "confirm_delete": "Удалить",
-      "user_avatar_alt": "Аватар пользователя",
-      "comments": {
-        "comment": "комментарий",
-        "showing_of": "Показаны {shown} из {total}",
-        "hide": "Скрыть комментарии",
-        "placeholder": "Добавить комментарий к когорте",
-        "submit_aria": "Отправить комментарий",
-        "delete": "Удалить"
+  "notes": {
+    "page_title": "My Notes",
+    "heading": "My Notes",
+    "description": "Notes you take while learning appear here.",
+    "list": {
+      "search": "Search notes",
+      "tabs": {
+        "all": "All notes",
+        "from_lessons": "From lessons"
       },
-      "card": {
-        "pin": "Пин-код",
-        "unpin": "Открепить",
-        "edit": "Редактировать",
-        "delete": "Удалить"
-      }
-    },
-    "create_modal": {
-      "title": "Создать когорту",
-      "description": "Добавьте новую когорту сертификации или соответствия.",
-      "name_label": "Имя",
-      "name_placeholder": "например Сертификация безопасности OSHA",
-      "description_label": "Описание",
-      "description_placeholder": "О чем эта когорта?",
-      "submit": "Создать"
-    },
-    "sidebar": {
-      "newsfeed": "Лента новостей",
-      "courses": "Курсы",
-      "people": "Люди",
-      "settings": "Настройки"
-    },
-    "status": {
-      "active": "Активный",
-      "inactive": "Неактивный",
-      "archived": "В архиве"
-    },
-    "description": "Предоставьте группе людей доступ к нескольким курсам, например к классу.",
-    "search_placeholder": "Поиск когорт",
-    "multiple_added": "Курсы добавлены",
-    "no_matching_cohorts": "Ни одна когорта не соответствует вашим фильтрам.",
-    "card": {
-      "courses": "Курсы",
-      "students": "Студенты"
-    },
-    "table": {
-      "name": "Имя",
-      "courses": "Курсы",
-      "students": "Студенты",
-      "status": "Статус",
-      "description": "Описание"
-    },
-    "filters": {
-      "filter": "Фильтр",
-      "clear_all": "Очистить все",
-      "popover_title": "Фильтры",
-      "sort": "Сортировать",
-      "order": "Заказать",
-      "status": "Статус",
-      "ascending": "по возрастанию",
-      "descending": "Описание",
-      "sort_name": "Имя",
-      "sort_courses": "Курсы",
-      "sort_students": "Студенты",
-      "sort_status": "Статус"
-    },
-    "invite_sent": "Приглашения отправлены",
-    "goals": {
-      "heading": "Цели обучения",
-      "description": "Установите измеримые цели, охватывающие несколько курсов для всех участников этой когорты.",
-      "add": "Новая цель",
-      "empty_title": "Целей пока нет",
-      "empty_description": "Создайте цель для отслеживания прогресса команды на нескольких курсах.",
-      "created": "Цель создана",
-      "updated": "Цель обновлена",
-      "deleted": "Цель удалена",
-      "delete_confirm": "Удалить эту цель? История статуса каждого учащегося будет удалена.",
-      "lms": {
-        "heading": "Ваши цели",
-        "empty_title": "Цели не назначены",
-        "empty_description": "Когда ваши преподаватели поставят цели, они появятся здесь.",
-        "due_in_days": "Срок оплаты: {days} дн.",
-        "due_tomorrow": "Срок завтра",
-        "due_today": "Срок оплаты сегодня",
-        "overdue": "Просрочено",
-        "no_deadline": "Нет срока"
-      },
-      "tile": {
-        "on_track": "на ходу",
-        "completed_short": "завершено",
-        "overdue_short": "просроченный",
-        "at_risk_short": "в опасности"
-      },
-      "status": {
-        "completed": "Завершено",
-        "in_progress": "В процессе",
-        "at_risk": "В зоне риска",
-        "overdue": "Просрочено",
-        "not_started": "Не запущено",
-        "waived": "Отказано"
-      },
-      "deadline_kind": {
-        "absolute": "Абсолютная дата",
-        "relative_to_join": "Относительно присоединения студента",
-        "recurring": "повторяющийся",
-        "none": "Нет срока"
-      },
-      "type": {
-        "complete_all": "Завершить все выбранные курсы",
-        "n_of_m": "Завершить выбранные курсы N из M",
-        "score": "Оценка выше порога на каждом курсе",
-        "pass_rate": "Порог проходимости команды",
-        "readiness": "Готовность (без сроков)"
-      },
-      "modal": {
-        "create_title": "Новая цель",
-        "edit_title": "Изменить цель",
-        "title_label": "Название",
-        "title_placeholder": "например Посадочная рампа",
-        "description_label": "Описание",
-        "description_placeholder": "Дополнительный контекст для команды",
-        "type_label": "Тип",
-        "courses_label": "Курсы",
-        "required_count_label": "Необходимое количество курсов",
-        "score_threshold_label": "Проходной балл на одного учащегося (%)",
-        "team_pass_rate_label": "Процент проходов команды (%)",
-        "deadline_label": "Крайний срок",
-        "deadline_date_label": "Крайний срок",
-        "relative_days_label": "Дни с момента присоединения студента",
-        "recurring_months_label": "Повторять каждые (месяцев)",
-        "reminders_label": "Напоминания (за несколько дней до наступления срока)",
-        "reminders_helper": "Через запятую. Пример: 7, 3, 1",
-        "save": "Сохранить",
-        "cancel": "Отмена"
-      }
+      "empty_title": "No notes yet",
+      "empty_description": "Take notes while watching a lesson and they will show up here.",
+      "no_content": "No content yet"
     }
   }
 }

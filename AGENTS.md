@@ -593,3 +593,20 @@ The seed (`packages/db/src/utils/seed/organizationmember.ts`) creates **three in
 | Skillshare Test (`skillshare-test`) | `early-adopter@test.com` | `early-adopter-student@test.com` | Product Management Fundamentals |
 
 In cloud mode you can demonstrate tenant isolation on the single local instance by visiting each org's public catalog via the `?org=<siteName>` param, e.g. `http://localhost:5173/?org=coursera-test` vs `?org=udemy-test` vs `?org=skillshare-test` — each renders its own branded catalog and courses. (Note: a user enrolled in courses across orgs becomes a member of multiple tenants, so after login the dashboard may open whichever org that user most recently used.)
+
+### Local session profiles: admin dashboard vs student/public org site
+
+On localhost, `?org=<siteName>` sets the `_orgSiteName` cookie (path `/`). That makes `getOrgSiteInfo` treat the browser as an **org public site** (`isOrgSite`), which drives student-facing routing (catalog, enrollment, `/lms`, lesson Take Note). It is **not** the same session profile as the org admin dashboard.
+
+Use **two browser profiles** so cookie state does not bleed:
+
+| Profile | Setup | Use for |
+|---|---|---|
+| **Admin dashboard** | Normal window; login only; **do not** visit `?org=` | `/org/[slug]/notes`, org settings, course admin, Share dialog, import |
+| **Student / public org site** | Incognito or a separate window; open `http://localhost:5173/?org=<siteName>` first | Branded catalog, enrollment, `/lms/notes`, lesson Take Note as a learner |
+
+**Gotchas:**
+
+- If `_orgSiteName` is set in the same profile where you test admin routes, `/org/[slug]/...` may redirect to `/lms` — expected org-site behavior, not a Notes bug. Clear the cookie (DevTools → Application → Cookies → `_orgSiteName`) or use a fresh incognito window.
+- For screen recordings or QA walkthroughs, script the split explicitly: Window A = admin org workspace; Window B = incognito + `?org=` = student experience.
+- Do not set `?org=` immediately before demoing admin-only surfaces (e.g. org Notes workspace) in the same browser profile.

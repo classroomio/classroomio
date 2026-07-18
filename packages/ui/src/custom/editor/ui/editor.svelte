@@ -29,6 +29,8 @@
   import Link from './menus/Link.svelte';
   import slashcommand from '../extensions/slash-command/slashcommand';
   import SlashCommandList from './components/SlashCommandList.svelte';
+  import { createTableOfContentsExtensions } from '../extensions/table-of-contents';
+  import TableOfContentsBlockComp from './components/TableOfContentsBlock.svelte';
 
   import '../editor.css';
   import './style.css';
@@ -48,7 +50,8 @@
     onUpdate,
     autofocus = false,
     class: className,
-    placeholder = ''
+    placeholder = '',
+    extraExtensions = []
   }: EdraEditorProps = $props();
 
   onMount(() => {
@@ -71,7 +74,9 @@
         AudioExtended(AudioExtendedComp),
         IFramePlaceholder(IFramePlaceHolderComp),
         IFrameExtended(IFrameExtendedComp),
-        slashcommand(SlashCommandList)
+        slashcommand(SlashCommandList),
+        ...createTableOfContentsExtensions(TableOfContentsBlockComp),
+        ...extraExtensions
       ],
       {
         onUpdate,

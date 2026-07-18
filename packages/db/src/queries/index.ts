@@ -19,3 +19,4 @@ export * from './cohort';
 export * from './widget';
 export * from './jobs';
 export * from './media-transcript';
+export * from './notes';

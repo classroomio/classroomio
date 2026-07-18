@@ -1319,6 +1319,8 @@
     "analytics": "Analytics",
     "compliance": "Compliance",
     "courses": "Courses",
+    "notes": "Notes",
+    "cohorts": "Cohorts",
     "tags": "Tags",
     "community": "Community",
     "audience": "Audience",
@@ -4024,6 +4026,7 @@
   "lms_navigation": {
     "home": "Home",
     "my_learning": "My Learning",
+    "my_notes": "My Notes",
     "certificates": "Certificates",
     "exercise": "Exercise",
     "community": "Community",
@@ -4042,6 +4045,146 @@
     "not_completed": "No Course Completed",
     "any_course": "Any course that you complete will be displayed here",
     "find_courses": "Find courses"
+  },
+  "notes": {
+    "page_title": "My Notes",
+    "heading": "My Notes",
+    "description": "Notes you take while learning appear here.",
+    "org_description": "Brainstorm and collaborate on course content before migrating it into a course.",
+    "take_note": {
+      "open": "Take Note",
+      "close": "Close Note"
+    },
+    "usage": {
+      "workspace": "{used}/{limit} workspace notes used"
+    },
+    "lesson_panel": {
+      "loading": "Loading note…",
+      "load_error": "Could not load this note.",
+      "view_lesson": "View lesson",
+      "insert_timestamp": "Insert timestamp",
+      "timestamp_hint": "Play the lesson video to add timestamps.",
+      "placeholder": "Write notes about this lesson…"
+    },
+    "list": {
+      "search": "Search notes",
+      "tabs": {
+        "all": "All notes",
+        "team": "Shared with team",
+        "from_lessons": "From lessons"
+      },
+      "shared_with_team": "Team",
+      "by_author": "By {name}",
+      "empty_title": "No notes yet",
+      "empty_description": "Take notes while watching a lesson and they will show up here.",
+      "no_content": "No content yet"
+    },
+    "org": {
+      "new_note": "New note",
+      "new_note_title": "Untitled",
+      "import": "Import",
+      "create_error": "Could not create note.",
+      "import_error": "Could not import note. Use .md, .txt, or .docx files up to 5MB.",
+      "import_success": "Note imported"
+    },
+    "tags": {
+      "heading": "Tags",
+      "add": "Add tag",
+      "popover_title": "Add tags to this note",
+      "empty_groups": "Create tags in organization settings to organize notes.",
+      "save_error": "Could not save tags.",
+      "filter_all": "All tags"
+    },
+    "share": {
+      "open": "Share",
+      "title": "Share note",
+      "description": "Choose who on your team can access this note.",
+      "private_label": "Only you",
+      "private_description": "Only you can view and edit this note.",
+      "team_label": "Your team",
+      "team_description": "All admins and tutors in {orgName} can view this note.",
+      "read_only_banner": "You can view this note. Only the author can edit it.",
+      "by_author": "By {name}",
+      "save": "Save",
+      "cancel": "Cancel",
+      "save_success": "Sharing updated",
+      "save_error": "Could not update sharing."
+    },
+    "editor": {
+      "page_title": "Edit note",
+      "loading": "Loading note…",
+      "load_error": "Could not load this note.",
+      "title_placeholder": "Untitled",
+      "placeholder": "Start writing…",
+      "version_history": {
+        "open": "Version history",
+        "title": "Version history",
+        "loading": "Loading versions…",
+        "empty": "No versions yet.",
+        "versions": "Versions",
+        "current": "Current version",
+        "preview": "Preview",
+        "restore": "Restore version",
+        "restore_success": "Version restored",
+        "restore_error": "Could not restore version.",
+        "load_more": "Load more"
+      },
+      "delete": "Delete",
+      "delete_title": "Delete note?",
+      "delete_description": "This note will be permanently removed. This action cannot be undone.",
+      "delete_confirm": "Delete note",
+      "delete_success": "Note deleted",
+      "delete_error": "Could not delete note.",
+      "more_actions": "More actions",
+      "slash_hint": "Type / for formatting commands.",
+      "convert_to_template": "Convert to template",
+      "convert_to_template_coming_soon": "Note templates are coming soon."
+    },
+    "empty_page": {
+      "hint": "Press Enter to continue with an empty page, or pick an option (↑↓ to select).",
+      "aria_label": "New note options",
+      "empty": "Empty",
+      "with_table_of_contents": "With table of contents",
+      "templates": "Templates",
+      "import": "Import"
+    },
+    "templates": {
+      "heading": "Templates",
+      "empty": "Save a note as a template to reuse it here.",
+      "coming_soon": "Note templates are coming soon."
+    },
+    "comments": {
+      "heading": "Comments",
+      "count": "{count} comments",
+      "add": "Add comment",
+      "add_inline": "Comment",
+      "empty": "Select text in the note to start a comment thread.",
+      "open_heading": "Open",
+      "resolved_heading": "Resolved",
+      "new_thread_label": "New comment",
+      "reply_label": "Reply",
+      "reply_placeholder": "Write a comment…",
+      "reply": "Reply",
+      "post": "Post",
+      "resolve": "Resolve",
+      "reopen": "Reopen",
+      "anonymous": "Unknown user",
+      "save": "Save",
+      "edit": "Edit",
+      "delete": "Delete",
+      "mention_team_member": "Team member",
+      "mention_no_results": "No team members found",
+      "autosave_hint": "Saves automatically as you type.",
+      "empty_open": "No open comment threads.",
+      "empty_resolved": "No resolved comment threads."
+    },
+    "ai_panel": {
+      "open": "Ask AI",
+      "title": "Note assistant",
+      "empty_title": "Ask about this note",
+      "empty_description": "Get help summarizing, expanding, or turning this note into course content.",
+      "note_context": "Responses will use this note as context."
+    }
   },
   "certificates": {
     "heading": "Certificates",
@@ -4738,7 +4881,9 @@
     "resize_panel_aria_label": "Resize panel",
     "titles": {
       "ai_assistant": "AI Assistant",
-      "transcript": "Transcript"
+      "transcript": "Transcript",
+      "lesson_note": "Lesson Note",
+      "note_ai": "Note assistant"
     }
   },
   "cohorts": {

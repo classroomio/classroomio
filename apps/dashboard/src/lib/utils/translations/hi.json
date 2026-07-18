@@ -498,7 +498,8 @@
     "explore": "अन्वेषण करें",
     "help": "मदद",
     "settings": "सेटिंग्स",
-    "cohorts": "कोहोर्ट"
+    "programs": "कार्यक्रम",
+    "my_notes": "My Notes"
   },
   "upgrade": {
     "certificate": "प्रमाणपत्र बनाने की अपनी योजना को अपग्रेड करें",
@@ -4751,210 +4752,19 @@
       "failed": "अपलोड विफल रहा"
     }
   },
-  "cohorts": {
-    "heading": "कोहोर्ट",
-    "page_title": "कोहोर्ट",
-    "create": "नया कोहोर्ट",
-    "create_success": "कोहोर्ट बनाया गया",
-    "update_success": "कोहोर्ट अद्यतन किया गया",
-    "delete_success": "कोहोर्ट हटा दिया गया",
-    "members_added": "सदस्य जोड़े गए",
-    "member_removed": "सदस्य हटा दिया गया",
-    "course_added": "पाठ्यक्रम जोड़ा गया",
-    "course_removed": "पाठ्यक्रम हटा दिया गया",
-    "empty_title": "अभी तक कोई कोहोर्ट नहीं",
-    "empty_description": "अपना पहला प्रमाणन या अनुपालन कोहोर्ट बनाएं।",
-    "settings": {
-      "general": "सामान्य",
-      "name_label": "नाम",
-      "description_label": "विवरण",
-      "status_label": "स्थिति",
-      "save": "परिवर्तन सहेजें",
-      "danger_zone": "ख़तरे का क्षेत्र",
-      "delete": "कोहोर्ट हटाएँ",
-      "delete_description": "एक बार डिलीट होने के बाद, यह कोहोर्ट और इसका सारा डेटा पुनर्प्राप्त नहीं किया जा सकता है।",
-      "confirm_delete": "क्या आप वाकई इस कोहोर्ट को हटाना चाहते हैं? इसे असंपादित नहीं किया जा सकता है।"
-    },
-    "lms": {
-      "empty_title": "अभी तक कोई कोहोर्ट नहीं",
-      "empty_description": "आपको किसी भी कोहोर्ट में नामांकित नहीं किया गया है."
-    },
-    "people": {
-      "invite": "आमंत्रित करें",
-      "invite_modal_title": "सदस्यों को आमंत्रित करें",
-      "invite_modal_description": "लोगों को ईमेल द्वारा इस कोहोर्ट में जोड़ें.",
-      "email_label": "ईमेल",
-      "role_label": "भूमिका",
-      "add_another": "दूसरा जोड़ें",
-      "invite_submit": "निमंत्रण भेजें",
-      "empty_title": "अभी तक कोई सदस्य नहीं",
-      "empty_description": "लोगों को इस कोहोर्ट में शामिल होने के लिए आमंत्रित करें."
-    },
-    "courses": {
-      "add": "पाठ्यक्रम जोड़ें",
-      "add_modal_title": "कोहोर्ट में पाठ्यक्रम जोड़ें",
-      "select_course": "एक पाठ्यक्रम चुनें",
-      "select_placeholder": "एक कोर्स चुनें...",
-      "empty_title": "अभी तक कोई पाठ्यक्रम नहीं",
-      "empty_description": "इस कोहोर्ट में पाठ्यक्रम जोड़ें.",
-      "select_courses": "पाठ्यक्रम चुनें",
-      "search_placeholder": "पाठ्यक्रम खोजें",
-      "no_available_courses": "जोड़ने के लिए कोई पाठ्यक्रम उपलब्ध नहीं है.",
-      "no_matching_courses": "कोई भी पाठ्यक्रम आपकी खोज से मेल नहीं खाता.",
-      "no_matching_cohort_courses": "कोई भी कोहोर्ट पाठ्यक्रम आपकी खोज से मेल नहीं खाता।",
-      "pagination_status": "{page} का पेज {totalPages}",
-      "published_access_callout_title": "छात्र प्रवेश",
-      "published_access_callout_description": "छात्रों को केवल प्रकाशित पाठ्यक्रमों तक ही पहुंच है। पाठ्यक्रम अप्रकाशित रहते हुए भी आपकी टीम के लिए इस कोहोर्ट में हो सकते हैं, जबकि जब तक आप उन्हें प्रकाशित नहीं करते तब तक वे छात्रों से छिपे रहते हैं।"
-    },
-    "newsfeed": {
-      "post": "नई पोस्ट",
-      "post_placeholder": "आपके मन में क्या है?",
-      "post_submit": "पोस्ट",
-      "empty_title": "अभी तक कोई पोस्ट नहीं",
-      "empty_description": "कुछ पोस्ट करने वाले पहले व्यक्ति बनें.",
-      "heading": "न्यूज़फीड",
-      "make_a_post": "एक पोस्ट बनाएं",
-      "edit_post": "पोस्ट संपादित करें",
-      "editor_placeholder": "अपने कोहोर्ट के साथ एक अपडेट साझा करें",
-      "cancel": "रद्द करें",
-      "pinned": "पिन किया गया",
-      "delete_feed_title": "पोस्ट हटाएं",
-      "delete_feed_description": "क्या आप वाकई इस पोस्ट को हटाना चाहते हैं?",
-      "confirm_delete": "हटाएँ",
-      "user_avatar_alt": "उपयोगकर्ता अवतार",
-      "comments": {
-        "comment": "टिप्पणी",
-        "showing_of": "{shown} में से {total}",
-        "hide": "टिप्पणियाँ छिपाएँ",
-        "placeholder": "कोहोर्ट टिप्पणी जोड़ें",
-        "submit_aria": "टिप्पणी सबमिट करें",
-        "delete": "हटाएँ"
+  "notes": {
+    "page_title": "My Notes",
+    "heading": "My Notes",
+    "description": "Notes you take while learning appear here.",
+    "list": {
+      "search": "Search notes",
+      "tabs": {
+        "all": "All notes",
+        "from_lessons": "From lessons"
       },
-      "card": {
-        "pin": "पिन",
-        "unpin": "अनपिन करें",
-        "edit": "संपादित करें",
-        "delete": "हटाएँ"
-      }
-    },
-    "create_modal": {
-      "title": "कोहोर्ट बनाएं",
-      "description": "एक नया प्रमाणन या अनुपालन कोहोर्ट जोड़ें.",
-      "name_label": "नाम",
-      "name_placeholder": "जैसे OSHA सुरक्षा प्रमाणन",
-      "description_label": "विवरण",
-      "description_placeholder": "यह कोहोर्ट किस बारे में है?",
-      "submit": "बनाएँ"
-    },
-    "sidebar": {
-      "newsfeed": "न्यूज़फीड",
-      "courses": "पाठ्यक्रम",
-      "people": "लोग",
-      "settings": "सेटिंग्स"
-    },
-    "status": {
-      "active": "सक्रिय",
-      "inactive": "निष्क्रिय",
-      "archived": "संग्रहीत"
-    },
-    "description": "लोगों के एक समूह को एक कक्षा जैसे कई पाठ्यक्रमों तक पहुंच प्रदान करें",
-    "search_placeholder": "कोहोर्ट खोजें",
-    "multiple_added": "पाठ्यक्रम जोड़े गए",
-    "no_matching_cohorts": "कोई भी कोहोर्ट आपके फ़िल्टर से मेल नहीं खाता.",
-    "card": {
-      "courses": "पाठ्यक्रम",
-      "students": "छात्र"
-    },
-    "table": {
-      "name": "नाम",
-      "courses": "पाठ्यक्रम",
-      "students": "छात्र",
-      "status": "स्थिति",
-      "description": "विवरण"
-    },
-    "filters": {
-      "filter": "फ़िल्टर करें",
-      "clear_all": "सब साफ़ करें",
-      "popover_title": "फिल्टर",
-      "sort": "क्रमबद्ध करें",
-      "order": "आदेश",
-      "status": "स्थिति",
-      "ascending": "ए.एस.सी",
-      "descending": "वर्णन",
-      "sort_name": "नाम",
-      "sort_courses": "पाठ्यक्रम",
-      "sort_students": "छात्र",
-      "sort_status": "स्थिति"
-    },
-    "invite_sent": "निमंत्रण भेजा गया",
-    "goals": {
-      "heading": "सीखने के लक्ष्य",
-      "description": "मापने योग्य लक्ष्य निर्धारित करें जो इस कोहोर्ट में सभी के लिए कई पाठ्यक्रमों तक फैले हों।",
-      "add": "नया लक्ष्य",
-      "empty_title": "अभी तक कोई लक्ष्य नहीं",
-      "empty_description": "अनेक पाठ्यक्रमों में टीम की प्रगति को ट्रैक करने के लिए एक लक्ष्य बनाएं।",
-      "created": "लक्ष्य बनाया गया",
-      "updated": "लक्ष्य अद्यतन किया गया",
-      "deleted": "लक्ष्य हटा दिया गया",
-      "delete_confirm": "यह लक्ष्य हटाएं? प्रति-छात्र स्थिति इतिहास हटा दिया जाएगा.",
-      "lms": {
-        "heading": "आपके लक्ष्य",
-        "empty_title": "कोई लक्ष्य नहीं सौंपा गया",
-        "empty_description": "जब आपके प्रशिक्षक लक्ष्य निर्धारित करेंगे, तो वे यहां दिखाई देंगे।",
-        "due_in_days": "{days} दिनों में देय",
-        "due_tomorrow": "कल देय",
-        "due_today": "आज देय",
-        "overdue": "अतिदेय",
-        "no_deadline": "कोई समयसीमा नहीं"
-      },
-      "tile": {
-        "on_track": "ट्रैक पर",
-        "completed_short": "पूरा हुआ",
-        "overdue_short": "अतिदेय",
-        "at_risk_short": "ख़तरे में"
-      },
-      "status": {
-        "completed": "पूरा हुआ",
-        "in_progress": "प्रगति पर है",
-        "at_risk": "ख़तरे में",
-        "overdue": "अतिदेय",
-        "not_started": "शुरू नहीं हुआ",
-        "waived": "माफ़ कर दिया गया"
-      },
-      "deadline_kind": {
-        "absolute": "पूर्ण तिथि",
-        "relative_to_join": "विद्यार्थियों के शामिल होने के संबंध में",
-        "recurring": "आवर्ती",
-        "none": "कोई समयसीमा नहीं"
-      },
-      "type": {
-        "complete_all": "सभी चयनित पाठ्यक्रम पूर्ण करें",
-        "n_of_m": "एम चयनित पाठ्यक्रमों का एन पूरा करें",
-        "score": "प्रत्येक पाठ्यक्रम पर सीमा से अधिक अंक प्राप्त करें",
-        "pass_rate": "टीम पास-रेट सीमा",
-        "readiness": "तैयारी (कोई समय सीमा नहीं)"
-      },
-      "modal": {
-        "create_title": "नया लक्ष्य",
-        "edit_title": "लक्ष्य संपादित करें",
-        "title_label": "शीर्षक",
-        "title_placeholder": "जैसे ऑनबोर्डिंग रैंप",
-        "description_label": "विवरण",
-        "description_placeholder": "टीम के लिए वैकल्पिक संदर्भ",
-        "type_label": "प्रकार",
-        "courses_label": "पाठ्यक्रम",
-        "required_count_label": "आवश्यक पाठ्यक्रमों की संख्या",
-        "score_threshold_label": "प्रति छात्र उत्तीर्णांक (%)",
-        "team_pass_rate_label": "टीम पास दर (%)",
-        "deadline_label": "समयसीमा",
-        "deadline_date_label": "अंतिम तिथि",
-        "relative_days_label": "छात्र के शामिल होने के दिन से दिन",
-        "recurring_months_label": "प्रत्येक (महीने) दोहराएँ",
-        "reminders_label": "अनुस्मारक (नियत तिथि से कुछ दिन पहले)",
-        "reminders_helper": "अल्पविराम से अलग किया गया. उदाहरण: 7, 3, 1",
-        "save": "सहेजें",
-        "cancel": "रद्द करें"
-      }
+      "empty_title": "No notes yet",
+      "empty_description": "Take notes while watching a lesson and they will show up here.",
+      "no_content": "No content yet"
     }
   }
 }

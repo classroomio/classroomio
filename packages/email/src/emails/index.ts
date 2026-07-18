@@ -12,6 +12,7 @@ export * from './verify-email';
 export * from './on-password-reset';
 export * from './invite-teacher';
 export * from './newsfeed';
+export * from './note-comments';
 export * from './student-course-welcome';
 export * from './student-course-completion';
 export * from './student-course-invite';
@@ -29,6 +30,7 @@ export * from './submission-graded';
 export * from './student-limit-reached';
 export * from './student-limit-approaching';
 
+import type { noteCommentMentionEmail, noteCommentReplyEmail } from './note-comments';
 import type { newsfeedCommentEmail, newsfeedPostEmail } from './newsfeed';
 
 // Import types for schema mapping (must be after exports to avoid circular dependency)
@@ -68,6 +70,8 @@ export type EmailSchemas = {
   inviteTeacher: typeof inviteTeacherEmail.template.schema;
   newsfeedPost: typeof newsfeedPostEmail.template.schema;
   newsfeedComment: typeof newsfeedCommentEmail.template.schema;
+  noteCommentMention: typeof noteCommentMentionEmail.template.schema;
+  noteCommentReply: typeof noteCommentReplyEmail.template.schema;
   studentCourseWelcome: typeof studentCourseWelcomeEmail.template.schema;
   studentCourseCompletion: typeof studentCourseCompletionEmail.template.schema;
   studentCourseInvite: typeof studentCourseInviteEmail.template.schema;

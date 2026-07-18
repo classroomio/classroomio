@@ -509,3 +509,123 @@ input[type='checkbox'] {
   color: var(--color-destructive);
   border: 1px solid darkred;
 }
+
+.tiptap .note-comment-mark {
+  background-color: #fef9c3;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.tiptap .note-comment-mark.note-comment-mark-active {
+  background-color: #fde68a;
+  outline: 2px solid #facc15;
+  outline-offset: 1px;
+}
+
+.tiptap .note-comment-mark-resolved {
+  background-color: transparent;
+  outline: none;
+}
+
+.tiptap .note-comment-anchor-pulse {
+  animation: note-comment-pulse 1.2s ease-out 1;
+}
+
+@keyframes note-comment-pulse {
+  0% {
+    background-color: rgb(250 204 21 / 0.55);
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
+
+.tiptap .table-of-contents-block {
+  margin: 0.25rem 0 0.75rem;
+}
+
+.tiptap .table-of-contents-block__inner {
+  max-width: 18rem;
+  border: 1px solid rgb(0 0 0 / 0.08);
+  border-radius: 0.375rem;
+  background: rgb(0 0 0 / 0.02);
+  padding: 0.75rem 0.875rem;
+}
+
+.tiptap .table-of-contents-block__header {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 0.5rem;
+}
+
+.tiptap .table-of-contents-block__title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgb(0 0 0 / 0.45);
+}
+
+.tiptap .table-of-contents-block__empty {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: rgb(0 0 0 / 0.45);
+}
+
+.tiptap .table-of-contents-block__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tiptap .table-of-contents-block__item {
+  margin: 0;
+  padding-left: calc((var(--toc-level, 1) - 1) * 0.75rem);
+}
+
+.tiptap .table-of-contents-block__link {
+  display: flex;
+  width: 100%;
+  align-items: baseline;
+  gap: 0.25rem;
+  border: 0;
+  background: transparent;
+  padding: 0.125rem 0;
+  text-align: left;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: rgb(0 0 0 / 0.65);
+  cursor: pointer;
+}
+
+.tiptap .table-of-contents-block__link:hover {
+  color: rgb(0 0 0 / 0.9);
+}
+
+.tiptap .table-of-contents-block__index {
+  color: rgb(0 0 0 / 0.45);
+}
+
+.dark .tiptap .table-of-contents-block__inner {
+  border-color: rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.03);
+}
+
+.dark .tiptap .table-of-contents-block__title,
+.dark .tiptap .table-of-contents-block__empty,
+.dark .tiptap .table-of-contents-block__index {
+  color: rgb(255 255 255 / 0.45);
+}
+
+.dark .tiptap .table-of-contents-block__link {
+  color: rgb(255 255 255 / 0.72);
+}
+
+.dark .tiptap .table-of-contents-block__link:hover {
+  color: rgb(255 255 255 / 0.95);
+}

@@ -498,7 +498,8 @@
     "explore": "Khám phá",
     "help": "Trợ giúp",
     "settings": "Cài đặt",
-    "cohorts": "Nhóm học tập"
+    "programs": "Chương trình",
+    "my_notes": "My Notes"
   },
   "upgrade": {
     "certificate": "Nâng cấp gói của bạn để tạo chứng chỉ",
@@ -4751,210 +4752,19 @@
       "failed": "Tải lên không thành công"
     }
   },
-  "cohorts": {
-    "heading": "Nhóm học tập",
-    "page_title": "Nhóm học tập",
-    "create": "Nhóm học tập mới",
-    "create_success": "Đã tạo nhóm học tập",
-    "update_success": "Đã cập nhật nhóm học tập",
-    "delete_success": "Nhóm học tập đã bị xóa",
-    "members_added": "Đã thêm thành viên",
-    "member_removed": "Thành viên đã bị xóa",
-    "course_added": "Đã thêm khóa học",
-    "course_removed": "Đã xóa khóa học",
-    "empty_title": "Chưa có nhóm học tập nào",
-    "empty_description": "Tạo nhóm học tập chứng nhận hoặc tuân thủ đầu tiên của bạn.",
-    "settings": {
-      "general": "chung",
-      "name_label": "Tên",
-      "description_label": "Mô tả",
-      "status_label": "Trạng thái",
-      "save": "Lưu thay đổi",
-      "danger_zone": "Vùng nguy hiểm",
-      "delete": "Xóa nhóm học tập",
-      "delete_description": "Sau khi xóa, nhóm học tập này và tất cả dữ liệu của nó sẽ không thể phục hồi được.",
-      "confirm_delete": "Bạn có chắc chắn muốn xóa nhóm học tập này? Điều này không thể hoàn tác được."
-    },
-    "lms": {
-      "empty_title": "Chưa có nhóm học tập nào",
-      "empty_description": "Bạn chưa được ghi danh vào bất kỳ nhóm học tập nào."
-    },
-    "people": {
-      "invite": "Mời",
-      "invite_modal_title": "Mời thành viên",
-      "invite_modal_description": "Thêm người vào nhóm học tập này qua email.",
-      "email_label": "Email",
-      "role_label": "Vai trò",
-      "add_another": "Thêm cái khác",
-      "invite_submit": "Gửi lời mời",
-      "empty_title": "Chưa có thành viên nào",
-      "empty_description": "Mời mọi người tham gia nhóm học tập này."
-    },
-    "courses": {
-      "add": "Thêm khóa học",
-      "add_modal_title": "Thêm khóa học vào nhóm học tập",
-      "select_course": "Chọn một khóa học",
-      "select_placeholder": "Chọn một khóa học…",
-      "empty_title": "Chưa có khóa học nào",
-      "empty_description": "Thêm các khóa học vào nhóm học tập này.",
-      "select_courses": "Chọn khóa học",
-      "search_placeholder": "Tìm kiếm khóa học",
-      "no_available_courses": "Không có khóa học có sẵn để thêm.",
-      "no_matching_courses": "Không có khóa học phù hợp với tìm kiếm của bạn.",
-      "no_matching_cohort_courses": "Không có nhóm học tập khóa học phù hợp với tìm kiếm của bạn.",
-      "pagination_status": "Trang {page} trong tổng số {totalPages}",
-      "published_access_callout_title": "Quyền truy cập của sinh viên",
-      "published_access_callout_description": "Sinh viên chỉ có quyền truy cập vào các khóa học được xuất bản. Các khóa học có thể có trong nhóm học tập này cho nhóm của bạn trong khi vẫn chưa được xuất bản và các khóa học đó sẽ bị ẩn với sinh viên cho đến khi bạn xuất bản chúng."
-    },
-    "newsfeed": {
-      "post": "Bài đăng mới",
-      "post_placeholder": "Bạn đang nghĩ gì thế?",
-      "post_submit": "bài đăng",
-      "empty_title": "Chưa có bài viết nào",
-      "empty_description": "Hãy là người đầu tiên đăng một cái gì đó.",
-      "heading": "Nguồn cấp tin tức",
-      "make_a_post": "Tạo một bài đăng",
-      "edit_post": "Chỉnh sửa bài đăng",
-      "editor_placeholder": "Chia sẻ bản cập nhật với nhóm học tập của bạn",
-      "cancel": "Hủy bỏ",
-      "pinned": "Đã ghim",
-      "delete_feed_title": "Xóa bài đăng",
-      "delete_feed_description": "Bạn có chắc chắn muốn xóa bài đăng này?",
-      "confirm_delete": "Xóa",
-      "user_avatar_alt": "Hình đại diện của người dùng",
-      "comments": {
-        "comment": "bình luận",
-        "showing_of": "Đang hiển thị {shown} trong tổng số {total}",
-        "hide": "Ẩn bình luận",
-        "placeholder": "Thêm bình luận nhóm học tập",
-        "submit_aria": "Gửi bình luận",
-        "delete": "Xóa"
+  "notes": {
+    "page_title": "My Notes",
+    "heading": "My Notes",
+    "description": "Notes you take while learning appear here.",
+    "list": {
+      "search": "Search notes",
+      "tabs": {
+        "all": "All notes",
+        "from_lessons": "From lessons"
       },
-      "card": {
-        "pin": "Ghim",
-        "unpin": "Bỏ ghim",
-        "edit": "Chỉnh sửa",
-        "delete": "Xóa"
-      }
-    },
-    "create_modal": {
-      "title": "Tạo nhóm học tập",
-      "description": "Thêm một nhóm học tập chứng nhận hoặc tuân thủ mới.",
-      "name_label": "Tên",
-      "name_placeholder": "ví dụ: Chứng nhận an toàn OSHA",
-      "description_label": "Mô tả",
-      "description_placeholder": "Nhóm học tập này nói về cái gì?",
-      "submit": "Tạo"
-    },
-    "sidebar": {
-      "newsfeed": "Nguồn cấp tin tức",
-      "courses": "Khóa học",
-      "people": "mọi người",
-      "settings": "Cài đặt"
-    },
-    "status": {
-      "active": "Đang hoạt động",
-      "inactive": "Không hoạt động",
-      "archived": "Đã lưu trữ"
-    },
-    "description": "Cấp cho một nhóm người quyền truy cập vào nhiều khóa học, chẳng hạn như một lớp học",
-    "search_placeholder": "Tìm kiếm nhóm học tập",
-    "multiple_added": "Đã thêm khóa học",
-    "no_matching_cohorts": "Không có nhóm học tập nào phù hợp với bộ lọc của bạn.",
-    "card": {
-      "courses": "Khóa học",
-      "students": "Sinh viên"
-    },
-    "table": {
-      "name": "Tên",
-      "courses": "Khóa học",
-      "students": "Sinh viên",
-      "status": "Trạng thái",
-      "description": "Mô tả"
-    },
-    "filters": {
-      "filter": "Lọc",
-      "clear_all": "Xóa tất cả",
-      "popover_title": "Bộ lọc",
-      "sort": "Sắp xếp",
-      "order": "Đặt hàng",
-      "status": "Trạng thái",
-      "ascending": "tăng dần",
-      "descending": "mô tả",
-      "sort_name": "Tên",
-      "sort_courses": "Khóa học",
-      "sort_students": "Sinh viên",
-      "sort_status": "Trạng thái"
-    },
-    "invite_sent": "Đã gửi lời mời",
-    "goals": {
-      "heading": "Mục tiêu học tập",
-      "description": "Đặt các mục tiêu có thể đo lường được trải rộng trên nhiều khóa học cho mọi người trong nhóm học tập này.",
-      "add": "Mục tiêu mới",
-      "empty_title": "Chưa có mục tiêu nào",
-      "empty_description": "Tạo mục tiêu để theo dõi tiến độ của nhóm qua nhiều khóa học.",
-      "created": "Đã tạo mục tiêu",
-      "updated": "Đã cập nhật mục tiêu",
-      "deleted": "Đã xóa mục tiêu",
-      "delete_confirm": "Xóa mục tiêu này? Lịch sử trạng thái của mỗi học sinh sẽ bị xóa.",
-      "lms": {
-        "heading": "Mục tiêu của bạn",
-        "empty_title": "Không có mục tiêu nào được giao",
-        "empty_description": "Khi người hướng dẫn của bạn đặt mục tiêu, họ sẽ hiển thị ở đây.",
-        "due_in_days": "Đến hạn sau {days} ngày nữa",
-        "due_tomorrow": "Hạn chót vào ngày mai",
-        "due_today": "Hạn chót hôm nay",
-        "overdue": "Quá hạn",
-        "no_deadline": "Không có thời hạn"
-      },
-      "tile": {
-        "on_track": "đi đúng hướng",
-        "completed_short": "hoàn thành",
-        "overdue_short": "quá hạn",
-        "at_risk_short": "có nguy cơ"
-      },
-      "status": {
-        "completed": "Đã hoàn thành",
-        "in_progress": "Đang tiến hành",
-        "at_risk": "Có nguy cơ",
-        "overdue": "Quá hạn",
-        "not_started": "Chưa bắt đầu",
-        "waived": "Miễn trừ"
-      },
-      "deadline_kind": {
-        "absolute": "Ngày tuyệt đối",
-        "relative_to_join": "Liên quan đến việc sinh viên tham gia",
-        "recurring": "Định kỳ",
-        "none": "Không có thời hạn"
-      },
-      "type": {
-        "complete_all": "Hoàn thành tất cả các khóa học đã chọn",
-        "n_of_m": "Hoàn thành N trong số M khóa học đã chọn",
-        "score": "Đạt điểm trên ngưỡng trong mỗi khóa học",
-        "pass_rate": "Ngưỡng tỷ lệ đậu của đội",
-        "readiness": "Sẵn sàng (không có thời hạn)"
-      },
-      "modal": {
-        "create_title": "Mục tiêu mới",
-        "edit_title": "Chỉnh sửa mục tiêu",
-        "title_label": "Tiêu đề",
-        "title_placeholder": "ví dụ: Đoạn đường nối",
-        "description_label": "Mô tả",
-        "description_placeholder": "Bối cảnh tùy chọn cho nhóm",
-        "type_label": "loại",
-        "courses_label": "Khóa học",
-        "required_count_label": "Số lượng khóa học yêu cầu",
-        "score_threshold_label": "Điểm đậu của mỗi học sinh (%)",
-        "team_pass_rate_label": "Tỷ lệ vượt qua của đội (%)",
-        "deadline_label": "thời hạn",
-        "deadline_date_label": "Ngày hết hạn",
-        "relative_days_label": "Ngày kể từ khi học viên tham gia",
-        "recurring_months_label": "Lặp lại mỗi (tháng)",
-        "reminders_label": "Lời nhắc (ngày trước hạn)",
-        "reminders_helper": "Được phân tách bằng dấu phẩy. Ví dụ: 7, 3, 1",
-        "save": "Lưu",
-        "cancel": "Hủy bỏ"
-      }
+      "empty_title": "No notes yet",
+      "empty_description": "Take notes while watching a lesson and they will show up here.",
+      "no_content": "No content yet"
     }
   }
 }
