@@ -3430,7 +3430,16 @@
           "add_theme": "Agregar tema"
         }
       },
-      "page_subtitle": "Establezca el nombre, el logotipo y el tema que ven los estudiantes para esta organización."
+      "page_subtitle": "Establezca el nombre, el logotipo y el tema que ven los estudiantes para esta organización.",
+      "notes": {
+        "heading": "Notes",
+        "description": "Control how new workspace notes are shared with your team.",
+        "share_by_default": {
+          "label": "Share new notes with the team",
+          "description": "When enabled, new workspace notes are visible to all admins and tutors. You can still make individual notes private."
+        },
+        "save": "Save notes settings"
+      }
     },
     "profile": {
       "heading": "Perfil",
@@ -4760,12 +4769,18 @@
     "list": {
       "search": "Search notes",
       "tabs": {
-        "all": "All notes",
-        "from_lessons": "From lessons"
+        "all": "All",
+        "from_lessons": "From lessons",
+        "mine": "Mine",
+        "shared_with_me": "Shared"
       },
       "empty_title": "No notes yet",
       "empty_description": "Take notes while watching a lesson and they will show up here.",
-      "no_content": "No content yet"
+      "no_content": "No content yet",
+      "badge_private": "Private",
+      "badge_shared_by_me": "Shared",
+      "badge_public": "Public",
+      "by_author": "By {name}"
     },
     "workspace": {
       "empty_title": "No note selected",
@@ -4777,7 +4792,12 @@
         "pinned": "Pinned",
         "previous_7_days": "Previous 7 Days",
         "previous_30_days": "Previous 30 Days"
-      }
+      },
+      "empty_mine": "You have no notes yet",
+      "empty_shared": "No notes have been shared with you",
+      "empty_shared_title": "Nothing shared yet",
+      "empty_shared_description": "When a teammate shares a note with the team, it will show up here.",
+      "empty_filtered": "No notes match your filters"
     },
     "convert_course": {
       "button": "Convert to course",

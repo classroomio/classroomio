@@ -2049,6 +2049,9 @@ export const organization = pgTable(
         enrollmentWelcome?: boolean;
         courseCompletion?: boolean;
       };
+      notes?: {
+        defaultVisibility?: 'private' | 'team';
+      };
     }>(),
     landingpage: jsonb().default({}).$type<{
       header?: {

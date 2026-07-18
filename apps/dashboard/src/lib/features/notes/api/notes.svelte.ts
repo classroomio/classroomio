@@ -41,6 +41,14 @@ class NotesApi extends BaseApiWithErrors {
   notes = $state<NoteListItem[]>([]);
   templates = $state<NoteTemplates>([]);
   usage = $state<NoteUsage | null>(null);
+  lastListParams = $state<{
+    origin?: 'workspace' | 'lesson_capture';
+    courseId?: string;
+    lessonId?: string;
+    search?: string;
+    tagId?: string;
+    scope?: 'mine' | 'team' | 'all';
+  } | null>(null);
 
   async listNotes(params?: {
     origin?: 'workspace' | 'lesson_capture';
@@ -52,6 +60,8 @@ class NotesApi extends BaseApiWithErrors {
   }) {
     const org = get(currentOrg);
     if (!org.id) return;
+
+    this.lastListParams = params ?? null;
 
     await this.execute<ListNotesRequest>({
       requestFn: () =>
@@ -74,6 +84,14 @@ class NotesApi extends BaseApiWithErrors {
         this.notes = [];
       }
     });
+  }
+
+  async refreshList() {
+    if (!this.lastListParams) {
+      return;
+    }
+
+    await this.listNotes(this.lastListParams);
   }
 
   async fetchUsage() {

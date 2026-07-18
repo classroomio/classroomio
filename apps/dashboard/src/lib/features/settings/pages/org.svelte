@@ -1,5 +1,6 @@
 <script lang="ts">
   import PlusIcon from '@lucide/svelte/icons/plus';
+  import FileTextIcon from '@lucide/svelte/icons/file-text';
   import debounce from 'lodash/debounce';
   import ColorPicker from 'svelte-awesome-color-picker';
 
@@ -7,13 +8,24 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
   import { orgApi } from '$features/org/api/org.svelte';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   import { Input } from '@cio/ui/base/input';
+  import { Switch } from '@cio/ui/base/switch';
+  import { Button } from '@cio/ui/base/button';
   import { UploadImage, UnsavedChanges } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
   let avatar = $state<string | File | undefined>();
   let hasUnsavedChanges = $state(false);
+  let shareNewNotesWithTeam = $state(getShareNewNotesWithTeam($currentOrg?.settings));
+  let isSavingNotesSettings = $state(false);
+
+  function getShareNewNotesWithTeam(settings: unknown) {
+    const notesSettings = (settings as { notes?: { defaultVisibility?: string } } | null | undefined)?.notes;
+
+    return notesSettings?.defaultVisibility === 'team';
+  }
 
   const themes = {
     rose: 'rose',
@@ -60,8 +72,42 @@
     }
   }
 
+  async function handleSaveNotesSettings() {
+    if (!$currentOrg?.id) {
+      return;
+    }
+
+    isSavingNotesSettings = true;
+    const existingSettings = ($currentOrg.settings as Record<string, unknown>) || {};
+    const existingNotes = (existingSettings.notes as Record<string, unknown>) || {};
+
+    await orgApi.update(
+      $currentOrg.id,
+      {
+        settings: {
+          ...existingSettings,
+          notes: {
+            ...existingNotes,
+            defaultVisibility: shareNewNotesWithTeam ? 'team' : 'private'
+          }
+        }
+      },
+      {
+        onSuccess: () => {
+          snackbar.success(t.get('snackbar.success_update'));
+        }
+      }
+    );
+    isSavingNotesSettings = false;
+  }
+
+  $effect(() => {
+    shareNewNotesWithTeam = getShareNewNotesWithTeam($currentOrg?.settings);
+  });
+
   let isCustomTheme = $derived($currentOrg?.theme?.includes('#'));
   let hex = $derived($currentOrg.theme?.includes('#') ? $currentOrg.theme : undefined);
+  let notesSettingsDirty = $derived(shareNewNotesWithTeam !== getShareNewNotesWithTeam($currentOrg?.settings));
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
@@ -164,6 +210,32 @@
         </div>
       </div>
     </Field.Field>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend class="flex items-center gap-2">
+      <FileTextIcon class="size-5" />
+      {$t('settings.organization.notes.heading')}
+    </Field.Legend>
+    <Field.Description>{$t('settings.organization.notes.description')}</Field.Description>
+
+    <Field.Field orientation="horizontal">
+      <Switch bind:checked={shareNewNotesWithTeam} disabled={isSavingNotesSettings} />
+      <div class="space-y-0.5">
+        <Field.Label>{$t('settings.organization.notes.share_by_default.label')}</Field.Label>
+        <Field.Description>
+          {$t('settings.organization.notes.share_by_default.description')}
+        </Field.Description>
+      </div>
+    </Field.Field>
+
+    {#if notesSettingsDirty}
+      <Button loading={isSavingNotesSettings} onclick={handleSaveNotesSettings}>
+        {$t('settings.organization.notes.save')}
+      </Button>
+    {/if}
   </Field.Set>
 </Field.Group>
 

@@ -87,7 +87,7 @@
 
     snackbar.success('notes.templates.remove_success');
     await notesApi.listTemplates();
-    await notesApi.listNotes({ scope: 'all', origin: 'workspace' });
+    await notesApi.refreshList();
   }
 
   async function applyUserTemplate(templateId: string) {

@@ -538,6 +538,15 @@
           "body": "Add team mates to your organization so you can both collaborate on projects.",
           "button": "Manage Team"
         }
+      },
+      "notes": {
+        "heading": "Notes",
+        "description": "Control how new workspace notes are shared with your team.",
+        "share_by_default": {
+          "label": "Share new notes with the team",
+          "description": "When enabled, new workspace notes are visible to all admins and tutors. You can still make individual notes private."
+        },
+        "save": "Save notes settings"
       }
     },
     "token_auth": {
@@ -4069,11 +4078,16 @@
     "list": {
       "search": "Search notes",
       "tabs": {
-        "all": "All notes",
+        "all": "All",
+        "mine": "Mine",
+        "shared_with_me": "Shared",
         "team": "Shared with team",
         "from_lessons": "From lessons"
       },
       "shared_with_team": "Team",
+      "badge_private": "Private",
+      "badge_shared_by_me": "Shared",
+      "badge_public": "Public",
       "by_author": "By {name}",
       "empty_title": "No notes yet",
       "empty_description": "Take notes while watching a lesson and they will show up here.",
@@ -4203,6 +4217,11 @@
     "workspace": {
       "empty_title": "No note selected",
       "empty_description": "Create a new note or pick one from the list.",
+      "empty_mine": "You have no notes yet",
+      "empty_shared": "No notes have been shared with you",
+      "empty_shared_title": "Nothing shared yet",
+      "empty_shared_description": "When a teammate shares a note with the team, it will show up here.",
+      "empty_filtered": "No notes match your filters",
       "create_note": "Create note",
       "no_notes": "No notes",
       "note_count": "{count, plural, =1 {1 note} other {# notes}}",

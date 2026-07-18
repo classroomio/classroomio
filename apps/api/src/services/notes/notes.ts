@@ -15,7 +15,7 @@ import {
   type NoteListRow
 } from '@cio/db/queries/notes';
 import { getNoteTagsForOrganization, replaceNoteTagAssignments } from '@cio/db/queries/notes/tag';
-import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
+import { getActiveOrganizationPlan, getOrganizationById } from '@cio/db/queries/organization';
 import { verifyLessonBelongsToCourse } from '@cio/core/services/agent/chat-context';
 import { BASIC_WORKSPACE_NOTE_LIMIT, PLAN } from '@cio/utils/plans/constants';
 import type {
@@ -46,6 +46,13 @@ async function getOrganizationPlanName(orgId: string): Promise<TPlan> {
   }
 
   return 'BASIC';
+}
+
+async function getWorkspaceNoteDefaultVisibility(organizationId: string): Promise<'private' | 'team'> {
+  const organization = await getOrganizationById(organizationId);
+  const defaultVisibility = organization?.settings?.notes?.defaultVisibility;
+
+  return defaultVisibility === 'team' ? 'team' : 'private';
 }
 
 export async function assertWorkspaceNoteCreationAllowed(organizationId: string, ownerId: string): Promise<void> {
@@ -135,6 +142,8 @@ export async function createNoteService(ownerId: string, data: TCreateNote) {
   }
 
   const plainText = htmlToPlainText(data.content ?? '');
+  const visibility =
+    data.origin === 'workspace' ? await getWorkspaceNoteDefaultVisibility(data.organizationId) : 'private';
 
   const note = await createNote({
     organizationId: data.organizationId,
@@ -143,7 +152,7 @@ export async function createNoteService(ownerId: string, data: TCreateNote) {
     content: data.content ?? '',
     plainText,
     origin: data.origin,
-    visibility: 'private',
+    visibility,
     isTemplate: false,
     courseId: data.courseId ?? null,
     lessonId: data.lessonId ?? null,
@@ -279,6 +288,8 @@ export async function createNoteFromTemplateService(
 
   await assertWorkspaceNoteCreationAllowed(organizationId, ownerId);
 
+  const visibility = await getWorkspaceNoteDefaultVisibility(organizationId);
+
   const note = await createNote({
     organizationId,
     ownerId,
@@ -286,7 +297,7 @@ export async function createNoteFromTemplateService(
     content: template.content,
     plainText: template.plainText,
     origin: 'workspace',
-    visibility: 'private',
+    visibility,
     isTemplate: false,
     courseId: null,
     lessonId: null,

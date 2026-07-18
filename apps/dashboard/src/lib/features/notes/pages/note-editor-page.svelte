@@ -425,7 +425,7 @@
     }
 
     snackbar.success('notes.templates.convert_copy_success');
-    await notesApi.listNotes({ scope: 'all', origin: 'workspace' });
+    await notesApi.refreshList();
     await notesApi.listTemplates();
   }
 
@@ -439,7 +439,7 @@
     }
 
     isPinned = updated.isPinned ?? nextPinned;
-    await notesApi.listNotes({ scope: 'all', origin: 'workspace' });
+    await notesApi.refreshList();
     snackbar.success(isPinned ? 'notes.editor.pin_success' : 'notes.editor.unpin_success');
   }
 
@@ -453,7 +453,7 @@
 
     isTemplateNote = false;
     snackbar.success('notes.templates.remove_success');
-    await notesApi.listNotes({ scope: 'all', origin: 'workspace' });
+    await notesApi.refreshList();
     await notesApi.listTemplates();
   }
 
