@@ -22,17 +22,18 @@ import {
 } from '@cio/db/queries/organization';
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
-import { addProgramMember, getExistingProgramMembers } from '@cio/db/queries/program';
+import { addCohortMember, getExistingCohortMembers } from '@cio/db/queries/cohort';
 
 import { ROLE } from '@cio/utils/constants';
 import type { TNewOrganizationInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
-import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
-import { parseCourseIdsFromInviteMetadata, parseProgramIdsFromInviteMetadata } from '@api/utils/org';
-import { markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
+import { assertStudentCapacityOrThrow } from './student-limit';
+import { getAppBaseUrl } from '@cio/core/config/dashboard-url';
+import { parseCourseIdsFromInviteMetadata, parseCohortIdsFromInviteMetadata } from '@api/utils/org';
+import { getProfileById, markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
-import { buildEmailBranding } from '@cio/email';
+import { buildEmailBranding, buildEmailFromName, sanitizeEmailSubject } from '@cio/email';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 
 type OrganizationInviteStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'ACCEPTED';
@@ -61,11 +62,8 @@ function normalizeEmails(emails: string[]): string[] {
   return [...new Set(emails.map((email) => email.toLowerCase().trim()).filter(Boolean))];
 }
 
-function buildInviteLink(
-  token: string,
-  org?: { siteName?: string | null; customDomain?: string | null; isCustomDomainVerified?: boolean | null }
-): string {
-  return `${getDashboardBaseUrl(org)}/invite/${encodeURIComponent(token)}`;
+function buildTeamInviteLink(token: string): string {
+  return `${getAppBaseUrl()}/invite/${encodeURIComponent(token)}`;
 }
 
 function getRoleLabel(roleId: number): string {
@@ -138,6 +136,10 @@ async function syncOrgMemberForOrgInvite(
     });
 
     return;
+  }
+
+  if (params.roleId === ROLE.STUDENT) {
+    await assertStudentCapacityOrThrow(params.organizationId, 1);
   }
 
   await createOrganizationMember(
@@ -220,6 +222,8 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
 
   const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
   const roleName = getRoleLabel(roleId);
+  const inviterProfile = invitedByProfileId ? await getProfileById(invitedByProfileId) : null;
+  const inviterName = inviterProfile?.fullname?.trim() || undefined;
 
   for (const email of emailsToInvite) {
     try {
@@ -249,7 +253,7 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
         }
       });
 
-      const inviteLink = buildInviteLink(token, organization);
+      const inviteLink = buildTeamInviteLink(token);
 
       try {
         await enqueueTransactionalEmail('inviteTeacher', {
@@ -259,10 +263,13 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
             orgName: organization.name,
             orgSiteName: organization.siteName,
             roleName,
+            inviterName,
             expiresAt: getExpiryLabel(expiresAt),
             inviteLink,
             branding: buildEmailBranding(organization)
           },
+          from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
+          subject: sanitizeEmailSubject(`You have been invited to join ${organization.name} on ClassroomIO`),
           idempotencyKey: `org-invite-teacher:${invite.id}`
         });
 
@@ -404,7 +411,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
   if (invite) {
     const metadata = invite.invite.metadata;
     const courseIds = parseCourseIdsFromInviteMetadata(metadata);
-    const programIds = parseProgramIdsFromInviteMetadata(metadata);
+    const cohortIds = parseCohortIdsFromInviteMetadata(metadata);
 
     if (courseIds.length > 0) {
       try {
@@ -422,19 +429,19 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
       }
     }
 
-    if (programIds.length > 0) {
+    if (cohortIds.length > 0) {
       try {
-        const existingProgramMemberships = await getExistingProgramMembers(
-          programIds.map((programId) => ({ programId, profileId: user.id }))
+        const existingCohortMemberships = await getExistingCohortMembers(
+          cohortIds.map((cohortId) => ({ cohortId, profileId: user.id }))
         );
-        const programIdsToInsert = programIds.filter(
-          (programId) => !existingProgramMemberships.has(`${programId}:${user.id}`)
+        const cohortIdsToInsert = cohortIds.filter(
+          (cohortId) => !existingCohortMemberships.has(`${cohortId}:${user.id}`)
         );
 
         await Promise.all(
-          programIdsToInsert.map((programId) =>
-            addProgramMember({
-              programId,
+          cohortIdsToInsert.map((cohortId) =>
+            addCohortMember({
+              cohortId,
               roleId: invite.invite.roleId,
               profileId: user.id,
               email: normalizedEmail
@@ -442,7 +449,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
           )
         );
       } catch (error) {
-        console.error('acceptOrganizationInvite program enrollment error:', error);
+        console.error('acceptOrganizationInvite cohort enrollment error:', error);
       }
     }
   }
@@ -697,7 +704,7 @@ export async function acceptOrganizationInviteById(
 
   const metadata = result.invite.metadata;
   const courseIds = parseCourseIdsFromInviteMetadata(metadata);
-  const programIds = parseProgramIdsFromInviteMetadata(metadata);
+  const cohortIds = parseCohortIdsFromInviteMetadata(metadata);
 
   if (courseIds.length > 0) {
     try {
@@ -714,22 +721,22 @@ export async function acceptOrganizationInviteById(
     }
   }
 
-  if (programIds.length > 0) {
+  if (cohortIds.length > 0) {
     try {
-      const existingProgramMemberships = await getExistingProgramMembers(
-        programIds.map((programId) => ({ programId, profileId: user.id }))
+      const existingCohortMemberships = await getExistingCohortMembers(
+        cohortIds.map((cohortId) => ({ cohortId, profileId: user.id }))
       );
-      const programIdsToInsert = programIds.filter(
-        (programId) => !existingProgramMemberships.has(`${programId}:${user.id}`)
+      const cohortIdsToInsert = cohortIds.filter(
+        (cohortId) => !existingCohortMemberships.has(`${cohortId}:${user.id}`)
       );
 
       await Promise.all(
-        programIdsToInsert.map((programId) =>
-          addProgramMember({ programId, roleId: result.invite.roleId, profileId: user.id, email: normalizedEmail })
+        cohortIdsToInsert.map((cohortId) =>
+          addCohortMember({ cohortId, roleId: result.invite.roleId, profileId: user.id, email: normalizedEmail })
         )
       );
     } catch (error) {
-      console.error('acceptOrganizationInviteById program enrollment error:', error);
+      console.error('acceptOrganizationInviteById cohort enrollment error:', error);
     }
   }
 

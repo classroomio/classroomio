@@ -1,6 +1,6 @@
 {
-  "id": "f30a7857-c951-4cfd-a832-7a7114866015",
-  "prevId": "2aac2605-91ba-4eb7-af34-27262c26be96",
+  "id": "1f0cde90-b46c-4f40-aa75-67078dbf800f",
+  "prevId": "17f4e73c-bf2c-4202-a0ec-0f3191ebdf8c",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -2855,6 +2855,815 @@
           "columns": ["asset_id", "target_type", "target_id", "slot_type", "slot_key"]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.cohort": {
+      "name": "cohort",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cover_image": {
+          "name": "cover_image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "COHORT_STATUS",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ACTIVE'"
+        },
+        "created_by_profile_id": {
+          "name": "created_by_profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "idx_cohort_organization_id": {
+          "name": "idx_cohort_organization_id",
+          "columns": [
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "cohort_organization_id_fkey": {
+          "name": "cohort_organization_id_fkey",
+          "tableFrom": "cohort",
+          "tableTo": "organization",
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "cohort_created_by_profile_id_fkey": {
+          "name": "cohort_created_by_profile_id_fkey",
+          "tableFrom": "cohort",
+          "tableTo": "profile",
+          "columnsFrom": ["created_by_profile_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.cohort_course": {
+      "name": "cohort_course",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "cohort_id": {
+          "name": "cohort_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "course_id": {
+          "name": "course_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "added_at": {
+          "name": "added_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_cohort_course_cohort_id": {
+          "name": "idx_cohort_course_cohort_id",
+          "columns": [
+            {
+              "expression": "cohort_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "cohort_course_cohort_id_fkey": {
+          "name": "cohort_course_cohort_id_fkey",
+          "tableFrom": "cohort_course",
+          "tableTo": "cohort",
+          "columnsFrom": ["cohort_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "cohort_course_course_id_fkey": {
+          "name": "cohort_course_course_id_fkey",
+          "tableFrom": "cohort_course",
+          "tableTo": "course",
+          "columnsFrom": ["course_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "cohort_course_cohort_id_course_id_unique": {
+          "name": "cohort_course_cohort_id_course_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["cohort_id", "course_id"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.cohort_goal": {
+      "name": "cohort_goal",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "cohort_id": {
+          "name": "cohort_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "COHORT_GOAL_TYPE",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "course_ids": {
+          "name": "course_ids",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "required_count": {
+          "name": "required_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "score_threshold": {
+          "name": "score_threshold",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "team_pass_rate_threshold": {
+          "name": "team_pass_rate_threshold",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deadline_kind": {
+          "name": "deadline_kind",
+          "type": "COHORT_GOAL_DEADLINE_KIND",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'none'"
+        },
+        "deadline_date": {
+          "name": "deadline_date",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "relative_days": {
+          "name": "relative_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "recurring_months": {
+          "name": "recurring_months",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reminder_days_before": {
+          "name": "reminder_days_before",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[7,1]'::jsonb"
+        },
+        "status": {
+          "name": "status",
+          "type": "COHORT_GOAL_STATUS",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "created_by_profile_id": {
+          "name": "created_by_profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_cohort_goal_cohort_id": {
+          "name": "idx_cohort_goal_cohort_id",
+          "columns": [
+            {
+              "expression": "cohort_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_cohort_goal_status": {
+          "name": "idx_cohort_goal_status",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "cohort_goal_cohort_id_fkey": {
+          "name": "cohort_goal_cohort_id_fkey",
+          "tableFrom": "cohort_goal",
+          "tableTo": "cohort",
+          "columnsFrom": ["cohort_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "cohort_goal_created_by_profile_id_fkey": {
+          "name": "cohort_goal_created_by_profile_id_fkey",
+          "tableFrom": "cohort_goal",
+          "tableTo": "profile",
+          "columnsFrom": ["created_by_profile_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.cohort_goal_assignment": {
+      "name": "cohort_goal_assignment",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "goal_id": {
+          "name": "goal_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cohort_member_id": {
+          "name": "cohort_member_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "due_date": {
+          "name": "due_date",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "COHORT_GOAL_ASSIGNMENT_STATUS",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'not_started'"
+        },
+        "completed_count": {
+          "name": "completed_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "required_count": {
+          "name": "required_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_evaluated_at": {
+          "name": "last_evaluated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_cohort_goal_assignment_goal_id": {
+          "name": "idx_cohort_goal_assignment_goal_id",
+          "columns": [
+            {
+              "expression": "goal_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_cohort_goal_assignment_cohort_member_id": {
+          "name": "idx_cohort_goal_assignment_cohort_member_id",
+          "columns": [
+            {
+              "expression": "cohort_member_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_cohort_goal_assignment_due_date": {
+          "name": "idx_cohort_goal_assignment_due_date",
+          "columns": [
+            {
+              "expression": "due_date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "cohort_goal_assignment_goal_id_fkey": {
+          "name": "cohort_goal_assignment_goal_id_fkey",
+          "tableFrom": "cohort_goal_assignment",
+          "tableTo": "cohort_goal",
+          "columnsFrom": ["goal_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "cohort_goal_assignment_cohort_member_id_fkey": {
+          "name": "cohort_goal_assignment_cohort_member_id_fkey",
+          "tableFrom": "cohort_goal_assignment",
+          "tableTo": "cohort_member",
+          "columnsFrom": ["cohort_member_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "cohort_goal_assignment_goal_id_cohort_member_id_unique": {
+          "name": "cohort_goal_assignment_goal_id_cohort_member_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["goal_id", "cohort_member_id"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.cohort_member": {
+      "name": "cohort_member",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "cohort_id": {
+          "name": "cohort_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "profile_id": {
+          "name": "profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role_id": {
+          "name": "role_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_cohort_member_cohort_id": {
+          "name": "idx_cohort_member_cohort_id",
+          "columns": [
+            {
+              "expression": "cohort_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_cohort_member_profile_id": {
+          "name": "idx_cohort_member_profile_id",
+          "columns": [
+            {
+              "expression": "profile_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "cohort_member_cohort_id_fkey": {
+          "name": "cohort_member_cohort_id_fkey",
+          "tableFrom": "cohort_member",
+          "tableTo": "cohort",
+          "columnsFrom": ["cohort_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "cohort_member_profile_id_fkey": {
+          "name": "cohort_member_profile_id_fkey",
+          "tableFrom": "cohort_member",
+          "tableTo": "profile",
+          "columnsFrom": ["profile_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "cohort_member_role_id_fkey": {
+          "name": "cohort_member_role_id_fkey",
+          "tableFrom": "cohort_member",
+          "tableTo": "role",
+          "columnsFrom": ["role_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "cohort_member_cohort_id_profile_id_unique": {
+          "name": "cohort_member_cohort_id_profile_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["cohort_id", "profile_id"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.cohort_newsfeed": {
+      "name": "cohort_newsfeed",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cohort_id": {
+          "name": "cohort_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reaction": {
+          "name": "reaction",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{\"clap\":[],\"smile\":[],\"thumbsup\":[],\"thumbsdown\":[]}'::jsonb"
+        },
+        "is_pinned": {
+          "name": "is_pinned",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {
+        "idx_cohort_newsfeed_cohort_id": {
+          "name": "idx_cohort_newsfeed_cohort_id",
+          "columns": [
+            {
+              "expression": "cohort_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "cohort_newsfeed_author_id_fkey": {
+          "name": "cohort_newsfeed_author_id_fkey",
+          "tableFrom": "cohort_newsfeed",
+          "tableTo": "cohort_member",
+          "columnsFrom": ["author_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "cohort_newsfeed_cohort_id_fkey": {
+          "name": "cohort_newsfeed_cohort_id_fkey",
+          "tableFrom": "cohort_newsfeed",
+          "tableTo": "cohort",
+          "columnsFrom": ["cohort_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.cohort_newsfeed_comment": {
+      "name": "cohort_newsfeed_comment",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "cohort_newsfeed_comment_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "9223372036854775807",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cohort_newsfeed_id": {
+          "name": "cohort_newsfeed_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "cohort_newsfeed_comment_author_id_fkey": {
+          "name": "cohort_newsfeed_comment_author_id_fkey",
+          "tableFrom": "cohort_newsfeed_comment",
+          "tableTo": "cohort_member",
+          "columnsFrom": ["author_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "cohort_newsfeed_comment_cohort_newsfeed_id_fkey": {
+          "name": "cohort_newsfeed_comment_cohort_newsfeed_id_fkey",
+          "tableFrom": "cohort_newsfeed_comment",
+          "tableTo": "cohort_newsfeed",
+          "columnsFrom": ["cohort_newsfeed_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -6397,101 +7206,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.note_tag_assignment": {
-      "name": "note_tag_assignment",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "tag_id": {
-          "name": "tag_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "note_id": {
-          "name": "note_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "timezone('utc'::text, now())"
-        }
-      },
-      "indexes": {
-        "idx_note_tag_assignment_tag_id": {
-          "name": "idx_note_tag_assignment_tag_id",
-          "columns": [
-            {
-              "expression": "tag_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_note_tag_assignment_note_id": {
-          "name": "idx_note_tag_assignment_note_id",
-          "columns": [
-            {
-              "expression": "note_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "note_tag_assignment_tag_id_fkey": {
-          "name": "note_tag_assignment_tag_id_fkey",
-          "tableFrom": "note_tag_assignment",
-          "tableTo": "tag",
-          "columnsFrom": ["tag_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "note_tag_assignment_note_id_fkey": {
-          "name": "note_tag_assignment_note_id_fkey",
-          "tableFrom": "note_tag_assignment",
-          "tableTo": "org_note",
-          "columnsFrom": ["note_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "note_tag_assignment_tag_note_key": {
-          "name": "note_tag_assignment_tag_note_key",
-          "nullsNotDistinct": false,
-          "columns": ["tag_id", "note_id"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.option": {
       "name": "option",
       "schema": "",
@@ -6568,364 +7282,6 @@
           "tableFrom": "option",
           "tableTo": "question",
           "columnsFrom": ["question_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.org_note": {
-      "name": "org_note",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "organization_id": {
-          "name": "organization_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "owner_id": {
-          "name": "owner_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "title": {
-          "name": "title",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "content": {
-          "name": "content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "''"
-        },
-        "plain_text": {
-          "name": "plain_text",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "''"
-        },
-        "origin": {
-          "name": "origin",
-          "type": "note_origin",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'workspace'"
-        },
-        "visibility": {
-          "name": "visibility",
-          "type": "note_visibility",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'private'"
-        },
-        "course_id": {
-          "name": "course_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "lesson_id": {
-          "name": "lesson_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "video_anchors": {
-          "name": "video_anchors",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'[]'::jsonb"
-        },
-        "converted_course_id": {
-          "name": "converted_course_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "timezone('utc'::text, now())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "timezone('utc'::text, now())"
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "idx_org_note_organization_owner_updated": {
-          "name": "idx_org_note_organization_owner_updated",
-          "columns": [
-            {
-              "expression": "organization_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "owner_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "updated_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_org_note_lesson_id": {
-          "name": "idx_org_note_lesson_id",
-          "columns": [
-            {
-              "expression": "lesson_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_org_note_origin": {
-          "name": "idx_org_note_origin",
-          "columns": [
-            {
-              "expression": "origin",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_org_note_visibility": {
-          "name": "idx_org_note_visibility",
-          "columns": [
-            {
-              "expression": "organization_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "visibility",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "org_note_owner_lesson_capture_key": {
-          "name": "org_note_owner_lesson_capture_key",
-          "columns": [
-            {
-              "expression": "owner_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "lesson_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "where": "\"org_note\".\"origin\" = 'lesson_capture' AND \"org_note\".\"deleted_at\" IS NULL",
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "org_note_organization_id_fkey": {
-          "name": "org_note_organization_id_fkey",
-          "tableFrom": "org_note",
-          "tableTo": "organization",
-          "columnsFrom": ["organization_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "org_note_owner_id_fkey": {
-          "name": "org_note_owner_id_fkey",
-          "tableFrom": "org_note",
-          "tableTo": "profile",
-          "columnsFrom": ["owner_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "org_note_course_id_fkey": {
-          "name": "org_note_course_id_fkey",
-          "tableFrom": "org_note",
-          "tableTo": "course",
-          "columnsFrom": ["course_id"],
-          "columnsTo": ["id"],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "org_note_lesson_id_fkey": {
-          "name": "org_note_lesson_id_fkey",
-          "tableFrom": "org_note",
-          "tableTo": "lesson",
-          "columnsFrom": ["lesson_id"],
-          "columnsTo": ["id"],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "org_note_converted_course_id_fkey": {
-          "name": "org_note_converted_course_id_fkey",
-          "tableFrom": "org_note",
-          "tableTo": "course",
-          "columnsFrom": ["converted_course_id"],
-          "columnsTo": ["id"],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.org_note_version": {
-      "name": "org_note_version",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "note_id": {
-          "name": "note_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "old_content": {
-          "name": "old_content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "new_content": {
-          "name": "new_content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "changed_by": {
-          "name": "changed_by",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "change_source": {
-          "name": "change_source",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'manual'"
-        },
-        "timestamp": {
-          "name": "timestamp",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "timezone('utc'::text, now())"
-        }
-      },
-      "indexes": {
-        "idx_org_note_version_note_id_timestamp": {
-          "name": "idx_org_note_version_note_id_timestamp",
-          "columns": [
-            {
-              "expression": "note_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "timestamp",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "org_note_version_note_id_fkey": {
-          "name": "org_note_version_note_id_fkey",
-          "tableFrom": "org_note_version",
-          "tableTo": "org_note",
-          "columnsFrom": ["note_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "org_note_version_changed_by_fkey": {
-          "name": "org_note_version_changed_by_fkey",
-          "tableFrom": "org_note_version",
-          "tableTo": "profile",
-          "columnsFrom": ["changed_by"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -8703,6 +9059,105 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.organizationmember_email_notifications": {
+      "name": "organizationmember_email_notifications",
+      "schema": "",
+      "columns": {
+        "organization_member_id": {
+          "name": "organization_member_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "new_student": {
+          "name": "new_student",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "new_submission": {
+          "name": "new_submission",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "grading_result": {
+          "name": "grading_result",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "newsfeed": {
+          "name": "newsfeed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "quiz_assigned": {
+          "name": "quiz_assigned",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "cohort_reminder": {
+          "name": "cohort_reminder",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "session": {
+          "name": "session",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "course_completion": {
+          "name": "course_completion",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "organizationmember_email_notifications_organization_member_id_fkey": {
+          "name": "organizationmember_email_notifications_organization_member_id_fkey",
+          "tableFrom": "organizationmember_email_notifications",
+          "tableTo": "organizationmember",
+          "columnsFrom": ["organization_member_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.profile": {
       "name": "profile",
       "schema": "",
@@ -8815,6 +9270,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
+        },
+        "settings": {
+          "name": "settings",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
         }
       },
       "indexes": {
@@ -11569,6 +12031,31 @@
       "schema": "public",
       "values": ["read", "write", "publish"]
     },
+    "public.COHORT_GOAL_ASSIGNMENT_STATUS": {
+      "name": "COHORT_GOAL_ASSIGNMENT_STATUS",
+      "schema": "public",
+      "values": ["not_started", "in_progress", "completed", "at_risk", "overdue", "waived"]
+    },
+    "public.COHORT_GOAL_DEADLINE_KIND": {
+      "name": "COHORT_GOAL_DEADLINE_KIND",
+      "schema": "public",
+      "values": ["absolute", "relative_to_join", "recurring", "none"]
+    },
+    "public.COHORT_GOAL_STATUS": {
+      "name": "COHORT_GOAL_STATUS",
+      "schema": "public",
+      "values": ["active", "archived"]
+    },
+    "public.COHORT_GOAL_TYPE": {
+      "name": "COHORT_GOAL_TYPE",
+      "schema": "public",
+      "values": ["complete_all", "n_of_m", "score", "pass_rate", "readiness"]
+    },
+    "public.COHORT_STATUS": {
+      "name": "COHORT_STATUS",
+      "schema": "public",
+      "values": ["ACTIVE", "INACTIVE", "ARCHIVED"]
+    },
     "public.COURSE_IMPORT_DRAFT_STATUS": {
       "name": "COURSE_IMPORT_DRAFT_STATUS",
       "schema": "public",
@@ -11598,16 +12085,6 @@
       "name": "LOCALE",
       "schema": "public",
       "values": ["en", "hi", "fr", "pt", "de", "vi", "ru", "es", "pl", "da"]
-    },
-    "public.note_origin": {
-      "name": "note_origin",
-      "schema": "public",
-      "values": ["workspace", "lesson_capture"]
-    },
-    "public.note_visibility": {
-      "name": "note_visibility",
-      "schema": "public",
-      "values": ["private", "team", "public"]
     },
     "public.ORGANIZATION_API_KEY_TYPE": {
       "name": "ORGANIZATION_API_KEY_TYPE",

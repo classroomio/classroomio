@@ -178,6 +178,10 @@ export interface OrgLandingPageLabels {
   calloutEyebrow?: string;
   /** Card footer CTA on the resources/links section. Default per template ("Learn more", "Visit"). Separate from the existing per-template `boldVisitLabel` / `classicLearnMoreLabel` on `LandingPageLinks`, which still apply to those specific templates. */
   learnMoreLabel?: string;
+  /** Empty catalog title when no courses are published. Default: "No courses published yet". */
+  catalogEmptyTitle?: string;
+  /** Empty catalog description when no courses are published. Default: "Check back soon for new programs." */
+  catalogEmptyDescription?: string;
 }
 
 export type CourseCurriculumLesson = {
@@ -210,6 +214,13 @@ export type CourseInstructor = {
   coursesNo?: number;
 };
 
+export type LandingPrimaryAction = {
+  label: string;
+  href?: string;
+  disabled?: boolean;
+  onclick?: (event: MouseEvent) => void;
+};
+
 export type CoursePricing = {
   cost: number;
   currency: string;
@@ -217,6 +228,7 @@ export type CoursePricing = {
   showDiscount?: boolean;
   ctaLabel: string;
   ctaHref?: string;
+  ctaOnclick?: (event: MouseEvent) => void;
   features?: string[];
   reward?: {
     show: boolean;
@@ -303,7 +315,7 @@ export interface CourseLandingPageProps {
   hero: {
     heading: string;
     subheading: string;
-    primaryAction: { label: string; href: string; disabled?: boolean };
+    primaryAction: LandingPrimaryAction;
     secondaryAction?: { label: string; href: string };
     image?: string;
     stats?: Array<{ label: string; value: string }>;
@@ -335,13 +347,15 @@ export interface OrgLandingPageProps {
   hero: {
     heading: string;
     subheading: string;
-    primaryAction: { label: string; href: string; disabled?: boolean };
+    primaryAction: LandingPrimaryAction;
     secondaryAction?: { label: string; href: string };
     image?: string;
     stats?: Array<{ label: string; value: string }>;
   };
   courses: CourseItem[];
   hasMoreCourses?: boolean;
+  /** When false, templates suppress the empty catalog state while courses are still loading. */
+  coursesLoaded?: boolean;
   disableCourseLinks?: boolean;
   embed?: LandingPageEmbed;
   callout?: LandingPageCallout;

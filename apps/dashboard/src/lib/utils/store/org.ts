@@ -4,9 +4,9 @@ import merge from 'lodash/merge';
 
 import type { AccountOrg } from '$features/app/types';
 import type { OrgTeamMember } from '../types/org';
-import { PLAN } from '@cio/utils/plans';
+import { canUsePublicApi, getStudentLimit, isOrgOnFreePlan, isResourceLimitReached, PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-import { ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
+import { BRAND_ROOT_DOMAIN, ROLE, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
 
@@ -67,19 +67,24 @@ export const isOrgAdmin = derived(currentOrg, ($currentOrg) => {
 
   return $currentOrg.roleId === ROLE.ADMIN;
 });
+
+/** True when the user can manage an org (admin dashboard), not a student-only member. */
+export function isOrgManagerRole(roleId: number): boolean {
+  return roleId === ROLE.ADMIN || roleId === ROLE.TUTOR;
+}
+
+/** Orgs where the user is ADMIN or TUTOR — eligible for the admin org switcher. */
+export const managedOrgs = derived(orgs, ($orgs) => $orgs.filter((org) => isOrgManagerRole(org.roleId)));
+
+export const isOrgTeamMember = derived(currentOrg, ($currentOrg) => {
+  if ($currentOrg.roleId === 0) return null;
+
+  return isOrgManagerRole($currentOrg.roleId);
+});
+
 const getActivePlan = (org: AccountOrg) => {
   return org.plans.find((p) => p.isActive);
 };
-
-export function isOrgOnFreePlan(org: AccountOrg | null | undefined) {
-  if (!org?.id || PUBLIC_IS_SELFHOSTED === 'true') {
-    return false;
-  }
-
-  const plan = getActivePlan(org);
-
-  return !plan || plan.planName === PLAN.BASIC;
-}
 
 export const currentOrgPlan = derived(currentOrg, ($currentOrg) => getActivePlan($currentOrg));
 
@@ -88,6 +93,18 @@ export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
 );
 
 type OrgPublicOrigin = Pick<AccountOrg, 'customDomain' | 'isCustomDomainVerified' | 'siteName'>;
+
+/**
+ * Admin dashboard origin (`app.classroomio.com` in cloud). Use for team invite links
+ * and other admin-only URLs — not student-facing tenant pages.
+ */
+export function getAppOrigin(): string {
+  if (PUBLIC_IS_SELFHOSTED === 'true' || dev) {
+    return browser ? window.location.origin : '';
+  }
+
+  return `https://app.${BRAND_ROOT_DOMAIN}`;
+}
 
 /**
  * Public origin for an org's tenant site (student LMS, public course pages, login-link handoff).
@@ -136,7 +153,13 @@ export function getOrgPublicUrl(org: OrgPublicOrigin, pathname = '/'): string {
 
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => getOrgPublicOrigin($currentOrg));
 
-export const isFreePlan = derived(currentOrg, ($currentOrg) => isOrgOnFreePlan($currentOrg));
+export const isFreePlan = derived(currentOrg, ($currentOrg) =>
+  isOrgOnFreePlan({
+    plans: $currentOrg.plans,
+    isSelfHosted: PUBLIC_IS_SELFHOSTED === 'true',
+    orgId: $currentOrg.id
+  })
+);
 
 export const isEnterprisePlan = derived(currentOrg, ($currentOrg) => {
   if (PUBLIC_IS_SELFHOSTED === 'true') return true;
@@ -146,14 +169,28 @@ export const isEnterprisePlan = derived(currentOrg, ($currentOrg) => {
   return plan?.planName === PLAN.ENTERPRISE;
 });
 
-export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) =>
-  !$plan
-    ? 20
-    : $plan.planName === PLAN.EARLY_ADOPTER
-      ? 10000
-      : $plan.planName === PLAN.ENTERPRISE
-        ? Number.MAX_SAFE_INTEGER
-        : 20
+export const hasPublicApiAccess = derived(currentOrg, ($currentOrg) => {
+  const plan = getActivePlan($currentOrg);
+
+  return canUsePublicApi(plan?.planName, PUBLIC_IS_SELFHOSTED === 'true');
+});
+
+export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) => {
+  const limit = getStudentLimit($plan?.planName);
+  return Number.isFinite(limit) ? limit : Number.MAX_SAFE_INTEGER;
+});
+
+/**
+ * Per-resource org usage + limits delivered by `/account` (admin/tutor only).
+ * `studentUsage`/`isStudentLimitReached` are convenience selectors; generic
+ * consumers can read `$currentOrgLimits.<resource>` with `isResourceLimitReached`.
+ */
+export const currentOrgLimits = derived(currentOrg, ($currentOrg) => $currentOrg.limits ?? {});
+
+export const studentUsage = derived(currentOrg, ($currentOrg) => $currentOrg.limits?.students);
+
+export const isStudentLimitReached = derived(currentOrg, ($currentOrg) =>
+  isResourceLimitReached($currentOrg.limits?.students)
 );
 
 // Quiz

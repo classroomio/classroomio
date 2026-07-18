@@ -2,21 +2,25 @@
   import type { OrgLandingPageProps } from '../types';
   import type { Snippet } from 'svelte';
   import SecondaryActionButton from '../secondary-action-button.svelte';
-  import { Button } from '../../../base/button';
+  import CoursePrimaryAction from '../course-primary-action.svelte';
   import EditableLandingSection from '../editable-section.svelte';
 
   interface Props {
     hero: OrgLandingPageProps['hero'];
     navigation: Snippet;
     showActions?: boolean;
+    compact?: boolean;
+    children?: Snippet;
   }
 
-  let { hero, navigation, showActions = true }: Props = $props();
+  let { hero, navigation, showActions = true, compact = false, children }: Props = $props();
 </script>
 
 <EditableLandingSection sectionKey="hero">
   <section
-    class="ui:relative ui:bg-[var(--landing-accent)] ui:text-[var(--landing-accent-fg)] ui:overflow-hidden ui:px-6 ui:pt-2 ui:pb-20"
+    class="ui:relative ui:bg-[var(--landing-accent)] ui:text-[var(--landing-accent-fg)] ui:overflow-hidden ui:px-6 ui:pt-2 {compact
+      ? 'ui:pb-10'
+      : 'ui:pb-20'}"
   >
     <!-- subtle grid overlay -->
     <div
@@ -30,7 +34,9 @@
     </div>
 
     <div
-      class="ui:relative ui:max-w-[1280px] ui:mx-auto ui:py-16 ui:lg:py-24 ui:grid ui:lg:grid-cols-2 ui:gap-12 ui:items-center"
+      class="ui:relative ui:max-w-[1280px] ui:mx-auto {compact
+        ? 'ui:py-8 ui:lg:py-12'
+        : 'ui:py-16 ui:lg:py-24'} ui:grid ui:lg:grid-cols-2 ui:gap-12 ui:items-center"
     >
       <div>
         <p
@@ -46,17 +52,17 @@
         >
           {hero.subheading}
         </p>
+        {#if children}
+          <div class="ui:mt-6">{@render children()}</div>
+        {/if}
         {#if showActions}
           <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-3">
-            <Button
-              href={hero.primaryAction.href}
-              disabled={hero.primaryAction.disabled ?? false}
+            <CoursePrimaryAction
+              action={hero.primaryAction}
               size="lg"
               variant="secondary"
               class="ui:rounded-none ui:px-7 ui:font-semibold ui:bg-[var(--landing-accent-fg)] ui:text-[var(--landing-accent)] ui:hover:bg-[var(--landing-accent-fg)]/90"
-            >
-              {hero.primaryAction.label}
-            </Button>
+            />
             {#if hero.secondaryAction}
               <SecondaryActionButton
                 href={hero.secondaryAction.href}

@@ -11,6 +11,7 @@
   import { courseCompletionModal, closeCourseCompletionModal } from '$features/course/store/course-completion-modal';
   import { getContentRoute } from '$features/course/utils/content';
   import { formatBlockerMessage } from '$features/course/utils/certificate-utils';
+  import { isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
   let open = $state(false);
@@ -84,11 +85,15 @@
     {:else if activeStep === 'eligible'}
       <Dialog.Header>
         <Dialog.Title>{$t('course.completion.modal.title')}</Dialog.Title>
-        <Dialog.Description>{$t('course.completion.modal.subtitle')}</Dialog.Description>
+        <Dialog.Description>
+          {$isFreePlan ? $t('course.completion.modal.subtitle_no_certificate') : $t('course.completion.modal.subtitle')}
+        </Dialog.Description>
       </Dialog.Header>
       <Dialog.Footer class="ui:gap-2">
         <Button variant="outline" onclick={() => onOpenChange(false)}>{$t('course.completion.modal.later')}</Button>
-        <Button onclick={goToCertificate}>{$t('course.completion.modal.view_certificate')}</Button>
+        {#if !$isFreePlan}
+          <Button onclick={goToCertificate}>{$t('course.completion.modal.view_certificate')}</Button>
+        {/if}
       </Dialog.Footer>
     {:else if activeStep === 'not-eligible'}
       <Dialog.Header>

@@ -65,3 +65,17 @@ export function getWorkspaceAllowance(planName: string | null | undefined): numb
 export function canCreateWorkspaces(planName: string | null | undefined): boolean {
   return planName === PLAN.ENTERPRISE;
 }
+
+/**
+ * Max students allowed per plan (org-wide, counts ROLE.STUDENT organizationmember rows).
+ */
+export const STUDENT_LIMITS: Record<string, number> = {
+  [PLAN.BASIC]: 20,
+  [PLAN.EARLY_ADOPTER]: 10000,
+  [PLAN.ENTERPRISE]: Infinity
+};
+
+export function getStudentLimit(planName: string | null | undefined): number {
+  if (!planName) return STUDENT_LIMITS[PLAN.BASIC];
+  return STUDENT_LIMITS[planName] ?? STUDENT_LIMITS[PLAN.BASIC];
+}

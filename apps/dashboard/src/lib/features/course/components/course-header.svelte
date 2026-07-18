@@ -17,6 +17,7 @@
   import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
   import { openCoursePreview } from '$features/course/utils/course-preview';
   import { t } from '$lib/utils/functions/translations';
+  import CourseProgressPopover from './course-progress-popover.svelte';
   import CoursePublishBadge from './course-publish-badge.svelte';
   import CoursePublicBadge from './course-public-badge.svelte';
   import CourseContextMenuContent from './course-context-menu-content.svelte';
@@ -58,7 +59,7 @@
 </script>
 
 <header
-  class="border-border ui:bg-background sticky top-0 z-100 flex h-12 w-full shrink-0 items-center gap-2 border-b backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8"
+  class="border-border ui:bg-background z-app-bar sticky top-0 flex h-12 w-full shrink-0 items-center gap-2 border-b backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8"
 >
   <div class="flex w-full items-center gap-2 px-4">
     <Sidebar.Trigger />
@@ -84,6 +85,10 @@
     </div>
 
     <span class="grow"></span>
+
+    {#if $isStudentExperience}
+      <CourseProgressPopover class="md:hidden" />
+    {/if}
 
     <Button
       size="sm"

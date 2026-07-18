@@ -4,11 +4,11 @@
   <rect x="96" y="96" width="360" height="28" rx="14" fill="#0F172A"/>
   <rect x="96" y="146" width="520" height="18" rx="9" fill="#94A3B8"/>
   <rect x="1200" y="92" width="256" height="52" rx="16" fill="#0F172A"/>
-  <text x="1328" y="126" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">Create Program</text>
+  <text x="1328" y="126" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">Create Cohort</text>
   <rect x="96" y="206" width="960" height="52" rx="16" fill="#E2E8F0"/>
   <rect x="1080" y="206" width="180" height="52" rx="16" fill="#E2E8F0"/>
   <rect x="1280" y="206" width="176" height="52" rx="16" fill="#E2E8F0"/>
   <rect x="96" y="296" width="1360" height="420" rx="24" fill="#FFFFFF" stroke="#94A3B8" stroke-dasharray="14 10" stroke-width="4"/>
-  <text x="776" y="500" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0F172A">Programs List Placeholder</text>
-  <text x="776" y="558" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#475569">Replace with the org dashboard programs index page.</text>
+  <text x="776" y="500" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0F172A">Cohorts List Placeholder</text>
+  <text x="776" y="558" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#475569">Replace with the org dashboard cohorts index page.</text>
 </svg>

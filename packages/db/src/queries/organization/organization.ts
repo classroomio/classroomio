@@ -8,8 +8,23 @@ import type {
   TOrganization,
   TOrganizationPlan
 } from '@db/types';
-import { and, asc, count, desc, eq, ilike, inArray, isNotNull, or, sql } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  gt,
+  ilike,
+  inArray,
+  isNotNull,
+  notInArray,
+  or,
+  sql
+} from 'drizzle-orm';
 
+import { PLAN } from '@cio/utils/plans';
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TAudienceSortBy, TAudienceSortOrder } from '@cio/utils/validation/organization';
@@ -568,6 +583,58 @@ export const getOrganizationTeam = async (orgId: string) => {
 };
 
 /**
+ * Counts active organization members with the student role. Used to enforce per-plan student caps.
+ */
+export async function countActiveStudents(orgId: string): Promise<number> {
+  try {
+    const [row] = await db
+      .select({ count: count(schema.organizationmember.id) })
+      .from(schema.organizationmember)
+      .where(
+        and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.roleId, ROLE.STUDENT))
+      );
+
+    return Number(row?.count ?? 0);
+  } catch (error) {
+    console.error('countActiveStudents error:', error);
+    throw new Error('Failed to count active students');
+  }
+}
+
+/**
+ * Gets verified admin emails for an organization. Used to notify admins about plan-limit events.
+ */
+export async function getOrganizationAdminEmails(orgId: string): Promise<Array<{ email: string; fullname: string }>> {
+  try {
+    const result = await db
+      .select({
+        email: schema.organizationmember.email,
+        profileEmail: schema.profile.email,
+        fullname: schema.profile.fullname
+      })
+      .from(schema.organizationmember)
+      .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.roleId, ROLE.ADMIN),
+          eq(schema.organizationmember.verified, true)
+        )
+      );
+
+    return result
+      .map((member) => ({
+        email: member.profileEmail || member.email || '',
+        fullname: member.fullname || ''
+      }))
+      .filter((member) => member.email);
+  } catch (error) {
+    console.error('getOrganizationAdminEmails error:', error);
+    throw new Error('Failed to get organization admin emails');
+  }
+}
+
+/**
  * Gets organization audience (all organization members with student role).
  * Includes invited members without a profile (LEFT JOIN profile).
  * Row id is organizationmember.id; use profileId for profile-backed actions when present.
@@ -799,6 +866,43 @@ export const getOrganizations = async (filters?: {
 };
 
 /**
+ * Gets free (BASIC) plan organizations whose active student count exceeds
+ * `limit`, in a single query. Free = no active paid plan. Used by maintenance
+ * jobs so they don't load every org (or every org's count) and filter in memory.
+ */
+export const getFreePlanOrganizationsOverStudentLimit = async (
+  limit: number
+): Promise<Array<TOrganization & { studentCount: number }>> => {
+  try {
+    const paidPlans = [PLAN.EARLY_ADOPTER, PLAN.ENTERPRISE] as ('EARLY_ADOPTER' | 'ENTERPRISE')[];
+    const paidOrgIds = db
+      .select({ orgId: schema.organizationPlan.orgId })
+      .from(schema.organizationPlan)
+      .where(and(eq(schema.organizationPlan.isActive, true), inArray(schema.organizationPlan.planName, paidPlans)));
+
+    const studentCount = count(schema.organizationmember.id);
+    const rows = await db
+      .select({ organization: schema.organization, studentCount })
+      .from(schema.organization)
+      .innerJoin(
+        schema.organizationmember,
+        and(
+          eq(schema.organizationmember.organizationId, schema.organization.id),
+          eq(schema.organizationmember.roleId, ROLE.STUDENT)
+        )
+      )
+      .where(notInArray(schema.organization.id, paidOrgIds))
+      .groupBy(schema.organization.id)
+      .having(gt(studentCount, limit));
+
+    return rows.map((row) => ({ ...(row.organization as TOrganization), studentCount: Number(row.studentCount) }));
+  } catch (error) {
+    console.error('getFreePlanOrganizationsOverStudentLimit error:', error);
+    throw new Error('Failed to load free-plan organizations over the student limit');
+  }
+};
+
+/**
  * Gets the first (and typically only) organization - used for self-hosted single-org mode
  * @returns First organization by createdAt, or null if none exist
  */
@@ -914,6 +1018,33 @@ export const getOrganizationPlanBySubscriptionId = async (
   } catch (error) {
     console.error('getOrganizationPlanBySubscriptionId error:', error);
     throw new Error(`Failed to fetch organization plan: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+};
+
+/**
+ * Gets every active organization plan that has a Polar subscription ID attached.
+ * Used by one-off backfills that need to re-verify subscription status against Polar.
+ * @param dbClient Optional DB or transaction client for use within transactions
+ * @returns Active organization plans with org name/siteName for readable logging
+ */
+export const getActiveOrganizationPlansWithSubscription = async (
+  dbClient: DbOrTxClient = db
+): Promise<Array<TOrganizationPlan & { orgName: string; orgSiteName: string | null }>> => {
+  try {
+    return await dbClient
+      .select({
+        ...getTableColumns(schema.organizationPlan),
+        orgName: schema.organization.name,
+        orgSiteName: schema.organization.siteName
+      })
+      .from(schema.organizationPlan)
+      .innerJoin(schema.organization, eq(schema.organization.id, schema.organizationPlan.orgId))
+      .where(and(eq(schema.organizationPlan.isActive, true), isNotNull(schema.organizationPlan.subscriptionId)));
+  } catch (error) {
+    console.error('getActiveOrganizationPlansWithSubscription error:', error);
+    throw new Error(
+      `Failed to fetch active organization plans: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 };
 

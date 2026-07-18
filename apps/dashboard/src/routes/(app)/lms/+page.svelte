@@ -1,18 +1,10 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { DashboardPage } from '$features/lms/pages';
-  import PendingInviteModal from '$features/lms/components/pending-invite-modal.svelte';
   import { getGreeting } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { classroomio } from '$lib/utils/services/api';
-  import * as Page from '@cio/ui/base/page';
   import { coursesApi } from '$features/course/api';
-  import type { PendingOrgInvite } from '$features/lms/utils/types';
-
-  let pendingInvite = $state<PendingOrgInvite | null>(null);
-  let showInviteModal = $state(false);
+  import * as Page from '@cio/ui/base/page';
 
   const todayLabel = new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
@@ -41,26 +33,6 @@
   );
 
   let progressPercentage = $derived(totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0);
-
-  onMount(async () => {
-    if (!$profile.id || !$currentOrg.id) return;
-
-    try {
-      const response = await classroomio.invite.organization.pending.$get();
-      const result = await response.json();
-
-      if (result.success && result.data) {
-        pendingInvite = result.data;
-        showInviteModal = true;
-      }
-    } catch (error) {
-      console.error('Failed to check pending org invite', error);
-    }
-  });
-
-  function handleInviteAccepted() {
-    window.location.href = '/lms';
-  }
 </script>
 
 <svelte:head>
@@ -91,7 +63,3 @@
     {/snippet}
   </Page.Body>
 </Page.Root>
-
-{#if pendingInvite}
-  <PendingInviteModal bind:open={showInviteModal} invite={pendingInvite} onAccepted={handleInviteAccepted} />
-{/if}

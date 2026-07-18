@@ -7,6 +7,7 @@
   import ClassicNav from './nav.svelte';
   import ClassicHero from './hero.svelte';
   import ClassicCourseCard from './course-card.svelte';
+  import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
   import { Button } from '../../../base/button';
   import { themeStyle } from '../theme-style';
 
@@ -18,6 +19,7 @@
     hero,
     courses,
     hasMoreCourses = false,
+    coursesLoaded = true,
     disableCourseLinks = false,
     embed,
     callout,
@@ -44,24 +46,28 @@
         <div class="ui:mt-6 ui:h-px ui:w-24 ui:bg-[var(--landing-border)] ui:mx-auto"></div>
       </div>
 
-      <div class="ui:grid ui:grid-cols-1 ui:sm:grid-cols-2 ui:lg:grid-cols-3 ui:gap-8 ui:justify-items-center">
-        {#each courses as course, index (course.id)}
-          <ClassicCourseCard {course} {disableCourseLinks} {labels} />
-        {/each}
-      </div>
-
-      {#if hasMoreCourses}
-        <div class="ui:mt-12 ui:flex ui:justify-center">
-          <Button
-            href={disableCourseLinks ? undefined : '/courses'}
-            variant="outline"
-            size="lg"
-            class="ui:px-8"
-            disabled={disableCourseLinks}
-          >
-            {labels?.browseCoursesLabel ?? 'View more courses'}
-          </Button>
+      {#if coursesLoaded && courses.length === 0}
+        <OrgLandingPageCoursesEmpty {labels} />
+      {:else}
+        <div class="ui:grid ui:grid-cols-1 ui:sm:grid-cols-2 ui:lg:grid-cols-3 ui:gap-8 ui:justify-items-center">
+          {#each courses as course, index (course.id)}
+            <ClassicCourseCard {course} {disableCourseLinks} {labels} />
+          {/each}
         </div>
+
+        {#if hasMoreCourses}
+          <div class="ui:mt-12 ui:flex ui:justify-center">
+            <Button
+              href={disableCourseLinks ? undefined : '/courses'}
+              variant="outline"
+              size="lg"
+              class="ui:px-8"
+              disabled={disableCourseLinks}
+            >
+              {labels?.browseCoursesLabel ?? 'View more courses'}
+            </Button>
+          </div>
+        {/if}
       {/if}
     </section>
   </main>

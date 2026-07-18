@@ -11,11 +11,12 @@ import {
   TNewCourseSection,
   TProfile
 } from '@db/types';
-import { and, count, desc, eq, ilike, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gt, ilike, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { getCourseContentItems, type CourseContentItemRow } from './content';
+import { isExerciseCompletedSql } from './progression';
 import { getUpcomingSessionsForCourseIds, type CourseUpcomingSession } from './session';
 
 /**
@@ -59,6 +60,9 @@ export interface TStudentCourse extends TBaseCourse {
 export const getPublishedCoursesBySiteName = async (
   siteName: string,
   courseIds?: string[],
+  courseTypes?: string[],
+  search?: string,
+  pricing?: 'free' | 'paid',
   limit?: number,
   offset?: number
 ): Promise<TBaseCourse[]> => {
@@ -75,6 +79,21 @@ export const getPublishedCoursesBySiteName = async (
 
     if (courseIds && courseIds.length > 0) {
       conditions.push(inArray(schema.course.id, courseIds));
+    }
+
+    if (courseTypes && courseTypes.length > 0) {
+      conditions.push(inArray(schema.course.type, courseTypes as (typeof schema.courseType.enumValues)[number][]));
+    }
+
+    if (search) {
+      const pattern = `%${search}%`;
+      conditions.push(or(ilike(schema.course.title, pattern), ilike(schema.course.description, pattern))!);
+    }
+
+    if (pricing === 'free') {
+      conditions.push(eq(schema.course.cost, 0));
+    } else if (pricing === 'paid') {
+      conditions.push(gt(schema.course.cost, 0));
     }
 
     const exerciseCountSql = sql<number>`(
@@ -127,7 +146,13 @@ export const getPublishedCoursesBySiteName = async (
   }
 };
 
-export const countPublishedCoursesBySiteName = async (siteName: string, courseIds?: string[]): Promise<number> => {
+export const countPublishedCoursesBySiteName = async (
+  siteName: string,
+  courseIds?: string[],
+  courseTypes?: string[],
+  search?: string,
+  pricing?: 'free' | 'paid'
+): Promise<number> => {
   try {
     if (courseIds && courseIds.length === 0) {
       return 0;
@@ -141,6 +166,21 @@ export const countPublishedCoursesBySiteName = async (siteName: string, courseId
 
     if (courseIds && courseIds.length > 0) {
       conditions.push(inArray(schema.course.id, courseIds));
+    }
+
+    if (courseTypes && courseTypes.length > 0) {
+      conditions.push(inArray(schema.course.type, courseTypes as (typeof schema.courseType.enumValues)[number][]));
+    }
+
+    if (search) {
+      const pattern = `%${search}%`;
+      conditions.push(or(ilike(schema.course.title, pattern), ilike(schema.course.description, pattern))!);
+    }
+
+    if (pricing === 'free') {
+      conditions.push(eq(schema.course.cost, 0));
+    } else if (pricing === 'paid') {
+      conditions.push(gt(schema.course.cost, 0));
     }
 
     const [result] = await db
@@ -585,15 +625,14 @@ export async function getCourseProgress(
 
       db
         .select({
-          exercisesCompleted: sql<number>`count(distinct ${schema.exercise.id})::int`
+          exercisesCompleted: sql<number>`count(*)::int`
         })
-        .from(schema.submission)
-        .innerJoin(schema.exercise, eq(schema.submission.exerciseId, schema.exercise.id))
+        .from(schema.exercise)
         .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
         .where(
           and(
             or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
-            eq(schema.submission.submittedBy, groupMemberId)
+            isExerciseCompletedSql('exercise', { groupMemberId })
           )
         )
     ]);
@@ -636,6 +675,7 @@ export type TCourseCertificationRow = {
     emailMessage?: string | null;
   } | null;
   title: string;
+  orgId: string;
   orgSiteName: string | null;
   orgCustomDomain: string | null;
   orgIsCustomDomainVerified: boolean | null;
@@ -652,6 +692,7 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
         compliance: schema.course.compliance,
         certificate: schema.course.certificate,
         title: schema.course.title,
+        orgId: schema.organization.id,
         orgSiteName: schema.organization.siteName,
         orgCustomDomain: schema.organization.customDomain,
         orgIsCustomDomainVerified: schema.organization.isCustomDomainVerified,
@@ -956,14 +997,12 @@ export const getEnrolledCourses = async ({
           WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
         )`.as('exercise_count'),
         exercisesCompleted: sql<number>`(
-          SELECT COUNT(DISTINCT s.exercise_id)::bigint
-          FROM ${schema.submission} as s
-          JOIN ${schema.exercise} as ex ON ex.id = s.exercise_id
+          SELECT COUNT(*)::bigint
+          FROM ${schema.exercise} as ex
           LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
-          JOIN ${schema.groupmember} as gm ON gm.id = s.submitted_by
           WHERE ${and(
             or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id)),
-            sql`gm.profile_id = ${sql.raw(`'${profileId}'::uuid`)}`
+            isExerciseCompletedSql('ex', { profileId })
           )}
         )`.as('exercises_completed'),
         certificateEarnedAt: schema.groupmember.certificateEarnedAt,
@@ -1135,6 +1174,7 @@ export const getExploreCourses = async ({
  */
 export async function getCourseWithOrgData(courseId: string): Promise<{
   courseTitle: string | null;
+  orgId: string;
   orgName: string | null;
   orgSiteName: string | null;
   orgCustomDomain: string | null;
@@ -1148,6 +1188,7 @@ export async function getCourseWithOrgData(courseId: string): Promise<{
     const result = await db
       .select({
         courseTitle: schema.course.title,
+        orgId: schema.organization.id,
         orgName: schema.organization.name,
         orgSiteName: schema.organization.siteName,
         orgCustomDomain: schema.organization.customDomain,

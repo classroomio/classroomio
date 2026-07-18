@@ -7,6 +7,7 @@
   import TerminalNav from './nav.svelte';
   import TerminalHero from './hero.svelte';
   import TerminalCourseCard from './course-card.svelte';
+  import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
   import { Button } from '../../../base/button';
   import { themeStyle } from '../theme-style';
   import { getCourseTypeLandingMeta } from '../landing-page-utils';
@@ -19,6 +20,7 @@
     hero,
     courses,
     hasMoreCourses = false,
+    coursesLoaded = true,
     disableCourseLinks = false,
     embed,
     callout,
@@ -81,34 +83,36 @@
       {/snippet}
     </TerminalHero>
 
-    {#if courses.length > 0}
-      <section
-        class="ui:py-24 ui:px-6 ui:bg-[var(--landing-bg)]"
-        style="border-top: 1px solid var(--landing-border-soft);"
-      >
-        <div class="ui:max-w-[1120px] ui:mx-auto">
-          <p
-            class="ui:font-mono ui:text-[11px] ui:tracking-[0.12em] ui:uppercase ui:mb-3 ui:inline-flex ui:items-center ui:gap-2"
-            style="color: var(--landing-accent);"
-          >
-            <span
-              class="ui:size-1.5 ui:rounded-full"
-              style="background: var(--landing-accent); box-shadow: 0 0 12px var(--landing-accent);"
-            ></span>
-            {labels?.catalogEyebrow ?? 'Catalog'}
-          </p>
+    <section
+      class="ui:py-24 ui:px-6 ui:bg-[var(--landing-bg)]"
+      style="border-top: 1px solid var(--landing-border-soft);"
+    >
+      <div class="ui:max-w-[1120px] ui:mx-auto">
+        <p
+          class="ui:font-mono ui:text-[11px] ui:tracking-[0.12em] ui:uppercase ui:mb-3 ui:inline-flex ui:items-center ui:gap-2"
+          style="color: var(--landing-accent);"
+        >
+          <span
+            class="ui:size-1.5 ui:rounded-full"
+            style="background: var(--landing-accent); box-shadow: 0 0 12px var(--landing-accent);"
+          ></span>
+          {labels?.catalogEyebrow ?? 'Catalog'}
+        </p>
 
-          <h2
-            class="ui:text-4xl ui:lg:text-[40px] ui:font-semibold ui:tracking-tight ui:leading-[1.08] ui:m-0 ui:mb-3 ui:max-w-[700px] ui:text-[var(--landing-fg)]"
-          >
-            {labels?.catalogHeading ?? 'Courses your team can actually finish.'}
-          </h2>
+        <h2
+          class="ui:text-4xl ui:lg:text-[40px] ui:font-semibold ui:tracking-tight ui:leading-[1.08] ui:m-0 ui:mb-3 ui:max-w-[700px] ui:text-[var(--landing-fg)]"
+        >
+          {labels?.catalogHeading ?? 'Courses your team can actually finish.'}
+        </h2>
 
-          <p class="ui:text-[15px] ui:max-w-xl ui:m-0 ui:mb-8 ui:text-[var(--landing-fg-muted)]">
-            {labels?.catalogDescription ??
-              'Tracks built around real-world artifacts — pull requests, postmortems, and runbooks. No filler.'}
-          </p>
+        <p class="ui:text-[15px] ui:max-w-xl ui:m-0 ui:mb-8 ui:text-[var(--landing-fg-muted)]">
+          {labels?.catalogDescription ??
+            'Tracks built around real-world artifacts — pull requests, postmortems, and runbooks. No filler.'}
+        </p>
 
+        {#if coursesLoaded && courses.length === 0}
+          <OrgLandingPageCoursesEmpty {labels} />
+        {:else}
           {#if tabs.length > 1}
             <div
               class="ui:inline-flex ui:items-center ui:gap-0.5 ui:p-1 ui:rounded-full ui:mb-8 ui:bg-[var(--landing-card)]"
@@ -151,9 +155,9 @@
               </Button>
             </div>
           {/if}
-        </div>
-      </section>
-    {/if}
+        {/if}
+      </div>
+    </section>
   </main>
 
   <OrgLandingPageLinks {links} {labels} variant="terminal" />

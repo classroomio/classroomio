@@ -40,7 +40,7 @@
     {
       title: 'Design certification paths',
       description:
-        'Group courses into Programs for onboarding, sales, implementation, and advanced topics, with required exercises and a final exam.'
+        'Group courses into cohorts for onboarding, sales, implementation, and advanced topics, with required exercises and a final exam.'
     },
     {
       title: 'Track readiness and certify',
@@ -51,7 +51,7 @@
   const features = [
     {
       Icon: Layers,
-      title: 'Programs and learning paths',
+      title: 'Cohorts and learning paths',
       description: 'Bundle multiple courses into a certification journey with a required order and shared progress.'
     },
     {
@@ -222,7 +222,7 @@
       <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
         <img
           src="https://assets.cdn.clsrio.com/www/partner-training/latest-courses.jpeg"
-          alt="Partner academy — latest courses, program structure, and learner state"
+          alt="Partner academy — latest courses, cohort structure, and learner state"
           class="block h-auto w-full"
           loading="eager"
           decoding="async"
@@ -310,11 +310,11 @@
         </h2>
         <p class="mt-5 text-base leading-relaxed text-gray-500">
           Drill into completion rates, time-to-certify, exercise marks, and submission quality. Filter by partner org,
-          cohort, geography, or program. Export anything to CSV.
+          cohort, geography, or certification path. Export anything to CSV.
         </p>
         <ul class="mt-6 space-y-3 text-sm text-gray-700">
           <li class="flex items-start gap-2">
-            <BookOpenCheck size={16} class="mt-0.5 text-blue-700" /> Course-level and program-level dashboards
+            <BookOpenCheck size={16} class="mt-0.5 text-blue-700" /> Course-level and cohort-level dashboards
           </li>
           <li class="flex items-start gap-2">
             <ChartNoAxesCombined size={16} class="mt-0.5 text-blue-700" /> Per-learner gradebook with manual override

@@ -1,7 +1,8 @@
 import type { Context } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
+import { ZodError } from 'zod';
 
-import { AppError, ErrorCodes, type ErrorCode } from '@cio/utils/errors';
+import { AppError, ErrorCodes, type ErrorCode, isUniqueConstraintViolation } from '@cio/utils/errors';
 
 // AppError moved to `@cio/utils/errors` so it can be thrown from
 // non-api workspace packages (notably `@cio/core`). Re-exported
@@ -17,6 +18,25 @@ export interface ErrorResponse {
   error: string;
   code: string;
   field?: string;
+}
+
+function getZodErrorField(error: ZodError): string | undefined {
+  const firstIssue = error.issues[0];
+  if (!firstIssue || firstIssue.path.length === 0) {
+    return undefined;
+  }
+
+  return firstIssue.path.map(String).join('.');
+}
+
+export function formatZodErrorMessage(error: ZodError): string {
+  return error.issues
+    .map((issue) => {
+      const fieldPath = issue.path.length > 0 ? `${issue.path.map(String).join('.')}: ` : '';
+
+      return `${fieldPath}${issue.message}`;
+    })
+    .join('; ');
 }
 
 /**
@@ -61,6 +81,17 @@ export const handleError = (
     );
   }
 
+  if (isUniqueConstraintViolation(error)) {
+    return c.json<ErrorResponse>(
+      {
+        success: false,
+        error: 'Resource already exists',
+        code: ErrorCodes.CONFLICT
+      },
+      409
+    );
+  }
+
   return c.json<ErrorResponse>(
     {
       success: false,
@@ -69,4 +100,31 @@ export const handleError = (
     },
     500
   );
+};
+
+/**
+ * Handles errors for public API routes, surfacing Zod validation failures
+ * as 400 responses instead of generic 500 INTERNAL_ERROR payloads.
+ */
+export const handlePublicApiError = (
+  c: Context,
+  error: unknown,
+  fallbackMessage: string = 'An unexpected error occurred',
+  fallbackCode?: string
+) => {
+  if (error instanceof ZodError) {
+    console.error('Error in route:', error);
+
+    return c.json<ErrorResponse>(
+      {
+        success: false,
+        error: formatZodErrorMessage(error),
+        code: ErrorCodes.VALIDATION_ERROR,
+        field: getZodErrorField(error)
+      },
+      400
+    );
+  }
+
+  return handleError(c, error, fallbackMessage, fallbackCode);
 };

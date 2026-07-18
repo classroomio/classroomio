@@ -1,16 +1,17 @@
 <script lang="ts">
-  import { currentOrgPath, currentOrg, isOrgAdmin, isFreePlan } from '$lib/utils/store/org';
+  import { currentOrgPath, currentOrg, isOrgAdmin, isFreePlan, isStudentLimitReached } from '$lib/utils/store/org';
   import * as Collapsible from '@cio/ui/base/collapsible';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { t } from '$lib/utils/functions/translations';
   import { page } from '$app/state';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import RocketIcon from '@lucide/svelte/icons/rocket';
   import { getOrgNavigationGroups } from '$features/ui/navigation/org-navigation';
-  import { HoverableItem } from '@cio/ui/custom/moving-icons';
+  import { HoverableItem, PremiumIcon } from '@cio/ui/custom/moving-icons';
 
   const groups = $derived(
-    getOrgNavigationGroups($currentOrgPath, $currentOrg, $isOrgAdmin, $t, page.url.pathname + page.url.search)
+    getOrgNavigationGroups($currentOrgPath, $currentOrg, $isOrgAdmin, $t, page.url.pathname + page.url.search, {
+      students: $isStudentLimitReached
+    })
   );
 </script>
 
@@ -85,6 +86,9 @@
                             {:else}
                               <span>{item.title}</span>
                             {/if}
+                            {#if item.upgrade}
+                              <PremiumIcon {isHovered} size={16} class="ui:text-primary ml-auto" />
+                            {/if}
                           </a>
                         {/if}
                       {/snippet}
@@ -102,7 +106,7 @@
                             <a href={subItem.url} {...props}>
                               <span>{subItem.title}</span>
                               {#if subItem.isPaid && $isFreePlan}
-                                <RocketIcon class="text-primary size-4" />
+                                <PremiumIcon size={16} class="ui:text-primary ml-auto" />
                               {/if}
                             </a>
                           {/snippet}

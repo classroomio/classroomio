@@ -46,6 +46,7 @@ import {
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { assignCourseTagsByName } from '@api/services/tag';
 import { generateSlug } from '@cio/utils/functions';
+import { ZodError } from 'zod';
 
 type DraftSummary = {
   sectionCount: number;
@@ -537,7 +538,7 @@ export async function createCourseImportDraftService(orgId: string, profileId: s
       sourceArtifacts: data.sourceArtifacts ?? data.draft.sourceReferences ?? []
     });
   } catch (error) {
-    if (error instanceof AppError) {
+    if (error instanceof AppError || error instanceof ZodError) {
       throw error;
     }
 
@@ -579,7 +580,7 @@ export async function getCourseImportStructureService(orgId: string, courseId: s
   try {
     return buildCourseStructureSnapshot(orgId, courseId);
   } catch (error) {
-    if (error instanceof AppError) {
+    if (error instanceof AppError || error instanceof ZodError) {
       throw error;
     }
 
@@ -600,7 +601,7 @@ export async function getCourseImportDraftService(orgId: string, draftId: string
 
     return draft;
   } catch (error) {
-    if (error instanceof AppError) {
+    if (error instanceof AppError || error instanceof ZodError) {
       throw error;
     }
 
@@ -641,7 +642,7 @@ export async function updateCourseImportDraftService(orgId: string, draftId: str
 
     return updated;
   } catch (error) {
-    if (error instanceof AppError) {
+    if (error instanceof AppError || error instanceof ZodError) {
       throw error;
     }
 
@@ -845,7 +846,7 @@ export async function publishCourseImportDraftService(
       localeCount: new Set(draft.lessonLanguages.map((item) => item.locale)).size
     };
   } catch (error) {
-    if (error instanceof AppError) {
+    if (error instanceof AppError || error instanceof ZodError) {
       throw error;
     }
 
@@ -1132,7 +1133,7 @@ export async function publishCourseImportDraftToExistingCourseService(
       localeCount: new Set(draft.lessonLanguages.map((item) => item.locale)).size
     };
   } catch (error) {
-    if (error instanceof AppError) {
+    if (error instanceof AppError || error instanceof ZodError) {
       throw error;
     }
 

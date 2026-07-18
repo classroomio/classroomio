@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import { TGroupmember, TNewGroupmember } from '@db/types';
-import { and, eq, or } from 'drizzle-orm';
+import { and, eq, isNull, or } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@db/drizzle';
@@ -322,6 +322,25 @@ export async function setMemberCertificateEarned(memberId: string, earnedAt: str
   } catch (error) {
     console.error('setMemberCertificateEarned error:', error);
     throw new Error(`Failed to set certificate earned: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Atomically claims the certificate for a member: only succeeds if it was not earned yet.
+ * Returns true when this caller won the claim, so concurrent evaluations issue the
+ * certificate (and downstream email) exactly once.
+ */
+export async function claimMemberCertificateEarned(memberId: string, earnedAt: string): Promise<boolean> {
+  try {
+    const updated = await db
+      .update(schema.groupmember)
+      .set({ certificateEarnedAt: earnedAt })
+      .where(and(eq(schema.groupmember.id, memberId), isNull(schema.groupmember.certificateEarnedAt)))
+      .returning({ id: schema.groupmember.id });
+    return updated.length > 0;
+  } catch (error) {
+    console.error('claimMemberCertificateEarned error:', error);
+    throw new Error(`Failed to claim certificate earned: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

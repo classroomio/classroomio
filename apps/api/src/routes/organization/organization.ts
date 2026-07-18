@@ -50,8 +50,9 @@ import { Hono } from '@api/utils/hono';
 import { ROLE } from '@cio/utils/constants';
 import { TOrganization } from '@db/types';
 import { assetsRouter } from '@api/routes/organization/assets';
-import { autoEnrollStudent } from '@api/services/organization/auto-enroll';
+import { autoJoinOrg } from '@api/services/organization/auto-join';
 import { organizationAiTutorRouter } from '@api/routes/organization/ai-tutor';
+import { organizationMemberEmailNotificationsRouter } from '@api/routes/organization/member-email-notifications';
 import { authMiddleware } from '@api/middlewares/auth';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
@@ -125,13 +126,13 @@ export const organizationRouter = new Hono()
    * Requires authentication
    */
   /**
-   * POST /organization/auto-enroll-student
-   * Idempotently enrolls the authenticated user as a STUDENT in the org
-   * identified by the `cio-org-id` header. Called by the dashboard's
-   * `setupApp` after a user authenticates on a tenant site they aren't a
-   * member of yet. Respects `disableSignup` and `inviteOnly` policies.
+   * POST /organization/auto-join
+   * Idempotently joins the authenticated user to the org identified by the
+   * `cio-org-id` header. Called by the dashboard's `setupApp` after a user
+   * authenticates on a tenant site they aren't a member of yet. Respects
+   * `disableSignup` and `inviteOnly` policies.
    */
-  .post('/auto-enroll-student', authMiddleware, async (c) => {
+  .post('/auto-join', authMiddleware, async (c) => {
     try {
       const user = c.get('user')!;
       const orgId = c.req.header('cio-org-id');
@@ -140,10 +141,10 @@ export const organizationRouter = new Hono()
         return c.json({ success: false, error: 'Organization ID is required', code: 'ORG_ID_REQUIRED' }, 400);
       }
 
-      const result = await autoEnrollStudent(user.id, orgId);
+      const result = await autoJoinOrg(user.id, orgId);
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
-      return handleError(c, error, 'Failed to auto-enroll student');
+      return handleError(c, error, 'Failed to auto-join organization');
     }
   })
   .get('/team', authMiddleware, orgTeamMemberMiddleware, async (c) => {
@@ -383,15 +384,21 @@ export const organizationRouter = new Hono()
    */
   .get('/courses/public', zValidator('query', ZGetCoursesBySiteName), async (c) => {
     try {
-      const { siteName, tags, page, limit } = c.req.valid('query');
-      const tagSlugs = tags
-        ?.split(',')
-        .map((value) => value.trim())
-        .filter(Boolean);
+      const { siteName, tags, types, search, pricing, page, limit } = c.req.valid('query');
+      const splitParam = (param: string | undefined) =>
+        param
+          ?.split(',')
+          .map((v) => v.trim())
+          .filter(Boolean);
+      const tagSlugs = splitParam(tags);
+      const courseTypes = splitParam(types);
       const pagination = page !== undefined || limit !== undefined ? { page, limit } : undefined;
       const courses = await getPublicCourses(
         siteName,
-        tagSlugs && tagSlugs.length > 0 ? tagSlugs : undefined,
+        tagSlugs?.length ? tagSlugs : undefined,
+        courseTypes?.length ? courseTypes : undefined,
+        search || undefined,
+        pricing || undefined,
         pagination
       );
 
@@ -762,4 +769,5 @@ export const organizationRouter = new Hono()
   .route('/widgets', widgetsRouter)
   .route('/assets', assetsRouter)
   .route('/ai-tutor', organizationAiTutorRouter)
+  .route('/member/email-notifications', organizationMemberEmailNotificationsRouter)
   .route('/:orgId/quiz', quizRouter);

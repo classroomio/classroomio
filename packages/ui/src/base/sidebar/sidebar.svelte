@@ -11,12 +11,14 @@
     variant = 'sidebar',
     collapsible = 'offcanvas',
     class: className,
+    mobileOverlayClass,
     children,
     ...restProps
   }: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
     side?: 'left' | 'right';
     variant?: 'sidebar' | 'floating' | 'inset';
     collapsible?: 'offcanvas' | 'icon' | 'none';
+    mobileOverlayClass?: string;
   } = $props();
 
   const sidebar = useSidebar();
@@ -39,7 +41,11 @@
       data-sidebar="sidebar"
       data-slot="sidebar"
       data-mobile="true"
-      class="ui:bg-sidebar ui:text-sidebar-foreground ui:w-(--sidebar-width) ui:p-0 ui:[&>button]:hidden"
+      overlayClass={mobileOverlayClass}
+      class={cn(
+        'ui:bg-sidebar ui:text-sidebar-foreground ui:w-(--sidebar-width) ui:p-0 ui:[&>button]:hidden',
+        className
+      )}
       style="--sidebar-width: {SIDEBAR_WIDTH_MOBILE};"
       {side}
     >
@@ -77,7 +83,7 @@
     <div
       data-slot="sidebar-container"
       class={cn(
-        'ui:w-(--sidebar-width) ui:fixed ui:inset-y-0 ui:z-100 ui:hidden ui:max-h-svh ui:transition-[left,right,width] ui:duration-200 ui:ease-linear ui:md:flex',
+        'ui:w-(--sidebar-width) ui:fixed ui:inset-y-0 ui:z-app-bar ui:hidden ui:max-h-svh ui:transition-[left,right,width] ui:duration-200 ui:ease-linear ui:md:flex',
         side === 'left'
           ? 'ui:left-0 ui:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
           : 'ui:right-0 ui:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',

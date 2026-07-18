@@ -615,6 +615,9 @@ importers:
 
   apps/docs:
     dependencies:
+      '@cio/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       '@react-router/dev':
         specifier: ^7.9.4
         version: 7.13.2(@react-router/serve@7.13.2(react-router@7.13.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.32.0)(react-router@7.13.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(sass@1.97.1)(tsx@4.21.0)(typescript@5.9.3)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.32.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2))(wrangler@4.86.0(@cloudflare/workers-types@4.20260511.1)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(yaml@2.8.2)
@@ -1260,6 +1263,9 @@ importers:
       typescript:
         specifier: ^5.5.2
         version: 5.9.3
+      vitest:
+        specifier: ^1.2.2
+        version: 1.6.1(@types/node@24.10.4)(jsdom@29.0.1(@noble/hashes@2.0.1))(lightningcss@1.32.0)(sass@1.97.1)
 
   packages/jobs:
     dependencies:
@@ -18670,7 +18676,7 @@ snapshots:
     dependencies:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
-      picomatch: 4.0.3
+      picomatch: 4.0.4
     optionalDependencies:
       rollup: 4.54.0
 
@@ -28567,8 +28573,8 @@ snapshots:
 
   tinyglobby@0.2.15:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.3)
-      picomatch: 4.0.3
+      fdir: 6.5.0(picomatch@4.0.4)
+      picomatch: 4.0.4
 
   tinyglobby@0.2.16:
     dependencies:

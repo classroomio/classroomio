@@ -4,7 +4,7 @@
   import CopyIcon from '@lucide/svelte/icons/copy';
 
   import { profile } from '$lib/utils/store/user';
-  import { isFreePlan, currentOrg } from '$lib/utils/store/org';
+  import { getAppOrigin, isFreePlan, currentOrg } from '$lib/utils/store/org';
   import { orgApi } from '$features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -25,7 +25,7 @@
   let isRemoving: number | null = $state(null);
 
   function buildLinkInviteUrl(token: string): string {
-    return `${window.location.origin}/invite/link/${encodeURIComponent(token)}`;
+    return `${getAppOrigin()}/invite/link/${encodeURIComponent(token)}`;
   }
 
   async function onCopyInviteLink() {

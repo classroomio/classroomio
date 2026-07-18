@@ -1,6 +1,36 @@
 import { FromData } from '../types';
 import { EMAIL_FROM } from '../constants';
 
+const EMAIL_HEADER_CONTROL_CHARS = /[\x00-\x1F\x7F]/g;
+
+function stripEmailHeaderControlChars(value: string): string {
+  return value.replace(EMAIL_HEADER_CONTROL_CHARS, ' ').replace(/\s+/g, ' ').trim();
+}
+
+/** Strip control chars and backslash-escape quotes for RFC 5322 quoted display names. */
+export function sanitizeEmailDisplayName(name: string): string {
+  const normalized = stripEmailHeaderControlChars(name);
+  if (!normalized) {
+    return '';
+  }
+
+  return normalized.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+/** Strip control chars that could break or inject email headers. */
+export function sanitizeEmailSubject(subject: string): string {
+  return stripEmailHeaderControlChars(subject);
+}
+
+export function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // format: "ClassroomIO Developers (via ClassroomIO.com)" <notify@mail.classroomio.com>
 export function extractNameAndEmail(str: string): FromData | undefined {
   // Use regular expressions to match the name and email
@@ -28,5 +58,10 @@ export function buildEmailFromName(name?: string): string {
     return EMAIL_FROM;
   }
 
-  return `"${name}" <${fromData.email}>`;
+  const displayName = sanitizeEmailDisplayName(name);
+  if (!displayName) {
+    return EMAIL_FROM;
+  }
+
+  return `"${displayName}" <${fromData.email}>`;
 }

@@ -7,6 +7,8 @@ import get from 'lodash/get';
 import type { AccountOrg } from '$features/app/types';
 import { normalizeLandingPageSettings } from '$features/org/utils/landing-page';
 import type { CourseLandingPageProps, OrgLandingPageTheme } from '@cio/ui/custom/org-landing-page';
+import { calcCourseDiscount, isCourseFree } from '$lib/utils/functions/course';
+import { t } from '$lib/utils/functions/translations';
 
 export type LandingPageLesson = {
   id: string;
@@ -116,6 +118,7 @@ export function buildCourseLandingPageProps(
     enrollHref: string;
     enrollDisabled: boolean;
     authAction?: { label: string; href: string };
+    onPaidEnrollClick?: (event: MouseEvent) => void;
   }
 ): CourseLandingPageProps {
   const landing = normalizeLandingPageSettings(org.landingpage);
@@ -161,7 +164,14 @@ export function buildCourseLandingPageProps(
     hasCertificate ? { label: 'Certificate', value: 'Included' } : null
   ].filter(Boolean) as Array<{ label: string; value: string }>;
 
-  const pricingCtaLabel = course.cost && course.cost > 0 ? 'Enrol now' : 'Start free';
+  const discount = metadata?.discount ?? 0;
+  const showDiscount = metadata?.showDiscount ?? false;
+  const calculatedCost = calcCourseDiscount(discount, course.cost ?? 0, !!showDiscount);
+  const isFree = isCourseFree(calculatedCost);
+  const pricingCtaLabel = isFree
+    ? t.get('course.navItem.landing_page.pricing_section.enroll')
+    : t.get('course.navItem.landing_page.pricing_section.buy');
+  const paidEnrollClick = !isFree && !options.enrollDisabled ? options.onPaidEnrollClick : undefined;
 
   return {
     theme: landing.theme as OrgLandingPageTheme,
@@ -174,7 +184,8 @@ export function buildCourseLandingPageProps(
       subheading: course.description ?? landing.hero.subheading,
       primaryAction: {
         label: pricingCtaLabel,
-        href: options.enrollHref,
+        href: paidEnrollClick ? undefined : options.enrollHref,
+        onclick: paidEnrollClick,
         disabled: options.enrollDisabled
       },
       secondaryAction: { label: 'View curriculum', href: '#curriculum' },
@@ -237,7 +248,8 @@ export function buildCourseLandingPageProps(
       discount: metadata?.discount,
       showDiscount: metadata?.showDiscount,
       ctaLabel: pricingCtaLabel,
-      ctaHref: options.enrollHref,
+      ctaHref: paidEnrollClick ? undefined : options.enrollHref,
+      ctaOnclick: paidEnrollClick,
       reward: metadata?.reward?.show ? { show: true, description: metadata.reward.description ?? '' } : undefined
     },
     footer: landing.footer

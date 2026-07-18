@@ -7,7 +7,10 @@
   import { Button } from '@cio/ui/base/button';
   import * as Tooltip from '@cio/ui/base/tooltip';
   import { PercentRingProgress } from '@cio/ui/custom/percent-ring-progress';
-  import { isOrgStudent } from '$lib/utils/store/app';
+  import { get } from 'svelte/store';
+  import { isCourseLearnerView } from '$lib/utils/store/app';
+  import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
+  import { getStudentContentLockTitleKey } from '$features/course/utils/content-lock-utils';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi, lessonApi } from '$features/course/api';
   import { getOrderedNavigableContent, getContentRoute } from '$features/course/utils/content';
@@ -49,8 +52,23 @@
     };
   });
 
+  function getNavigableLockReason(target: CourseContentItem | null) {
+    if (!target) return null;
+
+    const targetType = target.type === ContentType.Lesson ? ContentType.Lesson : ContentType.Exercise;
+    return getStudentContentLockReason(courseApi.course, target.id, targetType);
+  }
+
   function goToContent(target: CourseContentItem | null) {
     if (!target) return;
+
+    const lockReason = getNavigableLockReason(target);
+
+    if (get(isCourseLearnerView) && lockReason) {
+      snackbar.error(getStudentContentLockTitleKey(lockReason));
+      return;
+    }
+
     const courseIdResolved = courseApi.course?.id;
     if (!courseIdResolved) return;
     const path = getContentRoute(courseIdResolved, target);
@@ -60,6 +78,20 @@
 
   const isPrevDisabled = $derived(!prevNextContent.prev);
   const isNextDisabled = $derived(!prevNextContent.next);
+  const prevNavLockReason = $derived($isCourseLearnerView ? getNavigableLockReason(prevNextContent.prev) : null);
+  const nextNavLockReason = $derived($isCourseLearnerView ? getNavigableLockReason(prevNextContent.next) : null);
+  const isPrevNavBlocked = $derived(Boolean(prevNavLockReason));
+  const isNextNavBlocked = $derived(Boolean(nextNavLockReason));
+  const prevNavTooltip = $derived(
+    prevNavLockReason
+      ? $t(getStudentContentLockTitleKey(prevNavLockReason))
+      : $t('course.navItem.lessons.prev_shortcut')
+  );
+  const nextNavTooltip = $derived(
+    nextNavLockReason
+      ? $t(getStudentContentLockTitleKey(nextNavLockReason))
+      : $t('course.navItem.lessons.next_shortcut')
+  );
   const isLessonComplete = $derived.by(() => {
     if (!lessonId) return false;
     const lesson = lessonItems.find((l) => l.id === lessonId);
@@ -69,8 +101,10 @@
   const showMarkComplete = $derived(!!lessonId && !exerciseId);
 
   const currentLessonItem = $derived(lessonId ? lessonItems.find((l) => l.id === lessonId) : null);
-  const isTeacherLocked = $derived($isOrgStudent && currentLessonItem && !(currentLessonItem.isUnlocked ?? false));
-  const isProgressionLocked = $derived($isOrgStudent && currentLessonItem?.accessible === false && !isTeacherLocked);
+  const contentLockReason = $derived(
+    lessonId ? getStudentContentLockReason(courseApi.course, lessonId, ContentType.Lesson) : null
+  );
+  const isLessonLocked = $derived($isCourseLearnerView && contentLockReason !== null);
   const isVideoWatchLesson = $derived.by(() => {
     if (!lessonId) return false;
 
@@ -98,14 +132,13 @@
 
   const watchVideosRequired = $derived(lessonApi.lesson?.watchProgress?.videosRequired ?? 0);
   const watchVideosComplete = $derived(lessonApi.lesson?.watchProgress?.videosComplete ?? 0);
-  const isLessonLocked = $derived(isTeacherLocked || isProgressionLocked);
   const isVideoWatchComplete = $derived(isVideoWatchLesson && (lessonApi.lesson?.watchProgress?.isComplete ?? false));
   const showVideoWatchCompleteState = $derived(isVideoWatchComplete || (isVideoWatchLesson && isLessonComplete));
   const isMarkCompleteDisabled = $derived(
     isMarkingComplete || isLessonLocked || isLessonComplete || isVideoWatchLesson
   );
   const showWatchProgress = $derived(
-    !!lessonId && $isOrgStudent && isVideoWatchLesson && !showVideoWatchCompleteState && !isLessonLocked
+    !!lessonId && $isCourseLearnerView && isVideoWatchLesson && !showVideoWatchCompleteState && !isLessonLocked
   );
 
   const watchProgressTooltip = $derived(
@@ -133,10 +166,7 @@
       updateCourseContentCompletion(currentLessonId, isComplete);
 
       const allComplete =
-        $isOrgStudent &&
-        isComplete &&
-        navigableContentItems.length > 0 &&
-        navigableContentItems.every((item) => item.isComplete);
+        isComplete && navigableContentItems.length > 0 && navigableContentItems.every((item) => item.isComplete);
 
       if (allComplete) {
         const requiredExerciseId = courseApi.course?.certificate?.requiredExerciseId ?? undefined;
@@ -144,11 +174,13 @@
 
         const certRes = await courseApi.getCertificationEvaluation(courseId);
         if (certRes?.data) {
-          if (certRes.data.isNewCompletion) {
-            updateCourseCompletionModal(courseId, 'eligible', certRes.data, requiredExerciseId);
-          } else {
-            updateCourseCompletionModal(courseId, 'not-eligible', certRes.data, requiredExerciseId);
-          }
+          const hasCompletedCourse = Boolean(certRes.data.eligibleForCertificate || certRes.data.certificateEarnedAt);
+          updateCourseCompletionModal(
+            courseId,
+            hasCompletedCourse ? 'eligible' : 'not-eligible',
+            certRes.data,
+            requiredExerciseId
+          );
         } else {
           closeCourseCompletionModal();
         }
@@ -217,14 +249,14 @@
             size="icon-sm"
             variant="outline"
             onclick={() => goToContent(prevNextContent.prev)}
-            disabled={isPrevDisabled}
+            disabled={isPrevDisabled || isPrevNavBlocked}
             aria-label={$t('course.navItem.lessons.prev')}
           >
             <ChevronLeftIcon size={14} />
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content side="bottom" sideOffset={4}>
-          {$t('course.navItem.lessons.prev_shortcut')}
+          {prevNavTooltip}
         </Tooltip.Content>
       </Tooltip.Root>
 
@@ -234,14 +266,14 @@
             size="icon-sm"
             variant="outline"
             onclick={() => goToContent(prevNextContent.next)}
-            disabled={isNextDisabled}
+            disabled={isNextDisabled || isNextNavBlocked}
             aria-label={$t('course.navItem.lessons.next')}
           >
             <ChevronRightIcon size={14} />
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content side="bottom" sideOffset={4}>
-          {$t('course.navItem.lessons.next_shortcut')}
+          {nextNavTooltip}
         </Tooltip.Content>
       </Tooltip.Root>
     </div>

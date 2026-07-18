@@ -49,7 +49,8 @@
       normalizeLandingPageSettings(org.landingpage),
       orgApi.publicCourses,
       orgApi.hasMorePublicCourses,
-      authAction
+      authAction,
+      { coursesLoaded: hasLoadedCourses }
     )
   );
 

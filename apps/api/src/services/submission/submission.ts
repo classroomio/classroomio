@@ -45,7 +45,7 @@ import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@cio/core/utils/s3';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 import { evaluateCourseCertification } from '@api/services/course/completion';
-import { isExercisePassedForMember } from '@cio/db/queries/course/progression';
+import { isExerciseCompletedForMember } from '@cio/db/queries/course/progression';
 
 type SubmissionGradingState = 'queued' | 'processing' | 'awaiting_manual' | 'completed' | 'failed';
 type SubmissionOverallStatus = 'auto_graded' | 'manual_required' | 'hybrid';
@@ -55,19 +55,11 @@ async function triggerCertificationIfExerciseComplete(
   exerciseId: string,
   groupMemberId: string
 ): Promise<void> {
-  const exercise = await getExerciseById(exerciseId);
-  if (!exercise) return;
-
   const profile = await getProfileByGroupMemberId(groupMemberId);
   if (!profile?.id) return;
 
-  const policy = exercise.completionPolicy ?? 'submitted';
-
-  if (policy === 'passed') {
-    const threshold = exercise.passThreshold ?? 100;
-    const passed = await isExercisePassedForMember(exerciseId, groupMemberId, threshold);
-    if (!passed) return;
-  }
+  const isComplete = await isExerciseCompletedForMember(exerciseId, groupMemberId);
+  if (!isComplete) return;
 
   void evaluateCourseCertification(courseId, profile.id).catch((certError) => {
     console.error('Failed to evaluate course certification after exercise submission:', certError);
@@ -361,14 +353,15 @@ export async function listExerciseSubmissionsOverview(
       isCourseTeamMemberOrOrgAdmin(courseId, profileId)
     ]);
 
-    if (isInstructor) {
-      const allSubmissions = await listSubmissionsByExercise(courseId, exerciseId);
-      return { mySubmission: [], allSubmissions };
-    }
-
     const mySubmission = groupMemberId ? await listSubmissionsByExercise(courseId, exerciseId, groupMemberId) : [];
 
-    return { mySubmission, allSubmissions: [] };
+    if (!isInstructor) {
+      return { mySubmission, allSubmissions: [] };
+    }
+
+    const allSubmissions = await listSubmissionsByExercise(courseId, exerciseId);
+
+    return { mySubmission, allSubmissions };
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list exercise submissions overview',
@@ -1005,7 +998,11 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
         })
       },
       from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-      idempotencyKey: `submission-update:${submissionId}:${newStatusId}`
+      idempotencyKey: `submission-update:${submissionId}:${newStatusId}`,
+      preference: {
+        organizationId: orgResult?.orgId,
+        recipientProfileId: fullSubmission.groupmember.profile.id
+      }
     });
   } catch (error) {
     console.error('Failed to enqueue submission graded email:', error);
@@ -1076,7 +1073,8 @@ async function sendExerciseSubmissionUpdateEmail(courseId: string, exerciseId: s
         })
       },
       from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-      idempotencyKey: `exercise-submitted:${courseId}:${exerciseId}:${submittedBy}`
+      idempotencyKey: `exercise-submitted:${courseId}:${exerciseId}:${submittedBy}`,
+      preference: { organizationId: orgResult?.orgId }
     });
   } catch (error) {
     console.error('Failed to enqueue submission received email:', error);

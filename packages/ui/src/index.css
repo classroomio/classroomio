@@ -7,6 +7,54 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/**
+ * Shared z-index scale.
+ *
+ * Tailwind supports arbitrary integer z-index values out of the box (e.g. `z-137`), which is
+ * how one-off stacking numbers end up scattered across the app and collide as new layers get
+ * added. Prefer these named layers instead so intent is documented at the call site — see
+ * `packages/ui/README.md` for the full write-up and when to reach for each one.
+ *
+ *   z-app-bar          (100) Sticky/fixed app chrome: top bars, sticky in-page headers, the
+ *                             desktop sidebar rail, the side panel.
+ *   z-app-bar-elevated (150) A sidebar (mobile sheet or desktop) that must render above other
+ *                             z-app-bar content while open, e.g. the course content sidebar.
+ *   z-modal             (200) Blocking dialogs/drawers.
+ *   z-menu-elevated     (250) Dropdown/select/popover content that must escape a z-app-bar,
+ *                             z-app-bar-elevated, or z-modal ancestor.
+ *
+ * Anything not listed (dropdowns, sheets, drawers) uses Tailwind's default `z-50`,
+ * which already sits above normal page content. Tooltips use `z-menu-elevated` so they
+ * remain visible over `z-app-bar` chrome such as the transcript side panel.
+ */
+@utility z-app-bar {
+  z-index: 100;
+}
+
+@utility z-app-bar-elevated {
+  z-index: 150;
+}
+
+@utility z-modal {
+  z-index: 200;
+}
+
+@utility z-menu-elevated {
+  z-index: 250;
+}
+
+/*
+ * `@utility` only emits a class when Tailwind's scanner sees that exact candidate
+ * somewhere under `packages/ui/src` — it does not ship every documented layer just because
+ * it's declared above. Safelist all four here so the compiled `@cio/ui` CSS always exposes
+ * the full scale, regardless of which layers happen to be referenced inside this package
+ * today; otherwise a consumer using e.g. `ui:z-menu-elevated` could silently get no rule.
+ */
+@source inline('ui:z-app-bar{,!}');
+@source inline('ui:z-app-bar-elevated{,!}');
+@source inline('ui:z-modal{,!}');
+@source inline('ui:z-menu-elevated{,!}');
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

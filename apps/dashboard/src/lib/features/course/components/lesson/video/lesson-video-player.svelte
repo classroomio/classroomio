@@ -12,7 +12,7 @@
   import { lessonApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { AssetTranscriptPayload } from '$features/media/utils/types';
-  import { isOrgStudent } from '$lib/utils/store/app';
+  import { isCourseLearnerView } from '$lib/utils/store/app';
   import { resolveWatchEnforcedAssetIds, type LessonVideo } from './video-card-utils';
   import { lessonVideoBus } from './lesson-video-bus.svelte';
   import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
@@ -98,9 +98,10 @@
     video: LessonVideo;
     courseId: string;
     lessonId: string;
+    videoIndex: number;
   }
 
-  let { video, courseId, lessonId }: Props = $props();
+  let { video, courseId, lessonId, videoIndex }: Props = $props();
 
   let localTranscript = $state<AssetTranscriptPayload | null>(null);
   let localTranscriptLoading = $state(false);
@@ -125,17 +126,24 @@
 
   let localSeekFn: (seconds: number) => void = () => {};
 
-  function ownsVideoBus(): boolean {
+  function ownsPlaybackBus(): boolean {
     return uploadAssetId !== null && lessonVideoBus.assetId === uploadAssetId;
   }
 
-  function syncVideoBus(): void {
+  function syncPlaybackBus(): void {
     if (!uploadAssetId) return;
 
     lessonVideoBus.assetId = uploadAssetId;
-    lessonVideoBus.transcript = localTranscript;
-    lessonVideoBus.transcriptLoading = localTranscriptLoading;
     lessonVideoBus.setSeekFn(localSeekFn);
+  }
+
+  function syncTranscriptToRegistry(): void {
+    if (!uploadAssetId) return;
+
+    lessonVideoBus.updateTranscriptSource(uploadAssetId, {
+      transcript: localTranscript,
+      transcriptLoading: localTranscriptLoading
+    });
   }
 
   $effect(() => {
@@ -251,9 +259,7 @@
     if (!uploadAssetId) {
       if (isMounted) {
         localTranscript = null;
-        if (ownsVideoBus()) {
-          lessonVideoBus.transcript = null;
-        }
+        syncTranscriptToRegistry();
       }
 
       return;
@@ -262,9 +268,7 @@
     if (!isMounted) return;
 
     localTranscriptLoading = true;
-    if (ownsVideoBus()) {
-      lessonVideoBus.transcriptLoading = true;
-    }
+    syncTranscriptToRegistry();
 
     try {
       const data = await mediaApi.getAssetTranscript(uploadAssetId);
@@ -273,15 +277,11 @@
 
       localTranscript = data;
       scheduleVttRefetch(data?.vttUrlExpiresAt);
-      if (ownsVideoBus()) {
-        lessonVideoBus.transcript = data;
-      }
+      syncTranscriptToRegistry();
     } finally {
       if (isMounted) {
         localTranscriptLoading = false;
-        if (ownsVideoBus()) {
-          lessonVideoBus.transcriptLoading = false;
-        }
+        syncTranscriptToRegistry();
       }
     }
   }
@@ -345,7 +345,7 @@
 
   const seekPolicy = $derived.by(() => {
     const lesson = lessonApi.lesson;
-    if (!$isOrgStudent || !lesson || lesson.completionPolicy !== 'video_watch' || !isWatchEnforcedForVideo) {
+    if (!$isCourseLearnerView || !lesson || lesson.completionPolicy !== 'video_watch' || !isWatchEnforcedForVideo) {
       return undefined;
     }
 
@@ -373,7 +373,7 @@
   });
 
   async function restoreWatchProgress(): Promise<void> {
-    if (!$isOrgStudent || !uploadAssetId) return;
+    if (!$isCourseLearnerView || !uploadAssetId) return;
 
     const cachedAsset = assetWatchProgress;
     if (cachedAsset?.lastPositionSeconds && cachedAsset.lastPositionSeconds > 0) {
@@ -389,8 +389,19 @@
   }
 
   onMount(() => {
+    if (uploadAssetId) {
+      lessonVideoBus.registerTranscriptSource({
+        assetId: uploadAssetId,
+        videoIndex,
+        transcript: null,
+        transcriptLoading: false,
+        currentTimeSeconds: 0,
+        seek: (seconds) => localSeekFn(seconds)
+      });
+    }
+
     if (lessonVideoBus.assetId === null || lessonVideoBus.assetId === uploadAssetId) {
-      syncVideoBus();
+      syncPlaybackBus();
     }
 
     void restoreWatchProgress();
@@ -410,9 +421,22 @@
     stopJobPoller();
     revokeBlobTrackUrl?.();
     revokeBlobTrackUrl = null;
-    if (ownsVideoBus()) {
+
+    if (uploadAssetId) {
+      lessonVideoBus.unregisterTranscriptSource(uploadAssetId);
+    }
+
+    if (lessonVideoBus.transcriptSources.size === 0) {
       lessonVideoBus.reset();
       sidePanel.closeIfScope('lesson');
+      return;
+    }
+
+    if (uploadAssetId && ownsPlaybackBus()) {
+      lessonVideoBus.assetId = null;
+      lessonVideoBus.currentTimeSeconds = 0;
+      lessonVideoBus.hasPlayed = false;
+      lessonVideoBus.setSeekFn(() => {});
     }
   });
 
@@ -431,18 +455,22 @@
   );
 
   function handleFirstPlay() {
-    syncVideoBus();
+    syncPlaybackBus();
     lessonVideoBus.hasPlayed = true;
+  }
+
+  function openTranscriptPanel() {
+    if (!uploadAssetId) return;
+
+    lessonVideoBus.selectTranscriptSource(uploadAssetId);
+    sidePanel.open(TRANSCRIPT_PANEL_ID);
   }
 
   const transcriptPanelControl = $derived(
     localTranscript
       ? {
           label: t.get('course.navItem.lessons.materials.tabs.video.transcript.open_side_panel'),
-          onClick: () => {
-            syncVideoBus();
-            sidePanel.open(TRANSCRIPT_PANEL_ID);
-          }
+          onClick: openTranscriptPanel
         }
       : undefined
   );
@@ -463,7 +491,11 @@
       controls: true,
       playsinline: true,
       onTimeUpdate: (seconds) => {
-        if (ownsVideoBus()) {
+        if (uploadAssetId) {
+          lessonVideoBus.updateTranscriptSource(uploadAssetId, { currentTimeSeconds: seconds });
+        }
+
+        if (ownsPlaybackBus()) {
           lessonVideoBus.currentTimeSeconds = seconds;
         }
       },
@@ -471,7 +503,8 @@
         localSeekFn = (seconds) => {
           player.currentTime = seconds;
         };
-        if (ownsVideoBus()) {
+
+        if (ownsPlaybackBus()) {
           lessonVideoBus.setSeekFn(localSeekFn);
         }
       },

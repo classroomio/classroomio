@@ -13,7 +13,8 @@ import {
 import type { AccountOrg } from '$features/app/types';
 import type { Component } from 'svelte';
 import { isActive } from '$lib/utils/functions/app';
-import { isOrgOnFreePlan } from '$lib/utils/store/org';
+import { isOrgOnFreePlan } from '@cio/utils/plans';
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
 export interface NavItem {
   title: string;
@@ -71,7 +72,12 @@ export const baseNavConfig: NavItemConfig[] = [
     path: '/certificates',
     icon: CertificateIcon,
     matchPattern: '^/lms/certificates(/.*)?$',
-    show: (currentOrg) => !isOrgOnFreePlan(currentOrg)
+    show: (currentOrg) =>
+      !isOrgOnFreePlan({
+        plans: currentOrg?.plans,
+        isSelfHosted: PUBLIC_IS_SELFHOSTED === 'true',
+        orgId: currentOrg?.id
+      })
   },
   {
     titleKey: 'lms_navigation.explore',
@@ -80,10 +86,10 @@ export const baseNavConfig: NavItemConfig[] = [
     matchPattern: '^/lms/explore(/.*)?$'
   },
   {
-    titleKey: 'lms_navigation.programs',
-    path: '/programs',
+    titleKey: 'lms_navigation.cohorts',
+    path: '/cohorts',
     icon: GoalIcon,
-    matchPattern: '^/lms/programs(/.*)?$'
+    matchPattern: '^/lms/cohorts(/.*)?$'
   },
   {
     titleKey: 'lms_navigation.exercise',
@@ -118,8 +124,22 @@ export const baseNavConfig: NavItemConfig[] = [
         path: '/settings'
       },
       {
+        titleKey: 'Notifications',
+        path: '/settings/notifications'
+      },
+      {
         titleKey: 'Integrations',
         path: '/settings/integrations'
+      }
+    ],
+    nestedRoutes: [
+      {
+        path: 'notifications',
+        titleKey: 'settings.tabs.notifications_tab'
+      },
+      {
+        path: 'integrations',
+        titleKey: 'settings.tabs.integrations_tab'
       }
     ]
   }

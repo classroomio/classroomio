@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { openUpgradeModal } from '$lib/utils/functions/org';
+  import { openUpgradeModalOver } from '$lib/utils/functions/org';
   import { isFreePlan } from '$lib/utils/store/org';
   import * as Item from '@cio/ui/base/item';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
@@ -8,13 +8,18 @@
   interface Props {
     className?: string;
     onClick?: any;
+    visible?: boolean;
+    /** Query params to drop when opening the modal (e.g. `['add']` to close the invite modal first). */
+    removeParams?: string[];
     children?: import('svelte').Snippet;
   }
 
-  let { className = '', onClick = () => {}, ...restProps }: Props = $props();
+  let { className = '', onClick = () => {}, visible, removeParams = [], ...restProps }: Props = $props();
+
+  const shouldShow = $derived(visible ?? $isFreePlan);
 </script>
 
-{#if $isFreePlan}
+{#if shouldShow}
   <HoverableItem>
     {#snippet children(isHovered)}
       <Item.Root variant="outline" size="sm" class="h-fit w-full border-blue-700! py-2! {className}">
@@ -23,7 +28,7 @@
             {...props}
             onclick={() => {
               onClick();
-              openUpgradeModal();
+              openUpgradeModalOver(removeParams);
             }}
           >
             <Item.Media variant="icon">

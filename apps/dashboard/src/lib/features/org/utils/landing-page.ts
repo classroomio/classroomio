@@ -18,6 +18,7 @@ import {
   labelMatchesSocialPlatform,
   resolveFooterSocialPlatform
 } from '@cio/ui/custom/org-landing-page/footer-social-platform';
+import { t } from '$lib/utils/functions/translations';
 
 export const landingPageThemes = [
   'minimal',
@@ -689,12 +690,20 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
   });
 }
 
+export function buildOrgLandingPageLabels(): OrgLandingPageProps['labels'] {
+  return {
+    catalogEmptyTitle: t.get('public_courses.catalog_empty.title'),
+    catalogEmptyDescription: t.get('public_courses.catalog_empty.description')
+  };
+}
+
 export function buildOrgLandingPageProps(
   org: AccountOrg,
   landingpage: unknown,
   courses: OrgPublicCourses,
   hasMoreCourses = false,
-  authAction?: OrgLandingPageProps['authAction']
+  authAction?: OrgLandingPageProps['authAction'],
+  options?: { coursesLoaded?: boolean }
 ): OrgLandingPageProps {
   const normalizedLandingPage = normalizeLandingPageSettings(landingpage);
 
@@ -704,7 +713,9 @@ export function buildOrgLandingPageProps(
     authAction,
     ...normalizedLandingPage,
     courses: mapPublicCoursesToLandingPageCourses(courses),
-    hasMoreCourses
+    hasMoreCourses,
+    coursesLoaded: options?.coursesLoaded ?? true,
+    labels: buildOrgLandingPageLabels()
   };
 }
 

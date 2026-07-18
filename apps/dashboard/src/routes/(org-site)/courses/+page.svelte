@@ -10,6 +10,7 @@
 
   import { PoweredBy } from '$features/ui';
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
+  import XIcon from '@lucide/svelte/icons/x';
   import {
     normalizeLandingPageSettings,
     themeHeaderShellClass,
@@ -20,6 +21,7 @@
   import { LandingButton, OrgLandingPageFooter } from '@cio/ui/custom/org-landing-page';
 
   import { Checkbox } from '@cio/ui/base/checkbox';
+  import { Input } from '@cio/ui/base/input';
   import { Empty } from '@cio/ui/custom/empty';
   import { Separator } from '@cio/ui/base/separator';
   import * as Pagination from '@cio/ui/base/pagination';
@@ -27,6 +29,21 @@
   let { data } = $props();
 
   let selectedTags = $derived<string[]>(data.activeTags || []);
+  let selectedTypes = $derived<string[]>(data.activeTypes || []);
+  let activeSearch = $derived(data.activeSearch || '');
+  let activePricing = $derived<'free' | 'paid' | undefined>(data.activePricing);
+  let searchInput = $state('');
+
+  $effect(() => {
+    searchInput = activeSearch;
+  });
+
+  const COURSE_TYPES = [
+    { value: 'SELF_PACED', label: t.get('analytics.popularTypes.types.SELF_PACED') },
+    { value: 'LIVE_CLASS', label: t.get('analytics.popularTypes.types.LIVE_CLASS') },
+    { value: 'COMPLIANCE', label: t.get('analytics.popularTypes.types.COMPLIANCE') },
+    { value: 'PUBLIC', label: t.get('analytics.popularTypes.types.PUBLIC') }
+  ] as const;
 
   const landingSettings = $derived(normalizeLandingPageSettings(data.org.landingpage));
 
@@ -57,15 +74,22 @@
     image: ''
   });
 
-  async function applyTagFilters(nextTags: string[]) {
+  async function applyFilters(next: {
+    tags?: string[];
+    types?: string[];
+    search?: string;
+    pricing?: 'free' | 'paid' | null;
+  }) {
     const params = new SvelteURLSearchParams(page.url.searchParams);
+    const nextTags = next.tags ?? selectedTags;
+    const nextTypes = next.types ?? selectedTypes;
+    const nextSearch = next.search !== undefined ? next.search : activeSearch;
+    const nextPricing = 'pricing' in next ? next.pricing : activePricing;
 
-    if (nextTags.length > 0) {
-      params.set('tags', nextTags.join(','));
-    } else {
-      params.delete('tags');
-    }
-
+    nextTags.length ? params.set('tags', nextTags.join(',')) : params.delete('tags');
+    nextTypes.length ? params.set('types', nextTypes.join(',')) : params.delete('types');
+    nextSearch ? params.set('search', nextSearch) : params.delete('search');
+    nextPricing ? params.set('pricing', nextPricing) : params.delete('pricing');
     params.delete('page');
 
     const query = params.toString();
@@ -105,15 +129,47 @@
       next.delete(tagSlug);
     }
 
-    applyTagFilters(Array.from(next));
+    applyFilters({ tags: Array.from(next) });
+  }
+
+  function toggleType(typeValue: string, checked: boolean) {
+    const next = new SvelteSet(selectedTypes);
+    if (checked) {
+      next.add(typeValue);
+    } else {
+      next.delete(typeValue);
+    }
+
+    applyFilters({ types: Array.from(next) });
   }
 
   function clearFilters() {
-    if (selectedTags.length === 0) {
+    if (selectedTags.length === 0 && selectedTypes.length === 0 && !activeSearch && !activePricing) {
       return;
     }
 
-    applyTagFilters([]);
+    searchInput = '';
+    applyFilters({ tags: [], types: [], search: '', pricing: null });
+  }
+
+  let searchDebounce: ReturnType<typeof setTimeout>;
+  function onSearchInput(value: string) {
+    searchInput = value;
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => applyFilters({ search: value }), 300);
+  }
+
+  function onSearchKeydown(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      clearTimeout(searchDebounce);
+      applyFilters({ search: searchInput });
+    }
+  }
+
+  function clearSearch() {
+    searchInput = '';
+    clearTimeout(searchDebounce);
+    applyFilters({ search: '' });
   }
 
   function isTagSelected(tagSlug: string) {
@@ -141,13 +197,17 @@
       tags: tagsByGroupId[group.id] ?? []
     }));
   });
+
+  const hasActiveFilters = $derived(
+    selectedTags.length > 0 || selectedTypes.length > 0 || !!activeSearch || !!activePricing
+  );
 </script>
 
 <PoweredBy />
 
 <main class={shellClass} style={shellStyle}>
   {#if navInsideHero}
-    <HeroComponent hero={heroProps} orgName={data.org.name} showActions={false}>
+    <HeroComponent hero={heroProps} orgName={data.org.name} showActions={false} compact={true}>
       {#snippet navigation()}
         <NavComponent
           orgName={data.org.name}
@@ -155,6 +215,28 @@
           navItems={landingSettings.navItems}
           {authAction}
         />
+      {/snippet}
+      {#snippet children()}
+        <div class="ui:w-full ui:max-w-xl ui:mx-auto relative">
+          <Input
+            type="text"
+            value={searchInput}
+            oninput={(e) => onSearchInput(e.currentTarget.value)}
+            onkeydown={onSearchKeydown}
+            placeholder={$t('public_courses.filters.search_placeholder')}
+            class="ui:pr-8"
+          />
+          {#if searchInput}
+            <button
+              type="button"
+              onclick={clearSearch}
+              class="ui:text-muted-foreground ui:hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
+              aria-label="Clear search"
+            >
+              <XIcon class="ui:size-4" />
+            </button>
+          {/if}
+        </div>
       {/snippet}
     </HeroComponent>
   {:else}
@@ -164,12 +246,35 @@
       navItems={landingSettings.navItems}
       {authAction}
     />
-    <HeroComponent hero={heroProps} orgName={data.org.name} showActions={false} />
+    <HeroComponent hero={heroProps} orgName={data.org.name} showActions={false} compact={true}>
+      {#snippet children()}
+        <div class="ui:w-full ui:max-w-xl ui:mx-auto relative">
+          <Input
+            type="text"
+            value={searchInput}
+            oninput={(e) => onSearchInput(e.currentTarget.value)}
+            onkeydown={onSearchKeydown}
+            placeholder={$t('public_courses.filters.search_placeholder')}
+            class="ui:pr-8"
+          />
+          {#if searchInput}
+            <button
+              type="button"
+              onclick={clearSearch}
+              class="ui:text-muted-foreground ui:hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
+              aria-label="Clear search"
+            >
+              <XIcon class="ui:size-4" />
+            </button>
+          {/if}
+        </div>
+      {/snippet}
+    </HeroComponent>
   {/if}
 
   <section class="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
     <div class="mb-6 flex items-center justify-end gap-4">
-      <LandingButton variant="secondary" onclick={clearFilters} disabled={selectedTags.length === 0}>
+      <LandingButton variant="secondary" onclick={clearFilters} disabled={!hasActiveFilters}>
         {$t('public_courses.clear_filters')}
       </LandingButton>
     </div>
@@ -186,44 +291,87 @@
         <Separator class="ui:bg-[var(--landing-border)]" />
 
         <div class="flex-1 overflow-y-auto p-4">
-          {#if displayTagGroups.length === 0}
-            <p class="ui:text-[var(--landing-fg-muted)] text-sm">{$t('public_courses.filters.empty')}</p>
-          {:else}
-            <div class="space-y-5">
-              {#each displayTagGroups as group (group.id)}
-                <div class="space-y-2">
-                  <div class="space-y-1">
-                    <h3 class="text-sm font-semibold">{group.name}</h3>
-                    {#if group.description}
-                      <p class="ui:text-[var(--landing-fg-muted)] text-xs">{group.description}</p>
-                    {/if}
-                  </div>
-
-                  <div class="space-y-2">
-                    {#each group.tags as tag (tag.id)}
-                      <label
-                        class="ui:border-[var(--landing-border)] ui:hover:bg-[var(--landing-card-soft)] flex cursor-pointer items-center justify-between rounded-md border px-3 py-2"
-                      >
-                        <div class="flex items-center gap-2">
-                          <Checkbox
-                            checked={isTagSelected(tag.slug)}
-                            onCheckedChange={(checked) => toggleTag(tag.slug, Boolean(checked))}
-                          />
-                          <span
-                            class="inline-block h-2.5 w-2.5 rounded-full border"
-                            style={`background-color: ${tag.color}`}
-                            aria-hidden="true"
-                          ></span>
-                          <span class="text-sm">{tag.name}</span>
-                        </div>
-                        <span class="ui:text-[var(--landing-fg-muted)] text-xs">{tag.courseCount}</span>
-                      </label>
-                    {/each}
-                  </div>
-                </div>
-              {/each}
+          <div class="space-y-5">
+            <div class="space-y-2">
+              <h3 class="text-sm font-semibold">{$t('public_courses.filters.types_title')}</h3>
+              <div class="space-y-2">
+                {#each COURSE_TYPES as courseType (courseType.value)}
+                  <label
+                    class="ui:border-[var(--landing-border)] ui:hover:bg-[var(--landing-card-soft)] flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2"
+                  >
+                    <Checkbox
+                      checked={selectedTypes.includes(courseType.value)}
+                      onCheckedChange={(checked) => toggleType(courseType.value, Boolean(checked))}
+                    />
+                    <span class="text-sm">{courseType.label}</span>
+                  </label>
+                {/each}
+              </div>
             </div>
-          {/if}
+
+            <Separator class="ui:bg-[var(--landing-border)]" />
+
+            <div class="space-y-2">
+              <h3 class="text-sm font-semibold">{$t('public_courses.filters.pricing_title')}</h3>
+              <div class="space-y-2">
+                {#each [{ value: 'free', label: $t('public_courses.filters.pricing_free') }, { value: 'paid', label: $t('public_courses.filters.pricing_paid') }] as option (option.value)}
+                  <label
+                    class="ui:border-[var(--landing-border)] ui:hover:bg-[var(--landing-card-soft)] flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2"
+                  >
+                    <Checkbox
+                      checked={activePricing === option.value}
+                      onCheckedChange={(checked) =>
+                        applyFilters({ pricing: checked ? (option.value as 'free' | 'paid') : null })}
+                    />
+                    <span class="text-sm">{option.label}</span>
+                  </label>
+                {/each}
+              </div>
+            </div>
+
+            {#if displayTagGroups.length > 0}
+              <Separator class="ui:bg-[var(--landing-border)]" />
+
+              <div class="space-y-2">
+                <h3 class="text-sm font-semibold">{$t('public_courses.filters.tags_title')}</h3>
+              </div>
+
+              <div class="space-y-5">
+                {#each displayTagGroups as group (group.id)}
+                  <div class="space-y-2">
+                    <div class="space-y-1">
+                      <h3 class="text-sm font-semibold">{group.name}</h3>
+                      {#if group.description}
+                        <p class="ui:text-[var(--landing-fg-muted)] text-xs">{group.description}</p>
+                      {/if}
+                    </div>
+
+                    <div class="space-y-2">
+                      {#each group.tags as tag (tag.id)}
+                        <label
+                          class="ui:border-[var(--landing-border)] ui:hover:bg-[var(--landing-card-soft)] flex cursor-pointer items-center justify-between rounded-md border px-3 py-2"
+                        >
+                          <div class="flex items-center gap-2">
+                            <Checkbox
+                              checked={isTagSelected(tag.slug)}
+                              onCheckedChange={(checked) => toggleTag(tag.slug, Boolean(checked))}
+                            />
+                            <span
+                              class="inline-block h-2.5 w-2.5 rounded-full border"
+                              style={`background-color: ${tag.color}`}
+                              aria-hidden="true"
+                            ></span>
+                            <span class="text-sm">{tag.name}</span>
+                          </div>
+                          <span class="ui:text-[var(--landing-fg-muted)] text-xs">{tag.courseCount}</span>
+                        </label>
+                      {/each}
+                    </div>
+                  </div>
+                {/each}
+              </div>
+            {/if}
+          </div>
         </div>
       </aside>
 

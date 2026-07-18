@@ -1,15 +1,23 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
+  countActiveStudents,
   createOrganizationMember,
   getFirstOrganization,
   getOrganizationByProfileId,
   hasOrgMemberByProfileIdOrEmail
 } from '@cio/db/queries/organization';
-import { getProfileByEmail, getProfileById, updateProfile } from '@cio/db/queries/auth';
+import { getPlanLimit, toResourceUsage } from '@cio/utils/plans';
+import {
+  getProfileByEmail,
+  getProfileById,
+  syncProfileEmailVerificationFromAuthUser,
+  updateProfile
+} from '@cio/db/queries/auth';
 
 import type { OrganizationWithMemberAndPlans } from '@cio/db/queries/organization/types';
 import { ROLE } from '@cio/utils/constants';
 import type { TProfile } from '@cio/db/types';
+import type { TUpdateProfile } from '@cio/utils/validation/account';
 import { env } from '@cio/core/config/env';
 import { getLicenseStatus } from '@api/services/license';
 
@@ -38,6 +46,8 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
     throw new AppError(`Account not found for user ID: ${userId}`, ErrorCodes.ACCOUNT_NOT_FOUND, 404);
   }
 
+  profile = (await syncProfileEmailVerificationFromAuthUser(userId)) ?? profile;
+
   // Self-hosted: auto-add user as student to the single org if they are not a member.
   // Skip if they already have membership (by profileId) or a pending invite (by email).
   if (env.PUBLIC_IS_SELFHOSTED === 'true' && organizations.length === 0) {
@@ -58,6 +68,23 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
     }
   }
 
+  // Attach per-resource usage + plan limits for admin/tutor members only.
+  // Plain COUNTs (no rows) so the payload stays light and students never
+  // receive org limit data. Skip self-hosted (unlimited, matching the guard).
+  if (!isSelfHosted) {
+    await Promise.all(
+      organizations.map(async (org) => {
+        if (org.roleId !== ROLE.ADMIN && org.roleId !== ROLE.TUTOR) return;
+
+        const activePlan = org.plans.find((plan) => plan.isActive);
+        const studentsUsed = await countActiveStudents(org.id);
+        const studentsLimit = getPlanLimit('students', activePlan?.planName);
+
+        org.limits = { students: toResourceUsage(studentsUsed, studentsLimit) };
+      })
+    );
+  }
+
   return {
     profile,
     organizations,
@@ -71,10 +98,7 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
  * @param data - Partial profile data to update (excluding email, id, createdAt, updatedAt)
  * @returns Updated profile data
  */
-export async function updateUser(
-  userId: string,
-  data: Partial<Omit<TProfile, 'id' | 'email' | 'createdAt' | 'updatedAt'>>
-) {
+export async function updateUser(userId: string, data: TUpdateProfile) {
   try {
     const updatedProfile = await updateProfile(userId, data);
 

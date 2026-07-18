@@ -6,7 +6,7 @@ import type { EmailId } from '../utils/types';
  * Base email template interface
  */
 export interface EmailTemplate<TSchema extends z.ZodType = z.ZodType> {
-  subject: string;
+  subject: string | ((fields: z.infer<TSchema>) => string);
   schema: TSchema;
   render: (fields: z.infer<TSchema>) => string;
   from?: string;
@@ -29,6 +29,8 @@ export interface SendConfig<TSchema extends z.ZodType = z.ZodType> {
   fields: z.infer<TSchema>;
   from?: string;
   replyTo?: string;
+  /** Override the template's default subject (e.g. org-scoped transactional mail). */
+  subject?: string;
   /** Optional iCalendar (.ics) body delivered as a text/calendar part. */
   ics?: string;
 }
@@ -45,7 +47,7 @@ export interface SendTemplateConfig<TSchema extends z.ZodType = z.ZodType> exten
  */
 export interface DefineEmailConfig<TSchema extends z.ZodType = z.ZodType> {
   id: EmailId;
-  subject: string;
+  subject: string | ((fields: z.infer<TSchema>) => string);
   schema: TSchema;
   render: (fields: z.infer<TSchema>) => string;
   from?: string;

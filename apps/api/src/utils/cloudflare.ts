@@ -1,5 +1,11 @@
 import { CLOUDFLARE } from '@api/constants';
 
+export type ScreenshotViewport = {
+  width: number;
+  height: number;
+  deviceScaleFactor?: number;
+};
+
 export const getCloudflarePdfBuffer = async (html: string, styles?: string) => {
   console.log('Generating PDF with Cloudflare API...');
   try {
@@ -29,9 +35,13 @@ export const getCloudflarePdfBuffer = async (html: string, styles?: string) => {
 
 /**
  * Renders HTML to a PNG via Cloudflare Browser Rendering's `/screenshot` endpoint.
- * The viewport is fixed to 1100x780 to match the certificate canvas.
+ * Defaults to 1100x780 for certificate canvases; pass a custom viewport for other assets.
  */
-export const getCloudflarePngBuffer = async (html: string, styles?: string) => {
+export const getCloudflarePngBuffer = async (
+  html: string,
+  styles?: string,
+  viewport: ScreenshotViewport = { width: 1100, height: 780, deviceScaleFactor: 2 }
+) => {
   console.log('Generating PNG with Cloudflare API...');
   try {
     const response = await fetch(
@@ -45,7 +55,11 @@ export const getCloudflarePngBuffer = async (html: string, styles?: string) => {
         body: JSON.stringify({
           html,
           addStyleTag: styles ? [{ content: styles }] : undefined,
-          viewport: { width: 1100, height: 780, deviceScaleFactor: 2 },
+          viewport: {
+            width: viewport.width,
+            height: viewport.height,
+            deviceScaleFactor: viewport.deviceScaleFactor ?? 2
+          },
           screenshotOptions: { type: 'png', omitBackground: false, fullPage: false }
         })
       }

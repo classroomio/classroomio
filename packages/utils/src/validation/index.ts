@@ -18,7 +18,7 @@ export * from './public-api';
 export * from './submission';
 export * from './dash';
 export * from './tag';
-export * from './program';
+export * from './cohort';
 export * from './widget';
 export * from './jobs';
 export * from './notes';

@@ -9,7 +9,7 @@
   import { ROLE } from '@cio/utils/constants';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi } from '$features/course/api';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, isStudentLimitReached } from '$lib/utils/store/org';
   import { peopleApi } from '$features/course/api';
   import { orgApi } from '$features/org/api/org.svelte';
   import { DEFAULT_ORG_AUDIENCE_QUERY } from '$features/org/utils/audience-query-utils';
@@ -17,6 +17,7 @@
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import type { OrgStudent, Tutor } from '$features/people/utils/types';
   import { TutorSelectSection, ExistingStudentsSection, BulkEmailSection } from '$features/people/components';
+  import { UpgradeBanner } from '$features/ui';
 
   let tutors = $state<Tutor[]>([]);
   let selectedIds = $state<string[]>([]);
@@ -216,7 +217,11 @@
             onAssign={assignExistingStudents}
           />
 
-          <BulkEmailSection onInvite={inviteNewStudents} />
+          {#if $isStudentLimitReached}
+            <UpgradeBanner removeParams={['add']}>{$t(`${INVITE_MODAL}.student_limit_reached`)}</UpgradeBanner>
+          {/if}
+
+          <BulkEmailSection onInvite={inviteNewStudents} disabled={$isStudentLimitReached} />
         </div>
       </UnderlineTabs.Content>
     </UnderlineTabs.Root>

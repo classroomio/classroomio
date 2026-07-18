@@ -34,6 +34,7 @@ import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { getProfileByEmail, markUserAndProfileEmailVerified } from '@cio/db/queries/auth';
 import { generateSlug } from '@cio/utils/functions';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
+import { assertStudentCapacityOrThrow } from '../organization/student-limit';
 import { getWelcomeSessionIcs } from './session-invite';
 import { db } from '@cio/db/drizzle';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
@@ -358,6 +359,7 @@ async function sendStudentJoinEmails(input: {
   courseId: string;
   courseName: string;
   orgName: string;
+  organizationId: string;
   org: OrgUrlInfo;
   branding: EmailBranding;
   studentId: string;
@@ -378,7 +380,8 @@ async function sendStudentJoinEmails(input: {
       },
       from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`),
       idempotencyKey: `course-welcome:${input.courseId}:${input.studentId}`,
-      ics
+      ics,
+      preference: { organizationId: input.organizationId, recipientProfileId: input.studentId }
     });
   } catch (error) {
     console.error('Failed to enqueue student welcome email:', error);
@@ -406,7 +409,8 @@ async function sendStudentJoinEmails(input: {
         branding: input.branding
       },
       from: buildEmailFromName('ClassroomIO'),
-      idempotencyKey: `teacher-student-joined:${input.courseId}:${input.studentId}`
+      idempotencyKey: `teacher-student-joined:${input.courseId}:${input.studentId}`,
+      preference: { organizationId: input.organizationId }
     });
   } catch (error) {
     console.error('Failed to enqueue teacher join notification emails:', error);
@@ -671,6 +675,8 @@ export async function enrollInCourse(
   }
 
   if (!orgMemberId) {
+    await assertStudentCapacityOrThrow(org.id, 1);
+
     await createOrganizationMember({
       organizationId: org.id,
       roleId: ROLE.STUDENT,
@@ -693,6 +699,7 @@ export async function enrollInCourse(
     courseId,
     courseName: title,
     orgName: org.name,
+    organizationId: org.id,
     org: { siteName: org.siteName, customDomain: org.customDomain, isCustomDomainVerified: org.isCustomDomainVerified },
     branding: buildEmailBranding({ name: org.name, avatarUrl: org.avatarUrl, theme: org.theme }),
     studentId: user.id,
@@ -961,6 +968,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
         courseId: course.id,
         courseName: course.title,
         orgName: organization.name,
+        organizationId: organization.id,
         orgSiteName: organization.siteName,
         orgCustomDomain: organization.customDomain,
         orgIsCustomDomainVerified: organization.isCustomDomainVerified,
@@ -1001,6 +1009,8 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
     const orgMemberId = await getOrganizationMemberIdByOrgAndProfile(organization.id, user.id, tx);
 
     if (!orgMemberId) {
+      await assertStudentCapacityOrThrow(organization.id, 1);
+
       await createOrganizationMember(
         {
           organizationId: organization.id,
@@ -1044,6 +1054,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       courseId: course.id,
       courseName: course.title,
       orgName: organization.name,
+      organizationId: organization.id,
       orgSiteName: organization.siteName,
       orgCustomDomain: organization.customDomain,
       orgIsCustomDomainVerified: organization.isCustomDomainVerified,
@@ -1061,6 +1072,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       courseId: result.courseId,
       courseName: result.courseName,
       orgName: result.orgName,
+      organizationId: result.organizationId,
       org: {
         siteName: result.orgSiteName,
         customDomain: result.orgCustomDomain,

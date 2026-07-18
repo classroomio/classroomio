@@ -256,7 +256,8 @@
         "file_size": "Die Dateigröße darf 500 KB nicht überschreiten",
         "try_again": "Versuchen Sie es erneut",
         "label": "Bild hochladen",
-        "fetch_error": "Fehler beim Abrufen von Bildern von Unsplash"
+        "fetch_error": "Fehler beim Abrufen von Bildern von Unsplash",
+        "upload_failed": "Bild konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut."
       }
     },
     "team_members": {
@@ -287,7 +288,11 @@
         "saved": "Erfolgreich gespeichert",
         "successful_integration": "Integration erfolgreich",
         "successful_deletion": "Integration gelöscht",
-        "update_successful": "Update erfolgreich"
+        "update_successful": "Update erfolgreich",
+        "unlocked_all_content": "Alle Kursgegenstände freigeschaltet",
+        "all_content_already_unlocked": "Alle Inhalte sind bereits freigeschaltet",
+        "content_grouping_enabled": "Inhaltsgruppierung aktiviert",
+        "content_grouping_disabled": "Inhaltsgruppierung deaktiviert"
       }
     },
     "people": {
@@ -319,7 +324,8 @@
       "points_required_auto_grade": "Legen Sie für jede Frage einen positiven Punktwert fest, bevor Sie speichern.",
       "success": "Erfolgreich gespeichert",
       "submission_updated": "Einreichung aktualisiert auf",
-      "error_fetching": "Das Abrufen der Übungen ist fehlgeschlagen. Bitte laden Sie die Seite neu"
+      "error_fetching": "Das Abrufen der Übungen ist fehlgeschlagen. Bitte laden Sie die Seite neu",
+      "passed_requires_points": "Für den Abschluss durch Bestehen muss mindestens ein Punkt verfügbar sein."
     },
     "poll": {
       "info": {
@@ -386,32 +392,6 @@
       "rotated": "Automatisierungsschlüssel gedreht. Speichern Sie das neue Geheimnis jetzt, da es nicht mehr angezeigt wird.",
       "revoked": "Automatisierungsschlüssel widerrufen."
     },
-    "program": {
-      "error": {
-        "reaction_error": "Beim Reagieren auf den Beitrag ist ein Fehler aufgetreten",
-        "news_feed_fail": "Der Programm-Newsfeed konnte nicht abgerufen werden",
-        "post_create_failed": "Beitrag konnte nicht erstellt werden",
-        "post_update_failed": "Beitrag konnte nicht aktualisiert werden",
-        "code": {
-          "program_forbidden": "Sie müssen Mitglied dieses Programms sein, um diese Aktion ausführen zu können.",
-          "program_member_check_failed": "Wir konnten Ihre Programmmitgliedschaft nicht bestätigen. Versuchen Sie es erneut.",
-          "program_not_found": "Dieses Programm konnte nicht gefunden werden.",
-          "program_create_failed": "Das Programm konnte nicht erstellt werden.",
-          "program_update_failed": "Das Programm konnte nicht aktualisiert werden.",
-          "program_delete_failed": "Das Programm konnte nicht gelöscht werden.",
-          "program_member_not_found": "Dieses Programmmitglied konnte nicht gefunden werden.",
-          "program_newsfeed_not_found": "Dieser Beitrag konnte nicht gefunden werden.",
-          "program_newsfeed_comment_not_found": "Dieser Kommentar konnte nicht gefunden werden."
-        }
-      },
-      "success": {
-        "comment_deleted": "Kommentar gelöscht",
-        "comment_added": "Kommentar hinzugefügt",
-        "feed_delete_success": "Beitrag erfolgreich gelöscht",
-        "post_created": "Beitrag erfolgreich erstellt",
-        "post_updated": "Beitrag erfolgreich aktualisiert"
-      }
-    },
     "ai_credits": {
       "purchase_success": "AI credit pack zu Ihrem Guthaben hinzugefügt.",
       "checkout_failed": "Checkout konnte nicht gestartet werden. Bitte versuchen Sie es erneut."
@@ -445,7 +425,33 @@
       "generate_1080_completed": "1080p-Wiedergabe hinzugefügt",
       "generate_1080_failed": "Die 1080p-Wiedergabe konnte nicht generiert werden"
     },
-    "social_auth_not_enabled": "Dieser Authentifizierungsanbieter ist nicht aktiviert."
+    "social_auth_not_enabled": "Dieser Authentifizierungsanbieter ist nicht aktiviert.",
+    "cohort": {
+      "error": {
+        "reaction_error": "Beim Reagieren auf den Beitrag ist ein Fehler aufgetreten",
+        "news_feed_fail": "Der Kohorte-Newsfeed konnte nicht abgerufen werden",
+        "post_create_failed": "Beitrag konnte nicht erstellt werden",
+        "post_update_failed": "Beitrag konnte nicht aktualisiert werden",
+        "code": {
+          "cohort_forbidden": "Sie müssen Mitglied dieses Kohorte sein, um diese Aktion ausführen zu können.",
+          "cohort_member_check_failed": "Wir konnten Ihre Kohortenmitgliedschaft nicht bestätigen. Versuchen Sie es erneut.",
+          "cohort_not_found": "Dieses Kohorte konnte nicht gefunden werden.",
+          "cohort_create_failed": "Das Kohorte konnte nicht erstellt werden.",
+          "cohort_update_failed": "Das Kohorte konnte nicht aktualisiert werden.",
+          "cohort_delete_failed": "Das Kohorte konnte nicht gelöscht werden.",
+          "cohort_member_not_found": "Dieses Kohortenmitglied konnte nicht gefunden werden.",
+          "cohort_newsfeed_not_found": "Dieser Beitrag konnte nicht gefunden werden.",
+          "cohort_newsfeed_comment_not_found": "Dieser Kommentar konnte nicht gefunden werden."
+        }
+      },
+      "success": {
+        "comment_deleted": "Kommentar gelöscht",
+        "comment_added": "Kommentar hinzugefügt",
+        "feed_delete_success": "Beitrag erfolgreich gelöscht",
+        "post_created": "Beitrag erfolgreich erstellt",
+        "post_updated": "Beitrag erfolgreich aktualisiert"
+      }
+    }
   },
   "explore": {
     "heading": "Entdecken Sie unsere Kurse",
@@ -504,7 +510,8 @@
     "download_lessons": "Führen Sie ein Upgrade durch, um Lektionen herunterzuladen",
     "download_course": "Upgrade zum Download-Kurs",
     "required": "Upgrade erforderlich",
-    "enterprise_required": "Für diese Funktion ist ein Enterprise-Plan erforderlich."
+    "enterprise_required": "Für diese Funktion ist ein Enterprise-Plan erforderlich.",
+    "public_api_required": "Upgrade auf Early Adopter oder Enterprise, um auf die öffentliche API zuzugreifen."
   },
   "analytics": {
     "title": "Analytik",
@@ -683,18 +690,18 @@
       "all_courses": "Alle Kurse",
       "select_courses": "Wählen Sie bestimmte Kurse aus",
       "select_courses_placeholder": "Kurse auswählen...",
-      "program_access": "Programmzugriff",
-      "no_programs": "Keine Programmzuweisung",
-      "all_programs": "Alle Programme",
-      "select_programs": "Bestimmte Programme auswählen",
-      "select_programs_placeholder": "Programme auswählen...",
       "send_email": "Senden Sie Einladungs-E-Mails an importierte Benutzer",
       "submit": "Benutzer importieren",
       "back": "Zurück zum Publikum",
       "snackbar_success": "{imported} neue Einladungen, {assigned} bestehende Studierende mit Kurszugang, {pendingInvitesRenewed} ausstehende Einladungen erneuert ({emailsSent} E-Mails gesendet)",
       "snackbar_no_emails": "Bitte geben Sie mindestens eine E-Mail-Adresse ein",
       "snackbar_failed": "Benutzer konnten nicht importiert werden",
-      "page_subtitle": "Add many people at once by email, then assign courses or programs if you like."
+      "page_subtitle": "Fügen Sie viele Personen auf einmal per E-Mail hinzu und weisen Sie ihnen bei Bedarf Kurse oder Kohorten zu.",
+      "cohort_access": "Kohortenzugriff",
+      "no_cohorts": "Keine Kohortenzuweisung",
+      "all_cohorts": "Alle Kohorten",
+      "select_cohorts": "Bestimmte Kohorten auswählen",
+      "select_cohorts_placeholder": "Kohorten auswählen..."
     },
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
     "user_analytics": {
@@ -704,12 +711,13 @@
     "delete": {
       "action": "Löschen",
       "title": "Mitglied löschen",
-      "description": "Dadurch wird das Mitglied aus Ihrer Organisation entfernt und ihm der Zugriff auf alle zugewiesenen Kurse und Programme entzogen.",
+      "description": "Dadurch wird das Mitglied aus Ihrer Organisation entfernt und ihm der Zugriff auf alle zugewiesenen Kurse und Kohorten entzogen.",
       "confirmation": "Sind Sie sicher, dass Sie {name} ({email}) löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
       "cancel": "Abbrechen",
       "confirm": "Löschen",
       "snackbar_success": "Mitglied gelöscht"
-    }
+    },
+    "import_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um mehr Schüler zu importieren."
   },
   "community": {
     "title": "Gemeinschaft",
@@ -841,6 +849,12 @@
           "title": "Willkommens-E-Mail",
           "description": "Passen Sie die E-Mail an, die Studierende nach der Anmeldung erhalten. Fügen Sie eine persönliche Notiz, Anweisungen oder einen Link zur Live-Sitzung hinzu.",
           "placeholder": "Schreiben Sie die Willkommensnachricht, die Studierende bei der Einschreibung erhalten …"
+        },
+        "locked_content": {
+          "title": "{count} Kurselemente sind gesperrt",
+          "description": "Eingeschriebene Schüler können erst dann an gesperrten Lektionen oder Übungen teilnehmen, wenn Sie sie entsperren.",
+          "description_live": "Gesperrte Lektionen und Übungen bleiben den Schülern verborgen, bis Sie sie entsperren – nützlich, wenn Sie Inhalte Woche für Woche veröffentlichen.",
+          "unlock_all": "Schalte alle frei"
         }
       },
       "analytics": {
@@ -856,7 +870,7 @@
         "description": "Kursbeschreibung",
         "learn": "Was Sie lernen werden",
         "certificate": "Zertifikat",
-        "certificate_text": "Wenn Sie alle Kurse des Programms abschließen, erhalten Sie ein Zertifikat, das Sie mit Ihrem beruflichen Netzwerk teilen können.",
+        "certificate_text": "Wenn Sie alle Kurse der Kohorte abschließen, erhalten Sie ein Zertifikat, das Sie mit Ihrem beruflichen Netzwerk teilen können.",
         "content": "Kursinhalt",
         "slide": "1 Folie",
         "note": "Hinweis",
@@ -892,7 +906,10 @@
         "enroll_page": {
           "requires_payment_or_invite": "Sie müssen für diesen Kurs bezahlen oder eingeladen werden, um Zugang zu erhalten.",
           "back_to_course": "Zurück zum Kurs",
-          "join_course": "Nehmen Sie am Kurs teil"
+          "join_course": "Nehmen Sie am Kurs teil",
+          "enrolled_success": "Sie sind für diesen Kurs eingeschrieben.",
+          "enrolled_verify_email": "Sie sind eingeschrieben! Bestätigen Sie Ihre E-Mail, um auf diesen Kurs zuzugreifen.",
+          "student_limit_reached": "{orgName} hat seine Studentenkapazität erreicht. Bitte wenden Sie sich an den Administrator Ihrer Organisation."
         },
         "pricing_section": {
           "free": "Kostenlos",
@@ -1224,7 +1241,8 @@
             "multi_use_7d": "Mehrfachnutzung (7 Tage)",
             "multi_use_30d": "Mehrfachnutzung (30 Tage)",
             "custom": "Benutzerdefiniert"
-          }
+          },
+          "student_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um weitere Schüler einzuladen."
         }
       },
       "marks": {
@@ -1306,6 +1324,12 @@
         "add_content_create_lesson": "Lektion erstellen",
         "add_content_section_title_placeholder": "z. B. Modul 1: Einführung",
         "add_content_lesson_title_placeholder": "z. B. Erste Schritte mit Variablen",
+        "content_menu": {
+          "label": "Inhaltsoptionen",
+          "unlock_all": "Alle Inhalte freischalten",
+          "enable_grouping": "Inhaltsgruppierung aktivieren",
+          "disable_grouping": "Inhaltsgruppierung deaktivieren"
+        },
         "join_lesson": "Nehmen Sie an der Lektion teil",
         "no_link": "Kein Link",
         "no_tutor": "Kein Tutor hinzugefügt",
@@ -1404,8 +1428,8 @@
             "finish": "Fertig",
             "next": "Als nächstes",
             "check": "Überprüfen",
-            "auto_graded_badge": "Auto-grade",
-            "manual_grading_required_badge": "Manual grading required",
+            "auto_graded_badge": "Automatische Bewertung",
+            "manual_grading_required_badge": "Manuelle Bewertung erforderlich",
             "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
             "analytics": {
               "submissions": "Einsendungen",
@@ -1413,14 +1437,25 @@
                 "heading": "Individuell",
                 "answers": "Individuelle Antworten",
                 "no": "Es wurde keine Antwort gegeben",
-                "student_avatar": "Student"
+                "student_avatar": "Student",
+                "answers_for": "{name}s Antworten",
+                "attempts_count": "{count} Versuche",
+                "attempt_label": "Versuch {number}",
+                "date_unknown": "Datum unbekannt",
+                "status_awaiting_manual": "Wartet auf manuelle Bewertung",
+                "status_completed": "Bewertet",
+                "status_pending": "Ausstehend",
+                "counts_as_complete": "Zählt als abgeschlossen",
+                "passed": "Bestanden",
+                "not_passed": "Nicht bestanden"
               },
               "summary": {
                 "heading": "Zusammenfassung",
                 "question_chart": "Fragendiagramme",
                 "responses": "Antworten",
                 "no_responses": "Noch keine Antworten",
-                "other": "Andere"
+                "other": "Andere",
+                "attempts": "Versuche"
               },
               "loading_submissions": "Einsendungen werden geladen...",
               "empty_title": "Noch keine Einsendungen",
@@ -1443,6 +1478,10 @@
               "status_pending": "Status: Ausstehende Überprüfung",
               "status_graded": "Status: Überprüfung abgeschlossen",
               "status_submitted": "Status: Eingereicht",
+              "passed_completion_result_title": "Bestanden",
+              "passed_completion_result_description": "Du hast {scorePercent} % erzielt. Für diese Übung waren {requiredPercent} % erforderlich, damit sie als abgeschlossen zählt.",
+              "not_passed_completion_result_title": "Noch nicht bestanden",
+              "not_passed_completion_result_description": "Du hast {scorePercent} % erzielt. Für diese Übung sind {requiredPercent} % erforderlich, damit sie als abgeschlossen zählt.",
               "empty_description": "Klicken Sie zum Hinzufügen auf die Schaltfläche Bearbeiten.",
               "empty_edit_hint_prefix": "Klicken Sie auf ",
               "empty_edit_hint_suffix": " Schaltfläche zum Hinzufügen.",
@@ -1840,6 +1879,30 @@
               "sending": "Studierende benachrichtigen…",
               "sent": "{count} Studenten benachrichtigt",
               "failed": "Die Schüler konnten nicht benachrichtigt werden"
+            },
+            "zero_points_warning": "Legen Sie Punkte über 0 fest, andernfalls erhalten die Schüler für diese Frage keine Bewertung.",
+            "settings_completion_passed_helper": "Studierende müssen die Bestehenspunktzahl erreichen, bevor diese Übung als abgeschlossen zählt.",
+            "settings_manual_grading_warning": "Manuell bewertete Einreichungen müssen bewertet werden, bevor sie als bestanden zählen können.",
+            "settings_single_attempt_warning": "Bei nur einem Versuch benötigen nicht bestandene Studierende eine Aktion der Lehrkraft, bevor sie fortfahren können.",
+            "settings_existing_submissions_warning": "Das Ändern der Bestehenskriterien kann bestehende Abschlüsse und den Fortschritt beeinflussen.",
+            "question_auto_graded_badge": "Automatisch bewertet",
+            "question_manual_grading_badge": "Manuelle Bewertung",
+            "guard": {
+              "title": "Vor dem Speichern überprüfen",
+              "attempts_title": "Was passiert, wenn ein Student durchfällt?",
+              "description": "Diese Übung gilt erst dann als abgeschlossen, wenn ein Schüler bestanden hat.",
+              "retry_option": "Lassen Sie sie es erneut versuchen, bis sie bestehen",
+              "retry_option_description": "Studierende können ihre Unterlagen so oft wie nötig erneut einreichen.",
+              "single_attempt_option": "Nur ein Versuch",
+              "single_attempt_option_description": "Ein Student, der durchfällt, bleibt blockiert, bis Sie seinen Abgabestatus manuell ändern.",
+              "recommended": "Empfohlen",
+              "manual_notice_title": "Einige Fragen erfordern eine manuelle Bewertung",
+              "manual_notice_description": "Der Pass eines Schülers ist erst dann endgültig, wenn Sie die folgenden Fragen benotet haben:",
+              "cancel": "Abbrechen",
+              "save_anyway": "Sparen Sie trotzdem",
+              "save_continue": "Speichern und fortfahren",
+              "question_fallback": "Frage {number}",
+              "zero_points_field": "Für den bestandenen Abschluss ist mindestens ein Punkt erforderlich."
             }
           },
           "new_exercise_modal": {
@@ -1883,6 +1946,13 @@
           "no_content": "Kein Inhalt",
           "no_translation": "Keine Übersetzung für die ausgewählte Sprache",
           "button": "Taste",
+          "show_transcript": "Transkript anzeigen",
+          "summarize_lesson": "Lektion zusammenfassen",
+          "summarize_lesson_prompt": {
+            "lesson_only": "Fassen Sie zusammen, was in dieser Lektion vermittelt wurde.",
+            "transcript_only": "Sehen Sie sich das Transkript des hochgeladenen Videos an und fassen Sie zusammen, was im Transkript erwähnt wird.",
+            "transcript_and_notes": "Sehen Sie sich das Transkript des hochgeladenen Videos an und fassen Sie zusammen, was im Transkript erwähnt wird. Fassen Sie auch zusammen, was in den Lektionsnotizen behandelt wird."
+          },
           "button_done": "Fertig",
           "tabs": {
             "settings": {
@@ -1995,7 +2065,10 @@
                 "edit": "Transkript bearbeiten",
                 "save": "Speichern",
                 "cancel": "Abbrechen",
-                "segment_label": "Segmentieren um {timestamp}"
+                "segment_label": "Segmentieren um {timestamp}",
+                "video_nav_label": "Video {number}",
+                "previous_video": "Vorheriges Video-Transkript",
+                "next_video": "Nächstes Video-Transkript"
               },
               "simple_card": {
                 "kind_youtube": "YouTube",
@@ -2298,6 +2371,12 @@
         "title": "Compliance",
         "due_date": "Fällig",
         "valid_until": "Gültig bis"
+      },
+      "progress": {
+        "title": "Ihr Fortschritt",
+        "completed": "{completed} von {total} abgeschlossen",
+        "lessons": "{completed} von {total} Lektionen",
+        "exercises": "{completed} von {total} Übungen"
       }
     },
     "navItems": {
@@ -2323,7 +2402,8 @@
         "later": "Schließen",
         "checking": "Berechtigung prüfen…",
         "not_eligible_title": "Fast da",
-        "retake_exercise": "Wiederholen Sie die Übung"
+        "retake_exercise": "Wiederholen Sie die Übung",
+        "subtitle_no_certificate": "Herzlichen Glückwunsch – Sie haben diesen Kurs abgeschlossen."
       }
     },
     "certificates": {
@@ -2640,6 +2720,10 @@
         "refresh": "Aktualisieren",
         "remove": "Entfernen",
         "custom_favicon": "Benutzerdefiniertes Favicon",
+        "custom_favicon_description": "Wird in Browser-Tabs angezeigt, wenn Besucher Ihre öffentliche Schulwebsite öffnen. Falls nicht festgelegt, wird das Logo Ihrer Organisation verwendet.",
+        "custom_favicon_save": "Favicon speichern",
+        "custom_favicon_remove": "Favicon entfernen",
+        "custom_favicon_saved": "Favicon aktualisiert",
         "custom_code": "Benutzerdefinierter Code",
         "reconnect": "Domäne erneut verbinden",
         "reconnect_hint": "Verbinden Sie diese Domäne erneut, um neue Cloudflare-Setup-Datensätze zu generieren.",
@@ -2801,11 +2885,14 @@
     "upgrade": "Jetzt upgraden",
     "tags": "Schlagworte",
     "automation": "Automatisierung",
-    "programs": "Programme",
     "widgets": "Widgets",
     "stats": "Statistiken",
     "analytics": "Analytik",
-    "compliance": "Compliance"
+    "compliance": "Compliance",
+    "cohorts": "Kohorten",
+    "upgrade_now": "Jetzt upgraden",
+    "upgrade_students": "{studentCount} von {studentLimit} Studenten",
+    "upgrade_left": "{count} übrig"
   },
   "media_manager": {
     "page_title": "Medienmanager - ClassroomIO",
@@ -3382,7 +3469,8 @@
       "domains_tab": "Domänen",
       "teams_tab": "Mannschaften",
       "ai_credits_tab": "AI Credits",
-      "ai_tutor_tab": "KI-Tutor"
+      "ai_tutor_tab": "KI-Tutor",
+      "notifications_tab": "Benachrichtigungen"
     },
     "subheadings": {
       "view_site": "Offene Akademie"
@@ -3556,6 +3644,77 @@
         "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
         "buy_button": "Für ${dollars} kaufen"
       }
+    },
+    "notifications": {
+      "heading": "Benachrichtigungen",
+      "page_title": "Benachrichtigungen",
+      "page_subtitle": "Wählen Sie, welche E-Mail-Benachrichtigungen Sie erhalten, und als Administrator, welche E-Mails Ihre Organisation sendet.",
+      "toggles": {
+        "courseCompletion": {
+          "label": "Kursabschluss und Zertifikate",
+          "description": "E-Mail an Studenten senden, wenn sie einen Kurs abschließen und ein Zertifikat erhalten."
+        },
+        "enrollmentWelcome": {
+          "label": "Willkommens-E-Mails bei Anmeldung",
+          "description": "Willkommens-E-Mails senden, wenn Mitarbeitende Studenten zu Kursen oder Kohorten anmelden."
+        },
+        "session": {
+          "label": "Erinnerungen und Updates zu Live-Sitzungen",
+          "description": "E-Mail an Studenten vor Live-Sitzungen und bei Änderungen der Sitzungsdetails senden."
+        },
+        "cohortReminder": {
+          "label": "Erinnerungen an Kohortenlernziele",
+          "description": "E-Mail an Studenten über bevorstehende oder überfällige Kohortenlernziele senden."
+        },
+        "quizAssigned": {
+          "label": "Übung zugewiesen",
+          "description": "E-Mail an Studenten senden, wenn eine Übung zugewiesen oder erinnert wird."
+        },
+        "newsfeed": {
+          "label": "Kursankündigungen und Kommentare",
+          "description": "E-Mail an Kursmitglieder über neue Beiträge und Kommentare im Newsfeed senden."
+        },
+        "gradingResult": {
+          "label": "Bewertungsergebnisse",
+          "description": "E-Mail an Studenten senden, wenn ihre Abgabe bewertet oder aktualisiert wird."
+        },
+        "newSubmission": {
+          "label": "Neue Abgaben zum Bewerten",
+          "description": "E-Mail an Tutoren senden, wenn ein Student Arbeit zur Bewertung einreicht."
+        },
+        "newStudent": {
+          "label": "Neuer Student meldet sich an",
+          "description": "E-Mail an Tutoren senden, wenn sich ein Student für einen Kurs anmeldet."
+        }
+      },
+      "org": {
+        "heading": "Organisationsstandards",
+        "description": "Wenn hier deaktiviert, erhält niemand in Ihrer Organisation diese E-Mail. Mitglieder können sich weiterhin von E-Mails abmelden, die Sie aktiviert lassen.",
+        "save": "Organisationsstandards speichern",
+        "save_success": "Organisations-Benachrichtigungsstandards gespeichert"
+      },
+      "personal": {
+        "heading": "Ihre E-Mail-Einstellungen",
+        "save": "Persönliche Einstellungen speichern",
+        "save_success": "Persönliche Benachrichtigungseinstellungen gespeichert",
+        "description": "Diese Einstellungen gelten für E-Mails, die Ihnen in dieser Organisation gesendet werden. Ihre Organisation kann bestimmte E-Mails für alle deaktivieren.",
+        "description_with_org": "Diese Einstellungen gelten für E-Mails, die Ihnen in {orgName} gesendet werden. Ihre Organisation kann bestimmte E-Mails für alle deaktivieren."
+      },
+      "sections": {
+        "enrollment": {
+          "heading": "Anmeldung",
+          "description": "Willkommens-E-Mails, die gesendet werden, wenn Mitarbeitende Mitglieder zu Kursen oder Kohorten hinzufügen."
+        },
+        "cohort": {
+          "heading": "Kohorte",
+          "description": "Erinnerungen an Lernziele und Fristen der Kohorte."
+        },
+        "course": {
+          "heading": "Kurs",
+          "description": "Anmeldungen, Abgaben, Lektionen, Ankündigungen und Abschlüsse in Ihren Kursen."
+        }
+      },
+      "personal_page_subtitle": "Wählen Sie, welche E-Mail-Benachrichtigungen Sie von ClassroomIO erhalten."
     }
   },
   "profileMenu": {
@@ -3612,9 +3771,9 @@
       "command_palette": {
         "title": "Befehlspalette",
         "description": "Suchen und navigieren Sie in Ihrer Organisation",
-        "placeholder": "Durchsuchen Sie Kurse, Programme, Widgets, Studenten, Tags, Einstellungen ...",
-        "org_placeholder": "Durchsuchen Sie Kurse, Programme, Widgets, Studenten, Tags, Einstellungen ...",
-        "lms_placeholder": "Durchsuchen Sie Ihre Kurse, Programme und Lernseiten ...",
+        "placeholder": "Durchsuchen Sie Kurse, Kohorten, Widgets, Studenten, Tags, Einstellungen ...",
+        "org_placeholder": "Durchsuchen Sie Kurse, Kohorten, Widgets, Studenten, Tags, Einstellungen ...",
+        "lms_placeholder": "Durchsuchen Sie Ihre Kurse, Kohorten und Lernseiten ...",
         "lms_description": "Durchsuchen und navigieren Sie in Ihrem Lernarbeitsbereich",
         "empty": "Keine Ergebnisse gefunden",
         "loading": "Suche...",
@@ -3626,11 +3785,11 @@
           "recent": "Neu",
           "suggested": "Vorgeschlagen",
           "courses": "Kurse",
-          "programs": "Programme",
           "widgets": "Widgets",
           "tags": "Schlagworte",
           "students": "Studenten",
-          "settings": "Einstellungen"
+          "settings": "Einstellungen",
+          "cohorts": "Kohorten"
         }
       }
     },
@@ -3739,10 +3898,20 @@
       "title": "Keine Kurse gefunden",
       "description": "Versuchen Sie, Ihre Filter zu löschen, oder schauen Sie später noch einmal vorbei."
     },
+    "catalog_empty": {
+      "title": "Noch keine Kurse veröffentlicht",
+      "description": "Schauen Sie bald wieder vorbei für neue Kurse."
+    },
     "filters": {
       "title": "Nach Tags filtern",
       "help": "Wählen Sie einen oder mehrere Tags aus, um Kurse zu filtern",
-      "empty": "Noch keine Tags verfügbar"
+      "empty": "Noch keine Tags verfügbar",
+      "tags_title": "Schlagworte",
+      "types_title": "Typen",
+      "search_placeholder": "Kurse suchen...",
+      "pricing_title": "Preise",
+      "pricing_free": "Kostenlos",
+      "pricing_paid": "Bezahlt"
     }
   },
   "tags_admin": {
@@ -3887,6 +4056,10 @@
           "save": "Create key"
         }
       },
+      "setup": {
+        "title": "Schnellstart",
+        "description": "Verwenden Sie Ihren API-Schlüssel als Bearer-Token bei jeder Anfrage. Ersetzen Sie den Platzhalter durch einen Schlüssel von oben oder fügen Sie das Geheimnis direkt nach der Erstellung ein."
+      },
       "view_docs": "View Docs"
     },
     "keys": {
@@ -3911,7 +4084,11 @@
       "claude_code": "Claude Code",
       "codex": "Kodex",
       "cursor": "Cursor",
-      "opencode": "OpenCode"
+      "opencode": "OpenCode",
+      "curl": "cURL",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "go": "Go"
     },
     "tabs": {
       "mcp": "MCP",
@@ -3924,212 +4101,6 @@
     },
     "zapier": {
       "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
-    }
-  },
-  "programs": {
-    "heading": "Programme",
-    "page_title": "Programme",
-    "create": "Neues Programm",
-    "create_success": "Programm erstellt",
-    "update_success": "Programm aktualisiert",
-    "delete_success": "Programm gelöscht",
-    "members_added": "Mitglieder hinzugefügt",
-    "member_removed": "Mitglied entfernt",
-    "course_added": "Kurs hinzugefügt",
-    "course_removed": "Kurs entfernt",
-    "empty_title": "Noch keine Programme",
-    "empty_description": "Erstellen Sie Ihr erstes Zertifizierungs- oder Compliance-Programm.",
-    "settings": {
-      "general": "Allgemein",
-      "name_label": "Name",
-      "description_label": "Beschreibung",
-      "status_label": "Status",
-      "save": "Änderungen speichern",
-      "danger_zone": "Gefahrenzone",
-      "delete": "Programm löschen",
-      "delete_description": "Nach dem Löschen können dieses Programm und alle seine Daten nicht wiederhergestellt werden.",
-      "confirm_delete": "Sind Sie sicher, dass Sie dieses Programm löschen möchten? Dies kann nicht rückgängig gemacht werden."
-    },
-    "lms": {
-      "empty_title": "Noch keine Programme",
-      "empty_description": "Sie sind in keinem Programm eingeschrieben."
-    },
-    "people": {
-      "invite": "Einladen",
-      "invite_modal_title": "Mitglieder einladen",
-      "invite_modal_description": "Fügen Sie Personen per E-Mail zu diesem Programm hinzu.",
-      "email_label": "E-Mail",
-      "role_label": "Rolle",
-      "add_another": "Fügen Sie einen weiteren hinzu",
-      "invite_submit": "Senden Sie Einladungen",
-      "empty_title": "Noch keine Mitglieder",
-      "empty_description": "Laden Sie Menschen ein, an diesem Programm teilzunehmen."
-    },
-    "courses": {
-      "add": "Kurs hinzufügen",
-      "add_modal_title": "Kurs zum Programm hinzufügen",
-      "select_course": "Wählen Sie einen Kurs aus",
-      "select_placeholder": "Wählen Sie einen Kurs…",
-      "empty_title": "Noch keine Kurse",
-      "empty_description": "Fügen Sie Kurse zu diesem Programm hinzu.",
-      "select_courses": "Kurse auswählen",
-      "search_placeholder": "Kurse suchen",
-      "no_available_courses": "Keine Kurse zum Hinzufügen verfügbar.",
-      "no_matching_courses": "Zu Ihrer Suche passen keine Kurse.",
-      "no_matching_program_courses": "Zu Ihrer Suche passen keine Studiengänge.",
-      "pagination_status": "Seite {page} von {totalPages}",
-      "published_access_callout_title": "Zugang für Studierende",
-      "published_access_callout_description": "Studierende haben nur Zugriff auf veröffentlichte Kurse. Kurse können für Ihr Team in diesem Programm enthalten sein, solange sie noch unveröffentlicht sind, während sie den Studierenden verborgen bleiben, bis Sie sie veröffentlichen."
-    },
-    "newsfeed": {
-      "post": "Neuer Beitrag",
-      "post_placeholder": "Was geht Ihnen durch den Kopf?",
-      "post_submit": "Beitrag",
-      "empty_title": "Noch keine Beiträge",
-      "empty_description": "Seien Sie der Erste, der etwas postet.",
-      "heading": "Newsfeed",
-      "make_a_post": "Machen Sie einen Beitrag",
-      "edit_post": "Beitrag bearbeiten",
-      "editor_placeholder": "Teilen Sie ein Update mit Ihrem Programm",
-      "cancel": "Abbrechen",
-      "pinned": "Angepinnt",
-      "delete_feed_title": "Beitrag löschen",
-      "delete_feed_description": "Sind Sie sicher, dass Sie diesen Beitrag löschen möchten?",
-      "confirm_delete": "Löschen",
-      "user_avatar_alt": "Benutzer-Avatar",
-      "comments": {
-        "comment": "Kommentar",
-        "showing_of": "Es werden {shown} von {total} angezeigt",
-        "hide": "Kommentare ausblenden",
-        "placeholder": "Programmkommentar hinzufügen",
-        "submit_aria": "Kommentar abgeben",
-        "delete": "Löschen"
-      },
-      "card": {
-        "pin": "Pin",
-        "unpin": "Lösen",
-        "edit": "Bearbeiten",
-        "delete": "Löschen"
-      }
-    },
-    "create_modal": {
-      "title": "Programm erstellen",
-      "description": "Fügen Sie ein neues Zertifizierungs- oder Compliance-Programm hinzu.",
-      "name_label": "Name",
-      "name_placeholder": "z.B. OSHA-Sicherheitszertifizierung",
-      "description_label": "Beschreibung",
-      "description_placeholder": "Worum geht es in diesem Programm?",
-      "submit": "Erstellen"
-    },
-    "sidebar": {
-      "newsfeed": "Newsfeed",
-      "courses": "Kurse",
-      "people": "Menschen",
-      "settings": "Einstellungen"
-    },
-    "status": {
-      "active": "Aktiv",
-      "inactive": "Inaktiv",
-      "archived": "Archiviert"
-    },
-    "description": "Gewähren Sie einer Gruppe von Personen Zugriff auf mehrere Kurse, z. B. einen Kurs",
-    "search_placeholder": "Suchprogramme",
-    "multiple_added": "Kurse hinzugefügt",
-    "no_matching_programs": "Keine Programme entsprechen Ihren Filtern.",
-    "card": {
-      "courses": "Kurse",
-      "students": "Studenten"
-    },
-    "table": {
-      "name": "Name",
-      "courses": "Kurse",
-      "students": "Studenten",
-      "status": "Status",
-      "description": "Beschreibung"
-    },
-    "filters": {
-      "filter": "Filtern",
-      "clear_all": "Alles löschen",
-      "popover_title": "Filter",
-      "sort": "Sortieren",
-      "order": "Bestellen",
-      "status": "Status",
-      "ascending": "Aufstieg",
-      "descending": "Beschr",
-      "sort_name": "Name",
-      "sort_courses": "Kurse",
-      "sort_students": "Studenten",
-      "sort_status": "Status"
-    },
-    "invite_sent": "Einladungen gesendet",
-    "goals": {
-      "heading": "Lernziele",
-      "description": "Legen Sie messbare Ziele fest, die sich über mehrere Kurse für alle Teilnehmer dieses Programms erstrecken.",
-      "add": "Neues Ziel",
-      "empty_title": "Noch keine Ziele",
-      "empty_description": "Erstellen Sie ein Ziel, um den Teamfortschritt über mehrere Kurse hinweg zu verfolgen.",
-      "created": "Ziel erstellt",
-      "updated": "Ziel aktualisiert",
-      "deleted": "Ziel gelöscht",
-      "delete_confirm": "Dieses Ziel löschen? Der Statusverlauf pro Schüler wird entfernt.",
-      "lms": {
-        "heading": "Ihre Ziele",
-        "empty_title": "Keine Ziele zugewiesen",
-        "empty_description": "Wenn Ihre Kursleiter Ziele setzen, werden sie hier angezeigt.",
-        "due_in_days": "Fällig in {days} Tagen",
-        "due_tomorrow": "Fällig morgen",
-        "due_today": "Heute fällig",
-        "overdue": "Überfällig",
-        "no_deadline": "Keine Frist"
-      },
-      "tile": {
-        "on_track": "auf Kurs",
-        "completed_short": "abgeschlossen",
-        "overdue_short": "überfällig",
-        "at_risk_short": "gefährdet"
-      },
-      "status": {
-        "completed": "Abgeschlossen",
-        "in_progress": "In Bearbeitung",
-        "at_risk": "In Gefahr",
-        "overdue": "Überfällig",
-        "not_started": "Nicht gestartet",
-        "waived": "Verzichtet"
-      },
-      "deadline_kind": {
-        "absolute": "Absolutes Datum",
-        "relative_to_join": "Bezogen auf den Beitritt von Studierenden",
-        "recurring": "Wiederkehrend",
-        "none": "Keine Frist"
-      },
-      "type": {
-        "complete_all": "Absolvieren Sie alle ausgewählten Kurse",
-        "n_of_m": "Absolvieren Sie N von M ausgewählten Kursen",
-        "score": "Erreichen Sie in jedem Kurs eine Punktzahl über dem Schwellenwert",
-        "pass_rate": "Schwellenwert für die Erfolgsquote des Teams",
-        "readiness": "Bereitschaft (keine Frist)"
-      },
-      "modal": {
-        "create_title": "Neues Ziel",
-        "edit_title": "Ziel bearbeiten",
-        "title_label": "Titel",
-        "title_placeholder": "z.B. Onboarding-Rampe",
-        "description_label": "Beschreibung",
-        "description_placeholder": "Optionaler Kontext für das Team",
-        "type_label": "Typ",
-        "courses_label": "Kurse",
-        "required_count_label": "Anzahl der erforderlichen Kurse",
-        "score_threshold_label": "Bestehenspunktzahl pro Schüler (%)",
-        "team_pass_rate_label": "Erfolgsquote der Mannschaft (%)",
-        "deadline_label": "Frist",
-        "deadline_date_label": "Deadline-Datum",
-        "relative_days_label": "Tage ab dem Beitritt des Schülers",
-        "recurring_months_label": "Wiederholen Sie alle (Monate)",
-        "reminders_label": "Erinnerungen (Tage vor Fälligkeit)",
-        "reminders_helper": "Durch Kommas getrennt. Beispiel: 7, 3, 1",
-        "save": "Speichern",
-        "cancel": "Abbrechen"
-      }
     }
   },
   "ai_assistant": {

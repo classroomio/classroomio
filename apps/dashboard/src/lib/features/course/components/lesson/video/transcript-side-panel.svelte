@@ -1,10 +1,13 @@
 <script lang="ts">
+  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import XIcon from '@lucide/svelte/icons/x';
   import PencilIcon from '@lucide/svelte/icons/pencil';
   import CaptionsIcon from '@lucide/svelte/icons/captions';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
   import { Textarea } from '@cio/ui/base/textarea';
+  import { Separator } from '@cio/ui/base/separator';
   import { t } from '$lib/utils/functions/translations';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { sidePanel } from '$features/side-panel';
@@ -12,12 +15,20 @@
   import { lessonVideoBus } from './lesson-video-bus.svelte';
   import type { TranscriptSegment } from '$features/media/utils/types';
 
-  const transcript = $derived(lessonVideoBus.transcript);
-  const transcriptLoading = $derived(lessonVideoBus.transcriptLoading);
+  const activeSource = $derived.by(() => lessonVideoBus.getActiveTranscriptSource());
+  const transcript = $derived(activeSource?.transcript ?? null);
+  const transcriptLoading = $derived(activeSource?.transcriptLoading ?? false);
   const segments = $derived<TranscriptSegment[]>(transcript?.segments ?? []);
   const language = $derived(transcript?.language ?? '');
-  const assetId = $derived(lessonVideoBus.assetId);
-  const currentTimeSeconds = $derived(lessonVideoBus.currentTimeSeconds);
+  const assetId = $derived(activeSource?.assetId ?? null);
+  const currentTimeSeconds = $derived(activeSource?.currentTimeSeconds ?? 0);
+
+  const navigableSources = $derived.by(() => lessonVideoBus.getNavigableTranscriptSources());
+  const activeNavIndex = $derived(navigableSources.findIndex((source) => source.assetId === assetId));
+  const activeVideoNumber = $derived(activeNavIndex >= 0 ? activeNavIndex + 1 : 1);
+  const canGoToPreviousVideo = $derived(activeNavIndex > 0);
+  const canGoToNextVideo = $derived(activeNavIndex >= 0 && activeNavIndex < navigableSources.length - 1);
+  const showVideoNavigation = $derived(navigableSources.length > 1);
 
   let editing = $state(false);
   let saving = $state(false);
@@ -43,12 +54,34 @@
   }
 
   function formatTimestamp(seconds: number): string {
-    const m = Math.floor(seconds / 60);
-    const s = Math.floor(seconds % 60)
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60)
       .toString()
       .padStart(2, '0');
 
-    return `${m}:${s}`;
+    return `${minutes}:${remainingSeconds}`;
+  }
+
+  function goToPreviousVideo() {
+    if (!canGoToPreviousVideo) return;
+
+    if (editing) {
+      cancelEditing();
+    }
+
+    const previousSource = navigableSources[activeNavIndex - 1];
+    lessonVideoBus.selectTranscriptSource(previousSource.assetId);
+  }
+
+  function goToNextVideo() {
+    if (!canGoToNextVideo) return;
+
+    if (editing) {
+      cancelEditing();
+    }
+
+    const nextSource = navigableSources[activeNavIndex + 1];
+    lessonVideoBus.selectTranscriptSource(nextSource.assetId);
   }
 
   function startEditing() {
@@ -121,6 +154,38 @@
       {/if}
     </div>
   </header>
+
+  {#if showVideoNavigation && !editing}
+    <div class="border-border flex items-center justify-between gap-2 border-b px-4 py-2">
+      <IconButton
+        onclick={goToPreviousVideo}
+        variant="outline"
+        size="icon-xs"
+        disabled={!canGoToPreviousVideo}
+        tooltip={$t('course.navItem.lessons.materials.tabs.video.transcript.previous_video')}
+      >
+        <ChevronLeftIcon size={16} />
+      </IconButton>
+
+      <p class="min-w-0 truncate text-center text-sm font-medium">
+        {$t('course.navItem.lessons.materials.tabs.video.transcript.video_nav_label', {
+          number: activeVideoNumber
+        })}
+      </p>
+
+      <IconButton
+        onclick={goToNextVideo}
+        variant="outline"
+        size="icon-xs"
+        disabled={!canGoToNextVideo}
+        tooltip={$t('course.navItem.lessons.materials.tabs.video.transcript.next_video')}
+      >
+        <ChevronRightIcon size={16} />
+      </IconButton>
+    </div>
+  {:else if showVideoNavigation && editing}
+    <Separator />
+  {/if}
 
   <div class="min-h-0 flex-1 overflow-y-auto p-3">
     {#if editing}

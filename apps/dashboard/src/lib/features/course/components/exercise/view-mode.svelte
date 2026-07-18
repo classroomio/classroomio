@@ -39,7 +39,6 @@
   import { toggleConfetti } from '$features/ui/confetti/store';
   import { ContentType } from '@cio/utils/constants/content';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
-  import { isOrgStudent } from '$lib/utils/store/app';
   import {
     openCourseCompletionModal,
     updateCourseCompletionModal,
@@ -49,6 +48,7 @@
   import { toExerciseQuestionModel } from './question-type-utils';
   import { getExerciseQuestionLabels } from './question-labels';
   import { getExerciseSectionDisplayTitle } from '$features/course/utils/exercise-section-utils';
+  import { shouldCompleteExerciseFromSubmission } from '$features/course/utils/exercise-progression-utils';
   import axios from 'axios';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
@@ -80,7 +80,19 @@
   const questionLabels = $derived(getExerciseQuestionLabels());
   const sectionFallbackTitle = $derived($t('course.navItem.lessons.exercises.all_exercises.section.fallback_title'));
 
-  const submissionList = $derived(Array.isArray(mySubmissions) ? mySubmissions : []);
+  /** Submissions created in this session — the `mySubmissions` prop only refreshes on page load. */
+  let localSubmissions = $state<SubmissionListItem[]>([]);
+
+  const submissionList = $derived.by(() => {
+    const loadedSubmissions = Array.isArray(mySubmissions) ? mySubmissions : [];
+    const newSubmissions = localSubmissions.filter(
+      (localSubmission) => !loadedSubmissions.some((loadedSubmission) => loadedSubmission.id === localSubmission.id)
+    );
+    return [...loadedSubmissions, ...newSubmissions];
+  });
+
+  /** Attempt currently shown: -1 means "latest" (e.g. right after submitting). */
+  const viewedAttemptIndex = $derived(selectedTryIndex >= 0 ? selectedTryIndex : submissionList.length - 1);
 
   function handleStart() {
     questionnaireMetaData.update((m) => ({
@@ -137,6 +149,8 @@
     if (exerciseApi.success && submitResult?.data) {
       skipHydrateFromSubmissions = false;
       const sub = submitResult.data as unknown as SubmissionListItem & { gradingState?: string };
+      localSubmissions = [...localSubmissions, sub];
+      selectedTryIndex = submissionList.length - 1;
       if (sub.gradingState === 'completed' && sub.statusId === STATUS.GRADED && Array.isArray(sub.answers)) {
         applyMySubmission(sub);
       } else {
@@ -150,14 +164,23 @@
           exerciseId
         }));
       }
-      courseApi.updateContentItem(exerciseId, ContentType.Exercise, { isComplete: true });
+      const shouldMarkComplete = shouldCompleteExerciseFromSubmission({
+        completionPolicy: $questionnaire.completionPolicy,
+        passThreshold: $questionnaire.passThreshold,
+        totalPossiblePoints: totalPossibleGrade,
+        submission: sub
+      });
 
-      toggleConfetti();
-      setTimeout(toggleConfetti, 3000);
+      courseApi.updateContentItem(exerciseId, ContentType.Exercise, { isComplete: shouldMarkComplete });
+
+      if (shouldMarkComplete) {
+        toggleConfetti();
+        setTimeout(toggleConfetti, 3000);
+      }
 
       const allContentItems = getOrderedNavigableContent(courseApi.course);
       const allComplete =
-        $isOrgStudent && allContentItems.length > 0 && allContentItems.every((item) => item.isComplete);
+        shouldMarkComplete && allContentItems.length > 0 && allContentItems.every((item) => item.isComplete);
 
       if (allComplete && courseApi.course?.id) {
         const requiredExerciseId = courseApi.course?.certificate?.requiredExerciseId ?? undefined;
@@ -165,11 +188,13 @@
 
         const certRes = await courseApi.getCertificationEvaluation(courseApi.course.id);
         if (certRes?.data) {
-          if (certRes.data.isNewCompletion) {
-            updateCourseCompletionModal(courseApi.course.id, 'eligible', certRes.data, requiredExerciseId);
-          } else {
-            updateCourseCompletionModal(courseApi.course.id, 'not-eligible', certRes.data, requiredExerciseId);
-          }
+          const hasCompletedCourse = Boolean(certRes.data.eligibleForCertificate || certRes.data.certificateEarnedAt);
+          updateCourseCompletionModal(
+            courseApi.course.id,
+            hasCompletedCourse ? 'eligible' : 'not-eligible',
+            certRes.data,
+            requiredExerciseId
+          );
         } else {
           closeCourseCompletionModal();
         }
@@ -286,6 +311,12 @@
       acc += parseFloat(question.points);
       return acc;
     }, 0);
+  }
+
+  function formatPercent(value: number) {
+    return new Intl.NumberFormat(undefined, {
+      maximumFractionDigits: 1
+    }).format(value);
   }
 
   function getAutoSavedData() {
@@ -606,6 +637,24 @@
   );
   const canGoNextForSharedQuestion = $derived(hasAnswerValue(sharedCurrentAnswer));
   const sectionQuestionTotalPoints = $derived(getTotalPossibleGrade(currentSectionQuestions));
+  const passThresholdPercent = $derived(Number($questionnaire.passThreshold ?? 100));
+  const gradedScorePercent = $derived.by(() => {
+    const finalGrade = Number($questionnaireMetaData.finalTotalGrade);
+    const totalGrade = Number($questionnaireMetaData.totalPossibleGrade);
+    if (!Number.isFinite(finalGrade) || !Number.isFinite(totalGrade) || totalGrade <= 0) return null;
+
+    return (finalGrade / totalGrade) * 100;
+  });
+  const shouldShowPassedCompletionResult = $derived(
+    ($questionnaire.completionPolicy ?? 'submitted') === 'passed' &&
+      STATUS.GRADED === $questionnaireMetaData.status &&
+      gradedScorePercent !== null
+  );
+  const didCurrentAttemptPass = $derived(
+    shouldShowPassedCompletionResult && gradedScorePercent !== null && gradedScorePercent >= passThresholdPercent
+  );
+  const gradedScorePercentLabel = $derived(gradedScorePercent === null ? '' : formatPercent(gradedScorePercent));
+  const passThresholdPercentLabel = $derived(formatPercent(passThresholdPercent));
   const sectionNavigationGroups = $derived(
     activeSections.map((section, sectionIndex) => {
       const sectionQuestions = getQuestionsForSection($questionnaire.questions, section.id);
@@ -666,15 +715,15 @@
   });
 
   function goPrevTry() {
-    if (selectedTryIndex <= 0) return;
-    selectedTryIndex -= 1;
+    if (viewedAttemptIndex <= 0) return;
+    selectedTryIndex = viewedAttemptIndex - 1;
     const sub = submissionList[selectedTryIndex];
     if (sub) applyMySubmission(sub);
   }
 
   function goNextTry() {
-    if (selectedTryIndex >= submissionList.length - 1) return;
-    selectedTryIndex += 1;
+    if (viewedAttemptIndex >= submissionList.length - 1) return;
+    selectedTryIndex = viewedAttemptIndex + 1;
     const sub = submissionList[selectedTryIndex];
     if (sub) applyMySubmission(sub);
   }
@@ -725,6 +774,7 @@
       alreadyCheckedAutoSavedData = false;
       skipHydrateFromSubmissions = false;
       selectedTryIndex = -1;
+      localSubmissions = [];
     }
     prevExerciseId = exerciseId;
   });
@@ -842,6 +892,43 @@
                 <span class="text-xl">{$questionnaireMetaData.totalPossibleGrade}</span>
               </p>
             </div>
+            {#if shouldShowPassedCompletionResult}
+              <Alert.Root variant={didCurrentAttemptPass ? 'information' : 'warning'} class="h-fit! w-full! flex-1!">
+                <div class="col-start-2 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div class="min-w-0 space-y-1">
+                    <p class="font-medium">
+                      {didCurrentAttemptPass
+                        ? $t('course.navItem.lessons.exercises.all_exercises.view_mode.passed_completion_result_title')
+                        : $t(
+                            'course.navItem.lessons.exercises.all_exercises.view_mode.not_passed_completion_result_title'
+                          )}
+                    </p>
+                    <p class="ui:text-muted-foreground text-sm">
+                      {didCurrentAttemptPass
+                        ? $t(
+                            'course.navItem.lessons.exercises.all_exercises.view_mode.passed_completion_result_description',
+                            {
+                              scorePercent: gradedScorePercentLabel,
+                              requiredPercent: passThresholdPercentLabel
+                            }
+                          )
+                        : $t(
+                            'course.navItem.lessons.exercises.all_exercises.view_mode.not_passed_completion_result_description',
+                            {
+                              scorePercent: gradedScorePercentLabel,
+                              requiredPercent: passThresholdPercentLabel
+                            }
+                          )}
+                    </p>
+                  </div>
+                  {#if $questionnaire.allowMultipleAttempts && !didCurrentAttemptPass}
+                    <Button type="button" variant="outline" onclick={tryAgain} class="shrink-0">
+                      {$t('course.navItem.lessons.exercises.all_exercises.view_mode.try_again')}
+                    </Button>
+                  {/if}
+                </div>
+              </Alert.Root>
+            {/if}
           </div>
         </div>
       {:else if isSelfPacedLikeCourse(courseApi.course?.type)}
@@ -861,7 +948,7 @@
     {#if submissionList.length > 1}
       <div class="mb-4 flex flex-wrap items-center gap-2">
         <IconButton
-          disabled={selectedTryIndex <= 0}
+          disabled={viewedAttemptIndex <= 0}
           onclick={goPrevTry}
           tooltip={$t('course.navItem.lessons.exercises.all_exercises.view_mode.previous_try')}
         >
@@ -869,12 +956,12 @@
         </IconButton>
         <span class="ui:text-muted-foreground text-sm">
           {$t('course.navItem.lessons.exercises.all_exercises.view_mode.attempt_counter', {
-            current: selectedTryIndex + 1,
+            current: viewedAttemptIndex + 1,
             total: submissionList.length
           })}
         </span>
         <IconButton
-          disabled={selectedTryIndex >= submissionList.length - 1}
+          disabled={viewedAttemptIndex >= submissionList.length - 1}
           onclick={goNextTry}
           tooltip={$t('course.navItem.lessons.exercises.all_exercises.view_mode.next_try')}
         >
@@ -894,7 +981,7 @@
     />
 
     <RoleBasedSecurity allowedRoles={[3]}>
-      {#if $questionnaire.allowMultipleAttempts}
+      {#if $questionnaire.allowMultipleAttempts && !shouldShowPassedCompletionResult}
         <div class="mt-4">
           <Button type="button" variant="secondary" onclick={tryAgain}>
             {$t('course.navItem.lessons.exercises.all_exercises.view_mode.try_again')}

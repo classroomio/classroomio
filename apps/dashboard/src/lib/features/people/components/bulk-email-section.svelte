@@ -12,6 +12,7 @@
     descriptionKey?: string;
     submitKey?: string;
     noEmailsKey?: string;
+    disabled?: boolean;
   }
 
   let {
@@ -19,7 +20,8 @@
     titleKey = 'course.navItem.people.invite_modal.invite_new_students_title',
     descriptionKey = 'course.navItem.people.invite_modal.invite_new_students_description',
     submitKey = 'course.navItem.people.invite_modal.invite_new_students',
-    noEmailsKey = 'audience.import.snackbar_no_emails'
+    noEmailsKey = 'audience.import.snackbar_no_emails',
+    disabled = false
   }: Props = $props();
 
   let recipientCsv = $state('');
@@ -53,12 +55,18 @@
       bind:value={recipientCsv}
       rows={4}
       className="w-full"
+      {disabled}
       placeholder={$t('audience.import.emails_placeholder')}
     />
-    <CheckboxField name="send-invite-emails" label={$t('audience.import.send_email')} bind:checked={sendInviteEmails} />
+    <CheckboxField
+      name="send-invite-emails"
+      label={$t('audience.import.send_email')}
+      bind:checked={sendInviteEmails}
+      {disabled}
+    />
   </Field.Group>
 
-  <Button variant="secondary" onclick={inviteStudents} loading={isSubmitting}>
+  <Button variant="secondary" onclick={inviteStudents} loading={isSubmitting} {disabled}>
     {$t(submitKey)}
   </Button>
 </Field.Set>

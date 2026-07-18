@@ -20,11 +20,43 @@ When a task requires factual information (API specifications, context window siz
 - Commit messages must follow the Conventional Commits 1.0.0 spec: https://www.conventionalcommits.org/en/v1.0.0/
 - Never include agent-provider attribution in commits or commit trailers. Do not add `Co-authored-by` lines for Cursor, Claude, Codex, or any other tool.
 
+## Verification before commit/PR
+
+Before committing or opening/updating a PR, run the build checks that match the areas you changed. Use Node 20 (the repo's `.nvmrc` version):
+
+```bash
+export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
+```
+
+- **Dashboard changes** (`apps/dashboard/**`, or shared packages consumed by the dashboard):
+
+  ```bash
+  test -f apps/dashboard/.env || cp apps/dashboard/.env.example apps/dashboard/.env
+  pnpm --filter @cio/dashboard^... build && pnpm --filter @cio/dashboard build
+  ```
+
+- **API changes** (`apps/api/**`, or shared packages consumed by the API):
+
+  ```bash
+  pnpm --filter @cio/api^... build && pnpm --filter @cio/api build
+  ```
+
+Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow above). Do not commit if any verification step fails.
+
 ## Naming Convention
 
 - Use kebab-case for files (e.g. `user-profile.svelte`, `org.svelte.ts`).
 - **Variables must read clearly at the call site.** Avoid opaque single-letter or ultra-short names (`d`, `x`, `tmp`) unless they match a universal convention (e.g. `i` in a trivial index loop). Prefer names that state intent (`deadlineDate`, `parsedUrl`, `nextSection`).
 - **After an early `return` (or other guard exit), leave a blank line** before the next statement so the “happy path” block is visually separated from guards.
+- **Never put an `await` or a complex/multi-call expression inside an object literal** (construction or update). Assign each value to a well-named local first, then reference it in the object. This keeps the call site readable and debuggable.
+  ```ts
+  // ❌ don't
+  org.limits = { students: toResourceUsage(await countActiveStudents(org.id), getPlanLimit('students', plan)) };
+  // ✅ do
+  const studentsUsed = await countActiveStudents(org.id);
+  const studentsLimit = getPlanLimit('students', plan);
+  org.limits = { students: toResourceUsage(studentsUsed, studentsLimit) };
+  ```
 
 ## Creating a New Route
 
@@ -311,6 +343,69 @@ In Svelte 5, the built-in `Set` and `Map` classes are **not** reactive. Use `Sve
 </script>
 ```
 
+### Avoiding Svelte 5 rerender and `$effect` loops
+
+`$effect` re-runs when any reactive value it **reads** changes. Writing state inside an effect can retrigger it and cause infinite loops, redundant work, or flicker. Prefer explicit event handlers and bindings over effect-driven syncing.
+
+**Do not reset UI state in an effect tied to a steady condition** (e.g. “whenever `open` is false”). While the condition stays true, the effect keeps running and rewriting state:
+
+```svelte
+// ❌ don't — resets on every run while closed; can loop with bound children
+$effect(() => {
+  if (open) return;
+
+  step = STEPS.STEP_1;
+  fields = { fullname: '', email: '' };
+  errors = { fullname: '', email: '' };
+});
+```
+
+**Reset on transitions** — when a dialog closes, a route changes, or the user submits — not on every render where a flag is false:
+
+```svelte
+// ✅ do — reset only when the dialog actually closes
+function resetForm() {
+  step = STEPS.STEP_1;
+  fields.fullname = '';
+  fields.email = '';
+  errors.fullname = '';
+  errors.email = '';
+}
+
+function handleOpenChange(isOpen: boolean) {
+  open = isOpen;
+
+  if (!isOpen) {
+    resetForm();
+  }
+}
+```
+
+```svelte
+<Dialog.Root {open} onOpenChange={handleOpenChange}>
+```
+
+**Prefer `bind:` over `$effect` for keeping two sources in sync.** If a control can bind directly to a store or `$state` field, use that instead of reading one value in an effect and writing another (see **Svelte store binding** above).
+
+**When resetting bound form state, mutate properties in place** instead of replacing the whole object. Reassigning `fields = { ... }` breaks `bind:value={fields.fullname}` and can trigger extra updates downstream:
+
+```svelte
+// ❌ don't
+fields = { fullname: '', email: '' };
+
+// ✅ do
+fields.fullname = '';
+fields.email = '';
+```
+
+**Other common pitfalls:**
+
+- **Effect writes what it reads** — e.g. `$effect(() => { count = count + 1 })` loops forever.
+- **Effect mirrors props into local state** — use `$bindable`, `bind:`, or derive a value; only copy props when you need a draft the user can cancel.
+- **Effect fetches or navigates on every dependency tick** — gate with a guard, run on submit/route enter, or track “already loaded” so work runs once per intent.
+
+When cleanup or reset must follow a specific lifecycle moment, use the matching hook: `onOpenChange` for dialogs, submit/success handlers for forms, `onMount` / load functions for one-time setup.
+
 ### Server-Side API Calls
 
 Use `.server.ts` files for server-side code to isolate API keys.
@@ -328,6 +423,23 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - **Icon-only buttons** (a `Button` whose content is just an icon, e.g. `size="icon"`) must use `variant="secondary"`.
 - **Theme color classes:** Classes that use colors from `packages/ui/src/index.css` (e.g. `text-muted-foreground`, `text-primary`) must be prefixed with `ui:` in dashboard code so they resolve against the UI theme (e.g. `ui:text-muted-foreground`, `ui:text-primary`). Only color-related utilities need the prefix; layout/sizing classes like `rounded`, `border`, `p-4` stay unprefixed (Tailwind defaults).
 
+## Emails: system vs org-branded
+
+Every transactional email in `packages/email/src/emails` is one of two kinds — decide deliberately, because it changes the branding, the schema, and the `from` address.
+
+- **System emails** — ClassroomIO (the platform) addressing a user/account owner/admin about their *ClassroomIO account*: auth (verify/reset password), billing, **plan limits & usage**, license, workspace. These are **ClassroomIO-branded**:
+  - No `branding` field in the schema.
+  - Render with `getDefaultTemplate(content)` (no branding arg) — falls back to the ClassroomIO logo + default button color.
+  - Send from the default `EMAIL_FROM`; do **not** override `from` with the org name.
+  - Examples: `welcome`, `forgot-password`, `on-password-reset`, `studentLimitReached`.
+- **Org-branded emails** — an *organization* addressing its own members (students/tutors): course invites, welcome/completion, newsfeed, cohort, session reminders. These carry the org's identity:
+  - Add a `branding: ZEmailBranding` field.
+  - Render with `getDefaultTemplate(content, fields.branding)`.
+  - Callers build branding via `buildEmailBranding({ name, avatarUrl, theme })` and send with `from: buildEmailFromName('<Org> (via ClassroomIO.com)')`.
+  - Examples: `teacherStudentJoined`, `studentCourseWelcome`, `studentCourseInvite`, `verifyEmail` (org-scoped signup).
+
+Rule of thumb: if the recipient is being addressed **as a ClassroomIO customer** (account/billing/limits), it's a system email → ClassroomIO branding. If they're addressed **as a member of a specific org**, it's org-branded.
+
 ## Best Practices Summary
 
 ### ✅ DO
@@ -342,6 +454,8 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Use non-null assertion (`!`) for `user` when `authMiddleware` is present
 - Put all user-facing copy in translations and reference by key
 - Use `SvelteSet`/`SvelteMap` from `svelte/reactivity` for reactive collections (not `new Set`/`new Map`)
+- Reset modal/form state in close/submit handlers or `onOpenChange`, not in `$effect` tied to a steady “closed” condition
+- Mutate bound `$state` object fields in place when clearing forms (don't reassign the whole object)
 
 ### ❌ DON'T
 - Put business logic in routes or queries
@@ -356,6 +470,8 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Write plain English strings in components
 - Use `new Set()`/`new Map()` for mutable reactive state — use `SvelteSet`/`SvelteMap` instead
 - Wrap `SvelteSet`/`SvelteMap` in `$state()` — they are already reactive
+- **Use `$effect` to reset form/modal state whenever a boolean is false** — use `onOpenChange` or explicit handlers on close instead
+- **Reassign whole bound state objects to clear forms** (e.g. `fields = {}`) — mutate properties in place
 - **Use inline type imports** (e.g. `import('Package').Type` in type positions) — use top-level `import type` instead
 
 ## Checklist for New Routes

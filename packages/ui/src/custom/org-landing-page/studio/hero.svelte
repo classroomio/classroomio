@@ -2,7 +2,7 @@
   import type { OrgLandingPageProps } from '../types';
   import type { Snippet } from 'svelte';
   import SecondaryActionButton from '../secondary-action-button.svelte';
-  import { Button } from '../../../base/button';
+  import CoursePrimaryAction from '../course-primary-action.svelte';
   import EditableLandingSection from '../editable-section.svelte';
 
   interface Props {
@@ -10,9 +10,11 @@
     courses: OrgLandingPageProps['courses'];
     navigation: Snippet;
     showActions?: boolean;
+    compact?: boolean;
+    children?: Snippet;
   }
 
-  let { hero, courses = [], navigation, showActions = true }: Props = $props();
+  let { hero, courses = [], navigation, showActions = true, compact = false, children }: Props = $props();
 
   const coursesCount = $derived(courses.length);
 
@@ -29,7 +31,11 @@
 {@render navigation()}
 
 <EditableLandingSection sectionKey="hero">
-  <section class="ui:relative ui:overflow-hidden ui:px-6 ui:pt-20 ui:pb-20 ui:md:pt-24 ui:md:pb-24">
+  <section
+    class="ui:relative ui:overflow-hidden ui:px-6 {compact
+      ? 'ui:pt-10 ui:pb-10 ui:md:pt-12 ui:md:pb-12'
+      : 'ui:pt-20 ui:pb-20 ui:md:pt-24 ui:md:pb-24'}"
+  >
     <div
       class="ui:pointer-events-none ui:absolute ui:-top-32 ui:-left-24 ui:h-[520px] ui:w-[520px] ui:rounded-full ui:opacity-60 ui:blur-3xl"
       style="background: radial-gradient(circle, color-mix(in oklab, var(--landing-accent) 35%, transparent) 0%, transparent 70%);"
@@ -59,15 +65,12 @@
         {hero.subheading}
       </p>
 
+      {#if children}
+        <div class="ui:mt-6">{@render children()}</div>
+      {/if}
       {#if showActions}
         <div class="ui:flex ui:flex-wrap ui:items-center ui:gap-2">
-          <Button
-            href={hero.primaryAction.href}
-            disabled={hero.primaryAction.disabled ?? false}
-            class="ui:rounded-md ui:px-5"
-          >
-            {hero.primaryAction.label}
-          </Button>
+          <CoursePrimaryAction action={hero.primaryAction} class="ui:rounded-md ui:px-5" />
           {#if hero.secondaryAction}
             <SecondaryActionButton
               href={hero.secondaryAction.href}

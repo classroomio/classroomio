@@ -2,7 +2,92 @@ import * as schema from '@db/schema';
 
 import type { TProfile } from '@db/types';
 import { db, type DbOrTxClient } from '@db/drizzle';
-import { eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, ne } from 'drizzle-orm';
+
+/**
+ * True when the auth user has any non-credential account (OAuth/SSO). Those providers verify email.
+ */
+export async function hasVerifiedEmailProvider(userId: string, dbClient: DbOrTxClient = db): Promise<boolean> {
+  const accounts = await dbClient
+    .select({ providerId: schema.account.providerId })
+    .from(schema.account)
+    .where(and(eq(schema.account.userId, userId), ne(schema.account.providerId, 'credential')))
+    .limit(1);
+
+  return accounts.length > 0;
+}
+
+async function resolveAuthUserEmailVerified(
+  userId: string,
+  emailVerified: boolean,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
+  if (emailVerified) {
+    return true;
+  }
+
+  return hasVerifiedEmailProvider(userId, dbClient);
+}
+
+/**
+ * Keeps profile.is_email_verified in sync with auth user + linked OAuth/SSO accounts.
+ * Repairs legacy rows where user.email_verified is true but profile.is_email_verified is false,
+ * and promotes user.email_verified when profile is already verified (e.g. self-hosted bootstrap).
+ * Never demotes profile.is_email_verified.
+ */
+export async function syncProfileEmailVerificationFromAuthUser(userId: string, dbClient: DbOrTxClient = db) {
+  try {
+    const [user] = await dbClient.select().from(schema.user).where(eq(schema.user.id, userId)).limit(1);
+    if (!user) {
+      return null;
+    }
+
+    const [profile] = await dbClient.select().from(schema.profile).where(eq(schema.profile.id, userId)).limit(1);
+    if (!profile) {
+      return null;
+    }
+
+    const authSaysVerified = await resolveAuthUserEmailVerified(userId, user.emailVerified, dbClient);
+    // Only promote verification — never demote. Profile can be verified via
+    // self-hosted first signup, invites, or other flows before user.email_verified catches up.
+    const isEmailVerified = profile.isEmailVerified || authSaysVerified;
+    const emailChanged = profile.email !== user.email;
+    const profileNeedsVerification = isEmailVerified && !profile.isEmailVerified;
+    const userNeedsVerification = isEmailVerified && !user.emailVerified;
+
+    if (!emailChanged && !profileNeedsVerification && !userNeedsVerification) {
+      return profile;
+    }
+
+    if (userNeedsVerification) {
+      await dbClient.update(schema.user).set({ emailVerified: true }).where(eq(schema.user.id, userId));
+    }
+
+    const patch: Partial<TProfile> = {
+      email: user.email,
+      isEmailVerified
+    };
+
+    if (profileNeedsVerification) {
+      patch.verifiedAt = new Date().toISOString();
+    }
+
+    if (!emailChanged && !profileNeedsVerification) {
+      return { ...profile, isEmailVerified: true };
+    }
+
+    const [updatedProfile] = await dbClient
+      .update(schema.profile)
+      .set(patch)
+      .where(eq(schema.profile.id, userId))
+      .returning();
+
+    return updatedProfile ?? { ...profile, isEmailVerified: true };
+  } catch (error) {
+    console.error('syncProfileEmailVerificationFromAuthUser error:', error);
+    throw new Error('Failed to sync profile email verification');
+  }
+}
 
 export const getProfileById = async (id: string) => {
   const [profile] = await db.select().from(schema.profile).where(eq(schema.profile.id, id)).limit(1);
@@ -23,7 +108,43 @@ export async function getProfilesByEmails(emails: string[]) {
 }
 
 export const updateProfile = async (id: string, data: Partial<Omit<TProfile, 'id' | 'createdAt' | 'updatedAt'>>) => {
-  const [updatedProfile] = await db.update(schema.profile).set(data).where(eq(schema.profile.id, id)).returning();
+  let setData = { ...data };
+
+  if (data.settings !== undefined) {
+    const [existing] = await db
+      .select({ settings: schema.profile.settings })
+      .from(schema.profile)
+      .where(eq(schema.profile.id, id))
+      .limit(1);
+
+    const existingSettings = (existing?.settings as Record<string, unknown>) ?? {};
+    const newSettings = data.settings as Record<string, unknown>;
+    const mergedSettings: Record<string, unknown> = { ...existingSettings };
+
+    for (const key of Object.keys(newSettings ?? {})) {
+      const existingVal = existingSettings[key];
+      const newVal = newSettings[key];
+
+      if (newVal !== undefined) {
+        if (
+          existingVal &&
+          typeof existingVal === 'object' &&
+          !Array.isArray(existingVal) &&
+          newVal &&
+          typeof newVal === 'object' &&
+          !Array.isArray(newVal)
+        ) {
+          mergedSettings[key] = { ...(existingVal as Record<string, unknown>), ...(newVal as Record<string, unknown>) };
+        } else {
+          mergedSettings[key] = newVal;
+        }
+      }
+    }
+
+    setData = { ...setData, settings: mergedSettings as TProfile['settings'] };
+  }
+
+  const [updatedProfile] = await db.update(schema.profile).set(setData).where(eq(schema.profile.id, id)).returning();
 
   return updatedProfile;
 };

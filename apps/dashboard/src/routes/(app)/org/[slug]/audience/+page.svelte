@@ -18,6 +18,7 @@
   }
 
   const audienceLength = $derived(data.pagination?.total || 0);
+  const atStudentLimit = $derived(audienceLength >= $currentOrgMaxAudience);
 </script>
 
 <svelte:head>
@@ -41,7 +42,12 @@
       <Button variant="outline" onclick={exportAudience} disabled={isLoading} loading={isLoading}>
         {$t('audience.export')}
       </Button>
-      <Button variant="secondary" href={resolve(`${page.url.pathname}/import`, {})}>
+      <Button
+        variant="secondary"
+        disabled={atStudentLimit}
+        href={atStudentLimit ? '#' : resolve(`${page.url.pathname}/import`, {})}
+        title={atStudentLimit ? $t('audience.import_limit_reached') : undefined}
+      >
         {$t('audience.import_users')}
       </Button>
     </Page.Action>

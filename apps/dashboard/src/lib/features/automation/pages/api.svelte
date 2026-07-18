@@ -1,9 +1,16 @@
 <script lang="ts">
   import { automationApi } from '$features/automation/api/automation.svelte';
-  import { getMaskedAutomationSecret } from '$features/automation/utils/automation-utils';
-  import { isOrgAdmin, isEnterprisePlan } from '$lib/utils/store/org';
+  import {
+    getMaskedAutomationSecret,
+    getPublicApiCurlSnippet,
+    getPublicApiGoSnippet,
+    getPublicApiJavaScriptSnippet,
+    getPublicApiPythonSnippet
+  } from '$features/automation/utils/automation-utils';
+  import { hasPublicApiAccess, isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
   import * as Alert from '@cio/ui/base/alert';
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
@@ -13,18 +20,24 @@
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import * as Field from '@cio/ui/base/field';
   import * as Table from '@cio/ui/base/table';
+  import * as Tabs from '@cio/ui/base/tabs';
   import { InputField } from '@cio/ui/custom/input-field';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { UpgradeBanner } from '$features/ui';
+  import CodeIcon from '@lucide/svelte/icons/code';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import KeyIcon from '@lucide/svelte/icons/key';
   import PlusIcon from '@lucide/svelte/icons/plus';
 
+  let activeSetupTab = $state('curl');
   let generatedSecret = $state<string | null>(null);
   let isCreateKeyModalOpen = $state(false);
   let keyLabel = $state('');
 
   const canCreateKey = $derived(keyLabel.trim().length > 0 && !automationApi.isLoading);
+  const upgradeMessageKey = $derived(
+    PUBLIC_IS_SELFHOSTED === 'true' ? 'upgrade.enterprise_required' : 'upgrade.public_api_required'
+  );
 
   function resetCreateKeyModal() {
     keyLabel = '';
@@ -32,8 +45,8 @@
   }
 
   function openCreateKeyModal() {
-    if (!$isEnterprisePlan) {
-      snackbar.error('upgrade.required');
+    if (!$hasPublicApiAccess) {
+      snackbar.error(upgradeMessageKey);
       return;
     }
     resetCreateKeyModal();
@@ -41,7 +54,7 @@
   }
 
   async function onGenerateKey() {
-    if (!$isEnterprisePlan) return;
+    if (!$hasPublicApiAccess) return;
     const result = await automationApi.createKey('api', keyLabel);
     if (!result) return;
 
@@ -52,13 +65,13 @@
   }
 
   async function onRevokeKey(keyId: string) {
-    if (!$isEnterprisePlan) return;
+    if (!$hasPublicApiAccess) return;
     if (!confirm(t.get('automation.keys.revoke_confirm'))) return;
     await automationApi.revokeKey(keyId);
   }
 
   async function onRotateKey(keyId: string) {
-    if (!$isEnterprisePlan) return;
+    if (!$hasPublicApiAccess) return;
     if (!confirm(t.get('automation.keys.rotate_confirm'))) return;
     await automationApi.rotateKey(keyId);
     generatedSecret = automationApi.generatedSecret;
@@ -66,10 +79,11 @@
   }
 
   const apiKeys = $derived(automationApi.keys.filter((key) => key.type === 'api'));
+  const hasActiveApiKey = $derived(apiKeys.some((key) => !key.revokedAt));
 </script>
 
 <Field.Group class="mx-auto w-full space-y-2">
-  <UpgradeBanner>{$t('upgrade.enterprise_required')}</UpgradeBanner>
+  <UpgradeBanner visible={!$hasPublicApiAccess}>{$t(upgradeMessageKey)}</UpgradeBanner>
 
   {#if !$isOrgAdmin}
     <Alert.Callout
@@ -89,7 +103,7 @@
       {#if $isOrgAdmin}
         <IconButton
           onclick={openCreateKeyModal}
-          disabled={automationApi.isLoading || !$isEnterprisePlan}
+          disabled={automationApi.isLoading || !$hasPublicApiAccess}
           tooltip={$t('automation.api.keys.generate')}
         >
           <PlusIcon size={16} />
@@ -102,7 +116,7 @@
       <div class="rounded-lg border border-amber-200 bg-amber-50 p-4">
         <p class="ui:text-amber-800 text-sm font-medium">{$t('automation.api.keys.secret_once')}</p>
         <div class="mt-3">
-          <Code.Root code={generatedSecret} lang="bash" hideLines={true} class="ui:break-all ui:text-xs">
+          <Code.Root code={generatedSecret} hideLines={true} class="ui:break-all ui:text-xs">
             <Code.CopyButton />
           </Code.Root>
         </div>
@@ -174,7 +188,7 @@
           variant="page"
         >
           {#if $isOrgAdmin}
-            <Button onclick={openCreateKeyModal} disabled={automationApi.isLoading || !$isEnterprisePlan}>
+            <Button onclick={openCreateKeyModal} disabled={automationApi.isLoading || !$hasPublicApiAccess}>
               <PlusIcon size={16} />
               {$t('automation.api.keys.generate')}
             </Button>
@@ -183,6 +197,57 @@
       {/if}
     {/if}
   </div>
+
+  {#if hasActiveApiKey}
+    <Field.Set class="gap-3!">
+      <Field.Legend class="flex items-center gap-2">
+        <CodeIcon class="size-5" />
+        {$t('automation.api.setup.title')}
+      </Field.Legend>
+      <Field.Description>{$t('automation.api.setup.description')}</Field.Description>
+
+      <Tabs.Root bind:value={activeSetupTab} class="w-full">
+        <Tabs.List class="inline-flex w-auto">
+          <Tabs.Trigger value="curl">{$t('automation.clients.curl')}</Tabs.Trigger>
+          <Tabs.Trigger value="javascript">{$t('automation.clients.javascript')}</Tabs.Trigger>
+          <Tabs.Trigger value="python">{$t('automation.clients.python')}</Tabs.Trigger>
+          <Tabs.Trigger value="go">{$t('automation.clients.go')}</Tabs.Trigger>
+        </Tabs.List>
+
+        <Tabs.Content value="curl" class="mt-4">
+          <Code.Overflow>
+            <Code.Root code={getPublicApiCurlSnippet(generatedSecret)}>
+              <Code.CopyButton />
+            </Code.Root>
+          </Code.Overflow>
+        </Tabs.Content>
+
+        <Tabs.Content value="javascript" class="mt-4">
+          <Code.Overflow>
+            <Code.Root code={getPublicApiJavaScriptSnippet(generatedSecret)}>
+              <Code.CopyButton />
+            </Code.Root>
+          </Code.Overflow>
+        </Tabs.Content>
+
+        <Tabs.Content value="python" class="mt-4">
+          <Code.Overflow>
+            <Code.Root code={getPublicApiPythonSnippet(generatedSecret)}>
+              <Code.CopyButton />
+            </Code.Root>
+          </Code.Overflow>
+        </Tabs.Content>
+
+        <Tabs.Content value="go" class="mt-4">
+          <Code.Overflow>
+            <Code.Root code={getPublicApiGoSnippet(generatedSecret)}>
+              <Code.CopyButton />
+            </Code.Root>
+          </Code.Overflow>
+        </Tabs.Content>
+      </Tabs.Root>
+    </Field.Set>
+  {/if}
 </Field.Group>
 
 <Dialog.Root

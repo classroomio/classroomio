@@ -685,6 +685,7 @@ export function buildAgentTools(
               questionTypeId: q.questionTypeId,
               points: q.points,
               order: q.order ?? i,
+              settings: q.settings,
               options: q.options.map((o) => ({ label: o.label, isCorrect: o.isCorrect }))
             }))
           });
@@ -695,7 +696,7 @@ export function buildAgentTools(
 
     update_exercise: tool({
       description:
-        "Update an existing exercise's metadata (title, description, linked lesson, section, order, due date, lock state, allow-multiple-attempts). Use this for editing the exercise itself — not for changing its questions. To edit questions, use update_questions; to add questions, use add_questions.",
+        'Update an existing exercise\'s metadata (title, description, linked lesson, section, order, due date, lock state, allow-multiple-attempts, completion policy, passing threshold). Use this for editing the exercise itself — not for changing its questions. To require students to pass before progress/completion, set completionPolicy to "passed" and passThreshold to the required percentage. To edit questions, use update_questions; to add questions, use add_questions.',
       inputSchema: updateExerciseParam,
       execute: async (args) => {
         return executeAgentTool('update_exercise', { orgId, userId, courseId, args }, async () => {
@@ -717,7 +718,9 @@ export function buildAgentTools(
             order: args.order,
             dueBy: args.dueBy,
             isUnlocked: args.isUnlocked,
-            allowMultipleAttempts: args.allowMultipleAttempts
+            allowMultipleAttempts: args.allowMultipleAttempts,
+            completionPolicy: args.completionPolicy,
+            passThreshold: args.passThreshold
           });
 
           return {
@@ -725,6 +728,8 @@ export function buildAgentTools(
             title: updated.title,
             description: updated.description ?? null,
             dueBy: updated.dueBy ?? null,
+            completionPolicy: updated.completionPolicy ?? null,
+            passThreshold: updated.passThreshold ?? null,
             updated: true
           };
         });
@@ -812,6 +817,7 @@ export function buildAgentTools(
             questionTypeId: q.questionTypeId,
             points: q.points,
             order: q.order ?? nextOrder + i,
+            settings: q.settings,
             ...(args.exerciseSectionId !== undefined ? { exerciseSectionId: args.exerciseSectionId } : {}),
             options: q.options.map((o) => ({ label: o.label, isCorrect: o.isCorrect }))
           }));
@@ -823,6 +829,7 @@ export function buildAgentTools(
               questionTypeId: eq.questionTypeId,
               points: eq.points,
               order: eq.order,
+              settings: eq.settings,
               options: eq.options.map((o) => ({ id: Number(o.id), label: o.label || '', isCorrect: o.isCorrect }))
             })),
             ...newQuestions
@@ -841,7 +848,7 @@ export function buildAgentTools(
 
     update_questions: tool({
       description:
-        'Update existing questions in an exercise. Pass only fields you want to change; `id` identifies the question. Optional `exerciseSectionId` moves the question to another in-exercise block (use get_exercise_details section ids), or null to unassign. For NUMERIC, the correct answer is `settings.correctValue` (number) — do NOT add options to NUMERIC questions. For STAR use `settings.correctValue`. For WORD_BANK use `settings.correctAnswers` and `settings.template`. RADIO/CHECKBOX/TRUE_FALSE use `options[].isCorrect` (include option `id` to edit, omit `id` to add). `settings` is shallow-merged with existing settings. Omit `options` entirely to leave existing options untouched.',
+        'Update existing questions in an exercise. Pass only fields you want to change; `id` identifies the question. Optional `exerciseSectionId` moves the question to another in-exercise block (use get_exercise_details section ids), or null to unassign. For TRUE_FALSE use `settings.correctValue` (boolean) and keep exactly two options labeled True and False. For NUMERIC, the correct answer is `settings.correctValue` (number) — do NOT add options to NUMERIC questions. For STAR use `settings.correctValue`. For WORD_BANK use `settings.correctAnswers` and `settings.template`. RADIO/CHECKBOX use `options[].isCorrect` (include option `id` to edit, omit `id` to add). `settings` is shallow-merged with existing settings. Omit `options` entirely to leave existing options untouched.',
       inputSchema: updateQuestionsParam,
       execute: async (args) => {
         return executeAgentTool('update_questions', { orgId, userId, courseId, args }, async () => {

@@ -56,10 +56,22 @@
     "./config/upload-limits": {
       "types": "./dist/config/upload-limits.d.ts",
       "default": "./dist/config/upload-limits.js"
+    },
+    "./openapi/public-api": {
+      "types": "./dist/openapi/public-api.d.ts",
+      "default": "./dist/openapi/public-api.js"
+    },
+    "./org-site/og-public-url": {
+      "types": "./dist/org-site/og-public-url.d.ts",
+      "default": "./dist/org-site/og-public-url.js"
+    },
+    "./notifications": {
+      "types": "./dist/notifications/index.d.ts",
+      "default": "./dist/notifications/index.js"
     }
   },
   "scripts": {
-    "build": "tsc && tsc-alias",
+    "build": "rimraf dist tsconfig.tsbuildinfo && tsc && tsc-alias",
     "dev": "tsc --watch",
     "format": "prettier --write ."
   },

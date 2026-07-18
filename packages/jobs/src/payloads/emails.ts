@@ -12,6 +12,8 @@ export const ZSendTemplateEmailPayload = z.object({
   fields: z.record(z.string(), z.unknown()).default({}),
   from: z.string().optional(),
   replyTo: z.string().optional(),
+  /** Override the template's default subject (e.g. org-scoped transactional mail). */
+  subject: z.string().min(1).optional(),
   /** Optional iCalendar (.ics) body attached as a text/calendar part. */
   ics: z.string().optional()
 });

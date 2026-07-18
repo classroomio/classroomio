@@ -1,4 +1,5 @@
 import { listUpcomingSessionsForReminderScan } from '@cio/db/queries/course';
+import { EmailPreferenceLookupCache } from '@cio/db/queries/notifications';
 import { buildEmailBranding, buildEmailFromName, buildSessionIcs } from '@cio/email';
 import { enqueueEmailSend } from '@cio/jobs';
 
@@ -34,6 +35,7 @@ export async function processSessionReminderScan(): Promise<ScanResult> {
   const now = Date.now();
 
   let remindersEnqueued = 0;
+  const preferenceCache = new EmailPreferenceLookupCache();
 
   for (const row of rows) {
     if (!row.email) continue;
@@ -70,6 +72,17 @@ export async function processSessionReminderScan(): Promise<ScanResult> {
           : undefined;
 
       try {
+        const allowed = await preferenceCache.shouldSend({
+          emailId: 'sessionReminder',
+          organizationId: row.organizationId,
+          recipientEmail: row.email,
+          recipientProfileId: row.profileId
+        });
+
+        if (!allowed) {
+          continue;
+        }
+
         await enqueueEmailSend(
           {
             kind: 'template',

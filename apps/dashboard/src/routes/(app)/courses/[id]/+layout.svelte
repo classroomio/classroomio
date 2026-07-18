@@ -26,7 +26,7 @@
   import { page } from '$app/state';
   import { profile } from '$lib/utils/store/user';
   import { isOrgAdmin } from '$lib/utils/store/org';
-  import { isOrgStudent } from '$lib/utils/store/app';
+  import { isCourseLearnerView } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { ContentType } from '@cio/utils/constants/content';
   import type { CourseMember } from '$features/course/utils/types';
@@ -106,7 +106,7 @@
   const showContentAskAiBar = $derived(
     isCourseReady &&
       isLessonOrExercisePage &&
-      !($isOrgStudent && isContentLockedForStudent) &&
+      !($isCourseLearnerView && isContentLockedForStudent) &&
       sidePanel.activePanelId !== AI_ASSISTANT_PANEL_ID
   );
 

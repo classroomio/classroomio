@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'apps/api/**'
+      - 'packages/utils/src/openapi/**'
   workflow_dispatch:
 
 env:
@@ -65,5 +66,7 @@ jobs:
           CLOUDFLARE_ACCESS_KEY: ${{ secrets.CLOUDFLARE_ACCESS_KEY }}
           CLOUDFLARE_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_SECRET_ACCESS_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}

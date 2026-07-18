@@ -8,7 +8,7 @@
 
     "---Core Features---",
     "course",
-    "programs",
+    "cohorts",
     "api",
     "mcp",
     "tags",
@@ -16,7 +16,10 @@
     "community",
     "organization",
     "student-dashboard",
+
+    "---Enterprise---",
     "enterprise-sso",
+    "token-auth",
 
     "---Get started---",
     "create-first-course",
@@ -41,6 +44,7 @@
     "---Publish your academy---",
     "course-landingpage",
     "org-landing-page",
+    "academy-sharing-and-branding",
     "custom-domain",
 
     "---Organization & team---",

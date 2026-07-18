@@ -59,9 +59,17 @@
   } from '$features/course/components/exercise/question-type-utils';
   import type { SubmissionListItem } from '$features/course/utils/types';
   import { Badge } from '@cio/ui/base/badge';
+  import * as Alert from '@cio/ui/base/alert';
+  import * as RadioGroup from '@cio/ui/base/radio-group';
+  import InfoIcon from '@lucide/svelte/icons/info';
   import { isAutoGradableQuestionType } from '@cio/question-types';
   import * as Dialog from '@cio/ui/base/dialog';
   import type { ExerciseSectionState } from '$features/course/components/exercise/store';
+  import {
+    getActiveExerciseQuestions,
+    getManualGradedExerciseQuestions,
+    getTotalPossibleExercisePoints
+  } from '$features/course/utils/exercise-progression-utils';
 
   interface Props {
     exerciseId?: string;
@@ -100,6 +108,26 @@
   let selectedTab = $state<ExerciseTab>('questions');
   // eslint-disable-next-line svelte/prefer-writable-derived -- must be writable: cleared before intentional navigations and bound to UnsavedChanges
   let hasUnsavedChanges = $state(false);
+  type PassedPolicySaveAction = 'cancel' | 'save';
+  type PassedPolicyAttemptChoice = 'retry' | 'single';
+  type PassedPolicyDialogState = {
+    open: boolean;
+    manualQuestions: ReturnType<typeof getManualGradedExerciseQuestions>;
+    hasManualWarning: boolean;
+    hasSingleAttemptWarning: boolean;
+    resolve: ((action: PassedPolicySaveAction) => void) | null;
+  };
+
+  let passedPolicyDialog = $state<PassedPolicyDialogState>({
+    open: false,
+    manualQuestions: [],
+    hasManualWarning: false,
+    hasSingleAttemptWarning: false,
+    resolve: null
+  });
+  let acknowledgedPassedPolicyReviewSignature = $state<string | null>(null);
+  let passedPolicyAttemptChoice = $state<PassedPolicyAttemptChoice>('retry');
+  const passedPolicyReviewStoragePrefix = 'classroomio:passed-policy-review';
 
   function isTemporaryId(id: string | number | undefined) {
     return typeof id === 'string' && id.includes('-form');
@@ -167,6 +195,150 @@
     return sectionErrors;
   }
 
+  function getQuestionDisplayTitle(
+    question: ReturnType<typeof getManualGradedExerciseQuestions>[number],
+    index: number
+  ) {
+    return (
+      question.title?.trim() ||
+      t.get('course.navItem.lessons.exercises.all_exercises.guard.question_fallback', {
+        number: index + 1
+      })
+    );
+  }
+
+  function setPassedPolicyPointValidationErrors() {
+    const activeQuestions = getActiveExerciseQuestions($questionnaire.questions ?? []);
+    const pointErrors: ExerciseEditorErrors = {};
+
+    for (const question of activeQuestions) {
+      pointErrors[question.id] = {
+        points: t.get('course.navItem.lessons.exercises.all_exercises.guard.zero_points_field')
+      };
+    }
+
+    questionnaireValidation.set(pointErrors);
+    snackbar.error('snackbar.exercise.passed_requires_points');
+  }
+
+  function getPassedPolicyReviewStorageKey() {
+    return `${passedPolicyReviewStoragePrefix}:${courseApi.course?.id ?? 'course'}:${exerciseId}`;
+  }
+
+  function getPassedPolicyReviewSignature(params: {
+    manualQuestions: ReturnType<typeof getManualGradedExerciseQuestions>;
+    hasManualWarning: boolean;
+    hasSingleAttemptWarning: boolean;
+  }) {
+    const manualQuestionProfile = params.manualQuestions
+      .map((question) => String(getQuestionTypeId(question)))
+      .sort()
+      .join(',');
+
+    return [
+      'v1',
+      `manual:${params.hasManualWarning ? manualQuestionProfile : 'none'}`,
+      `single_attempt:${params.hasSingleAttemptWarning ? 'yes' : 'no'}`
+    ].join('|');
+  }
+
+  function hasAcknowledgedPassedPolicyReview(signature: string) {
+    if (acknowledgedPassedPolicyReviewSignature === signature) return true;
+
+    try {
+      const storedSignatures = localStorage.getItem(getPassedPolicyReviewStorageKey())?.split('\n') ?? [];
+      return storedSignatures.includes(signature);
+    } catch {
+      return false;
+    }
+  }
+
+  function acknowledgePassedPolicyReview(signature: string) {
+    acknowledgedPassedPolicyReviewSignature = signature;
+
+    try {
+      const storedSignatures = localStorage.getItem(getPassedPolicyReviewStorageKey())?.split('\n') ?? [];
+      const nextSignatures = new Set([...storedSignatures, signature].filter(Boolean));
+      localStorage.setItem(getPassedPolicyReviewStorageKey(), [...nextSignatures].join('\n'));
+    } catch {
+      // localStorage may be full or unavailable
+    }
+  }
+
+  function openPassedPolicyDialog(params: {
+    manualQuestions: ReturnType<typeof getManualGradedExerciseQuestions>;
+    hasManualWarning: boolean;
+    hasSingleAttemptWarning: boolean;
+  }) {
+    passedPolicyAttemptChoice = 'retry';
+
+    return new Promise<PassedPolicySaveAction>((resolve) => {
+      passedPolicyDialog = {
+        ...params,
+        open: true,
+        resolve
+      };
+    });
+  }
+
+  function closePassedPolicyDialog(action: PassedPolicySaveAction) {
+    const resolveDialog = passedPolicyDialog.resolve;
+    passedPolicyDialog = {
+      open: false,
+      manualQuestions: [],
+      hasManualWarning: false,
+      hasSingleAttemptWarning: false,
+      resolve: null
+    };
+    resolveDialog?.(action);
+  }
+
+  async function runPassedPolicySaveGuard() {
+    if (($questionnaire.completionPolicy ?? 'submitted') !== 'passed') return true;
+
+    const totalPossiblePoints = getTotalPossibleExercisePoints($questionnaire.questions ?? []);
+    if (totalPossiblePoints <= 0) {
+      setPassedPolicyPointValidationErrors();
+      return false;
+    }
+
+    const manualQuestions = getManualGradedExerciseQuestions($questionnaire.questions ?? []);
+    const hasManualWarning = manualQuestions.length > 0;
+    const hasSingleAttemptWarning = !$questionnaire.allowMultipleAttempts;
+    if (!hasManualWarning && !hasSingleAttemptWarning) return true;
+
+    const passedPolicyReviewSignature = getPassedPolicyReviewSignature({
+      manualQuestions,
+      hasManualWarning,
+      hasSingleAttemptWarning
+    });
+    if (hasAcknowledgedPassedPolicyReview(passedPolicyReviewSignature)) {
+      return true;
+    }
+
+    const action = await openPassedPolicyDialog({
+      manualQuestions,
+      hasManualWarning,
+      hasSingleAttemptWarning
+    });
+
+    if (action === 'cancel') return false;
+
+    if (hasSingleAttemptWarning && passedPolicyAttemptChoice === 'retry') {
+      questionnaire.update((state) => ({ ...state, allowMultipleAttempts: true }));
+
+      const retryEnabledSignature = getPassedPolicyReviewSignature({
+        manualQuestions,
+        hasManualWarning,
+        hasSingleAttemptWarning: false
+      });
+      acknowledgePassedPolicyReview(retryEnabledSignature);
+    }
+
+    acknowledgePassedPolicyReview(passedPolicyReviewSignature);
+    return true;
+  }
+
   async function handleSave() {
     if ($isOrgStudent || !courseApi.course?.id) return;
 
@@ -226,6 +398,9 @@
       }
     }
 
+    const passedPolicyCanSave = await runPassedPolicySaveGuard();
+    if (!passedPolicyCanSave) return;
+
     isSaving = true;
 
     reset();
@@ -236,13 +411,20 @@
         shouldIncludeDeleted: true
       });
 
+      const allowMultipleAttempts = !!$questionnaire.allowMultipleAttempts;
+      const completionPolicy = $questionnaire.completionPolicy ?? 'submitted';
+      const passThreshold = $questionnaire.passThreshold ?? 100;
+
       await exerciseApi.update(courseApi.course?.id, exerciseId, {
         title: $questionnaire.title ?? '',
         description: $questionnaire.description ?? '',
         dueBy: $questionnaire.dueBy ?? '',
         questions: questions,
         sections: shouldSyncSections ? sectionsPayload : undefined,
-        sectionDisplayMode: $questionnaire.sectionDisplayMode
+        sectionDisplayMode: $questionnaire.sectionDisplayMode,
+        allowMultipleAttempts,
+        completionPolicy,
+        passThreshold
       });
 
       // Check if there are validation errors from the API
@@ -405,7 +587,7 @@
   }
 </script>
 
-<Page.Header isSticky={true} class="top-12! z-100! min-h-[36px]">
+<Page.Header isSticky={true} class="z-app-bar! top-12! min-h-[36px]">
   <Page.HeaderContent>
     <Page.Title class="flex flex-col gap-2">
       <span>{exerciseDisplayTitle}</span>
@@ -451,7 +633,7 @@
                       </Button>
                     {/snippet}
                   </DropdownMenu.Trigger>
-                  <DropdownMenu.Content align="end" class="z-201!">
+                  <DropdownMenu.Content align="end" class="z-menu-elevated!">
                     <DropdownMenu.Item onclick={addSectionFromHeader}>
                       {$t('course.navItem.lessons.exercises.all_exercises.add_section')}
                     </DropdownMenu.Item>
@@ -490,7 +672,7 @@
                       </Button>
                     {/snippet}
                   </DropdownMenu.Trigger>
-                  <DropdownMenu.Content align="end" class="z-201!">
+                  <DropdownMenu.Content align="end" class="z-menu-elevated!">
                     {#if hasSections($questionnaire.sections)}
                       <DropdownMenu.Item onclick={() => (reorderQuestions = !reorderQuestions)}>
                         {reorderQuestions
@@ -575,7 +757,11 @@
             {/if}
           </UnderlineTabs.Content>
           <UnderlineTabs.Content value="settings">
-            <ExerciseSettingsTab {exerciseId} />
+            <ExerciseSettingsTab
+              {exerciseId}
+              onBeforeSave={runPassedPolicySaveGuard}
+              totalSubmissions={submissions.length}
+            />
           </UnderlineTabs.Content>
           <UnderlineTabs.Content value="submissions">
             <Submissions bind:exerciseId {submissions} />
@@ -608,6 +794,107 @@
                 </Button>
               </div>
             </form>
+          </Dialog.Content>
+        </Dialog.Root>
+
+        <Dialog.Root
+          open={passedPolicyDialog.open}
+          onOpenChange={(isOpen) => {
+            if (!isOpen && passedPolicyDialog.open) closePassedPolicyDialog('cancel');
+          }}
+        >
+          <Dialog.Content class="max-h-[90dvh] w-[min(92vw,36rem)] overflow-y-auto">
+            <Dialog.Header>
+              <Dialog.Title>
+                {passedPolicyDialog.hasSingleAttemptWarning
+                  ? $t('course.navItem.lessons.exercises.all_exercises.guard.attempts_title')
+                  : $t('course.navItem.lessons.exercises.all_exercises.guard.title')}
+              </Dialog.Title>
+              <Dialog.Description>
+                {$t('course.navItem.lessons.exercises.all_exercises.guard.description')}
+              </Dialog.Description>
+            </Dialog.Header>
+
+            <div class="space-y-4">
+              {#if passedPolicyDialog.hasSingleAttemptWarning}
+                <RadioGroup.Root
+                  value={passedPolicyAttemptChoice}
+                  onValueChange={(value) => {
+                    if (value === 'retry' || value === 'single') {
+                      passedPolicyAttemptChoice = value;
+                    }
+                  }}
+                  class="gap-3"
+                >
+                  <label
+                    for="passed-policy-retry"
+                    class="flex cursor-pointer items-start gap-3 rounded-md border p-3 {passedPolicyAttemptChoice ===
+                    'retry'
+                      ? 'ui:border-primary'
+                      : ''}"
+                  >
+                    <RadioGroup.Item value="retry" id="passed-policy-retry" class="mt-0.5" />
+                    <div class="flex flex-col gap-1">
+                      <span class="flex flex-wrap items-center gap-2 text-sm font-medium">
+                        {$t('course.navItem.lessons.exercises.all_exercises.guard.retry_option')}
+                        <Badge variant="secondary">
+                          {$t('course.navItem.lessons.exercises.all_exercises.guard.recommended')}
+                        </Badge>
+                      </span>
+                      <span class="ui:text-muted-foreground text-sm">
+                        {$t('course.navItem.lessons.exercises.all_exercises.guard.retry_option_description')}
+                      </span>
+                    </div>
+                  </label>
+
+                  <label
+                    for="passed-policy-single"
+                    class="flex cursor-pointer items-start gap-3 rounded-md border p-3 {passedPolicyAttemptChoice ===
+                    'single'
+                      ? 'ui:border-primary'
+                      : ''}"
+                  >
+                    <RadioGroup.Item value="single" id="passed-policy-single" class="mt-0.5" />
+                    <div class="flex flex-col gap-1">
+                      <span class="text-sm font-medium">
+                        {$t('course.navItem.lessons.exercises.all_exercises.guard.single_attempt_option')}
+                      </span>
+                      <span class="ui:text-muted-foreground text-sm">
+                        {$t('course.navItem.lessons.exercises.all_exercises.guard.single_attempt_option_description')}
+                      </span>
+                    </div>
+                  </label>
+                </RadioGroup.Root>
+              {/if}
+
+              {#if passedPolicyDialog.hasManualWarning}
+                <Alert.Root variant="information">
+                  <InfoIcon />
+                  <Alert.Title>
+                    {$t('course.navItem.lessons.exercises.all_exercises.guard.manual_notice_title')}
+                  </Alert.Title>
+                  <Alert.Description>
+                    {$t('course.navItem.lessons.exercises.all_exercises.guard.manual_notice_description')}
+                    <ul class="list-disc pl-5">
+                      {#each passedPolicyDialog.manualQuestions as question, index (question.id)}
+                        <li>{getQuestionDisplayTitle(question, index)}</li>
+                      {/each}
+                    </ul>
+                  </Alert.Description>
+                </Alert.Root>
+              {/if}
+            </div>
+
+            <div class="mt-6 flex justify-end gap-2">
+              <Button variant="outline" type="button" onclick={() => closePassedPolicyDialog('cancel')}>
+                {$t('course.navItem.lessons.exercises.all_exercises.guard.cancel')}
+              </Button>
+              <Button type="button" onclick={() => closePassedPolicyDialog('save')}>
+                {passedPolicyDialog.hasSingleAttemptWarning
+                  ? $t('course.navItem.lessons.exercises.all_exercises.guard.save_continue')
+                  : $t('course.navItem.lessons.exercises.all_exercises.guard.save_anyway')}
+              </Button>
+            </div>
           </Dialog.Content>
         </Dialog.Root>
       {/if}

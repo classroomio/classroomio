@@ -35,6 +35,7 @@
     getStudentCourseProgressPercent,
     isStudentCourseComplete
   } from '$features/course/utils/compliance-utils';
+  import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
 
   type EnrolledCourse = (typeof coursesApi.enrolledCourses)[number];
 
@@ -147,7 +148,7 @@
   function gotoCourse(id: string | undefined) {
     if (!id) return;
 
-    goto(`/courses/${id}/lessons?next=true`);
+    goto(getStudentCourseContinuePath(id));
   }
 
   function gotoCourseCertificates(id: string | undefined) {

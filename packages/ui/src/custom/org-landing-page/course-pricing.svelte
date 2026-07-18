@@ -71,7 +71,13 @@
           </ul>
         {/if}
 
-        <LandingButton variant="primary" size="lg" href={pricing.ctaHref ?? '#enroll'} class={t.pricingCta}>
+        <LandingButton
+          variant="primary"
+          size="lg"
+          href={pricing.ctaOnclick ? undefined : (pricing.ctaHref ?? '#enroll')}
+          onclick={pricing.ctaOnclick}
+          class={t.pricingCta}
+        >
           {pricing.ctaLabel}
         </LandingButton>
 

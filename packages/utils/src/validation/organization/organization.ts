@@ -19,6 +19,9 @@ export type TGetOrganizations = z.infer<typeof ZGetOrganizations>;
 export const ZGetCoursesBySiteName = z.object({
   siteName: z.string().min(1),
   tags: z.string().optional(),
+  types: z.string().optional(),
+  search: z.string().trim().optional(),
+  pricing: z.enum(['free', 'paid']).optional(),
   page: z.coerce.number().int().min(1).optional(),
   limit: z.coerce.number().int().min(1).max(100).optional()
 });
@@ -93,6 +96,7 @@ export const ZUpdateOrganization = z.object({
     })
     .optional(),
   avatarUrl: z.url().optional(),
+  favicon: z.union([z.url(), z.null()]).optional(),
   theme: z.string().optional(),
   landingpage: z.record(z.string(), z.unknown()).optional(),
   siteName: z.string().min(1).optional(),
@@ -111,7 +115,20 @@ export const ZUpdateOrganization = z.object({
           inviteOnly: z.boolean().optional()
         })
         .optional(),
-      internalEnrollmentOnly: z.boolean().optional()
+      internalEnrollmentOnly: z.boolean().optional(),
+      emailNotifications: z
+        .object({
+          newStudent: z.boolean().optional(),
+          newSubmission: z.boolean().optional(),
+          gradingResult: z.boolean().optional(),
+          newsfeed: z.boolean().optional(),
+          quizAssigned: z.boolean().optional(),
+          cohortReminder: z.boolean().optional(),
+          session: z.boolean().optional(),
+          enrollmentWelcome: z.boolean().optional(),
+          courseCompletion: z.boolean().optional()
+        })
+        .optional()
     })
     .optional()
 });

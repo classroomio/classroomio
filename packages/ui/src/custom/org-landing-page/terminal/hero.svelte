@@ -2,6 +2,7 @@
   import type { OrgLandingPageProps, CourseItem } from '../types';
   import type { Snippet } from 'svelte';
   import { Button } from '../../../base/button';
+  import CoursePrimaryAction from '../course-primary-action.svelte';
   import EditableLandingSection from '../editable-section.svelte';
 
   interface Props {
@@ -10,9 +11,11 @@
     courses: OrgLandingPageProps['courses'];
     navigation: Snippet;
     showActions?: boolean;
+    compact?: boolean;
+    children?: Snippet;
   }
 
-  let { orgName = '', hero, courses = [], navigation, showActions = true }: Props = $props();
+  let { orgName = '', hero, courses = [], navigation, showActions = true, compact = false, children }: Props = $props();
 
   const coursesCount = $derived(courses.length);
   const learnersCount = $derived(courses.reduce((sum, course) => sum + (course.totalStudents ?? 0), 0));
@@ -63,7 +66,9 @@
 
 <EditableLandingSection sectionKey="hero">
   <section
-    class="ui:relative ui:overflow-hidden ui:px-6 ui:pt-16 ui:pb-16 ui:md:pt-20 ui:md:pb-20 ui:bg-[var(--landing-bg)]"
+    class="ui:relative ui:overflow-hidden ui:px-6 {compact
+      ? 'ui:pt-8 ui:pb-8 ui:md:pt-10 ui:md:pb-10'
+      : 'ui:pt-16 ui:pb-16 ui:md:pt-20 ui:md:pb-20'} ui:bg-[var(--landing-bg)]"
   >
     <div
       class="ui:pointer-events-none ui:absolute ui:inset-x-0 ui:-top-32 ui:h-[680px] ui:opacity-90"
@@ -103,14 +108,11 @@
               {hero.secondaryAction.label}
             </Button>
           {/if}
-          <Button
-            href={hero.primaryAction.href}
-            disabled={hero.primaryAction.disabled ?? false}
+          <CoursePrimaryAction
+            action={hero.primaryAction}
             size="sm"
             class="ui:rounded-full ui:px-4 ui:font-medium ui:bg-[#f4f5f7] ui:text-[#0a0b0e] ui:hover:bg-white"
-          >
-            {hero.primaryAction.label}
-          </Button>
+          />
         </div>
       {/if}
 
@@ -118,6 +120,9 @@
         {hero.subheading}
       </p>
 
+      {#if children}
+        <div class="ui:flex ui:justify-center ui:w-full ui:mb-8">{@render children()}</div>
+      {/if}
       {#if coursesCount > 0}
         <span
           class="ui:inline-flex ui:items-center ui:gap-3 ui:px-4 ui:py-2 ui:rounded-full ui:font-mono ui:text-[13px] ui:text-[var(--landing-fg-muted)]"

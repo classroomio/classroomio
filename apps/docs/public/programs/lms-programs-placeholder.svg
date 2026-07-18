@@ -4,6 +4,6 @@
   <rect x="96" y="96" width="300" height="28" rx="14" fill="#0F172A"/>
   <rect x="96" y="170" width="1040" height="56" rx="18" fill="#E2E8F0"/>
   <rect x="96" y="280" width="1360" height="420" rx="24" fill="#FFFFFF" stroke="#94A3B8" stroke-dasharray="14 10" stroke-width="4"/>
-  <text x="776" y="490" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0F172A">LMS Programs Placeholder</text>
-  <text x="776" y="548" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#475569">Replace with the learner programs list or learner program entry view.</text>
+  <text x="776" y="490" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#0F172A">LMS Cohorts Placeholder</text>
+  <text x="776" y="548" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#475569">Replace with the learner cohorts list or learner cohort entry view.</text>
 </svg>

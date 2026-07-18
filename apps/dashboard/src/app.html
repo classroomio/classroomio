@@ -6,8 +6,10 @@
     <meta name="theme-color" content="#333333" />
 
     <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
-    <link rel="icon" type="image/png" href="/favicon.ico" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/logo-32.png" />
+
+    <!-- External (not inline) so it passes the app's nonce-based CSP; runs before
+         the app bundle to set the color mode and avoid a flash of the wrong theme. -->
+    <script src="/theme-init.js"></script>
 
     %sveltekit.head%
   </head>

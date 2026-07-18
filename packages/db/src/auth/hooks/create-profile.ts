@@ -1,23 +1,12 @@
 import * as schema from '@db/schema';
 
-import { and, eq, ne } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 import { User } from 'better-auth';
 import { db } from '@db/drizzle';
+import { hasVerifiedEmailProvider } from '@db/queries/auth/profile';
 import { getOrganizationCount } from '@db/queries/organization';
 import { ssoProvisioningHook } from './sso-provisioning';
-
-/**
- * True if the user has any non-credential account (OAuth/SSO). Those providers verify email.
- */
-export async function hasVerifiedEmailProvider(userId: string): Promise<boolean> {
-  const accounts = await db
-    .select({ providerId: schema.account.providerId })
-    .from(schema.account)
-    .where(and(eq(schema.account.userId, userId), ne(schema.account.providerId, 'credential')))
-    .limit(1);
-  return accounts.length > 0;
-}
 
 /**
  * True when this is a first-time signup on a self-hosted instance (no orgs exist yet).
@@ -59,6 +48,14 @@ export const createProfileHook = async (user: User, _request?: Request) => {
   }
 
   if (existingProfile.length) {
+    if (!existingProfile[0].isEmailVerified && isEmailVerified) {
+      await db.update(schema.user).set({ emailVerified: true }).where(eq(schema.user.id, user.id));
+      await db
+        .update(schema.profile)
+        .set({ isEmailVerified: true, verifiedAt: new Date().toISOString() })
+        .where(eq(schema.profile.id, user.id));
+    }
+
     return;
   }
 

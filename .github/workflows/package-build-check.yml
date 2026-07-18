@@ -1,0 +1,53 @@
+name: Package build check
+
+on:
+  pull_request:
+    paths:
+      - 'apps/dashboard/**'
+      - 'apps/api/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'turbo.json'
+      - '.nvmrc'
+      - '.github/workflows/package-build-check.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/dashboard/**'
+      - 'apps/api/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'turbo.json'
+      - '.nvmrc'
+      - '.github/workflows/package-build-check.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prepare dashboard env
+        run: cp apps/dashboard/.env.example apps/dashboard/.env
+
+      - name: Build dashboard
+        run: pnpm --filter @cio/dashboard^... build && pnpm --filter @cio/dashboard build
+
+      - name: Build API
+        run: pnpm --filter @cio/api^... build && pnpm --filter @cio/api build
