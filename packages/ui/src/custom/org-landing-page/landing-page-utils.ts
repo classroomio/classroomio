@@ -65,6 +65,21 @@ export function formatExerciseCountLabel(count: number) {
   return `${count} exercises`;
 }
 
+/** Mirrors dashboard `getCurrencyFormatter` for landing-page course pricing. */
+export function getCourseCurrencyFormatter(currency = 'USD') {
+  const locale = currency === 'NGN' ? 'en-NG' : 'en-US';
+
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 2
+  });
+}
+
+export function formatCourseCurrency(amount: number, currency = 'USD') {
+  return getCourseCurrencyFormatter(currency).format(amount);
+}
+
 /** Mirrors dashboard `calcCourseDiscount` for landing-page course cards. */
 export function calcCourseDiscount(percent = 0, cost: number, showDiscount: boolean) {
   if (!percent || !showDiscount) return cost;

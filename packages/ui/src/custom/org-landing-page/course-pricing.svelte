@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { CoursePricing, CourseLandingPageLabels, OrgLandingPageTheme } from './types';
   import { courseLandingTokens } from './course-landing-page.tokens';
+  import { calcCourseDiscount, getCourseCurrencyFormatter } from './landing-page-utils';
   import EditableLandingSection from './editable-section.svelte';
   import LandingButton from './landing-button.svelte';
   import CheckIcon from '@lucide/svelte/icons/check';
@@ -19,17 +20,17 @@
 
   const isFree = $derived(!pricing.cost || pricing.cost <= 0);
 
-  const currencySymbol = $derived(
-    pricing.currency === 'USD' ? '$' : pricing.currency === 'EUR' ? '€' : pricing.currency === 'GBP' ? '£' : ''
-  );
+  const currencyFormatter = $derived(getCourseCurrencyFormatter(pricing.currency ?? 'USD'));
 
   const discountedAmount = $derived(
     pricing.showDiscount && pricing.discount && pricing.cost
-      ? pricing.cost - (pricing.cost * pricing.discount) / 100
+      ? calcCourseDiscount(pricing.discount, pricing.cost, true)
       : null
   );
 
   const displayAmount = $derived(discountedAmount ?? pricing.cost ?? 0);
+  const formattedDisplayAmount = $derived(currencyFormatter.format(displayAmount));
+  const formattedOriginalAmount = $derived(currencyFormatter.format(pricing.cost ?? 0));
 </script>
 
 <EditableLandingSection sectionKey="pricing">
@@ -42,14 +43,9 @@
             <span class={t.pricingAmount}>{labels?.freeLabel ?? 'Free'}</span>
           {:else}
             <div class="ui:flex ui:items-baseline ui:gap-3">
-              <span class={t.pricingAmount}>
-                {currencySymbol}{displayAmount.toFixed(0)}
-                <span class={t.pricingCurrency}>{currencySymbol ? '' : pricing.currency}</span>
-              </span>
+              <span class={t.pricingAmount}>{formattedDisplayAmount}</span>
               {#if discountedAmount !== null}
-                <span class={t.pricingDiscount}>
-                  {currencySymbol}{(pricing.cost ?? 0).toFixed(0)}
-                </span>
+                <span class={t.pricingDiscount}>{formattedOriginalAmount}</span>
               {/if}
             </div>
             {#if pricing.discount && pricing.showDiscount}
