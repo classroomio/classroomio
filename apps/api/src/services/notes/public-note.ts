@@ -1,9 +1,9 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { getPublicNoteByOrgSiteAndSlug, type PublicNoteView } from '@cio/db/queries/notes';
+import { ensurePublicSlugsForSubtree, getPublicNotePageByOrgSiteAndSlug } from '@cio/db/queries/notes/public-note';
 
-export async function getPublicNoteService(siteName: string, noteSlug: string): Promise<PublicNoteView | null> {
+export async function getPublicNoteService(siteName: string, noteSlug: string) {
   try {
-    return await getPublicNoteByOrgSiteAndSlug(siteName, noteSlug);
+    return await getPublicNotePageByOrgSiteAndSlug(siteName, noteSlug);
   } catch (error) {
     if (error instanceof AppError) {
       throw error;

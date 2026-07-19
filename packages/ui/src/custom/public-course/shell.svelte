@@ -5,6 +5,7 @@
   import MobileSheet from './mobile-sheet.svelte';
   import Sidebar from './sidebar.svelte';
   import SiteHeader from './site-header.svelte';
+  import type { PublicSiteBreadcrumb } from './site-header.svelte';
   import { cn } from '../../tools';
   import type { PublicCourseOrgData, PublicCourseSidebarItem, PublicCourseSidebarSection } from './types';
 
@@ -29,6 +30,7 @@
     nextItem?: PublicCourseSidebarItem | null;
     /** Course title shown after the org name in the top header. */
     courseTitle: string;
+    breadcrumbs?: PublicSiteBreadcrumb[];
     /** Owning org / creator for the top-header logo + name. */
     org?: PublicCourseOrgData | null;
     /** Where clicking the org logo / name should go. Defaults to the org home (`/`). */
@@ -75,6 +77,7 @@
     prevItem = null,
     nextItem = null,
     courseTitle,
+    breadcrumbs = [],
     org = null,
     homeHref = '/',
     exploreHref = '/courses',
@@ -119,6 +122,7 @@
   <SiteHeader
     {org}
     pageTitle={courseTitle}
+    {breadcrumbs}
     {homeHref}
     {exploreHref}
     {signInHref}

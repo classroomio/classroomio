@@ -21,6 +21,7 @@ import {
   updateNote,
   wouldCreateCycle,
   cascadeNoteVisibility,
+  ensurePublicSlugsForSubtree,
   type NoteListRow,
   type SidebarNoteRow
 } from '@cio/db/queries/notes';
@@ -778,6 +779,10 @@ export async function updateNoteVisibilityService(
   }
 
   await cascadeNoteVisibility(noteId, data.visibility);
+
+  if (data.visibility === 'public') {
+    await ensurePublicSlugsForSubtree(organizationId, noteId);
+  }
 
   const note = await getNoteById(noteId);
 
