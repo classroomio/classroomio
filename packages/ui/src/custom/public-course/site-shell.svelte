@@ -3,11 +3,13 @@
   import { cn } from '../../tools';
   import PoweredBy from './powered-by.svelte';
   import SiteHeader from './site-header.svelte';
+  import type { PublicSiteBreadcrumb } from './site-header.svelte';
   import type { PublicCourseOrgData } from './types';
 
   interface Props {
     org?: PublicCourseOrgData | null;
-    pageTitle: string;
+    pageTitle?: string;
+    breadcrumbs?: PublicSiteBreadcrumb[];
     homeHref?: string;
     exploreHref?: string;
     signInHref?: string;
@@ -23,7 +25,8 @@
 
   let {
     org = null,
-    pageTitle,
+    pageTitle = '',
+    breadcrumbs = [],
     homeHref = '/',
     exploreHref = '/courses',
     signInHref = '/login',
@@ -44,6 +47,7 @@
   <SiteHeader
     {org}
     {pageTitle}
+    {breadcrumbs}
     {homeHref}
     {exploreHref}
     {signInHref}

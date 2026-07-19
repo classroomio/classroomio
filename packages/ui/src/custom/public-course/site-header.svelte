@@ -3,7 +3,6 @@
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import { Button } from '../../base/button';
   import { ModeSwitcher } from '../../base/dark-mode';
-  import { cn } from '../../tools';
   import type { PublicCourseOrgData } from './types';
 
   export type PublicSiteBreadcrumb = {
@@ -14,7 +13,7 @@
   interface Props {
     org?: PublicCourseOrgData | null;
     /** Secondary title in the header (course name, note title, etc.). */
-    pageTitle: string;
+    pageTitle?: string;
     breadcrumbs?: PublicSiteBreadcrumb[];
     homeHref?: string;
     exploreHref?: string;
@@ -26,7 +25,7 @@
 
   let {
     org = null,
-    pageTitle,
+    pageTitle = '',
     breadcrumbs = [],
     homeHref = '/',
     exploreHref = '/courses',
@@ -38,6 +37,7 @@
 
   const orgInitial = $derived((org?.name?.trim()?.charAt(0) ?? 'C').toUpperCase());
   const hasBreadcrumbs = $derived(breadcrumbs.length > 0);
+  const showMiddle = $derived(hasBreadcrumbs || pageTitle.trim().length > 0);
 </script>
 
 <header
@@ -70,38 +70,36 @@
       </span>
     </a>
 
-    <span aria-hidden="true" class="ui:text-muted-foreground/60">|</span>
+    {#if showMiddle}
+      <span aria-hidden="true" class="ui:text-muted-foreground/60">|</span>
 
-    {#if hasBreadcrumbs}
-      <nav
-        class="ui:flex ui:min-w-0 ui:flex-1 ui:items-center ui:gap-1 ui:text-sm ui:text-muted-foreground"
-        aria-label="Breadcrumb"
-      >
-        {#each breadcrumbs as crumb, index (crumb.label + (crumb.href ?? ''))}
-          {#if index > 0}
-            <ChevronRightIcon size={14} class="ui:shrink-0 ui:opacity-60" aria-hidden="true" />
-          {/if}
-          {#if crumb.href && index < breadcrumbs.length - 1}
-            <a href={crumb.href} class="ui:truncate ui:hover:text-foreground ui:max-w-[9rem] sm:ui:max-w-[12rem]">
-              {crumb.label}
-            </a>
-          {:else}
-            <span
-              class={cn(
-                'ui:truncate ui:max-w-[9rem] sm:ui:max-w-[16rem]',
-                index === breadcrumbs.length - 1 && 'ui:font-medium ui:text-foreground'
-              )}
-              title={crumb.label}
-            >
-              {crumb.label}
-            </span>
-          {/if}
-        {/each}
-      </nav>
+      {#if hasBreadcrumbs}
+        <nav
+          class="ui:flex ui:min-w-0 ui:flex-1 ui:items-center ui:gap-1 ui:text-sm ui:text-muted-foreground"
+          aria-label="Breadcrumb"
+        >
+          {#each breadcrumbs as crumb, index (crumb.label + (crumb.href ?? ''))}
+            {#if index > 0}
+              <ChevronRightIcon size={14} class="ui:shrink-0 ui:opacity-60" aria-hidden="true" />
+            {/if}
+            {#if crumb.href}
+              <a href={crumb.href} class="ui:max-w-[9rem] ui:truncate ui:hover:text-foreground sm:ui:max-w-[12rem]">
+                {crumb.label}
+              </a>
+            {:else}
+              <span class="ui:max-w-[9rem] ui:truncate sm:ui:max-w-[16rem]" title={crumb.label}>
+                {crumb.label}
+              </span>
+            {/if}
+          {/each}
+        </nav>
+      {:else}
+        <span class="ui:min-w-0 ui:flex-1 ui:truncate ui:text-sm ui:text-muted-foreground" title={pageTitle}>
+          {pageTitle}
+        </span>
+      {/if}
     {:else}
-      <span class="ui:min-w-0 ui:flex-1 ui:truncate ui:text-sm ui:text-muted-foreground" title={pageTitle}>
-        {pageTitle}
-      </span>
+      <span class="ui:min-w-0 ui:flex-1"></span>
     {/if}
 
     <div class="ui:ml-auto ui:flex ui:shrink-0 ui:items-center ui:gap-2">
