@@ -211,6 +211,7 @@
   "public_course": {
     "header": {
       "explore_courses": "Explore courses",
+      "view_academy": "View academy",
       "sign_in": "Sign in"
     },
     "footer_nav": {
