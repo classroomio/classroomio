@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { CoursePricing, CourseLandingPageLabels, OrgLandingPageTheme } from './types';
   import { courseLandingTokens } from './course-landing-page.tokens';
-  import { calcCourseDiscount, getCourseCurrencyFormatter } from './landing-page-utils';
+  import { calcCourseDiscount } from './landing-page-utils';
+  import { getCurrencyFormatter } from '@cio/utils/functions';
   import EditableLandingSection from './editable-section.svelte';
   import LandingButton from './landing-button.svelte';
   import CheckIcon from '@lucide/svelte/icons/check';
@@ -20,7 +21,7 @@
 
   const isFree = $derived(!pricing.cost || pricing.cost <= 0);
 
-  const currencyFormatter = $derived(getCourseCurrencyFormatter(pricing.currency ?? 'USD'));
+  const currencyFormatter = $derived(getCurrencyFormatter(pricing.currency ?? 'USD'));
 
   const discountedAmount = $derived(
     pricing.showDiscount && pricing.discount && pricing.cost
