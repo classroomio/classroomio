@@ -4109,6 +4109,13 @@
       "save_error": "Could not save tags.",
       "filter_all": "All tags"
     },
+    "page": {
+      "add_cover": "Add cover",
+      "add_cover_soon": "Cover images are coming soon",
+      "visibility_private": "Private · only visible to you",
+      "visibility_team": "Workspace · visible to your team",
+      "visibility_public": "Public · anyone with the link"
+    },
     "editor": {
       "page_title": "Edit note",
       "loading": "Loading note…",
