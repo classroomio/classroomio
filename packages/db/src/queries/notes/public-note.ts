@@ -1,7 +1,7 @@
 import { and, eq, isNull, sql } from 'drizzle-orm';
 import { db } from '../../drizzle';
 import * as schema from '../../schema';
-import { resolveSlugCollision, slugifyTitle } from '@cio/utils/validation/shared/slug';
+import { resolveSlugCollision, slugifyTitle } from '@cio/utils/validation/shared';
 import {
   getPublicNoteByOrgSiteAndSlug,
   listPublicNoteSlugsForOrganization,
@@ -169,7 +169,7 @@ function flattenOutline(rows: Map<string, PublicNoteRow>, rootId: string): Publi
       continue;
     }
 
-    const key = row.parentId;
+    const key = row.parentId ?? '';
     const bucket = childrenByParent.get(key) ?? [];
     bucket.push(row);
     childrenByParent.set(key, bucket);

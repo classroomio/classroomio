@@ -1,9 +1,11 @@
 import {
   selectCountryDailyAggregates,
   selectCourseDailyAggregates,
+  selectNoteDailyAggregates,
   selectOrgDailyAggregates,
   upsertCountryDailyRows,
   upsertCourseDailyRows,
+  upsertNoteDailyRows,
   upsertOrgDailyRows
 } from '@cio/db/queries/analytics';
 
@@ -12,6 +14,7 @@ type RollupResult = {
   windowEnd: string;
   orgRows: number;
   courseRows: number;
+  noteRows: number;
   countryRows: number;
 };
 
@@ -38,9 +41,10 @@ export async function runAnalyticsRollupDaily(opts: { daysAgo?: number } = {}): 
   const daysAgo = opts.daysAgo ?? 1;
   const { startIso, endIso } = getDayBoundsUtc(daysAgo);
 
-  const [orgAgg, courseAgg, countryAgg] = await Promise.all([
+  const [orgAgg, courseAgg, noteAgg, countryAgg] = await Promise.all([
     selectOrgDailyAggregates(startIso, endIso),
     selectCourseDailyAggregates(startIso, endIso),
+    selectNoteDailyAggregates(startIso, endIso),
     selectCountryDailyAggregates(startIso, endIso)
   ]);
 
@@ -52,6 +56,7 @@ export async function runAnalyticsRollupDaily(opts: { daysAgo?: number } = {}): 
       landingViews: row.landingViews,
       uniqueVisitors: row.uniqueVisitors,
       coursePageViews: row.coursePageViews,
+      notePageViews: row.notePageViews,
       enrollments: row.enrollments,
       completions: row.completions
     }));
@@ -68,6 +73,16 @@ export async function runAnalyticsRollupDaily(opts: { daysAgo?: number } = {}): 
       completions: row.completions
     }));
 
+  const noteRows = noteAgg
+    .filter((row) => row.noteId && row.orgId)
+    .map((row) => ({
+      noteId: row.noteId as string,
+      orgId: row.orgId as string,
+      date: row.date,
+      views: row.views,
+      uniqueVisitors: row.uniqueVisitors
+    }));
+
   const countryRows = countryAgg
     .filter((row) => row.orgId && row.country)
     .map((row) => ({
@@ -78,9 +93,10 @@ export async function runAnalyticsRollupDaily(opts: { daysAgo?: number } = {}): 
       enrollments: row.enrollments
     }));
 
-  const [orgWritten, courseWritten, countryWritten] = await Promise.all([
+  const [orgWritten, courseWritten, noteWritten, countryWritten] = await Promise.all([
     upsertOrgDailyRows(orgRows),
     upsertCourseDailyRows(courseRows),
+    upsertNoteDailyRows(noteRows),
     upsertCountryDailyRows(countryRows)
   ]);
 
@@ -89,6 +105,7 @@ export async function runAnalyticsRollupDaily(opts: { daysAgo?: number } = {}): 
     windowEnd: endIso,
     orgRows: orgWritten,
     courseRows: courseWritten,
+    noteRows: noteWritten,
     countryRows: countryWritten
   };
 }

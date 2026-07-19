@@ -3,6 +3,7 @@
   import EyeIcon from '@lucide/svelte/icons/eye';
   import UsersIcon from '@lucide/svelte/icons/users';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
+  import FileTextIcon from '@lucide/svelte/icons/file-text';
   import UserPlusIcon from '@lucide/svelte/icons/user-plus';
   import KpiCard from './kpi-card.svelte';
   import type { LandingStatsData } from '../utils/types';
@@ -18,6 +19,7 @@
     data?.totals ?? {
       landingViews: 0,
       coursePageViews: 0,
+      notePageViews: 0,
       uniqueVisitors: 0,
       enrollments: 0,
       completions: 0
@@ -28,7 +30,7 @@
   const enrollSpark = $derived(data?.sparkline.map((row) => row.enrollments) ?? []);
 </script>
 
-<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
   <KpiCard
     title={$t('analytics.kpi.landing_views')}
     value={totals.landingViews.toLocaleString()}
@@ -52,6 +54,14 @@
     description={$t('analytics.kpi.range_description')}
     loading={loading && !data}
     icon={BookOpenIcon}
+    accent="warning"
+  />
+  <KpiCard
+    title={$t('analytics.kpi.note_page_views')}
+    value={totals.notePageViews.toLocaleString()}
+    description={$t('analytics.kpi.range_description')}
+    loading={loading && !data}
+    icon={FileTextIcon}
     accent="warning"
   />
   <KpiCard

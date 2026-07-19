@@ -139,4 +139,22 @@ SELECT "owner_id", "id", COALESCE("updated_at", "created_at")
 FROM "org_note"
 WHERE "is_pinned" = true AND "deleted_at" IS NULL
 ON CONFLICT DO NOTHING;--> statement-breakpoint
-ALTER TABLE "org_note" ADD COLUMN IF NOT EXISTS "cover_image_url" varchar;
+ALTER TABLE "org_note" ADD COLUMN IF NOT EXISTS "cover_image_url" varchar;--> statement-breakpoint
+ALTER TABLE "analytics_page_event" ADD COLUMN IF NOT EXISTS "note_id" uuid;--> statement-breakpoint
+ALTER TABLE "analytics_page_event" ADD CONSTRAINT "analytics_page_event_note_id_fkey" FOREIGN KEY ("note_id") REFERENCES "public"."org_note"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_ape_note_occurred" ON "analytics_page_event" USING btree ("note_id","occurred_at");--> statement-breakpoint
+ALTER TABLE "analytics_org_daily" ADD COLUMN IF NOT EXISTS "note_page_views" integer DEFAULT 0 NOT NULL;--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "analytics_note_daily" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"note_id" uuid NOT NULL,
+	"org_id" uuid NOT NULL,
+	"date" date NOT NULL,
+	"views" integer DEFAULT 0 NOT NULL,
+	"unique_visitors" integer DEFAULT 0 NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+	CONSTRAINT "analytics_note_daily_note_date_unique" UNIQUE("note_id","date")
+);--> statement-breakpoint
+ALTER TABLE "analytics_note_daily" ADD CONSTRAINT "analytics_note_daily_note_id_fkey" FOREIGN KEY ("note_id") REFERENCES "public"."org_note"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "analytics_note_daily" ADD CONSTRAINT "analytics_note_daily_org_id_fkey" FOREIGN KEY ("org_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_and_org_date" ON "analytics_note_daily" USING btree ("org_id","date");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_and_note_date" ON "analytics_note_daily" USING btree ("note_id","date");

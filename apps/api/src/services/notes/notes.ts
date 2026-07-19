@@ -25,6 +25,7 @@ import {
   type NoteListRow,
   type SidebarNoteRow
 } from '@cio/db/queries/notes';
+import { selectNoteViewTotals } from '@cio/db/queries/analytics';
 import { addNoteFavorite, isNoteFavorited, removeNoteFavorite } from '@cio/db/queries/notes/favorite';
 import {
   getNoteSharePermission,
@@ -297,8 +298,10 @@ export async function getNoteService(organizationId: string, userId: string, rol
   const { note, canWrite } = await getReadableNote(organizationId, userId, roleId, noteId);
   const children = await listNoteChildren(noteId);
   const favorited = await isNoteFavorited(userId, noteId);
+  const viewRows = await selectNoteViewTotals(organizationId, [noteId]);
+  const publicPageViews = viewRows.find((row) => row.noteId === noteId)?.views ?? 0;
 
-  return { ...note, canWrite, children, isFavorited: favorited };
+  return { ...note, canWrite, children, isFavorited: favorited, publicPageViews };
 }
 
 export async function createNoteService(ownerId: string, roleId: number, data: TCreateNote) {

@@ -80,6 +80,7 @@
   let noteOwnerId = $state('');
   let isTemplateNote = $state(false);
   let ownerFullname = $state<string | null>(null);
+  let publicPageViews = $state(0);
   let canWrite = $state(true);
   let selectedTagIds = $state<string[]>([]);
   let isTagPopoverOpen = $state(false);
@@ -180,6 +181,7 @@
     noteOwnerId = note.ownerId;
     isTemplateNote = note.isTemplate ?? false;
     ownerFullname = note.ownerFullname;
+    publicPageViews = note.publicPageViews ?? 0;
     canWrite = note.canWrite ?? note.ownerId === $profile.id;
 
     if (note.origin === 'workspace' && canWrite) {
@@ -871,6 +873,12 @@
         {/snippet}
 
         {#snippet meta()}
+          {#if noteOrigin === 'workspace' && (canWrite || noteVisibility === 'public')}
+            <p class="ui:text-muted-foreground text-sm">
+              {$t('notes.page.public_views', { count: publicPageViews })}
+            </p>
+          {/if}
+
           {#if !canWrite && ownerFullname}
             <Badge variant="secondary" class="w-fit">{$t('notes.share.by_author', { name: ownerFullname })}</Badge>
           {/if}

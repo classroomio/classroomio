@@ -26,16 +26,22 @@
       endpoint: `${apiBaseUrl.replace(/\/$/, '')}/dash/track`,
       orgId: data.org?.id ?? undefined
     });
-    analytics.pageView({ kind: 'landing' });
+
+    if (!/^\/note\//.test(window.location.pathname)) {
+      analytics.pageView({ kind: 'landing' });
+    }
   });
 
   afterNavigate(({ to }) => {
     if (!to) return;
 
-    const isCoursePage = /\/course\//.test(to.url.pathname);
+    const path = to.url.pathname;
+    if (/^\/note\//.test(path)) return;
+
+    const isCoursePage = /\/course\//.test(path);
     analytics.pageView({
       kind: isCoursePage ? 'course' : 'landing',
-      path: to.url.pathname
+      path
     });
   });
 </script>

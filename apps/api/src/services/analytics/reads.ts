@@ -12,6 +12,7 @@ export type LandingStats = {
   totals: {
     landingViews: number;
     coursePageViews: number;
+    notePageViews: number;
     uniqueVisitors: number;
     enrollments: number;
     completions: number;
@@ -23,7 +24,7 @@ export type CountryBreakdown = Array<{ country: string; views: number; enrollmen
 
 export type CourseFunnel = {
   steps: Array<{
-    name: 'landing_view' | 'course_page_view' | 'enrollment_completed' | 'course_completed';
+    name: 'landing_view' | 'note_page_view' | 'course_page_view' | 'enrollment_completed' | 'course_completed';
     count: number;
     conversionFromPrev: number | null;
   }>;
@@ -83,16 +84,17 @@ export async function getLandingStats(orgId: string, days: number, bustCache = f
     (acc, row) => ({
       landingViews: acc.landingViews + row.landingViews,
       coursePageViews: acc.coursePageViews + row.coursePageViews,
+      notePageViews: acc.notePageViews + row.notePageViews,
       uniqueVisitors: acc.uniqueVisitors + row.uniqueVisitors,
       enrollments: acc.enrollments + row.enrollments,
       completions: acc.completions + row.completions
     }),
-    { landingViews: 0, coursePageViews: 0, uniqueVisitors: 0, enrollments: 0, completions: 0 }
+    { landingViews: 0, coursePageViews: 0, notePageViews: 0, uniqueVisitors: 0, enrollments: 0, completions: 0 }
   );
 
   const sparkline = rows.map((row) => ({
     date: row.date,
-    views: row.landingViews + row.coursePageViews,
+    views: row.landingViews + row.coursePageViews + row.notePageViews,
     enrollments: row.enrollments
   }));
 
@@ -134,6 +136,7 @@ export async function getCourseFunnel(
   const { fromDate, toDate } = computeRange(days);
 
   let landingViews = 0;
+  let notePageViews = 0;
   let coursePageViews = 0;
   let enrollments = 0;
   let completions = 0;
@@ -146,6 +149,7 @@ export async function getCourseFunnel(
   } else {
     const rows = await selectOrgDailyRange(orgId, fromDate, toDate);
     landingViews = rows.reduce((sum, r) => sum + r.landingViews, 0);
+    notePageViews = rows.reduce((sum, r) => sum + r.notePageViews, 0);
     coursePageViews = rows.reduce((sum, r) => sum + r.coursePageViews, 0);
     enrollments = rows.reduce((sum, r) => sum + r.enrollments, 0);
     completions = rows.reduce((sum, r) => sum + r.completions, 0);
@@ -153,13 +157,17 @@ export async function getCourseFunnel(
 
   const stepValues = [
     { name: 'landing_view' as const, count: landingViews },
+    { name: 'note_page_view' as const, count: notePageViews },
     { name: 'course_page_view' as const, count: coursePageViews },
     { name: 'enrollment_completed' as const, count: enrollments },
     { name: 'course_completed' as const, count: completions }
   ];
 
   const steps = stepValues
-    .filter((step) => (courseId ? step.name !== 'landing_view' : true))
+    .filter((step) => {
+      if (!courseId) return true;
+      return step.name !== 'landing_view' && step.name !== 'note_page_view';
+    })
     .map((step, index, arr) => {
       const prev = index > 0 ? arr[index - 1].count : null;
       const conversionFromPrev = prev && prev > 0 ? step.count / prev : null;

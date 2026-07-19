@@ -207,6 +207,7 @@ export const analyticsPageEvent = pgTable(
     userId: uuid('user_id'),
     eventType: text('event_type').notNull(),
     courseId: uuid('course_id'),
+    noteId: uuid('note_id'),
     path: text('path'),
     referrerHost: text('referrer_host'),
     utmSource: text('utm_source'),
@@ -220,6 +221,7 @@ export const analyticsPageEvent = pgTable(
   (table) => [
     index('idx_ape_org_occurred').on(table.orgId, table.occurredAt),
     index('idx_ape_course_occurred').on(table.courseId, table.occurredAt),
+    index('idx_ape_note_occurred').on(table.noteId, table.occurredAt),
     index('idx_ape_session').on(table.sessionId),
     index('idx_ape_event_type').on(table.eventType),
     index('idx_ape_user').on(table.userId)
@@ -235,6 +237,7 @@ export const analyticsOrgDaily = pgTable(
     landingViews: integer('landing_views').default(0).notNull(),
     uniqueVisitors: integer('unique_visitors').default(0).notNull(),
     coursePageViews: integer('course_page_views').default(0).notNull(),
+    notePageViews: integer('note_page_views').default(0).notNull(),
     enrollments: integer('enrollments').default(0).notNull(),
     completions: integer('completions').default(0).notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
@@ -263,6 +266,24 @@ export const analyticsCourseDaily = pgTable(
     unique('analytics_course_daily_course_date_unique').on(table.courseId, table.date),
     index('idx_acd_org_date').on(table.orgId, table.date),
     index('idx_acd_course_date').on(table.courseId, table.date)
+  ]
+);
+
+export const analyticsNoteDaily = pgTable(
+  'analytics_note_daily',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    noteId: uuid('note_id').notNull(),
+    orgId: uuid('org_id').notNull(),
+    date: date('date').notNull(),
+    views: integer('views').default(0).notNull(),
+    uniqueVisitors: integer('unique_visitors').default(0).notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('analytics_note_daily_note_date_unique').on(table.noteId, table.date),
+    index('idx_and_org_date').on(table.orgId, table.date),
+    index('idx_and_note_date').on(table.noteId, table.date)
   ]
 );
 

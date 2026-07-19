@@ -1,6 +1,7 @@
 export const CLIENT_EVENTS = {
   LANDING_VIEW: 'landing_view',
   COURSE_PAGE_VIEW: 'course_page_view',
+  NOTE_PAGE_VIEW: 'note_page_view',
   SIGNUP_VIEW: 'signup_view',
   SIGNIN_VIEW: 'signin_view',
   PRICING_VIEW: 'pricing_view',

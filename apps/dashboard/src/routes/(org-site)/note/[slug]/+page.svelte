@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/state';
   import { PublicCourse } from '@cio/ui';
   import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
+  import { analytics } from '@cio/analytics/client';
   import NoteSubpages from '$features/notes/components/note-subpages.svelte';
   import { displayNoteTitle } from '$features/notes/utils/note-list-utils';
   import { t } from '$lib/utils/functions/translations';
@@ -44,6 +46,19 @@
       sortOrder: child.sortOrder
     }))
   );
+
+  function trackPublicNoteView() {
+    analytics.pageView({
+      kind: 'note',
+      noteId: note.id,
+      orgId: note.org.id,
+      path: page.url.pathname
+    });
+  }
+
+  afterNavigate(() => {
+    trackPublicNoteView();
+  });
 </script>
 
 <PublicCourse.PublicSiteShell

@@ -9,6 +9,7 @@ type QueuedEvent = {
   occurredAt: string;
   orgId?: string;
   courseId?: string;
+  noteId?: string;
   path?: string;
   referrerHost?: string;
   utmSource?: string;
@@ -99,6 +100,7 @@ export function track(eventType: ClientEventType, fields: Partial<QueuedEvent> =
     occurredAt: new Date().toISOString(),
     orgId: fields.orgId ?? config.orgId,
     courseId: fields.courseId,
+    noteId: fields.noteId,
     path: fields.path ?? (typeof window !== 'undefined' ? window.location.pathname : undefined),
     referrerHost: fields.referrerHost ?? pickReferrerHost(),
     locale: fields.locale ?? (typeof navigator !== 'undefined' ? navigator.language : undefined),
@@ -114,9 +116,15 @@ export function track(eventType: ClientEventType, fields: Partial<QueuedEvent> =
   }
 }
 
-export function pageView(fields: Partial<QueuedEvent> & { kind?: 'landing' | 'course' } = {}): void {
+export function pageView(
+  fields: Partial<QueuedEvent> & { kind?: 'landing' | 'course' | 'note' } = {}
+): void {
   const eventType: ClientEventType =
-    fields.kind === 'course' ? CLIENT_EVENTS.COURSE_PAGE_VIEW : CLIENT_EVENTS.LANDING_VIEW;
+    fields.kind === 'course'
+      ? CLIENT_EVENTS.COURSE_PAGE_VIEW
+      : fields.kind === 'note'
+        ? CLIENT_EVENTS.NOTE_PAGE_VIEW
+        : CLIENT_EVENTS.LANDING_VIEW;
   track(eventType, fields);
 }
 

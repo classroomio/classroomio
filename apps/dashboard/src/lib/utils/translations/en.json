@@ -3872,6 +3872,7 @@
       "landing_views": "Landing views",
       "unique_visitors": "Unique visitors",
       "course_page_views": "Course page views",
+      "note_page_views": "Note page views",
       "enrollments": "Enrollments",
       "range_description": "In selected range"
     },
@@ -3888,6 +3889,7 @@
       "empty": "No funnel data yet",
       "step": {
         "landing_view": "Landing views",
+        "note_page_view": "Note page views",
         "course_page_view": "Course page views",
         "enrollment_completed": "Enrollments",
         "course_completed": "Completions"
@@ -4122,7 +4124,8 @@
       "cover_remove_error": "Could not remove cover.",
       "visibility_private": "Private · only visible to you",
       "visibility_team": "Workspace · visible to your team",
-      "visibility_public": "Public · anyone with the link"
+      "visibility_public": "Public · anyone with the link",
+      "public_views": "{count, plural, one {# public page view} other {# public page views}}"
     },
     "editor": {
       "page_title": "Edit note",
