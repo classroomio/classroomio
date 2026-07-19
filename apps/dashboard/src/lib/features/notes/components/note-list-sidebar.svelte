@@ -69,7 +69,7 @@
     },
     {
       key: 'workspace' as const,
-      title: $t('notes.sidebar.sections.workspace'),
+      title: $t('notes.sidebar.sections.organization'),
       notes: sections.workspace,
       type: 'tree' as const,
       tree: workspaceTree

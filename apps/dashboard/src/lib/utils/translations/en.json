@@ -542,10 +542,10 @@
       },
       "notes": {
         "heading": "Notes",
-        "description": "Control how new workspace notes are shared with your team.",
+        "description": "Control how new organization notes are shared with admins and tutors.",
         "share_by_default": {
-          "label": "Share new notes with the team",
-          "description": "When enabled, new workspace notes are visible to all admins and tutors. You can still make individual notes private."
+          "label": "Share new notes with the organization",
+          "description": "When enabled, new notes are visible to all admins and tutors in this organization. You can still make individual notes private."
         },
         "save": "Save notes settings"
       }
@@ -4068,7 +4068,7 @@
       "close": "Close Note"
     },
     "usage": {
-      "workspace": "{used}/{limit} workspace notes used"
+      "workspace": "{used}/{limit} organization notes used"
     },
     "lesson_panel": {
       "loading": "Loading note…",
@@ -4087,7 +4087,7 @@
         "team": "Shared with team",
         "from_lessons": "From lessons"
       },
-      "shared_with_team": "Team",
+      "shared_with_team": "Organization",
       "badge_private": "Private",
       "badge_shared_by_me": "Shared",
       "badge_public": "Public",
@@ -4123,8 +4123,8 @@
       "cover_remove_success": "Cover removed",
       "cover_remove_error": "Could not remove cover.",
       "visibility_private": "Private · only visible to you",
-      "visibility_team": "Workspace · visible to your team",
-      "visibility_public": "Public · anyone with the link",
+      "visibility_team": "Organization · visible to admins and tutors",
+      "visibility_public": "Public · on your academy site",
       "public_views": "{count, plural, one {# public page view} other {# public page views}}"
     },
     "editor": {
@@ -4225,7 +4225,7 @@
       "empty_mine": "You have no notes yet",
       "empty_shared": "No notes have been shared with you",
       "empty_shared_title": "Nothing shared yet",
-      "empty_shared_description": "When a teammate shares a note with the team, it will show up here.",
+      "empty_shared_description": "When someone shares a note with you directly, it will show up here.",
       "empty_filtered": "No notes match your filters",
       "create_note": "Create note",
       "no_notes": "No notes",
@@ -4307,7 +4307,8 @@
         "favorites": "Favorites",
         "private": "Private",
         "shared_with_me": "Shared with me",
-        "workspace": "Workspace"
+        "workspace": "Organization",
+        "organization": "Organization"
       },
       "footer": {
         "templates": "Templates",
@@ -4336,8 +4337,8 @@
       "description": "Choose who on your team can access this note.",
       "private_label": "Only you",
       "private_description": "Only you can view and edit this note.",
-      "team_label": "Your team",
-      "team_description": "All admins and tutors in {orgName} can view this note.",
+      "team_label": "Organization",
+      "team_description": "All admins and tutors in {orgName} can view and collaborate on this note.",
       "public_label": "Anyone with the link",
       "public_description": "Anyone with the link can view this note. It will appear on your public academy site.",
       "public_slug_label": "Public link slug",

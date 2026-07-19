@@ -89,7 +89,7 @@ export async function assertWorkspaceNoteCreationAllowed(organizationId: string,
 
   if (workspaceCount >= BASIC_WORKSPACE_NOTE_LIMIT) {
     throw new AppError(
-      `Your plan allows up to ${BASIC_WORKSPACE_NOTE_LIMIT} workspace notes`,
+      `Your plan allows up to ${BASIC_WORKSPACE_NOTE_LIMIT} organization notes`,
       ErrorCodes.NOTES_LIMIT_REACHED,
       403
     );
