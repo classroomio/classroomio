@@ -513,7 +513,7 @@
     "public_api_required": "Upgrade auf Early Adopter oder Enterprise, um auf die öffentliche API zuzugreifen."
   },
   "analytics": {
-    "title": "Analytik",
+    "title": "Analysen",
     "courses": "Kurse",
     "progress": "Fortschritt",
     "progress_description": "{value, number} von {total, number} abgeschlossen",
@@ -552,7 +552,7 @@
     "showing_students": "Zeigt {start} bis {end} von {total} Schülern",
     "no_analytics_data": "Keine Analytics-Daten",
     "no_analytics_description": "Für diesen Kurs können keine Analysedaten geladen werden. Bitte versuchen Sie es später noch einmal oder wenden Sie sich an den Support, wenn das Problem weiterhin besteht.",
-    "student": "Student",
+    "student": "Schüler",
     "student_progress_distribution": "Verteilung des Schülerfortschritts",
     "grade_distribution": "Notenverteilung",
     "progress_80_plus": "80 %+ Fortschritt",
@@ -577,7 +577,7 @@
       "description": "Anmeldungen gruppiert nach Kurstyp",
       "subtitle": "{total} Anmeldungen für alle Typen",
       "empty": "Noch keine Anmeldedaten",
-      "course_count": "{count, plural, one {# course} other {# courses}}",
+      "course_count": "{count, plural, one {# Kurs} other {# Kurse}}",
       "views_short": "Ansichten",
       "types": {
         "SELF_PACED": "Im eigenen Tempo",
@@ -635,7 +635,7 @@
       "progress_distribution_card_description": "Wie viele Schüler fallen in jede Abschlussgruppe?",
       "grade_distribution_card_description": "Wie viele Schüler fallen in jede Klassenstufe?",
       "students_table_description": "Sortierbare Übersicht mit Links zu Studierendenprofilen.",
-      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
+      "kpi_team_tutors": "{count, plural, one {# Tutor im Kurs-Team} other {# Tutoren im Kurs-Team}}",
       "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}}, zugeordnet zu Lektionen",
       "kpi_progress_grade": "{grade} % durchschnittliche Übungsnote aller eingeschriebenen Schüler"
     }
@@ -702,10 +702,10 @@
       "select_cohorts": "Bestimmte Kohorten auswählen",
       "select_cohorts_placeholder": "Kohorten auswählen..."
     },
-    "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
+    "page_subtitle": "Sehen Sie, wer zu Ihrer Organisation gehört, wer lernt, wer eingeladen ist und wie Sie sie erreichen.",
     "user_analytics": {
       "title": "Studentenprofil",
-      "page_subtitle": "Progress, grades, and activity across their courses."
+      "page_subtitle": "Fortschritt, Noten und Aktivität in ihren Kursen."
     },
     "delete": {
       "action": "Löschen",
@@ -748,11 +748,11 @@
       "cancel": "Abbrechen",
       "give": "Geben Sie eine Antwort",
       "comment": "Kommentar",
-      "page_subtitle": "Start a thread the whole community can see, and tie it to a course if you want."
+      "page_subtitle": "Starten Sie einen Thread, den die gesamte Community sehen kann, und verknüpfen Sie ihn bei Bedarf mit einem Kurs."
     },
-    "page_subtitle": "Questions and answers shared across your organization's courses.",
+    "page_subtitle": "Fragen und Antworten, die über die Kurse Ihrer Organisation geteilt werden.",
     "question": {
-      "page_subtitle": "Follow answers, vote, and join the discussion."
+      "page_subtitle": "Antworten verfolgen, abstimmen und an der Diskussion teilnehmen."
     }
   },
   "course": {
@@ -807,7 +807,7 @@
         "delete_text": "Löschen Sie diesen Kurs. Diese Aktion kann nicht rückgängig gemacht werden",
         "save": "Änderungen speichern",
         "tags": {
-          "title": "Schlagworte",
+          "title": "Tags",
           "description": "Weisen Sie Tags zu, damit Studierende diesen Kurs mithilfe von Filtern entdecken können.",
           "empty": "Keine Tags ausgewählt",
           "add": "Tag hinzufügen",
@@ -857,7 +857,7 @@
         }
       },
       "analytics": {
-        "title": "Analytik"
+        "title": "Analysen"
       },
       "landing_page": {
         "course_content": "Kursinhalte",
@@ -895,7 +895,7 @@
         "explore": "Entdecken Sie Kurse",
         "find": "Finden Sie Kurse von den besten Lehrern auf der ganzen Welt, die Ihnen gefallen werden",
         "find_course": "Finden Sie einen Kurs...",
-        "instructor": "Lehrer",
+        "instructor": "Dozent",
         "courses": "Kurse",
         "reviews_modal": {
           "title": "Rezensionen",
@@ -990,7 +990,7 @@
             "description": "Beschreibung",
             "goals": "Ziele",
             "reviews": "Rezensionen",
-            "instructor": "Lehrer",
+            "instructor": "Dozent",
             "pricing": "Preise",
             "certificate": "Zertifikat",
             "curriculum": "Lehrplan",
@@ -1129,9 +1129,9 @@
         },
         "roles": {
           "admin": "Admin",
-          "tutor": "Nachhilfelehrer",
-          "student": "Student",
-          "filter": "Filtern"
+          "tutor": "Tutor",
+          "student": "Schüler",
+          "filter": "Filter"
         },
         "delete_confirmation": {
           "title": "Löschen",
@@ -1190,23 +1190,23 @@
           "recipient_emails_placeholder": "student1@example.com, student2@example.com",
           "send_invite_emails": "Senden Sie sofort Einladungs-E-Mails",
           "create_email_invites": "Erstellen Sie E-Mail-Einladungen",
-          "existing_students_title": "Add existing org students",
+          "existing_students_title": "Bestehende Organisationsschüler hinzufügen",
           "existing_students_description": "Wählen Sie Studierende aus, die dieser Organisation bereits angehören, und gewähren Sie ihnen direkten Zugang zu diesem Kurs.",
-          "existing_students_search": "Search organization students",
-          "loading_existing_students": "Loading organization students...",
-          "no_existing_students": "No organization students are available to add.",
-          "no_matching_existing_students": "No organization students match your search.",
-          "notify_existing_students": "Send course access email",
-          "grant_access": "Grant Access",
+          "existing_students_search": "Organisationsschüler suchen",
+          "loading_existing_students": "Organisationsschüler werden geladen...",
+          "no_existing_students": "Keine Organisationsschüler zum Hinzufügen verfügbar.",
+          "no_matching_existing_students": "Keine Organisationsschüler entsprechen Ihrer Suche.",
+          "notify_existing_students": "Kurszugangs-E-Mail senden",
+          "grant_access": "Zugang gewähren",
           "grant_access_modal": {
             "title": "Schülerzugang gewähren",
             "description": "Gewähren Sie {email} Zugang zu diesem Kurs. Wir senden eine Einladungs-E-Mail, damit die Person Ihrer Organisation beitreten und in diesem Kurs eingeschrieben werden kann.",
             "cancel": "Abbrechen",
             "send_invite": "Einladung senden"
           },
-          "invite_new_students_title": "Invite new students",
-          "invite_new_students_description": "Invite new people into your organization and pre-assign them to this course. They will create an account, accept the invite, and get access.",
-          "invite_new_students": "Invite Students",
+          "invite_new_students_title": "Neue Schüler einladen",
+          "invite_new_students_description": "Laden Sie neue Personen in Ihre Organisation ein und weisen Sie sie diesem Kurs vorab zu. Sie erstellen ein Konto, nehmen die Einladung an und erhalten Zugang.",
+          "invite_new_students": "Schüler einladen",
           "existing_invites": "Vorhandene Einladungen",
           "refresh": "Aktualisieren",
           "loading_invites": "Einladungen werden geladen...",
@@ -1226,7 +1226,7 @@
           "no_audit_events": "Keine Prüfereignisse.",
           "audit_at": "Bei",
           "audit_email": "E-Mail",
-          "audit_actor": "Schauspieler",
+          "audit_actor": "Akteur",
           "audit_ip": "IP",
           "scan_qr": "QR scannen",
           "classroomio_brand": "ClassroomIO.com",
@@ -1240,7 +1240,7 @@
           "snackbar_failed_load_audit": "Das Einladungsaudit konnte nicht geladen werden",
           "snackbar_metadata_copied": "Einladungsmetadaten kopiert",
           "snackbar_email_invites_success": "{count} Einladung(en) erstellt. Gesendet {sent}, fehlgeschlagen {failed}. {duplicates} Duplikat(e) übersprungen.",
-          "select_at_least_one_student": "Select at least one existing student",
+          "select_at_least_one_student": "Wählen Sie mindestens einen bestehenden Schüler aus",
           "presets": {
             "one_time_24h": "Einmalig (24h)",
             "multi_use_7d": "Mehrfachnutzung (7 Tage)",
@@ -1252,8 +1252,8 @@
       },
       "marks": {
         "title": "Markierungen",
-        "student": "Student",
-        "total": "Insgesamt",
+        "student": "Schüler",
+        "total": "Gesamt",
         "no_student": "Kein Student hinzugefügt",
         "export": {
           "csv": "Als CSV exportieren",
@@ -1268,7 +1268,7 @@
           "early": "Früh",
           "late": "Spät",
           "total_grade": "Gesamtnote",
-          "student": "Student",
+          "student": "Schüler",
           "status": "Status",
           "add_comment": "Kommentar hinzufügen",
           "add_comment_placeholder": "Hinterlassen Sie einen Kommentar",
@@ -1285,7 +1285,7 @@
           "delete_prompt": "Löschen",
           "delete_error": "Die Übermittlung konnte nicht gelöscht werden",
           "delete_success": "Einreichung erfolgreich gelöscht",
-          "student_avatar": "Studenten-Avatar",
+          "student_avatar": "Schüler-Avatar",
           "ai_icon": "KI"
         },
         "submission_status": {
@@ -1304,7 +1304,7 @@
         "present": "Anwesend",
         "absent": "Abwesend",
         "search_students": "Suchen Sie nach Studenten",
-        "student": "Student",
+        "student": "Schüler",
         "lesson": "Lektion",
         "no_student": "Kein Student hinzugefügt"
       },
@@ -1348,7 +1348,7 @@
         "incomplete": "Unvollständig",
         "complete": "Komplett",
         "next": "Als nächstes",
-        "prev": "Vorher",
+        "prev": "Zurück",
         "prev_shortcut": "Zurück (←)",
         "next_shortcut": "Weiter (→)",
         "disabled": "Funktion ist deaktiviert",
@@ -1375,7 +1375,7 @@
           "create_poll": "Umfrage erstellen",
           "question": "Frage",
           "options": "Optionen",
-          "option_label": "Optionsbeschriftung",
+          "option_label": "Optionsbezeichnung",
           "cancel": "Abbrechen",
           "poll_question": "Umfragefrage"
         },
@@ -1435,14 +1435,14 @@
             "check": "Überprüfen",
             "auto_graded_badge": "Automatische Bewertung",
             "manual_grading_required_badge": "Manuelle Bewertung erforderlich",
-            "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
+            "points_required_auto_grade": "Punkte müssen für automatisch bewertete Übungen größer als 0 sein.",
             "analytics": {
               "submissions": "Einsendungen",
               "individual": {
-                "heading": "Individuell",
+                "heading": "Einzeln",
                 "answers": "Individuelle Antworten",
                 "no": "Es wurde keine Antwort gegeben",
-                "student_avatar": "Student",
+                "student_avatar": "Schüler",
                 "answers_for": "{name}s Antworten",
                 "attempts_count": "{count} Versuche",
                 "attempt_label": "Versuch {number}",
@@ -1531,9 +1531,9 @@
               },
               "select_type": "Typ auswählen",
               "question_type_auto_gradable": "Auto",
-              "question_type_auto_gradable_description": "Scored automatically by the system",
-              "question_type_manual_grading": "Manual",
-              "question_type_manual_grading_description": "Requires human review to score",
+              "question_type_auto_gradable_description": "Wird automatisch vom System bewertet",
+              "question_type_manual_grading": "Manuell",
+              "question_type_manual_grading_description": "Erfordert eine manuelle Bewertung",
               "premium_question_type": "Führen Sie ein Upgrade durch, um diesen Fragetyp zu verwenden"
             },
             "delete_confirmation": {
@@ -1554,16 +1554,16 @@
               "textarea": {
                 "take": {
                   "placeholder": "Schreiben Sie Ihre Antwort",
-                  "min_error": "Answer must be at least {min} characters.",
-                  "max_error": "Answer must be at most {max} characters.",
-                  "range_error": "Answer must be between {min} and {max} characters."
+                  "min_error": "Die Antwort muss mindestens {min} Zeichen lang sein.",
+                  "max_error": "Die Antwort darf höchstens {max} Zeichen lang sein.",
+                  "range_error": "Die Antwort muss zwischen {min} und {max} Zeichen lang sein."
                 },
                 "edit": {
                   "placeholder": "Die Schüler antworten mit einem Langtext",
-                  "min_characters_label": "Minimum characters",
-                  "min_characters_placeholder": "Minimum characters",
-                  "max_characters_label": "Maximum characters",
-                  "max_characters_placeholder": "Maximum characters"
+                  "min_characters_label": "Minimale Zeichenanzahl",
+                  "min_characters_placeholder": "Minimale Zeichenanzahl",
+                  "max_characters_label": "Maximale Zeichenanzahl",
+                  "max_characters_placeholder": "Maximale Zeichenanzahl"
                 }
               },
               "hotspot": {
@@ -1779,7 +1779,7 @@
                   "template_helper": "Verwenden Sie für jedes Leerzeichen drei Unterstriche (___). Den Schülern wird eine Wortdatenbank mit richtigen Antworten und Ablenkungsmanövern angezeigt.",
                   "no_blanks_warning": "Fügen Sie Ihrer Vorlage mindestens eine ___ leere Markierung hinzu.",
                   "correct_answers_heading": "Richtige Antwort für jedes Leerzeichen",
-                  "blank_label": "Leer",
+                  "blank_label": "Lücke",
                   "correct_placeholder": "Korrekter Begriff oder Ausdruck",
                   "distractors_heading": "Zusätzliche Wörter (Ablenker)",
                   "distractor_placeholder": "Falsche Option",
@@ -1830,7 +1830,7 @@
                   "stop_recording": "Stoppen Sie die Aufnahme",
                   "elapsed": "Vergangen",
                   "remaining": "Übrig",
-                  "max_duration": "Max",
+                  "max_duration": "Max.",
                   "too_short": "Nehmen Sie mindestens 1 Sekunde lang auf.",
                   "use_recording": "Verwenden Sie die Aufzeichnung",
                   "retake": "Wiederholen",
@@ -2036,7 +2036,7 @@
                 "add_from_library": "Aus Bibliothek hinzufügen",
                 "cancel_upload": "Hochladen abbrechen",
                 "upload_cancelled": "Der Upload wurde vom Benutzer abgebrochen",
-                "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
+                "max_files": "{count, plural, one {Sie können # Datei hochladen} other {Sie können # Dateien hochladen}}",
                 "max_files_and_size": "(jeweils bis zu {size})",
                 "google_drive_choose": "Wählen Sie aus Google Drive",
                 "google_drive_opening": "Auswahl öffnen…",
@@ -2058,14 +2058,14 @@
               "empty_title": "Noch keine Videos",
               "empty_description": "Fügen Sie Videos von YouTube hinzu, laden Sie sie hoch oder laden Sie sie aus Ihrer Medienbibliothek herunter",
               "google_drive": "Google Drive",
-              "generate_transcript": "Generate transcription",
-              "generate_transcript_in_progress": "Transcribing…",
+              "generate_transcript": "Transkript generieren",
+              "generate_transcript_in_progress": "Transkription läuft…",
               "transcript": {
-                "title": "Transcript",
-                "captions_label": "Captions",
-                "language": "Language: {language}",
-                "empty": "No transcript yet. You can generate one from this card’s menu after the video is uploaded.",
-                "loading": "Loading transcript…",
+                "title": "Transkript",
+                "captions_label": "Untertitel",
+                "language": "Sprache: {language}",
+                "empty": "Noch kein Transkript. Sie können eines über das Menü dieser Karte generieren, nachdem das Video hochgeladen wurde.",
+                "loading": "Transkript wird geladen…",
                 "open_side_panel": "Öffnen Sie das Transkriptfenster",
                 "edit": "Transkript bearbeiten",
                 "save": "Speichern",
@@ -2096,8 +2096,8 @@
               "playback_auth_action": "anmelden"
             },
             "slide": {
-              "title": "Rutsche",
-              "slide_link": "Folienlink",
+              "title": "Folie",
+              "slide_link": "Folien-Link",
               "helper_message": "Sie können Google Slides oder Canva-Präsentationen einbetten"
             },
             "note": {
@@ -2220,7 +2220,7 @@
           "add_to_calendar": "Zum Kalender hinzufügen",
           "add_google": "Google Kalender",
           "add_outlook": "Outlook.com",
-          "add_office365": "Büro 365",
+          "add_office365": "Office 365",
           "add_yahoo": "Yahoo-Kalender",
           "add_apple": "Apple Kalender (.ics)",
           "starts_in": "Beginnt in",
@@ -2263,7 +2263,7 @@
           "delete": "Löschen"
         },
         "card": {
-          "pin": "Pin",
+          "pin": "Anheften",
           "unpin": "Lösen",
           "edit": "Bearbeiten",
           "delete": "Löschen"
@@ -2306,7 +2306,7 @@
           "waived": "Verzichtet"
         },
         "fields": {
-          "learner": "Student",
+          "learner": "Schüler",
           "email": "E-Mail",
           "status": "Status",
           "cycle": "Zyklus",
@@ -2355,8 +2355,8 @@
       "empty": "Keine Ergebnisse gefunden"
     },
     "header": {
-      "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing.",
+      "preview": "Kursvorschau",
+      "preview_missing_slug": "Generieren und speichern Sie einen Kurs-Slug, bevor Sie eine Vorschau anzeigen.",
       "view_as_student": "Als Student anzeigen",
       "view_course_site": "Kursseite anzeigen"
     },
@@ -2392,7 +2392,7 @@
       "nav_marks": "Markierungen",
       "nav_compliance": "Compliance",
       "nav_people": "Menschen",
-      "nav_analytics": "Analytik",
+      "nav_analytics": "Analysen",
       "nav_certificates": "Zertifikate",
       "nav_landing_page": "Landingpage",
       "nav_settings": "Einstellungen",
@@ -2548,7 +2548,7 @@
         "students": "Studenten",
         "published": "Veröffentlicht",
         "type": "Typ",
-        "tags": "Schlagworte"
+        "tags": "Tags"
       },
       "context_menu": {
         "clone": "Klonen",
@@ -2565,29 +2565,29 @@
       "valid_until": "Gültig bis"
     },
     "course_filter": {
-      "date_created_newest": "Date Created: Newest first",
-      "date_created_oldest": "Date Created: Oldest first",
-      "published_first": "Published: Published first",
-      "unpublished_first": "Published: Unpublished first",
-      "most_lessons": "Lessons: Most first",
-      "fewest_lessons": "Lessons: Fewest first",
+      "date_created_newest": "Erstellungsdatum: Neueste zuerst",
+      "date_created_oldest": "Erstellungsdatum: Älteste zuerst",
+      "published_first": "Veröffentlicht: Veröffentlichte zuerst",
+      "unpublished_first": "Veröffentlicht: Unveröffentlichte zuerst",
+      "most_lessons": "Lektionen: Meiste zuerst",
+      "fewest_lessons": "Lektionen: Wenigste zuerst",
       "date_created": "Erstellungsdatum",
       "published": "Veröffentlicht",
       "lessons": "Lektionen"
     },
     "tag_filters": {
-      "filter": "Filtern",
+      "filter": "Filter",
       "active": "Aktive Filter",
       "clear_all": "Alles löschen",
       "popover_title": "Filter",
       "sort": "Sortieren",
       "order": "Reihenfolge",
-      "ascending": "Asc",
-      "descending": "Desc",
-      "tags": "Schlagworte",
+      "ascending": "Aufst.",
+      "descending": "Abst.",
+      "tags": "Tags",
       "empty_tags": "Keine Tags verfügbar"
     },
-    "page_subtitle": "Where lessons turn into courses and courses turn into enrollments."
+    "page_subtitle": "Wo Lektionen zu Kursen und Kurse zu Einschreibungen werden."
   },
   "ai": {
     "help_me": "Hilf mir zu schreiben",
@@ -2614,20 +2614,20 @@
     "lms_dashboard_hero": "Heute ist ein weiterer Tag, um Sie Ihren Lernzielen näher zu bringen. Geben Sie nicht auf, je mehr Sie lernen, desto besser werden Sie.",
     "lessons_completed": "Lektionen abgeschlossen",
     "no_courses_started": "Es wurden keine Kurse gestartet",
-    "certificates_earned": "Certificates issued",
-    "certificates_earned_description": "Total certificates issued to students in your organization",
+    "certificates_earned": "Ausgestellte Zertifikate",
+    "certificates_earned_description": "Gesamtzahl der an Schüler in Ihrer Organisation ausgestellten Zertifikate",
     "certification_rate": "Zertifiziert",
-    "recent_certifications": "Recent certifications",
-    "no_certifications_yet": "No certificates earned yet",
-    "no_certifications_yet_description": "When students complete a course and earn a certificate, they will appear here",
-    "view_courses": "View courses",
+    "recent_certifications": "Aktuelle Zertifikate",
+    "no_certifications_yet": "Noch keine Zertifikate erworben",
+    "no_certifications_yet_description": "Wenn Schüler einen Kurs abschließen und ein Zertifikat erhalten, erscheinen sie hier",
+    "view_courses": "Kurse anzeigen",
     "no_of_courses": "Anzahl der Kurse",
     "no_courses_description": "Innerhalb dieser Organisation erstellte Kurse",
     "total_students": "Gesamtzahl der Studierenden",
     "total_students_description": "Basierend auf den Einschreibungen der Studierenden",
     "top_courses": "Top-Kurse",
     "students": "Studenten",
-    "student": "Student",
+    "student": "Schüler",
     "completion": "Fertigstellung",
     "create_first_course": "Erstellen Sie Ihren ersten Kurs",
     "create_first_course_description": "Beginnen Sie mit der Erstellung von Kursen, um den Kursfortschritt zu verfolgen",
@@ -2637,7 +2637,7 @@
     "publish_course": "Kurs veröffentlichen",
     "items_completed": "Artikel abgeschlossen",
     "currently_learning": "Derzeit lernen",
-    "learner": "Student",
+    "learner": "Schüler",
     "progress": "Fortschritt",
     "pick_up_where_you_left_off": "Machen Sie dort weiter, wo Sie aufgehört haben",
     "get_your_certificate": "Hole dir dein Zertifikat",
@@ -2652,7 +2652,7 @@
     "compliance_score_empty": "Noch keine Compliance-Kurse zugewiesen",
     "compliance_met": "{completed} von {total} erfüllt",
     "required_courses_completed": "{completed} von {total} erforderlichen Kursen abgeschlossen",
-    "streak": "Streifen",
+    "streak": "Serie",
     "days_active": "Tage aktiv",
     "items_done": "{completed} von {total} erledigt",
     "login_activity_title": "Anmeldeaktivität für Studenten",
@@ -2689,7 +2689,7 @@
           "grading": "Benotung"
         },
         "dashboard": {
-          "title": "Armaturenbrett",
+          "title": "Dashboard",
           "community": "Gemeinschaft",
           "exercises": "Übungen",
           "banner_image": "Bannerbild",
@@ -2791,8 +2791,8 @@
     "goto": "Gehe zu",
     "courses": "Kurse",
     "home": "Zuhause",
-    "classroomio_home": "ClassroomIO Home",
-    "dashboard": "Armaturenbrett",
+    "classroomio_home": "ClassroomIO Startseite",
+    "dashboard": "Dashboard",
     "discussion": "Diskussion",
     "people": "Menschen",
     "goto_lms": "Gehen Sie zu LMS",
@@ -2803,7 +2803,7 @@
     "loading_state": "Bitte warten Sie, um zur nächsten Seite zu gelangen.",
     "org_loading_state": "Wir bringen Sie zu Ihrer Organisation...",
     "add_organization": "+ Organisation hinzufügen",
-    "goto_dashboard": "Armaturenbrett"
+    "goto_dashboard": "Dashboard"
   },
   "add_org": {
     "create_org": "Organisation erstellen",
@@ -2820,7 +2820,7 @@
     "progress": "Fortschritt",
     "completed": "abgeschlossen",
     "done": "Fertig",
-    "todo": "Todo",
+    "todo": "Aufgaben",
     "publish_course": {
       "title": "Veröffentlichen Sie einen Kurs",
       "desc": "Machen Sie Ihren Kurs öffentlich und käuflich",
@@ -2869,7 +2869,7 @@
     "plan_names": {
       "free": "Kostenlos",
       "early": "Früher Anwender",
-      "enterprise": "Unternehmen"
+      "enterprise": "Enterprise"
     }
   },
   "org_navigation": {
@@ -2877,7 +2877,7 @@
     "home": "Startseite",
     "content": "Inhalte",
     "people": "Personen",
-    "dashboard": "Armaturenbrett",
+    "dashboard": "Dashboard",
     "courses": "Kurse",
     "community": "Gemeinschaft",
     "audience": "Publikum",
@@ -2888,11 +2888,11 @@
     "early_adopter": "Werden Sie ein Early Adopter",
     "unlock": "Schalten Sie unbegrenzte Funktionen frei und investieren Sie in unsere Zukunft",
     "upgrade": "Jetzt upgraden",
-    "tags": "Schlagworte",
+    "tags": "Tags",
     "automation": "Automatisierung",
     "widgets": "Widgets",
     "stats": "Statistiken",
-    "analytics": "Analytik",
+    "analytics": "Analysen",
     "compliance": "Compliance",
     "cohorts": "Kohorten",
     "upgrade_now": "Jetzt upgraden",
@@ -2900,7 +2900,7 @@
     "upgrade_left": "{count} übrig"
   },
   "media_manager": {
-    "page_title": "Medienmanager - ClassroomIO",
+    "page_title": "Medienverwaltung - ClassroomIO",
     "heading": "Medienmanager",
     "empty": "Keine Vermögenswerte gefunden",
     "usage": {
@@ -2912,7 +2912,7 @@
       "table": {
         "target_type": "Zieltyp",
         "target_id": "Ziel-ID",
-        "slot": "Steckplatz",
+        "slot": "Slot",
         "position": "Position",
         "added": "Hinzugefügt"
       },
@@ -3013,16 +3013,16 @@
       "bytes_by_kind": "Speicher nach Asset-Typ"
     },
     "common": {
-      "not_available": "N/A"
+      "not_available": "N/V"
     },
     "empty_description": "Das Asset existiert nicht oder ist in dieser Organisation nicht verfügbar.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "page_subtitle": "Verwalten Sie Dateien, Videos und Links für Ihre Kurse in einer zentralen Bibliothek.",
     "thumbnails": {
       "manage_title": "Miniaturansichten verwalten",
       "manage_description": "Sehen Sie sich das Video in der Vorschau an, wählen Sie eines der automatisch generierten Frames aus oder laden Sie Ihr eigenes hoch.",
       "preview_unavailable": "Vorschau nicht verfügbar",
       "generated": "Generierte Miniaturansichten",
-      "slot_start": "Starten",
+      "slot_start": "Start",
       "slot_middle": "Mitte",
       "slot_end": "Ende",
       "none_generated_warning": "Es wurden noch keine Miniaturansichten generiert. Versuchen Sie, ein benutzerdefiniertes Bild neu zu generieren oder hochzuladen.",
@@ -3052,13 +3052,13 @@
       "provider": "Wir verwenden Polar, um Ihre Abrechnung zu verwalten",
       "open_billing": "Abrechnung öffnen",
       "error": "Beim Öffnen der Abrechnung ist ein Fehler aufgetreten",
-      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
+      "page_subtitle": "Ihr Plan, Abrechnungsportal und wie Sie ClassroomIO bezahlen.",
       "ai_credits": "AI credits",
       "ai_tokens_used": "AI credits diesen Monat verwendet",
       "ai_bonus_credits": "Bonus-AI credits verfügbar"
     },
     "integrations": {
-      "heading": "Telegramm",
+      "heading": "Telegram",
       "sub_heading": "Verbinden Sie Ihr Konto mit Telegram, um über jede Änderung innerhalb der Anwendung benachrichtigt zu werden.",
       "step_authenticate": "Schritt 1: Authentifizieren Sie Ihr Konto über den ClassroomIO-Bot.",
       "open_bot_button": "Bot öffnen",
@@ -3066,7 +3066,7 @@
       "connect_button": "Verbinden",
       "success_message": "Integration erfolgreich",
       "disconnect": "Trennen",
-      "page_subtitle": "Connect Telegram to get notified when important things happen."
+      "page_subtitle": "Verbinden Sie Telegram, um bei wichtigen Ereignissen benachrichtigt zu werden."
     },
     "landing_page": {
       "heading": "Landingpage",
@@ -3162,7 +3162,7 @@
         "show_background": "Hintergrund anzeigen",
         "hide_background": "Hintergrund ausblenden"
       },
-      "page_subtitle": "Shape the marketing page people see before they sign up or enroll.",
+      "page_subtitle": "Gestalten Sie die Marketingseite, die Menschen sehen, bevor sie sich registrieren oder einschreiben.",
       "editor": {
         "save": "Speichern",
         "close": "Schließen",
@@ -3171,22 +3171,22 @@
           "text": "Fußzeilentext",
           "add": "Fußzeilenlink hinzufügen",
           "default_label": "Neuer Link",
-          "link_label": "Link-Label",
+          "link_label": "Link-Bezeichnung",
           "link_href": "Link-URL",
           "remove": "Footer-Link entfernen",
           "brand": {
-            "legend": "Brand",
-            "description": "Your organization logo and name always appear here (from organization settings). Add optional details below.",
-            "preview_label": "Footer brand preview",
-            "tagline": "Tagline",
-            "tagline_placeholder": "Small line under your brand",
-            "copyright": "Copyright",
-            "copyright_placeholder": "© 2026 Your Organization",
-            "social_label": "Social links",
-            "platform_field": "Platform",
-            "url_label": "Profile URL",
-            "add_social": "Add social link",
-            "remove_social": "Remove social link",
+            "legend": "Marke",
+            "description": "Ihr Organisationslogo und -name erscheinen hier immer (aus den Organisationseinstellungen). Fügen Sie unten optionale Details hinzu.",
+            "preview_label": "Footer-Markenvorschau",
+            "tagline": "Slogan",
+            "tagline_placeholder": "Kurze Zeile unter Ihrer Marke",
+            "copyright": "Urheberrecht",
+            "copyright_placeholder": "© 2026 Ihre Organisation",
+            "social_label": "Social-Media-Links",
+            "platform_field": "Plattform",
+            "url_label": "Profil-URL",
+            "add_social": "Social-Media-Link hinzufügen",
+            "remove_social": "Social-Media-Link entfernen",
             "platforms": {
               "instagram": "Instagram",
               "x": "X",
@@ -3199,25 +3199,25 @@
             }
           },
           "columns": {
-            "legend": "Link columns",
-            "description": "Add grouped links (like Company or Resources). Enables a multi-column footer layout.",
-            "empty_hint": "No columns yet — add one to show a multi-column footer beside your brand.",
-            "add": "Add column",
-            "remove": "Remove column",
-            "heading_label": "Column heading",
-            "heading_placeholder": "e.g. Company",
-            "add_link": "Add link",
-            "remove_link": "Remove link",
-            "links_max_reached": "Up to 10 links per column",
-            "cta_toggle": "Add CTA link",
-            "cta_label": "CTA label",
-            "cta_href": "CTA URL",
-            "cta_default_label": "Explore more",
-            "max_reached": "Up to 6 columns"
+            "legend": "Link-Spalten",
+            "description": "Fügen Sie gruppierte Links hinzu (z. B. Unternehmen oder Ressourcen). Ermöglicht ein mehrspaltiges Footer-Layout.",
+            "empty_hint": "Noch keine Spalten — fügen Sie eine hinzu, um einen mehrspaltigen Footer neben Ihrer Marke anzuzeigen.",
+            "add": "Spalte hinzufügen",
+            "remove": "Spalte entfernen",
+            "heading_label": "Spaltenüberschrift",
+            "heading_placeholder": "z. B. Unternehmen",
+            "add_link": "Link hinzufügen",
+            "remove_link": "Link entfernen",
+            "links_max_reached": "Bis zu 10 Links pro Spalte",
+            "cta_toggle": "CTA-Link hinzufügen",
+            "cta_label": "CTA-Bezeichnung",
+            "cta_href": "CTA-URL",
+            "cta_default_label": "Mehr entdecken",
+            "max_reached": "Bis zu 6 Spalten"
           },
           "bottom": {
-            "legend": "Bottom row",
-            "add_link": "Add bottom link"
+            "legend": "Untere Zeile",
+            "add_link": "Link unten hinzufügen"
           }
         },
         "embed": {
@@ -3248,7 +3248,7 @@
         "navigation": {
           "add": "Navigationslink hinzufügen",
           "default_label": "Neuer Link",
-          "link_label": "Link-Label",
+          "link_label": "Link-Bezeichnung",
           "link_href": "Link-URL",
           "remove": "Navigationslink entfernen"
         },
@@ -3284,7 +3284,7 @@
           "embed": "Einbetten",
           "embed_desc": "Optionaler Iframe-Abschnitt, der nach den Kursen angezeigt wird.",
           "footer": "Fußzeile",
-          "footer_desc": "Brand line, socials, multi-column links, and bottom legal row.",
+          "footer_desc": "Markenzeile, Social Media, mehrspaltige Links und untere Rechtszeile.",
           "links": "Links",
           "links_desc": "Optionaler Block externer Links (Hilfecenter, Community, Webinare), die nach den Kursen angezeigt werden."
         },
@@ -3314,11 +3314,11 @@
           "max_reached": "Bis zu 3 Karten",
           "icons": {
             "help_circle": "Hilfe und Support",
-            "life_buoy": "Unterstützung",
+            "life_buoy": "Support",
             "book_open": "Dokumentation",
             "video": "Video / Webinare",
             "users": "Gemeinschaft",
-            "message_circle": "Chatten",
+            "message_circle": "Chat",
             "newspaper": "Nachrichten",
             "rocket": "Fangen Sie an",
             "calendar": "Veranstaltungen",
@@ -3352,7 +3352,7 @@
             "description": "Dunkle Oberfläche, geisterhafte Wortmarke, CLI-inspirierter Katalog"
           },
           "corporate": {
-            "title": "Unternehmen",
+            "title": "Corporate",
             "description": "Nüchterne Typografie, umrandete Raster, revisionssicherer Look"
           },
           "studio": {
@@ -3360,7 +3360,7 @@
             "description": "Haarlinienränder, Farbverlaufs-Heldenglanz, Produkt-Craft-Lack"
           },
           "tech": {
-            "title": "Techn",
+            "title": "Tech",
             "description": "Auffälliges Markenarmband, Monospace-Navigation, Ingenieursakademie-Feeling"
           },
           "saas": {
@@ -3368,7 +3368,7 @@
             "description": "Rahmen mit gepunkteten Linien, sanfte Akzente, modernes Produktgefühl"
           },
           "vibrant": {
-            "title": "Lebendig",
+            "title": "Lebhaft",
             "description": "Auffällige Primärpaneele, Held mit Sonnenuntergangsverlauf, energiegeladener Poster-Look"
           },
           "editorial": {
@@ -3458,7 +3458,7 @@
         "accepted": "Akzeptiert:",
         "validation_error": "Die Dateigröße überschreitet die maximale Grenze:"
       },
-      "page_subtitle": "Your name, email, and how you appear wherever you work in ClassroomIO."
+      "page_subtitle": "Ihr Name, Ihre E-Mail und wie Sie überall in ClassroomIO erscheinen."
     },
     "tabs": {
       "profile_tab": "Profil",
@@ -3469,11 +3469,11 @@
       "language_tab": "Sprache",
       "auth_tab": "Authentifizierung",
       "sso_tab": "SSO",
-      "token_auth_tab": "Token-Auth",
+      "token_auth_tab": "Token Auth",
       "customize_lms_tab": "LMS anpassen",
       "domains_tab": "Domänen",
       "teams_tab": "Mannschaften",
-      "ai_credits_tab": "AI Credits",
+      "ai_credits_tab": "KI-Credits",
       "ai_tutor_tab": "KI-Tutor",
       "notifications_tab": "Benachrichtigungen"
     },
@@ -3518,7 +3518,7 @@
             "description": "Ermöglichen Sie Administratoren, SSO im Notfall mit E-Mail/Passwort zu umgehen."
           },
           "auto_join": {
-            "label": "Automatisch beitreten",
+            "label": "Automatischer Beitritt",
             "description": "Ermöglichen Sie Benutzern mit übereinstimmenden E-Mail-Domänen den automatischen Beitritt zu Ihrer Organisation."
           },
           "force_sso": {
@@ -3584,12 +3584,12 @@
       "tabs": {
         "general": "Allgemein",
         "sso": "SSO",
-        "token_auth": "Token-Auth"
+        "token_auth": "Token Auth"
       },
-      "page_subtitle": "Control sign-up, login, SSO, and token-based access for this org."
+      "page_subtitle": "Steuern Sie Registrierung, Anmeldung, SSO und tokenbasierten Zugang für diese Organisation."
     },
     "token_auth": {
-      "heading": "Token-Auth",
+      "heading": "Token Auth",
       "description": "Ermöglichen Sie Benutzern die Anmeldung über Ihre App mit einem JWT – kein Passwort erforderlich. Generieren Sie ein Signaturgeheimnis und verwenden Sie es in Ihrem Backend, um kurzlebige JWTs auszustellen.",
       "status": "Status",
       "active": "Aktiv",
@@ -3609,12 +3609,12 @@
       "actions_menu": "Token-Authentifizierungsaktionen"
     },
     "teams": {
-      "page_subtitle": "Invite teammates and control who helps run this organization."
+      "page_subtitle": "Laden Sie Teammitglieder ein und steuern Sie, wer diese Organisation mitbetreibt."
     },
     "ai_credits": {
-      "sub_title": "AI credits",
+      "sub_title": "KI-Credits",
       "page_subtitle": "Verfolgen Sie die Nutzung des AI-Assistenten, den Teamverbrauch und den Kauf von AI credit packs.",
-      "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
+      "cost_note": "Die Credit-Nutzung wird nach Modellkosten gewichtet. Gemini 3.1 Flash Lite zählt als 1 Credit-Einheit pro Token. GPT-5.4 Mini und Kimi K2.6 zählen als 4× pro Token. Claude Sonnet 4.6 zählt als 11× pro Token, was die höheren API-Kosten widerspiegelt.",
       "included": {
         "title": "Ihr inbegriffener Verbrauch",
         "subtitle": "Monatliche AI credits in Ihrem Plan enthalten.",
@@ -3630,7 +3630,7 @@
         "heading": "Nutzung",
         "subheading": "Täglicher AI credits-Verbrauch in diesem Monat.",
         "tokens": "Credits",
-        "total_tokens": "Total credits",
+        "total_tokens": "Credits gesamt",
         "total_requests": "Gesamtzahl der Anfragen",
         "empty": "In diesem Monat wurde noch keine Nutzung registriert."
       },
@@ -3646,7 +3646,7 @@
         "title": "Mehr credits kaufen",
         "description": "Jedes Paket fügt 5,000,000 credits für $5 USD hinzu. Wählen Sie, wie viele Pakete Sie benötigen.",
         "quantity_hint": "Pakete",
-        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
+        "preview": "{quantity} Paket(e) · {tokens} Credits · ${dollars}",
         "buy_button": "Für ${dollars} kaufen"
       }
     },
@@ -3732,7 +3732,7 @@
     "see_more": "Mehr sehen",
     "whats_new": "Was ist neu?",
     "launch_week": "Startwoche",
-    "feedback": "Rückmeldung",
+    "feedback": "Feedback",
     "documentation": "Dokumentation",
     "need_help": "Brauchen Sie Hilfe?"
   },
@@ -3791,7 +3791,7 @@
           "suggested": "Vorgeschlagen",
           "courses": "Kurse",
           "widgets": "Widgets",
-          "tags": "Schlagworte",
+          "tags": "Tags",
           "students": "Studenten",
           "settings": "Einstellungen",
           "cohorts": "Kohorten"
@@ -3911,7 +3911,7 @@
       "title": "Nach Tags filtern",
       "help": "Wählen Sie einen oder mehrere Tags aus, um Kurse zu filtern",
       "empty": "Noch keine Tags verfügbar",
-      "tags_title": "Schlagworte",
+      "tags_title": "Tags",
       "types_title": "Typen",
       "search_placeholder": "Kurse suchen...",
       "pricing_title": "Preise",
@@ -3920,8 +3920,8 @@
     }
   },
   "tags_admin": {
-    "page_title": "Schlagworte – KlassenzimmerIO",
-    "heading": "Schlagworte",
+    "page_title": "Schlagwörter - ClassroomIO",
+    "heading": "Schlagwörter",
     "create": "Erstellen",
     "tag_modal": {
       "create_title": "Tag erstellen",
@@ -3947,7 +3947,7 @@
       "description": "Erstellen Sie zunächst eine Tag-Gruppe und beginnen Sie dann mit dem Hinzufügen von Tags."
     },
     "table": {
-      "tag": "Etikett",
+      "tag": "Tag",
       "total_courses": "Gesamtzahl der Kurse",
       "course": "natürlich",
       "courses": "Kurse",
@@ -3966,9 +3966,9 @@
       "actions_menu": "Markieren Sie Aktionen"
     },
     "common": {
-      "not_available": "N/A"
+      "not_available": "N/V"
     },
-    "page_subtitle": "Organize courses with labels so filters and lists stay easy to scan."
+    "page_subtitle": "Organisieren Sie Kurse mit Labels, damit Filter und Listen leicht zu überblicken sind."
   },
   "invite": {
     "organization": {
@@ -4022,12 +4022,12 @@
         "generate": "MCP-Schlüssel generieren",
         "secret_once": "Dieses Geheimnis wird einmal gezeigt. Kopieren Sie es jetzt in Ihren MCP-Client.",
         "modal": {
-          "title": "Create MCP key",
-          "description": "Choose a name for this MCP key before it is generated.",
-          "name_label": "Key name",
+          "title": "MCP-Schlüssel erstellen",
+          "description": "Wählen Sie einen Namen für diesen MCP-Schlüssel, bevor er generiert wird.",
+          "name_label": "Schlüsselname",
           "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Cancel",
-          "save": "Create key"
+          "cancel": "Abbrechen",
+          "save": "Schlüssel erstellen"
         }
       },
       "usage": {
@@ -4041,31 +4041,31 @@
         "rate_limits_description": "Zulässige Lese-/Schreib-/Veröffentlichungsanfragen pro Minute.",
         "used_label": "Verwendet:"
       },
-      "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime."
+      "page_subtitle": "Verbinden Sie KI-Tools mit ClassroomIO über organisationsbezogene Schlüssel, die Sie jederzeit rotieren können."
     },
     "api": {
-      "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
+      "subtitle": "Verwalten Sie API-Schlüssel zur Integration mit der öffentlichen ClassroomIO-API.",
       "keys": {
-        "title": "API keys",
-        "description": "These keys authenticate the current organization when calling the ClassroomIO public API.",
-        "generate": "Generate API key",
-        "secret_once": "This secret is shown once. Copy it and store it securely.",
-        "empty_title": "No API keys yet",
-        "empty_description": "Create the first org-scoped API key to use the ClassroomIO public API.",
+        "title": "API-Schlüssel",
+        "description": "Diese Schlüssel authentifizieren die aktuelle Organisation beim Aufruf der öffentlichen ClassroomIO-API.",
+        "generate": "API-Schlüssel generieren",
+        "secret_once": "Dieses Geheimnis wird nur einmal angezeigt. Kopieren Sie es und speichern Sie es sicher.",
+        "empty_title": "Noch keine API-Schlüssel",
+        "empty_description": "Erstellen Sie den ersten organisationsbezogenen API-Schlüssel, um die öffentliche ClassroomIO-API zu nutzen.",
         "modal": {
-          "title": "Create API key",
-          "description": "Choose a name for this API key before it is generated.",
-          "name_label": "Key name",
-          "name_placeholder": "My API integration",
-          "cancel": "Cancel",
-          "save": "Create key"
+          "title": "API-Schlüssel erstellen",
+          "description": "Wählen Sie einen Namen für diesen API-Schlüssel, bevor er generiert wird.",
+          "name_label": "Schlüsselname",
+          "name_placeholder": "Meine API-Integration",
+          "cancel": "Abbrechen",
+          "save": "Schlüssel erstellen"
         }
       },
       "setup": {
         "title": "Schnellstart",
         "description": "Verwenden Sie Ihren API-Schlüssel als Bearer-Token bei jeder Anfrage. Ersetzen Sie den Platzhalter durch einen Schlüssel von oben oder fügen Sie das Geheimnis direkt nach der Erstellung ein."
       },
-      "view_docs": "View Docs"
+      "view_docs": "Dokumentation anzeigen"
     },
     "keys": {
       "active": "Aktiv",
@@ -4087,7 +4087,7 @@
     },
     "clients": {
       "claude_code": "Claude Code",
-      "codex": "Kodex",
+      "codex": "Codex",
       "cursor": "Cursor",
       "opencode": "OpenCode",
       "curl": "cURL",
@@ -4105,13 +4105,13 @@
       "disabled_description": "Nur Organisationsadministratoren können Automatisierungsschlüssel erstellen, rotieren oder widerrufen. Lehrer können die Einrichtungsanweisungen hier einsehen."
     },
     "zapier": {
-      "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
+      "page_subtitle": "Automatisieren Sie ClassroomIO mit Tausenden von Apps über Zapier. Demnächst verfügbar."
     }
   },
   "ai_assistant": {
     "empty_state": "Bitten Sie mich, Ihnen bei den Inhalten Ihres Kurses zu helfen – Lektionen zu entwerfen, Fragen zu generieren oder einen Kurs anhand eines Dokuments zu planen.",
     "input_placeholder": "Fragen Sie den KI-Assistenten...",
-    "quote_lesson_note": "Quote in assistant",
+    "quote_lesson_note": "Im Assistenten zitieren",
     "attach_document": "Ein Dokument anhängen (PDF, DOCX, PPTX)",
     "upgrade_to_upload": "Upgrade zum Hochladen von Dokumenten",
     "tokens_exhausted": "Das monatliche AI-Token-Limit wurde erreicht.",
@@ -4132,76 +4132,76 @@
     "agent_running_warning": "Die Änderungen werden im Kurs angezeigt, sobald der Agent fertig ist. Laden Sie die Seite nicht neu.",
     "agent_running_warning_dismiss": "Schließen",
     "quick_action": {
-      "upload_document_course": "Upload a document to create a course",
-      "draft_lesson": "Draft a lesson",
-      "generate_questions_from_lesson": "Generate questions from this lesson",
-      "summarize_lesson": "Summarize this lesson",
-      "publish_course": "Help me publish this course"
+      "upload_document_course": "Dokument hochladen, um einen Kurs zu erstellen",
+      "draft_lesson": "Lektion entwerfen",
+      "generate_questions_from_lesson": "Fragen aus dieser Lektion generieren",
+      "summarize_lesson": "Diese Lektion zusammenfassen",
+      "publish_course": "Hilf mir, diesen Kurs zu veröffentlichen"
     },
-    "plan_applying_changes": "Applying changes",
-    "plan_working": "Working",
-    "plan_progress": "{completed} / {total} steps completed",
-    "stop": "Stop",
-    "copy_full_error": "Copy full error",
-    "resize_panel_aria_label": "Resize AI assistant panel",
-    "generic_working": "Working",
-    "run_failed_after": "{action} did not finish successfully.",
+    "plan_applying_changes": "Änderungen werden angewendet",
+    "plan_working": "In Arbeit",
+    "plan_progress": "{completed} / {total} Schritte abgeschlossen",
+    "stop": "Stopp",
+    "copy_full_error": "Vollständigen Fehler kopieren",
+    "resize_panel_aria_label": "KI-Assistenten-Panel in der Größe ändern",
+    "generic_working": "In Arbeit",
+    "run_failed_after": "{action} wurde nicht erfolgreich abgeschlossen.",
     "tool": {
       "pending": {
-        "working": "Working",
-        "unknown_tool": "Running {toolName}",
-        "get_course_structure": "Reading course structure",
-        "get_lesson_content": "Reading lesson content",
-        "get_exercise_details": "Reading exercise",
-        "create_section": "Creating section",
-        "update_section": "Updating section",
-        "create_lesson": "Creating lesson",
-        "update_lesson": "Updating lesson",
-        "update_lesson_content": "Writing lesson content",
-        "create_exercise": "Creating exercise",
-        "create_exercise_section": "Creating exercise section",
-        "update_exercise": "Updating exercise",
-        "update_exercise_section": "Updating exercise section",
-        "add_questions": "Adding questions",
-        "update_questions": "Updating questions",
-        "reorder_content": "Reordering content",
-        "update_course_landing_page": "Updating landing page",
-        "check_course_go_live_readiness": "Checking go-live readiness",
-        "go_live_course": "Publishing course",
-        "generate_course_plan": "Generating course plan",
+        "working": "In Arbeit",
+        "unknown_tool": "{toolName} wird ausgeführt",
+        "get_course_structure": "Kursstruktur wird gelesen",
+        "get_lesson_content": "Lektionsinhalt wird gelesen",
+        "get_exercise_details": "Übung wird gelesen",
+        "create_section": "Abschnitt wird erstellt",
+        "update_section": "Abschnitt wird aktualisiert",
+        "create_lesson": "Lektion wird erstellt",
+        "update_lesson": "Lektion wird aktualisiert",
+        "update_lesson_content": "Lektionsinhalt wird geschrieben",
+        "create_exercise": "Übung wird erstellt",
+        "create_exercise_section": "Übungsabschnitt wird erstellt",
+        "update_exercise": "Übung wird aktualisiert",
+        "update_exercise_section": "Übungsabschnitt wird aktualisiert",
+        "add_questions": "Fragen werden hinzugefügt",
+        "update_questions": "Fragen werden aktualisiert",
+        "reorder_content": "Inhalte werden neu sortiert",
+        "update_course_landing_page": "Landingpage wird aktualisiert",
+        "check_course_go_live_readiness": "Go-Live-Bereitschaft wird geprüft",
+        "go_live_course": "Kurs wird veröffentlicht",
+        "generate_course_plan": "Kursplan wird generiert",
         "ask_template_questions": "Vorlageformular vorbereiten",
         "fetch_documentation_url": "Seite „Dokumente lesen“.",
         "fetch_documentation_url_with_url": "{url} wird gelesen"
       },
       "meta": {
-        "lesson_char_count": "({count, plural, one {# character} other {# characters}})",
-        "landing_page_preview": "· Preview changes",
-        "exercise_questions_added": "· {count, plural, one {# question added} other {# questions added}}",
-        "exercise_questions_updated": "· {count, plural, one {# question updated} other {# questions updated}}"
+        "lesson_char_count": "({count, plural, one {# Zeichen} other {# Zeichen}})",
+        "landing_page_preview": "· Änderungen in der Vorschau",
+        "exercise_questions_added": "· {count, plural, one {# Frage hinzugefügt} other {# Fragen hinzugefügt}}",
+        "exercise_questions_updated": "· {count, plural, one {# Frage aktualisiert} other {# Fragen aktualisiert}}"
       },
       "done": {
-        "generic": "Done",
-        "create_section": "Created section: {title}",
-        "update_section": "Updated section: {title}",
-        "create_lesson": "Created lesson: {title}",
-        "update_lesson": "Updated lesson: {title}",
-        "update_lesson_content_fallback": "Wrote {count, plural, one {# character} other {# characters}}",
-        "create_exercise": "Created exercise «{title}» · {count, plural, one {# question} other {# questions}}",
-        "update_exercise": "Updated exercise: {title}",
-        "update_exercise_section": "Updated exercise section: {title}",
-        "add_questions_fallback": "{count, plural, one {Added # question} other {Added # questions}}",
-        "update_questions_fallback": "{count, plural, one {Updated # question} other {Updated # questions}}",
-        "create_exercise_section": "Created exercise section: {title}",
-        "get_course_structure": "Course structure loaded",
-        "get_lesson_content": "Lesson content loaded",
-        "get_exercise_details": "Exercise loaded",
-        "reorder_content": "Content reordered",
-        "update_course_landing_page": "Updated landing page: {title}",
-        "check_go_live_ready": "{warningCount, plural, =0{Ready to go live} other{Ready to go live — # warnings}}",
-        "check_go_live_blocked": "{blockerCount, plural, one{# blocker before go-live} other{# blockers before go-live}}",
-        "go_live_published": "Published course: {title}",
-        "go_live_not_published": "Course was not published",
-        "generate_course_plan": "Course plan generated",
+        "generic": "Fertig",
+        "create_section": "Abschnitt erstellt: {title}",
+        "update_section": "Abschnitt aktualisiert: {title}",
+        "create_lesson": "Lektion erstellt: {title}",
+        "update_lesson": "Lektion aktualisiert: {title}",
+        "update_lesson_content_fallback": "{count, plural, one {# Zeichen geschrieben} other {# Zeichen geschrieben}}",
+        "create_exercise": "Übung «{title}» erstellt · {count, plural, one {# Frage} other {# Fragen}}",
+        "update_exercise": "Übung aktualisiert: {title}",
+        "update_exercise_section": "Übungsabschnitt aktualisiert: {title}",
+        "add_questions_fallback": "{count, plural, one {# Frage hinzugefügt} other {# Fragen hinzugefügt}}",
+        "update_questions_fallback": "{count, plural, one {# Frage aktualisiert} other {# Fragen aktualisiert}}",
+        "create_exercise_section": "Übungsabschnitt erstellt: {title}",
+        "get_course_structure": "Kursstruktur geladen",
+        "get_lesson_content": "Lektionsinhalt geladen",
+        "get_exercise_details": "Übung geladen",
+        "reorder_content": "Inhalte neu sortiert",
+        "update_course_landing_page": "Landingpage aktualisiert: {title}",
+        "check_go_live_ready": "{warningCount, plural, =0{Bereit für Go-Live} other{Bereit für Go-Live — # Warnungen}}",
+        "check_go_live_blocked": "{blockerCount, plural, one{# Blocker vor Go-Live} other{# Blocker vor Go-Live}}",
+        "go_live_published": "Kurs veröffentlicht: {title}",
+        "go_live_not_published": "Kurs wurde nicht veröffentlicht",
+        "generate_course_plan": "Kursplan generiert",
         "ask_template_questions": "Vorlageformular fertig",
         "fetch_documentation_url": "{url} lesen"
       }
@@ -4223,7 +4223,7 @@
     "error_network": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
     "context_usage_tooltip": "{used} / {max} Token verwendet",
     "context_full_title": "Das Kontextfenster ist voll",
-    "context_full_description": "The assistant will summarize older messages automatically so you can keep working in this chat.",
+    "context_full_description": "Der Assistent fasst ältere Nachrichten automatisch zusammen, damit Sie in diesem Chat weiterarbeiten können.",
     "context_full_compact": "Kompaktes Gespräch",
     "context_full_compacting": "Verdichten...",
     "context_full_new_chat": "Neuen Chat mit Zusammenfassung starten",
@@ -4320,7 +4320,7 @@
       "name": "Widget-Name",
       "selection_mode": "Auswahlmodus",
       "course_search": "Kurse suchen",
-      "layout_type": "Layouttyp",
+      "layout_type": "Layout-Typ",
       "sort_by": "Sortieren nach",
       "cta_label": "CTA-Label",
       "load_more_label": "Weitere Etiketten laden",
@@ -4389,7 +4389,7 @@
       "columns": {
         "course": "Kurs",
         "lessons": "Lektionen",
-        "tags": "Schlagworte"
+        "tags": "Tags"
       }
     },
     "plan": {
@@ -4400,10 +4400,10 @@
       "draft": "Entwurf",
       "published": "Veröffentlicht",
       "archived": "Archiviert",
-      "live": "Lebe"
+      "live": "Live"
     },
     "sort": {
-      "manual": "Handbuch",
+      "manual": "Manuell",
       "newest": "Neueste",
       "title": "Titel"
     },
@@ -4436,8 +4436,8 @@
       "show_thumbnail": "Miniaturansicht anzeigen",
       "show_tags": "Tags anzeigen",
       "title_style": "Titelstil",
-      "title_style_serif": "Serife",
-      "title_style_sans": "Ohne",
+      "title_style_serif": "Serif",
+      "title_style_sans": "Sans",
       "category_tags": "Kategorie-Tags",
       "category_tags_required": "Wählen Sie mindestens ein Tag für das Kategorieregal aus.",
       "default_category": "Standardkategorie",
@@ -4494,7 +4494,7 @@
       },
       "viewport": {
         "mobile": "Mobil",
-        "tablet": "Tablette",
+        "tablet": "Tablet",
         "desktop": "Desktop"
       }
     },
@@ -4513,11 +4513,11 @@
     }
   },
   "side_panel": {
-    "close_aria": "Close panel",
-    "resize_panel_aria_label": "Resize panel",
+    "close_aria": "Panel schließen",
+    "resize_panel_aria_label": "Panel in der Größe ändern",
     "titles": {
-      "ai_assistant": "AI Assistant",
-      "transcript": "Transcript"
+      "ai_assistant": "KI-Assistent",
+      "transcript": "Transkript"
     }
   },
   "compliance": {
@@ -4527,7 +4527,7 @@
       "heading": "Studenten",
       "subtitle": "{count, number} passend",
       "empty": "Keine Schüler entsprechen diesem Filter",
-      "learner": "Student",
+      "learner": "Schüler",
       "course": "Kurs",
       "status": "Status",
       "due_date": "Fällig",
@@ -4567,7 +4567,7 @@
       "learners": "Studenten"
     },
     "summary": {
-      "heading": "Studentenstatus",
+      "heading": "Schülerstatus",
       "description": "Zählt für alle Teilnehmer aller Compliance-Kurse."
     }
   },
@@ -4629,7 +4629,7 @@
       "approaching": "Annäherung an die Kappe",
       "totalActive": "Aktive Studenten diesen Monat",
       "learnersHeading": "Studenten",
-      "headerLearner": "Student",
+      "headerLearner": "Schüler",
       "headerMessages": "Nachrichten",
       "headerTokens": "Token",
       "headerStatus": "Status",
@@ -4672,7 +4672,7 @@
     },
     "field": {
       "enabled": "KI-Tutor aktiviert",
-      "persona": "Persona des Tutors",
+      "persona": "Tutor-Persona",
       "customPersona": "Benutzerdefinierte Persona",
       "customPersona_description": "Beschreiben Sie, wie der Tutor klingen soll – Ton, Ansprachestil, alles, was speziell auf Ihr Publikum zugeschnitten ist.",
       "responseLength": "Antwortlänge",
@@ -4837,7 +4837,7 @@
         "delete": "Löschen"
       },
       "card": {
-        "pin": "Pin",
+        "pin": "Anheften",
         "unpin": "Lösen",
         "edit": "Bearbeiten",
         "delete": "Löschen"
@@ -4879,14 +4879,14 @@
       "description": "Beschreibung"
     },
     "filters": {
-      "filter": "Filtern",
+      "filter": "Filter",
       "clear_all": "Alles löschen",
       "popover_title": "Filter",
       "sort": "Sortieren",
       "order": "Bestellen",
       "status": "Status",
-      "ascending": "Aufstieg",
-      "descending": "Beschr",
+      "ascending": "Aufst.",
+      "descending": "Abst.",
       "sort_name": "Name",
       "sort_courses": "Kurse",
       "sort_students": "Studenten",
