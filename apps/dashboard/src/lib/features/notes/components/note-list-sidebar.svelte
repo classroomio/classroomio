@@ -148,7 +148,7 @@
                 <li>
                   <a href={noteHref(note.id)} class={noteLinkClass(note.id)}>
                     <StarIcon size={14} class="shrink-0 text-amber-500" />
-                    <span class="line-clamp-2 leading-snug font-medium">{displayNoteTitle(note.title)}</span>
+                    <span class="line-clamp-2 leading-snug">{displayNoteTitle(note.title)}</span>
                   </a>
                 </li>
               {/each}

@@ -54,7 +54,7 @@
 
         <a href={noteHref(node.id)} class={cn(linkClass(node.id), 'min-w-0 flex-1')}>
           <FileTextIcon size={14} class="ui:text-muted-foreground mt-0.5 shrink-0" />
-          <span class="line-clamp-2 leading-snug font-medium">{displayNoteTitle(node.title)}</span>
+          <span class="line-clamp-2 leading-snug">{displayNoteTitle(node.title)}</span>
         </a>
       </div>
 

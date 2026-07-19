@@ -81,7 +81,7 @@
 </script>
 
 <article class={cn('flex min-h-full w-full flex-col', className)}>
-  <div class="group/cover relative w-full shrink-0">
+  <div class="group/cover relative z-0 w-full shrink-0">
     {#if coverImageUrl}
       <img src={coverImageUrl} alt="" class="h-40 w-full object-cover" />
     {:else}
@@ -130,8 +130,10 @@
     {/if}
   </div>
 
-  <div class="mx-auto flex w-full max-w-3xl flex-1 flex-col px-8 pb-16 md:px-12">
-    <div class="-mt-7 mb-4 flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-xl border bg-background text-3xl shadow-sm">
+  <div class="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col px-8 pb-16 md:px-12">
+    <div
+      class="relative z-10 -mt-10 mb-4 flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-xl border bg-background text-3xl shadow-sm"
+    >
       <PageIcon size={36} class="ui:text-muted-foreground" />
     </div>
 
