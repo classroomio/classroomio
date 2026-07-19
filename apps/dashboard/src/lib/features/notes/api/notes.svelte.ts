@@ -18,16 +18,24 @@ import type {
   GetNoteTagsRequest,
   ListNoteTemplatesRequest,
   ListNotesRequest,
+  ListNotesSidebarRequest,
+  ListTrashedNotesRequest,
   NoteTemplates,
   NoteUsageRequest,
   RestoreNoteVersionRequest,
   UnsetNoteTemplateRequest,
   UpdateNoteRequest,
   UpdateNoteTagsRequest,
-  UpdateNoteVisibilityRequest
+  UpdateNoteVisibilityRequest,
+  FavoriteNoteRequest,
+  UnfavoriteNoteRequest,
+  RestoreNoteRequest,
+  PermanentDeleteNoteRequest
 } from '../utils/types';
 
 export type NoteListItem = Extract<InferResponseType<ListNotesRequest>, { success: true }>['data'][number];
+export type SidebarNoteItem = Extract<InferResponseType<ListNotesSidebarRequest>, { success: true }>['data'][number];
+export type TrashedNoteItem = Extract<InferResponseType<ListTrashedNotesRequest>, { success: true }>['data'][number];
 
 export type NoteDetail = Extract<InferResponseType<GetNoteRequest>, { success: true }>['data'];
 
@@ -39,6 +47,8 @@ export type NoteVersionHistory = Extract<InferResponseType<GetNoteVersionHistory
 
 class NotesApi extends BaseApiWithErrors {
   notes = $state<NoteListItem[]>([]);
+  sidebarNotes = $state<SidebarNoteItem[]>([]);
+  trashedNotes = $state<TrashedNoteItem[]>([]);
   templates = $state<NoteTemplates>([]);
   usage = $state<NoteUsage | null>(null);
   lastListParams = $state<{
@@ -92,6 +102,92 @@ class NotesApi extends BaseApiWithErrors {
     }
 
     await this.listNotes(this.lastListParams);
+  }
+
+  async listSidebar() {
+    const org = get(currentOrg);
+    if (!org.id) return;
+
+    await this.execute<ListNotesSidebarRequest>({
+      requestFn: () => classroomio.notes.sidebar.$get(),
+      onSuccess: (result) => {
+        this.sidebarNotes = result.data;
+      },
+      logContext: 'listSidebarNotes',
+      onError: () => {
+        this.sidebarNotes = [];
+      }
+    });
+  }
+
+  async listTrash() {
+    const org = get(currentOrg);
+    if (!org.id) return;
+
+    await this.execute<ListTrashedNotesRequest>({
+      requestFn: () => classroomio.notes.trash.$get(),
+      onSuccess: (result) => {
+        this.trashedNotes = result.data;
+      },
+      logContext: 'listTrashedNotes',
+      onError: () => {
+        this.trashedNotes = [];
+      }
+    });
+  }
+
+  async favoriteNote(noteId: string) {
+    await this.execute<FavoriteNoteRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId'].favorite.$post({
+          param: { noteId }
+        }),
+      logContext: 'favoriteNote'
+    });
+  }
+
+  async unfavoriteNote(noteId: string) {
+    await this.execute<UnfavoriteNoteRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId'].favorite.$delete({
+          param: { noteId }
+        }),
+      logContext: 'unfavoriteNote'
+    });
+  }
+
+  async restoreNote(noteId: string) {
+    let restored: NoteDetail | null = null;
+
+    await this.execute<RestoreNoteRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId'].restore.$post({
+          param: { noteId }
+        }),
+      onSuccess: (result) => {
+        restored = result.data ?? null;
+      },
+      logContext: 'restoreNote'
+    });
+
+    return restored;
+  }
+
+  async permanentDeleteNote(noteId: string) {
+    let deleted = false;
+
+    await this.execute<PermanentDeleteNoteRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId'].permanent.$delete({
+          param: { noteId }
+        }),
+      onSuccess: () => {
+        deleted = true;
+      },
+      logContext: 'permanentDeleteNote'
+    });
+
+    return deleted;
   }
 
   async fetchUsage() {
@@ -223,7 +319,10 @@ class NotesApi extends BaseApiWithErrors {
     return created;
   }
 
-  async updateNote(noteId: string, fields: { title?: string; content?: string; isPinned?: boolean }) {
+  async updateNote(
+    noteId: string,
+    fields: { title?: string; content?: string; isPinned?: boolean; parentId?: string | null; sortOrder?: number }
+  ) {
     let updated: NoteDetail | null = null;
 
     await this.execute<UpdateNoteRequest>({

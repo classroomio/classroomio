@@ -56,14 +56,27 @@ export const ZCreateNote = z.object({
   origin: ZNoteOrigin.default('workspace'),
   courseId: z.string().uuid().optional(),
   lessonId: z.string().uuid().optional(),
-  videoAnchors: z.array(ZNoteVideoAnchor).optional()
+  videoAnchors: z.array(ZNoteVideoAnchor).optional(),
+  parentId: z.string().uuid().nullable().optional(),
+  sortOrder: z.number().int().min(0).optional()
 });
 
 export const ZUpdateNote = z.object({
   title: z.string().min(1).max(500).optional(),
   content: z.string().optional(),
   videoAnchors: z.array(ZNoteVideoAnchor).optional(),
-  isPinned: z.boolean().optional()
+  isPinned: z.boolean().optional(),
+  parentId: z.string().uuid().nullable().optional(),
+  sortOrder: z.number().int().min(0).optional()
+});
+
+export const ZNoteShareGrant = z.object({
+  profileId: z.string().uuid(),
+  permission: z.enum(['read', 'write'])
+});
+
+export const ZReplaceNoteShares = z.object({
+  grants: z.array(ZNoteShareGrant).max(100).default([])
 });
 
 export const ZNoteTagAssignment = z.object({
@@ -104,6 +117,8 @@ export type TCreateNoteFromTemplate = z.infer<typeof ZCreateNoteFromTemplate>;
 export type TCreateNote = z.infer<typeof ZCreateNote>;
 export type TUpdateNote = z.infer<typeof ZUpdateNote>;
 export type TNoteTagAssignment = z.infer<typeof ZNoteTagAssignment>;
+export type TReplaceNoteShares = z.infer<typeof ZReplaceNoteShares>;
+export type TNoteShareGrant = z.infer<typeof ZNoteShareGrant>;
 export type TUpdateNoteVisibility = z.infer<typeof ZUpdateNoteVisibility>;
 export type TConvertNoteToCourse = z.infer<typeof ZConvertNoteToCourse>;
 export type TPublicNoteBySlugParam = z.infer<typeof ZPublicNoteBySlugParam>;

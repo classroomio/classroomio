@@ -354,6 +354,20 @@ export async function wouldCreateCycle(noteId: string, newParentId: string | nul
   }
 }
 
+export async function getMaxChildSortOrder(parentId: string): Promise<number> {
+  try {
+    const [row] = await db
+      .select({ max: sql<number>`coalesce(max(${schema.orgNote.sortOrder}), -1)` })
+      .from(schema.orgNote)
+      .where(and(eq(schema.orgNote.parentId, parentId), isNull(schema.orgNote.deletedAt)));
+
+    return row?.max ?? -1;
+  } catch (error) {
+    console.error('getMaxChildSortOrder error:', error);
+    throw new Error('Failed to get max child sort order');
+  }
+}
+
 export async function getNoteById(noteId: string): Promise<NoteListRow | null> {
   try {
     const [row] = await db
@@ -471,6 +485,7 @@ export async function updateNote(
       | 'convertedCourseId'
       | 'parentId'
       | 'sortOrder'
+      | 'ownerId'
       | 'updatedAt'
     >
   >

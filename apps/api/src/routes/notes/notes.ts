@@ -12,6 +12,7 @@ import {
   ZNoteTagAssignment,
   ZNoteVersionHistoryQuery,
   ZNoteVersionIdParam,
+  ZReplaceNoteShares,
   ZUpdateNote,
   ZUpdateNoteComment,
   ZUpdateNoteCommentThread,
@@ -32,13 +33,21 @@ import {
   convertNoteToTemplateService,
   createNoteFromTemplateService,
   deleteNoteService,
+  favoriteNoteService,
   getNoteService,
   getNoteVersionHistoryService,
   getWorkspaceNoteUsageService,
+  listNoteSharesService,
+  listNotesSidebarService,
   listNoteTemplatesService,
   listNotesService,
+  listTrashedNotesService,
+  permanentDeleteNoteService,
+  replaceNoteSharesService,
+  restoreNoteService,
   restoreNoteVersionService,
   unsetNoteTemplateService,
+  unfavoriteNoteService,
   updateNoteService,
   updateNoteVisibilityService
 } from '@api/services/notes/notes';
@@ -93,7 +102,7 @@ export const notesRouter = new Hono()
         return c.json({ success: false, error: 'Organization mismatch', code: 'FORBIDDEN' }, 403);
       }
 
-      const data = await createNoteService(user.id, body);
+      const data = await createNoteService(user.id, c.get('userRole')!, body);
 
       return c.json({ success: true, data }, 201);
     } catch (error) {
@@ -113,6 +122,7 @@ export const notesRouter = new Hono()
 
       const data = await importNoteService({
         ownerId: user.id,
+        roleId: c.get('userRole')!,
         organizationId,
         file
       });
@@ -130,6 +140,28 @@ export const notesRouter = new Hono()
       return c.json({ success: true, data }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to list note templates');
+    }
+  })
+  .get('/sidebar', authMiddleware, orgMemberMiddleware, async (c) => {
+    try {
+      const user = c.get('user')!;
+      const organizationId = c.get('orgId')!;
+      const data = await listNotesSidebarService(organizationId, user.id, c.get('userRole')!);
+
+      return c.json({ success: true, data }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to list sidebar notes');
+    }
+  })
+  .get('/trash', authMiddleware, orgMemberMiddleware, async (c) => {
+    try {
+      const user = c.get('user')!;
+      const organizationId = c.get('orgId')!;
+      const data = await listTrashedNotesService(organizationId, user.id);
+
+      return c.json({ success: true, data }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to list trashed notes');
     }
   })
   .post(
@@ -305,6 +337,86 @@ export const notesRouter = new Hono()
       return c.json({ success: true, data }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to delete note');
+    }
+  })
+  .post('/:noteId/favorite', authMiddleware, orgMemberMiddleware, zValidator('param', ZNoteIdParam), async (c) => {
+    try {
+      const user = c.get('user')!;
+      const organizationId = c.get('orgId')!;
+      const { noteId } = c.req.valid('param');
+      const data = await favoriteNoteService(organizationId, user.id, c.get('userRole')!, noteId);
+
+      return c.json({ success: true, data }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to favorite note');
+    }
+  })
+  .delete('/:noteId/favorite', authMiddleware, orgMemberMiddleware, zValidator('param', ZNoteIdParam), async (c) => {
+    try {
+      const user = c.get('user')!;
+      const organizationId = c.get('orgId')!;
+      const { noteId } = c.req.valid('param');
+      const data = await unfavoriteNoteService(organizationId, user.id, c.get('userRole')!, noteId);
+
+      return c.json({ success: true, data }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to unfavorite note');
+    }
+  })
+  .get('/:noteId/shares', authMiddleware, orgMemberMiddleware, zValidator('param', ZNoteIdParam), async (c) => {
+    try {
+      const user = c.get('user')!;
+      const organizationId = c.get('orgId')!;
+      const { noteId } = c.req.valid('param');
+      const data = await listNoteSharesService(organizationId, user.id, c.get('userRole')!, noteId);
+
+      return c.json({ success: true, data }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to list note shares');
+    }
+  })
+  .put(
+    '/:noteId/shares',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZNoteIdParam),
+    zValidator('json', ZReplaceNoteShares),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const { noteId } = c.req.valid('param');
+        const body = c.req.valid('json');
+        const data = await replaceNoteSharesService(organizationId, user.id, c.get('userRole')!, noteId, body);
+
+        return c.json({ success: true, data }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update note shares');
+      }
+    }
+  )
+  .post('/:noteId/restore', authMiddleware, orgMemberMiddleware, zValidator('param', ZNoteIdParam), async (c) => {
+    try {
+      const user = c.get('user')!;
+      const organizationId = c.get('orgId')!;
+      const { noteId } = c.req.valid('param');
+      const data = await restoreNoteService(organizationId, user.id, noteId);
+
+      return c.json({ success: true, data }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to restore note');
+    }
+  })
+  .delete('/:noteId/permanent', authMiddleware, orgMemberMiddleware, zValidator('param', ZNoteIdParam), async (c) => {
+    try {
+      const user = c.get('user')!;
+      const organizationId = c.get('orgId')!;
+      const { noteId } = c.req.valid('param');
+      const data = await permanentDeleteNoteService(organizationId, user.id, noteId);
+
+      return c.json({ success: true, data }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to permanently delete note');
     }
   })
   .get(

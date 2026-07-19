@@ -74,12 +74,17 @@ async function convertImportFileToHtml(file: File, extension: SupportedImportExt
   }
 }
 
-export async function importNoteService(params: { ownerId: string; organizationId: string; file: File }) {
+export async function importNoteService(params: {
+  ownerId: string;
+  roleId: number;
+  organizationId: string;
+  file: File;
+}) {
   const extension = assertSupportedImportFile(params.file);
   const content = await convertImportFileToHtml(params.file, extension);
   const title = titleFromFileName(params.file.name);
 
-  return createNoteService(params.ownerId, {
+  return createNoteService(params.ownerId, params.roleId, {
     organizationId: params.organizationId,
     title,
     content,

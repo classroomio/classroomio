@@ -1,6 +1,8 @@
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 
 export type ListNotesRequest = typeof classroomio.notes.$get;
+export type ListNotesSidebarRequest = typeof classroomio.notes.sidebar.$get;
+export type ListTrashedNotesRequest = typeof classroomio.notes.trash.$get;
 export type NoteUsageRequest = typeof classroomio.notes.usage.$get;
 export type GetNoteRequest = (typeof classroomio.notes)[':noteId']['$get'];
 export type CreateNoteRequest = typeof classroomio.notes.$post;
@@ -9,6 +11,12 @@ export type DeleteNoteRequest = (typeof classroomio.notes)[':noteId']['$delete']
 export type GetNoteTagsRequest = (typeof classroomio.notes)[':noteId']['tags']['$get'];
 export type UpdateNoteTagsRequest = (typeof classroomio.notes)[':noteId']['tags']['$put'];
 export type UpdateNoteVisibilityRequest = (typeof classroomio.notes)[':noteId']['visibility']['$put'];
+export type FavoriteNoteRequest = (typeof classroomio.notes)[':noteId']['favorite']['$post'];
+export type UnfavoriteNoteRequest = (typeof classroomio.notes)[':noteId']['favorite']['$delete'];
+export type GetNoteSharesRequest = (typeof classroomio.notes)[':noteId']['shares']['$get'];
+export type ReplaceNoteSharesRequest = (typeof classroomio.notes)[':noteId']['shares']['$put'];
+export type RestoreNoteRequest = (typeof classroomio.notes)[':noteId']['restore']['$post'];
+export type PermanentDeleteNoteRequest = (typeof classroomio.notes)[':noteId']['permanent']['$delete'];
 export type GetNoteVersionHistoryRequest = (typeof classroomio.notes)[':noteId']['versions']['$get'];
 export type RestoreNoteVersionRequest =
   (typeof classroomio.notes)[':noteId']['versions'][':versionId']['restore']['$post'];

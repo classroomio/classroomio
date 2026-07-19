@@ -3,20 +3,37 @@ import {
   countWorkspaceNotesByOwner,
   createNote,
   getLessonCaptureNote,
+  getMaxChildSortOrder,
   getNoteById,
+  getNoteByIdIncludingDeleted,
   getNoteVersionById,
   getNoteVersionHistory,
+  hardDeleteNote,
   insertNoteVersion,
   listAccessibleNotes,
+  listNoteChildren,
+  listNotesForSidebar,
   listNoteTemplates,
   listPublicNoteSlugsForOrganization,
+  listTrashedNotes,
+  restoreNote,
   softDeleteNote,
   updateNote,
-  type NoteListRow
+  wouldCreateCycle,
+  cascadeNoteVisibility,
+  type NoteListRow,
+  type SidebarNoteRow
 } from '@cio/db/queries/notes';
-import { getNoteSharePermission } from '@cio/db/queries/notes/share';
+import { addNoteFavorite, removeNoteFavorite } from '@cio/db/queries/notes/favorite';
+import {
+  getNoteSharePermission,
+  listNoteShares,
+  listSharePermissionsForNotes,
+  replaceNoteShares,
+  type NoteShareGrant
+} from '@cio/db/queries/notes/share';
 import { getNoteTagsForOrganization, replaceNoteTagAssignments } from '@cio/db/queries/notes/tag';
-import { getActiveOrganizationPlan, getOrganizationById } from '@cio/db/queries/organization';
+import { getActiveOrganizationPlan, getOrganizationById, getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 import { verifyLessonBelongsToCourse } from '@cio/core/services/agent/chat-context';
 import { BASIC_WORKSPACE_NOTE_LIMIT, PLAN } from '@cio/utils/plans/constants';
 import type {
@@ -24,6 +41,7 @@ import type {
   TCreateNoteFromTemplate,
   TListNotesQuery,
   TNoteOrigin,
+  TReplaceNoteShares,
   TUpdateNote,
   TUpdateNoteVisibility
 } from '@cio/utils/validation/notes';
@@ -91,6 +109,66 @@ async function getReadableNote(organizationId: string, userId: string, roleId: n
   return { note, canWrite: access.canWrite, sharePermission };
 }
 
+async function getWritableParentNote(params: {
+  organizationId: string;
+  userId: string;
+  roleId: number;
+  parentId: string;
+}) {
+  const parent = await getNoteById(params.parentId);
+
+  if (!parent || parent.organizationId !== params.organizationId) {
+    throw new AppError('Parent note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  if (parent.origin !== 'workspace' || parent.isTemplate) {
+    throw new AppError('Invalid parent note', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  const sharePermission = await getNoteSharePermission(params.parentId, params.userId);
+  const access = resolveNoteAccess({
+    note: parent,
+    organizationId: params.organizationId,
+    userId: params.userId,
+    roleId: params.roleId,
+    sharePermission
+  });
+
+  if (!access.canWrite) {
+    throw new AppError('Parent note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  return parent;
+}
+
+function mapSidebarNote(
+  note: SidebarNoteRow,
+  organizationId: string,
+  userId: string,
+  roleId: number,
+  sharePermissions: Map<string, 'read' | 'write'>
+) {
+  const sharePermission = sharePermissions.get(note.id) ?? null;
+  const access = resolveNoteAccess({ note, organizationId, userId, roleId, sharePermission });
+
+  return {
+    ...note,
+    canWrite: access.canWrite
+  };
+}
+
+async function validateShareGrantees(organizationId: string, grants: NoteShareGrant[]) {
+  const uniqueProfileIds = Array.from(new Set(grants.map((grant) => grant.profileId)));
+
+  for (const profileId of uniqueProfileIds) {
+    const memberId = await getOrganizationMemberIdByOrgAndProfile(organizationId, profileId);
+
+    if (!memberId) {
+      throw new AppError('One or more share recipients are invalid', ErrorCodes.VALIDATION_ERROR, 400, 'grants');
+    }
+  }
+}
+
 async function validateLessonCaptureContext(params: { organizationId: string; courseId?: string; lessonId?: string }) {
   if (!params.lessonId || !params.courseId) {
     throw new AppError('Lesson capture notes require courseId and lessonId', ErrorCodes.VALIDATION_ERROR, 400);
@@ -118,13 +196,108 @@ export async function listNotesService(organizationId: string, userId: string, r
   return attachTagsToNotes(organizationId, notes);
 }
 
-export async function getNoteService(organizationId: string, userId: string, roleId: number, noteId: string) {
-  const { note, canWrite } = await getReadableNote(organizationId, userId, roleId, noteId);
+export async function listNotesSidebarService(organizationId: string, userId: string, roleId: number) {
+  const notes = await listNotesForSidebar({ organizationId, userId });
+  const sharePermissions = await listSharePermissionsForNotes(
+    userId,
+    notes.map((note) => note.id)
+  );
 
-  return { ...note, canWrite };
+  const sidebarNotes = notes.map((note) => mapSidebarNote(note, organizationId, userId, roleId, sharePermissions));
+  const { attachTagsToNotes } = await import('./tags');
+
+  return attachTagsToNotes(organizationId, sidebarNotes);
 }
 
-export async function createNoteService(ownerId: string, data: TCreateNote) {
+export async function favoriteNoteService(organizationId: string, userId: string, roleId: number, noteId: string) {
+  await getReadableNote(organizationId, userId, roleId, noteId);
+  await addNoteFavorite(userId, noteId);
+
+  return { noteId, favorited: true };
+}
+
+export async function unfavoriteNoteService(organizationId: string, userId: string, roleId: number, noteId: string) {
+  await getReadableNote(organizationId, userId, roleId, noteId);
+  await removeNoteFavorite(userId, noteId);
+
+  return { noteId, favorited: false };
+}
+
+export async function listNoteSharesService(organizationId: string, userId: string, roleId: number, noteId: string) {
+  const { note, sharePermission } = await getReadableNote(organizationId, userId, roleId, noteId);
+  assertNoteWriteAccess({ note, organizationId, userId, roleId, sharePermission });
+
+  if (note.visibility !== 'private') {
+    throw new AppError('Only private notes support individual shares', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  return listNoteShares(noteId);
+}
+
+export async function replaceNoteSharesService(
+  organizationId: string,
+  userId: string,
+  roleId: number,
+  noteId: string,
+  data: TReplaceNoteShares
+) {
+  const { note, sharePermission } = await getReadableNote(organizationId, userId, roleId, noteId);
+  assertNoteWriteAccess({ note, organizationId, userId, roleId, sharePermission });
+
+  if (note.visibility !== 'private') {
+    throw new AppError('Only private notes support individual shares', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  const grants = data.grants.filter((grant) => grant.profileId !== note.ownerId);
+  await validateShareGrantees(organizationId, grants);
+
+  return replaceNoteShares(noteId, userId, grants);
+}
+
+export async function listTrashedNotesService(organizationId: string, userId: string) {
+  return listTrashedNotes(userId, organizationId);
+}
+
+export async function restoreNoteService(organizationId: string, userId: string, noteId: string) {
+  const note = await getNoteByIdIncludingDeleted(noteId);
+
+  if (!note || note.organizationId !== organizationId || note.ownerId !== userId) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  if (!note.deletedAt) {
+    return note;
+  }
+
+  const restored = await restoreNote(noteId);
+
+  if (!restored) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  return (await getNoteById(noteId))!;
+}
+
+export async function permanentDeleteNoteService(organizationId: string, userId: string, noteId: string) {
+  const note = await getNoteByIdIncludingDeleted(noteId);
+
+  if (!note || note.organizationId !== organizationId || note.ownerId !== userId) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  await hardDeleteNote(noteId);
+
+  return { id: noteId };
+}
+
+export async function getNoteService(organizationId: string, userId: string, roleId: number, noteId: string) {
+  const { note, canWrite } = await getReadableNote(organizationId, userId, roleId, noteId);
+  const children = await listNoteChildren(noteId);
+
+  return { ...note, canWrite, children };
+}
+
+export async function createNoteService(ownerId: string, roleId: number, data: TCreateNote) {
   if (data.organizationId && data.origin === 'workspace') {
     await assertWorkspaceNoteCreationAllowed(data.organizationId, ownerId);
   }
@@ -148,12 +321,29 @@ export async function createNoteService(ownerId: string, data: TCreateNote) {
   }
 
   const plainText = htmlToPlainText(data.content ?? '');
-  const visibility =
+  let visibility =
     data.origin === 'workspace' ? await getWorkspaceNoteDefaultVisibility(data.organizationId) : 'private';
+  let noteOwnerId = ownerId;
+  let parentId: string | null = data.parentId ?? null;
+  let sortOrder = data.sortOrder ?? 0;
+
+  if (data.parentId) {
+    const parent = await getWritableParentNote({
+      organizationId: data.organizationId,
+      userId: ownerId,
+      roleId,
+      parentId: data.parentId
+    });
+
+    visibility = parent.visibility;
+    noteOwnerId = parent.visibility === 'team' ? parent.ownerId : ownerId;
+    parentId = parent.id;
+    sortOrder = data.sortOrder ?? (await getMaxChildSortOrder(parent.id)) + 1;
+  }
 
   const note = await createNote({
     organizationId: data.organizationId,
-    ownerId,
+    ownerId: noteOwnerId,
     title: data.title,
     content: data.content ?? '',
     plainText,
@@ -162,7 +352,9 @@ export async function createNoteService(ownerId: string, data: TCreateNote) {
     isTemplate: false,
     courseId: data.courseId ?? null,
     lessonId: data.lessonId ?? null,
-    videoAnchors: data.videoAnchors ?? []
+    videoAnchors: data.videoAnchors ?? [],
+    parentId,
+    sortOrder
   });
 
   if (note.content) {
@@ -346,7 +538,33 @@ export async function updateNoteService(
   const nextTitle = data.title ?? existing.title;
   const nextVideoAnchors = data.videoAnchors ?? existing.videoAnchors;
   const nextIsPinned = data.isPinned ?? existing.isPinned;
+  const nextParentId = data.parentId !== undefined ? data.parentId : existing.parentId;
+  const nextSortOrder = data.sortOrder ?? existing.sortOrder;
   const contentChanged = data.content !== undefined && data.content !== existing.content;
+  let nextOwnerId = existing.ownerId;
+
+  if (data.parentId !== undefined && data.parentId !== existing.parentId) {
+    if (data.parentId) {
+      const parent = await getWritableParentNote({
+        organizationId,
+        userId,
+        roleId,
+        parentId: data.parentId
+      });
+
+      if (parent.visibility !== existing.visibility) {
+        throw new AppError('Child note visibility must match parent', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+
+      if (await wouldCreateCycle(noteId, data.parentId)) {
+        throw new AppError('Cannot move note under its own descendant', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+
+      if (parent.visibility === 'team') {
+        nextOwnerId = parent.ownerId;
+      }
+    }
+  }
 
   const updated = await updateNote(noteId, {
     title: nextTitle,
@@ -354,6 +572,9 @@ export async function updateNoteService(
     plainText: htmlToPlainText(nextContent),
     videoAnchors: nextVideoAnchors,
     isPinned: nextIsPinned,
+    parentId: nextParentId,
+    sortOrder: nextSortOrder,
+    ownerId: nextOwnerId,
     updatedAt: new Date().toISOString()
   });
 
@@ -420,6 +641,8 @@ export async function updateNoteVisibilityService(
   if (!updated) {
     throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
   }
+
+  await cascadeNoteVisibility(noteId, data.visibility);
 
   const note = await getNoteById(noteId);
 
