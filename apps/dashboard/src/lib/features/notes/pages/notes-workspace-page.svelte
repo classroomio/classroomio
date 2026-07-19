@@ -128,7 +128,7 @@
   });
 </script>
 
-<div class="flex h-full min-h-0 w-full overflow-hidden">
+<div class="flex min-h-0 flex-1 w-full overflow-hidden">
   <NoteListSidebar
     selectedNoteId={noteId}
     {listScope}

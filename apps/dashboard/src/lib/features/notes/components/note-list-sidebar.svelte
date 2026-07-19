@@ -144,7 +144,7 @@
   });
 </script>
 
-<aside class={cn('border-border ui:bg-muted/30 flex h-full min-h-0 w-72 shrink-0 flex-col border-r', className)}>
+<aside class={cn('border-border ui:bg-muted/30 flex min-h-0 w-72 shrink-0 flex-col self-stretch border-r', className)}>
   <div class="border-border flex items-center justify-between gap-2 border-b px-4 py-3">
     <div class="min-w-0">
       <p class="text-sm font-semibold">{$t('notes.heading')}</p>

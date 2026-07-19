@@ -16,9 +16,10 @@
     getNoteContent?: () => string;
     getSelectedText?: () => string;
     onReviewComplete?: (content: string) => void;
+    onPanelClose?: () => void;
   }
 
-  let { noteId, noteTitle, getNoteContent, getSelectedText, onReviewComplete }: Props = $props();
+  let { noteId, noteTitle, getNoteContent, getSelectedText, onReviewComplete, onPanelClose }: Props = $props();
 
   let isReviewing = $state(false);
   let lastCreatedCount = $state<number | null>(null);
@@ -86,7 +87,14 @@
       <p class="ui:text-muted-foreground truncate text-xs">{noteTitle}</p>
     {/if}
   </div>
-  <IconButton variant="secondary" size="icon" onclick={() => sidePanel.close()}>
+  <IconButton
+    variant="secondary"
+    size="icon"
+    onclick={() => {
+      onPanelClose?.();
+      sidePanel.close();
+    }}
+  >
     <XIcon size={16} />
   </IconButton>
 </header>

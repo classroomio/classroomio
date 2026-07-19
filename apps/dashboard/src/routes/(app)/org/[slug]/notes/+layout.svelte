@@ -27,6 +27,8 @@
   class="notes-workspace flex min-h-0 w-full flex-1 flex-col overflow-hidden"
   style={`--side-panel-width: ${sidePanelWidth}px;`}
 >
-  {@render children?.()}
+  <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
+    {@render children?.()}
+  </div>
   <SidePanelRail onWidthPreview={(width) => (sidePanelWidth = width)} />
 </div>

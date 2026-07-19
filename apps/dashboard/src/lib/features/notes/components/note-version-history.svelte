@@ -25,7 +25,6 @@
   let endRange = $state(9);
   let isLoading = $state(false);
   let isRestoring = $state(false);
-  let diffContainer = $state<HTMLDivElement | null>(null);
 
   const selectedVersion = $derived(versions[selectedVersionIndex]);
 
@@ -43,35 +42,40 @@
     }).format(date);
   }
 
+  function htmlToPlainText(html: string) {
+    if (!html) {
+      return '';
+    }
+
+    if (typeof document === 'undefined') {
+      return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+
+    return doc.body.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+  }
+
+  function buildPlainTextDiff(version: NoteVersionHistoryItem) {
+    const oldText = htmlToPlainText(version.oldContent ?? '');
+    const newText = htmlToPlainText(version.newContent ?? '');
+
+    if (!oldText && !newText) {
+      return [];
+    }
+
+    if (!oldText) {
+      return [{ added: true, value: newText }];
+    }
+
+    return diffLines(oldText, newText);
+  }
+
   async function loadVersionHistory() {
     isLoading = true;
     versions = await notesApi.getVersionHistory(noteId, endRange);
     selectedVersionIndex = 0;
     isLoading = false;
-  }
-
-  function renderDiff(version: NoteVersionHistoryItem) {
-    const container = diffContainer;
-    if (!container) return;
-
-    container.innerHTML = '';
-
-    const diff = diffLines(version.oldContent ?? '', version.newContent ?? '');
-    const fragment = document.createDocumentFragment();
-
-    diff.forEach((part) => {
-      const span = document.createElement('span');
-      if (part.added) {
-        span.classList.add('text-green-600');
-      } else if (part.removed) {
-        span.classList.add('text-red-600', 'line-through');
-      }
-
-      span.textContent = part.value;
-      fragment.appendChild(span);
-    });
-
-    container.appendChild(fragment);
   }
 
   async function restoreSelectedVersion() {
@@ -101,12 +105,6 @@
     endRange;
 
     void loadVersionHistory();
-  });
-
-  $effect(() => {
-    if (!open || !selectedVersion || !diffContainer) return;
-
-    renderDiff(selectedVersion);
   });
 </script>
 
@@ -146,16 +144,29 @@
           {:else if !selectedVersion}
             <p class="ui:text-muted-foreground text-sm">{$t('notes.editor.version_history.empty')}</p>
           {:else}
-            <div
-              bind:this={diffContainer}
-              class="ui:bg-muted/30 prose dark:prose-invert max-w-none rounded-lg p-4 whitespace-pre-wrap"
-            ></div>
-            <div class="ui:bg-card ui:border-border mt-6 rounded-lg border p-4">
-              <p class="ui:text-muted-foreground mb-2 text-xs font-medium uppercase">
+            <div class="ui:bg-card ui:border-border rounded-lg border p-4">
+              <p class="ui:text-muted-foreground mb-3 text-xs font-medium uppercase">
                 {$t('notes.editor.version_history.preview')}
               </p>
-              <SafeHtmlContent content={selectedVersion.newContent ?? ''} />
+              <div class="prose dark:prose-invert max-w-none">
+                <SafeHtmlContent content={selectedVersion.newContent ?? ''} />
+              </div>
             </div>
+
+            {#if selectedVersion.oldContent}
+              <div class="ui:bg-muted/30 mt-6 rounded-lg p-4">
+                <p class="ui:text-muted-foreground mb-3 text-xs font-medium uppercase">
+                  {$t('notes.editor.version_history.changes')}
+                </p>
+                <div class="text-sm leading-relaxed whitespace-pre-wrap">
+                  {#each buildPlainTextDiff(selectedVersion) as part, index (index)}
+                    <span class={part.added ? 'text-green-600' : part.removed ? 'text-red-600 line-through' : ''}>
+                      {part.value}
+                    </span>
+                  {/each}
+                </div>
+              </div>
+            {/if}
           {/if}
         </div>
       </div>

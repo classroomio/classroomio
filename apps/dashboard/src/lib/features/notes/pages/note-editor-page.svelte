@@ -4,7 +4,6 @@
   import MessageSquareIcon from '@lucide/svelte/icons/message-square';
   import ShareIcon from '@lucide/svelte/icons/share-2';
   import TrashIcon from '@lucide/svelte/icons/trash-2';
-  import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
   import PinIcon from '@lucide/svelte/icons/pin';
@@ -22,8 +21,9 @@
   import { Badge } from '@cio/ui/base/badge';
   import * as Dialog from '@cio/ui/base/dialog';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
-  import { Waves } from '@cio/ui/custom/animation';
   import { TextEditor } from '$features/ui';
+  import { ContentAskAiBar } from '$features/ai-assistant';
+  import { sidePanel } from '$features/side-panel';
   import { tagApi } from '$features/tag/api';
   import { currentOrgPath, currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
@@ -39,8 +39,13 @@
   import NoteEmptyPagePicker, { type NoteEmptyPageOption } from '../components/note-empty-page-picker.svelte';
   import NoteConvertCourseDialog from '../components/note-convert-course-dialog.svelte';
   import NoteTemplatesBrowser from '../components/note-templates-browser.svelte';
-  import NoteCommentsStickyRail from '../components/note-comments-sticky-rail.svelte';
-  import { openNoteAiPanel, toggleNoteCommentsPanel } from '../panel';
+  import {
+    NOTE_AI_PANEL_ID,
+    NOTE_COMMENTS_PANEL_ID,
+    openNoteAiFromAskAi,
+    openNoteAiPanel,
+    toggleNoteCommentsPanel
+  } from '../panel';
   import { noteCommentsBridge } from '../utils/note-comments-bridge.svelte';
   import {
     buildCommentAnchor,
@@ -97,6 +102,8 @@
   let emptyPagePickerDismissed = $state(false);
   let importInputRef = $state<HTMLInputElement | null>(null);
   let isImporting = $state(false);
+  let aiPanelManuallyClosed = $state(false);
+  let previousSidePanelId = $state<string | null>(null);
 
   const showEmptyPagePicker = $derived(
     canWrite &&
@@ -118,6 +125,14 @@
   );
 
   const canComment = $derived(!isLoading && !loadError && (canWrite || noteVisibility === 'team'));
+  const commentsPanelOpen = $derived(sidePanel.activePanelId === NOTE_COMMENTS_PANEL_ID);
+  const showNoteAskAiBar = $derived(
+    canWrite &&
+      noteOrigin === 'workspace' &&
+      !isLoading &&
+      !loadError &&
+      sidePanel.activePanelId !== NOTE_AI_PANEL_ID
+  );
   const commentExtensions = [NoteCommentMark];
   const defaultNoteTitle = $derived(t.get('notes.org.new_note_title'));
   const noteTitle = $derived(resolvePersistedTitle(title));
@@ -197,11 +212,46 @@
   }
 
   function openCommentsPanel() {
-    if (typeof window !== 'undefined' && window.matchMedia('(min-width: 1280px)').matches) {
+    toggleNoteCommentsPanel();
+  }
+
+  function toggleCommentsPanel() {
+    if (commentsPanelOpen) {
+      sidePanel.close();
       return;
     }
 
     toggleNoteCommentsPanel();
+  }
+
+  function getNoteAiPanelProps() {
+    return {
+      noteId,
+      noteTitle: title || t.get('notes.org.new_note_title'),
+      getNoteContent: () => editor?.getHTML() ?? content,
+      getSelectedText: () => {
+        if (!editor) {
+          return '';
+        }
+
+        const { from, to } = editor.state.selection;
+
+        return editor.state.doc.textBetween(from, to, ' ').trim();
+      },
+      onReviewComplete: (nextContent: string) => {
+        content = nextContent;
+        editor?.commands.setContent(nextContent, false);
+        void noteCommentsApi.listThreads(noteId);
+      },
+      onPanelClose: () => {
+        aiPanelManuallyClosed = true;
+      }
+    };
+  }
+
+  function handleAskAiSubmit(_prompt: string) {
+    aiPanelManuallyClosed = false;
+    openNoteAiFromAskAi(getNoteAiPanelProps());
   }
 
   function syncCommentsBridge() {
@@ -556,28 +606,6 @@
     });
   }
 
-  function openNoteAssistant() {
-    openNoteAiPanel({
-      noteId,
-      noteTitle: title || t.get('notes.org.new_note_title'),
-      getNoteContent: () => editor?.getHTML() ?? content,
-      getSelectedText: () => {
-        if (!editor) {
-          return '';
-        }
-
-        const { from, to } = editor.state.selection;
-
-        return editor.state.doc.textBetween(from, to, ' ').trim();
-      },
-      onReviewComplete: (nextContent: string) => {
-        content = nextContent;
-        editor?.commands.setContent(nextContent, false);
-        void noteCommentsApi.listThreads(noteId);
-      }
-    });
-  }
-
   function handleScrollToThread(thread: NoteCommentThread) {
     activeThreadId = thread.id;
 
@@ -585,6 +613,40 @@
       scrollToCommentAnchor(editorRoot, thread.anchor, thread.id);
     }
   }
+
+  $effect(() => {
+    if (!noteId) {
+      return;
+    }
+
+    aiPanelManuallyClosed = false;
+  });
+
+  $effect(() => {
+    if (isLoading || loadError || !canWrite || noteOrigin !== 'workspace' || !noteId || aiPanelManuallyClosed) {
+      return;
+    }
+
+    if (sidePanel.activePanelId === NOTE_COMMENTS_PANEL_ID) {
+      return;
+    }
+
+    if (sidePanel.activePanelId !== NOTE_AI_PANEL_ID) {
+      openNoteAiPanel(getNoteAiPanelProps());
+    }
+  });
+
+  $effect(() => {
+    const currentPanelId = sidePanel.activePanelId;
+
+    if (previousSidePanelId === NOTE_COMMENTS_PANEL_ID && currentPanelId === null && !aiPanelManuallyClosed) {
+      if (!isLoading && !loadError && canWrite && noteOrigin === 'workspace' && noteId) {
+        openNoteAiPanel(getNoteAiPanelProps());
+      }
+    }
+
+    previousSidePanelId = currentPanelId;
+  });
 
   $effect(() => {
     syncActiveCommentMark(editorRoot, activeThreadId);
@@ -677,36 +739,31 @@
           {/if}
 
           {#if canWrite && noteOrigin === 'workspace'}
-            <Button variant="secondary" size="sm" onclick={() => (showShareDialog = true)}>
+            <IconButton
+              variant="secondary"
+              size="icon"
+              aria-label={$t('notes.share.open')}
+              onclick={() => (showShareDialog = true)}
+            >
               <ShareIcon size={16} />
-              {$t('notes.share.open')}
-            </Button>
+            </IconButton>
+          {/if}
+
+          {#if canComment}
+            <IconButton
+              variant={commentsPanelOpen ? 'default' : 'secondary'}
+              size="icon"
+              aria-label={$t('notes.comments.heading')}
+              onclick={toggleCommentsPanel}
+            >
+              <MessageSquareIcon size={16} />
+            </IconButton>
           {/if}
 
           {#if canWrite && noteOrigin === 'workspace'}
             <Button variant="secondary" size="sm" onclick={() => (showConvertCourseDialog = true)}>
               <BookOpenIcon size={16} />
               {$t('notes.convert_course.button')}
-            </Button>
-          {/if}
-
-          {#if canWrite && noteOrigin === 'workspace'}
-            <Button
-              size="sm"
-              onclick={openNoteAssistant}
-              class="ui:bg-primary ui:text-primary-foreground relative overflow-hidden border-0"
-            >
-              <Waves
-                lineColor="rgba(255,255,255,0.55)"
-                xGap={8}
-                yGap={12}
-                waveAmpX={18}
-                waveAmpY={9}
-                waveSpeedX={0.04}
-                waveSpeedY={0.02}
-              />
-              <SparklesIcon size={14} class="relative z-10" />
-              <span class="relative z-10">{$t('course.navItems.nav_ai_assistant')}</span>
             </Button>
           {/if}
 
@@ -720,10 +777,6 @@
                 {/snippet}
               </DropdownMenu.Trigger>
               <DropdownMenu.Content align="end">
-                <DropdownMenu.Item onclick={openCommentsPanel}>
-                  <MessageSquareIcon size={16} />
-                  {$t('notes.comments.heading')}
-                </DropdownMenu.Item>
                 <DropdownMenu.Item onclick={() => (showVersionHistory = true)}>
                   <HistoryIcon size={16} />
                   {$t('notes.editor.version_history.open')}
@@ -860,11 +913,11 @@
       </div>
     </div>
   </div>
-
-  <div class="hidden xl:flex">
-    <NoteCommentsStickyRail />
-  </div>
 </div>
+
+{#if showNoteAskAiBar}
+  <ContentAskAiBar class="w-full max-w-3xl" onSubmit={handleAskAiSubmit} />
+{/if}
 
 <NoteConvertCourseDialog
   bind:open={showConvertCourseDialog}

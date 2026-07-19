@@ -4143,6 +4143,7 @@
         "versions": "Versions",
         "current": "Current version",
         "preview": "Preview",
+        "changes": "Changes",
         "restore": "Restore version",
         "restore_success": "Version restored",
         "restore_error": "Could not restore version.",
