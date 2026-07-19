@@ -1,4 +1,4 @@
-import { and, desc, eq, ilike, isNull, ne, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, ilike, inArray, isNotNull, isNull, ne, or, sql } from 'drizzle-orm';
 import { db } from '../../drizzle';
 import * as schema from '../../schema';
 import type { NoteVideoAnchor } from '../../schema';
@@ -11,7 +11,7 @@ export type NoteListRow = TOrgNote & {
   ownerFullname: string | null;
 };
 
-const noteListSelect = {
+export const noteListSelect = {
   id: schema.orgNote.id,
   organizationId: schema.orgNote.organizationId,
   ownerId: schema.orgNote.ownerId,
@@ -27,12 +27,18 @@ const noteListSelect = {
   lessonId: schema.orgNote.lessonId,
   videoAnchors: schema.orgNote.videoAnchors,
   convertedCourseId: schema.orgNote.convertedCourseId,
+  parentId: schema.orgNote.parentId,
+  sortOrder: schema.orgNote.sortOrder,
   createdAt: schema.orgNote.createdAt,
   updatedAt: schema.orgNote.updatedAt,
   deletedAt: schema.orgNote.deletedAt,
   courseTitle: schema.course.title,
   lessonTitle: schema.lesson.title,
   ownerFullname: schema.profile.fullname
+};
+
+export type SidebarNoteRow = NoteListRow & {
+  isFavorited: boolean;
 };
 
 export async function countWorkspaceNotesByOwner(organizationId: string, ownerId: string): Promise<number> {
@@ -161,6 +167,193 @@ export async function listAccessibleNotes(params: {
   }
 }
 
+export async function listNotesForSidebar(params: {
+  organizationId: string;
+  userId: string;
+}): Promise<SidebarNoteRow[]> {
+  try {
+    const readableCondition = or(
+      eq(schema.orgNote.ownerId, params.userId),
+      eq(schema.orgNote.visibility, 'team'),
+      eq(schema.orgNote.visibility, 'public'),
+      sql`EXISTS (
+        SELECT 1 FROM ${schema.orgNoteShare}
+        WHERE ${schema.orgNoteShare.noteId} = ${schema.orgNote.id}
+          AND ${schema.orgNoteShare.profileId} = ${params.userId}
+      )`
+    )!;
+
+    const rows = await db
+      .select({
+        ...noteListSelect,
+        isFavorited: sql<boolean>`CASE WHEN ${schema.orgNoteFavorite.id} IS NULL THEN false ELSE true END`
+      })
+      .from(schema.orgNote)
+      .innerJoin(schema.profile, eq(schema.orgNote.ownerId, schema.profile.id))
+      .leftJoin(schema.course, eq(schema.orgNote.courseId, schema.course.id))
+      .leftJoin(schema.lesson, eq(schema.orgNote.lessonId, schema.lesson.id))
+      .leftJoin(
+        schema.orgNoteFavorite,
+        and(
+          eq(schema.orgNoteFavorite.noteId, schema.orgNote.id),
+          eq(schema.orgNoteFavorite.profileId, params.userId)
+        )
+      )
+      .where(
+        and(
+          eq(schema.orgNote.organizationId, params.organizationId),
+          eq(schema.orgNote.origin, 'workspace'),
+          eq(schema.orgNote.isTemplate, false),
+          isNull(schema.orgNote.deletedAt),
+          readableCondition
+        )
+      )
+      .orderBy(asc(schema.orgNote.parentId), asc(schema.orgNote.sortOrder), desc(schema.orgNote.updatedAt));
+
+    return rows;
+  } catch (error) {
+    console.error('listNotesForSidebar error:', error);
+    throw new Error('Failed to list notes for sidebar');
+  }
+}
+
+export async function listNoteChildren(noteId: string): Promise<NoteListRow[]> {
+  try {
+    return db
+      .select(noteListSelect)
+      .from(schema.orgNote)
+      .innerJoin(schema.profile, eq(schema.orgNote.ownerId, schema.profile.id))
+      .leftJoin(schema.course, eq(schema.orgNote.courseId, schema.course.id))
+      .leftJoin(schema.lesson, eq(schema.orgNote.lessonId, schema.lesson.id))
+      .where(and(eq(schema.orgNote.parentId, noteId), isNull(schema.orgNote.deletedAt)))
+      .orderBy(asc(schema.orgNote.sortOrder), desc(schema.orgNote.updatedAt));
+  } catch (error) {
+    console.error('listNoteChildren error:', error);
+    throw new Error('Failed to list note children');
+  }
+}
+
+export async function listTrashedNotes(ownerId: string, organizationId: string): Promise<NoteListRow[]> {
+  try {
+    return db
+      .select(noteListSelect)
+      .from(schema.orgNote)
+      .innerJoin(schema.profile, eq(schema.orgNote.ownerId, schema.profile.id))
+      .leftJoin(schema.course, eq(schema.orgNote.courseId, schema.course.id))
+      .leftJoin(schema.lesson, eq(schema.orgNote.lessonId, schema.lesson.id))
+      .where(
+        and(
+          eq(schema.orgNote.organizationId, organizationId),
+          eq(schema.orgNote.ownerId, ownerId),
+          eq(schema.orgNote.origin, 'workspace'),
+          isNotNull(schema.orgNote.deletedAt)
+        )
+      )
+      .orderBy(desc(schema.orgNote.deletedAt));
+  } catch (error) {
+    console.error('listTrashedNotes error:', error);
+    throw new Error('Failed to list trashed notes');
+  }
+}
+
+export async function restoreNote(noteId: string): Promise<TOrgNote | null> {
+  try {
+    const [row] = await db
+      .update(schema.orgNote)
+      .set({ deletedAt: null, updatedAt: new Date().toISOString() })
+      .where(eq(schema.orgNote.id, noteId))
+      .returning();
+
+    return row ?? null;
+  } catch (error) {
+    console.error('restoreNote error:', error);
+    throw new Error('Failed to restore note');
+  }
+}
+
+export async function hardDeleteNote(noteId: string): Promise<void> {
+  try {
+    await db.delete(schema.orgNote).where(eq(schema.orgNote.id, noteId));
+  } catch (error) {
+    console.error('hardDeleteNote error:', error);
+    throw new Error('Failed to permanently delete note');
+  }
+}
+
+export async function cascadeNoteVisibility(
+  noteId: string,
+  visibility: TOrgNote['visibility']
+): Promise<void> {
+  try {
+    const queue = [noteId];
+
+    while (queue.length > 0) {
+      const currentId = queue.shift()!;
+
+      const children = await db
+        .select({ id: schema.orgNote.id })
+        .from(schema.orgNote)
+        .where(and(eq(schema.orgNote.parentId, currentId), isNull(schema.orgNote.deletedAt)));
+
+      const childIds = children.map((child) => child.id);
+
+      if (childIds.length === 0) {
+        continue;
+      }
+
+      await db
+        .update(schema.orgNote)
+        .set({ visibility, updatedAt: new Date().toISOString() })
+        .where(inArray(schema.orgNote.id, childIds));
+
+      queue.push(...childIds);
+    }
+  } catch (error) {
+    console.error('cascadeNoteVisibility error:', error);
+    throw new Error('Failed to cascade note visibility');
+  }
+}
+
+export async function wouldCreateCycle(noteId: string, newParentId: string | null): Promise<boolean> {
+  if (!newParentId) {
+    return false;
+  }
+
+  if (noteId === newParentId) {
+    return true;
+  }
+
+  try {
+    let current: string | null = newParentId;
+    const visited = new Set<string>();
+
+    while (current) {
+      if (current === noteId) {
+        return true;
+      }
+
+      if (visited.has(current)) {
+        return false;
+      }
+
+      visited.add(current);
+
+      const [row] = await db
+        .select({ parentId: schema.orgNote.parentId })
+        .from(schema.orgNote)
+        .where(eq(schema.orgNote.id, current))
+        .limit(1);
+
+      current = row?.parentId ?? null;
+    }
+
+    return false;
+  } catch (error) {
+    console.error('wouldCreateCycle error:', error);
+    throw new Error('Failed to check note parent cycle');
+  }
+}
+
 export async function getNoteById(noteId: string): Promise<NoteListRow | null> {
   try {
     const [row] = await db
@@ -175,6 +368,24 @@ export async function getNoteById(noteId: string): Promise<NoteListRow | null> {
     return row ?? null;
   } catch (error) {
     console.error('getNoteById error:', error);
+    throw new Error('Failed to get note');
+  }
+}
+
+export async function getNoteByIdIncludingDeleted(noteId: string): Promise<NoteListRow | null> {
+  try {
+    const [row] = await db
+      .select(noteListSelect)
+      .from(schema.orgNote)
+      .innerJoin(schema.profile, eq(schema.orgNote.ownerId, schema.profile.id))
+      .leftJoin(schema.course, eq(schema.orgNote.courseId, schema.course.id))
+      .leftJoin(schema.lesson, eq(schema.orgNote.lessonId, schema.lesson.id))
+      .where(eq(schema.orgNote.id, noteId))
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('getNoteByIdIncludingDeleted error:', error);
     throw new Error('Failed to get note');
   }
 }
@@ -258,6 +469,8 @@ export async function updateNote(
       | 'isPinned'
       | 'isTemplate'
       | 'convertedCourseId'
+      | 'parentId'
+      | 'sortOrder'
       | 'updatedAt'
     >
   >

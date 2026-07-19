@@ -4,8 +4,9 @@ import { createCourseSection } from '@cio/core/services/course/section';
 import { createLesson } from '@cio/core/services/lesson/lesson';
 import { sanitizeHtml } from '@cio/core/utils/sanitize-html';
 import { getNoteById, updateNote } from '@cio/db/queries/notes';
+import { getNoteSharePermission } from '@cio/db/queries/notes/share';
 import type { TConvertNoteToCourse } from '@cio/utils/validation/notes';
-import { assertNoteWriteAccess, isOrgTeamRole } from './access';
+import { isOrgTeamRole, resolveNoteAccess } from './access';
 
 async function getWritableWorkspaceNote(organizationId: string, userId: string, roleId: number, noteId: string) {
   const note = await getNoteById(noteId);
@@ -18,7 +19,12 @@ async function getWritableWorkspaceNote(organizationId: string, userId: string, 
     throw new AppError('Forbidden', ErrorCodes.FORBIDDEN, 403);
   }
 
-  assertNoteWriteAccess({ note, organizationId, userId });
+  const sharePermission = await getNoteSharePermission(noteId, userId);
+  const access = resolveNoteAccess({ note, organizationId, userId, roleId, sharePermission });
+
+  if (!access.canWrite) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
 
   return note;
 }

@@ -14,7 +14,8 @@ import {
   updateCommentThreadStatus,
   type NoteCommentThreadRow
 } from '@cio/db/queries/notes';
-import { getNoteById, insertNoteVersion, updateNote } from '@cio/db/queries/notes';
+import { getNoteById, updateNote } from '@cio/db/queries/notes';
+import { getNoteSharePermission } from '@cio/db/queries/notes/share';
 import { env } from '@cio/core/config/env';
 import { publishNoteCommentEvent } from '@cio/core/utils/redis/note-comments-pubsub';
 import { formatMentionsForEmail, parseUserMentions } from '@cio/utils/functions/note-comment-mentions';
@@ -30,8 +31,8 @@ import { enqueueTransactionalEmail } from '@api/services/jobs/email-jobs';
 import {
   assertNoteCommentAccess,
   assertNoteCommentAuthorAccess,
-  assertNoteReadAccess,
-  assertNoteThreadResolveAccess
+  assertNoteThreadResolveAccess,
+  resolveNoteAccess
 } from './access';
 
 function htmlToPlainText(html: string): string {
@@ -54,7 +55,12 @@ async function getReadableNote(organizationId: string, userId: string, roleId: n
     throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
   }
 
-  assertNoteReadAccess({ note, organizationId, userId, roleId });
+  const sharePermission = await getNoteSharePermission(noteId, userId);
+  const access = resolveNoteAccess({ note, organizationId, userId, roleId, sharePermission });
+
+  if (!access.canRead) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
 
   return note;
 }

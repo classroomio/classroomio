@@ -3810,6 +3810,8 @@ export const noteOrigin = pgEnum('note_origin', ['workspace', 'lesson_capture'])
 
 export const noteVisibility = pgEnum('note_visibility', ['private', 'team', 'public']);
 
+export const noteSharePermission = pgEnum('note_share_permission', ['read', 'write']);
+
 export const orgNote = pgTable(
   'org_note',
   {
@@ -3831,6 +3833,8 @@ export const orgNote = pgTable(
     lessonId: uuid('lesson_id'),
     videoAnchors: jsonb('video_anchors').$type<NoteVideoAnchor[]>().default([]).notNull(),
     convertedCourseId: uuid('converted_course_id'),
+    parentId: uuid('parent_id'),
+    sortOrder: integer('sort_order').notNull().default(0),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
       .default(sql`timezone('utc'::text, now())`)
       .notNull(),
@@ -3865,7 +3869,14 @@ export const orgNote = pgTable(
       foreignColumns: [course.id],
       name: 'org_note_converted_course_id_fkey'
     }).onDelete('set null'),
+    foreignKey({
+      columns: [table.parentId],
+      foreignColumns: [table.id],
+      name: 'org_note_parent_id_fkey'
+    }).onDelete('cascade'),
     index('idx_org_note_organization_owner_updated').on(table.organizationId, table.ownerId, table.updatedAt),
+    index('idx_org_note_parent_sort').on(table.parentId, table.sortOrder),
+    index('idx_org_note_org_parent').on(table.organizationId, table.parentId),
     index('idx_org_note_lesson_id').on(table.lessonId),
     index('idx_org_note_origin').on(table.origin),
     index('idx_org_note_visibility').on(table.organizationId, table.visibility),
@@ -4009,6 +4020,72 @@ export const orgNoteCommentMention = pgTable(
     }).onDelete('cascade'),
     index('idx_org_note_comment_mention_comment_id').on(table.commentId),
     uniqueIndex('idx_org_note_comment_mention_unique').on(table.commentId, table.profileId)
+  ]
+);
+
+export const orgNoteFavorite = pgTable(
+  'org_note_favorite',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    profileId: uuid('profile_id').notNull(),
+    noteId: uuid('note_id').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'org_note_favorite_profile_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.noteId],
+      foreignColumns: [orgNote.id],
+      name: 'org_note_favorite_note_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_org_note_favorite_profile').on(table.profileId),
+    unique('org_note_favorite_profile_note_key').on(table.profileId, table.noteId)
+  ]
+);
+
+export const orgNoteShare = pgTable(
+  'org_note_share',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    noteId: uuid('note_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    sharedBy: uuid('shared_by').notNull(),
+    permission: noteSharePermission().notNull().default('read'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.noteId],
+      foreignColumns: [orgNote.id],
+      name: 'org_note_share_note_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'org_note_share_profile_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.sharedBy],
+      foreignColumns: [profile.id],
+      name: 'org_note_share_shared_by_fkey'
+    }).onDelete('cascade'),
+    index('idx_org_note_share_profile').on(table.profileId),
+    index('idx_org_note_share_note').on(table.noteId),
+    unique('org_note_share_note_profile_key').on(table.noteId, table.profileId)
   ]
 );
 

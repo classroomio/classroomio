@@ -14,6 +14,7 @@ import {
   updateNote,
   type NoteListRow
 } from '@cio/db/queries/notes';
+import { getNoteSharePermission } from '@cio/db/queries/notes/share';
 import { getNoteTagsForOrganization, replaceNoteTagAssignments } from '@cio/db/queries/notes/tag';
 import { getActiveOrganizationPlan, getOrganizationById } from '@cio/db/queries/organization';
 import { verifyLessonBelongsToCourse } from '@cio/core/services/agent/chat-context';
@@ -28,7 +29,7 @@ import type {
 } from '@cio/utils/validation/notes';
 import { resolveSlugCollision, slugifyTitle } from '@cio/utils/validation/shared/slug';
 import type { TPlan } from '@db/types';
-import { assertNoteReadAccess, assertNoteWriteAccess, isOrgTeamRole } from './access';
+import { assertNoteWriteAccess, isOrgTeamRole, resolveNoteAccess } from './access';
 
 function htmlToPlainText(html: string): string {
   return html
@@ -80,9 +81,14 @@ async function getReadableNote(organizationId: string, userId: string, roleId: n
     throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
   }
 
-  const access = assertNoteReadAccess({ note, organizationId, userId, roleId });
+  const sharePermission = await getNoteSharePermission(noteId, userId);
+  const access = resolveNoteAccess({ note, organizationId, userId, roleId, sharePermission });
 
-  return { note, canWrite: access.canWrite };
+  if (!access.canRead) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  return { note, canWrite: access.canWrite, sharePermission };
 }
 
 async function validateLessonCaptureContext(params: { organizationId: string; courseId?: string; lessonId?: string }) {
@@ -186,8 +192,8 @@ export async function convertNoteToTemplateService(
   roleId: number,
   noteId: string
 ) {
-  const { note } = await getReadableNote(organizationId, userId, roleId, noteId);
-  assertNoteWriteAccess({ note, organizationId, userId });
+  const { note, sharePermission } = await getReadableNote(organizationId, userId, roleId, noteId);
+  assertNoteWriteAccess({ note, organizationId, userId, roleId, sharePermission });
 
   if (note.origin !== 'workspace') {
     throw new AppError('Only workspace notes can become templates', ErrorCodes.VALIDATION_ERROR, 400);
@@ -240,8 +246,8 @@ export async function convertNoteToTemplateService(
 }
 
 export async function unsetNoteTemplateService(organizationId: string, userId: string, roleId: number, noteId: string) {
-  const { note } = await getReadableNote(organizationId, userId, roleId, noteId);
-  assertNoteWriteAccess({ note, organizationId, userId });
+  const { note, sharePermission } = await getReadableNote(organizationId, userId, roleId, noteId);
+  assertNoteWriteAccess({ note, organizationId, userId, roleId, sharePermission });
 
   if (!note.isTemplate) {
     return { ...note, canWrite: true };
@@ -333,8 +339,8 @@ export async function updateNoteService(
   noteId: string,
   data: TUpdateNote
 ) {
-  const { note: existing } = await getReadableNote(organizationId, userId, roleId, noteId);
-  assertNoteWriteAccess({ note: existing, organizationId, userId });
+  const { note: existing, sharePermission } = await getReadableNote(organizationId, userId, roleId, noteId);
+  assertNoteWriteAccess({ note: existing, organizationId, userId, roleId, sharePermission });
 
   const nextContent = data.content ?? existing.content;
   const nextTitle = data.title ?? existing.title;
@@ -381,8 +387,8 @@ export async function updateNoteVisibilityService(
   noteId: string,
   data: TUpdateNoteVisibility
 ) {
-  const { note: existing } = await getReadableNote(organizationId, userId, roleId, noteId);
-  assertNoteWriteAccess({ note: existing, organizationId, userId });
+  const { note: existing, sharePermission } = await getReadableNote(organizationId, userId, roleId, noteId);
+  assertNoteWriteAccess({ note: existing, organizationId, userId, roleId, sharePermission });
 
   if (existing.origin !== 'workspace') {
     throw new AppError('Only workspace notes can be shared', ErrorCodes.VALIDATION_ERROR, 400);
@@ -425,8 +431,8 @@ export async function updateNoteVisibilityService(
 }
 
 export async function deleteNoteService(organizationId: string, userId: string, roleId: number, noteId: string) {
-  const { note } = await getReadableNote(organizationId, userId, roleId, noteId);
-  assertNoteWriteAccess({ note, organizationId, userId });
+  const { note, sharePermission } = await getReadableNote(organizationId, userId, roleId, noteId);
+  assertNoteWriteAccess({ note, organizationId, userId, roleId, sharePermission });
   await softDeleteNote(noteId);
   return { id: noteId };
 }
@@ -449,8 +455,8 @@ export async function restoreNoteVersionService(
   noteId: string,
   versionId: number
 ) {
-  const { note } = await getReadableNote(organizationId, userId, roleId, noteId);
-  assertNoteWriteAccess({ note, organizationId, userId });
+  const { note, sharePermission } = await getReadableNote(organizationId, userId, roleId, noteId);
+  assertNoteWriteAccess({ note, organizationId, userId, roleId, sharePermission });
 
   const version = await getNoteVersionById(noteId, versionId);
 

@@ -18,6 +18,8 @@ CREATE TABLE "org_note" (
 	"lesson_id" uuid,
 	"video_anchors" jsonb DEFAULT '[]'::jsonb NOT NULL,
 	"converted_course_id" uuid,
+	"parent_id" uuid,
+	"sort_order" integer DEFAULT 0 NOT NULL,
 	"created_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
 	"deleted_at" timestamp with time zone
@@ -102,4 +104,37 @@ CREATE INDEX "idx_org_note_comment_thread_note_id_status" ON "org_note_comment_t
 CREATE INDEX "idx_org_note_comment_thread_note_id_created" ON "org_note_comment_thread" USING btree ("note_id","created_at");--> statement-breakpoint
 CREATE INDEX "idx_org_note_comment_thread_id_created" ON "org_note_comment" USING btree ("thread_id","created_at");--> statement-breakpoint
 CREATE INDEX "idx_org_note_comment_mention_comment_id" ON "org_note_comment_mention" USING btree ("comment_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_org_note_comment_mention_unique" ON "org_note_comment_mention" USING btree ("comment_id","profile_id");
+CREATE UNIQUE INDEX "idx_org_note_comment_mention_unique" ON "org_note_comment_mention" USING btree ("comment_id","profile_id");--> statement-breakpoint
+ALTER TABLE "org_note" ADD CONSTRAINT "org_note_parent_id_fkey" FOREIGN KEY ("parent_id") REFERENCES "public"."org_note"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "idx_org_note_parent_sort" ON "org_note" USING btree ("parent_id","sort_order");--> statement-breakpoint
+CREATE INDEX "idx_org_note_org_parent" ON "org_note" USING btree ("organization_id","parent_id");--> statement-breakpoint
+CREATE TYPE "public"."note_share_permission" AS ENUM('read', 'write');--> statement-breakpoint
+CREATE TABLE "org_note_favorite" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"profile_id" uuid NOT NULL,
+	"note_id" uuid NOT NULL,
+	"created_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+	CONSTRAINT "org_note_favorite_profile_note_key" UNIQUE("profile_id","note_id")
+);--> statement-breakpoint
+ALTER TABLE "org_note_favorite" ADD CONSTRAINT "org_note_favorite_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "org_note_favorite" ADD CONSTRAINT "org_note_favorite_note_id_fkey" FOREIGN KEY ("note_id") REFERENCES "public"."org_note"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "idx_org_note_favorite_profile" ON "org_note_favorite" USING btree ("profile_id");--> statement-breakpoint
+CREATE TABLE "org_note_share" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"note_id" uuid NOT NULL,
+	"profile_id" uuid NOT NULL,
+	"shared_by" uuid NOT NULL,
+	"permission" "note_share_permission" DEFAULT 'read' NOT NULL,
+	"created_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+	CONSTRAINT "org_note_share_note_profile_key" UNIQUE("note_id","profile_id")
+);--> statement-breakpoint
+ALTER TABLE "org_note_share" ADD CONSTRAINT "org_note_share_note_id_fkey" FOREIGN KEY ("note_id") REFERENCES "public"."org_note"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "org_note_share" ADD CONSTRAINT "org_note_share_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "org_note_share" ADD CONSTRAINT "org_note_share_shared_by_fkey" FOREIGN KEY ("shared_by") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "idx_org_note_share_profile" ON "org_note_share" USING btree ("profile_id");--> statement-breakpoint
+CREATE INDEX "idx_org_note_share_note" ON "org_note_share" USING btree ("note_id");--> statement-breakpoint
+INSERT INTO "org_note_favorite" ("profile_id", "note_id", "created_at")
+SELECT "owner_id", "id", COALESCE("updated_at", "created_at")
+FROM "org_note"
+WHERE "is_pinned" = true AND "deleted_at" IS NULL
+ON CONFLICT DO NOTHING;

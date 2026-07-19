@@ -5,6 +5,7 @@ import {
   getNoteTagsForOrganization,
   replaceNoteTagAssignments
 } from '@cio/db/queries/notes';
+import { getNoteSharePermission } from '@cio/db/queries/notes/share';
 import type { TNoteTagAssignment } from '@cio/utils/validation/notes';
 import { assertNoteReadAccess, assertNoteWriteAccess } from './access';
 import { getNoteById } from '@cio/db/queries/notes';
@@ -22,7 +23,8 @@ export async function getNoteTagsService(organizationId: string, userId: string,
     throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
   }
 
-  assertNoteReadAccess({ note, organizationId, userId, roleId });
+  const sharePermission = await getNoteSharePermission(noteId, userId);
+  assertNoteReadAccess({ note, organizationId, userId, roleId, sharePermission });
   assertWorkspaceNoteTagsAllowed(note);
 
   return getNoteTagsForOrganization(organizationId, noteId);
@@ -41,7 +43,8 @@ export async function replaceNoteTagsService(
     throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
   }
 
-  assertNoteWriteAccess({ note, organizationId, userId });
+  const sharePermission = await getNoteSharePermission(noteId, userId);
+  assertNoteWriteAccess({ note, organizationId, userId, roleId, sharePermission });
   assertWorkspaceNoteTagsAllowed(note);
 
   const uniqueTagIds = Array.from(new Set(data.tagIds));
