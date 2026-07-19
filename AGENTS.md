@@ -442,7 +442,8 @@ Rule of thumb: if the recipient is being addressed **as a ClassroomIO customer**
 
 ### Email link URLs
 
-Links embedded in transactional emails must use the correct dashboard host:
+Links embedded in transactional emails must use the correct dashboard host. Templates only receive pre-built URLs — callers build them in API services before `enqueueTransactionalEmail`. See `packages/email/README.md` § Email link URLs.
+
 
 - **Teacher/tutor/admin dashboard actions** (course management, grading, team invites, auto-enroll): build URLs with `getAppBaseUrl()` from `@cio/core/config/dashboard-url`. This resolves to the admin app (`app.classroomio.com` in cloud, or `DASHBOARD_ORIGIN` / localhost in dev). Do **not** pass org `customDomain` or tenant `siteName` — staff sign in on the admin app, not the org public site.
 - **Student/learner-facing links** (course enroll, org audience invites, login): build URLs with `getDashboardBaseUrl(org)` so links land on the org's public site (verified custom domain, tenant subdomain, or platform fallback).
