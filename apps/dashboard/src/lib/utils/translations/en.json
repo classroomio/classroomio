@@ -4109,26 +4109,6 @@
       "save_error": "Could not save tags.",
       "filter_all": "All tags"
     },
-    "share": {
-      "open": "Share",
-      "title": "Share note",
-      "description": "Choose who on your team can access this note.",
-      "private_label": "Only you",
-      "private_description": "Only you can view and edit this note.",
-      "team_label": "Your team",
-      "team_description": "All admins and tutors in {orgName} can view this note.",
-      "public_label": "Anyone with the link",
-      "public_description": "Anyone with the link can view this note. It will appear on your public academy site.",
-      "public_slug_label": "Public link slug",
-      "public_slug_hint": "Used in the public URL for this note.",
-      "copy_success": "Link copied",
-      "read_only_banner": "You can view this note. Only the author can edit it.",
-      "by_author": "By {name}",
-      "save": "Save",
-      "cancel": "Cancel",
-      "save_success": "Sharing updated",
-      "save_error": "Could not update sharing."
-    },
     "editor": {
       "page_title": "Edit note",
       "loading": "Loading note…",
@@ -4190,6 +4170,10 @@
       "create_success": "Note created from template",
       "create_error": "Could not create note from template.",
       "use_template": "Use template",
+      "modules_included": "{count, plural, =1 {1 module included} other {# modules included}}",
+      "your_templates_heading": "Your saved templates",
+      "your_templates_description": "Notes you marked as templates for this organization.",
+      "your_templates_empty": "Save a note as a template to reuse it here.",
       "edit_template": "Edit template",
       "remove_template": "Remove as template",
       "remove_success": "Template removed",
@@ -4298,6 +4282,7 @@
     },
     "sidebar": {
       "search_placeholder": "Search",
+      "search_modal_title": "Search notes",
       "new_note": "New note",
       "sections": {
         "favorites": "Favorites",
@@ -4316,6 +4301,38 @@
       "restore": "Restore",
       "delete_forever": "Delete forever",
       "confirm_delete": "Delete this note permanently? This cannot be undone."
+    },
+    "subpages": {
+      "heading": "Sub-pages",
+      "new": "New sub-page",
+      "empty": "No sub-pages yet."
+    },
+    "favorite": {
+      "add": "Added to favorites",
+      "remove": "Removed from favorites"
+    },
+    "share": {
+      "open": "Share",
+      "title": "Share note",
+      "description": "Choose who on your team can access this note.",
+      "private_label": "Only you",
+      "private_description": "Only you can view and edit this note.",
+      "team_label": "Your team",
+      "team_description": "All admins and tutors in {orgName} can view this note.",
+      "public_label": "Anyone with the link",
+      "public_description": "Anyone with the link can view this note. It will appear on your public academy site.",
+      "public_slug_label": "Public link slug",
+      "public_slug_hint": "Used in the public URL for this note.",
+      "copy_success": "Link copied",
+      "read_only_banner": "You can view this note. Only the author can edit it.",
+      "by_author": "By {name}",
+      "save": "Save",
+      "cancel": "Cancel",
+      "save_success": "Sharing updated",
+      "save_error": "Could not update sharing.",
+      "people_heading": "People with access",
+      "permission_read": "Can view",
+      "permission_write": "Can edit"
     }
   },
   "certificates": {

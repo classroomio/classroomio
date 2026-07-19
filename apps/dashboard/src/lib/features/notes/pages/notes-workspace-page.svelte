@@ -7,13 +7,14 @@
   import PlusIcon from '@lucide/svelte/icons/plus';
   import FileTextIcon from '@lucide/svelte/icons/file-text';
   import Trash2Icon from '@lucide/svelte/icons/trash-2';
-  import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { notesApi } from '../api';
   import NoteListSidebar from '../components/note-list-sidebar.svelte';
+  import NoteSearchModal from '../components/note-search-modal.svelte';
   import NoteEditorPage from './note-editor-page.svelte';
+  import NoteTemplatesPage from './note-templates-page.svelte';
   import { displayNoteTitle } from '../utils/note-list-utils';
 
   export type NotesWorkspaceMode = 'workspace' | 'trash' | 'templates';
@@ -26,6 +27,7 @@
   let { noteId = null, mode = 'workspace' }: Props = $props();
   let isCreating = $state(false);
   let hasCheckedRedirect = $state(false);
+  let showSearchModal = $state(false);
 
   const privateRootNotes = $derived(
     notesApi.sidebarNotes.filter((note) => note.ownerId === $profile.id && !note.parentId && note.visibility !== 'team')
@@ -98,11 +100,21 @@
     if (params.get('create') === '1') {
       void handleCreateNote();
     }
+
+    const openSearch = () => {
+      showSearchModal = true;
+    };
+
+    window.addEventListener('notes:open-search', openSearch);
+
+    return () => {
+      window.removeEventListener('notes:open-search', openSearch);
+    };
   });
 </script>
 
 <div class="flex min-h-0 flex-1 w-full overflow-hidden">
-  <NoteListSidebar selectedNoteId={noteId} />
+  <NoteListSidebar selectedNoteId={noteId} onSearchClick={() => (showSearchModal = true)} />
 
   <section class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
     {#if mode === 'trash'}
@@ -141,19 +153,7 @@
         </div>
       </div>
     {:else if mode === 'templates'}
-      <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
-        <div class="border-border border-b px-6 py-4">
-          <h1 class="text-lg font-semibold">{$t('notes.templates.page_title')}</h1>
-          <p class="ui:text-muted-foreground mt-1 text-sm">{$t('notes.templates.page_subtitle')}</p>
-        </div>
-        <div class="flex flex-1 items-center justify-center p-6">
-          <Empty
-            title={$t('notes.templates.page_title')}
-            description={$t('notes.templates.page_subtitle')}
-            icon={LayoutTemplateIcon}
-          />
-        </div>
-      </div>
+      <NoteTemplatesPage />
     {:else if noteId}
       <NoteEditorPage {noteId} />
     {:else if notesApi.isLoading}
@@ -176,3 +176,5 @@
     {/if}
   </section>
 </div>
+
+<NoteSearchModal bind:open={showSearchModal} {noteHref} />

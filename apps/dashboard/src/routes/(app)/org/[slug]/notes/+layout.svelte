@@ -13,6 +13,15 @@
 
   let sidePanelWidth = $state(0);
 
+  function handleSearchShortcut(event: KeyboardEvent) {
+    if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'k') {
+      return;
+    }
+
+    event.preventDefault();
+    window.dispatchEvent(new CustomEvent('notes:open-search'));
+  }
+
   onMount(() => {
     const wasSidebarOpen = sidebar.open;
     sidebar.setOpen(false);
@@ -22,6 +31,8 @@
     };
   });
 </script>
+
+<svelte:window onkeydown={handleSearchShortcut} />
 
 <div
   class="notes-workspace flex min-h-0 w-full flex-1 flex-col overflow-hidden"

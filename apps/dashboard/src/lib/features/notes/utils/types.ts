@@ -23,6 +23,7 @@ export type RestoreNoteVersionRequest =
 
 export type ListNoteTemplatesRequest = (typeof classroomio.notes)['templates']['$get'];
 export type CreateNoteFromTemplateRequest = (typeof classroomio.notes)['from-template']['$post'];
+export type CreateNoteFromCourseTemplateRequest = (typeof classroomio.notes)['from-course-template']['$post'];
 export type ConvertNoteToTemplateRequest = (typeof classroomio.notes)[':noteId']['convert-to-template']['$post'];
 export type UnsetNoteTemplateRequest = (typeof classroomio.notes)[':noteId']['unset-template']['$post'];
 export type ConvertNoteToCourseRequest = (typeof classroomio.notes)[':noteId']['convert-to-course']['$post'];

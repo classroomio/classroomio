@@ -6,7 +6,7 @@
   import TrashIcon from '@lucide/svelte/icons/trash-2';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
-  import PinIcon from '@lucide/svelte/icons/pin';
+  import StarIcon from '@lucide/svelte/icons/star';
   import LoaderIcon from '@lucide/svelte/icons/loader';
   import XIcon from '@lucide/svelte/icons/x';
   import { onDestroy } from 'svelte';
@@ -38,7 +38,7 @@
   import NoteCommentSelection from '../components/note-comment-selection.svelte';
   import NoteEmptyPagePicker, { type NoteEmptyPageOption } from '../components/note-empty-page-picker.svelte';
   import NoteConvertCourseDialog from '../components/note-convert-course-dialog.svelte';
-  import NoteTemplatesBrowser from '../components/note-templates-browser.svelte';
+  import NoteSubpages from '../components/note-subpages.svelte';
   import {
     NOTE_AI_PANEL_ID,
     NOTE_COMMENTS_PANEL_ID,
@@ -73,6 +73,9 @@
   let noteSlug = $state<string | null>(null);
   let convertedCourseId = $state<string | null>(null);
   let isPinned = $state(false);
+  let isFavorited = $state(false);
+  let childNotes = $state<Array<{ id: string; title: string; sortOrder?: number; updatedAt?: string }>>([]);
+  let noteOwnerId = $state('');
   let isTemplateNote = $state(false);
   let ownerFullname = $state<string | null>(null);
   let canWrite = $state(true);
@@ -86,7 +89,6 @@
   let showVersionHistory = $state(false);
   let showDeleteDialog = $state(false);
   let showConvertCourseDialog = $state(false);
-  let showTemplatePicker = $state(false);
   let isDeleting = $state(false);
   let saveTimer: ReturnType<typeof setTimeout> | null = null;
   let titleSaveTimer: ReturnType<typeof setTimeout> | null = null;
@@ -170,6 +172,9 @@
     noteSlug = note.slug ?? null;
     convertedCourseId = note.convertedCourseId ?? null;
     isPinned = note.isPinned ?? false;
+    isFavorited = note.isFavorited ?? false;
+    childNotes = note.children ?? [];
+    noteOwnerId = note.ownerId;
     isTemplateNote = note.isTemplate ?? false;
     ownerFullname = note.ownerFullname;
     canWrite = note.canWrite ?? note.ownerId === $profile.id;
@@ -429,7 +434,7 @@
     }
 
     if (option === 'templates') {
-      showTemplatePicker = true;
+      await goto(resolve(`${$currentOrgPath}/notes/templates`, {}));
       return;
     }
 
@@ -480,18 +485,34 @@
     await notesApi.listTemplates();
   }
 
-  async function handleTogglePin() {
-    const nextPinned = !isPinned;
-    const updated = await notesApi.updateNote(noteId, { isPinned: nextPinned });
+  async function handleToggleFavorite() {
+    if (isFavorited) {
+      await notesApi.unfavoriteNote(noteId);
+      isFavorited = false;
+      snackbar.success('notes.favorite.remove');
+    } else {
+      await notesApi.favoriteNote(noteId);
+      isFavorited = true;
+      snackbar.success('notes.favorite.add');
+    }
 
-    if (!updated) {
-      snackbar.error('notes.editor.pin_error');
+    await notesApi.listSidebar();
+  }
+
+  async function handleCreateSubpage() {
+    const created = await notesApi.createWorkspaceNote(t.get('notes.subpages.new'), noteId);
+
+    if (!created) {
       return;
     }
 
-    isPinned = updated.isPinned ?? nextPinned;
-    await notesApi.refreshList();
-    snackbar.success(isPinned ? 'notes.editor.pin_success' : 'notes.editor.unpin_success');
+    childNotes = [...childNotes, created];
+    await notesApi.listSidebar();
+    await goto(resolve(`${$currentOrgPath}/notes/${created.id}`, {}));
+  }
+
+  function noteHref(targetNoteId: string) {
+    return resolve(`${$currentOrgPath}/notes/${targetNoteId}`, {});
   }
 
   async function handleUnsetTemplate() {
@@ -794,9 +815,9 @@
                   </DropdownMenu.Item>
                 {/if}
                 {#if noteOrigin === 'workspace' && canWrite && !isTemplateNote}
-                  <DropdownMenu.Item onclick={handleTogglePin}>
-                    <PinIcon size={16} />
-                    {isPinned ? $t('notes.editor.unpin') : $t('notes.editor.pin')}
+                  <DropdownMenu.Item onclick={handleToggleFavorite}>
+                    <StarIcon size={16} class={isFavorited ? 'text-amber-500' : ''} />
+                    {isFavorited ? $t('notes.favorite.remove') : $t('notes.favorite.add')}
                   </DropdownMenu.Item>
                 {/if}
                 {#if noteOrigin === 'workspace'}
@@ -902,6 +923,16 @@
               <p class="ui:text-muted-foreground mt-2 text-xs">{$t('notes.editor.slash_hint')}</p>
             {/if}
 
+            {#if noteOrigin === 'workspace' && !showEmptyPagePicker}
+              <NoteSubpages
+                {noteId}
+                children={childNotes}
+                {canWrite}
+                {noteHref}
+                onCreateChild={handleCreateSubpage}
+              />
+            {/if}
+
             {#if isImporting}
               <div class="ui:text-muted-foreground mt-2 flex items-center gap-2 text-sm">
                 <LoaderIcon size={16} class="animate-spin" />
@@ -930,18 +961,10 @@
   }}
 />
 
-<NoteTemplatesBrowser
-  bind:open={showTemplatePicker}
-  applyToNoteId={noteId}
-  onApplied={() => {
-    emptyPagePickerDismissed = true;
-    void loadNote();
-  }}
-/>
-
 <NoteShareDialog
   {noteId}
   {noteTitle}
+  ownerId={noteOwnerId}
   visibility={noteVisibility}
   {noteSlug}
   bind:open={showShareDialog}

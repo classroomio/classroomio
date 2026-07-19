@@ -30,7 +30,10 @@ import type {
   FavoriteNoteRequest,
   UnfavoriteNoteRequest,
   RestoreNoteRequest,
-  PermanentDeleteNoteRequest
+  PermanentDeleteNoteRequest,
+  GetNoteSharesRequest,
+  ReplaceNoteSharesRequest,
+  CreateNoteFromCourseTemplateRequest
 } from '../utils/types';
 
 export type NoteListItem = Extract<InferResponseType<ListNotesRequest>, { success: true }>['data'][number];
@@ -526,6 +529,64 @@ class NotesApi extends BaseApiWithErrors {
     });
 
     return created;
+  }
+
+  async createFromCourseTemplate(templateId: string) {
+    const org = get(currentOrg);
+    if (!org.id) return null;
+
+    let result: { rootNote: NoteDetail; children: NoteDetail[] } | null = null;
+
+    await this.execute<CreateNoteFromCourseTemplateRequest>({
+      requestFn: () =>
+        classroomio.notes['from-course-template'].$post({
+          json: {
+            organizationId: org.id,
+            templateId
+          }
+        }),
+      onSuccess: (response) => {
+        result = response.data ?? null;
+      },
+      logContext: 'createFromCourseTemplate'
+    });
+
+    return result;
+  }
+
+  async getNoteShares(noteId: string) {
+    let shares: Extract<InferResponseType<GetNoteSharesRequest>, { success: true }>['data'] = [];
+
+    await this.execute<GetNoteSharesRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId'].shares.$get({
+          param: { noteId }
+        }),
+      onSuccess: (response) => {
+        shares = response.data;
+      },
+      logContext: 'getNoteShares'
+    });
+
+    return shares;
+  }
+
+  async replaceNoteShares(noteId: string, grants: Array<{ profileId: string; permission: 'read' | 'write' }>) {
+    let shares: Extract<InferResponseType<ReplaceNoteSharesRequest>, { success: true }>['data'] | null = null;
+
+    await this.execute<ReplaceNoteSharesRequest>({
+      requestFn: () =>
+        classroomio.notes[':noteId'].shares.$put({
+          param: { noteId },
+          json: { grants }
+        }),
+      onSuccess: (response) => {
+        shares = response.data;
+      },
+      logContext: 'replaceNoteShares'
+    });
+
+    return shares;
   }
 
   async restoreVersion(noteId: string, versionId: number) {

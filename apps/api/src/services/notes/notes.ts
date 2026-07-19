@@ -24,7 +24,7 @@ import {
   type NoteListRow,
   type SidebarNoteRow
 } from '@cio/db/queries/notes';
-import { addNoteFavorite, removeNoteFavorite } from '@cio/db/queries/notes/favorite';
+import { addNoteFavorite, isNoteFavorited, removeNoteFavorite } from '@cio/db/queries/notes/favorite';
 import {
   getNoteSharePermission,
   listNoteShares,
@@ -38,6 +38,7 @@ import { verifyLessonBelongsToCourse } from '@cio/core/services/agent/chat-conte
 import { BASIC_WORKSPACE_NOTE_LIMIT, PLAN } from '@cio/utils/plans/constants';
 import type {
   TCreateNote,
+  TCreateNoteFromCourseTemplate,
   TCreateNoteFromTemplate,
   TListNotesQuery,
   TNoteOrigin,
@@ -46,6 +47,7 @@ import type {
   TUpdateNoteVisibility
 } from '@cio/utils/validation/notes';
 import { resolveSlugCollision, slugifyTitle } from '@cio/utils/validation/shared/slug';
+import { getCourseTemplateById } from '@cio/utils/constants/note-course-templates';
 import type { TPlan } from '@db/types';
 import { assertNoteWriteAccess, isOrgTeamRole, resolveNoteAccess } from './access';
 
@@ -293,8 +295,9 @@ export async function permanentDeleteNoteService(organizationId: string, userId:
 export async function getNoteService(organizationId: string, userId: string, roleId: number, noteId: string) {
   const { note, canWrite } = await getReadableNote(organizationId, userId, roleId, noteId);
   const children = await listNoteChildren(noteId);
+  const favorited = await isNoteFavorited(userId, noteId);
 
-  return { ...note, canWrite, children };
+  return { ...note, canWrite, children, isFavorited: favorited };
 }
 
 export async function createNoteService(ownerId: string, roleId: number, data: TCreateNote) {
@@ -321,7 +324,7 @@ export async function createNoteService(ownerId: string, roleId: number, data: T
   }
 
   const plainText = htmlToPlainText(data.content ?? '');
-  let visibility =
+  let visibility: 'private' | 'team' | 'public' =
     data.origin === 'workspace' ? await getWorkspaceNoteDefaultVisibility(data.organizationId) : 'private';
   let noteOwnerId = ownerId;
   let parentId: string | null = data.parentId ?? null;
@@ -463,6 +466,68 @@ export async function unsetNoteTemplateService(organizationId: string, userId: s
   return { ...refreshed, canWrite: true };
 }
 
+async function copyTemplateNoteTree(params: {
+  sourceNoteId: string;
+  organizationId: string;
+  ownerId: string;
+  visibility: 'private' | 'team' | 'public';
+  parentId?: string | null;
+  sortOrder?: number;
+}): Promise<NoteListRow> {
+  const source = await getNoteById(params.sourceNoteId);
+
+  if (!source) {
+    throw new AppError('Template not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  const note = await createNote({
+    organizationId: params.organizationId,
+    ownerId: params.ownerId,
+    title: source.title,
+    content: source.content,
+    plainText: source.plainText,
+    origin: 'workspace',
+    visibility: params.visibility,
+    isTemplate: false,
+    courseId: null,
+    lessonId: null,
+    videoAnchors: source.videoAnchors ?? [],
+    parentId: params.parentId ?? null,
+    sortOrder: params.sortOrder ?? 0
+  });
+
+  if (note.content) {
+    await insertNoteVersion({
+      noteId: note.id,
+      oldContent: null,
+      newContent: note.content,
+      changedBy: params.ownerId,
+      changeSource: 'manual'
+    });
+  }
+
+  const children = await listNoteChildren(params.sourceNoteId);
+
+  for (const [index, child] of children.entries()) {
+    await copyTemplateNoteTree({
+      sourceNoteId: child.id,
+      organizationId: params.organizationId,
+      ownerId: params.ownerId,
+      visibility: params.visibility,
+      parentId: note.id,
+      sortOrder: index
+    });
+  }
+
+  const refreshed = await getNoteById(note.id);
+
+  if (!refreshed) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  return refreshed;
+}
+
 export async function createNoteFromTemplateService(
   ownerId: string,
   organizationId: string,
@@ -487,41 +552,108 @@ export async function createNoteFromTemplateService(
   await assertWorkspaceNoteCreationAllowed(organizationId, ownerId);
 
   const visibility = await getWorkspaceNoteDefaultVisibility(organizationId);
-
-  const note = await createNote({
+  const copied = await copyTemplateNoteTree({
+    sourceNoteId: template.id,
     organizationId,
     ownerId,
-    title: template.title,
-    content: template.content,
-    plainText: template.plainText,
-    origin: 'workspace',
-    visibility,
-    isTemplate: false,
-    courseId: null,
-    lessonId: null,
-    videoAnchors: []
+    visibility
   });
-
-  if (note.content) {
-    await insertNoteVersion({
-      noteId: note.id,
-      oldContent: null,
-      newContent: note.content,
-      changedBy: ownerId,
-      changeSource: 'manual'
-    });
-  }
 
   const templateTags = await getNoteTagsForOrganization(organizationId, template.id);
 
   if (templateTags.length > 0) {
     await replaceNoteTagAssignments(
-      note.id,
+      copied.id,
       templateTags.map((tag) => tag.id)
     );
   }
 
-  return { ...(await getNoteById(note.id))!, canWrite: true };
+  return { ...copied, canWrite: true };
+}
+
+export async function createNoteFromCourseTemplateService(
+  ownerId: string,
+  organizationId: string,
+  roleId: number,
+  data: TCreateNoteFromCourseTemplate
+) {
+  if (!isOrgTeamRole(roleId)) {
+    throw new AppError('Forbidden', ErrorCodes.FORBIDDEN, 403);
+  }
+
+  const template = getCourseTemplateById(data.templateId);
+
+  if (!template) {
+    throw new AppError('Template not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  await assertWorkspaceNoteCreationAllowed(organizationId, ownerId);
+
+  const visibility = await getWorkspaceNoteDefaultVisibility(organizationId);
+  const plainText = htmlToPlainText(template.introHtml ?? '');
+
+  const rootNote = await createNote({
+    organizationId,
+    ownerId,
+    title: template.title,
+    content: template.introHtml ?? '',
+    plainText,
+    origin: 'workspace',
+    visibility,
+    isTemplate: false,
+    courseId: null,
+    lessonId: null,
+    videoAnchors: [],
+    parentId: null,
+    sortOrder: 0
+  });
+
+  if (rootNote.content) {
+    await insertNoteVersion({
+      noteId: rootNote.id,
+      oldContent: null,
+      newContent: rootNote.content,
+      changedBy: ownerId,
+      changeSource: 'manual'
+    });
+  }
+
+  const children: NoteListRow[] = [];
+
+  for (const [index, moduleTitle] of template.modules.entries()) {
+    const child = await createNote({
+      organizationId,
+      ownerId,
+      title: moduleTitle,
+      content: '',
+      plainText: '',
+      origin: 'workspace',
+      visibility,
+      isTemplate: false,
+      courseId: null,
+      lessonId: null,
+      videoAnchors: [],
+      parentId: rootNote.id,
+      sortOrder: index
+    });
+
+    const refreshedChild = await getNoteById(child.id);
+
+    if (refreshedChild) {
+      children.push(refreshedChild);
+    }
+  }
+
+  const refreshedRoot = await getNoteById(rootNote.id);
+
+  if (!refreshedRoot) {
+    throw new AppError('Note not found', ErrorCodes.NOTE_NOT_FOUND, 404);
+  }
+
+  return {
+    rootNote: { ...refreshedRoot, canWrite: true },
+    children: children.map((child) => ({ ...child, canWrite: true }))
+  };
 }
 
 export async function updateNoteService(

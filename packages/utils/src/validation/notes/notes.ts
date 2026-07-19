@@ -79,6 +79,18 @@ export const ZReplaceNoteShares = z.object({
   grants: z.array(ZNoteShareGrant).max(100).default([])
 });
 
+export const ZCreateNoteFromCourseTemplate = z.object({
+  organizationId: z.string().uuid(),
+  templateId: z.enum([
+    'cohort_bootcamp',
+    'self_paced_video',
+    'single_workshop',
+    'semester_course',
+    'certification_prep',
+    'blank_course'
+  ])
+});
+
 export const ZNoteTagAssignment = z.object({
   tagIds: z.array(z.uuid()).max(100).default([])
 });
@@ -119,6 +131,7 @@ export type TUpdateNote = z.infer<typeof ZUpdateNote>;
 export type TNoteTagAssignment = z.infer<typeof ZNoteTagAssignment>;
 export type TReplaceNoteShares = z.infer<typeof ZReplaceNoteShares>;
 export type TNoteShareGrant = z.infer<typeof ZNoteShareGrant>;
+export type TCreateNoteFromCourseTemplate = z.infer<typeof ZCreateNoteFromCourseTemplate>;
 export type TUpdateNoteVisibility = z.infer<typeof ZUpdateNoteVisibility>;
 export type TConvertNoteToCourse = z.infer<typeof ZConvertNoteToCourse>;
 export type TPublicNoteBySlugParam = z.infer<typeof ZPublicNoteBySlugParam>;

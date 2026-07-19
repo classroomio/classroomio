@@ -14,7 +14,7 @@ import {
   updateCommentThreadStatus,
   type NoteCommentThreadRow
 } from '@cio/db/queries/notes';
-import { getNoteById, updateNote } from '@cio/db/queries/notes';
+import { getNoteById, insertNoteVersion, updateNote } from '@cio/db/queries/notes';
 import { getNoteSharePermission } from '@cio/db/queries/notes/share';
 import { env } from '@cio/core/config/env';
 import { publishNoteCommentEvent } from '@cio/core/utils/redis/note-comments-pubsub';

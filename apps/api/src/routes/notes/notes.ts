@@ -4,6 +4,7 @@ import {
   ZCreateNoteCommentReply,
   ZCreateNoteCommentThread,
   ZCreateNoteFromTemplate,
+  ZCreateNoteFromCourseTemplate,
   ZConvertNoteToCourse,
   ZListNotesQuery,
   ZNoteCommentIdParam,
@@ -32,6 +33,7 @@ import {
   createNoteService,
   convertNoteToTemplateService,
   createNoteFromTemplateService,
+  createNoteFromCourseTemplateService,
   deleteNoteService,
   favoriteNoteService,
   getNoteService,
@@ -184,6 +186,29 @@ export const notesRouter = new Hono()
         return c.json({ success: true, data }, 201);
       } catch (error) {
         return handleError(c, error, 'Failed to create note from template');
+      }
+    }
+  )
+  .post(
+    '/from-course-template',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('json', ZCreateNoteFromCourseTemplate),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const organizationId = c.get('orgId')!;
+        const body = c.req.valid('json');
+
+        if (body.organizationId !== organizationId) {
+          return c.json({ success: false, error: 'Organization mismatch', code: 'FORBIDDEN' }, 403);
+        }
+
+        const data = await createNoteFromCourseTemplateService(user.id, organizationId, c.get('userRole')!, body);
+
+        return c.json({ success: true, data }, 201);
+      } catch (error) {
+        return handleError(c, error, 'Failed to create note from course template');
       }
     }
   )

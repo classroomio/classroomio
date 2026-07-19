@@ -23,10 +23,11 @@
 
   interface Props {
     selectedNoteId?: string | null;
+    onSearchClick?: () => void;
     class?: string;
   }
 
-  let { selectedNoteId = null, class: className = '' }: Props = $props();
+  let { selectedNoteId = null, onSearchClick, class: className = '' }: Props = $props();
 
   let isCreating = $state(false);
   let expandedIds = $state<Set<string>>(new Set());
@@ -100,7 +101,7 @@
 
 <aside class={cn('border-border ui:bg-muted/30 flex min-h-0 w-72 shrink-0 flex-col self-stretch border-r', className)}>
   <div class="space-y-1 py-3">
-    <NoteSidebarSearch />
+    <NoteSidebarSearch onclick={() => onSearchClick?.()} />
     <NoteSidebarNewNote loading={isCreating} onclick={handleCreateNote} />
   </div>
 
