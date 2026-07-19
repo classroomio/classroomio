@@ -1198,6 +1198,12 @@
           "no_matching_existing_students": "No organization students match your search.",
           "notify_existing_students": "Send course access email",
           "grant_access": "Grant Access",
+          "grant_access_modal": {
+            "title": "Udostępnij dostęp studentowi",
+            "description": "Przyznaj {email} dostęp do tego kursu. Wyślemy zaproszenie e-mailem, aby dołączył do Twojej organizacji i zapisał się na ten kurs.",
+            "cancel": "Anuluj",
+            "send_invite": "Wyślij zaproszenie"
+          },
           "invite_new_students_title": "Invite new students",
           "invite_new_students_description": "Invite new people into your organization and pre-assign them to this course. They will create an account, accept the invite, and get access.",
           "invite_new_students": "Invite Students",
