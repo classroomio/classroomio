@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { ROLE } from '@cio/utils/constants/roles';
-import type { NoteListRow } from '@cio/db/queries/notes';
-import { resolveNoteAccess } from '@api/services/notes/access';
+import type { DocListRow } from '@cio/db/queries/docs';
+import { resolveNoteAccess } from '@api/services/docs/access';
 
-function makeNote(overrides: Partial<NoteListRow> = {}): NoteListRow {
+function makeNote(overrides: Partial<DocListRow> = {}): DocListRow {
   return {
     id: 'note-1',
     organizationId: 'org-1',
@@ -11,7 +11,7 @@ function makeNote(overrides: Partial<NoteListRow> = {}): NoteListRow {
     title: 'Test note',
     content: '',
     plainText: '',
-    origin: 'workspace',
+    origin: 'organization',
     visibility: 'private',
     slug: null,
     isPinned: false,

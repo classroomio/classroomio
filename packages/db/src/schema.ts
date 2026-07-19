@@ -207,7 +207,7 @@ export const analyticsPageEvent = pgTable(
     userId: uuid('user_id'),
     eventType: text('event_type').notNull(),
     courseId: uuid('course_id'),
-    noteId: uuid('note_id'),
+    docId: uuid('doc_id'),
     path: text('path'),
     referrerHost: text('referrer_host'),
     utmSource: text('utm_source'),
@@ -221,7 +221,7 @@ export const analyticsPageEvent = pgTable(
   (table) => [
     index('idx_ape_org_occurred').on(table.orgId, table.occurredAt),
     index('idx_ape_course_occurred').on(table.courseId, table.occurredAt),
-    index('idx_ape_note_occurred').on(table.noteId, table.occurredAt),
+    index('idx_ape_note_occurred').on(table.docId, table.occurredAt),
     index('idx_ape_session').on(table.sessionId),
     index('idx_ape_event_type').on(table.eventType),
     index('idx_ape_user').on(table.userId)
@@ -237,7 +237,7 @@ export const analyticsOrgDaily = pgTable(
     landingViews: integer('landing_views').default(0).notNull(),
     uniqueVisitors: integer('unique_visitors').default(0).notNull(),
     coursePageViews: integer('course_page_views').default(0).notNull(),
-    notePageViews: integer('note_page_views').default(0).notNull(),
+    docPageViews: integer('doc_page_views').default(0).notNull(),
     enrollments: integer('enrollments').default(0).notNull(),
     completions: integer('completions').default(0).notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
@@ -269,11 +269,11 @@ export const analyticsCourseDaily = pgTable(
   ]
 );
 
-export const analyticsNoteDaily = pgTable(
-  'analytics_note_daily',
+export const analyticsDocDaily = pgTable(
+  'analytics_doc_daily',
   {
     id: uuid().defaultRandom().primaryKey().notNull(),
-    noteId: uuid('note_id').notNull(),
+    docId: uuid('doc_id').notNull(),
     orgId: uuid('org_id').notNull(),
     date: date('date').notNull(),
     views: integer('views').default(0).notNull(),
@@ -281,9 +281,9 @@ export const analyticsNoteDaily = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
   (table) => [
-    unique('analytics_note_daily_note_date_unique').on(table.noteId, table.date),
+    unique('analytics_doc_daily_note_date_unique').on(table.docId, table.date),
     index('idx_and_org_date').on(table.orgId, table.date),
-    index('idx_and_note_date').on(table.noteId, table.date)
+    index('idx_and_note_date').on(table.docId, table.date)
   ]
 );
 
@@ -730,7 +730,7 @@ export const course = pgTable(
         thingsToSay?: string;
         thingsNotToSay?: string;
         forbiddenTopics?: string[];
-        groundingScope?: 'lesson' | 'course' | 'workspace';
+        groundingScope?: 'lesson' | 'course' | 'organization';
         requireCitations?: boolean;
         assessmentMode?: 'direct_answer' | 'hint_only' | 'block_during_exercise';
         revealSolutionsAfterAttempts?: number;
@@ -2245,7 +2245,7 @@ export const organization = pgTable(
         thingsToSay: string;
         thingsNotToSay: string;
         forbiddenTopics: string[];
-        groundingScope: 'lesson' | 'course' | 'workspace';
+        groundingScope: 'lesson' | 'course' | 'organization';
         requireCitations: boolean;
         assessmentMode: 'direct_answer' | 'hint_only' | 'block_during_exercise';
         revealSolutionsAfterAttempts: number;
@@ -3808,14 +3808,14 @@ export const mediaTranscript = pgTable(
  * or a domain explicitly dead-letters a run. Drives the admin retry/replay UI
  * and Tinybird/Slack alerting.
  */
-export type NoteVideoAnchor = {
+export type DocVideoAnchor = {
   assetId: string;
   startSeconds: number;
   endSeconds?: number;
   label?: string;
 };
 
-export type NoteCommentAnchor = {
+export type DocCommentAnchor = {
   version: 1;
   threadId: string;
   quotedText: string;
@@ -3823,18 +3823,18 @@ export type NoteCommentAnchor = {
   suffix?: string;
 };
 
-export const noteCommentThreadStatus = pgEnum('note_comment_thread_status', ['open', 'resolved']);
+export const noteCommentThreadStatus = pgEnum('doc_comment_thread_status', ['open', 'resolved']);
 
-export const noteCommentAuthorType = pgEnum('note_comment_author_type', ['user', 'ai']);
+export const noteCommentAuthorType = pgEnum('doc_comment_author_type', ['user', 'ai']);
 
-export const noteOrigin = pgEnum('note_origin', ['workspace', 'lesson_capture']);
+export const docOrigin = pgEnum('doc_origin', ['organization', 'lesson_capture']);
 
-export const noteVisibility = pgEnum('note_visibility', ['private', 'team', 'public']);
+export const docVisibility = pgEnum('doc_visibility', ['private', 'team', 'public']);
 
-export const noteSharePermission = pgEnum('note_share_permission', ['read', 'write']);
+export const docSharePermission = pgEnum('doc_share_permission', ['read', 'write']);
 
-export const orgNote = pgTable(
-  'org_note',
+export const orgDoc = pgTable(
+  'org_doc',
   {
     id: uuid()
       .default(sql`gen_random_uuid()`)
@@ -3845,14 +3845,14 @@ export const orgNote = pgTable(
     title: varchar().notNull(),
     content: text().notNull().default(''),
     plainText: text('plain_text').notNull().default(''),
-    origin: noteOrigin().notNull().default('workspace'),
-    visibility: noteVisibility().notNull().default('private'),
+    origin: docOrigin().notNull().default('organization'),
+    visibility: docVisibility().notNull().default('private'),
     slug: varchar(),
     isPinned: boolean('is_pinned').notNull().default(false),
     isTemplate: boolean('is_template').notNull().default(false),
     courseId: uuid('course_id'),
     lessonId: uuid('lesson_id'),
-    videoAnchors: jsonb('video_anchors').$type<NoteVideoAnchor[]>().default([]).notNull(),
+    videoAnchors: jsonb('video_anchors').$type<DocVideoAnchor[]>().default([]).notNull(),
     convertedCourseId: uuid('converted_course_id'),
     parentId: uuid('parent_id'),
     sortOrder: integer('sort_order').notNull().default(0),
@@ -3869,54 +3869,54 @@ export const orgNote = pgTable(
     foreignKey({
       columns: [table.organizationId],
       foreignColumns: [organization.id],
-      name: 'org_note_organization_id_fkey'
+      name: 'org_doc_organization_id_fkey'
     }).onDelete('cascade'),
     foreignKey({
       columns: [table.ownerId],
       foreignColumns: [profile.id],
-      name: 'org_note_owner_id_fkey'
+      name: 'org_doc_owner_id_fkey'
     }).onDelete('cascade'),
     foreignKey({
       columns: [table.courseId],
       foreignColumns: [course.id],
-      name: 'org_note_course_id_fkey'
+      name: 'org_doc_course_id_fkey'
     }).onDelete('set null'),
     foreignKey({
       columns: [table.lessonId],
       foreignColumns: [lesson.id],
-      name: 'org_note_lesson_id_fkey'
+      name: 'org_doc_lesson_id_fkey'
     }).onDelete('set null'),
     foreignKey({
       columns: [table.convertedCourseId],
       foreignColumns: [course.id],
-      name: 'org_note_converted_course_id_fkey'
+      name: 'org_doc_converted_course_id_fkey'
     }).onDelete('set null'),
     foreignKey({
       columns: [table.parentId],
       foreignColumns: [table.id],
-      name: 'org_note_parent_id_fkey'
+      name: 'org_doc_parent_id_fkey'
     }).onDelete('cascade'),
-    index('idx_org_note_organization_owner_updated').on(table.organizationId, table.ownerId, table.updatedAt),
-    index('idx_org_note_parent_sort').on(table.parentId, table.sortOrder),
-    index('idx_org_note_org_parent').on(table.organizationId, table.parentId),
-    index('idx_org_note_lesson_id').on(table.lessonId),
-    index('idx_org_note_origin').on(table.origin),
-    index('idx_org_note_visibility').on(table.organizationId, table.visibility),
-    index('idx_org_note_is_template').on(table.organizationId, table.isTemplate),
-    uniqueIndex('org_note_owner_lesson_capture_key')
+    index('idx_org_doc_organization_owner_updated').on(table.organizationId, table.ownerId, table.updatedAt),
+    index('idx_org_doc_parent_sort').on(table.parentId, table.sortOrder),
+    index('idx_org_doc_org_parent').on(table.organizationId, table.parentId),
+    index('idx_org_doc_lesson_id').on(table.lessonId),
+    index('idx_org_doc_origin').on(table.origin),
+    index('idx_org_doc_visibility').on(table.organizationId, table.visibility),
+    index('idx_org_doc_is_template').on(table.organizationId, table.isTemplate),
+    uniqueIndex('org_doc_owner_lesson_capture_key')
       .on(table.ownerId, table.lessonId)
       .where(sql`${table.origin} = 'lesson_capture' AND ${table.deletedAt} IS NULL`),
-    uniqueIndex('org_note_org_slug_key')
+    uniqueIndex('org_doc_org_slug_key')
       .on(table.organizationId, table.slug)
       .where(sql`${table.deletedAt} IS NULL AND ${table.slug} IS NOT NULL`)
   ]
 );
 
-export const orgNoteVersion = pgTable(
-  'org_note_version',
+export const orgDocVersion = pgTable(
+  'org_doc_version',
   {
     id: serial().primaryKey().notNull(),
-    noteId: uuid('note_id').notNull(),
+    docId: uuid('doc_id').notNull(),
     oldContent: text('old_content'),
     newContent: text('new_content').notNull(),
     changedBy: uuid('changed_by').notNull(),
@@ -3927,29 +3927,29 @@ export const orgNoteVersion = pgTable(
   },
   (table) => [
     foreignKey({
-      columns: [table.noteId],
-      foreignColumns: [orgNote.id],
-      name: 'org_note_version_note_id_fkey'
+      columns: [table.docId],
+      foreignColumns: [orgDoc.id],
+      name: 'org_doc_version_doc_id_fkey'
     }).onDelete('cascade'),
     foreignKey({
       columns: [table.changedBy],
       foreignColumns: [profile.id],
-      name: 'org_note_version_changed_by_fkey'
+      name: 'org_doc_version_changed_by_fkey'
     }).onDelete('cascade'),
-    index('idx_org_note_version_note_id_timestamp').on(table.noteId, table.timestamp)
+    index('idx_org_doc_version_doc_id_timestamp').on(table.docId, table.timestamp)
   ]
 );
 
-export const orgNoteCommentThread = pgTable(
-  'org_note_comment_thread',
+export const orgDocCommentThread = pgTable(
+  'org_doc_comment_thread',
   {
     id: uuid()
       .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
-    noteId: uuid('note_id').notNull(),
+    docId: uuid('doc_id').notNull(),
     status: noteCommentThreadStatus().notNull().default('open'),
-    anchor: jsonb('anchor').$type<NoteCommentAnchor>().notNull(),
+    anchor: jsonb('anchor').$type<DocCommentAnchor>().notNull(),
     createdBy: uuid('created_by'),
     authorType: noteCommentAuthorType('author_type').notNull().default('user'),
     resolvedAt: timestamp('resolved_at', { withTimezone: true, mode: 'string' }),
@@ -3963,27 +3963,27 @@ export const orgNoteCommentThread = pgTable(
   },
   (table) => [
     foreignKey({
-      columns: [table.noteId],
-      foreignColumns: [orgNote.id],
-      name: 'org_note_comment_thread_note_id_fkey'
+      columns: [table.docId],
+      foreignColumns: [orgDoc.id],
+      name: 'org_doc_comment_thread_doc_id_fkey'
     }).onDelete('cascade'),
     foreignKey({
       columns: [table.createdBy],
       foreignColumns: [profile.id],
-      name: 'org_note_comment_thread_created_by_fkey'
+      name: 'org_doc_comment_thread_created_by_fkey'
     }).onDelete('set null'),
     foreignKey({
       columns: [table.resolvedBy],
       foreignColumns: [profile.id],
-      name: 'org_note_comment_thread_resolved_by_fkey'
+      name: 'org_doc_comment_thread_resolved_by_fkey'
     }).onDelete('set null'),
-    index('idx_org_note_comment_thread_note_id_status').on(table.noteId, table.status),
-    index('idx_org_note_comment_thread_note_id_created').on(table.noteId, table.createdAt)
+    index('idx_org_doc_comment_thread_doc_id_status').on(table.docId, table.status),
+    index('idx_org_doc_comment_thread_doc_id_created').on(table.docId, table.createdAt)
   ]
 );
 
-export const orgNoteComment = pgTable(
-  'org_note_comment',
+export const orgDocComment = pgTable(
+  'org_doc_comment',
   {
     id: uuid()
       .default(sql`gen_random_uuid()`)
@@ -4004,20 +4004,20 @@ export const orgNoteComment = pgTable(
   (table) => [
     foreignKey({
       columns: [table.threadId],
-      foreignColumns: [orgNoteCommentThread.id],
-      name: 'org_note_comment_thread_id_fkey'
+      foreignColumns: [orgDocCommentThread.id],
+      name: 'org_doc_comment_thread_id_fkey'
     }).onDelete('cascade'),
     foreignKey({
       columns: [table.authorId],
       foreignColumns: [profile.id],
-      name: 'org_note_comment_author_id_fkey'
+      name: 'org_doc_comment_author_id_fkey'
     }).onDelete('set null'),
-    index('idx_org_note_comment_thread_id_created').on(table.threadId, table.createdAt)
+    index('idx_org_doc_comment_thread_id_created').on(table.threadId, table.createdAt)
   ]
 );
 
-export const orgNoteCommentMention = pgTable(
-  'org_note_comment_mention',
+export const orgDocCommentMention = pgTable(
+  'org_doc_comment_mention',
   {
     id: uuid()
       .default(sql`gen_random_uuid()`)
@@ -4032,28 +4032,28 @@ export const orgNoteCommentMention = pgTable(
   (table) => [
     foreignKey({
       columns: [table.commentId],
-      foreignColumns: [orgNoteComment.id],
-      name: 'org_note_comment_mention_comment_id_fkey'
+      foreignColumns: [orgDocComment.id],
+      name: 'org_doc_comment_mention_comment_id_fkey'
     }).onDelete('cascade'),
     foreignKey({
       columns: [table.profileId],
       foreignColumns: [profile.id],
-      name: 'org_note_comment_mention_profile_id_fkey'
+      name: 'org_doc_comment_mention_profile_id_fkey'
     }).onDelete('cascade'),
-    index('idx_org_note_comment_mention_comment_id').on(table.commentId),
-    uniqueIndex('idx_org_note_comment_mention_unique').on(table.commentId, table.profileId)
+    index('idx_org_doc_comment_mention_comment_id').on(table.commentId),
+    uniqueIndex('idx_org_doc_comment_mention_unique').on(table.commentId, table.profileId)
   ]
 );
 
-export const orgNoteFavorite = pgTable(
-  'org_note_favorite',
+export const orgDocFavorite = pgTable(
+  'org_doc_favorite',
   {
     id: uuid()
       .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
     profileId: uuid('profile_id').notNull(),
-    noteId: uuid('note_id').notNull(),
+    docId: uuid('doc_id').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
       .default(sql`timezone('utc'::text, now())`)
       .notNull()
@@ -4062,64 +4062,64 @@ export const orgNoteFavorite = pgTable(
     foreignKey({
       columns: [table.profileId],
       foreignColumns: [profile.id],
-      name: 'org_note_favorite_profile_id_fkey'
+      name: 'org_doc_favorite_profile_id_fkey'
     }).onDelete('cascade'),
     foreignKey({
-      columns: [table.noteId],
-      foreignColumns: [orgNote.id],
-      name: 'org_note_favorite_note_id_fkey'
+      columns: [table.docId],
+      foreignColumns: [orgDoc.id],
+      name: 'org_doc_favorite_doc_id_fkey'
     }).onDelete('cascade'),
-    index('idx_org_note_favorite_profile').on(table.profileId),
-    unique('org_note_favorite_profile_note_key').on(table.profileId, table.noteId)
+    index('idx_org_doc_favorite_profile').on(table.profileId),
+    unique('org_doc_favorite_profile_note_key').on(table.profileId, table.docId)
   ]
 );
 
-export const orgNoteShare = pgTable(
-  'org_note_share',
+export const orgDocShare = pgTable(
+  'org_doc_share',
   {
     id: uuid()
       .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
-    noteId: uuid('note_id').notNull(),
+    docId: uuid('doc_id').notNull(),
     profileId: uuid('profile_id').notNull(),
     sharedBy: uuid('shared_by').notNull(),
-    permission: noteSharePermission().notNull().default('read'),
+    permission: docSharePermission().notNull().default('read'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
       .default(sql`timezone('utc'::text, now())`)
       .notNull()
   },
   (table) => [
     foreignKey({
-      columns: [table.noteId],
-      foreignColumns: [orgNote.id],
-      name: 'org_note_share_note_id_fkey'
+      columns: [table.docId],
+      foreignColumns: [orgDoc.id],
+      name: 'org_doc_share_doc_id_fkey'
     }).onDelete('cascade'),
     foreignKey({
       columns: [table.profileId],
       foreignColumns: [profile.id],
-      name: 'org_note_share_profile_id_fkey'
+      name: 'org_doc_share_profile_id_fkey'
     }).onDelete('cascade'),
     foreignKey({
       columns: [table.sharedBy],
       foreignColumns: [profile.id],
-      name: 'org_note_share_shared_by_fkey'
+      name: 'org_doc_share_shared_by_fkey'
     }).onDelete('cascade'),
-    index('idx_org_note_share_profile').on(table.profileId),
-    index('idx_org_note_share_note').on(table.noteId),
-    unique('org_note_share_note_profile_key').on(table.noteId, table.profileId)
+    index('idx_org_doc_share_profile').on(table.profileId),
+    index('idx_org_doc_share_note').on(table.docId),
+    unique('org_doc_share_note_profile_key').on(table.docId, table.profileId)
   ]
 );
 
-export const noteTagAssignment = pgTable(
-  'note_tag_assignment',
+export const docTagAssignment = pgTable(
+  'doc_tag_assignment',
   {
     id: uuid()
       .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
     tagId: uuid('tag_id').notNull(),
-    noteId: uuid('note_id').notNull(),
+    docId: uuid('doc_id').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
       .default(sql`timezone('utc'::text, now())`)
       .notNull()
@@ -4128,16 +4128,16 @@ export const noteTagAssignment = pgTable(
     foreignKey({
       columns: [table.tagId],
       foreignColumns: [tag.id],
-      name: 'note_tag_assignment_tag_id_fkey'
+      name: 'doc_tag_assignment_tag_id_fkey'
     }).onDelete('cascade'),
     foreignKey({
-      columns: [table.noteId],
-      foreignColumns: [orgNote.id],
-      name: 'note_tag_assignment_note_id_fkey'
+      columns: [table.docId],
+      foreignColumns: [orgDoc.id],
+      name: 'doc_tag_assignment_doc_id_fkey'
     }).onDelete('cascade'),
-    index('idx_note_tag_assignment_tag_id').on(table.tagId),
-    index('idx_note_tag_assignment_note_id').on(table.noteId),
-    unique('note_tag_assignment_tag_note_key').on(table.tagId, table.noteId)
+    index('idx_doc_tag_assignment_tag_id').on(table.tagId),
+    index('idx_doc_tag_assignment_doc_id').on(table.docId),
+    unique('doc_tag_assignment_tag_note_key').on(table.tagId, table.docId)
   ]
 );
 

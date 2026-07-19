@@ -8,7 +8,7 @@
   import type { Content, TiptapEditor } from '@cio/ui/custom/editor';
   import type { TLocale } from '@cio/db/types';
   import AIButton from '$features/course/components/lesson/ai-button.svelte';
-  import QuoteSelection from '$features/course/components/lesson/note/quote-selection.svelte';
+  import QuoteSelection from '$features/course/components/lesson/doc/quote-selection.svelte';
   import type { Writable } from 'svelte/store';
   import { saveDraft } from '$features/course/utils/lesson-draft';
 

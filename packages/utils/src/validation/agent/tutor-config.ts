@@ -12,7 +12,7 @@ export const TutorPersonaIdSchema = z.enum(['friendly', 'formal', 'encouraging',
 export const TutorResponseLengthSchema = z.enum(['short', 'medium', 'long']);
 export const TutorAssessmentModeSchema = z.enum(['direct_answer', 'hint_only', 'block_during_exercise']);
 export const TutorCodePolicySchema = z.enum(['allowed', 'hints_only', 'forbidden']);
-export const TutorGroundingScopeSchema = z.enum(['lesson', 'course', 'workspace']);
+export const TutorGroundingScopeSchema = z.enum(['lesson', 'course', 'organization']);
 
 const ZAiTutorEscalation = z.object({
   enabled: z.boolean(),

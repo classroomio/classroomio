@@ -35,7 +35,7 @@ export async function ingestEventBatch(batch: TIngestBatch, ctx: EnrichmentConte
     orgId: event.orgId ?? null,
     userId: ctx.userId,
     courseId: event.courseId ?? null,
-    noteId: event.noteId ?? null,
+    docId: event.docId ?? null,
     path: event.path ?? null,
     referrerHost: event.referrerHost ?? null,
     utmSource: event.utmSource ?? null,

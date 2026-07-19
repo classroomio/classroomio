@@ -11,7 +11,7 @@ import { seedGroupmembers } from '@db/utils/seed/groupmember';
 import { type LessonTemplate, seedLessons } from '@db/utils/seed/lesson';
 import { seedOrganization } from '@db/utils/seed/organization';
 import { seedOrganizationMember } from '@db/utils/seed/organizationmember';
-import { seedNotes } from '@db/utils/seed/notes';
+import { seedDocs } from '@db/utils/seed/docs';
 import {
   seedEarlyAdopterOrganizationPlan,
   seedEnterpriseOrganizationPlan,
@@ -86,7 +86,7 @@ Flags:
   --questions                Seed questions
   --templates                Seed exercise templates
   --compliance               Seed compliance demo data (coursera-test org)
-  --notes                    Seed notes demo data (udemy-test org)
+  --docs                     Seed docs demo data (udemy-test org)
   --help, -h                  Show this help message
 
 Examples:
@@ -231,9 +231,9 @@ const seedFunctions = {
     console.log('📝 Seeding compliance demo data (coursera-test)...');
     await seedCompliance({ enterpriseOrgId: ENTERPRISE_ORG_ID });
   },
-  notes: async () => {
-    console.log('📝 Seeding notes demo data (udemy-test)...');
-    await seedNotes({
+  docs: async () => {
+    console.log('📝 Seeding docs demo data (udemy-test)...');
+    await seedDocs({
       testOrgId: TEST_ORG_ID,
       adminUserId: ADMIN_USER_ID,
       studentUserId: STUDENT_USER_ID,
@@ -278,7 +278,7 @@ async function seed() {
       await seedFunctions.questions();
       await seedFunctions.templates();
       await seedFunctions.compliance();
-      await seedFunctions.notes();
+      await seedFunctions.docs();
     } else {
       // Run only specified seed functions
       // Order matters for dependencies, so we maintain the original order
@@ -301,7 +301,7 @@ async function seed() {
         'questions',
         'templates',
         'compliance',
-        'notes'
+        'docs'
       ];
 
       for (const seedName of orderedSeeds) {

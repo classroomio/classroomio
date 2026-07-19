@@ -9,7 +9,7 @@ type QueuedEvent = {
   occurredAt: string;
   orgId?: string;
   courseId?: string;
-  noteId?: string;
+  docId?: string;
   path?: string;
   referrerHost?: string;
   utmSource?: string;
@@ -100,7 +100,7 @@ export function track(eventType: ClientEventType, fields: Partial<QueuedEvent> =
     occurredAt: new Date().toISOString(),
     orgId: fields.orgId ?? config.orgId,
     courseId: fields.courseId,
-    noteId: fields.noteId,
+    docId: fields.docId,
     path: fields.path ?? (typeof window !== 'undefined' ? window.location.pathname : undefined),
     referrerHost: fields.referrerHost ?? pickReferrerHost(),
     locale: fields.locale ?? (typeof navigator !== 'undefined' ? navigator.language : undefined),

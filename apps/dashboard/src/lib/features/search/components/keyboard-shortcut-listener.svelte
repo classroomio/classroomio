@@ -3,7 +3,7 @@
   import { searchStore } from '../store/search-store.svelte';
 
   const scope = $derived(page.url.pathname.startsWith('/lms') ? 'lms' : 'org');
-  const isNotesWorkspace = $derived(/\/notes(?:\/|$)/.test(page.url.pathname));
+  const isDocsWorkspace = $derived(/\/docs(?:\/|$)/.test(page.url.pathname));
 
   function handleKeydown(event: KeyboardEvent) {
     if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'k') {
@@ -11,7 +11,7 @@
     }
 
     // Notes workspace registers its own notes-only search modal on ⌘K.
-    if (isNotesWorkspace) {
+    if (isDocsWorkspace) {
       return;
     }
 

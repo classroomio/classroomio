@@ -15,7 +15,7 @@
 
   let { data, children } = $props();
 
-  const isNotesWorkspace = $derived(/\/notes(?:\/|$)/.test(page.url.pathname));
+  const isDocsWorkspace = $derived(/\/docs(?:\/|$)/.test(page.url.pathname));
 
   function redirect(siteName: string | null) {
     if (!siteName) return;
@@ -41,13 +41,13 @@
   <AddOrgModal />
 {/if}
 
-<Sidebar.Provider class={isNotesWorkspace ? 'h-svh max-h-svh' : undefined}>
+<Sidebar.Provider class={isDocsWorkspace ? 'h-svh max-h-svh' : undefined}>
   <OrgSidebar />
 
-  <Sidebar.Inset class={isNotesWorkspace ? 'h-svh max-h-svh min-h-0 flex-1 overflow-hidden p-0' : 'min-h-0 flex-1 overflow-hidden p-0'}>
+  <Sidebar.Inset class={isDocsWorkspace ? 'h-svh max-h-svh min-h-0 flex-1 overflow-hidden p-0' : 'min-h-0 flex-1 overflow-hidden p-0'}>
     <AppHeader />
 
-    {#if isNotesWorkspace}
+    {#if isDocsWorkspace}
       <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
         {#if data.orgName === '*'}
           <div class="grid auto-rows-min gap-4 px-4 md:grid-cols-3">

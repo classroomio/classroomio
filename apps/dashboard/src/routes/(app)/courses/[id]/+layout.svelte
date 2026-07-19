@@ -21,7 +21,7 @@
   import { initialChatPrompt, openAiAssistant } from '$features/ai-assistant/utils/store';
   import { sidePanel, SidePanelRail } from '$features/side-panel';
   import { transcriptPanelDefinition } from '$features/course/components/lesson/video/transcript-panel-definition';
-  import { lessonNotePanelDefinition } from '$features/notes/panel';
+  import { lessonNotePanelDefinition } from '$features/docs/panel';
   import { get } from 'svelte/store';
   import { page } from '$app/state';
   import { profile } from '$lib/utils/store/user';

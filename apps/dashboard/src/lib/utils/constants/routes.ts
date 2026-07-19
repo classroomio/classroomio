@@ -32,7 +32,7 @@ export const PUBLIC_ROUTES = [
   `^${ROUTE.COURSE}/[^/]+(/enroll)?/?$`,
   `^${ROUTE.COURSE}/[^/]+/lesson/.*`,
   `^${ROUTE.COURSES}/?$`,
-  '^/note/[^/]+/?$',
+  '^/doc/[^/]+/?$',
   '/404',
   `^${ROUTE.VERIFY_EMAIL_ERROR}$`,
   ROUTE.AUTH_FAILED,

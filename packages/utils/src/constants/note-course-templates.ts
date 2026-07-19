@@ -19,7 +19,7 @@ export type CourseTemplate = {
   introHtml?: string;
 };
 
-export const NOTE_COURSE_TEMPLATES: CourseTemplate[] = [
+export const DOC_COURSE_TEMPLATES: CourseTemplate[] = [
   {
     id: 'cohort_bootcamp',
     title: 'Cohort Bootcamp',
@@ -94,5 +94,5 @@ export const NOTE_COURSE_TEMPLATES: CourseTemplate[] = [
 ];
 
 export function getCourseTemplateById(templateId: string): CourseTemplate | undefined {
-  return NOTE_COURSE_TEMPLATES.find((template) => template.id === templateId);
+  return DOC_COURSE_TEMPLATES.find((template) => template.id === templateId);
 }

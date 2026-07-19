@@ -3,7 +3,7 @@ import * as z from 'zod';
 const CLIENT_EVENT_TYPES = [
   'landing_view',
   'course_page_view',
-  'note_page_view',
+  'doc_page_view',
   'signup_view',
   'signin_view',
   'pricing_view',
@@ -15,7 +15,7 @@ export const ZTrackEvent = z.object({
   occurredAt: z.string().optional(),
   orgId: z.string().uuid().optional(),
   courseId: z.string().uuid().optional(),
-  noteId: z.string().uuid().optional(),
+  docId: z.string().uuid().optional(),
   path: z.string().max(2048).optional(),
   referrerHost: z.string().max(255).optional(),
   utmSource: z.string().max(128).optional(),

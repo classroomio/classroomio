@@ -89,7 +89,7 @@
     "groundingScope": {
       "course": "Whole course",
       "lesson": "Current lesson only",
-      "workspace": "Whole workspace"
+      "organization": "Whole organization"
     },
     "takeABreak": {
       "title": "Your AI tutor is taking a break",
@@ -540,14 +540,14 @@
           "button": "Manage Team"
         }
       },
-      "notes": {
-        "heading": "Notes",
-        "description": "Control how new organization notes are shared with admins and tutors.",
+      "docs": {
+        "heading": "Docs",
+        "description": "Control how new organization docs are shared with admins and tutors.",
         "share_by_default": {
-          "label": "Share new notes with the organization",
-          "description": "When enabled, new notes are visible to all admins and tutors in this organization. You can still make individual notes private."
+          "label": "Share new docs with the organization",
+          "description": "When enabled, new docs are visible to all admins and tutors in this organization. You can still make individual docs private."
         },
-        "save": "Save notes settings"
+        "save": "Save docs settings"
       }
     },
     "token_auth": {
@@ -1329,7 +1329,7 @@
     "analytics": "Analytics",
     "compliance": "Compliance",
     "courses": "Courses",
-    "notes": "Notes",
+    "docs": "Docs",
     "cohorts": "Cohorts",
     "tags": "Tags",
     "community": "Community",
@@ -3872,7 +3872,7 @@
       "landing_views": "Landing views",
       "unique_visitors": "Unique visitors",
       "course_page_views": "Course page views",
-      "note_page_views": "Note page views",
+      "doc_page_views": "Doc page views",
       "enrollments": "Enrollments",
       "range_description": "In selected range"
     },
@@ -3889,7 +3889,7 @@
       "empty": "No funnel data yet",
       "step": {
         "landing_view": "Landing views",
-        "note_page_view": "Note page views",
+        "doc_page_view": "Doc page views",
         "course_page_view": "Course page views",
         "enrollment_completed": "Enrollments",
         "course_completed": "Completions"
@@ -4058,8 +4058,9 @@
     "any_course": "Any course that you complete will be displayed here",
     "find_courses": "Find courses"
   },
-  "notes": {
+  "docs": {
     "page_title": "My Notes",
+    "workspace_page_title": "Docs",
     "heading": "My Notes",
     "description": "Notes you take while learning appear here.",
     "org_description": "Brainstorm and collaborate on course content before migrating it into a course.",
@@ -4068,7 +4069,7 @@
       "close": "Close Note"
     },
     "usage": {
-      "workspace": "{used}/{limit} organization notes used"
+      "workspace": "{used}/{limit} organization docs used"
     },
     "lesson_panel": {
       "loading": "Loading note…",

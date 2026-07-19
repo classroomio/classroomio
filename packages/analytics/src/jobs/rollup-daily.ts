@@ -1,11 +1,11 @@
 import {
   selectCountryDailyAggregates,
   selectCourseDailyAggregates,
-  selectNoteDailyAggregates,
+  selectDocDailyAggregates,
   selectOrgDailyAggregates,
   upsertCountryDailyRows,
   upsertCourseDailyRows,
-  upsertNoteDailyRows,
+  upsertDocDailyRows,
   upsertOrgDailyRows
 } from '@cio/db/queries/analytics';
 
@@ -44,7 +44,7 @@ export async function runAnalyticsRollupDaily(opts: { daysAgo?: number } = {}): 
   const [orgAgg, courseAgg, noteAgg, countryAgg] = await Promise.all([
     selectOrgDailyAggregates(startIso, endIso),
     selectCourseDailyAggregates(startIso, endIso),
-    selectNoteDailyAggregates(startIso, endIso),
+    selectDocDailyAggregates(startIso, endIso),
     selectCountryDailyAggregates(startIso, endIso)
   ]);
 
@@ -56,7 +56,7 @@ export async function runAnalyticsRollupDaily(opts: { daysAgo?: number } = {}): 
       landingViews: row.landingViews,
       uniqueVisitors: row.uniqueVisitors,
       coursePageViews: row.coursePageViews,
-      notePageViews: row.notePageViews,
+      docPageViews: row.docPageViews,
       enrollments: row.enrollments,
       completions: row.completions
     }));
@@ -74,9 +74,9 @@ export async function runAnalyticsRollupDaily(opts: { daysAgo?: number } = {}): 
     }));
 
   const noteRows = noteAgg
-    .filter((row) => row.noteId && row.orgId)
+    .filter((row) => row.docId && row.orgId)
     .map((row) => ({
-      noteId: row.noteId as string,
+      docId: row.docId as string,
       orgId: row.orgId as string,
       date: row.date,
       views: row.views,
@@ -96,7 +96,7 @@ export async function runAnalyticsRollupDaily(opts: { daysAgo?: number } = {}): 
   const [orgWritten, courseWritten, noteWritten, countryWritten] = await Promise.all([
     upsertOrgDailyRows(orgRows),
     upsertCourseDailyRows(courseRows),
-    upsertNoteDailyRows(noteRows),
+    upsertDocDailyRows(noteRows),
     upsertCountryDailyRows(countryRows)
   ]);
 

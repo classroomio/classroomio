@@ -19,7 +19,7 @@
     data?.totals ?? {
       landingViews: 0,
       coursePageViews: 0,
-      notePageViews: 0,
+      docPageViews: 0,
       uniqueVisitors: 0,
       enrollments: 0,
       completions: 0
@@ -57,8 +57,8 @@
     accent="warning"
   />
   <KpiCard
-    title={$t('analytics.kpi.note_page_views')}
-    value={totals.notePageViews.toLocaleString()}
+    title={$t('analytics.kpi.doc_page_views')}
+    value={totals.docPageViews.toLocaleString()}
     description={$t('analytics.kpi.range_description')}
     loading={loading && !data}
     icon={FileTextIcon}

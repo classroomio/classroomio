@@ -63,7 +63,7 @@
       <div class="ui:mt-auto ui:border-t ui:border-border ui:py-4">
         <PoweredBy
           orgSlug={orgSlug}
-          utmSource="public-note"
+          utmSource="public-doc"
           {poweredByLabel}
           {poweredByBrand}
           align="start"

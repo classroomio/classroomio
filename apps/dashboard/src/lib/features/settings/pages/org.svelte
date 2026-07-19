@@ -217,23 +217,23 @@
   <Field.Set>
     <Field.Legend class="flex items-center gap-2">
       <FileTextIcon class="size-5" />
-      {$t('settings.organization.notes.heading')}
+      {$t('settings.organization.docs.heading')}
     </Field.Legend>
-    <Field.Description>{$t('settings.organization.notes.description')}</Field.Description>
+    <Field.Description>{$t('settings.organization.docs.description')}</Field.Description>
 
     <Field.Field orientation="horizontal">
       <Switch bind:checked={shareNewNotesWithTeam} disabled={isSavingNotesSettings} />
       <div class="space-y-0.5">
-        <Field.Label>{$t('settings.organization.notes.share_by_default.label')}</Field.Label>
+        <Field.Label>{$t('settings.organization.docs.share_by_default.label')}</Field.Label>
         <Field.Description>
-          {$t('settings.organization.notes.share_by_default.description')}
+          {$t('settings.organization.docs.share_by_default.description')}
         </Field.Description>
       </div>
     </Field.Field>
 
     {#if notesSettingsDirty}
       <Button loading={isSavingNotesSettings} onclick={handleSaveNotesSettings}>
-        {$t('settings.organization.notes.save')}
+        {$t('settings.organization.docs.save')}
       </Button>
     {/if}
   </Field.Set>
