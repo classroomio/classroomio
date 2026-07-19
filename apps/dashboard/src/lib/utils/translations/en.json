@@ -4284,6 +4284,7 @@
       "search_placeholder": "Search",
       "search_modal_title": "Search notes",
       "new_note": "New note",
+      "section_empty": "No notes",
       "sections": {
         "favorites": "Favorites",
         "private": "Private",

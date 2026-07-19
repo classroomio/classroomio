@@ -46,12 +46,35 @@
   const templatesHref = $derived(resolve(`${$currentOrgPath}/notes/templates`, {}));
   const trashHref = $derived(resolve(`${$currentOrgPath}/notes/trash`, {}));
 
-  const hasSidebarContent = $derived(
-    sections.favorites.length > 0 ||
-      sections.private.length > 0 ||
-      sections.shared.length > 0 ||
-      sections.workspace.length > 0
-  );
+  const sectionConfig = $derived([
+    {
+      key: 'favorites' as const,
+      title: $t('notes.sidebar.sections.favorites'),
+      notes: sections.favorites,
+      type: 'flat' as const
+    },
+    {
+      key: 'private' as const,
+      title: $t('notes.sidebar.sections.private'),
+      notes: sections.private,
+      type: 'tree' as const,
+      tree: privateTree
+    },
+    {
+      key: 'shared' as const,
+      title: $t('notes.sidebar.sections.shared_with_me'),
+      notes: sections.shared,
+      type: 'tree' as const,
+      tree: sharedTree
+    },
+    {
+      key: 'workspace' as const,
+      title: $t('notes.sidebar.sections.workspace'),
+      notes: sections.workspace,
+      type: 'tree' as const,
+      tree: workspaceTree
+    }
+  ]);
 
   function noteHref(noteId: string) {
     return resolve(`${$currentOrgPath}/notes/${noteId}`, {});
@@ -110,77 +133,37 @@
       <div class="flex justify-center py-8">
         <Spinner />
       </div>
-    {:else if !hasSidebarContent}
-      <p class="ui:text-muted-foreground flex min-h-48 items-center justify-center px-4 text-center text-sm">
-        {$t('notes.workspace.no_notes')}
-      </p>
     {:else}
-      {#if sections.favorites.length > 0}
+      {#each sectionConfig as section (section.key)}
         <NoteSidebarSection
-          title={$t('notes.sidebar.sections.favorites')}
-          expanded={sectionExpanded.favorites}
-          onToggle={() => (sectionExpanded.favorites = !sectionExpanded.favorites)}
+          title={section.title}
+          expanded={sectionExpanded[section.key]}
+          onToggle={() => (sectionExpanded[section.key] = !sectionExpanded[section.key])}
         >
-          <ul>
-            {#each sections.favorites as note (note.id)}
-              <li>
-                <a href={noteHref(note.id)} class={noteLinkClass(note.id)}>
-                  <StarIcon size={14} class="shrink-0 text-amber-500" />
-                  <span class="line-clamp-2 leading-snug font-medium">{displayNoteTitle(note.title)}</span>
-                </a>
-              </li>
-            {/each}
-          </ul>
+          {#if section.notes.length === 0}
+            <p class="ui:text-muted-foreground px-4 py-2 text-xs">{$t('notes.sidebar.section_empty')}</p>
+          {:else if section.type === 'flat'}
+            <ul>
+              {#each section.notes as note (note.id)}
+                <li>
+                  <a href={noteHref(note.id)} class={noteLinkClass(note.id)}>
+                    <StarIcon size={14} class="shrink-0 text-amber-500" />
+                    <span class="line-clamp-2 leading-snug font-medium">{displayNoteTitle(note.title)}</span>
+                  </a>
+                </li>
+              {/each}
+            </ul>
+          {:else}
+            <NoteSidebarTree
+              nodes={section.tree}
+              {selectedNoteId}
+              {expandedIds}
+              {noteHref}
+              onToggleExpanded={toggleExpanded}
+            />
+          {/if}
         </NoteSidebarSection>
-      {/if}
-
-      {#if sections.private.length > 0}
-        <NoteSidebarSection
-          title={$t('notes.sidebar.sections.private')}
-          expanded={sectionExpanded.private}
-          onToggle={() => (sectionExpanded.private = !sectionExpanded.private)}
-        >
-          <NoteSidebarTree
-            nodes={privateTree}
-            {selectedNoteId}
-            {expandedIds}
-            {noteHref}
-            onToggleExpanded={toggleExpanded}
-          />
-        </NoteSidebarSection>
-      {/if}
-
-      {#if sections.shared.length > 0}
-        <NoteSidebarSection
-          title={$t('notes.sidebar.sections.shared_with_me')}
-          expanded={sectionExpanded.shared}
-          onToggle={() => (sectionExpanded.shared = !sectionExpanded.shared)}
-        >
-          <NoteSidebarTree
-            nodes={sharedTree}
-            {selectedNoteId}
-            {expandedIds}
-            {noteHref}
-            onToggleExpanded={toggleExpanded}
-          />
-        </NoteSidebarSection>
-      {/if}
-
-      {#if sections.workspace.length > 0}
-        <NoteSidebarSection
-          title={$t('notes.sidebar.sections.workspace')}
-          expanded={sectionExpanded.workspace}
-          onToggle={() => (sectionExpanded.workspace = !sectionExpanded.workspace)}
-        >
-          <NoteSidebarTree
-            nodes={workspaceTree}
-            {selectedNoteId}
-            {expandedIds}
-            {noteHref}
-            onToggleExpanded={toggleExpanded}
-          />
-        </NoteSidebarSection>
-      {/if}
+      {/each}
     {/if}
   </div>
 
