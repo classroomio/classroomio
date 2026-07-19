@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { CourseTemplate } from '@cio/utils/constants/note-course-templates';
+  import * as Card from '@cio/ui/base/card';
   import { Button } from '@cio/ui/base/button';
   import { cn } from '@cio/ui/tools';
   import { t } from '$lib/utils/functions/translations';
@@ -14,22 +15,30 @@
   let { template, loading = false, onUse, class: className = '' }: Props = $props();
 </script>
 
-<article class={cn('border-border flex flex-col overflow-hidden rounded-xl border bg-white shadow-sm', className)}>
-  <div class={cn('flex h-28 items-center justify-center bg-gradient-to-br text-4xl', template.gradient)}>
-    <span aria-hidden="true">{template.emoji}</span>
-  </div>
-
-  <div class="flex flex-1 flex-col gap-3 p-4">
-    <div class="space-y-2">
-      <h3 class="text-lg font-semibold">{template.title}</h3>
-      <p class="ui:text-muted-foreground text-sm leading-relaxed">{template.description}</p>
-      <p class="ui:text-muted-foreground text-xs font-medium">
-        {$t('notes.templates.modules_included', { count: template.modules.length })}
-      </p>
+<Card.Root class={cn('ui:hover:border-primary/40 ui:hover:bg-muted/30 h-full transition-colors', className)}>
+  <Card.Header class="gap-3">
+    <div class="flex items-start gap-3">
+      <div
+        class={cn(
+          'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br text-lg',
+          template.gradient
+        )}
+        aria-hidden="true"
+      >
+        {template.emoji}
+      </div>
+      <div class="min-w-0 flex-1 space-y-1">
+        <Card.Title class="line-clamp-2 text-sm leading-snug">{template.title}</Card.Title>
+        <p class="ui:text-muted-foreground text-xs font-medium">
+          {$t('notes.templates.modules_included', { count: template.modules.length })}
+        </p>
+      </div>
     </div>
 
-    <Button class="mt-auto w-full" {loading} onclick={() => onUse?.()}>
+    <Card.Description class="line-clamp-3 text-xs">{template.description}</Card.Description>
+
+    <Button size="sm" variant="secondary" class="w-full" {loading} onclick={() => onUse?.()}>
       {$t('notes.templates.use_template')}
     </Button>
-  </div>
-</article>
+  </Card.Header>
+</Card.Root>
