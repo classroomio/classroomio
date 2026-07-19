@@ -1198,6 +1198,12 @@
           "no_matching_existing_students": "No organization students match your search.",
           "notify_existing_students": "Send course access email",
           "grant_access": "Grant Access",
+          "grant_access_modal": {
+            "title": "छात्र को एक्सेस दें",
+            "description": "{email} को इस कोर्स का एक्सेस दें। हम उन्हें आपके संगठन में शामिल होने और इस कोर्स में नामांकन के लिए आमंत्रण ईमेल भेजेंगे।",
+            "cancel": "रद्द करें",
+            "send_invite": "निमंत्रण भेजें"
+          },
           "invite_new_students_title": "Invite new students",
           "invite_new_students_description": "Invite new people into your organization and pre-assign them to this course. They will create an account, accept the invite, and get access.",
           "invite_new_students": "Invite Students",
