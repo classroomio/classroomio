@@ -43,10 +43,10 @@ const NON_TEMPLATE_SEED_NOTE_IDS = SEED_NOTE_IDS.filter(
 );
 
 const FAVORITE_NOTE_IDS = [
-  NOTE_IDS.personalRoot,
-  NOTE_IDS.orgPlaybookRoot,
-  NOTE_IDS.sharedRoot,
-  NOTE_IDS.personalMvcPrep
+  NOTE_IDS.personalMvcPrep,
+  NOTE_IDS.reactLaunch,
+  NOTE_IDS.sharedQuizTopics,
+  NOTE_IDS.orgActionItems
 ] as const;
 
 function noteContent(paragraphs: string[]) {
@@ -386,7 +386,11 @@ export async function seedNotes({
     .where(inArray(orgNote.id, SEED_NOTE_IDS));
 
   if (existing.length > 0) {
-    console.log('   ✓ Notes demo data already exists, skipping');
+    console.log('   ✓ Notes demo data already exists, syncing favorites');
+    await db.delete(orgNoteFavorite).where(eq(orgNoteFavorite.profileId, adminUserId));
+    const favorites = buildFavorites(adminUserId);
+    await db.insert(orgNoteFavorite).values(favorites);
+    console.log(`   ✓ Synced ${favorites.length} favorite(s) for admin`);
     return;
   }
 
