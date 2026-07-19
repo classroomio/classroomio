@@ -42,7 +42,7 @@
     onclick={handleClick}
     onkeydown={handleKeydown}
     class={cn(
-      'group ui:relative ui:outline-none ui:cursor-pointer ui:border-y-2 ui:border-dashed ui:transition-colors',
+      'ui:group ui:relative ui:outline-none ui:cursor-pointer ui:border-y-2 ui:border-dashed ui:transition-colors',
       selected ? 'ui:border-primary' : 'ui:border-transparent ui:hover:border-primary/40',
       className
     )}
