@@ -577,7 +577,7 @@
       "description": "नामांकन पाठ्यक्रम प्रकार के आधार पर समूहीकृत किए गए",
       "subtitle": "सभी प्रकार के लिए {total} नामांकन",
       "empty": "अभी तक कोई नामांकन डेटा नहीं है",
-      "course_count": "{count, plural, one {# course} other {# courses}}",
+      "course_count": "{count, plural, one {# पाठ्यक्रम} other {# पाठ्यक्रम}}",
       "views_short": "विचार",
       "types": {
         "SELF_PACED": "स्वयं गतिमान",
@@ -635,8 +635,8 @@
       "progress_distribution_card_description": "प्रत्येक समापन बैंड में कितने छात्र आते हैं।",
       "grade_distribution_card_description": "प्रत्येक ग्रेड बैंड में कितने छात्र आते हैं।",
       "students_table_description": "छात्र प्रोफाइल के लिंक के साथ क्रमबद्ध अवलोकन।",
-      "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} पाठों के अनुसार मैप किया गया",
+      "kpi_team_tutors": "{count, plural, one {पाठ्यक्रम टीम में # शिक्षक} other {पाठ्यक्रम टीम में # शिक्षक}}",
+      "kpi_lessons_exercises": "{count, plural, one {# अभ्यास} other {# अभ्यास}} पाठों के अनुसार मैप किया गया",
       "kpi_progress_grade": "नामांकित विद्यार्थियों में {ग्रेड}% औसत व्यायाम ग्रेड"
     }
   },
@@ -702,10 +702,10 @@
       "select_cohorts": "विशिष्ट कोहोर्ट चुनें",
       "select_cohorts_placeholder": "कोहोर्ट चुनें..."
     },
-    "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
+    "page_subtitle": "देखें कि आपके संगठन में कौन शामिल है, कौन सीख रहा है, किसे आमंत्रित किया गया है, और उन तक कैसे पहुँचें।",
     "user_analytics": {
       "title": "छात्र प्रोफ़ाइल",
-      "page_subtitle": "Progress, grades, and activity across their courses."
+      "page_subtitle": "उनके पाठ्यक्रमों में प्रगति, ग्रेड और गतिविधि।"
     },
     "delete": {
       "action": "हटाएँ",
@@ -748,11 +748,11 @@
       "cancel": "रद्द करें",
       "give": "उत्तर दीजिए",
       "comment": "टिप्पणी करें",
-      "page_subtitle": "Start a thread the whole community can see, and tie it to a course if you want."
+      "page_subtitle": "एक थ्रेड शुरू करें जिसे पूरा समुदाय देख सके, और चाहें तो इसे किसी पाठ्यक्रम से जोड़ें।"
     },
-    "page_subtitle": "Questions and answers shared across your organization's courses.",
+    "page_subtitle": "आपके संगठन के पाठ्यक्रमों में साझा किए गए प्रश्न और उत्तर।",
     "question": {
-      "page_subtitle": "Follow answers, vote, and join the discussion."
+      "page_subtitle": "उत्तरों का अनुसरण करें, वोट करें और चर्चा में शामिल हों।"
     }
   },
   "course": {
@@ -1190,23 +1190,23 @@
           "recipient_emails_placeholder": "student1@example.com, student2@example.com",
           "send_invite_emails": "तुरंत आमंत्रण ईमेल भेजें",
           "create_email_invites": "ईमेल आमंत्रण बनाएँ",
-          "existing_students_title": "Add existing org students",
+          "existing_students_title": "मौजूदा संगठन छात्रों को जोड़ें",
           "existing_students_description": "इस संगठन में पहले से ही मौजूद छात्रों को चुनें और उन्हें इस पाठ्यक्रम तक सीधी पहुंच प्रदान करें।",
-          "existing_students_search": "Search organization students",
-          "loading_existing_students": "Loading organization students...",
-          "no_existing_students": "No organization students are available to add.",
-          "no_matching_existing_students": "No organization students match your search.",
-          "notify_existing_students": "Send course access email",
-          "grant_access": "Grant Access",
+          "existing_students_search": "संगठन के छात्रों को खोजें",
+          "loading_existing_students": "संगठन के छात्र लोड हो रहे हैं...",
+          "no_existing_students": "जोड़ने के लिए कोई संगठन छात्र उपलब्ध नहीं हैं।",
+          "no_matching_existing_students": "आपकी खोज से कोई संगठन छात्र मेल नहीं खाते।",
+          "notify_existing_students": "पाठ्यक्रम पहुँच ईमेल भेजें",
+          "grant_access": "पहुँच प्रदान करें",
           "grant_access_modal": {
             "title": "छात्र को एक्सेस दें",
             "description": "{email} को इस कोर्स का एक्सेस दें। हम उन्हें आपके संगठन में शामिल होने और इस कोर्स में नामांकन के लिए आमंत्रण ईमेल भेजेंगे।",
             "cancel": "रद्द करें",
             "send_invite": "निमंत्रण भेजें"
           },
-          "invite_new_students_title": "Invite new students",
-          "invite_new_students_description": "Invite new people into your organization and pre-assign them to this course. They will create an account, accept the invite, and get access.",
-          "invite_new_students": "Invite Students",
+          "invite_new_students_title": "नए छात्रों को आमंत्रित करें",
+          "invite_new_students_description": "अपने संगठन में नए लोगों को आमंत्रित करें और उन्हें इस पाठ्यक्रम में पहले से नियुक्त करें। वे खाता बनाएंगे, निमंत्रण स्वीकार करेंगे और पहुँच प्राप्त करेंगे।",
+          "invite_new_students": "छात्रों को आमंत्रित करें",
           "existing_invites": "मौजूदा आमंत्रण",
           "refresh": "ताज़ा करें",
           "loading_invites": "आमंत्रण लोड हो रहे हैं...",
@@ -1240,7 +1240,7 @@
           "snackbar_failed_load_audit": "आमंत्रण ऑडिट लोड करने में विफल",
           "snackbar_metadata_copied": "आमंत्रण मेटाडेटा कॉपी किया गया",
           "snackbar_email_invites_success": "{count} आमंत्रण बनाया गया। भेजा गया {sent}, असफल हुआ {failed}। {duplicates} डुप्लिकेट को छोड़ दिया गया।",
-          "select_at_least_one_student": "Select at least one existing student",
+          "select_at_least_one_student": "कम से कम एक मौजूदा छात्र चुनें",
           "presets": {
             "one_time_24h": "एक बार (24 घंटे)",
             "multi_use_7d": "बहु-उपयोग (7 दिन)",
@@ -1435,7 +1435,7 @@
             "check": "जांचें",
             "auto_graded_badge": "स्वचालित ग्रेडिंग",
             "manual_grading_required_badge": "मैन्युअल ग्रेडिंग आवश्यक",
-            "points_required_auto_grade": "Points must be greater than 0 for auto-graded exercises.",
+            "points_required_auto_grade": "स्वचालित अंकन वाले अभ्यासों के लिए अंक 0 से अधिक होने चाहिए।",
             "analytics": {
               "submissions": "प्रस्तुतियाँ",
               "individual": {
@@ -1530,10 +1530,10 @@
                 "video_recording": "वीडियो रिकार्डिंग"
               },
               "select_type": "प्रकार चुनें",
-              "question_type_auto_gradable": "Auto",
-              "question_type_auto_gradable_description": "Scored automatically by the system",
-              "question_type_manual_grading": "Manual",
-              "question_type_manual_grading_description": "Requires human review to score",
+              "question_type_auto_gradable": "स्वचालित",
+              "question_type_auto_gradable_description": "सिस्टम द्वारा स्वचालित रूप से अंकित",
+              "question_type_manual_grading": "मैन्युअल",
+              "question_type_manual_grading_description": "अंक देने के लिए मानव समीक्षा आवश्यक",
               "premium_question_type": "इस प्रश्न प्रकार का उपयोग करने के लिए अपग्रेड करें"
             },
             "delete_confirmation": {
@@ -1554,16 +1554,16 @@
               "textarea": {
                 "take": {
                   "placeholder": "अपना उत्तर लिखें",
-                  "min_error": "Answer must be at least {min} characters.",
-                  "max_error": "Answer must be at most {max} characters.",
-                  "range_error": "Answer must be between {min} and {max} characters."
+                  "min_error": "उत्तर कम से कम {min} अक्षरों का होना चाहिए।",
+                  "max_error": "उत्तर अधिकतम {max} अक्षरों का होना चाहिए।",
+                  "range_error": "उत्तर {min} और {max} अक्षरों के बीच होना चाहिए।"
                 },
                 "edit": {
                   "placeholder": "छात्र लंबे प्रारूप वाले पाठ के साथ उत्तर देंगे",
-                  "min_characters_label": "Minimum characters",
-                  "min_characters_placeholder": "Minimum characters",
-                  "max_characters_label": "Maximum characters",
-                  "max_characters_placeholder": "Maximum characters"
+                  "min_characters_label": "न्यूनतम अक्षर",
+                  "min_characters_placeholder": "न्यूनतम अक्षर",
+                  "max_characters_label": "अधिकतम अक्षर",
+                  "max_characters_placeholder": "अधिकतम अक्षर"
                 }
               },
               "hotspot": {
@@ -2036,7 +2036,7 @@
                 "add_from_library": "लाइब्रेरी से जोड़ें",
                 "cancel_upload": "अपलोड रद्द करें",
                 "upload_cancelled": "उपयोगकर्ता द्वारा अपलोड रद्द कर दिया गया",
-                "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
+                "max_files": "{count, plural, one {आप # फ़ाइल अपलोड कर सकते हैं} other {आप # फ़ाइलें अपलोड कर सकते हैं}}",
                 "max_files_and_size": "(प्रत्येक {size} तक)",
                 "google_drive_choose": "Google Drive से चुनें",
                 "google_drive_opening": "पिकर खुल रहा है...",
@@ -2058,14 +2058,14 @@
               "empty_title": "अभी तक कोई वीडियो नहीं",
               "empty_description": "YouTube से वीडियो जोड़ें, अपलोड करें, या अपनी मीडिया लाइब्रेरी से",
               "google_drive": "गूगल ड्राइव",
-              "generate_transcript": "Generate transcription",
-              "generate_transcript_in_progress": "Transcribing…",
+              "generate_transcript": "ट्रांसक्रिप्शन बनाएं",
+              "generate_transcript_in_progress": "ट्रांसक्राइब किया जा रहा है…",
               "transcript": {
-                "title": "Transcript",
-                "captions_label": "Captions",
-                "language": "Language: {language}",
-                "empty": "No transcript yet. You can generate one from this card’s menu after the video is uploaded.",
-                "loading": "Loading transcript…",
+                "title": "ट्रांसक्रिप्ट",
+                "captions_label": "कैप्शन",
+                "language": "भाषा: {language}",
+                "empty": "अभी तक कोई ट्रांसक्रिप्ट नहीं। वीडियो अपलोड होने के बाद इस कार्ड के मेनू से एक बना सकते हैं।",
+                "loading": "ट्रांसक्रिप्ट लोड हो रहा है…",
                 "open_side_panel": "ट्रांस्क्रिप्ट पैनल खोलें",
                 "edit": "प्रतिलेख संपादित करें",
                 "save": "सहेजें",
@@ -2355,8 +2355,8 @@
       "empty": "कोई परिणाम नहीं मिला"
     },
     "header": {
-      "preview": "Preview course",
-      "preview_missing_slug": "Generate and save a course slug before previewing.",
+      "preview": "पाठ्यक्रम का पूर्वावलोकन",
+      "preview_missing_slug": "पूर्वावलोकन से पहले पाठ्यक्रम स्लग बनाएं और सहेजें।",
       "view_as_student": "विद्यार्थी के रूप में देखें",
       "view_course_site": "कोर्स साइट देखें"
     },
@@ -2565,12 +2565,12 @@
       "valid_until": "तक वैध है"
     },
     "course_filter": {
-      "date_created_newest": "Date Created: Newest first",
-      "date_created_oldest": "Date Created: Oldest first",
-      "published_first": "Published: Published first",
-      "unpublished_first": "Published: Unpublished first",
-      "most_lessons": "Lessons: Most first",
-      "fewest_lessons": "Lessons: Fewest first",
+      "date_created_newest": "निर्माण तिथि: नवीनतम पहले",
+      "date_created_oldest": "निर्माण तिथि: सबसे पुराना पहले",
+      "published_first": "प्रकाशित: प्रकाशित पहले",
+      "unpublished_first": "प्रकाशित: अप्रकाशित पहले",
+      "most_lessons": "पाठ: सबसे अधिक पहले",
+      "fewest_lessons": "पाठ: सबसे कम पहले",
       "date_created": "दिनांक निर्मित",
       "published": "प्रकाशित",
       "lessons": "सबक"
@@ -2582,12 +2582,12 @@
       "popover_title": "फिल्टर",
       "sort": "क्रमबद्ध करें",
       "order": "क्रम",
-      "ascending": "Asc",
-      "descending": "Desc",
+      "ascending": "आरोही",
+      "descending": "अवरोही",
       "tags": "टैग",
       "empty_tags": "कोई टैग उपलब्ध नहीं है"
     },
-    "page_subtitle": "Where lessons turn into courses and courses turn into enrollments."
+    "page_subtitle": "जहाँ पाठ पाठ्यक्रम बनते हैं और पाठ्यक्रम नामांकन बनते हैं।"
   },
   "ai": {
     "help_me": "मुझे लिखने में मदद करें",
@@ -2614,13 +2614,13 @@
     "lms_dashboard_hero": "आज का दिन आपको आपके सीखने के लक्ष्यों के करीब लाने का एक और दिन है। हार मत मानो, जितना अधिक सीखोगे उतना बेहतर हो जाओगे।",
     "lessons_completed": "पाठ पूरा हुआ",
     "no_courses_started": "कोई पाठ्यक्रम शुरू नहीं हुआ",
-    "certificates_earned": "Certificates issued",
-    "certificates_earned_description": "Total certificates issued to students in your organization",
+    "certificates_earned": "जारी प्रमाणपत्र",
+    "certificates_earned_description": "आपके संगठन के छात्रों को जारी किए गए कुल प्रमाणपत्र",
     "certification_rate": "प्रमाणित",
-    "recent_certifications": "Recent certifications",
-    "no_certifications_yet": "No certificates earned yet",
-    "no_certifications_yet_description": "When students complete a course and earn a certificate, they will appear here",
-    "view_courses": "View courses",
+    "recent_certifications": "हाल के प्रमाणपत्र",
+    "no_certifications_yet": "अभी तक कोई प्रमाणपत्र अर्जित नहीं",
+    "no_certifications_yet_description": "जब छात्र कोई पाठ्यक्रम पूरा करके प्रमाणपत्र अर्जित करेंगे, तो वे यहाँ दिखाई देंगे",
+    "view_courses": "पाठ्यक्रम देखें",
     "no_of_courses": "पाठ्यक्रमों की संख्या",
     "no_courses_description": "इस संगठन के अंतर्गत बनाए गए पाठ्यक्रम",
     "total_students": "कुल छात्र",
@@ -3016,7 +3016,7 @@
       "not_available": "एन/ए"
     },
     "empty_description": "संपत्ति इस संगठन में मौजूद नहीं है या उपलब्ध नहीं है.",
-    "page_subtitle": "Keep files, videos, and links for your courses in one library.",
+    "page_subtitle": "अपने पाठ्यक्रमों की फ़ाइलें, वीडियो और लिंक एक लाइब्रेरी में रखें।",
     "thumbnails": {
       "manage_title": "थंबनेल प्रबंधित करें",
       "manage_description": "वीडियो का पूर्वावलोकन करें, स्वतः-निर्मित फ़्रेमों में से एक चुनें, या अपना स्वयं का अपलोड करें।",
@@ -3052,7 +3052,7 @@
       "provider": "हम आपकी बिलिंग प्रबंधित करने में सहायता के लिए पोलर का उपयोग करते हैं",
       "open_billing": "बिलिंग खोलें",
       "error": "बिलिंग खोलते समय एक त्रुटि उत्पन्न हुई",
-      "page_subtitle": "Your plan, billing portal, and how you pay for ClassroomIO.",
+      "page_subtitle": "आपकी योजना, बिलिंग पोर्टल और ClassroomIO के लिए भुगतान का तरीका।",
       "ai_credits": "AI credits",
       "ai_tokens_used": "इस महीने उपयोग किए गए AI credits",
       "ai_bonus_credits": "bonus AI credits उपलब्ध"
@@ -3066,7 +3066,7 @@
       "connect_button": "कनेक्ट करें",
       "success_message": "एकीकरण सफल",
       "disconnect": "डिस्कनेक्ट करें",
-      "page_subtitle": "Connect Telegram to get notified when important things happen."
+      "page_subtitle": "महत्वपूर्ण घटनाओं पर सूचना पाने के लिए Telegram कनेक्ट करें।"
     },
     "landing_page": {
       "heading": "लैंडिंग पृष्ठ",
@@ -3162,7 +3162,7 @@
         "show_background": "पृष्ठभूमि दिखाएँ",
         "hide_background": "पृष्ठभूमि छिपाएँ"
       },
-      "page_subtitle": "Shape the marketing page people see before they sign up or enroll.",
+      "page_subtitle": "वह मार्केटिंग पेज आकार दें जो लोग साइन अप या नामांकन से पहले देखते हैं।",
       "editor": {
         "save": "सहेजें",
         "close": "बंद करें",
@@ -3175,18 +3175,18 @@
           "link_href": "लिंक यूआरएल",
           "remove": "फ़ुटर लिंक हटाएँ",
           "brand": {
-            "legend": "Brand",
-            "description": "Your organization logo and name always appear here (from organization settings). Add optional details below.",
-            "preview_label": "Footer brand preview",
-            "tagline": "Tagline",
-            "tagline_placeholder": "Small line under your brand",
-            "copyright": "Copyright",
-            "copyright_placeholder": "© 2026 Your Organization",
-            "social_label": "Social links",
-            "platform_field": "Platform",
-            "url_label": "Profile URL",
-            "add_social": "Add social link",
-            "remove_social": "Remove social link",
+            "legend": "ब्रांड",
+            "description": "आपके संगठन का लोगो और नाम हमेशा यहाँ दिखाई देता है (संगठन सेटिंग्स से)। नीचे वैकल्पिक विवरण जोड़ें।",
+            "preview_label": "फ़ुटर ब्रांड पूर्वावलोकन",
+            "tagline": "टैगलाइन",
+            "tagline_placeholder": "आपके ब्रांड के नीचे छोटी पंक्ति",
+            "copyright": "कॉपीराइट",
+            "copyright_placeholder": "© 2026 आपका संगठन",
+            "social_label": "सोशल लिंक",
+            "platform_field": "प्लेटफ़ॉर्म",
+            "url_label": "प्रोफ़ाइल URL",
+            "add_social": "सोशल लिंक जोड़ें",
+            "remove_social": "सोशल लिंक हटाएँ",
             "platforms": {
               "instagram": "Instagram",
               "x": "X",
@@ -3195,29 +3195,29 @@
               "youtube": "YouTube",
               "github": "GitHub",
               "tiktok": "TikTok",
-              "website": "Website"
+              "website": "वेबसाइट"
             }
           },
           "columns": {
-            "legend": "Link columns",
-            "description": "Add grouped links (like Company or Resources). Enables a multi-column footer layout.",
-            "empty_hint": "No columns yet — add one to show a multi-column footer beside your brand.",
-            "add": "Add column",
-            "remove": "Remove column",
-            "heading_label": "Column heading",
-            "heading_placeholder": "e.g. Company",
-            "add_link": "Add link",
-            "remove_link": "Remove link",
-            "links_max_reached": "Up to 10 links per column",
-            "cta_toggle": "Add CTA link",
-            "cta_label": "CTA label",
+            "legend": "लिंक कॉलम",
+            "description": "समूहीकृत लिंक जोड़ें (जैसे कंपनी या संसाधन)। बहु-कॉलम फ़ुटर लेआउट सक्षम करता है।",
+            "empty_hint": "अभी तक कोई कॉलम नहीं — अपने ब्रांड के बगल में बहु-कॉलम फ़ुटर दिखाने के लिए एक जोड़ें।",
+            "add": "कॉलम जोड़ें",
+            "remove": "कॉलम हटाएँ",
+            "heading_label": "कॉलम शीर्षक",
+            "heading_placeholder": "उदा. कंपनी",
+            "add_link": "लिंक जोड़ें",
+            "remove_link": "लिंक हटाएँ",
+            "links_max_reached": "प्रति कॉलम अधिकतम 10 लिंक",
+            "cta_toggle": "CTA लिंक जोड़ें",
+            "cta_label": "CTA लेबल",
             "cta_href": "CTA URL",
-            "cta_default_label": "Explore more",
-            "max_reached": "Up to 6 columns"
+            "cta_default_label": "और देखें",
+            "max_reached": "अधिकतम 6 कॉलम"
           },
           "bottom": {
-            "legend": "Bottom row",
-            "add_link": "Add bottom link"
+            "legend": "नीचे की पंक्ति",
+            "add_link": "नीचे की पंक्ति में लिंक जोड़ें"
           }
         },
         "embed": {
@@ -3284,7 +3284,7 @@
           "embed": "एम्बेड करें",
           "embed_desc": "पाठ्यक्रमों के बाद वैकल्पिक आईफ्रेम अनुभाग दिखाया गया है।",
           "footer": "फ़ुटर",
-          "footer_desc": "Brand line, socials, multi-column links, and bottom legal row.",
+          "footer_desc": "ब्रांड पंक्ति, सोशल, बहु-कॉलम लिंक और नीचे की कानूनी पंक्ति।",
           "links": "कड़ियाँ",
           "links_desc": "पाठ्यक्रमों के बाद दिखाए गए बाहरी लिंक (सहायता केंद्र, समुदाय, वेबिनार) का वैकल्पिक ब्लॉक।"
         },
@@ -3458,7 +3458,7 @@
         "accepted": "स्वीकृत:",
         "validation_error": "फ़ाइल का आकार अधिकतम सीमा से अधिक है:"
       },
-      "page_subtitle": "Your name, email, and how you appear wherever you work in ClassroomIO."
+      "page_subtitle": "आपका नाम, ईमेल और ClassroomIO में कहीं भी काम करते समय आप कैसे दिखते हैं।"
     },
     "tabs": {
       "profile_tab": "प्रोफाइल",
@@ -3473,7 +3473,7 @@
       "customize_lms_tab": "एलएमएस को अनुकूलित करें",
       "domains_tab": "डोमेन",
       "teams_tab": "टीमें",
-      "ai_credits_tab": "AI Credits",
+      "ai_credits_tab": "AI क्रेडिट",
       "ai_tutor_tab": "एआई ट्यूटर",
       "notifications_tab": "सूचनाएँ"
     },
@@ -3586,7 +3586,7 @@
         "sso": "एसएसओ",
         "token_auth": "टोकन प्रामाणिक"
       },
-      "page_subtitle": "Control sign-up, login, SSO, and token-based access for this org."
+      "page_subtitle": "इस संगठन के लिए साइन-अप, लॉगिन, SSO और टोकन-आधारित पहुँच नियंत्रित करें।"
     },
     "token_auth": {
       "heading": "टोकन प्रामाणिक",
@@ -3609,12 +3609,12 @@
       "actions_menu": "टोकन प्रमाणीकरण क्रियाएँ"
     },
     "teams": {
-      "page_subtitle": "Invite teammates and control who helps run this organization."
+      "page_subtitle": "टीम के सदस्यों को आमंत्रित करें और नियंत्रित करें कि इस संगठन को कौन चलाने में मदद करता है।"
     },
     "ai_credits": {
-      "sub_title": "AI credits",
+      "sub_title": "AI क्रेडिट",
       "page_subtitle": "AI assistant उपयोग, टीम की खपत और AI credit packs खरीदारी को ट्रैक करें।",
-      "cost_note": "Credit usage is weighted by model cost. Gemini 3.1 Flash Lite counts as 1 credit unit per token. GPT-5.4 Mini and Kimi K2.6 count as 4× per token. Claude Sonnet 4.6 counts as 11× per token, reflecting its higher API cost.",
+      "cost_note": "क्रेडिट उपयोग मॉडल लागत के अनुसार भारित है। Gemini 3.1 Flash Lite प्रति टोकन 1 क्रेडिट इकाई के रूप में गिना जाता है। GPT-5.4 Mini और Kimi K2.6 प्रति टोकन 4× गिने जाते हैं। Claude Sonnet 4.6 प्रति टोकन 11× गिना जाता है, जो इसकी उच्च API लागत को दर्शाता है।",
       "included": {
         "title": "आपका शामिल उपयोग",
         "subtitle": "आपकी योजना में मासिक AI credits शामिल हैं।",
@@ -3629,8 +3629,8 @@
       "chart": {
         "heading": "उपयोग",
         "subheading": "इस महीने दैनिक AI credits की खपत।",
-        "tokens": "Credits",
-        "total_tokens": "Total credits",
+        "tokens": "क्रेडिट",
+        "total_tokens": "कुल क्रेडिट",
         "total_requests": "कुल अनुरोध",
         "empty": "इस महीने अभी तक कोई उपयोग दर्ज नहीं किया गया है।"
       },
@@ -3639,14 +3639,14 @@
         "this_month": "चालू माह",
         "user": "उपयोगकर्ता",
         "favorite_model": "पसंदीदा model",
-        "tokens": "Credits",
+        "tokens": "क्रेडिट",
         "empty": "इस महीने आपकी टीम में किसी ने भी AI assistant का उपयोग नहीं किया है।"
       },
       "buy_tokens": {
         "title": "और credits खरीदें",
         "description": "प्रत्येक pack $5 USD में 5,000,000 credits जोड़ता है। चुनें कि आपको कितने packs चाहिए।",
-        "quantity_hint": "packs",
-        "preview": "{quantity} pack(s) · {tokens} credits · ${dollars}",
+        "quantity_hint": "पैक",
+        "preview": "{quantity} पैक · {tokens} क्रेडिट · ${dollars}",
         "buy_button": "${dollars} में खरीदें"
       }
     },
@@ -3968,7 +3968,7 @@
     "common": {
       "not_available": "एन/ए"
     },
-    "page_subtitle": "Organize courses with labels so filters and lists stay easy to scan."
+    "page_subtitle": "फ़िल्टर और सूचियों को आसानी से स्कैन करने योग्य रखने के लिए लेबल से पाठ्यक्रम व्यवस्थित करें।"
   },
   "invite": {
     "organization": {
@@ -4022,12 +4022,12 @@
         "generate": "MCP कुंजी जनरेट करें",
         "secret_once": "यह रहस्य एक बार दिखाया गया है। अब इसे अपने MCP क्लाइंट में कॉपी करें।",
         "modal": {
-          "title": "Create MCP key",
-          "description": "Choose a name for this MCP key before it is generated.",
-          "name_label": "Key name",
+          "title": "MCP कुंजी बनाएं",
+          "description": "इस MCP कुंजी को बनाने से पहले इसका नाम चुनें।",
+          "name_label": "कुंजी का नाम",
           "name_placeholder": "ClassroomIO OpenCode",
-          "cancel": "Cancel",
-          "save": "Create key"
+          "cancel": "रद्द करें",
+          "save": "कुंजी बनाएं"
         }
       },
       "usage": {
@@ -4041,31 +4041,31 @@
         "rate_limits_description": "प्रति मिनट पढ़ने/लिखने/प्रकाशित करने के अनुरोधों की अनुमति है।",
         "used_label": "प्रयुक्त:"
       },
-      "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime."
+      "page_subtitle": "किसी भी समय घुमाने योग्य संगठन-स्तरीय कुंजियों के साथ AI टूल्स को ClassroomIO से कनेक्ट करें।"
     },
     "api": {
-      "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
+      "subtitle": "ClassroomIO सार्वजनिक API के साथ एकीकृत करने के लिए API कुंजियाँ प्रबंधित करें।",
       "keys": {
-        "title": "API keys",
-        "description": "These keys authenticate the current organization when calling the ClassroomIO public API.",
-        "generate": "Generate API key",
-        "secret_once": "This secret is shown once. Copy it and store it securely.",
-        "empty_title": "No API keys yet",
-        "empty_description": "Create the first org-scoped API key to use the ClassroomIO public API.",
+        "title": "API कुंजियाँ",
+        "description": "ये कुंजियाँ ClassroomIO सार्वजनिक API को कॉल करते समय वर्तमान संगठन को प्रमाणित करती हैं।",
+        "generate": "API कुंजी बनाएं",
+        "secret_once": "यह गुप्त कुंजी केवल एक बार दिखाई जाती है। इसे कॉपी करें और सुरक्षित रूप से संग्रहीत करें।",
+        "empty_title": "अभी तक कोई API कुंजी नहीं",
+        "empty_description": "ClassroomIO सार्वजनिक API का उपयोग करने के लिए पहली संगठन-स्तरीय API कुंजी बनाएं।",
         "modal": {
-          "title": "Create API key",
-          "description": "Choose a name for this API key before it is generated.",
-          "name_label": "Key name",
-          "name_placeholder": "My API integration",
-          "cancel": "Cancel",
-          "save": "Create key"
+          "title": "API कुंजी बनाएं",
+          "description": "इस API कुंजी को बनाने से पहले इसका नाम चुनें।",
+          "name_label": "कुंजी का नाम",
+          "name_placeholder": "मेरा API एकीकरण",
+          "cancel": "रद्द करें",
+          "save": "कुंजी बनाएं"
         }
       },
       "setup": {
         "title": "त्वरित शुरुआत",
         "description": "हर अनुरोध पर अपनी API कुंजी को Bearer टोकन के रूप में उपयोग करें। प्लेसहोल्डर को ऊपर की कुंजी से बदलें, या कुंजी बनाने के तुरंत बाद सीक्रेट पेस्ट करें।"
       },
-      "view_docs": "View Docs"
+      "view_docs": "दस्तावेज़ देखें"
     },
     "keys": {
       "active": "सक्रिय",
@@ -4105,13 +4105,13 @@
       "disabled_description": "केवल संगठन व्यवस्थापक ही स्वचालन कुंजियाँ बना सकते हैं, घुमा सकते हैं या निरस्त कर सकते हैं। शिक्षक यहां सेटअप निर्देशों की समीक्षा कर सकते हैं।"
     },
     "zapier": {
-      "page_subtitle": "Automate ClassroomIO with thousands of apps through Zapier. Coming soon."
+      "page_subtitle": "Zapier के माध्यम से हज़ारों ऐप्स के साथ ClassroomIO को स्वचालित करें। जल्द आ रहा है।"
     }
   },
   "ai_assistant": {
     "empty_state": "मुझसे अपने पाठ्यक्रम की सामग्री में मदद करने के लिए कहें - पाठों का मसौदा तैयार करें, प्रश्न तैयार करें, या किसी दस्तावेज़ से पाठ्यक्रम की योजना बनाएं।",
     "input_placeholder": "एआई सहायक से पूछें...",
-    "quote_lesson_note": "Quote in assistant",
+    "quote_lesson_note": "सहायक में उद्धृत करें",
     "attach_document": "एक दस्तावेज़ संलग्न करें (पीडीएफ, DOCX, PPTX)",
     "upgrade_to_upload": "दस्तावेज़ अपलोड करने के लिए अपग्रेड करें",
     "tokens_exhausted": "मासिक एआई टोकन सीमा पूरी हो गई।",
@@ -4132,76 +4132,76 @@
     "agent_running_warning": "एजेंट का कार्य पूरा होते ही पाठ्यक्रम में परिवर्तन दिखाई देंगे। पृष्ठ पुनः लोड न करें.",
     "agent_running_warning_dismiss": "बंद करें",
     "quick_action": {
-      "upload_document_course": "Upload a document to create a course",
-      "draft_lesson": "Draft a lesson",
-      "generate_questions_from_lesson": "Generate questions from this lesson",
-      "summarize_lesson": "Summarize this lesson",
-      "publish_course": "Help me publish this course"
+      "upload_document_course": "पाठ्यक्रम बनाने के लिए एक दस्तावेज़ अपलोड करें",
+      "draft_lesson": "एक पाठ का मसौदा तैयार करें",
+      "generate_questions_from_lesson": "इस पाठ से प्रश्न बनाएं",
+      "summarize_lesson": "इस पाठ का सारांश बनाएं",
+      "publish_course": "इस पाठ्यक्रम को प्रकाशित करने में मदद करें"
     },
-    "plan_applying_changes": "Applying changes",
-    "plan_working": "Working",
-    "plan_progress": "{completed} / {total} steps completed",
-    "stop": "Stop",
-    "copy_full_error": "Copy full error",
-    "resize_panel_aria_label": "Resize AI assistant panel",
-    "generic_working": "Working",
-    "run_failed_after": "{action} did not finish successfully.",
+    "plan_applying_changes": "परिवर्तन लागू किए जा रहे हैं",
+    "plan_working": "काम जारी है",
+    "plan_progress": "{completed} / {total} चरण पूर्ण",
+    "stop": "रोकें",
+    "copy_full_error": "पूरी त्रुटि कॉपी करें",
+    "resize_panel_aria_label": "AI सहायक पैनल का आकार बदलें",
+    "generic_working": "काम जारी है",
+    "run_failed_after": "{action} सफलतापूर्वक पूरा नहीं हुआ।",
     "tool": {
       "pending": {
-        "working": "Working",
-        "unknown_tool": "Running {toolName}",
-        "get_course_structure": "Reading course structure",
-        "get_lesson_content": "Reading lesson content",
-        "get_exercise_details": "Reading exercise",
-        "create_section": "Creating section",
-        "update_section": "Updating section",
-        "create_lesson": "Creating lesson",
-        "update_lesson": "Updating lesson",
-        "update_lesson_content": "Writing lesson content",
-        "create_exercise": "Creating exercise",
-        "create_exercise_section": "Creating exercise section",
-        "update_exercise": "Updating exercise",
-        "update_exercise_section": "Updating exercise section",
-        "add_questions": "Adding questions",
-        "update_questions": "Updating questions",
-        "reorder_content": "Reordering content",
-        "update_course_landing_page": "Updating landing page",
-        "check_course_go_live_readiness": "Checking go-live readiness",
-        "go_live_course": "Publishing course",
-        "generate_course_plan": "Generating course plan",
+        "working": "काम जारी है",
+        "unknown_tool": "{toolName} चलाया जा रहा है",
+        "get_course_structure": "पाठ्यक्रम संरचना पढ़ी जा रही है",
+        "get_lesson_content": "पाठ सामग्री पढ़ी जा रही है",
+        "get_exercise_details": "अभ्यास पढ़ा जा रहा है",
+        "create_section": "अनुभाग बनाया जा रहा है",
+        "update_section": "अनुभाग अपडेट किया जा रहा है",
+        "create_lesson": "पाठ बनाया जा रहा है",
+        "update_lesson": "पाठ अपडेट किया जा रहा है",
+        "update_lesson_content": "पाठ सामग्री लिखी जा रही है",
+        "create_exercise": "अभ्यास बनाया जा रहा है",
+        "create_exercise_section": "अभ्यास अनुभाग बनाया जा रहा है",
+        "update_exercise": "अभ्यास अपडेट किया जा रहा है",
+        "update_exercise_section": "अभ्यास अनुभाग अपडेट किया जा रहा है",
+        "add_questions": "प्रश्न जोड़े जा रहे हैं",
+        "update_questions": "प्रश्न अपडेट किए जा रहे हैं",
+        "reorder_content": "सामग्री का क्रम बदला जा रहा है",
+        "update_course_landing_page": "लैंडिंग पेज अपडेट किया जा रहा है",
+        "check_course_go_live_readiness": "लाइव होने की तैयारी जाँची जा रही है",
+        "go_live_course": "पाठ्यक्रम प्रकाशित किया जा रहा है",
+        "generate_course_plan": "पाठ्यक्रम योजना बनाई जा रही है",
         "ask_template_questions": "टेम्प्लेट फॉर्म तैयार किया जा रहा है",
         "fetch_documentation_url": "दस्तावेज़ पृष्ठ पढ़ना",
         "fetch_documentation_url_with_url": "पढ़ना {url}"
       },
       "meta": {
-        "lesson_char_count": "({count, plural, one {# character} other {# characters}})",
-        "landing_page_preview": "· Preview changes",
-        "exercise_questions_added": "· {count, plural, one {# question added} other {# questions added}}",
-        "exercise_questions_updated": "· {count, plural, one {# question updated} other {# questions updated}}"
+        "lesson_char_count": "({count, plural, one {# अक्षर} other {# अक्षर}})",
+        "landing_page_preview": "· परिवर्तनों का पूर्वावलोकन",
+        "exercise_questions_added": "· {count, plural, one {# प्रश्न जोड़ा गया} other {# प्रश्न जोड़े गए}}",
+        "exercise_questions_updated": "· {count, plural, one {# प्रश्न अपडेट किया गया} other {# प्रश्न अपडेट किए गए}}"
       },
       "done": {
-        "generic": "Done",
-        "create_section": "Created section: {title}",
-        "update_section": "Updated section: {title}",
-        "create_lesson": "Created lesson: {title}",
-        "update_lesson": "Updated lesson: {title}",
-        "update_lesson_content_fallback": "Wrote {count, plural, one {# character} other {# characters}}",
-        "create_exercise": "Created exercise «{title}» · {count, plural, one {# question} other {# questions}}",
-        "update_exercise": "Updated exercise: {title}",
-        "update_exercise_section": "Updated exercise section: {title}",
-        "add_questions_fallback": "{count, plural, one {Added # question} other {Added # questions}}",
-        "update_questions_fallback": "{count, plural, one {Updated # question} other {Updated # questions}}",
-        "create_exercise_section": "Created exercise section: {title}",
-        "get_course_structure": "Course structure loaded",
-        "get_lesson_content": "Lesson content loaded",
-        "get_exercise_details": "Exercise loaded",
-        "reorder_content": "Content reordered",
-        "update_course_landing_page": "Updated landing page: {title}",
-        "check_go_live_ready": "{warningCount, plural, =0{Ready to go live} other{Ready to go live — # warnings}}",
-        "check_go_live_blocked": "{blockerCount, plural, one{# blocker before go-live} other{# blockers before go-live}}",
-        "go_live_published": "Published course: {title}",
-        "go_live_not_published": "Course was not published",
-        "generate_course_plan": "Course plan generated",
+        "generic": "पूर्ण",
+        "create_section": "अनुभाग बनाया गया: {title}",
+        "update_section": "अनुभाग अपडेट किया गया: {title}",
+        "create_lesson": "पाठ बनाया गया: {title}",
+        "update_lesson": "पाठ अपडेट किया गया: {title}",
+        "update_lesson_content_fallback": "{count, plural, one {# अक्षर लिखा गया} other {# अक्षर लिखे गए}}",
+        "create_exercise": "अभ्यास «{title}» बनाया गया · {count, plural, one {# प्रश्न} other {# प्रश्न}}",
+        "update_exercise": "अभ्यास अपडेट किया गया: {title}",
+        "update_exercise_section": "अभ्यास अनुभाग अपडेट किया गया: {title}",
+        "add_questions_fallback": "{count, plural, one {# प्रश्न जोड़ा गया} other {# प्रश्न जोड़े गए}}",
+        "update_questions_fallback": "{count, plural, one {# प्रश्न अपडेट किया गया} other {# प्रश्न अपडेट किए गए}}",
+        "create_exercise_section": "अभ्यास अनुभाग बनाया गया: {title}",
+        "get_course_structure": "पाठ्यक्रम संरचना लोड की गई",
+        "get_lesson_content": "पाठ सामग्री लोड की गई",
+        "get_exercise_details": "अभ्यास लोड किया गया",
+        "reorder_content": "सामग्री का क्रम बदला गया",
+        "update_course_landing_page": "लैंडिंग पेज अपडेट किया गया: {title}",
+        "check_go_live_ready": "{warningCount, plural, =0{लाइव होने के लिए तैयार} other{लाइव होने के लिए तैयार — # चेतावनियाँ}}",
+        "check_go_live_blocked": "{blockerCount, plural, one{लाइव होने से पहले # बाधा} other{लाइव होने से पहले # बाधाएँ}}",
+        "go_live_published": "पाठ्यक्रम प्रकाशित: {title}",
+        "go_live_not_published": "पाठ्यक्रम प्रकाशित नहीं किया गया",
+        "generate_course_plan": "पाठ्यक्रम योजना बनाई गई",
         "ask_template_questions": "टेम्प्लेट फॉर्म तैयार",
         "fetch_documentation_url": "पढ़ें {url}"
       }
@@ -4223,7 +4223,7 @@
     "error_network": "नेटवर्क त्रुटि। अपने कनेक्शन की जांच करें और पुन: प्रयास करें।",
     "context_usage_tooltip": "{used} / {max} टोकन का उपयोग किया गया",
     "context_full_title": "प्रसंग विंडो भरी हुई है",
-    "context_full_description": "The assistant will summarize older messages automatically so you can keep working in this chat.",
+    "context_full_description": "सहायक पुराने संदेशों का स्वचालित रूप से सारांश बनाएगा ताकि आप इस चैट में काम जारी रख सकें।",
     "context_full_compact": "संक्षिप्त बातचीत",
     "context_full_compacting": "संघनन...",
     "context_full_new_chat": "सारांश के साथ नई चैट प्रारंभ करें",
@@ -4513,11 +4513,11 @@
     }
   },
   "side_panel": {
-    "close_aria": "Close panel",
-    "resize_panel_aria_label": "Resize panel",
+    "close_aria": "पैनल बंद करें",
+    "resize_panel_aria_label": "पैनल का आकार बदलें",
     "titles": {
-      "ai_assistant": "AI Assistant",
-      "transcript": "Transcript"
+      "ai_assistant": "AI सहायक",
+      "transcript": "ट्रांसक्रिप्ट"
     }
   },
   "compliance": {
