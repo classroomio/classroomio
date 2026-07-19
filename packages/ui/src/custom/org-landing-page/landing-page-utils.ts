@@ -76,10 +76,6 @@ export function getCourseCurrencyFormatter(currency = 'USD') {
   });
 }
 
-export function formatCourseCurrency(amount: number, currency = 'USD') {
-  return getCourseCurrencyFormatter(currency).format(amount);
-}
-
 /** Mirrors dashboard `calcCourseDiscount` for landing-page course cards. */
 export function calcCourseDiscount(percent = 0, cost: number, showDiscount: boolean) {
   if (!percent || !showDiscount) return cost;
