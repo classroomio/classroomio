@@ -4173,6 +4173,8 @@
       "import": "Import"
     },
     "templates": {
+      "page_title": "Start a new course",
+      "page_subtitle": "Pick a template to pre-fill the module structure for the kind of course you're building — everything stays editable after.",
       "heading": "Templates",
       "browse": "Browse templates",
       "browser_title": "Note templates",
@@ -4293,6 +4295,27 @@
       "empty_note_error": "Add some content before asking AI to review",
       "selection_required": "Select text in the note first",
       "last_result": "{count, plural, =0 {No comments added} =1 {1 comment added} other {# comments added}}"
+    },
+    "sidebar": {
+      "search_placeholder": "Search",
+      "new_note": "New note",
+      "sections": {
+        "favorites": "Favorites",
+        "private": "Private",
+        "shared_with_me": "Shared with me",
+        "workspace": "Workspace"
+      },
+      "footer": {
+        "templates": "Templates",
+        "trash": "Trash"
+      }
+    },
+    "trash": {
+      "title": "Trash",
+      "empty": "Notes you delete will appear here.",
+      "restore": "Restore",
+      "delete_forever": "Delete forever",
+      "confirm_delete": "Delete this note permanently? This cannot be undone."
     }
   },
   "certificates": {

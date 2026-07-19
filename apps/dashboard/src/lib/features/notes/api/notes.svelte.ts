@@ -97,11 +97,7 @@ class NotesApi extends BaseApiWithErrors {
   }
 
   async refreshList() {
-    if (!this.lastListParams) {
-      return;
-    }
-
-    await this.listNotes(this.lastListParams);
+    await this.listSidebar();
   }
 
   async listSidebar() {
@@ -220,7 +216,7 @@ class NotesApi extends BaseApiWithErrors {
     return note;
   }
 
-  async createWorkspaceNote(title: string) {
+  async createWorkspaceNote(title: string, parentId?: string | null) {
     const org = get(currentOrg);
     if (!org.id) return null;
 
@@ -233,7 +229,8 @@ class NotesApi extends BaseApiWithErrors {
             organizationId: org.id,
             title,
             content: '',
-            origin: 'workspace'
+            origin: 'workspace',
+            ...(parentId ? { parentId } : {})
           }
         }),
       onSuccess: (result) => {
@@ -241,6 +238,10 @@ class NotesApi extends BaseApiWithErrors {
       },
       logContext: 'createWorkspaceNote'
     });
+
+    if (created) {
+      await this.listSidebar();
+    }
 
     return created;
   }
