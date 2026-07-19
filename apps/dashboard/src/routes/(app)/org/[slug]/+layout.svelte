@@ -41,10 +41,10 @@
   <AddOrgModal />
 {/if}
 
-<Sidebar.Provider>
+<Sidebar.Provider class={isNotesWorkspace ? 'h-svh max-h-svh' : undefined}>
   <OrgSidebar />
 
-  <Sidebar.Inset class="min-h-0 flex-1 overflow-hidden p-0">
+  <Sidebar.Inset class={isNotesWorkspace ? 'h-svh max-h-svh min-h-0 flex-1 overflow-hidden p-0' : 'min-h-0 flex-1 overflow-hidden p-0'}>
     <AppHeader />
 
     {#if isNotesWorkspace}

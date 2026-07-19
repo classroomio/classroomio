@@ -35,10 +35,10 @@
 <svelte:window onkeydown={handleSearchShortcut} />
 
 <div
-  class="notes-workspace flex min-h-0 w-full flex-1 flex-col overflow-hidden"
+  class="notes-workspace flex h-full min-h-0 w-full flex-col overflow-hidden"
   style={`--side-panel-width: ${sidePanelWidth}px;`}
 >
-  <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
+  <div class="flex h-full min-h-0 flex-col overflow-hidden">
     {@render children?.()}
   </div>
   <SidePanelRail onWidthPreview={(width) => (sidePanelWidth = width)} />

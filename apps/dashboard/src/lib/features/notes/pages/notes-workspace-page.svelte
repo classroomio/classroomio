@@ -113,10 +113,10 @@
   });
 </script>
 
-<div class="flex min-h-0 flex-1 w-full overflow-hidden">
+<div class="flex h-full min-h-0 w-full overflow-hidden">
   <NoteListSidebar selectedNoteId={noteId} onSearchClick={() => (showSearchModal = true)} />
 
-  <section class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+  <section class="flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
     {#if mode === 'trash'}
       <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
         <div class="border-border border-b px-6 py-4">

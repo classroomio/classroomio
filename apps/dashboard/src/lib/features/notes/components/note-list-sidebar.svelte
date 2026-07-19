@@ -99,7 +99,7 @@
   });
 </script>
 
-<aside class={cn('border-border ui:bg-muted/30 flex min-h-0 w-72 shrink-0 flex-col self-stretch border-r', className)}>
+<aside class={cn('border-border ui:bg-muted/30 flex h-full min-h-0 w-72 shrink-0 flex-col border-r', className)}>
   <div class="space-y-1 py-3">
     <NoteSidebarSearch onclick={() => onSearchClick?.()} />
     <NoteSidebarNewNote loading={isCreating} onclick={handleCreateNote} />
