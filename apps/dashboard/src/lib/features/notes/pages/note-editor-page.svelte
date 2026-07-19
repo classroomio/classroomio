@@ -933,14 +933,14 @@
               <NoteEmptyPagePicker onSelect={handleEmptyPageOption} class="min-h-[40vh]" />
             {/if}
 
-            <div class={showEmptyPagePicker ? 'sr-only' : 'notes-editor-surface [&_*]:!border-none [&_*]:!shadow-none'}>
+            <div class={showEmptyPagePicker ? 'sr-only' : 'notes-editor-surface'}>
               <TextEditor
                 {content}
                 showToolBar={false}
                 editable={canWrite}
+                frameless
                 extraExtensions={commentExtensions}
-                class="!border-0 !border-none !shadow-none"
-                editorClass="min-h-[50vh] !border-0 !border-none !shadow-none px-0 py-0"
+                editorClass="min-h-[50vh] px-0 py-0"
                 onChange={scheduleContentSave}
                 onReady={handleEditorReady}
                 placeholder={$t('notes.editor.placeholder')}

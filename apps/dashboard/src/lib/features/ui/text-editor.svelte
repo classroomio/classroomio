@@ -30,6 +30,7 @@
     editableStorageKey?: string;
     class?: string;
     editorClass?: string;
+    frameless?: boolean;
     onChange?: (content: HTMLContent) => void;
     onReady?: (editor: TiptapEditor) => void;
     onEditorDestroy?: () => void;
@@ -45,6 +46,7 @@
     editableStorageKey = 'edra-editable',
     class: className = '',
     editorClass = '',
+    frameless = false,
     placeholder = 'Welcome to ClassroomIO',
     onChange,
     onReady,
@@ -56,14 +58,21 @@
 {#await loadEditor()}
   <div
     class={cn(
-      'ui:relative ui:bg-background ui:flex ui:w-full ui:flex-col ui:rounded-md ui:border ui:border-dashed',
+      frameless
+        ? 'ui:relative ui:bg-background ui:flex ui:w-full ui:flex-col'
+        : 'ui:relative ui:bg-background ui:flex ui:w-full ui:flex-col ui:rounded-md ui:border ui:border-dashed',
       className
     )}
     aria-busy="true"
     aria-hidden="true"
   >
     {#if showToolBar}
-      <div class="ui:h-9 ui:shrink-0 ui:border-b ui:border-dashed ui:bg-muted/50" />
+      <div
+        class={cn(
+          'ui:h-9 ui:shrink-0 ui:bg-muted/50',
+          !frameless && 'ui:border-b ui:border-dashed'
+        )}
+      />
     {/if}
     <div
       class={cn('ui:relative ui:h-128 ui:w-full ui:overflow-auto ui:p-4 ui:animate-pulse ui:bg-muted/50', editorClass)}
@@ -79,6 +88,7 @@
     {editableStorageKey}
     class={className}
     {editorClass}
+    {frameless}
     {placeholder}
     onContentChange={onChange}
     onEditorReady={onReady}

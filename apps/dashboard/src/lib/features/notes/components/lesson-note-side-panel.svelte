@@ -194,6 +194,7 @@
         <TextEditor
           {content}
           showToolBar={true}
+          frameless
           onChange={scheduleSave}
           onReady={bindEditor}
           placeholder={$t('notes.lesson_panel.placeholder')}

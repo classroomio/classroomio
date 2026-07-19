@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { PublicCourse } from '@cio/ui';
-  import { TextEditor } from '$features/ui';
+  import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import NoteSubpages from '$features/notes/components/note-subpages.svelte';
   import { displayNoteTitle } from '$features/notes/utils/note-list-utils';
   import { t } from '$lib/utils/functions/translations';
@@ -68,7 +68,11 @@
       {/if}
     </header>
 
-    <TextEditor content={note.content} editable={false} showToolBar={false} class="border-0" />
+    <div class="prose sm:prose-sm mt-8 max-w-none dark:text-white">
+      {#if note.content}
+        <SafeHtmlContent content={note.content} />
+      {/if}
+    </div>
 
     <NoteSubpages
       noteId={note.id}
