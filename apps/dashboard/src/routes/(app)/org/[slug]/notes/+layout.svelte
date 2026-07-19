@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { sidePanel, SidePanelRail } from '$features/side-panel';
   import { useSidebar } from '@cio/ui/base/sidebar';
+  import { searchStore } from '$features/search/store/search-store.svelte';
   import { noteAiPanelDefinition, noteCommentsPanelDefinition } from '$features/notes/panel';
 
   let { children } = $props();
@@ -19,10 +20,14 @@
     }
 
     event.preventDefault();
+    event.stopPropagation();
+    searchStore.close();
     window.dispatchEvent(new CustomEvent('notes:open-search'));
   }
 
   onMount(() => {
+    searchStore.close();
+
     const wasSidebarOpen = sidebar.open;
     sidebar.setOpen(false);
 
