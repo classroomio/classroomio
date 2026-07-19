@@ -636,7 +636,7 @@
       "grade_distribution_card_description": "Hvor mange elever falder der ind i hvert klassetrin.",
       "students_table_description": "Sorterbar oversigt med links til elevprofiler.",
       "kpi_team_tutors": "{count, plural, one {# underviser på kursusholdet} other {# undervisere på kursusholdet}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} knyttet til lektioner",
+      "kpi_lessons_exercises": "{count, plural, one {# øvelse} other {# øvelser}} knyttet til lektioner",
       "kpi_progress_grade": "{grade} % gennemsnitlig øvelseskarakter på tværs af tilmeldte elever"
     }
   },

@@ -636,7 +636,7 @@
       "grade_distribution_card_description": "Wie viele Schüler fallen in jede Klassenstufe?",
       "students_table_description": "Sortierbare Übersicht mit Links zu Studierendenprofilen.",
       "kpi_team_tutors": "{count, plural, one {# Tutor im Kurs-Team} other {# Tutoren im Kurs-Team}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}}, zugeordnet zu Lektionen",
+      "kpi_lessons_exercises": "{count, plural, one {# Übung} other {# Übungen}}, zugeordnet zu Lektionen",
       "kpi_progress_grade": "{grade} % durchschnittliche Übungsnote aller eingeschriebenen Schüler"
     }
   },

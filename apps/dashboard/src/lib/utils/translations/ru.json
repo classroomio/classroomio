@@ -636,7 +636,7 @@
       "grade_distribution_card_description": "Сколько учеников попадает в каждую группу классов.",
       "students_table_description": "Сортируемый обзор со ссылками на профили студентов.",
       "kpi_team_tutors": "{count, plural, one {# преподаватель в команде курса} other {# преподавателей в команде курса}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} сопоставлено с уроками",
+      "kpi_lessons_exercises": "{count, plural, one {# упражнение} other {# упражнений}} сопоставлено с уроками",
       "kpi_progress_grade": "{grade} % средняя оценка за упражнения среди зачисленных учащихся"
     }
   },

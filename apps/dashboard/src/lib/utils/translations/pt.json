@@ -636,7 +636,7 @@
       "grade_distribution_card_description": "Quantos alunos se enquadram em cada faixa de série.",
       "students_table_description": "Visão geral classificável com links para perfis de alunos.",
       "kpi_team_tutors": "{count, plural, one {# tutor na equipe do curso} other {# tutores na equipe do curso}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} mapeados para lições",
+      "kpi_lessons_exercises": "{count, plural, one {# exercício} other {# exercícios}} mapeados para lições",
       "kpi_progress_grade": "{grade}% da nota média do exercício entre os alunos matriculados"
     }
   },

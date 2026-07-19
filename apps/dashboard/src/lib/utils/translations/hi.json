@@ -636,7 +636,7 @@
       "grade_distribution_card_description": "प्रत्येक ग्रेड बैंड में कितने छात्र आते हैं।",
       "students_table_description": "छात्र प्रोफाइल के लिंक के साथ क्रमबद्ध अवलोकन।",
       "kpi_team_tutors": "{count, plural, one {पाठ्यक्रम टीम में # शिक्षक} other {पाठ्यक्रम टीम में # शिक्षक}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} पाठों के अनुसार मैप किया गया",
+      "kpi_lessons_exercises": "{count, plural, one {# अभ्यास} other {# अभ्यास}} पाठों के अनुसार मैप किया गया",
       "kpi_progress_grade": "नामांकित विद्यार्थियों में {ग्रेड}% औसत व्यायाम ग्रेड"
     }
   },

@@ -636,7 +636,7 @@
       "grade_distribution_card_description": "Combien d’élèves appartiennent à chaque tranche scolaire.",
       "students_table_description": "Aperçu triable avec des liens vers les profils des étudiants.",
       "kpi_team_tutors": "{count, plural, one {# tuteur dans l'équipe du cours} other {# tuteurs dans l'équipe du cours}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} mappés aux leçons",
+      "kpi_lessons_exercises": "{count, plural, one {# exercice} other {# exercices}} mappés aux leçons",
       "kpi_progress_grade": "{grade} % de note d'exercice moyenne parmi les étudiants inscrits"
     }
   },

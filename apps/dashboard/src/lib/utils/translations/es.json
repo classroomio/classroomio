@@ -636,7 +636,7 @@
       "grade_distribution_card_description": "¿Cuántos estudiantes caen en cada grupo de grado?",
       "students_table_description": "Descripción general ordenable con enlaces a perfiles de estudiantes.",
       "kpi_team_tutors": "{count, plural, one {# tutor en el equipo del curso} other {# tutores en el equipo del curso}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} asignados a lecciones",
+      "kpi_lessons_exercises": "{count, plural, one {# ejercicio} other {# ejercicios}} asignados a lecciones",
       "kpi_progress_grade": "{grade}% de calificación promedio de ejercicio entre los estudiantes matriculados"
     }
   },

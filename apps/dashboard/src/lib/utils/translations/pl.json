@@ -636,7 +636,7 @@
       "grade_distribution_card_description": "Ilu uczniów należy do każdego przedziału ocen.",
       "students_table_description": "Sortowalny przegląd z linkami do profili studentów.",
       "kpi_team_tutors": "{count, plural, one {# korepetytor w zespole kursu} other {# korepetytorów w zespole kursu}}",
-      "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} przypisane do lekcji",
+      "kpi_lessons_exercises": "{count, plural, one {# ćwiczenie} other {# ćwiczeń}} przypisane do lekcji",
       "kpi_progress_grade": "{grade}% średniej oceny z ćwiczeń wśród zapisanych uczniów"
     }
   },
