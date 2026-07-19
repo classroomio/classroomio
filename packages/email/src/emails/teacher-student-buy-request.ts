@@ -35,7 +35,7 @@ export const teacherStudentBuyRequestEmail = defineEmail({
       <p style="font-weight: bold; margin-top: 24px;">Or automatically enroll them</p>
       <p>Use the button below to open the course and send this student an invite in one step.</p>
       <div>
-        <a class="button" href="${fields.autoEnrollUrl}">Auto Enrol this Student</a>
+        <a class="button" href="${fields.autoEnrollUrl}">Auto Enrol Student</a>
       </div>
     `;
 
