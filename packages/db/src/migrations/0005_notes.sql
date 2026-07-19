@@ -20,6 +20,7 @@ CREATE TABLE "org_note" (
 	"converted_course_id" uuid,
 	"parent_id" uuid,
 	"sort_order" integer DEFAULT 0 NOT NULL,
+	"cover_image_url" varchar,
 	"created_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
 	"deleted_at" timestamp with time zone
@@ -137,4 +138,5 @@ INSERT INTO "org_note_favorite" ("profile_id", "note_id", "created_at")
 SELECT "owner_id", "id", COALESCE("updated_at", "created_at")
 FROM "org_note"
 WHERE "is_pinned" = true AND "deleted_at" IS NULL
-ON CONFLICT DO NOTHING;
+ON CONFLICT DO NOTHING;--> statement-breakpoint
+ALTER TABLE "org_note" ADD COLUMN IF NOT EXISTS "cover_image_url" varchar;

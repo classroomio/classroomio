@@ -29,6 +29,7 @@ export const noteListSelect = {
   convertedCourseId: schema.orgNote.convertedCourseId,
   parentId: schema.orgNote.parentId,
   sortOrder: schema.orgNote.sortOrder,
+  coverImageUrl: schema.orgNote.coverImageUrl,
   createdAt: schema.orgNote.createdAt,
   updatedAt: schema.orgNote.updatedAt,
   deletedAt: schema.orgNote.deletedAt,
@@ -485,6 +486,7 @@ export async function updateNote(
       | 'convertedCourseId'
       | 'parentId'
       | 'sortOrder'
+      | 'coverImageUrl'
       | 'ownerId'
       | 'updatedAt'
     >

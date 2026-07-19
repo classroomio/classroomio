@@ -2,37 +2,49 @@
   import GlobeIcon from '@lucide/svelte/icons/globe';
   import ImageIcon from '@lucide/svelte/icons/image';
   import LockIcon from '@lucide/svelte/icons/lock';
+  import Trash2Icon from '@lucide/svelte/icons/trash-2';
   import UsersIcon from '@lucide/svelte/icons/users';
   import { cn } from '@cio/ui/tools';
+  import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
   import type { NoteShareVisibility } from '../utils/types';
   import type { Snippet } from 'svelte';
+  import NoteCoverUpload from './note-cover-upload.svelte';
 
   interface Props {
     title?: string;
     visibility?: NoteShareVisibility;
+    coverImageUrl?: string | null;
     canWrite?: boolean;
+    isSavingCover?: boolean;
     actions?: Snippet;
     meta?: Snippet;
     children?: Snippet;
     onTitleInput?: (event: Event) => void;
     onTitleKeydown?: (event: KeyboardEvent) => void;
+    onCoverUploaded?: (url: string) => void | Promise<void>;
+    onCoverRemoved?: () => void | Promise<void>;
     class?: string;
   }
 
   let {
     title = '',
     visibility = 'private',
+    coverImageUrl = null,
     canWrite = false,
+    isSavingCover = false,
     actions,
     meta,
     children,
     onTitleInput,
     onTitleKeydown,
+    onCoverUploaded,
+    onCoverRemoved,
     class: className = ''
   }: Props = $props();
 
   let titleRef = $state<HTMLTextAreaElement | null>(null);
+  let showCoverUpload = $state(false);
 
   const visibilityLabel = $derived(
     visibility === 'team'
@@ -70,21 +82,45 @@
 
 <article class={cn('flex min-h-full w-full flex-col', className)}>
   <div class="group/cover relative w-full shrink-0">
-    <div
-      class="h-32 w-full bg-gradient-to-r from-violet-100 via-sky-50 to-amber-50 dark:from-violet-950/40 dark:via-sky-950/20 dark:to-amber-950/20"
-      aria-hidden="true"
-    ></div>
+    {#if coverImageUrl}
+      <img src={coverImageUrl} alt="" class="h-40 w-full object-cover" />
+    {:else}
+      <div
+        class="h-32 w-full bg-gradient-to-r from-violet-100 via-sky-50 to-amber-50 dark:from-violet-950/40 dark:via-sky-950/20 dark:to-amber-950/20"
+        aria-hidden="true"
+      ></div>
+    {/if}
 
-  {#if canWrite}
-      <button
-        type="button"
-        class="ui:text-muted-foreground ui:hover:bg-background/80 absolute bottom-3 left-1/2 hidden -translate-x-1/2 items-center gap-1.5 rounded-md bg-background/80 px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur-sm group-hover/cover:flex"
-        disabled
-        title={$t('notes.page.add_cover_soon')}
+    {#if canWrite}
+      <div
+        class="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2 opacity-0 transition-opacity group-hover/cover:opacity-100"
       >
-        <ImageIcon size={14} />
-        {$t('notes.page.add_cover')}
-      </button>
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          class="bg-background/90 backdrop-blur-sm"
+          loading={isSavingCover}
+          onclick={() => (showCoverUpload = true)}
+        >
+          <ImageIcon size={14} />
+          {coverImageUrl ? $t('notes.page.change_cover') : $t('notes.page.add_cover')}
+        </Button>
+
+        {#if coverImageUrl}
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            class="bg-background/90 backdrop-blur-sm"
+            loading={isSavingCover}
+            onclick={() => onCoverRemoved?.()}
+          >
+            <Trash2Icon size={14} />
+            {$t('notes.page.remove_cover')}
+          </Button>
+        {/if}
+      </div>
     {/if}
 
     {#if actions}
@@ -124,3 +160,7 @@
     </div>
   </div>
 </article>
+
+{#if canWrite}
+  <NoteCoverUpload bind:open={showCoverUpload} onUploaded={onCoverUploaded} />
+{/if}

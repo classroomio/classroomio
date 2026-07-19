@@ -325,7 +325,14 @@ class NotesApi extends BaseApiWithErrors {
 
   async updateNote(
     noteId: string,
-    fields: { title?: string; content?: string; isPinned?: boolean; parentId?: string | null; sortOrder?: number }
+    fields: {
+      title?: string;
+      content?: string;
+      isPinned?: boolean;
+      parentId?: string | null;
+      sortOrder?: number;
+      coverImageUrl?: string | null;
+    }
   ) {
     let updated: NoteDetail | null = null;
 

@@ -3835,6 +3835,7 @@ export const orgNote = pgTable(
     convertedCourseId: uuid('converted_course_id'),
     parentId: uuid('parent_id'),
     sortOrder: integer('sort_order').notNull().default(0),
+    coverImageUrl: varchar('cover_image_url'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
       .default(sql`timezone('utc'::text, now())`)
       .notNull(),

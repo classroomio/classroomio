@@ -67,7 +67,8 @@ export const ZUpdateNote = z.object({
   videoAnchors: z.array(ZNoteVideoAnchor).optional(),
   isPinned: z.boolean().optional(),
   parentId: z.string().uuid().nullable().optional(),
-  sortOrder: z.number().int().min(0).optional()
+  sortOrder: z.number().int().min(0).optional(),
+  coverImageUrl: z.string().max(2048).nullable().optional()
 });
 
 export const ZNoteShareGrant = z.object({

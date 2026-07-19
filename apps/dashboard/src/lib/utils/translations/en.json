@@ -4111,7 +4111,14 @@
     },
     "page": {
       "add_cover": "Add cover",
-      "add_cover_soon": "Cover images are coming soon",
+      "change_cover": "Change cover",
+      "remove_cover": "Remove cover",
+      "add_cover_description": "Upload a wide image for the top of this note.",
+      "upload_cover_prompt": "Choose an image to upload",
+      "cover_upload_success": "Cover updated",
+      "cover_upload_error": "Could not upload cover image.",
+      "cover_remove_success": "Cover removed",
+      "cover_remove_error": "Could not remove cover.",
       "visibility_private": "Private · only visible to you",
       "visibility_team": "Workspace · visible to your team",
       "visibility_public": "Public · anyone with the link"

@@ -68,6 +68,8 @@
 
   let title = $state('');
   let content = $state('');
+  let coverImageUrl = $state<string | null>(null);
+  let isSavingCover = $state(false);
   let noteOrigin = $state<'workspace' | 'lesson_capture' | null>(null);
   let noteVisibility = $state<NoteShareVisibility>('private');
   let noteSlug = $state<string | null>(null);
@@ -167,6 +169,7 @@
 
     title = normalizeTitleForDisplay(note.title);
     content = note.content;
+    coverImageUrl = note.coverImageUrl ?? null;
     noteOrigin = note.origin;
     noteVisibility = note.visibility === 'public' ? 'public' : note.visibility === 'team' ? 'team' : 'private';
     noteSlug = note.slug ?? null;
@@ -499,6 +502,34 @@
     await notesApi.listSidebar();
   }
 
+  async function handleCoverUploaded(url: string) {
+    isSavingCover = true;
+    const updated = await notesApi.updateNote(noteId, { coverImageUrl: url });
+    isSavingCover = false;
+
+    if (!updated) {
+      snackbar.error('notes.page.cover_upload_error');
+      return;
+    }
+
+    coverImageUrl = updated.coverImageUrl ?? url;
+    snackbar.success('notes.page.cover_upload_success');
+  }
+
+  async function handleCoverRemoved() {
+    isSavingCover = true;
+    const updated = await notesApi.updateNote(noteId, { coverImageUrl: null });
+    isSavingCover = false;
+
+    if (!updated) {
+      snackbar.error('notes.page.cover_remove_error');
+      return;
+    }
+
+    coverImageUrl = null;
+    snackbar.success('notes.page.cover_remove_success');
+  }
+
   async function handleCreateSubpage() {
     const created = await notesApi.createWorkspaceNote(t.get('notes.subpages.new'), noteId);
 
@@ -754,9 +785,13 @@
       <NotePageChrome
         {title}
         visibility={noteVisibility}
+        {coverImageUrl}
         {canWrite}
+        {isSavingCover}
         onTitleInput={scheduleTitleSave}
         onTitleKeydown={handleTitleKeydown}
+        onCoverUploaded={handleCoverUploaded}
+        onCoverRemoved={handleCoverRemoved}
       >
         {#snippet actions()}
           {#if isSaving}

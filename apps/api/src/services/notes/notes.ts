@@ -493,7 +493,8 @@ async function copyTemplateNoteTree(params: {
     lessonId: null,
     videoAnchors: source.videoAnchors ?? [],
     parentId: params.parentId ?? null,
-    sortOrder: params.sortOrder ?? 0
+    sortOrder: params.sortOrder ?? 0,
+    coverImageUrl: source.coverImageUrl ?? null
   });
 
   if (note.content) {
@@ -672,6 +673,7 @@ export async function updateNoteService(
   const nextIsPinned = data.isPinned ?? existing.isPinned;
   const nextParentId = data.parentId !== undefined ? data.parentId : existing.parentId;
   const nextSortOrder = data.sortOrder ?? existing.sortOrder;
+  const nextCoverImageUrl = data.coverImageUrl !== undefined ? data.coverImageUrl : existing.coverImageUrl;
   const contentChanged = data.content !== undefined && data.content !== existing.content;
   let nextOwnerId = existing.ownerId;
 
@@ -706,6 +708,7 @@ export async function updateNoteService(
     isPinned: nextIsPinned,
     parentId: nextParentId,
     sortOrder: nextSortOrder,
+    coverImageUrl: nextCoverImageUrl,
     ownerId: nextOwnerId,
     updatedAt: new Date().toISOString()
   });
