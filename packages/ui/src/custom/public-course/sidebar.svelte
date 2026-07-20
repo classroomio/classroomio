@@ -77,6 +77,7 @@
               <SidebarRow
                 number={index + 1}
                 title={item.title}
+                depth={item.depth ?? 0}
                 active={item.slug === activeSlug}
                 locked={!item.isUnlocked}
                 href={hrefFor?.(item)}

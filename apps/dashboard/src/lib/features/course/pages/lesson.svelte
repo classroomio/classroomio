@@ -487,7 +487,7 @@
           {#key lessonId}
             <div class="mb-20 flex w-full flex-col" in:fade={{ delay: 500 }} out:fade>
               {#if !hasLessonVideos}
-                <LessonMaterialActions showSummarize {lessonId} alignWithNote />
+                <LessonMaterialActions showSummarize showTakeNote {courseId} {lessonId} alignWithNote />
               {/if}
 
               {#each viewModeComponents as Component, index (index)}
@@ -570,7 +570,7 @@
         {#key lessonId}
           <div class="mb-20 flex w-full flex-col" in:fade={{ delay: 500 }} out:fade>
             {#if !hasLessonVideos}
-              <LessonMaterialActions showSummarize {lessonId} alignWithNote />
+              <LessonMaterialActions showSummarize showTakeNote {courseId} {lessonId} alignWithNote />
             {/if}
 
             {#each viewModeComponents as Component, index (index)}

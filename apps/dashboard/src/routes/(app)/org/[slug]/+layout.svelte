@@ -15,6 +15,8 @@
 
   let { data, children } = $props();
 
+  const isDocsWorkspace = $derived(/\/docs(?:\/|$)/.test(page.url.pathname));
+
   function redirect(siteName: string | null) {
     if (!siteName) return;
 
@@ -39,23 +41,38 @@
   <AddOrgModal />
 {/if}
 
-<Sidebar.Provider>
+<Sidebar.Provider class={isDocsWorkspace ? 'h-svh max-h-svh' : undefined}>
   <OrgSidebar />
 
-  <Sidebar.Inset>
+  <Sidebar.Inset class={isDocsWorkspace ? 'h-svh max-h-svh min-h-0 flex-1 overflow-hidden p-0' : 'min-h-0 flex-1 overflow-hidden p-0'}>
     <AppHeader />
 
-    <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4">
-      {#if data.orgName === '*'}
-        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-          <Skeleton class="aspect-video rounded-xl" />
-          <Skeleton class="aspect-video rounded-xl" />
-          <Skeleton class="aspect-video rounded-xl" />
-        </div>
-        <Skeleton class="h-[50vh] w-full rounded-xl" />
-      {:else}
-        {@render children?.()}
-      {/if}
-    </div>
+    {#if isDocsWorkspace}
+      <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
+        {#if data.orgName === '*'}
+          <div class="grid auto-rows-min gap-4 px-4 md:grid-cols-3">
+            <Skeleton class="aspect-video rounded-xl" />
+            <Skeleton class="aspect-video rounded-xl" />
+            <Skeleton class="aspect-video rounded-xl" />
+          </div>
+          <Skeleton class="mx-4 h-[50vh] rounded-xl" />
+        {:else}
+          {@render children?.()}
+        {/if}
+      </div>
+    {:else}
+      <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4">
+        {#if data.orgName === '*'}
+          <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+            <Skeleton class="aspect-video rounded-xl" />
+            <Skeleton class="aspect-video rounded-xl" />
+            <Skeleton class="aspect-video rounded-xl" />
+          </div>
+          <Skeleton class="h-[50vh] w-full rounded-xl" />
+        {:else}
+          {@render children?.()}
+        {/if}
+      </div>
+    {/if}
   </Sidebar.Inset>
 </Sidebar.Provider>

@@ -13,9 +13,11 @@
   interface Props {
     /** Width classes matching the page content column (e.g. mx-auto w-full max-w-3xl). */
     class?: string;
+    /** When set, overrides the default course assistant prompt handoff. */
+    onSubmit?: (prompt: string) => void;
   }
 
-  let { class: contentClass = 'mx-auto w-full max-w-3xl' }: Props = $props();
+  let { class: contentClass = 'mx-auto w-full max-w-3xl', onSubmit }: Props = $props();
 
   const pageShellClass = 'mx-auto w-[90%] max-w-4xl px-3 sm:px-4 lg:max-w-5xl';
 
@@ -71,7 +73,11 @@
       return;
     }
 
-    sendPromptToAssistant(trimmed);
+    if (onSubmit) {
+      onSubmit(trimmed);
+    } else {
+      sendPromptToAssistant(trimmed);
+    }
     draft = '';
     collapse();
   }

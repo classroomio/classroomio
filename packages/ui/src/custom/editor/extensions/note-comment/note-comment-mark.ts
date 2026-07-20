@@ -1,6 +1,6 @@
 import { Mark, mergeAttributes } from '@tiptap/core';
 
-export interface NoteCommentMarkOptions {
+export interface DocCommentMarkOptions {
   HTMLAttributes: Record<string, unknown>;
 }
 
@@ -13,7 +13,7 @@ declare module '@tiptap/core' {
   }
 }
 
-export const NoteCommentMark = Mark.create<NoteCommentMarkOptions>({
+export const DocCommentMark = Mark.create<DocCommentMarkOptions>({
   name: 'noteComment',
 
   addOptions() {
@@ -26,14 +26,14 @@ export const NoteCommentMark = Mark.create<NoteCommentMarkOptions>({
     return {
       threadId: {
         default: null,
-        parseHTML: (element) => element.getAttribute('data-note-comment'),
+        parseHTML: (element) => element.getAttribute('data-doc-comment'),
         renderHTML: (attributes) => {
           if (!attributes.threadId) {
             return {};
           }
 
           return {
-            'data-note-comment': attributes.threadId
+            'data-doc-comment': attributes.threadId
           };
         }
       }
@@ -43,7 +43,7 @@ export const NoteCommentMark = Mark.create<NoteCommentMarkOptions>({
   parseHTML() {
     return [
       {
-        tag: 'span[data-note-comment]'
+        tag: 'span[data-doc-comment]'
       }
     ];
   },
@@ -52,7 +52,7 @@ export const NoteCommentMark = Mark.create<NoteCommentMarkOptions>({
     return [
       'span',
       mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
-        class: 'note-comment-mark'
+        class: 'doc-comment-mark'
       }),
       0
     ];
@@ -96,4 +96,4 @@ export const NoteCommentMark = Mark.create<NoteCommentMarkOptions>({
   }
 });
 
-export default NoteCommentMark;
+export default DocCommentMark;

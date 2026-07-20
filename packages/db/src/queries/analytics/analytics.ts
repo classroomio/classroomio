@@ -422,6 +422,7 @@ export async function getProfileCourseProgress(courseId: string, profileId: stri
 type PageEventInsert = typeof schema.analyticsPageEvent.$inferInsert;
 type OrgDailyInsert = typeof schema.analyticsOrgDaily.$inferInsert;
 type CourseDailyInsert = typeof schema.analyticsCourseDaily.$inferInsert;
+type NoteDailyInsert = typeof schema.analyticsDocDaily.$inferInsert;
 type CountryDailyInsert = typeof schema.analyticsCountryDaily.$inferInsert;
 
 export async function insertPageEvents(events: PageEventInsert[]) {
@@ -456,6 +457,7 @@ export async function upsertOrgDailyRows(rows: OrgDailyInsert[]) {
           landingViews: sql`excluded.landing_views`,
           uniqueVisitors: sql`excluded.unique_visitors`,
           coursePageViews: sql`excluded.course_page_views`,
+          docPageViews: sql`excluded.doc_page_views`,
           enrollments: sql`excluded.enrollments`,
           completions: sql`excluded.completions`,
           updatedAt: new Date().toISOString()
@@ -494,6 +496,32 @@ export async function upsertCourseDailyRows(rows: CourseDailyInsert[]) {
   } catch (error) {
     console.error('upsertCourseDailyRows error:', error);
     throw new Error('Failed to upsert analytics_course_daily rows');
+  }
+}
+
+export async function upsertDocDailyRows(rows: NoteDailyInsert[]) {
+  if (rows.length === 0) {
+    return 0;
+  }
+
+  try {
+    const result = await db
+      .insert(schema.analyticsDocDaily)
+      .values(rows)
+      .onConflictDoUpdate({
+        target: [schema.analyticsDocDaily.docId, schema.analyticsDocDaily.date],
+        set: {
+          orgId: sql`excluded.org_id`,
+          views: sql`excluded.views`,
+          uniqueVisitors: sql`excluded.unique_visitors`,
+          updatedAt: new Date().toISOString()
+        }
+      })
+      .returning({ id: schema.analyticsDocDaily.id });
+    return result.length;
+  } catch (error) {
+    console.error('upsertDocDailyRows error:', error);
+    throw new Error('Failed to upsert analytics_doc_daily rows');
   }
 }
 
@@ -543,6 +571,10 @@ export async function selectOrgDailyAggregates(fromIso: string, toIso: string) {
         coursePageViews:
           sql<number>`COUNT(*) FILTER (WHERE ${schema.analyticsPageEvent.eventType} = 'course_page_view')::int`.as(
             'course_page_views'
+          ),
+        docPageViews:
+          sql<number>`COUNT(*) FILTER (WHERE ${schema.analyticsPageEvent.eventType} = 'doc_page_view')::int`.as(
+            'doc_page_views'
           ),
         uniqueVisitors: sql<number>`COUNT(DISTINCT ${schema.analyticsPageEvent.sessionId})::int`.as('unique_visitors'),
         enrollments:
@@ -609,6 +641,37 @@ export async function selectCourseDailyAggregates(fromIso: string, toIso: string
 }
 
 /**
+ * Pre-aggregated note/date counts from raw page events for the rollup job.
+ */
+export async function selectDocDailyAggregates(fromIso: string, toIso: string) {
+  try {
+    return await db
+      .select({
+        docId: schema.analyticsPageEvent.docId,
+        orgId: schema.analyticsPageEvent.orgId,
+        date: sql<string>`(${schema.analyticsPageEvent.occurredAt} AT TIME ZONE 'UTC')::date`.as('date'),
+        views: sql<number>`COUNT(*) FILTER (WHERE ${schema.analyticsPageEvent.eventType} = 'doc_page_view')::int`.as(
+          'views'
+        ),
+        uniqueVisitors: sql<number>`COUNT(DISTINCT ${schema.analyticsPageEvent.sessionId})::int`.as('unique_visitors')
+      })
+      .from(schema.analyticsPageEvent)
+      .where(
+        and(
+          sql`${schema.analyticsPageEvent.occurredAt} >= ${fromIso}`,
+          sql`${schema.analyticsPageEvent.occurredAt} < ${toIso}`,
+          sql`${schema.analyticsPageEvent.docId} IS NOT NULL`,
+          sql`${schema.analyticsPageEvent.orgId} IS NOT NULL`
+        )
+      )
+      .groupBy(schema.analyticsPageEvent.docId, schema.analyticsPageEvent.orgId, sql`date`);
+  } catch (error) {
+    console.error('selectDocDailyAggregates error:', error);
+    throw new Error('Failed to aggregate note/date page events');
+  }
+}
+
+/**
  * Pre-aggregated org/date/country counts from raw page events for the rollup job.
  */
 export async function selectCountryDailyAggregates(fromIso: string, toIso: string) {
@@ -619,7 +682,7 @@ export async function selectCountryDailyAggregates(fromIso: string, toIso: strin
         date: sql<string>`(${schema.analyticsPageEvent.occurredAt} AT TIME ZONE 'UTC')::date`.as('date'),
         country: schema.analyticsPageEvent.country,
         views:
-          sql<number>`COUNT(*) FILTER (WHERE ${schema.analyticsPageEvent.eventType} IN ('landing_view', 'course_page_view'))::int`.as(
+          sql<number>`COUNT(*) FILTER (WHERE ${schema.analyticsPageEvent.eventType} IN ('landing_view', 'course_page_view', 'doc_page_view'))::int`.as(
             'views'
           ),
         enrollments:
@@ -711,6 +774,7 @@ export async function selectOrgDailyRange(orgId: string, fromDate: string, toDat
         landingViews: schema.analyticsOrgDaily.landingViews,
         uniqueVisitors: schema.analyticsOrgDaily.uniqueVisitors,
         coursePageViews: schema.analyticsOrgDaily.coursePageViews,
+        docPageViews: schema.analyticsOrgDaily.docPageViews,
         enrollments: schema.analyticsOrgDaily.enrollments,
         completions: schema.analyticsOrgDaily.completions
       })
@@ -784,5 +848,35 @@ export async function selectCountryBreakdown(orgId: string, fromDate: string, to
   } catch (error) {
     console.error('selectCountryBreakdown error:', error);
     throw new Error('Failed to select country breakdown');
+  }
+}
+
+/**
+ * All-time public note page views (raw events) for one or more notes in an org.
+ */
+export async function selectDocViewTotals(orgId: string, docIds: string[]) {
+  if (docIds.length === 0) {
+    return [];
+  }
+
+  try {
+    return await db
+      .select({
+        docId: schema.analyticsPageEvent.docId,
+        views: sql<number>`COUNT(*)::int`.as('views')
+      })
+      .from(schema.analyticsPageEvent)
+      .where(
+        and(
+          eq(schema.analyticsPageEvent.orgId, orgId),
+          eq(schema.analyticsPageEvent.eventType, 'doc_page_view'),
+          inArray(schema.analyticsPageEvent.docId, docIds),
+          sql`${schema.analyticsPageEvent.docId} IS NOT NULL`
+        )
+      )
+      .groupBy(schema.analyticsPageEvent.docId);
+  } catch (error) {
+    console.error('selectDocViewTotals error:', error);
+    throw new Error('Failed to select note view totals');
   }
 }

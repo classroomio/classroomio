@@ -63,7 +63,7 @@ export const baseNavConfig: NavItemConfig[] = [
   },
   {
     titleKey: 'lms_navigation.my_notes',
-    path: '/notes',
+    path: '/docs',
     icon: ContentIcon,
     matchPattern: '^/lms/notes(/.*)?$'
   },

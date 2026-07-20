@@ -22,6 +22,8 @@
     class?: string;
     // CSS class for the editor itself
     editorClass?: string;
+    /** No dashed frame — plain document surface (notes, embedded panels). */
+    frameless?: boolean;
     // Placeholder text for the editor
     placeholder?: string | ((node: any) => string);
     // Callback functions
@@ -39,6 +41,7 @@
     editableStorageKey = 'edra-editable',
     class: className = '',
     editorClass = '',
+    frameless = false,
     placeholder,
     onContentChange,
     onEditorReady,
@@ -126,7 +129,9 @@
 {#if browser}
   <div
     class={cn(
-      'ui:relative ui:bg-background ui:z-50 ui:flex ui:size-full ui:w-full ui:flex-col ui:rounded-md ui:border ui:border-dashed',
+      frameless
+        ? 'ui:relative ui:bg-background ui:z-50 ui:flex ui:size-full ui:w-full ui:flex-col'
+        : 'ui:relative ui:bg-background ui:z-50 ui:flex ui:size-full ui:w-full ui:flex-col ui:rounded-md ui:border ui:border-dashed',
       className
     )}
   >
@@ -134,7 +139,10 @@
       {#if showToolBar}
         <div transition:slide>
           <EdraToolBar
-            class="ui:bg-secondary/50 ui:flex ui:w-full ui:items-center ui:overflow-x-auto ui:border-b ui:border-dashed ui:p-0.5"
+            class={cn(
+              'ui:bg-secondary/50 ui:flex ui:w-full ui:items-center ui:overflow-x-auto ui:p-0.5',
+              !frameless && 'ui:border-b ui:border-dashed'
+            )}
             {editor}
           />
         </div>
@@ -146,7 +154,10 @@
       {/if}
     {/if}
     <EdraEditor
-      class={cn('ui:relative ui:h-128 ui:overflow-auto ui:p-4', editorClass)}
+      class={cn(
+        frameless ? 'ui:relative ui:min-h-0 ui:overflow-auto ui:p-0' : 'ui:relative ui:h-128 ui:overflow-auto ui:p-4',
+        editorClass
+      )}
       bind:editor
       {editable}
       {content}

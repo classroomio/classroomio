@@ -32,14 +32,14 @@ import { mailRouter } from '@api/routes/mail';
 import { mediaRouter } from '@api/routes/media';
 import { transcriptsRouter } from '@api/routes/transcripts';
 import { mountQueueDashboard } from '@api/routes/admin/queues';
-import { notesRouter } from '@api/routes/notes';
+import { docsRouter } from '@api/routes/docs';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
 import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
 import { prettyJSON } from 'hono/pretty-json';
 import { cohortRouter } from '@api/routes/cohort';
-import { publicCourseRouter, orgSiteOgRouter } from '@api/routes/org-site';
+import { publicCourseRouter, orgSiteOgRouter, publicDocRouter } from '@api/routes/org-site';
 import { publicWidgetsRouter } from '@api/routes/widgets';
 import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
@@ -232,7 +232,7 @@ export const app = new Hono()
       user
     });
   })
-  .route('/notes', notesRouter)
+  .route('/doc', docsRouter)
   .route('/onboarding', onboardingRouter)
   .route('/account', accountRouter)
   .route('/course', courseRouter)
@@ -252,6 +252,7 @@ export const app = new Hono()
   .route('/invite', inviteRouter)
   .route('/org-site/course', publicCourseRouter)
   .route('/org-site/og', orgSiteOgRouter)
+  .route('/org-site/doc', publicDocRouter)
   .route('/public-api/v1', v1Router)
   .route('/cohort', cohortRouter)
   .route('/unsplash', unsplashRouter)

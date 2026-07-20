@@ -2,7 +2,7 @@ import * as CONSTANTS from './constants';
 
 import type { Component } from 'svelte';
 import Document from './document/document.svelte';
-import Note from './note/note.svelte';
+import Note from './doc/note.svelte';
 import Slide from './slide/slide.svelte';
 import Video from './video/video.svelte';
 
