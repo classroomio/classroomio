@@ -76,7 +76,7 @@ export default defineConfig({
     // pointing at /api. Platform is an absolute URL, so it is left alone by the
     // base-path rewrite and renders as a plain link out to the app.
     tabs: [
-      { label: 'Platform', path: 'https://app.classroomio.com/', icon: 'layout-dashboard' },
+      { label: 'Platform', path: '/home', icon: 'layout-dashboard' },
       { label: 'Guides', path: '/contributor-guides', icon: 'book-open' },
       { label: 'Self Hosting', path: '/self-hosted', icon: 'server' }
     ],
