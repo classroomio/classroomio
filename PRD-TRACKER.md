@@ -26,6 +26,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | - | `prd/reset-student-course-progress` | todo |
 | - | 15 | `prd/webhooks` | todo |
 | - | - | `prd/zapier` | draft |
+| - | - | `prd/release-process` | draft |
 
 ## DONE (Completed PRDs)
 
