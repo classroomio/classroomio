@@ -19,11 +19,9 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | 4 | `prd/course-content-search` | todo |
 | - | 9 | `prd/onboarding-ai-bootstrap` | todo |
 | - | 10 | `prd/pricing-improvements` | todo |
-| - | 12 | `prd/public-courses` | todo |
 | - | - | `prd/customer-course-documentation` | todo |
 | - | - | `prd/walkthrough-widget` | draft |
 | - | - | `prd/copy-page-as-markdown` | todo |
-| - | - | `prd/reset-student-course-progress` | todo |
 | - | 15 | `prd/webhooks` | todo |
 | - | - | `prd/zapier` | draft |
 | - | - | `prd/release-process` | draft |
@@ -45,6 +43,8 @@ Use this file to keep a single prioritized view of all PRDs.
 | `prd/org-landing-page-theme-picker [DONE]` | done |
 | `prd/programs [DONE]` | done |
 | `prd/public-api [DONE]` | done |
+| `prd/public-courses [DONE]` | done |
+| `prd/reset-student-course-progress [DONE]` | done |
 | `prd/secure-student-invites [DONE]` | done |
 | `prd/self-host-single-org.md` | done |
 | `prd/tags-feature [DONE]` | done |
