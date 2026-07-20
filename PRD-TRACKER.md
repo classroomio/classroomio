@@ -25,6 +25,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | 15 | `prd/webhooks` | todo |
 | - | - | `prd/zapier` | draft |
 | - | - | `prd/release-process` | draft |
+| - | - | `prd/workshops` | draft |
 
 ## DONE (Completed PRDs)
 
