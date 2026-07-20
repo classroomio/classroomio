@@ -1,6 +1,15 @@
+<script module lang="ts">
+  function loadChart() {
+    if (typeof window === 'undefined') return Promise.reject(new Error('browser-only'));
+    return import('../../../../base/chart');
+  }
+</script>
+
 <script lang="ts">
-  import * as Chart from '../../../../base/chart';
-  import type { ChartConfig } from '../../../../base/chart';
+  import { Spinner } from '../../../../base/spinner';
+  import type { ChartConfig } from '../../../../base/chart/types';
+
+  const isBrowser = typeof window !== 'undefined';
 
   interface Row {
     key: string;
@@ -32,17 +41,25 @@
 </script>
 
 {#if chartData.length > 0}
-  <Chart.Container config={chartConfig} class="ui:aspect-auto ui:w-full" style="height: {chartHeightPx}px">
-    <Chart.BarChart
-      data={chartData}
-      orientation="horizontal"
-      y="label"
-      axis="y"
-      bandPadding={0.25}
-      props={{ yAxis: { format: truncateAxisLabel } }}
-      {series}
-    />
-  </Chart.Container>
+  {#if isBrowser}
+    {#await loadChart() then C}
+      <C.ChartContainer config={chartConfig} class="ui:aspect-auto ui:w-full" style="height: {chartHeightPx}px">
+        <C.BarChart
+          data={chartData}
+          orientation="horizontal"
+          y="label"
+          axis="y"
+          bandPadding={0.25}
+          props={{ yAxis: { format: truncateAxisLabel } }}
+          {series}
+        />
+      </C.ChartContainer>
+    {/await}
+  {:else}
+    <div class="ui:flex ui:items-center ui:justify-center" style="height: {chartHeightPx}px">
+      <Spinner class="ui:text-muted-foreground ui:size-6" />
+    </div>
+  {/if}
 {:else}
   <p class="ui:text-muted-foreground ui:text-sm">{emptyLabel}</p>
 {/if}
