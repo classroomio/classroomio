@@ -3,7 +3,14 @@ title: Cloudflare Setup
 description: Guide to setting up Cloudflare for ClassroomIO.
 ---
 
-In this guide, you will learn how to get your Cloudflare environment variables and configure R2 buckets. ClassroomIO supports Cloudflare R2 for video uploads, document uploads, and media (images and video thumbnails). For on-premise or data-residency deployments, you can use [MinIO](/self-hosted/docker#optional--object-storage) instead.
+In this guide, you will learn how to get your Cloudflare environment variables and configure R2 buckets. ClassroomIO supports Cloudflare R2 for video uploads, document uploads, and media (images and video thumbnails). For on-premise or data-residency deployments, you can use [MinIO](/self-hosted/configuration/storage) instead.
+
+:::note[`CLOUDFLARE_*` is the legacy R2 config]
+The `CLOUDFLARE_*` variables below are a **fallback**, read only when the generic `OBJECT_STORAGE_*`
+variables are absent. For new deployments prefer `OBJECT_STORAGE_*` — they cover Cloudflare R2 as well
+(point `OBJECT_STORAGE_ENDPOINT` at `https://<account>.r2.cloudflarestorage.com`). See
+[Self Hosting → Object storage & uploads](/self-hosted/configuration/storage).
+:::
 
 ## R2 buckets overview
 

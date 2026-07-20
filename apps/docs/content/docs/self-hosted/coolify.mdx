@@ -27,6 +27,8 @@ run our secret-generation script, so generate them once yourself and keep them h
 openssl rand -hex 32   # BETTER_AUTH_SECRET
 openssl rand -hex 32   # PRIVATE_SERVER_KEY  (must be identical in the api and dashboard services)
 ```
+
+See [Configuration → Environment & secrets](/self-hosted/configuration/secrets) for what each does.
 :::
 
 ## Step-by-step walkthrough
@@ -248,29 +250,27 @@ won't work correctly without them — set them all.
 
 ### Object storage
 
-Recommended: the **bundled MinIO** — enable its profile with `COMPOSE_PROFILES=minio` and Coolify
-runs MinIO alongside the stack. Give the MinIO volume persistent storage in Coolify and route its
-public URL (`OBJECT_STORAGE_PUBLIC_ENDPOINT` / `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL`) so browsers
-can load media. Prefer fully-managed storage instead? Point the same `OBJECT_STORAGE_*` variables
-at external **S3 / Cloudflare R2** and leave the `minio` profile off — see the
-[Cloudflare Setup](/contributor-guides/cloudflare-setup) guide for R2.
+Enable the **bundled MinIO** with `COMPOSE_PROFILES=minio` and Coolify runs it alongside the stack.
+**Give the MinIO volume persistent storage in Coolify** and route its public URL
+(`OBJECT_STORAGE_PUBLIC_ENDPOINT` / `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL`) so browsers can load media.
 
 :::warning[MinIO is your durability boundary]
-Single-node MinIO has no redundancy — its volume is the only thing protecting your uploads. Give
-it persistent storage in Coolify and back it up. If you'd rather not operate storage, use external
-**Cloudflare R2 / AWS S3** instead (R2 has no egress fees): point the same `OBJECT_STORAGE_*`
-vars at the provider.
+Single-node MinIO has no redundancy — its volume is the only thing protecting your uploads, so give it
+persistent storage in Coolify and back it up.
 :::
+
+Prefer managed storage? Point the `OBJECT_STORAGE_*` variables at external S3 / Cloudflare R2 and leave
+the `minio` profile off. See [Configuration → Object storage & uploads](/self-hosted/configuration/storage).
 
 ### Upload size limits (optional)
 
 Set `UPLOAD_MAX_*_MB` in Coolify's env for both the `api` and `dashboard` services (same values in
 each), e.g. `UPLOAD_MAX_DOCUMENT_MB=50`. See
-[Docker self-hosting → Upload file size limits](/self-hosted/docker#optional--upload-file-size-limits).
+[Configuration → Upload file size limits](/self-hosted/configuration/storage#upload-file-size-limits).
 
 ## Upgrades & rollback
 
-Bump `CIO_VERSION` to a newer release and redeploy; roll back by setting it to the previous version and redeploying. Because you pin a version, a new release never restarts you onto broken images unattended.
+Bump `CIO_VERSION` to a newer release and redeploy; roll back by setting it to the previous version and redeploying. Because you pin a version, a new release never restarts you onto broken images unattended. See [Configuration → Versions & upgrades](/self-hosted/configuration/versions) for the full upgrade and backup steps.
 
 :::warning[Back up before upgrading]
 Schema migrations run automatically on API startup. Back up your Postgres (and object storage)

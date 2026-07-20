@@ -26,6 +26,8 @@ You'll reuse `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` across services. Gene
 openssl rand -hex 32   # BETTER_AUTH_SECRET
 openssl rand -hex 32   # PRIVATE_SERVER_KEY  (must be identical in cio-api and cio-dashboard)
 ```
+
+See [Configuration → Environment & secrets](/self-hosted/configuration/secrets) for what each does.
 :::
 
 ## Step-by-step walkthrough
@@ -192,7 +194,7 @@ ALLOWED_EXTERNAL_DOMAINS="https://fonts.googleapis.com"
 
 Optional: add `PUBLIC_APP_TITLE`, `PUBLIC_APP_DESCRIPTION`, `PUBLIC_OG_IMAGE_URL` for custom branding. You can also use per-directive CSP vars (`CSP_SCRIPT_SRC_DOMAINS`, `CSP_MEDIA_SRC_DOMAINS`, etc.) instead of `ALLOWED_EXTERNAL_DOMAINS` for finer control.
 
-**Upload size limits** (optional): add the same `UPLOAD_MAX_*_MB` values to **cio-api** and **cio-dashboard** (e.g. `UPLOAD_MAX_DOCUMENT_MB=50`). See [Docker self-hosting → Upload file size limits](/self-hosted/docker#optional--upload-file-size-limits).
+**Upload size limits** (optional): add the same `UPLOAD_MAX_*_MB` values to **cio-api** and **cio-dashboard** (e.g. `UPLOAD_MAX_DOCUMENT_MB=50`). See [Configuration → Upload file size limits](/self-hosted/configuration/storage#upload-file-size-limits).
 
 ### cio-jobs (background worker)
 
@@ -241,16 +243,21 @@ The api and jobs services reach MinIO over **two** endpoints: the private `OBJEC
 `OBJECT_STORAGE_FORCE_PATH_STYLE=true` is required for MinIO.
 
 :::warning[MinIO is your durability boundary]
-Single-node MinIO has no redundancy — the Railway Volume is the only thing protecting your
-uploads. Back it up. If you'd rather not operate storage, use external **Cloudflare R2 / AWS S3**
-instead (R2 has no egress fees): point the same `OBJECT_STORAGE_*` vars at the provider. See the
-[Cloudflare Setup](/contributor-guides/cloudflare-setup) guide for R2.
+Single-node MinIO has no redundancy — the Railway Volume is the only thing protecting your uploads, so
+back it up. See [Configuration → Object storage & uploads](/self-hosted/configuration/storage) for
+external Cloudflare R2 / AWS S3 alternatives.
 :::
 
 ### SMTP Setup
 
-You need SMTP for email sending. See [Nodemailer SMTP docs](https://nodemailer.com/smtp/) for provider setup.
+See [Configuration → Email (SMTP)](/self-hosted/configuration/email) for the SMTP variables and provider setup.
 
 ### SSO (Enterprise)
 
-SSO requires a license key. Set `LICENSE_KEY` in your API environment. [Book a call](http://cal.com/classroomio/enterprise) to get a license.
+SSO requires a `LICENSE_KEY` on the `cio-api` service. See [Configuration → SSO & licensing](/self-hosted/configuration/sso).
+
+## Upgrades
+
+Set `CIO_VERSION` on the ClassroomIO services to pin a release, then redeploy to upgrade. See
+[Configuration → Versions & upgrades](/self-hosted/configuration/versions) for pinning, rollback, and
+the pre-upgrade backup steps.

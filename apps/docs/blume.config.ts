@@ -60,23 +60,8 @@ export default defineConfig({
     sources: [{ label: 'API', spec: './openapi/public-api.json' }]
   },
   navigation: {
-    // Blume's header has no external-links slot, so the links that used to sit
-    // in the Fumadocs navbar are pinned above the sidebar instead.
-    featured: [
-      { label: 'Dashboard', href: 'https://app.classroomio.com/', icon: 'layout-dashboard' },
-      { label: 'Demo', href: 'https://dub.sh/ciodemo', icon: 'monitor-play' },
-      { label: 'Discord', href: 'https://classroomio.com/discord', icon: 'message-circle' },
-      { label: 'Feedback', href: 'https://feedback.classroomio.com', icon: 'megaphone' },
-      { label: 'Contact', href: 'https://x.com/classroomio', icon: 'at-sign' }
-    ],
-    // Header tabs. An internal tab scopes the sidebar to the group whose `root`
-    // equals its `path`, so each needs a real URL prefix — hence the `root` on
-    // the Self Hosting group below. The API tab is intentionally absent: Blume
-    // appends one automatically for the OpenAPI reference (see `openapi` above),
-    // pointing at /api. Platform is an absolute URL, so it is left alone by the
-    // base-path rewrite and renders as a plain link out to the app.
-    tabs: [
-      { label: 'Platform', path: '/home', icon: 'layout-dashboard' },
+      tabs: [
+      { label: 'Platform', path: '/docs/home', icon: 'layout-dashboard' },
       { label: 'Guides', path: '/contributor-guides', icon: 'book-open' },
       { label: 'Self Hosting', path: '/self-hosted', icon: 'server' }
     ],
@@ -155,7 +140,6 @@ export default defineConfig({
           '/contributor-guides',
           '/contributor-guides/devs',
           '/contributor-guides/design',
-          '/contributor-guides/supabase-cloud',
           '/contributor-guides/cloudflare-setup',
           '/contributor-guides/org-site-opengraph-and-favicon',
           '/contributor-guides/gitpod',
@@ -169,9 +153,27 @@ export default defineConfig({
         root: '/self-hosted',
         items: [
           '/self-hosted',
-          '/self-hosted/docker',
-          '/self-hosted/railway',
-          '/self-hosted/coolify'
+           {
+            label: 'Platforms',
+            items: [
+              '/self-hosted/docker',
+              '/self-hosted/railway',
+              '/self-hosted/coolify'
+            ]
+          },
+          {
+            label: 'Configuration',
+            items: [
+              '/self-hosted/configuration',
+              '/self-hosted/configuration/secrets',
+              '/self-hosted/configuration/email',
+              '/self-hosted/configuration/storage',
+              '/self-hosted/configuration/csp',
+              '/self-hosted/configuration/integrations',
+              '/self-hosted/configuration/sso',
+              '/self-hosted/configuration/versions'
+            ]
+          },
         ]
       }
     ]
