@@ -42,23 +42,22 @@
     onclick={handleClick}
     onkeydown={handleKeydown}
     class={cn(
-      'ui:relative ui:outline-none ui:cursor-pointer ui:transition-shadow',
-      selected
-        ? 'ui:ring-2 ui:ring-primary ui:ring-inset'
-        : 'ui:hover:ring-2 ui:hover:ring-primary/40 ui:hover:ring-inset',
+      'ui:group ui:relative ui:outline-none ui:cursor-pointer ui:border-y-2 ui:border-dashed ui:transition-colors',
+      selected ? 'ui:border-primary' : 'ui:border-transparent ui:hover:border-primary/40',
       className
     )}
   >
-    {#if selected}
-      <div
-        class="ui:absolute ui:top-0 ui:left-0 ui:z-30 ui:-translate-y-full ui:flex ui:items-center ui:gap-1.5 ui:rounded-t-md ui:bg-primary ui:px-2 ui:py-1 ui:text-xs ui:font-medium ui:text-primary-foreground ui:shadow-sm ui:pointer-events-none"
-      >
-        {#if Icon}
-          <Icon size={14} class="ui:size-3.5" />
-        {/if}
-        <span>{ctx.labelFor(sectionKey)}</span>
-      </div>
-    {/if}
+    <div
+      class={cn(
+        'ui:absolute ui:top-0 ui:left-0 ui:z-30 ui:-translate-y-full ui:flex ui:items-center ui:gap-1.5 ui:rounded-t-md ui:bg-primary ui:px-2 ui:py-1 ui:text-xs ui:font-medium ui:text-primary-foreground ui:shadow-sm ui:pointer-events-none ui:transition-opacity',
+        selected ? 'ui:opacity-100' : 'ui:opacity-0 ui:group-hover:opacity-100'
+      )}
+    >
+      {#if Icon}
+        <Icon size={14} class="ui:size-3.5" />
+      {/if}
+      <span>{ctx.labelFor(sectionKey)}</span>
+    </div>
     {@render children()}
   </div>
 {/if}
