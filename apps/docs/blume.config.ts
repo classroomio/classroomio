@@ -50,35 +50,21 @@ export default defineConfig({
   openapi: {
     enabled: true,
     renderer: 'scalar',
-    // The reference IS the API tab. It mounts at /api, and Blume auto-appends a
-    // header tab labeled by `sources[].label` ("API") pointing here — so there is
-    // no separate hand-written API page or "API Reference" entry anymore. The old
-    // /api/reference path 301s here (scripts/package-assets.mjs).
     route: '/api',
-    // Written by scripts/fetch-openapi.mjs: the R2 spec, enriched with the
-    // bearer auth scheme. Not committed.
     sources: [{ label: 'API', spec: './openapi/public-api.json' }]
   },
   navigation: {
       tabs: [
-      // Tab `path` values are base-RELATIVE (no `/docs` prefix): active-tab
-      // matching runs in base-less route space, and `deployment.base` is only
-      // applied to the emitted href. A `/docs/...` path here never highlights.
       { label: 'Home', path: '/home', icon: 'house' },
       { label: 'Guides', path: '/guides', icon: 'book-open' },
-      { label: 'Self Hosting', path: '/self-hosted', icon: 'server' }
+      { label: 'Self Hosting', path: '/self-hosted', icon: 'server' },
+      { label: 'API', path: '/api', icon: 'code' }
     ],
     sidebar: [
-      // Ungrouped (no `root`) — the catch-all sidebar, which backs the Home tab.
       {
         label: 'Home',
         items: ['/home']
       },
-      // The two groups below back the Guides / Self Hosting tabs. Their `root`
-      // must match the tab `path` exactly, or the tab won't scope to them and its
-      // pages stay in the catch-all sidebar instead. This is also why every page
-      // in a group lives under that group's route prefix. (The API tab needs no
-      // group: its route is the self-contained Scalar reference, with its own nav.)
       {
         label: 'Guides',
         root: '/guides',
