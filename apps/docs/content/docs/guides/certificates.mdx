@@ -1,0 +1,97 @@
+---
+title: How to Create Certificates
+description: Configure certificate rules for a course, set completion requirements, and let students download their certificates.
+---
+
+Certificates recognize students for completing a course. You configure the rules on a per-course basis — how much of the course must be completed, whether a final exercise must be passed, and when certificates expire. Students can then download their certificate from the **Certificates** tab in the LMS.
+
+:::warning[Paid plan required]
+Certificate features require a paid plan. The controls are visible on free plans but disabled.
+:::
+
+## Configure certificate rules
+
+Open your course in the admin dashboard and go to the **Certificates** tab.
+
+![Certificate rules panel with the download toggle and completion threshold](/docs/certificates-rules.webp)
+
+<Steps>
+<Step>
+### Enable downloadable certificates
+
+Turn on **Allow students download certificate**. When this is off, no certificate is generated even if students meet the requirements.
+</Step>
+
+<Step>
+### Set a completion threshold
+
+Enter a percentage in **Minimum completion (%)**. A student must complete this share of the course to qualify. Defaults to 100%.
+</Step>
+
+<Step>
+### Require a final exercise (optional)
+
+Select an exercise from **Final exercise (optional)**. When set, the student must pass that specific exercise (best attempt counts) in addition to meeting the overall completion percentage. Set **Minimum score on final exercise (%)** to the minimum passing score for that exercise.
+</Step>
+
+<Step>
+### Set a deadline (optional)
+
+Enter a date and time in **Certification deadline**. Students who complete the course after this date do not receive a certificate.
+</Step>
+
+<Step>
+### Add a custom email message (optional)
+
+Enter text in the email message field. This message is included in the notification email sent to students when they earn their certificate.
+</Step>
+</Steps>
+
+## Customize the design and add signatures
+
+Set up how the certificate looks before the course goes live, so the first student to qualify gets the finished
+version. On the **Certificates** tab, click **Customize design** to open the certificate editor.
+
+![Certificate design editor showing the template picker and live preview](/docs/certificates-design-editor.webp)
+
+<Steps>
+<Step>
+### Pick a template and accent color
+
+Choose a **Template** and an accent color to match your brand. A live preview shows the result as you change it.
+</Step>
+
+<Step>
+### Add signatories and signatures
+
+Under **Signatories**, turn on **Show signatory 1** and fill in **Signatory 1 name** and **Signatory 1 role**, then
+use **Signature image** to upload a signature graphic. You can enable a second signatory the same way.
+
+![Signatories section with name, role, and signature image upload](/docs/certificates-signatories.webp)
+</Step>
+
+<Step>
+### Set the certificate ID format (optional)
+
+Set a **Certificate ID format** so every issued certificate carries a unique, verifiable reference.
+</Step>
+</Steps>
+
+:::info
+Finalize the design and signatures before you publish the course. Certificates are generated from the current design
+when a student qualifies, so getting it right up front means no one receives an unfinished certificate.
+:::
+
+## What students see
+
+Once a student meets all the configured requirements, their certificate appears in the **Certificates** tab when they open the course in the LMS. They can view and download it from there.
+
+![Student certificate view with download buttons](/docs/certificates-student-download.webp)
+
+## Related guides
+
+- [Creating Your First Course](/guides/create-first-course) — course setup overview
+- [How to Create an Exercise](/guides/create-exercise) — create the exercise you reference as a final exercise
+- [How to Grade an Exercise](/guides/grade-exercise) — grade submissions before certificates are issued
+- [Control Course Progression](/guides/course-progression): require completion before the certificate unlocks
+- [Student Dashboard](/guides/student-dashboard) — where students access their certificates

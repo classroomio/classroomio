@@ -1,0 +1,60 @@
+---
+title: Roles and Permissions
+description: Understand org roles in ClassroomIO, who can create courses, and how admin access differs from the student LMS.
+---
+
+ClassroomIO uses organization roles to control what each person can do. This guide covers the three built-in roles, who can create courses, and how that relates to course enrollment (which is controlled separately per course).
+
+## Organization roles
+
+| Role | Typical use | Admin dashboard | Create courses | Edit course content |
+| --- | --- | --- | --- | --- |
+| **Admin** | Org owners, lead instructors | Yes | Yes | Yes (all org courses) |
+| **Tutor** | Instructors, content authors | Yes | No | Yes (courses they teach) |
+| **Student** | Learners | No (LMS only) | No | No |
+
+Admins have full control over organization settings, billing, domains, and all courses. Tutors can manage content for courses they are assigned to but cannot create new courses or change org-wide settings. Students use the [Student Dashboard](/guides/student-dashboard) to learn.
+
+:::info[Per-person enroll or create toggles]
+ClassroomIO does not support per-person flags like "this user can create courses but that user cannot." Access is set by role. To limit who joins a **course**, use course settings, invites, and **People** instead. See [How Course Enrollment Works](/guides/course-enrollment).
+:::
+
+## Who can create courses
+
+Only **Admins** can create new courses. The create-course action requires admin permissions on the API.
+
+Tutors and students cannot create courses. If someone needs to author content, assign them as a **Tutor** on the course or promote them to **Admin** if they also need org-level access.
+
+## Admin dashboard vs student LMS
+
+| Area | Who sees it | URL pattern |
+| --- | --- | --- |
+| **Admin dashboard** | Admins and Tutors | Course management, org settings, analytics |
+| **Student LMS** | All signed-in users | `/lms` and related paths |
+
+Students sign in on your academy and land in the LMS. Admins and tutors can switch to the admin dashboard to manage courses and settings.
+
+## Inviting team members
+
+To add Admins or Tutors, use [Inviting a Team Member](/guides/invite-team-member). Team invites are separate from [student course invites](/guides/invite-students).
+
+## Organization signup vs course enrollment
+
+Two different gates often get mixed up:
+
+| Setting | Controls |
+| --- | --- |
+| **Organization signup** | Who can create an account on your academy |
+| **Course enrollment** | Who can join a specific course |
+
+A person can be in your organization (org signup) without being enrolled in any course. Likewise, course **Allow New Students**, invites, and **People** only affect that course.
+
+Configure org signup under **Settings → Organization**. Configure per-course access under each course's **Settings** and **People** tabs.
+
+## Related guides
+
+- [How Course Enrollment Works](/guides/course-enrollment) — restrict who can join each course
+- [How to Invite Students](/guides/invite-students) — course enrollment links
+- [Inviting a Team Member](/guides/invite-team-member) — add admins and tutors
+- [Student Dashboard](/guides/student-dashboard) — what students see in the LMS
+- [Organization](/guides/organization) — org settings overview

@@ -1,0 +1,52 @@
+---
+title: Cohorts
+description: Learn what Cohorts are in ClassroomIO, how goals work, and what students see in the Cohorts view.
+---
+
+**Cohorts** group multiple courses into a structured learning path. Use them when students need to complete a set of courses toward a shared outcome (onboarding, certification prep, role-based training). Individual courses still live in the LMS; cohorts add goals and a dedicated **Cohorts** view for students.
+
+## Cohorts vs courses
+
+| Concept | Scope | Student view |
+| --- | --- | --- |
+| **Course** | Single content container with lessons | **Home**, **My Learning**, **Explore** |
+| **Cohort** | Multiple courses with shared goals | **Cohorts** in the LMS |
+
+A student can be enrolled in courses without belonging to a cohort, and in a cohort that references several courses. See [Student Dashboard](/guides/student-dashboard) for how those views fit together.
+
+## Admin workflow
+
+From the admin dashboard:
+
+1. Create a cohort and add courses to it.
+2. Configure cohort **Settings** (metadata, visibility, assignments).
+3. Add **Goals** that define what success looks like.
+4. Assign students to the cohort (existing students or by email invite).
+
+Students assigned to a cohort see it under **Cohorts** in the LMS.
+
+## Cohort goal types
+
+Goals measure progress across the cohort's courses. Supported types:
+
+| Type | What it measures |
+| --- | --- |
+| **Complete all** | Every selected course is completed |
+| **N of M** | A minimum number of selected courses completed |
+| **Score** | Per-learner score threshold on every selected course |
+| **Pass rate** | Team-wide pass-rate threshold |
+| **Readiness** | No deadline; tracks completion without a due date |
+
+Deadlines can be absolute, relative to when the student joins, recurring, or none.
+
+## Student experience
+
+In the LMS, students open **Cohorts** to see cohorts they belong to. Each cohort hub includes:
+
+- **Newsfeed** — updates from instructors
+- **Courses** — linked courses with progress
+- **Goals** — personal goal status when goals are configured
+
+:::info
+Legacy deployments may still have data in the original `program` tables. Run the migration script `pnpm --filter @cio/db migrate:programs-to-cohorts` after applying the cohort schema migration to copy existing data into the new tables without dropping the legacy tables.
+:::
