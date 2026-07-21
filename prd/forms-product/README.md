@@ -2,11 +2,12 @@
 
 ## Status
 
-- Draft
+- Draft — core product decisions locked (see Confirmed Product Decisions)
 
 ## Date
 
-- March 22, 2026
+- March 22, 2026 (initial draft)
+- July 18, 2026 (integration-first revision: attachment binding model, MVP integration loops, purchase-request pipeline, scope cuts, commercial model)
 
 ## Implementation Plan
 
@@ -65,6 +66,16 @@ If ClassroomIO turns the current exercise question engine into a standalone Form
 - `Response collection` for school operations and feedback.
 
 This expands ClassroomIO from LMS-only workflows into school operations workflows without throwing away the investment already made in the exercise system.
+
+### Differentiation Thesis
+
+The goal is **not** to build another Google Forms. The value of ClassroomIO Forms is that the **trigger, the respondent identity, and the consequence of a form all live inside the platform**:
+
+- **Trigger**: a lesson is completed, a course ends, a buyer clicks "Buy", a landing page is visited — the form appears at the right moment without anyone sending a link.
+- **Identity**: authenticated respondents are already known (`profile`, course membership); no re-typing who someone is, and responses attach to the person's record.
+- **Consequence**: a response can enroll a student, create a purchase request an admin approves, feed reviews onto a course landing page, or surface per-lesson feedback to the instructor.
+
+A standalone form with a share link is table stakes. Every roadmap decision should be weighed against this loop, not against feature parity with Google Forms or Typeform.
 
 ## Current-State Audit
 
@@ -137,12 +148,22 @@ This expands ClassroomIO from LMS-only workflows into school operations workflow
 2. The shared question engine remains the foundation for both Exercises and Forms.
 3. Forms v1 will support **draft**, **published**, **closed**, and **archived** lifecycle states.
 4. Forms responses are **never graded**. Points, correctness, grading state, and reviewer workflow do not belong in the forms domain.
-5. Forms v1 will support **one-page** and **multi-step/page** presentation modes.
+5. Forms v1 supports **one-page** presentation only. One-question-per-page / multi-step mode is phase 2.
 6. Public forms are required for enrollment and feedback use cases, but must include abuse protection.
 7. Authenticated internal forms are also required for staff and student-only workflows.
 8. File upload is supported in Forms, but public file upload must be guarded with rate limits and storage controls.
 9. Existing exercise question types are reused first; new form-only block types can be added later.
 10. The first implementation prioritizes reuse over perfect naming cleanup. Renaming `exercise-question` to a broader package is optional follow-up, not a blocker.
+11. **Binding is attachment-level, not form-level.** A form is a reusable org-owned asset. A `form_attachment` binds a form to a platform context (course, lesson, landing page, checkout). Every response records which attachment it came through, so course pages show only their own responses while the form library shows all responses with a per-context breakdown.
+12. **Per-attachment settings vs per-form settings**: lifecycle windows (open/close dates), response limits, and one-response-per-respondent live on the **attachment**. Question content and identity settings (anonymous, collect name/email) live on the **form**. Editing a form's questions applies everywhere it is attached; question versioning is deferred.
+13. **MVP ships two integration loops**: (a) application → enrollment, including the purchase-request pipeline that replaces the hardcoded course payment modal, and (b) per-lesson pulse feedback. A landing-page form section and a reviews display block are part of MVP surface work.
+14. **Create-in-context authoring**: every attachable surface (course settings, lesson, landing-page builder, checkout config) gets an "Attach a form" picker that lists existing org forms and offers "Create new", which opens the builder in a modal/drawer pre-seeded with a context-appropriate template. The form is saved to the org Forms library and attached in one motion. The Forms area is the library: manage forms, see where each is attached, view global results.
+15. **Default purchase-request form**: every org is seeded with a default "Course purchase request" form attached to the checkout context of paid courses. It replaces the hardcoded fullname/email payment modal. Submit stores a pending response, then redirects to the course's `paymentLink`. Admins review pending purchase requests in the response inbox and approve to enroll the student. This also fixes the current theme-based paid path, which dead-ends on a "requires payment or invite" message with no purchase flow at all.
+16. **Public review display requires consent + curation**: forms whose responses can be shown publicly (course reviews) must include a respondent consent checkbox, and only responses an admin has marked "approved for display" render on landing pages.
+17. **Author-side draft lifecycle stays** (DRAFT → PUBLISHED → CLOSED → ARCHIVED). **Respondent-side save-and-resume** of a partially filled response is phase 2, as are edit-submitted-response and one-question-per-page mode. Anonymous public forms stay in v1.
+18. **Commercial model: free standalone, paid integrations.** Free orgs get **unlimited forms** — creation, share-link collection, response inbox, analytics, CSV export — a full Google-Forms-style experience with no caps. What is gated behind paid plans is the **platform integration layer**: attaching forms to courses/lessons/landing pages/checkout, triggers, and consequences (approve→enroll, lesson pulse aggregation, landing-page form/reviews blocks). Self-hosted is ungated.
+    - **Checkout exception**: the default purchase-request form works on free orgs for *collection* — buyers fill it, responses land in the inbox, and the admin enrolls manually (parity with today's manual flow, no regression). The one-click **approve→enroll** action is paid.
+19. **Permissions**: org **admins and teachers** can create forms and manage/view/export responses. **Students cannot create forms**; they only respond.
 
 ## Core Use Cases
 
@@ -212,18 +233,16 @@ Forms-specific builder additions:
 
 1. Mark question as required/optional.
 2. Toggle anonymous collection.
-3. Choose response mode:
-- one page
-- one question/page
+3. Response mode is one page in v1 (one question/page is phase 2).
 4. Configure respondent fields:
 - collect name
 - collect email
 - authenticated respondent only
 - anonymous allowed
-5. Configure submission rules:
+5. Configure submission rules (stored per-attachment where the form is attached to a context):
 - one response per respondent
 - multiple responses allowed
-- save and continue later (optional)
+- save and continue later (phase 2)
 
 ### FR-3: Sharing and Access
 
@@ -254,7 +273,7 @@ Respondents can:
 5. Submit the form.
 6. See a thank-you screen after successful submission.
 
-Optional v1 capabilities:
+Phase 2 (cut from v1):
 
 - Save draft and resume later for authenticated respondents.
 - Edit own response when form setting allows it.
@@ -298,6 +317,37 @@ Forms can be created from templates for common education use cases:
 - staff request
 
 The existing template machinery should be reused where practical, but forms need their own template taxonomy and defaults.
+
+### FR-8: Platform Bindings and Attachments
+
+A form can be attached to platform contexts through `form_attachment` records:
+
+1. **Course** — e.g. a course review or end-of-course survey; responses surface in that course's context.
+2. **Lesson** — per-lesson pulse feedback (1–2 questions) shown after lesson completion, aggregated per lesson so instructors see which lessons need work.
+3. **Landing page** — a form section block on the org landing page (contact, waitlist, enrollment interest).
+4. **Checkout** — the purchase-request form on paid courses (see FR-9).
+
+Requirements:
+
+1. Each attachable surface exposes an "Attach a form" picker with existing forms plus inline "Create new" (builder opens in a modal/drawer, pre-seeded with a context-matching template; saved to the library and attached in one motion).
+2. Attachment carries its own settings: open/close window, response limit, one-response-per-respondent.
+3. Responses record `attachment_id`; context views filter by attachment, the library view aggregates across attachments with a per-context breakdown.
+4. Detaching a form preserves its responses.
+
+### FR-9: Purchase-Request Pipeline (default org form)
+
+1. Every org is seeded with a default "Course purchase request" form, auto-attached to the checkout context of paid courses.
+2. Buyer flow: click Buy → fill the form → response stored with status `PENDING` → redirect to the course `paymentLink` → confirmation copy telling the buyer to complete payment.
+3. Admin flow: pending purchase requests appear in the response inbox (and course context); admin approves a request → student is enrolled in the course; admin can also reject with an optional reason. On free plans the inbox shows the requests but the one-click approve→enroll action is gated (admin enrolls manually, as today).
+4. Teacher/student notification emails are preserved from the current flow.
+5. Admins can edit the default form's questions (org-wide) like any other form.
+6. This replaces the hardcoded `payment-modal.svelte` two-field modal and gives theme-based landing pages a working paid path (they currently dead-end on a block message).
+
+### FR-10: Public Review Display
+
+1. Review-type forms include a respondent consent checkbox ("you may display my review publicly").
+2. Admins can mark individual responses "approved for display".
+3. A landing-page reviews block renders approved responses only, filterable to a single course or org-wide.
 
 ## Recommended Architecture
 
@@ -384,17 +434,45 @@ Longer-term option:
 
 - Introduce a generalized `questionnaire`, `questionnaire_question`, and `questionnaire_response` model that both Exercises and Forms can use.
 
-#### 2.3 New `form_response` table
+#### 2.3 New `form_attachment` table
+
+Binds a reusable form to a platform context and holds per-attachment settings. The `form` entity stays standalone; integration coupling is isolated here.
+
+```sql
+CREATE TABLE form_attachment (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  form_id UUID NOT NULL REFERENCES form(id) ON DELETE CASCADE,
+  organization_id UUID NOT NULL REFERENCES organization(id) ON DELETE CASCADE,
+  context_type VARCHAR NOT NULL, -- 'COURSE' | 'LESSON' | 'LANDING_PAGE' | 'CHECKOUT'
+  course_id UUID REFERENCES course(id) ON DELETE CASCADE,
+  lesson_id UUID REFERENCES lesson(id) ON DELETE CASCADE,
+  starts_at TIMESTAMPTZ,
+  ends_at TIMESTAMPTZ,
+  response_limit INTEGER,
+  one_response_per_respondent BOOLEAN NOT NULL DEFAULT false,
+  settings JSONB NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+```
+
+Notes:
+
+- Lifecycle windows, limits, and dedup rules live here (per-attachment), not on `form`.
+- A share link is modeled as a link-type attachment or as the bare form URL; either way responses always resolve to at most one attachment.
+
+#### 2.4 New `form_response` table
 
 ```sql
 CREATE TABLE form_response (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   form_id UUID NOT NULL REFERENCES form(id) ON DELETE CASCADE,
+  form_attachment_id UUID REFERENCES form_attachment(id) ON DELETE SET NULL,
   organization_id UUID NOT NULL REFERENCES organization(id) ON DELETE CASCADE,
   respondent_profile_id UUID,
   respondent_email VARCHAR,
   respondent_name VARCHAR,
-  status VARCHAR NOT NULL DEFAULT 'SUBMITTED',
+  status VARCHAR NOT NULL DEFAULT 'SUBMITTED', -- purchase pipeline also uses PENDING | APPROVED | REJECTED
+  approved_for_display BOOLEAN NOT NULL DEFAULT false,
   source VARCHAR DEFAULT 'link',
   submitted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   started_at TIMESTAMPTZ,
@@ -403,7 +481,7 @@ CREATE TABLE form_response (
 );
 ```
 
-#### 2.4 New `form_response_answer` table
+#### 2.5 New `form_response_answer` table
 
 ```sql
 CREATE TABLE form_response_answer (
@@ -509,17 +587,24 @@ Ship:
 6. Response inbox
 7. CSV export
 8. Basic analytics
+9. Attachment model + "Attach a form" picker with create-in-context (FR-8)
+10. Purchase-request pipeline and default org form (FR-9)
+11. Per-lesson pulse feedback attachment with per-lesson aggregation
+12. Landing-page form section block and reviews display block with consent + curation (FR-10)
+13. Templates for common school forms
+14. Plan gating (free: unlimited standalone forms; paid: the integration layer)
+15. Permission enforcement: admin/teacher-only form creation and response access
 
 ### Phase 2: Education Workflow Expansion
 
 Add:
 
-1. Templates for common school forms
-2. Save-and-resume drafts
+1. Save-and-resume drafts (respondent side)
 3. Edit submitted response
-4. Section/page builder
+4. Section/page builder and one-question-per-page mode
 5. Invite-only forms
 6. Better branding and embed support
+7. Question versioning for forms edited after collecting responses
 
 ### Phase 3: Advanced Forms
 
@@ -569,22 +654,39 @@ Add:
 5. **Reporting expectations**
 - Users comparing the product to Google Forms or Typeform will expect polished analytics and exports even in early versions.
 
+## Resolved Questions
+
+1. **One-response-per-email enforcement** — yes, as a per-attachment setting.
+2. **Forms on public site/subdomain contexts** — yes; the landing-page form section and checkout attachment render on org public sites.
+3. **Section/page support** — phase 2; v1 is one-page only.
+4. **Staff routing after submission** — the purchase-request pipeline covers approve → enroll; general assignment/routing stays out of MVP.
+5. **Presentation modes / respondent drafts / response editing** — one-question-per-page, respondent save-and-resume, and edit-submitted-response are all phase 2. Author-side DRAFT → PUBLISHED lifecycle is unaffected and stays in v1.
+6. **Commercial model** — free tier gets unlimited standalone forms (no caps); the platform integration layer (attachments, triggers, consequences) is paid. Checkout exception: the default purchase-request form collects responses on free; one-click approve→enroll is paid. Self-hosted ungated.
+7. **Permissions** — admins and teachers create forms and manage/view/export responses; students only respond.
+
 ## Open Questions
 
 1. Should public forms support anonymous file uploads in v1, or should file upload require authentication first?
-2. Do schools need one-response-per-email enforcement for public forms?
-3. Should forms live only under organizations, or also under public site/subdomain contexts?
-4. Is section/page support mandatory for MVP, or acceptable in phase 2?
-5. Do we need respondent notification emails on submit in v1?
-6. Do we need staff assignment/routing after submission, or is inbox + export enough for MVP?
+2. Do we need respondent notification emails on submit in v1? (Admin/teacher emails exist for the purchase pipeline; existing ZeptoMail infra makes respondent confirmations cheap — leaning yes.)
+3. Runner i18n: which locales must the public form runner support at launch?
+4. PII/retention policy for enrollment/intake forms (minors' data, file uploads): retention window, deletion story, and what "anonymous" guarantees about stored metadata.
 
 ## Success Metrics
 
-1. At least 3 high-value school workflows can be completed without abusing exercises as forms.
-2. Form creation to publish time is under 10 minutes for common templates.
-3. Public form submission success rate stays above 98%.
-4. At least 70% of question rendering code is shared with the exercise product.
-5. Zero regressions in exercise creation, submission, and grading flows.
+Integration metrics (the differentiation thesis):
+
+1. Percentage of forms attached to a platform context (course, lesson, landing page, checkout) vs bare share links — target majority attached.
+2. Purchase-request conversion: Buy click → form submitted → approved → enrolled, measured end-to-end (baseline today is zero, since no purchase record exists).
+3. Per-lesson pulse response rate vs a plain shared feedback link.
+4. Number of orgs displaying approved reviews on a landing page.
+
+Product/engineering metrics:
+
+5. At least 3 high-value school workflows can be completed without abusing exercises as forms.
+6. Form creation to publish time is under 10 minutes for common templates (create-in-context should make this under 2 minutes for attached forms).
+7. Public form submission success rate stays above 98%.
+8. At least 70% of question rendering code is shared with the exercise product.
+9. Zero regressions in exercise creation, submission, and grading flows.
 
 ## Bottom Line
 

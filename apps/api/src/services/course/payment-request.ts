@@ -5,6 +5,7 @@ import { getCourseWithOrgData } from '@cio/db/queries/course';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
+import { getAppBaseUrl } from '@cio/core/config/dashboard-url';
 
 export interface PaymentRequestData {
   courseId: string;
@@ -47,6 +48,10 @@ export async function createPaymentRequest(data: PaymentRequestData) {
 
     const teacherEmail = teacherResult[0].email;
 
+    const appBaseUrl = getAppBaseUrl();
+    const courseUrl = `${appBaseUrl}/courses/${data.courseId}`;
+    const autoEnrollUrl = `${appBaseUrl}/courses/${data.courseId}/people?grantAccess=${encodeURIComponent(data.studentEmail)}`;
+
     try {
       await enqueueTransactionalEmail('teacherStudentBuyRequest', {
         to: teacherEmail,
@@ -54,6 +59,8 @@ export async function createPaymentRequest(data: PaymentRequestData) {
           courseName,
           studentEmail: data.studentEmail,
           studentFullname: data.studentFullname,
+          courseUrl,
+          autoEnrollUrl,
           branding
         },
         from: buildEmailFromName('ClassroomIO'),
