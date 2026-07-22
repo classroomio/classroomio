@@ -1,0 +1,194 @@
+---
+title: Dokploy
+description: Deploy ClassroomIO on Dokploy using the pull-based Docker Compose stack.
+---
+
+[Dokploy](https://dokploy.com) is an open-source, self-hosted PaaS — a Heroku/Vercel alternative you run
+on your own VPS. It deploys ClassroomIO from the published `classroomio/*` images using the **same
+pull-based Docker Compose file** as the [Docker](/self-hosted/docker) and [Coolify](/self-hosted/coolify)
+guides — Dokploy **pulls** the images and never builds anything.
+
+## Watch the walkthrough
+
+Prefer to follow along? This video walks through the whole Dokploy deployment end to end. The written
+steps below mirror it.
+
+<YouTube id="CJIZhdvxXIA" />
+
+## Prerequisites
+
+- A running **Dokploy instance** with a **server connected** to it. Dokploy runs on any VPS —
+  DigitalOcean, Hetzner, AWS (Lightsail/EC2), or another provider. See Dokploy's
+  [installation guide](https://docs.dokploy.com/docs/core/installation) to set this up.
+- A server sized for ClassroomIO. Dokploy's own baseline stack needs ~2 GB RAM, and ClassroomIO's
+  seven services need **8 GB for reliable operation** — provision for both. See
+  [Server requirements](/self-hosted#server-requirements).
+- A **domain** with a DNS **A record pointing at your server's public IP**. Dokploy's built-in Traefik
+  proxy terminates HTTPS and issues the certificate.
+- An **SMTP provider** for signup verification, password reset, and invite emails — see
+  [Configuration → Email (SMTP)](/self-hosted/configuration/email).
+- *Optional:* an **OpenAI API key** (transcription + AI course generation) and Google OAuth / Unsplash
+  keys — see [Configuration → Integrations](/self-hosted/configuration/integrations).
+
+:::note[Two secrets to generate first]
+Dokploy does **not** run our secret-generation script, so generate `BETTER_AUTH_SECRET` and
+`PRIVATE_SERVER_KEY` yourself and keep them handy:
+
+```zsh title="Terminal"
+openssl rand -hex 32   # BETTER_AUTH_SECRET
+openssl rand -hex 32   # PRIVATE_SERVER_KEY   (must be identical in the api and dashboard services)
+```
+
+See [Configuration → Environment & secrets](/self-hosted/configuration/secrets) for what each does.
+:::
+
+## Step-by-step walkthrough
+
+This uses a Dokploy **Compose** service: you paste the compose file, set every environment value
+yourself, deploy, then attach the dashboard domain. The flow is: **create a project → add a Compose
+service → paste the compose file → set environment variables → point your domain → deploy → add the
+dashboard domain → sign up**.
+
+<Steps>
+
+<Step>
+### Create a project
+
+In the Dokploy dashboard, open **Projects** and click **Create Project**. Give it a name (e.g.
+`classroomio`) and open it.
+
+![Creating a project in Dokploy](/docs/dokploy-01-create-project.webp)
+</Step>
+
+<Step>
+### Add a Compose service
+
+Inside the project, click **Create Service** and choose **Compose** from the service types. When
+prompted, **select the server** you connected to Dokploy — this is the VPS ClassroomIO runs on.
+
+![Adding a Compose service and selecting the server](/docs/dokploy-02-compose-service.webp)
+</Step>
+
+<Step>
+### Choose the Raw (manual) provider and paste the compose file
+
+Dokploy asks where the compose file comes from — GitHub, GitLab, Bitbucket, or **Raw**. Choose **Raw**
+(the manual option) and paste the contents of
+[`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker-compose.images.yaml)
+— the same pull-based stack used for the [Docker](/self-hosted/docker) and [Coolify](/self-hosted/coolify)
+deployments.
+
+![Choosing the Raw provider and pasting the compose file](/docs/dokploy-03-raw-compose.webp)
+</Step>
+
+<Step>
+### Set the environment variables
+
+Open the service's **Environment** tab and add your configuration. At minimum:
+
+```zsh title="Environment"
+COMPOSE_PROFILES=minio                      # runs the bundled MinIO object storage
+DASHBOARD_ORIGIN=https://dash.yourdomain.com
+PUBLIC_SERVER_URL=https://dash.yourdomain.com
+BETTER_AUTH_SECRET=<openssl rand -hex 32>
+PRIVATE_SERVER_KEY=<openssl rand -hex 32>   # identical in the api and dashboard services
+POSTGRES_PASSWORD=<strong password>
+# Email (signup verification, password reset, invites)
+SMTP_HOST=smtp.yourprovider.com
+SMTP_PORT=587
+SMTP_USER=<smtp username>
+SMTP_PASSWORD=<smtp password>
+SMTP_SENDER=ClassroomIO <you@yourdomain.com>
+```
+
+The full variable reference — object storage, CSP, integrations, licensing, versions — lives in the
+shared [Configuration](/self-hosted/configuration) section. Copy what you need before deploying.
+
+![Setting the environment variables in Dokploy](/docs/dokploy-04-env-vars.webp)
+</Step>
+
+<Step>
+### Point your domain at the server
+
+Before the domain will work, add a DNS **A record** for it (e.g. `dash.yourdomain.com`) pointing at
+your server's public IP. Do this for the dashboard domain — and any other domain you plan to use (such
+as storage). DNS can take a few minutes to propagate.
+
+</Step>
+
+<Step>
+### Deploy
+
+Click **Deploy**. Dokploy pulls `classroomio/{api,dashboard,jobs}` plus Postgres, Redis, and MinIO,
+then starts the stack. The API runs database setup on first boot. Watch the **logs** until every
+service is up — this is your first deploy.
+
+![Dokploy deploy logs showing the stack coming up](/docs/dokploy-05-deploy-logs.webp)
+</Step>
+
+<Step>
+### Add the dashboard domain
+
+Open the service's **Domains** section and click **Add Domain**. In the modal that appears:
+
+- **Service:** select **dashboard** — the service this domain routes to.
+- **Host:** your dashboard domain, e.g. `dash.yourdomain.com`.
+- **Container Port:** `3082` — the port the dashboard listens on.
+- **HTTPS:** turn it on, then choose **Let's Encrypt** as the certificate provider.
+
+Create the domain. Dokploy provisions the certificate through Traefik — it usually only takes a moment.
+
+![Adding the dashboard domain with port 3082 and Let's Encrypt](/docs/dokploy-06-add-domain.webp)
+</Step>
+
+<Step>
+### Open the app and sign up
+
+Once the certificate is issued, open your dashboard URL (`https://dash.yourdomain.com`) in a new browser
+tab and **sign up**. The **first** account becomes the organization **admin**; every signup after that
+joins as a student unless you invite them with a specific role.
+
+![The running ClassroomIO dashboard sign-up page](/docs/dokploy-07-signup.webp)
+</Step>
+
+</Steps>
+
+## Environment variable reference
+
+Dokploy reads the same variables as every other self-hosted install. Rather than repeat them, use the
+shared [Configuration](/self-hosted/configuration) section:
+
+<CardGroup cols={2}>
+  <Card title="Environment & secrets" href="/self-hosted/configuration/secrets" icon="key-round">
+    `BETTER_AUTH_SECRET`, `PRIVATE_SERVER_KEY`, database, mode/routing.
+  </Card>
+  <Card title="Email (SMTP)" href="/self-hosted/configuration/email" icon="mail">
+    Signup verification, password resets, invites.
+  </Card>
+  <Card title="Object storage & uploads" href="/self-hosted/configuration/storage" icon="hard-drive">
+    MinIO or external S3/R2, plus upload size limits.
+  </Card>
+  <Card title="CSP / allowed domains" href="/self-hosted/configuration/csp" icon="shield">
+    Allowed external CDN, font, and media domains.
+  </Card>
+  <Card title="Integrations" href="/self-hosted/configuration/integrations" icon="plug">
+    Google OAuth, Unsplash, OpenAI.
+  </Card>
+  <Card title="SSO & licensing" href="/self-hosted/configuration/sso" icon="id-card">
+    `LICENSE_KEY` for Enterprise features.
+  </Card>
+</CardGroup>
+
+:::warning[MinIO is your durability boundary]
+If you use the bundled MinIO, give its volume **persistent storage** in Dokploy and set
+`OBJECT_STORAGE_PUBLIC_ENDPOINT` / `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` to a domain that resolves to
+your server, so browsers can load uploaded media. Prefer managed storage? Point the `OBJECT_STORAGE_*`
+vars at Cloudflare R2 / AWS S3 instead. See [Object storage & uploads](/self-hosted/configuration/storage).
+:::
+
+## Upgrades & rollback
+
+Set `CIO_VERSION` in the service environment to pin a release, then redeploy to upgrade; roll back by
+setting it to the previous version and redeploying. See
+[Configuration → Versions & upgrades](/self-hosted/configuration/versions) for pinning, rollback, and
+the pre-upgrade backup steps.

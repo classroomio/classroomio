@@ -73,7 +73,7 @@
         {#if stars}<span class="text-blue-300">{stars}</span>{/if}
       </a>
       <a
-        href="https://classroomio.com/docs/self-hosting"
+        href="https://classroomio.com/docs/self-hosted/docker"
         target="_blank"
         rel="noopener noreferrer"
         class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-950 no-underline transition-all hover:border-gray-950"

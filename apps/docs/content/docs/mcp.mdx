@@ -3,8 +3,6 @@ title: MCP
 description: Connect Claude Code, Codex, Cursor, OpenCode, and other MCP clients to ClassroomIO for draft-based course authoring.
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-
 `@classroomio/mcp` is a thin stdio MCP server for ClassroomIO course authoring.
 
 It does not parse PDFs or generate course structures itself. The agent does that work. The MCP
@@ -475,8 +473,8 @@ For broad revisions, prefer this sequence:
 
 That keeps major AI-assisted edits reviewable and explicit.
 
-<Callout title="Operational Rule">
-  Keep published drafts for history and auditability. Do not treat omission from a draft as an
-  instruction to delete live sections or lessons. Destructive changes should only happen through
-  explicit user intent.
-</Callout>
+:::note[Operational Rule]
+Keep published drafts for history and auditability. Do not treat omission from a draft as an
+instruction to delete live sections or lessons. Destructive changes should only happen through
+explicit user intent.
+:::

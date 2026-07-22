@@ -2,44 +2,29 @@
   "name": "@cio/docs",
   "type": "module",
   "scripts": {
-    "dev": "react-router dev",
-    "build": "react-router build",
-    "preview": "wrangler dev --port 4173",
-    "start": "wrangler dev --port 3000",
+    "prebuild": "node scripts/fetch-openapi.mjs",
+    "dev": "node scripts/fetch-openapi.mjs && blume dev",
+    "build": "blume build && node scripts/package-assets.mjs",
+    "preview": "pnpm run build && wrangler dev --port 4173",
     "deploy": "pnpm run build && wrangler deploy",
-    "cf-typegen": "wrangler types && react-router typegen",
-    "types:check": "fumadocs-mdx && wrangler types && react-router typegen && tsc --noEmit",
-    "postinstall": "fumadocs-mdx"
+    "validate": "blume validate"
   },
   "dependencies": {
+    "@astrojs/mdx": "7.0.3",
     "@cio/utils": "workspace:*",
-    "@scalar/core": "^0.3.28",
-    "@react-router/dev": "^7.9.4",
-    "fumadocs-core": "16.2.1",
-    "fumadocs-mdx": "14.0.4",
-    "fumadocs-ui": "16.2.1",
-    "isbot": "^5.1.30",
-    "lucide-react": "^0.562.0",
-    "lucide-static": "^0.552.0",
-    "react": "^19.2.0",
-    "react-router": "^7.9.4",
-    "react-dom": "^19.2.0",
-    "tailwind-merge": "^3.3.1",
-    "vite": "^7.2.0"
+    "@scalar/astro": "0.4.9",
+    "@shikijs/twoslash": "4.3.1",
+    "@tailwindcss/typography": "0.5.19",
+    "@tailwindcss/vite": "4.1.18",
+    "astro": "7.0.9",
+    "blume": "1.1.2",
+    "mermaid": "^11.16.0",
+    "tailwindcss": "4.1.18"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.15.3",
-    "@tailwindcss/vite": "^4.1.16",
-    "@types/mdx": "^2.0.13",
-    "@types/node": "^24.10.0",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "tailwindcss": "^4.1.16",
-    "typescript": "^5.9.3",
-    "vite-tsconfig-paths": "^5.1.4",
     "wrangler": "4.86.0"
   },
   "engines": {
-    "node": "^20.19.3"
+    "node": ">=22.12.0"
   }
 }

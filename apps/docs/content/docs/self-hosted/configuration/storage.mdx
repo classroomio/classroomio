@@ -1,0 +1,74 @@
+---
+title: Object storage & uploads
+description: Configure object storage (MinIO or S3-compatible) for file and video uploads, plus upload size limits.
+---
+
+ClassroomIO stores uploaded files and videos in **object storage**. You have two choices: run the
+**bundled MinIO** alongside the stack, or point ClassroomIO at an **external S3-compatible** service
+(AWS S3, Cloudflare R2, etc.). Both speak the S3 API and use the same `OBJECT_STORAGE_*` variables.
+
+## Option 1 — Bundled MinIO (default)
+
+The Docker and Coolify compose files include **MinIO** under the `minio` profile, and the startup
+script auto-configures it. You only change these for custom credentials.
+
+| Variable | Default |
+|----------|---------|
+| `MINIO_ROOT_USER` | randomized by the script (`minioadmin` if you skip it) |
+| `MINIO_ROOT_PASSWORD` | randomized by the script (`minioadmin` if you skip it) |
+| `OBJECT_STORAGE_ENDPOINT` | `http://minio:9000` |
+| `OBJECT_STORAGE_PUBLIC_ENDPOINT` | `http://localhost:9000` |
+| `OBJECT_STORAGE_ACCESS_KEY_ID` | matches `MINIO_ROOT_USER` |
+| `OBJECT_STORAGE_SECRET_ACCESS_KEY` | matches `MINIO_ROOT_PASSWORD` |
+| `OBJECT_STORAGE_FORCE_PATH_STYLE` | `true` (required for MinIO) |
+| `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` | `http://localhost:9000/media` |
+
+:::warning[MinIO is your durability boundary]
+Single-node MinIO has no redundancy — its volume is the only thing protecting your uploads. Give it
+**persistent storage** and **back it up**. If you'd rather not operate storage yourself, use external
+**Cloudflare R2 / AWS S3** instead (R2 has no egress fees) — see below.
+:::
+
+## Option 2 — External S3 / Cloudflare R2
+
+The `OBJECT_STORAGE_*` variables speak the S3 API, so they work with **any S3-compatible provider**,
+including Cloudflare R2 and AWS S3. Point them at the provider and start **without** the bundled MinIO
+(`./run-docker-full-stack.sh --no-minio`, or leave the `minio` profile off).
+
+| Variable | Description |
+|----------|-------------|
+| `OBJECT_STORAGE_ENDPOINT` | Provider endpoint the app uploads to (for R2: `https://<account>.r2.cloudflarestorage.com`) |
+| `OBJECT_STORAGE_PUBLIC_ENDPOINT` | Public endpoint browsers download from |
+| `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY` | Provider credentials |
+| `OBJECT_STORAGE_REGION` | Region (some providers require it; `auto` for R2) |
+| `OBJECT_STORAGE_FORCE_PATH_STYLE` | `true` for MinIO; `false` for R2 |
+| `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` | Public base URL for media (`…/media`) |
+| `OBJECT_STORAGE_BUCKET_VIDEOS` / `_DOCUMENTS` / `_MEDIA` | Bucket names (default `videos`, `documents`, `media`) |
+
+:::note[Legacy `CLOUDFLARE_*` variables]
+ClassroomIO also accepts a legacy Cloudflare R2 config (`CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_ACCESS_KEY`,
+`CLOUDFLARE_SECRET_ACCESS_KEY`, …). It is a **fallback** used only when the `OBJECT_STORAGE_*` variables
+are absent — prefer `OBJECT_STORAGE_*` for new deployments (it covers R2 too). For step-by-step R2 bucket
+and CORS setup, see the [Cloudflare Setup](/guides/contributing/cloudflare-setup) guide.
+:::
+
+## Upload file size limits
+
+Set these to raise or lower upload caps (values are in **megabytes**). Compose passes them through to
+the `api` and `dashboard` containers. Unset = built-in defaults. On [Railway](/self-hosted/railway) or
+[Coolify](/self-hosted/coolify), set the **same** values on both the API and dashboard services.
+
+| Variable | Default | Applies to |
+|----------|---------|------------|
+| `UPLOAD_MAX_DOCUMENT_MB` | 5 | Course lesson documents |
+| `UPLOAD_MAX_IMAGE_MB` | 5 | Avatars, media library, editor images |
+| `UPLOAD_MAX_VIDEO_MB` | 800 | Lesson video uploads |
+| `UPLOAD_MAX_EXERCISE_FILE_MB` | 2 | Student assignment file-upload questions |
+| `UPLOAD_MAX_AGENT_DOCUMENT_MB` | 5 | AI assistant document uploads |
+| `UPLOAD_MAX_LANDING_IMAGE_MB` | 0.5 | Org landing page cover images |
+| `UPLOAD_MAX_THUMBNAIL_MB` | 5 | Media thumbnail uploads |
+
+:::warning[Reverse proxy limits]
+If you raise these values, also increase your reverse proxy body-size limit (e.g. nginx
+`client_max_body_size`) so large uploads aren't rejected before they reach ClassroomIO.
+:::

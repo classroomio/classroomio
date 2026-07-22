@@ -1,0 +1,34 @@
+---
+title: SSO & licensing
+description: Set LICENSE_KEY to unlock Enterprise features such as SSO on your self-hosted ClassroomIO.
+---
+
+Enterprise-only features — **SSO**, **token auth**, and no-tracking mode — require an Enterprise
+**license key**. If you don't use any Enterprise feature, you don't need a key; leave `LICENSE_KEY`
+unset and everything else works.
+
+## Setting `LICENSE_KEY`
+
+`LICENSE_KEY` is read by the **api** service. Set it wherever that service takes its environment:
+
+| Deployment | Where to set it |
+|------------|-----------------|
+| Local development | `apps/api/.env` |
+| Docker Compose | repository root `.env` |
+| Railway | the `cio-api` service environment |
+| Coolify | the resource's environment variables |
+
+```zsh title=".env"
+LICENSE_KEY=<your enterprise license key>
+```
+
+## Getting a license
+
+[Book a call](http://cal.com/classroomio/enterprise) to get an Enterprise license key.
+
+## Feature docs
+
+Once the key is set, configure the features themselves:
+
+- [Enterprise SSO](/enterprise-sso) — Single Sign-On with OIDC (Okta, Azure AD, and more).
+- [Token Auth](/token-auth) — issue signed tokens to log users in from your own app.
