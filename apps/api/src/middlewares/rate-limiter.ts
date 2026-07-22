@@ -11,6 +11,8 @@ import { userKeyGenerator } from '../utils/redis/key-generators';
 import { env } from '@cio/core/config/env';
 import { logRedisUnavailableOnce, redis } from '@cio/core/utils/redis/redis';
 
+import { timingSafeEqual } from 'crypto';
+
 /** Dashboard SSR and other internal callers authenticate with PRIVATE_SERVER_KEY. */
 export function isTrustedServerApiKeyRequest(c: Context): boolean {
   const expectedKey = env.PRIVATE_SERVER_KEY;
@@ -19,7 +21,13 @@ export function isTrustedServerApiKeyRequest(c: Context): boolean {
   const authHeader = c.req.header('Authorization');
   if (!authHeader?.startsWith('Bearer ')) return false;
 
-  return authHeader.slice('Bearer '.length).trim() === expectedKey;
+  const apiKey = authHeader.slice('Bearer '.length).trim();
+  const keyBuf = Buffer.from(apiKey);
+  const expectedBuf = Buffer.from(expectedKey);
+
+  if (keyBuf.length !== expectedBuf.length) return false;
+
+  return timingSafeEqual(keyBuf, expectedBuf);
 }
 
 export interface RateLimiterOptions {
