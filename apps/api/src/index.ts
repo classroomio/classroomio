@@ -10,6 +10,19 @@ import { preloadVerifiedCustomDomainOriginsRegistry } from '@api/utils/origins';
 import { serve } from '@hono/node-server';
 import { showRoutes } from 'hono/dev';
 
+/**
+ * Keep the API process alive across transient Redis / ioredis disconnects.
+ * Without these, an unhandled `error` event (e.g. `read ECONNABORTED`) exits
+ * the Node process. Same pattern as `apps/jobs` bootstrap.
+ */
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught exception:', error);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled rejection:', reason);
+});
+
 // Start server
 async function startServer() {
   console.log('Starting server on port:', API_PORT);

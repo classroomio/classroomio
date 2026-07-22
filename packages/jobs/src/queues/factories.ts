@@ -20,6 +20,9 @@ export function getQueue(name: QueueName): Queue {
       ...buildQueueOptions(name),
       connection: getSharedRedisConnection()
     });
+    queue.on('error', (error) => {
+      console.error(`BullMQ queue error (${name}):`, error);
+    });
     queues.set(name, queue);
   }
 
@@ -29,6 +32,9 @@ export function getQueue(name: QueueName): Queue {
 export function getFlowProducer(): FlowProducer {
   if (!flowProducer) {
     flowProducer = new FlowProducer({ connection: getSharedRedisConnection() });
+    flowProducer.on('error', (error) => {
+      console.error('BullMQ flow producer error:', error);
+    });
   }
 
   return flowProducer;
