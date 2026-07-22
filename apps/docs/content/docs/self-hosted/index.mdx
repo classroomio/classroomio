@@ -1,6 +1,6 @@
 ---
 title: Self Hosting
-description: Run ClassroomIO on your own infrastructure — with Docker, Railway, or Coolify.
+description: Run ClassroomIO on your own infrastructure — with Docker, DigitalOcean, Railway, Coolify, or Dokploy.
 ---
 
 ClassroomIO is open source, and you can run the whole platform on your own infrastructure. Every
@@ -12,6 +12,9 @@ Pick the path that matches where you want it to run.
 <CardGroup cols={3}>
   <Card title="Docker" href="/self-hosted/docker" icon="container">
     Run anywhere Docker runs. Pull the pre-built images, or build from source.
+  </Card>
+  <Card title="DigitalOcean" href="/self-hosted/digitalocean" icon="droplet">
+    A plain VPS, end to end — Docker Compose plus Caddy for automatic HTTPS.
   </Card>
   <Card title="Railway" href="/self-hosted/railway" icon="train-front">
     Deploy to Railway from a template. The quickest managed option.
@@ -29,6 +32,7 @@ Pick the path that matches where you want it to run.
 | Option                                | Best for                                                              |
 | ------------------------------------- | --------------------------------------------------------------------- |
 | [Docker](/self-hosted/docker)         | Full control on your own server, or as the base for another platform. |
+| [DigitalOcean](/self-hosted/digitalocean) | A raw VPS with no PaaS — you set up the reverse proxy and HTTPS yourself. Works on any Ubuntu server. |
 | [Railway](/self-hosted/railway)       | Getting a working instance up with the least infrastructure work.     |
 | [Coolify](/self-hosted/coolify)       | Running a PaaS on your own VPS, managing several apps alongside it.   |
 | [Dokploy](/self-hosted/dokploy)       | Running a Traefik-based PaaS on your own VPS, deployed from a pasted Compose file. |

@@ -7,8 +7,8 @@ import { defineConfig } from 'blume';
  * scripts/package-assets.mjs moves dist/ under docs/ to match the served path.
  *
  * Redirects are NOT declared here: under a base, Astro prefixes a redirect's
- * source but not its target, so it would emit `url=/home` instead of
- * `/docs/home`. They live in scripts/package-assets.mjs as a `_redirects` file.
+ * source but not its target, so it would emit `url=/guides` instead of
+ * `/docs/guides`. They live in scripts/package-assets.mjs as a `_redirects` file.
  */
 export default defineConfig({
   title: 'ClassroomIO Docs | Customer, Partner, and Employee Education',
@@ -17,7 +17,7 @@ export default defineConfig({
   logo: {
     text: 'ClassroomIO',
     image: '/docs/logo-192.png',
-    href: '/docs/home'
+    href: '/docs'
   },
   content: {
     root: 'content/docs'
@@ -55,15 +55,43 @@ export default defineConfig({
   },
   navigation: {
       tabs: [
-      { label: 'Home', path: '/home', icon: 'house' },
+      { label: 'Platform', path: '/', icon: 'house' },
       { label: 'Guides', path: '/guides', icon: 'book-open' },
       { label: 'Self Hosting', path: '/self-hosted', icon: 'server' },
       { label: 'API', path: '/api', icon: 'code' }
     ],
     sidebar: [
       {
-        label: 'Home',
-        items: ['/home']
+        label: 'Platform',
+        items: [
+          '/',
+          {
+            label: 'Introduction',
+            items: [
+              '/what-is-classroomio',
+              '/terminology',
+              {
+                label: 'Quickstart',
+                items: ['/quickstart/signup', '/quickstart/onboarding']
+              }
+            ]
+          },
+          {
+            label: 'Core Features',
+            items: [
+              '/course',
+              '/cohorts',
+              '/mcp',
+              '/tags',
+              '/audience',
+              '/community',
+              '/organization',
+              '/student-dashboard',
+              '/enterprise-sso',
+              '/token-auth'
+            ]
+          }
+        ]
       },
       {
         label: 'Guides',
@@ -73,32 +101,6 @@ export default defineConfig({
           {
             label: '',  // User Guides
             items: [
-              {
-                label: 'Introduction',
-                items: [
-                  '/guides/what-is-classroomio',
-                  '/guides/terminology',
-                  {
-                    label: 'Quickstart',
-                    items: ['/guides/quickstart/signup', '/guides/quickstart/onboarding']
-                  }
-                ]
-              },
-              {
-                label: 'Core Features',
-                items: [
-                  '/guides/course',
-                  '/guides/cohorts',
-                  '/guides/mcp',
-                  '/guides/tags',
-                  '/guides/audience',
-                  '/guides/community',
-                  '/guides/organization',
-                  '/guides/student-dashboard',
-                  '/guides/enterprise-sso',
-                  '/guides/token-auth'
-                ]
-              },
               {
                 label: 'Get started',
                 items: ['/guides/create-first-course']
@@ -170,6 +172,7 @@ export default defineConfig({
             label: 'Platforms',
             items: [
               '/self-hosted/docker',
+              '/self-hosted/digitalocean',
               '/self-hosted/railway',
               '/self-hosted/coolify',
               '/self-hosted/dokploy'
