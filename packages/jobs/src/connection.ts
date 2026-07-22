@@ -31,7 +31,12 @@ const DEFAULT_OPTIONS: RedisOptions = {
   // After a replica promotion, Redis may reply READONLY until we reconnect to the new primary.
   reconnectOnError(error) {
     const message = error.message.toUpperCase();
-    return message.includes('READONLY') || message.includes('LOADING');
+    if (message.includes('READONLY') || message.includes('LOADING')) {
+      // 2 = reconnect AND resend the failed command against the new primary.
+      return 2;
+    }
+
+    return false;
   },
   // Detect half-open sockets during provider maintenance (0 = OS default; 10s is safer for cloud).
   keepAlive: 10_000,
@@ -108,7 +113,12 @@ function wrapDuplicate(connection: Redis): void {
   }) as typeof connection.duplicate;
 }
 
-function prepareRedisConnection(connection: Redis): void {
+/**
+ * Attach lifecycle handlers and recursively wrap `duplicate()` so every
+ * connection BullMQ derives from this one is crash-safe. Exported so tests can
+ * assert against the real implementation instead of a copy.
+ */
+export function prepareRedisConnection(connection: Redis): void {
   attachRedisLifecycleHandlers(connection);
   wrapDuplicate(connection);
 }
