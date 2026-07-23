@@ -95,6 +95,24 @@ export const TEXTAREA_FIXTURE: QuestionStoryFixture = {
   answer: '<p>Specific feedback helps students improve on the next attempt quickly.</p>'
 };
 
+export const THUMBS_FIXTURE: QuestionStoryFixture = {
+  question: {
+    id: 'q-thumbs',
+    key: 'q-thumbs',
+    title: 'Thumbs Up or Down: Would you recommend ClassroomIO to a colleague? [THUMBS]',
+    questionType: 'THUMBS',
+    options: [
+      { id: 5001, label: 'Yes', value: 'true' },
+      { id: 5002, label: 'No', value: 'false', isCorrect: false }
+    ],
+    settings: {
+      correctValue: true
+    }
+  },
+  answer: { type: 'THUMBS', value: true },
+  wrongAnswer: { type: 'THUMBS', value: false }
+};
+
 export const TRUE_FALSE_FIXTURE: QuestionStoryFixture = {
   question: {
     id: 'q-true-false',

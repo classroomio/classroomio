@@ -10,6 +10,7 @@ export { default as SectionNavigationSidebar } from './section-navigation-sideba
 export { default as SectionOverview } from './section-overview.svelte';
 export * from './renderer-contract';
 
+export { default as ThumbsEdit } from './renderers/thumbs/edit.svelte';
 export { default as TrueFalseEdit } from './renderers/true-false/edit.svelte';
 export { default as ShortAnswerEdit } from './renderers/short-answer/edit.svelte';
 export { default as NumericEdit } from './renderers/numeric/edit.svelte';
@@ -23,6 +24,7 @@ export { default as OrderingEdit } from './renderers/ordering/edit.svelte';
 export { default as HotspotEdit } from './renderers/hotspot/edit.svelte';
 export { default as VideoRecordingEdit } from './renderers/video-recording/edit.svelte';
 
+export { default as ThumbsTake } from './renderers/thumbs/take.svelte';
 export { default as TrueFalseTake } from './renderers/true-false/take.svelte';
 export { default as ShortAnswerTake } from './renderers/short-answer/take.svelte';
 export { default as NumericTake } from './renderers/numeric/take.svelte';
@@ -36,6 +38,7 @@ export { default as OrderingTake } from './renderers/ordering/take.svelte';
 export { default as HotspotTake } from './renderers/hotspot/take.svelte';
 export { default as VideoRecordingTake } from './renderers/video-recording/take.svelte';
 
+export { default as ThumbsPreview } from './renderers/thumbs/preview.svelte';
 export { default as TrueFalsePreview } from './renderers/true-false/preview.svelte';
 export { default as ShortAnswerPreview } from './renderers/short-answer/preview.svelte';
 export { default as NumericPreview } from './renderers/numeric/preview.svelte';
@@ -50,6 +53,7 @@ export { default as OrderingDisplay } from './renderers/ordering/ordering-displa
 export { default as HotspotPreview } from './renderers/hotspot/preview.svelte';
 export { default as VideoRecordingPreview } from './renderers/video-recording/preview.svelte';
 
+export { default as ThumbsSubmission } from './renderers/thumbs/submission.svelte';
 export { default as TrueFalseSubmission } from './renderers/true-false/submission.svelte';
 export { default as ShortAnswerSubmission } from './renderers/short-answer/submission.svelte';
 export { default as NumericSubmission } from './renderers/numeric/submission.svelte';
@@ -63,3 +67,5 @@ export { default as OrderingSubmission } from './renderers/ordering/submission.s
 export { default as HotspotSubmission } from './renderers/hotspot/submission.svelte';
 export { default as LinkSubmission } from './renderers/link/submission.svelte';
 export { default as VideoRecordingSubmission } from './renderers/video-recording/submission.svelte';
+
+export { default as ThumbsReview } from './renderers/thumbs/review.svelte';
