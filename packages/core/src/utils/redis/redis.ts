@@ -45,29 +45,55 @@ export function logRedisUnavailableOnce(message: string, error?: unknown): void 
   console.warn(message);
 }
 
-function isTransientRedisSocketError(error: unknown): boolean {
+const TRANSIENT_REDIS_ERROR_CODES = new Set([
+  'ECONNABORTED',
+  'ECONNRESET',
+  'ECONNREFUSED',
+  'ETIMEDOUT',
+  'EPIPE',
+  'ENOTFOUND',
+  'EAI_AGAIN',
+  'EHOSTUNREACH',
+  'ENETUNREACH'
+]);
+
+const TRANSIENT_REDIS_MESSAGE_PATTERN =
+  /ECONNABORTED|ECONNRESET|ECONNREFUSED|ETIMEDOUT|READONLY|LOADING|Connection is closed|Socket closed unexpectedly|Connection timeout|client is closed/i;
+
+/**
+ * True for the connection/socket errors Redis Cloud maintenance & failover
+ * throw (ioredis and node-redis alike). Handles `AggregateError` (node-redis
+ * surfaces multi-address connect failures this way, e.g. IPv6 + IPv4) by
+ * recursing into its sub-errors. Exported so the API's process-level
+ * `uncaughtException` guard can distinguish "Redis is briefly unreachable,
+ * the client will reconnect" from a genuinely fatal bug.
+ */
+export function isTransientRedisError(error: unknown): boolean {
   if (!error || typeof error !== 'object') {
     return false;
   }
 
   const code = 'code' in error && typeof error.code === 'string' ? error.code : '';
-  const message = 'message' in error && typeof error.message === 'string' ? error.message : '';
+  if (TRANSIENT_REDIS_ERROR_CODES.has(code)) {
+    return true;
+  }
 
-  return (
-    code === 'ECONNABORTED' ||
-    code === 'ECONNRESET' ||
-    code === 'ECONNREFUSED' ||
-    code === 'ETIMEDOUT' ||
-    code === 'EPIPE' ||
-    code === 'ENOTFOUND' ||
-    code === 'EAI_AGAIN' ||
-    /READONLY|LOADING|Connection is closed|Socket closed unexpectedly/i.test(message)
-  );
+  const name = 'name' in error && typeof error.name === 'string' ? error.name : '';
+  const message = 'message' in error && typeof error.message === 'string' ? error.message : '';
+  if (TRANSIENT_REDIS_MESSAGE_PATTERN.test(message) || TRANSIENT_REDIS_MESSAGE_PATTERN.test(name)) {
+    return true;
+  }
+
+  if ('errors' in error && Array.isArray((error as AggregateError).errors)) {
+    return (error as AggregateError).errors.some((sub) => isTransientRedisError(sub));
+  }
+
+  return false;
 }
 
 // Handle connection events
 client.on('error', (err) => {
-  if (isTransientRedisSocketError(err)) {
+  if (isTransientRedisError(err)) {
     // Expected during Redis Cloud maintenance — client reconnects automatically.
     console.warn('Redis socket error (reconnecting):', err);
     return;

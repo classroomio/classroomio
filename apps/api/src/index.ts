@@ -4,7 +4,7 @@ import './instrument';
 import { API_PORT } from '@api/constants';
 import { app } from '@api/app';
 import { configureOpenAPI } from '@api/utils/openapi';
-import { connectRedis } from '@cio/core/utils/redis/redis';
+import { connectRedis, isTransientRedisError } from '@cio/core/utils/redis/redis';
 import { env } from '@cio/core/config/env';
 import { preloadVerifiedCustomDomainOriginsRegistry } from '@api/utils/origins';
 import { serve } from '@hono/node-server';
@@ -12,19 +12,30 @@ import * as Sentry from '@sentry/node';
 import { showRoutes } from 'hono/dev';
 
 /**
- * Transient Redis / ioredis disconnects (e.g. `read ECONNABORTED` during Redis
- * Cloud maintenance) are handled at the connection layer, so they no longer
- * reach here. Anything that does reach `uncaughtException` leaves the process in
- * an undefined state, so we report it and fail fast — the orchestrator restarts
- * us cleanly instead of running on in a corrupted state.
+ * Process-level safety net. Transient Redis / socket errors during Redis Cloud
+ * maintenance or failover can surface as uncaught exceptions / rejections
+ * (e.g. ioredis `read ECONNABORTED`, or node-redis `AggregateError [ECONNREFUSED]`
+ * mid-reconnect). Those are recoverable — the clients reconnect on their own —
+ * so we log and keep serving. Anything else leaves the process in an undefined
+ * state, so we report it and fail fast; the orchestrator restarts us cleanly.
  */
 process.on('uncaughtException', (error) => {
+  if (isTransientRedisError(error)) {
+    console.warn('Ignoring transient Redis error (client will reconnect):', error);
+    return;
+  }
+
   console.error('Uncaught exception:', error);
   Sentry.captureException(error);
   void Sentry.flush(2000).finally(() => process.exit(1));
 });
 
 process.on('unhandledRejection', (reason) => {
+  if (isTransientRedisError(reason)) {
+    console.warn('Ignoring transient Redis rejection (client will reconnect):', reason);
+    return;
+  }
+
   console.error('Unhandled rejection:', reason);
   Sentry.captureException(reason);
 });
