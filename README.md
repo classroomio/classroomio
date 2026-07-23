@@ -153,9 +153,14 @@ The repository also contains shared packages under `packages/` (for example `pac
      ```
 
    - `apps/jobs/.env`:
+      The jobs service handles background tasks (emails, media processing, analytics rollups, etc.).
 
-     ```bash
-     REDIS_URL="redis://localhost:6379"  #required for background workers
+      **Recommended setup** (simplest):
+
+      ```bash
+      cd apps/jobs
+      cp .env.example .env
+      ln -s ../../apps/api/.env .env     # symlink — reuses all API settings (recommended)
      ```
 
    - `apps/dashboard/.env`:
