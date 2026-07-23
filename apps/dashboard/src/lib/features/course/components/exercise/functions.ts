@@ -158,7 +158,7 @@ export function transformQuestionsToApiFormat(
     const settings = getQuestionSettings(q);
     const formattedOptions = questionTypeSupportsOptions(questionTypeKey) ? formatOptions(q.options) : [];
 
-    if (questionTypeKey === QUESTION_TYPE_KEY.TRUE_FALSE) {
+    if (questionTypeKey === QUESTION_TYPE_KEY.TRUE_FALSE || questionTypeKey === QUESTION_TYPE_KEY.THUMBS) {
       const correctValue = resolveTrueFalseCorrectValue(settings, formattedOptions);
 
       return {

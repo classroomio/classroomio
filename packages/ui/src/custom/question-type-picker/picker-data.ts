@@ -153,6 +153,24 @@ const QUESTION_TYPE_PICKER_ENTRIES: QuestionTypePickerEntry[] = [
     }
   },
   {
+    key: QUESTION_TYPE_KEY.THUMBS,
+    displayLabel: 'Thumbs up/down',
+    description: 'Quick yes/no sentiment — clear icons, automatic scoring.',
+    demoQuestion: {
+      id: 'picker-thumbs',
+      key: 'picker-thumbs',
+      title: 'Would you recommend this lesson to a colleague who is new to the topic?',
+      questionType: 'THUMBS',
+      options: [
+        { id: 14001, label: 'Yes', value: 'true', isCorrect: true },
+        { id: 14002, label: 'No', value: 'false', isCorrect: false }
+      ],
+      settings: {
+        correctValue: true
+      }
+    }
+  },
+  {
     key: QUESTION_TYPE_KEY.SHORT_ANSWER,
     displayLabel: 'Short answer',
     sidebarGlyph: 'A',

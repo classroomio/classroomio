@@ -1517,6 +1517,7 @@
                 "multiple": "Plusieurs réponses",
                 "paragraph": "Paragraphe",
                 "true_false": "Vrai/Faux",
+                "thumbs": "Pouce vers le haut/bas",
                 "short_answer": "Réponse courte",
                 "numeric": "Réponse numérique",
                 "fill_blank": "Remplissez le vide",
@@ -1703,6 +1704,16 @@
                 },
                 "edit": {
                   "correct_answer_label": "Bonne réponse"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Oui",
+                "no_label": "Non",
+                "edit": {
+                  "correct_answer_label": "Bonne réponse"
+                },
+                "preview": {
+                  "correct_value_label": "Valeur correcte"
                 }
               },
               "checkbox": {
