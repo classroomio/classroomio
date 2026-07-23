@@ -1,5 +1,3 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-
 import { buildProxiedApiResponse, proxyRequestToApi, shouldForwardToApi } from './proxy-api-request';
 
 describe('shouldForwardToApi', () => {
@@ -24,8 +22,7 @@ describe('buildProxiedApiResponse', () => {
         'content-type': 'application/json',
         'content-encoding': 'gzip',
         'content-length': '13',
-        'transfer-encoding': 'chunked',
-        'set-cookie': 'session=abc; Path=/'
+        'transfer-encoding': 'chunked'
       }
     });
 
@@ -33,23 +30,59 @@ describe('buildProxiedApiResponse', () => {
 
     expect(proxied.status).toBe(200);
     expect(proxied.headers.get('content-type')).toBe('application/json');
-    expect(proxied.headers.get('set-cookie')).toBe('session=abc; Path=/');
     expect(proxied.headers.get('content-encoding')).toBeNull();
     expect(proxied.headers.get('content-length')).toBeNull();
     expect(proxied.headers.get('transfer-encoding')).toBeNull();
     expect(await proxied.text()).toBe('{"user":null}');
   });
+
+  it('preserves multiple Set-Cookie headers without collapsing Expires commas', async () => {
+    const upstreamHeaders = new Headers({
+      'content-type': 'application/json',
+      'content-encoding': 'gzip'
+    });
+    upstreamHeaders.append(
+      'set-cookie',
+      'better-auth.session_token=abc; Path=/; HttpOnly; Expires=Wed, 21 Oct 2026 07:28:00 GMT'
+    );
+    upstreamHeaders.append(
+      'set-cookie',
+      'better-auth.csrf_token=xyz; Path=/; HttpOnly; Expires=Thu, 22 Oct 2026 07:28:00 GMT'
+    );
+
+    const proxied = buildProxiedApiResponse(
+      new Response('{"ok":true}', {
+        status: 200,
+        headers: upstreamHeaders
+      })
+    );
+
+    expect(proxied.headers.getSetCookie()).toEqual([
+      'better-auth.session_token=abc; Path=/; HttpOnly; Expires=Wed, 21 Oct 2026 07:28:00 GMT',
+      'better-auth.csrf_token=xyz; Path=/; HttpOnly; Expires=Thu, 22 Oct 2026 07:28:00 GMT'
+    ]);
+    expect(proxied.headers.get('content-encoding')).toBeNull();
+    expect(await proxied.text()).toBe('{"ok":true}');
+  });
 });
 
 describe('proxyRequestToApi', () => {
+  const originalPrivateServerUrl = process.env.PRIVATE_SERVER_URL;
+  const originalFetch = global.fetch;
+
   afterEach(() => {
-    vi.unstubAllGlobals();
-    vi.unstubAllEnvs();
-    vi.restoreAllMocks();
+    if (originalPrivateServerUrl === undefined) {
+      delete process.env.PRIVATE_SERVER_URL;
+    } else {
+      process.env.PRIVATE_SERVER_URL = originalPrivateServerUrl;
+    }
+
+    global.fetch = originalFetch;
+    jest.restoreAllMocks();
   });
 
   it('returns 502 when PRIVATE_SERVER_URL is missing', async () => {
-    vi.stubEnv('PRIVATE_SERVER_URL', '');
+    delete process.env.PRIVATE_SERVER_URL;
 
     const response = await proxyRequestToApi(new Request('https://app.example/api/auth/get-session'));
 
@@ -58,9 +91,9 @@ describe('proxyRequestToApi', () => {
   });
 
   it('requests identity encoding and returns a stripped response', async () => {
-    vi.stubEnv('PRIVATE_SERVER_URL', 'http://api.internal:3081');
+    process.env.PRIVATE_SERVER_URL = 'http://api.internal:3081';
 
-    const fetchMock = vi.fn().mockResolvedValue(
+    const fetchMock = jest.fn().mockResolvedValue(
       new Response('{"session":null}', {
         status: 200,
         headers: {
@@ -70,7 +103,7 @@ describe('proxyRequestToApi', () => {
         }
       })
     );
-    vi.stubGlobal('fetch', fetchMock);
+    global.fetch = fetchMock as typeof fetch;
 
     const response = await proxyRequestToApi(
       new Request('https://dashboard.example/api/auth/get-session', {
@@ -82,7 +115,7 @@ describe('proxyRequestToApi', () => {
       })
     );
 
-    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
     const [upstreamUrl, init] = fetchMock.mock.calls[0] as [URL, RequestInit];
     expect(String(upstreamUrl)).toBe('http://api.internal:3081/api/auth/get-session');
     expect(init.method).toBe('GET');

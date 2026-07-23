@@ -60,6 +60,10 @@ function resolveBrowserForwardedHost(request: Request, url: URL): string {
   return raw;
 }
 
+function isStrippedResponseHeader(name: string): boolean {
+  return (RESPONSE_HEADERS_TO_STRIP as readonly string[]).includes(name);
+}
+
 /**
  * Node's `fetch` always decompresses gzip/br bodies while often leaving
  * `Content-Encoding` on the Response. Returning that Response to the browser
@@ -67,12 +71,30 @@ function resolveBrowserForwardedHost(request: Request, url: URL): string {
  *
  * Ask the upstream for an identity body and strip encoding length headers so
  * the client receives a plain payload that matches the headers.
+ *
+ * Set-Cookie must be copied via `getSetCookie()` + `append` — never through
+ * `Headers.get('set-cookie')` / a naive `new Headers(upstream.headers)` path
+ * that can collapse multiple cookies into one comma-joined value (Expires
+ * attributes contain commas, so browsers may drop session/CSRF cookies).
  */
 export function buildProxiedApiResponse(upstream: Response): Response {
-  const headers = new Headers(upstream.headers);
+  const headers = new Headers();
 
-  for (const headerName of RESPONSE_HEADERS_TO_STRIP) {
-    headers.delete(headerName);
+  for (const [name, value] of upstream.headers.entries()) {
+    if (name === 'set-cookie' || isStrippedResponseHeader(name)) {
+      continue;
+    }
+
+    headers.set(name, value);
+  }
+
+  const setCookies =
+    typeof upstream.headers.getSetCookie === 'function'
+      ? upstream.headers.getSetCookie()
+      : [...upstream.headers.entries()].filter(([name]) => name === 'set-cookie').map(([, value]) => value);
+
+  for (const cookie of setCookies) {
+    headers.append('set-cookie', cookie);
   }
 
   return new Response(upstream.body, {

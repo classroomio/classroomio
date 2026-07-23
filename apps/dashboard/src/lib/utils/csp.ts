@@ -1,22 +1,24 @@
-function parseCspDomains(value: string | undefined): string[] {
+/** Normalize a comma-separated CSP domain/env list into valid CSP source values. */
+export function parseCspDomains(value: string | undefined): string[] {
   if (!value) return [];
+
   return value
     .split(',')
-    .map((d) => d.trim())
+    .map((domain) => domain.trim())
     .filter(Boolean)
-    .map((d) => {
+    .map((domain) => {
       if (
-        d === 'data:' ||
-        d === 'blob:' ||
-        d === "'self'" ||
-        d === 'self' ||
-        d.startsWith('http://') ||
-        d.startsWith('https://')
+        domain === 'data:' ||
+        domain === 'blob:' ||
+        domain === "'self'" ||
+        domain === 'self' ||
+        domain.startsWith('http://') ||
+        domain.startsWith('https://')
       ) {
-        return d === 'self' ? "'self'" : d;
+        return domain === 'self' ? "'self'" : domain;
       }
 
-      return `https://${d}`;
+      return `https://${domain}`;
     });
 }
 
