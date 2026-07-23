@@ -3,8 +3,6 @@ title: Cohorts
 description: Learn what Cohorts are in ClassroomIO, how goals work, and what students see in the Cohorts view.
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-
 **Cohorts** group multiple courses into a structured learning path. Use them when students need to complete a set of courses toward a shared outcome (onboarding, certification prep, role-based training). Individual courses still live in the LMS; cohorts add goals and a dedicated **Cohorts** view for students.
 
 ## Cohorts vs courses
@@ -14,7 +12,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 | **Course** | Single content container with lessons | **Home**, **My Learning**, **Explore** |
 | **Cohort** | Multiple courses with shared goals | **Cohorts** in the LMS |
 
-A student can be enrolled in courses without belonging to a cohort, and in a cohort that references several courses. See [Student Dashboard](/docs/student-dashboard) for how those views fit together.
+A student can be enrolled in courses without belonging to a cohort, and in a cohort that references several courses. See [Student Dashboard](/student-dashboard) for how those views fit together.
 
 ## Admin workflow
 
@@ -49,6 +47,6 @@ In the LMS, students open **Cohorts** to see cohorts they belong to. Each cohort
 - **Courses** — linked courses with progress
 - **Goals** — personal goal status when goals are configured
 
-<Callout type="info">
+:::info
 Legacy deployments may still have data in the original `program` tables. Run the migration script `pnpm --filter @cio/db migrate:programs-to-cohorts` after applying the cohort schema migration to copy existing data into the new tables without dropping the legacy tables.
-</Callout>
+:::

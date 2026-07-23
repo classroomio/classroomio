@@ -3,22 +3,17 @@ title: Token Auth
 description: Sign users in to ClassroomIO from your own app with a short-lived JWT.
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-import { Step, Steps } from 'fumadocs-ui/components/steps';
-
-# Token Auth
-
 Token Auth lets an external app sign a user in to ClassroomIO without asking for a ClassroomIO password. Your backend signs a short-lived JWT with your organization's Token Auth secret, then redirects the user's browser to ClassroomIO's token exchange URL.
 
 Use Token Auth when you already authenticate users in another product and want a trusted handoff into your ClassroomIO academy.
 
-<Callout type="info" title="Enterprise Feature">
-  Token Auth requires an **Enterprise** plan.
+:::info[Enterprise Feature]
+Token Auth requires an **Enterprise** plan.
 
-  **Cloud:** [Contact us](mailto:support@classroomio.com) to upgrade.
+**Cloud:** [Contact us](mailto:support@classroomio.com) to upgrade.
 
-  **Self-hosted:** Requires an Enterprise license key. Set `LICENSE_KEY` in the API service environment.
-</Callout>
+**Self-hosted:** Requires an Enterprise license key. Set `LICENSE_KEY` in the API service environment — see [Self Hosting → SSO & licensing](/self-hosted/configuration/sso).
+:::
 
 ## How It Works
 
