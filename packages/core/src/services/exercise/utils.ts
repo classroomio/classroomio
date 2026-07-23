@@ -76,14 +76,17 @@ function areSettingsEqual(left: unknown, right: unknown): boolean {
   return JSON.stringify(leftNormalized) === JSON.stringify(rightNormalized);
 }
 
-const TRUE_FALSE_QUESTION_TYPE_ID = QUESTION_TYPE_IDS[QUESTION_TYPE_KEY.TRUE_FALSE];
+const BINARY_BOOLEAN_QUESTION_TYPE_IDS = new Set([
+  QUESTION_TYPE_IDS[QUESTION_TYPE_KEY.TRUE_FALSE],
+  QUESTION_TYPE_IDS[QUESTION_TYPE_KEY.THUMBS]
+]);
 
-function normalizeTrueFalseQuestion(
+function normalizeBinaryBooleanQuestion(
   question: ExerciseUpdateQuestion,
   currentQuestion?: CurrentQuestion
 ): ExerciseUpdateQuestion {
   const questionTypeId = question.questionTypeId ?? currentQuestion?.questionTypeId;
-  if (questionTypeId !== TRUE_FALSE_QUESTION_TYPE_ID) return question;
+  if (questionTypeId == null || !BINARY_BOOLEAN_QUESTION_TYPE_IDS.has(questionTypeId)) return question;
 
   const settings = normalizeSettings(question.settings ?? currentQuestion?.settings);
   const options = question.options ?? currentQuestion?.options ?? [];
@@ -126,7 +129,7 @@ export function categorizeQuestions(questions: NonNullable<TExerciseUpdate['ques
   const questionUpdates: Array<{ id: number; data: Partial<TNewQuestion> }> = [];
 
   for (const rawQuestion of questions) {
-    const q = normalizeTrueFalseQuestion(rawQuestion);
+    const q = normalizeBinaryBooleanQuestion(rawQuestion);
 
     if (q.deletedAt && q.id) {
       deletedIds.push(q.id);
@@ -263,7 +266,7 @@ export function computeExerciseDiff(
 ) {
   const questionMap = new Map(currentQuestions.map((q) => [q.id, q]));
   const normalizedIncomingQuestions = incomingQuestions.map((incoming) =>
-    normalizeTrueFalseQuestion(incoming, incoming.id ? questionMap.get(incoming.id) : undefined)
+    normalizeBinaryBooleanQuestion(incoming, incoming.id ? questionMap.get(incoming.id) : undefined)
   );
 
   const deletedQuestionIds: number[] = [];
@@ -371,7 +374,7 @@ export async function createNewQuestionsWithOptions(
   newQuestions: NonNullable<TExerciseUpdate['questions']>,
   txClient: DbOrTxClient
 ): Promise<void> {
-  const normalizedQuestions = newQuestions.map((question) => normalizeTrueFalseQuestion(question));
+  const normalizedQuestions = newQuestions.map((question) => normalizeBinaryBooleanQuestion(question));
   const createdQuestions = await createQuestions(
     normalizedQuestions.map((q) => ({
       exerciseId,
