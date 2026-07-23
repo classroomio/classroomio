@@ -13,12 +13,12 @@ function normalizeBooleanText(value: unknown): string {
 
 export function getTrueFalseOptionValue(option: TrueFalseAnswerOption): boolean | undefined {
   const normalizedValue = normalizeBooleanText(option.value);
-  if (normalizedValue === 'true' || normalizedValue === '1') return true;
-  if (normalizedValue === 'false' || normalizedValue === '0') return false;
+  if (normalizedValue === 'true' || normalizedValue === '1' || normalizedValue === 'yes') return true;
+  if (normalizedValue === 'false' || normalizedValue === '0' || normalizedValue === 'no') return false;
 
   const normalizedLabel = normalizeBooleanText(option.label);
-  if (normalizedLabel === 'true' || normalizedLabel === '1') return true;
-  if (normalizedLabel === 'false' || normalizedLabel === '0') return false;
+  if (normalizedLabel === 'true' || normalizedLabel === '1' || normalizedLabel === 'yes') return true;
+  if (normalizedLabel === 'false' || normalizedLabel === '0' || normalizedLabel === 'no') return false;
 
   return undefined;
 }

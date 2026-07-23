@@ -119,6 +119,15 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     supportsPartialCredit: false,
     manualGradingRequired: true
   },
+  {
+    key: QUESTION_TYPE_KEY.THUMBS,
+    typename: 'THUMBS',
+    label: 'Thumbs up/down',
+    id: 14,
+    autoGradable: true,
+    supportsPartialCredit: false,
+    manualGradingRequired: false
+  },
   // Built but not offered in the product. Kept at the END of the id sequence
   // (append-only) so they never shift the ids of types that exist in the DB.
   // They have no `question_type` row, so `disabled` keeps them out of pickers,
@@ -127,7 +136,7 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     key: QUESTION_TYPE_KEY.MATCHING,
     typename: 'MATCHING',
     label: 'Matching',
-    id: 14,
+    id: 15,
     autoGradable: true,
     supportsPartialCredit: true,
     manualGradingRequired: false,
@@ -137,7 +146,7 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     key: QUESTION_TYPE_KEY.HOTSPOT,
     typename: 'HOTSPOT',
     label: 'Hotspot',
-    id: 15,
+    id: 16,
     autoGradable: true,
     supportsPartialCredit: true,
     manualGradingRequired: false,
