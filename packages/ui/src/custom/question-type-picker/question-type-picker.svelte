@@ -9,6 +9,7 @@
   import Link2Icon from '@lucide/svelte/icons/link-2';
   import SquareCheckIcon from '@lucide/svelte/icons/square-check';
   import StarIcon from '@lucide/svelte/icons/star';
+  import ThumbsUpIcon from '@lucide/svelte/icons/thumbs-up';
   import UploadIcon from '@lucide/svelte/icons/upload';
   import VideoIcon from '@lucide/svelte/icons/video';
   import { QuestionRenderer } from '../exercise-question';
@@ -33,6 +34,8 @@
         return Link2Icon;
       case QUESTION_TYPE_KEY.STAR:
         return StarIcon;
+      case QUESTION_TYPE_KEY.THUMBS:
+        return ThumbsUpIcon;
       case QUESTION_TYPE_KEY.VIDEO_RECORDING:
         return VideoIcon;
       default:

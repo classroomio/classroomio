@@ -405,6 +405,7 @@
       switch (answerValue.type) {
         case 'RADIO':
         case 'TRUE_FALSE':
+        case 'THUMBS':
         case 'NUMERIC':
         case 'STAR':
           return true;

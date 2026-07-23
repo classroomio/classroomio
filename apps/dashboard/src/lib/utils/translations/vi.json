@@ -1517,6 +1517,7 @@
                 "multiple": "Nhiều câu trả lời",
                 "paragraph": "Đoạn",
                 "true_false": "Đúng/Sai",
+                "thumbs": "Thích/Không thích",
                 "short_answer": "Câu trả lời ngắn",
                 "numeric": "Câu trả lời bằng số",
                 "fill_blank": "Điền vào chỗ trống",
@@ -1703,6 +1704,16 @@
                 },
                 "edit": {
                   "correct_answer_label": "Câu trả lời đúng"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Có",
+                "no_label": "Không",
+                "edit": {
+                  "correct_answer_label": "Câu trả lời đúng"
+                },
+                "preview": {
+                  "correct_value_label": "Giá trị đúng"
                 }
               },
               "checkbox": {

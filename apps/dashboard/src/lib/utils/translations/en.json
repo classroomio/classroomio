@@ -2608,6 +2608,7 @@
                 "multiple": "Multiple answers",
                 "paragraph": "Paragraph",
                 "true_false": "True/False",
+                "thumbs": "Thumbs up/down",
                 "short_answer": "Short answer",
                 "numeric": "Numeric answer",
                 "fill_blank": "Fill in the blank",
@@ -2746,6 +2747,16 @@
               "true_false": {
                 "true_label": "True",
                 "false_label": "False",
+                "edit": {
+                  "correct_answer_label": "Correct answer"
+                },
+                "preview": {
+                  "correct_value_label": "Correct value"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Yes",
+                "no_label": "No",
                 "edit": {
                   "correct_answer_label": "Correct answer"
                 },
