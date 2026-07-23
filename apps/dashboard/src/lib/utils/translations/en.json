@@ -2024,6 +2024,8 @@
       "rules_heading": "Rules",
       "deadline_label": "Certification deadline",
       "deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
+      "deadline_required": "Certificate deadline is required when certificates are downloadable.",
+      "deadline_required_enroll": "Compliance courses require a certificate deadline before learners can be enrolled.",
       "threshold_label": "Minimum completion (%)",
       "threshold_helper": "Combined lesson and exercise progress required to earn the certificate (0–100). Default is 100%.",
       "final_exercise_label": "Final exercise (optional)",
@@ -3608,6 +3610,9 @@
         "determines": "This determines if your course displays on your landing page",
         "published": "Published",
         "unpublished": "Unpublished",
+        "certificate_deadline_required": "Set Certificate Deadline First",
+        "certificate_deadline_required_description": "Compliance courses require a certificate deadline before learners can be enrolled. Please set a deadline in the certificate settings before publishing.",
+        "go_to_certificate_settings": "Go to Certificate Settings",
         "locked_content": {
           "title": "{count} course item(s) are locked",
           "description": "Enrolled students won't be able to take locked lessons or exercises until you unlock them.",

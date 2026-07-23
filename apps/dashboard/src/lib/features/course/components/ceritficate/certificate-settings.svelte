@@ -8,12 +8,14 @@
   import { isFreePlan } from '$lib/utils/store/org';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import { ContentType } from '@cio/utils/constants/content';
+  import { AttentionHighlight } from '$features/ui';
 
   type Props = {
     errors: Record<string, string>;
+    highlightActive?: boolean;
   };
 
-  let { errors }: Props = $props();
+  let { errors, highlightActive = $bindable(false) }: Props = $props();
 
   function isoToDatetimeLocal(iso: string | null | undefined): string {
     if (!iso) return '';
@@ -70,6 +72,16 @@
   function onEmailMessageInput(e: Event) {
     updateCertificate({ emailMessage: (e.currentTarget as HTMLTextAreaElement).value || null });
   }
+
+  function validateCertificateSettings(): string[] {
+    const errs: string[] = [];
+    if (courseApi.course?.certificate?.isDownloadable && !courseApi.course?.certificate?.deadline) {
+      errs.push('course.certification.deadline_required');
+    }
+    return errs;
+  }
+
+  const certificateValidationErrors = $derived(validateCertificateSettings());
 </script>
 
 <Field.Group class="w-full max-w-md! px-2">
@@ -85,27 +97,42 @@
         }}
         disabled={$isFreePlan}
       />
-      <Field.Label for="certificate-downloadable" class="text-gray-600">
-        {$t('course.navItem.certificates.allow')}
-      </Field.Label>
+      <div class="flex-1">
+        <Field.Label for="certificate-downloadable" class="text-gray-600">
+          {$t('course.navItem.certificates.allow')}
+        </Field.Label>
+        {#if courseApi.course?.certificate?.isDownloadable && certificateValidationErrors.includes('course.certification.deadline_required')}
+          <Field.Error class="mt-1">{$t('course.certification.deadline_required')}</Field.Error>
+        {/if}
+      </div>
     </Field.Field>
 
     <Field.Group>
-      <Field.Field>
-        <Field.Label for="cert-deadline">{$t('course.certification.deadline_label')}</Field.Label>
-        <Input
-          id="cert-deadline"
-          type="datetime-local"
-          class="w-full"
-          value={isoToDatetimeLocal(courseApi.course?.certificate?.deadline ?? null)}
-          onchange={onCertDeadlineChange}
-          disabled={$isFreePlan}
-        />
-        <Field.Description>{$t('course.certification.deadline_helper')}</Field.Description>
-        {#if errors['certificate.deadline']}
-          <Field.Error>{errors['certificate.deadline']}</Field.Error>
-        {/if}
-      </Field.Field>
+      <AttentionHighlight bind:active={highlightActive}>
+        <Field.Field>
+          <Field.Label for="cert-deadline">
+            {$t('course.certification.deadline_label')}
+            {#if courseApi.course?.certificate?.isDownloadable}
+              <span class="ui:text-red-600">*</span>
+            {/if}
+          </Field.Label>
+          <Input
+            id="cert-deadline"
+            type="datetime-local"
+            class="w-full"
+            value={isoToDatetimeLocal(courseApi.course?.certificate?.deadline ?? null)}
+            onchange={onCertDeadlineChange}
+            disabled={$isFreePlan}
+          />
+          <Field.Description>{$t('course.certification.deadline_helper')}</Field.Description>
+          {#if errors['certificate.deadline']}
+            <Field.Error>{errors['certificate.deadline']}</Field.Error>
+          {/if}
+          {#if certificateValidationErrors.includes('course.certification.deadline_required')}
+            <Field.Error>{$t('course.certification.deadline_required')}</Field.Error>
+          {/if}
+        </Field.Field>
+      </AttentionHighlight>
 
       <Field.Field>
         <Field.Label for="cert-threshold">{$t('course.certification.threshold_label')}</Field.Label>
@@ -167,21 +194,23 @@
 
   <Field.Separator />
 
-  <Field.Set>
-    <Field.Legend>{$t('course.certification.email_message_label')}</Field.Legend>
-    <Field.Field>
-      <Textarea
-        id="cert-email-message"
-        class="w-full"
-        rows={4}
-        placeholder={$t('course.certification.email_message_placeholder')}
-        value={courseApi.course?.certificate?.emailMessage ?? ''}
-        oninput={onEmailMessageInput}
-        disabled={$isFreePlan}
-      />
-      {#if errors['certificate.emailMessage']}
-        <Field.Error>{errors['certificate.emailMessage']}</Field.Error>
-      {/if}
-    </Field.Field>
-  </Field.Set>
+  <AttentionHighlight bind:active={highlightActive}>
+    <Field.Set>
+      <Field.Legend>{$t('course.certification.email_message_label')}</Field.Legend>
+      <Field.Field>
+        <Textarea
+          id="cert-email-message"
+          class="w-full"
+          rows={4}
+          placeholder={$t('course.certification.email_message_placeholder')}
+          value={courseApi.course?.certificate?.emailMessage ?? ''}
+          oninput={onEmailMessageInput}
+          disabled={$isFreePlan}
+        />
+        {#if errors['certificate.emailMessage']}
+          <Field.Error>{errors['certificate.emailMessage']}</Field.Error>
+        {/if}
+      </Field.Field>
+    </Field.Set>
+  </AttentionHighlight>
 </Field.Group>

@@ -65,12 +65,7 @@
   }
 
   function handlePublishCourse() {
-    if (page.url.pathname === courseSettingsPath) {
-      scrollToSettingsSection('publish');
-      return;
-    }
-
-    redirect(`/courses/${id}/settings#publish`);
+    redirect(`/courses/${id}/settings?highlight=publish#publish`);
   }
 
   function handleDeleteCourse() {
