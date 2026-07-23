@@ -133,7 +133,7 @@ The repository also contains shared packages under `packages/` (for example `pac
 
 5. Set up your `.env` files:
 
-   Each app reads its **own** `.env`. In `apps/api` and `apps/dashboard`, duplicate
+   Each app reads its **own** `.env`. In `apps/api`, `apps/jobs` and `apps/dashboard`, duplicate
    `.env.example` to `.env` and fill the values below (host ports). The secret values are
    placeholders — **generate each one** with `openssl rand -hex 32` rather than copying
    the example text. The two `PRIVATE_SERVER_KEY` values **must match** — they
@@ -150,6 +150,17 @@ The repository also contains shared packages under `packages/` (for example `pac
      BETTER_AUTH_SECRET="<generate-with-openssl-rand-hex-32>"
      PRIVATE_SERVER_KEY="<generate-with-openssl-rand-hex-32>"   # generate once; use the SAME value in the dashboard
      DASHBOARD_ORIGIN="http://localhost:5173"        # optional; used for invite/email links back to the dashboard
+     ```
+
+   - `apps/jobs/.env`:
+      The jobs service handles background tasks (emails, media processing, analytics rollups, etc.).
+
+      **Recommended setup** (simplest):
+
+      ```bash
+      cd apps/jobs
+      cp .env.example .env
+      ln -s ../../apps/api/.env .env     # symlink — reuses all API settings (recommended)
      ```
 
    - `apps/dashboard/.env`:
