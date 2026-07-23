@@ -7,8 +7,11 @@ import { configureOpenAPI } from '@api/utils/openapi';
 import { connectRedis } from '@cio/core/utils/redis/redis';
 import { env } from '@cio/core/config/env';
 import { preloadVerifiedCustomDomainOriginsRegistry } from '@api/utils/origins';
+import { registerProcessErrorGuards } from '@api/process-error-guards';
 import { serve } from '@hono/node-server';
 import { showRoutes } from 'hono/dev';
+
+registerProcessErrorGuards();
 
 // Start server
 async function startServer() {
