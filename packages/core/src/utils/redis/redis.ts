@@ -58,7 +58,26 @@ const TRANSIENT_REDIS_ERROR_CODES = new Set([
 ]);
 
 const TRANSIENT_REDIS_MESSAGE_PATTERN =
-  /ECONNABORTED|ECONNRESET|ECONNREFUSED|ETIMEDOUT|READONLY|LOADING|Connection is closed|Socket closed unexpectedly|Connection timeout|client is closed/i;
+  /ECONNABORTED|ECONNRESET|ECONNREFUSED|ETIMEDOUT|Connection is closed|Socket closed unexpectedly|Connection timeout|client is closed/i;
+
+const TRANSIENT_REDIS_LOG_INTERVAL_MS = 10_000;
+let lastTransientRedisLogAt = 0;
+
+function logTransientRedisEvent(message: string, error?: unknown): void {
+  const now = Date.now();
+  if (now - lastTransientRedisLogAt < TRANSIENT_REDIS_LOG_INTERVAL_MS) {
+    return;
+  }
+
+  lastTransientRedisLogAt = now;
+
+  if (error) {
+    console.warn(message, error);
+    return;
+  }
+
+  console.warn(message);
+}
 
 /**
  * True for the connection/socket errors Redis Cloud maintenance & failover
@@ -95,7 +114,7 @@ export function isTransientRedisError(error: unknown): boolean {
 client.on('error', (err) => {
   if (isTransientRedisError(err)) {
     // Expected during Redis Cloud maintenance — client reconnects automatically.
-    console.warn('Redis socket error (reconnecting):', err);
+    logTransientRedisEvent('Redis socket error (reconnecting):', err);
     return;
   }
 
@@ -103,7 +122,7 @@ client.on('error', (err) => {
 });
 
 client.on('reconnecting', () => {
-  console.warn('Redis client reconnecting');
+  logTransientRedisEvent('Redis client reconnecting');
 });
 
 client.on('connect', () => {

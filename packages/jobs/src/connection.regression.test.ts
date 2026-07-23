@@ -46,6 +46,15 @@ test('preparing the same connection twice does not stack listeners', () => {
   assert.equal(root.listenerCount('error'), 1);
 });
 
+test('preparing the same connection twice does not re-wrap duplicate()', () => {
+  const root = createFakeRedis();
+  const duplicateAfterFirst = root.duplicate;
+
+  prepareRedisConnection(root as unknown as Redis);
+
+  assert.equal(root.duplicate, duplicateAfterFirst);
+});
+
 test('emitting error on duplicates does not throw', () => {
   const root = createFakeRedis();
   const duplicated = root.duplicate();

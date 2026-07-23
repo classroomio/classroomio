@@ -47,6 +47,26 @@ const DEFAULT_OPTIONS: RedisOptions = {
 
 /** Marker so we don't stack duplicate error listeners when wrapping `duplicate()`. */
 const ERROR_HANDLER_ATTACHED = Symbol.for('cio.bullmq.redisErrorHandler');
+const DUPLICATE_WRAPPED = Symbol.for('cio.bullmq.duplicateWrapped');
+
+const BULLMQ_REDIS_LOG_INTERVAL_MS = 10_000;
+let lastBullMqRedisLogAt = 0;
+
+function logBullMqRedisEvent(message: string, error?: unknown): void {
+  const now = Date.now();
+  if (now - lastBullMqRedisLogAt < BULLMQ_REDIS_LOG_INTERVAL_MS) {
+    return;
+  }
+
+  lastBullMqRedisLogAt = now;
+
+  if (error) {
+    console.error(message, error);
+    return;
+  }
+
+  console.warn(message);
+}
 
 export interface RedisConnectionOptions extends RedisOptions {
   /** Override the URL; falls back to REDIS_URL env. */
@@ -84,11 +104,11 @@ function attachRedisLifecycleHandlers(connection: Redis): void {
   connection.on('error', (error) => {
     // Transient disconnects (ECONNABORTED / ECONNRESET / ETIMEDOUT) are expected
     // during Redis Cloud maintenance; ioredis reconnects automatically. Log only.
-    console.error('BullMQ Redis connection error:', error);
+    logBullMqRedisEvent('BullMQ Redis connection error:', error);
   });
 
   connection.on('reconnecting', (delay: number) => {
-    console.warn(`BullMQ Redis reconnecting in ${delay}ms`);
+    logBullMqRedisEvent(`BullMQ Redis reconnecting in ${delay}ms`);
   });
 
   connection.on('ready', () => {
@@ -104,6 +124,14 @@ function attachRedisLifecycleHandlers(connection: Redis): void {
  * during Redis Cloud maintenance).
  */
 function wrapDuplicate(connection: Redis): void {
+  const flagged = connection as Redis & { [DUPLICATE_WRAPPED]?: boolean };
+
+  if (flagged[DUPLICATE_WRAPPED]) {
+    return;
+  }
+
+  flagged[DUPLICATE_WRAPPED] = true;
+
   const originalDuplicate = connection.duplicate.bind(connection);
 
   connection.duplicate = ((options?: object) => {
