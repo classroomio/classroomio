@@ -54,7 +54,8 @@ function runPrettier(filePaths) {
     const chunk = filePaths.slice(index, index + chunkSize);
     const result = spawnSync('prettier', [prettierMode, '--ignore-unknown', ...chunk], {
       cwd: process.cwd(),
-      stdio: 'inherit'
+      stdio: 'inherit',
+      shell: true
     });
 
     if (result.status !== 0) {
