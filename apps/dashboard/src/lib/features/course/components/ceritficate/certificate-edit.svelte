@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { t } from '$lib/utils/functions/translations';
 
@@ -14,6 +15,20 @@
   let { errors }: Props = $props();
 
   let activeTab = $state('design');
+  let highlightActive = $state(false);
+
+  // Initialize activeTab and highlight from URL parameter if present
+  $effect(() => {
+    const tabParam = page.url.searchParams.get('tab');
+    if (tabParam && (tabParam === 'design' || tabParam === 'settings')) {
+      activeTab = tabParam;
+    }
+
+    const highlightParam = page.url.searchParams.get('highlight');
+    if (highlightParam === 'true') {
+      highlightActive = true;
+    }
+  });
 </script>
 
 <UpgradeBanner>{$t('upgrade.certificate')}</UpgradeBanner>
@@ -32,7 +47,7 @@
       <CertificateDesign {errors} />
     </UnderlineTabs.Content>
     <UnderlineTabs.Content value="settings" class="mt-4">
-      <CertificateSettings {errors} />
+      <CertificateSettings {errors} bind:highlightActive />
     </UnderlineTabs.Content>
   </UnderlineTabs.Root>
 </main>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  // import { onMount } from 'svelte';
   import { defaultAiTutorSettings } from '@cio/ai-assistant/tutor-config';
 
   import * as Page from '@cio/ui/base/page';
@@ -9,14 +9,34 @@
   import { aiTutorApi } from '../api/ai-tutor.svelte';
   import { applyOrgSettings, orgTutorSettingsStore } from '../store/tutor-settings-store';
   import TutorSettingsForm from '../components/tutor-settings-form.svelte';
+  import { currentOrg } from '$lib/utils/store/org';
 
   let initialized = $state(false);
 
-  onMount(async () => {
+  let fetchedOrgId = $state<string | null>(null);
+
+  async function intitializeSettings() {
     await aiTutorApi.fetchOrgSettings();
+
     applyOrgSettings(aiTutorApi.orgSettings ?? defaultAiTutorSettings);
+
     initialized = true;
+  }
+
+  $effect(() => {
+    const orgId = $currentOrg?.id;
+
+    if (!orgId || fetchedOrgId === orgId) return;
+    fetchedOrgId = orgId;
+
+    intitializeSettings();
   });
+
+  // onMount(async () => {
+  //   await aiTutorApi.fetchOrgSettings();
+  //   applyOrgSettings(aiTutorApi.orgSettings ?? defaultAiTutorSettings);
+  //   initialized = true;
+  // });
 
   async function handleSave() {
     await aiTutorApi.updateOrgSettings($orgTutorSettingsStore);

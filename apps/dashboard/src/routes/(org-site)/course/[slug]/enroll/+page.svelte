@@ -22,6 +22,7 @@
   let enrollmentSucceeded = $state(false);
   let verificationEmailSent = $state(false);
   let enrolledPendingVerification = $state(false);
+  let enrollmentError = $state<string | null>(null);
 
   const session = authClient.useSession();
   const sessionReady = $derived(!$session.isPending && !$session.isRefetching);
@@ -110,6 +111,7 @@
 
     enrollmentInFlight = true;
     loading = true;
+    enrollmentError = null;
 
     let navigatingAway = false;
 
@@ -118,6 +120,7 @@
       const result = await courseApi.enroll(data.course.id, body);
 
       if (!result?.data) {
+        enrollmentError = 'enroll_failed';
         snackbar.error('snackbar.invite.failed_join');
         return;
       }
@@ -147,6 +150,8 @@
 
       navigatingAway = true;
       await goto(resolve(getStudentCourseContinuePath(data.course.id), {}));
+    } catch (error) {
+      enrollmentError = String(error);
     } finally {
       enrollmentInFlight = false;
       if (!navigatingAway) {
@@ -186,7 +191,15 @@
   }
 
   $effect(() => {
-    if (!sessionReady || !isLoggedIn || !canJoinCourse || enrollmentInFlight || loading || enrollmentSucceeded) {
+    if (
+      !sessionReady ||
+      !isLoggedIn ||
+      !canJoinCourse ||
+      enrollmentInFlight ||
+      loading ||
+      enrollmentSucceeded ||
+      enrollmentError
+    ) {
       return;
     }
 

@@ -322,6 +322,15 @@ export class CourseApi extends BaseApiWithErrors {
               orgName: get(currentOrg)?.name ?? ''
             })
           );
+        } else if (
+          typeof result === 'object' &&
+          result !== null &&
+          'code' in result &&
+          result.code === 'VALIDATION_ERROR' &&
+          'field' in result &&
+          result.field === 'certificate.deadline'
+        ) {
+          snackbar.error('course.certification.deadline_required_enroll');
         } else if (typeof result === 'object' && result !== null && 'error' in result) {
           snackbar.error((result as { error: string }).error);
         }

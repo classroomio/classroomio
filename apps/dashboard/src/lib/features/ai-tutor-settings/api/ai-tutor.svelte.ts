@@ -28,6 +28,9 @@ class AiTutorApi extends BaseApiWithErrors {
         logContext: 'fetching org AI tutor settings',
         onSuccess: (response) => {
           this.orgSettings = response.data;
+        },
+        onError: () => {
+          snackbar.error('aiTutor.snackbar.fetchError');
         }
       });
     } finally {

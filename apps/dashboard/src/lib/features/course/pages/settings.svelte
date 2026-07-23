@@ -6,6 +6,7 @@
   import { Switch } from '@cio/ui/base/switch';
   import * as RadioGroup from '@cio/ui/base/radio-group';
   import * as Select from '@cio/ui/base/select';
+  import * as Dialog from '@cio/ui/base/dialog';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
   import XIcon from '@lucide/svelte/icons/x';
@@ -16,7 +17,7 @@
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
   import * as Field from '@cio/ui/base/field';
-  import { UpgradeBanner, UnsavedChanges, UploadWidget, TextEditor } from '$features/ui';
+  import { UpgradeBanner, UnsavedChanges, UploadWidget, TextEditor, AttentionHighlight } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
 
   import { settings } from '$features/course/utils/settings-store';
@@ -48,6 +49,9 @@
 
   let isLoading = $state(false);
   let isDeleting = $state(false);
+  let openCertificateDeadlineDialog = $state(false);
+  let highlightPublishToggle = $state(false);
+  // let highlightCertificateSettings = $state(false);
   let errors: {
     title: string | undefined;
     description: string | undefined;
@@ -156,6 +160,40 @@
     }
 
     isDeleting = false;
+  }
+
+  function onPublishToggle(checked: boolean) {
+    if (!checked) {
+      $settings.isPublished = false;
+      hasUnsavedChanges = true;
+      return;
+    }
+
+    // Check if course is COMPLIANCE type and missing certificate deadline
+    const isCourseCompliance = $settings.type === 'COMPLIANCE';
+    const hasCertificateDeadline = !!courseApi.course?.certificate?.deadline;
+
+    if (isCourseCompliance && !hasCertificateDeadline) {
+      // Show dialog and highlight both publish toggle and certificate settings
+      openCertificateDeadlineDialog = true;
+      highlightPublishToggle = true;
+      highlightCertificateSettings = true;
+      return;
+    }
+
+    // Otherwise, publish normally
+    $settings.isPublished = true;
+    $settings.allowNewStudents = true;
+    hasUnsavedChanges = true;
+  }
+
+  async function goToCertificateSettings() {
+    openCertificateDeadlineDialog = false;
+    const courseId = courseApi.course?.id;
+    if (!courseId) return;
+
+    // Navigate to certificates page with settings tab and highlight parameter
+    await goto(`/courses/${courseId}/certificates?tab=settings&highlight=true`);
   }
 
   export async function handleSave() {
@@ -339,6 +377,12 @@
 
   $effect(() => {
     const sectionId = $page.url.hash.replace('#', '').trim();
+    const highlightParam = $page.url.searchParams.get('highlight');
+
+    if (highlightParam === 'publish' || highlightParam === 'true' || sectionId === 'publish') {
+      highlightPublishToggle = true;
+    }
+
     if (!sectionId) {
       return;
     }
@@ -386,6 +430,25 @@
 <UnsavedChanges bind:hasUnsavedChanges />
 
 <DeleteModal onDelete={handleDeleteCourse} bind:open={openDeleteModal} />
+
+<Dialog.Root bind:open={openCertificateDeadlineDialog}>
+  <Dialog.Content class="max-w-md">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.navItem.settings.certificate_deadline_required')}</Dialog.Title>
+      <Dialog.Description>
+        {$t('course.navItem.settings.certificate_deadline_required_description')}
+      </Dialog.Description>
+    </Dialog.Header>
+    <Dialog.Footer>
+      <Button variant="outline" onclick={() => (openCertificateDeadlineDialog = false)}>
+        {$t('cancel')}
+      </Button>
+      <Button onclick={goToCertificateSettings}>
+        {$t('course.navItem.settings.go_to_certificate_settings')}
+      </Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>
 
 <Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
@@ -838,20 +901,14 @@
   <Field.Set id="publish">
     <Field.Legend>{$t('course.navItem.settings.publish')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.determines')}</Field.Description>
-    <Field.Field orientation="horizontal">
-      <Switch
-        id="is-published"
-        checked={$settings.isPublished}
-        onCheckedChange={(checked) => {
-          $settings.isPublished = checked;
-          if (checked) $settings.allowNewStudents = true;
-          hasUnsavedChanges = true;
-        }}
-      />
-      <Label for="publish">
-        {$settings.isPublished ? $t('course.navItem.settings.published') : $t('course.navItem.settings.unpublished')}
-      </Label>
-    </Field.Field>
+    <AttentionHighlight bind:active={highlightPublishToggle}>
+      <Field.Field orientation="horizontal">
+        <Switch id="is-published" checked={$settings.isPublished} onCheckedChange={onPublishToggle} />
+        <Label for="publish">
+          {$settings.isPublished ? $t('course.navItem.settings.published') : $t('course.navItem.settings.unpublished')}
+        </Label>
+      </Field.Field>
+    </AttentionHighlight>
 
     {#if showLockedContentNotice}
       <Alert.Root variant={isLiveClassCourse ? 'information' : 'warning'}>
