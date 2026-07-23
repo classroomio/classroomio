@@ -1517,6 +1517,7 @@
                 "multiple": "Несколько ответов",
                 "paragraph": "Параграф",
                 "true_false": "Верно/Неверно",
+                "thumbs": "Большой палец вверх/вниз",
                 "short_answer": "Короткий ответ",
                 "numeric": "Числовой ответ",
                 "fill_blank": "Заполните пробел",
@@ -1703,6 +1704,16 @@
                 },
                 "edit": {
                   "correct_answer_label": "Правильный ответ"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Да",
+                "no_label": "Нет",
+                "edit": {
+                  "correct_answer_label": "Правильный ответ"
+                },
+                "preview": {
+                  "correct_value_label": "Правильное значение"
                 }
               },
               "checkbox": {

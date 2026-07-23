@@ -24,7 +24,8 @@ export function getExerciseEditorQuestionTypeLabel(
 const OPTION_QUESTION_TYPE_KEYS = new Set<ExerciseQuestionTypeKey>([
   QUESTION_TYPE_KEY.RADIO,
   QUESTION_TYPE_KEY.CHECKBOX,
-  QUESTION_TYPE_KEY.TRUE_FALSE
+  QUESTION_TYPE_KEY.TRUE_FALSE,
+  QUESTION_TYPE_KEY.THUMBS
 ]);
 
 export function getQuestionTypeId(question: Partial<Question>): number {

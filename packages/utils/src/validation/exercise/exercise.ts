@@ -25,7 +25,8 @@ const EXERCISE_QUESTION_TYPE_ID_LITERALS = [
   z.literal(QUESTION_TYPE.LINK),
   z.literal(QUESTION_TYPE.WORD_BANK),
   z.literal(QUESTION_TYPE.STAR),
-  z.literal(QUESTION_TYPE.VIDEO_RECORDING)
+  z.literal(QUESTION_TYPE.VIDEO_RECORDING),
+  z.literal(QUESTION_TYPE.THUMBS)
 ] as const;
 
 export const ZExerciseQuestionTypeId = z.union(EXERCISE_QUESTION_TYPE_ID_LITERALS);
@@ -78,6 +79,22 @@ const QUESTION_VALIDATION_RULES: Record<number, Array<(question: QuestionRuleInp
       const options = question.options || [];
       if (options.length > 0 && options.length < 2) {
         return 'True/False questions need both True and False options';
+      }
+      return null;
+    },
+    (question) => {
+      const options = question.options || [];
+      if (options.length > 0 && !options.some((opt) => opt.isCorrect === true)) {
+        return 'Please mark an option as the correct answer';
+      }
+      return null;
+    }
+  ],
+  [QUESTION_TYPE.THUMBS]: [
+    (question) => {
+      const options = question.options || [];
+      if (options.length > 0 && options.length < 2) {
+        return 'Thumbs up/down questions need both Yes and No options';
       }
       return null;
     },

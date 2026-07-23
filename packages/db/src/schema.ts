@@ -1961,8 +1961,8 @@ export const questionAnswer = pgTable(
 /**
  * Exercise question kinds (`typename` matches `@cio/question-types` keys). Expected ids:
  * 1 RADIO, 2 CHECKBOX, 3 TEXTAREA, 4 TRUE_FALSE, 5 SHORT_ANSWER, 6 NUMERIC, 7 FILL_BLANK,
- * 8 FILE_UPLOAD, 9 MATCHING, 10 ORDERING, 11 HOTSPOT, 12 LINK, 13 WORD_BANK, 14 STAR,
- * 15 VIDEO_RECORDING.
+ * 8 FILE_UPLOAD, 9 ORDERING, 10 LINK, 11 WORD_BANK, 12 STAR, 13 VIDEO_RECORDING, 14 THUMBS.
+ * Disabled (no DB row): 15 MATCHING, 16 HOTSPOT.
  */
 export const questionType = pgTable(
   'question_type',

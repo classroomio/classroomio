@@ -1517,6 +1517,7 @@
                 "multiple": "एकाधिक उत्तर",
                 "paragraph": "अनुच्छेद",
                 "true_false": "सत्य/असत्य",
+                "thumbs": "अंगूठा ऊपर/नीचे",
                 "short_answer": "संक्षिप्त उत्तर",
                 "numeric": "संख्यात्मक उत्तर",
                 "fill_blank": "रिक्त स्थान भरें",
@@ -1703,6 +1704,16 @@
                 },
                 "edit": {
                   "correct_answer_label": "सही उत्तर"
+                }
+              },
+              "thumbs": {
+                "yes_label": "हाँ",
+                "no_label": "नहीं",
+                "edit": {
+                  "correct_answer_label": "सही उत्तर"
+                },
+                "preview": {
+                  "correct_value_label": "सही मूल्य"
                 }
               },
               "checkbox": {

@@ -5,6 +5,7 @@ export type QuestionAnswerPayload =
   | CheckboxAnswerPayload
   | TextareaAnswerPayload
   | TrueFalseAnswerPayload
+  | ThumbsAnswerPayload
   | ShortAnswerPayload
   | NumericAnswerPayload
   | FillBlankAnswerPayload
@@ -38,6 +39,11 @@ export interface TextareaAnswerPayload extends BaseAnswerPayload {
 
 export interface TrueFalseAnswerPayload extends BaseAnswerPayload {
   type: typeof QUESTION_TYPE_KEY.TRUE_FALSE;
+  value: boolean;
+}
+
+export interface ThumbsAnswerPayload extends BaseAnswerPayload {
+  type: typeof QUESTION_TYPE_KEY.THUMBS;
   value: boolean;
 }
 

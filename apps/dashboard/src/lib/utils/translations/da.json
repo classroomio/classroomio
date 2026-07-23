@@ -1517,6 +1517,7 @@
                 "multiple": "Flere svar",
                 "paragraph": "Afsnit",
                 "true_false": "Sandt/falsk",
+                "thumbs": "Tommel op/ned",
                 "short_answer": "Kort svar",
                 "numeric": "Numerisk svar",
                 "fill_blank": "Udfyld det tomme felt",
@@ -1703,6 +1704,16 @@
                 },
                 "edit": {
                   "correct_answer_label": "Korrekt svar"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Ja",
+                "no_label": "Nej",
+                "edit": {
+                  "correct_answer_label": "Korrekt svar"
+                },
+                "preview": {
+                  "correct_value_label": "Korrekt værdi"
                 }
               },
               "checkbox": {

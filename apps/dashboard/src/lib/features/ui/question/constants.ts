@@ -7,6 +7,7 @@ const QUESTION_TYPE_LABEL_KEYS: Partial<Record<QuestionTypeKey, string>> = {
   [QUESTION_TYPE_KEY.CHECKBOX]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.multiple',
   [QUESTION_TYPE_KEY.TEXTAREA]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.paragraph',
   [QUESTION_TYPE_KEY.TRUE_FALSE]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.true_false',
+  [QUESTION_TYPE_KEY.THUMBS]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.thumbs',
   [QUESTION_TYPE_KEY.SHORT_ANSWER]:
     'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.short_answer',
   [QUESTION_TYPE_KEY.NUMERIC]: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.numeric',

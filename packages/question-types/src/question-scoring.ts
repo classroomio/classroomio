@@ -118,6 +118,16 @@ function scoreTrueFalse(
   return answer.value === correctIsTrue ? maxPoints : 0;
 }
 
+function scoreThumbs(
+  question: ExerciseQuestionModel,
+  answer: Extract<AnswerData, { type: 'THUMBS' }>,
+  maxPoints: number
+): number {
+  const correctIsYes = resolveTrueFalseCorrectValue(question.settings, question.options);
+
+  return answer.value === correctIsYes ? maxPoints : 0;
+}
+
 function scoreStar(
   question: ExerciseQuestionModel,
   answer: Extract<AnswerData, { type: 'STAR' }>,
@@ -323,6 +333,9 @@ export function scoreAnswerForQuestion(question: ExerciseQuestionModel, answer: 
     case 'TRUE_FALSE':
       if (key !== QUESTION_TYPE_KEY.TRUE_FALSE) return 0;
       return scoreTrueFalse(question, answer, maxPoints);
+    case 'THUMBS':
+      if (key !== QUESTION_TYPE_KEY.THUMBS) return 0;
+      return scoreThumbs(question, answer, maxPoints);
     case 'NUMERIC':
       if (key !== QUESTION_TYPE_KEY.NUMERIC) return 0;
       return scoreNumeric(question, answer, maxPoints);

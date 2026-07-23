@@ -82,6 +82,12 @@ export async function seedQuestionTypes() {
       typename: 'VIDEO_RECORDING',
       createdAt: '2026-04-30 00:00:00+00',
       updatedAt: '2026-04-30 00:00:00+00'
+    },
+    {
+      label: 'Thumbs up/down',
+      typename: 'THUMBS',
+      createdAt: '2026-07-23 00:00:00+00',
+      updatedAt: '2026-07-23 00:00:00+00'
     }
   ].filter((q) => !questionTypeNames.includes(q.typename));
 

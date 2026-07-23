@@ -50,6 +50,8 @@
         };
       case 'TRUE_FALSE':
         return { type: 'TRUE_FALSE', value: index % 3 !== 0 };
+      case 'THUMBS':
+        return { type: 'THUMBS', value: index % 3 !== 0 };
       case 'TEXTAREA':
         return {
           type: 'TEXTAREA',

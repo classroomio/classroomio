@@ -1517,6 +1517,7 @@
                 "multiple": "Wiele odpowiedzi",
                 "paragraph": "Akapit",
                 "true_false": "Prawda/Fałsz",
+                "thumbs": "Kciuk w górę/w dół",
                 "short_answer": "Krótka odpowiedź",
                 "numeric": "Odpowiedź numeryczna",
                 "fill_blank": "Wypełnij puste miejsce",
@@ -1703,6 +1704,16 @@
                 },
                 "edit": {
                   "correct_answer_label": "Prawidłowa odpowiedź"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Tak",
+                "no_label": "Nie",
+                "edit": {
+                  "correct_answer_label": "Prawidłowa odpowiedź"
+                },
+                "preview": {
+                  "correct_value_label": "Prawidłowa wartość"
                 }
               },
               "checkbox": {

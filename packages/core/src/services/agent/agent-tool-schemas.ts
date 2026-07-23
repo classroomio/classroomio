@@ -87,7 +87,7 @@ export const questionSchema = z.object({
     .record(z.string(), z.unknown())
     .optional()
     .describe(
-      'Per-type correct-answer storage. TRUE_FALSE: { correctValue: boolean }. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.'
+      'Per-type correct-answer storage. TRUE_FALSE/THUMBS: { correctValue: boolean }. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.'
     ),
   options: z.array(z.object({ label: z.string().min(1), isCorrect: z.boolean() }))
 });
@@ -212,7 +212,7 @@ export const updateQuestionSettingsSchema = z
     message: 'Provide at least one settings field'
   })
   .describe(
-    'Per-type correct-answer storage. TRUE_FALSE: { correctValue: boolean }. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.'
+    'Per-type correct-answer storage. TRUE_FALSE/THUMBS: { correctValue: boolean }. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.'
   );
 
 export const updateOptionSchema = z.object({

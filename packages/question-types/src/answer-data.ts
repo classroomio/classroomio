@@ -1,6 +1,7 @@
 export type RadioAnswerData = { type: 'RADIO'; optionId: number };
 export type CheckboxAnswerData = { type: 'CHECKBOX'; optionIds: number[] };
 export type TrueFalseAnswerData = { type: 'TRUE_FALSE'; value: boolean };
+export type ThumbsAnswerData = { type: 'THUMBS'; value: boolean };
 export type TextareaAnswerData = { type: 'TEXTAREA'; text: string };
 export type ShortAnswerData = { type: 'SHORT_ANSWER'; text: string };
 export type NumericAnswerData = { type: 'NUMERIC'; value: number };
@@ -37,6 +38,7 @@ export type AnswerData =
   | RadioAnswerData
   | CheckboxAnswerData
   | TrueFalseAnswerData
+  | ThumbsAnswerData
   | TextareaAnswerData
   | ShortAnswerData
   | NumericAnswerData
