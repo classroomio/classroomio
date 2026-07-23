@@ -7,6 +7,7 @@ const saasDefaults = {
     'https://assets.cdn.clsrio.com',
     'https://embed.classroomio.com',
     'https://cdnjs.cloudflare.com',
+    'https://cdn.userjot.com',
     'https://*.posthog.com',
     'https://*.senja.io',
     'https://umami.hz.oncws.com',

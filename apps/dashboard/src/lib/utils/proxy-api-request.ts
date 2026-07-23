@@ -10,6 +10,9 @@
 const PROXY_PREFIX = '/proxy';
 const AUTH_PREFIX = '/api/auth';
 
+/** Hop-by-hop / encoding headers that must not be forwarded after Node fetch decompresses. */
+const RESPONSE_HEADERS_TO_STRIP = ['content-encoding', 'content-length', 'transfer-encoding'] as const;
+
 export function shouldForwardToApi(pathname: string): boolean {
   return (
     pathname === PROXY_PREFIX ||
@@ -57,6 +60,28 @@ function resolveBrowserForwardedHost(request: Request, url: URL): string {
   return raw;
 }
 
+/**
+ * Node's `fetch` always decompresses gzip/br bodies while often leaving
+ * `Content-Encoding` on the Response. Returning that Response to the browser
+ * (adapter-node) causes `net::ERR_CONTENT_DECODING_FAILED` on auth/proxy calls.
+ *
+ * Ask the upstream for an identity body and strip encoding length headers so
+ * the client receives a plain payload that matches the headers.
+ */
+export function buildProxiedApiResponse(upstream: Response): Response {
+  const headers = new Headers(upstream.headers);
+
+  for (const headerName of RESPONSE_HEADERS_TO_STRIP) {
+    headers.delete(headerName);
+  }
+
+  return new Response(upstream.body, {
+    status: upstream.status,
+    statusText: upstream.statusText,
+    headers
+  });
+}
+
 export async function proxyRequestToApi(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const apiBase = resolveApiUpstreamBase();
@@ -74,6 +99,9 @@ export async function proxyRequestToApi(request: Request): Promise<Response> {
   upstreamHeaders.set('host', upstreamUrl.host);
   upstreamHeaders.set('x-forwarded-host', originalHost);
   upstreamHeaders.set('x-forwarded-proto', url.protocol.replace(':', ''));
+  // Prevent compressed upstream responses: Node decompresses automatically but
+  // can leave Content-Encoding set, which breaks the browser.
+  upstreamHeaders.set('accept-encoding', 'identity');
 
   const forwardedFor = request.headers.get('cf-connecting-ip') ?? request.headers.get('x-forwarded-for');
   if (forwardedFor) {
@@ -90,5 +118,7 @@ export async function proxyRequestToApi(request: Request): Promise<Response> {
     init.body = await request.arrayBuffer();
   }
 
-  return fetch(upstreamUrl, init);
+  const upstreamResponse = await fetch(upstreamUrl, init);
+
+  return buildProxiedApiResponse(upstreamResponse);
 }

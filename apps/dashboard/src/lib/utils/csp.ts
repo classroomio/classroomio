@@ -4,7 +4,20 @@ function parseCspDomains(value: string | undefined): string[] {
     .split(',')
     .map((d) => d.trim())
     .filter(Boolean)
-    .map((d) => (d.startsWith('http://') || d.startsWith('https://') ? d : `https://${d}`));
+    .map((d) => {
+      if (
+        d === 'data:' ||
+        d === 'blob:' ||
+        d === "'self'" ||
+        d === 'self' ||
+        d.startsWith('http://') ||
+        d.startsWith('https://')
+      ) {
+        return d === 'self' ? "'self'" : d;
+      }
+
+      return `https://${d}`;
+    });
 }
 
 function buildCspExtensions(): Record<string, string[]> {
