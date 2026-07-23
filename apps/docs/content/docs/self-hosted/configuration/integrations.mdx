@@ -1,0 +1,48 @@
+---
+title: Integrations
+description: Optional integrations for self-hosted ClassroomIO — Google OAuth, Unsplash, OpenAI, and branding.
+---
+
+These integrations are all **optional** — ClassroomIO runs without any of them. Add a variable only if
+you use that feature; leaving it blank never causes a build or boot error.
+
+## Google OAuth
+
+Let users sign in with Google.
+
+| Variable | Description |
+|----------|-------------|
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
+
+## OpenAI (transcription & AI course generation)
+
+Powers video transcription and AI course generation. These jobs run on the **jobs** worker, so set the
+key wherever the worker reads its environment.
+
+| Variable | Description |
+|----------|-------------|
+| `OPENAI_API_KEY` | OpenAI API key — transcription + AI course generation |
+
+## Unsplash
+
+Enables the in-app Unsplash image search.
+
+| Variable | Description |
+|----------|-------------|
+| `UNSPLASH_API_KEY` | Unsplash API access key |
+
+## Branding & routing
+
+| Variable | Description |
+|----------|-------------|
+| `PUBLIC_APP_TITLE` | Custom app title |
+| `PUBLIC_APP_DESCRIPTION` | Custom app description / meta tag |
+| `PUBLIC_OG_IMAGE_URL` | Custom Open Graph image URL |
+| `PRIVATE_APP_HOST` | Dashboard host for multi-subdomain routing |
+| `PRIVATE_APP_SUBDOMAINS` | Subdomains served by the dashboard |
+
+:::note[Enterprise features]
+`LICENSE_KEY` unlocks Enterprise-only integrations such as SSO — see
+[SSO & licensing](/self-hosted/configuration/sso).
+:::
