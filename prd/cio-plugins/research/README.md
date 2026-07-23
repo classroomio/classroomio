@@ -1,10 +1,12 @@
-# Plugin System Research
+# Plugin system research
 
-This folder collects research and design exploration on **how to bring a plugin/extension
-system to ClassroomIO**. It is intentionally _research_, not a PRD: there are no acceptance
-criteria, phases, checklists, or open-question sections. It is the written record of an
-exploration into how other learning platforms and popular open-source projects implement
-extensibility, plus a proposed framework pattern tailored to ClassroomIO's stack.
+Research and design exploration for **[CIO Plugins](../README.md)** — work done **before**
+committing to an implementation approach for a ClassroomIO plugin/extension system.
+
+This folder is intentionally _research_, not a PRD: there are no acceptance criteria, phases,
+checklists, or open-question sections. It is the written record of how other learning platforms
+and popular open-source projects implement extensibility, plus a proposed framework pattern
+tailored to ClassroomIO's stack.
 
 ## Contents
 
