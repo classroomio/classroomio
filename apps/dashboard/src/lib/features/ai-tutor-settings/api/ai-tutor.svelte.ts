@@ -23,16 +23,20 @@ class AiTutorApi extends BaseApiWithErrors {
     this.loading = true;
 
     try {
+      let settings: OrgAiTutorSettings | null = null;
+
       await this.execute<GetOrgAiTutorRequest>({
         requestFn: () => classroomio.organization['ai-tutor'].$get(),
         logContext: 'fetching org AI tutor settings',
         onSuccess: (response) => {
+          settings = response.data;
           this.orgSettings = response.data;
         },
         onError: () => {
           snackbar.error('aiTutor.snackbar.fetchError');
         }
       });
+      return settings;
     } finally {
       this.loading = false;
     }
