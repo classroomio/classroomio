@@ -159,8 +159,7 @@ The repository also contains shared packages under `packages/` (for example `pac
 
       ```bash
       cd apps/jobs
-      cp .env.example .env
-      ln -s ../../apps/api/.env .env     # symlink — reuses all API settings (recommended)
+      ln -s ../../apps/api/.env .env  
      ```
 
    - `apps/dashboard/.env`:
