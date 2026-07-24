@@ -133,6 +133,9 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'thumbs.preview.correct_value_label': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.thumbs.preview.correct_value_label'
     ),
+    'thumbs.review.correct_answer_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.thumbs.review.correct_answer_label'
+    ),
     'short_answer.edit.instructions_placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.short_answer.edit.instructions_placeholder'
     ),

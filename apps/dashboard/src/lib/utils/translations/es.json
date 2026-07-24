@@ -1714,6 +1714,9 @@
                 },
                 "preview": {
                   "correct_value_label": "Valor correcto"
+                },
+                "review": {
+                  "correct_answer_label": "Respuesta correcta: {value}"
                 }
               },
               "checkbox": {

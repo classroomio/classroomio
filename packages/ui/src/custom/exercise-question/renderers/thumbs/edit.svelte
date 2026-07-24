@@ -54,12 +54,12 @@
       onValueChange={handleCorrectValueChange}
       class="ui:w-fit"
     >
-      <ToggleGroup.Item value="true" class="ui:gap-2">
-        <ThumbsUpIcon aria-hidden="true" class="ui:size-4" />
+      <ToggleGroup.Item value="true" class="ui:min-w-28 ui:gap-2 ui:px-6">
+        <ThumbsUpIcon aria-hidden="true" class="custom ui:size-4" />
         {label('thumbs.yes_label')}
       </ToggleGroup.Item>
-      <ToggleGroup.Item value="false" class="ui:gap-2">
-        <ThumbsDownIcon aria-hidden="true" class="ui:size-4" />
+      <ToggleGroup.Item value="false" class="ui:min-w-28 ui:gap-2 ui:px-6">
+        <ThumbsDownIcon aria-hidden="true" class="custom ui:size-4" />
         {label('thumbs.no_label')}
       </ToggleGroup.Item>
     </ToggleGroup.Root>

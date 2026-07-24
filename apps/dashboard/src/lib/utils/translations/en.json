@@ -2781,6 +2781,9 @@
                 },
                 "preview": {
                   "correct_value_label": "Correct value"
+                },
+                "review": {
+                  "correct_answer_label": "Correct answer: {value}"
                 }
               },
               "short_answer": {

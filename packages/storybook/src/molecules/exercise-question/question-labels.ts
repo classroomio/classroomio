@@ -53,6 +53,7 @@ export const QUESTION_LABELS = {
   'thumbs.no_label': 'No',
   'thumbs.edit.correct_answer_label': 'Correct answer',
   'thumbs.preview.correct_value_label': 'Correct value',
+  'thumbs.review.correct_answer_label': 'Correct answer: {value}',
   'short_answer.edit.instructions_placeholder': 'Optional instructions',
   'short_answer.take.placeholder': 'Type your answer',
   'short_answer.preview.helper': 'Free-text answer question.',

@@ -1714,6 +1714,9 @@
                 },
                 "preview": {
                   "correct_value_label": "Giá trị đúng"
+                },
+                "review": {
+                  "correct_answer_label": "Câu trả lời đúng: {value}"
                 }
               },
               "checkbox": {
