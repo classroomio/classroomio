@@ -1,13 +1,13 @@
 <script module lang="ts">
-  let pending: Promise<typeof import('@cio/ui/base/chart')> | null = null;
   function loadChart() {
-    pending ??= import('@cio/ui/base/chart');
-    return pending;
+    if (typeof window === 'undefined') return Promise.reject(new Error('browser-only'));
+    return import('@cio/ui/base/chart');
   }
 </script>
 
 <script lang="ts">
-  import type * as Chart from '@cio/ui/base/chart';
+  import { browser } from '$app/environment';
+  import type { ChartConfig } from '@cio/ui/base/chart/types';
   import { Spinner } from '@cio/ui/base/spinner';
   import { Empty } from '@cio/ui/custom/empty';
   import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
@@ -31,7 +31,7 @@
       label: $t('analytics.trend.enrollments'),
       color: 'var(--chart-2, var(--primary))'
     }
-  } satisfies Chart.ChartConfig);
+  } satisfies ChartConfig);
 
   const series = [
     { key: 'views', value: 'views', label: 'Views', color: 'var(--color-views)' },
@@ -49,12 +49,16 @@
       <div class="flex h-[280px] items-center justify-center">
         <Spinner class="ui:text-muted-foreground size-6" />
       </div>
-    {:else if hasData && data}
+    {:else if browser && hasData && data}
       {#await loadChart() then C}
         <C.ChartContainer class="h-[280px] w-full" config={chartConfig}>
           <C.AreaChart data={data.sparkline} x="date" axis="x" {series} />
         </C.ChartContainer>
       {/await}
+    {:else if hasData && data}
+      <div class="flex h-[280px] items-center justify-center">
+        <Spinner class="ui:text-muted-foreground size-6" />
+      </div>
     {:else}
       <Empty icon={TrendingUpIcon} title={$t('analytics.trend.empty')} class="h-[280px]" />
     {/if}
