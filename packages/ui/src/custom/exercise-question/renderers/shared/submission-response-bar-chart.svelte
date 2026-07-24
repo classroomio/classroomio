@@ -8,6 +8,8 @@
 <script lang="ts">
   import { Spinner } from '../../../../base/spinner';
   import type { ChartConfig } from '../../../../base/chart/types';
+  import Empty from '$src/custom/empty/empty.svelte';
+  import { BarChart3 } from '@lucide/svelte';
 
   const isBrowser = typeof window !== 'undefined';
 
@@ -54,6 +56,13 @@
           {series}
         />
       </C.ChartContainer>
+    {:catch error}
+      <Empty
+        title="Unable to load chart"
+        description="Something went wrong while loading the chart. Please refresh the page."
+        icon={BarChart3}
+        variant="page"
+      />
     {/await}
   {:else}
     <div class="ui:flex ui:items-center ui:justify-center" style="height: {chartHeightPx}px">

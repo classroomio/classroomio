@@ -8,10 +8,9 @@
 <script lang="ts">
   import { Spinner } from '../../../../base/spinner';
   import type { ChartConfig } from '../../../../base/chart/types';
+  import { CHART_COLORS } from '../submission-utils';
 
   const isBrowser = typeof window !== 'undefined';
-
-  import { CHART_COLORS } from '../submission-utils';
 
   interface Row {
     key: string;
