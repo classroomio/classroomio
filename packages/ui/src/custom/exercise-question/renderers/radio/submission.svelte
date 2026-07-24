@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { ExerciseQuestionRendererProps } from '@cio/question-types';
-  import type { ChartConfig } from '../../../../base/chart';
+  import type { ChartConfig } from '../../../../base/chart/types';
 
   import SubmissionResponsePieChart from '../shared/submission-response-pie-chart.svelte';
   import { getAnswerForQuestion, getSubmissionLabel, normalizeLabel, withChartColors } from '../submission-utils';

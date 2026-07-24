@@ -1,12 +1,18 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "cio-docs",
-  "main": "./workers/app.ts",
   "compatibility_date": "2026-03-13",
-  "compatibility_flags": ["nodejs_compat"],
+  // Static assets only — no Worker script. The site is prerendered by Blume and
+  // packaged into ./build by scripts/package-assets.mjs, which nests it under
+  // docs/ so the paths the website proxies through (/docs/*) resolve directly.
   "assets": {
-    "binding": "ASSETS",
-    "directory": "./build/client"
+    "directory": "./build",
+    "not_found_handling": "404-page",
+    // Blume's canonical URLs and internal links carry no trailing slash
+    // (/docs/home, not /docs/home/), which also matches the URLs the old
+    // Fumadocs site served. Without this, Cloudflare's default
+    // auto-trailing-slash would 307 every one of them.
+    "html_handling": "drop-trailing-slash"
   },
   "observability": {
     "logs": {

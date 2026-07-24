@@ -38,7 +38,8 @@ const config = {
         'script-src': ['self', ...csp.scriptSrc, 'unsafe-hashes', 'unsafe-eval'],
         'style-src': ['self', 'unsafe-inline', ...csp.styleSrc],
         'style-src-elem': ['self', 'unsafe-inline', ...csp.styleSrc],
-        'font-src': ['self', ...csp.fontSrc],
+        // data: covers inlined woff2 (e.g. PDF.js / icon fonts); file fonts use 'self'
+        'font-src': ['self', 'data:', ...csp.fontSrc],
         'img-src': ['self', 'data:', ...csp.mediaSrc, 'blob:', 'http://localhost:9000'],
         'media-src': [
           'self',
@@ -70,7 +71,7 @@ const config = {
         'script-src': ['self', ...csp.scriptSrc, 'unsafe-hashes', 'unsafe-eval'],
         'style-src': ['self', 'unsafe-inline', ...csp.styleSrc],
         'style-src-elem': ['self', 'unsafe-inline', ...csp.styleSrc],
-        'font-src': ['self', ...csp.fontSrc],
+        'font-src': ['self', 'data:', ...csp.fontSrc],
         'img-src': ['self', 'data:', ...csp.mediaSrc, 'blob:', 'http://localhost:9000'],
         'media-src': [
           'self',

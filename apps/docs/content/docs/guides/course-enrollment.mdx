@@ -1,0 +1,187 @@
+---
+title: How Course Enrollment Works
+description: Understand the ways students can join a course in ClassroomIO—public enrollment, invites, admin assignment, and paid access—and how to restrict who can enroll.
+---
+
+Enrollment is how a student becomes a member of a course group and gets access to lessons, exercises, and the LMS. ClassroomIO supports several enrollment paths. Which ones are available depends on your course price, publish status, and settings.
+
+## Enrollment paths at a glance
+
+| Path | Who initiates it | Typical use |
+| --- | --- | --- |
+| **Public self-enrollment** | Student | Open free courses on your landing page |
+| **Email invite** | You (admin) | Enter email addresses; ClassroomIO sends each recipient a unique enrollment link |
+| **Direct add** | You (admin) | Pick existing students from a list; they are enrolled instantly with no action needed from them |
+| **Paid enrollment** | Student (after payment) or invite | Courses with a price set |
+
+All paths end at the same place: the student is added to the course **group** and can open the course in the LMS.
+
+## What students need before they can enroll
+
+For **public** self-service paths (landing page, Explore), the course must be:
+
+- **Published** — unpublished courses are not listed in Explore and do not accept open enrollment from the public site
+- **Active** — deleted courses are blocked in all paths
+
+**Email invites are an exception:** a valid invite token lets a student join a course even if it is unpublished. This lets you pre-enroll students before a course goes live. The course must still not be deleted.
+
+## Public self-enrollment (free courses)
+
+On a **free** course (`cost` is 0) with **Allow New Students** enabled, anyone who finds your course landing page can enroll:
+
+1. They open the course landing page on your academy
+2. They click **Enroll**
+3. They sign in or sign up
+4. They land on `/course/[slug]/enroll` and click **Join course**
+5. They are enrolled and redirected to the LMS
+
+No invite token is required. This is the default for free, published courses.
+
+:::info[Allow New Students]
+In the course dashboard, go to **Settings** and find **Allow New Students**. When enabled, anyone can self-enroll from the course landing page. When disabled, the public **Enroll** button is hidden and open self-enrollment is blocked — but **course invite links** and **People → Add people** still work.
+:::
+
+## Email invites
+
+From **People → Add people**, you enter one or more email addresses and ClassroomIO sends each recipient a unique enrollment link. Each invite can have:
+
+- An **expiry** (e.g. 24 hours, 7 days)
+- A **max use** count (one-time or reusable)
+- **Allowed emails** or domains (optional restriction)
+
+When a student opens the link, they sign in (or sign up) and click **Join course**. ClassroomIO validates the token, expiry, and usage limit before enrolling them.
+
+For step-by-step instructions, see [How to Invite Students](/guides/invite-students).
+
+:::info[Email invites work on closed or unpublished courses]
+**Allow New Students** can be off and email invites still work. The toggle only blocks unsolicited self-enrollment from the landing page; it does not block people you explicitly invited. Invites also work on **unpublished** courses, so you can pre-enroll students before a course goes live.
+:::
+
+## Direct add (People)
+
+If a student already has an account, you can add them to the course directly — no email, no link, no action needed from them. They appear in the course immediately.
+
+From the course dashboard, open **People → Add people**, select the students you want, and confirm. They are enrolled right away.
+
+This does **not** require **Allow New Students** to be on. Use it for closed courses where you control exactly who gets access.
+
+:::note[Already enrolled students]
+Revoking an invite or turning off public enrollment does not remove students who have already joined. It only blocks future enrollments through that path.
+:::
+
+## Paid courses
+
+When a course has a **price** set, open self-enrollment from the landing page is blocked unless the student pays or uses a valid invite (depending on your setup). Visitors who open the enrollment page without payment or a token see a message that they need to pay or be invited.
+
+Paid courses are useful when you want to prevent casual sign-ups on a free landing page while still selling access or issuing invites to specific buyers.
+
+## Free vs paid vs closed — quick reference
+
+| Goal | Suggested setup |
+| --- | --- |
+| Anyone can join | Free course, published, **Allow New Students** on |
+| Only people you email invites to | **Allow New Students** off (optional), send [email invites](/guides/invite-students) |
+| Only people you add manually | **Allow New Students** off, use **People → Add people** to directly enroll existing students |
+| Paywall + optional invites | Set a price, send invites to buyers who should skip or supplement checkout |
+| Visible in catalog, enrollment closed | Published course, **Allow New Students** off, use invites or **People** to add members |
+| All students in your org can join any published course | Enable **Internal Enrollment Only** in **Settings → Authentication → General**; students bypass per-course **Allow New Students** |
+
+## Enrollment vs visibility
+
+Restricting who can **join** a course is not the same as hiding it from every student view.
+
+| Control | What it affects |
+| --- | --- |
+| **Published** | Whether the course is live on your academy and eligible for Explore |
+| **Allow New Students** | Whether the public **Enroll** button works on the landing page |
+| **Email invites** | Who can join via a link sent to their email (works even on unpublished or closed courses) |
+| **People → Add people** | Who you add directly, with or without an invite link |
+| **Price** | Whether open self-enrollment requires payment |
+| **Internal Enrollment Only** (org-wide) | When on, any student in your organization can self-enroll in any published course, bypassing per-course **Allow New Students** |
+
+:::warning[Explore shows published courses]
+**Explore** in the student LMS lists published courses the student has not enrolled in yet. Turning off **Allow New Students** blocks open enrollment from the landing page. It does **not** remove the course from Explore. ClassroomIO does not support hiding a published course from specific people in Explore today.
+:::
+
+**Workarounds:**
+
+- Keep the course **unpublished** until you are ready for students to discover it.
+- Use **Allow New Students** off plus invites or **People** so only the people you choose can actually join.
+- Accept that enrolled students may see the course in Explore even when they cannot self-enroll.
+
+For where students see enrolled vs available courses, see [Student Dashboard](/student-dashboard).
+
+## People and membership
+
+When a student enrolls or you add them from **People**, they become a member of the course **group** right away. They do not need to open a lesson first.
+
+| State | What it means |
+| --- | --- |
+| **Active member** | Linked to a profile; appears in **People** with full details |
+| **Pending** | Added by email before they sign in or finish onboarding |
+
+The **People** tab in the course dashboard is the source of truth for course membership.
+
+:::info[People vs Compliance status]
+**Compliance** courses also track completion status (for example **not started**). That is separate from membership. A student can appear in **People** as soon as they are enrolled while still showing **not started** on the Compliance dashboard until they begin the course.
+:::
+
+## Organization-level access settings (separate from course enrollment)
+
+Course enrollment is different from **organization signup**. In **Settings → Authentication → General**, you have two org-level controls that work together:
+
+**Disable Signup / Allow Public Signups** — controls who can create an account on your academy. When signup is disabled (invite-only), only people you invite can register. This controls who can sign up, not which courses they can join.
+
+**Internal Enrollment Only** — when enabled, any student in your organization can self-enroll in any published course without needing the course to have **Allow New Students** turned on. This is useful for internal academies: disable public signup, add employees via course invite links (which creates their account as a student in your organization), and they can then discover and join any other published course themselves without per-course admin work.
+
+A student might be in your org but not enrolled in any course until you assign them, they self-enroll on a course with **Allow New Students** on, or **Internal Enrollment Only** is enabled org-wide.
+
+## What students see after enrolling
+
+Once enrolled, the course appears in the student LMS (home/dashboard). They can open lessons, submit exercises, and download materials according to course settings (for example, lesson download or certificate rules).
+
+If a student follows an invite or enrollment link while logged out, ClassroomIO sends them through sign-in or sign-up first, then returns them to the enrollment page so they can finish joining.
+
+## Common scenarios
+
+<Steps>
+<Step>
+### Open cohort — anyone can join
+
+Create a free course, publish it, and leave **Allow New Students** enabled. Share the landing page link.
+</Step>
+
+<Step>
+### Private cohort — only invited emails
+
+Turn **Allow New Students** off to hide public enrollment. From **People**, send email invites with expiry and optional one-time use. Only people with a valid invite link can join.
+</Step>
+
+<Step>
+### Staff-only or hand-picked list
+
+Turn **Allow New Students** off. Use **People → Add people** to directly enroll existing students, or send email invites to people who do not have an account yet. No one can self-enroll.
+</Step>
+
+<Step>
+### Paid course
+
+Set the course price on the landing page. Students pay to enroll, or you send invites to people who should receive complimentary access.
+</Step>
+
+<Step>
+### Closed org academy — any student can join any course
+
+Enable **Disable Signup** and **Internal Enrollment Only** in **Settings → Authentication → General**. Add employees by sending them course invite links from **People → Add people** — accepting a course invite creates their account as a student in your organization. Once they are students in your org, they can discover and self-enroll in any other published course from Explore without per-course setup. **Allow New Students** on individual courses is bypassed for students when this setting is on.
+</Step>
+</Steps>
+
+## Related guides
+
+- [How to Invite Students](/guides/invite-students) — create, send, and revoke course invite links
+- [Customize the Welcome Email](/guides/welcome-email): the message students get when they enroll
+- [Roles and Permissions](/guides/roles-and-permissions) — who can create courses and access the admin dashboard
+- [Student Dashboard](/student-dashboard) — Home, My Learning, Explore, and Cohorts
+- [Set Up a Custom Domain](/guides/custom-domain) — org URLs used in enrollment links
+- [Create a Course Landing Page](/guides/course-landingpage) — pricing, publish state, and what prospects see before enrolling
+- [Creating Your First Course](/guides/create-first-course) — create and publish a course

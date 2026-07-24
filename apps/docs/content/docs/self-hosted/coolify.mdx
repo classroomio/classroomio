@@ -3,9 +3,6 @@ title: Coolify
 description: Deploy ClassroomIO on Coolify using the pull-based Docker Compose stack, with a video walkthrough.
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
-import { Step, Steps } from 'fumadocs-ui/components/steps';
-
 [Coolify](https://coolify.io) is a self-hosted PaaS (an open-source Heroku/Netlify alternative) you run on your own VPS. It runs ClassroomIO from the published `classroomio/*` images — your Coolify host **pulls** them and never builds anything.
 
 ## Watch the walkthrough
@@ -13,9 +10,7 @@ import { Step, Steps } from 'fumadocs-ui/components/steps';
 Prefer to follow along? This video walks through the whole Coolify deployment end to end. The written steps below mirror it, and the [Environment variable reference](#environment-variable-reference) has every value to copy.
 
 {/* TODO: replace REPLACE_WITH_VIDEO_ID with the Coolify walkthrough video id once recorded */}
-<div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px', marginBottom: '16px' }}>
-  <iframe width="560" height="315" src="https://www.youtube.com/embed/5pwzUn8JBws?si=HcetU4pDYmRbwn4M" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</div>
+<YouTube id="5pwzUn8JBws" />
 
 ## Prerequisites
 
@@ -24,15 +19,17 @@ Prefer to follow along? This video walks through the whole Coolify deployment en
 - An **SMTP provider** (or Zoho/ZeptoMail) for signup verification, password reset, and invite emails. See [Nodemailer SMTP docs](https://nodemailer.com/smtp/).
 - *Optional:* an **OpenAI API key** (transcription + AI course generation) and Google OAuth / Unsplash keys.
 
-<Callout title="Two secrets to generate first">
-  You'll reuse `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` across services. Coolify does **not**
-  run our secret-generation script, so generate them once yourself and keep them handy:
+:::note[Two secrets to generate first]
+You'll reuse `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` across services. Coolify does **not**
+run our secret-generation script, so generate them once yourself and keep them handy:
 
-  ```zsh title="Terminal"
-  openssl rand -hex 32   # BETTER_AUTH_SECRET
-  openssl rand -hex 32   # PRIVATE_SERVER_KEY  (must be identical in the api and dashboard services)
-  ```
-</Callout>
+```zsh title="Terminal"
+openssl rand -hex 32   # BETTER_AUTH_SECRET
+openssl rand -hex 32   # PRIVATE_SERVER_KEY  (must be identical in the api and dashboard services)
+```
+
+See [Configuration → Environment & secrets](/self-hosted/configuration/secrets) for what each does.
+:::
 
 ## Step-by-step walkthrough
 
@@ -45,7 +42,7 @@ This uses a **Docker Compose resource**: you paste the compose file and set ever
 
 Log in to Coolify and **create a project**. When you add a resource, Coolify asks what type it is — GitHub, a Docker image, a service, or a **Docker Compose** file. Choose **Docker Compose**, then **paste the contents of [`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker-compose.images.yaml)** into the editor.
 
-![Showing list of options to choose from](/coolify-02-services.webp)
+![Showing list of options to choose from](/docs/coolify-02-services.webp)
 
 </Step>
 
@@ -53,8 +50,8 @@ Log in to Coolify and **create a project**. When you add a resource, Coolify ask
 ### Confirm the services parsed
 
 After saving, Coolify parses the compose file and lists the services: `postgres`, `redis`, `api`, `dashboard`, `jobs` (and `minio` once you enable its profile in the next step). Confirm they all appear before moving on.
-![Select composer file type](/coolify-01-add-resource.webp)
-![Coolify showing the parsed ClassroomIO services](/coolify-02-services.webp)
+![Select composer file type](/docs/coolify-01-add-resource.webp)
+![Coolify showing the parsed ClassroomIO services](/docs/coolify-02-services.webp)
 </Step>
 
 <Step>
@@ -79,15 +76,15 @@ SMTP_SENDER=ClassroomIO <you@yourdomain.com>
 
 👉 The essentials above get you started, but the complete list of what to set — object storage, domains, and every optional variable — is in the [**Environment variable reference**](#environment-variable-reference) below. Copy that full block before you deploy.
 
-<Callout title="How to read the reference: value = required, blank = optional">
-  There's no way to guess which variables Coolify needs, so the [Environment variable
-  reference](#environment-variable-reference) spells it out. The rule is simple: **every variable
-  shown with a value must be set** for a smooth deployment (secrets, database, domains, object
-  storage, and SMTP are all needed). **Every variable left blank after `=` is optional** — fill it in
-  only if you use that integration. Leaving an optional one blank never causes a build or boot error.
-</Callout>
+:::note[How to read the reference: value = required, blank = optional]
+There's no way to guess which variables Coolify needs, so the [Environment variable
+reference](#environment-variable-reference) spells it out. The rule is simple: **every variable
+shown with a value must be set** for a smooth deployment (secrets, database, domains, object
+storage, and SMTP are all needed). **Every variable left blank after `=` is optional** — fill it in
+only if you use that integration. Leaving an optional one blank never causes a build or boot error.
+:::
 
-![Setting the environment variables in Coolify](/coolify-03-env-vars.webp)
+![Setting the environment variables in Coolify](/docs/coolify-03-env-vars.webp)
 </Step>
 
 <Step>
@@ -95,14 +92,14 @@ SMTP_SENDER=ClassroomIO <you@yourdomain.com>
 
 `CIO_VERSION` chooses the tag pulled for `classroomio/{api,dashboard,jobs}`. **Confirm the tag you use actually exists** at [hub.docker.com/r/classroomio](https://hub.docker.com/r/classroomio/) before deploying.
 
-<Callout title="Pin a released version">
-  Set `CIO_VERSION=1.0.0` to pin an exact release. `latest` is the freshest `main` build — it moves
-  on every merge (rolling; may include unreleased code), while the version tags (`1.0.0`, `1.0`, `1`)
-  are immutable, pinned releases. Pinning an exact release makes upgrades deliberate and deploys
-  reproducible.
-</Callout>
+:::note[Pin a released version]
+Set `CIO_VERSION=1.0.0` to pin an exact release. `latest` is the freshest `main` build — it moves
+on every merge (rolling; may include unreleased code), while the version tags (`1.0.0`, `1.0`, `1`)
+are immutable, pinned releases. Pinning an exact release makes upgrades deliberate and deploys
+reproducible.
+:::
 
-![Confirming the classroomio image tags on Docker Hub](/coolify-04-image-tag.webp)
+![Confirming the classroomio image tags on Docker Hub](/docs/coolify-04-image-tag.webp)
 </Step>
 
 <Step>
@@ -112,7 +109,7 @@ Open the **dashboard** service → **Settings** and set its domain, including th
 
 The dashboard proxies API calls server-side, so you normally only expose the dashboard publicly — the `api` service stays internal.
 
-![Setting the dashboard service domain in Coolify](/coolify-05-dashboard-domain.webp)
+![Setting the dashboard service domain in Coolify](/docs/coolify-05-dashboard-domain.webp)
 </Step>
 
 <Step>
@@ -120,7 +117,7 @@ The dashboard proxies API calls server-side, so you normally only expose the das
 
 Click **Deploy**. Coolify pulls `classroomio/{api,dashboard,jobs}:${CIO_VERSION}`, starts Postgres + Redis, the API container runs database setup on first boot, then the dashboard and the **jobs worker** come up. Watch the **logs** — they tell you when every service is up.
 
-![Coolify deploy logs showing the stack coming up](/coolify-06-deploy-logs.webp)
+![Coolify deploy logs showing the stack coming up](/docs/coolify-06-deploy-logs.webp)
 </Step>
 
 <Step>
@@ -128,7 +125,7 @@ Click **Deploy**. Coolify pulls `classroomio/{api,dashboard,jobs}:${CIO_VERSION}
 
 Once the logs show the stack is healthy, open your dashboard URL (`https://dash.yourdomain.com`) in a new browser tab and **sign up**. The **first** account becomes the organization **admin**. Every signup or sign-in after that joins as a student — unless you invite them with a specific role.
 
-![The running ClassroomIO dashboard sign-up page](/railway-12-signup.webp)
+![The running ClassroomIO dashboard sign-up page](/docs/railway-12-signup.webp)
 </Step>
 
 </Steps>
@@ -137,11 +134,11 @@ Once the logs show the stack is healthy, open your dashboard URL (`https://dash.
 
 You set these on the resource's Environment Variables page (Step 3). This is the complete picture — copy the block below, then replace the placeholder values with your own.
 
-<Callout title="Value = required, blank = optional">
-  **Every variable shown with a value below is required** for a working deployment. **Every variable
-  left blank after `=` is optional** — fill it in only if you use that feature. A blank optional
-  variable never causes a build or boot error, so don't put junk into fields you aren't using.
-</Callout>
+:::note[Value = required, blank = optional]
+**Every variable shown with a value below is required** for a working deployment. **Every variable
+left blank after `=` is optional** — fill it in only if you use that feature. A blank optional
+variable never causes a build or boot error, so don't put junk into fields you aren't using.
+:::
 
 ```zsh title=".env — a complete working Coolify deployment"
 # ── Secrets (generate with: openssl rand -hex 32) ──
@@ -228,12 +225,12 @@ SKIP_DB_SETUP=              # blank = run DB setup on first boot (leave blank)
 | `CSP_MEDIA_SRC_DOMAINS` | Your storage domain — otherwise the browser's CSP blocks uploaded media. |
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_SENDER` | SMTP server for signup verification, password reset, and invites. |
 
-<Callout type="warn" title="If the stack won't start at all">
-  Of the above, `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` are the two the compose file
-  **fails fast** on: leave either empty and the containers refuse to boot (so ClassroomIO never runs
-  with a predictable session-signing secret). The rest won't abort the boot, but the deployment
-  won't work correctly without them — set them all.
-</Callout>
+:::warning[If the stack won't start at all]
+Of the above, `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` are the two the compose file
+**fails fast** on: leave either empty and the containers refuse to boot (so ClassroomIO never runs
+with a predictable session-signing secret). The rest won't abort the boot, but the deployment
+won't work correctly without them — set them all.
+:::
 
 ### Optional — leave blank unless you need them
 
@@ -253,31 +250,29 @@ SKIP_DB_SETUP=              # blank = run DB setup on first boot (leave blank)
 
 ### Object storage
 
-Recommended: the **bundled MinIO** — enable its profile with `COMPOSE_PROFILES=minio` and Coolify
-runs MinIO alongside the stack. Give the MinIO volume persistent storage in Coolify and route its
-public URL (`OBJECT_STORAGE_PUBLIC_ENDPOINT` / `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL`) so browsers
-can load media. Prefer fully-managed storage instead? Point the same `OBJECT_STORAGE_*` variables
-at external **S3 / Cloudflare R2** and leave the `minio` profile off — see the
-[Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for R2.
+Enable the **bundled MinIO** with `COMPOSE_PROFILES=minio` and Coolify runs it alongside the stack.
+**Give the MinIO volume persistent storage in Coolify** and route its public URL
+(`OBJECT_STORAGE_PUBLIC_ENDPOINT` / `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL`) so browsers can load media.
 
-<Callout type="warn" title="MinIO is your durability boundary">
-  Single-node MinIO has no redundancy — its volume is the only thing protecting your uploads. Give
-  it persistent storage in Coolify and back it up. If you'd rather not operate storage, use external
-  **Cloudflare R2 / AWS S3** instead (R2 has no egress fees): point the same `OBJECT_STORAGE_*`
-  vars at the provider.
-</Callout>
+:::warning[MinIO is your durability boundary]
+Single-node MinIO has no redundancy — its volume is the only thing protecting your uploads, so give it
+persistent storage in Coolify and back it up.
+:::
+
+Prefer managed storage? Point the `OBJECT_STORAGE_*` variables at external S3 / Cloudflare R2 and leave
+the `minio` profile off. See [Configuration → Object storage & uploads](/self-hosted/configuration/storage).
 
 ### Upload size limits (optional)
 
 Set `UPLOAD_MAX_*_MB` in Coolify's env for both the `api` and `dashboard` services (same values in
 each), e.g. `UPLOAD_MAX_DOCUMENT_MB=50`. See
-[Docker self-hosting → Upload file size limits](/docs/self-hosted/docker#optional--upload-file-size-limits).
+[Configuration → Upload file size limits](/self-hosted/configuration/storage#upload-file-size-limits).
 
 ## Upgrades & rollback
 
-Bump `CIO_VERSION` to a newer release and redeploy; roll back by setting it to the previous version and redeploying. Because you pin a version, a new release never restarts you onto broken images unattended.
+Bump `CIO_VERSION` to a newer release and redeploy; roll back by setting it to the previous version and redeploying. Because you pin a version, a new release never restarts you onto broken images unattended. See [Configuration → Versions & upgrades](/self-hosted/configuration/versions) for the full upgrade and backup steps.
 
-<Callout type="warn" title="Back up before upgrading">
-  Schema migrations run automatically on API startup. Back up your Postgres (and object storage)
-  before a major upgrade.
-</Callout>
+:::warning[Back up before upgrading]
+Schema migrations run automatically on API startup. Back up your Postgres (and object storage)
+before a major upgrade.
+:::

@@ -1,0 +1,559 @@
+---
+title: DigitalOcean
+description: Deploy ClassroomIO to a DigitalOcean droplet with Docker Compose and Caddy, including automatic HTTPS.
+---
+
+Run ClassroomIO on a plain **DigitalOcean droplet** — no PaaS in between. You get the
+[pull-based Docker Compose stack](/self-hosted/docker) plus a [Caddy](https://caddyserver.com)
+reverse proxy that obtains and renews HTTPS certificates automatically.
+
+Nothing here is DigitalOcean-specific. The same steps work unchanged on **Hetzner, Vultr, Linode,
+AWS Lightsail**, or any Ubuntu 24.04 server you can SSH into.
+
+:::note[How this differs from the PaaS guides]
+[Railway](/self-hosted/railway), [Coolify](/self-hosted/coolify) and [Dokploy](/self-hosted/dokploy)
+terminate HTTPS for you. On a raw VPS you provide that yourself — this page covers the reverse proxy,
+the certificates, and closing your internal ports off from the internet.
+:::
+
+## Prerequisites
+
+- A **droplet running Ubuntu 24.04**. Minimum **2 vCPU / 4 GB RAM / 80 GB disk**; see
+  [Server requirements](/self-hosted#server-requirements). Measured idle usage of the full stack is
+  ~1.4 GB, but the jobs worker spikes during video transcoding.
+- **SSH access** to it.
+- A **domain** you control, with two DNS **A records** pointing at the droplet's public IP:
+
+  | Type | Name  | Value             |
+  | ---- | ----- | ----------------- |
+  | A    | `app` | your droplet's IP |
+  | A    | `s3`  | your droplet's IP |
+
+- An **SMTP provider** for signup verification, password resets, and invites — see
+  [Configuration → Email (SMTP)](/self-hosted/configuration/email).
+
+:::note[No domain? You can still get real HTTPS]
+Use [sslip.io](https://sslip.io), a public wildcard-DNS service where `<anything>.<ip>.sslip.io`
+resolves to that IP — so no records are needed. In Step 1 set
+`export DOMAIN=<your-droplet-ip>.sslip.io` instead of your own domain, and **every other command on
+this page is identical**. Read the [caveat](#a-note-on-sslipio) before using it for anything real.
+:::
+
+## Why two hostnames
+
+The dashboard is served from `app.<your-domain>`, and object storage from `s3.<your-domain>`.
+
+Storage needs its own hostname because video and document uploads hand **presigned S3 URLs** to the
+browser, and AWS SigV4 signs the full request path. Serving storage under a path on the app host
+(`app.example.com/s3`) means the proxy must strip that prefix, which invalidates the signature and
+breaks every upload with `SignatureDoesNotMatch`. A separate hostname preserves the path and the
+`Host` header.
+
+## Deployment
+
+<Steps>
+
+<Step>
+### Set your domain
+
+Everything below derives from this one variable. Run it in **every** new SSH session:
+
+```zsh title="Terminal"
+export DOMAIN=yourdomain.com
+```
+
+Using sslip.io instead? Set it to your droplet's IP plus `.sslip.io`:
+
+```zsh title="Terminal"
+export DOMAIN=203.0.113.10.sslip.io
+```
+
+Your dashboard will be `https://app.$DOMAIN` and storage `https://s3.$DOMAIN`.
+</Step>
+
+<Step>
+### Create a non-root user
+
+Connect as root, then create the account you'll actually work from:
+
+```zsh title="Terminal"
+adduser cio
+usermod -aG sudo cio
+rsync --archive --chown=cio:cio ~/.ssh /home/cio
+```
+
+**Before going further**, open a second terminal and confirm the new user can log in:
+
+```zsh title="Terminal"
+ssh cio@<your-droplet-ip> 'echo works'
+```
+
+:::danger[Verify first, then lock down]
+Only once that prints `works`, disable root login. If the key copy failed and you have already
+disabled root SSH, you are locked out of the droplet.
+
+```zsh title="Terminal"
+sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+systemctl restart ssh
+```
+:::
+
+Close the root session. Everything from here runs as `cio`.
+</Step>
+
+<Step>
+### Firewall and swap
+
+```zsh title="Terminal"
+sudo apt update && sudo apt upgrade -y
+
+sudo ufw allow OpenSSH
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw --force enable
+
+sudo apt install -y unattended-upgrades
+
+sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+```
+
+The swap file matters: a video transcode can spike memory enough to get Postgres killed on a 4 GB
+server.
+</Step>
+
+<Step>
+### Install Docker
+
+```zsh title="Terminal"
+sudo apt install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] \
+https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
+  | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+sudo usermod -aG docker cio
+```
+
+:::warning[Use the literal username, not `$USER`]
+`$USER` expands to whoever runs the shell — run it from a root session and it grants **root** rather
+than your user, and every later Docker command fails with `permission denied` on
+`/var/run/docker.sock`. Check with `getent group docker`.
+:::
+
+Group membership only applies to a **new login**, so reconnect, then verify:
+
+```zsh title="Terminal"
+exit
+ssh cio@<your-droplet-ip>
+export DOMAIN=yourdomain.com
+
+id | grep -o docker        # -> docker
+docker compose version     # must be v2.24.0 or newer
+```
+
+Compose **v2.24.0+** is required — Step 6 uses the `!override` YAML tag. Older versions
+*concatenate* port lists instead of replacing them, which would leave your internal services exposed
+to the internet.
+</Step>
+
+<Step>
+### Download the compose file
+
+```zsh title="Terminal"
+mkdir -p ~/classroomio && cd ~/classroomio
+curl -O https://raw.githubusercontent.com/classroomio/classroomio/main/docker-compose.images.yaml
+```
+
+This is the same [pull-based stack](/self-hosted/docker#run-from-pre-built-images-recommended) used
+by the other guides — it pulls the published `classroomio/*` images and builds nothing.
+</Step>
+
+<Step>
+### Create the `.env` file
+
+This generates every secret for you. Paste it whole:
+
+```zsh title="Terminal"
+cd ~/classroomio
+MINIO_PASS=$(openssl rand -hex 24)
+
+cat > .env <<EOF
+CIO_VERSION=1.0.0
+
+POSTGRES_DB=classroomio
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=$(openssl rand -hex 16)
+
+BETTER_AUTH_SECRET=$(openssl rand -hex 32)
+PRIVATE_SERVER_KEY=$(openssl rand -hex 32)
+
+PUBLIC_IS_SELFHOSTED=true
+PRIVATE_SERVER_URL=https://app.$DOMAIN
+DASHBOARD_ORIGIN=https://app.$DOMAIN
+PRIVATE_APP_HOST=$DOMAIN
+PRIVATE_APP_SUBDOMAINS=app
+PUBLIC_SERVER_URL=
+TRUSTED_ORIGINS=
+
+MINIO_ROOT_USER=cio-storage-admin
+MINIO_ROOT_PASSWORD=$MINIO_PASS
+OBJECT_STORAGE_ENDPOINT=http://minio:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=https://s3.$DOMAIN
+OBJECT_STORAGE_ACCESS_KEY_ID=cio-storage-admin
+OBJECT_STORAGE_SECRET_ACCESS_KEY=$MINIO_PASS
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://s3.$DOMAIN/media
+
+CSP_MEDIA_SRC_DOMAINS=s3.$DOMAIN
+CSP_CONNECT_SRC_DOMAINS=s3.$DOMAIN
+
+SMTP_HOST=smtp.yourprovider.com
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_SENDER=ClassroomIO <you@yourdomain.com>
+
+OPENAI_API_KEY=
+UNSPLASH_API_KEY=
+LICENSE_KEY=
+EOF
+
+chmod 600 .env
+```
+
+Then fill in your SMTP credentials with `nano .env`.
+
+Three of these break deployments more often than all the others combined:
+
+- **`OBJECT_STORAGE_PUBLIC_ENDPOINT`** — where the browser fetches video from. Left at the template
+  default of `localhost`, every video URL points at the *visitor's own machine*.
+- **`DASHBOARD_ORIGIN`** — must match the browser URL exactly, `https://` included, no trailing
+  slash. A mismatch breaks login with CSRF errors.
+- **`CSP_MEDIA_SRC_DOMAINS` / `CSP_CONNECT_SRC_DOMAINS`** — because storage is on a second hostname,
+  the browser blocks its media unless these allow it. Symptom: the page looks fine, images and video
+  silently don't load, and the only clue is in the browser console.
+
+:::note[Keep values unquoted and comment-free]
+One value per line, no trailing `# comment`. Compose can fold an inline comment into the value and
+silently corrupt a password or URL.
+:::
+
+Every remaining variable is documented in [Configuration](/self-hosted/configuration).
+</Step>
+
+<Step>
+### Add Caddy and close the internal ports
+
+Right now each part of ClassroomIO runs on its own port number — the dashboard on `3082`, file
+storage on `9000`. That leaves two problems: nobody wants to visit `yoursite.com:3082`, and neither
+port is encrypted, so there would be no padlock in the browser.
+
+Caddy fixes both. It's a small web server that sits in front of everything on the normal web ports
+(`80` and `443`). It gets an HTTPS certificate for your domain automatically, then sends each
+visitor to the right service based on the address they typed:
+
+| Visitor types | Caddy sends them to |
+| ------------- | ------------------- |
+| `app.<your-domain>` | the dashboard |
+| `s3.<your-domain>` | file storage |
+
+The second half of this step closes the internal ports, so the only way in from the internet is
+through Caddy.
+
+```zsh title="Terminal"
+cat > ~/classroomio/docker-compose.caddy.yaml <<'EOF'
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: cio-caddy
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - dashboard
+
+  api:
+    ports: !override
+      - '127.0.0.1:3081:3081'
+
+  dashboard:
+    ports: !override
+      - '127.0.0.1:3082:3082'
+
+  minio:
+    ports: !override
+      - '127.0.0.1:9000:9000'
+      - '127.0.0.1:9001:9001'
+
+volumes:
+  caddy-data:
+  caddy-config:
+EOF
+```
+
+```zsh title="Terminal"
+cat > ~/classroomio/Caddyfile <<EOF
+app.$DOMAIN {
+	encode gzip
+	reverse_proxy dashboard:3082
+}
+
+s3.$DOMAIN {
+	reverse_proxy minio:9000
+}
+EOF
+```
+
+Those eight lines are the entire HTTPS setup. The first time someone visits your site, Caddy asks
+Let's Encrypt for a free certificate, installs it, and from then on renews it before it expires —
+you never touch it again.
+
+You could use nginx instead, but you'd also be installing certbot, setting up a renewal timer, and
+hand-writing the forwarding rules that Caddy applies by default.
+
+:::warning[Your firewall does not cover Docker]
+You set up a firewall back in Step 3. It does **not** apply to Docker containers — Docker writes its
+own networking rules underneath it, so a container that publishes a port stays reachable from the
+internet even when `ufw` says that port is blocked.
+
+That's why the `!override` lines above matter. `127.0.0.1` means "this machine only", so those
+services stop accepting outside connections altogether. Caddy still reaches them because it sits on
+the same internal Docker network. Step 9 proves it from outside the server.
+:::
+</Step>
+
+<Step>
+### Download the images
+
+Save the long compose command as an alias first:
+
+```zsh title="Terminal"
+echo "alias dc='docker compose -f ~/classroomio/docker-compose.images.yaml -f ~/classroomio/docker-compose.caddy.yaml --env-file ~/classroomio/.env -p classroomio --profile minio'" >> ~/.bashrc
+source ~/.bashrc
+
+dc config --services
+```
+
+You should see: `postgres redis api dashboard jobs minio minio-init caddy`
+
+Then pull:
+
+```zsh title="Terminal"
+dc pull
+```
+
+:::warning[This downloads ~12 GB and takes 10–20 minutes]
+The images are large (`api` 3.7 GB, `dashboard` 3.9 GB, `jobs` 4.2 GB). On a 2-vCPU droplet the
+**progress bars sit still for minutes at a time — this is normal, it is not frozen.** Don't cancel it.
+:::
+</Step>
+
+<Step>
+### Start and verify
+
+```zsh title="Terminal"
+dc up -d
+```
+
+Services start in dependency order — Postgres and Redis must report healthy before the API starts,
+because the API runs database migrations on boot. A full start takes about **40 seconds**.
+
+```zsh title="Terminal"
+dc ps
+```
+
+```
+NAME            STATUS                        PORTS
+cio-api         Up About a minute (healthy)   127.0.0.1:3081->3081/tcp
+cio-caddy       Up 42 seconds                 0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp, ...
+cio-dashboard   Up 43 seconds                 3000/tcp, 127.0.0.1:3082->3082/tcp
+cio-jobs        Up About a minute
+cio-minio       Up About a minute             127.0.0.1:9000-9001->9000-9001/tcp
+cio-postgres    Up About a minute (healthy)
+cio-redis       Up About a minute (healthy)
+```
+
+`cio-minio-init` is absent on purpose — it creates the storage buckets and exits. Confirm it worked:
+
+```zsh title="Terminal"
+docker logs cio-minio-init | tail -4
+```
+
+```
+Bucket created successfully `local/videos`.
+Bucket created successfully `local/documents`.
+Bucket created successfully `local/media`.
+Access permission for `local/media` is set to `download`
+```
+
+Check the certificates were issued:
+
+```zsh title="Terminal"
+docker logs cio-caddy 2>&1 | grep "certificate obtained"
+```
+
+Now confirm nothing internal is exposed. **Run this from your own machine, not the droplet:**
+
+```zsh title="Terminal"
+for p in 3081 3082 9000 9001; do
+  curl -s --max-time 6 -o /dev/null "http://<your-droplet-ip>:$p" \
+    && echo "port $p REACHABLE  <-- problem" \
+    || echo "port $p no response (correct)"
+done
+```
+
+All four must report `no response`. If any is reachable, your Compose version ignored `!override` —
+check that `docker compose version` is v2.24.0 or newer.
+</Step>
+
+<Step>
+### Sign up
+
+Open `https://app.<your-domain>` and create the first account — it becomes the organization
+**admin**. Every signup after that joins as a student unless you invite them with a specific role.
+
+Then verify uploads end to end: create a course, upload an image, and upload a short video. Watch the
+worker process it with `dc logs -f jobs`. In your browser's DevTools the media URLs must point at
+`https://s3.<your-domain>/...` — if you see `localhost:9000`, `OBJECT_STORAGE_PUBLIC_ENDPOINT` is
+wrong.
+</Step>
+
+</Steps>
+
+## Day-to-day commands
+
+```zsh title="Terminal"
+dc ps                     # status
+dc logs -f api dashboard  # stream logs
+dc up -d                  # apply an .env change
+dc down                   # stop, keeping all data
+```
+
+:::danger[Never use `dc down -v`]
+The `-v` flag deletes the `postgres-data`, `redis-data` and `minio-data` volumes — your database and
+every upload. Plain `dc down` is always safe.
+:::
+
+## Backups
+
+```zsh title="Terminal"
+mkdir -p ~/backups
+
+docker exec cio-postgres pg_dump -U postgres classroomio | gzip > ~/backups/cio-db-$(date +%F).sql.gz
+
+docker run --rm -v classroomio_minio-data:/data -v ~/backups:/backup alpine \
+  tar czf /backup/cio-minio-$(date +%F).tar.gz -C /data .
+```
+
+Run both on a daily cron, copy them off the droplet, and enable DigitalOcean snapshots for whole-box
+recovery.
+
+## A note on sslip.io
+
+sslip.io is genuinely useful for evaluation, but it is **not on the
+[Public Suffix List](https://publicsuffix.org)**. Let's Encrypt scopes its *certificates per
+registered domain* limit using that list, so certificates for `sslip.io` count against a quota shared
+with everyone else using the service.
+
+In practice that means issuance can occasionally fail with `too many certificates already issued`
+through no fault of your configuration. If it happens, wait a few hours or move to a domain of your
+own. **For production, use your own domain.**
+
+## Moving from sslip.io to your own domain
+
+1. Add the two **A records** from [Prerequisites](#prerequisites) and confirm with
+   `dig +short app.yourdomain.com`.
+2. Update six lines in `~/classroomio/.env`:
+
+   ```zsh title=".env"
+   DASHBOARD_ORIGIN=https://app.yourdomain.com
+   PRIVATE_APP_HOST=yourdomain.com
+   OBJECT_STORAGE_PUBLIC_ENDPOINT=https://s3.yourdomain.com
+   OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://s3.yourdomain.com/media
+   CSP_MEDIA_SRC_DOMAINS=s3.yourdomain.com
+   CSP_CONNECT_SRC_DOMAINS=s3.yourdomain.com
+   ```
+
+3. Change the two site addresses in `~/classroomio/Caddyfile`.
+4. Apply, then clear cached media URLs — presigned URLs are cached in Redis for 50 minutes, so
+   without this the old hostname keeps being served:
+
+   ```zsh title="Terminal"
+   dc up -d
+   docker exec cio-redis sh -c "redis-cli --scan --pattern 'presign:download:*' | xargs -r redis-cli del"
+   ```
+
+Existing uploads keep working — media URLs are generated per request from the new endpoint.
+
+## Troubleshooting
+
+| Symptom | Cause |
+| ------- | ----- |
+| `permission denied` on `/var/run/docker.sock` | Your user isn't in the `docker` group, or you haven't logged out and back in since adding it |
+| A port answers from outside the droplet | Compose older than v2.24.0 ignored `!override` |
+| No certificate issued | Port 80 must be reachable; behind Cloudflare set the records to **DNS only** (the orange proxy breaks HTTP-01 validation) |
+| Video won't play, or `SignatureDoesNotMatch` | `OBJECT_STORAGE_PUBLIC_ENDPOINT` must be a bare hostname, never a path prefix |
+| Images/video blank, CSP errors in console | `CSP_MEDIA_SRC_DOMAINS` / `CSP_CONNECT_SRC_DOMAINS` missing |
+| Uploads stuck at "processing" | The `jobs` worker isn't running — check `dc logs jobs` |
+| No emails | `dc logs api \| grep -i smtp`; `ECONNREFUSED` means SMTP isn't configured |
+| Login loops or CSRF errors | `DASHBOARD_ORIGIN` doesn't exactly match the browser URL |
+| Containers being OOM-killed | A transcode on 4 GB can exhaust memory; confirm swap with `swapon --show`, or resize to 8 GB |
+
+## Configuration reference
+
+This deployment reads the same variables as every other self-hosted install:
+
+<CardGroup cols={2}>
+  <Card title="Environment & secrets" href="/self-hosted/configuration/secrets" icon="key-round">
+    `BETTER_AUTH_SECRET`, `PRIVATE_SERVER_KEY`, database, mode/routing.
+  </Card>
+  <Card title="Email (SMTP)" href="/self-hosted/configuration/email" icon="mail">
+    Signup verification, password resets, invites.
+  </Card>
+  <Card title="Object storage & uploads" href="/self-hosted/configuration/storage" icon="hard-drive">
+    MinIO or external S3/R2, plus upload size limits.
+  </Card>
+  <Card title="CSP / allowed domains" href="/self-hosted/configuration/csp" icon="shield">
+    Allowed external CDN, font, and media domains.
+  </Card>
+  <Card title="Integrations" href="/self-hosted/configuration/integrations" icon="plug">
+    Google OAuth, Unsplash, OpenAI.
+  </Card>
+  <Card title="Versions & upgrades" href="/self-hosted/configuration/versions" icon="tag">
+    Pinning `CIO_VERSION`, upgrading, and rolling back.
+  </Card>
+</CardGroup>
+
+## Upgrades
+
+Check which versions exist, then pin one — never guess a tag, as an unpublished one fails the pull
+with `manifest unknown`:
+
+```zsh title="Terminal"
+curl -s "https://hub.docker.com/v2/repositories/classroomio/dashboard/tags?page_size=20&ordering=last_updated" \
+  | tr ',' '\n' | grep '"name"'
+
+sed -i 's/^CIO_VERSION=.*/CIO_VERSION=<exact version>/' ~/classroomio/.env
+dc pull && dc up -d
+```
+
+Migrations run automatically on API startup. Roll back by setting `CIO_VERSION` to the previous
+release and repeating — which is why you pin an exact version rather than `latest`. See
+[Configuration → Versions & upgrades](/self-hosted/configuration/versions).

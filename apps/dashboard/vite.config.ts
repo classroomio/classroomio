@@ -47,7 +47,13 @@ export default ({ mode }) => {
     },
     optimizeDeps: {
       entries: ['src/routes/**/+*.{js,ts,svelte}'],
-      include: ['@cio/api/rpc-types'],
+      include: [
+        '@cio/api/rpc-types',
+        // Pre-bundle layerchart via esbuild so its internal circular dependencies
+        // are flattened before Vite SSR evaluates them. Without this, Vite's SSR
+        // transform hits a "not yet fully initialized" circular-dep error.
+        'layerchart'
+      ],
       // Workspace packages must be processed by Svelte/Vite (not pre-bundled)
       // so HMR fires when editing files under packages/*.
       exclude: ['@cio/ui', '@cio/utils', '@cio/question-types']

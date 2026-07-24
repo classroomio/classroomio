@@ -1,0 +1,97 @@
+---
+title: Self Hosting
+description: Run ClassroomIO on your own infrastructure — with Docker, DigitalOcean, Railway, Coolify, or Dokploy.
+---
+
+ClassroomIO is open source, and you can run the whole platform on your own infrastructure. Every
+option below runs the same stack — the API, the dashboard, and the background jobs worker, backed by
+Postgres and Redis.
+
+Pick the path that matches where you want it to run.
+
+<CardGroup cols={3}>
+  <Card title="Docker" href="/self-hosted/docker" icon="container">
+    Run anywhere Docker runs. Pull the pre-built images, or build from source.
+  </Card>
+  <Card title="DigitalOcean" href="/self-hosted/digitalocean" icon="droplet">
+    A plain VPS, end to end — Docker Compose plus Caddy for automatic HTTPS.
+  </Card>
+  <Card title="Railway" href="/self-hosted/railway" icon="train-front">
+    Deploy to Railway from a template. The quickest managed option.
+  </Card>
+  <Card title="Coolify" href="/self-hosted/coolify" icon="server">
+    Self-hosted PaaS on your own VPS, from a Docker Compose resource.
+  </Card>
+  <Card title="Dokploy" href="/self-hosted/dokploy" icon="ship">
+    Self-hosted PaaS on your own VPS, deployed from a raw Docker Compose file.
+  </Card>
+</CardGroup>
+
+## Which should I choose?
+
+| Option                                | Best for                                                              |
+| ------------------------------------- | --------------------------------------------------------------------- |
+| [Docker](/self-hosted/docker)         | Full control on your own server, or as the base for another platform. |
+| [DigitalOcean](/self-hosted/digitalocean) | A raw VPS with no PaaS — you set up the reverse proxy and HTTPS yourself. Works on any Ubuntu server. |
+| [Railway](/self-hosted/railway)       | Getting a working instance up with the least infrastructure work.     |
+| [Coolify](/self-hosted/coolify)       | Running a PaaS on your own VPS, managing several apps alongside it.   |
+| [Dokploy](/self-hosted/dokploy)       | Running a Traefik-based PaaS on your own VPS, deployed from a pasted Compose file. |
+
+:::note[You need an SMTP provider]
+Signup verification, password resets, and invite emails all send over SMTP. Whichever option you
+pick, have mail credentials ready before you start.
+:::
+
+## What you'll need
+
+- A **Postgres** database and a **Redis** instance (both are included in the Docker and Coolify compose files).
+- An **SMTP provider** for transactional email.
+- Object storage (**MinIO** or S3-compatible) if you want file and video uploads.
+- *Optional:* an **OpenAI API key** for transcription and AI course generation.
+
+For the full environment variable reference — secrets, email, storage, CSP, integrations, licensing,
+and versions — see the [Configuration](/self-hosted/configuration) section, which documents every
+variable the stack reads.
+
+## Server requirements
+
+ClassroomIO is not a single container — it runs **seven services**: Postgres, Redis, MinIO (object
+storage), the API, the dashboard, and a background **jobs worker** that handles video processing,
+transcription, and AI course generation. The jobs worker spikes RAM whenever it runs, so a server's
+idle memory use understates what you actually need.
+
+| Resource | Minimum          | Recommended   |
+| -------- | ---------------- | ------------- |
+| CPU      | 2 vCPU           | 4 vCPU        |
+| RAM      | 4 GB             | **8 GB**      |
+| Disk     | 20 GB + uploads  | 40 GB+ SSD    |
+
+:::warning[Don't under-provision RAM]
+A **1 GB server cannot run ClassroomIO at all** — it exhausts memory on the base stack before the
+app is even up. **2 GB is only enough for a PaaS control plane** (Coolify, Dokploy) with little left
+over for the app. Target **8 GB for reliable operation**, especially once the jobs worker starts
+processing video or AI generation.
+:::
+
+:::note[Running a PaaS on the same box?]
+Coolify and Dokploy need roughly **2 GB for themselves** on top of ClassroomIO's requirement. If
+they share the server, size it for both — e.g. 8 GB for ClassroomIO plus the PaaS overhead.
+:::
+
+Building the images **from source** is a separate, heavier job that needs ~8 GB RAM at build time —
+see the [Docker guide](/self-hosted/docker#build-from-source). Pulling the pre-built images (the
+default) avoids that.
+
+## HTTPS is required in production
+
+:::warning[Serve over HTTPS on any real domain]
+ClassroomIO's authentication session cookies are marked `Secure`, so browsers refuse to store or
+send them over plain HTTP — **login silently fails**. Plain HTTP works only for local evaluation on
+`localhost`. Any internet-facing deployment **must** be served over HTTPS.
+:::
+
+Terminate TLS at a reverse proxy in front of the stack:
+
+- **Railway** and **Coolify** issue the certificate and terminate HTTPS for you — nothing extra to do.
+- **Raw Docker** on your own server: put **nginx**, **Caddy**, or **Traefik** in front, and set
+  `DASHBOARD_ORIGIN` / `ORIGIN` to the `https://` URL your users visit.
