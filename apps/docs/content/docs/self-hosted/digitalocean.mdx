@@ -16,6 +16,12 @@ terminate HTTPS for you. On a raw VPS you provide that yourself — this page co
 the certificates, and closing your internal ports off from the internet.
 :::
 
+## Watch the walkthrough
+
+Prefer to follow along? This video walks through the whole deployment end to end. 
+
+<YouTube id="ewDKEoBD9EU" />
+
 ## Prerequisites
 
 - A **droplet running Ubuntu 24.04**. Minimum **2 vCPU / 4 GB RAM / 80 GB disk**; see
@@ -199,11 +205,11 @@ BETTER_AUTH_SECRET=$(openssl rand -hex 32)
 PRIVATE_SERVER_KEY=$(openssl rand -hex 32)
 
 PUBLIC_IS_SELFHOSTED=true
-PRIVATE_SERVER_URL=https://app.$DOMAIN
+PRIVATE_SERVER_URL=http://api:3081
 DASHBOARD_ORIGIN=https://app.$DOMAIN
 PRIVATE_APP_HOST=$DOMAIN
 PRIVATE_APP_SUBDOMAINS=app
-PUBLIC_SERVER_URL=
+PUBLIC_SERVER_URL=https://app.$DOMAIN
 TRUSTED_ORIGINS=
 
 MINIO_ROOT_USER=cio-storage-admin
