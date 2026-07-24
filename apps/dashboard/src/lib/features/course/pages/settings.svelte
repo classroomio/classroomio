@@ -177,7 +177,7 @@
       // Show dialog and highlight both publish toggle and certificate settings
       openCertificateDeadlineDialog = true;
       highlightPublishToggle = true;
-      highlightCertificateSettings = true;
+      // highlightCertificateSettings = true;
       return;
     }
 
