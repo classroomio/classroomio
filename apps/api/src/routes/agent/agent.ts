@@ -3,6 +3,7 @@ import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
+import { apiKeyMiddleware } from '@api/middlewares/api-key';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 import { b64EnvelopeRewrite } from '@api/middlewares/b64-envelope';
 import { handleError, AppError } from '@api/utils/errors';
@@ -298,7 +299,7 @@ const agentCoreRouter = new Hono()
       return handleError(c, error, 'Failed to purchase credits');
     }
   })
-  .post('/credits/purchase', authOrApiKeyMiddleware, zValidator('json', ZAgentCreditPurchase), async (c) => {
+  .post('/credits/purchase', apiKeyMiddleware, zValidator('json', ZAgentCreditPurchase), async (c) => {
     try {
       const body = c.req.valid('json');
       const purchase = await recordCreditPurchase(body);

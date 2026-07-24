@@ -53,6 +53,7 @@ import { assetsRouter } from '@api/routes/organization/assets';
 import { autoJoinOrg } from '@api/services/organization/auto-join';
 import { organizationAiTutorRouter } from '@api/routes/organization/ai-tutor';
 import { organizationMemberEmailNotificationsRouter } from '@api/routes/organization/member-email-notifications';
+import { apiKeyMiddleware } from '@api/middlewares/api-key';
 import { authMiddleware } from '@api/middlewares/auth';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
@@ -557,9 +558,9 @@ export const organizationRouter = new Hono()
   /**
    * POST /organization/plan
    * Creates a new organization plan
-   * Requires authentication (user session or API key)
+   * Requires API key authentication
    */
-  .post('/plan', authOrApiKeyMiddleware, zValidator('json', ZCreateOrgPlan), async (c) => {
+  .post('/plan', apiKeyMiddleware, zValidator('json', ZCreateOrgPlan), async (c) => {
     try {
       const data = c.req.valid('json');
       const plan = await createOrgPlan(data);
@@ -578,9 +579,9 @@ export const organizationRouter = new Hono()
   /**
    * PUT /organization/plan
    * Updates an organization plan by subscription ID
-   * Requires authentication (user session or API key)
+   * Requires API key authentication
    */
-  .put('/plan', authOrApiKeyMiddleware, zValidator('json', ZUpdateOrgPlan), async (c) => {
+  .put('/plan', apiKeyMiddleware, zValidator('json', ZUpdateOrgPlan), async (c) => {
     try {
       const { subscriptionId, payload } = c.req.valid('json');
       const plan = await updateOrgPlan(subscriptionId, payload);
@@ -599,9 +600,9 @@ export const organizationRouter = new Hono()
   /**
    * POST /organization/plan/cancel
    * Cancels an organization plan by subscription ID
-   * Requires authentication (user session or API key)
+   * Requires API key authentication
    */
-  .post('/plan/cancel', authOrApiKeyMiddleware, zValidator('json', ZCancelOrgPlan), async (c) => {
+  .post('/plan/cancel', apiKeyMiddleware, zValidator('json', ZCancelOrgPlan), async (c) => {
     try {
       const { subscriptionId, payload } = c.req.valid('json');
       const plan = await cancelOrgPlan(subscriptionId, payload);
@@ -647,7 +648,6 @@ export const organizationRouter = new Hono()
    */
   .put('/', authMiddleware, orgAdminMiddleware, zValidator('json', ZUpdateOrganization), async (c) => {
     try {
-      console.log(c.req.valid('json'));
       const orgId = c.req.header('cio-org-id')!;
 
       const data = c.req.valid('json') as Partial<TOrganization>;
@@ -711,7 +711,7 @@ export const organizationRouter = new Hono()
   .post(
     '/audience/import',
     authMiddleware,
-    orgTeamMemberMiddleware,
+    orgAdminMiddleware,
     zValidator('json', ZImportAudienceMembers),
     async (c) => {
       try {
@@ -741,7 +741,7 @@ export const organizationRouter = new Hono()
   .post(
     '/audience/assign-courses',
     authMiddleware,
-    orgTeamMemberMiddleware,
+    orgAdminMiddleware,
     zValidator('json', ZAssignAudienceCourses),
     async (c) => {
       try {

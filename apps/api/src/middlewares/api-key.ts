@@ -1,4 +1,5 @@
 import { Context, Next } from 'hono';
+import { timingSafeEqual } from 'crypto';
 
 import { env } from '@cio/core/config/env';
 
@@ -34,7 +35,10 @@ export const apiKeyMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    if (apiKey !== expectedApiKey) {
+    const apiKeyBuf = Buffer.from(apiKey);
+    const expectedBuf = Buffer.from(expectedApiKey);
+
+    if (apiKeyBuf.length !== expectedBuf.length || !timingSafeEqual(apiKeyBuf, expectedBuf)) {
       return c.json(
         {
           success: false,

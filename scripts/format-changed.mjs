@@ -47,12 +47,14 @@ function getChangedFiles() {
   });
 }
 
+const prettierCli = './node_modules/prettier/bin/prettier.cjs';
+
 function runPrettier(filePaths) {
   const chunkSize = 200;
 
   for (let index = 0; index < filePaths.length; index += chunkSize) {
     const chunk = filePaths.slice(index, index + chunkSize);
-    const result = spawnSync('prettier', [prettierMode, '--ignore-unknown', ...chunk], {
+    const result = spawnSync(process.execPath, [prettierCli, prettierMode, '--ignore-unknown', ...chunk], {
       cwd: process.cwd(),
       stdio: 'inherit'
     });
