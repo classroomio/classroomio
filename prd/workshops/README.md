@@ -25,8 +25,12 @@ Orgs that run trainings and webinars have single-video content that doesn't fit 
 4. **Watch gating is the admin's choice per workshop**: public (anyone watches, no login) or registration-required. Maps to the lesson `public` flag.
 5. **Registration = enrollment** (existing enroll flow). Registered users see the meeting link and get a confirmation email. Optional per-workshop external registration URL (Luma escape hatch) is a cheap, cuttable add.
 6. **Topics = existing course tags.** On-demand lists group by tag; untagged fall into "General".
-7. **Workshops and courses never mix**: excluded from the courses catalog, admin course list, course-type filters, the course create modal, and LMS My Learning / progress / certificates.
+7. **Workshops and courses never mix**: excluded from the courses catalog, admin course list, course-type filters, the course create modal, and LMS My Learning / progress / certificate lists. (A workshop certificate issued by a passed assessment — decision 9 — is delivered by email and downloadable from the workshop page; it does not enroll the workshop into LMS progress/completion surfaces.)
 8. **v1 scope is all four surfaces**: admin, public org-site pages, landing-page section (all 10 themes), LMS entry.
+9. **Optional post-session assessment (CE mode)**: an admin can enable exactly one assessment on a workshop — a quiz with a pass percentage (default 80%) — and registrants who pass are automatically issued a certificate. This is the standard certified-training (continuing-education) workflow — register → attend live → take the test → pass → certificate emailed → replay stays up; the grading, pass-gate, and certificate machinery already exist on courses. Off by default; a workshop without an assessment behaves exactly as decisions 1–8 describe.
+10. **Calendar invites ship in v1, not later** — reclassified after auditing the codebase: `.ics` generation (`packages/email/src/ics.ts` `buildSessionIcs`) and attachment-on-enrollment (`services/course/session-invite.ts` `getWelcomeSessionIcs`) already work in production for `LIVE_CLASS` courses, gated by one line (`course.type !== 'LIVE_CLASS'`). Widening that gate to include `WORKSHOP` gives every scheduled-workshop registrant an auto-attached calendar invite (title, time, join link, default reminders) with no new subsystem — see Data Model and Phase 1.
+11. **Internal-audience workshops need no new visibility flag — with one exception.** "Published, but only reachable/usable by people already in the organization" is achieved by combining the existing per-workshop gating choice (decision 4) with the org-level `organization.disableSignup` / `settings.signup.inviteOnly` toggles (`apps/api/src/middlewares/signup-guard.ts`, `services/organization/auto-join.ts`): a **registration-required** workshop on an org with signup disabled cannot be joined by a stranger (they can't create the account the enroll flow requires), while existing team members log in and register as usual. **The gap**: the **public (no-login)** gating choice bypasses `disableSignup` entirely — anyone with the link watches regardless of the org's signup settings. The admin UI must warn (or block) choosing "public" gating on an org that has signup disabled, since it silently defeats the org's own intent.
+12. **Zero-friction internal delivery is a real, separate feature — deferred.** Even with the combination above, an existing employee still clicks "Register" once (having an org account ≠ having a `groupmember` row on that specific workshop). True zero-click delivery — the workshop just appears already-registered for every teammate — needs a new `metadata.workshop.audience: 'public' | 'organization'` setting that auto-enrolls every current `organizationmember` (role ≥ STUDENT) into the workshop's group on publish, and auto-enrolls new hires as they join (mirroring the existing `autoJoinOrg` pattern). Out of v1; tracked as a Later item, not built alongside decisions 1–9.
 
 ## Current-State Audit
 
@@ -59,22 +63,27 @@ Orgs that run trainings and webinars have single-video content that doesn't fit 
 6. Orgs can showcase workshops on their landing page (all 10 themes) with a section toggle, heading, and item limit.
 7. Learners see their registered/available workshops in the LMS, linking to the org-site workshop page.
 8. Courses and workshops remain fully separated in every list, filter, count, and progress surface.
+9. An admin running certified trainings (CE) can enable a post-session assessment: registrants take the quiz on the workshop page after the session, it is auto-graded, and everyone at or above the pass percentage is automatically issued and emailed a certificate — no manual steps between registration and certificate delivery.
 
 ## Non-Goals (v1)
 
 - No-account (email-only) registration — Luma-grade friction reduction ships later (verify-email token → email-only groupmember, idempotent confirm/cancel, rate limits, reconcile to profile).
 - Paid workshops (course pricing plumbing exists; deferred).
 - Capacity limits, waitlists, approval, custom registration questions.
-- ICS calendar invites + 24h/1h reminders — near-free later (widen the `LIVE_CLASS` gate in `listUpcomingSessionsForReminderScan`, reuse `session-invite.ts`), but out of v1.
+- Rescheduling/cancellation calendar updates — `buildSessionIcs` supports `method: 'CANCEL'` but no caller wires it today; a rescheduled or cancelled workshop does not yet push an updated/cancelled calendar event to prior registrants.
+- Zero-click internal-audience auto-enrollment (`metadata.workshop.audience` — see Confirmed Decision 12).
 - Multiple hosts per workshop; replay-available notifications; workshop analytics dashboards; dedicated topic taxonomy (tags suffice); landing-page section reordering (no section-ordering system exists — the section renders after courses).
+- Assessment extras beyond one quiz + pass mark + certificate: multiple assessments, retake limits, timed tests, manual grading, attendance verification before the quiz unlocks, accreditation-body reporting.
 
 ## Data Model
 
 - Add `'WORKSHOP'` to `COURSE_TYPE_VALUES` (`packages/utils/src/constants/course-type.ts`); the pgEnum, Drizzle types, and Zod mirror follow from that one edit. Schema work stops at a passing `@cio/db` build (migrations handled outside this workflow).
-- Course `metadata` gains scalar settings only: `workshop?: { durationMinutes?: number; registrationMode?: 'enrollment' | 'external'; registrationUrl?: string }`.
+- Course `metadata` gains scalar settings only: `workshop?: { durationMinutes?: number; registrationMode?: 'enrollment' | 'external'; registrationUrl?: string; assessment?: { enabled: boolean; passPercentage: number } }`.
 - Workshop creation (one transaction): group + course (`type: 'WORKSHOP'`) + creator tutor member + the single lesson (title = course title, `public` per gating choice, explicit `lessonAt`, `teacherId` = host, slug via the slug service). No welcome newsfeed.
-- **Invariants enforced in services, not just UI**: lesson/section/exercise create services reject additions to WORKSHOP courses. Publish readiness (extend `go-live-readiness.ts`): title + host required; upcoming needs `lessonAt`; on-demand needs a playable video.
+- **Invariants enforced in services, not just UI**: lesson/section create services reject additions to WORKSHOP courses. Exercise creation is likewise rejected, with one controlled exception: the workshop assessment service may create **exactly one** exercise on the single lesson when `assessment.enabled` is turned on (and general exercise routes still reject workshop courses — the assessment service is the only entry point). Publish readiness (extend `go-live-readiness.ts`): title + host required; upcoming needs `lessonAt`; on-demand needs a playable video.
 - **Security**: anonymous payloads never contain `callUrl`; an authed membership check returns it for enrolled users (and drives the "Registered ✓ / Join" card state).
+- **Calendar invite reuse**: widen `getWelcomeSessionIcs`'s `course.type !== 'LIVE_CLASS'` gate (`services/course/session-invite.ts`) to admit `WORKSHOP`, so `buildSessionIcs` attaches a `.ics` to the confirmation email exactly as it does for live classes today (see Confirmed Decision 10). No new email template, no new package.
+- **Admin footgun guard**: the workshop editor's gating toggle warns (or blocks) selecting "public, no login" when the org has `disableSignup` enabled, since that combination silently exposes the workshop to anyone despite the org's closed-signup intent (see Confirmed Decision 11).
 
 ## API
 
@@ -101,12 +110,14 @@ No `DELETE /workshop` (course delete works). Default course queries (`getPublish
 - New "Workshops" entry in the org sidebar (`content` group, beside Courses).
 - List page: cards with title, host, derived-state badge, published status.
 - Single-page editor (`/workshops/[id]`) — no course sidebar: title, description, host picker (team members from `GET /organization/team`, which gains `avatarUrl`), schedule (`lessonAt` + `durationMinutes`), video + rich-text note (reusing `features/course/components/lesson/` `video/*` and `note/*` by hydrating the existing lesson store), callout, tags, gating toggle, registration mode, publish.
+- Assessment section (Phase 5): enable toggle, pass percentage (default 80), and the quiz builder (reusing the existing exercise question editor against the single lesson's one exercise). Enabling requires registration-required gating — anonymous viewers can't take a graded, certificate-issuing test. Results view lists registrants with score, pass/fail, and certificate status.
 - `/courses/[id]` for a workshop-typed course redirects to `/workshops/[id]`.
 
 ### Public org site
 
 - `/workshops` — full catalog: **Upcoming events** (date, Register; "Join" while live) then **On-demand sessions grouped by tag** (duration, Watch; "Replay coming soon" for replay-pending). Theme tokens via the same pattern as `/courses`.
 - `/workshops/[slug]` — stable URL through every state: host header (`course-instructor.svelte` pattern) + `lesson-view.svelte` (video, note, callout). Public → plays for anyone; gated → Register; upcoming → date + Register, meeting link for registered users. Admin adds the recording after the event and the same page becomes on-demand automatically.
+- With an assessment enabled, registered users see a "Take the assessment" section on the same page once the session is past (or on-demand video watched for evergreen enrollees): quiz → auto-grade → pass ≥ threshold → certificate emailed + downloadable there; below threshold → score shown with the org's contact path. Anonymous visitors see that a certificate assessment exists (conversion hook) but must register.
 - Org-site nav shows a Workshops link when the org has published workshops.
 
 ### Enrollment (registration) flow — traced
@@ -116,7 +127,8 @@ Reuses `(org-site)/course/[slug]/enroll`, with these deliberate deltas:
 - **Redirect chain**: the existing flow hard-redirects post-enroll to the LMS (`/courses/{id}/lessons?next=true`) and rebuilds login/signup redirects to the enroll page. Workshops thread a return destination through all hops so the registrant lands back on `/workshops/[slug]` (extend `getStudentCourseContinuePath` or pass an explicit redirect — don't fork the enroll page).
 - **Email verification gate**: kept — protects `callUrl` and keeps registrant emails real.
 - **Free reuse**: `allowNewStudent === false` doubles as "registration closed"; `?invite_token=` gives private/unlisted workshops.
-- **Confirmation email**: the org-branded student-course-welcome email; verify wording fits workshops (date + call link for scheduled ones).
+- **Confirmation email**: the org-branded student-course-welcome email, now with a `.ics` calendar invite attached for scheduled workshops (widened `getWelcomeSessionIcs` gate — Confirmed Decision 10); verify wording fits workshops (date + call link for scheduled ones).
+- **Internal-only orgs**: registration-required gating + the org's own `disableSignup`/`inviteOnly` settings already keep strangers out (Confirmed Decision 11) — no workshop-specific code needed here beyond the gating-toggle warning noted in Data Model.
 
 ### Landing page (all 10 themes)
 
@@ -138,10 +150,14 @@ Flow mirrors the courses section exactly:
 1. **Do workshop registrants count toward the org's plan student limit?** Enrollment creates a student `groupmember`, and `studentLimitReached` blocks signups — a popular free webinar collides with per-seat limits. v1 default until decided: they count; surface the limit clearly in admin. Alternative: exclude WORKSHOP groups from `countActiveStudents` (needs an abuse guard).
 2. Keep the external `registrationUrl` escape hatch in v1, or cut for leanness?
 3. Should the enrollment confirmation email get a workshop-specific template variant, or is adjusted generic wording enough?
+4. **Assessment certificate template**: reuse the existing course certificate templates as-is, or does a workshop certificate need its own fields (session date, host, duration/credit hours)? CE buyers may need credit hours printed — verify against a real CE customer's certificate before building.
+5. Does Phase 5 ship inside v1 (if certified trainings are the go-to-market wedge) or immediately after the four v1 surfaces? Default until decided: build Phases 1–4 first, but design Phase 1 metadata/invariants so the assessment slot needs no migration.
+6. Should the "public gating on a signup-disabled org" case (Confirmed Decision 11) hard-block save, or just show a warning the admin can dismiss? Recommendation: warn, don't block — an org might legitimately want one public workshop as a lead magnet while keeping account signup closed.
+7. Is zero-click internal auto-enrollment (Confirmed Decision 12 / `metadata.workshop.audience`) worth pulling into v1, or does the registration-required + disableSignup combination cover internal-training customers well enough for launch?
 
 ## Phased Delivery
 
-**Phase 1 — Data model & backend**: enum value; `metadata.workshop` settings; `createWorkshop` service; invariant guards + publish readiness; widen the PUBLIC anonymous pipeline; exclusions everywhere (courses catalog default, admin list, LMS student queries, filter UIs, create modal); `/workshop` + org-site routers; team `avatarUrl`; email copy check.
+**Phase 1 — Data model & backend**: enum value; `metadata.workshop` settings; `createWorkshop` service; invariant guards + publish readiness; widen the PUBLIC anonymous pipeline; widen the `LIVE_CLASS`-only ICS/calendar-invite gate (`session-invite.ts`) to include WORKSHOP; exclusions everywhere (courses catalog default, admin list, LMS student queries, filter UIs, create modal); `/workshop` + org-site routers; team `avatarUrl`; email copy check.
 
 **Phase 2 — Admin surface**: sidebar entry; list + single-page editor reusing lesson video/note components; host picker; schedule; gating; translations (`en.json` + `pnpm translate`).
 
@@ -149,7 +165,9 @@ Flow mirrors the courses section exactly:
 
 **Phase 4 — LMS + landing**: `/lms/workshops`; shared landing section + card with per-theme override hook; `OrgLandingPageJson.workshops` config; editor panel; 10 theme `org.svelte` conditional blocks; storybook fixtures; `ui:` prefix checks.
 
-**Later**: no-account registration, ICS + reminders (near-free via existing session machinery), paid workshops, capacity/waitlists, replay notifications, workshop analytics, multiple hosts, featured collections.
+**Phase 5 — Assessment & certificates (CE mode)**: `metadata.workshop.assessment`; assessment service (sole entry point that may create the single exercise); editor assessment section + results view; workshop-page assessment flow (quiz → auto-grade → pass gate → certificate email + download); certificate stays out of LMS progress/completion lists.
+
+**Later**: no-account registration, reschedule/cancel calendar updates (`method: 'CANCEL'` wiring), `metadata.workshop.audience` zero-click internal auto-enrollment, paid workshops, capacity/waitlists, replay notifications, workshop analytics, multiple hosts, featured collections, assessment extras (retakes, timing, attendance gating, accreditation reporting).
 
 ## Verification
 
@@ -159,4 +177,6 @@ Flow mirrors the courses section exactly:
   1. Admin: create → video + note + team-member host → publish. Not in Courses list; not in the course create modal.
   2. Incognito: landing section (after enabling) → `/workshops` → card (host avatar + duration) → detail plays video, callout renders.
   3. Gating: registration-required → Register → sign up → returned to the workshop page → video plays; student absent from LMS My Learning, present under `/lms/workshops`.
-  4. Upcoming: future `lessonAt` + `callUrl` → "Upcoming events" card with date; register → confirmation email; call link visible only to enrolled; anonymous API response contains no `callUrl`. Add recording after the date → same URL now on-demand.
+  4. Upcoming: future `lessonAt` + `callUrl` → "Upcoming events" card with date; register → confirmation email with a `.ics` attachment (title, time, join link, reminders) that the mail client offers to add to calendar; call link visible only to enrolled; anonymous API response contains no `callUrl`. Add recording after the date → same URL now on-demand.
+  5. Internal-only: set org `disableSignup: true`, workshop gating "registration-required" → an unauthenticated stranger hitting `/workshops/[slug]` is redirected to signup and blocked; an existing team member logs in and registers normally. Re-run with gating set to "public" → confirm the admin UI surfaces the disableSignup-conflict warning.
+  6. Assessment (Phase 5): enable assessment + 80% pass mark → registered student takes quiz on the workshop page → scoring above threshold emails a certificate and shows the download; scoring below shows the score with no certificate; a second exercise cannot be created through any route; the workshop still absent from LMS My Learning and completion/certificate lists.

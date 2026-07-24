@@ -1,0 +1,38 @@
+---
+title: Email (SMTP)
+description: Configure SMTP so ClassroomIO can send signup verification, password reset, and invite emails.
+---
+
+ClassroomIO sends transactional email — **signup verification, password resets, and invite emails** —
+over SMTP. Without it the app still runs, but it can't send any of those messages, so have mail
+credentials ready before you deploy.
+
+## Variables
+
+| Variable | Description |
+|----------|-------------|
+| `SMTP_HOST` | SMTP server hostname |
+| `SMTP_PORT` | SMTP server port (commonly `587`) |
+| `SMTP_USER` | SMTP username |
+| `SMTP_PASSWORD` | SMTP password |
+| `SMTP_SENDER` | From address, e.g. `ClassroomIO <you@yourdomain.com>` |
+
+```zsh title=".env"
+SMTP_HOST=smtp.yourprovider.com
+SMTP_PORT=587
+SMTP_USER=<smtp username>
+SMTP_PASSWORD=<smtp password>
+SMTP_SENDER=ClassroomIO <you@yourdomain.com>
+```
+
+:::note[Which services need SMTP]
+The **jobs** worker sends the mail, and the **api** reads the same values. On Docker they come from the
+single root `.env`; on Railway set them on `cio-jobs` (and `cio-api`); on Coolify they apply to the
+whole compose stack. The jobs worker won't send invites or notifications if SMTP is unset.
+:::
+
+## Providers
+
+Any standard SMTP provider works — including transactional services such as **Zoho / ZeptoMail**,
+Postmark, Resend (SMTP), Amazon SES, or Mailgun. See the
+[Nodemailer SMTP docs](https://nodemailer.com/smtp/) for provider-specific setup and port/TLS options.

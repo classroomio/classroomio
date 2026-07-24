@@ -1,0 +1,53 @@
+---
+title: Versions & upgrades
+description: Pin CIO_VERSION, upgrade ClassroomIO safely, and roll back to a previous release.
+---
+
+ClassroomIO publishes versioned images. `CIO_VERSION` controls which tag you run.
+
+## Choosing a tag
+
+- **Pin an exact release** (e.g. `1.0.0`) in production, so a merge to `main` never restarts you onto
+  changed images unattended.
+- `latest` is the freshest `main` build — it moves on **every merge** (rolling; may include unreleased
+  code). The version tags (`1.0.0`, `1.0`, `1`) are the immutable, pinned releases.
+
+```zsh title=".env"
+CIO_VERSION=1.0.0   # pin a release; blank or "latest" = rolling main build
+```
+
+:::note[Confirm the tag exists]
+Before deploying, confirm the tag you set actually exists at
+[hub.docker.com/r/classroomio](https://hub.docker.com/r/classroomio/).
+:::
+
+## Upgrading
+
+### Pre-built images (Docker)
+
+Bump `CIO_VERSION` in `.env`, then re-pull and recreate:
+
+```zsh title="Terminal"
+docker compose -f docker-compose.images.yaml --env-file .env --profile minio pull
+docker compose -f docker-compose.images.yaml --env-file .env --profile minio up -d
+```
+
+### Build from source (Docker)
+
+`git pull`, then re-run `./run-docker-full-stack.sh --build` to rebuild.
+
+### Railway / Coolify
+
+Set `CIO_VERSION` to the newer release and redeploy. Because you pin a version, a new release never
+restarts you onto changed images unattended.
+
+## Rolling back
+
+Set `CIO_VERSION` back to the previous release and run the same upgrade command (or redeploy). Pinned
+versions make rollbacks reproducible.
+
+:::warning[Back up before upgrading]
+Database schema migrations run **automatically** when the API starts. Back up your Postgres volume
+(and object storage) before a major upgrade, and avoid `docker compose down -v` / `docker volume prune`,
+which delete your data volumes.
+:::
