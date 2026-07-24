@@ -36,7 +36,7 @@
 
     if (isCorrect === true) {
       if (isSelected) {
-        return `${base} ui:border-emerald-600 ui:bg-emerald-600 ui:text-white ui:hover:bg-emerald-600 ui:hover:text-white ui:data-[state=on]:bg-emerald-600 ui:data-[state=on]:text-white`;
+        return `${base} ui:border-emerald-600 ui:bg-emerald-600 ui:text-emerald-950 ui:hover:bg-emerald-600 ui:hover:text-emerald-950 ui:data-[state=on]:bg-emerald-600 ui:data-[state=on]:text-emerald-950 ui:dark:text-emerald-950`;
       }
 
       return `${base} ui:text-muted-foreground ui:opacity-50`;
@@ -44,11 +44,11 @@
 
     if (isCorrect === false) {
       if (isSelected) {
-        return `${base} ui:border-destructive ui:bg-destructive ui:text-white ui:hover:bg-destructive ui:hover:text-white ui:data-[state=on]:bg-destructive ui:data-[state=on]:text-white`;
+        return `${base} ui:border-red-900 ui:bg-red-950 ui:text-red-400 ui:hover:bg-red-950 ui:hover:text-red-400 ui:data-[state=on]:bg-red-950 ui:data-[state=on]:text-red-400`;
       }
 
       if (isThisCorrectOption) {
-        return `${base} ui:border-emerald-600 ui:bg-transparent ui:text-emerald-700 ui:hover:bg-transparent ui:hover:text-emerald-700 ui:data-[state=on]:bg-transparent ui:data-[state=on]:text-emerald-700 ui:dark:text-emerald-400 ui:dark:hover:text-emerald-400 ui:dark:data-[state=on]:text-emerald-400`;
+        return `${base} ui:border-emerald-600 ui:bg-transparent ui:text-emerald-600 ui:hover:bg-transparent ui:hover:text-emerald-600 ui:data-[state=on]:bg-transparent ui:data-[state=on]:text-emerald-600 ui:dark:text-emerald-400 ui:dark:hover:text-emerald-400 ui:dark:data-[state=on]:text-emerald-400`;
       }
 
       return `${base} ui:text-muted-foreground ui:opacity-50`;
