@@ -1,13 +1,13 @@
 <script module lang="ts">
-  let pending: Promise<typeof import('@cio/ui/base/chart')> | null = null;
   function loadChart() {
-    pending ??= import('@cio/ui/base/chart');
-    return pending;
+    if (typeof window === 'undefined') return Promise.reject(new Error('browser-only'));
+    return import('@cio/ui/base/chart');
   }
 </script>
 
 <script lang="ts">
-  import type * as Chart from '@cio/ui/base/chart';
+  import { browser } from '$app/environment';
+  import type { ChartConfig } from '@cio/ui/base/chart/types';
   import { Spinner } from '@cio/ui/base/spinner';
   import { Empty } from '@cio/ui/custom/empty';
   import BarChartIcon from '@lucide/svelte/icons/bar-chart-3';
@@ -32,14 +32,14 @@
       label: $t('analytics.number_of_students'),
       color: 'var(--chart-1)'
     }
-  } satisfies Chart.ChartConfig);
+  } satisfies ChartConfig);
 
   const gradeChartConfig = $derived({
     students: {
       label: $t('analytics.number_of_students'),
       color: 'var(--chart-2)'
     }
-  } satisfies Chart.ChartConfig);
+  } satisfies ChartConfig);
 
   const hasStudentData = $derived(Boolean(courseAnalytics?.students?.length));
 
@@ -142,7 +142,7 @@
         <div class="flex h-[280px] items-center justify-center">
           <Spinner class="ui:text-muted-foreground size-6" />
         </div>
-      {:else if hasStudentData}
+      {:else if browser && hasStudentData}
         {#await loadChart() then C}
           <C.ChartContainer class="h-[280px] w-full" config={progressChartConfig}>
             <C.BarChart
@@ -154,6 +154,10 @@
             />
           </C.ChartContainer>
         {/await}
+      {:else if hasStudentData}
+        <div class="flex h-[280px] items-center justify-center">
+          <Spinner class="ui:text-muted-foreground size-6" />
+        </div>
       {:else}
         <Empty icon={BarChartIcon} title={$t('analytics.no_progress_data')} class="h-[280px]" />
       {/if}
@@ -169,12 +173,16 @@
         <div class="flex h-[280px] items-center justify-center">
           <Spinner class="ui:text-muted-foreground size-6" />
         </div>
-      {:else if hasStudentData}
+      {:else if browser && hasStudentData}
         {#await loadChart() then C}
           <C.ChartContainer class="h-[280px] w-full" config={gradeChartConfig}>
             <C.BarChart data={gradeChartData} x="group" axis="x" props={gradeChartProps} series={gradeSeries} />
           </C.ChartContainer>
         {/await}
+      {:else if hasStudentData}
+        <div class="flex h-[280px] items-center justify-center">
+          <Spinner class="ui:text-muted-foreground size-6" />
+        </div>
       {:else}
         <Empty icon={BarChartIcon} title={$t('analytics.no_grade_data')} class="h-[280px]" />
       {/if}

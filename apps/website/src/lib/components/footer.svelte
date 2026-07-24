@@ -165,7 +165,7 @@
           </li>
           <li>
             <a
-              href="https://classroomio.com/docs/quickstart/signup"
+              href="https://classroomio.com/docs/guides/quickstart/signup"
               target="_blank"
               class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors">Getting Started</a
             >
