@@ -1,7 +1,8 @@
 <script lang="ts">
-  import * as Chart from '../../../../base/chart';
   import type { ExerciseQuestionRendererProps } from '@cio/question-types';
+  import type { ChartConfig } from '../../../../base/chart/types';
 
+  import SubmissionResponsePieChart from '../shared/submission-response-pie-chart.svelte';
   import { getAnswerForQuestion, getSubmissionLabel, normalizeLabel, withChartColors } from '../submission-utils';
 
   let {
@@ -30,7 +31,7 @@
       label: getSubmissionLabel(labels, 'submission.chart.responses', 'Responses'),
       color: 'var(--chart-1)'
     }
-  } satisfies Chart.ChartConfig);
+  } satisfies ChartConfig);
 
   const chartData = $derived.by(() => {
     let trueCount = 0;
@@ -81,13 +82,8 @@
   });
 </script>
 
-{#if chartData.length > 0}
-  <Chart.Container config={chartConfig} class="ui:h-[280px] ui:w-full ui:flex-col ui:items-center">
-    <Chart.PieChart data={chartData} key="key" label="label" value="responses" c="color" />
-    <Chart.ChartLegend items={chartData.map((d) => ({ label: d.label, color: d.color, value: d.responses }))} />
-  </Chart.Container>
-{:else}
-  <p class="ui:text-muted-foreground ui:text-sm">
-    {getSubmissionLabel(labels, 'submission.chart.no_data', 'No responses yet')}
-  </p>
-{/if}
+<SubmissionResponsePieChart
+  {chartData}
+  {chartConfig}
+  emptyLabel={getSubmissionLabel(labels, 'submission.chart.no_data', 'No responses yet')}
+/>
