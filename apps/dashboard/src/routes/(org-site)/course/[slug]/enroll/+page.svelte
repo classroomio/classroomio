@@ -121,7 +121,6 @@
 
       if (!result?.data) {
         enrollmentError = 'enroll_failed';
-        snackbar.error('snackbar.invite.failed_join');
         return;
       }
 
