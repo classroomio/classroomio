@@ -8,7 +8,7 @@
 <script lang="ts">
   import { Spinner } from '../../../../base/spinner';
   import type { ChartConfig } from '../../../../base/chart/types';
-  import Empty from '$src/custom/empty/empty.svelte';
+  import Empty from '../../../empty/empty.svelte';
   import { BarChart3 } from '@lucide/svelte';
 
   const isBrowser = typeof window !== 'undefined';
