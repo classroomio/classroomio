@@ -152,13 +152,17 @@ export function mapZodErrorsToQuestionErrors(
   questions: Question[]
 ): ExerciseEditorErrors {
   const errors: ExerciseEditorErrors = {};
+  const activeQuestions = questions.filter((question) => !question.deletedAt);
+
   for (const [path, message] of Object.entries(zodErrors)) {
     const pathParts = path.split('.');
     const questionIndex = pathParts[0] === 'questions' ? parseInt(pathParts[1]) : -1;
 
-    if (questionIndex >= 0 && questionIndex < questions.length) {
-      const question = questions[questionIndex];
-      if (question && !question.deletedAt) {
+    if (questionIndex >= 0 && questionIndex < activeQuestions.length) {
+      const activeQuestion = activeQuestions[questionIndex];
+      const question = questions.find((questionItem) => questionItem.id === activeQuestion.id);
+
+      if (question) {
         const qErrors = errors[question.id] || {};
 
         // Check if error is related to options
