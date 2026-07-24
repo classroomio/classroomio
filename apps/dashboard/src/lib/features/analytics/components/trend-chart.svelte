@@ -1,6 +1,7 @@
 <script module lang="ts">
   function loadChart() {
     if (typeof window === 'undefined') return Promise.reject(new Error('browser-only'));
+
     return import('@cio/ui/base/chart');
   }
 </script>
