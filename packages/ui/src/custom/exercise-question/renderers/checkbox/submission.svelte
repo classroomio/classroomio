@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type * as Chart from '../../../../base/chart';
+  import type { ChartConfig } from '../../../../base/chart/types';
   import type { ExerciseQuestionRendererProps } from '@cio/question-types';
 
   import SubmissionResponseBarChart from '../shared/submission-response-bar-chart.svelte';
@@ -16,7 +16,7 @@
       label: getSubmissionLabel(labels, 'submission.chart.responses', 'Responses'),
       color: 'var(--chart-1)'
     }
-  } satisfies Chart.ChartConfig);
+  } satisfies ChartConfig);
 
   const series = $derived([
     {
