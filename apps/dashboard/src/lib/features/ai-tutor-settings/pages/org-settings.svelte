@@ -1,5 +1,4 @@
 <script lang="ts">
-  // import { onMount } from 'svelte';
   import { defaultAiTutorSettings } from '@cio/ai-assistant/tutor-config';
 
   import * as Page from '@cio/ui/base/page';
@@ -31,12 +30,6 @@
 
     intitializeSettings();
   });
-
-  // onMount(async () => {
-  //   await aiTutorApi.fetchOrgSettings();
-  //   applyOrgSettings(aiTutorApi.orgSettings ?? defaultAiTutorSettings);
-  //   initialized = true;
-  // });
 
   async function handleSave() {
     await aiTutorApi.updateOrgSettings($orgTutorSettingsStore);

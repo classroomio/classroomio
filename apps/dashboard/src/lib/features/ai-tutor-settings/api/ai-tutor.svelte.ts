@@ -33,6 +33,8 @@ class AiTutorApi extends BaseApiWithErrors {
           this.orgSettings = response.data;
         },
         onError: () => {
+          settings = null;
+          this.orgSettings = null;
           snackbar.error('aiTutor.snackbar.fetchError');
         }
       });

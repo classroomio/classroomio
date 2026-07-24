@@ -50,7 +50,7 @@
   let isLoading = $state(false);
   let isDeleting = $state(false);
   let openCertificateDeadlineDialog = $state(false);
-  let highlightPublishToggle = $state(false);
+  let highlightedField = $state<string | null>(null);
   // let highlightCertificateSettings = $state(false);
   let errors: {
     title: string | undefined;
@@ -176,7 +176,7 @@
     if (isCourseCompliance && !hasCertificateDeadline) {
       // Show dialog and highlight both publish toggle and certificate settings
       openCertificateDeadlineDialog = true;
-      highlightPublishToggle = true;
+      highlightedField = 'publish';
       // highlightCertificateSettings = true;
       return;
     }
@@ -380,7 +380,7 @@
     const highlightParam = $page.url.searchParams.get('highlight');
 
     if (highlightParam === 'publish' || highlightParam === 'true' || sectionId === 'publish') {
-      highlightPublishToggle = true;
+      highlightedField = 'publish';
     }
 
     if (!sectionId) {
@@ -901,7 +901,7 @@
   <Field.Set id="publish">
     <Field.Legend>{$t('course.navItem.settings.publish')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.determines')}</Field.Description>
-    <AttentionHighlight bind:active={highlightPublishToggle}>
+    <AttentionHighlight id="publish" bind:highlightedField>
       <Field.Field orientation="horizontal">
         <Switch id="is-published" checked={$settings.isPublished} onCheckedChange={onPublishToggle} />
         <Label for="publish">

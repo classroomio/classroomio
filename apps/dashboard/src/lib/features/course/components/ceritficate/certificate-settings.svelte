@@ -12,10 +12,10 @@
 
   type Props = {
     errors: Record<string, string>;
-    highlightActive?: boolean;
+    highlightedField?: string | null;
   };
 
-  let { errors, highlightActive = $bindable(false) }: Props = $props();
+  let { errors, highlightedField = $bindable<string | null>(null) }: Props = $props();
 
   function isoToDatetimeLocal(iso: string | null | undefined): string {
     if (!iso) return '';
@@ -74,11 +74,11 @@
   }
 
   function validateCertificateSettings(): string[] {
-    const errs: string[] = [];
+    const errors: string[] = [];
     if (courseApi.course?.certificate?.isDownloadable && !courseApi.course?.certificate?.deadline) {
-      errs.push('course.certification.deadline_required');
+      errors.push('course.certification.deadline_required');
     }
-    return errs;
+    return errors;
   }
 
   const certificateValidationErrors = $derived(validateCertificateSettings());
@@ -108,7 +108,7 @@
     </Field.Field>
 
     <Field.Group>
-      <AttentionHighlight bind:active={highlightActive}>
+      <AttentionHighlight id="certificate.deadline" bind:highlightedField>
         <Field.Field>
           <Field.Label for="cert-deadline">
             {$t('course.certification.deadline_label')}
@@ -194,23 +194,21 @@
 
   <Field.Separator />
 
-  <AttentionHighlight bind:active={highlightActive}>
-    <Field.Set>
-      <Field.Legend>{$t('course.certification.email_message_label')}</Field.Legend>
-      <Field.Field>
-        <Textarea
-          id="cert-email-message"
-          class="w-full"
-          rows={4}
-          placeholder={$t('course.certification.email_message_placeholder')}
-          value={courseApi.course?.certificate?.emailMessage ?? ''}
-          oninput={onEmailMessageInput}
-          disabled={$isFreePlan}
-        />
-        {#if errors['certificate.emailMessage']}
-          <Field.Error>{errors['certificate.emailMessage']}</Field.Error>
-        {/if}
-      </Field.Field>
-    </Field.Set>
-  </AttentionHighlight>
+  <Field.Set>
+    <Field.Legend>{$t('course.certification.email_message_label')}</Field.Legend>
+    <Field.Field>
+      <Textarea
+        id="cert-email-message"
+        class="w-full"
+        rows={4}
+        placeholder={$t('course.certification.email_message_placeholder')}
+        value={courseApi.course?.certificate?.emailMessage ?? ''}
+        oninput={onEmailMessageInput}
+        disabled={$isFreePlan}
+      />
+      {#if errors['certificate.emailMessage']}
+        <Field.Error>{errors['certificate.emailMessage']}</Field.Error>
+      {/if}
+    </Field.Field>
+  </Field.Set>
 </Field.Group>
