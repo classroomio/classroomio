@@ -1,18 +1,14 @@
 <script lang="ts">
-  import pluralize from 'pluralize';
-  import UsersIcon from '@lucide/svelte/icons/users';
-  import SendHorizontalIcon from '@lucide/svelte/icons/send-horizontal';
-  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
-  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import { onMount } from 'svelte';
 
   import { profile } from '$lib/utils/store/user';
   import { isOrgAdmin } from '$lib/utils/store/org';
-  import { calDateDiff } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
+  import { calDateDiff } from '$lib/utils/functions/date';
   import { newsfeedApi } from '$features/course/api';
 
+  import * as CommentTree from '@cio/ui/custom/comment-tree';
   import { Button } from '@cio/ui/base/button';
-  import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import type { Feed } from '$features/course/utils/types';
   import type { NewsfeedCommentsByFeedId } from '$features/course/api';
 
@@ -26,71 +22,50 @@
       avatarUrl: string;
     };
     comments?: NewsfeedCommentsByFeedId;
-    onAddComment: (content: string) => Promise<void> | void;
-    onDeleteComment: (commentId: string | number) => void;
+    onAddComment: (content: string, parentId?: number) => Promise<void> | void;
+    onDeleteComment: (commentId: string | number, parentId?: number) => void;
   }
 
   let { courseId, feed, author, comments, onAddComment, onDeleteComment }: Props = $props();
 
-  let comment = $state('');
-  let errors: { newComment: string } = $state({ newComment: '' });
+  let activeReplyTarget = $state<{ id: number; fullname: string } | null>(null);
   let isSubmitting = $state(false);
   let isBootstrapping = $state(false);
   let didBootstrap = $state(false);
+  let expandedRepliesMap = $state<Record<number, boolean>>({});
 
-  // Pagination / progressive reveal (newest-first)
-  const PAGE_SIZE = 5;
-  let visibleCount = $state(1);
+  const PAGE_SIZE = 10;
+  let visibleCount = $state(2);
 
   const loadedCount = $derived((comments?.items?.length ?? 0) as number);
-  const totalCount = $derived(comments?.totalCount || feed.commentCount);
+  const totalCount = $derived(comments?.totalCount ?? feed.commentCount ?? 0);
   const isLoading = $derived((comments?.isLoading ?? false) as boolean);
-  const shownCount = $derived(Math.min(visibleCount, loadedCount));
+  const shownCount = $derived(Math.min(visibleCount, Math.max(loadedCount, 0)));
 
-  // Fetch the minimum info needed to:
-  // - know totalCount
-  // - show the latest comment (1) by default
   const bootstrap = async () => {
-    if (!courseId || !comments) return;
-    if (didBootstrap) return;
-
+    if (!courseId || didBootstrap) return;
     didBootstrap = true;
     isBootstrapping = true;
     try {
       await newsfeedApi.getComments(courseId, feed.id, PAGE_SIZE);
+      const res = newsfeedApi.commentsByFeedId[feed.id];
+      if (res?.items?.length) {
+        visibleCount = Math.max(visibleCount, res.items.length);
+      }
     } finally {
       isBootstrapping = false;
     }
   };
 
-  const submitComment = async () => {
-    if (isSubmitting) return;
-
-    isSubmitting = true;
-    try {
-      await onAddComment(comment);
-      comment = '';
-    } finally {
-      isSubmitting = false;
+  onMount(async () => {
+    if (totalCount > 0 && (!comments || comments.items.length === 0)) {
+      await bootstrap();
     }
-  };
-
-  const handleAddNewComment = async (event: KeyboardEvent | MouseEvent) => {
-    if (isSubmitting) return;
-
-    const maybeKey = event as KeyboardEvent & { key?: string };
-    if (maybeKey.key === 'Enter' || event.type === 'click') {
-      event.preventDefault();
-      await submitComment();
-    }
-  };
+  });
 
   const ensureLoaded = async (targetVisible: number) => {
     if (!courseId || !comments) return;
-
     const target = Math.min(targetVisible, comments.totalCount);
-
-    // Load pages until we have enough locally to render `target` items.
     while (comments.hasMore && comments.items.length < target && !comments.isLoading) {
       await newsfeedApi.loadMoreComments(courseId, feed.id, PAGE_SIZE);
     }
@@ -98,127 +73,131 @@
 
   const showMore = async () => {
     if (!courseId || !comments) return;
-
-    // Ensure we know totalCount and have at least 1 comment (if it exists).
-    if (!didBootstrap) {
-      await bootstrap();
-    }
-
-    const next = visibleCount <= 1 ? PAGE_SIZE : visibleCount + PAGE_SIZE;
+    if (!didBootstrap) await bootstrap();
+    const next = visibleCount + PAGE_SIZE;
     visibleCount = next;
     await ensureLoaded(next);
   };
 
-  const minimize = () => {
-    visibleCount = visibleCount > 1 ? 1 : shownCount;
+  const handleToggleReplies = async (parentId: number) => {
+    const isCurrentlyExpanded = Boolean(expandedRepliesMap[parentId]);
+    expandedRepliesMap[parentId] = !isCurrentlyExpanded;
+
+    if (!isCurrentlyExpanded && courseId) {
+      await newsfeedApi.getReplies(courseId, feed.id, parentId);
+    }
   };
 
-  const toggleComments = async () => {
-    // If already showing more than the latest comment, collapse back to 1.
-    if (totalCount === shownCount) {
-      minimize();
-      return;
-    }
+  const handleReplyClick = (commentId: number, authorName: string) => {
+    activeReplyTarget = { id: commentId, fullname: authorName };
+  };
 
-    await showMore();
+  const handleCancelReply = () => {
+    activeReplyTarget = null;
+  };
+
+  const handleSubmit = async (text: string) => {
+    if (isSubmitting) return;
+    isSubmitting = true;
+    try {
+      const parentId = activeReplyTarget?.id;
+      await onAddComment(text, parentId);
+      if (parentId) {
+        expandedRepliesMap[parentId] = true;
+      }
+      activeReplyTarget = null;
+    } finally {
+      isSubmitting = false;
+    }
   };
 </script>
 
-<section class="ui:border-t p-3">
-  <div class="flex w-full items-center justify-between">
+<section class="ui:border-t ui:border-border/60 p-4 pt-3">
+  {#if totalCount > shownCount}
     <Button
       variant="ghost"
       size="sm"
-      onclick={toggleComments}
-      loading={isBootstrapping || isLoading}
-      class="justify-start"
+      onclick={showMore}
+      disabled={isBootstrapping || isLoading}
+      class="text-muted-foreground hover:text-foreground ui:transition-colors ui:h-auto ui:p-0 ui:justify-start mb-3 text-sm font-medium"
     >
-      <UsersIcon size={16} />
-      <p class="py-2 text-sm">{pluralize($t('course.navItem.news_feed.comments.comment'), totalCount, true)}</p>
-
-      {#if totalCount > shownCount}
-        <span class="ml-auto text-xs text-gray-600"
-          >{$t('course.navItem.news_feed.comments.showing_of', { shown: shownCount, total: totalCount })}</span
-        >
+      {#if isBootstrapping || isLoading}
+        Loading...
+      {:else}
+        View more comments ({totalCount - shownCount})
       {/if}
     </Button>
+  {/if}
 
-    {#if shownCount > 1}
-      <Button variant="ghost" size="sm" onclick={minimize}>
-        <span class="ml-auto text-xs text-gray-600">{$t('course.navItem.news_feed.comments.hide')}</span>
-      </Button>
-    {/if}
-  </div>
-
-  <div>
+  <CommentTree.Root class="max-h-[400px] overflow-y-auto py-2">
     {#if comments}
       {#each comments.items.slice(0, shownCount) as commentItem (commentItem.id)}
         {#if commentItem.content}
-          <div class="group flex items-center justify-between py-2">
-            <span class="flex items-center gap-3">
-              <div class="h-9 w-9">
-                <img
-                  src={commentItem.authorAvatarUrl || ''}
-                  alt={$t('course.navItem.news_feed.user_avatar_alt')}
-                  class="h-full w-full rounded-full object-cover"
-                />
-              </div>
-              <span>
-                <div class="flex items-center gap-2">
-                  <p class="text-sm font-medium capitalize">{commentItem.authorFullname || ''}</p>
-                  <p class="text-xs font-medium text-gray-600">{calDateDiff(commentItem.createdAt)}</p>
-                </div>
-                <p>{commentItem.content}</p>
-              </span>
-            </span>
+          {@const commentIdNum = Number(commentItem.id)}
+          {@const repliesState = newsfeedApi.repliesByParentId[commentIdNum]}
 
-            {#if commentItem.authorProfileId === $profile.id || $isOrgAdmin}
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger
-                  class="hidden h-8 w-8 items-center justify-center rounded-md group-hover:flex hover:bg-gray-100 dark:hover:bg-neutral-700"
-                >
-                  <EllipsisVerticalIcon class="h-5 w-5" />
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content align="end">
-                  <DropdownMenu.Item class="text-red-600" onclick={() => onDeleteComment(commentItem.id)}>
-                    {$t('course.navItem.news_feed.comments.delete')}
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
-            {/if}
-          </div>
+          <CommentTree.Item>
+            <div class="flex w-full items-start justify-between">
+              <div class="flex w-full flex-col gap-1">
+                <CommentTree.Header
+                  avatarUrl={commentItem.authorAvatarUrl}
+                  fullname={commentItem.authorFullname}
+                  dateLabel={calDateDiff(commentItem.createdAt)}
+                />
+                <div class="pl-10">
+                  <CommentTree.Content content={commentItem.content} />
+                  <CommentTree.Actions
+                    onReply={() => handleReplyClick(commentIdNum, commentItem.authorFullname || 'User')}
+                    canDelete={commentItem.authorProfileId === $profile.id || $isOrgAdmin}
+                    onDelete={() => onDeleteComment(commentItem.id)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Nested Replies Thread -->
+            <CommentTree.Replies
+              replyCount={commentItem.replyCount || 0}
+              isExpanded={Boolean(expandedRepliesMap[commentIdNum])}
+              onToggleExpand={() => handleToggleReplies(commentIdNum)}
+            >
+              {#if repliesState?.items}
+                {#each repliesState.items as reply (reply.id)}
+                  <CommentTree.Item>
+                    <div class="flex w-full flex-col gap-1">
+                      <CommentTree.Header
+                        avatarUrl={reply.authorAvatarUrl}
+                        fullname={reply.authorFullname}
+                        dateLabel={calDateDiff(reply.createdAt)}
+                        avatarSize="ui:size-7"
+                      />
+                      <div class="pl-9">
+                        <CommentTree.Content content={reply.content} />
+                        <CommentTree.Actions
+                          onReply={() => handleReplyClick(commentIdNum, reply.authorFullname || 'User')}
+                          canDelete={reply.authorProfileId === $profile.id || $isOrgAdmin}
+                          onDelete={() => onDeleteComment(reply.id, commentIdNum)}
+                        />
+                      </div>
+                    </div>
+                  </CommentTree.Item>
+                {/each}
+              {/if}
+            </CommentTree.Replies>
+          </CommentTree.Item>
         {/if}
       {/each}
     {/if}
-  </div>
+  </CommentTree.Root>
 
-  <!-- Input for new comment -->
-  <div class="flex items-center justify-between gap-2">
-    <UserAvatar src={author.avatarUrl} alt={$t('course.navItem.news_feed.user_avatar_alt')} class="size-7" />
-    <div class="flex-1">
-      <input
-        type="text"
-        bind:value={comment}
-        onkeydown={handleAddNewComment}
-        placeholder={$t('course.navItem.news_feed.comments.placeholder')}
-        class="ui:border w-full rounded-3xl bg-transparent p-1 pl-2 text-sm disabled:opacity-50"
-        disabled={isSubmitting}
-        required
-      />
-    </div>
-    <Button
-      variant="ghost"
-      size="icon-sm"
-      class="rounded-full"
-      loading={isSubmitting}
-      onclick={handleAddNewComment}
-      aria-label={$t('course.navItem.news_feed.comments.submit_aria')}
-    >
-      <SendHorizontalIcon size={16} />
-    </Button>
-  </div>
-
-  {#if errors?.newComment}
-    <p class="text-sm text-red-500">{errors?.newComment}</p>
-  {/if}
+  <!-- Comment Input Box -->
+  <CommentTree.Input
+    authorAvatarUrl={author.avatarUrl}
+    placeholder={$t('course.navItem.news_feed.comments.placeholder')}
+    replyingToUser={activeReplyTarget?.fullname || null}
+    onCancelReply={handleCancelReply}
+    onSubmit={handleSubmit}
+    {isSubmitting}
+    class="mt-2"
+  />
 </section>

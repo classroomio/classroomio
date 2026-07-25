@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import type { TCourseNewsfeed, TCourseNewsfeedComment, TNewCourseNewsfeed, TNewCourseNewsfeedComment } from '@db/types';
-import { and, db, desc, eq, lt, ne, sql } from '@db/drizzle';
+import { and, db, desc, eq, isNull, lt, ne, sql } from '@db/drizzle';
 import { ROLE } from '@cio/utils/constants';
 
 /**
@@ -221,36 +221,57 @@ export async function getNewsfeedCommentsByFeedId(feedId: string): Promise<TCour
 /**
  * Gets paginated comments for a newsfeed item with author profile
  * @param feedId Newsfeed ID
- * @param options Pagination options (cursor, limit)
+ * @param options Pagination options (parentId, cursor, limit)
  * @returns Object with comments array, total count, hasMore flag, and nextCursor
  */
 export async function getNewsfeedCommentsByFeedIdPaginated(
   feedId: string,
-  options: { cursor?: string; limit: number }
+  options: { parentId?: number; cursor?: string; limit: number }
 ) {
   try {
-    const { cursor, limit } = options;
+    const { parentId, cursor, limit } = options;
 
     // Build where conditions
     const whereConditions = [eq(schema.courseNewsfeedComment.courseNewsfeedId, feedId)];
+
+    if (parentId !== undefined) {
+      whereConditions.push(eq(schema.courseNewsfeedComment.parentId, parentId));
+    } else {
+      whereConditions.push(isNull(schema.courseNewsfeedComment.parentId));
+    }
+
     if (cursor) {
-      // Cursor is the last comment ID, fetch comments created after it
       whereConditions.push(lt(schema.courseNewsfeedComment.id, Number(cursor)));
     }
 
-    // Get total count
+    // Get total count matching parent condition
+    const countWhereConditions = [eq(schema.courseNewsfeedComment.courseNewsfeedId, feedId)];
+    if (parentId !== undefined) {
+      countWhereConditions.push(eq(schema.courseNewsfeedComment.parentId, parentId));
+    } else {
+      countWhereConditions.push(isNull(schema.courseNewsfeedComment.parentId));
+    }
+
     const totalCountResult = await db
       .select({ count: sql<number>`count(*)`.as('count') })
       .from(schema.courseNewsfeedComment)
-      .where(eq(schema.courseNewsfeedComment.courseNewsfeedId, feedId));
+      .where(and(...countWhereConditions));
     const totalCount = Number(totalCountResult[0]?.count || 0);
 
-    // Fetch comments with author profile (limit + 1 to check if there are more)
+    // Fetch comments with author profile & reply count
     const comments = await db
       .select({
         comment: schema.courseNewsfeedComment,
         groupmember: schema.groupmember,
-        profile: schema.profile
+        profile: schema.profile,
+        replyCount: sql<number>`
+          COALESCE(
+            (SELECT COUNT(*)::int 
+             FROM ${schema.courseNewsfeedComment} c2 
+             WHERE c2.parent_id = ${schema.courseNewsfeedComment.id}),
+            0
+          )
+        `.as('replyCount')
       })
       .from(schema.courseNewsfeedComment)
       .leftJoin(schema.groupmember, eq(schema.courseNewsfeedComment.authorId, schema.groupmember.id))
@@ -259,11 +280,9 @@ export async function getNewsfeedCommentsByFeedIdPaginated(
       .orderBy(desc(schema.courseNewsfeedComment.createdAt))
       .limit(limit + 1);
 
-    // Check if there are more comments
     const hasMore = comments.length > limit;
     const items = comments.slice(0, limit);
 
-    // Get next cursor (ID of the oldest comment in this batch - for loading older comments)
     const nextCursor = hasMore && items.length > 0 ? String(items[items.length - 1].comment.id) : null;
 
     return {
@@ -272,7 +291,8 @@ export async function getNewsfeedCommentsByFeedIdPaginated(
         authorProfileId: row.profile?.id || null,
         authorFullname: row.profile?.fullname || null,
         authorUsername: row.profile?.username || null,
-        authorAvatarUrl: row.profile?.avatarUrl || null
+        authorAvatarUrl: row.profile?.avatarUrl || null,
+        replyCount: Number(row.replyCount || 0)
       })),
       totalCount,
       hasMore,

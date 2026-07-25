@@ -231,10 +231,13 @@ export async function getNewsfeedComments(feedId: string) {
 /**
  * Gets paginated comments for a newsfeed item
  * @param feedId Newsfeed ID
- * @param options Pagination options (cursor, limit)
+ * @param options Pagination options (parentId, cursor, limit)
  * @returns Paginated comments with metadata
  */
-export async function getNewsfeedCommentsService(feedId: string, options: { cursor?: string; limit: number }) {
+export async function getNewsfeedCommentsService(
+  feedId: string,
+  options: { parentId?: number; cursor?: string; limit: number }
+) {
   try {
     const feed = await getNewsfeedById(feedId);
     if (!feed) {
@@ -260,16 +263,23 @@ export async function getNewsfeedCommentsService(feedId: string, options: { curs
  * @param feedId Newsfeed ID
  * @param authorId Group member ID (author)
  * @param content Comment content
+ * @param parentId Optional parent comment ID for replies
  * @returns Created comment
  */
-export async function createNewsfeedCommentService(feedId: string, authorId: string, content: string) {
+export async function createNewsfeedCommentService(
+  feedId: string,
+  authorId: string,
+  content: string,
+  parentId?: number
+) {
   try {
     const sanitizedContent = sanitizeHtml(content);
 
     const commentData: TNewCourseNewsfeedComment = {
       courseNewsfeedId: feedId,
       authorId,
-      content: sanitizedContent
+      content: sanitizedContent,
+      parentId: parentId ?? null
     };
 
     const comment = await createNewsfeedComment(commentData);

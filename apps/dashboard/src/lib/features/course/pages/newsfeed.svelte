@@ -10,7 +10,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import type { Feed } from '$features/course/utils/types';
-  import PinIcon from '@lucide/svelte/icons/pin';
+
   import { onMount } from 'svelte';
   import type { AccountOrg } from '$features/app/types';
   import Empty from '@cio/ui/custom/empty/empty.svelte';
@@ -44,8 +44,8 @@
     avatarUrl: $profile.avatarUrl || ''
   });
 
-  const deleteComment = async (feedId: string, commentId: string) => {
-    await newsfeedApi.deleteComment(courseId, feedId, commentId);
+  const deleteComment = async (feedId: string, commentId: string, parentId?: number) => {
+    await newsfeedApi.deleteComment(courseId, feedId, commentId, parentId);
   };
 
   const addNewReaction = async (reactionType: NewsfeedReactionType, feedId: string, authorId: string) => {
@@ -69,8 +69,8 @@
     }
   };
 
-  const addNewComment = async (comment: string, feedId: string) => {
-    await newsfeedApi.createComment(courseId, feedId, comment, author);
+  const addNewComment = async (comment: string, feedId: string, parentId?: number) => {
+    await newsfeedApi.createComment(courseId, feedId, comment, author, parentId);
 
     if (!newsfeedApi.success) {
       return snackbar.error('snackbar.course.error.commenting_error');
@@ -147,13 +147,6 @@
     />
   {:else}
     {#each sortedFeeds as feed}
-      {#if feed.isPinned}
-        <div class="flex items-center gap-2">
-          <PinIcon size={16} class="filled" />
-
-          <p class="text-sm">{$t('course.navItem.news_feed.pinned')}</p>
-        </div>
-      {/if}
       <NewsFeedCard
         {feed}
         comments={newsfeedApi.commentsByFeedId[feed.id]}

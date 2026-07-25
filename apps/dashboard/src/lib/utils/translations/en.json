@@ -2098,6 +2098,11 @@
           "hide": "Hide comments",
           "placeholder": "Add class comment",
           "submit_aria": "Submit comment",
+          "reply": "Reply",
+          "replying_to": "Replying to @{name}",
+          "cancel_reply": "Cancel",
+          "view_replies": "View {count} {count, plural, =1 {reply} other {replies}}",
+          "hide_replies": "Hide replies",
           "delete": "Delete"
         },
         "user_avatar_alt": "User avatar",

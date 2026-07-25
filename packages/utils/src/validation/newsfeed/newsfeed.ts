@@ -32,7 +32,8 @@ export type TNewsfeedListQuery = z.infer<typeof ZNewsfeedListQuery>;
 // Newsfeed Comment Schemas
 export const ZNewsfeedCommentCreate = z.object({
   courseNewsfeedId: z.string().min(1),
-  content: z.string().min(1)
+  content: z.string().min(1),
+  parentId: z.number().int().positive().optional()
 });
 export type TNewsfeedCommentCreate = z.infer<typeof ZNewsfeedCommentCreate>;
 
@@ -47,6 +48,7 @@ export const ZNewsfeedCommentUpdate = z.object({
 export type TNewsfeedCommentUpdate = z.infer<typeof ZNewsfeedCommentUpdate>;
 
 export const ZNewsfeedCommentsQuery = z.object({
+  parentId: z.coerce.number().int().positive().optional(),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(50).optional().default(5)
 });

@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import PinIcon from '@lucide/svelte/icons/pin';
 
   import { calDateDiff } from '$lib/utils/functions/date';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
@@ -21,29 +22,36 @@
   let { feed, onPin, onEdit, onRequestDelete }: Props = $props();
 </script>
 
-<div class="px-3 pt-3 pb-0">
-  <div class="mb-2 flex justify-between">
-    <span class="flex items-center gap-3">
-      <UserAvatar src={feed.authorAvatarUrl} />
-      <span>
-        <p class="text-base font-semibold capitalize">{feed.authorFullname || ''}</p>
-        <p class="text-sm font-medium text-gray-600">{calDateDiff(feed.createdAt)}</p>
-      </span>
-    </span>
+<div class="p-4 pb-2">
+  {#if feed.isPinned}
+    <div class="text-muted-foreground mb-3 flex items-center gap-1.5">
+      <PinIcon size={14} class="fill-current" />
+      <p class="text-xs font-medium tracking-wide uppercase">{$t('course.navItem.news_feed.pinned')}</p>
+    </div>
+  {/if}
+
+  <div class="mb-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <UserAvatar src={feed.authorAvatarUrl} class="size-10" />
+      <div class="flex flex-col">
+        <p class="text-foreground text-sm font-semibold capitalize">{feed.authorFullname || 'Anonymous'}</p>
+        <p class="text-muted-foreground text-xs font-normal">{calDateDiff(feed.createdAt)}</p>
+      </div>
+    </div>
 
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger
-          class="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700"
+          class="text-muted-foreground hover:bg-accent hover:text-accent-foreground flex h-8 w-8 items-center justify-center rounded-md transition-colors"
         >
-          <EllipsisVerticalIcon class="h-5 w-5" />
+          <EllipsisVerticalIcon class="h-4 w-4" />
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end">
           <DropdownMenu.Item onclick={() => onPin(feed.id, feed.isPinned)}>
             {feed.isPinned ? $t('course.navItem.news_feed.card.unpin') : $t('course.navItem.news_feed.card.pin')}
           </DropdownMenu.Item>
           <DropdownMenu.Item onclick={onEdit}>{$t('course.navItem.news_feed.card.edit')}</DropdownMenu.Item>
-          <DropdownMenu.Item class="text-red-600" onclick={onRequestDelete}
+          <DropdownMenu.Item class="text-destructive focus:text-destructive" onclick={onRequestDelete}
             >{$t('course.navItem.news_feed.card.delete')}</DropdownMenu.Item
           >
         </DropdownMenu.Content>
@@ -52,7 +60,9 @@
   </div>
 
   {#if !isHtmlValueEmpty(feed.content || '')}
-    <HTMLRender className="w-[80%]">
+    <HTMLRender
+      className="w-full text-foreground text-sm font-normal md:text-sm prose-headings:text-base prose-headings:font-semibold prose-headings:mb-2 prose-p:mb-2 prose-a:text-primary"
+    >
       <div>
         <SafeHtmlContent content={feed.content || ''} />
       </div>
