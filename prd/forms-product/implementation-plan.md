@@ -12,8 +12,8 @@
 8. MVP excludes grading, points, reviewer workflow, and correctness semantics.
 9. MVP may ship with form-specific question tables rather than a generalized cross-product questionnaire schema.
 10. Public forms must ship with abuse controls before general rollout.
-11. Binding is attachment-level: `form_attachment` binds a reusable form to a context (course, lesson, landing page, checkout) and holds lifecycle/limit/dedup settings; responses record their attachment.
-12. MVP includes the purchase-request pipeline (default org form replacing `payment-modal.svelte`, pending → approve → enroll) and per-lesson pulse feedback.
+11. Binding is attachment-level: `form_attachment` binds a reusable form to a context (course, lesson, landing page, checkout, workshop) and holds lifecycle/limit/dedup settings; responses record their attachment.
+12. MVP includes the purchase-request pipeline (default org form replacing `payment-modal.svelte`, pending → approve → enroll), per-lesson pulse feedback, and workshop registration → verified access.
 13. MVP is one-page presentation only; respondent save-and-resume (FORM-B6) and edit-submitted-response are deferred to phase 2. Author-side DRAFT → PUBLISHED lifecycle stays.
 14. Commercial model is free-standalone / paid-integrations: free orgs get unlimited forms with share-link collection, inbox, analytics, and export; attachments, triggers, and consequences (approve→enroll, lesson pulse, landing-page blocks) require a paid plan. Checkout exception: the default purchase-request form collects on free; one-click approve→enroll is paid. Self-hosted ungated.
 15. Form creation and response access are restricted to org admins and teachers; students can only respond.
@@ -78,6 +78,8 @@
 | FORM-F7 | C | Landing Page Blocks | Landing-page form section block and approved-reviews display block (consent checkbox + `approvedForDisplay` curation) | `packages/ui` landing themes, org landing-page editor | FORM-F2, FORM-C7 | Org can embed a form and display curated reviews on its public site |
 | FORM-F8 | E | Plan Gating | Gate the integration layer (attachment creation, approve→enroll, lesson pulse, landing-page blocks) behind paid plans; standalone forms stay ungated and unlimited; default checkout form collects on free with approve→enroll gated; self-hosted ungated | plan config, form/attachment services, dashboard upsell states | FORM-B2, FORM-F2, FORM-F4 | Free orgs can collect without limits; every integration touchpoint shows a paid upsell instead of failing silently |
 | FORM-F9 | B/C | Permissions | Restrict form creation, editing, response viewing, and export to org ADMIN and TUTOR roles across routes and dashboard nav; students only respond | forms routes middleware, dashboard nav/route guards | FORM-B7, FORM-C3 | Student accounts cannot reach form authoring or response data |
+| FORM-F10 | A/B | Workshop Access | Add `WORKSHOP` attachment support and a response-bound access-grant table/service using hashed, expiring, recipient-bound tokens | schema/migration, `packages/db/src/queries/form/*`, `apps/api/src/services/form/workshop-access.ts` | FORM-F1, FORM-B4 | Form submission stores a pending response and grant without creating an account or enrollment |
+| FORM-F11 | B/C | Workshop Redemption | Send the org-branded workshop access email; add scanner-safe interstitial + transactional `POST` redemption that reconciles identity, ensures membership/enrollment, starts a session, and redirects to the workshop | email package, public form routes, workshop page, Forms attach picker | FORM-F10, FORM-F3 | Recipient proves email ownership and receives workshop access exactly once without duplicate identities or memberships |
 
 ## Route Targets
 
@@ -97,6 +99,8 @@
 
 1. `GET /forms/:slug`
 2. `POST /forms/:slug/respond`
+3. `GET /forms/access/:token` — render only; never consume the grant
+4. `POST /forms/access/:token/redeem` — consume grant and apply the workshop consequence transactionally
 
 ### Optional Authenticated Draft Routes
 
@@ -120,6 +124,8 @@ Only if MVP keeps save/resume:
 2. Public and authenticated forms can be loaded by slug without course membership.
 3. Response submission persists typed answers and enforces lifecycle and limit rules.
 4. File upload questions work with safe restrictions.
+5. Workshop-form submission sends an access grant but does not create an identity or enrollment before email verification.
+6. Grant redemption is scanner-safe, expiring, single-use, transactional, and idempotent.
 
 ### Phase C
 
@@ -164,9 +170,9 @@ This gets the core platform decision made early, lands the schema/query/API foun
 1. `FORM-C3` to `FORM-C8`
 2. `FORM-D1`, `FORM-D2`
 3. `FORM-E1`
-4. `FORM-F3` to `FORM-F5`
+4. `FORM-F3` to `FORM-F5`, `FORM-F10`, `FORM-F11`
 
-This delivers an MVP loop: create form, publish form, submit response, inspect response, and keep public endpoints safe enough for controlled rollout — plus the flagship integration demo: attach a form from a course, and buy a paid course through the purchase-request pipeline with approve → enroll.
+This delivers an MVP loop: create form, publish form, submit response, inspect response, and keep public endpoints safe enough for controlled rollout — plus two flagship integration demos: buy a paid course through the purchase-request pipeline with approve → enroll, and submit a workshop form → redeem the email grant → watch as an enrolled learner.
 
 ## Post-MVP Follow-Up Candidates
 
