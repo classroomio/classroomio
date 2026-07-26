@@ -73,7 +73,7 @@ The goal is **not** to build another Google Forms. The value of ClassroomIO Form
 
 - **Trigger**: a lesson is completed, a course ends, a buyer clicks "Buy", a landing page is visited — the form appears at the right moment without anyone sending a link.
 - **Identity**: authenticated respondents are already known (`profile`, course membership); no re-typing who someone is, and responses attach to the person's record.
-- **Consequence**: after the required identity check, a response can enroll a student, issue access to a form-gated workshop, create a purchase request an admin approves, feed reviews onto a course landing page, or surface per-lesson feedback to the instructor.
+- **Consequence**: a response can enroll a student, create a purchase request an admin approves, feed reviews onto a course landing page, or surface per-lesson feedback to the instructor.
 
 A standalone form with a share link is table stakes. Every roadmap decision should be weighed against this loop, not against feature parity with Google Forms or Typeform.
 
@@ -154,17 +154,16 @@ A standalone form with a share link is table stakes. Every roadmap decision shou
 8. File upload is supported in Forms, but public file upload must be guarded with rate limits and storage controls.
 9. Existing exercise question types are reused first; new form-only block types can be added later.
 10. The first implementation prioritizes reuse over perfect naming cleanup. Renaming `exercise-question` to a broader package is optional follow-up, not a blocker.
-11. **Binding is attachment-level, not form-level.** A form is a reusable org-owned asset. A `form_attachment` binds a form to a platform context (course, lesson, landing page, checkout, workshop). Every response records which attachment it came through, so context pages show only their own responses while the form library shows all responses with a per-context breakdown.
+11. **Binding is attachment-level, not form-level.** A form is a reusable org-owned asset. A `form_attachment` binds a form to a platform context (course, lesson, landing page, checkout). Every response records which attachment it came through, so course pages show only their own responses while the form library shows all responses with a per-context breakdown.
 12. **Per-attachment settings vs per-form settings**: lifecycle windows (open/close dates), response limits, and one-response-per-respondent live on the **attachment**. Question content and identity settings (anonymous, collect name/email) live on the **form**. Editing a form's questions applies everywhere it is attached; question versioning is deferred.
-13. **MVP ships three integration loops**: (a) application → enrollment, including the purchase-request pipeline that replaces the hardcoded course payment modal, (b) per-lesson pulse feedback, and (c) workshop registration → verified access. A landing-page form section and a reviews display block are part of MVP surface work.
+13. **MVP ships two integration loops**: (a) application → enrollment, including the purchase-request pipeline that replaces the hardcoded course payment modal, and (b) per-lesson pulse feedback. A landing-page form section and a reviews display block are part of MVP surface work.
 14. **Create-in-context authoring**: every attachable surface (course settings, lesson, landing-page builder, checkout config) gets an "Attach a form" picker that lists existing org forms and offers "Create new", which opens the builder in a modal/drawer pre-seeded with a context-appropriate template. The form is saved to the org Forms library and attached in one motion. The Forms area is the library: manage forms, see where each is attached, view global results.
 15. **Default purchase-request form**: every org is seeded with a default "Course purchase request" form attached to the checkout context of paid courses. It replaces the hardcoded fullname/email payment modal. Submit stores a pending response, then redirects to the course's `paymentLink`. Admins review pending purchase requests in the response inbox and approve to enroll the student. This also fixes the current theme-based paid path, which dead-ends on a "requires payment or invite" message with no purchase flow at all.
 16. **Public review display requires consent + curation**: forms whose responses can be shown publicly (course reviews) must include a respondent consent checkbox, and only responses an admin has marked "approved for display" render on landing pages.
 17. **Author-side draft lifecycle stays** (DRAFT → PUBLISHED → CLOSED → ARCHIVED). **Respondent-side save-and-resume** of a partially filled response is phase 2, as are edit-submitted-response and one-question-per-page mode. Anonymous public forms stay in v1.
-18. **Commercial model: free standalone, paid integrations.** Free orgs get **unlimited forms** — creation, share-link collection, response inbox, analytics, CSV export — a full Google-Forms-style experience with no caps. What is gated behind paid plans is the **platform integration layer**: attaching forms to courses/lessons/landing pages/checkout/workshops, triggers, and consequences (approve→enroll, lesson pulse aggregation, landing-page form/reviews blocks, verified workshop access). Self-hosted is ungated.
+18. **Commercial model: free standalone, paid integrations.** Free orgs get **unlimited forms** — creation, share-link collection, response inbox, analytics, CSV export — a full Google-Forms-style experience with no caps. What is gated behind paid plans is the **platform integration layer**: attaching forms to courses/lessons/landing pages/checkout, triggers, and consequences (approve→enroll, lesson pulse aggregation, landing-page form/reviews blocks). Self-hosted is ungated.
     - **Checkout exception**: the default purchase-request form works on free orgs for *collection* — buyers fill it, responses land in the inbox, and the admin enrolls manually (parity with today's manual flow, no regression). The one-click **approve→enroll** action is paid.
 19. **Permissions**: org **admins and teachers** can create forms and manage/view/export responses. **Students cannot create forms**; they only respond.
-20. **Form-gated workshop access is an MVP integration.** A `WORKSHOP` attachment renders the selected form on the workshop page. Submission stores a pending response and sends an org-branded, recipient-bound access email; it does not trust the submitted email enough to create an account or enrollment. The recipient redeems a short-lived, single-use grant to verify ownership, reconcile or create the learner identity, enroll idempotently, start a session, and return to the workshop. This integration is available on paid plans and self-hosted deployments under the existing integration commercial model.
 
 ## Core Use Cases
 
@@ -327,7 +326,6 @@ A form can be attached to platform contexts through `form_attachment` records:
 2. **Lesson** — per-lesson pulse feedback (1–2 questions) shown after lesson completion, aggregated per lesson so instructors see which lessons need work.
 3. **Landing page** — a form section block on the org landing page (contact, waitlist, enrollment interest).
 4. **Checkout** — the purchase-request form on paid courses (see FR-9).
-5. **Workshop** — a registration gate for live or on-demand workshop access; verified redemption enrolls the respondent and opens the workshop.
 
 Requirements:
 
@@ -335,7 +333,6 @@ Requirements:
 2. Attachment carries its own settings: open/close window, response limit, one-response-per-respondent.
 3. Responses record `attachment_id`; context views filter by attachment, the library view aggregates across attachments with a per-context breakdown.
 4. Detaching a form preserves its responses.
-5. A workshop attachment additionally carries `accessPolicy: 'public_registration' | 'existing_members_only'`. Email collection is mandatory in this context, regardless of the reusable form's general anonymous setting.
 
 ### FR-9: Purchase-Request Pipeline (default org form)
 
@@ -351,19 +348,6 @@ Requirements:
 1. Review-type forms include a respondent consent checkbox ("you may display my review publicly").
 2. Admins can mark individual responses "approved for display".
 3. A landing-page reviews block renders approved responses only, filterable to a single course or org-wide.
-
-### FR-11: Workshop Registration and Verified Access
-
-1. A workshop admin can attach an existing form or create an event-registration form in context.
-2. The public workshop page renders the attached form while withholding the video and meeting link.
-3. A successful submission stores a pending response and sends an org-branded access email to the normalized respondent email. The UI always shows the same check-email state to avoid account enumeration.
-4. Submission alone never creates an account, organization membership, or workshop enrollment. Those consequences run only after the recipient proves email ownership by redeeming the emailed grant.
-5. Redemption is atomic and idempotent: reconcile or create the learner identity, ensure org membership, enroll in the workshop group, consume the grant, start an authenticated session, and redirect to `/workshops/[slug]`.
-6. Access grants are recipient- and response-bound, single-use, expire after 24 hours by default, and are stored only as SHA-256 hashes. Resend applies cooldown/rate limits and revokes older unredeemed grants.
-7. Email scanners must not consume grants. `GET` renders a confirmation interstitial; only the user's `POST` confirmation performs redemption.
-8. Existing-members-only attachments issue usable access only when the normalized email matches an existing organization member.
-9. Repeated submission or redemption must not create duplicate responses, profiles, organization members, group members, or emails outside the resend policy.
-10. Scheduled workshops include the existing `.ics` attachment. On-demand workshops use the same access flow without calendar metadata.
 
 ## Recommended Architecture
 
@@ -459,7 +443,7 @@ CREATE TABLE form_attachment (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   form_id UUID NOT NULL REFERENCES form(id) ON DELETE CASCADE,
   organization_id UUID NOT NULL REFERENCES organization(id) ON DELETE CASCADE,
-  context_type VARCHAR NOT NULL, -- 'COURSE' | 'LESSON' | 'LANDING_PAGE' | 'CHECKOUT' | 'WORKSHOP'
+  context_type VARCHAR NOT NULL, -- 'COURSE' | 'LESSON' | 'LANDING_PAGE' | 'CHECKOUT'
   course_id UUID REFERENCES course(id) ON DELETE CASCADE,
   lesson_id UUID REFERENCES lesson(id) ON DELETE CASCADE,
   starts_at TIMESTAMPTZ,
@@ -475,7 +459,6 @@ Notes:
 
 - Lifecycle windows, limits, and dedup rules live here (per-attachment), not on `form`.
 - A share link is modeled as a link-type attachment or as the bare form URL; either way responses always resolve to at most one attachment.
-- A `WORKSHOP` attachment uses `course_id` to reference the workshop-typed course and stores `accessPolicy` in typed attachment settings.
 
 #### 2.4 New `form_response` table
 
@@ -510,26 +493,6 @@ CREATE TABLE form_response_answer (
 );
 ```
 
-#### 2.6 New `form_response_access_grant` table
-
-This table supports consequences that require proof of email ownership, starting with workshop access. It is separate from `form_response.metadata` so expiry, uniqueness, revocation, and atomic consumption are enforceable.
-
-```sql
-CREATE TABLE form_response_access_grant (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  form_response_id UUID NOT NULL REFERENCES form_response(id) ON DELETE CASCADE,
-  form_attachment_id UUID NOT NULL REFERENCES form_attachment(id) ON DELETE CASCADE,
-  recipient_email VARCHAR NOT NULL,
-  token_hash VARCHAR NOT NULL UNIQUE,
-  expires_at TIMESTAMPTZ NOT NULL,
-  redeemed_at TIMESTAMPTZ,
-  revoked_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-```
-
-Store only the hash of a cryptographically random token. The redemption transaction locks the grant row and makes identity reconciliation, membership creation, enrollment, and consumption idempotent. Audit send, resend, redeem, expiry, and rejection events without logging the raw token.
-
 ### 3. API Surface
 
 New org-level routes should be introduced rather than extending course exercise routes:
@@ -544,8 +507,6 @@ New org-level routes should be introduced rather than extending course exercise 
 - `GET /organization/:orgId/forms/:formId/responses/:responseId`
 - `GET /forms/:slug`
 - `POST /forms/:slug/respond`
-- `GET /forms/access/:token` (non-consuming confirmation interstitial)
-- `POST /forms/access/:token/redeem` (state-changing, single-use redemption)
 
 Optional authenticated draft routes:
 
@@ -630,10 +591,9 @@ Ship:
 10. Purchase-request pipeline and default org form (FR-9)
 11. Per-lesson pulse feedback attachment with per-lesson aggregation
 12. Landing-page form section block and reviews display block with consent + curation (FR-10)
-13. Workshop attachment, registration email, and verified access redemption (FR-11)
-14. Templates for common school forms
-15. Plan gating (free: unlimited standalone forms; paid: the integration layer)
-16. Permission enforcement: admin/teacher-only form creation and response access
+13. Templates for common school forms
+14. Plan gating (free: unlimited standalone forms; paid: the integration layer)
+15. Permission enforcement: admin/teacher-only form creation and response access
 
 ### Phase 2: Education Workflow Expansion
 
@@ -701,13 +661,13 @@ Add:
 3. **Section/page support** — phase 2; v1 is one-page only.
 4. **Staff routing after submission** — the purchase-request pipeline covers approve → enroll; general assignment/routing stays out of MVP.
 5. **Presentation modes / respondent drafts / response editing** — one-question-per-page, respondent save-and-resume, and edit-submitted-response are all phase 2. Author-side DRAFT → PUBLISHED lifecycle is unaffected and stays in v1.
-6. **Commercial model** — free tier gets unlimited standalone forms (no caps); the platform integration layer (attachments, triggers, consequences, including verified workshop access) is paid. Checkout exception: the default purchase-request form collects responses on free; one-click approve→enroll is paid. Self-hosted ungated.
+6. **Commercial model** — free tier gets unlimited standalone forms (no caps); the platform integration layer (attachments, triggers, consequences) is paid. Checkout exception: the default purchase-request form collects responses on free; one-click approve→enroll is paid. Self-hosted ungated.
 7. **Permissions** — admins and teachers create forms and manage/view/export responses; students only respond.
 
 ## Open Questions
 
 1. Should public forms support anonymous file uploads in v1, or should file upload require authentication first?
-2. Outside the required workshop-access email, which form types should send optional respondent confirmation emails in v1?
+2. Do we need respondent notification emails on submit in v1? (Admin/teacher emails exist for the purchase pipeline; existing ZeptoMail infra makes respondent confirmations cheap — leaning yes.)
 3. Runner i18n: which locales must the public form runner support at launch?
 4. PII/retention policy for enrollment/intake forms (minors' data, file uploads): retention window, deletion story, and what "anonymous" guarantees about stored metadata.
 
@@ -715,7 +675,7 @@ Add:
 
 Integration metrics (the differentiation thesis):
 
-1. Percentage of forms attached to a platform context (course, lesson, landing page, checkout, workshop) vs bare share links — target majority attached.
+1. Percentage of forms attached to a platform context (course, lesson, landing page, checkout) vs bare share links — target majority attached.
 2. Purchase-request conversion: Buy click → form submitted → approved → enrolled, measured end-to-end (baseline today is zero, since no purchase record exists).
 3. Per-lesson pulse response rate vs a plain shared feedback link.
 4. Number of orgs displaying approved reviews on a landing page.
