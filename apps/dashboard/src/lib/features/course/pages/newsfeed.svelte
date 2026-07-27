@@ -96,12 +96,12 @@
     await newsfeedApi.delete(courseId, id);
   };
 
-  const sortedFeeds = $derived.by(() => {
-    return [...newsfeedApi.feeds].sort((a, b) => {
-      const aPinned = (a as any).isPinned || (a as any).is_pinned || false;
-      const bPinned = (b as any).isPinned || (b as any).is_pinned || false;
-      return Number(bPinned) - Number(aPinned);
-    });
+  const pinnedFeeds = $derived.by(() => {
+    return newsfeedApi.feeds.filter((feed) => Boolean((feed as any).isPinned || (feed as any).is_pinned));
+  });
+
+  const unpinnedFeeds = $derived.by(() => {
+    return newsfeedApi.feeds.filter((feed) => !((feed as any).isPinned || (feed as any).is_pinned));
   });
 
   function getPageRoles(org: AccountOrg) {
@@ -138,7 +138,7 @@
       <NewsFeedLoader />
       <NewsFeedLoader />
     </div>
-  {:else if !sortedFeeds.length}
+  {:else if !pinnedFeeds.length && !unpinnedFeeds.length}
     <Empty
       title={$t('course.navItem.news_feed.body_header')}
       description={$t('course.navItem.news_feed.body_content')}
@@ -146,22 +146,57 @@
       variant="page"
     />
   {:else}
-    {#each sortedFeeds as feed}
-      <NewsFeedCard
-        {feed}
-        comments={newsfeedApi.commentsByFeedId[feed.id]}
-        {courseId}
-        {deleteFeed}
-        {addNewComment}
-        {deleteComment}
-        {addNewReaction}
-        {onPin}
-        {author}
-        bind:edit
-        bind:editFeed
-        isActive={feedId === feed.id}
-        isReacting={Boolean(isReactingByFeedId[feed.id])}
-      />
-    {/each}
+    {#if pinnedFeeds.length > 0}
+      <div class="text-muted-foreground mb-3 flex items-center gap-1.5">
+        <span class="text-xs font-medium tracking-wider uppercase">
+          {$t('course.navItem.news_feed.pinned') || 'Pinned'}
+        </span>
+      </div>
+      {#each pinnedFeeds as feed (feed.id)}
+        <NewsFeedCard
+          {feed}
+          comments={newsfeedApi.commentsByFeedId[feed.id]}
+          {courseId}
+          {deleteFeed}
+          {addNewComment}
+          {deleteComment}
+          {addNewReaction}
+          {onPin}
+          {author}
+          bind:edit
+          bind:editFeed
+          isActive={feedId === feed.id}
+          isReacting={Boolean(isReactingByFeedId[feed.id])}
+        />
+      {/each}
+    {/if}
+
+    {#if pinnedFeeds.length > 0 && unpinnedFeeds.length > 0}
+      <div class="my-6 flex w-full items-center gap-4">
+        <div class="bg-border/80 h-px flex-1"></div>
+        <span class="text-muted-foreground text-xs font-medium tracking-wider uppercase"> Other Post </span>
+        <div class="bg-border/80 h-px flex-1"></div>
+      </div>
+    {/if}
+
+    {#if unpinnedFeeds.length > 0}
+      {#each unpinnedFeeds as feed (feed.id)}
+        <NewsFeedCard
+          {feed}
+          comments={newsfeedApi.commentsByFeedId[feed.id]}
+          {courseId}
+          {deleteFeed}
+          {addNewComment}
+          {deleteComment}
+          {addNewReaction}
+          {onPin}
+          {author}
+          bind:edit
+          bind:editFeed
+          isActive={feedId === feed.id}
+          isReacting={Boolean(isReactingByFeedId[feed.id])}
+        />
+      {/each}
+    {/if}
   {/if}
 </RoleBasedSecurity>

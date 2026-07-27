@@ -529,7 +529,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
   /**
    * Updates a newsfeed comment
    */
-  async updateComment(courseId: string, commentId: string, content: string) {
+  async updateComment(courseId: string, feedId: string, commentId: string, content: string, parentId?: number) {
     const result = ZNewsfeedCommentUpdate.safeParse({ content });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'newsfeed');
@@ -543,6 +543,34 @@ export class NewsfeedApi extends BaseApiWithErrors {
           json: result.data
         }),
       logContext: 'updating newsfeed comment',
+      onSuccess: (response) => {
+        if (response.data) {
+          snackbar.success('Comment updated successfully');
+
+          const numericId = Number(commentId);
+          if (parentId && this.repliesByParentId[parentId]) {
+            const replyState = this.repliesByParentId[parentId];
+            const updatedItems = replyState.items.map((item) => {
+              if (item.id === numericId) {
+                return { ...item, content: response.data?.content ?? content };
+              }
+              return item;
+            });
+            this.repliesByParentId[parentId] = { ...replyState, items: updatedItems };
+          } else {
+            const commentState = this.commentsByFeedId[feedId];
+            if (commentState) {
+              const updatedItems = commentState.items.map((item) => {
+                if (item.id === numericId) {
+                  return { ...item, content: response.data?.content ?? content };
+                }
+                return item;
+              });
+              this.commentsByFeedId[feedId] = { ...commentState, items: updatedItems };
+            }
+          }
+        }
+      },
       onError: (result) => {
         if (typeof result === 'string') {
           snackbar.error('Failed to update comment');
@@ -565,6 +593,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
         if (response.data) {
           snackbar.success('Comment deleted successfully');
 
+          const numericId = Number(commentId);
           if (parentId && this.repliesByParentId[parentId]) {
             const replyState = this.repliesByParentId[parentId];
             this.repliesByParentId[parentId] = {
@@ -584,6 +613,9 @@ export class NewsfeedApi extends BaseApiWithErrors {
               this.commentsByFeedId[feedId] = { ...commentState, items: updatedItems };
             }
           } else {
+            if (this.repliesByParentId[numericId]) {
+              delete this.repliesByParentId[numericId];
+            }
             const commentState = this.commentsByFeedId[feedId];
             if (commentState) {
               this.commentsByFeedId[feedId] = {

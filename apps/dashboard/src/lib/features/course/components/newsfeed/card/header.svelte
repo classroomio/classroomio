@@ -2,6 +2,8 @@
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import PinIcon from '@lucide/svelte/icons/pin';
+  import PencilIcon from '@lucide/svelte/icons/pencil';
+  import Trash2Icon from '@lucide/svelte/icons/trash-2';
 
   import { calDateDiff } from '$lib/utils/functions/date';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
@@ -26,7 +28,6 @@
   {#if feed.isPinned}
     <div class="text-muted-foreground mb-3 flex items-center gap-1.5">
       <PinIcon size={14} class="fill-current" />
-      <p class="text-xs font-medium tracking-wide uppercase">{$t('course.navItem.news_feed.pinned')}</p>
     </div>
   {/if}
 
@@ -48,12 +49,23 @@
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end">
           <DropdownMenu.Item onclick={() => onPin(feed.id, feed.isPinned)}>
-            {feed.isPinned ? $t('course.navItem.news_feed.card.unpin') : $t('course.navItem.news_feed.card.pin')}
+            <span class="flex items-center gap-2">
+              <PinIcon size={14} />
+              {feed.isPinned ? $t('course.navItem.news_feed.card.unpin') : $t('course.navItem.news_feed.card.pin')}
+            </span>
           </DropdownMenu.Item>
-          <DropdownMenu.Item onclick={onEdit}>{$t('course.navItem.news_feed.card.edit')}</DropdownMenu.Item>
-          <DropdownMenu.Item class="text-destructive focus:text-destructive" onclick={onRequestDelete}
-            >{$t('course.navItem.news_feed.card.delete')}</DropdownMenu.Item
-          >
+          <DropdownMenu.Item onclick={onEdit}>
+            <span class="flex items-center gap-2">
+              <PencilIcon size={14} />
+              {$t('course.navItem.news_feed.card.edit')}
+            </span>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item class="text-destructive focus:text-destructive" onclick={onRequestDelete}>
+            <span class="flex items-center gap-2">
+              <Trash2Icon size={14} />
+              {$t('course.navItem.news_feed.card.delete')}
+            </span>
+          </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     </RoleBasedSecurity>

@@ -28,6 +28,7 @@ import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
 import { handleError } from '@api/utils/errors';
+import { newsfeedCommentAuthorOnlyMiddleware } from '@api/middlewares/newsfeed-comment-author-only';
 import { newsfeedCommentAuthorOrTeamMiddleware } from '@api/middlewares/newsfeed-comment-author-or-team';
 import { zValidator } from '@hono/zod-validator';
 
@@ -169,7 +170,7 @@ export const newsfeedRouter = new Hono()
   .put(
     '/comment/:commentId',
     authMiddleware,
-    newsfeedCommentAuthorOrTeamMiddleware,
+    newsfeedCommentAuthorOnlyMiddleware,
     zValidator('param', ZNewsfeedCommentGetParam),
     zValidator('json', ZNewsfeedCommentUpdate),
     async (c) => {

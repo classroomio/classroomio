@@ -9,6 +9,7 @@
 
   import * as CommentTree from '@cio/ui/custom/comment-tree';
   import { Button } from '@cio/ui/base/button';
+  import { Textarea } from '@cio/ui/base/textarea';
   import type { Feed } from '$features/course/utils/types';
   import type { NewsfeedCommentsByFeedId } from '$features/course/api';
 
@@ -34,8 +35,36 @@
   let didBootstrap = $state(false);
   let expandedRepliesMap = $state<Record<number, boolean>>({});
 
+  let editingCommentId = $state<number | null>(null);
+  let editingText = $state('');
+  let isSavingEdit = $state(false);
+
   const PAGE_SIZE = 10;
   let visibleCount = $state(2);
+
+  const handleStartEdit = (commentId: number, currentContent: string) => {
+    editingCommentId = commentId;
+    editingText = currentContent;
+  };
+
+  const handleCancelEdit = () => {
+    editingCommentId = null;
+    editingText = '';
+  };
+
+  const handleSaveEdit = async (commentId: number, parentId?: number) => {
+    if (!courseId || isSavingEdit || !editingText.trim()) return;
+    isSavingEdit = true;
+    try {
+      await newsfeedApi.updateComment(courseId, feed.id, String(commentId), editingText.trim(), parentId);
+      if (newsfeedApi.success) {
+        editingCommentId = null;
+        editingText = '';
+      }
+    } finally {
+      isSavingEdit = false;
+    }
+  };
 
   const loadedCount = $derived((comments?.items?.length ?? 0) as number);
   const totalCount = $derived(comments?.totalCount ?? feed.commentCount ?? 0);
@@ -143,14 +172,34 @@
                   avatarUrl={commentItem.authorAvatarUrl}
                   fullname={commentItem.authorFullname}
                   dateLabel={calDateDiff(commentItem.createdAt)}
+                  canEdit={commentItem.authorProfileId === $profile.id}
+                  onEdit={() => handleStartEdit(commentIdNum, commentItem.content)}
+                  canDelete={commentItem.authorProfileId === $profile.id || $isOrgAdmin}
+                  onDelete={() => onDeleteComment(commentItem.id)}
                 />
                 <div class="pl-10">
-                  <CommentTree.Content content={commentItem.content} />
-                  <CommentTree.Actions
-                    onReply={() => handleReplyClick(commentIdNum, commentItem.authorFullname || 'User')}
-                    canDelete={commentItem.authorProfileId === $profile.id || $isOrgAdmin}
-                    onDelete={() => onDeleteComment(commentItem.id)}
-                  />
+                  {#if editingCommentId === commentIdNum}
+                    <div class="mt-1 flex flex-col gap-2">
+                      <Textarea bind:value={editingText} rows={2} class="text-sm" />
+                      <div class="flex items-center justify-end gap-2">
+                        <Button variant="ghost" size="xs" onclick={handleCancelEdit} disabled={isSavingEdit}>
+                          Cancel
+                        </Button>
+                        <Button
+                          size="xs"
+                          onclick={() => handleSaveEdit(commentIdNum)}
+                          disabled={isSavingEdit || !editingText.trim()}
+                        >
+                          {isSavingEdit ? 'Saving...' : 'Save'}
+                        </Button>
+                      </div>
+                    </div>
+                  {:else}
+                    <CommentTree.Content content={commentItem.content} />
+                    <CommentTree.Actions
+                      onReply={() => handleReplyClick(commentIdNum, commentItem.authorFullname || 'User')}
+                    />
+                  {/if}
                 </div>
               </div>
             </div>
@@ -163,6 +212,7 @@
             >
               {#if repliesState?.items}
                 {#each repliesState.items as reply (reply.id)}
+                  {@const replyIdNum = Number(reply.id)}
                   <CommentTree.Item>
                     <div class="flex w-full flex-col gap-1">
                       <CommentTree.Header
@@ -170,14 +220,34 @@
                         fullname={reply.authorFullname}
                         dateLabel={calDateDiff(reply.createdAt)}
                         avatarSize="ui:size-7"
+                        canEdit={reply.authorProfileId === $profile.id}
+                        onEdit={() => handleStartEdit(replyIdNum, reply.content)}
+                        canDelete={reply.authorProfileId === $profile.id || $isOrgAdmin}
+                        onDelete={() => onDeleteComment(reply.id, commentIdNum)}
                       />
                       <div class="pl-9">
-                        <CommentTree.Content content={reply.content} />
-                        <CommentTree.Actions
-                          onReply={() => handleReplyClick(commentIdNum, reply.authorFullname || 'User')}
-                          canDelete={reply.authorProfileId === $profile.id || $isOrgAdmin}
-                          onDelete={() => onDeleteComment(reply.id, commentIdNum)}
-                        />
+                        {#if editingCommentId === replyIdNum}
+                          <div class="mt-1 flex flex-col gap-2">
+                            <Textarea bind:value={editingText} rows={2} class="text-sm" />
+                            <div class="flex items-center justify-end gap-2">
+                              <Button variant="ghost" size="xs" onclick={handleCancelEdit} disabled={isSavingEdit}>
+                                Cancel
+                              </Button>
+                              <Button
+                                size="xs"
+                                onclick={() => handleSaveEdit(replyIdNum, commentIdNum)}
+                                disabled={isSavingEdit || !editingText.trim()}
+                              >
+                                {isSavingEdit ? 'Saving...' : 'Save'}
+                              </Button>
+                            </div>
+                          </div>
+                        {:else}
+                          <CommentTree.Content content={reply.content} />
+                          <CommentTree.Actions
+                            onReply={() => handleReplyClick(commentIdNum, reply.authorFullname || 'User')}
+                          />
+                        {/if}
                       </div>
                     </div>
                   </CommentTree.Item>
