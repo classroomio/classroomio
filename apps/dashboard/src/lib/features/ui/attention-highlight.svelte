@@ -19,7 +19,11 @@
   $effect(() => {
     const highlightParam = page.url.searchParams.get('highlight');
 
-    if (highlightParam !== id) return;
+    if (highlightParam !== id) {
+      handledFor = null;
+      return;
+    }
+
     if (handledFor === highlightParam) return;
 
     handledFor = highlightParam;

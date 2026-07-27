@@ -19,7 +19,7 @@
   import * as Field from '@cio/ui/base/field';
   import { UpgradeBanner, UnsavedChanges, UploadWidget, TextEditor, AttentionHighlight } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
-  import { goAndHighlight } from '$lib/routing/goAndHightlight';
+  import { goAndHighlight } from '$lib/routing/go-and-highlight';
   import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
 
   import { settings } from '$features/course/utils/settings-store';

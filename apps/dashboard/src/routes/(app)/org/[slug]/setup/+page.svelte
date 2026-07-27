@@ -17,8 +17,8 @@
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
-  import { goAndHighlight } from '$lib/routing/goAndHightlight';
   import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
+  import { goAndHighlight } from '$lib/routing/go-and-highlight';
 
   let { data } = $props();
 

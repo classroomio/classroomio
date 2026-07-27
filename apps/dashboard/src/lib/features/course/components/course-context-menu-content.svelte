@@ -7,7 +7,7 @@
   import { copyPublicCoursePageUrl, openCoursePreview } from '$features/course/utils/course-preview';
   import { currentOrgDomain } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { goAndHighlight } from '$lib/routing/goAndHightlight';
+  import { goAndHighlight } from '$lib/routing/go-and-highlight';
   import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
 
   interface Props {
