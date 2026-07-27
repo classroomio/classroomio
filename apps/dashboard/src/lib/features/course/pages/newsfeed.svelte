@@ -172,10 +172,8 @@
     {/if}
 
     {#if pinnedFeeds.length > 0 && unpinnedFeeds.length > 0}
-      <div class="my-6 flex w-full items-center gap-4">
-        <div class="bg-border/80 h-px flex-1"></div>
-        <span class="text-muted-foreground text-xs font-medium tracking-wider uppercase"> Other Post </span>
-        <div class="bg-border/80 h-px flex-1"></div>
+      <div class="text-muted-foreground mb-3 flex items-center gap-1.5">
+        <span class="text-xs font-medium tracking-wider uppercase"> Other Posts </span>
       </div>
     {/if}
 
