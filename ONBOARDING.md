@@ -88,15 +88,16 @@ then complete the type-specific checklist below.
 
 ### 2.3 Compliance Course
 
-- [ ] Create a new course, choose **Compliance**, name it "Test — Compliance".
-- [ ] Add a section with a lesson and an exercise (make sure the exercise has auto-gradable questions).
-- [ ] Go to **Course Settings → Compliance** and configure:
-  - [ ] Passing score.
+- [ ] Open the compliance course.
+- [ ] Navigate to **Certificate** from the course sidebar.
+- [ ] Open the **Settings** tab within the Certificate page.
+- [ ] Configure:
+  - [ ] Minimum completion / passing score.
   - [ ] Due date.
-  - [ ] Grace period (days).
-  - [ ] Retake interval and max attempts.
-  - [ ] Reminder days before deadline.
-  - [ ] Mark the course as mandatory.
+  - [ ] Grace period.
+  - [ ] Retake interval and maximum attempts.
+  - [ ] Reminder days before the deadline.
+  - [ ] Mark the course as mandatory (if applicable).
 - [ ] Go to **Compliance** in the course sidebar — verify the compliance dashboard tiles are shown (compliant, non-compliant, in progress, not started, etc.).
 - [ ] Go back to **Stats → Compliance** at the org level — confirm this course now appears in the course breakdown table.
 - 📸 **Screenshot:** The course compliance dashboard with status tiles.
@@ -164,7 +165,16 @@ Widgets are embeddable course catalogs for external websites.
 - [ ] **Embed** panel — copy the embed code and preview it in a standalone HTML file or CodePen.
 - [ ] Publish the widget and verify it renders the live preview correctly.
 - [ ] Go back, change a setting, and **rollback** to the previous published version.
-- 📸 **Screenshot:** The widget preview rendering in the embed panel.
+
+### Running the widget locally
+
+After publishing the widget, start the embeds development server:
+
+```bash
+pnpm --filter @cio/embeds dev
+```
+
+- 📸 **Screenshot:** The widget preview rendering on CodePen or Browser.
 
 ---
 
@@ -185,21 +195,27 @@ Tags are org-level labels for categorizing courses.
 
 ## Part 6 — Media
 
-The media manager is the central asset library for the org.
+The Media Library is the central asset repository for your organization. Media assets are uploaded while creating course content and can then be managed from the Media page.
 
+- [ ] Open a **Course**.
+- [ ] Create a **Section**.
+- [ ] Create a **Lesson** within the section.
+- [ ] In the lesson's **Materials** section:
+  - [ ] Upload an **image**.
+  - [ ] Upload a **document** (PDF).
+  - [ ] Upload a **video**.
+  - [ ] Add a **YouTube** video via link.
 - [ ] Navigate to **Media** (`/org/[slug]/media`).
 - [ ] Note the **storage usage summary** at the top.
-- [ ] Upload an **image** file — verify it appears in the asset list with kind "image".
-- [ ] Upload a **document** (PDF) — verify it appears with kind "document".
-- [ ] Upload a **video** — verify it appears with kind "video". After processing, check that it has HLS playback support and auto-generated thumbnails.
-- [ ] Use the **YouTube** option to add a video via link.
-- [ ] Use the **Embed** option to add a video via embed URL.
+- [ ] Verify the uploaded image appears with kind **"image"**.
+- [ ] Verify the uploaded PDF appears with kind **"document"**.
+- [ ] Verify the uploaded video appears with kind **"video"**. After processing, check that it has HLS playback support and auto-generated thumbnails.
 - [ ] Filter assets by kind (video, image, document, audio) and verify the filters work.
 - [ ] Search for an asset by name.
-- [ ] Click an asset to see its detail — view **usage tracking** (which lessons reference it).
+- [ ] Click an asset to view its details, including **usage tracking** (which lessons reference it).
 - [ ] Edit an asset name, then delete an asset you no longer need.
-- [ ] Go to a **Lesson**, open the materials section, and add a video from the **Media Library** picker (not a fresh upload). Verify it embeds in the lesson.
-- 📸 **Screenshot:** The media library showing uploaded assets of different kinds with the storage usage summary.
+- [ ] Return to a **Lesson**, open the **Materials** section, and add a video from the **Media Library** picker (instead of uploading a new file). Verify it embeds correctly in the lesson.
+- 📸 **Screenshot:** The Media Library showing uploaded assets of different kinds with the storage usage summary.
 
 ---
 
