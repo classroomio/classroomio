@@ -88,7 +88,9 @@ then complete the type-specific checklist below.
 
 ### 2.3 Compliance Course
 
-- [ ] Open the compliance course.
+- [ ] Create a new course, choose **Compliance**, name it "Test — Compliance".
+- [ ] Open the course.
+- [ ] Add a section with a lesson and an exercise (make sure the exercise has auto-gradable questions).
 - [ ] Navigate to **Certificate** from the course sidebar.
 - [ ] Open the **Settings** tab within the Certificate page.
 - [ ] Configure:
