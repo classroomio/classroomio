@@ -11,6 +11,7 @@
   import { Label } from '@cio/ui/base/label';
 
   import { t } from '$lib/utils/functions/translations';
+  import { AttentionHighlight } from '$features/ui';
   import { aiTutorApi } from '../api/ai-tutor.svelte';
   import TutorSettingsForm from '../components/tutor-settings-form.svelte';
 
@@ -66,19 +67,23 @@
         <p class="ui:text-muted-foreground text-sm">{$t('aiTutor.state.loading')}</p>
       {:else}
         <Field.Group>
-          <Field.Set>
-            <Field.Legend>{$t('aiTutor.section.inheritance')}</Field.Legend>
-            <Field.Description>{$t('aiTutor.section.inheritance_description')}</Field.Description>
+          <AttentionHighlight id="inheritance">
+            <Field.Set>
+              <Field.Legend>{$t('aiTutor.section.inheritance')}</Field.Legend>
+              <Field.Description>{$t('aiTutor.section.inheritance_description')}</Field.Description>
 
-            <Field.Field orientation="horizontal">
-              <Switch bind:checked={inheritFromOrg} />
-              <Label>{$t('aiTutor.field.inheritFromOrg')}</Label>
-            </Field.Field>
-          </Field.Set>
+              <Field.Field orientation="horizontal">
+                <Switch bind:checked={inheritFromOrg} />
+                <Label>{$t('aiTutor.field.inheritFromOrg')}</Label>
+              </Field.Field>
+            </Field.Set>
+          </AttentionHighlight>
 
           {#if !inheritFromOrg}
             <Field.Separator />
-            <TutorSettingsForm store={formStore} disabled={aiTutorApi.saving} />
+            <AttentionHighlight id="tutor-settings">
+              <TutorSettingsForm store={formStore} disabled={aiTutorApi.saving} />
+            </AttentionHighlight>
           {/if}
         </Field.Group>
       {/if}

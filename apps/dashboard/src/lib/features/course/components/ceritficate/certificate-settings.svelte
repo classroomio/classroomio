@@ -12,10 +12,9 @@
 
   type Props = {
     errors: Record<string, string>;
-    highlightedField?: string | null;
   };
 
-  let { errors, highlightedField = $bindable<string | null>(null) }: Props = $props();
+  let { errors }: Props = $props();
 
   function isoToDatetimeLocal(iso: string | null | undefined): string {
     if (!iso) return '';
@@ -108,7 +107,7 @@
     </Field.Field>
 
     <Field.Group>
-      <AttentionHighlight id="certificate.deadline" bind:highlightedField>
+      <AttentionHighlight id="cert-deadline">
         <Field.Field>
           <Field.Label for="cert-deadline">
             {$t('course.certification.deadline_label')}
@@ -134,23 +133,25 @@
         </Field.Field>
       </AttentionHighlight>
 
-      <Field.Field>
-        <Field.Label for="cert-threshold">{$t('course.certification.threshold_label')}</Field.Label>
-        <Input
-          id="cert-threshold"
-          type="number"
-          min={0}
-          max={100}
-          class="w-full"
-          value={String(courseApi.course?.certificate?.threshold ?? 100)}
-          oninput={onThresholdInput}
-          disabled={$isFreePlan}
-        />
-        <Field.Description>{$t('course.certification.threshold_helper')}</Field.Description>
-        {#if errors['certificate.threshold']}
-          <Field.Error>{errors['certificate.threshold']}</Field.Error>
-        {/if}
-      </Field.Field>
+      <AttentionHighlight id="cert-threshold">
+        <Field.Field>
+          <Field.Label for="cert-threshold">{$t('course.certification.threshold_label')}</Field.Label>
+          <Input
+            id="cert-threshold"
+            type="number"
+            min={0}
+            max={100}
+            class="w-full"
+            value={String(courseApi.course?.certificate?.threshold ?? 100)}
+            oninput={onThresholdInput}
+            disabled={$isFreePlan}
+          />
+          <Field.Description>{$t('course.certification.threshold_helper')}</Field.Description>
+          {#if errors['certificate.threshold']}
+            <Field.Error>{errors['certificate.threshold']}</Field.Error>
+          {/if}
+        </Field.Field>
+      </AttentionHighlight>
 
       <Field.Field>
         <Field.Label for="cert-final-exercise">{$t('course.certification.final_exercise_label')}</Field.Label>
@@ -194,21 +195,23 @@
 
   <Field.Separator />
 
-  <Field.Set>
-    <Field.Legend>{$t('course.certification.email_message_label')}</Field.Legend>
-    <Field.Field>
-      <Textarea
-        id="cert-email-message"
-        class="w-full"
-        rows={4}
-        placeholder={$t('course.certification.email_message_placeholder')}
-        value={courseApi.course?.certificate?.emailMessage ?? ''}
-        oninput={onEmailMessageInput}
-        disabled={$isFreePlan}
-      />
-      {#if errors['certificate.emailMessage']}
-        <Field.Error>{errors['certificate.emailMessage']}</Field.Error>
-      {/if}
-    </Field.Field>
-  </Field.Set>
+  <AttentionHighlight id="cert-email-message">
+    <Field.Set>
+      <Field.Legend>{$t('course.certification.email_message_label')}</Field.Legend>
+      <Field.Field>
+        <Textarea
+          id="cert-email-message"
+          class="w-full"
+          rows={4}
+          placeholder={$t('course.certification.email_message_placeholder')}
+          value={courseApi.course?.certificate?.emailMessage ?? ''}
+          oninput={onEmailMessageInput}
+          disabled={$isFreePlan}
+        />
+        {#if errors['certificate.emailMessage']}
+          <Field.Error>{errors['certificate.emailMessage']}</Field.Error>
+        {/if}
+      </Field.Field>
+    </Field.Set>
+  </AttentionHighlight>
 </Field.Group>

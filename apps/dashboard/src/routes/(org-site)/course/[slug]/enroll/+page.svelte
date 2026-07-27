@@ -151,6 +151,7 @@
       await goto(resolve(getStudentCourseContinuePath(data.course.id), {}));
     } catch (error) {
       enrollmentError = String(error);
+      snackbar.error(String(error));
     } finally {
       enrollmentInFlight = false;
       if (!navigatingAway) {
@@ -257,6 +258,8 @@
       >
         {$t('course.navItem.landing_page.enroll_page.back_to_course')}
       </a>
+    {:else if enrollmentError}
+      <p class="mt-3 text-center text-sm text-red-500">{enrollmentError}</p>
     {:else if !canJoinCourse}
       <p class="mt-3 text-center text-sm text-red-500">{getBlockedMessage()}</p>
     {/if}

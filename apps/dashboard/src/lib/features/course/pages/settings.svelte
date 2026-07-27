@@ -19,6 +19,8 @@
   import * as Field from '@cio/ui/base/field';
   import { UpgradeBanner, UnsavedChanges, UploadWidget, TextEditor, AttentionHighlight } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
+  import { goAndHighlight } from '$lib/routing/goAndHightlight';
+  import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
 
   import { settings } from '$features/course/utils/settings-store';
   import Copy from '@lucide/svelte/icons/copy';
@@ -192,8 +194,10 @@
     const courseId = courseApi.course?.id;
     if (!courseId) return;
 
-    // Navigate to certificates page with settings tab and highlight parameter
-    await goto(`/courses/${courseId}/certificates?tab=settings&highlight=true`);
+    goAndHighlight(ROUTE_NAME.COURSE_CERTIFICATE, ROUTE_SECTIONS[ROUTE_NAME.COURSE_CERTIFICATE].CERT_DEADLINE, {
+      id: courseId,
+      tab: 'settings'
+    });
   }
 
   export async function handleSave() {
@@ -901,7 +905,7 @@
   <Field.Set id="publish">
     <Field.Legend>{$t('course.navItem.settings.publish')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.determines')}</Field.Description>
-    <AttentionHighlight id="publish" bind:highlightedField>
+    <AttentionHighlight id="publish">
       <Field.Field orientation="horizontal">
         <Switch id="is-published" checked={$settings.isPublished} onCheckedChange={onPublishToggle} />
         <Label for="publish">
