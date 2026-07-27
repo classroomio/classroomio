@@ -63,7 +63,7 @@ const TRANSIENT_REDIS_MESSAGE_PATTERN =
 const TRANSIENT_REDIS_LOG_INTERVAL_MS = 10_000;
 let lastTransientRedisLogAt = 0;
 
-function logTransientRedisEvent(message: string, error?: unknown): void {
+export function logTransientRedisEvent(message: string, error?: unknown): void {
   const now = Date.now();
   if (now - lastTransientRedisLogAt < TRANSIENT_REDIS_LOG_INTERVAL_MS) {
     return;

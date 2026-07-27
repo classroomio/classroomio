@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/node';
 
-import { isTransientRedisError } from '@cio/core/utils/redis/redis';
+import { isTransientRedisError, logTransientRedisEvent } from '@cio/core/utils/redis/redis';
 
 function reportFatalProcessError(kind: 'uncaughtException' | 'unhandledRejection', error: unknown): void {
   console.error(kind === 'uncaughtException' ? 'Uncaught exception:' : 'Unhandled rejection:', error);
@@ -16,7 +16,7 @@ function reportFatalProcessError(kind: 'uncaughtException' | 'unhandledRejection
 export function registerProcessErrorGuards(): void {
   process.on('uncaughtException', (error) => {
     if (isTransientRedisError(error)) {
-      console.warn('Ignoring transient Redis error (client will reconnect):', error);
+      logTransientRedisEvent('Ignoring transient Redis error (client will reconnect):', error);
       return;
     }
 
@@ -25,7 +25,7 @@ export function registerProcessErrorGuards(): void {
 
   process.on('unhandledRejection', (reason) => {
     if (isTransientRedisError(reason)) {
-      console.warn('Ignoring transient Redis rejection (client will reconnect):', reason);
+      logTransientRedisEvent('Ignoring transient Redis rejection (client will reconnect):', reason);
       return;
     }
 
