@@ -175,8 +175,11 @@ After publishing the widget, start the embeds development server:
 ```bash
 pnpm --filter @cio/embeds dev
 ```
+- [ ] click on "URL" tab, copy URL
+- [ ] Paste URL in your browser to view the locally served widget preview.
+- [ ] Verify that the widget renders correctly.
 
-- 📸 **Screenshot:** The widget preview rendering on CodePen or Browser.
+- 📸 **Screenshot:** The widget preview in the browser.
 
 ---
 
