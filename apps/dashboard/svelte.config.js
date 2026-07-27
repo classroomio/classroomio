@@ -22,10 +22,13 @@ const config = {
       $features: path.resolve('./src/lib/features'),
       $mail: path.resolve('./src/mail'),
       '$src/tools': path.resolve('./node_modules/@cio/ui/src/tools/index.ts'),
-      '$src/base': path.resolve('./node_modules/@cio/ui/src/base'),
+      '$src/base/*': path.resolve('./node_modules/@cio/ui/src/base/*'),
       '@cio/ui': path.resolve('./node_modules/@cio/ui/src'),
+      '@cio/ui/*': path.resolve('./node_modules/@cio/ui/src/*'),
       '@cio/api': path.resolve('./node_modules/@cio/api/dist'),
+      '@cio/api/*': path.resolve('./node_modules/@cio/api/dist/*'),
       '@cio/utils': path.resolve('./node_modules/@cio/utils/dist'),
+      '@cio/utils/*': path.resolve('./node_modules/@cio/utils/dist/*'),
       '@cio/db/types': path.resolve('./node_modules/@cio/db/src/types.ts')
     },
     csp: {

@@ -509,7 +509,8 @@ function getCommentCount() {
           COALESCE(
             (SELECT COUNT(*)::int 
              FROM ${schema.courseNewsfeedComment} 
-             WHERE ${eq(schema.courseNewsfeedComment.courseNewsfeedId, schema.courseNewsfeed.id)}),
+             WHERE ${eq(schema.courseNewsfeedComment.courseNewsfeedId, schema.courseNewsfeed.id)}
+             AND ${isNull(schema.courseNewsfeedComment.parentId)}),
             0
           )
         `.as('commentCount');
