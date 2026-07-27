@@ -1,0 +1,87 @@
+/* ClassroomIO thumbnail brand tokens — Figma-exact. Consume these; do not eyeball.
+   Palette: deep blue #0233BD · brand blue #2F6BF1 · light blue #ADC3FF · violet #8071F2 */
+
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url(data:font/woff2;base64,__GEIST_WOFF2_B64__) format('woff2');
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; }
+
+body {
+  font-family: 'Geist', sans-serif;
+  width: 1920px; height: 1080px; position: relative; overflow: hidden;
+  /* Royal-blue full-bleed with center-bright vignette */
+  background: radial-gradient(120% 110% at 50% 42%, #2B5BE0 0%, #1D49C7 42%, #12318F 78%, #0E2A7E 100%);
+}
+
+/* --- faint white texture (keep ~5-12% opacity; never competes with title) --- */
+.texture { position: absolute; inset: 0; pointer-events: none; }
+.card-line {
+  position: absolute; top: 50%; left: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.06);
+  border-radius: 60px; transform: translate(-50%, -58%);
+}
+.spark { position: absolute; color: #8FE8DC; opacity: .85; font-size: 34px; }
+
+/* --- frame (logo + wordmark on ONE edge, domain on the other; never both edges) --- */
+.frame { position: absolute; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 72px; align-items: center; }
+.frame.top { top: 52px; }
+.frame.bottom { bottom: 52px; }
+.brand { display: flex; align-items: center; gap: 18px; }
+.brand img { width: 52px; height: 52px; filter: brightness(0) invert(1); }
+.brand .name { color: #fff; font-size: 40px; font-weight: 700; letter-spacing: -1px; }
+.domain { display: flex; align-items: center; gap: 14px; color: #fff; font-size: 34px; font-weight: 600; }
+.domain .globe { width: 36px; height: 36px; border: 2.5px solid #fff; border-radius: 50%; position: relative; opacity: .92; }
+.domain .globe::before { content: ''; position: absolute; inset: -2.5px 8px; border: 2.5px solid #fff; border-radius: 50%; }
+.domain .globe::after { content: ''; position: absolute; left: -2.5px; right: -2.5px; top: 50%; height: 0; border-top: 2.5px solid #fff; transform: translateY(-1px); }
+.domain span { text-decoration: underline; text-underline-offset: 6px; }
+
+/* --- glass icon tile (patterns C & D): blue gradient fill + iridescent border, NOT frosted white --- */
+.tile-wrap {
+  padding: 2.5px; border-radius: 44px;
+  background: linear-gradient(135deg, #0233BD 23%, #ADC3FF 42%, #8071F2 54%, #0233BD 82%);
+  box-shadow: 0 40px 80px rgba(6, 18, 66, 0.45);
+}
+.tile {
+  width: 300px; height: 300px; border-radius: 42px;
+  background: linear-gradient(145deg, #0233BD 10%, #2F6BF1 94%);
+  display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
+}
+.tile::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 55%; background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0)); }
+.tile img { width: 172px; height: 172px; filter: brightness(0) invert(1); position: relative; z-index: 1; }
+.tile .svg-icon { width: 186px; height: auto; position: relative; z-index: 1; }
+.tile .svg-icon svg { width: 100%; height: auto; }
+.tile .label { position: absolute; bottom: 24px; left: 0; right: 0; text-align: center; color: rgba(255, 255, 255, 0.85); font-size: 26px; font-weight: 600; letter-spacing: .5px; }
+
+/* --- connector (two-tile / before->after) --- */
+.connector { display: flex; align-items: center; margin: 0 -6px; z-index: 2; }
+.connector .dash { width: 44px; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.35); }
+.connector .node {
+  width: 74px; height: 74px; margin: 0 10px; border-radius: 50%;
+  padding: 2.5px; background: linear-gradient(135deg, #0233BD 23%, #ADC3FF 42%, #8071F2 54%, #0233BD 82%);
+  box-shadow: 0 16px 32px rgba(6, 18, 66, 0.4);
+}
+.connector .node-inner { width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(145deg, #0233BD 10%, #2F6BF1 94%); display: flex; align-items: center; justify-content: center; }
+.connector .node-inner svg { width: 36px; height: 36px; }
+
+/* --- pill / badge: fully gradient-built (fill + iridescent border + clipped gradient text) --- */
+.pill-wrap {
+  padding: 2px; border-radius: 999px;
+  background: linear-gradient(180deg, #0233BD 24%, #C1D4FF 55%, #93B4FF 80%);
+  box-shadow: 0 16px 32px rgba(6, 18, 66, 0.35);
+}
+.pill { height: 70px; padding: 0 40px; border-radius: 999px; background: linear-gradient(180deg, #0233BD 0%, #0C4BDA 100%); display: flex; align-items: center; }
+.pill span {
+  font-size: 30px; font-weight: 700; letter-spacing: .5px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #8EACFF 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* --- title: bold white Title Case, tight tracking; lighter 78%-white tail for hierarchy --- */
+.title { color: #fff; font-weight: 700; line-height: 1.02; letter-spacing: -3px; }
+.title .tail { font-weight: 500; color: rgba(255, 255, 255, 0.78); }

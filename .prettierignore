@@ -5,6 +5,7 @@ build
 _template
 supabase
 static
+skills
 dist
 docker
 packages/storybook/storybook-static
