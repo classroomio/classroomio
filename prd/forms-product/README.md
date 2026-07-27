@@ -154,7 +154,7 @@ A standalone form with a share link is table stakes. Every roadmap decision shou
 8. File upload is supported in Forms, but public file upload must be guarded with rate limits and storage controls.
 9. Existing exercise question types are reused first; new form-only block types can be added later.
 10. The first implementation prioritizes reuse over perfect naming cleanup. Renaming `exercise-question` to a broader package is optional follow-up, not a blocker.
-11. **Binding is attachment-level, not form-level.** A form is a reusable org-owned asset. A `form_attachment` binds a form to a platform context (course, lesson, landing page, checkout). Every response records which attachment it came through, so course pages show only their own responses while the form library shows all responses with a per-context breakdown.
+11. **Binding is attachment-level, not form-level.** A form is a reusable org-owned asset. A `form_attachment` binds a form to a platform context (course, lesson, landing page, checkout). Every response records which attachment it came through, so course pages show only their own responses while the form library shows all responses with a per-context breakdown. The attachment model is intentionally extensible: new platform features can add additional `context_type` values, per-context settings, and integration consequences in their own PRDs without reworking the core Forms product.
 12. **Per-attachment settings vs per-form settings**: lifecycle windows (open/close dates), response limits, and one-response-per-respondent live on the **attachment**. Question content and identity settings (anonymous, collect name/email) live on the **form**. Editing a form's questions applies everywhere it is attached; question versioning is deferred.
 13. **MVP ships two integration loops**: (a) application → enrollment, including the purchase-request pipeline that replaces the hardcoded course payment modal, and (b) per-lesson pulse feedback. A landing-page form section and a reviews display block are part of MVP surface work.
 14. **Create-in-context authoring**: every attachable surface (course settings, lesson, landing-page builder, checkout config) gets an "Attach a form" picker that lists existing org forms and offers "Create new", which opens the builder in a modal/drawer pre-seeded with a context-appropriate template. The form is saved to the org Forms library and attached in one motion. The Forms area is the library: manage forms, see where each is attached, view global results.
@@ -333,6 +333,8 @@ Requirements:
 2. Attachment carries its own settings: open/close window, response limit, one-response-per-respondent.
 3. Responses record `attachment_id`; context views filter by attachment, the library view aggregates across attachments with a per-context breakdown.
 4. Detaching a form preserves its responses.
+
+Future platform features may add new attachment contexts and consequence hooks (verified-email access grants, enrollment handoffs, etc.). Those integrations extend `form_attachment` and the runner/submission layer; they are specified in the consuming feature's PRD, not enumerated here.
 
 ### FR-9: Purchase-Request Pipeline (default org form)
 
