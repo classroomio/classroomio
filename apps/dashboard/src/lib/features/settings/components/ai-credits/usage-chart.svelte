@@ -1,13 +1,14 @@
 <script module lang="ts">
-  let pending: Promise<typeof import('@cio/ui/base/chart')> | null = null;
   function loadChart() {
-    pending ??= import('@cio/ui/base/chart');
-    return pending;
+    if (typeof window === 'undefined') return Promise.reject(new Error('browser-only'));
+    return import('@cio/ui/base/chart');
   }
 </script>
 
 <script lang="ts">
-  import type * as Chart from '@cio/ui/base/chart';
+  import { browser } from '$app/environment';
+  import type { ChartConfig } from '@cio/ui/base/chart/types';
+  import { Spinner } from '@cio/ui/base/spinner';
   import { t } from '$lib/utils/functions/translations';
   import type { AiUsageData } from '$features/settings/utils/types';
 
@@ -26,7 +27,7 @@
       label: $t('settings.ai_credits.chart.tokens'),
       color: 'var(--chart-1)'
     }
-  } satisfies Chart.ChartConfig);
+  } satisfies ChartConfig);
 
   const series = $derived([
     { key: 'tokens', value: 'tokens', label: chartConfig.tokens.label, color: 'var(--color-tokens)' }
@@ -55,12 +56,16 @@
     </div>
   </div>
 
-  {#if hasData}
+  {#if browser && hasData}
     {#await loadChart() then C}
       <C.ChartContainer class="h-[260px] w-full" config={chartConfig}>
         <C.BarChart {data} x="date" axis="x" {series} />
       </C.ChartContainer>
     {/await}
+  {:else if hasData}
+    <div class="flex h-[260px] items-center justify-center">
+      <Spinner class="ui:text-muted-foreground size-6" />
+    </div>
   {:else}
     <div class="ui:text-muted-foreground flex h-[260px] items-center justify-center text-sm">
       {$t('settings.ai_credits.chart.empty')}
