@@ -15,6 +15,13 @@ if (dsn && isProd && !isSelfHosted) {
     dsn,
     environment: process.env.SENTRY_ENVIRONMENT?.trim() || 'production',
     tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE ?? 0),
-    sendDefaultPii: false
+    sendDefaultPii: false,
+    // process-error-guards.ts registers handlers with transient Redis filtering.
+    integrations(integrations) {
+      return integrations.filter(
+        (integration) =>
+          integration.name !== 'OnUncaughtException' && integration.name !== 'OnUnhandledRejection'
+      );
+    }
   });
 }
