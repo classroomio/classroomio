@@ -1,4 +1,4 @@
-# README Updates for Onboarding Task flow
+# README Updates for Onboarding Task Flow
 
 The following updates should be made to the onboarding README to reflect the current application behavior.
 
@@ -24,11 +24,26 @@ The onboarding guide references an incorrect navigation path for configuring cou
 
 ### Required Change
 
-Update the navigation path to the correct location where the Compliance settings are currently found.
+Update the instructions to use the correct navigation path:
+
+```md
+- [ ] Open the compliance course.
+- [ ] Navigate to **Certificate** from the course sidebar.
+- [ ] Open the **Settings** tab within the Certificate page.
+- [ ] Configure:
+  - [ ] Minimum completion / passing score.
+  - [ ] Due date.
+  - [ ] Grace period.
+  - [ ] Retake interval and maximum attempts.
+  - [ ] Reminder days before the deadline.
+  - [ ] Mark the course as mandatory (if applicable).
+```
+
+This reflects the current location of the compliance configuration options.
 
 ---
 
-## 2. Part 4: Widgets
+## 2. Part 4 - Widgets
 
 ### Issue
 
@@ -38,11 +53,11 @@ Following the documented widget creation flow does not produce a working widget.
 
 After completing all the documented steps:
 
-* Creating a widget
-* Selecting courses
-* Configuring the layout and design
-* Copying the embed code
-* Clicking **Publish**
+- Creating a widget
+- Selecting courses
+- Configuring the layout and design
+- Copying the embed code
+- Clicking **Publish**
 
 the widget does **not** render or load when the generated HTML/embed code is used.
 
@@ -50,12 +65,13 @@ the widget does **not** render or load when the generated HTML/embed code is use
 
 The README should either:
 
-* document any additional required steps if they exist, or
-* note that widget publishing is currently not functioning as expected until the issue is resolved.
+- document any additional required steps if they exist, or
+- note that widget publishing is currently not functioning as expected until the issue is resolved.
+- or instruct to run any application that includes the ability for widgets to run.
 
 ---
 
-## 3. Part 6: Media
+## 3. Part 6 - Media
 
 ### Issue
 
@@ -72,18 +88,21 @@ The current onboarding guide implies that assets should be uploaded directly fro
 
 ### Required Change
 
-Clarify that media assets are **not uploaded directly from the Media page**.
+Media assets are uploaded while creating course content rather than directly from the Media page.
 
-Instead:
+Update the onboarding instructions to reflect the following workflow:
 
-* Images
-* PDFs
-* Videos
+```md
+- [ ] Open a course.
+- [ ] Create a **Section**.
+- [ ] Create a **Lesson** within the section.
+- [ ] Add lesson materials such as:
+  - [ ] Images
+  - [ ] PDFs
+  - [ ] Videos
+  - [ ] Links
+- [ ] Navigate to **Media** (`/org/[slug]/media`) to verify that the uploaded assets appear in the Media Library.
+- [ ] Continue testing filtering, searching, editing, and reusing media assets from the Media Library.
+```
 
-are added while creating or editing courses and lessons.
-
-The **Media Library** acts as a centralized asset repository that automatically contains media uploaded through course creation and editing workflows.
-
-The onboarding instructions should therefore explain that users should first upload media while creating course content, then navigate to the **Media** page to verify, manage, search, filter, and reuse those assets.
-
-These notes are ready to include in your PR description or commit alongside the README updates.
+The Media Library serves as a centralized repository for assets uploaded through course and lesson creation, rather than as the primary location for uploading new media.
