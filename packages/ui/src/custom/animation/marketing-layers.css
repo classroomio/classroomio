@@ -72,10 +72,10 @@
     position: absolute;
     aspect-ratio: 1;
     width: calc(var(--size) * 1px);
-    animation-delay: var(--delay);
     background: linear-gradient(to left, var(--color-from), var(--color-to), transparent);
     offset-anchor: calc(var(--anchor) * 1%) 50%;
     offset-path: rect(0 auto auto 0 round calc(var(--size) * 1px));
     animation: border-beam calc(var(--duration) * 1s) infinite linear;
+    animation-delay: var(--delay);
   }
 }
