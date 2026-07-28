@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="thumbnail.css" />
+<style>
+  /* Layout-only overrides for the two-tile connect pattern */
+  .stage { position: absolute; top: 238px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; }
+  .tiles { display: flex; align-items: center; }
+  .pill-wrap { margin-top: 56px; }
+  .title { position: absolute; bottom: 70px; left: 0; right: 0; text-align: center; font-size: 104px; }
+</style>
+</head>
+<body>
+  <div class="texture">
+    <div class="card-line" style="width:520px;height:520px;"></div>
+    <div class="card-line" style="width:760px;height:700px;border-radius:80px;"></div>
+    <div class="card-line" style="width:1040px;height:900px;border-radius:110px;"></div>
+    <div class="card-line" style="width:1360px;height:1120px;border-radius:140px;"></div>
+    <div class="spark" style="top:150px;right:360px;">✦</div>
+    <div class="spark" style="bottom:250px;left:150px;">✦</div>
+    <div class="spark" style="bottom:180px;right:220px;font-size:26px;">✦</div>
+  </div>
+
+  <!-- Frame on ONE edge only. Two-tile/hero patterns use the TOP frame here. -->
+  <div class="frame top">
+    <div class="brand">
+      <img src="data:image/png;base64,__CIO_LOGO_B64__" alt="ClassroomIO" />
+      <div class="name">ClassroomIO</div>
+    </div>
+    <div class="domain"><span class="globe"></span><span>classroomio.com</span></div>
+  </div>
+
+  <div class="stage">
+    <div class="tiles">
+      <!-- Left tile: ClassroomIO -->
+      <div class="tile-wrap"><div class="tile">
+        <img src="data:image/png;base64,__CIO_LOGO_B64__" alt="ClassroomIO" />
+        <div class="label">ClassroomIO</div>
+      </div></div>
+
+      <!-- Connector: arrow node between the two tiles -->
+      <div class="connector">
+        <div class="dash"></div>
+        <div class="node"><div class="node-inner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+        </div></div>
+        <div class="dash"></div>
+      </div>
+
+      <!-- Right tile: the partner/tool. Paste the OFFICIAL white svg inside .svg-icon
+           (fetch it per task; e.g. Dokploy: https://dokploy.com/icon.svg). -->
+      <div class="tile-wrap"><div class="tile">
+        <div class="svg-icon"><!-- PARTNER_SVG_HERE --></div>
+        <div class="label">Partner</div>
+      </div></div>
+    </div>
+
+    <!-- Category / action pill -->
+    <div class="pill-wrap"><div class="pill"><span>DEPLOY IN MINUTES</span></div></div>
+  </div>
+
+  <!-- Title: bold white, ≤2 lines. Lighter tail via <span class="tail"> for hierarchy. -->
+  <div class="title">Primary Headline<br/><span class="tail">with </span>Partner</div>
+</body>
+</html>
