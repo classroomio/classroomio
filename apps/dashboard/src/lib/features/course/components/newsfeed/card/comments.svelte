@@ -151,9 +151,9 @@
       class="text-muted-foreground hover:text-foreground ui:transition-colors ui:h-auto ui:p-0 ui:justify-start mb-3 text-sm font-medium"
     >
       {#if isBootstrapping || isLoading}
-        Loading...
+        {$t('course.navItem.news_feed.comments.loading')}
       {:else}
-        View more comments ({totalCount - shownCount})
+        {$t('course.navItem.news_feed.comments.view_more', { count: totalCount - shownCount })}
       {/if}
     </Button>
   {/if}
@@ -183,21 +183,29 @@
                       <Textarea bind:value={editingText} rows={2} class="text-sm" />
                       <div class="flex items-center justify-end gap-2">
                         <Button variant="ghost" size="xs" onclick={handleCancelEdit} disabled={isSavingEdit}>
-                          Cancel
+                          {$t('course.navItem.news_feed.heading_button.cancel')}
                         </Button>
                         <Button
                           size="xs"
                           onclick={() => handleSaveEdit(commentIdNum)}
                           disabled={isSavingEdit || !editingText.trim()}
                         >
-                          {isSavingEdit ? 'Saving...' : 'Save'}
+                          {isSavingEdit
+                            ? $t('course.navItem.news_feed.comments.saving')
+                            : $t('course.navItem.news_feed.comments.save')}
                         </Button>
                       </div>
                     </div>
                   {:else}
                     <CommentTree.Content content={commentItem.content} />
                     <CommentTree.Actions
-                      onReply={() => handleReplyClick(commentIdNum, commentItem.authorFullname || 'User')}
+                      replyLabel={$t('course.navItem.news_feed.comments.reply')}
+                      deleteLabel={$t('course.navItem.news_feed.comments.delete')}
+                      onReply={() =>
+                        handleReplyClick(
+                          commentIdNum,
+                          commentItem.authorFullname || $t('course.navItem.news_feed.user')
+                        )}
                     />
                   {/if}
                 </div>
@@ -208,6 +216,8 @@
             <CommentTree.Replies
               replyCount={commentItem.replyCount || 0}
               isExpanded={Boolean(expandedRepliesMap[commentIdNum])}
+              showLabel={$t('course.navItem.news_feed.comments.view_replies', { count: commentItem.replyCount || 0 })}
+              hideLabel={$t('course.navItem.news_feed.comments.hide_replies')}
               onToggleExpand={() => handleToggleReplies(commentIdNum)}
             >
               {#if repliesState?.items}
@@ -231,21 +241,29 @@
                             <Textarea bind:value={editingText} rows={2} class="text-sm" />
                             <div class="flex items-center justify-end gap-2">
                               <Button variant="ghost" size="xs" onclick={handleCancelEdit} disabled={isSavingEdit}>
-                                Cancel
+                                {$t('course.navItem.news_feed.heading_button.cancel')}
                               </Button>
                               <Button
                                 size="xs"
                                 onclick={() => handleSaveEdit(replyIdNum, commentIdNum)}
                                 disabled={isSavingEdit || !editingText.trim()}
                               >
-                                {isSavingEdit ? 'Saving...' : 'Save'}
+                                {isSavingEdit
+                                  ? $t('course.navItem.news_feed.comments.saving')
+                                  : $t('course.navItem.news_feed.comments.save')}
                               </Button>
                             </div>
                           </div>
                         {:else}
                           <CommentTree.Content content={reply.content} />
                           <CommentTree.Actions
-                            onReply={() => handleReplyClick(commentIdNum, reply.authorFullname || 'User')}
+                            replyLabel={$t('course.navItem.news_feed.comments.reply')}
+                            deleteLabel={$t('course.navItem.news_feed.comments.delete')}
+                            onReply={() =>
+                              handleReplyClick(
+                                commentIdNum,
+                                reply.authorFullname || $t('course.navItem.news_feed.user')
+                              )}
                           />
                         {/if}
                       </div>

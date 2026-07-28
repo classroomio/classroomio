@@ -2260,13 +2260,30 @@
           "hide": "टिप्पणियाँ छिपाएँ",
           "placeholder": "कक्षा टिप्पणी जोड़ें",
           "submit_aria": "टिप्पणी सबमिट करें",
-          "delete": "हटाएँ"
+          "delete": "हटाएँ",
+          "reply": "उत्तर",
+          "replying_to": "@{name} को उत्तर दिया जा रहा है",
+          "cancel_reply": "रद्द करें",
+          "view_replies": "देखें {count} {count, plural, =1 {उत्तर} other {उत्तर}}",
+          "hide_replies": "उत्तर छिपाएँ",
+          "view_more": "अधिक टिप्पणियाँ देखें ({count})",
+          "loading": "लोड हो रहा है...",
+          "save": "सहेजें",
+          "saving": "सहेजा जा रहा है...",
+          "send": "भेजें"
         },
         "card": {
           "pin": "पिन",
           "unpin": "अनपिन करें",
           "edit": "संपादित करें",
           "delete": "हटाएँ"
+        },
+        "other_posts": "अन्य पोस्ट",
+        "user": "उपयोगकर्ता",
+        "delete_modal": {
+          "title": "फ़ीड हटाएँ",
+          "description": "क्या आप वाकई इस फ़ीड को हटाना चाहते हैं?",
+          "no": "नहीं हां"
         }
       },
       "compliance": {

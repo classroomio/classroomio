@@ -173,7 +173,9 @@
 
     {#if pinnedFeeds.length > 0 && unpinnedFeeds.length > 0}
       <div class="text-muted-foreground mb-3 flex items-center gap-1.5">
-        <span class="text-xs font-medium tracking-wider uppercase"> Other Posts </span>
+        <span class="text-xs font-medium tracking-wider uppercase">
+          {$t('course.navItem.news_feed.other_posts')}
+        </span>
       </div>
     {/if}
 

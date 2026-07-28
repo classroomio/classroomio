@@ -2260,13 +2260,31 @@
           "hide": "Masquer les commentaires",
           "placeholder": "Ajouter un commentaire de classe",
           "submit_aria": "Soumettre un commentaire",
-          "delete": "Supprimer"
+          "delete": "Supprimer",
+          "reply": "Répondre",
+          "replying_to": "Répondre à @{name}",
+          "cancel_reply": "Annuler",
+          "view_replies": "Voir {count} {count, plural, =1 {réponse} autres {réponses}}",
+          "hide_replies": "Masquer les réponses",
+          "view_more": "Afficher plus de commentaires ({count})",
+          "loading": "Chargement...",
+          "save": "Enregistrer",
+          "saving": "Sauvegarde...",
+          "send": "Envoyer"
         },
         "card": {
           "pin": "Épingler",
           "unpin": "Désépingler",
           "edit": "Modifier",
           "delete": "Supprimer"
+        },
+        "other_posts": "Autres messages",
+        "user": "Utilisateur",
+        "delete_modal": {
+          "title": "Supprimer le flux",
+          "description": "Êtes-vous sûr de vouloir supprimer ce flux ?",
+          "no": "Non",
+          "yes": "Oui"
         }
       },
       "compliance": {

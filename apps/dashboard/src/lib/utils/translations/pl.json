@@ -2260,13 +2260,31 @@
           "hide": "Ukryj komentarze",
           "placeholder": "Dodaj komentarz do zajęć",
           "submit_aria": "Prześlij komentarz",
-          "delete": "Usuń"
+          "delete": "Usuń",
+          "reply": "Odpowiedz",
+          "replying_to": "Odpowiadanie na @{name}",
+          "cancel_reply": "Anuluj",
+          "view_replies": "Wyświetl {count} {count, plural, =1 {odpowiedź} inne {replies}}",
+          "hide_replies": "Ukryj odpowiedzi",
+          "view_more": "Wyświetl więcej komentarzy ({count})",
+          "loading": "Ładowanie...",
+          "save": "Zapisz",
+          "saving": "Zapisywanie...",
+          "send": "Wyślij"
         },
         "card": {
           "pin": "Przypnij",
           "unpin": "Odepnij",
           "edit": "Edytuj",
           "delete": "Usuń"
+        },
+        "other_posts": "Inne posty",
+        "user": "Użytkownik",
+        "delete_modal": {
+          "title": "Usuń kanał",
+          "description": "Czy na pewno chcesz usunąć ten kanał?",
+          "no": "Nie",
+          "yes": "Tak"
         }
       },
       "compliance": {
