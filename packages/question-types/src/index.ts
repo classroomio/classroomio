@@ -19,3 +19,4 @@ export * from './textarea-validation';
 export * from './star-rating-settings';
 export * from './video-recording-settings';
 export * from './true-false-answer-key';
+export * from './agent-question-type-guide';
