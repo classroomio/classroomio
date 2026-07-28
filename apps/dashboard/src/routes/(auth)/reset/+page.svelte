@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, untrack } from 'svelte';
+  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
@@ -34,17 +34,7 @@
     }, 2000);
   });
 
-  function setConfirmPasswordError(fields: TResetPasswordForm) {
-    untrack(() => {
-      const errors = { ...resetApi.errors };
-      errors.confirmPassword = getConfirmPasswordError(fields) ?? '';
-      resetApi.setError(errors);
-    });
-  }
-
-  $effect(() => {
-    setConfirmPasswordError(fields);
-  });
+  const confirmPasswordError = $derived(getConfirmPasswordError(fields));
 </script>
 
 <svelte:head>
@@ -77,7 +67,7 @@
         {#if resetApi.errors.password}
           <Field.Error>{resetApi.errors.password}</Field.Error>
         {/if}
-        <Field.Description>Password must be more than 8 characters</Field.Description>
+        <Field.Description>Password must be more than 6 characters</Field.Description>
       </Field.Content>
     </Field.Field>
 
@@ -89,11 +79,11 @@
           bind:value={fields.confirmPassword}
           placeholder="************"
           disabled={resetApi.isLoading}
-          aria-invalid={resetApi.errors.confirmPassword ? 'true' : undefined}
+          aria-invalid={confirmPasswordError || resetApi.errors.confirmPassword ? 'true' : undefined}
           autocomplete="new-password"
         />
-        {#if resetApi.errors.confirmPassword}
-          <Field.Error>{resetApi.errors.confirmPassword}</Field.Error>
+        {#if confirmPasswordError || resetApi.errors.confirmPassword}
+          <Field.Error>{confirmPasswordError || resetApi.errors.confirmPassword}</Field.Error>
         {/if}
       </Field.Content>
     </Field.Field>

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
   import { AuthUI, SenjaEmbed } from '$features/ui';
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { t } from '$lib/utils/functions/translations';
@@ -162,15 +161,28 @@
     }
   }
 
-  function setConfirmPasswordError(fields: typeof SIGNUP_FIELDS) {
-    untrack(() => {
-      errors.confirmPassword = getConfirmPasswordError(fields);
-    });
+  let passwordBlurred = $state(false);
+
+  function handlePasswordBlur() {
+    passwordBlurred = true;
+    validatePasswordLength();
+  }
+
+  function validatePasswordLength() {
+    if (fields.password && fields.password.length < 6) {
+      errors.password = 'validations.auth.password.min_char';
+    } else {
+      errors.password = '';
+    }
   }
 
   $effect(() => {
-    setConfirmPasswordError(fields);
+    if (passwordBlurred) {
+      validatePasswordLength();
+    }
   });
+
+  const confirmPasswordError = $derived(getConfirmPasswordError(fields));
 </script>
 
 <svelte:head>
@@ -255,13 +267,15 @@
               bind:value={fields.password}
               placeholder="************"
               disabled={loading}
+              onblur={handlePasswordBlur}
               aria-invalid={errors.password ? 'true' : undefined}
               autocomplete="new-password"
             />
             {#if errors.password}
               <Field.Error>{$t(errors.password)}</Field.Error>
+            {:else}
+              <Field.Description>{$t('login.fields.password_helper_message')}</Field.Description>
             {/if}
-            <Field.Description>{$t('login.fields.password_helper_message')}</Field.Description>
           </Field.Content>
         </Field.Field>
 
@@ -273,11 +287,11 @@
               bind:value={fields.confirmPassword}
               placeholder="************"
               disabled={loading}
-              aria-invalid={errors.confirmPassword ? 'true' : undefined}
+              aria-invalid={confirmPasswordError ? 'true' : undefined}
               autocomplete="new-password"
             />
-            {#if errors.confirmPassword}
-              <Field.Error>{errors.confirmPassword}</Field.Error>
+            {#if confirmPasswordError}
+              <Field.Error>{confirmPasswordError}</Field.Error>
             {/if}
           </Field.Content>
         </Field.Field>

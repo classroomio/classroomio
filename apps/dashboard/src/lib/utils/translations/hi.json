@@ -3761,7 +3761,7 @@
       "full_name": "पूरा नाम",
       "password": "आपका पासवर्ड",
       "confirm_password": "पासवर्ड की पुष्टि करें",
-      "password_helper_message": "पासवर्ड 8 अक्षर से अधिक होना चाहिए",
+      "password_helper_message": "पासवर्ड 6 या अधिक अक्षर का होना चाहिए",
       "create_account": "खाता बनाएँ"
     },
     "signup_disabled": {

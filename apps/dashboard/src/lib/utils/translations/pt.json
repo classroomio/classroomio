@@ -3761,7 +3761,7 @@
       "full_name": "Nome Completo",
       "password": "Sua senha",
       "confirm_password": "Confirmar senha",
-      "password_helper_message": "A senha deve ter mais de 8 caracteres",
+      "password_helper_message": "A senha deve ter 6 ou mais caracteres",
       "create_account": "Criar conta"
     },
     "signup_disabled": {

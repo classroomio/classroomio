@@ -3761,7 +3761,7 @@
       "full_name": "Полное имя",
       "password": "Ваш пароль",
       "confirm_password": "Подтвердите пароль",
-      "password_helper_message": "Пароль должен быть более 8 символов",
+      "password_helper_message": "Пароль должен содержать 6 или более символов",
       "create_account": "Создать учетную запись"
     },
     "signup_disabled": {

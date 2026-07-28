@@ -21,8 +21,14 @@ function getSiteNameValidation() {
     });
 }
 
-export const getConfirmPasswordError = ({ password, confirmPassword }) => {
-  return password > 6 && confirmPassword > 6 && password !== confirmPassword
+export const getConfirmPasswordError = ({
+  password = '',
+  confirmPassword = ''
+}: {
+  password?: string;
+  confirmPassword?: string;
+}) => {
+  return password.length >= 6 && confirmPassword && password !== confirmPassword
     ? `${t.get('validations.confirm_password.not_match')}`
     : undefined;
 };
@@ -194,8 +200,14 @@ export const commentInCommunityValidation = (fields = {}) => {
   return processErrors(error);
 };
 
-export const getDisableSubmit = ({ password, confirmPassword }) => {
-  return !!(password && confirmPassword && password !== confirmPassword);
+export const getDisableSubmit = ({
+  password = '',
+  confirmPassword = ''
+}: {
+  password?: string;
+  confirmPassword?: string;
+}) => {
+  return !password || password.length < 6 || !confirmPassword || password !== confirmPassword;
 };
 
 export const validateEmailInString = (emailsStr) => {
