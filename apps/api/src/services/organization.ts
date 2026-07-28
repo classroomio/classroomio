@@ -650,7 +650,7 @@ export async function createOrgPlan(data: TNewOrganizationPlan) {
 export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
   try {
     if (data.siteName) {
-      const exists = await checkSiteNameExists(data.siteName); // exclude current org
+      const exists = await checkSiteNameExists(data.siteName, orgId); // exclude current org
       if (exists) {
         throw new AppError('Site name already exists', ErrorCodes.SITENAME_EXISTS, 409, 'siteName');
       }

@@ -44,6 +44,7 @@ import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
 import { uploadImage } from '$lib/utils/services/upload';
 import { DEFAULT_ORG_AUDIENCE_QUERY, toAudienceRequestQuery } from '../utils/audience-query-utils';
+import type { ZodError } from 'zod';
 
 export interface TOrgUpdateForm {
   name?: string;
@@ -337,6 +338,11 @@ class OrgApi extends BaseApiWithErrors {
 
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'organization');
+      // Show the first validation error to the user
+      const firstError = Object.values(this.errors)[0];
+      if (firstError) {
+        snackbar.error(firstError);
+      }
       return;
     }
 
@@ -420,7 +426,8 @@ class OrgApi extends BaseApiWithErrors {
       onError: (error) => {
         console.error('Error updating organization:', error);
 
-        if (typeof error === 'object' && error !== null && 'code' in error) {
+        // First check if it's a structured error with field information
+        if (typeof error === 'object' && error !== null && 'field' in error && 'error' in error) {
           const apiError = error as {
             success: false;
             error: string;
@@ -428,14 +435,24 @@ class OrgApi extends BaseApiWithErrors {
             field?: string;
           };
 
-          this.handleValidationError(apiError);
+          const fieldErrorMap: Record<string, string> = {
+            siteName: 'Site name already exists'
+          };
 
-          snackbar.error(apiError.error || t.get('snackbar.update_failed'));
+          const userMessage =
+            apiError.field && fieldErrorMap[apiError.field] ? fieldErrorMap[apiError.field] : apiError.error;
+
+          this.errors = {
+            ...this.errors,
+            [apiError.field!]: userMessage
+          };
+
+          snackbar.error(userMessage);
           return;
         }
 
         const message = error instanceof Error ? error.message : `${error}`;
-        this.errors.general = message;
+        this.errors = { ...this.errors, general: message };
         snackbar.error(`${t.get('snackbar.update_failed')}: ${message}`);
       }
     });
