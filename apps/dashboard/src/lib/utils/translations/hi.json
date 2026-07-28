@@ -1710,7 +1710,9 @@
                 "yes_label": "हाँ",
                 "no_label": "नहीं",
                 "edit": {
-                  "correct_answer_label": "सही उत्तर"
+                  "correct_answer_label": "सही उत्तर",
+                  "positive_option_label": "अंगूठा ऊपर लेबल",
+                  "negative_option_label": "अंगूठा नीचे लेबल"
                 },
                 "preview": {
                   "correct_value_label": "सही मूल्य"

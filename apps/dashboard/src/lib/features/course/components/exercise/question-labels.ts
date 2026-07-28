@@ -130,6 +130,12 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'thumbs.edit.correct_answer_label': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.thumbs.edit.correct_answer_label'
     ),
+    'thumbs.edit.positive_option_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.thumbs.edit.positive_option_label'
+    ),
+    'thumbs.edit.negative_option_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.thumbs.edit.negative_option_label'
+    ),
     'thumbs.preview.correct_value_label': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.thumbs.preview.correct_value_label'
     ),

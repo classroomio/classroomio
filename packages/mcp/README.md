@@ -430,7 +430,7 @@ Supported `questionTypeId` values for exercise payloads:
 - `1` `RADIO` - Single answer
 - `2` `CHECKBOX` - Multiple answers
 - `3` `TEXTAREA` - Paragraph
-- `4` `TRUE_FALSE` - True/False (factual statements; options: True, False)
+- `4` `TRUE_FALSE` - True/False (factual statements; options: True, False; auto-graded)
 - `5` `SHORT_ANSWER` - Short answer
 - `6` `NUMERIC` - Numeric answer
 - `7` `FILL_BLANK` - Fill in the blank
@@ -440,9 +440,9 @@ Supported `questionTypeId` values for exercise payloads:
 - `11` `WORD_BANK` - Word bank
 - `12` `STAR` - Star rating
 - `13` `VIDEO_RECORDING` - Video recording
-- `14` `THUMBS` - Thumbs up/down (agreement/sentiment; options: Yes, No)
+- `14` `THUMBS` - Thumbs up/down (auto-graded Yes/No with customizable labels; teacher selects correct option)
 
-`TRUE_FALSE` and `THUMBS` both use `settings.correctValue` (boolean) with two options. Use True/False for factual correctness and Yes/No for opinion or recommendation. `MATCHING` and `HOTSPOT` are disabled and must not be used.
+`TRUE_FALSE` and `THUMBS` both use `settings.correctValue` (boolean) with two options and are auto-graded. `TRUE_FALSE` uses fixed True/False labels for factual statements. `THUMBS` uses thumbs icons with customizable Yes/No-style labels; the teacher chooses which option is correct. `MATCHING` and `HOTSPOT` are disabled and must not be used.
 
 ## Operational Notes
 

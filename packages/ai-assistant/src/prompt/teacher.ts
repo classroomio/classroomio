@@ -59,8 +59,8 @@ Every question you pass to \`create_exercise\` or \`add_questions\` MUST include
 
 **Pick the type that matches the cognitive skill being tested, not the type that's easiest to write:**
 
-- **TRUE_FALSE** — testing a single misconception. Cheap and high-signal when the statement targets a *common* wrong belief, not a trivia detail. Options must be labeled **True** and **False**.
-- **THUMBS** — yes/no agreement, sentiment, or recommendation ("Would you recommend this approach?", "Do you agree that…?"). Uses thumbs-up/thumbs-down UI with options labeled **Yes** and **No** — not True/False. Set \`settings.correctValue\` (boolean) and exactly two options labeled Yes and No. Do **not** use THUMBS for factual correctness; use TRUE_FALSE instead.
+- **TRUE_FALSE** — testing a single factual misconception. Cheap and high-signal when the statement targets a *common* wrong belief, not a trivia detail. Options must be labeled **True** and **False**. Auto-graded against the teacher's chosen correct answer.
+- **THUMBS** — auto-graded yes/no binary like TRUE_FALSE, but shown with **thumbs up/down icons** and **customizable option labels** (defaults: Yes / No). The teacher selects which option is correct via \`settings.correctValue\`. Use when Yes/No framing fits better than True/False (recommendations, agreement, "would you…?"). Do **not** use THUMBS for factual true/false statements — use TRUE_FALSE instead.
 - **SHORT_ANSWER** — recalling a specific term, command, value, or short phrase. Use when there's a small set of right answers you can list.
 - **NUMERIC** — anything quantitative: math, calculations, counts, sizes, rates. Default for any "how many / what value / calculate X" question.
 - **FILL_BLANK** — testing syntax, sequence completion, or code/sentence patterns where position matters ("\`SELECT \_\_ FROM users\`").
@@ -235,7 +235,7 @@ To change an existing question (its text, points, order, in-exercise section, co
 
 - RADIO, CHECKBOX: on \`options[].isCorrect\`. Include an option's \`id\` to edit it; omit \`id\` to add a new option. The system automatically balances which position holds the correct answer across an exercise, so you don't need to vary it yourself — but DO keep the correct option from being an obvious tell: don't always make it the longest or most detailed choice, and avoid leaning on "all of the above"-style options.
 - TRUE_FALSE: on \`settings.correctValue\` as a boolean. Use \`true\` when True is correct and \`false\` when False is correct. Keep exactly two options labeled True and False; their \`isCorrect\` values are synchronized from \`settings.correctValue\`.
-- THUMBS: on \`settings.correctValue\` as a boolean (same shape as TRUE_FALSE). Use \`true\` when Yes is correct and \`false\` when No is correct. Keep exactly two options labeled **Yes** and **No**; their \`isCorrect\` values are synchronized from \`settings.correctValue\`. Use THUMBS for agreement, sentiment, or recommendation — not for factual true/false statements.
+- THUMBS: on \`settings.correctValue\` as a boolean (same auto-grading shape as TRUE_FALSE). Use \`true\` when the positive/Yes option is correct and \`false\` when the negative/No option is correct. Keep exactly two options (default labels Yes and No, but teachers may customize labels); \`isCorrect\` values are synchronized from \`settings.correctValue\`. Use THUMBS when Yes/No + thumbs UI fits better than True/False — not for factual statements.
 - NUMERIC: see the dedicated NUMERIC block below — \`settings.correctValue\` is required and \`settings.tolerance\` should almost always be set. \`options\` MUST be empty/absent.
 - STAR: on \`settings.correctValue\` (1..max stars).
 - WORD_BANK: on \`settings.correctAnswers\` (array, one per \`___\` blank) and \`settings.template\`.
@@ -351,8 +351,8 @@ When you create an exercise (especially during plan implementation), it must act
 ### Question writing
 - Each question must reference something specific the lesson taught (a concept, a worked example, a definition, a step in a procedure). Do not write questions whose answer cannot be derived from the lesson.
 - Prefer scenario / "what would happen if…" / "why does X work this way?" phrasing over rote definition lookup, except for foundational vocabulary checks.
-- For TRUE_FALSE: the statement should target a real misconception, not a trivial fact. Use sparingly. Options: True / False.
-- For THUMBS: use for opinion, sentiment, or recommendation prompts ("Would you…?", "Do you agree…?") — not factual correctness. Options: Yes / No. Use sparingly.
+- For TRUE_FALSE: the statement should target a real misconception, not a trivial fact. Use sparingly. Options: True / False. Auto-graded.
+- For THUMBS: use when Yes/No framing fits ("Would you recommend…?", "Do you agree…?"). Teacher selects the correct option; labels default to Yes/No but may be customized. Auto-graded like TRUE_FALSE. Use sparingly.
 - For NUMERIC / STAR / WORD_BANK: still ensure the answer is unambiguously derivable from the lesson.
 
 ### Per-exercise structure

@@ -155,7 +155,7 @@ const QUESTION_TYPE_PICKER_ENTRIES: QuestionTypePickerEntry[] = [
   {
     key: QUESTION_TYPE_KEY.THUMBS,
     displayLabel: 'Thumbs up/down',
-    description: 'Quick yes/no sentiment — clear icons, automatic scoring.',
+    description: 'Quick yes/no with thumbs icons — teacher picks the correct answer and can customize labels.',
     demoQuestion: {
       id: 'picker-thumbs',
       key: 'picker-thumbs',

@@ -20,4 +20,4 @@
   });
 </script>
 
-<ThumbsReviewToggle {labels} {correctIsYes} {studentValue} {isCorrect} />
+<ThumbsReviewToggle {labels} options={question.options} {correctIsYes} {studentValue} {isCorrect} />

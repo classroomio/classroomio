@@ -249,7 +249,7 @@ export const updateExerciseSchema = {
 
 export const addQuestionsSchema = {
   description:
-    'Add questions to an existing exercise. Use this when the exercise already exists and you want to add more questions. When get_exercise_details returns a non-empty sections array, pass exerciseSectionId so new questions are placed in the right in-exercise block (same ids as update_exercise_section). For THUMBS (14), use settings.correctValue with exactly two options labeled Yes and No — for agreement/sentiment, not factual true/false (use TRUE_FALSE/4 for that).',
+    'Add questions to an existing exercise. Use this when the exercise already exists and you want to add more questions. When get_exercise_details returns a non-empty sections array, pass exerciseSectionId so new questions are placed in the right in-exercise block (same ids as update_exercise_section). For THUMBS (14), set settings.correctValue with two options (default Yes/No labels, customizable). For TRUE_FALSE (4), use True/False labels. Both are auto-graded; THUMBS uses thumbs icons.',
   parameters: z.object({
     courseId: z.string().describe('The course ID'),
     exerciseId: z.string().describe('The existing exercise ID'),

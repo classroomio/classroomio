@@ -52,6 +52,8 @@ export type ExerciseQuestionLabelKey =
   | 'thumbs.yes_label'
   | 'thumbs.no_label'
   | 'thumbs.edit.correct_answer_label'
+  | 'thumbs.edit.positive_option_label'
+  | 'thumbs.edit.negative_option_label'
   | 'thumbs.preview.correct_value_label'
   | 'thumbs.review.correct_answer_label'
   | 'short_answer.edit.instructions_placeholder'

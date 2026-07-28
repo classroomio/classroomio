@@ -3,23 +3,31 @@
   import ThumbsDownIcon from '@lucide/svelte/icons/thumbs-down';
   import ThumbsUpIcon from '@lucide/svelte/icons/thumbs-up';
   import XIcon from '@lucide/svelte/icons/x';
-  import { getExerciseQuestionLabel, type ExerciseQuestionLabels } from '@cio/question-types';
+  import {
+    getExerciseQuestionLabel,
+    type ExerciseQuestionLabels,
+    type ExerciseQuestionOption
+  } from '@cio/question-types';
   import * as ToggleGroup from '../../../../base/toggle-group';
+  import { getThumbsOptionLabel } from './thumbs-options';
 
   interface Props {
     labels: ExerciseQuestionLabels | undefined;
+    options: ExerciseQuestionOption[] | undefined;
     correctIsYes: boolean;
     studentValue: string;
     isCorrect: boolean | null;
   }
 
-  let { labels, correctIsYes, studentValue, isCorrect }: Props = $props();
+  let { labels, options, correctIsYes, studentValue, isCorrect }: Props = $props();
 
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(labels, key, fallback);
 
-  const yesLabel = $derived(label('thumbs.yes_label'));
-  const noLabel = $derived(label('thumbs.no_label'));
+  const defaultYesLabel = $derived(label('thumbs.yes_label', 'Yes'));
+  const defaultNoLabel = $derived(label('thumbs.no_label', 'No'));
+  const yesLabel = $derived(getThumbsOptionLabel(options, true, defaultYesLabel, defaultNoLabel));
+  const noLabel = $derived(getThumbsOptionLabel(options, false, defaultYesLabel, defaultNoLabel));
   const correctValueLabel = $derived(correctIsYes ? yesLabel : noLabel);
 
   const correctAnswerFooter = $derived(

@@ -1710,7 +1710,9 @@
                 "yes_label": "Oui",
                 "no_label": "Non",
                 "edit": {
-                  "correct_answer_label": "Bonne réponse"
+                  "correct_answer_label": "Bonne réponse",
+                  "positive_option_label": "Libellé pouce vers le haut",
+                  "negative_option_label": "Libellé pouce vers le bas"
                 },
                 "preview": {
                   "correct_value_label": "Valeur correcte"

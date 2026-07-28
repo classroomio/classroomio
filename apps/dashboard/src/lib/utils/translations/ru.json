@@ -1710,7 +1710,9 @@
                 "yes_label": "Да",
                 "no_label": "Нет",
                 "edit": {
-                  "correct_answer_label": "Правильный ответ"
+                  "correct_answer_label": "Правильный ответ",
+                  "positive_option_label": "Подпись «палец вверх»",
+                  "negative_option_label": "Подпись «палец вниз»"
                 },
                 "preview": {
                   "correct_value_label": "Правильное значение"

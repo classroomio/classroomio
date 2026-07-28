@@ -3,15 +3,19 @@
   import { getExerciseQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
   import { Badge } from '../../../../base/badge';
   import { getThumbsCorrectIsYes } from './thumbs-correct';
+  import { getThumbsOptionLabel } from './thumbs-options';
 
   let { question, labels }: ExerciseQuestionRendererProps = $props();
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(labels, key, fallback);
 
+  const defaultYesLabel = $derived(label('thumbs.yes_label', 'Yes'));
+  const defaultNoLabel = $derived(label('thumbs.no_label', 'No'));
+
   const correctValue = $derived(
     getThumbsCorrectIsYes(question.settings as Record<string, unknown> | undefined, question.options)
-      ? label('thumbs.yes_label')
-      : label('thumbs.no_label')
+      ? getThumbsOptionLabel(question.options, true, defaultYesLabel, defaultNoLabel)
+      : getThumbsOptionLabel(question.options, false, defaultYesLabel, defaultNoLabel)
   );
 </script>
 

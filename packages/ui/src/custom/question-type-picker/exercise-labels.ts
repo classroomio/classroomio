@@ -51,6 +51,8 @@ export const QUESTION_TYPE_PICKER_EXERCISE_LABELS: ExerciseQuestionLabels = {
   'thumbs.yes_label': 'Yes',
   'thumbs.no_label': 'No',
   'thumbs.edit.correct_answer_label': 'Correct answer',
+  'thumbs.edit.positive_option_label': 'Thumbs up label',
+  'thumbs.edit.negative_option_label': 'Thumbs down label',
   'thumbs.preview.correct_value_label': 'Correct value',
   'thumbs.review.correct_answer_label': 'Correct answer:',
   'short_answer.edit.instructions_placeholder': 'Optional instructions',

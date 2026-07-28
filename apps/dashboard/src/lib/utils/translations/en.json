@@ -2777,7 +2777,9 @@
                 "yes_label": "Yes",
                 "no_label": "No",
                 "edit": {
-                  "correct_answer_label": "Correct answer"
+                  "correct_answer_label": "Correct answer",
+                  "positive_option_label": "Thumbs up label",
+                  "negative_option_label": "Thumbs down label"
                 },
                 "preview": {
                   "correct_value_label": "Correct value"
