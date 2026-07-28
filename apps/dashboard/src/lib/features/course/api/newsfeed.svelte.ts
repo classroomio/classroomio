@@ -404,6 +404,46 @@ export class NewsfeedApi extends BaseApiWithErrors {
   }
 
   /**
+   * Load more replies for a specific parent comment (uses cursor)
+   */
+  async loadMoreReplies(courseId: string, feedId: string, parentId: number, limit = 5) {
+    const replyState = this.repliesByParentId[parentId];
+    if (!replyState || !replyState.hasMore || replyState.isLoading || !replyState.cursor) {
+      return;
+    }
+
+    replyState.isLoading = true;
+
+    await this.execute<GetNewsfeedCommentsRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].newsfeed[':feedId'].comments.$get({
+          param: { courseId, feedId },
+          query: { parentId: String(parentId), cursor: replyState.cursor!, limit: String(limit) }
+        }),
+      logContext: 'loading more newsfeed replies',
+      onSuccess: (response) => {
+        if (response.data) {
+          this.repliesByParentId[parentId] = {
+            items: [...replyState.items, ...response.data.items],
+            totalCount: response.data.totalCount,
+            hasMore: response.data.hasMore,
+            isLoading: false,
+            cursor: response.data.nextCursor
+          };
+        }
+      },
+      onError: (result) => {
+        if (this.repliesByParentId[parentId]) {
+          this.repliesByParentId[parentId].isLoading = false;
+        }
+        if (typeof result === 'string') {
+          snackbar.error('Failed to load more replies');
+        }
+      }
+    });
+  }
+
+  /**
    * Load more comments (uses cursor)
    */
   async loadMoreComments(courseId: string, feedId: string, limit = 5) {

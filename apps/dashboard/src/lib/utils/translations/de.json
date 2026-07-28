@@ -2270,7 +2270,8 @@
           "loading": "Laden...",
           "save": "Speichern",
           "saving": "Sparen...",
-          "send": "Senden"
+          "send": "Senden",
+          "load_more_replies": "Weitere Antworten laden"
         },
         "card": {
           "pin": "Anheften",

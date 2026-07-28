@@ -2116,7 +2116,8 @@
           "loading": "Loading...",
           "save": "Save",
           "saving": "Saving...",
-          "send": "Send"
+          "send": "Send",
+          "load_more_replies": "Load more replies"
         },
         "user_avatar_alt": "User avatar",
         "snackbar": {

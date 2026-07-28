@@ -48,7 +48,7 @@ export const newsfeedCommentAuthorOnlyMiddleware = async (c: Context, next: Next
     }
 
     const userGroupMemberId = await getGroupMemberIdByCourseAndProfile(commentInfo.courseId, user.id);
-    const isAuthor = commentInfo.authorId === userGroupMemberId;
+    const isAuthor = Boolean(userGroupMemberId && commentInfo.authorId && commentInfo.authorId === userGroupMemberId);
 
     if (!isAuthor) {
       return c.json(

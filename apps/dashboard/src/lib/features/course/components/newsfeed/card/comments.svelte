@@ -77,10 +77,6 @@
     isBootstrapping = true;
     try {
       await newsfeedApi.getComments(courseId, feed.id, PAGE_SIZE);
-      const res = newsfeedApi.commentsByFeedId[feed.id];
-      if (res?.items?.length) {
-        visibleCount = Math.max(visibleCount, res.items.length);
-      }
     } finally {
       isBootstrapping = false;
     }
@@ -95,7 +91,9 @@
   const ensureLoaded = async (targetVisible: number) => {
     if (!courseId || !comments) return;
     const target = Math.min(targetVisible, comments.totalCount);
-    while (comments.hasMore && comments.items.length < target && !comments.isLoading) {
+    while (true) {
+      const current = newsfeedApi.commentsByFeedId[feed.id];
+      if (!current || !current.hasMore || current.isLoading || current.items.length >= target) break;
       await newsfeedApi.loadMoreComments(courseId, feed.id, PAGE_SIZE);
     }
   };
@@ -270,6 +268,20 @@
                     </div>
                   </CommentTree.Item>
                 {/each}
+
+                {#if repliesState.hasMore}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onclick={() => courseId && newsfeedApi.loadMoreReplies(courseId, feed.id, commentIdNum)}
+                    disabled={repliesState.isLoading}
+                    class="text-muted-foreground hover:text-foreground ui:transition-colors ui:h-auto ui:p-0 ui:pl-9 ui:justify-start mt-1 text-sm font-medium"
+                  >
+                    {repliesState.isLoading
+                      ? $t('course.navItem.news_feed.comments.loading')
+                      : $t('course.navItem.news_feed.comments.load_more_replies')}
+                  </Button>
+                {/if}
               {/if}
             </CommentTree.Replies>
           </CommentTree.Item>

@@ -2270,7 +2270,8 @@
           "loading": "Đang tải...",
           "save": "Lưu",
           "saving": "Đang lưu...",
-          "send": "Gửi"
+          "send": "Gửi",
+          "load_more_replies": "Tải thêm câu trả lời"
         },
         "card": {
           "pin": "Ghim",

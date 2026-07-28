@@ -2270,7 +2270,8 @@
           "loading": "Chargement...",
           "save": "Enregistrer",
           "saving": "Sauvegarde...",
-          "send": "Envoyer"
+          "send": "Envoyer",
+          "load_more_replies": "Charger plus de réponses"
         },
         "card": {
           "pin": "Épingler",

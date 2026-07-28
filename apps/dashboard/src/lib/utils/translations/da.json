@@ -2270,7 +2270,8 @@
           "loading": "Indlæser...",
           "save": "Gem",
           "saving": "Gemmer...",
-          "send": "Send"
+          "send": "Send",
+          "load_more_replies": "Indlæs flere svar"
         },
         "card": {
           "pin": "Fastgør",

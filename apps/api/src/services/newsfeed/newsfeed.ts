@@ -11,6 +11,7 @@ import {
   getNewsfeedByCourseId,
   getNewsfeedByCourseIdPaginated,
   getNewsfeedById,
+  getNewsfeedCommentById,
   getNewsfeedCommentsByFeedId,
   getNewsfeedCommentsByFeedIdPaginated,
   getNewsfeedForEmail,
@@ -273,6 +274,27 @@ export async function createNewsfeedCommentService(
   parentId?: number
 ) {
   try {
+    // Validate parentId when provided
+    if (parentId !== undefined) {
+      const parentComment = await getNewsfeedCommentById(parentId);
+
+      if (!parentComment) {
+        throw new AppError('Parent comment not found', ErrorCodes.COMMENT_NOT_FOUND, 404);
+      }
+
+      if (parentComment.courseNewsfeedId !== feedId) {
+        throw new AppError('Parent comment does not belong to this feed', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+
+      if (parentComment.parentId !== null) {
+        throw new AppError(
+          'Cannot reply to a reply — only top-level comments can be replied to',
+          ErrorCodes.VALIDATION_ERROR,
+          400
+        );
+      }
+    }
+
     const sanitizedContent = sanitizeHtml(content);
 
     const commentData: TNewCourseNewsfeedComment = {
@@ -291,6 +313,10 @@ export async function createNewsfeedCommentService(
 
     return comment;
   } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to create newsfeed comment',
       ErrorCodes.INTERNAL_ERROR,

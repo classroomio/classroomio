@@ -364,6 +364,27 @@ export async function deleteNewsfeedComment(commentId: number): Promise<TCourseN
 }
 
 /**
+ * Gets a single newsfeed comment by ID
+ * @param commentId Comment ID
+ * @returns Comment or null
+ */
+export async function getNewsfeedCommentById(commentId: number): Promise<TCourseNewsfeedComment | null> {
+  try {
+    const [comment] = await db
+      .select()
+      .from(schema.courseNewsfeedComment)
+      .where(eq(schema.courseNewsfeedComment.id, commentId))
+      .limit(1);
+    return comment || null;
+  } catch (error) {
+    console.error('getNewsfeedCommentById error:', error);
+    throw new Error(
+      `Failed to get newsfeed comment by ID "${commentId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
  * Gets comment author and course ID for authorization checks
  * @param commentId Comment ID
  * @returns Object with authorId (group member ID) and courseId, or null if not found
