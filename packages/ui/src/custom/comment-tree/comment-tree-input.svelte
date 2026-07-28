@@ -9,6 +9,7 @@
     authorAvatarUrl?: string | null;
     placeholder?: string;
     replyingToUser?: string | null;
+    replyingToSnippet?: string | null;
     onCancelReply?: () => void;
     onSubmit: (content: string) => Promise<void> | void;
     isSubmitting?: boolean;
@@ -19,6 +20,7 @@
     authorAvatarUrl,
     placeholder = 'Add a comment...',
     replyingToUser = null,
+    replyingToSnippet = null,
     onCancelReply,
     onSubmit,
     isSubmitting = false,
@@ -54,7 +56,12 @@
       <div
         class="ui:flex ui:items-center ui:justify-between ui:bg-muted/30 ui:px-3 ui:py-1.5 ui:text-xs ui:text-muted-foreground ui:border-b ui:border-border/60"
       >
-        <span>Replying to <strong class="ui:font-medium ui:text-foreground">@{replyingToUser}</strong></span>
+        <div class="ui:flex ui:max-w-[85%] ui:flex-col ui:gap-0.5 ui:truncate">
+          <span>Replying to <strong class="ui:font-medium ui:text-foreground">@{replyingToUser}</strong></span>
+          {#if replyingToSnippet}
+            <span class="ui:truncate ui:italic ui:text-muted-foreground/80">"{replyingToSnippet}"</span>
+          {/if}
+        </div>
         {#if onCancelReply}
           <button
             type="button"

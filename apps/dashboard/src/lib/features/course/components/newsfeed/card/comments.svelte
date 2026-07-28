@@ -29,7 +29,12 @@
 
   let { courseId, feed, author, comments, onAddComment, onDeleteComment }: Props = $props();
 
-  let activeReplyTarget = $state<{ id: number; fullname: string } | null>(null);
+  let activeReplyTarget = $state<{
+    id: number;
+    commentId: number;
+    fullname: string;
+    snippet: string;
+  } | null>(null);
   let isSubmitting = $state(false);
   let isBootstrapping = $state(false);
   let didBootstrap = $state(false);
@@ -94,7 +99,10 @@
     while (true) {
       const current = newsfeedApi.commentsByFeedId[feed.id];
       if (!current || !current.hasMore || current.isLoading || current.items.length >= target) break;
+      const prevLength = current.items.length;
       await newsfeedApi.loadMoreComments(courseId, feed.id, PAGE_SIZE);
+      const updated = newsfeedApi.commentsByFeedId[feed.id];
+      if (!updated || updated.items.length <= prevLength) break;
     }
   };
 
@@ -115,8 +123,15 @@
     }
   };
 
-  const handleReplyClick = (commentId: number, authorName: string) => {
-    activeReplyTarget = { id: commentId, fullname: authorName };
+  const handleReplyClick = (topLevelId: number, targetCommentId: number, authorName: string, content: string) => {
+    const cleanText = content.replace(/<blockquote[\s\S]*?<\/blockquote>/gi, '').trim();
+    const snippet = cleanText.length > 60 ? cleanText.slice(0, 60) + '...' : cleanText;
+    activeReplyTarget = {
+      id: topLevelId,
+      commentId: targetCommentId,
+      fullname: authorName,
+      snippet
+    };
   };
 
   const handleCancelReply = () => {
@@ -128,7 +143,14 @@
     isSubmitting = true;
     try {
       const parentId = activeReplyTarget?.id;
-      await onAddComment(text, parentId);
+      let finalContent = text;
+
+      if (activeReplyTarget) {
+        const quoteBlock = `<blockquote class="reply-quote ui:mt-0.5 ui:mb-1 ui:rounded-r-md ui:border-l-2 ui:border-primary ui:bg-muted/40 ui:px-2.5 ui:py-1.5 ui:text-xs ui:text-muted-foreground"><strong class="ui:font-medium ui:text-foreground">Replying to @${activeReplyTarget.fullname}</strong><br/><span class="ui:block ui:truncate ui:italic">"${activeReplyTarget.snippet}"</span></blockquote>`;
+        finalContent = `${quoteBlock}${text}`;
+      }
+
+      await onAddComment(finalContent, parentId);
       if (parentId) {
         expandedRepliesMap[parentId] = true;
       }
@@ -164,7 +186,7 @@
           {@const repliesState = newsfeedApi.repliesByParentId[commentIdNum]}
 
           <CommentTree.Item>
-            <div class="flex w-full items-start justify-between">
+            <div id="comment-{commentItem.id}" class="flex w-full items-start justify-between">
               <div class="flex w-full flex-col gap-1">
                 <CommentTree.Header
                   avatarUrl={commentItem.authorAvatarUrl}
@@ -202,7 +224,9 @@
                       onReply={() =>
                         handleReplyClick(
                           commentIdNum,
-                          commentItem.authorFullname || $t('course.navItem.news_feed.user')
+                          commentIdNum,
+                          commentItem.authorFullname || $t('course.navItem.news_feed.user'),
+                          commentItem.content || ''
                         )}
                     />
                   {/if}
@@ -222,7 +246,7 @@
                 {#each repliesState.items as reply (reply.id)}
                   {@const replyIdNum = Number(reply.id)}
                   <CommentTree.Item>
-                    <div class="flex w-full flex-col gap-1">
+                    <div id="comment-{reply.id}" class="flex w-full flex-col gap-1">
                       <CommentTree.Header
                         avatarUrl={reply.authorAvatarUrl}
                         fullname={reply.authorFullname}
@@ -260,7 +284,9 @@
                             onReply={() =>
                               handleReplyClick(
                                 commentIdNum,
-                                reply.authorFullname || $t('course.navItem.news_feed.user')
+                                replyIdNum,
+                                reply.authorFullname || $t('course.navItem.news_feed.user'),
+                                reply.content || ''
                               )}
                           />
                         {/if}
@@ -295,6 +321,7 @@
     authorAvatarUrl={author.avatarUrl}
     placeholder={$t('course.navItem.news_feed.comments.placeholder')}
     replyingToUser={activeReplyTarget?.fullname || null}
+    replyingToSnippet={activeReplyTarget?.snippet || null}
     onCancelReply={handleCancelReply}
     onSubmit={handleSubmit}
     {isSubmitting}
