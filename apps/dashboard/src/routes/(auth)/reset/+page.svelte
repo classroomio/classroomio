@@ -66,8 +66,9 @@
         />
         {#if resetApi.errors.password}
           <Field.Error>{resetApi.errors.password}</Field.Error>
+        {:else}
+          <Field.Description>Password must be 6 or more characters</Field.Description>
         {/if}
-        <Field.Description>Password must be more than 6 characters</Field.Description>
       </Field.Content>
     </Field.Field>
 
