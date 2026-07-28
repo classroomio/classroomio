@@ -126,14 +126,38 @@ export class BaseApi {
 export class BaseApiWithErrors extends BaseApi {
   errors = $state<Record<string, string>>({});
 
-  handleValidationError(result: { success: false; error: string; code: string; field?: string }): Promise<void> | void {
+  handleValidationError(result: {
+    success: false;
+    error: string;
+    code?: string;
+    field?: string;
+  }): Promise<void> | void {
     const zodValidationError = result.error as unknown as ZodValidationError;
-    if (zodValidationError.name === 'ZodError') {
+    if (zodValidationError && typeof zodValidationError === 'object' && zodValidationError.name === 'ZodError') {
       const issues = JSON.parse(zodValidationError.message) as ZodValidatorMesssage;
 
       this.errors = mapZodErrorsToTranslations(new ZodError(issues));
 
       return;
+    }
+
+    if (result.code === 'SITENAME_EXISTS' || result.field === 'siteName') {
+      this.errors = { ...this.errors, siteName: result.error };
+      return;
+    }
+
+    if (result.code === 'ORGNAME_EXISTS' || result.field === 'orgName') {
+      this.errors = { ...this.errors, orgName: result.error };
+      return;
+    }
+
+    if (result.field) {
+      this.errors = { ...this.errors, [result.field]: result.error };
+      return;
+    }
+
+    if (typeof result.error === 'string') {
+      this.errors = { ...this.errors, general: result.error };
     }
   }
 

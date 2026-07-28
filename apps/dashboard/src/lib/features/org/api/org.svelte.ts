@@ -309,11 +309,8 @@ class OrgApi extends BaseApiWithErrors {
           snackbar.error(result);
           return;
         }
-        if ('error' in result && 'field' in result) {
-          // Field-specific error automatically mapped to this.errors[field]
-          this.errors[result.field as string] = result.error;
-        } else if ('error' in result) {
-          this.errors.general = result.error;
+        if ('error' in result) {
+          this.handleValidationError(result);
         }
       }
     });
