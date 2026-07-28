@@ -427,12 +427,13 @@
 {/snippet}
 
 {#snippet questionEditor(question, index)}
+  {@const questionStoreIndex = $questionnaire.questions.findIndex((item) => item.id === question.id)}
   <QuestionContainer
     elementId={getQuestionElementId(question.id)}
     key={String(question.id ?? `new-${index}`)}
     onClose={onInitDeleteClicked(question.id)}
     scrollToQuestion={shouldScrollToLast(question.id, $questionnaire.questions)}
-    bind:points={question.points}
+    bind:points={$questionnaire.questions[questionStoreIndex].points}
     hasError={!!errors[question.id]}
     errorMsg={getQuestionErrorMsg(errors, question, 'points')}
     pointsHint={requiresPositivePointsForAutoGrade

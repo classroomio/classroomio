@@ -1716,7 +1716,7 @@
                   "correct_value_label": "सही मूल्य"
                 },
                 "review": {
-                  "correct_answer_label": "सही उत्तर: {value}"
+                  "correct_answer_label": "सही उत्तर:"
                 }
               },
               "checkbox": {

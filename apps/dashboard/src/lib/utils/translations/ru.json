@@ -1716,7 +1716,7 @@
                   "correct_value_label": "Правильное значение"
                 },
                 "review": {
-                  "correct_answer_label": "Правильный ответ: {value}"
+                  "correct_answer_label": "Правильный ответ:"
                 }
               },
               "checkbox": {

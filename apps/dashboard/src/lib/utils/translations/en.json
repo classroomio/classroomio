@@ -2783,7 +2783,7 @@
                   "correct_value_label": "Correct value"
                 },
                 "review": {
-                  "correct_answer_label": "Correct answer: {value}"
+                  "correct_answer_label": "Correct answer:"
                 }
               },
               "short_answer": {

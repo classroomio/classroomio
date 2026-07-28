@@ -23,7 +23,7 @@
   const correctValueLabel = $derived(correctIsYes ? yesLabel : noLabel);
 
   const correctAnswerFooter = $derived(
-    label('thumbs.review.correct_answer_label', 'Correct answer: {value}').replace('{value}', correctValueLabel)
+    `${label('thumbs.review.correct_answer_label', 'Correct answer:')} ${correctValueLabel}`
   );
 
   const ariaCorrectLabel = $derived(label('common.correct_badge', 'Correct'));

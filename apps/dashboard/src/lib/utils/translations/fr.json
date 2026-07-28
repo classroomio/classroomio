@@ -1716,7 +1716,7 @@
                   "correct_value_label": "Valeur correcte"
                 },
                 "review": {
-                  "correct_answer_label": "Bonne réponse: {value}"
+                  "correct_answer_label": "Bonne réponse:"
                 }
               },
               "checkbox": {

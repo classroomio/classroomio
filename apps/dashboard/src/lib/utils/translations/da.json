@@ -1716,7 +1716,7 @@
                   "correct_value_label": "Korrekt værdi"
                 },
                 "review": {
-                  "correct_answer_label": "Korrekt svar: {value}"
+                  "correct_answer_label": "Korrekt svar:"
                 }
               },
               "checkbox": {
