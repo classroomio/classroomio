@@ -368,13 +368,13 @@
     });
 
     if (!zodResult.success || Object.keys(sectionValidationErrors).length > 0) {
-      const zodErrors = !zodResult.success ? mapZodErrorsToTranslations(zodResult.error) : {};
+      const zodErrors = !zodResult.success ? mapZodErrorsToTranslations(zodResult.error, 'exercise') : {};
       const questionErrors = mapZodErrorsToQuestionErrors(zodErrors, $questionnaire.questions);
       questionnaireValidation.set({
         ...questionErrors,
         ...sectionValidationErrors
       });
-      snackbar.error('Please fix all validation errors before saving');
+      snackbar.error('snackbar.exercise.validation_errors');
       return;
     }
 
@@ -435,7 +435,7 @@
       // Check if there are validation errors from the API
       if (Object.keys(exerciseApi.errors || {}).length > 0) {
         console.log('Validation errors from API:', exerciseApi.errors);
-        snackbar.error('Please fix all validation errors before saving');
+        snackbar.error('snackbar.exercise.validation_errors');
         isSaving = false;
         return;
       }

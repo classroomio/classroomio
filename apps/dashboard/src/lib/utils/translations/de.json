@@ -321,6 +321,7 @@
       "creating_new": "Das Erstellen neuer Übersetzungen ist fehlgeschlagen"
     },
     "exercise": {
+      "validation_errors": "Bitte beheben Sie alle Validierungsfehler, bevor Sie speichern.",
       "points_required_auto_grade": "Legen Sie für jede Frage einen positiven Punktwert fest, bevor Sie speichern.",
       "success": "Erfolgreich gespeichert",
       "submission_updated": "Einreichung aktualisiert auf",

@@ -457,6 +457,7 @@
     <div class="mt-2 flex flex-col">
       <ExerciseQuestion.QuestionRenderer
         showContainer={false}
+        titleError={getQuestionErrorMsg(errors, question, 'title')}
         contract={{
           mode: 'edit',
           question: toExerciseQuestionModel(question),

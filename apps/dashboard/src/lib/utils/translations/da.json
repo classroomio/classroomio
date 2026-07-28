@@ -321,6 +321,7 @@
       "creating_new": "Oprettelse af nye oversættelser mislykkedes"
     },
     "exercise": {
+      "validation_errors": "Ret alle valideringsfejl, før du gemmer.",
       "points_required_auto_grade": "Angiv en positiv pointværdi for hvert spørgsmål, før du gemmer.",
       "success": "Gemt",
       "submission_updated": "Indsendelse opdateret til",

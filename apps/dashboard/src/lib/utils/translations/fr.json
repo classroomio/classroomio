@@ -321,6 +321,7 @@
       "creating_new": "La création de nouvelles traductions a échoué"
     },
     "exercise": {
+      "validation_errors": "Veuillez corriger toutes les erreurs de validation avant d'enregistrer.",
       "points_required_auto_grade": "Définissez un nombre de points positif pour chaque question avant d'enregistrer.",
       "success": "Enregistré avec succès",
       "submission_updated": "Soumission mise à jour pour",

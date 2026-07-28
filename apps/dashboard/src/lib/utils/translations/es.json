@@ -321,6 +321,7 @@
       "creating_new": "Error al crear nuevas traducciones"
     },
     "exercise": {
+      "validation_errors": "Corrija todos los errores de validación antes de guardar.",
       "points_required_auto_grade": "Asigne un valor de puntos positivo a cada pregunta antes de guardar.",
       "success": "Guardado exitosamente",
       "submission_updated": "Envío actualizado a",

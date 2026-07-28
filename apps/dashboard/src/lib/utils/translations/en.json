@@ -4193,6 +4193,7 @@
       }
     },
     "exercise": {
+      "validation_errors": "Please fix all validation errors before saving.",
       "points_required_auto_grade": "Set a positive point value for every question before saving.",
       "passed_requires_points": "Passed completion needs at least one point available.",
       "success": "Saved Successfully",
