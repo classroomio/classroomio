@@ -62,7 +62,7 @@
   import * as Alert from '@cio/ui/base/alert';
   import * as RadioGroup from '@cio/ui/base/radio-group';
   import InfoIcon from '@lucide/svelte/icons/info';
-  import { isAutoGradableQuestionType } from '@cio/question-types';
+  import { isAutoGradableQuestionType, isAutoGradableQuestionTypeId } from '@cio/question-types';
   import * as Dialog from '@cio/ui/base/dialog';
   import type { ExerciseSectionState } from '$features/course/components/exercise/store';
   import {
@@ -379,7 +379,12 @@
     }
 
     if (requiresPositivePointsForAutoGrade) {
-      const zeroPointQuestions = ($questionnaire.questions ?? []).filter((q) => !q.deletedAt && Number(q.points) === 0);
+      const zeroPointQuestions = ($questionnaire.questions ?? []).filter(
+        (question) =>
+          !question.deletedAt &&
+          Number(question.points) === 0 &&
+          isAutoGradableQuestionTypeId(getQuestionTypeId(question))
+      );
 
       if (zeroPointQuestions.length > 0) {
         const pointErrors: Record<string, { option?: string; title?: string; points?: string }> = {};

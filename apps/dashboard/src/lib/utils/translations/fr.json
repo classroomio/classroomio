@@ -1533,6 +1533,8 @@
               "select_type": "Sélectionnez le type",
               "question_type_auto_gradable": "Auto",
               "question_type_auto_gradable_description": "Noté automatiquement par le système",
+              "question_type_open_ended": "Ouverte",
+              "question_type_open_ended_description": "Pas de bonne réponse — les réponses sont recueillies comme retour",
               "question_type_manual_grading": "Manuel",
               "question_type_manual_grading_description": "Nécessite une évaluation humaine",
               "premium_question_type": "Mettre à niveau pour utiliser ce type de question"

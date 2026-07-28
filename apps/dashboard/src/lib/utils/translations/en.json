@@ -2614,6 +2614,8 @@
               "select_type": "Select type",
               "question_type_auto_gradable": "Auto",
               "question_type_auto_gradable_description": "Scored automatically by the system",
+              "question_type_open_ended": "Open-ended",
+              "question_type_open_ended_description": "No correct answer — responses are collected as feedback",
               "question_type_manual_grading": "Manual",
               "question_type_manual_grading_description": "Requires human review to score",
               "premium_question_type": "Upgrade to use this question type",
