@@ -1,0 +1,55 @@
+---
+title: Enterprise & licensing
+description: What a ClassroomIO enterprise license unlocks on self-hosted — SSO, token auth, no-tracking — and how LICENSE_KEY validation works.
+---
+
+ClassroomIO is [open core](/self-hosted/101#how-licensing-works): the complete LMS is free to
+self-host, and a small set of enterprise features is unlocked by a paid license key. No key means
+everything else still works — leave `LICENSE_KEY` unset until you need one of these.
+
+## What a license unlocks
+
+| Feature | What it does |
+|---------|--------------|
+| **SSO** | Single Sign-On with OIDC (Okta, Azure AD, and more). Setup: [Enterprise SSO](/enterprise-sso). |
+| **Token auth** | Issue signed tokens to log users in from your own app. Setup: [Token Auth](/token-auth). |
+| **No-tracking** | Disables product analytics in the dashboard (PostHog, Umami) and third-party embeds. Without this feature, self-hosted mode already disables error reporting and the feedback widget — but not product analytics. |
+
+Without a valid license, the SSO and token-auth APIs return `403 FEATURE_REQUIRES_LICENSE` and
+their settings are hidden in the dashboard UI.
+
+## Setting `LICENSE_KEY`
+
+`LICENSE_KEY` is read by the **api** service. Set it wherever that service takes its environment:
+
+| Deployment | Where to set it |
+|------------|-----------------|
+| Docker | repository root `.env` |
+| Railway | the `cio-api` service environment |
+| Coolify / Dokploy | the resource's environment variables |
+| Local development | `apps/api/.env` |
+
+```zsh title=".env"
+LICENSE_KEY=<your enterprise license key>
+```
+
+Restart the api service after setting it.
+
+## How validation works
+
+The api service validates the key against ClassroomIO's license server
+(`enterprise-api.classroomio.dev`) and caches the result in memory for **one hour**.
+
+What that means operationally:
+
+- **The api container needs outbound HTTPS** to that host. In an air-gapped or egress-restricted
+  network, licensed features can't activate — contact ClassroomIO about your environment before
+  buying.
+- If a check fails (network blip, license server unreachable), licensed features switch off and
+  the failure is also cached — so it can take **up to an hour** (or an api restart) after
+  connectivity returns before they come back.
+- Everything outside the licensed feature list is unaffected by license-server reachability.
+
+## Getting a license
+
+[Book a call](http://cal.com/classroomio/enterprise) to get an enterprise license key.

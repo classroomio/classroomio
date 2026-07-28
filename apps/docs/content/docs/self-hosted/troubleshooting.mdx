@@ -1,0 +1,128 @@
+---
+title: Troubleshooting
+description: Diagnose common self-hosted ClassroomIO failures — sign-in errors, stuck uploads, out-of-memory kills, and disk issues.
+---
+
+Start here when something misbehaves. Every entry below is a failure mode we've seen in real
+deployments — with its cause and fix.
+
+First, always check what's actually running:
+
+```zsh title="Terminal"
+./classroomio.sh logs          # follow all service logs
+docker ps                      # anything restarting or exited?
+```
+
+## Quick reference
+
+| Symptom | Likely cause | Fix |
+|---------|-------------|-----|
+| Sign-in fails right after startup with a database error (`57P03`) | Postgres is still starting | Wait 30–60 s and retry — [details](#sign-in-fails-with-57p03-right-after-startup) |
+| Login silently fails on your domain (no error, just back to the login page) | Serving over plain HTTP — session cookies are `Secure` | Serve over HTTPS — [details](/self-hosted#https-is-required-in-production) |
+| Login loops or CSRF errors | `DASHBOARD_ORIGIN` doesn't match the URL users actually visit | Set it to the exact `https://` origin, restart |
+| Uploads stuck at "processing" forever, no error | The `jobs` worker isn't running, or Redis is unreachable | [details](#uploads-stuck-at-processing) |
+| Containers randomly killed, stack unstable | Out of memory — a transcode can exhaust a 4 GB server | [details](#containers-are-oom-killed) |
+| `No space left on device`, MinIO "minimum free drive threshold" | Disk full (images, build cache, uploads) | [details](#no-space-left-on-device) |
+| API container exits immediately at boot | Database migration failed | [details](#api-container-exits-at-boot) |
+| No signup / invite / reset emails, logs show `ECONNREFUSED` | SMTP not configured or wrong host/port | Check [Email settings](/self-hosted/configuration/email) |
+| Videos never get captions; no transcription | `OPENAI_API_KEY` not set | [details](#transcription-never-happens) |
+| Crash loops with `read ECONNABORTED` during managed-Redis maintenance | A bug fixed upstream | Upgrade — [details](#crash-loops-during-redis-maintenance) |
+
+## Sign-in fails with 57P03 right after startup
+
+**Symptom:** immediately after starting the stack, sign-in returns a database error with Postgres
+code `57P03` ("the database system is in recovery mode" / "is starting up").
+
+**Cause:** Postgres reports itself ready (`pg_isready` passes) before it has finished crash
+recovery, so the API can connect but queries fail.
+
+**Fix:** wait 30–60 seconds and retry — recovery completes on its own. Current compose files
+already guard against this: the Postgres healthcheck requires a successful `SELECT 1`, not just
+`pg_isready`, so dependent services wait until queries actually work. If you see this repeatedly,
+your compose file predates that healthcheck — refresh it:
+
+```zsh title="Terminal"
+curl -fsSLO https://raw.githubusercontent.com/classroomio/classroomio/main/docker-compose.images.yaml
+./classroomio.sh restart
+```
+
+## Uploads stuck at "processing"
+
+Video processing, transcription, AI course generation, and most emails don't run in the API — they
+are queued in Redis and executed by the separate **jobs** worker. If that worker is down (or the API
+has no `REDIS_URL`), jobs are created but nothing ever picks them up: uploads sit at "processing"
+with no error anywhere in the UI.
+
+```zsh title="Terminal"
+docker ps | grep jobs               # is cio-jobs up?
+./classroomio.sh logs jobs          # any errors?
+```
+
+The bundled compose file always starts the worker; on PaaS platforms make sure the jobs service
+wasn't scaled to zero or crashed on boot.
+
+## Containers are OOM-killed
+
+The jobs worker spikes RAM while processing video — enough to get Postgres or other containers
+killed on a 4 GB server even though the stack idles comfortably. See
+[server requirements](/self-hosted#server-requirements).
+
+- Confirm with `docker inspect <container> | grep -i oom` and `free -h`.
+- Add swap as a buffer, or resize to 8 GB for reliable operation.
+
+## "No space left on device"
+
+Also surfaces as MinIO's "Storage reached its minimum free drive threshold".
+
+```zsh title="Terminal"
+df -h                          # check host disk
+docker system df               # check Docker usage
+docker builder prune -f        # free build cache
+docker image prune -a -f       # free unused images
+docker container prune -f      # free stopped containers
+```
+
+Then restart: `./classroomio.sh start`
+
+:::danger[Never use `docker volume prune` or `down -v`]
+`docker volume prune` removes volumes not attached to a running container — run after
+`docker compose down`, it deletes your **database, Redis, and uploads** (`postgres-data`,
+`redis-data`, `minio-data`). `docker compose down -v` does the same explicitly. Use only the prune
+commands above to free space.
+:::
+
+## API container exits at boot
+
+The API runs database migrations before it starts listening. If a migration fails, the container
+exits rather than serve a half-migrated database — that's deliberate.
+
+```zsh title="Terminal"
+./classroomio.sh logs api      # the migration error is at the end
+```
+
+Common causes: wrong `DATABASE_URL`/`POSTGRES_*` credentials after an edit, or Postgres not yet
+healthy. Fix the cause and `./classroomio.sh start` again — migrations are safe to re-run.
+
+## Transcription never happens
+
+Transcription (video captions) requires `OPENAI_API_KEY` on the **jobs** service. Without it, media
+jobs still complete — thumbnails and processing work — but the transcription step is skipped with a
+warning in the jobs logs. Set the key and re-trigger transcription; see
+[Integrations](/self-hosted/configuration/integrations).
+
+## Crash loops during Redis maintenance
+
+Older versions could crash-loop with cascading `read ECONNABORTED` errors when a managed Redis
+provider (e.g. Redis Cloud) ran scheduled maintenance or failover. This was fixed upstream — the
+stack now reconnects and resumes automatically. If you hit it, upgrade:
+
+```zsh title="Terminal"
+./classroomio.sh upgrade
+```
+
+## Platform-specific issues
+
+Deploying on a DigitalOcean-style VPS with Caddy? That guide has its own
+[troubleshooting table](/self-hosted/digitalocean#troubleshooting) covering certificates, firewalls,
+and proxy issues. For anything else, [open an issue](https://github.com/classroomio/classroomio/issues)
+— include the output of `./classroomio.sh logs`.

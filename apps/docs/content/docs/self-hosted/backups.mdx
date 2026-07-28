@@ -1,0 +1,96 @@
+---
+title: Backups
+description: Back up and restore a self-hosted ClassroomIO — Postgres dumps and object-storage archives, automated or manual.
+---
+
+Two things hold all of your data: the **Postgres database** (courses, users, organizations) and
+**object storage** (uploaded videos, documents, media). Back up both.
+
+## With the script
+
+```zsh title="Terminal"
+./classroomio.sh backup
+```
+
+This writes two timestamped files into `./backups/`:
+
+- `classroomio-db-<timestamp>.sql.gz` — a full `pg_dump` of the database.
+- `classroomio-minio-<timestamp>.tar.gz` — an archive of the bundled MinIO volume.
+
+If you use external S3/R2 instead of the bundled MinIO, the second step is skipped — use your
+provider's backup or replication tools for the buckets.
+
+`./classroomio.sh upgrade` runs this backup automatically before pulling new images, so every
+upgrade has a restore point.
+
+:::warning[Copy backups off the server]
+A dead disk takes `./backups/` with it. Sync the files to another machine, an object-storage
+bucket, or your provider's snapshot system on a schedule — e.g. a nightly cron:
+
+```zsh title="crontab"
+0 3 * * * cd /path/to/classroomio && ./classroomio.sh backup && rsync -a backups/ user@other-host:classroomio-backups/
+```
+:::
+
+## Manual commands
+
+The script runs the equivalent of:
+
+```zsh title="Terminal"
+# Postgres (adjust user/db if you changed POSTGRES_USER / POSTGRES_DB)
+docker compose --env-file .env -p classroomio -f docker-compose.images.yaml \
+  exec -T postgres pg_dump -U postgres classroomio | gzip > backups/db.sql.gz
+
+# MinIO volume
+docker run --rm -v classroomio_minio-data:/data:ro -v "$PWD/backups":/backup \
+  alpine tar czf /backup/minio.tar.gz -C /data .
+```
+
+## Restoring
+
+<Steps>
+<Step>
+### Stop the app services
+
+Keep Postgres running, stop everything that writes to it:
+
+```zsh title="Terminal"
+docker compose --env-file .env -p classroomio -f docker-compose.images.yaml stop api dashboard jobs
+```
+</Step>
+<Step>
+### Restore the database
+
+```zsh title="Terminal"
+gunzip -c backups/classroomio-db-<timestamp>.sql.gz | \
+  docker compose --env-file .env -p classroomio -f docker-compose.images.yaml \
+  exec -T postgres psql -U postgres classroomio
+```
+
+Restoring into a non-empty database can conflict with existing rows. For a clean restore, drop and
+recreate the database first (`dropdb`/`createdb` inside the postgres container), then run the
+command above.
+</Step>
+<Step>
+### Restore object storage
+
+```zsh title="Terminal"
+docker run --rm -v classroomio_minio-data:/data -v "$PWD/backups":/backup \
+  alpine sh -c "cd /data && tar xzf /backup/classroomio-minio-<timestamp>.tar.gz"
+```
+</Step>
+<Step>
+### Start everything again
+
+```zsh title="Terminal"
+./classroomio.sh start
+```
+</Step>
+</Steps>
+
+:::danger[The fastest way to lose data is a cleanup command]
+`docker compose down -v` and `docker volume prune` **delete** the `postgres-data`, `redis-data`,
+and `minio-data` volumes. Never run them on a production host — see
+[Troubleshooting → disk space](/self-hosted/troubleshooting#no-space-left-on-device) for safe
+alternatives.
+:::

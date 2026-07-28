@@ -181,7 +181,7 @@ mkdir -p ~/classroomio && cd ~/classroomio
 curl -O https://raw.githubusercontent.com/classroomio/classroomio/main/docker-compose.images.yaml
 ```
 
-This is the same [pull-based stack](/self-hosted/docker#run-from-pre-built-images-recommended) used
+This is the same [pull-based stack](/self-hosted/docker#quick-start) used
 by the other guides — it pulls the published `classroomio/*` images and builds nothing.
 </Step>
 
@@ -509,6 +509,10 @@ own. **For production, use your own domain.**
 Existing uploads keep working — media URLs are generated per request from the new endpoint.
 
 ## Troubleshooting
+
+These are the droplet-specific issues. For general stack problems — sign-in errors right after
+startup, stuck uploads, OOM kills, disk space — see the shared
+[Troubleshooting](/self-hosted/troubleshooting) page.
 
 | Symptom | Cause |
 | ------- | ----- |

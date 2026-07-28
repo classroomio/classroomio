@@ -1,37 +1,121 @@
 ---
 title: Docker
-description: Self-host ClassroomIO with Docker — pull pre-built images (recommended) or build from source.
+description: Self-host ClassroomIO with Docker — one script installs, starts, upgrades, and backs up the whole stack.
 ---
 
-Docker is one way to self-host ClassroomIO. There are two paths:
-
-- **Run from pre-built images (recommended)** — pull the published `classroomio/{api,dashboard,jobs}` images. You only need one compose file and a `.env`; no repository clone and no heavy local build.
-- **Build from source** — clone the repo and build the images yourself (needs ~8 GB RAM for the dashboard build).
+Run ClassroomIO anywhere Docker runs. One script manages the entire lifecycle — you copy it,
+run it, and pick a number. New to self-hosting? Start with
+[Self-hosting 101](/self-hosted/101) to see what you're deploying.
 
 ![Selfhost ClassroomIO](/docs/selfhost-classroomio.webp)
 
-## Run from Pre-built Images (recommended)
+## Prerequisites
 
-### Prerequisites
+- Docker installed and running (Compose v2 or the legacy `docker-compose` both work).
+- A server that meets the [requirements](/self-hosted#server-requirements) — 8 GB RAM recommended.
 
-- Docker installed and running.
+## Quick start
 
-### Steps
-
-1. Download the pull-based compose file and an env template:
+<Steps>
+<Step>
+### Get the script
 
 ```zsh title="Terminal"
-curl -O https://raw.githubusercontent.com/classroomio/classroomio/main/docker-compose.images.yaml
-curl -o .env https://raw.githubusercontent.com/classroomio/classroomio/main/.env.example
+mkdir classroomio && cd classroomio
+curl -fsSLO https://raw.githubusercontent.com/classroomio/classroomio/main/classroomio.sh
+chmod +x classroomio.sh
+```
+</Step>
+<Step>
+### Run it and pick Install
+
+```zsh title="Terminal"
+./classroomio.sh
 ```
 
-2. Edit `.env`. At minimum set `CIO_VERSION` (pin a release), `DASHBOARD_ORIGIN`, the auth secrets, and SMTP:
+Choose **1) Install**. The script downloads the compose file, creates `.env` from the template,
+generates the auth secrets and MinIO credentials for you, then pulls the images and starts the
+stack. Re-running Install is safe — it never overwrites an existing `.env` or compose file.
+</Step>
+<Step>
+### Edit the required values
+
+Everything else is auto-generated or defaulted. For a real deployment, set only:
+
+```zsh title=".env"
+CIO_VERSION=1.0.0                            # pin a release for production
+DASHBOARD_ORIGIN=https://app.yourdomain.com  # your public https:// URL
+SMTP_HOST=                                   # email — signup, resets, invites
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_SENDER=
+```
+
+Then apply: `./classroomio.sh restart`
+</Step>
+</Steps>
+
+The dashboard is at http://localhost:3082, the API at http://localhost:3081, and the MinIO console
+at http://localhost:9001 (credentials are in your `.env`).
+
+:::warning[Pin `CIO_VERSION` in production]
+The default tags track moving builds — `latest` changes on every merge to `main`. Pin an exact
+release (e.g. `CIO_VERSION=1.4.2`) so an upstream merge can never change your deployment
+unannounced. The script warns you about this too. See
+[Versions & upgrades](/self-hosted/configuration/versions).
+:::
+
+:::note[Serving on a real domain?]
+Use an `https://` origin — session cookies are `Secure`, so
+[login silently fails over plain HTTP](/self-hosted#https-is-required-in-production).
+:::
+
+## The menu
+
+| Option | What it does |
+|--------|--------------|
+| 1 Install | First-time setup: fetch files, create `.env`, generate secrets, pull and start. |
+| 2 Start | Start the stack (also fills in any missing secrets first). |
+| 3 Stop | Stop containers. Data volumes are kept. |
+| 4 Restart | Restart containers, e.g. after editing `.env`. |
+| 5 Upgrade | **Backs up first**, then pulls newer images and restarts. |
+| 6 View logs | Follow logs for all services or one (`./classroomio.sh logs api`). |
+| 7 Backup | Dump Postgres and archive the MinIO volume into `./backups/`. See [Backups](/self-hosted/backups). |
+
+Every option is also a subcommand (`./classroomio.sh upgrade`), so you can script or cron it.
+
+<Expandable title="Build from source instead of pulling images">
+
+To run local code changes, clone the repo and use the same script with `--build`
+(needs `git` and ~8 GB RAM for the dashboard build):
+
+```zsh title="Terminal"
+git clone https://github.com/classroomio/classroomio.git
+cd classroomio
+cp .env.example .env
+./classroomio.sh start --build
+```
+
+Without `--build` the script pulls the published `classroomio/*` images at your `CIO_VERSION` —
+that's the faster default. `--no-minio` excludes the bundled MinIO if you use external
+[S3/R2 storage](/self-hosted/configuration/storage).
+
+</Expandable>
+
+## Configuration reference
+
+Docker self-hosting uses a single root `.env` file — every compose command reads it via
+`--env-file .env`, and the compose file itself tracks `main` (it's just the stack topology;
+`CIO_VERSION` pins the app images).
+
+<Expandable title="Common .env values">
 
 ```zsh title=".env"
 CIO_VERSION=1.0.0                 # pin a release (not "latest") so upgrades are deliberate
 DASHBOARD_ORIGIN=https://app.yourdomain.com
-BETTER_AUTH_SECRET=<openssl rand -hex 32>
-PRIVATE_SERVER_KEY=<openssl rand -hex 32>   # must be identical in the api and dashboard
+BETTER_AUTH_SECRET=               # auto-generated by the script if left blank
+PRIVATE_SERVER_KEY=               # auto-generated; must be identical in api and dashboard
 POSTGRES_PASSWORD=<strong password>
 # Email (required for signup/reset/invites)
 SMTP_HOST=
@@ -41,78 +125,13 @@ SMTP_PASSWORD=
 SMTP_SENDER=
 ```
 
-:::danger[Set strong secrets — the stack won't start without them]
-This path does **not** run `run-docker-full-stack.sh`, so secrets are not auto-generated. You must set
-`BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` yourself, or the compose file fails fast. See
-[Configuration → Environment & secrets](/self-hosted/configuration/secrets).
-:::
+See [`.env.example`](https://github.com/classroomio/classroomio/blob/main/.env.example) for the
+full annotated template.
 
-3. Pull and start the stack (MinIO is included via the `minio` profile):
+</Expandable>
 
-```zsh title="Terminal"
-docker compose -f docker-compose.images.yaml --env-file .env --profile minio pull
-docker compose -f docker-compose.images.yaml --env-file .env --profile minio up -d
-```
-
-4. Verify:
-
-```zsh title="Terminal"
-curl -sS http://localhost:3081/    # API — returns JSON
-curl -I  http://localhost:3082/    # Dashboard — returns 200
-```
-
-- Dashboard: http://localhost:3082
-- API: http://localhost:3081
-- MinIO Console: http://localhost:9001 (log in with `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` from your `.env`)
-
-## Build from Source
-
-Use this if you want to build the images locally (e.g. to run code changes).
-
-### Prerequisites
-
-- Docker Desktop installed and running
-- `git` installed
-- ~8 GB RAM available for the dashboard build
-
-### Steps
-
-1. Clone the repository:
-
-```zsh title="Terminal"
-git clone https://github.com/classroomio/classroomio.git
-cd classroomio
-```
-
-2. Copy the env template and edit it:
-
-```zsh title="Terminal"
-cp .env.example .env
-```
-
-Open `.env` and set `DASHBOARD_ORIGIN` for your domain. For local development the defaults work as-is — the startup script generates `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` when they are missing, and randomizes the MinIO credentials.
-
-3. Build and start the full stack:
-
-```zsh title="Terminal"
-./run-docker-full-stack.sh --build
-```
-
-The script builds and starts Postgres, Redis, MinIO (object storage), the API, the dashboard, and the background **jobs** worker.
-
-:::note[Default is pull, not build]
-Run without `--build` and the script **pulls** the published `classroomio/*` images at the
-`CIO_VERSION` in your `.env` instead of building locally — that's the faster default path.
-:::
-
-## One `.env`, One Command
-
-Docker self-hosting uses a single root `.env` file. Every `docker compose` command reads it via `--env-file .env` — you never need separate env files per service. See [`.env.example`](https://github.com/classroomio/classroomio/blob/main/.env.example) for the full template.
-
-## Configuration
-
-Every variable the stack reads is documented once in the shared
-[Configuration](/self-hosted/configuration) section — set the ones you need in your root `.env`:
+Every variable the stack reads is documented in the shared
+[Configuration](/self-hosted/configuration) section:
 
 <CardGroup cols={2}>
   <Card title="Environment & secrets" href="/self-hosted/configuration/secrets" icon="key-round">
@@ -130,51 +149,15 @@ Every variable the stack reads is documented once in the shared
   <Card title="Integrations" href="/self-hosted/configuration/integrations" icon="plug">
     Google OAuth, Unsplash, OpenAI, branding.
   </Card>
-  <Card title="SSO & licensing" href="/self-hosted/configuration/sso" icon="id-card">
-    `LICENSE_KEY` for Enterprise features.
+  <Card title="Enterprise & licensing" href="/self-hosted/enterprise" icon="id-card">
+    `LICENSE_KEY` for SSO, token auth, and no-tracking.
   </Card>
 </CardGroup>
 
 ## Upgrading
 
-ClassroomIO publishes versioned images and `CIO_VERSION` controls which tag you run. To upgrade the
-pre-built images path, bump `CIO_VERSION` and re-pull:
+Run `./classroomio.sh upgrade` — it backs up Postgres and MinIO first, then pulls the images at
+your (possibly newly pinned) `CIO_VERSION` and restarts. Rollback = set `CIO_VERSION` back and
+upgrade again. Details: [Versions & upgrades](/self-hosted/configuration/versions).
 
-```zsh title="Terminal"
-docker compose -f docker-compose.images.yaml --env-file .env --profile minio pull
-docker compose -f docker-compose.images.yaml --env-file .env --profile minio up -d
-```
-
-For the build-from-source path, `git pull` and re-run `./run-docker-full-stack.sh --build`. See
-[Configuration → Versions & upgrades](/self-hosted/configuration/versions) for pinning, rollback, and
-the pre-upgrade backup steps.
-
-## Common Commands
-
-```zsh title="Terminal"
-# Start the full stack (pulls pre-built images by default)
-./run-docker-full-stack.sh
-
-# Build from source instead of pulling
-./run-docker-full-stack.sh --build
-
-# Start without MinIO (requires an external S3-compatible store)
-./run-docker-full-stack.sh --no-minio
-```
-
-See [docker/docs/SELF_HOST.md](https://github.com/classroomio/classroomio/blob/main/docker/docs/SELF_HOST.md) for the full Docker reference including troubleshooting.
-
-## Troubleshooting: "No space left on device"
-
-```zsh title="Terminal"
-docker system df              # check usage
-docker builder prune -f       # free build cache
-docker image prune -a -f      # free unused images
-docker container prune -f     # free stopped containers
-```
-
-:::warning[Volume prune deletes data]
-Avoid `docker volume prune` after `docker compose ... down` — it can remove your database and storage volumes.
-:::
-
-Then restart: `./run-docker-full-stack.sh`
+Something not working? See [Troubleshooting](/self-hosted/troubleshooting).
