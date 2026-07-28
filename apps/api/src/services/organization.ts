@@ -4,6 +4,7 @@ import type { TGetAudienceQuery, TGetOrganizationCoursesQuery } from '@cio/utils
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
 import {
   cancelOrganizationPlan,
+  checkSiteNameExists,
   createOrganizationPlan,
   deleteOrganizationAudienceMember,
   deleteOrganizationMember,
@@ -648,7 +649,13 @@ export async function createOrgPlan(data: TNewOrganizationPlan) {
  */
 export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
   try {
-    // Enforce plan restriction: only paid plans can use non-minimal landing page themes
+    if (data.siteName) {
+      const exists = await checkSiteNameExists(data.siteName); // exclude current org
+      if (exists) {
+        throw new AppError('Site name already exists', ErrorCodes.SITENAME_EXISTS, 409, 'siteName');
+      }
+    }
+
     if (data.landingpage && typeof data.landingpage === 'object') {
       const landingpage = data.landingpage as Record<string, unknown>;
       const theme = landingpage.theme;

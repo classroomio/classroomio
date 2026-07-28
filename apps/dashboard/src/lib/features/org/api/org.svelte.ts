@@ -420,9 +420,22 @@ class OrgApi extends BaseApiWithErrors {
       onError: (error) => {
         console.error('Error updating organization:', error);
 
+        if (typeof error === 'object' && error !== null && 'code' in error) {
+          const apiError = error as {
+            success: false;
+            error: string;
+            code?: string;
+            field?: string;
+          };
+
+          this.handleValidationError(apiError);
+
+          snackbar.error(apiError.error || t.get('snackbar.update_failed'));
+          return;
+        }
+
         const message = error instanceof Error ? error.message : `${error}`;
         this.errors.general = message;
-
         snackbar.error(`${t.get('snackbar.update_failed')}: ${message}`);
       }
     });

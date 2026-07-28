@@ -141,16 +141,6 @@ export class BaseApiWithErrors extends BaseApi {
       return;
     }
 
-    if (result.code === 'SITENAME_EXISTS' || result.field === 'siteName') {
-      this.errors = { ...this.errors, siteName: result.error };
-      return;
-    }
-
-    if (result.code === 'ORGNAME_EXISTS' || result.field === 'orgName') {
-      this.errors = { ...this.errors, orgName: result.error };
-      return;
-    }
-
     if (result.field) {
       this.errors = { ...this.errors, [result.field]: result.error };
       return;
