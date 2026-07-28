@@ -323,6 +323,7 @@
     replyingToUser={activeReplyTarget?.fullname || null}
     replyingToSnippet={activeReplyTarget?.snippet || null}
     onCancelReply={handleCancelReply}
+    cancelLabel={$t('course.navItem.news_feed.comments.cancel_reply')}
     onSubmit={handleSubmit}
     {isSubmitting}
     class="mt-2"

@@ -11,6 +11,7 @@
     replyingToUser?: string | null;
     replyingToSnippet?: string | null;
     onCancelReply?: () => void;
+    cancelLabel?: string;
     onSubmit: (content: string) => Promise<void> | void;
     isSubmitting?: boolean;
     class?: string;
@@ -22,6 +23,7 @@
     replyingToUser = null,
     replyingToSnippet = null,
     onCancelReply,
+    cancelLabel = 'Cancel',
     onSubmit,
     isSubmitting = false,
     class: className = ''
@@ -74,7 +76,7 @@
             class="ui:h-auto ui:gap-1 ui:px-0 ui:text-xs ui:font-normal ui:text-muted-foreground ui:hover:bg-transparent ui:hover:text-foreground"
           >
             <XIcon size={12} />
-            <span>Cancel</span>
+            <span>{cancelLabel}</span>
           </Button>
         {/if}
       </div>
