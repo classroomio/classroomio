@@ -102,12 +102,10 @@ export const THUMBS_FIXTURE: QuestionStoryFixture = {
     title: 'Thumbs Up or Down: Would you recommend ClassroomIO to a colleague? [THUMBS]',
     questionType: 'THUMBS',
     options: [
-      { id: 5001, label: 'Yes', value: 'true' },
+      { id: 5001, label: 'Yes', value: 'true', isCorrect: false },
       { id: 5002, label: 'No', value: 'false', isCorrect: false }
     ],
-    settings: {
-      correctValue: true
-    }
+    settings: {}
   },
   answer: { type: 'THUMBS', value: true },
   wrongAnswer: { type: 'THUMBS', value: false }

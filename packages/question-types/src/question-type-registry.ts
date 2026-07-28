@@ -124,7 +124,7 @@ export const QUESTION_TYPE_REGISTRY: readonly QuestionTypeMetadata[] = [
     typename: 'THUMBS',
     label: 'Thumbs up/down',
     id: 14,
-    autoGradable: true,
+    autoGradable: false,
     supportsPartialCredit: false,
     manualGradingRequired: false
   },

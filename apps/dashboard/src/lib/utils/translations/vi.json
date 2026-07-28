@@ -1710,15 +1710,11 @@
                 "yes_label": "Có",
                 "no_label": "Không",
                 "edit": {
-                  "correct_answer_label": "Câu trả lời đúng",
                   "positive_option_label": "Nhãn thích",
                   "negative_option_label": "Nhãn không thích"
                 },
                 "preview": {
-                  "correct_value_label": "Giá trị đúng"
-                },
-                "review": {
-                  "correct_answer_label": "Câu trả lời đúng:"
+                  "helper": "Mở — học viên chọn thích hoặc không thích."
                 }
               },
               "checkbox": {

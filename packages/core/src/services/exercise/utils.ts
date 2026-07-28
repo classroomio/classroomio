@@ -76,10 +76,7 @@ function areSettingsEqual(left: unknown, right: unknown): boolean {
   return JSON.stringify(leftNormalized) === JSON.stringify(rightNormalized);
 }
 
-const BINARY_BOOLEAN_QUESTION_TYPE_IDS = new Set([
-  QUESTION_TYPE_IDS[QUESTION_TYPE_KEY.TRUE_FALSE],
-  QUESTION_TYPE_IDS[QUESTION_TYPE_KEY.THUMBS]
-]);
+const BINARY_BOOLEAN_QUESTION_TYPE_IDS = new Set([QUESTION_TYPE_IDS[QUESTION_TYPE_KEY.TRUE_FALSE]]);
 
 function normalizeBinaryBooleanQuestion(
   question: ExerciseUpdateQuestion,

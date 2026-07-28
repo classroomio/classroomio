@@ -37,6 +37,24 @@ type QuestionRuleInput = {
   settings?: Record<string, unknown>;
 };
 
+function requireAtLeastTwoOptions(message: string) {
+  return (question: QuestionRuleInput): string | null => {
+    const options = question.options || [];
+    if (options.length > 0 && options.length < 2) {
+      return message;
+    }
+    return null;
+  };
+}
+
+function requireMarkedCorrectOption(question: QuestionRuleInput): string | null {
+  const options = question.options || [];
+  if (options.length > 0 && !options.some((opt) => opt.isCorrect === true)) {
+    return 'Please mark an option as the correct answer';
+  }
+  return null;
+}
+
 const QUESTION_VALIDATION_RULES: Record<number, Array<(question: QuestionRuleInput) => string | null>> = {
   [QUESTION_TYPE.RADIO]: [
     (question) => {
@@ -75,37 +93,10 @@ const QUESTION_VALIDATION_RULES: Record<number, Array<(question: QuestionRuleInp
     }
   ],
   [QUESTION_TYPE.TRUE_FALSE]: [
-    (question) => {
-      const options = question.options || [];
-      if (options.length > 0 && options.length < 2) {
-        return 'True/False questions need both True and False options';
-      }
-      return null;
-    },
-    (question) => {
-      const options = question.options || [];
-      if (options.length > 0 && !options.some((opt) => opt.isCorrect === true)) {
-        return 'Please mark an option as the correct answer';
-      }
-      return null;
-    }
+    requireAtLeastTwoOptions('True/False questions need both True and False options'),
+    requireMarkedCorrectOption
   ],
-  [QUESTION_TYPE.THUMBS]: [
-    (question) => {
-      const options = question.options || [];
-      if (options.length > 0 && options.length < 2) {
-        return 'Thumbs up/down questions need both Yes and No options';
-      }
-      return null;
-    },
-    (question) => {
-      const options = question.options || [];
-      if (options.length > 0 && !options.some((opt) => opt.isCorrect === true)) {
-        return 'Please mark an option as the correct answer';
-      }
-      return null;
-    }
-  ],
+  [QUESTION_TYPE.THUMBS]: [requireAtLeastTwoOptions('Thumbs up/down questions need both Yes and No options')],
   [QUESTION_TYPE.TEXTAREA]: [],
   [QUESTION_TYPE.WORD_BANK]: [
     (question) => {

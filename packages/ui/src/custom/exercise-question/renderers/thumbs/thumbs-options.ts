@@ -29,3 +29,28 @@ export function getThumbsOptionLabel(
 
   return label || fallback;
 }
+
+export function ensureThumbsOptions(
+  existing: ExerciseQuestionOption[] | undefined,
+  defaultYesLabel: string,
+  defaultNoLabel: string
+): ExerciseQuestionOption[] {
+  const timestamp = Date.now();
+  const yesOption = findThumbsOption(existing, true);
+  const noOption = findThumbsOption(existing, false);
+
+  return [
+    {
+      ...(yesOption ?? { id: `${timestamp}-yes` }),
+      label: yesOption?.label?.trim() || defaultYesLabel,
+      value: 'true',
+      isCorrect: false
+    },
+    {
+      ...(noOption ?? { id: `${timestamp}-no` }),
+      label: noOption?.label?.trim() || defaultNoLabel,
+      value: 'false',
+      isCorrect: false
+    }
+  ];
+}

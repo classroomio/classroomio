@@ -200,11 +200,11 @@
     ];
   }
 
-  function makeThumbsOptions(correctValue = true) {
+  function makeThumbsOptions() {
     const ts = Date.now();
     return [
-      { id: `${ts}-yes-form`, label: 'Yes', value: 'true', isCorrect: correctValue },
-      { id: `${ts}-no-form`, label: 'No', value: 'false', isCorrect: !correctValue }
+      { id: `${ts}-yes-form`, label: 'Yes', value: 'true', isCorrect: false },
+      { id: `${ts}-no-form`, label: 'No', value: 'false', isCorrect: false }
     ];
   }
 
@@ -227,9 +227,8 @@
         nextSettings = { ...nextSettings, correctValue };
         nextOptions = makeTrueFalseOptions(correctValue);
       } else if (nextQuestionTypeKey === QUESTION_TYPE_KEY.THUMBS) {
-        const correctValue = (current.settings as { correctValue?: boolean })?.correctValue ?? true;
-        nextSettings = { ...nextSettings, correctValue };
-        nextOptions = makeThumbsOptions(correctValue);
+        nextSettings = { ...nextSettings };
+        nextOptions = makeThumbsOptions();
       } else if (questionTypeSupportsOptions(nextQuestionTypeKey)) {
         const hasActiveOptions = nextOptions.some((option) => !option.deletedAt);
         if (!hasActiveOptions) {
@@ -289,10 +288,7 @@
       let nextOptions = mappedOptions;
 
       const currentQuestionTypeKey = getQuestionTypeKey(current);
-      if (
-        currentQuestionTypeKey === QUESTION_TYPE_KEY.TRUE_FALSE ||
-        currentQuestionTypeKey === QUESTION_TYPE_KEY.THUMBS
-      ) {
+      if (currentQuestionTypeKey === QUESTION_TYPE_KEY.TRUE_FALSE) {
         const correctValue = resolveTrueFalseCorrectValue(nextSettings, nextOptions);
         nextSettings = { ...nextSettings, correctValue };
         nextOptions = syncTrueFalseOptions(nextOptions, correctValue);

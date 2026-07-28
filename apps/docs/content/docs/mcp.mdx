@@ -454,9 +454,9 @@ Supported `questionTypeId` values for exercise payloads:
 - `11` `WORD_BANK` - Word bank
 - `12` `STAR` - Star rating
 - `13` `VIDEO_RECORDING` - Video recording
-- `14` `THUMBS` - Thumbs up/down (auto-graded Yes/No with customizable labels; teacher selects correct option)
+- `14` `THUMBS` - Thumbs up/down (open-ended poll with customizable Yes/No labels; no correct answer)
 
-`TRUE_FALSE` and `THUMBS` both use `settings.correctValue` (boolean) with two options and are auto-graded. `TRUE_FALSE` uses fixed True/False labels for factual statements. `THUMBS` uses thumbs icons with customizable Yes/No-style labels; the teacher chooses which option is correct. `MATCHING` and `HOTSPOT` are disabled and must not be used.
+`TRUE_FALSE` is auto-graded with `settings.correctValue` (boolean) and fixed True/False labels for factual statements. `THUMBS` is open-ended (not auto-graded): two customizable Yes/No-style options with thumbs icons for sentiment or poll-style questions — do not set `settings.correctValue`. `MATCHING` and `HOTSPOT` are disabled and must not be used.
 
 ## Operational Notes
 

@@ -1710,15 +1710,11 @@
                 "yes_label": "Sim",
                 "no_label": "Não",
                 "edit": {
-                  "correct_answer_label": "Resposta correta",
                   "positive_option_label": "Rótulo de polegar para cima",
                   "negative_option_label": "Rótulo de polegar para baixo"
                 },
                 "preview": {
-                  "correct_value_label": "Valor correto"
-                },
-                "review": {
-                  "correct_answer_label": "Resposta correta:"
+                  "helper": "Aberta — os alunos escolhem polegar para cima ou para baixo."
                 }
               },
               "checkbox": {

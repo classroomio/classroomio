@@ -1710,15 +1710,11 @@
                 "yes_label": "Tak",
                 "no_label": "Nie",
                 "edit": {
-                  "correct_answer_label": "Prawidłowa odpowiedź",
                   "positive_option_label": "Etykieta kciuka w górę",
                   "negative_option_label": "Etykieta kciuka w dół"
                 },
                 "preview": {
-                  "correct_value_label": "Prawidłowa wartość"
-                },
-                "review": {
-                  "correct_answer_label": "Prawidłowa odpowiedź:"
+                  "helper": "Otwarte — uczniowie wybierają kciuk w górę lub w dół."
                 }
               },
               "checkbox": {

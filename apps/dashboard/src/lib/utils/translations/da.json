@@ -1710,15 +1710,11 @@
                 "yes_label": "Ja",
                 "no_label": "Nej",
                 "edit": {
-                  "correct_answer_label": "Korrekt svar",
                   "positive_option_label": "Tommel op-etiket",
                   "negative_option_label": "Tommel ned-etiket"
                 },
                 "preview": {
-                  "correct_value_label": "Korrekt værdi"
-                },
-                "review": {
-                  "correct_answer_label": "Korrekt svar:"
+                  "helper": "Åben — elever vælger tommel op eller ned."
                 }
               },
               "checkbox": {

@@ -1710,15 +1710,11 @@
                 "yes_label": "Ja",
                 "no_label": "Nein",
                 "edit": {
-                  "correct_answer_label": "Richtige Antwort",
                   "positive_option_label": "Daumen-hoch-Label",
                   "negative_option_label": "Daumen-runter-Label"
                 },
                 "preview": {
-                  "correct_value_label": "Korrekter Wert"
-                },
-                "review": {
-                  "correct_answer_label": "Richtige Antwort:"
+                  "helper": "Offen — Lernende wählen Daumen hoch oder runter."
                 }
               },
               "checkbox": {

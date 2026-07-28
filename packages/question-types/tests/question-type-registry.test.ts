@@ -126,7 +126,7 @@ const EXPECTED_REGISTRY = [
     key: QUESTION_TYPE_KEY.THUMBS,
     typename: 'THUMBS',
     id: 14,
-    autoGradable: true,
+    autoGradable: false,
     supportsPartialCredit: false,
     manualGradingRequired: false
   },
