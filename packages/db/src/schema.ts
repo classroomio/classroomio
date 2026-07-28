@@ -1710,7 +1710,8 @@ export const courseNewsfeedComment = pgTable(
       columns: [table.parentId],
       foreignColumns: [table.id],
       name: 'course_newsfeed_comment_parent_id_fkey'
-    }).onDelete('cascade')
+    }).onDelete('cascade'),
+    index('course_newsfeed_comment_parent_id_idx').on(table.parentId)
   ]
 );
 

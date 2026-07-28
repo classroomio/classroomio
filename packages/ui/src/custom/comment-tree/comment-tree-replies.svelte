@@ -29,8 +29,11 @@
   );
 
   function handleToggle() {
-    isExpanded = !isExpanded;
-    onToggleExpand?.();
+    if (onToggleExpand) {
+      onToggleExpand();
+    } else {
+      isExpanded = !isExpanded;
+    }
   }
 </script>
 

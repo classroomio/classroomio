@@ -231,31 +231,24 @@ export async function getNewsfeedCommentsByFeedIdPaginated(
   try {
     const { parentId, cursor, limit } = options;
 
-    // Build where conditions
-    const whereConditions = [eq(schema.courseNewsfeedComment.courseNewsfeedId, feedId)];
+    // Build base parent-scoped conditions
+    const parentCondition =
+      parentId !== undefined
+        ? eq(schema.courseNewsfeedComment.parentId, parentId)
+        : isNull(schema.courseNewsfeedComment.parentId);
 
-    if (parentId !== undefined) {
-      whereConditions.push(eq(schema.courseNewsfeedComment.parentId, parentId));
-    } else {
-      whereConditions.push(isNull(schema.courseNewsfeedComment.parentId));
-    }
+    const baseWhereConditions = [eq(schema.courseNewsfeedComment.courseNewsfeedId, feedId), parentCondition];
+
+    const whereConditions = [...baseWhereConditions];
 
     if (cursor) {
       whereConditions.push(lt(schema.courseNewsfeedComment.id, Number(cursor)));
     }
 
-    // Get total count matching parent condition
-    const countWhereConditions = [eq(schema.courseNewsfeedComment.courseNewsfeedId, feedId)];
-    if (parentId !== undefined) {
-      countWhereConditions.push(eq(schema.courseNewsfeedComment.parentId, parentId));
-    } else {
-      countWhereConditions.push(isNull(schema.courseNewsfeedComment.parentId));
-    }
-
     const totalCountResult = await db
       .select({ count: sql<number>`count(*)`.as('count') })
       .from(schema.courseNewsfeedComment)
-      .where(and(...countWhereConditions));
+      .where(and(...baseWhereConditions));
     const totalCount = Number(totalCountResult[0]?.count || 0);
 
     // Fetch comments with author profile & reply count

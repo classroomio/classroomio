@@ -41,7 +41,9 @@
     actions
   }: Props = $props();
 
-  const displayDate = $derived(dateLabel || createdAt || '');
+  const displayDate = $derived(
+    dateLabel || (createdAt && !isNaN(Date.parse(createdAt)) ? new Date(createdAt).toLocaleDateString() : '')
+  );
   const hasActions = $derived((canEdit && Boolean(onEdit)) || (canDelete && Boolean(onDelete)));
 </script>
 

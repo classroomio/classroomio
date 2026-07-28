@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import { sanitizeHtml } from '../../tools/sanitize';
 
   interface Props {
     content?: string | null;
@@ -9,7 +10,7 @@
 
   let { content, class: className = '', children }: Props = $props();
 
-  let formattedContent = $derived(content ? content.replace(/(<\/blockquote>)\s+/gi, '$1') : '');
+  let formattedContent = $derived(content ? sanitizeHtml(content.replace(/(<\/blockquote>)\s+/gi, '$1')) : '');
 </script>
 
 <div class="ui:text-sm ui:leading-relaxed ui:text-foreground/90 ui:whitespace-pre-line ui:break-words {className}">

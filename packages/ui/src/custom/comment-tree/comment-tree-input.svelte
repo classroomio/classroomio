@@ -33,7 +33,11 @@
     if (!value.trim() || isSubmitting) return;
     const text = value.trim();
     value = '';
-    await onSubmit(text);
+    try {
+      await onSubmit(text);
+    } catch {
+      value = text;
+    }
   }
 
   function handleKeyDown(e: KeyboardEvent) {
@@ -63,14 +67,15 @@
           {/if}
         </div>
         {#if onCancelReply}
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="xs"
             onclick={onCancelReply}
-            class="ui:inline-flex ui:items-center ui:gap-1 ui:hover:text-foreground"
+            class="ui:h-auto ui:gap-1 ui:px-0 ui:text-xs ui:font-normal ui:text-muted-foreground ui:hover:bg-transparent ui:hover:text-foreground"
           >
             <XIcon size={12} />
             <span>Cancel</span>
-          </button>
+          </Button>
         {/if}
       </div>
     {/if}
