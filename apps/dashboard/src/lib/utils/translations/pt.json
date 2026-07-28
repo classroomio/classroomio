@@ -1533,8 +1533,6 @@
               "select_type": "Selecione o tipo",
               "question_type_auto_gradable": "Automático",
               "question_type_auto_gradable_description": "Pontuado automaticamente pelo sistema",
-              "question_type_open_ended": "Aberta",
-              "question_type_open_ended_description": "Sem resposta correta — as respostas são coletadas como feedback",
               "question_type_manual_grading": "Manual",
               "question_type_manual_grading_description": "Requer revisão humana para pontuação",
               "premium_question_type": "Atualize para usar este tipo de pergunta"

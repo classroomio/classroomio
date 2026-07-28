@@ -1533,8 +1533,6 @@
               "select_type": "प्रकार चुनें",
               "question_type_auto_gradable": "स्वचालित",
               "question_type_auto_gradable_description": "सिस्टम द्वारा स्वचालित रूप से अंकित",
-              "question_type_open_ended": "खुला",
-              "question_type_open_ended_description": "कोई सही उत्तर नहीं — प्रतिक्रियाएँ फीडबैक के रूप में एकत्र की जाती हैं",
               "question_type_manual_grading": "मैन्युअल",
               "question_type_manual_grading_description": "अंक देने के लिए मानव समीक्षा आवश्यक",
               "premium_question_type": "इस प्रश्न प्रकार का उपयोग करने के लिए अपग्रेड करें"

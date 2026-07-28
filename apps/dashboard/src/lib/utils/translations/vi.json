@@ -1533,8 +1533,6 @@
               "select_type": "Chọn loại",
               "question_type_auto_gradable": "Tự động",
               "question_type_auto_gradable_description": "Hệ thống chấm điểm tự động",
-              "question_type_open_ended": "Mở",
-              "question_type_open_ended_description": "Không có câu trả lời đúng — phản hồi được thu thập làm ý kiến",
               "question_type_manual_grading": "Thủ công",
               "question_type_manual_grading_description": "Cần người xem xét để chấm điểm",
               "premium_question_type": "Nâng cấp để sử dụng loại câu hỏi này"

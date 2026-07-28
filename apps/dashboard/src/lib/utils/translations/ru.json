@@ -1533,8 +1533,6 @@
               "select_type": "Выберите тип",
               "question_type_auto_gradable": "Авто",
               "question_type_auto_gradable_description": "Оценивается автоматически системой",
-              "question_type_open_ended": "Открытый",
-              "question_type_open_ended_description": "Нет правильного ответа — ответы собираются как обратная связь",
               "question_type_manual_grading": "Вручную",
               "question_type_manual_grading_description": "Требует проверки человеком для выставления оценки",
               "premium_question_type": "Обновите, чтобы использовать этот тип вопроса"

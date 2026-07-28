@@ -46,7 +46,6 @@
   import {
     QUESTION_TYPE_KEY,
     isAutoGradableQuestionTypeId,
-    isOpenEndedQuestionTypeId,
     resolveTrueFalseCorrectValue,
     syncTrueFalseOptions
   } from '@cio/question-types';
@@ -370,25 +369,6 @@
     return isAutoGradableQuestionTypeId(questionTypeId);
   }
 
-  function isQuestionOpenEnded(question: Question) {
-    const questionTypeId = Number(question.questionTypeId ?? question.questionType?.id);
-    if (!Number.isFinite(questionTypeId)) return false;
-
-    return isOpenEndedQuestionTypeId(questionTypeId);
-  }
-
-  function getQuestionGradingBadgeKey(question: Question) {
-    if (isQuestionAutoGradable(question)) {
-      return 'auto' as const;
-    }
-
-    if (isQuestionOpenEnded(question)) {
-      return 'open_ended' as const;
-    }
-
-    return 'manual' as const;
-  }
-
   $effect(() => {
     if (reorderQuestions && !previousReorderQuestions) {
       syncReorderQuestionItems();
@@ -416,7 +396,7 @@
 <OrderModal />
 
 {#snippet gradingBadge(question)}
-  {@const gradingBadgeKey = getQuestionGradingBadgeKey(question)}
+  {@const autoGradable = isQuestionAutoGradable(question)}
   <Tooltip.Provider>
     <Tooltip.Root>
       <Tooltip.Trigger>
@@ -426,25 +406,17 @@
             variant="outline"
             class="absolute top-0 right-4 z-10 translate-y-[-50%] gap-1 bg-white font-normal dark:bg-black"
           >
-            {#if gradingBadgeKey === 'auto'}
-              {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_auto_gradable')}
-            {:else if gradingBadgeKey === 'open_ended'}
-              {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_open_ended')}
-            {:else}
-              {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_manual_grading')}
-            {/if}
+            {autoGradable
+              ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_auto_gradable')
+              : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_manual_grading')}
             <InfoIcon class="h-3 w-3" aria-hidden="true" />
           </Badge>
         {/snippet}
       </Tooltip.Trigger>
       <Tooltip.Content side="top" sideOffset={6} class="max-w-xs">
-        {#if gradingBadgeKey === 'auto'}
-          {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_auto_gradable_description')}
-        {:else if gradingBadgeKey === 'open_ended'}
-          {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_open_ended_description')}
-        {:else}
-          {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_manual_grading_description')}
-        {/if}
+        {autoGradable
+          ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_auto_gradable_description')
+          : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_manual_grading_description')}
       </Tooltip.Content>
     </Tooltip.Root>
   </Tooltip.Provider>

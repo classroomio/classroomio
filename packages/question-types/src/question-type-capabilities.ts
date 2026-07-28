@@ -23,16 +23,3 @@ export const AUTO_GRADABLE_QUESTION_TYPE_IDS: readonly number[] = QUESTION_TYPE_
 export function isAutoGradableQuestionTypeId(questionTypeId: number): boolean {
   return AUTO_GRADABLE_QUESTION_TYPE_IDS.includes(questionTypeId);
 }
-
-/** True for open-ended types that are neither auto-graded nor manually graded (e.g. THUMBS). */
-export function isOpenEndedQuestionType(key: QuestionTypeKey): boolean {
-  const meta = getQuestionTypeByKey(key);
-  return !meta.autoGradable && !meta.manualGradingRequired;
-}
-
-export function isOpenEndedQuestionTypeId(questionTypeId: number): boolean {
-  const entry = QUESTION_TYPE_REGISTRY.find((type) => type.id === questionTypeId);
-  if (!entry) return false;
-
-  return !entry.autoGradable && !entry.manualGradingRequired;
-}

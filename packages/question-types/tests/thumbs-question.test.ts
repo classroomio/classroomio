@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isOpenEndedQuestionType, isOpenEndedQuestionTypeId, normalizeThumbsQuestion, QUESTION_TYPE_KEY } from '../src';
+import { normalizeThumbsQuestion } from '../src';
 
 describe('thumbs question helpers', () => {
   it('normalizes answer-key fields out of thumbs questions', () => {
@@ -18,11 +18,5 @@ describe('thumbs question helpers', () => {
         { id: 2, label: 'No', value: 'false', isCorrect: false }
       ]
     });
-  });
-
-  it('identifies THUMBS as open-ended', () => {
-    expect(isOpenEndedQuestionType(QUESTION_TYPE_KEY.THUMBS)).toBe(true);
-    expect(isOpenEndedQuestionTypeId(14)).toBe(true);
-    expect(isOpenEndedQuestionType(QUESTION_TYPE_KEY.TRUE_FALSE)).toBe(false);
   });
 });

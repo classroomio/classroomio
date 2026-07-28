@@ -1533,8 +1533,6 @@
               "select_type": "Vælg type",
               "question_type_auto_gradable": "Auto",
               "question_type_auto_gradable_description": "Bedømmes automatisk af systemet",
-              "question_type_open_ended": "Åben",
-              "question_type_open_ended_description": "Intet korrekt svar — svar indsamles som feedback",
               "question_type_manual_grading": "Manuel",
               "question_type_manual_grading_description": "Kræver manuel gennemgang for bedømmelse",
               "premium_question_type": "Opgrader for at bruge denne spørgsmålstype"
