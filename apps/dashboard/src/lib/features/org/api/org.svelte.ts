@@ -426,8 +426,7 @@ class OrgApi extends BaseApiWithErrors {
       onError: (error) => {
         console.error('Error updating organization:', error);
 
-        // First check if it's a structured error with field information
-        if (typeof error === 'object' && error !== null && 'field' in error && 'error' in error) {
+        if (typeof error === 'object' && error !== null && 'error' in error) {
           const apiError = error as {
             success: false;
             error: string;
@@ -435,23 +434,32 @@ class OrgApi extends BaseApiWithErrors {
             field?: string;
           };
 
-          const fieldErrorMap: Record<string, string> = {
-            siteName: 'Site name already exists'
-          };
+          if (apiError.field === 'siteName' || apiError.code === 'SITENAME_EXISTS') {
+            const message = typeof apiError.error === 'string' ? apiError.error : 'Site name already exists';
+            this.errors = { ...this.errors, siteName: message };
+            snackbar.error(message);
+            return;
+          }
 
-          const userMessage =
-            apiError.field && fieldErrorMap[apiError.field] ? fieldErrorMap[apiError.field] : apiError.error;
+          if (apiError.field && typeof apiError.error === 'string') {
+            this.errors = { ...this.errors, [apiError.field]: apiError.error };
+            snackbar.error(apiError.error);
+            return;
+          }
 
-          this.errors = {
-            ...this.errors,
-            [apiError.field!]: userMessage
-          };
+          if (typeof apiError.error === 'string') {
+            this.errors = { ...this.errors, general: apiError.error };
+            snackbar.error(apiError.error);
+            return;
+          }
 
-          snackbar.error(userMessage);
+          this.errors = { ...this.errors, general: t.get('snackbar.update_failed') };
+          snackbar.error(t.get('snackbar.update_failed'));
           return;
         }
 
-        const message = error instanceof Error ? error.message : `${error}`;
+        const message =
+          error instanceof Error ? error.message : typeof error === 'string' ? error : t.get('snackbar.update_failed');
         this.errors = { ...this.errors, general: message };
         snackbar.error(`${t.get('snackbar.update_failed')}: ${message}`);
       }

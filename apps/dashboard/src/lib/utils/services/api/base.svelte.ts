@@ -133,19 +133,15 @@ export class BaseApiWithErrors extends BaseApi {
     field?: string;
   }): Promise<void> | void {
     const zodValidationError = result.error as unknown as ZodValidationError;
+
+    // Handle Zod validation errors
     if (zodValidationError && typeof zodValidationError === 'object' && zodValidationError.name === 'ZodError') {
       const issues = JSON.parse(zodValidationError.message) as ZodValidatorMesssage;
-
       this.errors = mapZodErrorsToTranslations(new ZodError(issues));
-
       return;
     }
 
-    if (result.field) {
-      this.errors = { ...this.errors, [result.field]: result.error };
-      return;
-    }
-
+    // Generic fallback only — no field-specific mapping here
     if (typeof result.error === 'string') {
       this.errors = { ...this.errors, general: result.error };
     }
