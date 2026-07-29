@@ -505,26 +505,39 @@ cmd_upgrade() {
   cmd_backup
 
   echo
-  local current_version
-  current_version="$(get_env_value CIO_VERSION)"
-  echo "Step 2/3: current CIO_VERSION is '${current_version:-unset}'."
-  if [[ -t 0 ]]; then
-    read -r -p "Enter a new version tag to pin (or press Enter to keep the current one): " new_version
-    if [[ -n "${new_version}" ]]; then
-      upsert_env_value CIO_VERSION "${new_version}"
-      echo "Set CIO_VERSION=${new_version} in .env"
+  if [[ "${USE_IMAGES}" == "true" ]]; then
+    # CIO_VERSION only selects a published image tag — meaningless for --build,
+    # which always builds whatever is in the local checkout.
+    local current_version
+    current_version="$(get_env_value CIO_VERSION)"
+    echo "Step 2/3: current CIO_VERSION is '${current_version:-unset}'."
+    if [[ -t 0 ]]; then
+      read -r -p "Enter a new version tag to pin (or press Enter to keep the current one): " new_version
+      if [[ -n "${new_version}" ]]; then
+        upsert_env_value CIO_VERSION "${new_version}"
+        echo "Set CIO_VERSION=${new_version} in .env"
+      fi
     fi
+    warn_if_unpinned_version
+  else
+    echo "Step 2/3: building from source — CIO_VERSION doesn't apply."
   fi
-  warn_if_unpinned_version
 
-  echo "Step 3/3: pulling images and restarting..."
-  compose pull
-  compose up -d
+  if [[ "${USE_IMAGES}" == "true" ]]; then
+    echo "Step 3/3: pulling images and restarting..."
+    compose pull
+    compose up -d
+  else
+    echo "Step 3/3: rebuilding from source and restarting..."
+    compose up --build -d
+  fi
   compose ps
   wait_for_endpoints
   echo
-  echo "Upgrade complete. Roll back by setting CIO_VERSION back in .env and running:"
-  echo "  ./classroomio.sh upgrade"
+  echo "Upgrade complete."
+  if [[ "${USE_IMAGES}" == "true" ]]; then
+    echo "Roll back by setting CIO_VERSION back in .env and running: ./classroomio.sh upgrade"
+  fi
 }
 
 show_menu() {
