@@ -1,0 +1,1411 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClassroomIO — Home redesign</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Newsreader:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #0e1116;
+        --ink-soft: #1c222c;
+        --muted: #5a6470;
+        --muted-2: #8a93a0;
+        --line: #d5dae2;
+        --line-soft: #e4e8ee;
+        --paper: #eef0f4;
+        --paper-2: #f7f8fa;
+        --white: #ffffff;
+        --teal: #0d7377;
+        --teal-deep: #085456;
+        --teal-soft: #d7ecec;
+        --amber: #c9851a;
+        --radius: 2px;
+        --max: 1120px;
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Newsreader', Georgia, serif;
+        background: var(--paper);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        font-size: 17px;
+        line-height: 1.55;
+        overflow-x: hidden;
+      }
+
+      /* Cool blueprint grain — not flat, not purple glow */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.45;
+        background-image:
+          linear-gradient(rgba(14, 17, 22, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(14, 17, 22, 0.035) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(ellipse at 50% 20%, black 20%, transparent 75%);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
+      }
+
+      .sans {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+      }
+
+      .mono {
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      }
+
+      .wrap {
+        position: relative;
+        z-index: 1;
+        width: min(100% - 2.5rem, var(--max));
+        margin-inline: auto;
+      }
+
+      @media (min-width: 900px) {
+        .wrap {
+          width: min(100% - 4rem, var(--max));
+        }
+      }
+
+      /* -------- Nav -------- */
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        mix-blend-mode: normal;
+        transition: background 0.35s var(--ease), border-color 0.35s var(--ease);
+        border-bottom: 1px solid transparent;
+      }
+
+      .nav.scrolled {
+        background: rgba(238, 240, 244, 0.92);
+        backdrop-filter: blur(10px);
+        border-bottom-color: var(--line);
+      }
+
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+      }
+
+      .brand {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-weight: 700;
+        font-size: 1.15rem;
+        letter-spacing: -0.03em;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+      }
+
+      .brand-mark {
+        width: 22px;
+        height: 22px;
+        background: var(--teal);
+        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      }
+
+      .nav-links {
+        display: none;
+        gap: 1.75rem;
+        align-items: center;
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--ink-soft);
+      }
+
+      .nav-links a {
+        position: relative;
+      }
+
+      .nav-links a::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -4px;
+        width: 100%;
+        height: 1px;
+        background: var(--teal);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s var(--ease);
+      }
+
+      .nav-links a:hover::after {
+        transform: scaleX(1);
+      }
+
+      .nav-cta {
+        display: none;
+        gap: 0.6rem;
+        align-items: center;
+      }
+
+      @media (min-width: 860px) {
+        .nav-links,
+        .nav-cta {
+          display: flex;
+        }
+      }
+
+      /* -------- Buttons -------- */
+      .btn {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: -0.01em;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        padding: 0.72rem 1.15rem;
+        border: 1px solid transparent;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: transform 0.25s var(--ease), background 0.25s var(--ease), color 0.25s var(--ease),
+          border-color 0.25s var(--ease);
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .btn-primary {
+        background: var(--ink);
+        color: var(--white);
+      }
+
+      .btn-primary:hover {
+        background: var(--teal);
+      }
+
+      .btn-ghost {
+        background: transparent;
+        color: var(--ink);
+        border-color: var(--line);
+      }
+
+      .btn-ghost:hover {
+        border-color: var(--ink);
+        background: var(--white);
+      }
+
+      .btn-teal {
+        background: var(--teal);
+        color: var(--white);
+      }
+
+      .btn-teal:hover {
+        background: var(--teal-deep);
+      }
+
+      .btn-light {
+        background: var(--white);
+        color: var(--ink);
+      }
+
+      .btn-light:hover {
+        background: var(--teal-soft);
+      }
+
+      /* -------- Hero -------- */
+      .hero {
+        position: relative;
+        min-height: 100svh;
+        display: grid;
+        grid-template-rows: 1fr auto;
+        padding-top: 64px;
+        isolation: isolate;
+      }
+
+      .hero-media {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        overflow: hidden;
+      }
+
+      .hero-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+        transform: scale(1.04);
+        animation: hero- ken 18s var(--ease) forwards;
+      }
+
+      @keyframes hero-ken {
+        to {
+          transform: scale(1);
+        }
+      }
+
+      .hero-media::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(180deg, rgba(14, 17, 22, 0.55) 0%, rgba(14, 17, 22, 0.28) 42%, rgba(14, 17, 22, 0.72) 100%),
+          linear-gradient(90deg, rgba(14, 17, 22, 0.45) 0%, transparent 55%);
+      }
+
+      .hero-copy {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 3.5rem 0 2rem;
+        color: var(--white);
+        max-width: 760px;
+      }
+
+      .hero-brand {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-weight: 700;
+        font-size: clamp(2.8rem, 9vw, 6.5rem);
+        line-height: 0.92;
+        letter-spacing: -0.055em;
+        margin: 0 0 1.4rem;
+      }
+
+      .hero-brand span {
+        color: #9ad8d9;
+      }
+
+      .hero h1 {
+        font-family: 'Newsreader', Georgia, serif;
+        font-weight: 400;
+        font-size: clamp(1.35rem, 2.6vw, 1.85rem);
+        line-height: 1.28;
+        letter-spacing: -0.01em;
+        margin: 0 0 0.9rem;
+        max-width: 28ch;
+        font-style: italic;
+      }
+
+      .hero-support {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-size: 0.95rem;
+        font-weight: 500;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.78);
+        max-width: 42ch;
+        margin: 0 0 1.6rem;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+      }
+
+      .hero-actions .btn-ghost {
+        color: var(--white);
+        border-color: rgba(255, 255, 255, 0.35);
+      }
+
+      .hero-actions .btn-ghost:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--white);
+      }
+
+      .hero-rail {
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+        color: rgba(255, 255, 255, 0.7);
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding: 0.95rem 0 1.4rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem 1.75rem;
+      }
+
+      .hero-rail strong {
+        color: #fff;
+        font-weight: 500;
+      }
+
+      /* Reveal motion */
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        animation: rise 0.9s var(--ease) forwards;
+      }
+
+      .reveal-d1 {
+        animation-delay: 0.08s;
+      }
+      .reveal-d2 {
+        animation-delay: 0.2s;
+      }
+      .reveal-d3 {
+        animation-delay: 0.34s;
+      }
+      .reveal-d4 {
+        animation-delay: 0.48s;
+      }
+      .reveal-d5 {
+        animation-delay: 0.62s;
+      }
+
+      @keyframes rise {
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* -------- Sections -------- */
+      section {
+        position: relative;
+        z-index: 1;
+        padding: 4.5rem 0;
+      }
+
+      @media (min-width: 900px) {
+        section {
+          padding: 6rem 0;
+        }
+      }
+
+      .eyebrow {
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--teal);
+        margin: 0 0 0.85rem;
+      }
+
+      .section-title {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-weight: 650;
+        font-size: clamp(1.85rem, 3.4vw, 2.75rem);
+        line-height: 1.08;
+        letter-spacing: -0.04em;
+        margin: 0 0 0.85rem;
+        max-width: 18ch;
+      }
+
+      .section-title em {
+        font-family: 'Newsreader', Georgia, serif;
+        font-style: italic;
+        font-weight: 400;
+        letter-spacing: -0.02em;
+        color: var(--teal-deep);
+      }
+
+      .section-lede {
+        font-size: 1.05rem;
+        color: var(--muted);
+        max-width: 42ch;
+        margin: 0;
+      }
+
+      .section-head {
+        margin-bottom: 2.5rem;
+      }
+
+      /* -------- ROI / proof -------- */
+      .proof {
+        background: var(--white);
+        border-block: 1px solid var(--line);
+      }
+
+      .proof-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+        border: 1px solid var(--line);
+      }
+
+      @media (min-width: 800px) {
+        .proof-grid {
+          grid-template-columns: 1.15fr 1fr 1fr 1fr;
+        }
+      }
+
+      .proof-intro,
+      .proof-stat {
+        padding: 1.6rem 1.4rem;
+      }
+
+      .proof-intro {
+        background: var(--ink);
+        color: var(--white);
+      }
+
+      .proof-intro .eyebrow {
+        color: #9ad8d9;
+      }
+
+      .proof-intro h2 {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        margin: 0 0 0.6rem;
+        font-weight: 650;
+      }
+
+      .proof-intro p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 0.95rem;
+      }
+
+      .proof-stat {
+        border-top: 1px solid var(--line);
+        background: var(--paper-2);
+      }
+
+      @media (min-width: 800px) {
+        .proof-stat {
+          border-top: 0;
+          border-left: 1px solid var(--line);
+        }
+      }
+
+      .proof-stat .value {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-weight: 700;
+        font-size: clamp(2.2rem, 3.5vw, 2.9rem);
+        letter-spacing: -0.05em;
+        line-height: 1;
+        color: var(--ink);
+        margin: 0 0 0.45rem;
+      }
+
+      .proof-stat .label {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-weight: 600;
+        font-size: 0.92rem;
+        margin: 0 0 0.55rem;
+      }
+
+      .proof-stat .source {
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 0.68rem;
+        color: var(--muted-2);
+        letter-spacing: 0.02em;
+        margin: 0;
+      }
+
+      /* -------- AI builds -------- */
+      .ai-builds {
+        background: var(--paper);
+      }
+
+      .ai-visual {
+        margin-top: 2rem;
+        border: 1px solid var(--line);
+        overflow: hidden;
+        background: var(--white);
+      }
+
+      .ai-visual img {
+        width: 100%;
+        height: auto;
+      }
+
+      .lane-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+        margin-top: 1.5rem;
+        border: 1px solid var(--line);
+        background: var(--white);
+      }
+
+      @media (min-width: 800px) {
+        .lane-row {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      .lane {
+        padding: 1.4rem 1.3rem 1.55rem;
+        border-top: 1px solid var(--line);
+      }
+
+      @media (min-width: 800px) {
+        .lane {
+          border-top: 0;
+          border-left: 1px solid var(--line);
+        }
+        .lane:first-child {
+          border-left: 0;
+        }
+      }
+
+      .lane-index {
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 0.7rem;
+        color: var(--teal);
+        letter-spacing: 0.08em;
+        margin-bottom: 0.7rem;
+      }
+
+      .lane h3 {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-size: 1.05rem;
+        font-weight: 650;
+        letter-spacing: -0.02em;
+        margin: 0 0 0.45rem;
+      }
+
+      .lane p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .agent-strip {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.85rem 1.4rem;
+        margin-top: 1.5rem;
+        padding-top: 1.1rem;
+        border-top: 1px dashed var(--line);
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-size: 0.82rem;
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .agent-strip img {
+        height: 18px;
+        width: auto;
+        filter: grayscale(1) contrast(1.1);
+        opacity: 0.75;
+      }
+
+      /* -------- Branding feature -------- */
+      .branding {
+        background: var(--ink);
+        color: var(--white);
+      }
+
+      .branding .section-title em {
+        color: #9ad8d9;
+      }
+
+      .branding .section-lede {
+        color: rgba(255, 255, 255, 0.65);
+      }
+
+      .branding-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-top: 2.25rem;
+      }
+
+      @media (min-width: 800px) {
+        .branding-grid {
+          grid-template-columns: 1.2fr 1fr;
+          grid-template-rows: auto auto;
+        }
+        .branding-feature:first-child {
+          grid-row: 1 / span 2;
+        }
+      }
+
+      .branding-feature {
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.03);
+        min-height: 180px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+      }
+
+      .branding-feature:hover {
+        border-color: rgba(154, 216, 217, 0.55);
+        background: rgba(13, 115, 119, 0.18);
+      }
+
+      .branding-feature h3 {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-size: 1.15rem;
+        font-weight: 650;
+        letter-spacing: -0.02em;
+        margin: 0 0 0.5rem;
+      }
+
+      .branding-feature p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 0.95rem;
+        max-width: 36ch;
+      }
+
+      .swatches {
+        display: flex;
+        gap: 0.55rem;
+        margin-top: 2rem;
+      }
+
+      .swatch {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        outline: 1px solid rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        transition: transform 0.25s var(--ease), border-color 0.25s var(--ease);
+      }
+
+      .swatch:hover,
+      .swatch.active {
+        transform: scale(1.08);
+        border-color: #fff;
+      }
+
+      .domain-chip {
+        margin-top: 2rem;
+        align-self: flex-start;
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 0.8rem;
+        padding: 0.55rem 0.75rem;
+        border: 1px dashed rgba(255, 255, 255, 0.28);
+        color: #9ad8d9;
+      }
+
+      .lock-row {
+        margin-top: 2rem;
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55);
+      }
+
+      /* -------- Tutor -------- */
+      .tutor {
+        background: var(--paper-2);
+      }
+
+      .tutor-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        align-items: center;
+      }
+
+      @media (min-width: 900px) {
+        .tutor-layout {
+          grid-template-columns: 0.95fr 1.05fr;
+          gap: 3rem;
+        }
+      }
+
+      .tutor-media {
+        border: 1px solid var(--line);
+        background: var(--ink);
+        aspect-ratio: 16 / 10;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .tutor-media::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 30% 40%, rgba(13, 115, 119, 0.45), transparent 45%),
+          radial-gradient(circle at 70% 70%, rgba(201, 133, 26, 0.2), transparent 40%),
+          linear-gradient(160deg, #1a222c, #0e1116);
+      }
+
+      .tutor-orb {
+        position: absolute;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        border: 1px solid rgba(154, 216, 217, 0.35);
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        animation: pulse-ring 3.6s var(--ease) infinite;
+      }
+
+      .tutor-orb::after {
+        content: '';
+        position: absolute;
+        inset: 18px;
+        border-radius: 50%;
+        background: rgba(13, 115, 119, 0.35);
+        border: 1px solid rgba(154, 216, 217, 0.5);
+      }
+
+      @keyframes pulse-ring {
+        0%,
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: translate(-50%, -50%) scale(1.08);
+          opacity: 0.7;
+        }
+      }
+
+      .tutor-caption {
+        position: absolute;
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      /* -------- Academies -------- */
+      .academies {
+        background: var(--white);
+        border-block: 1px solid var(--line);
+      }
+
+      .academy-list {
+        display: grid;
+        gap: 0;
+        border: 1px solid var(--line);
+      }
+
+      .academy {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1rem 1.4rem;
+        padding: 1.35rem 1.3rem;
+        border-top: 1px solid var(--line);
+        align-items: start;
+        transition: background 0.25s var(--ease);
+      }
+
+      .academy:first-child {
+        border-top: 0;
+      }
+
+      .academy:hover {
+        background: var(--paper);
+      }
+
+      .academy-num {
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 0.75rem;
+        color: var(--teal);
+        padding-top: 0.35rem;
+      }
+
+      .academy h3 {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-size: 1.2rem;
+        font-weight: 650;
+        letter-spacing: -0.03em;
+        margin: 0 0 0.25rem;
+      }
+
+      .academy .domain {
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin: 0 0 0.55rem;
+      }
+
+      .academy .audience {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .bar {
+        margin-top: 0.85rem;
+        height: 3px;
+        background: var(--line-soft);
+        overflow: hidden;
+      }
+
+      .bar > span {
+        display: block;
+        height: 100%;
+        background: var(--teal);
+        transform-origin: left;
+        transform: scaleX(0);
+        transition: transform 1s var(--ease);
+      }
+
+      .academy.in-view .bar > span {
+        transform: scaleX(1);
+      }
+
+      /* -------- Dev -------- */
+      .dev {
+        background: var(--paper);
+      }
+
+      .dev-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        border: 1px solid var(--line);
+        background: var(--white);
+      }
+
+      @media (min-width: 800px) {
+        .dev-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      .dev-card {
+        padding: 1.5rem 1.35rem;
+        border-top: 1px solid var(--line);
+      }
+
+      @media (min-width: 800px) {
+        .dev-card {
+          border-top: 0;
+          border-left: 1px solid var(--line);
+        }
+        .dev-card:first-child {
+          border-left: 0;
+        }
+      }
+
+      .dev-card .tag {
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--amber);
+        margin-bottom: 0.7rem;
+      }
+
+      .dev-card h3 {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-size: 1.1rem;
+        font-weight: 650;
+        letter-spacing: -0.02em;
+        margin: 0 0 0.45rem;
+      }
+
+      .dev-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      /* -------- Quote -------- */
+      .quote {
+        background: var(--paper-2);
+      }
+
+      blockquote {
+        margin: 0;
+        max-width: 28ch;
+        font-family: 'Newsreader', Georgia, serif;
+        font-style: italic;
+        font-size: clamp(1.55rem, 3vw, 2.2rem);
+        line-height: 1.3;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+      }
+
+      .quote-meta {
+        margin-top: 1.5rem;
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .quote-meta span {
+        display: block;
+        font-weight: 500;
+        color: var(--muted);
+        margin-top: 0.2rem;
+      }
+
+      /* -------- CTA -------- */
+      .cta {
+        background: var(--teal);
+        color: var(--white);
+        padding: 5rem 0;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .cta::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.08) 40.5%, transparent 41%),
+          linear-gradient(115deg, transparent 62%, rgba(0, 0, 0, 0.08) 62.5%, transparent 63%);
+        pointer-events: none;
+      }
+
+      .cta .wrap {
+        position: relative;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .cta h2 {
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-size: clamp(1.9rem, 4vw, 3rem);
+        letter-spacing: -0.045em;
+        line-height: 1.08;
+        margin: 0 0 0.85rem;
+        max-width: 16ch;
+        font-weight: 700;
+      }
+
+      .cta p {
+        margin: 0 0 1.6rem;
+        max-width: 38ch;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 1.05rem;
+      }
+
+      .cta-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        justify-content: center;
+      }
+
+      /* -------- Footer -------- */
+      footer {
+        background: var(--ink);
+        color: rgba(255, 255, 255, 0.65);
+        padding: 2.5rem 0 2rem;
+        font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+        font-size: 0.85rem;
+      }
+
+      .footer-inner {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      footer .brand {
+        color: #fff;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 1.4rem;
+      }
+
+      .footer-links a:hover {
+        color: #fff;
+      }
+
+      /* Scroll reveal */
+      .in-view-ready {
+        opacity: 0;
+        transform: translateY(22px);
+        transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+      }
+
+      .in-view-ready.is-in {
+        opacity: 1;
+        transform: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="nav" id="nav">
+      <div class="wrap nav-inner">
+        <a class="brand" href="#">
+          <span class="brand-mark" aria-hidden="true"></span>
+          ClassroomIO
+        </a>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="#proof">Why academy</a>
+          <a href="#ai">AI authoring</a>
+          <a href="#tutor">AI tutor</a>
+          <a href="#academies">Multi-academy</a>
+          <a href="#dev">Developers</a>
+        </nav>
+        <div class="nav-cta">
+          <a class="btn btn-ghost" href="https://app.classroomio.com">Login</a>
+          <a class="btn btn-primary" href="https://app.classroomio.com/signup">Start free</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO: brand-first, full-bleed media, one job -->
+      <section class="hero" aria-label="Hero">
+        <div class="hero-media" aria-hidden="true">
+          <img
+            src="https://assets.cdn.clsrio.com/www/home/hero-academy.jpeg"
+            alt=""
+            width="2560"
+            height="1440"
+          />
+        </div>
+
+        <div class="wrap hero-copy">
+          <p class="hero-brand reveal reveal-d1">Classroom<span>IO</span></p>
+          <h1 class="reveal reveal-d2">The simplest way to run training across your entire company.</h1>
+          <p class="hero-support reveal reveal-d3">
+            Employee training, customer education, and partner onboarding — certifications, your domain, and an AI
+            tutor in every lesson.
+          </p>
+          <div class="hero-actions reveal reveal-d4">
+            <a class="btn btn-teal" href="https://cal.com/classroomio/demo">Book a Demo</a>
+            <a class="btn btn-ghost" href="https://app.classroomio.com/signup">Start free</a>
+          </div>
+        </div>
+
+        <div class="wrap hero-rail reveal reveal-d5">
+          <span><strong>01</strong> Customer academies</span>
+          <span><strong>02</strong> Compliance &amp; SOPs</span>
+          <span><strong>03</strong> Partner onboarding</span>
+        </div>
+      </section>
+
+      <!-- Proof -->
+      <section class="proof" id="proof">
+        <div class="wrap in-view-ready">
+          <div class="proof-grid">
+            <div class="proof-intro">
+              <p class="eyebrow">The case for an academy</p>
+              <h2>Customers who learn the product, stay.</h2>
+              <p>Numbers from teams who built one.</p>
+            </div>
+            <div class="proof-stat">
+              <p class="value">+22%</p>
+              <p class="label">Higher retention</p>
+              <p class="source">Forrester · customer-education TEI</p>
+            </div>
+            <div class="proof-stat">
+              <p class="value">+38%</p>
+              <p class="label">Product adoption</p>
+              <p class="source">Intellum / Forrester benchmarks</p>
+            </div>
+            <div class="proof-stat">
+              <p class="value">−6.1%</p>
+              <p class="label">Support costs</p>
+              <p class="source">TSIA · education services impact</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI authoring -->
+      <section class="ai-builds" id="ai">
+        <div class="wrap">
+          <div class="section-head in-view-ready">
+            <p class="eyebrow">AI authoring</p>
+            <h2 class="section-title">AI that turns company knowledge into trainings that drive <em>business outcome</em></h2>
+            <p class="section-lede">
+              Feed it your docs, policies, and videos. AI drafts the structure, lessons, and quizzes. You approve every
+              step.
+            </p>
+          </div>
+
+          <div class="ai-visual in-view-ready">
+            <img
+              src="https://assets.cdn.clsrio.com/www/home/ai-course-builder.jpeg"
+              alt="Course builder — plan, approve, implement"
+              loading="lazy"
+            />
+          </div>
+
+          <div class="lane-row in-view-ready">
+            <article class="lane">
+              <div class="lane-index">01 — Template</div>
+              <h3>Pick a template</h3>
+              <p>Product 101, onboarding, or expert track. Fill three fields, get a course draft.</p>
+            </article>
+            <article class="lane">
+              <div class="lane-index">02 — Chat</div>
+              <h3>Chat with the builder</h3>
+              <p>Claude lives in the editor. It plans, drafts, and writes quizzes. You approve each step.</p>
+            </article>
+            <article class="lane">
+              <div class="lane-index">03 — Agents</div>
+              <h3>Use your own agent</h3>
+              <p>Drive course authoring from Cursor, Claude Code, Codex, or OpenCode via MCP.</p>
+            </article>
+          </div>
+
+          <div class="agent-strip in-view-ready">
+            <span>Works with</span>
+            <img src="https://assets.cdn.clsrio.com/www/home/cursor-logo.png" alt="Cursor" />
+            <img src="https://assets.cdn.clsrio.com/www/home/claude-logo.svg" alt="Claude Code" />
+            <img src="https://assets.cdn.clsrio.com/www/home/codex-logo.png" alt="Codex" />
+            <img src="https://assets.cdn.clsrio.com/www/home/opencode-logo.svg" alt="OpenCode" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Branding -->
+      <section class="branding" id="branding">
+        <div class="wrap">
+          <div class="section-head in-view-ready">
+            <p class="eyebrow">Your brand</p>
+            <h2 class="section-title">Make it yours, down to the <em>favicon</em>.</h2>
+            <p class="section-lede">Your brand, your domain, your content. ClassroomIO bends to fit the academy you want to ship.</p>
+          </div>
+
+          <div class="branding-grid in-view-ready">
+            <article class="branding-feature">
+              <div>
+                <h3>Theme everything</h3>
+                <p>Pick a theme color or drop in your own hex. Every page picks it up.</p>
+              </div>
+              <div class="swatches" role="list" aria-label="Theme colors">
+                <button class="swatch active" style="background:#1d4ee2" aria-label="Blue" type="button"></button>
+                <button class="swatch" style="background:#be1241" aria-label="Rose" type="button"></button>
+                <button class="swatch" style="background:#0c891b" aria-label="Green" type="button"></button>
+                <button class="swatch" style="background:#cc4902" aria-label="Orange" type="button"></button>
+                <button class="swatch" style="background:#0d7377" aria-label="Teal" type="button"></button>
+              </div>
+            </article>
+            <article class="branding-feature">
+              <div>
+                <h3>Custom domain</h3>
+                <p>Point a CNAME, click verify. SSL handled. Learners never leave your brand.</p>
+              </div>
+              <div class="domain-chip">learn.yourcompany.com</div>
+            </article>
+            <article class="branding-feature">
+              <div>
+                <h3>Private by default</h3>
+                <p>Gate courses behind SSO or invite links. Keep internal SOPs off the public web.</p>
+              </div>
+              <div class="lock-row">SSO · Invite links · Token auth</div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI Tutor -->
+      <section class="tutor" id="tutor">
+        <div class="wrap tutor-layout">
+          <div class="in-view-ready">
+            <p class="eyebrow">AI tutor</p>
+            <h2 class="section-title">An AI teaching assistant in every lesson</h2>
+            <p class="section-lede" style="margin-bottom: 1.5rem">
+              Answers questions in each student’s own words, adjusts to their pace, and catches the ones that would
+              otherwise land in your support inbox.
+            </p>
+            <a class="btn btn-primary" href="https://classroomio.com/customer-education">See the academy</a>
+          </div>
+          <div class="tutor-media in-view-ready" aria-hidden="true">
+            <div class="tutor-orb"></div>
+            <div class="tutor-caption">Always-on · Lesson-aware · Brand-safe</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Multi academy -->
+      <section class="academies" id="academies">
+        <div class="wrap">
+          <div class="section-head in-view-ready">
+            <p class="eyebrow">Multi-academy</p>
+            <h2 class="section-title">One platform. Three audiences. Zero bleed.</h2>
+            <p class="section-lede">
+              Run customer, partner, and internal academies side by side — each with its own brand and domain.
+            </p>
+          </div>
+
+          <div class="academy-list in-view-ready">
+            <article class="academy">
+              <div class="academy-num">01</div>
+              <div>
+                <h3>Customer Academy</h3>
+                <p class="domain">learn.acme.com</p>
+                <p class="audience">Customers · onboarding · adoption</p>
+                <div class="bar"><span style="width: 72%"></span></div>
+              </div>
+            </article>
+            <article class="academy">
+              <div class="academy-num">02</div>
+              <div>
+                <h3>Partner Academy</h3>
+                <p class="domain">partners.acme.com</p>
+                <p class="audience">Resellers · agencies · integrators</p>
+                <div class="bar"><span style="width: 54%"></span></div>
+              </div>
+            </article>
+            <article class="academy">
+              <div class="academy-num">03</div>
+              <div>
+                <h3>Internal Academy</h3>
+                <p class="domain">team.acme.com</p>
+                <p class="audience">Employees · onboarding · compliance</p>
+                <div class="bar"><span style="width: 88%"></span></div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Developers -->
+      <section class="dev" id="dev">
+        <div class="wrap">
+          <div class="section-head in-view-ready">
+            <p class="eyebrow">For developers</p>
+            <h2 class="section-title">API, Webhooks, MCP.</h2>
+            <p class="section-lede">No middleware in between. Wire it into the stack you already have.</p>
+          </div>
+
+          <div class="dev-grid in-view-ready">
+            <article class="dev-card">
+              <div class="tag">HTTP</div>
+              <h3>REST API</h3>
+              <p>Every object, reachable over HTTP. Provision users, pull completions, build your own tools.</p>
+            </article>
+            <article class="dev-card">
+              <div class="tag">Events</div>
+              <h3>Webhooks</h3>
+              <p>Signed events on enrollment, completion, certificate. Retries on failure.</p>
+            </article>
+            <article class="dev-card">
+              <div class="tag">Agents</div>
+              <h3>MCP server</h3>
+              <p>Course authoring as agent tools. Works with Cursor, Claude Code, Codex, OpenCode.</p>
+            </article>
+          </div>
+
+          <div style="margin-top: 1.5rem" class="in-view-ready">
+            <a class="btn btn-ghost" href="https://classroomio.com/automation">See the developer reference →</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quote -->
+      <section class="quote">
+        <div class="wrap in-view-ready">
+          <blockquote>
+            “We stopped forwarding help articles. The academy became the product’s second home.”
+          </blockquote>
+          <p class="quote-meta">
+            Customer Education Lead
+            <span>SaaS · 200+ employees</span>
+          </p>
+        </div>
+      </section>
+
+      <!-- Final CTA -->
+      <section class="cta">
+        <div class="wrap in-view-ready">
+          <h2>Stop forwarding help articles.</h2>
+          <p>Launch a branded academy on your domain in days — not quarters.</p>
+          <div class="cta-actions">
+            <a class="btn btn-light" href="https://cal.com/classroomio/demo">Book a Demo</a>
+            <a class="btn btn-ghost" style="color: #fff; border-color: rgba(255,255,255,0.35)" href="https://app.classroomio.com/signup"
+              >Start free</a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap footer-inner">
+        <a class="brand" href="#">
+          <span class="brand-mark" aria-hidden="true"></span>
+          ClassroomIO
+        </a>
+        <div class="footer-links">
+          <a href="https://classroomio.com/pricing">Pricing</a>
+          <a href="https://classroomio.com/blog">Blog</a>
+          <a href="https://classroomio.com/customer-education">Customer Education</a>
+          <a href="https://github.com/classroomio/classroomio">GitHub</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const nav = document.getElementById('nav');
+      const onScroll = () => {
+        nav.classList.toggle('scrolled', window.scrollY > 24);
+      };
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      // Theme swatches (visual only)
+      document.querySelectorAll('.swatch').forEach((swatch) => {
+        swatch.addEventListener('click', () => {
+          document.querySelectorAll('.swatch').forEach((s) => s.classList.remove('active'));
+          swatch.classList.add('active');
+        });
+      });
+
+      // Scroll reveals + academy bars
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-in');
+            if (entry.target.classList.contains('academy') || entry.target.querySelector?.('.academy')) {
+              entry.target.querySelectorAll?.('.academy').forEach((a) => a.classList.add('in-view'));
+              entry.target.classList.add('in-view');
+            }
+            observer.unobserve(entry.target);
+          });
+        },
+        { threshold: 0.18 }
+      );
+
+      document.querySelectorAll('.in-view-ready').forEach((el) => observer.observe(el));
+      document.querySelectorAll('.academy').forEach((el) => observer.observe(el));
+    </script>
+  </body>
+</html>
