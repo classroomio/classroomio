@@ -1,4 +1,5 @@
 import { Hono } from '@api/utils/hono';
+import { authMiddleware } from '@api/middlewares/auth';
 import { env } from '@cio/core/config/env';
 import { handleError } from '@api/utils/errors';
 import { z } from 'zod';
@@ -11,9 +12,9 @@ export const unsplashRouter = new Hono()
   /**
    * POST /unsplash
    * Fetches photos from Unsplash API
-   * No authentication required - public route
+   * Requires authentication
    */
-  .post('/', async (c) => {
+  .post('/', authMiddleware, async (c) => {
     try {
       const body = await c.req.json();
       const validatedData = ZUnsplashRequest.parse(body);

@@ -1,4 +1,5 @@
 import { marked } from 'marked';
+import { sanitizeHtml } from '@cio/ui';
 
 // Configure marked for safe, minimal output
 marked.setOptions({
@@ -13,5 +14,6 @@ marked.setOptions({
 export function renderMarkdown(text: string): string {
   if (!text) return '';
 
-  return marked.parse(text, { async: false }) as string;
+  const rawHtml = marked.parse(text, { async: false }) as string;
+  return sanitizeHtml(rawHtml);
 }
