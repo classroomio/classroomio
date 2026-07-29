@@ -3916,7 +3916,9 @@
       "search_placeholder": "Søg efter kurser...",
       "pricing_title": "Prissætning",
       "pricing_free": "Gratis",
-      "pricing_paid": "Betalt"
+      "pricing_paid": "Betalt",
+      "selected": "Valgt:",
+      "save_changes": "Gem ændringer"
     }
   },
   "tags_admin": {

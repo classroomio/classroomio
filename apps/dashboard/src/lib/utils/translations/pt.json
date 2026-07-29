@@ -3916,7 +3916,9 @@
       "search_placeholder": "Pesquisar cursos...",
       "pricing_title": "Preços",
       "pricing_free": "Grátis",
-      "pricing_paid": "Pago"
+      "pricing_paid": "Pago",
+      "selected": "Selecionado:",
+      "save_changes": "Salvar alterações"
     }
   },
   "tags_admin": {

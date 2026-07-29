@@ -1298,7 +1298,9 @@
       "pricing_free": "Free",
       "pricing_paid": "Paid",
       "empty": "No tags available yet",
-      "search_placeholder": "Search courses..."
+      "search_placeholder": "Search courses...",
+      "selected": "Selected:",
+      "save_changes": "Save Changes"
     },
     "empty": {
       "title": "No courses found",

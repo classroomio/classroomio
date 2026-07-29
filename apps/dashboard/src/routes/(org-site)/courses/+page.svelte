@@ -531,7 +531,7 @@
       <Sheet.Header class="ui:border-b ui:px-4 ui:py-4">
         <Sheet.Title>{$t('public_courses.filters.title')}</Sheet.Title>
         <Sheet.Description>
-          Selected:
+          {$t('public_courses.filters.selected')}
           <span
             class="ui:bg-muted ui:text-foreground ml-1 inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-medium"
           >
@@ -548,7 +548,9 @@
         <LandingButton variant="secondary" class="ui:flex-1" onclick={clearFilters}>
           {$t('public_courses.clear_filters')}
         </LandingButton>
-        <LandingButton class="ui:flex-1" onclick={() => (filterSheetOpen = false)}>Save Changes</LandingButton>
+        <LandingButton class="ui:flex-1" onclick={() => (filterSheetOpen = false)}
+          >{$t('public_courses.filters.save_changes')}</LandingButton
+        >
       </div>
     </Sheet.Content>
   </Sheet.Root>
