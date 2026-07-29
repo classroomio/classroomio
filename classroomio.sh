@@ -51,6 +51,8 @@ Run without a command to get an interactive menu.
 
 Options:
   --build     Use docker-compose.yaml and build images from source instead of pulling.
+              Requires a local repo checkout (git clone) — not available in a
+              standalone directory set up via 'install'.
   --no-minio  Exclude the bundled MinIO (requires external S3-compatible storage).
   -h, --help  Show this help message.
 USAGE
@@ -163,6 +165,14 @@ generate_secure_token() {
     return
   fi
 
+  if [[ -r /dev/urandom ]]; then
+    head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n'
+    echo
+    return
+  fi
+
+  # Last resort only: no openssl, node, python3, or /dev/urandom. A timestamp-derived
+  # value is weak (guessable within the install's time window) but better than failing.
   date +%s%N | shasum | awk '{ print $1 }'
 }
 
@@ -318,7 +328,7 @@ check_endpoint() {
   local name="$1" url="$2" curl_flags="$3" attempts="$4"
   local i=0
   while ((i < attempts)); do
-    if curl ${curl_flags} --max-time 5 "${url}" >/dev/null 2>&1; then
+    if curl "${curl_flags}" --max-time 5 "${url}" >/dev/null 2>&1; then
       echo "${name} is reachable on ${url}"
       return 0
     fi
@@ -377,6 +387,12 @@ prepare_env_and_secrets() {
 cmd_install() {
   echo "Installing ClassroomIO..."
   echo
+
+  if [[ "${USE_IMAGES}" != "true" && ! -f "${BUILD_COMPOSE_FILE}" ]]; then
+    echo "Error: --build install requires a local repo checkout (docker-compose.yaml not found)."
+    echo "Clone the repository instead, or run 'install' without --build to pull pre-built images."
+    exit 1
+  fi
 
   if [[ "${USE_IMAGES}" == "true" ]]; then
     # The compose file tracks main (stack topology only — CIO_VERSION pins the app
