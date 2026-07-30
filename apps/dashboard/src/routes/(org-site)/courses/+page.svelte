@@ -39,7 +39,7 @@
   let filterSheetOpen = $state(false);
   type FilterSection = 'types' | 'pricing' | 'tags';
   // let openFilterSection = $state<FilterSection | null>('types');
-  let openFilterSection = $state<FilterSection | string[] | undefined>(['types', 'pricing', 'tags']);
+  let openFilterSection = $state<FilterSection | string[] | undefined>('types');
 
   $effect(() => {
     searchInput = activeSearch;
