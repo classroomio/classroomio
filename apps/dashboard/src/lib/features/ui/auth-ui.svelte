@@ -10,11 +10,13 @@
   import * as Card from '@cio/ui/base/card';
   import { Button } from '@cio/ui/base/button';
   import { Separator } from '@cio/ui/base/separator';
+  import { BackButton } from '@cio/ui';
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { ROUTE } from '$lib/utils/constants/routes';
   import { DotPattern } from '@cio/ui/custom/animation/dot-pattern';
 
   interface Props {
+    backHref?: string;
     isLogin?: boolean;
     showOnlyContent?: boolean;
     isLoading?: boolean;
@@ -27,6 +29,7 @@
   }
 
   let {
+    backHref = '',
     isLogin = true,
     showOnlyContent = false,
     isLoading = false,
@@ -70,7 +73,9 @@
   const authBackgroundUrl = $derived($currentOrg.customization.auth?.backgroundImage?.trim() ?? '');
 </script>
 
-<div class="auth-ui-background relative flex min-h-screen w-full items-center justify-center overflow-hidden p-4">
+<div
+  class={`auth-ui-background relative flex ${backHref ? 'flex-col' : 'flex-row'} min-h-screen w-full items-center justify-center overflow-hidden p-4`}
+>
   {#if authBackgroundUrl}
     <div class="absolute inset-0 z-0">
       <img src={authBackgroundUrl} alt="" class="h-full w-full object-cover" decoding="async" />
@@ -78,6 +83,11 @@
     </div>
   {:else}
     <DotPattern fillColor="rgb(2 51 189 / 0.25)" class="absolute inset-0 z-0 h-full w-full" />
+  {/if}
+  {#if backHref}
+    <div class="ui:w-full ui:max-w-[400px] ui:pt-2 ui:mb-5">
+      <BackButton href={backHref || undefined} label={$t('onboarding.back')} />
+    </div>
   {/if}
   <Card.Root class="ui:w-full relative z-10 max-w-[400px] shadow-sm">
     {#if !showOnlyContent || showLogo}
@@ -112,7 +122,9 @@
         <div class="mt-6 flex flex-col gap-6">
           <div class="relative flex items-center justify-center">
             <Separator />
-            <span class="ui:bg-card ui:text-muted-foreground absolute px-2 text-sm"> Or continue With </span>
+            <span class="ui:bg-card ui:text-muted-foreground absolute px-2 text-sm"
+              >{isLogin ? $t('login.login_with') : $t('login.signup_with')}</span
+            >
           </div>
 
           {#if getPasswordAuthAlternative}
