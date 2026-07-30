@@ -23,7 +23,7 @@ Events is the first consumer of a **verified-email access-grant** capability tha
 
 1. **New attachment context** — add `EVENT` to `form_attachment.context_type`, referencing the event course via `course_id`. Attachment `settings` carry `accessPolicy: 'public_registration' | 'existing_members_only'`. Enforce with a DB check/enum plus a constraint that `EVENT` rows point at a `course.type = 'EVENT'` row.
 2. **Attachment-level settings are authoritative** — lifecycle window, response limit, and one-response-per-respondent are read from the attachment, not conflicting `form` columns. Event services must never read timing/limit fields from the reusable form row.
-3. **Context overrides on submit** — for `EVENT` attachments, the runner/submission service forces `collect_email = true`, `allow_anonymous = false`, and rejects submissions without a normalized `respondent_email` before creating an access grant. Reject submission when the org's student limit is reached (`studentLimitReached`), with a clear respondent-facing error — do not create a response or send an access email.
+3. **Context overrides on submit** — for `EVENT` attachments, the runner/submission service forces `collect_email = true`, `allow_anonymous = false`, and rejects submissions without a normalized `respondent_email` before creating an access grant. Reject submission when the org's student limit is reached (`studentLimitReached`), with a clear respondent-facing error — do not create a response or send an access email. **Close the student-limit TOCTOU gap**: under an organization-level student-limit lock, either (a) reserve one seat transactionally when the response is created (release the reservation if the grant expires unredeemed), or (b) recheck capacity again at redemption before membership/enrollment. If redemption fails for capacity, return a generic respondent-facing error, do not enroll, and revoke or mark the grant unusable so the address cannot bypass the limit via a delayed redeem. Concurrent submission/redemption tests must prove the org never exceeds its student limit.
 4. **`form_response_access_grant` table** — recipient-bound, expiring, single-use grants linked to `form_response_id` and `form_attachment_id`. Store only SHA-256 `token_hash`. Enforce at most one **active** (unredeemed, unrevoked, unexpired) grant per `(form_response_id, recipient_email)` with transactional locking on resend/redeem.
 5. **Scanner-safe redemption** — `GET /forms/access/:token` renders a confirmation interstitial and must not consume the grant. `POST /forms/access/:token/redeem` performs redemption. Both endpoints use `Cache-Control: no-store`, `Referrer-Policy: no-referrer`, and a one-time token-to-session exchange so the bearer token does not remain in the URL after the handoff.
 6. **PII retention** — define purge/anonymization for `recipient_email` and grant audit events: expired unredeemed grants after 30 days, redeemed grants after 90 days (audit metadata only), revoked grants after 30 days.
@@ -50,7 +50,7 @@ Orgs that run trainings, webinars, and community sessions have single-video cont
 3. **Lifecycle is derived, never stored**: `draft` (unpublished) → `upcoming` (published, `lessonAt` future) → `live` (inside `lessonAt + durationMinutes`) → `replay-pending` (past, no video) → `on-demand` (published video exists). No status field that can go stale.
 4. **`format` is cosmetic — it must never drive behavior.** `metadata.event.format` sets the badge label and the catalog filter, nothing else. Every behavioral branch derives from data: is `lessonAt` set, is `callUrl` present, is there a playable recording, is the event form-gated. Services and UI must not contain `if (format === 'webinar')` logic. Without this rule the lifecycle becomes a matrix of format × schedule × gating combinations and the stateless derivation in decision 3 collapses.
 5. **Watch gating is the admin's choice per event**: **public** (on-demand replay only — anyone watches the recording, no login) or **form-gated** (registration required). Public maps to the lesson `public` flag and applies only when there is no upcoming/live join requirement. **Scheduled events** (`lessonAt` set and/or `callUrl` present) must use form-gated access so meeting links never appear anonymously. Form-gated requires one active `EVENT` form attachment and withholds the video and meeting link until registration is verified. The editor blocks or auto-switches to form-gated when a schedule or meeting link is added while public is selected.
-6. **Form submission starts registration; redeeming the email completes enrollment.** The attached ClassroomIO Form collects the admin-configured fields. If the org's student limit is already reached, **block form submission** before creating a response or sending an access email — do not let registrants complete the form only to fail at redemption. A successful submission stores a pending response and sends an org-branded access email to the submitted address. ClassroomIO does not enroll or create an account from an unverified address. Redeeming the emailed access grant proves ownership, atomically creates or reconciles the learner identity and org membership, enrolls the learner in the event group, starts a session, and redirects to `/events/[slug]`. Existing learners are reconciled by normalized email, so the flow never creates a duplicate account.
+6. **Form submission starts registration; redeeming the email completes enrollment.** The attached ClassroomIO Form collects the admin-configured fields. If the org's student limit is already reached, **block form submission** before creating a response or sending an access email — do not let registrants complete the form only to fail at redemption. A successful submission stores a pending response and sends an org-branded access email to the submitted address. ClassroomIO does not enroll or create an account from an unverified address. Redeeming the emailed access grant proves ownership, atomically creates or reconciles the learner identity and org membership, enrolls the learner in the event group, starts a session, and redirects to `/events/[slug]`. Existing learners are reconciled by normalized email, so the flow never creates a duplicate account. Seat accounting uses the locked pre-check/reservation at submission plus the redemption-time recheck described in Prerequisites §3 so concurrent registrants cannot overshoot the limit between submit and redeem.
 7. **Topics = existing course tags.** On-demand lists group by tag; untagged fall into "General". Audience segmentation (OpenAI's "Work Users", "Small Business") is not a separate axis in v1 — model it as a tag.
 8. **Events and courses never mix**: excluded from the courses catalog, admin course list, course-type filters, the course create modal, and LMS My Learning / progress / certificate lists. (An event certificate issued by a passed assessment — decision 10 — is delivered by email and downloadable from the event page; it does not enroll the event into LMS progress/completion surfaces.)
 9. **v1 scope is all four surfaces**: admin, public org-site pages, landing-page section (all 10 themes), LMS entry. Form-gated registration is part of v1 but ships only after the Forms prerequisites above are complete.
@@ -72,7 +72,7 @@ Orgs that run trainings, webinars, and community sessions have single-video cont
 | Authoring timezone | `course.metadata.sessionTimezone` (IANA string, schema.ts:695) | Already defined for live sessions — reuse, do not add a new field |
 | Meeting link | `lesson.callUrl` | Must never appear in anonymous API payloads |
 | Conversion CTA | `course.callout` + `packages/ui/src/custom/public-course/callout` | Built for PUBLIC courses |
-| Anonymous viewing pipeline | `packages/db/src/queries/course/public-course.ts` + `apps/api/src/routes/org-site/public-course.ts` + HLS cookie | Gated `type = 'PUBLIC'` today — widen to include EVENT |
+| Anonymous viewing pipeline | `packages/db/src/queries/course/public-course.ts` + `apps/api/src/routes/org-site/public-course.ts` + HLS cookie | Gated `type = 'PUBLIC'` today — widen to admit `EVENT` **only** when `metadata.event.accessMode = 'public'`, derived state is on-demand (playable recording, no upcoming/live join), `lesson.lessonAt` is null, and `lesson.callUrl` is absent. Form-gated or scheduled events must stay behind auth/enrollment even if `type = 'EVENT'`. Regression tests must prove anonymous playback is denied for form-gated events. |
 | Student lesson renderer | `packages/ui/src/custom/public-course/lesson-view.svelte` | Video + note + callout; the body of the event page |
 | Host render pattern | `packages/ui/src/custom/org-landing-page/course-instructor.svelte` | Name + role + image |
 | Enrollment flow | `(org-site)/course/[slug]/enroll` + `POST /course/:courseId/enroll` | Handles login redirect, student limits, email verification, invite tokens |
@@ -121,13 +121,18 @@ The broader "Events" name invites expectations that are explicitly out of scope:
     format?: 'webinar' | 'livestream' | 'workshop' | 'bootcamp' | 'meetup' | 'session';
     delivery?: 'online' | 'in_person' | 'hybrid';
     location?: string;            // display-only (e.g. "St Louis, MO"); no venue management
-    durationMinutes?: number;
-    accessMode?: 'public' | 'form';
+    durationMinutes?: number;     // required positive integer when lessonAt is set
+    accessMode: 'public' | 'form'; // required on create; no implicit default at the API layer
     assessment?: { enabled: boolean; passPercentage: number };
   }
   ```
 
-  Defaults: `format: 'webinar'`, `delivery: 'online'`. Form-gated events resolve the attached form through the active `EVENT` `form_attachment`, not duplicated in course JSON. `accessMode: 'form'` requires a published `EVENT` attachment before publish. Authoring timezone reuses the existing `course.metadata.sessionTimezone`.
+  Defaults at creation: `format: 'webinar'`, `delivery: 'online'`, `accessMode: 'form'`. The admin must explicitly choose `public` for replay-only on-demand events. Form-gated events resolve the attached form through the active `EVENT` `form_attachment`, not duplicated in course JSON. `accessMode: 'form'` requires a published `EVENT` attachment before publish. Authoring timezone reuses the existing `course.metadata.sessionTimezone`.
+
+  **Scheduling invariants** (enforced in create/update/publish services, not just the editor):
+  - `lessonAt` set → `durationMinutes` must be a positive integer (countdown, time-range display, live-window derivation, and `.ics` end time all depend on it).
+  - `lessonAt` or `callUrl` present → `accessMode` must be `form` (public replay-only cannot carry a join link or upcoming schedule).
+  - `callUrl` without `lessonAt` is **invalid** — meeting links require a scheduled start so reminders, live state, and calendar metadata are defined. Reject on save/publish rather than inventing a synthetic schedule.
 - Event creation (one transaction): group + course (`type: 'EVENT'`) + creator tutor member + the single lesson (title = course title, `public` per gating choice, explicit `lessonAt`, `teacherId` = host, slug via the slug service). No welcome newsfeed.
 - **Invariants enforced in services, not just UI**: lesson/section create services reject additions to EVENT courses. Exercise creation is likewise rejected, with one controlled exception: the event assessment service may create **exactly one** exercise on the single lesson when `assessment.enabled` is turned on (and general exercise routes still reject event courses — the assessment service is the only entry point). Publish readiness (extend `go-live-readiness.ts`): title + host required; upcoming needs `lessonAt`; on-demand needs a playable video; `lessonAt` or `callUrl` requires `accessMode: 'form'` and a published `EVENT` attachment (public is valid only for replay-only events).
 - **`format` never branches logic** (Confirmed Decision 4): it is read only by badge rendering and catalog filtering. Lifecycle, gating, publish readiness, and calendar behavior derive from `lessonAt`, `callUrl`, `videos`, and `accessMode`.
@@ -139,12 +144,20 @@ The broader "Events" name invites expectations that are explicitly out of scope:
 
 ## API
 
-Dedicated thin router delegating to shared course/lesson/group/tag services (single response type per route, per repo conventions):
+Dedicated thin router delegating to shared course/lesson/group/tag services (single response type per route, per repo conventions).
+
+**Admin routes** (`POST /event`, `GET /event/:id`, `PUT /event/:id`):
+
+- Require authenticated session (`authMiddleware`) and org membership with **admin or teacher** role on the caller's active organization.
+- Scope every read/write to the caller's organization: the event course's `group.organizationId`, the referenced `groupId`, `lesson.teacherId` (host), and `:id` must all belong to that org before create/update/publish proceeds. Reject cross-org IDs with 404/403 rather than leaking existence.
+- `POST /event` creates atomically; `PUT /event/:id` updates course + lesson transactionally and folds publish readiness into the same handler when `isPublished` toggles.
+
+**Public org-site routes** (no session required; tenant resolved from site name / custom domain):
 
 ```text
-POST /event                     — atomic create, returns course + lesson
-GET  /event/:id                 — course + lesson + derived state (editor shape)
-PUT  /event/:id                 — transactional course + lesson update; publish folds in
+POST /event                     — atomic create, returns course + lesson (admin only; see above)
+GET  /event/:id                 — course + lesson + derived state (admin only; see above)
+PUT  /event/:id                 — transactional course + lesson update; publish folds in (admin only)
 
 GET  /org-site/events           — public list: course + lesson join (duration, slug)
                                   + profile join on teacherId (host name/avatar),
@@ -153,7 +166,21 @@ GET  /org-site/events/:slug     — public detail; lesson body/HLS reuses the ex
                                   public-course item endpoint + HLS cookie
 ```
 
-No `DELETE /event` (course delete works). Default course queries (`getPublishedCoursesBySiteName`, counts, admin org-courses) exclude `type = 'EVENT'`; the 3-file `type === 'PUBLIC'` anonymous pipeline is widened to admit EVENT. The grant redemption contract lives in Prerequisites §5 (Forms extension, not in the Forms MVP PRD).
+No `DELETE /event` (course delete works). Default course queries (`getPublishedCoursesBySiteName`, counts, admin org-courses) exclude `type = 'EVENT'`. The anonymous public-course pipeline admits `EVENT` only under the replay-only public rule in the Current-State Audit row (not by course type alone).
+
+**Forms access-grant routes** (Forms extension — see Prerequisites §4–5; not in the Forms MVP PRD):
+
+```text
+GET  /forms/access/:token       — scanner-safe interstitial; does not consume the grant;
+                                  Cache-Control: no-store; Referrer-Policy: no-referrer
+POST /forms/access/:token/redeem — verifies grant, runs event redemption consequence,
+                                  exchanges token for session cookie, redirects without
+                                  bearer token in URL; idempotent for repeat confirms
+POST /forms/access/:token/resend — rate-limited replacement grant (revokes prior active grant)
+POST /forms/access/:token/revoke — admin/support revoke of an active grant
+```
+
+Failure states (expired, revoked, wrong recipient, already redeemed, student limit at redeem) return generic respondent-facing errors without revealing whether an account exists.
 
 ## User Experience
 
@@ -244,7 +271,7 @@ Flow mirrors the courses section exactly:
 ## Verification
 
 - Builds per repo rules: `@cio/db`, `@cio/api` (+deps), dashboard (+deps); `pnpm format:check`; `pnpm --filter @cio/ui prefix:check`.
-- Service tests: create yields exactly one course/group/tutor-member/lesson; second lesson/section/exercise rejected; course queries exclude events and vice versa; lifecycle derivation covers all five states and is unaffected by `format`; anonymous payloads never contain `callUrl`; publish rejects public + scheduled/callUrl; form submit rejected when student limit reached.
+- Service tests: create yields exactly one course/group/tutor-member/lesson; second lesson/section/exercise rejected; course queries exclude events and vice versa; lifecycle derivation covers all five states and is unaffected by `format`; anonymous payloads never contain `callUrl`; publish rejects public + scheduled/callUrl, `callUrl` without `lessonAt`, and scheduled events without positive `durationMinutes`; anonymous `EVENT` playback allowed only for public replay-only rows; form-gated events denied anonymous playback; form submit rejected when student limit reached; concurrent submit/redeem never exceeds org student limit; admin event routes reject unauthenticated, student, and cross-org callers.
 - E2E (two browser profiles — admin window vs incognito `?org=udemy-test`):
   1. Admin: create → format + video + note + team-member host → publish. Not in Courses list; not in the course create modal.
   2. Incognito: landing section (after enabling) → `/events` → filter tabs (All/Upcoming/Live now/Past) → card (format badge, host avatar, duration) → detail plays video, callout renders.
