@@ -17,6 +17,7 @@
 
   interface Props {
     backHref?: string;
+    showBack?: boolean;
     isLogin?: boolean;
     showOnlyContent?: boolean;
     isLoading?: boolean;
@@ -30,6 +31,7 @@
 
   let {
     backHref = '',
+    showBack = false,
     isLogin = true,
     showOnlyContent = false,
     isLoading = false,
@@ -74,7 +76,7 @@
 </script>
 
 <div
-  class={`auth-ui-background relative flex ${backHref ? 'flex-col' : 'flex-row'} min-h-screen w-full items-center justify-center overflow-hidden p-4`}
+  class={`auth-ui-background relative flex ${showBack ? 'flex-col' : 'flex-row'} min-h-screen w-full items-center justify-center overflow-hidden p-4`}
 >
   {#if authBackgroundUrl}
     <div class="absolute inset-0 z-0">
@@ -84,7 +86,7 @@
   {:else}
     <DotPattern fillColor="rgb(2 51 189 / 0.25)" class="absolute inset-0 z-0 h-full w-full" />
   {/if}
-  {#if backHref}
+  {#if showBack}
     <div class="ui:w-full ui:max-w-[400px] ui:pt-2 ui:mb-5">
       <BackButton href={backHref || undefined} label={$t('onboarding.back')} />
     </div>
