@@ -21,9 +21,9 @@ Events is the first consumer of a **verified-email access-grant** capability tha
 
 ### Required Forms extensions (event-driven)
 
-1. **New attachment context** — add `EVENT` to `form_attachment.context_type`, referencing the event course via `course_id`. Attachment `settings` carry `accessPolicy: 'public_registration' | 'existing_members_only'`. Enforce with a DB check/enum plus a constraint that `EVENT` rows point at a `course.type = 'EVENT'` row.
+1. **New attachment context** — add `EVENT` to `form_attachment.context_type`, referencing the event course via `course_id`. Attachment `settings` carry `accessPolicy: 'public_registration' | 'existing_members_only'`. Enforce with a DB check/enum plus a constraint that `EVENT` rows point at a `course.type = 'EVENT'` row. **Tenant and uniqueness invariants** (transactional on attach/replace): the `form`, `form_attachment`, referenced `course`, `course.group`, and `organization_id` must all belong to the same organization. Allow at most one **active** `EVENT` attachment per event course — attaching a new form deactivates/replaces the prior attachment so "the" attachment is unambiguous for gating, grants, and publish readiness.
 2. **Attachment-level settings are authoritative** — lifecycle window, response limit, and one-response-per-respondent are read from the attachment, not conflicting `form` columns. Event services must never read timing/limit fields from the reusable form row.
-3. **Context overrides on submit** — for `EVENT` attachments, the runner/submission service forces `collect_email = true`, `allow_anonymous = false`, and rejects submissions without a normalized `respondent_email` before creating an access grant. Reject submission when the org's student limit is reached (`studentLimitReached`), with a clear respondent-facing error — do not create a response or send an access email. **Close the student-limit TOCTOU gap**: under an organization-level student-limit lock, either (a) reserve one seat transactionally when the response is created (release the reservation if the grant expires unredeemed), or (b) recheck capacity again at redemption before membership/enrollment. If redemption fails for capacity, return a generic respondent-facing error, do not enroll, and revoke or mark the grant unusable so the address cannot bypass the limit via a delayed redeem. Concurrent submission/redemption tests must prove the org never exceeds its student limit.
+3. **Context overrides on submit** — for `EVENT` attachments, the runner/submission service forces `collect_email = true`, `allow_anonymous = false`, and rejects submissions without a normalized `respondent_email` before creating an access grant. Reject submission when the org's student limit is reached (`studentLimitReached`), with a clear respondent-facing error — do not create a response or send an access email. **Student-limit contract (single strategy)**: under an organization-level student-limit lock, **reserve one seat transactionally** when the response and grant are created; release the reservation if the grant expires unredeemed or is revoked before redemption; consume the reservation during successful redemption when membership and enrollment are created. Do not offer a separate redemption-only recheck path — the reservation is the capacity hold. Concurrent submission/redemption tests must prove the org never exceeds its student limit.
 4. **`form_response_access_grant` table** — recipient-bound, expiring, single-use grants linked to `form_response_id` and `form_attachment_id`. Store only SHA-256 `token_hash`. Enforce at most one **active** (unredeemed, unrevoked, unexpired) grant per `(form_response_id, recipient_email)` with transactional locking on resend/redeem.
 5. **Scanner-safe redemption** — `GET /forms/access/:token` renders a confirmation interstitial and must not consume the grant. `POST /forms/access/:token/redeem` performs redemption. Both endpoints use `Cache-Control: no-store`, `Referrer-Policy: no-referrer`, and a one-time token-to-session exchange so the bearer token does not remain in the URL after the handoff.
 6. **PII retention** — define purge/anonymization for `recipient_email` and grant audit events: expired unredeemed grants after 30 days, redeemed grants after 90 days (audit metadata only), revoked grants after 30 days.
@@ -50,7 +50,7 @@ Orgs that run trainings, webinars, and community sessions have single-video cont
 3. **Lifecycle is derived, never stored**: `draft` (unpublished) → `upcoming` (published, `lessonAt` future) → `live` (inside `lessonAt + durationMinutes`) → `replay-pending` (past, no video) → `on-demand` (published video exists). No status field that can go stale.
 4. **`format` is cosmetic — it must never drive behavior.** `metadata.event.format` sets the badge label and the catalog filter, nothing else. Every behavioral branch derives from data: is `lessonAt` set, is `callUrl` present, is there a playable recording, is the event form-gated. Services and UI must not contain `if (format === 'webinar')` logic. Without this rule the lifecycle becomes a matrix of format × schedule × gating combinations and the stateless derivation in decision 3 collapses.
 5. **Watch gating is the admin's choice per event**: **public** (on-demand replay only — anyone watches the recording, no login) or **form-gated** (registration required). Public maps to the lesson `public` flag and applies only when there is no upcoming/live join requirement. **Scheduled events** (`lessonAt` set and/or `callUrl` present) must use form-gated access so meeting links never appear anonymously. Form-gated requires one active `EVENT` form attachment and withholds the video and meeting link until registration is verified. The editor blocks or auto-switches to form-gated when a schedule or meeting link is added while public is selected.
-6. **Form submission starts registration; redeeming the email completes enrollment.** The attached ClassroomIO Form collects the admin-configured fields. If the org's student limit is already reached, **block form submission** before creating a response or sending an access email — do not let registrants complete the form only to fail at redemption. A successful submission stores a pending response and sends an org-branded access email to the submitted address. ClassroomIO does not enroll or create an account from an unverified address. Redeeming the emailed access grant proves ownership, atomically creates or reconciles the learner identity and org membership, enrolls the learner in the event group, starts a session, and redirects to `/events/[slug]`. Existing learners are reconciled by normalized email, so the flow never creates a duplicate account. Seat accounting uses the locked pre-check/reservation at submission plus the redemption-time recheck described in Prerequisites §3 so concurrent registrants cannot overshoot the limit between submit and redeem.
+6. **Form submission starts registration; redeeming the email completes enrollment.** The attached ClassroomIO Form collects the admin-configured fields. If the org's student limit is already reached, **block form submission** before creating a response or sending an access email — do not let registrants complete the form only to fail at redemption. A successful submission stores a pending response, **reserves one student seat** under the org limit lock (Prerequisites §3), and sends an org-branded access email to the submitted address. ClassroomIO does not enroll or create an account from an unverified address. Redeeming the emailed access grant proves ownership, atomically consumes the seat reservation, creates or reconciles the learner identity and org membership, enrolls the learner in the event group, starts a session, and redirects to `/events/[slug]`. Existing learners are reconciled by normalized email, so the flow never creates a duplicate account. Expired or revoked grants release their seat reservation without enrollment.
 7. **Topics = existing course tags.** On-demand lists group by tag; untagged fall into "General". Audience segmentation (OpenAI's "Work Users", "Small Business") is not a separate axis in v1 — model it as a tag.
 8. **Events and courses never mix**: excluded from the courses catalog, admin course list, course-type filters, the course create modal, and LMS My Learning / progress / certificate lists. (An event certificate issued by a passed assessment — decision 10 — is delivered by email and downloadable from the event page; it does not enroll the event into LMS progress/completion surfaces.)
 9. **v1 scope is all four surfaces**: admin, public org-site pages, landing-page section (all 10 themes), LMS entry. Form-gated registration is part of v1 but ships only after the Forms prerequisites above are complete.
@@ -114,20 +114,21 @@ The broader "Events" name invites expectations that are explicitly out of scope:
 ## Data Model
 
 - Add `'EVENT'` to `COURSE_TYPE_VALUES` (`packages/utils/src/constants/course-type.ts`); the pgEnum, Drizzle types, and Zod mirror follow from that one edit. Schema work stops at a passing `@cio/db` build (migrations handled outside this workflow).
-- Course `metadata` gains scalar settings only:
+- Every `type = 'EVENT'` course **must** carry a complete `metadata.event` object after create — not an optional fragment. Create/update/publish services reject EVENT rows missing required event metadata or scheduling fields.
 
   ```ts
-  event?: {
-    format?: 'webinar' | 'livestream' | 'workshop' | 'bootcamp' | 'meetup' | 'session';
-    delivery?: 'online' | 'in_person' | 'hybrid';
+  // Required on every EVENT course (TypeScript optional only for non-EVENT course types)
+  event: {
+    format: 'webinar' | 'livestream' | 'workshop' | 'bootcamp' | 'meetup' | 'session';
+    delivery: 'online' | 'in_person' | 'hybrid';
     location?: string;            // display-only (e.g. "St Louis, MO"); no venue management
     durationMinutes?: number;     // required positive integer when lessonAt is set
-    accessMode: 'public' | 'form'; // required on create; no implicit default at the API layer
+    accessMode: 'public' | 'form'; // server default 'form' when omitted on create
     assessment?: { enabled: boolean; passPercentage: number };
   }
   ```
 
-  Defaults at creation: `format: 'webinar'`, `delivery: 'online'`, `accessMode: 'form'`. The admin must explicitly choose `public` for replay-only on-demand events. Form-gated events resolve the attached form through the active `EVENT` `form_attachment`, not duplicated in course JSON. `accessMode: 'form'` requires a published `EVENT` attachment before publish. Authoring timezone reuses the existing `course.metadata.sessionTimezone`.
+  **Server defaults on create** (applied when the client omits fields): `format: 'webinar'`, `delivery: 'online'`, `accessMode: 'form'`. The admin must explicitly set `accessMode: 'public'` for replay-only on-demand events. Form-gated events resolve the attached form through the active `EVENT` `form_attachment`, not duplicated in course JSON. `accessMode: 'form'` requires a published `EVENT` attachment before publish. Authoring timezone reuses the existing `course.metadata.sessionTimezone`.
 
   **Scheduling invariants** (enforced in create/update/publish services, not just the editor):
   - `lessonAt` set → `durationMinutes` must be a positive integer (countdown, time-range display, live-window derivation, and `.ics` end time all depend on it).
@@ -137,7 +138,7 @@ The broader "Events" name invites expectations that are explicitly out of scope:
 - **Invariants enforced in services, not just UI**: lesson/section create services reject additions to EVENT courses. Exercise creation is likewise rejected, with one controlled exception: the event assessment service may create **exactly one** exercise on the single lesson when `assessment.enabled` is turned on (and general exercise routes still reject event courses — the assessment service is the only entry point). Publish readiness (extend `go-live-readiness.ts`): title + host required; upcoming needs `lessonAt`; on-demand needs a playable video; `lessonAt` or `callUrl` requires `accessMode: 'form'` and a published `EVENT` attachment (public is valid only for replay-only events).
 - **`format` never branches logic** (Confirmed Decision 4): it is read only by badge rendering and catalog filtering. Lifecycle, gating, publish readiness, and calendar behavior derive from `lessonAt`, `callUrl`, `videos`, and `accessMode`.
 - **Security**: anonymous payloads never contain `callUrl`; an authed membership check returns it for enrolled users (and drives the "Registered ✓ / Join" card state).
-- **Form binding**: extend Forms `form_attachment.contextType` with `EVENT`; the attachment references the event course, carries `accessPolicy: 'public_registration' | 'existing_members_only'`, and is the source for lifecycle, response-limit, and dedup settings. A form remains reusable; every response records the event attachment through which it was submitted.
+- **Form binding**: extend Forms `form_attachment.contextType` with `EVENT`; the attachment references the event course, carries `accessPolicy: 'public_registration' | 'existing_members_only'`, and is the source for lifecycle, response-limit, and dedup settings. Exactly one active `EVENT` attachment per event course (Prerequisites §1). A form remains reusable; every response records the event attachment through which it was submitted.
 - **Access grants** (Forms extension — see Prerequisites): submission creates or replaces a recipient-bound, single-use grant linked to the form response and event. The event redemption handler runs only after Forms verifies the grant via `POST`. Redemption is transactional and idempotent across identity reconciliation, org membership, event enrollment, and grant consumption.
 - **Calendar invite reuse**: after successful redemption for a scheduled event, reuse `buildSessionIcs` from `services/course/session-invite.ts` in a follow-up confirmation email that includes title, time, join link, and reminders (see Confirmed Decision 11). The initial access email contains only the redemption link — no `.ics`, no `callUrl`.
 - **Admin footgun guard**: the event editor's gating toggle warns (or blocks) selecting "public, no login" when the org has `disableSignup` enabled, since that combination silently exposes the event to anyone despite the org's closed-signup intent (see Confirmed Decision 13).
@@ -152,13 +153,15 @@ Dedicated thin router delegating to shared course/lesson/group/tag services (sin
 - Scope every read/write to the caller's organization: the event course's `group.organizationId`, the referenced `groupId`, `lesson.teacherId` (host), and `:id` must all belong to that org before create/update/publish proceeds. Reject cross-org IDs with 404/403 rather than leaking existence.
 - `POST /event` creates atomically; `PUT /event/:id` updates course + lesson transactionally and folds publish readiness into the same handler when `isPublished` toggles.
 
+```text
+POST /event                     — atomic create, returns course + lesson
+GET  /event/:id                 — course + lesson + derived state (editor shape)
+PUT  /event/:id                 — transactional course + lesson update; publish folds in
+```
+
 **Public org-site routes** (no session required; tenant resolved from site name / custom domain):
 
 ```text
-POST /event                     — atomic create, returns course + lesson (admin only; see above)
-GET  /event/:id                 — course + lesson + derived state (admin only; see above)
-PUT  /event/:id                 — transactional course + lesson update; publish folds in (admin only)
-
 GET  /org-site/events           — public list: course + lesson join (duration, slug)
                                   + profile join on teacherId (host name/avatar),
                                   tags, format, delivery, derived state; callUrl stripped
@@ -170,17 +173,22 @@ No `DELETE /event` (course delete works). Default course queries (`getPublishedC
 
 **Forms access-grant routes** (Forms extension — see Prerequisites §4–5; not in the Forms MVP PRD):
 
+- **Context dispatch**: resolve the grant's `form_attachment.context_type` before running any integration consequence. Only `EVENT` grants invoke the event redemption handler (identity, membership, enrollment, redirect). Other future attachment contexts must register their own handlers — never route every grant to event enrollment.
+- **Revoke authorization**: `POST /forms/access/:token/revoke` requires an authenticated org **admin or teacher** session scoped to the grant's `organization_id`. Respondents cannot revoke their own grants through this route.
+
 ```text
 GET  /forms/access/:token       — scanner-safe interstitial; does not consume the grant;
                                   Cache-Control: no-store; Referrer-Policy: no-referrer
-POST /forms/access/:token/redeem — verifies grant, runs event redemption consequence,
-                                  exchanges token for session cookie, redirects without
-                                  bearer token in URL; idempotent for repeat confirms
-POST /forms/access/:token/resend — rate-limited replacement grant (revokes prior active grant)
-POST /forms/access/:token/revoke — admin/support revoke of an active grant
+POST /forms/access/:token/redeem — verifies grant + EVENT attachment context, runs event
+                                  redemption consequence, exchanges token for session cookie,
+                                  redirects without bearer token in URL; idempotent for repeat
+                                  confirms
+POST /forms/access/:token/resend — rate-limited replacement grant for the same response
+                                  (revokes prior active grant); respondent-facing, no auth
+POST /forms/access/:token/revoke — org admin/teacher revokes an active grant (see above)
 ```
 
-Failure states (expired, revoked, wrong recipient, already redeemed, student limit at redeem) return generic respondent-facing errors without revealing whether an account exists.
+Failure states (expired, revoked, wrong recipient, already redeemed, wrong attachment context) return generic respondent-facing errors without revealing whether an account exists. Student-limit failures occur at form submission before a grant is issued — not at redemption.
 
 ## User Experience
 

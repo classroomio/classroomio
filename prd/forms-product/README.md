@@ -462,7 +462,7 @@ Notes:
 - Lifecycle windows, limits, and dedup rules live here (per-attachment), not on `form`.
 - A share link is modeled as a link-type attachment or as the bare form URL; either way responses always resolve to at most one attachment.
 - When a response records `form_attachment_id`, attachment fields are authoritative. Do not read timing/limit columns from `form` for that submission path.
-- New `context_type` values, per-context `settings`, DB check constraints, and integration consequences (access grants, context-specific identity overrides) are introduced by consuming feature PRDs and implemented alongside those features — not as implicit scope inside this MVP document.
+- New `context_type` values, per-context `settings`, DB check constraints, and integration consequences (access grants, context-specific identity overrides) are introduced by consuming feature PRDs and implemented alongside those features — not as implicit scope inside this MVP document. The first such extension is the Events product (`prd/events/README.md`): `EVENT` context bindings, tenant/uniqueness invariants, `form_response_access_grant`, scanner-safe redemption routes, and token-to-session exchange.
 
 #### 2.4 New `form_response` table
 
