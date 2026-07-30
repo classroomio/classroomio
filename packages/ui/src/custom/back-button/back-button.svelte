@@ -13,18 +13,11 @@
 
   let { href, label, class: className, onclick }: Props = $props();
 
-  function handleClick(e: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
-    if (onclick) {
-      onclick(e);
-      return;
-    }
-
-    if (!href) {
-      if (typeof window !== 'undefined' && window.history.length > 1) {
-        window.history.back();
-      } else {
-        window.location.href = '/';
-      }
+  function handleClick() {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.href = '/';
     }
   }
 </script>
