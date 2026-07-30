@@ -1692,7 +1692,8 @@ export const courseNewsfeedComment = pgTable(
       minValue: 1,
       cache: 1
     }),
-    courseNewsfeedId: uuid('course_newsfeed_id')
+    courseNewsfeedId: uuid('course_newsfeed_id'),
+    parentId: bigint('parent_id', { mode: 'number' })
   },
   (table) => [
     foreignKey({
@@ -1704,7 +1705,13 @@ export const courseNewsfeedComment = pgTable(
       columns: [table.courseNewsfeedId],
       foreignColumns: [courseNewsfeed.id],
       name: 'course_newsfeed_comment_course_newsfeed_id_fkey'
-    })
+    }),
+    foreignKey({
+      columns: [table.parentId],
+      foreignColumns: [table.id],
+      name: 'course_newsfeed_comment_parent_id_fkey'
+    }).onDelete('cascade'),
+    index('course_newsfeed_comment_parent_id_idx').on(table.parentId)
   ]
 );
 

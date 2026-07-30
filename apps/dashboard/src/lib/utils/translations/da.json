@@ -2260,13 +2260,32 @@
           "hide": "Skjul kommentarer",
           "placeholder": "Tilføj klassekommentar",
           "submit_aria": "Send kommentar",
-          "delete": "Slet"
+          "delete": "Slet",
+          "reply": "Svar",
+          "replying_to": "Svarer til @{name}",
+          "cancel_reply": "Annuller",
+          "view_replies": "Se {count} {count, plural, =1 {reply} anden {replies}}",
+          "hide_replies": "Skjul svar",
+          "view_more": "Se flere kommentarer ({count})",
+          "loading": "Indlæser...",
+          "save": "Gem",
+          "saving": "Gemmer...",
+          "send": "Send",
+          "load_more_replies": "Indlæs flere svar"
         },
         "card": {
           "pin": "Fastgør",
           "unpin": "Frigør",
           "edit": "Rediger",
           "delete": "Slet"
+        },
+        "other_posts": "Andre indlæg",
+        "user": "Bruger",
+        "delete_modal": {
+          "title": "Slet feed",
+          "description": "Er du sikker på, at du vil slette dette feed?",
+          "no": "Nej",
+          "yes": "Ja"
         }
       },
       "compliance": {

@@ -2260,13 +2260,32 @@
           "hide": "Ocultar comentários",
           "placeholder": "Adicionar comentário da turma",
           "submit_aria": "Enviar comentário",
-          "delete": "Excluir"
+          "delete": "Excluir",
+          "reply": "Responder",
+          "replying_to": "Respondendo a @{name}",
+          "cancel_reply": "Cancelar",
+          "view_replies": "Ver {count} {count, plural, =1 {resposta} other {respostas}}",
+          "hide_replies": "Ocultar respostas",
+          "view_more": "Ver mais comentários ({count})",
+          "loading": "Carregando...",
+          "save": "Salvar",
+          "saving": "Salvando...",
+          "send": "Enviar",
+          "load_more_replies": "Carregar mais respostas"
         },
         "card": {
           "pin": "Fixar",
           "unpin": "Liberar",
           "edit": "Editar",
           "delete": "Excluir"
+        },
+        "other_posts": "Outras postagens",
+        "user": "Usuário",
+        "delete_modal": {
+          "title": "Excluir feed",
+          "description": "Tem certeza de que deseja excluir este feed?",
+          "no": "Não",
+          "yes": "Sim"
         }
       },
       "compliance": {

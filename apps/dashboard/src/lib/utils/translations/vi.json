@@ -2260,13 +2260,32 @@
           "hide": "Ẩn bình luận",
           "placeholder": "Thêm nhận xét của lớp",
           "submit_aria": "Gửi bình luận",
-          "delete": "Xóa"
+          "delete": "Xóa",
+          "reply": "trả lời",
+          "replying_to": "Đang trả lời @{name}",
+          "cancel_reply": "Hủy bỏ",
+          "view_replies": "Xem {count} {count, plural, =1 {trả lời} other {trả lời}} khác",
+          "hide_replies": "Ẩn câu trả lời",
+          "view_more": "Xem thêm bình luận ({count})",
+          "loading": "Đang tải...",
+          "save": "Lưu",
+          "saving": "Đang lưu...",
+          "send": "Gửi",
+          "load_more_replies": "Tải thêm câu trả lời"
         },
         "card": {
           "pin": "Ghim",
           "unpin": "Bỏ ghim",
           "edit": "Chỉnh sửa",
           "delete": "Xóa"
+        },
+        "other_posts": "Bài viết khác",
+        "user": "người dùng",
+        "delete_modal": {
+          "title": "Xóa nguồn cấp dữ liệu",
+          "description": "Bạn có chắc chắn muốn xóa nguồn cấp dữ liệu này không?",
+          "no": "Không",
+          "yes": "Có"
         }
       },
       "compliance": {

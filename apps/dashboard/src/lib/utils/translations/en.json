@@ -2086,6 +2086,14 @@
         "body_header": "No post yet",
         "body_content": "Make a post to your class. Start by clicking on the Add button.",
         "pinned": "Pinned",
+        "other_posts": "Other Posts",
+        "user": "User",
+        "delete_modal": {
+          "title": "Delete Feed",
+          "description": "Are you sure you want to delete this feed?",
+          "no": "No",
+          "yes": "Yes"
+        },
         "card": {
           "pin": "Pin",
           "unpin": "Unpin",
@@ -2098,7 +2106,18 @@
           "hide": "Hide comments",
           "placeholder": "Add class comment",
           "submit_aria": "Submit comment",
-          "delete": "Delete"
+          "reply": "Reply",
+          "replying_to": "Replying to @{name}",
+          "cancel_reply": "Cancel",
+          "view_replies": "View {count} {count, plural, =1 {reply} other {replies}}",
+          "hide_replies": "Hide replies",
+          "delete": "Delete",
+          "view_more": "View more comments ({count})",
+          "loading": "Loading...",
+          "save": "Save",
+          "saving": "Saving...",
+          "send": "Send",
+          "load_more_replies": "Load more replies"
         },
         "user_avatar_alt": "User avatar",
         "snackbar": {
