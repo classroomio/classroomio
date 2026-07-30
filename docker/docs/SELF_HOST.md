@@ -41,7 +41,7 @@ Easier: let the lifecycle script do all of the above (it also auto-generates sec
 an empty directory — `install` downloads the compose file and `.env.example` for you:
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/classroomio/classroomio/main/classroomio.sh
+curl -fsSLO https://classroomio.com/classroomio.sh
 chmod +x classroomio.sh
 ./classroomio.sh install
 ```
