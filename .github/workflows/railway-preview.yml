@@ -159,7 +159,12 @@ jobs:
           curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum -o mc.sha256sum
           echo "$(cut -d' ' -f1 mc.sha256sum)  mc" | sha256sum -c -
           chmod +x mc
-          ./mc alias set cio "https://${MINIO_HOST}" "$MINIO_USER" "$MINIO_PASS"
+          # --path on forces path-style bucket addressing (host/bucket/key), same as the
+          # app's own OBJECT_STORAGE_FORCE_PATH_STYLE=true. Without it mc's default "auto"
+          # detection can pick virtual-host style (bucket.host/key) against this Railway
+          # domain, which doesn't route wildcard bucket subdomains — `mc mb` then 404s with
+          # a misleading "specified bucket does not exist" even though alias/auth is fine.
+          ./mc alias set cio "https://${MINIO_HOST}" "$MINIO_USER" "$MINIO_PASS" --path on
           ./mc mb cio/videos cio/documents cio/media --ignore-existing
           ./mc anonymous set download cio/media
 
