@@ -73,6 +73,7 @@
           size="lg"
           href={pricing.ctaOnclick ? undefined : (pricing.ctaHref ?? '#enroll')}
           onclick={pricing.ctaOnclick}
+          disabled={pricing.ctaDisabled ?? false}
           class={t.pricingCta}
         >
           {pricing.ctaLabel}
