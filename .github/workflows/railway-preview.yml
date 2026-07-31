@@ -18,6 +18,12 @@ name: Railway Preview Environment
 # migrations + essential seed). The optional `seed` input adds the full demo dataset.
 
 on:
+  # TEMP: auto-run on push so we can record a demo before this file exists on the
+  # default branch (workflow_dispatch's "Run workflow" UI requires that). Remove this
+  # push trigger (and the `|| fallback` additions below) before merging.
+  push:
+    branches:
+      - chore/staging-setup
   workflow_dispatch:
     inputs:
       branch:
@@ -40,7 +46,7 @@ on:
 
 # One run per branch at a time; a newer run supersedes an in-flight one.
 concurrency:
-  group: railway-preview-${{ inputs.branch }}
+  group: railway-preview-${{ inputs.branch || github.ref_name }}
   cancel-in-progress: true
 
 env:
@@ -58,7 +64,7 @@ jobs:
       - name: Checkout target branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch }}
+          ref: ${{ inputs.branch || github.ref_name }}
 
       - name: Install Railway CLI
         run: npm install -g @railway/cli
@@ -68,14 +74,14 @@ jobs:
         # BRANCH is bound via env (not interpolated into the script) so an attacker-supplied
         # value can't be executed as shell. "feat/foo_bar" -> "pr-feat-foo-bar" ([a-z0-9-] only).
         env:
-          BRANCH: ${{ inputs.branch }}
+          BRANCH: ${{ inputs.branch || github.ref_name }}
         run: |
           slug=$(echo "$BRANCH" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//')
           echo "name=pr-${slug}" >> "$GITHUB_OUTPUT"
 
       # ---------------------------------------------------------------- destroy
       - name: Destroy preview environment
-        if: ${{ inputs.action == 'destroy' }}
+        if: ${{ (inputs.action || 'deploy') == 'destroy' }}
         env:
           ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
@@ -85,7 +91,7 @@ jobs:
 
       # ---------------------------------------------------------------- deploy
       - name: Create preview environment (duplicate base)
-        if: ${{ inputs.action == 'deploy' }}
+        if: ${{ (inputs.action || 'deploy') == 'deploy' }}
         # SPIKE: verify on a throwaway env that `environment new --duplicate` copies
         # BOTH service config AND variables (so cio-api/dashboard/jobs inherit their
         # OBJECT_STORAGE_* / auth secrets from `staging`). If your CLI version lacks
@@ -100,14 +106,14 @@ jobs:
             --duplicate "$BASE_ENV" || echo "Environment may already exist; continuing."
 
       - name: Link project + preview environment
-        if: ${{ inputs.action == 'deploy' }}
+        if: ${{ (inputs.action || 'deploy') == 'deploy' }}
         env:
           ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
           railway link --project "$RAILWAY_PROJECT_ID" --environment "$ENV_NAME"
 
       - name: Pin the Dockerfile per service
-        if: ${{ inputs.action == 'deploy' }}
+        if: ${{ (inputs.action || 'deploy') == 'deploy' }}
         # `railway up` uploads local source but does NOT carry the dashboard's "Dockerfile
         # Path" build setting, so without this Railway falls back to Railpack and builds
         # the whole monorepo as a generic Node app. (Same gotcha documented in the setup guide.)
@@ -117,7 +123,7 @@ jobs:
           railway variables --service cio-jobs       --set "RAILWAY_DOCKERFILE_PATH=docker/Dockerfile.jobs"
 
       - name: Seed MinIO buckets (fresh volume starts empty)
-        if: ${{ inputs.action == 'deploy' }}
+        if: ${{ (inputs.action || 'deploy') == 'deploy' }}
         # Railway has no minio-init sidecar and a duplicated env's MinIO volume is empty,
         # so create the buckets the app expects. Uses the env's own cio-minio public domain
         # + root creds carried over by duplication. `--ignore-existing` keeps re-deploys safe.
@@ -138,7 +144,7 @@ jobs:
           ./mc anonymous set download cio/media
 
       - name: Deploy each app service from this branch
-        if: ${{ inputs.action == 'deploy' }}
+        if: ${{ (inputs.action || 'deploy') == 'deploy' }}
         # Builds the checked-out source on Railway's builders (no local Docker build).
         # NOTE: `--ci` (without `--detach`) streams build logs and blocks until each service's
         # deploy/healthcheck succeeds, so by the time "Report the preview URL" runs the services
@@ -154,7 +160,7 @@ jobs:
           done
 
       - name: Seed the full demo dataset (optional)
-        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        if: ${{ (inputs.action || 'deploy') == 'deploy' && (inputs.seed || true) }}
         # SPIKE: `railway run` injects the service's env vars and runs the command ON THIS
         # RUNNER, so it needs a DB URL reachable from GitHub (Railway's public TCP proxy,
         # DATABASE_PUBLIC_URL) — NOT the private railway.internal one. If cio-api only
@@ -166,10 +172,10 @@ jobs:
             echo "Demo seed failed (likely DB not reachable from runner) — migrations + essential seed still ran on api boot."
 
       - name: Report the preview URL
-        if: ${{ inputs.action == 'deploy' }}
+        if: ${{ (inputs.action || 'deploy') == 'deploy' }}
         # BRANCH / ENV_NAME bound via env (never interpolated into the script).
         env:
-          BRANCH: ${{ inputs.branch }}
+          BRANCH: ${{ inputs.branch || github.ref_name }}
           ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
           # Ensure the dashboard has a public domain and print it.
