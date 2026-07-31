@@ -52,8 +52,6 @@
   let isLoading = $state(false);
   let isDeleting = $state(false);
   let openCertificateDeadlineDialog = $state(false);
-  let highlightedField = $state<string | null>(null);
-  // let highlightCertificateSettings = $state(false);
   let errors: {
     title: string | undefined;
     description: string | undefined;
@@ -171,15 +169,11 @@
       return;
     }
 
-    // Check if course is COMPLIANCE type and missing certificate deadline
     const isCourseCompliance = $settings.type === 'COMPLIANCE';
     const hasCertificateDeadline = !!courseApi.course?.certificate?.deadline;
 
     if (isCourseCompliance && !hasCertificateDeadline) {
-      // Show dialog and highlight both publish toggle and certificate settings
       openCertificateDeadlineDialog = true;
-      highlightedField = 'publish';
-      // highlightCertificateSettings = true;
       return;
     }
 
@@ -377,23 +371,6 @@
     }
 
     loadCourseTags(courseId);
-  });
-
-  $effect(() => {
-    const sectionId = $page.url.hash.replace('#', '').trim();
-    const highlightParam = $page.url.searchParams.get('highlight');
-
-    if (highlightParam === 'publish' || highlightParam === 'true' || sectionId === 'publish') {
-      highlightedField = 'publish';
-    }
-
-    if (!sectionId) {
-      return;
-    }
-
-    requestAnimationFrame(() => {
-      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
   });
 
   const selectedTagChips = $derived.by(() => {

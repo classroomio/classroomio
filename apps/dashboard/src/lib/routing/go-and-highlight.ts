@@ -1,4 +1,5 @@
 import { goto } from '$app/navigation';
+import { resolve } from '$app/paths';
 import { ROUTE_PATHS, type ROUTE_NAME, type RouteValues, type SectionsFor } from './routes';
 
 export function goAndHighlight<R extends ROUTE_NAME>(
@@ -20,5 +21,5 @@ export function goAndHighlight<R extends ROUTE_NAME>(
   }
 
   query.set('highlight', sectionName);
-  goto(`${path}?${query.toString()}`);
+  goto(resolve(`${path}?${query.toString()}`, {}));
 }

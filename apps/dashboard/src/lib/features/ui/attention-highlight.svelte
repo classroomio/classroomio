@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { replaceState } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import type { Snippet } from 'svelte';
 
   interface Props {
@@ -16,17 +17,25 @@
   let handledFor = $state<string | null>(null);
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-  $effect(() => {
-    const highlightParam = page.url.searchParams.get('highlight');
+  function getActiveHighlightId(url: URL): string | null {
+    const query = url.searchParams.get('highlight');
+    if (query) return query;
 
-    if (highlightParam !== id) {
+    const hash = url.hash.replace('#', '').trim();
+    return hash || null;
+  }
+
+  $effect(() => {
+    const activeHighlightId = getActiveHighlightId(page.url);
+
+    if (activeHighlightId !== id) {
       handledFor = null;
       return;
     }
 
-    if (handledFor === highlightParam) return;
+    if (handledFor === activeHighlightId) return;
 
-    handledFor = highlightParam;
+    handledFor = activeHighlightId;
     pulsing = true;
 
     containerRef?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -37,9 +46,14 @@
       timeoutId = null;
 
       const url = new URL(page.url);
-      if (url.searchParams.get('highlight') === id) {
-        url.searchParams.delete('highlight');
-        replaceState(url, page.state);
+      const highlightActive = url.searchParams.get('highlight') === id;
+      const hashActive = url.hash.replace('#', '').trim() === id;
+
+      if (highlightActive) url.searchParams.delete('highlight');
+      if (hashActive) url.hash = '';
+
+      if (highlightActive || hashActive) {
+        replaceState(resolve(`${url.pathname}${url.search}`, {}), page.state);
       }
     }, duration * 1000);
   });
@@ -52,5 +66,7 @@
 </script>
 
 <div bind:this={containerRef} class={`rounded-md p-2 ${pulsing ? 'ui:border-primary animate-pulse border' : ''}`}>
-  {#if children}{@render children()}{/if}
+  {#if children}
+    {@render children()}
+  {/if}
 </div>

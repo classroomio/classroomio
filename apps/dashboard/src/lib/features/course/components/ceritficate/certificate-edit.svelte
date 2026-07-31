@@ -15,18 +15,12 @@
   let { errors }: Props = $props();
 
   let activeTab = $state('design');
-  let highlightActive = $state(false);
 
-  // Initialize activeTab and highlight from URL parameter if present
+  // Initialize activeTab from URL parameter if present
   $effect(() => {
     const tabParam = page.url.searchParams.get('tab');
     if (tabParam && (tabParam === 'design' || tabParam === 'settings')) {
       activeTab = tabParam;
-    }
-
-    const highlightParam = page.url.searchParams.get('highlight');
-    if (highlightParam === 'true') {
-      highlightActive = true;
     }
   });
 </script>
@@ -47,7 +41,7 @@
       <CertificateDesign {errors} />
     </UnderlineTabs.Content>
     <UnderlineTabs.Content value="settings" class="mt-4">
-      <CertificateSettings {errors} bind:highlightActive />
+      <CertificateSettings {errors} />
     </UnderlineTabs.Content>
   </UnderlineTabs.Root>
 </main>

@@ -120,7 +120,7 @@
       const result = await courseApi.enroll(data.course.id, body);
 
       if (!result?.data) {
-        enrollmentError = 'enroll_failed';
+        enrollmentError = t.get('snackbar.invite.failed_join');
         return;
       }
 
@@ -150,8 +150,9 @@
       navigatingAway = true;
       await goto(resolve(getStudentCourseContinuePath(data.course.id), {}));
     } catch (error) {
-      enrollmentError = String(error);
-      snackbar.error(String(error));
+      console.error('[enroll] unexpected error during enrollment:', error);
+      enrollmentError = t.get('snackbar.invite.failed_join');
+      snackbar.error('snackbar.invite.failed_join');
     } finally {
       enrollmentInFlight = false;
       if (!navigatingAway) {

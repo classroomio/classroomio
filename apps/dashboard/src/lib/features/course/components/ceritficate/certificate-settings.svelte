@@ -7,6 +7,7 @@
   import { courseApi } from '$features/course/api';
   import { isFreePlan } from '$lib/utils/store/org';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
+  import type { CourseCertificate } from '$features/course/utils/types';
   import { ContentType } from '@cio/utils/constants/content';
   import { AttentionHighlight } from '$features/ui';
 
@@ -72,15 +73,15 @@
     updateCertificate({ emailMessage: (e.currentTarget as HTMLTextAreaElement).value || null });
   }
 
-  function validateCertificateSettings(): string[] {
+  function validateCertificateSettings(certificate: CourseCertificate | null | undefined): string[] {
     const errors: string[] = [];
-    if (courseApi.course?.certificate?.isDownloadable && !courseApi.course?.certificate?.deadline) {
+    if (certificate?.isDownloadable && !certificate?.deadline) {
       errors.push('course.certification.deadline_required');
     }
     return errors;
   }
 
-  const certificateValidationErrors = $derived(validateCertificateSettings());
+  const certificateValidationErrors = $derived(validateCertificateSettings(courseApi.course?.certificate));
 </script>
 
 <Field.Group class="w-full max-w-md! px-2">
@@ -195,23 +196,21 @@
 
   <Field.Separator />
 
-  <AttentionHighlight id="cert-email-message">
-    <Field.Set>
-      <Field.Legend>{$t('course.certification.email_message_label')}</Field.Legend>
-      <Field.Field>
-        <Textarea
-          id="cert-email-message"
-          class="w-full"
-          rows={4}
-          placeholder={$t('course.certification.email_message_placeholder')}
-          value={courseApi.course?.certificate?.emailMessage ?? ''}
-          oninput={onEmailMessageInput}
-          disabled={$isFreePlan}
-        />
-        {#if errors['certificate.emailMessage']}
-          <Field.Error>{errors['certificate.emailMessage']}</Field.Error>
-        {/if}
-      </Field.Field>
-    </Field.Set>
-  </AttentionHighlight>
+  <Field.Set>
+    <Field.Legend>{$t('course.certification.email_message_label')}</Field.Legend>
+    <Field.Field>
+      <Textarea
+        id="cert-email-message"
+        class="w-full"
+        rows={4}
+        placeholder={$t('course.certification.email_message_placeholder')}
+        value={courseApi.course?.certificate?.emailMessage ?? ''}
+        oninput={onEmailMessageInput}
+        disabled={$isFreePlan}
+      />
+      {#if errors['certificate.emailMessage']}
+        <Field.Error>{errors['certificate.emailMessage']}</Field.Error>
+      {/if}
+    </Field.Field>
+  </Field.Set>
 </Field.Group>
