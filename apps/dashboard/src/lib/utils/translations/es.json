@@ -2260,13 +2260,32 @@
           "hide": "Ocultar comentarios",
           "placeholder": "Agregar comentario de clase",
           "submit_aria": "Enviar comentario",
-          "delete": "Eliminar"
+          "delete": "Eliminar",
+          "reply": "Responder",
+          "replying_to": "Respondiendo a @{nombre}",
+          "cancel_reply": "Cancelar",
+          "view_replies": "Ver {count} {count, plural, =1 {respuesta} otras {respuestas}}",
+          "hide_replies": "Ocultar respuestas",
+          "view_more": "Ver más comentarios ({count})",
+          "loading": "Cargando...",
+          "save": "Guardar",
+          "saving": "Guardando...",
+          "send": "enviar",
+          "load_more_replies": "Cargar más respuestas"
         },
         "card": {
           "pin": "Fijar",
           "unpin": "Desanclar",
           "edit": "Editar",
           "delete": "Eliminar"
+        },
+        "other_posts": "Otras publicaciones",
+        "user": "Usuario",
+        "delete_modal": {
+          "title": "Eliminar feed",
+          "description": "¿Estás seguro de que deseas eliminar este feed?",
+          "no": "No",
+          "yes": "si"
         }
       },
       "compliance": {
