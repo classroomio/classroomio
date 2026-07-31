@@ -80,6 +80,16 @@ export const apiKeyGenerator = (c: Context): string => {
   return `ip:${extractClientIp(c)}`;
 };
 
+export const publicApiKeyGenerator = (c: Context): string => {
+  const automationKey = c.get('automationKey') as { id: string } | undefined;
+
+  if (automationKey?.id) {
+    return `automation_key:${automationKey.id}`;
+  }
+
+  return `ip:${extractClientIp(c)}`;
+};
+
 /**
  * Generate rate limit key based on IP only
  */

@@ -44,7 +44,6 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
   const opts = { ...defaultOptions, ...options };
 
   return async (c, next) => {
-    // Skip rate limiting if not in production
     if (env.NODE_ENV !== 'production' || opts.skip(c)) {
       return await next();
     }
@@ -53,13 +52,9 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
       const maxRequests = typeof opts.maxRequests === 'function' ? opts.maxRequests(c) : opts.maxRequests;
       const limiter = new RedisRateLimiter(redis, opts.windowMs, maxRequests);
 
-      // Generate rate limit key
       const key = opts.keyGenerator(c);
-
-      // Check rate limit
       const result = await limiter.isAllowed(key);
 
-      // Set rate limit headers
       if (opts.standardHeaders) {
         c.header(RATE_LIMIT_HEADERS.LIMIT, maxRequests.toString());
         c.header(RATE_LIMIT_HEADERS.REMAINING, result.remaining.toString());
@@ -106,6 +101,8 @@ function defaultMaxRequests(c: Context): number {
 
 function shouldSkipRateLimit(c: Context): boolean {
   if (isTrustedServerApiKeyRequest(c)) return true;
+
+  if (c.req.path.startsWith('/public-api/')) return true;
 
   return c.req.path === '/api/auth/get-session';
 }
