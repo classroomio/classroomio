@@ -11,6 +11,8 @@ name: Railway Preview Environment
 #   - Repo/Org secret  RAILWAY_API_TOKEN   -> a Railway ACCOUNT or TEAM token (NOT a
 #     project token; env-scoped project tokens can't create environments).
 #   - Repo/Org variable RAILWAY_PROJECT_ID -> the target project's id.
+#   - Repo/Org variable RAILWAY_WORKSPACE  -> the Railway workspace the project lives in
+#     (default: "cio projects"); required by `railway link` in non-interactive mode.
 #   - Repo/Org variable RAILWAY_BASE_ENV   -> the env to duplicate from (default: staging).
 #
 # The DB needs no explicit migration step here: the cio-api image self-migrates on boot
@@ -52,6 +54,7 @@ concurrency:
 env:
   RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
   RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+  RAILWAY_WORKSPACE: ${{ vars.RAILWAY_WORKSPACE || 'cio projects' }}
   BASE_ENV: ${{ vars.RAILWAY_BASE_ENV || 'staging' }}
   # The three app services that build from source. Postgres/Redis/cio-minio come along
   # via environment duplication and need no `railway up`.
@@ -110,7 +113,7 @@ jobs:
         env:
           ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
-          railway link --project "$RAILWAY_PROJECT_ID" --environment "$ENV_NAME"
+          railway link --project "$RAILWAY_PROJECT_ID" --workspace "$RAILWAY_WORKSPACE" --environment "$ENV_NAME"
 
       - name: Pin the Dockerfile per service
         if: ${{ (inputs.action || 'deploy') == 'deploy' }}
