@@ -321,6 +321,7 @@
       "creating_new": "Falha ao criar novas traduções"
     },
     "exercise": {
+      "validation_errors": "Corrija todos os erros de validação antes de salvar.",
       "points_required_auto_grade": "Defina um valor de pontos positivo para cada pergunta antes de salvar.",
       "success": "Salvo com sucesso",
       "submission_updated": "Envio atualizado para",
@@ -1517,6 +1518,7 @@
                 "multiple": "Múltiplas respostas",
                 "paragraph": "Parágrafo",
                 "true_false": "Verdadeiro/Falso",
+                "thumbs": "Polegar para cima/baixo",
                 "short_answer": "Resposta curta",
                 "numeric": "Resposta numérica",
                 "fill_blank": "Preencha o espaço em branco",
@@ -1703,6 +1705,17 @@
                 },
                 "edit": {
                   "correct_answer_label": "Resposta correta"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Sim",
+                "no_label": "Não",
+                "edit": {
+                  "positive_option_label": "Rótulo de polegar para cima",
+                  "negative_option_label": "Rótulo de polegar para baixo"
+                },
+                "preview": {
+                  "helper": "Aberta — os alunos escolhem polegar para cima ou para baixo."
                 }
               },
               "checkbox": {

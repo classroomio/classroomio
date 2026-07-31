@@ -321,6 +321,7 @@
       "creating_new": "Oprettelse af nye oversættelser mislykkedes"
     },
     "exercise": {
+      "validation_errors": "Ret alle valideringsfejl, før du gemmer.",
       "points_required_auto_grade": "Angiv en positiv pointværdi for hvert spørgsmål, før du gemmer.",
       "success": "Gemt",
       "submission_updated": "Indsendelse opdateret til",
@@ -1517,6 +1518,7 @@
                 "multiple": "Flere svar",
                 "paragraph": "Afsnit",
                 "true_false": "Sandt/falsk",
+                "thumbs": "Tommel op/ned",
                 "short_answer": "Kort svar",
                 "numeric": "Numerisk svar",
                 "fill_blank": "Udfyld det tomme felt",
@@ -1703,6 +1705,17 @@
                 },
                 "edit": {
                   "correct_answer_label": "Korrekt svar"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Ja",
+                "no_label": "Nej",
+                "edit": {
+                  "positive_option_label": "Tommel op-etiket",
+                  "negative_option_label": "Tommel ned-etiket"
+                },
+                "preview": {
+                  "helper": "Åben — elever vælger tommel op eller ned."
                 }
               },
               "checkbox": {

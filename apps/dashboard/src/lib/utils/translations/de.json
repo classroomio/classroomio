@@ -321,6 +321,7 @@
       "creating_new": "Das Erstellen neuer Übersetzungen ist fehlgeschlagen"
     },
     "exercise": {
+      "validation_errors": "Bitte beheben Sie alle Validierungsfehler, bevor Sie speichern.",
       "points_required_auto_grade": "Legen Sie für jede Frage einen positiven Punktwert fest, bevor Sie speichern.",
       "success": "Erfolgreich gespeichert",
       "submission_updated": "Einreichung aktualisiert auf",
@@ -1517,6 +1518,7 @@
                 "multiple": "Mehrere Antworten",
                 "paragraph": "Absatz",
                 "true_false": "Richtig/Falsch",
+                "thumbs": "Daumen hoch/runter",
                 "short_answer": "Kurze Antwort",
                 "numeric": "Numerische Antwort",
                 "fill_blank": "Füllen Sie die Lücke aus",
@@ -1703,6 +1705,17 @@
                 },
                 "edit": {
                   "correct_answer_label": "Richtige Antwort"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Ja",
+                "no_label": "Nein",
+                "edit": {
+                  "positive_option_label": "Daumen-hoch-Label",
+                  "negative_option_label": "Daumen-runter-Label"
+                },
+                "preview": {
+                  "helper": "Offen — Lernende wählen Daumen hoch oder runter."
                 }
               },
               "checkbox": {

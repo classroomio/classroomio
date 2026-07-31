@@ -321,6 +321,7 @@
       "creating_new": "Tạo bản dịch mới không thành công"
     },
     "exercise": {
+      "validation_errors": "Vui lòng sửa tất cả lỗi xác thực trước khi lưu.",
       "points_required_auto_grade": "Đặt điểm dương cho mỗi câu hỏi trước khi lưu.",
       "success": "Đã lưu thành công",
       "submission_updated": "Đã cập nhật bài nộp vào",
@@ -1517,6 +1518,7 @@
                 "multiple": "Nhiều câu trả lời",
                 "paragraph": "Đoạn",
                 "true_false": "Đúng/Sai",
+                "thumbs": "Thích/Không thích",
                 "short_answer": "Câu trả lời ngắn",
                 "numeric": "Câu trả lời bằng số",
                 "fill_blank": "Điền vào chỗ trống",
@@ -1703,6 +1705,17 @@
                 },
                 "edit": {
                   "correct_answer_label": "Câu trả lời đúng"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Có",
+                "no_label": "Không",
+                "edit": {
+                  "positive_option_label": "Nhãn thích",
+                  "negative_option_label": "Nhãn không thích"
+                },
+                "preview": {
+                  "helper": "Mở — học viên chọn thích hoặc không thích."
                 }
               },
               "checkbox": {
