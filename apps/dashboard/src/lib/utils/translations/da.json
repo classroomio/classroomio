@@ -3768,6 +3768,10 @@
       "title": "Tilmelding deaktiveret",
       "invite_only_message": "Tilmelding er kun for invitationer. Brug venligst et invitationslink til at oprette en konto.",
       "go_to_login": "Gå til Login"
+    },
+    "reset_password": {
+      "heading": "Ny adgangskode",
+      "description": "Indtast dine nye adgangskodeoplysninger"
     }
   },
   "app": {

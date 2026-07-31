@@ -376,6 +376,10 @@
       "title": "Signup Disabled",
       "invite_only_message": "Signup is invite-only. Please use an invite link to create an account.",
       "go_to_login": "Go to Login"
+    },
+    "reset_password": {
+      "heading": "New Password",
+      "description": "Enter your new password details"
     }
   },
   "profileMenu": {

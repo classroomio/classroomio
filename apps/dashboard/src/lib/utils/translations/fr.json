@@ -3768,6 +3768,10 @@
       "title": "Inscription désactivée",
       "invite_only_message": "L'inscription se fait sur invitation uniquement. Veuillez utiliser un lien d'invitation pour créer un compte.",
       "go_to_login": "Allez dans Connexion"
+    },
+    "reset_password": {
+      "heading": "Nouveau mot de passe",
+      "description": "Entrez les détails de votre nouveau mot de passe"
     }
   },
   "app": {

@@ -3768,6 +3768,10 @@
       "title": "Inscrição desativada",
       "invite_only_message": "A inscrição é apenas para convidados. Use um link de convite para criar uma conta.",
       "go_to_login": "Vá para Entrar"
+    },
+    "reset_password": {
+      "heading": "Nova senha",
+      "description": "Insira os detalhes da sua nova senha"
     }
   },
   "app": {

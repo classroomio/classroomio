@@ -3768,6 +3768,10 @@
       "title": "Anmeldung deaktiviert",
       "invite_only_message": "Die Anmeldung ist nur auf Einladung möglich. Bitte verwenden Sie einen Einladungslink, um ein Konto zu erstellen.",
       "go_to_login": "Gehen Sie zu Anmelden"
+    },
+    "reset_password": {
+      "heading": "Neues Passwort",
+      "description": "Geben Sie Ihre neuen Passwortdaten ein"
     }
   },
   "app": {

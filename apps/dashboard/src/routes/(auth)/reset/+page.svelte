@@ -3,7 +3,8 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
-  import { getConfirmPasswordError } from '$lib/utils/functions/validator';
+  import { getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
+  import { t } from '$lib/utils/functions/translations';
   import { AuthUI } from '$features/ui';
   import { resetApi } from '$features/auth/api/reset.svelte';
   import type { TResetPasswordForm } from '$features/auth/utils/types';
@@ -19,9 +20,7 @@
     token: ''
   });
 
-  const isSubmitDisabled = $derived!(
-    fields.password && fields.confirmPassword && fields.password !== fields.confirmPassword
-  );
+  const isSubmitDisabled = $derived(getDisableSubmit(fields));
   const token = $derived(new URLSearchParams(page.url.search).get('token'));
 
   onMount(() => {
@@ -50,11 +49,11 @@
 >
   <div class="ui:flex ui:flex-col ui:gap-6">
     <div>
-      <Card.Title class="ui:text-xl">New Password</Card.Title>
-      <Card.Description class="ui:mt-2">Enter your new password details</Card.Description>
+      <Card.Title class="ui:text-xl">{$t('login.reset_password.heading')}</Card.Title>
+      <Card.Description class="ui:mt-2">{$t('login.reset_password.description')}</Card.Description>
     </div>
     <Field.Field>
-      <Field.Label for="password">Your Password</Field.Label>
+      <Field.Label for="password">{$t('login.fields.password')}</Field.Label>
       <Field.Content>
         <Password
           id="password"
@@ -67,13 +66,13 @@
         {#if resetApi.errors.password}
           <Field.Error>{resetApi.errors.password}</Field.Error>
         {:else}
-          <Field.Description>Password must be 6 or more characters</Field.Description>
+          <Field.Description>{$t('login.fields.password_helper_message')}</Field.Description>
         {/if}
       </Field.Content>
     </Field.Field>
 
     <Field.Field>
-      <Field.Label for="confirmPassword">Confirm Password</Field.Label>
+      <Field.Label for="confirmPassword">{$t('login.fields.confirm_password')}</Field.Label>
       <Field.Content>
         <Password
           id="confirmPassword"
