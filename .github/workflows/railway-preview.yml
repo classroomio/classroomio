@@ -82,14 +82,22 @@ jobs:
           slug=$(echo "$BRANCH" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//')
           echo "name=pr-${slug}" >> "$GITHUB_OUTPUT"
 
+      - name: Link to base project
+        # `railway environment new`/`delete` take NO --project/--workspace/--environment
+        # flags (confirmed via `railway environment new --help` / `delete --help`) — they
+        # only operate on whatever's already linked. `railway link` is the only command
+        # that accepts --project/--workspace/--environment, so it must run first and
+        # establish that context for every other command in this job.
+        run: |
+          railway link --project "$RAILWAY_PROJECT_ID" --workspace "$RAILWAY_WORKSPACE" --environment "$BASE_ENV"
+
       # ---------------------------------------------------------------- destroy
       - name: Destroy preview environment
         if: ${{ (inputs.action || 'deploy') == 'destroy' }}
         env:
           ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
-          railway environment delete "$ENV_NAME" \
-            --project "$RAILWAY_PROJECT_ID" --workspace "$RAILWAY_WORKSPACE" --yes
+          railway environment delete "$ENV_NAME" --yes
           echo "Deleted environment $ENV_NAME." >> "$GITHUB_STEP_SUMMARY"
 
       # ---------------------------------------------------------------- deploy
@@ -100,15 +108,13 @@ jobs:
         # OBJECT_STORAGE_* / auth secrets from `staging`). If your CLI version lacks
         # `--duplicate`, fall back to the GraphQL `environmentCreate(sourceEnvironmentId)`
         # mutation. Re-running with an existing env name should no-op or update, not fail
-        # the run — but only "already exists" is swallowed; any other failure (e.g. a
-        # missing/wrong --workspace) must surface here instead of silently continuing
-        # into a "Link" step that can't find an environment that was never created.
+        # the run — but only "already exists" is swallowed; any other failure must surface
+        # here instead of silently continuing into a "Link" step that can't find an
+        # environment that was never created.
         env:
           ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
-          if ! output=$(railway environment new "$ENV_NAME" \
-              --project "$RAILWAY_PROJECT_ID" --workspace "$RAILWAY_WORKSPACE" \
-              --duplicate "$BASE_ENV" 2>&1); then
+          if ! output=$(railway environment new "$ENV_NAME" --duplicate "$BASE_ENV" 2>&1); then
             echo "$output"
             if echo "$output" | grep -qi "already exists"; then
               echo "Environment may already exist; continuing."
