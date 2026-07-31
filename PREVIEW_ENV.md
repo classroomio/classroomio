@@ -1,13 +1,18 @@
 # Railway Staging & PR Preview Environments
 
-ClassroomIO's production SaaS runs on Render + Cloudflare + Vercel — **not** Railway. This
+ClassroomIO's production SaaS runs on Render + Cloudflare — **not** Railway. This
 setup adds a **separate, internal Railway project** that provides a long-lived **staging**
 environment plus **short-lived preview environments** for testing a branch/PR of the full
 stack (api, dashboard, jobs, Postgres, Redis, MinIO) before it merges to `main`.
 
 Real users are never routed here; it's a team-only sandbox.
 
-## How previews are triggered
+## How to deploy to staging
+
+Push or merge your change to the branch connected to the staging environment (staging). Railway
+picks it up automatically and redeploys — no manual step required.
+
+## How to deploy a PR to a preview environment
 
 Two mechanisms, both enabled:
 
@@ -22,28 +27,9 @@ Two mechanisms, both enabled:
 > an image tag has no branch. That's why the Railway app services build **from the repo**
 > via `docker/Dockerfile.*`, not from `docker-compose.images.yaml`.
 
-## One-time setup
+### Using the manual workflow
 
-### 1. Railway project (dashboard)
-Follow the full topology in `RAILWAY_SETUP_GUIDE.md` (repo root, untracked). In short:
-create project `classroomio-staging`, rename its base environment to **`staging`**, and add
-6 services: Postgres, Redis, `cio-minio` (+ `/data` volume, seed buckets), `cio-api`,
-`cio-dashboard`, `cio-jobs`. The three app services connect to **GitHub repo → Dockerfile
-builder**, branch `main`, root `/`.
-
-### 2. Enable native PR environments
-Project **Settings → Environments → PR Environments → enable**, and set
-**Base environment = `staging`** (explicitly, not blank) so previews inherit staging's
-variables + service config.
-
-### 3. CI credentials (GitHub → repo settings)
-| Kind | Name | Value |
-|---|---|---|
-| Secret | `RAILWAY_API_TOKEN` | A Railway **account or team** token (project/env-scoped tokens can't create environments). |
-| Variable | `RAILWAY_PROJECT_ID` | The `classroomio-staging` project id. |
-| Variable | `RAILWAY_BASE_ENV` | *(optional)* env to duplicate; defaults to `staging`. |
-
-## Using the manual workflow
+> 🎥 Demo video: TODO
 
 **Actions → "Railway Preview Environment" → Run workflow:**
 - `branch` — the branch/PR head to deploy.
@@ -85,8 +71,3 @@ Railway's docs are thin on a couple of points the workflow depends on — confir
 Every environment (staging + each preview) runs the full 6 services incl. a MinIO volume, so
 previews are not free while alive. Destroy them promptly — the teardown workflow handles PR
 close automatically; use `action = destroy` for previews whose PR is still open.
-
-## Do not commit secrets
-
-`RAILWAY_SETUP_GUIDE.md` is intentionally **untracked/gitignored** and contains test secrets.
-Keep real secrets in Railway's variable store and GitHub secrets — never in the repo.
