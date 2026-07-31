@@ -37,7 +37,7 @@ Requests to this API are rate limited per API key: **100 requests per minute** p
 
 Two caveats to be aware of:
 
-- Rate limiting is only enforced in production (\`NODE_ENV=production\`); development and self-hosted deployments do not enforce a budget.
+- Rate limiting is only enforced when the API runs with NODE_ENV=production; it is disabled in development and test environments. This applies regardless of hosting a self-hosted production deployment with Redis available does enforce the per-key budget.
 - If the shared Redis store is unavailable, requests are served without rate limiting (fail open).
 
 ## Plan access
