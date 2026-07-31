@@ -89,7 +89,7 @@ jobs:
           ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
           railway environment delete "$ENV_NAME" \
-            --project "$RAILWAY_PROJECT_ID" --yes
+            --project "$RAILWAY_PROJECT_ID" --workspace "$RAILWAY_WORKSPACE" --yes
           echo "Deleted environment $ENV_NAME." >> "$GITHUB_STEP_SUMMARY"
 
       # ---------------------------------------------------------------- deploy
@@ -100,13 +100,24 @@ jobs:
         # OBJECT_STORAGE_* / auth secrets from `staging`). If your CLI version lacks
         # `--duplicate`, fall back to the GraphQL `environmentCreate(sourceEnvironmentId)`
         # mutation. Re-running with an existing env name should no-op or update, not fail
-        # the run — the `|| true` keeps re-deploys idempotent.
+        # the run — but only "already exists" is swallowed; any other failure (e.g. a
+        # missing/wrong --workspace) must surface here instead of silently continuing
+        # into a "Link" step that can't find an environment that was never created.
         env:
           ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
-          railway environment new "$ENV_NAME" \
-            --project "$RAILWAY_PROJECT_ID" \
-            --duplicate "$BASE_ENV" || echo "Environment may already exist; continuing."
+          if ! output=$(railway environment new "$ENV_NAME" \
+              --project "$RAILWAY_PROJECT_ID" --workspace "$RAILWAY_WORKSPACE" \
+              --duplicate "$BASE_ENV" 2>&1); then
+            echo "$output"
+            if echo "$output" | grep -qi "already exists"; then
+              echo "Environment may already exist; continuing."
+            else
+              exit 1
+            fi
+          else
+            echo "$output"
+          fi
 
       - name: Link project + preview environment
         if: ${{ (inputs.action || 'deploy') == 'deploy' }}
