@@ -64,17 +64,20 @@ jobs:
           ref: ${{ inputs.branch }}
 
       - name: Install Railway CLI
-        run: npm install -g @railway/cli
+        run: npm install -g @railway/cli@5.30.1
 
       - name: Derive a safe environment name
         id: env
         # BRANCH is bound via env (not interpolated into the script) so an attacker-supplied
-        # value can't be executed as shell. "feat/foo_bar" -> "pr-feat-foo-bar" ([a-z0-9-] only).
+        # value can't be executed as shell. "feat/foo_bar" -> "pr-feat-foo-bar-<hash>" — the
+        # slug alone is lossy (e.g. "foo/bar" and "foo_bar" both slug to "foo-bar"), so a
+        # hash of the original branch string disambiguates collisions.
         env:
           BRANCH: ${{ inputs.branch }}
         run: |
           slug=$(echo "$BRANCH" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//')
-          echo "name=pr-${slug}" >> "$GITHUB_OUTPUT"
+          hash=$(echo -n "$BRANCH" | sha256sum | cut -c1-8)
+          echo "name=pr-${slug}-${hash}" >> "$GITHUB_OUTPUT"
 
       - name: Link to base project
         # `railway environment new`/`delete` take no --project/--workspace/--environment

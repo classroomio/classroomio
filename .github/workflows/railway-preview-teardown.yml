@@ -14,7 +14,7 @@ on:
     types: [closed]
 
 concurrency:
-  group: railway-preview-teardown-${{ github.event.pull_request.head.ref }}
+  group: railway-preview-${{ github.event.pull_request.head.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
       BASE_ENV: ${{ vars.RAILWAY_BASE_ENV || 'staging' }}
     steps:
       - name: Install Railway CLI
-        run: npm install -g @railway/cli
+        run: npm install -g @railway/cli@5.30.1
 
       - name: Link to base project
         # `railway environment delete` takes no --project/--workspace/--environment
@@ -45,7 +45,8 @@ jobs:
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           slug=$(echo "$HEAD_REF" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//')
-          env_name="pr-${slug}"
+          hash=$(echo -n "$HEAD_REF" | sha256sum | cut -c1-8)
+          env_name="pr-${slug}-${hash}"
           echo "Attempting to delete environment: ${env_name}"
           if ! output=$(railway environment delete "${env_name}" --yes 2>&1); then
             echo "$output"
