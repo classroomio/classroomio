@@ -49,7 +49,7 @@
     return slug ? resolve(`/course/${slug}/enroll`, {}) : '#';
   });
 
-  const enrollmentsOpen = $derived(get(courseData, 'metadata.allowNewStudent') === true);
+  const enrollmentsOpen = $derived(get(courseData, 'metadata.allowNewStudent') !== false);
   const enrollDisabled = $derived(editMode || !enrollmentsOpen);
 
   const discount = $derived(get(courseData, 'metadata.discount', 0));
@@ -60,7 +60,7 @@
   function handlePaidEnrollClick(event: MouseEvent) {
     event.preventDefault();
 
-    if (editMode || !$currentOrg.siteName) {
+    if (editMode || !activeOrg.siteName) {
       return;
     }
 

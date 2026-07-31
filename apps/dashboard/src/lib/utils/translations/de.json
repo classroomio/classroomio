@@ -321,6 +321,7 @@
       "creating_new": "Das Erstellen neuer Übersetzungen ist fehlgeschlagen"
     },
     "exercise": {
+      "validation_errors": "Bitte beheben Sie alle Validierungsfehler, bevor Sie speichern.",
       "points_required_auto_grade": "Legen Sie für jede Frage einen positiven Punktwert fest, bevor Sie speichern.",
       "success": "Erfolgreich gespeichert",
       "submission_updated": "Einreichung aktualisiert auf",
@@ -1517,6 +1518,7 @@
                 "multiple": "Mehrere Antworten",
                 "paragraph": "Absatz",
                 "true_false": "Richtig/Falsch",
+                "thumbs": "Daumen hoch/runter",
                 "short_answer": "Kurze Antwort",
                 "numeric": "Numerische Antwort",
                 "fill_blank": "Füllen Sie die Lücke aus",
@@ -1703,6 +1705,17 @@
                 },
                 "edit": {
                   "correct_answer_label": "Richtige Antwort"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Ja",
+                "no_label": "Nein",
+                "edit": {
+                  "positive_option_label": "Daumen-hoch-Label",
+                  "negative_option_label": "Daumen-runter-Label"
+                },
+                "preview": {
+                  "helper": "Offen — Lernende wählen Daumen hoch oder runter."
                 }
               },
               "checkbox": {
@@ -2260,13 +2273,32 @@
           "hide": "Kommentare ausblenden",
           "placeholder": "Klassenkommentar hinzufügen",
           "submit_aria": "Kommentar abgeben",
-          "delete": "Löschen"
+          "delete": "Löschen",
+          "reply": "Antwort",
+          "replying_to": "Auf @{name} antworten",
+          "cancel_reply": "Abbrechen",
+          "view_replies": "{count} {count, plural, =1 {reply} other {replies}} ansehen",
+          "hide_replies": "Antworten ausblenden",
+          "view_more": "Weitere Kommentare anzeigen ({count})",
+          "loading": "Laden...",
+          "save": "Speichern",
+          "saving": "Sparen...",
+          "send": "Senden",
+          "load_more_replies": "Weitere Antworten laden"
         },
         "card": {
           "pin": "Anheften",
           "unpin": "Lösen",
           "edit": "Bearbeiten",
           "delete": "Löschen"
+        },
+        "other_posts": "Andere Beiträge",
+        "user": "Benutzer",
+        "delete_modal": {
+          "title": "Feed löschen",
+          "description": "Möchten Sie diesen Feed wirklich löschen?",
+          "no": "Nein",
+          "yes": "Ja"
         }
       },
       "compliance": {

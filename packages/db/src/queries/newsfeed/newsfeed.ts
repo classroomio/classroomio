@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import type { TCourseNewsfeed, TCourseNewsfeedComment, TNewCourseNewsfeed, TNewCourseNewsfeedComment } from '@db/types';
-import { and, db, desc, eq, lt, ne, sql } from '@db/drizzle';
+import { and, db, desc, eq, isNull, lt, ne, sql } from '@db/drizzle';
 import { ROLE } from '@cio/utils/constants';
 
 /**
@@ -221,36 +221,50 @@ export async function getNewsfeedCommentsByFeedId(feedId: string): Promise<TCour
 /**
  * Gets paginated comments for a newsfeed item with author profile
  * @param feedId Newsfeed ID
- * @param options Pagination options (cursor, limit)
+ * @param options Pagination options (parentId, cursor, limit)
  * @returns Object with comments array, total count, hasMore flag, and nextCursor
  */
 export async function getNewsfeedCommentsByFeedIdPaginated(
   feedId: string,
-  options: { cursor?: string; limit: number }
+  options: { parentId?: number; cursor?: string; limit: number }
 ) {
   try {
-    const { cursor, limit } = options;
+    const { parentId, cursor, limit } = options;
 
-    // Build where conditions
-    const whereConditions = [eq(schema.courseNewsfeedComment.courseNewsfeedId, feedId)];
+    // Build base parent-scoped conditions
+    const parentCondition =
+      parentId !== undefined
+        ? eq(schema.courseNewsfeedComment.parentId, parentId)
+        : isNull(schema.courseNewsfeedComment.parentId);
+
+    const baseWhereConditions = [eq(schema.courseNewsfeedComment.courseNewsfeedId, feedId), parentCondition];
+
+    const whereConditions = [...baseWhereConditions];
+
     if (cursor) {
-      // Cursor is the last comment ID, fetch comments created after it
       whereConditions.push(lt(schema.courseNewsfeedComment.id, Number(cursor)));
     }
 
-    // Get total count
     const totalCountResult = await db
       .select({ count: sql<number>`count(*)`.as('count') })
       .from(schema.courseNewsfeedComment)
-      .where(eq(schema.courseNewsfeedComment.courseNewsfeedId, feedId));
+      .where(and(...baseWhereConditions));
     const totalCount = Number(totalCountResult[0]?.count || 0);
 
-    // Fetch comments with author profile (limit + 1 to check if there are more)
+    // Fetch comments with author profile & reply count
     const comments = await db
       .select({
         comment: schema.courseNewsfeedComment,
         groupmember: schema.groupmember,
-        profile: schema.profile
+        profile: schema.profile,
+        replyCount: sql<number>`
+          COALESCE(
+            (SELECT COUNT(*)::int 
+             FROM ${schema.courseNewsfeedComment} c2 
+             WHERE c2.parent_id = ${schema.courseNewsfeedComment.id}),
+            0
+          )
+        `.as('replyCount')
       })
       .from(schema.courseNewsfeedComment)
       .leftJoin(schema.groupmember, eq(schema.courseNewsfeedComment.authorId, schema.groupmember.id))
@@ -259,11 +273,9 @@ export async function getNewsfeedCommentsByFeedIdPaginated(
       .orderBy(desc(schema.courseNewsfeedComment.createdAt))
       .limit(limit + 1);
 
-    // Check if there are more comments
     const hasMore = comments.length > limit;
     const items = comments.slice(0, limit);
 
-    // Get next cursor (ID of the oldest comment in this batch - for loading older comments)
     const nextCursor = hasMore && items.length > 0 ? String(items[items.length - 1].comment.id) : null;
 
     return {
@@ -272,7 +284,8 @@ export async function getNewsfeedCommentsByFeedIdPaginated(
         authorProfileId: row.profile?.id || null,
         authorFullname: row.profile?.fullname || null,
         authorUsername: row.profile?.username || null,
-        authorAvatarUrl: row.profile?.avatarUrl || null
+        authorAvatarUrl: row.profile?.avatarUrl || null,
+        replyCount: Number(row.replyCount || 0)
       })),
       totalCount,
       hasMore,
@@ -339,6 +352,27 @@ export async function deleteNewsfeedComment(commentId: number): Promise<TCourseN
     console.error('deleteNewsfeedComment error:', error);
     throw new Error(
       `Failed to delete newsfeed comment "${commentId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Gets a single newsfeed comment by ID
+ * @param commentId Comment ID
+ * @returns Comment or null
+ */
+export async function getNewsfeedCommentById(commentId: number): Promise<TCourseNewsfeedComment | null> {
+  try {
+    const [comment] = await db
+      .select()
+      .from(schema.courseNewsfeedComment)
+      .where(eq(schema.courseNewsfeedComment.id, commentId))
+      .limit(1);
+    return comment || null;
+  } catch (error) {
+    console.error('getNewsfeedCommentById error:', error);
+    throw new Error(
+      `Failed to get newsfeed comment by ID "${commentId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -489,7 +523,8 @@ function getCommentCount() {
           COALESCE(
             (SELECT COUNT(*)::int 
              FROM ${schema.courseNewsfeedComment} 
-             WHERE ${eq(schema.courseNewsfeedComment.courseNewsfeedId, schema.courseNewsfeed.id)}),
+             WHERE ${eq(schema.courseNewsfeedComment.courseNewsfeedId, schema.courseNewsfeed.id)}
+             AND ${isNull(schema.courseNewsfeedComment.parentId)}),
             0
           )
         `.as('commentCount');

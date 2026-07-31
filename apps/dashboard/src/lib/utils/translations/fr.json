@@ -321,6 +321,7 @@
       "creating_new": "La création de nouvelles traductions a échoué"
     },
     "exercise": {
+      "validation_errors": "Veuillez corriger toutes les erreurs de validation avant d'enregistrer.",
       "points_required_auto_grade": "Définissez un nombre de points positif pour chaque question avant d'enregistrer.",
       "success": "Enregistré avec succès",
       "submission_updated": "Soumission mise à jour pour",
@@ -1517,6 +1518,7 @@
                 "multiple": "Plusieurs réponses",
                 "paragraph": "Paragraphe",
                 "true_false": "Vrai/Faux",
+                "thumbs": "Pouce vers le haut/bas",
                 "short_answer": "Réponse courte",
                 "numeric": "Réponse numérique",
                 "fill_blank": "Remplissez le vide",
@@ -1703,6 +1705,17 @@
                 },
                 "edit": {
                   "correct_answer_label": "Bonne réponse"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Oui",
+                "no_label": "Non",
+                "edit": {
+                  "positive_option_label": "Libellé pouce vers le haut",
+                  "negative_option_label": "Libellé pouce vers le bas"
+                },
+                "preview": {
+                  "helper": "Ouverte — les apprenants choisissent pouce vers le haut ou vers le bas."
                 }
               },
               "checkbox": {
@@ -2260,13 +2273,32 @@
           "hide": "Masquer les commentaires",
           "placeholder": "Ajouter un commentaire de classe",
           "submit_aria": "Soumettre un commentaire",
-          "delete": "Supprimer"
+          "delete": "Supprimer",
+          "reply": "Répondre",
+          "replying_to": "Répondre à @{name}",
+          "cancel_reply": "Annuler",
+          "view_replies": "Voir {count} {count, plural, =1 {réponse} autres {réponses}}",
+          "hide_replies": "Masquer les réponses",
+          "view_more": "Afficher plus de commentaires ({count})",
+          "loading": "Chargement...",
+          "save": "Enregistrer",
+          "saving": "Sauvegarde...",
+          "send": "Envoyer",
+          "load_more_replies": "Charger plus de réponses"
         },
         "card": {
           "pin": "Épingler",
           "unpin": "Désépingler",
           "edit": "Modifier",
           "delete": "Supprimer"
+        },
+        "other_posts": "Autres messages",
+        "user": "Utilisateur",
+        "delete_modal": {
+          "title": "Supprimer le flux",
+          "description": "Êtes-vous sûr de vouloir supprimer ce flux ?",
+          "no": "Non",
+          "yes": "Oui"
         }
       },
       "compliance": {

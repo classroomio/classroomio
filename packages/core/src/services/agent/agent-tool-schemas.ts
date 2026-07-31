@@ -5,7 +5,12 @@ import {
   LANDING_PAGE_METADATA_DESCRIPTION_SECTION_HINT,
   LANDING_PAGE_SECTION_HTML_AGENT_HINT
 } from '@cio/ai-assistant/tools';
-import { ENABLED_QUESTION_TYPE_REGISTRY } from '@cio/question-types';
+import {
+  ADD_QUESTIONS_TOOL_DESCRIPTION,
+  ENABLED_QUESTION_TYPE_REGISTRY,
+  QUESTION_SETTINGS_SCHEMA_HINT,
+  UPDATE_QUESTIONS_BINARY_TYPES_HINT
+} from '@cio/question-types';
 import { ZExerciseSectionAfterBehavior } from '@cio/utils/validation/exercise';
 import { ZCourseLandingPageUpdate, ZCourseLandingPageMetadataUpdateFields } from '@cio/utils/validation/course';
 
@@ -83,12 +88,7 @@ export const questionSchema = z.object({
   ),
   points: z.number().min(0).default(1),
   order: z.number().int().min(0),
-  settings: z
-    .record(z.string(), z.unknown())
-    .optional()
-    .describe(
-      'Per-type correct-answer storage. TRUE_FALSE: { correctValue: boolean }. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.'
-    ),
+  settings: z.record(z.string(), z.unknown()).optional().describe(QUESTION_SETTINGS_SCHEMA_HINT),
   options: z.array(z.object({ label: z.string().min(1), isCorrect: z.boolean() }))
 });
 
@@ -211,9 +211,7 @@ export const updateQuestionSettingsSchema = z
   .refine((settings) => Object.keys(settings).length > 0, {
     message: 'Provide at least one settings field'
   })
-  .describe(
-    'Per-type correct-answer storage. TRUE_FALSE: { correctValue: boolean }. NUMERIC: { correctValue: number, tolerance?: number }. STAR: { correctValue: number }. WORD_BANK: { correctAnswers: string[], template: string }.'
-  );
+  .describe(QUESTION_SETTINGS_SCHEMA_HINT);
 
 export const updateOptionSchema = z.object({
   id: z.number().int().optional(),
