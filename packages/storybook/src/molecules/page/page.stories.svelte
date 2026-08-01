@@ -417,3 +417,28 @@
     </Page.Root>
   {/snippet}
 </Story>
+
+<Story name="Settings Actions (no changes)">
+  {#snippet template()}
+    <Page.Root class="w-[42rem]">
+      <Page.Header>
+        <Page.HeaderContent>
+          <Page.Title>Course settings</Page.Title>
+        </Page.HeaderContent>
+      </Page.Header>
+      <Page.Body>
+        {#snippet child()}
+          <div class="text-muted-foreground rounded-lg border border-dashed p-6 text-sm">All changes saved.</div>
+        {/snippet}
+      </Page.Body>
+      <Page.SettingsActions
+        hasChanges={false}
+        statusLabel="Unsaved changes"
+        discardLabel="Discard"
+        saveLabel="Save changes"
+        onSave={() => undefined}
+        onDiscard={() => undefined}
+      />
+    </Page.Root>
+  {/snippet}
+</Story>

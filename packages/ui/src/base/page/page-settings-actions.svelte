@@ -25,29 +25,29 @@
     onSave?: () => void | Promise<void>;
     onDiscard?: () => void;
   } = $props();
+
+  const actionsDisabled = $derived(!hasChanges || loading);
 </script>
 
-{#if hasChanges}
-  <div
-    bind:this={ref}
-    data-slot="page-settings-actions"
-    class={cn(
-      'ui:sticky ui:bottom-0 ui:z-20 ui:mt-6',
-      'ui:flex ui:flex-col ui:gap-3 ui:sm:flex-row ui:sm:items-center ui:sm:justify-between',
-      'ui:rounded-lg ui:border ui:border-border ui:bg-background ui:p-4 ui:shadow-sm',
-      className
-    )}
-    {...restProps}
-  >
-    <p class="ui:text-sm ui:text-muted-foreground">{statusLabel}</p>
+<div
+  bind:this={ref}
+  data-slot="page-settings-actions"
+  class={cn(
+    'ui:sticky ui:bottom-0 ui:z-20 ui:mt-6',
+    'ui:flex ui:flex-col ui:gap-3 ui:sm:flex-row ui:sm:items-center ui:sm:justify-between',
+    'ui:rounded-lg ui:border ui:border-border ui:bg-background ui:p-4 ui:shadow-sm',
+    className
+  )}
+  {...restProps}
+>
+  <p class="ui:text-sm ui:text-muted-foreground">{statusLabel}</p>
 
-    <div class="ui:flex ui:shrink-0 ui:items-center ui:justify-end ui:gap-2">
-      <Button variant="ghost" type="button" disabled={loading} onclick={onDiscard}>
-        {discardLabel}
-      </Button>
-      <Button type="button" {loading} disabled={disabled || loading} onclick={onSave}>
-        {saveLabel}
-      </Button>
-    </div>
+  <div class="ui:flex ui:shrink-0 ui:items-center ui:justify-end ui:gap-2">
+    <Button variant="ghost" type="button" disabled={actionsDisabled} onclick={onDiscard}>
+      {discardLabel}
+    </Button>
+    <Button type="button" {loading} disabled={actionsDisabled || disabled} onclick={onSave}>
+      {saveLabel}
+    </Button>
   </div>
-{/if}
+</div>

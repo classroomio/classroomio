@@ -137,7 +137,7 @@ Composable page shell used across dashboard list and settings screens. Import as
 | `Page.BodyHeader`              | Toolbar inside the body                                      |
 | `Page.SettingsActions`         | Sticky bottom save/discard bar for settings forms            |
 
-**Settings pages:** Place `Page.SettingsActions` as the last child inside `Page.Root`, after `Page.Body`. It only renders when `hasChanges` is true, sticks to the bottom of the viewport while scrolling, and settles at the end of the page content when you reach the bottom. Pass translated `statusLabel`, `discardLabel`, and `saveLabel` props from the dashboard.
+**Settings pages:** Place `Page.SettingsActions` as the last child inside `Page.Root`, after `Page.Body`. The bar is always visible; disable Save and Discard via `hasChanges={false}` when the form is clean. It sticks to the bottom of the viewport while scrolling and settles at the end of the page content when you reach the bottom. Pass translated `statusLabel`, `discardLabel`, and `saveLabel` props from the dashboard.
 
 ```svelte
 <Page.Root>

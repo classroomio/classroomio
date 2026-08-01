@@ -166,7 +166,7 @@
     <Page.SettingsActions
       hasChanges={hasUnsavedChanges}
       loading={courseApi.isLoading}
-      disabled={courseApi.isLoading || !hasUnsavedChanges}
+      disabled={courseApi.isLoading}
       statusLabel={$t('common.unsaved_changes.label')}
       discardLabel={$t('common.discard')}
       saveLabel={$t('common.save_changes')}

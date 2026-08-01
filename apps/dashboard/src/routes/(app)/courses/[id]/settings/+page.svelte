@@ -44,7 +44,7 @@
   <Page.SettingsActions
     hasChanges={hasUnsavedChanges}
     loading={isSaving}
-    disabled={isSaving || !hasUnsavedChanges}
+    disabled={isSaving}
     statusLabel={$t('common.unsaved_changes.label')}
     discardLabel={$t('common.discard')}
     saveLabel={$t('common.save_changes')}
