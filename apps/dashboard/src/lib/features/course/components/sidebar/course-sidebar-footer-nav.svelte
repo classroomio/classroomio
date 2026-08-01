@@ -92,9 +92,7 @@
     </Button>
   </nav>
 
-  <Progress value={courseProgress.percent} max={100} class="ui:h-[3px] ui:rounded-none" aria-hidden="true" />
-
-  <p class="ui:text-muted-foreground truncate px-3 pb-2.5 text-[11px]">
+  <p class="ui:text-muted-foreground truncate px-3 pb-2 text-[11px]">
     {$t('course.sidebar.progress.lessons', {
       completed: courseProgress.lessonsComplete,
       total: courseProgress.lessonsTotal
@@ -104,4 +102,6 @@
         total: courseProgress.exercisesTotal
       })}{/if}
   </p>
+
+  <Progress value={courseProgress.percent} max={100} class="ui:h-[3px] ui:rounded-none" aria-hidden="true" />
 </div>
