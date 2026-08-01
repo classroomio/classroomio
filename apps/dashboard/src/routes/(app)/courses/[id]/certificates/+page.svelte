@@ -14,6 +14,7 @@
   import { openUpgradeModal } from '$lib/utils/functions/org';
 
   let errors = $state<Record<string, string>>({});
+  let certificateActiveTab = $state('design');
   let hasUnsavedChanges = $state(false);
   let savedCertificateState = $state<string | null>(null);
   let savedCertificateStateCourseId = $state<string | null>(null);
@@ -159,10 +160,10 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <CertificatesPage {errors} />
+      <CertificatesPage {errors} bind:activeTab={certificateActiveTab} />
     {/snippet}
   </Page.Body>
-  {#if canEditCertificates}
+  {#if canEditCertificates && certificateActiveTab === 'settings'}
     <Page.SettingsActions
       hasChanges={hasUnsavedChanges}
       loading={courseApi.isLoading}

@@ -165,7 +165,7 @@
         </button>
 
         <div
-          style={isCustomTheme ? `border-color: ${$currentOrg.theme};` : ''}
+          style={isCustomTheme ? `border-color: ${$currentOrg.theme}; --picker-z-index: 50;` : '--picker-z-index: 50;'}
           class="group relative h-auto w-fit cursor-pointer rounded-full border-2 {!isCustomTheme
             ? 'custom-theme-picker--empty'
             : ''}"
