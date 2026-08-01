@@ -123,10 +123,10 @@ export const baseNavConfig: NavItemConfig[] = [
   },
   {
     group: 'content',
-    titleKey: 'org_navigation.notes',
-    path: '/notes',
+    titleKey: 'org_navigation.docs',
+    path: '/docs',
     icon: ContentIcon,
-    matchPattern: '^/org/[^/]+/notes(/.*)?$'
+    matchPattern: '^/org/[^/]+/docs(/.*)?$'
   },
   {
     group: 'content',

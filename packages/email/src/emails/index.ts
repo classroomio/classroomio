@@ -12,7 +12,7 @@ export * from './verify-email';
 export * from './on-password-reset';
 export * from './invite-teacher';
 export * from './newsfeed';
-export * from './note-comments';
+export * from './doc-comments';
 export * from './student-course-welcome';
 export * from './student-course-completion';
 export * from './student-course-invite';
@@ -30,7 +30,7 @@ export * from './submission-graded';
 export * from './student-limit-reached';
 export * from './student-limit-approaching';
 
-import type { noteCommentMentionEmail, noteCommentReplyEmail } from './note-comments';
+import type { noteCommentMentionEmail, noteCommentReplyEmail } from './doc-comments';
 import type { newsfeedCommentEmail, newsfeedPostEmail } from './newsfeed';
 
 // Import types for schema mapping (must be after exports to avoid circular dependency)

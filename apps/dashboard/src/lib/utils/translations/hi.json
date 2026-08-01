@@ -3430,7 +3430,16 @@
           "add_theme": "थीम जोड़ें"
         }
       },
-      "page_subtitle": "इस संगठन के लिए छात्रों को दिखने वाला नाम, लोगो और थीम सेट करें।"
+      "page_subtitle": "इस संगठन के लिए छात्रों को दिखने वाला नाम, लोगो और थीम सेट करें।",
+      "notes": {
+        "heading": "Notes",
+        "description": "Control how new workspace notes are shared with your team.",
+        "share_by_default": {
+          "label": "Share new notes with the team",
+          "description": "When enabled, new workspace notes are visible to all admins and tutors. You can still make individual notes private."
+        },
+        "save": "Save notes settings"
+      }
     },
     "profile": {
       "heading": "प्रोफाइल",
@@ -4512,7 +4521,8 @@
     "resize_panel_aria_label": "Resize panel",
     "titles": {
       "ai_assistant": "AI Assistant",
-      "transcript": "Transcript"
+      "transcript": "Transcript",
+      "note_comments": "Comments"
     }
   },
   "compliance": {
@@ -4759,12 +4769,99 @@
     "list": {
       "search": "Search notes",
       "tabs": {
-        "all": "All notes",
-        "from_lessons": "From lessons"
+        "all": "All",
+        "from_lessons": "From lessons",
+        "mine": "Mine",
+        "shared_with_me": "Shared"
       },
       "empty_title": "No notes yet",
       "empty_description": "Take notes while watching a lesson and they will show up here.",
-      "no_content": "No content yet"
+      "no_content": "No content yet",
+      "badge_private": "Private",
+      "badge_shared_by_me": "Shared",
+      "badge_public": "Public",
+      "by_author": "By {name}"
+    },
+    "workspace": {
+      "empty_title": "No note selected",
+      "empty_description": "Create a new note or pick one from the list.",
+      "create_note": "Create note",
+      "no_notes": "No notes",
+      "note_count": "{count, plural, =1 {1 note} other {# notes}}",
+      "sections": {
+        "pinned": "Pinned",
+        "previous_7_days": "Previous 7 Days",
+        "previous_30_days": "Previous 30 Days"
+      },
+      "empty_mine": "You have no notes yet",
+      "empty_shared": "No notes have been shared with you",
+      "empty_shared_title": "Nothing shared yet",
+      "empty_shared_description": "When a teammate shares a note with the team, it will show up here.",
+      "empty_filtered": "No notes match your filters"
+    },
+    "convert_course": {
+      "button": "Convert to course",
+      "title": "Convert note to course",
+      "description": "Review the course structure before creating. No AI is used for this conversion.",
+      "course_title": "Course title",
+      "use_sections": "Use sections",
+      "use_sections_hint": "Group lessons under H1 headings from your note.",
+      "use_toc": "Use table of contents for lesson titles",
+      "use_toc_hint": "When a table of contents block is present, use its entries as lesson titles.",
+      "summary": "{sections} sections, {lessons} lessons",
+      "create": "Create course",
+      "success": "Course created from note",
+      "error": "Could not create course from note.",
+      "copy_success": "Course created. Your note is unchanged.",
+      "empty_error": "Add at least one lesson before creating a course.",
+      "already_converted_description": "This note is already linked to a course.",
+      "already_converted_body": "Open the existing course, or keep editing this note. Creating another course from the same note is blocked.",
+      "open_course": "Open course"
+    },
+    "templates": {
+      "heading": "Templates",
+      "empty": "Save a note as a template to reuse it here.",
+      "convert_success": "Note saved as template",
+      "convert_error": "Could not save note as template.",
+      "create_success": "Note created from template",
+      "create_error": "Could not create note from template.",
+      "use_template": "Use template",
+      "convert_copy_success": "Template saved. Your note is unchanged.",
+      "edit_template": "Edit template",
+      "remove_template": "Remove as template",
+      "remove_success": "Template removed",
+      "remove_error": "Could not remove template"
+    },
+    "share": {
+      "public_label": "Anyone with the link",
+      "public_description": "Anyone with the link can view this note. It will appear on your public academy site.",
+      "public_slug_label": "Public link slug",
+      "public_slug_hint": "Used in the public URL for this note.",
+      "copy_success": "Link copied"
+    },
+    "editor": {
+      "pin": "Pin note",
+      "unpin": "Unpin note",
+      "pin_success": "Note pinned",
+      "unpin_success": "Note unpinned",
+      "pin_error": "Could not update pin"
+    },
+    "comments": {
+      "ai_author": "ClassroomIO Assistant",
+      "ai_badge": "AI"
+    },
+    "ai_panel": {
+      "empty_title": "Get AI feedback on this note",
+      "empty_description": "Review the note to add anchored AI comments you can resolve like teammate feedback.",
+      "review_note": "Review note",
+      "review_selection": "Review selection",
+      "review_hint": "AI comments appear in the comments sidebar with yellow highlights in the note.",
+      "review_success": "AI comments added to your note",
+      "review_empty": "No new AI comments were added",
+      "review_error": "Could not generate AI comments",
+      "empty_note_error": "Add some content before asking AI to review",
+      "selection_required": "Select text in the note first",
+      "last_result": "{count, plural, =0 {No comments added} =1 {1 comment added} other {# comments added}}"
     }
   }
 }

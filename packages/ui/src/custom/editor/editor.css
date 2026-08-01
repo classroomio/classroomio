@@ -510,7 +510,7 @@ input[type='checkbox'] {
   border: 1px solid darkred;
 }
 
-.tiptap .note-comment-mark {
+.tiptap .doc-comment-mark {
   background-color: #fef9c3;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
@@ -518,22 +518,22 @@ input[type='checkbox'] {
   transition: background-color 0.15s ease;
 }
 
-.tiptap .note-comment-mark.note-comment-mark-active {
+.tiptap .doc-comment-mark.doc-comment-mark-active {
   background-color: #fde68a;
   outline: 2px solid #facc15;
   outline-offset: 1px;
 }
 
-.tiptap .note-comment-mark-resolved {
+.tiptap .doc-comment-mark-resolved {
   background-color: transparent;
   outline: none;
 }
 
-.tiptap .note-comment-anchor-pulse {
-  animation: note-comment-pulse 1.2s ease-out 1;
+.tiptap .doc-comment-anchor-pulse {
+  animation: doc-comment-pulse 1.2s ease-out 1;
 }
 
-@keyframes note-comment-pulse {
+@keyframes doc-comment-pulse {
   0% {
     background-color: rgb(250 204 21 / 0.55);
   }
