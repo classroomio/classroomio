@@ -1,0 +1,213 @@
+name: Railway Preview Environment
+
+# Manually spin up (or tear down) a short-lived Railway preview environment for a
+# branch/PR, without waiting for a merge. Railway builds each app service FROM SOURCE
+# (docker/Dockerfile.*) so the preview runs the branch's exact code — this is the
+# controlled counterpart to Railway's native PR environments.
+#
+# Prerequisites (one-time):
+#   - A Railway project (e.g. "classroomio-staging") whose `staging` environment is
+#     fully configured (Postgres, Redis, cio-minio, cio-api, cio-dashboard, cio-jobs).
+#   - Repo/Org secret  RAILWAY_API_TOKEN   -> a Railway ACCOUNT or TEAM token (NOT a
+#     project token; env-scoped project tokens can't create environments).
+#   - Repo/Org secret   RAILWAY_PROJECT_ID -> the target project's id.
+#   - Repo/Org variable RAILWAY_WORKSPACE  -> the Railway workspace the project lives in
+#     (default: "cio projects"); required by `railway link` in non-interactive mode.
+#   - Repo/Org variable RAILWAY_BASE_ENV   -> the env to duplicate from (default: staging).
+#
+# The DB needs no explicit migration step here: the cio-api image self-migrates on boot
+# (docker/entrypoint-api.sh -> `pnpm --filter @cio/db db:setup`, which runs drizzle
+# migrations + essential seed). The optional `seed` input adds the full demo dataset.
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch (or PR head ref) to deploy into the preview env"
+        required: true
+        type: string
+      action:
+        description: "deploy = create/update the preview; destroy = delete it"
+        required: true
+        type: choice
+        default: deploy
+        options:
+          - deploy
+          - destroy
+      seed:
+        description: "Seed the full demo dataset (admin@test.com etc.) after deploy"
+        required: false
+        type: boolean
+        default: true
+
+# One run per branch at a time; a newer run supersedes an in-flight one.
+concurrency:
+  group: railway-preview-${{ inputs.branch }}
+  cancel-in-progress: true
+
+env:
+  RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+  RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+  RAILWAY_WORKSPACE: ${{ vars.RAILWAY_WORKSPACE || 'cio projects' }}
+  BASE_ENV: ${{ vars.RAILWAY_BASE_ENV || 'staging' }}
+  # The three app services that build from source. Postgres/Redis/cio-minio come along
+  # via environment duplication and need no `railway up`.
+  APP_SERVICES: "cio-api cio-dashboard cio-jobs"
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli@5.30.1
+
+      - name: Derive a safe environment name
+        id: env
+        # BRANCH is bound via env (not interpolated into the script) so an attacker-supplied
+        # value can't be executed as shell. "feat/foo_bar" -> "pr-feat-foo-bar-<hash>" — the
+        # slug alone is lossy (e.g. "foo/bar" and "foo_bar" both slug to "foo-bar"), so a
+        # hash of the original branch string disambiguates collisions.
+        env:
+          BRANCH: ${{ inputs.branch }}
+        run: |
+          slug=$(echo "$BRANCH" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//')
+          hash=$(echo -n "$BRANCH" | sha256sum | cut -c1-8)
+          echo "name=pr-${slug}-${hash}" >> "$GITHUB_OUTPUT"
+
+      - name: Link to base project
+        # `railway environment new`/`delete` take no --project/--workspace/--environment
+        # flags — only `railway link` does, so it must run first to establish that
+        # context for every other command in this job.
+        run: |
+          railway link --project "$RAILWAY_PROJECT_ID" --workspace "$RAILWAY_WORKSPACE" --environment "$BASE_ENV"
+
+      # ---------------------------------------------------------------- destroy
+      - name: Destroy preview environment
+        if: ${{ inputs.action == 'destroy' }}
+        env:
+          ENV_NAME: ${{ steps.env.outputs.name }}
+        run: |
+          railway environment delete "$ENV_NAME" --yes
+          echo "Deleted environment $ENV_NAME." >> "$GITHUB_STEP_SUMMARY"
+
+      # ---------------------------------------------------------------- deploy
+      - name: Create preview environment (duplicate base)
+        if: ${{ inputs.action == 'deploy' }}
+        # `--duplicate` copies service config and variables but not public domains (see
+        # domain-generation steps below). Only "already exists" is swallowed here — any
+        # other failure must surface, not silently continue into a "Link" step that can't
+        # find an environment that was never created.
+        env:
+          ENV_NAME: ${{ steps.env.outputs.name }}
+        run: |
+          if ! output=$(railway environment new "$ENV_NAME" --duplicate "$BASE_ENV" 2>&1); then
+            echo "$output"
+            if echo "$output" | grep -qi "already exists"; then
+              echo "Environment may already exist; continuing."
+            else
+              exit 1
+            fi
+          else
+            echo "$output"
+          fi
+
+      - name: Link project + preview environment
+        if: ${{ inputs.action == 'deploy' }}
+        env:
+          ENV_NAME: ${{ steps.env.outputs.name }}
+        run: |
+          railway link --project "$RAILWAY_PROJECT_ID" --workspace "$RAILWAY_WORKSPACE" --environment "$ENV_NAME"
+
+      - name: Pin the Dockerfile per service
+        if: ${{ inputs.action == 'deploy' }}
+        # `railway up` uploads local source but does NOT carry the dashboard's "Dockerfile
+        # Path" build setting, so without this Railway falls back to Railpack and builds
+        # the whole monorepo as a generic Node app. (Same gotcha documented in the setup guide.)
+        run: |
+          railway variables --service cio-api       --set "RAILWAY_DOCKERFILE_PATH=docker/Dockerfile.api"
+          railway variables --service cio-dashboard  --set "RAILWAY_DOCKERFILE_PATH=docker/Dockerfile.dashboard"
+          railway variables --service cio-jobs       --set "RAILWAY_DOCKERFILE_PATH=docker/Dockerfile.jobs"
+
+      - name: Seed MinIO buckets (fresh volume starts empty)
+        if: ${{ inputs.action == 'deploy' }}
+        # Railway has no minio-init sidecar and a duplicated env's MinIO volume is empty,
+        # so create the buckets the app expects. Root creds carry over via duplication,
+        # but the public domain doesn't, so generate one here (same as "Report the preview
+        # URL" does for cio-dashboard). `--ignore-existing` keeps re-deploys safe.
+        run: |
+          # --port 9000: the minio/minio image exposes both 9000 (S3 API) and 9001
+          # (console); pin it so domain generation doesn't land on the wrong one.
+          railway domain --service cio-minio --port 9000 || true
+          # `cut -d= -f2-` (not `awk -F= '{print $2}'`) so a value containing '=' — common in
+          # base64/auto-generated secrets like MINIO_ROOT_PASSWORD — isn't silently truncated.
+          MINIO_HOST=$(railway variables --service cio-minio --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
+          MINIO_USER=$(railway variables --service cio-minio --kv | grep '^MINIO_ROOT_USER=' | cut -d= -f2-)
+          MINIO_PASS=$(railway variables --service cio-minio --kv | grep '^MINIO_ROOT_PASSWORD=' | cut -d= -f2-)
+          if [ -z "$MINIO_HOST" ]; then
+            echo "::error::cio-minio has no public domain — 'railway domain' may have failed."
+            exit 1
+          fi
+          # Verify mc against MinIO's published SHA256 before executing it.
+          curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc -o mc
+          curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum -o mc.sha256sum
+          echo "$(cut -d' ' -f1 mc.sha256sum)  mc" | sha256sum -c -
+          chmod +x mc
+          # --path on forces path-style bucket addressing (host/bucket/key), same as the
+          # app's own OBJECT_STORAGE_FORCE_PATH_STYLE=true — this Railway domain doesn't
+          # route wildcard bucket subdomains, so virtual-host style (mc's "auto" default)
+          # fails bucket creation with a misleading "does not exist" error.
+          ./mc alias set cio "https://${MINIO_HOST}" "$MINIO_USER" "$MINIO_PASS" --path on
+          ./mc mb cio/videos cio/documents cio/media --ignore-existing
+          ./mc anonymous set download cio/media
+
+      - name: Deploy each app service from this branch
+        if: ${{ inputs.action == 'deploy' }}
+        # `--ci` (not `--detach`) blocks until each service's deploy/healthcheck succeeds,
+        # so the URL printed later is actually live. Trade-off: builds run sequentially.
+        run: |
+          for svc in $APP_SERVICES; do
+            echo "::group::railway up $svc"
+            railway up --service "$svc" --ci
+            echo "::endgroup::"
+          done
+
+      - name: Seed the full demo dataset (optional)
+        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        # SPIKE: `railway run` injects the service's env vars and runs the command ON THIS
+        # RUNNER, so it needs a DB URL reachable from GitHub (Railway's public TCP proxy,
+        # DATABASE_PUBLIC_URL) — NOT the private railway.internal one. If cio-api only
+        # exposes a private DATABASE_URL, add DATABASE_PUBLIC_URL to this step, or drop
+        # this step and rely on the api boot-time db:setup (migrations + essential seed).
+        run: |
+          corepack enable
+          railway run --service cio-api -- pnpm --filter @cio/db db:setup:seed || \
+            echo "Demo seed failed (likely DB not reachable from runner) — migrations + essential seed still ran on api boot."
+
+      - name: Report the preview URL
+        if: ${{ inputs.action == 'deploy' }}
+        # BRANCH / ENV_NAME bound via env (never interpolated into the script).
+        env:
+          BRANCH: ${{ inputs.branch }}
+          ENV_NAME: ${{ steps.env.outputs.name }}
+        run: |
+          railway domain --service cio-dashboard || true
+          URL=$(railway variables --service cio-dashboard --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
+          if [ -z "$URL" ]; then
+            echo "::error::cio-dashboard has no public domain — 'railway domain' may have failed."
+            exit 1
+          fi
+          {
+            echo "### Railway preview ready :rocket:"
+            echo ""
+            echo "- Environment: \`$ENV_NAME\` (branch \`$BRANCH\`)"
+            echo "- Dashboard: https://${URL}"
+            echo ""
+            echo "> All services passed their Railway deploy/healthcheck before this link was printed, so it should be live now."
+            echo ""
+            echo "Tear down with this workflow using **action = destroy** and the same branch."
+          } >> "$GITHUB_STEP_SUMMARY"
