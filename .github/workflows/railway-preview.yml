@@ -210,13 +210,27 @@ jobs:
             echo "::endgroup::"
           done
 
+      - name: Setup pnpm
+        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        run: pnpm install --frozen-lockfile
+
       - name: Seed the full demo dataset (optional)
         if: ${{ inputs.action == 'deploy' && inputs.seed }}
         # cio-api only carries the private DATABASE_URL; `railway run` executes on this
         # GitHub runner, so seeding needs Postgres's own DATABASE_PUBLIC_URL instead
         # (railway.internal isn't reachable from here).
         run: |
-          corepack enable
           PUBLIC_DB_URL=$(railway variables --service Postgres --kv | grep '^DATABASE_PUBLIC_URL=' | cut -d= -f2-)
           if [ -z "$PUBLIC_DB_URL" ]; then
             echo "::warning::Postgres has no DATABASE_PUBLIC_URL in this environment — skipping full seed; only essential seed ran on api boot."
