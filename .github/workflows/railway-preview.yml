@@ -182,7 +182,22 @@ jobs:
             echo "Bucket creation failed (attempt $attempt/10) — cio-minio may still be initializing; retrying in 5s..."
             sleep 5
           done
-          ./mc anonymous set download cio/media
+          # Same boot-race as above can hit the very next call too, even right after mb
+          # just succeeded — cio-minio's storage layer can take a moment past that point
+          # to fully settle.
+          for attempt in $(seq 1 10); do
+            if output=$(./mc anonymous set download cio/media 2>&1); then
+              echo "$output"
+              break
+            fi
+            echo "$output"
+            if [ "$attempt" -eq 10 ]; then
+              echo "::error::cio-minio anonymous-download policy failed after 10 attempts."
+              exit 1
+            fi
+            echo "Anonymous policy set failed (attempt $attempt/10) — retrying in 5s..."
+            sleep 5
+          done
 
       - name: Deploy each app service from this branch
         if: ${{ inputs.action == 'deploy' }}
