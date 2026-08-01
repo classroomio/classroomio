@@ -82,14 +82,14 @@
 
 <div
   id={feed.id}
-  class="bg-card text-card-foreground relative mb-6 flex w-full max-w-3xl flex-col rounded-xl {isActive
+  class="bg-card text-card-foreground relative mb-6 flex w-full max-w-3xl flex-col overflow-visible rounded-xl {isActive
     ? 'ring-primary border-primary ring-2'
     : 'border-border/60 border'}"
 >
   {#if feed.isPinned}
     <PinIcon
       size={16}
-      class="text-muted-foreground absolute top-3 left-4 z-10 -rotate-45 fill-current"
+      class="text-muted-foreground pointer-events-none absolute -top-2 left-3 z-10 -rotate-[40deg] fill-current"
       aria-hidden="true"
     />
   {/if}

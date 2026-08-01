@@ -24,7 +24,7 @@
   let { feed, onPin, onEdit, onRequestDelete }: Props = $props();
 </script>
 
-<div class="px-4 pt-4 pb-0">
+<div class="relative px-4 pt-3 pb-0">
   <div class="mb-2 flex items-center justify-between">
     <div class="flex items-center gap-3">
       <UserAvatar src={feed.authorAvatarUrl} class="size-10" />
