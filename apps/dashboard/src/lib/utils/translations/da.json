@@ -2401,6 +2401,11 @@
         "completed": "{completed} af {total} fuldført",
         "lessons": "{completed} af {total} lektioner",
         "exercises": "{completed} af {total} øvelser"
+      },
+      "footer_nav": {
+        "label": "Navigation i kursusindhold",
+        "previous": "Forrige lektion",
+        "next": "Næste lektion"
       }
     },
     "navItems": {

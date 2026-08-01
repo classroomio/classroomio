@@ -2401,6 +2401,11 @@
         "completed": "Đã hoàn thành {completed} trong số {total}",
         "lessons": "{completed} trong số {total} bài học",
         "exercises": "{completed} trong số {total} bài tập"
+      },
+      "footer_nav": {
+        "label": "Điều hướng nội dung khóa học",
+        "previous": "Bài học trước",
+        "next": "Bài học tiếp theo"
       }
     },
     "navItems": {

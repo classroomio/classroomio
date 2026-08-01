@@ -2401,6 +2401,11 @@
         "completed": "{completed} de {total} completados",
         "lessons": "{completed} de {total} lecciones",
         "exercises": "{completed} de {total} ejercicios"
+      },
+      "footer_nav": {
+        "label": "Navegación del contenido del curso",
+        "previous": "Lección anterior",
+        "next": "Siguiente lección"
       }
     },
     "navItems": {

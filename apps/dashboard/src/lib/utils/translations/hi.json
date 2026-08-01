@@ -2401,6 +2401,11 @@
         "completed": "{total} में से {completed} पूर्ण",
         "lessons": "{total} में से {completed} पाठ",
         "exercises": "{total} में से {completed} अभ्यास"
+      },
+      "footer_nav": {
+        "label": "कोर्स सामग्री नेविगेशन",
+        "previous": "पिछला पाठ",
+        "next": "अगला पाठ"
       }
     },
     "navItems": {
