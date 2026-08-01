@@ -268,7 +268,7 @@
     setDefault(courseApi.course);
     selectedTagIds = [...initialTagIds];
     avatar = undefined;
-    errors = {};
+    errors = { title: undefined, description: undefined };
     hasUnsavedChanges = false;
   }
 

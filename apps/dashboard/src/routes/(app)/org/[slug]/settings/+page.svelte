@@ -1,5 +1,6 @@
 <script lang="ts">
   import { ProfilePage } from '$features/settings/pages';
+  import { VisitOrgSiteButton } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
   import * as Page from '@cio/ui/base/page';
 
@@ -30,6 +31,9 @@
     <Page.Title>{$t('settings.profile.heading')}</Page.Title>
     <Page.Subtitle>{$t('settings.profile.page_subtitle')}</Page.Subtitle>
   </Page.HeaderContent>
+  <Page.Action>
+    <VisitOrgSiteButton />
+  </Page.Action>
 </Page.Header>
 <Page.Body>
   {#snippet child()}

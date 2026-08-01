@@ -23,6 +23,7 @@
   let savedFullname = $state('');
   let savedUsername = $state('');
   let savedLocale = $state<TLocale | undefined>(undefined);
+  let capturedProfileId = $state<string | null>(null);
   let email = $derived($profile.email || '');
   let isChangingEmail = $state(false);
   let emailChangeInitiated = $state(false);
@@ -77,7 +78,10 @@
   $effect(() => {
     if (!$profile.id) return;
 
-    captureSavedFields();
+    if (capturedProfileId !== $profile.id) {
+      capturedProfileId = $profile.id;
+      captureSavedFields();
+    }
   });
 
   export function handleDiscard() {

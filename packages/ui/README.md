@@ -137,7 +137,19 @@ Composable page shell used across dashboard list and settings screens. Import as
 | `Page.BodyHeader`              | Toolbar inside the body                                      |
 | `Page.SettingsActions`         | Save/discard bar for settings forms (floats, then docks)     |
 
-**Settings pages:** Place `Page.SettingsActions` as the last child inside `Page.Root`, after `Page.Body`. The bar uses `position: sticky; bottom: 0` so it stays pinned to the viewport bottom while you scroll, then settles into normal flow at the end of the page. Do not put `overflow` on `Page.Root` that would break sticky positioning (horizontal overflow on `Page.Body` is fine). Disable Save and Discard via `hasChanges={false}` when the form is clean. Pass translated `statusLabel`, `discardLabel`, and `saveLabel` props from the dashboard.
+**Settings pages:** Place `Page.SettingsActions` as the last child inside `Page.Root`, after `Page.Body`. The bar uses `position: sticky; bottom: 0` so it stays pinned to the viewport bottom while you scroll, then settles into normal flow at the end of the page. Do not put `overflow` on `Page.Root` that would break sticky positioning (horizontal overflow on `Page.Body` is fine). Disable Save and Discard via `hasChanges={false}` when the form is clean. Pass translated `statusLabel`, `discardLabel`, and `saveLabel` props from the dashboard. Use `disabled` to block Save only (Discard still follows `hasChanges`). Use `contentClass` for extra classes on the inner card when needed.
+
+| Prop           | Description                                              |
+| -------------- | -------------------------------------------------------- |
+| `hasChanges`   | Enables Save and Discard when the form is dirty          |
+| `loading`      | Shows loading state on Save                              |
+| `disabled`     | Disables Save only (e.g. while not initialized)          |
+| `contentClass` | Extra classes on the inner card (width, padding, etc.)   |
+| `statusLabel`  | Left-side status text (e.g. "Unsaved changes")           |
+| `discardLabel` | Discard button label                                     |
+| `saveLabel`    | Save button label                                        |
+| `onSave`       | Save handler                                             |
+| `onDiscard`    | Discard handler                                          |
 
 ```svelte
 <Page.Root>

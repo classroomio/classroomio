@@ -20,6 +20,7 @@
 
   let avatar = $state<string | File | undefined>();
   let savedName = $state('');
+  let capturedOrgId = $state<string | null>(null);
 
   const themes = {
     rose: 'rose',
@@ -74,7 +75,10 @@
   $effect(() => {
     if (!$currentOrg?.id) return;
 
-    captureSavedFields();
+    if (capturedOrgId !== $currentOrg.id) {
+      capturedOrgId = $currentOrg.id;
+      captureSavedFields();
+    }
   });
 
   export function handleDiscard() {

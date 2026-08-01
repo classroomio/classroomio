@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { defaultAiTutorSettings, type AiTutorSettings } from '@cio/ai-assistant/tutor-config';
+  import { defaultAiTutorSettings } from '@cio/ai-assistant/tutor-config';
   import { get } from 'svelte/store';
 
   import * as Page from '@cio/ui/base/page';
@@ -11,22 +11,15 @@
 
   let initialized = $state(false);
   let savedSettingsSnapshot = $state('');
-  let formSettings = $state<AiTutorSettings>({ ...defaultAiTutorSettings });
 
-  $effect(() => {
-    const unsubscribe = orgTutorSettingsStore.subscribe((value) => {
-      formSettings = value;
-    });
-
-    return unsubscribe;
-  });
+  const currentSettingsSnapshot = $derived(JSON.stringify($orgTutorSettingsStore));
 
   const hasUnsavedChanges = $derived(
-    initialized && savedSettingsSnapshot !== '' && JSON.stringify(formSettings) !== savedSettingsSnapshot
+    initialized && savedSettingsSnapshot !== '' && currentSettingsSnapshot !== savedSettingsSnapshot
   );
 
   function captureSavedSnapshot() {
-    savedSettingsSnapshot = JSON.stringify(get(orgTutorSettingsStore));
+    savedSettingsSnapshot = currentSettingsSnapshot;
   }
 
   onMount(async () => {

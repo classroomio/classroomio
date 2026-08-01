@@ -22,29 +22,20 @@
   let inheritFromOrg = $state(true);
   let initialized = $state(false);
   let savedStateSnapshot = $state('');
-  let formSettings = $state<AiTutorSettings>({ ...defaultAiTutorSettings });
 
-  $effect(() => {
-    const unsubscribe = formStore.subscribe((value) => {
-      formSettings = value;
-    });
-
-    return unsubscribe;
-  });
-
-  function getCurrentStateSnapshot() {
-    return JSON.stringify({
+  const currentStateSnapshot = $derived(
+    JSON.stringify({
       inheritFromOrg,
-      settings: formSettings
-    });
-  }
+      settings: $formStore
+    })
+  );
 
   const hasUnsavedChanges = $derived(
-    initialized && savedStateSnapshot !== '' && getCurrentStateSnapshot() !== savedStateSnapshot
+    initialized && savedStateSnapshot !== '' && currentStateSnapshot !== savedStateSnapshot
   );
 
   function captureSavedSnapshot() {
-    savedStateSnapshot = getCurrentStateSnapshot();
+    savedStateSnapshot = currentStateSnapshot;
   }
 
   onMount(async () => {
