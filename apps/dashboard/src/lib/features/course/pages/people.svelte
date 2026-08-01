@@ -28,15 +28,17 @@
   import UserIcon from '@lucide/svelte/icons/user';
   import { shortenName } from '$lib/utils/functions/string';
   import * as Select from '@cio/ui/base/select';
-  import { IconButton } from '@cio/ui/custom/icon-button';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
   import { peopleApi } from '$features/course/api';
   import { deleteMemberModal } from '$features/course/components/people/store';
   import { Search } from '@cio/ui/custom/search';
+  import { snackbar } from '$features/ui/snackbar/store';
   import {
     formatPeopleShortDate,
+    getMemberAvatarUrl,
     getMemberProgressPercent,
-    isStudentMember
+    isStudentMember,
+    obscureMemberEmail
   } from '$features/course/utils/people-utils';
 
   let member: { id?: string; email?: string; profile?: { email: string } } = $state({});
@@ -45,19 +47,32 @@
   let copiedEmail = $state<string | null>(null);
   let memberRows = $state<CourseMembers>([]);
   let isLoadingMembers = $state(false);
+  let membersRequestId = 0;
 
   const people: CourseMembers = $derived(sortAndFilterPeople(memberRows, filterBy));
 
   async function loadMembers(courseId: string) {
+    const requestId = ++membersRequestId;
     isLoadingMembers = true;
 
-    const response = await peopleApi.list(courseId);
-    if (response?.data) {
-      memberRows = response.data;
-      courseApi.group.people = response.data;
-    }
+    try {
+      const response = await peopleApi.list(courseId);
+      if (requestId !== membersRequestId) return;
 
-    isLoadingMembers = false;
+      if (response?.data) {
+        memberRows = response.data;
+        courseApi.group.people = response.data;
+      }
+    } catch (error) {
+      console.error('Failed to load course members:', error);
+      if (requestId === membersRequestId) {
+        snackbar.error('snackbar.something');
+      }
+    } finally {
+      if (requestId === membersRequestId) {
+        isLoadingMembers = false;
+      }
+    }
   }
 
   $effect(() => {
@@ -107,16 +122,6 @@
     return profile ? profile.email : email;
   }
 
-  function obscureEmail(email: string | null | undefined) {
-    if (!email) return '';
-
-    const [username, domain] = email.split('@');
-    const obscuredUsername =
-      username.charAt(0) + '*'.repeat(username.length - 2) + username.charAt(username.length - 1);
-
-    return `${obscuredUsername}@${domain}`;
-  }
-
   function gotoPerson(person: CourseMember) {
     if (!person.profileId) return;
 
@@ -133,13 +138,6 @@
     } catch (err) {
       console.error('Failed to copy:', err);
     }
-  }
-
-  function getAvatarUrl(person: CourseMember) {
-    if (!person.profile) return '';
-
-    const profileRecord = person.profile as Record<string, string | null | undefined>;
-    return profileRecord.avatar_url ?? profileRecord.avatarUrl ?? '';
   }
 
   const selectOptions = $derived(ROLES.map((role) => ({ label: $t(role.label), value: `${role.value}` })));
@@ -199,9 +197,9 @@
                 {#if person.profile}
                   <div class="flex items-start lg:items-center">
                     <Avatar.Root class="mr-3">
-                      {#if getAvatarUrl(person)}
+                      {#if getMemberAvatarUrl(person)}
                         <Avatar.Image
-                          src={getAvatarUrl(person)}
+                          src={getMemberAvatarUrl(person)}
                           alt={person.profile.fullname ? person.profile.fullname : 'User'}
                         />
                       {/if}
@@ -215,13 +213,13 @@
                           {person.profile.fullname}
                         </p>
                         <p class="ui:text-primary line-clamp-1 text-xs">
-                          {obscureEmail(getEmail(person))}
+                          {obscureMemberEmail(getEmail(person))}
                         </p>
                       </div>
                       <div class="flex items-center">
                         <RoleBasedSecurity allowedRoles={[1, 2]}>
                           <Button
-                            variant="ghost"
+                            variant="secondary"
                             size="icon"
                             class="h-8 w-8"
                             onclick={() => copyToClipboard(getEmail(person) ?? '')}
@@ -248,7 +246,7 @@
                     <div class="flex items-center justify-between">
                       <RoleBasedSecurity allowedRoles={[1, 2]}>
                         <Button
-                          variant="ghost"
+                          variant="secondary"
                           size="icon"
                           class="h-8 w-8"
                           onclick={() => copyToClipboard(getEmail(person) ?? '')}
@@ -337,7 +335,7 @@
                 <RoleBasedSecurity allowedRoles={[1, 2]}>
                   {#if person.profileId !== $profile.id}
                     <DropdownMenu.Root>
-                      <DropdownMenu.Trigger class="flex items-center justify-center rounded-md p-1 hover:bg-gray-100">
+                      <DropdownMenu.Trigger class="ui:hover:bg-muted flex items-center justify-center rounded-md p-1">
                         <EllipsisVerticalIcon size={16} />
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content align="end">

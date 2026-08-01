@@ -1,9 +1,16 @@
 import { ROLE } from '@cio/utils/constants';
 import { ContentType } from '@cio/utils/constants/content';
 import { getLastSeenForUserIds } from '@cio/db/queries/analytics';
+import { getCourseById } from '@cio/db/queries/course/course';
 import { getCourseContentItems } from '@cio/db/queries/course/content';
-import { getCourseProgress } from '@cio/db/queries/course/course';
+import {
+  getBatchCompletedExerciseIdsForMembers,
+  getBatchLessonCompletionsForCourse,
+  getBatchStudentCourseMembership,
+  getCourseTrackableContentCounts
+} from '@cio/db/queries/course/member-progress';
 import { calcCourseProgressPercent } from '@api/utils/course-completion';
+import { buildCourseContent, type CourseContentItem } from './utils';
 
 export type CourseMemberStage =
   | { kind: 'not_started' }
@@ -26,47 +33,56 @@ type TrackableContentItem = {
   id: string;
   type: ContentType.Lesson | ContentType.Exercise;
   title: string;
-  order: number | null;
-  createdAt: string | null;
-  isComplete: boolean | null;
+  isComplete: boolean;
 };
 
-const CONTENT_TYPE_PRIORITY: Record<ContentType.Lesson | ContentType.Exercise, number> = {
-  [ContentType.Lesson]: 0,
-  [ContentType.Exercise]: 1
-};
-
-function sortTrackableContentItems(items: TrackableContentItem[]): TrackableContentItem[] {
-  return [...items].sort((left, right) => {
-    const orderDiff = (left.order ?? 0) - (right.order ?? 0);
-    if (orderDiff !== 0) return orderDiff;
-
-    const typeDiff = CONTENT_TYPE_PRIORITY[left.type] - CONTENT_TYPE_PRIORITY[right.type];
-    if (typeDiff !== 0) return typeDiff;
-
-    return new Date(left.createdAt || 0).getTime() - new Date(right.createdAt || 0).getTime();
-  });
-}
-
-function toTrackableContentItems(rows: Awaited<ReturnType<typeof getCourseContentItems>>): TrackableContentItem[] {
+function toTrackableContentItems(contentItems: CourseContentItem[]): TrackableContentItem[] {
   const trackableItems: TrackableContentItem[] = [];
 
-  for (const row of rows) {
-    if (row.type !== ContentType.Lesson && row.type !== ContentType.Exercise) {
+  for (const item of contentItems) {
+    if (item.type !== ContentType.Lesson && item.type !== ContentType.Exercise) {
       continue;
     }
 
     trackableItems.push({
-      id: row.id,
-      type: row.type,
-      title: row.title ?? '',
-      order: row.order,
-      createdAt: row.createdAt,
-      isComplete: row.isComplete
+      id: item.id,
+      type: item.type,
+      title: item.title,
+      isComplete: item.isComplete ?? false
     });
   }
 
   return trackableItems;
+}
+
+function buildOrderedTrackableItems(
+  contentRows: Awaited<ReturnType<typeof getCourseContentItems>>,
+  isContentGroupingEnabled: boolean
+): Omit<TrackableContentItem, 'isComplete'>[] {
+  const content = buildCourseContent(contentRows, isContentGroupingEnabled);
+  const orderedItems = content.grouped ? content.sections.flatMap((section) => section.items) : content.items;
+
+  return toTrackableContentItems(orderedItems as CourseContentItem[]).map(({ id, type, title }) => ({
+    id,
+    type,
+    title
+  }));
+}
+
+function buildStudentTrackableItems(
+  skeleton: Omit<TrackableContentItem, 'isComplete'>[],
+  completedLessonIds: Set<string>,
+  completedExerciseIds: Set<string>
+): TrackableContentItem[] {
+  return skeleton.map((item) => {
+    const isLesson = item.type === ContentType.Lesson;
+    const isComplete = isLesson ? completedLessonIds.has(item.id) : completedExerciseIds.has(item.id);
+
+    return {
+      ...item,
+      isComplete
+    };
+  });
 }
 
 export function deriveCourseMemberStage(params: {
@@ -118,43 +134,69 @@ export async function getCourseMemberProgressSummaries(
   }
 
   const profileIds = students.map((student) => student.profileId);
-  const lastSeenByProfileId = await getLastSeenForUserIds(profileIds);
 
-  const progressResults = await Promise.all(
-    students.map(async (student) => {
-      const [courseProgress, contentRows] = await Promise.all([
-        getCourseProgress(courseId, student.profileId),
-        getCourseContentItems(courseId, student.profileId)
-      ]);
+  const [
+    courseRows,
+    contentRows,
+    contentCounts,
+    membershipByProfileId,
+    lessonCompletionsByProfileId,
+    lastSeenByProfileId
+  ] = await Promise.all([
+    getCourseById(courseId),
+    getCourseContentItems(courseId),
+    getCourseTrackableContentCounts(courseId),
+    getBatchStudentCourseMembership(courseId, profileIds),
+    getBatchLessonCompletionsForCourse(courseId, profileIds),
+    getLastSeenForUserIds(profileIds)
+  ]);
 
-      const contentItems = sortTrackableContentItems(toTrackableContentItems(contentRows));
-      const progressPercent = calcCourseProgressPercent({
-        lessonsCompleted: courseProgress.lessonsCompleted,
-        totalLessons: courseProgress.lessonsCount,
-        exercisesCompleted: courseProgress.exercisesCompleted,
-        exercisesCount: courseProgress.exercisesCount
-      });
+  const course = courseRows[0];
+  const isContentGroupingEnabled = course?.metadata?.isContentGroupingEnabled ?? true;
+  const trackableSkeleton = buildOrderedTrackableItems(contentRows, isContentGroupingEnabled);
 
-      const stage = deriveCourseMemberStage({
-        progressPercent,
-        certificateEarnedAt: courseProgress.certificateEarnedAt,
-        contentItems
-      });
+  const groupMemberIds = profileIds
+    .map((profileId) => membershipByProfileId.get(profileId)?.groupMemberId)
+    .filter((groupMemberId): groupMemberId is string => !!groupMemberId);
 
-      return {
-        profileId: student.profileId,
-        summary: {
-          progressPercent,
-          stage,
-          lastLoginAt: lastSeenByProfileId.get(student.profileId) ?? null,
-          enrolledAt: student.createdAt ?? null
-        }
-      };
-    })
-  );
+  const exerciseCompletionsByMemberId = await getBatchCompletedExerciseIdsForMembers(courseId, groupMemberIds);
 
-  for (const result of progressResults) {
-    summaries.set(result.profileId, result.summary);
+  for (const student of students) {
+    const membership = membershipByProfileId.get(student.profileId);
+    const completedLessonIds = lessonCompletionsByProfileId.get(student.profileId) ?? new Set<string>();
+    const completedExerciseIds = membership
+      ? (exerciseCompletionsByMemberId.get(membership.groupMemberId) ?? new Set<string>())
+      : new Set<string>();
+
+    const lessonsCompleted = trackableSkeleton.filter(
+      (item) => item.type === ContentType.Lesson && completedLessonIds.has(item.id)
+    ).length;
+    const exercisesCompleted = trackableSkeleton.filter(
+      (item) => item.type === ContentType.Exercise && completedExerciseIds.has(item.id)
+    ).length;
+
+    const progressPercent = calcCourseProgressPercent({
+      lessonsCompleted,
+      totalLessons: contentCounts.lessonsCount,
+      exercisesCompleted,
+      exercisesCount: contentCounts.exercisesCount
+    });
+
+    const contentItems = buildStudentTrackableItems(trackableSkeleton, completedLessonIds, completedExerciseIds);
+    const certificateEarnedAt = membership?.certificateEarnedAt ?? null;
+
+    const stage = deriveCourseMemberStage({
+      progressPercent,
+      certificateEarnedAt,
+      contentItems
+    });
+
+    summaries.set(student.profileId, {
+      progressPercent,
+      stage,
+      lastLoginAt: lastSeenByProfileId.get(student.profileId) ?? null,
+      enrolledAt: student.createdAt ?? null
+    });
   }
 
   return summaries;
