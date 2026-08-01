@@ -24,14 +24,8 @@
   let { feed, onPin, onEdit, onRequestDelete }: Props = $props();
 </script>
 
-<div class="p-4 pb-2">
-  {#if feed.isPinned}
-    <div class="text-muted-foreground mb-3 flex items-center gap-1.5">
-      <PinIcon size={14} class="fill-current" />
-    </div>
-  {/if}
-
-  <div class="mb-3 flex items-center justify-between">
+<div class="px-4 pt-4 pb-0">
+  <div class="mb-2 flex items-center justify-between">
     <div class="flex items-center gap-3">
       <UserAvatar src={feed.authorAvatarUrl} class="size-10" />
       <div class="flex flex-col">

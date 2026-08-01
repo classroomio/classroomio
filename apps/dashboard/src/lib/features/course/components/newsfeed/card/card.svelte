@@ -5,6 +5,8 @@
   import { newsfeedApi } from '$features/course/api';
   import { getNewsfeedReactionCounts, getSelectedNewsfeedReactionType } from '@cio/ui/custom/newsfeed-reactions';
 
+  import PinIcon from '@lucide/svelte/icons/pin';
+
   import DeleteConfirmation from './delete-confirmation.svelte';
   import type { NewsfeedCommentsByFeedId } from '$features/course/api';
   import Header from './header.svelte';
@@ -80,13 +82,21 @@
 
 <div
   id={feed.id}
-  class="bg-card text-card-foreground mb-6 flex w-full max-w-3xl flex-col rounded-xl shadow-sm transition-all duration-200 hover:shadow-md {isActive
+  class="bg-card text-card-foreground relative mb-6 flex w-full max-w-3xl flex-col rounded-xl {isActive
     ? 'ring-primary border-primary ring-2'
     : 'border-border/60 border'}"
 >
+  {#if feed.isPinned}
+    <PinIcon
+      size={16}
+      class="text-muted-foreground absolute top-3 left-4 z-10 -rotate-45 fill-current"
+      aria-hidden="true"
+    />
+  {/if}
+
   <Header {feed} {onPin} onEdit={openEditFeed} onRequestDelete={() => (isDeleteFeedModal = true)} />
 
-  <div class="px-4 pb-3">
+  <div class="px-4 pb-2">
     <NewsfeedReactions
       {reactionCounts}
       {selectedReactionType}

@@ -161,7 +161,7 @@
   };
 </script>
 
-<section class="ui:border-t ui:border-border/60 p-4 pt-3">
+<section class="ui:border-t ui:border-border/60 px-4 pt-2 pb-4">
   {#if totalCount > shownCount}
     <Button
       variant="ghost"
