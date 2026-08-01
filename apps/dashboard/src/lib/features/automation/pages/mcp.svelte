@@ -21,7 +21,6 @@
   import * as Tabs from '@cio/ui/base/tabs';
   import { InputField } from '@cio/ui/custom/input-field';
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import CoinsIcon from '@lucide/svelte/icons/coins';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import GaugeIcon from '@lucide/svelte/icons/gauge';
   import KeyIcon from '@lucide/svelte/icons/key';
@@ -74,13 +73,6 @@
 
     return [
       {
-        icon: CoinsIcon,
-        title: t.get('automation.mcp.usage.credits_title'),
-        percentage: automationApi.usage.monthlyCreditsRemaining,
-        description: `${t.get('automation.mcp.usage.used_label')} ${automationApi.usage.monthlyCreditsUsed} / ${automationApi.usage.monthlyCreditsIncluded}`,
-        hidePercentage: true
-      },
-      {
         icon: KeyIcon,
         title: t.get('automation.mcp.usage.keys_title'),
         percentage: automationApi.usage.activeKeys,
@@ -98,7 +90,6 @@
   });
 
   const isLastUsageCard = (index: number) => index === usageCards.length - 1;
-  const hasActiveMcpKey = $derived(mcpKeys.some((key) => !key.revokedAt));
 </script>
 
 <Field.Group class="mx-auto w-full space-y-2">
@@ -112,7 +103,7 @@
   {/if}
 
   {#if $isOrgAdmin && automationApi.usage}
-    <div class="grid gap-4 md:grid-cols-3">
+    <div class="grid gap-4 md:grid-cols-2">
       {#each usageCards as card, i (i)}
         <ActivityCard
           activity={card}
@@ -228,8 +219,7 @@
     {/if}
   </div>
 
-  {#if hasActiveMcpKey}
-    <Field.Set class="gap-3!">
+  <Field.Set class="gap-3!">
       <Field.Legend class="flex items-center gap-2">
         <SparklesIcon class="size-5" />
         {$t('automation.mcp.setup.title')}
@@ -277,7 +267,6 @@
         </Tabs.Content>
       </Tabs.Root>
     </Field.Set>
-  {/if}
 </Field.Group>
 
 <Dialog.Root

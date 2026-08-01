@@ -3998,9 +3998,7 @@
       "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime.",
       "usage": {
         "title": "Usage and limits",
-        "description": "MCP is available on every plan, but usage is controlled with monthly automation credits and key limits.",
-        "credits_title": "Credits remaining",
-        "credits_description": "Mutating MCP actions consume credits. Read actions are free.",
+        "description": "MCP is available on every plan. Usage is controlled by key limits and rate limits.",
         "keys_title": "Active keys",
         "keys_description": "Use one MCP key per integration so access can be rotated or revoked cleanly.",
         "rate_limits_title": "Rate limits",
@@ -4028,7 +4026,8 @@
         "codex_description": "Adds the ClassroomIO MCP server to Codex with the same org-scoped key.",
         "cursor_description": "Paste this into `~/.cursor/mcp.json` or your workspace MCP config.",
         "opencode_description": "Add this to `opencode.json` in your project root or `~/.config/opencode/opencode.json`."
-      }
+      },
+      "view_docs": "View Docs"
     },
     "api": {
       "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
