@@ -71,11 +71,14 @@ jobs:
         # BRANCH is bound via env (not interpolated into the script) so an attacker-supplied
         # value can't be executed as shell. "feat/foo_bar" -> "pr-feat-foo-bar-<hash>" — the
         # slug alone is lossy (e.g. "foo/bar" and "foo_bar" both slug to "foo-bar"), so a
-        # hash of the original branch string disambiguates collisions.
+        # hash of the original branch string disambiguates collisions. Slug is capped at 18
+        # chars so "pr-<slug>-<hash>" stays under Railway's ~32-char environment name limit
+        # even for long auto-generated branch names — the hash (not the slug) is what
+        # actually guarantees uniqueness, so truncating the slug is safe.
         env:
           BRANCH: ${{ inputs.branch }}
         run: |
-          slug=$(echo "$BRANCH" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//')
+          slug=$(echo "$BRANCH" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//' | cut -c1-18 | sed 's/-$//')
           hash=$(echo -n "$BRANCH" | sha256sum | cut -c1-8)
           echo "name=pr-${slug}-${hash}" >> "$GITHUB_OUTPUT"
 
