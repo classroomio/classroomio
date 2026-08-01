@@ -162,7 +162,23 @@ jobs:
           # route wildcard bucket subdomains, so virtual-host style (mc's "auto" default)
           # fails bucket creation with a misleading "does not exist" error.
           ./mc alias set cio "https://${MINIO_HOST}" "$MINIO_USER" "$MINIO_PASS" --path on
-          ./mc mb cio/videos cio/documents cio/media --ignore-existing
+          # A freshly duplicated cio-minio's HTTP listener accepts connections before it
+          # finishes formatting its storage backend ("Formatting 1st pool..." in its boot
+          # logs), so bucket creation can transiently fail right after boot. Retry instead
+          # of failing the run on what's usually just a not-ready-yet response.
+          for attempt in $(seq 1 10); do
+            if output=$(./mc mb cio/videos cio/documents cio/media --ignore-existing 2>&1); then
+              echo "$output"
+              break
+            fi
+            echo "$output"
+            if [ "$attempt" -eq 10 ]; then
+              echo "::error::cio-minio bucket creation failed after 10 attempts."
+              exit 1
+            fi
+            echo "Bucket creation failed (attempt $attempt/10) — cio-minio may still be initializing; retrying in 5s..."
+            sleep 5
+          done
           ./mc anonymous set download cio/media
 
       - name: Deploy each app service from this branch
