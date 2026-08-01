@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prototype 3 — Up Next Panel</title>
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --sidebar: #ffffff;
+        --border: #e2e8f0;
+        --text: #0f172a;
+        --muted: #64748b;
+        --primary: #2563eb;
+        --primary-soft: #eff6ff;
+        --green: #16a34a;
+        --radius: 10px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          Inter,
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+      }
+
+      .demo-label {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        z-index: 10;
+        background: #0f172a;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 8px 12px;
+        border-radius: 999px;
+      }
+
+      .sidebar {
+        width: 320px;
+        min-height: 100vh;
+        background: var(--sidebar);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        padding: 20px 16px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .course-title-row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .ring {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: conic-gradient(var(--green) 44%, #e2e8f0 0);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+      }
+
+      .ring span {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #fff;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--green);
+      }
+
+      .title-block h1 {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.3;
+      }
+
+      .title-block p {
+        margin: 4px 0 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+        margin: 12px;
+        padding: 4px;
+        background: #f1f5f9;
+        border-radius: 10px;
+      }
+
+      .tab {
+        border: 0;
+        background: transparent;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        cursor: pointer;
+      }
+
+      .tab[aria-selected='true'] {
+        background: #fff;
+        color: var(--text);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+      }
+
+      .panel {
+        flex: 1;
+        overflow: auto;
+        padding: 0 8px 16px;
+      }
+
+      .panel[hidden] {
+        display: none;
+      }
+
+      .up-next-hero {
+        margin: 4px 8px 12px;
+        padding: 14px;
+        border-radius: 12px;
+        background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+        border: 1px solid #bfdbfe;
+      }
+
+      .up-next-hero .badge {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--primary);
+        background: #dbeafe;
+        padding: 4px 8px;
+        border-radius: 999px;
+        margin-bottom: 8px;
+      }
+
+      .up-next-hero h2 {
+        margin: 0 0 6px;
+        font-size: 15px;
+        line-height: 1.35;
+      }
+
+      .up-next-hero p {
+        margin: 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .queue-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        padding: 4px 10px 8px;
+      }
+
+      .item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        color: #334155;
+        text-decoration: none;
+      }
+
+      .item:hover {
+        background: #f8fafc;
+      }
+
+      .item.active {
+        background: var(--primary-soft);
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .item .step {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 2px solid #cbd5e1;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+
+      .item.active .step {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .item.done .step {
+        border-color: #334155;
+        background: #334155;
+        color: #fff;
+        font-size: 10px;
+      }
+
+      .icon {
+        width: 18px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .label {
+        flex: 1;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .check {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #334155;
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        flex-shrink: 0;
+      }
+
+      .view-all {
+        display: block;
+        margin: 8px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--primary);
+        text-decoration: none;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px dashed #93c5fd;
+        background: #f8fbff;
+      }
+
+      .footer {
+        border-top: 1px solid var(--border);
+        padding: 12px;
+      }
+
+      .progress-box {
+        background: var(--primary-soft);
+        border-radius: var(--radius);
+        padding: 12px;
+        margin-bottom: 12px;
+      }
+
+      .progress-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .progress-row .pct {
+        color: var(--primary);
+      }
+
+      .bar {
+        height: 6px;
+        background: #dbeafe;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: 44%;
+        background: var(--primary);
+      }
+
+      .progress-meta {
+        margin-top: 8px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .powered {
+        text-align: center;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .content {
+        flex: 1;
+        padding: 32px;
+      }
+
+      .content h2 {
+        margin-top: 0;
+      }
+
+      .content p {
+        max-width: 560px;
+        line-height: 1.6;
+        color: #475569;
+      }
+
+      .pill {
+        display: inline-block;
+        background: #ede9fe;
+        color: #5b21b6;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 999px;
+        margin-bottom: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-label">Prototype 3 — Up Next Panel</div>
+
+    <aside class="sidebar">
+      <header class="header">
+        <div class="course-title-row">
+          <div class="ring" aria-hidden="true"><span>44%</span></div>
+          <div class="title-block">
+            <h1>HVA Virtual Assistant Program</h1>
+            <p>155 of 354 completed</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="tabs" role="tablist" aria-label="Sidebar view">
+        <button class="tab" id="tab-up-next" type="button" role="tab" aria-selected="true" aria-controls="panel-up-next">
+          Up next
+        </button>
+        <button class="tab" id="tab-all" type="button" role="tab" aria-selected="false" aria-controls="panel-all">
+          All content
+        </button>
+      </div>
+
+      <div class="panel" id="panel-up-next" role="tabpanel" aria-labelledby="tab-up-next">
+        <div class="up-next-hero">
+          <div class="badge">Now learning</div>
+          <h2 id="hero-title">Hotel &amp; Ground Transport Tips</h2>
+          <p>Lesson 9 of 14 in this module · ~8 min left in queue</p>
+        </div>
+
+        <div class="queue-label">Coming up</div>
+        <div id="queue-list"></div>
+
+        <a class="view-all" href="#" id="view-all">View full course outline (354 items)</a>
+      </div>
+
+      <div class="panel" id="panel-all" role="tabpanel" aria-labelledby="tab-all" hidden>
+        <div id="all-list"></div>
+      </div>
+
+      <footer class="footer">
+        <div class="progress-box">
+          <div class="progress-row">
+            <span>Your progress</span>
+            <span class="pct">44%</span>
+          </div>
+          <div class="bar"><span></span></div>
+          <div class="progress-meta">140 of 321 lessons · 15 of 33 exercises</div>
+        </div>
+        <div class="powered">Powered by ClassroomIO</div>
+      </footer>
+    </aside>
+
+    <main class="content">
+      <div class="pill">Solution C</div>
+      <h2>Focused “Up next” tab with full outline on demand</h2>
+      <p>
+        The default view is a short queue: the current item plus the next few lessons/exercises. Students
+        navigate forward without scrolling past dozens of checkmarks. The “All content” tab (or “View full
+        outline”) is there when they need the complete syllabus.
+      </p>
+    </main>
+
+    <script>
+      const items = [
+        { title: 'Entry/Exit Requirements', type: 'lesson', done: true },
+        { title: 'Passport Advice', type: 'lesson', done: true },
+        { title: 'Tips for Booking Flights', type: 'lesson', done: true },
+        { title: 'Airport Navigation', type: 'lesson', done: true },
+        { title: 'Travel Insurance Basics', type: 'lesson', done: true },
+        { title: 'Packing Checklist', type: 'lesson', done: true },
+        { title: 'Time Zone Planning', type: 'lesson', done: true },
+        { title: 'Client Travel Preferences', type: 'lesson', done: true },
+        { title: 'Hotel & Ground Transport Tips', type: 'lesson', done: false, active: true },
+        { title: 'Booking Hotels', type: 'lesson', done: false },
+        { title: '[Optional] Late Check-out Option', type: 'lesson', done: false },
+        { title: 'Mini-Project #1', type: 'exercise', done: false },
+        { title: 'Ground Transport Vendors', type: 'lesson', done: false },
+        { title: 'Expense Reporting', type: 'exercise', done: false }
+      ];
+
+      const tabUpNext = document.getElementById('tab-up-next');
+      const tabAll = document.getElementById('tab-all');
+      const panelUpNext = document.getElementById('panel-up-next');
+      const panelAll = document.getElementById('panel-all');
+      const queueList = document.getElementById('queue-list');
+      const allList = document.getElementById('all-list');
+      const viewAll = document.getElementById('view-all');
+
+      const activeIndex = items.findIndex((item) => item.active);
+      const upcoming = items.slice(activeIndex, activeIndex + 5);
+
+      function createItemRow(item, index, options = {}) {
+        const { numbered = false, showCheck = true } = options;
+        const row = document.createElement('a');
+        row.href = '#';
+        row.className = 'item';
+        if (item.active) row.classList.add('active');
+        if (item.done) row.classList.add('done');
+
+        const stepMarkup = numbered
+          ? `<span class="step">${item.done ? '✓' : index + 1}</span>`
+          : `<span class="icon">${item.type === 'lesson' ? '📘' : '✅'}</span>`;
+
+        row.innerHTML = `
+          ${stepMarkup}
+          <span class="label">${item.title}</span>
+          ${item.done && showCheck ? '<span class="check" aria-label="Completed">✓</span>' : ''}
+        `;
+
+        row.addEventListener('click', (event) => {
+          event.preventDefault();
+          document.querySelectorAll('.item').forEach((el) => el.classList.remove('active'));
+          row.classList.add('active');
+        });
+
+        return row;
+      }
+
+      upcoming.forEach((item, index) => {
+        queueList.appendChild(createItemRow(item, index, { numbered: true, showCheck: false }));
+      });
+
+      items.forEach((item) => {
+        allList.appendChild(createItemRow(item));
+      });
+
+      function selectTab(which) {
+        const isUpNext = which === 'up-next';
+        tabUpNext.setAttribute('aria-selected', String(isUpNext));
+        tabAll.setAttribute('aria-selected', String(!isUpNext));
+        panelUpNext.hidden = !isUpNext;
+        panelAll.hidden = isUpNext;
+      }
+
+      tabUpNext.addEventListener('click', () => selectTab('up-next'));
+      tabAll.addEventListener('click', () => selectTab('all'));
+      viewAll.addEventListener('click', (event) => {
+        event.preventDefault();
+        selectTab('all');
+      });
+    </script>
+  </body>
+</html>
