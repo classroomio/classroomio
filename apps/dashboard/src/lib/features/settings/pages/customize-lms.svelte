@@ -11,7 +11,14 @@
   import { UploadWidget } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
+  interface Props {
+    hasUnsavedChanges?: boolean;
+  }
+
+  let { hasUnsavedChanges = $bindable(false) }: Props = $props();
+
   let widgetKey = $state('');
+  let savedCustomizationSnapshot = $state('');
 
   function widgetControl(key: string) {
     widgetKey = key;
@@ -31,10 +38,40 @@
     $currentOrg.customization.auth.backgroundImage = '';
   }
 
+  function captureCustomizationSnapshot() {
+    savedCustomizationSnapshot = JSON.stringify($currentOrg.customization);
+  }
+
+  $effect(() => {
+    if (!$currentOrg?.id) return;
+
+    if (!savedCustomizationSnapshot) {
+      captureCustomizationSnapshot();
+    }
+  });
+
+  $effect(() => {
+    if (!$currentOrg?.id || !savedCustomizationSnapshot) return;
+
+    hasUnsavedChanges = JSON.stringify($currentOrg.customization) !== savedCustomizationSnapshot;
+  });
+
   export async function handleSave() {
     await orgApi.update($currentOrg.id, {
       customization: $currentOrg.customization
     });
+
+    if (orgApi.success) {
+      captureCustomizationSnapshot();
+      hasUnsavedChanges = false;
+    }
+  }
+
+  export function handleDiscard() {
+    if (!savedCustomizationSnapshot) return;
+
+    $currentOrg.customization = JSON.parse(savedCustomizationSnapshot);
+    hasUnsavedChanges = false;
   }
 </script>
 

@@ -1,11 +1,11 @@
 <script lang="ts">
   import * as Page from '@cio/ui/base/page';
-  import { Button } from '@cio/ui/base/button';
   import { Input } from '@cio/ui/base/input';
   import { Textarea } from '@cio/ui/base/textarea';
   import { Label } from '@cio/ui/base/label';
   import * as Select from '@cio/ui/base/select';
   import { Separator } from '@cio/ui/base/separator';
+  import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
   import { cohortApi } from '$features/cohort/api';
   import { goto } from '$app/navigation';
@@ -70,6 +70,15 @@
     }
   }
 
+  function handleDiscard() {
+    const currentCohort = cohortApi.cohort;
+    if (!currentCohort) return;
+
+    name = currentCohort.name;
+    description = currentCohort.description ?? '';
+    status = (currentCohort.status as 'ACTIVE' | 'INACTIVE' | 'ARCHIVED') ?? 'ACTIVE';
+  }
+
   async function handleDelete() {
     if (
       !confirm(
@@ -84,15 +93,10 @@
 </script>
 
 <Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
-  <Page.Header class="sticky top-13 z-10 bg-white">
+  <Page.Header>
     <Page.HeaderContent>
       <Page.Title>{$t('cohorts.sidebar.settings') || 'Settings'}</Page.Title>
     </Page.HeaderContent>
-    <Page.Action>
-      <Button variant="secondary" loading={isSaving} disabled={isSaving || !hasUnsavedChanges} onclick={handleSave}>
-        {$t('cohorts.settings.save') || 'Save Changes'}
-      </Button>
-    </Page.Action>
   </Page.Header>
   <Page.Body>
     {#snippet child()}
@@ -149,4 +153,14 @@
       </div>
     {/snippet}
   </Page.Body>
+  <Page.SettingsActions
+    hasChanges={hasUnsavedChanges}
+    loading={isSaving}
+    disabled={isSaving || !hasUnsavedChanges}
+    statusLabel={$t('common.unsaved_changes.label')}
+    discardLabel={$t('common.discard')}
+    saveLabel={$t('common.save_changes')}
+    onSave={handleSave}
+    onDiscard={handleDiscard}
+  />
 </Page.Root>

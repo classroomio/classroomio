@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Atualizar",
     "unsaved_changes": {
-      "message": "Você tem alterações não salvas. Tem certeza de que deseja sair?"
-    }
+      "message": "Você tem alterações não salvas. Tem certeza de que deseja sair?",
+      "label": "Alterações não salvas"
+    },
+    "discard": "Descartar",
+    "save_changes": "Salvar alterações"
   },
   "validations": {
     "generic": {

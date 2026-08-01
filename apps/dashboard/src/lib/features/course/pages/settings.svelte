@@ -262,6 +262,16 @@
     });
   }
 
+  export function handleDiscard() {
+    if (!courseApi.course) return;
+
+    setDefault(courseApi.course);
+    selectedTagIds = [...initialTagIds];
+    avatar = undefined;
+    errors = {};
+    hasUnsavedChanges = false;
+  }
+
   function sanitizeCalloutForSave(value: typeof $settings.callout) {
     if (!value) return null;
 

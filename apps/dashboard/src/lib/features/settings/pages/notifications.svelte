@@ -14,7 +14,6 @@
   import { orgApi } from '$features/org/api/org.svelte';
   import * as Field from '@cio/ui/base/field';
   import { Switch } from '@cio/ui/base/switch';
-  import { Button } from '@cio/ui/base/button';
   import BellIcon from '@lucide/svelte/icons/bell';
   import Building2Icon from '@lucide/svelte/icons/building-2';
   import { onMount } from 'svelte';
@@ -31,6 +30,12 @@
   let isSavingOrg = $state(false);
   let isLoadingPersonal = $state(false);
   let hasHydratedOrgToggles = $state(false);
+
+  interface Props {
+    hasUnsavedChanges?: boolean;
+  }
+
+  let { hasUnsavedChanges = $bindable(false) }: Props = $props();
 
   const tutorOnlyToggleKeys = new Set<string>(TUTOR_ONLY_PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS);
 
@@ -125,6 +130,26 @@
     )
   );
 
+  $effect(() => {
+    hasUnsavedChanges = personalHasChanges || orgHasChanges;
+  });
+
+  export async function handleSaveAll() {
+    if (personalHasChanges) {
+      await handleSavePersonal();
+    }
+
+    if (orgHasChanges) {
+      await handleSaveOrg();
+    }
+  }
+
+  export function handleDiscard() {
+    applyPersonalToggleState(savedPersonalToggles);
+    syncOrgTogglesFromCurrentOrg();
+    hasUnsavedChanges = false;
+  }
+
   function toStoredPreferences<T extends string>(keys: readonly T[], toggles: Record<T, boolean>) {
     const preferences: Partial<Record<T, boolean>> = {};
 
@@ -216,17 +241,6 @@
         </Field.Set>
       {/each}
     </div>
-
-    <div class="mt-6">
-      <Button
-        variant="secondary"
-        loading={isSavingPersonal}
-        disabled={!personalHasChanges || isSavingPersonal || isLoadingPersonal || !$currentOrg?.id}
-        onclick={handleSavePersonal}
-      >
-        {$t('settings.notifications.personal.save')}
-      </Button>
-    </div>
   </Field.Set>
 
   {#if $isOrgAdmin}
@@ -268,17 +282,6 @@
             </div>
           </Field.Set>
         {/each}
-      </div>
-
-      <div class="mt-6">
-        <Button
-          variant="secondary"
-          loading={isSavingOrg}
-          disabled={!orgHasChanges || isSavingOrg}
-          onclick={handleSaveOrg}
-        >
-          {$t('settings.notifications.org.save')}
-        </Button>
       </div>
     </Field.Set>
   {/if}

@@ -12,8 +12,14 @@
   import { UploadImage, UnsavedChanges } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
+  interface Props {
+    hasUnsavedChanges?: boolean;
+  }
+
+  let { hasUnsavedChanges = $bindable(false) }: Props = $props();
+
   let avatar = $state<string | File | undefined>();
-  let hasUnsavedChanges = $state(false);
+  let savedName = $state('');
 
   const themes = {
     rose: 'rose',
@@ -57,7 +63,25 @@
     if (orgApi.success) {
       hasUnsavedChanges = false;
       avatar = undefined;
+      savedName = $currentOrg.name;
     }
+  }
+
+  function captureSavedFields() {
+    savedName = $currentOrg.name;
+  }
+
+  $effect(() => {
+    if (!$currentOrg?.id) return;
+
+    captureSavedFields();
+  });
+
+  export function handleDiscard() {
+    $currentOrg.name = savedName;
+    avatar = undefined;
+    hasUnsavedChanges = false;
+    orgApi.errors = {};
   }
 
   let isCustomTheme = $derived($currentOrg?.theme?.includes('#'));

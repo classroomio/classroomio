@@ -122,6 +122,45 @@ Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelt
 
 Utility functions and helpers are located in `src/tools/`. The main utility is the `cn` function for class name merging.
 
+### Page layout (`src/base/page/`)
+
+Composable page shell used across dashboard list and settings screens. Import as `import * as Page from '@cio/ui/base/page'`.
+
+| Export                         | Purpose                                                      |
+| ------------------------------ | ------------------------------------------------------------ |
+| `Page.Root`                    | Flex column wrapper with minimum viewport height             |
+| `Page.Header`                  | Title row; pass `isSticky` to pin the header while scrolling |
+| `Page.HeaderContent`           | Title + subtitle column                                      |
+| `Page.Title` / `Page.Subtitle` | Page heading and description                                 |
+| `Page.Action`                  | Right-aligned header actions                                 |
+| `Page.Body`                    | Main content area (`child` snippet)                          |
+| `Page.BodyHeader`              | Toolbar inside the body                                      |
+| `Page.SettingsActions`         | Sticky bottom save/discard bar for settings forms            |
+
+**Settings pages:** Place `Page.SettingsActions` as the last child inside `Page.Root`, after `Page.Body`. It only renders when `hasChanges` is true, sticks to the bottom of the viewport while scrolling, and settles at the end of the page content when you reach the bottom. Pass translated `statusLabel`, `discardLabel`, and `saveLabel` props from the dashboard.
+
+```svelte
+<Page.Root>
+  <Page.Header>...</Page.Header>
+  <Page.Body>
+    {#snippet child()}
+      <!-- form sections -->
+    {/snippet}
+  </Page.Body>
+  <Page.SettingsActions
+    hasChanges={hasUnsavedChanges}
+    loading={isSaving}
+    statusLabel={$t('common.unsaved_changes.label')}
+    discardLabel={$t('common.discard')}
+    saveLabel={$t('common.save_changes')}
+    onSave={handleSave}
+    onDiscard={handleDiscard}
+  />
+</Page.Root>
+```
+
+See `Molecules/Page` → **Settings Actions** in Storybook.
+
 ## Importing `cn`
 
 The `cn` utility function is used throughout the codebase for merging Tailwind CSS classes. It combines `clsx` and `tailwind-merge` to handle class conflicts intelligently.

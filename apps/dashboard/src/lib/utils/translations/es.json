@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Actualizar",
     "unsaved_changes": {
-      "message": "Tienes cambios sin guardar. ¿Estás seguro de que quieres irte?"
-    }
+      "message": "Tienes cambios sin guardar. ¿Estás seguro de que quieres irte?",
+      "label": "Cambios sin guardar"
+    },
+    "discard": "Descartar",
+    "save_changes": "Guardar cambios"
   },
   "validations": {
     "generic": {

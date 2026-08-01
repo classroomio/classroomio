@@ -11,10 +11,18 @@
   import { UploadImage, UnsavedChanges } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
+  interface Props {
+    hasUnsavedChanges?: boolean;
+  }
+
+  let { hasUnsavedChanges = $bindable(false) }: Props = $props();
+
   let avatar = $state<string | File | undefined>();
   let hasLangChanged = $state(false);
   let locale = $derived<TLocale | undefined>($profile.locale || undefined);
-  let hasUnsavedChanges = $state(false);
+  let savedFullname = $state('');
+  let savedUsername = $state('');
+  let savedLocale = $state<TLocale | undefined>(undefined);
   let email = $derived($profile.email || '');
   let isChangingEmail = $state(false);
   let emailChangeInitiated = $state(false);
@@ -34,6 +42,7 @@
     if (profileApi.success) {
       hasUnsavedChanges = false;
       avatar = undefined;
+      captureSavedFields();
     }
   }
 
@@ -58,6 +67,28 @@
   }
 
   const isVerificationSent = $derived(page.url.searchParams.get('trigger') === 'app');
+
+  function captureSavedFields() {
+    savedFullname = $profile.fullname;
+    savedUsername = $profile.username;
+    savedLocale = $profile.locale || undefined;
+  }
+
+  $effect(() => {
+    if (!$profile.id) return;
+
+    captureSavedFields();
+  });
+
+  export function handleDiscard() {
+    $profile.fullname = savedFullname;
+    $profile.username = savedUsername;
+    $profile.locale = savedLocale;
+    avatar = undefined;
+    hasLangChanged = false;
+    hasUnsavedChanges = false;
+    profileApi.errors = {};
+  }
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
