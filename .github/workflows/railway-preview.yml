@@ -250,6 +250,12 @@ jobs:
         if: ${{ inputs.action == 'deploy' && inputs.seed }}
         run: pnpm install --frozen-lockfile
 
+      - name: Build workspace dependencies
+        if: ${{ inputs.action == 'deploy' && inputs.seed }}
+        # @cio/db imports compiled output (e.g. @cio/utils/dist/...) from its workspace
+        # deps, not source — they must be built before the seed script can import them.
+        run: pnpm --filter @cio/db^... build
+
       - name: Seed the full demo dataset (optional)
         if: ${{ inputs.action == 'deploy' && inputs.seed }}
         # cio-api only carries the private DATABASE_URL; `railway run` executes on this
