@@ -2,7 +2,7 @@
   import { type VariantProps, tv } from 'tailwind-variants';
 
   export const alertVariants = tv({
-    base: 'ui:relative ui:grid ui:w-full ui:grid-cols-[0_1fr] ui:items-start ui:gap-y-0.5 ui:rounded-lg ui:border ui:px-4 ui:py-3 ui:text-sm ui:has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] ui:has-[>svg]:gap-x-3 ui:[&>svg]:size-4 ui:[&>svg]:translate-y-0.5 ui:[&>svg]:text-current',
+    base: 'ui:relative ui:grid ui:w-full ui:grid-cols-[0_1fr] ui:items-start ui:gap-y-0.5 ui:rounded-lg ui:border ui:px-4 ui:py-3 ui:text-sm ui:has-[>svg]:grid-cols-[calc(var(--ui-spacing)*4)_1fr] ui:has-[>svg]:gap-x-3 ui:[&>svg]:size-4 ui:[&>svg]:translate-y-0.5 ui:[&>svg]:text-current',
     variants: {
       variant: {
         default: 'ui:bg-card ui:text-card-foreground',

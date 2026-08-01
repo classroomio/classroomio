@@ -2632,6 +2632,7 @@
                 "multiple": "Multiple answers",
                 "paragraph": "Paragraph",
                 "true_false": "True/False",
+                "thumbs": "Thumbs up/down",
                 "short_answer": "Short answer",
                 "numeric": "Numeric answer",
                 "fill_blank": "Fill in the blank",
@@ -2775,6 +2776,17 @@
                 },
                 "preview": {
                   "correct_value_label": "Correct value"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Yes",
+                "no_label": "No",
+                "edit": {
+                  "positive_option_label": "Thumbs up label",
+                  "negative_option_label": "Thumbs down label"
+                },
+                "preview": {
+                  "helper": "Open-ended — students choose thumbs up or down."
                 }
               },
               "short_answer": {
@@ -4186,6 +4198,7 @@
       }
     },
     "exercise": {
+      "validation_errors": "Please fix all validation errors before saving.",
       "points_required_auto_grade": "Set a positive point value for every question before saving.",
       "passed_requires_points": "Passed completion needs at least one point available.",
       "success": "Saved Successfully",

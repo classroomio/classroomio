@@ -59,7 +59,8 @@ Every question you pass to \`create_exercise\` or \`add_questions\` MUST include
 
 **Pick the type that matches the cognitive skill being tested, not the type that's easiest to write:**
 
-- **TRUE_FALSE** — testing a single misconception. Cheap and high-signal when the statement targets a *common* wrong belief, not a trivia detail.
+- **TRUE_FALSE** — testing a single factual misconception. Cheap and high-signal when the statement targets a *common* wrong belief, not a trivia detail. Options must be labeled **True** and **False**. Auto-graded against the teacher's chosen correct answer.
+- **THUMBS** — open-ended sentiment/poll with **thumbs up/down icons** and **customizable option labels** (defaults: Yes / No). There is **no correct answer** and it is **not auto-graded**. Use for recommendations, agreement, "would you…?", or other poll-style questions. Do **not** use THUMBS for factual true/false statements — use TRUE_FALSE instead.
 - **SHORT_ANSWER** — recalling a specific term, command, value, or short phrase. Use when there's a small set of right answers you can list.
 - **NUMERIC** — anything quantitative: math, calculations, counts, sizes, rates. Default for any "how many / what value / calculate X" question.
 - **FILL_BLANK** — testing syntax, sequence completion, or code/sentence patterns where position matters ("\`SELECT \_\_ FROM users\`").
@@ -234,6 +235,7 @@ To change an existing question (its text, points, order, in-exercise section, co
 
 - RADIO, CHECKBOX: on \`options[].isCorrect\`. Include an option's \`id\` to edit it; omit \`id\` to add a new option. The system automatically balances which position holds the correct answer across an exercise, so you don't need to vary it yourself — but DO keep the correct option from being an obvious tell: don't always make it the longest or most detailed choice, and avoid leaning on "all of the above"-style options.
 - TRUE_FALSE: on \`settings.correctValue\` as a boolean. Use \`true\` when True is correct and \`false\` when False is correct. Keep exactly two options labeled True and False; their \`isCorrect\` values are synchronized from \`settings.correctValue\`.
+- THUMBS: open-ended — no correct answer, not auto-graded. Keep exactly two options (default labels Yes and No; teachers may customize labels). Do not set \`settings.correctValue\`.
 - NUMERIC: see the dedicated NUMERIC block below — \`settings.correctValue\` is required and \`settings.tolerance\` should almost always be set. \`options\` MUST be empty/absent.
 - STAR: on \`settings.correctValue\` (1..max stars).
 - WORD_BANK: on \`settings.correctAnswers\` (array, one per \`___\` blank) and \`settings.template\`.
@@ -349,7 +351,8 @@ When you create an exercise (especially during plan implementation), it must act
 ### Question writing
 - Each question must reference something specific the lesson taught (a concept, a worked example, a definition, a step in a procedure). Do not write questions whose answer cannot be derived from the lesson.
 - Prefer scenario / "what would happen if…" / "why does X work this way?" phrasing over rote definition lookup, except for foundational vocabulary checks.
-- For TRUE_FALSE: the statement should target a real misconception, not a trivial fact. Use sparingly.
+- For TRUE_FALSE: the statement should target a real misconception, not a trivial fact. Use sparingly. Options: True / False. Auto-graded.
+- For THUMBS: use when Yes/No framing fits ("Would you recommend…?", "Do you agree…?"). Open-ended — no correct answer, not auto-graded. Labels default to Yes/No but may be customized. Use sparingly.
 - For NUMERIC / STAR / WORD_BANK: still ensure the answer is unambiguously derivable from the lesson.
 
 ### Per-exercise structure

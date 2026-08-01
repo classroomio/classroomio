@@ -1,0 +1,61 @@
+name: Railway Preview Teardown
+
+# Auto-delete a preview environment created by railway-preview.yml when its PR closes,
+# so manually-spun previews don't linger and accrue Railway cost. (Native Railway PR
+# environments clean themselves up; this covers the pr-<branch> envs made by the manual
+# workflow.) Deletion is best-effort — if no matching env exists, the run is a no-op.
+#
+# Uses the same RAILWAY_API_TOKEN + RAILWAY_PROJECT_ID secrets as the deploy workflow.
+# Note: secrets are unavailable to PRs from forks, so this only tears down previews for
+# same-repo branches (which is where manual previews come from anyway).
+
+on:
+  pull_request:
+    types: [closed]
+
+concurrency:
+  group: railway-preview-${{ github.event.pull_request.head.ref }}
+  cancel-in-progress: false
+
+jobs:
+  teardown:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    env:
+      RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+      RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+      RAILWAY_WORKSPACE: ${{ vars.RAILWAY_WORKSPACE || 'cio projects' }}
+      BASE_ENV: ${{ vars.RAILWAY_BASE_ENV || 'staging' }}
+    steps:
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli@5.30.1
+
+      - name: Link to base project
+        # `railway environment delete` takes no --project/--workspace/--environment
+        # flags — only `railway link` does, so it must run first to establish that
+        # context (same requirement as railway-preview.yml).
+        run: |
+          railway link --project "$RAILWAY_PROJECT_ID" --workspace "$RAILWAY_WORKSPACE" --environment "$BASE_ENV"
+
+      - name: Delete the preview environment
+        # Mirror the name derivation in railway-preview.yml so the env name matches.
+        # HEAD_REF is bound via env (not interpolated into the script) so a malicious
+        # branch name can never be executed as shell — Actions expands ${{ }} as text
+        # BEFORE bash parses it, so a raw `${{ ...head.ref }}` here is a script-injection hole.
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          slug=$(echo "$HEAD_REF" | tr '[:upper:]/_.' '[:lower:]---' | sed 's/[^a-z0-9-]//g' | sed 's/--*/-/g; s/^-//; s/-$//')
+          hash=$(echo -n "$HEAD_REF" | sha256sum | cut -c1-8)
+          env_name="pr-${slug}-${hash}"
+          echo "Attempting to delete environment: ${env_name}"
+          if ! output=$(railway environment delete "${env_name}" --yes 2>&1); then
+            echo "$output"
+            if echo "$output" | grep -qi "not found"; then
+              echo "No matching preview environment (or already deleted) — nothing to do."
+            else
+              exit 1
+            fi
+          else
+            echo "$output"
+          fi
