@@ -83,11 +83,11 @@
               <ChevronRightIcon size={14} class="ui:shrink-0 ui:opacity-60" aria-hidden="true" />
             {/if}
             {#if crumb.href}
-              <a href={crumb.href} class="ui:max-w-[9rem] ui:truncate ui:hover:text-foreground sm:ui:max-w-[12rem]">
+              <a href={crumb.href} class="ui:max-w-[9rem] ui:truncate ui:hover:text-foreground ui:sm:max-w-[12rem]">
                 {crumb.label}
               </a>
             {:else}
-              <span class="ui:max-w-[9rem] ui:truncate sm:ui:max-w-[16rem]" title={crumb.label}>
+              <span class="ui:max-w-[9rem] ui:truncate ui:sm:max-w-[16rem]" title={crumb.label}>
                 {crumb.label}
               </span>
             {/if}
