@@ -8,7 +8,6 @@
   import { courseApi } from '$features/course/api';
   import { getContentRoute, getCourseProgress } from '$features/course/utils/content';
   import {
-    getActiveNavigableContent,
     getNextIncompleteNavigableContent,
     getPreviousNavigableContent
   } from '$features/course/utils/content-navigation';
@@ -29,7 +28,6 @@
   let { courseId, path, class: className = '' }: Props = $props();
 
   const courseProgress = $derived(getCourseProgress(courseApi.course));
-  const activeItem = $derived(getActiveNavigableContent(courseApi.course, path));
   const previousItem = $derived(getPreviousNavigableContent(courseApi.course, path));
   const nextItem = $derived(getNextIncompleteNavigableContent(courseApi.course, path));
 
@@ -68,33 +66,42 @@
 </script>
 
 <div class={className}>
-  <nav class="flex items-center gap-2 px-3 py-2.5" aria-label={$t('course.sidebar.footer_nav.label')}>
+  <nav class="flex gap-2 px-3 py-2.5" aria-label={$t('course.sidebar.footer_nav.label')}>
     <Button
-      size="icon-sm"
+      size="sm"
       variant="outline"
+      class="flex-1"
       onclick={() => goToContent(previousItem)}
       disabled={isPreviousDisabled}
-      aria-label={$t('course.sidebar.footer_nav.previous')}
       title={previousLockReason ? $t(getStudentContentLockTitleKey(previousLockReason)) : undefined}
     >
       <ChevronLeftIcon size={16} />
+      {$t('course.sidebar.footer_nav.previous')}
     </Button>
 
-    <p class="min-w-0 flex-1 truncate text-center text-[13px] font-semibold">
-      {activeItem?.title ?? ''}
-    </p>
-
     <Button
-      size="icon-sm"
+      size="sm"
       variant="default"
+      class="flex-1"
       onclick={() => goToContent(nextItem)}
       disabled={isNextDisabled}
-      aria-label={$t('course.sidebar.footer_nav.next')}
       title={nextLockReason ? $t(getStudentContentLockTitleKey(nextLockReason)) : undefined}
     >
+      {$t('course.sidebar.footer_nav.next')}
       <ChevronRightIcon size={16} />
     </Button>
   </nav>
 
   <Progress value={courseProgress.percent} max={100} class="ui:h-[3px] ui:rounded-none" aria-hidden="true" />
+
+  <p class="ui:text-muted-foreground truncate px-3 pb-2.5 text-[11px]">
+    {$t('course.sidebar.progress.lessons', {
+      completed: courseProgress.lessonsComplete,
+      total: courseProgress.lessonsTotal
+    })}{#if courseProgress.exercisesTotal > 0}
+      · {$t('course.sidebar.progress.exercises', {
+        completed: courseProgress.exercisesComplete,
+        total: courseProgress.exercisesTotal
+      })}{/if}
+  </p>
 </div>
