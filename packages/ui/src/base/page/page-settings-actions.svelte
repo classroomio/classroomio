@@ -32,7 +32,7 @@
 <div
   bind:this={ref}
   data-slot="page-settings-actions"
-  class={cn('ui:sticky ui:bottom-0 ui:z-20 ui:mt-6 ui:pb-4', className)}
+  class={cn('ui:mt-6 ui:mb-4 ui:shrink-0', className)}
   {...restProps}
 >
   <div
