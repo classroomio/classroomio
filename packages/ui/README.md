@@ -135,9 +135,9 @@ Composable page shell used across dashboard list and settings screens. Import as
 | `Page.Action`                  | Right-aligned header actions                                 |
 | `Page.Body`                    | Main content area (`child` snippet)                          |
 | `Page.BodyHeader`              | Toolbar inside the body                                      |
-| `Page.SettingsActions`         | Save/discard bar for settings forms (end of page content)    |
+| `Page.SettingsActions`         | Save/discard bar for settings forms (floats, then docks)     |
 
-**Settings pages:** Place `Page.SettingsActions` as the last child inside `Page.Root`, after `Page.Body`. The bar is always visible at the end of the page content and scrolls with the page — it is not fixed to the viewport. Disable Save and Discard via `hasChanges={false}` when the form is clean. Pass translated `statusLabel`, `discardLabel`, and `saveLabel` props from the dashboard.
+**Settings pages:** Place `Page.SettingsActions` as the last child inside `Page.Root`, after `Page.Body`. The bar uses `position: sticky; bottom: 0` so it stays pinned to the viewport bottom while you scroll, then settles into normal flow at the end of the page. Do not put `overflow` on `Page.Root` that would break sticky positioning (horizontal overflow on `Page.Body` is fine). Disable Save and Discard via `hasChanges={false}` when the form is clean. Pass translated `statusLabel`, `discardLabel`, and `saveLabel` props from the dashboard.
 
 ```svelte
 <Page.Root>

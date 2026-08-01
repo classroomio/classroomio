@@ -6,6 +6,7 @@
   let {
     ref = $bindable(null),
     class: className,
+    contentClass: contentClassName,
     hasChanges = false,
     loading = false,
     disabled = false,
@@ -16,6 +17,7 @@
     onDiscard,
     ...restProps
   }: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
+    contentClass?: string;
     hasChanges?: boolean;
     loading?: boolean;
     disabled?: boolean;
@@ -32,13 +34,14 @@
 <div
   bind:this={ref}
   data-slot="page-settings-actions"
-  class={cn('ui:mt-6 ui:mb-4 ui:shrink-0', className)}
+  class={cn('ui:sticky ui:bottom-0 ui:z-20 ui:mt-6 ui:mb-4 ui:pb-4 ui:shrink-0', className)}
   {...restProps}
 >
   <div
     class={cn(
       'ui:flex ui:flex-col ui:gap-3 ui:sm:flex-row ui:sm:items-center ui:sm:justify-between',
-      'ui:rounded-lg ui:border ui:border-border ui:bg-background ui:p-4 ui:shadow-md'
+      'ui:rounded-lg ui:border ui:border-border ui:bg-background ui:p-4 ui:shadow-md',
+      contentClassName
     )}
   >
     <p class="ui:text-sm ui:text-muted-foreground">{statusLabel}</p>
