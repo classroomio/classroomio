@@ -143,18 +143,43 @@ jobs:
         # but the public domain doesn't, so generate one here (same as "Report the preview
         # URL" does for cio-dashboard). `--ignore-existing` keeps re-deploys safe.
         run: |
-          # --port 9000: the minio/minio image exposes both 9000 (S3 API) and 9001
-          # (console); pin it so domain generation doesn't land on the wrong one.
-          railway domain --service cio-minio --port 9000 || true
-          # `cut -d= -f2-` (not `awk -F= '{print $2}'`) so a value containing '=' — common in
-          # base64/auto-generated secrets like MINIO_ROOT_PASSWORD — isn't silently truncated.
-          MINIO_HOST=$(railway variables --service cio-minio --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
+          # A freshly duplicated environment's cio-minio ServiceInstance (volume-backed, like
+          # Postgres) can take a few seconds to materialize after `railway environment new
+          # --duplicate` returns, so `railway domain`/`variables` can fail with "ServiceInstance
+          # not found" immediately after duplication. Retry instead of failing the run.
+          MINIO_HOST=""
+          for attempt in $(seq 1 10); do
+            # --port 9000: the minio/minio image exposes both 9000 (S3 API) and 9001
+            # (console); pin it so domain generation doesn't land on the wrong one.
+            if output=$(railway domain --service cio-minio --port 9000 2>&1); then
+              echo "$output"
+            else
+              echo "$output"
+              if ! echo "$output" | grep -qi "already exists"; then
+                if [ "$attempt" -eq 10 ]; then
+                  echo "::error::cio-minio ServiceInstance never became available after 10 attempts."
+                  exit 1
+                fi
+                echo "cio-minio not ready yet (attempt $attempt/10) — retrying in 5s..."
+                sleep 5
+                continue
+              fi
+            fi
+            # `cut -d= -f2-` (not `awk -F= '{print $2}'`) so a value containing '=' — common in
+            # base64/auto-generated secrets like MINIO_ROOT_PASSWORD — isn't silently truncated.
+            MINIO_HOST=$(railway variables --service cio-minio --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
+            if [ -n "$MINIO_HOST" ]; then
+              break
+            fi
+            if [ "$attempt" -eq 10 ]; then
+              echo "::error::cio-minio has no public domain after 10 attempts — 'railway domain' may have failed."
+              exit 1
+            fi
+            echo "cio-minio has no public domain yet (attempt $attempt/10) — retrying in 5s..."
+            sleep 5
+          done
           MINIO_USER=$(railway variables --service cio-minio --kv | grep '^MINIO_ROOT_USER=' | cut -d= -f2-)
           MINIO_PASS=$(railway variables --service cio-minio --kv | grep '^MINIO_ROOT_PASSWORD=' | cut -d= -f2-)
-          if [ -z "$MINIO_HOST" ]; then
-            echo "::error::cio-minio has no public domain — 'railway domain' may have failed."
-            exit 1
-          fi
           # Verify mc against MinIO's published SHA256 before executing it.
           curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc -o mc
           curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum -o mc.sha256sum
