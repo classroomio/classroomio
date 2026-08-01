@@ -19,6 +19,7 @@ import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
+import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
 
 /**
@@ -28,7 +29,32 @@ import { getWelcomeSessionIcs } from './session-invite';
  */
 export async function listCourseMembers(courseId: string) {
   try {
-    return getCourseMembers(courseId);
+    const members = await getCourseMembers(courseId);
+    const progressSummaries = await getCourseMemberProgressSummaries(
+      courseId,
+      members.map((member) => ({
+        profileId: member.profileId ?? '',
+        roleId: member.roleId,
+        createdAt: member.createdAt ?? null
+      }))
+    );
+
+    return members.map((member) => {
+      const progress =
+        member.profileId && member.roleId === ROLE.STUDENT ? progressSummaries.get(member.profileId) : undefined;
+
+      if (!progress) {
+        return member;
+      }
+
+      return {
+        ...member,
+        progressPercent: progress.progressPercent,
+        stage: progress.stage,
+        lastLoginAt: progress.lastLoginAt,
+        enrolledAt: progress.enrolledAt
+      };
+    });
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
