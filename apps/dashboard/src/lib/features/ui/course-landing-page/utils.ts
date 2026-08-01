@@ -250,6 +250,7 @@ export function buildCourseLandingPageProps(
       ctaLabel: pricingCtaLabel,
       ctaHref: paidEnrollClick ? undefined : options.enrollHref,
       ctaOnclick: paidEnrollClick,
+      ctaDisabled: options.enrollDisabled,
       reward: metadata?.reward?.show ? { show: true, description: metadata.reward.description ?? '' } : undefined
     },
     footer: landing.footer

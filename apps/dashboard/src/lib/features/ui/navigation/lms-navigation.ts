@@ -117,8 +117,22 @@ export const baseNavConfig: NavItemConfig[] = [
         path: '/settings'
       },
       {
+        titleKey: 'Notifications',
+        path: '/settings/notifications'
+      },
+      {
         titleKey: 'Integrations',
         path: '/settings/integrations'
+      }
+    ],
+    nestedRoutes: [
+      {
+        path: 'notifications',
+        titleKey: 'settings.tabs.notifications_tab'
+      },
+      {
+        path: 'integrations',
+        titleKey: 'settings.tabs.integrations_tab'
       }
     ]
   }

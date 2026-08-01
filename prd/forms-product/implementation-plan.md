@@ -12,6 +12,11 @@
 8. MVP excludes grading, points, reviewer workflow, and correctness semantics.
 9. MVP may ship with form-specific question tables rather than a generalized cross-product questionnaire schema.
 10. Public forms must ship with abuse controls before general rollout.
+11. Binding is attachment-level: `form_attachment` binds a reusable form to a context (course, lesson, landing page, checkout) and holds lifecycle/limit/dedup settings; responses record their attachment.
+12. MVP includes the purchase-request pipeline (default org form replacing `payment-modal.svelte`, pending → approve → enroll) and per-lesson pulse feedback.
+13. MVP is one-page presentation only; respondent save-and-resume (FORM-B6) and edit-submitted-response are deferred to phase 2. Author-side DRAFT → PUBLISHED lifecycle stays.
+14. Commercial model is free-standalone / paid-integrations: free orgs get unlimited forms with share-link collection, inbox, analytics, and export; attachments, triggers, and consequences (approve→enroll, lesson pulse, landing-page blocks) require a paid plan. Checkout exception: the default purchase-request form collects on free; one-click approve→enroll is paid. Self-hosted ungated.
+15. Form creation and response access are restricted to org admins and teachers; students can only respond.
 
 ## Delivery Phases
 
@@ -64,6 +69,15 @@
 | FORM-E3 | E | QA/Tests | Add validation, query, API, and dashboard tests for form create/publish/respond/export flows | tests across `packages/utils`, `packages/db`, `apps/api`, `apps/dashboard` | FORM-D4 | Core flows have regression coverage |
 | FORM-E4 | E | Rollout | Add feature flag, rollout checklist, and production enablement notes | forms config/docs, PRD references | FORM-E1, FORM-E2, FORM-E3 | Safe staged rollout is documented and executable |
 | FORM-E5 | E | Follow-up Platforming | Evaluate whether to generalize forms/exercises into a shared questionnaire persistence layer after MVP stability | follow-up PRD/docs | FORM-E4 | Decision is made with real usage data instead of pre-optimizing |
+| FORM-F1 | A | DB Schema | Add `formAttachment` table (context type, course/lesson refs, lifecycle window, response limit, dedup flag) and `formResponse.formAttachmentId` + `approvedForDisplay` | `packages/db/src/schema.ts`, relations/types | FORM-A3, FORM-A5 | Reusable forms can bind to contexts and responses resolve to their attachment |
+| FORM-F2 | B | API Service | Attachment CRUD + response filtering by attachment/context; library view aggregates across attachments | `apps/api/src/services/form/attachment.ts`, form routes | FORM-F1, FORM-B2 | Course context shows only its responses; library shows per-context breakdown |
+| FORM-F3 | C | Attach Picker | "Attach a form" picker component with inline create-in-context (builder in modal/drawer, template pre-seeded by context) | `apps/dashboard/src/lib/features/forms/components/attach-picker/*`, course/lesson settings surfaces | FORM-C5, FORM-F2 | Admin can attach or create+attach a form without leaving the course |
+| FORM-F4 | B/C | Purchase Pipeline | Seed default "Course purchase request" form per org; checkout attachment on paid courses; submit stores PENDING response then redirects to `paymentLink`; preserve teacher/student emails | seed logic, `apps/api/src/services/form/purchase.ts`, org-site course routes | FORM-F2 | Buy click leads to the org form and a stored purchase request; legacy `payment-modal.svelte` retired |
+| FORM-F5 | C/D | Approve → Enroll | Response inbox actions for purchase requests: approve (enrolls student), reject with reason | forms inbox components, enrollment service wiring | FORM-F4, FORM-D1 | Admin approval enrolls the student without leaving the inbox |
+| FORM-F6 | C | Lesson Pulse | Per-lesson pulse feedback attachment shown after lesson completion, with per-lesson aggregate view for instructors | lesson completion surface, `apps/dashboard/src/lib/features/forms/components/analytics/*` | FORM-F2, FORM-D3 | Instructor sees pulse results grouped by lesson |
+| FORM-F7 | C | Landing Page Blocks | Landing-page form section block and approved-reviews display block (consent checkbox + `approvedForDisplay` curation) | `packages/ui` landing themes, org landing-page editor | FORM-F2, FORM-C7 | Org can embed a form and display curated reviews on its public site |
+| FORM-F8 | E | Plan Gating | Gate the integration layer (attachment creation, approve→enroll, lesson pulse, landing-page blocks) behind paid plans; standalone forms stay ungated and unlimited; default checkout form collects on free with approve→enroll gated; self-hosted ungated | plan config, form/attachment services, dashboard upsell states | FORM-B2, FORM-F2, FORM-F4 | Free orgs can collect without limits; every integration touchpoint shows a paid upsell instead of failing silently |
+| FORM-F9 | B/C | Permissions | Restrict form creation, editing, response viewing, and export to org ADMIN and TUTOR roles across routes and dashboard nav; students only respond | forms routes middleware, dashboard nav/route guards | FORM-B7, FORM-C3 | Student accounts cannot reach form authoring or response data |
 
 ## Route Targets
 
@@ -138,8 +152,8 @@ Only if MVP keeps save/resume:
 
 ## Suggested First Sprint Slice
 
-1. `FORM-A1` to `FORM-A9`
-2. `FORM-B1` to `FORM-B5`
+1. `FORM-A1` to `FORM-A9`, `FORM-F1`
+2. `FORM-B1` to `FORM-B5`, `FORM-F2`
 3. `FORM-B7`, `FORM-B8`
 4. `FORM-C1`, `FORM-C2`
 
@@ -150,8 +164,9 @@ This gets the core platform decision made early, lands the schema/query/API foun
 1. `FORM-C3` to `FORM-C8`
 2. `FORM-D1`, `FORM-D2`
 3. `FORM-E1`
+4. `FORM-F3` to `FORM-F5`
 
-This delivers an MVP loop: create form, publish form, submit response, inspect response, and keep public endpoints safe enough for controlled rollout.
+This delivers an MVP loop: create form, publish form, submit response, inspect response, and keep public endpoints safe enough for controlled rollout — plus the flagship integration demo: attach a form from a course, and buy a paid course through the purchase-request pipeline with approve → enroll.
 
 ## Post-MVP Follow-Up Candidates
 

@@ -20,6 +20,29 @@ When a task requires factual information (API specifications, context window siz
 - Commit messages must follow the Conventional Commits 1.0.0 spec: https://www.conventionalcommits.org/en/v1.0.0/
 - Never include agent-provider attribution in commits or commit trailers. Do not add `Co-authored-by` lines for Cursor, Claude, Codex, or any other tool.
 
+## Verification before commit/PR
+
+Before committing or opening/updating a PR, run the build checks that match the areas you changed. Use Node 20 (the repo's `.nvmrc` version):
+
+```bash
+export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
+```
+
+- **Dashboard changes** (`apps/dashboard/**`, or shared packages consumed by the dashboard):
+
+  ```bash
+  test -f apps/dashboard/.env || cp apps/dashboard/.env.example apps/dashboard/.env
+  pnpm --filter @cio/dashboard^... build && pnpm --filter @cio/dashboard build
+  ```
+
+- **API changes** (`apps/api/**`, or shared packages consumed by the API):
+
+  ```bash
+  pnpm --filter @cio/api^... build && pnpm --filter @cio/api build
+  ```
+
+Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow above). Do not commit if any verification step fails.
+
 ## Naming Convention
 
 - Use kebab-case for files (e.g. `user-profile.svelte`, `org.svelte.ts`).
@@ -416,6 +439,14 @@ Every transactional email in `packages/email/src/emails` is one of two kinds —
   - Examples: `teacherStudentJoined`, `studentCourseWelcome`, `studentCourseInvite`, `verifyEmail` (org-scoped signup).
 
 Rule of thumb: if the recipient is being addressed **as a ClassroomIO customer** (account/billing/limits), it's a system email → ClassroomIO branding. If they're addressed **as a member of a specific org**, it's org-branded.
+
+### Email link URLs
+
+Links embedded in transactional emails must use the correct dashboard host. Templates only receive pre-built URLs — callers build them in API services before `enqueueTransactionalEmail`. See `packages/email/README.md` § Email link URLs.
+
+
+- **Teacher/tutor/admin dashboard actions** (course management, grading, team invites, auto-enroll): build URLs with `getAppBaseUrl()` from `@cio/core/config/dashboard-url`. This resolves to the admin app (`app.classroomio.com` in cloud, or `DASHBOARD_ORIGIN` / localhost in dev). Do **not** pass org `customDomain` or tenant `siteName` — staff sign in on the admin app, not the org public site.
+- **Student/learner-facing links** (course enroll, org audience invites, login): build URLs with `getDashboardBaseUrl(org)` so links land on the org's public site (verified custom domain, tenant subdomain, or platform fallback).
 
 ## Best Practices Summary
 

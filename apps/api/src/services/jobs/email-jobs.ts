@@ -59,6 +59,11 @@ function recipientKey(base: string | undefined, recipient: string, total: number
  * against the template's Zod schema up front so bad payloads fail in the
  * domain handler instead of silently inside the worker.
  *
+ * **Link fields** (`courseUrl`, `autoEnrollUrl`, `loginUrl`, `inviteUrl`, etc.)
+ * must be built by the caller before enqueueing. Use `getAppBaseUrl()` for
+ * teacher/tutor/admin dashboard links and `getDashboardBaseUrl(org)` for
+ * student/learner links — see `packages/email/README.md` § Email link URLs.
+ *
  * BullMQ tracks send state, retries, and failure history — no DB ledger is
  * written. Final failures are recorded in `dead_letter_job` by the worker
  * for operator triage.

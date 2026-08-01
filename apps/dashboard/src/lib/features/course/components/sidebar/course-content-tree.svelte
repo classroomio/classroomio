@@ -8,12 +8,13 @@
   import * as Collapsible from '@cio/ui/base/collapsible';
   import { ContentType } from '@cio/utils/constants/content';
   import { courseApi } from '$features/course/api';
-  import { getContentRoute, getCourseContent } from '$features/course/utils/content';
+  import { getContentItemsProgress, getContentRoute, getCourseContent } from '$features/course/utils/content';
   import { CircleCheckIcon } from '$features/ui/icons';
   import { t } from '$lib/utils/functions/translations';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { RadioIcon } from '@cio/ui/custom/moving-icons';
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
+  import { isCourseLearnerView } from '$lib/utils/store/app';
 
   interface Props {
     path: string;
@@ -54,6 +55,18 @@
                   <span class="flex-1 truncate">{section.title}</span>
 
                   <div class="ml-auto flex items-center gap-1">
+                    {#if isStudent}
+                      {@const sectionProgress = getContentItemsProgress(section.items)}
+                      {#if sectionProgress.total > 0}
+                        <span
+                          class="shrink-0 text-[11px] font-medium tabular-nums {sectionProgress.percent === 100
+                            ? 'ui:text-green-600'
+                            : 'ui:text-muted-foreground'}"
+                        >
+                          {sectionProgress.percent}%
+                        </span>
+                      {/if}
+                    {/if}
                     {#if canOpenContentModal}
                       <IconButton
                         variant="ghost-outline"
@@ -85,7 +98,8 @@
                     <Sidebar.MenuSubButton isActive={(path || page.url.pathname).includes(contentItem.id)}>
                       {#snippet child({ props })}
                         {@const isContentLocked = (contentItem.isUnlocked ?? true) === false}
-                        {@const isLockedForStudent = isStudent && (isContentLocked || contentItem.accessible === false)}
+                        {@const isLockedForStudent =
+                          $isCourseLearnerView && (isContentLocked || contentItem.accessible === false)}
                         <a
                           href={resolve(getContentRoute(id, contentItem), {})}
                           aria-disabled={isLockedForStudent}
@@ -137,7 +151,7 @@
         <Sidebar.MenuSubButton isActive={(path || page.url.pathname).includes(contentItem.id)}>
           {#snippet child({ props })}
             {@const isContentLocked = (contentItem.isUnlocked ?? true) === false}
-            {@const isLockedForStudent = isStudent && (isContentLocked || contentItem.accessible === false)}
+            {@const isLockedForStudent = $isCourseLearnerView && (isContentLocked || contentItem.accessible === false)}
             <a
               href={resolve(getContentRoute(id, contentItem), {})}
               aria-disabled={isLockedForStudent}

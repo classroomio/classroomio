@@ -12,7 +12,7 @@
   import { classroomio } from '$lib/utils/services/api';
   import type { CertificationEvaluationData } from '$features/course/utils/types';
   import { normalizeCertificateIssuedAt, formatBlockerMessage } from '$features/course/utils/certificate-utils';
-  import { openCourseCompletionModal } from '$features/course/store/course-completion-modal';
+  import { updateCourseCompletionModal } from '$features/course/store/course-completion-modal';
 
   let isLoading = $state(false);
   let isPngLoading = $state(false);
@@ -94,7 +94,7 @@
       isCourseComplete = hasEarned || !!res.data.eligibleForCertificate;
 
       if (res.data.isNewCompletion && courseId) {
-        openCourseCompletionModal(courseId);
+        updateCourseCompletionModal(courseId, 'eligible', res.data);
       }
     }
     isLoading = false;

@@ -1,22 +1,10 @@
 import * as z from 'zod';
 
-const ZEmailNotificationToggleFields = {
-  newStudent: z.boolean().optional(),
-  newSubmission: z.boolean().optional(),
-  gradingResult: z.boolean().optional(),
-  newsfeed: z.boolean().optional(),
-  quizAssigned: z.boolean().optional(),
-  cohortReminder: z.boolean().optional(),
-  session: z.boolean().optional(),
-  courseCompletion: z.boolean().optional()
-};
-
 export const ZUpdateProfile = z.object({
   fullname: z.string().min(3).optional(),
   username: z.string().min(3).optional(),
   locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']).optional(),
-  avatarUrl: z.url().optional(),
-  emailNotifications: z.object(ZEmailNotificationToggleFields).optional()
+  avatarUrl: z.url().optional()
 });
 
 export type TUpdateProfile = z.infer<typeof ZUpdateProfile>;

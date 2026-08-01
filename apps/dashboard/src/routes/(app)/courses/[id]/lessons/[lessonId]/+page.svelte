@@ -16,7 +16,16 @@
   let { data }: Props = $props();
 
   $effect(() => {
-    if (!data.lesson) return;
+    if (!data.lessonId) return;
+
+    if (!data.lesson) {
+      if (lessonApi.lesson?.id === data.lessonId) {
+        lessonApi.lesson = null;
+      }
+
+      return;
+    }
+
     const lesson = data.lesson;
     if (lessonApi.lesson?.id === lesson.id) return;
 

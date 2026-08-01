@@ -80,13 +80,13 @@
 
 <div
   id={feed.id}
-  class="flex flex-col justify-between gap-2 {isActive
-    ? 'border-primary-700 border-2'
-    : 'ui:border'} mb-7 w-[90%] rounded-md md:max-w-3xl"
+  class="bg-card text-card-foreground mb-6 flex w-full max-w-3xl flex-col rounded-xl shadow-sm transition-all duration-200 hover:shadow-md {isActive
+    ? 'ring-primary border-primary ring-2'
+    : 'border-border/60 border'}"
 >
   <Header {feed} {onPin} onEdit={openEditFeed} onRequestDelete={() => (isDeleteFeedModal = true)} />
 
-  <div class="px-3 pt-1 pb-2">
+  <div class="px-4 pb-3">
     <NewsfeedReactions
       {reactionCounts}
       {selectedReactionType}
@@ -100,11 +100,11 @@
     {feed}
     {author}
     {comments}
-    onAddComment={async (content) => {
-      await addNewComment(content, feed.id);
+    onAddComment={async (content, parentId) => {
+      await addNewComment(content, feed.id, parentId);
     }}
-    onDeleteComment={(commentId) => {
-      if (courseId) deleteComment(feed.id, String(commentId));
+    onDeleteComment={(commentId, parentId) => {
+      if (courseId) deleteComment(feed.id, String(commentId), parentId);
     }}
   />
 

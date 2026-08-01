@@ -17,7 +17,6 @@ import {
 } from '@cio/db/queries/course/course';
 import { claimMemberCertificateEarned } from '@cio/db/queries/course/people';
 import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
-import { ROLE } from '@cio/utils/constants';
 import { PLAN } from '@cio/utils/plans';
 import { env } from '@cio/core/config/env';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
@@ -193,12 +192,7 @@ async function buildCertificationEvaluation(
   blockers.push(...finalEval.blockers);
 
   const eligibleForCertificate =
-    progress.roleId === ROLE.STUDENT &&
-    !!progress.groupMemberId &&
-    meetsThreshold &&
-    hasContent &&
-    withinDeadline &&
-    finalEval.meetsFinalExerciseRule;
+    !!progress.groupMemberId && meetsThreshold && hasContent && withinDeadline && finalEval.meetsFinalExerciseRule;
 
   return {
     progressPercent,

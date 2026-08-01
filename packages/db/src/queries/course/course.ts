@@ -16,6 +16,7 @@ import { and, count, desc, eq, gt, ilike, inArray, isNotNull, isNull, or, sql } 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { getCourseContentItems, type CourseContentItemRow } from './content';
+import { isExerciseCompletedSql } from './progression';
 import { getUpcomingSessionsForCourseIds, type CourseUpcomingSession } from './session';
 
 /**
@@ -624,15 +625,14 @@ export async function getCourseProgress(
 
       db
         .select({
-          exercisesCompleted: sql<number>`count(distinct ${schema.exercise.id})::int`
+          exercisesCompleted: sql<number>`count(*)::int`
         })
-        .from(schema.submission)
-        .innerJoin(schema.exercise, eq(schema.submission.exerciseId, schema.exercise.id))
+        .from(schema.exercise)
         .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
         .where(
           and(
             or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
-            eq(schema.submission.submittedBy, groupMemberId)
+            isExerciseCompletedSql('exercise', { groupMemberId })
           )
         )
     ]);
@@ -997,14 +997,12 @@ export const getEnrolledCourses = async ({
           WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
         )`.as('exercise_count'),
         exercisesCompleted: sql<number>`(
-          SELECT COUNT(DISTINCT s.exercise_id)::bigint
-          FROM ${schema.submission} as s
-          JOIN ${schema.exercise} as ex ON ex.id = s.exercise_id
+          SELECT COUNT(*)::bigint
+          FROM ${schema.exercise} as ex
           LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
-          JOIN ${schema.groupmember} as gm ON gm.id = s.submitted_by
           WHERE ${and(
             or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id)),
-            sql`gm.profile_id = ${sql.raw(`'${profileId}'::uuid`)}`
+            isExerciseCompletedSql('ex', { profileId })
           )}
         )`.as('exercises_completed'),
         certificateEarnedAt: schema.groupmember.certificateEarnedAt,

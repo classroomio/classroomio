@@ -6,12 +6,11 @@
     PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS,
     TUTOR_ONLY_PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS
   } from '@cio/utils/notifications';
-  import { profile } from '$lib/utils/store/user';
   import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { profileApi } from '$features/auth/api/profile.svelte';
+  import { memberEmailNotificationsApi } from '$features/settings/api/member-email-notifications.svelte';
   import { orgApi } from '$features/org/api/org.svelte';
   import * as Field from '@cio/ui/base/field';
   import { Switch } from '@cio/ui/base/switch';
@@ -26,10 +25,12 @@
   }
 
   let personalToggles = $state(buildToggleState(PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS));
+  let savedPersonalToggles = $state(buildToggleState(PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS));
   let orgToggles = $state(buildToggleState(EMAIL_NOTIFICATION_TOGGLE_KEYS));
   let isSavingPersonal = $state(false);
   let isSavingOrg = $state(false);
-  let hasHydratedFromStores = $state(false);
+  let isLoadingPersonal = $state(false);
+  let hasHydratedOrgToggles = $state(false);
 
   const tutorOnlyToggleKeys = new Set<string>(TUTOR_ONLY_PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS);
 
@@ -42,12 +43,18 @@
       : PERSONAL_EMAIL_NOTIFICATION_SECTIONS
   );
 
-  function syncPersonalTogglesFromProfile() {
-    const profileState = get(profile);
-    const next = buildToggleState(PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS, profileState.settings?.emailNotifications);
+  const personalDescription = $derived(
+    $currentOrg?.name
+      ? t.get('settings.notifications.personal.description_with_org', { orgName: $currentOrg.name })
+      : t.get('settings.notifications.personal.description')
+  );
+
+  function applyPersonalToggleState(source?: Partial<Record<string, boolean>> | null) {
+    const next = buildToggleState(PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS, source);
 
     for (const key of PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS) {
       personalToggles[key] = next[key];
+      savedPersonalToggles[key] = next[key];
     }
   }
 
@@ -63,41 +70,53 @@
     }
   }
 
-  function tryHydrateFromStores() {
-    if (hasHydratedFromStores) return;
+  async function loadPersonalPreferences() {
+    if (!$currentOrg?.id) return;
 
-    const profileState = get(profile);
-    if (!profileState.id) return;
+    isLoadingPersonal = true;
 
-    syncPersonalTogglesFromProfile();
+    const result = await memberEmailNotificationsApi.fetch();
 
-    if (get(isOrgAdmin)) {
-      if (!get(currentOrg)?.id) return;
-      syncOrgTogglesFromCurrentOrg();
+    if (result?.data) {
+      applyPersonalToggleState(result.data);
     }
 
-    hasHydratedFromStores = true;
+    isLoadingPersonal = false;
+  }
+
+  function tryHydrateOrgToggles() {
+    if (hasHydratedOrgToggles || !get(isOrgAdmin)) return;
+
+    if (!get(currentOrg)?.id) return;
+
+    syncOrgTogglesFromCurrentOrg();
+    hasHydratedOrgToggles = true;
   }
 
   onMount(() => {
-    tryHydrateFromStores();
+    tryHydrateOrgToggles();
   });
 
   $effect(() => {
-    if (hasHydratedFromStores) return;
+    const orgId = $currentOrg?.id;
 
-    const profileId = $profile.id;
-    const orgId = $isOrgAdmin ? $currentOrg?.id : 'ready';
+    if (!orgId) return;
 
-    if (!profileId || ($isOrgAdmin && !orgId)) return;
+    void loadPersonalPreferences();
+  });
 
-    tryHydrateFromStores();
+  $effect(() => {
+    if (hasHydratedOrgToggles) return;
+
+    const orgId = $isOrgAdmin ? $currentOrg?.id : null;
+
+    if (!orgId) return;
+
+    tryHydrateOrgToggles();
   });
 
   const personalHasChanges = $derived(
-    PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS.some(
-      (key) => personalToggles[key] !== ($profile.settings?.emailNotifications?.[key] !== false)
-    )
+    PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS.some((key) => personalToggles[key] !== savedPersonalToggles[key])
   );
 
   const orgHasChanges = $derived(
@@ -117,14 +136,16 @@
   }
 
   async function handleSavePersonal() {
+    if (!$currentOrg?.id) return;
+
     isSavingPersonal = true;
 
-    await profileApi.updateEmailNotifications(
+    const result = await memberEmailNotificationsApi.update(
       toStoredPreferences(PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS, personalToggles)
     );
 
-    if (profileApi.success) {
-      syncPersonalTogglesFromProfile();
+    if (memberEmailNotificationsApi.success && result?.data) {
+      applyPersonalToggleState(result.data);
       snackbar.success(t.get('settings.notifications.personal.save_success'));
     }
 
@@ -164,7 +185,7 @@
       {$t('settings.notifications.personal.heading')}
     </Field.Legend>
     <Field.Description>
-      {$t('settings.notifications.personal.description')}
+      {personalDescription}
     </Field.Description>
 
     <div class="mt-4 space-y-6">
@@ -182,7 +203,7 @@
           <div class="mt-4 space-y-4">
             {#each section.keys as key (key)}
               <Field.Field orientation="horizontal">
-                <Switch bind:checked={personalToggles[key]} disabled={isSavingPersonal} />
+                <Switch bind:checked={personalToggles[key]} disabled={isSavingPersonal || isLoadingPersonal} />
                 <div class="space-y-0.5">
                   <Field.Label>{$t(`settings.notifications.toggles.${key}.label`)}</Field.Label>
                   <Field.Description>
@@ -200,7 +221,7 @@
       <Button
         variant="secondary"
         loading={isSavingPersonal}
-        disabled={!personalHasChanges || isSavingPersonal}
+        disabled={!personalHasChanges || isSavingPersonal || isLoadingPersonal || !$currentOrg?.id}
         onclick={handleSavePersonal}
       >
         {$t('settings.notifications.personal.save')}

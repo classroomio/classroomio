@@ -1,5 +1,8 @@
 import type { Tooltip } from 'layerchart';
 import { getContext, setContext, type Component, type ComponentProps, type Snippet } from 'svelte';
+import type { ChartConfig } from './types';
+
+export type { ChartConfig } from './types';
 
 export const THEMES = { light: '', dark: '.dark' } as const;
 
@@ -7,13 +10,6 @@ export type ChartLegendItem = {
   label: string;
   color: string;
   value?: number;
-};
-
-export type ChartConfig = {
-  [k in string]: {
-    label?: string;
-    icon?: Component;
-  } & ({ color?: string; theme?: never } | { color?: never; theme: Record<keyof typeof THEMES, string> });
 };
 
 export type ExtractSnippetParams<T> = T extends Snippet<[infer P]> ? P : never;

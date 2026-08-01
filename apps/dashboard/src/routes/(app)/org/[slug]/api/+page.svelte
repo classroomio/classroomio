@@ -26,7 +26,7 @@
       <Page.Subtitle>{$t('automation.api.subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
     <Page.Action>
-      <Button variant="outline" onclick={() => window.open('https://classroomio.com/docs/api/reference', '_blank')}>
+      <Button variant="outline" onclick={() => window.open('https://classroomio.com/docs/api', '_blank')}>
         <ArrowUpRightIcon size={16} />
         {$t('automation.api.view_docs')}
       </Button>

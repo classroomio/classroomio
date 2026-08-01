@@ -133,7 +133,7 @@ The repository also contains shared packages under `packages/` (for example `pac
 
 5. Set up your `.env` files:
 
-   Each app reads its **own** `.env`. In `apps/api` and `apps/dashboard`, duplicate
+   Each app reads its **own** `.env`. In `apps/api`, `apps/jobs` and `apps/dashboard`, duplicate
    `.env.example` to `.env` and fill the values below (host ports). The secret values are
    placeholders — **generate each one** with `openssl rand -hex 32` rather than copying
    the example text. The two `PRIVATE_SERVER_KEY` values **must match** — they
@@ -150,6 +150,16 @@ The repository also contains shared packages under `packages/` (for example `pac
      BETTER_AUTH_SECRET="<generate-with-openssl-rand-hex-32>"
      PRIVATE_SERVER_KEY="<generate-with-openssl-rand-hex-32>"   # generate once; use the SAME value in the dashboard
      DASHBOARD_ORIGIN="http://localhost:5173"        # optional; used for invite/email links back to the dashboard
+     ```
+
+   - `apps/jobs/.env`:
+      The jobs service handles background tasks (emails, media processing, analytics rollups, etc.).
+
+      **Recommended setup** (simplest):
+
+      ```bash
+      cd apps/jobs
+      ln -s ../../apps/api/.env .env  
      ```
 
    - `apps/dashboard/.env`:
@@ -250,7 +260,7 @@ cp .env.example .env   # copy env template, edit for your domain
 
 The script reads root `.env` via `docker compose --env-file .env` and auto-generates a secure `PRIVATE_SERVER_KEY` (and `BETTER_AUTH_SECRET`) when missing.
 
-See [`.env.example`](.env.example) for the full list of environment variables with required/optional grouping, and [`docker/docs/SELF_HOST.md`](docker/docs/SELF_HOST.md) for the complete Docker self-hosting guide. To raise upload caps (documents, videos, assignment files), set the `UPLOAD_MAX_*_MB` vars in `.env` — see the [docs](https://docs.classroomio.com/docs/self-hosted/docker#optional--upload-file-size-limits).
+See [`.env.example`](.env.example) for the full list of environment variables with required/optional grouping, and [`docker/docs/SELF_HOST.md`](docker/docs/SELF_HOST.md) for the complete Docker self-hosting guide. To raise upload caps (documents, videos, assignment files), set the `UPLOAD_MAX_*_MB` vars in `.env` — see the [docs](https://classroomio.com/docs/self-hosted/docker#optional--upload-file-size-limits).
 
 ## Publishing
 

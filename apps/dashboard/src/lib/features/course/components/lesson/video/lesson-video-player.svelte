@@ -12,7 +12,7 @@
   import { lessonApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { AssetTranscriptPayload } from '$features/media/utils/types';
-  import { isOrgStudent } from '$lib/utils/store/app';
+  import { isCourseLearnerView } from '$lib/utils/store/app';
   import { resolveWatchEnforcedAssetIds, type LessonVideo } from './video-card-utils';
   import { lessonVideoBus } from './lesson-video-bus.svelte';
   import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
@@ -345,7 +345,7 @@
 
   const seekPolicy = $derived.by(() => {
     const lesson = lessonApi.lesson;
-    if (!$isOrgStudent || !lesson || lesson.completionPolicy !== 'video_watch' || !isWatchEnforcedForVideo) {
+    if (!$isCourseLearnerView || !lesson || lesson.completionPolicy !== 'video_watch' || !isWatchEnforcedForVideo) {
       return undefined;
     }
 
@@ -373,7 +373,7 @@
   });
 
   async function restoreWatchProgress(): Promise<void> {
-    if (!$isOrgStudent || !uploadAssetId) return;
+    if (!$isCourseLearnerView || !uploadAssetId) return;
 
     const cachedAsset = assetWatchProgress;
     if (cachedAsset?.lastPositionSeconds && cachedAsset.lastPositionSeconds > 0) {

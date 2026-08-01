@@ -113,7 +113,7 @@
         </div>
       </Card.Content>
       <Card.Footer>
-        <Button class="w-full justify-center" disabled={$isFreePlan || !courseId} href={editorHref}>
+        <Button variant="secondary" class="w-full justify-center" disabled={$isFreePlan || !courseId} href={editorHref}>
           {#if $isFreePlan}
             <ZapIcon class="size-4" />
           {/if}

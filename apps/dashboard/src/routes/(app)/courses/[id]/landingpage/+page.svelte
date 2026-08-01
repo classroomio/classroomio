@@ -44,10 +44,13 @@
   };
 
   setLandingPageEditContext({
-    selectedKey: () => selectedSectionKey,
-    selectKey: (key) => (selectedSectionKey = key),
-    labelFor: (key) => t.get(`course.navItem.landing_page.editor.title.${key}` as never) || key,
-    iconFor: (key) => sectionIcons[key] ?? HeaderIcon
+    selectedKey: () => (selectedSectionKey === 'header' ? 'hero' : selectedSectionKey),
+    selectKey: (key) => (selectedSectionKey = key === 'hero' ? 'header' : key),
+    labelFor: (key) => {
+      const sectionKey = key === 'hero' ? 'header' : key;
+      return t.get(`course.navItem.landing_page.editor.title.${sectionKey}` as never) || key;
+    },
+    iconFor: (key) => sectionIcons[key === 'hero' ? 'header' : key] ?? HeaderIcon
   });
 
   function syncCourseStore(_courseData: Course) {

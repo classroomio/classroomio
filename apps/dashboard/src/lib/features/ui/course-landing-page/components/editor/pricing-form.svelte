@@ -48,7 +48,7 @@
       <Select.Trigger class="w-full">
         <p>{course.currency === 'NGN' ? 'NGN' : 'USD'}</p>
       </Select.Trigger>
-      <Select.Content>
+      <Select.Content class="z-menu-elevated">
         <Select.Item value="NGN">NGN</Select.Item>
         <Select.Item value="USD">USD</Select.Item>
       </Select.Content>

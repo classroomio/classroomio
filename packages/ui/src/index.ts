@@ -87,6 +87,7 @@ export { BackButton } from './custom/back-button';
 export { CourseCard, DEFAULT_COURSE_BANNER_IMAGE } from './custom/course-card';
 export { NewsfeedReactions } from './custom/newsfeed-reactions';
 export * as PublicCourse from './custom/public-course';
+export * as CommentTree from './custom/comment-tree';
 export * as Certificate from './custom/certificate-preview';
 export * as EmailPreview from './custom/email-preview';
 export * from './custom/animation';

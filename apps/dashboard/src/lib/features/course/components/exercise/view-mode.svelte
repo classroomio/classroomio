@@ -39,7 +39,6 @@
   import { toggleConfetti } from '$features/ui/confetti/store';
   import { ContentType } from '@cio/utils/constants/content';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
-  import { isOrgStudent } from '$lib/utils/store/app';
   import {
     openCourseCompletionModal,
     updateCourseCompletionModal,
@@ -181,10 +180,7 @@
 
       const allContentItems = getOrderedNavigableContent(courseApi.course);
       const allComplete =
-        shouldMarkComplete &&
-        $isOrgStudent &&
-        allContentItems.length > 0 &&
-        allContentItems.every((item) => item.isComplete);
+        shouldMarkComplete && allContentItems.length > 0 && allContentItems.every((item) => item.isComplete);
 
       if (allComplete && courseApi.course?.id) {
         const requiredExerciseId = courseApi.course?.certificate?.requiredExerciseId ?? undefined;
@@ -409,6 +405,7 @@
       switch (answerValue.type) {
         case 'RADIO':
         case 'TRUE_FALSE':
+        case 'THUMBS':
         case 'NUMERIC':
         case 'STAR':
           return true;

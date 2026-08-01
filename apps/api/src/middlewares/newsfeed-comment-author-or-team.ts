@@ -49,7 +49,7 @@ export const newsfeedCommentAuthorOrTeamMiddleware = async (c: Context, next: Ne
 
     // Check if user is the author of the comment
     const userGroupMemberId = await getGroupMemberIdByCourseAndProfile(commentInfo.courseId, user.id);
-    const isAuthor = commentInfo.authorId === userGroupMemberId;
+    const isAuthor = Boolean(userGroupMemberId && commentInfo.authorId && commentInfo.authorId === userGroupMemberId);
 
     if (isAuthor) {
       await next();

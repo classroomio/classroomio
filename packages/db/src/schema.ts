@@ -410,18 +410,7 @@ export const profile = pgTable(
     verifiedAt: timestamp('verified_at', { withTimezone: true, mode: 'string' }),
     locale: locale().default('en'),
     isRestricted: boolean('is_restricted').default(false).notNull(),
-    settings: jsonb().default({}).$type<{
-      emailNotifications?: {
-        newStudent?: boolean;
-        newSubmission?: boolean;
-        gradingResult?: boolean;
-        newsfeed?: boolean;
-        quizAssigned?: boolean;
-        cohortReminder?: boolean;
-        session?: boolean;
-        courseCompletion?: boolean;
-      };
-    }>()
+    settings: jsonb().default({}).$type<Record<string, unknown>>()
   },
   (table) => [
     foreignKey({
@@ -1703,7 +1692,8 @@ export const courseNewsfeedComment = pgTable(
       minValue: 1,
       cache: 1
     }),
-    courseNewsfeedId: uuid('course_newsfeed_id')
+    courseNewsfeedId: uuid('course_newsfeed_id'),
+    parentId: bigint('parent_id', { mode: 'number' })
   },
   (table) => [
     foreignKey({
@@ -1715,7 +1705,13 @@ export const courseNewsfeedComment = pgTable(
       columns: [table.courseNewsfeedId],
       foreignColumns: [courseNewsfeed.id],
       name: 'course_newsfeed_comment_course_newsfeed_id_fkey'
-    })
+    }),
+    foreignKey({
+      columns: [table.parentId],
+      foreignColumns: [table.id],
+      name: 'course_newsfeed_comment_parent_id_fkey'
+    }).onDelete('cascade'),
+    index('course_newsfeed_comment_parent_id_idx').on(table.parentId)
   ]
 );
 
@@ -1860,6 +1856,30 @@ export const organizationmember = pgTable(
   ]
 );
 
+export const organizationmemberEmailNotifications = pgTable(
+  'organizationmember_email_notifications',
+  {
+    organizationMemberId: bigint('organization_member_id', { mode: 'number' }).primaryKey().notNull(),
+    newStudent: boolean('new_student').default(true).notNull(),
+    newSubmission: boolean('new_submission').default(true).notNull(),
+    gradingResult: boolean('grading_result').default(true).notNull(),
+    newsfeed: boolean('newsfeed').default(true).notNull(),
+    quizAssigned: boolean('quiz_assigned').default(true).notNull(),
+    cohortReminder: boolean('cohort_reminder').default(true).notNull(),
+    session: boolean('session').default(true).notNull(),
+    courseCompletion: boolean('course_completion').default(true).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationMemberId],
+      foreignColumns: [organizationmember.id],
+      name: 'organizationmember_email_notifications_organization_member_id_fkey'
+    }).onDelete('cascade')
+  ]
+);
+
 export const question = pgTable(
   'question',
   {
@@ -1948,8 +1968,8 @@ export const questionAnswer = pgTable(
 /**
  * Exercise question kinds (`typename` matches `@cio/question-types` keys). Expected ids:
  * 1 RADIO, 2 CHECKBOX, 3 TEXTAREA, 4 TRUE_FALSE, 5 SHORT_ANSWER, 6 NUMERIC, 7 FILL_BLANK,
- * 8 FILE_UPLOAD, 9 MATCHING, 10 ORDERING, 11 HOTSPOT, 12 LINK, 13 WORD_BANK, 14 STAR,
- * 15 VIDEO_RECORDING.
+ * 8 FILE_UPLOAD, 9 ORDERING, 10 LINK, 11 WORD_BANK, 12 STAR, 13 VIDEO_RECORDING, 14 THUMBS.
+ * Disabled (no DB row): 15 MATCHING, 16 HOTSPOT.
  */
 export const questionType = pgTable(
   'question_type',

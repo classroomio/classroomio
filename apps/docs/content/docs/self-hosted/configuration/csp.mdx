@@ -1,0 +1,41 @@
+---
+title: CSP / allowed domains
+description: Allow the external CDN, font, media, and frame domains your self-hosted dashboard needs to load.
+---
+
+When `PUBLIC_IS_SELFHOSTED=true`, the dashboard ships a strict Content Security Policy that allows only
+`'self'`. If you load assets from external domains — a CDN, custom fonts, embedded video, an external
+media/storage host — you must add those domains, or the browser blocks them.
+
+## Variables
+
+Set the broad override, or the per-directive variables for finer control. All are **comma-separated**
+lists of domains.
+
+| Variable | Description |
+|----------|-------------|
+| `ALLOWED_EXTERNAL_DOMAINS` | Overrides all per-directive vars below with one allowlist |
+| `CSP_SCRIPT_SRC_DOMAINS` | Domains allowed in `script-src` |
+| `CSP_STYLE_SRC_DOMAINS` | Domains allowed in `style-src` |
+| `CSP_CONNECT_SRC_DOMAINS` | Domains allowed in `connect-src` |
+| `CSP_FRAME_SRC_DOMAINS` | Domains allowed in `frame-src` |
+| `CSP_FONT_SRC_DOMAINS` | Domains allowed in `font-src` |
+| `CSP_MEDIA_SRC_DOMAINS` | Domains allowed in `img-src` and `media-src` |
+
+```zsh title=".env"
+# One broad allowlist…
+ALLOWED_EXTERNAL_DOMAINS=https://fonts.googleapis.com,https://storage.yourdomain.com
+# …or per-directive, e.g. just your object-storage host for uploaded media:
+CSP_MEDIA_SRC_DOMAINS=https://storage.yourdomain.com
+```
+
+:::note[Runtime — no rebuild needed]
+CSP domain variables are read at **container startup**. Change them and restart the container — you do
+not need to rebuild any image.
+:::
+
+:::warning[You don't need to add the API]
+Normal dashboard traffic is proxied to the API **same-origin**, so the API host does not need to be in
+the CSP. Add external hosts only — your CDN, video provider, font host, and object-storage/media domain
+(the most common one, so browsers can load uploaded media).
+:::

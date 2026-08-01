@@ -147,7 +147,7 @@
 
         <div class="mt-8 flex flex-wrap items-center gap-3">
           <a
-            href="https://classroomio.com/docs/self-hosting"
+            href="https://classroomio.com/docs/self-hosted/docker"
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex items-center gap-2 rounded-lg bg-gray-950 px-5 py-2.5 text-sm font-medium text-white no-underline transition-all hover:-translate-y-0.5 hover:bg-blue-700"
