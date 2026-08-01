@@ -12,7 +12,8 @@
   import {
     formatSectionCompletionLabel,
     getActiveSectionId,
-    getSectionIdForContentItem
+    getSectionIdForContentItem,
+    isContentItemInPath
   } from '$features/course/utils/content-navigation';
   import { CircleCheckIcon } from '$features/ui/icons';
   import { t } from '$lib/utils/functions/translations';
@@ -91,7 +92,7 @@
   {@const isContentLocked = (contentItem.isUnlocked ?? true) === false}
   {@const isLockedForStudent = $isCourseLearnerView && (isContentLocked || contentItem.accessible === false)}
   <Sidebar.MenuSubItem>
-    <Sidebar.MenuSubButton isActive={currentPath.includes(contentItem.id)}>
+    <Sidebar.MenuSubButton isActive={isContentItemInPath(contentItem.id, currentPath)}>
       {#snippet child({ props })}
         <a
           href={resolve(getContentRoute(id, contentItem), {})}

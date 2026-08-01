@@ -2404,8 +2404,8 @@
       },
       "footer_nav": {
         "label": "Navigation i kursusindhold",
-        "previous": "Forrige lektion",
-        "next": "Næste lektion"
+        "previous": "Forrige",
+        "next": "Næste"
       }
     },
     "navItems": {

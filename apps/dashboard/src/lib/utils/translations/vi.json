@@ -2404,8 +2404,8 @@
       },
       "footer_nav": {
         "label": "Điều hướng nội dung khóa học",
-        "previous": "Bài học trước",
-        "next": "Bài học tiếp theo"
+        "previous": "Trước",
+        "next": "Tiếp"
       }
     },
     "navItems": {

@@ -2404,8 +2404,8 @@
       },
       "footer_nav": {
         "label": "Kursinhalt-Navigation",
-        "previous": "Vorherige Lektion",
-        "next": "Nächste Lektion"
+        "previous": "Zurück",
+        "next": "Weiter"
       }
     },
     "navItems": {

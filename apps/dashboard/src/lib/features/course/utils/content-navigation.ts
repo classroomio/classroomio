@@ -9,8 +9,13 @@ export function getFirstIncompleteNavigableContent(course: Course | null): Conte
   return getOrderedNavigableContent(course).find((item) => !item.isComplete && isNavigableContentUnlocked(item));
 }
 
+export function isContentItemInPath(itemId: string, currentPath: string): boolean {
+  const pathSegments = currentPath.split('/').filter(Boolean);
+  return pathSegments.includes(itemId);
+}
+
 export function findActiveNavigableContentIndex(items: ContentItem[], currentPath: string): number {
-  return items.findIndex((item) => currentPath.includes(item.id));
+  return items.findIndex((item) => isContentItemInPath(item.id, currentPath));
 }
 
 export function resolveActiveNavigableContentIndex(course: Course | null, currentPath: string): number {
