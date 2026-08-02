@@ -6,6 +6,15 @@
   import AttachmentListRow from './attachment-list-row.svelte';
   import type { AttachmentListFile, AttachmentListLabels, AttachmentListMode } from './types';
 
+  const defaultLabels: AttachmentListLabels = {
+    title: 'Attachments',
+    fileCount: '',
+    view: 'View file',
+    download: 'Download file',
+    delete: 'Delete file',
+    reorder: 'Reorder file'
+  };
+
   const flipDurationMs = 150;
 
   interface Props {
@@ -21,9 +30,9 @@
   }
 
   let {
-    mode,
+    mode = 'view',
     files = [],
-    labels,
+    labels = defaultLabels,
     formatSize,
     onView,
     onDownload,
@@ -49,7 +58,7 @@
   function syncOrderedFiles(nextFiles: AttachmentListFile[] = []) {
     const signature = getFilesSignature(nextFiles);
 
-    if (signature === lastSyncedSignature) return;
+    if (signature === lastSyncedSignature && orderedFiles.length > 0) return;
 
     orderedFiles = nextFiles;
     lastSyncedSignature = signature;
@@ -67,6 +76,7 @@
 
   const displayFiles = $derived(mode === 'edit' ? (orderedFiles.length > 0 ? orderedFiles : files) : files);
   const isReorderable = $derived(mode === 'edit' && Boolean(onReorder));
+  const reorderItems = $derived(orderedFiles.length > 0 ? orderedFiles : files);
 
   $effect(() => {
     syncOrderedFiles(files);
@@ -91,7 +101,7 @@
     <section
       class="ui:flex ui:flex-col"
       use:dragHandleZone={{
-        items: orderedFiles,
+        items: reorderItems,
         flipDurationMs,
         dropTargetStyle: {
           border: '2px var(--ring) solid',
