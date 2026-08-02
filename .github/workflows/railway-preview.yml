@@ -121,10 +121,26 @@ jobs:
 
       - name: Link project + preview environment
         if: ${{ inputs.action == 'deploy' }}
+        # A brand-new environment (first run for a branch) can take a moment to become
+        # visible to `railway link` right after `railway environment new` returns — same
+        # duplication-propagation lag as the cio-minio ServiceInstance race below. Retry
+        # instead of failing the run.
         env:
           ENV_NAME: ${{ steps.env.outputs.name }}
         run: |
-          railway link --project "$RAILWAY_PROJECT_ID" --workspace "$RAILWAY_WORKSPACE" --environment "$ENV_NAME"
+          for attempt in $(seq 1 10); do
+            if output=$(railway link --project "$RAILWAY_PROJECT_ID" --workspace "$RAILWAY_WORKSPACE" --environment "$ENV_NAME" 2>&1); then
+              echo "$output"
+              break
+            fi
+            echo "$output"
+            if [ "$attempt" -eq 10 ]; then
+              echo "::error::Environment $ENV_NAME never became linkable after 10 attempts."
+              exit 1
+            fi
+            echo "Environment not ready yet (attempt $attempt/10) — retrying in 5s..."
+            sleep 5
+          done
 
       - name: Pin the Dockerfile per service
         if: ${{ inputs.action == 'deploy' }}
