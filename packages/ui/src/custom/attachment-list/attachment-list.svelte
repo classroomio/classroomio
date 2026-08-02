@@ -22,7 +22,7 @@
 
   let {
     mode,
-    files,
+    files = [],
     labels,
     formatSize,
     onView,
@@ -32,7 +32,7 @@
     class: className = ''
   }: Props = $props();
 
-  function getFilesSignature(nextFiles: AttachmentListFile[]): string {
+  function getFilesSignature(nextFiles: AttachmentListFile[] = []): string {
     return JSON.stringify(
       nextFiles.map((file) => ({
         id: file.id,
@@ -46,7 +46,7 @@
   let orderedFiles = $state<AttachmentListFile[]>([]);
   let lastSyncedSignature = $state('');
 
-  function syncOrderedFiles(nextFiles: AttachmentListFile[]) {
+  function syncOrderedFiles(nextFiles: AttachmentListFile[] = []) {
     const signature = getFilesSignature(nextFiles);
 
     if (signature === lastSyncedSignature) return;
