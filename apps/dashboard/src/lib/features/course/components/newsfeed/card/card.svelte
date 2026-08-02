@@ -2,6 +2,7 @@
   import { onMount, tick } from 'svelte';
 
   import type { Feed } from '$features/course/utils/types';
+  import { t } from '$lib/utils/functions/translations';
   import { newsfeedApi } from '$features/course/api';
   import { getNewsfeedReactionCounts, getSelectedNewsfeedReactionType } from '@cio/ui/custom/newsfeed-reactions';
 
@@ -89,9 +90,10 @@
   {#if feed.isPinned}
     <PinIcon
       size={24}
-      class="text-muted-foreground ui:stroke-primary ui:fill-primary pointer-events-none absolute -top-3 -left-2 z-10 -rotate-40"
+      class="ui:text-primary ui:fill-primary pointer-events-none absolute -top-3 -left-2 z-10 -rotate-40"
       aria-hidden="true"
     />
+    <span class="sr-only">{$t('course.navItem.news_feed.pinned')}</span>
   {/if}
 
   <Header {feed} {onPin} onEdit={openEditFeed} onRequestDelete={() => (isDeleteFeedModal = true)} />

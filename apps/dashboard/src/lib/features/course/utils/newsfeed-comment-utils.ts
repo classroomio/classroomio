@@ -1,7 +1,10 @@
 // Replies used to persist their "Replying to @someone" chrome as a leading
 // <blockquote> inside the comment body. New replies carry `replyToCommentId`
 // instead, so these helpers exist only to read rows written the old way.
-const LEADING_REPLY_QUOTE = /^\s*<blockquote[^>]*>[\s\S]*?<\/blockquote>/i;
+// Matches on the `reply-quote` class the old code always emitted, so a
+// blockquote the author typed themselves is left alone.
+const LEADING_REPLY_QUOTE =
+  /^\s*<blockquote[^>]*class=(?:"[^"]*\breply-quote\b[^"]*"|'[^']*\breply-quote\b[^']*')[\s\S]*?<\/blockquote>/i;
 
 const SNIPPET_MAX_LENGTH = 60;
 

@@ -102,11 +102,11 @@
   };
 
   const pinnedFeeds = $derived.by(() => {
-    return newsfeedApi.feeds.filter((feed) => Boolean((feed as any).isPinned || (feed as any).is_pinned));
+    return newsfeedApi.feeds.filter((feed) => feed.isPinned);
   });
 
   const unpinnedFeeds = $derived.by(() => {
-    return newsfeedApi.feeds.filter((feed) => !((feed as any).isPinned || (feed as any).is_pinned));
+    return newsfeedApi.feeds.filter((feed) => !feed.isPinned);
   });
 
   function getPageRoles(org: AccountOrg) {

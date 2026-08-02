@@ -56,7 +56,7 @@
   <UserAvatar src={authorAvatarUrl || undefined} class="ui:mt-1 ui:size-8 ui:shrink-0" />
 
   <div
-    class="ui:flex ui:w-full ui:flex-col ui:overflow-hidden ui:rounded-lg ui:border ui:border-input ui:transition-color ui:focus-within:border-ring ui:focus-within:ring-[3px] ui:focus-within:ring-ring/50"
+    class="ui:flex ui:w-full ui:flex-col ui:overflow-hidden ui:rounded-lg ui:border ui:border-input ui:transition-colors ui:focus-within:border-ring ui:focus-within:ring-[3px] ui:focus-within:ring-ring/50"
   >
     {#if replyingToUser}
       <div
