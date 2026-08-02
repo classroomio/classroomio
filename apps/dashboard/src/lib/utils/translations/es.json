@@ -2013,7 +2013,12 @@
               "failed_to_render_pdf": "No se pudo renderizar la página PDF",
               "use_arrow_keys": "Utilice las teclas de flecha para navegar, +/- para hacer zoom o haga clic en los controles de arriba. El clic derecho está deshabilitado.",
               "empty_title": "Aún no hay documentos",
-              "empty_description": "Cargue documentos para compartir con sus estudiantes"
+              "empty_description": "Cargue documentos para compartir con sus estudiantes",
+              "attachments_heading": "Adjuntos",
+              "file_count": "{count} archivos",
+              "file_count_one": "1 archivo",
+              "view_file": "Ver archivo",
+              "reorder_file": "Reordenar archivo"
             },
             "video": {
               "title": "Video",

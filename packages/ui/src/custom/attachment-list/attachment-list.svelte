@@ -88,10 +88,10 @@
   class={cn('ui:flex ui:w-full ui:flex-col ui:overflow-hidden ui:rounded-md ui:border ui:border-border', className)}
 >
   {#if mode === 'view'}
-    <div class="ui:flex ui:items-center ui:justify-between ui:border-b ui:border-border ui:px-4 ui:py-3">
+    <div class="ui:flex ui:items-center ui:justify-between ui:border-b ui:border-border ui:p-2">
       <div class="ui:flex ui:items-center ui:gap-2">
-        <PaperclipIcon class="ui:text-muted-foreground ui:size-4" aria-hidden="true" />
-        <h3 class="ui:text-sm ui:font-semibold">{labels.title}</h3>
+        <PaperclipIcon class="ui:text-muted-foreground ui:size-3.5" aria-hidden="true" />
+        <h3 class="ui:text-xs">{labels.title}</h3>
       </div>
       <span class="ui:text-muted-foreground ui:text-xs">{labels.fileCount}</span>
     </div>

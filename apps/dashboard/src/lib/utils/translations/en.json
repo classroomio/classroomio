@@ -2454,7 +2454,12 @@
               "failed_to_render_pdf": "Failed to render PDF page",
               "use_arrow_keys": "Use arrow keys to navigate, +/- to zoom, or click the controls above. Right-click is disabled.",
               "empty_title": "No documents yet",
-              "empty_description": "Upload documents to share with your students"
+              "empty_description": "Upload documents to share with your students",
+              "attachments_heading": "Attachments",
+              "file_count": "{count} files",
+              "file_count_one": "1 file",
+              "view_file": "View file",
+              "reorder_file": "Reorder file"
             }
           },
           "button_done": "Done"

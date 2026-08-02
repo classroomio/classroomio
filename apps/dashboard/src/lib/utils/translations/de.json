@@ -2013,7 +2013,12 @@
               "failed_to_render_pdf": "PDF-Seite konnte nicht gerendert werden",
               "use_arrow_keys": "Verwenden Sie die Pfeiltasten zum Navigieren, +/- zum Zoomen oder klicken Sie auf die Steuerelemente oben. Der Rechtsklick ist deaktiviert.",
               "empty_title": "Noch keine Dokumente",
-              "empty_description": "Laden Sie Dokumente hoch, um sie mit Ihren Schülern zu teilen"
+              "empty_description": "Laden Sie Dokumente hoch, um sie mit Ihren Schülern zu teilen",
+              "attachments_heading": "Anhänge",
+              "file_count": "{count} Dateien",
+              "file_count_one": "1 Datei",
+              "view_file": "Datei anzeigen",
+              "reorder_file": "Datei neu anordnen"
             },
             "video": {
               "title": "Video",

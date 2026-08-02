@@ -20,7 +20,6 @@
 
   let { mode = MODES.view }: Props = $props();
 
-  let downloadingDocuments = $state(new Set<string>());
   let openDeleteDocumentModal = $state(false);
   let documentIndexToDelete = $state<number | null>(null);
   let viewingPDF: any = $state(null);
@@ -83,9 +82,6 @@
   }
 
   async function downloadDocument(doc: LessonDocument) {
-    downloadingDocuments.add(doc.name);
-    downloadingDocuments = downloadingDocuments;
-
     if (!doc.key) {
       snackbar.error('Document not loaded correctly');
       return;
@@ -108,9 +104,6 @@
     } catch (error) {
       console.error('Error downloading document:', error);
       window.open(doc.link, '_blank');
-    } finally {
-      downloadingDocuments.delete(doc.name);
-      downloadingDocuments = downloadingDocuments;
     }
   }
 
@@ -255,6 +248,19 @@
     viewPDF(doc);
   }
 
+  function handleViewDocument(doc: LessonDocument) {
+    if (doc.type === 'pdf') {
+      handleViewPDF(doc);
+      return;
+    }
+
+    window.open(doc.link, '_blank', 'noopener,noreferrer');
+  }
+
+  function reorderDocuments(documents: LessonDocument[]) {
+    lessonApi.updateLessonState('documents', documents);
+  }
+
   function closePDFViewer() {
     // Cancel any ongoing render task
     if (currentRenderTask) {
@@ -320,12 +326,12 @@
 <DocumentList
   {mode}
   {displayDocuments}
-  {downloadingDocuments}
   {formatFileSize}
   {openDocumentUploadModal}
   {requestRemoveDocument}
-  onViewPDF={handleViewPDF}
+  onViewDocument={handleViewDocument}
   {downloadDocument}
+  {reorderDocuments}
 />
 
 <DeleteModal bind:open={openDeleteDocumentModal} onDelete={confirmRemoveDocument} />

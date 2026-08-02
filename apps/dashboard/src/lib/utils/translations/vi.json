@@ -2013,7 +2013,12 @@
               "failed_to_render_pdf": "Không thể hiển thị trang PDF",
               "use_arrow_keys": "Sử dụng các phím mũi tên để điều hướng, +/- để thu phóng hoặc nhấp vào các điều khiển ở trên. Nhấp chuột phải bị vô hiệu hóa.",
               "empty_title": "Chưa có tài liệu nào",
-              "empty_description": "Tải lên tài liệu để chia sẻ với sinh viên của bạn"
+              "empty_description": "Tải lên tài liệu để chia sẻ với sinh viên của bạn",
+              "attachments_heading": "Tệp đính kèm",
+              "file_count": "{count} tệp",
+              "file_count_one": "1 tệp",
+              "view_file": "Xem tệp",
+              "reorder_file": "Sắp xếp lại tệp"
             },
             "video": {
               "title": "Video",

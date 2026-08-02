@@ -2013,7 +2013,12 @@
               "failed_to_render_pdf": "Échec du rendu de la page PDF",
               "use_arrow_keys": "Utilisez les touches fléchées pour naviguer, +/- pour zoomer ou cliquez sur les commandes ci-dessus. Le clic droit est désactivé.",
               "empty_title": "Aucun document pour l'instant",
-              "empty_description": "Téléchargez des documents à partager avec vos étudiants"
+              "empty_description": "Téléchargez des documents à partager avec vos étudiants",
+              "attachments_heading": "Pièces jointes",
+              "file_count": "{count} fichiers",
+              "file_count_one": "1 fichier",
+              "view_file": "Voir le fichier",
+              "reorder_file": "Réordonner le fichier"
             },
             "video": {
               "title": "Vidéo",
