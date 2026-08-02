@@ -289,8 +289,11 @@
   },
   "common": {
     "unsaved_changes": {
-      "message": "You have unsaved changes. Are you sure you want to leave?"
+      "message": "You have unsaved changes. Are you sure you want to leave?",
+      "label": "Unsaved changes"
     },
+    "discard": "Discard",
+    "save_changes": "Save changes",
     "refresh": "Refresh"
   },
   "compliance": {

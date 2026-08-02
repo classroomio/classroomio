@@ -4,6 +4,7 @@ import BodyHeader from './page-body-header.svelte';
 import Header from './page-header.svelte';
 import HeaderContent from './page-header-content.svelte';
 import Root from './page.svelte';
+import SettingsActions from './page-settings-actions.svelte';
 import Subtitle from './page-subtitle.svelte';
 import Title from './page-title.svelte';
 
@@ -16,6 +17,7 @@ export {
   Subtitle,
   Body,
   BodyHeader,
+  SettingsActions,
   //
   Root as Page,
   Header as PageHeader,
@@ -24,5 +26,6 @@ export {
   Title as PageTitle,
   Subtitle as PageSubtitle,
   Body as PageBody,
-  BodyHeader as PageBodyHeader
+  BodyHeader as PageBodyHeader,
+  SettingsActions as PageSettingsActions
 };

@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Odśwież",
     "unsaved_changes": {
-      "message": "Masz niezapisane zmiany. Czy na pewno chcesz wyjść?"
-    }
+      "message": "Masz niezapisane zmiany. Czy na pewno chcesz wyjść?",
+      "label": "Niezapisane zmiany"
+    },
+    "discard": "Odrzuć",
+    "save_changes": "Zapisz zmiany"
   },
   "validations": {
     "generic": {

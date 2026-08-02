@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Làm mới",
     "unsaved_changes": {
-      "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
-    }
+      "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?",
+      "label": "Thay đổi chưa lưu"
+    },
+    "discard": "Hủy",
+    "save_changes": "Lưu thay đổi"
   },
   "validations": {
     "generic": {
