@@ -26,6 +26,10 @@
   z-index: 150;
 }
 
+@utility z-modal {
+  z-index: 200;
+}
+
 @utility z-menu-elevated {
   z-index: 250;
 }
