@@ -15,7 +15,9 @@
   import * as Avatar from '@cio/ui/base/avatar';
   import { Badge } from '@cio/ui/base/badge';
   import { Progress } from '@cio/ui/base/progress';
+  import * as Tooltip from '@cio/ui/base/tooltip';
   import { ComingSoon, RoleBasedSecurity, UpgradeBanner } from '$features/ui';
+  import TruncatedWithTooltip from '$features/course/components/truncated-with-tooltip.svelte';
   import InvitationModal from '$features/course/components/people/invitation-modal.svelte';
   import GrantAccessModal from '$features/course/components/people/grant-access-modal.svelte';
   import DeleteConfirmation from '$features/course/components/people/delete-confirmation.svelte';
@@ -172,51 +174,79 @@
   </div>
 
   <div class="rounded-md border">
-    <Table.Root>
-      <Table.Header>
-        <Table.Row>
-          <Table.Head>{$t('course.navItem.people.learner')}</Table.Head>
-          <Table.Head>{$t('course.navItem.people.progress')}</Table.Head>
-          <Table.Head>{$t('course.navItem.people.stage')}</Table.Head>
-          <Table.Head>{$t('course.navItem.people.last_login_at')}</Table.Head>
-          <Table.Head>{$t('course.navItem.people.enrolled_at')}</Table.Head>
-          <Table.Head class="w-12"></Table.Head>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {#if isLoadingMembers && memberRows.length === 0}
+    <Tooltip.Provider>
+      <Table.Root>
+        <Table.Header>
           <Table.Row>
-            <Table.Cell colspan={6} class="ui:text-muted-foreground py-8 text-center text-sm">
-              {$t('course.navItem.people.invite_modal.loading')}
-            </Table.Cell>
+            <Table.Head>{$t('course.navItem.people.learner')}</Table.Head>
+            <Table.Head>{$t('course.navItem.people.progress')}</Table.Head>
+            <Table.Head class="max-w-[220px]">{$t('course.navItem.people.stage')}</Table.Head>
+            <Table.Head>{$t('course.navItem.people.last_login_at')}</Table.Head>
+            <Table.Head>{$t('course.navItem.people.enrolled_at')}</Table.Head>
+            <Table.Head class="w-12"></Table.Head>
           </Table.Row>
-        {:else}
-          {#each filterPeople(searchValue, people) as person (person.id)}
+        </Table.Header>
+        <Table.Body>
+          {#if isLoadingMembers && memberRows.length === 0}
             <Table.Row>
-              <Table.Cell class="min-w-[220px]">
-                {#if person.profile}
-                  <div class="flex items-start lg:items-center">
-                    <Avatar.Root class="mr-3">
-                      {#if getMemberAvatarUrl(person)}
-                        <Avatar.Image
-                          src={getMemberAvatarUrl(person)}
-                          alt={person.profile.fullname ? person.profile.fullname : 'User'}
-                        />
-                      {/if}
-                      <Avatar.Fallback>
-                        <UserIcon class="ui:size-4 ui:text-muted-foreground" />
-                      </Avatar.Fallback>
-                    </Avatar.Root>
-                    <div class="flex flex-col items-start lg:flex-row lg:items-center">
-                      <div class="mr-2">
-                        <p class="text-base font-normal dark:text-white">
-                          {person.profile.fullname}
-                        </p>
-                        <p class="ui:text-primary line-clamp-1 text-xs">
-                          {obscureMemberEmail(getEmail(person))}
-                        </p>
+              <Table.Cell colspan={6} class="ui:text-muted-foreground py-8 text-center text-sm">
+                {$t('course.navItem.people.invite_modal.loading')}
+              </Table.Cell>
+            </Table.Row>
+          {:else}
+            {#each filterPeople(searchValue, people) as person (person.id)}
+              <Table.Row>
+                <Table.Cell class="min-w-[220px]">
+                  {#if person.profile}
+                    <div class="flex items-start lg:items-center">
+                      <Avatar.Root class="mr-3">
+                        {#if getMemberAvatarUrl(person)}
+                          <Avatar.Image
+                            src={getMemberAvatarUrl(person)}
+                            alt={person.profile.fullname ? person.profile.fullname : 'User'}
+                          />
+                        {/if}
+                        <Avatar.Fallback>
+                          <UserIcon class="ui:size-4 ui:text-muted-foreground" />
+                        </Avatar.Fallback>
+                      </Avatar.Root>
+                      <div class="flex flex-col items-start lg:flex-row lg:items-center">
+                        <div class="mr-2">
+                          <p class="text-base font-normal dark:text-white">
+                            {person.profile.fullname}
+                          </p>
+                          <p class="ui:text-primary line-clamp-1 text-xs">
+                            {obscureMemberEmail(getEmail(person))}
+                          </p>
+                        </div>
+                        <div class="flex items-center">
+                          <RoleBasedSecurity allowedRoles={[1, 2]}>
+                            <Button
+                              variant="secondary"
+                              size="icon"
+                              class="h-8 w-8"
+                              onclick={() => copyToClipboard(getEmail(person) ?? '')}
+                            >
+                              {#if copiedEmail === getEmail(person)}
+                                <CheckIcon size={16} class="text-green-600" />
+                              {:else}
+                                <CopyIcon size={16} />
+                              {/if}
+                            </Button>
+                          </RoleBasedSecurity>
+                          {#if person.profileId == $profile.id}
+                            <ComingSoon label={$t('course.navItem.people.you')} />
+                          {/if}
+                        </div>
                       </div>
-                      <div class="flex items-center">
+                    </div>
+                  {:else}
+                    <div class="flex w-2/4 items-start lg:items-center">
+                      <Chip value={shortenName(person.email)} className="mr-3" />
+                      <a href="mailto:{person.email}" class="text-md ui:text-primary mr-2 dark:text-white">
+                        {person.email}
+                      </a>
+                      <div class="flex items-center justify-between">
                         <RoleBasedSecurity allowedRoles={[1, 2]}>
                           <Button
                             variant="secondary"
@@ -231,139 +261,129 @@
                             {/if}
                           </Button>
                         </RoleBasedSecurity>
-                        {#if person.profileId == $profile.id}
-                          <ComingSoon label={$t('course.navItem.people.you')} />
-                        {/if}
+
+                        <Chip value={$t('course.navItem.people.pending')} className="bg-yellow-200 text-yellow-700" />
                       </div>
                     </div>
-                  </div>
-                {:else}
-                  <div class="flex w-2/4 items-start lg:items-center">
-                    <Chip value={shortenName(person.email)} className="mr-3" />
-                    <a href="mailto:{person.email}" class="text-md ui:text-primary mr-2 dark:text-white">
-                      {person.email}
-                    </a>
-                    <div class="flex items-center justify-between">
-                      <RoleBasedSecurity allowedRoles={[1, 2]}>
-                        <Button
-                          variant="secondary"
-                          size="icon"
-                          class="h-8 w-8"
-                          onclick={() => copyToClipboard(getEmail(person) ?? '')}
-                        >
-                          {#if copiedEmail === getEmail(person)}
-                            <CheckIcon size={16} class="text-green-600" />
-                          {:else}
-                            <CopyIcon size={16} />
-                          {/if}
-                        </Button>
-                      </RoleBasedSecurity>
+                  {/if}
+                </Table.Cell>
 
-                      <Chip value={$t('course.navItem.people.pending')} className="bg-yellow-200 text-yellow-700" />
-                    </div>
-                  </div>
-                {/if}
-              </Table.Cell>
-
-              <Table.Cell class="min-w-[140px]">
-                {#if isStudentMember(person)}
-                  {@const progressPercent = getMemberProgressPercent(person) ?? 0}
-                  <div class="flex items-center gap-3">
-                    <div class="w-24 flex-shrink-0">
-                      <Progress
-                        value={progressPercent}
-                        class={progressPercent >= 100 ? '[&_[data-slot=progress-indicator]]:ui:bg-emerald-500' : ''}
-                      />
-                    </div>
-                    <span
-                      class={`text-sm font-medium ${progressPercent >= 100 ? 'text-emerald-600 dark:text-emerald-400' : 'ui:text-foreground'}`}
-                    >
-                      {progressPercent}%
-                    </span>
-                  </div>
-                {:else}
-                  <span class="ui:text-muted-foreground text-sm">—</span>
-                {/if}
-              </Table.Cell>
-
-              <Table.Cell class="min-w-[180px]">
-                {#if isStudentMember(person) && person.stage}
-                  {#if person.stage.kind === 'certificate_earned'}
-                    <Badge
-                      variant="outline"
-                      class="border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300"
-                    >
-                      <AwardIcon class="mr-1 size-3.5" />
-                      {$t('course.navItem.people.certificate_earned')}
-                    </Badge>
-                  {:else if person.stage.kind === 'not_started'}
-                    <Badge variant="outline" class="ui:bg-muted ui:text-muted-foreground">
-                      {$t('course.navItem.people.not_started')}
-                    </Badge>
-                  {:else}
-                    <div class="flex items-center gap-2">
+                <Table.Cell class="min-w-[140px]">
+                  {#if isStudentMember(person)}
+                    {@const progressPercent = getMemberProgressPercent(person) ?? 0}
+                    <div class="flex items-center gap-3">
+                      <div class="w-24 flex-shrink-0">
+                        <Progress
+                          value={progressPercent}
+                          class={progressPercent >= 100 ? '[&_[data-slot=progress-indicator]]:ui:bg-emerald-500' : ''}
+                        />
+                      </div>
                       <span
-                        class="ui:bg-primary/10 ui:text-primary flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold"
+                        class={`text-sm font-medium ${progressPercent >= 100 ? 'text-emerald-600 dark:text-emerald-400' : 'ui:text-foreground'}`}
                       >
-                        {person.stage.position}
+                        {progressPercent}%
                       </span>
-                      <span class="ui:text-foreground truncate text-sm font-medium">{person.stage.title}</span>
                     </div>
+                  {:else}
+                    <span class="ui:text-muted-foreground text-sm">—</span>
                   {/if}
-                {:else}
-                  <span class="ui:text-muted-foreground text-sm">—</span>
-                {/if}
-              </Table.Cell>
+                </Table.Cell>
 
-              <Table.Cell class="min-w-[110px]">
-                {#if isStudentMember(person)}
-                  <span class="ui:text-muted-foreground text-sm">
-                    {formatPeopleShortDate(person.lastLoginAt)}
-                  </span>
-                {:else}
-                  <span class="ui:text-muted-foreground text-sm">—</span>
-                {/if}
-              </Table.Cell>
-
-              <Table.Cell class="min-w-[110px]">
-                <span class="ui:text-muted-foreground text-sm">
-                  {formatPeopleShortDate(person.enrolledAt ?? person.createdAt)}
-                </span>
-              </Table.Cell>
-
-              <Table.Cell class="w-12 text-right">
-                <RoleBasedSecurity allowedRoles={[1, 2]}>
-                  {#if person.profileId !== $profile.id}
-                    <DropdownMenu.Root>
-                      <DropdownMenu.Trigger class="ui:hover:bg-muted flex items-center justify-center rounded-md p-1">
-                        <EllipsisVerticalIcon size={16} />
-                      </DropdownMenu.Trigger>
-                      <DropdownMenu.Content align="end">
-                        {#if person.profileId}
-                          <DropdownMenu.Item onclick={() => gotoPerson(person)}>
-                            <EyeIcon class="mr-2 size-4" />
-                            {$t('course.navItem.people.view')}
-                          </DropdownMenu.Item>
-                        {/if}
-                        <DropdownMenu.Item
-                          class="text-red-600"
-                          onclick={() => {
-                            member = person;
-                            $deleteMemberModal.open = true;
-                          }}
+                <Table.Cell class="max-w-[220px]">
+                  {#if isStudentMember(person) && person.stage}
+                    {#if person.stage.kind === 'certificate_earned'}
+                      <Badge
+                        variant="outline"
+                        class="max-w-[200px] border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300"
+                      >
+                        <div class="flex min-w-0 items-center gap-1">
+                          <AwardIcon class="size-3.5 shrink-0" />
+                          <TruncatedWithTooltip
+                            text={$t('course.navItem.people.certificate_earned')}
+                            maxWidth="100%"
+                            class="text-emerald-700 dark:text-emerald-300"
+                          />
+                        </div>
+                      </Badge>
+                    {:else if person.stage.kind === 'not_started'}
+                      <Badge variant="outline" class="ui:bg-muted ui:text-muted-foreground max-w-[200px]">
+                        <TruncatedWithTooltip
+                          text={$t('course.navItem.people.not_started')}
+                          maxWidth="100%"
+                          class="ui:text-muted-foreground"
+                        />
+                      </Badge>
+                    {:else}
+                      <div class="flex max-w-[220px] items-center gap-2">
+                        <span
+                          class="ui:bg-primary/10 ui:text-primary flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold"
                         >
-                          <TrashIcon class="mr-2 size-4" />
-                          {$t('course.navItem.people.delete_profile')}
-                        </DropdownMenu.Item>
-                      </DropdownMenu.Content>
-                    </DropdownMenu.Root>
+                          {person.stage.position}
+                        </span>
+                        <div class="min-w-0 flex-1">
+                          <TruncatedWithTooltip
+                            text={person.stage.title}
+                            maxWidth="100%"
+                            class="ui:text-foreground text-sm font-medium"
+                          />
+                        </div>
+                      </div>
+                    {/if}
+                  {:else}
+                    <span class="ui:text-muted-foreground text-sm">—</span>
                   {/if}
-                </RoleBasedSecurity>
-              </Table.Cell>
-            </Table.Row>
-          {/each}
-        {/if}
-      </Table.Body>
-    </Table.Root>
+                </Table.Cell>
+
+                <Table.Cell class="min-w-[110px]">
+                  {#if isStudentMember(person)}
+                    <span class="ui:text-muted-foreground text-sm">
+                      {formatPeopleShortDate(person.lastLoginAt)}
+                    </span>
+                  {:else}
+                    <span class="ui:text-muted-foreground text-sm">—</span>
+                  {/if}
+                </Table.Cell>
+
+                <Table.Cell class="min-w-[110px]">
+                  <span class="ui:text-muted-foreground text-sm">
+                    {formatPeopleShortDate(person.enrolledAt ?? person.createdAt)}
+                  </span>
+                </Table.Cell>
+
+                <Table.Cell class="w-12 text-right">
+                  <RoleBasedSecurity allowedRoles={[1, 2]}>
+                    {#if person.profileId !== $profile.id}
+                      <DropdownMenu.Root>
+                        <DropdownMenu.Trigger class="ui:hover:bg-muted flex items-center justify-center rounded-md p-1">
+                          <EllipsisVerticalIcon size={16} />
+                        </DropdownMenu.Trigger>
+                        <DropdownMenu.Content align="end">
+                          {#if person.profileId}
+                            <DropdownMenu.Item onclick={() => gotoPerson(person)}>
+                              <EyeIcon class="mr-2 size-4" />
+                              {$t('course.navItem.people.view')}
+                            </DropdownMenu.Item>
+                          {/if}
+                          <DropdownMenu.Item
+                            class="text-red-600"
+                            onclick={() => {
+                              member = person;
+                              $deleteMemberModal.open = true;
+                            }}
+                          >
+                            <TrashIcon class="mr-2 size-4" />
+                            {$t('course.navItem.people.delete_profile')}
+                          </DropdownMenu.Item>
+                        </DropdownMenu.Content>
+                      </DropdownMenu.Root>
+                    {/if}
+                  </RoleBasedSecurity>
+                </Table.Cell>
+              </Table.Row>
+            {/each}
+          {/if}
+        </Table.Body>
+      </Table.Root>
+    </Tooltip.Provider>
   </div>
 </section>
