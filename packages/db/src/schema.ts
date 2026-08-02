@@ -1693,7 +1693,10 @@ export const courseNewsfeedComment = pgTable(
       cache: 1
     }),
     courseNewsfeedId: uuid('course_newsfeed_id'),
-    parentId: bigint('parent_id', { mode: 'number' })
+    parentId: bigint('parent_id', { mode: 'number' }),
+    // The comment this one answers. `parentId` is the thread root, so for a
+    // reply aimed at another reply the two differ; null means it answers the root.
+    replyToCommentId: bigint('reply_to_comment_id', { mode: 'number' })
   },
   (table) => [
     foreignKey({
@@ -1711,6 +1714,11 @@ export const courseNewsfeedComment = pgTable(
       foreignColumns: [table.id],
       name: 'course_newsfeed_comment_parent_id_fkey'
     }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.replyToCommentId],
+      foreignColumns: [table.id],
+      name: 'course_newsfeed_comment_reply_to_comment_id_fkey'
+    }).onDelete('set null'),
     index('course_newsfeed_comment_parent_id_idx').on(table.parentId)
   ]
 );

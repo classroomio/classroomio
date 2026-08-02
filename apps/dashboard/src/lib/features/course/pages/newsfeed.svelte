@@ -69,8 +69,13 @@
     }
   };
 
-  const addNewComment = async (comment: string, feedId: string, parentId?: number) => {
-    await newsfeedApi.createComment(courseId, feedId, comment, author, parentId);
+  const addNewComment = async (
+    comment: string,
+    feedId: string,
+    parentId?: number,
+    replyTo?: { commentId: number; authorFullname: string }
+  ) => {
+    await newsfeedApi.createComment(courseId, feedId, comment, author, parentId, replyTo);
 
     if (!newsfeedApi.success) {
       return snackbar.error('snackbar.course.error.commenting_error');

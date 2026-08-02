@@ -265,13 +265,15 @@ export async function getNewsfeedCommentsService(
  * @param authorId Group member ID (author)
  * @param content Comment content
  * @param parentId Optional parent comment ID for replies
+ * @param replyToCommentId Optional comment being answered, within the same thread
  * @returns Created comment
  */
 export async function createNewsfeedCommentService(
   feedId: string,
   authorId: string,
   content: string,
-  parentId?: number
+  parentId?: number,
+  replyToCommentId?: number
 ) {
   try {
     // Validate parentId when provided
@@ -295,13 +297,35 @@ export async function createNewsfeedCommentService(
       }
     }
 
+    if (replyToCommentId !== undefined) {
+      const targetComment = await getNewsfeedCommentById(replyToCommentId);
+
+      if (!targetComment) {
+        throw new AppError('Comment being replied to not found', ErrorCodes.COMMENT_NOT_FOUND, 404);
+      }
+
+      if (targetComment.courseNewsfeedId !== feedId) {
+        throw new AppError('Comment being replied to does not belong to this feed', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+
+      // The target must sit in the thread we're replying into: either the root
+      // itself, or one of its replies.
+      const isThreadRoot = targetComment.id === parentId;
+      const isSiblingReply = targetComment.parentId === parentId;
+
+      if (!isThreadRoot && !isSiblingReply) {
+        throw new AppError('Comment being replied to is not part of this thread', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+    }
+
     const sanitizedContent = sanitizeHtml(content);
 
     const commentData: TNewCourseNewsfeedComment = {
       courseNewsfeedId: feedId,
       authorId,
       content: sanitizedContent,
-      parentId: parentId ?? null
+      parentId: parentId ?? null,
+      replyToCommentId: replyToCommentId ?? null
     };
 
     const comment = await createNewsfeedComment(commentData);

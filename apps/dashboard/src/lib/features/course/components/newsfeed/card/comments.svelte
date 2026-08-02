@@ -6,6 +6,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { newsfeedApi } from '$features/course/api';
+  import { getReplySnippet, stripLegacyReplyQuote } from '$features/course/utils/newsfeed-comment-utils';
 
   import * as CommentTree from '@cio/ui/custom/comment-tree';
   import { Button } from '@cio/ui/base/button';
@@ -23,7 +24,11 @@
       avatarUrl: string;
     };
     comments?: NewsfeedCommentsByFeedId;
-    onAddComment: (content: string, parentId?: number) => Promise<void> | void;
+    onAddComment: (
+      content: string,
+      parentId?: number,
+      replyTo?: { commentId: number; authorFullname: string }
+    ) => Promise<void> | void;
     onDeleteComment: (commentId: string | number, parentId?: number) => void;
   }
 
@@ -49,7 +54,7 @@
 
   const handleStartEdit = (commentId: number, currentContent: string) => {
     editingCommentId = commentId;
-    editingText = currentContent;
+    editingText = stripLegacyReplyQuote(currentContent);
   };
 
   const handleCancelEdit = () => {
@@ -124,8 +129,7 @@
   };
 
   const handleReplyClick = (topLevelId: number, targetCommentId: number, authorName: string, content: string) => {
-    const cleanText = content.replace(/<blockquote[\s\S]*?<\/blockquote>/gi, '').trim();
-    const snippet = cleanText.length > 60 ? cleanText.slice(0, 60) + '...' : cleanText;
+    const snippet = getReplySnippet(content);
     activeReplyTarget = {
       id: topLevelId,
       commentId: targetCommentId,
@@ -143,14 +147,11 @@
     isSubmitting = true;
     try {
       const parentId = activeReplyTarget?.id;
-      let finalContent = text;
+      const replyTo = activeReplyTarget
+        ? { commentId: activeReplyTarget.commentId, authorFullname: activeReplyTarget.fullname }
+        : undefined;
 
-      if (activeReplyTarget) {
-        const quoteBlock = `<blockquote class="reply-quote ui:mt-0.5 ui:mb-1 ui:rounded-r-md ui:border-l-2 ui:border-primary ui:bg-muted/40 ui:px-2.5 ui:py-1.5 ui:text-xs ui:text-muted-foreground"><strong class="ui:font-medium ui:text-foreground">Replying to @${activeReplyTarget.fullname}</strong><br/><span class="ui:block ui:truncate ui:italic">"${activeReplyTarget.snippet}"</span></blockquote>`;
-        finalContent = `${quoteBlock}${text}`;
-      }
-
-      await onAddComment(finalContent, parentId);
+      await onAddComment(text, parentId, replyTo);
       if (parentId) {
         expandedRepliesMap[parentId] = true;
       }
@@ -276,6 +277,14 @@
                             </div>
                           </div>
                         {:else}
+                          {#if reply.replyToAuthorFullname}
+                            <CommentTree.ReplyingTo
+                              label={$t('course.navItem.news_feed.comments.replying_to', {
+                                name: reply.replyToAuthorFullname
+                              })}
+                              class="mb-0.5"
+                            />
+                          {/if}
                           <CommentTree.Content content={reply.content} />
                           <CommentTree.Actions
                             replyLabel={$t('course.navItem.news_feed.comments.reply')}
