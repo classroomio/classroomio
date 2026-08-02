@@ -423,6 +423,29 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - **Icon-only buttons** (a `Button` whose content is just an icon, e.g. `size="icon"`) must use `variant="secondary"`.
 - **Theme color classes:** Classes that use colors from `packages/ui/src/index.css` (e.g. `text-muted-foreground`, `text-primary`) must be prefixed with `ui:` in dashboard code so they resolve against the UI theme (e.g. `ui:text-muted-foreground`, `ui:text-primary`). Only color-related utilities need the prefix; layout/sizing classes like `rounded`, `border`, `p-4` stay unprefixed (Tailwind defaults).
 
+### Page layout and settings save bar
+
+Use `@cio/ui/base/page` for dashboard page shells. See `packages/ui/README.md` § Page layout for the full component list.
+
+**Every settings page with save/discard** must use `Page.SettingsActions` as the last child of `Page.Root` (after `Page.Body`). Do not put Save in `Page.Header` or inline at the bottom of form sections.
+
+- Sticky at the viewport bottom while scrolling; docks naturally at the end of the page content
+- Save and Discard are disabled when `hasChanges` is false
+- Labels come from dashboard translations: `common.unsaved_changes.label`, `common.discard`, `common.save_changes`
+- Pair with `UnsavedChanges` for navigation guards where appropriate
+
+```svelte
+<Page.SettingsActions
+  hasChanges={hasUnsavedChanges}
+  loading={isSaving}
+  statusLabel={$t('common.unsaved_changes.label')}
+  discardLabel={$t('common.discard')}
+  saveLabel={$t('common.save_changes')}
+  onSave={handleSave}
+  onDiscard={handleDiscard}
+/>
+```
+
 ## Emails: system vs org-branded
 
 Every transactional email in `packages/email/src/emails` is one of two kinds — decide deliberately, because it changes the branding, the schema, and the `from` address.

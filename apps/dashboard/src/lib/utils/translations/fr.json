@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Actualiser",
     "unsaved_changes": {
-      "message": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir partir ?"
-    }
+      "message": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir partir ?",
+      "label": "Modifications non enregistrées"
+    },
+    "discard": "Abandonner les modifications",
+    "save_changes": "Enregistrer les modifications"
   },
   "validations": {
     "generic": {

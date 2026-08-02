@@ -4,11 +4,16 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import * as Field from '@cio/ui/base/field';
   import { Switch } from '@cio/ui/base/switch';
-  import { Button } from '@cio/ui/base/button';
   import { Textarea } from '@cio/ui/base/textarea';
   import LockIcon from '@lucide/svelte/icons/lock';
   import { orgApi } from '$features/org/api/org.svelte';
   import * as Alert from '@cio/ui/base/alert';
+
+  interface Props {
+    hasUnsavedChanges?: boolean;
+  }
+
+  let { hasUnsavedChanges = $bindable(false) }: Props = $props();
 
   // Auth settings state - synced with store
   let disableSignup = $state($currentOrg?.disableSignup ?? false);
@@ -31,7 +36,22 @@
     }
   });
 
-  async function handleSave() {
+  let currentAllowPublicSignups = $derived(!$currentOrg?.settings?.signup?.inviteOnly);
+
+  let hasChanges = $derived(
+    disableSignup !== ($currentOrg?.disableSignup ?? false) ||
+      disableSignupMessage !== ($currentOrg?.disableSignupMessage ?? '') ||
+      allowPublicSignups !== currentAllowPublicSignups ||
+      disableEmailPassword !== ($currentOrg?.disableEmailPassword ?? false) ||
+      disableGoogleAuth !== ($currentOrg?.disableGoogleAuth ?? false) ||
+      internalEnrollmentOnly !== ($currentOrg?.settings?.internalEnrollmentOnly ?? false)
+  );
+
+  $effect(() => {
+    hasUnsavedChanges = hasChanges;
+  });
+
+  export async function handleSave() {
     if (!$currentOrg) return;
 
     isSaving = true;
@@ -64,15 +84,17 @@
     isSaving = false;
   }
 
-  let currentAllowPublicSignups = $derived(!$currentOrg?.settings?.signup?.inviteOnly);
-  let hasChanges = $derived(
-    disableSignup !== ($currentOrg?.disableSignup ?? false) ||
-      disableSignupMessage !== ($currentOrg?.disableSignupMessage ?? '') ||
-      allowPublicSignups !== currentAllowPublicSignups ||
-      disableEmailPassword !== ($currentOrg?.disableEmailPassword ?? false) ||
-      disableGoogleAuth !== ($currentOrg?.disableGoogleAuth ?? false) ||
-      internalEnrollmentOnly !== ($currentOrg?.settings?.internalEnrollmentOnly ?? false)
-  );
+  export function handleDiscard() {
+    if (!$currentOrg) return;
+
+    disableSignup = $currentOrg.disableSignup ?? false;
+    disableSignupMessage = $currentOrg.disableSignupMessage ?? '';
+    allowPublicSignups = !$currentOrg.settings?.signup?.inviteOnly;
+    disableEmailPassword = $currentOrg.disableEmailPassword ?? false;
+    disableGoogleAuth = $currentOrg.disableGoogleAuth ?? false;
+    internalEnrollmentOnly = $currentOrg.settings?.internalEnrollmentOnly ?? false;
+    hasUnsavedChanges = false;
+  }
 </script>
 
 <Field.Group class="w-full max-w-2xl! px-2">
@@ -158,14 +180,6 @@
         </div>
       </Field.Field>
     </div>
-
-    {#if hasChanges}
-      <div class="mt-6 flex justify-end">
-        <Button variant="default" onclick={handleSave} loading={isSaving} disabled={isSaving || !$isEnterprisePlan}>
-          {$t('settings.auth.general.save_button')}
-        </Button>
-      </div>
-    {/if}
   </Field.Set>
 
   <Field.Separator />

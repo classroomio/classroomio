@@ -9,11 +9,10 @@
 
   type Props = {
     errors: Record<string, string>;
+    activeTab?: string;
   };
 
-  let { errors }: Props = $props();
-
-  let activeTab = $state('design');
+  let { errors, activeTab = $bindable('design') }: Props = $props();
 </script>
 
 <UpgradeBanner>{$t('upgrade.certificate')}</UpgradeBanner>
