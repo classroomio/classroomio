@@ -3,10 +3,22 @@ export type FileTypeStyle = {
   iconClass: string;
 };
 
+const MIME_TO_EXTENSION: Record<string, string> = {
+  'application/pdf': 'pdf',
+  'application/msword': 'doc',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx'
+};
+
 function resolveExtension(typeOrName: string): string {
   const normalized = typeOrName.trim().toLowerCase();
 
   if (!normalized) return '';
+
+  const mimeExtension = MIME_TO_EXTENSION[normalized];
+
+  if (mimeExtension) return mimeExtension;
+
+  if (normalized.includes('/')) return '';
 
   if (normalized.includes('.')) {
     return normalized.split('.').pop() ?? normalized;

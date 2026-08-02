@@ -4,6 +4,7 @@
   import DownloadIcon from '@lucide/svelte/icons/download';
   import Trash2Icon from '@lucide/svelte/icons/trash-2';
   import GripVerticalIcon from '@lucide/svelte/icons/grip-vertical';
+  import { dragHandle } from 'svelte-dnd-action';
   import { Button } from '../../base/button';
   import { cn } from '../../tools';
   import { formatFileSize } from './format-file-size';
@@ -45,7 +46,11 @@
   )}
 >
   {#if showDragHandle}
-    <div class="ui:text-muted-foreground ui:flex ui:shrink-0 ui:cursor-grab ui:items-center ui:active:cursor-grabbing">
+    <div
+      use:dragHandle
+      class="ui:text-muted-foreground ui:flex ui:shrink-0 ui:cursor-grab ui:items-center ui:active:cursor-grabbing"
+      aria-label={labels.reorder}
+    >
       <GripVerticalIcon class="ui:size-4" aria-hidden="true" />
     </div>
   {/if}

@@ -98,7 +98,7 @@ Marketing / demo widget: left-hand list of question types and a live **take**-mo
 
 ### Attachment list (`src/custom/attachment-list/`)
 
-Presentational list for lesson (or similar) file attachments with **view** and **edit** modes. View mode shows a header (paperclip + title + file count) and rows with view/download icon buttons. Edit mode shows sortable rows (when `onReorder` is provided) with a drag handle, view, and delete actions. Copy is passed via the `labels: AttachmentListLabels` prop so dashboard wrappers can supply translated strings. See `Molecules/AttachmentList` in Storybook.
+Presentational list for lesson (or similar) file attachments with **view** and **edit** modes. View mode shows a header (paperclip + title + file count) and rows with view/download icon buttons. Edit mode shows sortable rows (when `onReorder` is provided) with a drag handle, view, and delete actions. Copy is passed via the `labels: AttachmentListLabels` prop (including `reorder` for the drag handle) so dashboard wrappers can supply translated strings. `AttachmentListFile.type` accepts a file extension or MIME type for icon styling. See `Molecules/AttachmentList` in Storybook.
 
 ### Live session card (`src/custom/live-session-card/`)
 

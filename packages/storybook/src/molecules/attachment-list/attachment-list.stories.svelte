@@ -22,7 +22,8 @@
     fileCount: '2 files',
     view: 'View file',
     download: 'Download file',
-    delete: 'Delete file'
+    delete: 'Delete file',
+    reorder: 'Reorder file'
   };
 
   const { Story } = defineMeta({

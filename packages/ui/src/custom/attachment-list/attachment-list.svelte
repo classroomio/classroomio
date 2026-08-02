@@ -1,6 +1,6 @@
 <script lang="ts">
   import PaperclipIcon from '@lucide/svelte/icons/paperclip';
-  import { dndzone } from 'svelte-dnd-action';
+  import { dragHandleZone } from 'svelte-dnd-action';
   import { flip } from 'svelte/animate';
   import { cn } from '../../tools';
   import AttachmentListRow from './attachment-list-row.svelte';
@@ -32,12 +32,19 @@
     class: className = ''
   }: Props = $props();
 
+  function getFilesSignature(nextFiles: AttachmentListFile[]): string {
+    return JSON.stringify(
+      nextFiles.map((file) => ({
+        id: file.id,
+        name: file.name,
+        size: file.size,
+        type: file.type
+      }))
+    );
+  }
+
   let orderedFiles = $state<AttachmentListFile[]>([]);
   let lastSyncedSignature = $state('');
-
-  function getFilesSignature(nextFiles: AttachmentListFile[]): string {
-    return nextFiles.map((file) => file.id).join('|');
-  }
 
   function syncOrderedFiles(nextFiles: AttachmentListFile[]) {
     const signature = getFilesSignature(nextFiles);
@@ -58,7 +65,7 @@
     onReorder?.(orderedFiles);
   }
 
-  const displayFiles = $derived(mode === 'edit' ? orderedFiles : files);
+  const displayFiles = $derived(mode === 'edit' ? (orderedFiles.length > 0 ? orderedFiles : files) : files);
   const isReorderable = $derived(mode === 'edit' && Boolean(onReorder));
 
   $effect(() => {
@@ -67,7 +74,6 @@
 </script>
 
 <div
-  role="list"
   data-slot="attachment-list"
   class={cn('ui:flex ui:w-full ui:flex-col ui:overflow-hidden ui:rounded-md ui:border ui:border-border', className)}
 >
@@ -84,7 +90,7 @@
   {#if isReorderable}
     <section
       class="ui:flex ui:flex-col"
-      use:dndzone={{
+      use:dragHandleZone={{
         items: orderedFiles,
         flipDurationMs,
         dropTargetStyle: {
@@ -112,8 +118,21 @@
       {/each}
     </section>
   {:else}
-    {#each displayFiles as file (file.id)}
-      <AttachmentListRow {file} {mode} {labels} showDragHandle={false} {formatSize} {onView} {onDownload} {onDelete} />
-    {/each}
+    <div role="list" class="ui:flex ui:flex-col">
+      {#each displayFiles as file (file.id)}
+        <div role="listitem">
+          <AttachmentListRow
+            {file}
+            {mode}
+            {labels}
+            showDragHandle={false}
+            {formatSize}
+            {onView}
+            {onDownload}
+            {onDelete}
+          />
+        </div>
+      {/each}
+    </div>
   {/if}
 </div>
