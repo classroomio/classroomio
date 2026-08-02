@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { lessonDocUpload, resetDocumentUploadStore } from '../store';
+  import { lessonDocUpload } from '../store';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { Button } from '@cio/ui/base/button';
@@ -25,6 +25,7 @@
 
   let selectedFile: File | null = $state(null);
   let errorTimeout: NodeJS.Timeout | null = $state(null);
+  let successResetTimeout: ReturnType<typeof setTimeout> | null = $state(null);
   let isDisabled = $derived($lessonDocUpload.isUploading || $isFreePlan);
 
   let uploadedDocument: NonNullable<Lesson['documents']>[number] | null = $state(null);
@@ -67,6 +68,38 @@
     }
 
     return null;
+  }
+
+  function resetModalState() {
+    selectedFile = null;
+    uploadedDocument = null;
+
+    if (successResetTimeout) {
+      clearTimeout(successResetTimeout);
+      successResetTimeout = null;
+    }
+
+    if (errorTimeout) {
+      clearTimeout(errorTimeout);
+      errorTimeout = null;
+    }
+
+    lessonDocUpload.update((state) => ({
+      ...state,
+      error: null,
+      isUploading: false,
+      uploadProgress: 0,
+      isCancelled: false
+    }));
+  }
+
+  function handleOpenChange(isOpen: boolean) {
+    if (isOpen) return;
+
+    if ($lessonDocUpload.isUploading) return;
+
+    resetModalState();
+    onClose();
   }
 
   function selectFile(file: File) {
@@ -174,10 +207,16 @@
 
       snackbar.success($t('course.navItem.lessons.materials.tabs.document.upload_success'));
 
-      // Reset after a short delay
-      setTimeout(() => {
-        resetDocumentUploadStore();
+      if (successResetTimeout) clearTimeout(successResetTimeout);
+
+      successResetTimeout = setTimeout(() => {
         selectedFile = null;
+        uploadedDocument = null;
+        lessonDocUpload.update((state) => ({
+          ...state,
+          uploadProgress: 0
+        }));
+        successResetTimeout = null;
       }, 1500);
     } catch (error) {
       console.error('Upload error:', error);
@@ -224,18 +263,14 @@
     autoClearError($lessonDocUpload.error);
   });
 
-  // Clear error timeout when component is destroyed
+  // Clear timeouts when component is destroyed
   onDestroy(() => {
     if (errorTimeout) clearTimeout(errorTimeout);
+    if (successResetTimeout) clearTimeout(successResetTimeout);
   });
 </script>
 
-<Dialog.Root
-  bind:open={$lessonDocUpload.isModalOpen}
-  onOpenChange={(isOpen) => {
-    if (!isOpen) onClose();
-  }}
->
+<Dialog.Root bind:open={$lessonDocUpload.isModalOpen} onOpenChange={handleOpenChange}>
   <Dialog.Content class="w-[90%] max-w-4/5">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.materials.tabs.document.upload_title')}</Dialog.Title>
