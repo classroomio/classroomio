@@ -58,6 +58,27 @@ Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow abov
   org.limits = { students: toResourceUsage(studentsUsed, studentsLimit) };
   ```
 
+## Persisted columns store data, not presentation
+
+A user-content column (`content`, `body`, `description`, …) stores what the author typed and nothing else. Check this **at the write site** — the component or service building the value — not at the schema.
+
+Never write into such a column:
+
+- **Presentational markup** — wrapper elements, Tailwind classes, inline styles. Render that in a component instead.
+- **Localized strings** — copy baked in at write time can never be re-translated, and it freezes the author's locale for every future reader.
+- **Copied values from another row** — a quoted snippet, an author name, a title. Store the relationship (a real FK column) and join or derive the display value at render time, so it stays correct when the source row is edited or deleted.
+
+```ts
+// ❌ don't — markup, English copy and a copy of the parent all land in the column
+const quote = `<blockquote class="...">Replying to @${target.fullname}"${target.snippet}"</blockquote>`;
+await createComment(`${quote}${text}`, parentId);
+
+// ✅ do — persist the relationship, render the label from live data
+await createComment(text, parentId, target.commentId);
+```
+
+The tell that this went wrong: an edit form shows raw markup, because the markup *is* the content.
+
 ## Creating a New Route
 
 ### Step 1: Validation Schema

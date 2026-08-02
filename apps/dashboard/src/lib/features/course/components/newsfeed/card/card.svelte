@@ -2,8 +2,11 @@
   import { onMount, tick } from 'svelte';
 
   import type { Feed } from '$features/course/utils/types';
+  import { t } from '$lib/utils/functions/translations';
   import { newsfeedApi } from '$features/course/api';
   import { getNewsfeedReactionCounts, getSelectedNewsfeedReactionType } from '@cio/ui/custom/newsfeed-reactions';
+
+  import PinIcon from '@lucide/svelte/icons/pin';
 
   import DeleteConfirmation from './delete-confirmation.svelte';
   import type { NewsfeedCommentsByFeedId } from '$features/course/api';
@@ -80,13 +83,22 @@
 
 <div
   id={feed.id}
-  class="bg-card text-card-foreground mb-6 flex w-full max-w-3xl flex-col rounded-xl shadow-sm transition-all duration-200 hover:shadow-md {isActive
+  class="bg-card text-card-foreground relative mb-6 flex w-full max-w-3xl flex-col overflow-visible rounded-xl {isActive
     ? 'ring-primary border-primary ring-2'
     : 'border-border/60 border'}"
 >
+  {#if feed.isPinned}
+    <PinIcon
+      size={24}
+      class="ui:text-primary ui:fill-primary pointer-events-none absolute -top-3 -left-2 z-10 -rotate-40"
+      aria-hidden="true"
+    />
+    <span class="sr-only">{$t('course.navItem.news_feed.pinned')}</span>
+  {/if}
+
   <Header {feed} {onPin} onEdit={openEditFeed} onRequestDelete={() => (isDeleteFeedModal = true)} />
 
-  <div class="px-4 pb-3">
+  <div class="px-4 pb-2">
     <NewsfeedReactions
       {reactionCounts}
       {selectedReactionType}
@@ -100,8 +112,8 @@
     {feed}
     {author}
     {comments}
-    onAddComment={async (content, parentId) => {
-      await addNewComment(content, feed.id, parentId);
+    onAddComment={async (content, parentId, replyTo) => {
+      await addNewComment(content, feed.id, parentId, replyTo);
     }}
     onDeleteComment={(commentId, parentId) => {
       if (courseId) deleteComment(feed.id, String(commentId), parentId);

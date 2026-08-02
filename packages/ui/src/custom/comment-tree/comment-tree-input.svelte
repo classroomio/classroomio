@@ -56,7 +56,7 @@
   <UserAvatar src={authorAvatarUrl || undefined} class="ui:mt-1 ui:size-8 ui:shrink-0" />
 
   <div
-    class="ui:flex ui:w-full ui:flex-col ui:overflow-hidden ui:rounded-lg ui:border ui:border-input ui:shadow-xs ui:transition-[color,box-shadow] ui:focus-within:border-ring ui:focus-within:ring-[3px] ui:focus-within:ring-ring/50"
+    class="ui:flex ui:w-full ui:flex-col ui:overflow-hidden ui:rounded-lg ui:border ui:border-input ui:transition-colors ui:focus-within:border-ring ui:focus-within:ring-[3px] ui:focus-within:ring-ring/50"
   >
     {#if replyingToUser}
       <div
@@ -93,7 +93,7 @@
       />
       <div class="ui:flex ui:items-center ui:justify-end ui:px-2 ui:pb-2">
         <Button
-          variant={value.trim() ? 'default' : 'ghost'}
+          variant="secondary"
           size="sm"
           class="ui:h-8 ui:gap-1.5 ui:rounded-md"
           loading={isSubmitting}
