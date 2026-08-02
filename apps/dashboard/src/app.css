@@ -2,6 +2,7 @@
 
 @import 'tailwindcss';
 
+@import '@cio/ui/tokens.css';
 @import '@cio/ui/output.css';
 
 @source '../../packages/ui/src/custom/animation/**/*.svelte';
