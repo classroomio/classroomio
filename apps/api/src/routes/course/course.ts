@@ -60,7 +60,7 @@ import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { paymentRequestRouter } from '@api/routes/course/payment-request';
 import { presignRouter } from '@api/routes/course/presign';
-import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
+import { withMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { sectionRouter } from '@api/routes/course/section';
 import { submissionRouter } from '@api/routes/course/submission';
 import { updateCourseLandingPageService } from '@cio/core/services/course/landing-page';
@@ -291,15 +291,12 @@ export const courseRouter = new Hono()
         const payload = c.req.valid('json');
         const automationKey = c.get('automationKey');
 
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'update_course_landing_page');
-        }
-
-        const result = await updateCourseLandingPageService(courseId, payload);
-
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'update_course_landing_page', { courseId });
-        }
+        const result = await withMcpAutomationUsage(
+          automationKey,
+          'update_course_landing_page',
+          () => updateCourseLandingPageService(courseId, payload),
+          () => ({ courseId })
+        );
 
         return c.json(
           {

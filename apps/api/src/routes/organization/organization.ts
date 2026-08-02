@@ -19,7 +19,7 @@ import {
   ZUpdateOrgPlan,
   ZUpdateOrganization
 } from '@cio/utils/validation/organization';
-import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
+import { withMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import {
   assignAudienceToCourses,
   importAudienceMembers,
@@ -499,25 +499,23 @@ export const organizationRouter = new Hono()
           );
         }
 
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'list_org_courses');
-        }
-
-        const result = await getOrganizationCourses(
-          orgId,
-          user?.id ?? automationKey?.createdByProfileId ?? '',
-          userRole ?? ROLE.ADMIN,
-          query
-        );
-
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'list_org_courses', {
+        const result = await withMcpAutomationUsage(
+          automationKey,
+          'list_org_courses',
+          () =>
+            getOrganizationCourses(
+              orgId,
+              user?.id ?? automationKey?.createdByProfileId ?? '',
+              userRole ?? ROLE.ADMIN,
+              query
+            ),
+          () => ({
             tags: query.tags,
             search: query.search,
             page: query.page,
             limit: query.limit
-          });
-        }
+          })
+        );
 
         return c.json(
           {

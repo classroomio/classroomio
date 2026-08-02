@@ -58,7 +58,10 @@
 
   async function onRevokeKey(keyId: string) {
     if (!confirm(t.get('automation.keys.revoke_confirm'))) return;
-    await automationApi.revokeKey(keyId);
+    const result = await automationApi.revokeKey(keyId);
+    if (result) {
+      generatedSecret = null;
+    }
   }
 
   async function onRotateKey(keyId: string) {

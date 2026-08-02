@@ -18,7 +18,7 @@ import {
   updateCourseImportDraftTagsService,
   updateCourseImportDraftService
 } from '@api/services/course-import/course-import';
-import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
+import { withMcpAutomationUsage } from '@api/services/organization/automation-usage';
 
 import { Hono } from '@api/utils/hono';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
@@ -38,15 +38,12 @@ export const courseImportRouter = new Hono()
         const automationKey = c.get('automationKey');
         const { courseId } = c.req.valid('param');
 
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'get_course_structure');
-        }
-
-        const structure = await getCourseImportStructureService(orgId, courseId);
-
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'get_course_structure', { courseId });
-        }
+        const structure = await withMcpAutomationUsage(
+          automationKey,
+          'get_course_structure',
+          () => getCourseImportStructureService(orgId, courseId),
+          () => ({ courseId })
+        );
 
         return c.json({ success: true, data: structure }, 200);
       } catch (error) {
@@ -66,15 +63,12 @@ export const courseImportRouter = new Hono()
         const automationKey = c.get('automationKey');
         const payload = c.req.valid('json');
 
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'create_course_draft');
-        }
-
-        const draft = await createCourseImportDraftService(orgId, actorId, payload);
-
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'create_course_draft', { draftId: draft.id });
-        }
+        const draft = await withMcpAutomationUsage(
+          automationKey,
+          'create_course_draft',
+          () => createCourseImportDraftService(orgId, actorId, payload),
+          (draft) => ({ draftId: draft.id })
+        );
 
         return c.json({ success: true, data: draft }, 201);
       } catch (error) {
@@ -94,18 +88,15 @@ export const courseImportRouter = new Hono()
         const automationKey = c.get('automationKey');
         const payload = c.req.valid('json');
 
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'create_course_draft_from_course');
-        }
-
-        const draft = await createCourseImportDraftFromCourseService(orgId, actorId, payload);
-
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'create_course_draft_from_course', {
+        const draft = await withMcpAutomationUsage(
+          automationKey,
+          'create_course_draft_from_course',
+          () => createCourseImportDraftFromCourseService(orgId, actorId, payload),
+          (draft) => ({
             draftId: draft.id,
             courseId: payload.courseId
-          });
-        }
+          })
+        );
 
         return c.json({ success: true, data: draft }, 201);
       } catch (error) {
@@ -124,15 +115,12 @@ export const courseImportRouter = new Hono()
         const automationKey = c.get('automationKey');
         const { draftId } = c.req.valid('param');
 
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'get_course_draft');
-        }
-
-        const draft = await getCourseImportDraftService(orgId, draftId);
-
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'get_course_draft', { draftId });
-        }
+        const draft = await withMcpAutomationUsage(
+          automationKey,
+          'get_course_draft',
+          () => getCourseImportDraftService(orgId, draftId),
+          () => ({ draftId })
+        );
 
         return c.json({ success: true, data: draft }, 200);
       } catch (error) {
@@ -153,15 +141,12 @@ export const courseImportRouter = new Hono()
         const { draftId } = c.req.valid('param');
         const payload = c.req.valid('json');
 
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'tag_course_draft');
-        }
-
-        const draft = await updateCourseImportDraftTagsService(orgId, draftId, payload.tagNames, payload.mode);
-
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'tag_course_draft', { draftId });
-        }
+        const draft = await withMcpAutomationUsage(
+          automationKey,
+          'tag_course_draft',
+          () => updateCourseImportDraftTagsService(orgId, draftId, payload.tagNames, payload.mode),
+          () => ({ draftId })
+        );
 
         return c.json({ success: true, data: draft }, 200);
       } catch (error) {
@@ -182,15 +167,12 @@ export const courseImportRouter = new Hono()
         const { draftId } = c.req.valid('param');
         const payload = c.req.valid('json');
 
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'update_course_draft');
-        }
-
-        const draft = await updateCourseImportDraftService(orgId, draftId, payload);
-
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'update_course_draft', { draftId });
-        }
+        const draft = await withMcpAutomationUsage(
+          automationKey,
+          'update_course_draft',
+          () => updateCourseImportDraftService(orgId, draftId, payload),
+          () => ({ draftId })
+        );
 
         return c.json({ success: true, data: draft }, 200);
       } catch (error) {
@@ -212,18 +194,15 @@ export const courseImportRouter = new Hono()
         const { draftId } = c.req.valid('param');
         const payload = c.req.valid('json');
 
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'publish_course_draft');
-        }
-
-        const result = await publishCourseImportDraftService(orgId, actorId, draftId, payload);
-
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'publish_course_draft', {
+        const result = await withMcpAutomationUsage(
+          automationKey,
+          'publish_course_draft',
+          () => publishCourseImportDraftService(orgId, actorId, draftId, payload),
+          (result) => ({
             draftId,
             courseId: result.courseId
-          });
-        }
+          })
+        );
 
         return c.json({ success: true, data: result }, 201);
       } catch (error) {
@@ -244,18 +223,15 @@ export const courseImportRouter = new Hono()
         const { draftId } = c.req.valid('param');
         const payload = c.req.valid('json');
 
-        if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'publish_course_draft_to_existing_course');
-        }
-
-        const result = await publishCourseImportDraftToExistingCourseService(orgId, draftId, payload);
-
-        if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'publish_course_draft_to_existing_course', {
+        const result = await withMcpAutomationUsage(
+          automationKey,
+          'publish_course_draft_to_existing_course',
+          () => publishCourseImportDraftToExistingCourseService(orgId, draftId, payload),
+          () => ({
             draftId,
             courseId: payload.courseId
-          });
-        }
+          })
+        );
 
         return c.json({ success: true, data: result }, 200);
       } catch (error) {

@@ -27,7 +27,12 @@
       <Page.Subtitle>{$t('automation.mcp.page_subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
     <Page.Action>
-      <Button variant="outline" onclick={() => window.open('https://classroomio.com/docs/mcp', '_blank')}>
+      <Button
+        variant="outline"
+        href="https://classroomio.com/docs/mcp"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <ArrowUpRightIcon size={16} />
         {$t('automation.mcp.view_docs')}
       </Button>
