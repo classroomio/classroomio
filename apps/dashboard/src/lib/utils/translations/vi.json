@@ -2020,8 +2020,7 @@
               "empty_title": "Chưa có tài liệu nào",
               "empty_description": "Tải lên tài liệu để chia sẻ với sinh viên của bạn",
               "attachments_heading": "Tệp đính kèm",
-              "file_count": "{count} tệp",
-              "file_count_one": "1 tệp",
+              "file_count": "{count, plural, one {# tệp} other {# tệp}}",
               "view_file": "Xem tệp",
               "reorder_file": "Sắp xếp lại tệp"
             },

@@ -2020,8 +2020,7 @@
               "empty_title": "Ingen dokumenter endnu",
               "empty_description": "Upload dokumenter for at dele med dine elever",
               "attachments_heading": "Vedhæftede filer",
-              "file_count": "{count} filer",
-              "file_count_one": "1 fil",
+              "file_count": "{count, plural, one {# fil} other {# filer}}",
               "view_file": "Vis fil",
               "reorder_file": "Omarranger fil"
             },

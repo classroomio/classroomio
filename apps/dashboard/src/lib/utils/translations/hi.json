@@ -2020,8 +2020,7 @@
               "empty_title": "अभी तक कोई दस्तावेज़ नहीं",
               "empty_description": "अपने छात्रों के साथ साझा करने के लिए दस्तावेज़ अपलोड करें",
               "attachments_heading": "अटैचमेंट",
-              "file_count": "{count} फ़ाइलें",
-              "file_count_one": "1 फ़ाइल",
+              "file_count": "{count, plural, one {# फ़ाइल} other {# फ़ाइलें}}",
               "view_file": "फ़ाइल देखें",
               "reorder_file": "फ़ाइल को पुनः क्रमित करें"
             },

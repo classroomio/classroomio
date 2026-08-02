@@ -2020,8 +2020,7 @@
               "empty_title": "Aucun document pour l'instant",
               "empty_description": "Téléchargez des documents à partager avec vos étudiants",
               "attachments_heading": "Pièces jointes",
-              "file_count": "{count} fichiers",
-              "file_count_one": "1 fichier",
+              "file_count": "{count, plural, one {# fichier} other {# fichiers}}",
               "view_file": "Voir le fichier",
               "reorder_file": "Réordonner le fichier"
             },

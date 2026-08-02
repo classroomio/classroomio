@@ -62,7 +62,7 @@
     <div
       use:dragHandle
       class="ui:text-muted-foreground ui:flex ui:shrink-0 ui:cursor-grab ui:items-center ui:active:cursor-grabbing"
-      aria-label={labels.reorder}
+      aria-label={`${labels.reorder}: ${file.name}`}
     >
       <GripVerticalIcon class="ui:size-4" aria-hidden="true" />
     </div>

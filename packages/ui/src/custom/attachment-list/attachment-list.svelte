@@ -18,9 +18,9 @@
   const flipDurationMs = 150;
 
   interface Props {
-    mode: AttachmentListMode;
-    files: AttachmentListFile[];
-    labels: AttachmentListLabels;
+    mode?: AttachmentListMode;
+    files?: AttachmentListFile[];
+    labels?: AttachmentListLabels;
     formatSize?: (bytes: number) => string;
     onView?: (file: AttachmentListFile) => void;
     onDownload?: (file: AttachmentListFile) => void | Promise<void>;
@@ -103,6 +103,7 @@
       use:dragHandleZone={{
         items: reorderItems,
         flipDurationMs,
+        dropFromOthersDisabled: true,
         dropTargetStyle: {
           border: '2px var(--ring) solid',
           'border-style': 'dashed',

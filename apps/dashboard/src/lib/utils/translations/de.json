@@ -2020,8 +2020,7 @@
               "empty_title": "Noch keine Dokumente",
               "empty_description": "Laden Sie Dokumente hoch, um sie mit Ihren Schülern zu teilen",
               "attachments_heading": "Anhänge",
-              "file_count": "{count} Dateien",
-              "file_count_one": "1 Datei",
+              "file_count": "{count, plural, one {# Datei} other {# Dateien}}",
               "view_file": "Datei anzeigen",
               "reorder_file": "Datei neu anordnen"
             },

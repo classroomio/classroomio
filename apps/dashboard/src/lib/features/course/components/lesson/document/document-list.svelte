@@ -36,12 +36,9 @@
 
   const attachmentLabels = $derived({
     title: t.get('course.navItem.lessons.materials.tabs.document.attachments_heading'),
-    fileCount:
-      displayDocuments.length === 1
-        ? t.get('course.navItem.lessons.materials.tabs.document.file_count_one')
-        : t.get('course.navItem.lessons.materials.tabs.document.file_count', {
-            count: displayDocuments.length
-          }),
+    fileCount: t.get('course.navItem.lessons.materials.tabs.document.file_count', {
+      count: displayDocuments.length
+    }),
     view: t.get('course.navItem.lessons.materials.tabs.document.view_file'),
     download: t.get('course.navItem.lessons.materials.tabs.document.download'),
     delete: t.get('course.navItem.lessons.materials.tabs.document.delete'),

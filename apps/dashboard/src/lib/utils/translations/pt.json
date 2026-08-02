@@ -2020,8 +2020,7 @@
               "empty_title": "Ainda não há documentos",
               "empty_description": "Faça upload de documentos para compartilhar com seus alunos",
               "attachments_heading": "Anexos",
-              "file_count": "{count} arquivos",
-              "file_count_one": "1 arquivo",
+              "file_count": "{count, plural, one {# arquivo} other {# arquivos}}",
               "view_file": "Ver arquivo",
               "reorder_file": "Reordenar arquivo"
             },

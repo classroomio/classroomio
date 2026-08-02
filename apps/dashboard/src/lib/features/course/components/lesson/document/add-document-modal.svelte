@@ -94,10 +94,17 @@
   }
 
   function handleOpenChange(isOpen: boolean) {
-    if (isOpen) return;
+    if (isOpen) {
+      $lessonDocUpload.isModalOpen = true;
+      return;
+    }
 
-    if ($lessonDocUpload.isUploading) return;
+    if ($lessonDocUpload.isUploading) {
+      $lessonDocUpload.isModalOpen = true;
+      return;
+    }
 
+    $lessonDocUpload.isModalOpen = false;
     resetModalState();
     onClose();
   }
@@ -270,7 +277,7 @@
   });
 </script>
 
-<Dialog.Root bind:open={$lessonDocUpload.isModalOpen} onOpenChange={handleOpenChange}>
+<Dialog.Root open={$lessonDocUpload.isModalOpen} onOpenChange={handleOpenChange}>
   <Dialog.Content class="w-[90%] max-w-4/5">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.materials.tabs.document.upload_title')}</Dialog.Title>

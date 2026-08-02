@@ -2020,8 +2020,7 @@
               "empty_title": "Документов пока нет",
               "empty_description": "Загрузите документы, чтобы поделиться ими со своими учениками",
               "attachments_heading": "Вложения",
-              "file_count": "{count} файлов",
-              "file_count_one": "1 файл",
+              "file_count": "{count, plural, one {# файл} few {# файла} many {# файлов} other {# файла}}",
               "view_file": "Просмотреть файл",
               "reorder_file": "Изменить порядок файла"
             },

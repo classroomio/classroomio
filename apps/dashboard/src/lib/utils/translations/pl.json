@@ -2020,8 +2020,7 @@
               "empty_title": "Nie ma jeszcze dokumentów",
               "empty_description": "Prześlij dokumenty, aby udostępnić je swoim uczniom",
               "attachments_heading": "Załączniki",
-              "file_count": "{count} plików",
-              "file_count_one": "1 plik",
+              "file_count": "{count, plural, one {# plik} few {# pliki} many {# plików} other {# plika}}",
               "view_file": "Wyświetl plik",
               "reorder_file": "Zmień kolejność pliku"
             },
