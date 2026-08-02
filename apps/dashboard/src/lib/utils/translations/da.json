@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Opdater",
     "unsaved_changes": {
-      "message": "Du har ikke-gemte ændringer. Er du sikker på, at du vil tage afsted?"
-    }
+      "message": "Du har ikke-gemte ændringer. Er du sikker på, at du vil tage afsted?",
+      "label": "Ikke-gemte ændringer"
+    },
+    "discard": "Kassér",
+    "save_changes": "Gem ændringer"
   },
   "validations": {
     "generic": {

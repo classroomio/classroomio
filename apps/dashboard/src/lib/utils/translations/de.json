@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Aktualisieren",
     "unsaved_changes": {
-      "message": "Sie haben nicht gespeicherte Änderungen. Sind Sie sicher, dass Sie gehen möchten?"
-    }
+      "message": "Sie haben nicht gespeicherte Änderungen. Sind Sie sicher, dass Sie gehen möchten?",
+      "label": "Nicht gespeicherte Änderungen"
+    },
+    "discard": "Verwerfen",
+    "save_changes": "Änderungen speichern"
   },
   "validations": {
     "generic": {
