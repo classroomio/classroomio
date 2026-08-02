@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Odśwież",
     "unsaved_changes": {
-      "message": "Masz niezapisane zmiany. Czy na pewno chcesz wyjść?"
-    }
+      "message": "Masz niezapisane zmiany. Czy na pewno chcesz wyjść?",
+      "label": "Niezapisane zmiany"
+    },
+    "discard": "Odrzuć",
+    "save_changes": "Zapisz zmiany"
   },
   "validations": {
     "generic": {
@@ -2004,6 +2007,8 @@
               "cancel_upload": "Anuluj przesyłanie",
               "upload_cancelled": "Przesyłanie anulowane przez użytkownika",
               "downloading": "Pobieram...",
+              "download_success": "Dokument pobrano pomyślnie",
+              "download_error": "Nie udało się pobrać dokumentu",
               "view_pdf": "Zobacz PDF",
               "remove_document": "Usuń dokument",
               "delete": "Usuń",
@@ -2013,7 +2018,11 @@
               "failed_to_render_pdf": "Nie udało się wyrenderować strony PDF",
               "use_arrow_keys": "Użyj klawiszy strzałek do nawigacji, +/-, aby powiększyć, lub kliknij elementy sterujące powyżej. Kliknięcie prawym przyciskiem myszy jest wyłączone.",
               "empty_title": "Nie ma jeszcze dokumentów",
-              "empty_description": "Prześlij dokumenty, aby udostępnić je swoim uczniom"
+              "empty_description": "Prześlij dokumenty, aby udostępnić je swoim uczniom",
+              "attachments_heading": "Załączniki",
+              "file_count": "{count, plural, one {# plik} few {# pliki} many {# plików} other {# plika}}",
+              "view_file": "Wyświetl plik",
+              "reorder_file": "Zmień kolejność pliku"
             },
             "video": {
               "title": "Wideo",

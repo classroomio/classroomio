@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Actualiser",
     "unsaved_changes": {
-      "message": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir partir ?"
-    }
+      "message": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir partir ?",
+      "label": "Modifications non enregistrées"
+    },
+    "discard": "Abandonner les modifications",
+    "save_changes": "Enregistrer les modifications"
   },
   "validations": {
     "generic": {
@@ -2004,6 +2007,8 @@
               "cancel_upload": "Annuler le téléchargement",
               "upload_cancelled": "Téléchargement annulé par l'utilisateur",
               "downloading": "Téléchargement...",
+              "download_success": "Document téléchargé avec succès",
+              "download_error": "Échec du téléchargement du document",
               "view_pdf": "Afficher le PDF",
               "remove_document": "Supprimer le document",
               "delete": "Supprimer",
@@ -2013,7 +2018,11 @@
               "failed_to_render_pdf": "Échec du rendu de la page PDF",
               "use_arrow_keys": "Utilisez les touches fléchées pour naviguer, +/- pour zoomer ou cliquez sur les commandes ci-dessus. Le clic droit est désactivé.",
               "empty_title": "Aucun document pour l'instant",
-              "empty_description": "Téléchargez des documents à partager avec vos étudiants"
+              "empty_description": "Téléchargez des documents à partager avec vos étudiants",
+              "attachments_heading": "Pièces jointes",
+              "file_count": "{count, plural, one {# fichier} other {# fichiers}}",
+              "view_file": "Voir le fichier",
+              "reorder_file": "Réordonner le fichier"
             },
             "video": {
               "title": "Vidéo",

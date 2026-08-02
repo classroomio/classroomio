@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Làm mới",
     "unsaved_changes": {
-      "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
-    }
+      "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?",
+      "label": "Thay đổi chưa lưu"
+    },
+    "discard": "Hủy",
+    "save_changes": "Lưu thay đổi"
   },
   "validations": {
     "generic": {
@@ -2004,6 +2007,8 @@
               "cancel_upload": "Hủy tải lên",
               "upload_cancelled": "Tải lên bị người dùng hủy",
               "downloading": "Đang tải xuống...",
+              "download_success": "Tài liệu đã được tải xuống thành công",
+              "download_error": "Không thể tải xuống tài liệu",
               "view_pdf": "Xem PDF",
               "remove_document": "Xóa tài liệu",
               "delete": "Xóa",
@@ -2013,7 +2018,11 @@
               "failed_to_render_pdf": "Không thể hiển thị trang PDF",
               "use_arrow_keys": "Sử dụng các phím mũi tên để điều hướng, +/- để thu phóng hoặc nhấp vào các điều khiển ở trên. Nhấp chuột phải bị vô hiệu hóa.",
               "empty_title": "Chưa có tài liệu nào",
-              "empty_description": "Tải lên tài liệu để chia sẻ với sinh viên của bạn"
+              "empty_description": "Tải lên tài liệu để chia sẻ với sinh viên của bạn",
+              "attachments_heading": "Tệp đính kèm",
+              "file_count": "{count, plural, one {# tệp} other {# tệp}}",
+              "view_file": "Xem tệp",
+              "reorder_file": "Sắp xếp lại tệp"
             },
             "video": {
               "title": "Video",
