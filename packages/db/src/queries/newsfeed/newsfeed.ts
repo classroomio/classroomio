@@ -252,7 +252,6 @@ export async function getNewsfeedCommentsByFeedIdPaginated(
       .where(and(...baseWhereConditions));
     const totalCount = Number(totalCountResult[0]?.count || 0);
 
-    // The comment a reply answers, so the UI can label it without storing markup
     const replyTarget = alias(schema.courseNewsfeedComment, 'reply_target');
     const replyTargetMember = alias(schema.groupmember, 'reply_target_member');
     const replyTargetProfile = alias(schema.profile, 'reply_target_profile');

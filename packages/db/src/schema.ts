@@ -1694,8 +1694,6 @@ export const courseNewsfeedComment = pgTable(
     }),
     courseNewsfeedId: uuid('course_newsfeed_id'),
     parentId: bigint('parent_id', { mode: 'number' }),
-    // The comment this one answers. `parentId` is the thread root, so for a
-    // reply aimed at another reply the two differ; null means it answers the root.
     replyToCommentId: bigint('reply_to_comment_id', { mode: 'number' })
   },
   (table) => [

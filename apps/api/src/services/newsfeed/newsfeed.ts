@@ -308,8 +308,6 @@ export async function createNewsfeedCommentService(
         throw new AppError('Comment being replied to does not belong to this feed', ErrorCodes.VALIDATION_ERROR, 400);
       }
 
-      // The target must sit in the thread we're replying into: either the root
-      // itself, or one of its replies.
       const isThreadRoot = targetComment.id === parentId;
       const isSiblingReply = targetComment.parentId === parentId;
 
