@@ -2004,6 +2004,8 @@
               "cancel_upload": "Hủy tải lên",
               "upload_cancelled": "Tải lên bị người dùng hủy",
               "downloading": "Đang tải xuống...",
+              "download_success": "Tài liệu đã được tải xuống thành công",
+              "download_error": "Không thể tải xuống tài liệu",
               "view_pdf": "Xem PDF",
               "remove_document": "Xóa tài liệu",
               "delete": "Xóa",

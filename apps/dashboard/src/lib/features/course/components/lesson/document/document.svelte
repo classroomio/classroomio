@@ -101,9 +101,10 @@
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
+      snackbar.success($t('course.navItem.lessons.materials.tabs.document.download_success'));
     } catch (error) {
       console.error('Error downloading document:', error);
-      window.open(doc.link, '_blank');
+      snackbar.error($t('course.navItem.lessons.materials.tabs.document.download_error'));
     }
   }
 

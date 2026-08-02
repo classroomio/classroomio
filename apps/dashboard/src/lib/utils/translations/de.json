@@ -2004,6 +2004,8 @@
               "cancel_upload": "Hochladen abbrechen",
               "upload_cancelled": "Der Upload wurde vom Benutzer abgebrochen",
               "downloading": "Herunterladen...",
+              "download_success": "Dokument erfolgreich heruntergeladen",
+              "download_error": "Dokument konnte nicht heruntergeladen werden",
               "view_pdf": "PDF ansehen",
               "remove_document": "Dokument entfernen",
               "delete": "Löschen",

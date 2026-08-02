@@ -2004,6 +2004,8 @@
               "cancel_upload": "Annuler le téléchargement",
               "upload_cancelled": "Téléchargement annulé par l'utilisateur",
               "downloading": "Téléchargement...",
+              "download_success": "Document téléchargé avec succès",
+              "download_error": "Échec du téléchargement du document",
               "view_pdf": "Afficher le PDF",
               "remove_document": "Supprimer le document",
               "delete": "Supprimer",

@@ -23,7 +23,7 @@
     labels: AttachmentListLabels;
     formatSize?: (bytes: number) => string;
     onView?: (file: AttachmentListFile) => void;
-    onDownload?: (file: AttachmentListFile) => void;
+    onDownload?: (file: AttachmentListFile) => void | Promise<void>;
     onDelete?: (file: AttachmentListFile) => void;
     onReorder?: (files: AttachmentListFile[]) => void;
     class?: string;

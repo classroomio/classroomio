@@ -2004,6 +2004,8 @@
               "cancel_upload": "Cancelar carga",
               "upload_cancelled": "Subida cancelada por el usuario",
               "downloading": "Descargando...",
+              "download_success": "Documento descargado correctamente",
+              "download_error": "No se pudo descargar el documento",
               "view_pdf": "Ver PDF",
               "remove_document": "Quitar documento",
               "delete": "Eliminar",

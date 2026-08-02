@@ -2004,6 +2004,8 @@
               "cancel_upload": "Anuluj przesyłanie",
               "upload_cancelled": "Przesyłanie anulowane przez użytkownika",
               "downloading": "Pobieram...",
+              "download_success": "Dokument pobrano pomyślnie",
+              "download_error": "Nie udało się pobrać dokumentu",
               "view_pdf": "Zobacz PDF",
               "remove_document": "Usuń dokument",
               "delete": "Usuń",

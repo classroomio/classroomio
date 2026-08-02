@@ -2004,6 +2004,8 @@
               "cancel_upload": "Annuller upload",
               "upload_cancelled": "Upload annulleret af brugeren",
               "downloading": "Downloader...",
+              "download_success": "Dokument downloadet",
+              "download_error": "Kunne ikke downloade dokumentet",
               "view_pdf": "Se PDF",
               "remove_document": "Fjern dokumentet",
               "delete": "Slet",

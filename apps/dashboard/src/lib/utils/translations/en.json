@@ -2445,6 +2445,8 @@
               "cancel_upload": "Cancel Upload",
               "upload_cancelled": "Upload cancelled by user",
               "downloading": "Downloading...",
+              "download_success": "Document downloaded successfully",
+              "download_error": "Failed to download document",
               "view_pdf": "View PDF",
               "remove_document": "Remove document",
               "delete": "Delete",

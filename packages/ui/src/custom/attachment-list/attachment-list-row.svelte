@@ -18,7 +18,7 @@
     showDragHandle?: boolean;
     formatSize?: (bytes: number) => string;
     onView?: (file: AttachmentListFile) => void;
-    onDownload?: (file: AttachmentListFile) => void;
+    onDownload?: (file: AttachmentListFile) => void | Promise<void>;
     onDelete?: (file: AttachmentListFile) => void;
     class?: string;
   }
@@ -37,6 +37,19 @@
 
   const fileTypeStyle = $derived(getFileTypeStyle(file.type ?? file.name));
   const sizeLabel = $derived(file.size != null ? formatSize(file.size) : null);
+  let isDownloading = $state(false);
+
+  async function handleDownloadClick() {
+    if (!onDownload) return;
+
+    isDownloading = true;
+
+    try {
+      await onDownload(file);
+    } finally {
+      isDownloading = false;
+    }
+  }
 </script>
 
 <div
@@ -85,7 +98,8 @@
         variant="outline"
         size="icon-sm"
         aria-label={labels.download}
-        onclick={() => onDownload(file)}
+        loading={isDownloading}
+        onclick={handleDownloadClick}
       >
         <DownloadIcon class="ui:size-4" />
       </Button>
