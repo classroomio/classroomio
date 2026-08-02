@@ -88,8 +88,8 @@
 >
   {#if feed.isPinned}
     <PinIcon
-      size={16}
-      class="text-muted-foreground pointer-events-none absolute -top-2 left-3 z-10 -rotate-[40deg] fill-current"
+      size={24}
+      class="text-muted-foreground ui:stroke-primary ui:fill-primary pointer-events-none absolute -top-3 -left-2 z-10 -rotate-40"
       aria-hidden="true"
     />
   {/if}

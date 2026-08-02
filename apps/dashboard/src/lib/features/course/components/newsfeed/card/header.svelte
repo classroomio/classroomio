@@ -37,7 +37,7 @@
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger
-          class="text-muted-foreground hover:bg-accent hover:text-accent-foreground flex h-8 w-8 items-center justify-center rounded-md transition-colors"
+          class="text-muted-foreground hover:bg-accent hover:text-accent-foreground flex h-8 w-8 cursor-pointer items-center justify-center rounded-md transition-colors"
         >
           <EllipsisVerticalIcon class="h-4 w-4" />
         </DropdownMenu.Trigger>

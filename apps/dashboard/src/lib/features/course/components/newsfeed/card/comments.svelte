@@ -161,7 +161,7 @@
   };
 </script>
 
-<section class="ui:border-t ui:border-border/60 px-4 pt-2 pb-4">
+<section class="ui:border-t ui:border-border/60 px-4 pb-4">
   {#if totalCount > shownCount}
     <Button
       variant="ghost"
@@ -209,10 +209,9 @@
                           size="xs"
                           onclick={() => handleSaveEdit(commentIdNum)}
                           disabled={isSavingEdit || !editingText.trim()}
+                          loading={isSavingEdit}
                         >
-                          {isSavingEdit
-                            ? $t('course.navItem.news_feed.comments.saving')
-                            : $t('course.navItem.news_feed.comments.save')}
+                          {$t('course.navItem.news_feed.comments.save')}
                         </Button>
                       </div>
                     </div>
