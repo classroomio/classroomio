@@ -26,9 +26,11 @@ const CoursesListResponse = {
   type: 'object' as const,
   properties: {
     success: { type: 'boolean' as const },
-    data: { type: 'array' as const, items: { type: 'object' as const } }
+    data: { type: 'array' as const, items: { type: 'object' as const } },
+    pagination: { type: 'object' as const },
+    query: { type: 'object' as const }
   },
-  required: ['success', 'data']
+  required: ['success', 'data', 'pagination', 'query']
 };
 
 const CourseDetailResponse = {
@@ -71,7 +73,9 @@ export const v1CoursesRouter = new Hono()
         return c.json(
           {
             success: true,
-            data: courses
+            data: courses.items,
+            pagination: courses.pagination,
+            query: courses.query
           },
           200
         );
