@@ -78,10 +78,8 @@
 
     const result = await memberEmailNotificationsApi.fetch();
 
-    if (loadVersion !== personalLoadVersion) {
-      isLoadingPersonal = false;
-      return;
-    }
+    // A newer load or a save started while this request was in flight — it owns the state now.
+    if (loadVersion !== personalLoadVersion) return;
 
     if (result?.data) {
       applyPersonalToggleState(result.data);
@@ -95,7 +93,6 @@
 
     if (!orgId) return;
 
-    personalLoadVersion++;
     void loadPersonalPreferences();
   });
 
@@ -176,16 +173,14 @@
     if (!$currentOrg) return;
 
     isSavingOrg = true;
-    const existingSettings = ($currentOrg.settings as Record<string, unknown>) || {};
     const emailNotifications = toStoredPreferences(EMAIL_NOTIFICATION_TOGGLE_KEYS, orgToggles);
 
+    // The API deep-merges `settings`, so only send the key being changed —
+    // spreading local settings here could write stale values over other keys.
     await orgApi.update(
       $currentOrg.id,
       {
-        settings: {
-          ...existingSettings,
-          emailNotifications
-        }
+        settings: { emailNotifications }
       },
       {
         onSuccess: () => {
