@@ -2286,14 +2286,20 @@
           "reply": "Odpowiedz",
           "replying_to": "Odpowiadanie na @{name}",
           "cancel_reply": "Anuluj",
-          "view_replies": "Wyświetl {count} {count, plural, =1 {odpowiedź} inne {replies}}",
+          "view_replies": "Wyświetl {count} {count, plural, =1 {odpowiedź} other {replies}}",
           "hide_replies": "Ukryj odpowiedzi",
           "view_more": "Wyświetl więcej komentarzy ({count})",
           "loading": "Ładowanie...",
           "save": "Zapisz",
           "saving": "Zapisywanie...",
           "send": "Wyślij",
-          "load_more_replies": "Załaduj więcej odpowiedzi"
+          "load_more_replies": "Załaduj więcej odpowiedzi",
+          "collapse_thread": "Zwiń wątek",
+          "expand_thread": "Rozwiń wątek",
+          "more_replies": "{count} więcej {count, plural, =1 {odpowiedź} other {odpowiedzi}}",
+          "continue_thread": "Kontynuuj ten wątek",
+          "collapsed_summary": "{count} {count, plural, =1 {odpowiedź} other {odpowiedzi}} ukryte",
+          "back_to_comments": "Powrót do wszystkich komentarzy"
         },
         "card": {
           "pin": "Przypnij",

@@ -33,8 +33,7 @@ export type TNewsfeedListQuery = z.infer<typeof ZNewsfeedListQuery>;
 export const ZNewsfeedCommentCreate = z.object({
   courseNewsfeedId: z.string().min(1),
   content: z.string().min(1),
-  parentId: z.number().int().positive().optional(),
-  replyToCommentId: z.number().int().positive().optional()
+  parentId: z.number().int().positive().optional()
 });
 export type TNewsfeedCommentCreate = z.infer<typeof ZNewsfeedCommentCreate>;
 
@@ -48,9 +47,16 @@ export const ZNewsfeedCommentUpdate = z.object({
 });
 export type TNewsfeedCommentUpdate = z.infer<typeof ZNewsfeedCommentUpdate>;
 
-export const ZNewsfeedCommentsQuery = z.object({
-  parentId: z.coerce.number().int().positive().optional(),
+export const ZNewsfeedCommentThreadQuery = z.object({
+  /** Fetch the subtree rooted at this comment. Omit for the feed's top-level comments. */
+  rootId: z.coerce.number().int().positive().optional(),
+  /** Keyset cursor over top-level comments. */
   cursor: z.string().optional(),
-  limit: z.coerce.number().int().min(1).max(50).optional().default(5)
+  /** Keyset cursor over the direct children of `rootId`. */
+  childCursor: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(50).optional().default(5),
+  childLimit: z.coerce.number().int().min(1).max(20).optional().default(3),
+  /** Levels fetched below the root. Bounds worst-case fan-out per request. */
+  maxDepth: z.coerce.number().int().min(0).max(6).optional().default(3)
 });
-export type TNewsfeedCommentsQuery = z.infer<typeof ZNewsfeedCommentsQuery>;
+export type TNewsfeedCommentThreadQuery = z.infer<typeof ZNewsfeedCommentThreadQuery>;

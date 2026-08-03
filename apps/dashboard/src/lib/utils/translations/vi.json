@@ -2293,7 +2293,13 @@
           "save": "Lưu",
           "saving": "Đang lưu...",
           "send": "Gửi",
-          "load_more_replies": "Tải thêm câu trả lời"
+          "load_more_replies": "Tải thêm câu trả lời",
+          "collapse_thread": "Thu gọn chủ đề",
+          "expand_thread": "Mở rộng chủ đề",
+          "more_replies": "{count} thêm {count, plural, =1 {reply} other {replies}}",
+          "continue_thread": "Tiếp tục chủ đề này",
+          "collapsed_summary": "{count} {count, plural, =1 {trả lời} other {trả lời}} khác bị ẩn",
+          "back_to_comments": "Quay lại tất cả bình luận"
         },
         "card": {
           "pin": "Ghim",

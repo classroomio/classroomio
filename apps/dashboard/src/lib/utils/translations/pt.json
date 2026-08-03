@@ -2293,7 +2293,13 @@
           "save": "Salvar",
           "saving": "Salvando...",
           "send": "Enviar",
-          "load_more_replies": "Carregar mais respostas"
+          "load_more_replies": "Carregar mais respostas",
+          "collapse_thread": "Recolher tópico",
+          "expand_thread": "Expandir tópico",
+          "more_replies": "{count} mais {count, plural, =1 {resposta} other {respostas}}",
+          "continue_thread": "Continuar este tópico",
+          "collapsed_summary": "{count} {count, plural, =1 {resposta} other {respostas}} oculto",
+          "back_to_comments": "Voltar para todos os comentários"
         },
         "card": {
           "pin": "Fixar",

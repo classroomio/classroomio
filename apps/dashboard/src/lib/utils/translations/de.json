@@ -2293,7 +2293,13 @@
           "save": "Speichern",
           "saving": "Sparen...",
           "send": "Senden",
-          "load_more_replies": "Weitere Antworten laden"
+          "load_more_replies": "Weitere Antworten laden",
+          "collapse_thread": "Thread schließen",
+          "expand_thread": "Thread erweitern",
+          "more_replies": "{count} mehr {count, plural, =1 {reply} other {replies}}",
+          "continue_thread": "Setzen Sie diesen Thread fort",
+          "collapsed_summary": "{count} {count, plural, =1 {reply} other {replies}} ausgeblendet",
+          "back_to_comments": "Zurück zu allen Kommentaren"
         },
         "card": {
           "pin": "Anheften",

@@ -2286,14 +2286,20 @@
           "reply": "Svar",
           "replying_to": "Svarer til @{name}",
           "cancel_reply": "Annuller",
-          "view_replies": "Se {count} {count, plural, =1 {reply} anden {replies}}",
+          "view_replies": "Se {count} {count, plural, =1 {reply} other {replies}}",
           "hide_replies": "Skjul svar",
           "view_more": "Se flere kommentarer ({count})",
           "loading": "Indlæser...",
           "save": "Gem",
           "saving": "Gemmer...",
           "send": "Send",
-          "load_more_replies": "Indlæs flere svar"
+          "load_more_replies": "Indlæs flere svar",
+          "collapse_thread": "Skjul tråden sammen",
+          "expand_thread": "Udvid tråden",
+          "more_replies": "{count} mere {count, plural, =1 {reply} other {replies}}",
+          "continue_thread": "Fortsæt denne tråd",
+          "collapsed_summary": "{count} {count, plural, =1 {reply} other {replies}} skjult",
+          "back_to_comments": "Tilbage til alle kommentarer"
         },
         "card": {
           "pin": "Fastgør",

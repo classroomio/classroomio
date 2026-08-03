@@ -2293,7 +2293,13 @@
           "save": "सहेजें",
           "saving": "सहेजा जा रहा है...",
           "send": "भेजें",
-          "load_more_replies": "अधिक उत्तर लोड करें"
+          "load_more_replies": "अधिक उत्तर लोड करें",
+          "collapse_thread": "धागे को संक्षिप्त करें",
+          "expand_thread": "धागे का विस्तार करें",
+          "more_replies": "{count} अधिक {count, plural, =1 {उत्तर} other {उत्तर}}",
+          "continue_thread": "इस सूत्र को जारी रखें",
+          "collapsed_summary": "{count} {count, plural, =1 {उत्तर} other {उत्तर}} छिपा हुआ",
+          "back_to_comments": "सभी टिप्पणियों पर वापस जाएँ"
         },
         "card": {
           "pin": "पिन",
