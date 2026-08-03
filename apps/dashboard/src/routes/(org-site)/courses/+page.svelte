@@ -12,14 +12,9 @@
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import XIcon from '@lucide/svelte/icons/x';
   import FilterIcon from '@lucide/svelte/icons/filter';
-  import {
-    normalizeLandingPageSettings,
-    themeHeaderShellClass,
-    themeStyle,
-    themeRendersNavInsideHero
-  } from '$features/org/utils/landing-page';
+  import { normalizeLandingPageSettings, themeRendersNavInsideHero } from '$features/org/utils/landing-page';
 
-  import { LandingButton, OrgLandingPageFooter } from '@cio/ui/custom/org-landing-page';
+  import { LandingButton, LandingThemeScope, OrgLandingPageFooter } from '@cio/ui/custom/org-landing-page';
 
   import { Checkbox } from '@cio/ui/base/checkbox';
   import { Input } from '@cio/ui/base/input';
@@ -66,36 +61,7 @@
         }
   );
 
-  const shellClass = $derived(`ui:min-h-screen ${themeHeaderShellClass(landingSettings.theme)}`);
-  const shellStyle = $derived(themeStyle(landingSettings.theme));
   const navInsideHero = $derived(themeRendersNavInsideHero(landingSettings.theme));
-
-  $effect(() => {
-    if (typeof document === 'undefined') return;
-    const root = document.documentElement;
-    const styleStr = shellStyle;
-
-    styleStr
-      .split(';')
-      .filter(Boolean)
-      .forEach((pair) => {
-        const [prop, val] = pair.split(':').map((s) => s.trim());
-        if (prop && val) root.style.setProperty(prop, val);
-      });
-
-    root.setAttribute('data-landing-theme', landingSettings.theme);
-
-    return () => {
-      styleStr
-        .split(';')
-        .filter(Boolean)
-        .forEach((pair) => {
-          const [prop] = pair.split(':').map((s) => s.trim());
-          if (prop) root.style.removeProperty(prop);
-        });
-      root.removeAttribute('data-landing-theme');
-    };
-  });
 
   const NavComponent = $derived(data.theme.Nav);
   const HeroComponent = $derived(data.theme.Hero);
@@ -406,159 +372,165 @@
 
 <PoweredBy />
 
-<main class={shellClass} style={shellStyle}>
-  {#if navInsideHero}
-    <HeroComponent hero={heroProps} orgName={data.org.name} showActions={false} compact={true}>
-      {#snippet navigation()}
-        <NavComponent
-          orgName={data.org.name}
-          logoUrl={data.org.avatarUrl ?? undefined}
-          navItems={landingSettings.navItems}
-          {authAction}
-        />
-      {/snippet}
-      {#snippet children()}
-        {@render searchField()}
-      {/snippet}
-    </HeroComponent>
-  {:else}
-    <NavComponent
-      orgName={data.org.name}
-      logoUrl={data.org.avatarUrl ?? undefined}
-      navItems={landingSettings.navItems}
-      {authAction}
-    />
-    <HeroComponent hero={heroProps} orgName={data.org.name} showActions={false} compact={true}>
-      {#snippet children()}
-        {@render searchField()}
-      {/snippet}
-    </HeroComponent>
-  {/if}
+<LandingThemeScope theme={landingSettings.theme} class="ui:font-sans">
+  <main>
+    {#if navInsideHero}
+      <HeroComponent hero={heroProps} orgName={data.org.name} showActions={false} compact={true}>
+        {#snippet navigation()}
+          <NavComponent
+            orgName={data.org.name}
+            logoUrl={data.org.avatarUrl ?? undefined}
+            navItems={landingSettings.navItems}
+            {authAction}
+          />
+        {/snippet}
+        {#snippet children()}
+          {@render searchField()}
+        {/snippet}
+      </HeroComponent>
+    {:else}
+      <NavComponent
+        orgName={data.org.name}
+        logoUrl={data.org.avatarUrl ?? undefined}
+        navItems={landingSettings.navItems}
+        {authAction}
+      />
+      <HeroComponent hero={heroProps} orgName={data.org.name} showActions={false} compact={true}>
+        {#snippet children()}
+          {@render searchField()}
+        {/snippet}
+      </HeroComponent>
+    {/if}
 
-  <section class="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
-    <!-- Actions row -->
-    <div class="mb-6 flex items-center justify-between gap-3">
-      <!-- Mobile only -->
-      <div class="lg:hidden">
-        <LandingButton variant="secondary" onclick={() => (filterSheetOpen = true)}>
-          <FilterIcon class="ui:size-4" />
-          {$t('public_courses.filters.title')}
-          {#if activeFilterCount > 0}
+    <section class="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
+      <!-- Actions row -->
+      <div class="mb-6 flex items-center justify-between gap-3">
+        <!-- Mobile only -->
+        <div class="lg:hidden">
+          <LandingButton variant="secondary" onclick={() => (filterSheetOpen = true)}>
+            <FilterIcon class="ui:size-4" />
+            {$t('public_courses.filters.title')}
+            {#if activeFilterCount > 0}
+              <span
+                class="ui:bg-primary ui:text-primary-foreground ml-1 inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-xs"
+              >
+                {activeFilterCount}
+              </span>
+            {/if}
+          </LandingButton>
+        </div>
+
+        <div class="ml-auto">
+          <LandingButton variant="secondary" onclick={clearFilters} disabled={!hasActiveFilters}>
+            {$t('public_courses.clear_filters')}
+          </LandingButton>
+        </div>
+      </div>
+
+      <!-- Layout: 1 col mobile, sidebar + content on desktop -->
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-8">
+        <!-- Desktop sidebar -->
+        <aside
+          class="ui:bg-[var(--landing-card)] ui:text-[var(--landing-fg)] ui:border-[var(--landing-border)] sticky top-4 hidden max-h-[calc(100dvh-2rem)] flex-col self-start overflow-hidden rounded-lg border lg:flex"
+        >
+          <div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
+            {@render filtersContent(true)}
+          </div>
+        </aside>
+
+        <!-- Course list -->
+        <div class="ui:@container min-w-0 space-y-4">
+          {#if data.courses.length === 0}
+            <Empty
+              icon={LibraryBigIcon}
+              title={$t('public_courses.empty.title')}
+              description={$t('public_courses.empty.description')}
+              variant="page"
+            />
+          {:else}
+            <div class={courseGridClass}>
+              {#each data.courses as course, index (course.id)}
+                <CourseCardComponent {course} {index} />
+              {/each}
+            </div>
+
+            {#if data.pagination.totalPages > 1}
+              <Pagination.Root
+                count={data.pagination.total}
+                perPage={data.pagination.perPage}
+                page={data.pagination.page}
+                onPageChange={goToPage}
+                class="mt-8"
+              >
+                {#snippet children({ pages, currentPage })}
+                  <Pagination.Content>
+                    <Pagination.Item>
+                      <Pagination.PrevButton />
+                    </Pagination.Item>
+                    {#each pages as pageItem (pageItem.key)}
+                      {#if pageItem.type === 'ellipsis'}
+                        <Pagination.Item>
+                          <Pagination.Ellipsis />
+                        </Pagination.Item>
+                      {:else}
+                        <Pagination.Item>
+                          <Pagination.Link page={pageItem} isActive={currentPage === pageItem.value}>
+                            {pageItem.value}
+                          </Pagination.Link>
+                        </Pagination.Item>
+                      {/if}
+                    {/each}
+                    <Pagination.Item>
+                      <Pagination.NextButton />
+                    </Pagination.Item>
+                  </Pagination.Content>
+                {/snippet}
+              </Pagination.Root>
+            {/if}
+          {/if}
+        </div>
+      </div>
+    </section>
+
+    <!-- Mobile filter sheet -->
+    <Sheet.Root bind:open={filterSheetOpen}>
+      <Sheet.Content
+        side="right"
+        portalProps={{ disabled: true }}
+        class="ui:flex ui:w-full ui:flex-col ui:p-0 ui:sm:max-w-md"
+      >
+        <Sheet.Header class="ui:border-b ui:px-4 ui:py-4">
+          <Sheet.Title>{$t('public_courses.filters.title')}</Sheet.Title>
+          <Sheet.Description>
+            {$t('public_courses.filters.selected')}
             <span
-              class="ui:bg-primary ui:text-primary-foreground ml-1 inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-xs"
+              class="ui:bg-muted ui:text-foreground ml-1 inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-medium"
             >
               {activeFilterCount}
             </span>
-          {/if}
-        </LandingButton>
-      </div>
+          </Sheet.Description>
+        </Sheet.Header>
 
-      <div class="ml-auto">
-        <LandingButton variant="secondary" onclick={clearFilters} disabled={!hasActiveFilters}>
-          {$t('public_courses.clear_filters')}
-        </LandingButton>
-      </div>
-    </div>
-
-    <!-- Layout: 1 col mobile, sidebar + content on desktop -->
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-8">
-      <!-- Desktop sidebar -->
-      <aside
-        class="ui:bg-[var(--landing-card)] ui:text-[var(--landing-fg)] ui:border-[var(--landing-border)] sticky top-4 hidden max-h-[calc(100dvh-2rem)] flex-col self-start overflow-hidden rounded-lg border lg:flex"
-      >
-        <div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
-          {@render filtersContent(true)}
+        <div class="ui:min-h-0 ui:flex-1 ui:overflow-y-auto">
+          {@render filtersContent(false)}
         </div>
-      </aside>
 
-      <!-- Course list -->
-      <div class="ui:@container min-w-0 space-y-4">
-        {#if data.courses.length === 0}
-          <Empty
-            icon={LibraryBigIcon}
-            title={$t('public_courses.empty.title')}
-            description={$t('public_courses.empty.description')}
-            variant="page"
-          />
-        {:else}
-          <div class={courseGridClass}>
-            {#each data.courses as course, index (course.id)}
-              <CourseCardComponent {course} {index} />
-            {/each}
-          </div>
-
-          {#if data.pagination.totalPages > 1}
-            <Pagination.Root
-              count={data.pagination.total}
-              perPage={data.pagination.perPage}
-              page={data.pagination.page}
-              onPageChange={goToPage}
-              class="mt-8"
-            >
-              {#snippet children({ pages, currentPage })}
-                <Pagination.Content>
-                  <Pagination.Item>
-                    <Pagination.PrevButton />
-                  </Pagination.Item>
-                  {#each pages as pageItem (pageItem.key)}
-                    {#if pageItem.type === 'ellipsis'}
-                      <Pagination.Item>
-                        <Pagination.Ellipsis />
-                      </Pagination.Item>
-                    {:else}
-                      <Pagination.Item>
-                        <Pagination.Link page={pageItem} isActive={currentPage === pageItem.value}>
-                          {pageItem.value}
-                        </Pagination.Link>
-                      </Pagination.Item>
-                    {/if}
-                  {/each}
-                  <Pagination.Item>
-                    <Pagination.NextButton />
-                  </Pagination.Item>
-                </Pagination.Content>
-              {/snippet}
-            </Pagination.Root>
-          {/if}
-        {/if}
-      </div>
-    </div>
-  </section>
-
-  <!-- Mobile filter sheet -->
-  <Sheet.Root bind:open={filterSheetOpen}>
-    <Sheet.Content side="right" class="ui:flex ui:w-full ui:flex-col ui:p-0 ui:sm:max-w-md">
-      <Sheet.Header class="ui:border-b ui:px-4 ui:py-4">
-        <Sheet.Title>{$t('public_courses.filters.title')}</Sheet.Title>
-        <Sheet.Description>
-          {$t('public_courses.filters.selected')}
-          <span
-            class="ui:bg-muted ui:text-foreground ml-1 inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-medium"
+        <div class="ui:flex ui:gap-3 ui:border-t ui:p-4">
+          <LandingButton variant="secondary" class="ui:flex-1" onclick={clearFilters}>
+            {$t('public_courses.clear_filters')}
+          </LandingButton>
+          <LandingButton class="ui:flex-1" onclick={() => (filterSheetOpen = false)}
+            >{$t('public_courses.filters.save_changes')}</LandingButton
           >
-            {activeFilterCount}
-          </span>
-        </Sheet.Description>
-      </Sheet.Header>
+        </div>
+      </Sheet.Content>
+    </Sheet.Root>
 
-      <div class="ui:min-h-0 ui:flex-1 ui:overflow-y-auto">
-        {@render filtersContent(false)}
-      </div>
-
-      <div class="ui:flex ui:gap-3 ui:border-t ui:p-4">
-        <LandingButton variant="secondary" class="ui:flex-1" onclick={clearFilters}>
-          {$t('public_courses.clear_filters')}
-        </LandingButton>
-        <LandingButton class="ui:flex-1" onclick={() => (filterSheetOpen = false)}
-          >{$t('public_courses.filters.save_changes')}</LandingButton
-        >
-      </div>
-    </Sheet.Content>
-  </Sheet.Root>
-
-  <OrgLandingPageFooter
-    orgName={data.org.name}
-    logoUrl={data.org.avatarUrl ?? undefined}
-    footer={landingSettings.footer}
-    variant={landingSettings.theme}
-  />
-</main>
+    <OrgLandingPageFooter
+      orgName={data.org.name}
+      logoUrl={data.org.avatarUrl ?? undefined}
+      footer={landingSettings.footer}
+      variant={landingSettings.theme}
+    />
+  </main>
+</LandingThemeScope>
