@@ -16,6 +16,7 @@
     SHORT_ANSWER_FIXTURE,
     STAR_FIXTURE,
     TEXTAREA_FIXTURE,
+    THUMBS_FIXTURE,
     TRUE_FALSE_FIXTURE,
     VIDEO_RECORDING_FIXTURE,
     WORD_BANK_FIXTURE
@@ -349,6 +350,16 @@
       question={TEXTAREA_FIXTURE.question}
       answer={TEXTAREA_FIXTURE.answer}
       wrongAnswer={TEXTAREA_FIXTURE.wrongAnswer}
+    />
+  {/snippet}
+</Story>
+
+<Story name="Thumbs">
+  {#snippet template()}
+    <QuestionTypeModes
+      question={THUMBS_FIXTURE.question}
+      answer={THUMBS_FIXTURE.answer}
+      wrongAnswer={THUMBS_FIXTURE.wrongAnswer}
     />
   {/snippet}
 </Story>

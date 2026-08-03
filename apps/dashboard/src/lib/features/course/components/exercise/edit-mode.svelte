@@ -200,6 +200,14 @@
     ];
   }
 
+  function makeThumbsOptions() {
+    const ts = Date.now();
+    return [
+      { id: `${ts}-yes-form`, label: 'Yes', value: 'true', isCorrect: false },
+      { id: `${ts}-no-form`, label: 'No', value: 'false', isCorrect: false }
+    ];
+  }
+
   function onQuestionTypeChange(questionId: string | number, value: string) {
     if (!value) return;
 
@@ -218,6 +226,9 @@
         const correctValue = (current.settings as { correctValue?: boolean })?.correctValue ?? true;
         nextSettings = { ...nextSettings, correctValue };
         nextOptions = makeTrueFalseOptions(correctValue);
+      } else if (nextQuestionTypeKey === QUESTION_TYPE_KEY.THUMBS) {
+        nextSettings = { ...nextSettings };
+        nextOptions = makeThumbsOptions();
       } else if (questionTypeSupportsOptions(nextQuestionTypeKey)) {
         const hasActiveOptions = nextOptions.some((option) => !option.deletedAt);
         if (!hasActiveOptions) {
@@ -276,7 +287,8 @@
       let nextSettings = nextQuestion.settings ?? {};
       let nextOptions = mappedOptions;
 
-      if (getQuestionTypeKey(current) === QUESTION_TYPE_KEY.TRUE_FALSE) {
+      const currentQuestionTypeKey = getQuestionTypeKey(current);
+      if (currentQuestionTypeKey === QUESTION_TYPE_KEY.TRUE_FALSE) {
         const correctValue = resolveTrueFalseCorrectValue(nextSettings, nextOptions);
         nextSettings = { ...nextSettings, correctValue };
         nextOptions = syncTrueFalseOptions(nextOptions, correctValue);
@@ -411,15 +423,16 @@
 {/snippet}
 
 {#snippet questionEditor(question, index)}
+  {@const questionStoreIndex = $questionnaire.questions.findIndex((item) => item.id === question.id)}
   <QuestionContainer
     elementId={getQuestionElementId(question.id)}
     key={String(question.id ?? `new-${index}`)}
     onClose={onInitDeleteClicked(question.id)}
     scrollToQuestion={shouldScrollToLast(question.id, $questionnaire.questions)}
-    bind:points={question.points}
+    bind:points={$questionnaire.questions[questionStoreIndex].points}
     hasError={!!errors[question.id]}
     errorMsg={getQuestionErrorMsg(errors, question, 'points')}
-    pointsHint={requiresPositivePointsForAutoGrade
+    pointsHint={isQuestionAutoGradable(question) && requiresPositivePointsForAutoGrade
       ? $t('course.navItem.lessons.exercises.all_exercises.points_required_auto_grade')
       : null}
     onPointsChange={() => {
@@ -444,6 +457,7 @@
     <div class="mt-2 flex flex-col">
       <ExerciseQuestion.QuestionRenderer
         showContainer={false}
+        titleError={getQuestionErrorMsg(errors, question, 'title')}
         contract={{
           mode: 'edit',
           question: toExerciseQuestionModel(question),

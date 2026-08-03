@@ -289,8 +289,11 @@
   },
   "common": {
     "unsaved_changes": {
-      "message": "You have unsaved changes. Are you sure you want to leave?"
+      "message": "You have unsaved changes. Are you sure you want to leave?",
+      "label": "Unsaved changes"
     },
+    "discard": "Discard",
+    "save_changes": "Save changes",
     "refresh": "Refresh"
   },
   "compliance": {
@@ -2088,6 +2091,14 @@
         "body_header": "No post yet",
         "body_content": "Make a post to your class. Start by clicking on the Add button.",
         "pinned": "Pinned",
+        "other_posts": "Other Posts",
+        "user": "User",
+        "delete_modal": {
+          "title": "Delete Feed",
+          "description": "Are you sure you want to delete this feed?",
+          "no": "No",
+          "yes": "Yes"
+        },
         "card": {
           "pin": "Pin",
           "unpin": "Unpin",
@@ -2100,7 +2111,18 @@
           "hide": "Hide comments",
           "placeholder": "Add class comment",
           "submit_aria": "Submit comment",
-          "delete": "Delete"
+          "reply": "Reply",
+          "replying_to": "Replying to @{name}",
+          "cancel_reply": "Cancel",
+          "view_replies": "View {count} {count, plural, =1 {reply} other {replies}}",
+          "hide_replies": "Hide replies",
+          "delete": "Delete",
+          "view_more": "View more comments ({count})",
+          "loading": "Loading...",
+          "save": "Save",
+          "saving": "Saving...",
+          "send": "Send",
+          "load_more_replies": "Load more replies"
         },
         "user_avatar_alt": "User avatar",
         "snackbar": {
@@ -2428,6 +2450,8 @@
               "cancel_upload": "Cancel Upload",
               "upload_cancelled": "Upload cancelled by user",
               "downloading": "Downloading...",
+              "download_success": "Document downloaded successfully",
+              "download_error": "Failed to download document",
               "view_pdf": "View PDF",
               "remove_document": "Remove document",
               "delete": "Delete",
@@ -2437,7 +2461,11 @@
               "failed_to_render_pdf": "Failed to render PDF page",
               "use_arrow_keys": "Use arrow keys to navigate, +/- to zoom, or click the controls above. Right-click is disabled.",
               "empty_title": "No documents yet",
-              "empty_description": "Upload documents to share with your students"
+              "empty_description": "Upload documents to share with your students",
+              "attachments_heading": "Attachments",
+              "file_count": "{count, plural, one {# file} other {# files}}",
+              "view_file": "View file",
+              "reorder_file": "Reorder file"
             }
           },
           "button_done": "Done"
@@ -2610,6 +2638,7 @@
                 "multiple": "Multiple answers",
                 "paragraph": "Paragraph",
                 "true_false": "True/False",
+                "thumbs": "Thumbs up/down",
                 "short_answer": "Short answer",
                 "numeric": "Numeric answer",
                 "fill_blank": "Fill in the blank",
@@ -2753,6 +2782,17 @@
                 },
                 "preview": {
                   "correct_value_label": "Correct value"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Yes",
+                "no_label": "No",
+                "edit": {
+                  "positive_option_label": "Thumbs up label",
+                  "negative_option_label": "Thumbs down label"
+                },
+                "preview": {
+                  "helper": "Open-ended — students choose thumbs up or down."
                 }
               },
               "short_answer": {
@@ -4164,6 +4204,7 @@
       }
     },
     "exercise": {
+      "validation_errors": "Please fix all validation errors before saving.",
       "points_required_auto_grade": "Set a positive point value for every question before saving.",
       "passed_requires_points": "Passed completion needs at least one point available.",
       "success": "Saved Successfully",

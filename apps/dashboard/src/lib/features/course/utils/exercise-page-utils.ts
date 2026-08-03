@@ -1,10 +1,15 @@
 import type { ExerciseSectionAfterBehavior, ExerciseSectionColorTheme } from '@cio/question-types';
+import { QUESTION_TYPE_KEY, normalizeThumbsQuestion } from '@cio/question-types';
 import {
   clearQuestionnaireValidation,
   questionnaire,
   questionnaireMetaData
 } from '$features/course/components/exercise/store';
-import { getQuestionTypeId, getQuestionTypeOptionById } from '$features/course/components/exercise/question-type-utils';
+import {
+  getQuestionTypeId,
+  getQuestionTypeKey,
+  getQuestionTypeOptionById
+} from '$features/course/components/exercise/question-type-utils';
 
 import type { Exercise } from '$features/course/utils/types';
 import type { ExerciseSectionState } from '$features/course/components/exercise/store';
@@ -34,12 +39,26 @@ export function hydrateExercisePageData(exercise: Exercise, exerciseId: string) 
   if (exerciseQuestions.length > 0) {
     const mappedQuestions: Question[] = exerciseQuestions.map((question) => {
       const questionType = getQuestionTypeOptionById(getQuestionTypeId(question));
-
-      return {
+      const baseQuestion = {
         ...question,
         exerciseSectionId: question.exerciseSectionId ?? null,
         questionTypeId: questionType.id,
         questionType
+      };
+
+      if (getQuestionTypeKey(baseQuestion) !== QUESTION_TYPE_KEY.THUMBS) {
+        return baseQuestion;
+      }
+
+      const normalized = normalizeThumbsQuestion({
+        settings: (baseQuestion as Question & { settings?: Record<string, unknown> }).settings,
+        options: baseQuestion.options
+      });
+
+      return {
+        ...baseQuestion,
+        settings: normalized.settings,
+        options: normalized.options
       };
     });
 
