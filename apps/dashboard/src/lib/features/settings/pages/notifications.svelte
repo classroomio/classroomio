@@ -16,8 +16,6 @@
   import { Switch } from '@cio/ui/base/switch';
   import BellIcon from '@lucide/svelte/icons/bell';
   import Building2Icon from '@lucide/svelte/icons/building-2';
-  import { onMount } from 'svelte';
-  import { get } from 'svelte/store';
 
   function buildToggleState<T extends string>(keys: readonly T[], source?: Partial<Record<T, boolean>> | null) {
     return Object.fromEntries(keys.map((key) => [key, source?.[key] !== false])) as Record<T, boolean>;
@@ -26,10 +24,11 @@
   let personalToggles = $state(buildToggleState(PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS));
   let savedPersonalToggles = $state(buildToggleState(PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS));
   let orgToggles = $state(buildToggleState(EMAIL_NOTIFICATION_TOGGLE_KEYS));
+  let savedOrgToggles = $state(buildToggleState(EMAIL_NOTIFICATION_TOGGLE_KEYS));
   let isSavingPersonal = $state(false);
   let isSavingOrg = $state(false);
   let isLoadingPersonal = $state(false);
-  let hasHydratedOrgToggles = $state(false);
+  let personalLoadVersion = 0;
 
   interface Props {
     hasUnsavedChanges?: boolean;
@@ -63,24 +62,26 @@
     }
   }
 
-  function syncOrgTogglesFromCurrentOrg() {
-    const org = get(currentOrg);
-
-    if (!org) return;
-
-    const next = buildToggleState(EMAIL_NOTIFICATION_TOGGLE_KEYS, org.settings?.emailNotifications);
+  function applyOrgToggleState(source?: Partial<Record<string, boolean>> | null) {
+    const next = buildToggleState(EMAIL_NOTIFICATION_TOGGLE_KEYS, source);
 
     for (const key of EMAIL_NOTIFICATION_TOGGLE_KEYS) {
       orgToggles[key] = next[key];
+      savedOrgToggles[key] = next[key];
     }
   }
 
   async function loadPersonalPreferences() {
-    if (!$currentOrg?.id) return;
+    const loadVersion = ++personalLoadVersion;
 
     isLoadingPersonal = true;
 
     const result = await memberEmailNotificationsApi.fetch();
+
+    if (loadVersion !== personalLoadVersion) {
+      isLoadingPersonal = false;
+      return;
+    }
 
     if (result?.data) {
       applyPersonalToggleState(result.data);
@@ -89,35 +90,26 @@
     isLoadingPersonal = false;
   }
 
-  function tryHydrateOrgToggles() {
-    if (hasHydratedOrgToggles || !get(isOrgAdmin)) return;
-
-    if (!get(currentOrg)?.id) return;
-
-    syncOrgTogglesFromCurrentOrg();
-    hasHydratedOrgToggles = true;
-  }
-
-  onMount(() => {
-    tryHydrateOrgToggles();
-  });
-
   $effect(() => {
     const orgId = $currentOrg?.id;
 
     if (!orgId) return;
 
+    personalLoadVersion++;
     void loadPersonalPreferences();
   });
 
   $effect(() => {
-    if (hasHydratedOrgToggles) return;
+    if (!$isOrgAdmin || !$currentOrg?.id) return;
 
-    const orgId = $isOrgAdmin ? $currentOrg?.id : null;
+    if (orgHasChanges) return;
 
-    if (!orgId) return;
+    const next = buildToggleState(EMAIL_NOTIFICATION_TOGGLE_KEYS, $currentOrg.settings?.emailNotifications);
+    const alreadySynced = EMAIL_NOTIFICATION_TOGGLE_KEYS.every((key) => savedOrgToggles[key] === next[key]);
 
-    tryHydrateOrgToggles();
+    if (alreadySynced) return;
+
+    applyOrgToggleState($currentOrg.settings?.emailNotifications);
   });
 
   const personalHasChanges = $derived(
@@ -125,9 +117,7 @@
   );
 
   const orgHasChanges = $derived(
-    EMAIL_NOTIFICATION_TOGGLE_KEYS.some(
-      (key) => orgToggles[key] !== ($currentOrg?.settings?.emailNotifications?.[key] !== false)
-    )
+    EMAIL_NOTIFICATION_TOGGLE_KEYS.some((key) => orgToggles[key] !== savedOrgToggles[key])
   );
 
   $effect(() => {
@@ -146,7 +136,11 @@
 
   export function handleDiscard() {
     applyPersonalToggleState(savedPersonalToggles);
-    syncOrgTogglesFromCurrentOrg();
+
+    for (const key of EMAIL_NOTIFICATION_TOGGLE_KEYS) {
+      orgToggles[key] = savedOrgToggles[key];
+    }
+
     hasUnsavedChanges = false;
   }
 
@@ -164,6 +158,7 @@
     if (!$currentOrg?.id) return;
 
     isSavingPersonal = true;
+    personalLoadVersion++;
 
     const result = await memberEmailNotificationsApi.update(
       toStoredPreferences(PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS, personalToggles)
@@ -182,18 +177,26 @@
 
     isSavingOrg = true;
     const existingSettings = ($currentOrg.settings as Record<string, unknown>) || {};
+    const emailNotifications = toStoredPreferences(EMAIL_NOTIFICATION_TOGGLE_KEYS, orgToggles);
 
     await orgApi.update(
       $currentOrg.id,
       {
         settings: {
           ...existingSettings,
-          emailNotifications: toStoredPreferences(EMAIL_NOTIFICATION_TOGGLE_KEYS, orgToggles)
+          emailNotifications
         }
       },
       {
         onSuccess: () => {
-          syncOrgTogglesFromCurrentOrg();
+          currentOrg.update((org) => ({
+            ...org,
+            settings: {
+              ...(org.settings as Record<string, unknown> | undefined),
+              emailNotifications
+            }
+          }));
+          applyOrgToggleState(emailNotifications);
           snackbar.success(t.get('settings.notifications.org.save_success'));
         }
       }
