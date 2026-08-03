@@ -29,6 +29,7 @@
   let isSavingOrg = $state(false);
   let isLoadingPersonal = $state(false);
   let personalLoadVersion = 0;
+  let lastHydratedOrgId: string | null = null;
 
   interface Props {
     hasUnsavedChanges?: boolean;
@@ -96,17 +97,17 @@
     void loadPersonalPreferences();
   });
 
+  // Org defaults hydrate once per organization. `/account` returns `settings`
+  // together with the org id and role, so an id transition never misses
+  // late-arriving settings — and unsaved edits from another org are discarded
+  // instead of being saved against the wrong organization.
   $effect(() => {
-    if (!$isOrgAdmin || !$currentOrg?.id) return;
+    const orgId = $isOrgAdmin ? $currentOrg?.id : null;
 
-    if (orgHasChanges) return;
+    if (!orgId || orgId === lastHydratedOrgId) return;
 
-    const next = buildToggleState(EMAIL_NOTIFICATION_TOGGLE_KEYS, $currentOrg.settings?.emailNotifications);
-    const alreadySynced = EMAIL_NOTIFICATION_TOGGLE_KEYS.every((key) => savedOrgToggles[key] === next[key]);
-
-    if (alreadySynced) return;
-
-    applyOrgToggleState($currentOrg.settings?.emailNotifications);
+    lastHydratedOrgId = orgId;
+    applyOrgToggleState($currentOrg?.settings?.emailNotifications);
   });
 
   const personalHasChanges = $derived(
