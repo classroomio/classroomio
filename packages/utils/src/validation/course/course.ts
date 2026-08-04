@@ -324,12 +324,11 @@ function preprocessCourseMetadata(value: unknown): unknown {
 
   if (metadata.discount === null || metadata.discount === '') {
     metadata.discount = undefined;
-  } else if (typeof metadata.discount === 'number') {
-    if (!Number.isFinite(metadata.discount)) {
-      metadata.discount = undefined;
-    }
   } else if (typeof metadata.discount === 'string') {
-    metadata.discount = toFiniteNumber(metadata.discount);
+    const parsedDiscount = toFiniteNumber(metadata.discount);
+    if (parsedDiscount !== undefined) {
+      metadata.discount = parsedDiscount;
+    }
   }
 
   return metadata;
