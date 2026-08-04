@@ -1,0 +1,1017 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Slide Embed Picker — prototype variants</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ---- Product tokens (mirrors packages/ui/src/index.css light theme) ---- */
+      :root {
+        --background: #ffffff;
+        --surface: #ffffff;
+        --surface-2: #f7f7f8;
+        --foreground: #24242a;
+        --muted: #f4f4f5;
+        --muted-foreground: #71717a;
+        --border: #e6e6e9;
+        --border-strong: #d6d6da;
+        --primary: #4f46e5; /* indigo, ~oklch(0.488 0.243 264) */
+        --primary-weak: #eef0ff;
+        --primary-foreground: #ffffff;
+        --ring: rgba(79, 70, 229, 0.35);
+        --green: #16a34a;
+        --green-weak: #ecfdf3;
+        --red: #dc2626;
+        --red-weak: #fef2f2;
+        --radius: 10px;
+        --shadow-sm: 0 1px 2px rgba(16, 17, 26, 0.06);
+        --shadow-md: 0 6px 20px rgba(16, 17, 26, 0.08), 0 2px 6px rgba(16, 17, 26, 0.05);
+        --shadow-lg: 0 18px 48px rgba(16, 17, 26, 0.12), 0 4px 12px rgba(16, 17, 26, 0.06);
+      }
+
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background:
+          radial-gradient(1200px 600px at 50% -10%, #f3f4ff 0%, rgba(243, 244, 255, 0) 60%),
+          var(--surface-2);
+        color: var(--foreground);
+        font-size: 14px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        letter-spacing: -0.006em;
+      }
+      button { font: inherit; cursor: pointer; }
+      a { color: inherit; }
+      input, textarea { font: inherit; }
+      ::selection { background: var(--primary-weak); }
+
+      /* ---- Stage: emulates the lesson editor panel with tabs ---- */
+      #stage { min-height: 100%; }
+      .shell {
+        max-width: 940px;
+        margin: 0 auto;
+        padding: 40px 24px 140px;
+      }
+      .app-tabs {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 0 4px 12px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 26px;
+      }
+      .app-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 2px;
+        border: 0;
+        background: transparent;
+        color: var(--muted-foreground);
+        font-weight: 500;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -13px;
+      }
+      .app-tab svg { width: 16px; height: 16px; }
+      .app-tab[data-current] { color: var(--foreground); border-bottom-color: var(--foreground); }
+      .app-tab .count {
+        min-width: 18px; height: 18px; padding: 0 5px;
+        display: inline-grid; place-items: center;
+        background: var(--muted); color: var(--muted-foreground);
+        border-radius: 999px; font-size: 11px; font-weight: 600;
+      }
+
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+      }
+      .panel-head {
+        padding: 22px 24px 18px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, #fbfbfd, var(--surface));
+      }
+      .panel-head h1 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 650;
+        letter-spacing: -0.02em;
+      }
+      .panel-head p { margin: 5px 0 0; color: var(--muted-foreground); font-size: 13px; }
+      .panel-body { padding: 22px 24px 26px; }
+
+      .eyebrow {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+        color: var(--primary);
+        background: var(--primary-weak);
+        padding: 4px 9px; border-radius: 999px;
+        margin-bottom: 12px;
+      }
+
+      /* ---- Brand icon badge ---- */
+      .badge {
+        position: relative;
+        display: inline-grid; place-items: center;
+        border-radius: 11px;
+        color: #fff;
+        font-weight: 700;
+        flex: none;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18), 0 1px 2px rgba(16,17,26,0.14);
+        overflow: hidden;
+      }
+      .badge span { position: relative; z-index: 1; line-height: 1; }
+      .badge svg { position: relative; z-index: 1; }
+
+      /* ---- Buttons ---- */
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        height: 38px; padding: 0 15px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
+        color: var(--foreground);
+        font-weight: 550;
+        transition: background 140ms ease-out, border-color 140ms ease-out, transform 90ms ease-out, box-shadow 140ms ease-out;
+      }
+      .btn svg { width: 16px; height: 16px; }
+      .btn:hover { background: var(--surface-2); border-color: var(--border-strong); }
+      .btn:active { transform: translateY(0.5px) scale(0.995); }
+      .btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+      .btn-primary {
+        background: var(--primary); border-color: var(--primary); color: var(--primary-foreground);
+        box-shadow: var(--shadow-sm);
+      }
+      .btn-primary:hover { background: #443cd6; border-color: #443cd6; }
+      .btn-ghost { border-color: transparent; background: transparent; color: var(--muted-foreground); }
+      .btn-ghost:hover { background: var(--muted); color: var(--foreground); }
+      .btn-sm { height: 32px; padding: 0 11px; font-size: 13px; border-radius: 8px; }
+
+      /* ---- Fields ---- */
+      .field-label { display: block; font-weight: 600; font-size: 13px; margin: 0 0 7px; }
+      .input, .textarea {
+        width: 100%;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius);
+        background: var(--surface);
+        color: var(--foreground);
+        padding: 11px 13px;
+        transition: border-color 140ms ease-out, box-shadow 140ms ease-out;
+      }
+      .textarea { min-height: 96px; resize: vertical; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; line-height: 1.6; }
+      .input:focus, .textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--ring); }
+      .input::placeholder, .textarea::placeholder { color: #a1a1aa; }
+      .help { margin: 8px 2px 0; color: var(--muted-foreground); font-size: 12.5px; }
+
+      .status { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; }
+      .status svg { width: 15px; height: 15px; }
+      .status.ok { color: var(--green); }
+      .status.err { color: var(--red); }
+      .status.err-box {
+        margin-top: 10px; padding: 9px 12px; background: var(--red-weak);
+        border: 1px solid #fecaca; border-radius: 9px; color: #b91c1c; font-weight: 500;
+      }
+
+      /* ---- Live preview ---- */
+      .preview {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface-2);
+        overflow: hidden;
+      }
+      .preview-16x9 { position: relative; aspect-ratio: 16 / 9; width: 100%; }
+      .preview-empty {
+        position: absolute; inset: 0;
+        display: grid; place-content: center; justify-items: center; gap: 10px;
+        color: #a1a1aa; text-align: center; padding: 20px;
+      }
+      .preview-empty .ring {
+        width: 46px; height: 46px; border-radius: 12px;
+        border: 2px dashed var(--border-strong);
+        display: grid; place-items: center; color: var(--border-strong);
+      }
+      /* faux rendered slide */
+      .slide {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column;
+        background: #fff;
+      }
+      .slide-topbar {
+        height: 34px; flex: none; display: flex; align-items: center; gap: 8px;
+        padding: 0 12px; color: #fff; font-size: 12px; font-weight: 600;
+      }
+      .slide-topbar .dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.5); }
+      .slide-stage { flex: 1; display: grid; place-items: center; padding: 18px; background:
+        radial-gradient(120% 120% at 20% 0%, #ffffff 0%, #f4f5fb 100%); }
+      .slide-card {
+        width: 78%; max-width: 340px;
+        background: #fff; border: 1px solid var(--border); border-radius: 10px;
+        box-shadow: var(--shadow-md); padding: 18px 20px;
+      }
+      .slide-kicker { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+      .slide-title { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; color: #1c1c22; }
+      .bar { height: 7px; border-radius: 4px; background: #ececf1; margin-bottom: 8px; }
+      .bar.w80 { width: 80%; } .bar.w60 { width: 60%; } .bar.w40 { width: 40%; }
+      .slide-dots { display: flex; gap: 5px; margin-top: 14px; }
+      .slide-dots i { width: 16px; height: 4px; border-radius: 2px; background: #e0e0e6; }
+      .slide-dots i:first-child { width: 22px; }
+      .preview-foot {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        padding: 9px 12px; border-top: 1px solid var(--border); background: var(--surface);
+      }
+      .preview-foot .src {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11.5px; color: var(--muted-foreground);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; direction: rtl; text-align: left;
+      }
+
+      .row { display: flex; align-items: center; gap: 10px; }
+      .between { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .grow { flex: 1; min-width: 0; }
+
+      /* keyframes (entrances only; ease-out, <300ms, transform/opacity) */
+      @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+      @keyframes pop { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: none; } }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+      /* ============================================================= */
+      /* VARIANT 1 — GALLERY                                            */
+      /* ============================================================= */
+      .g-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+      }
+      .g-tile {
+        display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 13px;
+        background: var(--surface);
+        text-align: left;
+        transition: border-color 150ms ease-out, box-shadow 150ms ease-out, transform 110ms ease-out;
+        animation: pop 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      .g-tile:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+      .g-tile:active { transform: translateY(0) scale(0.99); }
+      .g-tile:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); border-color: var(--primary); }
+      .g-tile .g-name { font-weight: 600; font-size: 13.5px; }
+      .g-tile .g-kind { font-size: 11.5px; color: var(--muted-foreground); }
+      .g-detail { animation: fadeUp 240ms ease-out both; }
+      .g-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+      @media (max-width: 720px) { .g-detail-grid { grid-template-columns: 1fr; } }
+      .g-back {
+        display: inline-flex; align-items: center; gap: 6px; margin-bottom: 16px;
+        color: var(--muted-foreground); font-weight: 550; background: none; border: 0; padding: 4px 2px;
+      }
+      .g-back:hover { color: var(--foreground); }
+      .g-detail-head { display: flex; align-items: center; gap: 13px; margin-bottom: 20px; }
+      .g-detail-head h2 { margin: 0; font-size: 18px; letter-spacing: -0.02em; }
+      .g-detail-head .sub { color: var(--muted-foreground); font-size: 12.5px; margin-top: 2px; }
+
+      /* ============================================================= */
+      /* VARIANT 2 — COMMAND BAR                                        */
+      /* ============================================================= */
+      .c-wrap { max-width: 640px; margin: 0 auto; }
+      .c-inputwrap { position: relative; }
+      .c-textarea {
+        min-height: 118px; padding: 15px 16px; font-size: 13px; border-radius: 13px;
+        border-width: 1.5px;
+      }
+      .c-detected {
+        display: flex; align-items: center; gap: 10px;
+        margin-top: 14px; padding: 11px 13px;
+        border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+        box-shadow: var(--shadow-sm);
+        animation: pop 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      .c-detected .meta { line-height: 1.35; }
+      .c-detected .meta b { font-size: 13.5px; }
+      .c-detected .meta .l { display: block; font-size: 12px; color: var(--muted-foreground); }
+      .c-legend { margin-top: 26px; }
+      .c-legend .lbl { font-size: 11.5px; color: var(--muted-foreground); text-align: center; margin-bottom: 12px; }
+      .c-logos { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+      .c-logo {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 6px 11px 6px 6px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface);
+        color: var(--muted-foreground); font-size: 12.5px; font-weight: 550;
+        transition: border-color 140ms ease-out, color 140ms ease-out, transform 90ms ease-out;
+      }
+      .c-logo:hover { border-color: var(--border-strong); color: var(--foreground); transform: translateY(-1px); }
+
+      /* ============================================================= */
+      /* VARIANT 3 — GUIDED                                             */
+      /* ============================================================= */
+      .w-grid { display: grid; grid-template-columns: 244px 1fr; gap: 0; min-height: 440px; }
+      @media (max-width: 720px) { .w-grid { grid-template-columns: 1fr; } }
+      .w-rail { border-right: 1px solid var(--border); padding: 14px; background: var(--surface-2); }
+      @media (max-width: 720px) { .w-rail { border-right: 0; border-bottom: 1px solid var(--border); } }
+      .w-search {
+        display: flex; align-items: center; gap: 8px; padding: 8px 11px; margin-bottom: 10px;
+        border: 1px solid var(--border-strong); border-radius: 9px; background: var(--surface);
+      }
+      .w-search input { border: 0; outline: none; width: 100%; background: transparent; }
+      .w-search svg { width: 15px; height: 15px; color: var(--muted-foreground); flex: none; }
+      .w-list { display: flex; flex-direction: column; gap: 2px; max-height: 380px; overflow: auto; }
+      .w-item {
+        display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 9px;
+        border: 0; background: transparent; text-align: left; color: var(--foreground); font-weight: 500;
+        transition: background 120ms ease-out;
+      }
+      .w-item:hover { background: var(--muted); }
+      .w-item[data-sel] { background: var(--primary-weak); color: var(--primary); }
+      .w-pane { padding: 22px 24px; }
+      .w-empty { height: 100%; display: grid; place-content: center; justify-items: center; gap: 12px; color: var(--muted-foreground); text-align: center; }
+      .w-content { animation: fadeUp 220ms ease-out both; }
+      .w-steps { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 10px; }
+      .w-steps li { display: flex; gap: 11px; align-items: flex-start; animation: fadeUp 260ms ease-out both; }
+      .w-steps .n {
+        flex: none; width: 21px; height: 21px; border-radius: 999px; background: var(--foreground); color: #fff;
+        font-size: 11px; font-weight: 700; display: grid; place-items: center; margin-top: 1px;
+      }
+      .w-steps .tx { font-size: 13px; color: #3f3f46; }
+      .w-steps .tx b { color: var(--foreground); font-weight: 600; }
+
+      .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+
+      /* ===================== PICKER (verbatim from PICKER.md) ===================== */
+      .proto-picker {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2147483647;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        padding: 4px;
+        border-radius: 999px;
+        background: rgba(10, 10, 10, 0.82);
+        -webkit-backdrop-filter: blur(12px) saturate(1.4);
+        backdrop-filter: blur(12px) saturate(1.4);
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+          0 8px 24px rgba(0, 0, 0, 0.24),
+          0 2px 6px rgba(0, 0, 0, 0.12);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 13px;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .proto-picker-highlight {
+        position: absolute;
+        top: 4px;
+        left: 0;
+        height: 28px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        will-change: transform;
+      }
+      .proto-picker[data-ready] .proto-picker-highlight {
+        transition:
+          transform 250ms cubic-bezier(0.23, 1, 0.32, 1),
+          width 250ms cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .proto-picker[data-ready] .proto-picker-highlight { transition: none; }
+      }
+      .proto-picker-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: 28px;
+        padding: 0 12px;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.55);
+        font: inherit;
+        cursor: pointer;
+        transition: color 150ms ease-out;
+      }
+      .proto-picker-item:hover { color: rgba(255, 255, 255, 0.85); }
+      .proto-picker-item:active { transform: scale(0.97); }
+      .proto-picker-item:focus-visible { outline: 2px solid rgba(255, 255, 255, 0.4); outline-offset: 2px; }
+      .proto-picker-item[data-active] { color: #fff; }
+      .proto-picker-divider { width: 1px; height: 16px; margin: 0 4px; background: rgba(255, 255, 255, 0.12); }
+      .proto-picker-replay { padding: 0 10px; font-size: 14px; }
+      .proto-picker[data-position="top"] { bottom: auto; top: 24px; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+
+    <nav class="proto-picker" aria-label="Prototype variants">
+      <span class="proto-picker-highlight" aria-hidden="true"></span>
+      <button class="proto-picker-item" data-active aria-current="true">Gallery</button>
+      <button class="proto-picker-item">Command&nbsp;Bar</button>
+      <button class="proto-picker-item">Guided</button>
+      <span class="proto-picker-divider" aria-hidden="true"></span>
+      <button class="proto-picker-item proto-picker-replay" aria-label="Replay animation (R)">↻</button>
+    </nav>
+
+    <script>
+      /* =====================================================================
+       * Shared: brand icons, platform configs, resolve logic, preview renderer
+       * ===================================================================== */
+      const DOCS = 'https://classroomio.com/docs/guides/embed-slides';
+
+      // Simple, recognizable brand monogram/glyph badges (prototype stand-ins).
+      function badge(id, size) {
+        const s = size || 40;
+        const r = Math.round(s * 0.28);
+        const p = PLAT[id];
+        const fs = Math.round(s * 0.42);
+        const style = `width:${s}px;height:${s}px;border-radius:${Math.round(s*0.26)}px;background:${p.bg};font-size:${fs}px;`;
+        return `<span class="badge" style="${style}" aria-hidden="true">${p.glyph}</span>`;
+      }
+
+      function iconExternal() {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>';
+      }
+      function iconCheck() {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+      }
+      function iconAlert() {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>';
+      }
+      function iconBack() {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>';
+      }
+      function iconSearch() {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>';
+      }
+
+      // Brand backgrounds + glyphs
+      const PLAT = {
+        'google-slides': { bg: 'linear-gradient(180deg,#FCC846,#F4B400)', glyph: '<span style="color:#fff">▸</span>' },
+        canva:           { bg: 'linear-gradient(135deg,#00C4CC,#7D2AE8)', glyph: '<span style="color:#fff">C</span>' },
+        powerpoint:      { bg: 'linear-gradient(180deg,#E45A34,#C43E1C)', glyph: '<span style="color:#fff">P</span>' },
+        keynote:         { bg: 'linear-gradient(180deg,#2AA3F5,#0A84FF)', glyph: '<span style="color:#fff">K</span>' },
+        figma:           { bg: 'linear-gradient(135deg,#F24E1E,#A259FF)', glyph: '<span style="color:#fff">F</span>' },
+        prezi:           { bg: 'linear-gradient(180deg,#4C9BFF,#3181FF)', glyph: '<span style="color:#fff">P</span>' },
+        pitch:           { bg: 'linear-gradient(180deg,#2A2B31,#131418)', glyph: '<span style="color:#fff">✦</span>' },
+        gamma:           { bg: 'linear-gradient(135deg,#7C3AED,#DB2777)', glyph: '<span style="color:#fff">G</span>' },
+        slideshare:      { bg: 'linear-gradient(180deg,#0A93D6,#0077B5)', glyph: '<span style="color:#fff">S</span>' },
+        beautiful:       { bg: 'linear-gradient(180deg,#FF7A46,#FB5A3C)', glyph: '<span style="color:#fff">b</span>' },
+      };
+
+      function iframeSrc(raw) {
+        const m = raw.match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i);
+        return m ? m[1] : null;
+      }
+
+      // Each platform: how to detect it, and how to turn a paste into an embed src.
+      const PLATFORMS = [
+        {
+          id: 'google-slides', name: 'Google Slides', kind: 'link',
+          hint: 'File → Share → Publish to web → Embed',
+          placeholder: 'https://docs.google.com/presentation/d/e/2PACX-.../pub',
+          example: 'https://docs.google.com/presentation/d/e/2PACX-1vTDemoPresentationId/pub?start=false&loop=false&delayms=3000',
+          steps: [
+            'Open your deck and choose <b>File → Share → Publish to web</b>.',
+            'Switch to the <b>Embed</b> tab and click <b>Publish</b>.',
+            'Copy the link (or the whole iframe) and paste it here.'
+          ],
+          test: (v) => /docs\.google\.com\/presentation/i.test(v),
+          resolve(v) {
+            let u = iframeSrc(v) || v.trim();
+            if (!/docs\.google\.com\/presentation/i.test(u)) return err('That doesn\u2019t look like a Google Slides link.');
+            if (/\/(edit|htmlpresent)/i.test(u) && !/\/embed/i.test(u))
+              return err('This is an edit link \u2014 use Publish to web to get an embeddable link first.');
+            u = u.replace(/\/(pub|preview|present|view)(?=[/?#]|$)/i, '/embed');
+            if (!/\/embed/i.test(u)) u = u.replace(/\/?(\?|#|$)/, '/embed$1');
+            if (!/[?&]delayms=/.test(u)) u += (u.includes('?') ? '&' : '?') + 'start=false&loop=false&delayms=3000';
+            return ok(u);
+          }
+        },
+        {
+          id: 'canva', name: 'Canva', kind: 'link',
+          hint: 'Share → More → Embed → Smart embed link',
+          placeholder: 'https://www.canva.com/design/DAFxxxx/view',
+          example: 'https://www.canva.com/design/DAFDemoDesignId/view',
+          steps: [
+            'Above the editor, click <b>Share</b> → <b>More</b>.',
+            'Choose <b>Embed</b> and confirm (this makes the design public).',
+            'Copy the <b>Smart embed link</b> and paste it here.'
+          ],
+          test: (v) => /canva\.com\/design/i.test(v),
+          resolve(v) {
+            let u = iframeSrc(v) || v.trim();
+            if (!/canva\.com\/design/i.test(u)) return err('That doesn\u2019t look like a Canva design link.');
+            u = u.replace(/\/(edit|watch)(?=[/?#]|$)/i, '/view');
+            if (!/\/view/i.test(u)) u = u.replace(/\/?(\?|#|$)/, '/view$1');
+            if (!/[?&]embed/i.test(u)) u += (u.includes('?') ? '&' : '?') + 'embed';
+            return ok(u);
+          }
+        },
+        {
+          id: 'powerpoint', name: 'PowerPoint', kind: 'code',
+          hint: 'PowerPoint for the web → File → Share → Embed',
+          placeholder: '<iframe src="https://onedrive.live.com/embed?resid=..." ...></iframe>',
+          example: '<iframe width="640" height="480" src="https://onedrive.live.com/embed?resid=DEMO123&authkey=Ademo&em=2" frameborder="0"></iframe>',
+          steps: [
+            'Save the deck to <b>OneDrive</b>, then open it in <b>PowerPoint for the web</b>.',
+            'Choose <b>File → Share → Embed</b> and pick your dimensions.',
+            'Copy the <b>embed code</b> and paste the whole &lt;iframe&gt; here.'
+          ],
+          test: (v) => /onedrive\.live\.com|officeapps\.live\.com|1drv\.ms|sharepoint\.com/i.test(v),
+          resolve(v) {
+            const src = iframeSrc(v) || v.trim();
+            if (!/onedrive\.live\.com|officeapps\.live\.com|1drv\.ms|sharepoint\.com/i.test(src))
+              return err('Paste the full embed code from PowerPoint for the web.');
+            return ok(src);
+          }
+        },
+        {
+          id: 'keynote', name: 'Keynote', kind: 'link',
+          hint: 'Collaborate → Copy Link (Anyone / View only)',
+          placeholder: 'https://www.icloud.com/keynote/0abc...#My_Deck',
+          example: 'https://www.icloud.com/keynote/0demoKeynoteShareId#Quarterly_Review',
+          steps: [
+            'Click <b>Collaborate</b> and set access to <b>Anyone with the link · View only</b>.',
+            'Click <b>Copy Link</b>, then <b>Share</b> (keep collaboration on).',
+            'Paste the iCloud link here.'
+          ],
+          test: (v) => /icloud\.com\/keynote/i.test(v),
+          resolve(v) {
+            let u = iframeSrc(v) || v.trim();
+            if (!/icloud\.com\/keynote/i.test(u)) return err('That doesn\u2019t look like an iCloud Keynote link.');
+            u = u.split('#')[0].replace(/\?embed=true/i, '');
+            u += (u.includes('?') ? '&' : '?') + 'embed=true';
+            return ok(u);
+          }
+        },
+        {
+          id: 'figma', name: 'Figma Slides', kind: 'link',
+          hint: 'Copy the figma.com/slides or /deck link',
+          placeholder: 'https://www.figma.com/slides/AbCd.../Deck-Name',
+          example: 'https://www.figma.com/slides/DemoFileKey123/Product-Review',
+          steps: [
+            'Open your Figma Slides file and check <b>link sharing</b> is enabled.',
+            'Copy the file URL from the address bar (<b>/slides/</b> or <b>/deck/</b>).',
+            'Paste it here \u2014 we build the Embed Kit URL for you.'
+          ],
+          test: (v) => /figma\.com\/(slides|deck)/i.test(v),
+          resolve(v) {
+            let u = iframeSrc(v) || v.trim();
+            if (!/figma\.com\/(slides|deck)/i.test(u)) return err('That doesn\u2019t look like a Figma Slides link.');
+            u = u.replace(/https?:\/\/(www\.)?figma\.com/i, 'https://embed.figma.com');
+            u = u.split('#')[0].replace(/\?.*$/, '');
+            u += '?embed-host=classroomio';
+            return ok(u);
+          }
+        },
+        {
+          id: 'prezi', name: 'Prezi', kind: 'link',
+          hint: 'Share → Embed, or copy the view link',
+          placeholder: 'https://prezi.com/view/AbCd12345/',
+          example: 'https://prezi.com/view/demoPreziViewId/',
+          steps: [
+            'From the dashboard, open <b>Share</b> on your presentation.',
+            'Click <b>Embed</b> and copy the code (or copy the view link).',
+            'Paste it here \u2014 we append <b>/embed</b> automatically.'
+          ],
+          test: (v) => /prezi\.com\/(view|p)\//i.test(v) || /prezi\.com\/embed/i.test(v),
+          resolve(v) {
+            let u = iframeSrc(v) || v.trim();
+            if (/prezi\.com\/embed/i.test(u)) return ok(u);
+            if (!/prezi\.com\/(view|p)\//i.test(u)) return err('That doesn\u2019t look like a Prezi link.');
+            u = u.replace(/\/+$/, '').split('#')[0].split('?')[0];
+            return ok(u + '/embed');
+          }
+        },
+        {
+          id: 'pitch', name: 'Pitch', kind: 'code',
+          hint: 'Share externally → link → Copy embed code',
+          placeholder: '<iframe src="https://pitch.com/embed/..." ...></iframe>',
+          example: '<iframe src="https://pitch.com/embed/demo-pitch-public-id" width="640" height="360" allowfullscreen></iframe>',
+          steps: [
+            'Click <b>Share</b> → <b>Share externally</b> and create a link (enable public access).',
+            'Open the link\u2019s <b>Options (…)</b> and choose <b>Copy embed code</b>.',
+            'Paste the whole embed code here.'
+          ],
+          test: (v) => /pitch\.com\/(embed|public)/i.test(v),
+          resolve(v) {
+            let u = iframeSrc(v) || v.trim();
+            if (!/pitch\.com/i.test(u)) return err('Paste the embed code from Pitch (Share externally).');
+            u = u.replace(/pitch\.com\/public\//i, 'pitch.com/embed/');
+            return ok(u);
+          }
+        },
+        {
+          id: 'gamma', name: 'Gamma', kind: 'code',
+          hint: 'Share → enable public access → copy iframe',
+          placeholder: '<iframe src="https://gamma.app/embed/..." ...></iframe>',
+          example: '<iframe src="https://gamma.app/embed/demo-gamma-deck-id" width="700" height="450" allow="fullscreen"></iframe>',
+          steps: [
+            'Open <b>Share</b> and toggle <b>Allow public access</b>.',
+            'Copy the generated <b>iframe embed code</b>.',
+            'Paste the whole embed code here.'
+          ],
+          test: (v) => /gamma\.app\/(embed|docs)/i.test(v),
+          resolve(v) {
+            let u = iframeSrc(v) || v.trim();
+            if (!/gamma\.app/i.test(u)) return err('Paste the embed code from Gamma\u2019s Share menu.');
+            u = u.replace(/gamma\.app\/docs\//i, 'gamma.app/embed/');
+            return ok(u);
+          }
+        },
+        {
+          id: 'slideshare', name: 'SlideShare', kind: 'code',
+          hint: 'Below the deck → Share → Embed',
+          placeholder: '<iframe src="https://www.slideshare.net/slideshow/embed_code/key/..." ...></iframe>',
+          example: '<iframe src="https://www.slideshare.net/slideshow/embed_code/key/demoSlideShareKey" width="595" height="485" frameborder="0"></iframe>',
+          steps: [
+            'Open the public deck on <b>slideshare.net</b>.',
+            'Click <b>Share</b> under the viewer and open the <b>Embed</b> tab.',
+            'Copy the embed code and paste the whole &lt;iframe&gt; here.'
+          ],
+          test: (v) => /slideshare\.net/i.test(v),
+          resolve(v) {
+            const u = iframeSrc(v) || v.trim();
+            if (!/slideshare\.net\/(slideshow\/)?embed_code/i.test(u))
+              return err('Paste the SlideShare embed code (it contains /embed_code/).');
+            return ok(u);
+          }
+        },
+        {
+          id: 'beautiful', name: 'Beautiful.ai', kind: 'link',
+          hint: 'Sharing Settings → Public → Get Embed Code',
+          placeholder: 'https://www.beautiful.ai/player/-AbCd...',
+          example: 'https://www.beautiful.ai/player/-demoBeautifulAiId',
+          steps: [
+            'Open <b>Sharing Settings</b> and switch the deck to <b>Public</b>.',
+            'Click <b>Get Embed Code</b> (or copy the public player link).',
+            'Paste the link or embed code here.'
+          ],
+          test: (v) => /beautiful\.ai/i.test(v),
+          resolve(v) {
+            let u = iframeSrc(v) || v.trim();
+            if (!/beautiful\.ai/i.test(u)) return err('That doesn\u2019t look like a Beautiful.ai link.');
+            return ok(u);
+          }
+        }
+      ];
+
+      const byId = Object.fromEntries(PLATFORMS.map((p) => [p.id, p]));
+      function ok(src) { return { status: 'ok', src }; }
+      function err(message) { return { status: 'err', message }; }
+      function docsFor(p) { return DOCS + '#' + p.id; }
+
+      function detectPlatform(raw) {
+        if (!raw || !raw.trim()) return null;
+        return PLATFORMS.find((p) => p.test(raw)) || null;
+      }
+
+      // -------- shared preview renderer --------
+      function previewMarkup(p, res) {
+        if (!res || res.status === 'empty') {
+          return `<div class="preview"><div class="preview-16x9"><div class="preview-empty">
+            <div class="ring"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+            <div>Paste your ${p ? p.name : 'slide'} link to preview it here</div>
+          </div></div></div>`;
+        }
+        if (res.status === 'err') {
+          return `<div class="preview" style="border-color:#fecaca"><div class="preview-16x9"><div class="preview-empty" style="color:#b91c1c">
+            <div class="ring" style="border-color:#fecaca;color:#dc2626">${iconAlert()}</div>
+            <div style="max-width:320px">${res.message}</div>
+          </div></div></div>`;
+        }
+        const brand = PLAT[p.id].bg;
+        return `<div class="preview">
+          <div class="preview-16x9">
+            <div class="slide">
+              <div class="slide-topbar" style="background:${brand}">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span style="margin-left:4px">${p.name}</span>
+              </div>
+              <div class="slide-stage">
+                <div class="slide-card">
+                  <div class="slide-kicker" style="color:${p.id==='pitch'?'#131418':'var(--primary)'}">Embedded deck</div>
+                  <div class="slide-title">Q4 Product Review</div>
+                  <div class="bar w80"></div><div class="bar w60"></div><div class="bar w40"></div>
+                  <div class="slide-dots"><i></i><i></i><i></i><i></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="preview-foot">
+            <span class="status ok">${iconCheck()} Embed ready</span>
+            <span class="src grow" title="${res.src}">${res.src}</span>
+          </div>
+        </div>`;
+      }
+
+      /* =====================================================================
+       * Stage chrome (tabs) shared by every variant
+       * ===================================================================== */
+      function chrome(inner, subtitle) {
+        return `<div class="shell">
+          <nav class="app-tabs" aria-label="Lesson materials">
+            <button class="app-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>Video</button>
+            <button class="app-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Note <span class="count">1</span></button>
+            <button class="app-tab" data-current><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Slide</button>
+            <button class="app-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Docs</button>
+            <button class="app-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>Settings</button>
+          </nav>
+          <div class="panel">
+            <div class="panel-head">
+              <h1>Add a slide deck</h1>
+              <p>${subtitle}</p>
+            </div>
+            <div class="panel-body">${inner}</div>
+          </div>
+        </div>`;
+      }
+
+      /* =====================================================================
+       * VARIANT 1 — GALLERY (browse tiles → focus into per-platform input)
+       * ===================================================================== */
+      const Gallery = (() => {
+        let selected = null;
+        function tiles() {
+          return `<div class="g-grid">` + PLATFORMS.map((p, i) =>
+            `<button class="g-tile" data-pick="${p.id}" style="animation-delay:${i * 28}ms">
+              ${badge(p.id, 40)}
+              <div>
+                <div class="g-name">${p.name}</div>
+                <div class="g-kind">${p.kind === 'code' ? 'Paste embed code' : 'Paste share link'}</div>
+              </div>
+            </button>`).join('') + `</div>`;
+        }
+        function detail(p) {
+          return `<div class="g-detail">
+            <button class="g-back" data-back>${iconBack()} All platforms</button>
+            <div class="g-detail-head">
+              ${badge(p.id, 48)}
+              <div><h2>${p.name}</h2><div class="sub">${p.hint}</div></div>
+            </div>
+            <div class="g-detail-grid">
+              <div>
+                <label class="field-label" for="g-input">${p.kind === 'code' ? 'Embed code' : 'Share link'}</label>
+                ${p.kind === 'code'
+                  ? `<textarea id="g-input" class="textarea" placeholder="${escapeHtml(p.placeholder)}"></textarea>`
+                  : `<input id="g-input" class="input" placeholder="${escapeHtml(p.placeholder)}" />`}
+                <div class="help" id="g-help">${p.hint}.</div>
+                <div class="row" style="margin-top:16px">
+                  <a class="btn btn-sm" href="${docsFor(p)}" target="_blank" rel="noopener">${iconExternal()} How to embed ${p.name}</a>
+                  <button class="btn btn-sm btn-ghost" data-fill>Use an example</button>
+                </div>
+              </div>
+              <div>
+                <div class="field-label">Live preview</div>
+                <div id="g-preview">${previewMarkup(p, { status: 'empty' })}</div>
+              </div>
+            </div>
+          </div>`;
+        }
+        return {
+          render() {
+            return chrome(selected ? detail(byId[selected]) : tiles(),
+              selected ? 'Paste your link and preview it before saving.'
+                       : 'Pick where your slides live \u2014 we\u2019ll show you exactly what to paste.');
+          },
+          init(root) {
+            root.querySelectorAll('[data-pick]').forEach((el) =>
+              el.addEventListener('click', () => { selected = el.dataset.pick; remount(); }));
+            const back = root.querySelector('[data-back]');
+            if (back) back.addEventListener('click', () => { selected = null; remount(); });
+            const input = root.querySelector('#g-input');
+            if (input) {
+              const p = byId[selected];
+              const preview = root.querySelector('#g-preview');
+              const update = () => {
+                const raw = input.value;
+                const res = raw.trim() ? p.resolve(raw) : { status: 'empty' };
+                preview.innerHTML = previewMarkup(p, res);
+              };
+              input.addEventListener('input', update);
+              const fill = root.querySelector('[data-fill]');
+              if (fill) fill.addEventListener('click', () => { input.value = p.example; update(); input.focus(); });
+            }
+          }
+        };
+      })();
+
+      /* =====================================================================
+       * VARIANT 2 — COMMAND BAR (paste first → auto-detect → preview)
+       * ===================================================================== */
+      const Command = (() => {
+        return {
+          render() {
+            return chrome(`<div class="c-wrap">
+              <div class="eyebrow">Smart paste</div>
+              <label class="field-label" for="c-input">Paste a share link or embed code</label>
+              <div class="c-inputwrap">
+                <textarea id="c-input" class="textarea c-textarea" placeholder="Paste anything from Google Slides, Canva, PowerPoint, Figma\u2026 we\u2019ll figure out the rest."></textarea>
+              </div>
+              <div id="c-result"></div>
+              <div class="c-legend">
+                <div class="lbl">Works with</div>
+                <div class="c-logos">` +
+                  PLATFORMS.map((p) => `<button class="c-logo" data-ex="${p.id}">${badge(p.id, 22)} ${p.name}</button>`).join('') +
+                `</div>
+              </div>
+            </div>`, 'One field. Paste your deck and we detect the platform automatically.');
+          },
+          init(root) {
+            const input = root.querySelector('#c-input');
+            const result = root.querySelector('#c-result');
+            const update = () => {
+              const raw = input.value;
+              if (!raw.trim()) { result.innerHTML = ''; return; }
+              const p = detectPlatform(raw);
+              if (!p) {
+                result.innerHTML = `<div class="c-detected" style="border-color:#fde68a;background:#fffbeb">
+                  <span class="status" style="color:#b45309">${iconAlert()}</span>
+                  <div class="meta grow"><b>Platform not recognized yet</b><span class="l">Check the supported list below, or see all platforms in the docs.</span></div>
+                  <a class="btn btn-sm" href="${DOCS}" target="_blank" rel="noopener">${iconExternal()} Docs</a>
+                </div>`;
+                return;
+              }
+              const res = p.resolve(raw);
+              result.innerHTML = `<div class="c-detected">
+                ${badge(p.id, 34)}
+                <div class="meta grow"><b>${p.name} detected</b>
+                  <span class="l">${res.status === 'ok' ? 'Ready to embed \u2014 preview below.' : res.message}</span>
+                </div>
+                <a class="btn btn-sm btn-ghost" href="${docsFor(p)}" target="_blank" rel="noopener">${iconExternal()} ${p.name} guide</a>
+              </div>
+              <div style="margin-top:16px">${previewMarkup(p, res)}</div>`;
+            };
+            input.addEventListener('input', update);
+            root.querySelectorAll('[data-ex]').forEach((el) =>
+              el.addEventListener('click', () => { input.value = byId[el.dataset.ex].example; update(); input.focus(); }));
+          }
+        };
+      })();
+
+      /* =====================================================================
+       * VARIANT 3 — GUIDED (searchable rail + step-by-step instructions)
+       * ===================================================================== */
+      const Guided = (() => {
+        let selected = null;
+        let query = '';
+        function listItems() {
+          const q = query.trim().toLowerCase();
+          const items = PLATFORMS.filter((p) => p.name.toLowerCase().includes(q));
+          if (!items.length) return `<div style="padding:14px;color:var(--muted-foreground);font-size:13px">No matches</div>`;
+          return items.map((p) =>
+            `<button class="w-item" data-sel-id="${p.id}" ${p.id === selected ? 'data-sel' : ''}>
+              ${badge(p.id, 26)} ${p.name}
+            </button>`).join('');
+        }
+        function pane() {
+          if (!selected) {
+            return `<div class="w-empty">
+              <div style="width:52px;height:52px;border-radius:14px;border:2px dashed var(--border-strong);display:grid;place-items:center;color:var(--border-strong)">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+              <div>Pick a platform to see step-by-step<br/>instructions and paste your link.</div>
+            </div>`;
+          }
+          const p = byId[selected];
+          return `<div class="w-content">
+            <div class="g-detail-head">
+              ${badge(p.id, 44)}
+              <div><h2 style="font-size:16px;margin:0">${p.name}</h2><div class="sub">${p.kind === 'code' ? 'Needs the full embed code' : 'Needs a public share link'}</div></div>
+            </div>
+            <div class="eyebrow">How to get your embed link</div>
+            <ol class="w-steps">${p.steps.map((s, i) =>
+              `<li style="animation-delay:${i * 55}ms"><span class="n">${i + 1}</span><span class="tx">${s}</span></li>`).join('')}</ol>
+            <label class="field-label" for="w-input">${p.kind === 'code' ? 'Paste embed code' : 'Paste share link'}</label>
+            ${p.kind === 'code'
+              ? `<textarea id="w-input" class="textarea" placeholder="${escapeHtml(p.placeholder)}"></textarea>`
+              : `<input id="w-input" class="input" placeholder="${escapeHtml(p.placeholder)}" />`}
+            <div class="row" style="margin:12px 0 18px">
+              <a class="btn btn-sm" href="${docsFor(p)}" target="_blank" rel="noopener">${iconExternal()} Open ${p.name} docs</a>
+              <button class="btn btn-sm btn-ghost" data-fill>Use an example</button>
+            </div>
+            <div class="field-label">Live preview</div>
+            <div id="w-preview">${previewMarkup(p, { status: 'empty' })}</div>
+          </div>`;
+        }
+        return {
+          render() {
+            return chrome(`<div class="panel" style="box-shadow:none;border-radius:13px;overflow:hidden;margin:-4px 0">
+              <div class="w-grid">
+                <div class="w-rail">
+                  <div class="w-search">${iconSearch()}<input id="w-search" placeholder="Search platforms" value="${escapeHtml(query)}" /></div>
+                  <div class="w-list" id="w-list">${listItems()}</div>
+                </div>
+                <div class="w-pane" id="w-pane">${pane()}</div>
+              </div>
+            </div>`, 'A guided path \u2014 search, follow the steps, paste, done.');
+          },
+          init(root) {
+            const search = root.querySelector('#w-search');
+            const list = root.querySelector('#w-list');
+            const paneEl = root.querySelector('#w-pane');
+            function wireList() {
+              list.querySelectorAll('[data-sel-id]').forEach((el) =>
+                el.addEventListener('click', () => { selected = el.dataset.selId; paneEl.innerHTML = pane(); wirePane(); syncSel(); }));
+            }
+            function syncSel() {
+              list.querySelectorAll('[data-sel-id]').forEach((el) =>
+                el.toggleAttribute('data-sel', el.dataset.selId === selected));
+            }
+            function wirePane() {
+              const input = paneEl.querySelector('#w-input');
+              if (!input) return;
+              const p = byId[selected];
+              const preview = paneEl.querySelector('#w-preview');
+              const update = () => {
+                const raw = input.value;
+                preview.innerHTML = previewMarkup(p, raw.trim() ? p.resolve(raw) : { status: 'empty' });
+              };
+              input.addEventListener('input', update);
+              const fill = paneEl.querySelector('[data-fill]');
+              if (fill) fill.addEventListener('click', () => { input.value = p.example; update(); input.focus(); });
+            }
+            search.addEventListener('input', () => {
+              query = search.value;
+              list.innerHTML = listItems();
+              wireList();
+            });
+            // keep caret focus stable after re-render
+            search.addEventListener('keyup', () => {});
+            wireList();
+            wirePane();
+          }
+        };
+      })();
+
+      function escapeHtml(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      /* =====================================================================
+       * Picker wiring (behavior per PICKER.md, expressed with an init hook)
+       * ===================================================================== */
+      const variants = [Gallery, Command, Guided];
+      const stage = document.getElementById('stage');
+      const picker = document.querySelector('.proto-picker');
+      const highlight = picker.querySelector('.proto-picker-highlight');
+      const items = [...picker.querySelectorAll('.proto-picker-item:not(.proto-picker-replay)')];
+      const replay = picker.querySelector('.proto-picker-replay');
+      let current = 0;
+
+      function moveHighlight() {
+        const el = items[current];
+        highlight.style.width = el.offsetWidth + 'px';
+        highlight.style.transform = `translateX(${el.offsetLeft}px)`;
+      }
+      function mount(i) {
+        stage.innerHTML = '';
+        requestAnimationFrame(() => {
+          stage.innerHTML = variants[i].render();
+          variants[i].init(stage);
+        });
+      }
+      function remount() { // used by variants that hold internal state
+        stage.innerHTML = variants[current].render();
+        variants[current].init(stage);
+      }
+      function setActive(i) {
+        if (i < 0 || i >= variants.length) return;
+        current = i;
+        items.forEach((el, j) => {
+          el.toggleAttribute('data-active', j === i);
+          if (j === i) el.setAttribute('aria-current', 'true');
+          else el.removeAttribute('aria-current');
+        });
+        moveHighlight();
+        const url = new URL(location);
+        url.searchParams.set('v', i + 1);
+        history.replaceState(null, '', url);
+        mount(i);
+      }
+
+      items.forEach((el, i) => el.addEventListener('click', () => setActive(i)));
+      replay?.addEventListener('click', () => mount(current));
+      window.addEventListener('resize', moveHighlight);
+      document.addEventListener('keydown', (e) => {
+        if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable) return;
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        const num = parseInt(e.key, 10);
+        if (num >= 1 && num <= variants.length) setActive(num - 1);
+        else if (e.key === 'ArrowRight') setActive((current + 1) % variants.length);
+        else if (e.key === 'ArrowLeft') setActive((current - 1 + variants.length) % variants.length);
+        else if (e.key === 'r' || e.key === 'R') mount(current);
+      });
+
+      setActive((parseInt(new URLSearchParams(location.search).get('v'), 10) || 1) - 1);
+      requestAnimationFrame(() => requestAnimationFrame(() => picker.setAttribute('data-ready', '')));
+    </script>
+  </body>
+</html>
