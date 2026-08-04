@@ -10,7 +10,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import type { Feed } from '$features/course/utils/types';
-  import PinIcon from '@lucide/svelte/icons/pin';
+
   import { onMount } from 'svelte';
   import type { AccountOrg } from '$features/app/types';
   import Empty from '@cio/ui/custom/empty/empty.svelte';
@@ -44,8 +44,8 @@
     avatarUrl: $profile.avatarUrl || ''
   });
 
-  const deleteComment = async (feedId: string, commentId: string) => {
-    await newsfeedApi.deleteComment(courseId, feedId, commentId);
+  const deleteComment = async (feedId: string, commentId: string, parentId?: number) => {
+    await newsfeedApi.deleteComment(courseId, feedId, commentId, parentId);
   };
 
   const addNewReaction = async (reactionType: NewsfeedReactionType, feedId: string, authorId: string) => {
@@ -69,8 +69,13 @@
     }
   };
 
-  const addNewComment = async (comment: string, feedId: string) => {
-    await newsfeedApi.createComment(courseId, feedId, comment, author);
+  const addNewComment = async (
+    comment: string,
+    feedId: string,
+    parentId?: number,
+    replyTo?: { commentId: number; authorFullname: string }
+  ) => {
+    await newsfeedApi.createComment(courseId, feedId, comment, author, parentId, replyTo);
 
     if (!newsfeedApi.success) {
       return snackbar.error('snackbar.course.error.commenting_error');
@@ -96,12 +101,12 @@
     await newsfeedApi.delete(courseId, id);
   };
 
-  const sortedFeeds = $derived.by(() => {
-    return [...newsfeedApi.feeds].sort((a, b) => {
-      const aPinned = (a as any).isPinned || (a as any).is_pinned || false;
-      const bPinned = (b as any).isPinned || (b as any).is_pinned || false;
-      return Number(bPinned) - Number(aPinned);
-    });
+  const pinnedFeeds = $derived.by(() => {
+    return newsfeedApi.feeds.filter((feed) => feed.isPinned);
+  });
+
+  const unpinnedFeeds = $derived.by(() => {
+    return newsfeedApi.feeds.filter((feed) => !feed.isPinned);
   });
 
   function getPageRoles(org: AccountOrg) {
@@ -138,7 +143,7 @@
       <NewsFeedLoader />
       <NewsFeedLoader />
     </div>
-  {:else if !sortedFeeds.length}
+  {:else if !pinnedFeeds.length && !unpinnedFeeds.length}
     <Empty
       title={$t('course.navItem.news_feed.body_header')}
       description={$t('course.navItem.news_feed.body_content')}
@@ -146,29 +151,57 @@
       variant="page"
     />
   {:else}
-    {#each sortedFeeds as feed}
-      {#if feed.isPinned}
-        <div class="flex items-center gap-2">
-          <PinIcon size={16} class="filled" />
+    {#if pinnedFeeds.length > 0}
+      <div class="text-muted-foreground mb-1.5 flex items-center gap-1.5">
+        <span class="text-xs font-medium tracking-wider uppercase">
+          {$t('course.navItem.news_feed.pinned') || 'Pinned'}
+        </span>
+      </div>
+      {#each pinnedFeeds as feed (feed.id)}
+        <NewsFeedCard
+          {feed}
+          comments={newsfeedApi.commentsByFeedId[feed.id]}
+          {courseId}
+          {deleteFeed}
+          {addNewComment}
+          {deleteComment}
+          {addNewReaction}
+          {onPin}
+          {author}
+          bind:edit
+          bind:editFeed
+          isActive={feedId === feed.id}
+          isReacting={Boolean(isReactingByFeedId[feed.id])}
+        />
+      {/each}
+    {/if}
 
-          <p class="text-sm">{$t('course.navItem.news_feed.pinned')}</p>
-        </div>
-      {/if}
-      <NewsFeedCard
-        {feed}
-        comments={newsfeedApi.commentsByFeedId[feed.id]}
-        {courseId}
-        {deleteFeed}
-        {addNewComment}
-        {deleteComment}
-        {addNewReaction}
-        {onPin}
-        {author}
-        bind:edit
-        bind:editFeed
-        isActive={feedId === feed.id}
-        isReacting={Boolean(isReactingByFeedId[feed.id])}
-      />
-    {/each}
+    {#if pinnedFeeds.length > 0 && unpinnedFeeds.length > 0}
+      <div class="text-muted-foreground mb-1.5 flex items-center gap-1.5">
+        <span class="text-xs font-medium tracking-wider uppercase">
+          {$t('course.navItem.news_feed.other_posts')}
+        </span>
+      </div>
+    {/if}
+
+    {#if unpinnedFeeds.length > 0}
+      {#each unpinnedFeeds as feed (feed.id)}
+        <NewsFeedCard
+          {feed}
+          comments={newsfeedApi.commentsByFeedId[feed.id]}
+          {courseId}
+          {deleteFeed}
+          {addNewComment}
+          {deleteComment}
+          {addNewReaction}
+          {onPin}
+          {author}
+          bind:edit
+          bind:editFeed
+          isActive={feedId === feed.id}
+          isReacting={Boolean(isReactingByFeedId[feed.id])}
+        />
+      {/each}
+    {/if}
   {/if}
 </RoleBasedSecurity>

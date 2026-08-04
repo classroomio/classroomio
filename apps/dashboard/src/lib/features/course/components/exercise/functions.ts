@@ -1,6 +1,11 @@
 import { getQuestionAnswerKey, getQuestionTypeKey, questionTypeSupportsOptions } from './question-type-utils';
 
-import { QUESTION_TYPE_KEY, resolveTrueFalseCorrectValue, syncTrueFalseOptions } from '@cio/question-types';
+import {
+  QUESTION_TYPE_KEY,
+  normalizeThumbsQuestion,
+  resolveTrueFalseCorrectValue,
+  syncTrueFalseOptions
+} from '@cio/question-types';
 import type { Question } from '$features/course/types';
 import type { QuestionnaireMetaData } from './store';
 import type { TExerciseUpdate } from '@cio/utils/validation/exercise';
@@ -170,6 +175,25 @@ export function transformQuestionsToApiFormat(
         order: typeof (q as { order?: number }).order === 'number' ? (q as { order: number }).order : index + 1,
         settings: { ...(settings ?? {}), correctValue },
         options: syncTrueFalseOptions(formattedOptions, correctValue),
+        ...(shouldIncludeDeleted && q.deletedAt ? { deletedAt: q.deletedAt } : {})
+      };
+    }
+
+    if (questionTypeKey === QUESTION_TYPE_KEY.THUMBS) {
+      const normalized = normalizeThumbsQuestion({
+        settings,
+        options: formattedOptions
+      });
+
+      return {
+        id: normalizeId(q.id),
+        question: q.title,
+        points: q.points || 0,
+        questionTypeId: q.questionTypeId,
+        exerciseSectionId: q.exerciseSectionId ?? null,
+        order: typeof (q as { order?: number }).order === 'number' ? (q as { order: number }).order : index + 1,
+        settings: normalized.settings,
+        options: normalized.options,
         ...(shouldIncludeDeleted && q.deletedAt ? { deletedAt: q.deletedAt } : {})
       };
     }

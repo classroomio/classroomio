@@ -1256,6 +1256,9 @@ importers:
 
   packages/mcp:
     dependencies:
+      '@cio/question-types':
+        specifier: workspace:*
+        version: link:../question-types
       '@cio/utils':
         specifier: workspace:*
         version: link:../utils

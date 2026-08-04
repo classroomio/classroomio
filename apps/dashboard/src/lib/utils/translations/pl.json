@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Odśwież",
     "unsaved_changes": {
-      "message": "Masz niezapisane zmiany. Czy na pewno chcesz wyjść?"
-    }
+      "message": "Masz niezapisane zmiany. Czy na pewno chcesz wyjść?",
+      "label": "Niezapisane zmiany"
+    },
+    "discard": "Odrzuć",
+    "save_changes": "Zapisz zmiany"
   },
   "validations": {
     "generic": {
@@ -321,6 +324,7 @@
       "creating_new": "Tworzenie nowych tłumaczeń nie powiodło się"
     },
     "exercise": {
+      "validation_errors": "Popraw wszystkie błędy walidacji przed zapisaniem.",
       "points_required_auto_grade": "Ustaw dodatnią liczbę punktów dla każdego pytania przed zapisaniem.",
       "success": "Zapisano pomyślnie",
       "submission_updated": "Zgłoszenie zaktualizowane do",
@@ -1517,6 +1521,7 @@
                 "multiple": "Wiele odpowiedzi",
                 "paragraph": "Akapit",
                 "true_false": "Prawda/Fałsz",
+                "thumbs": "Kciuk w górę/w dół",
                 "short_answer": "Krótka odpowiedź",
                 "numeric": "Odpowiedź numeryczna",
                 "fill_blank": "Wypełnij puste miejsce",
@@ -1703,6 +1708,17 @@
                 },
                 "edit": {
                   "correct_answer_label": "Prawidłowa odpowiedź"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Tak",
+                "no_label": "Nie",
+                "edit": {
+                  "positive_option_label": "Etykieta kciuka w górę",
+                  "negative_option_label": "Etykieta kciuka w dół"
+                },
+                "preview": {
+                  "helper": "Otwarte — uczniowie wybierają kciuk w górę lub w dół."
                 }
               },
               "checkbox": {
@@ -1991,6 +2007,8 @@
               "cancel_upload": "Anuluj przesyłanie",
               "upload_cancelled": "Przesyłanie anulowane przez użytkownika",
               "downloading": "Pobieram...",
+              "download_success": "Dokument pobrano pomyślnie",
+              "download_error": "Nie udało się pobrać dokumentu",
               "view_pdf": "Zobacz PDF",
               "remove_document": "Usuń dokument",
               "delete": "Usuń",
@@ -2000,7 +2018,11 @@
               "failed_to_render_pdf": "Nie udało się wyrenderować strony PDF",
               "use_arrow_keys": "Użyj klawiszy strzałek do nawigacji, +/-, aby powiększyć, lub kliknij elementy sterujące powyżej. Kliknięcie prawym przyciskiem myszy jest wyłączone.",
               "empty_title": "Nie ma jeszcze dokumentów",
-              "empty_description": "Prześlij dokumenty, aby udostępnić je swoim uczniom"
+              "empty_description": "Prześlij dokumenty, aby udostępnić je swoim uczniom",
+              "attachments_heading": "Załączniki",
+              "file_count": "{count, plural, one {# plik} few {# pliki} many {# plików} other {# plika}}",
+              "view_file": "Wyświetl plik",
+              "reorder_file": "Zmień kolejność pliku"
             },
             "video": {
               "title": "Wideo",
@@ -2260,13 +2282,32 @@
           "hide": "Ukryj komentarze",
           "placeholder": "Dodaj komentarz do zajęć",
           "submit_aria": "Prześlij komentarz",
-          "delete": "Usuń"
+          "delete": "Usuń",
+          "reply": "Odpowiedz",
+          "replying_to": "Odpowiadanie na @{name}",
+          "cancel_reply": "Anuluj",
+          "view_replies": "Wyświetl {count} {count, plural, =1 {odpowiedź} inne {replies}}",
+          "hide_replies": "Ukryj odpowiedzi",
+          "view_more": "Wyświetl więcej komentarzy ({count})",
+          "loading": "Ładowanie...",
+          "save": "Zapisz",
+          "saving": "Zapisywanie...",
+          "send": "Wyślij",
+          "load_more_replies": "Załaduj więcej odpowiedzi"
         },
         "card": {
           "pin": "Przypnij",
           "unpin": "Odepnij",
           "edit": "Edytuj",
           "delete": "Usuń"
+        },
+        "other_posts": "Inne posty",
+        "user": "Użytkownik",
+        "delete_modal": {
+          "title": "Usuń kanał",
+          "description": "Czy na pewno chcesz usunąć ten kanał?",
+          "no": "Nie",
+          "yes": "Tak"
         }
       },
       "compliance": {
@@ -2572,6 +2613,7 @@
       "most_lessons": "Lekcje: od największej liczby",
       "fewest_lessons": "Lekcje: od najmniejszej liczby",
       "date_created": "Data utworzenia",
+      "last_updated_at": "Ostatnia aktualizacja",
       "published": "Opublikowano",
       "lessons": "Lekcje"
     },

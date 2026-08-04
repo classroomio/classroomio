@@ -77,7 +77,7 @@
   }
 </script>
 
-<Field.Group class="space-y-6">
+<Field.Group class="min-w-0 space-y-6 overflow-x-hidden">
   <Field.Set>
     <Field.Legend>{$t('settings.landing_page.editor.sections.embed')}</Field.Legend>
 
@@ -112,7 +112,7 @@
             />
           </div>
           <Textarea
-            class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y"
+            class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y ui:break-all ui:overflow-x-auto"
             value={settings.embed.description ?? ''}
             placeholder={$t('settings.landing_page.editor.embed.description_placeholder')}
             oninput={(event) => setter(event.currentTarget.value, 'embed.description')}
@@ -123,7 +123,7 @@
           <Field.Label>{$t('settings.landing_page.editor.embed.code')}</Field.Label>
           <Field.Description>{$t('settings.landing_page.editor.embed.code_description')}</Field.Description>
           <Textarea
-            class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y"
+            class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y ui:break-all ui:overflow-x-auto"
             value={settings.embed.code}
             placeholder={$t('settings.landing_page.editor.embed.code_placeholder')}
             oninput={(event) => setter(event.currentTarget.value, 'embed.code')}

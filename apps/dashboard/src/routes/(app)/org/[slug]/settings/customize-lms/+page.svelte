@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte';
   import { CustomizeLmsPage } from '$features/settings/pages';
-  import { settingsHeaderAction } from '$features/settings/utils/store';
+  import { t } from '$lib/utils/functions/translations';
+  import * as Page from '@cio/ui/base/page';
 
   let customizeLmsComponent: CustomizeLmsPage | null = $state(null);
   let isSaving = $state(false);
+  let hasUnsavedChanges = $state(false);
 
   async function handleSave() {
     isSaving = true;
@@ -15,27 +16,22 @@
     }
   }
 
-  $effect(() => {
-    settingsHeaderAction.set({
-      label: 'Save',
-      disabled: isSaving,
-      loading: isSaving,
-      onClick: handleSave
-    });
-  });
-
-  onDestroy(() => {
-    settingsHeaderAction.set({
-      label: 'Save',
-      disabled: true,
-      loading: false,
-      onClick: null
-    });
-  });
+  function handleDiscard() {
+    customizeLmsComponent?.handleDiscard();
+  }
 </script>
 
 <svelte:head>
   <title>Customize LMS - ClassroomIO</title>
 </svelte:head>
 
-<CustomizeLmsPage bind:this={customizeLmsComponent} />
+<CustomizeLmsPage bind:this={customizeLmsComponent} bind:hasUnsavedChanges />
+<Page.SettingsActions
+  hasChanges={hasUnsavedChanges}
+  loading={isSaving}
+  statusLabel={$t('common.unsaved_changes.label')}
+  discardLabel={$t('common.discard')}
+  saveLabel={$t('common.save_changes')}
+  onSave={handleSave}
+  onDiscard={handleDiscard}
+/>

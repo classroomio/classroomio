@@ -28,7 +28,7 @@ export const FORBID_ATTR = [
   'onunload'
 ] as const;
 
-export const ADD_ATTR = ['data-type', 'data-latex', 'colwidth', 'target', 'rel'] as const;
+export const ADD_ATTR = ['data-type', 'data-latex', 'colwidth', 'target', 'rel', 'data-comment-id'] as const;
 
 export const ALLOWED_URI_REGEXP =
   /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i;

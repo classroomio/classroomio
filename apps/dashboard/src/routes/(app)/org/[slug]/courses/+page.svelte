@@ -156,6 +156,13 @@
           ? new Date(a.createdAt ?? '').getTime() - new Date(b.createdAt ?? '').getTime()
           : new Date(b.createdAt ?? '').getTime() - new Date(a.createdAt ?? '').getTime()
       );
+    } else if (sortKey === CourseSortBy.LastUpdatedAt) {
+      return sortedCourses.sort((a, b) => {
+        const aUpdatedAt = new Date(a.updatedAt ?? a.createdAt ?? '').getTime();
+        const bUpdatedAt = new Date(b.updatedAt ?? b.createdAt ?? '').getTime();
+
+        return selectedOrder === CourseSortOrder.Asc ? aUpdatedAt - bUpdatedAt : bUpdatedAt - aUpdatedAt;
+      });
     } else if (sortKey === CourseSortBy.Published) {
       return sortedCourses.sort((a, b) =>
         selectedOrder === CourseSortOrder.Asc
