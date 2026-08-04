@@ -321,6 +321,13 @@ function preprocessCourseMetadata(value: unknown): unknown {
     metadata.allowNewStudent = true;
   }
 
+  if (metadata.discount === '' || metadata.discount === null) {
+    metadata.discount = undefined;
+  } else if (metadata.discount !== undefined) {
+    const parsedDiscount = Number(metadata.discount);
+    metadata.discount = Number.isFinite(parsedDiscount) ? parsedDiscount : undefined;
+  }
+
   return metadata;
 }
 

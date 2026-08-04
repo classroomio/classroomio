@@ -18,10 +18,25 @@
 
   let { course = $bindable(), setter }: Props = $props();
 
-  let discount = $derived(get(course, 'metadata.discount', 0));
-  let paymentLink = $derived(get(course, 'metadata.paymentLink', ''));
-  let showDiscount = $derived(get(course, 'metadata.showDiscount', false));
-  let giftToggled = $derived(get(course, 'metadata.reward.show', false));
+  function parseMetadataDiscount(value: unknown): number {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return value;
+    }
+
+    if (typeof value === 'string' && value.trim()) {
+      const parsed = Number(value);
+      if (Number.isFinite(parsed)) {
+        return parsed;
+      }
+    }
+
+    return 0;
+  }
+
+  let paymentLink = $state(get(course, 'metadata.paymentLink', '') as string);
+  let showDiscount = $state(Boolean(get(course, 'metadata.showDiscount', false)));
+  let discount = $state(parseMetadataDiscount(get(course, 'metadata.discount', 0)));
+  let giftToggled = $state(Boolean(get(course, 'metadata.reward.show', false)));
 
   function handleChange(content: string) {
     setter(content, 'metadata.reward.description');
@@ -34,7 +49,7 @@
     setter(paymentLink, 'metadata.paymentLink');
   });
   $effect(() => {
-    setter(discount, 'metadata.discount');
+    setter(parseMetadataDiscount(discount), 'metadata.discount');
   });
   $effect(() => {
     setter(giftToggled, 'metadata.reward.show');
