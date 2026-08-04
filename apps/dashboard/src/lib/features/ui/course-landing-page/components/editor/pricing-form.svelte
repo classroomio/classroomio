@@ -7,6 +7,7 @@
   import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { isCourseFree } from '$lib/utils/functions/course';
+  import { toFiniteNumber } from '@cio/utils/functions';
 
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextEditor } from '$features/ui';
@@ -18,24 +19,9 @@
 
   let { course = $bindable(), setter }: Props = $props();
 
-  function parseMetadataDiscount(value: unknown): number {
-    if (typeof value === 'number' && Number.isFinite(value)) {
-      return value;
-    }
-
-    if (typeof value === 'string' && value.trim()) {
-      const parsed = Number(value);
-      if (Number.isFinite(parsed)) {
-        return parsed;
-      }
-    }
-
-    return 0;
-  }
-
   let paymentLink = $state(get(course, 'metadata.paymentLink', '') as string);
   let showDiscount = $state(Boolean(get(course, 'metadata.showDiscount', false)));
-  let discount = $state(parseMetadataDiscount(get(course, 'metadata.discount', 0)));
+  let discount = $state(toFiniteNumber(get(course, 'metadata.discount', 0)) ?? 0);
   let giftToggled = $state(Boolean(get(course, 'metadata.reward.show', false)));
 
   function handleChange(content: string) {
@@ -49,7 +35,7 @@
     setter(paymentLink, 'metadata.paymentLink');
   });
   $effect(() => {
-    setter(parseMetadataDiscount(discount), 'metadata.discount');
+    setter(toFiniteNumber(discount) ?? 0, 'metadata.discount');
   });
   $effect(() => {
     setter(giftToggled, 'metadata.reward.show');
