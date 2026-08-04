@@ -256,7 +256,7 @@
         type="button"
         onclick={clearSearch}
         class="ui:text-muted-foreground ui:hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
-        aria-label="Clear search"
+        aria-label={$t('public_courses.filters.clear_search')}
       >
         <XIcon class="ui:size-4" />
       </button>

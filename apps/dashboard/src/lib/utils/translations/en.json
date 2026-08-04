@@ -1302,6 +1302,7 @@
       "pricing_paid": "Paid",
       "empty": "No tags available yet",
       "search_placeholder": "Search courses...",
+      "clear_search": "Clear search",
       "selected": "Selected:",
       "save_changes": "Save Changes"
     },
