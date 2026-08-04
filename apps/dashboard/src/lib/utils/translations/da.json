@@ -2007,6 +2007,8 @@
               "cancel_upload": "Annuller upload",
               "upload_cancelled": "Upload annulleret af brugeren",
               "downloading": "Downloader...",
+              "download_success": "Dokument downloadet",
+              "download_error": "Kunne ikke downloade dokumentet",
               "view_pdf": "Se PDF",
               "remove_document": "Fjern dokumentet",
               "delete": "Slet",
@@ -2016,7 +2018,11 @@
               "failed_to_render_pdf": "Kunne ikke gengive PDF-siden",
               "use_arrow_keys": "Brug piletasterne til at navigere, +/- for at zoome, eller klik på kontrollerne ovenfor. Højreklik er deaktiveret.",
               "empty_title": "Ingen dokumenter endnu",
-              "empty_description": "Upload dokumenter for at dele med dine elever"
+              "empty_description": "Upload dokumenter for at dele med dine elever",
+              "attachments_heading": "Vedhæftede filer",
+              "file_count": "{count, plural, one {# fil} other {# filer}}",
+              "view_file": "Vis fil",
+              "reorder_file": "Omarranger fil"
             },
             "video": {
               "title": "Video",

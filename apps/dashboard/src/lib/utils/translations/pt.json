@@ -2007,6 +2007,8 @@
               "cancel_upload": "Cancelar upload",
               "upload_cancelled": "Upload cancelado pelo usuário",
               "downloading": "Baixando...",
+              "download_success": "Documento baixado com sucesso",
+              "download_error": "Falha ao baixar o documento",
               "view_pdf": "Ver PDF",
               "remove_document": "Remover documento",
               "delete": "Excluir",
@@ -2016,7 +2018,11 @@
               "failed_to_render_pdf": "Falha ao renderizar a página PDF",
               "use_arrow_keys": "Use as teclas de seta para navegar, +/- para ampliar ou clique nos controles acima. O clique com o botão direito está desativado.",
               "empty_title": "Ainda não há documentos",
-              "empty_description": "Faça upload de documentos para compartilhar com seus alunos"
+              "empty_description": "Faça upload de documentos para compartilhar com seus alunos",
+              "attachments_heading": "Anexos",
+              "file_count": "{count, plural, one {# arquivo} other {# arquivos}}",
+              "view_file": "Ver arquivo",
+              "reorder_file": "Reordenar arquivo"
             },
             "video": {
               "title": "Vídeo",

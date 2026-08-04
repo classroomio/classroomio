@@ -58,6 +58,27 @@ Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow abov
   org.limits = { students: toResourceUsage(studentsUsed, studentsLimit) };
   ```
 
+## Persisted columns store data, not presentation
+
+A user-content column (`content`, `body`, `description`, …) stores what the author typed and nothing else. Check this **at the write site** — the component or service building the value — not at the schema.
+
+Never write into such a column:
+
+- **Presentational markup** — wrapper elements, Tailwind classes, inline styles. Render that in a component instead.
+- **Localized strings** — copy baked in at write time can never be re-translated, and it freezes the author's locale for every future reader.
+- **Copied values from another row** — a quoted snippet, an author name, a title. Store the relationship (a real FK column) and join or derive the display value at render time, so it stays correct when the source row is edited or deleted.
+
+```ts
+// ❌ don't — markup, English copy and a copy of the parent all land in the column
+const quote = `<blockquote class="...">Replying to @${target.fullname}"${target.snippet}"</blockquote>`;
+await createComment(`${quote}${text}`, parentId);
+
+// ✅ do — persist the relationship, render the label from live data
+await createComment(text, parentId, target.commentId);
+```
+
+The tell that this went wrong: an edit form shows raw markup, because the markup *is* the content.
+
 ## Creating a New Route
 
 ### Step 1: Validation Schema
@@ -409,6 +430,37 @@ When cleanup or reset must follow a specific lifecycle moment, use the matching 
 ### Server-Side API Calls
 
 Use `.server.ts` files for server-side code to isolate API keys.
+
+### Chart Imports and SSR
+
+`layerchart` has internal circular dependencies that Vite cannot reliably evaluate during SSR. Never statically import `layerchart` or the `@cio/ui/base/chart` runtime barrel from a component that can enter the server module graph.
+
+- Import chart types from the dependency-free types module: `import type { ChartConfig } from '@cio/ui/base/chart/types'` (or the equivalent relative path inside `packages/ui`).
+- Load chart runtime components with a browser-only dynamic import and render them inside an `{#await}` block guarded by `browser` or `typeof window !== 'undefined'`.
+- In exercise submission renderers, reuse `submission-response-bar-chart.svelte` or `submission-response-pie-chart.svelte`; do not import the chart barrel directly.
+
+```svelte
+<script module lang="ts">
+  function loadChart() {
+    if (typeof window === 'undefined') return Promise.reject(new Error('browser-only'));
+
+    return import('@cio/ui/base/chart');
+  }
+</script>
+
+<script lang="ts">
+  import { browser } from '$app/environment';
+  import type { ChartConfig } from '@cio/ui/base/chart/types';
+</script>
+
+{#if browser}
+  {#await loadChart() then Chart}
+    <Chart.ChartContainer {config}>
+      <Chart.BarChart data={chartData} x="label" y="value" />
+    </Chart.ChartContainer>
+  {/await}
+{/if}
+```
 
 ### UI Components
 
