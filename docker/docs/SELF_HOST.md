@@ -23,8 +23,8 @@ It auto-generates secure values for `PRIVATE_SERVER_KEY` and `BETTER_AUTH_SECRET
 
 ## Run from Pre-built Images (no build)
 
-The Quick Start builds images from source: that needs the full repo and ~8 GB RAM for the
-dashboard build. Most self-hosters should instead **pull** the published `classroomio/{api,dashboard,jobs}`
+The Quick Start pulls the published `classroomio/{api,dashboard,jobs}` images by default. To run
+without a full repository clone, you only need
 images. You only need [`docker-compose.images.yaml`](../../docker-compose.images.yaml) and a `.env`:
 
 ```bash

@@ -58,9 +58,11 @@ stack reads.
 ## Server requirements
 
 ClassroomIO is not a single container. It runs **seven services**: Postgres, Redis, MinIO (object
-storage), the API, the dashboard, and a background **jobs worker** that handles video processing,
-transcription, and AI course generation. The jobs worker spikes RAM whenever it runs, so a server's
-idle memory use understates what you actually need.
+storage), the API, the dashboard, a background **jobs worker** that handles video processing,
+transcription, and AI course generation, and **`minio-init`**, a one-shot container that creates
+the MinIO buckets on first start and then exits, so it won't show up in `docker ps` afterward. The
+jobs worker spikes RAM whenever it runs, so a server's idle memory use understates what you
+actually need.
 
 | Resource | Minimum          | Recommended   |
 | -------- | ---------------- | ------------- |
