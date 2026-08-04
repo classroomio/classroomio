@@ -322,7 +322,13 @@ function preprocessCourseMetadata(value: unknown): unknown {
     metadata.allowNewStudent = true;
   }
 
-  if (metadata.discount !== undefined) {
+  if (metadata.discount === null || metadata.discount === '') {
+    metadata.discount = undefined;
+  } else if (typeof metadata.discount === 'number') {
+    if (!Number.isFinite(metadata.discount)) {
+      metadata.discount = undefined;
+    }
+  } else if (typeof metadata.discount === 'string') {
     metadata.discount = toFiniteNumber(metadata.discount);
   }
 

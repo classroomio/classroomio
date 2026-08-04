@@ -1,6 +1,7 @@
 /**
- * Coerces unknown input to a finite number.
- * String numbers are parsed; empty, null, and invalid values return undefined.
+ * Coerces a number or numeric string to a finite number.
+ * Does not coerce booleans, arrays, or other types (unlike bare `Number()`).
+ * Empty, null, and invalid values return undefined.
  */
 export function toFiniteNumber(value: unknown): number | undefined {
   if (typeof value === 'number' && Number.isFinite(value)) {
