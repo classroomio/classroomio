@@ -3,7 +3,7 @@ title: Architecture
 description: The services in a self-hosted ClassroomIO stack, how they authenticate to each other, and why the jobs worker drives your RAM requirement.
 ---
 
-Every install path — Docker, DigitalOcean, Railway, Coolify, Dokploy — runs the same topology.
+Every install path (Docker, DigitalOcean, Railway, Coolify, Dokploy) runs the same topology.
 Understanding it makes sizing, debugging, and scaling decisions obvious.
 
 ## The services
@@ -30,7 +30,7 @@ flowchart LR
 | `minio` | `minio/minio` | 9000/9001 | S3-compatible object storage for uploads (volume `minio-data`). Swappable for AWS S3 / Cloudflare R2. |
 | `minio-init` | `minio/mc` | — | One-shot: creates the `videos`, `documents`, and `media` buckets, makes `media` publicly downloadable, then exits. |
 
-The app services are pinned by one variable, `CIO_VERSION` — see
+The app services are pinned by one variable, `CIO_VERSION`. See
 [Versions & upgrades](/self-hosted/configuration/versions).
 
 ## Startup order
@@ -73,7 +73,7 @@ The jobs worker is why the [server requirements](/self-hosted#server-requirement
 It processes queues for media (probe → thumbnail → audio extraction), transcription (Whisper),
 emails, notifications, AI course generation, and periodic maintenance (including reaping stuck
 jobs). Video work runs **ffmpeg as a subprocess**, streaming files via disk rather than holding
-whole videos in memory — but transcodes still spike RAM well above the stack's idle usage. A server
+whole videos in memory, but transcodes still spike RAM well above the stack's idle usage. A server
 that looks comfortable at idle can OOM-kill Postgres the first time someone uploads a lecture
 video; see [Troubleshooting → OOM kills](/self-hosted/troubleshooting#containers-are-oom-killed).
 

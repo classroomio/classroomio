@@ -7,7 +7,7 @@ ClassroomIO stores uploaded files and videos in **object storage**. You have two
 **bundled MinIO** alongside the stack, or point ClassroomIO at an **external S3-compatible** service
 (AWS S3, Cloudflare R2, etc.). Both speak the S3 API and use the same `OBJECT_STORAGE_*` variables.
 
-## Option 1 — Bundled MinIO (default)
+## Option 1: Bundled MinIO (default)
 
 The Docker and Coolify compose files include **MinIO** under the `minio` profile, and the startup
 script auto-configures it. You only change these for custom credentials.
@@ -24,12 +24,12 @@ script auto-configures it. You only change these for custom credentials.
 | `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` | `http://localhost:9000/media` |
 
 :::warning[MinIO is your durability boundary]
-Single-node MinIO has no redundancy — its volume is the only thing protecting your uploads. Give it
+Single-node MinIO has no redundancy: its volume is the only thing protecting your uploads. Give it
 **persistent storage** and **back it up**. If you'd rather not operate storage yourself, use external
-**Cloudflare R2 / AWS S3** instead (R2 has no egress fees) — see below.
+**Cloudflare R2 / AWS S3** instead (R2 has no egress fees); see below.
 :::
 
-## Option 2 — External S3 / Cloudflare R2
+## Option 2: External S3 / Cloudflare R2
 
 The `OBJECT_STORAGE_*` variables speak the S3 API, so they work with **any S3-compatible provider**,
 including Cloudflare R2 and AWS S3. Point them at the provider and start **without** the bundled MinIO
@@ -48,7 +48,7 @@ including Cloudflare R2 and AWS S3. Point them at the provider and start **witho
 :::note[Legacy `CLOUDFLARE_*` variables]
 ClassroomIO also accepts a legacy Cloudflare R2 config (`CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_ACCESS_KEY`,
 `CLOUDFLARE_SECRET_ACCESS_KEY`, …). It is a **fallback** used only when the `OBJECT_STORAGE_*` variables
-are absent — prefer `OBJECT_STORAGE_*` for new deployments (it covers R2 too). For step-by-step R2 bucket
+are absent; prefer `OBJECT_STORAGE_*` for new deployments (it covers R2 too). For step-by-step R2 bucket
 and CORS setup, see the [Cloudflare Setup](/guides/contributing/cloudflare-setup) guide.
 :::
 

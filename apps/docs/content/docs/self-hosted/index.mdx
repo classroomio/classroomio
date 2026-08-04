@@ -1,10 +1,12 @@
 ---
 title: Self Hosting
 description: Run ClassroomIO on your own infrastructure — with Docker, DigitalOcean, Railway, Coolify, or Dokploy.
+sidebar:
+  label: Overview
 ---
 
 ClassroomIO is open source, and you can run the whole platform on your own infrastructure. Every
-option below runs the same stack — the API, the dashboard, and the background jobs worker, backed by
+option below runs the same stack: the API, the dashboard, and the background jobs worker, backed by
 Postgres and Redis.
 
 Pick the path that matches where you want it to run.
@@ -49,13 +51,13 @@ pick, have mail credentials ready before you start.
 - Object storage (**MinIO** or S3-compatible) if you want file and video uploads.
 - *Optional:* an **OpenAI API key** for transcription and AI course generation.
 
-For the full environment variable reference — secrets, email, storage, CSP, integrations, licensing,
-and versions — see the [Configuration](/self-hosted/configuration) section, which documents every
-variable the stack reads.
+The [Configuration](/self-hosted/configuration) section has the full environment variable reference
+(secrets, email, storage, CSP, integrations, licensing, versions) and documents every variable the
+stack reads.
 
 ## Server requirements
 
-ClassroomIO is not a single container — it runs **seven services**: Postgres, Redis, MinIO (object
+ClassroomIO is not a single container. It runs **seven services**: Postgres, Redis, MinIO (object
 storage), the API, the dashboard, and a background **jobs worker** that handles video processing,
 transcription, and AI course generation. The jobs worker spikes RAM whenever it runs, so a server's
 idle memory use understates what you actually need.
@@ -67,20 +69,19 @@ idle memory use understates what you actually need.
 | Disk     | 20 GB + uploads  | 40 GB+ SSD    |
 
 :::warning[Don't under-provision RAM]
-A **1 GB server cannot run ClassroomIO at all** — it exhausts memory on the base stack before the
-app is even up. **2 GB is only enough for a PaaS control plane** (Coolify, Dokploy) with little left
-over for the app. Target **8 GB for reliable operation**, especially once the jobs worker starts
-processing video or AI generation.
+A **1 GB** server can't run ClassroomIO at all: it exhausts memory on the base stack before the app
+is even up. **2 GB** is only enough for a PaaS control plane (Coolify, Dokploy), with little left
+over for the app itself. Aim for **8 GB** for reliable operation, especially once the jobs worker
+starts processing video or AI generation.
 :::
 
 :::note[Running a PaaS on the same box?]
-Coolify and Dokploy need roughly **2 GB for themselves** on top of ClassroomIO's requirement. If
-they share the server, size it for both — e.g. 8 GB for ClassroomIO plus the PaaS overhead.
+Coolify and Dokploy need roughly **2 GB** for themselves on top of ClassroomIO's requirement. If
+they share the server, size it for both, e.g. 8 GB for ClassroomIO plus the PaaS overhead.
 :::
 
-Building the images **from source** is a separate, heavier job that needs ~8 GB RAM at build time —
-see the [Docker guide](/self-hosted/docker). Pulling the pre-built images (the
-default) avoids that.
+Building the images **from source** is a separate, heavier job that needs ~8 GB RAM at build time.
+See the [Docker guide](/self-hosted/docker). Pulling the pre-built images (the default) avoids that.
 
 ## HTTPS is required in production
 

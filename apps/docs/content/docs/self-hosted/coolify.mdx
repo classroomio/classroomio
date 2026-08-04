@@ -3,7 +3,7 @@ title: Coolify
 description: Deploy ClassroomIO on Coolify using the pull-based Docker Compose stack, with a video walkthrough.
 ---
 
-[Coolify](https://coolify.io) is a self-hosted PaaS (an open-source Heroku/Netlify alternative) you run on your own VPS. It runs ClassroomIO from the published `classroomio/*` images — your Coolify host **pulls** them and never builds anything.
+[Coolify](https://coolify.io) is a self-hosted PaaS (an open-source Heroku/Netlify alternative) you run on your own VPS. It runs ClassroomIO from the published `classroomio/*` images: your Coolify host **pulls** them and never builds anything.
 
 ## Watch the walkthrough
 
@@ -40,7 +40,7 @@ This uses a **Docker Compose resource**: you paste the compose file and set ever
 <Step>
 ### Create a project and add a Docker Compose resource
 
-Log in to Coolify and **create a project**. When you add a resource, Coolify asks what type it is — GitHub, a Docker image, a service, or a **Docker Compose** file. Choose **Docker Compose**, then **paste the contents of [`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker-compose.images.yaml)** into the editor.
+Log in to Coolify and **create a project**. When you add a resource, Coolify asks what type it is: GitHub, a Docker image, a service, or a **Docker Compose** file. Choose **Docker Compose**, then **paste the contents of [`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker-compose.images.yaml)** into the editor.
 
 ![Showing list of options to choose from](/docs/coolify-02-services.webp)
 
@@ -74,13 +74,13 @@ SMTP_SENDER=ClassroomIO <you@yourdomain.com>
 # Object storage + domains: see the full reference below
 ```
 
-👉 The essentials above get you started, but the complete list of what to set — object storage, domains, and every optional variable — is in the [**Environment variable reference**](#environment-variable-reference) below. Copy that full block before you deploy.
+The essentials above get you started, but the complete list of what to set (object storage, domains, and every optional variable) is in the [**Environment variable reference**](#environment-variable-reference) below. Copy that full block before you deploy.
 
 :::note[How to read the reference: value = required, blank = optional]
 There's no way to guess which variables Coolify needs, so the [Environment variable
 reference](#environment-variable-reference) spells it out. The rule is simple: **every variable
 shown with a value must be set** for a smooth deployment (secrets, database, domains, object
-storage, and SMTP are all needed). **Every variable left blank after `=` is optional** — fill it in
+storage, and SMTP are all needed). **Every variable left blank after `=` is optional**: fill it in
 only if you use that integration. Leaving an optional one blank never causes a build or boot error.
 :::
 
@@ -107,7 +107,7 @@ reproducible.
 
 Open the **dashboard** service → **Settings** and set its domain, including the internal port, e.g. `https://dash.yourdomain.com:3082`. Coolify maps that FQDN to the container's port `3082` and issues the certificate through its proxy.
 
-The dashboard proxies API calls server-side, so you normally only expose the dashboard publicly — the `api` service stays internal.
+The dashboard proxies API calls server-side, so you normally only expose the dashboard publicly. The `api` service stays internal.
 
 ![Setting the dashboard service domain in Coolify](/docs/coolify-05-dashboard-domain.webp)
 </Step>
@@ -123,7 +123,7 @@ Click **Deploy**. Coolify pulls `classroomio/{api,dashboard,jobs}:${CIO_VERSION}
 <Step>
 ### Open the app and sign up
 
-Once the logs show the stack is healthy, open your dashboard URL (`https://dash.yourdomain.com`) in a new browser tab and **sign up**. The **first** account becomes the organization **admin**. Every signup or sign-in after that joins as a student — unless you invite them with a specific role.
+Once the logs show the stack is healthy, open your dashboard URL (`https://dash.yourdomain.com`) in a new browser tab and **sign up**. The **first** account becomes the organization **admin**. Every signup or sign-in after that joins as a student, unless you invite them with a specific role.
 
 ![The running ClassroomIO dashboard sign-up page](/docs/railway-12-signup.webp)
 </Step>
@@ -132,11 +132,11 @@ Once the logs show the stack is healthy, open your dashboard URL (`https://dash.
 
 ## Environment variable reference
 
-You set these on the resource's Environment Variables page (Step 3). This is the complete picture — copy the block below, then replace the placeholder values with your own.
+You set these on the resource's Environment Variables page (Step 3). This is the complete picture: copy the block below, then replace the placeholder values with your own.
 
 :::note[Value = required, blank = optional]
 **Every variable shown with a value below is required** for a working deployment. **Every variable
-left blank after `=` is optional** — fill it in only if you use that feature. A blank optional
+left blank after `=` is optional**: fill it in only if you use that feature. A blank optional
 variable never causes a build or boot error, so don't put junk into fields you aren't using.
 :::
 
@@ -255,7 +255,7 @@ Enable the **bundled MinIO** with `COMPOSE_PROFILES=minio` and Coolify runs it a
 (`OBJECT_STORAGE_PUBLIC_ENDPOINT` / `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL`) so browsers can load media.
 
 :::warning[MinIO is your durability boundary]
-Single-node MinIO has no redundancy — its volume is the only thing protecting your uploads, so give it
+Single-node MinIO has no redundancy: its volume is the only thing protecting your uploads, so give it
 persistent storage in Coolify and back it up.
 :::
 

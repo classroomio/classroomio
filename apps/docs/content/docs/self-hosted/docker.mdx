@@ -3,7 +3,7 @@ title: Docker
 description: Self-host ClassroomIO with Docker — one script installs, starts, upgrades, and backs up the whole stack.
 ---
 
-Run ClassroomIO anywhere Docker runs. One script manages the entire lifecycle — you copy it,
+Run ClassroomIO anywhere Docker runs. One script manages the entire lifecycle: you copy it,
 run it, and pick a number. New to self-hosting? Start with
 [Self-hosting 101](/self-hosted/101) to see what you're deploying.
 
@@ -12,7 +12,7 @@ run it, and pick a number. New to self-hosting? Start with
 ## Prerequisites
 
 - Docker installed and running (Compose v2 or the legacy `docker-compose` both work).
-- A server that meets the [requirements](/self-hosted#server-requirements) — 8 GB RAM recommended.
+- A server that meets the [requirements](/self-hosted#server-requirements) (8 GB RAM recommended).
 
 ## Quick start
 
@@ -61,7 +61,7 @@ The dashboard is at http://localhost:3082, the API at http://localhost:3081, and
 at http://localhost:9001 (credentials are in your `.env`).
 
 :::warning[Pin `CIO_VERSION` in production]
-The default tags track moving builds — `latest` changes on every merge to `main`. Pin an exact
+The default tags track moving builds: `latest` changes on every merge to `main`. Pin an exact
 release (e.g. `CIO_VERSION=1.4.2`) so an upstream merge can never change your deployment
 unannounced. The script warns you about this too. See
 [Versions & upgrades](/self-hosted/configuration/versions).
@@ -98,8 +98,8 @@ cp .env.example .env
 ./classroomio.sh start --build
 ```
 
-Without `--build` the script pulls the published `classroomio/*` images at your `CIO_VERSION` —
-that's the faster default. `--no-minio` excludes the bundled MinIO if you use external
+Without `--build` the script pulls the published `classroomio/*` images at your `CIO_VERSION`,
+which is the faster default. `--no-minio` excludes the bundled MinIO if you use external
 [S3/R2 storage](/self-hosted/configuration/storage).
 
 </Expandable>

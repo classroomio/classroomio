@@ -9,14 +9,14 @@ This page explains what you're actually deploying before you pick an
 
 ## What you get
 
-The full product — the same code that powers the cloud version. Self-hosted, you run:
+The full product: the same code that powers the cloud version. Self-hosted, you run:
 
 - The **dashboard** your team and students use (courses, exercises, communities, certificates).
 - The **API** behind it.
 - A background **jobs worker** for the heavy lifting: video processing, transcription, AI course
   generation, and email sending.
 - The infrastructure they need: **Postgres** (database), **Redis** (queues and caching), and
-  **MinIO** (S3-compatible object storage for uploads — swappable for AWS S3 or Cloudflare R2).
+  **MinIO** (S3-compatible object storage for uploads, swappable for AWS S3 or Cloudflare R2).
 
 That's the ~7 containers the Docker stack starts (MinIO ships with a small one-shot init container
 that creates its buckets). They're deliberately separate services: the parts that spike CPU and RAM
@@ -34,26 +34,26 @@ is on the [Architecture](/self-hosted/architecture) page; what hardware they nee
 | Organizations | Multiple per account, plan-based feature tiers | Single organization with all core features |
 | Enterprise features (SSO, token auth, no-tracking) | On the Enterprise plan | Via a [license key](/self-hosted/enterprise) |
 
-Self-hosted mode is controlled by one flag — `PUBLIC_IS_SELFHOSTED=true` — which is already set in
+Self-hosted mode is controlled by one flag, `PUBLIC_IS_SELFHOSTED=true`, which is already set in
 the shipped Docker configuration. It locks the instance to a single organization with the full core
 feature set, and points invite links and emails at your own domain.
 
-**About telemetry, honestly:** self-hosted mode disables error reporting (Sentry) and the in-app
-feedback widget out of the box. Product analytics (PostHog, Umami) are only disabled by the
-`no-tracking` enterprise license feature — see [Enterprise & licensing](/self-hosted/enterprise).
+**About telemetry:** self-hosted mode disables error reporting (Sentry) and the in-app feedback
+widget out of the box. Product analytics (PostHog, Umami) are only disabled by the `no-tracking`
+enterprise license feature. See [Enterprise & licensing](/self-hosted/enterprise).
 
 ## How licensing works
 
 ClassroomIO is **open core** under the [AGPL-3.0 license](https://github.com/classroomio/classroomio/blob/main/LICENSE):
 
-- **Everything an LMS needs is free** — courses, students, uploads, video, AI features,
+- **Everything an LMS needs is free:** courses, students, uploads, video, AI features,
   communities, certificates. No seat limits, no artificial caps. You never need a license key to
   run a complete platform.
-- **A small set of enterprise features** — SSO, token auth, and no-tracking mode — are gated behind
+- **A small set of enterprise features** (SSO, token auth, and no-tracking mode) are gated behind
   a paid `LICENSE_KEY`. They exist so organizations with compliance requirements can fund the
   project. Details on the [Enterprise & licensing](/self-hosted/enterprise) page.
 
-There is exactly one codebase and one set of Docker images — a license key unlocks features in the
+There is exactly one codebase and one set of Docker images. A license key unlocks features in the
 same build you already run, so you never migrate editions.
 
 ## Where to next

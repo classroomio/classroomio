@@ -4,7 +4,7 @@ description: Diagnose common self-hosted ClassroomIO failures — sign-in errors
 ---
 
 Start here when something misbehaves. Every entry below is a failure mode we've seen in real
-deployments — with its cause and fix.
+deployments, with its cause and fix.
 
 First, always check what's actually running:
 
@@ -17,7 +17,7 @@ docker ps                      # anything restarting or exited?
 
 | Symptom | Likely cause | Fix |
 |---------|-------------|-----|
-| Sign-in fails right after startup with a database error (`57P03`) | Postgres is still starting | Wait 30–60 s and retry — [details](#sign-in-fails-with-57p03-right-after-startup) |
+| Sign-in fails right after startup with a database error (`57P03`) | Postgres is still starting | Wait 30–60 s and retry, [details](#sign-in-fails-with-57p03-right-after-startup) |
 | Login silently fails on your domain (no error, just back to the login page) | Serving over plain HTTP — session cookies are `Secure` | Serve over HTTPS — [details](/self-hosted#https-is-required-in-production) |
 | Login loops or CSRF errors | `DASHBOARD_ORIGIN` doesn't match the URL users actually visit | Set it to the exact `https://` origin, restart |
 | Uploads stuck at "processing" forever, no error | The `jobs` worker isn't running, or Redis is unreachable | [details](#uploads-stuck-at-processing) |
@@ -36,10 +36,10 @@ code `57P03` ("the database system is in recovery mode" / "is starting up").
 **Cause:** Postgres reports itself ready (`pg_isready` passes) before it has finished crash
 recovery, so the API can connect but queries fail.
 
-**Fix:** wait 30–60 seconds and retry — recovery completes on its own. Current compose files
+**Fix:** wait 30–60 seconds and retry. Recovery completes on its own. Current compose files
 already guard against this: the Postgres healthcheck requires a successful `SELECT 1`, not just
 `pg_isready`, so dependent services wait until queries actually work. If you see this repeatedly,
-your compose file predates that healthcheck — refresh it:
+your compose file predates that healthcheck. Refresh it:
 
 ```zsh title="Terminal"
 curl -fsSLO https://raw.githubusercontent.com/classroomio/classroomio/main/docker-compose.images.yaml
@@ -63,7 +63,7 @@ wasn't scaled to zero or crashed on boot.
 
 ## Containers are OOM-killed
 
-The jobs worker spikes RAM while processing video — enough to get Postgres or other containers
+The jobs worker spikes RAM while processing video, enough to get Postgres or other containers
 killed on a 4 GB server even though the stack idles comfortably. See
 [server requirements](/self-hosted#server-requirements).
 
@@ -85,7 +85,7 @@ docker container prune -f      # free stopped containers
 Then restart: `./classroomio.sh start`
 
 :::danger[Never use `docker volume prune` or `down -v`]
-`docker volume prune` removes volumes not attached to a running container — run after
+`docker volume prune` removes volumes not attached to a running container: run after
 `docker compose down`, it deletes your **database, Redis, and uploads** (`postgres-data`,
 `redis-data`, `minio-data`). `docker compose down -v` does the same explicitly. Use only the prune
 commands above to free space.
@@ -94,7 +94,7 @@ commands above to free space.
 ## API container exits at boot
 
 The API runs database migrations before it starts listening. If a migration fails, the container
-exits rather than serve a half-migrated database — that's deliberate.
+exits rather than serve a half-migrated database. That's deliberate.
 
 ```zsh title="Terminal"
 ./classroomio.sh logs api      # the migration error is at the end
@@ -113,7 +113,7 @@ warning in the jobs logs. Set the key and re-trigger transcription; see
 ## Crash loops during Redis maintenance
 
 Older versions could crash-loop with cascading `read ECONNABORTED` errors when a managed Redis
-provider (e.g. Redis Cloud) ran scheduled maintenance or failover. This was fixed upstream — the
+provider (e.g. Redis Cloud) ran scheduled maintenance or failover. This was fixed upstream: the
 stack now reconnects and resumes automatically. If you hit it, upgrade:
 
 ```zsh title="Terminal"
@@ -125,4 +125,4 @@ stack now reconnects and resumes automatically. If you hit it, upgrade:
 Deploying on a DigitalOcean-style VPS with Caddy? That guide has its own
 [troubleshooting table](/self-hosted/digitalocean#troubleshooting) covering certificates, firewalls,
 and proxy issues. For anything else, [open an issue](https://github.com/classroomio/classroomio/issues)
-— include the output of `./classroomio.sh logs`.
+and include the output of `./classroomio.sh logs`.

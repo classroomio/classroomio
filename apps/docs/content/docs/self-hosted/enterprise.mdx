@@ -5,7 +5,7 @@ description: What a ClassroomIO enterprise license unlocks on self-hosted — SS
 
 ClassroomIO is [open core](/self-hosted/101#how-licensing-works): the complete LMS is free to
 self-host, and a small set of enterprise features is unlocked by a paid license key. No key means
-everything else still works — leave `LICENSE_KEY` unset until you need one of these.
+everything else still works, so leave `LICENSE_KEY` unset until you need one of these.
 
 ## What a license unlocks
 
@@ -13,7 +13,7 @@ everything else still works — leave `LICENSE_KEY` unset until you need one of 
 |---------|--------------|
 | **SSO** | Single Sign-On with OIDC (Okta, Azure AD, and more). Setup: [Enterprise SSO](/enterprise-sso). |
 | **Token auth** | Issue signed tokens to log users in from your own app. Setup: [Token Auth](/token-auth). |
-| **No-tracking** | Disables product analytics in the dashboard (PostHog, Umami) and third-party embeds. Without this feature, self-hosted mode already disables error reporting and the feedback widget — but not product analytics. |
+| **No-tracking** | Disables product analytics in the dashboard (PostHog, Umami) and third-party embeds. Without this feature, self-hosted mode already disables error reporting and the feedback widget, but not product analytics. |
 
 Without a valid license, the SSO and token-auth APIs return `403 FEATURE_REQUIRES_LICENSE` and
 their settings are hidden in the dashboard UI.
@@ -43,10 +43,10 @@ The api service validates the key against ClassroomIO's license server
 What that means operationally:
 
 - **The api container needs outbound HTTPS** to that host. In an air-gapped or egress-restricted
-  network, licensed features can't activate — contact ClassroomIO about your environment before
+  network, licensed features can't activate. Contact ClassroomIO about your environment before
   buying.
 - If a check fails (network blip, license server unreachable), licensed features switch off and
-  the failure is also cached — so it can take **up to an hour** (or an api restart) after
+  the failure is also cached, so it can take **up to an hour** (or an api restart) after
   connectivity returns before they come back.
 - Everything outside the licensed feature list is unaffected by license-server reachability.
 

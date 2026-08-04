@@ -14,8 +14,8 @@ Two things hold all of your data: the **Postgres database** (courses, users, org
 
 This writes two timestamped files into `./backups/`:
 
-- `classroomio-db-<timestamp>.sql.gz` — a full `pg_dump` of the database.
-- `classroomio-minio-<timestamp>.tar.gz` — an archive of the bundled MinIO volume.
+- `classroomio-db-<timestamp>.sql.gz`: a full `pg_dump` of the database.
+- `classroomio-minio-<timestamp>.tar.gz`: an archive of the bundled MinIO volume.
 
 If you use external S3/R2 instead of the bundled MinIO, the second step is skipped — use your
 provider's backup or replication tools for the buckets.
