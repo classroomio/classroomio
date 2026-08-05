@@ -22,6 +22,7 @@
   type StaffAction = 'reset' | 'extend' | 'waive' | null;
 
   let staffTab = $state<'overview' | 'learners'>('overview');
+  let loadedCourseId = $state<string | null>(null);
   let activeAction = $state<StaffAction>(null);
   let bulkActionType = $state<Exclude<StaffAction, null> | null>(null);
   let isBulkActionModalOpen = $state(false);
@@ -75,16 +76,20 @@
 
     if (!isComplianceCourse) {
       complianceApi.reset();
+      loadedCourseId = null;
       return;
     }
 
     const courseId = courseApi.course.id;
+    const needsRefresh = loadedCourseId !== courseId;
+    loadedCourseId = courseId;
+
     if (isStudent && currentMember?.profileId) {
-      void complianceApi.ensureLearnerHistory(courseId, currentMember.profileId);
+      void complianceApi.ensureLearnerHistory(courseId, currentMember.profileId, needsRefresh);
       return;
     }
 
-    void complianceApi.ensureOverview(courseId);
+    void complianceApi.ensureOverview(courseId, needsRefresh);
   });
 
   $effect(() => {
