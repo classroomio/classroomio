@@ -33,7 +33,7 @@
   }
 </script>
 
-{#if links && links.cards.length > 0}
+{#if links && links.enabled !== false && links.cards.length > 0}
   <EditableLandingSection sectionKey="links">
     {#if variant === 'minimal'}
       <section class="ui:py-20 ui:px-4">

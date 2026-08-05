@@ -91,6 +91,8 @@ export type OrgLandingPageFooterConfig = {
   };
 };
 export type LandingPageEmbed = {
+  /** Whether to render the section. Defaults to visible when omitted. */
+  enabled?: boolean;
   title: string;
   description?: string;
   code: string;
@@ -101,6 +103,8 @@ export type LandingPageEmbed = {
 };
 
 export type LandingPageCallout = {
+  /** Whether to render the section. Defaults to visible when omitted. */
+  enabled?: boolean;
   heading: string;
   description: string;
   action: {
@@ -129,6 +133,8 @@ export type LandingPageLinkCard = {
 };
 
 export type LandingPageLinks = {
+  /** Whether to render the section. Defaults to visible when omitted. */
+  enabled?: boolean;
   heading: string;
   description?: string;
   /** Bold template card footer chip (e.g. Visit). */
