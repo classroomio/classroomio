@@ -23,9 +23,9 @@ It auto-generates secure values for `PRIVATE_SERVER_KEY` and `BETTER_AUTH_SECRET
 
 ## Run from Pre-built Images (no build)
 
-The Quick Start pulls the published `classroomio/{api,dashboard,jobs}` images by default. To run
-without a full repository clone, you only need
-images. You only need [`docker-compose.images.yaml`](../../docker-compose.images.yaml) and a `.env`:
+The Quick Start already pulls the published `classroomio/{api,dashboard,jobs}` images by default.
+To skip cloning the full repository, you only need
+[`docker-compose.images.yaml`](../../docker-compose.images.yaml) and a `.env`:
 
 ```bash
 # 1. Get just the compose file + env template (no full clone required)
@@ -47,7 +47,7 @@ chmod +x classroomio.sh
 ```
 
 > If you run the raw `docker compose` commands instead of the script, secrets aren't
-> auto-generated — set `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` to strong random values
+> auto-generated. Set `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` to strong random values
 > yourself.
 
 ## Versioning & Upgrades
@@ -73,30 +73,40 @@ CIO_VERSION=1.5.0 docker compose -f docker-compose.images.yaml --env-file .env u
 
 Schema migrations run automatically on `api` startup (`db:setup`), so upgrades need no manual DB
 step. If a release consolidates ("squashes") older migrations, the startup baseline detects an
-existing instance and adopts the new baseline as already-applied — your database is upgraded in
+existing instance and adopts the new baseline as already-applied, and your database is upgraded in
 place without re-running schema that already exists.
 
-(Maintainers: every published image is boot-smoke-tested in CI before it ships — see
+(Maintainers: every published image is boot-smoke-tested in CI before it ships. See
 [`PUBLISHING_IMAGES.md`](PUBLISHING_IMAGES.md).)
 
 ## Environment Variables
 
 All Docker services read from a single root `.env` file. See [`.env.example`](../../.env.example) for the full annotated template with required/optional grouping.
 
-Key points:
+Two variables actually need your attention: `PUBLIC_IS_SELFHOSTED=true` and `DASHBOARD_ORIGIN`,
+which you should set to your real domain in production (it also drives public media URLs; see
+[Production Object Storage](#production-object-storage)). Everything else below has a sane
+default.
 
-- **Required:** `PUBLIC_IS_SELFHOSTED=true`, `DASHBOARD_ORIGIN` (set this to your real domain in production; it also drives public media URLs, see [Production Object Storage](#production-object-storage)).
-- **API routing:** Browser dashboard calls go to the dashboard origin and are proxied to `PRIVATE_SERVER_URL` (default: `http://api:3081`). You do not need API/dashboard cookie-domain matching for normal dashboard auth.
-- **Direct API access (optional):** Set `PUBLIC_SERVER_URL` and `TRUSTED_ORIGINS` only if browsers or third-party clients need to call the API origin directly.
-- **CSP (runtime):** `ALLOWED_EXTERNAL_DOMAINS` (overrides all) or per-directive: `CSP_SCRIPT_SRC_DOMAINS`, `CSP_STYLE_SRC_DOMAINS`, `CSP_CONNECT_SRC_DOMAINS`, `CSP_FRAME_SRC_DOMAINS`, `CSP_FONT_SRC_DOMAINS`, `CSP_MEDIA_SRC_DOMAINS`. These are read at container startup — no image rebuild needed. The API does not need to be added for normal dashboard calls.
-- **Auth cookies:** No cookie-domain env is needed. The dashboard proxy makes auth first-party and Better Auth sets host-only dashboard cookies.
-- **Auto-generated:** `PRIVATE_SERVER_KEY`, `BETTER_AUTH_SECRET` (by `./classroomio.sh`). A strong value you set yourself is never overwritten.
-- **Auto-configured:** All `MINIO_*` / `OBJECT_STORAGE_*` vars (by the startup script, with randomized MinIO credentials).
-- **Email (effectively required):** SMTP (or Zoho). See [Email](#email) — without it, signup verification, password reset, and invites do not send.
-- **Optional:** Google OAuth, Unsplash, `LICENSE_KEY` (enterprise).
-- **Optional — upload limits:** `UPLOAD_MAX_*_MB` vars (documents, images, videos, assignment files, etc.). See [`.env.example`](../../.env.example). Passed through to both `api` and `dashboard` containers; unset values use built-in defaults. Raise your reverse-proxy body-size limit too if you increase these.
+Routing and auth are handled for you. Browser dashboard calls go to the dashboard origin and get
+proxied to `PRIVATE_SERVER_URL` (default `http://api:3081`), so normal dashboard auth needs no
+cookie-domain matching between the API and dashboard: the proxy makes it first-party, and Better
+Auth sets host-only cookies. Only set `PUBLIC_SERVER_URL` and `TRUSTED_ORIGINS` if a browser or
+third-party client needs to call the API directly. CSP is read at container startup rather than
+baked into the image, so `ALLOWED_EXTERNAL_DOMAINS` (or the per-directive `CSP_SCRIPT_SRC_DOMAINS`,
+`CSP_STYLE_SRC_DOMAINS`, `CSP_CONNECT_SRC_DOMAINS`, `CSP_FRAME_SRC_DOMAINS`, `CSP_FONT_SRC_DOMAINS`,
+`CSP_MEDIA_SRC_DOMAINS` vars) take effect on restart with no rebuild, and none of it needs to
+include the API for normal dashboard calls.
 
-`PRIVATE_SERVER_KEY` must be the same value in both API and dashboard. The script ensures this.
+`PRIVATE_SERVER_KEY` and `BETTER_AUTH_SECRET` are generated for you by `./classroomio.sh` if you
+leave them blank, and a value you set yourself is never overwritten; the script also ensures
+`PRIVATE_SERVER_KEY` matches between API and dashboard. The same goes for the `MINIO_*` /
+`OBJECT_STORAGE_*` vars: the startup script configures them with randomized credentials. Email is
+effectively required: without SMTP (or Zoho) configured, signup verification, password resets, and
+invites silently don't send (see [Email](#email)). Google OAuth, Unsplash, and `LICENSE_KEY` stay
+off until you set them. If you raise the `UPLOAD_MAX_*_MB` vars (documents, images, videos,
+assignment files; full list in [`.env.example`](../../.env.example)), set the same values on both
+`api` and `dashboard`, and raise your reverse-proxy body-size limit to match.
 
 ## Verify
 
@@ -222,7 +232,7 @@ The bundled MinIO is fine for a single host. Two things matter for a real deploy
 1. **Public media URLs must point at your domain, not `localhost`.** Media URLs are embedded in
    pages served to browsers, so `http://localhost:9000/...` breaks for every remote visitor. The
    startup script derives `OBJECT_STORAGE_PUBLIC_ENDPOINT` and
-   `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` from `DASHBOARD_ORIGIN` when it is a real domain — make
+   `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` from `DASHBOARD_ORIGIN` when it is a real domain. Make
    sure your reverse proxy routes `<your-domain>/media` to MinIO on port 9000 (or set those two
    variables explicitly).
 2. **External S3 / Cloudflare R2 instead of MinIO.** Run with `--no-minio` and set the
@@ -304,7 +314,7 @@ docker compose --env-file .env -p classroomio -f docker-compose.yaml restart min
 
 ### SMTP Errors in Logs
 
-`ECONNREFUSED 127.0.0.1:465` means SMTP is not configured. This does not block startup — configure SMTP or Zoho when you need email.
+`ECONNREFUSED 127.0.0.1:465` means SMTP is not configured. This does not block startup; configure SMTP or Zoho when you need email.
 
 ### Port Conflicts
 

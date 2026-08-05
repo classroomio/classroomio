@@ -16,7 +16,7 @@ Pick the path that matches where you want it to run.
     Run anywhere Docker runs. Pull the pre-built images, or build from source.
   </Card>
   <Card title="DigitalOcean" href="/self-hosted/digitalocean" icon="droplet">
-    A plain VPS, end to end — Docker Compose plus Caddy for automatic HTTPS.
+    A plain VPS, end to end: Docker Compose plus Caddy for automatic HTTPS.
   </Card>
   <Card title="Railway" href="/self-hosted/railway" icon="train-front">
     Deploy to Railway from a template. The quickest managed option.
@@ -89,12 +89,12 @@ See the [Docker guide](/self-hosted/docker). Pulling the pre-built images (the d
 
 :::warning[Serve over HTTPS on any real domain]
 ClassroomIO's authentication session cookies are marked `Secure`, so browsers refuse to store or
-send them over plain HTTP — **login silently fails**. Plain HTTP works only for local evaluation on
+send them over plain HTTP. **Login silently fails**. Plain HTTP works only for local evaluation on
 `localhost`. Any internet-facing deployment **must** be served over HTTPS.
 :::
 
 Terminate TLS at a reverse proxy in front of the stack:
 
-- **Railway** and **Coolify** issue the certificate and terminate HTTPS for you — nothing extra to do.
+- **Railway** and **Coolify** issue the certificate and terminate HTTPS for you: nothing extra to do.
 - **Raw Docker** on your own server: put **nginx**, **Caddy**, or **Traefik** in front, and set
   `DASHBOARD_ORIGIN` / `ORIGIN` to the `https://` URL your users visit.

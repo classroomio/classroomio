@@ -93,7 +93,7 @@ only if you use that integration. Leaving an optional one blank never causes a b
 `CIO_VERSION` chooses the tag pulled for `classroomio/{api,dashboard,jobs}`. **Confirm the tag you use actually exists** at [hub.docker.com/r/classroomio](https://hub.docker.com/r/classroomio/) before deploying.
 
 :::note[Pin a released version]
-Set `CIO_VERSION=1.0.0` to pin an exact release. `latest` is the freshest `main` build — it moves
+Set `CIO_VERSION=1.0.0` to pin an exact release. `latest` is the freshest `main` build: it moves
 on every merge (rolling; may include unreleased code), while the version tags (`1.0.0`, `1.0`, `1`)
 are immutable, pinned releases. Pinning an exact release makes upgrades deliberate and deploys
 reproducible.
@@ -115,7 +115,7 @@ The dashboard proxies API calls server-side, so you normally only expose the das
 <Step>
 ### Deploy
 
-Click **Deploy**. Coolify pulls `classroomio/{api,dashboard,jobs}:${CIO_VERSION}`, starts Postgres + Redis, the API container runs database setup on first boot, then the dashboard and the **jobs worker** come up. Watch the **logs** — they tell you when every service is up.
+Click **Deploy**. Coolify pulls `classroomio/{api,dashboard,jobs}:${CIO_VERSION}`, starts Postgres + Redis, the API container runs database setup on first boot, then the dashboard and the **jobs worker** come up. Watch the **logs**: they tell you when every service is up.
 
 ![Coolify deploy logs showing the stack coming up](/docs/coolify-06-deploy-logs.webp)
 </Step>
@@ -201,7 +201,7 @@ OBJECT_STORAGE_REGION=      # only for some external S3 providers
 SKIP_DB_SETUP=              # blank = run DB setup on first boot (leave blank)
 ```
 
-### Required — set all of these
+### Required: set all of these
 
 | Variable | What it's for |
 |----------|---------------|
@@ -229,10 +229,10 @@ SKIP_DB_SETUP=              # blank = run DB setup on first boot (leave blank)
 Of the above, `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` are the two the compose file
 **fails fast** on: leave either empty and the containers refuse to boot (so ClassroomIO never runs
 with a predictable session-signing secret). The rest won't abort the boot, but the deployment
-won't work correctly without them — set them all.
+won't work correctly without them. Set them all.
 :::
 
-### Optional — leave blank unless you need them
+### Optional: leave blank unless you need them
 
 | Variable | Enables |
 |----------|---------|

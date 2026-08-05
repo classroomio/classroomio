@@ -35,7 +35,7 @@ chmod +x classroomio.sh
 
 Choose **1) Install**. The script downloads the compose file, creates `.env` from the template,
 generates the auth secrets and MinIO credentials for you, then pulls the images and starts the
-stack. Re-running Install is safe — it never overwrites an existing `.env` or compose file.
+stack. Re-running Install is safe: it never overwrites an existing `.env` or compose file.
 </Step>
 <Step>
 ### Edit the required values
@@ -68,7 +68,7 @@ unannounced. The script warns you about this too. See
 :::
 
 :::note[Serving on a real domain?]
-Use an `https://` origin — session cookies are `Secure`, so
+Use an `https://` origin: session cookies are `Secure`, so
 [login silently fails over plain HTTP](/self-hosted#https-is-required-in-production).
 :::
 
@@ -106,7 +106,7 @@ which is the faster default. `--no-minio` excludes the bundled MinIO if you use 
 
 ## Configuration reference
 
-Docker self-hosting uses a single root `.env` file — every compose command reads it via
+Docker self-hosting uses a single root `.env` file: every compose command reads it via
 `--env-file .env`, and the compose file itself tracks `main` (it's just the stack topology;
 `CIO_VERSION` pins the app images).
 
@@ -157,7 +157,7 @@ Every variable the stack reads is documented in the shared
 
 ## Upgrading
 
-Run `./classroomio.sh upgrade` — it backs up Postgres and MinIO first, then pulls the images at
+Run `./classroomio.sh upgrade`: it backs up Postgres and MinIO first, then pulls the images at
 your (possibly newly pinned) `CIO_VERSION` and restarts. Rollback = set `CIO_VERSION` back and
 upgrade again. Details: [Versions & upgrades](/self-hosted/configuration/versions).
 

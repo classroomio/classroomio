@@ -3,8 +3,8 @@ title: Architecture
 description: The services in a self-hosted ClassroomIO stack, how they authenticate to each other, and why the jobs worker drives your RAM requirement.
 ---
 
-Every install path (Docker, DigitalOcean, Railway, Coolify, Dokploy) runs the same topology.
-Understanding it makes sizing, debugging, and scaling decisions obvious.
+Every install path (Docker, DigitalOcean, Railway, Coolify, Dokploy) runs the same topology, so
+this page applies no matter which one you picked.
 
 ## The services
 
@@ -38,7 +38,7 @@ The app services are pinned by one variable, `CIO_VERSION`. See
 The compose file encodes the dependency chain with healthchecks:
 
 1. **postgres** and **redis** start first. Postgres only reports healthy once it answers a real
-   query (`SELECT 1`) — not just `pg_isready` — because Postgres can accept connections while still
+   query (`SELECT 1`), not just `pg_isready`, because Postgres can accept connections while still
    in crash recovery, which would surface as
    [57P03 sign-in errors](/self-hosted/troubleshooting#sign-in-fails-with-57p03-right-after-startup).
 2. **api** starts, runs any pending database migrations, then listens. A failed migration exits the
@@ -63,8 +63,8 @@ one configured (500). Two consequences for operators:
   same `.env` value to both, and `./classroomio.sh` generates a strong one automatically. On PaaS
   platforms where you set env per service, a mismatch is the classic cause of a dashboard that
   renders but can't load any data.
-- The compose file **fails fast** if `PRIVATE_SERVER_KEY` (or `BETTER_AUTH_SECRET`) is empty —
-  see [Environment & secrets](/self-hosted/configuration/secrets).
+- The compose file **fails fast** if `PRIVATE_SERVER_KEY` (or `BETTER_AUTH_SECRET`) is empty.
+  See [Environment & secrets](/self-hosted/configuration/secrets).
 
 ## The jobs worker and your RAM
 
@@ -77,10 +77,8 @@ whole videos in memory, but transcodes still spike RAM well above the stack's id
 that looks comfortable at idle can OOM-kill Postgres the first time someone uploads a lecture
 video; see [Troubleshooting → OOM kills](/self-hosted/troubleshooting#containers-are-oom-killed).
 
-Two operational notes:
-
-- **The worker is required, not optional.** Without it (or without Redis), uploads queue forever at
-  "processing" and most emails never send —
-  [details](/self-hosted/troubleshooting#uploads-stuck-at-processing).
-- **It scales independently.** The image runs all workers in one process by default; override the
-  container command to run e.g. media processing on separate hardware from email sending.
+The worker is required, not optional: without it (or without Redis), uploads queue forever at
+"processing" and most emails never send
+([details](/self-hosted/troubleshooting#uploads-stuck-at-processing)). It also scales
+independently: the image runs all workers in one process by default, but you can override the
+container command to run, say, media processing on separate hardware from email sending.

@@ -48,7 +48,7 @@ curl -fsSLO https://raw.githubusercontent.com/classroomio/classroomio/main/docke
 
 ## Uploads stuck at "processing"
 
-Video processing, transcription, AI course generation, and most emails don't run in the API — they
+Video processing, transcription, AI course generation, and most emails don't run in the API. They
 are queued in Redis and executed by the separate **jobs** worker. If that worker is down (or the API
 has no `REDIS_URL`), jobs are created but nothing ever picks them up: uploads sit at "processing"
 with no error anywhere in the UI.
@@ -101,12 +101,12 @@ exits rather than serve a half-migrated database. That's deliberate.
 ```
 
 Common causes: wrong `DATABASE_URL`/`POSTGRES_*` credentials after an edit, or Postgres not yet
-healthy. Fix the cause and `./classroomio.sh start` again — migrations are safe to re-run.
+healthy. Fix the cause and `./classroomio.sh start` again. Migrations are safe to re-run.
 
 ## Transcription never happens
 
 Transcription (video captions) requires `OPENAI_API_KEY` on the **jobs** service. Without it, media
-jobs still complete — thumbnails and processing work — but the transcription step is skipped with a
+jobs still complete (thumbnails and processing work), but the transcription step is skipped with a
 warning in the jobs logs. Set the key and re-trigger transcription; see
 [Integrations](/self-hosted/configuration/integrations).
 

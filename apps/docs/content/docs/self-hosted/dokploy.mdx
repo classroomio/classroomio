@@ -17,7 +17,7 @@ steps below mirror it.
 
 ## Prerequisites
 
-- A running **Dokploy instance** with a **server connected** to it. Dokploy runs on any VPS —
+- A running **Dokploy instance** with a **server connected** to it. Dokploy runs on any VPS:
   DigitalOcean, Hetzner, AWS (Lightsail/EC2), or another provider. See Dokploy's
   [installation guide](https://docs.dokploy.com/docs/core/installation) to set this up.
 - A server sized for ClassroomIO. Dokploy's own baseline stack needs ~2 GB RAM, and ClassroomIO's
@@ -72,7 +72,7 @@ prompted, **select the server** you connected to Dokploy. This is the VPS Classr
 <Step>
 ### Choose the Raw (manual) provider and paste the compose file
 
-Dokploy asks where the compose file comes from — GitHub, GitLab, Bitbucket, or **Raw**. Choose **Raw**
+Dokploy asks where the compose file comes from: GitHub, GitLab, Bitbucket, or **Raw**. Choose **Raw**
 (the manual option) and paste the contents of
 [`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker-compose.images.yaml),
 the same pull-based stack used for the [Docker](/self-hosted/docker) and [Coolify](/self-hosted/coolify)
@@ -121,7 +121,7 @@ as storage). DNS can take a few minutes to propagate.
 
 Click **Deploy**. Dokploy pulls `classroomio/{api,dashboard,jobs}` plus Postgres, Redis, and MinIO,
 then starts the stack. The API runs database setup on first boot. Watch the **logs** until every
-service is up — this is your first deploy.
+service is up. This is your first deploy.
 
 ![Dokploy deploy logs showing the stack coming up](/docs/dokploy-05-deploy-logs.webp)
 </Step>
@@ -131,9 +131,9 @@ service is up — this is your first deploy.
 
 Open the service's **Domains** section and click **Add Domain**. In the modal that appears:
 
-- **Service:** select **dashboard** — the service this domain routes to.
+- **Service:** select **dashboard**, the service this domain routes to.
 - **Host:** your dashboard domain, e.g. `dash.yourdomain.com`.
-- **Container Port:** `3082` — the port the dashboard listens on.
+- **Container Port:** `3082`, the port the dashboard listens on.
 - **HTTPS:** turn it on, then choose **Let's Encrypt** as the certificate provider.
 
 Create the domain. Dokploy provisions the certificate through Traefik, which usually only takes a moment.

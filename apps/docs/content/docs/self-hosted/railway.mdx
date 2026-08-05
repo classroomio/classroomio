@@ -49,7 +49,7 @@ Click the **Deploy on Railway** button above. Railway opens the template page wh
 <Step>
 ### Review the preconfigured services
 
-The template comes with every service preconfigured — most need nothing from you:
+The template comes with every service preconfigured: most need nothing from you:
 
 - **Redis** and **Postgres**: no configuration required.
 - **cio-dashboard**: no required configuration (optionally set branding such as the public OG image; not required).
@@ -103,10 +103,10 @@ Click **Deploy**. Railway begins building and bringing the services online: Redi
 </Step>
 
 <Step>
-### First boot may crash — this is expected
+### First boot may crash: this is expected
 
 :::warning[Only if you use the Railway-generated subdomain]
-On the first deploy, `cio-api` can crash. This is expected **only when you rely on the Railway-generated subdomain**: the API needs the dashboard's public domain (Better Auth's base URL), which doesn't exist yet. If you're using your **own custom subdomain**, this crash doesn't happen — skip ahead to signing up.
+On the first deploy, `cio-api` can crash. This is expected **only when you rely on the Railway-generated subdomain**: the API needs the dashboard's public domain (Better Auth's base URL), which doesn't exist yet. If you're using your **own custom subdomain**, this crash doesn't happen. Skip ahead to signing up.
 :::
 
 ![cio-api crashing on first boot before the dashboard domain exists](/docs/railway-08-first-boot-crash.webp)
@@ -198,7 +198,7 @@ Optional: add `PUBLIC_APP_TITLE`, `PUBLIC_APP_DESCRIPTION`, `PUBLIC_OG_IMAGE_URL
 
 ### cio-jobs (background worker)
 
-The jobs worker has **no public domain** — it drains the Redis queue (video processing, transcription, AI course generation, and emails). It shares the same Postgres, Redis, storage, email, and OpenAI settings as the API:
+The jobs worker has **no public domain**: it drains the Redis queue (video processing, transcription, AI course generation, and emails). It shares the same Postgres, Redis, storage, email, and OpenAI settings as the API:
 
 ```zsh title="env"
 DATABASE_URL="${{db.DATABASE_URL}}"
@@ -225,7 +225,7 @@ OPENAI_API_KEY=
 
 ### cio-minio (object storage)
 
-`cio-minio` ships **in the template** — its `/data` volume is already attached and the `videos`,
+`cio-minio` ships **in the template**: its `/data` volume is already attached and the `videos`,
 `documents`, and `media` buckets are already seeded. You only set its credentials during
 configuration:
 

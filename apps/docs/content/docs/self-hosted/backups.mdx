@@ -17,7 +17,7 @@ This writes two timestamped files into `./backups/`:
 - `classroomio-db-<timestamp>.sql.gz`: a full `pg_dump` of the database.
 - `classroomio-minio-<timestamp>.tar.gz`: an archive of the bundled MinIO volume.
 
-If you use external S3/R2 instead of the bundled MinIO, the second step is skipped — use your
+If you use external S3/R2 instead of the bundled MinIO, the second step is skipped. Use your
 provider's backup or replication tools for the buckets.
 
 `./classroomio.sh upgrade` runs this backup automatically before pulling new images, so every
@@ -25,7 +25,7 @@ upgrade has a restore point.
 
 :::warning[Copy backups off the server]
 A dead disk takes `./backups/` with it. Sync the files to another machine, an object-storage
-bucket, or your provider's snapshot system on a schedule — e.g. a nightly cron:
+bucket, or your provider's snapshot system on a schedule, e.g. a nightly cron:
 
 ```zsh title="crontab"
 0 3 * * * cd /path/to/classroomio && ./classroomio.sh backup && rsync -a backups/ user@other-host:classroomio-backups/
@@ -90,7 +90,7 @@ docker run --rm -v classroomio_minio-data:/data -v "$PWD/backups":/backup \
 
 :::danger[The fastest way to lose data is a cleanup command]
 `docker compose down -v` and `docker volume prune` **delete** the `postgres-data`, `redis-data`,
-and `minio-data` volumes. Never run them on a production host — see
+and `minio-data` volumes. Never run them on a production host. See
 [Troubleshooting → disk space](/self-hosted/troubleshooting#no-space-left-on-device) for safe
 alternatives.
 :::

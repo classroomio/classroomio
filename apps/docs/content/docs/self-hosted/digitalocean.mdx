@@ -40,7 +40,7 @@ Prefer to follow along? This video walks through the whole deployment end to end
 
 :::note[No domain? You can still get real HTTPS]
 Use [sslip.io](https://sslip.io), a public wildcard-DNS service where `<anything>.<ip>.sslip.io`
-resolves to that IP — so no records are needed. In Step 1 set
+resolves to that IP, so no records are needed. In Step 1 set
 `export DOMAIN=<your-droplet-ip>.sslip.io` instead of your own domain, and **every other command on
 this page is identical**. Read the [caveat](#a-note-on-sslipio) before using it for anything real.
 :::
@@ -152,7 +152,7 @@ sudo usermod -aG docker cio
 ```
 
 :::warning[Use the literal username, not `$USER`]
-`$USER` expands to whoever runs the shell — run it from a root session and it grants **root** rather
+`$USER` expands to whoever runs the shell. Run it from a root session and it grants **root** rather
 than your user, and every later Docker command fails with `permission denied` on
 `/var/run/docker.sock`. Check with `getent group docker`.
 :::
@@ -168,7 +168,7 @@ id | grep -o docker        # -> docker
 docker compose version     # must be v2.24.0 or newer
 ```
 
-Compose **v2.24.0+** is required — Step 6 uses the `!override` YAML tag. Older versions
+Compose **v2.24.0+** is required: Step 6 uses the `!override` YAML tag. Older versions
 *concatenate* port lists instead of replacing them, which would leave your internal services exposed
 to the internet.
 </Step>
@@ -182,7 +182,7 @@ curl -O https://raw.githubusercontent.com/classroomio/classroomio/main/docker-co
 ```
 
 This is the same [pull-based stack](/self-hosted/docker#quick-start) used
-by the other guides — it pulls the published `classroomio/*` images and builds nothing.
+by the other guides. It pulls the published `classroomio/*` images and builds nothing.
 </Step>
 
 <Step>
@@ -396,7 +396,7 @@ cio-postgres    Up About a minute (healthy)
 cio-redis       Up About a minute (healthy)
 ```
 
-`cio-minio-init` is absent on purpose — it creates the storage buckets and exits. Confirm it worked:
+`cio-minio-init` is absent on purpose: it creates the storage buckets and exits. Confirm it worked:
 
 ```zsh title="Terminal"
 docker logs cio-minio-init | tail -4
@@ -437,7 +437,7 @@ Open `https://app.<your-domain>` and create the first account: it becomes the or
 
 Then verify uploads end to end: create a course, upload an image, and upload a short video. Watch the
 worker process it with `dc logs -f jobs`. In your browser's DevTools the media URLs must point at
-`https://s3.<your-domain>/...` — if you see `localhost:9000`, `OBJECT_STORAGE_PUBLIC_ENDPOINT` is
+`https://s3.<your-domain>/...`. If you see `localhost:9000`, `OBJECT_STORAGE_PUBLIC_ENDPOINT` is
 wrong.
 </Step>
 
@@ -498,7 +498,7 @@ own. **For production, use your own domain.**
    ```
 
 3. Change the two site addresses in `~/classroomio/Caddyfile`.
-4. Apply, then clear cached media URLs — presigned URLs are cached in Redis for 50 minutes, so
+4. Apply, then clear cached media URLs: presigned URLs are cached in Redis for 50 minutes, so
    without this the old hostname keeps being served:
 
    ```zsh title="Terminal"
@@ -506,7 +506,7 @@ own. **For production, use your own domain.**
    docker exec cio-redis sh -c "redis-cli --scan --pattern 'presign:download:*' | xargs -r redis-cli del"
    ```
 
-Existing uploads keep working — media URLs are generated per request from the new endpoint.
+Existing uploads keep working. Media URLs are generated per request from the new endpoint.
 
 ## Troubleshooting
 
