@@ -31,10 +31,10 @@
 
   const sizeClass = $derived(
     size === 'sm'
-      ? 'ui:px-3 ui:py-1.5 ui:text-sm'
+      ? 'ui:h-8 ui:px-3 ui:text-sm'
       : size === 'lg'
-        ? 'ui:px-6 ui:py-3 ui:text-base'
-        : 'ui:px-4 ui:py-2 ui:text-sm'
+        ? 'ui:h-10 ui:px-6 ui:text-sm'
+        : 'ui:h-9 ui:px-4 ui:text-sm'
   );
 
   const variantClass = $derived(
