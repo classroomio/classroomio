@@ -289,8 +289,11 @@
   },
   "common": {
     "unsaved_changes": {
-      "message": "You have unsaved changes. Are you sure you want to leave?"
+      "message": "You have unsaved changes. Are you sure you want to leave?",
+      "label": "Unsaved changes"
     },
+    "discard": "Discard",
+    "save_changes": "Save changes",
     "refresh": "Refresh"
   },
   "compliance": {
@@ -1858,6 +1861,7 @@
       "most_lessons": "Lessons: Most first",
       "fewest_lessons": "Lessons: Fewest first",
       "date_created": "Date Created",
+      "last_updated_at": "Last Updated At",
       "published": "Published",
       "lessons": "Lessons"
     },
@@ -2447,6 +2451,8 @@
               "cancel_upload": "Cancel Upload",
               "upload_cancelled": "Upload cancelled by user",
               "downloading": "Downloading...",
+              "download_success": "Document downloaded successfully",
+              "download_error": "Failed to download document",
               "view_pdf": "View PDF",
               "remove_document": "Remove document",
               "delete": "Delete",
@@ -2456,7 +2462,11 @@
               "failed_to_render_pdf": "Failed to render PDF page",
               "use_arrow_keys": "Use arrow keys to navigate, +/- to zoom, or click the controls above. Right-click is disabled.",
               "empty_title": "No documents yet",
-              "empty_description": "Upload documents to share with your students"
+              "empty_description": "Upload documents to share with your students",
+              "attachments_heading": "Attachments",
+              "file_count": "{count, plural, one {# file} other {# files}}",
+              "view_file": "View file",
+              "reorder_file": "Reorder file"
             }
           },
           "button_done": "Done"

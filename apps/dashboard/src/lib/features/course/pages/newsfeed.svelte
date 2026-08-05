@@ -69,8 +69,13 @@
     }
   };
 
-  const addNewComment = async (comment: string, feedId: string, parentId?: number) => {
-    await newsfeedApi.createComment(courseId, feedId, comment, author, parentId);
+  const addNewComment = async (
+    comment: string,
+    feedId: string,
+    parentId?: number,
+    replyTo?: { commentId: number; authorFullname: string }
+  ) => {
+    await newsfeedApi.createComment(courseId, feedId, comment, author, parentId, replyTo);
 
     if (!newsfeedApi.success) {
       return snackbar.error('snackbar.course.error.commenting_error');
@@ -97,11 +102,11 @@
   };
 
   const pinnedFeeds = $derived.by(() => {
-    return newsfeedApi.feeds.filter((feed) => Boolean((feed as any).isPinned || (feed as any).is_pinned));
+    return newsfeedApi.feeds.filter((feed) => feed.isPinned);
   });
 
   const unpinnedFeeds = $derived.by(() => {
-    return newsfeedApi.feeds.filter((feed) => !((feed as any).isPinned || (feed as any).is_pinned));
+    return newsfeedApi.feeds.filter((feed) => !feed.isPinned);
   });
 
   function getPageRoles(org: AccountOrg) {
@@ -147,7 +152,7 @@
     />
   {:else}
     {#if pinnedFeeds.length > 0}
-      <div class="text-muted-foreground mb-3 flex items-center gap-1.5">
+      <div class="text-muted-foreground mb-1.5 flex items-center gap-1.5">
         <span class="text-xs font-medium tracking-wider uppercase">
           {$t('course.navItem.news_feed.pinned') || 'Pinned'}
         </span>
@@ -172,7 +177,7 @@
     {/if}
 
     {#if pinnedFeeds.length > 0 && unpinnedFeeds.length > 0}
-      <div class="text-muted-foreground mb-3 flex items-center gap-1.5">
+      <div class="text-muted-foreground mb-1.5 flex items-center gap-1.5">
         <span class="text-xs font-medium tracking-wider uppercase">
           {$t('course.navItem.news_feed.other_posts')}
         </span>

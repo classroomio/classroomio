@@ -10,6 +10,7 @@
 
   type Props = {
     errors: Record<string, string>;
+    activeTab?: string;
   };
 
   let { errors }: Props = $props();

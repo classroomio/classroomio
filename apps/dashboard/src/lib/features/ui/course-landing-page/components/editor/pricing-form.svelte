@@ -7,6 +7,7 @@
   import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { isCourseFree } from '$lib/utils/functions/course';
+  import { toFiniteNumber } from '@cio/utils/functions';
 
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextEditor } from '$features/ui';
@@ -18,10 +19,10 @@
 
   let { course = $bindable(), setter }: Props = $props();
 
-  let discount = $derived(get(course, 'metadata.discount', 0));
   let paymentLink = $derived(get(course, 'metadata.paymentLink', ''));
-  let showDiscount = $derived(get(course, 'metadata.showDiscount', false));
-  let giftToggled = $derived(get(course, 'metadata.reward.show', false));
+  let showDiscount = $derived(Boolean(get(course, 'metadata.showDiscount', false)));
+  let discount = $derived(toFiniteNumber(get(course, 'metadata.discount', 0)) ?? 0);
+  let giftToggled = $derived(Boolean(get(course, 'metadata.reward.show', false)));
 
   function handleChange(content: string) {
     setter(content, 'metadata.reward.description');
@@ -34,7 +35,7 @@
     setter(paymentLink, 'metadata.paymentLink');
   });
   $effect(() => {
-    setter(discount, 'metadata.discount');
+    setter(toFiniteNumber(discount) ?? 0, 'metadata.discount');
   });
   $effect(() => {
     setter(giftToggled, 'metadata.reward.show');

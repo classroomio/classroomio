@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Actualizar",
     "unsaved_changes": {
-      "message": "Tienes cambios sin guardar. ¿Estás seguro de que quieres irte?"
-    }
+      "message": "Tienes cambios sin guardar. ¿Estás seguro de que quieres irte?",
+      "label": "Cambios sin guardar"
+    },
+    "discard": "Descartar",
+    "save_changes": "Guardar cambios"
   },
   "validations": {
     "generic": {
@@ -2004,6 +2007,8 @@
               "cancel_upload": "Cancelar carga",
               "upload_cancelled": "Subida cancelada por el usuario",
               "downloading": "Descargando...",
+              "download_success": "Documento descargado correctamente",
+              "download_error": "No se pudo descargar el documento",
               "view_pdf": "Ver PDF",
               "remove_document": "Quitar documento",
               "delete": "Eliminar",
@@ -2013,7 +2018,11 @@
               "failed_to_render_pdf": "No se pudo renderizar la página PDF",
               "use_arrow_keys": "Utilice las teclas de flecha para navegar, +/- para hacer zoom o haga clic en los controles de arriba. El clic derecho está deshabilitado.",
               "empty_title": "Aún no hay documentos",
-              "empty_description": "Cargue documentos para compartir con sus estudiantes"
+              "empty_description": "Cargue documentos para compartir con sus estudiantes",
+              "attachments_heading": "Adjuntos",
+              "file_count": "{count, plural, one {# archivo} other {# archivos}}",
+              "view_file": "Ver archivo",
+              "reorder_file": "Reordenar archivo"
             },
             "video": {
               "title": "Video",
@@ -2604,6 +2613,7 @@
       "most_lessons": "Lecciones: más primero",
       "fewest_lessons": "Lecciones: menos primero",
       "date_created": "Fecha de creación",
+      "last_updated_at": "Última actualización",
       "published": "Publicado",
       "lessons": "Lecciones"
     },
