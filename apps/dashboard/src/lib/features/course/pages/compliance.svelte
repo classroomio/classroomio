@@ -21,7 +21,6 @@
   type ComplianceStatus = CourseComplianceLearner['status'] | LearnerComplianceRecord['status'] | 'no_record';
   type StaffAction = 'reset' | 'extend' | 'waive' | null;
 
-  let lastRequestKey = $state<string | null>(null);
   let staffTab = $state<'overview' | 'learners'>('overview');
   let activeAction = $state<StaffAction>(null);
   let bulkActionType = $state<Exclude<StaffAction, null> | null>(null);
@@ -76,28 +75,15 @@
 
     if (!isComplianceCourse) {
       complianceApi.reset();
-      lastRequestKey = null;
       return;
     }
 
     const courseId = courseApi.course.id;
     if (isStudent && currentMember?.profileId) {
-      const requestKey = `${courseId}:${currentMember.profileId}:learner`;
-      if (lastRequestKey === requestKey) {
-        return;
-      }
-
-      lastRequestKey = requestKey;
       void complianceApi.ensureLearnerHistory(courseId, currentMember.profileId);
       return;
     }
 
-    const requestKey = `${courseId}:overview`;
-    if (lastRequestKey === requestKey) {
-      return;
-    }
-
-    lastRequestKey = requestKey;
     void complianceApi.ensureOverview(courseId);
   });
 
