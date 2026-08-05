@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import { Checkbox } from '@cio/ui/base/checkbox';
@@ -81,7 +82,7 @@
     }
 
     const courseId = courseApi.course.id;
-    const needsRefresh = loadedCourseId !== courseId;
+    const needsRefresh = untrack(() => loadedCourseId) !== courseId;
     loadedCourseId = courseId;
 
     if (isStudent && currentMember?.profileId) {
