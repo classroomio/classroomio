@@ -1,0 +1,55 @@
+/*
+ * Scalar's embedded API reference (openapi.renderer: 'scalar' in blume.config.ts)
+ * manages its own light/dark state independently of Blume's [data-theme]
+ * attribute on <html> -- the two never talk to each other, so the reference
+ * can get stuck looking dark even when the rest of the site is light.
+ *
+ * Force Scalar's palette to follow the site's actual theme instead, regardless
+ * of which of Scalar's own .light-mode/.dark-mode classes it happens to apply.
+ * Values below are copied from Scalar's own default theme (its .light-mode and
+ * .dark-mode blocks in the CDN-loaded @scalar/api-reference bundle), not
+ * invented, so this matches what Scalar looks like when it does pick the
+ * matching class itself.
+ *
+ * Fragile by nature: @scalar/api-reference loads unpinned from jsDelivr
+ * (see blume's getScriptTags), so if Scalar renames or restructures these
+ * variables upstream, this override silently stops matching and the two
+ * palettes can drift. Re-check against the live bundle if the API page's
+ * colors look off after a Scalar update.
+ */
+
+html[data-theme='light'] .light-mode,
+html[data-theme='light'] .dark-mode {
+  --scalar-background-1: #fff !important;
+  --scalar-background-2: #f6f6f6 !important;
+  --scalar-background-3: #e7e7e7 !important;
+  --scalar-background-accent: #8ab4f81f !important;
+  --scalar-color-1: #1b1b1b !important;
+  --scalar-color-2: #757575 !important;
+  --scalar-color-3: #8e8e8e !important;
+  --scalar-border-color: #dfdfdf !important;
+  --scalar-button-1: #000 !important;
+  --scalar-button-1-hover: #000c !important;
+  --scalar-button-1-color: #fff !important;
+  --scalar-scrollbar-color: #0000002e !important;
+  --scalar-scrollbar-color-active: #0000005c !important;
+  color-scheme: light !important;
+}
+
+html[data-theme='dark'] .light-mode,
+html[data-theme='dark'] .dark-mode {
+  --scalar-background-1: #020202 !important;
+  --scalar-background-2: #1a1a1a !important;
+  --scalar-background-3: #272727 !important;
+  --scalar-background-accent: #3ea6ff1f !important;
+  --scalar-color-1: #e7e7e7 !important;
+  --scalar-color-2: #a4a4a4 !important;
+  --scalar-color-3: #797979 !important;
+  --scalar-border-color: #2d2d2d !important;
+  --scalar-button-1: #fff !important;
+  --scalar-button-1-hover: #ffffffe6 !important;
+  --scalar-button-1-color: #000 !important;
+  --scalar-scrollbar-color: #ffffff2e !important;
+  --scalar-scrollbar-color-active: #ffffff5c !important;
+  color-scheme: dark !important;
+}
