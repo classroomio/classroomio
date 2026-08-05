@@ -6,6 +6,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { authClient } from '$lib/utils/services/auth/client';
+  import { logout } from '$lib/utils/functions/logout';
   import { classroomio } from '$lib/utils/services/api';
   import { globalStore } from '$lib/utils/store/app';
   import { page } from '$app/state';
@@ -151,7 +152,12 @@
 </script>
 
 <Dialog.Root {open}>
-  <Dialog.Content class="w-4/5 max-w-[500px] p-4" showCloseButton={false} interactOutsideBehavior="ignore">
+  <Dialog.Content
+    class="w-4/5 max-w-[500px] p-4"
+    data-verification-modal
+    showCloseButton={false}
+    interactOutsideBehavior="ignore"
+  >
     <Dialog.Header>
       <Dialog.Title>{$t('verify_email_modal.heading')}</Dialog.Title>
     </Dialog.Header>
@@ -165,15 +171,21 @@
       </p>
 
       <div class="flex flex-col items-center">
-        <Button disabled={loading || isSent} onclick={sendVerificationCode}>
-          {#if loading}
-            {$t('verify_email_modal.loading')}
-          {:else}
-            {$t('verify_email_modal.resend')}
-          {/if}
-        </Button>
+        <div class="flex flex-row gap-2">
+          <Button disabled={loading || isSent} onclick={sendVerificationCode}>
+            {#if loading}
+              {$t('verify_email_modal.loading')}
+            {:else}
+              {$t('verify_email_modal.resend')}
+            {/if}
+          </Button>
+          <Button variant="secondary" onclick={() => logout()} class="cursor-pointer">
+            {$t('settings.profile.logout')}
+          </Button>
+        </div>
+
         {#if isSent}
-          <p class="text-xs text-gray-700">
+          <p class="mt-2 text-xs text-gray-700">
             {$t('verify_email_modal.resend_in')}
             {countDown}
             {$t('verify_email_modal.seconds')}

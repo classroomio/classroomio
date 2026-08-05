@@ -858,7 +858,12 @@
           "description": "Os alunos inscritos não poderão fazer aulas ou exercícios bloqueados até que você os desbloqueie.",
           "description_live": "Aulas e exercícios bloqueados permanecem ocultos aos alunos até que você os desbloqueie – o que é útil se você liberar conteúdo semana após semana.",
           "unlock_all": "Desbloquear tudo"
-        }
+        },
+        "certificate_deadline_required": "Defina o prazo do certificado primeiro",
+        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados. Defina um prazo nas configurações do certificado antes de publicar.",
+        "go_to_certificate_settings": "Vá para configurações de certificado",
+        "completion_deadline_label": "Prazo de conclusão do curso",
+        "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo."
       },
       "analytics": {
         "title": "Análises"
@@ -2475,7 +2480,9 @@
       "blocker_final_misconfigured": "O exercício de certificação \"{exerciseTitle}\" não possui pontos configurados; peça ao seu instrutor para consertar.",
       "email_message_label": "Mensagem de e-mail",
       "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!",
-      "final_exercise_multiple_attempts_note": "Os alunos terão permissão para tentativas ilimitadas no exercício selecionado."
+      "final_exercise_multiple_attempts_note": "Os alunos terão permissão para tentativas ilimitadas no exercício selecionado.",
+      "deadline_required": "O prazo do certificado é necessário quando os certificados podem ser baixados.",
+      "deadline_required_enroll": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados."
     },
     "creator": {
       "heading": "Qual curso você deseja criar?",
