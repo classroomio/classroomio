@@ -65,6 +65,15 @@
           {/if}
         </div>
       {/if}
+      {#if hero.image}
+        <div class="ui:mt-12 ui:max-w-3xl ui:mx-auto">
+          <img
+            src={hero.image}
+            alt=""
+            class="ui:w-full ui:h-auto ui:rounded-xl ui:border ui:border-[var(--landing-border)]"
+          />
+        </div>
+      {/if}
     </div>
   </section>
 </EditableLandingSection>
