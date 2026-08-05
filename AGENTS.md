@@ -431,6 +431,37 @@ When cleanup or reset must follow a specific lifecycle moment, use the matching 
 
 Use `.server.ts` files for server-side code to isolate API keys.
 
+### Chart Imports and SSR
+
+`layerchart` has internal circular dependencies that Vite cannot reliably evaluate during SSR. Never statically import `layerchart` or the `@cio/ui/base/chart` runtime barrel from a component that can enter the server module graph.
+
+- Import chart types from the dependency-free types module: `import type { ChartConfig } from '@cio/ui/base/chart/types'` (or the equivalent relative path inside `packages/ui`).
+- Load chart runtime components with a browser-only dynamic import and render them inside an `{#await}` block guarded by `browser` or `typeof window !== 'undefined'`.
+- In exercise submission renderers, reuse `submission-response-bar-chart.svelte` or `submission-response-pie-chart.svelte`; do not import the chart barrel directly.
+
+```svelte
+<script module lang="ts">
+  function loadChart() {
+    if (typeof window === 'undefined') return Promise.reject(new Error('browser-only'));
+
+    return import('@cio/ui/base/chart');
+  }
+</script>
+
+<script lang="ts">
+  import { browser } from '$app/environment';
+  import type { ChartConfig } from '@cio/ui/base/chart/types';
+</script>
+
+{#if browser}
+  {#await loadChart() then Chart}
+    <Chart.ChartContainer {config}>
+      <Chart.BarChart data={chartData} x="label" y="value" />
+    </Chart.ChartContainer>
+  {/await}
+{/if}
+```
+
 ### UI Components
 
 - Add new UI components under `packages/ui/src` following existing folder patterns.
