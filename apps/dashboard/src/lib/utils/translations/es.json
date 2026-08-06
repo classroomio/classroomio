@@ -3941,7 +3941,11 @@
     "resend": "Reenviar código de verificación",
     "resend_in": "Reenviar verificación en",
     "seconds": "segundos",
-    "snackbar_error": "error al enviar código"
+    "snackbar_error": "error al enviar código",
+    "wrong_address": "¿Se registró con la dirección incorrecta?",
+    "switch_account": "Cambiar de cuenta",
+    "confirm_link_prefix": "Haga clic en el enlace que le enviamos",
+    "confirm_link_suffix": "para confirmar tu correo electrónico"
   },
   "public_courses": {
     "page_title": "Cursos - ClassroomIO",

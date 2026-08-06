@@ -3941,7 +3941,11 @@
     "resend": "Bestätigungscode erneut senden",
     "resend_in": "Bestätigung erneut senden",
     "seconds": "Sekunden",
-    "snackbar_error": "Fehler beim Senden des Codes"
+    "snackbar_error": "Fehler beim Senden des Codes",
+    "wrong_address": "Mit der falschen Adresse angemeldet?",
+    "switch_account": "Konto wechseln",
+    "confirm_link_prefix": "Klicken Sie auf den Link, an den wir gesendet haben",
+    "confirm_link_suffix": "um Ihre E-Mail zu bestätigen"
   },
   "public_courses": {
     "page_title": "Kurse - ClassroomIO",

@@ -3941,7 +3941,11 @@
     "resend": "सत्यापन कोड पुनः भेजें",
     "resend_in": "सत्यापन पुनः भेजें",
     "seconds": "सेकंड",
-    "snackbar_error": "कोड भेजते समय त्रुटि"
+    "snackbar_error": "कोड भेजते समय त्रुटि",
+    "wrong_address": "गलत पते से साइन अप किया गया?",
+    "switch_account": "खाता स्थानांतरित करें",
+    "confirm_link_prefix": "हमारे द्वारा भेजे गए लिंक पर क्लिक करें",
+    "confirm_link_suffix": "अपने ईमेल की पुष्टि करने के लिए"
   },
   "public_courses": {
     "page_title": "पाठ्यक्रम - क्लासरूमआईओ",
