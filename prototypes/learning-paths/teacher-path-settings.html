@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Path Settings · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .fset { margin-top: 16px; }
+      .fset-head { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+      .fset-head h2 { font-size: 14.5px; font-weight: 600; margin: 0; }
+      .fset-head p { font-size: 12.5px; color: var(--muted-foreground); margin: 2px 0 0; }
+      .fset-body { padding: 18px 20px; }
+      .cover-pick { display: flex; gap: 14px; align-items: center; }
+      .cover-prev { width: 150px; height: 84px; border-radius: var(--radius-md); flex-shrink: 0; background: radial-gradient(120% 150% at 10% -20%, oklch(0.623 0.214 259.815) 0%, transparent 55%), linear-gradient(120deg, oklch(0.488 0.243 264.376), oklch(0.546 0.245 262.881)); }
+      .trow2 { display: flex; align-items: center; gap: 14px; padding: 4px 0; }
+      .trow2 .tt { font-size: 14px; font-weight: 500; }
+      .trow2 .td { font-size: 12.5px; color: var(--muted-foreground); margin-top: 2px; }
+      .trow2 .grow { flex: 1; }
+      .sep { height: 1px; background: var(--border); margin: 14px 0; }
+      .price-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .save-note { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 12px; border-radius: var(--radius-md); background: var(--success-soft); color: var(--success); font-size: 13px; font-weight: 500; }
+      .save-note svg { width: 15px; height: 15px; stroke-width: 2.2; flex-shrink: 0; }
+      .radio-card { display: flex; align-items: flex-start; gap: 12px; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 14px; cursor: pointer; margin-bottom: 8px; }
+      .radio-card.sel { border-color: var(--primary); background: color-mix(in oklab, var(--primary) 5%, transparent); }
+      .rdot { width: 16px; height: 16px; border-radius: 999px; border: 1.5px solid var(--input); flex-shrink: 0; margin-top: 2px; display: grid; place-items: center; }
+      .radio-card.sel .rdot { border-color: var(--primary); }
+      .radio-card.sel .rdot::after { content: ''; width: 8px; height: 8px; border-radius: 999px; background: var(--primary); }
+      .rt { font-size: 13.5px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+      .rd { font-size: 12.5px; color: var(--muted-foreground); margin-top: 1px; display: block; }
+      .danger-zone { border-color: color-mix(in oklab, var(--destructive) 35%, transparent); }
+      .danger-zone .fset-head h2 { color: var(--destructive); }
+      .savebar { position: sticky; bottom: 12px; margin-top: 20px; background: color-mix(in oklab, var(--background) 94%, transparent); backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 10px 14px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-md); }
+      .savebar .msg { font-size: 13px; color: var(--muted-foreground); }
+      .savebar .actions { margin-left: auto; display: flex; gap: 8px; }
+      @media (max-width: 680px) { .price-row { grid-template-columns: 1fr; } .cover-pick { flex-direction: column; align-items: stretch; } .cover-prev { width: 100%; } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <a class="back-link" href="teacher-paths.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>All Learning Paths</a>
+        <div class="path-id">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></div>
+          <div><div class="nm">Frontend Engineering Bootcamp</div><div class="st st-active"><span class="dot"></span>Active</div></div>
+        </div>
+        <a class="nav-item" href="teacher-path-builder.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses<span class="nav-tail tnum">5</span></a>
+        <a class="nav-item" href="teacher-path-people.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>People<span class="nav-tail tnum">48</span></a>
+        <a class="nav-item" href="teacher-path-analytics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>Analytics</a>
+        <a class="nav-item" href="teacher-path-landing-editor.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Landing page</a>
+        <a class="nav-item" href="teacher-path-certificate.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Certificate</a>
+        <a class="nav-item active" href="teacher-path-settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>Settings</a>
+        <div class="sidebar-foot"><div class="avatar">JD</div><div class="who"><div class="nm">Jordan Diallo</div><div class="rl">Admin</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <nav class="crumbs">
+            <a href="teacher-paths.html">Learning Paths</a><span class="sep">/</span>
+            <a href="teacher-path-builder.html">Frontend Engineering Bootcamp</a><span class="sep">/</span>
+            <span class="here">Settings</span>
+          </nav>
+          <div class="top-actions">
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+            <a class="btn btn-outline btn-sm" href="path-detail.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>Preview as student</a>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap-narrow">
+            <div class="page-head" style="margin-bottom: 6px">
+              <div>
+                <h1 class="page-title">Settings</h1>
+                <p class="page-sub">Manage how this path appears, is priced, and behaves for learners.</p>
+              </div>
+            </div>
+
+            <!-- General -->
+            <section class="card fset">
+              <div class="fset-head"><h2>General</h2><p>The name, summary, and cover learners see across the LMS.</p></div>
+              <div class="fset-body">
+                <div class="field">
+                  <label class="label" for="nm">Path name</label>
+                  <input class="input" id="nm" value="Frontend Engineering Bootcamp" />
+                </div>
+                <div class="field">
+                  <label class="label" for="ds">Description</label>
+                  <textarea class="textarea" id="ds">A guided, five-course track that takes you from markup fundamentals to shipping a production React app. Finish in order to earn your certificate.</textarea>
+                </div>
+                <div class="field">
+                  <span class="label">Cover image</span>
+                  <div class="cover-pick">
+                    <div class="cover-prev"></div>
+                    <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start">
+                      <button class="btn btn-outline btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>Upload image</button>
+                      <span class="hint">PNG or JPG, at least 1200×480px.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Pricing -->
+            <section class="card fset">
+              <div class="fset-head"><h2>Pricing</h2><p>One bundle price for the whole path. Enrolling unlocks every course.</p></div>
+              <div class="fset-body">
+                <div class="price-row">
+                  <div class="field" style="margin-bottom: 0">
+                    <label class="label" for="pr">Path price</label>
+                    <input class="input tnum" id="pr" value="$199" />
+                  </div>
+                  <div class="field" style="margin-bottom: 0">
+                    <label class="label" for="cur">Currency</label>
+                    <select class="select" id="cur"><option>USD</option><option>EUR</option><option>NGN</option></select>
+                  </div>
+                </div>
+                <div class="sep"></div>
+                <div class="trow2">
+                  <div class="grow">
+                    <div class="tt">Show savings vs individual courses</div>
+                    <div class="td tnum">Courses sum to $280 — the page will show "Save $81 (29%)".</div>
+                  </div>
+                  <label class="switch"><input type="checkbox" checked aria-label="Show savings" /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <div class="save-note tnum">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  Learners see: $199 <s style="opacity: 0.7">$280</s> · Save $81 vs buying each course
+                </div>
+              </div>
+            </section>
+
+            <!-- Enrollment & flow -->
+            <section class="card fset">
+              <div class="fset-head"><h2>Enrollment &amp; flow</h2><p>How learners join and move through the path.</p></div>
+              <div class="fset-body">
+                <div class="trow2">
+                  <div class="grow">
+                    <div class="tt">Self-enrollment from the landing page</div>
+                    <div class="td">Visitors can buy or join this path from your public site. Turn off for admin-managed enrollment only.</div>
+                  </div>
+                  <label class="switch"><input type="checkbox" checked aria-label="Self-enrollment" /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <div class="sep"></div>
+                <div class="trow2">
+                  <div class="grow">
+                    <div class="tt">Unlock courses in order</div>
+                    <div class="td">Each course unlocks after the previous one's lessons and exercises are complete.</div>
+                  </div>
+                  <label class="switch"><input type="checkbox" checked aria-label="Unlock in order" /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <div class="sep"></div>
+                <div class="trow2">
+                  <div class="grow">
+                    <div class="tt">Auto-enroll in path courses</div>
+                    <div class="td">Joining the path enrolls the learner in every course it contains.</div>
+                  </div>
+                  <label class="switch"><input type="checkbox" checked aria-label="Auto-enroll" /><span class="track"></span><span class="knob"></span></label>
+                </div>
+              </div>
+            </section>
+
+            <!-- Status -->
+            <section class="card fset">
+              <div class="fset-head"><h2>Status &amp; visibility</h2><p>Controls whether learners can see and join this path.</p></div>
+              <div class="fset-body">
+                <label class="radio-card sel"><span class="rdot"></span><span><span class="rt">Active <span class="badge badge-success-soft">Visible</span></span><span class="rd">Live on your landing page and in the LMS for enrolled learners.</span></span></label>
+                <label class="radio-card"><span class="rdot"></span><span><span class="rt">Draft <span class="badge badge-muted">Hidden</span></span><span class="rd">Hidden from visitors and learners while you build it.</span></span></label>
+                <label class="radio-card"><span class="rdot"></span><span><span class="rt">Archived <span class="badge badge-muted">Off catalog</span></span><span class="rd">Removed everywhere. Learner progress and course access are preserved.</span></span></label>
+              </div>
+            </section>
+
+            <!-- Danger -->
+            <section class="card fset danger-zone">
+              <div class="fset-head"><h2>Danger zone</h2></div>
+              <div class="fset-body">
+                <div class="trow2">
+                  <div class="grow">
+                    <div class="tt">Delete this path</div>
+                    <div class="td">Permanently removes the path and its landing page. Courses, enrollments, and learner progress are not deleted.</div>
+                  </div>
+                  <button class="btn btn-destructive btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete path</button>
+                </div>
+              </div>
+            </section>
+
+            <div class="savebar">
+              <span class="msg">Unsaved changes</span>
+              <div class="actions">
+                <button class="btn btn-ghost btn-sm">Discard</button>
+                <button class="btn btn-primary btn-sm">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+      document.querySelectorAll('.radio-card').forEach((r) => {
+        r.addEventListener('click', () => {
+          document.querySelector('.radio-card.sel')?.classList.remove('sel');
+          r.classList.add('sel');
+        });
+      });
+    </script>
+  </body>
+</html>
