@@ -2423,6 +2423,11 @@
         "completed": "{total} में से {completed} पूर्ण",
         "lessons": "{total} में से {completed} पाठ",
         "exercises": "{total} में से {completed} अभ्यास"
+      },
+      "footer_nav": {
+        "label": "कोर्स सामग्री नेविगेशन",
+        "previous": "पिछला",
+        "next": "अगला"
       }
     },
     "navItems": {
@@ -4625,7 +4630,7 @@
     },
     "powered_by": {
       "label": "द्वारा संचालित",
-      "brand": "क्लासरूमआईओ"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "पिछला",

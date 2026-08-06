@@ -2423,6 +2423,11 @@
         "completed": "{completed} de {total} completados",
         "lessons": "{completed} de {total} lecciones",
         "exercises": "{completed} de {total} ejercicios"
+      },
+      "footer_nav": {
+        "label": "Navegación del contenido del curso",
+        "previous": "Anterior",
+        "next": "Siguiente"
       }
     },
     "navItems": {
@@ -4625,7 +4630,7 @@
     },
     "powered_by": {
       "label": "Desarrollado por",
-      "brand": "AulaIO"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "Anterior",

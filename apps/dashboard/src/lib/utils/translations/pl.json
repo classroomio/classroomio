@@ -2423,6 +2423,11 @@
         "completed": "Ukończono {completed} z {total}",
         "lessons": "{completed} z {total} lekcji",
         "exercises": "{completed} z {total} ćwiczeń"
+      },
+      "footer_nav": {
+        "label": "Nawigacja po treści kursu",
+        "previous": "Poprzedni",
+        "next": "Następny"
       }
     },
     "navItems": {
@@ -4625,7 +4630,7 @@
     },
     "powered_by": {
       "label": "Obsługiwane przez",
-      "brand": "KlasaIO"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "Poprzedni",

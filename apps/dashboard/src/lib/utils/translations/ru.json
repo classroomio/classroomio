@@ -2423,6 +2423,11 @@
         "completed": "Завершено {completed} из {total}",
         "lessons": "{completed} из {total} уроков",
         "exercises": "{completed} из {total} упражнений"
+      },
+      "footer_nav": {
+        "label": "Навигация по содержанию курса",
+        "previous": "Назад",
+        "next": "Далее"
       }
     },
     "navItems": {
@@ -4625,7 +4630,7 @@
     },
     "powered_by": {
       "label": "При поддержке",
-      "brand": "КлассIO"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "Предыдущий",
