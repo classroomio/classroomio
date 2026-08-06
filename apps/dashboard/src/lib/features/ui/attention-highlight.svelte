@@ -65,8 +65,11 @@
   });
 
   $effect(() => {
-    if (trigger > 0 && trigger !== lastTrigger) {
-      lastTrigger = trigger;
+    if (trigger === lastTrigger) return;
+
+    lastTrigger = trigger;
+
+    if (trigger > 0) {
       triggerPulse();
     }
   });
