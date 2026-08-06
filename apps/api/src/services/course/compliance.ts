@@ -135,16 +135,17 @@ async function getTargetStudentMembers(courseId: string, profileIds?: string[]) 
   return students;
 }
 
-function resolveComplianceInitialDueDate(course: Awaited<ReturnType<typeof getComplianceCourseOrThrow>>) {
+/**
+ * Resolves the initial compliance cycle due date from the course certificate
+ * deadline. Returns `null` when no deadline is set — callers must then skip
+ * record creation (enrollment itself is still allowed). Throws only when a
+ * deadline is present but malformed.
+ */
+function getComplianceInitialDueDate(course: Awaited<ReturnType<typeof getComplianceCourseOrThrow>>): string | null {
   const dueDate = course.certificate?.deadline ?? null;
 
   if (!dueDate) {
-    throw new AppError(
-      'Compliance courses require a certificate deadline before learners can be enrolled',
-      ErrorCodes.VALIDATION_ERROR,
-      400,
-      'certificate.deadline'
-    );
+    return null;
   }
 
   const parsedDueDate = new Date(dueDate);
@@ -211,7 +212,12 @@ async function getComplianceCompletionSnapshot(params: {
 
 async function ensureComplianceEnrollmentRecordForLearner(courseId: string, groupMemberId: string, profileId: string) {
   const course = await getComplianceCourseOrThrow(courseId);
-  const dueDate = resolveComplianceInitialDueDate(course);
+  const dueDate = getComplianceInitialDueDate(course);
+
+  if (!dueDate) {
+    return null;
+  }
+
   const [existingRecord] = await getLatestComplianceRecordsByProfiles(courseId, [profileId]);
 
   if (existingRecord) {
@@ -242,11 +248,14 @@ export async function ensureComplianceEnrollmentRecordsForProfiles(courseIds: st
   for (const courseId of courseIds) {
     const [course] = await getCourseById(courseId);
 
-    if (!course || course.type !== 'COMPLIANCE') {
+    if (!course || course.type !== 'COMPLIANCE' || !course.compliance) {
       continue;
     }
 
-    resolveComplianceInitialDueDate(await getComplianceCourseOrThrow(courseId));
+    const initialDueDate = getComplianceInitialDueDate(course);
+    if (!initialDueDate) {
+      continue;
+    }
 
     const learners = await getStudentCourseMembersForCompliance(courseId, profileIds);
     for (const learner of learners) {
@@ -283,6 +292,14 @@ export async function syncComplianceProgressFromSubmission(courseId: string, gro
   }
 
   const activeRecord = await ensureComplianceEnrollmentRecordForLearner(courseId, groupMemberId, profile.id);
+
+  if (!activeRecord) {
+    return {
+      status: 'not_started',
+      completed: false
+    };
+  }
+
   if (!activeRecord.completedAt && activeRecord.status === 'not_started') {
     await updateCourseCompletionRecord(activeRecord.id, {
       status: 'in_progress',
@@ -299,6 +316,14 @@ export async function syncComplianceProgressFromSubmission(courseId: string, gro
   }
 
   const latestRecord = await ensureComplianceEnrollmentRecordForLearner(courseId, groupMemberId, profile.id);
+
+  if (!latestRecord) {
+    return {
+      status: 'not_started',
+      completed: false
+    };
+  }
+
   if (latestRecord.completedAt) {
     return {
       status: latestRecord.status,
