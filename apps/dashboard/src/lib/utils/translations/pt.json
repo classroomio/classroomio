@@ -5,6 +5,11 @@
       "message": "Você tem alterações não salvas. Tem certeza de que deseja sair?",
       "label": "Alterações não salvas"
     },
+    "app_update": {
+      "title": "Uma nova versão está disponível.",
+      "description": "Recarregue para obter os recursos e correções mais recentes.",
+      "reload": "Recarregar"
+    },
     "discard": "Descartar",
     "save_changes": "Salvar alterações"
   },

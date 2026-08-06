@@ -5,6 +5,11 @@
       "message": "Masz niezapisane zmiany. Czy na pewno chcesz wyjść?",
       "label": "Niezapisane zmiany"
     },
+    "app_update": {
+      "title": "Dostępna jest nowa wersja.",
+      "description": "Odśwież, aby uzyskać najnowsze funkcje i poprawki.",
+      "reload": "Odśwież"
+    },
     "discard": "Odrzuć",
     "save_changes": "Zapisz zmiany"
   },
