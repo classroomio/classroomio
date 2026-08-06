@@ -184,7 +184,7 @@
       variant="ghost"
       size="sm"
       onclick={handleBackToComments}
-      class="text-muted-foreground hover:text-foreground ui:transition-colors ui:h-auto ui:p-0 ui:justify-start mb-3 text-sm font-medium"
+      class="ui:text-muted-foreground ui:hover:text-foreground ui:transition-colors ui:h-auto ui:p-0 ui:justify-start mb-3 text-sm font-medium"
     >
       {$t('course.navItem.news_feed.comments.back_to_comments')}
     </Button>
@@ -195,7 +195,7 @@
       onclick={handleShowMore}
       disabled={isLoading}
       loading={isLoading}
-      class="text-muted-foreground hover:text-foreground ui:transition-colors ui:h-auto ui:p-0 ui:justify-start mb-3 text-sm font-medium"
+      class="ui:text-muted-foreground ui:hover:text-foreground ui:transition-colors ui:h-auto ui:p-0 ui:justify-start mb-3 text-sm font-medium"
     >
       {$t('course.navItem.news_feed.comments.view_more', {
         count: Math.max((thread?.totalRootCount ?? 0) - (thread?.rootIds.length ?? 0), 0)

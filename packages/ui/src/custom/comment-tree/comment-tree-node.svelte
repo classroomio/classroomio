@@ -40,7 +40,6 @@
   const hasBranch = $derived(node.directReplyCount > 0 || node.children.length > 0);
   const atCap = $derived(node.depth >= indentCap);
   const missingChildren = $derived(Math.max(node.directReplyCount - node.children.length, 0));
-  const hiddenBelow = $derived(Math.max(node.descendantCount - node.children.length, 0));
   const childrenId = $derived(`comment-children-${node.id}`);
 </script>
 
@@ -92,7 +91,7 @@
 
         {#if missingChildren > 0 && onLoadMoreChildren}
           <MoreReplies
-            label={labels.moreReplies(hiddenBelow || missingChildren)}
+            label={labels.moreReplies(missingChildren)}
             loading={node.isLoading}
             onclick={() => onLoadMoreChildren(node.id)}
           />

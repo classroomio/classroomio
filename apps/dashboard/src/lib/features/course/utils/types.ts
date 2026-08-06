@@ -249,7 +249,7 @@ export type NewsfeedThreadState = {
   isLoading: boolean;
 };
 
-export type NewsfeedThreadIngestMode = 'replaceRoots' | 'appendRoots' | 'appendChildren';
+export type NewsfeedThreadIngestMode = 'replaceRoots' | 'appendRoots' | 'appendChildren' | 'replaceChildren';
 
 // Attendance types
 // Note: Only POST (upsert) route exists, no GET or PUT routes

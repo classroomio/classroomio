@@ -2286,7 +2286,7 @@
           "reply": "trả lời",
           "replying_to": "Đang trả lời @{name}",
           "cancel_reply": "Hủy bỏ",
-          "view_replies": "Xem {count} {count, plural, =1 {trả lời} other {trả lời}} khác",
+          "view_replies": "{count, plural, other {Xem # trả lời}}",
           "hide_replies": "Ẩn câu trả lời",
           "view_more": "Xem thêm bình luận ({count})",
           "loading": "Đang tải...",
@@ -2296,9 +2296,9 @@
           "load_more_replies": "Tải thêm câu trả lời",
           "collapse_thread": "Thu gọn chủ đề",
           "expand_thread": "Mở rộng chủ đề",
-          "more_replies": "{count} thêm {count, plural, =1 {reply} other {replies}}",
+          "more_replies": "{count, plural, other {Thêm # trả lời}}",
           "continue_thread": "Tiếp tục chủ đề này",
-          "collapsed_summary": "{count} {count, plural, =1 {trả lời} other {trả lời}} khác bị ẩn",
+          "collapsed_summary": "{count, plural, other {# trả lời đã ẩn}}",
           "back_to_comments": "Quay lại tất cả bình luận"
         },
         "card": {

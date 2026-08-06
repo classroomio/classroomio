@@ -243,6 +243,7 @@ export type TNewsfeedCommentNode = {
 
 type ThreadRow = Omit<TNewsfeedCommentNode, 'loadedChildCount' | 'hasMoreChildren'> & {
   hasMoreRoots: boolean;
+  remainingChildren: number;
   totalRootCount: number;
   totalCommentCount: number;
 };
@@ -283,17 +284,6 @@ export async function getNewsfeedCommentThread(
         FROM course_newsfeed_comment
         WHERE course_newsfeed_id = ${feedId}
       ),
-      closure AS (
-        SELECT id AS ancestor_id, id AS node_id FROM feed_comments
-        UNION ALL
-        SELECT cl.ancestor_id, fc.id
-        FROM closure cl
-        JOIN feed_comments fc ON fc.parent_id = cl.node_id
-      ),
-      descendant_counts AS (
-        SELECT ancestor_id AS id, (COUNT(*) - 1)::int AS descendant_count
-        FROM closure GROUP BY ancestor_id
-      ),
       direct_counts AS (
         SELECT parent_id AS id, COUNT(*)::int AS direct_reply_count
         FROM feed_comments WHERE parent_id IS NOT NULL GROUP BY parent_id
@@ -331,6 +321,24 @@ export async function getNewsfeedCommentThread(
         SELECT r.id, r.depth
         FROM visible v JOIN ranked r ON r.parent_id = v.id
         WHERE r.sibling_rank <= ${childLimit}
+      ),
+      closure AS (
+        SELECT v.id AS ancestor_id, v.id AS node_id FROM visible v
+        UNION ALL
+        SELECT cl.ancestor_id, fc.id
+        FROM closure cl
+        JOIN feed_comments fc ON fc.parent_id = cl.node_id
+      ),
+      descendant_counts AS (
+        SELECT ancestor_id AS id, (COUNT(*) - 1)::int AS descendant_count
+        FROM closure GROUP BY ancestor_id
+      ),
+      remaining_children AS (
+        SELECT COUNT(*)::int AS n
+        FROM feed_comments fc
+        WHERE ${rootId}::int IS NOT NULL
+          AND fc.parent_id = ${rootId}::int
+          AND fc.id < COALESCE((SELECT MIN(v.id) FROM visible v WHERE v.depth = 1), 0)
       )
       SELECT
         c.id::int                  AS "id",
@@ -349,6 +357,7 @@ export async function getNewsfeedCommentThread(
         COALESCE(dc.direct_reply_count, 0)::int AS "directReplyCount",
         COALESCE(dsc.descendant_count, 0)::int  AS "descendantCount",
         ((SELECT COUNT(*) FROM roots) > ${rootLimit})                       AS "hasMoreRoots",
+        (SELECT n FROM remaining_children)                                  AS "remainingChildren",
         (SELECT COUNT(*)::int FROM feed_comments WHERE parent_id IS NULL)   AS "totalRootCount",
         (SELECT COUNT(*)::int FROM feed_comments)                           AS "totalCommentCount"
       FROM visible v
@@ -401,9 +410,8 @@ export async function getNewsfeedCommentThread(
     const totals = rows[0];
     const rootRows = items.filter((item) => item.depth === 0);
     const isChildPage = rootId !== null;
-    const rootNode = isChildPage ? rootRows[0] : undefined;
 
-    const hasMore = isChildPage ? Boolean(rootNode?.hasMoreChildren) : Boolean(totals?.hasMoreRoots);
+    const hasMore = isChildPage ? Number(totals?.remainingChildren ?? 0) > 0 : Boolean(totals?.hasMoreRoots);
     const childRows = isChildPage ? items.filter((item) => item.depth === 1) : [];
     const lastChild = childRows.length > 0 ? childRows[childRows.length - 1] : undefined;
     const lastRoot = rootRows.length > 0 ? rootRows[rootRows.length - 1] : undefined;

@@ -2286,7 +2286,7 @@
           "reply": "Responder",
           "replying_to": "Respondendo a @{name}",
           "cancel_reply": "Cancelar",
-          "view_replies": "Ver {count} {count, plural, =1 {resposta} other {respostas}}",
+          "view_replies": "{count, plural, one {Ver # resposta} other {Ver # respostas}}",
           "hide_replies": "Ocultar respostas",
           "view_more": "Ver mais comentários ({count})",
           "loading": "Carregando...",
@@ -2296,9 +2296,9 @@
           "load_more_replies": "Carregar mais respostas",
           "collapse_thread": "Recolher tópico",
           "expand_thread": "Expandir tópico",
-          "more_replies": "{count} mais {count, plural, =1 {resposta} other {respostas}}",
+          "more_replies": "{count, plural, one {Mais # resposta} other {Mais # respostas}}",
           "continue_thread": "Continuar este tópico",
-          "collapsed_summary": "{count} {count, plural, =1 {resposta} other {respostas}} oculto",
+          "collapsed_summary": "{count, plural, one {# resposta oculta} other {# respostas ocultas}}",
           "back_to_comments": "Voltar para todos os comentários"
         },
         "card": {

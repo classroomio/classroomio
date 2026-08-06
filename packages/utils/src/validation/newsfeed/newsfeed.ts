@@ -51,9 +51,9 @@ export const ZNewsfeedCommentThreadQuery = z.object({
   /** Fetch the subtree rooted at this comment. Omit for the feed's top-level comments. */
   rootId: z.coerce.number().int().positive().optional(),
   /** Keyset cursor over top-level comments. */
-  cursor: z.string().optional(),
+  cursor: z.string().regex(/^\d+$/).optional(),
   /** Keyset cursor over the direct children of `rootId`. */
-  childCursor: z.string().optional(),
+  childCursor: z.string().regex(/^\d+$/).optional(),
   limit: z.coerce.number().int().min(1).max(50).optional().default(5),
   childLimit: z.coerce.number().int().min(1).max(20).optional().default(3),
   /** Levels fetched below the root. Bounds worst-case fan-out per request. */

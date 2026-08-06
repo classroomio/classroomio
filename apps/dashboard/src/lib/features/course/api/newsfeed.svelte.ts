@@ -398,7 +398,8 @@ export class NewsfeedApi extends BaseApiWithErrors {
     }
 
     for (const [parentKey, incoming] of childIds) {
-      const existing = mode === 'replaceRoots' ? [] : (this.childIdsByParent[parentKey] ?? []);
+      const isReplacedParent = mode === 'replaceChildren' && parentKey === String(data.rootId);
+      const existing = mode === 'replaceRoots' || isReplacedParent ? [] : (this.childIdsByParent[parentKey] ?? []);
       const merged = [...existing];
       for (const id of incoming) {
         if (merged.indexOf(id) === -1) merged.push(id);
@@ -425,7 +426,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
     thread.totalRootCount = data.totalRootCount;
     thread.totalCommentCount = data.totalCommentCount;
 
-    if (mode === 'appendChildren' && data.rootId !== null) {
+    if ((mode === 'appendChildren' || mode === 'replaceChildren') && data.rootId !== null) {
       const rootState = this.nodeState(data.rootId);
       if (rootState) {
         rootState.childCursor = data.nextCursor;
@@ -529,7 +530,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
         }),
       logContext: 'loading more newsfeed replies',
       onSuccess: (response) => {
-        if (response.data) this.ingest(feedId, response.data, 'appendChildren');
+        if (response.data) this.ingest(feedId, response.data, options.fromStart ? 'replaceChildren' : 'appendChildren');
         const current = this.nodeState(parentId);
         if (current) current.isLoading = false;
       },

@@ -99,8 +99,12 @@ export async function seedNewsfeedThreads({ enterpriseOrgId }: SeedNewsfeedThrea
     fullname: profile.fullname
   })).filter((author) => author.groupMemberId);
 
-  if (learnerAuthors.length === 0) {
-    console.log('   ⚠ No HIPAA groupmembers found — run `pnpm seed --compliance` first, skipping');
+  // The fixtures index up to learnerAuthors[4], so a partial compliance run must fail loudly here
+  // rather than as an undefined property access further down.
+  if (learnerAuthors.length < 5) {
+    console.log(
+      `   ⚠ Only ${learnerAuthors.length} HIPAA groupmember(s) found, need at least 5 — run \`pnpm seed --compliance\` first, skipping`
+    );
     return;
   }
 

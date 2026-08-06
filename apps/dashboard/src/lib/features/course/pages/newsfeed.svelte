@@ -152,7 +152,7 @@
       {#if pinnedFeeds.length > 0}
         <div class="text-muted-foreground mb-1.5 flex items-center gap-1.5">
           <span class="text-xs font-medium tracking-wider uppercase">
-            {$t('course.navItem.news_feed.pinned') || 'Pinned'}
+            {$t('course.navItem.news_feed.pinned')}
           </span>
         </div>
         {#each pinnedFeeds as feed (feed.id)}
