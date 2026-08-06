@@ -6,7 +6,7 @@ import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automati
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseTeamMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-team-member-or-automation-key';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
-import { withMcpAutomationUsage } from '@api/services/organization/automation-usage';
+import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
@@ -22,16 +22,19 @@ export const contentRouter = new Hono()
         const automationKey = c.get('automationKey');
         const payload = c.req.valid('json');
 
-        const result = await withMcpAutomationUsage(
-          automationKey,
-          'reorder_course_content',
-          () => reorderCourseContent(courseId, payload),
-          () => ({
+        if (automationKey?.type === 'mcp') {
+          await assertMcpAutomationUsageAllowed(automationKey, 'reorder_course_content');
+        }
+
+        const result = await reorderCourseContent(courseId, payload);
+
+        if (automationKey?.type === 'mcp') {
+          await recordMcpAutomationUsage(automationKey, 'reorder_course_content', {
             courseId,
             sectionCount: payload.sections?.length ?? 0,
             itemCount: payload.items?.length ?? 0
-          })
-        );
+          });
+        }
 
         return c.json({ success: true, data: result }, 200);
       } catch (error) {

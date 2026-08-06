@@ -5,24 +5,6 @@ import { and, count, desc, eq, gte, sql } from 'drizzle-orm';
 import { db } from '@db/drizzle';
 import type { TAutomationUsageCategory, TNewOrganizationAutomationUsage, TOrganizationApiKeyType } from '@db/types';
 
-export class AutomationRateLimitExceededError extends Error {
-  constructor() {
-    super('Automation rate limit exceeded');
-    this.name = 'AutomationRateLimitExceededError';
-  }
-}
-
-export type ReserveMcpAutomationUsageInput = {
-  organizationId: string;
-  organizationApiKeyId: string;
-  type: TOrganizationApiKeyType;
-  action: string;
-  category: TAutomationUsageCategory;
-  keyLimit: number;
-  orgLimit: number;
-  since: string;
-};
-
 export const createOrganizationAutomationUsage = async (data: TNewOrganizationAutomationUsage) => {
   try {
     const [row] = await db.insert(schema.organizationAutomationUsage).values(data).returning();
@@ -111,92 +93,6 @@ export const getOrganizationAutomationCreditsUsedSince = async (
   } catch (error) {
     console.error('getOrganizationAutomationCreditsUsedSince error:', error);
     throw new Error('Failed to get organization automation credits used');
-  }
-};
-
-export const reserveMcpAutomationUsageSlot = async (input: ReserveMcpAutomationUsageInput): Promise<string> => {
-  try {
-    return await db.transaction(async (tx) => {
-      await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${input.organizationId}))`);
-
-      const [keyRow] = await tx
-        .select({ total: count() })
-        .from(schema.organizationAutomationUsage)
-        .where(
-          and(
-            eq(schema.organizationAutomationUsage.organizationApiKeyId, input.organizationApiKeyId),
-            eq(schema.organizationAutomationUsage.category, input.category),
-            gte(schema.organizationAutomationUsage.createdAt, input.since)
-          )
-        );
-
-      if (Number(keyRow?.total ?? 0) >= input.keyLimit) {
-        throw new AutomationRateLimitExceededError();
-      }
-
-      const [orgRow] = await tx
-        .select({ total: count() })
-        .from(schema.organizationAutomationUsage)
-        .where(
-          and(
-            eq(schema.organizationAutomationUsage.organizationId, input.organizationId),
-            eq(schema.organizationAutomationUsage.type, input.type),
-            eq(schema.organizationAutomationUsage.category, input.category),
-            gte(schema.organizationAutomationUsage.createdAt, input.since)
-          )
-        );
-
-      if (Number(orgRow?.total ?? 0) >= input.orgLimit) {
-        throw new AutomationRateLimitExceededError();
-      }
-
-      const [row] = await tx
-        .insert(schema.organizationAutomationUsage)
-        .values({
-          organizationId: input.organizationId,
-          organizationApiKeyId: input.organizationApiKeyId,
-          type: input.type,
-          action: input.action,
-          category: input.category,
-          creditsConsumed: 0,
-          metadata: {}
-        })
-        .returning({ id: schema.organizationAutomationUsage.id });
-
-      if (!row) {
-        throw new Error('Failed to reserve organization automation usage');
-      }
-
-      return row.id;
-    });
-  } catch (error) {
-    if (error instanceof AutomationRateLimitExceededError) {
-      throw error;
-    }
-
-    console.error('reserveMcpAutomationUsageSlot error:', error);
-    throw new Error('Failed to reserve organization automation usage');
-  }
-};
-
-export const completeMcpAutomationUsageMetadata = async (usageId: string, metadata: Record<string, unknown>) => {
-  try {
-    await db
-      .update(schema.organizationAutomationUsage)
-      .set({ metadata })
-      .where(eq(schema.organizationAutomationUsage.id, usageId));
-  } catch (error) {
-    console.error('completeMcpAutomationUsageMetadata error:', error);
-    throw new Error('Failed to complete organization automation usage');
-  }
-};
-
-export const releaseMcpAutomationUsageReservation = async (usageId: string) => {
-  try {
-    await db.delete(schema.organizationAutomationUsage).where(eq(schema.organizationAutomationUsage.id, usageId));
-  } catch (error) {
-    console.error('releaseMcpAutomationUsageReservation error:', error);
-    throw new Error('Failed to release organization automation usage reservation');
   }
 };
 

@@ -1,13 +1,12 @@
 import { env } from '@cio/core/config/env';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
-  AutomationRateLimitExceededError,
   countActiveOrganizationApiKeys,
-  completeMcpAutomationUsageMetadata,
+  countOrganizationAutomationUsageSince,
+  countOrganizationAutomationUsageSinceByKey,
+  createOrganizationAutomationUsage,
   getActiveOrganizationPlan,
-  listRecentOrganizationAutomationUsage,
-  releaseMcpAutomationUsageReservation,
-  reserveMcpAutomationUsageSlot
+  listRecentOrganizationAutomationUsage
 } from '@cio/db/queries/organization';
 import type { TOrganizationApiKey, TOrganizationApiKeyType, TPlan } from '@db/types';
 import {
@@ -48,30 +47,6 @@ function getMinuteWindowStart(date: Date = new Date()) {
 async function getOrganizationPlanName(orgId: string): Promise<TPlan> {
   const activePlan = await getActiveOrganizationPlan(orgId);
   return (activePlan?.planName as TPlan | null) ?? 'BASIC';
-}
-
-function getMcpRateLimits(
-  limits: ReturnType<typeof getMcpAutomationLimits>,
-  category: ReturnType<typeof getMcpAutomationCategory>
-) {
-  if (category === 'read') {
-    return {
-      keyLimit: limits.rateLimits.perKey.readPerMinute,
-      orgLimit: limits.rateLimits.perOrg.readPerMinute
-    };
-  }
-
-  if (category === 'write') {
-    return {
-      keyLimit: limits.rateLimits.perKey.writePerMinute,
-      orgLimit: limits.rateLimits.perOrg.writePerMinute
-    };
-  }
-
-  return {
-    keyLimit: limits.rateLimits.perKey.publishPerMinute,
-    orgLimit: limits.rateLimits.perOrg.publishPerMinute
-  };
 }
 
 export async function assertOrganizationAutomationKeyCreationAllowed(
@@ -156,47 +131,52 @@ export async function getOrganizationAutomationUsageSummaryService(
   };
 }
 
-export async function withMcpAutomationUsage<T>(
-  automationKey: TOrganizationApiKey | undefined | null,
-  toolName: TMcpToolName,
-  run: () => Promise<T>,
-  getMetadata?: (result: T) => Record<string, unknown>
-): Promise<T> {
-  if (!automationKey || automationKey.type !== 'mcp') {
-    return run();
-  }
-
+export async function assertMcpAutomationUsageAllowed(
+  automationKey: TOrganizationApiKey,
+  toolName: TMcpToolName
+): Promise<void> {
   const planName = await getOrganizationPlanName(automationKey.organizationId);
   const limits = getMcpAutomationLimits(planName);
   const category = getMcpAutomationCategory(toolName);
-  const minuteWindowStart = getMinuteWindowStart().toISOString();
-  const { keyLimit, orgLimit } = getMcpRateLimits(limits, category);
+  const now = new Date();
+  const minuteWindowStart = getMinuteWindowStart(now).toISOString();
 
-  try {
-    const reservationId = await reserveMcpAutomationUsageSlot({
-      organizationId: automationKey.organizationId,
-      organizationApiKeyId: automationKey.id,
-      type: automationKey.type,
-      action: toolName,
-      category,
-      keyLimit,
-      orgLimit,
-      since: minuteWindowStart
-    });
+  const [keyRequestsInWindow, orgRequestsInWindow] = await Promise.all([
+    countOrganizationAutomationUsageSinceByKey(automationKey.id, category, minuteWindowStart),
+    countOrganizationAutomationUsageSince(automationKey.organizationId, automationKey.type, category, minuteWindowStart)
+  ]);
 
-    try {
-      const result = await run();
-      await completeMcpAutomationUsageMetadata(reservationId, getMetadata ? getMetadata(result) : {});
-      return result;
-    } catch (error) {
-      await releaseMcpAutomationUsageReservation(reservationId);
-      throw error;
-    }
-  } catch (error) {
-    if (error instanceof AutomationRateLimitExceededError) {
-      throw new AppError('Automation rate limit exceeded', ErrorCodes.AUTOMATION_RATE_LIMIT_EXCEEDED, 429);
-    }
+  const keyLimit =
+    category === 'read'
+      ? limits.rateLimits.perKey.readPerMinute
+      : category === 'write'
+        ? limits.rateLimits.perKey.writePerMinute
+        : limits.rateLimits.perKey.publishPerMinute;
 
-    throw error;
+  const orgLimit =
+    category === 'read'
+      ? limits.rateLimits.perOrg.readPerMinute
+      : category === 'write'
+        ? limits.rateLimits.perOrg.writePerMinute
+        : limits.rateLimits.perOrg.publishPerMinute;
+
+  if (keyRequestsInWindow >= keyLimit || orgRequestsInWindow >= orgLimit) {
+    throw new AppError('Automation rate limit exceeded', ErrorCodes.AUTOMATION_RATE_LIMIT_EXCEEDED, 429);
   }
+}
+
+export async function recordMcpAutomationUsage(
+  automationKey: TOrganizationApiKey,
+  toolName: TMcpToolName,
+  metadata: Record<string, unknown> = {}
+): Promise<void> {
+  await createOrganizationAutomationUsage({
+    organizationId: automationKey.organizationId,
+    organizationApiKeyId: automationKey.id,
+    type: automationKey.type,
+    action: toolName,
+    category: getMcpAutomationCategory(toolName),
+    creditsConsumed: 0,
+    metadata
+  });
 }

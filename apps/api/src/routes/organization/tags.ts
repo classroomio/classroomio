@@ -25,7 +25,7 @@ import { handleError } from '@api/utils/errors';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { orgAdminOrAutomationKeyMiddleware } from '@api/middlewares/org-admin-or-automation-key';
-import { withMcpAutomationUsage } from '@api/services/organization/automation-usage';
+import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { zValidator } from '@hono/zod-validator';
 
 export const tagsRouter = new Hono()
@@ -89,12 +89,15 @@ export const tagsRouter = new Hono()
         const automationKey = c.get('automationKey');
         const data = c.req.valid('json');
 
-        const result = await withMcpAutomationUsage(
-          automationKey,
-          'tag_courses',
-          () => assignTagsToCoursesByName(orgId, data),
-          () => ({ courseIds: data.courseIds })
-        );
+        if (automationKey?.type === 'mcp') {
+          await assertMcpAutomationUsageAllowed(automationKey, 'tag_courses');
+        }
+
+        const result = await assignTagsToCoursesByName(orgId, data);
+
+        if (automationKey?.type === 'mcp') {
+          await recordMcpAutomationUsage(automationKey, 'tag_courses', { courseIds: data.courseIds });
+        }
 
         return c.json(
           {

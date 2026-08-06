@@ -31,6 +31,7 @@
 
   let activeSetupTab = $state('cursor');
   let generatedSecret = $state<string | null>(null);
+  let generatedSecretKeyId = $state<string | null>(null);
   let isCreateKeyModalOpen = $state(false);
   let keyLabel = $state('');
 
@@ -51,6 +52,7 @@
     if (!result) return;
 
     generatedSecret = automationApi.generatedSecret;
+    generatedSecretKeyId = result.key.id;
     automationApi.clearGeneratedSecret();
     isCreateKeyModalOpen = false;
     resetCreateKeyModal();
@@ -59,15 +61,19 @@
   async function onRevokeKey(keyId: string) {
     if (!confirm(t.get('automation.keys.revoke_confirm'))) return;
     const result = await automationApi.revokeKey(keyId);
-    if (result) {
+    if (result && generatedSecretKeyId === keyId) {
       generatedSecret = null;
+      generatedSecretKeyId = null;
     }
   }
 
   async function onRotateKey(keyId: string) {
     if (!confirm(t.get('automation.keys.rotate_confirm'))) return;
-    await automationApi.rotateKey(keyId);
+    const result = await automationApi.rotateKey(keyId);
+    if (!result) return;
+
     generatedSecret = automationApi.generatedSecret;
+    generatedSecretKeyId = keyId;
     automationApi.clearGeneratedSecret();
   }
   const mcpKeys = $derived(automationApi.keys.filter((key) => key.type === 'mcp'));
