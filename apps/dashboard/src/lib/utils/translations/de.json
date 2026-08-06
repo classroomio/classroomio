@@ -4074,16 +4074,15 @@
       },
       "usage": {
         "title": "Nutzung und Grenzen",
-        "description": "MCP ist in jedem Plan verfügbar, die Nutzung wird jedoch durch monatliche Automatisierungsguthaben und Schlüssellimits gesteuert.",
-        "credits_title": "Verbleibende Credits",
-        "credits_description": "Mutierende MCP-Aktionen verbrauchen Credits. Leseaktionen sind kostenlos.",
+        "description": "MCP ist in jedem Plan verfügbar. Die Nutzung wird durch Schlüssellimits und Ratenlimits gesteuert.",
         "keys_title": "Aktive Schlüssel",
         "keys_description": "Verwenden Sie einen MCP-Schlüssel pro Integration, damit der Zugriff sauber rotiert oder widerrufen werden kann.",
         "rate_limits_title": "Tarifbegrenzungen",
         "rate_limits_description": "Zulässige Lese-/Schreib-/Veröffentlichungsanfragen pro Minute.",
         "used_label": "Verwendet:"
       },
-      "page_subtitle": "Verbinden Sie KI-Tools mit ClassroomIO über organisationsbezogene Schlüssel, die Sie jederzeit rotieren können."
+      "page_subtitle": "Verbinden Sie KI-Tools mit ClassroomIO über organisationsbezogene Schlüssel, die Sie jederzeit rotieren können.",
+      "view_docs": "Dokumentation anzeigen"
     },
     "api": {
       "subtitle": "Verwalten Sie API-Schlüssel zur Integration mit der öffentlichen ClassroomIO-API.",

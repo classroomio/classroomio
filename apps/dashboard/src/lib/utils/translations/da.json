@@ -4074,16 +4074,15 @@
       },
       "usage": {
         "title": "Anvendelse og grænser",
-        "description": "MCP er tilgængelig på alle abonnementer, men brugen styres med månedlige automatiseringskreditter og nøglegrænser.",
-        "credits_title": "Kreditter tilbage",
-        "credits_description": "Muterende MCP-handlinger bruger kreditter. Læsehandlinger er gratis.",
+        "description": "MCP er tilgængelig på alle abonnementer. Brugen styres af nøglegrænser og hastighedsgrænser.",
         "keys_title": "Aktive nøgler",
         "keys_description": "Brug én MCP-nøgle pr. integration, så adgang kan roteres eller tilbagekaldes rent.",
         "rate_limits_title": "Satsgrænser",
         "rate_limits_description": "Læs/skriv/publicér anmodninger tilladt pr. minut.",
         "used_label": "Brugt:"
       },
-      "page_subtitle": "Forbind AI-værktøjer til ClassroomIO med organisationsnøgler, du kan rotere når som helst."
+      "page_subtitle": "Forbind AI-værktøjer til ClassroomIO med organisationsnøgler, du kan rotere når som helst.",
+      "view_docs": "Se dokumentation"
     },
     "api": {
       "subtitle": "Administrer API-nøgler til integration med ClassroomIOs offentlige API.",

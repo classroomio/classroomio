@@ -4074,16 +4074,15 @@
       },
       "usage": {
         "title": "Uso y límites",
-        "description": "MCP está disponible en todos los planes, pero el uso se controla con créditos de automatización mensuales y límites clave.",
-        "credits_title": "Créditos restantes",
-        "credits_description": "Las acciones mutantes de MCP consumen créditos. Las acciones de lectura son gratuitas.",
+        "description": "MCP está disponible en todos los planes. El uso se controla mediante límites de claves y límites de tasa.",
         "keys_title": "Claves activas",
         "keys_description": "Utilice una clave MCP por integración para que el acceso se pueda rotar o revocar limpiamente.",
         "rate_limits_title": "Límites de tarifas",
         "rate_limits_description": "Solicitudes de lectura/escritura/publicación permitidas por minuto.",
         "used_label": "Usado:"
       },
-      "page_subtitle": "Conecta herramientas de IA a ClassroomIO con claves con ámbito de organización que puedes rotar en cualquier momento."
+      "page_subtitle": "Conecta herramientas de IA a ClassroomIO con claves con ámbito de organización que puedes rotar en cualquier momento.",
+      "view_docs": "Ver documentación"
     },
     "api": {
       "subtitle": "Administra las claves API para integrarte con la API pública de ClassroomIO.",
