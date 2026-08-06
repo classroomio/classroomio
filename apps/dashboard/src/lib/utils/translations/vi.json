@@ -5,6 +5,11 @@
       "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?",
       "label": "Thay đổi chưa lưu"
     },
+    "app_update": {
+      "title": "Đã có phiên bản mới.",
+      "description": "Tải lại để nhận các tính năng và bản sửa lỗi mới nhất.",
+      "reload": "Tải lại"
+    },
     "discard": "Hủy",
     "save_changes": "Lưu thay đổi"
   },
