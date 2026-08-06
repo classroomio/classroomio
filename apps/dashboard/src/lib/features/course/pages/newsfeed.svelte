@@ -39,13 +39,14 @@
 
   const author = $derived({
     id: courseApi.group.memberId || '',
+    profileId: $profile.id || '',
     username: $profile.username || '',
     fullname: $profile.fullname || '',
     avatarUrl: $profile.avatarUrl || ''
   });
 
-  const deleteComment = async (feedId: string, commentId: string, parentId?: number) => {
-    await newsfeedApi.deleteComment(courseId, feedId, commentId, parentId);
+  const deleteComment = async (feedId: string, commentId: string) => {
+    await newsfeedApi.deleteComment(courseId, feedId, commentId);
   };
 
   const addNewReaction = async (reactionType: NewsfeedReactionType, feedId: string, authorId: string) => {
@@ -69,13 +70,8 @@
     }
   };
 
-  const addNewComment = async (
-    comment: string,
-    feedId: string,
-    parentId?: number,
-    replyTo?: { commentId: number; authorFullname: string }
-  ) => {
-    await newsfeedApi.createComment(courseId, feedId, comment, author, parentId, replyTo);
+  const addNewComment = async (comment: string, feedId: string, parentId?: number) => {
+    await newsfeedApi.createComment(courseId, feedId, comment, author, parentId);
 
     if (!newsfeedApi.success) {
       return snackbar.error('snackbar.course.error.commenting_error');
@@ -151,57 +147,58 @@
       variant="page"
     />
   {:else}
-    {#if pinnedFeeds.length > 0}
-      <div class="text-muted-foreground mb-1.5 flex items-center gap-1.5">
-        <span class="text-xs font-medium tracking-wider uppercase">
-          {$t('course.navItem.news_feed.pinned') || 'Pinned'}
-        </span>
-      </div>
-      {#each pinnedFeeds as feed (feed.id)}
-        <NewsFeedCard
-          {feed}
-          comments={newsfeedApi.commentsByFeedId[feed.id]}
-          {courseId}
-          {deleteFeed}
-          {addNewComment}
-          {deleteComment}
-          {addNewReaction}
-          {onPin}
-          {author}
-          bind:edit
-          bind:editFeed
-          isActive={feedId === feed.id}
-          isReacting={Boolean(isReactingByFeedId[feed.id])}
-        />
-      {/each}
-    {/if}
+    <!-- pt-4/pl-3 clear the pinned icon's negative offset, which Page.Body's overflow-x-hidden would otherwise clip -->
+    <div class="flex w-full flex-col pt-4 pl-3">
+      {#if pinnedFeeds.length > 0}
+        <div class="text-muted-foreground mb-1.5 flex items-center gap-1.5">
+          <span class="text-xs font-medium tracking-wider uppercase">
+            {$t('course.navItem.news_feed.pinned')}
+          </span>
+        </div>
+        {#each pinnedFeeds as feed (feed.id)}
+          <NewsFeedCard
+            {feed}
+            {courseId}
+            {deleteFeed}
+            {addNewComment}
+            {deleteComment}
+            {addNewReaction}
+            {onPin}
+            {author}
+            bind:edit
+            bind:editFeed
+            isActive={feedId === feed.id}
+            isReacting={Boolean(isReactingByFeedId[feed.id])}
+          />
+        {/each}
+      {/if}
 
-    {#if pinnedFeeds.length > 0 && unpinnedFeeds.length > 0}
-      <div class="text-muted-foreground mb-1.5 flex items-center gap-1.5">
-        <span class="text-xs font-medium tracking-wider uppercase">
-          {$t('course.navItem.news_feed.other_posts')}
-        </span>
-      </div>
-    {/if}
+      {#if pinnedFeeds.length > 0 && unpinnedFeeds.length > 0}
+        <div class="text-muted-foreground mb-1.5 flex items-center gap-1.5">
+          <span class="text-xs font-medium tracking-wider uppercase">
+            {$t('course.navItem.news_feed.other_posts')}
+          </span>
+        </div>
+      {/if}
 
-    {#if unpinnedFeeds.length > 0}
-      {#each unpinnedFeeds as feed (feed.id)}
-        <NewsFeedCard
-          {feed}
-          comments={newsfeedApi.commentsByFeedId[feed.id]}
-          {courseId}
-          {deleteFeed}
-          {addNewComment}
-          {deleteComment}
-          {addNewReaction}
-          {onPin}
-          {author}
-          bind:edit
-          bind:editFeed
-          isActive={feedId === feed.id}
-          isReacting={Boolean(isReactingByFeedId[feed.id])}
-        />
-      {/each}
-    {/if}
+      {#if unpinnedFeeds.length > 0}
+        {#each unpinnedFeeds as feed (feed.id)}
+          <NewsFeedCard
+            {feed}
+            {courseId}
+            {deleteFeed}
+            {addNewComment}
+            {deleteComment}
+            {addNewReaction}
+            {onPin}
+            {author}
+            bind:edit
+            bind:editFeed
+            isActive={feedId === feed.id}
+            isReacting={Boolean(isReactingByFeedId[feed.id])}
+          />
+        {/each}
+      {/if}
+    </div>
   {/if}
 </RoleBasedSecurity>

@@ -39,7 +39,7 @@
     "@zxcvbn-ts/core": "^3.0.4",
     "dotenv": "^16.3.1",
     "storybook": "^8.4.2",
-    "svelte": "^5.39.11",
+    "svelte": "^5.46.1",
     "svelte-easy-crop": "^5.0.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.7.1",

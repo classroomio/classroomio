@@ -9,18 +9,17 @@
   import PinIcon from '@lucide/svelte/icons/pin';
 
   import DeleteConfirmation from './delete-confirmation.svelte';
-  import type { NewsfeedCommentsByFeedId } from '$features/course/api';
   import Header from './header.svelte';
   import { NewsfeedReactions } from '@cio/ui/custom/newsfeed-reactions';
   import Comments from './comments.svelte';
 
   interface Props {
     feed: Feed;
-    comments?: NewsfeedCommentsByFeedId;
     courseId?: string;
     editFeed: Feed | null;
     author: {
       id: string;
+      profileId: string;
       username: string;
       fullname: string;
       avatarUrl: string;
@@ -37,7 +36,6 @@
 
   let {
     feed,
-    comments,
     courseId,
     editFeed = $bindable(),
     author,
@@ -111,12 +109,11 @@
     {courseId}
     {feed}
     {author}
-    {comments}
-    onAddComment={async (content, parentId, replyTo) => {
-      await addNewComment(content, feed.id, parentId, replyTo);
+    onAddComment={async (content, parentId) => {
+      await addNewComment(content, feed.id, parentId);
     }}
-    onDeleteComment={(commentId, parentId) => {
-      if (courseId) deleteComment(feed.id, String(commentId), parentId);
+    onDeleteComment={(commentId) => {
+      if (courseId) deleteComment(feed.id, String(commentId));
     }}
   />
 

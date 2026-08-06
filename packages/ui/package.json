@@ -36,7 +36,7 @@
     "mode-watcher": "^1.1.0",
     "runed": "^0.37.1",
     "shiki": "^3.22.0",
-    "svelte": "^5.39.11",
+    "svelte": "^5.46.1",
     "svelte-easy-crop": "^5.0.0",
     "svelte-sonner": "^1.0.5",
     "svelte-toolbelt": "^0.10.6",

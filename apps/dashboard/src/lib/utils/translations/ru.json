@@ -2286,14 +2286,20 @@
           "reply": "Ответить",
           "replying_to": "Отвечаю на @{name}",
           "cancel_reply": "Отмена",
-          "view_replies": "Просмотреть {count} {count, множественное число, =1 {ответ} other {ответы}}",
+          "view_replies": "{count, plural, one {Показать # ответ} few {Показать # ответа} many {Показать # ответов} other {Показать # ответа}}",
           "hide_replies": "Скрыть ответы",
           "view_more": "Посмотреть больше комментариев ({count})",
           "loading": "Загрузка...",
           "save": "Сохранить",
           "saving": "Сохранение...",
           "send": "Отправить",
-          "load_more_replies": "Загрузить больше ответов"
+          "load_more_replies": "Загрузить больше ответов",
+          "collapse_thread": "Свернуть ветку",
+          "expand_thread": "Развернуть тему",
+          "more_replies": "{count, plural, one {Ещё # ответ} few {Ещё # ответа} many {Ещё # ответов} other {Ещё # ответа}}",
+          "continue_thread": "Продолжить эту тему",
+          "collapsed_summary": "{count, plural, one {# ответ скрыт} few {# ответа скрыто} many {# ответов скрыто} other {# ответа скрыто}}",
+          "back_to_comments": "Вернуться ко всем комментариям"
         },
         "card": {
           "pin": "Закрепить",

@@ -228,6 +228,29 @@ export type Feed = ListNewsfeed[number];
 export type NewsfeedComment = NewsfeedCommentsResponse['items'][number];
 export type Reaction = NonNullable<Feed['reaction']>;
 
+export type NewsfeedNodeState = {
+  depth: number;
+  parentId: number | null;
+  directReplyCount: number;
+  descendantCount: number;
+  loadedChildCount: number;
+  childCursor: string | null;
+  hasMoreChildren: boolean;
+  isLoading: boolean;
+  isOptimistic: boolean;
+};
+
+export type NewsfeedThreadState = {
+  rootIds: number[];
+  totalRootCount: number;
+  totalCommentCount: number;
+  hasMore: boolean;
+  cursor: string | null;
+  isLoading: boolean;
+};
+
+export type NewsfeedThreadIngestMode = 'replaceRoots' | 'appendRoots' | 'appendChildren' | 'replaceChildren';
+
 // Attendance types
 // Note: Only POST (upsert) route exists, no GET or PUT routes
 export type UpsertAttendanceRequest = (typeof classroomio.course)[':courseId']['attendance']['$post'];
