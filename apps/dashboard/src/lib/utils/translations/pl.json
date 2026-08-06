@@ -3803,13 +3803,17 @@
       "full_name": "Pełne imię i nazwisko",
       "password": "Twoje hasło",
       "confirm_password": "Potwierdź hasło",
-      "password_helper_message": "Hasło musi mieć więcej niż 8 znaków",
+      "password_helper_message": "Hasło musi mieć 6 lub więcej znaków",
       "create_account": "Utwórz konto"
     },
     "signup_disabled": {
       "title": "Rejestracja wyłączona",
       "invite_only_message": "Rejestracja jest dostępna tylko za zaproszeniem. Aby utworzyć konto, użyj linku z zaproszeniem.",
       "go_to_login": "Przejdź do logowania"
+    },
+    "reset_password": {
+      "heading": "Nowe hasło",
+      "description": "Wprowadź dane nowego hasła"
     }
   },
   "app": {

@@ -3803,13 +3803,17 @@
       "full_name": "Nombre completo",
       "password": "Tu Contraseña",
       "confirm_password": "Confirmar contraseña",
-      "password_helper_message": "La contraseña debe tener más de 8 caracteres.",
+      "password_helper_message": "La contraseña debe tener 6 o más caracteres.",
       "create_account": "Crear cuenta"
     },
     "signup_disabled": {
       "title": "Registro deshabilitado",
       "invite_only_message": "El registro es sólo por invitación. Utilice un enlace de invitación para crear una cuenta.",
       "go_to_login": "Ir a Iniciar sesión"
+    },
+    "reset_password": {
+      "heading": "Nueva contraseña",
+      "description": "Ingrese los detalles de su nueva contraseña"
     }
   },
   "app": {

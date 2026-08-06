@@ -3803,13 +3803,17 @@
       "full_name": "Vollständiger Name",
       "password": "Ihr Passwort",
       "confirm_password": "Passwort bestätigen",
-      "password_helper_message": "Das Passwort muss mehr als 8 Zeichen lang sein",
+      "password_helper_message": "Das Passwort muss 6 oder mehr Zeichen lang sein",
       "create_account": "Konto erstellen"
     },
     "signup_disabled": {
       "title": "Anmeldung deaktiviert",
       "invite_only_message": "Die Anmeldung ist nur auf Einladung möglich. Bitte verwenden Sie einen Einladungslink, um ein Konto zu erstellen.",
       "go_to_login": "Gehen Sie zu Anmelden"
+    },
+    "reset_password": {
+      "heading": "Neues Passwort",
+      "description": "Geben Sie Ihre neuen Passwortdaten ein"
     }
   },
   "app": {

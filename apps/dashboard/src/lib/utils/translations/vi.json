@@ -3803,13 +3803,17 @@
       "full_name": "Tên đầy đủ",
       "password": "Mật khẩu của bạn",
       "confirm_password": "Xác nhận mật khẩu",
-      "password_helper_message": "Mật khẩu phải nhiều hơn 8 ký tự",
+      "password_helper_message": "Mật khẩu phải có từ 6 ký tự trở lên",
       "create_account": "Tạo tài khoản"
     },
     "signup_disabled": {
       "title": "Đăng ký bị vô hiệu hóa",
       "invite_only_message": "Đăng ký chỉ dành cho người được mời. Vui lòng sử dụng liên kết mời để tạo tài khoản.",
       "go_to_login": "Đi tới Đăng nhập"
+    },
+    "reset_password": {
+      "heading": "Mật khẩu mới",
+      "description": "Nhập chi tiết mật khẩu mới của bạn"
     }
   },
   "app": {
