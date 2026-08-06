@@ -20,8 +20,6 @@
   import * as Field from '@cio/ui/base/field';
   import { UpgradeBanner, UnsavedChanges, UploadWidget, TextEditor, AttentionHighlight } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
-  import { goAndHighlight } from '$lib/routing/go-and-highlight';
-  import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
 
   import { settings } from '$features/course/utils/settings-store';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
@@ -55,6 +53,7 @@
   let isLoading = $state(false);
   let isDeleting = $state(false);
   let openCertificateDeadlineDialog = $state(false);
+  let completionDeadlineTrigger = $state(0);
   let errors: {
     title: string | undefined;
     description: string | undefined;
@@ -186,15 +185,9 @@
     hasUnsavedChanges = true;
   }
 
-  async function goToCertificateSettings() {
+  function goToCompletionDeadline() {
     openCertificateDeadlineDialog = false;
-    const courseId = courseApi.course?.id;
-    if (!courseId) return;
-
-    goAndHighlight(ROUTE_NAME.COURSE_CERTIFICATE, ROUTE_SECTIONS[ROUTE_NAME.COURSE_CERTIFICATE].CERT_DEADLINE, {
-      id: courseId,
-      tab: 'settings'
-    });
+    completionDeadlineTrigger += 1;
   }
 
   export async function handleSave() {
@@ -505,8 +498,8 @@
       <Button variant="outline" onclick={() => (openCertificateDeadlineDialog = false)}>
         {$t('cancel')}
       </Button>
-      <Button onclick={goToCertificateSettings}>
-        {$t('course.navItem.settings.go_to_certificate_settings')}
+      <Button onclick={goToCompletionDeadline}>
+        {$t('course.navItem.settings.go_to_completion_deadline')}
       </Button>
     </Dialog.Footer>
   </Dialog.Content>
@@ -668,22 +661,24 @@
     {/if}
 
     <Field.Group class="mt-3">
-      <Field.Field>
-        <Field.Label for="course-completion-deadline">
-          {$t('course.navItem.settings.completion_deadline_label')}
-        </Field.Label>
-        <Input
-          id="course-completion-deadline"
-          type="datetime-local"
-          class="w-full"
-          value={isoToDatetimeLocal($settings.certificate.deadline)}
-          onchange={onCompletionDeadlineChange}
-        />
-        <Field.Description>{$t('course.navItem.settings.completion_deadline_helper')}</Field.Description>
-        {#if courseApi.errors['certificate.deadline']}
-          <Field.Error>{courseApi.errors['certificate.deadline']}</Field.Error>
-        {/if}
-      </Field.Field>
+      <AttentionHighlight id="course-completion-deadline" trigger={completionDeadlineTrigger}>
+        <Field.Field id="course-completion-deadline">
+          <Field.Label for="course-completion-deadline">
+            {$t('course.navItem.settings.completion_deadline_label')}
+          </Field.Label>
+          <Input
+            id="course-completion-deadline"
+            type="datetime-local"
+            class="w-full"
+            value={isoToDatetimeLocal($settings.certificate.deadline)}
+            onchange={onCompletionDeadlineChange}
+          />
+          <Field.Description>{$t('course.navItem.settings.completion_deadline_helper')}</Field.Description>
+          {#if courseApi.errors['certificate.deadline']}
+            <Field.Error>{courseApi.errors['certificate.deadline']}</Field.Error>
+          {/if}
+        </Field.Field>
+      </AttentionHighlight>
 
       <Field.Field>
         <Field.Label for="course-completion-threshold">

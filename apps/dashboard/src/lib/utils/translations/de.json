@@ -860,8 +860,8 @@
           "unlock_all": "Schalte alle frei"
         },
         "certificate_deadline_required": "Legen Sie zuerst die Frist für das Zertifikat fest",
-        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Zertifikatseinstellungen fest.",
-        "go_to_certificate_settings": "Gehen Sie zu Zertifikatseinstellungen",
+        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
+        "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
         "completion_deadline_label": "Frist für den Abschluss des Kurses",
         "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen."
       },

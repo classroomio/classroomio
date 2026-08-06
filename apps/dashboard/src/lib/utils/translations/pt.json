@@ -860,8 +860,8 @@
           "unlock_all": "Desbloquear tudo"
         },
         "certificate_deadline_required": "Defina o prazo do certificado primeiro",
-        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados. Defina um prazo nas configurações do certificado antes de publicar.",
-        "go_to_certificate_settings": "Vá para configurações de certificado",
+        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
+        "go_to_completion_deadline": "Ir para o prazo de conclusão",
         "completion_deadline_label": "Prazo para conclusão do curso",
         "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo."
       },

@@ -860,8 +860,8 @@
           "unlock_all": "Odblokuj wszystko"
         },
         "certificate_deadline_required": "Najpierw ustal termin wydania certyfikatu",
-        "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach certyfikatu.",
-        "go_to_certificate_settings": "Przejdź do Ustawień certyfikatu",
+        "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach kursu.",
+        "go_to_completion_deadline": "Przejdź do terminu ukończenia",
         "completion_deadline_label": "Termin zakończenia kursu",
         "completion_deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu."
       },

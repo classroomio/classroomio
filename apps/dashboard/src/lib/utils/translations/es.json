@@ -860,8 +860,8 @@
           "unlock_all": "Desbloquear todo"
         },
         "certificate_deadline_required": "Establecer la fecha límite del certificado primero",
-        "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para el certificado antes de que los estudiantes puedan inscribirse. Establezca una fecha límite en la configuración del certificado antes de publicarlo.",
-        "go_to_certificate_settings": "Vaya a Configuración de certificado",
+        "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para el certificado antes de que los estudiantes puedan inscribirse. Establezca una fecha límite en la configuración del curso antes de publicarlo.",
+        "go_to_completion_deadline": "Ir a la fecha límite de finalización",
         "completion_deadline_label": "Fecha límite de finalización del curso",
         "completion_deadline_helper": "Los estudiantes deben alcanzar el porcentaje de finalización antes de esta fecha (hora local). Déjelo vacío sin fecha límite."
       },

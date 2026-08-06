@@ -860,8 +860,8 @@
           "unlock_all": "Débloquez tout"
         },
         "certificate_deadline_required": "Définir d'abord la date limite du certificat",
-        "certificate_deadline_required_description": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits. Veuillez définir une date limite dans les paramètres du certificat avant de publier.",
-        "go_to_certificate_settings": "Accédez aux paramètres du certificat",
+        "certificate_deadline_required_description": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits. Veuillez définir une date limite dans les paramètres du cours avant de publier.",
+        "go_to_completion_deadline": "Accéder à la date limite d'achèvement",
         "completion_deadline_label": "Date limite de fin de cours",
         "completion_deadline_helper": "Les étudiants doivent atteindre le pourcentage d'achèvement avant cette date/heure (heure locale). Laisser vide sans date limite."
       },
