@@ -3956,9 +3956,12 @@
       "tags_title": "टैग",
       "types_title": "प्रकार",
       "search_placeholder": "पाठ्यक्रम खोजें...",
+      "clear_search": "खोज साफ़ करें",
       "pricing_title": "मूल्य निर्धारण",
       "pricing_free": "निःशुल्क",
-      "pricing_paid": "भुगतान किया गया"
+      "pricing_paid": "भुगतान किया गया",
+      "selected": "चयनित:",
+      "save_changes": "परिवर्तन सहेजें"
     }
   },
   "tags_admin": {

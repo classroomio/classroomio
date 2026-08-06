@@ -11,7 +11,7 @@
   import CourseInstructor from '../course-instructor.svelte';
   import CourseReviews from '../course-reviews.svelte';
   import CoursePricing from '../course-pricing.svelte';
-  import { themeStyle } from '../theme-style';
+  import LandingThemeScope from '../landing-theme-scope.svelte';
   import { alignHeroCtaWithPricing, buildCourseSectionNavItems } from '../course-landing-page.helpers';
 
   let {
@@ -37,10 +37,7 @@
   );
 </script>
 
-<div
-  class="ui:min-h-screen ui:bg-[var(--landing-bg-section)] ui:text-[var(--landing-fg)] ui:font-sans"
-  style={themeStyle('classic')}
->
+<LandingThemeScope theme="classic" class="ui:bg-[var(--landing-bg-section)] ui:font-sans">
   <ClassicNav {orgName} {logoUrl} {navItems} {authAction} />
 
   <main>
@@ -59,4 +56,4 @@
   </main>
 
   <OrgLandingPageFooter {orgName} {logoUrl} {footer} variant="classic" />
-</div>
+</LandingThemeScope>

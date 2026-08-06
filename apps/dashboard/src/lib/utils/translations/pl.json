@@ -3956,9 +3956,12 @@
       "tags_title": "Tagi",
       "types_title": "Typy",
       "search_placeholder": "Wyszukaj kursy...",
+      "clear_search": "Wyczyść szukanie",
       "pricing_title": "Ceny",
       "pricing_free": "Bezpłatny",
-      "pricing_paid": "Płatny"
+      "pricing_paid": "Płatny",
+      "selected": "Wybrane:",
+      "save_changes": "Zapisz zmiany"
     }
   },
   "tags_admin": {

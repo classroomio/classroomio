@@ -3956,9 +3956,12 @@
       "tags_title": "Thẻ",
       "types_title": "Các loại",
       "search_placeholder": "Tìm kiếm khóa học...",
+      "clear_search": "Xóa tìm kiếm",
       "pricing_title": "Định giá",
       "pricing_free": "miễn phí",
-      "pricing_paid": "Đã trả tiền"
+      "pricing_paid": "Đã trả tiền",
+      "selected": "Đã chọn:",
+      "save_changes": "Lưu thay đổi"
     }
   },
   "tags_admin": {

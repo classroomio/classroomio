@@ -3956,9 +3956,12 @@
       "tags_title": "Теги",
       "types_title": "Типы",
       "search_placeholder": "Искать курсы...",
+      "clear_search": "Очистить поиск",
       "pricing_title": "Цены",
       "pricing_free": "Бесплатно",
-      "pricing_paid": "Платный"
+      "pricing_paid": "Платный",
+      "selected": "Выбрано:",
+      "save_changes": "Сохранить изменения"
     }
   },
   "tags_admin": {
