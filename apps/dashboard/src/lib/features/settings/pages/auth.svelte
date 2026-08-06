@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
+  import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
   import { licenseApi } from '$features/license/api/license.svelte';
   import { currentOrgPath } from '$lib/utils/store/org';
@@ -10,6 +11,10 @@
   import AuthGeneral from '../components/auth-general.svelte';
   import AuthSso from '../components/auth-sso.svelte';
   import AuthTokenAuth from '../components/auth-token-auth.svelte';
+
+  let authGeneralComponent: AuthGeneral | null = $state(null);
+  let hasUnsavedChanges = $state(false);
+  let isSaving = $state(false);
 
   const ssoLicensed = $derived(licenseApi.hasAccess('sso'));
   const tokenAuthLicensed = $derived(licenseApi.hasAccess('token-auth'));
@@ -55,6 +60,19 @@
         break;
     }
   }
+
+  async function handleSave() {
+    isSaving = true;
+    try {
+      await authGeneralComponent?.handleSave();
+    } finally {
+      isSaving = false;
+    }
+  }
+
+  function handleDiscard() {
+    authGeneralComponent?.handleDiscard();
+  }
 </script>
 
 <UpgradeBanner>{$t('upgrade.enterprise_required')}</UpgradeBanner>
@@ -77,7 +95,7 @@
   </UnderlineTabs.List>
 
   <UnderlineTabs.Content value="general">
-    <AuthGeneral />
+    <AuthGeneral bind:this={authGeneralComponent} bind:hasUnsavedChanges />
   </UnderlineTabs.Content>
 
   {#if ssoLicensed}
@@ -92,3 +110,16 @@
     </UnderlineTabs.Content>
   {/if}
 </UnderlineTabs.Root>
+
+{#if currentTab === 'general'}
+  <Page.SettingsActions
+    hasChanges={hasUnsavedChanges}
+    loading={isSaving}
+    disabled={isSaving}
+    statusLabel={$t('common.unsaved_changes.label')}
+    discardLabel={$t('common.discard')}
+    saveLabel={$t('common.save_changes')}
+    onSave={handleSave}
+    onDiscard={handleDiscard}
+  />
+{/if}

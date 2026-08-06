@@ -22,6 +22,7 @@ import { default as WordBankEdit } from './renderers/word-bank/edit.svelte';
 import { default as ShortAnswerEdit } from './renderers/short-answer/edit.svelte';
 import { default as StarEdit } from './renderers/star/edit.svelte';
 import { default as TextareaEdit } from './renderers/textarea/edit.svelte';
+import { default as ThumbsEdit } from './renderers/thumbs/edit.svelte';
 import { default as TrueFalseEdit } from './renderers/true-false/edit.svelte';
 import { default as VideoRecordingEdit } from './renderers/video-recording/edit.svelte';
 
@@ -38,6 +39,7 @@ import { default as WordBankTake } from './renderers/word-bank/take.svelte';
 import { default as ShortAnswerTake } from './renderers/short-answer/take.svelte';
 import { default as StarTake } from './renderers/star/take.svelte';
 import { default as TextareaTake } from './renderers/textarea/take.svelte';
+import { default as ThumbsTake } from './renderers/thumbs/take.svelte';
 import { default as TrueFalseTake } from './renderers/true-false/take.svelte';
 import { default as VideoRecordingTake } from './renderers/video-recording/take.svelte';
 
@@ -54,6 +56,7 @@ import { default as WordBankPreview } from './renderers/word-bank/preview.svelte
 import { default as ShortAnswerPreview } from './renderers/short-answer/preview.svelte';
 import { default as StarPreview } from './renderers/star/preview.svelte';
 import { default as TextareaPreview } from './renderers/textarea/preview.svelte';
+import { default as ThumbsPreview } from './renderers/thumbs/preview.svelte';
 import { default as TrueFalsePreview } from './renderers/true-false/preview.svelte';
 import { default as VideoRecordingPreview } from './renderers/video-recording/preview.svelte';
 
@@ -70,6 +73,7 @@ import { default as WordBankSubmission } from './renderers/word-bank/submission.
 import { default as ShortAnswerSubmission } from './renderers/short-answer/submission.svelte';
 import { default as StarSubmission } from './renderers/star/submission.svelte';
 import { default as TextareaSubmission } from './renderers/textarea/submission.svelte';
+import { default as ThumbsSubmission } from './renderers/thumbs/submission.svelte';
 import { default as TrueFalseSubmission } from './renderers/true-false/submission.svelte';
 import { default as VideoRecordingSubmission } from './renderers/video-recording/submission.svelte';
 
@@ -80,6 +84,7 @@ import { default as ShortAnswerReview } from './renderers/short-answer/review.sv
 import { default as FillBlankReview } from './renderers/fill-blank/review.svelte';
 import { default as WordBankReview } from './renderers/word-bank/review.svelte';
 import { default as OrderingReview } from './renderers/ordering/review.svelte';
+import { default as ThumbsReview } from './renderers/thumbs/review.svelte';
 import { default as TrueFalseReview } from './renderers/true-false/review.svelte';
 
 type SharedRendererComponent = Component<ExerciseQuestionRendererProps>;
@@ -111,6 +116,13 @@ export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<Share
     preview: TrueFalsePreview,
     submission: TrueFalseSubmission,
     review: TrueFalseReview
+  },
+  [QUESTION_TYPE_KEY.THUMBS]: {
+    edit: ThumbsEdit,
+    take: ThumbsTake,
+    preview: ThumbsPreview,
+    submission: ThumbsSubmission,
+    review: ThumbsReview
   },
   [QUESTION_TYPE_KEY.SHORT_ANSWER]: {
     edit: ShortAnswerEdit,

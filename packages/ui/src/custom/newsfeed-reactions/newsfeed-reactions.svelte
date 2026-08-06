@@ -59,7 +59,7 @@
       {/snippet}
     </Popover.Trigger>
 
-    <Popover.Content side="top" align="start" sideOffset={10} class="ui:w-auto ui:max-w-none ui:p-1!">
+    <Popover.Content side="bottom" align="start" sideOffset={10} class="ui:w-auto ui:max-w-none ui:p-1!">
       <div class="ui:grid ui:grid-cols-4 ui:gap-2">
         {#each NEWSFEED_REACTION_OPTIONS as reactionOption (reactionOption.type)}
           <Button

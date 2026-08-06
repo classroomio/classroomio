@@ -150,7 +150,7 @@
   {/if}
 </Sidebar.Header>
 
-<Sidebar.Content class="flex-1 overflow-y-auto">
+<Sidebar.Content class="min-w-0 flex-1 overflow-x-hidden overflow-y-auto">
   {#if !$landingPageEditorSelection}
     <Sidebar.Group>
       <Sidebar.GroupLabel class="px-2">
@@ -176,7 +176,7 @@
     </Sidebar.Group>
   {:else if selectedSectionDefinition}
     {@const SectionComponent = selectedSectionDefinition.component}
-    <div class="p-4">
+    <div class="min-w-0 overflow-x-hidden p-4">
       <SectionComponent bind:settings {markDirty} />
     </div>
   {/if}

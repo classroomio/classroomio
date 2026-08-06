@@ -44,6 +44,8 @@ export class NewsfeedApi extends BaseApiWithErrors {
 
   commentsByFeedId = $state<Record<string, NewsfeedCommentsByFeedId>>({});
 
+  repliesByParentId = $state<Record<number, NewsfeedCommentsByFeedId>>({});
+
   isNewFeedModalOpen = $state(false);
 
   /**
@@ -75,7 +77,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
         if (response.data) {
           this.feeds = Array.isArray(response.data) ? response.data : response.data.items || [];
           for (const feed of this.feeds) {
-            this.initComments(feed.id, 0);
+            this.initComments(feed.id, feed.commentCount || 0);
           }
         }
       },
@@ -357,6 +359,91 @@ export class NewsfeedApi extends BaseApiWithErrors {
   }
 
   /**
+   * Fetch replies for a specific parent comment
+   */
+  async getReplies(courseId: string, feedId: string, parentId: number, limit = 5) {
+    if (!this.repliesByParentId[parentId]) {
+      this.repliesByParentId[parentId] = {
+        items: [],
+        totalCount: 0,
+        hasMore: false,
+        isLoading: true,
+        cursor: null
+      };
+    } else {
+      this.repliesByParentId[parentId].isLoading = true;
+    }
+
+    await this.execute<GetNewsfeedCommentsRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].newsfeed[':feedId'].comments.$get({
+          param: { courseId, feedId },
+          query: { parentId: String(parentId), limit: String(limit) }
+        }),
+      logContext: 'fetching newsfeed comment replies',
+      onSuccess: (response) => {
+        if (response.data) {
+          this.repliesByParentId[parentId] = {
+            items: response.data.items,
+            totalCount: response.data.totalCount,
+            hasMore: response.data.hasMore,
+            isLoading: false,
+            cursor: response.data.nextCursor
+          };
+        }
+      },
+      onError: (result) => {
+        if (this.repliesByParentId[parentId]) {
+          this.repliesByParentId[parentId].isLoading = false;
+        }
+        if (typeof result === 'string') {
+          snackbar.error('Failed to fetch replies');
+        }
+      }
+    });
+  }
+
+  /**
+   * Load more replies for a specific parent comment (uses cursor)
+   */
+  async loadMoreReplies(courseId: string, feedId: string, parentId: number, limit = 5) {
+    const replyState = this.repliesByParentId[parentId];
+    if (!replyState || !replyState.hasMore || replyState.isLoading || !replyState.cursor) {
+      return;
+    }
+
+    replyState.isLoading = true;
+
+    await this.execute<GetNewsfeedCommentsRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].newsfeed[':feedId'].comments.$get({
+          param: { courseId, feedId },
+          query: { parentId: String(parentId), cursor: replyState.cursor!, limit: String(limit) }
+        }),
+      logContext: 'loading more newsfeed replies',
+      onSuccess: (response) => {
+        if (response.data) {
+          this.repliesByParentId[parentId] = {
+            items: [...replyState.items, ...response.data.items],
+            totalCount: response.data.totalCount,
+            hasMore: response.data.hasMore,
+            isLoading: false,
+            cursor: response.data.nextCursor
+          };
+        }
+      },
+      onError: (result) => {
+        if (this.repliesByParentId[parentId]) {
+          this.repliesByParentId[parentId].isLoading = false;
+        }
+        if (typeof result === 'string') {
+          snackbar.error('Failed to load more replies');
+        }
+      }
+    });
+  }
+
+  /**
    * Load more comments (uses cursor)
    */
   async loadMoreComments(courseId: string, feedId: string, limit = 5) {
@@ -395,16 +482,22 @@ export class NewsfeedApi extends BaseApiWithErrors {
   }
 
   /**
-   * Creates a newsfeed comment
+   * Creates a newsfeed comment or reply
    */
   async createComment(
     courseId: string,
     feedId: string,
     content: string,
-    author: { id: string; username: string; fullname: string; avatarUrl: string }
+    author: { id: string; username: string; fullname: string; avatarUrl: string },
+    parentId?: number,
+    replyTo?: { commentId: number; authorFullname: string }
   ) {
-    const result = ZNewsfeedCommentCreate.safeParse({ courseNewsfeedId: feedId, content });
-    console.log('result', result);
+    const result = ZNewsfeedCommentCreate.safeParse({
+      courseNewsfeedId: feedId,
+      content,
+      parentId,
+      replyToCommentId: replyTo?.commentId
+    });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'newsfeed');
       return;
@@ -421,22 +514,54 @@ export class NewsfeedApi extends BaseApiWithErrors {
         if (response.data) {
           snackbar.success('Comment added successfully');
 
-          // Add comment to local state
-          const commentState = this.commentsByFeedId[feedId];
-          if (commentState) {
-            const newComment = {
-              ...response.data,
-              // Map author data to the expected flat structure
-              authorProfileId: author.id,
-              authorFullname: author.fullname,
-              authorUsername: author.username,
-              authorAvatarUrl: author.avatarUrl
-            };
-            this.commentsByFeedId[feedId] = {
-              ...commentState,
-              items: [newComment, ...commentState.items],
-              totalCount: commentState.totalCount + 1
-            };
+          const newComment = {
+            ...response.data,
+            authorProfileId: author.id,
+            authorFullname: author.fullname,
+            authorUsername: author.username,
+            authorAvatarUrl: author.avatarUrl,
+            replyToAuthorFullname: replyTo?.authorFullname ?? null,
+            replyCount: 0
+          };
+
+          if (parentId) {
+            const repliesState = this.repliesByParentId[parentId];
+            if (repliesState) {
+              this.repliesByParentId[parentId] = {
+                ...repliesState,
+                items: [...repliesState.items, newComment],
+                totalCount: repliesState.totalCount + 1
+              };
+            } else {
+              this.repliesByParentId[parentId] = {
+                items: [newComment],
+                totalCount: 1,
+                hasMore: false,
+                isLoading: false,
+                cursor: null
+              };
+            }
+
+            // Increment parent reply count in local top-level items
+            const commentState = this.commentsByFeedId[feedId];
+            if (commentState) {
+              const updatedItems = commentState.items.map((item) => {
+                if (item.id === parentId) {
+                  return { ...item, replyCount: (item.replyCount || 0) + 1 };
+                }
+                return item;
+              });
+              this.commentsByFeedId[feedId] = { ...commentState, items: updatedItems };
+            }
+          } else {
+            const commentState = this.commentsByFeedId[feedId];
+            if (commentState) {
+              this.commentsByFeedId[feedId] = {
+                ...commentState,
+                items: [newComment, ...commentState.items],
+                totalCount: commentState.totalCount + 1
+              };
+            }
           }
         }
       },
@@ -451,7 +576,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
   /**
    * Updates a newsfeed comment
    */
-  async updateComment(courseId: string, commentId: string, content: string) {
+  async updateComment(courseId: string, feedId: string, commentId: string, content: string, parentId?: number) {
     const result = ZNewsfeedCommentUpdate.safeParse({ content });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'newsfeed');
@@ -465,6 +590,34 @@ export class NewsfeedApi extends BaseApiWithErrors {
           json: result.data
         }),
       logContext: 'updating newsfeed comment',
+      onSuccess: (response) => {
+        if (response.data) {
+          snackbar.success('Comment updated successfully');
+
+          const numericId = Number(commentId);
+          if (parentId && this.repliesByParentId[parentId]) {
+            const replyState = this.repliesByParentId[parentId];
+            const updatedItems = replyState.items.map((item) => {
+              if (item.id === numericId) {
+                return { ...item, content: response.data?.content ?? content };
+              }
+              return item;
+            });
+            this.repliesByParentId[parentId] = { ...replyState, items: updatedItems };
+          } else {
+            const commentState = this.commentsByFeedId[feedId];
+            if (commentState) {
+              const updatedItems = commentState.items.map((item) => {
+                if (item.id === numericId) {
+                  return { ...item, content: response.data?.content ?? content };
+                }
+                return item;
+              });
+              this.commentsByFeedId[feedId] = { ...commentState, items: updatedItems };
+            }
+          }
+        }
+      },
       onError: (result) => {
         if (typeof result === 'string') {
           snackbar.error('Failed to update comment');
@@ -476,7 +629,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
   /**
    * Deletes a newsfeed comment
    */
-  async deleteComment(courseId: string, feedId: string, commentId: string) {
+  async deleteComment(courseId: string, feedId: string, commentId: string, parentId?: number) {
     await this.execute<DeleteNewsfeedCommentRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].newsfeed.comment[':commentId'].$delete({
@@ -487,14 +640,37 @@ export class NewsfeedApi extends BaseApiWithErrors {
         if (response.data) {
           snackbar.success('Comment deleted successfully');
 
-          // Remove comment from local state
-          const commentState = this.commentsByFeedId[feedId];
-          if (commentState) {
-            this.commentsByFeedId[feedId] = {
-              ...commentState,
-              items: commentState.items.filter((item) => String(item.id) !== commentId),
-              totalCount: Math.max(0, commentState.totalCount - 1)
+          const numericId = Number(commentId);
+          if (parentId && this.repliesByParentId[parentId]) {
+            const replyState = this.repliesByParentId[parentId];
+            this.repliesByParentId[parentId] = {
+              ...replyState,
+              items: replyState.items.filter((item) => String(item.id) !== commentId),
+              totalCount: Math.max(0, replyState.totalCount - 1)
             };
+
+            const commentState = this.commentsByFeedId[feedId];
+            if (commentState) {
+              const updatedItems = commentState.items.map((item) => {
+                if (item.id === parentId) {
+                  return { ...item, replyCount: Math.max(0, (item.replyCount || 1) - 1) };
+                }
+                return item;
+              });
+              this.commentsByFeedId[feedId] = { ...commentState, items: updatedItems };
+            }
+          } else {
+            if (this.repliesByParentId[numericId]) {
+              delete this.repliesByParentId[numericId];
+            }
+            const commentState = this.commentsByFeedId[feedId];
+            if (commentState) {
+              this.commentsByFeedId[feedId] = {
+                ...commentState,
+                items: commentState.items.filter((item) => String(item.id) !== commentId),
+                totalCount: Math.max(0, commentState.totalCount - 1)
+              };
+            }
           }
         }
       },

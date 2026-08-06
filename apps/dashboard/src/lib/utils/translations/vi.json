@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Làm mới",
     "unsaved_changes": {
-      "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
-    }
+      "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?",
+      "label": "Thay đổi chưa lưu"
+    },
+    "discard": "Hủy",
+    "save_changes": "Lưu thay đổi"
   },
   "validations": {
     "generic": {
@@ -321,6 +324,7 @@
       "creating_new": "Tạo bản dịch mới không thành công"
     },
     "exercise": {
+      "validation_errors": "Vui lòng sửa tất cả lỗi xác thực trước khi lưu.",
       "points_required_auto_grade": "Đặt điểm dương cho mỗi câu hỏi trước khi lưu.",
       "success": "Đã lưu thành công",
       "submission_updated": "Đã cập nhật bài nộp vào",
@@ -1517,6 +1521,7 @@
                 "multiple": "Nhiều câu trả lời",
                 "paragraph": "Đoạn",
                 "true_false": "Đúng/Sai",
+                "thumbs": "Thích/Không thích",
                 "short_answer": "Câu trả lời ngắn",
                 "numeric": "Câu trả lời bằng số",
                 "fill_blank": "Điền vào chỗ trống",
@@ -1703,6 +1708,17 @@
                 },
                 "edit": {
                   "correct_answer_label": "Câu trả lời đúng"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Có",
+                "no_label": "Không",
+                "edit": {
+                  "positive_option_label": "Nhãn thích",
+                  "negative_option_label": "Nhãn không thích"
+                },
+                "preview": {
+                  "helper": "Mở — học viên chọn thích hoặc không thích."
                 }
               },
               "checkbox": {
@@ -1991,6 +2007,8 @@
               "cancel_upload": "Hủy tải lên",
               "upload_cancelled": "Tải lên bị người dùng hủy",
               "downloading": "Đang tải xuống...",
+              "download_success": "Tài liệu đã được tải xuống thành công",
+              "download_error": "Không thể tải xuống tài liệu",
               "view_pdf": "Xem PDF",
               "remove_document": "Xóa tài liệu",
               "delete": "Xóa",
@@ -2000,7 +2018,11 @@
               "failed_to_render_pdf": "Không thể hiển thị trang PDF",
               "use_arrow_keys": "Sử dụng các phím mũi tên để điều hướng, +/- để thu phóng hoặc nhấp vào các điều khiển ở trên. Nhấp chuột phải bị vô hiệu hóa.",
               "empty_title": "Chưa có tài liệu nào",
-              "empty_description": "Tải lên tài liệu để chia sẻ với sinh viên của bạn"
+              "empty_description": "Tải lên tài liệu để chia sẻ với sinh viên của bạn",
+              "attachments_heading": "Tệp đính kèm",
+              "file_count": "{count, plural, one {# tệp} other {# tệp}}",
+              "view_file": "Xem tệp",
+              "reorder_file": "Sắp xếp lại tệp"
             },
             "video": {
               "title": "Video",
@@ -2260,13 +2282,32 @@
           "hide": "Ẩn bình luận",
           "placeholder": "Thêm nhận xét của lớp",
           "submit_aria": "Gửi bình luận",
-          "delete": "Xóa"
+          "delete": "Xóa",
+          "reply": "trả lời",
+          "replying_to": "Đang trả lời @{name}",
+          "cancel_reply": "Hủy bỏ",
+          "view_replies": "Xem {count} {count, plural, =1 {trả lời} other {trả lời}} khác",
+          "hide_replies": "Ẩn câu trả lời",
+          "view_more": "Xem thêm bình luận ({count})",
+          "loading": "Đang tải...",
+          "save": "Lưu",
+          "saving": "Đang lưu...",
+          "send": "Gửi",
+          "load_more_replies": "Tải thêm câu trả lời"
         },
         "card": {
           "pin": "Ghim",
           "unpin": "Bỏ ghim",
           "edit": "Chỉnh sửa",
           "delete": "Xóa"
+        },
+        "other_posts": "Bài viết khác",
+        "user": "người dùng",
+        "delete_modal": {
+          "title": "Xóa nguồn cấp dữ liệu",
+          "description": "Bạn có chắc chắn muốn xóa nguồn cấp dữ liệu này không?",
+          "no": "Không",
+          "yes": "Có"
         }
       },
       "compliance": {
@@ -2572,6 +2613,7 @@
       "most_lessons": "Bài học: Nhiều nhất trước",
       "fewest_lessons": "Bài học: Ít nhất trước",
       "date_created": "Ngày tạo",
+      "last_updated_at": "Cập nhật lần cuối",
       "published": "Đã xuất bản",
       "lessons": "Bài học"
     },

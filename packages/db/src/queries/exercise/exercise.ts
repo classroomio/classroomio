@@ -545,3 +545,19 @@ export async function syncQuestionIdSequence(dbClient: DbOrTxClient = db): Promi
     `
   );
 }
+
+/**
+ * Syncs the question_type table's identity sequence to the current max(id).
+ * Call before inserting question types to avoid duplicate key on question_type_pkey when the sequence is behind.
+ */
+export async function syncQuestionTypeIdSequence(dbClient: DbOrTxClient = db): Promise<void> {
+  await dbClient.execute(
+    sql`
+      SELECT setval(
+        pg_get_serial_sequence('question_type', 'id'),
+        COALESCE((SELECT MAX(id) FROM question_type), 1),
+        EXISTS(SELECT 1 FROM question_type)
+      )
+    `
+  );
+}
