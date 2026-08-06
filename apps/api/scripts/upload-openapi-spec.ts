@@ -147,6 +147,18 @@ class OpenAPISpecGenerator {
               url: 'http://localhost:3002',
               description: 'Development environment'
             }
+          ],
+          tags: [
+            {
+              name: 'Public API Audience',
+              description:
+                "Manage your organization's audience, invite, list, update, and remove members, and assign them to courses."
+            },
+            {
+              name: 'Public API Courses',
+              description:
+                "Manage your organization's courses, create, list, update, delete, and export course structure and content."
+            }
           ]
         }
       });
