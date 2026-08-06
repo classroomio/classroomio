@@ -173,7 +173,7 @@
     }
 
     const isCourseCompliance = $settings.type === 'COMPLIANCE';
-    const hasCertificateDeadline = !!courseApi.course?.certificate?.deadline;
+    const hasCertificateDeadline = !!$settings.certificate.deadline;
 
     if (isCourseCompliance && !hasCertificateDeadline) {
       openCertificateDeadlineDialog = true;
@@ -245,6 +245,7 @@
           $settings.type === 'COMPLIANCE' ? (courseApi.course.compliance ?? DEFAULT_COMPLIANCE_SETTINGS) : undefined,
         callout: $settings.type === 'PUBLIC' ? sanitizeCalloutForSave($settings.callout) : null,
         certificate: {
+          ...(courseApi.course.certificate ?? {}),
           deadline: $settings.certificate.deadline,
           threshold: $settings.certificate.threshold,
           requiredExerciseId: $settings.certificate.requiredExerciseId,
