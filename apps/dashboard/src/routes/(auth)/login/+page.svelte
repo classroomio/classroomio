@@ -147,7 +147,6 @@
 {/snippet}
 
 <AuthUI
-  showBack={true}
   isLogin={true}
   {handleSubmit}
   isLoading={loading}

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import { page } from '$app/state';
+  import { resolve } from '$app/paths';
   import * as Avatar from '@cio/ui/base/avatar';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
@@ -10,14 +11,11 @@
   import * as Card from '@cio/ui/base/card';
   import { Button } from '@cio/ui/base/button';
   import { Separator } from '@cio/ui/base/separator';
-  import { BackButton } from '@cio/ui';
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { ROUTE } from '$lib/utils/constants/routes';
   import { DotPattern } from '@cio/ui/custom/animation/dot-pattern';
 
   interface Props {
-    backHref?: string;
-    showBack?: boolean;
     isLogin?: boolean;
     showOnlyContent?: boolean;
     isLoading?: boolean;
@@ -30,8 +28,6 @@
   }
 
   let {
-    backHref = '',
-    showBack = false,
     isLogin = true,
     showOnlyContent = false,
     isLoading = false,
@@ -75,9 +71,7 @@
   const authBackgroundUrl = $derived($currentOrg.customization.auth?.backgroundImage?.trim() ?? '');
 </script>
 
-<div
-  class={`auth-ui-background relative flex ${showBack ? 'flex-col' : 'flex-row'} min-h-screen w-full items-center justify-center overflow-hidden p-4`}
->
+<div class="auth-ui-background relative flex min-h-screen w-full items-center justify-center overflow-hidden p-4">
   {#if authBackgroundUrl}
     <div class="absolute inset-0 z-0">
       <img src={authBackgroundUrl} alt="" class="h-full w-full object-cover" decoding="async" />
@@ -86,21 +80,22 @@
   {:else}
     <DotPattern fillColor="rgb(2 51 189 / 0.25)" class="absolute inset-0 z-0 h-full w-full" />
   {/if}
-  {#if showBack}
-    <div class="ui:w-full ui:max-w-[400px] ui:pt-2 ui:mb-5">
-      <BackButton href={backHref || undefined} label={$t('onboarding.back')} />
-    </div>
-  {/if}
   <Card.Root class="ui:w-full relative z-10 max-w-[400px] shadow-sm">
     {#if !showOnlyContent || showLogo}
       <Card.Header class="ui:flex ui:flex-col ui:items-center ui:gap-4">
-        <Avatar.Root>
-          <Avatar.Image
-            src={$currentOrg.avatarUrl ? $currentOrg.avatarUrl : '/logo-192.png'}
-            alt={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
-          />
-          <Avatar.Fallback>{$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}</Avatar.Fallback>
-        </Avatar.Root>
+        <a
+          href={resolve(ROUTE.HOME, {})}
+          class="ui:inline-flex"
+          aria-label={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
+        >
+          <Avatar.Root>
+            <Avatar.Image
+              src={$currentOrg.avatarUrl ? $currentOrg.avatarUrl : '/logo-192.png'}
+              alt={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
+            />
+            <Avatar.Fallback>{$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}</Avatar.Fallback>
+          </Avatar.Root>
+        </a>
 
         {#if !showOnlyContent}
           <a href="/">
