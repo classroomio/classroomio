@@ -23,6 +23,15 @@ script auto-configures it. You only change these for custom credentials.
 | `OBJECT_STORAGE_FORCE_PATH_STYLE` | `true` (required for MinIO) |
 | `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` | `http://localhost:9000/media` |
 
+:::note[Changing your domain later]
+If you change `DASHBOARD_ORIGIN` after Install, `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` is
+re-derived from it automatically the next time you run `./classroomio.sh restart` (or
+`start`/`upgrade`). If you've bundled MinIO but manually pinned
+`OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` to a custom media CDN, note that a domain change will
+overwrite it back to `<DASHBOARD_ORIGIN>/media` — re-set it afterward if you need the custom
+value.
+:::
+
 :::warning[MinIO is your durability boundary]
 Single-node MinIO has no redundancy: its volume is the only thing protecting your uploads. Give it
 **persistent storage** and **back it up**. If you'd rather not operate storage yourself, use external

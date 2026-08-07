@@ -95,8 +95,8 @@ Auth sets host-only cookies. Only set `PUBLIC_SERVER_URL` and `TRUSTED_ORIGINS` 
 third-party client needs to call the API directly. CSP is read at container startup rather than
 baked into the image, so `ALLOWED_EXTERNAL_DOMAINS` (or the per-directive `CSP_SCRIPT_SRC_DOMAINS`,
 `CSP_STYLE_SRC_DOMAINS`, `CSP_CONNECT_SRC_DOMAINS`, `CSP_FRAME_SRC_DOMAINS`, `CSP_FONT_SRC_DOMAINS`,
-`CSP_MEDIA_SRC_DOMAINS` vars) take effect on restart with no rebuild, and none of it needs to
-include the API for normal dashboard calls.
+`CSP_MEDIA_SRC_DOMAINS` vars) take effect after `./classroomio.sh restart` (no image rebuild
+needed), and none of it needs to include the API for normal dashboard calls.
 
 `PRIVATE_SERVER_KEY` and `BETTER_AUTH_SECRET` are generated for you by `./classroomio.sh` if you
 leave them blank, and a value you set yourself is never overwritten; the script also ensures
@@ -141,11 +141,12 @@ dc = docker compose --env-file .env -p classroomio -f docker-compose.yaml
 | Exclude MinIO | `./classroomio.sh start --no-minio` |
 | Back up Postgres + MinIO volume | `./classroomio.sh backup` |
 | Upgrade published images (backs up first) | `./classroomio.sh upgrade` |
+| Upgrade a source build (backs up first, then rebuilds) | `./classroomio.sh upgrade --build` |
 | API-only smoke test | `dc up --build -d postgres redis api` |
 | Service status | `dc ps` |
 | Stream logs | `dc logs -f api dashboard` |
 | Rebuild one service | `dc up -d --build api` |
-| Restart (env change, no rebuild) | `dc restart api dashboard` |
+| Restart (recreates containers, applies .env changes) | `./classroomio.sh restart` |
 | Stop | `dc down` |
 | Stop + delete volumes | `dc down -v` |
 
@@ -280,8 +281,8 @@ docker compose --env-file .env -p classroomio -f docker-compose.yaml up -d --bui
 # Both (e.g. shared packages/* changed)
 docker compose --env-file .env -p classroomio -f docker-compose.yaml up -d --build api dashboard
 
-# Full stack
-./classroomio.sh start --build
+# Full stack (backs up first)
+./classroomio.sh upgrade --build
 ```
 
 ## Troubleshooting

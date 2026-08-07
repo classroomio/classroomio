@@ -40,7 +40,10 @@ docker compose -f docker-compose.images.yaml --env-file .env --profile minio up 
 
 ### Build from source (Docker)
 
-`git pull`, then re-run `./classroomio.sh start --build` to rebuild.
+`git pull`, then re-run `./classroomio.sh upgrade --build` to rebuild. Like the pre-built path,
+this backs up Postgres and MinIO first, then rebuilds and restarts. (`start --build` also
+rebuilds, but skips the backup step — use `upgrade --build` when upgrading an existing
+deployment with real data.)
 
 ### Railway / Coolify / Dokploy / DigitalOcean
 

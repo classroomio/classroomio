@@ -222,8 +222,14 @@ is_local_origin() {
 
 # Point browser-facing storage URLs at the public domain when DASHBOARD_ORIGIN is not
 # localhost. MinIO media is served on :9000 — operators must reverse-proxy /media to it.
-# We only override values that are still empty/localhost so explicit S3/R2 config is kept.
+# `mode` is "bundled" (ensure_minio_env) or "external" (ensure_storage_env's --no-minio
+# path). For bundled MinIO, OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL is script-owned, so we
+# keep it in sync with DASHBOARD_ORIGIN on every run — otherwise changing DASHBOARD_ORIGIN
+# after install would leave media links pointed at the old domain forever. For external
+# storage it's operator-owned (their CDN/bucket URL), so we only fill in a default and
+# never clobber an explicit value.
 derive_public_storage_urls() {
+  local mode="$1"
   local dashboard_origin public_endpoint media_base
   dashboard_origin="$(get_env_value DASHBOARD_ORIGIN)"
   public_endpoint="$(get_env_value OBJECT_STORAGE_PUBLIC_ENDPOINT)"
@@ -231,17 +237,25 @@ derive_public_storage_urls() {
 
   if ! is_local_origin "${dashboard_origin}"; then
     local origin="${dashboard_origin%/}"
+    local derived="${origin}/media"
     # Public media is served from the public-download `media` bucket, so deriving its base
     # URL from the domain is what fixes broken media links in served pages. We deliberately
     # do NOT touch OBJECT_STORAGE_PUBLIC_ENDPOINT (the S3 API endpoint) — pointing it at the
     # dashboard origin would break presigned URLs for the non-public videos/documents buckets.
-    if is_local_origin "${media_base}"; then
-      upsert_env_value OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL "${origin}/media"
+    if [[ "${mode}" == "bundled" ]]; then
+      if [[ "${media_base}" != "${derived}" ]]; then
+        upsert_env_value OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL "${derived}"
+        echo "Derived OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL from DASHBOARD_ORIGIN (${derived})."
+        echo "  -> Ensure your reverse proxy routes ${origin}/media to MinIO (port 9000)."
+        echo "  -> For presigned access to the videos/documents buckets behind a domain, expose"
+        echo "     MinIO's S3 API on its own route and set OBJECT_STORAGE_PUBLIC_ENDPOINT explicitly."
+      fi
+    else
+      if is_local_origin "${media_base}"; then
+        upsert_env_value OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL "${derived}"
+        echo "Derived OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL from DASHBOARD_ORIGIN (${derived})."
+      fi
     fi
-    echo "Derived OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL from DASHBOARD_ORIGIN (${origin}/media)."
-    echo "  -> Ensure your reverse proxy routes ${origin}/media to MinIO (port 9000)."
-    echo "  -> For presigned access to the videos/documents buckets behind a domain, expose"
-    echo "     MinIO's S3 API on its own route and set OBJECT_STORAGE_PUBLIC_ENDPOINT explicitly."
   else
     # Local demo: ensure localhost defaults are present.
     if [[ -z "${public_endpoint}" ]]; then
@@ -280,7 +294,7 @@ ensure_minio_env() {
     echo "Provisioned MinIO with randomized credentials in .env"
   fi
 
-  derive_public_storage_urls
+  derive_public_storage_urls "bundled"
 }
 
 # ──────────────────────────────────────────────
@@ -303,7 +317,7 @@ ensure_storage_env() {
       echo "or drop --no-minio to use the bundled MinIO."
       exit 1
     fi
-    derive_public_storage_urls
+    derive_public_storage_urls "external"
   fi
 }
 
@@ -454,6 +468,7 @@ cmd_stop() {
 }
 
 cmd_restart() {
+  prepare_env_and_secrets
   echo "Restarting ClassroomIO..."
   # `compose restart` only bounces the container *process* — it never re-reads .env, so
   # edits to DASHBOARD_ORIGIN/SMTP_*/LICENSE_KEY/etc. were silently ignored. Recreate
@@ -520,6 +535,7 @@ cmd_backup() {
 }
 
 cmd_upgrade() {
+  prepare_env_and_secrets
   echo "Upgrading ClassroomIO..."
   echo
   echo "Step 1/3: backing up before touching images..."
