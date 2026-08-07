@@ -858,7 +858,12 @@
           "description": "Les étudiants inscrits ne pourront pas suivre de leçons ou d'exercices verrouillés tant que vous ne les aurez pas déverrouillés.",
           "description_live": "Les leçons et les exercices verrouillés restent cachés aux étudiants jusqu'à ce que vous les déverrouilliez, ce qui est utile si vous publiez du contenu semaine après semaine.",
           "unlock_all": "Débloquez tout"
-        }
+        },
+        "certificate_deadline_required": "Définir d'abord la date limite du certificat",
+        "certificate_deadline_required_description": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits. Veuillez définir une date limite dans les paramètres du certificat avant de publier.",
+        "go_to_certificate_settings": "Accédez aux paramètres du certificat",
+        "completion_deadline_label": "Date limite d’achèvement du cours",
+        "completion_deadline_helper": "Les étudiants doivent atteindre le pourcentage d'achèvement avant cette date/heure (heure locale). Laisser vide sans date limite."
       },
       "analytics": {
         "title": "Analytique"
@@ -2475,7 +2480,9 @@
       "blocker_final_misconfigured": "L'exercice de certification « {exerciseTitle} » n'a aucun point configuré ; demandez à votre instructeur de le réparer.",
       "email_message_label": "Message électronique",
       "email_message_placeholder": "par ex. Nous sommes fiers de vos progrès – continuez à apprendre !",
-      "final_exercise_multiple_attempts_note": "Les étudiants auront droit à des tentatives illimitées sur l'exercice sélectionné."
+      "final_exercise_multiple_attempts_note": "Les étudiants auront droit à des tentatives illimitées sur l'exercice sélectionné.",
+      "deadline_required": "La date limite du certificat est requise lorsque les certificats sont téléchargeables.",
+      "deadline_required_enroll": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits."
     },
     "creator": {
       "heading": "Quel cours souhaitez-vous créer ?",
@@ -3934,7 +3941,11 @@
     "resend": "Renvoyer le code de vérification",
     "resend_in": "Renvoyer la vérification dans",
     "seconds": "secondes",
-    "snackbar_error": "erreur lors de l'envoi du code"
+    "snackbar_error": "erreur lors de l'envoi du code",
+    "wrong_address": "Vous vous êtes inscrit avec une mauvaise adresse ?",
+    "switch_account": "Changer de compte",
+    "confirm_link_prefix": "Cliquez sur le lien que nous avons envoyé à",
+    "confirm_link_suffix": "pour confirmer votre email"
   },
   "public_courses": {
     "page_title": "Cours - ClassroomIO",

@@ -858,7 +858,12 @@
           "description": "Zarejestrowani uczniowie nie będą mogli brać udziału w zablokowanych lekcjach ani ćwiczeniach, dopóki ich nie odblokujesz.",
           "description_live": "Zablokowane lekcje i ćwiczenia pozostają ukryte przed uczniami, dopóki ich nie odblokujesz — przydatne, jeśli publikujesz treści tydzień po tygodniu.",
           "unlock_all": "Odblokuj wszystko"
-        }
+        },
+        "certificate_deadline_required": "Najpierw ustal termin wydania certyfikatu",
+        "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach certyfikatu.",
+        "go_to_certificate_settings": "Przejdź do Ustawień certyfikatu",
+        "completion_deadline_label": "Termin ukończenia kursu",
+        "completion_deadline_helper": "Uczniowie muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu."
       },
       "analytics": {
         "title": "Analityka"
@@ -2475,7 +2480,9 @@
       "blocker_final_misconfigured": "W ćwiczeniu certyfikacyjnym „{exerciseTitle}” nie skonfigurowano żadnych punktów; poproś instruktora, żeby to naprawił.",
       "email_message_label": "Wiadomość e-mail",
       "email_message_placeholder": "np. Jesteśmy dumni z Twoich postępów — ucz się dalej!",
-      "final_exercise_multiple_attempts_note": "Studenci będą mieli nieograniczoną liczbę prób wykonania wybranego ćwiczenia."
+      "final_exercise_multiple_attempts_note": "Studenci będą mieli nieograniczoną liczbę prób wykonania wybranego ćwiczenia.",
+      "deadline_required": "W przypadku możliwości pobrania certyfikatów wymagany jest termin wydania certyfikatu.",
+      "deadline_required_enroll": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników."
     },
     "creator": {
       "heading": "Jaki kurs chcesz stworzyć?",
@@ -3934,7 +3941,11 @@
     "resend": "Wyślij ponownie kod weryfikacyjny",
     "resend_in": "Wyślij ponownie weryfikację w",
     "seconds": "sekundy",
-    "snackbar_error": "błąd podczas wysyłania kodu"
+    "snackbar_error": "błąd podczas wysyłania kodu",
+    "wrong_address": "Zarejestrowałeś się pod złym adresem?",
+    "switch_account": "Zmień konto",
+    "confirm_link_prefix": "Kliknij link, na który wysłaliśmy",
+    "confirm_link_suffix": "aby potwierdzić swój e-mail"
   },
   "public_courses": {
     "page_title": "Kursy — ClassroomIO",
