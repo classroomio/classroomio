@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import { cn } from '../../tools';
 
   type Variant = 'primary' | 'secondary' | 'tertiary';
   type Size = 'sm' | 'md' | 'lg';
@@ -30,10 +31,10 @@
 
   const sizeClass = $derived(
     size === 'sm'
-      ? 'ui:px-3 ui:py-1.5 ui:text-sm'
+      ? 'ui:h-8 ui:px-3 ui:text-sm'
       : size === 'lg'
-        ? 'ui:px-6 ui:py-3 ui:text-base'
-        : 'ui:px-4 ui:py-2 ui:text-sm'
+        ? 'ui:h-10 ui:px-6 ui:text-sm'
+        : 'ui:h-9 ui:px-4 ui:text-sm'
   );
 
   const variantClass = $derived(
@@ -47,7 +48,7 @@
   const baseClass =
     'ui:inline-flex ui:items-center ui:justify-center ui:gap-1.5 ui:rounded-md ui:font-medium ui:border ui:transition-colors ui:focus-visible:outline-none ui:focus-visible:ring-2 ui:focus-visible:ring-[var(--landing-accent)]/50 ui:disabled:opacity-50 ui:disabled:cursor-not-allowed ui:cursor-pointer ui:no-underline ui:whitespace-nowrap';
 
-  const finalClass = $derived(`${baseClass} ${sizeClass} ${variantClass} ${extraClass}`);
+  const finalClass = $derived(cn(baseClass, sizeClass, variantClass, extraClass));
 </script>
 
 {#if href && !disabled}
