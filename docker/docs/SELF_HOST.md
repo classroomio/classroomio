@@ -140,7 +140,7 @@ dc = docker compose --env-file .env -p classroomio -f docker-compose.yaml
 | Build from source instead of pulling | `./classroomio.sh start --build` |
 | Exclude MinIO | `./classroomio.sh start --no-minio` |
 | Back up Postgres + MinIO volume | `./classroomio.sh backup` |
-| Upgrade (backs up first) | `./classroomio.sh upgrade` |
+| Upgrade published images (backs up first) | `./classroomio.sh upgrade` |
 | API-only smoke test | `dc up --build -d postgres redis api` |
 | Service status | `dc ps` |
 | Stream logs | `dc logs -f api dashboard` |
