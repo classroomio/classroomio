@@ -455,8 +455,13 @@ cmd_stop() {
 
 cmd_restart() {
   echo "Restarting ClassroomIO..."
-  compose restart
+  # `compose restart` only bounces the container *process* — it never re-reads .env, so
+  # edits to DASHBOARD_ORIGIN/SMTP_*/LICENSE_KEY/etc. were silently ignored. Recreate
+  # instead: --force-recreate guarantees an actual restart even when config is
+  # unchanged, without pulling new images (that's what `upgrade` is for).
+  compose up -d --force-recreate
   compose ps
+  wait_for_endpoints
 }
 
 cmd_logs() {

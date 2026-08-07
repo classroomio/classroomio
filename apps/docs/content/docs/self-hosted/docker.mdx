@@ -54,6 +54,13 @@ SMTP_SENDER=
 ```
 
 Then apply: `./classroomio.sh restart`
+
+:::warning[Changing `POSTGRES_PASSWORD` after Install does nothing on its own]
+Postgres only applies `POSTGRES_PASSWORD` the first time it initializes its data volume. If
+you're editing `.env` after Install has already run, see [rotating it after
+install](/self-hosted/configuration/secrets#rotating-postgres_password-after-install) —
+just restarting/recreating containers will break the DB connection instead of fixing it.
+:::
 </Step>
 </Steps>
 

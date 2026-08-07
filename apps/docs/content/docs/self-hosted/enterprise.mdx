@@ -33,7 +33,9 @@ their settings are hidden in the dashboard UI.
 LICENSE_KEY=<your enterprise license key>
 ```
 
-Restart the api service after setting it.
+Restart the stack with `./classroomio.sh restart` after setting it (this recreates the
+`api` container so it picks up the new value — `docker compose restart api` on its own
+does **not**, since it doesn't recreate the container).
 
 ## How validation works
 
