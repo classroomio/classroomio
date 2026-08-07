@@ -117,8 +117,7 @@
   };
 
   const switchAccount = async () => {
-    await authClient.signOut();
-    window.location.href = '/login';
+    await logout();
   };
 
   onMount(() => {
@@ -166,6 +165,7 @@
 
 <Dialog.Root {open}>
   <Dialog.Content
+    data-verification-modal
     class="w-4/5 max-w-[440px] gap-0 overflow-hidden p-0"
     showCloseButton={false}
     interactOutsideBehavior="ignore"

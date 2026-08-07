@@ -148,7 +148,7 @@
     "resend": "Resend Verification Code",
     "resend_in": "Resend verification in",
     "seconds": "seconds",
-    "snackbar_error": "error while sending code",
+    "snackbar_error": "Error while sending code",
     "wrong_address": "Signed up with the wrong address?",
     "switch_account": "Switch Account",
     "confirm_link_prefix": "Click the link we sent to",
