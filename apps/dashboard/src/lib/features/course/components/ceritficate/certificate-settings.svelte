@@ -101,9 +101,6 @@
         <Field.Label for="certificate-downloadable" class="text-gray-600">
           {$t('course.navItem.certificates.allow')}
         </Field.Label>
-        {#if courseApi.course?.certificate?.isDownloadable && certificateValidationErrors.includes('course.certification.deadline_required')}
-          <Field.Error class="mt-1">{$t('course.certification.deadline_required')}</Field.Error>
-        {/if}
       </div>
     </Field.Field>
 
