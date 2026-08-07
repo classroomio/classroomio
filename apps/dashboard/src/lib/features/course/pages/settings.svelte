@@ -662,8 +662,8 @@
 
     <Field.Group class="mt-3">
       <AttentionHighlight id="course-completion-deadline" trigger={completionDeadlineTrigger}>
-        <Field.Field id="course-completion-deadline">
-          <Field.Label for="course-completion-deadline">
+        <Field.Field>
+          <Field.Label>
             {$t('course.navItem.settings.completion_deadline_label')}
           </Field.Label>
           <Input
