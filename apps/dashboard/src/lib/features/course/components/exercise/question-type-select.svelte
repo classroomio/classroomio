@@ -39,7 +39,7 @@
 {#snippet upgradeButton({ typeEntry })}
   <button
     type="button"
-    class="ui:flex ui:w-full ui:cursor-pointer ui:select-none ui:items-center ui:gap-2 ui:rounded-sm ui:py-1.5 ui:pl-2 ui:pr-8 ui:text-sm ui:outline-hidden ui:hover:bg-accent ui:hover:text-accent-foreground ui:relative"
+    class="ui:relative ui:flex ui:w-full ui:cursor-pointer ui:select-none ui:items-center ui:justify-between ui:gap-2 ui:rounded-sm ui:px-2 ui:py-1.5 ui:text-sm ui:outline-hidden ui:hover:bg-accent ui:hover:text-accent-foreground"
     onclick={(clickEvent) => {
       clickEvent.preventDefault();
       clickEvent.stopPropagation();
@@ -47,8 +47,8 @@
     }}
     title={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.premium_question_type')}
   >
-    <PremiumIcon size={16} class="ui:text-blue-700 ui:dark:text-white ui:shrink-0" />
     <span>{getExerciseEditorQuestionTypeLabel(typeEntry)}</span>
+    <PremiumIcon size={16} class="ui:ml-auto ui:shrink-0 ui:text-blue-700 ui:dark:text-white" />
   </button>
 {/snippet}
 

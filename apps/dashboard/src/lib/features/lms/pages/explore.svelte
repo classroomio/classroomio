@@ -39,6 +39,13 @@
       return coursesFiltered.sort(
         (a, b) => new Date(a.createdAt ?? '').getTime() - new Date(b.createdAt ?? '').getTime()
       );
+    } else if (sortKey === CourseSortBy.LastUpdatedAt) {
+      return coursesFiltered.sort((a, b) => {
+        const aUpdatedAt = new Date(a.updatedAt ?? a.createdAt ?? '').getTime();
+        const bUpdatedAt = new Date(b.updatedAt ?? b.createdAt ?? '').getTime();
+
+        return bUpdatedAt - aUpdatedAt;
+      });
     } else if (sortKey === CourseSortBy.Published) {
       return coursesFiltered.sort((a, b) => Number(b.isPublished) - Number(a.isPublished));
     } else if (sortKey === CourseSortBy.Lessons) {

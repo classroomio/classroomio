@@ -11,6 +11,7 @@ import {
   getNewsfeedByCourseId,
   getNewsfeedByCourseIdPaginated,
   getNewsfeedById,
+  getNewsfeedCommentById,
   getNewsfeedCommentsByFeedId,
   getNewsfeedCommentsByFeedIdPaginated,
   getNewsfeedForEmail,
@@ -231,10 +232,13 @@ export async function getNewsfeedComments(feedId: string) {
 /**
  * Gets paginated comments for a newsfeed item
  * @param feedId Newsfeed ID
- * @param options Pagination options (cursor, limit)
+ * @param options Pagination options (parentId, cursor, limit)
  * @returns Paginated comments with metadata
  */
-export async function getNewsfeedCommentsService(feedId: string, options: { cursor?: string; limit: number }) {
+export async function getNewsfeedCommentsService(
+  feedId: string,
+  options: { parentId?: number; cursor?: string; limit: number }
+) {
   try {
     const feed = await getNewsfeedById(feedId);
     if (!feed) {
@@ -260,16 +264,66 @@ export async function getNewsfeedCommentsService(feedId: string, options: { curs
  * @param feedId Newsfeed ID
  * @param authorId Group member ID (author)
  * @param content Comment content
+ * @param parentId Optional parent comment ID for replies
+ * @param replyToCommentId Optional comment being answered, within the same thread
  * @returns Created comment
  */
-export async function createNewsfeedCommentService(feedId: string, authorId: string, content: string) {
+export async function createNewsfeedCommentService(
+  feedId: string,
+  authorId: string,
+  content: string,
+  parentId?: number,
+  replyToCommentId?: number
+) {
   try {
+    // Validate parentId when provided
+    if (parentId !== undefined) {
+      const parentComment = await getNewsfeedCommentById(parentId);
+
+      if (!parentComment) {
+        throw new AppError('Parent comment not found', ErrorCodes.COMMENT_NOT_FOUND, 404);
+      }
+
+      if (parentComment.courseNewsfeedId !== feedId) {
+        throw new AppError('Parent comment does not belong to this feed', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+
+      if (parentComment.parentId !== null) {
+        throw new AppError(
+          'Cannot reply to a reply — only top-level comments can be replied to',
+          ErrorCodes.VALIDATION_ERROR,
+          400
+        );
+      }
+    }
+
+    if (replyToCommentId !== undefined) {
+      const targetComment = await getNewsfeedCommentById(replyToCommentId);
+
+      if (!targetComment) {
+        throw new AppError('Comment being replied to not found', ErrorCodes.COMMENT_NOT_FOUND, 404);
+      }
+
+      if (targetComment.courseNewsfeedId !== feedId) {
+        throw new AppError('Comment being replied to does not belong to this feed', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+
+      const isThreadRoot = targetComment.id === parentId;
+      const isSiblingReply = targetComment.parentId === parentId;
+
+      if (!isThreadRoot && !isSiblingReply) {
+        throw new AppError('Comment being replied to is not part of this thread', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+    }
+
     const sanitizedContent = sanitizeHtml(content);
 
     const commentData: TNewCourseNewsfeedComment = {
       courseNewsfeedId: feedId,
       authorId,
-      content: sanitizedContent
+      content: sanitizedContent,
+      parentId: parentId ?? null,
+      replyToCommentId: replyToCommentId ?? null
     };
 
     const comment = await createNewsfeedComment(commentData);
@@ -281,6 +335,10 @@ export async function createNewsfeedCommentService(feedId: string, authorId: str
 
     return comment;
   } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to create newsfeed comment',
       ErrorCodes.INTERNAL_ERROR,

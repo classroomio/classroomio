@@ -31,4 +31,17 @@ describe('true/false answer key helpers', () => {
       { label: 'False', value: 'false', isCorrect: true }
     ]);
   });
+
+  it('recognizes yes/no option labels used by thumbs questions', () => {
+    const options = [
+      { label: 'Yes', value: 'yes', isCorrect: false },
+      { label: 'No', value: 'no', isCorrect: true }
+    ];
+
+    expect(resolveTrueFalseCorrectValue({}, options)).toBe(false);
+    expect(syncTrueFalseOptions(options, true)).toEqual([
+      { label: 'Yes', value: 'yes', isCorrect: true },
+      { label: 'No', value: 'no', isCorrect: false }
+    ]);
+  });
 });

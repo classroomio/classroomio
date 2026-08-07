@@ -2,7 +2,13 @@ import { createHash } from 'node:crypto';
 
 import { tool } from 'ai';
 import { CoursePlanSchema, getCourseTemplate } from '@cio/ai-assistant';
-import { PREMIUM_QUESTION_TYPE_KEYS, QUESTION_TYPE_ID_TO_KEY, QUESTION_TYPE_REGISTRY } from '@cio/question-types';
+import {
+  ADD_QUESTIONS_TOOL_DESCRIPTION,
+  PREMIUM_QUESTION_TYPE_KEYS,
+  QUESTION_TYPE_ID_TO_KEY,
+  QUESTION_TYPE_REGISTRY,
+  UPDATE_QUESTIONS_BINARY_TYPES_HINT
+} from '@cio/question-types';
 import { AppError } from '@cio/utils/errors';
 import { trackAgentEvent, AgentEvent } from '../../utils/tinybird';
 import {
@@ -781,8 +787,7 @@ export function buildAgentTools(
     }),
 
     add_questions: tool({
-      description:
-        'Add questions to an existing exercise in this course. When get_exercise_details lists in-exercise sections, pass exerciseSectionId so new questions are added to the correct block.',
+      description: ADD_QUESTIONS_TOOL_DESCRIPTION,
       inputSchema: addQuestionsParam,
       execute: async (args) => {
         return executeAgentTool('add_questions', { orgId, userId, courseId, args }, async () => {
@@ -847,8 +852,7 @@ export function buildAgentTools(
     }),
 
     update_questions: tool({
-      description:
-        'Update existing questions in an exercise. Pass only fields you want to change; `id` identifies the question. Optional `exerciseSectionId` moves the question to another in-exercise block (use get_exercise_details section ids), or null to unassign. For TRUE_FALSE use `settings.correctValue` (boolean) and keep exactly two options labeled True and False. For NUMERIC, the correct answer is `settings.correctValue` (number) — do NOT add options to NUMERIC questions. For STAR use `settings.correctValue`. For WORD_BANK use `settings.correctAnswers` and `settings.template`. RADIO/CHECKBOX use `options[].isCorrect` (include option `id` to edit, omit `id` to add). `settings` is shallow-merged with existing settings. Omit `options` entirely to leave existing options untouched.',
+      description: `Update existing questions in an exercise. Pass only fields you want to change; \`id\` identifies the question. Optional \`exerciseSectionId\` moves the question to another in-exercise block (use get_exercise_details section ids), or null to unassign. ${UPDATE_QUESTIONS_BINARY_TYPES_HINT} For NUMERIC, the correct answer is \`settings.correctValue\` (number) — do NOT add options to NUMERIC questions. For STAR use \`settings.correctValue\`. For WORD_BANK use \`settings.correctAnswers\` and \`settings.template\`. RADIO/CHECKBOX use \`options[].isCorrect\` (include option \`id\` to edit, omit \`id\` to add). \`settings\` is shallow-merged with existing settings. Omit \`options\` entirely to leave existing options untouched.`,
       inputSchema: updateQuestionsParam,
       execute: async (args) => {
         return executeAgentTool('update_questions', { orgId, userId, courseId, args }, async () => {

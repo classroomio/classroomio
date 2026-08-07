@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learning Paths (Admin) · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+      .grid-cols { grid-template-columns: 2.4fr 0.8fr 0.9fr 1fr 40px; }
+      .p-ico { width: 38px; height: 38px; border-radius: var(--radius-md); display: grid; place-items: center; color: #fff; flex-shrink: 0; }
+      .p-ico svg { width: 18px; height: 18px; stroke-width: 2; }
+      .p-name { display: flex; align-items: center; gap: 12px; min-width: 0; }
+      .p-name .t { font-size: 14px; font-weight: 500; }
+      .p-name .d { font-size: 12.5px; color: var(--muted-foreground); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+      .cell { display: flex; align-items: center; gap: 6px; color: var(--foreground); }
+      .cell svg { width: 14px; height: 14px; stroke-width: 2; color: var(--muted-foreground); }
+      .row-more { color: var(--muted-foreground); display: grid; place-items: center; }
+      .row-more svg { width: 16px; height: 16px; stroke-width: 2; }
+      .org-pill { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid var(--sidebar-border); border-radius: var(--radius-md); margin-bottom: 6px; background: var(--background); }
+      .org-pill .l { width: 22px; height: 22px; border-radius: var(--radius-sm); background: oklch(0.596 0.145 163.225); color: #fff; display: grid; place-items: center; font-size: 11px; font-weight: 600; }
+      .org-pill .n { font-size: 13px; font-weight: 500; }
+      .org-pill svg { margin-left: auto; width: 14px; height: 14px; color: var(--muted-foreground); stroke-width: 2; }
+      @media (max-width: 900px) { .stats { grid-template-columns: 1fr; } .thead { display: none; } .trow.grid-cols { grid-template-columns: 1fr auto; } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand"><div class="brand-mark">C</div><div class="brand-name">ClassroomIO</div></div>
+        <div class="org-pill"><span class="l">A</span><span class="n">Acme Academy</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></div>
+        <div class="nav-label">Workspace</div>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Courses</a>
+        <a class="nav-item active" href="teacher-paths.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Learning Paths</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>Audience</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 9V5a3 3 0 0 0-6 0v4"/><rect x="4" y="9" width="16" height="12" rx="2"/></svg>Community</a>
+        <div class="nav-label">Settings</div>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>Organization</a>
+        <div class="sidebar-foot"><div class="avatar">JD</div><div class="who"><div class="nm">Jordan Diallo</div><div class="rl">Admin</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <span class="top-title">Learning Paths</span>
+          <div class="top-actions">
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap" style="max-width: 1000px">
+            <div class="page-head">
+              <div>
+                <h1 class="page-title">Learning Paths</h1>
+                <p class="page-sub">Group your courses into ordered tracks your learners complete step by step.</p>
+              </div>
+              <a class="btn btn-primary" href="teacher-path-setup.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Create path</a>
+            </div>
+
+            <div class="stats">
+              <div class="card stat-card"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Active paths</div><div class="v tnum">3</div></div>
+              <div class="card stat-card"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Enrolled learners</div><div class="v tnum">126</div></div>
+              <div class="card stat-card"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Completions</div><div class="v tnum">54</div></div>
+            </div>
+
+            <div class="card" style="overflow: hidden">
+              <div class="thead grid-cols"><span>Path</span><span>Courses</span><span>Learners</span><span>Status</span><span></span></div>
+
+              <a class="trow grid-cols" href="teacher-path-builder.html">
+                <div class="p-name">
+                  <span class="p-ico" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+                  <div style="min-width: 0"><div class="t">Frontend Engineering Bootcamp</div><div class="d">HTML foundations through shipping a React app.</div></div>
+                </div>
+                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>5</span>
+                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>48</span>
+                <span><span class="badge badge-success-soft"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Active</span></span>
+                <span class="row-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
+              </a>
+
+              <a class="trow grid-cols" href="teacher-path-builder.html">
+                <div class="p-name">
+                  <span class="p-ico" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+                  <div style="min-width: 0"><div class="t">Data Science with Python</div><div class="d">Pandas, visualization, and applied ML basics.</div></div>
+                </div>
+                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>4</span>
+                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>61</span>
+                <span><span class="badge badge-success-soft"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Active</span></span>
+                <span class="row-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
+              </a>
+
+              <a class="trow grid-cols" href="teacher-path-setup.html">
+                <div class="p-name">
+                  <span class="p-ico" style="background: linear-gradient(135deg, oklch(0.666 0.179 58.318), oklch(0.769 0.188 70.08))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+                  <div style="min-width: 0"><div class="t">Product Management Fundamentals</div><div class="d">Discovery, prioritization, and roadmap craft.</div></div>
+                </div>
+                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>5</span>
+                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>0</span>
+                <span><span class="badge badge-warning" style="background: var(--warning-soft); color: var(--warning)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Draft</span></span>
+                <span class="row-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
+              </a>
+
+              <a class="trow grid-cols" href="teacher-path-builder.html" style="opacity: 0.7">
+                <div class="p-name">
+                  <span class="p-ico" style="background: var(--muted); color: var(--muted-foreground)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+                  <div style="min-width: 0"><div class="t">Workplace Compliance 2026</div><div class="d">Security awareness, data handling, code of conduct.</div></div>
+                </div>
+                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>3</span>
+                <span class="cell tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>17</span>
+                <span><span class="badge badge-muted">Inactive</span></span>
+                <span class="row-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></span>
+              </a>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+    </script>
+  </body>
+</html>

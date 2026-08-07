@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learning Path · ClassroomIO LMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .path-head { overflow: hidden; }
+      .ph-cover { height: 110px; background:
+        radial-gradient(120% 150% at 10% -20%, oklch(0.623 0.214 259.815) 0%, transparent 55%),
+        linear-gradient(120deg, oklch(0.488 0.243 264.376), oklch(0.546 0.245 262.881)); position: relative; }
+      .ph-cover .badge { position: absolute; top: 14px; left: 18px; background: oklch(1 0 0 / 0.18); color: #fff; border-color: oklch(1 0 0 / 0.3); backdrop-filter: blur(4px); }
+      .ph-body { padding: 20px 22px 22px; }
+      .ph-title { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 6px; text-wrap: balance; }
+      .ph-desc { color: var(--muted-foreground); font-size: 14px; max-width: 64ch; margin: 0 0 16px; }
+      .ph-meta { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 18px; }
+      .ph-meta .m { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--foreground); }
+      .ph-meta svg { width: 15px; height: 15px; stroke-width: 2; color: var(--muted-foreground); }
+      .ph-progress { background: color-mix(in oklab, var(--muted) 50%, transparent); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
+      .pp-top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 9px; }
+      .pp-label { font-size: 13px; font-weight: 500; }
+      .pp-count { font-size: 12.5px; color: var(--muted-foreground); }
+      .pp-pct { font-size: 15px; font-weight: 600; color: var(--primary); }
+      .pp-foot { display: flex; align-items: center; gap: 7px; margin-top: 10px; font-size: 12.5px; color: var(--muted-foreground); }
+      .pp-foot svg { width: 14px; height: 14px; stroke-width: 2; }
+      .pp-foot strong { color: var(--foreground); font-weight: 500; }
+
+      .course { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; display: flex; gap: 14px; align-items: flex-start; box-shadow: var(--shadow-2xs); }
+      .step.s-current .course { border-color: var(--primary); box-shadow: var(--shadow-sm); }
+      .step.s-locked .course { background: color-mix(in oklab, var(--muted) 40%, transparent); box-shadow: none; }
+      .thumb { width: 86px; height: 62px; border-radius: var(--radius-md); flex-shrink: 0; position: relative; overflow: hidden; }
+      .step.s-locked .thumb { filter: grayscale(0.75) opacity(0.7); }
+      .c-main { min-width: 0; flex: 1; }
+      .c-top { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; flex-wrap: wrap; }
+      .c-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+      .c-desc { font-size: 12.5px; color: var(--muted-foreground); margin: 3px 0 0; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+      .c-facts { display: flex; align-items: center; gap: 14px; margin-top: 9px; font-size: 12px; color: var(--muted-foreground); }
+      .c-facts .f { display: flex; align-items: center; gap: 5px; }
+      .c-facts svg { width: 13px; height: 13px; stroke-width: 2; }
+      .c-progress { display: flex; align-items: center; gap: 10px; margin-top: 10px; max-width: 340px; }
+      .c-progress .p { font-size: 12px; font-weight: 600; min-width: 34px; text-align: right; color: var(--muted-foreground); }
+      .c-side { display: flex; flex-direction: column; align-items: flex-end; gap: 9px; flex-shrink: 0; }
+      .unlock-note { font-size: 11.5px; color: var(--muted-foreground); display: flex; align-items: center; gap: 5px; text-align: right; max-width: 160px; }
+      .unlock-note svg { width: 12px; height: 12px; stroke-width: 2; flex-shrink: 0; }
+      .cert-card { border: 1px dashed var(--border); border-radius: var(--radius-lg); padding: 16px; display: flex; align-items: center; gap: 14px; }
+      @media (max-width: 720px) { .c-side { display: none; } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand"><div class="brand-mark">C</div><div class="brand-name">ClassroomIO</div></div>
+        <div class="nav-label">Learn</div>
+        <a class="nav-item" href="lms-home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>My Learning</a>
+        <a class="nav-item active" href="paths.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Learning Paths<span class="nav-badge">2</span></a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Exercises</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>Community</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Certificates</a>
+        <div class="sidebar-foot"><div class="avatar">AO</div><div class="who"><div class="nm">Ada Okafor</div><div class="rl">Student</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <nav class="crumbs">
+            <a href="paths.html">Learning Paths</a><span class="sep">/</span>
+            <span class="here">Frontend Engineering Bootcamp</span>
+          </nav>
+          <div class="top-actions">
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap">
+            <section class="card path-head">
+              <div class="ph-cover">
+                <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Learning Path</span>
+              </div>
+              <div class="ph-body">
+                <h1 class="ph-title">Frontend Engineering Bootcamp</h1>
+                <p class="ph-desc">A guided, five-course track that takes you from markup fundamentals to shipping a production React app. Each course unlocks the next — finish in order to earn your certificate.</p>
+                <div class="ph-meta">
+                  <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>5 courses</span>
+                  <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>~38 hours</span>
+                  <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Sequential · unlock in order</span>
+                  <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Certificate on completion</span>
+                </div>
+                <div class="ph-progress">
+                  <div class="pp-top">
+                    <div><div class="pp-label">Your progress</div><div class="pp-count tnum">2 of 5 courses complete</div></div>
+                    <div class="pp-pct tnum">49%</div>
+                  </div>
+                  <div class="progress"><span style="width: 49%"></span></div>
+                  <div class="pp-foot">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    Up next: continue&nbsp;<strong>Modern Web Development with React</strong>&nbsp;— 3 lessons and 2 exercises left.
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div class="sec-head">
+              <h2 class="sec-title">Path courses</h2>
+              <span class="more" style="color: var(--muted-foreground); font-weight: 400">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Finish lessons &amp; exercises to unlock the next course
+              </span>
+            </div>
+
+            <div class="journey">
+              <div class="step s-done">
+                <div class="rail"><div class="node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div></div>
+                <article class="course">
+                  <div class="thumb" style="background: linear-gradient(135deg, oklch(0.705 0.213 47.604), oklch(0.75 0.183 55.934))"></div>
+                  <div class="c-main">
+                    <div class="c-top"><span class="item-eyebrow">Course 1</span><span class="badge badge-success-soft"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Completed</span></div>
+                    <h3 class="c-title">HTML &amp; CSS Foundations</h3>
+                    <p class="c-desc">Semantic markup, the box model, flexbox, and responsive layout basics.</p>
+                    <div class="c-progress"><div class="progress progress-thin progress-success"><span style="width: 100%"></span></div><span class="p tnum">100%</span></div>
+                  </div>
+                  <div class="c-side">
+                    <a class="btn btn-outline btn-sm" href="course-in-path.html">Review</a>
+                    <span class="unlock-note" style="color: var(--success)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Finished May 12</span>
+                  </div>
+                </article>
+              </div>
+
+              <div class="step s-done">
+                <div class="rail"><div class="node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div></div>
+                <article class="course">
+                  <div class="thumb" style="background: linear-gradient(135deg, oklch(0.795 0.184 86.047), oklch(0.769 0.188 70.08))"></div>
+                  <div class="c-main">
+                    <div class="c-top"><span class="item-eyebrow">Course 2</span><span class="badge badge-success-soft"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Completed</span></div>
+                    <h3 class="c-title">JavaScript Essentials</h3>
+                    <p class="c-desc">Types, functions, the DOM, async/await, and fetching data from APIs.</p>
+                    <div class="c-progress"><div class="progress progress-thin progress-success"><span style="width: 100%"></span></div><span class="p tnum">100%</span></div>
+                  </div>
+                  <div class="c-side">
+                    <a class="btn btn-outline btn-sm" href="course-in-path.html">Review</a>
+                    <span class="unlock-note" style="color: var(--success)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Finished Jun 3</span>
+                  </div>
+                </article>
+              </div>
+
+              <div class="step s-current">
+                <div class="rail"><div class="node"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></div></div>
+                <article class="course">
+                  <a class="thumb" href="course-in-path.html" style="background: linear-gradient(135deg, oklch(0.685 0.169 237.323), oklch(0.488 0.243 264.376))"></a>
+                  <div class="c-main">
+                    <div class="c-top"><span class="item-eyebrow" style="color: var(--primary)">Course 3</span><span class="badge badge-primary-soft"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg>In progress</span></div>
+                    <h3 class="c-title"><a href="course-in-path.html">Modern Web Development with React</a></h3>
+                    <p class="c-desc">Components, props &amp; state, hooks, and building interactive UIs.</p>
+                    <div class="c-facts">
+                      <span class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>9 / 12 lessons</span>
+                      <span class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>2 / 4 exercises</span>
+                    </div>
+                    <div class="c-progress"><div class="progress progress-thin"><span style="width: 45%"></span></div><span class="p tnum">45%</span></div>
+                  </div>
+                  <div class="c-side">
+                    <a class="btn btn-primary btn-sm" href="course-in-path.html">Continue<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                    <span class="unlock-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>~4h left</span>
+                  </div>
+                </article>
+              </div>
+
+              <div class="step s-locked">
+                <div class="rail"><div class="node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div></div>
+                <article class="course">
+                  <div class="thumb" style="background: linear-gradient(135deg, oklch(0.585 0.233 277.117), oklch(0.606 0.25 292.717))"><div class="lock-veil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div></div>
+                  <div class="c-main">
+                    <div class="c-top"><span class="item-eyebrow">Course 4</span><span class="badge badge-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Locked</span></div>
+                    <h3 class="c-title">State Management &amp; Data Fetching</h3>
+                    <p class="c-desc">Context, reducers, caching, and connecting a React app to a backend.</p>
+                    <div class="c-facts">
+                      <span class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>10 lessons</span>
+                      <span class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>3 exercises</span>
+                    </div>
+                  </div>
+                  <div class="c-side">
+                    <span class="btn btn-secondary btn-sm disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Locked</span>
+                    <span class="unlock-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Unlocks after Course 3</span>
+                  </div>
+                </article>
+              </div>
+
+              <div class="step s-locked">
+                <div class="rail"><div class="node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div></div>
+                <article class="course">
+                  <div class="thumb" style="background: linear-gradient(135deg, oklch(0.645 0.246 16.439), oklch(0.586 0.253 17.585))"><div class="lock-veil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div></div>
+                  <div class="c-main">
+                    <div class="c-top"><span class="item-eyebrow">Course 5</span><span class="badge badge-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Locked</span></div>
+                    <h3 class="c-title">Building &amp; Shipping a Capstone</h3>
+                    <p class="c-desc">Plan, build, and deploy a full project — your portfolio piece.</p>
+                    <div class="c-facts">
+                      <span class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>7 lessons</span>
+                      <span class="f"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>1 capstone project</span>
+                    </div>
+                  </div>
+                  <div class="c-side">
+                    <span class="btn btn-secondary btn-sm disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Locked</span>
+                    <span class="unlock-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Unlocks after Course 4</span>
+                  </div>
+                </article>
+              </div>
+
+              <div class="step no-rail">
+                <div class="rail"><div class="node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg></div></div>
+                <div class="cert-card">
+                  <div class="item-media-icon item-media-lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg></div>
+                  <div class="item-content">
+                    <span class="item-title item-title-lg">Bootcamp Certificate</span>
+                    <span class="item-desc">Complete all 5 courses to unlock and download your certificate.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+    </script>
+  </body>
+</html>
