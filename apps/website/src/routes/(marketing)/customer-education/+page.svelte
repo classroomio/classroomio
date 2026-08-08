@@ -216,8 +216,8 @@
         Customer Education
       </Badge>
       <h1 class="text-[clamp(2rem,3.4vw,2.8rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
-        Launch an academy
-        <em class="text-blue-700 not-italic">customers actually love.</em>
+        Launch an academy<br />
+        <em class="whitespace-nowrap text-blue-700 not-italic">customers actually love.</em>
       </h1>
       <HeroSubtitle class="mx-auto">
         Turn your help docs, onboarding videos, and product knowledge into a branded learning portal. Train customers,
