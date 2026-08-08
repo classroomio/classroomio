@@ -21,8 +21,8 @@
       <span class="relative text-blue-700">Launch your academy.</span>
     </h1>
     <p class="mt-10 w-[90%] text-center text-lg font-normal text-slate-700 md:w-[60%] lg:mt-7">
-      Start free, then upgrade when you need more learners, AI authoring, or a branded domain. Same product for
-      customer, employee, and partner training.
+      Basic is free for up to 20 students and includes monthly AI credits. Upgrade for more seats, higher AI limits, or
+      a custom domain. Same product for customer, employee, and partner training.
     </p>
     <div class="mt-8">
       <PricingToggle
@@ -78,7 +78,7 @@
 
 <PageSignupCTA
   header="Start building your academy."
-  subText="Sign up free on Basic. Upgrade when you need more learners, AI authoring, or a custom domain."
+  subText="Sign up free on Basic. Upgrade for more students, higher AI credits, or a custom domain."
   btnLabel="Sign up for free"
   link="/signup"
   demo={false}
