@@ -334,7 +334,7 @@
       <div>
         <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">Certified champions</div>
         <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-          Turn power-users into a public community.
+          Turn power users into a public community.
         </h2>
         <p class="mt-5 text-base leading-relaxed text-gray-500">
           Bundle courses into cohorts, gate them with a required exercise, and issue shareable certificates. Customer
