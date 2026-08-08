@@ -233,7 +233,7 @@
     bgClass="bg-gray-50"
     eyebrow="Renewals on autopilot"
     title="Training that re-runs itself."
-    description="Set a retake interval once. ClassroomIO moves learners back into "expiring soon", sends reminders, holds them in a grace period, and flags non-compliance, all without admin intervention."
+    description="Set a retake interval once. ClassroomIO moves learners back into 'expiring soon', sends reminders, holds them in a grace period, and flags non-compliance, all without admin intervention."
     imageSrc="https://assets.cdn.clsrio.com/www/compliance-training/course-compliance.jpeg"
     imageAlt="Compliance settings panel with retake interval, grace period, reminders, and waiver rules"
   >
