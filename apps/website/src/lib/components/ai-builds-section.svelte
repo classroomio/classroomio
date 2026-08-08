@@ -36,7 +36,7 @@
       <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">AI authoring</div>
       <h2 class="max-w-[760px] text-[clamp(1.75rem,3vw,2.6rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
         AI that turns company knowledge into trainings that drive <em class="text-blue-700 not-italic"
-          >business outcome</em
+          >business outcomes</em
         >
       </h2>
       <p class="mt-3 max-w-[560px] text-sm leading-relaxed text-gray-500">
@@ -50,7 +50,7 @@
         <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
           <img
             src="https://assets.cdn.clsrio.com/www/home/ai-course-builder.jpeg"
-            alt="Course builder — plan, approve, implement. Templates, in-editor chat, and MCP."
+            alt="Course builder: plan, approve, implement. Templates, in-editor chat, and MCP."
             class="block h-auto w-full"
             loading="lazy"
             decoding="async"
