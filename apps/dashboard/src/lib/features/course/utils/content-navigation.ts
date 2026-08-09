@@ -105,3 +105,24 @@ export function getActiveSectionId(course: Course | null, currentPath: string): 
 export function formatSectionCompletionLabel(completed: number, total: number): string {
   return `${completed}/${total}`;
 }
+
+export function collapseExpandedSectionsToActive(activeSectionId: string | null): Set<string> {
+  if (!activeSectionId) {
+    return new Set();
+  }
+
+  return new Set([activeSectionId]);
+}
+
+export function scrollOutlineToActiveItem(container: HTMLElement | null, itemId: string): void {
+  if (!container || !itemId) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    const activeRow = container.querySelector(`[data-sidebar-content-id="${itemId}"]`);
+    if (activeRow instanceof HTMLElement) {
+      activeRow.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  });
+}

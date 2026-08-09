@@ -1,5 +1,8 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { mergeProps } from 'bits-ui';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import * as Collapsible from '../../base/collapsible';
   import * as Tooltip from '../../base/tooltip';
   import { cn } from '../../tools';
   import PoweredBy from './powered-by.svelte';
@@ -7,24 +10,18 @@
   import type { PublicCourseSidebarItem, PublicCourseSidebarSection } from './types';
 
   interface Props {
-    // Sections
     sections: PublicCourseSidebarSection[];
     /** Slug of the active item. Matches against `item.slug`. */
     activeSlug?: string | null;
-    /** Receives the target item on click; components using `hrefFor` should also provide this. */
     onItemClick?: (item: PublicCourseSidebarItem) => void;
-    /** Builds the `href` for a given item. Omit to render rows as buttons. */
     hrefFor?: (item: PublicCourseSidebarItem) => string;
-    /**
-     * Show the "Powered by ClassroomIO" footer pinned to the bottom of the sidebar.
-     * Defaults to `true` when paired with `courseSlug` / `orgSlug`.
-     */
+    /** When true, sections collapse/expand; only `collapseToSectionId` stays open on reset. */
+    collapsibleSections?: boolean;
+    /** When set, collapses all sections except this one (e.g. on mobile sheet open). */
+    collapseToSectionId?: string | null;
     showPoweredBy?: boolean;
-    /** Course slug used in the powered-by attribution link. */
     courseSlug?: string | null;
-    /** Org slug used in the powered-by attribution link. */
     orgSlug?: string | null;
-    /** Localized labels for the powered-by footer. */
     poweredByLabel?: string;
     poweredByBrand?: string;
     class?: string;
@@ -35,6 +32,8 @@
     activeSlug = null,
     onItemClick,
     hrefFor,
+    collapsibleSections = false,
+    collapseToSectionId = null,
     showPoweredBy = true,
     courseSlug = null,
     orgSlug = null,
@@ -42,49 +41,116 @@
     poweredByBrand = 'ClassroomIO',
     class: className
   }: Props = $props();
+
+  let expandedSectionIds = $state<Set<string>>(new Set());
+  let trackedCollapseSectionId = $state<string | null>(null);
+
+  $effect(() => {
+    if (!collapsibleSections || !collapseToSectionId) {
+      return;
+    }
+
+    if (collapseToSectionId === trackedCollapseSectionId) {
+      return;
+    }
+
+    trackedCollapseSectionId = collapseToSectionId;
+    expandedSectionIds = new Set([collapseToSectionId]);
+  });
+
+  function isSectionOpen(sectionId: string): boolean {
+    if (!collapsibleSections) {
+      return true;
+    }
+
+    return expandedSectionIds.has(sectionId);
+  }
+
+  function handleSectionOpenChange(sectionId: string, open: boolean) {
+    if (!collapsibleSections) {
+      return;
+    }
+
+    const next = new Set(expandedSectionIds);
+    if (open) {
+      next.add(sectionId);
+    } else {
+      next.delete(sectionId);
+    }
+    expandedSectionIds = next;
+  }
 </script>
+
+{#snippet sectionItems(section: PublicCourseSidebarSection)}
+  {#each section.items as item, index (item.id)}
+    <SidebarRow
+      number={index + 1}
+      title={item.title}
+      active={item.slug === activeSlug}
+      locked={!item.isUnlocked}
+      itemSlug={item.slug}
+      href={hrefFor?.(item)}
+      onClick={() => onItemClick?.(item)}
+    />
+  {/each}
+{/snippet}
 
 <div class={cn('ui:flex ui:h-full ui:flex-col ui:bg-sidebar', className)}>
   <nav class="ui:flex ui:flex-1 ui:flex-col ui:gap-6 ui:py-6 ui:px-2" aria-label="Course outline">
     <Tooltip.Provider delayDuration={300}>
       {#each sections as section (section.id)}
-        <div class="ui:flex ui:min-w-0 ui:flex-col ui:gap-2">
-          <h2 class="ui:m-0 ui:min-w-0 ui:w-full">
-            <Tooltip.Root>
-              <Tooltip.Trigger>
-                {#snippet child({ props })}
-                  <span
-                    {...mergeProps(
-                      {
-                        class: cn(
-                          'ui:block ui:w-full ui:min-w-0 ui:truncate ui:px-3 ui:font-medium ui:uppercase ui:text-[11px] ui:text-muted-foreground ui:transition-colors'
-                        )
-                      },
-                      props
-                    )}
-                  >
-                    {section.title}
-                  </span>
-                {/snippet}
-              </Tooltip.Trigger>
-              <Tooltip.Content side="top" sideOffset={6} class="ui:max-w-xs">
-                {section.title}
-              </Tooltip.Content>
-            </Tooltip.Root>
-          </h2>
-          <div class="ui:flex ui:flex-col">
-            {#each section.items as item, index (item.id)}
-              <SidebarRow
-                number={index + 1}
-                title={item.title}
-                active={item.slug === activeSlug}
-                locked={!item.isUnlocked}
-                href={hrefFor?.(item)}
-                onClick={() => onItemClick?.(item)}
-              />
-            {/each}
+        {#if collapsibleSections}
+          <Collapsible.Root
+            open={isSectionOpen(section.id)}
+            onOpenChange={(open) => handleSectionOpenChange(section.id, open)}
+            class="ui:group/section ui:flex ui:min-w-0 ui:flex-col ui:gap-1"
+          >
+            <Collapsible.Trigger
+              class="ui:flex ui:w-full ui:items-center ui:justify-between ui:gap-2 ui:rounded-sm ui:px-3 ui:py-1.5 ui:text-left"
+            >
+              <span class="ui:flex ui:min-w-0 ui:items-center ui:gap-1.5">
+                <ChevronRightIcon
+                  class="ui:size-3.5 ui:shrink-0 ui:text-muted-foreground ui:transition-transform ui:group-data-[state=open]/section:rotate-90"
+                />
+                <span class="ui:truncate ui:font-medium ui:uppercase ui:text-[11px] ui:text-muted-foreground">
+                  {section.title}
+                </span>
+              </span>
+            </Collapsible.Trigger>
+            <Collapsible.Content class="ui:flex ui:flex-col">
+              {@render sectionItems(section)}
+            </Collapsible.Content>
+          </Collapsible.Root>
+        {:else}
+          <div class="ui:flex ui:min-w-0 ui:flex-col ui:gap-2">
+            <h2 class="ui:m-0 ui:min-w-0 ui:w-full">
+              <Tooltip.Root>
+                <Tooltip.Trigger>
+                  {#snippet child({ props })}
+                    <span
+                      {...mergeProps(
+                        {
+                          class: cn(
+                            'ui:block ui:w-full ui:min-w-0 ui:truncate ui:px-3 ui:font-medium ui:uppercase ui:text-[11px] ui:text-muted-foreground ui:transition-colors'
+                          )
+                        },
+                        props
+                      )}
+                    >
+                      {section.title}
+                    </span>
+                  {/snippet}
+                </Tooltip.Trigger>
+                <Tooltip.Content side="top" sideOffset={6} class="ui:max-w-xs">
+                  {section.title}
+                </Tooltip.Content>
+              </Tooltip.Root>
+            </h2>
+            <div class="ui:flex ui:flex-col">
+              {@render sectionItems(section)}
+            </div>
           </div>
-        </div>
+        {/if}
       {/each}
     </Tooltip.Provider>
   </nav>

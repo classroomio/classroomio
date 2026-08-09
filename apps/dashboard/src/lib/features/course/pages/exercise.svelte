@@ -30,7 +30,10 @@
   import { ZExerciseUpdate } from '@cio/utils/validation/exercise';
   import { mapZodErrorsToTranslations } from '$lib/utils/validation';
   import { transformQuestionsToApiFormat } from '$features/course/components/exercise/functions';
-  import { isOrgStudent, isStudentExperience } from '$lib/utils/store/app';
+  import { isOrgStudent, isCourseLearnerView, isStudentExperience } from '$lib/utils/store/app';
+  import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
+  import { getCourseProgress } from '$features/course/utils/content';
+  import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { exerciseApi } from '$features/course/api';
@@ -86,6 +89,15 @@
     submissions,
     mySubmissions = []
   }: Props = $props();
+
+  const showMobileBottomNav = $derived(
+    isCourseMobileBottomNavVisible({
+      isCourseLearnerView: $isCourseLearnerView,
+      isMobile: isMobileStore.current,
+      isLessonOrExercisePage: Boolean(exerciseId),
+      courseProgress: getCourseProgress(courseApi.course)
+    })
+  );
 
   type ExerciseTab = 'questions' | 'settings' | 'submissions';
 
@@ -611,7 +623,7 @@
   </Page.HeaderContent>
   <Page.Action>
     <div class="flex items-center gap-2">
-      {#if $isStudentExperience && courseApi.course?.id && exerciseId}
+      {#if $isCourseLearnerView && courseApi.course?.id && exerciseId && !showMobileBottomNav}
         <ContentNavigationActions courseId={courseApi.course.id} {exerciseId} />
       {/if}
 
