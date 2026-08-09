@@ -15,7 +15,6 @@
   } from '$features/course/utils/content-navigation';
   import { CircleCheckIcon } from '$features/ui/icons';
   import { t } from '$lib/utils/functions/translations';
-  import { IconButton } from '@cio/ui/custom/icon-button';
   import { RadioIcon } from '@cio/ui/custom/moving-icons';
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
   import { isCourseLearnerView } from '$lib/utils/store/app';
@@ -93,54 +92,71 @@
   </span>
 {/snippet}
 
+{#snippet contentItemIndicators(
+  contentItem: (typeof contentData.items)[number],
+  isContentLocked: boolean,
+  isLockedForStudent: boolean
+)}
+  {#if contentItem.isComplete}
+    <span class="shrink-0">
+      <CircleCheckIcon size={16} filled />
+    </span>
+  {/if}
+  {#if contentItem.type === ContentType.Lesson && contentItem.callUrl}
+    {@render liveSessionDot()}
+  {:else if isContentLocked || isLockedForStudent}
+    <span
+      class="shrink-0"
+      title={$t('course.navItem.lessons.add_lesson.lock')}
+      aria-label={$t('course.navItem.lessons.add_lesson.lock')}
+    >
+      <LockIcon size={12} />
+    </span>
+  {/if}
+{/snippet}
+
 {#snippet contentItemRow(contentItem: (typeof contentData.items)[number])}
   {@const isContentLocked = (contentItem.isUnlocked ?? true) === false}
   {@const isLockedForStudent = $isCourseLearnerView && (isContentLocked || contentItem.accessible === false)}
   {@const isActive = isContentItemInPath(contentItem.id, currentPath)}
-  <a
-    href={resolve(getContentRoute(courseId, contentItem), {})}
-    aria-disabled={isLockedForStudent}
-    title={contentItem.title}
-    data-sidebar-content-id={contentItem.id}
-    class="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors {isActive
+  {@const rowClass =
+    'flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ' +
+    (isActive
       ? 'ui:bg-sidebar-accent ui:text-sidebar-accent-foreground font-medium'
-      : 'ui:text-foreground hover:ui:bg-muted'} {isLockedForStudent ? 'cursor-not-allowed opacity-50' : ''}"
-    onclick={(event) => {
-      if (isLockedForStudent) {
-        event.preventDefault();
-        return;
-      }
+      : 'ui:text-foreground hover:ui:bg-muted') +
+    (isLockedForStudent ? ' cursor-not-allowed opacity-50' : '')}
 
-      if (contentData.grouped) {
-        const sectionId = getSectionIdForContentItem(courseApi.course, contentItem.id);
-        if (sectionId) {
-          expandedSectionIds.clear();
-          expandedSectionIds.add(sectionId);
+  {#if isLockedForStudent}
+    <span title={contentItem.title} data-sidebar-content-id={contentItem.id} class={rowClass} aria-disabled="true">
+      <CourseContentIcon type={contentItem.type} size={14} />
+      <span class="min-w-0 flex-1 truncate">{contentItem.title}</span>
+      <div class="ml-auto flex items-center gap-1">
+        {@render contentItemIndicators(contentItem, isContentLocked, isLockedForStudent)}
+      </div>
+    </span>
+  {:else}
+    <a
+      href={resolve(getContentRoute(courseId, contentItem), {})}
+      title={contentItem.title}
+      data-sidebar-content-id={contentItem.id}
+      class={rowClass}
+      onclick={() => {
+        if (contentData.grouped) {
+          const sectionId = getSectionIdForContentItem(courseApi.course, contentItem.id);
+          if (sectionId) {
+            expandedSectionIds.clear();
+            expandedSectionIds.add(sectionId);
+          }
         }
-      }
-    }}
-  >
-    <CourseContentIcon type={contentItem.type} size={14} />
-    <span class="min-w-0 flex-1 truncate">{contentItem.title}</span>
-    <div class="ml-auto flex items-center gap-1">
-      {#if contentItem.isComplete}
-        <span class="shrink-0">
-          <CircleCheckIcon size={16} filled />
-        </span>
-      {/if}
-      {#if contentItem.type === ContentType.Lesson && contentItem.callUrl}
-        {@render liveSessionDot()}
-      {:else if isContentLocked || isLockedForStudent}
-        <span
-          class="shrink-0"
-          title={$t('course.navItem.lessons.add_lesson.lock')}
-          aria-label={$t('course.navItem.lessons.add_lesson.lock')}
-        >
-          <LockIcon size={12} />
-        </span>
-      {/if}
-    </div>
-  </a>
+      }}
+    >
+      <CourseContentIcon type={contentItem.type} size={14} />
+      <span class="min-w-0 flex-1 truncate">{contentItem.title}</span>
+      <div class="ml-auto flex items-center gap-1">
+        {@render contentItemIndicators(contentItem, isContentLocked, isLockedForStudent)}
+      </div>
+    </a>
+  {/if}
 {/snippet}
 
 <nav class="flex flex-col gap-1 {className}" aria-label={$t('course.navItems.nav_content')}>
@@ -167,9 +183,9 @@
                 {formatSectionCompletionLabel(sectionProgress.completed, sectionProgress.total)}
               </span>
             {/if}
-            <IconButton variant="ghost" size="icon-xs">
-              <ChevronRightIcon class="transition-transform duration-200 group-data-[state=open]/section:rotate-90" />
-            </IconButton>
+            <ChevronRightIcon
+              class="text-muted-foreground size-3.5 shrink-0 transition-transform duration-200 group-data-[state=open]/section:rotate-90"
+            />
           </div>
         </Collapsible.Trigger>
         <Collapsible.Content class="ml-2 flex flex-col gap-0.5 border-l pl-2">

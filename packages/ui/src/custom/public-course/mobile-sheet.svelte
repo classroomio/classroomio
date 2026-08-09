@@ -41,6 +41,7 @@
   }: Props = $props();
 
   let scrollContainer = $state<HTMLDivElement | null>(null);
+  let collapseResetKey = $state(0);
 
   function scrollToActiveItem() {
     if (!scrollContainer || !activeSlug) {
@@ -60,6 +61,7 @@
     onOpenChange?.(next);
 
     if (next) {
+      collapseResetKey += 1;
       scrollToActiveItem();
     }
   }
@@ -96,6 +98,7 @@
           {hrefFor}
           collapsibleSections={Boolean(collapseToSectionId)}
           {collapseToSectionId}
+          {collapseResetKey}
           {showPoweredBy}
           {courseSlug}
           {orgSlug}

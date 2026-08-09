@@ -19,6 +19,8 @@
     collapsibleSections?: boolean;
     /** When set, collapses all sections except this one (e.g. on mobile sheet open). */
     collapseToSectionId?: string | null;
+    /** Increment to force collapse reset even when `collapseToSectionId` is unchanged. */
+    collapseResetKey?: number;
     showPoweredBy?: boolean;
     courseSlug?: string | null;
     orgSlug?: string | null;
@@ -34,6 +36,7 @@
     hrefFor,
     collapsibleSections = false,
     collapseToSectionId = null,
+    collapseResetKey = 0,
     showPoweredBy = true,
     courseSlug = null,
     orgSlug = null,
@@ -43,18 +46,19 @@
   }: Props = $props();
 
   let expandedSectionIds = $state<Set<string>>(new Set());
-  let trackedCollapseSectionId = $state<string | null>(null);
+  let trackedCollapseSignature = $state<string | null>(null);
 
   $effect(() => {
     if (!collapsibleSections || !collapseToSectionId) {
       return;
     }
 
-    if (collapseToSectionId === trackedCollapseSectionId) {
+    const collapseSignature = `${collapseToSectionId}:${collapseResetKey}`;
+    if (collapseSignature === trackedCollapseSignature) {
       return;
     }
 
-    trackedCollapseSectionId = collapseToSectionId;
+    trackedCollapseSignature = collapseSignature;
     expandedSectionIds = new Set([collapseToSectionId]);
   });
 
