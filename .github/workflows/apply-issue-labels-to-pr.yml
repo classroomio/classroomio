@@ -1,18 +1,22 @@
 name: 'Apply issue labels to PR'
 
+# pull_request_target is used so labeling works for fork PRs.
+# SAFE ONLY because this workflow never checks out or executes PR code.
+# Do not add actions/checkout, pnpm install, build, or cache steps here.
+
 on:
   pull_request_target:
     types:
       - opened
 
+permissions:
+  contents: none
+  issues: read
+  pull-requests: write
+
 jobs:
   label_on_pr:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: none
-      issues: read
-      pull-requests: write
 
     steps:
       - name: Apply labels from linked issue to PR
