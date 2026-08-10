@@ -383,7 +383,7 @@
                 : $t('tags_admin.tag_modal.select_category')}
             </p>
           </Select.Trigger>
-          <Select.Content class="z-menu-elevated">
+          <Select.Content class="ui:z-menu-elevated">
             {#each tagApi.tagGroups as group (group.id)}
               <Select.Item value={group.id}>{group.name}</Select.Item>
             {/each}
