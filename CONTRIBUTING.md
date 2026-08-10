@@ -22,6 +22,10 @@ Ready to dive into the code and make a real impact? Here's your path:
 
 Would you prefer a chat before you dive into a lot of work? Our [Discord server](https://dub.sh/ciodiscord) is your harbor. Share your thoughts, and we'll meet you there with open arms. We're responsive and friendly, promise!
 
+## Dependency and workflow changes
+
+PRs that touch `pnpm-lock.yaml`, `.github/workflows/**`, or npm publish config get extra review. Prefer the smallest lockfile diff that matches your change, and do not add `pull_request_target` workflows that check out or build untrusted PR code.
+
 ## Features
 
 If you spot a feature that isn't part of our official plan but could propel ClassroomIO forward, don't hesitate. Raise it as an enhancement issue, and let us know you're ready to take the lead. We'll be quick to respond.
