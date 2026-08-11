@@ -131,7 +131,6 @@ export type LandingPageLinkCard = {
 };
 
 export type LandingPageLinks = {
-  /** Whether to render the section. Defaults to visible when omitted. */
   enabled?: boolean;
   heading: string;
   description?: string;
