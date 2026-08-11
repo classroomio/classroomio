@@ -858,7 +858,12 @@
           "description": "Tilmeldte elever vil ikke kunne tage låste lektioner eller øvelser, før du låser dem op.",
           "description_live": "Låste lektioner og øvelser forbliver skjult for eleverne, indtil du låser dem op - nyttigt, hvis du udgiver indhold uge for uge.",
           "unlock_all": "Lås alle op"
-        }
+        },
+        "certificate_deadline_required": "Indstil certifikatfrist først",
+        "certificate_deadline_required_description": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes. Indstil venligst en deadline i certifikatindstillingerne før udgivelse.",
+        "go_to_certificate_settings": "Gå til Certifikatindstillinger",
+        "completion_deadline_label": "Deadline for kursusafslutning",
+        "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline."
       },
       "analytics": {
         "title": "Analyse"
@@ -2475,7 +2480,9 @@
       "blocker_final_misconfigured": "Certificeringsøvelsen \"{exerciseTitle}\" har ingen point konfigureret; bed din instruktør om at ordne det.",
       "email_message_label": "E-mail besked",
       "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!",
-      "final_exercise_multiple_attempts_note": "Elever får lov til ubegrænsede forsøg på den valgte øvelse."
+      "final_exercise_multiple_attempts_note": "Elever får lov til ubegrænsede forsøg på den valgte øvelse.",
+      "deadline_required": "Certifikatfrist er påkrævet, når certifikater kan downloades.",
+      "deadline_required_enroll": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes."
     },
     "creator": {
       "heading": "Hvilket kursus vil du lave?",
@@ -3934,7 +3941,11 @@
     "resend": "Send bekræftelseskode igen",
     "resend_in": "Send bekræftelse ind igen",
     "seconds": "sekunder",
-    "snackbar_error": "fejl under afsendelse af kode"
+    "snackbar_error": "fejl under afsendelse af kode",
+    "wrong_address": "Tilmeldt med den forkerte adresse?",
+    "switch_account": "Skift konto",
+    "confirm_link_prefix": "Klik på linket, vi sendte til",
+    "confirm_link_suffix": "for at bekræfte din e-mail"
   },
   "public_courses": {
     "page_title": "Kurser - ClassroomIO",
