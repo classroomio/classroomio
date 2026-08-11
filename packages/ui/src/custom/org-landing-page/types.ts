@@ -91,6 +91,7 @@ export type OrgLandingPageFooterConfig = {
   };
 };
 export type LandingPageEmbed = {
+  enabled?: boolean;
   title: string;
   description?: string;
   code: string;
@@ -101,6 +102,7 @@ export type LandingPageEmbed = {
 };
 
 export type LandingPageCallout = {
+  enabled?: boolean;
   heading: string;
   description: string;
   action: {
@@ -129,6 +131,7 @@ export type LandingPageLinkCard = {
 };
 
 export type LandingPageLinks = {
+  enabled?: boolean;
   heading: string;
   description?: string;
   /** Bold template card footer chip (e.g. Visit). */
