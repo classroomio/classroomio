@@ -32,6 +32,7 @@
   import { NAV_IDS } from './constants';
   import { complianceApi, courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
+  import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { currentOrg, isFreePlan, isStudentLimitReached, currentOrgPath } from '$lib/utils/store/org';
   import { isStudentExperience } from '$lib/utils/store/app';
   import { getNavItemRoute, getLessonsRoute } from '$features/course/utils/functions';
@@ -185,7 +186,7 @@
         url: getNavItemRoute(id, 'ai-tutor'),
         isActive: (path || page.url.pathname) === getNavItemRoute(id, 'ai-tutor'),
         show() {
-          return !isStudent;
+          return !isStudent && !IS_AI_ENABLED;
         },
         icon: getNavIcon(NAV_IDS.AI_ASSISTANT)
       },

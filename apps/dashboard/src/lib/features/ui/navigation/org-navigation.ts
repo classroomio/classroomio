@@ -19,6 +19,7 @@ import type { AccountOrg } from '$features/app/types';
 import BotIcon from '@lucide/svelte/icons/bot';
 import type { Component } from 'svelte';
 import { isActive } from '$lib/utils/functions/app';
+import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
 import type { PlanLimitResource } from '@cio/utils/plans';
 
 export interface NavItem {
@@ -302,6 +303,29 @@ export const baseNavConfig: NavItemConfig[] = [
   }
 ];
 
+function isAiSettingsPath(path: string | undefined): boolean {
+  if (!path) return false;
+
+  return path.includes('ai-tutor') || path.includes('ai-credits');
+}
+
+function isHomePath(path: string): boolean {
+  return path === '';
+}
+
+/**
+ * Nav config with the Home item and AI-related settings tabs removed when AI is turned off.
+ */
+const resolvedNavConfig = IS_AI_ENABLED
+  ? baseNavConfig
+      .filter((config) => !isHomePath(config.path))
+      .map((config) => ({
+        ...config,
+        items: config.items?.filter((sub) => !isAiSettingsPath(sub.path)),
+        nestedRoutes: config.nestedRoutes?.filter((route) => !isAiSettingsPath(route.path))
+      }))
+  : baseNavConfig;
+
 /**
  * Get navigation items based on organization context and permissions
  */
@@ -314,7 +338,7 @@ export function getOrgNavigationItems(
 ): NavItem[] {
   const items: NavItem[] = [];
 
-  for (const config of baseNavConfig) {
+  for (const config of resolvedNavConfig) {
     // Skip admin-only items if user is not admin
     if (config.requiresAdmin && !isOrgAdmin && !config.disableWhenNotAdmin) {
       continue;
@@ -401,7 +425,7 @@ export function getOrgNavigationGroups(
     groupedMap.set(groupDef.key, []);
   }
 
-  for (const config of baseNavConfig) {
+  for (const config of resolvedNavConfig) {
     if (config.requiresAdmin && !isOrgAdmin && !config.disableWhenNotAdmin) {
       continue;
     }

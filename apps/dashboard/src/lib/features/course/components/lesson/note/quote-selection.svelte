@@ -4,6 +4,7 @@
   import QuoteIcon from '@lucide/svelte/icons/quote';
   import { t } from '$lib/utils/functions/translations';
   import { quoteInChat } from '$features/ai-assistant/utils/store';
+  import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
 
   interface Props {
     root: HTMLElement | undefined;
@@ -11,6 +12,10 @@
   }
 
   let { root = undefined, enabled = false }: Props = $props();
+
+  if (IS_AI_ENABLED) {
+    enabled = false;
+  }
 
   let top = $state(0);
   let left = $state(0);

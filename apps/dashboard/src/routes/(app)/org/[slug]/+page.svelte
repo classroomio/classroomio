@@ -21,7 +21,8 @@
   import CompassIcon from '@lucide/svelte/icons/compass';
   import AwardIcon from '@lucide/svelte/icons/award';
   import { openUpgradeModal } from '$lib/utils/functions/org';
-  import { isFreePlan } from '$lib/utils/store/org';
+  import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { AI_CHAT_MODEL_STORAGE_KEY } from '$features/ai-assistant/utils/constants';
   import type { TCourseType } from '@cio/db/types';
   import {
@@ -32,6 +33,14 @@
   } from '@cio/utils/agent-models';
 
   type CreatingStep = 'reading' | 'naming' | 'building';
+
+  $effect(() => {
+    if (!IS_AI_ENABLED) return;
+
+    if ($currentOrgPath !== '#') {
+      goto(`${$currentOrgPath}/dash`);
+    }
+  });
 
   const steps: { key: CreatingStep; label: string }[] = [
     { key: 'reading', label: t.get('course.creator.drafting.step_reading') },

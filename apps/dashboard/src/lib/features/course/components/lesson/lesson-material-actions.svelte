@@ -4,6 +4,7 @@
   import { ContentIcon, HoverableItem, PremiumIcon } from '@cio/ui/custom/moving-icons';
   import { sendPromptToAssistant } from '$features/ai-assistant/utils/store';
   import { t } from '$lib/utils/functions/translations';
+  import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { buildLessonSummarizePrompt } from './utils/lesson-summarize-prompt';
 
   interface Props {
@@ -32,7 +33,7 @@
   }
 </script>
 
-{#if showTranscript || showSummarize}
+{#if showTranscript || (showSummarize && !IS_AI_ENABLED)}
   <div class={alignWithNote ? 'mx-auto w-full max-w-2xl' : 'w-full'}>
     {#if showTopSeparator}
       <Separator class="my-2" />
@@ -50,11 +51,11 @@
         </HoverableItem>
       {/if}
 
-      {#if showTranscript && showSummarize}
+      {#if showTranscript && showSummarize && !IS_AI_ENABLED}
         <span class="ui:text-muted-foreground hidden text-sm sm:inline" aria-hidden="true">|</span>
       {/if}
 
-      {#if showSummarize}
+      {#if showSummarize && !IS_AI_ENABLED}
         <HoverableItem>
           {#snippet children(isHovered)}
             <Button
