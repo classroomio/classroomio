@@ -66,7 +66,7 @@
         {/if}
       </div>
     </Select.Trigger>
-    <Select.Content class="ui:z-menu-elevated">
+    <Select.Content>
       {#each tutors as tutor (tutor.id)}
         <Select.Item value={tutor.id.toString()}>
           {tutor.text}
