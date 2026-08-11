@@ -152,17 +152,17 @@ Composable page shell used across dashboard list and settings screens. Import as
 
 The bar also sits at `z-50`, matching the editor root so it paints above editor content (later in DOM wins the tie) while staying below body-portaled dialogs and sheets. Its shadow appears only while it is pinned away from its flow position, tracked by an `IntersectionObserver` on a 1px sentinel rendered as its next sibling.
 
-| Prop           | Description                                              |
-| -------------- | -------------------------------------------------------- |
-| `hasChanges`   | Enables Save and Discard when the form is dirty          |
-| `loading`      | Shows loading state on Save                              |
-| `disabled`     | Disables Save only (e.g. while not initialized)          |
-| `contentClass` | Extra classes on the inner card (width, padding, etc.)   |
-| `statusLabel`  | Left-side status text (e.g. "Unsaved changes")           |
-| `discardLabel` | Discard button label                                     |
-| `saveLabel`    | Save button label                                        |
-| `onSave`       | Save handler                                             |
-| `onDiscard`    | Discard handler                                          |
+| Prop           | Description                                            |
+| -------------- | ------------------------------------------------------ |
+| `hasChanges`   | Enables Save and Discard when the form is dirty        |
+| `loading`      | Shows loading state on Save                            |
+| `disabled`     | Disables Save only (e.g. while not initialized)        |
+| `contentClass` | Extra classes on the inner card (width, padding, etc.) |
+| `statusLabel`  | Left-side status text (e.g. "Unsaved changes")         |
+| `discardLabel` | Discard button label                                   |
+| `saveLabel`    | Save button label                                      |
+| `onSave`       | Save handler                                           |
+| `onDiscard`    | Discard handler                                        |
 
 ```svelte
 <Page.Root>

@@ -168,7 +168,7 @@ The repository also contains shared packages under `packages/` (for example `pac
      PUBLIC_SERVER_URL="http://localhost:3002"
      PRIVATE_SERVER_URL="http://localhost:3002"      # used by the SSR auth proxy — required, or login returns "API upstream not configured"
      PRIVATE_SERVER_KEY="<generate-with-openssl-rand-hex-32>"   # must match the API (paste the value generated above)
-     PUBLIC_IS_SELFHOSTED=true
+     PUBLIC_IS_SELFHOSTED=false
      ```
 
    - Running the background workers? Also create `apps/jobs/.env` (e.g. `cp apps/api/.env apps/jobs/.env`); it needs `REDIS_URL`. The `packages/db/.env` used by the DB scripts is set up in step 6.
