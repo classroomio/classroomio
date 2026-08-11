@@ -17,6 +17,8 @@
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
+  import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
+  import { goAndHighlight } from '$lib/routing/go-and-highlight';
 
   let { data } = $props();
 
@@ -96,7 +98,9 @@
           const courses = setupProgressApi.progress.courses || [];
           const courseId = courses[0]?.id;
           if (courseId) {
-            goto(`/courses/${courseId}/settings`);
+            goAndHighlight(ROUTE_NAME.COURSE_SETTINGS, ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].PUBLISH, {
+              id: courseId
+            });
           }
         } else {
           snackbar.info('setup.info_course');

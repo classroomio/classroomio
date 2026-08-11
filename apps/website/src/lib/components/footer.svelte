@@ -7,7 +7,7 @@
 <footer
   class="ui:border-border relative overflow-hidden border-t bg-[linear-gradient(to_top,#eef3fb_0%,#f8fafc_100%)] px-[5%] py-12 lg:px-[10%]"
 >
-  <!-- Minor cloud — top-left, smaller than the hero -->
+  <!-- Minor cloud, top-left, smaller than the hero -->
   <svg
     class="pointer-events-none absolute -top-4 left-3 z-[2] h-12 w-[160px] md:-top-5 md:left-4 md:h-16 md:w-[210px] lg:-top-6 lg:h-20 lg:w-[260px]"
     viewBox="0 0 240 110"
@@ -214,6 +214,6 @@
   <div
     class="ui:border-border ui:text-muted-foreground relative z-10 mt-10 border-t pt-6 text-center text-xs lg:text-left"
   >
-    All rights reserved — ClassroomIO © {new Date().getFullYear()}
+    All rights reserved. ClassroomIO © {new Date().getFullYear()}
   </div>
 </footer>

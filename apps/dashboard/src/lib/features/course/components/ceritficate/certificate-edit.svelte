@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { t } from '$lib/utils/functions/translations';
 
@@ -12,7 +13,17 @@
     activeTab?: string;
   };
 
-  let { errors, activeTab = $bindable('design') }: Props = $props();
+  let { errors }: Props = $props();
+
+  let activeTab = $state('design');
+
+  // Initialize activeTab from URL parameter if present
+  $effect(() => {
+    const tabParam = page.url.searchParams.get('tab');
+    if (tabParam && (tabParam === 'design' || tabParam === 'settings')) {
+      activeTab = tabParam;
+    }
+  });
 </script>
 
 <UpgradeBanner>{$t('upgrade.certificate')}</UpgradeBanner>

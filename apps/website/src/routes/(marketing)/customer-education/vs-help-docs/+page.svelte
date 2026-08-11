@@ -33,7 +33,7 @@
     {
       Icon: GraduationCap,
       title: 'Add a customer academy alongside.',
-      body: "When a customer needs to learn the product — onboarding, role-based programs, certification, adoption courses for new features — that's the job an academy was built for."
+      body: "When a customer needs to learn the product (onboarding, role-based programs, certification, adoption courses for new features), that's the job an academy was built for."
     }
   ];
 </script>
@@ -50,9 +50,9 @@
       </h1>
 
       <HeroSubtitle>
-        Intercom Articles, Zendesk Guide, and Confluence are excellent at one thing — answering "how do I do X?" when
-        the user already knows what they need. They were never designed to take a brand-new customer from zero to
-        confident product use. That's what a customer academy is for.
+        Intercom Articles, Zendesk Guide, and Confluence are excellent at one thing: answering "how do I do X?" when the
+        user already knows what they need. They were never designed to take a brand-new customer from zero to confident
+        product use. That's what a customer academy is for.
       </HeroSubtitle>
 
       <div class="mt-8 flex flex-wrap items-center gap-3">
@@ -99,7 +99,7 @@
       <div class="mb-8 max-w-[640px]">
         <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">Tool-by-tool</div>
         <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-          What the popular help-doc tools are great at — and what they aren't.
+          What the popular help-doc tools are great at, and what they aren't.
         </h2>
       </div>
 

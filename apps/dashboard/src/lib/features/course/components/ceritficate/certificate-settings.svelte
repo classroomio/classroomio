@@ -7,7 +7,9 @@
   import { courseApi } from '$features/course/api';
   import { isFreePlan } from '$lib/utils/store/org';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
+  import type { CourseCertificate } from '$features/course/utils/types';
   import { ContentType } from '@cio/utils/constants/content';
+  import { AttentionHighlight } from '$features/ui';
 
   type Props = {
     errors: Record<string, string>;
@@ -70,6 +72,16 @@
   function onEmailMessageInput(e: Event) {
     updateCertificate({ emailMessage: (e.currentTarget as HTMLTextAreaElement).value || null });
   }
+
+  function validateCertificateSettings(certificate: CourseCertificate | null | undefined): string[] {
+    const errors: string[] = [];
+    if (certificate?.isDownloadable && !certificate?.deadline) {
+      errors.push('course.certification.deadline_required');
+    }
+    return errors;
+  }
+
+  const certificateValidationErrors = $derived(validateCertificateSettings(courseApi.course?.certificate));
 </script>
 
 <Field.Group class="w-full max-w-md! px-2">
@@ -85,45 +97,62 @@
         }}
         disabled={$isFreePlan}
       />
-      <Field.Label for="certificate-downloadable" class="text-gray-600">
-        {$t('course.navItem.certificates.allow')}
-      </Field.Label>
+      <div class="flex-1">
+        <Field.Label for="certificate-downloadable" class="text-gray-600">
+          {$t('course.navItem.certificates.allow')}
+        </Field.Label>
+        {#if courseApi.course?.certificate?.isDownloadable && certificateValidationErrors.includes('course.certification.deadline_required')}
+          <Field.Error class="mt-1">{$t('course.certification.deadline_required')}</Field.Error>
+        {/if}
+      </div>
     </Field.Field>
 
     <Field.Group>
-      <Field.Field>
-        <Field.Label for="cert-deadline">{$t('course.certification.deadline_label')}</Field.Label>
-        <Input
-          id="cert-deadline"
-          type="datetime-local"
-          class="w-full"
-          value={isoToDatetimeLocal(courseApi.course?.certificate?.deadline ?? null)}
-          onchange={onCertDeadlineChange}
-          disabled={$isFreePlan}
-        />
-        <Field.Description>{$t('course.certification.deadline_helper')}</Field.Description>
-        {#if errors['certificate.deadline']}
-          <Field.Error>{errors['certificate.deadline']}</Field.Error>
-        {/if}
-      </Field.Field>
+      <AttentionHighlight id="cert-deadline">
+        <Field.Field>
+          <Field.Label for="cert-deadline">
+            {$t('course.certification.deadline_label')}
+            {#if courseApi.course?.certificate?.isDownloadable}
+              <span class="ui:text-red-600">*</span>
+            {/if}
+          </Field.Label>
+          <Input
+            id="cert-deadline"
+            type="datetime-local"
+            class="w-full"
+            value={isoToDatetimeLocal(courseApi.course?.certificate?.deadline ?? null)}
+            onchange={onCertDeadlineChange}
+            disabled={$isFreePlan}
+          />
+          <Field.Description>{$t('course.certification.deadline_helper')}</Field.Description>
+          {#if errors['certificate.deadline']}
+            <Field.Error>{errors['certificate.deadline']}</Field.Error>
+          {/if}
+          {#if certificateValidationErrors.includes('course.certification.deadline_required')}
+            <Field.Error>{$t('course.certification.deadline_required')}</Field.Error>
+          {/if}
+        </Field.Field>
+      </AttentionHighlight>
 
-      <Field.Field>
-        <Field.Label for="cert-threshold">{$t('course.certification.threshold_label')}</Field.Label>
-        <Input
-          id="cert-threshold"
-          type="number"
-          min={0}
-          max={100}
-          class="w-full"
-          value={String(courseApi.course?.certificate?.threshold ?? 100)}
-          oninput={onThresholdInput}
-          disabled={$isFreePlan}
-        />
-        <Field.Description>{$t('course.certification.threshold_helper')}</Field.Description>
-        {#if errors['certificate.threshold']}
-          <Field.Error>{errors['certificate.threshold']}</Field.Error>
-        {/if}
-      </Field.Field>
+      <AttentionHighlight id="cert-threshold">
+        <Field.Field>
+          <Field.Label for="cert-threshold">{$t('course.certification.threshold_label')}</Field.Label>
+          <Input
+            id="cert-threshold"
+            type="number"
+            min={0}
+            max={100}
+            class="w-full"
+            value={String(courseApi.course?.certificate?.threshold ?? 100)}
+            oninput={onThresholdInput}
+            disabled={$isFreePlan}
+          />
+          <Field.Description>{$t('course.certification.threshold_helper')}</Field.Description>
+          {#if errors['certificate.threshold']}
+            <Field.Error>{errors['certificate.threshold']}</Field.Error>
+          {/if}
+        </Field.Field>
+      </AttentionHighlight>
 
       <Field.Field>
         <Field.Label for="cert-final-exercise">{$t('course.certification.final_exercise_label')}</Field.Label>
