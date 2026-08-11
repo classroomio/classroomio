@@ -943,7 +943,8 @@
             "no": "Non",
             "yes": "Oui",
             "percent": "Pourcentage de remise",
-            "gift": "À propos du cadeau"
+            "gift": "À propos du cadeau",
+            "payment_required": "Un lien de paiement est requis pour les cours payants"
           },
           "instructor_form": {
             "upload": "Logo de l'instructeur",

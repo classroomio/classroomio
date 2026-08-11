@@ -15,11 +15,13 @@
   interface Props {
     course: Course;
     setter: (value: any, key: string) => void;
+    showPaymentError?: boolean;
   }
 
-  let { course = $bindable(), setter }: Props = $props();
+  let { course = $bindable(), setter, showPaymentError = $bindable(false) }: Props = $props();
 
   let paymentLink = $derived(get(course, 'metadata.paymentLink', ''));
+  const isPaidWithoutPaymentLink = $derived(!isCourseFree(course.cost || 0) && !paymentLink.trim());
   let showDiscount = $derived(Boolean(get(course, 'metadata.showDiscount', false)));
   let discount = $derived(toFiniteNumber(get(course, 'metadata.discount', 0)) ?? 0);
   let giftToggled = $derived(Boolean(get(course, 'metadata.reward.show', false)));
@@ -70,6 +72,15 @@
       labelClassName="font-bold"
       label={$t('course.navItem.landing_page.editor.pricing_form.payment')}
       helperMessage="Stripe, Lemon Squeezy or any payment link"
+      isRequired
+      errorMessage={isPaidWithoutPaymentLink && showPaymentError
+        ? $t('course.navItem.landing_page.editor.pricing_form.payment_required')
+        : ''}
+      onInputChange={(e) => {
+        if (showPaymentError && e.currentTarget.value.trim()) {
+          showPaymentError = false;
+        }
+      }}
       bind:value={paymentLink}
     />
   {/if}

@@ -1,10 +1,16 @@
 import { generateSlug } from '@cio/utils/functions';
 import { isObject } from '$lib/utils/functions/isObject';
 import { courseApi } from '$features/course/api';
+import { snackbar } from '$features/ui/snackbar/store';
 import type { Course } from '$features/course/utils/types';
 
 export async function publishCourse(course: Course): Promise<boolean> {
   if (!course?.id) {
+    return false;
+  }
+
+  if (Number(course.cost) > 0 && !(course.metadata?.paymentLink ?? '').trim()) {
+    snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
     return false;
   }
 

@@ -3532,6 +3532,7 @@
             "currency": "Currency",
             "cost": "Cost",
             "payment": "Payment Link",
+            "payment_required": "A payment link is required for paid courses",
             "discount": "Discount",
             "no": "No",
             "yes": "Yes",

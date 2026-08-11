@@ -943,7 +943,8 @@
             "no": "Không",
             "yes": "Có",
             "percent": "Phần trăm chiết khấu",
-            "gift": "Về quà tặng"
+            "gift": "Về quà tặng",
+            "payment_required": "Cần có liên kết thanh toán cho các khóa học trả phí"
           },
           "instructor_form": {
             "upload": "Logo giảng viên",
