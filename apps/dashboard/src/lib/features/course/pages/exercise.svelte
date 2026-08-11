@@ -62,7 +62,7 @@
   import * as Alert from '@cio/ui/base/alert';
   import * as RadioGroup from '@cio/ui/base/radio-group';
   import InfoIcon from '@lucide/svelte/icons/info';
-  import { isAutoGradableQuestionType } from '@cio/question-types';
+  import { isAutoGradableQuestionType, isAutoGradableQuestionTypeId } from '@cio/question-types';
   import * as Dialog from '@cio/ui/base/dialog';
   import type { ExerciseSectionState } from '$features/course/components/exercise/store';
   import {
@@ -368,18 +368,23 @@
     });
 
     if (!zodResult.success || Object.keys(sectionValidationErrors).length > 0) {
-      const zodErrors = !zodResult.success ? mapZodErrorsToTranslations(zodResult.error) : {};
+      const zodErrors = !zodResult.success ? mapZodErrorsToTranslations(zodResult.error, 'exercise') : {};
       const questionErrors = mapZodErrorsToQuestionErrors(zodErrors, $questionnaire.questions);
       questionnaireValidation.set({
         ...questionErrors,
         ...sectionValidationErrors
       });
-      snackbar.error('Please fix all validation errors before saving');
+      snackbar.error('snackbar.exercise.validation_errors');
       return;
     }
 
     if (requiresPositivePointsForAutoGrade) {
-      const zeroPointQuestions = ($questionnaire.questions ?? []).filter((q) => !q.deletedAt && Number(q.points) === 0);
+      const zeroPointQuestions = ($questionnaire.questions ?? []).filter(
+        (question) =>
+          !question.deletedAt &&
+          Number(question.points) === 0 &&
+          isAutoGradableQuestionTypeId(getQuestionTypeId(question))
+      );
 
       if (zeroPointQuestions.length > 0) {
         const pointErrors: Record<string, { option?: string; title?: string; points?: string }> = {};
@@ -430,7 +435,7 @@
       // Check if there are validation errors from the API
       if (Object.keys(exerciseApi.errors || {}).length > 0) {
         console.log('Validation errors from API:', exerciseApi.errors);
-        snackbar.error('Please fix all validation errors before saving');
+        snackbar.error('snackbar.exercise.validation_errors');
         isSaving = false;
         return;
       }

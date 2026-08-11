@@ -430,15 +430,19 @@ Supported `questionTypeId` values for exercise payloads:
 - `1` `RADIO` - Single answer
 - `2` `CHECKBOX` - Multiple answers
 - `3` `TEXTAREA` - Paragraph
-- `4` `TRUE_FALSE` - True/False
+- `4` `TRUE_FALSE` - True/False (factual statements; options: True, False; auto-graded)
 - `5` `SHORT_ANSWER` - Short answer
 - `6` `NUMERIC` - Numeric answer
 - `7` `FILL_BLANK` - Fill in the blank
 - `8` `FILE_UPLOAD` - File upload
-- `9` `MATCHING` - Matching
-- `10` `ORDERING` - Ordering
-- `11` `HOTSPOT` - Hotspot
-- `12` `LINK` - Links
+- `9` `ORDERING` - Ordering
+- `10` `LINK` - Links
+- `11` `WORD_BANK` - Word bank
+- `12` `STAR` - Star rating
+- `13` `VIDEO_RECORDING` - Video recording
+- `14` `THUMBS` - Thumbs up/down (open-ended poll with customizable Yes/No labels; no correct answer)
+
+`TRUE_FALSE` is auto-graded with `settings.correctValue` (boolean) and fixed True/False labels for factual statements. `THUMBS` is open-ended (not auto-graded): two customizable Yes/No-style options with thumbs icons for sentiment or poll-style questions — do not set `settings.correctValue`. `MATCHING` and `HOTSPOT` are disabled and must not be used.
 
 ## Operational Notes
 

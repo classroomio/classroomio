@@ -229,6 +229,7 @@ export type CoursePricing = {
   ctaLabel: string;
   ctaHref?: string;
   ctaOnclick?: (event: MouseEvent) => void;
+  ctaDisabled?: boolean;
   features?: string[];
   reward?: {
     show: boolean;

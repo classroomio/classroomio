@@ -1,6 +1,6 @@
 {
   "name": "@classroomio/mcp",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "private": false,
   "type": "module",
   "main": "./dist/index.js",
@@ -35,6 +35,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
+    "@cio/question-types": "workspace:*",
     "@cio/utils": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.27.1"
   },

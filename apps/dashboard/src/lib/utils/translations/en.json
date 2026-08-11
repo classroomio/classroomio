@@ -289,8 +289,11 @@
   },
   "common": {
     "unsaved_changes": {
-      "message": "You have unsaved changes. Are you sure you want to leave?"
+      "message": "You have unsaved changes. Are you sure you want to leave?",
+      "label": "Unsaved changes"
     },
+    "discard": "Discard",
+    "save_changes": "Save changes",
     "refresh": "Refresh"
   },
   "compliance": {
@@ -1858,6 +1861,7 @@
       "most_lessons": "Lessons: Most first",
       "fewest_lessons": "Lessons: Fewest first",
       "date_created": "Date Created",
+      "last_updated_at": "Last Updated At",
       "published": "Published",
       "lessons": "Lessons"
     },
@@ -2024,6 +2028,8 @@
       "rules_heading": "Rules",
       "deadline_label": "Certification deadline",
       "deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
+      "deadline_required": "Certificate deadline is required when certificates are downloadable.",
+      "deadline_required_enroll": "Compliance courses require a certificate deadline before learners can be enrolled.",
       "threshold_label": "Minimum completion (%)",
       "threshold_helper": "Combined lesson and exercise progress required to earn the certificate (0–100). Default is 100%.",
       "final_exercise_label": "Final exercise (optional)",
@@ -2445,6 +2451,8 @@
               "cancel_upload": "Cancel Upload",
               "upload_cancelled": "Upload cancelled by user",
               "downloading": "Downloading...",
+              "download_success": "Document downloaded successfully",
+              "download_error": "Failed to download document",
               "view_pdf": "View PDF",
               "remove_document": "Remove document",
               "delete": "Delete",
@@ -2454,7 +2462,11 @@
               "failed_to_render_pdf": "Failed to render PDF page",
               "use_arrow_keys": "Use arrow keys to navigate, +/- to zoom, or click the controls above. Right-click is disabled.",
               "empty_title": "No documents yet",
-              "empty_description": "Upload documents to share with your students"
+              "empty_description": "Upload documents to share with your students",
+              "attachments_heading": "Attachments",
+              "file_count": "{count, plural, one {# file} other {# files}}",
+              "view_file": "View file",
+              "reorder_file": "Reorder file"
             }
           },
           "button_done": "Done"
@@ -2627,6 +2639,7 @@
                 "multiple": "Multiple answers",
                 "paragraph": "Paragraph",
                 "true_false": "True/False",
+                "thumbs": "Thumbs up/down",
                 "short_answer": "Short answer",
                 "numeric": "Numeric answer",
                 "fill_blank": "Fill in the blank",
@@ -2770,6 +2783,17 @@
                 },
                 "preview": {
                   "correct_value_label": "Correct value"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Yes",
+                "no_label": "No",
+                "edit": {
+                  "positive_option_label": "Thumbs up label",
+                  "negative_option_label": "Thumbs down label"
+                },
+                "preview": {
+                  "helper": "Open-ended — students choose thumbs up or down."
                 }
               },
               "short_answer": {
@@ -3627,6 +3651,9 @@
         "determines": "This determines if your course displays on your landing page",
         "published": "Published",
         "unpublished": "Unpublished",
+        "certificate_deadline_required": "Set Certificate Deadline First",
+        "certificate_deadline_required_description": "Compliance courses require a certificate deadline before learners can be enrolled. Please set a deadline in the certificate settings before publishing.",
+        "go_to_certificate_settings": "Go to Certificate Settings",
         "locked_content": {
           "title": "{count} course item(s) are locked",
           "description": "Enrolled students won't be able to take locked lessons or exercises until you unlock them.",
@@ -4181,6 +4208,7 @@
       }
     },
     "exercise": {
+      "validation_errors": "Please fix all validation errors before saving.",
       "points_required_auto_grade": "Set a positive point value for every question before saving.",
       "passed_requires_points": "Passed completion needs at least one point available.",
       "success": "Saved Successfully",

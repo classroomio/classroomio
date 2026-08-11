@@ -10,7 +10,7 @@ export function alignHeroCtaWithPricing(
       label: pricing.ctaLabel,
       href: pricing.ctaOnclick ? undefined : (pricing.ctaHref ?? '#pricing'),
       onclick: pricing.ctaOnclick,
-      disabled: hero.primaryAction.disabled
+      disabled: pricing.ctaDisabled ?? hero.primaryAction.disabled
     }
   };
 }

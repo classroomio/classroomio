@@ -18,7 +18,7 @@
       eyebrow: '01 · Authoring',
       title: 'Generate a customer onboarding course from a doc URL',
       description:
-        'The agent plans the course, drafts every lesson, and writes the quiz questions — then waits for your approval before publishing.',
+        'The agent plans the course, drafts every lesson, and writes the quiz questions, then waits for your approval before publishing.',
       prompt:
         'Generate a customer onboarding course from https://docs.acme.com/getting-started. Use the "Customer Onboarding" template. Plan the course first, then wait for my approval before implementing the lessons.'
     },
@@ -56,7 +56,7 @@
       eyebrow: '06 · Review',
       title: 'Audit every draft before publish',
       description:
-        'Get a written summary of what each draft is missing — landing page, quiz questions, certificate rule, or final exam.',
+        'Get a written summary of what each draft is missing: landing page, quiz questions, certificate rule, or final exam.',
       prompt:
         'List every draft course in my org. For each one, fetch its structure and tell me what is still missing before it can go live (e.g. landing page copy, final exam, certificate rule, lessons without exercises).'
     }

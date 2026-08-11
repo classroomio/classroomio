@@ -54,7 +54,7 @@
 
   {#if !hideCta}
     <PageSignupCTA
-      header="Your Custom Academy – Up & Running in Minutes!"
+      header="Your custom academy, up and running in minutes."
       subText="Try before you buy. No credit card required."
       btnLabel="Book a demo"
       link="classroomio/demo"

@@ -6,10 +6,10 @@
   <div class="mx-auto max-w-[1100px] text-center">
     <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">Testimonials</div>
     <h2 class="mb-3 text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-      Hear from happy ClassroomIO users
+      What teams say after they ship an academy
     </h2>
     <p class="mx-auto mb-8 max-w-[520px] text-sm leading-relaxed text-gray-500">
-      See what excites them about building and managing training programs with ClassroomIO.
+      Short notes from people running customer, partner, and internal training on ClassroomIO.
     </p>
 
     <div class="relative mx-auto w-full">

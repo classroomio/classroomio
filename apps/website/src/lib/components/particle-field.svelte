@@ -5,8 +5,8 @@
    * Reusable animated particle cloud, same family as the hero.
    *
    * @typedef {Object} ClusterSpec
-   * @property {number} x         Normalized 0–1 x position
-   * @property {number} y         Normalized 0–1 y position
+   * @property {number} x         Normalized 0-1 x position
+   * @property {number} y         Normalized 0-1 y position
    * @property {number} rx
    * @property {number} ry
    * @property {number} density

@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Opdater",
     "unsaved_changes": {
-      "message": "Du har ikke-gemte ændringer. Er du sikker på, at du vil tage afsted?"
-    }
+      "message": "Du har ikke-gemte ændringer. Er du sikker på, at du vil tage afsted?",
+      "label": "Ikke-gemte ændringer"
+    },
+    "discard": "Kassér",
+    "save_changes": "Gem ændringer"
   },
   "validations": {
     "generic": {
@@ -321,6 +324,7 @@
       "creating_new": "Oprettelse af nye oversættelser mislykkedes"
     },
     "exercise": {
+      "validation_errors": "Ret alle valideringsfejl, før du gemmer.",
       "points_required_auto_grade": "Angiv en positiv pointværdi for hvert spørgsmål, før du gemmer.",
       "success": "Gemt",
       "submission_updated": "Indsendelse opdateret til",
@@ -1517,6 +1521,7 @@
                 "multiple": "Flere svar",
                 "paragraph": "Afsnit",
                 "true_false": "Sandt/falsk",
+                "thumbs": "Tommel op/ned",
                 "short_answer": "Kort svar",
                 "numeric": "Numerisk svar",
                 "fill_blank": "Udfyld det tomme felt",
@@ -1703,6 +1708,17 @@
                 },
                 "edit": {
                   "correct_answer_label": "Korrekt svar"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Ja",
+                "no_label": "Nej",
+                "edit": {
+                  "positive_option_label": "Tommel op-etiket",
+                  "negative_option_label": "Tommel ned-etiket"
+                },
+                "preview": {
+                  "helper": "Åben — elever vælger tommel op eller ned."
                 }
               },
               "checkbox": {
@@ -1991,6 +2007,8 @@
               "cancel_upload": "Annuller upload",
               "upload_cancelled": "Upload annulleret af brugeren",
               "downloading": "Downloader...",
+              "download_success": "Dokument downloadet",
+              "download_error": "Kunne ikke downloade dokumentet",
               "view_pdf": "Se PDF",
               "remove_document": "Fjern dokumentet",
               "delete": "Slet",
@@ -2000,7 +2018,11 @@
               "failed_to_render_pdf": "Kunne ikke gengive PDF-siden",
               "use_arrow_keys": "Brug piletasterne til at navigere, +/- for at zoome, eller klik på kontrollerne ovenfor. Højreklik er deaktiveret.",
               "empty_title": "Ingen dokumenter endnu",
-              "empty_description": "Upload dokumenter for at dele med dine elever"
+              "empty_description": "Upload dokumenter for at dele med dine elever",
+              "attachments_heading": "Vedhæftede filer",
+              "file_count": "{count, plural, one {# fil} other {# filer}}",
+              "view_file": "Vis fil",
+              "reorder_file": "Omarranger fil"
             },
             "video": {
               "title": "Video",
@@ -2591,6 +2613,7 @@
       "most_lessons": "Lektioner: Flest først",
       "fewest_lessons": "Lektioner: Færrest først",
       "date_created": "Dato oprettet",
+      "last_updated_at": "Sidst opdateret",
       "published": "Udgivet",
       "lessons": "Lektioner"
     },

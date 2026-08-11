@@ -2,6 +2,7 @@ import * as schema from '@db/schema';
 
 import type { TCourseNewsfeed, TCourseNewsfeedComment, TNewCourseNewsfeed, TNewCourseNewsfeedComment } from '@db/types';
 import { and, db, desc, eq, isNull, lt, ne, sql } from '@db/drizzle';
+import { alias } from 'drizzle-orm/pg-core';
 import { ROLE } from '@cio/utils/constants';
 
 /**
@@ -251,16 +252,21 @@ export async function getNewsfeedCommentsByFeedIdPaginated(
       .where(and(...baseWhereConditions));
     const totalCount = Number(totalCountResult[0]?.count || 0);
 
+    const replyTarget = alias(schema.courseNewsfeedComment, 'reply_target');
+    const replyTargetMember = alias(schema.groupmember, 'reply_target_member');
+    const replyTargetProfile = alias(schema.profile, 'reply_target_profile');
+
     // Fetch comments with author profile & reply count
     const comments = await db
       .select({
         comment: schema.courseNewsfeedComment,
         groupmember: schema.groupmember,
         profile: schema.profile,
+        replyToAuthorFullname: replyTargetProfile.fullname,
         replyCount: sql<number>`
           COALESCE(
-            (SELECT COUNT(*)::int 
-             FROM ${schema.courseNewsfeedComment} c2 
+            (SELECT COUNT(*)::int
+             FROM ${schema.courseNewsfeedComment} c2
              WHERE c2.parent_id = ${schema.courseNewsfeedComment.id}),
             0
           )
@@ -269,6 +275,9 @@ export async function getNewsfeedCommentsByFeedIdPaginated(
       .from(schema.courseNewsfeedComment)
       .leftJoin(schema.groupmember, eq(schema.courseNewsfeedComment.authorId, schema.groupmember.id))
       .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
+      .leftJoin(replyTarget, eq(schema.courseNewsfeedComment.replyToCommentId, replyTarget.id))
+      .leftJoin(replyTargetMember, eq(replyTarget.authorId, replyTargetMember.id))
+      .leftJoin(replyTargetProfile, eq(replyTargetMember.profileId, replyTargetProfile.id))
       .where(and(...whereConditions))
       .orderBy(desc(schema.courseNewsfeedComment.createdAt))
       .limit(limit + 1);
@@ -285,6 +294,7 @@ export async function getNewsfeedCommentsByFeedIdPaginated(
         authorFullname: row.profile?.fullname || null,
         authorUsername: row.profile?.username || null,
         authorAvatarUrl: row.profile?.avatarUrl || null,
+        replyToAuthorFullname: row.replyToAuthorFullname || null,
         replyCount: Number(row.replyCount || 0)
       })),
       totalCount,

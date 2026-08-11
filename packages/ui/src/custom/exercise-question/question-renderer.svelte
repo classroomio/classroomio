@@ -31,6 +31,8 @@
     questionNumber?: number;
     /** When false, the badge uses muted styling (e.g. question lists). Defaults to true. */
     questionNumberActive?: boolean;
+    /** Shown beneath the title input in edit mode when validation fails. */
+    titleError?: string | null;
   }
 
   let {
@@ -40,7 +42,8 @@
     showContainer = true,
     questionTypeSelect,
     questionNumber,
-    questionNumberActive = true
+    questionNumberActive = true,
+    titleError = null
   }: Props = $props();
 
   const Renderer = $derived(getExerciseQuestionRenderer(contract.question.questionType, contract.mode));
@@ -280,8 +283,12 @@
             value={contract.question.title}
             placeholder={label('question.edit.title_placeholder')}
             disabled={contract.disabled}
+            aria-invalid={titleError ? true : undefined}
             onchange={(event) => patchQuestion({ title: event.currentTarget.value })}
           />
+          {#if titleError}
+            <p class="ui:text-destructive ui:text-xs">{titleError}</p>
+          {/if}
         </div>
 
         <DropdownMenu.Root>

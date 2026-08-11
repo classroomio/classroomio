@@ -19,6 +19,8 @@ import {
   ilike,
   inArray,
   isNotNull,
+  ne,
+  not,
   notInArray,
   or,
   sql
@@ -214,14 +216,18 @@ export async function insertOrganizationMembersOnConflictDoNothing(
   }
 }
 
-export const checkSiteNameExists = async (siteName: string): Promise<boolean> => {
+export const checkSiteNameExists = async (siteName: string, excludeOrgId?: string): Promise<boolean> => {
+  const conditions = [eq(schema.organization.siteName, siteName)];
+
+  if (excludeOrgId) {
+    conditions.push(ne(schema.organization.id, excludeOrgId));
+  }
+
   const result = await db
     .select({ id: schema.organization.id })
     .from(schema.organization)
-    .where(eq(schema.organization.siteName, siteName))
+    .where(and(...conditions))
     .limit(1);
-
-  console.debug('checkSiteNameExists result:', result);
 
   return result.length > 0;
 };
