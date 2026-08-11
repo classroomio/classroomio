@@ -1,0 +1,44 @@
+name: MCP package build check
+
+# Verifies @classroomio/mcp still builds on PRs/pushes that touch it.
+# Intentionally separate from publish-mcp.yml so PR CI never sees NPM_TOKEN.
+
+on:
+  pull_request:
+    paths:
+      - 'packages/mcp/**'
+      - 'packages/question-types/**'
+      - 'packages/utils/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/mcp-package-build-check.yml'
+  push:
+    paths:
+      - 'packages/mcp/**'
+      - 'packages/question-types/**'
+      - 'packages/utils/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/mcp-package-build-check.yml'
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.3
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build publishable MCP package
+        run: pnpm mcp:build

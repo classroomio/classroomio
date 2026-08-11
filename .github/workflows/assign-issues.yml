@@ -5,6 +5,11 @@ on:
     types:
       - created
       - edited
+
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   take-issue:
     name: Disable take issue

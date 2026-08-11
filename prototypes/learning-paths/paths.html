@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learning Paths · ClassroomIO LMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+      .tab { padding: 9px 14px; font-size: 14px; font-weight: 500; color: var(--muted-foreground); border: none; background: none; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; display: flex; align-items: center; gap: 7px; }
+      .tab:hover { color: var(--foreground); }
+      .tab.active { color: var(--foreground); border-bottom-color: var(--primary); }
+      .tab .n { font-size: 11.5px; font-weight: 500; background: var(--muted); border-radius: 999px; padding: 0 7px; color: var(--muted-foreground); }
+
+      .path-list { display: flex; flex-direction: column; gap: 14px; }
+      .path-row { display: grid; grid-template-columns: 150px 1fr; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s; }
+      .path-row:hover { border-color: var(--ring); box-shadow: var(--shadow-md); }
+      .pr-cover { position: relative; display: grid; place-items: center; color: oklch(1 0 0 / 0.9); min-height: 120px; }
+      .pr-cover svg { width: 28px; height: 28px; stroke-width: 1.8; }
+      .pr-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 11px; min-width: 0; }
+      .pr-head { display: flex; align-items: flex-start; gap: 12px; }
+      .pr-title { font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 2px; }
+      .pr-desc { font-size: 13px; color: var(--muted-foreground); margin: 0; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+      .seg-row { display: flex; align-items: center; gap: 11px; }
+      .seg-pct { font-size: 13.5px; font-weight: 600; min-width: 36px; text-align: right; }
+      .pr-foot { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+      .pr-meta { display: flex; align-items: center; gap: 16px; font-size: 12.5px; color: var(--muted-foreground); flex: 1; flex-wrap: wrap; }
+      .pr-meta .m { display: flex; align-items: center; gap: 5px; }
+      .pr-meta svg { width: 14px; height: 14px; stroke-width: 2; }
+      .pr-meta strong { color: var(--foreground); font-weight: 500; }
+      @media (max-width: 720px) { .path-row { grid-template-columns: 1fr; } .pr-cover { min-height: 72px; } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand"><div class="brand-mark">C</div><div class="brand-name">ClassroomIO</div></div>
+        <div class="nav-label">Learn</div>
+        <a class="nav-item" href="lms-home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>My Learning</a>
+        <a class="nav-item active" href="paths.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Learning Paths<span class="nav-badge">2</span></a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Exercises</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>Community</a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Certificates</a>
+        <div class="sidebar-foot"><div class="avatar">AO</div><div class="who"><div class="nm">Ada Okafor</div><div class="rl">Student</div></div></div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <span class="top-title">Learning Paths</span>
+          <div class="top-actions">
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="wrap" style="max-width: 1000px">
+            <div class="page-head">
+              <div>
+                <h1 class="page-title">Learning Paths</h1>
+                <p class="page-sub">Structured tracks you're enrolled in. Complete the courses in order to finish a path and earn its certificate.</p>
+              </div>
+            </div>
+
+            <div class="tabs">
+              <button class="tab active">In progress <span class="n">2</span></button>
+              <button class="tab">Completed <span class="n">1</span></button>
+              <button class="tab">All <span class="n">3</span></button>
+            </div>
+
+            <div class="path-list">
+              <a class="card path-row" href="path-detail.html">
+                <div class="pr-cover" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                </div>
+                <div class="pr-body">
+                  <div class="pr-head">
+                    <div style="min-width: 0">
+                      <h3 class="pr-title">Frontend Engineering Bootcamp</h3>
+                      <p class="pr-desc">From HTML foundations to shipping a production React app.</p>
+                    </div>
+                    <span class="badge badge-primary-soft" style="margin-left: auto; flex-shrink: 0"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg>In progress</span>
+                  </div>
+                  <div class="seg-row">
+                    <div class="segs"><span class="seg done"></span><span class="seg done"></span><span class="seg half"></span><span class="seg"></span><span class="seg"></span></div>
+                    <span class="seg-pct tnum text-primary">49%</span>
+                  </div>
+                  <div class="pr-foot">
+                    <div class="pr-meta">
+                      <span class="m tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>2 of 5 courses</span>
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>~38h</span>
+                      <span class="m">Next: <strong>Modern Web Development with React</strong></span>
+                    </div>
+                    <span class="btn btn-primary btn-sm">Continue<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                  </div>
+                </div>
+              </a>
+
+              <a class="card path-row" href="path-detail.html">
+                <div class="pr-cover" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.696 0.17 162.48))">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                </div>
+                <div class="pr-body">
+                  <div class="pr-head">
+                    <div style="min-width: 0">
+                      <h3 class="pr-title">Data Science with Python</h3>
+                      <p class="pr-desc">Pandas, visualization, and applied machine-learning basics.</p>
+                    </div>
+                    <span class="badge badge-primary-soft" style="margin-left: auto; flex-shrink: 0"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg>In progress</span>
+                  </div>
+                  <div class="seg-row">
+                    <div class="segs"><span class="seg half"></span><span class="seg"></span><span class="seg"></span><span class="seg"></span></div>
+                    <span class="seg-pct tnum text-primary">8%</span>
+                  </div>
+                  <div class="pr-foot">
+                    <div class="pr-meta">
+                      <span class="m tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>0 of 4 courses</span>
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>~30h</span>
+                      <span class="m">Just started: <strong>Intro to Python</strong></span>
+                    </div>
+                    <span class="btn btn-primary btn-sm">Continue<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                  </div>
+                </div>
+              </a>
+
+              <a class="card path-row" href="path-detail.html" style="opacity: 0.85">
+                <div class="pr-cover" style="background: linear-gradient(135deg, oklch(0.666 0.179 58.318), oklch(0.769 0.188 70.08))">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>
+                </div>
+                <div class="pr-body">
+                  <div class="pr-head">
+                    <div style="min-width: 0">
+                      <h3 class="pr-title">Workplace Compliance 2026</h3>
+                      <p class="pr-desc">Security awareness, data handling, and code of conduct.</p>
+                    </div>
+                    <span class="badge badge-success" style="margin-left: auto; flex-shrink: 0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Completed</span>
+                  </div>
+                  <div class="seg-row">
+                    <div class="segs"><span class="seg done"></span><span class="seg done"></span><span class="seg done"></span></div>
+                    <span class="seg-pct tnum" style="color: var(--success)">100%</span>
+                  </div>
+                  <div class="pr-foot">
+                    <div class="pr-meta">
+                      <span class="m tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>3 of 3 courses</span>
+                      <span class="m"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>Certificate earned</span>
+                    </div>
+                    <span class="btn btn-outline btn-sm">View certificate<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+      document.querySelectorAll('.tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          document.querySelector('.tab.active')?.classList.remove('active');
+          tab.classList.add('active');
+        });
+      });
+    </script>
+  </body>
+</html>

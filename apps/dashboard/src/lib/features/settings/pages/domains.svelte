@@ -141,6 +141,8 @@
     if (orgApi.success) {
       $currentOrg.siteName = siteName;
       goto(`/org/${$currentOrg.siteName}/settings/domains`);
+    } else if (orgApi.errors.siteName) {
+      errors.siteName = orgApi.errors.siteName;
     } else if (orgApi.errors.general) {
       errors.siteName = orgApi.errors.general;
     } else {

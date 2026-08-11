@@ -255,12 +255,12 @@ Notes:
 
 ```bash
 cp .env.example .env   # copy env template, edit for your domain
-./run-docker-full-stack.sh
+./classroomio.sh start           # pulls pre-built images; use --build to build from source
 ```
 
-The script reads root `.env` via `docker compose --env-file .env` and auto-generates a secure `PRIVATE_SERVER_KEY` (and `BETTER_AUTH_SECRET`) when missing.
+The script reads root `.env` via `docker compose --env-file .env` and auto-generates a secure `PRIVATE_SERVER_KEY` (and `BETTER_AUTH_SECRET`) when missing. Run `./classroomio.sh` with no arguments for the full lifecycle menu (install, start, stop, restart, upgrade, logs, backup).
 
-See [`.env.example`](.env.example) for the full list of environment variables with required/optional grouping, and [`docker/docs/SELF_HOST.md`](docker/docs/SELF_HOST.md) for the complete Docker self-hosting guide. To raise upload caps (documents, videos, assignment files), set the `UPLOAD_MAX_*_MB` vars in `.env` — see the [docs](https://classroomio.com/docs/self-hosted/docker#optional--upload-file-size-limits).
+See [`.env.example`](.env.example) for the full list of environment variables with required/optional grouping, and [`docker/docs/SELF_HOST.md`](docker/docs/SELF_HOST.md) for the complete Docker self-hosting guide. To raise upload caps (documents, videos, assignment files), set the `UPLOAD_MAX_*_MB` vars in `.env` — see the [docs](https://classroomio.com/docs/self-hosted/configuration/storage#upload-file-size-limits).
 
 ## Publishing
 

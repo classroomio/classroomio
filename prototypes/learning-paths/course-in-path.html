@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Course in Path · ClassroomIO LMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .shell { display: grid; grid-template-columns: 300px 1fr; min-height: 100vh; }
+
+      /* ============ COURSE SIDEBAR (matches app course content sidebar) ============ */
+      .csb { background: var(--sidebar); border-right: 1px solid var(--sidebar-border); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+      .csb-scroll { flex: 1; overflow-y: auto; padding: 12px; }
+
+      /* course identity block */
+      .course-id { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: var(--radius-md); background: color-mix(in oklab, var(--primary) 7%, transparent); margin-bottom: 10px; }
+      .course-id .nm { font-size: 14px; font-weight: 600; color: var(--foreground); line-height: 1.3; }
+      .course-id .ct { font-size: 12px; color: var(--muted-foreground); margin-top: 1px; }
+
+      .back-path { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--primary); padding: 4px 12px 10px; }
+      .back-path svg { width: 14px; height: 14px; stroke-width: 2.2; }
+
+      /* Content header row */
+      .content-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: var(--radius-md); background: color-mix(in oklab, var(--primary) 8%, transparent); color: var(--primary); font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+      .content-row > svg { width: 16px; height: 16px; stroke-width: 2; }
+      .content-row .counts { margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; }
+      .content-row .counts .c { display: flex; align-items: center; gap: 4px; }
+      .content-row .counts svg { width: 13px; height: 13px; stroke-width: 2; }
+
+      /* module section rows */
+      .module { display: flex; align-items: center; gap: 8px; padding: 7px 8px 7px 14px; font-size: 13.5px; font-weight: 500; color: var(--foreground); border-radius: var(--radius-md); cursor: pointer; }
+      .module:hover { background: var(--sidebar-accent); }
+      .module > svg:first-child { width: 15px; height: 15px; stroke-width: 2; color: var(--primary); flex-shrink: 0; }
+      .module .pct { margin-left: auto; font-size: 12px; color: var(--muted-foreground); font-weight: 500; }
+      .module .chev { width: 14px; height: 14px; stroke-width: 2; color: var(--muted-foreground); flex-shrink: 0; }
+
+      /* lesson rows */
+      .lessons { padding-left: 14px; }
+      .lesson { display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 10px; font-size: 13.5px; color: var(--foreground); border-radius: var(--radius-md); cursor: pointer; }
+      .lesson:hover { background: var(--sidebar-accent); }
+      .lesson > svg:first-child { width: 15px; height: 15px; stroke-width: 1.8; color: color-mix(in oklab, var(--primary) 70%, var(--muted-foreground)); flex-shrink: 0; }
+      .lesson .t { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+      .lesson.active { background: color-mix(in oklab, var(--primary) 10%, transparent); color: var(--primary); font-weight: 500; }
+      .lesson.active > svg:first-child { color: var(--primary); }
+      .lesson .done-mark { width: 16px; height: 16px; border-radius: 999px; background: var(--foreground); color: var(--background); display: grid; place-items: center; flex-shrink: 0; }
+      .lesson .done-mark svg { width: 9px; height: 9px; stroke-width: 3.4; }
+      .lesson.locked { color: var(--muted-foreground); cursor: not-allowed; }
+      .lesson.locked > svg:first-child { color: var(--muted-foreground); }
+      .lesson .lock { width: 13px; height: 13px; stroke-width: 2; color: var(--muted-foreground); flex-shrink: 0; }
+
+      /* sidebar footer: progress card + powered by */
+      .csb-foot { padding: 12px; border-top: 1px solid var(--sidebar-border); }
+      .prog-card { background: color-mix(in oklab, var(--primary) 7%, transparent); border-radius: var(--radius-md); padding: 12px 14px; }
+      .prog-card .row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+      .prog-card .row .l { font-size: 13px; font-weight: 600; }
+      .prog-card .row .p { font-size: 13px; font-weight: 700; color: var(--primary); }
+      .prog-card .cap { font-size: 11.5px; color: var(--muted-foreground); margin-top: 8px; }
+      .powered { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 11.5px; color: var(--muted-foreground); padding: 12px 0 2px; }
+      .powered b { color: var(--foreground); font-weight: 600; }
+
+      /* ============ HEADER (matches app course header) ============ */
+      .chead { height: 52px; border-bottom: 1px solid var(--border); background: var(--background); position: sticky; top: 0; z-index: 100; display: flex; align-items: center; gap: 12px; padding: 0 20px; }
+      .panel-btn { width: 30px; height: 30px; border: none; background: transparent; border-radius: var(--radius-md); display: grid; place-items: center; color: var(--muted-foreground); cursor: pointer; }
+      .panel-btn:hover { background: var(--accent); color: var(--foreground); }
+      .panel-btn svg { width: 17px; height: 17px; stroke-width: 2; }
+      .chead .crumb { font-size: 14px; font-weight: 500; }
+      .chead .right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+      .chead .sep { width: 1px; height: 18px; background: var(--border); flex-shrink: 0; margin: 0 4px; }
+      /* path widget — tinted pill so it clearly reads as the learning path */
+      .path-widget {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 4px 12px 4px 10px; border-radius: 999px;
+        background: color-mix(in oklab, var(--primary) 8%, transparent);
+        border: 1px solid color-mix(in oklab, var(--primary) 22%, transparent);
+        min-width: 0;
+      }
+      .path-widget:hover { border-color: color-mix(in oklab, var(--primary) 45%, transparent); }
+      .path-widget .pw-kind { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--primary); white-space: nowrap; }
+      .path-widget .pw-kind svg { width: 13px; height: 13px; stroke-width: 2.2; }
+      .mini-stepper { display: flex; align-items: center; gap: 0; min-width: 0; }
+      .ms-node { display: flex; align-items: center; }
+      .ms-dot { width: 22px; height: 22px; border-radius: 999px; display: grid; place-items: center; font-size: 10.5px; font-weight: 600; background: var(--muted); color: var(--muted-foreground); border: 1px solid var(--border); flex-shrink: 0; }
+      .ms-dot svg { width: 11px; height: 11px; stroke-width: 2.8; }
+      .ms-node.done .ms-dot { background: var(--success); border-color: var(--success); color: var(--success-foreground); }
+      .ms-node.current .ms-dot { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
+      .ms-bar { width: 22px; height: 2px; background: var(--border); flex-shrink: 0; }
+      .ms-bar.filled { background: var(--success); }
+      .ms-label { font-size: 12.5px; font-weight: 500; color: var(--foreground); margin-left: 8px; white-space: nowrap; }
+      @media (max-width: 760px) { .path-widget, .chead .sep { display: none; } }
+
+      /* ============ LESSON VIEW ============ */
+      .lesson-view { padding: 28px 32px 48px; min-width: 0; }
+      .lv-inner { max-width: 760px; }
+      .lv-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 22px; }
+      .lv-title { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin: 0; flex: 1; min-width: 200px; }
+      .lv-actions { display: flex; align-items: center; gap: 8px; }
+      .pill-btn { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--input); background: var(--background); font-size: 13.5px; font-weight: 500; cursor: pointer; box-shadow: var(--shadow-2xs); }
+      .pill-btn:hover { background: var(--accent); }
+      .pill-btn svg { width: 15px; height: 15px; stroke-width: 2; }
+      .round-btn { width: 34px; height: 34px; border-radius: 999px; border: 1px solid var(--input); background: var(--background); display: grid; place-items: center; color: var(--foreground); cursor: pointer; box-shadow: var(--shadow-2xs); }
+      .round-btn:hover { background: var(--accent); }
+      .round-btn svg { width: 15px; height: 15px; stroke-width: 2; }
+      .lang { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: var(--radius-md); border: 1px solid var(--input); background: var(--background); font-size: 13.5px; cursor: pointer; box-shadow: var(--shadow-2xs); }
+      .lang svg { width: 14px; height: 14px; stroke-width: 2; color: var(--muted-foreground); }
+
+      .lv-rule { border: none; border-top: 1px solid var(--border); margin: 0 0 20px; }
+      .video { aspect-ratio: 16 / 9; border-radius: var(--radius-xl); background: linear-gradient(135deg, oklch(0.685 0.169 237.323), oklch(0.488 0.243 264.376)); display: grid; place-items: center; box-shadow: var(--shadow-sm); margin-bottom: 22px; }
+      .play { width: 56px; height: 56px; border-radius: 999px; background: oklch(1 0 0 / 0.92); display: grid; place-items: center; }
+      .play svg { width: 22px; height: 22px; color: var(--primary); margin-left: 3px; }
+      .lv-body p { margin: 0 0 14px; line-height: 1.65; font-size: 15px; }
+      .lv-body h3 { font-size: 16px; font-weight: 600; margin: 22px 0 8px; }
+      .lv-body ul { margin: 0 0 14px; padding-left: 20px; color: var(--muted-foreground); }
+      .lv-body li { margin-bottom: 5px; }
+
+      /* next in path callout */
+      .path-next { margin-top: 28px; overflow: hidden; }
+      .pn-head { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: color-mix(in oklab, var(--muted) 50%, transparent); border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 500; color: var(--muted-foreground); letter-spacing: 0.04em; }
+      .pn-head svg { width: 14px; height: 14px; stroke-width: 2; color: var(--primary); }
+      .pn-body { padding: 14px 16px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+      .pn-req { font-size: 12.5px; color: var(--muted-foreground); display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+      .pn-req svg { width: 13px; height: 13px; stroke-width: 2; color: var(--warning); }
+      .pn-req b { color: var(--foreground); font-weight: 500; }
+
+      @media (max-width: 900px) { .shell { grid-template-columns: 1fr; } .csb { display: none; } .lesson-view { padding: 22px 18px 40px; } }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <!-- ============ SIDEBAR ============ -->
+      <aside class="csb">
+        <div class="csb-scroll">
+          <div class="course-id">
+            <div class="ring ring-sm" style="width: 42px; height: 42px">
+              <svg viewBox="0 0 100 100">
+                <circle class="track" cx="50" cy="50" r="45" fill="none" stroke-width="10" />
+                <circle class="arc" cx="50" cy="50" r="45" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="282.7" stroke-dashoffset="155.5" />
+              </svg>
+              <span class="lbl tnum" style="font-size: 10px">45%</span>
+            </div>
+            <div style="min-width: 0">
+              <div class="nm">Modern Web Development with React</div>
+              <div class="ct tnum">9 of 16 completed</div>
+            </div>
+          </div>
+
+          <a class="back-path" href="path-detail.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Frontend Engineering Bootcamp</a>
+
+          <div class="content-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+            Content
+            <span class="counts">
+              <span class="c tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>12</span>
+              <span class="c tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>4</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 14px; height: 14px"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </div>
+
+          <!-- Module 1 -->
+          <div class="module">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Fundamentals
+            <span class="pct tnum">100%</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="lessons">
+            <div class="lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="t">What is React?</span><span class="done-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+            <div class="lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="t">JSX &amp; rendering</span><span class="done-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+            <div class="lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="t">Components &amp; props</span><span class="done-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+          </div>
+
+          <!-- Module 2 -->
+          <div class="module">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Interactivity
+            <span class="pct tnum">38%</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="lessons">
+            <div class="lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="t">State with useState</span><span class="done-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+            <div class="lesson active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="t">Handling events</span></div>
+            <div class="lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="t">Lists &amp; keys</span></div>
+            <div class="lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="t">Conditional rendering</span></div>
+            <div class="lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="t">Interactivity Checkpoint</span></div>
+          </div>
+
+          <!-- Module 3 (locked) -->
+          <div class="module">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Effects &amp; Data
+            <span class="pct tnum">0%</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="lessons">
+            <div class="lesson locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="t">The useEffect hook</span><svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div class="lesson locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="t">Fetching data</span><svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div class="lesson locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="t">Effects Checkpoint</span><svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          </div>
+        </div>
+
+        <div class="csb-foot">
+          <div class="prog-card">
+            <div class="row"><span class="l">Your progress</span><span class="p tnum">45%</span></div>
+            <div class="progress progress-thin"><span style="width: 45%"></span></div>
+            <div class="cap tnum">9 of 12 lessons · 2 of 4 exercises</div>
+          </div>
+          <div class="powered">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 13px; height: 13px; stroke-width: 2; color: var(--primary)"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Powered by <b>ClassroomIO</b>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ============ MAIN ============ -->
+      <div style="display: flex; flex-direction: column; min-width: 0">
+        <!-- header -->
+        <header class="chead">
+          <button class="panel-btn" title="Toggle sidebar" aria-label="Toggle sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg></button>
+          <span class="crumb">Content</span>
+          <span class="sep"></span>
+          <a class="path-widget" href="path-detail.html" title="Frontend Engineering Bootcamp — open path">
+            <span class="pw-kind"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Learning Path</span>
+            <div class="mini-stepper">
+              <span class="ms-node done" title="HTML &amp; CSS Foundations"><span class="ms-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span></span>
+              <span class="ms-bar filled"></span>
+              <span class="ms-node done" title="JavaScript Essentials"><span class="ms-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span></span>
+              <span class="ms-bar filled"></span>
+              <span class="ms-node current" title="Modern Web Development with React"><span class="ms-dot tnum">3</span></span>
+              <span class="ms-bar"></span>
+              <span class="ms-node" title="State Management &amp; Data Fetching"><span class="ms-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span></span>
+              <span class="ms-bar"></span>
+              <span class="ms-node" title="Building &amp; Shipping a Capstone"><span class="ms-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span></span>
+              <span class="ms-label tnum">Course 3 of 5</span>
+            </div>
+          </a>
+          <div class="right">
+            <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+            <button class="btn btn-primary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"/></svg>Assistant</button>
+          </div>
+        </header>
+
+        <!-- lesson -->
+        <main class="lesson-view">
+          <div class="lv-inner">
+            <div class="lv-head">
+              <h1 class="lv-title">Handling events</h1>
+              <div class="lv-actions">
+                <button class="pill-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 5-5"/></svg>Mark as Complete</button>
+                <button class="round-btn" title="Previous lesson" aria-label="Previous lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></button>
+                <button class="round-btn" title="Next lesson" aria-label="Next lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></button>
+                <button class="lang">English<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+              </div>
+            </div>
+
+            <hr class="lv-rule" />
+
+            <div class="video"><div class="play"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg></div></div>
+
+            <div class="lv-body">
+              <p>In React you respond to user interaction by passing event handlers as props to elements. Handlers are regular functions, and React normalizes the underlying browser event for you.</p>
+              <h3>What you'll learn</h3>
+              <ul>
+                <li>Attaching <code>onClick</code>, <code>onChange</code>, and <code>onSubmit</code> handlers</li>
+                <li>Reading values from the synthetic event object</li>
+                <li>Updating state in response to an event</li>
+              </ul>
+              <p>By the end of this lesson you'll wire up a small form that updates the screen as the user types — the foundation for everything interactive you'll build in this path.</p>
+            </div>
+
+            <div class="card path-next">
+              <div class="pn-head">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                NEXT IN YOUR PATH
+              </div>
+              <div class="pn-body">
+                <div class="item-media-icon item-media-lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                <div class="item-content">
+                  <span class="item-eyebrow">Course 4</span>
+                  <span class="item-title">State Management &amp; Data Fetching</span>
+                  <span class="pn-req">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                    Unlocks when you finish this course — <b>3 lessons &amp; 2 exercises</b> to go.
+                  </span>
+                </div>
+                <span class="btn btn-outline btn-sm disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Locked</span>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+    </script>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 <script>
   /**
-   * Two-column feature split — text + optional bullets on one side, image on the other.
+   * Two-column feature split: text + optional bullets on one side, image on the other.
    * Replaces bespoke per-page splits so we keep grid + spacing consistent across marketing pages.
    *
    * @typedef {Object} Props

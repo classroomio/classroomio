@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Frontend Engineering Bootcamp — Acme Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="landing-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .path-hero { text-align: left; padding: 56px 0 0; }
+      .path-hero-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 48px; align-items: start; max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; }
+      .path-hero h1 { font-size: clamp(30px, 4.5vw, 44px); text-align: left; }
+      .path-hero .sub { text-align: left; margin-left: 0; font-size: 17px; }
+      .instructors-row { display: flex; align-items: center; gap: 10px; margin-bottom: 26px; font-size: 14px; color: var(--landing-fg-muted); }
+      .av-stack { display: flex; }
+      .av-stack .av { width: 34px; height: 34px; border-radius: 999px; background: var(--landing-accent-soft); color: var(--landing-accent); display: grid; place-items: center; font-weight: 600; font-size: 12px; border: 2px solid var(--landing-bg); margin-left: -8px; }
+      .av-stack .av:first-child { margin-left: 0; }
+      .enroll-box { padding: 26px; position: sticky; top: 70px; }
+      .enroll-box .amt { font-size: 38px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+      .enroll-box .was { display: flex; align-items: center; gap: 10px; margin: 8px 0 16px; font-size: 14px; color: var(--landing-fg-muted); }
+      .enroll-note { font-size: 12.5px; color: var(--landing-fg-muted); margin-top: 12px; text-align: center; }
+      .hero-stats { margin-top: 44px; }
+      @media (max-width: 860px) { .path-hero-grid { grid-template-columns: 1fr; } .enroll-box { position: static; } }
+    </style>
+  </head>
+  <body>
+    <div class="lp-nav-outer">
+      <nav class="lp-nav">
+        <a class="lp-nav-brand" href="org-landing.html"><span class="lp-nav-logo">A</span>Acme Academy</a>
+        <div class="lp-nav-links">
+          <a class="active" href="public-paths.html">Learning Paths</a>
+          <a href="org-landing.html#courses">Courses</a>
+          <a class="lp-nav-auth" href="lms-home.html">Login</a>
+        </div>
+      </nav>
+    </div>
+
+    <!-- ===== HERO ===== -->
+    <header class="lp-hero path-hero">
+      <div class="lp-hero-dots"></div>
+      <div class="path-hero-grid">
+        <div>
+          <span class="lp-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 3v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Learning Path · Certificate</span>
+          <h1>Become a job-ready frontend engineer</h1>
+          <p class="sub">Five courses, one path — from your first HTML tag to a deployed React capstone. Learn in order, build real projects, earn a certificate.</p>
+          <div class="instructors-row">
+            <div class="av-stack"><span class="av">JD</span><span class="av">EO</span><span class="av">RM</span></div>
+            Taught by Jordan Diallo, Efe Obi + 1 more
+          </div>
+          <div class="lp-cta-row" style="justify-content: flex-start">
+            <a class="lp-btn lp-btn-primary lp-btn-lg" href="#pricing">Enroll · $199</a>
+            <span class="lp-save tnum" style="font-size: 14px; padding: 6px 12px">Save $81 vs individual courses</span>
+          </div>
+        </div>
+
+        <aside class="lp-card enroll-box">
+          <div class="eyebrow" style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; color: var(--landing-fg-muted); margin-bottom: 10px">Full path</div>
+          <div class="amt tnum">$199</div>
+          <div class="was tnum"><s>$280</s><span class="lp-save">Save $81 (29%)</span></div>
+          <ul class="lp-features">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>All 5 courses, unlocked in order</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>52 lessons · 13 exercises · 1 capstone</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Path certificate on completion</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Lifetime access, learn at your pace</li>
+          </ul>
+          <a class="lp-btn lp-btn-primary lp-btn-lg lp-btn-block" href="lms-home.html">Enroll in this path</a>
+          <p class="enroll-note tnum">942 already enrolled · 4.7 ★ from 213 reviews</p>
+        </aside>
+      </div>
+
+      <div class="lp-stats hero-stats">
+        <div class="lp-stat"><div class="v tnum">5</div><div class="k">courses in series</div></div>
+        <div class="lp-stat"><div class="v tnum">~38h</div><div class="k">at your own pace</div></div>
+        <div class="lp-stat"><div class="v">Beginner</div><div class="k">no experience required</div></div>
+        <div class="lp-stat"><div class="v tnum">4.7 ★</div><div class="k tnum">213 reviews</div></div>
+      </div>
+    </header>
+
+    <!-- ===== ANCHOR NAV ===== -->
+    <nav class="lp-anchor-nav">
+      <div class="in">
+        <a class="active" href="#about">About</a>
+        <a href="#courses">Courses</a>
+        <a href="#certificate">Certificate</a>
+        <a href="#instructors">Instructors</a>
+        <a href="#testimonials">Testimonials</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </nav>
+
+    <!-- ===== ABOUT ===== -->
+    <section class="lp-section" id="about">
+      <div class="lp-wrap-narrow">
+        <h2>What you'll learn</h2>
+        <p class="lead">Practical, project-first skills — every course ends with something you built.</p>
+        <div class="lp-outcomes">
+          <div class="lp-outcome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Build responsive, accessible websites with semantic HTML and modern CSS</div>
+          <div class="lp-outcome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Write production JavaScript: async, APIs, and the DOM</div>
+          <div class="lp-outcome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Build and ship interactive React apps with state, hooks, and data fetching</div>
+          <div class="lp-outcome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Complete a portfolio-ready capstone project, deployed to production</div>
+        </div>
+
+        <h2 style="margin-top: 48px">Skills you'll gain</h2>
+        <div class="lp-skills" style="margin-top: 18px">
+          <span class="lp-skill">HTML &amp; CSS</span>
+          <span class="lp-skill">Flexbox &amp; Grid</span>
+          <span class="lp-skill">JavaScript</span>
+          <span class="lp-skill">REST APIs</span>
+          <span class="lp-skill">React</span>
+          <span class="lp-skill">State management</span>
+          <span class="lp-skill">Deployment</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== COURSE SERIES ===== -->
+    <section class="lp-section" id="courses">
+      <div class="lp-wrap-narrow">
+        <span class="lp-eyebrow">Series · take in order</span>
+        <h2>5 courses in this path</h2>
+        <p class="lead">Each course unlocks the next once you finish its lessons and exercises.</p>
+
+        <div class="lp-series">
+          <!-- Course 1 -->
+          <div class="lp-card lp-series-card">
+            <div class="lp-series-head">
+              <span class="lp-series-n tnum">1</span>
+              <div>
+                <h3>HTML &amp; CSS Foundations</h3>
+                <span class="lp-series-sub tnum">Course 1 · 12 lessons · ~8 hours</span>
+              </div>
+            </div>
+            <div class="lp-series-body">
+              <div class="lbl">What you'll learn</div>
+              <div class="lp-series-outcomes">
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Semantic markup and document structure</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>The box model, flexbox, and grid</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Responsive layout from mobile up</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Accessibility fundamentals</span>
+              </div>
+              <button class="lp-lessons-toggle">Show lesson outline<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+              <div class="lp-lessons">
+                <div class="lp-lesson"><span class="ix tnum">01</span><span>Anatomy of a web page</span><span class="prev">Preview</span><span class="dur">14m</span></div>
+                <div class="lp-lesson"><span class="ix tnum">02</span><span>Semantic HTML in practice</span><span class="dur">18m</span></div>
+                <div class="lp-lesson"><span class="ix tnum">03</span><span>The box model</span><span class="dur">16m</span></div>
+                <div class="lp-lesson" style="border-bottom: none"><span class="ix tnum">…</span><span style="color: var(--landing-fg-muted)">9 more lessons</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Course 2 -->
+          <div class="lp-card lp-series-card">
+            <div class="lp-series-head">
+              <span class="lp-series-n tnum">2</span>
+              <div>
+                <h3>JavaScript Essentials</h3>
+                <span class="lp-series-sub tnum">Course 2 · 10 lessons · ~9 hours</span>
+              </div>
+            </div>
+            <div class="lp-series-body">
+              <div class="lbl">What you'll learn</div>
+              <div class="lp-series-outcomes">
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Types, functions, and control flow</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Working with the DOM</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>async/await and promises</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Fetching data from APIs</span>
+              </div>
+              <button class="lp-lessons-toggle">Show lesson outline<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+              <div class="lp-lessons">
+                <div class="lp-lesson"><span class="ix tnum">01</span><span>Values, types, and variables</span><span class="prev">Preview</span><span class="dur">15m</span></div>
+                <div class="lp-lesson"><span class="ix tnum">02</span><span>Functions and scope</span><span class="dur">17m</span></div>
+                <div class="lp-lesson" style="border-bottom: none"><span class="ix tnum">…</span><span style="color: var(--landing-fg-muted)">8 more lessons</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Course 3 -->
+          <div class="lp-card lp-series-card">
+            <div class="lp-series-head">
+              <span class="lp-series-n tnum">3</span>
+              <div>
+                <h3>Modern Web Development with React</h3>
+                <span class="lp-series-sub tnum">Course 3 · 12 lessons · ~10 hours</span>
+              </div>
+            </div>
+            <div class="lp-series-body">
+              <div class="lbl">What you'll learn</div>
+              <div class="lp-series-outcomes">
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Components, props, and JSX</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>State and event handling</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Hooks and effects</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Building interactive UIs</span>
+              </div>
+              <button class="lp-lessons-toggle">Show lesson outline<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+              <div class="lp-lessons">
+                <div class="lp-lesson"><span class="ix tnum">01</span><span>What is React?</span><span class="prev">Preview</span><span class="dur">6m</span></div>
+                <div class="lp-lesson"><span class="ix tnum">02</span><span>JSX &amp; rendering</span><span class="dur">11m</span></div>
+                <div class="lp-lesson" style="border-bottom: none"><span class="ix tnum">…</span><span style="color: var(--landing-fg-muted)">10 more lessons</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Course 4 -->
+          <div class="lp-card lp-series-card">
+            <div class="lp-series-head">
+              <span class="lp-series-n tnum">4</span>
+              <div>
+                <h3>State Management &amp; Data Fetching</h3>
+                <span class="lp-series-sub tnum">Course 4 · 10 lessons · ~7 hours</span>
+              </div>
+            </div>
+            <div class="lp-series-body">
+              <div class="lbl">What you'll learn</div>
+              <div class="lp-series-outcomes">
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Context and reducers</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Caching and loading states</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Connecting React to a backend</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Error handling patterns</span>
+              </div>
+              <button class="lp-lessons-toggle">Show lesson outline<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+              <div class="lp-lessons">
+                <div class="lp-lesson"><span class="ix tnum">01</span><span>Lifting state up</span><span class="dur">13m</span></div>
+                <div class="lp-lesson" style="border-bottom: none"><span class="ix tnum">…</span><span style="color: var(--landing-fg-muted)">9 more lessons</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Course 5 -->
+          <div class="lp-card lp-series-card">
+            <div class="lp-series-head">
+              <span class="lp-series-n tnum">5</span>
+              <div>
+                <h3>Building &amp; Shipping a Capstone</h3>
+                <span class="lp-series-sub tnum">Course 5 · 7 lessons + capstone project · ~4 hours</span>
+              </div>
+            </div>
+            <div class="lp-series-body">
+              <div class="lbl">What you'll learn</div>
+              <div class="lp-series-outcomes">
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Scoping and planning a real project</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Deploying to production</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Code review and iteration</span>
+                <span class="o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Presenting your portfolio piece</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CERTIFICATE ===== -->
+    <section class="lp-section" id="certificate">
+      <div class="lp-wrap-narrow">
+        <div class="lp-card lp-cert">
+          <div class="frame"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg></div>
+          <div>
+            <h3>Earn a shareable certificate</h3>
+            <p>Complete all five courses — every lesson and exercise — and receive the Frontend Engineering Bootcamp certificate, ready to add to LinkedIn and your CV.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== INSTRUCTORS ===== -->
+    <section class="lp-section" id="instructors">
+      <div class="lp-wrap-narrow">
+        <h2>Your instructors</h2>
+        <p class="lead">The tutors behind the courses in this path.</p>
+        <div class="lp-instructors">
+          <div class="lp-card lp-instructor">
+            <span class="av">JD</span>
+            <span class="nm">Jordan Diallo</span>
+            <span class="rl">Lead Instructor · Frontend</span>
+            <span class="bio">10 years building web apps; previously staff engineer at a fintech scale-up.</span>
+          </div>
+          <div class="lp-card lp-instructor">
+            <span class="av">EO</span>
+            <span class="nm">Efe Obi</span>
+            <span class="rl">Instructor · JavaScript</span>
+            <span class="bio">Teaches JS to thousands of learners; maintainer of two OSS tooling projects.</span>
+          </div>
+          <div class="lp-card lp-instructor">
+            <span class="av">RM</span>
+            <span class="nm">Rita Mensah</span>
+            <span class="rl">Instructor · React</span>
+            <span class="bio">Product engineer and design-systems specialist; capstone project mentor.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TESTIMONIALS ===== -->
+    <section class="lp-section" id="testimonials">
+      <div class="lp-wrap-narrow">
+        <h2>What learners say</h2>
+        <p class="lead">From people who finished the path.</p>
+        <div class="lp-testimonials">
+          <div class="lp-card lp-testimonial">
+            <p class="q">"I went from zero to deploying my own React app in ten weeks. The order of the courses just makes sense — nothing assumed I knew things I didn't."</p>
+            <div class="who"><span class="av">TB</span><div><div class="nm">Tunde Bello</div><div class="loc">Lagos, Nigeria</div></div></div>
+          </div>
+          <div class="lp-card lp-testimonial">
+            <p class="q">"The locked courses kept me honest — no skipping ahead, and everything built on what came before. The certificate helped me land interviews."</p>
+            <div class="who"><span class="av">MK</span><div><div class="nm">Mariam Kone</div><div class="loc">Abidjan, Côte d'Ivoire</div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="lp-section" id="faq">
+      <div class="lp-wrap-narrow">
+        <h2>Frequently asked questions</h2>
+        <div class="lp-faq" style="margin-top: 24px">
+          <div class="lp-faq-item open">
+            <button class="lp-faq-q">Do I need any prior experience?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+            <div class="lp-faq-a">No — the path starts from absolute fundamentals and each course unlocks the next, so you're never dropped into material you're not ready for.</div>
+          </div>
+          <div class="lp-faq-item">
+            <button class="lp-faq-q">Can I buy a single course instead of the whole path?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+            <div class="lp-faq-a">Yes, every course is also sold individually — the path bundle saves you 29% and adds the path certificate.</div>
+          </div>
+          <div class="lp-faq-item">
+            <button class="lp-faq-q">Do I have to take the courses in order?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+            <div class="lp-faq-a">Yes — this path is sequential. Each course unlocks after you complete the previous one's lessons and exercises. That's what makes the curriculum build properly.</div>
+          </div>
+          <div class="lp-faq-item">
+            <button class="lp-faq-q">How long do I have access?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+            <div class="lp-faq-a">Lifetime. Learn at your own pace — most learners finish in 8–12 weeks at 4–5 hours a week.</div>
+          </div>
+          <div class="lp-faq-item">
+            <button class="lp-faq-q">What do I need to earn the certificate?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+            <div class="lp-faq-a">Complete every lesson and submit every exercise across all five courses, including the capstone project. The certificate is issued automatically.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PRICING ===== -->
+    <section class="lp-section" id="pricing">
+      <div class="lp-wrap-narrow">
+        <div class="lp-card lp-pricing-card">
+          <div class="eyebrow">Enroll</div>
+          <div class="lp-price tnum">$199</div>
+          <div class="lp-price-was tnum"><s>$280</s><span class="lp-save">Save $81 (29%)</span></div>
+          <ul class="lp-features">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>All 5 courses, unlocked in order</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>52 lessons, 13 exercises, 1 capstone project</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Path certificate on completion</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Lifetime access</li>
+          </ul>
+          <a class="lp-btn lp-btn-primary lp-btn-lg lp-btn-block" href="lms-home.html">Enroll in this path</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="lp-footer">
+      <div class="lp-wrap lp-footer-grid">
+        <div>
+          <div class="brand"><span class="lp-nav-logo" style="width: 26px; height: 26px; font-size: 12px">A</span>Acme Academy</div>
+          <p class="copy">© 2026 Acme Academy</p>
+        </div>
+        <div>
+          <h4>Learn</h4>
+          <a href="public-paths.html">Learning Paths</a>
+          <a href="org-landing.html#courses">Courses</a>
+        </div>
+        <div>
+          <h4>Academy</h4>
+          <a href="#">About</a>
+          <a href="lms-home.html">Login</a>
+        </div>
+      </div>
+    </footer>
+
+    <button class="lp-theme-btn" id="theme" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+
+    <script>
+      document.getElementById('theme').onclick = () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+      };
+      document.querySelectorAll('.lp-lessons-toggle').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const lessons = btn.nextElementSibling;
+          const open = lessons.classList.toggle('open');
+          btn.classList.toggle('open', open);
+          btn.firstChild.textContent = open ? 'Hide lesson outline' : 'Show lesson outline';
+        });
+      });
+      document.querySelectorAll('.lp-faq-q').forEach((q) => {
+        q.addEventListener('click', () => q.parentElement.classList.toggle('open'));
+      });
+      // highlight anchor nav on scroll
+      const anchors = [...document.querySelectorAll('.lp-anchor-nav a')];
+      const sections = anchors.map((a) => document.querySelector(a.getAttribute('href')));
+      addEventListener('scroll', () => {
+        let current = 0;
+        sections.forEach((sec, i) => { if (sec && sec.getBoundingClientRect().top < 120) current = i; });
+        anchors.forEach((a, i) => a.classList.toggle('active', i === current));
+      }, { passive: true });
+    </script>
+  </body>
+</html>
