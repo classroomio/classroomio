@@ -858,7 +858,10 @@
           "description": "Học viên đã đăng ký sẽ không thể học các bài học hoặc bài tập bị khóa cho đến khi bạn mở khóa chúng.",
           "description_live": "Các bài học và bài tập bị khóa sẽ được ẩn khỏi học sinh cho đến khi bạn mở khóa chúng — hữu ích nếu bạn phát hành nội dung hàng tuần.",
           "unlock_all": "Mở khóa tất cả"
-        }
+        },
+        "certificate_deadline_required": "Đặt thời hạn chứng chỉ đầu tiên",
+        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt chứng chỉ trước khi xuất bản.",
+        "go_to_certificate_settings": "Đi tới Cài đặt chứng chỉ"
       },
       "analytics": {
         "title": "Phân tích"
@@ -2475,7 +2478,9 @@
       "blocker_final_misconfigured": "Bài tập chứng nhận \"{exerciseTitle}\" không có cấu hình điểm nào; nhờ người hướng dẫn khắc phục.",
       "email_message_label": "Tin nhắn email",
       "email_message_placeholder": "ví dụ: Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!",
-      "final_exercise_multiple_attempts_note": "Học sinh sẽ được phép thử không giới hạn bài tập đã chọn."
+      "final_exercise_multiple_attempts_note": "Học sinh sẽ được phép thử không giới hạn bài tập đã chọn.",
+      "deadline_required": "Thời hạn cấp chứng chỉ là bắt buộc khi có thể tải xuống chứng chỉ.",
+      "deadline_required_enroll": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký."
     },
     "creator": {
       "heading": "Bạn muốn tạo khóa học nào?",
@@ -3810,7 +3815,8 @@
       "title": "Đăng ký bị vô hiệu hóa",
       "invite_only_message": "Đăng ký chỉ dành cho người được mời. Vui lòng sử dụng liên kết mời để tạo tài khoản.",
       "go_to_login": "Đi tới Đăng nhập"
-    }
+    },
+    "continue_with": "Hoặc tiếp tục với"
   },
   "app": {
     "search": {

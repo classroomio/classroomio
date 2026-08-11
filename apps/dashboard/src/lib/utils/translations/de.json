@@ -858,7 +858,10 @@
           "description": "Eingeschriebene Schüler können erst dann an gesperrten Lektionen oder Übungen teilnehmen, wenn Sie sie entsperren.",
           "description_live": "Gesperrte Lektionen und Übungen bleiben den Schülern verborgen, bis Sie sie entsperren – nützlich, wenn Sie Inhalte Woche für Woche veröffentlichen.",
           "unlock_all": "Schalte alle frei"
-        }
+        },
+        "certificate_deadline_required": "Legen Sie zuerst die Frist für das Zertifikat fest",
+        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Zertifikatseinstellungen fest.",
+        "go_to_certificate_settings": "Gehen Sie zu Zertifikatseinstellungen"
       },
       "analytics": {
         "title": "Analysen"
@@ -2475,7 +2478,9 @@
       "blocker_final_misconfigured": "Für die Zertifizierungsübung „{exerciseTitle}“ sind keine Punkte konfiguriert; Bitten Sie Ihren Lehrer, das Problem zu beheben.",
       "email_message_label": "E-Mail-Nachricht",
       "email_message_placeholder": "z.B. Wir sind stolz auf Ihre Fortschritte – lernen Sie weiter!",
-      "final_exercise_multiple_attempts_note": "Den Schülern sind unbegrenzte Versuche für die ausgewählte Übung gestattet."
+      "final_exercise_multiple_attempts_note": "Den Schülern sind unbegrenzte Versuche für die ausgewählte Übung gestattet.",
+      "deadline_required": "Wenn Zertifikate herunterladbar sind, ist eine Zertifikatsfrist erforderlich.",
+      "deadline_required_enroll": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können."
     },
     "creator": {
       "heading": "Welchen Kurs möchten Sie erstellen?",
@@ -3810,7 +3815,8 @@
       "title": "Anmeldung deaktiviert",
       "invite_only_message": "Die Anmeldung ist nur auf Einladung möglich. Bitte verwenden Sie einen Einladungslink, um ein Konto zu erstellen.",
       "go_to_login": "Gehen Sie zu Anmelden"
-    }
+    },
+    "continue_with": "Oder fahren Sie mit fort"
   },
   "app": {
     "search": {

@@ -119,9 +119,7 @@
         <div class="mt-6 flex flex-col gap-6">
           <div class="relative flex items-center justify-center">
             <Separator />
-            <span class="ui:bg-card ui:text-muted-foreground absolute px-2 text-sm"
-              >{isLogin ? $t('login.login_with') : $t('login.signup_with')}</span
-            >
+            <span class="ui:bg-card ui:text-muted-foreground absolute px-2 text-sm">{$t('login.continue_with')}</span>
           </div>
 
           {#if getPasswordAuthAlternative}
