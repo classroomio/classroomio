@@ -91,7 +91,6 @@ export type OrgLandingPageFooterConfig = {
   };
 };
 export type LandingPageEmbed = {
-  /** Whether to render the section. Defaults to visible when omitted. */
   enabled?: boolean;
   title: string;
   description?: string;
@@ -103,7 +102,6 @@ export type LandingPageEmbed = {
 };
 
 export type LandingPageCallout = {
-  /** Whether to render the section. Defaults to visible when omitted. */
   enabled?: boolean;
   heading: string;
   description: string;
