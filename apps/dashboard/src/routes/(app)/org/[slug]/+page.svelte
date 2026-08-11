@@ -35,7 +35,7 @@
   type CreatingStep = 'reading' | 'naming' | 'building';
 
   $effect(() => {
-    if (!IS_AI_ENABLED) return;
+    if (IS_AI_ENABLED) return;
 
     if ($currentOrgPath !== '#') {
       goto(`${$currentOrgPath}/dash`);

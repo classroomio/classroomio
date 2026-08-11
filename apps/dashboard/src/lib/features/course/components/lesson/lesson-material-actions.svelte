@@ -33,7 +33,7 @@
   }
 </script>
 
-{#if showTranscript || (showSummarize && !IS_AI_ENABLED)}
+{#if showTranscript || (showSummarize && IS_AI_ENABLED)}
   <div class={alignWithNote ? 'mx-auto w-full max-w-2xl' : 'w-full'}>
     {#if showTopSeparator}
       <Separator class="my-2" />
@@ -51,11 +51,11 @@
         </HoverableItem>
       {/if}
 
-      {#if showTranscript && showSummarize && !IS_AI_ENABLED}
+      {#if showTranscript && showSummarize && IS_AI_ENABLED}
         <span class="ui:text-muted-foreground hidden text-sm sm:inline" aria-hidden="true">|</span>
       {/if}
 
-      {#if showSummarize && !IS_AI_ENABLED}
+      {#if showSummarize && IS_AI_ENABLED}
         <HoverableItem>
           {#snippet children(isHovered)}
             <Button

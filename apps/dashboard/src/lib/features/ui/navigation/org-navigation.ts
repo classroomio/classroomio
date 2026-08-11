@@ -318,13 +318,13 @@ function isHomePath(path: string): boolean {
  */
 const resolvedNavConfig = IS_AI_ENABLED
   ? baseNavConfig
+  : baseNavConfig
       .filter((config) => !isHomePath(config.path))
       .map((config) => ({
         ...config,
         items: config.items?.filter((sub) => !isAiSettingsPath(sub.path)),
         nestedRoutes: config.nestedRoutes?.filter((route) => !isAiSettingsPath(route.path))
-      }))
-  : baseNavConfig;
+      }));
 
 /**
  * Get navigation items based on organization context and permissions

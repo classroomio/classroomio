@@ -13,7 +13,7 @@
 
   let { root = undefined, enabled = false }: Props = $props();
 
-  if (IS_AI_ENABLED) {
+  if (!IS_AI_ENABLED) {
     enabled = false;
   }
 

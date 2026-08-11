@@ -37,7 +37,7 @@
     COURSE_SIDEBAR_STORAGE_KEY
   } from '$features/course/components/sidebar/constants';
 
-  if (!IS_AI_ENABLED) {
+  if (IS_AI_ENABLED) {
     sidePanel.register(aiAssistantPanelDefinition);
   }
 
@@ -108,7 +108,7 @@
   const showContentAskAiBar = $derived(
     isCourseReady &&
       isLessonOrExercisePage &&
-      !IS_AI_ENABLED &&
+      IS_AI_ENABLED &&
       !($isCourseLearnerView && isContentLockedForStudent) &&
       sidePanel.activePanelId !== AI_ASSISTANT_PANEL_ID
   );
@@ -144,7 +144,7 @@
 
     hasLoadedSidebarWidth = true;
 
-    if (!IS_AI_ENABLED && get(initialChatPrompt)) {
+    if (IS_AI_ENABLED && get(initialChatPrompt)) {
       openAiAssistant();
     }
   });

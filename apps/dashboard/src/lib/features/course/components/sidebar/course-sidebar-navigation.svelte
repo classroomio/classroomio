@@ -186,7 +186,7 @@
         url: getNavItemRoute(id, 'ai-tutor'),
         isActive: (path || page.url.pathname) === getNavItemRoute(id, 'ai-tutor'),
         show() {
-          return !isStudent && !IS_AI_ENABLED;
+          return !isStudent && IS_AI_ENABLED;
         },
         icon: getNavIcon(NAV_IDS.AI_ASSISTANT)
       },

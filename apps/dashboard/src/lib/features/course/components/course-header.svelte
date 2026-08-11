@@ -91,7 +91,7 @@
       <CourseProgressPopover class="md:hidden" />
     {/if}
 
-    {#if !IS_AI_ENABLED}
+    {#if IS_AI_ENABLED}
       <Button
         size="sm"
         onclick={toggleAiAssistant}
