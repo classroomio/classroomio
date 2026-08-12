@@ -1,4 +1,4 @@
-f<script lang="ts">
+<script lang="ts">
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import { cn } from '../../tools';
   import { Button } from '../../base/button';
