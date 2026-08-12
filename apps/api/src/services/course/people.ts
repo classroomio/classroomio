@@ -58,6 +58,11 @@ export async function addMember(
 
     const addedMember = await addCourseMember(courseId, data);
 
+    if (data.roleId === ROLE.STUDENT) {
+      const statsOrgId = await getOrgIdByCourseId(courseId);
+      await invalidateOrgStats(statsOrgId);
+    }
+
     if (data.roleId === ROLE.STUDENT && data.profileId) {
       await ensureComplianceEnrollmentRecordsForProfiles([courseId], [data.profileId]);
     }
@@ -150,11 +155,6 @@ export async function addMember(
       }
     }
 
-    if (data.roleId === ROLE.STUDENT) {
-      const statsOrgId = await getOrgIdByCourseId(courseId);
-      await invalidateOrgStats(statsOrgId);
-    }
-
     return addedMember;
   } catch (error) {
     if (error instanceof AppError) {
@@ -209,6 +209,12 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
 
     // Add all members
     const addedMembers = await Promise.all(members.map((member) => addCourseMember(courseId, member)));
+    const hasStudentMember = members.some((member) => member.roleId === ROLE.STUDENT);
+
+    if (hasStudentMember) {
+      await invalidateOrgStats(courseOrgData.orgId);
+    }
+
     const studentProfileIds = members
       .filter((member) => member.roleId === ROLE.STUDENT && member.profileId)
       .map((member) => member.profileId!);
@@ -263,12 +269,6 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       }
     }
 
-    const hasStudentMember = members.some((member) => member.roleId === ROLE.STUDENT);
-    if (hasStudentMember) {
-      const statsOrgId = await getOrgIdByCourseId(courseId);
-      await invalidateOrgStats(statsOrgId);
-    }
-
     return addedMembers;
   } catch (error) {
     if (error instanceof AppError) {
@@ -291,10 +291,26 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
  */
 export async function updateMember(courseId: string, memberId: string, data: Partial<TGroupmember>) {
   try {
+    const existingMember = await getCourseMember(courseId, memberId);
+    if (!existingMember) {
+      throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
+    }
+
     const updated = await updateCourseMember(courseId, memberId, data);
     if (!updated) {
       throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
     }
+
+    const previousRoleId = existingMember.roleId;
+    const nextRoleId = data.roleId ?? previousRoleId;
+    const studentRoleChanged =
+      data.roleId !== undefined && (previousRoleId === ROLE.STUDENT || nextRoleId === ROLE.STUDENT);
+
+    if (studentRoleChanged) {
+      const statsOrgId = await getOrgIdByCourseId(courseId);
+      await invalidateOrgStats(statsOrgId);
+    }
+
     return updated;
   } catch (error) {
     if (error instanceof AppError) {

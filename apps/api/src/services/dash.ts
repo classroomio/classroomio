@@ -16,7 +16,7 @@ import {
   writeOrgStatsCache
 } from '@cio/core/utils/redis/org-stats-cache';
 
-import { OrganisationAnalytics } from '@api/types';
+import type { OrganisationAnalytics } from '@api/types';
 import { getOrgIdBySiteName } from '@cio/db/queries';
 
 async function loadOrganisationAnalyticsFromDatabase(orgId: string): Promise<OrganisationAnalytics> {

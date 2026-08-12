@@ -195,6 +195,8 @@ async function enrollAudienceStudentProfilesInCourses(
         email: profileEmailMap.get(p.profileId) || undefined
       }))
     );
+
+    await invalidateOrgStats(orgId);
   }
 
   if (validProfiles.length > 0) {
@@ -235,10 +237,6 @@ async function enrollAudienceStudentProfilesInCourses(
       });
 
     await Promise.all(emailPromises);
-  }
-
-  if (toInsert.length > 0) {
-    await invalidateOrgStats(orgId);
   }
 
   return {
@@ -556,11 +554,11 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
         if (profiles.length > 0) {
           const users = profiles.map((p) => ({ profileId: p.id, email: p.email ?? undefined }));
           await enrollUsersInCourseGroups(validGroupIds, users, ROLE.STUDENT);
+          await invalidateOrgStats(orgId);
           await ensureComplianceEnrollmentRecordsForProfiles(
             courseIds,
             profiles.map((profile) => profile.id)
           );
-          await invalidateOrgStats(orgId);
         }
       }
     }

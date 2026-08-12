@@ -694,6 +694,8 @@ export async function enrollInCourse(
     email: normalizedEmail
   });
 
+  await invalidateOrgStats(org.id);
+
   await ensureComplianceEnrollmentRecordsForProfiles([courseId], [user.id]);
 
   await sendStudentJoinEmails({
@@ -715,8 +717,6 @@ export async function enrollInCourse(
     courseId,
     props: { path: 'free-enrollment' }
   });
-
-  await invalidateOrgStats(org.id);
 
   return {
     success: true,
@@ -1068,6 +1068,10 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
     };
   });
 
+  if (!result.alreadyJoined) {
+    await invalidateOrgStats(result.organizationId);
+  }
+
   await ensureComplianceEnrollmentRecordsForProfiles([result.courseId], [user.id]);
 
   if (!result.alreadyJoined) {
@@ -1097,8 +1101,6 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       courseId: result.courseId,
       props: { path: 'invite' }
     });
-
-    await invalidateOrgStats(result.organizationId);
   }
 
   return {

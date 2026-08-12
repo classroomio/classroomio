@@ -238,6 +238,9 @@ export async function cloneCourse(
     type: course.type
   });
 
+  const statsOrgId = organizationId ?? newGroup.organizationId;
+  await invalidateOrgStats(statsOrgId);
+
   // 4. add group member
   await addGroupMember({
     profileId: userId,
@@ -292,9 +295,6 @@ export async function cloneCourse(
   // 7. clone languages, exercises, questions, options using bulk queries
   await cloneLessonLanguages(newLessons, oldLessons);
   await cloneExercises(newLessons, oldLessons);
-
-  const statsOrgId = organizationId ?? newGroup.organizationId;
-  await invalidateOrgStats(statsOrgId);
 
   return newCourse;
 }

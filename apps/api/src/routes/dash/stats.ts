@@ -41,8 +41,7 @@ export const dashAnalyticsRouter = new Hono()
   })
   .get('/stats', authMiddleware, orgMemberMiddleware, zValidator('query', ZDashStats), async (c) => {
     try {
-      const { orgId, siteName } = c.req.valid('query');
-      const bust = c.req.query('bust') === '1';
+      const { orgId, siteName, bust } = c.req.valid('query');
 
       const result = await getOrganisationAnalytics(orgId, siteName, bust);
 

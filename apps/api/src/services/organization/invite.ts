@@ -424,11 +424,12 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
           [{ profileId: user.id, email: normalizedEmail }],
           invite.invite.roleId
         );
-        await ensureComplianceEnrollmentRecordsForProfiles(courseIds, [user.id]);
 
         if (invite.invite.roleId === ROLE.STUDENT) {
           await invalidateOrgStats(invite.invite.organizationId);
         }
+
+        await ensureComplianceEnrollmentRecordsForProfiles(courseIds, [user.id]);
       } catch (error) {
         console.error('acceptOrganizationInvite course enrollment error:', error);
       }
@@ -720,11 +721,12 @@ export async function acceptOrganizationInviteById(
         [{ profileId: user.id, email: normalizedEmail }],
         result.invite.roleId
       );
-      await ensureComplianceEnrollmentRecordsForProfiles(courseIds, [user.id]);
 
       if (result.invite.roleId === ROLE.STUDENT) {
         await invalidateOrgStats(result.organization.id);
       }
+
+      await ensureComplianceEnrollmentRecordsForProfiles(courseIds, [user.id]);
     } catch (error) {
       console.error('acceptOrganizationInviteById course enrollment error:', error);
     }

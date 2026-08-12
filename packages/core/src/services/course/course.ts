@@ -120,6 +120,10 @@ export async function ensureProgramCourseAccess(courseId: string, profileId: str
     );
   });
 
+  if (access.roleId === ROLE.STUDENT) {
+    await invalidateOrgStats(organizationId);
+  }
+
   return true;
 }
 
@@ -426,12 +430,12 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
  */
 export async function deleteCourse(courseId: string) {
   try {
+    const statsOrgId = await getOrgIdByCourseId(courseId);
     const deleted = await deleteCourseQuery(courseId);
     if (!deleted) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
 
-    const statsOrgId = await getOrgIdByCourseId(courseId);
     await invalidateOrgStats(statsOrgId);
 
     return deleted;
