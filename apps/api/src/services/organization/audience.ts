@@ -5,6 +5,7 @@ import type {
   TImportAudienceMembers
 } from '@cio/utils/validation/organization';
 import { addGroupMembers, enrollUsersInCourseGroups, getExistingGroupMembers } from '@cio/db/queries/group';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { addCohortMember, getExistingCohortMembers, getCohortsByOrg } from '@cio/db/queries/cohort';
@@ -234,6 +235,10 @@ async function enrollAudienceStudentProfilesInCourses(
       });
 
     await Promise.all(emailPromises);
+  }
+
+  if (toInsert.length > 0) {
+    await invalidateOrgStats(orgId);
   }
 
   return {
@@ -555,6 +560,7 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
             courseIds,
             profiles.map((profile) => profile.id)
           );
+          await invalidateOrgStats(orgId);
         }
       }
     }

@@ -8,6 +8,7 @@ import {
   getCourseProgress as getCourseProgressQuery,
   getCourseTypeById,
   getCourseWithRelations,
+  getOrgIdByCourseId,
   updateCourse as updateCourseQuery,
   updateLessonsSectionId
 } from '@cio/db/queries/course';
@@ -44,6 +45,7 @@ import {
 } from '@cio/db/queries/organization';
 import { getStudentLimit } from '@cio/utils/plans';
 import { env } from '../../config/env';
+import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { annotateCourseContentWithProgression } from './progression';
 import { buildCourseContent, calcPercentageWithRounding, type CourseContent } from './utils';
 import { guardCourseTypeTransition } from './public-course-guard';
@@ -306,6 +308,8 @@ export async function createCourse(
       };
     });
 
+    await invalidateOrgStats(data.organizationId);
+
     return result;
   } catch (error) {
     if (error instanceof AppError) {
@@ -397,6 +401,11 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
       }
     }
 
+    if (data.status !== undefined) {
+      const statsOrgId = await getOrgIdByCourseId(courseId);
+      await invalidateOrgStats(statsOrgId);
+    }
+
     return updated;
   } catch (error) {
     if (error instanceof AppError) {
@@ -421,6 +430,10 @@ export async function deleteCourse(courseId: string) {
     if (!deleted) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
+
+    const statsOrgId = await getOrgIdByCourseId(courseId);
+    await invalidateOrgStats(statsOrgId);
+
     return deleted;
   } catch (error) {
     if (error instanceof AppError) {

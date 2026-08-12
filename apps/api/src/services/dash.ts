@@ -10,19 +10,52 @@ import {
 } from '@cio/db/queries/dash';
 import { dashLoginActivityKey } from '@api/utils/redis/key-generators';
 import { logRedisUnavailableOnce, redis } from '@cio/core/utils/redis/redis';
+import {
+  invalidateOrgStats,
+  readOrgStatsVersionAndCache,
+  writeOrgStatsCache
+} from '@cio/core/utils/redis/org-stats-cache';
 
 import { OrganisationAnalytics } from '@api/types';
 import { getOrgIdBySiteName } from '@cio/db/queries';
 
-export async function getOrganisationAnalytics(orgId?: string, siteName?: string): Promise<OrganisationAnalytics> {
+async function loadOrganisationAnalyticsFromDatabase(orgId: string): Promise<OrganisationAnalytics> {
+  const [stats, topCourses, recentCertificationRows, certificateCountRows] = await Promise.all([
+    getDashOrgStats(orgId),
+    getCourseStats(orgId),
+    getRecentCertifications(orgId),
+    getTotalCertificatesIssued(orgId)
+  ]);
+
   const analytics: OrganisationAnalytics = {
-    totalCertificates: 0,
-    numberOfCourses: 0,
-    totalStudents: 0,
-    topCourses: [],
-    recentCertifications: []
+    totalCertificates: certificateCountRows[0]?.count ?? 0,
+    numberOfCourses: stats?.[0]?.noOfCourses ?? 0,
+    totalStudents: stats?.[0]?.enrolledStudents ?? 0,
+    topCourses: topCourses.map((course) => ({
+      id: course.courseId,
+      title: course.courseTitle,
+      enrollments: course.totalStudents,
+      completion: course.completionPercentage,
+      certification: course.certificationPercentage
+    })),
+    recentCertifications: recentCertificationRows.map((row) => ({
+      id: row.profileId,
+      avatarUrl: row.avatarUrl,
+      name: row.fullname,
+      courseId: row.courseId,
+      course: row.courseTitle,
+      date: row.earnedAt ?? ''
+    }))
   };
 
+  return analytics;
+}
+
+export async function getOrganisationAnalytics(
+  orgId?: string,
+  siteName?: string,
+  bustCache = false
+): Promise<OrganisationAnalytics> {
   let resolvedOrgId = orgId;
 
   if (!resolvedOrgId && siteName) {
@@ -35,37 +68,26 @@ export async function getOrganisationAnalytics(orgId?: string, siteName?: string
     }
   }
 
+  if (!resolvedOrgId) {
+    throw new AppError('Organization not found', ErrorCodes.ORG_NOT_FOUND, 404);
+  }
+
   try {
-    const [stats, topCourses, recentCertificationRows, certificateCountRows] = await Promise.all([
-      getDashOrgStats(resolvedOrgId!),
-      getCourseStats(resolvedOrgId!),
-      getRecentCertifications(resolvedOrgId!),
-      getTotalCertificatesIssued(resolvedOrgId!)
-    ]);
+    const { version, data: cached } = await readOrgStatsVersionAndCache<OrganisationAnalytics>(resolvedOrgId);
 
-    analytics.totalCertificates = certificateCountRows[0]?.count ?? 0;
-    analytics.numberOfCourses = stats?.[0]?.noOfCourses ?? 0;
-    analytics.totalStudents = stats?.[0]?.enrolledStudents ?? 0;
+    if (!bustCache && cached) {
+      return cached;
+    }
 
-    analytics.topCourses = topCourses.map((c) => ({
-      id: c.courseId,
-      title: c.courseTitle,
-      enrollments: c.totalStudents,
-      completion: c.completionPercentage,
-      certification: c.certificationPercentage
-    }));
-
-    analytics.recentCertifications = recentCertificationRows.map((row) => ({
-      id: row.profileId,
-      avatarUrl: row.avatarUrl,
-      name: row.fullname,
-      courseId: row.courseId,
-      course: row.courseTitle,
-      date: row.earnedAt ?? ''
-    }));
+    const analytics = await loadOrganisationAnalyticsFromDatabase(resolvedOrgId);
+    await writeOrgStatsCache(resolvedOrgId, version, analytics);
 
     return analytics;
   } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
     console.error('Failed to load organisation analytics:', error);
     throw new AppError('Failed to load organisation analytics', ErrorCodes.ORG_ANALYTICS_FETCH_FAILED, 500);
   }
@@ -168,3 +190,5 @@ export async function getCurrentUserLoginStreak(userId: string) {
     throw new AppError('Failed to load login streak', ErrorCodes.ORG_ANALYTICS_FETCH_FAILED, 500);
   }
 }
+
+export { invalidateOrgStats };

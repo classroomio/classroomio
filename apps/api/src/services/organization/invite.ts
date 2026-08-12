@@ -22,6 +22,7 @@ import {
 } from '@cio/db/queries/organization';
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { addCohortMember, getExistingCohortMembers } from '@cio/db/queries/cohort';
 
 import { ROLE } from '@cio/utils/constants';
@@ -424,6 +425,10 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
           invite.invite.roleId
         );
         await ensureComplianceEnrollmentRecordsForProfiles(courseIds, [user.id]);
+
+        if (invite.invite.roleId === ROLE.STUDENT) {
+          await invalidateOrgStats(invite.invite.organizationId);
+        }
       } catch (error) {
         console.error('acceptOrganizationInvite course enrollment error:', error);
       }
@@ -716,6 +721,10 @@ export async function acceptOrganizationInviteById(
         result.invite.roleId
       );
       await ensureComplianceEnrollmentRecordsForProfiles(courseIds, [user.id]);
+
+      if (result.invite.roleId === ROLE.STUDENT) {
+        await invalidateOrgStats(result.organization.id);
+      }
     } catch (error) {
       console.error('acceptOrganizationInviteById course enrollment error:', error);
     }

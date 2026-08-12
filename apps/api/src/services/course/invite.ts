@@ -27,6 +27,7 @@ import type { TCreateCourseInvite } from '@cio/utils/validation/course/invite';
 import type { TNewCourseInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding, type EmailBranding } from '@cio/email';
@@ -715,6 +716,8 @@ export async function enrollInCourse(
     props: { path: 'free-enrollment' }
   });
 
+  await invalidateOrgStats(org.id);
+
   return {
     success: true,
     alreadyJoined: false,
@@ -1094,6 +1097,8 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       courseId: result.courseId,
       props: { path: 'invite' }
     });
+
+    await invalidateOrgStats(result.organizationId);
   }
 
   return {

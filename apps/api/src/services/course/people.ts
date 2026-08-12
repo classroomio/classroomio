@@ -13,7 +13,8 @@ import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progres
 import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
-import { getCourseWithOrgData } from '@cio/db/queries/course';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
@@ -149,6 +150,11 @@ export async function addMember(
       }
     }
 
+    if (data.roleId === ROLE.STUDENT) {
+      const statsOrgId = await getOrgIdByCourseId(courseId);
+      await invalidateOrgStats(statsOrgId);
+    }
+
     return addedMember;
   } catch (error) {
     if (error instanceof AppError) {
@@ -257,6 +263,12 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       }
     }
 
+    const hasStudentMember = members.some((member) => member.roleId === ROLE.STUDENT);
+    if (hasStudentMember) {
+      const statsOrgId = await getOrgIdByCourseId(courseId);
+      await invalidateOrgStats(statsOrgId);
+    }
+
     return addedMembers;
   } catch (error) {
     if (error instanceof AppError) {
@@ -308,6 +320,12 @@ export async function deleteMember(courseId: string, memberId: string) {
     if (!deleted) {
       throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
     }
+
+    if (deleted.roleId === ROLE.STUDENT) {
+      const statsOrgId = await getOrgIdByCourseId(courseId);
+      await invalidateOrgStats(statsOrgId);
+    }
+
     return deleted;
   } catch (error) {
     if (error instanceof AppError) {
@@ -347,6 +365,9 @@ export async function resetMemberCourseProgress(courseId: string, memberId: stri
       memberId,
       summary
     });
+
+    const statsOrgId = await getOrgIdByCourseId(courseId);
+    await invalidateOrgStats(statsOrgId);
 
     return summary;
   } catch (error) {

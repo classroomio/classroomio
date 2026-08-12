@@ -328,3 +328,23 @@ export async function insertGroupMembersOnConflictDoNothing(
     throw new Error(`Failed to insert group members: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
+
+export async function getOrgIdsByGroupIds(groupIds: string[]): Promise<string[]> {
+  if (groupIds.length === 0) {
+    return [];
+  }
+
+  try {
+    const rows = await db
+      .selectDistinct({ orgId: schema.group.organizationId })
+      .from(schema.group)
+      .where(inArray(schema.group.id, groupIds));
+
+    return rows.map((row) => row.orgId).filter((orgId): orgId is string => Boolean(orgId));
+  } catch (error) {
+    console.error('getOrgIdsByGroupIds error:', error);
+    throw new Error(
+      `Failed to get organization IDs for groups: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
