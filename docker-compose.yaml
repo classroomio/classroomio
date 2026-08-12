@@ -6,6 +6,7 @@ services:
     # without exposing the database to the LAN.
     ports:
       - '127.0.0.1:5432:5432'
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-classroomio}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -31,6 +32,7 @@ services:
     # Bound to localhost only (see postgres note above).
     ports:
       - '127.0.0.1:6379:6379'
+    restart: unless-stopped
     command: ['redis-server', '--appendonly', 'yes']
     volumes:
       - redis-data:/data
