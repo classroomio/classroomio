@@ -122,6 +122,10 @@ export async function ensureProgramCourseAccess(courseId: string, profileId: str
   return true;
 }
 
+function omitUndefinedValues<T extends Record<string, unknown>>(record: T): T {
+  return Object.fromEntries(Object.entries(record).filter(([, value]) => value !== undefined)) as T;
+}
+
 function sanitizeCourseMetadata(metadata: TCourse['metadata'] | undefined) {
   if (!metadata) return metadata;
 
@@ -339,11 +343,14 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
       throw new AppError('Paid courses require a payment link', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
+    const existingMetadata = existingCourse?.metadata;
+    const mergedMetadata = data.metadata ? { ...existingMetadata, ...omitUndefinedValues(data.metadata) } : undefined;
+
     const sanitizedData: Partial<TCourse> = {
       ...data,
       description: sanitizeOptionalHtml(data.description),
       overview: sanitizeOptionalHtml(data.overview),
-      metadata: sanitizeCourseMetadata(data.metadata),
+      metadata: sanitizeCourseMetadata(mergedMetadata),
       certificate: sanitizeCourseCertificate(data.certificate),
       logo: data.logo,
       slug: data.slug

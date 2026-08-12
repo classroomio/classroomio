@@ -20,7 +20,7 @@
 
   let { course = $bindable(), setter, showPaymentError = $bindable(false) }: Props = $props();
 
-  let paymentLink = $derived(get(course, 'metadata.paymentLink', ''));
+  let paymentLink = $derived(get(course, 'metadata.paymentLink', '') ?? '');
   const isPaidWithoutPaymentLink = $derived(!isCourseFree(course.cost || 0) && !paymentLink.trim());
   let showDiscount = $derived(Boolean(get(course, 'metadata.showDiscount', false)));
   let discount = $derived(toFiniteNumber(get(course, 'metadata.discount', 0)) ?? 0);
