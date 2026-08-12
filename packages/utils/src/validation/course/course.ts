@@ -1,5 +1,6 @@
 import * as z from 'zod';
 
+import { toFiniteNumber } from '../../functions/number';
 import { ALLOWED_CONTENT_TYPES, ALLOWED_DOCUMENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
 import { ZCourseType } from './course-type';
@@ -319,6 +320,15 @@ function preprocessCourseMetadata(value: unknown): unknown {
 
   if (metadata.allowNewStudent == null) {
     metadata.allowNewStudent = true;
+  }
+
+  if (metadata.discount === null || metadata.discount === '') {
+    metadata.discount = undefined;
+  } else if (typeof metadata.discount === 'string') {
+    const parsedDiscount = toFiniteNumber(metadata.discount);
+    if (parsedDiscount !== undefined) {
+      metadata.discount = parsedDiscount;
+    }
   }
 
   return metadata;

@@ -19,6 +19,7 @@ export const EXERCISE_TEMPLATE_TAGS = {
 /** Named sort keys for course lists (URL `sort`, localStorage, filter UI). */
 export const CourseSortBy = {
   DateCreated: 'date_created',
+  LastUpdatedAt: 'last_updated_at',
   Published: 'published',
   Lessons: 'lessons'
 } as const;
@@ -68,6 +69,7 @@ export function parseCourseSortOrder(value: string | null | undefined): CourseSo
 
 export const COURSE_SORT_OPTIONS = [
   { value: CourseSortBy.DateCreated, label: 'courses.course_filter.date_created' },
+  { value: CourseSortBy.LastUpdatedAt, label: 'courses.course_filter.last_updated_at' },
   { value: CourseSortBy.Published, label: 'courses.course_filter.published' },
   { value: CourseSortBy.Lessons, label: 'courses.course_filter.lessons' }
 ] as const;

@@ -2,6 +2,9 @@
   "$schema": "https://turborepo.org/schema.json",
   "globalEnv": ["PUBLIC_IS_SELFHOSTED"],
   "pipeline": {
+    "@cio/ui#build": {
+      "outputs": ["src/output.css"]
+    },
     "@cio/dashboard#build": {
       "dependsOn": ["@cio/api#build", "@cio/ui#build", "@cio/db#build", "@cio/analytics#build"],
       "outputs": [".svelte-kit/**", "build/**"]

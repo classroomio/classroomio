@@ -3,7 +3,7 @@ title: DigitalOcean
 description: Deploy ClassroomIO to a DigitalOcean droplet with Docker Compose and Caddy, including automatic HTTPS.
 ---
 
-Run ClassroomIO on a plain **DigitalOcean droplet** — no PaaS in between. You get the
+Run ClassroomIO on a plain **DigitalOcean droplet**, no PaaS in between. You get the
 [pull-based Docker Compose stack](/self-hosted/docker) plus a [Caddy](https://caddyserver.com)
 reverse proxy that obtains and renews HTTPS certificates automatically.
 
@@ -12,7 +12,7 @@ AWS Lightsail**, or any Ubuntu 24.04 server you can SSH into.
 
 :::note[How this differs from the PaaS guides]
 [Railway](/self-hosted/railway), [Coolify](/self-hosted/coolify) and [Dokploy](/self-hosted/dokploy)
-terminate HTTPS for you. On a raw VPS you provide that yourself — this page covers the reverse proxy,
+terminate HTTPS for you. On a raw VPS you provide that yourself: this page covers the reverse proxy,
 the certificates, and closing your internal ports off from the internet.
 :::
 
@@ -35,12 +35,12 @@ Prefer to follow along? This video walks through the whole deployment end to end
   | A    | `app` | your droplet's IP |
   | A    | `s3`  | your droplet's IP |
 
-- An **SMTP provider** for signup verification, password resets, and invites — see
+- An **SMTP provider** for signup verification, password resets, and invites. See
   [Configuration → Email (SMTP)](/self-hosted/configuration/email).
 
 :::note[No domain? You can still get real HTTPS]
 Use [sslip.io](https://sslip.io), a public wildcard-DNS service where `<anything>.<ip>.sslip.io`
-resolves to that IP — so no records are needed. In Step 1 set
+resolves to that IP, so no records are needed. In Step 1 set
 `export DOMAIN=<your-droplet-ip>.sslip.io` instead of your own domain, and **every other command on
 this page is identical**. Read the [caveat](#a-note-on-sslipio) before using it for anything real.
 :::
@@ -152,7 +152,7 @@ sudo usermod -aG docker cio
 ```
 
 :::warning[Use the literal username, not `$USER`]
-`$USER` expands to whoever runs the shell — run it from a root session and it grants **root** rather
+`$USER` expands to whoever runs the shell. Run it from a root session and it grants **root** rather
 than your user, and every later Docker command fails with `permission denied` on
 `/var/run/docker.sock`. Check with `getent group docker`.
 :::
@@ -168,7 +168,7 @@ id | grep -o docker        # -> docker
 docker compose version     # must be v2.24.0 or newer
 ```
 
-Compose **v2.24.0+** is required — Step 6 uses the `!override` YAML tag. Older versions
+Compose **v2.24.0+** is required: Step 6 uses the `!override` YAML tag. Older versions
 *concatenate* port lists instead of replacing them, which would leave your internal services exposed
 to the internet.
 </Step>
@@ -181,8 +181,8 @@ mkdir -p ~/classroomio && cd ~/classroomio
 curl -O https://raw.githubusercontent.com/classroomio/classroomio/main/docker-compose.images.yaml
 ```
 
-This is the same [pull-based stack](/self-hosted/docker#run-from-pre-built-images-recommended) used
-by the other guides — it pulls the published `classroomio/*` images and builds nothing.
+This is the same [pull-based stack](/self-hosted/docker#quick-start) used
+by the other guides. It pulls the published `classroomio/*` images and builds nothing.
 </Step>
 
 <Step>
@@ -242,11 +242,11 @@ Then fill in your SMTP credentials with `nano .env`.
 
 Three of these break deployments more often than all the others combined:
 
-- **`OBJECT_STORAGE_PUBLIC_ENDPOINT`** — where the browser fetches video from. Left at the template
+- **`OBJECT_STORAGE_PUBLIC_ENDPOINT`**: where the browser fetches video from. Left at the template
   default of `localhost`, every video URL points at the *visitor's own machine*.
-- **`DASHBOARD_ORIGIN`** — must match the browser URL exactly, `https://` included, no trailing
+- **`DASHBOARD_ORIGIN`**: must match the browser URL exactly, `https://` included, no trailing
   slash. A mismatch breaks login with CSRF errors.
-- **`CSP_MEDIA_SRC_DOMAINS` / `CSP_CONNECT_SRC_DOMAINS`** — because storage is on a second hostname,
+- **`CSP_MEDIA_SRC_DOMAINS` / `CSP_CONNECT_SRC_DOMAINS`**: because storage is on a second hostname,
   the browser blocks its media unless these allow it. Symptom: the page looks fine, images and video
   silently don't load, and the only clue is in the browser console.
 
@@ -261,7 +261,7 @@ Every remaining variable is documented in [Configuration](/self-hosted/configura
 <Step>
 ### Add Caddy and close the internal ports
 
-Right now each part of ClassroomIO runs on its own port number — the dashboard on `3082`, file
+Right now each part of ClassroomIO runs on its own port number: the dashboard on `3082`, file
 storage on `9000`. That leaves two problems: nobody wants to visit `yoursite.com:3082`, and neither
 port is encrypted, so there would be no padlock in the browser.
 
@@ -328,14 +328,14 @@ EOF
 ```
 
 Those eight lines are the entire HTTPS setup. The first time someone visits your site, Caddy asks
-Let's Encrypt for a free certificate, installs it, and from then on renews it before it expires —
-you never touch it again.
+Let's Encrypt for a free certificate, installs it, and from then on renews it before it expires.
+You never touch it again.
 
 You could use nginx instead, but you'd also be installing certbot, setting up a renewal timer, and
 hand-writing the forwarding rules that Caddy applies by default.
 
 :::warning[Your firewall does not cover Docker]
-You set up a firewall back in Step 3. It does **not** apply to Docker containers — Docker writes its
+You set up a firewall back in Step 3. It does **not** apply to Docker containers: Docker writes its
 own networking rules underneath it, so a container that publishes a port stays reachable from the
 internet even when `ufw` says that port is blocked.
 
@@ -367,7 +367,7 @@ dc pull
 
 :::warning[This downloads ~12 GB and takes 10–20 minutes]
 The images are large (`api` 3.7 GB, `dashboard` 3.9 GB, `jobs` 4.2 GB). On a 2-vCPU droplet the
-**progress bars sit still for minutes at a time — this is normal, it is not frozen.** Don't cancel it.
+**progress bars sit still for minutes at a time. This is normal, it is not frozen.** Don't cancel it.
 :::
 </Step>
 
@@ -378,7 +378,7 @@ The images are large (`api` 3.7 GB, `dashboard` 3.9 GB, `jobs` 4.2 GB). On a 2-v
 dc up -d
 ```
 
-Services start in dependency order — Postgres and Redis must report healthy before the API starts,
+Services start in dependency order: Postgres and Redis must report healthy before the API starts,
 because the API runs database migrations on boot. A full start takes about **40 seconds**.
 
 ```zsh title="Terminal"
@@ -396,7 +396,7 @@ cio-postgres    Up About a minute (healthy)
 cio-redis       Up About a minute (healthy)
 ```
 
-`cio-minio-init` is absent on purpose — it creates the storage buckets and exits. Confirm it worked:
+`cio-minio-init` is absent on purpose: it creates the storage buckets and exits. Confirm it worked:
 
 ```zsh title="Terminal"
 docker logs cio-minio-init | tail -4
@@ -425,19 +425,19 @@ for p in 3081 3082 9000 9001; do
 done
 ```
 
-All four must report `no response`. If any is reachable, your Compose version ignored `!override` —
-check that `docker compose version` is v2.24.0 or newer.
+All four must report `no response`. If any is reachable, your Compose version ignored `!override`.
+Check that `docker compose version` is v2.24.0 or newer.
 </Step>
 
 <Step>
 ### Sign up
 
-Open `https://app.<your-domain>` and create the first account — it becomes the organization
+Open `https://app.<your-domain>` and create the first account: it becomes the organization
 **admin**. Every signup after that joins as a student unless you invite them with a specific role.
 
 Then verify uploads end to end: create a course, upload an image, and upload a short video. Watch the
 worker process it with `dc logs -f jobs`. In your browser's DevTools the media URLs must point at
-`https://s3.<your-domain>/...` — if you see `localhost:9000`, `OBJECT_STORAGE_PUBLIC_ENDPOINT` is
+`https://s3.<your-domain>/...`. If you see `localhost:9000`, `OBJECT_STORAGE_PUBLIC_ENDPOINT` is
 wrong.
 </Step>
 
@@ -453,7 +453,7 @@ dc down                   # stop, keeping all data
 ```
 
 :::danger[Never use `dc down -v`]
-The `-v` flag deletes the `postgres-data`, `redis-data` and `minio-data` volumes — your database and
+The `-v` flag deletes the `postgres-data`, `redis-data` and `minio-data` volumes: your database and
 every upload. Plain `dc down` is always safe.
 :::
 
@@ -498,7 +498,7 @@ own. **For production, use your own domain.**
    ```
 
 3. Change the two site addresses in `~/classroomio/Caddyfile`.
-4. Apply, then clear cached media URLs — presigned URLs are cached in Redis for 50 minutes, so
+4. Apply, then clear cached media URLs: presigned URLs are cached in Redis for 50 minutes, so
    without this the old hostname keeps being served:
 
    ```zsh title="Terminal"
@@ -506,9 +506,13 @@ own. **For production, use your own domain.**
    docker exec cio-redis sh -c "redis-cli --scan --pattern 'presign:download:*' | xargs -r redis-cli del"
    ```
 
-Existing uploads keep working — media URLs are generated per request from the new endpoint.
+Existing uploads keep working. Media URLs are generated per request from the new endpoint.
 
 ## Troubleshooting
+
+These are the droplet-specific issues. For general stack problems (sign-in errors right after
+startup, stuck uploads, OOM kills, disk space), see the shared
+[Troubleshooting](/self-hosted/troubleshooting) page.
 
 | Symptom | Cause |
 | ------- | ----- |
@@ -549,8 +553,8 @@ This deployment reads the same variables as every other self-hosted install:
 
 ## Upgrades
 
-Check which versions exist, then pin one — never guess a tag, as an unpublished one fails the pull
-with `manifest unknown`:
+Check which versions exist, then pin one: never guess a tag, since an unpublished one fails the pull
+with `manifest unknown`.
 
 ```zsh title="Terminal"
 curl -s "https://hub.docker.com/v2/repositories/classroomio/dashboard/tags?page_size=20&ordering=last_updated" \
@@ -561,5 +565,5 @@ dc pull && dc up -d
 ```
 
 Migrations run automatically on API startup. Roll back by setting `CIO_VERSION` to the previous
-release and repeating — which is why you pin an exact version rather than `latest`. See
+release and repeating, which is why you pin an exact version rather than `latest`. See
 [Configuration → Versions & upgrades](/self-hosted/configuration/versions).

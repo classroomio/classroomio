@@ -2613,6 +2613,7 @@
       "most_lessons": "Lektioner: Flest først",
       "fewest_lessons": "Lektioner: Færrest først",
       "date_created": "Dato oprettet",
+      "last_updated_at": "Sidst opdateret",
       "published": "Udgivet",
       "lessons": "Lektioner"
     },

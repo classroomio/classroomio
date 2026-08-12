@@ -125,6 +125,7 @@ type LegacyLandingPageJson = {
   footerText?: string;
   theme?: OrgLandingPageTheme;
   embed?: {
+    enabled?: boolean;
     title?: string;
     description?: string;
     code?: string;
@@ -138,6 +139,7 @@ type LegacyLandingPageJson = {
     sandbox?: string;
   };
   callout?: {
+    enabled?: boolean;
     heading?: string;
     description?: string;
     action?: {
@@ -413,6 +415,7 @@ function normalizeCallout(callout: NonNullable<LegacyLandingPageJson['callout']>
   }
 
   return {
+    enabled: callout.enabled !== false,
     heading,
     description: normalizeText(callout.description, ''),
     action: {
@@ -468,6 +471,7 @@ function normalizeLinks(raw: unknown): OrgLandingPageLinks | undefined {
   const classicLearnMoreLabel = normalizeText(raw.classicLearnMoreLabel, '');
 
   return {
+    enabled: raw.enabled !== false,
     heading,
     description: description || undefined,
     boldVisitLabel: boldVisitLabel || undefined,
@@ -541,6 +545,7 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
       footer: resolveFooterConfig(landingPage),
       embed: landingPage.embed
         ? {
+            enabled: landingPage.embed.enabled !== false,
             title: normalizeText(landingPage.embed.title, 'Section title'),
             description: normalizeText(landingPage.embed.description, ''),
             code: normalizeEmbedCode(landingPage.embed),
@@ -587,6 +592,7 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
       footer: resolveFooterConfig(landingPage),
       embed: landingPage.embed
         ? {
+            enabled: landingPage.embed.enabled !== false,
             title: normalizeText(landingPage.embed.title, 'Section title'),
             description: normalizeText(landingPage.embed.description, ''),
             code: normalizeEmbedCode(landingPage.embed)
@@ -624,6 +630,7 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
     footer: resolveFooterConfig(landingPage),
     embed: landingPage.embed
       ? {
+          enabled: landingPage.embed.enabled !== false,
           title: normalizeText(landingPage.embed.title, 'Section title'),
           description: normalizeText(landingPage.embed.description, ''),
           code: normalizeEmbedCode(landingPage.embed),

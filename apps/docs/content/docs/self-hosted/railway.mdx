@@ -15,7 +15,7 @@ Prefer to follow along? This video walks through the whole deployment end to end
 
 ## Prerequisites
 
-- A **Railway account** (a paid plan is recommended — the stack runs several always-on services).
+- A **Railway account** (a paid plan is recommended, since the stack runs several always-on services).
 - An **SMTP provider** (or Zoho/ZeptoMail) for signup verification, password reset, and invite emails. See [SMTP Setup](#smtp-setup).
 - *Optional:* a **custom domain** for the dashboard and storage, an **OpenAI API key** (transcription + AI course generation), and Google OAuth / Unsplash keys.
 
@@ -32,7 +32,7 @@ See [Configuration → Environment & secrets](/self-hosted/configuration/secrets
 
 ## Step-by-step walkthrough
 
-The one-click template provisions **all of the services** for you — Postgres, Redis, `cio-api`, `cio-dashboard`, `cio-jobs`, and `cio-minio` (object storage). The flow is: **configure a few values → deploy → connect the dashboard domain → sign up**.
+The one-click template provisions **all of the services** for you: Postgres, Redis, `cio-api`, `cio-dashboard`, `cio-jobs`, and `cio-minio` (object storage). The flow is: **configure a few values → deploy → connect the dashboard domain → sign up**.
 
 
 <Steps>
@@ -49,10 +49,10 @@ Click the **Deploy on Railway** button above. Railway opens the template page wh
 <Step>
 ### Review the preconfigured services
 
-The template comes with every service preconfigured — most need nothing from you:
+The template comes with every service preconfigured: most need nothing from you:
 
-- **Redis** and **Postgres** — no configuration required.
-- **cio-dashboard** — no required configuration (optionally set branding such as the public OG image; not required).
+- **Redis** and **Postgres**: no configuration required.
+- **cio-dashboard**: no required configuration (optionally set branding such as the public OG image; not required).
 
 The next three steps cover the services that **do** need input: `cio-jobs`, `cio-minio`, and `cio-api`.
 
@@ -78,7 +78,7 @@ The next three steps cover the services that **do** need input: `cio-jobs`, `cio
 
 Set the storage credentials on `cio-minio`:
 
-- `MINIO_SERVER_URL` — optional but recommended (fixes MinIO console redirects behind the proxy); the template presets it to the generated `cio-minio` domain, so you normally just confirm it
+- `MINIO_SERVER_URL`: optional but recommended (fixes MinIO console redirects behind the proxy); the template presets it to the generated `cio-minio` domain, so you normally just confirm it
 - `MINIO_ROOT_USER`
 - `MINIO_ROOT_PASSWORD`
 
@@ -97,16 +97,16 @@ On `cio-api`, set the SMTP host and any additional values you want. See the [Env
 <Step>
 ### Deploy
 
-Click **Deploy**. Railway begins building and bringing the services online — Redis, Postgres, and the rest come up first.
+Click **Deploy**. Railway begins building and bringing the services online: Redis, Postgres, and the rest come up first.
 
 ![Railway deploying the ClassroomIO services after clicking Deploy](/docs/railway-07-deploying.webp)
 </Step>
 
 <Step>
-### First boot may crash — this is expected
+### First boot may crash: this is expected
 
 :::warning[Only if you use the Railway-generated subdomain]
-On the first deploy, `cio-api` can crash. This is expected **only when you rely on the Railway-generated subdomain**: the API needs the dashboard's public domain (Better Auth's base URL), which doesn't exist yet. If you're using your **own custom subdomain**, this crash doesn't happen — skip ahead to signing up.
+On the first deploy, `cio-api` can crash. This is expected **only when you rely on the Railway-generated subdomain**: the API needs the dashboard's public domain (Better Auth's base URL), which doesn't exist yet. If you're using your **own custom subdomain**, this crash doesn't happen. Skip ahead to signing up.
 :::
 
 ![cio-api crashing on first boot before the dashboard domain exists](/docs/railway-08-first-boot-crash.webp)
@@ -141,7 +141,7 @@ Open the generated dashboard URL in a **new browser tab** and **sign up** to cre
 
 ## Environment variable reference
 
-You set these values **while configuring each service on the template page** (the configure steps above) — you don't enter them again after deploying. Use this section as the reference for what each service's variables should be.
+You set these values **while configuring each service on the template page** (the configure steps above); you don't enter them again after deploying. Use this section as the reference for what each service's variables should be.
 
 ### cio-api
 
@@ -198,7 +198,7 @@ Optional: add `PUBLIC_APP_TITLE`, `PUBLIC_APP_DESCRIPTION`, `PUBLIC_OG_IMAGE_URL
 
 ### cio-jobs (background worker)
 
-The jobs worker has **no public domain** — it drains the Redis queue (video processing, transcription, AI course generation, and emails). It shares the same Postgres, Redis, storage, email, and OpenAI settings as the API:
+The jobs worker has **no public domain**: it drains the Redis queue (video processing, transcription, AI course generation, and emails). It shares the same Postgres, Redis, storage, email, and OpenAI settings as the API:
 
 ```zsh title="env"
 DATABASE_URL="${{db.DATABASE_URL}}"
@@ -225,7 +225,7 @@ OPENAI_API_KEY=
 
 ### cio-minio (object storage)
 
-`cio-minio` ships **in the template** — its `/data` volume is already attached and the `videos`,
+`cio-minio` ships **in the template**: its `/data` volume is already attached and the `videos`,
 `documents`, and `media` buckets are already seeded. You only set its credentials during
 configuration:
 
@@ -239,11 +239,11 @@ MINIO_SERVER_URL=https://${{cio-minio.RAILWAY_PUBLIC_DOMAIN}}
 
 The api and jobs services reach MinIO over **two** endpoints: the private `OBJECT_STORAGE_ENDPOINT`
 (server uploads/reads) and the public `OBJECT_STORAGE_PUBLIC_ENDPOINT` + `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL`
-(browser-facing presigned downloads and public images) — already wired in the env blocks above.
+(browser-facing presigned downloads and public images), already wired in the env blocks above.
 `OBJECT_STORAGE_FORCE_PATH_STYLE=true` is required for MinIO.
 
 :::warning[MinIO is your durability boundary]
-Single-node MinIO has no redundancy — the Railway Volume is the only thing protecting your uploads, so
+Single-node MinIO has no redundancy: the Railway Volume is the only thing protecting your uploads, so
 back it up. See [Configuration → Object storage & uploads](/self-hosted/configuration/storage) for
 external Cloudflare R2 / AWS S3 alternatives.
 :::
@@ -254,7 +254,7 @@ See [Configuration → Email (SMTP)](/self-hosted/configuration/email) for the S
 
 ### SSO (Enterprise)
 
-SSO requires a `LICENSE_KEY` on the `cio-api` service. See [Configuration → SSO & licensing](/self-hosted/configuration/sso).
+SSO requires a `LICENSE_KEY` on the `cio-api` service. See [Enterprise & licensing](/self-hosted/enterprise).
 
 ## Upgrades
 

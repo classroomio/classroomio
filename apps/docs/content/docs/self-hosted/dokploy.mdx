@@ -3,10 +3,10 @@ title: Dokploy
 description: Deploy ClassroomIO on Dokploy using the pull-based Docker Compose stack.
 ---
 
-[Dokploy](https://dokploy.com) is an open-source, self-hosted PaaS — a Heroku/Vercel alternative you run
-on your own VPS. It deploys ClassroomIO from the published `classroomio/*` images using the **same
+[Dokploy](https://dokploy.com) is an open-source, self-hosted PaaS (a Heroku/Vercel alternative you run
+on your own VPS). It deploys ClassroomIO from the published `classroomio/*` images using the **same
 pull-based Docker Compose file** as the [Docker](/self-hosted/docker) and [Coolify](/self-hosted/coolify)
-guides — Dokploy **pulls** the images and never builds anything.
+guides. Dokploy **pulls** the images and never builds anything.
 
 ## Watch the walkthrough
 
@@ -17,18 +17,18 @@ steps below mirror it.
 
 ## Prerequisites
 
-- A running **Dokploy instance** with a **server connected** to it. Dokploy runs on any VPS —
+- A running **Dokploy instance** with a **server connected** to it. Dokploy runs on any VPS:
   DigitalOcean, Hetzner, AWS (Lightsail/EC2), or another provider. See Dokploy's
   [installation guide](https://docs.dokploy.com/docs/core/installation) to set this up.
 - A server sized for ClassroomIO. Dokploy's own baseline stack needs ~2 GB RAM, and ClassroomIO's
-  seven services need **8 GB for reliable operation** — provision for both. See
+  seven services need **8 GB for reliable operation**, so provision for both. See
   [Server requirements](/self-hosted#server-requirements).
 - A **domain** with a DNS **A record pointing at your server's public IP**. Dokploy's built-in Traefik
   proxy terminates HTTPS and issues the certificate.
-- An **SMTP provider** for signup verification, password reset, and invite emails — see
+- An **SMTP provider** for signup verification, password reset, and invite emails. See
   [Configuration → Email (SMTP)](/self-hosted/configuration/email).
 - *Optional:* an **OpenAI API key** (transcription + AI course generation) and Google OAuth / Unsplash
-  keys — see [Configuration → Integrations](/self-hosted/configuration/integrations).
+  keys. See [Configuration → Integrations](/self-hosted/configuration/integrations).
 
 :::note[Two secrets to generate first]
 Dokploy does **not** run our secret-generation script, so generate `BETTER_AUTH_SECRET` and
@@ -64,7 +64,7 @@ In the Dokploy dashboard, open **Projects** and click **Create Project**. Give i
 ### Add a Compose service
 
 Inside the project, click **Create Service** and choose **Compose** from the service types. When
-prompted, **select the server** you connected to Dokploy — this is the VPS ClassroomIO runs on.
+prompted, **select the server** you connected to Dokploy. This is the VPS ClassroomIO runs on.
 
 ![Adding a Compose service and selecting the server](/docs/dokploy-02-compose-service.webp)
 </Step>
@@ -72,10 +72,10 @@ prompted, **select the server** you connected to Dokploy — this is the VPS Cla
 <Step>
 ### Choose the Raw (manual) provider and paste the compose file
 
-Dokploy asks where the compose file comes from — GitHub, GitLab, Bitbucket, or **Raw**. Choose **Raw**
+Dokploy asks where the compose file comes from: GitHub, GitLab, Bitbucket, or **Raw**. Choose **Raw**
 (the manual option) and paste the contents of
-[`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker-compose.images.yaml)
-— the same pull-based stack used for the [Docker](/self-hosted/docker) and [Coolify](/self-hosted/coolify)
+[`docker-compose.images.yaml`](https://github.com/classroomio/classroomio/blob/main/docker-compose.images.yaml),
+the same pull-based stack used for the [Docker](/self-hosted/docker) and [Coolify](/self-hosted/coolify)
 deployments.
 
 ![Choosing the Raw provider and pasting the compose file](/docs/dokploy-03-raw-compose.webp)
@@ -101,7 +101,7 @@ SMTP_PASSWORD=<smtp password>
 SMTP_SENDER=ClassroomIO <you@yourdomain.com>
 ```
 
-The full variable reference — object storage, CSP, integrations, licensing, versions — lives in the
+The full variable reference (object storage, CSP, integrations, licensing, versions) lives in the
 shared [Configuration](/self-hosted/configuration) section. Copy what you need before deploying.
 
 ![Setting the environment variables in Dokploy](/docs/dokploy-04-env-vars.webp)
@@ -111,7 +111,7 @@ shared [Configuration](/self-hosted/configuration) section. Copy what you need b
 ### Point your domain at the server
 
 Before the domain will work, add a DNS **A record** for it (e.g. `dash.yourdomain.com`) pointing at
-your server's public IP. Do this for the dashboard domain — and any other domain you plan to use (such
+your server's public IP. Do this for the dashboard domain, and any other domain you plan to use (such
 as storage). DNS can take a few minutes to propagate.
 
 </Step>
@@ -121,7 +121,7 @@ as storage). DNS can take a few minutes to propagate.
 
 Click **Deploy**. Dokploy pulls `classroomio/{api,dashboard,jobs}` plus Postgres, Redis, and MinIO,
 then starts the stack. The API runs database setup on first boot. Watch the **logs** until every
-service is up — this is your first deploy.
+service is up. This is your first deploy.
 
 ![Dokploy deploy logs showing the stack coming up](/docs/dokploy-05-deploy-logs.webp)
 </Step>
@@ -131,12 +131,12 @@ service is up — this is your first deploy.
 
 Open the service's **Domains** section and click **Add Domain**. In the modal that appears:
 
-- **Service:** select **dashboard** — the service this domain routes to.
+- **Service:** select **dashboard**, the service this domain routes to.
 - **Host:** your dashboard domain, e.g. `dash.yourdomain.com`.
-- **Container Port:** `3082` — the port the dashboard listens on.
+- **Container Port:** `3082`, the port the dashboard listens on.
 - **HTTPS:** turn it on, then choose **Let's Encrypt** as the certificate provider.
 
-Create the domain. Dokploy provisions the certificate through Traefik — it usually only takes a moment.
+Create the domain. Dokploy provisions the certificate through Traefik, which usually only takes a moment.
 
 ![Adding the dashboard domain with port 3082 and Let's Encrypt](/docs/dokploy-06-add-domain.webp)
 </Step>
@@ -174,7 +174,7 @@ shared [Configuration](/self-hosted/configuration) section:
   <Card title="Integrations" href="/self-hosted/configuration/integrations" icon="plug">
     Google OAuth, Unsplash, OpenAI.
   </Card>
-  <Card title="SSO & licensing" href="/self-hosted/configuration/sso" icon="id-card">
+  <Card title="Enterprise & licensing" href="/self-hosted/enterprise" icon="id-card">
     `LICENSE_KEY` for Enterprise features.
   </Card>
 </CardGroup>

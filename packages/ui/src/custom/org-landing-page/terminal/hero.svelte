@@ -108,11 +108,7 @@
               {hero.secondaryAction.label}
             </Button>
           {/if}
-          <CoursePrimaryAction
-            action={hero.primaryAction}
-            size="sm"
-            class="ui:rounded-full ui:px-4 ui:font-medium ui:bg-[#f4f5f7] ui:text-[#0a0b0e] ui:hover:bg-white"
-          />
+          <CoursePrimaryAction action={hero.primaryAction} size="sm" class="ui:rounded-full ui:px-4 ui:font-medium" />
         </div>
       {/if}
 
