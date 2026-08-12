@@ -56,22 +56,22 @@ then complete the type-specific checklist below.
 
 ### 2.1 Self-Paced Course
 
-- [ ] Create a new course, choose **Self-Paced**, name it "Test — Self-Paced".
-- [ ] Add a **Section** called "Module 1".
-- [ ] Add a **Lesson** inside Module 1 — add a title, body text, and upload an image.
-- [ ] Add a second lesson with an embedded YouTube video link.
-- [ ] Create an **Exercise** inside Module 1 with at least 3 different question types (see Section 3).
-- [ ] Go to **Course Settings** and:
-  - [ ] Set a slug (custom URL).
-  - [ ] Upload a logo and banner image.
-  - [ ] Assign a tag to the course.
-  - [ ] Toggle lesson download on/off.
-  - [ ] Enable course progression and set it to **sequential**.
-  - [ ] Preview the course landing page.
-- [ ] Go to **People** — invite yourself as a student (use a second email or `student@test.com`).
-- [ ] Go to **Analytics** — observe there is no data yet.
-- [ ] Go to **Newsfeed** — create a post.
-- [ ] Go to **Settings → Certificates** — enable certificate download and preview the template.
+- [X] Create a new course, choose **Self-Paced**, name it "Test — Self-Paced".
+- [X] Add a **Section** called "Module 1".
+- [X] Add a **Lesson** inside Module 1 — add a title, body text, and upload an image.
+- [X] Add a second lesson with an embedded YouTube video link.
+- [X] Create an **Exercise** inside Module 1 with at least 3 different question types (see Section 3).
+- [X] Go to **Course Settings** and:
+  - [X] Set a slug (custom URL).
+  - [X] Upload a logo and banner image.
+  - [X] Assign a tag to the course.
+  - [X] Toggle lesson download on/off.
+  - [X] Enable course progression and set it to **sequential**.
+  - [X] Preview the course landing page.
+- [X] Go to **People** — invite yourself as a student (use a second email or `student@test.com`).
+- [X] Go to **Analytics** — observe there is no data yet.
+- [X] Go to **Newsfeed** — create a post.
+- [X] Go to **Settings → Certificates** — enable certificate download and preview the template.
 - 📸 **Screenshot:** The course content page showing Module 1 with lessons and the exercise.
 - 📸 **Screenshot:** The course landing page preview.
 
