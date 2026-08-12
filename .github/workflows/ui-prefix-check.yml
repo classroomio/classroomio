@@ -12,6 +12,9 @@ on:
       - 'packages/ui/**'
       - '.github/workflows/ui-prefix-check.yml'
 
+permissions:
+  contents: read
+
 jobs:
   ui-prefix:
     runs-on: ubuntu-latest

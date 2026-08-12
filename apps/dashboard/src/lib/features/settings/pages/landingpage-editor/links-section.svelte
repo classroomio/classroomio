@@ -54,6 +54,7 @@
     }
 
     const links: NonNullable<OrgLandingPageJson['links']> = {
+      enabled: true,
       heading: t.get('settings.landing_page.editor.links.heading_default'),
       description: '',
       boldVisitLabel: t.get('settings.landing_page.editor.links.bold_visit_default'),
@@ -90,16 +91,11 @@
   }
 
   function setLinksEnabled(enabled: boolean) {
-    if (!enabled) {
-      settings = {
-        ...settings,
-        links: undefined
-      };
-      markDirty();
-      return;
-    }
-
-    ensureLinks();
+    settings = {
+      ...settings,
+      links: { ...ensureLinks(), enabled }
+    };
+    markDirty();
   }
 
   function addCard() {
@@ -137,11 +133,14 @@
 
     <div class="space-y-6">
       <Field.Field orientation="horizontal">
-        <Switch checked={Boolean(settings.links)} onCheckedChange={(checked) => setLinksEnabled(checked === true)} />
+        <Switch
+          checked={settings.links?.enabled ?? false}
+          onCheckedChange={(checked) => setLinksEnabled(checked === true)}
+        />
         <Field.Label>{$t('settings.landing_page.editor.links.toggle')}</Field.Label>
       </Field.Field>
 
-      {#if settings.links}
+      {#if settings.links?.enabled}
         <Field.Field>
           <Field.Label>{$t('settings.landing_page.editor.links.heading')}</Field.Label>
           <Input
