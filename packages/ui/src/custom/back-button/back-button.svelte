@@ -1,10 +1,10 @@
-<script lang="ts">
+f<script lang="ts">
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import { cn } from '../../tools';
   import { Button } from '../../base/button';
 
   interface Props {
-    href?: string;
+    href: string;
     label?: string;
     class?: string;
   }
