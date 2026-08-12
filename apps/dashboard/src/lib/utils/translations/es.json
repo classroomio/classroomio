@@ -858,7 +858,10 @@
           "description": "Los estudiantes inscritos no podrán tomar lecciones o ejercicios bloqueados hasta que los desbloquees.",
           "description_live": "Las lecciones y ejercicios bloqueados permanecen ocultos para los estudiantes hasta que los desbloqueas, lo que resulta útil si publicas contenido semana tras semana.",
           "unlock_all": "Desbloquear todo"
-        }
+        },
+        "certificate_deadline_required": "Establecer la fecha límite del certificado primero",
+        "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para el certificado antes de que los estudiantes puedan inscribirse. Establezca una fecha límite en la configuración del certificado antes de publicarlo.",
+        "go_to_certificate_settings": "Vaya a Configuración de certificado"
       },
       "analytics": {
         "title": "Analíticas"
@@ -2475,7 +2478,9 @@
       "blocker_final_misconfigured": "El ejercicio de certificación \"{exerciseTitle}\" no tiene puntos configurados; Pídele a tu instructor que lo arregle.",
       "email_message_label": "Mensaje de correo electrónico",
       "email_message_placeholder": "por ej. Estamos orgullosos de tu progreso: ¡sigue aprendiendo!",
-      "final_exercise_multiple_attempts_note": "A los estudiantes se les permitirán intentos ilimitados en el ejercicio seleccionado."
+      "final_exercise_multiple_attempts_note": "A los estudiantes se les permitirán intentos ilimitados en el ejercicio seleccionado.",
+      "deadline_required": "Se requiere una fecha límite para el certificado cuando los certificados se pueden descargar.",
+      "deadline_required_enroll": "Los cursos de cumplimiento requieren una fecha límite para el certificado antes de que los estudiantes puedan inscribirse."
     },
     "creator": {
       "heading": "¿Qué curso quieres crear?",
@@ -3810,7 +3815,8 @@
       "title": "Registro deshabilitado",
       "invite_only_message": "El registro es sólo por invitación. Utilice un enlace de invitación para crear una cuenta.",
       "go_to_login": "Ir a Iniciar sesión"
-    }
+    },
+    "continue_with": "O continuar con"
   },
   "app": {
     "search": {
