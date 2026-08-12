@@ -39,11 +39,11 @@ Open these pages in a new tab so you understand the product before clicking arou
 
 ### Explore the dashboard
 
-- [ ] Log in and land on `/org/[slug]` — note the sidebar groups (Home, Content, People, Automation, Settings).
-- [ ] Visit **Dashboard** (`/org/[slug]/dash`) and observe the overview cards.
-- [ ] Open **Stats → Analytics** (`/org/[slug]/stats/analytics`) and change the date range picker (7, 30, 90 days). Note the landing page KPIs, country breakdown, and course funnel.
-- [ ] Visit **Stats → Compliance** (`/org/[slug]/stats/compliance`) — this is admin-only, so you may not see course data yet. You'll come back after creating a compliance course.
-- [ ] Click through every Settings page (Profile, Notifications, Domains, Teams, Customize LMS, Landing Page, Billing, AI Credits, AI Tutor) to get a feel for what lives where.
+- [X] Log in and land on `/org/[slug]` — note the sidebar groups (Home, Content, People, Automation, Settings).
+- [X] Visit **Dashboard** (`/org/[slug]/dash`) and observe the overview cards.
+- [X] Open **Stats → Analytics** (`/org/[slug]/stats/analytics`) and change the date range picker (7, 30, 90 days). Note the landing page KPIs, country breakdown, and course funnel.
+- [X] Visit **Stats → Compliance** (`/org/[slug]/stats/compliance`) — this is admin-only, so you may not see course data yet. You'll come back after creating a compliance course.
+- [X] Click through every Settings page (Profile, Notifications, Domains, Teams, Customize LMS, Landing Page, Billing, AI Credits, AI Tutor) to get a feel for what lives where.
 - 📸 **Screenshot:** The main dashboard page (`/org/[slug]/dash`) with the overview cards visible.
 
 ---
