@@ -370,6 +370,7 @@ const ZCourseMetadataFields = z.object({
   videoUrl: z.string().optional(),
   showDiscount: z.boolean().optional(),
   discount: z.number().optional(),
+  isPaid: z.boolean().optional(),
   paymentLink: z.string().optional(),
   reward: ZCourseReward.optional(),
   instructor: ZCourseInstructor.optional(),

@@ -946,7 +946,10 @@
             "no": "Nej",
             "yes": "Ja",
             "percent": "Rabatprocent",
-            "gift": "Om gave"
+            "gift": "Om gave",
+            "payment_required": "Et betalingslink er påkrævet for betalte kurser",
+            "enable_paid": "Aktiver betalt",
+            "payment_invalid_url": "Indtast venligst en gyldig webadresse (f.eks. https://pay.example.com)"
           },
           "instructor_form": {
             "upload": "Instruktør logo",

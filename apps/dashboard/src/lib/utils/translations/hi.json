@@ -946,7 +946,10 @@
             "no": "नहीं",
             "yes": "हाँ",
             "percent": "छूट प्रतिशत",
-            "gift": "उपहार के बारे में"
+            "gift": "उपहार के बारे में",
+            "payment_required": "सशुल्क पाठ्यक्रमों के लिए भुगतान लिंक आवश्यक है",
+            "enable_paid": "भुगतान सक्षम करें",
+            "payment_invalid_url": "कृपया एक मान्य URL दर्ज करें (उदा. https://pay.example.com)"
           },
           "instructor_form": {
             "upload": "प्रशिक्षक लोगो",

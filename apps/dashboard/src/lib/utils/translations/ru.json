@@ -946,7 +946,10 @@
             "no": "Нет",
             "yes": "Да",
             "percent": "Процент скидки",
-            "gift": "О подарке"
+            "gift": "О подарке",
+            "payment_required": "Для платных курсов необходима ссылка для оплаты.",
+            "enable_paid": "Включить платную",
+            "payment_invalid_url": "Введите действительный URL-адрес (например, https://pay.example.com)."
           },
           "instructor_form": {
             "upload": "Логотип инструктора",

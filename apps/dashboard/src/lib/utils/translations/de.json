@@ -946,7 +946,10 @@
             "no": "Nein",
             "yes": "Ja",
             "percent": "Rabattprozentsatz",
-            "gift": "Über Geschenk"
+            "gift": "Über Geschenk",
+            "payment_required": "Für kostenpflichtige Kurse ist ein Zahlungslink erforderlich",
+            "enable_paid": "Bezahlt aktivieren",
+            "payment_invalid_url": "Bitte geben Sie eine gültige URL ein (z. B. https://pay.example.com)"
           },
           "instructor_form": {
             "upload": "Lehrerlogo",

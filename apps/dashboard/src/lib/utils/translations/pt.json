@@ -946,7 +946,10 @@
             "no": "Não",
             "yes": "Sim",
             "percent": "Porcentagem de desconto",
-            "gift": "Sobre presente"
+            "gift": "Sobre presente",
+            "payment_required": "Um link de pagamento é necessário para cursos pagos",
+            "enable_paid": "Ativar pago",
+            "payment_invalid_url": "Insira um URL válido (por exemplo, https://pay.example.com)"
           },
           "instructor_form": {
             "upload": "Logotipo do instrutor",

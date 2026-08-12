@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as z from 'zod';
   import type { Component } from 'svelte';
   import { untrack } from 'svelte';
   import cloneDeep from 'lodash/cloneDeep';
@@ -42,6 +43,8 @@
 
   import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
+  import { isCoursePaid } from '$lib/utils/functions/course';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   interface Props {
     course: Course;
@@ -61,6 +64,15 @@
 
   const sidebar = useSidebar();
   let loading = $state(false);
+  let showPaymentError = $state(false);
+
+  const ZPaymentUrl = z.url();
+
+  const paymentLink = $derived((course.metadata?.paymentLink ?? '').trim());
+  const isPaidWithoutPaymentLink = $derived(isCoursePaid(course) && !paymentLink);
+  const isPaidWithInvalidPaymentLink = $derived(
+    isCoursePaid(course) && !!paymentLink && !ZPaymentUrl.safeParse(paymentLink).success
+  );
 
   interface Section {
     key: LandingSectionKey;
@@ -136,6 +148,21 @@
       return;
     }
 
+    if (selectedSectionKey === 'pricing') {
+      if (isPaidWithoutPaymentLink) {
+        showPaymentError = true;
+        snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
+        return;
+      }
+
+      if (isPaidWithInvalidPaymentLink) {
+        showPaymentError = true;
+        snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_invalid_url');
+        return;
+      }
+    }
+
+    showPaymentError = false;
     selectedSectionKey = null;
   }
 

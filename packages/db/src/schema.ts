@@ -656,6 +656,7 @@ export const course = pgTable(
       videoUrl?: string;
       showDiscount?: boolean;
       discount?: number;
+      isPaid?: boolean;
       paymentLink?: string;
       reward?: {
         show: boolean;
