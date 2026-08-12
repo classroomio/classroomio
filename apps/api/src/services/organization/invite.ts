@@ -419,13 +419,13 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
         // Same as importAudienceMembers after course ids are known: resolve groups from course rows only.
         const courseGroupMappings = await getCourseGroupIds(courseIds);
         const validGroupIds = courseGroupMappings.map((m) => m.groupId).filter(Boolean) as string[];
-        await enrollUsersInCourseGroups(
+        const enrolledCount = await enrollUsersInCourseGroups(
           validGroupIds,
           [{ profileId: user.id, email: normalizedEmail }],
           invite.invite.roleId
         );
 
-        if (invite.invite.roleId === ROLE.STUDENT) {
+        if (enrolledCount > 0 && invite.invite.roleId === ROLE.STUDENT) {
           await invalidateOrgStats(invite.invite.organizationId);
         }
 
@@ -716,13 +716,13 @@ export async function acceptOrganizationInviteById(
     try {
       const courseGroupMappings = await getCourseGroupIds(courseIds);
       const validGroupIds = courseGroupMappings.map((m) => m.groupId).filter(Boolean) as string[];
-      await enrollUsersInCourseGroups(
+      const enrolledCount = await enrollUsersInCourseGroups(
         validGroupIds,
         [{ profileId: user.id, email: normalizedEmail }],
         result.invite.roleId
       );
 
-      if (result.invite.roleId === ROLE.STUDENT) {
+      if (enrolledCount > 0 && result.invite.roleId === ROLE.STUDENT) {
         await invalidateOrgStats(result.organization.id);
       }
 

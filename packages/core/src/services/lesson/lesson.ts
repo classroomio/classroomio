@@ -22,12 +22,18 @@ import {
   type LessonById
 } from '@cio/db/queries/lesson';
 import type { TUpdateLessonWatchProgress } from '@cio/utils/validation/lesson';
-import { touchCourseUpdatedAt } from '@cio/db/queries/course';
+import { getOrgIdByCourseId, touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
 import { db } from '@cio/db/drizzle';
 import { enrichLessonWithPresignedUrls } from '../../utils/lesson-media';
 import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforcement';
+import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { resolveItemSlug } from '../course/slug';
+
+async function invalidateOrgStatsForLessonCourse(courseId: string): Promise<void> {
+  const orgId = await getOrgIdByCourseId(courseId);
+  await invalidateOrgStats(orgId);
+}
 
 /**
  * Creates a new lesson
@@ -412,7 +418,10 @@ export async function upsertLessonCompletionService(lessonId: string, profileId:
       isComplete
     };
 
-    return await upsertLessonCompletion(completionData);
+    const completion = await upsertLessonCompletion(completionData);
+    await invalidateOrgStatsForLessonCourse(lesson.courseId);
+
+    return completion;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -629,6 +638,7 @@ export async function updateLessonWatchProgressService(
         profileId,
         isComplete: true
       });
+      await invalidateOrgStatsForLessonCourse(lesson.courseId);
     }
 
     if (!aggregate) {

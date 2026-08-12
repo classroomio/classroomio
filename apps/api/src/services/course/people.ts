@@ -207,12 +207,23 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       theme: courseOrgData.orgTheme
     });
 
-    // Add all members
-    const addedMembers = await Promise.all(members.map((member) => addCourseMember(courseId, member)));
-    const hasStudentMember = members.some((member) => member.roleId === ROLE.STUDENT);
+    // Add members sequentially so partial failures still invalidate stats for successful inserts.
+    const addedMembers = [];
+    let addedStudentMember = false;
 
-    if (hasStudentMember) {
-      await invalidateOrgStats(courseOrgData.orgId);
+    try {
+      for (const member of members) {
+        const addedMember = await addCourseMember(courseId, member);
+        addedMembers.push(addedMember);
+
+        if (member.roleId === ROLE.STUDENT) {
+          addedStudentMember = true;
+        }
+      }
+    } finally {
+      if (addedStudentMember) {
+        await invalidateOrgStats(courseOrgData.orgId);
+      }
     }
 
     const studentProfileIds = members
