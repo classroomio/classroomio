@@ -31,8 +31,12 @@ import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { resolveItemSlug } from '../course/slug';
 
 async function invalidateOrgStatsForLessonCourse(courseId: string): Promise<void> {
-  const orgId = await getOrgIdByCourseId(courseId);
-  await invalidateOrgStats(orgId);
+  try {
+    const orgId = await getOrgIdByCourseId(courseId);
+    await invalidateOrgStats(orgId);
+  } catch (error) {
+    console.error('invalidateOrgStatsForLessonCourse error:', error);
+  }
 }
 
 /**
