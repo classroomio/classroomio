@@ -296,7 +296,7 @@
               >
                 <EllipsisVerticalIcon class="h-5 w-5" />
               </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="end" class="z-menu-elevated">
+              <DropdownMenu.Content align="end">
                 <DropdownMenu.Item
                   class="text-red-600"
                   onclick={() => {
@@ -366,7 +366,7 @@
               <Select.Trigger class="w-full">
                 {status.text}
               </Select.Trigger>
-              <Select.Content class="z-menu-elevated">
+              <Select.Content>
                 {#each SELECTABLE_STATUS as statusOption}
                   <Select.Item value={statusOption.id.toString()}>
                     {statusOption.text}
