@@ -1,5 +1,5 @@
-import * as z from 'zod';
 import { generateSlug } from '@cio/utils/functions';
+import { ZPaymentLink } from '@cio/utils/validation/course';
 import { isObject } from '$lib/utils/functions/isObject';
 import { isCoursePaid } from '$lib/utils/functions/course';
 import { courseApi } from '$features/course/api';
@@ -18,7 +18,7 @@ export async function publishCourse(course: Course): Promise<boolean> {
       return false;
     }
 
-    if (!z.url().safeParse(paymentLink).success) {
+    if (!ZPaymentLink.safeParse(paymentLink).success) {
       snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_invalid_url');
       return false;
     }
@@ -39,6 +39,7 @@ export async function publishCourse(course: Course): Promise<boolean> {
     {
       isPublished: true,
       slug,
+      cost: course.cost ?? 0,
       metadata: metadataPayload
     },
     { showSuccessToast: true }

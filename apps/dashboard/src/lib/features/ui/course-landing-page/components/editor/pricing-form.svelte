@@ -1,9 +1,9 @@
 <script lang="ts">
-  import * as z from 'zod';
   import get from 'lodash/get';
   import * as Select from '@cio/ui/base/select';
   import { Switch } from '@cio/ui/base/switch';
   import { Label } from '@cio/ui/base/label';
+  import { ZPaymentLink } from '@cio/utils/validation/course';
 
   import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
@@ -30,12 +30,10 @@
 
   let paymentLinkError = $state('');
 
-  const ZPaymentUrl = z.url();
-
   function validatePaymentLink(value: string): string {
     if (!value.trim()) return '';
 
-    const result = ZPaymentUrl.safeParse(value.trim());
+    const result = ZPaymentLink.safeParse(value.trim());
 
     if (!result.success) {
       return t.get('course.navItem.landing_page.editor.pricing_form.payment_invalid_url');
@@ -56,7 +54,7 @@
       return t.get('course.navItem.landing_page.editor.pricing_form.payment_required');
     }
 
-    if (!ZPaymentUrl.safeParse(trimmed).success) {
+    if (!ZPaymentLink.safeParse(trimmed).success) {
       return t.get('course.navItem.landing_page.editor.pricing_form.payment_invalid_url');
     }
 
@@ -138,7 +136,7 @@
       className="mt-5"
       labelClassName="font-bold"
       label={$t('course.navItem.landing_page.editor.pricing_form.payment')}
-      helperMessage="Stripe, Lemon Squeezy or any payment link"
+      helperMessage={$t('course.navItem.landing_page.editor.pricing_form.payment_helper')}
       isRequired
       errorMessage={paymentLinkErrorMessage}
       bind:value={paymentLink}
@@ -167,13 +165,13 @@
       label={$t('course.navItem.landing_page.editor.pricing_form.percent')}
       type="number"
       bind:value={discount}
-      helperMessage="In Percentage %"
+      helperMessage={$t('course.navItem.landing_page.editor.pricing_form.percentage_helper')}
     />
   {/if}
 
   <div class="mt-5">
     <div class="mb-2">
-      <Label class="font-bold">Gift on Completion</Label>
+      <Label class="font-bold">{$t('course.navItem.landing_page.editor.pricing_form.gift_on_completion')}</Label>
     </div>
     <div class="flex items-center space-x-2">
       <Switch bind:checked={giftToggled} />

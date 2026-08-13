@@ -11,7 +11,7 @@ import {
   ZCourseGetBySlugParam,
   ZCourseGetParam,
   ZCourseGetQuery,
-  ZCourseLandingPageUpdate,
+  ZCourseLandingPageUpdateValidated,
   ZCourseProgressParam,
   ZCourseProgressQuery,
   ZCourseUpdate,
@@ -284,7 +284,7 @@ export const courseRouter = new Hono()
     authOrAutomationKeyMiddleware,
     courseTeamMemberOrAutomationKeyMiddleware(['course:write']),
     zValidator('param', ZCourseUpdateParam),
-    zValidator('json', ZCourseLandingPageUpdate),
+    zValidator('json', ZCourseLandingPageUpdateValidated),
     async (c) => {
       try {
         const { courseId } = c.req.valid('param');

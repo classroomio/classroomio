@@ -1,5 +1,4 @@
 <script lang="ts">
-  import * as z from 'zod';
   import type { Component } from 'svelte';
   import { untrack } from 'svelte';
   import cloneDeep from 'lodash/cloneDeep';
@@ -23,6 +22,7 @@
     PreviewIcon
   } from '@cio/ui/custom/moving-icons';
   import type { TCourseUpdate } from '@cio/utils/validation/course';
+  import { ZPaymentLink } from '@cio/utils/validation/course';
   import type { LandingSectionKey } from '@cio/ui/custom/org-landing-page';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -70,12 +70,10 @@
   // eslint-disable-next-line svelte/prefer-writable-derived -- must be writable: bound to UnsavedChanges
   let hasUnsavedChanges = $state(false);
 
-  const ZPaymentUrl = z.url();
-
   const paymentLink = $derived((course.metadata?.paymentLink ?? '').trim());
   const isPaidWithoutPaymentLink = $derived(isCoursePaid(course) && !paymentLink);
   const isPaidWithInvalidPaymentLink = $derived(
-    isCoursePaid(course) && !!paymentLink && !ZPaymentUrl.safeParse(paymentLink).success
+    isCoursePaid(course) && !!paymentLink && !ZPaymentLink.safeParse(paymentLink).success
   );
 
   interface Section {

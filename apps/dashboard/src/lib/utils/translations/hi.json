@@ -949,7 +949,10 @@
             "gift": "उपहार के बारे में",
             "payment_required": "सशुल्क पाठ्यक्रमों के लिए भुगतान लिंक आवश्यक है",
             "enable_paid": "भुगतान सक्षम करें",
-            "payment_invalid_url": "कृपया एक मान्य URL दर्ज करें (उदा. https://pay.example.com)"
+            "payment_invalid_url": "कृपया एक मान्य URL दर्ज करें (उदा. https://pay.example.com)",
+            "payment_helper": "स्ट्राइप, लेमन स्क्वीज़ी या कोई भुगतान लिंक",
+            "percentage_helper": "प्रतिशत में %",
+            "gift_on_completion": "समापन पर उपहार"
           },
           "instructor_form": {
             "upload": "प्रशिक्षक लोगो",
