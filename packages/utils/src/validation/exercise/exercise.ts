@@ -156,7 +156,7 @@ const ZExerciseUpdateQuestionBase = z.object({
   exerciseSectionId: z.string().uuid().nullable().optional(),
   question: z.string().min(1),
   questionTypeId: ZExerciseQuestionTypeId.optional(),
-  points: z.number().int().min(1).optional(),
+  points: z.number().int().min(1),
   order: z.number().int().min(0).optional(),
   settings: z.record(z.string(), z.unknown()).optional(),
   deletedAt: z.string().optional(), // Marks question as deleted
@@ -195,7 +195,7 @@ const ZExerciseUpdateQuestion = ZExerciseUpdateQuestionBase.superRefine(validate
 const ZExerciseCreateQuestionBase = z.object({
   question: z.string().min(1),
   questionTypeId: ZExerciseQuestionTypeId.optional(),
-  points: z.number().int().min(1).optional(),
+  points: z.number().int().min(1),
   order: z.number().int().min(0).optional(),
   settings: z.record(z.string(), z.unknown()).optional(),
   options: z
