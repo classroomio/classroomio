@@ -77,13 +77,13 @@ then complete the type-specific checklist below.
 
 ### 2.2 Live Class Course
 
-- [ ] Create a new course, choose **Live Class**, name it "Test — Live Class".
-- [ ] Add a section with a lesson and an exercise.
-- [ ] Go to **Attendance** — verify the attendance tracker is available.
-- [ ] Go to **Marks** — verify the grading interface is available.
-- [ ] Create a live session from the sidebar (add a join link, date, and time).
-- [ ] Go to **People** — invite a student.
-- [ ] Go to **Settings** — enable grading, set a passing score.
+- [X] Create a new course, choose **Live Class**, name it "Test — Live Class".
+- [X] Add a section with a lesson and an exercise.
+- [X] Go to **Attendance** — verify the attendance tracker is available.
+- [X] Go to **Marks** — verify the grading interface is available.
+- [X] Create a live session from the sidebar (add a join link, date, and time).
+- [X] Go to **People** — invite a student.
+- [X] Go to **Settings** — enable grading, set a passing score.
 - 📸 **Screenshot:** The Marks page showing the grading interface.
 
 ### 2.3 Compliance Course
