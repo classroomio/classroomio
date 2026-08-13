@@ -1,9 +1,7 @@
 <script lang="ts">
   import { InputField } from '@cio/ui/custom/input-field';
   import TrashIcon from '@lucide/svelte/icons/trash';
-  import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import * as Tooltip from '@cio/ui/base/tooltip';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -13,8 +11,6 @@
     points?: any;
     hasError?: boolean;
     errorMsg?: string | null;
-    /** Hint shown next to the points input while points is 0 (e.g. auto-grade requires non-zero points) */
-    pointsHint?: string | null;
     onPointsChange?: any;
     elementId?: string;
     key?: string;
@@ -28,7 +24,6 @@
     points = $bindable(undefined),
     hasError = false,
     errorMsg = null,
-    pointsHint = null,
     onPointsChange = () => {},
     elementId,
     children
@@ -37,7 +32,7 @@
   let ref: HTMLDivElement | undefined = $state();
 
   // `points` is often bound to a plain store object property, which is not deeply
-  // reactive — a local reactive owner keeps the zero-points warning live while typing.
+  // reactive — a local reactive owner keeps the bound input value live while typing.
   let pointsValue = $state(points);
 
   $effect(() => {
@@ -74,32 +69,24 @@
           bind:value={
             () => pointsValue,
             (nextValue) => {
-              pointsValue = nextValue;
-              points = nextValue;
+              const parsedValue = Number(nextValue);
+              const isBelowMinValue =
+                nextValue !== '' && nextValue != null && Number.isFinite(parsedValue) && parsedValue < 1;
+              const clampedValue = isBelowMinValue ? 1 : nextValue;
+
+              pointsValue = clampedValue;
+              points = clampedValue;
             }
           }
           type="number"
+          min={1}
+          step={1}
           onchange={onPointsChange}
         />
-
-        {#if Number(pointsValue) === 0}
-          <Tooltip.Provider>
-            <Tooltip.Root>
-              <Tooltip.Trigger class="ml-2 shrink-0">
-                <TriangleAlertIcon size={16} class="text-amber-500 dark:text-amber-400" />
-              </Tooltip.Trigger>
-              <Tooltip.Content side="top" sideOffset={4}>
-                {$t('course.navItem.lessons.exercises.all_exercises.zero_points_warning')}
-              </Tooltip.Content>
-            </Tooltip.Root>
-          </Tooltip.Provider>
-        {/if}
       </div>
 
       {#if errorMsg}
         <p class="text-xs text-red-500">{errorMsg}</p>
-      {:else if pointsHint && Number(pointsValue) === 0}
-        <p class="ui:text-muted-foreground max-w-[min(100%,12rem)] text-xs">{pointsHint}</p>
       {/if}
 
       {#if onClose && !isTitle}

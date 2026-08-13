@@ -749,14 +749,7 @@
           <UnderlineTabs.Content value="questions" class="mx-auto w-full md:max-w-3xl">
             <UpdateDescription {preview} />
             {#if !preview}
-              <EditMode
-                {exerciseId}
-                {goBack}
-                {requiresPositivePointsForAutoGrade}
-                selfPacedCourse={isSelfPacedCourse}
-                {isPublicCourse}
-                {reorderQuestions}
-              />
+              <EditMode {exerciseId} {goBack} selfPacedCourse={isSelfPacedCourse} {isPublicCourse} {reorderQuestions} />
             {:else}
               <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmissions} />
             {/if}

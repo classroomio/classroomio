@@ -65,8 +65,6 @@
     shouldDeleteExercise?: boolean;
     exerciseId: string;
     goBack?: () => void;
-    /** All auto-gradable question types (any course): enforce points &gt; 0 for scoring */
-    requiresPositivePointsForAutoGrade?: boolean;
     selfPacedCourse?: boolean;
     /** Public course restricts picker to auto-gradable question types only. */
     isPublicCourse?: boolean;
@@ -77,7 +75,6 @@
     shouldDeleteExercise = $bindable(false),
     exerciseId: _exerciseId,
     goBack: _goBack = () => {},
-    requiresPositivePointsForAutoGrade = false,
     selfPacedCourse = false,
     isPublicCourse = false,
     reorderQuestions = false
@@ -432,9 +429,6 @@
     bind:points={$questionnaire.questions[questionStoreIndex].points}
     hasError={!!errors[question.id]}
     errorMsg={getQuestionErrorMsg(errors, question, 'points')}
-    pointsHint={isQuestionAutoGradable(question) && requiresPositivePointsForAutoGrade
-      ? $t('course.navItem.lessons.exercises.all_exercises.points_required_auto_grade')
-      : null}
     onPointsChange={() => {
       question.isDirty = true;
     }}

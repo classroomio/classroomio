@@ -124,7 +124,7 @@
         "custom": "{message}"
       },
       "points": {
-        "too_small": "Los puntos deben ser al menos 0."
+        "too_small": "Los puntos deben ser al menos 1."
       },
       "label": {
         "too_small": "Se requiere etiqueta de opción"
