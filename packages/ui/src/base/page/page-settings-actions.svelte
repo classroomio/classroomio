@@ -27,54 +27,51 @@
     onSave?: () => void | Promise<void>;
     onDiscard?: () => void;
   } = $props();
-
-  const actionsDisabled = $derived(!hasChanges || loading);
-
-  let dockSentinel: HTMLDivElement | null = $state(null);
-  let isDocked = $state(true);
-
-  $effect(() => {
-    if (!dockSentinel) return;
-
-    const observer = new IntersectionObserver(([entry]) => {
-      isDocked = entry.isIntersecting;
-    });
-    observer.observe(dockSentinel);
-
-    return () => observer.disconnect();
-  });
 </script>
 
-<div
-  bind:this={ref}
-  data-slot="page-settings-actions"
-  class={cn('ui:sticky ui:bottom-0 ui:z-50 ui:pb-4 ui:shrink-0', className)}
-  {...restProps}
->
+{#if hasChanges}
   <div
+    bind:this={ref}
+    data-slot="page-settings-actions"
     class={cn(
-      'ui:flex ui:flex-col ui:gap-3 ui:sm:flex-row ui:sm:items-center ui:sm:justify-between',
-      'ui:rounded-lg ui:border ui:border-border ui:bg-background ui:p-4 ui:transition-shadow',
-      !isDocked && 'ui:shadow-md',
-      contentClassName
+      'ui:pointer-events-none ui:sticky ui:bottom-0 ui:z-50 ui:flex ui:shrink-0 ui:justify-center ui:px-2 ui:pb-4',
+      className
     )}
+    {...restProps}
   >
-    <p class="ui:text-sm ui:text-muted-foreground">{statusLabel}</p>
+    <div
+      role="status"
+      aria-live="polite"
+      class={cn(
+        'ui:pointer-events-auto ui:flex ui:w-fit ui:max-w-full ui:flex-wrap ui:items-center ui:justify-center ui:gap-x-6 ui:gap-y-2 ui:rounded-lg ui:bg-foreground ui:px-3.5 ui:py-2 ui:text-background ui:shadow-lg',
+        contentClassName
+      )}
+    >
+      <div class="ui:flex ui:min-w-0 ui:items-center ui:gap-2">
+        <span
+          class="ui:flex ui:size-5 ui:shrink-0 ui:items-center ui:justify-center ui:rounded-full ui:bg-primary ui:text-[11px] ui:font-semibold ui:leading-none ui:text-primary-foreground"
+          aria-hidden="true"
+        >
+          !
+        </span>
+        <p class="ui:text-sm ui:font-medium">{statusLabel}</p>
+      </div>
 
-    <div class="ui:flex ui:shrink-0 ui:items-center ui:justify-end ui:gap-2">
-      <Button variant="ghost" type="button" disabled={actionsDisabled} onclick={onDiscard}>
-        {discardLabel}
-      </Button>
-      <Button type="button" {loading} disabled={actionsDisabled || disabled} onclick={onSave}>
-        {saveLabel}
-      </Button>
+      <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2">
+        <Button
+          variant="secondary"
+          size="sm"
+          type="button"
+          class="ui:bg-background ui:text-foreground ui:hover:bg-background/80"
+          disabled={loading}
+          onclick={onDiscard}
+        >
+          {discardLabel}
+        </Button>
+        <Button variant="default" size="sm" type="button" {loading} disabled={loading || disabled} onclick={onSave}>
+          {saveLabel}
+        </Button>
+      </div>
     </div>
   </div>
-</div>
-
-<div
-  bind:this={dockSentinel}
-  data-slot="page-settings-actions-sentinel"
-  class="ui:h-px ui:shrink-0"
-  aria-hidden="true"
-></div>
+{/if}
