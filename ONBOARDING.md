@@ -88,20 +88,20 @@ then complete the type-specific checklist below.
 
 ### 2.3 Compliance Course
 
-- [ ] Create a new course, choose **Compliance**, name it "Test — Compliance".
-- [ ] Open the course.
-- [ ] Add a section with a lesson and an exercise (make sure the exercise has auto-gradable questions).
-- [ ] Navigate to **Certificate** from the course sidebar.
-- [ ] Open the **Settings** tab within the Certificate page.
-- [ ] Configure:
-  - [ ] Minimum completion / passing score.
-  - [ ] Due date.
-  - [ ] Grace period.
-  - [ ] Retake interval and maximum attempts.
-  - [ ] Reminder days before the deadline.
-  - [ ] Mark the course as mandatory (if applicable).
-- [ ] Go to **Compliance** in the course sidebar — verify the compliance dashboard tiles are shown (compliant, non-compliant, in progress, not started, etc.).
-- [ ] Go back to **Stats → Compliance** at the org level — confirm this course now appears in the course breakdown table.
+- [X] Create a new course, choose **Compliance**, name it "Test — Compliance".
+- [X] Open the course.
+- [X] Add a section with a lesson and an exercise (make sure the exercise has auto-gradable questions).
+- [X] Navigate to **Certificate** from the course sidebar.
+- [X] Open the **Settings** tab within the Certificate page.
+- [X] Configure:
+  - [X] Minimum completion / passing score.
+  - [X] Due date.
+  - [X] Grace period.
+  - [X] Retake interval and maximum attempts.
+  - [X] Reminder days before the deadline.
+  - [X] Mark the course as mandatory (if applicable).
+- [X] Go to **Compliance** in the course sidebar — verify the compliance dashboard tiles are shown (compliant, non-compliant, in progress, not started, etc.).
+- [X] Go back to **Stats → Compliance** at the org level — confirm this course now appears in the course breakdown table.
 - 📸 **Screenshot:** The course compliance dashboard with status tiles.
 - 📸 **Screenshot:** The org-level compliance page showing the course in the breakdown table.
 
