@@ -122,33 +122,33 @@ one of each question type below. This is how you learn the authoring and grading
 
 ### Auto-graded types
 
-- [ ] **Single Answer (Radio)** — add a question with 4 options, mark one correct.
-- [ ] **Multiple Answers (Checkbox)** — add a question with 4 options, mark 2 correct. Verify partial credit works.
-- [ ] **True / False** — add a true/false question.
-- [ ] **Numeric** — add a question with a numeric answer and tolerance range.
-- [ ] **Fill in the Blank** — add a question with a sentence containing one or more blanks.
-- [ ] **Word Bank** — add a question where students drag/select from a word bank.
+- [x] **Single Answer (Radio)** — add a question with 4 options, mark one correct.
+- [X] **Multiple Answers (Checkbox)** — add a question with 4 options, mark 2 correct. Verify partial credit works.
+- [X] **True / False** — add a true/false question.
+- [X] **Numeric** — add a question with a numeric answer and tolerance range.
+- [X] **Fill in the Blank** — add a question with a sentence containing one or more blanks.
+- [X] **Word Bank** — add a question where students drag/select from a word bank.
 
 ### Manually graded types
 
-- [ ] **Paragraph (Textarea)** — add a long-form text question.
-- [ ] **Short Answer** — add a short text question.
-- [ ] **File Upload** *(premium)* — add a file upload question. Verify the upload dialog works.
-- [ ] **Link** *(premium)* — add a question that asks for a URL.
-- [ ] **Video Recording** *(premium)* — add a video recording question. Test the camera capture, record, and preview flow.
+- [X] **Paragraph (Textarea)** — add a long-form text question.
+- [X] **Short Answer** — add a short text question.
+- [X] **File Upload** *(premium)* — add a file upload question. Verify the upload dialog works.
+- [X] **Link** *(premium)* — add a question that asks for a URL.
+- [X] **Video Recording** *(premium)* — add a video recording question. Test the camera capture, record, and preview flow.
 
 ### Premium types
 
-- [ ] **Ordering** *(premium)* — add an ordering/drag-and-drop question.
-- [ ] **Star Rating** *(premium)* — add a star rating question.
+- [X] **Ordering** *(premium)* — add an ordering/drag-and-drop question.
+- [X] **Star Rating** *(premium)* — add a star rating question.
 
 ### After creating the exercise
 
-- [ ] Preview the exercise as a student would see it.
-- [ ] Submit a test response as a student.
-- [ ] Go to the **submissions summary** view in the admin — check the charts and aggregate data.
-- [ ] Open the **individual submission** view — grade the manually-graded questions.
-- [ ] Verify the student's exercise status changes from "Submitted" to "Graded".
+- [X] Preview the exercise as a student would see it.
+- [X] Submit a test response as a student.
+- [X] Go to the **submissions summary** view in the admin — check the charts and aggregate data.
+- [X] Open the **individual submission** view — grade the manually-graded questions.
+- [X] Verify the student's exercise status changes from "Submitted" to "Graded".
 - 📸 **Screenshot:** The exercise editor showing multiple question types in the list.
 - 📸 **Screenshot:** The submissions summary view with charts.
 - 📸 **Screenshot:** The individual submission view with graded answers.
