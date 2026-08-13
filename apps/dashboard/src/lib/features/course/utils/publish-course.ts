@@ -1,3 +1,4 @@
+import * as z from 'zod';
 import { generateSlug } from '@cio/utils/functions';
 import { isObject } from '$lib/utils/functions/isObject';
 import { isCoursePaid } from '$lib/utils/functions/course';
@@ -9,9 +10,18 @@ export async function publishCourse(course: Course): Promise<boolean> {
     return false;
   }
 
-  if (isCoursePaid(course) && !(course.metadata?.paymentLink ?? '').trim()) {
-    snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
-    return false;
+  if (isCoursePaid(course)) {
+    const paymentLink = (course.metadata?.paymentLink ?? '').trim();
+
+    if (!paymentLink) {
+      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
+      return false;
+    }
+
+    if (!z.url().safeParse(paymentLink).success) {
+      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_invalid_url');
+      return false;
+    }
   }
 
   let slug = course.slug?.trim() ? course.slug : undefined;

@@ -23,6 +23,7 @@
 
   let paymentLink = $derived(get(course, 'metadata.paymentLink', '') ?? '');
   let isPaid = $derived(isCoursePaid(course));
+  let cost = $derived(toFiniteNumber(course.cost) ?? 0);
   let showDiscount = $derived(Boolean(get(course, 'metadata.showDiscount', false)));
   let discount = $derived(toFiniteNumber(get(course, 'metadata.discount', 0)) ?? 0);
   let giftToggled = $derived(Boolean(get(course, 'metadata.reward.show', false)));
@@ -75,16 +76,15 @@
     }
   }
 
-  function handleCostChange(value: string) {
-    setter(toFiniteNumber(value) ?? 0, 'cost');
-  }
-
   function handleChange(content: string) {
     setter(content, 'metadata.reward.description');
   }
 
   $effect(() => {
     setter(showDiscount, 'metadata.showDiscount');
+  });
+  $effect(() => {
+    setter(toFiniteNumber(cost) ?? 0, 'cost');
   });
   $effect(() => {
     setter(paymentLink, 'metadata.paymentLink');
@@ -131,8 +131,7 @@
       labelClassName="font-bold"
       label={$t('course.navItem.landing_page.editor.pricing_form.cost')}
       type="number"
-      bind:value={course.cost}
-      onInputChange={(e) => handleCostChange(e.currentTarget.value)}
+      bind:value={cost}
     />
 
     <InputField
