@@ -107,10 +107,10 @@ then complete the type-specific checklist below.
 
 ### 2.4 Public Course
 
-- [ ] Create a new course, choose **Public**, name it "Test — Public".
-- [ ] Add a section and a lesson.
-- [ ] Preview the course landing page — verify there is no "Join course" button since it is open content.
-- [ ] Log out and visit the course URL as an anonymous visitor — confirm you can see the lesson content without signing in.
+- [X] Create a new course, choose **Public**, name it "Test — Public".
+- [X] Add a section and a lesson.
+- [X] Preview the course landing page — verify there is no "Join course" button since it is open content.
+- [X] Log out and visit the course URL as an anonymous visitor — confirm you can see the lesson content without signing in.
 - 📸 **Screenshot:** The public course viewed in an incognito window (no login).
 
 ---
