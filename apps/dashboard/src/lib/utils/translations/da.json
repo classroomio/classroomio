@@ -4858,7 +4858,7 @@
       "no_matching_cohort_courses": "Ingen kohortekurser matcher din søgning.",
       "pagination_status": "Side {page} af {totalPages}",
       "published_access_callout_title": "Studerendes adgang",
-      "published_access_callout_description": "Studerende har kun adgang til publicerede kurser. Kurser kan være i denne kohorte for dit team, mens de stadig er upublicerede, og de forbliver skjulte for studerende, indtil du publicerer dem."
+      "published_access_callout_description": "Studerende har kun adgang til offentliggjorte kurser. Kurser kan være i denne kohorte for dit team, mens de stadig ikke er udgivet, men de forbliver skjulte for eleverne, indtil du udgiver dem."
     },
     "newsfeed": {
       "post": "Nyt indlæg",

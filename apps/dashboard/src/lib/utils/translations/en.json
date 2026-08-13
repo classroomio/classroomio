@@ -4903,7 +4903,7 @@
       "empty_title": "No courses yet",
       "empty_description": "Add courses to this cohort.",
       "published_access_callout_title": "Student access",
-      "published_access_callout_description": "Students only have access to published courses. Courses can be in this cohort for your team while still unpublished while those stay hidden from students until you publish them."
+      "published_access_callout_description": "Students only have access to published courses. Courses can be in this cohort for your team while still unpublished, but they remain hidden from students until you publish them."
     },
     "people": {
       "invite": "Invite",
