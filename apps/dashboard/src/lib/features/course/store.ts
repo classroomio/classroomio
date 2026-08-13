@@ -47,7 +47,7 @@ export const defaultCourse: Course = {
     videoUrl: '',
     showDiscount: false,
     discount: 0,
-    isPaid: false,
+    paymentEnabled: false,
     paymentLink: '',
     reward: {
       show: false,

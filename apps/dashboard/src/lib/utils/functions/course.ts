@@ -2,11 +2,11 @@ export const isCourseFree = (cost: number) => !(Number(cost) > 0);
 
 export type CoursePaidSource = {
   cost?: number | null;
-  metadata?: { isPaid?: boolean; discount?: number; showDiscount?: boolean } | null;
+  metadata?: { paymentEnabled?: boolean; discount?: number; showDiscount?: boolean } | null;
 } | null;
 
 export const isCoursePaid = (course: CoursePaidSource) => {
-  const paidFlag = course?.metadata?.isPaid;
+  const paidFlag = course?.metadata?.paymentEnabled;
   if (typeof paidFlag === 'boolean') return paidFlag;
   return !isCourseFree(Number(course?.cost ?? 0));
 };

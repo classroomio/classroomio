@@ -16,9 +16,10 @@
   interface Props {
     course: Course;
     setter: (value: any, key: string) => void;
+    showPaymentError?: boolean;
   }
 
-  let { course = $bindable(), setter }: Props = $props();
+  let { course = $bindable(), setter, showPaymentError = $bindable(false) }: Props = $props();
 
   let paymentLink = $derived(get(course, 'metadata.paymentLink', '') ?? '');
   let isPaid = $derived(isCoursePaid(course));
@@ -68,10 +69,14 @@
   }
 
   function handlePaidChange(checked: boolean) {
-    setter(checked, 'metadata.isPaid');
+    setter(checked, 'metadata.paymentEnabled');
     if (!checked) {
       paymentLinkError = '';
     }
+  }
+
+  function handleCostChange(value: string) {
+    setter(toFiniteNumber(value) ?? 0, 'cost');
   }
 
   function handleChange(content: string) {
@@ -127,20 +132,19 @@
       label={$t('course.navItem.landing_page.editor.pricing_form.cost')}
       type="number"
       bind:value={course.cost}
+      onInputChange={(e) => handleCostChange(e.currentTarget.value)}
     />
 
-    {#if !!(course.cost && course.cost > 0)}
-      <InputField
-        className="mt-5"
-        labelClassName="font-bold"
-        label={$t('course.navItem.landing_page.editor.pricing_form.payment')}
-        helperMessage="Stripe, Lemon Squeezy or any payment link"
-        isRequired
-        errorMessage={paymentLinkErrorMessage}
-        bind:value={paymentLink}
-        onchange={(e) => handlePaymentLinkChange(e.currentTarget.value)}
-      />
-    {/if}
+    <InputField
+      className="mt-5"
+      labelClassName="font-bold"
+      label={$t('course.navItem.landing_page.editor.pricing_form.payment')}
+      helperMessage="Stripe, Lemon Squeezy or any payment link"
+      isRequired
+      errorMessage={paymentLinkErrorMessage}
+      bind:value={paymentLink}
+      onchange={(e) => handlePaymentLinkChange(e.currentTarget.value)}
+    />
   {/if}
 
   <div class="mt-5">
