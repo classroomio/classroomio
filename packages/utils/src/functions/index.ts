@@ -1,4 +1,5 @@
 export * from './array';
+export * from './course-progression';
 export * from './currency';
 export * from './fileValidation';
 export * from './number';
