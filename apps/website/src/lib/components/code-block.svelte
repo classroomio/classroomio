@@ -75,7 +75,7 @@
 
 <style>
   /* JetBrains Mono loaded via the Google Fonts link in src/app.html. System stack as fallback. */
-  /* :global(...*) forces the font onto every descendant — including {@html}-rendered
+  /* :global(...*) forces the font onto every descendant, including {@html}-rendered
      spans that don't carry Svelte's scope hash, and overrides any stray universal rules. */
   .cio-code-font,
   :global(.cio-code-font *) {

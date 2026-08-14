@@ -858,7 +858,10 @@
           "description": "Les étudiants inscrits ne pourront pas suivre de leçons ou d'exercices verrouillés tant que vous ne les aurez pas déverrouillés.",
           "description_live": "Les leçons et les exercices verrouillés restent cachés aux étudiants jusqu'à ce que vous les déverrouilliez, ce qui est utile si vous publiez du contenu semaine après semaine.",
           "unlock_all": "Débloquez tout"
-        }
+        },
+        "certificate_deadline_required": "Définir d'abord la date limite du certificat",
+        "certificate_deadline_required_description": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits. Veuillez définir une date limite dans les paramètres du certificat avant de publier.",
+        "go_to_certificate_settings": "Accédez aux paramètres du certificat"
       },
       "analytics": {
         "title": "Analytique"
@@ -2475,7 +2478,9 @@
       "blocker_final_misconfigured": "L'exercice de certification « {exerciseTitle} » n'a aucun point configuré ; demandez à votre instructeur de le réparer.",
       "email_message_label": "Message électronique",
       "email_message_placeholder": "par ex. Nous sommes fiers de vos progrès – continuez à apprendre !",
-      "final_exercise_multiple_attempts_note": "Les étudiants auront droit à des tentatives illimitées sur l'exercice sélectionné."
+      "final_exercise_multiple_attempts_note": "Les étudiants auront droit à des tentatives illimitées sur l'exercice sélectionné.",
+      "deadline_required": "La date limite du certificat est requise lorsque les certificats sont téléchargeables.",
+      "deadline_required_enroll": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits."
     },
     "creator": {
       "heading": "Quel cours souhaitez-vous créer ?",
@@ -3810,7 +3815,8 @@
       "title": "Inscription désactivée",
       "invite_only_message": "L'inscription se fait sur invitation uniquement. Veuillez utiliser un lien d'invitation pour créer un compte.",
       "go_to_login": "Allez dans Connexion"
-    }
+    },
+    "continue_with": "Ou continuer avec"
   },
   "app": {
     "search": {
@@ -4852,7 +4858,8 @@
       "no_matching_cohort_courses": "Aucun cours de cohorte ne correspond à votre recherche.",
       "pagination_status": "Page {page} sur {totalPages}",
       "published_access_callout_title": "Accès étudiant",
-      "published_access_callout_description": "Les étudiants n’ont accès qu’aux cours publiés. Les cours peuvent figurer dans cette cohorte pour votre équipe alors qu’ils ne sont pas encore publiés, tout en restant cachés aux étudiants jusqu’à leur publication."
+      "published_access_callout_description": "Les étudiants n'ont accès qu'aux cours publiés. Les cours peuvent figurer dans cette cohorte pour votre équipe même s'ils ne sont pas encore publiés, mais ils restent cachés aux étudiants jusqu'à ce que vous les publiiez.",
+      "empty_student_description": "Il n'y a pas encore de cours publiés dans cette cohorte."
     },
     "newsfeed": {
       "post": "Nouveau message",

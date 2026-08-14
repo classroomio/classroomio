@@ -1,22 +1,16 @@
 name: Publish @classroomio/mcp to NPM
 
+# Publish-only. Never triggered by pull_request — keeps NPM_TOKEN off the PR trust boundary.
+# PR/push build verification lives in mcp-package-build-check.yml.
+
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - "packages/mcp/**"
-
-  push:
-    paths:
-      - "packages/mcp/**"
-    branches:
-      - main
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: production
     permissions:
-      packages: write
       contents: read
     steps:
       - uses: actions/checkout@v4
@@ -24,18 +18,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.19.3
-          registry-url: "https://registry.npmjs.org"
+          registry-url: 'https://registry.npmjs.org'
 
       - uses: pnpm/action-setup@v4
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build publishable MCP package
         run: pnpm mcp:build
 
       - name: Publish package
-        if: github.event_name == 'workflow_dispatch'
         run: pnpm --filter @classroomio/mcp publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

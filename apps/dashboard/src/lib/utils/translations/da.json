@@ -858,7 +858,10 @@
           "description": "Tilmeldte elever vil ikke kunne tage låste lektioner eller øvelser, før du låser dem op.",
           "description_live": "Låste lektioner og øvelser forbliver skjult for eleverne, indtil du låser dem op - nyttigt, hvis du udgiver indhold uge for uge.",
           "unlock_all": "Lås alle op"
-        }
+        },
+        "certificate_deadline_required": "Indstil certifikatfrist først",
+        "certificate_deadline_required_description": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes. Indstil venligst en deadline i certifikatindstillingerne før udgivelse.",
+        "go_to_certificate_settings": "Gå til Certifikatindstillinger"
       },
       "analytics": {
         "title": "Analyse"
@@ -2475,7 +2478,9 @@
       "blocker_final_misconfigured": "Certificeringsøvelsen \"{exerciseTitle}\" har ingen point konfigureret; bed din instruktør om at ordne det.",
       "email_message_label": "E-mail besked",
       "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!",
-      "final_exercise_multiple_attempts_note": "Elever får lov til ubegrænsede forsøg på den valgte øvelse."
+      "final_exercise_multiple_attempts_note": "Elever får lov til ubegrænsede forsøg på den valgte øvelse.",
+      "deadline_required": "Certifikatfrist er påkrævet, når certifikater kan downloades.",
+      "deadline_required_enroll": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes."
     },
     "creator": {
       "heading": "Hvilket kursus vil du lave?",
@@ -3810,7 +3815,8 @@
       "title": "Tilmelding deaktiveret",
       "invite_only_message": "Tilmelding er kun for invitationer. Brug venligst et invitationslink til at oprette en konto.",
       "go_to_login": "Gå til Login"
-    }
+    },
+    "continue_with": "Eller fortsæt med"
   },
   "app": {
     "search": {
@@ -4852,7 +4858,8 @@
       "no_matching_cohort_courses": "Ingen kohortekurser matcher din søgning.",
       "pagination_status": "Side {page} af {totalPages}",
       "published_access_callout_title": "Studerendes adgang",
-      "published_access_callout_description": "Studerende har kun adgang til publicerede kurser. Kurser kan være i denne kohorte for dit team, mens de stadig er upublicerede, og de forbliver skjulte for studerende, indtil du publicerer dem."
+      "published_access_callout_description": "Studerende har kun adgang til offentliggjorte kurser. Kurser kan være i denne kohorte for dit team, mens de stadig ikke er udgivet, men de forbliver skjulte for eleverne, indtil du udgiver dem.",
+      "empty_student_description": "Der er endnu ingen offentliggjorte kurser i denne kohorte."
     },
     "newsfeed": {
       "post": "Nyt indlæg",
