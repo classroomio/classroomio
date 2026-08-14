@@ -53,7 +53,7 @@
       description: item.course.description ?? '',
       lessonCount: 0,
       totalStudents: 0,
-      isPublished: item.course.status === 'ACTIVE',
+      isPublished: !!item.course.isPublished,
       tags: []
     }))
   );
@@ -176,7 +176,7 @@
                     <p>{item.course.description}</p>
                   </Table.Cell>
                   <Table.Cell>
-                    <CoursePublishBadge isPublished={item.course.status === 'ACTIVE'} />
+                    <CoursePublishBadge isPublished={!!item.course.isPublished} />
                   </Table.Cell>
                   {#if !$isStudentExperience}
                     <Table.Cell class="text-center">
