@@ -260,7 +260,9 @@ jobs:
           for svc in $APP_SERVICES; do
             echo "::group::railway up $svc"
             log_file=$(mktemp)
-            if ! railway up --service "$svc" --ci 2>&1 | tee "$log_file"; then
+            railway up --service "$svc" --ci 2>&1 | tee "$log_file"
+            railway_status=${PIPESTATUS[0]}
+            if [ "$railway_status" -ne 0 ]; then
               if grep -q "Failed to stream build logs:" "$log_file"; then
                 deploy_id=$(grep -oP '(?<=[?&]id=)[0-9a-fA-F-]+' "$log_file" | head -n1)
                 if [ -z "$deploy_id" ]; then
