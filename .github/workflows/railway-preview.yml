@@ -245,38 +245,47 @@ jobs:
         # `--ci` (not `--detach`) blocks until each service's deploy/healthcheck succeeds,
         # so the URL printed later is actually live. Trade-off: builds run sequentially.
         #
-        # `railway up --ci` has a known upstream flakiness (railwayapp/cli#696): it opens
-        # a subscription to stream build logs, and that subscription intermittently fails
-        # to establish/retrieve ("Failed to stream build logs: Failed to retrieve build
-        # log"), which makes the CLI exit 1 even when the deployment itself reached
-        # SUCCESS. So a bare failure here doesn't mean the deploy actually failed — poll
-        # the deployment's real status via the API before trusting the CLI's exit code.
+        # `railway up --ci` can exit 1 on a log-streaming glitch (railwayapp/cli#696) even
+        # though the deploy succeeded. Only on that specific error do we poll the real
+        # deployment status instead of trusting the exit code — any other failure means no
+        # new deployment exists yet, so it fails immediately rather than risking a match
+        # against a stale, unrelated deployment.
         run: |
           for svc in $APP_SERVICES; do
             echo "::group::railway up $svc"
-            if ! railway up --service "$svc" --ci; then
-              echo "railway up reported failure for $svc; checking actual deployment status..."
-              status=""
-              for attempt in $(seq 1 60); do
-                status=$(railway deployment list --service "$svc" --json --limit 1 2>/dev/null | jq -r '.[0].status // empty')
-                case "$status" in
-                  SUCCESS)
-                    echo "Deployment for $svc actually succeeded (status: SUCCESS) — the CLI error was just a log-streaming glitch. Continuing."
-                    break
-                    ;;
-                  FAILED|CRASHED|REMOVED)
-                    echo "::error::$svc deployment did not succeed (status: $status)."
+            log_file=$(mktemp)
+            if ! railway up --service "$svc" --ci 2>&1 | tee "$log_file"; then
+              if grep -q "Failed to stream build logs:" "$log_file"; then
+                echo "railway up reported failure for $svc due to the known log-streaming glitch; checking actual deployment status..."
+                status=""
+                for attempt in $(seq 1 60); do
+                  status=$(railway deployment list --service "$svc" --json --limit 1 2>/dev/null | jq -r '.[0].status // empty')
+                  case "$status" in
+                    SUCCESS)
+                      echo "Deployment for $svc actually succeeded (status: SUCCESS) — the CLI error was just a log-streaming glitch. Continuing."
+                      break
+                      ;;
+                    FAILED|CRASHED|REMOVED)
+                      echo "::error::$svc deployment did not succeed (status: $status)."
+                      rm -f "$log_file"
+                      exit 1
+                      ;;
+                  esac
+                  if [ "$attempt" -eq 60 ]; then
+                    echo "::error::$svc deployment never reached a terminal status after 60 attempts (last seen: ${status:-unknown})."
+                    rm -f "$log_file"
                     exit 1
-                    ;;
-                esac
-                if [ "$attempt" -eq 60 ]; then
-                  echo "::error::$svc deployment never reached a terminal status after 60 attempts (last seen: ${status:-unknown})."
-                  exit 1
-                fi
-                echo "Deployment for $svc not finished yet (status: ${status:-unknown}, attempt $attempt/60) — retrying in 10s..."
-                sleep 10
-              done
+                  fi
+                  echo "Deployment for $svc not finished yet (status: ${status:-unknown}, attempt $attempt/60) — retrying in 10s..."
+                  sleep 10
+                done
+              else
+                echo "::error::railway up failed for $svc for a reason other than the known log-streaming glitch — not polling stale deployment status."
+                rm -f "$log_file"
+                exit 1
+              fi
             fi
+            rm -f "$log_file"
             echo "::endgroup::"
           done
 
