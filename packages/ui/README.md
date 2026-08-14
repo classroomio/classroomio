@@ -139,9 +139,9 @@ Composable page shell used across dashboard list and settings screens. Import as
 | `Page.Action`                  | Right-aligned header actions                                 |
 | `Page.Body`                    | Main content area (`child` snippet)                          |
 | `Page.BodyHeader`              | Toolbar inside the body                                      |
-| `Page.SettingsActions`         | Save/discard bar for settings forms (floats, then docks)     |
+| `Page.SettingsActions`         | Compact save/discard card for dirty settings forms           |
 
-**Settings pages:** Place `Page.SettingsActions` as the last child inside `Page.Root`, after `Page.Body`. The bar uses `position: sticky; bottom: 0` so it stays pinned to the viewport bottom while you scroll, then settles into normal flow at the end of the page. Do not put `overflow` on `Page.Root` that would break sticky positioning (horizontal overflow on `Page.Body` is fine). Disable Save and Discard via `hasChanges={false}` when the form is clean. Pass translated `statusLabel`, `discardLabel`, and `saveLabel` props from the dashboard. Use `disabled` to block Save only (Discard still follows `hasChanges`). Use `contentClass` for extra classes on the inner card when needed.
+**Settings pages:** Place `Page.SettingsActions` as the last child inside `Page.Root`, after `Page.Body`. The card uses `position: sticky; bottom: 0` so it stays pinned to the viewport bottom while you scroll, then settles into normal flow at the end of the page. Do not put `overflow` on `Page.Root` that would break sticky positioning (horizontal overflow on `Page.Body` is fine). The card is compact and centered (not full width) and **only renders when `hasChanges` is true**. Pass translated `statusLabel`, `discardLabel`, and `saveLabel` props from the dashboard. Save is a primary button; Discard is a secondary button. Use `disabled` to block Save only (Discard still follows `loading`). Use `contentClass` for extra classes on the inner card when needed.
 
 **`Page.Root` can come from a layout.** "Last child of `Page.Root`" is a runtime relationship, not a same-file one. Where a `+layout.svelte` owns the `Page.Root` and renders pages into it via `{@render children?.()}`, the page file itself contains only `Page.Header`, `Page.Body`, and `Page.SettingsActions` — that is correct and already satisfies the rule. Do **not** add a second `Page.Root` in the page: nesting them stacks two `min-h-[calc(100vh-48px)]` containers, drops the layout's width constraints, and shortens the sticky bar's containing block so it stops floating. Pages that rely on a layout-owned `Page.Root`:
 
@@ -150,11 +150,11 @@ Composable page shell used across dashboard list and settings screens. Import as
 
 **Never render `Page.SettingsActions` from inside `Page.Body`.** That includes rendering it from a feature component that a route passes into `Page.Body`'s `child` snippet. `Page.Body` sets `overflow-x-hidden`, and CSS computes `overflow-y` to `auto` whenever the other axis is not `visible` — so `Page.Body` is a scroll container. It is sized by its content and never scrolls internally, so a sticky bar inside it has no travel and renders flat at the end of the content. Keep the bar a sibling of `Page.Body` and lift the dirty/saving state up to the route with `bind:this` and `bind:hasUnsavedChanges`, the way `routes/(app)/courses/[id]/settings/+page.svelte` does.
 
-The bar also sits at `z-50`, matching the editor root so it paints above editor content (later in DOM wins the tie) while staying below body-portaled dialogs and sheets. Its shadow appears only while it is pinned away from its flow position, tracked by an `IntersectionObserver` on a 1px sentinel rendered as its next sibling.
+The card also sits at `z-50`, matching the editor root so it paints above editor content (later in DOM wins the tie) while staying below body-portaled dialogs and sheets. The sticky wrapper is full width with `pointer-events: none` so it does not block clicks beside the compact card.
 
 | Prop           | Description                                            |
 | -------------- | ------------------------------------------------------ |
-| `hasChanges`   | Enables Save and Discard when the form is dirty        |
+| `hasChanges`   | When true, shows the floating save/discard card        |
 | `loading`      | Shows loading state on Save                            |
 | `disabled`     | Disables Save only (e.g. while not initialized)        |
 | `contentClass` | Extra classes on the inner card (width, padding, etc.) |
