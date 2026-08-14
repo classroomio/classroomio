@@ -178,6 +178,9 @@ export function formatCourseForWidget(
   course: OrgCourse,
   tags: BuildWidgetPayloadCourse['tags']
 ): BuildWidgetPayloadCourse {
+  const isPaidFlag = (course.metadata as { paymentEnabled?: boolean } | null | undefined)?.paymentEnabled;
+  const isPaidCourse = typeof isPaidFlag === 'boolean' ? isPaidFlag : Boolean(course.cost);
+
   return {
     id: course.id,
     slug: course.slug ?? course.id,
@@ -185,7 +188,7 @@ export function formatCourseForWidget(
     description: course.description,
     imageUrl: course.bannerImage || course.logo || null,
     isPublished: course.isPublished,
-    price: course.cost ? `${course.currency} ${course.cost}` : 'Free',
+    price: isPaidCourse && course.cost ? `${course.currency} ${course.cost}` : 'Free',
     lessonCount: course.lessonCount,
     exerciseCount: course.exerciseCount ?? 0,
     courseType: course.type,

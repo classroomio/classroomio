@@ -3,6 +3,8 @@
   import { untrack } from 'svelte';
   import cloneDeep from 'lodash/cloneDeep';
   import set from 'lodash/set';
+  import get from 'lodash/get';
+  import isEqual from 'lodash/isEqual';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import { currentOrgDomain } from '$lib/utils/store/org';
@@ -20,10 +22,11 @@
     PreviewIcon
   } from '@cio/ui/custom/moving-icons';
   import type { TCourseUpdate } from '@cio/utils/validation/course';
+  import { ZPaymentLink } from '@cio/utils/validation/course';
   import type { LandingSectionKey } from '@cio/ui/custom/org-landing-page';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import { CloseButton } from '$features/ui';
+  import { CloseButton, UnsavedChanges } from '$features/ui';
   import HeaderForm from './header-form.svelte';
   import RequirementForm from './requirement-form.svelte';
   import DescriptionForm from './description-form.svelte';
@@ -42,6 +45,8 @@
 
   import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
+  import { isCoursePaid } from '$lib/utils/functions/course';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   interface Props {
     course: Course;
@@ -61,6 +66,15 @@
 
   const sidebar = useSidebar();
   let loading = $state(false);
+  let showPaymentError = $state(false);
+  // eslint-disable-next-line svelte/prefer-writable-derived -- must be writable: bound to UnsavedChanges
+  let hasUnsavedChanges = $state(false);
+
+  const paymentLink = $derived((course.metadata?.paymentLink ?? '').trim());
+  const isPaidWithoutPaymentLink = $derived(isCoursePaid(course) && !paymentLink);
+  const isPaidWithInvalidPaymentLink = $derived(
+    isCoursePaid(course) && !!paymentLink && !ZPaymentLink.safeParse(paymentLink).success
+  );
 
   interface Section {
     key: LandingSectionKey;
@@ -136,6 +150,21 @@
       return;
     }
 
+    if (selectedSectionKey === 'pricing') {
+      if (isPaidWithoutPaymentLink) {
+        showPaymentError = true;
+        snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
+        return;
+      }
+
+      if (isPaidWithInvalidPaymentLink) {
+        showPaymentError = true;
+        snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_invalid_url');
+        return;
+      }
+    }
+
+    showPaymentError = false;
     selectedSectionKey = null;
   }
 
@@ -184,6 +213,7 @@
 
     loading = false;
     syncCourseStore(course);
+    hasUnsavedChanges = false;
   }
 
   function handlePreview() {
@@ -197,12 +227,21 @@
   function setter(value: unknown, setterKey: string) {
     if (typeof value === 'undefined') return;
 
+    if (isEqual(get(course, setterKey), value)) return;
+
     const _course = untrack(() => cloneDeep(course));
     set(_course, setterKey, value);
 
     course = _course;
+    hasUnsavedChanges = true;
+  }
+
+  function markDirty() {
+    hasUnsavedChanges = true;
   }
 </script>
+
+<UnsavedChanges bind:hasUnsavedChanges />
 
 <Sidebar.Header
   class="flex flex-row! items-center {sidebar.open ? 'justify-between' : 'justify-center'} border-b px-2 py-2"
@@ -266,7 +305,7 @@
   {:else}
     <div class="p-4">
       {#if selectedSection.key === 'header'}
-        <HeaderForm bind:course />
+        <HeaderForm bind:course {markDirty} />
       {:else if selectedSection.key === 'requirement'}
         <RequirementForm bind:course {setter} />
       {:else if selectedSection.key === 'description'}
@@ -282,7 +321,7 @@
       {:else if selectedSection.key === 'instructor'}
         <InstructorForm bind:course {setter} />
       {:else if selectedSection.key === 'pricing'}
-        <PricingForm bind:course {setter} />
+        <PricingForm bind:course {setter} bind:showPaymentError />
       {/if}
     </div>
   {/if}

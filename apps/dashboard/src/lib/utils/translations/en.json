@@ -3530,13 +3530,19 @@
             "total": "Total number of courses"
           },
           "pricing_form": {
+            "enable_paid": "Enable Paid",
             "currency": "Currency",
             "cost": "Cost",
             "payment": "Payment Link",
+            "payment_required": "A payment link is required for paid courses",
+            "payment_invalid_url": "Please enter a valid URL (e.g. https://pay.example.com)",
+            "payment_helper": "Stripe, Lemon Squeezy or any payment link",
             "discount": "Discount",
             "no": "No",
             "yes": "Yes",
             "percent": "Discount Percent",
+            "percentage_helper": "In Percentage %",
+            "gift_on_completion": "Gift on Completion",
             "gift": "About Gift"
           }
         },

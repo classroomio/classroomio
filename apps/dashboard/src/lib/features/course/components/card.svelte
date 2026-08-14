@@ -17,7 +17,7 @@
 
   import { Image } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
-  import { calcCourseDiscount } from '$lib/utils/functions/course';
+  import { calcCourseEffectiveCost } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { calcCourseProgress, calcProgressRate } from '$features/course/utils/functions';
   import {
@@ -140,7 +140,7 @@
     }
   };
 
-  let cost = $derived(calcCourseDiscount(pricingData.discount, pricingData.cost ?? 0, !!pricingData.showDiscount));
+  let cost = $derived(calcCourseEffectiveCost(course));
 
   let courseUrl = $derived.by(() => {
     if (onExploreClick && isLMS && isExplore) {

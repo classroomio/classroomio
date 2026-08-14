@@ -633,7 +633,9 @@ export async function enrollInCourse(
 
   const { groupId, cost: courseCost, status, isPublished, title } = courseWithRelations;
   const cost = Number(courseCost ?? 0);
-  if (cost > 0) {
+  const isPaidFlag = (courseWithRelations.metadata as { paymentEnabled?: boolean } | null | undefined)?.paymentEnabled;
+  const isPaidCourse = typeof isPaidFlag === 'boolean' ? isPaidFlag : cost > 0;
+  if (isPaidCourse) {
     throw new AppError('Paid courses require an invite or payment', ErrorCodes.VALIDATION_ERROR, 400);
   }
 

@@ -8,7 +8,7 @@
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
   import XIcon from '@lucide/svelte/icons/x';
   import { t } from '$lib/utils/functions/translations';
-  import { calcCourseDiscount, isCourseFree } from '$lib/utils/functions/course';
+  import { calcCourseEffectiveCost, isCourseFree } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import type { RecommendedCourses } from '$features/course/types';
   import pluralize from 'pluralize';
@@ -28,8 +28,7 @@
   };
 
   const metadata = $derived(course.metadata as CourseMetadata | null);
-  const discount = $derived(metadata?.discount ?? 0);
-  const calculatedCost = $derived(calcCourseDiscount(discount, course.cost || 0, !!metadata?.showDiscount));
+  const calculatedCost = $derived(calcCourseEffectiveCost(course));
   const isFree = $derived(isCourseFree(calculatedCost));
   const allowNewStudent = $derived(metadata?.allowNewStudent !== false);
   const requirements = $derived(metadata?.requirements?.trim() || null);

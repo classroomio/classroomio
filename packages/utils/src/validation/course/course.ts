@@ -370,6 +370,7 @@ const ZCourseMetadataFields = z.object({
   videoUrl: z.string().optional(),
   showDiscount: z.boolean().optional(),
   discount: z.number().optional(),
+  paymentEnabled: z.boolean().optional(),
   paymentLink: z.string().optional(),
   reward: ZCourseReward.optional(),
   instructor: ZCourseInstructor.optional(),
@@ -420,6 +421,42 @@ export const ZCertificationSettings = z.object({
 });
 export type TCertificationSettings = z.infer<typeof ZCertificationSettings>;
 
+export const ZPaymentLink = z.url({ protocol: /^https?$/ });
+
+type TPaidCoursePayload = {
+  cost?: number | null;
+  metadata?: { paymentEnabled?: boolean; paymentLink?: string | null } | null;
+};
+
+function superRefinePaidCourse(data: TPaidCoursePayload, ctx: z.RefinementCtx) {
+  const paidFlag = data.metadata?.paymentEnabled;
+  const isPaid = typeof paidFlag === 'boolean' ? paidFlag : typeof data.cost === 'number' && data.cost > 0;
+  if (!isPaid) return;
+
+  const paymentLink = typeof data.metadata?.paymentLink === 'string' ? data.metadata.paymentLink.trim() : '';
+  if (!paymentLink) {
+    ctx.addIssue({
+      code: 'custom',
+      message: 'A payment link is required for paid courses',
+      path: ['metadata', 'paymentLink']
+    });
+  } else if (!ZPaymentLink.safeParse(paymentLink).success) {
+    ctx.addIssue({
+      code: 'custom',
+      message: 'Payment link must be a valid http(s) URL',
+      path: ['metadata', 'paymentLink']
+    });
+  }
+
+  if (typeof data.cost === 'number' && data.cost <= 0) {
+    ctx.addIssue({
+      code: 'custom',
+      message: 'Paid courses must have a cost greater than 0',
+      path: ['cost']
+    });
+  }
+}
+
 export const ZCourseUpdateBase = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
@@ -444,7 +481,7 @@ export const ZCourseUpdate = ZCourseUpdateBase.refine(
     message: 'Compliance settings are required when changing a course to COMPLIANCE',
     path: ['compliance']
   }
-);
+).superRefine(superRefinePaidCourse);
 export type TCourseUpdate = z.infer<typeof ZCourseUpdate>;
 
 export const ZCourseUpdateParam = z.object({
@@ -464,6 +501,8 @@ export const ZCourseLandingPageUpdate = z.object({
   metadata: ZCourseLandingPageMetadataUpdate.optional()
 });
 export type TCourseLandingPageUpdate = z.infer<typeof ZCourseLandingPageUpdate>;
+
+export const ZCourseLandingPageUpdateValidated = ZCourseLandingPageUpdate.superRefine(superRefinePaidCourse);
 
 export const ZCourseDeleteParam = z.object({
   courseId: z.string().min(1)

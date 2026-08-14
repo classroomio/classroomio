@@ -1,5 +1,25 @@
 export const isCourseFree = (cost: number) => !(Number(cost) > 0);
 
+export type CoursePaidSource = {
+  cost?: number | null;
+  metadata?: { paymentEnabled?: boolean; discount?: number; showDiscount?: boolean } | null;
+} | null;
+
+export const isCoursePaid = (course: CoursePaidSource) => {
+  const paidFlag = course?.metadata?.paymentEnabled;
+  if (typeof paidFlag === 'boolean') return paidFlag;
+  return !isCourseFree(Number(course?.cost ?? 0));
+};
+
+export function calcCourseEffectiveCost(course: CoursePaidSource): number {
+  if (!isCoursePaid(course)) return 0;
+
+  const cost = Number(course?.cost ?? 0);
+  const discount = course?.metadata?.discount ?? 0;
+  const showDiscount = course?.metadata?.showDiscount ?? false;
+  return calcCourseDiscount(discount, cost, showDiscount);
+}
+
 const tagsToReplace: { [k: string]: string } = {
   '&': '&amp;',
   '<': '&lt;',

@@ -946,7 +946,13 @@
             "no": "Non",
             "yes": "Oui",
             "percent": "Pourcentage de remise",
-            "gift": "À propos du cadeau"
+            "gift": "À propos du cadeau",
+            "payment_required": "Un lien de paiement est requis pour les cours payants",
+            "enable_paid": "Activer le paiement",
+            "payment_invalid_url": "Veuillez saisir une URL valide (par exemple https://pay.example.com)",
+            "payment_helper": "Stripe, Lemon Squeezy ou tout autre lien de paiement",
+            "percentage_helper": "En pourcentage %",
+            "gift_on_completion": "Cadeau à la fin"
           },
           "instructor_form": {
             "upload": "Logo de l'instructeur",

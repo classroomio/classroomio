@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { formatCourseForWidget } from '@api/services/widget-payload';
+
 const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 
 /** Mirrors the key generation logic from widget-payload.ts for isolated testing. */
@@ -109,5 +111,44 @@ describe('getWidgetEmbedCode', () => {
     // Public keys are base58, so no special HTML chars, but verify structure
     const embedCode = getWidgetEmbedCode('wgt_abc123def456gh');
     expect(embedCode).toMatch(/^<div[^>]+><\/div>\n<script[^>]+><\/script>$/);
+  });
+});
+
+describe('formatCourseForWidget price', () => {
+  const baseCourse = {
+    id: 'course-1',
+    slug: 'my-course',
+    title: 'My Course',
+    description: 'A course',
+    bannerImage: null,
+    logo: null,
+    isPublished: true,
+    currency: 'USD',
+    lessonCount: 10,
+    exerciseCount: 5,
+    type: 'PUBLIC',
+    createdAt: new Date().toISOString()
+  };
+
+  function format(overrides: Record<string, unknown>) {
+    const course = { ...baseCourse, ...overrides } as Parameters<typeof formatCourseForWidget>[0];
+    return formatCourseForWidget(course, []);
+  }
+
+  it('renders the price for a paid course', () => {
+    expect(format({ cost: 100, metadata: { paymentEnabled: true } }).price).toBe('USD 100');
+  });
+
+  it('renders the price when paymentEnabled is absent but the cost is positive', () => {
+    expect(format({ cost: 100, metadata: {} }).price).toBe('USD 100');
+  });
+
+  it('renders Free for a free course', () => {
+    expect(format({ cost: 0, metadata: { paymentEnabled: false } }).price).toBe('Free');
+    expect(format({ cost: 0, metadata: {} }).price).toBe('Free');
+  });
+
+  it('renders Free when a paid course has a zero cost (state blocked by API validation)', () => {
+    expect(format({ cost: 0, metadata: { paymentEnabled: true } }).price).toBe('Free');
   });
 });

@@ -1,11 +1,27 @@
 import { generateSlug } from '@cio/utils/functions';
+import { ZPaymentLink } from '@cio/utils/validation/course';
 import { isObject } from '$lib/utils/functions/isObject';
+import { isCoursePaid } from '$lib/utils/functions/course';
 import { courseApi } from '$features/course/api';
 import type { Course } from '$features/course/utils/types';
 
 export async function publishCourse(course: Course): Promise<boolean> {
   if (!course?.id) {
     return false;
+  }
+
+  if (isCoursePaid(course)) {
+    const paymentLink = (course.metadata?.paymentLink ?? '').trim();
+
+    if (!paymentLink) {
+      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
+      return false;
+    }
+
+    if (!ZPaymentLink.safeParse(paymentLink).success) {
+      snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_invalid_url');
+      return false;
+    }
   }
 
   let slug = course.slug?.trim() ? course.slug : undefined;
@@ -23,6 +39,7 @@ export async function publishCourse(course: Course): Promise<boolean> {
     {
       isPublished: true,
       slug,
+      cost: course.cost ?? 0,
       metadata: metadataPayload
     },
     { showSuccessToast: true }
