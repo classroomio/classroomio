@@ -55,13 +55,13 @@ An org admin looking at a member today cannot tell how that person gets into the
 | Login recording | `trackLoginHook`, `packages/db/src/auth/hooks/track-login.ts:13` → `analytics_login_events` | `unique(user_id, logged_in_date)` + `onConflictDoNothing`: at most one row per user per day, and no provider column |
 | Session hooks | `databaseHooks.session.create.after` / `.update.after`, `packages/db/src/auth.ts:97-126` | Both call `trackLoginHook`; `update` fires on session refresh (`updateAge` = 1 day), which is not a sign-in |
 | Magic link (`login-link` plugin) | `packages/db/src/auth/plugins/login-link.ts:77` raw-inserts a session with `impersonatedBy: 'login-link'` | Creates no `account` row, and bypasses `databaseHooks` entirely. Only caller is `createViewAsStudentToken` |
-| Token auth (`token-exchange` plugin) | `packages/db/src/auth/plugins/token-exchange.ts:86` raw-inserts a session; for new users `packages/db/src/auth/token-exchange.ts:76` calls `signUpEmail` with a random password | Produces a `credential` account row for a user who can never use a password |
+| Token auth (`token-exchange` plugin) | `packages/db/src/auth/plugins/token-exchange.ts:86` raw-inserts a session. `packages/db/src/auth/token-exchange.ts:73-86` branches: existing users are reused as-is, new users go through `signUpEmail` with a random password | New users get a `credential` row they can never use; existing users get no identity row at all. Neither branch records token auth |
 | Member profile page | `/org/[slug]/audience/[profileId]` → `user-analytics.svelte`, header is `hero-profile-card.svelte` | Header shows avatar, name, email, last seen. No badges |
 | Audience list | `audience.svelte:44` header array + `audience-member-row.svelte` | Columns are positional; header and cell order kept in sync manually |
 | Team list | `settings/pages/teams.svelte:164-202` | `Field.Set` list, not a table. Role badge + "invite sent" badge already present |
 | Own account settings | `/org/[slug]/settings` → `settings/pages/profile.svelte` | Profile picture, name, username, email change, language. No password UI, no identity UI |
 | Account API | `apps/api/src/routes/account/account.ts` — `GET /`, `PUT /profile`, `GET /profile`, `POST /view-as-student-token` | No endpoint returns linked identities |
-| Badge component | `packages/ui/src/base/badge/badge.svelte` | Variants `default | secondary | destructive | warning | success | outline`; base styles already size an inline `svg` to `size-3` |
+| Badge component | `packages/ui/src/base/badge/badge.svelte` | Variants `default`, `secondary`, `destructive`, `warning`, `success`, `outline`; base styles already size an inline `svg` to `size-3` |
 
 ## Data Sources Checked
 
@@ -98,13 +98,13 @@ An org admin looking at a member today cannot tell how that person gets into the
 
 Prototype: `audience-profile.html`.
 
-- `hero-profile-card.svelte` gains a badge row in the existing metadata flex (`lines 24-37`), below the email / last-seen line.
+- `hero-profile-card.svelte` gains a badge row in the existing metadata flex (`lines 24-37`), below the email / last-seen line. **The profile header shows every method the member has**, in precedence order — precedence only decides ordering here, not what is dropped. Single-badge behavior belongs to the list surfaces (§2, §3), where there is one cell to fill.
 - The last-used line renders alongside the existing "Last seen" metadata: `Last signed in with Acme Okta · 3 days ago`. It uses the same `calDateDiff` helper as last seen.
 - A **Sign-in methods** section renders below the metric cards **only when the member has two or more methods**. One method needs no section; the header badge already says it.
 - The section lists each method as an `Item` row: icon, label, and `Connected <date>`.
 - States the prototype covers, all of which must be implemented:
   - **Single method** — one header badge, no section.
-  - **Multiple methods** — header badge shows the highest-precedence method, section lists all.
+  - **Multiple methods** — every method badged in the header, section lists all with their connected dates.
   - **Foreign SSO** — badge reads `SSO`, section row reads `SSO` with no connection name and no domain.
   - **Never signed in since the feature shipped** — methods render, last-used line is omitted entirely. Do not render "Unknown" or an empty dash.
   - **No methods at all** — an invited member who has never completed signup. Render nothing rather than an empty section.
@@ -167,13 +167,29 @@ lastSignInAt: timestamp('last_sign_in_at', { withTimezone: true, mode: 'string' 
 
 `lastSignInProviderId` stores the raw `account.provider_id` so the SSO label can be resolved against `organization_sso_config` at render time, org-scoped, rather than being frozen into the row. This follows the repo rule that a persisted column stores the relationship, not a copied display value.
 
-#### 2. Stop token-exchange from minting fake password identities
+#### 2. Give token-exchange a real identity, and stop it minting fake password ones
 
-`packages/db/src/auth/token-exchange.ts:76` calls `signUpEmail` with a random password, producing an `account` row with `provider_id = 'credential'` for a user who has no password and can never use one. Left alone, every token-auth user would be badged `Password` — the exact opposite of the truth.
+`packages/db/src/auth/token-exchange.ts` has two branches, and both are wrong for this feature in different ways:
 
-Fix at the write site: after the sign-up completes, update the created row's `provider_id` to `'token-exchange'`. Better Auth only looks up `'credential'` when handling password sign-in, so retagging the row disables a path the user never had, and makes the column honest.
+- **New user** (`:75-86`) — calls `signUpEmail` with a random password, producing an `account` row with `provider_id = 'credential'` for someone who has no password and can never use one. Left alone, these users are badged `Password`, the exact opposite of the truth.
+- **Existing user** (`:73-74`) — reuses the row and calls nothing. No account row is written at all, so a user who authenticates by token exchange but also has, say, a password would be badged `Password` with no sign that partner token access exists.
 
-No migration is authored here; schema edits stop at a passing `@cio/db` build.
+One helper fixes both, called once after `ensureOrgMembership` so it covers every successful exchange rather than only first-time signups:
+
+```
+ensureTokenAuthIdentity(userId, orgId):
+  insert into account (user_id, provider_id, account_id)
+  values (userId, 'token-exchange', orgId)
+  on conflict (user_id, provider_id, account_id) do nothing
+```
+
+`account_id` holds the org id because the org's token issuer *is* the external identity provider here. It is a scoping key, not a foreign key — `account` has no org relationship and none is being invented — and it gives natural per-org dedup for a user who reaches the product through two different partner orgs.
+
+In the new-user branch only, delete the synthetic `credential` row after sign-up. Deleting rather than retagging keeps `account_id` meaningful and drops a bcrypt hash of a random password that nothing can ever verify. Better Auth only looks up `'credential'` for password sign-in, so removing it closes a path the user never had. Note the side effect, which is correct: `hasVerifiedEmailProvider()` starts returning true for these users, because a partner-issued token *is* proof of the email.
+
+#### Migrations
+
+Both changes need a real migration against deployed databases — the `profile` columns, and a backfill pass for token-auth users. Following repo convention, no migration is authored in this PRD; generation and review happen in the normal migration workflow. It must be deployed **before** the application code, since the recorder writes `last_sign_in_*` on the first sign-in after rollout. Rollback is safe in either order: the columns are nullable and every read treats null as "no last-used line", so reverting the app while leaving the columns in place is a no-op.
 
 ### Deriving available methods (query layer)
 
@@ -207,8 +223,10 @@ The function takes an array of user ids and returns a `Map<userId, SignInMethod[
 
 `databaseHooks.session.create.after` receives an optional second `context` argument. `ctx.path` identifies the route that produced the session, which is the only place the provider is knowable.
 
-```
+```text
 trackSignInMethodHook(session, ctx):
+  if not ctx or not session?.userId: return   // context is optional in the hook signature
+
   method, providerId = derive(ctx.path, ctx.params)
     '/sign-in/email' | '/sign-up/email'   -> ('password', 'credential')
     '/callback/:id'                       -> ('google', ctx.params.id)   // when id == 'google'
@@ -301,7 +319,7 @@ pnpm format:check
 
 4. Add `recordSignInMethod` to the new query file.
 5. Add `trackSignInMethodHook`; wire it into `databaseHooks.session.create.after` only.
-6. Retag the token-exchange `credential` row to `'token-exchange'` at `packages/db/src/auth/token-exchange.ts`, and call the recorder from the plugin's session write site.
+6. Add `ensureTokenAuthIdentity(userId, orgId)` and call it after `ensureOrgMembership` in `packages/db/src/auth/token-exchange.ts`, so both the new-user and existing-user branches are covered. Delete the synthetic `credential` row in the new-user branch. Call the recorder from the plugin's session write site.
 7. Confirm `login-link` still records nothing.
 
 ### Phase 3: Query layer
@@ -332,7 +350,7 @@ pnpm format:check
 ## Acceptance Criteria
 
 1. A member with only a password shows one `Password` badge on their profile, and no Sign-in methods section.
-2. A member with Google and password shows a `Google` badge in the header (precedence) and a section listing both, each with its connected date.
+2. A member with Google and password shows both badges in the profile header, ordered by precedence, and a section listing both with their connected dates.
 3. A member who signed in through their own org's SSO shows a badge carrying the connection's `display_name`.
 4. A member whose only SSO identity belongs to another organization shows `SSO` with no name, and the other org's `display_name` appears nowhere in the API response.
 5. The audience list shows exactly one badge per member, the highest-precedence one, and an empty cell for pending invitees.
@@ -342,19 +360,20 @@ pnpm format:check
 9. A session refresh 24 hours after sign-in does not change `last_sign_in_at`.
 10. Using "view as student" does not change the target learner's last-used record.
 11. A user created through token exchange is badged `Token auth`, never `Password`.
-12. A member who has not signed in since deploy renders their methods with no last-used line, and no placeholder text.
-13. Loading the audience list for 50 members issues one sign-in-method query, not 50.
-14. The course filter badges on the member profile visibly change state when clicked.
-15. Existing audience, team, profile, and analytics behavior continues to work exactly as today (zero regression).
-16. All user-facing strings use translation keys, and every locale file is regenerated.
-17. `pnpm --filter @cio/db build`, `pnpm --filter @cio/api build`, `pnpm --filter @cio/dashboard build`, and `pnpm format:check` all pass.
+12. An **existing** user who authenticates through token exchange for the first time gains a `Token auth` badge, and reaching the product a second time through the same org creates no duplicate identity.
+13. A member who has not signed in since deploy renders their methods with no last-used line, and no placeholder text.
+14. Loading the audience list for 50 members issues one sign-in-method query, not 50.
+15. The course filter badges on the member profile visibly change state when clicked.
+16. Existing audience, team, profile, and analytics behavior continues to work exactly as today (zero regression).
+17. All user-facing strings use translation keys, and every locale file is regenerated.
+18. `pnpm --filter @cio/db build`, `pnpm --filter @cio/api build`, `pnpm --filter @cio/dashboard build`, and `pnpm format:check` all pass.
 
 ---
 
 ## Risks and Mitigations
 
 - **Risk**: Token-auth users created *before* this change already have `credential` account rows that are indistinguishable from real password users, and will be badged `Password`.
-  - **Mitigation**: The retag fixes all new rows. For existing ones, ship a targeted script that retags `credential` rows belonging to users who are members only of orgs with token auth configured and who have no other account row. Users outside that intersection are genuinely ambiguous; leave them and document the limitation.
+  - **Mitigation**: `ensureTokenAuthIdentity` self-heals going forward — the next exchange any such user performs writes the correct identity, whichever branch they hit. For users who never come back, ship a targeted backfill that deletes `credential` rows belonging to users who are members only of orgs with token auth configured and who have no other account row, inserting the token-auth identity in their place. Users outside that intersection are genuinely ambiguous; leave them and document the limitation.
 - **Risk**: `ctx.path` is a Better Auth internal shape, so a library upgrade could silently change the strings and stop recording.
   - **Mitigation**: `derive()` returns early on anything unrecognized, so an upgrade degrades to "no last-used line" rather than wrong data. Add unit tests over the path strings so the break is loud at CI time, not in production.
 - **Risk**: `last_sign_in_*` is null for the entire user base on deploy day, making the feature look broken.

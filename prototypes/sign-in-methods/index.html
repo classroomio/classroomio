@@ -101,8 +101,8 @@
 
       <div class="foot">
         <b>Three traps the PRD is built around.</b><br />
-        Token-auth signup mints a real <code>credential</code> account row with a random password, so those users would be badged
-        <b>Password</b> unless the row is retagged at the write site.<br />
+        Token exchange records no usable identity either way: new users get a real <code>credential</code> row from a random password,
+        so they would be badged <b>Password</b>; existing users get no account row at all, so token access would be invisible.<br />
         The <code>login-link</code> and <code>token-exchange</code> plugins raw-insert sessions, so Better Auth's
         <code>databaseHooks</code> never fire for them — and "view as student" must never overwrite the learner's record.<br />
         <code>analytics_login_events</code> is unique per user per day with <code>onConflictDoNothing</code>, so it can only ever hold the
