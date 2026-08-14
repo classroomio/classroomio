@@ -225,7 +225,7 @@
   }
 
   function handleExploreCardKeydown(event: KeyboardEvent) {
-    if (event.key !== 'Enter' && event.key !== ' ') {
+    if (event.repeat || event.target !== event.currentTarget || (event.key !== 'Enter' && event.key !== ' ')) {
       return;
     }
 
