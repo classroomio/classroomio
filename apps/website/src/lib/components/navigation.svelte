@@ -14,6 +14,7 @@
   import Webhook from '@lucide/svelte/icons/webhook';
   import X from '@lucide/svelte/icons/x';
   import { page } from '$app/state';
+  import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import type { HTMLAttributes } from 'svelte/elements';
   import * as NavigationMenu from '@cio/ui/base/navigation-menu';
@@ -43,9 +44,23 @@
     items?: NavCollectionItem[];
   };
 
+  let displayStars = $state(stars);
   let expandedMobileGroup = $state<string | null>(null);
   let showSolutions = $state(false);
   let activeLink = $derived(page.url.pathname);
+
+  onMount(() => {
+    fetch('/api/github-stars')
+      .then((response) => response.json())
+      .then((data: { stars?: unknown }) => {
+        if (typeof data.stars === 'number') {
+          displayStars = data.stars;
+        }
+      })
+      .catch(() => {
+        // Keep SSR/prerender prop value on network/parse errors
+      });
+  });
 
   function handleMobileGroupToggle(groupKey: string) {
     expandedMobileGroup = expandedMobileGroup === groupKey ? null : groupKey;
@@ -327,7 +342,7 @@
           <span
             class="text-sm leading-none font-medium text-gray-600 transition-colors duration-200 group-hover:text-black"
           >
-            {stars}
+            {displayStars}
           </span>
         </a>
       </div>
@@ -428,7 +443,7 @@
             />
             <span class="ml-3 transition-colors duration-200 group-hover:text-black">Github</span>
             <span class="ml-1 text-sm font-medium text-gray-600 transition-colors duration-200 group-hover:text-black"
-              >({stars})</span
+              >({displayStars})</span
             >
           </a>
           <a

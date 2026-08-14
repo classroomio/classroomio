@@ -31,7 +31,13 @@ const mdsvexOptions = {
 
 const config = {
   kit: {
-    adapter: adapter(),
+    adapter: adapter({
+      config: 'wrangler.jsonc',
+      platformProxy: {
+        // Local / prerender access to wrangler bindings (including KV).
+        persist: { path: './.wrangler/state' }
+      }
+    }),
     alias: {
       $lib: path.resolve('./src/lib'),
       '$src/tools': path.resolve('./node_modules/@cio/ui/src/tools/index.ts'),
