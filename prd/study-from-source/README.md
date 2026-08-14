@@ -143,7 +143,7 @@ The AI output is one learner activity:
 - Real-time collaborative editing of generated outlines
 - Automatic publishing without teacher review
 - Full website crawling beyond explicitly provided URLs
-- Video ingestion, YouTube transcript ingestion, or podcast/audio ingestion
+- Video ingestion, YouTube transcript ingestion, or podcast/audio ingestion (lesson YouTube captions are a separate PRD: [`prd/youtube-embed-transcripts`](../youtube-embed-transcripts/README.md))
 - Compliance retake/expiry lifecycle; that belongs to the compliance course type
 
 ## Core Product Decisions
@@ -225,7 +225,7 @@ Wants a clear reading/study experience with short checks for understanding and t
 - private webpages requiring login
 - scanned PDF OCR
 - Google Drive document import
-- YouTube/video transcript ingestion
+- YouTube/video transcript ingestion (see [`prd/youtube-embed-transcripts`](../youtube-embed-transcripts/README.md) for lesson YouTube captions; this PRD still excludes video as a Study from Source input)
 - ZIP packages or SCORM
 
 ## Source Lifecycle
