@@ -13,25 +13,18 @@ type NavigableCourseContent<T extends { order?: number | null }> = {
  */
 export function flattenNavigableItems<T extends { order?: number | null }>(content: NavigableCourseContent<T>): T[] {
   if (content.grouped) {
-    const flattenedListItems: Array<T & { flattenedListOrder?: number }> = [];
+    const flattenedListItems: T[] = [];
 
     for (const section of content.sections) {
-      const totalItems = flattenedListItems.length;
+      const sortedSectionItems = section.items
+        .map((item, index) => ({ item, sortOrder: item.order ?? index }))
+        .sort((left, right) => left.sortOrder - right.sortOrder)
+        .map(({ item }) => item);
 
-      const updateItemOrder = section.items
-        .map((item, index) => ({
-          ...item,
-          flattenedListOrder: totalItems + (item.order ?? index)
-        }))
-        .sort((left, right) => left.flattenedListOrder - right.flattenedListOrder);
-
-      flattenedListItems.push(...updateItemOrder);
+      flattenedListItems.push(...sortedSectionItems);
     }
 
-    return flattenedListItems.map((item) => {
-      delete item.flattenedListOrder;
-      return item;
-    });
+    return flattenedListItems;
   }
 
   return [...content.items].sort((left, right) => (left.order ?? 0) - (right.order ?? 0));
@@ -59,7 +52,11 @@ function itemBlocksProgression(type?: ContentType, completionPolicy?: string | n
     return lessonBlocksProgression(completionPolicy ?? 'manual');
   }
 
-  return exerciseBlocksProgression();
+  if (type === ContentType.Exercise) {
+    return exerciseBlocksProgression();
+  }
+
+  return false;
 }
 
 type CourseProgressionItem = {

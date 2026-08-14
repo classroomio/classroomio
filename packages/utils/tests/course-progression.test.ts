@@ -4,7 +4,8 @@ import { ContentType } from '../src/constants/content';
 import {
   annotateContentItem,
   computeProgressionAccess,
-  flattenNavigableItems
+  flattenNavigableItems,
+  type ProgressionLockReason
 } from '../src/functions/course-progression';
 
 type TestItem = {
@@ -14,6 +15,8 @@ type TestItem = {
   isComplete?: boolean | null;
   isUnlocked?: boolean | null;
   completionPolicy?: string | null;
+  accessible?: boolean;
+  lockReason?: ProgressionLockReason | null;
 };
 
 function lesson(id: string, order: number, options: Partial<TestItem> = {}): TestItem {
@@ -92,12 +95,19 @@ describe('flattenNavigableItems', () => {
 
 describe('computeProgressionAccess', () => {
   it('unlocks the next item in the same section after the previous item is complete', () => {
-    const navigableItems = [
-      lesson('section-1-lesson-1', 1, { isComplete: true }),
-      lesson('section-1-lesson-2', 2),
-      lesson('section-2-lesson-1', 1),
-      lesson('section-2-lesson-2', 2)
-    ];
+    const content = {
+      grouped: true,
+      sections: [
+        {
+          items: [lesson('section-1-lesson-1', 1, { isComplete: true }), lesson('section-1-lesson-2', 2)]
+        },
+        {
+          items: [lesson('section-2-lesson-1', 1), lesson('section-2-lesson-2', 2)]
+        }
+      ],
+      items: []
+    };
+    const navigableItems = flattenNavigableItems(content);
 
     const accessById = computeProgressionAccess({
       navigableItems,
