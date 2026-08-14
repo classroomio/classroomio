@@ -165,19 +165,19 @@
 
 {#snippet rowContent()}
   <div
-    class="grid w-full grid-cols-1 items-start gap-x-3 gap-y-2 @3xl:grid-cols-[var(--row-cols)]"
+    class="grid w-full grid-cols-[5rem_minmax(0,1fr)] items-center gap-x-3 gap-y-1.5 @3xl:grid-cols-[var(--row-cols)]"
     style="--row-cols: {gridTemplateColumns}"
   >
     <!-- Banner -->
     <div
-      class="ui:border-border bg-muted relative size-28 shrink-0 overflow-hidden rounded-md border"
+      class="ui:border-border bg-muted relative size-20 shrink-0 overflow-hidden rounded-md border @3xl:size-24"
       aria-hidden="true"
     >
       <Image src={bannerImage} alt="" className="h-full w-full object-cover" />
     </div>
 
     <!-- Title / type / updated -->
-    <div class="flex min-w-0 flex-col gap-0.5">
+    <div class="col-start-2 flex min-w-0 flex-col gap-0.5 @3xl:col-start-auto">
       <div class="flex min-w-0 flex-wrap items-center gap-2">
         <p class="line-clamp-2 min-w-0 flex-1 text-base">{title}</p>
         {#if type === 'PUBLIC'}
@@ -194,7 +194,7 @@
 
     <!-- Published badge -->
     {#if !hidden.has('published')}
-      <div>
+      <div class="col-start-2 @3xl:col-start-auto">
         {#if isPublished}
           <Badge variant="success" class="whitespace-nowrap">
             {$t('courses.course_card.published')}
@@ -209,7 +209,7 @@
 
     <!-- Tags -->
     {#if !hidden.has('tags')}
-      <div class="flex min-w-0 flex-wrap items-center gap-1">
+      <div class="col-start-2 flex min-w-0 flex-wrap items-center gap-1 @3xl:col-start-auto">
         {#if tags.length === 0}
           <span class="ui:text-muted-foreground text-xs">—</span>
         {:else}
@@ -231,7 +231,7 @@
     {/if}
 
     <!-- Lessons / exercises -->
-    <div class="flex flex-col gap-1 tabular-nums">
+    <div class="col-start-2 flex flex-col gap-1 tabular-nums @3xl:col-start-auto">
       <p class="flex items-center gap-1.5 text-sm" aria-label="{lessonCount} lessons">
         <CourseContentIcon type={ContentType.Lesson} size={14} />
         <span class="font-medium">{lessonCount}</span>
@@ -244,7 +244,7 @@
 
     <!-- Students -->
     {#if !hidden.has('students')}
-      <div class="flex items-center gap-1">
+      <div class="col-start-2 flex items-center gap-1 @3xl:col-start-auto">
         {#if totalStudents > 0}
           {#if totalStudents < 3}
             <div class="flex items-center gap-1">
@@ -285,7 +285,7 @@
 
     <!-- Actions -->
     {#if showActionsColumn}
-      <div class="flex justify-end">
+      <div class="col-start-2 flex justify-start @3xl:col-start-auto @3xl:justify-end">
         {#if isLMS && isExplore}
           <Button
             variant="outline"
@@ -344,7 +344,7 @@
   </div>
 {/snippet}
 
-<ResourceListRow.Root variant="default" size="sm" align="start" class="cursor-pointer py-4!">
+<ResourceListRow.Root variant="default" size="sm" align="start" class="cursor-pointer py-3!">
   {#snippet child({ props })}
     {#if courseUrl}
       <a href={courseUrl} {...props} class={cn('block', props.class as string)}>
