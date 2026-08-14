@@ -29,6 +29,10 @@
   } = $props();
 </script>
 
+<div class="ui:sr-only" role="status" aria-atomic="true" aria-live="polite">
+  {hasChanges ? statusLabel : ''}
+</div>
+
 {#if hasChanges}
   <div
     bind:this={ref}
@@ -40,8 +44,6 @@
     {...restProps}
   >
     <div
-      role="status"
-      aria-live="polite"
       class={cn(
         'ui:pointer-events-auto ui:flex ui:w-fit ui:max-w-full ui:flex-wrap ui:items-center ui:justify-center ui:gap-x-6 ui:gap-y-2 ui:rounded-lg ui:bg-foreground ui:px-3.5 ui:py-2 ui:text-background ui:shadow-lg',
         contentClassName
