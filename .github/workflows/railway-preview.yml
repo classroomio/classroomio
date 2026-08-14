@@ -256,27 +256,33 @@ jobs:
             log_file=$(mktemp)
             if ! railway up --service "$svc" --ci 2>&1 | tee "$log_file"; then
               if grep -q "Failed to stream build logs:" "$log_file"; then
-                echo "railway up reported failure for $svc due to the known log-streaming glitch; checking actual deployment status..."
+                deploy_id=$(grep -oP '(?<=[?&]id=)[0-9a-fA-F-]+' "$log_file" | head -n1)
+                if [ -z "$deploy_id" ]; then
+                  echo "::error::railway up failed for $svc and no deployment id could be recovered from its output — cannot verify actual status."
+                  rm -f "$log_file"
+                  exit 1
+                fi
+                echo "railway up reported failure for $svc due to the known log-streaming glitch; checking status of deployment $deploy_id..."
                 status=""
                 for attempt in $(seq 1 60); do
-                  status=$(railway deployment list --service "$svc" --json --limit 1 2>/dev/null | jq -r '.[0].status // empty')
+                  status=$(railway deployment list --service "$svc" --json 2>/dev/null | jq -r --arg id "$deploy_id" '.[] | select(.id == $id) | .status // empty')
                   case "$status" in
                     SUCCESS)
-                      echo "Deployment for $svc actually succeeded (status: SUCCESS) — the CLI error was just a log-streaming glitch. Continuing."
+                      echo "Deployment $deploy_id for $svc actually succeeded (status: SUCCESS) — the CLI error was just a log-streaming glitch. Continuing."
                       break
                       ;;
                     FAILED|CRASHED|REMOVED)
-                      echo "::error::$svc deployment did not succeed (status: $status)."
+                      echo "::error::$svc deployment $deploy_id did not succeed (status: $status)."
                       rm -f "$log_file"
                       exit 1
                       ;;
                   esac
                   if [ "$attempt" -eq 60 ]; then
-                    echo "::error::$svc deployment never reached a terminal status after 60 attempts (last seen: ${status:-unknown})."
+                    echo "::error::$svc deployment $deploy_id never reached a terminal status after 60 attempts (last seen: ${status:-unknown})."
                     rm -f "$log_file"
                     exit 1
                   fi
-                  echo "Deployment for $svc not finished yet (status: ${status:-unknown}, attempt $attempt/60) — retrying in 10s..."
+                  echo "Deployment $deploy_id for $svc not finished yet (status: ${status:-unknown}, attempt $attempt/60) — retrying in 10s..."
                   sleep 10
                 done
               else
