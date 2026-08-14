@@ -75,9 +75,10 @@
             () => pointsValue,
             (nextValue) => {
               const parsedValue = Number(nextValue);
-              const isBelowMinValue =
-                nextValue !== '' && nextValue != null && Number.isFinite(parsedValue) && parsedValue < 1;
-              const clampedValue = isBelowMinValue ? 1 : nextValue;
+              const clampedValue =
+                nextValue === '' || nextValue == null || !Number.isFinite(parsedValue)
+                  ? nextValue // ← empty/invalid: preserve unchanged
+                  : Math.max(parsedValue, 1); // ← finite value: ALWAYS a number, min 1
 
               pointsValue = clampedValue;
               points = clampedValue;
