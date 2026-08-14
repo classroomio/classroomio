@@ -481,8 +481,9 @@ Use `@cio/ui/base/page` for dashboard page shells. See `packages/ui/README.md` Â
 
 **Every settings page with save/discard** must use `Page.SettingsActions` as the last child of `Page.Root` (after `Page.Body`). Do not put Save in `Page.Header` or inline at the bottom of form sections.
 
-- Sticky at the viewport bottom while scrolling; docks naturally at the end of the page content
-- Save and Discard are disabled when `hasChanges` is false
+- Compact centered card (not full width), sticky at the viewport bottom while scrolling; docks naturally at the end of the page content
+- Only appears when `hasChanges` is true
+- Save is a primary button (not a split/combo control); Discard is secondary
 - Labels come from dashboard translations: `common.unsaved_changes.label`, `common.discard`, `common.save_changes`
 - Pair with `UnsavedChanges` for navigation guards where appropriate
 

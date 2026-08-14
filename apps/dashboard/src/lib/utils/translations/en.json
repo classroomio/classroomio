@@ -4902,8 +4902,9 @@
       "pagination_status": "Page {page} of {totalPages}",
       "empty_title": "No courses yet",
       "empty_description": "Add courses to this cohort.",
+      "empty_student_description": "There are no published courses in this cohort yet.",
       "published_access_callout_title": "Student access",
-      "published_access_callout_description": "Students only have access to published courses. Courses can be in this cohort for your team while still unpublished while those stay hidden from students until you publish them."
+      "published_access_callout_description": "Students only have access to published courses. Courses can be in this cohort for your team while still unpublished, but they remain hidden from students until you publish them."
     },
     "people": {
       "invite": "Invite",
