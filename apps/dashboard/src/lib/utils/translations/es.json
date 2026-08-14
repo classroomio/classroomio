@@ -295,7 +295,8 @@
         "unlocked_all_content": "Todos los elementos del curso desbloqueados",
         "all_content_already_unlocked": "Todo el contenido ya está desbloqueado",
         "content_grouping_enabled": "Agrupación de contenidos activada",
-        "content_grouping_disabled": "Agrupación de contenidos desactivada"
+        "content_grouping_disabled": "Agrupación de contenidos desactivada",
+        "link_generated": "Enlace del curso actualizado exitosamente"
       }
     },
     "people": {
@@ -861,7 +862,10 @@
         },
         "certificate_deadline_required": "Establecer la fecha límite del certificado primero",
         "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para el certificado antes de que los estudiantes puedan inscribirse. Establezca una fecha límite en la configuración del certificado antes de publicarlo.",
-        "go_to_certificate_settings": "Vaya a Configuración de certificado"
+        "go_to_certificate_settings": "Vaya a Configuración de certificado",
+        "generate_link": "Generar nuevo enlace",
+        "open_link": "Abrir enlace en nueva pestaña",
+        "copy_link": "Copiar enlace"
       },
       "analytics": {
         "title": "Analíticas"

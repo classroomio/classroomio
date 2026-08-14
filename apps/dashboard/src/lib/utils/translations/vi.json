@@ -295,7 +295,8 @@
         "unlocked_all_content": "Tất cả các mục khóa học đã được mở khóa",
         "all_content_already_unlocked": "Tất cả nội dung đã được mở khóa",
         "content_grouping_enabled": "Đã bật nhóm nội dung",
-        "content_grouping_disabled": "Đã tắt nhóm nội dung"
+        "content_grouping_disabled": "Đã tắt nhóm nội dung",
+        "link_generated": "Liên kết khóa học được cập nhật thành công"
       }
     },
     "people": {
@@ -861,7 +862,10 @@
         },
         "certificate_deadline_required": "Đặt thời hạn chứng chỉ đầu tiên",
         "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt chứng chỉ trước khi xuất bản.",
-        "go_to_certificate_settings": "Đi tới Cài đặt chứng chỉ"
+        "go_to_certificate_settings": "Đi tới Cài đặt chứng chỉ",
+        "generate_link": "Tạo liên kết mới",
+        "open_link": "Mở liên kết trong tab mới",
+        "copy_link": "Sao chép liên kết"
       },
       "analytics": {
         "title": "Phân tích"

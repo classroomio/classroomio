@@ -295,7 +295,8 @@
         "unlocked_all_content": "Wszystkie elementy kursu odblokowane",
         "all_content_already_unlocked": "Cała treść jest już odblokowana",
         "content_grouping_enabled": "Grupowanie treści włączone",
-        "content_grouping_disabled": "Grupowanie treści wyłączone"
+        "content_grouping_disabled": "Grupowanie treści wyłączone",
+        "link_generated": "Link do kursu został pomyślnie zaktualizowany"
       }
     },
     "people": {
@@ -861,7 +862,10 @@
         },
         "certificate_deadline_required": "Najpierw ustal termin wydania certyfikatu",
         "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach certyfikatu.",
-        "go_to_certificate_settings": "Przejdź do Ustawień certyfikatu"
+        "go_to_certificate_settings": "Przejdź do Ustawień certyfikatu",
+        "generate_link": "Wygeneruj nowy link",
+        "open_link": "Otwórz link w nowej karcie",
+        "copy_link": "Skopiuj link"
       },
       "analytics": {
         "title": "Analityka"
