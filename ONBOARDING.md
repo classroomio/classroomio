@@ -187,12 +187,12 @@ pnpm --filter @cio/embeds dev
 
 Tags are org-level labels for categorizing courses.
 
-- [ ] Navigate to **Tags** (`/org/[slug]/tags`).
-- [ ] Create a **Tag Group** (e.g. "Programming Languages").
-- [ ] Add 3 tags inside the group (e.g. "JavaScript", "Python", "Go") — give each a color.
-- [ ] Create a second tag group (e.g. "Difficulty") with tags like "Beginner", "Intermediate", "Advanced".
-- [ ] Go to a course → **Settings** and assign tags from both groups using the tag picker.
-- [ ] Verify the tags appear on the course card in the courses list.
+- [X] Navigate to **Tags** (`/org/[slug]/tags`).
+- [X] Create a **Tag Group** (e.g. "Programming Languages").
+- [X] Add 3 tags inside the group (e.g. "JavaScript", "Python", "Go") — give each a color.
+- [X] Create a second tag group (e.g. "Difficulty") with tags like "Beginner", "Intermediate", "Advanced".
+- [X] Go to a course → **Settings** and assign tags from both groups using the tag picker.
+- [X] Verify the tags appear on the course card in the courses list.
 - 📸 **Screenshot:** The tags admin page showing both tag groups with their tags.
 - 📸 **Screenshot:** A course card in the courses list displaying the assigned tags.
 
