@@ -142,8 +142,10 @@
 
   let cost = $derived(calcCourseDiscount(pricingData.discount, pricingData.cost ?? 0, !!pricingData.showDiscount));
 
+  const isExploreClickable = $derived(!!(isLMS && isExplore && onExploreClick));
+
   let courseUrl = $derived.by(() => {
-    if (onExploreClick && isLMS && isExplore) {
+    if (isExploreClickable) {
       return undefined;
     }
 
@@ -165,8 +167,6 @@
 
     return `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
   });
-
-  const isExploreClickable = $derived(!!(isExplore && onExploreClick));
 
   const typeBadge = $derived(
     type && COURSE_TAG[type]
@@ -223,23 +223,11 @@
       dateStyle: 'medium'
     }).format(date);
   }
-
-  function handleExploreCardKeydown(event: KeyboardEvent) {
-    if (event.repeat || event.target !== event.currentTarget || (event.key !== 'Enter' && event.key !== ' ')) {
-      return;
-    }
-
-    event.preventDefault();
-    onExploreClick?.();
-  }
 </script>
 
 <CourseCard
   href={courseUrl ? resolve(courseUrl, {}) : undefined}
   onclick={isExploreClickable ? onExploreClick : undefined}
-  onkeydown={isExploreClickable ? handleExploreCardKeydown : undefined}
-  role={isExploreClickable ? 'button' : undefined}
-  tabindex={isExploreClickable ? 0 : undefined}
   {title}
   {description}
   {typeBadge}
