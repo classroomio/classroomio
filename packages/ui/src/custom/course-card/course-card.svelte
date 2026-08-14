@@ -25,6 +25,12 @@
       iconClass?: string;
     };
     class?: string;
+    /** Click handler for the card wrapper (e.g. opening a preview modal when `href` is absent) */
+    onclick?: (event: MouseEvent) => void;
+    /** Keyboard handler for the card wrapper when it acts as a clickable region */
+    onkeydown?: (event: KeyboardEvent) => void;
+    role?: string;
+    tabindex?: number;
     /** Custom banner area (e.g. optimized `Image`); overrides `bannerImage` */
     media?: Snippet;
     /** Optional overlay inside the link (e.g. dropdown), typically absolutely positioned */
@@ -42,6 +48,10 @@
     typeBadge,
     visibilityBadge,
     class: className = '',
+    onclick,
+    onkeydown,
+    role,
+    tabindex,
     media,
     overlay,
     tags,
@@ -51,7 +61,14 @@
   const resolvedBannerImage = $derived(bannerImage?.trim() ? bannerImage : DEFAULT_COURSE_BANNER_IMAGE);
 </script>
 
-<Item.Root variant="outline" class={cn('ui:group ui:relative ui:max-w-[320px] ui:p-3!', className)}>
+<Item.Root
+  variant="outline"
+  class={cn('ui:group ui:relative ui:max-w-[320px] ui:p-3!', className)}
+  {onclick}
+  {onkeydown}
+  {role}
+  {tabindex}
+>
   {#snippet child({ props })}
     {#if href}
       <a {href} {...props} class={cn('ui:block', props.class as string)}>

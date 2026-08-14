@@ -166,6 +166,8 @@
     return `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
   });
 
+  const isExploreClickable = $derived(!!(isExplore && onExploreClick));
+
   const typeBadge = $derived(
     type && COURSE_TAG[type]
       ? {
@@ -221,10 +223,23 @@
       dateStyle: 'medium'
     }).format(date);
   }
+
+  function handleExploreCardKeydown(event: KeyboardEvent) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    event.preventDefault();
+    onExploreClick?.();
+  }
 </script>
 
 <CourseCard
   href={courseUrl ? resolve(courseUrl, {}) : undefined}
+  onclick={isExploreClickable ? onExploreClick : undefined}
+  onkeydown={isExploreClickable ? handleExploreCardKeydown : undefined}
+  role={isExploreClickable ? 'button' : undefined}
+  tabindex={isExploreClickable ? 0 : undefined}
   {title}
   {description}
   {typeBadge}
@@ -318,7 +333,15 @@
       </div>
 
       {#if isLMS}
-        <Button variant="outline" onclick={isExplore && onExploreClick ? onExploreClick : undefined}>
+        <Button
+          variant="outline"
+          onclick={(event) => {
+            if (isExploreClickable) {
+              event.stopPropagation();
+              onExploreClick?.();
+            }
+          }}
+        >
           {isCertificateView
             ? $t('certificates.view_certificate')
             : isExplore
