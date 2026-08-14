@@ -36,10 +36,15 @@
   tabindex={disableCourseLinks ? -1 : undefined}
 >
   <Card.Root
-    class="ui:rounded-none ui:border-[var(--landing-border)]/60 ui:shadow-none ui:h-full ui:p-0 ui:gap-0 {disableCourseLinks
+    class="ui:rounded-none ui:overflow-hidden ui:border-[var(--landing-border)]/60 ui:shadow-none ui:h-full ui:p-0 ui:gap-0 {disableCourseLinks
       ? ''
       : 'ui:hover:border-[var(--landing-border)] ui:transition-colors'}"
   >
+    {#if course.logo}
+      <div class="ui:aspect-video ui:w-full ui:overflow-hidden">
+        <img src={course.logo} alt={course.title} class="ui:h-full ui:w-full ui:object-cover" />
+      </div>
+    {/if}
     <Card.Content class="ui:p-8 ui:flex ui:flex-col ui:flex-1">
       <Card.Title class="ui:text-xl ui:font-normal ui:mb-4">{course.title}</Card.Title>
       <Card.Description class="ui:mb-8 ui:line-clamp-3 ui:text-base ui:leading-relaxed">
