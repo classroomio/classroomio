@@ -22,6 +22,11 @@ name: Railway Preview Environment
 on:
   workflow_dispatch:
     inputs:
+      repo:
+        description: "Repo to deploy from (leave blank for classroomio/classroomio; set to e.g. Arun5768/classroomio for a fork)"
+        required: false
+        type: string
+        default: ""
       branch:
         description: "Branch (or PR head ref) to deploy into the preview env"
         required: true
@@ -61,6 +66,7 @@ jobs:
       - name: Checkout target branch
         uses: actions/checkout@v4
         with:
+          repository: ${{ inputs.repo != '' && inputs.repo || github.repository }}
           ref: ${{ inputs.branch }}
 
       - name: Install Railway CLI
