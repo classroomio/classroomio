@@ -159,14 +159,14 @@ one of each question type below. This is how you learn the authoring and grading
 
 Widgets are embeddable course catalogs for external websites.
 
-- [ ] Navigate to **Widgets** (`/org/[slug]/widgets`).
-- [ ] Click **Create Widget**.
-- [ ] **Select Courses** panel — pick 2–3 courses to include.
-- [ ] **Layout** panel — try different layout options.
-- [ ] **Design** panel — pick a theme preset, change the primary color, toggle branding options.
-- [ ] **Embed** panel — copy the embed code and preview it in a standalone HTML file or CodePen.
-- [ ] Publish the widget and verify it renders the live preview correctly.
-- [ ] Go back, change a setting, and **rollback** to the previous published version.
+- [X] Navigate to **Widgets** (`/org/[slug]/widgets`).
+- [X] Click **Create Widget**.
+- [X] **Select Courses** panel — pick 2–3 courses to include.
+- [X] **Layout** panel — try different layout options.
+- [X] **Design** panel — pick a theme preset, change the primary color, toggle branding options.
+- [X] **Embed** panel — copy the embed code and preview it in a standalone HTML file or CodePen.
+- [X] Publish the widget and verify it renders the live preview correctly.
+- [X] Go back, change a setting, and **rollback** to the previous published version.
 
 ### Running the widget locally
 
@@ -175,9 +175,9 @@ After publishing the widget, start the embeds development server:
 ```bash
 pnpm --filter @cio/embeds dev
 ```
-- [ ] click on "URL" tab, copy URL
-- [ ] Paste URL in your browser to view the locally served widget preview.
-- [ ] Verify that the widget renders correctly.
+- [X] click on "URL" tab, copy URL
+- [X] Paste URL in your browser to view the locally served widget preview.
+- [X] Verify that the widget renders correctly.
 
 - 📸 **Screenshot:** The widget preview in the browser.
 
