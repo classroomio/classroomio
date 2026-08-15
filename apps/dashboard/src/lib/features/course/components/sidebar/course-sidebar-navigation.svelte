@@ -9,7 +9,6 @@
 
   import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
   import BotIcon from '@lucide/svelte/icons/bot';
-  import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
   import {
     AnalyticsIcon,
     AttendanceIcon,
@@ -22,6 +21,7 @@
     PeopleIcon,
     PremiumIcon,
     SettingsIcon,
+    ShieldCheckIcon,
     SubmissionIcon
   } from '@cio/ui/custom/moving-icons';
   import { ContentType } from '@cio/utils/constants/content';
@@ -403,7 +403,7 @@
                 {#snippet children(isHovered)}
                   {@const Icon = item.icon}
                   <a href={resolve(item.url, {})} {...props}>
-                    {#if Icon === TableOfContentsIcon || Icon === BotIcon || Icon === ShieldCheckIcon}
+                    {#if Icon === TableOfContentsIcon}
                       <Icon size={16} />
                     {:else}
                       <Icon {isHovered} size={16} />
