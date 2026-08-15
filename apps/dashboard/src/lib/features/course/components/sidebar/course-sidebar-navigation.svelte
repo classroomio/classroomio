@@ -9,6 +9,7 @@
 
   import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
   import BotIcon from '@lucide/svelte/icons/bot';
+  import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
   import {
     AnalyticsIcon,
     AttendanceIcon,
@@ -248,7 +249,7 @@
     } else if (id === NAV_IDS.MARKS) {
       return MarksIcon;
     } else if (id === NAV_IDS.COMPLIANCE) {
-      return CertificateIcon;
+      return ShieldCheckIcon;
     } else if (id === NAV_IDS.PEOPLE) {
       return PeopleIcon;
     } else if (id === NAV_IDS.ANALYTICS) {
@@ -402,7 +403,7 @@
                 {#snippet children(isHovered)}
                   {@const Icon = item.icon}
                   <a href={resolve(item.url, {})} {...props}>
-                    {#if Icon === TableOfContentsIcon}
+                    {#if Icon === TableOfContentsIcon || Icon === BotIcon || Icon === ShieldCheckIcon}
                       <Icon size={16} />
                     {:else}
                       <Icon {isHovered} size={16} />
