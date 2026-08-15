@@ -28,7 +28,7 @@
     if (days === 0) return $t('cohorts.goals.lms.due_today');
     if (days === 1) return $t('cohorts.goals.lms.due_tomorrow');
 
-    return $t('cohorts.goals.lms.due_in_days').replace('{days}', String(days));
+    return $t('cohorts.goals.lms.due_in_days', { days: days });
   }
 
   function progressPct(assignment: (typeof cohortGoalApi.myGoals)[number]): number {
