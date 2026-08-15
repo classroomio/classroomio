@@ -7,7 +7,6 @@
   import { courseApi } from '$features/course/api';
   import { isFreePlan } from '$lib/utils/store/org';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
-  import type { CourseCertificate } from '$features/course/utils/types';
   import { ContentType } from '@cio/utils/constants/content';
   import { AttentionHighlight } from '$features/ui';
 
@@ -72,16 +71,6 @@
   function onEmailMessageInput(e: Event) {
     updateCertificate({ emailMessage: (e.currentTarget as HTMLTextAreaElement).value || null });
   }
-
-  function validateCertificateSettings(certificate: CourseCertificate | null | undefined): string[] {
-    const errors: string[] = [];
-    if (certificate?.isDownloadable && !certificate?.deadline) {
-      errors.push('course.certification.deadline_required');
-    }
-    return errors;
-  }
-
-  const certificateValidationErrors = $derived(validateCertificateSettings(courseApi.course?.certificate));
 </script>
 
 <Field.Group class="w-full max-w-md! px-2">
@@ -101,9 +90,6 @@
         <Field.Label for="certificate-downloadable" class="text-gray-600">
           {$t('course.navItem.certificates.allow')}
         </Field.Label>
-        {#if courseApi.course?.certificate?.isDownloadable && certificateValidationErrors.includes('course.certification.deadline_required')}
-          <Field.Error class="mt-1">{$t('course.certification.deadline_required')}</Field.Error>
-        {/if}
       </div>
     </Field.Field>
 
@@ -112,9 +98,6 @@
         <Field.Field>
           <Field.Label for="cert-deadline">
             {$t('course.certification.deadline_label')}
-            {#if courseApi.course?.certificate?.isDownloadable}
-              <span class="ui:text-red-600">*</span>
-            {/if}
           </Field.Label>
           <Input
             id="cert-deadline"
@@ -127,9 +110,6 @@
           <Field.Description>{$t('course.certification.deadline_helper')}</Field.Description>
           {#if errors['certificate.deadline']}
             <Field.Error>{errors['certificate.deadline']}</Field.Error>
-          {/if}
-          {#if certificateValidationErrors.includes('course.certification.deadline_required')}
-            <Field.Error>{$t('course.certification.deadline_required')}</Field.Error>
           {/if}
         </Field.Field>
       </AttentionHighlight>

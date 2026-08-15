@@ -177,6 +177,43 @@ describe('evaluateCourseGoLiveReadiness', () => {
     expect(readiness.blockers).toEqual([]);
     expect(readiness.courseUrl).toBe('https://school.example.com/course/workplace-safety-essentials');
   });
+
+  it('blocks publishing a compliance course that has no completion deadline', () => {
+    const readiness = evaluateCourseGoLiveReadiness({
+      course: buildCourse({
+        type: 'COMPLIANCE',
+        certificate: { isDownloadable: true }
+      }) as never,
+      contentItems: [buildContentItem()],
+      organization: {
+        customDomain: 'school.example.com',
+        isCustomDomainVerified: true,
+        siteName: 'school'
+      } as never
+    });
+
+    expect(readiness.ready).toBe(false);
+    expect(readiness.blockers.map((blocker) => blocker.code)).toContain('COMPLIANCE_DEADLINE_MISSING');
+  });
+
+  it('allows publishing a compliance course when a completion deadline is set', () => {
+    const readiness = evaluateCourseGoLiveReadiness({
+      course: buildCourse({
+        type: 'COMPLIANCE',
+        certificate: { deadline: '2026-12-31T23:59:00.000Z' }
+      }) as never,
+      contentItems: [buildContentItem()],
+      organization: {
+        customDomain: 'school.example.com',
+        isCustomDomainVerified: true,
+        siteName: 'school'
+      } as never
+    });
+
+    expect(readiness.ready).toBe(true);
+    expect(readiness.blockers).toEqual([]);
+    expect(readiness.warnings.map((warning) => warning.code)).toContain('COMPLIANCE_REVIEW_RECOMMENDED');
+  });
 });
 
 describe('course go-live service', () => {

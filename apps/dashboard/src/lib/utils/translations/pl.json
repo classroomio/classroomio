@@ -2479,8 +2479,9 @@
       "email_message_label": "Wiadomość e-mail",
       "email_message_placeholder": "np. Jesteśmy dumni z Twoich postępów — ucz się dalej!",
       "final_exercise_multiple_attempts_note": "Studenci będą mieli nieograniczoną liczbę prób wykonania wybranego ćwiczenia.",
-      "deadline_required": "W przypadku możliwości pobrania certyfikatów wymagany jest termin wydania certyfikatu.",
-      "deadline_required_enroll": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników."
+      "deadline_required": "Kursy zgodności wymagają terminu ukończenia przed publikacją.",
+      "deadline_required_enroll": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników.",
+      "deadline_invalid": "Termin ukończenia kursu jest nieprawidłowy."
     },
     "creator": {
       "heading": "Jaki kurs chcesz stworzyć?",

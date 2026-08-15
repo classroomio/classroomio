@@ -31,7 +31,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { generateSlug } from '@cio/utils/functions';
+  import { generateSlug, isPublishedComplianceMissingDeadline } from '@cio/utils/functions';
   import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
   import { DeleteModal } from '$features/ui';
   import { contentApi, courseApi } from '$features/course/api';
@@ -169,10 +169,13 @@
       return;
     }
 
-    const isCourseCompliance = $settings.type === 'COMPLIANCE';
-    const hasCertificateDeadline = !!courseApi.course?.certificate?.deadline;
-
-    if (isCourseCompliance && !hasCertificateDeadline) {
+    if (
+      isPublishedComplianceMissingDeadline({
+        type: $settings.type,
+        isPublished: true,
+        deadline: courseApi.course?.certificate?.deadline
+      })
+    ) {
       openCertificateDeadlineDialog = true;
       return;
     }
@@ -214,6 +217,17 @@
       }
 
       if (!courseApi.course) return;
+
+      if (
+        isPublishedComplianceMissingDeadline({
+          type: $settings.type,
+          isPublished: $settings.isPublished,
+          deadline: courseApi.course.certificate?.deadline
+        })
+      ) {
+        openCertificateDeadlineDialog = true;
+        return;
+      }
 
       if ($settings.isPublished && !courseApi.course.slug) {
         courseApi.course.slug = generateSlug($settings.courseTitle, { appendTimestamp: true });

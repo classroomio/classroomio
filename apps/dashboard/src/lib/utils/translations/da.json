@@ -2479,8 +2479,9 @@
       "email_message_label": "E-mail besked",
       "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!",
       "final_exercise_multiple_attempts_note": "Elever får lov til ubegrænsede forsøg på den valgte øvelse.",
-      "deadline_required": "Certifikatfrist er påkrævet, når certifikater kan downloades.",
-      "deadline_required_enroll": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes."
+      "deadline_required": "Overholdelseskurser kræver en fuldførelsesfrist, før de kan udgives.",
+      "deadline_required_enroll": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes.",
+      "deadline_invalid": "Kursusets fuldførelsesfrist er ugyldig."
     },
     "creator": {
       "heading": "Hvilket kursus vil du lave?",

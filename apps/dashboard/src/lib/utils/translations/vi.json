@@ -2479,8 +2479,9 @@
       "email_message_label": "Tin nhắn email",
       "email_message_placeholder": "ví dụ: Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!",
       "final_exercise_multiple_attempts_note": "Học sinh sẽ được phép thử không giới hạn bài tập đã chọn.",
-      "deadline_required": "Thời hạn cấp chứng chỉ là bắt buộc khi có thể tải xuống chứng chỉ.",
-      "deadline_required_enroll": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký."
+      "deadline_required": "Các khóa học tuân thủ yêu cầu thời hạn hoàn thành trước khi có thể xuất bản.",
+      "deadline_required_enroll": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký.",
+      "deadline_invalid": "Thời hạn hoàn thành khóa học không hợp lệ."
     },
     "creator": {
       "heading": "Bạn muốn tạo khóa học nào?",
