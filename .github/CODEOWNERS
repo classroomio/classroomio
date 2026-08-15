@@ -1,0 +1,5 @@
+# High-risk supply-chain paths — prefer maintainer review before merge.
+/.github/workflows/ @rotimi-best
+/pnpm-lock.yaml @rotimi-best
+/pnpm-workspace.yaml @rotimi-best
+/package.json @rotimi-best

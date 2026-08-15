@@ -3817,7 +3817,8 @@
       "title": "Anmeldung deaktiviert",
       "invite_only_message": "Die Anmeldung ist nur auf Einladung möglich. Bitte verwenden Sie einen Einladungslink, um ein Konto zu erstellen.",
       "go_to_login": "Gehen Sie zu Anmelden"
-    }
+    },
+    "continue_with": "Oder fahren Sie mit fort"
   },
   "app": {
     "search": {
@@ -4859,7 +4860,8 @@
       "no_matching_cohort_courses": "Zu Ihrer Suche passen keine Kohortenkurse.",
       "pagination_status": "Seite {page} von {totalPages}",
       "published_access_callout_title": "Zugang für Studierende",
-      "published_access_callout_description": "Studierende haben nur Zugriff auf veröffentlichte Kurse. Kurse können für Ihr Team in dieser Kohorte enthalten sein, solange sie noch unveröffentlicht sind, und bleiben den Studierenden verborgen, bis Sie sie veröffentlichen."
+      "published_access_callout_description": "Studierende haben nur Zugriff auf veröffentlichte Kurse. Kurse können für Ihr Team in dieser Kohorte enthalten sein, solange sie noch unveröffentlicht sind. Sie bleiben den Studierenden jedoch verborgen, bis Sie sie veröffentlichen.",
+      "empty_student_description": "In dieser Kohorte gibt es noch keine veröffentlichten Kurse."
     },
     "newsfeed": {
       "post": "Neuer Beitrag",

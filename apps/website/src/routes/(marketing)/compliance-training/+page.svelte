@@ -53,13 +53,13 @@
       Icon: ShieldCheck,
       title: 'Compliance status tracking',
       description:
-        'Know at a glance whether each learner is compliant, expiring soon, or non-compliant — and surface the people who need a reminder.'
+        'Know at a glance whether each learner is compliant, expiring soon, or non-compliant, and surface the people who need a reminder.'
     },
     {
       Icon: RefreshCw,
-      title: 'Renewals & retake intervals',
+      title: 'Renewals and retake intervals',
       description:
-        'Configure recurring training rules — annual, biannual, custom — so certifications refresh on schedule.'
+        'Configure recurring training rules (annual, biannual, or custom) so certifications refresh on schedule.'
     },
     {
       Icon: CalendarClock,
@@ -83,7 +83,7 @@
       Icon: FileSpreadsheet,
       title: 'Completion records & certificate ledger',
       description:
-        'Every completion, mark, and issued certificate is stored against the learner — searchable from the dashboard when you need to look up who finished what.'
+        'Every completion, mark, and issued certificate is stored against the learner, searchable from the dashboard when you need to look up who finished what.'
     },
     {
       Icon: KeyRound,
@@ -169,7 +169,7 @@
       </h1>
       <HeroSubtitle class="mx-auto">
         Turn policies, SOPs, docs, and videos into assigned courses with quizzes, certificates, renewal rules, and
-        completion evidence. Know exactly who is compliant — and prove it.
+        completion evidence. Know exactly who is compliant, and prove it.
       </HeroSubtitle>
       <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
         <Button data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</Button>
@@ -188,7 +188,7 @@
       <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
         <img
           src="https://assets.cdn.clsrio.com/www/compliance-training/org-compliance.jpeg"
-          alt="Compliance dashboard — required learners grouped by compliant, expiring soon, and non-compliant"
+          alt="Compliance dashboard with required learners grouped by compliant, expiring soon, and non-compliant"
           class="block h-auto w-full"
           loading="eager"
           decoding="async"
@@ -214,15 +214,15 @@
   <ImageDemoSection
     eyebrow="Inside a compliance program"
     title="A look inside a compliance program."
-    description="From importing your team to issuing a certificate — the whole flow at a glance."
+    description="From importing your team to issuing a certificate, the whole flow at a glance."
     imageSrc="https://assets.cdn.clsrio.com/www/compliance-training/compliance-dashboard.jpeg"
-    imageAlt="Compliance dashboard — required learners, status, and certificates"
+    imageAlt="Compliance dashboard showing required learners, status, and certificates"
   />
 
   <FeatureGrid
     eyebrow="Built for audit pressure"
     title="Everything you need when training completion is not optional."
-    description={'Not a generic LMS with a "compliance" checkbox. Real workflows for the people who have to answer the auditor\u2019s questions.'}
+    description={'Not a generic LMS with a "compliance" checkbox. Real workflows for the people who have to answer the auditor\'s questions.'}
     ctaLabel="Get started"
     ctaHref="/signup"
     {features}
@@ -233,9 +233,9 @@
     bgClass="bg-gray-50"
     eyebrow="Renewals on autopilot"
     title="Training that re-runs itself."
-    description="Set a retake interval once. ClassroomIO automatically moves learners back into “expiring soon”, sends reminders, holds them in a grace period, and flags non-compliance — all without admin intervention."
+    description="Set a retake interval once. ClassroomIO moves learners back into 'expiring soon', sends reminders, holds them in a grace period, and flags non-compliance, all without admin intervention."
     imageSrc="https://assets.cdn.clsrio.com/www/compliance-training/course-compliance.jpeg"
-    imageAlt="Compliance settings panel — retake interval, grace period, reminders, waiver rules"
+    imageAlt="Compliance settings panel with retake interval, grace period, reminders, and waiver rules"
   >
     {#snippet bullets()}
       <li class="flex items-start gap-2">
@@ -262,8 +262,8 @@
           15 question types. Twelve auto-graded.
         </h2>
         <p class="mt-5 text-base leading-relaxed text-gray-500">
-          Don't settle for multiple choice. Test understanding the way the policy actually requires — with partial
-          credit, file uploads, video evidence, and manual override when you need a human in the loop.
+          Don't settle for multiple choice. Test understanding the way the policy requires, with partial credit, file
+          uploads, video evidence, and manual override when you need a human in the loop.
         </p>
         <div class="mt-6 flex flex-wrap gap-2">
           <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">Auto-graded · 12</span>
@@ -295,7 +295,7 @@
           Proof of training, designed for your brand.
         </h2>
         <p class="mt-5 text-base leading-relaxed text-gray-500">
-          Configure the certificate ID format the way your records team needs it — by year, month, sequence, or a custom
+          Configure the certificate ID format the way your records team needs it: by year, month, sequence, or a custom
           prefix. Download as PDF or PNG. Every issuance is logged for audit.
         </p>
         <ul class="mt-6 space-y-3 text-sm text-gray-700">
@@ -316,9 +316,9 @@
   <AiTutorSection
     accent="In your dashboard"
     title="A personal course-authoring assistant."
-    description="Drop in a policy doc or paste a URL. The assistant plans the compliance course, drafts each lesson, writes the quiz questions, and stops for your approval before publishing — so building required training drops from a week to an afternoon."
+    description="Drop in a policy doc or paste a URL. The assistant plans the compliance course, drafts each lesson, writes the quiz questions, and stops for your approval before publishing. Building required training drops from a week to an afternoon."
     imageSrc="https://assets.cdn.clsrio.com/www/compliance-training/ai-course-builder.jpeg"
-    imageAlt="Course builder — plan, approve, implement. Templates, in-editor chat, and MCP."
+    imageAlt="Course builder: plan, approve, implement. Templates, in-editor chat, and MCP."
   />
 
   <!-- Use cases -->

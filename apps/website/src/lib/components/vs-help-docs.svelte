@@ -17,7 +17,7 @@
     bgClass = 'bg-white',
     eyebrow = 'Help docs are not an academy',
     heading = 'Reading docs isn’t the same as learning.',
-    subhead = 'Intercom Articles, Zendesk Guide, and Confluence are great at one thing — answering "how do I do X?" when the user already knows what they need. They were never built to teach.',
+    subhead = 'Intercom Articles, Zendesk Guide, and Confluence are great at one thing: answering "how do I do X?" when the user already knows what they need. They were never built to teach.',
     showHeading = true
   } = $props();
 
@@ -44,7 +44,7 @@
       capability: 'Cohorts / multi-course paths',
       docs: false,
       academy: true,
-      note: 'Onboarding week, admin track, power-user path — three audiences, three sequenced journeys, one academy.'
+      note: 'Onboarding week, admin track, power-user path: three audiences, three sequenced journeys, one academy.'
     },
     {
       capability: 'AI tutor inside the lesson',
@@ -68,7 +68,7 @@
       capability: 'Search & quick lookup',
       docs: true,
       academy: false,
-      note: 'When someone already knows what they need, docs win. Pair an academy with your docs — don’t replace them.'
+      note: "When someone already knows what they need, docs win. Pair an academy with your docs; don't replace them."
     },
     {
       capability: 'In-product contextual answers',
@@ -140,7 +140,7 @@
 
     <p class="mt-6 text-xs text-gray-500">
       Compared against typical capabilities of Intercom Articles, Zendesk Guide, and Confluence at time of writing. Run
-      your own academy alongside your existing help center — most teams who launch a customer academy keep both.
+      your own academy alongside your existing help center. Most teams who launch a customer academy keep both.
     </p>
   </div>
 </section>

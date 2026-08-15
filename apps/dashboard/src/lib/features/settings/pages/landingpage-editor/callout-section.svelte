@@ -33,6 +33,7 @@
     }
 
     const callout: OrgLandingPageCallout = {
+      enabled: true,
       heading: t.get('settings.landing_page.editor.callout.heading_default'),
       description: '',
       action: {
@@ -51,16 +52,7 @@
   }
 
   function setCalloutEnabled(enabled: boolean) {
-    if (!enabled) {
-      settings = {
-        ...settings,
-        callout: undefined
-      };
-      markDirty();
-      return;
-    }
-
-    setter(ensureCallout(), 'callout');
+    setter({ ...ensureCallout(), enabled }, 'callout');
   }
 </script>
 
@@ -71,13 +63,13 @@
     <div class="space-y-6">
       <Field.Field orientation="horizontal">
         <Switch
-          checked={Boolean(settings.callout)}
+          checked={settings.callout?.enabled ?? false}
           onCheckedChange={(checked) => setCalloutEnabled(checked === true)}
         />
         <Field.Label>{$t('settings.landing_page.editor.callout.toggle')}</Field.Label>
       </Field.Field>
 
-      {#if settings.callout}
+      {#if settings.callout?.enabled}
         <Field.Field>
           <div class="flex items-center justify-between">
             <Field.Label>{$t('settings.landing_page.editor.callout.heading')}</Field.Label>

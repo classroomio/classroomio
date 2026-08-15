@@ -12,20 +12,20 @@ git clone https://github.com/classroomio/classroomio.git
 cd classroomio
 cp .env.example .env
 # Edit .env — set your dashboard domain and secrets
-./run-docker-full-stack.sh
+./classroomio.sh start
 ```
 
-The script builds and starts: **postgres**, **redis**, **minio** (object storage), **api** (`localhost:3081`), **dashboard** (`localhost:3082`), and the **jobs** worker (background processing). Database schema setup runs automatically inside the `api` container on startup (see [`docker/entrypoint-api.sh`](../entrypoint-api.sh); skip with `SKIP_DB_SETUP=true`).
+The script pulls and starts: **postgres**, **redis**, **minio** (object storage), **api** (`localhost:3081`), **dashboard** (`localhost:3082`), and the **jobs** worker (background processing). Pass `--build` to build the application images from this checkout instead of pulling published ones. Database schema setup runs automatically inside the `api` container on startup (see [`docker/entrypoint-api.sh`](../entrypoint-api.sh); skip with `SKIP_DB_SETUP=true`).
 
 It auto-generates secure values for `PRIVATE_SERVER_KEY` and `BETTER_AUTH_SECRET` when they are missing or left at placeholders, and randomizes MinIO credentials on first provision.
 
-> **The jobs worker is required, not optional.** Without it, video processing, captions/transcription, AI course generation, and most emails are enqueued in Redis but never run — uploads stay stuck "processing" with no error. See [Background Jobs Worker](#background-jobs-worker) below.
+> **The jobs worker is required, not optional.** Without it, video processing, captions/transcription, AI course generation, and most emails are enqueued in Redis but never run: uploads stay stuck "processing" with no error. See [Background Jobs Worker](#background-jobs-worker) below.
 
 ## Run from Pre-built Images (no build)
 
-The Quick Start builds images from source — that needs the full repo and ~8 GB RAM for the
-dashboard build. Most self-hosters should instead **pull** the published `classroomio/{api,dashboard,jobs}`
-images. You only need [`docker-compose.images.yaml`](../../docker-compose.images.yaml) and a `.env`:
+The Quick Start already pulls the published `classroomio/{api,dashboard,jobs}` images by default.
+To skip cloning the full repository, you only need
+[`docker-compose.images.yaml`](../../docker-compose.images.yaml) and a `.env`:
 
 ```bash
 # 1. Get just the compose file + env template (no full clone required)
@@ -37,10 +37,18 @@ CIO_VERSION=1.4.2 docker compose -f docker-compose.images.yaml --env-file .env p
 CIO_VERSION=1.4.2 docker compose -f docker-compose.images.yaml --env-file .env up -d
 ```
 
-From a full clone you can also use the helper: `./run-docker-full-stack.sh --images`.
+Easier: let the lifecycle script do all of the above (it also auto-generates secrets). It works in
+an empty directory: `install` downloads the compose file and `.env.example` for you:
 
-> Secrets aren't auto-generated in this path (the helper script does that). Set `BETTER_AUTH_SECRET`
-> and `PRIVATE_SERVER_KEY` to strong random values yourself.
+```bash
+curl -fsSLO https://classroomio.com/classroomio.sh
+chmod +x classroomio.sh
+./classroomio.sh install
+```
+
+> If you run the raw `docker compose` commands instead of the script, secrets aren't
+> auto-generated. Set `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` to strong random values
+> yourself.
 
 ## Versioning & Upgrades
 
@@ -65,30 +73,40 @@ CIO_VERSION=1.5.0 docker compose -f docker-compose.images.yaml --env-file .env u
 
 Schema migrations run automatically on `api` startup (`db:setup`), so upgrades need no manual DB
 step. If a release consolidates ("squashes") older migrations, the startup baseline detects an
-existing instance and adopts the new baseline as already-applied — your database is upgraded in
+existing instance and adopts the new baseline as already-applied, and your database is upgraded in
 place without re-running schema that already exists.
 
-(Maintainers: every published image is boot-smoke-tested in CI before it ships — see
+(Maintainers: every published image is boot-smoke-tested in CI before it ships. See
 [`PUBLISHING_IMAGES.md`](PUBLISHING_IMAGES.md).)
 
 ## Environment Variables
 
 All Docker services read from a single root `.env` file. See [`.env.example`](../../.env.example) for the full annotated template with required/optional grouping.
 
-Key points:
+Two variables actually need your attention: `PUBLIC_IS_SELFHOSTED=true` and `DASHBOARD_ORIGIN`,
+which you should set to your real domain in production (it also drives public media URLs; see
+[Production Object Storage](#production-object-storage)). Everything else below has a sane
+default.
 
-- **Required:** `PUBLIC_IS_SELFHOSTED=true`, `DASHBOARD_ORIGIN` (set this to your real domain in production — it also drives public media URLs, see [Production Object Storage](#production-object-storage)).
-- **API routing:** Browser dashboard calls go to the dashboard origin and are proxied to `PRIVATE_SERVER_URL` (default: `http://api:3081`). You do not need API/dashboard cookie-domain matching for normal dashboard auth.
-- **Direct API access (optional):** Set `PUBLIC_SERVER_URL` and `TRUSTED_ORIGINS` only if browsers or third-party clients need to call the API origin directly.
-- **CSP (runtime):** `ALLOWED_EXTERNAL_DOMAINS` (overrides all) or per-directive: `CSP_SCRIPT_SRC_DOMAINS`, `CSP_STYLE_SRC_DOMAINS`, `CSP_CONNECT_SRC_DOMAINS`, `CSP_FRAME_SRC_DOMAINS`, `CSP_FONT_SRC_DOMAINS`, `CSP_MEDIA_SRC_DOMAINS`. These are read at container startup — no image rebuild needed. The API does not need to be added for normal dashboard calls.
-- **Auth cookies:** No cookie-domain env is needed. The dashboard proxy makes auth first-party and Better Auth sets host-only dashboard cookies.
-- **Auto-generated:** `PRIVATE_SERVER_KEY`, `BETTER_AUTH_SECRET` (by `./run-docker-full-stack.sh`). A strong value you set yourself is never overwritten.
-- **Auto-configured:** All `MINIO_*` / `OBJECT_STORAGE_*` vars (by the startup script, with randomized MinIO credentials).
-- **Email (effectively required):** SMTP (or Zoho). See [Email](#email) — without it, signup verification, password reset, and invites do not send.
-- **Optional:** Google OAuth, Unsplash, `LICENSE_KEY` (enterprise).
-- **Optional — upload limits:** `UPLOAD_MAX_*_MB` vars (documents, images, videos, assignment files, etc.). See [`.env.example`](../../.env.example). Passed through to both `api` and `dashboard` containers; unset values use built-in defaults. Raise your reverse-proxy body-size limit too if you increase these.
+Routing and auth are handled for you. Browser dashboard calls go to the dashboard origin and get
+proxied to `PRIVATE_SERVER_URL` (default `http://api:3081`), so normal dashboard auth needs no
+cookie-domain matching between the API and dashboard: the proxy makes it first-party, and Better
+Auth sets host-only cookies. Only set `PUBLIC_SERVER_URL` and `TRUSTED_ORIGINS` if a browser or
+third-party client needs to call the API directly. CSP is read at container startup rather than
+baked into the image, so `ALLOWED_EXTERNAL_DOMAINS` (or the per-directive `CSP_SCRIPT_SRC_DOMAINS`,
+`CSP_STYLE_SRC_DOMAINS`, `CSP_CONNECT_SRC_DOMAINS`, `CSP_FRAME_SRC_DOMAINS`, `CSP_FONT_SRC_DOMAINS`,
+`CSP_MEDIA_SRC_DOMAINS` vars) take effect after `./classroomio.sh restart` (no image rebuild
+needed), and none of it needs to include the API for normal dashboard calls.
 
-`PRIVATE_SERVER_KEY` must be the same value in both API and dashboard — the script ensures this.
+`PRIVATE_SERVER_KEY` and `BETTER_AUTH_SECRET` are generated for you by `./classroomio.sh` if you
+leave them blank, and a value you set yourself is never overwritten; the script also ensures
+`PRIVATE_SERVER_KEY` matches between API and dashboard. The same goes for the `MINIO_*` /
+`OBJECT_STORAGE_*` vars: the startup script configures them with randomized credentials. Email is
+effectively required: without SMTP (or Zoho) configured, signup verification, password resets, and
+invites silently don't send (see [Email](#email)). Google OAuth, Unsplash, and `LICENSE_KEY` stay
+off until you set them. If you raise the `UPLOAD_MAX_*_MB` vars (documents, images, videos,
+assignment files; full list in [`.env.example`](../../.env.example)), set the same values on both
+`api` and `dashboard`, and raise your reverse-proxy body-size limit to match.
 
 ## Verify
 
@@ -109,7 +127,7 @@ docker exec cio-api pnpm --filter @cio/db db:setup:seed
 
 ## Command Reference
 
-All commands use this prefix — abbreviated as `dc` below:
+All commands use this prefix, abbreviated as `dc` below:
 
 ```
 dc = docker compose --env-file .env -p classroomio -f docker-compose.yaml
@@ -117,14 +135,18 @@ dc = docker compose --env-file .env -p classroomio -f docker-compose.yaml
 
 | Task | Command |
 |------|---------|
-| Full stack (pulls pre-built images, with MinIO) | `./run-docker-full-stack.sh` |
-| Build from source instead of pulling | `./run-docker-full-stack.sh --build` |
-| Exclude MinIO | `./run-docker-full-stack.sh --no-minio` |
+| Interactive lifecycle menu (install/start/stop/upgrade/logs/backup) | `./classroomio.sh` |
+| Full stack (pulls pre-built images, with MinIO) | `./classroomio.sh start` |
+| Build from source instead of pulling | `./classroomio.sh start --build` |
+| Exclude MinIO | `./classroomio.sh start --no-minio` |
+| Back up Postgres + MinIO volume | `./classroomio.sh backup` |
+| Upgrade published images (backs up first) | `./classroomio.sh upgrade` |
+| Upgrade a source build (backs up first, then rebuilds) | `./classroomio.sh upgrade --build` |
 | API-only smoke test | `dc up --build -d postgres redis api` |
 | Service status | `dc ps` |
 | Stream logs | `dc logs -f api dashboard` |
 | Rebuild one service | `dc up -d --build api` |
-| Restart (env change, no rebuild) | `dc restart api dashboard` |
+| Restart (recreates containers, applies .env changes) | `./classroomio.sh restart` |
 | Stop | `dc down` |
 | Stop + delete volumes | `dc down -v` |
 
@@ -177,11 +199,11 @@ Data is preserved in the `minio-data` volume.
 The `jobs` service (`cio-jobs`) is a BullMQ worker that processes everything ClassroomIO does
 asynchronously:
 
-- **Video processing** — probe, thumbnails, audio extraction, transcoding
-- **Transcription / captions** — via OpenAI Whisper (needs `OPENAI_API_KEY`)
-- **AI course generation** — the "generate a course with AI" agent
-- **Emails** — invites, notifications, and other non-auth emails
-- **Maintenance** — periodic cleanup
+- **Video processing:** probe, thumbnails, audio extraction, transcoding
+- **Transcription / captions:** via OpenAI Whisper (needs `OPENAI_API_KEY`)
+- **AI course generation:** the "generate a course with AI" agent
+- **Emails:** invites, notifications, and other non-auth emails
+- **Maintenance:** periodic cleanup
 
 It shares Redis and the database with the API. It is started automatically by the full-stack
 script. If it is not running, jobs accumulate in Redis and silently never complete.
@@ -211,7 +233,7 @@ The bundled MinIO is fine for a single host. Two things matter for a real deploy
 1. **Public media URLs must point at your domain, not `localhost`.** Media URLs are embedded in
    pages served to browsers, so `http://localhost:9000/...` breaks for every remote visitor. The
    startup script derives `OBJECT_STORAGE_PUBLIC_ENDPOINT` and
-   `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` from `DASHBOARD_ORIGIN` when it is a real domain — make
+   `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` from `DASHBOARD_ORIGIN` when it is a real domain. Make
    sure your reverse proxy routes `<your-domain>/media` to MinIO on port 9000 (or set those two
    variables explicitly).
 2. **External S3 / Cloudflare R2 instead of MinIO.** Run with `--no-minio` and set the
@@ -222,7 +244,7 @@ The bundled MinIO is fine for a single host. Two things matter for a real deploy
 ## Backups & Persistence
 
 All state lives in named Docker volumes: `postgres-data`, `redis-data`, `minio-data`
-(see `docker-compose.yaml`). **`docker compose ... down -v` deletes them — and all your
+(see `docker-compose.yaml`). **`docker compose ... down -v` deletes them, and all your
 data.** Back up regularly:
 
 ```bash
@@ -240,7 +262,7 @@ Restore the database into a fresh stack with `psql`/`pg_restore` against `cio-po
 API replicas**, set `SKIP_DB_SETUP=true` on all but one to avoid concurrent migration races, and
 run setup once out-of-band. The worker queues can also be scaled independently by overriding the
 `jobs` container command with the per-queue `start:*` scripts (e.g. `start:media`,
-`start:media-transcribe`) — see `apps/jobs/package.json`.
+`start:media-transcribe`). See `apps/jobs/package.json`.
 
 ## HLS Video Playback
 
@@ -259,8 +281,8 @@ docker compose --env-file .env -p classroomio -f docker-compose.yaml up -d --bui
 # Both (e.g. shared packages/* changed)
 docker compose --env-file .env -p classroomio -f docker-compose.yaml up -d --build api dashboard
 
-# Full stack
-./run-docker-full-stack.sh
+# Full stack (backs up first)
+./classroomio.sh upgrade --build
 ```
 
 ## Troubleshooting
@@ -277,7 +299,7 @@ docker container prune -f      # free stopped containers
 
 > **Warning:** `docker volume prune` removes volumes not used by any container. If run after `docker compose ... down`, it deletes `postgres-data`, `redis-data`, and `minio-data`. Use only the prunes above to free space safely.
 
-Then restart: `./run-docker-full-stack.sh`
+Then restart: `./classroomio.sh start`
 
 ### "The database system is in recovery mode" (57P03)
 
@@ -293,7 +315,7 @@ docker compose --env-file .env -p classroomio -f docker-compose.yaml restart min
 
 ### SMTP Errors in Logs
 
-`ECONNREFUSED 127.0.0.1:465` means SMTP is not configured. This does not block startup — configure SMTP or Zoho when you need email.
+`ECONNREFUSED 127.0.0.1:465` means SMTP is not configured. This does not block startup; configure SMTP or Zoho when you need email.
 
 ### Port Conflicts
 
@@ -304,5 +326,5 @@ lsof -nP -iTCP:3082 -sTCP:LISTEN
 
 ## Related
 
-- [Self-hosting docs](https://classroomio.com/docs/self-hosted/docker) — published guide with Docker, Railway, and Coolify instructions
-- [`docker/docs/PUBLISHING_IMAGES.md`](PUBLISHING_IMAGES.md) — publishing Docker images to Docker Hub
+- [Self-hosting docs](https://classroomio.com/docs/self-hosted/docker): published guide with Docker, Railway, and Coolify instructions
+- [`docker/docs/PUBLISHING_IMAGES.md`](PUBLISHING_IMAGES.md): publishing Docker images to Docker Hub

@@ -3817,7 +3817,8 @@
       "title": "Rejestracja wyłączona",
       "invite_only_message": "Rejestracja jest dostępna tylko za zaproszeniem. Aby utworzyć konto, użyj linku z zaproszeniem.",
       "go_to_login": "Przejdź do logowania"
-    }
+    },
+    "continue_with": "Lub kontynuuj z"
   },
   "app": {
     "search": {
@@ -4859,7 +4860,8 @@
       "no_matching_cohort_courses": "Żaden kurs kohorty nie pasuje do Twojego wyszukiwania.",
       "pagination_status": "Strona {page} z {totalPages}",
       "published_access_callout_title": "Dostęp studencki",
-      "published_access_callout_description": "Studenci mają dostęp tylko do opublikowanych kursów. Kursy mogą być w tej kohorcie dla Twojego zespołu, nawet jeśli są jeszcze nieopublikowane, i pozostają ukryte przed studentami do czasu publikacji."
+      "published_access_callout_description": "Studenci mają dostęp wyłącznie do opublikowanych kursów. Kursy mogą znajdować się w tej kohorcie Twojego zespołu, gdy nie są jeszcze opublikowane, ale pozostają ukryte przed uczniami, dopóki ich nie opublikujesz.",
+      "empty_student_description": "Nie ma jeszcze opublikowanych kursów w tej kohorcie."
     },
     "newsfeed": {
       "post": "Nowy post",

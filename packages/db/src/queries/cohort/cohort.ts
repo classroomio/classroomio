@@ -476,6 +476,7 @@ export async function getCoursesByCohort(
         coverImage: string | null;
         slug: string | null;
         status: string | null;
+        isPublished: boolean | null;
       };
     }
   >

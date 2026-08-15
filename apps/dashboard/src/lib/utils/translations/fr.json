@@ -3817,7 +3817,8 @@
       "title": "Inscription désactivée",
       "invite_only_message": "L'inscription se fait sur invitation uniquement. Veuillez utiliser un lien d'invitation pour créer un compte.",
       "go_to_login": "Allez dans Connexion"
-    }
+    },
+    "continue_with": "Ou continuer avec"
   },
   "app": {
     "search": {
@@ -4859,7 +4860,8 @@
       "no_matching_cohort_courses": "Aucun cours de cohorte ne correspond à votre recherche.",
       "pagination_status": "Page {page} sur {totalPages}",
       "published_access_callout_title": "Accès étudiant",
-      "published_access_callout_description": "Les étudiants n’ont accès qu’aux cours publiés. Les cours peuvent figurer dans cette cohorte pour votre équipe alors qu’ils ne sont pas encore publiés, tout en restant cachés aux étudiants jusqu’à leur publication."
+      "published_access_callout_description": "Les étudiants n'ont accès qu'aux cours publiés. Les cours peuvent figurer dans cette cohorte pour votre équipe même s'ils ne sont pas encore publiés, mais ils restent cachés aux étudiants jusqu'à ce que vous les publiiez.",
+      "empty_student_description": "Il n'y a pas encore de cours publiés dans cette cohorte."
     },
     "newsfeed": {
       "post": "Nouveau message",

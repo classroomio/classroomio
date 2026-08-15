@@ -2,6 +2,7 @@ import type { Course, CourseContentItem, CourseContentSection } from './types';
 import { ExerciseIcon, LessonIcon } from '@cio/ui/custom/moving-icons';
 
 import { ContentType as CourseContentType } from '@cio/utils/constants/content';
+import { flattenNavigableItems } from '@cio/utils/functions/course-progression';
 import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
 
 export type ContentItem = CourseContentItem;
@@ -94,8 +95,9 @@ export function getCourseProgress(course: Course | null): ContentProgress {
 
 export function getOrderedNavigableContent(course: Course | null): ContentItem[] {
   const content = getCourseContent(course);
-  const items = content.grouped ? content.sections.flatMap((s) => s.items) : content.items;
-  return items.filter((item) =>
+  const flattenedItems = flattenNavigableItems(content);
+
+  return flattenedItems.filter((item) =>
     NAVIGABLE_CONTENT_TYPES.includes(item.type as (typeof NAVIGABLE_CONTENT_TYPES)[number])
   );
 }
