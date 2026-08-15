@@ -2334,7 +2334,7 @@
                 "search": "Search platforms",
                 "empty_prompt": "Pick a platform to see step-by-step instructions and paste your embed code.",
                 "embed_code": "Paste embed code",
-                "embed_placeholder": "<iframe src=\"https://...\"></iframe>",
+                "embed_placeholder": "Paste the full iframe embed code here",
                 "how_to_embed": "How to embed",
                 "preview": "Preview",
                 "embed_ready": "Embed ready",
