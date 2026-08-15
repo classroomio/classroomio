@@ -273,6 +273,7 @@ export async function cloneCourse(
       note: lesson.note,
       videoUrl: lesson.videoUrl,
       slideUrl: lesson.slideUrl,
+      slides: lesson.slides,
       courseId: newCourse.id,
       title: lesson.title,
       public: lesson.public,

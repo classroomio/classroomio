@@ -1,6 +1,16 @@
 import * as z from 'zod';
 
+import { isAllowedSlideEmbedSrc, SLIDE_PLATFORM_IDS } from '../../functions/slide-embed';
 import { ZSlug } from '../shared/slug';
+
+export const ZLessonSlide = z.object({
+  id: z.string().min(1),
+  src: z
+    .url()
+    .refine((src) => isAllowedSlideEmbedSrc(src), { message: 'Slide embed source is not from a supported platform' }),
+  platform: z.enum(SLIDE_PLATFORM_IDS)
+});
+export type TLessonSlide = z.infer<typeof ZLessonSlide>;
 
 // Lesson Schemas
 export const ZLessonCreate = z.object({
@@ -32,7 +42,8 @@ export const ZLessonUpdate = z.object({
   completionPolicy: z.enum(['manual', 'video_watch', 'none']).optional(),
   videoWatchThreshold: z.number().int().min(1).max(100).optional(),
   videoUrl: z.url().optional(),
-  slideUrl: z.url().optional(),
+  slideUrl: z.string().optional(),
+  slides: z.array(ZLessonSlide).optional(),
   videos: z
     .array(
       z.object({

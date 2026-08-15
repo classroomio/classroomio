@@ -113,6 +113,7 @@ export default defineConfig({
                   '/guides/grade-exercise',
                   '/guides/course-progression',
                   '/guides/use-math-in-editor',
+                  '/guides/embed-slides',
                   '/guides/certificates'
                 ]
               },
