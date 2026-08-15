@@ -240,16 +240,43 @@ jobs:
             sleep 5
           done
 
-      - name: Deploy each app service from this branch
+      - name: Deploy app services from this branch in parallel
         if: ${{ inputs.action == 'deploy' }}
-        # `--ci` (not `--detach`) blocks until each service's deploy/healthcheck succeeds,
-        # so the URL printed later is actually live. Trade-off: builds run sequentially.
+        # `--ci` (not `--detach`) keeps each process attached until its deployment
+        # succeeds or fails. Run the independent app builds concurrently, then wait for
+        # every service so the URL printed later is actually live.
         run: |
-          for svc in $APP_SERVICES; do
-            echo "::group::railway up $svc"
-            railway up --service "$svc" --ci
+          read -r -a services <<< "$APP_SERVICES"
+          deployment_pids=()
+          deployment_logs=()
+
+          for service in "${services[@]}"; do
+            deployment_log="$RUNNER_TEMP/railway-${service}.log"
+            echo "Starting deployment for $service..."
+            railway up --service "$service" --ci > "$deployment_log" 2>&1 &
+            deployment_pids+=("$!")
+            deployment_logs+=("$deployment_log")
+          done
+
+          deployment_failed=false
+          for service_index in "${!services[@]}"; do
+            service="${services[$service_index]}"
+            if wait "${deployment_pids[$service_index]}"; then
+              deployment_status="succeeded"
+            else
+              deployment_status="failed"
+              deployment_failed=true
+            fi
+
+            echo "::group::railway up $service ($deployment_status)"
+            cat "${deployment_logs[$service_index]}"
             echo "::endgroup::"
           done
+
+          if [ "$deployment_failed" = true ]; then
+            echo "::error::One or more Railway app deployments failed."
+            exit 1
+          fi
 
       - name: Setup pnpm
         if: ${{ inputs.action == 'deploy' && inputs.seed }}
