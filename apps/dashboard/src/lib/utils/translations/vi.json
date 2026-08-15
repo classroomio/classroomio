@@ -795,7 +795,7 @@
         "lesson_download": "Bài học Tải về",
         "available": "Cung cấp Bài học để tải xuống dưới dạng pdf cho học viên đã đăng ký",
         "course_download": "Tải xuống khóa học",
-        "course_avail": "Cung cấp Khóa học để tải xuống cho sinh viên đã đăng ký",
+        "course_avail": "Tải xuống một bản sao của khóa học này.",
         "download": "Tải xuống",
         "allow": "Cho phép sinh viên mới",
         "access": "Cho phép sinh viên mới truy cập khóa học này",
@@ -860,8 +860,10 @@
           "unlock_all": "Mở khóa tất cả"
         },
         "certificate_deadline_required": "Đặt thời hạn chứng chỉ đầu tiên",
-        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt chứng chỉ trước khi xuất bản.",
-        "go_to_certificate_settings": "Đi tới Cài đặt chứng chỉ"
+        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
+        "go_to_completion_deadline": "Đi tới thời hạn hoàn thành",
+        "completion_deadline_label": "Thời hạn hoàn thành khóa học",
+        "completion_deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn."
       },
       "analytics": {
         "title": "Phân tích"
@@ -2479,8 +2481,9 @@
       "email_message_label": "Tin nhắn email",
       "email_message_placeholder": "ví dụ: Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!",
       "final_exercise_multiple_attempts_note": "Học sinh sẽ được phép thử không giới hạn bài tập đã chọn.",
-      "deadline_required": "Thời hạn cấp chứng chỉ là bắt buộc khi có thể tải xuống chứng chỉ.",
-      "deadline_required_enroll": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký."
+      "deadline_required": "Các khóa học tuân thủ yêu cầu thời hạn hoàn thành trước khi có thể xuất bản.",
+      "deadline_required_enroll": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký.",
+      "deadline_invalid": "Thời hạn hoàn thành khóa học không hợp lệ."
     },
     "creator": {
       "heading": "Bạn muốn tạo khóa học nào?",

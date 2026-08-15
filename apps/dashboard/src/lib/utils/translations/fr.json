@@ -795,7 +795,7 @@
         "lesson_download": "Téléchargement des leçons",
         "available": "Rendre la leçon disponible en téléchargement en pdf pour les étudiants inscrits",
         "course_download": "Téléchargement du cours",
-        "course_avail": "Rendre le cours disponible en téléchargement pour les étudiants inscrits",
+        "course_avail": "Téléchargez une copie de ce cours.",
         "download": "Télécharger",
         "allow": "Autoriser les nouveaux étudiants",
         "access": "Autoriser les nouveaux étudiants à accéder à ce cours",
@@ -860,8 +860,10 @@
           "unlock_all": "Débloquez tout"
         },
         "certificate_deadline_required": "Définir d'abord la date limite du certificat",
-        "certificate_deadline_required_description": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits. Veuillez définir une date limite dans les paramètres du certificat avant de publier.",
-        "go_to_certificate_settings": "Accédez aux paramètres du certificat"
+        "certificate_deadline_required_description": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits. Veuillez définir une date limite dans les paramètres du cours avant de publier.",
+        "go_to_completion_deadline": "Accéder à la date limite d'achèvement",
+        "completion_deadline_label": "Date limite de fin de cours",
+        "completion_deadline_helper": "Les étudiants doivent atteindre le pourcentage d'achèvement avant cette date/heure (heure locale). Laisser vide sans date limite."
       },
       "analytics": {
         "title": "Analytique"
@@ -2479,8 +2481,9 @@
       "email_message_label": "Message électronique",
       "email_message_placeholder": "par ex. Nous sommes fiers de vos progrès – continuez à apprendre !",
       "final_exercise_multiple_attempts_note": "Les étudiants auront droit à des tentatives illimitées sur l'exercice sélectionné.",
-      "deadline_required": "La date limite du certificat est requise lorsque les certificats sont téléchargeables.",
-      "deadline_required_enroll": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits."
+      "deadline_required": "Les cours de conformité nécessitent une date limite d'achèvement avant de pouvoir être publiés.",
+      "deadline_required_enroll": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits.",
+      "deadline_invalid": "La date limite d'achèvement du cours n'est pas valide."
     },
     "creator": {
       "heading": "Quel cours souhaitez-vous créer ?",

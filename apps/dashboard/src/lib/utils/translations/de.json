@@ -795,7 +795,7 @@
         "lesson_download": "Lektionen herunterladen",
         "available": "Stellen Sie die Lektion für registrierte Studierende zum Download im PDF-Format zur Verfügung",
         "course_download": "Kurs-Download",
-        "course_avail": "Stellen Sie den Kurs für registrierte Studierende zum Download bereit",
+        "course_avail": "Laden Sie eine Kopie dieses Kurses herunter.",
         "download": "Herunterladen",
         "allow": "Erlauben Sie neue Studenten",
         "access": "Ermöglichen Sie neuen Studierenden den Zugang zu diesem Kurs",
@@ -860,8 +860,10 @@
           "unlock_all": "Schalte alle frei"
         },
         "certificate_deadline_required": "Legen Sie zuerst die Frist für das Zertifikat fest",
-        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Zertifikatseinstellungen fest.",
-        "go_to_certificate_settings": "Gehen Sie zu Zertifikatseinstellungen"
+        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
+        "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
+        "completion_deadline_label": "Frist für den Abschluss des Kurses",
+        "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen."
       },
       "analytics": {
         "title": "Analysen"
@@ -2479,8 +2481,9 @@
       "email_message_label": "E-Mail-Nachricht",
       "email_message_placeholder": "z.B. Wir sind stolz auf Ihre Fortschritte – lernen Sie weiter!",
       "final_exercise_multiple_attempts_note": "Den Schülern sind unbegrenzte Versuche für die ausgewählte Übung gestattet.",
-      "deadline_required": "Wenn Zertifikate herunterladbar sind, ist eine Zertifikatsfrist erforderlich.",
-      "deadline_required_enroll": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können."
+      "deadline_required": "Für Compliance-Kurse ist eine Abschlussfrist erforderlich, bevor sie veröffentlicht werden können.",
+      "deadline_required_enroll": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können.",
+      "deadline_invalid": "Die Abschlussfrist des Kurses ist ungültig."
     },
     "creator": {
       "heading": "Welchen Kurs möchten Sie erstellen?",

@@ -792,10 +792,10 @@
         "progression_mode_description": "Controle se os alunos podem acessar todo o conteúdo desbloqueado ou devem concluir os itens em ordem.",
         "progression_mode_free": "Livre — conteúdo desbloqueado é acessível",
         "progression_mode_sequential": "Sequencial — concluir itens anteriores para desbloquear o próximo",
-        "lesson_download": "Lições baixadas",
+        "lesson_download": "Download das lições",
         "available": "Disponibilizar a Lição para Download em PDF para alunos matriculados",
         "course_download": "Download do curso",
-        "course_avail": "Disponibilizar o Curso para Download para alunos cadastrados",
+        "course_avail": "Baixe uma cópia deste curso.",
         "download": "Baixar",
         "allow": "Permitir novos alunos",
         "access": "Permitir que novos alunos acessem este curso",
@@ -860,8 +860,10 @@
           "unlock_all": "Desbloquear tudo"
         },
         "certificate_deadline_required": "Defina o prazo do certificado primeiro",
-        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados. Defina um prazo nas configurações do certificado antes de publicar.",
-        "go_to_certificate_settings": "Vá para configurações de certificado"
+        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
+        "go_to_completion_deadline": "Ir para o prazo de conclusão",
+        "completion_deadline_label": "Prazo para conclusão do curso",
+        "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo."
       },
       "analytics": {
         "title": "Análises"
@@ -2479,8 +2481,9 @@
       "email_message_label": "Mensagem de e-mail",
       "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!",
       "final_exercise_multiple_attempts_note": "Os alunos terão permissão para tentativas ilimitadas no exercício selecionado.",
-      "deadline_required": "O prazo do certificado é necessário quando os certificados podem ser baixados.",
-      "deadline_required_enroll": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados."
+      "deadline_required": "Os cursos de conformidade exigem um prazo de conclusão antes de serem publicados.",
+      "deadline_required_enroll": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados.",
+      "deadline_invalid": "O prazo de conclusão do curso é inválido."
     },
     "creator": {
       "heading": "Qual curso você deseja criar?",

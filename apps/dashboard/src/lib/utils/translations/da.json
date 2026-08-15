@@ -794,8 +794,8 @@
         "progression_mode_sequential": "Sekventiel — fuldfør tidligere elementer for at låse næste op",
         "lesson_download": "Hent lektioner",
         "available": "Gør lektionen tilgængelig til download i pdf for tilmeldte studerende",
-        "course_download": "Kursus download",
-        "course_avail": "Gør kurset tilgængeligt til download for registrerede studerende",
+        "course_download": "Kursusdownload",
+        "course_avail": "Download en kopi af dette kursus.",
         "download": "Download",
         "allow": "Tillad nye studerende",
         "access": "Tillad nye studerende at få adgang til dette kursus",
@@ -860,8 +860,10 @@
           "unlock_all": "Lås alle op"
         },
         "certificate_deadline_required": "Indstil certifikatfrist først",
-        "certificate_deadline_required_description": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes. Indstil venligst en deadline i certifikatindstillingerne før udgivelse.",
-        "go_to_certificate_settings": "Gå til Certifikatindstillinger"
+        "certificate_deadline_required_description": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes. Indstil venligst en deadline i kursusindstillingerne før udgivelse.",
+        "go_to_completion_deadline": "Gå til fuldførelsesfristen",
+        "completion_deadline_label": "Deadline for kursusafslutning",
+        "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline."
       },
       "analytics": {
         "title": "Analyse"
@@ -2479,8 +2481,9 @@
       "email_message_label": "E-mail besked",
       "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!",
       "final_exercise_multiple_attempts_note": "Elever får lov til ubegrænsede forsøg på den valgte øvelse.",
-      "deadline_required": "Certifikatfrist er påkrævet, når certifikater kan downloades.",
-      "deadline_required_enroll": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes."
+      "deadline_required": "Overholdelseskurser kræver en fuldførelsesfrist, før de kan udgives.",
+      "deadline_required_enroll": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes.",
+      "deadline_invalid": "Kursusets fuldførelsesfrist er ugyldig."
     },
     "creator": {
       "heading": "Hvilket kursus vil du lave?",

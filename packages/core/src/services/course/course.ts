@@ -6,7 +6,7 @@ import {
   createCourseSections,
   deleteCourse as deleteCourseQuery,
   getCourseProgress as getCourseProgressQuery,
-  getCourseTypeById,
+  getCourseById,
   getCourseWithRelations,
   updateCourse as updateCourseQuery,
   updateLessonsSectionId
@@ -28,6 +28,7 @@ import { getStudentCourseProgressImpactCounts } from '@cio/db/queries/course/res
 import { getCourseGroupId } from '@cio/db/queries/course/people';
 
 import { ContentType, ROLE } from '@cio/utils/constants';
+import { isPublishedComplianceMissingDeadline, resolveCourseCertificateDeadline } from '@cio/utils/functions';
 import type { TCourse } from '@cio/db/types';
 import type { TCourseCreate } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
@@ -338,14 +339,36 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
       slug: data.slug
     };
 
-    if (data.type !== undefined) {
-      const currentType = await getCourseTypeById(courseId);
+    const [currentCourse] = await getCourseById(courseId);
+    if (!currentCourse) {
+      throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+    }
 
+    if (data.type !== undefined) {
       await guardCourseTypeTransition({
         courseId,
-        currentType: currentType ?? null,
+        currentType: currentCourse.type ?? null,
         nextType: data.type
       });
+    }
+
+    const nextType = data.type ?? currentCourse.type;
+    const nextIsPublished = data.isPublished ?? currentCourse.isPublished;
+    const nextDeadline = resolveCourseCertificateDeadline(currentCourse.certificate?.deadline, data.certificate);
+
+    if (
+      isPublishedComplianceMissingDeadline({
+        type: nextType,
+        isPublished: nextIsPublished,
+        deadline: nextDeadline
+      })
+    ) {
+      throw new AppError(
+        'Compliance courses require a completion deadline before they can be published',
+        ErrorCodes.COMPLIANCE_DEADLINE_REQUIRED,
+        400,
+        'certificate.deadline'
+      );
     }
 
     if (data.certificate?.requiredExerciseId) {
