@@ -8,10 +8,10 @@
   import { BackButton } from '@cio/ui';
 
   import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
-  import BotIcon from '@lucide/svelte/icons/bot';
   import {
     AnalyticsIcon,
     AttendanceIcon,
+    BotIcon,
     CertificateIcon,
     ContentIcon,
     HoverableItem,
