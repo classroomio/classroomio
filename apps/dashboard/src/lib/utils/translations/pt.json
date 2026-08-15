@@ -2481,8 +2481,9 @@
       "email_message_label": "Mensagem de e-mail",
       "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!",
       "final_exercise_multiple_attempts_note": "Os alunos terão permissão para tentativas ilimitadas no exercício selecionado.",
-      "deadline_required": "O prazo do certificado é necessário quando os certificados podem ser baixados.",
-      "deadline_required_enroll": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados."
+      "deadline_required": "Os cursos de conformidade exigem um prazo de conclusão antes de serem publicados.",
+      "deadline_required_enroll": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados.",
+      "deadline_invalid": "O prazo de conclusão do curso é inválido."
     },
     "creator": {
       "heading": "Qual curso você deseja criar?",

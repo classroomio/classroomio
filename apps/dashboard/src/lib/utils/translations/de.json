@@ -2481,8 +2481,9 @@
       "email_message_label": "E-Mail-Nachricht",
       "email_message_placeholder": "z.B. Wir sind stolz auf Ihre Fortschritte – lernen Sie weiter!",
       "final_exercise_multiple_attempts_note": "Den Schülern sind unbegrenzte Versuche für die ausgewählte Übung gestattet.",
-      "deadline_required": "Wenn Zertifikate herunterladbar sind, ist eine Zertifikatsfrist erforderlich.",
-      "deadline_required_enroll": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können."
+      "deadline_required": "Für Compliance-Kurse ist eine Abschlussfrist erforderlich, bevor sie veröffentlicht werden können.",
+      "deadline_required_enroll": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können.",
+      "deadline_invalid": "Die Abschlussfrist des Kurses ist ungültig."
     },
     "creator": {
       "heading": "Welchen Kurs möchten Sie erstellen?",

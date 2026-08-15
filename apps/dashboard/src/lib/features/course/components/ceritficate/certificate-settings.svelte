@@ -5,7 +5,6 @@
   import { t } from '$lib/utils/functions/translations';
   import { courseApi } from '$features/course/api';
   import { isFreePlan } from '$lib/utils/store/org';
-  import type { CourseCertificate } from '$features/course/utils/types';
 
   type Props = {
     errors: Record<string, string>;
@@ -25,16 +24,6 @@
   function onEmailMessageInput(e: Event) {
     updateCertificate({ emailMessage: (e.currentTarget as HTMLTextAreaElement).value || null });
   }
-
-  function validateCertificateSettings(certificate: CourseCertificate | null | undefined): string[] {
-    const errors: string[] = [];
-    if (certificate?.isDownloadable && !certificate?.deadline) {
-      errors.push('course.certification.deadline_required');
-    }
-    return errors;
-  }
-
-  const certificateValidationErrors = $derived(validateCertificateSettings(courseApi.course?.certificate));
 </script>
 
 <Field.Group class="w-full max-w-md! px-2">
@@ -54,9 +43,6 @@
         <Field.Label for="certificate-downloadable" class="text-gray-600">
           {$t('course.navItem.certificates.allow')}
         </Field.Label>
-        {#if courseApi.course?.certificate?.isDownloadable && certificateValidationErrors.includes('course.certification.deadline_required')}
-          <Field.Error class="mt-1">{$t('course.certification.deadline_required')}</Field.Error>
-        {/if}
       </div>
     </Field.Field>
   </Field.Set>
