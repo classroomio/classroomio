@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Notifications — ClassroomIO Mobile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <header class="proto-head">
+      <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14"><path d="m15 18-6-6 6-6"/></svg> All screens</a>
+      <span class="eyebrow">Learner · Retention</span>
+      <h1>Notifications, permission &amp; preferences</h1>
+      <p>
+        The single biggest reason to ship an app: ClassroomIO has no push channel today, only email. This rides on
+        <code>prd/notification-system</code> — mobile adds a device-token registry and an Expo Push transport in the existing
+        <code>apps/jobs</code> worker, never a second notification pipeline. Every category is independently switchable and
+        quiet hours defer rather than drop.
+      </p>
+      <div class="proto-links">
+        <a href="home.html">Deep-link target: Home →</a>
+        <a href="exercise.html">Deep-link target: Exercise →</a>
+        <a href="profile.html">← Profile</a>
+      </div>
+    </header>
+
+    <div class="stage">
+      <!-- 1. PRE-PROMPT -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="9:43"></div>
+
+            <div class="screen centered">
+              <div style="text-align: center">
+                <div style="width: 76px; height: 76px; border-radius: 22px; background: color-mix(in oklab, var(--primary) 12%, transparent); color: var(--primary); display: grid; place-items: center; margin: 0 auto 18px">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="34" height="34" stroke-width="1.7"><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+                </div>
+                <div style="font-size: 20px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.3">
+                  Never miss a deadline
+                </div>
+                <div class="text-muted" style="font-size: 14px; margin-top: 8px; line-height: 1.55">
+                  Northwind Logistics assigns required training with real deadlines. Turn on notifications and we'll remind you
+                  before something goes overdue — not after.
+                </div>
+              </div>
+
+              <div class="card card-pad" style="margin: 22px 0 20px; text-align: left">
+                <div class="lrow flat">
+                  <div class="media is-warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+                  <div class="grow"><div class="ltitle">Deadline &amp; renewal reminders</div></div>
+                </div>
+                <div class="lrow flat">
+                  <div class="media is-current"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+                  <div class="grow"><div class="ltitle">New assignments and grades</div></div>
+                </div>
+                <div class="lrow flat">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg></div>
+                  <div class="grow"><div class="ltitle">Replies to your questions</div></div>
+                </div>
+              </div>
+
+              <button class="btn btn-primary btn-lg btn-block">Turn on notifications</button>
+              <button class="btn btn-ghost btn-block" style="margin-top: 6px">Not now</button>
+              <div class="hint" style="text-align: center; margin-top: 12px">
+                You choose exactly which categories reach you — nothing is marketing.
+              </div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>Permission pre-prompt</b>Asks in context with the value stated, so a "no" from the cold OS dialog doesn't permanently kill the channel.</figcaption>
+      </figure>
+
+      <!-- 2. CENTER -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="9:41"></div>
+
+            <div class="navbar">
+              <a class="icon-btn plain" href="home.html" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></a>
+              <div class="grow"><div class="title">Notifications</div></div>
+              <button class="btn btn-ghost btn-sm">Mark all read</button>
+            </div>
+
+            <div class="screen">
+              <div class="sec-head" style="margin-top: 10px"><h2>Today</h2></div>
+              <div class="stack">
+                <a class="lrow" href="compliance.html" style="border-color: color-mix(in oklab, var(--destructive) 35%, transparent)">
+                  <div class="media is-danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Forklift Safety is now overdue</div>
+                    <div class="lsub">Grace period ends 24 Aug · 8 lessons left</div>
+                    <div class="lmeta"><span>08:00</span></div>
+                  </div>
+                  <span style="width: 8px; height: 8px; border-radius: 999px; background: var(--primary)"></span>
+                </a>
+
+                <a class="lrow" href="exercise.html">
+                  <div class="media is-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Your Section 2 check was graded</div>
+                    <div class="lsub">87% · Passed · Feedback from Daniel Mensah</div>
+                    <div class="lmeta"><span>07:12</span></div>
+                  </div>
+                  <span style="width: 8px; height: 8px; border-radius: 999px; background: var(--primary)"></span>
+                </a>
+
+                <a class="lrow" href="community.html">
+                  <div class="media is-current"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Daniel replied to your question</div>
+                    <div class="lsub">"Yes — any crack at the heel is a tag-out…"</div>
+                    <div class="lmeta"><span>06:40</span></div>
+                  </div>
+                  <span style="width: 8px; height: 8px; border-radius: 999px; background: var(--primary)"></span>
+                </a>
+              </div>
+
+              <div class="sec-head"><h2>Earlier</h2></div>
+              <div class="stack">
+                <a class="lrow" href="course.html">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">New course assigned: Hazardous Materials Handling</div>
+                    <div class="lsub">Assigned by Daniel Mensah · due 30 Sep</div>
+                    <div class="lmeta"><span>Yesterday 16:20</span></div>
+                  </div>
+                </a>
+                <a class="lrow" href="certificates.html">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Certificate issued: GDPR Essentials</div>
+                    <div class="lsub">Valid until 16 Aug 2027</div>
+                    <div class="lmeta"><span>Sat 16 Aug</span></div>
+                  </div>
+                </a>
+                <a class="lrow" href="compliance.html">
+                  <div class="media is-warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Hazmat certification expires in 30 days</div>
+                    <div class="lsub">Renewal opens 8 Sep</div>
+                    <div class="lmeta"><span>Fri 15 Aug</span></div>
+                  </div>
+                </a>
+                <a class="lrow" href="learn.html">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Cohort goal: 9 days left</div>
+                    <div class="lsub">Q3 Frontline Onboarding · 13 of 18 done</div>
+                    <div class="lmeta"><span>Thu 14 Aug</span></div>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <nav class="tabbar" data-tabbar="home"></nav>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>Center</b>Grouped Today / Earlier with unread dots. Every row deep-links to the exact screen its push notification would open.</figcaption>
+      </figure>
+
+      <!-- 3. PREFERENCES -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="9:47"></div>
+
+            <div class="navbar bordered">
+              <a class="icon-btn plain" href="profile.html" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></a>
+              <div class="grow"><div class="title-sm">Notification preferences</div></div>
+            </div>
+
+            <div class="screen">
+              <div class="sec-head" style="margin-top: 12px"><h2>Training &amp; deadlines</h2></div>
+              <div class="card card-pad">
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">New assignment</div><div class="lsub">When a course is assigned to you</div></div>
+                  <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Deadline reminder</div><div class="lsub">7 days, 1 day, and morning-of</div></div>
+                  <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Overdue alert</div><div class="lsub">Always on for required training</div></div>
+                  <label class="switch"><input type="checkbox" checked disabled /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Certification renewal</div><div class="lsub">30 and 7 days before expiry</div></div>
+                  <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                </div>
+              </div>
+
+              <div class="sec-head"><h2>Progress &amp; feedback</h2></div>
+              <div class="card card-pad">
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Exercise graded</div></div>
+                  <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Certificate issued</div></div>
+                  <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Cohort goal approaching</div></div>
+                  <label class="switch"><input type="checkbox" /><span class="track"></span><span class="knob"></span></label>
+                </div>
+              </div>
+
+              <div class="sec-head"><h2>Community</h2></div>
+              <div class="card card-pad">
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Mentions &amp; replies</div></div>
+                  <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">New lesson or newsfeed post</div></div>
+                  <label class="switch"><input type="checkbox" /><span class="track"></span><span class="knob"></span></label>
+                </div>
+              </div>
+
+              <div class="sec-head"><h2>Quiet hours</h2></div>
+              <div class="card card-pad">
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Pause notifications</div><div class="lsub">Deferred, not dropped — they arrive after</div></div>
+                  <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <div class="kv"><span class="k">From</span><span class="v tnum">21:00</span></div>
+                <div class="kv"><span class="k">Until</span><span class="v tnum">07:00</span></div>
+                <div class="kv"><span class="k">Time zone</span><span class="v">Europe/London</span></div>
+              </div>
+
+              <div class="banner banner-muted" style="margin-top: 14px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                <div class="bd" style="color: var(--muted-foreground)">
+                  These settings apply to push and in-app alike, and stay in sync with your email preferences on the web.
+                </div>
+              </div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>Preferences</b>Per-category switches writing to the same preference store the web uses. Overdue compliance alerts are deliberately not switchable.</figcaption>
+      </figure>
+    </div>
+
+    <button class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <script src="proto.js"></script>
+  </body>
+</html>
