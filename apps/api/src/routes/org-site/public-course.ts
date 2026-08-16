@@ -4,6 +4,7 @@ import {
   getPublicCourseTreeService,
   issuePublicHlsCookieService
 } from '@api/services/course/public-course';
+import { lessonMarkdownRouter } from './lesson-markdown';
 
 import { Hono } from '@api/utils/hono';
 import { handleError } from '@api/utils/errors';
@@ -16,6 +17,7 @@ import { zValidator } from '@hono/zod-validator';
  * repo's single-response-shape rule; the item endpoint uses a `kind` discriminator.
  */
 export const publicCourseRouter = new Hono()
+  .route('/', lessonMarkdownRouter)
   .get('/:courseSlug', zValidator('param', ZPublicCourseBySlugParam), async (c) => {
     try {
       const { courseSlug } = c.req.valid('param');

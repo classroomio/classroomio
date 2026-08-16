@@ -100,6 +100,16 @@ Marketing / demo widget: left-hand list of question types and a live **take**-mo
 
 Presentational list for lesson (or similar) file attachments with **view** and **edit** modes. View mode shows a header (paperclip + title + file count) and rows with view/download icon buttons. Edit mode shows sortable rows (when `onReorder` is provided) with a drag handle, view, and delete actions. Copy is passed via the `labels: AttachmentListLabels` prop (including `reorder` for the drag handle) so dashboard wrappers can supply translated strings. `AttachmentListFile.type` accepts a file extension or MIME type for icon styling. See `Molecules/AttachmentList` in Storybook.
 
+### Public course Copy Page (`src/custom/public-course/copy-page-button.svelte`)
+
+Split button used on public lesson pages when the course has Markdown export enabled. Primary action copies the lesson Markdown; the chevron menu offers View as Markdown, Open in ChatGPT, and Open in Claude. Copy is passed via `labels: CopyPageLabels`. The host app supplies `markdownUrl` plus ChatGPT/Claude URLs (see `buildStudyPrompt`, `buildChatGptUrl`, `buildClaudeUrl`) and snackbar callbacks. Render it through `PublicLessonView`'s `titleActions` snippet so it sits beside the lesson title. See `Molecules/PublicCourse` → **Lesson · Copy Page split button** in Storybook.
+
+### Page outline (`src/custom/page-outline/`)
+
+Sticky in-page table of contents for long-form content (public lessons, exercises, docs). Pass `items: PageOutlineItem[]` (`id`, `title`, `level` 1–3). Clicking an item updates the URL hash, restores that hash on reload, and highlights the active heading via `IntersectionObserver`. Hierarchy is shown with left-border indent (`h1` / `h2` / `h3`).
+
+**Hidden on mobile by default.** `hideBelow` defaults to `lg` (`hidden` below that breakpoint). Pass `never` when the parent already hides the rail (for example `PublicLessonView`'s `aside`). Helpers: `injectHeadingIds(html)` rewrites `h1`–`h3` with unique ids and returns outline entries; `withPageTitle` prefixes the page title; `outlineFromSections` builds a title + subsection list. See `Molecules/PageOutline` in Storybook.
+
 ### Live session card (`src/custom/live-session-card/`)
 
 Presentational card for a live-class lesson with three states (`live`, `upcoming`, `ended`) derived from `lessonAt` + `durationMinutes`, or forced via the `status` prop (used by Storybook). Shows a join/copy action set when live, an "Add to calendar" combo button (Google, Outlook.com, Office 365, Yahoo, plus an `.ics` download for Apple) and a countdown when upcoming. All copy is passed in via the `labels: LiveSessionLabels` prop, so the dashboard wrapper supplies translated strings; `onCopyLink` fires after the link is copied (e.g. for a snackbar). See `Molecules/LiveSessionCard` in Storybook.

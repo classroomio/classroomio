@@ -3,11 +3,13 @@
   import { page } from '$app/state';
   import { PublicCourse } from '@cio/ui';
   import { toPublicSidebarSections } from '$features/course/utils/public-course-mappers';
-  import type { PublicCourseSidebarItem, PublicCourseSidebarSection } from '@cio/ui/custom/public-course';
+  import { type PublicCourseSidebarItem, type PublicCourseSidebarSection } from '@cio/ui/custom/public-course';
   import { t } from '$lib/utils/functions/translations';
   import type { Snippet } from 'svelte';
 
-  let { data, children }: { data: { tree: any }; children?: Snippet } = $props();
+  type PublicCourseTree = Parameters<typeof toPublicSidebarSections>[0];
+
+  let { data, children }: { data: { tree: PublicCourseTree }; children?: Snippet } = $props();
 
   const sections: PublicCourseSidebarSection[] = $derived(toPublicSidebarSections(data.tree));
   const flatItems = $derived(sections.flatMap((section) => section.items));
@@ -30,7 +32,7 @@
   }
 </script>
 
-{#key data.slug}
+{#key data.tree.course.slug}
   <PublicCourse.PublicCourseShell
     {sections}
     {courseTitle}

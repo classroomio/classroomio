@@ -229,6 +229,18 @@
       "attempts_select_aria": "Your attempts",
       "privacy_hint": "Graded instantly in your browser — nothing is submitted.",
       "summary_template": "You got [[correct]] / [[total]] correct."
+    },
+    "copy_page": {
+      "copy": "Copy Page",
+      "copied": "Copied",
+      "view_as_markdown": "View as Markdown",
+      "open_in_chatgpt": "Open in ChatGPT",
+      "open_in_claude": "Open in Claude",
+      "more_actions": "More copy page actions",
+      "copy_failed": "Could not copy this lesson as Markdown"
+    },
+    "outline": {
+      "label": "On this page"
     }
   },
   "onboarding": {
@@ -3642,6 +3654,8 @@
         "progression_mode_sequential": "Sequential — complete prior items to unlock next",
         "lesson_download": "Lesson download",
         "available": "Let registered students download lessons as PDF.",
+        "allow_markdown_export": "Allow learners to copy lesson pages as Markdown",
+        "allow_markdown_export_description": "When enabled, public lesson pages show a Copy Page button that exports the lesson content (excluding videos) as Markdown. This also publishes a public Markdown URL for each unlocked lesson.",
         "course_download": "Course download",
         "course_avail": "Download a copy of this course.",
         "download": "Download",

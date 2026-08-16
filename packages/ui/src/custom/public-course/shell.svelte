@@ -58,6 +58,11 @@
      * replaces the default Sign in / Explore courses buttons entirely.
      */
     topRight?: Snippet;
+    /**
+     * Extra actions rendered before the default (or overridden) top-right
+     * buttons.
+     */
+    headerActions?: Snippet;
     class?: string;
   }
 
@@ -90,6 +95,7 @@
     showPoweredBy = true,
     children,
     topRight,
+    headerActions,
     class: className
   }: Props = $props();
 
@@ -161,6 +167,7 @@
       </span>
 
       <div class="ui:ml-auto ui:flex ui:shrink-0 ui:items-center ui:gap-2">
+        {@render headerActions?.()}
         {#if topRight}
           {@render topRight()}
         {:else}

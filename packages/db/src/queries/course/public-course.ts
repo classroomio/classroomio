@@ -16,6 +16,8 @@ export interface PublicCourseHeader {
   title: string;
   description: string | null;
   bannerImage: string | null;
+  /** Teacher opt-in for the public Copy Page / Markdown export surface. */
+  allowMarkdownExport: boolean;
   callout: {
     title: string;
     description: string;
@@ -111,6 +113,7 @@ export async function getPublicCourseTreeBySlug(courseSlug: string): Promise<Pub
         description: schema.course.description,
         bannerImage: schema.course.bannerImage,
         callout: schema.course.callout,
+        metadata: schema.course.metadata,
         type: schema.course.type,
         isPublished: schema.course.isPublished,
         status: schema.course.status,
@@ -267,6 +270,7 @@ export async function getPublicCourseTreeBySlug(courseSlug: string): Promise<Pub
         title: courseRow.title,
         description: courseRow.description,
         bannerImage: courseRow.bannerImage,
+        allowMarkdownExport: courseRow.metadata?.allowMarkdownExport === true,
         callout,
         org
       },
@@ -475,6 +479,84 @@ export async function getPublicCourseItem(
     console.error('getPublicCourseItem error:', error);
     throw new Error(
       `Failed to get public course item "${itemSlug}" for course "${courseSlug}": ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
+    );
+  }
+}
+
+export interface PublicLessonMarkdownSource {
+  courseTitle: string;
+  lessonTitle: string;
+  body: string;
+  allowMarkdownExport: boolean;
+  isUnlocked: boolean;
+}
+
+/**
+ * Fetch the lesson HTML body and export flag for the public Markdown endpoint.
+ * Returns `null` when the course is not public/published or the slug is not a lesson.
+ */
+export async function getPublicLessonMarkdownSource(
+  courseSlug: string,
+  itemSlug: string
+): Promise<PublicLessonMarkdownSource | null> {
+  try {
+    const [courseRow] = await db
+      .select({
+        id: schema.course.id,
+        title: schema.course.title,
+        metadata: schema.course.metadata,
+        type: schema.course.type,
+        isPublished: schema.course.isPublished,
+        status: schema.course.status
+      })
+      .from(schema.course)
+      .where(eq(schema.course.slug, courseSlug))
+      .limit(1);
+
+    if (!courseRow) return null;
+    if (courseRow.type !== 'PUBLIC') return null;
+    if (!courseRow.isPublished) return null;
+    if (courseRow.status !== 'ACTIVE') return null;
+
+    const [lessonRow] = await db
+      .select({
+        id: schema.lesson.id,
+        title: schema.lesson.title,
+        note: schema.lesson.note,
+        isUnlocked: schema.lesson.isUnlocked
+      })
+      .from(schema.lesson)
+      .where(and(eq(schema.lesson.courseId, courseRow.id), eq(schema.lesson.slug, itemSlug)))
+      .limit(1);
+
+    if (!lessonRow) return null;
+
+    const languageRows = await db
+      .select({
+        content: schema.lessonLanguage.content,
+        locale: schema.lessonLanguage.locale
+      })
+      .from(schema.lessonLanguage)
+      .where(eq(schema.lessonLanguage.lessonId, lessonRow.id));
+
+    const englishRow = languageRows.find((row) => row.locale === 'en');
+    const fallbackRow = languageRows.find((row) => typeof row.content === 'string' && row.content.length > 0);
+    const body = englishRow?.content ?? fallbackRow?.content ?? lessonRow.note ?? '';
+    const isUnlocked = lessonRow.isUnlocked ?? false;
+
+    return {
+      courseTitle: courseRow.title,
+      lessonTitle: lessonRow.title,
+      body: isUnlocked ? body : '',
+      allowMarkdownExport: courseRow.metadata?.allowMarkdownExport === true,
+      isUnlocked
+    };
+  } catch (error) {
+    console.error('getPublicLessonMarkdownSource error:', error);
+    throw new Error(
+      `Failed to get public lesson markdown for "${itemSlug}" in course "${courseSlug}": ${
         error instanceof Error ? error.message : 'Unknown error'
       }`
     );
