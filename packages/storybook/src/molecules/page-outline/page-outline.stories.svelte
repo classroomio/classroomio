@@ -72,7 +72,7 @@
 </Story>
 
 <Story
-  name="Default · desktop (visible from lg)"
+  name="DesktopDefault"
   parameters={{
     layout: 'fullscreen',
     viewport: { defaultViewport: 'desktop' }
@@ -85,7 +85,7 @@
           {PAGE_TITLE}
         </h1>
         <p class="ui:mt-3 ui:text-sm ui:text-muted-foreground">
-          Default <code>hideBelow="lg"</code> — the outline is visible at the desktop viewport.
+          Default hideBelow is lg, so the outline is visible at the desktop viewport.
         </p>
         <div class="prose ui:mt-8 ui:max-w-none">
           <SafeHtmlContent content={injected.html} />
@@ -99,7 +99,7 @@
 </Story>
 
 <Story
-  name="Default · mobile (hidden below lg)"
+  name="MobileHidden"
   parameters={{
     layout: 'fullscreen',
     viewport: { defaultViewport: 'mobile2' }
@@ -111,7 +111,7 @@
         {PAGE_TITLE}
       </h1>
       <p class="ui:mt-3 ui:text-sm ui:text-muted-foreground">
-        Default <code>hideBelow="lg"</code> — the outline does not render on mobile.
+        Default hideBelow is lg, so the outline does not render on mobile.
       </p>
       <div class="prose ui:mt-8 ui:max-w-none">
         <SafeHtmlContent content={injected.html} />
