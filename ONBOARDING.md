@@ -504,24 +504,24 @@ student-side testing. This keeps the admin session clean.
 
 ### LMS Checklist
 
-- [ ] **Home** (`/lms`) — review the dashboard: enrolled courses, progress summary, upcoming sessions, login streak, compliance score, highlighted courses, recommended courses.
-- [ ] **Explore** (`/lms/explore`) — browse the public course catalog. Search for a course. Sort the results. Click a course card to preview its details. Enroll in a course.
-- [ ] **My Learning** (`/lms/mylearning`) — check the In Progress and Complete tabs. Confirm the courses you enrolled in appear here.
-- [ ] Open a course from My Learning — navigate through lessons, mark lessons as complete, verify sequential progression (if enabled).
-- [ ] **Course progression** (requires switching between incognito and normal browser):
+- [X] **Home** (`/lms`) — review the dashboard: enrolled courses, progress summary, upcoming sessions, login streak, compliance score, highlighted courses, recommended courses.
+- [X] **Explore** (`/lms/explore`) — browse the public course catalog. Search for a course. Sort the results. Click a course card to preview its details. Enroll in a course.
+- [X] **My Learning** (`/lms/mylearning`) — check the In Progress and Complete tabs. Confirm the courses you enrolled in appear here.
+- [X] Open a course from My Learning — navigate through lessons, mark lessons as complete, verify sequential progression (if enabled).
+- [X] **Course progression** (requires switching between incognito and normal browser):
   1. As admin (normal browser): set the self-paced course to **sequential** in settings.
   2. As student (incognito): open the course — confirm lesson 2 is locked until lesson 1 is completed.
   3. As admin: switch progression back to **free**.
   4. As student: confirm all lessons are now accessible.
 - [ ] Open an exercise — answer all question types you created in Part 3, submit the exercise, and check that the status changes to "Submitted".
-- [ ] Check if the exercise was graded (if the admin graded it in Part 3) — verify the score and feedback are visible.
-- [ ] **Certificates** (`/lms/certificates`) — check if you have earned any certificates (requires completing a course with certificates enabled).
-- [ ] **Cohorts** (`/lms/cohorts`) — if you were invited to a cohort in Part 8, verify it appears here. View the cohort goals and newsfeed.
-- [ ] **Exercises** (`/lms/exercises`) — view the centralized exercises list (if enabled in org customization). Filter by course.
-- [ ] **Community** (`/lms/community`) — view the Q&A questions posted by the admin in Part 9. Post an answer to a question.
-- [ ] **Settings** (`/lms/settings`) — update your profile, toggle notification preferences, check integrations (Telegram).
-- [ ] **AI Tutor** — open a lesson and interact with the AI tutor. Ask it to explain a concept from the lesson or quiz you on the material.
-- [ ] **AI Assistant (student quick actions)** — open the AI assistant and use student-specific quick actions: "Explain lesson", "Quiz me", "Summarize section", "What to review next".
+- [X] Check if the exercise was graded (if the admin graded it in Part 3) — verify the score and feedback are visible.
+- [X] **Certificates** (`/lms/certificates`) — check if you have earned any certificates (requires completing a course with certificates enabled).
+- [X] **Cohorts** (`/lms/cohorts`) — if you were invited to a cohort in Part 8, verify it appears here. View the cohort goals and newsfeed.
+- [X] **Exercises** (`/lms/exercises`) — view the centralized exercises list (if enabled in org customization). Filter by course.
+- [X] **Community** (`/lms/community`) — view the Q&A questions posted by the admin in Part 9. Post an answer to a question.
+- [X] **Settings** (`/lms/settings`) — update your profile, toggle notification preferences, check integrations (Telegram).
+- [X] **AI Tutor** — open a lesson and interact with the AI tutor. Ask it to explain a concept from the lesson or quiz you on the material.
+- [X] **AI Assistant (student quick actions)** — open the AI assistant and use student-specific quick actions: "Explain lesson", "Quiz me", "Summarize section", "What to review next".
 - 📸 **Screenshot:** The LMS home dashboard showing enrolled courses and progress.
 - 📸 **Screenshot:** An exercise submission confirmation showing "Submitted" status.
 
