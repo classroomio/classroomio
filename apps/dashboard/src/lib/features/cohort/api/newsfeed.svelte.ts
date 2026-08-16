@@ -24,7 +24,7 @@ import {
   ZUpdateCohortReaction
 } from '@cio/utils/validation/cohort';
 import { get } from 'svelte/store';
-import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
+import { getTextFromHTML, isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { profile } from '$lib/utils/store/user';
 import { snackbar } from '$features/ui/snackbar/store';

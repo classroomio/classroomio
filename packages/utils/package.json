@@ -73,7 +73,9 @@
   "scripts": {
     "build": "rimraf dist tsconfig.tsbuildinfo && tsc && tsc-alias",
     "dev": "tsc --watch",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "peerDependencies": {
     "zod": "^4.1.8"
@@ -86,6 +88,7 @@
     "tsc-alias": "^1.8.16",
     "tsx": "^4.7.1",
     "typescript": "^5.5.2",
+    "vitest": "^1.2.2",
     "zod": "^4.1.8"
   }
 }

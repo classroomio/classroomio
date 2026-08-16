@@ -142,8 +142,10 @@
 
   let cost = $derived(calcCourseDiscount(pricingData.discount, pricingData.cost ?? 0, !!pricingData.showDiscount));
 
+  const isExploreClickable = $derived(!!(isLMS && isExplore && onExploreClick));
+
   let courseUrl = $derived.by(() => {
-    if (onExploreClick && isLMS && isExplore) {
+    if (isExploreClickable) {
       return undefined;
     }
 
@@ -225,6 +227,7 @@
 
 <CourseCard
   href={courseUrl ? resolve(courseUrl, {}) : undefined}
+  onclick={isExploreClickable ? onExploreClick : undefined}
   {title}
   {description}
   {typeBadge}
@@ -318,7 +321,15 @@
       </div>
 
       {#if isLMS}
-        <Button variant="outline" onclick={isExplore && onExploreClick ? onExploreClick : undefined}>
+        <Button
+          variant="outline"
+          onclick={(event) => {
+            if (isExploreClickable) {
+              event.stopPropagation();
+              onExploreClick?.();
+            }
+          }}
+        >
           {isCertificateView
             ? $t('certificates.view_certificate')
             : isExplore
