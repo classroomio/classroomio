@@ -72,7 +72,7 @@
     if (!confirm(t.get('automation.keys.rotate_confirm'))) return;
 
     const result = await automationApi.rotateKey(keyId);
-    if (!result) return;
+    if (!result || result.key.revokedAt) return;
 
     const key = automationApi.keys.find((entry) => entry.id === keyId);
     if (!key || key.revokedAt) return;
