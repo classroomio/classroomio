@@ -446,6 +446,7 @@
         align-items: center;
         gap: 12px;
         margin-bottom: 12px;
+        min-width: 0;
       }
 
       .type-icon {
@@ -478,6 +479,10 @@
         font-size: 15px;
         font-weight: 650;
         margin: 0;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .ok {
@@ -497,6 +502,7 @@
       /* Footer */
       .footer {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: flex-end;
         gap: 8px;
@@ -509,6 +515,7 @@
 
       .footer-right {
         display: flex;
+        flex-wrap: wrap;
         gap: 8px;
       }
 
@@ -975,16 +982,17 @@
 
       function sectionContext() {
         if (!state.sectionLocked && state.selectedType === 'section') return '';
+        const safeSectionTitle = escapeHtml(sectionTitle(state.sectionId));
         if (state.sectionLocked) {
           return `<div class="field">
             <label>Section</label>
-            <p class="adding-to">Adding to <strong>${sectionTitle(state.sectionId)}</strong></p>
+            <p class="adding-to">Adding to <strong>${safeSectionTitle}</strong></p>
           </div>`;
         }
         if (state.selectedType !== 'section' && state.scenario === 'full-picker') {
           return `<div class="field">
             <label>Section</label>
-            <div class="select-like">${sectionTitle(state.sectionId)}</div>
+            <div class="select-like">${safeSectionTitle}</div>
           </div>`;
         }
         return '';
@@ -1000,7 +1008,12 @@
       }
 
       function escapeHtml(s) {
-        return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
+        return String(s)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#39;');
       }
 
       function renderOutline() {
@@ -1123,7 +1136,7 @@
           body.innerHTML = `<div class="status">
               <div class="status-row">
                 <div class="type-icon">${icon(created.type)}<span class="badge">${checkIcon()}</span></div>
-                <p class="created-title">${escapeHtml(created.title)}</p>
+                <p class="created-title" title="${escapeHtml(created.title)}">${escapeHtml(created.title)}</p>
               </div>
               <p class="ok" aria-live="polite">${checkIcon()} ${TYPES[created.type].success}</p>
             </div>`;
