@@ -75,7 +75,12 @@ async function fetchStarsFromGithub(): Promise<number> {
   }
 
   const data = (await response.json()) as { stargazers_count?: unknown };
-  return typeof data.stargazers_count === 'number' ? data.stargazers_count : 0;
+
+  if (typeof data.stargazers_count !== 'number') {
+    throw new Error('GitHub API returned an invalid star count');
+  }
+
+  return data.stargazers_count;
 }
 
 /** Factory used by tests so each suite gets an isolated memory cache. */

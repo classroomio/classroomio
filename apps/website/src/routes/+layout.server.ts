@@ -3,7 +3,7 @@ import { getGithubStars } from '$lib/server/github-stars';
 
 export async function load({ platform }) {
   // adapter-cloudflare throws if platform.env.* is read while prerendering.
-  // Prerendered HTML uses a build-time GitHub fetch; runtime SSR + /api/github-stars use KV.
+  // Prerender uses a build-time GitHub fetch; runtime SSR reads Cloudflare KV.
   const kv = building ? null : platform?.env?.CACHE;
   const stars = await getGithubStars(kv);
 

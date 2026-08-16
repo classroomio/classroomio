@@ -62,6 +62,20 @@ async function main() {
     const getStarsStale = createGithubStarsGetter();
     const staleFallback = await getStarsStale(kv);
     assert.equal(staleFallback, 100);
+
+    // Invalid GitHub payload must not overwrite the stale cache with zero
+    globalThis.fetch = (async () => {
+      githubHits += 1;
+      return new Response(JSON.stringify({ message: 'ok' }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' }
+      });
+    }) as typeof fetch;
+
+    const getStarsInvalid = createGithubStarsGetter();
+    const invalidFallback = await getStarsInvalid(kv);
+    assert.equal(invalidFallback, 100);
+    assert.equal(JSON.parse(kv.store.get('github:classroomio:stars')!).stars, 100);
   } finally {
     globalThis.fetch = originalFetch;
   }
