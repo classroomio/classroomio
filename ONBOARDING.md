@@ -228,13 +228,13 @@ The Media Library is the central asset repository for your organization. Media a
 
 ### AI Course Assistant
 
-- [ ] Open any course and look for the AI assistant panel (side panel).
-- [ ] Use the **Quick Action: "Draft lesson"** — provide a topic and watch it generate a lesson.
-- [ ] Use **"Generate questions from lesson"** — pick an existing lesson and have AI create exercise questions.
-- [ ] Use **"Summarize lesson"** on a lesson with content.
-- [ ] Open the AI assistant chat and ask it to create a new section with two lessons. Observe the step-by-step execution.
-- [ ] Check the **conversation history** — rename a conversation, delete one.
-- [ ] In the course creation flow, choose **"Create with AI"** and provide a course topic to see the full AI course generation flow.
+- [X] Open any course and look for the AI assistant panel (side panel).
+- [X] Use the **Quick Action: "Draft lesson"** — provide a topic and watch it generate a lesson.
+- [X] Use **"Generate questions from lesson"** — pick an existing lesson and have AI create exercise questions.
+- [X] Use **"Summarize lesson"** on a lesson with content.
+- [X] Open the AI assistant chat and ask it to create a new section with two lessons. Observe the step-by-step execution.
+- [X] Check the **conversation history** — rename a conversation, delete one.
+- [X] In the course creation flow, choose **"Create with AI"** and provide a course topic to see the full AI course generation flow.
 - 📸 **Screenshot:** The AI assistant side panel mid-generation (showing step-by-step execution or a generated lesson).
 
 ### AI Tutor (org settings)
