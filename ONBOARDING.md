@@ -337,11 +337,11 @@ most time on MCP — it's how you create content through an AI agent.
 
 ### API
 
-- [ ] Navigate to **API** (`/org/[slug]/api`) — create an API key, note the usage tracking, then revoke it.
+- [X] Navigate to **API** (`/org/[slug]/api`) — create an API key, note the usage tracking, then revoke it.
 
 ### Zapier
 
-- [ ] Navigate to **Zapier** (`/org/[slug]/zapier`) — review the available triggers and actions.
+- [X] Navigate to **Zapier** (`/org/[slug]/zapier`) — review the available triggers and actions.
 
 ### MCP — Create content with your agent of choice
 
@@ -350,10 +350,10 @@ OpenCode, etc.) to create courses, lessons, and exercises through natural langua
 
 **Step 1 — Generate a key**
 
-- [ ] Navigate to **MCP** (`/org/[slug]/mcp`).
-- [ ] Click **Generate Key**, give it a label (e.g. "onboarding-test").
-- [ ] **Copy the secret immediately** — it is shown only once.
-- [ ] Note the usage dashboard: credits used/remaining, active keys, rate limits.
+- [X] Navigate to **MCP** (`/org/[slug]/mcp`).
+- [X] Click **Generate Key**, give it a label (e.g. "onboarding-test").
+- [X] **Copy the secret immediately** — it is shown only once.
+- [X] Note the usage dashboard: credits used/remaining, active keys, rate limits.
 
 **Step 2 — Connect your agent**
 
