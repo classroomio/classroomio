@@ -130,6 +130,36 @@
     goto(`${page.url.href}/${person.profileId}`);
   }
 
+  function shouldIgnoreRowNavigation(event: Event) {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return false;
+
+    return Boolean(
+      target.closest('button, a, [data-slot="dropdown-menu-trigger"], [data-slot="dropdown-menu-content"]')
+    );
+  }
+
+  function handleRowClick(person: CourseMember, event: MouseEvent) {
+    if (!person.profileId || shouldIgnoreRowNavigation(event)) return;
+
+    gotoPerson(person);
+  }
+
+  function handleRowKeydown(person: CourseMember, event: KeyboardEvent) {
+    if (!person.profileId || shouldIgnoreRowNavigation(event)) return;
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+
+    event.preventDefault();
+    gotoPerson(person);
+  }
+
+  const navigableRowClass =
+    'group cursor-pointer ui:hover:[&>td]:!ui:bg-secondary/80 focus-visible:[&>td]:ui:bg-secondary/80';
+  const stickyActionsHeadClass =
+    'ui:bg-muted/95 sticky right-0 z-20 w-12 border-l ui:border-border shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)]';
+  const stickyActionsCellClass =
+    'ui:bg-card group-hover:ui:bg-secondary/80 sticky right-0 z-10 w-12 border-l ui:border-border text-right shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.08)] transition-colors';
+
   async function copyToClipboard(text: string) {
     try {
       await navigator.clipboard.writeText(text);
@@ -173,9 +203,9 @@
     </Select.Root>
   </div>
 
-  <div class="rounded-md border">
+  <div class="overflow-x-auto rounded-md border">
     <Tooltip.Provider>
-      <Table.Root>
+      <Table.Root class="min-w-[880px]">
         <Table.Header>
           <Table.Row>
             <Table.Head>{$t('course.navItem.people.learner')}</Table.Head>
@@ -183,7 +213,7 @@
             <Table.Head class="max-w-[220px]">{$t('course.navItem.people.stage')}</Table.Head>
             <Table.Head>{$t('course.navItem.people.last_login_at')}</Table.Head>
             <Table.Head>{$t('course.navItem.people.enrolled_at')}</Table.Head>
-            <Table.Head class="w-12"></Table.Head>
+            <Table.Head class={stickyActionsHeadClass}></Table.Head>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -195,7 +225,12 @@
             </Table.Row>
           {:else}
             {#each filterPeople(searchValue, people) as person (person.id)}
-              <Table.Row>
+              <Table.Row
+                class={person.profileId ? navigableRowClass : undefined}
+                tabindex={person.profileId ? 0 : undefined}
+                onclick={(event) => handleRowClick(person, event)}
+                onkeydown={(event) => handleRowKeydown(person, event)}
+              >
                 <Table.Cell class="min-w-[220px]">
                   {#if person.profile}
                     <div class="flex items-start lg:items-center">
@@ -225,7 +260,10 @@
                               variant="secondary"
                               size="icon"
                               class="h-8 w-8"
-                              onclick={() => copyToClipboard(getEmail(person) ?? '')}
+                              onclick={(event) => {
+                                event.stopPropagation();
+                                void copyToClipboard(getEmail(person) ?? '');
+                              }}
                             >
                               {#if copiedEmail === getEmail(person)}
                                 <CheckIcon size={16} class="text-green-600" />
@@ -252,7 +290,10 @@
                             variant="secondary"
                             size="icon"
                             class="h-8 w-8"
-                            onclick={() => copyToClipboard(getEmail(person) ?? '')}
+                            onclick={(event) => {
+                              event.stopPropagation();
+                              void copyToClipboard(getEmail(person) ?? '');
+                            }}
                           >
                             {#if copiedEmail === getEmail(person)}
                               <CheckIcon size={16} class="text-green-600" />
@@ -350,23 +391,32 @@
                   </span>
                 </Table.Cell>
 
-                <Table.Cell class="w-12 text-right">
+                <Table.Cell class={stickyActionsCellClass}>
                   <RoleBasedSecurity allowedRoles={[1, 2]}>
                     {#if person.profileId !== $profile.id}
                       <DropdownMenu.Root>
-                        <DropdownMenu.Trigger class="ui:hover:bg-muted flex items-center justify-center rounded-md p-1">
+                        <DropdownMenu.Trigger
+                          class="ui:hover:bg-muted flex items-center justify-center rounded-md p-1"
+                          onclick={(event) => event.stopPropagation()}
+                        >
                           <EllipsisVerticalIcon size={16} />
                         </DropdownMenu.Trigger>
                         <DropdownMenu.Content align="end">
                           {#if person.profileId}
-                            <DropdownMenu.Item onclick={() => gotoPerson(person)}>
+                            <DropdownMenu.Item
+                              onclick={(event) => {
+                                event.stopPropagation();
+                                gotoPerson(person);
+                              }}
+                            >
                               <EyeIcon class="mr-2 size-4" />
                               {$t('course.navItem.people.view')}
                             </DropdownMenu.Item>
                           {/if}
                           <DropdownMenu.Item
                             class="text-red-600"
-                            onclick={() => {
+                            onclick={(event) => {
+                              event.stopPropagation();
                               member = person;
                               $deleteMemberModal.open = true;
                             }}
