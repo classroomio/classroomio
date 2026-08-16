@@ -276,13 +276,13 @@ Cohorts group learners through a set of courses with goals and communication.
 
 ## Part 10 — Audience
 
-- [ ] Navigate to **Audience** (`/org/[slug]/audience`).
-- [ ] Verify the table shows member names, emails, status, and date joined.
-- [ ] Search for a member by name or email.
-- [ ] Sort the table by "Date Joined".
-- [ ] Select multiple members using checkboxes and open the **Assign Courses** bulk action.
-- [ ] Click on a member row to view their **user analytics** — check enrolled courses, progress percentage, and average grade.
-- [ ] Navigate to **Audience → Import** — paste a list of emails, choose to auto-assign to all courses, and submit.
+- [X] Navigate to **Audience** (`/org/[slug]/audience`).
+- [X] Verify the table shows member names, emails, status, and date joined.
+- [X] Search for a member by name or email.
+- [X] Sort the table by "Date Joined".
+- [X] Select multiple members using checkboxes and open the **Assign Courses** bulk action.
+- [X] Click on a member row to view their **user analytics** — check enrolled courses, progress percentage, and average grade.
+- [X] Navigate to **Audience → Import** — paste a list of emails, choose to auto-assign to all courses, and submit.
 - 📸 **Screenshot:** The audience table with members listed.
 - 📸 **Screenshot:** A member's user analytics showing enrolled courses and progress.
 
