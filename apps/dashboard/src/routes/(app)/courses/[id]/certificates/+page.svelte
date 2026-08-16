@@ -11,7 +11,7 @@
   import { ZCourseUpdate } from '@cio/utils/validation/course/course';
   import { validateWithTranslation } from '$lib/utils/validation';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { openUpgradeModal } from '$lib/utils/functions/org';
+  import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
 
   let errors = $state<Record<string, string>>({});
   let certificateActiveTab = $state('design');

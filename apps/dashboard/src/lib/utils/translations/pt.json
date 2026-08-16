@@ -329,7 +329,8 @@
       "success": "Salvo com sucesso",
       "submission_updated": "Envio atualizado para",
       "error_fetching": "Falha ao buscar exercícios. Atualize a página",
-      "passed_requires_points": "A conclusão por aprovação precisa de pelo menos um ponto disponível."
+      "passed_requires_points": "A conclusão por aprovação precisa de pelo menos um ponto disponível.",
+      "draft_restored": "Restauramos as alterações não salvas que você deixou"
     },
     "poll": {
       "info": {

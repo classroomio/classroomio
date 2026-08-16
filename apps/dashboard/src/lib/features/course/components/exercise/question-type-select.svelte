@@ -4,7 +4,7 @@
   import { PremiumIcon } from '@cio/ui/custom/moving-icons';
   import { getExerciseEditorQuestionTypeLabel } from './question-type-utils';
   import { isFreePlan } from '$lib/utils/store/org';
-  import { openUpgradeModal } from '$lib/utils/functions/org';
+  import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { t } from '$lib/utils/functions/translations';
   import type { Question } from '$features/course/types';
 
