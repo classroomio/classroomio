@@ -150,7 +150,7 @@
     <!-- pt-4/pl-3 clear the pinned icon's negative offset, which Page.Body's overflow-x-hidden would otherwise clip -->
     <div class="flex w-full flex-col pt-4 pl-3">
       {#if pinnedFeeds.length > 0}
-        <div class="text-muted-foreground mb-1.5 flex items-center gap-1.5">
+        <div class="text-muted-foreground mb-5 flex items-center gap-1.5">
           <span class="text-xs font-medium tracking-wider uppercase">
             {$t('course.navItem.news_feed.pinned')}
           </span>
