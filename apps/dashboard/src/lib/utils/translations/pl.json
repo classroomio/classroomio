@@ -1092,7 +1092,9 @@
         "fix": "Popraw",
         "save_changes_to_fix_questions": "Zapisz niezapisane zmiany przed przejściem do poprawiania pytań.",
         "certificate_deadline_required_description": "Kursy zgodności wymagają terminu dostarczenia certyfikatu przed zapisaniem studentów. Ustaw termin w ustawieniach kursu przed publikacją.",
-        "progression_mode_description": "Kontroluj, czy uczniowie mogą uzyskać dostęp do całej odblokowanej zawartości lub czy muszą ukończyć elementy w określonej kolejności. Reguła ukończenia na podstawie oglądania wideo działa tylko dla przesłanych filmów."
+        "progression_mode_description": "Kontroluj, czy uczniowie mogą uzyskać dostęp do całej odblokowanej zawartości lub czy muszą ukończyć elementy w określonej kolejności. Reguła ukończenia na podstawie oglądania wideo działa tylko dla przesłanych filmów.",
+"allow_markdown_export": "Pozwól uczniom kopiować strony lekcji jako Markdown",
+        "allow_markdown_export_description": "Po włączeniu publiczne strony lekcji pokazują przycisk Kopiuj stronę, który eksportuje treść lekcji (bez filmów) jako Markdown. Publikuje też publiczny adres URL Markdown dla każdej odblokowanej lekcji."
       },
       "analytics": {
         "title": "Analityka"
@@ -5038,6 +5040,15 @@
     "header": {
       "explore_courses": "Przeglądaj kursy",
       "sign_in": "Zaloguj się"
+    },
+    "copy_page": {
+      "copy": "Kopiuj stronę",
+      "copied": "Skopiowano",
+      "view_as_markdown": "Wyświetl jako Markdown",
+      "open_in_chatgpt": "Otwórz w ChatGPT",
+      "open_in_claude": "Otwórz w Claude",
+      "more_actions": "Więcej działań kopiowania strony",
+      "copy_failed": "Nie udało się skopiować tej lekcji jako Markdown"
     }
   },
   "account": {
