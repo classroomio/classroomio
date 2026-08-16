@@ -292,41 +292,41 @@ Cohorts group learners through a set of courses with goals and communication.
 
 ### Profile & Theme
 
-- [ ] Go to **Settings → Profile** — change the org name, upload an avatar, switch between theme colors (blue, rose, green, orange, purple). Try the custom hex color picker.
+- [X] Go to **Settings → Profile** — change the org name, upload an avatar, switch between theme colors (blue, rose, green, orange, purple). Try the custom hex color picker.
 
 ### Domains
 
-- [ ] Go to **Settings → Domains** — note the subdomain field and custom domain setup.
-- [ ] Upload a **favicon** for the org.
+- [X] Go to **Settings → Domains** — note the subdomain field and custom domain setup.
+- [X] Upload a **favicon** for the org.
 
 ### Teams
 
-- [ ] Go to **Settings → Teams** — invite a team member by email with the role **Tutor**.
-- [ ] Generate an **invite link** and copy it.
-- [ ] Review the existing team members table and their roles.
+- [X] Go to **Settings → Teams** — invite a team member by email with the role **Tutor**.
+- [X] Generate an **invite link** and copy it.
+- [X] Review the existing team members table and their roles.
 
 ### Customize LMS
 
-- [ ] Go to **Settings → Customize LMS** — toggle the Community and Exercises features on/off.
-- [ ] Upload a **banner image** and set banner text for the student dashboard.
-- [ ] Upload a **background image** for the auth page.
+- [X] Go to **Settings → Customize LMS** — toggle the Community and Exercises features on/off.
+- [X] Upload a **banner image** and set banner text for the student dashboard.
+- [X] Upload a **background image** for the auth page.
 
 ### Landing Page
 
-- [ ] Go to **Settings → Landing Page** — browse the available themes.
-- [ ] Select a theme and preview it.
-- [ ] Edit sections (hero, navigation, links, callout, footer) in the landing page editor.
+- [X] Go to **Settings → Landing Page** — browse the available themes.
+- [X] Select a theme and preview it.
+- [X] Edit sections (hero, navigation, links, callout, footer) in the landing page editor.
 - 📸 **Screenshot:** The landing page preview after customizing the theme and sections.
 
 ### Notifications
 
-- [ ] Go to **Settings → Notifications** — toggle personal email notification preferences for different sections (courses, exercises, newsfeed, etc.).
+- [X] Go to **Settings → Notifications** — toggle personal email notification preferences for different sections (courses, exercises, newsfeed, etc.).
 
 ### Auth
 
-- [ ] Go to **Settings → Auth** — review the General auth settings.
-- [ ] Look at the SSO tab (OIDC configuration fields, force SSO policy, auto-join domains, break-glass access).
-- [ ] Look at the Token Auth tab — generate a test API secret, review the JWT example, then revoke the secret.
+- [X] Go to **Settings → Auth** — review the General auth settings.
+- [X] Look at the SSO tab (OIDC configuration fields, force SSO policy, auto-join domains, break-glass access).
+- [X] Look at the Token Auth tab — generate a test API secret, review the JWT example, then revoke the secret.
 
 ---
 
