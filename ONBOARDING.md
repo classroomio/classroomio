@@ -463,10 +463,10 @@ Ask your agent to create a course using the MCP tools. Try prompts like:
 
 ## Part 13 — Analytics
 
-- [ ] Go to **Stats → Analytics** at the org level — review landing page KPIs, country breakdown, course funnel, popular course types, and trend charts. Change the date range and refresh the data.
-- [ ] Go to a specific course → **Analytics** — review enrollment count, completion rate, average score, and per-student progress table.
-- [ ] Go to a specific course → **Exercise** → open the submissions view — review the summary charts and individual student submissions.
-- [ ] If you created a compliance course (Part 2.3), go to **Stats → Compliance** and review the status tiles, course breakdown, and learner table with status filters.
+- [X] Go to **Stats → Analytics** at the org level — review landing page KPIs, country breakdown, course funnel, popular course types, and trend charts. Change the date range and refresh the data.
+- [X] Go to a specific course → **Analytics** — review enrollment count, completion rate, average score, and per-student progress table.
+- [X] Go to a specific course → **Exercise** → open the submissions view — review the summary charts and individual student submissions.
+- [X] If you created a compliance course (Part 2.3), go to **Stats → Compliance** and review the status tiles, course breakdown, and learner table with status filters.
 - 📸 **Screenshot:** The org-level analytics page with KPIs and charts populated with data.
 - 📸 **Screenshot:** A course analytics page showing enrollment and progress data.
 
