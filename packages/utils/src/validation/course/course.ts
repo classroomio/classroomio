@@ -380,6 +380,7 @@ const ZCourseMetadataFields = z.object({
   allowSelfEnrollment: z.boolean().optional(),
   /** @deprecated Read-only legacy key; use `allowSelfEnrollment`. */
   allowNewStudent: z.boolean().optional(),
+  allowMarkdownExport: z.boolean().optional(),
   welcomeEmailMessage: z.string().max(20000).nullish(),
   sessionTimezone: z.string().max(64).nullish(),
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),

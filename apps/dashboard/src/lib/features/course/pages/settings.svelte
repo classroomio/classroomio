@@ -244,6 +244,7 @@
         grading: $settings.grading,
         lessonDownload: $settings.lessonDownload,
         allowSelfEnrollment: $settings.allowSelfEnrollment,
+        allowMarkdownExport: $settings.allowMarkdownExport,
         isContentGroupingEnabled: $settings.isContentGroupingEnabled,
         progressionMode: $settings.progressionMode,
         commentsEnabled: $settings.commentsEnabled,
@@ -332,6 +333,7 @@
         tabs: course.metadata?.lessonTabsOrder || $settings.tabs,
         grading: !!course.metadata?.grading,
         lessonDownload: !!course.metadata?.lessonDownload,
+        allowMarkdownExport: !!course.metadata?.allowMarkdownExport,
         isPublished: !!course.isPublished,
         allowSelfEnrollment: isSelfEnrollmentAllowed(course.metadata),
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
@@ -981,6 +983,30 @@
           </Label>
         </div>
       {/if}
+    </Field.Field>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.allow_markdown_export')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.allow_markdown_export_description')}</Field.Description>
+    <Field.Field>
+      <div class="flex items-center space-x-2">
+        <Switch
+          id="allow-markdown-export"
+          checked={$settings.allowMarkdownExport}
+          onCheckedChange={(checked) => {
+            $settings.allowMarkdownExport = checked;
+            hasUnsavedChanges = true;
+          }}
+        />
+        <Label for="allow-markdown-export">
+          {$settings.allowMarkdownExport
+            ? $t('course.navItem.settings.enabled')
+            : $t('course.navItem.settings.disabled')}
+        </Label>
+      </div>
     </Field.Field>
   </Field.Set>
 

@@ -1051,7 +1051,9 @@
         "open_link": "Abrir enlace en nueva pestaña",
         "copy_link": "Copiar enlace",
         "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para la obtención del certificado antes de que los estudiantes puedan inscribirse. Por favor, establezca una fecha límite en la configuración del curso antes de publicarlo.",
-        "progression_mode_description": "Controle si los estudiantes pueden acceder a todo el contenido desbloqueado o deben completar los elementos en orden. La finalización de la visualización del video solo rastrea los videos subidos."
+        "progression_mode_description": "Controle si los estudiantes pueden acceder a todo el contenido desbloqueado o deben completar los elementos en orden. La finalización de la visualización del video solo rastrea los videos subidos.",
+"allow_markdown_export": "Permitir a los alumnos copiar las páginas de las lecciones como Markdown",
+        "allow_markdown_export_description": "Cuando está activado, las páginas públicas de las lecciones muestran un botón Copiar página que exporta el contenido de la lección (sin vídeos) como Markdown. También publica una URL pública de Markdown para cada lección desbloqueada."
       },
       "analytics": {
         "title": "Analíticas"
@@ -4997,6 +4999,15 @@
     "header": {
       "explore_courses": "Explorar cursos",
       "sign_in": "Iniciar sesión"
+    },
+    "copy_page": {
+      "copy": "Copiar página",
+      "copied": "Copiado",
+      "view_as_markdown": "Ver como Markdown",
+      "open_in_chatgpt": "Abrir en ChatGPT",
+      "open_in_claude": "Abrir en Claude",
+      "more_actions": "Más acciones para copiar la página",
+      "copy_failed": "No se pudo copiar esta lección como Markdown"
     }
   },
   "account": {
