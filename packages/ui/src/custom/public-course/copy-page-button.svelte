@@ -3,13 +3,13 @@
   import CheckIcon from '@lucide/svelte/icons/check';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import FileTextIcon from '@lucide/svelte/icons/file-text';
-  import MessageCircleIcon from '@lucide/svelte/icons/message-circle';
-  import SparklesIcon from '@lucide/svelte/icons/sparkles';
+  import { siClaude } from 'simple-icons';
   import { Button } from '../../base/button';
   import * as ButtonGroup from '../../base/button-group';
   import * as DropdownMenu from '../../base/dropdown-menu';
   import { UseClipboard } from '../../hooks/use-clipboard.svelte';
   import { cn } from '../../tools';
+  import { CHATGPT_ICON_PATH } from './copy-page-icons';
   import type { CopyPageLabels } from './copy-page-utils';
 
   interface Props {
@@ -95,17 +95,21 @@
         </Button>
       {/snippet}
     </DropdownMenu.Trigger>
-    <DropdownMenu.Content align="end" class="ui:w-52">
+    <DropdownMenu.Content align="end" class="ui:w-56">
       <DropdownMenu.Item onclick={() => openUrl(markdownUrl)}>
         <FileTextIcon class="ui:size-4" aria-hidden="true" />
         {labels.viewAsMarkdown}
       </DropdownMenu.Item>
       <DropdownMenu.Item onclick={() => openUrl(chatgptUrl)}>
-        <MessageCircleIcon class="ui:size-4" aria-hidden="true" />
+        <svg viewBox="0 0 24 24" class="ui:size-4" fill="currentColor" aria-hidden="true">
+          <path d={CHATGPT_ICON_PATH} />
+        </svg>
         {labels.openInChatGPT}
       </DropdownMenu.Item>
       <DropdownMenu.Item onclick={() => openUrl(claudeUrl)}>
-        <SparklesIcon class="ui:size-4" aria-hidden="true" />
+        <svg viewBox="0 0 24 24" class="ui:size-4" fill="currentColor" aria-hidden="true">
+          <path d={siClaude.path} />
+        </svg>
         {labels.openInClaude}
       </DropdownMenu.Item>
     </DropdownMenu.Content>

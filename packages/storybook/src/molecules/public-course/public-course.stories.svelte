@@ -93,22 +93,23 @@
       hasPrev={activeIndex > 0}
       hasNext={activeIndex >= 0 && activeIndex < flatItems.length - 1}
     >
-      {#snippet headerActions()}
-        <PublicCourse.CopyPageButton
-          markdownUrl="/course/ai-for-builders/lesson/hallucination-and-limitations/markdown"
-          chatgptUrl="https://chatgpt.com/?prompt=demo"
-          claudeUrl="https://claude.ai/new?q=demo"
-          labels={{
-            copy: 'Copy Page',
-            copied: 'Copied',
-            viewAsMarkdown: 'View as Markdown',
-            openInChatGPT: 'Open in ChatGPT',
-            openInClaude: 'Open in Claude',
-            moreActions: 'More copy page actions'
-          }}
-        />
-      {/snippet}
-      <PublicCourse.PublicLessonView lesson={LESSON_FIXTURE} videoCaptionsLabel="Captions" callout={CALLOUT_FIXTURE} />
+      <PublicCourse.PublicLessonView lesson={LESSON_FIXTURE} videoCaptionsLabel="Captions" callout={CALLOUT_FIXTURE}>
+        {#snippet titleActions()}
+          <PublicCourse.CopyPageButton
+            markdownUrl="/course/ai-for-builders/lesson/hallucination-and-limitations/markdown"
+            chatgptUrl="https://chatgpt.com/?prompt=demo"
+            claudeUrl="https://claude.ai/new?q=demo"
+            labels={{
+              copy: 'Copy Page',
+              copied: 'Copied',
+              viewAsMarkdown: 'View as Markdown',
+              openInChatGPT: 'Open in ChatGPT',
+              openInClaude: 'Open in Claude',
+              moreActions: 'More copy page actions'
+            }}
+          />
+        {/snippet}
+      </PublicCourse.PublicLessonView>
     </PublicCourse.PublicCourseShell>
   {/snippet}
 </Story>

@@ -4652,6 +4652,9 @@
       "open_in_claude": "Abrir en Claude",
       "more_actions": "Más acciones para copiar la página",
       "copy_failed": "No se pudo copiar esta lección como Markdown"
+    },
+    "outline": {
+      "label": "En esta página"
     }
   },
   "account": {

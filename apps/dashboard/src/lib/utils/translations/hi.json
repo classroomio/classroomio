@@ -4652,6 +4652,9 @@
       "open_in_claude": "Claude में खोलें",
       "more_actions": "पृष्ठ कॉपी करने की और क्रियाएँ",
       "copy_failed": "इस पाठ को Markdown के रूप में कॉपी नहीं किया जा सका"
+    },
+    "outline": {
+      "label": "इस पृष्ठ पर"
     }
   },
   "account": {

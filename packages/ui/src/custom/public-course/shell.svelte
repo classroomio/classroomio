@@ -60,7 +60,7 @@
     topRight?: Snippet;
     /**
      * Extra actions rendered before the default (or overridden) top-right
-     * buttons — e.g. the Copy Page split button on public lessons.
+     * buttons.
      */
     headerActions?: Snippet;
     class?: string;

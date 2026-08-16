@@ -4652,6 +4652,9 @@
       "open_in_claude": "Åbn i Claude",
       "more_actions": "Flere handlinger til kopi af siden",
       "copy_failed": "Kunne ikke kopiere denne lektion som Markdown"
+    },
+    "outline": {
+      "label": "På denne side"
     }
   },
   "account": {

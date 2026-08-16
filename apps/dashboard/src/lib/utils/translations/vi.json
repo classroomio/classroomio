@@ -4652,6 +4652,9 @@
       "open_in_claude": "Mở trong Claude",
       "more_actions": "Thêm thao tác sao chép trang",
       "copy_failed": "Không thể sao chép bài học này dưới dạng Markdown"
+    },
+    "outline": {
+      "label": "Trên trang này"
     }
   },
   "account": {
