@@ -6,6 +6,7 @@
   import { isFreePlan } from '$lib/utils/store/org';
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { t } from '$lib/utils/functions/translations';
+  import { onDestroy } from 'svelte';
   import type { Question } from '$features/course/types';
 
   type QuestionTypeEntry = (typeof QUESTION_TYPES)[number];
@@ -22,6 +23,7 @@
   const SELECT_CLOSE_ANIMATION_MS = 180;
 
   let isSelectOpen = $state(false);
+  let openUpgradeModalTimeout: ReturnType<typeof setTimeout> | undefined;
 
   const autoGradableTypes = $derived(types.filter((typeEntry) => typeEntry.autoGradable));
   const manuallyGradedTypes = $derived(types.filter((typeEntry) => !typeEntry.autoGradable));
@@ -31,11 +33,15 @@
     clickEvent.stopPropagation();
 
     isSelectOpen = false;
-
-    setTimeout(() => {
+    clearTimeout(openUpgradeModalTimeout);
+    openUpgradeModalTimeout = setTimeout(() => {
       openUpgradeModal();
     }, SELECT_CLOSE_ANIMATION_MS);
   }
+
+  onDestroy(() => {
+    clearTimeout(openUpgradeModalTimeout);
+  });
 </script>
 
 {#snippet sectionTitle({ title, description })}
