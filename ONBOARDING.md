@@ -202,24 +202,24 @@ Tags are org-level labels for categorizing courses.
 
 The Media Library is the central asset repository for your organization. Media assets are uploaded while creating course content and can then be managed from the Media page.
 
-- [ ] Open a **Course**.
-- [ ] Create a **Section**.
-- [ ] Create a **Lesson** within the section.
-- [ ] In the lesson's **Materials** section:
-  - [ ] Upload an **image**.
-  - [ ] Upload a **document** (PDF).
-  - [ ] Upload a **video**.
-  - [ ] Add a **YouTube** video via link.
-- [ ] Navigate to **Media** (`/org/[slug]/media`).
-- [ ] Note the **storage usage summary** at the top.
-- [ ] Verify the uploaded image appears with kind **"image"**.
-- [ ] Verify the uploaded PDF appears with kind **"document"**.
-- [ ] Verify the uploaded video appears with kind **"video"**. After processing, check that it has HLS playback support and auto-generated thumbnails.
-- [ ] Filter assets by kind (video, image, document, audio) and verify the filters work.
-- [ ] Search for an asset by name.
-- [ ] Click an asset to view its details, including **usage tracking** (which lessons reference it).
-- [ ] Edit an asset name, then delete an asset you no longer need.
-- [ ] Return to a **Lesson**, open the **Materials** section, and add a video from the **Media Library** picker (instead of uploading a new file). Verify it embeds correctly in the lesson.
+- [X] Open a **Course**.
+- [X] Create a **Section**.
+- [X] Create a **Lesson** within the section.
+- [X] In the lesson's **Materials** section:
+  - [X] Upload an **image**.
+  - [X] Upload a **document** (PDF).
+  - [X] Upload a **video**.
+  - [X] Add a **YouTube** video via link.
+- [X] Navigate to **Media** (`/org/[slug]/media`).
+- [X] Note the **storage usage summary** at the top.
+- [X] Verify the uploaded image appears with kind **"image"**.
+- [X] Verify the uploaded PDF appears with kind **"document"**.
+- [X] Verify the uploaded video appears with kind **"video"**. After processing, check that it has HLS playback support and auto-generated thumbnails.
+- [X] Filter assets by kind (video, image, document, audio) and verify the filters work.
+- [X] Search for an asset by name.
+- [X] Click an asset to view its details, including **usage tracking** (which lessons reference it).
+- [X] Edit an asset name, then delete an asset you no longer need.
+- [X] Return to a **Lesson**, open the **Materials** section, and add a video from the **Media Library** picker (instead of uploading a new file). Verify it embeds correctly in the lesson.
 - 📸 **Screenshot:** The Media Library showing uploaded assets of different kinds with the storage usage summary.
 
 ---
