@@ -62,7 +62,7 @@ describe('getOrganisationAnalytics cache', () => {
     expect(getDashOrgStats).toHaveBeenCalledTimes(1);
     expect(redisMocks.setEx).toHaveBeenCalledWith(
       'dash:stats:v1:org-1',
-      300,
+      600,
       JSON.stringify({ version: '0', data: sampleAnalytics })
     );
   });

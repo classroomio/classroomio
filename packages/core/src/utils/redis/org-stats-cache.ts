@@ -2,8 +2,8 @@ import { env } from '../../config/env';
 import { getOrgIdsByGroupIds } from '@cio/db/queries/group';
 import { logRedisUnavailableOnce, redis } from './redis';
 
-/** TTL for org dashboard stats payload (5 min). */
-export const ORG_STATS_CACHE_TTL_SECONDS = 300;
+/** TTL for org dashboard stats payload (10 min). */
+export const ORG_STATS_CACHE_TTL_SECONDS = 600;
 
 export function orgStatsKey(orgId: string): string {
   return `dash:stats:v1:${orgId}`;
