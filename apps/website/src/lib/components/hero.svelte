@@ -9,7 +9,7 @@
     class="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#f7f9fc_0%,#eef2fa_60%,#e5ecf7_100%)]"
   ></div>
 
-  <!-- Bordered clouds, top-left — crisp SVG silhouettes -->
+  <!-- Bordered clouds, top-left: crisp SVG silhouettes -->
   <div class="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
     <!-- Cloud 1 (largest) -->
     <svg
@@ -81,7 +81,7 @@
     </svg>
   </div>
 
-  <!-- Particle cloud — same component used in the footer at lower intensity -->
+  <!-- Particle cloud: same component used in the footer at lower intensity -->
   <ParticleField class="pointer-events-none absolute inset-0 z-[2] hidden h-full w-full md:block" />
 
   <!-- Bottom fade to next section -->
@@ -110,7 +110,7 @@
     <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
       <img
         src="https://assets.cdn.clsrio.com/www/home/hero-academy.jpeg"
-        alt="Branded customer academy on a custom domain — catalog, cohorts, AI tutor"
+        alt="Branded customer academy on a custom domain with catalog, cohorts, and AI tutor"
         width="2560"
         height="1440"
         class="block h-auto w-full"

@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "dev": "vite dev --port 5173",
+    "prebuild": "pnpm --filter @cio/ui run build",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint ./src",

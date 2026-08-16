@@ -5,14 +5,14 @@
   import ArrowRight from '@lucide/svelte/icons/arrow-right';
 
   /**
-   * AI teaching assistant section — centered, light theme, logo on top, gradient accent,
+   * AI teaching assistant section: centered, light theme, logo on top, gradient accent,
    * large heading, short subhead, optional CTA, and an image placeholder underneath.
    * Used on the homepage + each solution page with variant copy.
    *
    * @typedef {Object} Props
    * @property {string} [accent]          Small gradient line above the heading (e.g. "Academy", "Compliance AI")
    * @property {string} [title]           Main heading
-   * @property {string} description       Subhead paragraph (1–3 sentences)
+   * @property {string} description       Subhead paragraph (1-3 sentences)
    * @property {string} [ctaLabel]        CTA button label (optional). Omit to hide the button.
    * @property {string} [ctaHref]         CTA destination
    * @property {string} [imagePath]       Suggested static file path for the image placeholder
@@ -34,7 +34,7 @@
     ctaLabel,
     ctaHref = '/customer-education',
     imagePath = '/static/ai-tutor-stack.png',
-    imageCaption = 'AI tutor in a lesson — lesson-aware chat, follow-ups, translation, summarisation',
+    imageCaption = 'AI tutor in a lesson with chat, follow-ups, translation, and summarisation',
     showImage = true,
     imageSrc,
     imageAlt = '',

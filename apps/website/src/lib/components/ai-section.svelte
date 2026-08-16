@@ -2,7 +2,7 @@
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
   import CodeBlock from './code-block.svelte';
 
-  // mcp.json — sky-300 keys · emerald-300 strings · slate-500 punctuation
+  // mcp.json: sky-300 keys · emerald-300 strings · slate-500 punctuation
   // 2-space indent (real spaces; body uses whitespace-pre).
   const mcpJsonLines = [
     '<span class="text-slate-500">{</span>',

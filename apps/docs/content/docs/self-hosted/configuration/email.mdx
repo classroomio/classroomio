@@ -3,7 +3,7 @@ title: Email (SMTP)
 description: Configure SMTP so ClassroomIO can send signup verification, password reset, and invite emails.
 ---
 
-ClassroomIO sends transactional email — **signup verification, password resets, and invite emails** —
+ClassroomIO sends transactional email (**signup verification, password resets, and invite emails**)
 over SMTP. Without it the app still runs, but it can't send any of those messages, so have mail
 credentials ready before you deploy.
 
@@ -33,6 +33,6 @@ whole compose stack. The jobs worker won't send invites or notifications if SMTP
 
 ## Providers
 
-Any standard SMTP provider works — including transactional services such as **Zoho / ZeptoMail**,
+Any standard SMTP provider works, including transactional services such as **Zoho / ZeptoMail**,
 Postmark, Resend (SMTP), Amazon SES, or Mailgun. See the
 [Nodemailer SMTP docs](https://nodemailer.com/smtp/) for provider-specific setup and port/TLS options.

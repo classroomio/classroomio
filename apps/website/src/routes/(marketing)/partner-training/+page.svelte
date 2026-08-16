@@ -222,7 +222,7 @@
       <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
         <img
           src="https://assets.cdn.clsrio.com/www/partner-training/latest-courses.jpeg"
-          alt="Partner academy — latest courses, cohort structure, and learner state"
+          alt="Partner academy with latest courses, cohort structure, and learner state"
           class="block h-auto w-full"
           loading="eager"
           decoding="async"
@@ -255,7 +255,7 @@
     title="Open a few courses to the public, gate the rest."
     description="Pick the courses you want anyone to see. Partners (and the curious ones who aren’t partners yet) can jump in without signing up, watch a few lessons, and if they’re hooked they create an account to unlock the rest of your catalog."
     imageSrc="https://assets.cdn.clsrio.com/www/partner-training/public-courses.jpeg"
-    imageAlt="Public partner course pages — open courses up front, sign-up gates the rest"
+    imageAlt="Public partner course pages: open courses up front, sign-up gates the rest"
   />
 
   <FeatureGrid

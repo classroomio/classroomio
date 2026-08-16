@@ -44,10 +44,10 @@
     {
       title: 'Publish it under your brand',
       description:
-        'Custom domain, themed landing pages, public course catalog, and embeddable widgets — your academy, not ours.'
+        'Custom domain, themed landing pages, public course catalog, and embeddable widgets. Your academy, not ours.'
     },
     {
-      title: 'Track adoption & retention',
+      title: 'Track adoption and retention',
       description: 'See progress, assessment results, certificates, and completion data across customers and cohorts.'
     }
   ];
@@ -191,12 +191,12 @@
   ];
 
   const outcomes = [
-    { title: 'Reduce repeat support tickets', sub: 'Self-serve education replaces 1:1 onboarding calls.' },
-    { title: 'Shorten time-to-value', sub: 'Customers learn core workflows before their first review call.' },
-    { title: 'Train admins and power users', sub: 'Multi-tier programs for end-users vs. champions.' },
-    { title: 'Certify customer champions', sub: 'Public shareable certificates fuel community advocacy.' },
-    { title: 'Drive feature adoption', sub: 'Targeted micro-courses when you ship something new.' },
-    { title: 'Build a moat of educated users', sub: 'The customers who know your product never churn quietly.' }
+    { title: 'Fewer repeat support tickets', sub: 'Self-serve education replaces a lot of 1:1 onboarding calls.' },
+    { title: 'Faster time to value', sub: 'Customers learn core workflows before their first review call.' },
+    { title: 'Train admins and power users', sub: 'Separate tracks for end users and champions.' },
+    { title: 'Certify customer champions', sub: 'Shareable certificates give people a reason to keep learning.' },
+    { title: 'Drive feature adoption', sub: 'Short courses when you ship something new.' },
+    { title: 'Keep educated customers longer', sub: 'People who know your product are harder to lose quietly.' }
   ];
 </script>
 
@@ -204,7 +204,7 @@
   <title>Customer academy software for SaaS | ClassroomIO</title>
   <meta
     name="description"
-    content="Launch a branded customer academy. Onboarding, feature adoption, admin training, and certification — under your own domain, with an AI tutor in every lesson."
+    content="Launch a branded academy. Onboarding, feature adoption, admin training, and certification under your own domain, with an AI tutor in every lesson."
   />
 </svelte:head>
 
@@ -216,12 +216,12 @@
         Customer Education
       </Badge>
       <h1 class="text-[clamp(2rem,3.4vw,2.8rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
-        Launch a customer academy
-        <em class="text-blue-700 not-italic">customers actually love.</em>
+        Launch an academy<br />
+        <em class="whitespace-nowrap text-blue-700 not-italic">customers actually love.</em>
       </h1>
       <HeroSubtitle class="mx-auto">
         Turn your help docs, onboarding videos, and product knowledge into a branded learning portal. Train customers,
-        certify power-users, and drive adoption — under your own domain, with an AI tutor in every lesson.
+        certify power users, and drive adoption under your own domain, with an AI tutor in every lesson.
       </HeroSubtitle>
       <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
         <Button data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</Button>
@@ -240,7 +240,7 @@
       <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
         <img
           src="https://assets.cdn.clsrio.com/www/customer-education/beautiful-academy-site.jpeg"
-          alt="Branded customer academy on a custom domain — hero, catalog, themed branding"
+          alt="Branded customer academy on a custom domain: hero, catalog, and themed branding"
           class="block h-auto w-full"
           loading="eager"
           decoding="async"
@@ -267,16 +267,16 @@
 
   <ImageDemoSection
     eyebrow="Make it yours"
-    title="Customize how your customer academy looks like."
-    description="Theme the catalog, swap fonts and colors to match your brand, and build landing pages that feel like the rest of your product — without losing the LMS underneath."
+    title="Make the academy look like the rest of your product."
+    description="Theme the catalog, swap fonts and colors to match your brand, and build landing pages that feel like home, without losing the LMS underneath."
     imageSrc="https://assets.cdn.clsrio.com/www/customer-education/customizable-academy.jpeg"
-    imageAlt="Customizable customer academy — catalog, course page, certificate"
+    imageAlt="Customizable customer academy showing catalog, course page, and certificate"
   />
 
   <FeatureGrid
     eyebrow="Every piece, included"
     title="Everything you need to teach customers your product."
-    description={'Not a "content site" bolted onto your help docs. A real LMS with cohorts, assessments, certificates, AI tutoring, community, and analytics, wrapped in your brand.'}
+    description={'Not a content site bolted onto your help docs. A real LMS with cohorts, assessments, certificates, AI tutoring, community, and analytics, wrapped in your brand.'}
     ctaLabel="Get started"
     ctaHref="/signup"
     {features}
@@ -285,9 +285,9 @@
   <AiTutorSection
     accent=""
     title="An AI tutor in every lesson."
-    description="An AI tutor sits inside every lesson — lesson-aware, multilingual, and patient. It answers the questions customers would have sent to support, before they leave the page."
+    description="An AI tutor sits inside every lesson. It knows the material, speaks multiple languages, and answers the questions customers would have sent to support before they leave the page."
     imagePath="/static/ai-tutor-stack.png"
-    imageCaption="AI tutor in a lesson — lesson-aware chat, follow-ups, translation, summarisation"
+    imageCaption="AI tutor in a lesson with chat, follow-ups, translation, and summarisation"
     vimeoVideoId="1192910311"
   />
 
@@ -296,7 +296,7 @@
     eyebrow="Global customers"
     headlineLead="Teach customers"
     headlineAccent="in the language they bought in."
-    description="Author once, publish in ten. Each lesson supports per-language variants — customers pick the language they read in, certificates render in that language, and adoption analytics roll up across regions."
+    description="Author once, publish in ten. Each lesson supports per-language variants. Customers pick the language they read in, certificates render in that language, and adoption analytics roll up across regions."
     moduleLabel="Lesson 1 · Onboarding"
     footerLabel="6 lessons · 18 min"
     bgClass="bg-white"
@@ -334,11 +334,11 @@
       <div>
         <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">Certified champions</div>
         <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-          Turn power-users into a public community.
+          Turn power users into a public community.
         </h2>
         <p class="mt-5 text-base leading-relaxed text-gray-500">
           Bundle courses into cohorts, gate them with a required exercise, and issue shareable certificates. Customer
-          champions love showing off — and your product gets a quiet army of advocates.
+          champions love showing them off, and your product gets a quiet army of advocates.
         </p>
         <ul class="mt-6 space-y-3 text-sm text-gray-700">
           <li class="flex items-start gap-2">
@@ -367,7 +367,7 @@
       <div class="mb-10 max-w-[640px]">
         <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">Why teams ship this</div>
         <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-          Educated customers churn less. Period.
+          Educated customers churn less.
         </h2>
       </div>
 
@@ -386,7 +386,7 @@
 
   <PageSignupCTA
     header="Launch your customer academy."
-    subText="Build a branded learning portal customers actually use. Custom domain, AI tutoring, certificates, and analytics — out of the box."
+    subText="Build a branded learning portal customers actually use. Custom domain, AI tutoring, certificates, and analytics out of the box."
     btnLabel="Book a Demo"
   />
 </section>

@@ -32,6 +32,6 @@
 
 <PageSignupCTA
   header="Stop forwarding help articles."
-  subText="Launch a branded academy on your domain in days."
+  subText="Launch a branded academy on your domain in a few days."
   btnLabel="Book a Demo"
 />

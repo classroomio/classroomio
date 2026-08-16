@@ -792,10 +792,10 @@
         "progression_mode_description": "Controle se os alunos podem acessar todo o conteúdo desbloqueado ou devem concluir os itens em ordem.",
         "progression_mode_free": "Livre — conteúdo desbloqueado é acessível",
         "progression_mode_sequential": "Sequencial — concluir itens anteriores para desbloquear o próximo",
-        "lesson_download": "Lições baixadas",
+        "lesson_download": "Download das lições",
         "available": "Disponibilizar a Lição para Download em PDF para alunos matriculados",
         "course_download": "Download do curso",
-        "course_avail": "Disponibilizar o Curso para Download para alunos cadastrados",
+        "course_avail": "Baixe uma cópia deste curso.",
         "download": "Baixar",
         "allow": "Permitir novos alunos",
         "access": "Permitir que novos alunos acessem este curso",
@@ -858,7 +858,12 @@
           "description": "Os alunos inscritos não poderão fazer aulas ou exercícios bloqueados até que você os desbloqueie.",
           "description_live": "Aulas e exercícios bloqueados permanecem ocultos aos alunos até que você os desbloqueie – o que é útil se você liberar conteúdo semana após semana.",
           "unlock_all": "Desbloquear tudo"
-        }
+        },
+        "certificate_deadline_required": "Defina o prazo do certificado primeiro",
+        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
+        "go_to_completion_deadline": "Ir para o prazo de conclusão",
+        "completion_deadline_label": "Prazo para conclusão do curso",
+        "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo."
       },
       "analytics": {
         "title": "Análises"
@@ -2481,7 +2486,10 @@
       "blocker_final_misconfigured": "O exercício de certificação \"{exerciseTitle}\" não possui pontos configurados; peça ao seu instrutor para consertar.",
       "email_message_label": "Mensagem de e-mail",
       "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!",
-      "final_exercise_multiple_attempts_note": "Os alunos terão permissão para tentativas ilimitadas no exercício selecionado."
+      "final_exercise_multiple_attempts_note": "Os alunos terão permissão para tentativas ilimitadas no exercício selecionado.",
+      "deadline_required": "Os cursos de conformidade exigem um prazo de conclusão antes de serem publicados.",
+      "deadline_required_enroll": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados.",
+      "deadline_invalid": "O prazo de conclusão do curso é inválido."
     },
     "creator": {
       "heading": "Qual curso você deseja criar?",
@@ -2619,6 +2627,7 @@
       "most_lessons": "Lições: mais primeiro",
       "fewest_lessons": "Lições: menos primeiro",
       "date_created": "Data de criação",
+      "last_updated_at": "Última atualização",
       "published": "Publicado",
       "lessons": "Lições"
     },
@@ -3815,7 +3824,8 @@
       "title": "Inscrição desativada",
       "invite_only_message": "A inscrição é apenas para convidados. Use um link de convite para criar uma conta.",
       "go_to_login": "Vá para Entrar"
-    }
+    },
+    "continue_with": "Ou continue com"
   },
   "app": {
     "search": {
@@ -3855,8 +3865,6 @@
     "deeply_appreciate": "agradecemos profundamente e estamos ao seu serviço."
   },
   "onboarding": {
-    "sell": "Venda cursos online",
-    "teach": "Ensine meus alunos atuais on-line",
     "expanding": "Em outra plataforma, expandindo aqui",
     "employees": "Treinar meus funcionários",
     "customers": "Criar cursos para meus clientes",
@@ -4079,16 +4087,15 @@
       },
       "usage": {
         "title": "Uso e limites",
-        "description": "O MCP está disponível em todos os planos, mas o uso é controlado com créditos mensais de automação e limites principais.",
-        "credits_title": "Créditos restantes",
-        "credits_description": "As ações mutantes do MCP consomem créditos. As ações de leitura são gratuitas.",
+        "description": "O MCP está disponível em todos os planos. O uso é controlado por limites de chaves e limites de taxa.",
         "keys_title": "Chaves ativas",
         "keys_description": "Use uma chave MCP por integração para que o acesso possa ser alternado ou revogado de forma limpa.",
         "rate_limits_title": "Limites de taxa",
         "rate_limits_description": "Solicitações de leitura/gravação/publicação permitidas por minuto.",
         "used_label": "Usado:"
       },
-      "page_subtitle": "Conecte ferramentas de IA ao ClassroomIO com chaves da organização que você pode rotacionar a qualquer momento."
+      "page_subtitle": "Conecte ferramentas de IA ao ClassroomIO com chaves da organização que você pode rotacionar a qualquer momento.",
+      "view_docs": "Ver documentação"
     },
     "api": {
       "subtitle": "Gerencie chaves de API para integrar com a API pública do ClassroomIO.",
@@ -4857,7 +4864,8 @@
       "no_matching_cohort_courses": "Nenhum curso da coorte corresponde à sua pesquisa.",
       "pagination_status": "Página {page} de {totalPages}",
       "published_access_callout_title": "Acesso de estudante",
-      "published_access_callout_description": "Os alunos só têm acesso aos cursos publicados. Os cursos podem estar nesta coorte para sua equipe enquanto ainda não foram publicados, e ficam ocultos para os alunos até que você os publique."
+      "published_access_callout_description": "Os alunos só têm acesso aos cursos publicados. Os cursos podem estar neste grupo para sua equipe enquanto ainda não foram publicados, mas permanecem ocultos aos alunos até que você os publique.",
+      "empty_student_description": "Ainda não há cursos publicados nesta coorte."
     },
     "newsfeed": {
       "post": "Nova postagem",

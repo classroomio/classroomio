@@ -24,6 +24,9 @@ on:
       - '.nvmrc'
       - '.github/workflows/package-build-check.yml'
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
