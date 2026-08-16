@@ -239,9 +239,9 @@ The Media Library is the central asset repository for your organization. Media a
 
 ### AI Tutor (org settings)
 
-- [ ] Navigate to **Settings → AI Tutor** and review the org-level tutor configuration.
-- [ ] Open a course → **Settings** and check the course-level AI tutor toggle.
-- [ ] As a student (Part 9), open a lesson and interact with the AI tutor — ask it to explain the content.
+- [X] Navigate to **Settings → AI Tutor** and review the org-level tutor configuration.
+- [X] Open a course → **Settings** and check the course-level AI tutor toggle.
+- [X] As a student (Part 9), open a lesson and interact with the AI tutor — ask it to explain the content.
 
 ---
 
@@ -249,15 +249,15 @@ The Media Library is the central asset repository for your organization. Media a
 
 Cohorts group learners through a set of courses with goals and communication.
 
-- [ ] Navigate to **Cohorts** (`/org/[slug]/cohorts`).
-- [ ] Create a new cohort — name it "Test Cohort", add a description.
-- [ ] **Add courses** — search and add 2 courses to the cohort.
-- [ ] **Invite members** — go to the People tab, invite `student@test.com` as a student. Optionally send the invite email.
-- [ ] Add an org team member as a **tutor**.
-- [ ] Go to **Goals** — create a goal of type "Complete all courses" with a deadline 30 days from now.
-- [ ] Create a second goal of type "Score" — set a score threshold of 80%.
-- [ ] Check the **Goals Overview** tiles — note the on-track/at-risk/overdue counts.
-- [ ] Go to **Newsfeed** — create a post with rich text, react to it with an emoji, add a comment. Pin the post.
+- [X] Navigate to **Cohorts** (`/org/[slug]/cohorts`).
+- [X] Create a new cohort — name it "Test Cohort", add a description.
+- [X] **Add courses** — search and add 2 courses to the cohort.
+- [X] **Invite members** — go to the People tab, invite `student@test.com` as a student. Optionally send the invite email.
+- [X] Add an org team member as a **tutor**.
+- [X] Go to **Goals** — create a goal of type "Complete all courses" with a deadline 30 days from now.
+- [X] Create a second goal of type "Score" — set a score threshold of 80%.
+- [X] Check the **Goals Overview** tiles — note the on-track/at-risk/overdue counts.
+- [X] Go to **Newsfeed** — create a post with rich text, react to it with an emoji, add a comment. Pin the post.
 - 📸 **Screenshot:** The cohort page showing goals with their status tiles.
 
 ---
