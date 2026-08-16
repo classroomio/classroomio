@@ -2,7 +2,7 @@
   import CodeBlock from './code-block.svelte';
 
   /**
-   * Shared MCP server section — dark background, copy + mcp.json on left/right.
+   * Shared MCP server section: dark background, copy + mcp.json on left/right.
    * Used on /automation and /mcp-recipes.
    *
    * @typedef {Object} Props

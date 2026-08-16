@@ -5,6 +5,7 @@ import Content from './comment-tree-content.svelte';
 import Actions from './comment-tree-actions.svelte';
 import Input from './comment-tree-input.svelte';
 import Replies from './comment-tree-replies.svelte';
+import ReplyingTo from './comment-tree-replying-to.svelte';
 
 export * from './types';
 
@@ -16,6 +17,7 @@ export {
   Actions,
   Input,
   Replies,
+  ReplyingTo,
   // Alias names
   Root as CommentRoot,
   Item as CommentItem,
@@ -23,5 +25,6 @@ export {
   Content as CommentContent,
   Actions as CommentActions,
   Input as CommentInput,
-  Replies as CommentReplies
+  Replies as CommentReplies,
+  ReplyingTo as CommentReplyingTo
 };

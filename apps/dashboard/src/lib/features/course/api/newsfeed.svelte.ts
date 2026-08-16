@@ -489,9 +489,15 @@ export class NewsfeedApi extends BaseApiWithErrors {
     feedId: string,
     content: string,
     author: { id: string; username: string; fullname: string; avatarUrl: string },
-    parentId?: number
+    parentId?: number,
+    replyTo?: { commentId: number; authorFullname: string }
   ) {
-    const result = ZNewsfeedCommentCreate.safeParse({ courseNewsfeedId: feedId, content, parentId });
+    const result = ZNewsfeedCommentCreate.safeParse({
+      courseNewsfeedId: feedId,
+      content,
+      parentId,
+      replyToCommentId: replyTo?.commentId
+    });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'newsfeed');
       return;
@@ -514,6 +520,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
             authorFullname: author.fullname,
             authorUsername: author.username,
             authorAvatarUrl: author.avatarUrl,
+            replyToAuthorFullname: replyTo?.authorFullname ?? null,
             replyCount: 0
           };
 

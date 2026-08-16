@@ -152,14 +152,14 @@ export const newsfeedRouter = new Hono()
         const user = c.get('user')!;
         const courseId = c.req.param('courseId')!;
         const { feedId } = c.req.valid('param');
-        const { content, parentId } = c.req.valid('json');
+        const { content, parentId, replyToCommentId } = c.req.valid('json');
 
         const groupMemberId = await getGroupMemberIdByCourseAndProfile(courseId, user.id);
         if (!groupMemberId) {
           return c.json({ success: false, error: 'User is not a member of this course' }, 403);
         }
 
-        const comment = await createNewsfeedCommentService(feedId, groupMemberId, content, parentId);
+        const comment = await createNewsfeedCommentService(feedId, groupMemberId, content, parentId, replyToCommentId);
 
         return c.json({ success: true, data: comment }, 201);
       } catch (error) {

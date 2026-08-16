@@ -33,7 +33,8 @@ export type TNewsfeedListQuery = z.infer<typeof ZNewsfeedListQuery>;
 export const ZNewsfeedCommentCreate = z.object({
   courseNewsfeedId: z.string().min(1),
   content: z.string().min(1),
-  parentId: z.number().int().positive().optional()
+  parentId: z.number().int().positive().optional(),
+  replyToCommentId: z.number().int().positive().optional()
 });
 export type TNewsfeedCommentCreate = z.infer<typeof ZNewsfeedCommentCreate>;
 

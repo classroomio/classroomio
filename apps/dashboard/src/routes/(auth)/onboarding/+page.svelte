@@ -102,6 +102,7 @@
                 suffix=".classroomio.com"
                 oninput={() => {
                   isSiteNameTouched = true;
+                  onboardingApi.errors.siteName = '';
                 }}
               />
               {#if onboardingApi.errors.siteName}

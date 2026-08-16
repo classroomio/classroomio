@@ -795,7 +795,7 @@
         "lesson_download": "Bài học Tải về",
         "available": "Cung cấp Bài học để tải xuống dưới dạng pdf cho học viên đã đăng ký",
         "course_download": "Tải xuống khóa học",
-        "course_avail": "Cung cấp Khóa học để tải xuống cho sinh viên đã đăng ký",
+        "course_avail": "Tải xuống một bản sao của khóa học này.",
         "download": "Tải xuống",
         "allow": "Cho phép sinh viên mới",
         "access": "Cho phép sinh viên mới truy cập khóa học này",
@@ -858,7 +858,12 @@
           "description": "Học viên đã đăng ký sẽ không thể học các bài học hoặc bài tập bị khóa cho đến khi bạn mở khóa chúng.",
           "description_live": "Các bài học và bài tập bị khóa sẽ được ẩn khỏi học sinh cho đến khi bạn mở khóa chúng — hữu ích nếu bạn phát hành nội dung hàng tuần.",
           "unlock_all": "Mở khóa tất cả"
-        }
+        },
+        "certificate_deadline_required": "Đặt thời hạn chứng chỉ đầu tiên",
+        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
+        "go_to_completion_deadline": "Đi tới thời hạn hoàn thành",
+        "completion_deadline_label": "Thời hạn hoàn thành khóa học",
+        "completion_deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn."
       },
       "analytics": {
         "title": "Phân tích"
@@ -2007,6 +2012,8 @@
               "cancel_upload": "Hủy tải lên",
               "upload_cancelled": "Tải lên bị người dùng hủy",
               "downloading": "Đang tải xuống...",
+              "download_success": "Tài liệu đã được tải xuống thành công",
+              "download_error": "Không thể tải xuống tài liệu",
               "view_pdf": "Xem PDF",
               "remove_document": "Xóa tài liệu",
               "delete": "Xóa",
@@ -2016,7 +2023,11 @@
               "failed_to_render_pdf": "Không thể hiển thị trang PDF",
               "use_arrow_keys": "Sử dụng các phím mũi tên để điều hướng, +/- để thu phóng hoặc nhấp vào các điều khiển ở trên. Nhấp chuột phải bị vô hiệu hóa.",
               "empty_title": "Chưa có tài liệu nào",
-              "empty_description": "Tải lên tài liệu để chia sẻ với sinh viên của bạn"
+              "empty_description": "Tải lên tài liệu để chia sẻ với sinh viên của bạn",
+              "attachments_heading": "Tệp đính kèm",
+              "file_count": "{count, plural, one {# tệp} other {# tệp}}",
+              "view_file": "Xem tệp",
+              "reorder_file": "Sắp xếp lại tệp"
             },
             "video": {
               "title": "Video",
@@ -2469,7 +2480,10 @@
       "blocker_final_misconfigured": "Bài tập chứng nhận \"{exerciseTitle}\" không có cấu hình điểm nào; nhờ người hướng dẫn khắc phục.",
       "email_message_label": "Tin nhắn email",
       "email_message_placeholder": "ví dụ: Chúng tôi tự hào về sự tiến bộ của bạn - hãy tiếp tục học hỏi!",
-      "final_exercise_multiple_attempts_note": "Học sinh sẽ được phép thử không giới hạn bài tập đã chọn."
+      "final_exercise_multiple_attempts_note": "Học sinh sẽ được phép thử không giới hạn bài tập đã chọn.",
+      "deadline_required": "Các khóa học tuân thủ yêu cầu thời hạn hoàn thành trước khi có thể xuất bản.",
+      "deadline_required_enroll": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký.",
+      "deadline_invalid": "Thời hạn hoàn thành khóa học không hợp lệ."
     },
     "creator": {
       "heading": "Bạn muốn tạo khóa học nào?",
@@ -2607,6 +2621,7 @@
       "most_lessons": "Bài học: Nhiều nhất trước",
       "fewest_lessons": "Bài học: Ít nhất trước",
       "date_created": "Ngày tạo",
+      "last_updated_at": "Cập nhật lần cuối",
       "published": "Đã xuất bản",
       "lessons": "Bài học"
     },
@@ -3803,7 +3818,8 @@
       "title": "Đăng ký bị vô hiệu hóa",
       "invite_only_message": "Đăng ký chỉ dành cho người được mời. Vui lòng sử dụng liên kết mời để tạo tài khoản.",
       "go_to_login": "Đi tới Đăng nhập"
-    }
+    },
+    "continue_with": "Hoặc tiếp tục với"
   },
   "app": {
     "search": {
@@ -3843,8 +3859,6 @@
     "deeply_appreciate": "chúng tôi đánh giá cao điều đó và sẵn sàng phục vụ bạn."
   },
   "onboarding": {
-    "sell": "Bán các khóa học trực tuyến",
-    "teach": "Dạy học sinh hiện tại của tôi trực tuyến",
     "expanding": "Trên nền tảng khác, mở rộng ở đây",
     "employees": "Đào tạo nhân viên của tôi",
     "customers": "Tạo khóa học cho khách hàng của tôi",
@@ -4844,7 +4858,8 @@
       "no_matching_cohort_courses": "Không có nhóm học tập khóa học phù hợp với tìm kiếm của bạn.",
       "pagination_status": "Trang {page} trong tổng số {totalPages}",
       "published_access_callout_title": "Quyền truy cập của sinh viên",
-      "published_access_callout_description": "Sinh viên chỉ có quyền truy cập vào các khóa học được xuất bản. Các khóa học có thể có trong nhóm học tập này cho nhóm của bạn trong khi vẫn chưa được xuất bản và các khóa học đó sẽ bị ẩn với sinh viên cho đến khi bạn xuất bản chúng."
+      "published_access_callout_description": "Sinh viên chỉ có quyền truy cập vào các khóa học được xuất bản. Các khóa học có thể nằm trong nhóm này cho nhóm của bạn mặc dù vẫn chưa được xuất bản nhưng chúng vẫn bị ẩn với học sinh cho đến khi bạn xuất bản chúng.",
+      "empty_student_description": "Chưa có khóa học nào được xuất bản trong nhóm này."
     },
     "newsfeed": {
       "post": "Bài đăng mới",

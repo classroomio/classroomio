@@ -16,8 +16,6 @@
   import { Switch } from '@cio/ui/base/switch';
   import BellIcon from '@lucide/svelte/icons/bell';
   import Building2Icon from '@lucide/svelte/icons/building-2';
-  import { onMount } from 'svelte';
-  import { get } from 'svelte/store';
 
   function buildToggleState<T extends string>(keys: readonly T[], source?: Partial<Record<T, boolean>> | null) {
     return Object.fromEntries(keys.map((key) => [key, source?.[key] !== false])) as Record<T, boolean>;
@@ -26,10 +24,12 @@
   let personalToggles = $state(buildToggleState(PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS));
   let savedPersonalToggles = $state(buildToggleState(PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS));
   let orgToggles = $state(buildToggleState(EMAIL_NOTIFICATION_TOGGLE_KEYS));
+  let savedOrgToggles = $state(buildToggleState(EMAIL_NOTIFICATION_TOGGLE_KEYS));
   let isSavingPersonal = $state(false);
   let isSavingOrg = $state(false);
   let isLoadingPersonal = $state(false);
-  let hasHydratedOrgToggles = $state(false);
+  let personalLoadVersion = 0;
+  let lastHydratedOrgId: string | null = null;
 
   interface Props {
     hasUnsavedChanges?: boolean;
@@ -63,24 +63,24 @@
     }
   }
 
-  function syncOrgTogglesFromCurrentOrg() {
-    const org = get(currentOrg);
-
-    if (!org) return;
-
-    const next = buildToggleState(EMAIL_NOTIFICATION_TOGGLE_KEYS, org.settings?.emailNotifications);
+  function applyOrgToggleState(source?: Partial<Record<string, boolean>> | null) {
+    const next = buildToggleState(EMAIL_NOTIFICATION_TOGGLE_KEYS, source);
 
     for (const key of EMAIL_NOTIFICATION_TOGGLE_KEYS) {
       orgToggles[key] = next[key];
+      savedOrgToggles[key] = next[key];
     }
   }
 
   async function loadPersonalPreferences() {
-    if (!$currentOrg?.id) return;
+    const loadVersion = ++personalLoadVersion;
 
     isLoadingPersonal = true;
 
     const result = await memberEmailNotificationsApi.fetch();
+
+    // A newer load or a save started while this request was in flight — it owns the state now.
+    if (loadVersion !== personalLoadVersion) return;
 
     if (result?.data) {
       applyPersonalToggleState(result.data);
@@ -88,19 +88,6 @@
 
     isLoadingPersonal = false;
   }
-
-  function tryHydrateOrgToggles() {
-    if (hasHydratedOrgToggles || !get(isOrgAdmin)) return;
-
-    if (!get(currentOrg)?.id) return;
-
-    syncOrgTogglesFromCurrentOrg();
-    hasHydratedOrgToggles = true;
-  }
-
-  onMount(() => {
-    tryHydrateOrgToggles();
-  });
 
   $effect(() => {
     const orgId = $currentOrg?.id;
@@ -110,14 +97,17 @@
     void loadPersonalPreferences();
   });
 
+  // Org defaults hydrate once per organization. `/account` returns `settings`
+  // together with the org id and role, so an id transition never misses
+  // late-arriving settings — and unsaved edits from another org are discarded
+  // instead of being saved against the wrong organization.
   $effect(() => {
-    if (hasHydratedOrgToggles) return;
-
     const orgId = $isOrgAdmin ? $currentOrg?.id : null;
 
-    if (!orgId) return;
+    if (!orgId || orgId === lastHydratedOrgId) return;
 
-    tryHydrateOrgToggles();
+    lastHydratedOrgId = orgId;
+    applyOrgToggleState($currentOrg?.settings?.emailNotifications);
   });
 
   const personalHasChanges = $derived(
@@ -125,9 +115,7 @@
   );
 
   const orgHasChanges = $derived(
-    EMAIL_NOTIFICATION_TOGGLE_KEYS.some(
-      (key) => orgToggles[key] !== ($currentOrg?.settings?.emailNotifications?.[key] !== false)
-    )
+    EMAIL_NOTIFICATION_TOGGLE_KEYS.some((key) => orgToggles[key] !== savedOrgToggles[key])
   );
 
   $effect(() => {
@@ -146,7 +134,11 @@
 
   export function handleDiscard() {
     applyPersonalToggleState(savedPersonalToggles);
-    syncOrgTogglesFromCurrentOrg();
+
+    for (const key of EMAIL_NOTIFICATION_TOGGLE_KEYS) {
+      orgToggles[key] = savedOrgToggles[key];
+    }
+
     hasUnsavedChanges = false;
   }
 
@@ -164,6 +156,7 @@
     if (!$currentOrg?.id) return;
 
     isSavingPersonal = true;
+    personalLoadVersion++;
 
     const result = await memberEmailNotificationsApi.update(
       toStoredPreferences(PERSONAL_EMAIL_NOTIFICATION_TOGGLE_KEYS, personalToggles)
@@ -181,19 +174,25 @@
     if (!$currentOrg) return;
 
     isSavingOrg = true;
-    const existingSettings = ($currentOrg.settings as Record<string, unknown>) || {};
+    const emailNotifications = toStoredPreferences(EMAIL_NOTIFICATION_TOGGLE_KEYS, orgToggles);
 
+    // The API deep-merges `settings`, so only send the key being changed —
+    // spreading local settings here could write stale values over other keys.
     await orgApi.update(
       $currentOrg.id,
       {
-        settings: {
-          ...existingSettings,
-          emailNotifications: toStoredPreferences(EMAIL_NOTIFICATION_TOGGLE_KEYS, orgToggles)
-        }
+        settings: { emailNotifications }
       },
       {
         onSuccess: () => {
-          syncOrgTogglesFromCurrentOrg();
+          currentOrg.update((org) => ({
+            ...org,
+            settings: {
+              ...(org.settings as Record<string, unknown> | undefined),
+              emailNotifications
+            }
+          }));
+          applyOrgToggleState(emailNotifications);
           snackbar.success(t.get('settings.notifications.org.save_success'));
         }
       }

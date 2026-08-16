@@ -6,6 +6,7 @@
   import { Switch } from '@cio/ui/base/switch';
   import * as RadioGroup from '@cio/ui/base/radio-group';
   import * as Select from '@cio/ui/base/select';
+  import * as Dialog from '@cio/ui/base/dialog';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
   import XIcon from '@lucide/svelte/icons/x';
@@ -15,11 +16,13 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
+  import { Input } from '@cio/ui/base/input';
   import * as Field from '@cio/ui/base/field';
-  import { UpgradeBanner, UnsavedChanges, UploadWidget, TextEditor } from '$features/ui';
+  import { UpgradeBanner, UnsavedChanges, UploadWidget, TextEditor, AttentionHighlight } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
 
   import { settings } from '$features/course/utils/settings-store';
+  import { getOrderedNavigableContent } from '$features/course/utils/content';
   import Copy from '@lucide/svelte/icons/copy';
   import * as Alert from '@cio/ui/base/alert';
   import LockOpenIcon from '@lucide/svelte/icons/lock-open';
@@ -28,8 +31,9 @@
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { generateSlug } from '@cio/utils/functions';
+  import { generateSlug, isPublishedComplianceMissingDeadline } from '@cio/utils/functions';
   import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
+  import { ContentType } from '@cio/utils/constants/content';
   import { DeleteModal } from '$features/ui';
   import { contentApi, courseApi } from '$features/course/api';
   import { collectLockedContentItems } from '$features/course/utils/content-lock-utils';
@@ -48,6 +52,8 @@
 
   let isLoading = $state(false);
   let isDeleting = $state(false);
+  let openCertificateDeadlineDialog = $state(false);
+  let completionDeadlineTrigger = $state(0);
   let errors: {
     title: string | undefined;
     description: string | undefined;
@@ -158,6 +164,35 @@
     isDeleting = false;
   }
 
+  function onPublishToggle(checked: boolean) {
+    if (!checked) {
+      $settings.isPublished = false;
+      hasUnsavedChanges = true;
+      return;
+    }
+
+    if (
+      isPublishedComplianceMissingDeadline({
+        type: $settings.type,
+        isPublished: true,
+        deadline: $settings.certificate.deadline
+      })
+    ) {
+      openCertificateDeadlineDialog = true;
+      return;
+    }
+
+    // Otherwise, publish normally
+    $settings.isPublished = true;
+    $settings.allowNewStudents = true;
+    hasUnsavedChanges = true;
+  }
+
+  function goToCompletionDeadline() {
+    openCertificateDeadlineDialog = false;
+    completionDeadlineTrigger += 1;
+  }
+
   export async function handleSave() {
     if (!$settings.courseTitle) {
       errors.title = $t('snackbar.course_settings.error.title');
@@ -178,6 +213,17 @@
       }
 
       if (!courseApi.course) return;
+
+      if (
+        isPublishedComplianceMissingDeadline({
+          type: $settings.type,
+          isPublished: $settings.isPublished,
+          deadline: $settings.certificate.deadline
+        })
+      ) {
+        openCertificateDeadlineDialog = true;
+        return;
+      }
 
       if ($settings.isPublished && !courseApi.course.slug) {
         courseApi.course.slug = generateSlug($settings.courseTitle, { appendTimestamp: true });
@@ -204,7 +250,16 @@
         slug: courseApi.course.slug ?? undefined,
         compliance:
           $settings.type === 'COMPLIANCE' ? (courseApi.course.compliance ?? DEFAULT_COMPLIANCE_SETTINGS) : undefined,
-        callout: $settings.type === 'PUBLIC' ? sanitizeCalloutForSave($settings.callout) : null
+        callout: $settings.type === 'PUBLIC' ? sanitizeCalloutForSave($settings.callout) : null,
+        certificate: {
+          ...(courseApi.course.certificate ?? {}),
+          deadline: $settings.certificate.deadline,
+          threshold: $settings.certificate.threshold,
+          requiredExerciseId: $settings.certificate.requiredExerciseId,
+          exerciseMinScorePercent: $settings.certificate.requiredExerciseId
+            ? $settings.certificate.exerciseMinScorePercent
+            : null
+        }
       };
 
       const normalizedSelectedTagIds = normalizeTagIds(selectedTagIds);
@@ -257,7 +312,18 @@
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
         progressionMode: course.metadata?.progressionMode ?? 'free',
         callout: normalizeCallout(course.callout),
-        welcomeEmailMessage: course.metadata?.welcomeEmailMessage ?? ''
+        welcomeEmailMessage: course.metadata?.welcomeEmailMessage ?? '',
+        certificate: {
+          deadline: course.certificate?.deadline ?? null,
+          threshold: typeof course.certificate?.threshold === 'number' ? course.certificate.threshold : 100,
+          requiredExerciseId: course.certificate?.requiredExerciseId ?? null,
+          exerciseMinScorePercent:
+            typeof course.certificate?.exerciseMinScorePercent === 'number'
+              ? course.certificate.exerciseMinScorePercent
+              : course.certificate?.requiredExerciseId
+                ? 100
+                : null
+        }
       });
     });
   }
@@ -347,17 +413,6 @@
     loadCourseTags(courseId);
   });
 
-  $effect(() => {
-    const sectionId = $page.url.hash.replace('#', '').trim();
-    if (!sectionId) {
-      return;
-    }
-
-    requestAnimationFrame(() => {
-      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  });
-
   const selectedTagChips = $derived.by(() => {
     const allTags = tagApi.tagGroups.flatMap((group) =>
       group.tags.map((tag) => ({
@@ -391,11 +446,78 @@
   });
 
   let courseLink = $derived(courseApi.course?.slug ? `${$currentOrgDomain}/course/${courseApi.course.slug}` : '#');
+
+  const certExercises = $derived(
+    getOrderedNavigableContent(courseApi.course).filter((item) => item.type === ContentType.Exercise)
+  );
+
+  const finalExerciseTitle = $derived(
+    certExercises.find((item) => item.id === $settings.certificate.requiredExerciseId)?.title
+  );
+
+  function isoToDatetimeLocal(iso: string | null | undefined): string {
+    if (!iso) return '';
+
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return '';
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
+
+  function onCompletionDeadlineChange(e: Event) {
+    const value = (e.currentTarget as HTMLInputElement).value;
+    $settings.certificate.deadline = value ? new Date(value).toISOString() : null;
+    hasUnsavedChanges = true;
+  }
+
+  function onThresholdInput(e: Event) {
+    const value = Number((e.currentTarget as HTMLInputElement).value);
+    $settings.certificate.threshold = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 100;
+    hasUnsavedChanges = true;
+  }
+
+  function onFinalExerciseChange(value: string) {
+    $settings.certificate.requiredExerciseId = value && value !== 'none' ? value : null;
+
+    if (!$settings.certificate.requiredExerciseId) {
+      $settings.certificate.exerciseMinScorePercent = null;
+    } else if (typeof $settings.certificate.exerciseMinScorePercent !== 'number') {
+      $settings.certificate.exerciseMinScorePercent = 100;
+    }
+
+    hasUnsavedChanges = true;
+  }
+
+  function onMinExerciseScoreInput(e: Event) {
+    const value = Number((e.currentTarget as HTMLInputElement).value);
+    $settings.certificate.exerciseMinScorePercent = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 100;
+    hasUnsavedChanges = true;
+  }
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
 
 <DeleteModal onDelete={handleDeleteCourse} bind:open={openDeleteModal} />
+
+<Dialog.Root bind:open={openCertificateDeadlineDialog}>
+  <Dialog.Content class="max-w-md">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.navItem.settings.certificate_deadline_required')}</Dialog.Title>
+      <Dialog.Description>
+        {$t('course.navItem.settings.certificate_deadline_required_description')}
+      </Dialog.Description>
+    </Dialog.Header>
+    <Dialog.Footer>
+      <Button variant="outline" onclick={() => (openCertificateDeadlineDialog = false)}>
+        {$t('cancel')}
+      </Button>
+      <Button onclick={goToCompletionDeadline}>
+        {$t('course.navItem.settings.go_to_completion_deadline')}
+      </Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>
 
 <Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
@@ -551,6 +673,96 @@
         <p class="ui:mt-1 ui:text-destructive/90">{courseApi.errors.type}</p>
       </div>
     {/if}
+
+    <Field.Group class="mt-3">
+      <AttentionHighlight id="course-completion-deadline" trigger={completionDeadlineTrigger}>
+        <Field.Field>
+          <Field.Label>
+            {$t('course.navItem.settings.completion_deadline_label')}
+          </Field.Label>
+          <Input
+            id="course-completion-deadline"
+            type="datetime-local"
+            class="w-full"
+            value={isoToDatetimeLocal($settings.certificate.deadline)}
+            onchange={onCompletionDeadlineChange}
+          />
+          <Field.Description>{$t('course.navItem.settings.completion_deadline_helper')}</Field.Description>
+          {#if courseApi.errors['certificate.deadline']}
+            <Field.Error>{courseApi.errors['certificate.deadline']}</Field.Error>
+          {/if}
+        </Field.Field>
+      </AttentionHighlight>
+
+      <Field.Field>
+        <Field.Label for="course-completion-threshold">
+          {$t('course.certification.threshold_label')}
+        </Field.Label>
+        <Input
+          id="course-completion-threshold"
+          type="number"
+          min={0}
+          max={100}
+          class="w-full"
+          value={String($settings.certificate.threshold)}
+          oninput={onThresholdInput}
+        />
+        <Field.Description>{$t('course.certification.threshold_helper')}</Field.Description>
+        {#if courseApi.errors['certificate.threshold']}
+          <Field.Error>{courseApi.errors['certificate.threshold']}</Field.Error>
+        {/if}
+      </Field.Field>
+
+      <Field.Field>
+        <Field.Label for="course-final-exercise">
+          {$t('course.certification.final_exercise_label')}
+        </Field.Label>
+        <Select.Root
+          type="single"
+          value={$settings.certificate.requiredExerciseId ?? 'none'}
+          onValueChange={onFinalExerciseChange}
+        >
+          <Select.Trigger class="w-full">
+            {finalExerciseTitle ?? $t('course.certification.final_exercise_none')}
+          </Select.Trigger>
+          <Select.Content>
+            <Select.Group>
+              <Select.Item value="none" label={$t('course.certification.final_exercise_none')}>
+                {$t('course.certification.final_exercise_none')}
+              </Select.Item>
+              {#each certExercises as item (item.id)}
+                <Select.Item value={item.id} label={item.title}>
+                  {item.title}
+                </Select.Item>
+              {/each}
+            </Select.Group>
+          </Select.Content>
+        </Select.Root>
+        <Field.Description>{$t('course.certification.final_exercise_helper')}</Field.Description>
+        <Field.Description>{$t('course.certification.final_exercise_multiple_attempts_note')}</Field.Description>
+      </Field.Field>
+
+      {#if $settings.certificate.requiredExerciseId}
+        <Field.Field>
+          <Field.Label for="course-min-exercise-score">
+            {$t('course.certification.min_exercise_score_label')}
+          </Field.Label>
+          <Input
+            id="course-min-exercise-score"
+            type="number"
+            min={0}
+            max={100}
+            class="w-full"
+            value={String($settings.certificate.exerciseMinScorePercent ?? 100)}
+            oninput={onMinExerciseScoreInput}
+          />
+          <Field.Description>{$t('course.certification.min_exercise_score_helper')}</Field.Description>
+          {#if courseApi.errors['certificate.exerciseMinScorePercent']}
+            <Field.Error>{courseApi.errors['certificate.exerciseMinScorePercent']}</Field.Error>
+          {/if}
+        </Field.Field>
+      {/if}
+    </Field.Group>
   </Field.Set>
 
   <Field.Separator />
@@ -848,20 +1060,14 @@
   <Field.Set id="publish">
     <Field.Legend>{$t('course.navItem.settings.publish')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.determines')}</Field.Description>
-    <Field.Field orientation="horizontal">
-      <Switch
-        id="is-published"
-        checked={$settings.isPublished}
-        onCheckedChange={(checked) => {
-          $settings.isPublished = checked;
-          if (checked) $settings.allowNewStudents = true;
-          hasUnsavedChanges = true;
-        }}
-      />
-      <Label for="publish">
-        {$settings.isPublished ? $t('course.navItem.settings.published') : $t('course.navItem.settings.unpublished')}
-      </Label>
-    </Field.Field>
+    <AttentionHighlight id="publish">
+      <Field.Field orientation="horizontal">
+        <Switch id="is-published" checked={$settings.isPublished} onCheckedChange={onPublishToggle} />
+        <Label for="publish">
+          {$settings.isPublished ? $t('course.navItem.settings.published') : $t('course.navItem.settings.unpublished')}
+        </Label>
+      </Field.Field>
+    </AttentionHighlight>
 
     {#if showLockedContentNotice}
       <Alert.Root variant={isLiveClassCourse ? 'information' : 'warning'}>

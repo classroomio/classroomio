@@ -34,6 +34,7 @@
     }
 
     const embed = {
+      enabled: true,
       title: t.get('settings.landing_page.editor.embed.title'),
       description: '',
       code: '',
@@ -50,16 +51,7 @@
   }
 
   function setEmbedEnabled(enabled: boolean) {
-    if (!enabled) {
-      settings = {
-        ...settings,
-        embed: undefined
-      };
-      markDirty();
-      return;
-    }
-
-    setter(ensureEmbed(), 'embed');
+    setter({ ...ensureEmbed(), enabled }, 'embed');
   }
 
   function updateSecondaryAction(label: string, href: string) {
@@ -83,63 +75,68 @@
 
     <div class="space-y-6">
       <Field.Field orientation="horizontal">
-        <Switch checked={Boolean(settings.embed)} onCheckedChange={(checked) => setEmbedEnabled(checked === true)} />
+        <Switch
+          checked={settings.embed?.enabled ?? false}
+          onCheckedChange={(checked) => setEmbedEnabled(checked === true)}
+        />
         <Field.Label>{$t('settings.landing_page.editor.embed.toggle')}</Field.Label>
       </Field.Field>
 
-      {#if settings.embed}
-        <Field.Field>
-          <div class="flex items-center justify-between">
-            <Field.Label>{$t('settings.landing_page.editor.embed.title')}</Field.Label>
-            <AIGenerateButton
-              context="the embed section title on an organization's course platform landing page"
-              onInsert={(text) => setter(text, 'embed.title')}
+      {#if settings.embed?.enabled}
+        <div class="pb-5">
+          <Field.Field>
+            <div class="flex items-center justify-between">
+              <Field.Label>{$t('settings.landing_page.editor.embed.title')}</Field.Label>
+              <AIGenerateButton
+                context="the embed section title on an organization's course platform landing page"
+                onInsert={(text) => setter(text, 'embed.title')}
+              />
+            </div>
+            <Input
+              value={settings.embed.title}
+              placeholder={$t('settings.landing_page.editor.embed.title_placeholder')}
+              oninput={(event) => setter(event.currentTarget.value, 'embed.title')}
             />
-          </div>
-          <Input
-            value={settings.embed.title}
-            placeholder={$t('settings.landing_page.editor.embed.title_placeholder')}
-            oninput={(event) => setter(event.currentTarget.value, 'embed.title')}
-          />
-        </Field.Field>
+          </Field.Field>
 
-        <Field.Field class="min-w-0">
-          <div class="flex items-center justify-between">
-            <Field.Label>{$t('settings.landing_page.editor.embed.description')}</Field.Label>
-            <AIGenerateButton
-              context="the embed section description on an organization's course platform landing page"
-              onInsert={(text) => setter(text, 'embed.description')}
+          <Field.Field class="min-w-0">
+            <div class="flex items-center justify-between">
+              <Field.Label>{$t('settings.landing_page.editor.embed.description')}</Field.Label>
+              <AIGenerateButton
+                context="the embed section description on an organization's course platform landing page"
+                onInsert={(text) => setter(text, 'embed.description')}
+              />
+            </div>
+            <Textarea
+              class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y ui:break-all ui:overflow-x-auto"
+              value={settings.embed.description ?? ''}
+              placeholder={$t('settings.landing_page.editor.embed.description_placeholder')}
+              oninput={(event) => setter(event.currentTarget.value, 'embed.description')}
             />
-          </div>
-          <Textarea
-            class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y ui:break-all ui:overflow-x-auto"
-            value={settings.embed.description ?? ''}
-            placeholder={$t('settings.landing_page.editor.embed.description_placeholder')}
-            oninput={(event) => setter(event.currentTarget.value, 'embed.description')}
-          />
-        </Field.Field>
+          </Field.Field>
 
-        <Field.Field class="min-w-0">
-          <Field.Label>{$t('settings.landing_page.editor.embed.code')}</Field.Label>
-          <Field.Description>{$t('settings.landing_page.editor.embed.code_description')}</Field.Description>
-          <Textarea
-            class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y ui:break-all ui:overflow-x-auto"
-            value={settings.embed.code}
-            placeholder={$t('settings.landing_page.editor.embed.code_placeholder')}
-            oninput={(event) => setter(event.currentTarget.value, 'embed.code')}
-          />
-        </Field.Field>
+          <Field.Field class="min-w-0">
+            <Field.Label>{$t('settings.landing_page.editor.embed.code')}</Field.Label>
+            <Field.Description>{$t('settings.landing_page.editor.embed.code_description')}</Field.Description>
+            <Textarea
+              class="ui:[field-sizing:fixed] ui:min-w-0 ui:w-full ui:max-w-full ui:box-border ui:resize-y ui:break-all ui:overflow-x-auto"
+              value={settings.embed.code}
+              placeholder={$t('settings.landing_page.editor.embed.code_placeholder')}
+              oninput={(event) => setter(event.currentTarget.value, 'embed.code')}
+            />
+          </Field.Field>
 
-        <ButtonLinkFields
-          label={settings.embed.secondaryAction?.label ?? ''}
-          href={settings.embed.secondaryAction?.href ?? ''}
-          labelFieldLabel={$t('settings.landing_page.editor.embed.secondary_label')}
-          hrefFieldLabel={$t('settings.landing_page.editor.embed.secondary_href')}
-          labelPlaceholder={$t('settings.landing_page.editor.embed.secondary_label')}
-          hrefPlaceholder={$t('settings.landing_page.editor.embed.secondary_href')}
-          onLabelInput={(value) => updateSecondaryAction(value, settings.embed.secondaryAction?.href ?? '')}
-          onHrefInput={(value) => updateSecondaryAction(settings.embed.secondaryAction?.label ?? '', value)}
-        />
+          <ButtonLinkFields
+            label={settings.embed.secondaryAction?.label ?? ''}
+            href={settings.embed.secondaryAction?.href ?? ''}
+            labelFieldLabel={$t('settings.landing_page.editor.embed.secondary_label')}
+            hrefFieldLabel={$t('settings.landing_page.editor.embed.secondary_href')}
+            labelPlaceholder={$t('settings.landing_page.editor.embed.secondary_label')}
+            hrefPlaceholder={$t('settings.landing_page.editor.embed.secondary_href')}
+            onLabelInput={(value) => updateSecondaryAction(value, settings.embed.secondaryAction?.href ?? '')}
+            onHrefInput={(value) => updateSecondaryAction(settings.embed.secondaryAction?.label ?? '', value)}
+          />
+        </div>
       {/if}
     </div>
   </Field.Set>

@@ -795,7 +795,7 @@
         "lesson_download": "Lektionen herunterladen",
         "available": "Stellen Sie die Lektion für registrierte Studierende zum Download im PDF-Format zur Verfügung",
         "course_download": "Kurs-Download",
-        "course_avail": "Stellen Sie den Kurs für registrierte Studierende zum Download bereit",
+        "course_avail": "Laden Sie eine Kopie dieses Kurses herunter.",
         "download": "Herunterladen",
         "allow": "Erlauben Sie neue Studenten",
         "access": "Ermöglichen Sie neuen Studierenden den Zugang zu diesem Kurs",
@@ -858,7 +858,12 @@
           "description": "Eingeschriebene Schüler können erst dann an gesperrten Lektionen oder Übungen teilnehmen, wenn Sie sie entsperren.",
           "description_live": "Gesperrte Lektionen und Übungen bleiben den Schülern verborgen, bis Sie sie entsperren – nützlich, wenn Sie Inhalte Woche für Woche veröffentlichen.",
           "unlock_all": "Schalte alle frei"
-        }
+        },
+        "certificate_deadline_required": "Legen Sie zuerst die Frist für das Zertifikat fest",
+        "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
+        "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
+        "completion_deadline_label": "Frist für den Abschluss des Kurses",
+        "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen."
       },
       "analytics": {
         "title": "Analysen"
@@ -2007,6 +2012,8 @@
               "cancel_upload": "Hochladen abbrechen",
               "upload_cancelled": "Der Upload wurde vom Benutzer abgebrochen",
               "downloading": "Herunterladen...",
+              "download_success": "Dokument erfolgreich heruntergeladen",
+              "download_error": "Dokument konnte nicht heruntergeladen werden",
               "view_pdf": "PDF ansehen",
               "remove_document": "Dokument entfernen",
               "delete": "Löschen",
@@ -2016,7 +2023,11 @@
               "failed_to_render_pdf": "PDF-Seite konnte nicht gerendert werden",
               "use_arrow_keys": "Verwenden Sie die Pfeiltasten zum Navigieren, +/- zum Zoomen oder klicken Sie auf die Steuerelemente oben. Der Rechtsklick ist deaktiviert.",
               "empty_title": "Noch keine Dokumente",
-              "empty_description": "Laden Sie Dokumente hoch, um sie mit Ihren Schülern zu teilen"
+              "empty_description": "Laden Sie Dokumente hoch, um sie mit Ihren Schülern zu teilen",
+              "attachments_heading": "Anhänge",
+              "file_count": "{count, plural, one {# Datei} other {# Dateien}}",
+              "view_file": "Datei anzeigen",
+              "reorder_file": "Datei neu anordnen"
             },
             "video": {
               "title": "Video",
@@ -2469,7 +2480,10 @@
       "blocker_final_misconfigured": "Für die Zertifizierungsübung „{exerciseTitle}“ sind keine Punkte konfiguriert; Bitten Sie Ihren Lehrer, das Problem zu beheben.",
       "email_message_label": "E-Mail-Nachricht",
       "email_message_placeholder": "z.B. Wir sind stolz auf Ihre Fortschritte – lernen Sie weiter!",
-      "final_exercise_multiple_attempts_note": "Den Schülern sind unbegrenzte Versuche für die ausgewählte Übung gestattet."
+      "final_exercise_multiple_attempts_note": "Den Schülern sind unbegrenzte Versuche für die ausgewählte Übung gestattet.",
+      "deadline_required": "Für Compliance-Kurse ist eine Abschlussfrist erforderlich, bevor sie veröffentlicht werden können.",
+      "deadline_required_enroll": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können.",
+      "deadline_invalid": "Die Abschlussfrist des Kurses ist ungültig."
     },
     "creator": {
       "heading": "Welchen Kurs möchten Sie erstellen?",
@@ -2607,6 +2621,7 @@
       "most_lessons": "Lektionen: Meiste zuerst",
       "fewest_lessons": "Lektionen: Wenigste zuerst",
       "date_created": "Erstellungsdatum",
+      "last_updated_at": "Zuletzt aktualisiert",
       "published": "Veröffentlicht",
       "lessons": "Lektionen"
     },
@@ -3803,7 +3818,8 @@
       "title": "Anmeldung deaktiviert",
       "invite_only_message": "Die Anmeldung ist nur auf Einladung möglich. Bitte verwenden Sie einen Einladungslink, um ein Konto zu erstellen.",
       "go_to_login": "Gehen Sie zu Anmelden"
-    }
+    },
+    "continue_with": "Oder fahren Sie mit fort"
   },
   "app": {
     "search": {
@@ -3843,8 +3859,6 @@
     "deeply_appreciate": "Wir wissen das sehr zu schätzen und stehen Ihnen gerne zur Verfügung."
   },
   "onboarding": {
-    "sell": "Kurse online verkaufen",
-    "teach": "Unterrichte meine derzeitigen Schüler online",
     "expanding": "Auf einer anderen Plattform, hier erweitert",
     "employees": "Bilden Sie meine Mitarbeiter aus",
     "customers": "Erstellen Sie Kurse für meine Kunden",
@@ -4844,7 +4858,8 @@
       "no_matching_cohort_courses": "Zu Ihrer Suche passen keine Kohortenkurse.",
       "pagination_status": "Seite {page} von {totalPages}",
       "published_access_callout_title": "Zugang für Studierende",
-      "published_access_callout_description": "Studierende haben nur Zugriff auf veröffentlichte Kurse. Kurse können für Ihr Team in dieser Kohorte enthalten sein, solange sie noch unveröffentlicht sind, und bleiben den Studierenden verborgen, bis Sie sie veröffentlichen."
+      "published_access_callout_description": "Studierende haben nur Zugriff auf veröffentlichte Kurse. Kurse können für Ihr Team in dieser Kohorte enthalten sein, solange sie noch unveröffentlicht sind. Sie bleiben den Studierenden jedoch verborgen, bis Sie sie veröffentlichen.",
+      "empty_student_description": "In dieser Kohorte gibt es noch keine veröffentlichten Kurse."
     },
     "newsfeed": {
       "post": "Neuer Beitrag",
