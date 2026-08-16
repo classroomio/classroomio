@@ -1,0 +1,1242 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add content — created-success prototype</title>
+    <style>
+      :root {
+        --background: oklch(1 0 0);
+        --foreground: oklch(0.145 0 0);
+        --muted: oklch(0.97 0 0);
+        --muted-foreground: oklch(0.556 0 0);
+        --primary: oklch(0.488 0.243 264.376);
+        --primary-foreground: oklch(0.97 0.014 254.604);
+        --secondary: oklch(0.967 0.001 286.375);
+        --secondary-foreground: oklch(0.21 0.006 285.885);
+        --border: oklch(0.922 0 0);
+        --input: oklch(0.922 0 0);
+        --ring: oklch(0.708 0 0);
+        --destructive: oklch(0.577 0.245 27.325);
+        --success: oklch(0.55 0.17 145);
+        --overlay: rgb(0 0 0 / 0.45);
+        --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        font-family: var(--font);
+        color: var(--foreground);
+        background: oklch(0.97 0.005 80);
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      /* ---- Prototype chrome ---- */
+      .proto-bar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px 20px;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding: 12px 20px;
+        background: var(--background);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .proto-bar h1 {
+        margin: 0 0 2px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .proto-bar p {
+        margin: 0;
+        font-size: 12px;
+        color: var(--muted-foreground);
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: end;
+      }
+
+      .control label {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: var(--muted-foreground);
+      }
+
+      .seg {
+        display: flex;
+        padding: 2px;
+        background: var(--muted);
+        border-radius: 8px;
+      }
+
+      .seg button {
+        border: 0;
+        background: transparent;
+        color: var(--foreground);
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      .seg button[aria-pressed='true'] {
+        background: var(--background);
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+        font-weight: 600;
+      }
+
+      select.scenario {
+        height: 32px;
+        min-width: 240px;
+        padding: 0 10px;
+        border: 1px solid var(--input);
+        border-radius: 6px;
+        background: var(--background);
+      }
+
+      /* ---- Fake course page ---- */
+      .page {
+        max-width: 720px;
+        margin: 32px auto 80px;
+        padding: 0 20px;
+      }
+
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+
+      .page-header h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 650;
+      }
+
+      .page-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .section {
+        margin-bottom: 22px;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+
+      .section-head h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 650;
+      }
+
+      .section-meta {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        color: var(--muted-foreground);
+        font-size: 12px;
+      }
+
+      .icon-btn {
+        width: 28px;
+        height: 28px;
+        border: 0;
+        background: transparent;
+        border-radius: 6px;
+        cursor: pointer;
+        color: var(--foreground);
+      }
+
+      .icon-btn:hover {
+        background: var(--muted);
+      }
+
+      .item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        margin-bottom: 8px;
+        background: var(--background);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: 14px;
+      }
+
+      .item.new {
+        outline: 2px solid color-mix(in oklch, var(--success) 50%, transparent);
+      }
+
+      .chip {
+        font-size: 10px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: var(--muted);
+        color: var(--secondary-foreground);
+      }
+
+      .flash {
+        display: none;
+        margin: 0 20px 12px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        background: color-mix(in oklch, var(--primary) 10%, white);
+        color: var(--primary);
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .flash.show {
+        display: block;
+      }
+
+      /* ---- Overlay + dialog ---- */
+      .backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        background: var(--overlay);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .backdrop.open {
+        display: flex;
+      }
+
+      .dialog {
+        width: min(576px, 100%);
+        max-height: min(680px, calc(100vh - 48px));
+        display: flex;
+        flex-direction: column;
+        background: var(--background);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        padding: 24px;
+        overflow: hidden;
+      }
+
+      .dialog-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+
+      .dialog-title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      .close {
+        width: 28px;
+        height: 28px;
+        margin: -4px -4px 0 0;
+        border: 0;
+        background: transparent;
+        border-radius: 4px;
+        cursor: pointer;
+        opacity: 0.7;
+        color: var(--foreground);
+      }
+
+      .close:hover {
+        opacity: 1;
+      }
+
+      .dialog-body {
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+      }
+
+      .desc {
+        margin: 0 0 12px;
+        font-size: 14px;
+        color: var(--muted-foreground);
+      }
+
+      /* Radio cards */
+      .cards {
+        display: grid;
+        gap: 12px;
+      }
+
+      .cards.cols-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .cards.cols-3 {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      .card {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: left;
+        background: var(--background);
+        transition: border-color 0.15s, background 0.15s;
+      }
+
+      .card:hover {
+        background: color-mix(in oklch, var(--primary) 5%, white);
+      }
+
+      .card[aria-checked='true'] {
+        border-color: var(--primary);
+        background: color-mix(in oklch, var(--primary) 5%, white);
+      }
+
+      .card.disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .card-copy {
+        flex: 1;
+      }
+
+      .card-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .card-desc {
+        font-size: 13px;
+        color: var(--muted-foreground);
+        line-height: 1.4;
+      }
+
+      .radio {
+        width: 16px;
+        height: 16px;
+        margin-top: 2px;
+        border: 1px solid var(--input);
+        border-radius: 99px;
+        flex-shrink: 0;
+        display: grid;
+        place-items: center;
+      }
+
+      .card[aria-checked='true'] .radio {
+        border-color: var(--primary);
+      }
+
+      .card[aria-checked='true'] .radio::after {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-radius: 99px;
+        background: var(--primary);
+      }
+
+      .soon {
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 999px;
+        background: var(--secondary);
+        color: var(--muted-foreground);
+      }
+
+      /* Fields */
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+
+      .field label {
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .req {
+        color: #b91c1c;
+      }
+
+      .field input {
+        height: 36px;
+        padding: 0 12px;
+        border: 1px solid var(--input);
+        border-radius: 6px;
+        background: var(--background);
+        font-size: 14px;
+        outline: none;
+      }
+
+      .field input:focus {
+        border-color: var(--ring);
+        box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 50%, transparent);
+      }
+
+      .adding-to {
+        font-size: 14px;
+        color: var(--muted-foreground);
+        margin: 0 0 16px;
+      }
+
+      .select-like {
+        height: 40px;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        border: 1px solid var(--input);
+        border-radius: 6px;
+        font-size: 14px;
+        color: var(--foreground);
+      }
+
+      /* Success panel */
+      .status {
+        border: 1px solid var(--border);
+        background: oklch(0.985 0 0);
+        border-radius: 8px;
+        padding: 20px 16px;
+      }
+
+      .status-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .type-icon {
+        position: relative;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: color-mix(in oklch, var(--primary) 12%, white);
+        color: var(--primary);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+      }
+
+      .type-icon .badge {
+        position: absolute;
+        right: -4px;
+        bottom: -4px;
+        width: 16px;
+        height: 16px;
+        border-radius: 99px;
+        background: var(--success);
+        color: white;
+        display: grid;
+        place-items: center;
+        border: 2px solid var(--background);
+      }
+
+      .created-title {
+        font-size: 15px;
+        font-weight: 650;
+        margin: 0;
+      }
+
+      .ok {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: var(--success);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .ok svg {
+        flex-shrink: 0;
+      }
+
+      /* Footer */
+      .footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 24px;
+      }
+
+      .footer.split {
+        justify-content: space-between;
+      }
+
+      .footer-right {
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn {
+        height: 36px;
+        padding: 0 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border: 1px solid transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: var(--primary-foreground);
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        filter: brightness(1.05);
+      }
+
+      .btn-outline {
+        background: var(--background);
+        border-color: var(--input);
+        color: var(--foreground);
+      }
+
+      .btn-outline:hover:not(:disabled) {
+        background: var(--muted);
+      }
+
+      .btn-ghost-primary {
+        background: var(--background);
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .btn-secondary {
+        background: var(--secondary);
+        color: var(--secondary-foreground);
+      }
+
+      .spin {
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgb(255 255 255 / 0.35);
+        border-top-color: white;
+        border-radius: 99px;
+        animation: spin 0.7s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .tags {
+        display: flex;
+        gap: 8px;
+        margin: 8px 0 12px;
+      }
+
+      .tag {
+        border: 0;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        cursor: pointer;
+        background: var(--secondary);
+        color: var(--secondary-foreground);
+      }
+
+      .tag[aria-pressed='true'] {
+        background: var(--foreground);
+        color: var(--background);
+      }
+
+      .templates {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      @media (max-width: 640px) {
+        .cards.cols-2,
+        .cards.cols-3,
+        .templates {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="proto-bar">
+      <div>
+        <h1>Add content — created-success prototype</h1>
+        <p>ClassroomIO course outline modal. Not production UI.</p>
+      </div>
+      <div class="controls">
+        <div class="control">
+          <label for="mode">Behavior</label>
+          <div class="seg" role="group" aria-label="Behavior">
+            <button type="button" id="mode-proposed" aria-pressed="true">Proposed</button>
+            <button type="button" id="mode-current" aria-pressed="false">Current</button>
+          </div>
+        </div>
+        <div class="control">
+          <label for="scenario">Entry point</label>
+          <select id="scenario" class="scenario">
+            <option value="page-header">Page “Add content” (grouping on) → section form</option>
+            <option value="section-plus">Section “+” → lesson or exercise</option>
+            <option value="full-picker">Ungrouped / default → type picker</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <div id="flash" class="flash" role="status"></div>
+
+    <main class="page">
+      <div class="page-header">
+        <h2>Content</h2>
+        <div class="page-actions">
+          <button class="btn btn-outline" type="button" disabled>Reorder</button>
+          <button class="btn btn-primary" type="button" id="page-add">Add content</button>
+        </div>
+      </div>
+      <div id="outline"></div>
+    </main>
+
+    <div class="backdrop" id="backdrop" aria-hidden="true">
+      <div
+        class="dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dialog-title"
+        onclick="event.stopPropagation()"
+      >
+        <div class="dialog-header">
+          <h2 class="dialog-title" id="dialog-title">Add content</h2>
+          <button class="close" type="button" id="btn-x" aria-label="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="dialog-body" id="dialog-body"></div>
+        <div class="footer" id="dialog-footer"></div>
+      </div>
+    </div>
+
+    <script>
+      const TYPES = {
+        section: {
+          title: 'Section',
+          description: 'Group lessons and exercises together.',
+          success: 'Section has been created successfully!',
+          create: 'Create section',
+          another: 'Create another section',
+          placeholder: 'e.g., Module 1: Introduction',
+          field: 'Section Title'
+        },
+        lesson: {
+          title: 'Lesson',
+          description: 'Teach with notes, slides, and videos.',
+          success: 'Lesson has been created successfully!',
+          create: 'Create lesson',
+          another: 'Create another lesson',
+          placeholder: 'e.g., Getting Started with Variables',
+          field: 'Lesson title'
+        },
+        exercise: {
+          title: 'Exercise',
+          description: 'Assess students with quizzes and tasks.',
+          success: 'Exercise has been created successfully!',
+          create: 'Finish',
+          another: 'Create another exercise',
+          placeholder: 'Exercise name',
+          field: 'Give your exercise a title'
+        }
+      };
+
+      const TEMPLATES = [
+        { id: 'quiz', title: 'Multiple choice quiz', description: '10 scored questions' },
+        { id: 'exit', title: 'Exit ticket', description: '3 short prompts' },
+        { id: 'rubric', title: 'Project rubric', description: 'Graded checklist' },
+        { id: 'survey', title: 'Pulse survey', description: 'Ungraded feedback' }
+      ];
+
+      const state = {
+        mode: 'proposed',
+        scenario: 'page-header',
+        open: false,
+        screen: 'section-form',
+        selectedType: 'section',
+        sectionId: null,
+        sectionLocked: false,
+        skipType: true,
+        title: '',
+        exerciseMethod: 'scratch',
+        templateId: '',
+        templateTag: 'Quiz',
+        created: null,
+        loading: false,
+        nav: null
+      };
+
+      let outline = [
+        {
+          id: 'intro',
+          title: 'Introduction and Setup',
+          items: [{ id: 'l1', type: 'lesson', title: 'Course Materials', chip: 'Note' }]
+        },
+        {
+          id: 'config',
+          title: 'Project Configuration',
+          items: [{ id: 'e1', type: 'exercise', title: 'Section 2 Quiz', chip: 'Quiz' }]
+        }
+      ];
+
+      const $ = (id) => document.getElementById(id);
+
+      function icon(type) {
+        if (type === 'section') {
+          return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>`;
+        }
+        if (type === 'exercise') {
+          return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`;
+        }
+        return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`;
+      }
+
+      function checkIcon() {
+        return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>`;
+      }
+
+      function plusIcon() {
+        return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>`;
+      }
+
+      function sectionTitle(id) {
+        return outline.find((s) => s.id === id)?.title ?? 'section';
+      }
+
+      function visibleTypes() {
+        if (state.sectionLocked || state.scenario === 'section-plus') return ['lesson', 'exercise'];
+        if (state.scenario === 'full-picker') return ['lesson', 'exercise'];
+        return ['section', 'lesson', 'exercise'];
+      }
+
+      function resetFormFields() {
+        state.title = '';
+        state.exerciseMethod = 'scratch';
+        state.templateId = '';
+        state.loading = false;
+      }
+
+      function openFromScenario(scenario, sectionId) {
+        state.scenario = scenario;
+        state.created = null;
+        state.nav = null;
+        resetFormFields();
+        $('flash').classList.remove('show');
+
+        if (scenario === 'page-header') {
+          state.skipType = true;
+          state.selectedType = 'section';
+          state.sectionId = null;
+          state.sectionLocked = false;
+          state.screen = 'section-form';
+        } else if (scenario === 'section-plus') {
+          state.skipType = false;
+          state.selectedType = 'lesson';
+          state.sectionId = sectionId || 'intro';
+          state.sectionLocked = true;
+          state.screen = 'type';
+        } else {
+          state.skipType = false;
+          state.selectedType = 'lesson';
+          state.sectionId = outline[0]?.id ?? null;
+          state.sectionLocked = false;
+          state.screen = 'type';
+        }
+
+        state.open = true;
+        render();
+      }
+
+      function closeModal(message) {
+        state.open = false;
+        state.created = null;
+        if (message) showFlash(message);
+        render();
+      }
+
+      function showFlash(message) {
+        const el = $('flash');
+        el.textContent = message;
+        el.classList.add('show');
+      }
+
+      function addCreatedToOutline(created) {
+        const row = {
+          id: created.id,
+          type: created.type,
+          title: created.title,
+          chip: created.type === 'exercise' ? 'Quiz' : 'Note',
+          new: true
+        };
+        outline.forEach((s) => s.items.forEach((i) => (i.new = false)));
+        if (created.type === 'section') {
+          outline.push({ id: created.id, title: created.title, items: [], new: true });
+          return;
+        }
+        const target = outline.find((s) => s.id === created.sectionId) ?? outline[0];
+        if (target) target.items.push(row);
+      }
+
+      function nextId(prefix) {
+        return prefix + '-' + Math.random().toString(36).slice(2, 7);
+      }
+
+      function finishCreate() {
+        const type = state.selectedType;
+        const title =
+          type === 'exercise' && state.exerciseMethod === 'template'
+            ? TEMPLATES.find((t) => t.id === state.templateId)?.title ?? 'Untitled'
+            : state.title.trim();
+
+        const created = {
+          id: nextId(type[0]),
+          type,
+          title,
+          sectionId: type === 'section' ? null : state.sectionId
+        };
+
+        addCreatedToOutline(created);
+
+        if (state.mode === 'current') {
+          if (type === 'section') {
+            closeModal('Current behavior: section created. Modal closed. No confirmation, no next step.');
+            return;
+          }
+          state.open = false;
+          state.nav = type;
+          showFlash(
+            'Current behavior: ' +
+              type +
+              ' created and the teacher was taken to the ' +
+              type +
+              ' editor (' +
+              title +
+              ').'
+          );
+          render();
+          return;
+        }
+
+        state.created = created;
+        state.screen = 'success';
+        state.loading = false;
+        render();
+        const primary = document.querySelector('[data-primary]');
+        primary?.focus();
+      }
+
+      async function submitCreate() {
+        if (state.loading) return;
+        if (state.selectedType !== 'exercise' || state.exerciseMethod === 'scratch') {
+          if (!state.title.trim()) return;
+        } else if (!state.templateId) {
+          return;
+        }
+        state.loading = true;
+        render();
+        await new Promise((r) => setTimeout(r, 450));
+        finishCreate();
+      }
+
+      function createAnother() {
+        const type = state.created.type;
+        resetFormFields();
+        state.created = null;
+        state.selectedType = type;
+        if (type === 'section') state.screen = 'section-form';
+        else if (type === 'lesson') state.screen = 'lesson-form';
+        else state.screen = 'exercise-method';
+        render();
+        requestAnimationFrame(() => document.querySelector('input')?.focus());
+      }
+
+      function addContentToSection() {
+        const sectionId = state.created.id;
+        const title = state.created.title;
+        if (!outline.find((s) => s.id === sectionId)) {
+          outline.push({ id: sectionId, title, items: [] });
+        }
+        resetFormFields();
+        state.created = null;
+        state.scenario = 'section-plus';
+        state.sectionId = sectionId;
+        state.sectionLocked = true;
+        state.skipType = false;
+        state.selectedType = 'lesson';
+        state.screen = 'type';
+        render();
+      }
+
+      function openNow() {
+        const created = state.created;
+        state.open = false;
+        state.nav = created.type;
+        showFlash('Would open the ' + created.type + ' editor: “' + created.title + '”. Outline stays updated.');
+        state.created = null;
+        render();
+      }
+
+      function later() {
+        closeModal('Stayed on the content outline. “' + state.created.title + '” is in the list.');
+      }
+
+      function goDetails() {
+        if (state.selectedType === 'section') state.screen = 'section-form';
+        else if (state.selectedType === 'lesson') state.screen = 'lesson-form';
+        else state.screen = 'exercise-method';
+        render();
+      }
+
+      function goBack() {
+        if (state.screen === 'exercise-title' || state.screen === 'exercise-template') {
+          state.screen = 'exercise-method';
+        } else {
+          // Production still shows type selection when Back is pressed,
+          // even if the modal opened directly on the section form.
+          state.skipType = false;
+          state.screen = 'type';
+          if (!state.selectedType) state.selectedType = 'lesson';
+        }
+        render();
+      }
+
+      function card(type, selected) {
+        const t = TYPES[type];
+        return `<button type="button" class="card" role="radio" aria-checked="${selected}" data-type="${type}">
+          <span class="card-copy">
+            <span class="card-title">${t.title}</span>
+            <span class="card-desc">${t.description}</span>
+          </span>
+          <span class="radio" aria-hidden="true"></span>
+        </button>`;
+      }
+
+      function sectionContext() {
+        if (!state.sectionLocked && state.selectedType === 'section') return '';
+        if (state.sectionLocked) {
+          return `<div class="field">
+            <label>Section</label>
+            <p class="adding-to">Adding to <strong>${sectionTitle(state.sectionId)}</strong></p>
+          </div>`;
+        }
+        if (state.selectedType !== 'section' && state.scenario === 'full-picker') {
+          return `<div class="field">
+            <label>Section</label>
+            <div class="select-like">${sectionTitle(state.sectionId)}</div>
+          </div>`;
+        }
+        return '';
+      }
+
+      function titleField(type) {
+        const t = TYPES[type];
+        return `${sectionContext()}
+          <div class="field">
+            <label>${t.field} <span class="req">*</span></label>
+            <input id="title-input" value="${escapeHtml(state.title)}" placeholder="${t.placeholder}" />
+          </div>`;
+      }
+
+      function escapeHtml(s) {
+        return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
+      }
+
+      function renderOutline() {
+        $('outline').innerHTML = outline
+          .map(
+            (section) => `<section class="section">
+            <div class="section-head">
+              <h3>${escapeHtml(section.title)}</h3>
+              <div class="section-meta">
+                <button class="icon-btn" data-plus="${section.id}" aria-label="Add content to ${escapeHtml(section.title)}">${plusIcon()}</button>
+                <span>⋯</span>
+              </div>
+            </div>
+            ${section.items
+              .map(
+                (item) => `<div class="item ${item.new ? 'new' : ''}">
+                ${icon(item.type)}
+                <span>${escapeHtml(item.title)}</span>
+                <span class="chip">${item.chip}</span>
+              </div>`
+              )
+              .join('')}
+          </section>`
+          )
+          .join('');
+      }
+
+      function renderDialog() {
+        const body = $('dialog-body');
+        const footer = $('dialog-footer');
+        const types = visibleTypes();
+        const cols = types.length === 3 ? 'cols-3' : 'cols-2';
+
+        if (state.screen === 'type') {
+          body.innerHTML = `<p class="desc">Select the type of content you want to add.</p>
+            <div class="cards ${cols}" role="radiogroup">
+              ${types.map((t) => card(t, state.selectedType === t)).join('')}
+            </div>`;
+          footer.className = 'footer';
+          footer.innerHTML = `<button class="btn btn-primary" type="button" data-action="continue">Continue</button>`;
+          return;
+        }
+
+        if (state.screen === 'section-form' || state.screen === 'lesson-form') {
+          const type = state.screen === 'section-form' ? 'section' : 'lesson';
+          body.innerHTML = titleField(type);
+          footer.className = 'footer split';
+          footer.innerHTML = `<button class="btn btn-outline" type="button" data-action="back">Back</button>
+            <button class="btn btn-primary" type="button" data-action="create" ${state.title.trim() ? '' : 'disabled'}>
+              ${state.loading ? '<span class="spin"></span>' : ''} ${TYPES[type].create}
+            </button>`;
+          bindTitle();
+          return;
+        }
+
+        if (state.screen === 'exercise-method') {
+          body.innerHTML = `${sectionContext()}
+            <label class="field" style="margin-bottom:12px"><span>How do you want to create your exercise?</span></label>
+            <div class="cards" role="radiogroup">
+              <button type="button" class="card" role="radio" aria-checked="${state.exerciseMethod === 'scratch'}" data-method="scratch">
+                <span class="card-copy"><span class="card-title">From Scratch</span><span class="card-desc">Create your exercise from scratch if you have your questions already prepared</span></span>
+                <span class="radio"></span>
+              </button>
+              <button type="button" class="card" role="radio" aria-checked="${state.exerciseMethod === 'template'}" data-method="template">
+                <span class="card-copy"><span class="card-title">Use a Template</span><span class="card-desc">Select from 100+ templates of predefined exercise to help you get started</span></span>
+                <span class="radio"></span>
+              </button>
+              <button type="button" class="card disabled" role="radio" aria-checked="false" disabled>
+                <span class="card-copy"><span class="card-title">Use AI <span class="soon">Coming soon</span></span><span class="card-desc">You can generate an exercise with AI from your notes</span></span>
+                <span class="radio"></span>
+              </button>
+            </div>`;
+          footer.className = 'footer split';
+          footer.innerHTML = `<button class="btn btn-outline" type="button" data-action="back">Back</button>
+            <button class="btn btn-primary" type="button" data-action="ex-next">Next</button>`;
+          return;
+        }
+
+        if (state.screen === 'exercise-title') {
+          body.innerHTML = titleField('exercise');
+          footer.className = 'footer split';
+          footer.innerHTML = `<button class="btn btn-outline" type="button" data-action="back">Back</button>
+            <button class="btn btn-primary" type="button" data-action="create" ${state.title.trim() ? '' : 'disabled'}>
+              ${state.loading ? '<span class="spin"></span>' : ''} Finish
+            </button>`;
+          bindTitle();
+          return;
+        }
+
+        if (state.screen === 'exercise-template') {
+          body.innerHTML = `${sectionContext()}
+            <div class="field"><label>Select a template</label></div>
+            <div class="tags">
+              ${['Quiz', 'Survey', 'Assignment']
+                .map(
+                  (tag) =>
+                    `<button type="button" class="tag" data-tag="${tag}" aria-pressed="${state.templateTag === tag}">${tag}</button>`
+                )
+                .join('')}
+            </div>
+            <div class="templates" role="radiogroup">
+              ${TEMPLATES.map(
+                (tpl) => `<button type="button" class="card" role="radio" aria-checked="${state.templateId === tpl.id}" data-tpl="${tpl.id}">
+                  <span class="card-copy"><span class="card-title">${tpl.title}</span><span class="card-desc">${tpl.description}</span></span>
+                  <span class="radio"></span>
+                </button>`
+              ).join('')}
+            </div>`;
+          footer.className = 'footer split';
+          footer.innerHTML = `<button class="btn btn-outline" type="button" data-action="back">Back</button>
+            <button class="btn btn-primary" type="button" data-action="create" ${state.templateId ? '' : 'disabled'}>
+              ${state.loading ? '<span class="spin"></span>' : ''} Finish
+            </button>`;
+          return;
+        }
+
+        if (state.screen === 'success' && state.created) {
+          const created = state.created;
+          const isSection = created.type === 'section';
+          body.innerHTML = `<div class="status">
+              <div class="status-row">
+                <div class="type-icon">${icon(created.type)}<span class="badge">${checkIcon()}</span></div>
+                <p class="created-title">${escapeHtml(created.title)}</p>
+              </div>
+              <p class="ok" aria-live="polite">${checkIcon()} ${TYPES[created.type].success}</p>
+            </div>`;
+          footer.className = 'footer split';
+          footer.innerHTML = `<button class="btn btn-ghost-primary" type="button" data-action="another">${TYPES[created.type].another}</button>
+            <div class="footer-right">
+              <button class="btn btn-secondary" type="button" data-action="later">Later</button>
+              <button class="btn btn-primary" type="button" data-action="${isSection ? 'add-to-section' : 'open'}" data-primary>
+                ${isSection ? 'Add content' : 'Open now'}
+              </button>
+            </div>`;
+        }
+      }
+
+      function bindTitle() {
+        const input = $('title-input');
+        if (!input) return;
+        input.addEventListener('input', (e) => {
+          state.title = e.target.value;
+          const btn = document.querySelector('[data-action="create"]');
+          if (btn) btn.disabled = !state.title.trim() || state.loading;
+        });
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && state.title.trim()) submitCreate();
+        });
+      }
+
+      function render() {
+        $('mode-proposed').setAttribute('aria-pressed', String(state.mode === 'proposed'));
+        $('mode-current').setAttribute('aria-pressed', String(state.mode === 'current'));
+        $('scenario').value = state.scenario;
+        $('backdrop').classList.toggle('open', state.open);
+        $('backdrop').setAttribute('aria-hidden', String(!state.open));
+        renderOutline();
+        if (state.open) renderDialog();
+      }
+
+      $('mode-proposed').addEventListener('click', () => {
+        state.mode = 'proposed';
+        openFromScenario(state.scenario);
+      });
+      $('mode-current').addEventListener('click', () => {
+        state.mode = 'current';
+        openFromScenario(state.scenario);
+      });
+      $('scenario').addEventListener('change', (e) => openFromScenario(e.target.value));
+      $('page-add').addEventListener('click', () => openFromScenario('page-header'));
+      $('btn-x').addEventListener('click', () => {
+        if (state.screen === 'success' && state.created) later();
+        else closeModal();
+      });
+      $('backdrop').addEventListener('click', (e) => {
+        if (e.target === $('backdrop')) {
+          if (state.screen === 'success' && state.created) later();
+          else closeModal();
+        }
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && state.open) {
+          if (state.screen === 'success' && state.created) later();
+          else closeModal();
+        }
+      });
+
+      $('outline').addEventListener('click', (e) => {
+        const plus = e.target.closest('[data-plus]');
+        if (plus) openFromScenario('section-plus', plus.dataset.plus);
+      });
+
+      $('dialog-body').addEventListener('click', (e) => {
+        const typeBtn = e.target.closest('[data-type]');
+        if (typeBtn) {
+          state.selectedType = typeBtn.dataset.type;
+          render();
+          return;
+        }
+        const method = e.target.closest('[data-method]');
+        if (method) {
+          state.exerciseMethod = method.dataset.method;
+          render();
+          return;
+        }
+        const tpl = e.target.closest('[data-tpl]');
+        if (tpl) {
+          state.templateId = tpl.dataset.tpl;
+          render();
+          return;
+        }
+        const tag = e.target.closest('[data-tag]');
+        if (tag) {
+          state.templateTag = tag.dataset.tag;
+          render();
+        }
+      });
+
+      $('dialog-footer').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn || btn.disabled) return;
+        const action = btn.dataset.action;
+        if (action === 'continue') goDetails();
+        else if (action === 'back') goBack();
+        else if (action === 'create') submitCreate();
+        else if (action === 'ex-next') {
+          state.screen = state.exerciseMethod === 'template' ? 'exercise-template' : 'exercise-title';
+          render();
+          requestAnimationFrame(() => document.querySelector('input')?.focus());
+        } else if (action === 'another') createAnother();
+        else if (action === 'later') later();
+        else if (action === 'open') openNow();
+        else if (action === 'add-to-section') addContentToSection();
+      });
+
+      openFromScenario('page-header');
+    </script>
+  </body>
+</html>
