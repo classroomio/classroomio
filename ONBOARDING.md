@@ -264,12 +264,12 @@ Cohorts group learners through a set of courses with goals and communication.
 
 ## Part 9 — Community Q&A
 
-- [ ] Navigate to **Community** (`/org/[slug]/community`).
-- [ ] Click **Ask a Question** — enter a title, select a course, write a body, and publish.
-- [ ] Open the question you just posted — upvote it.
-- [ ] Post an **answer** to your own question — upvote the answer.
-- [ ] Search for the question by title.
-- [ ] Filter questions by a specific course.
+- [X] Navigate to **Community** (`/org/[slug]/community`).
+- [X] Click **Ask a Question** — enter a title, select a course, write a body, and publish.
+- [X] Open the question you just posted — upvote it.
+- [X] Post an **answer** to your own question — upvote the answer.
+- [X] Search for the question by title.
+- [X] Filter questions by a specific course.
 - 📸 **Screenshot:** A community question with an answer and upvotes.
 
 ---
