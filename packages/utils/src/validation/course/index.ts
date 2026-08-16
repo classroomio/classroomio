@@ -12,4 +12,3 @@ export * from './compliance';
 export * from './public-course';
 export * from './section';
 export * from './invite';
-export { ZCourseGetParam, type TCourseGetParam } from './course';

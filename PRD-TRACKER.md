@@ -26,6 +26,8 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | - | `prd/zapier` | draft |
 | - | - | `prd/release-process` | draft |
 | - | - | `prd/events` | draft |
+| - | - | `prd/youtube-embed-transcripts` | draft |
+| - | - | `prd/scroll-to-top` | draft |
 
 ## DONE (Completed PRDs)
 

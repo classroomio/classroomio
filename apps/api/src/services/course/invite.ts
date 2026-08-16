@@ -27,6 +27,7 @@ import type { TCreateCourseInvite } from '@cio/utils/validation/course/invite';
 import type { TNewCourseInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding, type EmailBranding } from '@cio/email';
@@ -693,6 +694,8 @@ export async function enrollInCourse(
     email: normalizedEmail
   });
 
+  await invalidateOrgStats(org.id);
+
   await ensureComplianceEnrollmentRecordsForProfiles([courseId], [user.id]);
 
   await sendStudentJoinEmails({
@@ -1064,6 +1067,10 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
         (course.metadata as { welcomeEmailMessage?: string | null } | null)?.welcomeEmailMessage ?? null
     };
   });
+
+  if (!result.alreadyJoined) {
+    await invalidateOrgStats(result.organizationId);
+  }
 
   await ensureComplianceEnrollmentRecordsForProfiles([result.courseId], [user.id]);
 

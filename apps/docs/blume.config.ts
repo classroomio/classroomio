@@ -140,6 +140,7 @@ export default defineConfig({
               {
                 label: 'Organization & team',
                 items: [
+                  '/guides/admin-dashboard',
                   '/guides/customize-organization',
                   '/guides/invite-team-member',
                   '/guides/roles-and-permissions'

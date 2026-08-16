@@ -481,8 +481,9 @@ Use `@cio/ui/base/page` for dashboard page shells. See `packages/ui/README.md` �
 
 **Every settings page with save/discard** must use `Page.SettingsActions` as the last child of `Page.Root` (after `Page.Body`). Do not put Save in `Page.Header` or inline at the bottom of form sections.
 
-- Sticky at the viewport bottom while scrolling; docks naturally at the end of the page content
-- Save and Discard are disabled when `hasChanges` is false
+- Compact centered card (not full width), sticky at the viewport bottom while scrolling; docks naturally at the end of the page content
+- Only appears when `hasChanges` is true
+- Save is a primary button (not a split/combo control); Discard is secondary
 - Labels come from dashboard translations: `common.unsaved_changes.label`, `common.discard`, `common.save_changes`
 - Pair with `UnsavedChanges` for navigation guards where appropriate
 
@@ -496,6 +497,33 @@ Use `@cio/ui/base/page` for dashboard page shells. See `packages/ui/README.md` �
   onSave={handleSave}
   onDiscard={handleDiscard}
 />
+```
+
+### Scroll to top
+
+Any surface whose **main column can overflow the viewport** must use the shared `ScrollToTop` control. Do not invent a one-off back-to-top button, FAB, or “scroll up” link.
+
+Full behavior, threshold, clearance, and mount points: `prd/scroll-to-top/README.md`.
+
+**Rules:**
+
+- Implement and import from `@cio/ui/custom/scroll-to-top` (see that spec if the file is not there yet — add the shared component, do not inline a button in the page).
+- Hidden until the scroll container overflows **and** the user has scrolled at least **one viewport**. Hidden again below 0.8 viewports. Never visible at the top of the page.
+- Click only scrolls that container to `top: 0`. Prefer `behavior: 'smooth'`; use instant when `prefers-reduced-motion` is set.
+- Fixed to the **viewport**, bottom-right, icon-only `Button`/`IconButton` with `variant="secondary"`.
+- Pass `label` from the host (`$t('common.scroll_to_top')` in the dashboard). The UI package does not own copy.
+- Prefer **one mount per shell**, not per leaf page:
+  - Public lessons and exercises → `PublicCourse.PublicCourseShell` (`clearance="mobile-nav"`).
+  - Authenticated course contents list, lesson, and exercise → `routes/(app)/courses/[id]/+layout.svelte` (Ask AI clearance on lesson/exercise routes).
+- New long-read pages (community thread, public course landing, long catalogs, etc.) must include the same component. Do not mount it on `(app)/+layout.svelte` or inside dialogs/sheets/nested panes.
+
+```svelte
+<script lang="ts">
+  import { ScrollToTop } from '@cio/ui/custom/scroll-to-top';
+  import { t } from '$lib/utils/functions/translations';
+</script>
+
+<ScrollToTop label={$t('common.scroll_to_top')} />
 ```
 
 ## Emails: system vs org-branded
@@ -539,6 +567,7 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - Use `SvelteSet`/`SvelteMap` from `svelte/reactivity` for reactive collections (not `new Set`/`new Map`)
 - Reset modal/form state in close/submit handlers or `onOpenChange`, not in `$effect` tied to a steady “closed” condition
 - Mutate bound `$state` object fields in place when clearing forms (don't reassign the whole object)
+- Use `ScrollToTop` (`@cio/ui/custom/scroll-to-top`) on any page whose main column can overflow the viewport (see **Scroll to top**)
 
 ### ❌ DON'T
 - Put business logic in routes or queries
@@ -556,6 +585,7 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - **Use `$effect` to reset form/modal state whenever a boolean is false** — use `onOpenChange` or explicit handlers on close instead
 - **Reassign whole bound state objects to clear forms** (e.g. `fields = {}`) — mutate properties in place
 - **Use inline type imports** (e.g. `import('Package').Type` in type positions) — use top-level `import type` instead
+- Build a one-off back-to-top button — use `ScrollToTop` (see **Scroll to top** and `prd/scroll-to-top/README.md`)
 
 ## Checklist for New Routes
 
