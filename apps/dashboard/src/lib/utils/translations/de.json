@@ -4084,7 +4084,7 @@
         "description": "MCP ist in jedem Plan verfügbar. Die Nutzung wird durch Schlüssellimits und Ratenlimits gesteuert.",
         "keys_title": "Aktive Schlüssel",
         "keys_description": "Verwenden Sie einen MCP-Schlüssel pro Integration, damit der Zugriff sauber rotiert oder widerrufen werden kann.",
-        "rate_limits_title": "Tarifbegrenzungen",
+        "rate_limits_title": "Anfragenlimits pro Minute",
         "rate_limits_description": "Zulässige Lese-/Schreib-/Veröffentlichungsanfragen pro Minute.",
         "used_label": "Verwendet:"
       },
