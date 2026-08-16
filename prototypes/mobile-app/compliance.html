@@ -42,49 +42,50 @@
             </div>
 
             <div class="screen">
-              <div
-                class="card card-pad"
-                style="margin: 8px 0 14px; border-color: color-mix(in oklab, var(--destructive) 40%, transparent); background: var(--destructive-soft)"
-              >
+              <div class="card card-pad" style="margin: 8px 0 14px">
                 <div class="row">
-                  <div style="width: 46px; height: 46px; border-radius: 999px; background: var(--destructive); color: #fff; display: grid; place-items: center">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="24" height="24"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0"/></svg>
+                  <div class="media lg is-danger">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0"/></svg>
                   </div>
                   <div class="grow">
-                    <div style="font-size: 16px; font-weight: 600; letter-spacing: -0.02em; color: var(--destructive)">Action required</div>
-                    <div class="lsub" style="color: var(--destructive); opacity: 0.9">1 overdue · 1 expiring · 4 compliant</div>
+                    <div class="ltitle">Action required</div>
+                    <div class="lmeta">
+                      <span class="badge badge-danger-soft">1 overdue</span>
+                      <span class="badge badge-warning-soft">1 expiring</span>
+                      <span class="badge badge-outline">4 compliant</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div class="sec-head" style="margin-top: 0"><h2>Overdue</h2></div>
-              <a class="card card-pad" href="course.html" style="display: block; border-color: color-mix(in oklab, var(--destructive) 40%, transparent)">
+              <a class="card card-pad" href="course.html" style="display: block">
                 <div class="row row-top">
                   <div class="media is-danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0"/></svg></div>
                   <div class="grow">
                     <div class="ltitle">Forklift Safety Recertification 2026</div>
-                    <div class="lmeta"><span class="badge badge-danger">Overdue 3 days</span><span class="badge badge-warning-soft">Grace ends 24 Aug</span></div>
+                    <div class="lmeta"><span class="badge badge-danger-soft">Overdue 3 days</span><span class="badge badge-warning-soft">Grace ends 24 Aug</span></div>
                   </div>
                 </div>
                 <div class="divider" style="margin: 12px 0"></div>
                 <div class="kv"><span class="k">Deadline</span><span class="v">17 Aug 2026</span></div>
                 <div class="kv"><span class="k">Progress</span><span class="v tnum">4 of 12 lessons</span></div>
-                <div class="kv"><span class="k">If missed</span><span class="v" style="color: var(--destructive)">Authorization suspended</span></div>
-                <button class="btn btn-destructive btn-block" style="margin-top: 12px">Resume now · 28 min left</button>
+                <div class="kv"><span class="k">If missed</span><span class="v">Authorization suspended</span></div>
+                <button class="btn btn-primary btn-block" style="margin-top: 12px">Resume now · 28 min left</button>
               </a>
 
               <div class="sec-head"><h2>Expiring soon</h2></div>
-              <div class="card card-pad" style="border-color: color-mix(in oklab, var(--warning) 40%, transparent)">
+              <div class="card card-pad">
                 <div class="row row-top">
                   <div class="media is-warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
                   <div class="grow">
                     <div class="ltitle">Hazardous Materials Handling</div>
-                    <div class="lmeta"><span class="badge badge-warning">Expires in 21 days</span></div>
+                    <div class="lmeta"><span class="badge badge-warning-soft">Expires in 21 days</span></div>
                   </div>
                 </div>
                 <div class="divider" style="margin: 12px 0"></div>
                 <div class="row" style="margin-bottom: 6px">
-                  <div class="progress warning"><span style="width: 82%"></span></div>
+                  <div class="progress"><span style="width: 82%"></span></div>
                   <span class="text-muted tnum" style="font-size: 11.5px">21d</span>
                 </div>
                 <div class="kv"><span class="k">Certified</span><span class="v">8 Sep 2025</span></div>
@@ -139,21 +140,22 @@
             </div>
 
             <div class="screen">
-              <div
-                class="card card-pad"
-                style="margin: 8px 0 14px; text-align: center; border-color: color-mix(in oklab, var(--success) 40%, transparent); background: var(--success-soft)"
-              >
-                <div style="width: 56px; height: 56px; border-radius: 999px; background: var(--success); color: var(--success-foreground); display: grid; place-items: center; margin: 4px auto 12px">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="28" height="28"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+              <div class="card card-pad" style="margin: 8px 0 14px">
+                <div class="row">
+                  <div class="media lg is-done">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+                  </div>
+                  <div class="grow">
+                    <div class="ltitle">Fully compliant</div>
+                    <div class="lmeta"><span class="badge badge-success-soft">All 6 requirements up to date</span></div>
+                  </div>
                 </div>
-                <div style="font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: var(--success)">Fully compliant</div>
-                <div class="lsub" style="color: var(--success); opacity: 0.9">All 6 requirements up to date</div>
               </div>
 
               <div class="sec-head" style="margin-top: 0"><h2>Renewal timeline</h2></div>
               <div class="card card-pad">
                 <div class="lrow flat">
-                  <div class="media" style="background: var(--warning-soft); border-color: transparent; color: var(--warning)">
+                  <div class="media is-warning">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                   </div>
                   <div class="grow"><div class="ltitle">Hazardous Materials Handling</div><div class="lmeta"><span>Renews 15 Feb 2027</span></div></div>
