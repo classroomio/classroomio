@@ -4081,16 +4081,15 @@
       },
       "usage": {
         "title": "Cách sử dụng và giới hạn",
-        "description": "MCP có sẵn trên mọi gói, nhưng việc sử dụng được kiểm soát bằng tín dụng tự động hóa hàng tháng và các giới hạn chính.",
-        "credits_title": "Tín dụng còn lại",
-        "credits_description": "Các hành động MCP đột biến sẽ tiêu tốn tín dụng. Hành động đọc là miễn phí.",
-        "keys_title": "Phím hoạt động",
+        "description": "MCP có sẵn trên mọi gói. Việc sử dụng được kiểm soát bằng giới hạn khóa và giới hạn tần suất.",
+        "keys_title": "Khóa đang hoạt động",
         "keys_description": "Sử dụng một khóa MCP cho mỗi lần tích hợp để có thể luân chuyển hoặc thu hồi quyền truy cập một cách dễ dàng.",
         "rate_limits_title": "Giới hạn tỷ lệ",
         "rate_limits_description": "Yêu cầu đọc/ghi/xuất bản được phép mỗi phút.",
         "used_label": "Đã sử dụng:"
       },
-      "page_subtitle": "Kết nối công cụ AI với ClassroomIO bằng khóa trong phạm vi tổ chức mà bạn có thể xoay bất cứ lúc nào."
+      "page_subtitle": "Kết nối công cụ AI với ClassroomIO bằng khóa trong phạm vi tổ chức mà bạn có thể xoay bất cứ lúc nào.",
+      "view_docs": "Xem tài liệu"
     },
     "api": {
       "subtitle": "Quản lý khóa API để tích hợp với API công khai ClassroomIO.",

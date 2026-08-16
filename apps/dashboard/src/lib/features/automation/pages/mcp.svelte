@@ -21,7 +21,6 @@
   import * as Tabs from '@cio/ui/base/tabs';
   import { InputField } from '@cio/ui/custom/input-field';
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import CoinsIcon from '@lucide/svelte/icons/coins';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import GaugeIcon from '@lucide/svelte/icons/gauge';
   import KeyIcon from '@lucide/svelte/icons/key';
@@ -32,6 +31,7 @@
 
   let activeSetupTab = $state('cursor');
   let generatedSecret = $state<string | null>(null);
+  let generatedSecretKeyId = $state<string | null>(null);
   let isCreateKeyModalOpen = $state(false);
   let keyLabel = $state('');
 
@@ -52,6 +52,7 @@
     if (!result) return;
 
     generatedSecret = automationApi.generatedSecret;
+    generatedSecretKeyId = result.key.id;
     automationApi.clearGeneratedSecret();
     isCreateKeyModalOpen = false;
     resetCreateKeyModal();
@@ -59,13 +60,25 @@
 
   async function onRevokeKey(keyId: string) {
     if (!confirm(t.get('automation.keys.revoke_confirm'))) return;
-    await automationApi.revokeKey(keyId);
+
+    const result = await automationApi.revokeKey(keyId);
+    if (result && generatedSecretKeyId === keyId) {
+      generatedSecret = null;
+      generatedSecretKeyId = null;
+    }
   }
 
   async function onRotateKey(keyId: string) {
     if (!confirm(t.get('automation.keys.rotate_confirm'))) return;
-    await automationApi.rotateKey(keyId);
+
+    const result = await automationApi.rotateKey(keyId);
+    if (!result || result.key.revokedAt) return;
+
+    const key = automationApi.keys.find((entry) => entry.id === keyId);
+    if (!key || key.revokedAt) return;
+
     generatedSecret = automationApi.generatedSecret;
+    generatedSecretKeyId = keyId;
     automationApi.clearGeneratedSecret();
   }
   const mcpKeys = $derived(automationApi.keys.filter((key) => key.type === 'mcp'));
@@ -73,13 +86,6 @@
     if (!automationApi.usage) return [];
 
     return [
-      {
-        icon: CoinsIcon,
-        title: t.get('automation.mcp.usage.credits_title'),
-        percentage: automationApi.usage.monthlyCreditsRemaining,
-        description: `${t.get('automation.mcp.usage.used_label')} ${automationApi.usage.monthlyCreditsUsed} / ${automationApi.usage.monthlyCreditsIncluded}`,
-        hidePercentage: true
-      },
       {
         icon: KeyIcon,
         title: t.get('automation.mcp.usage.keys_title'),
@@ -98,7 +104,6 @@
   });
 
   const isLastUsageCard = (index: number) => index === usageCards.length - 1;
-  const hasActiveMcpKey = $derived(mcpKeys.some((key) => !key.revokedAt));
 </script>
 
 <Field.Group class="mx-auto w-full space-y-2">
@@ -112,7 +117,7 @@
   {/if}
 
   {#if $isOrgAdmin && automationApi.usage}
-    <div class="grid gap-4 md:grid-cols-3">
+    <div class="grid gap-4 md:grid-cols-2">
       {#each usageCards as card, i (i)}
         <ActivityCard
           activity={card}
@@ -228,8 +233,7 @@
     {/if}
   </div>
 
-  {#if hasActiveMcpKey}
-    <Field.Set class="gap-3!">
+  <Field.Set class="gap-3!">
       <Field.Legend class="flex items-center gap-2">
         <SparklesIcon class="size-5" />
         {$t('automation.mcp.setup.title')}
@@ -277,7 +281,6 @@
         </Tabs.Content>
       </Tabs.Root>
     </Field.Set>
-  {/if}
 </Field.Group>
 
 <Dialog.Root
