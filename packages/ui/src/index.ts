@@ -97,6 +97,7 @@ export {
   SlideEmbedCard,
   SlideEmbedFrame,
   SlideEmbedPicker,
+  SlidePlatformIcon,
   DEFAULT_SLIDE_EMBED_PICKER_LABELS
 } from './custom/slide-embed';
 export type { SlideEmbed, SlideEmbedCardLabels, SlideEmbedPickerLabels, SlidePlatformId } from './custom/slide-embed';

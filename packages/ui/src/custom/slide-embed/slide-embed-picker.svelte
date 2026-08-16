@@ -13,9 +13,9 @@
   import { Input } from '../../base/input';
   import { TextareaField } from '../textarea-field';
   import { cn } from '../../tools';
-  import { SLIDE_PLATFORM_BRAND } from './brand';
   import { DEFAULT_SLIDE_EMBED_PICKER_LABELS } from './default-labels';
   import SlideEmbedFrame from './slide-embed-frame.svelte';
+  import SlidePlatformIcon from './slide-platform-icon.svelte';
   import type { SlideEmbedPickerLabels } from './types';
 
   const DEFAULT_DOCS_BASE_URL = 'https://classroomio.com/docs/guides/embed-slides';
@@ -112,7 +112,6 @@
     >
       {#each filteredPlatforms as platform (platform.id)}
         {@const isActive = platform.id === selectedId}
-        {@const brand = SLIDE_PLATFORM_BRAND[platform.id]}
 
         <button
           type="button"
@@ -123,13 +122,7 @@
           aria-pressed={isActive}
           onclick={() => selectPlatform(platform.id)}
         >
-          <span
-            class="ui:flex ui:size-7 ui:shrink-0 ui:items-center ui:justify-center ui:rounded-md ui:text-xs ui:font-semibold ui:text-white"
-            style:background={brand.color}
-            aria-hidden="true"
-          >
-            {brand.glyph}
-          </span>
+          <SlidePlatformIcon platform={platform.id} class="ui:size-7" />
           <span class="ui:leading-tight">{platform.name}</span>
         </button>
       {/each}
@@ -145,16 +138,9 @@
       </div>
     {:else}
       {@const platformCopy = labels.platforms[selectedPlatform.id]}
-      {@const brand = SLIDE_PLATFORM_BRAND[selectedPlatform.id]}
 
       <div class="ui:flex ui:items-center ui:gap-3">
-        <span
-          class="ui:flex ui:size-10 ui:items-center ui:justify-center ui:rounded-md ui:text-sm ui:font-semibold ui:text-white"
-          style:background={brand.color}
-          aria-hidden="true"
-        >
-          {brand.glyph}
-        </span>
+        <SlidePlatformIcon platform={selectedPlatform.id} class="ui:size-10" />
         <div>
           <p class="ui:text-base ui:font-semibold">{selectedPlatform.name}</p>
           <p class="ui:text-muted-foreground ui:text-xs">{platformCopy.hint}</p>

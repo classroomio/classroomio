@@ -5,7 +5,7 @@
   import * as DropdownMenu from '../../base/dropdown-menu';
   import { IconButton } from '../icon-button';
   import { cn } from '../../tools';
-  import { SLIDE_PLATFORM_BRAND } from './brand';
+  import SlidePlatformIcon from './slide-platform-icon.svelte';
   import type { SlideEmbedCardLabels } from './types';
 
   interface Props {
@@ -19,7 +19,6 @@
   let { slide, labels, isEditMode = false, onRemove, class: className = '' }: Props = $props();
 
   const platform = $derived(SLIDE_PLATFORM_BY_ID[slide.platform]);
-  const brand = $derived(SLIDE_PLATFORM_BRAND[slide.platform]);
   const title = $derived(platform?.name ?? 'Slide');
   const hostLabel = $derived.by(() => {
     try {
@@ -37,13 +36,7 @@
       role="img"
       aria-label={title}
     >
-      <span
-        class="ui:flex ui:size-12 ui:items-center ui:justify-center ui:rounded-md ui:text-lg ui:font-semibold ui:text-white"
-        style:background={brand.color}
-        aria-hidden="true"
-      >
-        {brand.glyph}
-      </span>
+      <SlidePlatformIcon platform={slide.platform} class="ui:size-12" />
       <span class="ui:text-muted-foreground ui:line-clamp-2 ui:max-w-full ui:text-center ui:text-xs ui:font-medium">
         {title}
       </span>

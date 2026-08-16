@@ -102,7 +102,7 @@ Presentational list for lesson (or similar) file attachments with **view** and *
 
 ### Slide embed (`src/custom/slide-embed/`)
 
-Guided picker, added-embed card, and 16:9 iframe for lesson slide decks. Copy is passed via `labels` so the dashboard can translate. The picker accepts a **full iframe**; pasted width/height are ignored and the frame always uses `aspect-video`. See `Molecules/SlideEmbed` in Storybook.
+Guided picker, added-embed card, and 16:9 iframe for lesson slide decks. Copy is passed via `labels` so the dashboard can translate. The picker accepts a **full iframe**; pasted width/height are ignored and the frame always uses `aspect-video`. Platform marks use the official product logos (Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, Beautiful.ai). See `Molecules/SlideEmbed` in Storybook.
 
 ### Live session card (`src/custom/live-session-card/`)
 
