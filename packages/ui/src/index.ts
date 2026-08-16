@@ -96,3 +96,12 @@ export { AttachmentList } from './custom/attachment-list';
 export type { AttachmentListFile, AttachmentListLabels, AttachmentListMode } from './custom/attachment-list';
 export { AttentionHighlight, type AttentionHighlightProps } from './custom/attention-highlight';
 export { CircularProgress } from './custom/circular-progress';
+export {
+  PageOutline,
+  injectHeadingIds,
+  outlineFromSections,
+  slugifyHeading,
+  stripHtml,
+  withPageTitle
+} from './custom/page-outline';
+export type { PageOutlineHideBelow, PageOutlineItem, PageOutlineLevel } from './custom/page-outline';
