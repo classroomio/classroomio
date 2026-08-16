@@ -863,7 +863,9 @@
         "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para el certificado antes de que los estudiantes puedan inscribirse. Establezca una fecha límite en la configuración del curso antes de publicarlo.",
         "go_to_completion_deadline": "Ir a la fecha límite de finalización",
         "completion_deadline_label": "Fecha límite de finalización del curso",
-        "completion_deadline_helper": "Los estudiantes deben alcanzar el porcentaje de finalización antes de esta fecha (hora local). Déjelo vacío sin fecha límite."
+        "completion_deadline_helper": "Los estudiantes deben alcanzar el porcentaje de finalización antes de esta fecha (hora local). Déjelo vacío sin fecha límite.",
+        "allow_markdown_export": "Permitir a los alumnos copiar las páginas de las lecciones como Markdown",
+        "allow_markdown_export_description": "Cuando está activado, las páginas públicas de las lecciones muestran un botón Copiar página que exporta el contenido de la lección (sin vídeos) como Markdown. También publica una URL pública de Markdown para cada lección desbloqueada."
       },
       "analytics": {
         "title": "Analíticas"
@@ -4641,6 +4643,15 @@
     "header": {
       "explore_courses": "Explorar cursos",
       "sign_in": "Iniciar sesión"
+    },
+    "copy_page": {
+      "copy": "Copiar página",
+      "copied": "Copiado",
+      "view_as_markdown": "Ver como Markdown",
+      "open_in_chatgpt": "Abrir en ChatGPT",
+      "open_in_claude": "Abrir en Claude",
+      "more_actions": "Más acciones para copiar la página",
+      "copy_failed": "No se pudo copiar esta lección como Markdown"
     }
   },
   "account": {

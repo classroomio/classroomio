@@ -863,7 +863,9 @@
         "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
         "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
         "completion_deadline_label": "Frist für den Abschluss des Kurses",
-        "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen."
+        "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen.",
+        "allow_markdown_export": "Lernenden erlauben, Lektionsseiten als Markdown zu kopieren",
+        "allow_markdown_export_description": "Wenn aktiviert, zeigen öffentliche Lektionsseiten eine „Seite kopieren“-Schaltfläche, die den Lektionsinhalt (ohne Videos) als Markdown exportiert. Dadurch wird außerdem eine öffentliche Markdown-URL für jede entsperrte Lektion veröffentlicht."
       },
       "analytics": {
         "title": "Analysen"
@@ -4641,6 +4643,15 @@
     "header": {
       "explore_courses": "Entdecken Sie Kurse",
       "sign_in": "Melden Sie sich an"
+    },
+    "copy_page": {
+      "copy": "Seite kopieren",
+      "copied": "Kopiert",
+      "view_as_markdown": "Als Markdown anzeigen",
+      "open_in_chatgpt": "In ChatGPT öffnen",
+      "open_in_claude": "In Claude öffnen",
+      "more_actions": "Weitere Aktionen zum Kopieren der Seite",
+      "copy_failed": "Diese Lektion konnte nicht als Markdown kopiert werden"
     }
   },
   "account": {

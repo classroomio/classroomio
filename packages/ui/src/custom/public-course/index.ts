@@ -8,6 +8,9 @@ export { default as PublicCourseMobileSheet } from './mobile-sheet.svelte';
 export { default as PublicLessonView } from './lesson-view.svelte';
 export { default as PublicExerciseView } from './exercise-view.svelte';
 export { default as PublicCourseCallout } from './callout.svelte';
+export { default as CopyPageButton } from './copy-page-button.svelte';
+export { buildChatGptUrl, buildClaudeUrl, buildStudyPrompt } from './copy-page-utils';
+export type { CopyPageLabels } from './copy-page-utils';
 
 export {
   PUBLIC_EXERCISE_ATTEMPTS_STORE_VERSION,

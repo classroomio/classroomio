@@ -3,11 +3,20 @@
   import { page } from '$app/state';
   import { PublicCourse } from '@cio/ui';
   import { toPublicSidebarSections } from '$features/course/utils/public-course-mappers';
-  import type { PublicCourseSidebarItem, PublicCourseSidebarSection } from '@cio/ui/custom/public-course';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import {
+    buildChatGptUrl,
+    buildClaudeUrl,
+    buildStudyPrompt,
+    type PublicCourseSidebarItem,
+    type PublicCourseSidebarSection
+  } from '@cio/ui/custom/public-course';
   import { t } from '$lib/utils/functions/translations';
   import type { Snippet } from 'svelte';
 
-  let { data, children }: { data: { tree: any }; children?: Snippet } = $props();
+  type PublicCourseTree = Parameters<typeof toPublicSidebarSections>[0];
+
+  let { data, children }: { data: { tree: PublicCourseTree }; children?: Snippet } = $props();
 
   const sections: PublicCourseSidebarSection[] = $derived(toPublicSidebarSections(data.tree));
   const flatItems = $derived(sections.flatMap((section) => section.items));
@@ -21,6 +30,21 @@
   const courseTitle = $derived(data.tree.course.title);
   const org = $derived(data.tree.course.org ?? null);
 
+  const showCopyPage = $derived(
+    data.tree.course.allowMarkdownExport === true && activeItem?.kind === 'lesson' && activeItem.isUnlocked
+  );
+  const markdownUrl = $derived(`/course/${data.tree.course.slug}/lesson/${itemSlug}/markdown`);
+  const publicLessonUrl = $derived(`${page.url.origin}${page.url.pathname}`);
+  const studyPrompt = $derived(
+    buildStudyPrompt({
+      lessonTitle: activeItem?.title ?? '',
+      courseTitle,
+      publicLessonUrl
+    })
+  );
+  const chatgptUrl = $derived(buildChatGptUrl(studyPrompt));
+  const claudeUrl = $derived(buildClaudeUrl(studyPrompt));
+
   const hrefFor = (item: PublicCourseSidebarItem) => `/course/${data.tree.course.slug}/lesson/${item.slug}`;
 
   async function navigateTo(item: PublicCourseSidebarItem | null) {
@@ -30,7 +54,7 @@
   }
 </script>
 
-{#key data.slug}
+{#key data.tree.course.slug}
   <PublicCourse.PublicCourseShell
     {sections}
     {courseTitle}
@@ -57,6 +81,25 @@
     onPrev={() => navigateTo(prevItem)}
     onNext={() => navigateTo(nextItem)}
   >
+    {#snippet headerActions()}
+      {#if showCopyPage}
+        <PublicCourse.CopyPageButton
+          {markdownUrl}
+          {chatgptUrl}
+          {claudeUrl}
+          labels={{
+            copy: $t('public_course.copy_page.copy'),
+            copied: $t('public_course.copy_page.copied'),
+            viewAsMarkdown: $t('public_course.copy_page.view_as_markdown'),
+            openInChatGPT: $t('public_course.copy_page.open_in_chatgpt'),
+            openInClaude: $t('public_course.copy_page.open_in_claude'),
+            moreActions: $t('public_course.copy_page.more_actions')
+          }}
+          onCopied={() => snackbar.success('public_course.copy_page.copied')}
+          onCopyError={() => snackbar.error('public_course.copy_page.copy_failed')}
+        />
+      {/if}
+    {/snippet}
     {@render children?.()}
   </PublicCourse.PublicCourseShell>
 {/key}

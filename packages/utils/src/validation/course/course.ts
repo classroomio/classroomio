@@ -380,6 +380,7 @@ const ZCourseMetadataFields = z.object({
   lessonTabsOrder: ZCourseLessonTabsOrder.optional(),
   grading: z.boolean().optional(),
   lessonDownload: z.boolean().optional(),
+  allowMarkdownExport: z.boolean().optional(),
   allowNewStudent: z.boolean().default(true),
   welcomeEmailMessage: z.string().max(20000).nullish(),
   sessionTimezone: z.string().max(64).nullish(),

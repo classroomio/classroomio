@@ -863,7 +863,9 @@
         "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach kursu.",
         "go_to_completion_deadline": "Przejdź do terminu ukończenia",
         "completion_deadline_label": "Termin zakończenia kursu",
-        "completion_deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu."
+        "completion_deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu.",
+        "allow_markdown_export": "Pozwól uczniom kopiować strony lekcji jako Markdown",
+        "allow_markdown_export_description": "Po włączeniu publiczne strony lekcji pokazują przycisk Kopiuj stronę, który eksportuje treść lekcji (bez filmów) jako Markdown. Publikuje też publiczny adres URL Markdown dla każdej odblokowanej lekcji."
       },
       "analytics": {
         "title": "Analityka"
@@ -4641,6 +4643,15 @@
     "header": {
       "explore_courses": "Przeglądaj kursy",
       "sign_in": "Zaloguj się"
+    },
+    "copy_page": {
+      "copy": "Kopiuj stronę",
+      "copied": "Skopiowano",
+      "view_as_markdown": "Wyświetl jako Markdown",
+      "open_in_chatgpt": "Otwórz w ChatGPT",
+      "open_in_claude": "Otwórz w Claude",
+      "more_actions": "Więcej działań kopiowania strony",
+      "copy_failed": "Nie udało się skopiować tej lekcji jako Markdown"
     }
   },
   "account": {
