@@ -67,7 +67,7 @@
 
           <Tabs.Content value="overview" class="space-y-4">
             <TrendChart data={analyticsApi.landing} loading={analyticsApi.loadingLanding} />
-            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <Funnel data={analyticsApi.funnel} loading={analyticsApi.loadingFunnel} />
               <TopCourses data={analyticsApi.topCourses} loading={analyticsApi.loadingTopCourses} />
               <PopularTypes data={analyticsApi.popularTypes} loading={analyticsApi.loadingPopularTypes} />

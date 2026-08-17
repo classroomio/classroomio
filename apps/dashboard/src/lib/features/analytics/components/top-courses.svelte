@@ -53,6 +53,7 @@
                 <a
                   href={resolve(`/courses/${row.courseId}`, {})}
                   class="ui:text-foreground line-clamp-1 text-sm font-medium hover:underline"
+                  title={row.title}
                 >
                   {row.title}
                 </a>
