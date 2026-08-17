@@ -244,5 +244,8 @@ export type TNewMediaTranscript = typeof schema.mediaTranscript.$inferInsert;
 export type TJobStep = typeof schema.jobStep.$inferSelect;
 export type TNewJobStep = typeof schema.jobStep.$inferInsert;
 
+export type TYoutubeCaption = typeof schema.youtubeCaption.$inferSelect;
+export type TNewYoutubeCaption = typeof schema.youtubeCaption.$inferInsert;
+
 export type TDeadLetterJob = typeof schema.deadLetterJob.$inferSelect;
 export type TNewDeadLetterJob = typeof schema.deadLetterJob.$inferInsert;

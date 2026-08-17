@@ -15,8 +15,10 @@ import {
   enqueueGenerateThumbnailOnly,
   enqueueLessonVideoPipeline,
   enqueueTranscriptionOnly,
+  enqueueYoutubeCaptionsFetch,
   isRedisConfigured
 } from '@cio/jobs';
+import { canFetchYouTubeCaptions } from '@cio/utils/plans';
 
 import { logRedisUnavailableOnce } from '@cio/core/utils/redis/redis';
 import type { TMediaJob } from '@db/types';
@@ -180,6 +182,101 @@ export async function startThumbnailRegenJob(input: StartThumbnailRegenInput): P
 
     throw new AppError(
       error instanceof Error ? error : 'Failed to enqueue thumbnail job',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+export interface StartYoutubeCaptionsJobInput {
+  organizationId: string;
+  assetId: string;
+  triggeredByProfileId: string | null;
+  youtubeVideoId: string;
+  canonicalUrl: string;
+  preferredLanguages?: string[];
+}
+
+/**
+ * Create a `media_job` row and enqueue a YouTube captions fetch job.
+ * The worker calls Supadata, writes to `youtube_caption`, and writes
+ * through to `media_transcript` + VTT.
+ *
+ * Falls back to a persisted `queued` row with no BullMQ job id when Redis
+ * is unavailable. Gated to paid cloud plans (EARLY_ADOPTER / ENTERPRISE)
+ * and self-hosted. Free (BASIC) orgs skip silently.
+ */
+export async function startYoutubeCaptionsJob(
+  input: StartYoutubeCaptionsJobInput,
+  orgPlan?: { planName: string | null; isSelfHosted: boolean }
+): Promise<TMediaJob> {
+  if (orgPlan && !canFetchYouTubeCaptions(orgPlan.planName, orgPlan.isSelfHosted)) {
+    const job = await createMediaJob({
+      organizationId: input.organizationId,
+      assetId: input.assetId,
+      triggeredByProfileId: input.triggeredByProfileId,
+      status: 'completed',
+      stage: 'done',
+      progressPercent: 100,
+      result: { status: 'skipped', reason: 'plan_gated' }
+    });
+    return job;
+  }
+
+  if (!process.env.SUPADATA_API_KEY) {
+    const job = await createMediaJob({
+      organizationId: input.organizationId,
+      assetId: input.assetId,
+      triggeredByProfileId: input.triggeredByProfileId,
+      status: 'completed',
+      stage: 'done',
+      progressPercent: 100,
+      result: { status: 'skipped', reason: 'no_provider_key' }
+    });
+    return job;
+  }
+
+  const job = await createMediaJob({
+    organizationId: input.organizationId,
+    assetId: input.assetId,
+    triggeredByProfileId: input.triggeredByProfileId,
+    status: 'queued',
+    stage: 'queued',
+    progressPercent: 0
+  });
+
+  if (!isRedisConfigured()) {
+    logRedisUnavailableOnce(
+      'Redis not configured: YouTube captions job created but no BullMQ job enqueued. ' +
+        'Set REDIS_URL and run apps/jobs to process this job.'
+    );
+    return job;
+  }
+
+  try {
+    await enqueueYoutubeCaptionsFetch({
+      mediaJobId: job.id,
+      assetId: input.assetId,
+      organizationId: input.organizationId,
+      youtubeVideoId: input.youtubeVideoId,
+      canonicalUrl: input.canonicalUrl,
+      preferredLanguages: input.preferredLanguages
+    });
+
+    return job;
+  } catch (error) {
+    console.error('startYoutubeCaptionsJob enqueue failed:', error);
+    await updateMediaJob(job.id, {
+      status: 'failed',
+      stage: 'failed',
+      error: {
+        code: 'ENQUEUE_FAILED',
+        message: error instanceof Error ? error.message : 'Failed to enqueue YouTube captions job'
+      }
+    });
+
+    throw new AppError(
+      error instanceof Error ? error : 'Failed to enqueue YouTube captions job',
       ErrorCodes.INTERNAL_ERROR,
       500
     );

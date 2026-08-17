@@ -15,6 +15,7 @@ import {
   enqueueGenerateThumbnailOnly,
   enqueueLessonVideoPipeline,
   enqueueTranscriptionOnly,
+  enqueueYoutubeCaptionsFetch,
   isRedisConfigured
 } from '@cio/jobs';
 
@@ -334,4 +335,63 @@ export async function getMediaJobSteps(jobId: string, orgId: string) {
   }
 
   return listJobStepsByRun('media', jobId);
+}
+
+export interface StartYoutubeCaptionsJobInput {
+  organizationId: string;
+  assetId: string;
+  triggeredByProfileId: string | null;
+  youtubeVideoId: string;
+  canonicalUrl: string;
+  preferredLanguages?: string[];
+}
+
+/**
+ * Create a `media_job` row and enqueue a YouTube captions fetch job.
+ * Used by `createAssetFromUploadService` when a YouTube asset is created.
+ * No-ops gracefully when Redis or the provider key is missing.
+ */
+export async function startYoutubeCaptionsJob(input: StartYoutubeCaptionsJobInput): Promise<TMediaJob> {
+  const job = await createMediaJob({
+    organizationId: input.organizationId,
+    assetId: input.assetId,
+    triggeredByProfileId: input.triggeredByProfileId,
+    status: 'queued',
+    stage: 'queued',
+    progressPercent: 0
+  });
+
+  if (!isRedisConfigured()) {
+    logRedisUnavailableOnce('Redis not configured: YouTube captions job created but no BullMQ job enqueued.');
+    return job;
+  }
+
+  try {
+    await enqueueYoutubeCaptionsFetch({
+      mediaJobId: job.id,
+      assetId: input.assetId,
+      organizationId: input.organizationId,
+      youtubeVideoId: input.youtubeVideoId,
+      canonicalUrl: input.canonicalUrl,
+      preferredLanguages: input.preferredLanguages
+    });
+
+    return job;
+  } catch (error) {
+    console.error('startYoutubeCaptionsJob enqueue failed:', error);
+    await updateMediaJob(job.id, {
+      status: 'failed',
+      stage: 'failed',
+      error: {
+        code: 'ENQUEUE_FAILED',
+        message: error instanceof Error ? error.message : 'Failed to enqueue YouTube captions job'
+      }
+    });
+
+    throw new AppError(
+      error instanceof Error ? error : 'Failed to enqueue YouTube captions job',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
 }

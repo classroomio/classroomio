@@ -263,6 +263,21 @@ export async function createAssetFromUploadService(orgId: string, profileId: str
       });
     }
 
+    // Fire-and-forget: enqueue YouTube captions fetch for new YouTube embeds.
+    // The worker checks plan gating and API key availability before calling Supadata.
+    if (asset.kind === 'video' && asset.provider === 'youtube' && asset.sourceUrl) {
+      const videoId = (asset.metadata as { videoId?: string } | undefined)?.videoId;
+      if (videoId) {
+        void enqueueYoutubeCaptionsFetchForAsset({
+          organizationId: orgId,
+          assetId: asset.id,
+          triggeredByProfileId: profileId,
+          youtubeVideoId: videoId,
+          canonicalUrl: asset.sourceUrl
+        });
+      }
+    }
+
     return asset;
   } catch (error) {
     throw new AppError(
@@ -290,6 +305,27 @@ async function enqueueMediaPostProcessingForAsset(input: {
     });
   } catch (error) {
     console.error('enqueueMediaPostProcessingForAsset failed:', error);
+  }
+}
+
+async function enqueueYoutubeCaptionsFetchForAsset(input: {
+  organizationId: string;
+  assetId: string;
+  triggeredByProfileId: string;
+  youtubeVideoId: string;
+  canonicalUrl: string;
+}): Promise<void> {
+  try {
+    const { startYoutubeCaptionsJob } = await import('../jobs/media-jobs');
+    await startYoutubeCaptionsJob({
+      organizationId: input.organizationId,
+      assetId: input.assetId,
+      triggeredByProfileId: input.triggeredByProfileId,
+      youtubeVideoId: input.youtubeVideoId,
+      canonicalUrl: input.canonicalUrl
+    });
+  } catch (error) {
+    console.error('enqueueYoutubeCaptionsFetchForAsset failed:', error);
   }
 }
 

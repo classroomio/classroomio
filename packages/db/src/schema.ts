@@ -3793,6 +3793,44 @@ export const mediaTranscript = pgTable(
 );
 
 /**
+ * `youtube_caption` — platform-wide caption store for YouTube videos.
+ * One row per video + language. Shared across orgs so the provider is only
+ * hit once per unique YouTube video. Unavailable rows (`status: 'unavailable'`)
+ * with an `expiresAt` TTL prevent hammering the provider for videos without captions.
+ */
+export const youtubeCaption = pgTable(
+  'youtube_caption',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    youtubeVideoId: varchar('youtube_video_id', { length: 11 }).notNull(),
+    language: varchar({ length: 8 }).notNull(),
+    /** `ready` = captions stored, `unavailable` = no captions / private / disabled, `failed` = provider error */
+    status: varchar({ length: 16 }).notNull().default('ready'),
+    unavailableReason: varchar('unavailable_reason', { length: 32 }),
+    /** YouTube ASR (auto-generated) vs creator-uploaded captions */
+    isGenerated: boolean('is_generated').default(false).notNull(),
+    text: text(),
+    segments: jsonb().$type<{ start: number; end: number; text: string }[]>(),
+    provider: varchar({ length: 32 }).notNull().default('supadata'),
+    /** Hash of provider payload for change detection */
+    sourceHash: text('source_hash'),
+    costCents: integer('cost_cents').default(0).notNull(),
+    fetchedAt: timestamp('fetched_at', { withTimezone: true, mode: 'string' }).notNull(),
+    /** Optional TTL — null for `ready` rows (keep indefinitely), set for unavailable entries (~24h) */
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('youtube_caption_video_lang_unique').on(table.youtubeVideoId, table.language),
+    index('idx_youtube_caption_video_id').on(table.youtubeVideoId)
+  ]
+);
+
+/**
  * `dead_letter_job` — terminal failure record after BullMQ exhausts attempts
  * or a domain explicitly dead-letters a run. Drives the admin retry/replay UI
  * and Tinybird/Slack alerting.

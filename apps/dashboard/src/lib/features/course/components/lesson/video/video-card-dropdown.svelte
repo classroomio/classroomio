@@ -66,6 +66,7 @@
   const assetId = $derived((video as LessonVideo & { assetId?: string }).assetId ?? null);
 
   const canGenerateTranscript = $derived(video.type === 'upload' && !!assetId);
+  const canViewTranscript = $derived((video.type === 'upload' || video.type === 'youtube') && !!assetId);
   const canManageThumbnails = $derived(video.type === 'upload' && !!assetId);
   const hls1080Status = $derived(getHls1080Status(video));
   const showGenerate1080 = $derived(canGenerateHls1080(video) && !isGenerating1080);
@@ -75,7 +76,7 @@
   );
 
   onMount(() => {
-    if (canGenerateTranscript) {
+    if (canGenerateTranscript || video.type === 'youtube') {
       void ensureTranscriptChecked();
     }
   });
@@ -301,7 +302,7 @@
   onOpenChange={(open) => {
     if (!open) return;
 
-    if (canGenerateTranscript) {
+    if (canGenerateTranscript || video.type === 'youtube') {
       void ensureTranscriptChecked();
     }
 
@@ -380,7 +381,7 @@
         </span>
       </DropdownMenu.Item>
     {/if}
-    {#if canGenerateTranscript && hasTranscript}
+    {#if canViewTranscript && hasTranscript}
       <DropdownMenu.Item
         onclick={() => {
           void handleViewTranscript();
