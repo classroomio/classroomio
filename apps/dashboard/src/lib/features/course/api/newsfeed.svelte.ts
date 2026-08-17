@@ -140,6 +140,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
 
           const newFeed = {
             ...response.data,
+            createdAt: response.data.createdAt ?? new Date().toISOString(),
             authorProfileId: author.id,
             authorFullname: author.fullname,
             authorUsername: author.username,
@@ -147,7 +148,8 @@ export class NewsfeedApi extends BaseApiWithErrors {
             commentCount: 0
           };
 
-          this.feeds = [...feedsArray, newFeed];
+          this.initComments(newFeed.id, 0);
+          this.feeds = [newFeed, ...feedsArray];
         }
       },
       onError: (result) => {
@@ -561,6 +563,10 @@ export class NewsfeedApi extends BaseApiWithErrors {
     const parentState = parentId === undefined ? undefined : this.nodeState(parentId);
     const tempId = -Date.now();
     const tempKey = String(tempId);
+
+    if (!this.threadByFeedId[feedId]) {
+      this.initComments(feedId, 0);
+    }
 
     const optimistic = {
       id: tempId,
