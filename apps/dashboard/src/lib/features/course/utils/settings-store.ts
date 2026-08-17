@@ -16,6 +16,12 @@ type CourseSettings = {
   progressionMode: 'free' | 'sequential';
   callout: TCourseCallout | null;
   welcomeEmailMessage: string;
+  certificate: {
+    deadline: string | null;
+    threshold: number;
+    requiredExerciseId: string | null;
+    exerciseMinScorePercent: number | null;
+  };
 };
 
 export const settings = writable<CourseSettings>({
@@ -36,5 +42,11 @@ export const settings = writable<CourseSettings>({
   isContentGroupingEnabled: true,
   progressionMode: 'free',
   callout: null,
-  welcomeEmailMessage: ''
+  welcomeEmailMessage: '',
+  certificate: {
+    deadline: null,
+    threshold: 100,
+    requiredExerciseId: null,
+    exerciseMinScorePercent: null
+  }
 });

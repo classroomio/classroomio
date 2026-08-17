@@ -796,7 +796,7 @@
         "lesson_download": "Lekcje do pobrania",
         "available": "Udostępnij lekcję do pobrania w formacie PDF zarejestrowanym studentom",
         "course_download": "Pobieranie kursu",
-        "course_avail": "Udostępnij kurs do pobrania zarejestrowanym studentom",
+        "course_avail": "Pobierz kopię tego kursu.",
         "download": "Pobierz",
         "allow": "Zezwalaj na nowych uczniów",
         "access": "Zezwól nowym studentom na dostęp do tego kursu",
@@ -861,11 +861,13 @@
           "unlock_all": "Odblokuj wszystko"
         },
         "certificate_deadline_required": "Najpierw ustal termin wydania certyfikatu",
-        "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach certyfikatu.",
-        "go_to_certificate_settings": "Przejdź do Ustawień certyfikatu",
         "generate_link": "Wygeneruj nowy link",
         "open_link": "Otwórz link w nowej karcie",
-        "copy_link": "Skopiuj link"
+        "copy_link": "Skopiuj link",
+        "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach kursu.",
+        "go_to_completion_deadline": "Przejdź do terminu ukończenia",
+        "completion_deadline_label": "Termin zakończenia kursu",
+        "completion_deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu."
       },
       "analytics": {
         "title": "Analityka"
@@ -2483,8 +2485,9 @@
       "email_message_label": "Wiadomość e-mail",
       "email_message_placeholder": "np. Jesteśmy dumni z Twoich postępów — ucz się dalej!",
       "final_exercise_multiple_attempts_note": "Studenci będą mieli nieograniczoną liczbę prób wykonania wybranego ćwiczenia.",
-      "deadline_required": "W przypadku możliwości pobrania certyfikatów wymagany jest termin wydania certyfikatu.",
-      "deadline_required_enroll": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników."
+      "deadline_required": "Kursy zgodności wymagają terminu ukończenia przed publikacją.",
+      "deadline_required_enroll": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników.",
+      "deadline_invalid": "Termin ukończenia kursu jest nieprawidłowy."
     },
     "creator": {
       "heading": "Jaki kurs chcesz stworzyć?",
@@ -3860,8 +3863,6 @@
     "deeply_appreciate": "bardzo to doceniamy i jesteśmy do Twojej dyspozycji."
   },
   "onboarding": {
-    "sell": "Sprzedawaj kursy online",
-    "teach": "Naucz moich obecnych uczniów online",
     "expanding": "Na innej platformie, rozwijamy się tutaj",
     "employees": "Szkoluj moich pracowników",
     "customers": "Twórz kursy dla moich klientów",
@@ -4084,16 +4085,15 @@
       },
       "usage": {
         "title": "Zastosowanie i ograniczenia",
-        "description": "MCP jest dostępne w każdym planie, ale wykorzystanie jest kontrolowane za pomocą miesięcznych kredytów automatyzacji i limitów kluczowych.",
-        "credits_title": "Pozostały kredyty",
-        "credits_description": "Mutowanie działań MCP zużywa kredyty. Czytanie akcji jest bezpłatne.",
+        "description": "MCP jest dostępne w każdym planie. Wykorzystanie jest kontrolowane przez limity kluczy i limity żądań.",
         "keys_title": "Aktywne klucze",
         "keys_description": "Użyj jednego klucza MCP na każdą integrację, aby umożliwić łatwą rotację lub cofnięcie dostępu.",
         "rate_limits_title": "Limity stawek",
         "rate_limits_description": "Żądania odczytu/zapisu/publikowania dozwolone na minutę.",
         "used_label": "Używane:"
       },
-      "page_subtitle": "Połącz narzędzia AI z ClassroomIO za pomocą kluczy o zasięgu organizacji, które możesz w dowolnym momencie obrócić."
+      "page_subtitle": "Połącz narzędzia AI z ClassroomIO za pomocą kluczy o zasięgu organizacji, które możesz w dowolnym momencie obrócić.",
+      "view_docs": "Zobacz dokumentację"
     },
     "api": {
       "subtitle": "Zarządzaj kluczami API, aby integrować się z publicznym API ClassroomIO.",

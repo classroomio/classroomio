@@ -246,62 +246,18 @@ jobs:
             sleep 5
           done
 
-      - name: Deploy each app service from this branch
+      - name: Deploy app services from this branch in parallel
         if: ${{ inputs.action == 'deploy' }}
-        # `--ci` (not `--detach`) blocks until each service's deploy/healthcheck succeeds,
-        # so the URL printed later is actually live. Trade-off: builds run sequentially.
+        # `--ci` (not `--detach`) keeps each process attached until its deployment
+        # succeeds or fails. Run the independent app builds concurrently, then wait for
+        # every service so the URL printed later is actually live.
         #
         # `railway up --ci` can exit 1 on a log-streaming glitch (railwayapp/cli#696) even
         # though the deploy succeeded. Only on that specific error do we poll the real
         # deployment status instead of trusting the exit code — any other failure means no
         # new deployment exists yet, so it fails immediately rather than risking a match
         # against a stale, unrelated deployment.
-        run: |
-          for svc in $APP_SERVICES; do
-            echo "::group::railway up $svc"
-            log_file=$(mktemp)
-            railway up --service "$svc" --ci 2>&1 | tee "$log_file"
-            railway_status=${PIPESTATUS[0]}
-            if [ "$railway_status" -ne 0 ]; then
-              if grep -q "Failed to stream build logs:" "$log_file"; then
-                deploy_id=$(grep -oP '(?<=[?&]id=)[0-9a-fA-F-]+' "$log_file" | head -n1)
-                if [ -z "$deploy_id" ]; then
-                  echo "::error::railway up failed for $svc and no deployment id could be recovered from its output — cannot verify actual status."
-                  rm -f "$log_file"
-                  exit 1
-                fi
-                echo "railway up reported failure for $svc due to the known log-streaming glitch; checking status of deployment $deploy_id..."
-                status=""
-                for attempt in $(seq 1 60); do
-                  status=$(railway deployment list --service "$svc" --json 2>/dev/null | jq -r --arg id "$deploy_id" '.[] | select(.id == $id) | .status // empty')
-                  case "$status" in
-                    SUCCESS)
-                      echo "Deployment $deploy_id for $svc actually succeeded (status: SUCCESS) — the CLI error was just a log-streaming glitch. Continuing."
-                      break
-                      ;;
-                    FAILED|CRASHED|REMOVED)
-                      echo "::error::$svc deployment $deploy_id did not succeed (status: $status)."
-                      rm -f "$log_file"
-                      exit 1
-                      ;;
-                  esac
-                  if [ "$attempt" -eq 60 ]; then
-                    echo "::error::$svc deployment $deploy_id never reached a terminal status after 60 attempts (last seen: ${status:-unknown})."
-                    rm -f "$log_file"
-                    exit 1
-                  fi
-                  echo "Deployment $deploy_id for $svc not finished yet (status: ${status:-unknown}, attempt $attempt/60) — retrying in 10s..."
-                  sleep 10
-                done
-              else
-                echo "::error::railway up failed for $svc for a reason other than the known log-streaming glitch — not polling stale deployment status."
-                rm -f "$log_file"
-                exit 1
-              fi
-            fi
-            rm -f "$log_file"
-            echo "::endgroup::"
-          done
+        run: bash .github/scripts/railway-preview-deploy.sh
 
       - name: Setup pnpm
         if: ${{ inputs.action == 'deploy' && inputs.seed }}
