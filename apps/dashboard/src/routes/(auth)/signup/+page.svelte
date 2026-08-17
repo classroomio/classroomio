@@ -177,12 +177,6 @@
     }
   }
 
-  $effect(() => {
-    if (passwordBlurred) {
-      validatePasswordLength();
-    }
-  });
-
   const confirmPasswordError = $derived(getConfirmPasswordError(fields));
 </script>
 
