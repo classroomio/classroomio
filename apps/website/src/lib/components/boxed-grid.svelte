@@ -2,7 +2,7 @@
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
 
   /**
-   * Boxed grid of cards — one outer rounded border, internal dividers between cells.
+   * Boxed grid of cards: one outer rounded border, internal dividers between cells.
    * Reused by RoiBand, AutomationBand, customer-ed outcomes, etc.
    *
    * @typedef {Object} Props

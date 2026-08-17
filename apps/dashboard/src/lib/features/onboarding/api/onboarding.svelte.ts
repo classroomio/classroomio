@@ -55,8 +55,19 @@ export class OnboardingApi extends BaseApiWithErrors {
           return;
         }
 
-        // map api validation back to frontend fields
         if ('error' in result) {
+          // Specific handling for siteName / orgName
+          if (result.code === 'SITENAME_EXISTS' || result.field === 'siteName') {
+            this.errors = { ...this.errors, siteName: result.error };
+            return;
+          }
+
+          if (result.code === 'ORGNAME_EXISTS' || result.field === 'orgName') {
+            this.errors = { ...this.errors, orgName: result.error };
+            return;
+          }
+
+          // Fallback to generic
           this.handleValidationError(result);
         }
       }
