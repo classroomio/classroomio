@@ -590,6 +590,14 @@
         "PUBLIC": "Publique"
       }
     },
+    "topCourses": {
+      "heading": "Meilleurs cours par vues",
+      "description": "Cours classés par pages vues",
+      "subtitle": "{total} pages vues dans cette période",
+      "empty": "Aucune consultation de page de cours pour l'instant",
+      "course": "Cours",
+      "views": "Vues"
+    },
     "countries": {
       "heading": "Principaux pays",
       "subtitle": "{total} visiteurs au total",

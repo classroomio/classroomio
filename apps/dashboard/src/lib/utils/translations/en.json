@@ -3956,6 +3956,14 @@
         "COMPLIANCE": "Compliance",
         "PUBLIC": "Public"
       }
+    },
+    "topCourses": {
+      "heading": "Top courses by views",
+      "description": "Courses ranked by page views",
+      "subtitle": "{total} page views in this range",
+      "empty": "No course page views yet",
+      "course": "Course",
+      "views": "Views"
     }
   },
   "upgrade": {

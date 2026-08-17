@@ -135,7 +135,7 @@ export const agentUploadKeyGenerator = (c: Context): string => {
 
 /**
  * Redis keys for engagement analytics read endpoints (landing-stats, funnel,
- * country breakdown, time-to-enrollment). Value: JSON.
+ * country breakdown, popular types, top courses). Value: JSON.
  */
 export function dashAnalyticsKey(route: string, orgId: string, days: number, extra?: string): string {
   const suffix = extra ? `:${extra}` : '';
