@@ -13,6 +13,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { browser } from '$app/environment';
   import { setupDOMProtection, updateBodyClass } from '../utils/dom-protection';
+  import { LogOut } from '@lucide/svelte';
 
   const WAIT_SEC = 120; // 2 minutes
   const WAIT_TIME = WAIT_SEC * 1000;
@@ -171,7 +172,7 @@
     interactOutsideBehavior="ignore"
   >
     <div class="flex flex-col items-center px-8 pt-12 pb-10 text-center">
-      <svg
+      <!-- <svg
         class="mb-8 h-8 w-8 text-gray-400 dark:text-gray-500"
         viewBox="0 0 24 24"
         fill="none"
@@ -182,7 +183,9 @@
       >
         <rect x="2" y="4" width="20" height="16" rx="2" />
         <path d="m22 6-10 7L2 6" />
-      </svg>
+      </svg> -->
+
+      <img src="/verify-email.svg" alt="email verification" />
 
       <h2 class="mb-3 text-lg font-bold text-gray-900 dark:text-gray-50">
         {$t('verify_email_modal.heading')}
@@ -223,19 +226,7 @@
         class="ml-1 inline-flex items-center gap-1 font-bold text-gray-900 dark:text-gray-50"
         onclick={switchAccount}
       >
-        <svg
-          class="h-4 w-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-          <path d="M10 17l5-5-5-5" />
-          <path d="M15 12H3" />
-        </svg>
+        <LogOut class="h-4 w-4" />
         {$t('verify_email_modal.switch_account')}
       </Button>
     </div>
