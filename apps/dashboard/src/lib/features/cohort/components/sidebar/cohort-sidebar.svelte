@@ -29,7 +29,7 @@
 {#if !isOrgLoaded}
   <SidebarSkeleton />
 {:else}
-  <Sidebar.Root collapsible="icon">
+  <Sidebar.Root collapsible="icon" class="ui:z-app-bar-elevated">
     <Sidebar.Header>
       <OrgLogo />
     </Sidebar.Header>

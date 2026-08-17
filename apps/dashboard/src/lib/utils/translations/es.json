@@ -792,10 +792,10 @@
         "progression_mode_description": "Controla si los estudiantes pueden acceder a todo el contenido desbloqueado o deben completar los elementos en orden.",
         "progression_mode_free": "Libre — el contenido desbloqueado es accesible",
         "progression_mode_sequential": "Secuencial — completar elementos previos para desbloquear el siguiente",
-        "lesson_download": "Lecciones DescargarCargar",
+        "lesson_download": "Descarga de lecciones",
         "available": "Haga que la lección esté disponible para descargar en pdf para estudiantes registrados",
         "course_download": "Descarga del curso",
-        "course_avail": "Hacer que el curso esté disponible para su descarga para los estudiantes registrados",
+        "course_avail": "Descarga una copia de este curso.",
         "download": "Descargar",
         "allow": "Permitir nuevos estudiantes",
         "access": "Permitir que nuevos estudiantes accedan a este curso",
@@ -858,7 +858,12 @@
           "description": "Los estudiantes inscritos no podrán tomar lecciones o ejercicios bloqueados hasta que los desbloquees.",
           "description_live": "Las lecciones y ejercicios bloqueados permanecen ocultos para los estudiantes hasta que los desbloqueas, lo que resulta útil si publicas contenido semana tras semana.",
           "unlock_all": "Desbloquear todo"
-        }
+        },
+        "certificate_deadline_required": "Establecer la fecha límite del certificado primero",
+        "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para el certificado antes de que los estudiantes puedan inscribirse. Establezca una fecha límite en la configuración del curso antes de publicarlo.",
+        "go_to_completion_deadline": "Ir a la fecha límite de finalización",
+        "completion_deadline_label": "Fecha límite de finalización del curso",
+        "completion_deadline_helper": "Los estudiantes deben alcanzar el porcentaje de finalización antes de esta fecha (hora local). Déjelo vacío sin fecha límite."
       },
       "analytics": {
         "title": "Analíticas"
@@ -2475,7 +2480,10 @@
       "blocker_final_misconfigured": "El ejercicio de certificación \"{exerciseTitle}\" no tiene puntos configurados; Pídele a tu instructor que lo arregle.",
       "email_message_label": "Mensaje de correo electrónico",
       "email_message_placeholder": "por ej. Estamos orgullosos de tu progreso: ¡sigue aprendiendo!",
-      "final_exercise_multiple_attempts_note": "A los estudiantes se les permitirán intentos ilimitados en el ejercicio seleccionado."
+      "final_exercise_multiple_attempts_note": "A los estudiantes se les permitirán intentos ilimitados en el ejercicio seleccionado.",
+      "deadline_required": "Los cursos de cumplimiento requieren una fecha límite de finalización antes de poder publicarse.",
+      "deadline_required_enroll": "Los cursos de cumplimiento requieren una fecha límite para el certificado antes de que los estudiantes puedan inscribirse.",
+      "deadline_invalid": "La fecha límite de finalización del curso no es válida."
     },
     "creator": {
       "heading": "¿Qué curso quieres crear?",
@@ -3810,7 +3818,8 @@
       "title": "Registro deshabilitado",
       "invite_only_message": "El registro es sólo por invitación. Utilice un enlace de invitación para crear una cuenta.",
       "go_to_login": "Ir a Iniciar sesión"
-    }
+    },
+    "continue_with": "O continuar con"
   },
   "app": {
     "search": {
@@ -3850,8 +3859,6 @@
     "deeply_appreciate": "lo apreciamos profundamente y estamos a su servicio."
   },
   "onboarding": {
-    "sell": "Vender cursos en línea",
-    "teach": "Enseñar a mis alumnos actuales en línea",
     "expanding": "En otra plataforma, ampliando aquí",
     "employees": "Capacitar a mis empleados",
     "customers": "Crear cursos para mis clientes",
@@ -4077,16 +4084,15 @@
       },
       "usage": {
         "title": "Uso y límites",
-        "description": "MCP está disponible en todos los planes, pero el uso se controla con créditos de automatización mensuales y límites clave.",
-        "credits_title": "Créditos restantes",
-        "credits_description": "Las acciones mutantes de MCP consumen créditos. Las acciones de lectura son gratuitas.",
+        "description": "MCP está disponible en todos los planes. El uso se controla mediante límites de claves y límites de tasa.",
         "keys_title": "Claves activas",
         "keys_description": "Utilice una clave MCP por integración para que el acceso se pueda rotar o revocar limpiamente.",
         "rate_limits_title": "Límites de tarifas",
         "rate_limits_description": "Solicitudes de lectura/escritura/publicación permitidas por minuto.",
         "used_label": "Usado:"
       },
-      "page_subtitle": "Conecta herramientas de IA a ClassroomIO con claves con ámbito de organización que puedes rotar en cualquier momento."
+      "page_subtitle": "Conecta herramientas de IA a ClassroomIO con claves con ámbito de organización que puedes rotar en cualquier momento.",
+      "view_docs": "Ver documentación"
     },
     "api": {
       "subtitle": "Administra las claves API para integrarte con la API pública de ClassroomIO.",
@@ -4855,7 +4861,8 @@
       "no_matching_cohort_courses": "Ningún curso de cohorte coincide con su búsqueda.",
       "pagination_status": "Página {page} de {totalPages}",
       "published_access_callout_title": "Acceso de estudiantes",
-      "published_access_callout_description": "Los estudiantes solo tienen acceso a los cursos publicados. Los cursos pueden estar en esta cohorte para tu equipo aunque aún no estén publicados, y permanecerán ocultos para los estudiantes hasta que los publiques."
+      "published_access_callout_description": "Los estudiantes solo tienen acceso a los cursos publicados. Los cursos pueden estar en esta cohorte para su equipo mientras aún no están publicados, pero permanecen ocultos para los estudiantes hasta que los publique.",
+      "empty_student_description": "Aún no hay cursos publicados en esta cohorte."
     },
     "newsfeed": {
       "post": "Nueva publicación",

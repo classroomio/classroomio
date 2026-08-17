@@ -5,6 +5,7 @@ import type {
   TImportAudienceMembers
 } from '@cio/utils/validation/organization';
 import { addGroupMembers, enrollUsersInCourseGroups, getExistingGroupMembers } from '@cio/db/queries/group';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { buildEmailFromName, buildEmailBranding } from '@cio/email';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { addCohortMember, getExistingCohortMembers, getCohortsByOrg } from '@cio/db/queries/cohort';
@@ -194,6 +195,8 @@ async function enrollAudienceStudentProfilesInCourses(
         email: profileEmailMap.get(p.profileId) || undefined
       }))
     );
+
+    await invalidateOrgStats(orgId);
   }
 
   if (validProfiles.length > 0) {
@@ -551,6 +554,7 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
         if (profiles.length > 0) {
           const users = profiles.map((p) => ({ profileId: p.id, email: p.email ?? undefined }));
           await enrollUsersInCourseGroups(validGroupIds, users, ROLE.STUDENT);
+          await invalidateOrgStats(orgId);
           await ensureComplianceEnrollmentRecordsForProfiles(
             courseIds,
             profiles.map((profile) => profile.id)

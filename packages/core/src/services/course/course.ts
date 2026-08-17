@@ -6,8 +6,9 @@ import {
   createCourseSections,
   deleteCourse as deleteCourseQuery,
   getCourseProgress as getCourseProgressQuery,
-  getCourseTypeById,
+  getCourseById,
   getCourseWithRelations,
+  getOrgIdByCourseId,
   updateCourse as updateCourseQuery,
   updateLessonsSectionId
 } from '@cio/db/queries/course';
@@ -28,6 +29,7 @@ import { getStudentCourseProgressImpactCounts } from '@cio/db/queries/course/res
 import { getCourseGroupId } from '@cio/db/queries/course/people';
 
 import { ContentType, ROLE } from '@cio/utils/constants';
+import { isPublishedComplianceMissingDeadline, resolveCourseCertificateDeadline } from '@cio/utils/functions';
 import type { TCourse } from '@cio/db/types';
 import type { TCourseCreate } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
@@ -44,6 +46,7 @@ import {
 } from '@cio/db/queries/organization';
 import { getStudentLimit } from '@cio/utils/plans';
 import { env } from '../../config/env';
+import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { annotateCourseContentWithProgression } from './progression';
 import { buildCourseContent, calcPercentageWithRounding, type CourseContent } from './utils';
 import { guardCourseTypeTransition } from './public-course-guard';
@@ -117,6 +120,10 @@ export async function ensureProgramCourseAccess(courseId: string, profileId: str
       tx
     );
   });
+
+  if (access.roleId === ROLE.STUDENT) {
+    await invalidateOrgStats(organizationId);
+  }
 
   return true;
 }
@@ -306,6 +313,8 @@ export async function createCourse(
       };
     });
 
+    await invalidateOrgStats(data.organizationId);
+
     return result;
   } catch (error) {
     if (error instanceof AppError) {
@@ -338,14 +347,36 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
       slug: data.slug
     };
 
-    if (data.type !== undefined) {
-      const currentType = await getCourseTypeById(courseId);
+    const [currentCourse] = await getCourseById(courseId);
+    if (!currentCourse) {
+      throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+    }
 
+    if (data.type !== undefined) {
       await guardCourseTypeTransition({
         courseId,
-        currentType: currentType ?? null,
+        currentType: currentCourse.type ?? null,
         nextType: data.type
       });
+    }
+
+    const nextType = data.type ?? currentCourse.type;
+    const nextIsPublished = data.isPublished ?? currentCourse.isPublished;
+    const nextDeadline = resolveCourseCertificateDeadline(currentCourse.certificate?.deadline, data.certificate);
+
+    if (
+      isPublishedComplianceMissingDeadline({
+        type: nextType,
+        isPublished: nextIsPublished,
+        deadline: nextDeadline
+      })
+    ) {
+      throw new AppError(
+        'Compliance courses require a completion deadline before they can be published',
+        ErrorCodes.COMPLIANCE_DEADLINE_REQUIRED,
+        400,
+        'certificate.deadline'
+      );
     }
 
     if (data.certificate?.requiredExerciseId) {
@@ -397,6 +428,11 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
       }
     }
 
+    if (data.status !== undefined) {
+      const statsOrgId = await getOrgIdByCourseId(courseId);
+      await invalidateOrgStats(statsOrgId);
+    }
+
     return updated;
   } catch (error) {
     if (error instanceof AppError) {
@@ -417,10 +453,14 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
  */
 export async function deleteCourse(courseId: string) {
   try {
+    const statsOrgId = await getOrgIdByCourseId(courseId);
     const deleted = await deleteCourseQuery(courseId);
     if (!deleted) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
+
+    await invalidateOrgStats(statsOrgId);
+
     return deleted;
   } catch (error) {
     if (error instanceof AppError) {
