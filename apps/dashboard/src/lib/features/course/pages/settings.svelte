@@ -287,6 +287,7 @@
         hasUnsavedChanges = false;
       }
     } catch (error) {
+      console.error(error);
       snackbar.error();
     }
   }
@@ -303,7 +304,8 @@
         courseApi.course.slug = response.slug ?? newSlug;
         snackbar.success('snackbar.course_settings.success.link_generated');
       }
-    } catch {
+    } catch (error) {
+      console.error(error);
       snackbar.error();
     } finally {
       isGeneratingLink = false;
@@ -610,7 +612,6 @@
             <IconButton
               onclick={generateNewCourseLink}
               loading={isGeneratingLink}
-              disabled={isGeneratingLink}
               tooltip={$t('course.navItem.settings.generate_link')}
             >
               <RotateCcwIcon size={16} />
