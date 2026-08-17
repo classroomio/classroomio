@@ -81,7 +81,7 @@
 
 <div
   id={feed.id}
-  class="bg-card text-card-foreground relative mb-6 flex w-full max-w-3xl flex-col overflow-visible rounded-xl {isActive
+  class="bg-card text-card-foreground relative mb-4 flex w-full max-w-3xl flex-col overflow-visible rounded-xl {isActive
     ? 'ring-primary border-primary ring-2'
     : 'border-border/60 border'}"
 >
@@ -96,7 +96,7 @@
 
   <Header {feed} {onPin} onEdit={openEditFeed} onRequestDelete={() => (isDeleteFeedModal = true)} />
 
-  <div class="px-4 pb-2">
+  <div class="px-3 pb-1.5">
     <NewsfeedReactions
       {reactionCounts}
       {selectedReactionType}

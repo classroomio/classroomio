@@ -178,13 +178,13 @@
   };
 </script>
 
-<section class="ui:border-t ui:border-border/60 px-4 pb-4">
+<section class="ui:border-t ui:border-border/60 px-3 pb-3">
   {#if focusedRootId !== null}
     <Button
       variant="ghost"
       size="sm"
       onclick={handleBackToComments}
-      class="ui:text-muted-foreground ui:hover:text-foreground ui:transition-colors ui:h-auto ui:p-0 ui:justify-start mb-3 text-sm font-medium"
+      class="ui:text-muted-foreground ui:hover:text-foreground ui:transition-colors ui:h-auto ui:p-0 ui:justify-start mb-2 text-sm font-medium"
     >
       {$t('course.navItem.news_feed.comments.back_to_comments')}
     </Button>
@@ -195,7 +195,7 @@
       onclick={handleShowMore}
       disabled={isLoading}
       loading={isLoading}
-      class="ui:text-muted-foreground ui:hover:text-foreground ui:transition-colors ui:h-auto ui:p-0 ui:justify-start mb-3 text-sm font-medium"
+      class="ui:text-muted-foreground ui:hover:text-foreground ui:transition-colors ui:h-auto ui:p-0 ui:justify-start mb-2 text-sm font-medium"
     >
       {$t('course.navItem.news_feed.comments.view_more', {
         count: Math.max((thread?.totalRootCount ?? 0) - (thread?.rootIds.length ?? 0), 0)
@@ -203,7 +203,7 @@
     </Button>
   {/if}
 
-  <CommentTree.Root class="max-h-[400px] overflow-y-auto py-2">
+  <CommentTree.Root class="max-h-[400px] overflow-y-auto py-1">
     {#each rootNodes as node (node.id)}
       <CommentTree.Node
         {node}
@@ -217,12 +217,12 @@
         {#snippet body({ node: current })}
           {@const comment = commentOf(current.id)}
           {#if comment}
-            <div id="comment-{comment.id}" class="flex w-full flex-col gap-1">
+            <div id="comment-{comment.id}" class="flex w-full flex-col gap-0.5">
               <CommentTree.Header
                 avatarUrl={comment.authorAvatarUrl}
                 fullname={comment.authorFullname}
                 dateLabel={calDateDiff(comment.createdAt)}
-                avatarSize={current.depth === 0 ? 'ui:size-8' : 'ui:size-7'}
+                avatarSize={current.depth === 0 ? 'ui:size-7' : 'ui:size-6'}
                 canEdit={comment.authorProfileId === $profile.id}
                 onEdit={() => handleStartEdit(current.id, comment.content ?? '')}
                 canDelete={comment.authorProfileId === $profile.id || $isOrgAdmin}
@@ -231,7 +231,7 @@
                 deleteLabel={$t('course.navItem.news_feed.comments.delete')}
               />
 
-              <div class="pl-10">
+              <div class="pl-8">
                 {#if editingCommentId === current.id}
                   <div class="mt-1 flex flex-col gap-2">
                     <Textarea bind:value={editingText} rows={2} class="text-sm" />
@@ -286,6 +286,6 @@
     cancelLabel={$t('course.navItem.news_feed.comments.cancel_reply')}
     onSubmit={handleSubmit}
     {isSubmitting}
-    class="mt-2"
+    class="mt-1.5"
   />
 </section>

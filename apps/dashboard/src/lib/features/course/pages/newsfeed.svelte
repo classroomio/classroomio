@@ -156,7 +156,7 @@
     />
   {:else}
     <!-- pt-4/pl-3 clear the pinned icon's negative offset, which Page.Body's overflow-x-hidden would otherwise clip -->
-    <div class="flex w-full flex-col pt-4 pl-3">
+    <div class="flex w-full flex-col pt-3 pl-2.5">
       {#each orderedFeeds as feed, index (feed.id)}
         {#if index === 0 && pinnedFeeds.length > 0}
           <div class="ui:text-muted-foreground mb-5 flex items-center gap-1.5">

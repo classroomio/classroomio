@@ -26,7 +26,7 @@
   let {
     node,
     indentCap = 5,
-    indentStep = 24,
+    indentStep = 20,
     isCollapsed,
     onToggleCollapse,
     onLoadMoreChildren,
@@ -43,7 +43,7 @@
   const childrenId = $derived(`comment-children-${node.id}`);
 </script>
 
-<div class="ui:relative ui:flex ui:w-full ui:flex-col ui:gap-1.5 {className}" data-depth={node.depth}>
+<div class="ui:relative ui:flex ui:w-full ui:flex-col ui:gap-1 {className}" data-depth={node.depth}>
   <div class="ui:flex ui:w-full ui:items-start ui:gap-1">
     {#if hasBranch}
       <CollapseToggle
@@ -67,7 +67,7 @@
   {:else if hasBranch}
     <div
       id={childrenId}
-      class="ui:relative ui:flex ui:flex-col ui:gap-3"
+      class="ui:relative ui:flex ui:flex-col ui:gap-1.5"
       style:padding-left={`${atCap ? 0 : indentStep}px`}
     >
       <ThreadLine label={labels.collapse} onclick={() => onToggleCollapse(node.id)} />
