@@ -204,6 +204,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
             return {
               ...feed,
               ...response.data,
+              isPinned: result.data.isPinned ?? response.data.isPinned ?? feed.isPinned,
               authorProfileId: feed.authorProfileId,
               authorFullname: feed.authorFullname,
               authorUsername: feed.authorUsername,
