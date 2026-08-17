@@ -43,6 +43,13 @@
       "when": 1785228000000,
       "tag": "0005_add_parent_id_to_course_newsfeed_comment",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1786972800000,
+      "tag": "0006_content_report",
+      "breakpoints": true
     }
   ]
 }

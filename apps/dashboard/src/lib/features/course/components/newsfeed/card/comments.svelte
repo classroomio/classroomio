@@ -13,6 +13,7 @@
   import { Textarea } from '@cio/ui/base/textarea';
   import type { Feed } from '$features/course/utils/types';
   import type { NewsfeedCommentsByFeedId } from '$features/course/api';
+  import { reportDialog } from '$features/report';
 
   interface Props {
     courseId?: string;
@@ -197,6 +198,9 @@
                   onEdit={() => handleStartEdit(commentIdNum, commentItem.content)}
                   canDelete={commentItem.authorProfileId === $profile.id || $isOrgAdmin}
                   onDelete={() => onDeleteComment(commentItem.id)}
+                  canReport={commentItem.authorProfileId !== $profile.id}
+                  onReport={() => reportDialog.start('course_newsfeed_comment', String(commentItem.id))}
+                  reportLabel={$t('report.menu')}
                 />
                 <div class="pl-10">
                   {#if editingCommentId === commentIdNum}
@@ -256,6 +260,9 @@
                         onEdit={() => handleStartEdit(replyIdNum, reply.content)}
                         canDelete={reply.authorProfileId === $profile.id || $isOrgAdmin}
                         onDelete={() => onDeleteComment(reply.id, commentIdNum)}
+                        canReport={reply.authorProfileId !== $profile.id}
+                        onReport={() => reportDialog.start('course_newsfeed_comment', String(reply.id))}
+                        reportLabel={$t('report.menu')}
                       />
                       <div class="pl-9">
                         {#if editingCommentId === replyIdNum}

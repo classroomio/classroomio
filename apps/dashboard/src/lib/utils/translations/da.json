@@ -455,6 +455,11 @@
         "post_created": "Indlægget er oprettet",
         "post_updated": "Opslaget blev opdateret"
       }
+    },
+    "report": {
+      "success": "Thanks. We’ll review this report.",
+      "error": "Could not submit the report. Please try again.",
+      "already_submitted": "You’ve already reported this."
     }
   },
   "explore": {
@@ -1403,7 +1408,9 @@
           "comment_btn": "Kommentar",
           "cancel_btn": "Annuller",
           "load_more_btn": "Indlæs mere",
-          "comment_error": "Kunne ikke skrive kommentar. Prøv venligst igen."
+          "comment_error": "Kunne ikke skrive kommentar. Prøv venligst igen.",
+          "edit": "Edit",
+          "delete": "Delete"
         },
         "exercises": {
           "heading": "Alle øvelser",
@@ -5010,6 +5017,28 @@
         "save": "Gem",
         "cancel": "Annuller"
       }
+    }
+  },
+  "report": {
+    "menu": "Report",
+    "title": "Report content",
+    "description": "Tell us what’s wrong. Our team will review this report.",
+    "reason_label": "Reason",
+    "reason_placeholder": "Select a reason",
+    "reason_required": "Please choose a reason",
+    "details_label": "Additional details",
+    "details_placeholder": "Add any context that will help us review this (optional)",
+    "submit": "Submit report",
+    "cancel": "Cancel",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Harassment or bullying",
+      "hate_speech": "Hate speech",
+      "sexual_content": "Sexual content",
+      "violence": "Violence or threats",
+      "misinformation": "Misinformation",
+      "privacy": "Privacy violation",
+      "other": "Other"
     }
   }
 }

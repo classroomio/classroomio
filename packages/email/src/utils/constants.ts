@@ -14,6 +14,7 @@ export const EMAIL_IDS = [
   'submissionReceived',
   'studentLimitReached',
   'studentLimitApproaching',
+  'contentReportAlert',
   'studentCourseInvite',
   'studentCourseCompletion',
   'studentCourseWelcome',
