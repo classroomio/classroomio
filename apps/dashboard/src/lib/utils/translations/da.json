@@ -470,6 +470,11 @@
         "post_created": "Indlægget er oprettet",
         "post_updated": "Opslaget blev opdateret"
       }
+    },
+    "report": {
+      "success": "Tak. Vi gennemgår denne anmeldelse.",
+      "error": "Anmeldelsen kunne ikke sendes. Prøv venligst igen.",
+      "already_submitted": "Du har allerede anmeldt dette."
     }
   },
   "explore": {
@@ -5484,5 +5489,27 @@
     "format_json": "JSON",
     "copied": "Kopieret til udklipsholder",
     "copy_failed": "Kunne ikke kopiere til udklipsholder"
+  },
+  "report": {
+    "menu": "Anmeld",
+    "title": "Anmeld indhold",
+    "description": "Fortæl os, hvad der er galt. Vores team vil gennemgå denne anmeldelse.",
+    "reason_label": "Årsag",
+    "reason_placeholder": "Vælg en årsag",
+    "reason_required": "Vælg venligst en årsag",
+    "details_label": "Yderligere oplysninger",
+    "details_placeholder": "Tilføj kontekst, der kan hjælpe os med at gennemgå dette (valgfrit)",
+    "submit": "Send anmeldelse",
+    "cancel": "Annuller",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Chikane eller mobning",
+      "hate_speech": "Hadefuld tale",
+      "sexual_content": "Seksuelt indhold",
+      "violence": "Vold eller trusler",
+      "misinformation": "Misinformation",
+      "privacy": "Brud på privatlivet",
+      "other": "Andet"
+    }
   }
 }

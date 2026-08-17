@@ -470,6 +470,11 @@
         "post_created": "Message créé avec succès",
         "post_updated": "Message mis à jour avec succès"
       }
+    },
+    "report": {
+      "success": "Merci. Nous examinerons ce signalement.",
+      "error": "Impossible d'envoyer le signalement. Veuillez réessayer.",
+      "already_submitted": "Vous avez déjà signalé ce contenu."
     }
   },
   "explore": {
@@ -5484,5 +5489,27 @@
     "format_json": "JSON",
     "copied": "Copié dans le presse-papiers",
     "copy_failed": "Impossible de copier dans le presse-papiers"
+  },
+  "report": {
+    "menu": "Signaler",
+    "title": "Signaler du contenu",
+    "description": "Indiquez-nous ce qui ne va pas. Notre équipe examinera ce signalement.",
+    "reason_label": "Motif",
+    "reason_placeholder": "Sélectionnez un motif",
+    "reason_required": "Veuillez choisir un motif",
+    "details_label": "Détails supplémentaires",
+    "details_placeholder": "Ajoutez tout contexte qui nous aidera à examiner ce signalement (facultatif)",
+    "submit": "Envoyer le signalement",
+    "cancel": "Annuler",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Harcèlement ou intimidation",
+      "hate_speech": "Discours haineux",
+      "sexual_content": "Contenu sexuel",
+      "violence": "Violence ou menaces",
+      "misinformation": "Désinformation",
+      "privacy": "Atteinte à la vie privée",
+      "other": "Autre"
+    }
   }
 }
