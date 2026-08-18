@@ -1300,7 +1300,10 @@
       "pricing_free": "Free",
       "pricing_paid": "Paid",
       "empty": "No tags available yet",
-      "search_placeholder": "Search courses..."
+      "search_placeholder": "Search courses...",
+      "clear_search": "Clear search",
+      "selected": "Selected:",
+      "save_changes": "Save Changes"
     },
     "empty": {
       "title": "No courses found",
@@ -3623,6 +3626,9 @@
         "setup_landing_for_link": "Setup landing page to get course link",
         "coming_soon": "Coming soon",
         "link": "Course Link",
+        "generate_link": "Generate new link",
+        "open_link": "Open link in new tab",
+        "copy_link": "Copy link",
         "grading": "Grading",
         "reports": "Make grading reports available for lessons",
         "disabled": "Disabled",
@@ -4015,9 +4021,7 @@
       "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime.",
       "usage": {
         "title": "Usage and limits",
-        "description": "MCP is available on every plan, but usage is controlled with monthly automation credits and key limits.",
-        "credits_title": "Credits remaining",
-        "credits_description": "Mutating MCP actions consume credits. Read actions are free.",
+        "description": "MCP is available on every plan. Usage is controlled by key limits and rate limits.",
         "keys_title": "Active keys",
         "keys_description": "Use one MCP key per integration so access can be rotated or revoked cleanly.",
         "rate_limits_title": "Rate limits",
@@ -4045,7 +4049,8 @@
         "codex_description": "Adds the ClassroomIO MCP server to Codex with the same org-scoped key.",
         "cursor_description": "Paste this into `~/.cursor/mcp.json` or your workspace MCP config.",
         "opencode_description": "Add this to `opencode.json` in your project root or `~/.config/opencode/opencode.json`."
-      }
+      },
+      "view_docs": "View Docs"
     },
     "api": {
       "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
@@ -4215,7 +4220,8 @@
       "passed_requires_points": "Passed completion needs at least one point available.",
       "success": "Saved Successfully",
       "submission_updated": "Submission updated to",
-      "error_fetching": "Fetching exercises failed, please reload the page"
+      "error_fetching": "Fetching exercises failed, please reload the page",
+      "draft_restored": "We restored the unsaved changes you left behind"
     },
     "materials": {
       "apology": "We apologise, there was an error saving your lesson.",
@@ -4252,7 +4258,8 @@
         "saved": "Saved successfully",
         "successful_integration": "Integration successful",
         "successful_deletion": "Integration deleted",
-        "update_successful": "Update successful"
+        "update_successful": "Update successful",
+        "link_generated": "Course link updated successfully"
       },
       "error": {
         "not_right": "Something's not right - Please try later",

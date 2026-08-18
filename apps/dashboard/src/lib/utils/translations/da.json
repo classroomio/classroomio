@@ -295,7 +295,8 @@
         "unlocked_all_content": "Alle kursusartikler er låst op",
         "all_content_already_unlocked": "Alt indhold er allerede låst op",
         "content_grouping_enabled": "Indholdsgruppering aktiveret",
-        "content_grouping_disabled": "Indholdsgruppering deaktiveret"
+        "content_grouping_disabled": "Indholdsgruppering deaktiveret",
+        "link_generated": "Kursuslinket blev opdateret"
       }
     },
     "people": {
@@ -329,7 +330,8 @@
       "success": "Gemt",
       "submission_updated": "Indsendelse opdateret til",
       "error_fetching": "Hentning af øvelser mislykkedes. Genindlæs venligst siden",
-      "passed_requires_points": "Gennemførelse ved bestået kræver mindst ét tilgængeligt point."
+      "passed_requires_points": "Gennemførelse ved bestået kræver mindst ét tilgængeligt point.",
+      "draft_restored": "Vi har gendannet de ikke-gemte ændringer, du efterlod"
     },
     "poll": {
       "info": {
@@ -859,6 +861,9 @@
           "description_live": "Låste lektioner og øvelser forbliver skjult for eleverne, indtil du låser dem op - nyttigt, hvis du udgiver indhold uge for uge.",
           "unlock_all": "Lås alle op"
         },
+        "generate_link": "Generer nyt link",
+        "open_link": "Åbn link i ny fane",
+        "copy_link": "Kopiér link",
         "certificate_deadline_required": "Indstil certifikatfrist først",
         "certificate_deadline_required_description": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes. Indstil venligst en deadline i kursusindstillingerne før udgivelse.",
         "go_to_completion_deadline": "Gå til fuldførelsesfristen",
@@ -3963,9 +3968,12 @@
       "tags_title": "Tags",
       "types_title": "Typer",
       "search_placeholder": "Søg efter kurser...",
+      "clear_search": "Ryd søgning",
       "pricing_title": "Prissætning",
       "pricing_free": "Gratis",
-      "pricing_paid": "Betalt"
+      "pricing_paid": "Betalt",
+      "selected": "Valgt:",
+      "save_changes": "Gem ændringer"
     }
   },
   "tags_admin": {
@@ -4081,16 +4089,15 @@
       },
       "usage": {
         "title": "Anvendelse og grænser",
-        "description": "MCP er tilgængelig på alle abonnementer, men brugen styres med månedlige automatiseringskreditter og nøglegrænser.",
-        "credits_title": "Kreditter tilbage",
-        "credits_description": "Muterende MCP-handlinger bruger kreditter. Læsehandlinger er gratis.",
+        "description": "MCP er tilgængelig på alle abonnementer. Brugen styres af nøglegrænser og hastighedsgrænser.",
         "keys_title": "Aktive nøgler",
         "keys_description": "Brug én MCP-nøgle pr. integration, så adgang kan roteres eller tilbagekaldes rent.",
         "rate_limits_title": "Satsgrænser",
         "rate_limits_description": "Læs/skriv/publicér anmodninger tilladt pr. minut.",
         "used_label": "Brugt:"
       },
-      "page_subtitle": "Forbind AI-værktøjer til ClassroomIO med organisationsnøgler, du kan rotere når som helst."
+      "page_subtitle": "Forbind AI-værktøjer til ClassroomIO med organisationsnøgler, du kan rotere når som helst.",
+      "view_docs": "Se dokumentation"
     },
     "api": {
       "subtitle": "Administrer API-nøgler til integration med ClassroomIOs offentlige API.",
