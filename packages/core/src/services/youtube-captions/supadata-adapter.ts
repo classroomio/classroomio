@@ -31,12 +31,14 @@ export class SupadataAdapter implements YoutubeCaptionAdapter {
     const { youtubeVideoId, canonicalUrl, preferredLanguages } = input;
 
     const languagesToTry = preferredLanguages.length > 0 ? preferredLanguages : ['en'];
+    let lastUnavailable: { unavailable: true; reason: string } | null = null;
 
     for (const lang of languagesToTry) {
       const result = await this.fetchCaptionsForLanguage(youtubeVideoId, canonicalUrl, lang);
       if (!('unavailable' in result)) {
         return result;
       }
+      lastUnavailable = result;
     }
 
     if (languagesToTry.length > 1) {
@@ -44,10 +46,10 @@ export class SupadataAdapter implements YoutubeCaptionAdapter {
       if (!('unavailable' in fallbackResult)) {
         return fallbackResult;
       }
+      lastUnavailable = fallbackResult;
     }
 
-    const lastResult = await this.fetchCaptionsForLanguage(youtubeVideoId, canonicalUrl, languagesToTry[0]);
-    return lastResult;
+    return lastUnavailable ?? { unavailable: true, reason: 'not_found' };
   }
 
   private async fetchCaptionsForLanguage(

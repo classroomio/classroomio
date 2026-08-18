@@ -107,8 +107,8 @@ export async function getLessonVideoTranscript(
 
   const youtubeTranscriptTexts: string[] = [];
 
-  for (const yt of youtubeVideos) {
-    const existing = await getMediaTranscriptByAsset(yt.assetId, orgId);
+  for (const youtubeVideo of youtubeVideos) {
+    const existing = await getMediaTranscriptByAsset(youtubeVideo.assetId, orgId);
     if (existing?.text) {
       youtubeTranscriptTexts.push(existing.text);
       continue;
@@ -127,8 +127,8 @@ export async function getLessonVideoTranscript(
 
       const { fetchAndCacheYoutubeCaptions } = await import('../youtube-captions');
       const result = await fetchAndCacheYoutubeCaptions({
-        youtubeVideoId: yt.youtubeVideoId,
-        canonicalUrl: yt.link,
+        youtubeVideoId: youtubeVideo.youtubeVideoId,
+        canonicalUrl: youtubeVideo.link,
         apiKey
       });
 
@@ -164,7 +164,7 @@ export async function getLessonVideoTranscript(
         const getMediaBucket = () => bucket;
 
         await writeYoutubeCaptionToMediaTranscript({
-          assetId: yt.assetId,
+          assetId: youtubeVideo.assetId,
           organizationId: orgId,
           captionResult: result,
           uploadBufferToBucket: uploadBuffer,
