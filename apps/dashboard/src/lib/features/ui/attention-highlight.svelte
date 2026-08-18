@@ -2,7 +2,7 @@
   import { afterNavigate, replaceState } from '$app/navigation';
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
-  import { tick, untrack, type Snippet } from 'svelte';
+  import { onMount, tick, type Snippet } from 'svelte';
 
   interface Props {
     id: string;
@@ -11,17 +11,13 @@
     children?: Snippet;
   }
 
-  let { id, duration = 3, trigger = 0, children }: Props = $props();
-
-  const SCROLL_RETRY_DELAYS_MS = [0, 50, 300];
+  let { id, duration = 5, trigger = 0, children }: Props = $props();
 
   let containerRef = $state<HTMLDivElement | null>(null);
   let pulsing = $state(false);
-  let handledFor = $state<string | null>(null);
   let lastTrigger = trigger;
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
   let retryTimeoutIds: ReturnType<typeof setTimeout>[] = [];
-  let rafId: number | null = null;
 
   function getActiveHighlightId(url: URL): string | null {
     const query = url.searchParams.get('highlight');
@@ -37,11 +33,6 @@
     }
 
     retryTimeoutIds = [];
-
-    if (rafId !== null) {
-      cancelAnimationFrame(rafId);
-      rafId = null;
-    }
   }
 
   function clearTimers() {
@@ -57,29 +48,19 @@
     containerRef?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  function scheduleScrollRetries() {
-    clearScrollRetries();
-
-    rafId = requestAnimationFrame(() => {
-      scrollToSection();
-      rafId = null;
-    });
-
-    retryTimeoutIds = SCROLL_RETRY_DELAYS_MS.map((delayMs) =>
-      setTimeout(() => {
-        scrollToSection();
-      }, delayMs)
-    );
-  }
-
-  async function triggerPulse() {
+  function triggerPulse() {
     pulsing = true;
-    scheduleScrollRetries();
-
-    await tick();
     scrollToSection();
 
+    void tick().then(() => {
+      scrollToSection();
+      clearScrollRetries();
+      retryTimeoutIds = [50, 300].map((delayMs) => setTimeout(scrollToSection, delayMs));
+    });
+
     if (timeoutId) clearTimeout(timeoutId);
+
+    const pulseMs = (Number(duration) || 5) * 1000;
     timeoutId = setTimeout(() => {
       pulsing = false;
       timeoutId = null;
@@ -95,41 +76,30 @@
       if (highlightActive || hashActive) {
         replaceState(resolve(`${url.pathname}${url.search}`, {}), page.state);
       }
-    }, duration * 1000);
+    }, pulseMs);
   }
 
-  function maybePulseFromUrl(resyncScroll = false) {
-    const href = page.url.href;
-    const activeHighlightId = getActiveHighlightId(page.url);
+  function pulseIfUrlMatches() {
+    if (getActiveHighlightId(page.url) !== id) return;
 
-    if (activeHighlightId !== id) {
-      untrack(() => {
-        handledFor = null;
-      });
+    if (pulsing) {
+      scrollToSection();
       return;
     }
 
-    if (untrack(() => handledFor) === href) {
-      if (resyncScroll) {
-        scheduleScrollRetries();
-      }
-
-      return;
-    }
-
-    untrack(() => {
-      handledFor = href;
-    });
-    void triggerPulse();
+    triggerPulse();
   }
 
-  $effect(() => {
-    void page.url.href;
-    maybePulseFromUrl();
+  onMount(() => {
+    pulseIfUrlMatches();
+
+    return () => {
+      clearTimers();
+    };
   });
 
   afterNavigate(() => {
-    maybePulseFromUrl(true);
+    pulseIfUrlMatches();
   });
 
   $effect(() => {
@@ -138,20 +108,14 @@
     lastTrigger = trigger;
 
     if (trigger > 0) {
-      void triggerPulse();
+      triggerPulse();
     }
-  });
-
-  $effect(() => {
-    return () => {
-      clearTimers();
-    };
   });
 </script>
 
 <div
   bind:this={containerRef}
-  class={`scroll-mt-16 rounded-md p-2 ${pulsing ? 'ui:ring-primary ui:ring-2 ui:ring-offset-2 animate-pulse' : ''}`}
+  class={`scroll-mt-16 rounded-md p-2 ${pulsing ? 'ui:bg-primary/15 ui:ring-primary ui:ring-4 ui:ring-offset-background ui:ring-offset-2' : ''}`}
 >
   {#if children}
     {@render children()}
