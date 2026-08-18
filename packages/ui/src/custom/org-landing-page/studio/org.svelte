@@ -9,7 +9,7 @@
   import StudioCourseCard from './course-card.svelte';
   import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
   import { Button } from '../../../base/button';
-  import { themeStyle } from '../theme-style';
+  import LandingThemeScope from '../landing-theme-scope.svelte';
 
   let {
     orgName,
@@ -29,10 +29,7 @@
   }: OrgLandingPageProps = $props();
 </script>
 
-<div
-  class="ui:min-h-screen ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:font-sans"
-  style={themeStyle('studio')}
->
+<LandingThemeScope theme="studio" class="ui:font-sans">
   <main>
     <StudioHero {hero} {courses}>
       {#snippet navigation()}
@@ -86,4 +83,4 @@
   <OrgLandingPageCallout {callout} {labels} variant="studio" />
 
   <OrgLandingPageFooter {orgName} {logoUrl} {footer} variant="studio" />
-</div>
+</LandingThemeScope>

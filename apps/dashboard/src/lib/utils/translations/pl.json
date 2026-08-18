@@ -295,7 +295,8 @@
         "unlocked_all_content": "Wszystkie elementy kursu odblokowane",
         "all_content_already_unlocked": "Cała treść jest już odblokowana",
         "content_grouping_enabled": "Grupowanie treści włączone",
-        "content_grouping_disabled": "Grupowanie treści wyłączone"
+        "content_grouping_disabled": "Grupowanie treści wyłączone",
+        "link_generated": "Link do kursu został pomyślnie zaktualizowany"
       }
     },
     "people": {
@@ -329,7 +330,8 @@
       "success": "Zapisano pomyślnie",
       "submission_updated": "Zgłoszenie zaktualizowane do",
       "error_fetching": "Pobieranie ćwiczeń nie powiodło się. Załaduj stronę ponownie",
-      "passed_requires_points": "Ukończenie przez zaliczenie wymaga co najmniej jednego dostępnego punktu."
+      "passed_requires_points": "Ukończenie przez zaliczenie wymaga co najmniej jednego dostępnego punktu.",
+      "draft_restored": "Przywróciliśmy niezapisane zmiany, które pozostawiłeś"
     },
     "poll": {
       "info": {
@@ -860,6 +862,9 @@
           "unlock_all": "Odblokuj wszystko"
         },
         "certificate_deadline_required": "Najpierw ustal termin wydania certyfikatu",
+        "generate_link": "Wygeneruj nowy link",
+        "open_link": "Otwórz link w nowej karcie",
+        "copy_link": "Skopiuj link",
         "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach kursu.",
         "go_to_completion_deadline": "Przejdź do terminu ukończenia",
         "completion_deadline_label": "Termin zakończenia kursu",
@@ -3963,9 +3968,12 @@
       "tags_title": "Tagi",
       "types_title": "Typy",
       "search_placeholder": "Wyszukaj kursy...",
+      "clear_search": "Wyczyść szukanie",
       "pricing_title": "Ceny",
       "pricing_free": "Bezpłatny",
-      "pricing_paid": "Płatny"
+      "pricing_paid": "Płatny",
+      "selected": "Wybrane:",
+      "save_changes": "Zapisz zmiany"
     }
   },
   "tags_admin": {

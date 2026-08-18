@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Exercise — ClassroomIO Mobile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <header class="proto-head">
+      <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14"><path d="m15 18-6-6 6-6"/></svg> All screens</a>
+      <span class="eyebrow">Learner · Assessment</span>
+      <h1>Exercises</h1>
+      <p>
+        Touch renderers for all 16 question types in <code>packages/question-types</code> — including the ones the web
+        takes for granted: <code>MATCHING</code> and <code>ORDERING</code> as drag, <code>HOTSPOT</code> as tap,
+        <code>FILE_UPLOAD</code> through the camera, and <code>VIDEO_RECORDING</code> in-app. Answers autosave locally so a
+        phone call never costs an attempt; media goes up through the existing presigned-upload route.
+      </p>
+      <div class="proto-links">
+        <a href="lesson.html">← Lesson</a>
+        <a href="tutor-grading.html">How it's graded →</a>
+        <a href="certificates.html">Certificate →</a>
+      </div>
+    </header>
+
+    <div class="stage">
+      <!-- 1. IN PROGRESS -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="9:52"></div>
+
+            <div class="navbar bordered">
+              <button class="icon-btn plain" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+              <div class="grow">
+                <div class="title-sm">Section 2 check</div>
+                <div class="sub">Question 3 of 8 · no time limit</div>
+              </div>
+              <span class="badge badge-muted">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>
+                Saved
+              </span>
+            </div>
+
+            <div class="screen">
+              <div class="row" style="margin: 12px 0 18px">
+                <div class="segs">
+                  <span class="seg done"></span><span class="seg done"></span><span class="seg now"></span><span class="seg"></span>
+                  <span class="seg"></span><span class="seg"></span><span class="seg"></span><span class="seg"></span>
+                </div>
+              </div>
+
+              <div class="eyebrow">Single choice · 2 points</div>
+              <div style="font-size: 17px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.4; margin: 8px 0 16px">
+                You find a wet, shiny film on a hydraulic ram that reappears after wiping. What do you do?
+              </div>
+
+              <div class="stack" data-select style="margin-bottom: 18px">
+                <label class="opt" data-option>
+                  <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>
+                  <span>Top up the hydraulic fluid and continue the shift</span>
+                </label>
+                <label class="opt on" data-option>
+                  <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>
+                  <span>Tag the truck out of service and report the fault</span>
+                </label>
+                <label class="opt" data-option>
+                  <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>
+                  <span>Note it on the log and check again at the end of the shift</span>
+                </label>
+                <label class="opt" data-option>
+                  <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>
+                  <span>Wipe it down and only escalate if the load feels unstable</span>
+                </label>
+              </div>
+
+              <div class="banner banner-muted">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                <div class="bd" style="color: var(--muted-foreground)">
+                  Your answers save on this device as you go. If you get interrupted, you'll pick up exactly here.
+                </div>
+              </div>
+
+              <div class="row" style="gap: 8px; margin-top: 18px">
+                <button class="btn btn-outline btn-lg" style="flex: 1">Back</button>
+                <button class="btn btn-primary btn-lg" style="flex: 2">Next question</button>
+              </div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>In progress</b>One question per screen with a segment bar and a persistent "Saved" chip — the autosave promise made visible.</figcaption>
+      </figure>
+
+      <!-- 2. RICH TYPES -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="9:58"></div>
+
+            <div class="navbar bordered">
+              <button class="icon-btn plain" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+              <div class="grow">
+                <div class="title-sm">Section 2 check</div>
+                <div class="sub">Question 7 of 8</div>
+              </div>
+              <span class="badge badge-muted"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg> Saved</span>
+            </div>
+
+            <div class="screen">
+              <div class="row" style="margin: 12px 0 18px">
+                <div class="segs">
+                  <span class="seg done"></span><span class="seg done"></span><span class="seg done"></span><span class="seg done"></span>
+                  <span class="seg done"></span><span class="seg done"></span><span class="seg now"></span><span class="seg"></span>
+                </div>
+              </div>
+
+              <div class="eyebrow">Photo evidence · 5 points</div>
+              <div style="font-size: 17px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.4; margin: 8px 0 6px">
+                Photograph the data plate on the truck you're authorized to drive.
+              </div>
+              <div class="lsub" style="margin-bottom: 14px">Your tutor checks that the rated capacity matches your authorization.</div>
+
+              <div class="card card-pad" style="margin-bottom: 10px">
+                <div class="row">
+                  <div class="thumb" style="background: linear-gradient(135deg, oklch(0.556 0 0), oklch(0.3 0 0)); width: 64px; height: 48px">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg>
+                  </div>
+                  <div class="grow">
+                    <div class="ltitle">IMG_4192.jpg</div>
+                    <div class="lmeta"><span>2.4 MB</span><span class="sep">·</span><span>Uploading…</span></div>
+                    <div class="row" style="margin-top: 6px"><div class="progress"><span style="width: 62%"></span></div><span class="text-muted tnum" style="font-size: 11px">62%</span></div>
+                  </div>
+                  <button class="icon-btn plain" aria-label="Cancel upload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                </div>
+              </div>
+
+              <div class="row" style="gap: 8px; margin-bottom: 18px">
+                <button class="btn btn-outline" style="flex: 1">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg>
+                  Camera
+                </button>
+                <button class="btn btn-outline" style="flex: 1">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                  Files
+                </button>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="eyebrow">Also in this exercise</div>
+              <div class="stack stack-sm" style="margin-top: 8px">
+                <div class="lrow flat">
+                  <div class="media is-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                  <div class="grow"><div class="ltitle">Match the hazard to its control</div><div class="lmeta"><span>Drag to match · answered</span></div></div>
+                </div>
+                <div class="lrow flat">
+                  <div class="media is-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                  <div class="grow"><div class="ltitle">Tap the blind spot on the diagram</div><div class="lmeta"><span>Hotspot · answered</span></div></div>
+                </div>
+                <div class="lrow flat">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></div>
+                  <div class="grow"><div class="ltitle">Record your 60-second handover</div><div class="lmeta"><span>Video · not started</span></div></div>
+                </div>
+              </div>
+
+              <button class="btn btn-primary btn-lg btn-block" style="margin-top: 18px">Next question</button>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>Media &amp; rich question types</b>Camera capture with visible upload progress and retry, plus drag, hotspot, and in-app video recording — the types a phone does better than a laptop.</figcaption>
+      </figure>
+
+      <!-- 3. GRADED -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="14:07"></div>
+
+            <div class="navbar bordered">
+              <a class="icon-btn plain" href="course.html" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></a>
+              <div class="grow"><div class="title-sm">Section 2 check · Result</div></div>
+            </div>
+
+            <div class="screen">
+              <div class="card card-pad" style="margin: 14px 0 12px; text-align: center">
+                <div class="ring lg" style="margin: 0 auto 12px; width: 92px; height: 92px">
+                  <svg viewBox="0 0 36 36"><circle class="track" cx="18" cy="18" r="15.5" fill="none" stroke-width="3"/><circle class="arc" cx="18" cy="18" r="15.5" fill="none" stroke-width="3" stroke-linecap="round" stroke-dasharray="97.4" stroke-dashoffset="12.7"/></svg>
+                  <span class="lbl tnum" style="font-size: 20px">87%</span>
+                </div>
+                <div style="font-size: 17px; font-weight: 600; letter-spacing: -0.02em">Passed</div>
+                <div class="lsub" style="margin-top: 3px">26 of 30 points · pass mark 70%</div>
+                <div class="row" style="justify-content: center; gap: 6px; margin-top: 10px">
+                  <span class="badge badge-success-soft">Graded by Daniel Mensah</span>
+                  <span class="badge badge-outline">2h ago</span>
+                </div>
+              </div>
+
+              <div class="card card-pad" style="margin-bottom: 12px">
+                <div class="eyebrow" style="margin-bottom: 8px">Tutor feedback</div>
+                <div style="font-size: 13.5px; line-height: 1.55">
+                  Solid inspection sequence and the tag-out call was right. Your handover recording skipped the battery state —
+                  mention it next time, it's the one item the incoming driver can't check quickly.
+                </div>
+              </div>
+
+              <div class="sec-head"><h2>Question breakdown</h2></div>
+              <div class="stack stack-sm">
+                <div class="lrow flat">
+                  <div class="media is-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                  <div class="grow"><div class="ltitle">Q3 · Hydraulic fault response</div><div class="lmeta"><span>2 / 2</span></div></div>
+                </div>
+                <div class="lrow flat">
+                  <div class="media is-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                  <div class="grow"><div class="ltitle">Q5 · Match hazard to control</div><div class="lmeta"><span>4 / 4</span></div></div>
+                </div>
+                <div class="lrow flat">
+                  <div class="media is-warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Q8 · Handover recording</div>
+                    <div class="lmeta"><span>4 / 8</span><span class="sep">·</span><span>Missing battery state</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <a class="btn btn-primary btn-lg btn-block" href="course.html">Continue to Section 3</a>
+              <button class="btn btn-outline btn-block" style="margin-top: 8px">Retake for a higher score</button>
+              <div class="hint" style="text-align: center">1 retake remaining · your highest score counts</div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>Graded</b>Score, tutor comment, and a per-question breakdown that names what was missing — feedback the learner can act on without opening a laptop.</figcaption>
+      </figure>
+    </div>
+
+    <button class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <script src="proto.js"></script>
+  </body>
+</html>
