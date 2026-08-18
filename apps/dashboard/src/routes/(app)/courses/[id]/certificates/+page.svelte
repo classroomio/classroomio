@@ -22,8 +22,12 @@
     return tab === 'settings' ? 'settings' : 'design';
   }
 
-  // replaceState does not update page.url; keep the tab in local state and sync the query string.
+  // replaceState does not update page.url; local state handles tab clicks, this resyncs on navigation.
   let certificateActiveTab = $state(normalizeCertificateTab(page.url.searchParams.get('tab')));
+
+  $effect.pre(() => {
+    certificateActiveTab = normalizeCertificateTab(page.url.searchParams.get('tab'));
+  });
 
   let hasUnsavedChanges = $state(false);
   let savedCertificateState = $state<string | null>(null);
