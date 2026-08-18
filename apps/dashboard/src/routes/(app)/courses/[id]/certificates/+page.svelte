@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { goto } from '$app/navigation';
+  import { replaceState } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { CertificatesPage } from '$features/course/pages';
   import * as Page from '@cio/ui/base/page';
@@ -18,10 +18,12 @@
 
   let errors = $state<Record<string, string>>({});
 
-  const certificateActiveTab = $derived.by(() => {
-    const tabInParam = page.url.searchParams.get('tab');
-    return tabInParam === 'settings' ? 'settings' : 'design';
-  });
+  function normalizeCertificateTab(tab: string | null) {
+    return tab === 'settings' ? 'settings' : 'design';
+  }
+
+  // replaceState does not update page.url; keep the tab in local state and sync the query string.
+  let certificateActiveTab = $state(normalizeCertificateTab(page.url.searchParams.get('tab')));
 
   let hasUnsavedChanges = $state(false);
   let savedCertificateState = $state<string | null>(null);
@@ -144,12 +146,17 @@
   }
 
   function handleActiveTabChange(tab: string) {
+    const nextTab = normalizeCertificateTab(tab);
+
+    if (nextTab === certificateActiveTab) {
+      return;
+    }
+
+    certificateActiveTab = nextTab;
+
     const url = new URL(page.url);
-    url.searchParams.set('tab', tab);
-  function handleActiveTabChange(tab: string) {
-    const url = new URL(page.url);
-    url.searchParams.set('tab', tab);
-    replaceState(url, {});
+    url.searchParams.set('tab', nextTab);
+    replaceState(resolve(`${url.pathname}${url.search}`, {}), page.state);
   }
 </script>
 
