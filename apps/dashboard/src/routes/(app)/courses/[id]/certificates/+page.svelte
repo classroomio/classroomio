@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { page } from '$app/state';
+  import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { CertificatesPage } from '$features/course/pages';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
@@ -14,7 +17,12 @@
   import { openUpgradeModal } from '$lib/utils/functions/org';
 
   let errors = $state<Record<string, string>>({});
-  let certificateActiveTab = $state('design');
+
+  const certificateActiveTab = $derived.by(() => {
+    const tabInParam = page.url.searchParams.get('tab');
+    return tabInParam === 'settings' ? 'settings' : 'design';
+  });
+
   let hasUnsavedChanges = $state(false);
   let savedCertificateState = $state<string | null>(null);
   let savedCertificateStateCourseId = $state<string | null>(null);
@@ -134,6 +142,15 @@
     hasUnsavedChanges = false;
     errors = {};
   }
+
+  function handleActiveTabChange(tab: string) {
+    const url = new URL(page.url);
+    url.searchParams.set('tab', tab);
+  function handleActiveTabChange(tab: string) {
+    const url = new URL(page.url);
+    url.searchParams.set('tab', tab);
+    replaceState(url, {});
+  }
 </script>
 
 <svelte:head>
@@ -160,7 +177,7 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <CertificatesPage {errors} bind:activeTab={certificateActiveTab} />
+      <CertificatesPage {errors} activeTab={certificateActiveTab} onActiveTabChange={handleActiveTabChange} />
     {/snippet}
   </Page.Body>
   {#if canEditCertificates && certificateActiveTab === 'settings'}
