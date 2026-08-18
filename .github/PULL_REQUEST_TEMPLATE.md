@@ -4,7 +4,9 @@
 
 Fixes # (place issue number here without bracket)
 
-<!-- Please provide a screenshots or upload a video for visual changes to speed up reviews -->
+## Demo
+
+<!-- Please upload a video here or attach a link to a video player like Awesome Screenshot or Loom to show the change in action. This speeds up reviews, especially for visual changes. -->
 
 ## Type of change
 

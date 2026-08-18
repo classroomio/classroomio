@@ -232,8 +232,6 @@
     }
   },
   "onboarding": {
-    "sell": "Sell courses online",
-    "teach": "Teach my current students online",
     "expanding": "On another platform, expanding here",
     "employees": "Train my employees",
     "customers": "Create courses for my customers",
@@ -353,6 +351,7 @@
     "password": "Your password",
     "forgot": "Forgot password?",
     "login": "Log In",
+    "continue_with": "Or continue With",
     "login_with": "or login with",
     "signup_with": "or sign up with",
     "already_have_account": "Already have an account?",
@@ -1301,7 +1300,10 @@
       "pricing_free": "Free",
       "pricing_paid": "Paid",
       "empty": "No tags available yet",
-      "search_placeholder": "Search courses..."
+      "search_placeholder": "Search courses...",
+      "clear_search": "Clear search",
+      "selected": "Selected:",
+      "save_changes": "Save Changes"
     },
     "empty": {
       "title": "No courses found",
@@ -2028,8 +2030,9 @@
       "rules_heading": "Rules",
       "deadline_label": "Certification deadline",
       "deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
-      "deadline_required": "Certificate deadline is required when certificates are downloadable.",
+      "deadline_required": "Compliance courses require a completion deadline before they can be published.",
       "deadline_required_enroll": "Compliance courses require a certificate deadline before learners can be enrolled.",
+      "deadline_invalid": "The course completion deadline is invalid.",
       "threshold_label": "Minimum completion (%)",
       "threshold_helper": "Combined lesson and exercise progress required to earn the certificate (0–100). Default is 100%.",
       "final_exercise_label": "Final exercise (optional)",
@@ -3623,6 +3626,9 @@
         "setup_landing_for_link": "Setup landing page to get course link",
         "coming_soon": "Coming soon",
         "link": "Course Link",
+        "generate_link": "Generate new link",
+        "open_link": "Open link in new tab",
+        "copy_link": "Copy link",
         "grading": "Grading",
         "reports": "Make grading reports available for lessons",
         "disabled": "Disabled",
@@ -3640,10 +3646,10 @@
         "progression_mode_description": "Control whether students can access all unlocked content or must complete items in order.",
         "progression_mode_free": "Free — unlocked content is accessible",
         "progression_mode_sequential": "Sequential — complete prior items to unlock next",
-        "lesson_download": "Lessons DownLoad",
-        "available": "Make the Lesson available for Download in pdf for registered students",
-        "course_download": "Course Downlaod",
-        "course_avail": "Make the Course available for Download for registered students",
+        "lesson_download": "Lesson download",
+        "available": "Let registered students download lessons as PDF.",
+        "course_download": "Course download",
+        "course_avail": "Download a copy of this course.",
         "download": "Download",
         "allow": "Allow New Students",
         "access": "Allow new students to access this course",
@@ -3652,8 +3658,10 @@
         "published": "Published",
         "unpublished": "Unpublished",
         "certificate_deadline_required": "Set Certificate Deadline First",
-        "certificate_deadline_required_description": "Compliance courses require a certificate deadline before learners can be enrolled. Please set a deadline in the certificate settings before publishing.",
-        "go_to_certificate_settings": "Go to Certificate Settings",
+        "certificate_deadline_required_description": "Compliance courses require a certificate deadline before learners can be enrolled. Please set a deadline in the course settings before publishing.",
+        "go_to_completion_deadline": "Go to Completion Deadline",
+        "completion_deadline_label": "Course completion deadline",
+        "completion_deadline_helper": "Students must meet the completion percentage before this datetime (local time). Leave empty for no deadline.",
         "locked_content": {
           "title": "{count} course item(s) are locked",
           "description": "Enrolled students won't be able to take locked lessons or exercises until you unlock them.",
@@ -4013,9 +4021,7 @@
       "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime.",
       "usage": {
         "title": "Usage and limits",
-        "description": "MCP is available on every plan, but usage is controlled with monthly automation credits and key limits.",
-        "credits_title": "Credits remaining",
-        "credits_description": "Mutating MCP actions consume credits. Read actions are free.",
+        "description": "MCP is available on every plan. Usage is controlled by key limits and rate limits.",
         "keys_title": "Active keys",
         "keys_description": "Use one MCP key per integration so access can be rotated or revoked cleanly.",
         "rate_limits_title": "Rate limits",
@@ -4043,7 +4049,8 @@
         "codex_description": "Adds the ClassroomIO MCP server to Codex with the same org-scoped key.",
         "cursor_description": "Paste this into `~/.cursor/mcp.json` or your workspace MCP config.",
         "opencode_description": "Add this to `opencode.json` in your project root or `~/.config/opencode/opencode.json`."
-      }
+      },
+      "view_docs": "View Docs"
     },
     "api": {
       "subtitle": "Manage API keys to integrate with the ClassroomIO public API.",
@@ -4213,7 +4220,8 @@
       "passed_requires_points": "Passed completion needs at least one point available.",
       "success": "Saved Successfully",
       "submission_updated": "Submission updated to",
-      "error_fetching": "Fetching exercises failed, please reload the page"
+      "error_fetching": "Fetching exercises failed, please reload the page",
+      "draft_restored": "We restored the unsaved changes you left behind"
     },
     "materials": {
       "apology": "We apologise, there was an error saving your lesson.",
@@ -4250,7 +4258,8 @@
         "saved": "Saved successfully",
         "successful_integration": "Integration successful",
         "successful_deletion": "Integration deleted",
-        "update_successful": "Update successful"
+        "update_successful": "Update successful",
+        "link_generated": "Course link updated successfully"
       },
       "error": {
         "not_right": "Something's not right - Please try later",
@@ -4901,8 +4910,9 @@
       "pagination_status": "Page {page} of {totalPages}",
       "empty_title": "No courses yet",
       "empty_description": "Add courses to this cohort.",
+      "empty_student_description": "There are no published courses in this cohort yet.",
       "published_access_callout_title": "Student access",
-      "published_access_callout_description": "Students only have access to published courses. Courses can be in this cohort for your team while still unpublished while those stay hidden from students until you publish them."
+      "published_access_callout_description": "Students only have access to published courses. Courses can be in this cohort for your team while still unpublished, but they remain hidden from students until you publish them."
     },
     "people": {
       "invite": "Invite",

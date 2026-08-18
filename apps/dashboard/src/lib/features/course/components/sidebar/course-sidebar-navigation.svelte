@@ -8,10 +8,10 @@
   import { BackButton } from '@cio/ui';
 
   import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
-  import BotIcon from '@lucide/svelte/icons/bot';
   import {
     AnalyticsIcon,
     AttendanceIcon,
+    BotIcon,
     CertificateIcon,
     ContentIcon,
     HoverableItem,
@@ -21,6 +21,7 @@
     PeopleIcon,
     PremiumIcon,
     SettingsIcon,
+    ShieldCheckIcon,
     SubmissionIcon
   } from '@cio/ui/custom/moving-icons';
   import { ContentType } from '@cio/utils/constants/content';
@@ -249,7 +250,7 @@
     } else if (id === NAV_IDS.MARKS) {
       return MarksIcon;
     } else if (id === NAV_IDS.COMPLIANCE) {
-      return CertificateIcon;
+      return ShieldCheckIcon;
     } else if (id === NAV_IDS.PEOPLE) {
       return PeopleIcon;
     } else if (id === NAV_IDS.ANALYTICS) {

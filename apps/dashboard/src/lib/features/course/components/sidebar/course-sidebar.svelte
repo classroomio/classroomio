@@ -118,7 +118,7 @@
 {#if !isOrgLoaded}
   <SidebarSkeleton />
 {:else}
-  <Sidebar.Root collapsible="icon" class="z-app-bar-elevated!" mobileOverlayClass="z-app-bar-elevated!">
+  <Sidebar.Root collapsible="icon" class="ui:z-app-bar-elevated" mobileOverlayClass="ui:z-app-bar-elevated">
     <Sidebar.Header>
       <CourseSidebarLogo isStudent={$isStudentExperience} />
     </Sidebar.Header>

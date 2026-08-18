@@ -22,6 +22,11 @@ name: Railway Preview Environment
 on:
   workflow_dispatch:
     inputs:
+      repo:
+        description: "Repo to deploy from (leave blank for classroomio/classroomio; set to e.g. Arun5768/classroomio for a fork)"
+        required: false
+        type: string
+        default: ""
       branch:
         description: "Branch (or PR head ref) to deploy into the preview env"
         required: true
@@ -61,6 +66,7 @@ jobs:
       - name: Checkout target branch
         uses: actions/checkout@v4
         with:
+          repository: ${{ inputs.repo != '' && inputs.repo || github.repository }}
           ref: ${{ inputs.branch }}
 
       - name: Install Railway CLI
@@ -240,16 +246,18 @@ jobs:
             sleep 5
           done
 
-      - name: Deploy each app service from this branch
+      - name: Deploy app services from this branch in parallel
         if: ${{ inputs.action == 'deploy' }}
-        # `--ci` (not `--detach`) blocks until each service's deploy/healthcheck succeeds,
-        # so the URL printed later is actually live. Trade-off: builds run sequentially.
-        run: |
-          for svc in $APP_SERVICES; do
-            echo "::group::railway up $svc"
-            railway up --service "$svc" --ci
-            echo "::endgroup::"
-          done
+        # `--ci` (not `--detach`) keeps each process attached until its deployment
+        # succeeds or fails. Run the independent app builds concurrently, then wait for
+        # every service so the URL printed later is actually live.
+        #
+        # `railway up --ci` can exit 1 on a log-streaming glitch (railwayapp/cli#696) even
+        # though the deploy succeeded. Only on that specific error do we poll the real
+        # deployment status instead of trusting the exit code — any other failure means no
+        # new deployment exists yet, so it fails immediately rather than risking a match
+        # against a stale, unrelated deployment.
+        run: bash .github/scripts/railway-preview-deploy.sh
 
       - name: Setup pnpm
         if: ${{ inputs.action == 'deploy' && inputs.seed }}

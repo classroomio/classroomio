@@ -20,9 +20,9 @@
   import GraduationCapIcon from '@lucide/svelte/icons/graduation-cap';
   import CompassIcon from '@lucide/svelte/icons/compass';
   import AwardIcon from '@lucide/svelte/icons/award';
-  import { openUpgradeModal } from '$lib/utils/functions/org';
   import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
+  import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { AI_CHAT_MODEL_STORAGE_KEY } from '$features/ai-assistant/utils/constants';
   import type { TCourseType } from '@cio/db/types';
   import {
