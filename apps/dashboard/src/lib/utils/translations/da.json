@@ -295,7 +295,8 @@
         "unlocked_all_content": "Alle kursusartikler er låst op",
         "all_content_already_unlocked": "Alt indhold er allerede låst op",
         "content_grouping_enabled": "Indholdsgruppering aktiveret",
-        "content_grouping_disabled": "Indholdsgruppering deaktiveret"
+        "content_grouping_disabled": "Indholdsgruppering deaktiveret",
+        "link_generated": "Kursuslinket blev opdateret"
       }
     },
     "people": {
@@ -859,6 +860,9 @@
           "description_live": "Låste lektioner og øvelser forbliver skjult for eleverne, indtil du låser dem op - nyttigt, hvis du udgiver indhold uge for uge.",
           "unlock_all": "Lås alle op"
         },
+        "generate_link": "Generer nyt link",
+        "open_link": "Åbn link i ny fane",
+        "copy_link": "Kopiér link",
         "certificate_deadline_required": "Indstil certifikatfrist først",
         "certificate_deadline_required_description": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes. Indstil venligst en deadline i kursusindstillingerne før udgivelse.",
         "go_to_completion_deadline": "Gå til fuldførelsesfristen",

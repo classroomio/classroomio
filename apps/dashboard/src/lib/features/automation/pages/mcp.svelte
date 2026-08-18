@@ -234,53 +234,53 @@
   </div>
 
   <Field.Set class="gap-3!">
-      <Field.Legend class="flex items-center gap-2">
-        <SparklesIcon class="size-5" />
-        {$t('automation.mcp.setup.title')}
-      </Field.Legend>
-      <Field.Description>{$t('automation.mcp.setup.description')}</Field.Description>
+    <Field.Legend class="flex items-center gap-2">
+      <SparklesIcon class="size-5" />
+      {$t('automation.mcp.setup.title')}
+    </Field.Legend>
+    <Field.Description>{$t('automation.mcp.setup.description')}</Field.Description>
 
-      <Tabs.Root bind:value={activeSetupTab} class="w-full">
-        <Tabs.List class="inline-flex w-auto">
-          <Tabs.Trigger value="cursor">{$t('automation.clients.cursor')}</Tabs.Trigger>
-          <Tabs.Trigger value="claude-code">{$t('automation.clients.claude_code')}</Tabs.Trigger>
-          <Tabs.Trigger value="codex">{$t('automation.clients.codex')}</Tabs.Trigger>
-          <Tabs.Trigger value="opencode">{$t('automation.clients.opencode')}</Tabs.Trigger>
-        </Tabs.List>
+    <Tabs.Root bind:value={activeSetupTab} class="w-full">
+      <Tabs.List class="inline-flex w-auto">
+        <Tabs.Trigger value="cursor">{$t('automation.clients.cursor')}</Tabs.Trigger>
+        <Tabs.Trigger value="claude-code">{$t('automation.clients.claude_code')}</Tabs.Trigger>
+        <Tabs.Trigger value="codex">{$t('automation.clients.codex')}</Tabs.Trigger>
+        <Tabs.Trigger value="opencode">{$t('automation.clients.opencode')}</Tabs.Trigger>
+      </Tabs.List>
 
-        <Tabs.Content value="claude-code" class="mt-4">
-          <Code.Overflow>
-            <Code.Root code={getClaudeCodeSnippet(generatedSecret)} lang="bash">
-              <Code.CopyButton />
-            </Code.Root>
-          </Code.Overflow>
-        </Tabs.Content>
+      <Tabs.Content value="claude-code" class="mt-4">
+        <Code.Overflow>
+          <Code.Root code={getClaudeCodeSnippet(generatedSecret)} lang="bash">
+            <Code.CopyButton />
+          </Code.Root>
+        </Code.Overflow>
+      </Tabs.Content>
 
-        <Tabs.Content value="codex" class="mt-4">
-          <Code.Overflow>
-            <Code.Root code={getCodexSnippet(generatedSecret)} lang="bash">
-              <Code.CopyButton />
-            </Code.Root>
-          </Code.Overflow>
-        </Tabs.Content>
+      <Tabs.Content value="codex" class="mt-4">
+        <Code.Overflow>
+          <Code.Root code={getCodexSnippet(generatedSecret)} lang="bash">
+            <Code.CopyButton />
+          </Code.Root>
+        </Code.Overflow>
+      </Tabs.Content>
 
-        <Tabs.Content value="cursor" class="mt-4">
-          <Code.Overflow>
-            <Code.Root code={getCursorSnippet(generatedSecret)} lang="json">
-              <Code.CopyButton />
-            </Code.Root>
-          </Code.Overflow>
-        </Tabs.Content>
+      <Tabs.Content value="cursor" class="mt-4">
+        <Code.Overflow>
+          <Code.Root code={getCursorSnippet(generatedSecret)} lang="json">
+            <Code.CopyButton />
+          </Code.Root>
+        </Code.Overflow>
+      </Tabs.Content>
 
-        <Tabs.Content value="opencode" class="mt-4">
-          <Code.Overflow>
-            <Code.Root code={getOpenCodeSnippet(generatedSecret)} lang="json">
-              <Code.CopyButton />
-            </Code.Root>
-          </Code.Overflow>
-        </Tabs.Content>
-      </Tabs.Root>
-    </Field.Set>
+      <Tabs.Content value="opencode" class="mt-4">
+        <Code.Overflow>
+          <Code.Root code={getOpenCodeSnippet(generatedSecret)} lang="json">
+            <Code.CopyButton />
+          </Code.Root>
+        </Code.Overflow>
+      </Tabs.Content>
+    </Tabs.Root>
+  </Field.Set>
 </Field.Group>
 
 <Dialog.Root

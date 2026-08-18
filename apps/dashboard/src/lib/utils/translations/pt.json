@@ -295,7 +295,8 @@
         "unlocked_all_content": "Todos os itens do curso desbloqueados",
         "all_content_already_unlocked": "Todo o conteúdo já está desbloqueado",
         "content_grouping_enabled": "Agrupamento de conteúdo ativado",
-        "content_grouping_disabled": "Agrupamento de conteúdo desativado"
+        "content_grouping_disabled": "Agrupamento de conteúdo desativado",
+        "link_generated": "Link do curso atualizado com sucesso"
       }
     },
     "people": {
@@ -859,6 +860,9 @@
           "description_live": "Aulas e exercícios bloqueados permanecem ocultos aos alunos até que você os desbloqueie – o que é útil se você liberar conteúdo semana após semana.",
           "unlock_all": "Desbloquear tudo"
         },
+        "generate_link": "Gerar novo link",
+        "open_link": "Abrir link em nova aba",
+        "copy_link": "Copiar link",
         "certificate_deadline_required": "Defina o prazo do certificado primeiro",
         "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
         "go_to_completion_deadline": "Ir para o prazo de conclusão",

@@ -51,6 +51,7 @@
   let { hasUnsavedChanges = $bindable(false) }: Props = $props();
 
   let isLoading = $state(false);
+  let isGeneratingLink = $state(false);
   let isDeleting = $state(false);
   let openCertificateDeadlineDialog = $state(false);
   let completionDeadlineTrigger = $state(0);
@@ -66,6 +67,7 @@
   let selectedTagIds = $state<string[]>([]);
   let initialTagIds = $state<string[]>([]);
   let loadedCourseTagsForId = $state<string | null>(null);
+  let initializedCourseId = $state<string | null>(null);
   let isTagPopoverOpen = $state(false);
 
   function normalizeTagIds(tagIds: string[]) {
@@ -285,14 +287,29 @@
         hasUnsavedChanges = false;
       }
     } catch (error) {
+      console.error(error);
       snackbar.error();
     }
   }
 
-  const generateNewCourseLink = () => {
-    if (!courseApi.course) return;
-    courseApi.course.slug = generateSlug(courseApi.course.title, { appendTimestamp: true });
-    hasUnsavedChanges = true;
+  const generateNewCourseLink = async () => {
+    if (!courseApi.course || isGeneratingLink) return;
+
+    isGeneratingLink = true;
+    try {
+      const newSlug = generateSlug(courseApi.course.title, { appendTimestamp: true });
+      const response = await courseApi.update(courseApi.course.id, { slug: newSlug }, { showSuccessToast: false });
+
+      if (courseApi.success && response) {
+        courseApi.course.slug = response.slug ?? newSlug;
+        snackbar.success('snackbar.course_settings.success.link_generated');
+      }
+    } catch (error) {
+      console.error(error);
+      snackbar.error();
+    } finally {
+      isGeneratingLink = false;
+    }
   };
 
   async function setDefault(course: Course) {
@@ -389,8 +406,10 @@
   });
 
   $effect(() => {
-    if (courseApi.course) {
-      setDefault(courseApi.course);
+    const course = courseApi.course;
+    if (course?.id && initializedCourseId !== course.id) {
+      initializedCourseId = course.id;
+      setDefault(course);
     }
   });
 
@@ -590,10 +609,19 @@
           >{$t('course.navItem.settings.link')}
 
           <div class="flex items-center gap-1">
-            <IconButton onclick={generateNewCourseLink}>
+            <IconButton
+              onclick={generateNewCourseLink}
+              loading={isGeneratingLink}
+              tooltip={$t('course.navItem.settings.generate_link')}
+            >
               <RotateCcwIcon size={16} />
             </IconButton>
-            <IconButton href={courseLink} target="_blank">
+            <IconButton
+              href={courseLink}
+              target="_blank"
+              disabled={isGeneratingLink || !courseApi.course?.slug}
+              tooltip={$t('course.navItem.settings.open_link')}
+            >
               <ArrowUpRightIcon size={16} />
             </IconButton>
           </div>
@@ -606,6 +634,8 @@
               onclick={() => {
                 copyToClipboard(courseLink);
               }}
+              disabled={isGeneratingLink}
+              tooltip={$t('course.navItem.settings.copy_link')}
             >
               <Copy size={16} />
             </IconButton>

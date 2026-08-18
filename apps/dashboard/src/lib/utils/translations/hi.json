@@ -295,7 +295,8 @@
         "unlocked_all_content": "सभी पाठ्यक्रम आइटम अनलॉक हो गए",
         "all_content_already_unlocked": "सभी सामग्री पहले से अनलॉक है",
         "content_grouping_enabled": "सामग्री समूहीकरण सक्षम",
-        "content_grouping_disabled": "सामग्री समूहीकरण अक्षम"
+        "content_grouping_disabled": "सामग्री समूहीकरण अक्षम",
+        "link_generated": "पाठ्यक्रम लिंक सफलतापूर्वक अपडेट किया गया"
       }
     },
     "people": {
@@ -860,6 +861,9 @@
           "unlock_all": "सबको अनलॉक करें"
         },
         "certificate_deadline_required": "पहले प्रमाणपत्र की समय सीमा निर्धारित करें",
+        "generate_link": "नया लिंक जनरेट करें",
+        "open_link": "नए टैब में लिंक खोलें",
+        "copy_link": "लिंक कॉपी करें",
         "certificate_deadline_required_description": "अनुपालन पाठ्यक्रमों में शिक्षार्थियों के नामांकन से पहले प्रमाणपत्र की समय सीमा की आवश्यकता होती है। कृपया प्रकाशन से पहले पाठ्यक्रम सेटिंग में एक समय सीमा निर्धारित करें।",
         "go_to_completion_deadline": "समापन समय सीमा पर जाएं",
         "completion_deadline_label": "कोर्स पूरा करने की समय सीमा",
