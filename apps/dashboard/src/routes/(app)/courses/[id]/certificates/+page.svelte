@@ -146,11 +146,10 @@
   function handleActiveTabChange(tab: string) {
     const url = new URL(page.url);
     url.searchParams.set('tab', tab);
-    goto(resolve(`${url.pathname}${url.search}`, {}), {
-      replaceState: true,
-      keepFocus: true,
-      noScroll: true
-    });
+  function handleActiveTabChange(tab: string) {
+    const url = new URL(page.url);
+    url.searchParams.set('tab', tab);
+    replaceState(url, {});
   }
 </script>
 
