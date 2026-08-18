@@ -1,4 +1,8 @@
-import { getYoutubeCaption, upsertYoutubeCaption } from '@cio/db/queries/youtube-caption';
+import {
+  getYoutubeCaption,
+  getActiveNegativeYoutubeCaption,
+  upsertYoutubeCaption
+} from '@cio/db/queries/youtube-caption';
 
 import { SupadataAdapter } from './supadata-adapter';
 import type { YoutubeCaptionFetchResult } from './types';
@@ -36,6 +40,11 @@ export async function fetchAndCacheYoutubeCaptions(input: {
       provider: 'supadata',
       sourceTrackKind: cached.isGenerated ? 'asr' : 'manual'
     };
+  }
+
+  const negative = await getActiveNegativeYoutubeCaption(youtubeVideoId, language);
+  if (negative) {
+    return { unavailable: true, reason: negative.unavailableReason ?? 'unavailable' };
   }
 
   const adapter = new SupadataAdapter(apiKey);

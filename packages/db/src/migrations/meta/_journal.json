@@ -43,6 +43,13 @@
       "when": 1785228000000,
       "tag": "0005_add_parent_id_to_course_newsfeed_comment",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1787055915027,
+      "tag": "0006_clumsy_omega_flight",
+      "breakpoints": true
     }
   ]
 }

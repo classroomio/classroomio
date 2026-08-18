@@ -36,11 +36,15 @@ worker.on('failed', async (job, err) => {
 
   if (err instanceof JobCanceledError) {
     log.warn('youtube-captions-job-canceled', { jobName: job.name, bullmqJobId: job.id });
-    await updateMediaJob(err.mediaJobId, {
-      status: 'canceled',
-      stage: 'canceled',
-      error: { code: 'CANCELED', message: 'Run canceled by user' }
-    });
+    try {
+      await updateMediaJob(err.mediaJobId, {
+        status: 'canceled',
+        stage: 'canceled',
+        error: { code: 'CANCELED', message: 'Run canceled by user' }
+      });
+    } catch (updateErr) {
+      log.error('youtube-captions-failed-to-update-canceled-job', { error: errorMessage(updateErr) });
+    }
     return;
   }
 
@@ -55,25 +59,34 @@ worker.on('failed', async (job, err) => {
   if (!isFinalAttempt) return;
 
   const data = job.data as { mediaJobId?: string; organizationId?: string };
+
   if (data?.mediaJobId) {
-    await updateMediaJob(data.mediaJobId, {
-      status: 'failed',
-      stage: 'failed',
-      error: { code: 'WORKER_EXHAUSTED_RETRIES', message: errorMessage(err) }
-    });
+    try {
+      await updateMediaJob(data.mediaJobId, {
+        status: 'failed',
+        stage: 'failed',
+        error: { code: 'WORKER_EXHAUSTED_RETRIES', message: errorMessage(err) }
+      });
+    } catch (updateErr) {
+      log.error('youtube-captions-failed-to-update-failed-job', { error: errorMessage(updateErr) });
+    }
   }
 
-  await recordDeadLetterJob({
-    organizationId: data?.organizationId ?? null,
-    domain: 'youtube-captions',
-    runId: data?.mediaJobId ?? null,
-    queueName: QUEUE_NAMES.youtubeCaptions,
-    jobName: job.name,
-    bullmqJobId: job.id ?? null,
-    payload: job.data as Record<string, unknown>,
-    error: { code: 'WORKER_EXHAUSTED_RETRIES', message: errorMessage(err), stack: err.stack },
-    attempts: job.attemptsMade
-  });
+  try {
+    await recordDeadLetterJob({
+      organizationId: data?.organizationId ?? null,
+      domain: 'youtube-captions',
+      runId: data?.mediaJobId ?? null,
+      queueName: QUEUE_NAMES.youtubeCaptions,
+      jobName: job.name,
+      bullmqJobId: job.id ?? null,
+      payload: job.data as Record<string, unknown>,
+      error: { code: 'WORKER_EXHAUSTED_RETRIES', message: errorMessage(err), stack: err.stack },
+      attempts: job.attemptsMade
+    });
+  } catch (deadLetterErr) {
+    log.error('youtube-captions-failed-to-record-dead-letter', { error: errorMessage(deadLetterErr) });
+  }
 });
 
 worker.on('ready', () =>

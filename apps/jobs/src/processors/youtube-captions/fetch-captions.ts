@@ -2,6 +2,7 @@ import { updateMediaJob, hasActiveMediaJobForAsset } from '@cio/db/queries';
 import type { TFetchYoutubeCaptionsPayload } from '@cio/jobs/payloads/youtube-captions';
 import { fetchAndCacheYoutubeCaptions } from '@cio/core/services/youtube-captions/index';
 import { writeYoutubeCaptionToMediaTranscript } from '@cio/core/services/youtube-captions/write-through';
+import { isOrgOnPaidPlan } from '@cio/core/services/agent/usage';
 
 import { uploadBufferToBucket, mediaBucket } from '../../utils/storage';
 import { log } from '../../utils/logger';
@@ -39,11 +40,8 @@ export async function processFetchYoutubeCaptions(payload: TFetchYoutubeCaptions
 
   const hasActive = await hasActiveMediaJobForAsset(assetId, organizationId, { staleAfterMinutes: 10 });
   if (hasActive) {
-    const existingJob = await import('@cio/db/queries').then((m) => m.getMediaJobById(mediaJobId));
-    if (existingJob && existingJob.status !== 'queued' && existingJob.status !== 'running') {
-      log.info('youtube-captions-skip-active-job', { mediaJobId, assetId });
-      return { provider: 'supadata', language: 'en', segmentCount: 0, status: 'ready' };
-    }
+    log.info('youtube-captions-skip-dedup', { mediaJobId, assetId });
+    return { provider: 'supadata', language: 'en', segmentCount: 0, status: 'ready' };
   }
 
   await updateMediaJob(mediaJobId, {
@@ -60,6 +58,18 @@ export async function processFetchYoutubeCaptions(payload: TFetchYoutubeCaptions
       stage: 'done',
       progressPercent: 100,
       result: { status: 'skipped', reason: 'no_provider_key' } as Record<string, unknown>
+    });
+    return { provider: 'supadata', language: 'en', segmentCount: 0, status: 'ready' };
+  }
+
+  const paid = await isOrgOnPaidPlan(organizationId);
+  if (!paid) {
+    log.info('youtube-captions-plan-gated', { mediaJobId, youtubeVideoId, organizationId });
+    await updateMediaJob(mediaJobId, {
+      status: 'completed',
+      stage: 'done',
+      progressPercent: 100,
+      result: { status: 'skipped', reason: 'plan_gated' } as Record<string, unknown>
     });
     return { provider: 'supadata', language: 'en', segmentCount: 0, status: 'ready' };
   }

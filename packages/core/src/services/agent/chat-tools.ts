@@ -461,7 +461,7 @@ export function buildAgentTools(
   priorMessages: unknown[],
   options: BuildAgentToolsOptions = {}
 ) {
-  const isOrgOnPaidPlan = options.isOrgOnPaidPlan ?? true;
+  const isOrgOnPaidPlan = options.isOrgOnPaidPlan ?? false;
   const documentAssets = options.documentAssets ?? [];
 
   const executeAgentTool = <TArgs, TResult>(
