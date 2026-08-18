@@ -3967,9 +3967,12 @@
       "tags_title": "Etiquetas",
       "types_title": "Tipos",
       "search_placeholder": "Buscar cursos...",
+      "clear_search": "Borrar búsqueda",
       "pricing_title": "Precios",
       "pricing_free": "Gratis",
-      "pricing_paid": "Pagado"
+      "pricing_paid": "Pagado",
+      "selected": "Seleccionado:",
+      "save_changes": "Guardar cambios"
     }
   },
   "tags_admin": {

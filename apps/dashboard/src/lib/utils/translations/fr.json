@@ -3967,9 +3967,12 @@
       "tags_title": "Étiquettes",
       "types_title": "Espèces",
       "search_placeholder": "Rechercher des cours...",
+      "clear_search": "Effacer la recherche",
       "pricing_title": "Tarifs",
       "pricing_free": "Gratuit",
-      "pricing_paid": "Payé"
+      "pricing_paid": "Prix",
+      "selected": "Sélectionné :",
+      "save_changes": "Enregistrer les modifications"
     }
   },
   "tags_admin": {

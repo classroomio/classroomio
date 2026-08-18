@@ -3967,9 +3967,12 @@
       "tags_title": "Tags",
       "types_title": "Typen",
       "search_placeholder": "Kurse suchen...",
+      "clear_search": "Suche löschen",
       "pricing_title": "Preise",
       "pricing_free": "Kostenlos",
-      "pricing_paid": "Bezahlt"
+      "pricing_paid": "Bezahlt",
+      "selected": "Ausgewählt:",
+      "save_changes": "Änderungen speichern"
     }
   },
   "tags_admin": {
