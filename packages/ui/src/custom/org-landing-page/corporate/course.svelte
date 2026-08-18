@@ -11,7 +11,7 @@
   import CourseInstructor from '../course-instructor.svelte';
   import CourseReviews from '../course-reviews.svelte';
   import CoursePricing from '../course-pricing.svelte';
-  import { themeStyle } from '../theme-style';
+  import LandingThemeScope from '../landing-theme-scope.svelte';
   import { alignHeroCtaWithPricing, buildCourseSectionNavItems } from '../course-landing-page.helpers';
 
   let {
@@ -37,10 +37,7 @@
   );
 </script>
 
-<div
-  class="ui:min-h-screen ui:bg-[var(--landing-bg)] ui:text-[var(--landing-fg)] ui:font-sans"
-  style={themeStyle('corporate')}
->
+<LandingThemeScope theme="corporate" class="ui:font-sans">
   <main>
     <CorporateHero {orgName} hero={heroProps}>
       {#snippet navigation()}
@@ -61,4 +58,4 @@
   </main>
 
   <OrgLandingPageFooter {orgName} {logoUrl} {footer} variant="corporate" />
-</div>
+</LandingThemeScope>

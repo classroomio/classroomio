@@ -14,7 +14,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { resolve } from '$app/paths';
   import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import { openUpgradeModal } from '$lib/utils/functions/org';
+  import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { ModelPicker } from '@cio/ui/custom/model-picker';
   import type { AgentModelId } from '@cio/utils/agent-models';
   import { AI_AGENT_RUNNING_WARNING_DISMISSED_KEY } from '$features/ai-assistant/utils/constants';

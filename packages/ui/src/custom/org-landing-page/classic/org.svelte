@@ -9,7 +9,7 @@
   import ClassicCourseCard from './course-card.svelte';
   import OrgLandingPageCoursesEmpty from '../courses-empty.svelte';
   import { Button } from '../../../base/button';
-  import { themeStyle } from '../theme-style';
+  import LandingThemeScope from '../landing-theme-scope.svelte';
 
   let {
     orgName,
@@ -29,10 +29,7 @@
   }: OrgLandingPageProps = $props();
 </script>
 
-<div
-  class="ui:min-h-screen ui:bg-[var(--landing-bg-section)] ui:text-[var(--landing-fg)] ui:font-sans"
-  style={themeStyle('classic')}
->
+<LandingThemeScope theme="classic" class="ui:bg-[var(--landing-bg-section)] ui:font-sans">
   <ClassicNav {orgName} {logoUrl} {navItems} {authAction} />
 
   <main>
@@ -79,4 +76,4 @@
   <OrgLandingPageCallout {callout} {labels} variant="classic" />
 
   <OrgLandingPageFooter {orgName} {logoUrl} {footer} variant="classic" />
-</div>
+</LandingThemeScope>

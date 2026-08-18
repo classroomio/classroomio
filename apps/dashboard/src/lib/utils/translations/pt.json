@@ -295,7 +295,8 @@
         "unlocked_all_content": "Todos os itens do curso desbloqueados",
         "all_content_already_unlocked": "Todo o conteúdo já está desbloqueado",
         "content_grouping_enabled": "Agrupamento de conteúdo ativado",
-        "content_grouping_disabled": "Agrupamento de conteúdo desativado"
+        "content_grouping_disabled": "Agrupamento de conteúdo desativado",
+        "link_generated": "Link do curso atualizado com sucesso"
       }
     },
     "people": {
@@ -329,7 +330,8 @@
       "success": "Salvo com sucesso",
       "submission_updated": "Envio atualizado para",
       "error_fetching": "Falha ao buscar exercícios. Atualize a página",
-      "passed_requires_points": "A conclusão por aprovação precisa de pelo menos um ponto disponível."
+      "passed_requires_points": "A conclusão por aprovação precisa de pelo menos um ponto disponível.",
+      "draft_restored": "Restauramos as alterações não salvas que você deixou"
     },
     "poll": {
       "info": {
@@ -859,6 +861,9 @@
           "description_live": "Aulas e exercícios bloqueados permanecem ocultos aos alunos até que você os desbloqueie – o que é útil se você liberar conteúdo semana após semana.",
           "unlock_all": "Desbloquear tudo"
         },
+        "generate_link": "Gerar novo link",
+        "open_link": "Abrir link em nova aba",
+        "copy_link": "Copiar link",
         "certificate_deadline_required": "Defina o prazo do certificado primeiro",
         "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
         "go_to_completion_deadline": "Ir para o prazo de conclusão",
@@ -3963,9 +3968,12 @@
       "tags_title": "Etiquetas",
       "types_title": "Tipos",
       "search_placeholder": "Pesquisar cursos...",
+      "clear_search": "Limpar pesquisa",
       "pricing_title": "Preços",
       "pricing_free": "Grátis",
-      "pricing_paid": "Pago"
+      "pricing_paid": "Pago",
+      "selected": "Selecionado:",
+      "save_changes": "Salvar alterações"
     }
   },
   "tags_admin": {
