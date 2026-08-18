@@ -330,7 +330,8 @@
       "success": "Gemt",
       "submission_updated": "Indsendelse opdateret til",
       "error_fetching": "Hentning af øvelser mislykkedes. Genindlæs venligst siden",
-      "passed_requires_points": "Gennemførelse ved bestået kræver mindst ét tilgængeligt point."
+      "passed_requires_points": "Gennemførelse ved bestået kræver mindst ét tilgængeligt point.",
+      "draft_restored": "Vi har gendannet de ikke-gemte ændringer, du efterlod"
     },
     "poll": {
       "info": {

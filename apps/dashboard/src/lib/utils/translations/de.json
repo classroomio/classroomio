@@ -330,7 +330,8 @@
       "success": "Erfolgreich gespeichert",
       "submission_updated": "Einreichung aktualisiert auf",
       "error_fetching": "Das Abrufen der Übungen ist fehlgeschlagen. Bitte laden Sie die Seite neu",
-      "passed_requires_points": "Für den Abschluss durch Bestehen muss mindestens ein Punkt verfügbar sein."
+      "passed_requires_points": "Für den Abschluss durch Bestehen muss mindestens ein Punkt verfügbar sein.",
+      "draft_restored": "Wir haben die nicht gespeicherten Änderungen wiederhergestellt, die Sie hinterlassen haben"
     },
     "poll": {
       "info": {

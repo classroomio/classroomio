@@ -330,7 +330,8 @@
       "success": "Enregistré avec succès",
       "submission_updated": "Soumission mise à jour pour",
       "error_fetching": "La récupération des exercices a échoué, veuillez recharger la page",
-      "passed_requires_points": "La validation par réussite nécessite au moins un point disponible."
+      "passed_requires_points": "La validation par réussite nécessite au moins un point disponible.",
+      "draft_restored": "Nous avons restauré les modifications non enregistrées que vous aviez laissées"
     },
     "poll": {
       "info": {

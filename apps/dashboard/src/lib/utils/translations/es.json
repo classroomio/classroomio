@@ -330,7 +330,8 @@
       "success": "Guardado exitosamente",
       "submission_updated": "Envío actualizado a",
       "error_fetching": "No se han podido recuperar los ejercicios. Vuelva a cargar la página.",
-      "passed_requires_points": "La finalización por aprobado necesita al menos un punto disponible."
+      "passed_requires_points": "La finalización por aprobado necesita al menos un punto disponible.",
+      "draft_restored": "Restauramos los cambios sin guardar que dejaste"
     },
     "poll": {
       "info": {

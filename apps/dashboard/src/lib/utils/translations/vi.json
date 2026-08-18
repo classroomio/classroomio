@@ -330,7 +330,8 @@
       "success": "Đã lưu thành công",
       "submission_updated": "Đã cập nhật bài nộp vào",
       "error_fetching": "Tìm nạp bài tập không thành công, vui lòng tải lại trang",
-      "passed_requires_points": "Hoàn thành theo điều kiện đạt yêu cầu cần có ít nhất một điểm khả dụng."
+      "passed_requires_points": "Hoàn thành theo điều kiện đạt yêu cầu cần có ít nhất một điểm khả dụng.",
+      "draft_restored": "Chúng tôi đã khôi phục các thay đổi chưa lưu mà bạn để lại"
     },
     "poll": {
       "info": {
