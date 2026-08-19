@@ -43,8 +43,19 @@ export interface FfprobeData {
  */
 export async function ffprobeJson(localPath: string): Promise<FfprobeData> {
   const args = ['-v', 'error', '-print_format', 'json', '-show_format', '-show_streams', localPath];
-  const { stdout } = await execFileAsync(FFPROBE_BIN, args, { maxBuffer: MAX_OUTPUT_BYTES });
-  return JSON.parse(stdout) as FfprobeData;
+  try {
+    const { stdout } = await execFileAsync(FFPROBE_BIN, args, { maxBuffer: MAX_OUTPUT_BYTES });
+    return JSON.parse(stdout) as FfprobeData;
+  } catch (error) {
+    const err = error as Error & { code?: string };
+    if (err.code === 'ENOENT') {
+      throw new Error(
+        `ffprobe binary not found at "${FFPROBE_BIN}". Ensure ffprobe is installed and available on PATH or set FFPROBE_PATH.`,
+        { cause: err }
+      );
+    }
+    throw error;
+  }
 }
 
 /**
@@ -56,9 +67,18 @@ export async function ffmpegRun(args: string[]): Promise<void> {
   try {
     await execFileAsync(FFMPEG_BIN, args, { maxBuffer: MAX_OUTPUT_BYTES });
   } catch (error) {
-    const stderr = (error as { stderr?: string | Buffer })?.stderr?.toString('utf8') ?? '';
+    const err = error as Error & { stderr?: string | Buffer; code?: string };
+    if (err.code === 'ENOENT') {
+      throw new Error(
+        `ffmpeg binary not found at "${FFMPEG_BIN}". Ensure ffmpeg is installed and available on PATH or set FFMPEG_PATH.`,
+        { cause: err }
+      );
+    }
+
+    const stderr = typeof err.stderr === 'string' ? err.stderr : (err.stderr?.toString('utf8') ?? '');
     const tail = stderr.split('\n').filter(Boolean).slice(-5).join(' | ');
-    throw new Error(`ffmpeg exited with error${tail ? `: ${tail}` : ''}`, { cause: error as Error });
+    const detail = tail || err.message || String(error);
+    throw new Error(`ffmpeg exited with error: ${detail}`, { cause: err });
   }
 }
 
@@ -76,7 +96,15 @@ export async function ffmpegProbeLuma(filePath: string): Promise<number> {
     const raw = result.stderr as string | Buffer | undefined;
     stderr = typeof raw === 'string' ? raw : (raw?.toString('utf8') ?? '');
   } catch (error) {
-    const raw = (error as { stderr?: string | Buffer })?.stderr;
+    const err = error as Error & { stderr?: string | Buffer; code?: string };
+    if (err.code === 'ENOENT') {
+      throw new Error(
+        `ffmpeg binary not found at "${FFMPEG_BIN}". Ensure ffmpeg is installed and available on PATH or set FFMPEG_PATH.`,
+        { cause: err }
+      );
+    }
+
+    const raw = err.stderr;
     stderr = typeof raw === 'string' ? raw : (raw?.toString('utf8') ?? '');
     if (!stderr) {
       throw error as Error;
