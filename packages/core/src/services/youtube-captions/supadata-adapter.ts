@@ -1,10 +1,22 @@
 import type { YoutubeCaptionAdapter, YoutubeCaptionFetchResult } from './types';
 
+interface SupadataCaptionItem {
+  text?: string;
+  offset?: number;
+  duration?: number;
+  lang?: string;
+}
+
 /**
  * Supadata adapter for fetching YouTube native captions.
  *
  * Uses the `@supadata/js` SDK to retrieve creator-uploaded or auto-generated
  * caption tracks from YouTube videos.
+ *
+ * The SDK returns `TranscriptOrJobId = Transcript | JobId`. For large videos
+ * where captions can't be returned immediately, the API responds with
+ * `{ jobId }` instead of `{ content }`. We detect this and poll
+ * `supadata.transcript.getJobStatus()` until the job completes or fails.
  *
  * SDK response shape:
  * ```json
@@ -68,20 +80,31 @@ export class SupadataAdapter implements YoutubeCaptionAdapter {
         ...(lang ? { lang } : {})
       };
 
-      const response = (await supadata.transcript(requestParams)) as {
-        error?: { code?: string; message?: string };
-        lang?: string;
-        availableLangs?: string[];
-        content?: Array<{ lang?: string; text: string; offset: number; duration: number }>;
-      } | null;
+      const raw = await supadata.transcript(requestParams);
 
-      if (!response || typeof response !== 'object') {
+      if (!raw || typeof raw !== 'object') {
         return { unavailable: true, reason: 'invalid_response' };
       }
 
-      if ('error' in response && response.error) {
-        const code = response.error.code ?? '';
-        const message = response.error.message ?? '';
+      let transcript: any;
+
+      if ('jobId' in raw) {
+        const jobResult = await supadata.transcript.getJobStatus(raw.jobId);
+
+        if (jobResult.status === 'completed' && jobResult.result) {
+          transcript = jobResult.result;
+        } else if (jobResult.status === 'failed') {
+          return { unavailable: true, reason: 'provider_error' };
+        } else {
+          return { unavailable: true, reason: 'async_pending' };
+        }
+      } else {
+        transcript = raw;
+      }
+
+      if ('error' in transcript && transcript.error) {
+        const code = transcript.error.code ?? '';
+        const message = transcript.error.message ?? '';
 
         if (code === 'NOT_FOUND' || message.toLowerCase().includes('not found')) {
           return { unavailable: true, reason: 'not_found' };
@@ -99,13 +122,15 @@ export class SupadataAdapter implements YoutubeCaptionAdapter {
         return { unavailable: true, reason: 'other' };
       }
 
-      const content = response.content;
+      const content = transcript.content as SupadataCaptionItem[] | undefined;
       if (!content || content.length === 0) {
         return { unavailable: true, reason: 'no_captions' };
       }
 
       const normalizedSegments = content
-        .filter((item) => item.text?.trim())
+        .filter((item: SupadataCaptionItem): item is SupadataCaptionItem & { text: string } =>
+          Boolean(item.text?.trim())
+        )
         .map((item) => ({
           start: typeof item.offset === 'number' ? item.offset / 1000 : 0,
           end:
@@ -128,7 +153,7 @@ export class SupadataAdapter implements YoutubeCaptionAdapter {
         return { unavailable: true, reason: 'no_captions' };
       }
 
-      const language = response.lang ?? lang ?? content[0]?.lang ?? 'en';
+      const language = transcript.lang ?? lang ?? content[0]?.lang ?? 'en';
 
       return {
         youtubeVideoId,
