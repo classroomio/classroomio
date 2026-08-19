@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
+  import { page } from '$app/state';
   import { PublicCourseBottomNav } from '@cio/ui/custom/public-course';
   import { courseApi } from '$features/course/api';
   import { getContentRoute, getCourseProgress } from '$features/course/utils/content';
@@ -28,11 +29,12 @@
 
   let sheetOpen = $state(false);
 
+  const currentPath = $derived(path || page.url.pathname);
   const courseProgress = $derived(getCourseProgress(courseApi.course));
-  const activeIndex = $derived(resolveActiveNavigableContentIndex(courseApi.course, path));
-  const activeItem = $derived(getActiveNavigableContent(courseApi.course, path));
-  const previousItem = $derived(getPreviousNavigableContent(courseApi.course, path));
-  const nextItem = $derived(getNextIncompleteNavigableContent(courseApi.course, path));
+  const activeIndex = $derived(resolveActiveNavigableContentIndex(courseApi.course, currentPath));
+  const activeItem = $derived(getActiveNavigableContent(courseApi.course, currentPath));
+  const previousItem = $derived(getPreviousNavigableContent(courseApi.course, currentPath));
+  const nextItem = $derived(getNextIncompleteNavigableContent(courseApi.course, currentPath));
 
   const positionLabel = $derived(
     activeIndex >= 0 && courseProgress.total > 0 ? `${activeIndex + 1} / ${courseProgress.total}` : ''
@@ -87,4 +89,4 @@
   progressPercent={courseProgress.percent}
 />
 
-<CourseMobileOutlineSheet bind:open={sheetOpen} {path} {courseId} />
+<CourseMobileOutlineSheet bind:open={sheetOpen} path={currentPath} {courseId} />
