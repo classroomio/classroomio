@@ -35,6 +35,14 @@
     "./status": {
       "types": "./dist/status.d.ts",
       "default": "./dist/status.js"
+    },
+    "./enqueue": {
+      "types": "./dist/enqueue/index.d.ts",
+      "default": "./dist/enqueue/index.js"
+    },
+    "./enqueue/*": {
+      "types": "./dist/enqueue/*.d.ts",
+      "default": "./dist/enqueue/*.js"
     }
   },
   "scripts": {

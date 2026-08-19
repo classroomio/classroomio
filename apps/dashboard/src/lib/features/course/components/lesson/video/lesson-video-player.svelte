@@ -113,6 +113,14 @@
   const uploadStorageKey =
     video.type === 'upload' && typeof video.key === 'string' && video.key.length > 0 ? video.key : null;
 
+  // YouTube assets also register on the transcript bus so the side panel
+  // can display their captions once fetched.
+  const youtubeAssetId =
+    video.type === 'youtube' ? ((video as LessonVideo & { assetId?: string }).assetId ?? null) : null;
+
+  /** The assetId used for transcript loading — upload or YouTube. */
+  const transcriptAssetId = uploadAssetId ?? youtubeAssetId;
+
   /** Refresh ~10 minutes before server presign expiry (1 hour). */
   const PLAYBACK_URL_REFRESH_MS = 50 * 60 * 1000;
 
@@ -138,9 +146,9 @@
   }
 
   function syncTranscriptToRegistry(): void {
-    if (!uploadAssetId) return;
+    if (!transcriptAssetId) return;
 
-    lessonVideoBus.updateTranscriptSource(uploadAssetId, {
+    lessonVideoBus.updateTranscriptSource(transcriptAssetId, {
       transcript: localTranscript,
       transcriptLoading: localTranscriptLoading
     });
@@ -256,7 +264,7 @@
   }
 
   async function loadTranscript(): Promise<void> {
-    if (!uploadAssetId) {
+    if (!transcriptAssetId) {
       if (isMounted) {
         localTranscript = null;
         syncTranscriptToRegistry();
@@ -271,7 +279,7 @@
     syncTranscriptToRegistry();
 
     try {
-      const data = await mediaApi.getAssetTranscript(uploadAssetId);
+      const data = await mediaApi.getAssetTranscript(transcriptAssetId);
 
       if (!isMounted) return;
 
@@ -287,11 +295,11 @@
   }
 
   async function watchJobsUntilTerminalThenReload(): Promise<void> {
-    if (!uploadAssetId || localTranscript || !isMounted) return;
+    if (!transcriptAssetId || localTranscript || !isMounted) return;
 
     stopJobPoller();
 
-    const runs = await jobsApi.getMediaJobsForAsset(uploadAssetId);
+    const runs = await jobsApi.getMediaJobsForAsset(transcriptAssetId);
 
     if (!isMounted) return;
 
@@ -389,18 +397,19 @@
   }
 
   onMount(() => {
-    if (uploadAssetId) {
+    // Register on the transcript bus for both upload and YouTube assets
+    if (transcriptAssetId) {
       lessonVideoBus.registerTranscriptSource({
-        assetId: uploadAssetId,
+        assetId: transcriptAssetId,
         videoIndex,
         transcript: null,
         transcriptLoading: false,
         currentTimeSeconds: 0,
-        seek: (seconds) => localSeekFn(seconds)
+        seek: video.type === 'youtube' ? () => {} : (seconds) => localSeekFn(seconds)
       });
     }
 
-    if (lessonVideoBus.assetId === null || lessonVideoBus.assetId === uploadAssetId) {
+    if (uploadAssetId && (lessonVideoBus.assetId === null || lessonVideoBus.assetId === uploadAssetId)) {
       syncPlaybackBus();
     }
 
@@ -422,8 +431,8 @@
     revokeBlobTrackUrl?.();
     revokeBlobTrackUrl = null;
 
-    if (uploadAssetId) {
-      lessonVideoBus.unregisterTranscriptSource(uploadAssetId);
+    if (transcriptAssetId) {
+      lessonVideoBus.unregisterTranscriptSource(transcriptAssetId);
     }
 
     if (lessonVideoBus.transcriptSources.size === 0) {
@@ -460,9 +469,9 @@
   }
 
   function openTranscriptPanel() {
-    if (!uploadAssetId) return;
+    if (!transcriptAssetId) return;
 
-    lessonVideoBus.selectTranscriptSource(uploadAssetId);
+    lessonVideoBus.selectTranscriptSource(transcriptAssetId);
     sidePanel.open(TRANSCRIPT_PANEL_ID);
   }
 

@@ -23,6 +23,12 @@ export const QUEUE_DEFAULTS: Record<QueueName, JobsOptions> = {
     removeOnComplete: { age: 86_400, count: 500 },
     removeOnFail: { age: 14 * 86_400 }
   },
+  [QUEUE_NAMES.youtubeCaptions]: {
+    attempts: 3,
+    backoff: { type: 'exponential', delay: 30_000 },
+    removeOnComplete: { age: 86_400, count: 1_000 },
+    removeOnFail: { age: 7 * 86_400 }
+  },
   [QUEUE_NAMES.emails]: {
     attempts: 5,
     backoff: { type: 'exponential', delay: 5_000 },

@@ -5,6 +5,7 @@
 export const QUEUE_NAMES = {
   media: 'media',
   mediaTranscribe: 'media-transcribe',
+  youtubeCaptions: 'youtube-captions',
   emails: 'emails',
   notifications: 'notifications',
   webhooks: 'webhooks',
@@ -29,6 +30,9 @@ export const JOB_NAMES = {
   },
   mediaTranscribe: {
     transcribeAudio: 'transcribe-audio'
+  },
+  youtubeCaptions: {
+    fetchCaptions: 'fetch-captions'
   },
   emails: {
     send: 'send'

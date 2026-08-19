@@ -461,7 +461,7 @@ export function buildAgentTools(
   priorMessages: unknown[],
   options: BuildAgentToolsOptions = {}
 ) {
-  const isOrgOnPaidPlan = options.isOrgOnPaidPlan ?? true;
+  const isOrgOnPaidPlan = options.isOrgOnPaidPlan ?? false;
   const documentAssets = options.documentAssets ?? [];
 
   const executeAgentTool = <TArgs, TResult>(
@@ -503,13 +503,13 @@ export function buildAgentTools(
 
     get_lesson_transcript: tool({
       description:
-        "Get the transcript of a lesson's uploaded video(s). The spoken content of a video is NOT part of the lesson's HTML content, so call this whenever a question is about what the video says, explains, or demonstrates. Only uploaded videos are transcribed — embedded links (YouTube, etc.) return no transcript.",
+        "Get the transcript of a lesson's video(s). The spoken content of a video is NOT part of the lesson's HTML content, so call this whenever a question is about what the video says, explains, or demonstrates. Use this for uploaded videos and YouTube embeds. Note: YouTube transcripts require a paid plan.",
       inputSchema: lessonTranscriptParam,
       execute: async (args) => {
         return executeAgentTool('get_lesson_transcript', { orgId, userId, courseId, args }, async () => {
           await verifyLessonBelongsToCourse(args.lessonId, courseId);
 
-          return getLessonVideoTranscript(args.lessonId, orgId);
+          return getLessonVideoTranscript(args.lessonId, orgId, { isOrgOnPaidPlan });
         });
       }
     }),
