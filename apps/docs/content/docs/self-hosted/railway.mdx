@@ -225,27 +225,38 @@ OPENAI_API_KEY=
 
 ### cio-minio (object storage)
 
-`cio-minio` ships **in the template**: its `/data` volume is already attached and the `videos`,
-`documents`, and `media` buckets are already seeded. You only set its credentials during
-configuration:
+`cio-minio` ships **in the template**: its `/data` volume is attached so `videos`, `documents`, and `media` buckets persist across redeploys.
 
+#### Domain & Network Configuration
+MinIO exposes **two distinct services** that require separate Railway domain ports:
+1. **S3 API Endpoint (Target Port 9000):** e.g. `https://cio-minio-api.up.railway.app`. Used for `OBJECT_STORAGE_ENDPOINT` in `cio-api` and `cio-jobs`, as well as direct browser presigned uploads.
+2. **MinIO Web Console UI (Target Port 9001):** e.g. `https://cio-minio-ui.up.railway.app`. Used in your browser to log in and inspect buckets.
+
+On `cio-minio`, set the following environment variables in Railway:
 ```zsh title="env"
 MINIO_ROOT_USER=<strong user>
-MINIO_ROOT_PASSWORD=<strong password>
-# Recommended (not required — ClassroomIO reaches storage via OBJECT_STORAGE_* below;
-# this only fixes MinIO's own console redirects behind the proxy). Template presets it.
-MINIO_SERVER_URL=https://${{cio-minio.RAILWAY_PUBLIC_DOMAIN}}
+MINIO_ROOT_PASSWORD=<strong password (at least 8 characters)>
+# Set MINIO_SERVER_URL to internal localhost so the Console UI talks to S3 internally
+MINIO_SERVER_URL=http://127.0.0.1:9000
+# Allow browser presigned PUT uploads from your frontend domain or localhost
+MINIO_API_CORS_ALLOW_ORIGIN=*
 ```
 
-The api and jobs services reach MinIO over **two** endpoints: the private `OBJECT_STORAGE_ENDPOINT`
-(server uploads/reads) and the public `OBJECT_STORAGE_PUBLIC_ENDPOINT` + `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL`
-(browser-facing presigned downloads and public images), already wired in the env blocks above.
-`OBJECT_STORAGE_FORCE_PATH_STYLE=true` is required for MinIO.
+On `cio-dashboard`, set `ALLOWED_EXTERNAL_DOMAINS` to include your MinIO S3 API domain so Content Security Policy (CSP) permits browser fetches and uploads:
+```zsh title="env"
+ALLOWED_EXTERNAL_DOMAINS=https://cio-minio-api.up.railway.app
+```
+
+#### Viewing Buckets & Files in the MinIO Console
+1. Open your **Port 9001** domain (e.g. `https://cio-minio-ui.up.railway.app`) in your web browser.
+2. Log in using your `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`.
+3. Click **Object Browser** in the left menu to view and inspect all buckets:
+   - **`videos`**: Stores raw and encoded HLS lesson videos.
+   - **`documents`**: Stores course assignment documents and attachments.
+   - **`media`**: Stores public avatars, course thumbnails, and landing page images.
 
 :::warning[MinIO is your durability boundary]
-Single-node MinIO has no redundancy: the Railway Volume is the only thing protecting your uploads, so
-back it up. See [Configuration → Object storage & uploads](/self-hosted/configuration/storage) for
-external Cloudflare R2 / AWS S3 alternatives.
+Single-node MinIO has no built-in cloud replication: ensure a Railway Volume is mounted to `/data` under `cio-minio` -> **Volumes** so your uploaded files and buckets survive container redeploys. See [Configuration → Object storage & uploads](/self-hosted/configuration/storage) for external Cloudflare R2 / AWS S3 alternatives.
 :::
 
 ### SMTP Setup

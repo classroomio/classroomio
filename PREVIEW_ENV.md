@@ -37,13 +37,20 @@ Two mechanisms, both enabled:
 - `seed` — also load the full demo dataset (`admin@test.com` etc.); migrations + essential
   seed always run on api boot regardless.
 
-The run prints the preview dashboard URL in its job **summary**. The env is named
-`pr-<branch-slug>`.
+The run prints both the preview **Dashboard URL** and the **MinIO Web Console URL** in its job **summary**. The env is named `pr-<branch-slug>`.
 
 The deploy step runs `railway up --ci` (no `--detach`), which streams build logs and **blocks until
-each service passes its deploy/healthcheck** before the next one starts — so the printed URL is live
+each service passes its deploy/healthcheck** before the next one starts — so the printed URLs are live
 the moment the run finishes, and a failed healthcheck fails the run rather than reporting a broken
 preview.
+
+## MinIO Storage & Web UI
+
+- **Dual Domains:** `cio-minio` generates two separate public domain ports on Railway:
+  - **Port 9000 (S3 API):** Used for backend uploads (`OBJECT_STORAGE_ENDPOINT`) and browser presigned uploads.
+  - **Port 9001 (Web Console):** Open in browser to log into the MinIO dashboard (`videos`, `documents`, `media` buckets).
+- **CORS & CSP:** Previews automatically set `MINIO_API_CORS_ALLOW_ORIGIN=*` on `cio-minio` and append the MinIO API domain to `ALLOWED_EXTERNAL_DOMAINS` on `cio-dashboard` so browser uploads and video playback pass Content Security Policy checks.
+- **Persistence:** Ensure a Railway Volume is mounted to `/data` under `cio-minio` -> **Volumes** so uploaded files and buckets survive service redeploys.
 
 ## Database behavior
 
