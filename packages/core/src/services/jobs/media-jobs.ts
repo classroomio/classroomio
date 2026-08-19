@@ -362,8 +362,13 @@ export async function startYoutubeCaptionsJob(input: StartYoutubeCaptionsJobInpu
   });
 
   if (!isRedisConfigured()) {
-    logRedisUnavailableOnce('Redis not configured: YouTube captions job created but no BullMQ job enqueued.');
-    return job;
+    logRedisUnavailableOnce('Redis not configured: YouTube captions job cannot be processed.');
+    await updateMediaJob(job.id, {
+      status: 'failed',
+      stage: 'failed',
+      error: { code: 'REDIS_UNAVAILABLE', message: 'Redis not configured; captions job cannot run' }
+    });
+    return { ...job, status: 'failed', stage: 'failed' };
   }
 
   try {

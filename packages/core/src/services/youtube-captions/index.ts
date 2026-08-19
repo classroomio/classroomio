@@ -55,21 +55,23 @@ export async function fetchAndCacheYoutubeCaptions(input: {
   });
 
   if ('unavailable' in result) {
-    const expiresAt = new Date(Date.now() + NEGATIVE_CACHE_TTL_HOURS * 60 * 60 * 1000).toISOString();
-    await upsertYoutubeCaption({
-      youtubeVideoId,
-      language,
-      status: 'unavailable',
-      unavailableReason: result.reason,
-      isGenerated: false,
-      text: null,
-      segments: null,
-      provider: 'supadata',
-      sourceHash: null,
-      costCents: 0,
-      fetchedAt: new Date().toISOString(),
-      expiresAt
-    });
+    if (result.reason !== 'async_pending') {
+      const expiresAt = new Date(Date.now() + NEGATIVE_CACHE_TTL_HOURS * 60 * 60 * 1000).toISOString();
+      await upsertYoutubeCaption({
+        youtubeVideoId,
+        language,
+        status: 'unavailable',
+        unavailableReason: result.reason,
+        isGenerated: false,
+        text: null,
+        segments: null,
+        provider: 'supadata',
+        sourceHash: null,
+        costCents: 0,
+        fetchedAt: new Date().toISOString(),
+        expiresAt
+      });
+    }
 
     return result;
   }
