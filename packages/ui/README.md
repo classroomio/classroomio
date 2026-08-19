@@ -81,6 +81,34 @@ Components in the `custom` directory come from various sources or are built on t
 - `custom/checkbox-field/` - Field component built on top of base Checkbox
 - `custom/newsfeed-reactions/` - Newsfeed reaction picker and summary used by course and program feeds
 - `custom/course-creator/` - ChatGPT-style course creation input with level and type selects
+- `custom/attention-highlight/` - Prop-driven focus pulse and smooth scroll wrapper to draw user attention to specific items
+
+### Attention highlight (`src/custom/attention-highlight/`)
+
+Wrapper component that highlights its content with an animated focus pulse ring and smooth scrolls into view when triggered.
+
+| Prop          | Type                    | Default     | Description                                                                     |
+| ------------- | ----------------------- | ----------- | ------------------------------------------------------------------------------- |
+| `highlight`   | `boolean`               | `false`     | When true, triggers the pulse animation and auto-scroll                         |
+| `trigger`     | `number`                | `0`         | Incremental counter to imperatively trigger the pulse animation and auto-scroll |
+| `duration`    | `number`                | `3`         | Duration of the pulse animation in seconds                                      |
+| `autoScroll`  | `boolean`               | `true`      | Whether to smoothly scroll the element into view on trigger                     |
+| `scrollBlock` | `ScrollLogicalPosition` | `'center'`  | Scroll alignment (`'center'`, `'start'`, `'nearest'`, `'end'`)                  |
+| `id`          | `string`                | `undefined` | Optional DOM element id                                                         |
+| `class`       | `string`                | `''`        | Additional CSS classes                                                          |
+| `onComplete`  | `() => void`            | `undefined` | Callback fired when the duration timer completes                                |
+
+```svelte
+<!-- Declarative (e.g. from URL / state) -->
+<AttentionHighlight highlight={isHighlighted} duration={3}>
+  <div class="rounded border p-4">Content to highlight</div>
+</AttentionHighlight>
+
+<!-- Imperative (e.g. from button click) -->
+<AttentionHighlight trigger={triggerCount} duration={3}>
+  <div class="rounded border p-4">Content to highlight</div>
+</AttentionHighlight>
+```
 
 ### Exercise question (`src/custom/exercise-question/`)
 

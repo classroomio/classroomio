@@ -829,7 +829,6 @@
         },
         "compliance": "Conformité",
         "public": "Publique",
-        "convert_to_public_blocked": "Ce cours comporte des questions qui ne peuvent pas être notées automatiquement et ne peut donc pas encore être rendu public.",
         "fix_blocking_questions": "Corriger les questions bloquantes",
         "slug": {
           "label": "Limace d'URL",
@@ -876,7 +875,11 @@
         "go_to_completion_deadline": "Accéder à la date limite d'achèvement",
         "generate_link": "Générer un nouveau lien",
         "open_link": "Ouvrir le lien dans un nouvel onglet",
-        "copy_link": "Copier le lien"
+        "copy_link": "Copier le lien",
+        "question_in_exercise": "Dans \"{exercise}\"",
+        "fix_question": "Modifier",
+        "convert_to_public_blocked": "Les cours publics ne nécessitent que des questions à notation automatique.",
+        "convert_to_public_blocked_desc": "Les exercices d'un cours public sont notés automatiquement dans le navigateur. C'est pourquoi nous ne prenons en charge que les questions à notation automatique. Supprimez ou remplacez les questions suivantes avant de convertir ce cours en public :"
       },
       "analytics": {
         "title": "Analytique"

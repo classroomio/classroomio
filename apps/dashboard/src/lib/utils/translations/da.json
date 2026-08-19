@@ -829,7 +829,6 @@
         },
         "compliance": "Overholdelse",
         "public": "Offentlig",
-        "convert_to_public_blocked": "Dette kursus har spørgsmål, der ikke kan automatisk bedømmes, så det kan ikke gøres offentligt endnu.",
         "fix_blocking_questions": "Ret blokerende spørgsmål",
         "slug": {
           "label": "URL-slug",
@@ -876,7 +875,11 @@
         "go_to_completion_deadline": "Gå til fuldførelsesfristen",
         "generate_link": "Generer nyt link",
         "open_link": "Åbn link i ny fane",
-        "copy_link": "Kopiér link"
+        "copy_link": "Kopiér link",
+        "question_in_exercise": "I \"{exercise}\"",
+        "fix_question": "Rediger",
+        "convert_to_public_blocked": "Offentlige kurser kræver kun autogradable spørgsmål.",
+        "convert_to_public_blocked_desc": "Øvelser i et offentligt kursus bedømmes automatisk i browseren, hvorfor vi kun understøtter autogradable spørgsmål. Fjern eller erstat følgende spørgsmål, før du konverterer dette kursus til offentligt:"
       },
       "analytics": {
         "title": "Analyse"

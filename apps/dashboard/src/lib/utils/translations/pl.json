@@ -829,7 +829,6 @@
         },
         "compliance": "Zgodność",
         "public": "Publiczne",
-        "convert_to_public_blocked": "Ten kurs zawiera pytania, których nie można oceniać automatycznie, dlatego nie można go jeszcze udostępnić publicznie.",
         "fix_blocking_questions": "Napraw blokujące pytania",
         "slug": {
           "label": "Błąd adresu URL",
@@ -876,7 +875,11 @@
         "go_to_completion_deadline": "Przejdź do terminu ukończenia",
         "generate_link": "Wygeneruj nowy link",
         "open_link": "Otwórz link w nowej karcie",
-        "copy_link": "Skopiuj link"
+        "copy_link": "Skopiuj link",
+        "question_in_exercise": "W „{exercise}”",
+        "fix_question": "Edytuj",
+        "convert_to_public_blocked": "W kursach publicznych wymagane są wyłącznie pytania, które podlegają automatycznej ocenie.",
+        "convert_to_public_blocked_desc": "Ćwiczenia na kursie publicznym są oceniane automatycznie w przeglądarce, dlatego obsługujemy tylko pytania z automatyczną oceną. Usuń lub zastąp następujące pytania przed konwersją tego kursu na publiczny:"
       },
       "analytics": {
         "title": "Analityka"
