@@ -35,6 +35,7 @@
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import DeleteConfirmationModal from './delete-confirmation.svelte';
   import { QuestionContainer } from '$features/course/components';
+  import { AttentionHighlight } from '$features/ui';
   import { uploadImage } from '$lib/utils/services/upload';
   import {
     getExerciseEditorQuestionTypeLabel,
@@ -58,7 +59,6 @@
   const flipDurationMs = 200;
   const uploadLimits = getResolvedUploadLimits();
   const platformMaxFileSizeMb = uploadLimits.exerciseFileMb;
-  const initialQuestionsLength = $questionnaire.questions.length;
   type QuestionDndEvent = CustomEvent<{ items: Question[] }>;
 
   interface Props {
@@ -78,7 +78,6 @@
     exerciseId: _exerciseId,
     goBack: _goBack = () => {},
     requiresPositivePointsForAutoGrade = false,
-    selfPacedCourse = false,
     isPublicCourse = false,
     reorderQuestions = false
   }: Props = $props();
@@ -116,14 +115,6 @@
     goToSection: t.get('course.navItem.lessons.exercises.all_exercises.section.go_to_section'),
     submit: t.get('course.navItem.lessons.exercises.all_exercises.section.submit')
   });
-
-  function shouldScrollToLast(questionId, questions) {
-    const [lastQuestion] = questions.slice(-1);
-    const currentQuestionsLength = questions.length;
-    const isLast = lastQuestion.id === questionId;
-
-    return isLast && initialQuestionsLength !== currentQuestionsLength;
-  }
 
   async function scrollToExerciseElement(elementId: string) {
     await tick();
@@ -424,64 +415,64 @@
 
 {#snippet questionEditor(question, index)}
   {@const questionStoreIndex = $questionnaire.questions.findIndex((item) => item.id === question.id)}
-  <QuestionContainer
-    elementId={getQuestionElementId(question.id)}
-    key={String(question.id ?? `new-${index}`)}
-    onClose={onInitDeleteClicked(question.id)}
-    scrollToQuestion={shouldScrollToLast(question.id, $questionnaire.questions)}
-    bind:points={$questionnaire.questions[questionStoreIndex].points}
-    hasError={!!errors[question.id]}
-    errorMsg={getQuestionErrorMsg(errors, question, 'points')}
-    pointsHint={isQuestionAutoGradable(question) && requiresPositivePointsForAutoGrade
-      ? $t('course.navItem.lessons.exercises.all_exercises.points_required_auto_grade')
-      : null}
-    onPointsChange={() => {
-      question.isDirty = true;
-    }}
-  >
-    {#if typeof question.code === 'string'}
-      <div class="my-3 flex w-3/5 items-center justify-between">
-        <TextareaField
-          bind:value={question.code}
-          rows={2}
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.write')}
-        />
-        <IconButton onclick={() => handleCode(question.id, false)}>
-          <TrashIcon size={16} />
-        </IconButton>
-      </div>
-    {/if}
-
-    {@render gradingBadge(question)}
-
-    <div class="mt-2 flex flex-col">
-      <ExerciseQuestion.QuestionRenderer
-        showContainer={false}
-        titleError={getQuestionErrorMsg(errors, question, 'title')}
-        contract={{
-          mode: 'edit',
-          question: toExerciseQuestionModel(question),
-          labels: questionLabels,
-          platformMaxFileSizeMb,
-          onImageUpload: uploadImage
-        }}
-        onQuestionChange={(nextQuestion) => onSharedQuestionChange(question.id, nextQuestion)}
-      >
-        {#snippet questionTypeSelect()}
-          <QuestionTypeSelect
-            value={question.questionTypeId?.toString()}
-            onValueChange={(nextValue) => onQuestionTypeChange(question.id, nextValue)}
-            triggerQuestionType={question?.questionType}
-            types={availableQuestionTypes}
+  <AttentionHighlight id={getQuestionElementId(question.id)} class="mb-6">
+    <QuestionContainer
+      key={String(question.id ?? `new-${index}`)}
+      onClose={onInitDeleteClicked(question.id)}
+      bind:points={$questionnaire.questions[questionStoreIndex].points}
+      hasError={!!errors[question.id]}
+      errorMsg={getQuestionErrorMsg(errors, question, 'points')}
+      pointsHint={isQuestionAutoGradable(question) && requiresPositivePointsForAutoGrade
+        ? $t('course.navItem.lessons.exercises.all_exercises.points_required_auto_grade')
+        : null}
+      onPointsChange={() => {
+        question.isDirty = true;
+      }}
+    >
+      {#if typeof question.code === 'string'}
+        <div class="my-3 flex w-3/5 items-center justify-between">
+          <TextareaField
+            bind:value={question.code}
+            rows={2}
+            placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.write')}
           />
-        {/snippet}
-      </ExerciseQuestion.QuestionRenderer>
-
-      {#if getQuestionErrorMsg(errors, question, 'option')}
-        <p class="text-sm text-red-500">{getQuestionErrorMsg(errors, question, 'option')}</p>
+          <IconButton onclick={() => handleCode(question.id, false)}>
+            <TrashIcon size={16} />
+          </IconButton>
+        </div>
       {/if}
-    </div>
-  </QuestionContainer>
+
+      {@render gradingBadge(question)}
+
+      <div class="mt-2 flex flex-col">
+        <ExerciseQuestion.QuestionRenderer
+          showContainer={false}
+          titleError={getQuestionErrorMsg(errors, question, 'title')}
+          contract={{
+            mode: 'edit',
+            question: toExerciseQuestionModel(question),
+            labels: questionLabels,
+            platformMaxFileSizeMb,
+            onImageUpload: uploadImage
+          }}
+          onQuestionChange={(nextQuestion) => onSharedQuestionChange(question.id, nextQuestion)}
+        >
+          {#snippet questionTypeSelect()}
+            <QuestionTypeSelect
+              value={question.questionTypeId?.toString()}
+              onValueChange={(nextValue) => onQuestionTypeChange(question.id, nextValue)}
+              triggerQuestionType={question?.questionType}
+              types={availableQuestionTypes}
+            />
+          {/snippet}
+        </ExerciseQuestion.QuestionRenderer>
+
+        {#if getQuestionErrorMsg(errors, question, 'option')}
+          <p class="text-sm text-red-500">{getQuestionErrorMsg(errors, question, 'option')}</p>
+        {/if}
+      </div>
+    </QuestionContainer>
+  </AttentionHighlight>
 {/snippet}
 
 {#snippet compactQuestionRow(question, index)}

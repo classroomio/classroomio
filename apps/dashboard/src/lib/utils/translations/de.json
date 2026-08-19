@@ -822,7 +822,6 @@
         },
         "compliance": "Compliance",
         "public": "Öffentlich",
-        "convert_to_public_blocked": "Dieser Kurs enthält Fragen, die nicht automatisch bewertet werden können, daher kann er noch nicht veröffentlicht werden.",
         "fix_blocking_questions": "Blockierende Fragen beheben",
         "slug": {
           "label": "URL-Slug",
@@ -868,7 +867,11 @@
         "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
         "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
         "completion_deadline_label": "Frist für den Abschluss des Kurses",
-        "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen."
+        "completion_deadline_helper": "Die Schüler müssen den Abschlussprozentsatz vor diesem Datum/Uhrzeit (Ortszeit) erreichen. Für keine Frist leer lassen.",
+        "question_in_exercise": "In „{exercise}“",
+        "fix_question": "Bearbeiten",
+        "convert_to_public_blocked": "Für öffentliche Kurse sind nur automatisch benotebare Fragen erforderlich.",
+        "convert_to_public_blocked_desc": "Übungen in einem öffentlichen Kurs werden automatisch im Browser benotet, weshalb wir nur automatisch benotebare Fragen unterstützen. Entfernen oder ersetzen Sie die folgenden Fragen, bevor Sie diesen Kurs in einen öffentlichen Kurs umwandeln:"
       },
       "analytics": {
         "title": "Analysen"

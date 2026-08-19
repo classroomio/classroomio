@@ -822,7 +822,6 @@
         },
         "compliance": "Zgodność",
         "public": "Publiczne",
-        "convert_to_public_blocked": "Ten kurs zawiera pytania, których nie można oceniać automatycznie, dlatego nie można go jeszcze udostępnić publicznie.",
         "fix_blocking_questions": "Napraw blokujące pytania",
         "slug": {
           "label": "Błąd adresu URL",
@@ -868,7 +867,11 @@
         "certificate_deadline_required_description": "Kursy zgodności wymagają wystawienia certyfikatu przed zapisaniem się na nie uczestników. Przed publikacją ustaw termin w ustawieniach kursu.",
         "go_to_completion_deadline": "Przejdź do terminu ukończenia",
         "completion_deadline_label": "Termin zakończenia kursu",
-        "completion_deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu."
+        "completion_deadline_helper": "Studenci muszą osiągnąć procent ukończenia przed tą datą (czasu lokalnego). Pozostaw puste bez terminu.",
+        "question_in_exercise": "W „{exercise}”",
+        "fix_question": "Edytuj",
+        "convert_to_public_blocked": "W kursach publicznych wymagane są wyłącznie pytania, które podlegają automatycznej ocenie.",
+        "convert_to_public_blocked_desc": "Ćwiczenia na kursie publicznym są oceniane automatycznie w przeglądarce, dlatego obsługujemy tylko pytania z automatyczną oceną. Usuń lub zastąp następujące pytania przed konwersją tego kursu na publiczny:"
       },
       "analytics": {
         "title": "Analityka"

@@ -822,7 +822,6 @@
         },
         "compliance": "Tuân thủ",
         "public": "công cộng",
-        "convert_to_public_blocked": "Khóa học này có các câu hỏi không thể tự động chấm điểm nên chưa thể công khai.",
         "fix_blocking_questions": "Sửa câu hỏi chặn",
         "slug": {
           "label": "sên URL",
@@ -868,7 +867,11 @@
         "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi người học có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
         "go_to_completion_deadline": "Đi tới thời hạn hoàn thành",
         "completion_deadline_label": "Thời hạn hoàn thành khóa học",
-        "completion_deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn."
+        "completion_deadline_helper": "Học sinh phải đáp ứng tỷ lệ hoàn thành trước ngày này (giờ địa phương). Để trống không có thời hạn.",
+        "question_in_exercise": "Trong \"{exercise}\"",
+        "fix_question": "Chỉnh sửa",
+        "convert_to_public_blocked": "Các khóa học công khai chỉ yêu cầu các câu hỏi có thể tự động phân loại.",
+        "convert_to_public_blocked_desc": "Các bài tập trong khóa học công khai được chấm điểm tự động trong trình duyệt, đó là lý do tại sao chúng tôi chỉ hỗ trợ các câu hỏi có thể tự động chấm điểm. Xóa hoặc thay thế các câu hỏi sau trước khi chuyển khóa học này sang Công khai:"
       },
       "analytics": {
         "title": "Phân tích"

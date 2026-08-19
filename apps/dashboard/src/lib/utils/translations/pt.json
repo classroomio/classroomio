@@ -822,7 +822,6 @@
         },
         "compliance": "Conformidade",
         "public": "Público",
-        "convert_to_public_blocked": "Este curso tem perguntas que não podem ser avaliadas automaticamente, portanto ainda não pode ser tornado público.",
         "fix_blocking_questions": "Corrigir perguntas de bloqueio",
         "slug": {
           "label": "Slug de URL",
@@ -868,7 +867,11 @@
         "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo de certificação antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
         "go_to_completion_deadline": "Ir para o prazo de conclusão",
         "completion_deadline_label": "Prazo para conclusão do curso",
-        "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo."
+        "completion_deadline_helper": "Os alunos devem atingir o percentual de conclusão antes desta data e hora (horário local). Deixe em branco para não ter prazo.",
+        "question_in_exercise": "Em \"{exercise}\"",
+        "fix_question": "Editar",
+        "convert_to_public_blocked": "Os cursos públicos exigem apenas perguntas com avaliação automática.",
+        "convert_to_public_blocked_desc": "Os exercícios em um curso público são avaliados automaticamente no navegador, por isso oferecemos suporte apenas a perguntas com avaliação automática. Remova ou substitua as seguintes perguntas antes de converter este curso para Público:"
       },
       "analytics": {
         "title": "Análises"

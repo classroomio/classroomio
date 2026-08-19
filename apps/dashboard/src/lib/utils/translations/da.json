@@ -822,7 +822,6 @@
         },
         "compliance": "Overholdelse",
         "public": "Offentlig",
-        "convert_to_public_blocked": "Dette kursus har spørgsmål, der ikke kan automatisk bedømmes, så det kan ikke gøres offentligt endnu.",
         "fix_blocking_questions": "Ret blokerende spørgsmål",
         "slug": {
           "label": "URL-slug",
@@ -868,7 +867,11 @@
         "certificate_deadline_required_description": "Overholdelseskurser kræver en certifikatfrist, før elever kan tilmeldes. Indstil venligst en deadline i kursusindstillingerne før udgivelse.",
         "go_to_completion_deadline": "Gå til fuldførelsesfristen",
         "completion_deadline_label": "Deadline for kursusafslutning",
-        "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline."
+        "completion_deadline_helper": "Studerende skal opfylde fuldførelsesprocenten inden denne dato (lokal tid). Lad være tomt uden deadline.",
+        "question_in_exercise": "I \"{exercise}\"",
+        "fix_question": "Rediger",
+        "convert_to_public_blocked": "Offentlige kurser kræver kun autogradable spørgsmål.",
+        "convert_to_public_blocked_desc": "Øvelser i et offentligt kursus bedømmes automatisk i browseren, hvorfor vi kun understøtter autogradable spørgsmål. Fjern eller erstat følgende spørgsmål, før du konverterer dette kursus til offentligt:"
       },
       "analytics": {
         "title": "Analyse"

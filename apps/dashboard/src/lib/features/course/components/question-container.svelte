@@ -9,7 +9,6 @@
   interface Props {
     isTitle?: boolean;
     onClose?: any;
-    scrollToQuestion?: boolean;
     points?: any;
     hasError?: boolean;
     errorMsg?: string | null;
@@ -17,6 +16,7 @@
     pointsHint?: string | null;
     onPointsChange?: any;
     elementId?: string;
+    class?: string;
     key?: string;
     children?: import('svelte').Snippet;
   }
@@ -24,37 +24,26 @@
   let {
     isTitle = false,
     onClose = () => {},
-    scrollToQuestion = false,
     points = $bindable(undefined),
     hasError = false,
     errorMsg = null,
     pointsHint = null,
     onPointsChange = () => {},
     elementId,
+    class: className = '',
     children
   }: Props = $props();
-
-  let ref: HTMLDivElement | undefined = $state();
 
   // `points` is often bound to a plain store object property, which is not deeply
   // reactive — a local reactive owner keeps the zero-points warning live while typing.
   let pointsValue = $state(points);
-
-  $effect(() => {
-    if (ref && scrollToQuestion) {
-      ref.scrollIntoView({
-        block: 'start',
-        behavior: 'smooth',
-        inline: 'nearest'
-      });
-    }
-  });
 </script>
 
 <div
   id={elementId}
-  bind:this={ref}
-  class="border-border border bg-white dark:bg-black {hasError ? 'border-red-700' : ''} root relative mb-6 rounded-md"
+  class="border-border border bg-white dark:bg-black {hasError
+    ? 'border-red-700'
+    : ''} root relative rounded-md {className}"
 >
   {#if isTitle}
     <div class="title bg-primary-700 absolute"></div>

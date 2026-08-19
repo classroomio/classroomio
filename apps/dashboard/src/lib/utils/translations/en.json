@@ -3675,7 +3675,10 @@
         "self_paced": "Self paced",
         "compliance": "Compliance",
         "public": "Public",
-        "convert_to_public_blocked": "This course has questions that can’t be auto-graded, so it can’t be made Public yet.",
+        "convert_to_public_blocked": "Public courses require only auto-gradable questions.",
+        "convert_to_public_blocked_desc": "Exercises in a public course are graded automatically in the browser which is why we only support auto-gradable questions. Remove or replace the following questions before converting this course to Public:",
+        "question_in_exercise": "In \"{exercise}\"",
+        "fix_question": "Edit",
         "fix_blocking_questions": "Fix blocking questions",
         "callout": {
           "legend": "Public course callout",

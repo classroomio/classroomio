@@ -2,22 +2,28 @@
   import { page } from '$app/state';
   import { replaceState } from '$app/navigation';
   import { resolve } from '$app/paths';
+  import AttentionHighlight from '@cio/ui/custom/attention-highlight';
   import type { Snippet } from 'svelte';
 
   interface Props {
     id: string;
     duration?: number;
     trigger?: number;
+    autoScroll?: boolean;
+    scrollBlock?: ScrollLogicalPosition;
+    class?: string;
     children?: Snippet;
   }
 
-  let { id, duration = 3, trigger = 0, children }: Props = $props();
-
-  let containerRef = $state<HTMLDivElement | null>(null);
-  let pulsing = $state(false);
-  let handledFor = $state<string | null>(null);
-  let lastTrigger = trigger;
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  let {
+    id,
+    duration = 3,
+    trigger = 0,
+    autoScroll = true,
+    scrollBlock = 'center',
+    class: className = '',
+    children
+  }: Props = $props();
 
   function getActiveHighlightId(url: URL): string | null {
     const query = url.searchParams.get('highlight');
@@ -27,62 +33,34 @@
     return hash || null;
   }
 
-  function triggerPulse() {
-    pulsing = true;
+  let activeHighlightId = $derived(getActiveHighlightId(page.url));
+  let isTarget = $derived(activeHighlightId === id);
 
-    containerRef?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  function handleComplete() {
+    const url = new URL(page.url);
+    const highlightActive = url.searchParams.get('highlight') === id;
+    const hashActive = url.hash.replace('#', '').trim() === id;
 
-    if (timeoutId) clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-      pulsing = false;
-      timeoutId = null;
+    if (highlightActive) url.searchParams.delete('highlight');
+    if (hashActive) url.hash = '';
 
-      const url = new URL(page.url);
-      const highlightActive = url.searchParams.get('highlight') === id;
-      const hashActive = url.hash.replace('#', '').trim() === id;
-
-      if (highlightActive) url.searchParams.delete('highlight');
-      if (hashActive) url.hash = '';
-
-      if (highlightActive || hashActive) {
-        replaceState(resolve(`${url.pathname}${url.search}`, {}), page.state);
-      }
-    }, duration * 1000);
+    if (highlightActive || hashActive) {
+      replaceState(resolve(`${url.pathname}${url.search}`, {}), page.state);
+    }
   }
-
-  $effect(() => {
-    const activeHighlightId = getActiveHighlightId(page.url);
-
-    if (activeHighlightId !== id) {
-      handledFor = null;
-      return;
-    }
-
-    if (handledFor === activeHighlightId) return;
-
-    handledFor = activeHighlightId;
-    triggerPulse();
-  });
-
-  $effect(() => {
-    if (trigger === lastTrigger) return;
-
-    lastTrigger = trigger;
-
-    if (trigger > 0) {
-      triggerPulse();
-    }
-  });
-
-  $effect(() => {
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  });
 </script>
 
-<div bind:this={containerRef} class={`rounded-md p-2 ${pulsing ? 'ui:border-primary animate-pulse border' : ''}`}>
+<AttentionHighlight
+  {id}
+  highlight={isTarget}
+  {trigger}
+  {duration}
+  {autoScroll}
+  {scrollBlock}
+  class={className}
+  onComplete={handleComplete}
+>
   {#if children}
     {@render children()}
   {/if}
-</div>
+</AttentionHighlight>
