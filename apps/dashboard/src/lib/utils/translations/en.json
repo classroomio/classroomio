@@ -2017,6 +2017,11 @@
         "completed": "{completed} of {total} completed",
         "lessons": "{completed} of {total} lessons",
         "exercises": "{completed} of {total} exercises"
+      },
+      "footer_nav": {
+        "label": "Course content navigation",
+        "previous": "Previous",
+        "next": "Next"
       }
     },
     "search": {

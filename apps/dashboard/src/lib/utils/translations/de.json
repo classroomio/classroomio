@@ -2433,6 +2433,11 @@
         "completed": "{completed} von {total} abgeschlossen",
         "lessons": "{completed} von {total} Lektionen",
         "exercises": "{completed} von {total} Übungen"
+      },
+      "footer_nav": {
+        "label": "Kursinhalt-Navigation",
+        "previous": "Zurück",
+        "next": "Weiter"
       }
     },
     "navItems": {
@@ -4639,7 +4644,7 @@
     },
     "powered_by": {
       "label": "Unterstützt von",
-      "brand": "KlassenzimmerIO"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "Zurück",
