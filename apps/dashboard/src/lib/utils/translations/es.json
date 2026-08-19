@@ -850,7 +850,6 @@
         },
         "compliance": "Cumplimiento",
         "public": "Público",
-        "convert_to_public_blocked": "Este curso tiene preguntas que no se pueden calificar automáticamente, por lo que aún no se puede hacer público.",
         "fix_blocking_questions": "Corregir preguntas de bloqueo",
         "slug": {
           "label": "barra de URL",
@@ -897,7 +896,11 @@
         "go_to_completion_deadline": "Ir a la fecha límite de finalización",
         "generate_link": "Generar nuevo enlace",
         "open_link": "Abrir enlace en nueva pestaña",
-        "copy_link": "Copiar enlace"
+        "copy_link": "Copiar enlace",
+        "question_in_exercise": "En \"{exercise}\"",
+        "fix_question": "Editar",
+        "convert_to_public_blocked": "Los cursos públicos solo requieren preguntas autocalificables.",
+        "convert_to_public_blocked_desc": "Los ejercicios de un curso público se califican automáticamente en el navegador, por lo que solo admitimos preguntas con calificación automática. Elimine o reemplace las siguientes preguntas antes de convertir este curso a Público:"
       },
       "analytics": {
         "title": "Analíticas"

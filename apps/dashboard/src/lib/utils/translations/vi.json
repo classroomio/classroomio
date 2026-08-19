@@ -850,7 +850,6 @@
         },
         "compliance": "Tuân thủ",
         "public": "công cộng",
-        "convert_to_public_blocked": "Khóa học này có các câu hỏi không thể tự động chấm điểm nên chưa thể công khai.",
         "fix_blocking_questions": "Sửa câu hỏi chặn",
         "slug": {
           "label": "sên URL",
@@ -897,7 +896,11 @@
         "go_to_completion_deadline": "Đi tới thời hạn hoàn thành",
         "generate_link": "Tạo liên kết mới",
         "open_link": "Mở liên kết trong tab mới",
-        "copy_link": "Sao chép liên kết"
+        "copy_link": "Sao chép liên kết",
+        "question_in_exercise": "Trong \"{exercise}\"",
+        "fix_question": "Chỉnh sửa",
+        "convert_to_public_blocked": "Các khóa học công khai chỉ yêu cầu các câu hỏi có thể tự động phân loại.",
+        "convert_to_public_blocked_desc": "Các bài tập trong khóa học công khai được chấm điểm tự động trong trình duyệt, đó là lý do tại sao chúng tôi chỉ hỗ trợ các câu hỏi có thể tự động chấm điểm. Xóa hoặc thay thế các câu hỏi sau trước khi chuyển khóa học này sang Công khai:"
       },
       "analytics": {
         "title": "Phân tích"

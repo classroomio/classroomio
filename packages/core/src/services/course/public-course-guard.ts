@@ -1,5 +1,6 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import type { DbOrTxClient } from '@cio/db/drizzle';
+import type { NonAutoGradableQuestionOffender } from '@cio/utils/validation/course';
 import { findNonAutoGradableQuestionsInCourse, getCourseTypeById } from '@cio/db/queries/course';
 import { AUTO_GRADABLE_QUESTION_TYPE_IDS, isAutoGradableQuestionTypeId } from '@cio/question-types';
 
@@ -36,7 +37,7 @@ export async function guardNonAutoGradableQuestionsForCourseType(params: {
 /**
  * When converting a course to `PUBLIC`, enumerate any questions whose type is not
  * auto-gradable. Throws `PUBLIC_COURSE_CONVERSION_BLOCKED` with the offending list
- * in `message`; callers should surface the list to the creator so they can fix them.
+ * in `message` and `details`; callers should surface the list to the creator so they can fix them.
  */
 export async function guardCourseTypeTransition(params: {
   courseId: string;
@@ -55,13 +56,11 @@ export async function guardCourseTypeTransition(params: {
   );
   if (offenders.length === 0) return;
 
-  const preview = offenders.slice(0, 5).map((item) => `"${item.questionTitle}" in "${item.exerciseTitle}"`);
-  const more = offenders.length > 5 ? ` (+${offenders.length - 5} more)` : '';
-
-  throw new AppError(
-    `Remove or replace these non-auto-gradable questions before converting to Public: ${preview.join('; ')}${more}`,
+  throw new AppError<NonAutoGradableQuestionOffender[]>(
+    `Public courses require only auto-gradable questions`,
     ErrorCodes.PUBLIC_COURSE_CONVERSION_BLOCKED,
     400,
-    'type'
+    'type',
+    offenders
   );
 }

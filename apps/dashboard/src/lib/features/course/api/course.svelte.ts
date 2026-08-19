@@ -12,6 +12,7 @@ import type {
   GetCertificationEvaluationRequest,
   GetCourseProgressRequest,
   GetCourseRequest,
+  NonAutoGradableQuestionOffender,
   UpdateCourseData,
   UpdateCourseRequest
 } from '../utils/types';
@@ -53,6 +54,7 @@ interface UpdateCourseOptions {
 export class CourseApi extends BaseApiWithErrors {
   course = $state<Course | null>(null);
   courseAnalytics = $state<CourseAnalytics | null>(null);
+  publicConversionOffenders = $state<NonAutoGradableQuestionOffender[]>([]);
   group = $state<GroupStore>({
     id: '',
     tutors: [],
@@ -60,6 +62,16 @@ export class CourseApi extends BaseApiWithErrors {
     people: [],
     memberId: ''
   });
+
+  override resetErrors() {
+    super.resetErrors();
+    this.publicConversionOffenders = [];
+  }
+
+  override reset() {
+    super.reset();
+    this.publicConversionOffenders = [];
+  }
 
   private loadedCourseId = $state<string | null>(null);
   private isCourseDirty = $state(false);
@@ -500,6 +512,7 @@ export class CourseApi extends BaseApiWithErrors {
           }
           this.success = true;
           this.errors = {};
+          this.publicConversionOffenders = [];
         }
       },
       onError: (result) => {
@@ -512,6 +525,17 @@ export class CourseApi extends BaseApiWithErrors {
           snackbar.error('course.certification.deadline_required');
           return;
         }
+        if (
+          'code' in result &&
+          result.code === ErrorCodes.PUBLIC_COURSE_CONVERSION_BLOCKED &&
+          'details' in result &&
+          Array.isArray(result.details)
+        ) {
+          this.publicConversionOffenders = result.details as unknown as NonAutoGradableQuestionOffender[];
+        } else {
+          this.publicConversionOffenders = [];
+        }
+
         if ('error' in result && 'field' in result && result.field) {
           this.errors[result.field] = result.error;
           snackbar.error(result.error);

@@ -13,11 +13,12 @@ export { AppError, ErrorCodes, type ErrorCode };
 /**
  * Standard error response format
  */
-export interface ErrorResponse {
+export interface ErrorResponse<TDetails = unknown> {
   success: false;
   error: string;
   code: string;
   field?: string;
+  details?: TDetails;
 }
 
 function getZodErrorField(error: ZodError): string | undefined {
@@ -75,7 +76,8 @@ export const handleError = (
         success: false,
         error: responseMessage,
         code: responseCode,
-        field: isServerError ? undefined : error.field
+        field: isServerError ? undefined : error.field,
+        details: isServerError ? undefined : error.details
       },
       error.statusCode as ContentfulStatusCode
     );
