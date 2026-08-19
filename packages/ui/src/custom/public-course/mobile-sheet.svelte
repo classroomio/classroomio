@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import * as Drawer from '../../base/drawer';
   import Sidebar from './sidebar.svelte';
   import type { PublicCourseSidebarItem, PublicCourseSidebarSection } from './types';
@@ -11,7 +12,10 @@
     onItemClick?: (item: PublicCourseSidebarItem) => void;
     hrefFor?: (item: PublicCourseSidebarItem) => string;
     title?: string;
-    /** Forwarded to Sidebar's powered-by footer. */
+    /** Optional progress card rendered between header and scrollable outline. */
+    progress?: Snippet;
+    /** When set, collapses all sections except this one when the sheet opens. */
+    collapseToSectionId?: string | null;
     showPoweredBy?: boolean;
     courseSlug?: string | null;
     orgSlug?: string | null;
@@ -27,6 +31,8 @@
     onItemClick,
     hrefFor,
     title = 'Course outline',
+    progress,
+    collapseToSectionId = null,
     showPoweredBy = true,
     courseSlug = null,
     orgSlug = null,
@@ -34,9 +40,30 @@
     poweredByBrand = 'ClassroomIO'
   }: Props = $props();
 
+  let scrollContainer = $state<HTMLDivElement | null>(null);
+  let collapseResetKey = $state(0);
+
+  function scrollToActiveItem() {
+    if (!scrollContainer || !activeSlug) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      const activeRow = scrollContainer?.querySelector(`[data-item-slug="${activeSlug}"]`);
+      if (activeRow instanceof HTMLElement) {
+        activeRow.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+    });
+  }
+
   function handleOpenChange(next: boolean) {
     open = next;
     onOpenChange?.(next);
+
+    if (next) {
+      collapseResetKey += 1;
+      scrollToActiveItem();
+    }
   }
 
   function handleItemClick(item: PublicCourseSidebarItem) {
@@ -55,12 +82,23 @@
       <Drawer.Header class="ui:px-5 ui:pt-3 ui:pb-2">
         <Drawer.Title class="ui:text-sm ui:font-semibold ui:text-foreground">{title}</Drawer.Title>
       </Drawer.Header>
-      <div class="ui:flex-1 ui:overflow-y-auto ui:px-2 ui:pb-[max(env(safe-area-inset-bottom),1rem)]">
+      {#if progress}
+        <div class="ui:shrink-0 ui:px-3 ui:pb-2">
+          {@render progress()}
+        </div>
+      {/if}
+      <div
+        bind:this={scrollContainer}
+        class="ui:flex-1 ui:overflow-y-auto ui:px-2 ui:pb-[max(env(safe-area-inset-bottom),1rem)]"
+      >
         <Sidebar
           {sections}
           {activeSlug}
           onItemClick={handleItemClick}
           {hrefFor}
+          collapsibleSections={Boolean(collapseToSectionId)}
+          {collapseToSectionId}
+          {collapseResetKey}
           {showPoweredBy}
           {courseSlug}
           {orgSlug}

@@ -295,7 +295,8 @@
         "unlocked_all_content": "Alle Kursgegenstände freigeschaltet",
         "all_content_already_unlocked": "Alle Inhalte sind bereits freigeschaltet",
         "content_grouping_enabled": "Inhaltsgruppierung aktiviert",
-        "content_grouping_disabled": "Inhaltsgruppierung deaktiviert"
+        "content_grouping_disabled": "Inhaltsgruppierung deaktiviert",
+        "link_generated": "Der Kurslink wurde erfolgreich aktualisiert"
       }
     },
     "people": {
@@ -329,7 +330,8 @@
       "success": "Erfolgreich gespeichert",
       "submission_updated": "Einreichung aktualisiert auf",
       "error_fetching": "Das Abrufen der Übungen ist fehlgeschlagen. Bitte laden Sie die Seite neu",
-      "passed_requires_points": "Für den Abschluss durch Bestehen muss mindestens ein Punkt verfügbar sein."
+      "passed_requires_points": "Für den Abschluss durch Bestehen muss mindestens ein Punkt verfügbar sein.",
+      "draft_restored": "Wir haben die nicht gespeicherten Änderungen wiederhergestellt, die Sie hinterlassen haben"
     },
     "poll": {
       "info": {
@@ -859,6 +861,9 @@
           "description_live": "Gesperrte Lektionen und Übungen bleiben den Schülern verborgen, bis Sie sie entsperren – nützlich, wenn Sie Inhalte Woche für Woche veröffentlichen.",
           "unlock_all": "Schalte alle frei"
         },
+        "generate_link": "Neuen Link generieren",
+        "open_link": "Link in neuem Tab öffnen",
+        "copy_link": "Link kopieren",
         "certificate_deadline_required": "Legen Sie zuerst die Frist für das Zertifikat fest",
         "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Lernende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
         "go_to_completion_deadline": "Gehen Sie zur Abschlussfrist",
@@ -2434,6 +2439,11 @@
         "completed": "{completed} von {total} abgeschlossen",
         "lessons": "{completed} von {total} Lektionen",
         "exercises": "{completed} von {total} Übungen"
+      },
+      "footer_nav": {
+        "label": "Kursinhalt-Navigation",
+        "previous": "Zurück",
+        "next": "Weiter"
       }
     },
     "navItems": {
@@ -3969,9 +3979,12 @@
       "tags_title": "Tags",
       "types_title": "Typen",
       "search_placeholder": "Kurse suchen...",
+      "clear_search": "Suche löschen",
       "pricing_title": "Preise",
       "pricing_free": "Kostenlos",
-      "pricing_paid": "Bezahlt"
+      "pricing_paid": "Bezahlt",
+      "selected": "Ausgewählt:",
+      "save_changes": "Änderungen speichern"
     }
   },
   "tags_admin": {
@@ -4637,7 +4650,7 @@
     },
     "powered_by": {
       "label": "Unterstützt von",
-      "brand": "KlassenzimmerIO"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "Zurück",

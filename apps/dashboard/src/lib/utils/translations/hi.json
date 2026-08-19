@@ -295,7 +295,8 @@
         "unlocked_all_content": "सभी पाठ्यक्रम आइटम अनलॉक हो गए",
         "all_content_already_unlocked": "सभी सामग्री पहले से अनलॉक है",
         "content_grouping_enabled": "सामग्री समूहीकरण सक्षम",
-        "content_grouping_disabled": "सामग्री समूहीकरण अक्षम"
+        "content_grouping_disabled": "सामग्री समूहीकरण अक्षम",
+        "link_generated": "पाठ्यक्रम लिंक सफलतापूर्वक अपडेट किया गया"
       }
     },
     "people": {
@@ -329,7 +330,8 @@
       "success": "सफलतापूर्वक सहेजा गया",
       "submission_updated": "सबमिशन को अद्यतन किया गया",
       "error_fetching": "फ़ेचिंग अभ्यास विफल रहा, कृपया पृष्ठ पुनः लोड करें",
-      "passed_requires_points": "पास होकर पूर्ण करने के लिए कम से कम एक अंक उपलब्ध होना चाहिए।"
+      "passed_requires_points": "पास होकर पूर्ण करने के लिए कम से कम एक अंक उपलब्ध होना चाहिए।",
+      "draft_restored": "आपके द्वारा छोड़े गए सहेजे न किए गए परिवर्तन हमने पुनर्स्थापित कर दिए हैं"
     },
     "poll": {
       "info": {
@@ -860,6 +862,9 @@
           "unlock_all": "सबको अनलॉक करें"
         },
         "certificate_deadline_required": "पहले प्रमाणपत्र की समय सीमा निर्धारित करें",
+        "generate_link": "नया लिंक जनरेट करें",
+        "open_link": "नए टैब में लिंक खोलें",
+        "copy_link": "लिंक कॉपी करें",
         "certificate_deadline_required_description": "अनुपालन पाठ्यक्रमों में शिक्षार्थियों के नामांकन से पहले प्रमाणपत्र की समय सीमा की आवश्यकता होती है। कृपया प्रकाशन से पहले पाठ्यक्रम सेटिंग में एक समय सीमा निर्धारित करें।",
         "go_to_completion_deadline": "समापन समय सीमा पर जाएं",
         "completion_deadline_label": "कोर्स पूरा करने की समय सीमा",
@@ -2434,6 +2439,11 @@
         "completed": "{total} में से {completed} पूर्ण",
         "lessons": "{total} में से {completed} पाठ",
         "exercises": "{total} में से {completed} अभ्यास"
+      },
+      "footer_nav": {
+        "label": "कोर्स सामग्री नेविगेशन",
+        "previous": "पिछला",
+        "next": "अगला"
       }
     },
     "navItems": {
@@ -3969,9 +3979,12 @@
       "tags_title": "टैग",
       "types_title": "प्रकार",
       "search_placeholder": "पाठ्यक्रम खोजें...",
+      "clear_search": "खोज साफ़ करें",
       "pricing_title": "मूल्य निर्धारण",
       "pricing_free": "निःशुल्क",
-      "pricing_paid": "भुगतान किया गया"
+      "pricing_paid": "भुगतान किया गया",
+      "selected": "चयनित:",
+      "save_changes": "परिवर्तन सहेजें"
     }
   },
   "tags_admin": {
@@ -4637,7 +4650,7 @@
     },
     "powered_by": {
       "label": "द्वारा संचालित",
-      "brand": "क्लासरूमआईओ"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "पिछला",

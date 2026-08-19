@@ -26,6 +26,10 @@
   import { profile } from '$lib/utils/store/user';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { isCourseLearnerView } from '$lib/utils/store/app';
+  import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
+  import { CourseMobileBottomNav } from '$features/course/components/mobile';
+  import { getCourseProgress } from '$features/course/utils/content';
+  import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import { t } from '$lib/utils/functions/translations';
   import { ContentType } from '@cio/utils/constants/content';
   import type { CourseMember } from '$features/course/utils/types';
@@ -107,6 +111,18 @@
       !($isCourseLearnerView && isContentLockedForStudent) &&
       sidePanel.activePanelId !== AI_ASSISTANT_PANEL_ID
   );
+
+  const courseProgress = $derived(getCourseProgress(courseApi.course));
+  const showMobileBottomNav = $derived(
+    isCourseMobileBottomNavVisible({
+      isCourseLearnerView: $isCourseLearnerView,
+      isMobile: isMobileStore.current,
+      isLessonOrExercisePage,
+      courseProgress
+    })
+  );
+
+  const contentAskAiBarBottomClass = $derived(showMobileBottomNav ? 'bottom-16' : 'bottom-4');
 
   function clampSidebarWidth(width: number) {
     return Math.min(COURSE_SIDEBAR_MAX_WIDTH, Math.max(COURSE_SIDEBAR_MIN_WIDTH, width));
@@ -200,7 +216,7 @@
     onSidebarWidthChange={handleSidebarWidthChange}
   />
 
-  <Sidebar.Inset class="ui:min-w-0 ui:flex-1">
+  <Sidebar.Inset class="ui:min-w-0 ui:flex-1 {showMobileBottomNav ? 'pb-24' : ''}">
     <CourseHeader />
     <ContentCreateModal />
     <CourseCompletionModal />
@@ -223,7 +239,11 @@
       {@render children?.()}
 
       {#if showContentAskAiBar}
-        <ContentAskAiBar class={contentAskAiWidthClass} />
+        <ContentAskAiBar class={contentAskAiWidthClass} bottomClass={contentAskAiBarBottomClass} />
+      {/if}
+
+      {#if showMobileBottomNav}
+        <CourseMobileBottomNav courseId={data.courseId} {path} />
       {/if}
     {/if}
   </Sidebar.Inset>

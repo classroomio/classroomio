@@ -99,6 +99,20 @@
     activeFlatIndex !== null && totalItems > 0 ? `${activeFlatIndex + 1} / ${totalItems}` : ''
   );
 
+  const activeSectionId = $derived.by(() => {
+    if (!activeSlug) {
+      return null;
+    }
+
+    for (const section of sections) {
+      if (section.items.some((item) => item.slug === activeSlug)) {
+        return section.id;
+      }
+    }
+
+    return null;
+  });
+
   const orgInitial = $derived((org?.name?.trim()?.charAt(0) ?? 'C').toUpperCase());
 
   /** Left/right arrow keys navigate between items when focus is not in an editable element. */
@@ -237,6 +251,7 @@
     orgSlug={org?.siteName ?? org?.name ?? null}
     {poweredByLabel}
     {poweredByBrand}
+    collapseToSectionId={activeSectionId}
     onItemClick={(item) => {
       if (!hrefFor) {
         onItemClick?.(item);

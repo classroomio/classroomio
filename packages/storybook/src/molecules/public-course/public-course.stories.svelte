@@ -9,6 +9,7 @@
     EXERCISE_FIXTURE,
     LESSON_FIXTURE,
     LESSON_LOCKED_FIXTURE,
+    LONG_SIDEBAR_FIXTURE,
     ORG_FIXTURE,
     SIDEBAR_FIXTURE
   } from './fixtures';
@@ -101,6 +102,40 @@
   {#snippet template()}
     <div class="ui:mx-auto ui:max-w-xs ui:border-r ui:border-border">
       <PublicCourse.PublicCourseSidebar sections={SIDEBAR_FIXTURE} activeSlug="hallucination-and-limitations" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Bottom nav · ring variant">
+  {#snippet template()}
+    <div class="ui:relative ui:min-h-[200px] ui:bg-background">
+      <PublicCourse.PublicCourseBottomNav
+        positionLabel="3 / 12"
+        sublineLabel="Hallucination & limitations"
+        hasPrev
+        hasNext
+        centerVariant="ring"
+        progressPercent={42}
+        onPrev={() => console.log('prev')}
+        onNext={() => console.log('next')}
+        onOpenSheet={() => console.log('open sheet')}
+      />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Mobile sheet · collapse + long course">
+  {#snippet template()}
+    {@const activeSlug = 'module-10-lesson-4'}
+    <div class="ui:mx-auto ui:max-w-sm ui:border ui:border-border">
+      <PublicCourse.PublicCourseMobileSheet
+        open
+        sections={LONG_SIDEBAR_FIXTURE}
+        {activeSlug}
+        collapseToSectionId="section-10"
+        title="Course outline"
+        onItemClick={(item: PublicCourseSidebarItem) => console.log('navigate', item.slug)}
+      />
     </div>
   {/snippet}
 </Story>

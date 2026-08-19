@@ -1300,7 +1300,10 @@
       "pricing_free": "Free",
       "pricing_paid": "Paid",
       "empty": "No tags available yet",
-      "search_placeholder": "Search courses..."
+      "search_placeholder": "Search courses...",
+      "clear_search": "Clear search",
+      "selected": "Selected:",
+      "save_changes": "Save Changes"
     },
     "empty": {
       "title": "No courses found",
@@ -2014,6 +2017,11 @@
         "completed": "{completed} of {total} completed",
         "lessons": "{completed} of {total} lessons",
         "exercises": "{completed} of {total} exercises"
+      },
+      "footer_nav": {
+        "label": "Course content navigation",
+        "previous": "Previous",
+        "next": "Next"
       }
     },
     "search": {
@@ -3629,6 +3637,9 @@
         "setup_landing_for_link": "Setup landing page to get course link",
         "coming_soon": "Coming soon",
         "link": "Course Link",
+        "generate_link": "Generate new link",
+        "open_link": "Open link in new tab",
+        "copy_link": "Copy link",
         "grading": "Grading",
         "reports": "Make grading reports available for lessons",
         "disabled": "Disabled",
@@ -4220,7 +4231,8 @@
       "passed_requires_points": "Passed completion needs at least one point available.",
       "success": "Saved Successfully",
       "submission_updated": "Submission updated to",
-      "error_fetching": "Fetching exercises failed, please reload the page"
+      "error_fetching": "Fetching exercises failed, please reload the page",
+      "draft_restored": "We restored the unsaved changes you left behind"
     },
     "materials": {
       "apology": "We apologise, there was an error saving your lesson.",
@@ -4257,7 +4269,8 @@
         "saved": "Saved successfully",
         "successful_integration": "Integration successful",
         "successful_deletion": "Integration deleted",
-        "update_successful": "Update successful"
+        "update_successful": "Update successful",
+        "link_generated": "Course link updated successfully"
       },
       "error": {
         "not_right": "Something's not right - Please try later",

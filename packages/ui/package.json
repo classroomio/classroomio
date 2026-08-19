@@ -32,7 +32,7 @@
     "bits-ui": "^2.16.1",
     "clsx": "^2.1.1",
     "jsrepo": "^3.5.1",
-    "layerchart": "2.0.0-next.27",
+    "layerchart": "2.2.0",
     "mode-watcher": "^1.1.0",
     "runed": "^0.37.1",
     "shiki": "^3.22.0",

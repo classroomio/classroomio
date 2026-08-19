@@ -295,7 +295,8 @@
         "unlocked_all_content": "Todos los elementos del curso desbloqueados",
         "all_content_already_unlocked": "Todo el contenido ya está desbloqueado",
         "content_grouping_enabled": "Agrupación de contenidos activada",
-        "content_grouping_disabled": "Agrupación de contenidos desactivada"
+        "content_grouping_disabled": "Agrupación de contenidos desactivada",
+        "link_generated": "Enlace del curso actualizado exitosamente"
       }
     },
     "people": {
@@ -329,7 +330,8 @@
       "success": "Guardado exitosamente",
       "submission_updated": "Envío actualizado a",
       "error_fetching": "No se han podido recuperar los ejercicios. Vuelva a cargar la página.",
-      "passed_requires_points": "La finalización por aprobado necesita al menos un punto disponible."
+      "passed_requires_points": "La finalización por aprobado necesita al menos un punto disponible.",
+      "draft_restored": "Restauramos los cambios sin guardar que dejaste"
     },
     "poll": {
       "info": {
@@ -859,6 +861,9 @@
           "description_live": "Las lecciones y ejercicios bloqueados permanecen ocultos para los estudiantes hasta que los desbloqueas, lo que resulta útil si publicas contenido semana tras semana.",
           "unlock_all": "Desbloquear todo"
         },
+        "generate_link": "Generar nuevo enlace",
+        "open_link": "Abrir enlace en nueva pestaña",
+        "copy_link": "Copiar enlace",
         "certificate_deadline_required": "Establecer la fecha límite del certificado primero",
         "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para el certificado antes de que los estudiantes puedan inscribirse. Establezca una fecha límite en la configuración del curso antes de publicarlo.",
         "go_to_completion_deadline": "Ir a la fecha límite de finalización",
@@ -2434,6 +2439,11 @@
         "completed": "{completed} de {total} completados",
         "lessons": "{completed} de {total} lecciones",
         "exercises": "{completed} de {total} ejercicios"
+      },
+      "footer_nav": {
+        "label": "Navegación del contenido del curso",
+        "previous": "Anterior",
+        "next": "Siguiente"
       }
     },
     "navItems": {
@@ -3969,9 +3979,12 @@
       "tags_title": "Etiquetas",
       "types_title": "Tipos",
       "search_placeholder": "Buscar cursos...",
+      "clear_search": "Borrar búsqueda",
       "pricing_title": "Precios",
       "pricing_free": "Gratis",
-      "pricing_paid": "Pagado"
+      "pricing_paid": "Pagado",
+      "selected": "Seleccionado:",
+      "save_changes": "Guardar cambios"
     }
   },
   "tags_admin": {
@@ -4637,7 +4650,7 @@
     },
     "powered_by": {
       "label": "Desarrollado por",
-      "brand": "AulaIO"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "Anterior",
