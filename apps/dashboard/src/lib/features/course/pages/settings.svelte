@@ -6,12 +6,12 @@
   import { Switch } from '@cio/ui/base/switch';
   import * as RadioGroup from '@cio/ui/base/radio-group';
   import * as Select from '@cio/ui/base/select';
-  import * as Dialog from '@cio/ui/base/dialog';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
   import XIcon from '@lucide/svelte/icons/x';
 
   import ReorderMaterialTabs from '$features/course/components/reorder-material-tabs.svelte';
+  import CertificateDeadlineRequiredDialog from '$features/course/components/certificate-deadline-required-dialog.svelte';
   import { CourseTagPicker } from '$features/course/components';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
@@ -43,6 +43,7 @@
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
   import { currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { page } from '$app/stores';
+  import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
 
   interface Props {
     hasUnsavedChanges?: boolean;
@@ -519,24 +520,7 @@
 
 <DeleteModal onDelete={handleDeleteCourse} bind:open={openDeleteModal} />
 
-<Dialog.Root bind:open={openCertificateDeadlineDialog}>
-  <Dialog.Content class="max-w-md">
-    <Dialog.Header>
-      <Dialog.Title>{$t('course.navItem.settings.certificate_deadline_required')}</Dialog.Title>
-      <Dialog.Description>
-        {$t('course.navItem.settings.certificate_deadline_required_description')}
-      </Dialog.Description>
-    </Dialog.Header>
-    <Dialog.Footer>
-      <Button variant="outline" onclick={() => (openCertificateDeadlineDialog = false)}>
-        {$t('cancel')}
-      </Button>
-      <Button onclick={goToCompletionDeadline}>
-        {$t('course.navItem.settings.go_to_completion_deadline')}
-      </Button>
-    </Dialog.Footer>
-  </Dialog.Content>
-</Dialog.Root>
+<CertificateDeadlineRequiredDialog bind:open={openCertificateDeadlineDialog} onGoToDeadline={goToCompletionDeadline} />
 
 <Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
@@ -705,7 +689,10 @@
     {/if}
 
     <Field.Group class="mt-3">
-      <AttentionHighlight id="course-completion-deadline" trigger={completionDeadlineTrigger}>
+      <AttentionHighlight
+        id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_DEADLINE}
+        trigger={completionDeadlineTrigger}
+      >
         <Field.Field>
           <Field.Label>
             {$t('course.navItem.settings.completion_deadline_label')}
