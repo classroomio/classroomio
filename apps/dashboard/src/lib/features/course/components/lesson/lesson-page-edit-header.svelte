@@ -10,14 +10,12 @@
   import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { RoleBasedSecurity } from '$features/ui';
-  import { CircleCheckIcon } from '$features/ui/icons';
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
   import { slugifyTitle } from '@cio/utils/validation';
 
   interface Props {
     mode: (typeof MODES)[keyof typeof MODES];
     title: string;
-    isComplete?: boolean;
     isUnlocked?: boolean | null;
     isDeletingLesson?: boolean;
     onTitleChange: (value: string) => void;
@@ -32,7 +30,6 @@
   let {
     mode,
     title,
-    isComplete = false,
     isUnlocked = false,
     isDeletingLesson = false,
     onTitleChange,
@@ -76,14 +73,7 @@
         {/if}
       </RoleBasedSecurity>
     {:else}
-      <Page.Title class="flex min-w-0 items-center gap-2">
-        <span class="min-w-0 truncate">{title}</span>
-        {#if isComplete}
-          <span class="ui:text-primary shrink-0" aria-label={$t('course.navItem.lessons.complete')}>
-            <CircleCheckIcon size={20} filled />
-          </span>
-        {/if}
-      </Page.Title>
+      <Page.Title>{title}</Page.Title>
     {/if}
   </div>
 
