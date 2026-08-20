@@ -272,8 +272,15 @@ export async function rollbackOrganizationWidget(
       throw new AppError('Widget version not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
     }
 
+    const payloadSnapshot = version.payloadSnapshot as Record<string, unknown>;
+    const restoredLayoutType = (payloadSnapshot.layoutType ?? widget.layoutType) as typeof widget.layoutType;
+    const restoredSelectionMode = (payloadSnapshot.selectionMode ??
+      widget.selectionMode) as typeof widget.selectionMode;
+
     const updatedWidget = await updateWidget(orgId, widgetId, {
       config: version.configSnapshot,
+      layoutType: restoredLayoutType,
+      selectionMode: restoredSelectionMode,
       status: 'PUBLISHED',
       hasUnpublishedChanges: false,
       latestPublishedVersionId: version.id,
