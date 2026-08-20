@@ -8,6 +8,8 @@
     /** Current position — e.g. "3 of 12" — plus a subline — e.g. "Hallucination & limitations". */
     positionLabel: string;
     sublineLabel?: string;
+    /** When true, a filled check is shown to the right of `sublineLabel`. */
+    sublineComplete?: boolean;
     hasPrev: boolean;
     hasNext: boolean;
     onPrev: () => void;
@@ -27,6 +29,7 @@
   let {
     positionLabel,
     sublineLabel,
+    sublineComplete = false,
     hasPrev,
     hasNext,
     onPrev,
@@ -98,7 +101,21 @@
         {positionLabel}
       </span>
       {#if sublineLabel}
-        <span class="ui:max-w-[55vw] ui:truncate ui:text-sm ui:font-medium ui:text-foreground">{sublineLabel}</span>
+        <span class="ui:flex ui:max-w-[55vw] ui:min-w-0 ui:items-center ui:gap-1">
+          <span class="ui:min-w-0 ui:truncate ui:text-sm ui:font-medium ui:text-foreground">{sublineLabel}</span>
+          {#if sublineComplete}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              class="ui:size-3.5 ui:shrink-0 ui:text-primary"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="10" fill="currentColor"></circle>
+              <path d="m9 12 2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          {/if}
+        </span>
       {/if}
     </span>
   </button>
