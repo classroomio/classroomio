@@ -935,7 +935,8 @@ export class LessonApi extends BaseApiWithErrors {
 
     await Promise.all([
       this.update(courseId, lessonId, {
-        slideUrl: this.lesson.slideUrl || undefined,
+        slideUrl: this.lesson.slideUrl || '',
+        slides: this.lesson.slides || [],
         videos: this.lesson.videos || [],
         documents: this.lesson.documents || []
       }),

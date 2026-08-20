@@ -100,6 +100,10 @@ Marketing / demo widget: left-hand list of question types and a live **take**-mo
 
 Presentational list for lesson (or similar) file attachments with **view** and **edit** modes. View mode shows a header (paperclip + title + file count) and rows with view/download icon buttons. Edit mode shows sortable rows (when `onReorder` is provided) with a drag handle, view, and delete actions. Copy is passed via the `labels: AttachmentListLabels` prop (including `reorder` for the drag handle) so dashboard wrappers can supply translated strings. `AttachmentListFile.type` accepts a file extension or MIME type for icon styling. See `Molecules/AttachmentList` in Storybook.
 
+### Slide embed (`src/custom/slide-embed/`)
+
+Guided picker, added-embed card, and 16:9 iframe for lesson slide decks. Copy is passed via `labels` so the dashboard can translate. The picker accepts a **full iframe**; pasted width/height are ignored and the frame always uses `aspect-video`. Platform marks use the official product logos (Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, Beautiful.ai). See `Molecules/SlideEmbed` in Storybook.
+
 ### Live session card (`src/custom/live-session-card/`)
 
 Presentational card for a live-class lesson with three states (`live`, `upcoming`, `ended`) derived from `lessonAt` + `durationMinutes`, or forced via the `status` prop (used by Storybook). Shows a join/copy action set when live, an "Add to calendar" combo button (Google, Outlook.com, Office 365, Yahoo, plus an `.ics` download for Apple) and a countdown when upcoming. All copy is passed in via the `labels: LiveSessionLabels` prop, so the dashboard wrapper supplies translated strings; `onCopyLink` fires after the link is copied (e.g. for a snackbar). See `Molecules/LiveSessionCard` in Storybook.

@@ -1310,6 +1310,9 @@ importers:
       '@cio/utils':
         specifier: workspace:*
         version: link:../utils
+      '@lucide/svelte':
+        specifier: ^0.562.0
+        version: 0.562.0(svelte@5.46.0)
       svelte-inview:
         specifier: ^4.0.4
         version: 4.0.4(svelte@5.46.0)

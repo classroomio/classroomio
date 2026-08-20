@@ -99,6 +99,7 @@ export async function getCourseContentItems(courseId: string, profileId?: string
         ) AS "hasNoteContent",
         (
           length(trim(COALESCE(slide_url, ''))) > 0
+          OR COALESCE(jsonb_array_length(slides), 0) > 0
         ) AS "hasSlideContent",
         COALESCE(jsonb_array_length(videos), 0) AS "videosCount",
         COALESCE(jsonb_array_length(documents), 0) AS "documentsCount",

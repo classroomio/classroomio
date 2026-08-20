@@ -30,6 +30,7 @@
   import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store';
   import { t } from '$lib/utils/functions/translations';
   import { ContentType } from '@cio/utils/constants/content';
+  import { resolveLessonSlides } from '@cio/utils/functions';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
@@ -171,7 +172,7 @@
     const ordered = orderedTabs(materialTabs, courseApi.course?.metadata?.lessonTabsOrder);
     const content = lessonApi.translations[lessonId]?.[lessonApi.currentLocale] || '';
 
-    const slideUrl = lessonApi.lesson?.slideUrl || '';
+    const slides = resolveLessonSlides(lessonApi.lesson?.slides, lessonApi.lesson?.slideUrl);
     const videos = lessonApi.lesson?.videos || [];
     const documents = lessonApi.lesson?.documents || [];
 
@@ -179,7 +180,7 @@
       if (tab.value === 1) {
         tab.badgeValue = isHtmlValueEmpty(content) ? 0 : 1;
       } else if (tab.value === 2) {
-        tab.badgeValue = slideUrl ? 1 : 0;
+        tab.badgeValue = slides.length;
       } else if (tab.value === 3) {
         tab.badgeValue = !isEmpty(videos) ? videos.length : 0;
       } else if (tab.value === 4) {
@@ -244,7 +245,7 @@
       title: lessonApi.lesson.title ?? '',
       isUnlocked: lessonApi.lesson.isUnlocked ?? null,
       hasNoteContent: hasLessonNoteContent(lessonApi.lesson.id),
-      hasSlideContent: Boolean(lessonApi.lesson.slideUrl?.trim()),
+      hasSlideContent: resolveLessonSlides(lessonApi.lesson.slides, lessonApi.lesson.slideUrl).length > 0,
       videosCount: Array.isArray(lessonApi.lesson.videos) ? lessonApi.lesson.videos.length : 0,
       documentsCount: Array.isArray(lessonApi.lesson.documents) ? lessonApi.lesson.documents.length : 0
     });
@@ -259,7 +260,8 @@
         isUnlocked: lessonApi.lesson.isUnlocked ?? undefined,
         completionPolicy: lessonApi.lesson.completionPolicy ?? undefined,
         videoWatchThreshold: lessonApi.lesson.videoWatchThreshold ?? undefined,
-        slideUrl: lessonApi.lesson.slideUrl || undefined,
+        slideUrl: lessonApi.lesson.slideUrl || '',
+        slides: lessonApi.lesson.slides || [],
         videos: lessonApi.lesson.videos || [],
         documents: lessonApi.lesson.documents || [],
         slug: isPublicCourse && lessonApi.lesson.slug ? lessonApi.lesson.slug : undefined

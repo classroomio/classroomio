@@ -970,6 +970,23 @@ export const lesson = pgTable(
     note: varchar(),
     videoUrl: varchar('video_url'),
     slideUrl: varchar('slide_url'),
+    slides: jsonb().default([]).$type<
+      {
+        id: string;
+        src: string;
+        platform:
+          | 'google-slides'
+          | 'canva'
+          | 'powerpoint'
+          | 'keynote'
+          | 'figma'
+          | 'prezi'
+          | 'pitch'
+          | 'gamma'
+          | 'slideshare'
+          | 'beautiful';
+      }[]
+    >(),
     courseId: uuid('course_id').notNull(),
     id: uuid()
       .default(sql`gen_random_uuid()`)
