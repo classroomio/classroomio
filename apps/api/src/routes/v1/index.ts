@@ -8,10 +8,14 @@ import { v1CoursesRouter } from './courses';
 
 export const v1Router = new Hono()
   .use('*', publicApiCors)
+  .use('*', async (c, next) => {
+    try {
+      await next();
+    } catch (err) {
+      console.error('Public API error:', err);
+      Sentry.captureException(err);
+      return handlePublicApiError(c, err, 'Internal Server Error', ErrorCodes.INTERNAL_ERROR);
+    }
+  })
   .route('/audience', v1AudienceRouter)
-  .route('/courses', v1CoursesRouter)
-  .onError((err, c) => {
-    console.error('Public API error:', err);
-    Sentry.captureException(err);
-    return handlePublicApiError(c, err, 'Internal Server Error', ErrorCodes.INTERNAL_ERROR);
-  });
+  .route('/courses', v1CoursesRouter);
