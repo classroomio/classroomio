@@ -231,7 +231,7 @@
           {watchProgressTooltip}
         </Tooltip.Content>
       </Tooltip.Root>
-    {:else if showMarkComplete && lessonId && !isLessonLocked && (showVideoWatchCompleteState || !isVideoWatchLesson)}
+    {:else if showMarkComplete && lessonId && !isLessonLocked && !isLessonComplete && !isVideoWatchLesson}
       <Button
         size="sm"
         variant="secondary"

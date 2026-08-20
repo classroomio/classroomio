@@ -95,6 +95,7 @@
       (item) => item.type === ContentType.Lesson && item.id === lessonId
     )
   );
+  const isLessonComplete = $derived(currentLessonContentItem?.isComplete ?? lessonApi.lesson?.isComplete ?? false);
   const lessonTitle = $derived(currentLessonContentItem?.title || lessonApi.lesson?.title || 'Lesson');
   const contentLockReason = $derived(getStudentContentLockReason(courseApi.course, lessonId, ContentType.Lesson));
   const isStudentLessonStateReady = $derived.by(() => {
@@ -420,6 +421,7 @@
     <LessonPageEditHeader
       {mode}
       title={lessonTitle}
+      isComplete={mode === MODES.view && isLessonComplete}
       isUnlocked={lessonApi.lesson?.isUnlocked ?? false}
       {isDeletingLesson}
       onTitleChange={handleLessonTitleChange}
