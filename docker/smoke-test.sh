@@ -49,6 +49,15 @@ case "${SERVICE}" in
     ;;
 
   jobs)
+    # Workers query Postgres on boot (analytics rollups, media jobs, etc.).
+    # Apply schema first — this job has its own empty postgres, unlike api which
+    # runs db:setup in its entrypoint.
+    docker run --rm --network host \
+      -e DATABASE_URL="${DB_URL}" -e PRIVATE_DATABASE_URL="${DB_URL}" \
+      --entrypoint pnpm \
+      "${IMAGE}" \
+      --filter @cio/db db:migrate
+
     docker run -d --name "${NAME}" --network host \
       -e NODE_ENV=production -e DATABASE_URL="${DB_URL}" -e REDIS_URL="${REDIS_URL}" \
       "${IMAGE}"
