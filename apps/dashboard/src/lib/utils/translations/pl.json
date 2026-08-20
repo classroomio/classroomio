@@ -220,6 +220,7 @@
       },
       "success": {
         "complete_marked": "Oznaczono jako ukończone",
+        "complete_unmarked": "Oznaczono jako nieukończone",
         "complete_download": "Pobierz ukończono",
         "version_restored": "Wersja została przywrócona pomyślnie"
       },

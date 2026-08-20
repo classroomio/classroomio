@@ -4366,6 +4366,7 @@
       "completion_update_failed": "Failed to update lesson completion",
       "success": {
         "complete_marked": "Marked as complete",
+        "complete_unmarked": "Marked as incomplete",
         "complete_download": "Download Complete",
         "version_restored": "Version restored sucessfully"
       },

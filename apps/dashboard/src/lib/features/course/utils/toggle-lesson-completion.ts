@@ -22,7 +22,9 @@ export async function toggleLessonCompletion(courseId: string, lessonId: string)
     return false;
   }
 
-  snackbar.success('snackbar.lessons.success.complete_marked');
+  snackbar.success(
+    isComplete ? 'snackbar.lessons.success.complete_marked' : 'snackbar.lessons.success.complete_unmarked'
+  );
 
   if (courseApi.course?.content) {
     courseApi.course = updateLessonCompletionInCourseContent(courseApi.course, lessonId, isComplete);

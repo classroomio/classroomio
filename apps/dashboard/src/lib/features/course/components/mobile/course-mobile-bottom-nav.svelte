@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { PublicCourseBottomNav } from '@cio/ui/custom/public-course';
-  import { IconButton } from '@cio/ui/custom/icon-button';
+  import { Button } from '@cio/ui/base/button';
   import { courseApi, lessonApi } from '$features/course/api';
   import { getContentRoute, getCourseProgress } from '$features/course/utils/content';
   import {
@@ -131,20 +131,18 @@
 >
   {#snippet completeToggle()}
     {#if showCompleteToggle}
-      <IconButton
+      <Button
         type="button"
         variant="secondary"
-        size="icon"
-        tooltip={completeToggleLabel}
-        tooltipSide="top"
+        size="icon-sm"
         class={isLessonComplete ? 'ui:text-primary' : ''}
         disabled={isMarkingComplete}
         aria-pressed={isLessonComplete}
         aria-label={completeToggleLabel}
         onclick={() => handleToggleComplete()}
       >
-        <CircleCheckIcon size={20} filled={isLessonComplete} />
-      </IconButton>
+        <CircleCheckIcon size={18} filled={isLessonComplete} />
+      </Button>
     {/if}
   {/snippet}
 </PublicCourseBottomNav>

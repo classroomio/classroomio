@@ -220,6 +220,7 @@
       },
       "success": {
         "complete_marked": "Помечено как завершенное",
+        "complete_unmarked": "Помечено как незавершенное",
         "complete_download": "Загрузка завершена",
         "version_restored": "Версия успешно восстановлена"
       },

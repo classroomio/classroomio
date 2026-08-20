@@ -220,6 +220,7 @@
       },
       "success": {
         "complete_marked": "Markeret som komplet",
+        "complete_unmarked": "Markeret som ufuldstændig",
         "complete_download": "Download fuldført",
         "version_restored": "Version blev gendannet"
       },
