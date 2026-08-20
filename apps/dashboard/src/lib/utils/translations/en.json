@@ -3047,6 +3047,8 @@
           "placeholder": "What do you think about this lesson?",
           "comment_btn": "Comment",
           "cancel_btn": "Cancel",
+          "edit": "Edit",
+          "delete": "Delete",
           "load_more_btn": "Load more",
           "comment_error": "Failed to post comment. Please try again."
         },
@@ -3763,6 +3765,28 @@
     },
     "all": "All"
   },
+  "report": {
+    "menu": "Report",
+    "title": "Report content",
+    "description": "Tell us what’s wrong. Our team will review this report.",
+    "reason_label": "Reason",
+    "reason_placeholder": "Select a reason",
+    "reason_required": "Please choose a reason",
+    "details_label": "Additional details",
+    "details_placeholder": "Add any context that will help us review this (optional)",
+    "submit": "Submit report",
+    "cancel": "Cancel",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Harassment or bullying",
+      "hate_speech": "Hate speech",
+      "sexual_content": "Sexual content",
+      "violence": "Violence or threats",
+      "misinformation": "Misinformation",
+      "privacy": "Privacy violation",
+      "other": "Other"
+    }
+  },
   "audience": {
     "title": "Audience",
     "page_subtitle": "See who belongs to your org, who is learning, who is invited, and how to reach them.",
@@ -4396,6 +4420,11 @@
         "success_delete": "Deleted successfully",
         "question_submitted": "Question Submitted!"
       }
+    },
+    "report": {
+      "success": "Thanks. We’ll review this report.",
+      "error": "Could not submit the report. Please try again.",
+      "already_submitted": "You’ve already reported this."
     },
     "signup": {
       "disposable": "The email you provided is disposable"

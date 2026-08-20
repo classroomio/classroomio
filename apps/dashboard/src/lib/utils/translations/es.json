@@ -457,6 +457,11 @@
         "post_created": "Publicación creada exitosamente",
         "post_updated": "Publicación actualizada exitosamente"
       }
+    },
+    "report": {
+      "success": "Thanks. We’ll review this report.",
+      "error": "Could not submit the report. Please try again.",
+      "already_submitted": "You’ve already reported this."
     }
   },
   "explore": {
@@ -1408,7 +1413,9 @@
           "comment_btn": "Comentario",
           "cancel_btn": "Cancelar",
           "load_more_btn": "Cargar más",
-          "comment_error": "No se pudo publicar el comentario. Por favor inténtalo de nuevo."
+          "comment_error": "No se pudo publicar el comentario. Por favor inténtalo de nuevo.",
+          "edit": "Edit",
+          "delete": "Delete"
         },
         "exercises": {
           "heading": "Todos los ejercicios",
@@ -5023,6 +5030,28 @@
         "save": "Guardar",
         "cancel": "Cancelar"
       }
+    }
+  },
+  "report": {
+    "menu": "Report",
+    "title": "Report content",
+    "description": "Tell us what’s wrong. Our team will review this report.",
+    "reason_label": "Reason",
+    "reason_placeholder": "Select a reason",
+    "reason_required": "Please choose a reason",
+    "details_label": "Additional details",
+    "details_placeholder": "Add any context that will help us review this (optional)",
+    "submit": "Submit report",
+    "cancel": "Cancel",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Harassment or bullying",
+      "hate_speech": "Hate speech",
+      "sexual_content": "Sexual content",
+      "violence": "Violence or threats",
+      "misinformation": "Misinformation",
+      "privacy": "Privacy violation",
+      "other": "Other"
     }
   }
 }
