@@ -5,7 +5,8 @@ const TEXT_GEN_MODELS: Record<AIProvider, string> = {
   [AIProvider.OPENAI]: 'gpt-4o-mini',
   [AIProvider.ANTHROPIC]: 'claude-haiku-4-5-20251001',
   [AIProvider.GOOGLE]: 'gemini-3.1-flash-lite',
-  [AIProvider.MOONSHOT]: 'kimi-k2.6'
+  [AIProvider.MOONSHOT]: 'kimi-k2.6',
+  [AIProvider.ORCAROUTER]: 'orcarouter/auto'
 };
 
 export interface GenerateFieldTextResult {

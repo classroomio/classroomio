@@ -7,10 +7,16 @@
  *   even though it isn't currently exposed to users.
  */
 
-export const AGENT_MODEL_IDS = ['gemini-3.1-flash-lite', 'gpt-5.4-mini', 'claude-sonnet-3-5', 'kimi-k2.6'] as const;
+export const AGENT_MODEL_IDS = [
+  'gemini-3.1-flash-lite',
+  'gpt-5.4-mini',
+  'claude-sonnet-3-5',
+  'kimi-k2.6',
+  'orcarouter/auto'
+] as const;
 
 export type AgentModelId = (typeof AGENT_MODEL_IDS)[number];
-export type AgentModelProvider = 'google' | 'openai' | 'anthropic' | 'moonshot';
+export type AgentModelProvider = 'google' | 'openai' | 'anthropic' | 'moonshot' | 'orcarouter';
 export type AgentModelCostTier = 'low' | 'high';
 
 export interface AgentModelDescriptor {
@@ -58,6 +64,14 @@ export const AGENT_MODELS: Record<AgentModelId, AgentModelDescriptor> = {
     isFree: true,
     costTier: 'low',
     contextWindow: 262_144
+  },
+  'orcarouter/auto': {
+    provider: 'orcarouter',
+    label: 'OrcaRouter Auto',
+    backendModelId: 'orcarouter/auto',
+    isFree: true,
+    costTier: 'low',
+    contextWindow: 131_072
   }
 };
 
@@ -65,7 +79,8 @@ export const UI_PICKER_MODEL_IDS = [
   'kimi-k2.6',
   'gemini-3.1-flash-lite',
   'gpt-5.4-mini',
-  'claude-sonnet-3-5'
+  'claude-sonnet-3-5',
+  'orcarouter/auto'
 ] as const satisfies readonly AgentModelId[];
 
 export const DEFAULT_PICKER_MODEL_ID: AgentModelId = 'gemini-3.1-flash-lite';

@@ -9,14 +9,16 @@ const DEFAULT_MODELS: Record<AIProvider, string> = {
   [AIProvider.OPENAI]: 'gpt-5.4-mini',
   [AIProvider.ANTHROPIC]: 'claude-sonnet-4-20250514',
   [AIProvider.GOOGLE]: 'gemini-3.1-flash-lite',
-  [AIProvider.MOONSHOT]: 'kimi-k2.6'
+  [AIProvider.MOONSHOT]: 'kimi-k2.6',
+  [AIProvider.ORCAROUTER]: 'orcarouter/auto'
 };
 
 const PROVIDER_API_KEY_ENV: Record<AIProvider, string> = {
   [AIProvider.OPENAI]: 'OPENAI_API_KEY',
   [AIProvider.ANTHROPIC]: 'ANTHROPIC_API_KEY',
   [AIProvider.GOOGLE]: 'GOOGLE_API_KEY',
-  [AIProvider.MOONSHOT]: 'MOONSHOT_API_KEY'
+  [AIProvider.MOONSHOT]: 'MOONSHOT_API_KEY',
+  [AIProvider.ORCAROUTER]: 'ORCAROUTER_API_KEY'
 };
 
 /**
@@ -43,6 +45,15 @@ export function createModel(config: AIProviderConfig): LanguageModel {
       const moonshot = createMoonshotAI({ apiKey: config.apiKey });
       return moonshot(modelName);
     }
+    case AIProvider.ORCAROUTER: {
+      const orcarouter = createOpenAI({
+        apiKey: config.apiKey,
+        baseURL: 'https://api.orcarouter.ai/v1'
+      });
+      // OrcaRouter is an OpenAI-compatible chat gateway, so use the Chat
+      // Completions model rather than the default Responses API.
+      return orcarouter.chat(modelName);
+    }
     default:
       throw new Error(`Unsupported AI provider: ${config.provider}`);
   }
@@ -64,7 +75,7 @@ export function getProviderConfigForProvider(provider: AIProvider): AIProviderCo
  * Used by routes that don't take an explicit model (status check, title generation).
  */
 export function pickAnyConfiguredProvider(): AIProviderConfig | null {
-  const order: AIProvider[] = [AIProvider.GOOGLE, AIProvider.OPENAI, AIProvider.ANTHROPIC];
+  const order: AIProvider[] = [AIProvider.GOOGLE, AIProvider.OPENAI, AIProvider.ANTHROPIC, AIProvider.ORCAROUTER];
 
   for (const provider of order) {
     const config = getProviderConfigForProvider(provider);

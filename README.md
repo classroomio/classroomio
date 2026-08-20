@@ -243,6 +243,7 @@ The in-course AI chat (course authoring, plan generation, lesson edits) is **dis
 OPENAI_API_KEY=sk-...        # enables GPT-4o
 GOOGLE_API_KEY=AIza...       # enables Gemini 2.5 Flash (default model in the picker)
 ANTHROPIC_API_KEY=sk-ant-... # supported in code; not currently in the picker UI
+ORCAROUTER_API_KEY=sk-orca-... # enables OrcaRouter (OpenAI-compatible gateway, https://api.orcarouter.ai/v1)
 ```
 
 Notes:

@@ -298,7 +298,7 @@ A thin, backend-focused package consumed by `apps/api`. No UI code. The heavy li
 
 ### Responsibilities
 
-- **Provider factory** — creates the right AI SDK `LanguageModel` for a given provider (`createModel`); `getProviderConfigForProvider(provider)` reads the per-provider key (`OPENAI_API_KEY` / `GOOGLE_API_KEY` / `ANTHROPIC_API_KEY`); `pickAnyConfiguredProvider()` returns the first provider with a key set, used by the status route and title generation
+- **Provider factory** — creates the right AI SDK `LanguageModel` for a given provider (`createModel`); `getProviderConfigForProvider(provider)` reads the per-provider key (`OPENAI_API_KEY` / `GOOGLE_API_KEY` / `ANTHROPIC_API_KEY` / `ORCAROUTER_API_KEY`); `pickAnyConfiguredProvider()` returns the first provider with a key set, used by the status route and title generation
 - **Role-aware tool registry** — `getToolSchemas(role)` returns Zod schemas per role
 - **Role-aware system prompt** — `buildSystemPrompt(context)` generates different LLM instructions for teachers vs students, including Plan Mode vs Agent Mode behavior
 - **Course plan types** — `CoursePlan`, `CoursePlanSection`, `CoursePlanLesson` types used by both API and dashboard
@@ -606,7 +606,7 @@ When not configured (self-hosted, or dev environments), events are silently skip
 ## Self-Hosted vs Cloud
 
 - **Cloud**: AI assistant enabled by default. ClassroomIO provides the LLM API key server-side. Usage metered per plan tier.
-- **Self-hosted**: AI assistant **disabled by default**. To enable, admin sets at least one of `OPENAI_API_KEY`, `GOOGLE_API_KEY`, or `ANTHROPIC_API_KEY`. The dashboard model picker exposes Gemini 2.5 Flash (Google) and GPT-4o (OpenAI); each option requires its own provider key. Anthropic is supported in code but not exposed in the picker. The assistant button is hidden when no provider key is set. No token metering for self-hosted (user's own API key, their cost).
+- **Self-hosted**: AI assistant **disabled by default**. To enable, admin sets at least one of `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `ANTHROPIC_API_KEY`, or `ORCAROUTER_API_KEY`. The dashboard model picker exposes Gemini 2.5 Flash (Google), GPT-4o (OpenAI), and OrcaRouter Auto (OrcaRouter, OpenAI-compatible gateway); each option requires its own provider key. Anthropic is supported in code but not exposed in the picker. The assistant button is hidden when no provider key is set. No token metering for self-hosted (user's own API key, their cost).
 
 ---
 
@@ -801,6 +801,7 @@ Per-provider API keys configure which models are available:
 - `OPENAI_API_KEY` — enables GPT-4o (and `gpt-4o-mini` for title generation)
 - `GOOGLE_API_KEY` — enables Gemini 2.5 Flash
 - `ANTHROPIC_API_KEY` — enables Claude (Sonnet 4.5 / Haiku for titles); supported in code, not in the picker UI
+- `ORCAROUTER_API_KEY` — enables [OrcaRouter](https://www.orcarouter.ai) (`orcarouter/auto`), an OpenAI-compatible gateway at `https://api.orcarouter.ai/v1`
 - `TINYBIRD_TOKEN` — Tinybird API token for event ingestion (optional; events silently skipped when not set)
 - `TINYBIRD_BASE_URL` — Tinybird API base URL (default: `https://api.tinybird.co`)
 
