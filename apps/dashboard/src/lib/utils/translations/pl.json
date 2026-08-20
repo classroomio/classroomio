@@ -4557,7 +4557,10 @@
         "mobile": "Telefon",
         "tablet": "Tablet",
         "desktop": "Komputer"
-      }
+      },
+      "current_version": "Aktualna wersja",
+      "active_badge": "Aktywny",
+      "active_badge_description": "Ta wersja jest obecnie dostępna na Twoim osadzeniu"
     },
     "tabs": {
       "select_courses": "Wybierz Kursy",

@@ -272,27 +272,17 @@ export async function rollbackOrganizationWidget(
       throw new AppError('Widget version not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
     }
 
-    const nextVersion = await getNextWidgetVersion(widgetId);
-    const rollbackVersion = await createWidgetVersion({
-      widgetId: widget.id,
-      version: nextVersion,
-      configSnapshot: version.configSnapshot,
-      payloadSnapshot: version.payloadSnapshot,
-      runtimeManifest: version.runtimeManifest,
-      rolledBackFromVersionId: version.id,
-      publishedByUserId: userId
-    });
-
     const updatedWidget = await updateWidget(orgId, widgetId, {
+      config: version.configSnapshot,
       status: 'PUBLISHED',
       hasUnpublishedChanges: false,
-      latestPublishedVersionId: rollbackVersion.id,
+      latestPublishedVersionId: version.id,
       updatedByUserId: userId
     });
 
     return {
       widget: updatedWidget,
-      version: rollbackVersion
+      version
     };
   } catch (error) {
     if (error instanceof AppError) {

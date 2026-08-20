@@ -4557,7 +4557,10 @@
         "mobile": "Di động",
         "tablet": "Máy tính bảng",
         "desktop": "Máy tính"
-      }
+      },
+      "current_version": "Phiên bản hiện tại",
+      "active_badge": "Đang hoạt động",
+      "active_badge_description": "Phiên bản này hiện đang có trên nhúng của bạn"
     },
     "tabs": {
       "select_courses": "Chọn khóa học",

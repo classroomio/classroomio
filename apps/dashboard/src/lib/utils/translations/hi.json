@@ -4557,7 +4557,10 @@
         "mobile": "मोबाइल",
         "tablet": "गोली",
         "desktop": "डेस्कटॉप"
-      }
+      },
+      "current_version": "वर्तमान संस्करण",
+      "active_badge": "सक्रिय",
+      "active_badge_description": "यह संस्करण वर्तमान में आपके एम्बेड पर लाइव है"
     },
     "tabs": {
       "select_courses": "पाठ्यक्रम चुनें",
