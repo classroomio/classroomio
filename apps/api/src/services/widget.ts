@@ -290,7 +290,9 @@ export async function rollbackOrganizationWidget(
       updatedByUserId: userId
     });
 
-    await replaceWidgetCourses(widgetId, restoredCourseIds);
+    if (restoredCourseIds.length > 0) {
+      await replaceWidgetCourses(widgetId, restoredCourseIds);
+    }
 
     return {
       widget: updatedWidget,
