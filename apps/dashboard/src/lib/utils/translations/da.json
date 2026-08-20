@@ -2453,7 +2453,8 @@
       "nav_landing_page": "Landingsside",
       "nav_settings": "Indstillinger",
       "nav_ai_assistant": "Assistent",
-      "nav_ai_tutor": "AI underviser"
+      "nav_ai_tutor": "AI underviser",
+      "exit_course": "Forlad kursus"
     },
     "completion": {
       "modal": {

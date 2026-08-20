@@ -2453,7 +2453,8 @@
       "nav_landing_page": "Trang đích",
       "nav_settings": "Cài đặt",
       "nav_ai_assistant": "Trợ lý",
-      "nav_ai_tutor": "Gia sư AI"
+      "nav_ai_tutor": "Gia sư AI",
+      "exit_course": "Thoát khóa học"
     },
     "completion": {
       "modal": {

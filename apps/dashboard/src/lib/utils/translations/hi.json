@@ -2453,7 +2453,8 @@
       "nav_landing_page": "लैंडिंग पृष्ठ",
       "nav_settings": "सेटिंग्स",
       "nav_ai_assistant": "सहायक",
-      "nav_ai_tutor": "एआई ट्यूटर"
+      "nav_ai_tutor": "एआई ट्यूटर",
+      "exit_course": "पाठ्यक्रम से बाहर निकलें"
     },
     "completion": {
       "modal": {

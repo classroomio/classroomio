@@ -17,12 +17,7 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { CourseContentItem } from '$features/course/utils/types';
-  import {
-    openCourseCompletionModal,
-    updateCourseCompletionModal,
-    closeCourseCompletionModal
-  } from '$features/course/store/course-completion-modal';
-  import { updateLessonCompletionInCourseContent } from '$features/course/utils/content-completion';
+  import { toggleLessonCompletion } from '$features/course/utils/toggle-lesson-completion';
 
   interface Props {
     lessonId?: string;
@@ -155,49 +150,8 @@
 
   async function markLessonComplete(currentLessonId: string) {
     isMarkingComplete = true;
-
-    const lesson = lessonItems.find((entry) => entry.id === currentLessonId);
-    const currentIsComplete = lesson?.isComplete ?? lessonApi.lesson?.isComplete ?? false;
-
-    const isComplete = !currentIsComplete;
-
-    await lessonApi.updateCompletion(courseId, currentLessonId, isComplete);
-
-    if (lessonApi.success) {
-      snackbar.success('snackbar.lessons.success.complete_marked');
-      updateCourseContentCompletion(currentLessonId, isComplete);
-
-      const allComplete =
-        isComplete && navigableContentItems.length > 0 && navigableContentItems.every((item) => item.isComplete);
-
-      if (allComplete) {
-        const requiredExerciseId = courseApi.course?.certificate?.requiredExerciseId ?? undefined;
-        openCourseCompletionModal(courseId);
-
-        const certRes = await courseApi.getCertificationEvaluation(courseId);
-        if (certRes?.data) {
-          const hasCompletedCourse = Boolean(certRes.data.eligibleForCertificate || certRes.data.certificateEarnedAt);
-          updateCourseCompletionModal(
-            courseId,
-            hasCompletedCourse ? 'eligible' : 'not-eligible',
-            certRes.data,
-            requiredExerciseId
-          );
-        } else {
-          closeCourseCompletionModal();
-        }
-      }
-    } else {
-      snackbar.error('snackbar.lessons.error.try_later');
-    }
-
+    await toggleLessonCompletion(courseId, currentLessonId);
     isMarkingComplete = false;
-  }
-
-  function updateCourseContentCompletion(currentLessonId: string, isComplete: boolean) {
-    if (!courseApi.course?.content) return;
-
-    courseApi.course = updateLessonCompletionInCourseContent(courseApi.course, currentLessonId, isComplete);
   }
 
   const INTERACTIVE_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT']);
@@ -231,7 +185,7 @@
           {watchProgressTooltip}
         </Tooltip.Content>
       </Tooltip.Root>
-    {:else if showMarkComplete && lessonId && !isLessonLocked && !isLessonComplete && !isVideoWatchLesson}
+    {:else if showPrevNext && showMarkComplete && lessonId && !isLessonLocked && !isLessonComplete && !isVideoWatchLesson}
       <Button
         size="sm"
         variant="secondary"

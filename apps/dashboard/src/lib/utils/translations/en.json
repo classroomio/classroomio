@@ -1999,7 +1999,8 @@
       "nav_landing_page": "Landing Page",
       "nav_settings": "Settings",
       "nav_ai_assistant": "Assistant",
-      "nav_ai_tutor": "AI Tutor"
+      "nav_ai_tutor": "AI Tutor",
+      "exit_course": "Exit course"
     },
     "sidebar": {
       "back_to_course": "Back to course",

@@ -2453,7 +2453,8 @@
       "nav_landing_page": "Landingpage",
       "nav_settings": "Einstellungen",
       "nav_ai_assistant": "Assistent",
-      "nav_ai_tutor": "KI-Tutor"
+      "nav_ai_tutor": "KI-Tutor",
+      "exit_course": "Kurs verlassen"
     },
     "completion": {
       "modal": {
