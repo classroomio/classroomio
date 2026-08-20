@@ -277,6 +277,9 @@ export async function rollbackOrganizationWidget(
     const restoredSelectionMode = (payloadSnapshot.selectionMode ??
       widget.selectionMode) as typeof widget.selectionMode;
 
+    const restoredCourses = (payloadSnapshot.courses as Array<{ id: string }>) ?? [];
+    const restoredCourseIds = restoredCourses.map((c) => c.id);
+
     const updatedWidget = await updateWidget(orgId, widgetId, {
       config: version.configSnapshot,
       layoutType: restoredLayoutType,
@@ -286,6 +289,8 @@ export async function rollbackOrganizationWidget(
       latestPublishedVersionId: version.id,
       updatedByUserId: userId
     });
+
+    await replaceWidgetCourses(widgetId, restoredCourseIds);
 
     return {
       widget: updatedWidget,
