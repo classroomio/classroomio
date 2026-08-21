@@ -2296,14 +2296,20 @@
           "reply": "Antwort",
           "replying_to": "Auf @{name} antworten",
           "cancel_reply": "Abbrechen",
-          "view_replies": "{count} {count, plural, =1 {reply} other {replies}} ansehen",
+          "view_replies": "{count, plural, one {# Antwort ansehen} other {# Antworten ansehen}}",
           "hide_replies": "Antworten ausblenden",
           "view_more": "Weitere Kommentare anzeigen ({count})",
           "loading": "Laden...",
           "save": "Speichern",
           "saving": "Sparen...",
           "send": "Senden",
-          "load_more_replies": "Weitere Antworten laden"
+          "load_more_replies": "Weitere Antworten laden",
+          "collapse_thread": "Thread schließen",
+          "expand_thread": "Thread erweitern",
+          "more_replies": "{count, plural, one {# weitere Antwort} other {# weitere Antworten}}",
+          "continue_thread": "Setzen Sie diesen Thread fort",
+          "collapsed_summary": "{count, plural, one {# Antwort ausgeblendet} other {# Antworten ausgeblendet}}",
+          "back_to_comments": "Zurück zu allen Kommentaren"
         },
         "card": {
           "pin": "Anheften",

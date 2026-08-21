@@ -77,6 +77,7 @@
 <PublicCourseBottomNav
   {positionLabel}
   sublineLabel={activeItem?.title}
+  sublineComplete={activeItem?.isComplete ?? false}
   hasPrev={!isPreviousDisabled}
   hasNext={!isNextDisabled}
   onPrev={() => goToContent(previousItem)}

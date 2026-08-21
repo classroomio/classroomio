@@ -2296,14 +2296,20 @@
           "reply": "उत्तर",
           "replying_to": "@{name} को उत्तर दिया जा रहा है",
           "cancel_reply": "रद्द करें",
-          "view_replies": "देखें {count} {count, plural, =1 {उत्तर} other {उत्तर}}",
+          "view_replies": "{count, plural, one {# उत्तर देखें} other {# उत्तर देखें}}",
           "hide_replies": "उत्तर छिपाएँ",
           "view_more": "अधिक टिप्पणियाँ देखें ({count})",
           "loading": "लोड हो रहा है...",
           "save": "सहेजें",
           "saving": "सहेजा जा रहा है...",
           "send": "भेजें",
-          "load_more_replies": "अधिक उत्तर लोड करें"
+          "load_more_replies": "अधिक उत्तर लोड करें",
+          "collapse_thread": "धागे को संक्षिप्त करें",
+          "expand_thread": "धागे का विस्तार करें",
+          "more_replies": "{count, plural, one {# और उत्तर} other {# और उत्तर}}",
+          "continue_thread": "इस सूत्र को जारी रखें",
+          "collapsed_summary": "{count, plural, one {# उत्तर छिपा हुआ} other {# उत्तर छिपे हुए}}",
+          "back_to_comments": "सभी टिप्पणियों पर वापस जाएँ"
         },
         "card": {
           "pin": "पिन",

@@ -2296,14 +2296,20 @@
           "reply": "Odpowiedz",
           "replying_to": "Odpowiadanie na @{name}",
           "cancel_reply": "Anuluj",
-          "view_replies": "Wyświetl {count} {count, plural, =1 {odpowiedź} inne {replies}}",
+          "view_replies": "{count, plural, one {Wyświetl # odpowiedź} few {Wyświetl # odpowiedzi} many {Wyświetl # odpowiedzi} other {Wyświetl # odpowiedzi}}",
           "hide_replies": "Ukryj odpowiedzi",
           "view_more": "Wyświetl więcej komentarzy ({count})",
           "loading": "Ładowanie...",
           "save": "Zapisz",
           "saving": "Zapisywanie...",
           "send": "Wyślij",
-          "load_more_replies": "Załaduj więcej odpowiedzi"
+          "load_more_replies": "Załaduj więcej odpowiedzi",
+          "collapse_thread": "Zwiń wątek",
+          "expand_thread": "Rozwiń wątek",
+          "more_replies": "{count, plural, one {Jeszcze # odpowiedź} few {Jeszcze # odpowiedzi} many {Jeszcze # odpowiedzi} other {Jeszcze # odpowiedzi}}",
+          "continue_thread": "Kontynuuj ten wątek",
+          "collapsed_summary": "{count, plural, one {# odpowiedź ukryta} few {# odpowiedzi ukryte} many {# odpowiedzi ukrytych} other {# odpowiedzi ukrytych}}",
+          "back_to_comments": "Powrót do wszystkich komentarzy"
         },
         "card": {
           "pin": "Przypnij",
