@@ -190,7 +190,8 @@ export function buildCourseLandingPageProps(
       },
       secondaryAction: { label: 'View curriculum', href: '#curriculum' },
       image: course.logo || undefined,
-      stats
+      stats,
+      eyebrow: landing.hero.eyebrow
     },
     socialProof: {
       rating: averageRating,

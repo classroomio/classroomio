@@ -3319,6 +3319,9 @@
           "remove": "नेविगेशन लिंक हटाएँ"
         },
         "hero": {
+          "eyebrow": "शीर्ष लेबल",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "शीर्षक के ऊपर वैकल्पिक लेबल (उन टेम्पलेट्स द्वारा उपयोग किया जाता है जो इसे सपोर्ट करते हैं, जैसे Tech)। छिपाने के लिए खाली छोड़ें।",
           "heading": "शीर्षक",
           "subheading": "उपशीर्षक",
           "primary_label": "प्राथमिक बटन लेबल",

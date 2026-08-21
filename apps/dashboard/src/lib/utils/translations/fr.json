@@ -3319,6 +3319,9 @@
           "remove": "Supprimer le lien de navigation"
         },
         "hero": {
+          "eyebrow": "Surtitre",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "Libellé facultatif au-dessus du titre (utilisé par les modèles qui le prennent en charge, p. ex. Tech). Laissez vide pour le masquer.",
           "heading": "Rubrique",
           "subheading": "Sous-titre",
           "primary_label": "Étiquette du bouton principal",

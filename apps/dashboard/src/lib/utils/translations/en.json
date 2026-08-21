@@ -775,6 +775,9 @@
           "footer_desc": "Brand line, socials, multi-column links, and bottom legal row."
         },
         "hero": {
+          "eyebrow": "Eyebrow",
+          "eyebrow_placeholder": "// engineering academy",
+          "eyebrow_description": "Optional label above the heading (used by templates that support it, e.g. Tech). Leave blank to hide.",
           "heading": "Heading",
           "subheading": "Subheading",
           "primary_label": "Primary Button Label",
