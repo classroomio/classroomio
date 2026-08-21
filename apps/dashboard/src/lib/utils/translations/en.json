@@ -2131,7 +2131,13 @@
           "save": "Save",
           "saving": "Saving...",
           "send": "Send",
-          "load_more_replies": "Load more replies"
+          "load_more_replies": "Load more replies",
+          "collapse_thread": "Collapse thread",
+          "expand_thread": "Expand thread",
+          "more_replies": "{count} more {count, plural, =1 {reply} other {replies}}",
+          "continue_thread": "Continue this thread",
+          "collapsed_summary": "{count} {count, plural, =1 {reply} other {replies}} hidden",
+          "back_to_comments": "Back to all comments"
         },
         "user_avatar_alt": "User avatar",
         "snackbar": {
