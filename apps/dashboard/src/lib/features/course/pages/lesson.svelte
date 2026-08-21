@@ -433,8 +433,8 @@
   </Page.HeaderContent>
   <Page.Action>
     <div class="flex items-center gap-2">
-      {#if mode === MODES.view && $isCourseLearnerView && !showMobileBottomNav}
-        <ContentNavigationActions {lessonId} {courseId} />
+      {#if mode === MODES.view && $isCourseLearnerView}
+        <ContentNavigationActions {lessonId} {courseId} showPrevNext={!showMobileBottomNav} />
       {/if}
 
       <RoleBasedSecurity allowedRoles={[1, 2]}>
