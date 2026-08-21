@@ -953,7 +953,8 @@
             "no": "Nej",
             "yes": "Ja",
             "percent": "Rabatprocent",
-            "gift": "Om gave"
+            "gift": "Om gave",
+            "payment_required": "Et betalingslink er påkrævet for betalte kurser"
           },
           "instructor_form": {
             "upload": "Instruktør logo",
