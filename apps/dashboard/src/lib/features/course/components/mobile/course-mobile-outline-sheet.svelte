@@ -60,7 +60,7 @@
           class="inline-flex! items-center! gap-1 overflow-visible p-0 text-xs! leading-none"
           href={resolve(coursesListPath, {})}
         >
-          <CircleXIcon size={14} class="custom ui:size-3.5 size-3.5 shrink-0 translate-y-[2px]" aria-hidden="true" />
+          <CircleXIcon size={12} class="custom ui:size-3 size-3 shrink-0 translate-y-px" aria-hidden="true" />
           {$t('course.navItems.exit_course')}
         </Button>
       </Drawer.Header>
