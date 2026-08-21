@@ -124,7 +124,7 @@
         "custom": "{message}"
       },
       "points": {
-        "too_small": "Die Punkte müssen mindestens 0 sein"
+        "too_small": "Die Punkte müssen mindestens 1 sein"
       },
       "label": {
         "too_small": "Optionsetikett ist erforderlich"
@@ -953,7 +953,8 @@
             "no": "Nein",
             "yes": "Ja",
             "percent": "Rabattprozentsatz",
-            "gift": "Über Geschenk"
+            "gift": "Über Geschenk",
+            "payment_required": "Für kostenpflichtige Kurse ist ein Zahlungslink erforderlich"
           },
           "instructor_form": {
             "upload": "Lehrerlogo",

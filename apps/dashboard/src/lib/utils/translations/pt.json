@@ -124,7 +124,7 @@
         "custom": "{message}"
       },
       "points": {
-        "too_small": "Os pontos devem ser pelo menos 0"
+        "too_small": "Os pontos devem ser pelo menos 1"
       },
       "label": {
         "too_small": "O rótulo da opção é obrigatório"
@@ -953,7 +953,8 @@
             "no": "Não",
             "yes": "Sim",
             "percent": "Porcentagem de desconto",
-            "gift": "Sobre presente"
+            "gift": "Sobre presente",
+            "payment_required": "Um link de pagamento é necessário para cursos pagos"
           },
           "instructor_form": {
             "upload": "Logotipo do instrutor",

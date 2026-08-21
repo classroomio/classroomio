@@ -124,7 +124,7 @@
         "custom": "{message}"
       },
       "points": {
-        "too_small": "Punkty muszą wynosić co najmniej 0"
+        "too_small": "Punkty muszą wynosić co najmniej 1"
       },
       "label": {
         "too_small": "Etykieta opcji jest wymagana"
@@ -953,7 +953,8 @@
             "no": "Nie",
             "yes": "Tak",
             "percent": "Procent rabatu",
-            "gift": "O prezencie"
+            "gift": "O prezencie",
+            "payment_required": "W przypadku kursów płatnych wymagany jest link do płatności"
           },
           "instructor_form": {
             "upload": "Logo instruktora",
