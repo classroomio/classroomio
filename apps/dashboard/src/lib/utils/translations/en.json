@@ -588,12 +588,12 @@
         "heading": "Authentication Settings",
         "description": "Control how users can sign up and log in to your organization.",
         "allow_public_signups": {
-          "label": "Allow public signups",
-          "description": "When disabled, only users with an invite link can sign up. Enable to allow anyone to create an account."
+          "label": "Require invitation to sign up",
+          "description": "When enabled, only users with a valid invitation link can create an account. Disable to allow anyone to sign up."
         },
         "disable_signup": {
-          "label": "Disable Signup",
-          "description": "Prevent new users from signing up. Only invited users can join."
+          "label": "Block all new signups",
+          "description": "Completely prevent new account creation. No one can sign up — even invited users. Existing accounts are not affected."
         },
         "disable_signup_message": {
           "label": "Signup Disabled Message",
