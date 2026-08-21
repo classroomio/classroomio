@@ -18,6 +18,7 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import type { CourseContentItem } from '$features/course/utils/types';
   import { toggleLessonCompletion } from '$features/course/utils/toggle-lesson-completion';
+  import { getLessonCompletionState } from '$features/course/utils/lesson-completion-state';
 
   interface Props {
     lessonId?: string;
@@ -89,26 +90,23 @@
       ? $t(getStudentContentLockTitleKey(nextNavLockReason))
       : $t('course.navItem.lessons.next_shortcut')
   );
-  const isLessonComplete = $derived.by(() => {
-    if (!lessonId) return false;
-    const lesson = lessonItems.find((l) => l.id === lessonId);
-    return lesson?.isComplete ?? false;
-  });
-
   const showMarkComplete = $derived(!!lessonId && !exerciseId);
 
-  const currentLessonItem = $derived(lessonId ? lessonItems.find((l) => l.id === lessonId) : null);
+  const currentLessonItem = $derived(lessonId ? (lessonItems.find((l) => l.id === lessonId) ?? null) : null);
   const contentLockReason = $derived(
     lessonId ? getStudentContentLockReason(courseApi.course, lessonId, ContentType.Lesson) : null
   );
-  const isLessonLocked = $derived($isCourseLearnerView && contentLockReason !== null);
-  const isVideoWatchLesson = $derived.by(() => {
-    if (!lessonId) return false;
-
-    return (
-      lessonApi.lesson?.completionPolicy === 'video_watch' || currentLessonItem?.completionPolicy === 'video_watch'
-    );
-  });
+  const completionState = $derived(
+    getLessonCompletionState({
+      contentItem: currentLessonItem,
+      isLearnerView: $isCourseLearnerView,
+      lockReason: contentLockReason,
+      loadedLesson: lessonApi.lesson
+    })
+  );
+  const isLessonComplete = $derived(completionState.isLessonComplete);
+  const isLessonLocked = $derived(completionState.isLessonLocked);
+  const isVideoWatchLesson = $derived(completionState.isVideoWatchLesson);
   const watchedPercent = $derived.by(() => {
     const progress = lessonApi.lesson?.watchProgress;
     if (progress?.isComplete) return 100;

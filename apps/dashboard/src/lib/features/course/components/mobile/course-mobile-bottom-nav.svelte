@@ -15,6 +15,10 @@
   import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
   import { getStudentContentLockTitleKey } from '$features/course/utils/content-lock-utils';
   import { toggleLessonCompletion } from '$features/course/utils/toggle-lesson-completion';
+  import {
+    getLessonCompletionState,
+    getLessonCompletionToggleLabel
+  } from '$features/course/utils/lesson-completion-state';
   import { ContentType } from '@cio/utils/constants/content';
   import { CircleCheckIcon } from '$features/ui/icons';
   import { t } from '$lib/utils/functions/translations';
@@ -44,31 +48,22 @@
     activeIndex >= 0 && courseProgress.total > 0 ? `${activeIndex + 1} / ${courseProgress.total}` : ''
   );
 
-  const isActiveLesson = $derived(activeItem?.type === ContentType.Lesson);
   const contentLockReason = $derived(
-    isActiveLesson && activeItem
+    activeItem?.type === ContentType.Lesson
       ? getStudentContentLockReason(courseApi.course, activeItem.id, ContentType.Lesson)
       : null
   );
-  const isLessonLocked = $derived($isCourseLearnerView && contentLockReason !== null);
-  const isVideoWatchLesson = $derived.by(() => {
-    if (!isActiveLesson || !activeItem) {
-      return false;
-    }
-
-    if (lessonApi.lesson?.id === activeItem.id) {
-      return lessonApi.lesson.completionPolicy === 'video_watch';
-    }
-
-    return activeItem.completionPolicy === 'video_watch';
-  });
-  const showCompleteToggle = $derived(isActiveLesson && !isLessonLocked && !isVideoWatchLesson);
-  const isLessonComplete = $derived(activeItem?.isComplete ?? false);
-  const completeToggleLabel = $derived(
-    isLessonComplete
-      ? `${t.get('course.navItem.lessons.mark_as')} ${t.get('course.navItem.lessons.incomplete')}`
-      : `${t.get('course.navItem.lessons.mark_as')} ${t.get('course.navItem.lessons.complete')}`
+  const completionState = $derived(
+    getLessonCompletionState({
+      contentItem: activeItem,
+      isLearnerView: $isCourseLearnerView,
+      lockReason: contentLockReason,
+      loadedLesson: lessonApi.lesson
+    })
   );
+  const showCompleteToggle = $derived(completionState.canToggleCompletion);
+  const isLessonComplete = $derived(completionState.isLessonComplete);
+  const completeToggleLabel = $derived(getLessonCompletionToggleLabel(isLessonComplete));
 
   function getNavigableLockReason(target: CourseContentItem | null) {
     if (!target) {
