@@ -3839,7 +3839,7 @@
     "reset_password": {
       "heading": "Nueva contraseña",
       "description": "Ingrese los detalles de su nueva contraseña"
-    }
+    },
     "continue_with": "O continuar con"
   },
   "app": {

@@ -3839,7 +3839,7 @@
     "reset_password": {
       "heading": "Nouveau mot de passe",
       "description": "Entrez les détails de votre nouveau mot de passe"
-    }
+    },
     "continue_with": "Ou continuer avec"
   },
   "app": {

@@ -3839,7 +3839,7 @@
     "reset_password": {
       "heading": "Ny adgangskode",
       "description": "Indtast dine nye adgangskodeoplysninger"
-    }
+    },
     "continue_with": "Eller fortsæt med"
   },
   "app": {
