@@ -283,10 +283,15 @@ export async function rollbackOrganizationWidget(
       publishedByUserId: userId
     });
 
+    const restoredPayload = ZWidgetPayload.parse(version.payloadSnapshot);
+
     const updatedWidget = await updateWidget(orgId, widgetId, {
       status: 'PUBLISHED',
       hasUnpublishedChanges: false,
       latestPublishedVersionId: rollbackVersion.id,
+      layoutType: restoredPayload.layoutType,
+      selectionMode: restoredPayload.selectionMode,
+      config: version.configSnapshot,
       updatedByUserId: userId
     });
 
