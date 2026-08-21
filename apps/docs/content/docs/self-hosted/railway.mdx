@@ -170,6 +170,8 @@ SMTP_SENDER=
 
 # Object storage → the self-hosted cio-minio service (see below)
 OBJECT_STORAGE_ENDPOINT=http://${{cio-minio.RAILWAY_PRIVATE_DOMAIN}}:9000
+# Browser-facing presign endpoint — must resolve to cio-minio port 9000
+# (custom domain, or the generated API domain — see "Domain & Network Configuration" below)
 OBJECT_STORAGE_PUBLIC_ENDPOINT=https://storage.yourdomain.com
 OBJECT_STORAGE_ACCESS_KEY_ID=${{cio-minio.MINIO_ROOT_USER}}
 OBJECT_STORAGE_SECRET_ACCESS_KEY=${{cio-minio.MINIO_ROOT_PASSWORD}}
@@ -206,6 +208,8 @@ REDIS_URL="${{Redis.REDIS_URL}}"
 
 # Object storage — same cio-minio service as the API
 OBJECT_STORAGE_ENDPOINT=http://${{cio-minio.RAILWAY_PRIVATE_DOMAIN}}:9000
+# Browser-facing presign endpoint — must resolve to cio-minio port 9000
+# (custom domain, or the generated API domain — see "Domain & Network Configuration" below)
 OBJECT_STORAGE_PUBLIC_ENDPOINT=https://storage.yourdomain.com
 OBJECT_STORAGE_ACCESS_KEY_ID=${{cio-minio.MINIO_ROOT_USER}}
 OBJECT_STORAGE_SECRET_ACCESS_KEY=${{cio-minio.MINIO_ROOT_PASSWORD}}
@@ -230,8 +234,25 @@ OPENAI_API_KEY=
 #### Domain & Network Configuration
 Railway allows only **one Railway-provided domain per service**, so `cio-minio` gets a single
 generated domain with **Target Port 9000** (S3 API):
-1. **S3 API Endpoint (Target Port 9000):** e.g. `https://cio-minio.up.railway.app`. Used for `OBJECT_STORAGE_ENDPOINT` in `cio-api` and `cio-jobs`, as well as direct browser presigned uploads.
+1. **S3 API Endpoint (Target Port 9000):** e.g. `https://cio-minio.up.railway.app`. Server-side transfers in `cio-api`/`cio-jobs` go over the private network (`OBJECT_STORAGE_ENDPOINT`); this generated domain is what **browser presigned uploads/downloads** use via `OBJECT_STORAGE_PUBLIC_ENDPOINT`, unless you add a custom S3 domain.
 2. **MinIO Web Console (Target Port 9001, optional):** the console has no generated domain. To browse buckets in your browser, add a **custom domain** targeting port 9001 on `cio-minio`, then set `MINIO_BROWSER_REDIRECT_URL=https://<console-domain>` on the service.
+
+#### Browser presigned uploads & downloads
+Presigned URLs handed to the browser are minted verbatim from `OBJECT_STORAGE_PUBLIC_ENDPOINT`,
+so that host must actually resolve to cio-minio's port 9000:
+
+- **With a custom S3 domain:** add a custom domain targeting port 9000 on `cio-minio`
+  (e.g. `storage.yourdomain.com`) and keep the preset
+  `OBJECT_STORAGE_PUBLIC_ENDPOINT=https://storage.yourdomain.com` and
+  `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://storage.yourdomain.com/media` in the
+  `cio-api` and `cio-jobs` blocks above.
+- **Without one:** point both at the generated API domain instead —
+  `OBJECT_STORAGE_PUBLIC_ENDPOINT=https://cio-minio.up.railway.app` and
+  `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://cio-minio.up.railway.app/media`.
+
+Leaving the `storage.yourdomain.com` placeholder without creating that domain won't fail the
+deploy — server-side transfers keep working over the internal `OBJECT_STORAGE_ENDPOINT` — but
+every browser upload/download gets presigned URLs for a host that doesn't exist.
 
 On `cio-minio`, set the following environment variables in Railway:
 ```zsh title="env"
