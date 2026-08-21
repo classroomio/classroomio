@@ -588,8 +588,8 @@
         "heading": "Authentication Settings",
         "description": "Control how users can sign up and log in to your organization.",
         "allow_public_signups": {
-          "label": "Require invitation to sign up",
-          "description": "When enabled, only users with a valid invitation link can create an account. Disable to allow anyone to sign up."
+          "label": "Allow public signups",
+          "description": "When enabled, anyone can create an account. When disabled, only users with a valid invitation link can sign up."
         },
         "disable_signup": {
           "label": "Block all new signups",

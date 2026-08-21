@@ -3629,8 +3629,8 @@
           "description": "Impedir completamente a criação de novas contas. Ninguém pode se inscrever — nem usuários convidados. Contas existentes não são afetadas."
         },
         "allow_public_signups": {
-          "label": "Convite necessário para se inscrever",
-          "description": "Quando habilitado, apenas usuários com um link de convite válido podem criar uma conta. Desative para permitir que qualquer pessoa se inscreva."
+          "label": "Permitir inscrições públicas",
+          "description": "Quando habilitado, qualquer pessoa pode criar uma conta. Quando desativado, apenas usuários com um link de convite válido podem se inscrever."
         },
         "internal_enrollment_only": {
           "label": "Somente inscrição interna",

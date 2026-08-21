@@ -3629,8 +3629,8 @@
           "description": "Forhindre helt oprettelse af nye konti. Ingen kan tilmelde sig — heller ikke inviterede brugere. Eksisterende konti påvirkes ikke."
         },
         "allow_public_signups": {
-          "label": "Invitation påkrævet for at tilmelde sig",
-          "description": "Når aktiveret, kan kun brugere med et gyldigt invitationslink oprette en konto. Deaktiver for at tillade alle at tilmelde sig."
+          "label": "Tillad offentlige tilmeldinger",
+          "description": "Når aktiveret, kan alle oprette en konto. Når deaktiveret, kan kun brugere med et gyldigt invitationslink tilmelde sig."
         },
         "internal_enrollment_only": {
           "label": "Kun intern tilmelding",

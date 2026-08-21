@@ -3629,8 +3629,8 @@
           "description": "Empêcher complètement la création de nouveaux comptes. Personne ne peut s'inscrire — même les utilisateurs invités. Les comptes existants ne sont pas affectés."
         },
         "allow_public_signups": {
-          "label": "Invitation requise pour s'inscrire",
-          "description": "Lorsqu'il est activé, seuls les utilisateurs disposant d'un lien d'invitation valide peuvent créer un compte. Désactivez pour permettre à quiconque de s'inscrire."
+          "label": "Autoriser les inscriptions publiques",
+          "description": "Lorsqu'il est activé, quiconque peut créer un compte. Lorsqu'il est désactivé, seuls les utilisateurs disposant d'un lien d'invitation valide peuvent s'inscrire."
         },
         "internal_enrollment_only": {
           "label": "Inscription interne uniquement",

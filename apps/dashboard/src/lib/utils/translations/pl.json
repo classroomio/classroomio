@@ -3629,8 +3629,8 @@
           "description": "Całkowicie uniemożliwiaj tworzenie nowych kont. Nikt nie może się zarejestrować — nawet zaproszeni użytkownicy. Istniejące konta nie są dotknięte."
         },
         "allow_public_signups": {
-          "label": "Wymagaj zaproszenia do rejestracji",
-          "description": "Gdy włączone, tylko użytkownicy z prawidłowym linkiem zaproszenia mogą utworzyć konto. Wyłącz, aby zarejestrować się każdemu."
+          "label": "Zezwalaj na publiczne rejestracje",
+          "description": "Gdy włączone, każdy może utworzyć konto. Gdy wyłączone, tylko użytkownicy z prawidłowym linkiem zaproszenia mogą się zarejestrować."
         },
         "internal_enrollment_only": {
           "label": "Tylko rejestracja wewnętrzna",

@@ -3629,8 +3629,8 @@
           "description": "Vollständig die Erstellung neuer Konten verhindern. Niemand kann sich registrieren — auch eingeladene Benutzer nicht. Bestehende Konten sind nicht betroffen."
         },
         "allow_public_signups": {
-          "label": "Einladung zur Anmeldung erforderlich",
-          "description": "Wenn aktiviert, können nur Benutzer mit einem gültigen Einladungslink ein Konto erstellen. Deaktivieren, damit sich jeder anmelden kann."
+          "label": "Öffentliche Anmeldungen zulassen",
+          "description": "Wenn aktiviert, kann jeder ein Konto erstellen. Wenn deaktiviert, können sich nur Benutzer mit einem gültigen Einladungslink anmelden."
         },
         "internal_enrollment_only": {
           "label": "Nur interne Anmeldung",

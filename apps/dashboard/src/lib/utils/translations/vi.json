@@ -3629,8 +3629,8 @@
           "description": "Hoàn toàn ngăn chặn việc tạo tài khoản mới. Không ai có thể đăng ký — kể cả người dùng được mời. Tài khoản hiện có không bị ảnh hưởng."
         },
         "allow_public_signups": {
-          "label": "Yêu cầu lời mời để đăng ký",
-          "description": "Khi bật, chỉ người dùng có liên kết mời hợp lệ mới có thể tạo tài khoản. Tắt để cho phép bất kỳ ai đăng ký."
+          "label": "Cho phép đăng ký công khai",
+          "description": "Khi bật, bất kỳ ai cũng có thể tạo tài khoản. Khi tắt, chỉ người dùng có liên kết mời hợp lệ mới có thể đăng ký."
         },
         "internal_enrollment_only": {
           "label": "Chỉ đăng ký nội bộ",
