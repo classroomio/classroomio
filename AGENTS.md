@@ -471,7 +471,12 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Add new UI components under `packages/ui/src` following existing folder patterns.
 - **All Tailwind utility classes in `packages/ui/src/**` must use the `ui:` prefix** (see `packages/ui/README.md`). Pre-commit and CI run `pnpm --filter @cio/ui prefix:check` on touched UI files; fix with `pnpm --filter @cio/ui prefix`.
 - Document component usage and props in `packages/ui/README.md`.
-- Add example usages and variants in Storybook stories under `packages/storybook/src`.
+- **Every new component in `packages/ui/src` ships with a Storybook story in the same change.** A component without a story is incomplete — do not open the PR without one.
+  - Path: `packages/storybook/src/{atoms|molecules}/{component-name}/{component-name}.stories.svelte`, plus a `fields.ts` exporting the `FIELDS` array used by `parameters.controls.include`.
+  - Use `defineMeta` from `@storybook/addon-svelte-csf` with `tags: ['autodocs']`, and set `argTypes` callbacks to `{ control: false }`.
+  - Cover every state the component can be in, not just the happy path — each variant, each boolean prop, loading and empty states, and any recursive or nested rendering.
+  - When adding a component to an existing family (e.g. a new `comment-tree-*` part), extend that family's existing story file rather than creating a second one.
+  - `ui:` classes used inside a story must also exist somewhere under `packages/ui/src`, otherwise they emit no CSS — use unprefixed layout classes in story wrappers when in doubt.
 - See `packages/ui/README.md` and `packages/storybook/README.md` for full guidance.
 - For dashboard forms, prefer `@cio/ui/custom/*-field` wrappers (for example `InputField`, `TextareaField`, `CheckboxField`) so label/error/spacing behavior stays consistent.
 - Use base primitives (`@cio/ui/base/input`, `@cio/ui/base/textarea`, `@cio/ui/base/checkbox`, `@cio/ui/base/label`) only when creating/updating reusable UI components or when no custom field wrapper exists.

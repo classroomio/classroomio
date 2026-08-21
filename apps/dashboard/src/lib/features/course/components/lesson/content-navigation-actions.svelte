@@ -29,9 +29,11 @@
     courseId: string;
     /** When on an exercise page, pass this to show prev/next content in content order (no mark-complete). */
     exerciseId?: string;
+    /** When false, hide prev/next chevrons (mobile bottom nav already has them). */
+    showPrevNext?: boolean;
   }
 
-  let { lessonId, courseId, exerciseId }: Props = $props();
+  let { lessonId, courseId, exerciseId, showPrevNext = true }: Props = $props();
 
   let isMarkingComplete = $state(false);
 
@@ -229,7 +231,7 @@
           {watchProgressTooltip}
         </Tooltip.Content>
       </Tooltip.Root>
-    {:else if showMarkComplete && lessonId && !isLessonLocked && (showVideoWatchCompleteState || !isVideoWatchLesson)}
+    {:else if showMarkComplete && lessonId && !isLessonLocked && !isLessonComplete && !isVideoWatchLesson}
       <Button
         size="sm"
         variant="secondary"
@@ -242,40 +244,42 @@
       </Button>
     {/if}
 
-    <div class="flex items-center gap-1">
-      <Tooltip.Root>
-        <Tooltip.Trigger>
-          <Button
-            size="icon-sm"
-            variant="outline"
-            onclick={() => goToContent(prevNextContent.prev)}
-            disabled={isPrevDisabled || isPrevNavBlocked}
-            aria-label={$t('course.navItem.lessons.prev')}
-          >
-            <ChevronLeftIcon size={14} />
-          </Button>
-        </Tooltip.Trigger>
-        <Tooltip.Content side="bottom" sideOffset={4}>
-          {prevNavTooltip}
-        </Tooltip.Content>
-      </Tooltip.Root>
+    {#if showPrevNext}
+      <div class="flex items-center gap-1">
+        <Tooltip.Root>
+          <Tooltip.Trigger>
+            <Button
+              size="icon-sm"
+              variant="outline"
+              onclick={() => goToContent(prevNextContent.prev)}
+              disabled={isPrevDisabled || isPrevNavBlocked}
+              aria-label={$t('course.navItem.lessons.prev')}
+            >
+              <ChevronLeftIcon size={14} />
+            </Button>
+          </Tooltip.Trigger>
+          <Tooltip.Content side="bottom" sideOffset={4}>
+            {prevNavTooltip}
+          </Tooltip.Content>
+        </Tooltip.Root>
 
-      <Tooltip.Root>
-        <Tooltip.Trigger>
-          <Button
-            size="icon-sm"
-            variant="outline"
-            onclick={() => goToContent(prevNextContent.next)}
-            disabled={isNextDisabled || isNextNavBlocked}
-            aria-label={$t('course.navItem.lessons.next')}
-          >
-            <ChevronRightIcon size={14} />
-          </Button>
-        </Tooltip.Trigger>
-        <Tooltip.Content side="bottom" sideOffset={4}>
-          {nextNavTooltip}
-        </Tooltip.Content>
-      </Tooltip.Root>
-    </div>
+        <Tooltip.Root>
+          <Tooltip.Trigger>
+            <Button
+              size="icon-sm"
+              variant="outline"
+              onclick={() => goToContent(prevNextContent.next)}
+              disabled={isNextDisabled || isNextNavBlocked}
+              aria-label={$t('course.navItem.lessons.next')}
+            >
+              <ChevronRightIcon size={14} />
+            </Button>
+          </Tooltip.Trigger>
+          <Tooltip.Content side="bottom" sideOffset={4}>
+            {nextNavTooltip}
+          </Tooltip.Content>
+        </Tooltip.Root>
+      </div>
+    {/if}
   </Tooltip.Provider>
 </div>

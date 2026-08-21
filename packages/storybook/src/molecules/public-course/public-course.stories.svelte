@@ -124,6 +124,25 @@
   {/snippet}
 </Story>
 
+<Story name="Bottom nav · completed lesson">
+  {#snippet template()}
+    <div class="ui:relative ui:min-h-[200px] ui:bg-background">
+      <PublicCourse.PublicCourseBottomNav
+        positionLabel="2 / 6"
+        sublineLabel="Delving into Data Analysis with Pandas"
+        sublineComplete
+        hasPrev
+        hasNext
+        centerVariant="ring"
+        progressPercent={33}
+        onPrev={() => console.log('prev')}
+        onNext={() => console.log('next')}
+        onOpenSheet={() => console.log('open sheet')}
+      />
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="Mobile sheet · collapse + long course">
   {#snippet template()}
     {@const activeSlug = 'module-10-lesson-4'}

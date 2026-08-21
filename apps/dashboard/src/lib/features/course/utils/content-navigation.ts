@@ -9,16 +9,23 @@ export function getFirstIncompleteNavigableContent(course: Course | null): Conte
   return getOrderedNavigableContent(course).find((item) => !item.isComplete && isNavigableContentUnlocked(item));
 }
 
-export function isContentItemInPath(itemId: string, currentPath: string): boolean {
+export function isContentItemInPath(itemId: string, currentPath: string | null | undefined): boolean {
+  if (!itemId || !currentPath) {
+    return false;
+  }
+
   const pathSegments = currentPath.split('/').filter(Boolean);
   return pathSegments.includes(itemId);
 }
 
-export function findActiveNavigableContentIndex(items: ContentItem[], currentPath: string): number {
+export function findActiveNavigableContentIndex(items: ContentItem[], currentPath: string | null | undefined): number {
   return items.findIndex((item) => isContentItemInPath(item.id, currentPath));
 }
 
-export function resolveActiveNavigableContentIndex(course: Course | null, currentPath: string): number {
+export function resolveActiveNavigableContentIndex(
+  course: Course | null,
+  currentPath: string | null | undefined
+): number {
   const items = getOrderedNavigableContent(course);
   if (items.length === 0) {
     return -1;
@@ -37,7 +44,10 @@ export function resolveActiveNavigableContentIndex(course: Course | null, curren
   return 0;
 }
 
-export function getPreviousNavigableContent(course: Course | null, currentPath: string): ContentItem | null {
+export function getPreviousNavigableContent(
+  course: Course | null,
+  currentPath: string | null | undefined
+): ContentItem | null {
   const items = getOrderedNavigableContent(course);
   const activeIndex = resolveActiveNavigableContentIndex(course, currentPath);
   if (activeIndex <= 0) {
@@ -47,7 +57,10 @@ export function getPreviousNavigableContent(course: Course | null, currentPath: 
   return items[activeIndex - 1] ?? null;
 }
 
-export function getNextIncompleteNavigableContent(course: Course | null, currentPath: string): ContentItem | null {
+export function getNextIncompleteNavigableContent(
+  course: Course | null,
+  currentPath: string | null | undefined
+): ContentItem | null {
   const items = getOrderedNavigableContent(course);
   const activeIndex = resolveActiveNavigableContentIndex(course, currentPath);
   if (activeIndex < 0) {
@@ -64,7 +77,10 @@ export function getNextIncompleteNavigableContent(course: Course | null, current
   return null;
 }
 
-export function getActiveNavigableContent(course: Course | null, currentPath: string): ContentItem | null {
+export function getActiveNavigableContent(
+  course: Course | null,
+  currentPath: string | null | undefined
+): ContentItem | null {
   const items = getOrderedNavigableContent(course);
   const activeIndex = resolveActiveNavigableContentIndex(course, currentPath);
   if (activeIndex < 0) {
@@ -93,7 +109,7 @@ export function getSectionIdForContentItem(course: Course | null, itemId: string
   return null;
 }
 
-export function getActiveSectionId(course: Course | null, currentPath: string): string | null {
+export function getActiveSectionId(course: Course | null, currentPath: string | null | undefined): string | null {
   const activeItem = getActiveNavigableContent(course, currentPath);
   if (!activeItem) {
     return null;

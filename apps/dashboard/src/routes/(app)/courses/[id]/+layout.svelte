@@ -45,7 +45,6 @@
 
   interface Props {
     children?: import('svelte').Snippet;
-    path: string;
     data: {
       course?: Course;
       courseId: string;
@@ -53,7 +52,8 @@
     };
   }
 
-  let { children, path, data }: Props = $props();
+  let { children, data }: Props = $props();
+  const currentPath = $derived(page.url.pathname);
   let sidebarWidth = $state(COURSE_SIDEBAR_DEFAULT_WIDTH);
   let hasLoadedSidebarWidth = $state(false);
   let sidebarProviderElement = $state<HTMLDivElement | null>(null);
@@ -208,7 +208,7 @@
   style={`--sidebar-width: ${sidebarWidth}px; --side-panel-width: ${sidePanel.width}px;`}
 >
   <CourseSidebar
-    {path}
+    path={currentPath}
     id={data.courseId}
     {isCourseReady}
     {sidebarWidth}
@@ -243,7 +243,7 @@
       {/if}
 
       {#if showMobileBottomNav}
-        <CourseMobileBottomNav courseId={data.courseId} {path} />
+        <CourseMobileBottomNav courseId={data.courseId} path={currentPath} />
       {/if}
     {/if}
   </Sidebar.Inset>

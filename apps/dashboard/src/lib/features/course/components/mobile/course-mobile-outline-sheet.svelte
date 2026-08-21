@@ -52,7 +52,7 @@
       </Drawer.Header>
 
       <div class="shrink-0 px-3 pb-2">
-        <CourseProgressCard {courseProgress} class="rounded-lg border p-3" />
+        <CourseProgressCard progress={courseProgress} class="rounded-lg border p-3" />
       </div>
 
       <div bind:this={scrollContainer} class="flex-1 overflow-y-auto px-2 pb-[max(env(safe-area-inset-bottom),1rem)]">
