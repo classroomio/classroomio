@@ -818,7 +818,11 @@
           "empty": "Aucune balise sélectionnée",
           "add": "Ajouter une balise",
           "popover_title": "Sélectionnez les balises",
-          "empty_groups": "Aucun tag disponible pour l'instant"
+          "empty_groups": "Aucun tag disponible pour l'instant",
+          "create_tag": "Créer une balise",
+          "none_created": "Aucune balise créée pour l'instant",
+          "search_placeholder": "Rechercher des balises...",
+          "no_results": "Aucune balise trouvée"
         },
         "compliance": "Conformité",
         "public": "Publique",
@@ -4002,7 +4006,9 @@
       "color": "Couleur",
       "color_help": "Choisissez une des 10 couleurs",
       "select_category": "Sélectionnez une catégorie",
-      "no_groups": "Créez un groupe de balises avant de créer des balises"
+      "no_groups": "Créez un groupe de balises avant de créer des balises",
+      "search_category": "Catégorie de recherche",
+      "no_results": "Aucune catégorie trouvée"
     },
     "group_modal": {
       "create_title": "Créer un groupe de balises",

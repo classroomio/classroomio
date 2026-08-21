@@ -818,7 +818,11 @@
           "empty": "Nenhuma tag selecionada",
           "add": "Adicionar etiqueta",
           "popover_title": "Selecione tags",
-          "empty_groups": "Nenhuma tag disponível ainda"
+          "empty_groups": "Nenhuma tag disponível ainda",
+          "create_tag": "Criar etiqueta",
+          "none_created": "Nenhuma tag criada ainda",
+          "search_placeholder": "Pesquisar tags...",
+          "no_results": "Nenhuma tag encontrada"
         },
         "compliance": "Conformidade",
         "public": "Público",
@@ -4002,7 +4006,9 @@
       "color": "Cor",
       "color_help": "Escolha uma das 10 cores",
       "select_category": "Selecione uma categoria",
-      "no_groups": "Crie um grupo de tags antes de criar tags"
+      "no_groups": "Crie um grupo de tags antes de criar tags",
+      "search_category": "Categoria de pesquisa",
+      "no_results": "Nenhuma categoria encontrada"
     },
     "group_modal": {
       "create_title": "Criar grupo de tags",

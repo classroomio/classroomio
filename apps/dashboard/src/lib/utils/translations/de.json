@@ -818,7 +818,11 @@
           "empty": "Keine Tags ausgewählt",
           "add": "Tag hinzufügen",
           "popover_title": "Wählen Sie Tags aus",
-          "empty_groups": "Noch keine Tags verfügbar"
+          "empty_groups": "Noch keine Tags verfügbar",
+          "create_tag": "Tag erstellen",
+          "none_created": "Noch keine Tags erstellt",
+          "search_placeholder": "Such-Tags...",
+          "no_results": "Keine Tags gefunden"
         },
         "compliance": "Compliance",
         "public": "Öffentlich",
@@ -4002,7 +4006,9 @@
       "color": "Farbe",
       "color_help": "Wählen Sie eine von 10 Farben",
       "select_category": "Wählen Sie eine Kategorie aus",
-      "no_groups": "Erstellen Sie eine Tag-Gruppe, bevor Sie Tags erstellen"
+      "no_groups": "Erstellen Sie eine Tag-Gruppe, bevor Sie Tags erstellen",
+      "search_category": "Suchkategorie",
+      "no_results": "Keine Kategorien gefunden"
     },
     "group_modal": {
       "create_title": "Erstellen Sie eine Tag-Gruppe",
