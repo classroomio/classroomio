@@ -57,15 +57,11 @@
         </Drawer.Title>
         <Button
           variant="link"
-          class="inline-flex! h-4! items-center! gap-1 overflow-visible p-0 text-xs! leading-none"
+          class="inline-flex! items-center! gap-1 overflow-visible p-0 text-xs! leading-none"
           href={resolve(coursesListPath, {})}
         >
-          <CircleXIcon
-            size={14}
-            class="custom ui:size-3.5 ui:shrink-0 ui:self-center ui:translate-y-px"
-            aria-hidden="true"
-          />
-          <span class="inline-flex h-4 items-center leading-none">{$t('course.navItems.exit_course')}</span>
+          <CircleXIcon size={14} class="custom ui:size-3.5 size-3.5 shrink-0 translate-y-[2px]" aria-hidden="true" />
+          {$t('course.navItems.exit_course')}
         </Button>
       </Drawer.Header>
 
