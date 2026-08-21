@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClassroomIO Mobile App — Prototype Map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .page {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 56px 24px 80px;
+      }
+      h1 {
+        font-size: 32px;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        margin: 8px 0 10px;
+      }
+      .lead {
+        color: var(--muted-foreground);
+        font-size: 15px;
+        max-width: 74ch;
+        margin: 0 0 12px;
+        line-height: 1.65;
+      }
+      .lead b {
+        color: var(--foreground);
+        font-weight: 500;
+      }
+      .lead code {
+        background: var(--muted);
+        color: var(--foreground);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 12.5px;
+      }
+      .sec {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted-foreground);
+        margin: 38px 0 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .sec::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+      .shot {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: border-color 0.15s, box-shadow 0.15s;
+      }
+      .shot:hover {
+        border-color: var(--ring);
+        box-shadow: var(--shadow-md);
+      }
+      .shot .cover {
+        height: 72px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+      }
+      .shot .cover svg {
+        width: 26px;
+        height: 26px;
+        stroke-width: 1.8;
+      }
+      .shot .b {
+        padding: 13px 15px 15px;
+      }
+      .shot .n {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted-foreground);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .shot .t {
+        font-size: 14.5px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        margin: 3px 0 4px;
+      }
+      .shot .d {
+        font-size: 12.5px;
+        color: var(--muted-foreground);
+        margin: 0;
+        line-height: 1.5;
+      }
+      .foot {
+        margin-top: 46px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+        color: var(--muted-foreground);
+        font-size: 13.5px;
+        line-height: 1.75;
+      }
+      .foot b {
+        color: var(--foreground);
+        font-weight: 500;
+      }
+      .foot code {
+        background: var(--muted);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 12.5px;
+      }
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <span class="eyebrow" style="font-size: 12px; letter-spacing: 0.1em">ClassroomIO · Prototype + PRD handoff</span>
+      <h1>Mobile App</h1>
+      <p class="lead">
+        A <b>learner-first</b> iOS and Android app for the people companies actually train — frontline staff, field
+        technicians, and distributed employees who often have no work laptop and unreliable connectivity. It opens on
+        <b>what needs your attention</b>, works <b>offline</b>, and finally gives ClassroomIO a <b>push channel</b> for
+        deadlines and renewals. A small tutor mode handles grading and attendance on the go; authoring and org
+        administration stay on the web.
+      </p>
+      <p class="lead" style="font-size: 13.5px">
+        Built on the real <code>packages/ui</code> tokens, rendered in a 390 × 844 device frame. Every page has a theme
+        toggle and cross-links so you can click through each journey end to end. The engineering PRD lives at
+        <code>prd/mobile-app/README.md</code>.
+      </p>
+
+      <!-- ENTRY -->
+      <div class="sec">1 · Entry — sign in &amp; organization</div>
+      <div class="grid">
+        <a class="card shot" href="auth.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Auth · 3 states</div>
+            <div class="t">Sign in, org picker, biometric</div>
+            <p class="d">Password, Google, and enterprise SSO through Better Auth's Expo client; custom server URL for self-hosted; Face ID re-entry and an offline launch path.</p>
+          </div>
+        </a>
+        <a class="card shot" href="home.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.546 0.245 262.881), oklch(0.488 0.243 264.376))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Tab 1 · 3 states</div>
+            <div class="t">Home — attention surface</div>
+            <p class="d">Compliance alerts, continue-learning, due-soon, assignments, announcements, feedback — one <code>/account/home-digest</code> call. Plus caught-up and offline states.</p>
+          </div>
+        </a>
+        <a class="card shot" href="notifications.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.623 0.214 259.815), oklch(0.546 0.245 262.881))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Retention · 3 states</div>
+            <div class="t">Notifications</div>
+            <p class="d">Permission pre-prompt, the notification center with deep links, and per-category preferences with quiet hours.</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- LEARNING -->
+      <div class="sec">2 · Learner — the consumption path</div>
+      <div class="grid">
+        <a class="card shot" href="learn.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.424 0.199 265.638), oklch(0.488 0.243 264.376))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Tab 2 · 3 states</div>
+            <div class="t">Learn</div>
+            <p class="d">My learning with progress rings and download markers, the org catalog with enroll-in-place, and cohorts with goal progress.</p>
+          </div>
+        </a>
+        <a class="card shot" href="course.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.685 0.169 237.323), oklch(0.488 0.243 264.376))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Detail · 3 states</div>
+            <div class="t">Course outline</div>
+            <p class="d">Complete / current / locked / downloaded on every row, a deadline banner for compliance courses, the download sheet, and the completed state.</p>
+          </div>
+        </a>
+        <a class="card shot" href="lesson.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.424 0.199 265.638), oklch(0.546 0.245 262.881))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Player · 3 states</div>
+            <div class="t">Lesson</div>
+            <p class="d">HLS video with a playback token, transcript and AI-tutor sheets, the fair-use cap state, and offline playback with a queued completion.</p>
+          </div>
+        </a>
+        <a class="card shot" href="exercise.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Assessment · 3 states</div>
+            <div class="t">Exercises</div>
+            <p class="d">Autosaving single-choice, camera capture with upload progress, drag/hotspot/video types, and the graded result with a per-question breakdown.</p>
+          </div>
+        </a>
+        <a class="card shot" href="compliance.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.37 0.044 257.287), oklch(0.488 0.243 264.376))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Tab 3 · 2 states</div>
+            <div class="t">Compliance</div>
+            <p class="d">The differentiator as a tab: overdue with grace dates and consequences, expiring certifications, waivers, and the all-clear renewal timeline.</p>
+          </div>
+        </a>
+        <a class="card shot" href="certificates.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.685 0.169 237.323), oklch(0.424 0.199 265.638))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Proof · 2 states</div>
+            <div class="t">Certificate wallet</div>
+            <p class="d">Issued certificates sorted by what needs attention, plus the rendered certificate with share, save, and a verification ID/QR.</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- PLATFORM -->
+      <div class="sec">3 · Learner — engagement &amp; platform</div>
+      <div class="grid">
+        <a class="card shot" href="community.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.685 0.169 237.323))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Tab 4 · 3 states</div>
+            <div class="t">Community &amp; newsfeed</div>
+            <p class="d">Mentions and followed threads, a Q&amp;A thread with the tutor answer promoted, and the offline read-only state with compose disabled.</p>
+          </div>
+        </a>
+        <a class="card shot" href="downloads.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.556 0 0), oklch(0.488 0.243 264.376))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 15V3M7 10l5 5 5-5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Offline · 2 states</div>
+            <div class="t">Downloads &amp; sync queue</div>
+            <p class="d">Storage breakdown, resumable downloads, Wi-Fi-only defaults, and every queued write with its sync state and retry count.</p>
+          </div>
+        </a>
+        <a class="card shot" href="profile.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.546 0.245 262.881), oklch(0.685 0.169 237.323))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Tab 5 · 2 states</div>
+            <div class="t">Profile &amp; settings</div>
+            <p class="d">Learner record, org switcher sheet, app settings and biometric lock — plus frontline mode, QR launch, and the accessibility commitments.</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- TUTOR -->
+      <div class="sec">4 · Tutor companion — role-aware, same binary</div>
+      <div class="grid">
+        <a class="card shot" href="tutor-grading.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.424 0.199 265.638), oklch(0.546 0.245 262.881))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15l2 2 4-4"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Teach · 2 states</div>
+            <div class="t">Grading queue</div>
+            <p class="d">Submissions across all courses, oldest first, and a review screen with answer, video, rubric, score, and recorded audio feedback.</p>
+          </div>
+        </a>
+        <a class="card shot" href="tutor-attendance.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.546 0.245 262.881))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Teach · 2 states</div>
+            <div class="t">Attendance</div>
+            <p class="d">One-tap Present / Late / Absent on the roster, plus a rotating QR check-in code so learners mark themselves.</p>
+          </div>
+        </a>
+        <a class="card shot" href="tutor-course.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.685 0.169 237.323), oklch(0.488 0.243 264.376))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m7 15 4-4 3 3 5-6"/></svg>
+          </div>
+          <div class="b">
+            <div class="n">Teach · 2 states</div>
+            <div class="t">Course snapshot &amp; moderation</div>
+            <p class="d">Completion, overdue learners, and where people get stuck; post an announcement; handle unanswered and reported posts.</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="foot">
+        <p style="margin: 0 0 10px">
+          <b>Explicitly not in the app.</b> Course, lesson, and exercise authoring; the media manager and AI course builder;
+          org settings, team management, billing, SSO configuration, custom domains, and API keys; live-class video hosting;
+          SCORM playback; and <b>any purchase flow at all</b> — no checkout, no plan upgrade, no AI token packs, on any
+          storefront.
+        </p>
+        <p style="margin: 0 0 10px">
+          <b>Hard dependency.</b> Push notifications ride on <code>prd/notification-system</code>. Mobile contributes a
+          device-token registry and an Expo Push transport in the existing <code>apps/jobs</code> worker — never a second
+          notification pipeline.
+        </p>
+        <p style="margin: 0">
+          <b>Offline scope.</b> v1 caches content and queues two monotonic writes (lesson completion, playback position).
+          Exercises, submissions, and grading stay online so no assessment record can be corrupted by a replay — the same
+          line Canvas and Blackboard draw.
+        </p>
+      </div>
+    </div>
+
+    <button class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <script src="proto.js"></script>
+  </body>
+</html>

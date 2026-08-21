@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Profile — ClassroomIO Mobile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <header class="proto-head">
+      <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14"><path d="m15 18-6-6 6-6"/></svg> All screens</a>
+      <span class="eyebrow">Learner · Tab 5</span>
+      <h1>Profile &amp; settings</h1>
+      <p>
+        The learner's own record plus the app's controls. Switching organization re-themes the app and swaps every list
+        behind it. Anything that belongs to org administration — billing, team management, SSO, domains — is deliberately a
+        link to the web, not a screen here.
+      </p>
+      <div class="proto-links">
+        <a href="downloads.html">Downloads →</a>
+        <a href="notifications.html">Notification preferences →</a>
+        <a href="certificates.html">Certificates →</a>
+      </div>
+    </header>
+
+    <div class="stage">
+      <!-- 1. PROFILE -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="9:50"></div>
+
+            <div class="navbar">
+              <div class="grow"><div class="title">Profile</div></div>
+              <button class="icon-btn" data-sheet-open="orgs" aria-label="Switch organization"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 8 4 4-4 4M2 12h20M6 16l-4-4 4-4"/></svg></button>
+            </div>
+
+            <div class="screen">
+              <div class="card card-pad" style="margin: 10px 0 12px">
+                <div class="row">
+                  <div class="avatar lg">AO</div>
+                  <div class="grow">
+                    <div style="font-size: 16px; font-weight: 600; letter-spacing: -0.02em">Amara Okafor</div>
+                    <div class="lsub">amara.okafor@northwind.co</div>
+                    <div class="lmeta"><span class="badge badge-primary-soft">Learner</span><span>Warehouse Operations</span></div>
+                  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="row" style="align-items: stretch">
+                  <div class="stat"><div class="v tnum">9</div><div class="k">Completed</div></div>
+                  <div style="width: 1px; background: var(--border)"></div>
+                  <div class="stat"><div class="v tnum">6</div><div class="k">Certificates</div></div>
+                  <div style="width: 1px; background: var(--border)"></div>
+                  <div class="stat"><div class="v tnum">83%</div><div class="k">On time</div></div>
+                </div>
+              </div>
+
+              <button class="lrow" data-sheet-open="orgs" style="width: 100%; text-align: left; cursor: pointer; margin-bottom: 14px">
+                <div class="avatar brand">NL</div>
+                <div class="grow">
+                  <div class="ltitle">Northwind Logistics</div>
+                  <div class="lsub">Tap to switch organization · 3 available</div>
+                </div>
+                <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></span>
+              </button>
+
+              <div class="sec-head" style="margin-top: 0"><h2>Your learning</h2></div>
+              <div class="card card-pad">
+                <a class="lrow flat" href="certificates.html">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg></div>
+                  <div class="grow"><div class="ltitle">Certificates</div></div>
+                  <span class="badge badge-outline">6</span>
+                  <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></span>
+                </a>
+                <a class="lrow flat" href="compliance.html">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></div>
+                  <div class="grow"><div class="ltitle">Compliance record</div></div>
+                  <span class="badge badge-danger-soft">1 overdue</span>
+                  <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></span>
+                </a>
+                <a class="lrow flat" href="downloads.html">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 15V3M7 10l5 5 5-5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></div>
+                  <div class="grow"><div class="ltitle">Downloads</div></div>
+                  <span class="badge badge-outline tnum">284 MB</span>
+                  <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></span>
+                </a>
+              </div>
+
+              <div class="sec-head"><h2>App</h2></div>
+              <div class="card card-pad">
+                <a class="lrow flat" href="notifications.html">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg></div>
+                  <div class="grow"><div class="ltitle">Notifications</div></div>
+                  <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></span>
+                </a>
+                <div class="kv"><span class="k">Language</span><span class="v">English (UK)</span></div>
+                <div class="kv"><span class="k">Theme</span><span class="v">Match system</span></div>
+                <div class="kv"><span class="k">Video quality</span><span class="v">Auto</span></div>
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Unlock with Face ID</div><div class="lsub">Re-lock the app after 5 minutes</div></div>
+                  <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                </div>
+              </div>
+
+              <div class="sec-head"><h2>Account</h2></div>
+              <div class="card card-pad">
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Change password</div><div class="lsub">Opens the web dashboard</div></div>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" class="text-muted"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                </div>
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Privacy &amp; data</div></div>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" class="text-muted"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                </div>
+                <a class="lrow flat" href="auth.html">
+                  <div class="grow"><div class="ltitle" style="color: var(--destructive)">Sign out</div></div>
+                </a>
+              </div>
+
+              <div class="hint" style="text-align: center; margin-top: 14px">
+                ClassroomIO 1.0.0 (build 118) · Connected to app.classroomio.com
+              </div>
+            </div>
+
+            <div class="scrim" data-scrim-for="orgs" style="display: none"></div>
+            <div class="sheet" id="orgs" style="display: none">
+              <div class="grabber"></div>
+              <div class="sheet-head">
+                <div class="st">Switch organization</div>
+                <button class="icon-btn plain" data-sheet-close="orgs" style="margin-left: auto" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+              </div>
+              <div class="sheet-body">
+                <div class="stack">
+                  <div class="lrow current">
+                    <div class="avatar brand">NL</div>
+                    <div class="grow"><div class="ltitle">Northwind Logistics</div><div class="lmeta"><span class="badge badge-primary-soft">Learner</span><span>Current</span></div></div>
+                    <span class="dl-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>
+                  </div>
+                  <a class="lrow" href="tutor-grading.html">
+                    <div class="avatar brand" style="background: oklch(0.424 0.199 265.638)">AH</div>
+                    <div class="grow"><div class="ltitle">Acme Health Academy</div><div class="lmeta"><span class="badge badge-success-soft">Tutor</span><span>12 to grade</span></div></div>
+                    <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></span>
+                  </a>
+                  <a class="lrow" href="home.html">
+                    <div class="avatar brand" style="background: oklch(0.546 0.245 262.881)">MP</div>
+                    <div class="grow"><div class="ltitle">Meridian Partner Network</div><div class="lmeta"><span class="badge badge-primary-soft">Learner</span></div></div>
+                    <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></span>
+                  </a>
+                </div>
+                <div class="hint" style="margin-top: 12px">
+                  Switching changes the theme, the courses, and your records. Downloads stay on the device per organization.
+                </div>
+              </div>
+            </div>
+
+            <nav class="tabbar" data-tabbar="profile"></nav>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>Profile</b>Learner record, app settings, and the org switcher (tap the header row in the live prototype). Admin concerns link out to the web on purpose.</figcaption>
+      </figure>
+
+      <!-- 2. FRONTLINE MODE -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="6:05"></div>
+
+            <div class="navbar bordered">
+              <a class="icon-btn plain" href="profile.html" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></a>
+              <div class="grow"><div class="title-sm">Frontline mode</div></div>
+            </div>
+
+            <div class="screen">
+              <div class="banner banner-info" style="margin: 12px 0 14px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                <div class="grow">
+                  <div class="bt">Built for shop floors and shared devices</div>
+                  <div class="bd">Bigger targets, lighter media, and QR launch for staff without a work laptop.</div>
+                </div>
+              </div>
+
+              <div class="card card-pad" style="margin-bottom: 14px">
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Large touch targets</div><div class="lsub">Gloves-friendly rows and buttons</div></div>
+                  <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Low-bandwidth media</div><div class="lsub">Audio-first playback on cellular</div></div>
+                  <label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label>
+                </div>
+                <div class="lrow flat">
+                  <div class="grow"><div class="ltitle">Shared device</div><div class="lsub">Sign out automatically after each session</div></div>
+                  <label class="switch"><input type="checkbox" /><span class="track"></span><span class="knob"></span></label>
+                </div>
+              </div>
+
+              <div class="card card-pad" style="text-align: center">
+                <div class="eyebrow">Scan to start a course</div>
+                <div
+                  style="width: 150px; height: 150px; margin: 14px auto; border-radius: var(--radius-lg); border: 1px solid var(--border); background: var(--muted); display: grid; place-items: center; color: var(--muted-foreground)"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="66" height="66" stroke-width="1.5">
+                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                    <path d="M14 14h3v3h-3zM18 18h3v3h-3zM14 21h3M21 14v3"/>
+                  </svg>
+                </div>
+                <div class="lsub">Point the camera at the poster in the break room, or a QR on the machine itself.</div>
+                <button class="btn btn-primary btn-lg btn-block" style="margin-top: 14px">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg>
+                  Open scanner
+                </button>
+              </div>
+
+              <div class="sec-head"><h2>Accessibility</h2></div>
+              <div class="card card-pad">
+                <div class="kv"><span class="k">Text size</span><span class="v">Follows system (Dynamic Type)</span></div>
+                <div class="kv"><span class="k">Screen reader</span><span class="v">Full labels on every control</span></div>
+                <div class="kv"><span class="k">Status colours</span><span class="v">Always paired with an icon</span></div>
+                <div class="kv"><span class="k">Minimum target</span><span class="v tnum">44 pt</span></div>
+              </div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>Frontline mode &amp; accessibility</b>The settings that make the app usable in a warehouse: large targets, low-bandwidth media, shared-device sign-out, and QR launch.</figcaption>
+      </figure>
+    </div>
+
+    <button class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <script src="proto.js"></script>
+  </body>
+</html>

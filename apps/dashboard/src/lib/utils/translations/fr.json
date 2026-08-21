@@ -295,7 +295,8 @@
         "unlocked_all_content": "Tous les éléments de cours débloqués",
         "all_content_already_unlocked": "Tout le contenu est déjà déverrouillé",
         "content_grouping_enabled": "Regroupement de contenu activé",
-        "content_grouping_disabled": "Regroupement de contenu désactivé"
+        "content_grouping_disabled": "Regroupement de contenu désactivé",
+        "link_generated": "Lien du cours mis à jour avec succès"
       }
     },
     "people": {
@@ -329,7 +330,8 @@
       "success": "Enregistré avec succès",
       "submission_updated": "Soumission mise à jour pour",
       "error_fetching": "La récupération des exercices a échoué, veuillez recharger la page",
-      "passed_requires_points": "La validation par réussite nécessite au moins un point disponible."
+      "passed_requires_points": "La validation par réussite nécessite au moins un point disponible.",
+      "draft_restored": "Nous avons restauré les modifications non enregistrées que vous aviez laissées"
     },
     "poll": {
       "info": {
@@ -795,7 +797,7 @@
         "lesson_download": "Téléchargement des leçons",
         "available": "Rendre la leçon disponible en téléchargement en pdf pour les étudiants inscrits",
         "course_download": "Téléchargement du cours",
-        "course_avail": "Rendre le cours disponible en téléchargement pour les étudiants inscrits",
+        "course_avail": "Téléchargez une copie de ce cours.",
         "download": "Télécharger",
         "allow": "Autoriser les nouveaux étudiants",
         "access": "Autoriser les nouveaux étudiants à accéder à ce cours",
@@ -859,9 +861,14 @@
           "description_live": "Les leçons et les exercices verrouillés restent cachés aux étudiants jusqu'à ce que vous les déverrouilliez, ce qui est utile si vous publiez du contenu semaine après semaine.",
           "unlock_all": "Débloquez tout"
         },
+        "generate_link": "Générer un nouveau lien",
+        "open_link": "Ouvrir le lien dans un nouvel onglet",
+        "copy_link": "Copier le lien",
         "certificate_deadline_required": "Définir d'abord la date limite du certificat",
-        "certificate_deadline_required_description": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits. Veuillez définir une date limite dans les paramètres du certificat avant de publier.",
-        "go_to_certificate_settings": "Accédez aux paramètres du certificat"
+        "certificate_deadline_required_description": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits. Veuillez définir une date limite dans les paramètres du cours avant de publier.",
+        "go_to_completion_deadline": "Accéder à la date limite d'achèvement",
+        "completion_deadline_label": "Date limite de fin de cours",
+        "completion_deadline_helper": "Les étudiants doivent atteindre le pourcentage d'achèvement avant cette date/heure (heure locale). Laisser vide sans date limite."
       },
       "analytics": {
         "title": "Analytique"
@@ -946,7 +953,8 @@
             "no": "Non",
             "yes": "Oui",
             "percent": "Pourcentage de remise",
-            "gift": "À propos du cadeau"
+            "gift": "À propos du cadeau",
+            "payment_required": "Un lien de paiement est requis pour les cours payants"
           },
           "instructor_form": {
             "upload": "Logo de l'instructeur",
@@ -2289,14 +2297,20 @@
           "reply": "Répondre",
           "replying_to": "Répondre à @{name}",
           "cancel_reply": "Annuler",
-          "view_replies": "Voir {count} {count, plural, =1 {réponse} autres {réponses}}",
+          "view_replies": "{count, plural, one {Voir # réponse} other {Voir # réponses}}",
           "hide_replies": "Masquer les réponses",
           "view_more": "Afficher plus de commentaires ({count})",
           "loading": "Chargement...",
           "save": "Enregistrer",
           "saving": "Sauvegarde...",
           "send": "Envoyer",
-          "load_more_replies": "Charger plus de réponses"
+          "load_more_replies": "Charger plus de réponses",
+          "collapse_thread": "Réduire le fil de discussion",
+          "expand_thread": "Développer le fil de discussion",
+          "more_replies": "{count, plural, one {# réponse supplémentaire} other {# réponses supplémentaires}}",
+          "continue_thread": "Continuez ce fil",
+          "collapsed_summary": "{count, plural, one {# réponse masquée} other {# réponses masquées}}",
+          "back_to_comments": "Retour à tous les commentaires"
         },
         "card": {
           "pin": "Épingler",
@@ -2426,6 +2440,11 @@
         "completed": "{completed} sur {total} terminés",
         "lessons": "{completed} sur {total} leçons",
         "exercises": "{completed} sur {total} exercices"
+      },
+      "footer_nav": {
+        "label": "Navigation du contenu du cours",
+        "previous": "Précédent",
+        "next": "Suivant"
       }
     },
     "navItems": {
@@ -2479,8 +2498,9 @@
       "email_message_label": "Message électronique",
       "email_message_placeholder": "par ex. Nous sommes fiers de vos progrès – continuez à apprendre !",
       "final_exercise_multiple_attempts_note": "Les étudiants auront droit à des tentatives illimitées sur l'exercice sélectionné.",
-      "deadline_required": "La date limite du certificat est requise lorsque les certificats sont téléchargeables.",
-      "deadline_required_enroll": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits."
+      "deadline_required": "Les cours de conformité nécessitent une date limite d'achèvement avant de pouvoir être publiés.",
+      "deadline_required_enroll": "Les cours de conformité nécessitent une date limite de certificat avant que les apprenants puissent être inscrits.",
+      "deadline_invalid": "La date limite d'achèvement du cours n'est pas valide."
     },
     "creator": {
       "heading": "Quel cours souhaitez-vous créer ?",
@@ -3856,8 +3876,6 @@
     "deeply_appreciate": "nous l'apprécions profondément et sommes à votre service."
   },
   "onboarding": {
-    "sell": "Vendre des cours en ligne",
-    "teach": "Enseigner en ligne à mes étudiants actuels",
     "expanding": "Sur une autre plateforme, en expansion ici",
     "employees": "Former mes collaborateurs",
     "customers": "Créer des cours pour mes clients",
@@ -3962,9 +3980,12 @@
       "tags_title": "Étiquettes",
       "types_title": "Espèces",
       "search_placeholder": "Rechercher des cours...",
+      "clear_search": "Effacer la recherche",
       "pricing_title": "Tarifs",
       "pricing_free": "Gratuit",
-      "pricing_paid": "Payé"
+      "pricing_paid": "Prix",
+      "selected": "Sélectionné :",
+      "save_changes": "Enregistrer les modifications"
     }
   },
   "tags_admin": {
@@ -4080,16 +4101,15 @@
       },
       "usage": {
         "title": "Utilisation et limites",
-        "description": "MCP est disponible sur chaque forfait, mais l'utilisation est contrôlée par des crédits d'automatisation mensuels et des limites clés.",
-        "credits_title": "Crédits restants",
-        "credits_description": "Les actions MCP en mutation consomment des crédits. Les actions de lecture sont gratuites.",
+        "description": "MCP est disponible sur tous les forfaits. L'utilisation est contrôlée par les limites de clés et les limites de taux.",
         "keys_title": "Clés actives",
         "keys_description": "Utilisez une clé MCP par intégration afin que l'accès puisse être alterné ou révoqué proprement.",
         "rate_limits_title": "Limites de taux",
         "rate_limits_description": "Requêtes de lecture/écriture/publication autorisées par minute.",
         "used_label": "Utilisé :"
       },
-      "page_subtitle": "Connectez des outils IA à ClassroomIO avec des clés à l'échelle de l'organisation que vous pouvez faire pivoter à tout moment."
+      "page_subtitle": "Connectez des outils IA à ClassroomIO avec des clés à l'échelle de l'organisation que vous pouvez faire pivoter à tout moment.",
+      "view_docs": "Voir la documentation"
     },
     "api": {
       "subtitle": "Gérez les clés API pour intégrer l'API publique ClassroomIO.",
@@ -4631,7 +4651,7 @@
     },
     "powered_by": {
       "label": "Alimenté par",
-      "brand": "Salle de classeIO"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "Précédent",
@@ -4858,7 +4878,8 @@
       "no_matching_cohort_courses": "Aucun cours de cohorte ne correspond à votre recherche.",
       "pagination_status": "Page {page} sur {totalPages}",
       "published_access_callout_title": "Accès étudiant",
-      "published_access_callout_description": "Les étudiants n’ont accès qu’aux cours publiés. Les cours peuvent figurer dans cette cohorte pour votre équipe alors qu’ils ne sont pas encore publiés, tout en restant cachés aux étudiants jusqu’à leur publication."
+      "published_access_callout_description": "Les étudiants n'ont accès qu'aux cours publiés. Les cours peuvent figurer dans cette cohorte pour votre équipe même s'ils ne sont pas encore publiés, mais ils restent cachés aux étudiants jusqu'à ce que vous les publiiez.",
+      "empty_student_description": "Il n'y a pas encore de cours publiés dans cette cohorte."
     },
     "newsfeed": {
       "post": "Nouveau message",

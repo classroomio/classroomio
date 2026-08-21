@@ -2,10 +2,9 @@ import * as z from 'zod';
 
 import { ZCourseCreateBase, ZCourseUpdateBase } from '../course/course';
 import { ZCourseImportDraftPayload } from '../course-import/course-import';
+import { ZGetOrganizationCoursesQuery } from '../organization';
 
-export const ZPublicApiCoursesQuery = z.object({
-  tags: z.string().optional()
-});
+export const ZPublicApiCoursesQuery = ZGetOrganizationCoursesQuery;
 export type TPublicApiCoursesQuery = z.infer<typeof ZPublicApiCoursesQuery>;
 
 export const ZPublicApiCourseParam = z.object({

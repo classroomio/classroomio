@@ -9,6 +9,7 @@ import { seedExerciseTemplates } from '@db/utils/seed/exerciseTemplate';
 import { seedGroup } from '@db/utils/seed/group';
 import { seedGroupmembers } from '@db/utils/seed/groupmember';
 import { type LessonTemplate, seedLessons } from '@db/utils/seed/lesson';
+import { seedNewsfeedThreads } from '@db/utils/seed/newsfeedThreads';
 import { seedOrganization } from '@db/utils/seed/organization';
 import { seedOrganizationMember } from '@db/utils/seed/organizationmember';
 import { seedEarlyAdopterOrganizationPlan, seedEnterpriseOrganizationPlan } from '@db/utils/seed/organizationPlan';
@@ -81,6 +82,7 @@ Flags:
   --questions                Seed questions
   --templates                Seed exercise templates
   --compliance               Seed compliance demo data (coursera-test org)
+  --newsfeed-threads         Seed nested newsfeed comment threads (coursera-test org)
   --help, -h                  Show this help message
 
 Examples:
@@ -222,6 +224,10 @@ const seedFunctions = {
   compliance: async () => {
     console.log('📝 Seeding compliance demo data (coursera-test)...');
     await seedCompliance({ enterpriseOrgId: ENTERPRISE_ORG_ID });
+  },
+  'newsfeed-threads': async () => {
+    console.log('📝 Seeding nested newsfeed threads (coursera-test)...');
+    await seedNewsfeedThreads({ enterpriseOrgId: ENTERPRISE_ORG_ID });
   }
 };
 
@@ -260,6 +266,7 @@ async function seed() {
       await seedFunctions.questions();
       await seedFunctions.templates();
       await seedFunctions.compliance();
+      await seedFunctions['newsfeed-threads']();
     } else {
       // Run only specified seed functions
       // Order matters for dependencies, so we maintain the original order
@@ -281,7 +288,8 @@ async function seed() {
         'exercises',
         'questions',
         'templates',
-        'compliance'
+        'compliance',
+        'newsfeed-threads'
       ];
 
       for (const seedName of orderedSeeds) {
