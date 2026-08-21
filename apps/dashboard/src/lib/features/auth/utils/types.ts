@@ -1,4 +1,5 @@
 import * as z from 'zod';
+import { ZPassword } from '@cio/utils/validation/auth/password';
 
 export const ZForgotPasswordForm = z.object({
   email: z.email()
@@ -6,8 +7,8 @@ export const ZForgotPasswordForm = z.object({
 export type TForgotPasswordForm = z.infer<typeof ZForgotPasswordForm>;
 
 export const ZResetPasswordForm = z.object({
-  password: z.string().min(8),
-  confirmPassword: z.string().min(8),
+  password: ZPassword,
+  confirmPassword: ZPassword,
   token: z.string()
 });
 export type TResetPasswordForm = z.infer<typeof ZResetPasswordForm>;
