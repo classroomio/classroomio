@@ -1,4 +1,5 @@
 import type { CertificateDesign, CertificateRenderData, CertificateSignatory } from '../types';
+import { computeFieldFontSizes, type FitFontSizeOptions } from '../font-metrics';
 
 export function escapeHtml(input: unknown): string {
   return String(input ?? '').replace(/[&<>"']/g, (char) => {
@@ -53,6 +54,60 @@ export interface TemplateRenderOutput {
 
 export type TemplateRenderer = (args: TemplateRenderArgs) => TemplateRenderOutput;
 
+export interface PreparedTemplateRender<K extends string = string> {
+  accent: string;
+  subtitle: string;
+  description: string;
+  signatoryOne?: CertificateSignatory;
+  signatoryTwo?: CertificateSignatory;
+  year: string;
+  idDigits: string;
+  fontSizes: Record<K, number>;
+}
+
+/**
+ * Normalizes design/data values and computes all field font sizes in a single step.
+ */
+export function prepareCertificateRenderContext<K extends string>(
+  design: CertificateDesign,
+  data: CertificateRenderData,
+  fieldDefinitions: Record<K, FitFontSizeOptions>,
+  customValues?: Partial<Record<K, string | undefined | null>>
+): PreparedTemplateRender<K> {
+  const accent = design.accentColor;
+  const subtitle = design.subtitle ?? '';
+  const description = design.descriptionOverride || data.courseDescription;
+  const [signatoryOne, signatoryTwo] = design.signatories;
+  const year = getYear(data.date);
+  const idDigits = data.certificateId.match(/\d+/)?.[0] ?? '00';
+
+  const defaultFieldValues: Record<string, string | undefined | null> = {
+    org: data.orgName,
+    title: data.courseName,
+    course: data.courseName,
+    subtitle,
+    recipient: data.recipientName,
+    description,
+    certId: data.certificateId,
+    certMeta: `${data.certificateId} · ${data.date}`,
+    date: data.date,
+    ...customValues
+  };
+
+  const fontSizes = computeFieldFontSizes(fieldDefinitions, defaultFieldValues as Record<K, string | undefined | null>);
+
+  return {
+    accent,
+    subtitle,
+    description,
+    signatoryOne,
+    signatoryTwo,
+    year,
+    idDigits,
+    fontSizes
+  };
+}
+
 export interface SignatoryBlockOptions {
   wrapperClass?: string;
   nameClass: string;
@@ -60,8 +115,11 @@ export interface SignatoryBlockOptions {
   roleFirst?: boolean;
 }
 
-export function renderSignatoryBlock(sig: CertificateSignatory, options: SignatoryBlockOptions): string {
-  if (sig.enabled === false) return '';
+export function renderSignatoryBlock(sig: CertificateSignatory | undefined, options: SignatoryBlockOptions): string {
+  if (!sig || sig.enabled === false) {
+    const wrapperClass = options.wrapperClass ? ` class="${options.wrapperClass} sig-empty"` : ' class="sig-empty"';
+    return `<div${wrapperClass} style="visibility: hidden;" aria-hidden="true"></div>`;
+  }
 
   const sigImg = sig.signatureUrl ? `<img class="sig-img" src="${escapeHtml(sig.signatureUrl)}" alt="" />` : '';
 
@@ -102,6 +160,26 @@ export function renderFooterMetaBlock(label: string, value: string, options: Foo
   `;
 }
 
+export interface SealBlockOptions {
+  wrapperClass?: string;
+  year: string;
+  label: string;
+  topSymbol?: string;
+}
+
+export function renderSealBlock(options: SealBlockOptions): string {
+  const wrapperClass = options.wrapperClass ? ` class="${options.wrapperClass}"` : ' class="seal"';
+  const topSymbolHtml = options.topSymbol ? `<div class="star">${escapeHtml(options.topSymbol)}</div>` : '';
+
+  return `
+    <div${wrapperClass}>
+      ${topSymbolHtml}
+      <div class="yr">${escapeHtml(options.year)}</div>
+      <div class="lbl">${escapeHtml(options.label)}</div>
+    </div>
+  `;
+}
+
 export const SIGNATURE_IMAGE_STYLES = `
   .sig-content {
     display: flex;
@@ -114,9 +192,9 @@ export const SIGNATURE_IMAGE_STYLES = `
     align-items: flex-end;
     justify-content: center;
     width: 100%;
-    height: 48px;
-    min-height: 48px;
-    margin-bottom: 6px;
+    height: 44px;
+    min-height: 44px;
+    margin-bottom: 4px;
     flex-shrink: 0;
   }
   .sig-text {
@@ -128,7 +206,7 @@ export const SIGNATURE_IMAGE_STYLES = `
   }
   .sig-img {
     display: block;
-    max-height: 48px;
+    max-height: 44px;
     max-width: 100%;
     width: auto;
     height: auto;
@@ -138,15 +216,32 @@ export const SIGNATURE_IMAGE_STYLES = `
 `;
 
 export const FONTS_LINK_HREF =
-  'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Cinzel:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Bodoni+Moda:ital,wght@0,400;0,700;1,400&family=Archivo+Black&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@400;500;700&display=swap';
+  'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=Cinzel:wght@400;500;600;700;800;900&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Archivo+Black&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap';
 
 export const BASE_STYLES = `
+  @page {
+    size: 1100px 780px;
+    margin: 0;
+  }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { width: 1100px; height: 780px; background: transparent; }
+  html, body { width: 1100px; height: 780px; margin: 0; padding: 0; overflow: hidden; background: transparent; }
   body {
     -webkit-font-smoothing: antialiased;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  .cert { width: 1100px; height: 780px; position: relative; overflow: hidden; box-shadow: inset 0 0 0 3px rgba(0,0,0,0.12); }
+  .cert {
+    width: 1100px;
+    height: 780px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 3px rgba(0,0,0,0.12);
+    box-sizing: border-box;
+    page-break-inside: avoid;
+  }
+  .break-word {
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+  ${SIGNATURE_IMAGE_STYLES}
 `;
