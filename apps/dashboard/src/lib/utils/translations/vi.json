@@ -124,7 +124,7 @@
         "custom": "{message}"
       },
       "points": {
-        "too_small": "Điểm ít nhất phải bằng 0"
+        "too_small": "Điểm ít nhất phải bằng 1"
       },
       "label": {
         "too_small": "Nhãn tùy chọn là bắt buộc"
