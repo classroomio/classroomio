@@ -18,3 +18,11 @@ export {
 } from './constants';
 
 export { renderCertificate, renderCertificateDocument, resolveTemplateId } from './render';
+export {
+  computeFitFontSize,
+  computeFieldFontSizes,
+  CERTIFICATE_FONTS,
+  type CertificateFontFamily,
+  type FitFontSizeOptions
+} from './font-metrics';
+export { FONTS_LINK_HREF } from './templates/shared';
