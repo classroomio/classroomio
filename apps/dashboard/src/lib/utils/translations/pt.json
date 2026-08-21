@@ -3625,12 +3625,12 @@
           "placeholder": "por exemplo, as inscrições estão desativadas, entre em contato com learn@domain.com para obter acesso"
         },
         "disable_signup": {
-          "label": "Desativar inscrição",
-          "description": "Impedir que novos usuários se inscrevam. Somente usuários convidados podem participar."
+          "label": "Bloquear todas as novas inscrições",
+          "description": "Impedir completamente a criação de novas contas. Ninguém pode se inscrever — nem usuários convidados. Contas existentes não são afetadas."
         },
         "allow_public_signups": {
-          "label": "Permitir inscrições públicas",
-          "description": "Quando desativado, apenas usuários com link de convite poderão se inscrever. Ative para permitir que qualquer pessoa crie uma conta."
+          "label": "Convite necessário para se inscrever",
+          "description": "Quando habilitado, apenas usuários com um link de convite válido podem criar uma conta. Desative para permitir que qualquer pessoa se inscreva."
         },
         "internal_enrollment_only": {
           "label": "Somente inscrição interna",

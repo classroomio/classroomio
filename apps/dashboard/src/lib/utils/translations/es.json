@@ -3625,12 +3625,12 @@
           "placeholder": "por ejemplo, los registros están deshabilitados; comuníquese con learn@domain.com para obtener acceso"
         },
         "disable_signup": {
-          "label": "Deshabilitar registro",
-          "description": "Evitar que nuevos usuarios se registren. Sólo los usuarios invitados pueden unirse."
+          "label": "Bloquear todos los registros nuevos",
+          "description": "Impedir completamente la creación de nuevas cuentas. Nadie puede registrarse — ni siquiera usuarios invitados. Las cuentas existentes no se ven afectadas."
         },
         "allow_public_signups": {
-          "label": "Permitir registros públicos",
-          "description": "Cuando está deshabilitado, solo los usuarios con un enlace de invitación pueden registrarse. Habilite esta opción para permitir que cualquiera pueda crear una cuenta."
+          "label": "Se requiere invitación para registrarse",
+          "description": "Cuando está habilitado, solo los usuarios con un enlace de invitación válido pueden crear una cuenta. Deshabilite para permitir que cualquiera se registre."
         },
         "internal_enrollment_only": {
           "label": "Inscripción interna únicamente",

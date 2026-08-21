@@ -3625,12 +3625,12 @@
           "placeholder": "Wenn beispielsweise Anmeldungen deaktiviert sind, wenden Sie sich bitte an learn@domain.com, um Zugriff zu erhalten"
         },
         "disable_signup": {
-          "label": "Deaktivieren Sie die Anmeldung",
-          "description": "Verhindern Sie, dass sich neue Benutzer anmelden. Nur eingeladene Benutzer können beitreten."
+          "label": "Alle neuen Registrierungen blockieren",
+          "description": "Vollständig die Erstellung neuer Konten verhindern. Niemand kann sich registrieren — auch eingeladene Benutzer nicht. Bestehende Konten sind nicht betroffen."
         },
         "allow_public_signups": {
-          "label": "Öffentliche Anmeldungen zulassen",
-          "description": "Wenn die Funktion deaktiviert ist, können sich nur Benutzer mit einem Einladungslink anmelden. Aktivieren Sie diese Option, damit jeder ein Konto erstellen kann."
+          "label": "Einladung zur Anmeldung erforderlich",
+          "description": "Wenn aktiviert, können nur Benutzer mit einem gültigen Einladungslink ein Konto erstellen. Deaktivieren, damit sich jeder anmelden kann."
         },
         "internal_enrollment_only": {
           "label": "Nur interne Anmeldung",

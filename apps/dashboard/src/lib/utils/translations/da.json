@@ -3625,12 +3625,12 @@
           "placeholder": "tilmeldinger er f.eks. deaktiveret, kontakt venligst learn@domain.com for at få adgang"
         },
         "disable_signup": {
-          "label": "Deaktiver tilmelding",
-          "description": "Forhindre nye brugere i at tilmelde sig. Kun inviterede brugere kan deltage."
+          "label": "Bloker alle nye tilmeldinger",
+          "description": "Forhindre helt oprettelse af nye konti. Ingen kan tilmelde sig — heller ikke inviterede brugere. Eksisterende konti påvirkes ikke."
         },
         "allow_public_signups": {
-          "label": "Tillad offentlige tilmeldinger",
-          "description": "Når den er deaktiveret, kan kun brugere med et invitationslink tilmelde sig. Aktiver for at tillade alle at oprette en konto."
+          "label": "Invitation påkrævet for at tilmelde sig",
+          "description": "Når aktiveret, kan kun brugere med et gyldigt invitationslink oprette en konto. Deaktiver for at tillade alle at tilmelde sig."
         },
         "internal_enrollment_only": {
           "label": "Kun intern tilmelding",
