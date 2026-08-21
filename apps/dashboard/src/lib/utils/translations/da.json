@@ -2433,6 +2433,11 @@
         "completed": "{completed} af {total} fuldført",
         "lessons": "{completed} af {total} lektioner",
         "exercises": "{completed} af {total} øvelser"
+      },
+      "footer_nav": {
+        "label": "Navigation i kursusindhold",
+        "previous": "Forrige",
+        "next": "Næste"
       }
     },
     "navItems": {
@@ -4639,7 +4644,7 @@
     },
     "powered_by": {
       "label": "Drevet af",
-      "brand": "KlasseværelseIO"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "Forrige",
