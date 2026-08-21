@@ -56,7 +56,7 @@ Published images use a **rolling `latest` + pinned releases** tag policy:
 
 | Tag | Meaning | Use it for |
 |-----|---------|-----------|
-| `1.4.2` (exact) | An immutable, smoke-tested release | **Production — always pin this** |
+| `1.4.2` (exact) | An immutable, pinned release | **Production — always pin this** |
 | `1.4`, `1` | Latest patch/minor of that line | Tracking a line |
 | `latest` | The freshest `main` build (rolling; may include unreleased code) | Trying the newest code |
 
@@ -75,9 +75,6 @@ Schema migrations run automatically on `api` startup (`db:setup`), so upgrades n
 step. If a release consolidates ("squashes") older migrations, the startup baseline detects an
 existing instance and adopts the new baseline as already-applied, and your database is upgraded in
 place without re-running schema that already exists.
-
-(Maintainers: every published image is boot-smoke-tested in CI before it ships. See
-[`PUBLISHING_IMAGES.md`](PUBLISHING_IMAGES.md).)
 
 ## Environment Variables
 
