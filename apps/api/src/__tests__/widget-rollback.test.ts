@@ -111,4 +111,28 @@ describe('rollbackOrganizationWidget', () => {
       })
     );
   });
+
+  it('rejects rollback and persists nothing when the target version has an invalid payload', async () => {
+    vi.mocked(getWidgetById).mockResolvedValue({
+      id: 'widget-1',
+      organizationId: 'org-1',
+      layoutType: 'card_grid',
+      selectionMode: 'manual'
+    } as Awaited<ReturnType<typeof getWidgetById>>);
+
+    vi.mocked(getWidgetVersionById).mockResolvedValue({
+      id: 'version-1',
+      widgetId: 'widget-1',
+      configSnapshot: {},
+      payloadSnapshot: { version: 'v1' },
+      runtimeManifest: { version: 'v1', release: 'current', entryUrl: 'https://example.com/widget.js' }
+    } as Awaited<ReturnType<typeof getWidgetVersionById>>);
+
+    await expect(
+      rollbackOrganizationWidget('org-1', 'widget-1', 'user-1', { versionId: 'version-1' })
+    ).rejects.toThrow();
+
+    expect(createWidgetVersion).not.toHaveBeenCalled();
+    expect(updateWidget).not.toHaveBeenCalled();
+  });
 });
