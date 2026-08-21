@@ -818,7 +818,11 @@
           "empty": "Không có thẻ nào được chọn",
           "add": "Thêm thẻ",
           "popover_title": "Chọn thẻ",
-          "empty_groups": "Chưa có thẻ nào"
+          "empty_groups": "Chưa có thẻ nào",
+          "create_tag": "Tạo thẻ",
+          "none_created": "Chưa có thẻ nào được tạo",
+          "search_placeholder": "Tìm kiếm thẻ...",
+          "no_results": "Không tìm thấy thẻ nào"
         },
         "compliance": "Tuân thủ",
         "public": "công cộng",
@@ -4002,7 +4006,9 @@
       "color": "Màu",
       "color_help": "Chọn một trong 10 màu",
       "select_category": "Chọn một danh mục",
-      "no_groups": "Tạo nhóm thẻ trước khi tạo thẻ"
+      "no_groups": "Tạo nhóm thẻ trước khi tạo thẻ",
+      "search_category": "Tìm kiếm danh mục",
+      "no_results": "Không tìm thấy danh mục nào"
     },
     "group_modal": {
       "create_title": "Tạo nhóm thẻ",
