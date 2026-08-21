@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Home — ClassroomIO Mobile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <header class="proto-head">
+      <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14"><path d="m15 18-6-6 6-6"/></svg> All screens</a>
+      <span class="eyebrow">Learner · Tab 1</span>
+      <h1>Home — the attention surface</h1>
+      <p>
+        Ordered by urgency, not recency: compliance alerts, then continue-learning, due-soon, newly assigned, announcements,
+        and feedback. The whole screen is one <code>GET /account/home-digest</code> call so a cold launch on a weak
+        connection costs a single round trip — and the cached copy still renders offline with an explicit staleness chip.
+      </p>
+      <div class="proto-links">
+        <a href="compliance.html">Compliance →</a>
+        <a href="lesson.html">Continue lesson →</a>
+        <a href="exercise.html">Due exercise →</a>
+        <a href="notifications.html">Notifications →</a>
+        <a href="learn.html">Learn tab →</a>
+      </div>
+    </header>
+
+    <div class="stage">
+      <!-- 1. DEFAULT — WORK TO DO -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="9:41"></div>
+
+            <div class="navbar">
+              <div class="avatar brand">NL</div>
+              <div class="grow">
+                <div class="sub">Northwind Logistics</div>
+                <div class="title-sm">Good morning, Amara</div>
+              </div>
+              <a class="icon-btn plain" href="notifications.html" aria-label="Notifications">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+                <span class="ping"></span>
+              </a>
+            </div>
+
+            <div class="screen">
+              <a class="banner banner-danger" href="compliance.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0"/></svg>
+                <div class="grow">
+                  <div class="bt">1 training overdue</div>
+                  <div class="bd">Forklift Safety Recertification was due 3 days ago · 4 days of grace left</div>
+                </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 15px; height: 15px; margin-top: 3px"><path d="m9 18 6-6-6-6"/></svg>
+              </a>
+
+              <!-- continue -->
+              <div class="sec-head"><h2>Continue learning</h2></div>
+              <a class="card" href="lesson.html" style="display: block; overflow: hidden">
+                <div style="display: flex; gap: 12px; padding: 12px">
+                  <div class="thumb" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.546 0.245 262.881))">
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg>
+                  </div>
+                  <div class="grow">
+                    <div class="lsub" style="margin: 0">Forklift Safety Recertification 2026</div>
+                    <div class="ltitle" style="margin-top: 2px">Pre-operation inspection checklist</div>
+                    <div class="lmeta"><span>Lesson 4 of 12</span><span class="sep">·</span><span>6 min left</span></div>
+                  </div>
+                </div>
+                <div style="padding: 0 12px 12px">
+                  <div class="row">
+                    <div class="progress"><span style="width: 33%"></span></div>
+                    <span class="text-muted tnum" style="font-size: 11.5px">33%</span>
+                  </div>
+                </div>
+              </a>
+
+              <!-- due soon -->
+              <div class="sec-head"><h2>Due soon</h2><span class="count">4</span><a class="more" href="learn.html">See all</a></div>
+              <div class="stack">
+                <a class="lrow" href="exercise.html">
+                  <div class="media is-danger">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0"/></svg>
+                  </div>
+                  <div class="grow">
+                    <div class="ltitle">Forklift Safety Recertification</div>
+                    <div class="lmeta"><span class="badge badge-danger-soft">Overdue 3 days</span><span class="badge badge-outline">Required</span></div>
+                  </div>
+                  <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></span>
+                </a>
+                <a class="lrow" href="certificates.html">
+                  <div class="media is-warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Hazardous Materials Handling</div>
+                    <div class="lmeta"><span class="badge badge-warning-soft">Expires in 21 days</span><span>Renewal opens 8 Sep</span></div>
+                  </div>
+                  <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></span>
+                </a>
+                <a class="lrow" href="exercise.html">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Module 3 knowledge check</div>
+                    <div class="lmeta"><span>Data Protection &amp; GDPR Essentials</span><span class="sep">·</span><span>Due in 2 days</span></div>
+                  </div>
+                  <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></span>
+                </a>
+                <a class="lrow" href="course.html">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Warehouse Fire Safety</div>
+                    <div class="lmeta"><span>Due in 6 days</span><span class="sep">·</span><span>2 of 8 lessons done</span></div>
+                  </div>
+                  <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></span>
+                </a>
+              </div>
+
+              <!-- newly assigned -->
+              <div class="sec-head"><h2>Newly assigned</h2></div>
+              <div class="card card-pad">
+                <div class="row row-top">
+                  <div class="media lg is-current"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Hazardous Materials Handling</div>
+                    <div class="lsub">Assigned by Daniel Mensah · 8 lessons · ~45 min</div>
+                    <div class="lmeta"><span class="badge badge-outline">Required</span><span class="badge badge-outline">Deadline 30 Sep</span></div>
+                  </div>
+                </div>
+                <button class="btn btn-primary btn-block btn-sm" style="margin-top: 12px; height: 36px">Start course</button>
+              </div>
+
+              <!-- announcements -->
+              <div class="sec-head"><h2>Cohort announcements</h2><a class="more" href="community.html">See all</a></div>
+              <a class="card card-pad" href="community.html" style="display: block">
+                <div class="row row-top">
+                  <div class="avatar">DM</div>
+                  <div class="grow">
+                    <div class="ltitle" style="font-size: 13.5px">Daniel Mensah</div>
+                    <div class="lsub" style="margin-top: 3px">
+                      Reminder: the practical forklift assessment moves to Bay 4 this Thursday. Bring your completion code from
+                      Lesson 12.
+                    </div>
+                    <div class="lmeta"><span>Q3 Frontline Onboarding</span><span class="sep">·</span><span>2h ago</span></div>
+                  </div>
+                </div>
+              </a>
+
+              <!-- feedback -->
+              <div class="sec-head"><h2>Recent feedback</h2></div>
+              <a class="lrow" href="exercise.html">
+                <div class="media is-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                <div class="grow">
+                  <div class="ltitle">Incident reporting scenario</div>
+                  <div class="lsub">"Clear escalation path — nice work on step 3."</div>
+                  <div class="lmeta"><span class="badge badge-success-soft">18 / 20 · Passed</span><span>Graded yesterday</span></div>
+                </div>
+              </a>
+            </div>
+
+            <nav class="tabbar" data-tabbar="home" data-badges="compliance:dot"></nav>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>Default — work to do</b>Overdue compliance outranks everything. Every card is a deep-link target for a push notification.</figcaption>
+      </figure>
+
+      <!-- 2. CAUGHT UP -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="9:41"></div>
+
+            <div class="navbar">
+              <div class="avatar brand">NL</div>
+              <div class="grow">
+                <div class="sub">Northwind Logistics</div>
+                <div class="title-sm">Good morning, Amara</div>
+              </div>
+              <a class="icon-btn plain" href="notifications.html" aria-label="Notifications">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+              </a>
+            </div>
+
+            <div class="screen">
+              <a class="banner banner-muted" href="compliance.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+                <div class="grow">
+                  <div class="bt">All 6 requirements compliant</div>
+                  <div class="bd">Next renewal: Hazmat Handling on 15 Feb 2027</div>
+                </div>
+              </a>
+
+              <div class="empty" style="padding: 34px 22px 26px">
+                <div class="ei">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>
+                </div>
+                <div class="et">Nothing due — you're all caught up</div>
+                <div class="ed">No overdue training, no deadlines this week. We'll notify you when something new is assigned.</div>
+              </div>
+
+              <div class="card card-pad" style="margin-bottom: 12px">
+                <div class="row" style="align-items: stretch">
+                  <div class="stat"><div class="v tnum">9</div><div class="k">Completed</div></div>
+                  <div style="width: 1px; background: var(--border)"></div>
+                  <div class="stat"><div class="v tnum">6</div><div class="k">Certificates</div></div>
+                  <div style="width: 1px; background: var(--border)"></div>
+                  <div class="stat"><div class="v tnum">14</div><div class="k">Day streak</div></div>
+                </div>
+              </div>
+
+              <div class="sec-head"><h2>Keep going</h2><a class="more" href="learn.html">Explore</a></div>
+              <div class="stack">
+                <a class="lrow" href="course.html">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Customer Service Excellence</div>
+                    <div class="lmeta"><span class="badge badge-outline">Optional</span><span>6 lessons · ~30 min</span></div>
+                  </div>
+                  <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></span>
+                </a>
+                <a class="lrow" href="certificates.html">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Your certificate wallet</div>
+                    <div class="lmeta"><span>6 certificates · 1 expiring soon</span></div>
+                  </div>
+                  <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></span>
+                </a>
+              </div>
+            </div>
+
+            <nav class="tabbar" data-tabbar="home"></nav>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>Caught up</b>The reward state. A muted status line replaces the overdue alert, the urgency stack collapses to an empty state, and the screen shifts to optional learning.</figcaption>
+      </figure>
+
+      <!-- 3. OFFLINE + PUSH -->
+      <figure class="device">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusbar" data-status="18:12" data-offline></div>
+
+            <!-- push notification preview -->
+            <div class="push">
+              <div class="pi">C</div>
+              <div class="grow">
+                <div class="row between">
+                  <div class="pt">Deadline reminder</div>
+                  <div class="pw">now</div>
+                </div>
+                <div class="pb">Forklift Safety Recertification is due tomorrow. 8 lessons left — about 20 minutes.</div>
+              </div>
+            </div>
+
+            <div class="offline-strip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 2 22 22M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 4-2.4M12 20h.01"/></svg>
+              Offline — showing your last sync
+            </div>
+
+            <div class="navbar" style="margin-top: 54px">
+              <div class="avatar brand">NL</div>
+              <div class="grow">
+                <div class="sub">Northwind Logistics</div>
+                <div class="title-sm">Good evening, Amara</div>
+              </div>
+              <a class="icon-btn plain" href="notifications.html" aria-label="Notifications">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+                <span class="ping"></span>
+              </a>
+            </div>
+
+            <div class="screen">
+              <div class="row" style="margin-bottom: 10px">
+                <span class="badge badge-warning-soft">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  Last updated 2h ago
+                </span>
+                <a class="badge badge-outline" href="downloads.html">2 changes waiting to sync</a>
+              </div>
+
+              <div class="sec-head" style="margin-top: 6px"><h2>Available offline</h2></div>
+              <div class="stack">
+                <a class="card" href="lesson.html" style="display: block; overflow: hidden">
+                  <div style="display: flex; gap: 12px; padding: 12px">
+                    <div class="thumb" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.546 0.245 262.881))">
+                      <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                    <div class="grow">
+                      <div class="lsub" style="margin: 0">Forklift Safety Recertification 2026</div>
+                      <div class="ltitle" style="margin-top: 2px">Load stability and centre of gravity</div>
+                      <div class="lmeta">
+                        <span class="dl-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></span>
+                        <span>Downloaded</span><span class="sep">·</span><span>Lesson 5 of 12</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="padding: 0 12px 12px">
+                    <div class="row"><div class="progress"><span style="width: 42%"></span></div><span class="text-muted tnum" style="font-size: 11.5px">42%</span></div>
+                  </div>
+                </a>
+
+                <a class="lrow" href="course.html">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 15V3M7 10l5 5 5-5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Warehouse Fire Safety</div>
+                    <div class="lmeta"><span>8 lessons downloaded</span><span class="sep">·</span><span>112 MB</span></div>
+                  </div>
+                  <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></span>
+                </a>
+              </div>
+
+              <div class="sec-head"><h2>Needs a connection</h2></div>
+              <div class="stack">
+                <div class="lrow locked">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Module 3 knowledge check</div>
+                    <div class="lsub">Exercises submit online only — we'll remind you when you reconnect</div>
+                  </div>
+                </div>
+                <div class="lrow locked">
+                  <div class="media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg></div>
+                  <div class="grow">
+                    <div class="ltitle">Community &amp; announcements</div>
+                    <div class="lsub">Reading cached posts · posting disabled offline</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <nav class="tabbar" data-tabbar="home"></nav>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+        <figcaption><b>Offline + incoming push</b>The cached digest with an explicit staleness chip. Anything that can't work offline is listed and explained rather than silently failing.</figcaption>
+      </figure>
+    </div>
+
+    <button class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <script src="proto.js"></script>
+  </body>
+</html>

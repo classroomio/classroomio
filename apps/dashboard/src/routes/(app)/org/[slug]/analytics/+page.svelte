@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
   import * as Page from '@cio/ui/base/page';
@@ -15,9 +14,8 @@
     analyticsApi
   } from '$features/analytics';
 
-  onMount(() => {
-    const orgId = $currentOrg.id;
-    if (orgId) analyticsApi.ensureFetched(orgId);
+  $effect(() => {
+    analyticsApi.ensureFetched($currentOrg.id);
   });
 
   function handleRangeChange(days: 7 | 30 | 90) {

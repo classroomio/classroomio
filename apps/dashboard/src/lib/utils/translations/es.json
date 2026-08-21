@@ -2,8 +2,11 @@
   "common": {
     "refresh": "Actualizar",
     "unsaved_changes": {
-      "message": "Tienes cambios sin guardar. ¿Estás seguro de que quieres irte?"
-    }
+      "message": "Tienes cambios sin guardar. ¿Estás seguro de que quieres irte?",
+      "label": "Cambios sin guardar"
+    },
+    "discard": "Descartar",
+    "save_changes": "Guardar cambios"
   },
   "validations": {
     "generic": {
@@ -121,7 +124,7 @@
         "custom": "{message}"
       },
       "points": {
-        "too_small": "Los puntos deben ser al menos 0."
+        "too_small": "Los puntos deben ser al menos 1."
       },
       "label": {
         "too_small": "Se requiere etiqueta de opción"
@@ -292,7 +295,8 @@
         "unlocked_all_content": "Todos los elementos del curso desbloqueados",
         "all_content_already_unlocked": "Todo el contenido ya está desbloqueado",
         "content_grouping_enabled": "Agrupación de contenidos activada",
-        "content_grouping_disabled": "Agrupación de contenidos desactivada"
+        "content_grouping_disabled": "Agrupación de contenidos desactivada",
+        "link_generated": "Enlace del curso actualizado exitosamente"
       }
     },
     "people": {
@@ -321,11 +325,13 @@
       "creating_new": "Error al crear nuevas traducciones"
     },
     "exercise": {
+      "validation_errors": "Corrija todos los errores de validación antes de guardar.",
       "points_required_auto_grade": "Asigne un valor de puntos positivo a cada pregunta antes de guardar.",
       "success": "Guardado exitosamente",
       "submission_updated": "Envío actualizado a",
       "error_fetching": "No se han podido recuperar los ejercicios. Vuelva a cargar la página.",
-      "passed_requires_points": "La finalización por aprobado necesita al menos un punto disponible."
+      "passed_requires_points": "La finalización por aprobado necesita al menos un punto disponible.",
+      "draft_restored": "Restauramos los cambios sin guardar que dejaste"
     },
     "poll": {
       "info": {
@@ -788,10 +794,10 @@
         "progression_mode_description": "Controla si los estudiantes pueden acceder a todo el contenido desbloqueado o deben completar los elementos en orden.",
         "progression_mode_free": "Libre — el contenido desbloqueado es accesible",
         "progression_mode_sequential": "Secuencial — completar elementos previos para desbloquear el siguiente",
-        "lesson_download": "Lecciones DescargarCargar",
+        "lesson_download": "Descarga de lecciones",
         "available": "Haga que la lección esté disponible para descargar en pdf para estudiantes registrados",
         "course_download": "Descarga del curso",
-        "course_avail": "Hacer que el curso esté disponible para su descarga para los estudiantes registrados",
+        "course_avail": "Descarga una copia de este curso.",
         "download": "Descargar",
         "allow": "Permitir nuevos estudiantes",
         "access": "Permitir que nuevos estudiantes accedan a este curso",
@@ -854,7 +860,15 @@
           "description": "Los estudiantes inscritos no podrán tomar lecciones o ejercicios bloqueados hasta que los desbloquees.",
           "description_live": "Las lecciones y ejercicios bloqueados permanecen ocultos para los estudiantes hasta que los desbloqueas, lo que resulta útil si publicas contenido semana tras semana.",
           "unlock_all": "Desbloquear todo"
-        }
+        },
+        "generate_link": "Generar nuevo enlace",
+        "open_link": "Abrir enlace en nueva pestaña",
+        "copy_link": "Copiar enlace",
+        "certificate_deadline_required": "Establecer la fecha límite del certificado primero",
+        "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para el certificado antes de que los estudiantes puedan inscribirse. Establezca una fecha límite en la configuración del curso antes de publicarlo.",
+        "go_to_completion_deadline": "Ir a la fecha límite de finalización",
+        "completion_deadline_label": "Fecha límite de finalización del curso",
+        "completion_deadline_helper": "Los estudiantes deben alcanzar el porcentaje de finalización antes de esta fecha (hora local). Déjelo vacío sin fecha límite."
       },
       "analytics": {
         "title": "Analíticas"
@@ -939,7 +953,8 @@
             "no": "No",
             "yes": "si",
             "percent": "Porcentaje de descuento",
-            "gift": "Acerca del regalo"
+            "gift": "Acerca del regalo",
+            "payment_required": "Se requiere un enlace de pago para los cursos pagos"
           },
           "instructor_form": {
             "upload": "Logotipo del instructor",
@@ -1517,6 +1532,7 @@
                 "multiple": "Múltiples respuestas",
                 "paragraph": "Párrafo",
                 "true_false": "Verdadero/Falso",
+                "thumbs": "Pulgares arriba/abajo",
                 "short_answer": "respuesta corta",
                 "numeric": "respuesta numérica",
                 "fill_blank": "Completa el espacio en blanco",
@@ -1703,6 +1719,17 @@
                 },
                 "edit": {
                   "correct_answer_label": "respuesta correcta"
+                }
+              },
+              "thumbs": {
+                "yes_label": "Sí",
+                "no_label": "No",
+                "edit": {
+                  "positive_option_label": "Etiqueta de pulgar arriba",
+                  "negative_option_label": "Etiqueta de pulgar abajo"
+                },
+                "preview": {
+                  "helper": "Abierta — los estudiantes eligen pulgar arriba o abajo."
                 }
               },
               "checkbox": {
@@ -1991,6 +2018,8 @@
               "cancel_upload": "Cancelar carga",
               "upload_cancelled": "Subida cancelada por el usuario",
               "downloading": "Descargando...",
+              "download_success": "Documento descargado correctamente",
+              "download_error": "No se pudo descargar el documento",
               "view_pdf": "Ver PDF",
               "remove_document": "Quitar documento",
               "delete": "Eliminar",
@@ -2000,7 +2029,11 @@
               "failed_to_render_pdf": "No se pudo renderizar la página PDF",
               "use_arrow_keys": "Utilice las teclas de flecha para navegar, +/- para hacer zoom o haga clic en los controles de arriba. El clic derecho está deshabilitado.",
               "empty_title": "Aún no hay documentos",
-              "empty_description": "Cargue documentos para compartir con sus estudiantes"
+              "empty_description": "Cargue documentos para compartir con sus estudiantes",
+              "attachments_heading": "Adjuntos",
+              "file_count": "{count, plural, one {# archivo} other {# archivos}}",
+              "view_file": "Ver archivo",
+              "reorder_file": "Reordenar archivo"
             },
             "video": {
               "title": "Video",
@@ -2260,13 +2293,38 @@
           "hide": "Ocultar comentarios",
           "placeholder": "Agregar comentario de clase",
           "submit_aria": "Enviar comentario",
-          "delete": "Eliminar"
+          "delete": "Eliminar",
+          "reply": "Responder",
+          "replying_to": "Respondiendo a @{name}",
+          "cancel_reply": "Cancelar",
+          "view_replies": "{count, plural, one {Ver # respuesta} other {Ver # respuestas}}",
+          "hide_replies": "Ocultar respuestas",
+          "view_more": "Ver más comentarios ({count})",
+          "loading": "Cargando...",
+          "save": "Guardar",
+          "saving": "Guardando...",
+          "send": "enviar",
+          "load_more_replies": "Cargar más respuestas",
+          "collapse_thread": "Colapsar hilo",
+          "expand_thread": "Expandir hilo",
+          "more_replies": "{count, plural, one {# respuesta más} other {# respuestas más}}",
+          "continue_thread": "Continuar este hilo",
+          "collapsed_summary": "{count, plural, one {# respuesta oculta} other {# respuestas ocultas}}",
+          "back_to_comments": "Volver a todos los comentarios"
         },
         "card": {
           "pin": "Fijar",
           "unpin": "Desanclar",
           "edit": "Editar",
           "delete": "Eliminar"
+        },
+        "other_posts": "Otras publicaciones",
+        "user": "Usuario",
+        "delete_modal": {
+          "title": "Eliminar feed",
+          "description": "¿Estás seguro de que deseas eliminar este feed?",
+          "no": "No",
+          "yes": "si"
         }
       },
       "compliance": {
@@ -2382,6 +2440,11 @@
         "completed": "{completed} de {total} completados",
         "lessons": "{completed} de {total} lecciones",
         "exercises": "{completed} de {total} ejercicios"
+      },
+      "footer_nav": {
+        "label": "Navegación del contenido del curso",
+        "previous": "Anterior",
+        "next": "Siguiente"
       }
     },
     "navItems": {
@@ -2434,7 +2497,10 @@
       "blocker_final_misconfigured": "El ejercicio de certificación \"{exerciseTitle}\" no tiene puntos configurados; Pídele a tu instructor que lo arregle.",
       "email_message_label": "Mensaje de correo electrónico",
       "email_message_placeholder": "por ej. Estamos orgullosos de tu progreso: ¡sigue aprendiendo!",
-      "final_exercise_multiple_attempts_note": "A los estudiantes se les permitirán intentos ilimitados en el ejercicio seleccionado."
+      "final_exercise_multiple_attempts_note": "A los estudiantes se les permitirán intentos ilimitados en el ejercicio seleccionado.",
+      "deadline_required": "Los cursos de cumplimiento requieren una fecha límite de finalización antes de poder publicarse.",
+      "deadline_required_enroll": "Los cursos de cumplimiento requieren una fecha límite para el certificado antes de que los estudiantes puedan inscribirse.",
+      "deadline_invalid": "La fecha límite de finalización del curso no es válida."
     },
     "creator": {
       "heading": "¿Qué curso quieres crear?",
@@ -2572,6 +2638,7 @@
       "most_lessons": "Lecciones: más primero",
       "fewest_lessons": "Lecciones: menos primero",
       "date_created": "Fecha de creación",
+      "last_updated_at": "Última actualización",
       "published": "Publicado",
       "lessons": "Lecciones"
     },
@@ -3773,6 +3840,7 @@
       "heading": "Nueva contraseña",
       "description": "Ingrese los detalles de su nueva contraseña"
     }
+    "continue_with": "O continuar con"
   },
   "app": {
     "search": {
@@ -3812,8 +3880,6 @@
     "deeply_appreciate": "lo apreciamos profundamente y estamos a su servicio."
   },
   "onboarding": {
-    "sell": "Vender cursos en línea",
-    "teach": "Enseñar a mis alumnos actuales en línea",
     "expanding": "En otra plataforma, ampliando aquí",
     "employees": "Capacitar a mis empleados",
     "customers": "Crear cursos para mis clientes",
@@ -3918,9 +3984,12 @@
       "tags_title": "Etiquetas",
       "types_title": "Tipos",
       "search_placeholder": "Buscar cursos...",
+      "clear_search": "Borrar búsqueda",
       "pricing_title": "Precios",
       "pricing_free": "Gratis",
-      "pricing_paid": "Pagado"
+      "pricing_paid": "Pagado",
+      "selected": "Seleccionado:",
+      "save_changes": "Guardar cambios"
     }
   },
   "tags_admin": {
@@ -4036,16 +4105,15 @@
       },
       "usage": {
         "title": "Uso y límites",
-        "description": "MCP está disponible en todos los planes, pero el uso se controla con créditos de automatización mensuales y límites clave.",
-        "credits_title": "Créditos restantes",
-        "credits_description": "Las acciones mutantes de MCP consumen créditos. Las acciones de lectura son gratuitas.",
+        "description": "MCP está disponible en todos los planes. El uso se controla mediante límites de claves y límites de tasa.",
         "keys_title": "Claves activas",
         "keys_description": "Utilice una clave MCP por integración para que el acceso se pueda rotar o revocar limpiamente.",
         "rate_limits_title": "Límites de tarifas",
         "rate_limits_description": "Solicitudes de lectura/escritura/publicación permitidas por minuto.",
         "used_label": "Usado:"
       },
-      "page_subtitle": "Conecta herramientas de IA a ClassroomIO con claves con ámbito de organización que puedes rotar en cualquier momento."
+      "page_subtitle": "Conecta herramientas de IA a ClassroomIO con claves con ámbito de organización que puedes rotar en cualquier momento.",
+      "view_docs": "Ver documentación"
     },
     "api": {
       "subtitle": "Administra las claves API para integrarte con la API pública de ClassroomIO.",
@@ -4587,7 +4655,7 @@
     },
     "powered_by": {
       "label": "Desarrollado por",
-      "brand": "AulaIO"
+      "brand": "ClassroomIO"
     },
     "footer_nav": {
       "previous": "Anterior",
@@ -4814,7 +4882,8 @@
       "no_matching_cohort_courses": "Ningún curso de cohorte coincide con su búsqueda.",
       "pagination_status": "Página {page} de {totalPages}",
       "published_access_callout_title": "Acceso de estudiantes",
-      "published_access_callout_description": "Los estudiantes solo tienen acceso a los cursos publicados. Los cursos pueden estar en esta cohorte para tu equipo aunque aún no estén publicados, y permanecerán ocultos para los estudiantes hasta que los publiques."
+      "published_access_callout_description": "Los estudiantes solo tienen acceso a los cursos publicados. Los cursos pueden estar en esta cohorte para su equipo mientras aún no están publicados, pero permanecen ocultos para los estudiantes hasta que los publique.",
+      "empty_student_description": "Aún no hay cursos publicados en esta cohorte."
     },
     "newsfeed": {
       "post": "Nueva publicación",

@@ -71,9 +71,8 @@ jobs:
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
 
-  # The docs render the API reference statically from this spec, so a fresh
-  # upload only reaches classroomio.com/docs/api once they rebuild.
-  redeploy-docs:
-    needs: generate-and-upload-openapi
-    uses: ./.github/workflows/deploy-docs.yml
-    secrets: inherit
+      - name: Trigger docs rebuild
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: curl --connect-timeout 10 --max-time 30 --retry 3 --retry-delay 5 --retry-all-errors -fsS -X POST "$CLOUDFLARE_DOCS_DEPLOY_HOOK"
+        env:
+          CLOUDFLARE_DOCS_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_DOCS_DEPLOY_HOOK }}

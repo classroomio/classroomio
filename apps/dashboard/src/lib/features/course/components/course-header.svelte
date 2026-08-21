@@ -9,7 +9,10 @@
   import { Waves } from '@cio/ui/custom/animation';
   import { page } from '$app/state';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
-  import { isStudentExperience } from '$lib/utils/store/app';
+  import { isStudentExperience, isCourseLearnerView } from '$lib/utils/store/app';
+  import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
+  import { getCourseProgress } from '$features/course/utils/content';
+  import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import { courseApi } from '$features/course/api';
@@ -29,6 +32,16 @@
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const activeNavKey = $derived(getActiveCourseNavKey(page.url.pathname, courseApi.course?.id ?? ''));
   const isPublished = $derived(courseApi.course?.isPublished ?? false);
+  const lessonId = $derived(page.params.lessonId as string | undefined);
+  const exerciseId = $derived(page.params.exerciseId as string | undefined);
+  const showMobileBottomNav = $derived(
+    isCourseMobileBottomNavVisible({
+      isCourseLearnerView: $isCourseLearnerView,
+      isMobile: isMobileStore.current,
+      isLessonOrExercisePage: Boolean(lessonId || exerciseId),
+      courseProgress: getCourseProgress(courseApi.course)
+    })
+  );
 
   let viewAsStudentOpen = $state(false);
   let viewCourseSiteUnpublishedOpen = $state(false);
@@ -59,7 +72,7 @@
 </script>
 
 <header
-  class="border-border ui:bg-background z-app-bar sticky top-0 flex h-12 w-full shrink-0 items-center gap-2 border-b backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8"
+  class="border-border ui:bg-background ui:z-app-bar sticky top-0 flex h-12 w-full shrink-0 items-center gap-2 border-b backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8"
 >
   <div class="flex w-full items-center gap-2 px-4">
     <Sidebar.Trigger />
@@ -86,7 +99,7 @@
 
     <span class="grow"></span>
 
-    {#if $isStudentExperience}
+    {#if $isCourseLearnerView && !showMobileBottomNav}
       <CourseProgressPopover class="md:hidden" />
     {/if}
 

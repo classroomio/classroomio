@@ -17,12 +17,12 @@
 <section>
   <PageHeader className="flex flex-col items-center justify-center text-center">
     <h1 class="mx-auto flex flex-col items-center text-4xl text-slate-900 md:text-6xl">
-      <span>Certified training for</span>
-      <span class="relative text-blue-700">every team.</span>
+      <span>Pick a plan.</span>
+      <span class="relative text-blue-700">Launch your academy.</span>
     </h1>
     <p class="mt-10 w-[90%] text-center text-lg font-normal text-slate-700 md:w-[60%] lg:mt-7">
-      Start with your docs, policies, and videos. Choose the plan that helps you turn them into courses, certificates,
-      and completion evidence.
+      Basic is free for up to 20 students and includes monthly AI credits. Upgrade for more seats, higher AI limits, or
+      a custom domain. Same product for customer, employee, and partner training.
     </p>
     <div class="mt-8">
       <PricingToggle
@@ -77,8 +77,8 @@
 </section>
 
 <PageSignupCTA
-  header="Choose the plan that fits your training program."
-  subText="Start small, prove completion, and scale certified training across your teams, customers, and partners."
+  header="Start building your academy."
+  subText="Sign up free on Basic. Upgrade for more students, higher AI credits, or a custom domain."
   btnLabel="Sign up for free"
   link="/signup"
   demo={false}

@@ -6,6 +6,10 @@ This document collects implementation rules and workflow conventions for code ch
 
 When a task requires factual information (API specifications, context window sizes, library versions, pricing, rate limits, etc.), **look it up** using web search. Do not rely on educated guesses or assumptions from training data. If you're unsure whether something is a guess, look it up anyway.
 
+## Out of scope paths
+
+The `prototypes/` directory holds standalone HTML/CSS design mocks for exploration. Do not treat prototype files as production code: avoid implementing features there unless explicitly asked, and do not apply production review standards (CodeRabbit/Greptile exclude this path via `.coderabbit.yaml` and `.greptile/config.json`).
+
 ## Translation, Formatting, and Git Workflow
 
 - If `apps/dashboard/src/lib/utils/translations/en.json` changes, update the other dashboard locale files before staging or committing.
@@ -57,6 +61,27 @@ Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow abov
   const studentsLimit = getPlanLimit('students', plan);
   org.limits = { students: toResourceUsage(studentsUsed, studentsLimit) };
   ```
+
+## Persisted columns store data, not presentation
+
+A user-content column (`content`, `body`, `description`, …) stores what the author typed and nothing else. Check this **at the write site** — the component or service building the value — not at the schema.
+
+Never write into such a column:
+
+- **Presentational markup** — wrapper elements, Tailwind classes, inline styles. Render that in a component instead.
+- **Localized strings** — copy baked in at write time can never be re-translated, and it freezes the author's locale for every future reader.
+- **Copied values from another row** — a quoted snippet, an author name, a title. Store the relationship (a real FK column) and join or derive the display value at render time, so it stays correct when the source row is edited or deleted.
+
+```ts
+// ❌ don't — markup, English copy and a copy of the parent all land in the column
+const quote = `<blockquote class="...">Replying to @${target.fullname}"${target.snippet}"</blockquote>`;
+await createComment(`${quote}${text}`, parentId);
+
+// ✅ do — persist the relationship, render the label from live data
+await createComment(text, parentId, target.commentId);
+```
+
+The tell that this went wrong: an edit form shows raw markup, because the markup *is* the content.
 
 ## Creating a New Route
 
@@ -410,18 +435,105 @@ When cleanup or reset must follow a specific lifecycle moment, use the matching 
 
 Use `.server.ts` files for server-side code to isolate API keys.
 
+### Chart Imports and SSR
+
+`layerchart` has internal circular dependencies that Vite cannot reliably evaluate during SSR. Never statically import `layerchart` or the `@cio/ui/base/chart` runtime barrel from a component that can enter the server module graph.
+
+- Import chart types from the dependency-free types module: `import type { ChartConfig } from '@cio/ui/base/chart/types'` (or the equivalent relative path inside `packages/ui`).
+- Load chart runtime components with a browser-only dynamic import and render them inside an `{#await}` block guarded by `browser` or `typeof window !== 'undefined'`.
+- In exercise submission renderers, reuse `submission-response-bar-chart.svelte` or `submission-response-pie-chart.svelte`; do not import the chart barrel directly.
+
+```svelte
+<script module lang="ts">
+  function loadChart() {
+    if (typeof window === 'undefined') return Promise.reject(new Error('browser-only'));
+
+    return import('@cio/ui/base/chart');
+  }
+</script>
+
+<script lang="ts">
+  import { browser } from '$app/environment';
+  import type { ChartConfig } from '@cio/ui/base/chart/types';
+</script>
+
+{#if browser}
+  {#await loadChart() then Chart}
+    <Chart.ChartContainer {config}>
+      <Chart.BarChart data={chartData} x="label" y="value" />
+    </Chart.ChartContainer>
+  {/await}
+{/if}
+```
+
 ### UI Components
 
 - Add new UI components under `packages/ui/src` following existing folder patterns.
 - **All Tailwind utility classes in `packages/ui/src/**` must use the `ui:` prefix** (see `packages/ui/README.md`). Pre-commit and CI run `pnpm --filter @cio/ui prefix:check` on touched UI files; fix with `pnpm --filter @cio/ui prefix`.
 - Document component usage and props in `packages/ui/README.md`.
-- Add example usages and variants in Storybook stories under `packages/storybook/src`.
+- **Every new component in `packages/ui/src` ships with a Storybook story in the same change.** A component without a story is incomplete — do not open the PR without one.
+  - Path: `packages/storybook/src/{atoms|molecules}/{component-name}/{component-name}.stories.svelte`, plus a `fields.ts` exporting the `FIELDS` array used by `parameters.controls.include`.
+  - Use `defineMeta` from `@storybook/addon-svelte-csf` with `tags: ['autodocs']`, and set `argTypes` callbacks to `{ control: false }`.
+  - Cover every state the component can be in, not just the happy path — each variant, each boolean prop, loading and empty states, and any recursive or nested rendering.
+  - When adding a component to an existing family (e.g. a new `comment-tree-*` part), extend that family's existing story file rather than creating a second one.
+  - `ui:` classes used inside a story must also exist somewhere under `packages/ui/src`, otherwise they emit no CSS — use unprefixed layout classes in story wrappers when in doubt.
 - See `packages/ui/README.md` and `packages/storybook/README.md` for full guidance.
 - For dashboard forms, prefer `@cio/ui/custom/*-field` wrappers (for example `InputField`, `TextareaField`, `CheckboxField`) so label/error/spacing behavior stays consistent.
 - Use base primitives (`@cio/ui/base/input`, `@cio/ui/base/textarea`, `@cio/ui/base/checkbox`, `@cio/ui/base/label`) only when creating/updating reusable UI components or when no custom field wrapper exists.
 - In app-level form UIs, do not introduce native form controls (`<input>`, `<textarea>`, `<label>`) when equivalent `packages/ui` components exist.
 - **Icon-only buttons** (a `Button` whose content is just an icon, e.g. `size="icon"`) must use `variant="secondary"`.
 - **Theme color classes:** Classes that use colors from `packages/ui/src/index.css` (e.g. `text-muted-foreground`, `text-primary`) must be prefixed with `ui:` in dashboard code so they resolve against the UI theme (e.g. `ui:text-muted-foreground`, `ui:text-primary`). Only color-related utilities need the prefix; layout/sizing classes like `rounded`, `border`, `p-4` stay unprefixed (Tailwind defaults).
+
+### Page layout and settings save bar
+
+Use `@cio/ui/base/page` for dashboard page shells. See `packages/ui/README.md` § Page layout for the full component list.
+
+**Every settings page with save/discard** must use `Page.SettingsActions` as the last child of `Page.Root` (after `Page.Body`). Do not put Save in `Page.Header` or inline at the bottom of form sections.
+
+- Compact centered card (not full width), sticky at the viewport bottom while scrolling; docks naturally at the end of the page content
+- Only appears when `hasChanges` is true
+- Save is a primary button (not a split/combo control); Discard is secondary
+- Labels come from dashboard translations: `common.unsaved_changes.label`, `common.discard`, `common.save_changes`
+- Pair with `UnsavedChanges` for navigation guards where appropriate
+
+```svelte
+<Page.SettingsActions
+  hasChanges={hasUnsavedChanges}
+  loading={isSaving}
+  statusLabel={$t('common.unsaved_changes.label')}
+  discardLabel={$t('common.discard')}
+  saveLabel={$t('common.save_changes')}
+  onSave={handleSave}
+  onDiscard={handleDiscard}
+/>
+```
+
+### Scroll to top
+
+Any surface whose **main column can overflow the viewport** must use the shared `ScrollToTop` control. Do not invent a one-off back-to-top button, FAB, or “scroll up” link.
+
+Full behavior, threshold, clearance, and mount points: `prd/scroll-to-top/README.md`.
+
+**Rules:**
+
+- Implement and import from `@cio/ui/custom/scroll-to-top` (see that spec if the file is not there yet — add the shared component, do not inline a button in the page).
+- Hidden until the scroll container overflows **and** the user has scrolled at least **one viewport**. Hidden again below 0.8 viewports. Never visible at the top of the page.
+- Click only scrolls that container to `top: 0`. Prefer `behavior: 'smooth'`; use instant when `prefers-reduced-motion` is set.
+- Fixed to the **viewport**, bottom-right, icon-only `Button`/`IconButton` with `variant="secondary"`.
+- Pass `label` from the host (`$t('common.scroll_to_top')` in the dashboard). The UI package does not own copy.
+- Prefer **one mount per shell**, not per leaf page:
+  - Public lessons and exercises → `PublicCourse.PublicCourseShell` (`clearance="mobile-nav"`).
+  - Authenticated course contents list, lesson, and exercise → `routes/(app)/courses/[id]/+layout.svelte` (Ask AI clearance on lesson/exercise routes).
+- New long-read pages (community thread, public course landing, long catalogs, etc.) must include the same component. Do not mount it on `(app)/+layout.svelte` or inside dialogs/sheets/nested panes.
+
+```svelte
+<script lang="ts">
+  import { ScrollToTop } from '@cio/ui/custom/scroll-to-top';
+  import { t } from '$lib/utils/functions/translations';
+</script>
+
+<ScrollToTop label={$t('common.scroll_to_top')} />
+```
 
 ## Emails: system vs org-branded
 
@@ -464,6 +576,7 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - Use `SvelteSet`/`SvelteMap` from `svelte/reactivity` for reactive collections (not `new Set`/`new Map`)
 - Reset modal/form state in close/submit handlers or `onOpenChange`, not in `$effect` tied to a steady “closed” condition
 - Mutate bound `$state` object fields in place when clearing forms (don't reassign the whole object)
+- Use `ScrollToTop` (`@cio/ui/custom/scroll-to-top`) on any page whose main column can overflow the viewport (see **Scroll to top**)
 
 ### ❌ DON'T
 - Put business logic in routes or queries
@@ -481,6 +594,7 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - **Use `$effect` to reset form/modal state whenever a boolean is false** — use `onOpenChange` or explicit handlers on close instead
 - **Reassign whole bound state objects to clear forms** (e.g. `fields = {}`) — mutate properties in place
 - **Use inline type imports** (e.g. `import('Package').Type` in type positions) — use top-level `import type` instead
+- Build a one-off back-to-top button — use `ScrollToTop` (see **Scroll to top** and `prd/scroll-to-top/README.md`)
 
 ## Checklist for New Routes
 

@@ -2,7 +2,7 @@ import {
   ZNewsfeedCommentCreate,
   ZNewsfeedCommentGetParam,
   ZNewsfeedCommentUpdate,
-  ZNewsfeedCommentsQuery,
+  ZNewsfeedCommentThreadQuery,
   ZNewsfeedCreate,
   ZNewsfeedGetParam,
   ZNewsfeedListQuery,
@@ -14,7 +14,7 @@ import {
   createNewsfeedService,
   deleteNewsfeedCommentService,
   deleteNewsfeedService,
-  getNewsfeedCommentsService,
+  getNewsfeedCommentThreadService,
   getNewsfeedItem,
   listNewsfeedPaginated,
   updateNewsfeedCommentService,
@@ -28,6 +28,7 @@ import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
 import { handleError } from '@api/utils/errors';
+import { newsfeedCommentAuthorOnlyMiddleware } from '@api/middlewares/newsfeed-comment-author-only';
 import { newsfeedCommentAuthorOrTeamMiddleware } from '@api/middlewares/newsfeed-comment-author-or-team';
 import { zValidator } from '@hono/zod-validator';
 
@@ -126,13 +127,20 @@ export const newsfeedRouter = new Hono()
     authMiddleware,
     courseMemberMiddleware,
     zValidator('param', ZNewsfeedGetParam),
-    zValidator('query', ZNewsfeedCommentsQuery),
+    zValidator('query', ZNewsfeedCommentThreadQuery),
     async (c) => {
       try {
         const { feedId } = c.req.valid('param');
-        const { cursor, limit = 5 } = c.req.valid('query');
+        const { rootId, cursor, childCursor, limit = 5, childLimit = 3, maxDepth = 3 } = c.req.valid('query');
 
-        const result = await getNewsfeedCommentsService(feedId, { cursor, limit });
+        const result = await getNewsfeedCommentThreadService(feedId, {
+          rootId,
+          cursor,
+          childCursor,
+          rootLimit: limit,
+          childLimit,
+          maxDepth
+        });
 
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
@@ -151,14 +159,14 @@ export const newsfeedRouter = new Hono()
         const user = c.get('user')!;
         const courseId = c.req.param('courseId')!;
         const { feedId } = c.req.valid('param');
-        const { content } = c.req.valid('json');
+        const { content, parentId } = c.req.valid('json');
 
         const groupMemberId = await getGroupMemberIdByCourseAndProfile(courseId, user.id);
         if (!groupMemberId) {
           return c.json({ success: false, error: 'User is not a member of this course' }, 403);
         }
 
-        const comment = await createNewsfeedCommentService(feedId, groupMemberId, content);
+        const comment = await createNewsfeedCommentService(feedId, groupMemberId, content, parentId);
 
         return c.json({ success: true, data: comment }, 201);
       } catch (error) {
@@ -169,7 +177,7 @@ export const newsfeedRouter = new Hono()
   .put(
     '/comment/:commentId',
     authMiddleware,
-    newsfeedCommentAuthorOrTeamMiddleware,
+    newsfeedCommentAuthorOnlyMiddleware,
     zValidator('param', ZNewsfeedCommentGetParam),
     zValidator('json', ZNewsfeedCommentUpdate),
     async (c) => {

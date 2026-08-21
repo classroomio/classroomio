@@ -67,6 +67,7 @@
     "db:assets-backfill": "tsx src/scripts/backfill-lesson-assets.ts",
     "db:rewrite-media-host": "tsx src/scripts/rewrite-media-host.ts",
     "db:login-link": "tsx src/scripts/generate-login-link.ts",
+    "db:create-org": "tsx src/scripts/create-org-with-admin.ts",
     "db:sync-orphaned-profiles": "tsx src/scripts/sync-orphaned-profiles.ts",
     "db:backfill-profile-email-verification": "tsx src/scripts/backfill-profile-email-verification.ts",
     "db:backfill-member-email-notifications": "tsx src/scripts/backfill-member-email-notifications-from-profile.ts",

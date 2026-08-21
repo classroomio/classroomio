@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
+  import { t } from '$lib/utils/functions/translations';
 
   interface Props {
     openDeleteModal?: boolean;
@@ -18,14 +19,16 @@
 <Dialog.Root bind:open={openDeleteModal}>
   <Dialog.Content class="w-96">
     <Dialog.Header>
-      <Dialog.Title>Delete Feed</Dialog.Title>
+      <Dialog.Title>{$t('course.navItem.news_feed.delete_modal.title')}</Dialog.Title>
     </Dialog.Header>
     <div>
-      <h1 class="text-lg dark:text-white">Are you sure you want to delete this feed?</h1>
+      <h1 class="text-lg dark:text-white">{$t('course.navItem.news_feed.delete_modal.description')}</h1>
 
       <div class="mt-5 flex items-center justify-between">
-        <Button variant="outline" onclick={() => (openDeleteModal = false)}>No</Button>
-        <Button variant="outline" onclick={handleDelete}>Yes</Button>
+        <Button variant="outline" onclick={() => (openDeleteModal = false)}
+          >{$t('course.navItem.news_feed.delete_modal.no')}</Button
+        >
+        <Button variant="outline" onclick={handleDelete}>{$t('course.navItem.news_feed.delete_modal.yes')}</Button>
       </div>
     </div>
   </Dialog.Content>

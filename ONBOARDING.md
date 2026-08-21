@@ -33,9 +33,9 @@ Open these pages in a new tab so you understand the product before clicking arou
 | What is ClassroomIO | https://classroomio.com/docs |
 | Terminology | https://classroomio.com/docs/terminology |
 | Quickstart | https://classroomio.com/docs/quickstart/signup |
-| Course Types | https://classroomio.com/docs/build-a-course/course-types |
-| Organization | https://classroomio.com/docs/core-features/organization |
-| Student Dashboard | https://classroomio.com/docs/core-features/student-dashboard |
+| Course Types | https://classroomio.com/docs/guides/course-types |
+| Organization | https://classroomio.com/docs/organization |
+| Student Dashboard | https://classroomio.com/docs/student-dashboard |
 
 ### Explore the dashboard
 
@@ -51,7 +51,7 @@ Open these pages in a new tab so you understand the product before clicking arou
 ## Part 2 — Courses
 
 Create one course for each course type. For each course, follow the
-[Create First Course](https://classroomio.com/docs/get-started/create-first-course) guide,
+[Create First Course](https://classroomio.com/docs/guides/create-first-course) guide,
 then complete the type-specific checklist below.
 
 ### 2.1 Self-Paced Course
@@ -89,14 +89,17 @@ then complete the type-specific checklist below.
 ### 2.3 Compliance Course
 
 - [ ] Create a new course, choose **Compliance**, name it "Test — Compliance".
+- [ ] Open the course.
 - [ ] Add a section with a lesson and an exercise (make sure the exercise has auto-gradable questions).
-- [ ] Go to **Course Settings → Compliance** and configure:
-  - [ ] Passing score.
+- [ ] Navigate to **Certificate** from the course sidebar.
+- [ ] Open the **Settings** tab within the Certificate page.
+- [ ] Configure:
+  - [ ] Minimum completion / passing score.
   - [ ] Due date.
-  - [ ] Grace period (days).
-  - [ ] Retake interval and max attempts.
-  - [ ] Reminder days before deadline.
-  - [ ] Mark the course as mandatory.
+  - [ ] Grace period.
+  - [ ] Retake interval and maximum attempts.
+  - [ ] Reminder days before the deadline.
+  - [ ] Mark the course as mandatory (if applicable).
 - [ ] Go to **Compliance** in the course sidebar — verify the compliance dashboard tiles are shown (compliant, non-compliant, in progress, not started, etc.).
 - [ ] Go back to **Stats → Compliance** at the org level — confirm this course now appears in the course breakdown table.
 - 📸 **Screenshot:** The course compliance dashboard with status tiles.
@@ -164,7 +167,19 @@ Widgets are embeddable course catalogs for external websites.
 - [ ] **Embed** panel — copy the embed code and preview it in a standalone HTML file or CodePen.
 - [ ] Publish the widget and verify it renders the live preview correctly.
 - [ ] Go back, change a setting, and **rollback** to the previous published version.
-- 📸 **Screenshot:** The widget preview rendering in the embed panel.
+
+### Running the widget locally
+
+After publishing the widget, start the embeds development server:
+
+```bash
+pnpm --filter @cio/embeds dev
+```
+- [ ] click on "URL" tab, copy URL
+- [ ] Paste URL in your browser to view the locally served widget preview.
+- [ ] Verify that the widget renders correctly.
+
+- 📸 **Screenshot:** The widget preview in the browser.
 
 ---
 
@@ -185,21 +200,27 @@ Tags are org-level labels for categorizing courses.
 
 ## Part 6 — Media
 
-The media manager is the central asset library for the org.
+The Media Library is the central asset repository for your organization. Media assets are uploaded while creating course content and can then be managed from the Media page.
 
+- [ ] Open a **Course**.
+- [ ] Create a **Section**.
+- [ ] Create a **Lesson** within the section.
+- [ ] In the lesson's **Materials** section:
+  - [ ] Upload an **image**.
+  - [ ] Upload a **document** (PDF).
+  - [ ] Upload a **video**.
+  - [ ] Add a **YouTube** video via link.
 - [ ] Navigate to **Media** (`/org/[slug]/media`).
 - [ ] Note the **storage usage summary** at the top.
-- [ ] Upload an **image** file — verify it appears in the asset list with kind "image".
-- [ ] Upload a **document** (PDF) — verify it appears with kind "document".
-- [ ] Upload a **video** — verify it appears with kind "video". After processing, check that it has HLS playback support and auto-generated thumbnails.
-- [ ] Use the **YouTube** option to add a video via link.
-- [ ] Use the **Embed** option to add a video via embed URL.
+- [ ] Verify the uploaded image appears with kind **"image"**.
+- [ ] Verify the uploaded PDF appears with kind **"document"**.
+- [ ] Verify the uploaded video appears with kind **"video"**. After processing, check that it has HLS playback support and auto-generated thumbnails.
 - [ ] Filter assets by kind (video, image, document, audio) and verify the filters work.
 - [ ] Search for an asset by name.
-- [ ] Click an asset to see its detail — view **usage tracking** (which lessons reference it).
+- [ ] Click an asset to view its details, including **usage tracking** (which lessons reference it).
 - [ ] Edit an asset name, then delete an asset you no longer need.
-- [ ] Go to a **Lesson**, open the materials section, and add a video from the **Media Library** picker (not a fresh upload). Verify it embeds in the lesson.
-- 📸 **Screenshot:** The media library showing uploaded assets of different kinds with the storage usage summary.
+- [ ] Return to a **Lesson**, open the **Materials** section, and add a video from the **Media Library** picker (instead of uploading a new file). Verify it embeds correctly in the lesson.
+- 📸 **Screenshot:** The Media Library showing uploaded assets of different kinds with the storage usage summary.
 
 ---
 
@@ -476,10 +497,10 @@ student-side testing. This keeps the admin session clean.
 
 | Topic | Link |
 |---|---|
-| Student Dashboard | https://classroomio.com/docs/core-features/student-dashboard |
-| Course Enrollment | https://classroomio.com/docs/enrollment-and-students/course-enrollment |
-| Welcome Email | https://classroomio.com/docs/enrollment-and-students/welcome-email |
-| Invite Students | https://classroomio.com/docs/enrollment-and-students/invite-students |
+| Student Dashboard | https://classroomio.com/docs/student-dashboard |
+| Course Enrollment | https://classroomio.com/docs/guides/course-enrollment |
+| Welcome Email | https://classroomio.com/docs/guides/welcome-email |
+| Invite Students | https://classroomio.com/docs/guides/invite-students |
 
 ### LMS Checklist
 

@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "dev": "vite dev --port 5173",
+    "prebuild": "pnpm --filter @cio/ui run build",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint ./src",
@@ -117,7 +118,7 @@
     "postcss-load-config": "^4.0.1",
     "qrcode": "^1.5.3",
     "sass": "^1.64.2",
-    "svelte": "^5.0.0",
+    "svelte": "^5.46.1",
     "svelte-dnd-action": "^0.9.24",
     "svelte-jester": "^3.0.0",
     "svelte-preprocess": "^6.0.0",

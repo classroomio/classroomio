@@ -385,3 +385,62 @@
     </Page.Root>
   {/snippet}
 </Story>
+
+<Story name="Settings Actions">
+  {#snippet template()}
+    <Page.Root class="h-[32rem] w-[42rem] overflow-y-auto">
+      <Page.Header>
+        <Page.HeaderContent>
+          <Page.Title>Course settings</Page.Title>
+          <Page.Subtitle>Update publishing, enrollment, and visibility options.</Page.Subtitle>
+        </Page.HeaderContent>
+      </Page.Header>
+      <Page.Body>
+        {#snippet child()}
+          <div class="space-y-4">
+            {#each Array.from({ length: 8 }) as _, index (index)}
+              <div class="text-muted-foreground rounded-lg border border-dashed p-6 text-sm">
+                Settings section {index + 1}
+              </div>
+            {/each}
+          </div>
+        {/snippet}
+      </Page.Body>
+      <Page.SettingsActions
+        hasChanges={true}
+        statusLabel="Unsaved changes"
+        discardLabel="Discard"
+        saveLabel="Save changes"
+        onSave={() => undefined}
+        onDiscard={() => undefined}
+      />
+    </Page.Root>
+  {/snippet}
+</Story>
+
+<Story name="Settings Actions (no changes)">
+  {#snippet template()}
+    <Page.Root class="w-[42rem]">
+      <Page.Header>
+        <Page.HeaderContent>
+          <Page.Title>Course settings</Page.Title>
+        </Page.HeaderContent>
+      </Page.Header>
+      <Page.Body>
+        {#snippet child()}
+          <div class="text-muted-foreground rounded-lg border border-dashed p-6 text-sm">
+            All changes saved. The compact save card stays hidden until the form is dirty.
+          </div>
+        {/snippet}
+      </Page.Body>
+      <Page.SettingsActions
+        hasChanges={false}
+        statusLabel="Unsaved changes"
+        discardLabel="Discard"
+        saveLabel="Save changes"
+        onSave={() => undefined}
+        onDiscard={() => undefined}
+      />
+    </Page.Root>
+  {/snippet}
+</Story>

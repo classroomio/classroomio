@@ -125,6 +125,17 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'true_false.preview.correct_value_label': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.true_false.preview.correct_value_label'
     ),
+    'thumbs.yes_label': t.get('course.navItem.lessons.exercises.all_exercises.shared_question.thumbs.yes_label'),
+    'thumbs.no_label': t.get('course.navItem.lessons.exercises.all_exercises.shared_question.thumbs.no_label'),
+    'thumbs.edit.positive_option_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.thumbs.edit.positive_option_label'
+    ),
+    'thumbs.edit.negative_option_label': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.thumbs.edit.negative_option_label'
+    ),
+    'thumbs.preview.helper': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.thumbs.preview.helper'
+    ),
     'short_answer.edit.instructions_placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.short_answer.edit.instructions_placeholder'
     ),

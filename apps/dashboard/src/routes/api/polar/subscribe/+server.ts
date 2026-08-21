@@ -14,6 +14,17 @@ const SUBSCRIPTION_PRODUCT_IDS = new Set(
     .filter((id): id is string => Boolean(id))
 );
 
+/**
+ * Sends the customer back to the page they upgraded from. Only in-app paths are accepted:
+ * `//host` and `/\host` are protocol-relative URLs that would redirect off-site.
+ */
+function getReturnPath(returnTo: string | null, fallbackPath: string) {
+  if (!returnTo || !returnTo.startsWith('/')) return fallbackPath;
+  if (returnTo.startsWith('//') || returnTo.startsWith('/\\')) return fallbackPath;
+
+  return returnTo;
+}
+
 export const GET = async ({ url, locals, cookies }: RequestEvent) => {
   const { user } = locals;
 
@@ -60,11 +71,17 @@ export const GET = async ({ url, locals, cookies }: RequestEvent) => {
     server: dev ? 'sandbox' : 'production'
   });
 
+  const returnPath = getReturnPath(url.searchParams.get('returnTo'), `/org/${org.siteName}`);
+  const successUrl = new URL(returnPath, url.origin);
+
+  successUrl.searchParams.set('upgrade', 'true');
+  successUrl.searchParams.set('confirmation', 'true');
+
   const checkout = await polar.checkouts.create({
     products: [productId],
     customerEmail: accountData.profile?.email ?? user.email,
     customerName: accountData.profile?.fullname || undefined,
-    successUrl: `${url.origin}/org/${org.siteName}?upgrade=true&confirmation=true`,
+    successUrl: successUrl.toString(),
     metadata: {
       orgId: org.id,
       orgSlug: org.siteName,

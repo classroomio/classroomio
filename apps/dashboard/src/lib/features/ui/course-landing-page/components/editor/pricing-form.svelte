@@ -7,6 +7,7 @@
   import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { isCourseFree } from '$lib/utils/functions/course';
+  import { toFiniteNumber } from '@cio/utils/functions';
 
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextEditor } from '$features/ui';
@@ -14,14 +15,16 @@
   interface Props {
     course: Course;
     setter: (value: any, key: string) => void;
+    showPaymentError?: boolean;
   }
 
-  let { course = $bindable(), setter }: Props = $props();
+  let { course = $bindable(), setter, showPaymentError = $bindable(false) }: Props = $props();
 
-  let discount = $derived(get(course, 'metadata.discount', 0));
-  let paymentLink = $derived(get(course, 'metadata.paymentLink', ''));
-  let showDiscount = $derived(get(course, 'metadata.showDiscount', false));
-  let giftToggled = $derived(get(course, 'metadata.reward.show', false));
+  let paymentLink = $derived(get(course, 'metadata.paymentLink', '') ?? '');
+  const isPaidWithoutPaymentLink = $derived(!isCourseFree(course.cost || 0) && !paymentLink.trim());
+  let showDiscount = $derived(Boolean(get(course, 'metadata.showDiscount', false)));
+  let discount = $derived(toFiniteNumber(get(course, 'metadata.discount', 0)) ?? 0);
+  let giftToggled = $derived(Boolean(get(course, 'metadata.reward.show', false)));
 
   function handleChange(content: string) {
     setter(content, 'metadata.reward.description');
@@ -34,7 +37,7 @@
     setter(paymentLink, 'metadata.paymentLink');
   });
   $effect(() => {
-    setter(discount, 'metadata.discount');
+    setter(toFiniteNumber(discount) ?? 0, 'metadata.discount');
   });
   $effect(() => {
     setter(giftToggled, 'metadata.reward.show');
@@ -48,7 +51,7 @@
       <Select.Trigger class="w-full">
         <p>{course.currency === 'NGN' ? 'NGN' : 'USD'}</p>
       </Select.Trigger>
-      <Select.Content class="z-menu-elevated">
+      <Select.Content>
         <Select.Item value="NGN">NGN</Select.Item>
         <Select.Item value="USD">USD</Select.Item>
       </Select.Content>
@@ -69,6 +72,15 @@
       labelClassName="font-bold"
       label={$t('course.navItem.landing_page.editor.pricing_form.payment')}
       helperMessage="Stripe, Lemon Squeezy or any payment link"
+      isRequired
+      errorMessage={isPaidWithoutPaymentLink && showPaymentError
+        ? $t('course.navItem.landing_page.editor.pricing_form.payment_required')
+        : ''}
+      onInputChange={(e) => {
+        if (showPaymentError && e.currentTarget.value.trim()) {
+          showPaymentError = false;
+        }
+      }}
       bind:value={paymentLink}
     />
   {/if}

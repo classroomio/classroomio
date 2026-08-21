@@ -36,6 +36,20 @@
       "when": 1783938329367,
       "tag": "0004_organizationmember_email_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1785228000000,
+      "tag": "0005_add_parent_id_to_course_newsfeed_comment",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1786924444436,
+      "tag": "0006_add_reply_to_comment_id_to_course_newsfeed_comment",
+      "breakpoints": true
     }
   ]
 }

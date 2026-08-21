@@ -107,7 +107,7 @@
   `;
 </script>
 
-{#if callout}
+{#if callout && callout.enabled !== false}
   <EditableLandingSection sectionKey="callout">
     <section
       class={sectionClasses[variant]}
