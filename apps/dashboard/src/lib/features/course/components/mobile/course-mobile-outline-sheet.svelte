@@ -55,14 +55,11 @@
         <Drawer.Title class="ui:text-sm ui:font-semibold ui:text-foreground">
           {$t('course.navItems.nav_content')}
         </Drawer.Title>
-        <Button
-          variant="link"
-          size="xs"
-          class="h-auto! gap-1 px-0 py-0 leading-none"
-          href={resolve(coursesListPath, {})}
-        >
-          <CircleXIcon class="custom size-3.5!" />
-          <span class="leading-none">{$t('course.navItems.exit_course')}</span>
+        <Button variant="link" class="h-fit! overflow-visible p-0" href={resolve(coursesListPath, {})}>
+          <span class="inline-flex items-center gap-1 text-xs leading-none">
+            <CircleXIcon size={12} class="custom ui:block ui:size-3 ui:shrink-0" aria-hidden="true" />
+            <span>{$t('course.navItems.exit_course')}</span>
+          </span>
         </Button>
       </Drawer.Header>
 
