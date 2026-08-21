@@ -22,7 +22,40 @@ import { automationKeyScopesMiddleware } from '@api/middlewares/automation-key-s
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 
+const PaginationSchema = {
+  type: 'object' as const,
+  properties: {
+    page: { type: 'number' as const },
+    limit: { type: 'number' as const },
+    total: { type: 'number' as const },
+    totalPages: { type: 'number' as const }
+  },
+  required: ['page', 'limit', 'total', 'totalPages']
+};
+
+const CoursesQuerySchema = {
+  type: 'object' as const,
+  properties: {
+    page: { type: 'number' as const },
+    limit: { type: 'number' as const },
+    search: { type: 'string' as const },
+    tags: { type: 'string' as const }
+  },
+  required: ['page', 'limit']
+};
+
 const CoursesListResponse = {
+  type: 'object' as const,
+  properties: {
+    success: { type: 'boolean' as const },
+    data: { type: 'array' as const, items: { type: 'object' as const } },
+    pagination: PaginationSchema,
+    query: CoursesQuerySchema
+  },
+  required: ['success', 'data', 'pagination', 'query']
+};
+
+const CourseStudentsResponse = {
   type: 'object' as const,
   properties: {
     success: { type: 'boolean' as const },
@@ -71,7 +104,9 @@ export const v1CoursesRouter = new Hono()
         return c.json(
           {
             success: true,
-            data: courses
+            data: courses.items,
+            pagination: courses.pagination,
+            query: courses.query
           },
           200
         );
@@ -133,7 +168,7 @@ export const v1CoursesRouter = new Hono()
           description: 'Course students returned successfully',
           content: {
             'application/json': {
-              schema: CoursesListResponse
+              schema: CourseStudentsResponse
             }
           }
         },
