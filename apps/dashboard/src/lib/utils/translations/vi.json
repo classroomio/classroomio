@@ -296,7 +296,8 @@
         "all_content_already_unlocked": "Tất cả nội dung đã được mở khóa",
         "content_grouping_enabled": "Đã bật nhóm nội dung",
         "content_grouping_disabled": "Đã tắt nhóm nội dung",
-        "link_generated": "Liên kết khóa học được cập nhật thành công"
+        "link_generated": "Liên kết khóa học được cập nhật thành công",
+        "converted_to_public": "Khóa học được chuyển đổi thành công sang Công khai"
       }
     },
     "people": {
@@ -871,7 +872,18 @@
         "question_in_exercise": "Trong \"{exercise}\"",
         "fix_question": "Chỉnh sửa",
         "convert_to_public_blocked": "Các khóa học công khai chỉ yêu cầu các câu hỏi có thể tự động phân loại.",
-        "convert_to_public_blocked_desc": "Các bài tập trong khóa học công khai được chấm điểm tự động trong trình duyệt, đó là lý do tại sao chúng tôi chỉ hỗ trợ các câu hỏi có thể tự động chấm điểm. Xóa hoặc thay thế các câu hỏi sau trước khi chuyển khóa học này sang Công khai:"
+        "convert_to_public_blocked_desc": "Các bài tập trong khóa học công khai được chấm điểm tự động trong trình duyệt, đó là lý do tại sao chúng tôi chỉ hỗ trợ các câu hỏi có thể tự động chấm điểm. Xóa hoặc thay thế các câu hỏi sau trước khi chuyển khóa học này sang Công khai:",
+        "fix_in_exercise": "Sửa chữa trong tập thể dục",
+        "cancel_conversion": "Hủy chuyển đổi",
+        "public_conversion": {
+          "banner_title": "Chuyển đổi khóa học sang công khai",
+          "exercise_fixed": "Bài tập này đã sẵn sàng",
+          "back_to_settings": "Quay lại Cài đặt",
+          "complete_conversion": "Hoàn thành chuyển đổi công khai",
+          "jump_to": "Chuyển tới",
+          "blocks_public_conversion": "Không thể tự động phân loại",
+          "blocks_public_conversion_desc": "Các khóa học công khai chỉ hỗ trợ các câu hỏi có thể tự động phân loại. Thay đổi loại câu hỏi này hoặc xóa nó để tiến hành chuyển đổi."
+        }
       },
       "analytics": {
         "title": "Phân tích"

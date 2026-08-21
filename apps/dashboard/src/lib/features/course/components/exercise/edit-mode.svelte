@@ -35,6 +35,7 @@
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import DeleteConfirmationModal from './delete-confirmation.svelte';
   import { QuestionContainer } from '$features/course/components';
+  import { publicConversionFlow } from '$features/course/store/public-conversion.svelte';
   import { AttentionHighlight } from '$features/ui';
   import { uploadImage } from '$lib/utils/services/upload';
   import {
@@ -388,26 +389,35 @@
 
 {#snippet gradingBadge(question)}
   {@const autoGradable = isQuestionAutoGradable(question)}
+  {@const isConversionActive = publicConversionFlow.isActive}
   <Tooltip.Provider>
     <Tooltip.Root>
       <Tooltip.Trigger>
         {#snippet child({ props })}
           <Badge
             {...props}
-            variant="outline"
+            variant={!autoGradable && isConversionActive ? 'destructive' : 'outline'}
             class="absolute top-0 right-4 z-10 translate-y-[-50%] gap-1 bg-white font-normal dark:bg-black"
           >
-            {autoGradable
-              ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_auto_gradable')
-              : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_manual_grading')}
+            {#if !autoGradable && isConversionActive}
+              {$t('course.navItem.settings.public_conversion.blocks_public_conversion')}
+            {:else}
+              {autoGradable
+                ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_auto_gradable')
+                : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_manual_grading')}
+            {/if}
             <InfoIcon class="h-3 w-3" aria-hidden="true" />
           </Badge>
         {/snippet}
       </Tooltip.Trigger>
       <Tooltip.Content side="top" sideOffset={6} class="max-w-xs">
-        {autoGradable
-          ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_auto_gradable_description')
-          : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_manual_grading_description')}
+        {#if !autoGradable && isConversionActive}
+          {$t('course.navItem.settings.public_conversion.blocks_public_conversion_desc')}
+        {:else}
+          {autoGradable
+            ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_auto_gradable_description')
+            : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.question_type_manual_grading_description')}
+        {/if}
       </Tooltip.Content>
     </Tooltip.Root>
   </Tooltip.Provider>

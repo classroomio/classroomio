@@ -538,11 +538,24 @@ export async function findNonAutoGradableQuestionsInCourse(
         questionTitle: schema.question.title,
         exerciseId: schema.exercise.id,
         exerciseTitle: schema.exercise.title,
-        typeId: schema.question.questionTypeId
+        typeId: schema.question.questionTypeId,
+        courseSectionOrder: schema.courseSection.order,
+        exerciseOrder: schema.exercise.order,
+        exerciseSectionOrder: schema.exerciseSection.order,
+        questionOrder: schema.question.order
       })
       .from(schema.question)
       .innerJoin(schema.exercise, eq(schema.exercise.id, schema.question.exerciseId))
-      .where(eq(schema.exercise.courseId, courseId));
+      .leftJoin(schema.courseSection, eq(schema.courseSection.id, schema.exercise.sectionId))
+      .leftJoin(schema.exerciseSection, eq(schema.exerciseSection.id, schema.question.exerciseSectionId))
+      .where(eq(schema.exercise.courseId, courseId))
+      .orderBy(
+        asc(schema.courseSection.order),
+        asc(schema.exercise.order),
+        asc(schema.exerciseSection.order),
+        asc(schema.question.order),
+        asc(schema.question.id)
+      );
 
     return rows
       .filter((row) => row.typeId !== null && !autoGradableTypeIds.includes(row.typeId))

@@ -296,7 +296,8 @@
         "all_content_already_unlocked": "Todo el contenido ya está desbloqueado",
         "content_grouping_enabled": "Agrupación de contenidos activada",
         "content_grouping_disabled": "Agrupación de contenidos desactivada",
-        "link_generated": "Enlace del curso actualizado exitosamente"
+        "link_generated": "Enlace del curso actualizado exitosamente",
+        "converted_to_public": "Curso convertido exitosamente a Público"
       }
     },
     "people": {
@@ -871,7 +872,18 @@
         "question_in_exercise": "En \"{exercise}\"",
         "fix_question": "Editar",
         "convert_to_public_blocked": "Los cursos públicos solo requieren preguntas autocalificables.",
-        "convert_to_public_blocked_desc": "Los ejercicios de un curso público se califican automáticamente en el navegador, por lo que solo admitimos preguntas con calificación automática. Elimine o reemplace las siguientes preguntas antes de convertir este curso a Público:"
+        "convert_to_public_blocked_desc": "Los ejercicios de un curso público se califican automáticamente en el navegador, por lo que solo admitimos preguntas con calificación automática. Elimine o reemplace las siguientes preguntas antes de convertir este curso a Público:",
+        "fix_in_exercise": "Arreglar en ejercicio",
+        "cancel_conversion": "Cancelar conversión",
+        "public_conversion": {
+          "banner_title": "Convertir curso a público",
+          "exercise_fixed": "Este ejercicio está listo.",
+          "back_to_settings": "Volver a configuración",
+          "complete_conversion": "Conversión pública completa",
+          "jump_to": "Saltar a",
+          "blocks_public_conversion": "No autogradable",
+          "blocks_public_conversion_desc": "Los cursos públicos solo admiten preguntas calificables automáticamente. Cambie el tipo de esta pregunta o elimínela para continuar con la conversión."
+        }
       },
       "analytics": {
         "title": "Analíticas"

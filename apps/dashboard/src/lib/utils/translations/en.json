@@ -3679,7 +3679,18 @@
         "convert_to_public_blocked_desc": "Exercises in a public course are graded automatically in the browser which is why we only support auto-gradable questions. Remove or replace the following questions before converting this course to Public:",
         "question_in_exercise": "In \"{exercise}\"",
         "fix_question": "Edit",
+        "fix_in_exercise": "Fix in exercise",
+        "cancel_conversion": "Cancel conversion",
         "fix_blocking_questions": "Fix blocking questions",
+        "public_conversion": {
+          "banner_title": "Converting course to Public",
+          "exercise_fixed": "This exercise is ready",
+          "back_to_settings": "Back to Settings",
+          "complete_conversion": "Complete Public Conversion",
+          "jump_to": "Jump to",
+          "blocks_public_conversion": "Non-autogradable",
+          "blocks_public_conversion_desc": "Public courses only support auto-gradable questions. Change this question's type or delete it to proceed with conversion."
+        },
         "callout": {
           "legend": "Public course callout",
           "description": "Shown at the bottom of each lesson and in place of locked items. Use it to drive students to your site or a paid course.",
@@ -4262,7 +4273,8 @@
         "successful_integration": "Integration successful",
         "successful_deletion": "Integration deleted",
         "update_successful": "Update successful",
-        "link_generated": "Course link updated successfully"
+        "link_generated": "Course link updated successfully",
+        "converted_to_public": "Course successfully converted to Public"
       },
       "error": {
         "not_right": "Something's not right - Please try later",

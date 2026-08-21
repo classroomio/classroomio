@@ -19,7 +19,7 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
   import { Badge } from '@cio/ui/base/badge';
-  import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
+  import TriangleAlertIcon from '@lucide/svelte/icons/alert-triangle';
   import FileTextIcon from '@lucide/svelte/icons/file-text';
   import CheckIcon from '@lucide/svelte/icons/check';
 

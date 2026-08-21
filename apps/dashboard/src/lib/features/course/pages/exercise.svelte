@@ -41,6 +41,9 @@
   import Submissions from '$features/course/components/exercise/submissions/submissions.svelte';
   import UpdateDescription from '$features/course/components/exercise/update-description.svelte';
   import { ContentNavigationActions } from '$features/course/components/lesson';
+  import { PublicConversionBanner } from '$features/course/components';
+  import { publicConversionFlow } from '$features/course/store/public-conversion.svelte';
+  import { isQuestionAutoGradable } from '$features/course/utils/public-conversion-utils';
   import {
     // RefreshPageData,
     RoleBasedSecurity,
@@ -449,6 +452,16 @@
         hasUnsavedChanges = false;
         patchExerciseListItemLocally();
         snackbar.success('snackbar.exercise.success');
+
+        if (publicConversionFlow.isActive && publicConversionFlow.courseId === courseApi.course?.id) {
+          const activeQuestions = getActiveExerciseQuestions($questionnaire.questions ?? []);
+          const hasManual = activeQuestions.some((q) => !isQuestionAutoGradable(getQuestionTypeId(q)));
+          if (!hasManual) {
+            publicConversionFlow.markExerciseResolved(exerciseId);
+          } else {
+            publicConversionFlow.unmarkExerciseResolved(exerciseId);
+          }
+        }
       }
     } catch {
       snackbar.error();
@@ -747,6 +760,8 @@
           />
         {/if}
       {:else}
+        <PublicConversionBanner {exerciseId} />
+
         <UnderlineTabs.Root bind:value={selectedTab} class="mb-4">
           <UnderlineTabs.List class="grid w-full max-w-lg grid-cols-3">
             <UnderlineTabs.Trigger value="questions">
