@@ -23,13 +23,13 @@
   }: Props = $props();
 </script>
 
-<div class="ui:flex ui:items-center ui:gap-2 {className}">
+<div class="ui:flex ui:items-center ui:gap-1 {className}">
   {#if onReply}
     <Button
       variant="ghost"
       size="xs"
       onclick={onReply}
-      class="ui:gap-1.5 ui:text-xs ui:text-muted-foreground ui:hover:text-foreground"
+      class="ui:h-6 ui:gap-1 ui:px-1.5 ui:text-xs ui:text-muted-foreground ui:hover:text-foreground"
     >
       <MessageSquareIcon size={14} />
       <span>{replyLabel}</span>
