@@ -228,9 +228,10 @@ OPENAI_API_KEY=
 `cio-minio` ships **in the template**: its `/data` volume is attached so `videos`, `documents`, and `media` buckets persist across redeploys.
 
 #### Domain & Network Configuration
-MinIO exposes **two distinct services** that require separate Railway domain ports:
-1. **S3 API Endpoint (Target Port 9000):** e.g. `https://cio-minio-api.up.railway.app`. Used for `OBJECT_STORAGE_ENDPOINT` in `cio-api` and `cio-jobs`, as well as direct browser presigned uploads.
-2. **MinIO Web Console UI (Target Port 9001):** e.g. `https://cio-minio-ui.up.railway.app`. Used in your browser to log in and inspect buckets.
+Railway allows only **one Railway-provided domain per service**, so `cio-minio` gets a single
+generated domain with **Target Port 9000** (S3 API):
+1. **S3 API Endpoint (Target Port 9000):** e.g. `https://cio-minio.up.railway.app`. Used for `OBJECT_STORAGE_ENDPOINT` in `cio-api` and `cio-jobs`, as well as direct browser presigned uploads.
+2. **MinIO Web Console (Target Port 9001, optional):** the console has no generated domain. To browse buckets in your browser, add a **custom domain** targeting port 9001 on `cio-minio`, then set `MINIO_BROWSER_REDIRECT_URL=https://<console-domain>` on the service.
 
 On `cio-minio`, set the following environment variables in Railway:
 ```zsh title="env"
@@ -244,11 +245,12 @@ MINIO_API_CORS_ALLOW_ORIGIN=*
 
 On `cio-dashboard`, set `ALLOWED_EXTERNAL_DOMAINS` to include your MinIO S3 API domain so Content Security Policy (CSP) permits browser fetches and uploads:
 ```zsh title="env"
-ALLOWED_EXTERNAL_DOMAINS=https://cio-minio-api.up.railway.app
+ALLOWED_EXTERNAL_DOMAINS=https://cio-minio.up.railway.app
 ```
 
 #### Viewing Buckets & Files in the MinIO Console
-1. Open your **Port 9001** domain (e.g. `https://cio-minio-ui.up.railway.app`) in your web browser.
+Locally, open `http://localhost:9001`. On Railway, expose the console first by adding a custom domain targeting port 9001 (see above), then:
+1. Open the console domain in your web browser.
 2. Log in using your `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`.
 3. Click **Object Browser** in the left menu to view and inspect all buckets:
    - **`videos`**: Stores raw and encoded HLS lesson videos.

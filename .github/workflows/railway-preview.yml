@@ -62,6 +62,10 @@ env:
 jobs:
   preview:
     runs-on: ubuntu-latest
+    # Bounded so a hung download or a stuck Railway build can't run until GitHub's
+    # default 6-hour job limit. Longest legit path is the three parallel source
+    # builds + polling, which finishes well under this cap.
+    timeout-minutes: 90
     steps:
       - name: Checkout target branch
         uses: actions/checkout@v4
@@ -162,24 +166,61 @@ jobs:
         if: ${{ inputs.action == 'deploy' }}
         # Railway has no minio-init sidecar and a duplicated env's MinIO volume is empty,
         # so create the buckets the app expects. Root creds carry over via duplication,
-        # but public domains don't, so generate S3 API (9000) and Web Console (9001) domains.
+        # but the public domain doesn't, so generate one here (same as "Report the preview
+        # URL" does for cio-dashboard).
+        #
+        # Railway allows only ONE Railway-provided domain per service, so the single
+        # generated domain is pinned to port 9000 (S3 API). The Web Console on 9001
+        # cannot get a second generated domain — to browse buckets in a preview, add a
+        # custom domain targeting 9001 on cio-minio by hand.
         run: |
-          # A freshly duplicated environment's cio-minio ServiceInstance can take a few
-          # seconds to materialize after `railway environment new --duplicate` returns.
+          # Sets one variable and FAILS THE RUN if the update doesn't stick. A silent
+          # failure here would deploy the preview with stale storage/CORS/CSP config
+          # while still reporting it as ready.
+          set_var() {
+            local service="$1"
+            local kv="$2"
+            local attempt output
+            for attempt in $(seq 1 3); do
+              if output=$(railway variables --service "$service" --set "$kv" 2>&1); then
+                echo "$output"
+                return 0
+              fi
+              echo "$output"
+              if [ "$attempt" -eq 3 ]; then
+                echo "::error::Setting '$kv' on $service failed after 3 attempts."
+                return 1
+              fi
+              echo "Variable update failed (attempt $attempt/3) — retrying in 5s..."
+              sleep 5
+            done
+          }
+
+          # A freshly duplicated environment's cio-minio ServiceInstance (volume-backed, like
+          # Postgres) can take a few seconds to materialize after `railway environment new
+          # --duplicate` returns, so `railway domain`/`variables` can fail with "ServiceInstance
+          # not found" immediately after duplication. Retry instead of failing the run.
           MINIO_API_HOST=""
-          MINIO_UI_HOST=""
           for attempt in $(seq 1 10); do
-            # Pin port 9000 for S3 API traffic and port 9001 for MinIO Console UI
-            railway domain --service cio-minio --port 9000 || true
-            railway domain --service cio-minio --port 9001 || true
-
-            MINIO_API_HOST=$(railway domain --service cio-minio --port 9000 2>&1 | grep -oE '[a-zA-Z0-9.-]+\.up\.railway\.app' | head -n1 || true)
-            if [ -z "$MINIO_API_HOST" ]; then
-              MINIO_API_HOST=$(railway variables --service cio-minio --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
+            # --port 9000: the minio/minio image exposes both 9000 (S3 API) and 9001
+            # (console); pin it so domain generation doesn't land on the wrong one.
+            if output=$(railway domain --service cio-minio --port 9000 2>&1); then
+              echo "$output"
+            else
+              echo "$output"
+              if ! echo "$output" | grep -qi "already exists"; then
+                if [ "$attempt" -eq 10 ]; then
+                  echo "::error::cio-minio ServiceInstance never became available after 10 attempts."
+                  exit 1
+                fi
+                echo "cio-minio not ready yet (attempt $attempt/10) — retrying in 5s..."
+                sleep 5
+                continue
+              fi
             fi
-
-            MINIO_UI_HOST=$(railway domain --service cio-minio --port 9001 2>&1 | grep -oE '[a-zA-Z0-9.-]+\.up\.railway\.app' | head -n1 || true)
-
+            # `cut -d= -f2-` (not `awk -F= '{print $2}'`) so a value containing '=' — common in
+            # base64/auto-generated secrets like MINIO_ROOT_PASSWORD — isn't silently truncated.
+            MINIO_API_HOST=$(railway variables --service cio-minio --kv | grep '^RAILWAY_PUBLIC_DOMAIN=' | cut -d= -f2-)
             if [ -n "$MINIO_API_HOST" ]; then
               break
             fi
@@ -191,39 +232,46 @@ jobs:
             sleep 5
           done
 
-          # Fix internal console routing, CORS, and browser redirects
-          railway variables --service cio-minio --set "MINIO_SERVER_URL=http://127.0.0.1:9000" || true
-          railway variables --service cio-minio --set "MINIO_API_CORS_ALLOW_ORIGIN=*" || true
-          if [ -n "$MINIO_UI_HOST" ]; then
-            railway variables --service cio-minio --set "MINIO_BROWSER_REDIRECT_URL=https://${MINIO_UI_HOST}" || true
-          fi
+          # Neutralize a stale MINIO_SERVER_URL inherited from the base env (its domain
+          # doesn't exist in this environment) and enable browser presigned uploads.
+          set_var cio-minio "MINIO_SERVER_URL=http://127.0.0.1:9000"
+          set_var cio-minio "MINIO_API_CORS_ALLOW_ORIGIN=*"
 
           # Update S3 endpoints on api and jobs
-          railway variables --service cio-api --set "OBJECT_STORAGE_ENDPOINT=https://${MINIO_API_HOST}" || true
-          railway variables --service cio-api --set "OBJECT_STORAGE_PUBLIC_ENDPOINT=https://${MINIO_API_HOST}" || true
-          railway variables --service cio-api --set "OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://${MINIO_API_HOST}/media" || true
+          set_var cio-api "OBJECT_STORAGE_ENDPOINT=https://${MINIO_API_HOST}"
+          set_var cio-api "OBJECT_STORAGE_PUBLIC_ENDPOINT=https://${MINIO_API_HOST}"
+          set_var cio-api "OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://${MINIO_API_HOST}/media"
 
-          railway variables --service cio-jobs --set "OBJECT_STORAGE_ENDPOINT=https://${MINIO_API_HOST}" || true
-          railway variables --service cio-jobs --set "OBJECT_STORAGE_PUBLIC_ENDPOINT=https://${MINIO_API_HOST}" || true
-          railway variables --service cio-jobs --set "OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://${MINIO_API_HOST}/media" || true
+          set_var cio-jobs "OBJECT_STORAGE_ENDPOINT=https://${MINIO_API_HOST}"
+          set_var cio-jobs "OBJECT_STORAGE_PUBLIC_ENDPOINT=https://${MINIO_API_HOST}"
+          set_var cio-jobs "OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://${MINIO_API_HOST}/media"
 
-          # Inject MinIO API domain into ALLOWED_EXTERNAL_DOMAINS for cio-dashboard CSP
-          CURRENT_ALLOWED=$(railway variables --service cio-dashboard --kv | grep '^ALLOWED_EXTERNAL_DOMAINS=' | cut -d= -f2- || true)
+          # Append the MinIO API domain to ALLOWED_EXTERNAL_DOMAINS for cio-dashboard CSP.
+          # Read the current value first (fail loudly if unreadable) and append — never
+          # overwrite, since the base env may already allow other hosts.
+          DASHBOARD_VARS=$(railway variables --service cio-dashboard --kv)
+          CURRENT_ALLOWED=$(echo "$DASHBOARD_VARS" | grep '^ALLOWED_EXTERNAL_DOMAINS=' | cut -d= -f2- || true)
           if [ -z "$CURRENT_ALLOWED" ]; then
-            railway variables --service cio-dashboard --set "ALLOWED_EXTERNAL_DOMAINS=https://${MINIO_API_HOST}" || true
+            set_var cio-dashboard "ALLOWED_EXTERNAL_DOMAINS=https://${MINIO_API_HOST}"
           elif ! echo "$CURRENT_ALLOWED" | grep -q "${MINIO_API_HOST}"; then
-            railway variables --service cio-dashboard --set "ALLOWED_EXTERNAL_DOMAINS=${CURRENT_ALLOWED},https://${MINIO_API_HOST}" || true
+            set_var cio-dashboard "ALLOWED_EXTERNAL_DOMAINS=${CURRENT_ALLOWED},https://${MINIO_API_HOST}"
           fi
 
           MINIO_USER=$(railway variables --service cio-minio --kv | grep '^MINIO_ROOT_USER=' | cut -d= -f2-)
           MINIO_PASS=$(railway variables --service cio-minio --kv | grep '^MINIO_ROOT_PASSWORD=' | cut -d= -f2-)
 
-          # Verify mc against MinIO's published SHA256 before executing it.
-          curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc -o mc
-          curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum -o mc.sha256sum
+          # Verify mc against MinIO's published SHA256 before executing it. Bounded
+          # timeouts + retries so a stalled dl.min.io download can't hang the job.
+          curl --connect-timeout 15 --max-time 120 --retry 3 --retry-delay 5 -fsSL \
+            https://dl.min.io/client/mc/release/linux-amd64/mc -o mc
+          curl --connect-timeout 15 --max-time 120 --retry 3 --retry-delay 5 -fsSL \
+            https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum -o mc.sha256sum
           echo "$(cut -d' ' -f1 mc.sha256sum)  mc" | sha256sum -c -
           chmod +x mc
-
+          # --path on forces path-style bucket addressing (host/bucket/key), same as the
+          # app's own OBJECT_STORAGE_FORCE_PATH_STYLE=true — this Railway domain doesn't
+          # route wildcard bucket subdomains, so virtual-host style (mc's "auto" default)
+          # fails bucket creation with a misleading "does not exist" error.
           ./mc alias set cio "https://${MINIO_API_HOST}" "$MINIO_USER" "$MINIO_PASS" --path on
 
           for attempt in $(seq 1 10); do
@@ -316,18 +364,11 @@ jobs:
             exit 1
           fi
 
-          MINIO_UI_HOST=$(railway domain --service cio-minio --port 9001 2>&1 | grep -oE '[a-zA-Z0-9.-]+\.up\.railway\.app' | head -n1 || true)
-          MINIO_USER=$(railway variables --service cio-minio --kv | grep '^MINIO_ROOT_USER=' | cut -d= -f2- || true)
-          MINIO_PASS=$(railway variables --service cio-minio --kv | grep '^MINIO_ROOT_PASSWORD=' | cut -d= -f2- || true)
-
           {
             echo "### Railway preview ready :rocket:"
             echo ""
             echo "- Environment: \`$ENV_NAME\` (branch \`$BRANCH\`)"
             echo "- Dashboard: https://${URL}"
-            if [ -n "$MINIO_UI_HOST" ]; then
-              echo "- MinIO Web Console: https://${MINIO_UI_HOST} (User: \`${MINIO_USER:-minioadmin}\`)"
-            fi
             echo ""
             echo "> All services passed their Railway deploy/healthcheck before this link was printed, so it should be live now."
             echo ""

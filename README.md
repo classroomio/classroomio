@@ -196,8 +196,8 @@ The repository also contains shared packages under `packages/` (for example `pac
    - Console Web UI: http://localhost:9001 (user/pass default `minioadmin` / `minioadmin`). Open in browser and select **Object Browser** to view buckets and uploaded files.
    - S3 endpoint: http://localhost:9000
    - Buckets created by `minio-init`: `videos`, `documents`, `media`
+   - Browser presigned uploads work out of the box: Compose passes `MINIO_API_CORS_ALLOW_ORIGIN` (default `*`) from the **root `.env`** to the MinIO container — set it there if you need to restrict origins.
    - Add to `apps/api/.env` when using MinIO locally:
-     - `MINIO_API_CORS_ALLOW_ORIGIN=*`
      - `OBJECT_STORAGE_ENDPOINT=http://localhost:9000`
      - `OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000`
      - `OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin`

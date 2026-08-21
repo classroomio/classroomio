@@ -37,19 +37,28 @@ Two mechanisms, both enabled:
 - `seed` — also load the full demo dataset (`admin@test.com` etc.); migrations + essential
   seed always run on api boot regardless.
 
-The run prints both the preview **Dashboard URL** and the **MinIO Web Console URL** in its job **summary**. The env is named `pr-<branch-slug>`.
+The run prints the preview **Dashboard URL** in its job **summary**. The env is named
+`pr-<branch-slug>-<hash>` — an 8-character hash of the branch name is appended because the
+slug alone is lossy (e.g. `foo/bar` and `foo_bar` both slug to `foo-bar`).
 
-The deploy step runs `railway up --ci` (no `--detach`), which streams build logs and **blocks until
-each service passes its deploy/healthcheck** before the next one starts — so the printed URLs are live
-the moment the run finishes, and a failed healthcheck fails the run rather than reporting a broken
-preview.
+The deploy step starts the three app-service builds **in parallel** (each `railway up --ci`
+streams its build logs and blocks until that service passes its deploy/healthcheck), then
+waits for all of them — so the printed URL is live the moment the run finishes, and a failed
+healthcheck fails the run rather than reporting a broken preview.
 
-## MinIO Storage & Web UI
+## MinIO Storage
 
-- **Dual Domains:** `cio-minio` generates two separate public domain ports on Railway:
-  - **Port 9000 (S3 API):** Used for backend uploads (`OBJECT_STORAGE_ENDPOINT`) and browser presigned uploads.
-  - **Port 9001 (Web Console):** Open in browser to log into the MinIO dashboard (`videos`, `documents`, `media` buckets).
-- **CORS & CSP:** Previews automatically set `MINIO_API_CORS_ALLOW_ORIGIN=*` on `cio-minio` and append the MinIO API domain to `ALLOWED_EXTERNAL_DOMAINS` on `cio-dashboard` so browser uploads and video playback pass Content Security Policy checks.
+- **Single Domain:** Railway allows only **one Railway-provided domain per service**, so the
+  workflow pins `cio-minio`'s generated domain to **port 9000 (S3 API)** — used for backend
+  uploads (`OBJECT_STORAGE_ENDPOINT`) and browser presigned uploads.
+- **Web Console:** the console listens on port 9001 but gets **no automatic public domain**
+  in previews. To browse buckets, add a custom domain targeting 9001 on `cio-minio` →
+  **Settings → Networking**, then set `MINIO_BROWSER_REDIRECT_URL=https://<that-domain>` on
+  the service. Locally, the console is simply at `http://localhost:9001`.
+- **CORS & CSP:** Previews set `MINIO_API_CORS_ALLOW_ORIGIN=*` on `cio-minio` and append the
+  MinIO API domain to `ALLOWED_EXTERNAL_DOMAINS` on `cio-dashboard` so browser uploads and
+  video playback pass Content Security Policy checks. Variable updates are retried and fail
+  the run instead of leaving the preview misconfigured.
 - **Persistence:** Ensure a Railway Volume is mounted to `/data` under `cio-minio` -> **Volumes** so uploaded files and buckets survive service redeploys.
 
 ## Database behavior
