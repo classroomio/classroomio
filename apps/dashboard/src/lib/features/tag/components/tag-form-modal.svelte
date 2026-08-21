@@ -86,7 +86,7 @@
         return;
       }
 
-      open = false;
+      handleOpenChange(false);
 
       return;
     }
@@ -102,7 +102,7 @@
       return;
     }
 
-    open = false;
+    handleOpenChange(false);
     onCreated?.(created);
   }
 </script>
@@ -188,7 +188,7 @@
               {#each TAG_COLOR_OPTIONS as color (color)}
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="secondary"
                   size="icon"
                   class={`h-6 w-6 rounded-full p-0 ${tagColor === color ? 'ring-2 ring-offset-1' : ''}`}
                   style={`background-color: ${color}`}

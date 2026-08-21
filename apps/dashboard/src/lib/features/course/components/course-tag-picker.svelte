@@ -63,7 +63,7 @@
     </p>
   {:else if hasNoTags}
     <div class="space-y-2">
-      <p class="ui:text-muted-foreground text-xs">No Tags found</p>
+      <p class="ui:text-muted-foreground text-xs">{$t('course.navItem.settings.tags.no_results')}</p>
     </div>
   {:else if hasNoMatchingTags}
     <div class="space-y-2">
