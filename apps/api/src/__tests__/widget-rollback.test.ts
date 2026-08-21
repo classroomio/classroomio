@@ -51,7 +51,8 @@ describe('rollbackOrganizationWidget', () => {
   });
 
   it('restores the target version layout, selection mode, and config onto the live widget row', async () => {
-    const targetVersionConfig = { ...getDefaultWidgetConfig(), themePreset: 'graphite' as const };
+    const defaultWidgetConfig = getDefaultWidgetConfig();
+    const targetVersionConfig = { ...defaultWidgetConfig, themePreset: 'graphite' as const };
     const WIDGET_UUID = '11111111-1111-4111-8111-111111111111';
     const ORG_UUID = '22222222-2222-4222-8222-222222222222';
 
