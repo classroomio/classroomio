@@ -45,6 +45,17 @@ export function renderCertificate(design: CertificateDesign, data: CertificateRe
 </head>
 <body>
 ${body}
+<script>
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function() {
+      document.documentElement.classList.add('fonts-ready');
+    }).catch(function() {
+      document.documentElement.classList.add('fonts-ready');
+    });
+  } else {
+    document.documentElement.classList.add('fonts-ready');
+  }
+</script>
 </body>
 </html>`;
 

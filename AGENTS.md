@@ -45,6 +45,12 @@ export PATH="$HOME/.nvm/versions/node/v20.19.3/bin:$PATH"
   pnpm --filter @cio/api^... build && pnpm --filter @cio/api build
   ```
 
+- **Certificate changes** (`packages/certificates/**`):
+
+  ```bash
+  pnpm --filter @cio/certificates build
+  ```
+
 Also run `pnpm format:check` (see Translation, Formatting, and Git Workflow above). Do not commit if any verification step fails.
 
 ## Naming Convention
@@ -560,6 +566,78 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - **Teacher/tutor/admin dashboard actions** (course management, grading, team invites, auto-enroll): build URLs with `getAppBaseUrl()` from `@cio/core/config/dashboard-url`. This resolves to the admin app (`app.classroomio.com` in cloud, or `DASHBOARD_ORIGIN` / localhost in dev). Do **not** pass org `customDomain` or tenant `siteName` — staff sign in on the admin app, not the org public site.
 - **Student/learner-facing links** (course enroll, org audience invites, login): build URLs with `getDashboardBaseUrl(org)` so links land on the org's public site (verified custom domain, tenant subdomain, or platform fallback).
 
+## Certificate Templates & Dynamic Text Fitting (`packages/certificates`)
+
+Certificate templates in `packages/certificates/src/templates/` render fixed-dimension certificate layouts for preview and PDF export. Dynamic user-generated fields (such as `orgName`, `courseName`, `recipientName`, `subtitle`, `description`, `certificateId`, and `date`) vary in length and must dynamically fit within their assigned layout boundaries without text clipping or layout overflow.
+
+### Rules for Certificate Template Edits:
+
+1. **Compute font sizes dynamically from font metrics — never hardcode fixed font sizes for dynamic text**:
+   - All user-generated content must have its font size computed via `prepareCertificateRenderContext(design, data, FIELDS)` and the font metrics engine (`font-metrics.ts`).
+   - Define a `FIELDS` constant object declaring `maxWidth`, `maxHeight`, `fontFamily`, `basePx`, `lineHeight`, `allowWrap`, `letterSpacingPx`, and `textTransform` for each field.
+   - Inject the computed font size via inline style in the HTML markup (e.g. `style="font-size: ${fontSizes.recipient}px;"`).
+   - Wrap all interpolated user strings with `escapeHtml(...)`.
+
+2. **Define dedicated constants/variables for all paddings, margins, and decorative dimensions**:
+   - Do not use inline magic numbers. Define named constants at the top of the template file for any padding, cell dimensions, or flanking decoration widths.
+   ```ts
+   const recipientPaddingBottom = 14;
+   const certIdPaddingHorizontal = 10;
+   const certIdPaddingVertical = 6;
+   const subtitleDecorationLineWidth = 50;
+   const subtitleDecorationGap = 14;
+   const subtitleTotalDecorationWidth = (subtitleDecorationLineWidth + subtitleDecorationGap) * 2;
+   ```
+
+3. **`FIELDS` must subtract padding and decorations before computing size**:
+   - The sizing engine uses `maxWidth` and `maxHeight` in `FIELDS` to measure available space for text glyphs.
+   - If an element has CSS padding or flanking decoration, **subtract that padding/decoration from `FIELDS.maxWidth` or `FIELDS.maxHeight`** so the font size calculation accounts for the reduced text area:
+   ```ts
+   const FIELDS = {
+     certId: {
+       maxWidth: 280 - certIdPaddingHorizontal * 2,
+       maxHeight: 60 - certIdPaddingVertical * 2,
+       fontFamily: FONTS.mono,
+       basePx: 11,
+       allowWrap: false,
+       textTransform: 'uppercase' as const
+     },
+     subtitle: {
+       maxWidth: 800 - subtitleTotalDecorationWidth,
+       maxHeight: 34,
+       fontFamily: FONTS.heading,
+       basePx: 13,
+       allowWrap: false,
+       letterSpacingPx: 4,
+       textTransform: 'uppercase' as const
+     },
+     recipient: {
+       maxWidth: 820,
+       maxHeight: 86 - recipientPaddingBottom,
+       fontFamily: FONTS.display,
+       basePx: 54,
+       lineHeight: 1.05,
+       allowWrap: true
+     }
+   } as const;
+   ```
+
+4. **CSS styles must use the dedicated padding variables**:
+   - Reference the same dedicated padding constants in the template's CSS styles.
+   - Container max dimensions in CSS should reflect the total outer boundary where needed (e.g., inner width/height from `FIELDS` plus the padding):
+   ```css
+   .t-classique .recipient {
+     padding-bottom: ${recipientPaddingBottom}px;
+     max-width: ${FIELDS.recipient.maxWidth}px;
+     max-height: ${FIELDS.recipient.maxHeight + recipientPaddingBottom}px;
+     overflow-wrap: break-word;
+     word-break: normal;
+   }
+   ```
+
+5. **Keep `FIELDS` typography configuration and CSS declarations strictly synchronized**:
+   - If CSS applies `letter-spacing`, `text-transform: uppercase`, or a specific `line-height`, the same values must be declared in `FIELDS` (`letterSpacingPx`, `textTransform: 'uppercase'`, `lineHeight`) so the advance-width and line-wrap calculations match the browser rendering.
+
 ## Best Practices Summary
 
 ### ✅ DO
@@ -578,6 +656,8 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - Mutate bound `$state` object fields in place when clearing forms (don't reassign the whole object)
 - Use `ScrollToTop` (`@cio/ui/custom/scroll-to-top`) on any page whose main column can overflow the viewport (see **Scroll to top**)
 - Add `testId` on `@cio/ui` wrappers or shell surfaces when Playwright needs a stable hook (see **E2E test hooks**)
+- In certificate templates, compute font sizes for dynamic text using `FIELDS` and `prepareCertificateRenderContext` (`packages/certificates`)
+- In certificate templates, extract paddings into dedicated constants, subtract them in `FIELDS` before computing font sizes, and reference those constants in CSS
 
 ### ❌ DON'T
 - Put business logic in routes or queries
@@ -596,6 +676,8 @@ Links embedded in transactional emails must use the correct dashboard host. Temp
 - **Reassign whole bound state objects to clear forms** (e.g. `fields = {}`) — mutate properties in place
 - **Use inline type imports** (e.g. `import('Package').Type` in type positions) — use top-level `import type` instead
 - Build a one-off back-to-top button — use `ScrollToTop` (see **Scroll to top** and `prd/scroll-to-top/README.md`)
+- Hardcode font sizes in CSS for user-generated certificate fields
+- Use magic padding numbers in certificate templates without subtracting them from `FIELDS` bounding boxes
 
 ## E2E test hooks
 
