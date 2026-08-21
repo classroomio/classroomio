@@ -4564,7 +4564,10 @@
         "mobile": "Мобильный",
         "tablet": "Планшет",
         "desktop": "Рабочий стол"
-      }
+      },
+      "current_version": "Текущая версия",
+      "active_badge": "Активный",
+      "active_badge_description": "Эта версия в настоящее время доступна на вашей вставке"
     },
     "tabs": {
       "select_courses": "Выберите курсы",

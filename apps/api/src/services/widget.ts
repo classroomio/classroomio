@@ -272,27 +272,31 @@ export async function rollbackOrganizationWidget(
       throw new AppError('Widget version not found', ErrorCodes.WIDGET_NOT_FOUND, 404);
     }
 
-    const nextVersion = await getNextWidgetVersion(widgetId);
-    const rollbackVersion = await createWidgetVersion({
-      widgetId: widget.id,
-      version: nextVersion,
-      configSnapshot: version.configSnapshot,
-      payloadSnapshot: version.payloadSnapshot,
-      runtimeManifest: version.runtimeManifest,
-      rolledBackFromVersionId: version.id,
-      publishedByUserId: userId
-    });
+    const payloadSnapshot = version.payloadSnapshot as Record<string, unknown>;
+    const restoredLayoutType = (payloadSnapshot.layoutType ?? widget.layoutType) as typeof widget.layoutType;
+    const restoredSelectionMode = (payloadSnapshot.selectionMode ??
+      widget.selectionMode) as typeof widget.selectionMode;
+
+    const restoredCourses = (payloadSnapshot.courses as Array<{ id: string }>) ?? [];
+    const restoredCourseIds = restoredCourses.map((c) => c.id);
 
     const updatedWidget = await updateWidget(orgId, widgetId, {
+      config: version.configSnapshot,
+      layoutType: restoredLayoutType,
+      selectionMode: restoredSelectionMode,
       status: 'PUBLISHED',
       hasUnpublishedChanges: false,
-      latestPublishedVersionId: rollbackVersion.id,
+      latestPublishedVersionId: version.id,
       updatedByUserId: userId
     });
 
+    if (restoredCourseIds.length > 0) {
+      await replaceWidgetCourses(widgetId, restoredCourseIds);
+    }
+
     return {
       widget: updatedWidget,
-      version: rollbackVersion
+      version
     };
   } catch (error) {
     if (error instanceof AppError) {

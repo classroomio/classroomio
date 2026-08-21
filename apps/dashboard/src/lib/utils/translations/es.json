@@ -4564,7 +4564,10 @@
         "mobile": "Móvil",
         "tablet": "Tableta",
         "desktop": "Escritorio"
-      }
+      },
+      "current_version": "Versión actual",
+      "active_badge": "Activo",
+      "active_badge_description": "Esta versión está actualmente disponible en tu inserción."
     },
     "tabs": {
       "select_courses": "Seleccionar cursos",
