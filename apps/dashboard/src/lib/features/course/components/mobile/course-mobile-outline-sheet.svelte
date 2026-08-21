@@ -1,7 +1,8 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
+  import CircleXIcon from '@lucide/svelte/icons/circle-x';
   import * as Drawer from '@cio/ui/base/drawer';
-  import { BackButton } from '@cio/ui';
+  import { Button } from '@cio/ui/base/button';
   import CourseProgressCard from '$features/course/components/course-progress-card.svelte';
   import { courseApi } from '$features/course/api';
   import { getCourseProgress } from '$features/course/utils/content';
@@ -54,7 +55,10 @@
         <Drawer.Title class="ui:text-sm ui:font-semibold ui:text-foreground">
           {$t('course.navItems.nav_content')}
         </Drawer.Title>
-        <BackButton href={resolve(coursesListPath, {})} label={$t('course.navItems.exit_course')} class="px-2! py-2!" />
+        <Button variant="link" class="h-fit! px-2! py-2!" href={resolve(coursesListPath, {})}>
+          <CircleXIcon class="custom" />
+          <span class="text-xs">{$t('course.navItems.exit_course')}</span>
+        </Button>
       </Drawer.Header>
 
       <div class="shrink-0 px-3 pb-2">
